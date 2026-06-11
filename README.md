@@ -266,7 +266,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 | Key | Inhalt |
 |---|---|
 | `spanischcard.progress.v2` | Lernfortschritt pro Karte (SRS-Zustand + Statistik-Felder) |
-| `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme) |
+| `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme, letzte Kategorie, Einstellungs-Panel auf/zu, aktiver Start-Reiter) |
 | `spanischcard.usercards.v1` | Vom Nutzer angelegte eigene Karten |
 | `spanischcard.gamestats.v1` | Ruta-Pass: Spiel-Zähler (Streak, Tageszeit-Marken, „Nochmal“, Hostel-Mode-Battles & -Rollenspiele, Definiciones-Quizze, geöffnete Reise-Kontexte) + freigeschaltete Badges |
 
@@ -322,7 +322,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 - **Fälligkeit:** `isDue` ist `true`, sobald `due ≤ jetzt` (neue Karten sind sofort fällig)
 - **Re-Queue:** „Nochmal" hängt die Karte ans Ende der laufenden Sitzung
 
-Bei Sitzungsstart wählt der Controller alle **fälligen** Karten im gewählten Bereich/Stufen-Filter. Ist nichts fällig, startet automatisch **freies Üben** über alle Karten des Bereichs.
+Bei Sitzungsstart wählt der Controller alle **fälligen** Karten im gewählten Bereich/Stufen-Filter. Ist nichts fällig, startet automatisch **freies Üben** über alle Karten des Bereichs. Eine Runde umfasst höchstens **20 Karten** – der Rest bleibt fällig und kommt in der nächsten Runde dran.
 
 ---
 

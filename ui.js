@@ -48,13 +48,52 @@
                     aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
   }
 
-  // ---------- HOME ----------
-  function renderHome(vm) {
+  // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
+  // Die Startseite ist in drei Reiter geclustert, damit pro Blick nur ein Thema
+  // sichtbar ist: Lernen (Heute-Karte + Themen), Entdecken (Spielmodi & Wissen),
+  // Profil (Fortschritt, Pass, Eigenes). Unten eine feste Tab-Leiste; der aktive
+  // Reiter kommt aus vm.tab und wird in den Einstellungen gemerkt.
+
+  // Entdecken-Reiter: die vier großen Einstiege als volle Gradient-Buttons.
+  const FEATURES = [
+    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
+  ];
+
+  // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
+  // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
+  // ist ehrlicher und für Screenreader genauso klar (Seiten-Navigation).
+  function tabbar(tab) {
+    const t = (id, icon, label) =>
+      `<button class="tab ${tab === id ? "is-active" : ""}"${tab === id ? ' aria-current="page"' : ""}
+               data-action="set-tab" data-tab="${id}">
+         <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
+       </button>`;
+    return `
+      <nav class="tabbar" aria-label="Bereiche">
+        ${t("lernen", "🎒", "Lernen")}${t("entdecken", "🧭", "Entdecken")}${t("profil", "👤", "Profil")}
+      </nav>`;
+  }
+
+  // Schlanke Kopfzeile pro Reiter: nur Titel + Dark-Mode-Knopf (statt des großen
+  // Heros mit Kicker und Icon-Reihe – der Markenname steht schon in der App-Bar).
+  function pagehead(title, vm) {
+    return `
+      <div class="pagehead">
+        <h2 class="pagehead__title">${title}</h2>
+        ${themeToggle(vm.theme)}
+      </div>`;
+  }
+
+  function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
         const badge = c.due > 0 ? `<span class="tile__due">${c.due} fällig</span>` : `<span class="tile__due tile__due--ok">✓ erledigt</span>`;
-        // Stufen-Aufschlüsselung: aktive Stufe farbig, inaktive ausgegraut.
-        const breakdown = c.byLevel
+        // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
+        // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
+        const breakdown = vm.allLevels ? "" : c.byLevel
           .map((b) =>
             `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
           .join("");
@@ -64,7 +103,7 @@
             <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
             <span class="tile__label">${esc(c.label)}</span>
             <span class="tile__meta">${c.total} Karten · ${badge}</span>
-            <span class="tile__levels">${breakdown}</span>
+            ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
           </button>`;
       })
       .join("");
@@ -81,22 +120,26 @@
          </button>`),
     ].join("");
 
-    return `
-      <section class="screen">
-        <div class="hero">
-          <div class="hero__text">
-            <p class="hero__kicker">Reise-Spanisch für echte Situationen</p>
-            <h2 class="hero__title">¿Qué aprendemos hoy?</h2>
-          </div>
-          <div class="hero__actions">
-            ${themeToggle(vm.theme)}
-            <button class="iconbtn" data-action="open-info" aria-label="Länderkunde" title="Länderkunde">🌎</button>
-            <button class="iconbtn" data-action="open-editor" aria-label="Eigene Karten" title="Eigene Karten">✍️</button>
-            <button class="iconbtn hero__pass" data-action="open-badges" aria-label="Mein Ruta-Pass" title="Mein Ruta-Pass">🎖️${vm.badgeCount ? `<span class="hero__passnum">${vm.badgeCount}</span>` : ""}</button>
-            <button class="iconbtn hero__stats" data-action="open-stats" aria-label="Statistik" title="Statistik">📊</button>
-          </div>
-        </div>
+    // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
+    // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
+    const streakChip = vm.streak > 0
+      ? `<span class="today__streak">🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} Serie</span>`
+      : `<span class="today__streak today__streak--new">🌱 Starte deine Serie</span>`;
+    const resume = vm.lastCat
+      ? `<button class="today__resume" data-action="resume-last">
+           ↩ Weiter mit ${esc(vm.lastCat.icon)} ${esc(vm.lastCat.label)}
+           <span class="today__resumecount">${vm.lastCat.due} fällig</span>
+         </button>`
+      : "";
 
+    // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
+    // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
+    const lvlSummary = vm.allLevels
+      ? "Alle Stufen"
+      : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
+    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🗣️ Sprechen"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const setupBody = `
+      <div class="setup__body" id="setup-body">
         <div class="switchgroup">
           <span class="switchcap">Modus</span>
           <div class="segmented" role="tablist" aria-label="Lernmodus">
@@ -104,7 +147,6 @@
             <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
           </div>
         </div>
-
         <div class="switchgroup">
           <span class="switchcap">Richtung</span>
           <div class="segmented" role="tablist" aria-label="Lernrichtung">
@@ -112,46 +154,90 @@
             <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → 🇩🇪 Español</button>
           </div>
         </div>
-
         <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
+      </div>`;
 
+    return `
+      ${pagehead("¿Qué aprendemos hoy?", vm)}
+
+      <div class="today">
+        ${streakChip}
         <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
-          ${vm.totalDue > 0
-            ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
-            : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
+          ${vm.totalDue === 0
+            ? `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`
+            : vm.totalDue > vm.sessionCap
+              ? `Lernrunde starten <span class="cta__count">${vm.sessionCap} von ${vm.totalDue}</span>`
+              : `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`}
         </button>
+        ${resume}
+      </div>
 
-        <button class="hostelmode" data-action="open-hostel">
-          <span class="hostelmode__icon" aria-hidden="true">🛏️</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">Hostel Mode</span>
-            <span class="hostelmode__sub">Zu zweit üben: Battle &amp; Rollenspiele</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
+      <div class="setup">
+        <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
+          <span class="setup__cap">⚙️ Einstellungen</span>
+          <span class="setup__summary">${setupSummary}</span>
+          <span class="setup__chev" aria-hidden="true">›</span>
         </button>
+        ${vm.setupOpen ? setupBody : ""}
+      </div>
 
-        <button class="hostelmode hostelmode--quiz" data-action="open-quiz-setup">
-          <span class="hostelmode__icon" aria-hidden="true">🧩</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">Definiciones</span>
-            <span class="hostelmode__sub">Zuordnen: Definition lesen, Begriff wählen</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
+      <p class="sectioncap">Themen</p>
+      <div class="tiles">${tiles}</div>
 
-        <button class="hostelmode hostelmode--cuerpo" data-action="open-cuerpo">
-          <span class="hostelmode__icon" aria-hidden="true">🧍</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">El Cuerpo</span>
-            <span class="hostelmode__sub">Körperteile antippen: Wort, Aussprache &amp; Reisetipp</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
+      <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>`;
+  }
 
-        <div class="tiles">${tiles}</div>
+  function entdeckenBody(vm) {
+    const feats = FEATURES.map((x) => `
+      <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
+        <span class="feat__icon" aria-hidden="true">${x.icon}</span>
+        <span class="feat__text">
+          <span class="feat__title">${esc(x.title)}</span>
+          <span class="feat__sub">${esc(x.sub)}</span>
+        </span>
+        <span class="feat__chev" aria-hidden="true">›</span>
+      </button>`).join("");
+    return `
+      ${pagehead("Entdecken", vm)}
+      <p class="pageintro">Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.</p>
+      ${feats}`;
+  }
 
-        <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
-      </section>`;
+  function profilBody(vm) {
+    const streakLine = vm.streak > 0
+      ? `🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} in Folge`
+      : `🌱 Heute die erste Karte lernen`;
+    const navrow = (action, icon, label, chip) => `
+      <button class="navrow" data-action="${action}">
+        <span class="navrow__icon" aria-hidden="true">${icon}</span>
+        <span class="navrow__label">${esc(label)}</span>
+        ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
+        <span class="navrow__chev" aria-hidden="true">›</span>
+      </button>`;
+    return `
+      ${pagehead("Dein Fortschritt", vm)}
+
+      <div class="profcard">
+        <p class="profcard__streak">${streakLine}</p>
+        <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
+          <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
+        </div>
+        <p class="profcard__meta">${vm.overall.mastered} von ${vm.overall.total} Karten gemeistert · ${vm.overall.pct} %</p>
+      </div>
+
+      ${navrow("open-stats", "📊", "Statistik")}
+      ${navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "")}
+      ${navrow("open-editor", "✍️", "Eigene Karten")}`;
+  }
+
+  function renderHome(vm) {
+    const body =
+      vm.tab === "entdecken" ? entdeckenBody(vm) :
+      vm.tab === "profil" ? profilBody(vm) :
+      lernenBody(vm);
+    return `
+      <section class="screen screen--tabbed">${body}</section>
+      ${tabbar(vm.tab)}`;
   }
 
   // ---------- STUDY ----------

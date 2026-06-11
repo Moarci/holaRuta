@@ -114,6 +114,7 @@
 [data-theme="dark"] .fmtrow { background: rgba(251, 243, 228, 0.05); }
 [data-theme="dark"] .progress,
 [data-theme="dark"] .dist__bar,
+[data-theme="dark"] .today__bar,
 [data-theme="dark"] .brk__track { background: rgba(251, 243, 228, 0.08); }
 [data-theme="dark"] .srate--none { background: rgba(251, 243, 228, 0.07); }
 [data-theme="dark"] .cinfo-sect--food { background: #2A1D14; }
@@ -200,15 +201,14 @@ body {
 .screen { display: flex; flex-direction: column; gap: 18px; animation: fade 0.25s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-/* Hero */
-.hero__kicker {
-  margin: 0 0 6px; font-size: 0.74rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.18em; color: var(--brand);
+/* Schlanke Kopfzeile der Start-Reiter: Titel links, Dark-Mode-Knopf rechts.
+ * (Der Markenname steht schon in der App-Bar – kein großer Hero mehr.) */
+.pagehead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pagehead__title {
+  margin: 0; font-family: var(--font-display); min-width: 0;
+  font-size: 1.45rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; color: var(--ink);
 }
-.hero__title {
-  margin: 0; font-family: var(--font-display);
-  font-size: 2rem; line-height: 1.05; font-weight: 800; letter-spacing: -0.02em; color: var(--ink);
-}
+.pageintro { margin: -6px 0 0; font-size: 0.92rem; color: var(--ink-soft); line-height: 1.45; }
 
 /* Umschalter-Gruppe mit kleiner Beschriftung (Modus / Richtung) */
 .switchgroup { display: flex; flex-direction: column; gap: 6px; }
@@ -272,8 +272,133 @@ body {
   padding: 2px 10px; font-size: 0.9rem; font-weight: 800;
 }
 
-/* Hero-Aktionen (mehrere Icon-Buttons rechts oben) */
-.hero__actions { display: flex; gap: 8px; flex-shrink: 0; }
+/* ---------- LERNEN-REITER: "Heute"-Karte (Streak, Haupt-CTA, Quick-Resume) ---------- */
+.today {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); padding: 16px; box-shadow: var(--shadow-lg);
+}
+.today__streak {
+  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+  font-size: 0.85rem; font-weight: 800; color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--warn) 40%, transparent);
+  padding: 5px 12px; border-radius: 999px;
+}
+.today__streak--new {
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 12%, transparent);
+  border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+}
+.today__bar { height: 8px; background: rgba(45, 27, 18, 0.1); border-radius: 999px; overflow: hidden; }
+.today__barfill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--ok), var(--easy));
+  transition: width 0.3s ease;
+}
+.today__resume {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink-soft);
+  cursor: pointer; padding: 12px 14px; border-radius: var(--r-md);
+  font-size: 0.92rem; font-weight: 700; box-shadow: var(--shadow);
+}
+.today__resume:active { transform: translateY(1px); }
+.today__resumecount {
+  background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--brand-ink);
+  border-radius: 999px; padding: 2px 9px; font-size: 0.78rem; font-weight: 800;
+}
+
+/* Einklappbares Einstellungs-Panel (Modus/Richtung/Stufen) */
+.setup {
+  border: 1.5px solid var(--line); border-radius: var(--r-md);
+  background: var(--card); box-shadow: var(--shadow); overflow: hidden;
+}
+.setup__head {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px;
+  border: none; background: transparent; cursor: pointer; padding: 12px 14px; text-align: left;
+  color: inherit; font-family: inherit;
+}
+.setup__cap {
+  flex: none; font-size: 0.78rem; font-weight: 800;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft);
+}
+.setup__summary {
+  flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-align: right; font-size: 0.82rem; font-weight: 700; color: var(--muted);
+}
+.setup__chev { flex: none; font-size: 1.2rem; font-weight: 700; color: var(--muted); transition: transform 0.18s ease; }
+.setup__head[aria-expanded="true"] .setup__chev { transform: rotate(90deg); }
+.setup__body { display: flex; flex-direction: column; gap: 14px; padding: 2px 14px 16px; animation: pop 0.2s ease; }
+
+/* Abschnitts-Überschriften der Startseite ("Themen") */
+.sectioncap {
+  margin: 4px 0 -8px; padding-left: 4px;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* ---------- TAB-LEISTE (Lernen · Entdecken · Profil) ---------- */
+/* Fest am unteren Rand, auf die App-Spalte begrenzt. Die Reiter-Inhalte
+ * bekommen über .screen--tabbed Platz, damit nichts darunter verschwindet. */
+.tabbar {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: var(--maxw); z-index: 30;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  background: var(--card); border-top: 1.5px solid var(--line);
+  padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+}
+.tab {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  border: none; background: transparent; cursor: pointer;
+  padding: 7px 6px; border-radius: var(--r-sm); min-height: 52px;
+  color: var(--muted); font-family: inherit; font-weight: 700;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tab__icon { font-size: 1.3rem; line-height: 1; filter: grayscale(1); opacity: 0.65; }
+.tab__label { font-size: 0.68rem; letter-spacing: 0.02em; }
+.tab.is-active { color: var(--brand-ink); background: color-mix(in srgb, var(--brand) 10%, transparent); }
+.tab.is-active .tab__icon { filter: none; opacity: 1; }
+.screen--tabbed { padding-bottom: 86px; } /* Platz für die feste Tab-Leiste */
+
+/* ---------- ENTDECKEN-REITER: große Einstiegs-Buttons ---------- */
+.feat {
+  display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;
+  text-align: left; padding: 16px; border-radius: var(--r-tile);
+  background: linear-gradient(135deg, var(--from), var(--to));
+  border: none; color: var(--cream); box-shadow: var(--shadow);
+  transition: transform 0.12s ease;
+}
+.feat:active { transform: translateY(1px); }
+.feat__icon { font-size: 1.7rem; line-height: 1; flex: none; }
+.feat__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.feat__title { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; }
+.feat__sub { font-size: 0.82rem; opacity: 0.92; }
+.feat__chev { font-size: 1.4rem; font-weight: 700; flex: none; opacity: 0.85; }
+
+/* ---------- PROFIL-REITER: Fortschritts-Karte + Navigations-Zeilen ---------- */
+.profcard {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); padding: 18px; box-shadow: var(--shadow-lg);
+}
+.profcard__streak { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--ink); }
+.profcard__meta { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+.navrow {
+  display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer;
+  text-align: left; min-height: 56px; padding: 14px 16px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  box-shadow: var(--shadow); color: var(--ink);
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  transition: transform 0.12s ease;
+}
+.navrow:active { transform: translateY(1px); }
+.navrow__icon { font-size: 1.3rem; line-height: 1; flex: none; }
+.navrow__label { flex: 1 1 auto; min-width: 0; }
+.navrow__chip {
+  flex: none; background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--brand-ink);
+  border-radius: 999px; padding: 2px 10px; font-size: 0.8rem; font-weight: 800;
+}
+.navrow__chev { flex: none; color: var(--muted); font-size: 1.2rem; font-weight: 700; }
 
 /* ---------- EIGENE KARTEN (EDITOR) ---------- */
 .editor {
@@ -546,11 +671,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .done h2 { margin: 0; font-family: var(--font-display); font-size: 2.2rem; font-weight: 800; color: var(--ink); }
 .done p { margin: 0; color: var(--ink-soft); }
 .done .cta { margin-top: 10px; max-width: 280px; }
-
-/* Hero mit Statistik-Knopf */
-.hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.hero__text { min-width: 0; }
-.hero__stats { flex: none; font-size: 1.25rem; }
 
 /* Dezenter Sekundär-Button */
 .ghostbtn {
@@ -897,15 +1017,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .badge__prog { font-size: 0.7rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
 [data-theme="dark"] .badge__bar { background: rgba(251, 243, 228, 0.08); }
 
-/* Zähler-Bommel am Ruta-Pass-Knopf der Startseite. */
-.hero__pass { position: relative; }
-.hero__passnum {
-  position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px;
-  border-radius: 999px; background: var(--brand); color: var(--cream);
-  font-size: 0.64rem; font-weight: 800; line-height: 18px; text-align: center;
-  font-variant-numeric: tabular-nums; box-shadow: var(--shadow);
-}
-
 /* Glückwunsch-Einblendung nach Freischaltung (eigene Ebene, unten zentriert). */
 .btoast {
   position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
@@ -929,21 +1040,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* ====================================================================
  * HOSTEL MODE – Battle & Rollenspiele (Anwenden zu zweit)
  * ==================================================================== */
-
-/* Einstieg auf der Startseite (zwischen CTA und Kacheln). */
-.hostelmode {
-  display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;
-  text-align: left; padding: 14px 16px; border-radius: var(--r-md);
-  background: linear-gradient(135deg, #C25A45, #8E4FA8);
-  border: none; color: var(--cream); box-shadow: var(--shadow);
-  transition: transform 0.12s ease;
-}
-.hostelmode:active { transform: translateY(1px); }
-.hostelmode__icon { font-size: 1.7rem; line-height: 1; flex: none; }
-.hostelmode__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
-.hostelmode__title { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; }
-.hostelmode__sub { font-size: 0.82rem; opacity: 0.92; }
-.hostelmode__chev { font-size: 1.4rem; font-weight: 700; flex: none; opacity: 0.85; }
 
 /* Gemeinsame Bausteine. */
 .hm-intro { margin: 0; color: var(--ink-soft); line-height: 1.5; font-size: 0.95rem; }
@@ -1125,9 +1221,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    Nutzt die Spiel-Bausteine (.hm-scene, .cta, .done) und ergänzt nur das
    Frage-/Optionen-Layout. Farbtöne kommen aus den Theme-Tokens (Dark-Mode-fest).
    ========================================================================== */
-.hostelmode--quiz { background: linear-gradient(135deg, #3F7355, #2F6B70); }
-.hostelmode--cuerpo { background: linear-gradient(135deg, #2E6E86, #7D4A8E); }
-
 /* ==========================================================================
    EL CUERPO – interaktive Körperkarte. Eine stilisierte SVG-Figur mit
    absolut positionierten Hotspot-Punkten (Prozent-Koordinaten der Figur).
@@ -7420,13 +7513,52 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                     aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
   }
 
-  // ---------- HOME ----------
-  function renderHome(vm) {
+  // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
+  // Die Startseite ist in drei Reiter geclustert, damit pro Blick nur ein Thema
+  // sichtbar ist: Lernen (Heute-Karte + Themen), Entdecken (Spielmodi & Wissen),
+  // Profil (Fortschritt, Pass, Eigenes). Unten eine feste Tab-Leiste; der aktive
+  // Reiter kommt aus vm.tab und wird in den Einstellungen gemerkt.
+
+  // Entdecken-Reiter: die vier großen Einstiege als volle Gradient-Buttons.
+  const FEATURES = [
+    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
+  ];
+
+  // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
+  // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
+  // ist ehrlicher und für Screenreader genauso klar (Seiten-Navigation).
+  function tabbar(tab) {
+    const t = (id, icon, label) =>
+      `<button class="tab ${tab === id ? "is-active" : ""}"${tab === id ? ' aria-current="page"' : ""}
+               data-action="set-tab" data-tab="${id}">
+         <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
+       </button>`;
+    return `
+      <nav class="tabbar" aria-label="Bereiche">
+        ${t("lernen", "🎒", "Lernen")}${t("entdecken", "🧭", "Entdecken")}${t("profil", "👤", "Profil")}
+      </nav>`;
+  }
+
+  // Schlanke Kopfzeile pro Reiter: nur Titel + Dark-Mode-Knopf (statt des großen
+  // Heros mit Kicker und Icon-Reihe – der Markenname steht schon in der App-Bar).
+  function pagehead(title, vm) {
+    return `
+      <div class="pagehead">
+        <h2 class="pagehead__title">${title}</h2>
+        ${themeToggle(vm.theme)}
+      </div>`;
+  }
+
+  function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
         const badge = c.due > 0 ? `<span class="tile__due">${c.due} fällig</span>` : `<span class="tile__due tile__due--ok">✓ erledigt</span>`;
-        // Stufen-Aufschlüsselung: aktive Stufe farbig, inaktive ausgegraut.
-        const breakdown = c.byLevel
+        // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
+        // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
+        const breakdown = vm.allLevels ? "" : c.byLevel
           .map((b) =>
             `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
           .join("");
@@ -7436,7 +7568,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
             <span class="tile__label">${esc(c.label)}</span>
             <span class="tile__meta">${c.total} Karten · ${badge}</span>
-            <span class="tile__levels">${breakdown}</span>
+            ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
           </button>`;
       })
       .join("");
@@ -7453,22 +7585,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
          </button>`),
     ].join("");
 
-    return `
-      <section class="screen">
-        <div class="hero">
-          <div class="hero__text">
-            <p class="hero__kicker">Reise-Spanisch für echte Situationen</p>
-            <h2 class="hero__title">¿Qué aprendemos hoy?</h2>
-          </div>
-          <div class="hero__actions">
-            ${themeToggle(vm.theme)}
-            <button class="iconbtn" data-action="open-info" aria-label="Länderkunde" title="Länderkunde">🌎</button>
-            <button class="iconbtn" data-action="open-editor" aria-label="Eigene Karten" title="Eigene Karten">✍️</button>
-            <button class="iconbtn hero__pass" data-action="open-badges" aria-label="Mein Ruta-Pass" title="Mein Ruta-Pass">🎖️${vm.badgeCount ? `<span class="hero__passnum">${vm.badgeCount}</span>` : ""}</button>
-            <button class="iconbtn hero__stats" data-action="open-stats" aria-label="Statistik" title="Statistik">📊</button>
-          </div>
-        </div>
+    // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
+    // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
+    const streakChip = vm.streak > 0
+      ? `<span class="today__streak">🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} Serie</span>`
+      : `<span class="today__streak today__streak--new">🌱 Starte deine Serie</span>`;
+    const resume = vm.lastCat
+      ? `<button class="today__resume" data-action="resume-last">
+           ↩ Weiter mit ${esc(vm.lastCat.icon)} ${esc(vm.lastCat.label)}
+           <span class="today__resumecount">${vm.lastCat.due} fällig</span>
+         </button>`
+      : "";
 
+    // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
+    // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
+    const lvlSummary = vm.allLevels
+      ? "Alle Stufen"
+      : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
+    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🗣️ Sprechen"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const setupBody = `
+      <div class="setup__body" id="setup-body">
         <div class="switchgroup">
           <span class="switchcap">Modus</span>
           <div class="segmented" role="tablist" aria-label="Lernmodus">
@@ -7476,7 +7612,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
           </div>
         </div>
-
         <div class="switchgroup">
           <span class="switchcap">Richtung</span>
           <div class="segmented" role="tablist" aria-label="Lernrichtung">
@@ -7484,46 +7619,90 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → 🇩🇪 Español</button>
           </div>
         </div>
-
         <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
+      </div>`;
 
+    return `
+      ${pagehead("¿Qué aprendemos hoy?", vm)}
+
+      <div class="today">
+        ${streakChip}
         <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
-          ${vm.totalDue > 0
-            ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
-            : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
+          ${vm.totalDue === 0
+            ? `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`
+            : vm.totalDue > vm.sessionCap
+              ? `Lernrunde starten <span class="cta__count">${vm.sessionCap} von ${vm.totalDue}</span>`
+              : `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`}
         </button>
+        ${resume}
+      </div>
 
-        <button class="hostelmode" data-action="open-hostel">
-          <span class="hostelmode__icon" aria-hidden="true">🛏️</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">Hostel Mode</span>
-            <span class="hostelmode__sub">Zu zweit üben: Battle &amp; Rollenspiele</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
+      <div class="setup">
+        <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
+          <span class="setup__cap">⚙️ Einstellungen</span>
+          <span class="setup__summary">${setupSummary}</span>
+          <span class="setup__chev" aria-hidden="true">›</span>
         </button>
+        ${vm.setupOpen ? setupBody : ""}
+      </div>
 
-        <button class="hostelmode hostelmode--quiz" data-action="open-quiz-setup">
-          <span class="hostelmode__icon" aria-hidden="true">🧩</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">Definiciones</span>
-            <span class="hostelmode__sub">Zuordnen: Definition lesen, Begriff wählen</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
+      <p class="sectioncap">Themen</p>
+      <div class="tiles">${tiles}</div>
 
-        <button class="hostelmode hostelmode--cuerpo" data-action="open-cuerpo">
-          <span class="hostelmode__icon" aria-hidden="true">🧍</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">El Cuerpo</span>
-            <span class="hostelmode__sub">Körperteile antippen: Wort, Aussprache &amp; Reisetipp</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
+      <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>`;
+  }
 
-        <div class="tiles">${tiles}</div>
+  function entdeckenBody(vm) {
+    const feats = FEATURES.map((x) => `
+      <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
+        <span class="feat__icon" aria-hidden="true">${x.icon}</span>
+        <span class="feat__text">
+          <span class="feat__title">${esc(x.title)}</span>
+          <span class="feat__sub">${esc(x.sub)}</span>
+        </span>
+        <span class="feat__chev" aria-hidden="true">›</span>
+      </button>`).join("");
+    return `
+      ${pagehead("Entdecken", vm)}
+      <p class="pageintro">Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.</p>
+      ${feats}`;
+  }
 
-        <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
-      </section>`;
+  function profilBody(vm) {
+    const streakLine = vm.streak > 0
+      ? `🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} in Folge`
+      : `🌱 Heute die erste Karte lernen`;
+    const navrow = (action, icon, label, chip) => `
+      <button class="navrow" data-action="${action}">
+        <span class="navrow__icon" aria-hidden="true">${icon}</span>
+        <span class="navrow__label">${esc(label)}</span>
+        ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
+        <span class="navrow__chev" aria-hidden="true">›</span>
+      </button>`;
+    return `
+      ${pagehead("Dein Fortschritt", vm)}
+
+      <div class="profcard">
+        <p class="profcard__streak">${streakLine}</p>
+        <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
+          <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
+        </div>
+        <p class="profcard__meta">${vm.overall.mastered} von ${vm.overall.total} Karten gemeistert · ${vm.overall.pct} %</p>
+      </div>
+
+      ${navrow("open-stats", "📊", "Statistik")}
+      ${navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "")}
+      ${navrow("open-editor", "✍️", "Eigene Karten")}`;
+  }
+
+  function renderHome(vm) {
+    const body =
+      vm.tab === "entdecken" ? entdeckenBody(vm) :
+      vm.tab === "profil" ? profilBody(vm) :
+      lernenBody(vm);
+    return `
+      <section class="screen screen--tabbed">${body}</section>
+      ${tabbar(vm.tab)}`;
   }
 
   // ---------- STUDY ----------
@@ -8638,6 +8817,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
+  // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
+  // Sonst startet ein Neueinsteiger mit "561 fällig" in eine erschlagende
+  // Pflicht-Session – der Rest bleibt fällig und kommt in der nächsten Runde.
+  const SESSION_CAP = 20;
 
   // ----- Zustand (eine einzige Quelle der Wahrheit) -----
   let progress = store.loadProgress();
@@ -8646,6 +8829,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
+    homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -8735,6 +8919,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       return { id: c.id, label: c.label, icon: c.icon, grad: c.grad,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
+    // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
+    // seine Originalreihenfolge – so steht das Dringende oben, ohne dass die
+    // Kacheln bei jedem Besuch wild durcheinanderwürfeln.
+    const sortedCategories = categories
+      .map((c, i) => ({ c, i }))
+      .sort((a, b) => (b.c.due - a.c.due) || (a.i - b.i))
+      .map((x) => x.c);
     const all = scopeCards("all");
     // Stufen inkl. Kartenzahl je Stufe (über alle Kategorien) + Auswahl-Status.
     // Stufen ohne Karten (z. B. B2, das nur in Rollenspielen vorkommt) im
@@ -8744,16 +8935,36 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       count: everyCard.filter((c) => c.lvl === l.id).length,
       active: state.levels.includes(l.id),
     })).filter((l) => l.count > 0);
+    // Gesamtfortschritt für die "Heute"-Karte – über ALLE Karten, unabhängig
+    // vom Stufenfilter, damit der Balken eine stabile Bezugsgröße hat.
+    const overall = stats.overview(everyCard, progress);
+    // Quick-Resume: zuletzt gelernte Kategorie, nur wenn dort noch etwas fällig ist.
+    let lastCat = null;
+    if (settings.lastScope) {
+      const c = categoryById(settings.lastScope);
+      const due = c ? dueIn(scopeCards(c.id)).length : 0;
+      if (c && due > 0) lastCat = { id: c.id, label: c.label, icon: c.icon, due };
+    }
     return {
       mode: state.mode,
       dir: state.dir,
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
-      categories,
+      categories: sortedCategories,
       totalDue: dueIn(all).length,
+      sessionCap: SESSION_CAP,
       totalCards: all.length,
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
+      streak: currentStreak(),
+      overall: {
+        mastered: overall.mastered,
+        total: overall.total,
+        pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
+      },
+      lastCat,
+      setupOpen: setupOpenDefault(),
+      tab: state.homeTab,
     };
   }
 
@@ -8900,6 +9111,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const b = new Date(bKey + "T00:00:00");
     if (isNaN(a) || isNaN(b)) return null;
     return Math.round((b - a) / DAY_MS);
+  }
+
+  // Aktuelle Tage-Serie für die Startseite: zählt nur, wenn zuletzt heute oder
+  // gestern gelernt wurde – sonst ist die Serie gerissen und wird als 0 gezeigt.
+  // (gamestats.dailyStreak selbst wird erst bei der nächsten Bewertung korrigiert.)
+  function currentStreak() {
+    const last = gamestats.lastStudyDate;
+    if (!last) return 0;
+    const gap = daysBetween(last, dayKey(Date.now()));
+    return gap === 0 || gap === 1 ? (gamestats.dailyStreak || 0) : 0;
+  }
+
+  // Einstellungs-Panel des Lernen-Reiters: standardmäßig zu (Set-once-
+  // Einstellungen), offen nur, wenn der Nutzer es selbst aufgeklappt hat.
+  function setupOpenDefault() {
+    return settings.setupOpen === true;
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -9379,7 +9606,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dismissBadgeToast();
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
-    const chosen = due.length ? due : cards; // nichts fällig? -> freies Üben
+    // Nichts fällig? -> freies Üben. In beiden Fällen auf eine Runde gedeckelt.
+    const chosen = (due.length ? due : cards).slice(0, SESSION_CAP);
+    // Letzte Kategorie merken (für "Weiter mit …" auf der Startseite).
+    if (scopeId !== "all" && settings.lastScope !== scopeId) {
+      settings = Object.assign({}, settings, { lastScope: scopeId });
+      store.saveSettings(settings);
+    }
     state.scopeId = scopeId;
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
@@ -9529,6 +9762,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       state.levels = Array.from(set).sort((a, b) => a - b);
     }
     settings = Object.assign({}, settings, { levels: state.levels });
+    store.saveSettings(settings);
+    render();
+  }
+
+  // "Weiter mit …" auf der Startseite: gemerkte letzte Kategorie fortsetzen.
+  function resumeLast() {
+    if (settings.lastScope && categoryById(settings.lastScope)) startStudy(settings.lastScope);
+  }
+
+  // Einstellungs-Panel der Startseite auf-/zuklappen und die Wahl merken.
+  function toggleSetup() {
+    settings = Object.assign({}, settings, { setupOpen: !setupOpenDefault() });
+    store.saveSettings(settings);
+    render();
+  }
+
+  // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
+  function setTab(tab) {
+    const valid = tab === "entdecken" || tab === "profil" ? tab : "lernen";
+    state.homeTab = valid;
+    settings = Object.assign({}, settings, { homeTab: valid });
     store.saveSettings(settings);
     render();
   }
@@ -9859,6 +10113,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
+    else if (action === "resume-last") resumeLast();
+    else if (action === "toggle-setup") toggleSetup();
+    else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
