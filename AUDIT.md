@@ -1,4 +1,8 @@
-# SpanischCard — Audit & Review
+# HolaRuta — Audit & Review
+
+> Hinweis: Die App hieß zum Audit-Zeitpunkt „SpanischCard" und wurde anschließend zu **HolaRuta**
+> („Dein Reise-Spanisch für echte Situationen") umbenannt. Code-Pfade/Fundstellen gelten unverändert;
+> der Single-File-Build heißt jetzt `HolaRuta.html`.
 
 **Datum:** 2026-06-10 · **Umfang:** Code, Wörterbasis, UI, UX, A11y, PWA, Security, Performance
 **Methodik:** 4 parallele spezialisierte Audit-Agents (statisch) + Live-Browser-Test (Playwright) zur Verifikation.
@@ -152,7 +156,7 @@ binden; CSP; Onboarding-Overlay für Gesten (H8); Undo nach Rating; minimale Tes
 
 ## Verifikation
 
-- Statisch: `node --check *.js` grün; `node build.js` erzeugt `SpanischCard.html` fehlerfrei.
+- Statisch: `node --check *.js` grün; `node build.js` erzeugt `HolaRuta.html` fehlerfrei.
 - Live (Playwright): Home, Flip (Space/Tap), Rating (Taste/Fortschritt), Type-Matcher (Akzent/Slash), Persistenz nach Reload,
   Editor + XSS-Probe, Stats — **0 Konsolen-Errors**.
 - Nach den Fixes: Reduced-Motion, Fokus-Ziel, `aria-live`, Tap-Größen und Manifest erneut im Browser gegengeprüft.
