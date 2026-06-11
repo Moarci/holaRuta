@@ -7,6 +7,7 @@
   "use strict";
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
+  const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
   const speech = window.SC.speech || null; // optional – Browser kann Ausgabe ggf. nicht
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
@@ -16,6 +17,7 @@
   // ----- Zustand (eine einzige Quelle der Wahrheit) -----
   let progress = store.loadProgress();
   let settings = store.loadSettings();
+  let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card'
@@ -31,7 +33,10 @@
     cardId: null,            // Detailseite: welche Karte
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
+    badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
   };
+
+  let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
 
   const root = document.getElementById("app");
 
@@ -101,6 +106,7 @@
       categories,
       totalDue: dueIn(all).length,
       totalCards: all.length,
+      badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
     };
   }
 
@@ -227,6 +233,89 @@
     return { country, groups };
   }
 
+  // ----- Badge-System ("Mein Ruta-Pass") -----
+  // Lokaler Tages-Schlüssel "YYYY-MM-DD" – Basis für die Lern-Serie (Streak).
+  function dayKey(ms) {
+    const d = new Date(ms);
+    const p = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
+  // Tageszeit-Marken setzen, "Nochmal"-Drücke und Gesamtzahl zählen. Immutabel.
+  function recordStudyEvent(rating, now) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.reviews = (g.reviews || 0) + 1;
+    if (rating === srs.RATING.AGAIN) g.againPresses = (g.againPresses || 0) + 1;
+
+    const today = dayKey(now);
+    if (g.lastStudyDate !== today) {
+      const yesterday = dayKey(now - DAY_MS);
+      g.dailyStreak = g.lastStudyDate === yesterday ? (g.dailyStreak || 0) + 1 : 1;
+      g.lastStudyDate = today;
+      g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
+    }
+
+    const hour = new Date(now).getHours();
+    if (hour >= 22) g.nightOwl = true;   // "Midnight Español" – nach 22 Uhr
+    if (hour < 9) g.earlyBird = true;    // "Café con Vocabulario" – vor 9 Uhr
+
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
+  // Erfüllte, aber noch nicht vermerkte Badges freischalten. announce=true sammelt
+  // sie für die Glückwunsch-Einblendung; beim Start (false) still nachtragen.
+  function syncBadges(now, announce) {
+    if (!badges) return [];
+    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const newly = badges.satisfiedIds(metrics).filter((id) => !gamestats.unlocked[id]);
+    if (!newly.length) return [];
+    const unlocked = Object.assign({}, gamestats.unlocked);
+    newly.forEach((id) => { unlocked[id] = now; });
+    gamestats = Object.assign({}, gamestats, { unlocked });
+    store.saveGameStats(gamestats);
+    if (announce) showBadgeToast(newly.map((id) => badges.byId(id)).filter(Boolean));
+    return newly;
+  }
+
+  // Einblendung zeigen und nach kurzer Zeit selbst wieder ausblenden.
+  function showBadgeToast(list) {
+    if (!list.length) return;
+    state.badgeToast = list;
+    if (badgeToastTimer) clearTimeout(badgeToastTimer);
+    badgeToastTimer = setTimeout(() => {
+      badgeToastTimer = null;
+      state.badgeToast = null;
+      render();
+    }, 5000);
+  }
+
+  function badgesVM() {
+    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const all = badges.evaluate(metrics, gamestats.unlocked);
+    const groups = badges.GROUPS
+      .map((g) => {
+        const list = all.filter((b) => b.group === g.id);
+        return {
+          id: g.id, label: g.label, icon: g.icon,
+          badges: list,
+          unlocked: list.filter((b) => b.unlocked).length,
+          total: list.length,
+        };
+      })
+      .filter((g) => g.total > 0);
+    return { groups, unlocked: all.filter((b) => b.unlocked).length, total: all.length };
+  }
+
+  function openBadges() {
+    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
+    state.badgeToast = null;
+    state.screen = "badges";
+    render();
+  }
+
   // ----- Rendern -----
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
@@ -235,7 +324,13 @@
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
+    else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else root.innerHTML = ui.renderHome(homeVM());
+
+    // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
+    if (badges && state.badgeToast && state.badgeToast.length) {
+      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+    }
 
     manageFocus();
   }
@@ -307,11 +402,16 @@
     buzz(rating === srs.RATING.AGAIN ? 30 : 12);
 
     // SRS-Zustand neu berechnen und Statistik-Felder mitführen (immutabel).
+    const now = Date.now();
     const prev = progress[card.id];
     const srsNext = srs.review(prev, rating);
-    const merged = stats.record(prev, srsNext, rating, Date.now());
+    const merged = stats.record(prev, srsNext, rating, now);
     progress = Object.assign({}, progress, { [card.id]: merged });
     store.saveProgress(progress);
+
+    // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
+    recordStudyEvent(rating, now);
+    syncBadges(now, true);
 
     state.queue = state.queue.slice(1);
     if (rating === srs.RATING.AGAIN) state.queue = state.queue.concat(card.id);
@@ -414,6 +514,11 @@
     if (!ok) return;
     store.resetProgress();
     progress = {};
+    // Badges/Streak hängen am Lernfortschritt -> mit zurücksetzen (sonst inkonsistent).
+    store.resetGameStats();
+    gamestats = store.loadGameStats();
+    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
+    state.badgeToast = null;
     state.statsFilter = "answered";
     goHome();
   }
@@ -585,6 +690,7 @@
     else if (action === "rate") rate(el.dataset.rating);
     else if (action === "speak") speakCurrent();
     else if (action === "open-stats") goStats();
+    else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
@@ -725,6 +831,7 @@
     };
     mq.addEventListener ? mq.addEventListener("change", onSys) : (mq.addListener && mq.addListener(onSys));
   } catch (e) { /* matchMedia fehlt – egal */ }
+  syncBadges(Date.now(), false); // bereits erfüllte Badges still nachtragen (Bestandsnutzer)
   render();
   registerServiceWorker();
 
