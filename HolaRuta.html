@@ -786,6 +786,110 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-weight: 600; line-height: 1.5; margin-bottom: 8px;
 }
 
+/* ===================== RUTA-PASS (BADGES) ===================== */
+/* "Mein Ruta-Pass": gesammelte Reisestempel. Freigeschaltete Stempel im
+ * warmen Sticker-Look, gesperrte dezent ausgegraut mit Fortschrittsbalken. */
+
+/* Kopf mit Gesamt-Fortschritt. */
+.passhero {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px;
+}
+.passhero__sub { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+.passhero__bar { height: 10px; background: rgba(45, 27, 18, 0.1); border-radius: 999px; overflow: hidden; }
+.passhero__fill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--warn));
+  transition: width 0.4s ease;
+}
+.passhero__meta {
+  margin: 0; font-size: 0.8rem; font-weight: 700; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+[data-theme="dark"] .passhero__bar { background: rgba(251, 243, 228, 0.08); }
+
+/* Gruppen (Lernreise, Dranbleiben, Bereiche, Spezial). */
+.passgroup { display: flex; flex-direction: column; gap: 10px; }
+.passgroup__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.passgroup__title { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
+.passgroup__count {
+  font-size: 0.82rem; font-weight: 800; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stempel-Raster. */
+.passgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (min-width: 560px) { .passgrid { grid-template-columns: 1fr 1fr 1fr; } }
+
+.badge {
+  position: relative; overflow: hidden;
+  border: 1.5px solid var(--line); border-radius: var(--r-tile);
+  background: var(--card); padding: 14px 12px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 5px;
+  min-height: 132px;
+}
+.badge__icon {
+  width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 1.6rem; line-height: 1; margin-bottom: 2px;
+  background: color-mix(in srgb, var(--brand) 14%, transparent);
+}
+.badge__name { font-weight: 700; font-size: 0.9rem; color: var(--ink); line-height: 1.2; }
+.badge__desc { font-size: 0.74rem; color: var(--muted); line-height: 1.35; }
+
+/* Freigeschaltet: voller Kontrast + grünes Häkchen oben rechts. */
+.badge.is-unlocked { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.badge.is-unlocked .badge__icon { background: color-mix(in srgb, var(--brand) 20%, transparent); }
+.badge__check {
+  position: absolute; top: 8px; right: 8px; width: 22px; height: 22px;
+  border-radius: 50%; background: var(--ok); color: var(--cream);
+  display: grid; place-items: center; font-size: 0.78rem; font-weight: 800;
+  box-shadow: var(--shadow);
+}
+
+/* Gesperrt: ausgegraut, Icon entsättigt, Fortschrittsbalken unten. */
+.badge.is-locked { opacity: 0.96; }
+.badge.is-locked .badge__icon { filter: grayscale(1); opacity: 0.5; background: rgba(45, 27, 18, 0.06); }
+.badge.is-locked .badge__name { color: var(--ink-soft); }
+.badge--secret .badge__icon { filter: none; opacity: 0.7; }
+[data-theme="dark"] .badge.is-locked .badge__icon { background: rgba(251, 243, 228, 0.06); }
+
+.badge__bar {
+  display: block; width: 100%; height: 6px; margin-top: 6px;
+  background: rgba(45, 27, 18, 0.1); border-radius: 999px; overflow: hidden;
+}
+.badge__fill { display: block; height: 100%; border-radius: 999px; background: var(--warn); }
+.badge__prog { font-size: 0.7rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+[data-theme="dark"] .badge__bar { background: rgba(251, 243, 228, 0.08); }
+
+/* Zähler-Bommel am Ruta-Pass-Knopf der Startseite. */
+.hero__pass { position: relative; }
+.hero__passnum {
+  position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px;
+  border-radius: 999px; background: var(--brand); color: var(--cream);
+  font-size: 0.64rem; font-weight: 800; line-height: 18px; text-align: center;
+  font-variant-numeric: tabular-nums; box-shadow: var(--shadow);
+}
+
+/* Glückwunsch-Einblendung nach Freischaltung (eigene Ebene, unten zentriert). */
+.btoast {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+  z-index: 50; width: min(92%, calc(var(--maxw) - 24px));
+  display: flex; flex-direction: column; gap: 8px; text-align: left; cursor: pointer;
+  background: var(--card); border: 1.5px solid color-mix(in srgb, var(--brand) 45%, var(--line));
+  border-radius: var(--r-md); padding: 12px 14px;
+  box-shadow: 0 14px 36px -10px rgba(45, 27, 18, 0.45);
+  animation: btoast-in 0.3s ease;
+}
+@keyframes btoast-in { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.btoast__head { font-family: var(--font-display); font-weight: 800; font-size: 0.95rem; color: var(--brand-ink); }
+.btoast__item { display: flex; align-items: center; gap: 10px; }
+.btoast__icon {
+  flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 1.2rem; background: color-mix(in srgb, var(--brand) 18%, transparent);
+}
+.btoast__text { display: flex; flex-direction: column; min-width: 0; }
+.btoast__name { font-weight: 700; font-size: 0.9rem; color: var(--ink); }
+.btoast__sub { font-size: 0.76rem; color: var(--muted); line-height: 1.35; }
 /* ====================================================================
  * HOSTEL MODE – Battle & Rollenspiele (Anwenden zu zweit)
  * ==================================================================== */
@@ -4557,6 +4661,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const PROGRESS_KEY = "spanischcard.progress.v2";
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
+  const GAMESTATS_KEY = "spanischcard.gamestats.v1";
 
   function readJson(key, fallback) {
     try {
@@ -4594,6 +4699,39 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return v.filter((c) => c && typeof c === "object" && typeof c.id === "string" && c.id);
   }
 
+  // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
+  // Drücke und die Map freigeschalteter Badges. Defaults für alte/leere Stände.
+  function freshGameStats() {
+    return {
+      reviews: 0,           // Gesamtzahl Bewertungen
+      againPresses: 0,      // wie oft "Otra vez" gedrückt
+      dailyStreak: 0,       // aktuelle Tage-in-Folge-Serie
+      longestStreak: 0,     // längste je erreichte Serie
+      lastStudyDate: null,  // letztes Lern-Datum als "YYYY-MM-DD" (lokal)
+      nightOwl: false,      // schon mal nach 22 Uhr gelernt
+      earlyBird: false,     // schon mal vor 9 Uhr gelernt
+      unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
+    };
+  }
+  function loadGameStats() {
+    const v = readJson(GAMESTATS_KEY, null);
+    if (!isPlainObject(v)) return freshGameStats();
+    // Strukturwächter: jedes Feld typisieren. Korruptes/manipuliertes localStorage
+    // (z.B. "5" statt 5) darf sonst Streak-/Badge-Logik verfälschen (Streichketten
+    // wie "5"+1 = "51"). unlocked muss ein Objekt sein (sonst Crash beim Diffen).
+    const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    return {
+      reviews: num(v.reviews),
+      againPresses: num(v.againPresses),
+      dailyStreak: num(v.dailyStreak),
+      longestStreak: num(v.longestStreak),
+      lastStudyDate: typeof v.lastStudyDate === "string" ? v.lastStudyDate : null,
+      nightOwl: !!v.nightOwl,
+      earlyBird: !!v.earlyBird,
+      unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
+    };
+  }
+
   window.SC = window.SC || {};
   window.SC.store = {
     loadProgress,
@@ -4605,6 +4743,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     saveSettings: (s) => writeJson(SETTINGS_KEY, s),
     loadUserCards,
     saveUserCards: (c) => writeJson(USERCARDS_KEY, c),
+    freshGameStats,
+    loadGameStats,
+    saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),
+    resetGameStats: () => {
+      try { localStorage.removeItem(GAMESTATS_KEY); } catch (e) { /* egal */ }
+    },
   };
 })();
 
@@ -4827,6 +4971,242 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   window.SC = window.SC || {};
   window.SC.stats = { record, statusOf, cardSummary, overview, HARD_BELOW, MASTERED_DAYS };
+})();
+
+</script>
+<script>
+/*
+ * badges.js  (SC.badges) – "Mein Ruta-Pass": Stempel/Erfolge fürs Reise-Lernen.
+ * REINE FUNKTIONEN + REINE DATEN, kennt weder UI noch Speicher.
+ *
+ * Idee: Badges fühlen sich an wie kleine Reisestempel im Pass. Sie belohnen
+ * nicht nur "viel gelernt", sondern verschiedene Arten von Fortschritt:
+ * Lernmenge, Regelmäßigkeit (Streak), Kategorien-Meisterschaft und Spezielles.
+ *
+ * Datenfluss:  progress + counters --buildMetrics--> metrics --evaluate--> Liste
+ *
+ * Ein Badge ist reine Beschreibung. Ob es freigeschaltet ist, ergibt sich aus
+ * einer Metrik (metric) und einer Schwelle (threshold) – so bleibt die Logik
+ * generisch und neue Badges sind nur ein Eintrag im Array.
+ *
+ * type:
+ *   "counter"         – metrics[metric] >= threshold (z.B. cardsReviewed >= 50)
+ *   "flag"            – metrics[metric] === true (z.B. nightOwl)
+ *   "categoryMastery" – Anteil gemeisterter Karten einer Kategorie >= threshold
+ *   "allReviewed"     – alle Karten mindestens einmal gelernt (Schwelle = Gesamt)
+ *
+ * Optionale Felder:
+ *   secret  – Badge wird als "???" angezeigt, solange es nicht freigeschaltet ist.
+ */
+(function () {
+  "use strict";
+
+  // "Gemeistert" ist die Wahrheit aus stats.js (SC.stats.statusOf). Wir greifen
+  // darauf zu, statt die Regel (interval >= 7) zu duplizieren – so können
+  // Statistik und Ruta-Pass nie auseinanderlaufen. Der Fallback greift nur, falls
+  // stats (noch) nicht geladen ist (Graceful Degradation, eigenständig testbar).
+  const MASTERED_DAYS_FALLBACK = 7;
+  function isMastered(r) {
+    const st = window.SC && window.SC.stats;
+    if (st && st.statusOf) return st.statusOf(r) === "mastered";
+    return (r.seen || 0) > 0 && (r.interval || 0) >= MASTERED_DAYS_FALLBACK;
+  }
+
+  // Gruppen für die Anzeige im Ruta-Pass.
+  const GROUPS = [
+    { id: "learning", label: "Lernreise",   icon: "🧭" },
+    { id: "streak",   label: "Dranbleiben", icon: "🔥" },
+    { id: "category", label: "Bereiche",    icon: "🗂️" },
+    { id: "special",  label: "Spezial",     icon: "✨" },
+  ];
+
+  // Kategorie-Badges (80 % einer Kategorie gemeistert). Reise-/Hostel-Namen im
+  // HolaRuta-Stil. Die category-Id muss einer Kategorie in data.js entsprechen.
+  const CATEGORY_BADGES = [
+    { category: "basics",  icon: "💬", name: "Erste Worte",         description: "Meistere 80 % der Grundlagen-Karten." },
+    { category: "zahlen",  icon: "🔢", name: "Zahlen-Zähmer",       description: "Meistere 80 % der Zahlen-Karten." },
+    { category: "essen",   icon: "🌮", name: "Taco Tactician",      description: "Meistere 80 % der Essen-Karten." },
+    { category: "trinken", icon: "🥤", name: "Agua, por favor",     description: "Meistere 80 % der Trinken-Karten." },
+    { category: "hotel",   icon: "🛏️", name: "Dorm Diplomat",       description: "Meistere 80 % der Hotel-Karten." },
+    { category: "verkehr", icon: "🚌", name: "Busbahnhof-Boss",     description: "Meistere 80 % der Verkehr-Karten." },
+    { category: "compras", icon: "🛍️", name: "Markt-Meister",       description: "Meistere 80 % der Einkaufen-Karten." },
+    { category: "dinero",  icon: "💵", name: "Peso-Profi",          description: "Meistere 80 % der Geld-Karten." },
+    { category: "notfall", icon: "🆘", name: "Calm in Chaos",       description: "Meistere 80 % der Notfall-Karten." },
+    { category: "zeit",    icon: "⏰", name: "Pünktlich auf Ruta",   description: "Meistere 80 % der Zeit-Karten." },
+    { category: "talk",    icon: "🤝", name: "Conversation Starter", description: "Meistere 80 % der Smalltalk-Karten." },
+    { category: "alltag",  icon: "🏙️", name: "Alltags-Held",        description: "Meistere 80 % der Alltag-Karten." },
+    { category: "frases",  icon: "🙋", name: "Satz-Sammler",        description: "Meistere 80 % der Sätze-Karten." },
+    { category: "grenze",  icon: "🛂", name: "Grenzgänger",         description: "Meistere 80 % der Behörden-Karten." },
+    { category: "reise",   icon: "🚐", name: "Roadtrip-Ready",      description: "Meistere 80 % der Busreise-Karten." },
+  ].map((b) => Object.assign({
+    id: "cat_" + b.category,
+    group: "category",
+    type: "categoryMastery",
+    threshold: 0.8,
+    unlockedText: "Du kommst in diesem Bereich sprachlich klar. 🎒",
+  }, b));
+
+  const BADGES = [
+    // ---------- Lernreise (Lernmenge) ----------
+    { id: "first_steps",     group: "learning", icon: "👣", name: "Erste Schritte",        type: "counter", metric: "cardsReviewed", threshold: 1,
+      description: "Lerne deine erste Karte.",            unlockedText: "Dein erster Schritt auf der Ruta ist gemacht." },
+    { id: "ten_cards",       group: "learning", icon: "🎒", name: "10 Wörter im Rucksack",  type: "counter", metric: "cardsReviewed", threshold: 10,
+      description: "Lerne 10 verschiedene Karten.",       unlockedText: "Dein Reise-Spanisch kommt in Fahrt." },
+    { id: "fifty_cards",     group: "learning", icon: "📘", name: "Halber Reiseführer",     type: "counter", metric: "cardsReviewed", threshold: 50,
+      description: "Lerne 50 verschiedene Karten.",       unlockedText: "Genug Spanisch für viele Alltagssituationen." },
+    { id: "hundred_cards",   group: "learning", icon: "🧭", name: "Ruta Rookie",            type: "counter", metric: "cardsReviewed", threshold: 100,
+      description: "Lerne 100 verschiedene Karten.",      unlockedText: "Du findest dich sprachlich unterwegs zurecht." },
+    { id: "twohundred_cards",group: "learning", icon: "🧠", name: "Backpack Brain",         type: "counter", metric: "cardsReviewed", threshold: 200,
+      description: "Lerne 200 verschiedene Karten.",      unlockedText: "Dein Kopf ist offiziell reisefertig gepackt." },
+    { id: "all_cards",       group: "learning", icon: "🌎", name: "HolaRuta Legend",        type: "allReviewed",
+      description: "Lerne alle Karten mindestens einmal.", unlockedText: "Du hast das komplette Reise-Deck durchgespielt." },
+    { id: "master_10",       group: "learning", icon: "🏅", name: "Erste Meisterschaft",    type: "counter", metric: "cardsMastered", threshold: 10,
+      description: "Meistere 10 Karten (Intervall ≥ 7 Tage).", unlockedText: "Zehn Karten sitzen langfristig. Stark!" },
+    { id: "master_50",       group: "learning", icon: "🏆", name: "Routinier",              type: "counter", metric: "cardsMastered", threshold: 50,
+      description: "Meistere 50 Karten.",                 unlockedText: "Ein halbes Hundert Karten sitzt fest." },
+
+    // ---------- Dranbleiben (Streak) ----------
+    { id: "streak_3",  group: "streak", icon: "🗓️", name: "Drei-Tage-Trip",     type: "counter", metric: "longestStreak", threshold: 3,
+      description: "Lerne 3 Tage in Folge.",   unlockedText: "Drei Tage am Stück auf Ruta geblieben." },
+    { id: "streak_7",  group: "streak", icon: "🚐", name: "Eine Woche unterwegs", type: "counter", metric: "longestStreak", threshold: 7,
+      description: "Lerne 7 Tage in Folge.",   unlockedText: "Eine Woche Reise-Spanisch durchgezogen." },
+    { id: "streak_14", group: "streak", icon: "🛏️", name: "Reise-Routine",       type: "counter", metric: "longestStreak", threshold: 14,
+      description: "Lerne 14 Tage in Folge.",  unlockedText: "Spanisch ist Teil deiner Reiseroutine." },
+    { id: "streak_30", group: "streak", icon: "🔥", name: "Ruta Ritual",         type: "counter", metric: "longestStreak", threshold: 30,
+      description: "Lerne 30 Tage in Folge.",  unlockedText: "Aus Lernen ist eine echte Gewohnheit geworden." },
+
+    // ---------- Bereiche (Kategorie-Meisterschaft) ----------
+    ...CATEGORY_BADGES,
+
+    // ---------- Spezial ----------
+    { id: "night_owl",  group: "special", icon: "🌙", name: "Midnight Español",         type: "flag", metric: "nightOwl", secret: true,
+      description: "Lerne nach 22 Uhr.",        unlockedText: "Noch schnell ein bisschen Spanisch vor dem Schlafen." },
+    { id: "early_bird", group: "special", icon: "☕", name: "Café con Vocabulario",     type: "flag", metric: "earlyBird", secret: true,
+      description: "Lerne vor 9 Uhr.",          unlockedText: "Spanisch gelernt, bevor der Tag richtig losging." },
+    { id: "many_again", group: "special", icon: "🔁", name: "Nochmal ist kein Scheitern", type: "counter", metric: "againPresses", threshold: 20,
+      description: "Drücke 20× „Otra vez“.",    unlockedText: "Du hast weitergemacht, obwohl es nicht sofort saß." },
+    { id: "persistent", group: "special", icon: "💪", name: "Drangeblieben",            type: "counter", metric: "totalReviews", threshold: 500,
+      description: "Sammle 500 Bewertungen.",   unlockedText: "Fünfhundert Bewertungen – das ist Ausdauer." },
+  ];
+
+  const BY_ID = BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
+  const byId = (id) => BY_ID[id] || null;
+
+  // ----- Metriken aus Lernfortschritt + Zählern ableiten (rein) -----
+  // cards    : vollständige Kartenliste (eingebaut + eigene)
+  // progress : Map cardId -> Lern-Datensatz
+  // counters : persistierte Spiel-Zähler (Streak, Tageszeit, "Nochmal", …)
+  function buildMetrics(cards, progress, counters) {
+    const prog = progress || {};
+    const c = counters || {};
+    let cardsReviewed = 0, cardsMastered = 0;
+    const catTotal = {}, catMastered = {};
+
+    cards.forEach((card) => {
+      const r = prog[card.id] || {};
+      const seen = r.seen || 0;
+      const mastered = isMastered(r);
+      catTotal[card.cat] = (catTotal[card.cat] || 0) + 1;
+      if (seen > 0) cardsReviewed++;
+      if (mastered) { cardsMastered++; catMastered[card.cat] = (catMastered[card.cat] || 0) + 1; }
+    });
+
+    const categoryMastery = {};
+    Object.keys(catTotal).forEach((cat) => {
+      categoryMastery[cat] = catTotal[cat] ? (catMastered[cat] || 0) / catTotal[cat] : 0;
+    });
+
+    return {
+      cardsReviewed,
+      cardsMastered,
+      totalCards: cards.length,
+      totalReviews: c.reviews || 0,
+      dailyStreak: c.dailyStreak || 0,
+      longestStreak: c.longestStreak || 0,
+      againPresses: c.againPresses || 0,
+      nightOwl: !!c.nightOwl,
+      earlyBird: !!c.earlyBird,
+      categoryMastery,
+      categoryTotals: catTotal,
+    };
+  }
+
+  // Aktueller Wert einer Badge-Metrik (für Fortschrittsanzeige).
+  function valueOf(badge, m) {
+    switch (badge.type) {
+      case "counter":         return m[badge.metric] || 0;
+      case "flag":            return m[badge.metric] ? 1 : 0;
+      case "categoryMastery": return (m.categoryMastery && m.categoryMastery[badge.category]) || 0;
+      case "allReviewed":     return m.cardsReviewed || 0;
+      default:                return 0;
+    }
+  }
+
+  // Zielwert/Schwelle einer Badge-Metrik.
+  function targetOf(badge, m) {
+    switch (badge.type) {
+      case "flag":            return 1;
+      case "categoryMastery": return badge.threshold;
+      case "allReviewed":     return m.totalCards || 0;
+      default:                return badge.threshold;
+    }
+  }
+
+  // Ist das Badge erreicht?
+  function isSatisfied(badge, m) {
+    if (badge.type === "categoryMastery") {
+      const tot = m.categoryTotals ? m.categoryTotals[badge.category] : 0;
+      return !!tot && valueOf(badge, m) >= badge.threshold;
+    }
+    if (badge.type === "allReviewed") {
+      const t = targetOf(badge, m);
+      return t > 0 && valueOf(badge, m) >= t;
+    }
+    return valueOf(badge, m) >= targetOf(badge, m);
+  }
+
+  // Fortschritt 0..1 (für den Balken bei noch nicht erreichten Badges).
+  function progressOf(badge, m) {
+    const t = targetOf(badge, m);
+    if (!t) return 0;
+    return Math.max(0, Math.min(1, valueOf(badge, m) / t));
+  }
+
+  // Ids aller aktuell erfüllten Badges (für die Freischalt-Erkennung).
+  function satisfiedIds(m) {
+    return BADGES.filter((b) => isSatisfied(b, m)).map((b) => b.id);
+  }
+
+  // Vollständige Auswertung für die UI. unlocked = Map id -> Zeitstempel.
+  // Ein Badge gilt als freigeschaltet, sobald es erfüllt ist ODER bereits in der
+  // unlocked-Map steht (Freischaltung bleibt erhalten, auch wenn sich Werte ändern).
+  function evaluate(m, unlocked) {
+    const u = unlocked || {};
+    return BADGES.map((b) => {
+      const satisfied = isSatisfied(b, m);
+      const value = valueOf(b, m);
+      const target = targetOf(b, m);
+      return Object.assign({}, b, {
+        satisfied,
+        unlocked: satisfied || !!u[b.id],
+        value,
+        target,
+        progress: progressOf(b, m),
+        unlockedAt: u[b.id] || null,
+      });
+    });
+  }
+
+  window.SC = window.SC || {};
+  // Schlanke öffentliche API – die Auswertungs-Helfer (valueOf/targetOf/…) bleiben
+  // modul-intern.
+  window.SC.badges = {
+    GROUPS,
+    byId,
+    buildMetrics,
+    evaluate,
+    satisfiedIds,
+  };
 })();
 
 </script>
@@ -5407,6 +5787,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             ${themeToggle(vm.theme)}
             <button class="iconbtn" data-action="open-info" aria-label="Länderkunde" title="Länderkunde">🌎</button>
             <button class="iconbtn" data-action="open-editor" aria-label="Eigene Karten" title="Eigene Karten">✍️</button>
+            <button class="iconbtn hero__pass" data-action="open-badges" aria-label="Mein Ruta-Pass" title="Mein Ruta-Pass">🎖️${vm.badgeCount ? `<span class="hero__passnum">${vm.badgeCount}</span>` : ""}</button>
             <button class="iconbtn hero__stats" data-action="open-stats" aria-label="Statistik" title="Statistik">📊</button>
           </div>
         </div>
@@ -5604,6 +5985,100 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <button class="ghostbtn" data-action="open-stats">📊 Statistik ansehen</button>
         </div>
       </section>`;
+  }
+
+  // ---------- RUTA-PASS (BADGES) ----------
+  // Fortschrittstext eines noch nicht erreichten Badges (je nach Metrik-Typ).
+  function badgeProgressText(b) {
+    if (b.type === "categoryMastery") return `${Math.round((b.value || 0) * 100)} % · Ziel 80 %`;
+    if (b.type === "flag") return "Noch nicht freigeschaltet";
+    const cur = Math.min(Math.round(b.value || 0), b.target);
+    return `${cur} / ${b.target}`;
+  }
+
+  // Eine Stempel-Kachel. Drei Zustände: freigeschaltet, gesperrt, geheim-gesperrt.
+  function badgeCard(b) {
+    if (b.unlocked) {
+      return `
+        <div class="badge is-unlocked">
+          <span class="badge__icon" aria-hidden="true">${esc(b.icon)}</span>
+          <span class="badge__check" aria-hidden="true">✓</span>
+          <span class="badge__name">${esc(b.name)}</span>
+          <span class="badge__desc">${esc(b.unlockedText || b.description)}</span>
+        </div>`;
+    }
+    if (b.secret) {
+      return `
+        <div class="badge is-locked badge--secret" aria-label="Geheimes Badge, noch nicht freigeschaltet">
+          <span class="badge__icon" aria-hidden="true">❓</span>
+          <span class="badge__name">Geheim-Stempel</span>
+          <span class="badge__desc">Noch nicht freigeschaltet.</span>
+        </div>`;
+    }
+    const pct = Math.round((b.progress || 0) * 100);
+    return `
+      <div class="badge is-locked">
+        <span class="badge__icon" aria-hidden="true">${esc(b.icon)}</span>
+        <span class="badge__name">${esc(b.name)}</span>
+        <span class="badge__desc">${esc(b.description)}</span>
+        <span class="badge__bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+          <span class="badge__fill" style="width:${pct}%"></span>
+        </span>
+        <span class="badge__prog">${esc(badgeProgressText(b))}</span>
+      </div>`;
+  }
+
+  function renderBadges(vm) {
+    const pct = vm.total ? Math.round((vm.unlocked / vm.total) * 100) : 0;
+    const groups = vm.groups
+      .map((g) => `
+        <div class="passgroup">
+          <div class="passgroup__head">
+            <span class="passgroup__title">${g.icon} ${esc(g.label)}</span>
+            <span class="passgroup__count">${g.unlocked}/${g.total}</span>
+          </div>
+          <div class="passgrid">${g.badges.map(badgeCard).join("")}</div>
+        </div>`)
+      .join("");
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+          <div class="topbar__title">🎖️ Mein Ruta-Pass</div>
+          <div class="topbar__counter">${vm.unlocked}/${vm.total}</div>
+        </div>
+
+        <div class="passhero">
+          <p class="passhero__sub">Sammle Stempel für deine Reise-Skills.</p>
+          <div class="passhero__bar"><div class="passhero__fill" style="width:${pct}%"></div></div>
+          <p class="passhero__meta">${vm.unlocked} von ${vm.total} Stempeln gesammelt · ${pct} %</p>
+        </div>
+
+        ${groups}
+      </section>`;
+  }
+
+  // Kurze Glückwunsch-Einblendung nach frisch freigeschalteten Badges.
+  // Liegt als eigene Ebene über dem Screen; tippen führt zum Ruta-Pass.
+  function badgeToast(list) {
+    if (!list || !list.length) return "";
+    const items = list
+      .map((b) => `
+        <span class="btoast__item">
+          <span class="btoast__icon" aria-hidden="true">${esc(b.icon)}</span>
+          <span class="btoast__text">
+            <span class="btoast__name">${esc(b.name)}</span>
+            <span class="btoast__sub">${esc(b.unlockedText || b.description)}</span>
+          </span>
+        </span>`)
+      .join("");
+    const head = list.length > 1 ? `${list.length} neue Stempel!` : "Neuer Stempel!";
+    return `
+      <button class="btoast" data-action="open-badges" aria-label="${esc(head)} Ruta-Pass öffnen">
+        <span class="btoast__head">🎖️ ${esc(head)}</span>
+        ${items}
+      </button>`;
   }
 
   // ---------- STATISTIK ----------
@@ -6193,6 +6668,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
+                   renderBadges, badgeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay };
 })();
 
@@ -6207,6 +6683,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   "use strict";
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
+  const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
   const speech = window.SC.speech || null; // optional – Browser kann Ausgabe ggf. nicht
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
@@ -6216,6 +6693,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // ----- Zustand (eine einzige Quelle der Wahrheit) -----
   let progress = store.loadProgress();
   let settings = store.loadSettings();
+  let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay'
@@ -6231,11 +6709,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     cardId: null,            // Detailseite: welche Karte
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
+    badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     // ----- Hostel Mode (transient, keine Persistenz) -----
     battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
   };
+
+  let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
 
   // Fisher–Yates – liefert eine neue, gemischte Kopie (mutiert das Original nicht).
   function shuffle(arr) {
@@ -6315,6 +6796,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       categories,
       totalDue: dueIn(all).length,
       totalCards: all.length,
+      badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
     };
   }
 
@@ -6441,6 +6923,104 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return { country, groups };
   }
 
+  // ----- Badge-System ("Mein Ruta-Pass") -----
+  // Lokaler Tages-Schlüssel "YYYY-MM-DD" – Basis für die Lern-Serie (Streak).
+  function dayKey(ms) {
+    const d = new Date(ms);
+    const p = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  // Kalendertage zwischen zwei "YYYY-MM-DD"-Schlüsseln (b − a). Über lokale
+  // Mitternacht gerechnet, damit Sommer-/Winterzeit (23-/25-Stunden-Tage) die
+  // Serie nicht verfälscht – ein fixer 24-h-Abzug täte das nahe Mitternacht.
+  function daysBetween(aKey, bKey) {
+    const a = new Date(aKey + "T00:00:00");
+    const b = new Date(bKey + "T00:00:00");
+    if (isNaN(a) || isNaN(b)) return null;
+    return Math.round((b - a) / DAY_MS);
+  }
+
+  // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
+  // Tageszeit-Marken setzen, "Nochmal"-Drücke und Gesamtzahl zählen. Immutabel.
+  function recordStudyEvent(rating, now) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.reviews = (g.reviews || 0) + 1;
+    if (rating === srs.RATING.AGAIN) g.againPresses = (g.againPresses || 0) + 1;
+
+    const today = dayKey(now);
+    if (g.lastStudyDate !== today) {
+      const gap = g.lastStudyDate ? daysBetween(g.lastStudyDate, today) : null;
+      g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
+      g.lastStudyDate = today;
+      g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
+    }
+
+    const hour = new Date(now).getHours();
+    if (hour >= 22) g.nightOwl = true;   // "Midnight Español" – nach 22 Uhr
+    if (hour < 9) g.earlyBird = true;    // "Café con Vocabulario" – vor 9 Uhr
+
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
+  // Erfüllte, aber noch nicht vermerkte Badges freischalten. announce=true sammelt
+  // sie für die Glückwunsch-Einblendung; beim Start (false) still nachtragen.
+  function syncBadges(now, announce) {
+    if (!badges) return [];
+    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const newly = badges.satisfiedIds(metrics).filter((id) => !gamestats.unlocked[id]);
+    if (!newly.length) return [];
+    const unlocked = Object.assign({}, gamestats.unlocked);
+    newly.forEach((id) => { unlocked[id] = now; });
+    gamestats = Object.assign({}, gamestats, { unlocked });
+    store.saveGameStats(gamestats);
+    if (announce) showBadgeToast(newly.map((id) => badges.byId(id)).filter(Boolean));
+    return newly;
+  }
+
+  // Einblendung schließen: Timer stoppen, Zustand leeren und NUR den Toast-Knoten
+  // entfernen. Bewusst kein render() – ein Voll-Re-Render würde sonst nicht
+  // gespeicherte Eingaben (Schreiben-Modus #answer, Editor-Felder) verwerfen.
+  function dismissBadgeToast() {
+    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
+    state.badgeToast = null;
+    const el = root.querySelector(".btoast");
+    if (el) el.remove();
+  }
+
+  // Einblendung zeigen und nach kurzer Zeit selbst wieder ausblenden.
+  function showBadgeToast(list) {
+    if (!list.length) return;
+    state.badgeToast = list;
+    if (badgeToastTimer) clearTimeout(badgeToastTimer);
+    badgeToastTimer = setTimeout(dismissBadgeToast, 5000);
+  }
+
+  function badgesVM() {
+    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const all = badges.evaluate(metrics, gamestats.unlocked);
+    const groups = badges.GROUPS
+      .map((g) => {
+        const list = all.filter((b) => b.group === g.id);
+        return {
+          id: g.id, label: g.label, icon: g.icon,
+          badges: list,
+          unlocked: list.filter((b) => b.unlocked).length,
+          total: list.length,
+        };
+      })
+      .filter((g) => g.total > 0);
+    return { groups, unlocked: all.filter((b) => b.unlocked).length, total: all.length };
+  }
+
+  function openBadges() {
+    dismissBadgeToast();
+    state.screen = "badges";
+    render();
+  }
+
   // ----- Hostel Mode: View-Modelle -----
   const battleById = (id) => data.BATTLES.find((b) => b.id === id) || null;
   const roleplayById = (id) => data.ROLEPLAYS.find((r) => r.id === id) || null;
@@ -6538,6 +7118,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
+    else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
@@ -6545,6 +7126,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "roleplaySetup") root.innerHTML = ui.renderRoleplaySetup(roleplaySetupVM());
     else if (state.screen === "roleplay") root.innerHTML = ui.renderRoleplay(roleplayVM());
     else root.innerHTML = ui.renderHome(homeVM());
+
+    // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
+    if (badges && state.badgeToast && state.badgeToast.length) {
+      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+    }
 
     manageFocus();
   }
@@ -6570,6 +7156,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ----- Aktionen -----
   function startStudy(scopeId) {
+    dismissBadgeToast();
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
     const chosen = due.length ? due : cards; // nichts fällig? -> freies Üben
@@ -6616,11 +7203,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     buzz(rating === srs.RATING.AGAIN ? 30 : 12);
 
     // SRS-Zustand neu berechnen und Statistik-Felder mitführen (immutabel).
+    const now = Date.now();
     const prev = progress[card.id];
     const srsNext = srs.review(prev, rating);
-    const merged = stats.record(prev, srsNext, rating, Date.now());
+    const merged = stats.record(prev, srsNext, rating, now);
     progress = Object.assign({}, progress, { [card.id]: merged });
     store.saveProgress(progress);
+
+    // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
+    recordStudyEvent(rating, now);
+    syncBadges(now, true);
 
     state.queue = state.queue.slice(1);
     if (rating === srs.RATING.AGAIN) state.queue = state.queue.concat(card.id);
@@ -6687,6 +7279,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function goHome() {
+    dismissBadgeToast();
     state.screen = "home";
     state.revealed = false;
     state.typeResult = null;
@@ -6777,6 +7370,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ----- Länderkunde (Infoseite) -----
   function openInfo() {
+    dismissBadgeToast();
     state.screen = "info";
     render();
   }
@@ -6788,6 +7382,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ----- Statistik-Navigation -----
   function goStats() {
+    dismissBadgeToast();
     state.screen = "stats";
     render();
   }
@@ -6805,12 +7400,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!ok) return;
     store.resetProgress();
     progress = {};
+    // Badges/Streak hängen am Lernfortschritt -> mit zurücksetzen (sonst inkonsistent).
+    store.resetGameStats();
+    gamestats = store.loadGameStats();
     state.statsFilter = "answered";
-    goHome();
+    goHome(); // räumt auch eine offene Badge-Einblendung weg
   }
 
   // Detailseite einer Karte öffnen. backTo merkt sich die Herkunft (Zurück-Knopf).
   function openCard(id, backTo) {
+    dismissBadgeToast();
     state.cardId = id;
     state.backTo = backTo || "stats";
     state.screen = "card";
@@ -6821,6 +7420,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function studyOne(id) {
     const card = cardById(id);
     if (!card) return;
+    dismissBadgeToast();
     state.scopeId = card.cat;
     state.queue = [id];
     state.total = 1;
@@ -6854,6 +7454,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function openEditor() {
+    dismissBadgeToast();
     editorMsg = null;
     state.screen = "editor";
     render();
@@ -6976,6 +7577,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "rate") rate(el.dataset.rating);
     else if (action === "speak") speakCurrent();
     else if (action === "open-stats") goStats();
+    else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
@@ -7125,6 +7727,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     };
     mq.addEventListener ? mq.addEventListener("change", onSys) : (mq.addListener && mq.addListener(onSys));
   } catch (e) { /* matchMedia fehlt – egal */ }
+  syncBadges(Date.now(), false); // bereits erfüllte Badges still nachtragen (Bestandsnutzer)
   render();
   registerServiceWorker();
 

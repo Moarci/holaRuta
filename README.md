@@ -9,7 +9,7 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-23_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-38_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-459-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -30,6 +30,7 @@ Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Span
 - [Single-File-Build](#-single-file-build)
 - [Datenmodell](#datenmodell)
 - [Spaced Repetition (SM-2)](#-spaced-repetition-sm-2)
+- [Ruta-Pass (Badges)](#️-ruta-pass-badges)
 - [Antwort-Matcher](#-antwort-matcher)
 - [Offline & PWA](#-offline--pwa)
 - [Tech Stack](#-tech-stack)
@@ -96,6 +97,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **17 Bereiche** | Themen-Kategorien | Grundlagen, Zahlen, Essen, Trinken, Hotel, Hostel, Social, Verkehr, Einkaufen, Geld, Notfall, Zeit, Smalltalk, Alltag, Sätze, Behörden, Busreise |
 | **Hostel Mode** | Üben zu zweit 🛏️ | **Battle** (Aufgabe auf Deutsch, laut auf Spanisch antworten, Mitspieler bewertet 2/1/0 über 10 Runden) & **Rollenspiele** (kurze Dialoge mit verteilten Rollen) — plus Real-Life-Challenge als Bonus |
 | **Statistik** | Lern-Auswertung | Trefferquote, gemeistert / schwierig / neu, sortierte Kartenliste, Detailseite je Karte |
+| **Ruta-Pass** | Badges / Reisestempel 🎖️ | Sammelbare Stempel für Lernmenge, Lern-Serie (Streak), Bereichs-Meisterschaft & Spezielles — inkl. Geheim-Stempel und Freischalt-Einblendung |
 | **Eigene Karten** | Editor | Eigene Vokabeln anlegen — erscheinen überall ohne Sonderbehandlung |
 | **Dark Mode** | Fürs Hostel-Bett 🌙 | Warmer, augenschonender Nachtmodus per 🌙/☀️-Schalter; folgt sonst der System-Vorliebe, Wahl wird gemerkt |
 | **Sprachausgabe** | TTS (Web Speech API) | Spricht die spanische Antwort vor, bevorzugt eine LatAm-Stimme |
@@ -161,6 +163,7 @@ SpanischCard/
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
 ├── matcher.js     SC.matcher    # Antwortprüfung, akzent-/satzzeichen-tolerant — REINE FUNKTIONEN
 ├── stats.js       SC.stats      # Auswertung pro Karte & gesamt — REINE FUNKTIONEN
+├── badges.js      SC.badges     # Ruta-Pass: Badge-Definitionen + Auswertung — REINE FUNKTIONEN
 │
 ├── store.js       SC.store      # Persistenz — kapselt localStorage komplett weg
 ├── usercards.js   SC.userCards  # Eigene Karten (anlegen/löschen/validieren)
@@ -175,7 +178,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/sc.test.js              # 23 Tests (node:test, keine Dependencies)
+├── test/sc.test.js              # 38 Tests (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -260,6 +263,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 | `spanischcard.progress.v2` | Lernfortschritt pro Karte (SRS-Zustand + Statistik-Felder) |
 | `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme) |
 | `spanischcard.usercards.v1` | Vom Nutzer angelegte eigene Karten |
+| `spanischcard.gamestats.v1` | Ruta-Pass: Spiel-Zähler (Streak, Tageszeit-Marken, „Nochmal“) + freigeschaltete Badges |
 
 ### Karte
 
@@ -312,6 +316,30 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 - **Re-Queue:** „Nochmal" hängt die Karte ans Ende der laufenden Sitzung
 
 Bei Sitzungsstart wählt der Controller alle **fälligen** Karten im gewählten Bereich/Stufen-Filter. Ist nichts fällig, startet automatisch **freies Üben** über alle Karten des Bereichs.
+
+---
+
+## 🎖️ Ruta-Pass (Badges)
+
+[badges.js](badges.js) ist eine **reine Daten-/Funktionsschicht** im Stil von `srs`/`stats`: sie kennt weder DOM noch Speicher. Ein Badge ist nur eine Beschreibung; ob es freigeschaltet ist, ergibt sich generisch aus einer **Metrik + Schwelle**.
+
+```
+progress + gamestats  →  buildMetrics()  →  metrics  →  evaluate()  →  Stempel-Liste
+```
+
+| Badge-Typ | Bedeutung |
+|---|---|
+| `counter` | `metrics[metric] ≥ threshold` (z.B. 50 gelernte Karten, Streak ≥ 7) |
+| `flag` | Ein Ereignis ist eingetreten (z.B. nach 22 Uhr gelernt) |
+| `categoryMastery` | ≥ 80 % der Karten eines Bereichs gemeistert |
+| `allReviewed` | Alle Karten mindestens einmal gelernt |
+
+**Gruppen:** Lernreise (Lernmenge), Dranbleiben (Streak), Bereiche (je Kategorie ein Stempel) und Spezial (inkl. **Geheim-Stempel**, die erst nach Freischaltung sichtbar werden).
+
+- **Tracking:** Beim Bewerten bucht der Controller einen kleinen Satz Spiel-Zähler in `gamestats` (Gesamt-Bewertungen, Lern-Serie/Streak, Tageszeit-Marken, „Nochmal“-Drücke) und schaltet erfüllte Badges frei.
+- **Freischaltung bleibt erhalten:** Einmal vergeben, bleibt ein Stempel im Pass — auch wenn sich abgeleitete Werte später ändern. Eine kurze Glückwunsch-Einblendung zeigt frische Stempel.
+- **Bestandsnutzer:** Beim Start werden bereits erfüllte Badges still nachgetragen (kein Einblendungs-Stau).
+- **Konsistenz:** „Fortschritt zurücksetzen“ löscht auch Streak & Stempel.
 
 ---
 
@@ -382,8 +410,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 23
-#  ℹ pass 23
+#  ℹ tests 38
+#  ℹ pass 38
 #  ℹ fail 0
 ```
 
@@ -406,8 +434,8 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Bereiche / Kategorien | 17 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
-| JS-Module | 12 (`SC.*`) |
-| Tests | 23 (alle grün) |
+| JS-Module | 13 (`SC.*`) |
+| Tests | 38 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

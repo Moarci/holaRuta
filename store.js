@@ -9,6 +9,7 @@
   const PROGRESS_KEY = "spanischcard.progress.v2";
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
+  const GAMESTATS_KEY = "spanischcard.gamestats.v1";
 
   function readJson(key, fallback) {
     try {
@@ -46,6 +47,39 @@
     return v.filter((c) => c && typeof c === "object" && typeof c.id === "string" && c.id);
   }
 
+  // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
+  // Drücke und die Map freigeschalteter Badges. Defaults für alte/leere Stände.
+  function freshGameStats() {
+    return {
+      reviews: 0,           // Gesamtzahl Bewertungen
+      againPresses: 0,      // wie oft "Otra vez" gedrückt
+      dailyStreak: 0,       // aktuelle Tage-in-Folge-Serie
+      longestStreak: 0,     // längste je erreichte Serie
+      lastStudyDate: null,  // letztes Lern-Datum als "YYYY-MM-DD" (lokal)
+      nightOwl: false,      // schon mal nach 22 Uhr gelernt
+      earlyBird: false,     // schon mal vor 9 Uhr gelernt
+      unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
+    };
+  }
+  function loadGameStats() {
+    const v = readJson(GAMESTATS_KEY, null);
+    if (!isPlainObject(v)) return freshGameStats();
+    // Strukturwächter: jedes Feld typisieren. Korruptes/manipuliertes localStorage
+    // (z.B. "5" statt 5) darf sonst Streak-/Badge-Logik verfälschen (Streichketten
+    // wie "5"+1 = "51"). unlocked muss ein Objekt sein (sonst Crash beim Diffen).
+    const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    return {
+      reviews: num(v.reviews),
+      againPresses: num(v.againPresses),
+      dailyStreak: num(v.dailyStreak),
+      longestStreak: num(v.longestStreak),
+      lastStudyDate: typeof v.lastStudyDate === "string" ? v.lastStudyDate : null,
+      nightOwl: !!v.nightOwl,
+      earlyBird: !!v.earlyBird,
+      unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
+    };
+  }
+
   window.SC = window.SC || {};
   window.SC.store = {
     loadProgress,
@@ -57,5 +91,11 @@
     saveSettings: (s) => writeJson(SETTINGS_KEY, s),
     loadUserCards,
     saveUserCards: (c) => writeJson(USERCARDS_KEY, c),
+    freshGameStats,
+    loadGameStats,
+    saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),
+    resetGameStats: () => {
+      try { localStorage.removeItem(GAMESTATS_KEY); } catch (e) { /* egal */ }
+    },
   };
 })();

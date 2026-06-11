@@ -19,8 +19,9 @@ require(path.join(SRC, "data.js"));
 require(path.join(SRC, "srs.js"));
 require(path.join(SRC, "matcher.js"));
 require(path.join(SRC, "stats.js"));
+require(path.join(SRC, "badges.js"));
 
-const { data, srs, matcher, stats } = globalThis.window.SC;
+const { data, srs, matcher, stats, badges } = globalThis.window.SC;
 const close = (a, b, eps = 1e-9) => Math.abs(a - b) < eps;
 
 // ---------- matcher ----------
@@ -190,6 +191,131 @@ test("stats.overview: aggregiert Status, Quote und Zähler", () => {
   assert.equal(ov.firstTry, 1);
   assert.equal(ov.hard, 1);
   assert.equal(ov.rate, 50); // 2 correct / 4 seen
+});
+
+// ---------- badges ----------
+test("badges.buildMetrics: zählt gelernte/gemeisterte Karten und Kategorie-Anteile", () => {
+  const cards = [
+    { id: "a", cat: "essen" }, { id: "b", cat: "essen" },
+    { id: "c", cat: "essen" }, { id: "d", cat: "hotel" },
+  ];
+  const progress = {
+    a: { seen: 3, interval: 10 }, // gemeistert (>=7)
+    b: { seen: 2, interval: 12 }, // gemeistert
+    c: { seen: 1, interval: 1 },  // gelernt, nicht gemeistert
+    // d: ungesehen
+  };
+  const m = badges.buildMetrics(cards, progress, { reviews: 6 });
+  assert.equal(m.cardsReviewed, 3);
+  assert.equal(m.cardsMastered, 2);
+  assert.equal(m.totalCards, 4);
+  assert.equal(m.totalReviews, 6);
+  assert.ok(close(m.categoryMastery.essen, 2 / 3));
+  assert.equal(m.categoryMastery.hotel, 0);
+});
+
+test("badges.satisfiedIds: Lernmengen-Schwellen greifen", () => {
+  const cards = Array.from({ length: 60 }, (_, i) => ({ id: "x" + i, cat: "essen" }));
+  const progress = {};
+  for (let i = 0; i < 55; i++) progress["x" + i] = { seen: 1, interval: 1 };
+  const m = badges.buildMetrics(cards, progress, {});
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("first_steps"));
+  assert.ok(ids.includes("ten_cards"));
+  assert.ok(ids.includes("fifty_cards"));
+  assert.ok(!ids.includes("hundred_cards")); // erst ab 100
+});
+
+test("badges: 'all_cards' erst wenn alle Karten gelernt", () => {
+  const cards = [{ id: "a", cat: "essen" }, { id: "b", cat: "essen" }];
+  const partial = badges.buildMetrics(cards, { a: { seen: 1, interval: 1 } }, {});
+  assert.ok(!badges.satisfiedIds(partial).includes("all_cards"));
+  const full = badges.buildMetrics(cards, { a: { seen: 1, interval: 1 }, b: { seen: 1, interval: 1 } }, {});
+  assert.ok(badges.satisfiedIds(full).includes("all_cards"));
+});
+
+test("badges: Kategorie-Badge ab 80 % Meisterschaft", () => {
+  const cards = Array.from({ length: 5 }, (_, i) => ({ id: "e" + i, cat: "essen" }));
+  const prog = {};
+  for (let i = 0; i < 4; i++) prog["e" + i] = { seen: 2, interval: 10 }; // 4/5 = 80 %
+  const m = badges.buildMetrics(cards, prog, {});
+  assert.ok(badges.satisfiedIds(m).includes("cat_essen"));
+});
+
+test("badges: Streak- und Spezial-Zähler über counters", () => {
+  const cards = [{ id: "a", cat: "essen" }];
+  const m = badges.buildMetrics(cards, {}, {
+    longestStreak: 7, againPresses: 20, nightOwl: true, earlyBird: false,
+  });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("streak_3"));
+  assert.ok(ids.includes("streak_7"));
+  assert.ok(!ids.includes("streak_14"));
+  assert.ok(ids.includes("many_again"));
+  assert.ok(ids.includes("night_owl"));
+  assert.ok(!ids.includes("early_bird"));
+});
+
+test("badges.evaluate: unlocked-Map hält Freischaltung, auch wenn Wert wieder sinkt", () => {
+  const cards = [{ id: "a", cat: "essen" }];
+  const m = badges.buildMetrics(cards, {}, {}); // nichts erfüllt
+  const evald = badges.evaluate(m, { first_steps: 123 });
+  const fs = evald.find((b) => b.id === "first_steps");
+  assert.equal(fs.satisfied, false);
+  assert.equal(fs.unlocked, true); // bleibt freigeschaltet
+  assert.equal(fs.unlockedAt, 123);
+});
+
+test("badges.evaluate: Fortschritt 0..1 und Zielwerte stimmen", () => {
+  const cards = Array.from({ length: 20 }, (_, i) => ({ id: "y" + i, cat: "essen" }));
+  const prog = {};
+  for (let i = 0; i < 5; i++) prog["y" + i] = { seen: 1, interval: 1 };
+  const m = badges.buildMetrics(cards, prog, {});
+  const ten = badges.evaluate(m, {}).find((b) => b.id === "ten_cards");
+  assert.equal(ten.target, 10);
+  assert.equal(ten.value, 5);
+  assert.ok(close(ten.progress, 0.5));
+});
+
+// ---------- store: gamestats-Sanitisierung (Badge-Zähler) ----------
+const storeMem = {};
+globalThis.localStorage = {
+  getItem: (k) => (k in storeMem ? storeMem[k] : null),
+  setItem: (k, v) => { storeMem[k] = String(v); },
+  removeItem: (k) => { delete storeMem[k]; },
+};
+require(path.join(SRC, "store.js"));
+const store = globalThis.window.SC.store;
+const GKEY = "spanischcard.gamestats.v1";
+
+test("store.loadGameStats: korrupte Zähler werden typisiert (kein String-Concat)", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: "5", longestStreak: null, dailyStreak: 3, lastStudyDate: 42,
+    nightOwl: 1, earlyBird: false, unlocked: ["x"],
+  });
+  const g = store.loadGameStats();
+  assert.equal(g.reviews, 0);          // "5" (String) -> 0
+  assert.equal(g.longestStreak, 0);    // null -> 0
+  assert.equal(g.dailyStreak, 3);      // gültige Zahl bleibt
+  assert.equal(g.lastStudyDate, null); // Zahl -> null
+  assert.equal(g.nightOwl, true);      // truthy -> bool
+  assert.equal(g.earlyBird, false);
+  assert.deepEqual(g.unlocked, {});    // Array -> {}
+});
+
+test("store.loadGameStats: Nicht-Objekt liefert frische Defaults", () => {
+  storeMem[GKEY] = JSON.stringify([1, 2, 3]);
+  assert.deepEqual(store.loadGameStats(), store.freshGameStats());
+});
+
+test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
+  const valid = {
+    reviews: 12, againPresses: 4, dailyStreak: 2, longestStreak: 9,
+    lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
+    unlocked: { first_steps: 1700000000000 },
+  };
+  storeMem[GKEY] = JSON.stringify(valid);
+  assert.deepEqual(store.loadGameStats(), valid);
 });
 
 // ---------- data-Integrität ----------

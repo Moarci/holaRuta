@@ -92,6 +92,7 @@
             ${themeToggle(vm.theme)}
             <button class="iconbtn" data-action="open-info" aria-label="Länderkunde" title="Länderkunde">🌎</button>
             <button class="iconbtn" data-action="open-editor" aria-label="Eigene Karten" title="Eigene Karten">✍️</button>
+            <button class="iconbtn hero__pass" data-action="open-badges" aria-label="Mein Ruta-Pass" title="Mein Ruta-Pass">🎖️${vm.badgeCount ? `<span class="hero__passnum">${vm.badgeCount}</span>` : ""}</button>
             <button class="iconbtn hero__stats" data-action="open-stats" aria-label="Statistik" title="Statistik">📊</button>
           </div>
         </div>
@@ -289,6 +290,100 @@
           <button class="ghostbtn" data-action="open-stats">📊 Statistik ansehen</button>
         </div>
       </section>`;
+  }
+
+  // ---------- RUTA-PASS (BADGES) ----------
+  // Fortschrittstext eines noch nicht erreichten Badges (je nach Metrik-Typ).
+  function badgeProgressText(b) {
+    if (b.type === "categoryMastery") return `${Math.round((b.value || 0) * 100)} % · Ziel 80 %`;
+    if (b.type === "flag") return "Noch nicht freigeschaltet";
+    const cur = Math.min(Math.round(b.value || 0), b.target);
+    return `${cur} / ${b.target}`;
+  }
+
+  // Eine Stempel-Kachel. Drei Zustände: freigeschaltet, gesperrt, geheim-gesperrt.
+  function badgeCard(b) {
+    if (b.unlocked) {
+      return `
+        <div class="badge is-unlocked">
+          <span class="badge__icon" aria-hidden="true">${esc(b.icon)}</span>
+          <span class="badge__check" aria-hidden="true">✓</span>
+          <span class="badge__name">${esc(b.name)}</span>
+          <span class="badge__desc">${esc(b.unlockedText || b.description)}</span>
+        </div>`;
+    }
+    if (b.secret) {
+      return `
+        <div class="badge is-locked badge--secret" aria-label="Geheimes Badge, noch nicht freigeschaltet">
+          <span class="badge__icon" aria-hidden="true">❓</span>
+          <span class="badge__name">Geheim-Stempel</span>
+          <span class="badge__desc">Noch nicht freigeschaltet.</span>
+        </div>`;
+    }
+    const pct = Math.round((b.progress || 0) * 100);
+    return `
+      <div class="badge is-locked">
+        <span class="badge__icon" aria-hidden="true">${esc(b.icon)}</span>
+        <span class="badge__name">${esc(b.name)}</span>
+        <span class="badge__desc">${esc(b.description)}</span>
+        <span class="badge__bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+          <span class="badge__fill" style="width:${pct}%"></span>
+        </span>
+        <span class="badge__prog">${esc(badgeProgressText(b))}</span>
+      </div>`;
+  }
+
+  function renderBadges(vm) {
+    const pct = vm.total ? Math.round((vm.unlocked / vm.total) * 100) : 0;
+    const groups = vm.groups
+      .map((g) => `
+        <div class="passgroup">
+          <div class="passgroup__head">
+            <span class="passgroup__title">${g.icon} ${esc(g.label)}</span>
+            <span class="passgroup__count">${g.unlocked}/${g.total}</span>
+          </div>
+          <div class="passgrid">${g.badges.map(badgeCard).join("")}</div>
+        </div>`)
+      .join("");
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+          <div class="topbar__title">🎖️ Mein Ruta-Pass</div>
+          <div class="topbar__counter">${vm.unlocked}/${vm.total}</div>
+        </div>
+
+        <div class="passhero">
+          <p class="passhero__sub">Sammle Stempel für deine Reise-Skills.</p>
+          <div class="passhero__bar"><div class="passhero__fill" style="width:${pct}%"></div></div>
+          <p class="passhero__meta">${vm.unlocked} von ${vm.total} Stempeln gesammelt · ${pct} %</p>
+        </div>
+
+        ${groups}
+      </section>`;
+  }
+
+  // Kurze Glückwunsch-Einblendung nach frisch freigeschalteten Badges.
+  // Liegt als eigene Ebene über dem Screen; tippen führt zum Ruta-Pass.
+  function badgeToast(list) {
+    if (!list || !list.length) return "";
+    const items = list
+      .map((b) => `
+        <span class="btoast__item">
+          <span class="btoast__icon" aria-hidden="true">${esc(b.icon)}</span>
+          <span class="btoast__text">
+            <span class="btoast__name">${esc(b.name)}</span>
+            <span class="btoast__sub">${esc(b.unlockedText || b.description)}</span>
+          </span>
+        </span>`)
+      .join("");
+    const head = list.length > 1 ? `${list.length} neue Stempel!` : "Neuer Stempel!";
+    return `
+      <button class="btoast" data-action="open-badges" aria-label="${esc(head)} Ruta-Pass öffnen">
+        <span class="btoast__head">🎖️ ${esc(head)}</span>
+        ${items}
+      </button>`;
   }
 
   // ---------- STATISTIK ----------
@@ -878,5 +973,6 @@
 
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
+                   renderBadges, badgeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay };
 })();
