@@ -275,3 +275,44 @@ test("badges.evaluate: Fortschritt 0..1 und Zielwerte stimmen", () => {
   assert.equal(ten.value, 5);
   assert.ok(close(ten.progress, 0.5));
 });
+
+// ---------- store: gamestats-Sanitisierung (Badge-Zähler) ----------
+const storeMem = {};
+globalThis.localStorage = {
+  getItem: (k) => (k in storeMem ? storeMem[k] : null),
+  setItem: (k, v) => { storeMem[k] = String(v); },
+  removeItem: (k) => { delete storeMem[k]; },
+};
+require(path.join(SRC, "store.js"));
+const store = globalThis.window.SC.store;
+const GKEY = "spanischcard.gamestats.v1";
+
+test("store.loadGameStats: korrupte Zähler werden typisiert (kein String-Concat)", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: "5", longestStreak: null, dailyStreak: 3, lastStudyDate: 42,
+    nightOwl: 1, earlyBird: false, unlocked: ["x"],
+  });
+  const g = store.loadGameStats();
+  assert.equal(g.reviews, 0);          // "5" (String) -> 0
+  assert.equal(g.longestStreak, 0);    // null -> 0
+  assert.equal(g.dailyStreak, 3);      // gültige Zahl bleibt
+  assert.equal(g.lastStudyDate, null); // Zahl -> null
+  assert.equal(g.nightOwl, true);      // truthy -> bool
+  assert.equal(g.earlyBird, false);
+  assert.deepEqual(g.unlocked, {});    // Array -> {}
+});
+
+test("store.loadGameStats: Nicht-Objekt liefert frische Defaults", () => {
+  storeMem[GKEY] = JSON.stringify([1, 2, 3]);
+  assert.deepEqual(store.loadGameStats(), store.freshGameStats());
+});
+
+test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
+  const valid = {
+    reviews: 12, againPresses: 4, dailyStreak: 2, longestStreak: 9,
+    lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
+    unlocked: { first_steps: 1700000000000 },
+  };
+  storeMem[GKEY] = JSON.stringify(valid);
+  assert.deepEqual(store.loadGameStats(), valid);
+});

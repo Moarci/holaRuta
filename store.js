@@ -63,12 +63,21 @@
   }
   function loadGameStats() {
     const v = readJson(GAMESTATS_KEY, null);
-    const base = freshGameStats();
-    if (!isPlainObject(v)) return base;
-    const merged = Object.assign(base, v);
-    // Strukturwächter: unlocked muss ein Objekt sein (sonst Crash beim Diffen).
-    merged.unlocked = isPlainObject(v.unlocked) ? v.unlocked : {};
-    return merged;
+    if (!isPlainObject(v)) return freshGameStats();
+    // Strukturwächter: jedes Feld typisieren. Korruptes/manipuliertes localStorage
+    // (z.B. "5" statt 5) darf sonst Streak-/Badge-Logik verfälschen (Streichketten
+    // wie "5"+1 = "51"). unlocked muss ein Objekt sein (sonst Crash beim Diffen).
+    const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    return {
+      reviews: num(v.reviews),
+      againPresses: num(v.againPresses),
+      dailyStreak: num(v.dailyStreak),
+      longestStreak: num(v.longestStreak),
+      lastStudyDate: typeof v.lastStudyDate === "string" ? v.lastStudyDate : null,
+      nightOwl: !!v.nightOwl,
+      earlyBird: !!v.earlyBird,
+      unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
+    };
   }
 
   window.SC = window.SC || {};

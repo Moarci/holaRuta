@@ -4315,12 +4315,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
   function loadGameStats() {
     const v = readJson(GAMESTATS_KEY, null);
-    const base = freshGameStats();
-    if (!isPlainObject(v)) return base;
-    const merged = Object.assign(base, v);
-    // Strukturwächter: unlocked muss ein Objekt sein (sonst Crash beim Diffen).
-    merged.unlocked = isPlainObject(v.unlocked) ? v.unlocked : {};
-    return merged;
+    if (!isPlainObject(v)) return freshGameStats();
+    // Strukturwächter: jedes Feld typisieren. Korruptes/manipuliertes localStorage
+    // (z.B. "5" statt 5) darf sonst Streak-/Badge-Logik verfälschen (Streichketten
+    // wie "5"+1 = "51"). unlocked muss ein Objekt sein (sonst Crash beim Diffen).
+    const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    return {
+      reviews: num(v.reviews),
+      againPresses: num(v.againPresses),
+      dailyStreak: num(v.dailyStreak),
+      longestStreak: num(v.longestStreak),
+      lastStudyDate: typeof v.lastStudyDate === "string" ? v.lastStudyDate : null,
+      nightOwl: !!v.nightOwl,
+      earlyBird: !!v.earlyBird,
+      unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
+    };
   }
 
   window.SC = window.SC || {};
@@ -4592,10 +4601,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 (function () {
   "use strict";
 
-  // Ab diesem Intervall (Tage) gilt eine Karte als "gemeistert" – deckungsgleich
-  // mit stats.MASTERED_DAYS, hier bewusst lokal gehalten, damit das Modul ohne
-  // Abhängigkeit zu stats testbar bleibt.
-  const MASTERED_DAYS = 7;
+  // "Gemeistert" ist die Wahrheit aus stats.js (SC.stats.statusOf). Wir greifen
+  // darauf zu, statt die Regel (interval >= 7) zu duplizieren – so können
+  // Statistik und Ruta-Pass nie auseinanderlaufen. Der Fallback greift nur, falls
+  // stats (noch) nicht geladen ist (Graceful Degradation, eigenständig testbar).
+  const MASTERED_DAYS_FALLBACK = 7;
+  function isMastered(r) {
+    const st = window.SC && window.SC.stats;
+    if (st && st.statusOf) return st.statusOf(r) === "mastered";
+    return (r.seen || 0) > 0 && (r.interval || 0) >= MASTERED_DAYS_FALLBACK;
+  }
 
   // Gruppen für die Anzeige im Ruta-Pass.
   const GROUPS = [
@@ -4690,7 +4705,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     cards.forEach((card) => {
       const r = prog[card.id] || {};
       const seen = r.seen || 0;
-      const mastered = seen > 0 && (r.interval || 0) >= MASTERED_DAYS;
+      const mastered = isMastered(r);
       catTotal[card.cat] = (catTotal[card.cat] || 0) + 1;
       if (seen > 0) cardsReviewed++;
       if (mastered) { cardsMastered++; catMastered[card.cat] = (catMastered[card.cat] || 0) + 1; }
@@ -4783,18 +4798,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
+  // Schlanke öffentliche API – die Auswertungs-Helfer (valueOf/targetOf/…) bleiben
+  // modul-intern.
   window.SC.badges = {
     GROUPS,
-    BADGES,
     byId,
     buildMetrics,
     evaluate,
     satisfiedIds,
-    isSatisfied,
-    valueOf,
-    targetOf,
-    progressOf,
-    MASTERED_DAYS,
   };
 })();
 
@@ -6288,6 +6299,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
   }
 
+  // Kalendertage zwischen zwei "YYYY-MM-DD"-Schlüsseln (b − a). Über lokale
+  // Mitternacht gerechnet, damit Sommer-/Winterzeit (23-/25-Stunden-Tage) die
+  // Serie nicht verfälscht – ein fixer 24-h-Abzug täte das nahe Mitternacht.
+  function daysBetween(aKey, bKey) {
+    const a = new Date(aKey + "T00:00:00");
+    const b = new Date(bKey + "T00:00:00");
+    if (isNaN(a) || isNaN(b)) return null;
+    return Math.round((b - a) / DAY_MS);
+  }
+
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
   // Tageszeit-Marken setzen, "Nochmal"-Drücke und Gesamtzahl zählen. Immutabel.
   function recordStudyEvent(rating, now) {
@@ -6298,8 +6319,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     const today = dayKey(now);
     if (g.lastStudyDate !== today) {
-      const yesterday = dayKey(now - DAY_MS);
-      g.dailyStreak = g.lastStudyDate === yesterday ? (g.dailyStreak || 0) + 1 : 1;
+      const gap = g.lastStudyDate ? daysBetween(g.lastStudyDate, today) : null;
+      g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
       g.lastStudyDate = today;
       g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
     }
@@ -6327,16 +6348,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return newly;
   }
 
+  // Einblendung schließen: Timer stoppen, Zustand leeren und NUR den Toast-Knoten
+  // entfernen. Bewusst kein render() – ein Voll-Re-Render würde sonst nicht
+  // gespeicherte Eingaben (Schreiben-Modus #answer, Editor-Felder) verwerfen.
+  function dismissBadgeToast() {
+    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
+    state.badgeToast = null;
+    const el = root.querySelector(".btoast");
+    if (el) el.remove();
+  }
+
   // Einblendung zeigen und nach kurzer Zeit selbst wieder ausblenden.
   function showBadgeToast(list) {
     if (!list.length) return;
     state.badgeToast = list;
     if (badgeToastTimer) clearTimeout(badgeToastTimer);
-    badgeToastTimer = setTimeout(() => {
-      badgeToastTimer = null;
-      state.badgeToast = null;
-      render();
-    }, 5000);
+    badgeToastTimer = setTimeout(dismissBadgeToast, 5000);
   }
 
   function badgesVM() {
@@ -6357,8 +6384,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function openBadges() {
-    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
-    state.badgeToast = null;
+    dismissBadgeToast();
     state.screen = "badges";
     render();
   }
@@ -6403,6 +6429,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ----- Aktionen -----
   function startStudy(scopeId) {
+    dismissBadgeToast();
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
     const chosen = due.length ? due : cards; // nichts fällig? -> freies Üben
@@ -6525,6 +6552,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function goHome() {
+    dismissBadgeToast();
     state.screen = "home";
     state.revealed = false;
     state.typeResult = null;
@@ -6533,6 +6561,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ----- Länderkunde (Infoseite) -----
   function openInfo() {
+    dismissBadgeToast();
     state.screen = "info";
     render();
   }
@@ -6544,6 +6573,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ----- Statistik-Navigation -----
   function goStats() {
+    dismissBadgeToast();
     state.screen = "stats";
     render();
   }
@@ -6564,14 +6594,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Badges/Streak hängen am Lernfortschritt -> mit zurücksetzen (sonst inkonsistent).
     store.resetGameStats();
     gamestats = store.loadGameStats();
-    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
-    state.badgeToast = null;
     state.statsFilter = "answered";
-    goHome();
+    goHome(); // räumt auch eine offene Badge-Einblendung weg
   }
 
   // Detailseite einer Karte öffnen. backTo merkt sich die Herkunft (Zurück-Knopf).
   function openCard(id, backTo) {
+    dismissBadgeToast();
     state.cardId = id;
     state.backTo = backTo || "stats";
     state.screen = "card";
@@ -6582,6 +6611,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function studyOne(id) {
     const card = cardById(id);
     if (!card) return;
+    dismissBadgeToast();
     state.scopeId = card.cat;
     state.queue = [id];
     state.total = 1;
@@ -6615,6 +6645,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function openEditor() {
+    dismissBadgeToast();
     editorMsg = null;
     state.screen = "editor";
     render();

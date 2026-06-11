@@ -24,10 +24,16 @@
 (function () {
   "use strict";
 
-  // Ab diesem Intervall (Tage) gilt eine Karte als "gemeistert" – deckungsgleich
-  // mit stats.MASTERED_DAYS, hier bewusst lokal gehalten, damit das Modul ohne
-  // Abhängigkeit zu stats testbar bleibt.
-  const MASTERED_DAYS = 7;
+  // "Gemeistert" ist die Wahrheit aus stats.js (SC.stats.statusOf). Wir greifen
+  // darauf zu, statt die Regel (interval >= 7) zu duplizieren – so können
+  // Statistik und Ruta-Pass nie auseinanderlaufen. Der Fallback greift nur, falls
+  // stats (noch) nicht geladen ist (Graceful Degradation, eigenständig testbar).
+  const MASTERED_DAYS_FALLBACK = 7;
+  function isMastered(r) {
+    const st = window.SC && window.SC.stats;
+    if (st && st.statusOf) return st.statusOf(r) === "mastered";
+    return (r.seen || 0) > 0 && (r.interval || 0) >= MASTERED_DAYS_FALLBACK;
+  }
 
   // Gruppen für die Anzeige im Ruta-Pass.
   const GROUPS = [
@@ -122,7 +128,7 @@
     cards.forEach((card) => {
       const r = prog[card.id] || {};
       const seen = r.seen || 0;
-      const mastered = seen > 0 && (r.interval || 0) >= MASTERED_DAYS;
+      const mastered = isMastered(r);
       catTotal[card.cat] = (catTotal[card.cat] || 0) + 1;
       if (seen > 0) cardsReviewed++;
       if (mastered) { cardsMastered++; catMastered[card.cat] = (catMastered[card.cat] || 0) + 1; }
@@ -215,17 +221,13 @@
   }
 
   window.SC = window.SC || {};
+  // Schlanke öffentliche API – die Auswertungs-Helfer (valueOf/targetOf/…) bleiben
+  // modul-intern.
   window.SC.badges = {
     GROUPS,
-    BADGES,
     byId,
     buildMetrics,
     evaluate,
     satisfiedIds,
-    isSatisfied,
-    valueOf,
-    targetOf,
-    progressOf,
-    MASTERED_DAYS,
   };
 })();

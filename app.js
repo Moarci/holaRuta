@@ -241,6 +241,16 @@
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
   }
 
+  // Kalendertage zwischen zwei "YYYY-MM-DD"-Schlüsseln (b − a). Über lokale
+  // Mitternacht gerechnet, damit Sommer-/Winterzeit (23-/25-Stunden-Tage) die
+  // Serie nicht verfälscht – ein fixer 24-h-Abzug täte das nahe Mitternacht.
+  function daysBetween(aKey, bKey) {
+    const a = new Date(aKey + "T00:00:00");
+    const b = new Date(bKey + "T00:00:00");
+    if (isNaN(a) || isNaN(b)) return null;
+    return Math.round((b - a) / DAY_MS);
+  }
+
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
   // Tageszeit-Marken setzen, "Nochmal"-Drücke und Gesamtzahl zählen. Immutabel.
   function recordStudyEvent(rating, now) {
@@ -251,8 +261,8 @@
 
     const today = dayKey(now);
     if (g.lastStudyDate !== today) {
-      const yesterday = dayKey(now - DAY_MS);
-      g.dailyStreak = g.lastStudyDate === yesterday ? (g.dailyStreak || 0) + 1 : 1;
+      const gap = g.lastStudyDate ? daysBetween(g.lastStudyDate, today) : null;
+      g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
       g.lastStudyDate = today;
       g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
     }
@@ -280,16 +290,22 @@
     return newly;
   }
 
+  // Einblendung schließen: Timer stoppen, Zustand leeren und NUR den Toast-Knoten
+  // entfernen. Bewusst kein render() – ein Voll-Re-Render würde sonst nicht
+  // gespeicherte Eingaben (Schreiben-Modus #answer, Editor-Felder) verwerfen.
+  function dismissBadgeToast() {
+    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
+    state.badgeToast = null;
+    const el = root.querySelector(".btoast");
+    if (el) el.remove();
+  }
+
   // Einblendung zeigen und nach kurzer Zeit selbst wieder ausblenden.
   function showBadgeToast(list) {
     if (!list.length) return;
     state.badgeToast = list;
     if (badgeToastTimer) clearTimeout(badgeToastTimer);
-    badgeToastTimer = setTimeout(() => {
-      badgeToastTimer = null;
-      state.badgeToast = null;
-      render();
-    }, 5000);
+    badgeToastTimer = setTimeout(dismissBadgeToast, 5000);
   }
 
   function badgesVM() {
@@ -310,8 +326,7 @@
   }
 
   function openBadges() {
-    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
-    state.badgeToast = null;
+    dismissBadgeToast();
     state.screen = "badges";
     render();
   }
@@ -356,6 +371,7 @@
 
   // ----- Aktionen -----
   function startStudy(scopeId) {
+    dismissBadgeToast();
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
     const chosen = due.length ? due : cards; // nichts fällig? -> freies Üben
@@ -478,6 +494,7 @@
   }
 
   function goHome() {
+    dismissBadgeToast();
     state.screen = "home";
     state.revealed = false;
     state.typeResult = null;
@@ -486,6 +503,7 @@
 
   // ----- Länderkunde (Infoseite) -----
   function openInfo() {
+    dismissBadgeToast();
     state.screen = "info";
     render();
   }
@@ -497,6 +515,7 @@
 
   // ----- Statistik-Navigation -----
   function goStats() {
+    dismissBadgeToast();
     state.screen = "stats";
     render();
   }
@@ -517,14 +536,13 @@
     // Badges/Streak hängen am Lernfortschritt -> mit zurücksetzen (sonst inkonsistent).
     store.resetGameStats();
     gamestats = store.loadGameStats();
-    if (badgeToastTimer) { clearTimeout(badgeToastTimer); badgeToastTimer = null; }
-    state.badgeToast = null;
     state.statsFilter = "answered";
-    goHome();
+    goHome(); // räumt auch eine offene Badge-Einblendung weg
   }
 
   // Detailseite einer Karte öffnen. backTo merkt sich die Herkunft (Zurück-Knopf).
   function openCard(id, backTo) {
+    dismissBadgeToast();
     state.cardId = id;
     state.backTo = backTo || "stats";
     state.screen = "card";
@@ -535,6 +553,7 @@
   function studyOne(id) {
     const card = cardById(id);
     if (!card) return;
+    dismissBadgeToast();
     state.scopeId = card.cat;
     state.queue = [id];
     state.total = 1;
@@ -568,6 +587,7 @@
   }
 
   function openEditor() {
+    dismissBadgeToast();
     editorMsg = null;
     state.screen = "editor";
     render();
