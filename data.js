@@ -652,6 +652,43 @@
     { id: "dir36", cat: "rumbo", lvl: 3, de: "Es ist gegenüber der Kirche", es: "Está enfrente de la iglesia", tip: "en-FREN-te de la i-GLE-sia" },
     { id: "dir37", cat: "rumbo", lvl: 3, de: "Es ist zwischen der Bank und der Apotheke", es: "Está entre el banco y la farmacia", tip: "EN-tre el BAN-ko i la far-MA-sia" },
     { id: "dir38", cat: "rumbo", lvl: 2, de: "Es ist zwei Blocks von hier", es: "Queda a dos cuadras de aquí", tip: "KE-da a dos KUA-dras de a-KI" },
+
+    // -- Mehr Lage-Präpositionen (Feinheiten der Beschreibung) --
+    { id: "dir39", cat: "rumbo", lvl: 2, de: "in Richtung / auf ... zu", es: "hacia", tip: "A-sia (h stumm)" },
+    { id: "dir40", cat: "rumbo", lvl: 2, de: "bis (zu)", es: "hasta", tip: "AS-ta" },
+    { id: "dir41", cat: "rumbo", lvl: 3, de: "schräg gegenüber von", es: "diagonal a", tip: "dia-go-NAL a" },
+    { id: "dir42", cat: "rumbo", lvl: 2, de: "direkt bei / nahe bei", es: "junto a / próximo a", tip: "HUN-to a / PROK-si-mo a" },
+    { id: "dir43", cat: "rumbo", lvl: 2, de: "vor (örtlich)", es: "antes de", tip: "AN-tes de" },
+    { id: "dir44", cat: "rumbo", lvl: 2, de: "nach (örtlich)", es: "después de", tip: "des-PUES de" },
+    { id: "dir45", cat: "rumbo", lvl: 3, de: "gleich um die Ecke", es: "a la vuelta de la esquina", tip: "a la WUEL-ta de la es-KI-na" },
+    { id: "dir46", cat: "rumbo", lvl: 2, de: "nur einen Katzensprung entfernt", es: "a un paso", tip: "a un PA-so – wörtlich 'einen Schritt'" },
+
+    // -- Himmelsrichtungen --
+    { id: "dir47", cat: "rumbo", lvl: 1, de: "der Norden", es: "el norte", tip: "el NOR-te" },
+    { id: "dir48", cat: "rumbo", lvl: 1, de: "der Süden", es: "el sur", tip: "el sur" },
+    { id: "dir49", cat: "rumbo", lvl: 1, de: "der Osten", es: "el este", tip: "el ES-te" },
+    { id: "dir50", cat: "rumbo", lvl: 1, de: "der Westen", es: "el oeste", tip: "el o-ES-te" },
+
+    // -- Orientierungspunkte unterwegs --
+    { id: "dir51", cat: "rumbo", lvl: 2, de: "die Ampel", es: "el semáforo", tip: "el se-MA-fo-ro" },
+    { id: "dir52", cat: "rumbo", lvl: 2, de: "der Kreisverkehr", es: "la rotonda", tip: "la ro-TON-da (Mexiko: glorieta)" },
+    { id: "dir53", cat: "rumbo", lvl: 2, de: "die Kreuzung", es: "el cruce", tip: "el KRU-se" },
+    { id: "dir54", cat: "rumbo", lvl: 2, de: "die Brücke", es: "el puente", tip: "el PUEN-te" },
+    { id: "dir55", cat: "rumbo", lvl: 2, de: "die Haltestelle", es: "la parada", tip: "la pa-RA-da" },
+
+    // -- Mehr Anweisungen (Verben) --
+    { id: "dir56", cat: "rumbo", lvl: 2, de: "Biege rechts ab (Variante)", es: "Gira a la derecha", tip: "HI-ra a la de-RE-cha (Mexiko: voltea)" },
+    { id: "dir57", cat: "rumbo", lvl: 2, de: "Geh die Straße hinauf", es: "Sube por esta calle", tip: "SU-be por ES-ta KA-ye" },
+    { id: "dir58", cat: "rumbo", lvl: 2, de: "Geh die Straße hinunter", es: "Baja por esta calle", tip: "BA-ha por ES-ta KA-ye" },
+    { id: "dir59", cat: "rumbo", lvl: 3, de: "Geh zurück", es: "Regrésate / Devuélvete", tip: "re-GRE-sa-te / de-WUEL-we-te (sehr LatAm)" },
+    { id: "dir60", cat: "rumbo", lvl: 2, de: "Geh an der Ampel vorbei", es: "Pasa el semáforo", tip: "PA-sa el se-MA-fo-ro" },
+
+    // -- Mehr Fragen nach dem Weg --
+    { id: "dir61", cat: "rumbo", lvl: 3, de: "Wo geht's zum Markt lang?", es: "¿Por dónde se va al mercado?", tip: "por DON-de se wa al mer-KA-do" },
+    { id: "dir62", cat: "rumbo", lvl: 3, de: "Bin ich auf dem richtigen Weg zur Plaza?", es: "¿Voy bien para la plaza?", tip: "woi bien PA-ra la PLA-sa" },
+    { id: "dir63", cat: "rumbo", lvl: 2, de: "Wo gibt es ein Bekleidungsgeschäft?", es: "¿Dónde hay una tienda de ropa?", tip: "DON-de ai U-na TIEN-da de RO-pa" },
+    { id: "dir64", cat: "rumbo", lvl: 3, de: "Kann man zu Fuß gehen?", es: "¿Se puede ir caminando?", tip: "se PUE-de ir ka-mi-NAN-do" },
+    { id: "dir65", cat: "rumbo", lvl: 3, de: "Wie lange dauert es zu Fuß?", es: "¿Cuánto se tarda a pie?", tip: "KUAN-to se TAR-da a pie" },
   ];
 
   /*
