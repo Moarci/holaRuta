@@ -884,10 +884,17 @@
            <span class="hm-scene__count">${s.count}</span>
          </button>`),
     ].join("");
+    const lengths = vm.lengths.map((l) =>
+      `<button class="seg ${l.selected ? "is-active" : ""}" data-action="set-battle-length" data-len="${l.value}"
+               aria-pressed="${l.selected}">${esc(l.label)} · ${l.value}</button>`).join("");
     return `
       <section class="screen">
         ${hmTopbar("⚔️ Battle", "open-hostel")}
         <p class="hm-intro">Wählt eine Situation. Die App zeigt eine Aufgabe auf Deutsch – einer antwortet laut auf Spanisch, der andere bewertet.</p>
+        <div class="hm-length">
+          <span class="hm-length__cap">Länge</span>
+          <div class="segmented" role="group" aria-label="Battle-Länge">${lengths}</div>
+        </div>
         <div class="hm-scenes">${scenes}</div>
       </section>`;
   }

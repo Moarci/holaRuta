@@ -906,6 +906,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Gemeinsame Bausteine. */
 .hm-intro { margin: 0; color: var(--ink-soft); line-height: 1.5; font-size: 0.95rem; }
+.hm-length { display: flex; flex-direction: column; gap: 6px; }
+.hm-length__cap { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); letter-spacing: 0.02em; }
 
 /* Menü: Battle / Rollenspiele. */
 .hm-menu { display: flex; flex-direction: column; gap: 12px; }
