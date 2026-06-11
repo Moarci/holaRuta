@@ -1402,6 +1402,10 @@
   // hoch = Gut. So lässt sich die App komplett mit dem Daumen bedienen.
   let touch = null; // { x, y } Startpunkt
   const SWIPE_MIN = 45; // px – ab hier zählt es als Wisch
+  // Aufdecken (↑) und „Gut" bewerten (↑) sind dieselbe Richtung. Ein direkt auf den
+  // Aufdeck-Wisch folgender Hoch-Wisch soll daher nicht versehentlich bewerten.
+  let lastFlipSwipeAt = 0;
+  const SWIPE_FLIP_GUARD = 600; // ms – Sperrzeit für ↑-Bewerten nach Aufdeck-Wisch
 
   function canRate() {
     return state.screen === "study" &&
@@ -1432,9 +1436,12 @@
 
     if (canRate()) {
       if (ax > ay) { rate(dx < 0 ? srs.RATING.AGAIN : srs.RATING.EASY); lastSwipeAt = Date.now(); } // ← Nochmal · → Einfach
-      else if (dy < 0) { rate(srs.RATING.GOOD); lastSwipeAt = Date.now(); }                          // ↑ Gut
+      else if (dy < 0) {
+        if (Date.now() - lastFlipSwipeAt < SWIPE_FLIP_GUARD) return; // direkt nach Aufdeck-Wisch nicht versehentlich bewerten
+        rate(srs.RATING.GOOD); lastSwipeAt = Date.now();                                              // ↑ Gut
+      }
     } else if (state.mode === "flip" && !state.revealed && dy < 0) {
-      flip(); lastSwipeAt = Date.now(); // ↑ hochwischen dreht die Karte um
+      flip(); lastSwipeAt = Date.now(); lastFlipSwipeAt = Date.now(); // ↑ hochwischen dreht die Karte um
     }
   }
 
