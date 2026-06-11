@@ -20,7 +20,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -42,6 +42,8 @@
     roleplaySwapped: false,  // Rollen A/B getauscht?
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
     quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
+    // ----- El Cuerpo (interaktive Körperkarte) -----
+    bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -645,6 +647,60 @@
     store.saveGameStats(gamestats);
   }
 
+  // ----- El Cuerpo: interaktive Körperkarte -----
+  const bodyPartById = (id) => data.BODY_PARTS.find((p) => p.id === id) || null;
+
+  function cuerpoVM() {
+    const selId = state.bodyPartId;
+    const parts = data.BODY_PARTS.map((p) => ({
+      id: p.id, de: p.de, x: p.x, y: p.y,
+      selected: p.id === selId,
+      seen: !!(gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[p.id]),
+    }));
+    const sel = bodyPartById(selId);
+    return {
+      parts,
+      selected: sel ? { id: sel.id, es: sel.es, de: sel.de, tip: sel.tip, note: sel.note } : null,
+      exploredCount: gamestats.bodyPartsSeen ? Object.keys(gamestats.bodyPartsSeen).length : 0,
+      total: data.BODY_PARTS.length,
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function openCuerpo() {
+    dismissBadgeToast();
+    state.bodyPartId = null;
+    state.screen = "cuerpo";
+    render();
+  }
+
+  // Ein Körperteil antippen: Wort anzeigen, vorlesen und (einmalig) für den
+  // Ruta-Pass einbuchen. Erneutes Antippen desselben Teils ist ein No-Op-Write.
+  function selectBodyPart(id) {
+    const part = bodyPartById(id);
+    if (!part) return;
+    state.bodyPartId = id;
+    buzz(8);
+    recordBodyPartView(id, Date.now());
+    render();
+    if (speech && speech.isSupported()) speech.speak(part.es);
+  }
+
+  // Distinkt erkundetes Körperteil vermerken und erfüllte 🧍-Badges freischalten.
+  function recordBodyPartView(id, now) {
+    if (!badges || !id || (gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[id])) return;
+    const seen = Object.assign({}, gamestats.bodyPartsSeen, { [id]: true });
+    gamestats = Object.assign({}, gamestats, { bodyPartsSeen: seen });
+    store.saveGameStats(gamestats);
+    syncBadges(now, true); // render() malt den Toast anschließend über den Screen
+  }
+
+  // 🔊-Knopf im Körperteil-Panel: das gewählte Wort (er-)neut vorlesen.
+  function speakBodyPart() {
+    const part = bodyPartById(state.bodyPartId);
+    if (part && speech && speech.isSupported()) speech.speak(part.es);
+  }
+
   // ----- Rendern -----
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
@@ -663,6 +719,7 @@
     else if (state.screen === "quizSetup") root.innerHTML = ui.renderQuizSetup(quizSetupVM());
     else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
+    else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -1210,6 +1267,9 @@
     else if (action === "quiz-answer") answerQuiz(el.dataset.id);
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
+    else if (action === "open-cuerpo") openCuerpo();
+    else if (action === "cuerpo-select") selectBodyPart(el.dataset.id);
+    else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "home") goHome();
   }
 

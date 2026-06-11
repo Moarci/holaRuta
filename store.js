@@ -70,6 +70,8 @@
       quizzesPerfect: 0,    // Quiz-Runden ohne Fehler
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
+      // ----- El Cuerpo (interaktive Körperkarte) -----
+      bodyPartsSeen: {},    // Map bodyPartId -> true (distinkt erkundete Körperteile)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
   }
@@ -97,6 +99,7 @@
       quizzesPlayed: num(v.quizzesPlayed),
       quizzesPerfect: num(v.quizzesPerfect),
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
+      bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
   }

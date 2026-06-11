@@ -1107,6 +1107,97 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    Frage-/Optionen-Layout. Farbtöne kommen aus den Theme-Tokens (Dark-Mode-fest).
    ========================================================================== */
 .hostelmode--quiz { background: linear-gradient(135deg, #3F7355, #2F6B70); }
+.hostelmode--cuerpo { background: linear-gradient(135deg, #2E6E86, #7D4A8E); }
+
+/* ==========================================================================
+   EL CUERPO – interaktive Körperkarte. Eine stilisierte SVG-Figur mit
+   absolut positionierten Hotspot-Punkten (Prozent-Koordinaten der Figur).
+   ========================================================================== */
+.bp-screen { display: flex; flex-direction: column; gap: 14px; }
+
+/* Fortschritt: erkundete Körperteile. */
+.bp-progress { display: flex; flex-direction: column; gap: 6px; }
+.bp-progress__bar { height: 8px; border-radius: 999px; background: rgba(45, 27, 18, 0.10); overflow: hidden; }
+[data-theme="dark"] .bp-progress__bar { background: rgba(251, 243, 228, 0.12); }
+.bp-progress__fill {
+  height: 100%; border-radius: 999px; transition: width 0.35s ease;
+  background: linear-gradient(90deg, #2E6E86, #7D4A8E);
+}
+.bp-progress__label { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); }
+
+/* Bühne: Figur links/oben, Info-Panel daneben/darunter. */
+.bp-stage { display: flex; flex-direction: column; gap: 16px; align-items: stretch; }
+
+.bp-figwrap {
+  position: relative; width: 100%; max-width: 300px; margin: 0 auto;
+  aspect-ratio: 200 / 440; /* exakt der SVG-Bezugsrahmen → Prozent-Hotspots sitzen */
+}
+.bp-figure {
+  width: 100%; height: 100%; display: block;
+  color: #C9A37E; /* Körperfarbe (warm), via currentColor an Flächen & Striche */
+  filter: drop-shadow(0 3px 0 rgba(45, 27, 18, 0.10));
+}
+[data-theme="dark"] .bp-figure { color: #6E5142; }
+
+/* Hotspot: runder, pulsierender Punkt – sitzt mittig auf seiner Koordinate. */
+.bp-dot {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 26px; height: 26px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 2.5px solid var(--cream);
+  background: rgba(46, 110, 134, 0.55);
+  box-shadow: 0 1px 4px rgba(45, 27, 18, 0.35);
+  display: grid; place-items: center;
+  transition: transform 0.12s ease, background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.bp-dot:active { transform: translate(-50%, -50%) scale(0.88); }
+.bp-dot__ring {
+  position: absolute; inset: -6px; border-radius: 50%;
+  border: 2px solid rgba(46, 110, 134, 0.55); opacity: 0;
+}
+.bp-dot.is-seen { background: rgba(63, 115, 85, 0.85); }      /* schon erkundet */
+.bp-dot.is-active {
+  background: var(--brand); border-color: var(--cream);
+  transform: translate(-50%, -50%) scale(1.18); z-index: 3;
+}
+.bp-dot.is-active .bp-dot__ring {
+  border-color: var(--brand); opacity: 1;
+  animation: bp-pulse 1.4s ease-out infinite;
+}
+@keyframes bp-pulse {
+  0%   { transform: scale(0.7); opacity: 0.9; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bp-dot.is-active .bp-dot__ring { animation: none; opacity: 1; }
+  .bp-progress__fill { transition: none; }
+}
+
+/* Info-Panel: Hinweis oder gewähltes Körperteil. */
+.bp-panel {
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-md); padding: 16px; box-shadow: var(--shadow);
+  min-height: 92px; display: flex; flex-direction: column; gap: 8px;
+}
+.bp-panel--filled { border-color: var(--brand); }
+.bp-panel__hint { margin: 0; color: var(--muted); line-height: 1.5; font-size: 0.92rem; align-self: center; text-align: center; }
+.bp-panel__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.bp-panel__de { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink-soft); }
+.bp-panel__es {
+  margin: 0; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.7rem; line-height: 1.1; letter-spacing: -0.01em; color: var(--brand-ink);
+}
+.bp-panel__tip { margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--ink-soft); }
+.bp-panel__note { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
+/* 🔊 im Panel: aus der absoluten Karten-Ecke in den Textfluss zurückholen. */
+.bp-speak { position: static; flex: none; }
+
+/* Ab ~560px: Figur und Panel nebeneinander. */
+@media (min-width: 560px) {
+  .bp-stage { flex-direction: row; align-items: flex-start; gap: 22px; }
+  .bp-figwrap { margin: 0; flex: 0 0 240px; }
+  .bp-panel { flex: 1 1 auto; align-self: stretch; }
+}
 
 /* Listen-Auswahl: Intro-Zeile unter dem Titel. */
 .quiz-set__intro { display: block; margin-top: 3px; font-size: 0.8rem; font-weight: 400; color: var(--muted); line-height: 1.35; }
@@ -3172,8 +3263,61 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "qf10", set: "comida", es: "el postre",   de: "Nachtisch",   icon: "🍰", def: "Comida dulce que se come al final, como el pastel o el helado." },
   ];
 
+  // ===================== EL CUERPO (interaktive Körperkarte) =====================
+  // Anatomie zum Antippen: eine stilisierte Figur, auf der jeder Punkt ein Körperteil
+  // markiert. x/y sind PROZENT-Koordinaten (0–100) im Bezugsrahmen der SVG-Figur
+  //   (viewBox 0 0 200 440) und positionieren den Hotspot exakt über der Grafik.
+  //   es   = der spanische Begriff inkl. Artikel (wird auch vorgelesen)
+  //   de   = deutsche Übersetzung           tip = Aussprache-Hilfe
+  //   note = Reise-/Merk-Tipp (oft die «Me duele …»-Formel für Arzt & Apotheke)
+  const BODY_PARTS = [
+    // ---- Kopf & Gesicht ----
+    { id: "bp_pelo",     es: "el pelo",      de: "Haare",        x: 50,   y: 4.1,  tip: "el PE-lo",
+      note: "Auch «el cabello». Beim Friseur: «un corte de pelo» = ein Haarschnitt." },
+    { id: "bp_cabeza",   es: "la cabeza",    de: "Kopf",         x: 37,   y: 6,    tip: "la ka-BE-sa",
+      note: "Kopfschmerzen? Sag «Me duele la cabeza»." },
+    { id: "bp_ojo",      es: "el ojo",       de: "Auge",         x: 58,   y: 8.6,  tip: "el O-cho (j wie ch in Bach)",
+      note: "Mehrzahl «los ojos». «Me duelen los ojos» = meine Augen tun weh." },
+    { id: "bp_oreja",    es: "la oreja",     de: "Ohr",          x: 67,   y: 10.5, tip: "la o-RE-cha",
+      note: "Das Außenohr. Beim Arzt für Ohrenschmerzen: «Me duele el oído» (Innenohr)." },
+    { id: "bp_cara",     es: "la cara",      de: "Gesicht",      x: 42,   y: 11,   tip: "la KA-ra",
+      note: "«¡Qué cara!» heißt umgangssprachlich auch «So eine Frechheit!»." },
+    { id: "bp_nariz",    es: "la nariz",     de: "Nase",         x: 50,   y: 11.6, tip: "la na-RIS",
+      note: "Schnupfen: «Tengo la nariz tapada» = meine Nase ist verstopft." },
+    { id: "bp_boca",     es: "la boca",      de: "Mund",         x: 50,   y: 14,   tip: "la BO-ka",
+      note: "Beim Zahnarzt: «Abra la boca» = Mund öffnen." },
+    { id: "bp_cuello",   es: "el cuello",    de: "Hals / Nacken", x: 50,  y: 18.2, tip: "el KUE-yo",
+      note: "Steifer Nacken vom Busfahren? «Me duele el cuello». «La garganta» ist der Rachen (Halsweh)." },
+    // ---- Oberkörper & Arme ----
+    { id: "bp_hombro",   es: "el hombro",    de: "Schulter",     x: 33,   y: 22.7, tip: "el OM-bro",
+      note: "Schwerer Rucksack: «Me duelen los hombros»." },
+    { id: "bp_pecho",    es: "el pecho",     de: "Brust",        x: 50,   y: 27.5, tip: "el PE-cho",
+      note: "«Me duele el pecho» – beim Arzt immer ernst nehmen." },
+    { id: "bp_espalda",  es: "la espalda",   de: "Rücken",       x: 66,   y: 30.5, tip: "la es-PAL-da",
+      note: "Backpacking-Klassiker: «Me duele la espalda»." },
+    { id: "bp_brazo",    es: "el brazo",     de: "Arm",          x: 28,   y: 34,   tip: "el BRA-so",
+      note: "Mehrzahl «los brazos». «Me rompí el brazo» = ich habe mir den Arm gebrochen." },
+    { id: "bp_codo",     es: "el codo",      de: "Ellbogen",     x: 24,   y: 38.5, tip: "el KO-do",
+      note: "«Hablar por los codos» = reden wie ein Wasserfall." },
+    { id: "bp_estomago", es: "el estómago",  de: "Bauch / Magen", x: 50,  y: 45.5, tip: "el es-TO-ma-go",
+      note: "Nach dem Streetfood: «Me duele el estómago» oder «la barriga»." },
+    { id: "bp_mano",     es: "la mano",      de: "Hand",         x: 20.5, y: 57,   tip: "la MA-no",
+      note: "Trotz -o weiblich: «la mano». «hecho a mano» = handgemacht (am Markt!)." },
+    { id: "bp_dedo",     es: "el dedo",      de: "Finger",       x: 19,   y: 61,   tip: "el DE-do",
+      note: "Auch Zeh: «el dedo del pie». Mehrzahl «los dedos»." },
+    // ---- Beine & Füße ----
+    { id: "bp_pierna",   es: "la pierna",    de: "Bein",         x: 58,   y: 66,   tip: "la PIER-na",
+      note: "Mehrzahl «las piernas». Nach langer Wanderung: «Me duelen las piernas»." },
+    { id: "bp_rodilla",  es: "la rodilla",   de: "Knie",         x: 58,   y: 75,   tip: "la ro-DI-ya",
+      note: "Bergab tut's weh: «Me duele la rodilla»." },
+    { id: "bp_tobillo",  es: "el tobillo",   de: "Knöchel",      x: 60,   y: 91,   tip: "el to-BI-yo",
+      note: "Umgeknickt? «Me torcí el tobillo» = ich habe mir den Knöchel verstaucht." },
+    { id: "bp_pie",      es: "el pie",       de: "Fuß",          x: 62,   y: 95.5, tip: "el pie",
+      note: "Zu Fuß = «a pie». Mehrzahl «los pies». «Me duelen los pies» nach dem Stadtbummel." },
+  ];
+
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, BODY_PARTS };
 })();
 
 </script>
@@ -6131,6 +6275,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       quizzesPerfect: 0,    // Quiz-Runden ohne Fehler
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
+      // ----- El Cuerpo (interaktive Körperkarte) -----
+      bodyPartsSeen: {},    // Map bodyPartId -> true (distinkt erkundete Körperteile)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
   }
@@ -6158,6 +6304,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       quizzesPlayed: num(v.quizzesPlayed),
       quizzesPerfect: num(v.quizzesPerfect),
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
+      bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
   }
@@ -6450,6 +6597,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "context",  label: "Reise-Kontext", icon: "🧭" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
     { id: "quiz",     label: "Definiciones", icon: "🧩" },
+    { id: "cuerpo",   label: "El Cuerpo",   icon: "🧍" },
     { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
   ];
@@ -6554,6 +6702,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "challenge_5",     group: "reallife", icon: "🚪", name: "Comfort Zone Exit",   type: "counter", metric: "challengesCompleted", threshold: 5,
       description: "Hake 5 Real-Life Challenges ab.", unlockedText: "Raus aus der App, rein ins echte Sprechen." },
 
+    // ---------- El Cuerpo (interaktive Körperkarte) ----------
+    { id: "cuerpo_first", group: "cuerpo", icon: "👆", name: "Primer toque",   type: "counter", metric: "bodyPartsExplored", threshold: 1,
+      description: "Tippe dein erstes Körperteil an.", unlockedText: "Du erkundest den Körper jetzt auf Spanisch." },
+    { id: "cuerpo_10",    group: "cuerpo", icon: "🦴", name: "Anatomista",     type: "counter", metric: "bodyPartsExplored", threshold: 10,
+      description: "Erkunde 10 verschiedene Körperteile.", unlockedText: "Halber Körper sitzt – beim Arzt zeigst du jetzt mit Worten." },
+    { id: "cuerpo_all",   group: "cuerpo", icon: "🧍", name: "Cuerpo completo", type: "counter", metric: "bodyPartsExplored", threshold: 20,
+      description: "Erkunde alle Körperteile auf der Karte.", unlockedText: "Von «la cabeza» bis «los pies» – alles erkundet." },
+
     // ---------- Spezial ----------
     { id: "night_owl",  group: "special", icon: "🌙", name: "Midnight Español",         type: "flag", metric: "nightOwl", secret: true,
       description: "Lerne nach 22 Uhr.",        unlockedText: "Noch schnell ein bisschen Spanisch vor dem Schlafen." },
@@ -6614,6 +6770,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       quizzesPerfect: c.quizzesPerfect || 0,
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
+      // El Cuerpo: distinkt angetippte Körperteile (für die 🧍-Badges).
+      bodyPartsExplored: c.bodyPartsSeen ? Object.keys(c.bodyPartsSeen).length : 0,
       categoryMastery,
       categoryTotals: catTotal,
     };
@@ -7318,6 +7476,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <span class="hostelmode__text">
             <span class="hostelmode__title">Definiciones</span>
             <span class="hostelmode__sub">Zuordnen: Definition lesen, Begriff wählen</span>
+          </span>
+          <span class="hostelmode__chev" aria-hidden="true">›</span>
+        </button>
+
+        <button class="hostelmode hostelmode--cuerpo" data-action="open-cuerpo">
+          <span class="hostelmode__icon" aria-hidden="true">🧍</span>
+          <span class="hostelmode__text">
+            <span class="hostelmode__title">El Cuerpo</span>
+            <span class="hostelmode__sub">Körperteile antippen: Wort, Aussprache &amp; Reisetipp</span>
           </span>
           <span class="hostelmode__chev" aria-hidden="true">›</span>
         </button>
@@ -8319,11 +8486,92 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </section>`;
   }
 
+  // ---------- EL CUERPO (interaktive Körperkarte) ----------
+  // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
+  // viewBox 0 0 200 440 – exakt der, auf den sich die Prozent-Koordinaten der Hotspots
+  // beziehen. Gliedmaßen sind runde Striche (currentColor), Rumpf/Kopf gefüllte Flächen.
+  const BP_FIGURE = `
+    <svg class="bp-figure" viewBox="0 0 200 440" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+      <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M70 104 L52 168 L46 240" />
+        <path d="M130 104 L148 168 L154 240" />
+      </g>
+      <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M86 236 L82 330 L78 408" />
+        <path d="M114 236 L118 330 L122 408" />
+      </g>
+      <g class="bp-figure__body" fill="currentColor" stroke="none">
+        <ellipse cx="74" cy="416" rx="17" ry="9" />
+        <ellipse cx="126" cy="416" rx="17" ry="9" />
+        <circle cx="44" cy="248" r="12" />
+        <circle cx="156" cy="248" r="12" />
+        <path d="M68 96 L132 96 C141 96 141 105 139 113 L126 212 C125 232 121 242 100 242 C79 242 75 232 74 212 L61 113 C59 105 59 96 68 96 Z" />
+        <rect x="91" y="68" width="18" height="20" rx="8" />
+        <circle cx="100" cy="44" r="30" />
+      </g>
+    </svg>`;
+
+  function renderCuerpo(vm) {
+    const dots = vm.parts
+      .map((p) => {
+        const cls = `bp-dot${p.selected ? " is-active" : ""}${p.seen ? " is-seen" : ""}`;
+        return `
+          <button class="${cls}" type="button" data-action="cuerpo-select" data-id="${esc(p.id)}"
+                  style="left:${p.x}%;top:${p.y}%" aria-label="${esc(p.de)}" title="${esc(p.de)}"
+                  aria-pressed="${p.selected ? "true" : "false"}">
+            <span class="bp-dot__ring" aria-hidden="true"></span>
+          </button>`;
+      })
+      .join("");
+
+    const sel = vm.selected;
+    const speak = sel && vm.speakable
+      ? cornerBtn({ base: "cardbtn--speak bp-speak", on: false, icon: "🔊", label: "Wort anhören", action: "cuerpo-speak" })
+      : "";
+    const panel = sel
+      ? `
+        <div class="bp-panel bp-panel--filled" role="status" aria-live="polite">
+          <div class="bp-panel__top">
+            <span class="bp-panel__de">${esc(sel.de)}</span>
+            ${speak}
+          </div>
+          <p class="bp-panel__es" lang="es">${esc(sel.es)}</p>
+          ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">🗣️</span> ${esc(sel.tip)}</p>` : ""}
+          ${sel.note ? `<p class="bp-panel__note">${esc(sel.note)}</p>` : ""}
+        </div>`
+      : `
+        <div class="bp-panel" role="status" aria-live="polite">
+          <p class="bp-panel__hint">👆 Tippe einen Punkt auf der Figur an – dann erscheinen das spanische Wort, die Aussprache und ein Reisetipp.</p>
+        </div>`;
+
+    const pct = vm.total > 0 ? Math.round((vm.exploredCount / vm.total) * 100) : 0;
+    const done = vm.total > 0 && vm.exploredCount >= vm.total;
+    const progress = `
+      <div class="bp-progress">
+        <div class="bp-progress__bar"><div class="bp-progress__fill" style="width:${pct}%"></div></div>
+        <span class="bp-progress__label">${done ? "¡Cuerpo completo! 🎉 Alle " + vm.total + " erkundet" : "Erkundet: " + vm.exploredCount + "/" + vm.total}</span>
+      </div>`;
+
+    return `
+      <section class="screen bp-screen">
+        ${hmTopbar("🧍 El Cuerpo", "home")}
+        <p class="hm-intro">Der menschliche Körper auf Spanisch – zum Antippen. Wähle ein Körperteil und lerne Wort, Aussprache und den passenden Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
+        ${progress}
+        <div class="bp-stage">
+          <div class="bp-figwrap">
+            ${BP_FIGURE}
+            ${dots}
+          </div>
+          ${panel}
+        </div>
+      </section>`;
+  }
+
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone };
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
 })();
 
 </script>
@@ -8350,7 +8598,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -8372,6 +8620,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     roleplaySwapped: false,  // Rollen A/B getauscht?
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
     quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
+    // ----- El Cuerpo (interaktive Körperkarte) -----
+    bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -8975,6 +9225,60 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     store.saveGameStats(gamestats);
   }
 
+  // ----- El Cuerpo: interaktive Körperkarte -----
+  const bodyPartById = (id) => data.BODY_PARTS.find((p) => p.id === id) || null;
+
+  function cuerpoVM() {
+    const selId = state.bodyPartId;
+    const parts = data.BODY_PARTS.map((p) => ({
+      id: p.id, de: p.de, x: p.x, y: p.y,
+      selected: p.id === selId,
+      seen: !!(gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[p.id]),
+    }));
+    const sel = bodyPartById(selId);
+    return {
+      parts,
+      selected: sel ? { id: sel.id, es: sel.es, de: sel.de, tip: sel.tip, note: sel.note } : null,
+      exploredCount: gamestats.bodyPartsSeen ? Object.keys(gamestats.bodyPartsSeen).length : 0,
+      total: data.BODY_PARTS.length,
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function openCuerpo() {
+    dismissBadgeToast();
+    state.bodyPartId = null;
+    state.screen = "cuerpo";
+    render();
+  }
+
+  // Ein Körperteil antippen: Wort anzeigen, vorlesen und (einmalig) für den
+  // Ruta-Pass einbuchen. Erneutes Antippen desselben Teils ist ein No-Op-Write.
+  function selectBodyPart(id) {
+    const part = bodyPartById(id);
+    if (!part) return;
+    state.bodyPartId = id;
+    buzz(8);
+    recordBodyPartView(id, Date.now());
+    render();
+    if (speech && speech.isSupported()) speech.speak(part.es);
+  }
+
+  // Distinkt erkundetes Körperteil vermerken und erfüllte 🧍-Badges freischalten.
+  function recordBodyPartView(id, now) {
+    if (!badges || !id || (gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[id])) return;
+    const seen = Object.assign({}, gamestats.bodyPartsSeen, { [id]: true });
+    gamestats = Object.assign({}, gamestats, { bodyPartsSeen: seen });
+    store.saveGameStats(gamestats);
+    syncBadges(now, true); // render() malt den Toast anschließend über den Screen
+  }
+
+  // 🔊-Knopf im Körperteil-Panel: das gewählte Wort (er-)neut vorlesen.
+  function speakBodyPart() {
+    const part = bodyPartById(state.bodyPartId);
+    if (part && speech && speech.isSupported()) speech.speak(part.es);
+  }
+
   // ----- Rendern -----
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
@@ -8993,6 +9297,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "quizSetup") root.innerHTML = ui.renderQuizSetup(quizSetupVM());
     else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
+    else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -9540,6 +9845,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "quiz-answer") answerQuiz(el.dataset.id);
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
+    else if (action === "open-cuerpo") openCuerpo();
+    else if (action === "cuerpo-select") selectBodyPart(el.dataset.id);
+    else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "home") goHome();
   }
 

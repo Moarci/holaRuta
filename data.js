@@ -1434,6 +1434,59 @@
     { id: "qf10", set: "comida", es: "el postre",   de: "Nachtisch",   icon: "🍰", def: "Comida dulce que se come al final, como el pastel o el helado." },
   ];
 
+  // ===================== EL CUERPO (interaktive Körperkarte) =====================
+  // Anatomie zum Antippen: eine stilisierte Figur, auf der jeder Punkt ein Körperteil
+  // markiert. x/y sind PROZENT-Koordinaten (0–100) im Bezugsrahmen der SVG-Figur
+  //   (viewBox 0 0 200 440) und positionieren den Hotspot exakt über der Grafik.
+  //   es   = der spanische Begriff inkl. Artikel (wird auch vorgelesen)
+  //   de   = deutsche Übersetzung           tip = Aussprache-Hilfe
+  //   note = Reise-/Merk-Tipp (oft die «Me duele …»-Formel für Arzt & Apotheke)
+  const BODY_PARTS = [
+    // ---- Kopf & Gesicht ----
+    { id: "bp_pelo",     es: "el pelo",      de: "Haare",        x: 50,   y: 4.1,  tip: "el PE-lo",
+      note: "Auch «el cabello». Beim Friseur: «un corte de pelo» = ein Haarschnitt." },
+    { id: "bp_cabeza",   es: "la cabeza",    de: "Kopf",         x: 37,   y: 6,    tip: "la ka-BE-sa",
+      note: "Kopfschmerzen? Sag «Me duele la cabeza»." },
+    { id: "bp_ojo",      es: "el ojo",       de: "Auge",         x: 58,   y: 8.6,  tip: "el O-cho (j wie ch in Bach)",
+      note: "Mehrzahl «los ojos». «Me duelen los ojos» = meine Augen tun weh." },
+    { id: "bp_oreja",    es: "la oreja",     de: "Ohr",          x: 67,   y: 10.5, tip: "la o-RE-cha",
+      note: "Das Außenohr. Beim Arzt für Ohrenschmerzen: «Me duele el oído» (Innenohr)." },
+    { id: "bp_cara",     es: "la cara",      de: "Gesicht",      x: 42,   y: 11,   tip: "la KA-ra",
+      note: "«¡Qué cara!» heißt umgangssprachlich auch «So eine Frechheit!»." },
+    { id: "bp_nariz",    es: "la nariz",     de: "Nase",         x: 50,   y: 11.6, tip: "la na-RIS",
+      note: "Schnupfen: «Tengo la nariz tapada» = meine Nase ist verstopft." },
+    { id: "bp_boca",     es: "la boca",      de: "Mund",         x: 50,   y: 14,   tip: "la BO-ka",
+      note: "Beim Zahnarzt: «Abra la boca» = Mund öffnen." },
+    { id: "bp_cuello",   es: "el cuello",    de: "Hals / Nacken", x: 50,  y: 18.2, tip: "el KUE-yo",
+      note: "Steifer Nacken vom Busfahren? «Me duele el cuello». «La garganta» ist der Rachen (Halsweh)." },
+    // ---- Oberkörper & Arme ----
+    { id: "bp_hombro",   es: "el hombro",    de: "Schulter",     x: 33,   y: 22.7, tip: "el OM-bro",
+      note: "Schwerer Rucksack: «Me duelen los hombros»." },
+    { id: "bp_pecho",    es: "el pecho",     de: "Brust",        x: 50,   y: 27.5, tip: "el PE-cho",
+      note: "«Me duele el pecho» – beim Arzt immer ernst nehmen." },
+    { id: "bp_espalda",  es: "la espalda",   de: "Rücken",       x: 66,   y: 30.5, tip: "la es-PAL-da",
+      note: "Backpacking-Klassiker: «Me duele la espalda»." },
+    { id: "bp_brazo",    es: "el brazo",     de: "Arm",          x: 28,   y: 34,   tip: "el BRA-so",
+      note: "Mehrzahl «los brazos». «Me rompí el brazo» = ich habe mir den Arm gebrochen." },
+    { id: "bp_codo",     es: "el codo",      de: "Ellbogen",     x: 24,   y: 38.5, tip: "el KO-do",
+      note: "«Hablar por los codos» = reden wie ein Wasserfall." },
+    { id: "bp_estomago", es: "el estómago",  de: "Bauch / Magen", x: 50,  y: 45.5, tip: "el es-TO-ma-go",
+      note: "Nach dem Streetfood: «Me duele el estómago» oder «la barriga»." },
+    { id: "bp_mano",     es: "la mano",      de: "Hand",         x: 20.5, y: 57,   tip: "la MA-no",
+      note: "Trotz -o weiblich: «la mano». «hecho a mano» = handgemacht (am Markt!)." },
+    { id: "bp_dedo",     es: "el dedo",      de: "Finger",       x: 19,   y: 61,   tip: "el DE-do",
+      note: "Auch Zeh: «el dedo del pie». Mehrzahl «los dedos»." },
+    // ---- Beine & Füße ----
+    { id: "bp_pierna",   es: "la pierna",    de: "Bein",         x: 58,   y: 66,   tip: "la PIER-na",
+      note: "Mehrzahl «las piernas». Nach langer Wanderung: «Me duelen las piernas»." },
+    { id: "bp_rodilla",  es: "la rodilla",   de: "Knie",         x: 58,   y: 75,   tip: "la ro-DI-ya",
+      note: "Bergab tut's weh: «Me duele la rodilla»." },
+    { id: "bp_tobillo",  es: "el tobillo",   de: "Knöchel",      x: 60,   y: 91,   tip: "el to-BI-yo",
+      note: "Umgeknickt? «Me torcí el tobillo» = ich habe mir den Knöchel verstaucht." },
+    { id: "bp_pie",      es: "el pie",       de: "Fuß",          x: 62,   y: 95.5, tip: "el pie",
+      note: "Zu Fuß = «a pie». Mehrzahl «los pies». «Me duelen los pies» nach dem Stadtbummel." },
+  ];
+
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, BODY_PARTS };
 })();

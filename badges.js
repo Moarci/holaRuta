@@ -43,6 +43,7 @@
     { id: "context",  label: "Reise-Kontext", icon: "🧭" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
     { id: "quiz",     label: "Definiciones", icon: "🧩" },
+    { id: "cuerpo",   label: "El Cuerpo",   icon: "🧍" },
     { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
   ];
@@ -147,6 +148,14 @@
     { id: "challenge_5",     group: "reallife", icon: "🚪", name: "Comfort Zone Exit",   type: "counter", metric: "challengesCompleted", threshold: 5,
       description: "Hake 5 Real-Life Challenges ab.", unlockedText: "Raus aus der App, rein ins echte Sprechen." },
 
+    // ---------- El Cuerpo (interaktive Körperkarte) ----------
+    { id: "cuerpo_first", group: "cuerpo", icon: "👆", name: "Primer toque",   type: "counter", metric: "bodyPartsExplored", threshold: 1,
+      description: "Tippe dein erstes Körperteil an.", unlockedText: "Du erkundest den Körper jetzt auf Spanisch." },
+    { id: "cuerpo_10",    group: "cuerpo", icon: "🦴", name: "Anatomista",     type: "counter", metric: "bodyPartsExplored", threshold: 10,
+      description: "Erkunde 10 verschiedene Körperteile.", unlockedText: "Halber Körper sitzt – beim Arzt zeigst du jetzt mit Worten." },
+    { id: "cuerpo_all",   group: "cuerpo", icon: "🧍", name: "Cuerpo completo", type: "counter", metric: "bodyPartsExplored", threshold: 20,
+      description: "Erkunde alle Körperteile auf der Karte.", unlockedText: "Von «la cabeza» bis «los pies» – alles erkundet." },
+
     // ---------- Spezial ----------
     { id: "night_owl",  group: "special", icon: "🌙", name: "Midnight Español",         type: "flag", metric: "nightOwl", secret: true,
       description: "Lerne nach 22 Uhr.",        unlockedText: "Noch schnell ein bisschen Spanisch vor dem Schlafen." },
@@ -207,6 +216,8 @@
       quizzesPerfect: c.quizzesPerfect || 0,
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
+      // El Cuerpo: distinkt angetippte Körperteile (für die 🧍-Badges).
+      bodyPartsExplored: c.bodyPartsSeen ? Object.keys(c.bodyPartsSeen).length : 0,
       categoryMastery,
       categoryTotals: catTotal,
     };
