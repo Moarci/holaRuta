@@ -345,6 +345,30 @@
     render();
   }
 
+  // Hostel Mode: Ergebnis eines beendeten Battles in die Spiel-Zähler buchen.
+  function recordBattleResult(b) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.battlesPlayed = (g.battlesPlayed || 0) + 1;
+    if (b.scores.A !== b.scores.B) g.battlesWon = (g.battlesWon || 0) + 1; // klarer Sieger
+    // "Perfekt": ein Spieler holte in ALLEN seinen Runden die volle Punktzahl (2).
+    const turnsA = Math.ceil(b.totalRounds / 2), turnsB = Math.floor(b.totalRounds / 2);
+    if (b.scores.A === turnsA * 2 || (turnsB > 0 && b.scores.B === turnsB * 2)) {
+      g.perfectBattles = (g.perfectBattles || 0) + 1;
+    }
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
+  // Hostel Mode: ein distinktes gespieltes Rollenspiel vermerken (Mehrfach-Öffnen
+  // derselben Szene zählt nur einmal).
+  function recordRoleplaySeen(id) {
+    if (!badges || (gamestats.roleplaysSeen && gamestats.roleplaysSeen[id])) return;
+    const seen = Object.assign({}, gamestats.roleplaysSeen, { [id]: true });
+    gamestats = Object.assign({}, gamestats, { roleplaysSeen: seen });
+    store.saveGameStats(gamestats);
+  }
+
   // ----- Hostel Mode: View-Modelle -----
   const battleById = (id) => data.BATTLES.find((b) => b.id === id) || null;
   const roleplayById = (id) => data.ROLEPLAYS.find((r) => r.id === id) || null;
@@ -612,17 +636,20 @@
 
   // ----- Hostel Mode (Anwenden zu zweit) -----
   function openHostel() {
+    dismissBadgeToast();
     state.screen = "hostel";
     render();
   }
 
   function openBattleSetup() {
+    dismissBadgeToast();
     state.screen = "battleSetup";
     render();
   }
 
   // Battle starten: Aufgaben der Szene (oder alle) mischen, max. 10 Runden.
   function startBattle(sceneId) {
+    dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     const queue = shuffle(pool).map((b) => b.id);
     if (!queue.length) return;
@@ -660,6 +687,8 @@
       const list = data.CHALLENGES || [];
       b.challenge = list.length ? list[Math.floor(Math.random() * list.length)] : null;
       state.screen = "battleDone";
+      recordBattleResult(b);
+      syncBadges(Date.now(), true); // Battle-Badges freischalten + einblenden
     } else {
       b.round += 1;
       b.current = b.current === "A" ? "B" : "A";
@@ -669,20 +698,25 @@
   }
 
   function battleAgain() {
+    dismissBadgeToast();
     state.battle = null;
     state.screen = "battleSetup";
     render();
   }
 
   function openRoleplaySetup() {
+    dismissBadgeToast();
     state.screen = "roleplaySetup";
     render();
   }
 
   function startRoleplay(id) {
     if (!roleplayById(id)) return;
+    dismissBadgeToast();
     state.roleplayId = id;
     state.roleplaySwapped = false;
+    recordRoleplaySeen(id);
+    syncBadges(Date.now(), true); // Rollenspiel-Badges freischalten + einblenden
     state.screen = "roleplay";
     render();
   }
