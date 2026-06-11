@@ -62,14 +62,17 @@
     { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
   ];
 
+  // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
+  // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
+  // ist ehrlicher und für Screenreader genauso klar (Seiten-Navigation).
   function tabbar(tab) {
     const t = (id, icon, label) =>
-      `<button class="tab ${tab === id ? "is-active" : ""}" role="tab" aria-selected="${tab === id}"
+      `<button class="tab ${tab === id ? "is-active" : ""}"${tab === id ? ' aria-current="page"' : ""}
                data-action="set-tab" data-tab="${id}">
          <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
        </button>`;
     return `
-      <nav class="tabbar" role="tablist" aria-label="Bereiche">
+      <nav class="tabbar" aria-label="Bereiche">
         ${t("lernen", "🎒", "Lernen")}${t("entdecken", "🧭", "Entdecken")}${t("profil", "👤", "Profil")}
       </nav>`;
   }
@@ -88,8 +91,9 @@
     const tiles = vm.categories
       .map((c) => {
         const badge = c.due > 0 ? `<span class="tile__due">${c.due} fällig</span>` : `<span class="tile__due tile__due--ok">✓ erledigt</span>`;
-        // Stufen-Aufschlüsselung: aktive Stufe farbig, inaktive ausgegraut.
-        const breakdown = c.byLevel
+        // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
+        // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
+        const breakdown = vm.allLevels ? "" : c.byLevel
           .map((b) =>
             `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
           .join("");
@@ -99,7 +103,7 @@
             <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
             <span class="tile__label">${esc(c.label)}</span>
             <span class="tile__meta">${c.total} Karten · ${badge}</span>
-            <span class="tile__levels">${breakdown}</span>
+            ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
           </button>`;
       })
       .join("");
@@ -159,16 +163,18 @@
       <div class="today">
         ${streakChip}
         <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
-          ${vm.totalDue > 0
-            ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
-            : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
+          ${vm.totalDue === 0
+            ? `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`
+            : vm.totalDue > vm.sessionCap
+              ? `Lernrunde starten <span class="cta__count">${vm.sessionCap} von ${vm.totalDue}</span>`
+              : `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`}
         </button>
         ${resume}
       </div>
 
       <div class="setup">
         <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
-          <span class="setup__cap">⚙️ Lernen</span>
+          <span class="setup__cap">⚙️ Einstellungen</span>
           <span class="setup__summary">${setupSummary}</span>
           <span class="setup__chev" aria-hidden="true">›</span>
         </button>

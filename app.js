@@ -13,6 +13,10 @@
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
+  // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
+  // Sonst startet ein Neueinsteiger mit "561 fällig" in eine erschlagende
+  // Pflicht-Session – der Rest bleibt fällig und kommt in der nächsten Runde.
+  const SESSION_CAP = 20;
 
   // ----- Zustand (eine einzige Quelle der Wahrheit) -----
   let progress = store.loadProgress();
@@ -145,6 +149,7 @@
       levels,
       categories: sortedCategories,
       totalDue: dueIn(all).length,
+      sessionCap: SESSION_CAP,
       totalCards: all.length,
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
@@ -797,7 +802,8 @@
     dismissBadgeToast();
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
-    const chosen = due.length ? due : cards; // nichts fällig? -> freies Üben
+    // Nichts fällig? -> freies Üben. In beiden Fällen auf eine Runde gedeckelt.
+    const chosen = (due.length ? due : cards).slice(0, SESSION_CAP);
     // Letzte Kategorie merken (für "Weiter mit …" auf der Startseite).
     if (scopeId !== "all" && settings.lastScope !== scopeId) {
       settings = Object.assign({}, settings, { lastScope: scopeId });

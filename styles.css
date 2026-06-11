@@ -73,6 +73,7 @@
 [data-theme="dark"] .fmtrow { background: rgba(251, 243, 228, 0.05); }
 [data-theme="dark"] .progress,
 [data-theme="dark"] .dist__bar,
+[data-theme="dark"] .today__bar,
 [data-theme="dark"] .brk__track { background: rgba(251, 243, 228, 0.08); }
 [data-theme="dark"] .srate--none { background: rgba(251, 243, 228, 0.07); }
 [data-theme="dark"] .cinfo-sect--food { background: #2A1D14; }
