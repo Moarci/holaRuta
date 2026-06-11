@@ -63,7 +63,9 @@
     return lines;
   }
 
-  // Mehrzeiligen, zentrierten Text zeichnen. Verkleinert die Schrift, bis er passt.
+  // Mehrzeiligen, zentrierten Text zeichnen. Verkleinert die Schrift, bis er
+  // sowohl in die Breite (maxW) ALS AUCH in die Höhe (maxH) passt – so kann der
+  // Text nie über sein Budget hinauslaufen und nachfolgende Elemente überlappen.
   // Gibt die untere Y-Kante zurück (für Folgeelemente).
   function fitText(ctx, text, cx, top, maxW, opts) {
     const o = opts || {};
@@ -72,14 +74,18 @@
     const weight = o.weight || "700";
     const lh = o.lineHeight || 1.18;
     const maxLines = o.maxLines || 4;
-    let lines;
-    while (px >= min) {
+    const maxH = o.maxH || Infinity;
+    let lines = wrap(ctx, text, maxW);
+    while (px > min) {
       ctx.font = font(weight, px);
       lines = wrap(ctx, text, maxW);
-      if (lines.length <= maxLines) break;
+      const blockH = px + (lines.length - 1) * px * lh; // Höhe des Textblocks
+      if (lines.length <= maxLines && blockH <= maxH) break;
       px -= 4;
     }
+    if (px < min) px = min;
     ctx.font = font(weight, px);
+    lines = wrap(ctx, text, maxW);
     ctx.fillStyle = o.color || INK;
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
@@ -135,7 +141,8 @@
     bgGradient(ctx, accent[0], accent[1], h);
 
     // Mittiges weißes Karten-Panel; Höhe je Format, vertikal zentriert.
-    const panelH = aspect === "story" ? 860 : 560;
+    const isStory = aspect === "story";
+    const panelH = isStory ? 920 : 640;
     const panelY = Math.round((h - panelH) / 2);
     const px = PAD, pw = W - PAD * 2;
     const innerW = pw - 112;
@@ -162,37 +169,51 @@
     ctx.fill();
     ctx.restore();
 
-    // Deutsch (Frage)
+    // Inhaltsbereich mit Innenrand. Feste Zonen verhindern Überlappungen:
+    //   [ DEUTSCH-Label + Frage ] · Trenner · [ ESPAÑOL-Label + Antwort + Tipp ]
+    const contentTop = panelY + 56;
+    const contentBottom = panelY + panelH - 56;
+    const contentH = contentBottom - contentTop;
+    const dividerY = Math.round(contentTop + contentH * 0.42);
+    const gap = 24;
+    const tipH = payload.tip ? (isStory ? 120 : 96) : 0;
+
+    // Deutsch (Frage) – obere Zone, begrenzt durch den Trenner.
     ctx.fillStyle = MUTE;
     ctx.textAlign = "center";
     ctx.font = font("600", 30);
-    ctx.fillText("DEUTSCH", cx, panelY + 84);
-    const deBottom = fitText(ctx, payload.de, cx, panelY + 102, innerW, {
+    ctx.fillText("DEUTSCH", cx, contentTop + 30);
+    const deTop = contentTop + 50;
+    fitText(ctx, payload.de, cx, deTop, innerW, {
       px: 58, min: 32, weight: "600", color: INK, maxLines: 2,
+      maxH: dividerY - gap - deTop,
     });
 
-    // Trenner – etwa in Panel-Mitte, aber nie über dem deutschen Text
-    const midY = Math.max(deBottom + 50, panelY + panelH * 0.44);
+    // Trenner – feste Position in der Panel-Mitte.
     ctx.strokeStyle = "rgba(15,23,42,0.10)";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(cx - 70, midY);
-    ctx.lineTo(cx + 70, midY);
+    ctx.moveTo(cx - 70, dividerY);
+    ctx.lineTo(cx + 70, dividerY);
     ctx.stroke();
 
-    // Spanisch (Antwort) – hervorgehoben in Akzentfarbe
+    // Spanisch (Antwort) – hervorgehoben; Höhe so begrenzt, dass darunter
+    // immer Platz für den Aussprache-Tipp bleibt (kein Überlappen mehr).
     ctx.fillStyle = accent[0];
     ctx.font = font("600", 30);
-    ctx.fillText("ESPAÑOL", cx, midY + 64);
-    const esBottom = fitText(ctx, payload.es, cx, midY + 82, innerW, {
+    ctx.fillText("ESPAÑOL", cx, dividerY + 56);
+    const esTop = dividerY + 76;
+    const esBottom = fitText(ctx, payload.es, cx, esTop, innerW, {
       px: 88, min: 38, weight: "800", color: accent[0], maxLines: 2,
+      maxH: contentBottom - tipH - gap - esTop,
     });
 
-    // Aussprache-Tipp
+    // Aussprache-Tipp – dicht unter der Antwort, aber innerhalb des Panels.
     if (payload.tip) {
-      ctx.fillStyle = MUTE;
-      fitText(ctx, "🗣️ " + payload.tip, cx, Math.min(esBottom + 26, panelY + panelH - 72), innerW, {
+      const tipTop = Math.min(esBottom + gap, contentBottom - tipH);
+      fitText(ctx, "🗣️ " + payload.tip, cx, tipTop, innerW, {
         px: 34, min: 24, weight: "500", color: MUTE, maxLines: 2,
+        maxH: contentBottom - tipTop,
       });
     }
 
