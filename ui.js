@@ -733,6 +733,9 @@
         <div class="hm-solution" role="status" aria-live="polite">
           <span class="hm-solution__cap">Musterlösung</span>
           <div class="hm-solution__es" lang="es">${esc(vm.answerEs)}</div>
+          ${vm.alsoOk && vm.alsoOk.length
+            ? `<div class="hm-solution__also">auch ok: ${vm.alsoOk.map((a) => `<span lang="es">${esc(a)}</span>`).join(", ")}</div>`
+            : ""}
         </div>
         <div class="hm-verdict">
           <p class="hm-verdict__cap">Spieler ${vm.current === "A" ? "B" : "A"} bewertet:</p>

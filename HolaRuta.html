@@ -871,6 +871,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hm-solution__cap { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
 .hm-solution__es { margin-top: 4px; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; color: var(--brand-ink); }
+.hm-solution__also { margin-top: 8px; font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+.hm-solution__also span { color: var(--ink-soft); font-weight: 600; }
 .hm-verdict { width: 100%; display: flex; flex-direction: column; gap: 8px; }
 .hm-verdict__cap { margin: 0; text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
 
@@ -6046,6 +6048,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="hm-solution" role="status" aria-live="polite">
           <span class="hm-solution__cap">Musterlösung</span>
           <div class="hm-solution__es" lang="es">${esc(vm.answerEs)}</div>
+          ${vm.alsoOk && vm.alsoOk.length
+            ? `<div class="hm-solution__also">auch ok: ${vm.alsoOk.map((a) => `<span lang="es">${esc(a)}</span>`).join(", ")}</div>`
+            : ""}
         </div>
         <div class="hm-verdict">
           <p class="hm-verdict__cap">Spieler ${vm.current === "A" ? "B" : "A"} bewertet:</p>
@@ -6460,6 +6465,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const b = state.battle;
     const prompt = battleById(b.queue[b.round - 1]);
     const scene = data.BATTLE_SCENES.find((s) => s.id === b.sceneId);
+    // Weitere gültige Antworten (ohne die schon angezeigte Musterlösung) als Hilfe
+    // für den bewertenden Mitspieler – damit faire Phrasing-Varianten zählen.
+    const alsoOk = prompt
+      ? prompt.acceptable.filter((a) => matcher.normalize(a) !== matcher.normalize(prompt.answerEs))
+      : [];
     return {
       sceneLabel: b.sceneId === "all" ? "Alle Szenen" : (scene ? scene.label : ""),
       sceneIcon: b.sceneId === "all" ? "🎲" : (scene ? scene.icon : "🛏️"),
@@ -6470,6 +6480,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       revealed: b.revealed,
       promptDe: prompt ? prompt.promptDe : "",
       answerEs: prompt ? prompt.answerEs : "",
+      alsoOk,
       hint: prompt ? prompt.hint : "",
     };
   }
@@ -6493,7 +6504,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       scenes: data.ROLEPLAYS.map((r) => {
         const lvl = levelById(r.level);
         return { id: r.id, title: r.title, roleA: r.roles.a, roleB: r.roles.b,
-          lvlShort: lvl ? lvl.short : "", situationDe: r.situationDe };
+          lvlShort: lvl ? lvl.short : "" };
       }),
     };
   }
@@ -6550,7 +6561,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const flipEl = document.getElementById("flip");
       if (flipEl) { try { flipEl.focus({ preventScroll: true }); } catch (e) { flipEl.focus(); } return; }
     }
-    const target = root.querySelector("h2, [data-action='card-back'], [data-action='home']") || root.firstElementChild;
+    const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
       if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
       try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); }
@@ -6698,11 +6709,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     const queue = shuffle(pool).map((b) => b.id);
     if (!queue.length) return;
+    // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
+    const cap = Math.min(10, queue.length);
+    const rounds = cap - (cap % 2) || cap; // bei nur 1 Aufgabe bleibt 1 Runde
     state.battle = {
       sceneId,
       queue,
       round: 1,
-      totalRounds: Math.min(10, queue.length),
+      totalRounds: rounds,
       current: "A",
       scores: { A: 0, B: 0 },
       revealed: false,

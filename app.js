@@ -265,6 +265,11 @@
     const b = state.battle;
     const prompt = battleById(b.queue[b.round - 1]);
     const scene = data.BATTLE_SCENES.find((s) => s.id === b.sceneId);
+    // Weitere gültige Antworten (ohne die schon angezeigte Musterlösung) als Hilfe
+    // für den bewertenden Mitspieler – damit faire Phrasing-Varianten zählen.
+    const alsoOk = prompt
+      ? prompt.acceptable.filter((a) => matcher.normalize(a) !== matcher.normalize(prompt.answerEs))
+      : [];
     return {
       sceneLabel: b.sceneId === "all" ? "Alle Szenen" : (scene ? scene.label : ""),
       sceneIcon: b.sceneId === "all" ? "🎲" : (scene ? scene.icon : "🛏️"),
@@ -275,6 +280,7 @@
       revealed: b.revealed,
       promptDe: prompt ? prompt.promptDe : "",
       answerEs: prompt ? prompt.answerEs : "",
+      alsoOk,
       hint: prompt ? prompt.hint : "",
     };
   }
@@ -298,7 +304,7 @@
       scenes: data.ROLEPLAYS.map((r) => {
         const lvl = levelById(r.level);
         return { id: r.id, title: r.title, roleA: r.roles.a, roleB: r.roles.b,
-          lvlShort: lvl ? lvl.short : "", situationDe: r.situationDe };
+          lvlShort: lvl ? lvl.short : "" };
       }),
     };
   }
@@ -355,7 +361,7 @@
       const flipEl = document.getElementById("flip");
       if (flipEl) { try { flipEl.focus({ preventScroll: true }); } catch (e) { flipEl.focus(); } return; }
     }
-    const target = root.querySelector("h2, [data-action='card-back'], [data-action='home']") || root.firstElementChild;
+    const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
       if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
       try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); }
@@ -503,11 +509,14 @@
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     const queue = shuffle(pool).map((b) => b.id);
     if (!queue.length) return;
+    // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
+    const cap = Math.min(10, queue.length);
+    const rounds = cap - (cap % 2) || cap; // bei nur 1 Aufgabe bleibt 1 Runde
     state.battle = {
       sceneId,
       queue,
       round: 1,
-      totalRounds: Math.min(10, queue.length),
+      totalRounds: rounds,
       current: "A",
       scores: { A: 0, B: 0 },
       revealed: false,

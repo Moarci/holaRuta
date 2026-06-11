@@ -830,6 +830,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hm-solution__cap { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
 .hm-solution__es { margin-top: 4px; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; color: var(--brand-ink); }
+.hm-solution__also { margin-top: 8px; font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+.hm-solution__also span { color: var(--ink-soft); font-weight: 600; }
 .hm-verdict { width: 100%; display: flex; flex-direction: column; gap: 8px; }
 .hm-verdict__cap { margin: 0; text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
 
