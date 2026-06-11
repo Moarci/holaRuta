@@ -41,6 +41,7 @@
     { id: "grenze",  label: "Behörden",   icon: "🛂", grad: ["#566B8A", "#6E86A3"] },
     { id: "reise",   label: "Busreise",   icon: "🚐", grad: ["#B5503F", "#CE6855"] },
     { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
+    { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -606,6 +607,51 @@
     { id: "kj35", cat: "ropa", lvl: 3, de: "Kann ich das anprobieren?", es: "¿Puedo probármelo?", tip: "PUE-do pro-BAR-me-lo" },
     { id: "kj36", cat: "ropa", lvl: 3, de: "Haben Sie das in einer anderen Größe?", es: "¿Lo tiene en otra talla?", tip: "en O-tra TA-ya" },
     { id: "kj37", cat: "ropa", lvl: 3, de: "Es ist zu groß / zu klein", es: "Es demasiado grande / pequeño", tip: "de-ma-si-A-do GRAN-de" },
+
+    // ===================== WEGBESCHREIBUNG (Richtungen & Anweisungen) =====================
+    // -- Richtungs- und Ortswörter --
+    { id: "dir01", cat: "rumbo", lvl: 1, de: "rechts", es: "la derecha", tip: "la de-RE-cha" },
+    { id: "dir02", cat: "rumbo", lvl: 1, de: "links", es: "la izquierda", tip: "la is-ki-ER-da" },
+    { id: "dir03", cat: "rumbo", lvl: 1, de: "geradeaus", es: "derecho / recto", tip: "de-RE-cho – in LatAm meist 'derecho'", alt: ["derecho", "recto", "todo derecho", "todo recto"] },
+    { id: "dir04", cat: "rumbo", lvl: 1, de: "die Ecke", es: "la esquina", tip: "la es-KI-na" },
+    { id: "dir05", cat: "rumbo", lvl: 1, de: "der Häuserblock", es: "la cuadra", tip: "la KUA-dra (LatAm; in Spanien: manzana)" },
+    { id: "dir06", cat: "rumbo", lvl: 1, de: "die Straße", es: "la calle", tip: "la KA-ye" },
+    { id: "dir07", cat: "rumbo", lvl: 2, de: "die Hauptstraße / Allee", es: "la avenida", tip: "la a-we-NI-da (oft abgekürzt: Av.)" },
+    { id: "dir08", cat: "rumbo", lvl: 1, de: "nah / in der Nähe", es: "cerca", tip: "SER-ka" },
+    { id: "dir09", cat: "rumbo", lvl: 1, de: "weit weg", es: "lejos", tip: "LE-hos" },
+    { id: "dir10", cat: "rumbo", lvl: 1, de: "hier", es: "aquí / acá", tip: "a-KI – 'acá' ist in LatAm sehr verbreitet", alt: ["aquí", "acá"] },
+    { id: "dir11", cat: "rumbo", lvl: 1, de: "dort", es: "allí / allá", tip: "a-YI – 'allá' ist in LatAm üblich", alt: ["allí", "allá"] },
+    { id: "dir12", cat: "rumbo", lvl: 2, de: "gegenüber (von)", es: "enfrente de", tip: "en-FREN-te de" },
+    { id: "dir13", cat: "rumbo", lvl: 2, de: "neben / an der Seite (von)", es: "al lado de", tip: "al LA-do de" },
+    { id: "dir14", cat: "rumbo", lvl: 2, de: "hinter", es: "detrás de", tip: "de-TRAS de" },
+    { id: "dir15", cat: "rumbo", lvl: 2, de: "zwischen", es: "entre", tip: "EN-tre" },
+    { id: "dir16", cat: "rumbo", lvl: 2, de: "die Adresse", es: "la dirección", tip: "la di-rek-si-ON" },
+    { id: "dir17", cat: "rumbo", lvl: 1, de: "die Karte (Landkarte)", es: "el mapa", tip: "el MA-pa (maskulin!)" },
+
+    // -- Nach dem Weg fragen --
+    { id: "dir18", cat: "rumbo", lvl: 2, de: "Wo ist die Schule?", es: "¿Dónde está la escuela?", tip: "DON-de es-TA la es-KUE-la" },
+    { id: "dir19", cat: "rumbo", lvl: 2, de: "Wo liegt das Hostel?", es: "¿Dónde queda el hostal?", tip: "DON-de KE-da – 'quedar' = sich befinden (LatAm)" },
+    { id: "dir20", cat: "rumbo", lvl: 2, de: "Wie komme ich ins Zentrum?", es: "¿Cómo llego al centro?", tip: "KO-mo YE-go al SEN-tro" },
+    { id: "dir21", cat: "rumbo", lvl: 3, de: "Können Sie mir sagen, wie ich hinkomme?", es: "¿Puede decirme cómo llegar?", tip: "PUE-de de-SIR-me KO-mo ye-GAR" },
+    { id: "dir22", cat: "rumbo", lvl: 2, de: "Wo gibt es einen Geldautomaten?", es: "¿Dónde hay un cajero?", tip: "DON-de ai un ka-HE-ro" },
+    { id: "dir23", cat: "rumbo", lvl: 2, de: "Ist es weit oder nah?", es: "¿Está lejos o cerca?", tip: "es-TA LE-hos o SER-ka" },
+    { id: "dir24", cat: "rumbo", lvl: 3, de: "Wie viele Blocks ist es entfernt?", es: "¿A cuántas cuadras está?", tip: "a KUAN-tas KUA-dras es-TA" },
+    { id: "dir25", cat: "rumbo", lvl: 2, de: "Wie lautet die Adresse?", es: "¿Cuál es la dirección?", tip: "kual es la di-rek-si-ON" },
+    { id: "dir26", cat: "rumbo", lvl: 3, de: "Zeigen Sie es mir auf der Karte?", es: "¿Me lo muestra en el mapa?", tip: "me lo MUES-tra en el MA-pa" },
+    { id: "dir27", cat: "rumbo", lvl: 2, de: "Gibt es hier in der Nähe eine Bank?", es: "¿Hay un banco por aquí?", tip: "ai un BAN-ko por a-KI" },
+
+    // -- Anweisungen geben (den Weg beschreiben) --
+    { id: "dir28", cat: "rumbo", lvl: 2, de: "Biege rechts ab", es: "Dobla a la derecha", tip: "DO-bla a la de-RE-cha" },
+    { id: "dir29", cat: "rumbo", lvl: 2, de: "Biege links ab", es: "Dobla a la izquierda", tip: "DO-bla a la is-ki-ER-da" },
+    { id: "dir30", cat: "rumbo", lvl: 2, de: "Geh geradeaus", es: "Sigue derecho", tip: "SI-ge de-RE-cho", alt: ["sigue derecho", "sigue recto", "sigue todo derecho"] },
+    { id: "dir31", cat: "rumbo", lvl: 2, de: "Überquere die Straße", es: "Cruza la calle", tip: "KRU-sa la KA-ye" },
+    { id: "dir32", cat: "rumbo", lvl: 2, de: "Geh zwei Blocks", es: "Camina dos cuadras", tip: "ka-MI-na dos KUA-dras" },
+    { id: "dir33", cat: "rumbo", lvl: 3, de: "Nimm die erste Straße", es: "Toma la primera calle", tip: "TO-ma la pri-ME-ra KA-ye" },
+    { id: "dir34", cat: "rumbo", lvl: 2, de: "Es ist an der Ecke", es: "Está en la esquina", tip: "es-TA en la es-KI-na" },
+    { id: "dir35", cat: "rumbo", lvl: 3, de: "Es ist neben dem Markt", es: "Está al lado del mercado", tip: "al LA-do del mer-KA-do" },
+    { id: "dir36", cat: "rumbo", lvl: 3, de: "Es ist gegenüber der Kirche", es: "Está enfrente de la iglesia", tip: "en-FREN-te de la i-GLE-sia" },
+    { id: "dir37", cat: "rumbo", lvl: 3, de: "Es ist zwischen der Bank und der Apotheke", es: "Está entre el banco y la farmacia", tip: "EN-tre el BAN-ko i la far-MA-sia" },
+    { id: "dir38", cat: "rumbo", lvl: 2, de: "Es ist zwei Blocks von hier", es: "Queda a dos cuadras de aquí", tip: "KE-da a dos KUA-dras de a-KI" },
   ];
 
   /*

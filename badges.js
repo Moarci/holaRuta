@@ -68,6 +68,7 @@
     { category: "grenze",  icon: "🛂", name: "Grenzgänger",         description: "Meistere 80 % der Behörden-Karten." },
     { category: "reise",   icon: "🚐", name: "Roadtrip-Ready",      description: "Meistere 80 % der Busreise-Karten." },
     { category: "ropa",    icon: "👕", name: "Style auf Ruta",      description: "Meistere 80 % der Kleidungsschmuck-Karten." },
+    { category: "rumbo",   icon: "🧭", name: "Wegfinder",           description: "Meistere 80 % der Wegbeschreibung-Karten." },
   ].map((b) => Object.assign({
     id: "cat_" + b.category,
     group: "category",
