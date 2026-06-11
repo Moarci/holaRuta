@@ -40,6 +40,7 @@
     { id: "frases",  label: "Sätze",      icon: "🙋", grad: ["#A85A6E", "#C2748A"] },
     { id: "grenze",  label: "Behörden",   icon: "🛂", grad: ["#566B8A", "#6E86A3"] },
     { id: "reise",   label: "Busreise",   icon: "🚐", grad: ["#B5503F", "#CE6855"] },
+    { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -562,6 +563,48 @@
     { id: "r18", cat: "reise", lvl: 1, de: "das Sammeltaxi / der Minibus", es: "la combi / el colectivo", tip: "KOM-bi / ko-lek-TI-wo" },
     { id: "r19", cat: "reise", lvl: 2, de: "Halten Sie an der Ecke", es: "Pare en la esquina", tip: "es-KI-na" },
     { id: "r20", cat: "reise", lvl: 3, de: "Ich habe meinen Bus verpasst", es: "Perdí mi bus", tip: "per-DI mi bus" },
+
+    // ===================== KLEIDUNG & SCHMUCK =====================
+    // -- Kleidung --
+    { id: "kj01", cat: "ropa", lvl: 1, de: "die Kleidung", es: "la ropa", tip: "la RO-pa" },
+    { id: "kj02", cat: "ropa", lvl: 1, de: "das T-Shirt", es: "la camiseta / la playera", tip: "ka-mi-SE-ta / pla-YE-ra" },
+    { id: "kj03", cat: "ropa", lvl: 1, de: "das Hemd", es: "la camisa", tip: "la ka-MI-sa" },
+    { id: "kj04", cat: "ropa", lvl: 1, de: "die Hose", es: "el pantalón", tip: "el pan-ta-LON" },
+    { id: "kj05", cat: "ropa", lvl: 2, de: "die Jeans", es: "los jeans / el pantalón de mezclilla", tip: "los yins" },
+    { id: "kj06", cat: "ropa", lvl: 2, de: "die kurze Hose", es: "los pantalones cortos / el short", tip: "pan-ta-LO-nes KOR-tos" },
+    { id: "kj07", cat: "ropa", lvl: 2, de: "der Rock", es: "la falda", tip: "la FAL-da" },
+    { id: "kj08", cat: "ropa", lvl: 1, de: "das Kleid", es: "el vestido", tip: "el wes-TI-do" },
+    { id: "kj09", cat: "ropa", lvl: 2, de: "die Jacke", es: "la chaqueta / la chamarra", tip: "cha-KE-ta / cha-MA-rra" },
+    { id: "kj10", cat: "ropa", lvl: 2, de: "der Pullover", es: "el suéter", tip: "el SUE-ter" },
+    { id: "kj11", cat: "ropa", lvl: 2, de: "der Mantel", es: "el abrigo", tip: "el a-BRI-go" },
+    { id: "kj12", cat: "ropa", lvl: 2, de: "die Socken", es: "los calcetines", tip: "kal-se-TI-nes" },
+    { id: "kj13", cat: "ropa", lvl: 2, de: "die Unterwäsche", es: "la ropa interior", tip: "RO-pa in-te-ri-OR" },
+    { id: "kj14", cat: "ropa", lvl: 1, de: "die Schuhe", es: "los zapatos", tip: "los sa-PA-tos" },
+    { id: "kj15", cat: "ropa", lvl: 2, de: "die Sandalen", es: "las sandalias", tip: "san-DA-li-as" },
+    { id: "kj16", cat: "ropa", lvl: 2, de: "die Flip-Flops", es: "las chanclas", tip: "las CHAN-klas" },
+    { id: "kj17", cat: "ropa", lvl: 1, de: "der Hut", es: "el sombrero", tip: "el som-BRE-ro" },
+    { id: "kj18", cat: "ropa", lvl: 2, de: "die Mütze", es: "el gorro", tip: "el GO-rro" },
+    { id: "kj19", cat: "ropa", lvl: 2, de: "die Sonnenbrille", es: "las gafas de sol / los lentes de sol", tip: "GA-fas de sol" },
+    { id: "kj20", cat: "ropa", lvl: 2, de: "der Gürtel", es: "el cinturón", tip: "el sin-tu-RON" },
+    { id: "kj21", cat: "ropa", lvl: 3, de: "der Schal", es: "la bufanda", tip: "la bu-FAN-da" },
+    { id: "kj22", cat: "ropa", lvl: 3, de: "die Handschuhe", es: "los guantes", tip: "los GUAN-tes" },
+    { id: "kj23", cat: "ropa", lvl: 2, de: "der Badeanzug / die Badehose", es: "el traje de baño", tip: "TRA-che de BA-nyo" },
+    // -- Schmuck --
+    { id: "kj24", cat: "ropa", lvl: 1, de: "der Schmuck", es: "las joyas / la bisutería", tip: "las CHO-yas" },
+    { id: "kj25", cat: "ropa", lvl: 1, de: "die Ohrringe", es: "los aretes / los pendientes", tip: "a-RE-tes / pen-di-EN-tes" },
+    { id: "kj26", cat: "ropa", lvl: 1, de: "die Halskette", es: "el collar", tip: "el ko-YAR" },
+    { id: "kj27", cat: "ropa", lvl: 2, de: "die Kette", es: "la cadena", tip: "la ka-DE-na" },
+    { id: "kj28", cat: "ropa", lvl: 2, de: "das Armband", es: "la pulsera", tip: "la pul-SE-ra" },
+    { id: "kj29", cat: "ropa", lvl: 1, de: "der Ring", es: "el anillo", tip: "el a-NI-yo" },
+    { id: "kj30", cat: "ropa", lvl: 2, de: "die Fußkette", es: "la tobillera", tip: "la to-bi-YE-ra" },
+    { id: "kj31", cat: "ropa", lvl: 2, de: "die Uhr", es: "el reloj", tip: "el re-LOCH" },
+    { id: "kj32", cat: "ropa", lvl: 3, de: "die Brosche", es: "el broche", tip: "el BRO-che" },
+    { id: "kj33", cat: "ropa", lvl: 3, de: "aus Silber / aus Gold", es: "de plata / de oro", tip: "de PLA-ta / de O-ro" },
+    // -- Beim Einkaufen --
+    { id: "kj34", cat: "ropa", lvl: 2, de: "die Größe", es: "la talla", tip: "la TA-ya" },
+    { id: "kj35", cat: "ropa", lvl: 3, de: "Kann ich das anprobieren?", es: "¿Puedo probármelo?", tip: "PUE-do pro-BAR-me-lo" },
+    { id: "kj36", cat: "ropa", lvl: 3, de: "Haben Sie das in einer anderen Größe?", es: "¿Lo tiene en otra talla?", tip: "en O-tra TA-ya" },
+    { id: "kj37", cat: "ropa", lvl: 3, de: "Es ist zu groß / zu klein", es: "Es demasiado grande / pequeño", tip: "de-ma-si-A-do GRAN-de" },
   ];
 
   /*
