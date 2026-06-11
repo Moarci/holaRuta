@@ -359,6 +359,19 @@ body {
 }
 .navrow__chev { flex: none; color: var(--muted); font-size: 1.2rem; font-weight: 700; }
 
+/* „Auf den Startbildschirm"-Hinweis: dezent abgesetzte Karte unter den Zeilen.
+   Erscheint nur, wenn eine Installation möglich und die App noch nicht installiert
+   ist (siehe install.js). */
+.installcard {
+  display: flex; flex-direction: column; gap: 10px;
+  background: color-mix(in srgb, var(--brand) 8%, var(--card));
+  border: 1.5px dashed color-mix(in srgb, var(--brand) 38%, var(--line));
+  border-radius: var(--r-md); padding: 16px;
+}
+.installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
+.installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
+.installcard__btn { align-self: flex-start; }
+
 /* ---------- EIGENE KARTEN (EDITOR) ---------- */
 .editor {
   display: flex; flex-direction: column; gap: 14px;
