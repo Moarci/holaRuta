@@ -394,21 +394,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .face__tip { margin-top: 14px; font-size: 1.05rem; font-style: italic; color: rgba(251, 243, 228, 0.88); }
 .face__hint { position: absolute; bottom: 16px; font-size: 0.82rem; color: var(--faint); }
 
-/* 🔊 Sprachausgabe-Button (auf der Antwortkarte, unten rechts) */
-.speak {
-  position: absolute; bottom: 16px; right: 16px; z-index: 2;
+/* Runde Eck-Buttons auf der Antwortkarte: 🔊 (rechts) & 🧭 (links) teilen eine Basis. */
+.cardbtn {
+  position: absolute; bottom: 16px; z-index: 2;
   width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
   display: grid; place-items: center; font-size: 1.1rem; line-height: 1;
   border: 1.5px solid var(--line-strong); background: var(--card); color: var(--ink);
   box-shadow: var(--shadow);
-  transition: transform 0.1s ease;
+  transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
 }
-.speak:active { transform: scale(0.92); }
-/* Variante auf der farbigen Rückseite */
-.speak--on {
+.cardbtn:active { transform: scale(0.92); }
+.cardbtn--speak { right: 16px; }   /* 🔊 Sprachausgabe */
+.cardbtn--ctx   { left: 16px; }    /* 🧭 Reise-Kontext */
+/* Variante auf der farbigen Antwort-Rückseite */
+.cardbtn.is-on {
   border-color: rgba(251, 243, 228, 0.55); color: var(--cream);
   background: rgba(36, 21, 16, 0.22);
 }
+/* 🧭 aktiv (Panel offen) */
+.cardbtn--ctx.is-open { background: var(--brand); border-color: var(--brand); color: var(--cream); }
+.cardbtn--ctx.is-on.is-open { background: rgba(36, 21, 16, 0.42); border-color: var(--cream); }
 
 /* Statische Karte (Schreiben-Modus) */
 .card-static {
@@ -421,6 +426,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 @keyframes pop { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
 .card-static.is-ok { border-color: rgba(63, 115, 85, 0.45); background: rgba(63, 115, 85, 0.07); }
 .card-static.is-no { border-color: rgba(181, 48, 42, 0.4); background: rgba(181, 48, 42, 0.06); }
+/* Ergebnis-Karte trägt unten 🧭 (links) und 🔊 (rechts) – Inhalt nach oben rücken,
+   damit ein langer Verdict-Text nicht in die Eck-Buttons läuft. */
+.card-static.is-ok, .card-static.is-no { padding-bottom: 66px; }
 .card-static .face__word { font-family: var(--font-display); font-weight: 800; }
 .verdict { margin-top: 14px; font-weight: 700; font-size: 0.98rem; }
 .verdict--ok { color: var(--ok); }
@@ -510,6 +518,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-size: 0.92rem; font-weight: 700; box-shadow: var(--shadow);
 }
 .ghostbtn:active { transform: translateY(1px); }
+
+/* 🧭 Reise-Kontext: aufklappbarer Block unter der Antwort. Fühlt sich an wie eine
+ * kleine handgeschriebene Reise-Notiz statt wie Grammatikunterricht. */
+.context { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+.contextbtn { align-self: center; }
+.context-panel {
+  width: 100%; text-align: left;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  padding: 14px 16px; box-shadow: var(--shadow); animation: pop 0.2s ease;
+}
+.context-panel[hidden] { display: none; }
+.context-panel__title {
+  margin: 0 0 10px; font-family: var(--font-display);
+  font-size: 1.02rem; font-weight: 800; color: var(--ink);
+}
+.context-panel__line { margin: 0 0 12px; }
+.context-panel__es {
+  margin: 0 0 4px; font-weight: 800; font-size: 1.06rem; line-height: 1.35; color: var(--brand-ink);
+}
+.context-panel__de { margin: 0; color: var(--ink-soft); line-height: 1.4; }
+.context-panel__block { margin-top: 10px; }
+.context-panel__label {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--muted);
+}
+.context-panel__text { margin: 3px 0 0; color: var(--ink-soft); line-height: 1.45; font-size: 0.92rem; }
+/* In der Kartendetail-Ansicht sitzt der Block in der Karte – etwas Abstand nach oben. */
+.cardx .context { margin-top: 14px; }
 
 /* Gefahr-Button */
 .dangerbtn {

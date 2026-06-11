@@ -3,13 +3,17 @@
  *
  * Kategorie: { id, label, icon, grad:[from,to] }  – grad = Farbverlauf der Kachel
  * Stufe:     { id, label, short, color }           – Schwierigkeitsstufe (1–3)
- * Karte:     { id, cat, lvl, de, es, tip?, alt? }
+ * Karte:     { id, cat, lvl, de, es, tip?, alt?, context? }
  *   cat = Kategorie-id
  *   lvl = Schwierigkeitsstufe: 1 = Einsteiger, 2 = Mittel, 3 = Fortgeschritten
  *   de  = Frage (Deutsch bzw. Ziffer)
  *   es  = Antwort (Anzeige). Mehrere gültige Antworten mit " / " trennen.
  *   tip = Aussprache-/Merkhinweis (optional)
  *   alt = explizite Liste akzeptierter Tipp-Antworten (optional, überschreibt es-Split)
+ *   context = Reise-Kontext (optional): { sentenceEs, sentenceDe, situation, note }
+ *             Wird NICHT hier gepflegt, sondern von context.js zur Laufzeit angehängt
+ *             (Inhalte aus contextdata.js; Zahlen werden generiert). So bleibt data.js
+ *             reine Daten ohne Logik.
  *
  * Neue Karten: einfach ans passende Array anhängen (lvl nicht vergessen).
  * Neue Kategorie: oben ergänzen. Filtern nach Stufe: über card.lvl.
@@ -149,7 +153,7 @@
     { id: "z25000", cat: "zahlen", lvl: 3, de: "25.000", es: "veinticinco mil", tip: "wein-ti-SIN-ko mil" },
     { id: "z50000", cat: "zahlen", lvl: 2, de: "50.000", es: "cincuenta mil", tip: "sin-KUEN-ta mil" },
     { id: "z75000", cat: "zahlen", lvl: 3, de: "75.000", es: "setenta y cinco mil", tip: "se-TEN-ta i SIN-ko mil" },
-    { id: "z85000", cat: "zahlen", lvl: 3, de: "85.500", es: "ochenta y cinco mil quinientos", tip: "Tausender + Hunderter" },
+    { id: "z85000", cat: "zahlen", lvl: 3, de: "85.000", es: "ochenta y cinco mil", tip: "o-CHEN-ta i SIN-ko mil" },
     { id: "z100000", cat: "zahlen", lvl: 2, de: "100.000", es: "cien mil", tip: "si-EN mil (nicht 'ciento mil')" },
     { id: "z120000", cat: "zahlen", lvl: 3, de: "120.000", es: "ciento veinte mil", tip: "ab 101.000: 'ciento ... mil'" },
     { id: "z150000", cat: "zahlen", lvl: 3, de: "150.000", es: "ciento cincuenta mil", tip: "SI-en-to sin-KUEN-ta mil" },

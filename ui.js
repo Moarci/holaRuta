@@ -168,13 +168,68 @@
     return `<span class="${cls}"${style} title="${esc(vm.level.label)}">${esc(vm.level.short)} · ${esc(vm.level.label)}</span>`;
   }
 
+  // Runder Eck-Button auf der Karte (44px). Gemeinsame Basis für 🔊 (rechts) und
+  // 🧭 (links), damit Markup/Stil nicht doppelt gepflegt werden. base = Modifier-
+  // Klasse (cardbtn--speak | cardbtn--ctx), on = farbige Variante für die Rückseite,
+  // extra = zusätzliche Attribute (z.B. aria-expanded/-controls), icon/label/action.
+  function cornerBtn({ base, on, icon, label, action, extra = "" }) {
+    const cls = `cardbtn ${base}${on ? " is-on" : ""}`;
+    return `<button class="${cls}" type="button" data-action="${action}"
+              aria-label="${esc(label)}" title="${esc(label)}"${extra ? " " + extra : ""}>${icon}</button>`;
+  }
+
   // 🔊-Button für die Sprachausgabe (nur wenn der Browser es kann).
   // on = farbige Variante (für die bunte Rückseite).
   function speakBtn(on) {
     const sp = window.SC && window.SC.speech;
     if (!sp || !sp.isSupported()) return "";
-    const cls = on ? "speak speak--on" : "speak";
-    return `<button class="${cls}" type="button" data-action="speak" aria-label="Antwort anhören" title="Anhören">🔊</button>`;
+    return cornerBtn({ base: "cardbtn--speak", on, icon: "🔊", label: "Antwort anhören", action: "speak" });
+  }
+
+  // Reise-Kontext-Panel: aufklappbarer Inhalt mit echtem Reisesatz, Situation und
+  // kurzem Reisetipp. open spiegelt state.contextOpen (Single Source of Truth) –
+  // der Controller hält DOM und Zustand in-place synchron (kein Re-Render nötig).
+  function contextPanel(ctx, open) {
+    if (!ctx) return "";
+    const line = (es, de) => {
+      const e = es ? `<p class="context-panel__es" lang="es">${esc(es)}</p>` : "";
+      const d = de ? `<p class="context-panel__de">${esc(de)}</p>` : "";
+      return e || d ? `<div class="context-panel__line">${e}${d}</div>` : "";
+    };
+    const meta = (label, text) => text
+      ? `<div class="context-panel__block"><div class="context-panel__label">${esc(label)}</div><p class="context-panel__text">${esc(text)}</p></div>`
+      : "";
+    return `
+      <div class="context-panel" id="context-panel"${open ? "" : " hidden"}>
+        <h3 class="context-panel__title">🧭 So nutzt du es unterwegs</h3>
+        ${line(ctx.sentenceEs, ctx.sentenceDe)}
+        ${meta("Situation", ctx.situation)}
+        ${meta("Reisetipp", ctx.note)}
+      </div>`;
+  }
+
+  // Runder 🧭-Icon-Button auf der Lernkarte (unten links) – Pendant zum 🔊 (unten
+  // rechts). on = farbige Variante für die bunte Antwort-Rückseite; open = Panel offen.
+  function contextIconBtn(ctx, on, open) {
+    if (!ctx) return "";
+    return cornerBtn({
+      base: "cardbtn--ctx" + (open ? " is-open" : ""), on, icon: "🧭",
+      label: "Reise-Kontext anzeigen", action: "toggle-context",
+      extra: `aria-expanded="${!!open}" aria-controls="context-panel"`,
+    });
+  }
+
+  // Detail-Variante (Karten-Detailseite): sichtbar beschrifteter Button + Panel im
+  // Textfluss, da hier kein 🔊 zum Spiegeln und mehr Platz vorhanden ist.
+  function contextBlock(ctx, open) {
+    if (!ctx) return "";
+    const label = open ? "🧭 Kontext ausblenden" : "🧭 Kontext";
+    return `
+      <div class="context">
+        <button class="ghostbtn contextbtn${open ? " is-open" : ""}" type="button" data-action="toggle-context"
+                data-ctx-text="1" aria-expanded="${!!open}" aria-controls="context-panel">${label}</button>
+        ${contextPanel(ctx, open)}
+      </div>`;
   }
 
   // Sprechen-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
@@ -197,6 +252,7 @@
           <div class="face face--back">
             <span class="face__cat">${esc(vm.catLabel)}</span>
             ${levelBadge(vm, true)}
+            ${contextIconBtn(vm.context, true, vm.contextOpen)}
             ${sq ? "" : speakBtn(true)}
             <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
             ${sq ? "" : tip}
@@ -204,6 +260,7 @@
         </div>
       </div>
       <div class="controls" id="controls" ${vm.revealed ? "" : "hidden"}>
+        ${contextPanel(vm.context, vm.contextOpen)}
         ${rateButtons()}
       </div>`;
   }
@@ -241,12 +298,16 @@
       <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
         <span class="face__cat">${esc(vm.catLabel)}</span>
         ${levelBadge(vm, false)}
+        ${contextIconBtn(vm.context, false, vm.contextOpen)}
         ${sq ? "" : speakBtn(false)}
         <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
         ${sq ? "" : tip}
         ${verdict}
       </div>
-      <div class="controls" id="controls">${rateButtons()}</div>`;
+      <div class="controls" id="controls">
+        ${contextPanel(vm.context, vm.contextOpen)}
+        ${rateButtons()}
+      </div>`;
   }
 
   function rateButtons() {
@@ -557,6 +618,7 @@
           <div class="cardx__es" lang="es">${esc(vm.es)}</div>
           ${tip}
           <div class="cardx__tags">${firstTryBadge}</div>
+          ${contextBlock(vm.context, vm.contextOpen)}
         </div>
 
         ${facts}

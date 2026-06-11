@@ -40,6 +40,7 @@
     { id: "learning", label: "Lernreise",   icon: "🧭" },
     { id: "streak",   label: "Dranbleiben", icon: "🔥" },
     { id: "category", label: "Bereiche",    icon: "🗂️" },
+    { id: "context",  label: "Reise-Kontext", icon: "🧭" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
     { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
@@ -105,6 +106,14 @@
 
     // ---------- Bereiche (Kategorie-Meisterschaft) ----------
     ...CATEGORY_BADGES,
+
+    // ---------- Reise-Kontext (🧭 Kontext-Button) ----------
+    { id: "context_first", group: "context", icon: "💡", name: "Erster Aha-Moment", type: "counter", metric: "contextCardsViewed", threshold: 1,
+      description: "Öffne deinen ersten Reise-Kontext.",   unlockedText: "Du siehst, wie ein Satz unterwegs wirklich verwendet wird." },
+    { id: "context_10",    group: "context", icon: "🧭", name: "Kontext-Kompass",   type: "counter", metric: "contextCardsViewed", threshold: 10,
+      description: "Sieh dir den Kontext von 10 Karten an.", unlockedText: "Du lernst nicht nur Wörter, sondern echte Reisesituationen." },
+    { id: "context_25",    group: "context", icon: "🌎", name: "Real-Life Ready",   type: "counter", metric: "contextCardsViewed", threshold: 25,
+      description: "Sieh dir den Kontext von 25 Karten an.", unlockedText: "Du verstehst immer besser, wie Spanisch unterwegs klingt." },
 
     // ---------- Hostel Mode (Üben zu zweit) ----------
     { id: "battle_first",   group: "hostel", icon: "⚔️", name: "First Duel",        type: "counter", metric: "battlesPlayed", threshold: 1,
@@ -183,6 +192,8 @@
       comebacks: c.comebacks || 0,
       roleplaysCompleted: c.roleplaysSeen ? Object.keys(c.roleplaysSeen).length : 0,
       challengesCompleted: c.challengesDone ? Object.keys(c.challengesDone).length : 0,
+      // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
+      contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       categoryMastery,
       categoryTotals: catTotal,
     };

@@ -15,7 +15,9 @@ const path = require("path");
 // window-Shim: die Module referenzieren `window`, das hier auf globalThis.window zeigt.
 globalThis.window = {};
 const SRC = path.join(__dirname, "..");
+require(path.join(SRC, "contextdata.js")); // Kontext-Inhalte (vor data.js/context.js)
 require(path.join(SRC, "data.js"));
+require(path.join(SRC, "context.js"));     // hängt den Kontext an die Karten (nach data.js)
 require(path.join(SRC, "srs.js"));
 require(path.join(SRC, "matcher.js"));
 require(path.join(SRC, "stats.js"));
@@ -314,6 +316,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
+    contextCardsSeen: { hostel01: true },
     unlocked: { first_steps: 1700000000000 },
   };
   storeMem[GKEY] = JSON.stringify(valid);
@@ -362,6 +365,70 @@ test("data.CHALLENGES: textDe und phraseEs gesetzt", () => {
   data.CHALLENGES.forEach((c) => {
     assert.ok(c.textDe && c.phraseEs, `Challenge unvollständig: ${c.id}`);
   });
+});
+
+// ---------- Reise-Kontext (🧭) ----------
+test("data.CARDS: ALLE Karten haben vollständigen Kontext", () => {
+  const without = data.CARDS.filter((c) => !c.context);
+  assert.equal(without.length, 0, `ohne Kontext: ${without.map((c) => c.id).join(", ")}`);
+  data.CARDS.forEach((c) => {
+    const ctx = c.context;
+    assert.ok(ctx.sentenceEs && ctx.sentenceDe, `Beispielsatz fehlt: ${c.id}`);
+    assert.ok(ctx.situation, `situation fehlt: ${c.id}`);
+    assert.ok(ctx.note, `note (Reisetipp) fehlt: ${c.id}`);
+  });
+});
+
+test("data.CARDS: Kontext-Beispielsätze haben ausgeglichene ¿? und ¡!", () => {
+  data.CARDS.forEach((c) => {
+    const e = c.context.sentenceEs;
+    const cnt = (re) => (e.match(re) || []).length;
+    assert.equal(cnt(/¿/g), cnt(/\?/g), `¿?-Mismatch: ${c.id} (${e})`);
+    assert.equal(cnt(/¡/g), cnt(/!/g), `¡!-Mismatch: ${c.id} (${e})`);
+  });
+});
+
+test("data.numberContext: reine Zahlen-Karten bekommen praktischen Preis-Kontext", () => {
+  const z = data.CARDS.find((c) => c.id === "z58");
+  assert.match(z.context.sentenceEs, /pesos/);
+  assert.match(z.context.sentenceDe, /Pesos/);
+});
+
+test("data.numberContext: spanische Grammatik korrekt (un peso / un / de pesos)", () => {
+  const es = (id) => data.CARDS.find((c) => c.id === id).context.sentenceEs;
+  // genau 1: Singular "un peso", kein "uno pesos"
+  assert.equal(es("z01"), "Es un peso.");
+  // Apokope vor dem Nomen: veintiún / ...un, nie "uno pesos"
+  assert.equal(es("z21"), "Son veintiún pesos.");
+  assert.equal(es("z31"), "Son treinta y un pesos.");
+  assert.equal(es("z101"), "Son ciento un pesos.");
+  data.CARDS.forEach((c) => {
+    if (/^z\d+$/.test(c.id)) assert.doesNotMatch(c.context.sentenceEs, /uno pesos/, `falsches "uno pesos": ${c.id}`);
+  });
+  // "de pesos" nur bei reinem Millionenbetrag, nicht mit Tausender-Rest
+  assert.equal(es("z1000000"), "Son un millón de pesos.");
+  assert.equal(es("z2000000"), "Son dos millones de pesos.");
+  assert.equal(es("z1500000"), "Son un millón quinientos mil pesos.");
+  assert.equal(es("z3500000"), "Son tres millones quinientos mil pesos.");
+  // 0 ergibt keinen erfundenen Preis
+  assert.doesNotMatch(es("z00"), /cero pesos\.$/);
+});
+
+test("badges.buildMetrics: zählt distinkte Kontext-Karten", () => {
+  const counters = { contextCardsSeen: { hostel01: true, social01: true } };
+  const m = badges.buildMetrics(data.CARDS, {}, counters);
+  assert.equal(m.contextCardsViewed, 2);
+});
+
+test("badges.evaluate: Kontext-Badge schaltet bei Schwelle frei", () => {
+  const seen = {};
+  for (let i = 0; i < 10; i++) seen["c" + i] = true; // 10 distinkte Kontexte
+  const m = badges.buildMetrics(data.CARDS, {}, { contextCardsSeen: seen });
+  const list = badges.evaluate(m, {});
+  const byId = (id) => list.find((b) => b.id === id);
+  assert.equal(byId("context_first").unlocked, true);
+  assert.equal(byId("context_10").unlocked, true);
+  assert.equal(byId("context_25").unlocked, false);
 });
 
 // ---------- badges: Hostel Mode ----------
