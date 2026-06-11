@@ -37,6 +37,7 @@
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     // ----- Hostel Mode (transient, keine Persistenz) -----
     battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
+    battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
@@ -425,12 +426,20 @@
   }
 
   // Szenen-Auswahl: "Alle" + je Szene mit Anzahl verfügbarer Aufgaben.
+  // Wählbare Battle-Längen (Runden). Werte gerade halten, damit A/B gleich oft drankommen.
+  const BATTLE_LENGTHS = [
+    { value: 6, label: "Kurz" },
+    { value: 10, label: "Mittel" },
+    { value: 20, label: "Lang" },
+  ];
+
   function battleSetupVM() {
     const scenes = data.BATTLE_SCENES
       .map((s) => ({ id: s.id, label: s.label, icon: s.icon,
         count: data.BATTLES.filter((b) => b.scene === s.id).length }))
       .filter((s) => s.count > 0);
-    return { scenes, totalCount: data.BATTLES.length };
+    const lengths = BATTLE_LENGTHS.map((l) => ({ ...l, selected: l.value === state.battleLength }));
+    return { scenes, totalCount: data.BATTLES.length, lengths };
   }
 
   function battleVM() {
@@ -864,14 +873,20 @@
     render();
   }
 
-  // Battle starten: Aufgaben der Szene (oder alle) mischen, max. 10 Runden.
+  // Vor dem Start gewählte Battle-Länge merken (nur Umschalten, kein Start).
+  function setBattleLength(value) {
+    state.battleLength = value;
+    render();
+  }
+
+  // Battle starten: Aufgaben der Szene (oder alle) mischen, begrenzt auf die gewählte Länge.
   function startBattle(sceneId) {
     dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     const queue = shuffle(pool).map((b) => b.id);
     if (!queue.length) return;
     // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
-    const cap = Math.min(10, queue.length);
+    const cap = Math.min(state.battleLength, queue.length);
     const rounds = cap - (cap % 2) || cap; // bei nur 1 Aufgabe bleibt 1 Runde
     state.battle = {
       sceneId,
@@ -1181,6 +1196,7 @@
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
     else if (action === "open-battle-setup") openBattleSetup();
+    else if (action === "set-battle-length") setBattleLength(Number(el.dataset.len));
     else if (action === "start-battle") startBattle(el.dataset.scene);
     else if (action === "battle-reveal") battleReveal();
     else if (action === "battle-score") battleScore(Number(el.dataset.points));
