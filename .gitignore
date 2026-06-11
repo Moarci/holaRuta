@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build / temp artifacts
+tmp_*.js
+tmp_*.json
+.playwright-mcp/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Local Claude settings (keep shared config, ignore local overrides)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Stray screenshots
+info-accordion.png
