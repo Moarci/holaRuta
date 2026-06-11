@@ -275,6 +275,96 @@ body {
 /* Hero-Aktionen (mehrere Icon-Buttons rechts oben) */
 .hero__actions { display: flex; gap: 8px; flex-shrink: 0; }
 
+/* ---------- STARTSEITE: "Heute"-Karte (Streak, Fortschritt, Haupt-CTA) ---------- */
+.today {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); padding: 16px; box-shadow: var(--shadow-lg);
+}
+.today__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.today__streak {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; font-weight: 800; color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--warn) 40%, transparent);
+  padding: 5px 12px; border-radius: 999px;
+}
+.today__streak--new {
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 12%, transparent);
+  border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+}
+.today__mastery { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.today__bar { height: 8px; background: rgba(45, 27, 18, 0.1); border-radius: 999px; overflow: hidden; }
+.today__barfill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--ok), var(--easy));
+  transition: width 0.3s ease;
+}
+.today__resume {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink-soft);
+  cursor: pointer; padding: 12px 14px; border-radius: var(--r-md);
+  font-size: 0.92rem; font-weight: 700; box-shadow: var(--shadow);
+}
+.today__resume:active { transform: translateY(1px); }
+.today__resumecount {
+  background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--brand-ink);
+  border-radius: 999px; padding: 2px 9px; font-size: 0.78rem; font-weight: 800;
+}
+
+/* Einklappbares Einstellungs-Panel (Modus/Richtung/Stufen) */
+.setup {
+  border: 1.5px solid var(--line); border-radius: var(--r-md);
+  background: var(--card); box-shadow: var(--shadow); overflow: hidden;
+}
+.setup__head {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px;
+  border: none; background: transparent; cursor: pointer; padding: 12px 14px; text-align: left;
+  color: inherit; font-family: inherit;
+}
+.setup__cap {
+  flex: none; font-size: 0.78rem; font-weight: 800;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft);
+}
+.setup__summary {
+  flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-align: right; font-size: 0.82rem; font-weight: 700; color: var(--muted);
+}
+.setup__chev { flex: none; font-size: 1.2rem; font-weight: 700; color: var(--muted); transition: transform 0.18s ease; }
+.setup__head[aria-expanded="true"] .setup__chev { transform: rotate(90deg); }
+.setup__body { display: flex; flex-direction: column; gap: 14px; padding: 2px 14px 16px; animation: pop 0.2s ease; }
+
+/* Abschnitts-Überschriften der Startseite ("Entdecken", "Themen") */
+.sectioncap {
+  margin: 4px 0 -8px; padding-left: 4px;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* "Entdecken": horizontale Wisch-Reihe kompakter Einstiegs-Karten.
+ * Negative Ränder lassen die Reihe bis an den Rand der App-Spalte laufen,
+ * damit die angeschnittene Folgekarte zum Wischen einlädt. */
+.explore {
+  display: flex; gap: 10px; overflow-x: auto;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  margin: 0 -20px; padding: 4px 20px 8px;
+  scrollbar-width: none;
+}
+.explore::-webkit-scrollbar { display: none; }
+.explore__card {
+  flex: 0 0 auto; width: 128px; scroll-snap-align: start; cursor: pointer;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  border: none; border-radius: var(--r-tile); padding: 12px;
+  background: linear-gradient(135deg, var(--from), var(--to));
+  color: var(--cream); text-align: left; box-shadow: var(--shadow);
+  transition: transform 0.12s ease;
+}
+.explore__card:active { transform: scale(0.97); }
+.explore__icon { font-size: 1.55rem; line-height: 1.2; }
+.explore__title { font-family: var(--font-display); font-weight: 800; font-size: 0.9rem; line-height: 1.15; }
+.explore__sub { font-size: 0.7rem; opacity: 0.92; line-height: 1.25; }
+
 /* ---------- EIGENE KARTEN (EDITOR) ---------- */
 .editor {
   display: flex; flex-direction: column; gap: 14px;
@@ -550,7 +640,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Hero mit Statistik-Knopf */
 .hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .hero__text { min-width: 0; }
-.hero__stats { flex: none; font-size: 1.25rem; }
 
 /* Dezenter Sekundär-Button */
 .ghostbtn {
@@ -930,21 +1019,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  * HOSTEL MODE – Battle & Rollenspiele (Anwenden zu zweit)
  * ==================================================================== */
 
-/* Einstieg auf der Startseite (zwischen CTA und Kacheln). */
-.hostelmode {
-  display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;
-  text-align: left; padding: 14px 16px; border-radius: var(--r-md);
-  background: linear-gradient(135deg, #C25A45, #8E4FA8);
-  border: none; color: var(--cream); box-shadow: var(--shadow);
-  transition: transform 0.12s ease;
-}
-.hostelmode:active { transform: translateY(1px); }
-.hostelmode__icon { font-size: 1.7rem; line-height: 1; flex: none; }
-.hostelmode__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
-.hostelmode__title { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; }
-.hostelmode__sub { font-size: 0.82rem; opacity: 0.92; }
-.hostelmode__chev { font-size: 1.4rem; font-weight: 700; flex: none; opacity: 0.85; }
-
 /* Gemeinsame Bausteine. */
 .hm-intro { margin: 0; color: var(--ink-soft); line-height: 1.5; font-size: 0.95rem; }
 .hm-length { display: flex; flex-direction: column; gap: 8px; }
@@ -1125,9 +1199,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    Nutzt die Spiel-Bausteine (.hm-scene, .cta, .done) und ergänzt nur das
    Frage-/Optionen-Layout. Farbtöne kommen aus den Theme-Tokens (Dark-Mode-fest).
    ========================================================================== */
-.hostelmode--quiz { background: linear-gradient(135deg, #3F7355, #2F6B70); }
-.hostelmode--cuerpo { background: linear-gradient(135deg, #2E6E86, #7D4A8E); }
-
 /* ==========================================================================
    EL CUERPO – interaktive Körperkarte. Eine stilisierte SVG-Figur mit
    absolut positionierten Hotspot-Punkten (Prozent-Koordinaten der Figur).
@@ -7421,6 +7492,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // ---------- HOME ----------
+  // "Entdecken"-Reihe: sechs gleichrangige Einstiege in die Extras als kompakte
+  // Karten in einer horizontalen Wisch-Reihe (statt drei großer Buttons plus
+  // schwer auffindbarer Icon-Knöpfe im Hero).
+  const EXPLORE = [
+    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben",      grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones",  sub: "Begriffe zuordnen",  grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",     sub: "Körper entdecken",   grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",       icon: "🌎", title: "Länderkunde",   sub: "Land & Leute",       grad: ["#B97C24", "#C2502E"] },
+    { action: "open-editor",     icon: "✍️", title: "Eigene Karten", sub: "Selbst ergänzen",    grad: ["#7D4A8E", "#B5302A"] },
+    { action: "open-stats",      icon: "📊", title: "Statistik",     sub: "Dein Fortschritt",   grad: ["#2F6B70", "#3F7355"] },
+  ];
+
   function renderHome(vm) {
     const tiles = vm.categories
       .map((c) => {
@@ -7453,6 +7536,49 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
          </button>`),
     ].join("");
 
+    // "Heute"-Karte: Streak-Chip, Fortschrittsbalken, Haupt-CTA und Quick-Resume.
+    const streakChip = vm.streak > 0
+      ? `<span class="today__streak">🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} Serie</span>`
+      : `<span class="today__streak today__streak--new">🌱 Starte deine Serie</span>`;
+    const resume = vm.lastCat
+      ? `<button class="today__resume" data-action="resume-last">
+           ↩ Weiter mit ${esc(vm.lastCat.icon)} ${esc(vm.lastCat.label)}
+           <span class="today__resumecount">${vm.lastCat.due} fällig</span>
+         </button>`
+      : "";
+
+    // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
+    // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
+    const lvlSummary = vm.allLevels
+      ? "Alle Stufen"
+      : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
+    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🗣️ Sprechen"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const setupBody = `
+      <div class="setup__body" id="setup-body">
+        <div class="switchgroup">
+          <span class="switchcap">Modus</span>
+          <div class="segmented" role="tablist" aria-label="Lernmodus">
+            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🗣️ Sprechen</button>
+            <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
+          </div>
+        </div>
+        <div class="switchgroup">
+          <span class="switchcap">Richtung</span>
+          <div class="segmented" role="tablist" aria-label="Lernrichtung">
+            <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">🇩🇪 → 🇪🇸 Deutsch</button>
+            <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → 🇩🇪 Español</button>
+          </div>
+        </div>
+        <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
+      </div>`;
+
+    const explore = EXPLORE.map((x) => `
+      <button class="explore__card" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
+        <span class="explore__icon" aria-hidden="true">${x.icon}</span>
+        <span class="explore__title">${esc(x.title)}</span>
+        <span class="explore__sub">${esc(x.sub)}</span>
+      </button>`).join("");
+
     return `
       <section class="screen">
         <div class="hero">
@@ -7462,64 +7588,39 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </div>
           <div class="hero__actions">
             ${themeToggle(vm.theme)}
-            <button class="iconbtn" data-action="open-info" aria-label="Länderkunde" title="Länderkunde">🌎</button>
-            <button class="iconbtn" data-action="open-editor" aria-label="Eigene Karten" title="Eigene Karten">✍️</button>
             <button class="iconbtn hero__pass" data-action="open-badges" aria-label="Mein Ruta-Pass" title="Mein Ruta-Pass">🎖️${vm.badgeCount ? `<span class="hero__passnum">${vm.badgeCount}</span>` : ""}</button>
-            <button class="iconbtn hero__stats" data-action="open-stats" aria-label="Statistik" title="Statistik">📊</button>
           </div>
         </div>
 
-        <div class="switchgroup">
-          <span class="switchcap">Modus</span>
-          <div class="segmented" role="tablist" aria-label="Lernmodus">
-            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🗣️ Sprechen</button>
-            <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
+        <div class="today">
+          <div class="today__top">
+            ${streakChip}
+            <span class="today__mastery">${vm.overall.mastered} / ${vm.overall.total} gemeistert</span>
           </div>
+          <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
+            <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
+          </div>
+          <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
+            ${vm.totalDue > 0
+              ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
+              : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
+          </button>
+          ${resume}
         </div>
 
-        <div class="switchgroup">
-          <span class="switchcap">Richtung</span>
-          <div class="segmented" role="tablist" aria-label="Lernrichtung">
-            <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">🇩🇪 → 🇪🇸 Deutsch</button>
-            <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → 🇩🇪 Español</button>
-          </div>
+        <div class="setup">
+          <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
+            <span class="setup__cap">⚙️ Lernen</span>
+            <span class="setup__summary">${setupSummary}</span>
+            <span class="setup__chev" aria-hidden="true">›</span>
+          </button>
+          ${vm.setupOpen ? setupBody : ""}
         </div>
 
-        <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
+        <p class="sectioncap">Entdecken</p>
+        <div class="explore" role="group" aria-label="Entdecken">${explore}</div>
 
-        <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
-          ${vm.totalDue > 0
-            ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
-            : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
-        </button>
-
-        <button class="hostelmode" data-action="open-hostel">
-          <span class="hostelmode__icon" aria-hidden="true">🛏️</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">Hostel Mode</span>
-            <span class="hostelmode__sub">Zu zweit üben: Battle &amp; Rollenspiele</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
-
-        <button class="hostelmode hostelmode--quiz" data-action="open-quiz-setup">
-          <span class="hostelmode__icon" aria-hidden="true">🧩</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">Definiciones</span>
-            <span class="hostelmode__sub">Zuordnen: Definition lesen, Begriff wählen</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
-
-        <button class="hostelmode hostelmode--cuerpo" data-action="open-cuerpo">
-          <span class="hostelmode__icon" aria-hidden="true">🧍</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">El Cuerpo</span>
-            <span class="hostelmode__sub">Körperteile antippen: Wort, Aussprache &amp; Reisetipp</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
-
+        <p class="sectioncap">Themen</p>
         <div class="tiles">${tiles}</div>
 
         <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
@@ -8735,6 +8836,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       return { id: c.id, label: c.label, icon: c.icon, grad: c.grad,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
+    // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
+    // seine Originalreihenfolge – so steht das Dringende oben, ohne dass die
+    // Kacheln bei jedem Besuch wild durcheinanderwürfeln.
+    const sortedCategories = categories
+      .map((c, i) => ({ c, i }))
+      .sort((a, b) => (b.c.due - a.c.due) || (a.i - b.i))
+      .map((x) => x.c);
     const all = scopeCards("all");
     // Stufen inkl. Kartenzahl je Stufe (über alle Kategorien) + Auswahl-Status.
     // Stufen ohne Karten (z. B. B2, das nur in Rollenspielen vorkommt) im
@@ -8744,16 +8852,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       count: everyCard.filter((c) => c.lvl === l.id).length,
       active: state.levels.includes(l.id),
     })).filter((l) => l.count > 0);
+    // Gesamtfortschritt für die "Heute"-Karte – über ALLE Karten, unabhängig
+    // vom Stufenfilter, damit der Balken eine stabile Bezugsgröße hat.
+    const overall = stats.overview(everyCard, progress);
+    // Quick-Resume: zuletzt gelernte Kategorie, nur wenn dort noch etwas fällig ist.
+    let lastCat = null;
+    if (settings.lastScope) {
+      const c = categoryById(settings.lastScope);
+      const due = c ? dueIn(scopeCards(c.id)).length : 0;
+      if (c && due > 0) lastCat = { id: c.id, label: c.label, icon: c.icon, due };
+    }
     return {
       mode: state.mode,
       dir: state.dir,
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
-      categories,
+      categories: sortedCategories,
       totalDue: dueIn(all).length,
       totalCards: all.length,
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
+      streak: currentStreak(),
+      overall: {
+        mastered: overall.mastered,
+        total: overall.total,
+        pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
+      },
+      lastCat,
+      setupOpen: setupOpenDefault(),
     };
   }
 
@@ -8900,6 +9026,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const b = new Date(bKey + "T00:00:00");
     if (isNaN(a) || isNaN(b)) return null;
     return Math.round((b - a) / DAY_MS);
+  }
+
+  // Aktuelle Tage-Serie für die Startseite: zählt nur, wenn zuletzt heute oder
+  // gestern gelernt wurde – sonst ist die Serie gerissen und wird als 0 gezeigt.
+  // (gamestats.dailyStreak selbst wird erst bei der nächsten Bewertung korrigiert.)
+  function currentStreak() {
+    const last = gamestats.lastStudyDate;
+    if (!last) return 0;
+    const gap = daysBetween(last, dayKey(Date.now()));
+    return gap === 0 || gap === 1 ? (gamestats.dailyStreak || 0) : 0;
+  }
+
+  // Einstellungs-Panel der Startseite: ohne gemerkte Wahl für Neueinsteiger offen
+  // (Modus/Richtung entdecken), sonst eingeklappt – Einstellungen sind Set-once.
+  function setupOpenDefault() {
+    if (typeof settings.setupOpen === "boolean") return settings.setupOpen;
+    return Object.keys(progress).length === 0;
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -9380,6 +9523,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
     const chosen = due.length ? due : cards; // nichts fällig? -> freies Üben
+    // Letzte Kategorie merken (für "Weiter mit …" auf der Startseite).
+    if (scopeId !== "all" && settings.lastScope !== scopeId) {
+      settings = Object.assign({}, settings, { lastScope: scopeId });
+      store.saveSettings(settings);
+    }
     state.scopeId = scopeId;
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
@@ -9529,6 +9677,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       state.levels = Array.from(set).sort((a, b) => a - b);
     }
     settings = Object.assign({}, settings, { levels: state.levels });
+    store.saveSettings(settings);
+    render();
+  }
+
+  // "Weiter mit …" auf der Startseite: gemerkte letzte Kategorie fortsetzen.
+  function resumeLast() {
+    if (settings.lastScope && categoryById(settings.lastScope)) startStudy(settings.lastScope);
+  }
+
+  // Einstellungs-Panel der Startseite auf-/zuklappen und die Wahl merken.
+  function toggleSetup() {
+    settings = Object.assign({}, settings, { setupOpen: !setupOpenDefault() });
     store.saveSettings(settings);
     render();
   }
@@ -9859,6 +10019,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
+    else if (action === "resume-last") resumeLast();
+    else if (action === "toggle-setup") toggleSetup();
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);

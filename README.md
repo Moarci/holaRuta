@@ -266,7 +266,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 | Key | Inhalt |
 |---|---|
 | `spanischcard.progress.v2` | Lernfortschritt pro Karte (SRS-Zustand + Statistik-Felder) |
-| `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme) |
+| `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme, letzte Kategorie, Einstellungs-Panel auf/zu) |
 | `spanischcard.usercards.v1` | Vom Nutzer angelegte eigene Karten |
 | `spanischcard.gamestats.v1` | Ruta-Pass: Spiel-Zähler (Streak, Tageszeit-Marken, „Nochmal“, Hostel-Mode-Battles & -Rollenspiele, Definiciones-Quizze, geöffnete Reise-Kontexte) + freigeschaltete Badges |
 

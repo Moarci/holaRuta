@@ -49,6 +49,18 @@
   }
 
   // ---------- HOME ----------
+  // "Entdecken"-Reihe: sechs gleichrangige Einstiege in die Extras als kompakte
+  // Karten in einer horizontalen Wisch-Reihe (statt drei großer Buttons plus
+  // schwer auffindbarer Icon-Knöpfe im Hero).
+  const EXPLORE = [
+    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben",      grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones",  sub: "Begriffe zuordnen",  grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",     sub: "Körper entdecken",   grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",       icon: "🌎", title: "Länderkunde",   sub: "Land & Leute",       grad: ["#B97C24", "#C2502E"] },
+    { action: "open-editor",     icon: "✍️", title: "Eigene Karten", sub: "Selbst ergänzen",    grad: ["#7D4A8E", "#B5302A"] },
+    { action: "open-stats",      icon: "📊", title: "Statistik",     sub: "Dein Fortschritt",   grad: ["#2F6B70", "#3F7355"] },
+  ];
+
   function renderHome(vm) {
     const tiles = vm.categories
       .map((c) => {
@@ -81,6 +93,49 @@
          </button>`),
     ].join("");
 
+    // "Heute"-Karte: Streak-Chip, Fortschrittsbalken, Haupt-CTA und Quick-Resume.
+    const streakChip = vm.streak > 0
+      ? `<span class="today__streak">🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} Serie</span>`
+      : `<span class="today__streak today__streak--new">🌱 Starte deine Serie</span>`;
+    const resume = vm.lastCat
+      ? `<button class="today__resume" data-action="resume-last">
+           ↩ Weiter mit ${esc(vm.lastCat.icon)} ${esc(vm.lastCat.label)}
+           <span class="today__resumecount">${vm.lastCat.due} fällig</span>
+         </button>`
+      : "";
+
+    // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
+    // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
+    const lvlSummary = vm.allLevels
+      ? "Alle Stufen"
+      : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
+    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🗣️ Sprechen"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const setupBody = `
+      <div class="setup__body" id="setup-body">
+        <div class="switchgroup">
+          <span class="switchcap">Modus</span>
+          <div class="segmented" role="tablist" aria-label="Lernmodus">
+            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🗣️ Sprechen</button>
+            <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
+          </div>
+        </div>
+        <div class="switchgroup">
+          <span class="switchcap">Richtung</span>
+          <div class="segmented" role="tablist" aria-label="Lernrichtung">
+            <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">🇩🇪 → 🇪🇸 Deutsch</button>
+            <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → 🇩🇪 Español</button>
+          </div>
+        </div>
+        <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
+      </div>`;
+
+    const explore = EXPLORE.map((x) => `
+      <button class="explore__card" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
+        <span class="explore__icon" aria-hidden="true">${x.icon}</span>
+        <span class="explore__title">${esc(x.title)}</span>
+        <span class="explore__sub">${esc(x.sub)}</span>
+      </button>`).join("");
+
     return `
       <section class="screen">
         <div class="hero">
@@ -90,64 +145,39 @@
           </div>
           <div class="hero__actions">
             ${themeToggle(vm.theme)}
-            <button class="iconbtn" data-action="open-info" aria-label="Länderkunde" title="Länderkunde">🌎</button>
-            <button class="iconbtn" data-action="open-editor" aria-label="Eigene Karten" title="Eigene Karten">✍️</button>
             <button class="iconbtn hero__pass" data-action="open-badges" aria-label="Mein Ruta-Pass" title="Mein Ruta-Pass">🎖️${vm.badgeCount ? `<span class="hero__passnum">${vm.badgeCount}</span>` : ""}</button>
-            <button class="iconbtn hero__stats" data-action="open-stats" aria-label="Statistik" title="Statistik">📊</button>
           </div>
         </div>
 
-        <div class="switchgroup">
-          <span class="switchcap">Modus</span>
-          <div class="segmented" role="tablist" aria-label="Lernmodus">
-            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🗣️ Sprechen</button>
-            <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
+        <div class="today">
+          <div class="today__top">
+            ${streakChip}
+            <span class="today__mastery">${vm.overall.mastered} / ${vm.overall.total} gemeistert</span>
           </div>
+          <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
+            <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
+          </div>
+          <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
+            ${vm.totalDue > 0
+              ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
+              : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
+          </button>
+          ${resume}
         </div>
 
-        <div class="switchgroup">
-          <span class="switchcap">Richtung</span>
-          <div class="segmented" role="tablist" aria-label="Lernrichtung">
-            <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">🇩🇪 → 🇪🇸 Deutsch</button>
-            <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → 🇩🇪 Español</button>
-          </div>
+        <div class="setup">
+          <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
+            <span class="setup__cap">⚙️ Lernen</span>
+            <span class="setup__summary">${setupSummary}</span>
+            <span class="setup__chev" aria-hidden="true">›</span>
+          </button>
+          ${vm.setupOpen ? setupBody : ""}
         </div>
 
-        <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
+        <p class="sectioncap">Entdecken</p>
+        <div class="explore" role="group" aria-label="Entdecken">${explore}</div>
 
-        <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
-          ${vm.totalDue > 0
-            ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
-            : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
-        </button>
-
-        <button class="hostelmode" data-action="open-hostel">
-          <span class="hostelmode__icon" aria-hidden="true">🛏️</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">Hostel Mode</span>
-            <span class="hostelmode__sub">Zu zweit üben: Battle &amp; Rollenspiele</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
-
-        <button class="hostelmode hostelmode--quiz" data-action="open-quiz-setup">
-          <span class="hostelmode__icon" aria-hidden="true">🧩</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">Definiciones</span>
-            <span class="hostelmode__sub">Zuordnen: Definition lesen, Begriff wählen</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
-
-        <button class="hostelmode hostelmode--cuerpo" data-action="open-cuerpo">
-          <span class="hostelmode__icon" aria-hidden="true">🧍</span>
-          <span class="hostelmode__text">
-            <span class="hostelmode__title">El Cuerpo</span>
-            <span class="hostelmode__sub">Körperteile antippen: Wort, Aussprache &amp; Reisetipp</span>
-          </span>
-          <span class="hostelmode__chev" aria-hidden="true">›</span>
-        </button>
-
+        <p class="sectioncap">Themen</p>
         <div class="tiles">${tiles}</div>
 
         <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>

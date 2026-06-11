@@ -110,6 +110,13 @@
       return { id: c.id, label: c.label, icon: c.icon, grad: c.grad,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
+    // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
+    // seine Originalreihenfolge – so steht das Dringende oben, ohne dass die
+    // Kacheln bei jedem Besuch wild durcheinanderwürfeln.
+    const sortedCategories = categories
+      .map((c, i) => ({ c, i }))
+      .sort((a, b) => (b.c.due - a.c.due) || (a.i - b.i))
+      .map((x) => x.c);
     const all = scopeCards("all");
     // Stufen inkl. Kartenzahl je Stufe (über alle Kategorien) + Auswahl-Status.
     // Stufen ohne Karten (z. B. B2, das nur in Rollenspielen vorkommt) im
@@ -119,16 +126,34 @@
       count: everyCard.filter((c) => c.lvl === l.id).length,
       active: state.levels.includes(l.id),
     })).filter((l) => l.count > 0);
+    // Gesamtfortschritt für die "Heute"-Karte – über ALLE Karten, unabhängig
+    // vom Stufenfilter, damit der Balken eine stabile Bezugsgröße hat.
+    const overall = stats.overview(everyCard, progress);
+    // Quick-Resume: zuletzt gelernte Kategorie, nur wenn dort noch etwas fällig ist.
+    let lastCat = null;
+    if (settings.lastScope) {
+      const c = categoryById(settings.lastScope);
+      const due = c ? dueIn(scopeCards(c.id)).length : 0;
+      if (c && due > 0) lastCat = { id: c.id, label: c.label, icon: c.icon, due };
+    }
     return {
       mode: state.mode,
       dir: state.dir,
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
-      categories,
+      categories: sortedCategories,
       totalDue: dueIn(all).length,
       totalCards: all.length,
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
+      streak: currentStreak(),
+      overall: {
+        mastered: overall.mastered,
+        total: overall.total,
+        pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
+      },
+      lastCat,
+      setupOpen: setupOpenDefault(),
     };
   }
 
@@ -275,6 +300,23 @@
     const b = new Date(bKey + "T00:00:00");
     if (isNaN(a) || isNaN(b)) return null;
     return Math.round((b - a) / DAY_MS);
+  }
+
+  // Aktuelle Tage-Serie für die Startseite: zählt nur, wenn zuletzt heute oder
+  // gestern gelernt wurde – sonst ist die Serie gerissen und wird als 0 gezeigt.
+  // (gamestats.dailyStreak selbst wird erst bei der nächsten Bewertung korrigiert.)
+  function currentStreak() {
+    const last = gamestats.lastStudyDate;
+    if (!last) return 0;
+    const gap = daysBetween(last, dayKey(Date.now()));
+    return gap === 0 || gap === 1 ? (gamestats.dailyStreak || 0) : 0;
+  }
+
+  // Einstellungs-Panel der Startseite: ohne gemerkte Wahl für Neueinsteiger offen
+  // (Modus/Richtung entdecken), sonst eingeklappt – Einstellungen sind Set-once.
+  function setupOpenDefault() {
+    if (typeof settings.setupOpen === "boolean") return settings.setupOpen;
+    return Object.keys(progress).length === 0;
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -755,6 +797,11 @@
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
     const chosen = due.length ? due : cards; // nichts fällig? -> freies Üben
+    // Letzte Kategorie merken (für "Weiter mit …" auf der Startseite).
+    if (scopeId !== "all" && settings.lastScope !== scopeId) {
+      settings = Object.assign({}, settings, { lastScope: scopeId });
+      store.saveSettings(settings);
+    }
     state.scopeId = scopeId;
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
@@ -904,6 +951,18 @@
       state.levels = Array.from(set).sort((a, b) => a - b);
     }
     settings = Object.assign({}, settings, { levels: state.levels });
+    store.saveSettings(settings);
+    render();
+  }
+
+  // "Weiter mit …" auf der Startseite: gemerkte letzte Kategorie fortsetzen.
+  function resumeLast() {
+    if (settings.lastScope && categoryById(settings.lastScope)) startStudy(settings.lastScope);
+  }
+
+  // Einstellungs-Panel der Startseite auf-/zuklappen und die Wahl merken.
+  function toggleSetup() {
+    settings = Object.assign({}, settings, { setupOpen: !setupOpenDefault() });
     store.saveSettings(settings);
     render();
   }
@@ -1234,6 +1293,8 @@
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
+    else if (action === "resume-last") resumeLast();
+    else if (action === "toggle-setup") toggleSetup();
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
