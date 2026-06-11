@@ -786,6 +786,169 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-weight: 600; line-height: 1.5; margin-bottom: 8px;
 }
 
+/* ====================================================================
+ * HOSTEL MODE – Battle & Rollenspiele (Anwenden zu zweit)
+ * ==================================================================== */
+
+/* Einstieg auf der Startseite (zwischen CTA und Kacheln). */
+.hostelmode {
+  display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;
+  text-align: left; padding: 14px 16px; border-radius: var(--r-md);
+  background: linear-gradient(135deg, #C25A45, #8E4FA8);
+  border: none; color: var(--cream); box-shadow: var(--shadow);
+  transition: transform 0.12s ease;
+}
+.hostelmode:active { transform: translateY(1px); }
+.hostelmode__icon { font-size: 1.7rem; line-height: 1; flex: none; }
+.hostelmode__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.hostelmode__title { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; }
+.hostelmode__sub { font-size: 0.82rem; opacity: 0.92; }
+.hostelmode__chev { font-size: 1.4rem; font-weight: 700; flex: none; opacity: 0.85; }
+
+/* Gemeinsame Bausteine. */
+.hm-intro { margin: 0; color: var(--ink-soft); line-height: 1.5; font-size: 0.95rem; }
+
+/* Menü: Battle / Rollenspiele. */
+.hm-menu { display: flex; flex-direction: column; gap: 12px; }
+.hm-card {
+  display: flex; flex-direction: column; gap: 6px; cursor: pointer; text-align: left;
+  padding: 18px; border-radius: var(--r-lg); color: var(--cream);
+  border: none; box-shadow: var(--shadow); transition: transform 0.12s ease;
+}
+.hm-card:active { transform: translateY(1px); }
+.hm-card--battle { background: linear-gradient(135deg, #C25A45, #DB7A5E); }
+.hm-card--roleplay { background: linear-gradient(135deg, #8E4FA8, #A96DBE); }
+.hm-card__icon { font-size: 2rem; line-height: 1; }
+.hm-card__title { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
+.hm-card__desc { font-size: 0.9rem; line-height: 1.45; opacity: 0.94; }
+.hm-card__meta { margin-top: 4px; font-size: 0.78rem; font-weight: 700; opacity: 0.85; }
+
+/* Battle: Szenen-Auswahl. */
+.hm-scenes { display: flex; flex-direction: column; gap: 10px; }
+.hm-scene {
+  display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left; width: 100%;
+  padding: 14px 16px; border-radius: var(--r-md); background: var(--card);
+  border: 1.5px solid var(--line); border-bottom-width: 3px; box-shadow: var(--shadow);
+  color: var(--ink); transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.hm-scene:active { transform: translateY(1px); border-bottom-width: 1.5px; }
+.hm-scene__icon { font-size: 1.4rem; line-height: 1; flex: none; }
+.hm-scene__label { flex: 1 1 auto; font-weight: 700; }
+.hm-scene__count {
+  flex: none; font-size: 0.78rem; font-weight: 700; color: var(--muted);
+  background: var(--surface); border-radius: 999px; padding: 3px 9px;
+}
+
+/* Battle: laufende Runde. */
+.hm-score {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  padding: 10px 14px; box-shadow: var(--shadow);
+}
+.hm-score__p {
+  display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--ink-soft);
+  padding: 4px 10px; border-radius: 999px; transition: all 0.15s ease;
+}
+.hm-score__p b { font-family: var(--font-display); font-size: 1.2rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+.hm-score__p.is-turn { background: var(--brand); color: var(--cream); }
+.hm-score__p.is-turn b { color: var(--cream); }
+.hm-score__round { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-align: center; }
+.hm-turn { margin: 0; text-align: center; color: var(--ink-soft); font-size: 0.95rem; }
+.hm-turn b { color: var(--brand-ink); }
+.hm-prompt {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg);
+  padding: 30px 22px; text-align: center; box-shadow: var(--shadow);
+  font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; line-height: 1.25; color: var(--ink);
+}
+.hm-hint {
+  background: rgba(185, 124, 36, 0.12); border: 1.5px solid rgba(185, 124, 36, 0.35);
+  border-radius: var(--r-md); padding: 11px 14px; color: var(--brand-ink);
+  font-weight: 600; line-height: 1.45; font-size: 0.9rem; width: 100%;
+}
+.hm-solution {
+  width: 100%; text-align: center; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-md); padding: 16px;
+}
+.hm-solution__cap { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.hm-solution__es { margin-top: 4px; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; color: var(--brand-ink); }
+.hm-solution__also { margin-top: 8px; font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+.hm-solution__also span { color: var(--ink-soft); font-weight: 600; }
+.hm-verdict { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.hm-verdict__cap { margin: 0; text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+
+/* Battle: Auswertung. */
+.hm-result {
+  display: flex; align-items: center; justify-content: center; gap: 18px; margin: 6px 0;
+}
+.hm-result__p { color: var(--ink-soft); font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
+.hm-result__p b { display: block; font-family: var(--font-display); font-size: 2.2rem; font-weight: 800; color: var(--ink); }
+.hm-result__vs { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--muted); }
+.hm-winner { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--brand-ink); }
+.hm-challenge {
+  width: 100%; max-width: 320px; text-align: center; margin: 6px auto 2px;
+  background: rgba(63, 115, 85, 0.12); border: 1.5px solid rgba(63, 115, 85, 0.35);
+  border-radius: var(--r-md); padding: 14px 16px;
+}
+.hm-challenge__cap { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ok); }
+.hm-challenge__text { margin: 6px 0 4px; color: var(--ink); font-weight: 600; line-height: 1.4; }
+.hm-challenge__es { margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--ok); }
+
+/* Rollenspiele: Szenen-Liste. */
+.hm-rps { display: flex; flex-direction: column; gap: 10px; }
+.hm-rp {
+  display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left; width: 100%;
+  padding: 14px 16px; border-radius: var(--r-md); background: var(--card);
+  border: 1.5px solid var(--line); border-bottom-width: 3px; box-shadow: var(--shadow);
+  color: var(--ink); transition: transform 0.12s ease;
+}
+.hm-rp:active { transform: translateY(1px); border-bottom-width: 1.5px; }
+.hm-rp__main { display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; min-width: 0; }
+.hm-rp__title { font-weight: 700; }
+.hm-rp__roles { font-size: 0.82rem; color: var(--muted); }
+.hm-rp__lvl {
+  flex: none; font-size: 0.72rem; font-weight: 800; color: var(--muted);
+  background: var(--surface); border-radius: 999px; padding: 3px 9px;
+}
+
+/* Rollenspiel: eine Szene. */
+.hm-rphead { display: flex; flex-direction: column; gap: 6px; }
+.hm-rphead__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--ink); }
+.hm-rphead__lvl { font-size: 0.8rem; font-weight: 800; color: var(--muted); vertical-align: middle; }
+.hm-rphead__sit { margin: 0; color: var(--ink-soft); line-height: 1.5; }
+.hm-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hm-role {
+  display: flex; flex-direction: column; gap: 5px; padding: 12px 13px;
+  border-radius: var(--r-md); border: 1.5px solid var(--line); background: var(--card); box-shadow: var(--shadow);
+}
+.hm-role--a { border-left: 4px solid var(--brand); }
+.hm-role--b { border-left: 4px solid var(--easy); }
+.hm-role__tag { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+.hm-role__goal { font-size: 0.88rem; line-height: 1.4; color: var(--ink); }
+.hm-swap { align-self: center; }
+.hm-dialogue { display: flex; flex-direction: column; gap: 10px; }
+.hm-line { display: flex; gap: 10px; max-width: 92%; }
+.hm-line--a { align-self: flex-start; }
+.hm-line--b { align-self: flex-end; flex-direction: row-reverse; }
+.hm-line__who {
+  flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 0.85rem; color: var(--cream);
+}
+.hm-line--a .hm-line__who { background: var(--brand); }
+.hm-line--b .hm-line__who { background: var(--easy); }
+.hm-line__bubble {
+  display: flex; flex-direction: column; gap: 2px; padding: 10px 13px;
+  border-radius: var(--r-md); background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+}
+.hm-line--b .hm-line__bubble { text-align: right; }
+.hm-line__es { font-weight: 700; color: var(--ink); line-height: 1.35; }
+.hm-line__de { font-size: 0.82rem; color: var(--muted); line-height: 1.35; }
+.hm-phrases {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-md); padding: 14px 16px;
+}
+.hm-phrases__cap { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px; }
+.hm-phrases__list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.hm-phrases__list li { color: var(--brand-ink); font-weight: 600; line-height: 1.4; }
+
 </style>
 </head>
 <body>
@@ -841,6 +1004,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "essen",   label: "Essen",      icon: "🍽️", grad: ["#CB5A2B", "#E0743C"] },
     { id: "trinken", label: "Trinken",    icon: "🥤", grad: ["#2F6B70", "#3E8388"] },
     { id: "hotel",   label: "Hotel",      icon: "🏨", grad: ["#7D4A8E", "#9763A6"] },
+    { id: "hostel",  label: "Hostel",     icon: "🛏️", grad: ["#C25A45", "#DB7A5E"] },
+    { id: "social",  label: "Social",     icon: "🤝", grad: ["#8E4FA8", "#A96DBE"] },
     { id: "verkehr", label: "Verkehr",    icon: "🚌", grad: ["#3F7355", "#52906C"] },
     { id: "compras", label: "Einkaufen",  icon: "🛒", grad: ["#A86A2D", "#C2853F"] },
     { id: "dinero",  label: "Geld",       icon: "💵", grad: ["#5E7D3A", "#76954E"] },
@@ -1120,6 +1285,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "h23", cat: "hotel", lvl: 2, de: "Die Toilette ist verstopft", es: "El baño está tapado", tip: "ta-PA-do" },
     { id: "h24", cat: "hotel", lvl: 2, de: "Mir ist zu kalt / zu warm", es: "Tengo mucho frío / calor", tip: "FRI-o / ka-LOR" },
 
+    // ===================== HOSTEL =====================
+    { id: "hostel01", cat: "hostel", lvl: 1, de: "Ich habe eine Reservierung.", es: "Tengo una reserva.", tip: "TEN-go U-na re-SER-wa" },
+    { id: "hostel02", cat: "hostel", lvl: 1, de: "Haben Sie noch ein Bett frei?", es: "¿Tiene una cama libre?", tip: "TI-e-ne U-na KA-ma LI-bre" },
+    { id: "hostel03", cat: "hostel", lvl: 1, de: "Ist Frühstück inklusive?", es: "¿El desayuno está incluido?", tip: "el de-sa-YU-no es-TA in-klu-I-do" },
+    { id: "hostel04", cat: "hostel", lvl: 1, de: "Wo ist mein Bett?", es: "¿Dónde está mi cama?", tip: "DON-de es-TA mi KA-ma" },
+    { id: "hostel05", cat: "hostel", lvl: 2, de: "Mein Schlüssel funktioniert nicht.", es: "Mi llave no funciona.", tip: "mi YA-we no fun-si-O-na" },
+    { id: "hostel06", cat: "hostel", lvl: 2, de: "Kann ich mein Gepäck hier lassen?", es: "¿Puedo dejar mi equipaje aquí?", tip: "PUE-do de-CHAR mi e-ki-PA-che a-KI" },
+    { id: "hostel07", cat: "hostel", lvl: 2, de: "Gibt es ein Schließfach?", es: "¿Hay un locker?", tip: "ai un LO-ker" },
+    { id: "hostel08", cat: "hostel", lvl: 2, de: "Mein Bett ist belegt.", es: "Mi cama está ocupada.", tip: "mi KA-ma es-TA o-ku-PA-da" },
+    { id: "hostel09", cat: "hostel", lvl: 2, de: "Gibt es eine Küche?", es: "¿Hay cocina?", tip: "ai ko-SI-na" },
+    { id: "hostel10", cat: "hostel", lvl: 3, de: "Könnte ich das Zimmer wechseln?", es: "¿Podría cambiar de habitación?", tip: "po-DRI-a kam-bi-AR de a-bi-ta-si-ON" },
+
     // ===================== VERKEHR =====================
     { id: "v01", cat: "verkehr", lvl: 2, de: "Wo ist ...?", es: "¿Dónde está ...?", tip: "DON-de es-TA", alt: ["donde esta"] },
     { id: "v02", cat: "verkehr", lvl: 1, de: "links / rechts", es: "izquierda / derecha", tip: "is-ki-ER-da / de-RE-cha" },
@@ -1257,6 +1434,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "s23", cat: "talk", lvl: 2, de: "Alles war perfekt", es: "Todo estuvo perfecto", tip: "es-TU-wo per-FEK-to" },
     { id: "s24", cat: "talk", lvl: 3, de: "Das nächste Mal lade ich dich ein", es: "La próxima te invito yo", tip: "PROK-si-ma te in-WI-to yo" },
 
+    // ===================== SOCIAL & ANSCHLUSS =====================
+    { id: "social01", cat: "social", lvl: 1, de: "Woher kommst du?", es: "¿De dónde eres?", tip: "de DON-de E-res" },
+    { id: "social02", cat: "social", lvl: 1, de: "Reist du alleine?", es: "¿Viajas solo/a?", tip: "wi-A-chas SO-lo / SO-la", alt: ["viajas solo", "viajas sola"] },
+    { id: "social03", cat: "social", lvl: 1, de: "Wie lange bist du hier?", es: "¿Cuánto tiempo estás aquí?", tip: "KUAN-to TIEM-po es-TAS a-KI" },
+    { id: "social04", cat: "social", lvl: 1, de: "Wohin reist du danach?", es: "¿A dónde vas después?", tip: "a DON-de bas des-PUES" },
+    { id: "social05", cat: "social", lvl: 2, de: "Was machst du morgen?", es: "¿Qué haces mañana?", tip: "ke A-ses ma-NYA-na" },
+    { id: "social06", cat: "social", lvl: 2, de: "Hast du Lust, etwas essen zu gehen?", es: "¿Quieres ir a comer algo?", tip: "KIE-res ir a ko-MER AL-go" },
+    { id: "social07", cat: "social", lvl: 2, de: "Sollen wir zusammen gehen?", es: "¿Vamos juntos?", tip: "BA-mos CHUN-tos" },
+    { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes" },
+    { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp" },
+    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen.", es: "Mucho gusto.", tip: "MU-cho GUS-to" },
+
     // ===================== ALLTAG & LEBEN =====================
     { id: "a01", cat: "alltag", lvl: 3, de: "Wie sagt man ... auf Spanisch?", es: "¿Cómo se dice ... en español?", tip: "KO-mo se DI-se" },
     { id: "a02", cat: "alltag", lvl: 2, de: "Was bedeutet das?", es: "¿Qué significa?", tip: "sig-ni-FI-ka" },
@@ -1351,8 +1540,220 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "r20", cat: "reise", lvl: 3, de: "Ich habe meinen Bus verpasst", es: "Perdí mi bus", tip: "per-DI mi bus" },
   ];
 
+  /*
+   * ===== HOSTEL MODE (Anwenden zu zweit) =====
+   * Reine Daten für den Zwei-Personen-Modus. Keine Persistenz – die Spiel-Session
+   * ist transient. "Karten = lernen, Hostel Mode = sprechen".
+   */
+
+  // Battle-Szenen (Auswahl vor einer Runde). icon nur fürs UI.
+  const BATTLE_SCENES = [
+    { id: "checkin", label: "Check-in",          icon: "🛎️" },
+    { id: "dorm",    label: "Dorm & Zimmer",     icon: "🛏️" },
+    { id: "meet",    label: "Leute kennenlernen", icon: "🤝" },
+    { id: "plan",    label: "Gemeinsam planen",  icon: "🗓️" },
+    { id: "food",    label: "Essen & Trinken",   icon: "🍽️" },
+    { id: "out",     label: "Unterwegs",         icon: "🧭" },
+    { id: "problem", label: "Problem lösen",     icon: "🛠️" },
+  ];
+
+  // Battle-Aufgaben: Ansage auf Deutsch (promptDe), laut auf Spanisch antworten.
+  // answerEs = Musterlösung (Anzeige), acceptable = weitere gültige Varianten (LatAm).
+  // points = Maximalpunkte (Mitspieler bewertet manuell: 2/1/0). scene -> BATTLE_SCENES.
+  const BATTLES = [
+    // ----- Check-in -----
+    { id: "hb01", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob noch ein Bett frei ist.", answerEs: "¿Tiene una cama libre?", acceptable: ["tiene una cama libre", "hay una cama libre", "hay una cama disponible"], points: 2, hint: "Du brauchst: ¿Tiene...? oder ¿Hay...?" },
+    { id: "hb02", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Sag, dass du eine Reservierung hast.", answerEs: "Tengo una reserva.", acceptable: ["tengo una reserva", "tengo una reservacion"], points: 2, hint: "Tengo una ..." },
+    { id: "hb03", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob das Frühstück inklusive ist.", answerEs: "¿El desayuno está incluido?", acceptable: ["el desayuno esta incluido", "esta incluido el desayuno", "incluye desayuno"], points: 2, hint: "desayuno = Frühstück" },
+    { id: "hb04", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag nach dem WLAN-Passwort.", answerEs: "¿Cuál es la contraseña del wifi?", acceptable: ["cual es la contrasena del wifi", "cual es la clave del wifi"], points: 2, hint: "contraseña / clave = Passwort" },
+    { id: "hb05", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, um wie viel Uhr Check-out ist.", answerEs: "¿A qué hora es el check-out?", acceptable: ["a que hora es el check out", "a que hora es el checkout", "a que hora hay que salir"], points: 2, hint: "¿A qué hora...?" },
+
+    // ----- Dorm & Zimmer -----
+    { id: "hb06", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, wo dein Bett ist.", answerEs: "¿Dónde está mi cama?", acceptable: ["donde esta mi cama"], points: 2, hint: "¿Dónde está...?" },
+    { id: "hb07", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Sag, dass dein Bett belegt ist.", answerEs: "Mi cama está ocupada.", acceptable: ["mi cama esta ocupada", "hay alguien en mi cama"], points: 2, hint: "ocupada = belegt" },
+    { id: "hb08", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, ob es ein Schließfach gibt.", answerEs: "¿Hay un locker?", acceptable: ["hay un locker", "hay casilleros", "hay un casillero"], points: 2, hint: "locker / casillero" },
+    { id: "hb09", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Sag, dass dein Schlüssel nicht funktioniert.", answerEs: "Mi llave no funciona.", acceptable: ["mi llave no funciona", "la llave no funciona", "la tarjeta no funciona"], points: 2, hint: "llave = Schlüssel" },
+    { id: "hb10", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Bitte höflich, das Zimmer wechseln zu dürfen.", answerEs: "¿Podría cambiar de habitación?", acceptable: ["podria cambiar de habitacion", "puedo cambiar de habitacion", "puedo cambiar de cuarto"], points: 2, hint: "¿Podría...? ist höflicher" },
+
+    // ----- Leute kennenlernen -----
+    { id: "hb11", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag jemanden, woher er/sie kommt.", answerEs: "¿De dónde eres?", acceptable: ["de donde eres", "de donde vienes"], points: 2, hint: "¿De dónde...?" },
+    { id: "hb12", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, ob die Person alleine reist.", answerEs: "¿Viajas solo/a?", acceptable: ["viajas solo", "viajas sola", "viajas solo a", "estas viajando solo", "estas viajando sola"], points: 2, hint: "viajar = reisen" },
+    { id: "hb13", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, wie lange die Person schon hier ist.", answerEs: "¿Cuánto tiempo estás aquí?", acceptable: ["cuanto tiempo estas aqui", "cuanto tiempo llevas aqui"], points: 2, hint: "¿Cuánto tiempo...?" },
+    { id: "hb14", mode: "battle", cat: "social", scene: "meet", promptDe: "Sag, dass es schön war, kennenzulernen.", answerEs: "Mucho gusto.", acceptable: ["mucho gusto", "un placer", "encantado", "encantada"], points: 2, hint: "Mucho gusto" },
+
+    // ----- Gemeinsam planen -----
+    { id: "hb15", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, was die Person morgen macht.", answerEs: "¿Qué haces mañana?", acceptable: ["que haces manana", "que vas a hacer manana"], points: 2, hint: "¿Qué haces...?" },
+    { id: "hb16", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, ob die Person Lust hat, etwas essen zu gehen.", answerEs: "¿Quieres ir a comer algo?", acceptable: ["quieres ir a comer algo", "quieres comer algo", "vamos a comer algo"], points: 2, hint: "¿Quieres...?" },
+    { id: "hb17", mode: "battle", cat: "social", scene: "plan", promptDe: "Schlag vor, zusammen zu gehen.", answerEs: "¿Vamos juntos?", acceptable: ["vamos juntos", "vamos juntas", "podemos ir juntos"], points: 2, hint: "juntos = zusammen" },
+    { id: "hb18", mode: "battle", cat: "social", scene: "plan", promptDe: "Bitte, dir auf WhatsApp zu schreiben.", answerEs: "Escríbeme por WhatsApp.", acceptable: ["escribeme por whatsapp", "mandame un mensaje por whatsapp", "pasame tu whatsapp"], points: 2, hint: "escríbeme = schreib mir" },
+
+    // ----- Essen & Trinken -----
+    { id: "hb19", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag nach der Speisekarte.", answerEs: "¿Me trae la carta?", acceptable: ["me trae la carta", "la carta por favor", "me da el menu", "me trae el menu"], points: 2, hint: "carta / menú" },
+    { id: "hb20", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag, was die Person empfiehlt.", answerEs: "¿Qué me recomienda?", acceptable: ["que me recomienda", "que recomiendas", "que me recomiendas"], points: 2, hint: "recomendar = empfehlen" },
+    { id: "hb21", mode: "battle", cat: "trinken", scene: "food", promptDe: "Bestell zwei Bier.", answerEs: "Dos cervezas, por favor.", acceptable: ["dos cervezas por favor", "dos cervezas", "queremos dos cervezas"], points: 2, hint: "cerveza = Bier" },
+    { id: "hb22", mode: "battle", cat: "essen", scene: "food", promptDe: "Bitte um die Rechnung.", answerEs: "La cuenta, por favor.", acceptable: ["la cuenta por favor", "me trae la cuenta", "nos trae la cuenta"], points: 2, hint: "cuenta = Rechnung" },
+
+    // ----- Unterwegs (vom Hostel aus) -----
+    { id: "hb23", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wo die nächste Bushaltestelle ist.", answerEs: "¿Dónde está la parada de bus?", acceptable: ["donde esta la parada de bus", "donde esta la parada del bus", "donde queda la parada"], points: 2, hint: "parada = Haltestelle" },
+    { id: "hb24", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Schlag vor, ein Taxi zu teilen.", answerEs: "¿Compartimos un taxi?", acceptable: ["compartimos un taxi", "vamos juntos en taxi", "tomamos un taxi juntos"], points: 2, hint: "compartir = teilen" },
+    { id: "hb25", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wie man zum Zentrum kommt.", answerEs: "¿Cómo llego al centro?", acceptable: ["como llego al centro", "como se va al centro", "como llegar al centro"], points: 2, hint: "¿Cómo llego...?" },
+    { id: "hb26", mode: "battle", cat: "social", scene: "out", promptDe: "Frag eine Empfehlung, wohin man abends gehen kann.", answerEs: "¿Qué me recomiendas para la noche?", acceptable: ["que me recomiendas para la noche", "adonde puedo ir en la noche", "que hay para hacer en la noche"], points: 2, hint: "para la noche = für abends" },
+
+    // ----- Problem lösen -----
+    { id: "hb27", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass dein Handy gestohlen wurde.", answerEs: "Me robaron el celular.", acceptable: ["me robaron el celular", "me robaron mi celular", "me robaron el telefono"], points: 2, hint: "robar = stehlen" },
+    { id: "hb28", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du dich nicht gut fühlst.", answerEs: "Me siento mal.", acceptable: ["me siento mal", "no me siento bien"], points: 2, hint: "sentirse = sich fühlen" },
+    { id: "hb29", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du deinen Rucksack verloren hast.", answerEs: "Perdí mi mochila.", acceptable: ["perdi mi mochila", "perdi la mochila"], points: 2, hint: "perder = verlieren · mochila = Rucksack" },
+    { id: "hb30", mode: "battle", cat: "basics", scene: "problem", promptDe: "Bitte jemanden um Hilfe.", answerEs: "¿Me puedes ayudar?", acceptable: ["me puedes ayudar", "me puede ayudar", "necesito ayuda", "ayudame por favor"], points: 2, hint: "ayudar = helfen" },
+  ];
+
+  // Rollenspiele: kurze Dialoge zum lauten Durchspielen zu zweit.
+  const ROLEPLAYS = [
+    {
+      id: "hr01", mode: "roleplay", title: "Check-in im Hostel", category: "hostel", level: 1,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Du kommst im Hostel an. Du hast eine Reservierung und möchtest einchecken.",
+      goalA: "Sage, dass du eine Reservierung hast, nenne deinen Namen und frage nach WLAN.",
+      goalB: "Frage nach dem Namen, bitte um den Pass und erkläre kurz Frühstück und WLAN.",
+      dialogue: [
+        { speaker: "A", de: "Hallo, ich habe eine Reservierung.", es: "Hola, tengo una reserva." },
+        { speaker: "B", de: "Auf welchen Namen?", es: "¿A nombre de quién?" },
+        { speaker: "A", de: "Auf den Namen Marcel.", es: "A nombre de Marcel." },
+        { speaker: "B", de: "Kannst du mir deinen Pass zeigen?", es: "¿Me puedes mostrar tu pasaporte?" },
+        { speaker: "A", de: "Ja, hier bitte.", es: "Sí, aquí tienes." },
+        { speaker: "B", de: "Das WLAN-Passwort steht auf der Karte.", es: "La contraseña del wifi está en la tarjeta." },
+      ],
+      usefulPhrases: ["Tengo una reserva.", "¿A nombre de quién?", "¿Me puedes mostrar tu pasaporte?", "¿Cuál es la contraseña del wifi?"],
+    },
+    {
+      id: "hr02", mode: "roleplay", title: "Bett ist belegt", category: "hostel", level: 2,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Du gehst zu deinem Bett im Dorm – aber da liegt schon jemand anderes.",
+      goalA: "Erkläre, dass dein Bett belegt ist, und frage nach einer Lösung.",
+      goalB: "Entschuldige dich, prüfe die Buchung und biete ein anderes Bett an.",
+      dialogue: [
+        { speaker: "A", de: "Entschuldigung, mein Bett ist belegt.", es: "Disculpe, mi cama está ocupada." },
+        { speaker: "B", de: "Welche Bettnummer hast du?", es: "¿Qué número de cama tienes?" },
+        { speaker: "A", de: "Bett Nummer vier, unten.", es: "La cama número cuatro, abajo." },
+        { speaker: "B", de: "Es tut mir leid, da gab es einen Fehler.", es: "Lo siento, hubo un error." },
+        { speaker: "B", de: "Ich gebe dir das Bett gegenüber.", es: "Te doy la cama de enfrente." },
+        { speaker: "A", de: "Super, vielen Dank.", es: "Perfecto, muchas gracias." },
+      ],
+      usefulPhrases: ["Mi cama está ocupada.", "¿Qué número de cama tienes?", "Hubo un error.", "Te doy otra cama."],
+    },
+    {
+      id: "hr03", mode: "roleplay", title: "Schlüssel funktioniert nicht", category: "hostel", level: 2,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Deine Schlüsselkarte öffnet die Tür zum Dorm nicht.",
+      goalA: "Erkläre das Problem und bitte um Hilfe.",
+      goalB: "Frage nach Zimmer/Karte und biete an, sie neu zu aktivieren.",
+      dialogue: [
+        { speaker: "A", de: "Meine Karte funktioniert nicht.", es: "Mi tarjeta no funciona." },
+        { speaker: "B", de: "Welches Zimmer ist es?", es: "¿Qué habitación es?" },
+        { speaker: "A", de: "Zimmer drei, das Dorm.", es: "La habitación tres, el dormitorio." },
+        { speaker: "B", de: "Gib sie mir, ich aktiviere sie neu.", es: "Dámela, la activo de nuevo." },
+        { speaker: "A", de: "Danke, jetzt geht sie.", es: "Gracias, ahora sí funciona." },
+      ],
+      usefulPhrases: ["Mi llave no funciona.", "¿Qué habitación es?", "La activo de nuevo.", "Ahora sí funciona."],
+    },
+    {
+      id: "hr04", mode: "roleplay", title: "Neue Leute im Dorm kennenlernen", category: "social", level: 1,
+      roles: { a: "Reisender", b: "Hostelgast" },
+      situationDe: "Im Gemeinschaftsraum sitzt jemand, den du kennenlernen möchtest.",
+      goalA: "Stell dich vor und frage, woher die Person kommt und wohin sie reist.",
+      goalB: "Antworte freundlich und stell auch Gegenfragen.",
+      dialogue: [
+        { speaker: "A", de: "Hallo! Woher kommst du?", es: "¡Hola! ¿De dónde eres?" },
+        { speaker: "B", de: "Ich komme aus Argentinien. Und du?", es: "Soy de Argentina. ¿Y tú?" },
+        { speaker: "A", de: "Aus Deutschland. Reist du alleine?", es: "De Alemania. ¿Viajas solo?" },
+        { speaker: "B", de: "Ja, seit zwei Monaten.", es: "Sí, desde hace dos meses." },
+        { speaker: "A", de: "Cool! Wohin reist du danach?", es: "¡Qué chévere! ¿A dónde vas después?" },
+        { speaker: "B", de: "Nach Peru. Willst du mit?", es: "A Perú. ¿Te unes?" },
+      ],
+      usefulPhrases: ["¿De dónde eres?", "¿Viajas solo/a?", "¿A dónde vas después?", "¿Te unes?"],
+    },
+    {
+      id: "hr05", mode: "roleplay", title: "Gemeinsam essen gehen", category: "social", level: 2,
+      roles: { a: "Reisender", b: "Hostelgast" },
+      situationDe: "Du willst jemanden aus dem Hostel fragen, ob ihr zusammen essen geht.",
+      goalA: "Frag, ob die Person Hunger hat, und schlag ein Lokal vor.",
+      goalB: "Sag zu und frag nach den Details (wann, wo).",
+      dialogue: [
+        { speaker: "A", de: "Hast du Lust, etwas essen zu gehen?", es: "¿Quieres ir a comer algo?" },
+        { speaker: "B", de: "Ja, gerne! Wohin?", es: "¡Sí, claro! ¿A dónde?" },
+        { speaker: "A", de: "Es gibt einen guten Markt hier in der Nähe.", es: "Hay un buen mercado aquí cerca." },
+        { speaker: "B", de: "Perfekt. Um wie viel Uhr?", es: "Perfecto. ¿A qué hora?" },
+        { speaker: "A", de: "Um acht? Sollen wir zusammen gehen?", es: "¿A las ocho? ¿Vamos juntos?" },
+        { speaker: "B", de: "Abgemacht, bis dann!", es: "Hecho, ¡nos vemos!" },
+      ],
+      usefulPhrases: ["¿Quieres ir a comer algo?", "¿A qué hora?", "¿Vamos juntos?", "Hecho, ¡nos vemos!"],
+    },
+    {
+      id: "hr06", mode: "roleplay", title: "Taxi zum Busbahnhof teilen", category: "verkehr", level: 2,
+      roles: { a: "Reisender", b: "Mitreisender" },
+      situationDe: "Ihr müsst beide zum Busbahnhof – teilt euch ein Taxi.",
+      goalA: "Schlag vor, ein Taxi zu teilen, und frag, wohin die Person muss.",
+      goalB: "Stimm zu und kläre, wie ihr die Kosten teilt.",
+      dialogue: [
+        { speaker: "A", de: "Musst du auch zum Busbahnhof?", es: "¿Vas también a la terminal?" },
+        { speaker: "B", de: "Ja, in einer Stunde.", es: "Sí, en una hora." },
+        { speaker: "A", de: "Sollen wir uns ein Taxi teilen?", es: "¿Compartimos un taxi?" },
+        { speaker: "B", de: "Gute Idee, das ist billiger.", es: "Buena idea, sale más barato." },
+        { speaker: "A", de: "Wir teilen den Preis, okay?", es: "Dividimos el precio, ¿vale?" },
+        { speaker: "B", de: "Klar, machen wir.", es: "Claro, hagámoslo." },
+      ],
+      usefulPhrases: ["¿Compartimos un taxi?", "¿Vas a la terminal?", "Sale más barato.", "Dividimos el precio."],
+    },
+    {
+      id: "hr07", mode: "roleplay", title: "Wäsche waschen", category: "hostel", level: 2,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Du brauchst saubere Kleidung und fragst nach der Waschmaschine.",
+      goalA: "Frage, ob es eine Waschmaschine gibt und was es kostet.",
+      goalB: "Erkläre Preis, Ort und wann die Wäsche fertig ist.",
+      dialogue: [
+        { speaker: "A", de: "Gibt es eine Waschmaschine?", es: "¿Hay lavadora?" },
+        { speaker: "B", de: "Ja, im Erdgeschoss.", es: "Sí, en la planta baja." },
+        { speaker: "A", de: "Wie viel kostet eine Ladung?", es: "¿Cuánto cuesta un lavado?" },
+        { speaker: "B", de: "Hundert Pesos, mit Trocknen.", es: "Cien pesos, con secado." },
+        { speaker: "A", de: "Wann ist sie fertig?", es: "¿Cuándo está lista?" },
+        { speaker: "B", de: "In etwa zwei Stunden.", es: "En unas dos horas." },
+      ],
+      usefulPhrases: ["¿Hay lavadora?", "¿Cuánto cuesta un lavado?", "¿Cuándo está lista?", "con secado"],
+    },
+    {
+      id: "hr08", mode: "roleplay", title: "Check-out und Gepäck lagern", category: "hostel", level: 2,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Du checkst aus, dein Bus fährt aber erst am Abend. Du willst dein Gepäck lagern.",
+      goalA: "Sag, dass du auscheckst, und frage, ob du dein Gepäck lassen kannst.",
+      goalB: "Bestätige den Check-out und erkläre die Gepäckaufbewahrung.",
+      dialogue: [
+        { speaker: "A", de: "Ich möchte auschecken, bitte.", es: "Quiero hacer el check-out, por favor." },
+        { speaker: "B", de: "Klar. War alles in Ordnung?", es: "Claro. ¿Todo bien?" },
+        { speaker: "A", de: "Ja, alles super. Kann ich mein Gepäck hier lassen?", es: "Sí, todo perfecto. ¿Puedo dejar mi equipaje aquí?" },
+        { speaker: "B", de: "Natürlich, bis wann?", es: "Por supuesto, ¿hasta qué hora?" },
+        { speaker: "A", de: "Bis sechs Uhr abends.", es: "Hasta las seis de la tarde." },
+        { speaker: "B", de: "Kein Problem, ich gebe dir eine Marke.", es: "Sin problema, te doy un ticket." },
+      ],
+      usefulPhrases: ["Quiero hacer el check-out.", "¿Puedo dejar mi equipaje aquí?", "¿Hasta qué hora?", "Te doy un ticket."],
+    },
+  ];
+
+  // Real-Life Challenges: kleine Aufgaben für draußen, erscheinen als Bonus nach
+  // einer Battle-Runde. Reine Daten – category/level passen zur App-Logik.
+  const CHALLENGES = [
+    { id: "challenge01", category: "social", level: 1, textDe: "Frag heute eine Person im Hostel, woher sie kommt.", phraseEs: "¿De dónde eres?" },
+    { id: "challenge02", category: "hostel", level: 1, textDe: "Frag an der Rezeption nach dem WLAN-Passwort.", phraseEs: "¿Cuál es la contraseña del wifi?" },
+    { id: "challenge03", category: "social", level: 2, textDe: "Lade jemanden ein, mit dir essen zu gehen.", phraseEs: "¿Quieres ir a comer algo?" },
+    { id: "challenge04", category: "hostel", level: 1, textDe: "Frag, ob das Frühstück inklusive ist.", phraseEs: "¿El desayuno está incluido?" },
+    { id: "challenge05", category: "social", level: 1, textDe: "Frag jemanden, wie lange er/sie schon unterwegs ist.", phraseEs: "¿Cuánto tiempo estás aquí?" },
+    { id: "challenge06", category: "essen", level: 2, textDe: "Frag im Lokal nach einer Empfehlung.", phraseEs: "¿Qué me recomienda?" },
+    { id: "challenge07", category: "verkehr", level: 2, textDe: "Frag jemanden, ob ihr euch ein Taxi teilt.", phraseEs: "¿Compartimos un taxi?" },
+    { id: "challenge08", category: "social", level: 2, textDe: "Tausch mit jemandem die WhatsApp-Nummer.", phraseEs: "Escríbeme por WhatsApp." },
+    { id: "challenge09", category: "hostel", level: 2, textDe: "Frag, ob du dein Gepäck lagern kannst.", phraseEs: "¿Puedo dejar mi equipaje aquí?" },
+    { id: "challenge10", category: "social", level: 1, textDe: "Verabschiede dich von jemandem auf Spanisch.", phraseEs: "Mucho gusto, ¡nos vemos!" },
+  ];
+
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES };
 })();
 
 </script>
@@ -5034,6 +5435,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
         </button>
 
+        <button class="hostelmode" data-action="open-hostel">
+          <span class="hostelmode__icon" aria-hidden="true">🛏️</span>
+          <span class="hostelmode__text">
+            <span class="hostelmode__title">Hostel Mode</span>
+            <span class="hostelmode__sub">Zu zweit üben: Battle &amp; Rollenspiele</span>
+          </span>
+          <span class="hostelmode__chev" aria-hidden="true">›</span>
+        </button>
+
         <div class="tiles">${tiles}</div>
 
         <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
@@ -5574,8 +5984,216 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`;
   }
 
+  // ---------- HOSTEL MODE ----------
+  // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
+  function hmTopbar(title, back) {
+    return `
+      <div class="topbar">
+        <button class="iconbtn" data-action="${back}" aria-label="Zurück">‹</button>
+        <div class="topbar__title">${title}</div>
+        <span></span>
+      </div>`;
+  }
+
+  // Menü: Battle vs. Rollenspiele.
+  function renderHostel(vm) {
+    return `
+      <section class="screen">
+        ${hmTopbar("🛏️ Hostel Mode", "home")}
+        <p class="hm-intro">Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.</p>
+        <div class="hm-menu">
+          <button class="hm-card hm-card--battle" data-action="open-battle-setup">
+            <span class="hm-card__icon" aria-hidden="true">⚔️</span>
+            <span class="hm-card__title">Battle</span>
+            <span class="hm-card__desc">Tretet gegeneinander an und übt echte Reisesätze laut. Der Mitspieler bewertet.</span>
+            <span class="hm-card__meta">${vm.battleCount} Aufgaben</span>
+          </button>
+          <button class="hm-card hm-card--roleplay" data-action="open-roleplay-setup">
+            <span class="hm-card__icon" aria-hidden="true">🎭</span>
+            <span class="hm-card__title">Rollenspiele</span>
+            <span class="hm-card__desc">Übernehmt Rollen und spielt echte Situationen als Dialog durch.</span>
+            <span class="hm-card__meta">${vm.roleplayCount} Szenen</span>
+          </button>
+        </div>
+      </section>`;
+  }
+
+  // Battle: Szene wählen.
+  function renderBattleSetup(vm) {
+    const scenes = [
+      `<button class="hm-scene" data-action="start-battle" data-scene="all">
+         <span class="hm-scene__icon" aria-hidden="true">🎲</span>
+         <span class="hm-scene__label">Alle Szenen</span>
+         <span class="hm-scene__count">${vm.totalCount}</span>
+       </button>`,
+      ...vm.scenes.map((s) =>
+        `<button class="hm-scene" data-action="start-battle" data-scene="${esc(s.id)}">
+           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+           <span class="hm-scene__label">${esc(s.label)}</span>
+           <span class="hm-scene__count">${s.count}</span>
+         </button>`),
+    ].join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("⚔️ Battle", "open-hostel")}
+        <p class="hm-intro">Wählt eine Situation. Die App zeigt eine Aufgabe auf Deutsch – einer antwortet laut auf Spanisch, der andere bewertet.</p>
+        <div class="hm-scenes">${scenes}</div>
+      </section>`;
+  }
+
+  // Battle: laufende Runde.
+  function renderBattle(vm) {
+    const solution = vm.revealed
+      ? `
+        <div class="hm-solution" role="status" aria-live="polite">
+          <span class="hm-solution__cap">Musterlösung</span>
+          <div class="hm-solution__es" lang="es">${esc(vm.answerEs)}</div>
+          ${vm.alsoOk && vm.alsoOk.length
+            ? `<div class="hm-solution__also">auch ok: ${vm.alsoOk.map((a) => `<span lang="es">${esc(a)}</span>`).join(", ")}</div>`
+            : ""}
+        </div>
+        <div class="hm-verdict">
+          <p class="hm-verdict__cap">Spieler ${vm.current === "A" ? "B" : "A"} bewertet:</p>
+          <div class="ratebar" role="group" aria-label="Antwort bewerten">
+            <button class="feel feel--again" data-action="battle-score" data-points="0">
+              <span class="feel__emoji" aria-hidden="true">❌</span><span class="feel__txt">Falsch</span>
+            </button>
+            <button class="feel feel--good" data-action="battle-score" data-points="1">
+              <span class="feel__emoji" aria-hidden="true">😬</span><span class="feel__txt">Fast</span>
+            </button>
+            <button class="feel feel--easy" data-action="battle-score" data-points="2">
+              <span class="feel__emoji" aria-hidden="true">✅</span><span class="feel__txt">Richtig</span>
+            </button>
+          </div>
+        </div>`
+      : `
+        ${vm.hint ? `<div class="hm-hint">💡 ${esc(vm.hint)}</div>` : ""}
+        <button class="cta" data-action="battle-reveal">Lösung anzeigen</button>`;
+
+    return `
+      <section class="screen study">
+        ${hmTopbar(`${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
+        <div class="hm-score">
+          <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">A <b>${vm.scores.A}</b></span>
+          <span class="hm-score__round">Runde ${vm.round}/${vm.totalRounds}</span>
+          <span class="hm-score__p ${vm.current === "B" ? "is-turn" : ""}">B <b>${vm.scores.B}</b></span>
+        </div>
+        <p class="hm-turn" aria-live="polite">Spieler <b>${vm.current}</b> ist dran – laut auf Spanisch!</p>
+        <div class="hm-prompt">${esc(vm.promptDe)}</div>
+        <div class="controls">${solution}</div>
+      </section>`;
+  }
+
+  // Battle: Auswertung.
+  function renderBattleDone(vm) {
+    const verdict = vm.winner === "tie"
+      ? "Unentschieden! 🤝"
+      : `Spieler ${vm.winner} gewinnt! 🏆`;
+    const challenge = vm.challenge
+      ? `
+        <div class="hm-challenge">
+          <span class="hm-challenge__cap">🎯 Real-Life Challenge</span>
+          <p class="hm-challenge__text">${esc(vm.challenge.textDe)}</p>
+          <p class="hm-challenge__es" lang="es">${esc(vm.challenge.phraseEs)}</p>
+        </div>`
+      : "";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">🎉</div>
+          <h2>Ihr habt ${esc(vm.sceneLabel)} überlebt</h2>
+          <p class="hm-result">
+            <span class="hm-result__p">Spieler A<br><b>${vm.scores.A}</b></span>
+            <span class="hm-result__vs">:</span>
+            <span class="hm-result__p">Spieler B<br><b>${vm.scores.B}</b></span>
+          </p>
+          <p class="hm-winner">${verdict}</p>
+          ${challenge}
+          <button class="cta" data-action="battle-again">Nochmal spielen</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
+  }
+
+  // Rollenspiele: Szene wählen.
+  function renderRoleplaySetup(vm) {
+    const list = vm.scenes
+      .map((s) =>
+        `<button class="hm-rp" data-action="start-roleplay" data-id="${esc(s.id)}">
+           <span class="hm-rp__main">
+             <span class="hm-rp__title">${esc(s.title)}</span>
+             <span class="hm-rp__roles">${esc(s.roleA)} ↔ ${esc(s.roleB)}</span>
+           </span>
+           ${s.lvlShort ? `<span class="hm-rp__lvl">${esc(s.lvlShort)}</span>` : ""}
+         </button>`)
+      .join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🎭 Rollenspiele", "open-hostel")}
+        <p class="hm-intro">Wählt eine Szene, verteilt die Rollen und spielt den Dialog laut durch.</p>
+        <div class="hm-rps">${list}</div>
+      </section>`;
+  }
+
+  // Rollenspiele: eine Szene.
+  function renderRoleplay(vm) {
+    if (!vm) {
+      return `
+        <section class="screen">
+          ${hmTopbar("🎭 Rollenspiel", "open-roleplay-setup")}
+          <p class="stat-empty">Szene nicht gefunden.</p>
+        </section>`;
+    }
+    const roles = `
+      <div class="hm-roles">
+        <div class="hm-role hm-role--a">
+          <span class="hm-role__tag">Spieler A · ${esc(vm.roleA.name)}</span>
+          <span class="hm-role__goal">${esc(vm.roleA.goal)}</span>
+        </div>
+        <div class="hm-role hm-role--b">
+          <span class="hm-role__tag">Spieler B · ${esc(vm.roleB.name)}</span>
+          <span class="hm-role__goal">${esc(vm.roleB.goal)}</span>
+        </div>
+      </div>`;
+
+    const lines = vm.dialogue
+      .map((d) =>
+        `<div class="hm-line hm-line--${d.speaker === "A" ? "a" : "b"}">
+           <span class="hm-line__who">${esc(d.speaker)}</span>
+           <span class="hm-line__bubble">
+             <span class="hm-line__es" lang="es">${esc(d.es)}</span>
+             <span class="hm-line__de">${esc(d.de)}</span>
+           </span>
+         </div>`)
+      .join("");
+
+    const phrases = vm.usefulPhrases && vm.usefulPhrases.length
+      ? `<div class="hm-phrases">
+           <span class="hm-phrases__cap">Nützliche Sätze</span>
+           <ul class="hm-phrases__list">
+             ${vm.usefulPhrases.map((p) => `<li lang="es">${esc(p)}</li>`).join("")}
+           </ul>
+         </div>`
+      : "";
+
+    return `
+      <section class="screen">
+        ${hmTopbar("🎭 Rollenspiel", "open-roleplay-setup")}
+        <div class="hm-rphead">
+          <h2 class="hm-rphead__title">${esc(vm.title)}${vm.lvlShort ? ` <span class="hm-rphead__lvl">${esc(vm.lvlShort)}</span>` : ""}</h2>
+          <p class="hm-rphead__sit">${esc(vm.situationDe)}</p>
+        </div>
+        ${roles}
+        <button class="ghostbtn hm-swap" data-action="roleplay-swap">🔄 Rollen tauschen</button>
+        <div class="hm-dialogue">${lines}</div>
+        ${phrases}
+        <button class="ghostbtn" data-action="open-roleplay-setup">Andere Szene wählen</button>
+      </section>`;
+  }
+
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo };
+  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
+                   renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay };
 })();
 
 </script>
@@ -5600,7 +6218,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let settings = store.loadSettings();
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay'
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -5613,7 +6231,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     cardId: null,            // Detailseite: welche Karte
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
+    // ----- Hostel Mode (transient, keine Persistenz) -----
+    battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
+    roleplayId: null,        // aktuell geöffnetes Rollenspiel
+    roleplaySwapped: false,  // Rollen A/B getauscht?
   };
+
+  // Fisher–Yates – liefert eine neue, gemischte Kopie (mutiert das Original nicht).
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
 
   const root = document.getElementById("app");
 
@@ -5809,6 +6441,95 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return { country, groups };
   }
 
+  // ----- Hostel Mode: View-Modelle -----
+  const battleById = (id) => data.BATTLES.find((b) => b.id === id) || null;
+  const roleplayById = (id) => data.ROLEPLAYS.find((r) => r.id === id) || null;
+
+  function hostelVM() {
+    return {
+      battleCount: data.BATTLES.length,
+      roleplayCount: data.ROLEPLAYS.length,
+    };
+  }
+
+  // Szenen-Auswahl: "Alle" + je Szene mit Anzahl verfügbarer Aufgaben.
+  function battleSetupVM() {
+    const scenes = data.BATTLE_SCENES
+      .map((s) => ({ id: s.id, label: s.label, icon: s.icon,
+        count: data.BATTLES.filter((b) => b.scene === s.id).length }))
+      .filter((s) => s.count > 0);
+    return { scenes, totalCount: data.BATTLES.length };
+  }
+
+  function battleVM() {
+    const b = state.battle;
+    const prompt = battleById(b.queue[b.round - 1]);
+    const scene = data.BATTLE_SCENES.find((s) => s.id === b.sceneId);
+    // Weitere gültige Antworten (ohne die schon angezeigte Musterlösung) als Hilfe
+    // für den bewertenden Mitspieler – damit faire Phrasing-Varianten zählen.
+    const alsoOk = prompt
+      ? prompt.acceptable.filter((a) => matcher.normalize(a) !== matcher.normalize(prompt.answerEs))
+      : [];
+    return {
+      sceneLabel: b.sceneId === "all" ? "Alle Szenen" : (scene ? scene.label : ""),
+      sceneIcon: b.sceneId === "all" ? "🎲" : (scene ? scene.icon : "🛏️"),
+      round: b.round,
+      totalRounds: b.totalRounds,
+      current: b.current,
+      scores: b.scores,
+      revealed: b.revealed,
+      promptDe: prompt ? prompt.promptDe : "",
+      answerEs: prompt ? prompt.answerEs : "",
+      alsoOk,
+      hint: prompt ? prompt.hint : "",
+    };
+  }
+
+  function battleDoneVM() {
+    const b = state.battle;
+    const a = b.scores.A, bb = b.scores.B;
+    const winner = a === bb ? "tie" : (a > bb ? "A" : "B");
+    return {
+      sceneLabel: b.sceneId === "all" ? "Alle Szenen"
+        : ((data.BATTLE_SCENES.find((s) => s.id === b.sceneId) || {}).label || ""),
+      scores: b.scores,
+      rounds: b.totalRounds,
+      winner,
+      challenge: b.challenge, // { textDe, phraseEs } | null
+    };
+  }
+
+  function roleplaySetupVM() {
+    return {
+      scenes: data.ROLEPLAYS.map((r) => {
+        const lvl = levelById(r.level);
+        return { id: r.id, title: r.title, roleA: r.roles.a, roleB: r.roles.b,
+          lvlShort: lvl ? lvl.short : "" };
+      }),
+    };
+  }
+
+  function roleplayVM() {
+    const r = roleplayById(state.roleplayId);
+    if (!r) return null;
+    const lvl = levelById(r.level);
+    // Rollen-Tausch: A↔B (Ziele & Sprecher-Labels), Dialog-Reihenfolge bleibt gleich.
+    const swapped = state.roleplaySwapped;
+    return {
+      title: r.title,
+      lvlShort: lvl ? lvl.short : "",
+      situationDe: r.situationDe,
+      swapped,
+      roleA: { name: swapped ? r.roles.b : r.roles.a, goal: swapped ? r.goalB : r.goalA },
+      roleB: { name: swapped ? r.roles.a : r.roles.b, goal: swapped ? r.goalA : r.goalB },
+      dialogue: r.dialogue.map((d) => ({
+        speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
+        de: d.de, es: d.es,
+      })),
+      usefulPhrases: r.usefulPhrases,
+    };
+  }
+
   // ----- Rendern -----
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
@@ -5817,6 +6538,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
+    else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
+    else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
+    else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
+    else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
+    else if (state.screen === "roleplaySetup") root.innerHTML = ui.renderRoleplaySetup(roleplaySetupVM());
+    else if (state.screen === "roleplay") root.innerHTML = ui.renderRoleplay(roleplayVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     manageFocus();
@@ -5834,7 +6561,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const flipEl = document.getElementById("flip");
       if (flipEl) { try { flipEl.focus({ preventScroll: true }); } catch (e) { flipEl.focus(); } return; }
     }
-    const target = root.querySelector("h2, [data-action='card-back'], [data-action='home']") || root.firstElementChild;
+    const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
       if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
       try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); }
@@ -5963,6 +6690,88 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.screen = "home";
     state.revealed = false;
     state.typeResult = null;
+    render();
+  }
+
+  // ----- Hostel Mode (Anwenden zu zweit) -----
+  function openHostel() {
+    state.screen = "hostel";
+    render();
+  }
+
+  function openBattleSetup() {
+    state.screen = "battleSetup";
+    render();
+  }
+
+  // Battle starten: Aufgaben der Szene (oder alle) mischen, max. 10 Runden.
+  function startBattle(sceneId) {
+    const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
+    const queue = shuffle(pool).map((b) => b.id);
+    if (!queue.length) return;
+    // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
+    const cap = Math.min(10, queue.length);
+    const rounds = cap - (cap % 2) || cap; // bei nur 1 Aufgabe bleibt 1 Runde
+    state.battle = {
+      sceneId,
+      queue,
+      round: 1,
+      totalRounds: rounds,
+      current: "A",
+      scores: { A: 0, B: 0 },
+      revealed: false,
+      challenge: null,
+    };
+    state.screen = "battle";
+    render();
+  }
+
+  function battleReveal() {
+    if (!state.battle) return;
+    state.battle.revealed = true;
+    render();
+  }
+
+  // Mitspieler bewertet (2/1/0). Danach nächste Runde oder Auswertung.
+  function battleScore(points) {
+    const b = state.battle;
+    if (!b || !b.revealed) return;
+    buzz(points >= 2 ? 12 : 8);
+    b.scores[b.current] += points;
+    if (b.round >= b.totalRounds) {
+      // Passende Real-Life-Challenge als Bonus (zufällig).
+      const list = data.CHALLENGES || [];
+      b.challenge = list.length ? list[Math.floor(Math.random() * list.length)] : null;
+      state.screen = "battleDone";
+    } else {
+      b.round += 1;
+      b.current = b.current === "A" ? "B" : "A";
+      b.revealed = false;
+    }
+    render();
+  }
+
+  function battleAgain() {
+    state.battle = null;
+    state.screen = "battleSetup";
+    render();
+  }
+
+  function openRoleplaySetup() {
+    state.screen = "roleplaySetup";
+    render();
+  }
+
+  function startRoleplay(id) {
+    if (!roleplayById(id)) return;
+    state.roleplayId = id;
+    state.roleplaySwapped = false;
+    state.screen = "roleplay";
+    render();
+  }
+
+  function roleplaySwap() {
+    state.roleplaySwapped = !state.roleplaySwapped;
     render();
   }
 
@@ -6178,6 +6987,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
+    else if (action === "open-hostel") openHostel();
+    else if (action === "open-battle-setup") openBattleSetup();
+    else if (action === "start-battle") startBattle(el.dataset.scene);
+    else if (action === "battle-reveal") battleReveal();
+    else if (action === "battle-score") battleScore(Number(el.dataset.points));
+    else if (action === "battle-again") battleAgain();
+    else if (action === "open-roleplay-setup") openRoleplaySetup();
+    else if (action === "start-roleplay") startRoleplay(el.dataset.id);
+    else if (action === "roleplay-swap") roleplaySwap();
     else if (action === "home") goHome();
   }
 

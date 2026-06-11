@@ -24,6 +24,8 @@
     { id: "essen",   label: "Essen",      icon: "🍽️", grad: ["#CB5A2B", "#E0743C"] },
     { id: "trinken", label: "Trinken",    icon: "🥤", grad: ["#2F6B70", "#3E8388"] },
     { id: "hotel",   label: "Hotel",      icon: "🏨", grad: ["#7D4A8E", "#9763A6"] },
+    { id: "hostel",  label: "Hostel",     icon: "🛏️", grad: ["#C25A45", "#DB7A5E"] },
+    { id: "social",  label: "Social",     icon: "🤝", grad: ["#8E4FA8", "#A96DBE"] },
     { id: "verkehr", label: "Verkehr",    icon: "🚌", grad: ["#3F7355", "#52906C"] },
     { id: "compras", label: "Einkaufen",  icon: "🛒", grad: ["#A86A2D", "#C2853F"] },
     { id: "dinero",  label: "Geld",       icon: "💵", grad: ["#5E7D3A", "#76954E"] },
@@ -303,6 +305,18 @@
     { id: "h23", cat: "hotel", lvl: 2, de: "Die Toilette ist verstopft", es: "El baño está tapado", tip: "ta-PA-do" },
     { id: "h24", cat: "hotel", lvl: 2, de: "Mir ist zu kalt / zu warm", es: "Tengo mucho frío / calor", tip: "FRI-o / ka-LOR" },
 
+    // ===================== HOSTEL =====================
+    { id: "hostel01", cat: "hostel", lvl: 1, de: "Ich habe eine Reservierung.", es: "Tengo una reserva.", tip: "TEN-go U-na re-SER-wa" },
+    { id: "hostel02", cat: "hostel", lvl: 1, de: "Haben Sie noch ein Bett frei?", es: "¿Tiene una cama libre?", tip: "TI-e-ne U-na KA-ma LI-bre" },
+    { id: "hostel03", cat: "hostel", lvl: 1, de: "Ist Frühstück inklusive?", es: "¿El desayuno está incluido?", tip: "el de-sa-YU-no es-TA in-klu-I-do" },
+    { id: "hostel04", cat: "hostel", lvl: 1, de: "Wo ist mein Bett?", es: "¿Dónde está mi cama?", tip: "DON-de es-TA mi KA-ma" },
+    { id: "hostel05", cat: "hostel", lvl: 2, de: "Mein Schlüssel funktioniert nicht.", es: "Mi llave no funciona.", tip: "mi YA-we no fun-si-O-na" },
+    { id: "hostel06", cat: "hostel", lvl: 2, de: "Kann ich mein Gepäck hier lassen?", es: "¿Puedo dejar mi equipaje aquí?", tip: "PUE-do de-CHAR mi e-ki-PA-che a-KI" },
+    { id: "hostel07", cat: "hostel", lvl: 2, de: "Gibt es ein Schließfach?", es: "¿Hay un locker?", tip: "ai un LO-ker" },
+    { id: "hostel08", cat: "hostel", lvl: 2, de: "Mein Bett ist belegt.", es: "Mi cama está ocupada.", tip: "mi KA-ma es-TA o-ku-PA-da" },
+    { id: "hostel09", cat: "hostel", lvl: 2, de: "Gibt es eine Küche?", es: "¿Hay cocina?", tip: "ai ko-SI-na" },
+    { id: "hostel10", cat: "hostel", lvl: 3, de: "Könnte ich das Zimmer wechseln?", es: "¿Podría cambiar de habitación?", tip: "po-DRI-a kam-bi-AR de a-bi-ta-si-ON" },
+
     // ===================== VERKEHR =====================
     { id: "v01", cat: "verkehr", lvl: 2, de: "Wo ist ...?", es: "¿Dónde está ...?", tip: "DON-de es-TA", alt: ["donde esta"] },
     { id: "v02", cat: "verkehr", lvl: 1, de: "links / rechts", es: "izquierda / derecha", tip: "is-ki-ER-da / de-RE-cha" },
@@ -440,6 +454,18 @@
     { id: "s23", cat: "talk", lvl: 2, de: "Alles war perfekt", es: "Todo estuvo perfecto", tip: "es-TU-wo per-FEK-to" },
     { id: "s24", cat: "talk", lvl: 3, de: "Das nächste Mal lade ich dich ein", es: "La próxima te invito yo", tip: "PROK-si-ma te in-WI-to yo" },
 
+    // ===================== SOCIAL & ANSCHLUSS =====================
+    { id: "social01", cat: "social", lvl: 1, de: "Woher kommst du?", es: "¿De dónde eres?", tip: "de DON-de E-res" },
+    { id: "social02", cat: "social", lvl: 1, de: "Reist du alleine?", es: "¿Viajas solo/a?", tip: "wi-A-chas SO-lo / SO-la", alt: ["viajas solo", "viajas sola"] },
+    { id: "social03", cat: "social", lvl: 1, de: "Wie lange bist du hier?", es: "¿Cuánto tiempo estás aquí?", tip: "KUAN-to TIEM-po es-TAS a-KI" },
+    { id: "social04", cat: "social", lvl: 1, de: "Wohin reist du danach?", es: "¿A dónde vas después?", tip: "a DON-de bas des-PUES" },
+    { id: "social05", cat: "social", lvl: 2, de: "Was machst du morgen?", es: "¿Qué haces mañana?", tip: "ke A-ses ma-NYA-na" },
+    { id: "social06", cat: "social", lvl: 2, de: "Hast du Lust, etwas essen zu gehen?", es: "¿Quieres ir a comer algo?", tip: "KIE-res ir a ko-MER AL-go" },
+    { id: "social07", cat: "social", lvl: 2, de: "Sollen wir zusammen gehen?", es: "¿Vamos juntos?", tip: "BA-mos CHUN-tos" },
+    { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes" },
+    { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp" },
+    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen.", es: "Mucho gusto.", tip: "MU-cho GUS-to" },
+
     // ===================== ALLTAG & LEBEN =====================
     { id: "a01", cat: "alltag", lvl: 3, de: "Wie sagt man ... auf Spanisch?", es: "¿Cómo se dice ... en español?", tip: "KO-mo se DI-se" },
     { id: "a02", cat: "alltag", lvl: 2, de: "Was bedeutet das?", es: "¿Qué significa?", tip: "sig-ni-FI-ka" },
@@ -534,6 +560,218 @@
     { id: "r20", cat: "reise", lvl: 3, de: "Ich habe meinen Bus verpasst", es: "Perdí mi bus", tip: "per-DI mi bus" },
   ];
 
+  /*
+   * ===== HOSTEL MODE (Anwenden zu zweit) =====
+   * Reine Daten für den Zwei-Personen-Modus. Keine Persistenz – die Spiel-Session
+   * ist transient. "Karten = lernen, Hostel Mode = sprechen".
+   */
+
+  // Battle-Szenen (Auswahl vor einer Runde). icon nur fürs UI.
+  const BATTLE_SCENES = [
+    { id: "checkin", label: "Check-in",          icon: "🛎️" },
+    { id: "dorm",    label: "Dorm & Zimmer",     icon: "🛏️" },
+    { id: "meet",    label: "Leute kennenlernen", icon: "🤝" },
+    { id: "plan",    label: "Gemeinsam planen",  icon: "🗓️" },
+    { id: "food",    label: "Essen & Trinken",   icon: "🍽️" },
+    { id: "out",     label: "Unterwegs",         icon: "🧭" },
+    { id: "problem", label: "Problem lösen",     icon: "🛠️" },
+  ];
+
+  // Battle-Aufgaben: Ansage auf Deutsch (promptDe), laut auf Spanisch antworten.
+  // answerEs = Musterlösung (Anzeige), acceptable = weitere gültige Varianten (LatAm).
+  // points = Maximalpunkte (Mitspieler bewertet manuell: 2/1/0). scene -> BATTLE_SCENES.
+  const BATTLES = [
+    // ----- Check-in -----
+    { id: "hb01", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob noch ein Bett frei ist.", answerEs: "¿Tiene una cama libre?", acceptable: ["tiene una cama libre", "hay una cama libre", "hay una cama disponible"], points: 2, hint: "Du brauchst: ¿Tiene...? oder ¿Hay...?" },
+    { id: "hb02", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Sag, dass du eine Reservierung hast.", answerEs: "Tengo una reserva.", acceptable: ["tengo una reserva", "tengo una reservacion"], points: 2, hint: "Tengo una ..." },
+    { id: "hb03", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob das Frühstück inklusive ist.", answerEs: "¿El desayuno está incluido?", acceptable: ["el desayuno esta incluido", "esta incluido el desayuno", "incluye desayuno"], points: 2, hint: "desayuno = Frühstück" },
+    { id: "hb04", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag nach dem WLAN-Passwort.", answerEs: "¿Cuál es la contraseña del wifi?", acceptable: ["cual es la contrasena del wifi", "cual es la clave del wifi"], points: 2, hint: "contraseña / clave = Passwort" },
+    { id: "hb05", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, um wie viel Uhr Check-out ist.", answerEs: "¿A qué hora es el check-out?", acceptable: ["a que hora es el check out", "a que hora es el checkout", "a que hora hay que salir"], points: 2, hint: "¿A qué hora...?" },
+
+    // ----- Dorm & Zimmer -----
+    { id: "hb06", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, wo dein Bett ist.", answerEs: "¿Dónde está mi cama?", acceptable: ["donde esta mi cama"], points: 2, hint: "¿Dónde está...?" },
+    { id: "hb07", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Sag, dass dein Bett belegt ist.", answerEs: "Mi cama está ocupada.", acceptable: ["mi cama esta ocupada", "hay alguien en mi cama"], points: 2, hint: "ocupada = belegt" },
+    { id: "hb08", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, ob es ein Schließfach gibt.", answerEs: "¿Hay un locker?", acceptable: ["hay un locker", "hay casilleros", "hay un casillero"], points: 2, hint: "locker / casillero" },
+    { id: "hb09", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Sag, dass dein Schlüssel nicht funktioniert.", answerEs: "Mi llave no funciona.", acceptable: ["mi llave no funciona", "la llave no funciona", "la tarjeta no funciona"], points: 2, hint: "llave = Schlüssel" },
+    { id: "hb10", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Bitte höflich, das Zimmer wechseln zu dürfen.", answerEs: "¿Podría cambiar de habitación?", acceptable: ["podria cambiar de habitacion", "puedo cambiar de habitacion", "puedo cambiar de cuarto"], points: 2, hint: "¿Podría...? ist höflicher" },
+
+    // ----- Leute kennenlernen -----
+    { id: "hb11", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag jemanden, woher er/sie kommt.", answerEs: "¿De dónde eres?", acceptable: ["de donde eres", "de donde vienes"], points: 2, hint: "¿De dónde...?" },
+    { id: "hb12", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, ob die Person alleine reist.", answerEs: "¿Viajas solo/a?", acceptable: ["viajas solo", "viajas sola", "viajas solo a", "estas viajando solo", "estas viajando sola"], points: 2, hint: "viajar = reisen" },
+    { id: "hb13", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, wie lange die Person schon hier ist.", answerEs: "¿Cuánto tiempo estás aquí?", acceptable: ["cuanto tiempo estas aqui", "cuanto tiempo llevas aqui"], points: 2, hint: "¿Cuánto tiempo...?" },
+    { id: "hb14", mode: "battle", cat: "social", scene: "meet", promptDe: "Sag, dass es schön war, kennenzulernen.", answerEs: "Mucho gusto.", acceptable: ["mucho gusto", "un placer", "encantado", "encantada"], points: 2, hint: "Mucho gusto" },
+
+    // ----- Gemeinsam planen -----
+    { id: "hb15", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, was die Person morgen macht.", answerEs: "¿Qué haces mañana?", acceptable: ["que haces manana", "que vas a hacer manana"], points: 2, hint: "¿Qué haces...?" },
+    { id: "hb16", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, ob die Person Lust hat, etwas essen zu gehen.", answerEs: "¿Quieres ir a comer algo?", acceptable: ["quieres ir a comer algo", "quieres comer algo", "vamos a comer algo"], points: 2, hint: "¿Quieres...?" },
+    { id: "hb17", mode: "battle", cat: "social", scene: "plan", promptDe: "Schlag vor, zusammen zu gehen.", answerEs: "¿Vamos juntos?", acceptable: ["vamos juntos", "vamos juntas", "podemos ir juntos"], points: 2, hint: "juntos = zusammen" },
+    { id: "hb18", mode: "battle", cat: "social", scene: "plan", promptDe: "Bitte, dir auf WhatsApp zu schreiben.", answerEs: "Escríbeme por WhatsApp.", acceptable: ["escribeme por whatsapp", "mandame un mensaje por whatsapp", "pasame tu whatsapp"], points: 2, hint: "escríbeme = schreib mir" },
+
+    // ----- Essen & Trinken -----
+    { id: "hb19", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag nach der Speisekarte.", answerEs: "¿Me trae la carta?", acceptable: ["me trae la carta", "la carta por favor", "me da el menu", "me trae el menu"], points: 2, hint: "carta / menú" },
+    { id: "hb20", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag, was die Person empfiehlt.", answerEs: "¿Qué me recomienda?", acceptable: ["que me recomienda", "que recomiendas", "que me recomiendas"], points: 2, hint: "recomendar = empfehlen" },
+    { id: "hb21", mode: "battle", cat: "trinken", scene: "food", promptDe: "Bestell zwei Bier.", answerEs: "Dos cervezas, por favor.", acceptable: ["dos cervezas por favor", "dos cervezas", "queremos dos cervezas"], points: 2, hint: "cerveza = Bier" },
+    { id: "hb22", mode: "battle", cat: "essen", scene: "food", promptDe: "Bitte um die Rechnung.", answerEs: "La cuenta, por favor.", acceptable: ["la cuenta por favor", "me trae la cuenta", "nos trae la cuenta"], points: 2, hint: "cuenta = Rechnung" },
+
+    // ----- Unterwegs (vom Hostel aus) -----
+    { id: "hb23", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wo die nächste Bushaltestelle ist.", answerEs: "¿Dónde está la parada de bus?", acceptable: ["donde esta la parada de bus", "donde esta la parada del bus", "donde queda la parada"], points: 2, hint: "parada = Haltestelle" },
+    { id: "hb24", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Schlag vor, ein Taxi zu teilen.", answerEs: "¿Compartimos un taxi?", acceptable: ["compartimos un taxi", "vamos juntos en taxi", "tomamos un taxi juntos"], points: 2, hint: "compartir = teilen" },
+    { id: "hb25", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wie man zum Zentrum kommt.", answerEs: "¿Cómo llego al centro?", acceptable: ["como llego al centro", "como se va al centro", "como llegar al centro"], points: 2, hint: "¿Cómo llego...?" },
+    { id: "hb26", mode: "battle", cat: "social", scene: "out", promptDe: "Frag eine Empfehlung, wohin man abends gehen kann.", answerEs: "¿Qué me recomiendas para la noche?", acceptable: ["que me recomiendas para la noche", "adonde puedo ir en la noche", "que hay para hacer en la noche"], points: 2, hint: "para la noche = für abends" },
+
+    // ----- Problem lösen -----
+    { id: "hb27", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass dein Handy gestohlen wurde.", answerEs: "Me robaron el celular.", acceptable: ["me robaron el celular", "me robaron mi celular", "me robaron el telefono"], points: 2, hint: "robar = stehlen" },
+    { id: "hb28", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du dich nicht gut fühlst.", answerEs: "Me siento mal.", acceptable: ["me siento mal", "no me siento bien"], points: 2, hint: "sentirse = sich fühlen" },
+    { id: "hb29", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du deinen Rucksack verloren hast.", answerEs: "Perdí mi mochila.", acceptable: ["perdi mi mochila", "perdi la mochila"], points: 2, hint: "perder = verlieren · mochila = Rucksack" },
+    { id: "hb30", mode: "battle", cat: "basics", scene: "problem", promptDe: "Bitte jemanden um Hilfe.", answerEs: "¿Me puedes ayudar?", acceptable: ["me puedes ayudar", "me puede ayudar", "necesito ayuda", "ayudame por favor"], points: 2, hint: "ayudar = helfen" },
+  ];
+
+  // Rollenspiele: kurze Dialoge zum lauten Durchspielen zu zweit.
+  const ROLEPLAYS = [
+    {
+      id: "hr01", mode: "roleplay", title: "Check-in im Hostel", category: "hostel", level: 1,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Du kommst im Hostel an. Du hast eine Reservierung und möchtest einchecken.",
+      goalA: "Sage, dass du eine Reservierung hast, nenne deinen Namen und frage nach WLAN.",
+      goalB: "Frage nach dem Namen, bitte um den Pass und erkläre kurz Frühstück und WLAN.",
+      dialogue: [
+        { speaker: "A", de: "Hallo, ich habe eine Reservierung.", es: "Hola, tengo una reserva." },
+        { speaker: "B", de: "Auf welchen Namen?", es: "¿A nombre de quién?" },
+        { speaker: "A", de: "Auf den Namen Marcel.", es: "A nombre de Marcel." },
+        { speaker: "B", de: "Kannst du mir deinen Pass zeigen?", es: "¿Me puedes mostrar tu pasaporte?" },
+        { speaker: "A", de: "Ja, hier bitte.", es: "Sí, aquí tienes." },
+        { speaker: "B", de: "Das WLAN-Passwort steht auf der Karte.", es: "La contraseña del wifi está en la tarjeta." },
+      ],
+      usefulPhrases: ["Tengo una reserva.", "¿A nombre de quién?", "¿Me puedes mostrar tu pasaporte?", "¿Cuál es la contraseña del wifi?"],
+    },
+    {
+      id: "hr02", mode: "roleplay", title: "Bett ist belegt", category: "hostel", level: 2,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Du gehst zu deinem Bett im Dorm – aber da liegt schon jemand anderes.",
+      goalA: "Erkläre, dass dein Bett belegt ist, und frage nach einer Lösung.",
+      goalB: "Entschuldige dich, prüfe die Buchung und biete ein anderes Bett an.",
+      dialogue: [
+        { speaker: "A", de: "Entschuldigung, mein Bett ist belegt.", es: "Disculpe, mi cama está ocupada." },
+        { speaker: "B", de: "Welche Bettnummer hast du?", es: "¿Qué número de cama tienes?" },
+        { speaker: "A", de: "Bett Nummer vier, unten.", es: "La cama número cuatro, abajo." },
+        { speaker: "B", de: "Es tut mir leid, da gab es einen Fehler.", es: "Lo siento, hubo un error." },
+        { speaker: "B", de: "Ich gebe dir das Bett gegenüber.", es: "Te doy la cama de enfrente." },
+        { speaker: "A", de: "Super, vielen Dank.", es: "Perfecto, muchas gracias." },
+      ],
+      usefulPhrases: ["Mi cama está ocupada.", "¿Qué número de cama tienes?", "Hubo un error.", "Te doy otra cama."],
+    },
+    {
+      id: "hr03", mode: "roleplay", title: "Schlüssel funktioniert nicht", category: "hostel", level: 2,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Deine Schlüsselkarte öffnet die Tür zum Dorm nicht.",
+      goalA: "Erkläre das Problem und bitte um Hilfe.",
+      goalB: "Frage nach Zimmer/Karte und biete an, sie neu zu aktivieren.",
+      dialogue: [
+        { speaker: "A", de: "Meine Karte funktioniert nicht.", es: "Mi tarjeta no funciona." },
+        { speaker: "B", de: "Welches Zimmer ist es?", es: "¿Qué habitación es?" },
+        { speaker: "A", de: "Zimmer drei, das Dorm.", es: "La habitación tres, el dormitorio." },
+        { speaker: "B", de: "Gib sie mir, ich aktiviere sie neu.", es: "Dámela, la activo de nuevo." },
+        { speaker: "A", de: "Danke, jetzt geht sie.", es: "Gracias, ahora sí funciona." },
+      ],
+      usefulPhrases: ["Mi llave no funciona.", "¿Qué habitación es?", "La activo de nuevo.", "Ahora sí funciona."],
+    },
+    {
+      id: "hr04", mode: "roleplay", title: "Neue Leute im Dorm kennenlernen", category: "social", level: 1,
+      roles: { a: "Reisender", b: "Hostelgast" },
+      situationDe: "Im Gemeinschaftsraum sitzt jemand, den du kennenlernen möchtest.",
+      goalA: "Stell dich vor und frage, woher die Person kommt und wohin sie reist.",
+      goalB: "Antworte freundlich und stell auch Gegenfragen.",
+      dialogue: [
+        { speaker: "A", de: "Hallo! Woher kommst du?", es: "¡Hola! ¿De dónde eres?" },
+        { speaker: "B", de: "Ich komme aus Argentinien. Und du?", es: "Soy de Argentina. ¿Y tú?" },
+        { speaker: "A", de: "Aus Deutschland. Reist du alleine?", es: "De Alemania. ¿Viajas solo?" },
+        { speaker: "B", de: "Ja, seit zwei Monaten.", es: "Sí, desde hace dos meses." },
+        { speaker: "A", de: "Cool! Wohin reist du danach?", es: "¡Qué chévere! ¿A dónde vas después?" },
+        { speaker: "B", de: "Nach Peru. Willst du mit?", es: "A Perú. ¿Te unes?" },
+      ],
+      usefulPhrases: ["¿De dónde eres?", "¿Viajas solo/a?", "¿A dónde vas después?", "¿Te unes?"],
+    },
+    {
+      id: "hr05", mode: "roleplay", title: "Gemeinsam essen gehen", category: "social", level: 2,
+      roles: { a: "Reisender", b: "Hostelgast" },
+      situationDe: "Du willst jemanden aus dem Hostel fragen, ob ihr zusammen essen geht.",
+      goalA: "Frag, ob die Person Hunger hat, und schlag ein Lokal vor.",
+      goalB: "Sag zu und frag nach den Details (wann, wo).",
+      dialogue: [
+        { speaker: "A", de: "Hast du Lust, etwas essen zu gehen?", es: "¿Quieres ir a comer algo?" },
+        { speaker: "B", de: "Ja, gerne! Wohin?", es: "¡Sí, claro! ¿A dónde?" },
+        { speaker: "A", de: "Es gibt einen guten Markt hier in der Nähe.", es: "Hay un buen mercado aquí cerca." },
+        { speaker: "B", de: "Perfekt. Um wie viel Uhr?", es: "Perfecto. ¿A qué hora?" },
+        { speaker: "A", de: "Um acht? Sollen wir zusammen gehen?", es: "¿A las ocho? ¿Vamos juntos?" },
+        { speaker: "B", de: "Abgemacht, bis dann!", es: "Hecho, ¡nos vemos!" },
+      ],
+      usefulPhrases: ["¿Quieres ir a comer algo?", "¿A qué hora?", "¿Vamos juntos?", "Hecho, ¡nos vemos!"],
+    },
+    {
+      id: "hr06", mode: "roleplay", title: "Taxi zum Busbahnhof teilen", category: "verkehr", level: 2,
+      roles: { a: "Reisender", b: "Mitreisender" },
+      situationDe: "Ihr müsst beide zum Busbahnhof – teilt euch ein Taxi.",
+      goalA: "Schlag vor, ein Taxi zu teilen, und frag, wohin die Person muss.",
+      goalB: "Stimm zu und kläre, wie ihr die Kosten teilt.",
+      dialogue: [
+        { speaker: "A", de: "Musst du auch zum Busbahnhof?", es: "¿Vas también a la terminal?" },
+        { speaker: "B", de: "Ja, in einer Stunde.", es: "Sí, en una hora." },
+        { speaker: "A", de: "Sollen wir uns ein Taxi teilen?", es: "¿Compartimos un taxi?" },
+        { speaker: "B", de: "Gute Idee, das ist billiger.", es: "Buena idea, sale más barato." },
+        { speaker: "A", de: "Wir teilen den Preis, okay?", es: "Dividimos el precio, ¿vale?" },
+        { speaker: "B", de: "Klar, machen wir.", es: "Claro, hagámoslo." },
+      ],
+      usefulPhrases: ["¿Compartimos un taxi?", "¿Vas a la terminal?", "Sale más barato.", "Dividimos el precio."],
+    },
+    {
+      id: "hr07", mode: "roleplay", title: "Wäsche waschen", category: "hostel", level: 2,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Du brauchst saubere Kleidung und fragst nach der Waschmaschine.",
+      goalA: "Frage, ob es eine Waschmaschine gibt und was es kostet.",
+      goalB: "Erkläre Preis, Ort und wann die Wäsche fertig ist.",
+      dialogue: [
+        { speaker: "A", de: "Gibt es eine Waschmaschine?", es: "¿Hay lavadora?" },
+        { speaker: "B", de: "Ja, im Erdgeschoss.", es: "Sí, en la planta baja." },
+        { speaker: "A", de: "Wie viel kostet eine Ladung?", es: "¿Cuánto cuesta un lavado?" },
+        { speaker: "B", de: "Hundert Pesos, mit Trocknen.", es: "Cien pesos, con secado." },
+        { speaker: "A", de: "Wann ist sie fertig?", es: "¿Cuándo está lista?" },
+        { speaker: "B", de: "In etwa zwei Stunden.", es: "En unas dos horas." },
+      ],
+      usefulPhrases: ["¿Hay lavadora?", "¿Cuánto cuesta un lavado?", "¿Cuándo está lista?", "con secado"],
+    },
+    {
+      id: "hr08", mode: "roleplay", title: "Check-out und Gepäck lagern", category: "hostel", level: 2,
+      roles: { a: "Reisender", b: "Rezeption" },
+      situationDe: "Du checkst aus, dein Bus fährt aber erst am Abend. Du willst dein Gepäck lagern.",
+      goalA: "Sag, dass du auscheckst, und frage, ob du dein Gepäck lassen kannst.",
+      goalB: "Bestätige den Check-out und erkläre die Gepäckaufbewahrung.",
+      dialogue: [
+        { speaker: "A", de: "Ich möchte auschecken, bitte.", es: "Quiero hacer el check-out, por favor." },
+        { speaker: "B", de: "Klar. War alles in Ordnung?", es: "Claro. ¿Todo bien?" },
+        { speaker: "A", de: "Ja, alles super. Kann ich mein Gepäck hier lassen?", es: "Sí, todo perfecto. ¿Puedo dejar mi equipaje aquí?" },
+        { speaker: "B", de: "Natürlich, bis wann?", es: "Por supuesto, ¿hasta qué hora?" },
+        { speaker: "A", de: "Bis sechs Uhr abends.", es: "Hasta las seis de la tarde." },
+        { speaker: "B", de: "Kein Problem, ich gebe dir eine Marke.", es: "Sin problema, te doy un ticket." },
+      ],
+      usefulPhrases: ["Quiero hacer el check-out.", "¿Puedo dejar mi equipaje aquí?", "¿Hasta qué hora?", "Te doy un ticket."],
+    },
+  ];
+
+  // Real-Life Challenges: kleine Aufgaben für draußen, erscheinen als Bonus nach
+  // einer Battle-Runde. Reine Daten – category/level passen zur App-Logik.
+  const CHALLENGES = [
+    { id: "challenge01", category: "social", level: 1, textDe: "Frag heute eine Person im Hostel, woher sie kommt.", phraseEs: "¿De dónde eres?" },
+    { id: "challenge02", category: "hostel", level: 1, textDe: "Frag an der Rezeption nach dem WLAN-Passwort.", phraseEs: "¿Cuál es la contraseña del wifi?" },
+    { id: "challenge03", category: "social", level: 2, textDe: "Lade jemanden ein, mit dir essen zu gehen.", phraseEs: "¿Quieres ir a comer algo?" },
+    { id: "challenge04", category: "hostel", level: 1, textDe: "Frag, ob das Frühstück inklusive ist.", phraseEs: "¿El desayuno está incluido?" },
+    { id: "challenge05", category: "social", level: 1, textDe: "Frag jemanden, wie lange er/sie schon unterwegs ist.", phraseEs: "¿Cuánto tiempo estás aquí?" },
+    { id: "challenge06", category: "essen", level: 2, textDe: "Frag im Lokal nach einer Empfehlung.", phraseEs: "¿Qué me recomienda?" },
+    { id: "challenge07", category: "verkehr", level: 2, textDe: "Frag jemanden, ob ihr euch ein Taxi teilt.", phraseEs: "¿Compartimos un taxi?" },
+    { id: "challenge08", category: "social", level: 2, textDe: "Tausch mit jemandem die WhatsApp-Nummer.", phraseEs: "Escríbeme por WhatsApp." },
+    { id: "challenge09", category: "hostel", level: 2, textDe: "Frag, ob du dein Gepäck lagern kannst.", phraseEs: "¿Puedo dejar mi equipaje aquí?" },
+    { id: "challenge10", category: "social", level: 1, textDe: "Verabschiede dich von jemandem auf Spanisch.", phraseEs: "Mucho gusto, ¡nos vemos!" },
+  ];
+
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES };
 })();

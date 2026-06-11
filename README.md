@@ -4,13 +4,13 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.0.0** — 439 Karten · 15 Bereiche · Spaced Repetition · Offline · Null Dependencies
+**v1.1.0** — 459 Karten · 17 Bereiche · Hostel Mode (Battle & Rollenspiele) · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
 [![Tests](https://img.shields.io/badge/Tests-23_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
-[![Karten](https://img.shields.io/badge/Karten-439-C2502E?style=flat-square)](#datenmodell)
+[![Karten](https://img.shields.io/badge/Karten-459-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
 
@@ -93,7 +93,8 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Richtung** | DE→ES / ES→DE | Lernrichtung jederzeit umschaltbar, wird gemerkt |
 | **Spaced Repetition** | Eigene SM-2-Engine | 3-Tasten-Bewertung (Nochmal / Gut / Einfach), Intervall- & Ease-Berechnung |
 | **Stufen-Filter** | A1 / A2 / B1 | Mehrfachauswahl der Schwierigkeitsstufen, kombinierbar mit Bereich |
-| **15 Bereiche** | Themen-Kategorien | Grundlagen, Zahlen, Essen, Trinken, Hotel, Verkehr, Einkaufen, Geld, Notfall, Zeit, Smalltalk, Alltag, Sätze, Behörden, Busreise |
+| **17 Bereiche** | Themen-Kategorien | Grundlagen, Zahlen, Essen, Trinken, Hotel, Hostel, Social, Verkehr, Einkaufen, Geld, Notfall, Zeit, Smalltalk, Alltag, Sätze, Behörden, Busreise |
+| **Hostel Mode** | Üben zu zweit 🛏️ | **Battle** (Aufgabe auf Deutsch, laut auf Spanisch antworten, Mitspieler bewertet 2/1/0 über 10 Runden) & **Rollenspiele** (kurze Dialoge mit verteilten Rollen) — plus Real-Life-Challenge als Bonus |
 | **Statistik** | Lern-Auswertung | Trefferquote, gemeistert / schwierig / neu, sortierte Kartenliste, Detailseite je Karte |
 | **Eigene Karten** | Editor | Eigene Vokabeln anlegen — erscheinen überall ohne Sonderbehandlung |
 | **Dark Mode** | Fürs Hostel-Bett 🌙 | Warmer, augenschonender Nachtmodus per 🌙/☀️-Schalter; folgt sonst der System-Vorliebe, Wahl wird gemerkt |
@@ -108,7 +109,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 
 ## 🌎 Die Wörterbasis
 
-**439 Karten · 15 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
+**459 Karten · 17 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
 
 Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md) live im Browser gegengeprüft: **0 Duplikate, 0 fehlende Felder, 0 ¿¡-Mismatches, keine falschen Übersetzungen**.
 
@@ -128,6 +129,9 @@ Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md
 | Smalltalk | 24 | Grundlagen | 21 | Behörden | 20 |
 | Busreise | 20 | Notfall | 15 | Alltag | 15 |
 | Trinken | 14 | Geld | 13 | Zeit | 12 |
+| Hostel | 10 | Social | 10 | | |
+
+> Hinzu kommen die **Hostel-Mode-Daten** (`BATTLES`, `ROLEPLAYS`, `CHALLENGES`) für das Üben zu zweit — separate Arrays, die nicht in die Kartenzählung eingehen.
 
 ---
 
@@ -151,7 +155,7 @@ SpanischCard/
 ├── index.html          # App-Shell + Modul-Ladereihenfolge
 ├── styles.css          # Komplettes Design (Erdton-Palette, 3D-Flip, Responsive)
 │
-├── data.js        SC.data       # Modell: 15 Kategorien, 3 Stufen, 439 Karten (REINE DATEN)
+├── data.js        SC.data       # Modell: 17 Kategorien, 3 Stufen, 459 Karten + Hostel-Mode-Daten (REINE DATEN)
 ├── countries.js   SC.countries  # Länderkunde: 19 Länder in 3 Regionen
 │
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
@@ -266,7 +270,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 
 | Feld | Bedeutung |
 |---|---|
-| `cat` | Kategorie-Id (eine von 15) |
+| `cat` | Kategorie-Id (eine von 17) |
 | `lvl` | Stufe: `1` Einsteiger (A1) · `2` Mittel (A2) · `3` Fortgeschritten (B1) |
 | `de` | Frage (Deutsch) |
 | `es` | Antwort (Spanisch); mehrere gültige Antworten mit `/` getrennt |
@@ -398,8 +402,8 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 
 | Kennzahl | Wert |
 |---|---|
-| Karten | 439 |
-| Bereiche / Kategorien | 15 |
+| Karten | 459 |
+| Bereiche / Kategorien | 17 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 12 (`SC.*`) |
