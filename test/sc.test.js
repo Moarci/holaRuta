@@ -15,11 +15,12 @@ const path = require("path");
 // window-Shim: die Module referenzieren `window`, das hier auf globalThis.window zeigt.
 globalThis.window = {};
 const SRC = path.join(__dirname, "..");
+require(path.join(SRC, "data.js"));
 require(path.join(SRC, "srs.js"));
 require(path.join(SRC, "matcher.js"));
 require(path.join(SRC, "stats.js"));
 
-const { srs, matcher, stats } = globalThis.window.SC;
+const { data, srs, matcher, stats } = globalThis.window.SC;
 const close = (a, b, eps = 1e-9) => Math.abs(a - b) < eps;
 
 // ---------- matcher ----------
@@ -189,4 +190,48 @@ test("stats.overview: aggregiert Status, Quote und Zähler", () => {
   assert.equal(ov.firstTry, 1);
   assert.equal(ov.hard, 1);
   assert.equal(ov.rate, 50); // 2 correct / 4 seen
+});
+
+// ---------- data-Integrität ----------
+test("data.CARDS: alle IDs eindeutig (inkl. Hostel/Social)", () => {
+  const ids = data.CARDS.map((c) => c.id);
+  assert.equal(new Set(ids).size, ids.length);
+});
+
+test("data.CATEGORIES: Hostel & Social vorhanden, jede Karte hat gültige cat", () => {
+  const catIds = new Set(data.CATEGORIES.map((c) => c.id));
+  assert.ok(catIds.has("hostel"));
+  assert.ok(catIds.has("social"));
+  data.CARDS.forEach((c) => assert.ok(catIds.has(c.cat), `unbekannte cat: ${c.cat} (${c.id})`));
+});
+
+test("data.BATTLES: Pflichtfelder, gültige scene, acceptable nicht leer", () => {
+  const scenes = new Set(data.BATTLE_SCENES.map((s) => s.id));
+  const ids = data.BATTLES.map((b) => b.id);
+  assert.equal(new Set(ids).size, ids.length); // eindeutige IDs
+  data.BATTLES.forEach((b) => {
+    assert.ok(b.promptDe && b.answerEs, `Felder fehlen: ${b.id}`);
+    assert.ok(scenes.has(b.scene), `unbekannte scene: ${b.scene} (${b.id})`);
+    assert.ok(Array.isArray(b.acceptable) && b.acceptable.length > 0, `acceptable leer: ${b.id}`);
+  });
+});
+
+test("data.ROLEPLAYS: Rollen, Dialog mit Sprecher A/B, usefulPhrases gesetzt", () => {
+  assert.ok(data.ROLEPLAYS.length >= 6);
+  data.ROLEPLAYS.forEach((r) => {
+    assert.ok(r.roles && r.roles.a && r.roles.b, `Rollen fehlen: ${r.id}`);
+    assert.ok(Array.isArray(r.dialogue) && r.dialogue.length > 0, `Dialog leer: ${r.id}`);
+    r.dialogue.forEach((d) => {
+      assert.ok(d.speaker === "A" || d.speaker === "B", `ungültiger Sprecher: ${r.id}`);
+      assert.ok(d.de && d.es, `Dialogzeile unvollständig: ${r.id}`);
+    });
+    assert.ok(Array.isArray(r.usefulPhrases) && r.usefulPhrases.length > 0, `usefulPhrases leer: ${r.id}`);
+  });
+});
+
+test("data.CHALLENGES: textDe und phraseEs gesetzt", () => {
+  assert.ok(data.CHALLENGES.length > 0);
+  data.CHALLENGES.forEach((c) => {
+    assert.ok(c.textDe && c.phraseEs, `Challenge unvollständig: ${c.id}`);
+  });
 });
