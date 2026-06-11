@@ -22,6 +22,7 @@ Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Span
 <summary><b>Inhaltsverzeichnis</b></summary>
 
 - [Überblick](#überblick)
+- [Screenshots](#-screenshots)
 - [Features](#-features)
 - [Die Wörterbasis](#-die-wörterbasis)
 - [Architektur](#-architektur)
@@ -58,6 +59,28 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 - **Offline first** — Service Worker cacht die komplette App. Einmal geladen, läuft sie ohne Netz weiter.
 - **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`. Es verlässt nichts das Gerät.
 - **Graceful Degradation** — Kein `localStorage`? Kein TTS? Kein Service Worker? Die App läuft trotzdem, nur ohne das jeweilige Extra.
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+
+| Startseite | Sprechen (Flip) | Antwort aufgedeckt |
+|:----------:|:---------------:|:------------------:|
+| <img src="docs/screenshots/home.png" width="250" alt="Startseite mit 15 Bereichen, Modus-, Richtungs- und Stufen-Auswahl"> | <img src="docs/screenshots/study-flip.png" width="250" alt="Lernkarte im Sprechen-Modus, Frageseite"> | <img src="docs/screenshots/study-flip-revealed.png" width="250" alt="Aufgedeckte Karte mit Aussprache und Bewertungs-Buttons"> |
+
+| Schreiben (Type) | Antwort geprüft | Statistik |
+|:----------------:|:---------------:|:---------:|
+| <img src="docs/screenshots/study-type.png" width="250" alt="Schreiben-Modus mit Eingabefeld"> | <img src="docs/screenshots/study-type-result.png" width="250" alt="Geprüfte Antwort, großzügiger Matcher zeigt Richtig"> | <img src="docs/screenshots/stats.png" width="250" alt="Statistik mit Trefferquote, gemeistert/schwierig und Kartenliste"> |
+
+| Karten-Detail | Eigene Karten | Länderkunde |
+|:-------------:|:-------------:|:-----------:|
+| <img src="docs/screenshots/card-detail.png" width="250" alt="Detailseite einer Karte mit Verlauf und Kennzahlen"> | <img src="docs/screenshots/editor.png" width="250" alt="Editor für eigene Karten"> | <img src="docs/screenshots/info.png" width="250" alt="Länderkunde mit Hauptstadt, Geschichte, Sprache, Essen und Trinken"> |
+
+</div>
+
+> Erdton-Palette im Lateinamerika-Look, 3D-Flip-Animation, komplett mit dem Daumen bedienbar.
 
 ---
 
