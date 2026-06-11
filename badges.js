@@ -65,6 +65,7 @@
     { category: "frases",  icon: "🙋", name: "Satz-Sammler",        description: "Meistere 80 % der Sätze-Karten." },
     { category: "grenze",  icon: "🛂", name: "Grenzgänger",         description: "Meistere 80 % der Behörden-Karten." },
     { category: "reise",   icon: "🚐", name: "Roadtrip-Ready",      description: "Meistere 80 % der Busreise-Karten." },
+    { category: "ropa",    icon: "👕", name: "Style auf Ruta",      description: "Meistere 80 % der Kleidungsschmuck-Karten." },
   ].map((b) => Object.assign({
     id: "cat_" + b.category,
     group: "category",
