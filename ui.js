@@ -229,9 +229,24 @@
 
   function rateButtons() {
     return `
-      <button class="rate rate--again" data-action="rate" data-rating="again">Nochmal<small>1</small></button>
-      <button class="rate rate--good" data-action="rate" data-rating="good">Gut<small>2</small></button>
-      <button class="rate rate--easy" data-action="rate" data-rating="easy">Einfach<small>3</small></button>`;
+      <span class="rateprompt">¿Cómo fue?</span>
+      <div class="ratebar" role="group" aria-label="Wie gut saß die Antwort?">
+        <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="Otra vez – nochmal üben">
+          <span class="feel__emoji" aria-hidden="true">😅</span>
+          <span class="feel__txt">Otra vez</span>
+          <kbd class="feel__key" aria-hidden="true">1</kbd>
+        </button>
+        <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="Vale – saß ganz gut">
+          <span class="feel__emoji" aria-hidden="true">🙂</span>
+          <span class="feel__txt">Vale</span>
+          <kbd class="feel__key" aria-hidden="true">2</kbd>
+        </button>
+        <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="¡Fácil! – mühelos gewusst">
+          <span class="feel__emoji" aria-hidden="true">😎</span>
+          <span class="feel__txt">¡Fácil!</span>
+          <kbd class="feel__key" aria-hidden="true">3</kbd>
+        </button>
+      </div>`;
   }
 
   // ---------- DONE ----------
