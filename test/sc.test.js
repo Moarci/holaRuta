@@ -312,8 +312,9 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
   const valid = {
     reviews: 12, againPresses: 4, dailyStreak: 2, longestStreak: 9,
     lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
-    battlesPlayed: 5, battlesWon: 3, perfectBattles: 1,
-    roleplaysSeen: { hr01: true }, unlocked: { first_steps: 1700000000000 },
+    battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
+    roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
+    unlocked: { first_steps: 1700000000000 },
   };
   storeMem[GKEY] = JSON.stringify(valid);
   assert.deepEqual(store.loadGameStats(), valid);
@@ -397,4 +398,25 @@ test("badges: Kategorie-Badges für Hostel & Social greifen ab 80 %", () => {
   const ids = badges.satisfiedIds(badges.buildMetrics(cards, prog, {}));
   assert.ok(ids.includes("cat_hostel"));
   assert.ok(!ids.includes("cat_social")); // social 0 %
+});
+
+// ---------- badges: Comeback & Real-Life Challenges ----------
+test("badges: Comeback Kid & Challenge-Badges schalten über Zähler frei", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "hostel" }], {}, {
+    comebacks: 1, challengesDone: { challenge01: true },
+  });
+  assert.equal(m.comebacks, 1);
+  assert.equal(m.challengesCompleted, 1);
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("battle_comeback"));
+  assert.ok(ids.includes("challenge_first"));
+  assert.ok(!ids.includes("challenge_5")); // erst ab 5
+});
+
+test("badges: challenge_5 ab 5 distinkten Challenges", () => {
+  const done = {};
+  for (let i = 1; i <= 5; i++) done["challenge0" + i] = true;
+  const m = badges.buildMetrics([{ id: "a", cat: "hostel" }], {}, { challengesDone: done });
+  assert.equal(m.challengesCompleted, 5);
+  assert.ok(badges.satisfiedIds(m).includes("challenge_5"));
 });

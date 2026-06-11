@@ -996,6 +996,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hm-challenge__cap { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ok); }
 .hm-challenge__text { margin: 6px 0 4px; color: var(--ink); font-weight: 600; line-height: 1.4; }
 .hm-challenge__es { margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--ok); }
+.hm-challenge__btn {
+  margin-top: 12px; width: 100%; min-height: 44px; cursor: pointer;
+  border: 1.5px solid var(--ok); border-radius: 999px; background: transparent;
+  color: var(--ok); font-weight: 700; font-size: 0.9rem; box-shadow: var(--shadow);
+}
+.hm-challenge__btn:active { transform: translateY(1px); }
+.hm-challenge__done {
+  display: block; margin-top: 12px; font-weight: 800; color: var(--ok); font-size: 0.92rem;
+}
 
 /* Rollenspiele: Szenen-Liste. */
 .hm-rps { display: flex; flex-direction: column; gap: 10px; }
@@ -4714,7 +4723,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       battlesPlayed: 0,     // abgeschlossene Battles
       battlesWon: 0,        // Battles mit klarem Sieger (kein Unentschieden)
       perfectBattles: 0,    // Battles, in denen ein Spieler volle Punkte holte
+      comebacks: 0,         // Battles nach Rückstand gewonnen
       roleplaysSeen: {},    // Map roleplayId -> true (distinkt gespielte Rollenspiele)
+      challengesDone: {},   // Map challengeId -> true (erledigte Real-Life-Challenges)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
   }
@@ -4736,7 +4747,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       battlesPlayed: num(v.battlesPlayed),
       battlesWon: num(v.battlesWon),
       perfectBattles: num(v.perfectBattles),
+      comebacks: num(v.comebacks),
       roleplaysSeen: isPlainObject(v.roleplaysSeen) ? v.roleplaysSeen : {},
+      challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
   }
@@ -5027,6 +5040,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "streak",   label: "Dranbleiben", icon: "🔥" },
     { id: "category", label: "Bereiche",    icon: "🗂️" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
+    { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
   ];
 
@@ -5099,10 +5113,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       description: "Spiele 10 Battles.",               unlockedText: "Schon durch viele Sprachduelle gekämpft." },
     { id: "battle_perfect", group: "hostel", icon: "✅", name: "Perfect Check-in",   type: "counter", metric: "perfectBattles", threshold: 1,
       description: "Beende ein Battle ohne Fehler (volle Punktzahl).", unlockedText: "Sauber durchgezogen – keine Aussetzer." },
+    { id: "battle_comeback",group: "hostel", icon: "🔁", name: "Comeback Kid",       type: "counter", metric: "comebacks", threshold: 1,
+      description: "Gewinne ein Battle nach Rückstand.", unlockedText: "Erst gestolpert, dann gewonnen." },
     { id: "roleplay_first", group: "hostel", icon: "🎭", name: "First Scene",        type: "counter", metric: "roleplaysCompleted", threshold: 1,
       description: "Spiele dein erstes Rollenspiel.",  unlockedText: "Dein erstes Gespräch laut durchgespielt." },
     { id: "roleplay_5",     group: "hostel", icon: "🎬", name: "Scene Collector",    type: "counter", metric: "roleplaysCompleted", threshold: 5,
       description: "Spiele 5 verschiedene Rollenspiele.", unlockedText: "Viele echte Reisesituationen trainiert." },
+
+    // ---------- Mutproben (Real-Life Challenges) ----------
+    { id: "challenge_first", group: "reallife", icon: "💬", name: "Mutiger erster Satz", type: "counter", metric: "challengesCompleted", threshold: 1,
+      description: "Hake deine erste Real-Life Challenge ab.", unlockedText: "Du hast Spanisch nicht nur gelernt, sondern benutzt." },
+    { id: "challenge_5",     group: "reallife", icon: "🚪", name: "Comfort Zone Exit",   type: "counter", metric: "challengesCompleted", threshold: 5,
+      description: "Hake 5 Real-Life Challenges ab.", unlockedText: "Raus aus der App, rein ins echte Sprechen." },
 
     // ---------- Spezial ----------
     { id: "night_owl",  group: "special", icon: "🌙", name: "Midnight Español",         type: "flag", metric: "nightOwl", secret: true,
@@ -5156,7 +5178,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       battlesPlayed: c.battlesPlayed || 0,
       battlesWon: c.battlesWon || 0,
       perfectBattles: c.perfectBattles || 0,
+      comebacks: c.comebacks || 0,
       roleplaysCompleted: c.roleplaysSeen ? Object.keys(c.roleplaysSeen).length : 0,
+      challengesCompleted: c.challengesDone ? Object.keys(c.challengesDone).length : 0,
       categoryMastery,
       categoryTotals: catTotal,
     };
@@ -6601,6 +6625,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <span class="hm-challenge__cap">🎯 Real-Life Challenge</span>
           <p class="hm-challenge__text">${esc(vm.challenge.textDe)}</p>
           <p class="hm-challenge__es" lang="es">${esc(vm.challenge.phraseEs)}</p>
+          ${vm.challengeDone
+            ? `<span class="hm-challenge__done">✓ Geschafft – ¡bien hecho!</span>`
+            : `<button class="hm-challenge__btn" data-action="challenge-done" data-id="${esc(vm.challenge.id)}">Challenge gemeistert ✓</button>`}
         </div>`
       : "";
     return `
@@ -7063,7 +7090,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (b.scores.A === turnsA * 2 || (turnsB > 0 && b.scores.B === turnsB * 2)) {
       g.perfectBattles = (g.perfectBattles || 0) + 1;
     }
+    // Comeback: Sieger lag zwischendurch hinten.
+    const wonA = b.scores.A > b.scores.B, wonB = b.scores.B > b.scores.A;
+    if ((wonA && b.behindA) || (wonB && b.behindB)) g.comebacks = (g.comebacks || 0) + 1;
     gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
+  // Hostel Mode: eine erledigte Real-Life-Challenge vermerken (distinkt).
+  function recordChallengeDone(id) {
+    if (!badges || !id || (gamestats.challengesDone && gamestats.challengesDone[id])) return;
+    const done = Object.assign({}, gamestats.challengesDone, { [id]: true });
+    gamestats = Object.assign({}, gamestats, { challengesDone: done });
     store.saveGameStats(gamestats);
   }
 
@@ -7130,7 +7168,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       scores: b.scores,
       rounds: b.totalRounds,
       winner,
-      challenge: b.challenge, // { textDe, phraseEs } | null
+      challenge: b.challenge, // { id, textDe, phraseEs } | null
+      challengeDone: !!(b.challenge && gamestats.challengesDone && gamestats.challengesDone[b.challenge.id]),
     };
   }
 
@@ -7370,6 +7409,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       totalRounds: rounds,
       current: "A",
       scores: { A: 0, B: 0 },
+      behindA: false,         // war A irgendwann in Rückstand? (für "Comeback Kid")
+      behindB: false,
       revealed: false,
       challenge: null,
     };
@@ -7389,6 +7430,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!b || !b.revealed) return;
     buzz(points >= 2 ? 12 : 8);
     b.scores[b.current] += points;
+    // Rückstand-Marken laufend mitführen (Basis für "Comeback Kid").
+    if (b.scores.A < b.scores.B) b.behindA = true;
+    if (b.scores.B < b.scores.A) b.behindB = true;
     if (b.round >= b.totalRounds) {
       // Passende Real-Life-Challenge als Bonus (zufällig).
       const list = data.CHALLENGES || [];
@@ -7408,6 +7452,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dismissBadgeToast();
     state.battle = null;
     state.screen = "battleSetup";
+    render();
+  }
+
+  // Real-Life-Challenge auf dem Battle-Ende-Screen abhaken (Mutproben-Badges).
+  function markChallengeDone(id) {
+    recordChallengeDone(id);
+    syncBadges(Date.now(), true);
     render();
   }
 
@@ -7660,6 +7711,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "battle-reveal") battleReveal();
     else if (action === "battle-score") battleScore(Number(el.dataset.points));
     else if (action === "battle-again") battleAgain();
+    else if (action === "challenge-done") markChallengeDone(el.dataset.id);
     else if (action === "open-roleplay-setup") openRoleplaySetup();
     else if (action === "start-roleplay") startRoleplay(el.dataset.id);
     else if (action === "roleplay-swap") roleplaySwap();

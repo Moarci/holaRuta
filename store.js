@@ -62,7 +62,9 @@
       battlesPlayed: 0,     // abgeschlossene Battles
       battlesWon: 0,        // Battles mit klarem Sieger (kein Unentschieden)
       perfectBattles: 0,    // Battles, in denen ein Spieler volle Punkte holte
+      comebacks: 0,         // Battles nach Rückstand gewonnen
       roleplaysSeen: {},    // Map roleplayId -> true (distinkt gespielte Rollenspiele)
+      challengesDone: {},   // Map challengeId -> true (erledigte Real-Life-Challenges)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
   }
@@ -84,7 +86,9 @@
       battlesPlayed: num(v.battlesPlayed),
       battlesWon: num(v.battlesWon),
       perfectBattles: num(v.perfectBattles),
+      comebacks: num(v.comebacks),
       roleplaysSeen: isPlainObject(v.roleplaysSeen) ? v.roleplaysSeen : {},
+      challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
   }

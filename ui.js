@@ -875,6 +875,9 @@
           <span class="hm-challenge__cap">🎯 Real-Life Challenge</span>
           <p class="hm-challenge__text">${esc(vm.challenge.textDe)}</p>
           <p class="hm-challenge__es" lang="es">${esc(vm.challenge.phraseEs)}</p>
+          ${vm.challengeDone
+            ? `<span class="hm-challenge__done">✓ Geschafft – ¡bien hecho!</span>`
+            : `<button class="hm-challenge__btn" data-action="challenge-done" data-id="${esc(vm.challenge.id)}">Challenge gemeistert ✓</button>`}
         </div>`
       : "";
     return `

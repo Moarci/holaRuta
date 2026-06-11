@@ -41,6 +41,7 @@
     { id: "streak",   label: "Dranbleiben", icon: "🔥" },
     { id: "category", label: "Bereiche",    icon: "🗂️" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
+    { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
   ];
 
@@ -113,10 +114,18 @@
       description: "Spiele 10 Battles.",               unlockedText: "Schon durch viele Sprachduelle gekämpft." },
     { id: "battle_perfect", group: "hostel", icon: "✅", name: "Perfect Check-in",   type: "counter", metric: "perfectBattles", threshold: 1,
       description: "Beende ein Battle ohne Fehler (volle Punktzahl).", unlockedText: "Sauber durchgezogen – keine Aussetzer." },
+    { id: "battle_comeback",group: "hostel", icon: "🔁", name: "Comeback Kid",       type: "counter", metric: "comebacks", threshold: 1,
+      description: "Gewinne ein Battle nach Rückstand.", unlockedText: "Erst gestolpert, dann gewonnen." },
     { id: "roleplay_first", group: "hostel", icon: "🎭", name: "First Scene",        type: "counter", metric: "roleplaysCompleted", threshold: 1,
       description: "Spiele dein erstes Rollenspiel.",  unlockedText: "Dein erstes Gespräch laut durchgespielt." },
     { id: "roleplay_5",     group: "hostel", icon: "🎬", name: "Scene Collector",    type: "counter", metric: "roleplaysCompleted", threshold: 5,
       description: "Spiele 5 verschiedene Rollenspiele.", unlockedText: "Viele echte Reisesituationen trainiert." },
+
+    // ---------- Mutproben (Real-Life Challenges) ----------
+    { id: "challenge_first", group: "reallife", icon: "💬", name: "Mutiger erster Satz", type: "counter", metric: "challengesCompleted", threshold: 1,
+      description: "Hake deine erste Real-Life Challenge ab.", unlockedText: "Du hast Spanisch nicht nur gelernt, sondern benutzt." },
+    { id: "challenge_5",     group: "reallife", icon: "🚪", name: "Comfort Zone Exit",   type: "counter", metric: "challengesCompleted", threshold: 5,
+      description: "Hake 5 Real-Life Challenges ab.", unlockedText: "Raus aus der App, rein ins echte Sprechen." },
 
     // ---------- Spezial ----------
     { id: "night_owl",  group: "special", icon: "🌙", name: "Midnight Español",         type: "flag", metric: "nightOwl", secret: true,
@@ -170,7 +179,9 @@
       battlesPlayed: c.battlesPlayed || 0,
       battlesWon: c.battlesWon || 0,
       perfectBattles: c.perfectBattles || 0,
+      comebacks: c.comebacks || 0,
       roleplaysCompleted: c.roleplaysSeen ? Object.keys(c.roleplaysSeen).length : 0,
+      challengesCompleted: c.challengesDone ? Object.keys(c.challengesDone).length : 0,
       categoryMastery,
       categoryTotals: catTotal,
     };
