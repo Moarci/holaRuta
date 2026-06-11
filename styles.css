@@ -511,6 +511,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .ghostbtn:active { transform: translateY(1px); }
 
+/* 🧭 Reise-Kontext: aufklappbarer Block unter der Antwort. Fühlt sich an wie eine
+ * kleine handgeschriebene Reise-Notiz statt wie Grammatikunterricht. */
+.context { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+.contextbtn { align-self: center; }
+.context-panel {
+  width: 100%; text-align: left;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  padding: 14px 16px; box-shadow: var(--shadow); animation: pop 0.2s ease;
+}
+.context-panel[hidden] { display: none; }
+.context-panel__title {
+  margin: 0 0 10px; font-family: var(--font-display);
+  font-size: 1.02rem; font-weight: 800; color: var(--ink);
+}
+.context-panel__line { margin: 0 0 12px; }
+.context-panel__es {
+  margin: 0 0 4px; font-weight: 800; font-size: 1.06rem; line-height: 1.35; color: var(--brand-ink);
+}
+.context-panel__de { margin: 0; color: var(--ink-soft); line-height: 1.4; }
+.context-panel__block { margin-top: 10px; }
+.context-panel__label {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--muted);
+}
+.context-panel__text { margin: 3px 0 0; color: var(--ink-soft); line-height: 1.45; font-size: 0.92rem; }
+/* In der Kartendetail-Ansicht sitzt der Block in der Karte – etwas Abstand nach oben. */
+.cardx .context { margin-top: 14px; }
+
 /* Gefahr-Button */
 .dangerbtn {
   margin-top: 6px; cursor: pointer;

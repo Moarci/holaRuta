@@ -177,6 +177,33 @@
     return `<button class="${cls}" type="button" data-action="speak" aria-label="Antwort anhören" title="Anhören">🔊</button>`;
   }
 
+  // Reise-Kontext: aufklappbarer "🧭 Kontext"-Block. Zeigt einen echten Reisesatz,
+  // die typische Situation und einen kurzen Reisetipp. Nur gerendert, wenn die Karte
+  // ein context-Objekt mitbringt. Der Controller toggelt das Panel in-place (kein
+  // Re-Render) und zählt die Ansicht fürs Badge-System.
+  function contextBlock(ctx) {
+    if (!ctx) return "";
+    const line = (es, de) => {
+      const e = es ? `<p class="context-panel__es" lang="es">${esc(es)}</p>` : "";
+      const d = de ? `<p class="context-panel__de">${esc(de)}</p>` : "";
+      return e || d ? `<div class="context-panel__line">${e}${d}</div>` : "";
+    };
+    const meta = (label, text) => text
+      ? `<div class="context-panel__block"><div class="context-panel__label">${esc(label)}</div><p class="context-panel__text">${esc(text)}</p></div>`
+      : "";
+    return `
+      <div class="context">
+        <button class="ghostbtn contextbtn" type="button" data-action="toggle-context"
+                aria-expanded="false" aria-controls="context-panel">🧭 Kontext</button>
+        <div class="context-panel" id="context-panel" hidden>
+          <h3 class="context-panel__title">🧭 So nutzt du es unterwegs</h3>
+          ${line(ctx.sentenceEs, ctx.sentenceDe)}
+          ${meta("Situation", ctx.situation)}
+          ${meta("Reisetipp", ctx.note)}
+        </div>
+      </div>`;
+  }
+
   // Sprechen-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
   // 🔊 und Aussprache-Tipp sitzen immer auf der spanischen Seite.
   function flipBody(vm) {
@@ -204,6 +231,7 @@
         </div>
       </div>
       <div class="controls" id="controls" ${vm.revealed ? "" : "hidden"}>
+        ${contextBlock(vm.context)}
         ${rateButtons()}
       </div>`;
   }
@@ -246,7 +274,10 @@
         ${sq ? "" : tip}
         ${verdict}
       </div>
-      <div class="controls" id="controls">${rateButtons()}</div>`;
+      <div class="controls" id="controls">
+        ${contextBlock(vm.context)}
+        ${rateButtons()}
+      </div>`;
   }
 
   function rateButtons() {
@@ -557,6 +588,7 @@
           <div class="cardx__es" lang="es">${esc(vm.es)}</div>
           ${tip}
           <div class="cardx__tags">${firstTryBadge}</div>
+          ${contextBlock(vm.context)}
         </div>
 
         ${facts}

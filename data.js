@@ -3,13 +3,17 @@
  *
  * Kategorie: { id, label, icon, grad:[from,to] }  – grad = Farbverlauf der Kachel
  * Stufe:     { id, label, short, color }           – Schwierigkeitsstufe (1–3)
- * Karte:     { id, cat, lvl, de, es, tip?, alt? }
+ * Karte:     { id, cat, lvl, de, es, tip?, alt?, context? }
  *   cat = Kategorie-id
  *   lvl = Schwierigkeitsstufe: 1 = Einsteiger, 2 = Mittel, 3 = Fortgeschritten
  *   de  = Frage (Deutsch bzw. Ziffer)
  *   es  = Antwort (Anzeige). Mehrere gültige Antworten mit " / " trennen.
  *   tip = Aussprache-/Merkhinweis (optional)
  *   alt = explizite Liste akzeptierter Tipp-Antworten (optional, überschreibt es-Split)
+ *   context = Reise-Kontext (optional): { sentenceEs, sentenceDe, situation, note }
+ *             zeigt einen echten Reisesatz, die typische Situation und einen kurzen
+ *             Reisetipp. Per "🧭 Kontext"-Button auf der Antwortseite aufklappbar.
+ *             Inhaltsregel: immer ein echter, sprechbarer Satz – kein Lehrbuch-Spanisch.
  *
  * Neue Karten: einfach ans passende Array anhängen (lvl nicht vergessen).
  * Neue Kategorie: oben ergänzen. Filtern nach Stufe: über card.lvl.
@@ -56,14 +60,17 @@
     { id: "b07", cat: "basics", lvl: 1, de: "Gern geschehen", es: "De nada", tip: "de NA-da" },
     { id: "b08", cat: "basics", lvl: 1, de: "Entschuldigung", es: "Disculpe", tip: "dis-KUL-pe" },
     { id: "b09", cat: "basics", lvl: 1, de: "Ja / Nein", es: "Sí / No", tip: "" },
-    { id: "b10", cat: "basics", lvl: 2, de: "Ich verstehe nicht", es: "No entiendo", tip: "no en-ti-EN-do" },
+    { id: "b10", cat: "basics", lvl: 2, de: "Ich verstehe nicht", es: "No entiendo", tip: "no en-ti-EN-do",
+      context: { sentenceEs: "Perdón, no entiendo. ¿Puede repetir?", sentenceDe: "Entschuldigung, ich verstehe nicht. Können Sie das wiederholen?", situation: "Wenn jemand zu schnell oder undeutlich spricht.", note: "Bleib ruhig und ergänze direkt ¿Puede repetir? – das hilft fast immer weiter." } },
     { id: "b11", cat: "basics", lvl: 2, de: "Sprechen Sie Englisch?", es: "¿Habla inglés?", tip: "AB-la in-GLES" },
     { id: "b12", cat: "basics", lvl: 2, de: "Wie heißt du?", es: "¿Cómo te llamas?", tip: "KO-mo te YA-mas" },
     { id: "b13", cat: "basics", lvl: 2, de: "Ich heiße ...", es: "Me llamo ...", tip: "me YA-mo", alt: ["me llamo"] },
     { id: "b14", cat: "basics", lvl: 2, de: "Kannst du mir helfen?", es: "¿Me puedes ayudar?", tip: "me PUE-des a-yu-DAR" },
     { id: "b15", cat: "basics", lvl: 2, de: "Langsamer, bitte", es: "Más despacio, por favor", tip: "mas des-PA-si-o" },
-    { id: "b16", cat: "basics", lvl: 1, de: "die Toilette", es: "el baño", tip: "el BA-nyo" },
-    { id: "b17", cat: "basics", lvl: 1, de: "Hilfe!", es: "Ayuda / Socorro", tip: "a-YU-da" },
+    { id: "b16", cat: "basics", lvl: 1, de: "die Toilette", es: "el baño", tip: "el BA-nyo",
+      context: { sentenceEs: "Disculpe, ¿dónde está el baño?", sentenceDe: "Entschuldigung, wo ist die Toilette?", situation: "In Restaurants, Hostels, Busbahnhöfen oder Cafés.", note: "In Lateinamerika sagt man meistens el baño, nicht wörtlich el inodoro." } },
+    { id: "b17", cat: "basics", lvl: 1, de: "Hilfe!", es: "Ayuda / Socorro", tip: "a-YU-da",
+      context: { sentenceEs: "Por favor, necesito ayuda.", sentenceDe: "Bitte, ich brauche Hilfe.", situation: "Wenn du dich unsicher fühlst oder Unterstützung brauchst.", note: "Kurz und klar. In ernsten Situationen kannst du ergänzen: Es urgente." } },
     { id: "b18", cat: "basics", lvl: 2, de: "Ich brauche einen Arzt", es: "Necesito un médico", tip: "ne-se-SI-to un ME-di-ko" },
     { id: "b19", cat: "basics", lvl: 3, de: "Rufen Sie die Polizei", es: "Llame a la policía", tip: "YA-me a la po-li-SI-a" },
     { id: "b20", cat: "basics", lvl: 2, de: "Ich habe mich verlaufen", es: "Estoy perdido/a", tip: "es-TOY per-DI-do", alt: ["estoy perdido", "estoy perdida"] },
@@ -197,7 +204,8 @@
     { id: "e01", cat: "essen", lvl: 1, de: "das Essen", es: "la comida", tip: "la ko-MI-da" },
     { id: "e02", cat: "essen", lvl: 2, de: "Ich habe Hunger", es: "Tengo hambre", tip: "TEN-go AM-bre" },
     { id: "e03", cat: "essen", lvl: 1, de: "die Speisekarte", es: "el menú / la carta", tip: "el me-NU" },
-    { id: "e04", cat: "essen", lvl: 2, de: "Die Rechnung, bitte", es: "La cuenta, por favor", tip: "la KUEN-ta" },
+    { id: "e04", cat: "essen", lvl: 2, de: "Die Rechnung, bitte", es: "La cuenta, por favor", tip: "la KUEN-ta",
+      context: { sentenceEs: "La cuenta, por favor.", sentenceDe: "Die Rechnung, bitte.", situation: "Im Restaurant, Café oder bei Streetfood mit Sitzbereich.", note: "Kurz, höflich und völlig ausreichend. Noch höflicher: ¿Me trae la cuenta, por favor?" } },
     { id: "e05", cat: "essen", lvl: 2, de: "Ich bin Vegetarier", es: "Soy vegetariano/a", tip: "soy we-che-ta-RI-a-no", alt: ["soy vegetariano", "soy vegetariana"] },
     { id: "e06", cat: "essen", lvl: 1, de: "ohne Fleisch", es: "sin carne", tip: "sin KAR-ne" },
     { id: "e07", cat: "essen", lvl: 1, de: "Brot", es: "pan", tip: "pan" },
@@ -241,7 +249,8 @@
     { id: "e43", cat: "essen", lvl: 2, de: "Kann ich die Pommes gegen Salat tauschen?", es: "¿Puedo cambiar las papas por ensalada?", tip: "kam-bi-AR ... por en-sa-LA-da" },
     { id: "e44", cat: "essen", lvl: 3, de: "Statt Reis lieber Bohnen, bitte", es: "En vez de arroz, frijoles, por favor", tip: "en wes de a-RROS, fri-CHO-les" },
     { id: "e45", cat: "essen", lvl: 2, de: "Geht das auch mit einer Beilage nach Wahl?", es: "¿Puede ser con un acompañamiento a elección?", tip: "a-kom-pa-nya-mi-EN-to a e-lek-si-ON" },
-    { id: "e46", cat: "essen", lvl: 2, de: "Können Sie die Zwiebeln weglassen?", es: "¿Puede quitar la cebolla?", tip: "ki-TAR la se-BO-ya" },
+    { id: "e46", cat: "essen", lvl: 2, de: "Können Sie die Zwiebeln weglassen?", es: "¿Puede quitar la cebolla?", tip: "ki-TAR la se-BO-ya",
+      context: { sentenceEs: "Para mí sin cebolla, por favor.", sentenceDe: "Für mich ohne Zwiebeln, bitte.", situation: "Beim Bestellen, wenn du eine Zutat vermeiden willst.", note: "Die Struktur sin ... ist extrem praktisch: sin carne, sin queso, sin picante." } },
     { id: "e47", cat: "essen", lvl: 2, de: "Ohne Koriander, bitte", es: "Sin cilantro, por favor", tip: "sin si-LAN-tro" },
     { id: "e48", cat: "essen", lvl: 2, de: "Dressing bitte separat", es: "El aderezo aparte, por favor", tip: "el a-de-RE-so a-PAR-te" },
     { id: "e49", cat: "essen", lvl: 3, de: "Kann ich das Hähnchen durch Gemüse ersetzen?", es: "¿Puedo reemplazar el pollo por verduras?", tip: "rre-em-pla-SAR el PO-yo" },
@@ -306,30 +315,42 @@
     { id: "h24", cat: "hotel", lvl: 2, de: "Mir ist zu kalt / zu warm", es: "Tengo mucho frío / calor", tip: "FRI-o / ka-LOR" },
 
     // ===================== HOSTEL =====================
-    { id: "hostel01", cat: "hostel", lvl: 1, de: "Ich habe eine Reservierung.", es: "Tengo una reserva.", tip: "TEN-go U-na re-SER-wa" },
-    { id: "hostel02", cat: "hostel", lvl: 1, de: "Haben Sie noch ein Bett frei?", es: "¿Tiene una cama libre?", tip: "TI-e-ne U-na KA-ma LI-bre" },
-    { id: "hostel03", cat: "hostel", lvl: 1, de: "Ist Frühstück inklusive?", es: "¿El desayuno está incluido?", tip: "el de-sa-YU-no es-TA in-klu-I-do" },
-    { id: "hostel04", cat: "hostel", lvl: 1, de: "Wo ist mein Bett?", es: "¿Dónde está mi cama?", tip: "DON-de es-TA mi KA-ma" },
-    { id: "hostel05", cat: "hostel", lvl: 2, de: "Mein Schlüssel funktioniert nicht.", es: "Mi llave no funciona.", tip: "mi YA-we no fun-si-O-na" },
-    { id: "hostel06", cat: "hostel", lvl: 2, de: "Kann ich mein Gepäck hier lassen?", es: "¿Puedo dejar mi equipaje aquí?", tip: "PUE-do de-CHAR mi e-ki-PA-che a-KI" },
-    { id: "hostel07", cat: "hostel", lvl: 2, de: "Gibt es ein Schließfach?", es: "¿Hay un locker?", tip: "ai un LO-ker" },
-    { id: "hostel08", cat: "hostel", lvl: 2, de: "Mein Bett ist belegt.", es: "Mi cama está ocupada.", tip: "mi KA-ma es-TA o-ku-PA-da" },
-    { id: "hostel09", cat: "hostel", lvl: 2, de: "Gibt es eine Küche?", es: "¿Hay cocina?", tip: "ai ko-SI-na" },
-    { id: "hostel10", cat: "hostel", lvl: 3, de: "Könnte ich das Zimmer wechseln?", es: "¿Podría cambiar de habitación?", tip: "po-DRI-a kam-bi-AR de a-bi-ta-si-ON" },
+    { id: "hostel01", cat: "hostel", lvl: 1, de: "Ich habe eine Reservierung.", es: "Tengo una reserva.", tip: "TEN-go U-na re-SER-wa",
+      context: { sentenceEs: "Hola, tengo una reserva para esta noche.", sentenceDe: "Hallo, ich habe eine Reservierung für heute Nacht.", situation: "Beim Check-in im Hostel, Hotel oder Guesthouse.", note: "Wenn nach dem Namen gefragt wird, sag: A nombre de Marcel." } },
+    { id: "hostel02", cat: "hostel", lvl: 1, de: "Haben Sie noch ein Bett frei?", es: "¿Tiene una cama libre?", tip: "TI-e-ne U-na KA-ma LI-bre",
+      context: { sentenceEs: "Hola, ¿tiene una cama libre para esta noche?", sentenceDe: "Hallo, haben Sie für heute Nacht noch ein Bett frei?", situation: "Wenn du spontan ein Hostel suchst oder verlängern möchtest.", note: "Alternativ kannst du fragen: ¿Hay una cama disponible?" } },
+    { id: "hostel03", cat: "hostel", lvl: 1, de: "Ist Frühstück inklusive?", es: "¿El desayuno está incluido?", tip: "el de-sa-YU-no es-TA in-klu-I-do",
+      context: { sentenceEs: "¿El desayuno está incluido en el precio?", sentenceDe: "Ist das Frühstück im Preis enthalten?", situation: "Beim Check-in oder bei der Buchung vor Ort.", note: "Wenn es nicht inklusive ist, frag einfach: ¿Cuánto cuesta?" } },
+    { id: "hostel04", cat: "hostel", lvl: 1, de: "Wo ist mein Bett?", es: "¿Dónde está mi cama?", tip: "DON-de es-TA mi KA-ma",
+      context: { sentenceEs: "Perdón, ¿dónde está mi cama?", sentenceDe: "Entschuldigung, wo ist mein Bett?", situation: "Im Dorm, wenn dir nur eine Bett- oder Zimmernummer genannt wurde.", note: "Oben oder unten? Man unterscheidet cama de arriba und cama de abajo." } },
+    { id: "hostel05", cat: "hostel", lvl: 2, de: "Mein Schlüssel funktioniert nicht.", es: "Mi llave no funciona.", tip: "mi YA-we no fun-si-O-na",
+      context: { sentenceEs: "Perdón, mi llave no funciona. ¿Me puede ayudar?", sentenceDe: "Entschuldigung, mein Schlüssel funktioniert nicht. Können Sie mir helfen?", situation: "An der Rezeption, wenn Karte, Schlüssel oder Türcode streiken.", note: "Für eine Schlüsselkarte sag tarjeta: Mi tarjeta no funciona." } },
+    { id: "hostel06", cat: "hostel", lvl: 2, de: "Kann ich mein Gepäck hier lassen?", es: "¿Puedo dejar mi equipaje aquí?", tip: "PUE-do de-CHAR mi e-ki-PA-che a-KI",
+      context: { sentenceEs: "¿Puedo dejar mi equipaje aquí hasta la tarde?", sentenceDe: "Kann ich mein Gepäck hier bis zum Nachmittag lassen?", situation: "Vor dem Check-in oder nach dem Check-out.", note: "Sehr praktisch am Reisetag. Für Rucksack sag mochila." } },
+    { id: "hostel07", cat: "hostel", lvl: 2, de: "Gibt es ein Schließfach?", es: "¿Hay un locker?", tip: "ai un LO-ker",
+      context: { sentenceEs: "¿Hay un locker para guardar mis cosas?", sentenceDe: "Gibt es ein Schließfach, um meine Sachen aufzubewahren?", situation: "Im Dorm, wenn du Wertsachen sicher verstauen willst.", note: "locker wird fast überall verstanden. Spanischer wäre casillero." } },
+    { id: "hostel08", cat: "hostel", lvl: 2, de: "Mein Bett ist belegt.", es: "Mi cama está ocupada.", tip: "mi KA-ma es-TA o-ku-PA-da",
+      context: { sentenceEs: "Perdón, mi cama está ocupada. Creo que hay un error.", sentenceDe: "Entschuldigung, mein Bett ist belegt. Ich glaube, es gibt einen Fehler.", situation: "Wenn jemand auf deinem zugewiesenen Bett liegt.", note: "Der Zusatz Creo que hay un error klingt ruhig, nicht aggressiv." } },
+    { id: "hostel09", cat: "hostel", lvl: 2, de: "Gibt es eine Küche?", es: "¿Hay cocina?", tip: "ai ko-SI-na",
+      context: { sentenceEs: "¿Hay cocina para los huéspedes?", sentenceDe: "Gibt es eine Küche für die Gäste?", situation: "Wenn du selbst kochen oder Essen lagern willst.", note: "Gäste heißt huéspedes – im Hostel reicht aber auch nur cocina." } },
+    { id: "hostel10", cat: "hostel", lvl: 3, de: "Könnte ich das Zimmer wechseln?", es: "¿Podría cambiar de habitación?", tip: "po-DRI-a kam-bi-AR de a-bi-ta-si-ON",
+      context: { sentenceEs: "Disculpe, ¿podría cambiar de habitación? Hay mucho ruido.", sentenceDe: "Entschuldigung, könnte ich das Zimmer wechseln? Es ist sehr laut.", situation: "Wenn dein Zimmer zu laut, zu heiß oder problematisch ist.", note: "Podría ist höflicher als puedo und passt gut an der Rezeption." } },
 
     // ===================== VERKEHR =====================
     { id: "v01", cat: "verkehr", lvl: 2, de: "Wo ist ...?", es: "¿Dónde está ...?", tip: "DON-de es-TA", alt: ["donde esta"] },
     { id: "v02", cat: "verkehr", lvl: 1, de: "links / rechts", es: "izquierda / derecha", tip: "is-ki-ER-da / de-RE-cha" },
     { id: "v03", cat: "verkehr", lvl: 1, de: "geradeaus", es: "todo recto / derecho", tip: "TO-do REK-to" },
     { id: "v04", cat: "verkehr", lvl: 2, de: "Wie komme ich nach ...?", es: "¿Cómo llego a ...?", tip: "KO-mo YE-go", alt: ["como llego a"] },
-    { id: "v05", cat: "verkehr", lvl: 1, de: "der Bus", es: "el bus / el colectivo", tip: "'colectivo' in vielen Ländern" },
+    { id: "v05", cat: "verkehr", lvl: 1, de: "der Bus", es: "el bus / el colectivo", tip: "'colectivo' in vielen Ländern",
+      context: { sentenceEs: "Disculpe, ¿de dónde sale el bus a Cartagena?", sentenceDe: "Entschuldigung, von wo fährt der Bus nach Cartagena ab?", situation: "Am Busbahnhof, bei einer Agentur oder an einer Haltestelle.", note: "Je nach Land heißt der Bus auch colectivo, micro, buseta oder camión." } },
     { id: "v06", cat: "verkehr", lvl: 1, de: "das Taxi", es: "el taxi", tip: "el TAK-si" },
     { id: "v07", cat: "verkehr", lvl: 1, de: "das Ticket", es: "el boleto / el billete", tip: "bo-LE-to" },
     { id: "v08", cat: "verkehr", lvl: 1, de: "der Bahnhof", es: "la estación", tip: "la es-ta-si-ON" },
     { id: "v09", cat: "verkehr", lvl: 1, de: "der Flughafen", es: "el aeropuerto", tip: "a-e-ro-PUER-to" },
     { id: "v10", cat: "verkehr", lvl: 2, de: "Halten Sie hier, bitte", es: "Pare aquí, por favor", tip: "PA-re a-KI" },
     { id: "v11", cat: "verkehr", lvl: 2, de: "Wann fährt es ab?", es: "¿A qué hora sale?", tip: "a ke O-ra SA-le" },
-    { id: "v12", cat: "verkehr", lvl: 2, de: "Wie viel kostet die Fahrt?", es: "¿Cuánto cuesta el viaje?", tip: "WI-a-che" },
+    { id: "v12", cat: "verkehr", lvl: 2, de: "Wie viel kostet die Fahrt?", es: "¿Cuánto cuesta el viaje?", tip: "WI-a-che",
+      context: { sentenceEs: "¿Cuánto cuesta el viaje al centro?", sentenceDe: "Wie viel kostet die Fahrt ins Zentrum?", situation: "Im Taxi oder colectivo, am besten vor dem Einsteigen.", note: "Vorher fragen schützt vor Überraschungen. Für ein Ticket sag boleto oder pasaje." } },
     { id: "v13", cat: "verkehr", lvl: 2, de: "Ist es weit?", es: "¿Está lejos?", tip: "es-TA LE-chos" },
     { id: "v14", cat: "verkehr", lvl: 1, de: "in der Nähe / nah", es: "cerca", tip: "SER-ka" },
     { id: "v15", cat: "verkehr", lvl: 3, de: "Wie weit ist es?", es: "¿Qué tan lejos está?", tip: "ke tan LE-chos" },
@@ -408,11 +429,13 @@
     { id: "n08", cat: "notfall", lvl: 3, de: "Rufen Sie einen Krankenwagen", es: "Llame a una ambulancia", tip: "am-bu-LAN-si-a" },
     { id: "n09", cat: "notfall", lvl: 2, de: "Ich brauche Medikamente", es: "Necesito medicamentos", tip: "me-di-ka-MEN-tos" },
     { id: "n10", cat: "notfall", lvl: 2, de: "Man hat mich bestohlen", es: "Me robaron", tip: "me ro-BA-ron" },
-    { id: "n11", cat: "notfall", lvl: 2, de: "Ich habe mein ... verloren", es: "Perdí mi ...", tip: "per-DI mi" },
+    { id: "n11", cat: "notfall", lvl: 2, de: "Ich habe mein ... verloren", es: "Perdí mi ...", tip: "per-DI mi",
+      context: { sentenceEs: "Perdí mi celular. ¿Alguien lo encontró?", sentenceDe: "Ich habe mein Handy verloren. Hat es jemand gefunden?", situation: "Im Hostel, Bus, Restaurant oder nach einer Tour.", note: "In Lateinamerika ist celular das übliche Wort für Handy." } },
     { id: "n12", cat: "notfall", lvl: 1, de: "mein Reisepass", es: "mi pasaporte", tip: "pa-sa-POR-te" },
     { id: "n13", cat: "notfall", lvl: 1, de: "mein Handy", es: "mi celular", tip: "se-lu-LAR" },
     { id: "n14", cat: "notfall", lvl: 2, de: "Können Sie mir helfen?", es: "¿Puede ayudarme?", tip: "a-yu-DAR-me" },
-    { id: "n15", cat: "notfall", lvl: 3, de: "Wo ist die nächste Apotheke?", es: "¿Dónde está la farmacia más cercana?", tip: "mas ser-KA-na" },
+    { id: "n15", cat: "notfall", lvl: 3, de: "Wo ist die nächste Apotheke?", es: "¿Dónde está la farmacia más cercana?", tip: "mas ser-KA-na",
+      context: { sentenceEs: "Disculpe, ¿dónde está la farmacia más cercana?", sentenceDe: "Entschuldigung, wo ist die nächste Apotheke?", situation: "Wenn du Medikamente oder etwas gegen Bauchweh brauchst.", note: "Apotheken sind in LatAm oft auch ohne Rezept hilfreich. Nachts: farmacia de turno." } },
 
     // ===================== ZEIT & DATUM =====================
     { id: "ti01", cat: "zeit", lvl: 2, de: "Wie spät ist es?", es: "¿Qué hora es?", tip: "ke O-ra es" },
@@ -455,16 +478,26 @@
     { id: "s24", cat: "talk", lvl: 3, de: "Das nächste Mal lade ich dich ein", es: "La próxima te invito yo", tip: "PROK-si-ma te in-WI-to yo" },
 
     // ===================== SOCIAL & ANSCHLUSS =====================
-    { id: "social01", cat: "social", lvl: 1, de: "Woher kommst du?", es: "¿De dónde eres?", tip: "de DON-de E-res" },
-    { id: "social02", cat: "social", lvl: 1, de: "Reist du alleine?", es: "¿Viajas solo/a?", tip: "wi-A-chas SO-lo / SO-la", alt: ["viajas solo", "viajas sola"] },
-    { id: "social03", cat: "social", lvl: 1, de: "Wie lange bist du hier?", es: "¿Cuánto tiempo estás aquí?", tip: "KUAN-to TIEM-po es-TAS a-KI" },
-    { id: "social04", cat: "social", lvl: 1, de: "Wohin reist du danach?", es: "¿A dónde vas después?", tip: "a DON-de bas des-PUES" },
-    { id: "social05", cat: "social", lvl: 2, de: "Was machst du morgen?", es: "¿Qué haces mañana?", tip: "ke A-ses ma-NYA-na" },
-    { id: "social06", cat: "social", lvl: 2, de: "Hast du Lust, etwas essen zu gehen?", es: "¿Quieres ir a comer algo?", tip: "KIE-res ir a ko-MER AL-go" },
-    { id: "social07", cat: "social", lvl: 2, de: "Sollen wir zusammen gehen?", es: "¿Vamos juntos?", tip: "BA-mos CHUN-tos" },
-    { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes" },
-    { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp" },
-    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen.", es: "Mucho gusto.", tip: "MU-cho GUS-to" },
+    { id: "social01", cat: "social", lvl: 1, de: "Woher kommst du?", es: "¿De dónde eres?", tip: "de DON-de E-res",
+      context: { sentenceEs: "Hola, ¿de dónde eres?", sentenceDe: "Hey, woher kommst du?", situation: "Beim Frühstück, im Dorm, in einer Tourgruppe oder im Bus.", note: "Perfekter Einstieg. Danach passt: ¿Cuánto tiempo viajas?" } },
+    { id: "social02", cat: "social", lvl: 1, de: "Reist du alleine?", es: "¿Viajas solo/a?", tip: "wi-A-chas SO-lo / SO-la", alt: ["viajas solo", "viajas sola"],
+      context: { sentenceEs: "¿Viajas solo o con amigos?", sentenceDe: "Reist du alleine oder mit Freunden?", situation: "Beim Kennenlernen anderer Backpacker.", note: "Bei Männern solo, bei Frauen sola. Im Hostel eine ganz normale Frage." } },
+    { id: "social03", cat: "social", lvl: 1, de: "Wie lange bist du hier?", es: "¿Cuánto tiempo estás aquí?", tip: "KUAN-to TIEM-po es-TAS a-KI",
+      context: { sentenceEs: "¿Cuánto tiempo estás aquí en Cartagena?", sentenceDe: "Wie lange bist du hier in Cartagena?", situation: "Wenn du wissen willst, ob jemand länger bleibt oder bald weiterreist.", note: "Den Ort einfach austauschen: aquí en Bogotá, aquí en Lima, aquí en Medellín." } },
+    { id: "social04", cat: "social", lvl: 1, de: "Wohin reist du danach?", es: "¿A dónde vas después?", tip: "a DON-de bas des-PUES",
+      context: { sentenceEs: "¿A dónde vas después de Cartagena?", sentenceDe: "Wohin reist du nach Cartagena weiter?", situation: "Typischer Backpacker-Smalltalk über Reiserouten.", note: "Super, um Tipps zu bekommen oder gemeinsame Pläne zu entdecken." } },
+    { id: "social05", cat: "social", lvl: 2, de: "Was machst du morgen?", es: "¿Qué haces mañana?", tip: "ke A-ses ma-NYA-na",
+      context: { sentenceEs: "¿Qué haces mañana? Quiero ir a la playa.", sentenceDe: "Was machst du morgen? Ich möchte an den Strand gehen.", situation: "Wenn du gemeinsame Pläne anstoßen willst.", note: "Mach es direkt konkret. Nur ¿Qué haces mañana? kann leicht privat klingen." } },
+    { id: "social06", cat: "social", lvl: 2, de: "Hast du Lust, etwas essen zu gehen?", es: "¿Quieres ir a comer algo?", tip: "KIE-res ir a ko-MER AL-go",
+      context: { sentenceEs: "¿Quieres ir a comer algo más tarde?", sentenceDe: "Hast du Lust, später etwas essen zu gehen?", situation: "Im Hostel, nach einer Tour oder vor dem Abend.", note: "más tarde bedeutet später und macht die Einladung locker." } },
+    { id: "social07", cat: "social", lvl: 2, de: "Sollen wir zusammen gehen?", es: "¿Vamos juntos?", tip: "BA-mos CHUN-tos",
+      context: { sentenceEs: "¿Vamos juntos al centro?", sentenceDe: "Gehen wir zusammen ins Zentrum?", situation: "Wenn ihr dasselbe Ziel habt oder gemeinsam losziehen wollt.", note: "juntos für gemischte Gruppen oder Männer, juntas für nur Frauen." } },
+    { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes",
+      context: { sentenceEs: "Vamos a tomar algo. ¿Te unes?", sentenceDe: "Wir gehen etwas trinken. Kommst du mit?", situation: "Um jemanden locker einzuladen.", note: "Klingt natürlicher als eine sehr formelle Einladung. Perfekt im Hostel." } },
+    { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp",
+      context: { sentenceEs: "Escríbeme por WhatsApp y nos vemos más tarde.", sentenceDe: "Schreib mir auf WhatsApp, dann sehen wir uns später.", situation: "Wenn ihr euch später treffen oder Pläne abstimmen wollt.", note: "WhatsApp ist in Lateinamerika extrem verbreitet – fast jeder nutzt es." } },
+    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen.", es: "Mucho gusto.", tip: "MU-cho GUS-to",
+      context: { sentenceEs: "Mucho gusto. Nos vemos mañana.", sentenceDe: "Schön, dich kennenzulernen. Wir sehen uns morgen.", situation: "Nach einem ersten Gespräch im Hostel oder unterwegs.", note: "Mucho gusto passt beim Kennenlernen. Beim Abschied passt: Fue un gusto conocerte." } },
 
     // ===================== ALLTAG & LEBEN =====================
     { id: "a01", cat: "alltag", lvl: 3, de: "Wie sagt man ... auf Spanisch?", es: "¿Cómo se dice ... en español?", tip: "KO-mo se DI-se" },

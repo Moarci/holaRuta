@@ -148,6 +148,7 @@
       total: state.total,
       revealed: state.revealed,
       typeResult: state.typeResult,
+      context: card.context || null,
     };
   }
 
@@ -228,6 +229,7 @@
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
+      context: card.context || null,
     });
   }
 
@@ -287,6 +289,29 @@
 
     gamestats = g;
     store.saveGameStats(gamestats);
+  }
+
+  // Eine geöffnete Kontext-Ansicht einbuchen: Gesamtzähler hoch, Karte als distinkt
+  // gesehen vermerken, erfüllte Kontext-Badges freischalten. Immutabel.
+  function recordContextView(cardId, now) {
+    if (!badges || !cardId) return;
+    const g = Object.assign({}, gamestats);
+    g.contextViews = (g.contextViews || 0) + 1;
+    const seen = Object.assign({}, g.contextCardsSeen);
+    if (!seen[cardId]) seen[cardId] = true;
+    g.contextCardsSeen = seen;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+    syncBadges(now, true);
+    paintBadgeToast(); // ohne Re-Render einblenden – das Kontext-Panel bleibt offen
+  }
+
+  // Glückwunsch-Einblendung einfügen, ohne den Screen neu zu rendern (sonst klappt
+  // das gerade geöffnete Kontext-Panel wieder zu). Nur, wenn noch keiner sichtbar ist.
+  function paintBadgeToast() {
+    if (!badges || !state.badgeToast || !state.badgeToast.length) return;
+    if (root.querySelector(".btoast")) return;
+    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
   }
 
   // Erfüllte, aber noch nicht vermerkte Badges freischalten. announce=true sammelt
@@ -541,6 +566,23 @@
       flipEl.setAttribute("aria-label", state.revealed ? "Karte ist umgedreht – tippen zum Zurückdrehen" : "Karte umdrehen");
     }
     if (controls) controls.toggleAttribute("hidden", !state.revealed);
+  }
+
+  // Reise-Kontext auf-/zuklappen. In-Place (kein Re-Render), damit im Schreiben-Modus
+  // nichts verloren geht und das Panel offen bleibt. Beim Öffnen wird die Ansicht
+  // fürs Badge-System gezählt (distinkt pro Karte).
+  function toggleContext(btn) {
+    const panel = btn.parentElement && btn.parentElement.querySelector(".context-panel");
+    if (!panel) return;
+    const willOpen = panel.hasAttribute("hidden");
+    panel.toggleAttribute("hidden", !willOpen);
+    btn.setAttribute("aria-expanded", String(willOpen));
+    btn.textContent = willOpen ? "🧭 Kontext ausblenden" : "🧭 Kontext";
+    if (willOpen) {
+      buzz(6);
+      const id = state.screen === "card" ? state.cardId : state.queue[0];
+      recordContextView(id, Date.now());
+    }
   }
 
   function submitTyped(input) {
@@ -956,6 +998,7 @@
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "flip") flip();
+    else if (action === "toggle-context") toggleContext(el);
     else if (action === "rate") rate(el.dataset.rating);
     else if (action === "speak") speakCurrent();
     else if (action === "open-stats") goStats();
@@ -1019,6 +1062,9 @@
   function onKeydown(e) {
     if (state.screen !== "study") return;
     const inInput = e.target && e.target.tagName === "INPUT";
+    // Space/Enter auf einem echten Button (Bewerten, 🔊, 🧭 Kontext) gehört dem Button –
+    // sonst würde der globale Flip-Shortcut die native Aktivierung kapern.
+    const onButton = e.target && e.target.tagName === "BUTTON";
 
     // 'p' = Antwort anhören (play), sobald die spanische Antwort sichtbar ist.
     if ((e.key === "p" || e.key === "P") && !inInput && canRate()) {
@@ -1027,10 +1073,10 @@
     }
 
     if (state.mode === "flip") {
-      if (e.key === " " || e.key === "Enter") {
+      if ((e.key === " " || e.key === "Enter") && !onButton) {
         e.preventDefault();
         flip(); // beidseitig: Frage ⇄ Antwort
-      } else if (state.revealed) rateByKey(e.key);
+      } else if (state.revealed && !onButton) rateByKey(e.key);
     } else {
       // Schreiben-Modus: Zahlen nur bewerten, wenn Ergebnis schon sichtbar ist.
       if (state.typeResult && !inInput) rateByKey(e.key);

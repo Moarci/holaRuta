@@ -314,6 +314,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
+    contextViews: 7, contextCardsSeen: { hostel01: true },
     unlocked: { first_steps: 1700000000000 },
   };
   storeMem[GKEY] = JSON.stringify(valid);
@@ -362,6 +363,36 @@ test("data.CHALLENGES: textDe und phraseEs gesetzt", () => {
   data.CHALLENGES.forEach((c) => {
     assert.ok(c.textDe && c.phraseEs, `Challenge unvollständig: ${c.id}`);
   });
+});
+
+// ---------- Reise-Kontext (🧭) ----------
+test("data.CARDS: context-Karten haben alle Pflichtfelder", () => {
+  const withCtx = data.CARDS.filter((c) => c.context);
+  assert.ok(withCtx.length >= 20, "zu wenige Karten mit Kontext");
+  withCtx.forEach((c) => {
+    const ctx = c.context;
+    assert.ok(ctx.sentenceEs && ctx.sentenceDe, `Beispielsatz fehlt: ${c.id}`);
+    assert.ok(ctx.situation, `situation fehlt: ${c.id}`);
+    assert.ok(ctx.note, `note (Reisetipp) fehlt: ${c.id}`);
+  });
+});
+
+test("badges.buildMetrics: zählt distinkte Kontext-Karten", () => {
+  const counters = { contextViews: 5, contextCardsSeen: { hostel01: true, social01: true } };
+  const m = badges.buildMetrics(data.CARDS, {}, counters);
+  assert.equal(m.contextViews, 5);
+  assert.equal(m.contextCardsViewed, 2);
+});
+
+test("badges.evaluate: Kontext-Badge schaltet bei Schwelle frei", () => {
+  const seen = {};
+  for (let i = 0; i < 10; i++) seen["c" + i] = true; // 10 distinkte Kontexte
+  const m = badges.buildMetrics(data.CARDS, {}, { contextViews: 14, contextCardsSeen: seen });
+  const list = badges.evaluate(m, {});
+  const byId = (id) => list.find((b) => b.id === id);
+  assert.equal(byId("context_first").unlocked, true);
+  assert.equal(byId("context_10").unlocked, true);
+  assert.equal(byId("context_25").unlocked, false);
 });
 
 // ---------- badges: Hostel Mode ----------
