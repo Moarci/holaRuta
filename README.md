@@ -16,7 +16,7 @@
 
 Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Spanisch vor · Funktioniert ohne Netz
 
-### ▶️ [**Live öffnen → moarci.github.io/holaruta**](https://moarci.github.io/holaruta/)
+### ▶️ [**Live öffnen → moarci.github.io/holaRuta**](https://moarci.github.io/holaRuta/)
 
 *Direkt im Browser starten — nichts installieren. Auf dem Handy „Zum Startbildschirm hinzufügen" tippen, und HolaRuta liegt als offline-fähige App auf dem Homescreen.*
 
