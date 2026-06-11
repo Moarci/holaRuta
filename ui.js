@@ -130,6 +130,15 @@
           <span class="hostelmode__chev" aria-hidden="true">›</span>
         </button>
 
+        <button class="hostelmode hostelmode--quiz" data-action="open-quiz-setup">
+          <span class="hostelmode__icon" aria-hidden="true">🧩</span>
+          <span class="hostelmode__text">
+            <span class="hostelmode__title">Definiciones</span>
+            <span class="hostelmode__sub">Zuordnen: Definition lesen, Begriff wählen</span>
+          </span>
+          <span class="hostelmode__chev" aria-hidden="true">›</span>
+        </button>
+
         <div class="tiles">${tiles}</div>
 
         <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
@@ -1036,8 +1045,93 @@
       </section>`;
   }
 
+  // ---------- DEFINICIONES (Zuordnen-Quiz) ----------
+  // Liste wählen.
+  function renderQuizSetup(vm) {
+    const list = vm.sets
+      .map((s) =>
+        `<button class="hm-scene" data-action="start-quiz" data-set="${esc(s.id)}">
+           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+           <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
+           <span class="hm-scene__count">${s.count}</span>
+         </button>`)
+      .join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🧩 Definiciones", "home")}
+        <p class="hm-intro">Lies eine spanische Definition und wähle den passenden Begriff. So lernst du Wörter über ihre Bedeutung – ganz ohne Übersetzung.</p>
+        <div class="hm-scenes">${list}</div>
+      </section>`;
+  }
+
+  // Eine Frage: Definition + Antwort-Optionen.
+  function renderQuiz(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
+    const options = vm.options
+      .map((o) => {
+        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
+        // Nach dem Aufdecken sind alle Optionen deaktiviert (kein Umentscheiden).
+        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
+        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
+          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
+        return `
+          <button class="${cls}" type="button" data-action="quiz-answer" data-id="${esc(o.id)}"${dis}>
+            <span class="quiz-opt__icon" aria-hidden="true">${esc(o.icon)}</span>
+            <span class="quiz-opt__text">
+              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+              <span class="quiz-opt__de">${esc(o.de)}</span>
+            </span>
+            ${mark}
+          </button>`;
+      })
+      .join("");
+
+    const feedback = vm.answered
+      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
+           ${vm.isCorrect
+             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
+             : `<span class="quiz-feedback__head">No exactamente.</span>
+                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b> · ${esc(vm.solutionDe)}</span>`}
+         </div>
+         <button class="cta" data-action="quiz-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+      : "";
+
+    return `
+      <section class="screen study">
+        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "quiz-again")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Quiz-Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">Frage ${vm.position + 1}/${vm.total}</div>
+        <div class="quiz-def">
+          <span class="quiz-def__cap">Definición</span>
+          <p class="quiz-def__text" lang="es">${esc(vm.definition)}</p>
+        </div>
+        <div class="quiz-opts">${options}</div>
+        ${feedback}
+      </section>`;
+  }
+
+  // Auswertung.
+  function renderQuizDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Alles richtig. 🏆"
+      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
+      : "Sigue practicando – Übung macht den Meister. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "🧩"}</div>
+          <h2>${esc(vm.setLabel)} geschafft</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="quiz-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
+  }
+
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast,
-                   renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay };
+                   renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
+                   renderQuizSetup, renderQuiz, renderQuizDone };
 })();

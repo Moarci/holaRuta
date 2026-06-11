@@ -819,6 +819,67 @@
     { id: "challenge10", category: "social", level: 1, textDe: "Verabschiede dich von jemandem auf Spanisch.", phraseEs: "Mucho gusto, ¡nos vemos!" },
   ];
 
+  // ----- Definiciones (Zuordnen / Definitions-Quiz) -----
+  // Eigenständiger Aufgabentyp im Stil eines Lehrbuch-Arbeitsblatts: eine spanische
+  // Definition lesen und den passenden Begriff aus mehreren Optionen wählen.
+  // QUIZ_SETS = Themen-Listen; QUIZ_DEFS = Einträge { set, es, de, icon, def }.
+  //   es  = der Begriff (Lösung, Spanisch)   de = deutsche Übersetzung (Lernhilfe)
+  //   def = die spanische Definition (Frage)  icon = kleines Sinnbild
+  const QUIZ_SETS = [
+    { id: "ciudad", label: "En la ciudad", icon: "🏙️", lvl: 1,
+      intro: "Lies die Definition und wähle den richtigen Ort in der Stadt." },
+    { id: "ruta", label: "En la ruta", icon: "🎒", lvl: 1,
+      intro: "Orte, die du als Backpacker unterwegs ständig brauchst." },
+    { id: "comida", label: "La comida", icon: "🍽️", lvl: 1,
+      intro: "Lies die Definition und wähle das passende Essen oder Getränk." },
+  ];
+
+  const QUIZ_DEFS = [
+    // ----- En la ciudad (Orte in der Stadt) -----
+    { id: "qc01", set: "ciudad", es: "la iglesia",          de: "Kirche",         icon: "⛪", def: "Lugar donde la gente va a rezar y a adorar a Dios." },
+    { id: "qc02", set: "ciudad", es: "el parque",           de: "Park",           icon: "🌳", def: "Lugar con árboles, césped y juegos para relajarse al aire libre." },
+    { id: "qc03", set: "ciudad", es: "el cine",             de: "Kino",           icon: "🎬", def: "Lugar donde se ven películas en una pantalla grande." },
+    { id: "qc04", set: "ciudad", es: "el centro comercial", de: "Einkaufszentrum", icon: "🏬", def: "Lugar con muchas tiendas, zonas de comida y juegos bajo un mismo techo." },
+    { id: "qc05", set: "ciudad", es: "el museo",            de: "Museum",         icon: "🏛️", def: "Lugar donde se ven cosas interesantes como arte, antigüedades o dinosaurios." },
+    { id: "qc06", set: "ciudad", es: "el banco",            de: "Bank",           icon: "🏦", def: "Lugar donde guardas tu dinero y puedes pedir préstamos." },
+    { id: "qc07", set: "ciudad", es: "el gimnasio",         de: "Fitnessstudio",  icon: "🏋️", def: "Lugar donde la gente va a hacer ejercicio y mantenerse en forma." },
+    { id: "qc08", set: "ciudad", es: "el hospital",         de: "Krankenhaus",    icon: "🏥", def: "Lugar donde recibes atención médica cuando estás enfermo o herido." },
+    { id: "qc09", set: "ciudad", es: "el supermercado",     de: "Supermarkt",     icon: "🛒", def: "Lugar donde compras alimentos, bebidas y productos para el día a día." },
+    { id: "qc10", set: "ciudad", es: "la librería",         de: "Buchhandlung",   icon: "📚", def: "Lugar donde puedes comprar libros para leer y disfrutar en casa." },
+    { id: "qc11", set: "ciudad", es: "el restaurante",      de: "Restaurant",     icon: "🍴", def: "Lugar donde vas a comer comida preparada sin tener que cocinar tú mismo." },
+    { id: "qc12", set: "ciudad", es: "la farmacia",         de: "Apotheke",       icon: "💊", def: "Lugar donde compras medicinas y productos de salud." },
+    { id: "qc13", set: "ciudad", es: "el mercado",          de: "Markt",          icon: "🧺", def: "Lugar donde se venden frutas, verduras y comida fresca, a menudo al aire libre." },
+    { id: "qc14", set: "ciudad", es: "la estación",         de: "Bahnhof",        icon: "🚉", def: "Lugar donde tomas el tren o el autobús para viajar a otro sitio." },
+    { id: "qc15", set: "ciudad", es: "la plaza",            de: "Platz",          icon: "⛲", def: "Espacio abierto en el centro de la ciudad donde la gente se reúne." },
+    { id: "qc16", set: "ciudad", es: "el aeropuerto",       de: "Flughafen",      icon: "🛫", def: "Lugar desde donde los aviones despegan y aterrizan." },
+
+    // ----- En la ruta (Backpacker-Orte unterwegs) -----
+    { id: "qr01", set: "ruta", es: "el hostal",            de: "Hostel",         icon: "🛏️", def: "Alojamiento barato donde los viajeros duermen, a veces en habitaciones compartidas." },
+    { id: "qr02", set: "ruta", es: "el cajero automático", de: "Geldautomat",    icon: "🏧", def: "Máquina donde sacas dinero en efectivo con tu tarjeta." },
+    { id: "qr03", set: "ruta", es: "la casa de cambio",    de: "Wechselstube",   icon: "💱", def: "Lugar donde cambias tu dinero por la moneda local." },
+    { id: "qr04", set: "ruta", es: "la terminal de buses", de: "Busbahnhof",     icon: "🚌", def: "Lugar de donde salen los autobuses de larga distancia entre ciudades." },
+    { id: "qr05", set: "ruta", es: "la lavandería",        de: "Waschsalon",     icon: "🧼", def: "Lugar donde lavas y secas tu ropa durante el viaje." },
+    { id: "qr06", set: "ruta", es: "la oficina de turismo", de: "Touristeninfo", icon: "🗺️", def: "Lugar donde pides mapas, información y consejos para tu viaje." },
+    { id: "qr07", set: "ruta", es: "la comisaría",         de: "Polizeiwache",   icon: "🚓", def: "Lugar donde vas si te roban algo o necesitas ayuda de la policía." },
+    { id: "qr08", set: "ruta", es: "la embajada",          de: "Botschaft",      icon: "🛂", def: "Oficina de tu país en el extranjero que te ayuda si pierdes el pasaporte." },
+    { id: "qr09", set: "ruta", es: "la frontera",          de: "Grenze",         icon: "🚧", def: "Línea donde termina un país y empieza otro; allí muestras tu pasaporte." },
+    { id: "qr10", set: "ruta", es: "la playa",             de: "Strand",         icon: "🏖️", def: "Lugar a la orilla del mar, con arena, para nadar y descansar." },
+    { id: "qr11", set: "ruta", es: "el mirador",           de: "Aussichtspunkt", icon: "🌄", def: "Lugar alto desde donde ves un bonito paisaje o toda una ciudad." },
+    { id: "qr12", set: "ruta", es: "el bar",               de: "Bar",            icon: "🍻", def: "Lugar donde la gente va a tomar algo y conocer a otros por la noche." },
+
+    // ----- La comida (Essen & Trinken) -----
+    { id: "qf01", set: "comida", es: "el desayuno", de: "Frühstück",   icon: "🍳", def: "La primera comida del día, por la mañana." },
+    { id: "qf02", set: "comida", es: "el almuerzo", de: "Mittagessen", icon: "🍽️", def: "La comida principal que se come al mediodía." },
+    { id: "qf03", set: "comida", es: "la cena",     de: "Abendessen",  icon: "🌙", def: "La comida que se toma por la noche." },
+    { id: "qf04", set: "comida", es: "la fruta",    de: "Obst",        icon: "🍎", def: "Alimento dulce que crece en los árboles, como la manzana o el plátano." },
+    { id: "qf05", set: "comida", es: "la verdura",  de: "Gemüse",      icon: "🥦", def: "Alimento que viene de las plantas, como la lechuga o la zanahoria." },
+    { id: "qf06", set: "comida", es: "la carne",    de: "Fleisch",     icon: "🥩", def: "Alimento que viene de animales como la vaca, el cerdo o el pollo." },
+    { id: "qf07", set: "comida", es: "el pan",      de: "Brot",        icon: "🍞", def: "Alimento hecho de harina que se hornea." },
+    { id: "qf08", set: "comida", es: "el agua",     de: "Wasser",      icon: "💧", def: "Bebida sin color ni sabor, esencial para vivir." },
+    { id: "qf09", set: "comida", es: "el café",     de: "Kaffee",      icon: "☕", def: "Bebida caliente y oscura que muchos toman por la mañana." },
+    { id: "qf10", set: "comida", es: "el postre",   de: "Nachtisch",   icon: "🍰", def: "Comida dulce que se come al final, como el pastel o el helado." },
+  ];
+
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS };
 })();
