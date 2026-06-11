@@ -200,15 +200,14 @@ body {
 .screen { display: flex; flex-direction: column; gap: 18px; animation: fade 0.25s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-/* Hero */
-.hero__kicker {
-  margin: 0 0 6px; font-size: 0.74rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.18em; color: var(--brand);
+/* Schlanke Kopfzeile der Start-Reiter: Titel links, Dark-Mode-Knopf rechts.
+ * (Der Markenname steht schon in der App-Bar – kein großer Hero mehr.) */
+.pagehead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pagehead__title {
+  margin: 0; font-family: var(--font-display); min-width: 0;
+  font-size: 1.45rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; color: var(--ink);
 }
-.hero__title {
-  margin: 0; font-family: var(--font-display);
-  font-size: 2rem; line-height: 1.05; font-weight: 800; letter-spacing: -0.02em; color: var(--ink);
-}
+.pageintro { margin: -6px 0 0; font-size: 0.92rem; color: var(--ink-soft); line-height: 1.45; }
 
 /* Umschalter-Gruppe mit kleiner Beschriftung (Modus / Richtung) */
 .switchgroup { display: flex; flex-direction: column; gap: 6px; }
@@ -272,18 +271,14 @@ body {
   padding: 2px 10px; font-size: 0.9rem; font-weight: 800;
 }
 
-/* Hero-Aktionen (mehrere Icon-Buttons rechts oben) */
-.hero__actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-/* ---------- STARTSEITE: "Heute"-Karte (Streak, Fortschritt, Haupt-CTA) ---------- */
+/* ---------- LERNEN-REITER: "Heute"-Karte (Streak, Haupt-CTA, Quick-Resume) ---------- */
 .today {
   display: flex; flex-direction: column; gap: 12px;
   background: var(--card); border: 1.5px solid var(--line);
   border-radius: var(--r-lg); padding: 16px; box-shadow: var(--shadow-lg);
 }
-.today__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .today__streak {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
   font-size: 0.85rem; font-weight: 800; color: var(--warn);
   background: color-mix(in srgb, var(--warn) 14%, transparent);
   border: 1.5px solid color-mix(in srgb, var(--warn) 40%, transparent);
@@ -294,7 +289,6 @@ body {
   background: color-mix(in srgb, var(--ok) 12%, transparent);
   border-color: color-mix(in srgb, var(--ok) 35%, transparent);
 }
-.today__mastery { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
 .today__bar { height: 8px; background: rgba(45, 27, 18, 0.1); border-radius: 999px; overflow: hidden; }
 .today__barfill {
   height: 100%; border-radius: 999px;
@@ -335,35 +329,75 @@ body {
 .setup__head[aria-expanded="true"] .setup__chev { transform: rotate(90deg); }
 .setup__body { display: flex; flex-direction: column; gap: 14px; padding: 2px 14px 16px; animation: pop 0.2s ease; }
 
-/* Abschnitts-Überschriften der Startseite ("Entdecken", "Themen") */
+/* Abschnitts-Überschriften der Startseite ("Themen") */
 .sectioncap {
   margin: 4px 0 -8px; padding-left: 4px;
   font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--ink-soft);
 }
 
-/* "Entdecken": horizontale Wisch-Reihe kompakter Einstiegs-Karten.
- * Negative Ränder lassen die Reihe bis an den Rand der App-Spalte laufen,
- * damit die angeschnittene Folgekarte zum Wischen einlädt. */
-.explore {
-  display: flex; gap: 10px; overflow-x: auto;
-  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
-  margin: 0 -20px; padding: 4px 20px 8px;
-  scrollbar-width: none;
+/* ---------- TAB-LEISTE (Lernen · Entdecken · Profil) ---------- */
+/* Fest am unteren Rand, auf die App-Spalte begrenzt. Die Reiter-Inhalte
+ * bekommen über .screen--tabbed Platz, damit nichts darunter verschwindet. */
+.tabbar {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: var(--maxw); z-index: 30;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  background: var(--card); border-top: 1.5px solid var(--line);
+  padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
 }
-.explore::-webkit-scrollbar { display: none; }
-.explore__card {
-  flex: 0 0 auto; width: 128px; scroll-snap-align: start; cursor: pointer;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
-  border: none; border-radius: var(--r-tile); padding: 12px;
+.tab {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  border: none; background: transparent; cursor: pointer;
+  padding: 7px 6px; border-radius: var(--r-sm); min-height: 52px;
+  color: var(--muted); font-family: inherit; font-weight: 700;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tab__icon { font-size: 1.3rem; line-height: 1; filter: grayscale(1); opacity: 0.65; }
+.tab__label { font-size: 0.68rem; letter-spacing: 0.02em; }
+.tab.is-active { color: var(--brand-ink); background: color-mix(in srgb, var(--brand) 10%, transparent); }
+.tab.is-active .tab__icon { filter: none; opacity: 1; }
+.screen--tabbed { padding-bottom: 86px; } /* Platz für die feste Tab-Leiste */
+
+/* ---------- ENTDECKEN-REITER: große Einstiegs-Buttons ---------- */
+.feat {
+  display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;
+  text-align: left; padding: 16px; border-radius: var(--r-tile);
   background: linear-gradient(135deg, var(--from), var(--to));
-  color: var(--cream); text-align: left; box-shadow: var(--shadow);
+  border: none; color: var(--cream); box-shadow: var(--shadow);
   transition: transform 0.12s ease;
 }
-.explore__card:active { transform: scale(0.97); }
-.explore__icon { font-size: 1.55rem; line-height: 1.2; }
-.explore__title { font-family: var(--font-display); font-weight: 800; font-size: 0.9rem; line-height: 1.15; }
-.explore__sub { font-size: 0.7rem; opacity: 0.92; line-height: 1.25; }
+.feat:active { transform: translateY(1px); }
+.feat__icon { font-size: 1.7rem; line-height: 1; flex: none; }
+.feat__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.feat__title { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; }
+.feat__sub { font-size: 0.82rem; opacity: 0.92; }
+.feat__chev { font-size: 1.4rem; font-weight: 700; flex: none; opacity: 0.85; }
+
+/* ---------- PROFIL-REITER: Fortschritts-Karte + Navigations-Zeilen ---------- */
+.profcard {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); padding: 18px; box-shadow: var(--shadow-lg);
+}
+.profcard__streak { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--ink); }
+.profcard__meta { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+.navrow {
+  display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer;
+  text-align: left; min-height: 56px; padding: 14px 16px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  box-shadow: var(--shadow); color: var(--ink);
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  transition: transform 0.12s ease;
+}
+.navrow:active { transform: translateY(1px); }
+.navrow__icon { font-size: 1.3rem; line-height: 1; flex: none; }
+.navrow__label { flex: 1 1 auto; min-width: 0; }
+.navrow__chip {
+  flex: none; background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--brand-ink);
+  border-radius: 999px; padding: 2px 10px; font-size: 0.8rem; font-weight: 800;
+}
+.navrow__chev { flex: none; color: var(--muted); font-size: 1.2rem; font-weight: 700; }
 
 /* ---------- EIGENE KARTEN (EDITOR) ---------- */
 .editor {
@@ -636,10 +670,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .done h2 { margin: 0; font-family: var(--font-display); font-size: 2.2rem; font-weight: 800; color: var(--ink); }
 .done p { margin: 0; color: var(--ink-soft); }
 .done .cta { margin-top: 10px; max-width: 280px; }
-
-/* Hero mit Statistik-Knopf */
-.hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.hero__text { min-width: 0; }
 
 /* Dezenter Sekundär-Button */
 .ghostbtn {
@@ -985,15 +1015,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .badge__fill { display: block; height: 100%; border-radius: 999px; background: var(--warn); }
 .badge__prog { font-size: 0.7rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
 [data-theme="dark"] .badge__bar { background: rgba(251, 243, 228, 0.08); }
-
-/* Zähler-Bommel am Ruta-Pass-Knopf der Startseite. */
-.hero__pass { position: relative; }
-.hero__passnum {
-  position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px;
-  border-radius: 999px; background: var(--brand); color: var(--cream);
-  font-size: 0.64rem; font-weight: 800; line-height: 18px; text-align: center;
-  font-variant-numeric: tabular-nums; box-shadow: var(--shadow);
-}
 
 /* Glückwunsch-Einblendung nach Freischaltung (eigene Ebene, unten zentriert). */
 .btoast {
@@ -7491,20 +7512,43 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                     aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
   }
 
-  // ---------- HOME ----------
-  // "Entdecken"-Reihe: sechs gleichrangige Einstiege in die Extras als kompakte
-  // Karten in einer horizontalen Wisch-Reihe (statt drei großer Buttons plus
-  // schwer auffindbarer Icon-Knöpfe im Hero).
-  const EXPLORE = [
-    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben",      grad: ["#C25A45", "#8E4FA8"] },
-    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones",  sub: "Begriffe zuordnen",  grad: ["#3F7355", "#2F6B70"] },
-    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",     sub: "Körper entdecken",   grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-info",       icon: "🌎", title: "Länderkunde",   sub: "Land & Leute",       grad: ["#B97C24", "#C2502E"] },
-    { action: "open-editor",     icon: "✍️", title: "Eigene Karten", sub: "Selbst ergänzen",    grad: ["#7D4A8E", "#B5302A"] },
-    { action: "open-stats",      icon: "📊", title: "Statistik",     sub: "Dein Fortschritt",   grad: ["#2F6B70", "#3F7355"] },
+  // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
+  // Die Startseite ist in drei Reiter geclustert, damit pro Blick nur ein Thema
+  // sichtbar ist: Lernen (Heute-Karte + Themen), Entdecken (Spielmodi & Wissen),
+  // Profil (Fortschritt, Pass, Eigenes). Unten eine feste Tab-Leiste; der aktive
+  // Reiter kommt aus vm.tab und wird in den Einstellungen gemerkt.
+
+  // Entdecken-Reiter: die vier großen Einstiege als volle Gradient-Buttons.
+  const FEATURES = [
+    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
   ];
 
-  function renderHome(vm) {
+  function tabbar(tab) {
+    const t = (id, icon, label) =>
+      `<button class="tab ${tab === id ? "is-active" : ""}" role="tab" aria-selected="${tab === id}"
+               data-action="set-tab" data-tab="${id}">
+         <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
+       </button>`;
+    return `
+      <nav class="tabbar" role="tablist" aria-label="Bereiche">
+        ${t("lernen", "🎒", "Lernen")}${t("entdecken", "🧭", "Entdecken")}${t("profil", "👤", "Profil")}
+      </nav>`;
+  }
+
+  // Schlanke Kopfzeile pro Reiter: nur Titel + Dark-Mode-Knopf (statt des großen
+  // Heros mit Kicker und Icon-Reihe – der Markenname steht schon in der App-Bar).
+  function pagehead(title, vm) {
+    return `
+      <div class="pagehead">
+        <h2 class="pagehead__title">${title}</h2>
+        ${themeToggle(vm.theme)}
+      </div>`;
+  }
+
+  function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
         const badge = c.due > 0 ? `<span class="tile__due">${c.due} fällig</span>` : `<span class="tile__due tile__due--ok">✓ erledigt</span>`;
@@ -7536,7 +7580,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
          </button>`),
     ].join("");
 
-    // "Heute"-Karte: Streak-Chip, Fortschrittsbalken, Haupt-CTA und Quick-Resume.
+    // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
+    // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
     const streakChip = vm.streak > 0
       ? `<span class="today__streak">🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} Serie</span>`
       : `<span class="today__streak today__streak--new">🌱 Starte deine Serie</span>`;
@@ -7572,59 +7617,85 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
       </div>`;
 
-    const explore = EXPLORE.map((x) => `
-      <button class="explore__card" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
-        <span class="explore__icon" aria-hidden="true">${x.icon}</span>
-        <span class="explore__title">${esc(x.title)}</span>
-        <span class="explore__sub">${esc(x.sub)}</span>
-      </button>`).join("");
-
     return `
-      <section class="screen">
-        <div class="hero">
-          <div class="hero__text">
-            <p class="hero__kicker">Reise-Spanisch für echte Situationen</p>
-            <h2 class="hero__title">¿Qué aprendemos hoy?</h2>
-          </div>
-          <div class="hero__actions">
-            ${themeToggle(vm.theme)}
-            <button class="iconbtn hero__pass" data-action="open-badges" aria-label="Mein Ruta-Pass" title="Mein Ruta-Pass">🎖️${vm.badgeCount ? `<span class="hero__passnum">${vm.badgeCount}</span>` : ""}</button>
-          </div>
+      ${pagehead("¿Qué aprendemos hoy?", vm)}
+
+      <div class="today">
+        ${streakChip}
+        <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
+          ${vm.totalDue > 0
+            ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
+            : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
+        </button>
+        ${resume}
+      </div>
+
+      <div class="setup">
+        <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
+          <span class="setup__cap">⚙️ Lernen</span>
+          <span class="setup__summary">${setupSummary}</span>
+          <span class="setup__chev" aria-hidden="true">›</span>
+        </button>
+        ${vm.setupOpen ? setupBody : ""}
+      </div>
+
+      <p class="sectioncap">Themen</p>
+      <div class="tiles">${tiles}</div>
+
+      <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>`;
+  }
+
+  function entdeckenBody(vm) {
+    const feats = FEATURES.map((x) => `
+      <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
+        <span class="feat__icon" aria-hidden="true">${x.icon}</span>
+        <span class="feat__text">
+          <span class="feat__title">${esc(x.title)}</span>
+          <span class="feat__sub">${esc(x.sub)}</span>
+        </span>
+        <span class="feat__chev" aria-hidden="true">›</span>
+      </button>`).join("");
+    return `
+      ${pagehead("Entdecken", vm)}
+      <p class="pageintro">Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.</p>
+      ${feats}`;
+  }
+
+  function profilBody(vm) {
+    const streakLine = vm.streak > 0
+      ? `🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} in Folge`
+      : `🌱 Heute die erste Karte lernen`;
+    const navrow = (action, icon, label, chip) => `
+      <button class="navrow" data-action="${action}">
+        <span class="navrow__icon" aria-hidden="true">${icon}</span>
+        <span class="navrow__label">${esc(label)}</span>
+        ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
+        <span class="navrow__chev" aria-hidden="true">›</span>
+      </button>`;
+    return `
+      ${pagehead("Dein Fortschritt", vm)}
+
+      <div class="profcard">
+        <p class="profcard__streak">${streakLine}</p>
+        <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
+          <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
         </div>
+        <p class="profcard__meta">${vm.overall.mastered} von ${vm.overall.total} Karten gemeistert · ${vm.overall.pct} %</p>
+      </div>
 
-        <div class="today">
-          <div class="today__top">
-            ${streakChip}
-            <span class="today__mastery">${vm.overall.mastered} / ${vm.overall.total} gemeistert</span>
-          </div>
-          <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
-            <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
-          </div>
-          <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
-            ${vm.totalDue > 0
-              ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
-              : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
-          </button>
-          ${resume}
-        </div>
+      ${navrow("open-stats", "📊", "Statistik")}
+      ${navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "")}
+      ${navrow("open-editor", "✍️", "Eigene Karten")}`;
+  }
 
-        <div class="setup">
-          <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
-            <span class="setup__cap">⚙️ Lernen</span>
-            <span class="setup__summary">${setupSummary}</span>
-            <span class="setup__chev" aria-hidden="true">›</span>
-          </button>
-          ${vm.setupOpen ? setupBody : ""}
-        </div>
-
-        <p class="sectioncap">Entdecken</p>
-        <div class="explore" role="group" aria-label="Entdecken">${explore}</div>
-
-        <p class="sectioncap">Themen</p>
-        <div class="tiles">${tiles}</div>
-
-        <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
-      </section>`;
+  function renderHome(vm) {
+    const body =
+      vm.tab === "entdecken" ? entdeckenBody(vm) :
+      vm.tab === "profil" ? profilBody(vm) :
+      lernenBody(vm);
+    return `
+      <section class="screen screen--tabbed">${body}</section>
+      ${tabbar(vm.tab)}`;
   }
 
   // ---------- STUDY ----------
@@ -8747,6 +8818,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
+    homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -8880,6 +8952,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       },
       lastCat,
       setupOpen: setupOpenDefault(),
+      tab: state.homeTab,
     };
   }
 
@@ -9038,11 +9111,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return gap === 0 || gap === 1 ? (gamestats.dailyStreak || 0) : 0;
   }
 
-  // Einstellungs-Panel der Startseite: ohne gemerkte Wahl für Neueinsteiger offen
-  // (Modus/Richtung entdecken), sonst eingeklappt – Einstellungen sind Set-once.
+  // Einstellungs-Panel des Lernen-Reiters: standardmäßig zu (Set-once-
+  // Einstellungen), offen nur, wenn der Nutzer es selbst aufgeklappt hat.
   function setupOpenDefault() {
-    if (typeof settings.setupOpen === "boolean") return settings.setupOpen;
-    return Object.keys(progress).length === 0;
+    return settings.setupOpen === true;
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -9693,6 +9765,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
+  function setTab(tab) {
+    const valid = tab === "entdecken" || tab === "profil" ? tab : "lernen";
+    state.homeTab = valid;
+    settings = Object.assign({}, settings, { homeTab: valid });
+    store.saveSettings(settings);
+    render();
+  }
+
   function goHome() {
     dismissBadgeToast();
     state.screen = "home";
@@ -10021,6 +10102,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "resume-last") resumeLast();
     else if (action === "toggle-setup") toggleSetup();
+    else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);

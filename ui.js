@@ -48,20 +48,43 @@
                     aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
   }
 
-  // ---------- HOME ----------
-  // "Entdecken"-Reihe: sechs gleichrangige Einstiege in die Extras als kompakte
-  // Karten in einer horizontalen Wisch-Reihe (statt drei großer Buttons plus
-  // schwer auffindbarer Icon-Knöpfe im Hero).
-  const EXPLORE = [
-    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben",      grad: ["#C25A45", "#8E4FA8"] },
-    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones",  sub: "Begriffe zuordnen",  grad: ["#3F7355", "#2F6B70"] },
-    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",     sub: "Körper entdecken",   grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-info",       icon: "🌎", title: "Länderkunde",   sub: "Land & Leute",       grad: ["#B97C24", "#C2502E"] },
-    { action: "open-editor",     icon: "✍️", title: "Eigene Karten", sub: "Selbst ergänzen",    grad: ["#7D4A8E", "#B5302A"] },
-    { action: "open-stats",      icon: "📊", title: "Statistik",     sub: "Dein Fortschritt",   grad: ["#2F6B70", "#3F7355"] },
+  // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
+  // Die Startseite ist in drei Reiter geclustert, damit pro Blick nur ein Thema
+  // sichtbar ist: Lernen (Heute-Karte + Themen), Entdecken (Spielmodi & Wissen),
+  // Profil (Fortschritt, Pass, Eigenes). Unten eine feste Tab-Leiste; der aktive
+  // Reiter kommt aus vm.tab und wird in den Einstellungen gemerkt.
+
+  // Entdecken-Reiter: die vier großen Einstiege als volle Gradient-Buttons.
+  const FEATURES = [
+    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
   ];
 
-  function renderHome(vm) {
+  function tabbar(tab) {
+    const t = (id, icon, label) =>
+      `<button class="tab ${tab === id ? "is-active" : ""}" role="tab" aria-selected="${tab === id}"
+               data-action="set-tab" data-tab="${id}">
+         <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
+       </button>`;
+    return `
+      <nav class="tabbar" role="tablist" aria-label="Bereiche">
+        ${t("lernen", "🎒", "Lernen")}${t("entdecken", "🧭", "Entdecken")}${t("profil", "👤", "Profil")}
+      </nav>`;
+  }
+
+  // Schlanke Kopfzeile pro Reiter: nur Titel + Dark-Mode-Knopf (statt des großen
+  // Heros mit Kicker und Icon-Reihe – der Markenname steht schon in der App-Bar).
+  function pagehead(title, vm) {
+    return `
+      <div class="pagehead">
+        <h2 class="pagehead__title">${title}</h2>
+        ${themeToggle(vm.theme)}
+      </div>`;
+  }
+
+  function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
         const badge = c.due > 0 ? `<span class="tile__due">${c.due} fällig</span>` : `<span class="tile__due tile__due--ok">✓ erledigt</span>`;
@@ -93,7 +116,8 @@
          </button>`),
     ].join("");
 
-    // "Heute"-Karte: Streak-Chip, Fortschrittsbalken, Haupt-CTA und Quick-Resume.
+    // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
+    // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
     const streakChip = vm.streak > 0
       ? `<span class="today__streak">🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} Serie</span>`
       : `<span class="today__streak today__streak--new">🌱 Starte deine Serie</span>`;
@@ -129,59 +153,85 @@
         <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
       </div>`;
 
-    const explore = EXPLORE.map((x) => `
-      <button class="explore__card" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
-        <span class="explore__icon" aria-hidden="true">${x.icon}</span>
-        <span class="explore__title">${esc(x.title)}</span>
-        <span class="explore__sub">${esc(x.sub)}</span>
-      </button>`).join("");
-
     return `
-      <section class="screen">
-        <div class="hero">
-          <div class="hero__text">
-            <p class="hero__kicker">Reise-Spanisch für echte Situationen</p>
-            <h2 class="hero__title">¿Qué aprendemos hoy?</h2>
-          </div>
-          <div class="hero__actions">
-            ${themeToggle(vm.theme)}
-            <button class="iconbtn hero__pass" data-action="open-badges" aria-label="Mein Ruta-Pass" title="Mein Ruta-Pass">🎖️${vm.badgeCount ? `<span class="hero__passnum">${vm.badgeCount}</span>` : ""}</button>
-          </div>
+      ${pagehead("¿Qué aprendemos hoy?", vm)}
+
+      <div class="today">
+        ${streakChip}
+        <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
+          ${vm.totalDue > 0
+            ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
+            : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
+        </button>
+        ${resume}
+      </div>
+
+      <div class="setup">
+        <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
+          <span class="setup__cap">⚙️ Lernen</span>
+          <span class="setup__summary">${setupSummary}</span>
+          <span class="setup__chev" aria-hidden="true">›</span>
+        </button>
+        ${vm.setupOpen ? setupBody : ""}
+      </div>
+
+      <p class="sectioncap">Themen</p>
+      <div class="tiles">${tiles}</div>
+
+      <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>`;
+  }
+
+  function entdeckenBody(vm) {
+    const feats = FEATURES.map((x) => `
+      <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
+        <span class="feat__icon" aria-hidden="true">${x.icon}</span>
+        <span class="feat__text">
+          <span class="feat__title">${esc(x.title)}</span>
+          <span class="feat__sub">${esc(x.sub)}</span>
+        </span>
+        <span class="feat__chev" aria-hidden="true">›</span>
+      </button>`).join("");
+    return `
+      ${pagehead("Entdecken", vm)}
+      <p class="pageintro">Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.</p>
+      ${feats}`;
+  }
+
+  function profilBody(vm) {
+    const streakLine = vm.streak > 0
+      ? `🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} in Folge`
+      : `🌱 Heute die erste Karte lernen`;
+    const navrow = (action, icon, label, chip) => `
+      <button class="navrow" data-action="${action}">
+        <span class="navrow__icon" aria-hidden="true">${icon}</span>
+        <span class="navrow__label">${esc(label)}</span>
+        ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
+        <span class="navrow__chev" aria-hidden="true">›</span>
+      </button>`;
+    return `
+      ${pagehead("Dein Fortschritt", vm)}
+
+      <div class="profcard">
+        <p class="profcard__streak">${streakLine}</p>
+        <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
+          <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
         </div>
+        <p class="profcard__meta">${vm.overall.mastered} von ${vm.overall.total} Karten gemeistert · ${vm.overall.pct} %</p>
+      </div>
 
-        <div class="today">
-          <div class="today__top">
-            ${streakChip}
-            <span class="today__mastery">${vm.overall.mastered} / ${vm.overall.total} gemeistert</span>
-          </div>
-          <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
-            <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
-          </div>
-          <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
-            ${vm.totalDue > 0
-              ? `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`
-              : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
-          </button>
-          ${resume}
-        </div>
+      ${navrow("open-stats", "📊", "Statistik")}
+      ${navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "")}
+      ${navrow("open-editor", "✍️", "Eigene Karten")}`;
+  }
 
-        <div class="setup">
-          <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
-            <span class="setup__cap">⚙️ Lernen</span>
-            <span class="setup__summary">${setupSummary}</span>
-            <span class="setup__chev" aria-hidden="true">›</span>
-          </button>
-          ${vm.setupOpen ? setupBody : ""}
-        </div>
-
-        <p class="sectioncap">Entdecken</p>
-        <div class="explore" role="group" aria-label="Entdecken">${explore}</div>
-
-        <p class="sectioncap">Themen</p>
-        <div class="tiles">${tiles}</div>
-
-        <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
-      </section>`;
+  function renderHome(vm) {
+    const body =
+      vm.tab === "entdecken" ? entdeckenBody(vm) :
+      vm.tab === "profil" ? profilBody(vm) :
+      lernenBody(vm);
+    return `
+      <section class="screen screen--tabbed">${body}</section>
+      ${tabbar(vm.tab)}`;
   }
 
   // ---------- STUDY ----------

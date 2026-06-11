@@ -4,7 +4,7 @@
  * Internet startet. Bei jeder Version CACHE_VERSION hochzählen -> alte Caches
  * werden beim Aktivieren entfernt und die App lädt frisch.
  */
-const CACHE_VERSION = "holaruta-v4";
+const CACHE_VERSION = "holaruta-v5";
 const ASSETS = [
   "./",
   "./index.html",

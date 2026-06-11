@@ -21,6 +21,7 @@
 
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
+    homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -154,6 +155,7 @@
       },
       lastCat,
       setupOpen: setupOpenDefault(),
+      tab: state.homeTab,
     };
   }
 
@@ -312,11 +314,10 @@
     return gap === 0 || gap === 1 ? (gamestats.dailyStreak || 0) : 0;
   }
 
-  // Einstellungs-Panel der Startseite: ohne gemerkte Wahl für Neueinsteiger offen
-  // (Modus/Richtung entdecken), sonst eingeklappt – Einstellungen sind Set-once.
+  // Einstellungs-Panel des Lernen-Reiters: standardmäßig zu (Set-once-
+  // Einstellungen), offen nur, wenn der Nutzer es selbst aufgeklappt hat.
   function setupOpenDefault() {
-    if (typeof settings.setupOpen === "boolean") return settings.setupOpen;
-    return Object.keys(progress).length === 0;
+    return settings.setupOpen === true;
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -967,6 +968,15 @@
     render();
   }
 
+  // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
+  function setTab(tab) {
+    const valid = tab === "entdecken" || tab === "profil" ? tab : "lernen";
+    state.homeTab = valid;
+    settings = Object.assign({}, settings, { homeTab: valid });
+    store.saveSettings(settings);
+    render();
+  }
+
   function goHome() {
     dismissBadgeToast();
     state.screen = "home";
@@ -1295,6 +1305,7 @@
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "resume-last") resumeLast();
     else if (action === "toggle-setup") toggleSetup();
+    else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
