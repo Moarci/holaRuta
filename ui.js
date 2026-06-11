@@ -129,7 +129,6 @@
           <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
-            ${canShare() ? `<button class="iconbtn iconbtn--sm" data-action="share-card" aria-label="Karte als Bild teilen" title="Als Bild teilen">📤</button>` : ""}
             <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
           </div>
         </div>
@@ -181,6 +180,7 @@
           </div>
         </div>
       </div>
+      ${shareCardBtn()}
       <div class="controls" id="controls" ${vm.revealed ? "" : "hidden"}>
         ${rateButtons()}
       </div>`;
@@ -209,7 +209,8 @@
                  autocapitalize="off" autocorrect="off" spellcheck="false"
                  placeholder="${placeholder}" />
           <button class="typer__btn" type="submit">Prüfen</button>
-        </form>`;
+        </form>
+        ${shareCardBtn()}`;
     }
 
     const verdict = res.correct
@@ -224,29 +225,39 @@
         ${sq ? "" : tip}
         ${verdict}
       </div>
+      ${shareCardBtn()}
       <div class="controls" id="controls">${rateButtons()}</div>`;
   }
 
   function rateButtons() {
     return `
-      <span class="rateprompt">¿Cómo fue?</span>
+      <div class="rateprompt">
+        <span class="rateprompt__es">¿Cómo fue?</span>
+        <span class="rateprompt__de">Wie gut saß die Antwort?</span>
+      </div>
       <div class="ratebar" role="group" aria-label="Wie gut saß die Antwort?">
         <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="Otra vez – nochmal üben">
           <span class="feel__emoji" aria-hidden="true">😅</span>
           <span class="feel__txt">Otra vez</span>
-          <kbd class="feel__key" aria-hidden="true">1</kbd>
         </button>
         <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="Vale – saß ganz gut">
           <span class="feel__emoji" aria-hidden="true">🙂</span>
           <span class="feel__txt">Vale</span>
-          <kbd class="feel__key" aria-hidden="true">2</kbd>
         </button>
         <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="¡Fácil! – mühelos gewusst">
           <span class="feel__emoji" aria-hidden="true">😎</span>
           <span class="feel__txt">¡Fácil!</span>
-          <kbd class="feel__key" aria-hidden="true">3</kbd>
         </button>
       </div>`;
+  }
+
+  // Klar beschrifteter Teilen-Button: erzeugt aus der aktuellen Karte ein Sharepic.
+  function shareCardBtn() {
+    if (!canShare()) return "";
+    return `
+      <button class="sharepic-btn" type="button" data-action="share-card" aria-label="Diese Karte als Bild teilen">
+        <span aria-hidden="true">📤</span> Als Sharepic teilen
+      </button>`;
   }
 
   // ---------- DONE ----------

@@ -427,14 +427,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Selbsteinschätzung: keine Wertungs-Buttons, sondern drei "Gefühls"-Karten.
  * Spanische Mikro-Labels (passend zum Lern-Thema) + Emoji als Sprach-unabhängige
  * Bedeutung; die Zahl bleibt für die Tastatur-Shortcuts (1/2/3) sichtbar. */
-.rateprompt {
-  font-family: var(--font-display); font-weight: 700; font-style: italic;
-  font-size: 0.95rem; color: var(--muted); letter-spacing: 0.01em;
+.rateprompt { text-align: center; line-height: 1.15; }
+.rateprompt__es {
+  display: block; font-family: var(--font-display); font-weight: 700; font-style: italic;
+  font-size: 1.02rem; color: var(--ink-soft); letter-spacing: 0.01em;
+}
+.rateprompt__de {
+  display: block; margin-top: 1px; font-size: 0.72rem; font-weight: 600; color: var(--muted);
 }
 .ratebar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; width: 100%; }
 .feel {
-  display: flex; flex-direction: column; align-items: center; gap: 5px;
-  cursor: pointer; padding: 12px 6px 9px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; padding: 13px 6px 11px;
   background: var(--card); color: var(--ink);
   border: 1.5px solid var(--line); border-bottom-width: 4px;
   border-radius: var(--r-md); box-shadow: var(--shadow);
@@ -442,18 +446,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .feel:hover { border-color: var(--line-strong); }
 .feel:active { transform: translateY(2px); border-bottom-width: 2px; box-shadow: none; }
-.feel__emoji { font-size: 1.7rem; line-height: 1; }
-.feel__txt { font-weight: 700; font-size: 0.92rem; }
-.feel__key {
-  font-family: var(--font); font-size: 0.62rem; font-weight: 600; color: var(--muted);
-  border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; opacity: 0.8;
-}
+.feel__emoji { font-size: 1.8rem; line-height: 1; }
+.feel__txt { font-weight: 700; font-size: 0.95rem; }
 .feel--again { border-bottom-color: var(--no); }
 .feel--good  { border-bottom-color: var(--ok); }
 .feel--easy  { border-bottom-color: var(--easy); }
 .feel--again .feel__txt { color: var(--no); }
 .feel--good  .feel__txt { color: var(--ok); }
 .feel--easy  .feel__txt { color: var(--easy); }
+
+/* Teilen-Button auf der Lernkarte: dezente Pille, zentriert unter der Karte. */
+.sharepic-btn {
+  align-self: center; display: inline-flex; align-items: center; gap: 7px;
+  margin: 2px auto 4px; padding: 9px 16px; cursor: pointer;
+  font-family: var(--font); font-size: 0.88rem; font-weight: 600; color: var(--brand-ink);
+  background: var(--card); border: 1.5px solid var(--line-strong);
+  border-radius: 999px; box-shadow: var(--shadow);
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.sharepic-btn:hover { border-color: var(--brand); }
+.sharepic-btn:active { transform: translateY(1px); }
 
 /* Fertig */
 .done { text-align: center; padding: 36px 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
@@ -4943,7 +4955,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
-            ${canShare() ? `<button class="iconbtn iconbtn--sm" data-action="share-card" aria-label="Karte als Bild teilen" title="Als Bild teilen">📤</button>` : ""}
             <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
           </div>
         </div>
@@ -4995,6 +5006,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </div>
         </div>
       </div>
+      ${shareCardBtn()}
       <div class="controls" id="controls" ${vm.revealed ? "" : "hidden"}>
         ${rateButtons()}
       </div>`;
@@ -5023,7 +5035,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                  autocapitalize="off" autocorrect="off" spellcheck="false"
                  placeholder="${placeholder}" />
           <button class="typer__btn" type="submit">Prüfen</button>
-        </form>`;
+        </form>
+        ${shareCardBtn()}`;
     }
 
     const verdict = res.correct
@@ -5038,29 +5051,39 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${sq ? "" : tip}
         ${verdict}
       </div>
+      ${shareCardBtn()}
       <div class="controls" id="controls">${rateButtons()}</div>`;
   }
 
   function rateButtons() {
     return `
-      <span class="rateprompt">¿Cómo fue?</span>
+      <div class="rateprompt">
+        <span class="rateprompt__es">¿Cómo fue?</span>
+        <span class="rateprompt__de">Wie gut saß die Antwort?</span>
+      </div>
       <div class="ratebar" role="group" aria-label="Wie gut saß die Antwort?">
         <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="Otra vez – nochmal üben">
           <span class="feel__emoji" aria-hidden="true">😅</span>
           <span class="feel__txt">Otra vez</span>
-          <kbd class="feel__key" aria-hidden="true">1</kbd>
         </button>
         <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="Vale – saß ganz gut">
           <span class="feel__emoji" aria-hidden="true">🙂</span>
           <span class="feel__txt">Vale</span>
-          <kbd class="feel__key" aria-hidden="true">2</kbd>
         </button>
         <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="¡Fácil! – mühelos gewusst">
           <span class="feel__emoji" aria-hidden="true">😎</span>
           <span class="feel__txt">¡Fácil!</span>
-          <kbd class="feel__key" aria-hidden="true">3</kbd>
         </button>
       </div>`;
+  }
+
+  // Klar beschrifteter Teilen-Button: erzeugt aus der aktuellen Karte ein Sharepic.
+  function shareCardBtn() {
+    if (!canShare()) return "";
+    return `
+      <button class="sharepic-btn" type="button" data-action="share-card" aria-label="Diese Karte als Bild teilen">
+        <span aria-hidden="true">📤</span> Als Sharepic teilen
+      </button>`;
   }
 
   // ---------- DONE ----------
