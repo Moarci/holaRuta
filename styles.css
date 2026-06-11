@@ -955,6 +955,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hm-challenge__cap { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ok); }
 .hm-challenge__text { margin: 6px 0 4px; color: var(--ink); font-weight: 600; line-height: 1.4; }
 .hm-challenge__es { margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--ok); }
+.hm-challenge__btn {
+  margin-top: 12px; width: 100%; min-height: 44px; cursor: pointer;
+  border: 1.5px solid var(--ok); border-radius: 999px; background: transparent;
+  color: var(--ok); font-weight: 700; font-size: 0.9rem; box-shadow: var(--shadow);
+}
+.hm-challenge__btn:active { transform: translateY(1px); }
+.hm-challenge__done {
+  display: block; margin-top: 12px; font-weight: 800; color: var(--ok); font-size: 0.92rem;
+}
 
 /* Rollenspiele: Szenen-Liste. */
 .hm-rps { display: flex; flex-direction: column; gap: 10px; }

@@ -58,6 +58,13 @@
       lastStudyDate: null,  // letztes Lern-Datum als "YYYY-MM-DD" (lokal)
       nightOwl: false,      // schon mal nach 22 Uhr gelernt
       earlyBird: false,     // schon mal vor 9 Uhr gelernt
+      // ----- Hostel Mode (Üben zu zweit) -----
+      battlesPlayed: 0,     // abgeschlossene Battles
+      battlesWon: 0,        // Battles mit klarem Sieger (kein Unentschieden)
+      perfectBattles: 0,    // Battles, in denen ein Spieler volle Punkte holte
+      comebacks: 0,         // Battles nach Rückstand gewonnen
+      roleplaysSeen: {},    // Map roleplayId -> true (distinkt gespielte Rollenspiele)
+      challengesDone: {},   // Map challengeId -> true (erledigte Real-Life-Challenges)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
   }
@@ -76,6 +83,12 @@
       lastStudyDate: typeof v.lastStudyDate === "string" ? v.lastStudyDate : null,
       nightOwl: !!v.nightOwl,
       earlyBird: !!v.earlyBird,
+      battlesPlayed: num(v.battlesPlayed),
+      battlesWon: num(v.battlesWon),
+      perfectBattles: num(v.perfectBattles),
+      comebacks: num(v.comebacks),
+      roleplaysSeen: isPlainObject(v.roleplaysSeen) ? v.roleplaysSeen : {},
+      challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
   }

@@ -345,6 +345,41 @@
     render();
   }
 
+  // Hostel Mode: Ergebnis eines beendeten Battles in die Spiel-Zähler buchen.
+  function recordBattleResult(b) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.battlesPlayed = (g.battlesPlayed || 0) + 1;
+    if (b.scores.A !== b.scores.B) g.battlesWon = (g.battlesWon || 0) + 1; // klarer Sieger
+    // "Perfekt": ein Spieler holte in ALLEN seinen Runden die volle Punktzahl (2).
+    const turnsA = Math.ceil(b.totalRounds / 2), turnsB = Math.floor(b.totalRounds / 2);
+    if (b.scores.A === turnsA * 2 || (turnsB > 0 && b.scores.B === turnsB * 2)) {
+      g.perfectBattles = (g.perfectBattles || 0) + 1;
+    }
+    // Comeback: Sieger lag zwischendurch hinten.
+    const wonA = b.scores.A > b.scores.B, wonB = b.scores.B > b.scores.A;
+    if ((wonA && b.behindA) || (wonB && b.behindB)) g.comebacks = (g.comebacks || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
+  // Hostel Mode: eine erledigte Real-Life-Challenge vermerken (distinkt).
+  function recordChallengeDone(id) {
+    if (!badges || !id || (gamestats.challengesDone && gamestats.challengesDone[id])) return;
+    const done = Object.assign({}, gamestats.challengesDone, { [id]: true });
+    gamestats = Object.assign({}, gamestats, { challengesDone: done });
+    store.saveGameStats(gamestats);
+  }
+
+  // Hostel Mode: ein distinktes gespieltes Rollenspiel vermerken (Mehrfach-Öffnen
+  // derselben Szene zählt nur einmal).
+  function recordRoleplaySeen(id) {
+    if (!badges || (gamestats.roleplaysSeen && gamestats.roleplaysSeen[id])) return;
+    const seen = Object.assign({}, gamestats.roleplaysSeen, { [id]: true });
+    gamestats = Object.assign({}, gamestats, { roleplaysSeen: seen });
+    store.saveGameStats(gamestats);
+  }
+
   // ----- Hostel Mode: View-Modelle -----
   const battleById = (id) => data.BATTLES.find((b) => b.id === id) || null;
   const roleplayById = (id) => data.ROLEPLAYS.find((r) => r.id === id) || null;
@@ -399,7 +434,8 @@
       scores: b.scores,
       rounds: b.totalRounds,
       winner,
-      challenge: b.challenge, // { textDe, phraseEs } | null
+      challenge: b.challenge, // { id, textDe, phraseEs } | null
+      challengeDone: !!(b.challenge && gamestats.challengesDone && gamestats.challengesDone[b.challenge.id]),
     };
   }
 
@@ -612,17 +648,20 @@
 
   // ----- Hostel Mode (Anwenden zu zweit) -----
   function openHostel() {
+    dismissBadgeToast();
     state.screen = "hostel";
     render();
   }
 
   function openBattleSetup() {
+    dismissBadgeToast();
     state.screen = "battleSetup";
     render();
   }
 
   // Battle starten: Aufgaben der Szene (oder alle) mischen, max. 10 Runden.
   function startBattle(sceneId) {
+    dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     const queue = shuffle(pool).map((b) => b.id);
     if (!queue.length) return;
@@ -636,6 +675,8 @@
       totalRounds: rounds,
       current: "A",
       scores: { A: 0, B: 0 },
+      behindA: false,         // war A irgendwann in Rückstand? (für "Comeback Kid")
+      behindB: false,
       revealed: false,
       challenge: null,
     };
@@ -655,11 +696,16 @@
     if (!b || !b.revealed) return;
     buzz(points >= 2 ? 12 : 8);
     b.scores[b.current] += points;
+    // Rückstand-Marken laufend mitführen (Basis für "Comeback Kid").
+    if (b.scores.A < b.scores.B) b.behindA = true;
+    if (b.scores.B < b.scores.A) b.behindB = true;
     if (b.round >= b.totalRounds) {
       // Passende Real-Life-Challenge als Bonus (zufällig).
       const list = data.CHALLENGES || [];
       b.challenge = list.length ? list[Math.floor(Math.random() * list.length)] : null;
       state.screen = "battleDone";
+      recordBattleResult(b);
+      syncBadges(Date.now(), true); // Battle-Badges freischalten + einblenden
     } else {
       b.round += 1;
       b.current = b.current === "A" ? "B" : "A";
@@ -669,20 +715,32 @@
   }
 
   function battleAgain() {
+    dismissBadgeToast();
     state.battle = null;
     state.screen = "battleSetup";
     render();
   }
 
+  // Real-Life-Challenge auf dem Battle-Ende-Screen abhaken (Mutproben-Badges).
+  function markChallengeDone(id) {
+    recordChallengeDone(id);
+    syncBadges(Date.now(), true);
+    render();
+  }
+
   function openRoleplaySetup() {
+    dismissBadgeToast();
     state.screen = "roleplaySetup";
     render();
   }
 
   function startRoleplay(id) {
     if (!roleplayById(id)) return;
+    dismissBadgeToast();
     state.roleplayId = id;
     state.roleplaySwapped = false;
+    recordRoleplaySeen(id);
+    syncBadges(Date.now(), true); // Rollenspiel-Badges freischalten + einblenden
     state.screen = "roleplay";
     render();
   }
@@ -919,6 +977,7 @@
     else if (action === "battle-reveal") battleReveal();
     else if (action === "battle-score") battleScore(Number(el.dataset.points));
     else if (action === "battle-again") battleAgain();
+    else if (action === "challenge-done") markChallengeDone(el.dataset.id);
     else if (action === "open-roleplay-setup") openRoleplaySetup();
     else if (action === "start-roleplay") startRoleplay(el.dataset.id);
     else if (action === "roleplay-swap") roleplaySwap();

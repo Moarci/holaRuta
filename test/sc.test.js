@@ -312,6 +312,8 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
   const valid = {
     reviews: 12, againPresses: 4, dailyStreak: 2, longestStreak: 9,
     lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
+    battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
+    roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
     unlocked: { first_steps: 1700000000000 },
   };
   storeMem[GKEY] = JSON.stringify(valid);
@@ -360,4 +362,61 @@ test("data.CHALLENGES: textDe und phraseEs gesetzt", () => {
   data.CHALLENGES.forEach((c) => {
     assert.ok(c.textDe && c.phraseEs, `Challenge unvollständig: ${c.id}`);
   });
+});
+
+// ---------- badges: Hostel Mode ----------
+test("badges.buildMetrics: Hostel-Mode-Zähler übernommen (Rollenspiele distinkt)", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "hostel" }], {}, {
+    battlesPlayed: 3, battlesWon: 2, perfectBattles: 1,
+    roleplaysSeen: { hr01: true, hr02: true },
+  });
+  assert.equal(m.battlesPlayed, 3);
+  assert.equal(m.battlesWon, 2);
+  assert.equal(m.perfectBattles, 1);
+  assert.equal(m.roleplaysCompleted, 2);
+});
+
+test("badges: Hostel-Mode-Badges schalten über Zähler frei", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "hostel" }], {}, {
+    battlesPlayed: 1, battlesWon: 1, perfectBattles: 1,
+    roleplaysSeen: { a: true, b: true, c: true, d: true, e: true },
+  });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("battle_first"));
+  assert.ok(ids.includes("battle_win"));
+  assert.ok(ids.includes("battle_perfect"));
+  assert.ok(!ids.includes("battle_10")); // erst ab 10
+  assert.ok(ids.includes("roleplay_first"));
+  assert.ok(ids.includes("roleplay_5"));
+});
+
+test("badges: Kategorie-Badges für Hostel & Social greifen ab 80 %", () => {
+  const cards = Array.from({ length: 5 }, (_, i) => ({ id: "h" + i, cat: "hostel" }))
+    .concat(Array.from({ length: 5 }, (_, i) => ({ id: "s" + i, cat: "social" })));
+  const prog = {};
+  for (let i = 0; i < 4; i++) prog["h" + i] = { seen: 2, interval: 10 }; // 4/5 hostel = 80 %
+  const ids = badges.satisfiedIds(badges.buildMetrics(cards, prog, {}));
+  assert.ok(ids.includes("cat_hostel"));
+  assert.ok(!ids.includes("cat_social")); // social 0 %
+});
+
+// ---------- badges: Comeback & Real-Life Challenges ----------
+test("badges: Comeback Kid & Challenge-Badges schalten über Zähler frei", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "hostel" }], {}, {
+    comebacks: 1, challengesDone: { challenge01: true },
+  });
+  assert.equal(m.comebacks, 1);
+  assert.equal(m.challengesCompleted, 1);
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("battle_comeback"));
+  assert.ok(ids.includes("challenge_first"));
+  assert.ok(!ids.includes("challenge_5")); // erst ab 5
+});
+
+test("badges: challenge_5 ab 5 distinkten Challenges", () => {
+  const done = {};
+  for (let i = 1; i <= 5; i++) done["challenge0" + i] = true;
+  const m = badges.buildMetrics([{ id: "a", cat: "hostel" }], {}, { challengesDone: done });
+  assert.equal(m.challengesCompleted, 5);
+  assert.ok(badges.satisfiedIds(m).includes("challenge_5"));
 });

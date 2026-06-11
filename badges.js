@@ -40,6 +40,8 @@
     { id: "learning", label: "Lernreise",   icon: "🧭" },
     { id: "streak",   label: "Dranbleiben", icon: "🔥" },
     { id: "category", label: "Bereiche",    icon: "🗂️" },
+    { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
+    { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
   ];
 
@@ -51,6 +53,8 @@
     { category: "essen",   icon: "🌮", name: "Taco Tactician",      description: "Meistere 80 % der Essen-Karten." },
     { category: "trinken", icon: "🥤", name: "Agua, por favor",     description: "Meistere 80 % der Trinken-Karten." },
     { category: "hotel",   icon: "🛏️", name: "Dorm Diplomat",       description: "Meistere 80 % der Hotel-Karten." },
+    { category: "hostel",  icon: "🔑", name: "Check-in Champion",    description: "Meistere 80 % der Hostel-Karten." },
+    { category: "social",  icon: "👋", name: "Neue Bekanntschaften", description: "Meistere 80 % der Social-Karten." },
     { category: "verkehr", icon: "🚌", name: "Busbahnhof-Boss",     description: "Meistere 80 % der Verkehr-Karten." },
     { category: "compras", icon: "🛍️", name: "Markt-Meister",       description: "Meistere 80 % der Einkaufen-Karten." },
     { category: "dinero",  icon: "💵", name: "Peso-Profi",          description: "Meistere 80 % der Geld-Karten." },
@@ -101,6 +105,28 @@
     // ---------- Bereiche (Kategorie-Meisterschaft) ----------
     ...CATEGORY_BADGES,
 
+    // ---------- Hostel Mode (Üben zu zweit) ----------
+    { id: "battle_first",   group: "hostel", icon: "⚔️", name: "First Duel",        type: "counter", metric: "battlesPlayed", threshold: 1,
+      description: "Spiele dein erstes Hostel Battle.", unlockedText: "Dein erstes Sprachduell ist geschafft." },
+    { id: "battle_win",     group: "hostel", icon: "🏆", name: "Dorm Champion",      type: "counter", metric: "battlesWon", threshold: 1,
+      description: "Gewinne ein Battle (klarer Sieger).", unlockedText: "Du hast dich im Hostel Battle durchgesetzt." },
+    { id: "battle_10",      group: "hostel", icon: "🎒", name: "Battle Backpacker",  type: "counter", metric: "battlesPlayed", threshold: 10,
+      description: "Spiele 10 Battles.",               unlockedText: "Schon durch viele Sprachduelle gekämpft." },
+    { id: "battle_perfect", group: "hostel", icon: "✅", name: "Perfect Check-in",   type: "counter", metric: "perfectBattles", threshold: 1,
+      description: "Beende ein Battle ohne Fehler (volle Punktzahl).", unlockedText: "Sauber durchgezogen – keine Aussetzer." },
+    { id: "battle_comeback",group: "hostel", icon: "🔁", name: "Comeback Kid",       type: "counter", metric: "comebacks", threshold: 1,
+      description: "Gewinne ein Battle nach Rückstand.", unlockedText: "Erst gestolpert, dann gewonnen." },
+    { id: "roleplay_first", group: "hostel", icon: "🎭", name: "First Scene",        type: "counter", metric: "roleplaysCompleted", threshold: 1,
+      description: "Spiele dein erstes Rollenspiel.",  unlockedText: "Dein erstes Gespräch laut durchgespielt." },
+    { id: "roleplay_5",     group: "hostel", icon: "🎬", name: "Scene Collector",    type: "counter", metric: "roleplaysCompleted", threshold: 5,
+      description: "Spiele 5 verschiedene Rollenspiele.", unlockedText: "Viele echte Reisesituationen trainiert." },
+
+    // ---------- Mutproben (Real-Life Challenges) ----------
+    { id: "challenge_first", group: "reallife", icon: "💬", name: "Mutiger erster Satz", type: "counter", metric: "challengesCompleted", threshold: 1,
+      description: "Hake deine erste Real-Life Challenge ab.", unlockedText: "Du hast Spanisch nicht nur gelernt, sondern benutzt." },
+    { id: "challenge_5",     group: "reallife", icon: "🚪", name: "Comfort Zone Exit",   type: "counter", metric: "challengesCompleted", threshold: 5,
+      description: "Hake 5 Real-Life Challenges ab.", unlockedText: "Raus aus der App, rein ins echte Sprechen." },
+
     // ---------- Spezial ----------
     { id: "night_owl",  group: "special", icon: "🌙", name: "Midnight Español",         type: "flag", metric: "nightOwl", secret: true,
       description: "Lerne nach 22 Uhr.",        unlockedText: "Noch schnell ein bisschen Spanisch vor dem Schlafen." },
@@ -149,6 +175,13 @@
       againPresses: c.againPresses || 0,
       nightOwl: !!c.nightOwl,
       earlyBird: !!c.earlyBird,
+      // Hostel Mode: Battle-Zähler direkt, Rollenspiele als distinkte Anzahl.
+      battlesPlayed: c.battlesPlayed || 0,
+      battlesWon: c.battlesWon || 0,
+      perfectBattles: c.perfectBattles || 0,
+      comebacks: c.comebacks || 0,
+      roleplaysCompleted: c.roleplaysSeen ? Object.keys(c.roleplaysSeen).length : 0,
+      challengesCompleted: c.challengesDone ? Object.keys(c.challengesDone).length : 0,
       categoryMastery,
       categoryTotals: catTotal,
     };
