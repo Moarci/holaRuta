@@ -894,15 +894,18 @@
          </button>`),
     ].join("");
     const lengths = vm.lengths.map((l) =>
-      `<button class="seg ${l.selected ? "is-active" : ""}" data-action="set-battle-length" data-len="${l.value}"
-               aria-pressed="${l.selected}">${esc(l.label)} · ${l.value}</button>`).join("");
+      `<button class="seg seg--len ${l.selected ? "is-active" : ""}" data-action="set-battle-length" data-len="${l.value}"
+               aria-pressed="${l.selected}">
+         <span class="seg__name">${esc(l.label)}</span>
+         <span class="seg__sub">${l.value} Runden</span>
+       </button>`).join("");
     return `
       <section class="screen">
         ${hmTopbar("⚔️ Battle", "open-hostel")}
         <p class="hm-intro">Wählt eine Situation. Die App zeigt eine Aufgabe auf Deutsch – einer antwortet laut auf Spanisch, der andere bewertet.</p>
         <div class="hm-length">
           <span class="hm-length__cap">Länge</span>
-          <div class="segmented" role="group" aria-label="Battle-Länge">${lengths}</div>
+          <div class="segmented segmented--len" role="group" aria-label="Battle-Länge">${lengths}</div>
         </div>
         <div class="hm-scenes">${scenes}</div>
       </section>`;
@@ -1151,6 +1154,9 @@
   // beziehen. Gliedmaßen sind runde Striche (currentColor), Rumpf/Kopf gefüllte Flächen.
   const BP_FIGURE = `
     <svg class="bp-figure" viewBox="0 0 200 440" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+      <!-- weicher Bodenschatten – erdet die Figur. -->
+      <ellipse class="bp-figure__ground" cx="100" cy="430" rx="56" ry="8" />
+      <!-- Arme & Beine: runde Striche. -->
       <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
         <path d="M70 104 L52 168 L46 240" />
         <path d="M130 104 L148 168 L154 240" />
@@ -1159,14 +1165,24 @@
         <path d="M86 236 L82 330 L78 408" />
         <path d="M114 236 L118 330 L122 408" />
       </g>
+      <!-- Rumpf, Kopf, Hände/Füße + runde Schulter-/Hüftgelenke (glätten die Übergänge). -->
       <g class="bp-figure__body" fill="currentColor" stroke="none">
         <ellipse cx="74" cy="416" rx="17" ry="9" />
         <ellipse cx="126" cy="416" rx="17" ry="9" />
         <circle cx="44" cy="248" r="12" />
         <circle cx="156" cy="248" r="12" />
+        <circle cx="70" cy="104" r="14" />
+        <circle cx="130" cy="104" r="14" />
+        <circle cx="86" cy="238" r="15" />
+        <circle cx="114" cy="238" r="15" />
         <path d="M68 96 L132 96 C141 96 141 105 139 113 L126 212 C125 232 121 242 100 242 C79 242 75 232 74 212 L61 113 C59 105 59 96 68 96 Z" />
         <rect x="91" y="68" width="18" height="20" rx="8" />
         <circle cx="100" cy="44" r="30" />
+      </g>
+      <!-- Lichtkante oben links: gibt der flachen Sticker-Figur etwas Tiefe. -->
+      <g class="bp-figure__shine" fill="#fff" stroke="none">
+        <ellipse cx="89" cy="35" rx="11" ry="13" />
+        <ellipse cx="85" cy="152" rx="12" ry="44" />
       </g>
     </svg>`;
 
