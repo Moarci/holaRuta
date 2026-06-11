@@ -20,7 +20,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone'
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -39,6 +39,8 @@
     battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
+    // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
+    quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -501,6 +503,139 @@
     };
   }
 
+  // ----- Definiciones (Zuordnen-Quiz): View-Modelle -----
+  const quizSetById = (id) => data.QUIZ_SETS.find((s) => s.id === id) || null;
+  const quizDefById = (id) => data.QUIZ_DEFS.find((d) => d.id === id) || null;
+  const quizDefsForSet = (setId) => data.QUIZ_DEFS.filter((d) => d.set === setId);
+
+  // Antwort-Optionen einer Frage bauen: die richtige Lösung + bis zu 3 Ablenker aus
+  // derselben Liste, anschließend gemischt. Wird beim Stellen der Frage EINMAL
+  // berechnet und im State gehalten – ein Re-Render darf nicht neu mischen.
+  function buildQuizOptions(correct, pool) {
+    const distractors = shuffle(pool.filter((d) => d.id !== correct.id)).slice(0, 3);
+    return shuffle([correct, ...distractors])
+      .map((d) => ({ id: d.id, es: d.es, de: d.de, icon: d.icon }));
+  }
+
+  function quizSetupVM() {
+    return {
+      sets: data.QUIZ_SETS.map((s) => {
+        const lvl = levelById(s.lvl);
+        return { id: s.id, label: s.label, icon: s.icon, intro: s.intro,
+          count: quizDefsForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
+      }),
+    };
+  }
+
+  function quizVM() {
+    const q = state.quiz;
+    const set = quizSetById(q.setId);
+    const def = quizDefById(q.queue[q.idx]);
+    const answered = q.selected !== null;
+    const options = q.options.map((o) => ({
+      id: o.id, es: o.es, de: o.de, icon: o.icon,
+      // Zustand fürs Einfärben: vor der Antwort neutral, danach Lösung grün,
+      // falsche Wahl rot, der Rest gedämpft.
+      state: !answered ? "idle"
+        : o.id === def.id ? "correct"
+        : o.id === q.selected ? "wrong"
+        : "dim",
+    }));
+    return {
+      setLabel: set ? set.label : "",
+      setIcon: set ? set.icon : "🧩",
+      position: q.idx,
+      total: q.total,
+      definition: def.def,
+      options,
+      answered,
+      isCorrect: q.selected === def.id,
+      solutionEs: def.es,
+      solutionDe: def.de,
+      isLast: q.idx >= q.total - 1,
+    };
+  }
+
+  function quizDoneVM() {
+    const q = state.quiz;
+    const set = quizSetById(q.setId);
+    return {
+      setLabel: set ? set.label : "",
+      setIcon: set ? set.icon : "🧩",
+      correct: q.correct,
+      total: q.total,
+      perfect: q.total > 0 && q.correct === q.total,
+    };
+  }
+
+  // ----- Definiciones: Steuerung -----
+  function openQuizSetup() {
+    dismissBadgeToast();
+    state.screen = "quizSetup";
+    render();
+  }
+
+  function startQuiz(setId) {
+    dismissBadgeToast();
+    const pool = quizDefsForSet(setId);
+    if (!pool.length) return;
+    const queue = shuffle(pool).map((d) => d.id);
+    state.quiz = {
+      setId,
+      queue,
+      idx: 0,
+      total: queue.length,
+      options: buildQuizOptions(quizDefById(queue[0]), pool),
+      selected: null,
+      correct: 0,
+    };
+    state.screen = "quiz";
+    render();
+  }
+
+  // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
+  function answerQuiz(defId) {
+    const q = state.quiz;
+    if (!q || q.selected !== null) return;
+    const current = q.queue[q.idx];
+    q.selected = defId;
+    if (defId === current) { q.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function nextQuiz() {
+    const q = state.quiz;
+    if (!q || q.selected === null) return; // erst antworten, dann weiter
+    if (q.idx >= q.total - 1) {
+      recordQuizResult(q);
+      syncBadges(Date.now(), true); // Quiz-Badges freischalten + einblenden
+      state.screen = "quizDone";
+      render();
+      return;
+    }
+    q.idx += 1;
+    q.selected = null;
+    q.options = buildQuizOptions(quizDefById(q.queue[q.idx]), quizDefsForSet(q.setId));
+    render();
+  }
+
+  function quizAgain() {
+    dismissBadgeToast();
+    state.quiz = null;
+    state.screen = "quizSetup";
+    render();
+  }
+
+  // Ergebnis eines beendeten Quiz in die Spiel-Zähler buchen (Ruta-Pass).
+  function recordQuizResult(q) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.quizzesPlayed = (g.quizzesPlayed || 0) + 1;
+    if (q.total > 0 && q.correct === q.total) g.quizzesPerfect = (g.quizzesPerfect || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
   // ----- Rendern -----
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
@@ -516,6 +651,9 @@
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
     else if (state.screen === "roleplaySetup") root.innerHTML = ui.renderRoleplaySetup(roleplaySetupVM());
     else if (state.screen === "roleplay") root.innerHTML = ui.renderRoleplay(roleplayVM());
+    else if (state.screen === "quizSetup") root.innerHTML = ui.renderQuizSetup(quizSetupVM());
+    else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
+    else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -1051,6 +1189,11 @@
     else if (action === "open-roleplay-setup") openRoleplaySetup();
     else if (action === "start-roleplay") startRoleplay(el.dataset.id);
     else if (action === "roleplay-swap") roleplaySwap();
+    else if (action === "open-quiz-setup") openQuizSetup();
+    else if (action === "start-quiz") startQuiz(el.dataset.set);
+    else if (action === "quiz-answer") answerQuiz(el.dataset.id);
+    else if (action === "quiz-next") nextQuiz();
+    else if (action === "quiz-again") quizAgain();
     else if (action === "home") goHome();
   }
 

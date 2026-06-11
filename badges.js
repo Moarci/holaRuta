@@ -42,6 +42,7 @@
     { id: "category", label: "Bereiche",    icon: "🗂️" },
     { id: "context",  label: "Reise-Kontext", icon: "🧭" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
+    { id: "quiz",     label: "Definiciones", icon: "🧩" },
     { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
   ];
@@ -131,6 +132,14 @@
     { id: "roleplay_5",     group: "hostel", icon: "🎬", name: "Scene Collector",    type: "counter", metric: "roleplaysCompleted", threshold: 5,
       description: "Spiele 5 verschiedene Rollenspiele.", unlockedText: "Viele echte Reisesituationen trainiert." },
 
+    // ---------- Definiciones (Zuordnen-Quiz) ----------
+    { id: "quiz_first",   group: "quiz", icon: "🧩", name: "Erste Zuordnung",   type: "counter", metric: "quizzesPlayed", threshold: 1,
+      description: "Schließe dein erstes Definiciones-Quiz ab.", unlockedText: "Du lernst Wörter jetzt auch über ihre Bedeutung." },
+    { id: "quiz_10",      group: "quiz", icon: "📖", name: "Wort-Detektiv",     type: "counter", metric: "quizzesPlayed", threshold: 10,
+      description: "Schließe 10 Definiciones-Quizze ab.",       unlockedText: "Du erkennst Begriffe an ihrer Beschreibung – stark." },
+    { id: "quiz_perfect", group: "quiz", icon: "💯", name: "Sin errores",       type: "counter", metric: "quizzesPerfect", threshold: 1,
+      description: "Beende ein Quiz ohne Fehler.",              unlockedText: "Fehlerfrei durchgespielt – alles richtig zugeordnet." },
+
     // ---------- Mutproben (Real-Life Challenges) ----------
     { id: "challenge_first", group: "reallife", icon: "💬", name: "Mutiger erster Satz", type: "counter", metric: "challengesCompleted", threshold: 1,
       description: "Hake deine erste Real-Life Challenge ab.", unlockedText: "Du hast Spanisch nicht nur gelernt, sondern benutzt." },
@@ -192,6 +201,9 @@
       comebacks: c.comebacks || 0,
       roleplaysCompleted: c.roleplaysSeen ? Object.keys(c.roleplaysSeen).length : 0,
       challengesCompleted: c.challengesDone ? Object.keys(c.challengesDone).length : 0,
+      // Definiciones: abgeschlossene und fehlerfreie Quiz-Runden.
+      quizzesPlayed: c.quizzesPlayed || 0,
+      quizzesPerfect: c.quizzesPerfect || 0,
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       categoryMastery,
