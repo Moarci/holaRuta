@@ -137,7 +137,7 @@
     { id: "z1000", cat: "zahlen", lvl: 1, de: "1.000", es: "mil", tip: "mil (nie 'un mil'!)" },
     { id: "z1500", cat: "zahlen", lvl: 2, de: "1.500", es: "mil quinientos", tip: "mil ki-ni-EN-tos" },
     { id: "z2000", cat: "zahlen", lvl: 2, de: "2.000", es: "dos mil", tip: "dos mil (mil bleibt unverändert)" },
-    { id: "z2025", cat: "zahlen", lvl: 3, de: "2.025 (Jahr)", es: "dos mil veinticinco", tip: "Jahre: dos mil ..." },
+    { id: "z2025", cat: "zahlen", lvl: 3, de: "2025 (Jahr)", es: "dos mil veinticinco", tip: "Jahre: dos mil ..." },
     { id: "z3500", cat: "zahlen", lvl: 2, de: "3.500", es: "tres mil quinientos", tip: "tres mil ki-ni-EN-tos" },
     { id: "z5000", cat: "zahlen", lvl: 2, de: "5.000", es: "cinco mil", tip: "SIN-ko mil" },
     { id: "z10000", cat: "zahlen", lvl: 2, de: "10.000", es: "diez mil", tip: "di-ES mil" },
