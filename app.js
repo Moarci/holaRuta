@@ -161,6 +161,19 @@
       lastCat,
       setupOpen: setupOpenDefault(),
       tab: state.homeTab,
+      install: installVM(),
+    };
+  }
+
+  // „Auf den Startbildschirm"-Hinweis fürs Profil. Leer, wenn die App schon
+  // installiert ist oder als Einzeldatei läuft (siehe install.js).
+  function installVM() {
+    const inst = window.SC && window.SC.install;
+    if (!inst || !inst.shouldOffer()) return { show: false };
+    return {
+      show: true,
+      canPrompt: inst.canPrompt(),
+      hint: 'Tippe unten in der Leiste auf „Teilen" und dann auf „Zum Home-Bildschirm" – schon hast du HolaRuta als App-Icon, ganz ohne Datei-Suchen, auch offline.',
     };
   }
 
@@ -1196,6 +1209,14 @@
     render();
   }
 
+  // „App installieren" (Android/Chromium): nativen Installations-Dialog zeigen.
+  // Erfolg/Abbruch löst über den setOnChange-Callback in install.js ein Re-Render
+  // aus (bei Erfolg verschwindet die Karte, weil die App dann standalone läuft).
+  function installApp() {
+    const inst = window.SC && window.SC.install;
+    if (inst) inst.promptInstall();
+  }
+
   function saveCard(input) {
     if (!userCards) return;
     const errs = userCards.validate(input);
@@ -1325,6 +1346,7 @@
     else if (action === "study-one") studyOne(el.dataset.id);
     else if (action === "card-back") (state.backTo === "home" ? goHome() : goStats());
     else if (action === "open-editor") openEditor();
+    else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
@@ -1488,6 +1510,12 @@
     mq.addEventListener ? mq.addEventListener("change", onSys) : (mq.addListener && mq.addListener(onSys));
   } catch (e) { /* matchMedia fehlt – egal */ }
   syncBadges(Date.now(), false); // bereits erfüllte Badges still nachtragen (Bestandsnutzer)
+  // Der Installier-Hinweis kann erst später verfügbar werden (Browser feuert
+  // beforeinstallprompt verzögert). Wird HolaRuta gerade auf der Startseite
+  // angezeigt, frisch rendern, damit der Knopf auftaucht bzw. wieder verschwindet.
+  if (window.SC && window.SC.install) {
+    window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
+  }
   render();
   registerServiceWorker();
 

@@ -227,7 +227,24 @@
 
       ${navrow("open-stats", "📊", "Statistik")}
       ${navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "")}
-      ${navrow("open-editor", "✍️", "Eigene Karten")}`;
+      ${navrow("open-editor", "✍️", "Eigene Karten")}
+      ${installBlock(vm.install)}`;
+  }
+
+  // „Auf den Startbildschirm"-Hinweis (nur wenn sinnvoll, siehe install.js).
+  // Android zeigt einen Knopf für den nativen Installations-Dialog; iOS bekommt
+  // eine kurze Schritt-für-Schritt-Anleitung, weil Safari keinen Prompt kennt.
+  function installBlock(install) {
+    if (!install || !install.show) return "";
+    const body = install.canPrompt
+      ? `<p class="installcard__text">Leg HolaRuta als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.</p>
+         <button class="ghostbtn installcard__btn" data-action="install-app">📲 App installieren</button>`
+      : `<p class="installcard__text">${esc(install.hint)}</p>`;
+    return `
+      <div class="installcard">
+        <p class="installcard__title"><span aria-hidden="true">📲</span> Auf den Startbildschirm</p>
+        ${body}
+      </div>`;
   }
 
   function renderHome(vm) {

@@ -226,6 +226,16 @@ python -m http.server 3000
 
 Im Browser öffnen → die App registriert den Service Worker, wird offline-fähig und lässt sich über „Zum Startbildschirm hinzufügen" installieren.
 
+### Variante C — als PWA online (GitHub Pages)
+
+Für die App auf dem **Android-Startbildschirm**, ohne die Datei je wieder zu suchen:
+
+1. In **Settings → Pages** als Quelle **„GitHub Actions"** wählen (einmalig). Der Workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) veröffentlicht den Projektordner bei jedem Push auf `main`.
+2. Die ausgespielte Adresse (`https://<user>.github.io/holaRuta/`) einmal auf dem Handy öffnen.
+3. Im Profil-Reiter auf **„📲 App installieren"** tippen (Android) bzw. der dort eingeblendeten **iOS-Anleitung** folgen.
+
+Danach liegt HolaRuta als eigenes App-Icon auf dem Startbildschirm – ein Tipp startet die App, offline-fähig, kein Datei-Suchen mehr.
+
 ### Voraussetzungen
 
 | Zweck | Anforderung |

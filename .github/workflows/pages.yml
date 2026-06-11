@@ -1,0 +1,52 @@
+# Veröffentlicht HolaRuta auf GitHub Pages.
+#
+# Damit bekommt die App eine feste Internet-Adresse (https://<user>.github.io/holaRuta/).
+# Die einmal auf dem Handy öffnen und „Zum Startbildschirm hinzufügen" tippen –
+# fertig ist das App-Icon: kein Datei-Suchen mehr, offline-fähig (Service Worker).
+#
+# Die App ist statisches HTML/CSS/JS ohne Build-Schritt, deshalb wird der
+# Projektordner unverändert als Pages-Artefakt hochgeladen.
+#
+# Einmalig nötig: unter Settings → Pages als Quelle „GitHub Actions" wählen.
+# (Der configure-pages-Schritt unten versucht das beim ersten Lauf automatisch.)
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # erlaubt manuelles Auslösen über den Actions-Tab
+
+# Nur Lese-Zugriff aufs Repo, aber Schreibrechte für die Pages-Bereitstellung.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Gleichzeitige Deployments serialisieren; laufende nicht abbrechen.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true # Pages beim ersten Lauf einschalten, falls noch nicht aktiv
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: . # gesamtes Projekt (index.html ist die App-Startseite)
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
