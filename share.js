@@ -346,6 +346,28 @@
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 
+  // Begleittext zum geteilten Bild (erscheint z.B. als Bildunterschrift in
+  // WhatsApp/Telegram). Bei einer Vokabel wird die Karte selbst zitiert.
+  function shareText(kind, payload) {
+    const p = payload || {};
+    if (kind === "stats") {
+      const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
+      const facts = [];
+      if (r !== null) facts.push(`${r}% Trefferquote`);
+      if (p.mastered) facts.push(`${p.mastered} Vokabeln gemeistert`);
+      const tail = facts.length ? " – " + facts.join(", ") : "";
+      return `📍 Mein Reise-Spanisch mit HolaRuta${tail}. Lernst du mit? 🌎`;
+    }
+    const es = String(p.es || "").trim();
+    const de = String(p.de || "").trim();
+    const head = es && de ? `„${es}" = ${de}` : (es || de || "eine neue Vokabel");
+    const tip = String(p.tip || "").trim();
+    let t = `📍 Spanisch für unterwegs: ${head}`;
+    if (tip) t += `\n🗣️ Aussprache: ${tip}`;
+    t += `\n\nGelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
+    return t;
+  }
+
   // Baut das Bild und teilt es. Erst Web Share API (mit Datei), sonst Download.
   // Gibt zurück: 'shared' | 'downloaded' | 'cancelled' | 'error'.
   async function shareImage(kind, payload, aspect) {
@@ -369,13 +391,14 @@
     const base = kind === "stats" ? "holaruta-fortschritt" : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt" : "Reise-Spanisch lernen";
+    const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
     // Web Share API mit Datei (Handy: Insta/WhatsApp etc.)
     try {
       if (navigator.canShare && typeof File === "function") {
         const file = new File([blob], filename, { type: "image/png" });
         if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title, text: title });
+          await navigator.share({ files: [file], title, text });
           return "shared";
         }
       }
