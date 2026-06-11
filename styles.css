@@ -34,6 +34,57 @@
   /* Schriften */
   --font: "Instrument Sans", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-display: "Bricolage Grotesque", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Native Steuerelemente (Felder, Scrollbalken) an den Modus koppeln */
+  color-scheme: light;
+}
+
+/* Dark Mode – "Nachts im Hostel-Bett": warme, gedämpfte Erdtöne statt kühlem
+ * Schwarz, niedrige Helligkeit, augenfreundlich. Nur Tokens werden getauscht –
+ * die Komponenten erben alles daraus. Aktiv über data-theme="dark" am <html>. */
+[data-theme="dark"] {
+  /* Flächen */
+  --page: #0E0907;       /* fast schwarzer, warmer Rahmen außen */
+  --surface: #17100C;    /* App-Spalte */
+  --card: #221811;       /* Karten/Kacheln – einen Hauch heller als die Spalte */
+  --cream: #FBF3E4;      /* unverändert: Text auf farbigen Flächen */
+  /* Tinte (auf Dunkel jetzt hell) */
+  --ink: #F0E6D8;
+  --ink-soft: #C3B2A1;
+  --muted: #A8917D;      /* hell genug für AA auf den dunklen Flächen */
+  --faint: #968069;
+  --line: rgba(251, 243, 228, 0.12);
+  --line-strong: rgba(251, 243, 228, 0.22);
+  /* Akzente – etwas heller, damit sie auf Dunkel leuchten */
+  --brand: #E06A40;      /* Terrakotta */
+  --brand-ink: #F0996B;  /* heller für Text auf Dunkel */
+  --ok: #5FA77C;
+  --no: #E5736A;
+  --easy: #4FA0A6;
+  --warn: #D89B3E;
+  /* Schatten dezent abdunkeln (Sticker-Optik bleibt, fällt im Dunkeln aber zurück) */
+  --shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 0 -6px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+/* Wenige hartkodierte Tönungen (dunkle Tinte auf Creme) müssen im Dark Mode
+ * umgedreht werden, sonst verschwinden sie auf den dunklen Flächen. */
+[data-theme="dark"] .segmented,
+[data-theme="dark"] .fmtrow { background: rgba(251, 243, 228, 0.05); }
+[data-theme="dark"] .progress,
+[data-theme="dark"] .dist__bar,
+[data-theme="dark"] .brk__track { background: rgba(251, 243, 228, 0.08); }
+[data-theme="dark"] .srate--none { background: rgba(251, 243, 228, 0.07); }
+[data-theme="dark"] .cinfo-sect--food { background: #2A1D14; }
+/* Dropdown-Pfeil (Länderkunde) hell einfärben, sonst dunkel auf dunkel. */
+[data-theme="dark"] .cinfo-pick__sel {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23A8917D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+/* Sanfter Übergang beim Umschalten (nur auf den stabilen Rahmen-Elementen). */
+html, body, .appshell, .appbar { transition: background-color 0.3s ease, color 0.3s ease; }
+@media (prefers-reduced-motion: reduce) {
+  html, body, .appshell, .appbar { transition: none; }
 }
 
 * {

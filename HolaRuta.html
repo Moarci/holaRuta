@@ -23,6 +23,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
 
+  <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
+       Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe. -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
+        var t = (s && (s.theme === "dark" || s.theme === "light")) ? s.theme
+          : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", t === "dark" ? "#0E0907" : "#241510");
+      } catch (e) { /* localStorage gesperrt o.ä. – App startet hell */ }
+    })();
+  </script>
+
 <style>
 /* styles.css – "HolaRuta"-Design: warme Lateinamerika-Erdtöne,
  * flache Sticker-Schatten, Bricolage Grotesque (Display) + Instrument Sans (Text).
@@ -60,6 +75,57 @@
   /* Schriften */
   --font: "Instrument Sans", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-display: "Bricolage Grotesque", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Native Steuerelemente (Felder, Scrollbalken) an den Modus koppeln */
+  color-scheme: light;
+}
+
+/* Dark Mode – "Nachts im Hostel-Bett": warme, gedämpfte Erdtöne statt kühlem
+ * Schwarz, niedrige Helligkeit, augenfreundlich. Nur Tokens werden getauscht –
+ * die Komponenten erben alles daraus. Aktiv über data-theme="dark" am <html>. */
+[data-theme="dark"] {
+  /* Flächen */
+  --page: #0E0907;       /* fast schwarzer, warmer Rahmen außen */
+  --surface: #17100C;    /* App-Spalte */
+  --card: #221811;       /* Karten/Kacheln – einen Hauch heller als die Spalte */
+  --cream: #FBF3E4;      /* unverändert: Text auf farbigen Flächen */
+  /* Tinte (auf Dunkel jetzt hell) */
+  --ink: #F0E6D8;
+  --ink-soft: #C3B2A1;
+  --muted: #A8917D;      /* hell genug für AA auf den dunklen Flächen */
+  --faint: #968069;
+  --line: rgba(251, 243, 228, 0.12);
+  --line-strong: rgba(251, 243, 228, 0.22);
+  /* Akzente – etwas heller, damit sie auf Dunkel leuchten */
+  --brand: #E06A40;      /* Terrakotta */
+  --brand-ink: #F0996B;  /* heller für Text auf Dunkel */
+  --ok: #5FA77C;
+  --no: #E5736A;
+  --easy: #4FA0A6;
+  --warn: #D89B3E;
+  /* Schatten dezent abdunkeln (Sticker-Optik bleibt, fällt im Dunkeln aber zurück) */
+  --shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 0 -6px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+/* Wenige hartkodierte Tönungen (dunkle Tinte auf Creme) müssen im Dark Mode
+ * umgedreht werden, sonst verschwinden sie auf den dunklen Flächen. */
+[data-theme="dark"] .segmented,
+[data-theme="dark"] .fmtrow { background: rgba(251, 243, 228, 0.05); }
+[data-theme="dark"] .progress,
+[data-theme="dark"] .dist__bar,
+[data-theme="dark"] .brk__track { background: rgba(251, 243, 228, 0.08); }
+[data-theme="dark"] .srate--none { background: rgba(251, 243, 228, 0.07); }
+[data-theme="dark"] .cinfo-sect--food { background: #2A1D14; }
+/* Dropdown-Pfeil (Länderkunde) hell einfärben, sonst dunkel auf dunkel. */
+[data-theme="dark"] .cinfo-pick__sel {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23A8917D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+/* Sanfter Übergang beim Umschalten (nur auf den stabilen Rahmen-Elementen). */
+html, body, .appshell, .appbar { transition: background-color 0.3s ease, color 0.3s ease; }
+@media (prefers-reduced-motion: reduce) {
+  html, body, .appshell, .appbar { transition: none; }
 }
 
 * {
@@ -4885,6 +4951,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`;
   }
 
+  // Dark-Mode-Umschalter (Startseite, oben rechts). Zeigt das Ziel der nächsten
+  // Aktion: Mond = "in den Dunkelmodus" (fürs Hostel-Bett), Sonne = "zurück ins Helle".
+  function themeToggle(theme) {
+    const dark = theme === "dark";
+    const icon = dark ? "☀️" : "🌙";
+    const label = dark ? "Hellen Modus einschalten" : "Dunklen Modus einschalten";
+    const title = dark ? "Heller Modus" : "Dunkler Modus – fürs Hostel-Bett 🌙";
+    return `<button class="iconbtn" data-action="toggle-theme"
+                    aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
+  }
+
   // ---------- HOME ----------
   function renderHome(vm) {
     const tiles = vm.categories
@@ -4926,6 +5003,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             <h2 class="hero__title">¿Qué aprendemos hoy?</h2>
           </div>
           <div class="hero__actions">
+            ${themeToggle(vm.theme)}
             <button class="iconbtn" data-action="open-info" aria-label="Länderkunde" title="Länderkunde">🌎</button>
             <button class="iconbtn" data-action="open-editor" aria-label="Eigene Karten" title="Eigene Karten">✍️</button>
             <button class="iconbtn hero__stats" data-action="open-stats" aria-label="Statistik" title="Statistik">📊</button>
@@ -5599,6 +5677,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return {
       mode: state.mode,
       dir: state.dir,
+      theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
       categories,
@@ -5832,6 +5911,32 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // ----- Dark Mode ("Nachts im Hostel-Bett") -----
+  // settings.theme ist 'light' | 'dark' (gemerkte Wahl) – ohne Wahl folgt die App
+  // der System-Vorliebe (prefers-color-scheme). Die <html data-theme>-Umschaltung
+  // taucht die CSS-Tokens; ein früher Boot-Schnipsel in index.html verhindert
+  // beim Start das Hell-Aufblitzen.
+  const THEME_COLOR = { light: "#241510", dark: "#0E0907" };
+  function effectiveTheme() {
+    if (settings.theme === "dark" || settings.theme === "light") return settings.theme;
+    try {
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    } catch (e) { return "light"; }
+  }
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", THEME_COLOR[theme] || THEME_COLOR.light);
+  }
+  function toggleTheme() {
+    const next = effectiveTheme() === "dark" ? "light" : "dark";
+    settings = Object.assign({}, settings, { theme: next });
+    store.saveSettings(settings);
+    applyTheme(next);
+    buzz(8);
+    render();
+  }
+
   // Lernrichtung umschalten (DE→ES / ES→DE) und merken.
   function setDir(dir) {
     state.dir = dir === "es2de" ? "es2de" : "de2es";
@@ -6053,6 +6158,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const action = el.dataset.action;
 
     if (action === "set-mode") setMode(el.dataset.mode);
+    else if (action === "toggle-theme") toggleTheme();
     else if (action === "set-dir") setDir(el.dataset.dir);
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
@@ -6192,6 +6298,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });
   root.addEventListener("touchend", onTouchEnd, { passive: true });
+  applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
+  // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).
+  try {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onSys = () => {
+      if (settings.theme !== "dark" && settings.theme !== "light") { applyTheme(effectiveTheme()); render(); }
+    };
+    mq.addEventListener ? mq.addEventListener("change", onSys) : (mq.addListener && mq.addListener(onSys));
+  } catch (e) { /* matchMedia fehlt – egal */ }
   render();
   registerServiceWorker();
 

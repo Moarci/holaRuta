@@ -37,6 +37,17 @@
       </div>`;
   }
 
+  // Dark-Mode-Umschalter (Startseite, oben rechts). Zeigt das Ziel der nächsten
+  // Aktion: Mond = "in den Dunkelmodus" (fürs Hostel-Bett), Sonne = "zurück ins Helle".
+  function themeToggle(theme) {
+    const dark = theme === "dark";
+    const icon = dark ? "☀️" : "🌙";
+    const label = dark ? "Hellen Modus einschalten" : "Dunklen Modus einschalten";
+    const title = dark ? "Heller Modus" : "Dunkler Modus – fürs Hostel-Bett 🌙";
+    return `<button class="iconbtn" data-action="toggle-theme"
+                    aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
+  }
+
   // ---------- HOME ----------
   function renderHome(vm) {
     const tiles = vm.categories
@@ -78,6 +89,7 @@
             <h2 class="hero__title">¿Qué aprendemos hoy?</h2>
           </div>
           <div class="hero__actions">
+            ${themeToggle(vm.theme)}
             <button class="iconbtn" data-action="open-info" aria-label="Länderkunde" title="Länderkunde">🌎</button>
             <button class="iconbtn" data-action="open-editor" aria-label="Eigene Karten" title="Eigene Karten">✍️</button>
             <button class="iconbtn hero__stats" data-action="open-stats" aria-label="Statistik" title="Statistik">📊</button>
