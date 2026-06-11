@@ -109,11 +109,13 @@
     });
     const all = scopeCards("all");
     // Stufen inkl. Kartenzahl je Stufe (über alle Kategorien) + Auswahl-Status.
+    // Stufen ohne Karten (z. B. B2, das nur in Rollenspielen vorkommt) im
+    // Karten-Filter ausblenden – sie würden sonst als leere 0-Stufe erscheinen.
     const levels = data.LEVELS.map((l) => ({
       id: l.id, label: l.label, short: l.short, color: l.color,
       count: everyCard.filter((c) => c.lvl === l.id).length,
       active: state.levels.includes(l.id),
-    }));
+    })).filter((l) => l.count > 0);
     return {
       mode: state.mode,
       dir: state.dir,
