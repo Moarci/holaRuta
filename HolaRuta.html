@@ -947,8 +947,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Gemeinsame Bausteine. */
 .hm-intro { margin: 0; color: var(--ink-soft); line-height: 1.5; font-size: 0.95rem; }
-.hm-length { display: flex; flex-direction: column; gap: 6px; }
-.hm-length__cap { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); letter-spacing: 0.02em; }
+.hm-length { display: flex; flex-direction: column; gap: 8px; }
+.hm-length__cap {
+  font-size: 0.72rem; font-weight: 800; color: var(--ink-soft);
+  letter-spacing: 0.06em; text-transform: uppercase; padding-left: 4px;
+}
+
+/* Battle-Längen: drei gleichwertige Segmente, immer einreihig, zweizeilig
+   (Name + Runden) – statt des unschön umbrechenden 2-Spalten-Rasters. */
+.segmented--len {
+  grid-template-columns: none;
+  grid-auto-flow: column; grid-auto-columns: 1fr;
+  gap: 5px; padding: 5px;
+}
+.seg--len {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px; min-height: 52px; padding: 8px 6px; line-height: 1.15;
+}
+.seg--len .seg__name { font-size: 0.98rem; font-weight: 800; letter-spacing: -0.01em; }
+.seg--len .seg__sub { font-size: 0.7rem; font-weight: 600; opacity: 0.65; }
+.seg--len.is-active { transform: translateY(-1px); }
+.seg--len.is-active .seg__sub { opacity: 1; color: var(--brand-ink); }
 
 /* Menü: Battle / Rollenspiele. */
 .hm-menu { display: flex; flex-direction: column; gap: 12px; }
@@ -1129,28 +1148,39 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .bp-stage { display: flex; flex-direction: column; gap: 16px; align-items: stretch; }
 
 .bp-figwrap {
-  position: relative; width: 100%; max-width: 300px; margin: 0 auto;
+  position: relative; width: 100%; max-width: 290px; margin: 4px auto 0;
   aspect-ratio: 200 / 440; /* exakt der SVG-Bezugsrahmen → Prozent-Hotspots sitzen */
+  /* weiches Spotlight hinter der Figur – hebt sie sanft von der Fläche ab */
+  background: radial-gradient(58% 44% at 50% 33%, rgba(194, 80, 46, 0.12), transparent 72%);
+}
+[data-theme="dark"] .bp-figwrap {
+  background: radial-gradient(58% 44% at 50% 33%, rgba(224, 106, 64, 0.16), transparent 72%);
 }
 .bp-figure {
   width: 100%; height: 100%; display: block;
   color: #C9A37E; /* Körperfarbe (warm), via currentColor an Flächen & Striche */
-  filter: drop-shadow(0 3px 0 rgba(45, 27, 18, 0.10));
+  filter: drop-shadow(0 5px 7px rgba(45, 27, 18, 0.20));
 }
-[data-theme="dark"] .bp-figure { color: #6E5142; }
+[data-theme="dark"] .bp-figure { color: #6E5142; filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.45)); }
+/* Bodenschatten & Lichtkante: erden bzw. modellieren die Sticker-Figur. */
+.bp-figure__ground { fill: rgba(45, 27, 18, 0.12); }
+[data-theme="dark"] .bp-figure__ground { fill: rgba(0, 0, 0, 0.38); }
+.bp-figure__shine { opacity: 0.16; }
+[data-theme="dark"] .bp-figure__shine { opacity: 0.09; }
 
 /* Hotspot: runder, pulsierender Punkt – sitzt mittig auf seiner Koordinate. */
 .bp-dot {
   position: absolute; transform: translate(-50%, -50%);
-  width: 26px; height: 26px; padding: 0; border-radius: 50%; cursor: pointer;
+  width: 23px; height: 23px; padding: 0; border-radius: 50%; cursor: pointer;
   border: 2.5px solid var(--cream);
-  background: rgba(46, 110, 134, 0.55);
-  box-shadow: 0 1px 4px rgba(45, 27, 18, 0.35);
+  background: rgba(46, 110, 134, 0.62);
+  box-shadow: 0 2px 5px rgba(45, 27, 18, 0.4);
   display: grid; place-items: center;
-  transition: transform 0.12s ease, background 0.15s ease;
+  transition: transform 0.14s ease, background 0.15s ease, box-shadow 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }
 .bp-dot:active { transform: translate(-50%, -50%) scale(0.88); }
+.bp-dot:hover { background: rgba(46, 110, 134, 0.8); }
 .bp-dot__ring {
   position: absolute; inset: -6px; border-radius: 50%;
   border: 2px solid rgba(46, 110, 134, 0.55); opacity: 0;
@@ -1158,7 +1188,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .bp-dot.is-seen { background: rgba(63, 115, 85, 0.85); }      /* schon erkundet */
 .bp-dot.is-active {
   background: var(--brand); border-color: var(--cream);
-  transform: translate(-50%, -50%) scale(1.18); z-index: 3;
+  transform: translate(-50%, -50%) scale(1.2); z-index: 3;
+  box-shadow: 0 2px 9px rgba(194, 80, 46, 0.55);
 }
 .bp-dot.is-active .bp-dot__ring {
   border-color: var(--brand); opacity: 1;
@@ -8235,15 +8266,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
          </button>`),
     ].join("");
     const lengths = vm.lengths.map((l) =>
-      `<button class="seg ${l.selected ? "is-active" : ""}" data-action="set-battle-length" data-len="${l.value}"
-               aria-pressed="${l.selected}">${esc(l.label)} · ${l.value}</button>`).join("");
+      `<button class="seg seg--len ${l.selected ? "is-active" : ""}" data-action="set-battle-length" data-len="${l.value}"
+               aria-pressed="${l.selected}">
+         <span class="seg__name">${esc(l.label)}</span>
+         <span class="seg__sub">${l.value} Runden</span>
+       </button>`).join("");
     return `
       <section class="screen">
         ${hmTopbar("⚔️ Battle", "open-hostel")}
         <p class="hm-intro">Wählt eine Situation. Die App zeigt eine Aufgabe auf Deutsch – einer antwortet laut auf Spanisch, der andere bewertet.</p>
         <div class="hm-length">
           <span class="hm-length__cap">Länge</span>
-          <div class="segmented" role="group" aria-label="Battle-Länge">${lengths}</div>
+          <div class="segmented segmented--len" role="group" aria-label="Battle-Länge">${lengths}</div>
         </div>
         <div class="hm-scenes">${scenes}</div>
       </section>`;
@@ -8492,6 +8526,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // beziehen. Gliedmaßen sind runde Striche (currentColor), Rumpf/Kopf gefüllte Flächen.
   const BP_FIGURE = `
     <svg class="bp-figure" viewBox="0 0 200 440" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+      <!-- weicher Bodenschatten – erdet die Figur. -->
+      <ellipse class="bp-figure__ground" cx="100" cy="430" rx="56" ry="8" />
+      <!-- Arme & Beine: runde Striche. -->
       <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
         <path d="M70 104 L52 168 L46 240" />
         <path d="M130 104 L148 168 L154 240" />
@@ -8500,14 +8537,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <path d="M86 236 L82 330 L78 408" />
         <path d="M114 236 L118 330 L122 408" />
       </g>
+      <!-- Rumpf, Kopf, Hände/Füße + runde Schulter-/Hüftgelenke (glätten die Übergänge). -->
       <g class="bp-figure__body" fill="currentColor" stroke="none">
         <ellipse cx="74" cy="416" rx="17" ry="9" />
         <ellipse cx="126" cy="416" rx="17" ry="9" />
         <circle cx="44" cy="248" r="12" />
         <circle cx="156" cy="248" r="12" />
+        <circle cx="70" cy="104" r="14" />
+        <circle cx="130" cy="104" r="14" />
+        <circle cx="86" cy="238" r="15" />
+        <circle cx="114" cy="238" r="15" />
         <path d="M68 96 L132 96 C141 96 141 105 139 113 L126 212 C125 232 121 242 100 242 C79 242 75 232 74 212 L61 113 C59 105 59 96 68 96 Z" />
         <rect x="91" y="68" width="18" height="20" rx="8" />
         <circle cx="100" cy="44" r="30" />
+      </g>
+      <!-- Lichtkante oben links: gibt der flachen Sticker-Figur etwas Tiefe. -->
+      <g class="bp-figure__shine" fill="#fff" stroke="none">
+        <ellipse cx="89" cy="35" rx="11" ry="13" />
+        <ellipse cx="85" cy="152" rx="12" ry="44" />
       </g>
     </svg>`;
 
