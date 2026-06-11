@@ -20,7 +20,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay'
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -34,9 +34,23 @@
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
+    // ----- Hostel Mode (transient, keine Persistenz) -----
+    battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
+    roleplayId: null,        // aktuell geöffnetes Rollenspiel
+    roleplaySwapped: false,  // Rollen A/B getauscht?
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
+
+  // Fisher–Yates – liefert eine neue, gemischte Kopie (mutiert das Original nicht).
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
 
   const root = document.getElementById("app");
 
@@ -331,6 +345,95 @@
     render();
   }
 
+  // ----- Hostel Mode: View-Modelle -----
+  const battleById = (id) => data.BATTLES.find((b) => b.id === id) || null;
+  const roleplayById = (id) => data.ROLEPLAYS.find((r) => r.id === id) || null;
+
+  function hostelVM() {
+    return {
+      battleCount: data.BATTLES.length,
+      roleplayCount: data.ROLEPLAYS.length,
+    };
+  }
+
+  // Szenen-Auswahl: "Alle" + je Szene mit Anzahl verfügbarer Aufgaben.
+  function battleSetupVM() {
+    const scenes = data.BATTLE_SCENES
+      .map((s) => ({ id: s.id, label: s.label, icon: s.icon,
+        count: data.BATTLES.filter((b) => b.scene === s.id).length }))
+      .filter((s) => s.count > 0);
+    return { scenes, totalCount: data.BATTLES.length };
+  }
+
+  function battleVM() {
+    const b = state.battle;
+    const prompt = battleById(b.queue[b.round - 1]);
+    const scene = data.BATTLE_SCENES.find((s) => s.id === b.sceneId);
+    // Weitere gültige Antworten (ohne die schon angezeigte Musterlösung) als Hilfe
+    // für den bewertenden Mitspieler – damit faire Phrasing-Varianten zählen.
+    const alsoOk = prompt
+      ? prompt.acceptable.filter((a) => matcher.normalize(a) !== matcher.normalize(prompt.answerEs))
+      : [];
+    return {
+      sceneLabel: b.sceneId === "all" ? "Alle Szenen" : (scene ? scene.label : ""),
+      sceneIcon: b.sceneId === "all" ? "🎲" : (scene ? scene.icon : "🛏️"),
+      round: b.round,
+      totalRounds: b.totalRounds,
+      current: b.current,
+      scores: b.scores,
+      revealed: b.revealed,
+      promptDe: prompt ? prompt.promptDe : "",
+      answerEs: prompt ? prompt.answerEs : "",
+      alsoOk,
+      hint: prompt ? prompt.hint : "",
+    };
+  }
+
+  function battleDoneVM() {
+    const b = state.battle;
+    const a = b.scores.A, bb = b.scores.B;
+    const winner = a === bb ? "tie" : (a > bb ? "A" : "B");
+    return {
+      sceneLabel: b.sceneId === "all" ? "Alle Szenen"
+        : ((data.BATTLE_SCENES.find((s) => s.id === b.sceneId) || {}).label || ""),
+      scores: b.scores,
+      rounds: b.totalRounds,
+      winner,
+      challenge: b.challenge, // { textDe, phraseEs } | null
+    };
+  }
+
+  function roleplaySetupVM() {
+    return {
+      scenes: data.ROLEPLAYS.map((r) => {
+        const lvl = levelById(r.level);
+        return { id: r.id, title: r.title, roleA: r.roles.a, roleB: r.roles.b,
+          lvlShort: lvl ? lvl.short : "" };
+      }),
+    };
+  }
+
+  function roleplayVM() {
+    const r = roleplayById(state.roleplayId);
+    if (!r) return null;
+    const lvl = levelById(r.level);
+    // Rollen-Tausch: A↔B (Ziele & Sprecher-Labels), Dialog-Reihenfolge bleibt gleich.
+    const swapped = state.roleplaySwapped;
+    return {
+      title: r.title,
+      lvlShort: lvl ? lvl.short : "",
+      situationDe: r.situationDe,
+      swapped,
+      roleA: { name: swapped ? r.roles.b : r.roles.a, goal: swapped ? r.goalB : r.goalA },
+      roleB: { name: swapped ? r.roles.a : r.roles.b, goal: swapped ? r.goalA : r.goalB },
+      dialogue: r.dialogue.map((d) => ({
+        speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
+        de: d.de, es: d.es,
+      })),
+      usefulPhrases: r.usefulPhrases,
+    };
+  }
+
   // ----- Rendern -----
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
@@ -340,6 +443,12 @@
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
+    else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
+    else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
+    else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
+    else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
+    else if (state.screen === "roleplaySetup") root.innerHTML = ui.renderRoleplaySetup(roleplaySetupVM());
+    else if (state.screen === "roleplay") root.innerHTML = ui.renderRoleplay(roleplayVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -362,7 +471,7 @@
       const flipEl = document.getElementById("flip");
       if (flipEl) { try { flipEl.focus({ preventScroll: true }); } catch (e) { flipEl.focus(); } return; }
     }
-    const target = root.querySelector("h2, [data-action='card-back'], [data-action='home']") || root.firstElementChild;
+    const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
       if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
       try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); }
@@ -498,6 +607,88 @@
     state.screen = "home";
     state.revealed = false;
     state.typeResult = null;
+    render();
+  }
+
+  // ----- Hostel Mode (Anwenden zu zweit) -----
+  function openHostel() {
+    state.screen = "hostel";
+    render();
+  }
+
+  function openBattleSetup() {
+    state.screen = "battleSetup";
+    render();
+  }
+
+  // Battle starten: Aufgaben der Szene (oder alle) mischen, max. 10 Runden.
+  function startBattle(sceneId) {
+    const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
+    const queue = shuffle(pool).map((b) => b.id);
+    if (!queue.length) return;
+    // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
+    const cap = Math.min(10, queue.length);
+    const rounds = cap - (cap % 2) || cap; // bei nur 1 Aufgabe bleibt 1 Runde
+    state.battle = {
+      sceneId,
+      queue,
+      round: 1,
+      totalRounds: rounds,
+      current: "A",
+      scores: { A: 0, B: 0 },
+      revealed: false,
+      challenge: null,
+    };
+    state.screen = "battle";
+    render();
+  }
+
+  function battleReveal() {
+    if (!state.battle) return;
+    state.battle.revealed = true;
+    render();
+  }
+
+  // Mitspieler bewertet (2/1/0). Danach nächste Runde oder Auswertung.
+  function battleScore(points) {
+    const b = state.battle;
+    if (!b || !b.revealed) return;
+    buzz(points >= 2 ? 12 : 8);
+    b.scores[b.current] += points;
+    if (b.round >= b.totalRounds) {
+      // Passende Real-Life-Challenge als Bonus (zufällig).
+      const list = data.CHALLENGES || [];
+      b.challenge = list.length ? list[Math.floor(Math.random() * list.length)] : null;
+      state.screen = "battleDone";
+    } else {
+      b.round += 1;
+      b.current = b.current === "A" ? "B" : "A";
+      b.revealed = false;
+    }
+    render();
+  }
+
+  function battleAgain() {
+    state.battle = null;
+    state.screen = "battleSetup";
+    render();
+  }
+
+  function openRoleplaySetup() {
+    state.screen = "roleplaySetup";
+    render();
+  }
+
+  function startRoleplay(id) {
+    if (!roleplayById(id)) return;
+    state.roleplayId = id;
+    state.roleplaySwapped = false;
+    state.screen = "roleplay";
+    render();
+  }
+
+  function roleplaySwap() {
+    state.roleplaySwapped = !state.roleplaySwapped;
     render();
   }
 
@@ -722,6 +913,15 @@
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
+    else if (action === "open-hostel") openHostel();
+    else if (action === "open-battle-setup") openBattleSetup();
+    else if (action === "start-battle") startBattle(el.dataset.scene);
+    else if (action === "battle-reveal") battleReveal();
+    else if (action === "battle-score") battleScore(Number(el.dataset.points));
+    else if (action === "battle-again") battleAgain();
+    else if (action === "open-roleplay-setup") openRoleplaySetup();
+    else if (action === "start-roleplay") startRoleplay(el.dataset.id);
+    else if (action === "roleplay-swap") roleplaySwap();
     else if (action === "home") goHome();
   }
 

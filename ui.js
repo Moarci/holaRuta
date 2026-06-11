@@ -121,6 +121,15 @@
             : `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`}
         </button>
 
+        <button class="hostelmode" data-action="open-hostel">
+          <span class="hostelmode__icon" aria-hidden="true">🛏️</span>
+          <span class="hostelmode__text">
+            <span class="hostelmode__title">Hostel Mode</span>
+            <span class="hostelmode__sub">Zu zweit üben: Battle &amp; Rollenspiele</span>
+          </span>
+          <span class="hostelmode__chev" aria-hidden="true">›</span>
+        </button>
+
         <div class="tiles">${tiles}</div>
 
         <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
@@ -755,6 +764,215 @@
       </div>`;
   }
 
+  // ---------- HOSTEL MODE ----------
+  // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
+  function hmTopbar(title, back) {
+    return `
+      <div class="topbar">
+        <button class="iconbtn" data-action="${back}" aria-label="Zurück">‹</button>
+        <div class="topbar__title">${title}</div>
+        <span></span>
+      </div>`;
+  }
+
+  // Menü: Battle vs. Rollenspiele.
+  function renderHostel(vm) {
+    return `
+      <section class="screen">
+        ${hmTopbar("🛏️ Hostel Mode", "home")}
+        <p class="hm-intro">Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.</p>
+        <div class="hm-menu">
+          <button class="hm-card hm-card--battle" data-action="open-battle-setup">
+            <span class="hm-card__icon" aria-hidden="true">⚔️</span>
+            <span class="hm-card__title">Battle</span>
+            <span class="hm-card__desc">Tretet gegeneinander an und übt echte Reisesätze laut. Der Mitspieler bewertet.</span>
+            <span class="hm-card__meta">${vm.battleCount} Aufgaben</span>
+          </button>
+          <button class="hm-card hm-card--roleplay" data-action="open-roleplay-setup">
+            <span class="hm-card__icon" aria-hidden="true">🎭</span>
+            <span class="hm-card__title">Rollenspiele</span>
+            <span class="hm-card__desc">Übernehmt Rollen und spielt echte Situationen als Dialog durch.</span>
+            <span class="hm-card__meta">${vm.roleplayCount} Szenen</span>
+          </button>
+        </div>
+      </section>`;
+  }
+
+  // Battle: Szene wählen.
+  function renderBattleSetup(vm) {
+    const scenes = [
+      `<button class="hm-scene" data-action="start-battle" data-scene="all">
+         <span class="hm-scene__icon" aria-hidden="true">🎲</span>
+         <span class="hm-scene__label">Alle Szenen</span>
+         <span class="hm-scene__count">${vm.totalCount}</span>
+       </button>`,
+      ...vm.scenes.map((s) =>
+        `<button class="hm-scene" data-action="start-battle" data-scene="${esc(s.id)}">
+           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+           <span class="hm-scene__label">${esc(s.label)}</span>
+           <span class="hm-scene__count">${s.count}</span>
+         </button>`),
+    ].join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("⚔️ Battle", "open-hostel")}
+        <p class="hm-intro">Wählt eine Situation. Die App zeigt eine Aufgabe auf Deutsch – einer antwortet laut auf Spanisch, der andere bewertet.</p>
+        <div class="hm-scenes">${scenes}</div>
+      </section>`;
+  }
+
+  // Battle: laufende Runde.
+  function renderBattle(vm) {
+    const solution = vm.revealed
+      ? `
+        <div class="hm-solution" role="status" aria-live="polite">
+          <span class="hm-solution__cap">Musterlösung</span>
+          <div class="hm-solution__es" lang="es">${esc(vm.answerEs)}</div>
+          ${vm.alsoOk && vm.alsoOk.length
+            ? `<div class="hm-solution__also">auch ok: ${vm.alsoOk.map((a) => `<span lang="es">${esc(a)}</span>`).join(", ")}</div>`
+            : ""}
+        </div>
+        <div class="hm-verdict">
+          <p class="hm-verdict__cap">Spieler ${vm.current === "A" ? "B" : "A"} bewertet:</p>
+          <div class="ratebar" role="group" aria-label="Antwort bewerten">
+            <button class="feel feel--again" data-action="battle-score" data-points="0">
+              <span class="feel__emoji" aria-hidden="true">❌</span><span class="feel__txt">Falsch</span>
+            </button>
+            <button class="feel feel--good" data-action="battle-score" data-points="1">
+              <span class="feel__emoji" aria-hidden="true">😬</span><span class="feel__txt">Fast</span>
+            </button>
+            <button class="feel feel--easy" data-action="battle-score" data-points="2">
+              <span class="feel__emoji" aria-hidden="true">✅</span><span class="feel__txt">Richtig</span>
+            </button>
+          </div>
+        </div>`
+      : `
+        ${vm.hint ? `<div class="hm-hint">💡 ${esc(vm.hint)}</div>` : ""}
+        <button class="cta" data-action="battle-reveal">Lösung anzeigen</button>`;
+
+    return `
+      <section class="screen study">
+        ${hmTopbar(`${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
+        <div class="hm-score">
+          <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">A <b>${vm.scores.A}</b></span>
+          <span class="hm-score__round">Runde ${vm.round}/${vm.totalRounds}</span>
+          <span class="hm-score__p ${vm.current === "B" ? "is-turn" : ""}">B <b>${vm.scores.B}</b></span>
+        </div>
+        <p class="hm-turn" aria-live="polite">Spieler <b>${vm.current}</b> ist dran – laut auf Spanisch!</p>
+        <div class="hm-prompt">${esc(vm.promptDe)}</div>
+        <div class="controls">${solution}</div>
+      </section>`;
+  }
+
+  // Battle: Auswertung.
+  function renderBattleDone(vm) {
+    const verdict = vm.winner === "tie"
+      ? "Unentschieden! 🤝"
+      : `Spieler ${vm.winner} gewinnt! 🏆`;
+    const challenge = vm.challenge
+      ? `
+        <div class="hm-challenge">
+          <span class="hm-challenge__cap">🎯 Real-Life Challenge</span>
+          <p class="hm-challenge__text">${esc(vm.challenge.textDe)}</p>
+          <p class="hm-challenge__es" lang="es">${esc(vm.challenge.phraseEs)}</p>
+        </div>`
+      : "";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">🎉</div>
+          <h2>Ihr habt ${esc(vm.sceneLabel)} überlebt</h2>
+          <p class="hm-result">
+            <span class="hm-result__p">Spieler A<br><b>${vm.scores.A}</b></span>
+            <span class="hm-result__vs">:</span>
+            <span class="hm-result__p">Spieler B<br><b>${vm.scores.B}</b></span>
+          </p>
+          <p class="hm-winner">${verdict}</p>
+          ${challenge}
+          <button class="cta" data-action="battle-again">Nochmal spielen</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
+  }
+
+  // Rollenspiele: Szene wählen.
+  function renderRoleplaySetup(vm) {
+    const list = vm.scenes
+      .map((s) =>
+        `<button class="hm-rp" data-action="start-roleplay" data-id="${esc(s.id)}">
+           <span class="hm-rp__main">
+             <span class="hm-rp__title">${esc(s.title)}</span>
+             <span class="hm-rp__roles">${esc(s.roleA)} ↔ ${esc(s.roleB)}</span>
+           </span>
+           ${s.lvlShort ? `<span class="hm-rp__lvl">${esc(s.lvlShort)}</span>` : ""}
+         </button>`)
+      .join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🎭 Rollenspiele", "open-hostel")}
+        <p class="hm-intro">Wählt eine Szene, verteilt die Rollen und spielt den Dialog laut durch.</p>
+        <div class="hm-rps">${list}</div>
+      </section>`;
+  }
+
+  // Rollenspiele: eine Szene.
+  function renderRoleplay(vm) {
+    if (!vm) {
+      return `
+        <section class="screen">
+          ${hmTopbar("🎭 Rollenspiel", "open-roleplay-setup")}
+          <p class="stat-empty">Szene nicht gefunden.</p>
+        </section>`;
+    }
+    const roles = `
+      <div class="hm-roles">
+        <div class="hm-role hm-role--a">
+          <span class="hm-role__tag">Spieler A · ${esc(vm.roleA.name)}</span>
+          <span class="hm-role__goal">${esc(vm.roleA.goal)}</span>
+        </div>
+        <div class="hm-role hm-role--b">
+          <span class="hm-role__tag">Spieler B · ${esc(vm.roleB.name)}</span>
+          <span class="hm-role__goal">${esc(vm.roleB.goal)}</span>
+        </div>
+      </div>`;
+
+    const lines = vm.dialogue
+      .map((d) =>
+        `<div class="hm-line hm-line--${d.speaker === "A" ? "a" : "b"}">
+           <span class="hm-line__who">${esc(d.speaker)}</span>
+           <span class="hm-line__bubble">
+             <span class="hm-line__es" lang="es">${esc(d.es)}</span>
+             <span class="hm-line__de">${esc(d.de)}</span>
+           </span>
+         </div>`)
+      .join("");
+
+    const phrases = vm.usefulPhrases && vm.usefulPhrases.length
+      ? `<div class="hm-phrases">
+           <span class="hm-phrases__cap">Nützliche Sätze</span>
+           <ul class="hm-phrases__list">
+             ${vm.usefulPhrases.map((p) => `<li lang="es">${esc(p)}</li>`).join("")}
+           </ul>
+         </div>`
+      : "";
+
+    return `
+      <section class="screen">
+        ${hmTopbar("🎭 Rollenspiel", "open-roleplay-setup")}
+        <div class="hm-rphead">
+          <h2 class="hm-rphead__title">${esc(vm.title)}${vm.lvlShort ? ` <span class="hm-rphead__lvl">${esc(vm.lvlShort)}</span>` : ""}</h2>
+          <p class="hm-rphead__sit">${esc(vm.situationDe)}</p>
+        </div>
+        ${roles}
+        <button class="ghostbtn hm-swap" data-action="roleplay-swap">🔄 Rollen tauschen</button>
+        <div class="hm-dialogue">${lines}</div>
+        ${phrases}
+        <button class="ghostbtn" data-action="open-roleplay-setup">Andere Szene wählen</button>
+      </section>`;
+  }
+
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBadges, badgeToast };
+  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
+                   renderBadges, badgeToast,
+                   renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay };
 })();
