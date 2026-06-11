@@ -864,14 +864,14 @@
     render();
   }
 
-  // Battle starten: Aufgaben der Szene (oder alle) mischen, max. 10 Runden.
+  // Battle starten: Aufgaben der Szene (oder alle) mischen, max. 20 Runden.
   function startBattle(sceneId) {
     dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     const queue = shuffle(pool).map((b) => b.id);
     if (!queue.length) return;
     // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
-    const cap = Math.min(10, queue.length);
+    const cap = Math.min(20, queue.length);
     const rounds = cap - (cap % 2) || cap; // bei nur 1 Aufgabe bleibt 1 Runde
     state.battle = {
       sceneId,
