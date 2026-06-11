@@ -393,6 +393,26 @@ test("data.numberContext: reine Zahlen-Karten bekommen praktischen Preis-Kontext
   assert.match(z.context.sentenceDe, /Pesos/);
 });
 
+test("data.numberContext: spanische Grammatik korrekt (un peso / un / de pesos)", () => {
+  const es = (id) => data.CARDS.find((c) => c.id === id).context.sentenceEs;
+  // genau 1: Singular "un peso", kein "uno pesos"
+  assert.equal(es("z01"), "Es un peso.");
+  // Apokope vor dem Nomen: veintiún / ...un, nie "uno pesos"
+  assert.equal(es("z21"), "Son veintiún pesos.");
+  assert.equal(es("z31"), "Son treinta y un pesos.");
+  assert.equal(es("z101"), "Son ciento un pesos.");
+  data.CARDS.forEach((c) => {
+    if (/^z\d+$/.test(c.id)) assert.doesNotMatch(c.context.sentenceEs, /uno pesos/, `falsches "uno pesos": ${c.id}`);
+  });
+  // "de pesos" nur bei reinem Millionenbetrag, nicht mit Tausender-Rest
+  assert.equal(es("z1000000"), "Son un millón de pesos.");
+  assert.equal(es("z2000000"), "Son dos millones de pesos.");
+  assert.equal(es("z1500000"), "Son un millón quinientos mil pesos.");
+  assert.equal(es("z3500000"), "Son tres millones quinientos mil pesos.");
+  // 0 ergibt keinen erfundenen Preis
+  assert.doesNotMatch(es("z00"), /cero pesos\.$/);
+});
+
 test("badges.buildMetrics: zählt distinkte Kontext-Karten", () => {
   const counters = { contextViews: 5, contextCardsSeen: { hostel01: true, social01: true } };
   const m = badges.buildMetrics(data.CARDS, {}, counters);

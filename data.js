@@ -814,12 +814,41 @@
   // Praktischer Kontext für reine Zahlen-Karten (id "z" + Ziffern). Statt eines
   // erfundenen Satzes pro Ziffer bekommen Zahlen die häufigste Reise-Verwendung:
   // den Preis hören und verstehen. Hinweise variieren nach Größenordnung.
+  //
+  // Spanische Grammatik korrekt halten (LatAm-Inhalte sind "heilig"):
+  //   - genau 1: "Es un peso" (Singular, apokopiertes "un").
+  //   - Zahlen auf "uno": vor dem Nomen "un" / "veintiún" (z. B. veintiún pesos).
+  //   - "de pesos" NUR, wenn die Zahl auf millón/millones ENDET (un millón de pesos),
+  //     nicht bei Tausender-Rest (un millón quinientos mil pesos – ohne "de").
   function numberContext(card) {
     const es = card.es;                                   // z.B. "cincuenta y siete"
     const deNum = String(card.de).replace(/\s*\(.*\)\s*/g, "").trim(); // "57", "1.000"
     const value = Number(deNum.replace(/[.\s]/g, "")) || 0;
-    // "millón/millones" verlangen "de pesos", sonst direkt "pesos".
-    const dePesos = /mill(ó|o)n/i.test(es) ? `${es} de pesos` : `${es} pesos`;
+
+    // "uno" am Wortende vor dem Nomen apokopieren: veintiuno -> veintiún (mit Akzent),
+    // sonst -> un (treinta y uno -> treinta y un, ciento uno -> ciento un).
+    const apocope = (n) => /veintiuno$/i.test(n) ? n.replace(/veintiuno$/i, "veintiún")
+                                                 : n.replace(/uno$/i, "un");
+    const endsInMillion = /mill(?:ó|o)n(?:es)?$/i.test(es);
+    let amountEs, verbEs, pesoDe;
+    if (value === 1) {
+      amountEs = "un peso"; verbEs = "Es"; pesoDe = "Peso";   // genau 1: Singular
+    } else if (endsInMillion) {
+      amountEs = `${es} de pesos`; verbEs = "Son"; pesoDe = "Pesos";
+    } else {
+      amountEs = `${apocope(es)} pesos`; verbEs = "Son"; pesoDe = "Pesos";
+    }
+
+    // 0 ergibt keinen sinnvollen Preis -> echter Reise-Gebrauch von "cero".
+    if (value === 0) {
+      return {
+        sentenceEs: "Me quedan cero pesos, necesito un cajero.",
+        sentenceDe: "Mir bleiben null Pesos, ich brauche einen Geldautomaten.",
+        situation: "Wenn dein Bargeld alle ist.",
+        note: "cero = null; praktisch, um zu sagen, dass etwas leer oder aus ist.",
+      };
+    }
+
     let situation, note;
     if (value < 100) {
       situation = "Beim Bezahlen, bei Mengen, Personen oder einer Zimmernummer.";
@@ -832,8 +861,8 @@
       note = "Große Beträge schnell zu erkennen, schützt dich beim Wechselgeld vor Fehlern.";
     }
     return {
-      sentenceEs: `Son ${dePesos}.`,
-      sentenceDe: `Das macht ${deNum} Pesos.`,
+      sentenceEs: `${verbEs} ${amountEs}.`,
+      sentenceDe: `Das macht ${deNum} ${pesoDe}.`,
       situation,
       note,
     };
