@@ -805,6 +805,50 @@
     { id: "challenge10", category: "social", level: 1, textDe: "Verabschiede dich von jemandem auf Spanisch.", phraseEs: "Mucho gusto, ¡nos vemos!" },
   ];
 
+  // ===================== REISE-KONTEXT ANHÄNGEN =====================
+  // Quelle der handgeschriebenen Kontexte ist contextdata.js (SC.contextData), in
+  // kompakter Schreibweise { e, d, s, n } -> { sentenceEs, sentenceDe, situation, note }.
+  // Reihenfolge: bereits inline gesetzter context bleibt > handgeschriebener Eintrag >
+  // praktischer Auto-Kontext für reine Zahlen-Karten (Preis/Menge im Reisealltag).
+
+  // Praktischer Kontext für reine Zahlen-Karten (id "z" + Ziffern). Statt eines
+  // erfundenen Satzes pro Ziffer bekommen Zahlen die häufigste Reise-Verwendung:
+  // den Preis hören und verstehen. Hinweise variieren nach Größenordnung.
+  function numberContext(card) {
+    const es = card.es;                                   // z.B. "cincuenta y siete"
+    const deNum = String(card.de).replace(/\s*\(.*\)\s*/g, "").trim(); // "57", "1.000"
+    const value = Number(deNum.replace(/[.\s]/g, "")) || 0;
+    // "millón/millones" verlangen "de pesos", sonst direkt "pesos".
+    const dePesos = /mill(ó|o)n/i.test(es) ? `${es} de pesos` : `${es} pesos`;
+    let situation, note;
+    if (value < 100) {
+      situation = "Beim Bezahlen, bei Mengen, Personen oder einer Zimmernummer.";
+      note = "Kleine Zahlen brauchst du ständig – für Anzahl, Personen oder die Hausnummer.";
+    } else if (value < 10000) {
+      situation = "Beim Bezahlen an der Kasse, im Markt oder im Taxi.";
+      note = "In vielen Ländern (z. B. Kolumbien, Chile) sind selbst kleine Preise schnell vierstellig.";
+    } else {
+      situation = "Beim Bezahlen größerer Beträge: Hostel-Nacht, Tour oder am Geldautomaten.";
+      note = "Große Beträge schnell zu erkennen, schützt dich beim Wechselgeld vor Fehlern.";
+    }
+    return {
+      sentenceEs: `Son ${dePesos}.`,
+      sentenceDe: `Das macht ${deNum} Pesos.`,
+      situation,
+      note,
+    };
+  }
+
+  (function attachContext() {
+    const map = (window.SC && window.SC.contextData) || {};
+    const expand = (x) => ({ sentenceEs: x.e, sentenceDe: x.d, situation: x.s, note: x.n });
+    CARDS.forEach((card) => {
+      if (card.context) return;                       // inline gesetzter Kontext bleibt
+      if (map[card.id]) { card.context = expand(map[card.id]); return; }
+      if (/^z\d+$/.test(card.id)) card.context = numberContext(card);
+    });
+  })();
+
   window.SC = window.SC || {};
   window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES };
 })();

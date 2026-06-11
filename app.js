@@ -569,19 +569,25 @@
   }
 
   // Reise-Kontext auf-/zuklappen. In-Place (kein Re-Render), damit im Schreiben-Modus
-  // nichts verloren geht und das Panel offen bleibt. Beim Öffnen wird die Ansicht
-  // fürs Badge-System gezählt (distinkt pro Karte).
+  // nichts verloren geht und das Panel offen bleibt. Der 🧭-Button (rund auf der Karte)
+  // und das Panel (unter der Karte) haben verschiedene Eltern – darum global suchen;
+  // pro Screen existiert ohnehin nur ein Panel. Beim Öffnen wird die Ansicht fürs
+  // Badge-System gezählt (distinkt pro Karte).
   function toggleContext(btn) {
-    const panel = btn.parentElement && btn.parentElement.querySelector(".context-panel");
+    const panel = document.getElementById("context-panel");
     if (!panel) return;
     const willOpen = panel.hasAttribute("hidden");
     panel.toggleAttribute("hidden", !willOpen);
     btn.setAttribute("aria-expanded", String(willOpen));
-    btn.textContent = willOpen ? "🧭 Kontext ausblenden" : "🧭 Kontext";
+    btn.classList.toggle("is-open", willOpen);
+    // Der beschriftete Detail-Button (data-ctx-text) bekommt zusätzlich einen Text-Toggle.
+    if (btn.dataset.ctxText) btn.textContent = willOpen ? "🧭 Kontext ausblenden" : "🧭 Kontext";
     if (willOpen) {
       buzz(6);
       const id = state.screen === "card" ? state.cardId : state.queue[0];
       recordContextView(id, Date.now());
+      // Panel sanft in den Blick holen (es sitzt unter der Karte / den Bewertungs-Buttons).
+      try { panel.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) { /* egal */ }
     }
   }
 

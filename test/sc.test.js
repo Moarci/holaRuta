@@ -15,6 +15,7 @@ const path = require("path");
 // window-Shim: die Module referenzieren `window`, das hier auf globalThis.window zeigt.
 globalThis.window = {};
 const SRC = path.join(__dirname, "..");
+require(path.join(SRC, "contextdata.js")); // vor data.js: liefert die Kontext-Inhalte
 require(path.join(SRC, "data.js"));
 require(path.join(SRC, "srs.js"));
 require(path.join(SRC, "matcher.js"));
@@ -366,15 +367,30 @@ test("data.CHALLENGES: textDe und phraseEs gesetzt", () => {
 });
 
 // ---------- Reise-Kontext (🧭) ----------
-test("data.CARDS: context-Karten haben alle Pflichtfelder", () => {
-  const withCtx = data.CARDS.filter((c) => c.context);
-  assert.ok(withCtx.length >= 20, "zu wenige Karten mit Kontext");
-  withCtx.forEach((c) => {
+test("data.CARDS: ALLE Karten haben vollständigen Kontext", () => {
+  const without = data.CARDS.filter((c) => !c.context);
+  assert.equal(without.length, 0, `ohne Kontext: ${without.map((c) => c.id).join(", ")}`);
+  data.CARDS.forEach((c) => {
     const ctx = c.context;
     assert.ok(ctx.sentenceEs && ctx.sentenceDe, `Beispielsatz fehlt: ${c.id}`);
     assert.ok(ctx.situation, `situation fehlt: ${c.id}`);
     assert.ok(ctx.note, `note (Reisetipp) fehlt: ${c.id}`);
   });
+});
+
+test("data.CARDS: Kontext-Beispielsätze haben ausgeglichene ¿? und ¡!", () => {
+  data.CARDS.forEach((c) => {
+    const e = c.context.sentenceEs;
+    const cnt = (re) => (e.match(re) || []).length;
+    assert.equal(cnt(/¿/g), cnt(/\?/g), `¿?-Mismatch: ${c.id} (${e})`);
+    assert.equal(cnt(/¡/g), cnt(/!/g), `¡!-Mismatch: ${c.id} (${e})`);
+  });
+});
+
+test("data.numberContext: reine Zahlen-Karten bekommen praktischen Preis-Kontext", () => {
+  const z = data.CARDS.find((c) => c.id === "z58");
+  assert.match(z.context.sentenceEs, /pesos/);
+  assert.match(z.context.sentenceDe, /Pesos/);
 });
 
 test("badges.buildMetrics: zählt distinkte Kontext-Karten", () => {
