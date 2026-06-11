@@ -318,6 +318,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
     contextCardsSeen: { hostel01: true },
     quizzesPlayed: 7, quizzesPerfect: 2,
+    bodyPartsSeen: { bp_cabeza: true },
     unlocked: { first_steps: 1700000000000 },
   };
   storeMem[GKEY] = JSON.stringify(valid);
@@ -391,6 +392,39 @@ test("data.QUIZ_SETS: lvl verweist auf eine bekannte Stufe", () => {
     assert.ok(s.label && s.icon && s.intro, `Listen-Felder fehlen: ${s.id}`);
     assert.ok(lvlIds.has(s.lvl), `unbekannte Stufe in Liste ${s.id}: ${s.lvl}`);
   });
+});
+
+// ---------- data: El Cuerpo (Körperkarte) ----------
+test("data.BODY_PARTS: eindeutige IDs, Pflichtfelder, Koordinaten im Rahmen", () => {
+  const ids = data.BODY_PARTS.map((p) => p.id);
+  assert.equal(new Set(ids).size, ids.length, "doppelte BODY_PARTS-IDs");
+  data.BODY_PARTS.forEach((p) => {
+    assert.ok(p.es && p.de && p.note, `Felder fehlen: ${p.id}`);
+    assert.ok(typeof p.x === "number" && p.x >= 0 && p.x <= 100, `x außerhalb 0–100: ${p.id}`);
+    assert.ok(typeof p.y === "number" && p.y >= 0 && p.y <= 100, `y außerhalb 0–100: ${p.id}`);
+  });
+});
+
+// ---------- badges: El Cuerpo ----------
+test("badges.buildMetrics: zählt distinkte erkundete Körperteile", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    bodyPartsSeen: { bp_cabeza: true, bp_mano: true, bp_pie: true },
+  });
+  assert.equal(m.bodyPartsExplored, 3);
+});
+
+test("badges: Cuerpo-Badges schalten über die Schwelle frei", () => {
+  const seen = {};
+  data.BODY_PARTS.forEach((p) => { seen[p.id] = true; }); // alle erkundet
+  const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, { bodyPartsSeen: seen }));
+  assert.ok(ids.includes("cuerpo_first"));
+  assert.ok(ids.includes("cuerpo_10"));
+  assert.ok(ids.includes("cuerpo_all"));
+});
+
+test("badges: ohne erkundete Körperteile bleiben Cuerpo-Badges gesperrt", () => {
+  const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {}));
+  assert.ok(!ids.includes("cuerpo_first"));
 });
 
 // ---------- badges: Definiciones ----------

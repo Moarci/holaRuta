@@ -139,6 +139,15 @@
           <span class="hostelmode__chev" aria-hidden="true">›</span>
         </button>
 
+        <button class="hostelmode hostelmode--cuerpo" data-action="open-cuerpo">
+          <span class="hostelmode__icon" aria-hidden="true">🧍</span>
+          <span class="hostelmode__text">
+            <span class="hostelmode__title">El Cuerpo</span>
+            <span class="hostelmode__sub">Körperteile antippen: Wort, Aussprache &amp; Reisetipp</span>
+          </span>
+          <span class="hostelmode__chev" aria-hidden="true">›</span>
+        </button>
+
         <div class="tiles">${tiles}</div>
 
         <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>
@@ -1136,9 +1145,90 @@
       </section>`;
   }
 
+  // ---------- EL CUERPO (interaktive Körperkarte) ----------
+  // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
+  // viewBox 0 0 200 440 – exakt der, auf den sich die Prozent-Koordinaten der Hotspots
+  // beziehen. Gliedmaßen sind runde Striche (currentColor), Rumpf/Kopf gefüllte Flächen.
+  const BP_FIGURE = `
+    <svg class="bp-figure" viewBox="0 0 200 440" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+      <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M70 104 L52 168 L46 240" />
+        <path d="M130 104 L148 168 L154 240" />
+      </g>
+      <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M86 236 L82 330 L78 408" />
+        <path d="M114 236 L118 330 L122 408" />
+      </g>
+      <g class="bp-figure__body" fill="currentColor" stroke="none">
+        <ellipse cx="74" cy="416" rx="17" ry="9" />
+        <ellipse cx="126" cy="416" rx="17" ry="9" />
+        <circle cx="44" cy="248" r="12" />
+        <circle cx="156" cy="248" r="12" />
+        <path d="M68 96 L132 96 C141 96 141 105 139 113 L126 212 C125 232 121 242 100 242 C79 242 75 232 74 212 L61 113 C59 105 59 96 68 96 Z" />
+        <rect x="91" y="68" width="18" height="20" rx="8" />
+        <circle cx="100" cy="44" r="30" />
+      </g>
+    </svg>`;
+
+  function renderCuerpo(vm) {
+    const dots = vm.parts
+      .map((p) => {
+        const cls = `bp-dot${p.selected ? " is-active" : ""}${p.seen ? " is-seen" : ""}`;
+        return `
+          <button class="${cls}" type="button" data-action="cuerpo-select" data-id="${esc(p.id)}"
+                  style="left:${p.x}%;top:${p.y}%" aria-label="${esc(p.de)}" title="${esc(p.de)}"
+                  aria-pressed="${p.selected ? "true" : "false"}">
+            <span class="bp-dot__ring" aria-hidden="true"></span>
+          </button>`;
+      })
+      .join("");
+
+    const sel = vm.selected;
+    const speak = sel && vm.speakable
+      ? cornerBtn({ base: "cardbtn--speak bp-speak", on: false, icon: "🔊", label: "Wort anhören", action: "cuerpo-speak" })
+      : "";
+    const panel = sel
+      ? `
+        <div class="bp-panel bp-panel--filled" role="status" aria-live="polite">
+          <div class="bp-panel__top">
+            <span class="bp-panel__de">${esc(sel.de)}</span>
+            ${speak}
+          </div>
+          <p class="bp-panel__es" lang="es">${esc(sel.es)}</p>
+          ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">🗣️</span> ${esc(sel.tip)}</p>` : ""}
+          ${sel.note ? `<p class="bp-panel__note">${esc(sel.note)}</p>` : ""}
+        </div>`
+      : `
+        <div class="bp-panel" role="status" aria-live="polite">
+          <p class="bp-panel__hint">👆 Tippe einen Punkt auf der Figur an – dann erscheinen das spanische Wort, die Aussprache und ein Reisetipp.</p>
+        </div>`;
+
+    const pct = vm.total > 0 ? Math.round((vm.exploredCount / vm.total) * 100) : 0;
+    const done = vm.total > 0 && vm.exploredCount >= vm.total;
+    const progress = `
+      <div class="bp-progress">
+        <div class="bp-progress__bar"><div class="bp-progress__fill" style="width:${pct}%"></div></div>
+        <span class="bp-progress__label">${done ? "¡Cuerpo completo! 🎉 Alle " + vm.total + " erkundet" : "Erkundet: " + vm.exploredCount + "/" + vm.total}</span>
+      </div>`;
+
+    return `
+      <section class="screen bp-screen">
+        ${hmTopbar("🧍 El Cuerpo", "home")}
+        <p class="hm-intro">Der menschliche Körper auf Spanisch – zum Antippen. Wähle ein Körperteil und lerne Wort, Aussprache und den passenden Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
+        ${progress}
+        <div class="bp-stage">
+          <div class="bp-figwrap">
+            ${BP_FIGURE}
+            ${dots}
+          </div>
+          ${panel}
+        </div>
+      </section>`;
+  }
+
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone };
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
 })();
