@@ -455,17 +455,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .feel--good  .feel__txt { color: var(--ok); }
 .feel--easy  .feel__txt { color: var(--easy); }
 
-/* Teilen-Button auf der Lernkarte: dezente Pille, zentriert unter der Karte. */
+/* Teilen: dezenter Text-Link ganz unten – bewusst unauffällig. */
 .sharepic-btn {
-  align-self: center; display: inline-flex; align-items: center; gap: 7px;
-  margin: 2px auto 4px; padding: 9px 16px; cursor: pointer;
-  font-family: var(--font); font-size: 0.88rem; font-weight: 600; color: var(--brand-ink);
-  background: var(--card); border: 1.5px solid var(--line-strong);
-  border-radius: 999px; box-shadow: var(--shadow);
-  transition: transform 0.12s ease, border-color 0.12s ease;
+  align-self: center; margin: 6px auto 2px; padding: 6px 10px; cursor: pointer;
+  font-family: var(--font); font-size: 0.8rem; font-weight: 600; color: var(--muted);
+  background: none; border: none;
+  text-decoration: underline; text-underline-offset: 3px;
+  transition: color 0.12s ease;
 }
-.sharepic-btn:hover { border-color: var(--brand); }
-.sharepic-btn:active { transform: translateY(1px); }
+.sharepic-btn:hover { color: var(--brand-ink); }
+.sharepic-btn:active { opacity: 0.7; }
 
 /* Fertig */
 .done { text-align: center; padding: 36px 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
@@ -4771,6 +4770,28 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 
+  // Begleittext zum geteilten Bild (erscheint z.B. als Bildunterschrift in
+  // WhatsApp/Telegram). Bei einer Vokabel wird die Karte selbst zitiert.
+  function shareText(kind, payload) {
+    const p = payload || {};
+    if (kind === "stats") {
+      const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
+      const facts = [];
+      if (r !== null) facts.push(`${r}% Trefferquote`);
+      if (p.mastered) facts.push(`${p.mastered} Vokabeln gemeistert`);
+      const tail = facts.length ? " – " + facts.join(", ") : "";
+      return `📍 Mein Reise-Spanisch mit HolaRuta${tail}. Lernst du mit? 🌎`;
+    }
+    const es = String(p.es || "").trim();
+    const de = String(p.de || "").trim();
+    const head = es && de ? `„${es}" = ${de}` : (es || de || "eine neue Vokabel");
+    const tip = String(p.tip || "").trim();
+    let t = `📍 Spanisch für unterwegs: ${head}`;
+    if (tip) t += `\n🗣️ Aussprache: ${tip}`;
+    t += `\n\nGelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
+    return t;
+  }
+
   // Baut das Bild und teilt es. Erst Web Share API (mit Datei), sonst Download.
   // Gibt zurück: 'shared' | 'downloaded' | 'cancelled' | 'error'.
   async function shareImage(kind, payload, aspect) {
@@ -4794,13 +4815,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const base = kind === "stats" ? "holaruta-fortschritt" : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt" : "Reise-Spanisch lernen";
+    const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
     // Web Share API mit Datei (Handy: Insta/WhatsApp etc.)
     try {
       if (navigator.canShare && typeof File === "function") {
         const file = new File([blob], filename, { type: "image/png" });
         if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title, text: title });
+          await navigator.share({ files: [file], title, text });
           return "shared";
         }
       }
@@ -4960,6 +4982,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Lernfortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
         ${body}
+        ${shareCardBtn()}
       </section>`;
   }
 
@@ -5006,7 +5029,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </div>
         </div>
       </div>
-      ${shareCardBtn()}
       <div class="controls" id="controls" ${vm.revealed ? "" : "hidden"}>
         ${rateButtons()}
       </div>`;
@@ -5035,8 +5057,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                  autocapitalize="off" autocorrect="off" spellcheck="false"
                  placeholder="${placeholder}" />
           <button class="typer__btn" type="submit">Prüfen</button>
-        </form>
-        ${shareCardBtn()}`;
+        </form>`;
     }
 
     const verdict = res.correct
@@ -5051,7 +5072,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${sq ? "" : tip}
         ${verdict}
       </div>
-      ${shareCardBtn()}
       <div class="controls" id="controls">${rateButtons()}</div>`;
   }
 
@@ -5077,13 +5097,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`;
   }
 
-  // Klar beschrifteter Teilen-Button: erzeugt aus der aktuellen Karte ein Sharepic.
+  // Dezenter Teilen-Link ganz unten: erzeugt aus der aktuellen Karte ein Sharepic.
   function shareCardBtn() {
     if (!canShare()) return "";
-    return `
-      <button class="sharepic-btn" type="button" data-action="share-card" aria-label="Diese Karte als Bild teilen">
-        <span aria-hidden="true">📤</span> Als Sharepic teilen
-      </button>`;
+    return `<button class="sharepic-btn" type="button" data-action="share-card" aria-label="Diese Karte als Bild teilen">Teilen</button>`;
   }
 
   // ---------- DONE ----------
@@ -5759,14 +5776,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
+  // Frage gedreht werden. Die Bewertungs-Leiste erscheint nur auf der Antwortseite.
   function flip() {
-    if (state.revealed) return;
-    state.revealed = true;
+    state.revealed = !state.revealed;
     // In-Place-Klasse für die 3D-Animation (kein Voll-Re-Render).
     const flipEl = document.getElementById("flip");
     const controls = document.getElementById("controls");
-    if (flipEl) flipEl.classList.add("is-flipped");
-    if (controls) controls.removeAttribute("hidden");
+    if (flipEl) {
+      flipEl.classList.toggle("is-flipped", state.revealed);
+      flipEl.setAttribute("aria-label", state.revealed ? "Karte ist umgedreht – tippen zum Zurückdrehen" : "Karte umdrehen");
+    }
+    if (controls) controls.toggleAttribute("hidden", !state.revealed);
   }
 
   function submitTyped(input) {
@@ -6097,9 +6118,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     }
 
     if (state.mode === "flip") {
-      if ((e.key === " " || e.key === "Enter") && !state.revealed) {
+      if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
-        flip();
+        flip(); // beidseitig: Frage ⇄ Antwort
       } else if (state.revealed) rateByKey(e.key);
     } else {
       // Schreiben-Modus: Zahlen nur bewerten, wenn Ergebnis schon sichtbar ist.

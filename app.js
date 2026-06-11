@@ -272,14 +272,18 @@
     render();
   }
 
+  // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
+  // Frage gedreht werden. Die Bewertungs-Leiste erscheint nur auf der Antwortseite.
   function flip() {
-    if (state.revealed) return;
-    state.revealed = true;
+    state.revealed = !state.revealed;
     // In-Place-Klasse für die 3D-Animation (kein Voll-Re-Render).
     const flipEl = document.getElementById("flip");
     const controls = document.getElementById("controls");
-    if (flipEl) flipEl.classList.add("is-flipped");
-    if (controls) controls.removeAttribute("hidden");
+    if (flipEl) {
+      flipEl.classList.toggle("is-flipped", state.revealed);
+      flipEl.setAttribute("aria-label", state.revealed ? "Karte ist umgedreht – tippen zum Zurückdrehen" : "Karte umdrehen");
+    }
+    if (controls) controls.toggleAttribute("hidden", !state.revealed);
   }
 
   function submitTyped(input) {
@@ -610,9 +614,9 @@
     }
 
     if (state.mode === "flip") {
-      if ((e.key === " " || e.key === "Enter") && !state.revealed) {
+      if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
-        flip();
+        flip(); // beidseitig: Frage ⇄ Antwort
       } else if (state.revealed) rateByKey(e.key);
     } else {
       // Schreiben-Modus: Zahlen nur bewerten, wenn Ergebnis schon sichtbar ist.

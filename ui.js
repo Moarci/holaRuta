@@ -134,6 +134,7 @@
         </div>
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Lernfortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
         ${body}
+        ${shareCardBtn()}
       </section>`;
   }
 
@@ -180,7 +181,6 @@
           </div>
         </div>
       </div>
-      ${shareCardBtn()}
       <div class="controls" id="controls" ${vm.revealed ? "" : "hidden"}>
         ${rateButtons()}
       </div>`;
@@ -209,8 +209,7 @@
                  autocapitalize="off" autocorrect="off" spellcheck="false"
                  placeholder="${placeholder}" />
           <button class="typer__btn" type="submit">Prüfen</button>
-        </form>
-        ${shareCardBtn()}`;
+        </form>`;
     }
 
     const verdict = res.correct
@@ -225,7 +224,6 @@
         ${sq ? "" : tip}
         ${verdict}
       </div>
-      ${shareCardBtn()}
       <div class="controls" id="controls">${rateButtons()}</div>`;
   }
 
@@ -251,13 +249,10 @@
       </div>`;
   }
 
-  // Klar beschrifteter Teilen-Button: erzeugt aus der aktuellen Karte ein Sharepic.
+  // Dezenter Teilen-Link ganz unten: erzeugt aus der aktuellen Karte ein Sharepic.
   function shareCardBtn() {
     if (!canShare()) return "";
-    return `
-      <button class="sharepic-btn" type="button" data-action="share-card" aria-label="Diese Karte als Bild teilen">
-        <span aria-hidden="true">📤</span> Als Sharepic teilen
-      </button>`;
+    return `<button class="sharepic-btn" type="button" data-action="share-card" aria-label="Diese Karte als Bild teilen">Teilen</button>`;
   }
 
   // ---------- DONE ----------
