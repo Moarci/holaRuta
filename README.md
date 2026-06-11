@@ -96,6 +96,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **15 Bereiche** | Themen-Kategorien | Grundlagen, Zahlen, Essen, Trinken, Hotel, Verkehr, Einkaufen, Geld, Notfall, Zeit, Smalltalk, Alltag, Sätze, Behörden, Busreise |
 | **Statistik** | Lern-Auswertung | Trefferquote, gemeistert / schwierig / neu, sortierte Kartenliste, Detailseite je Karte |
 | **Eigene Karten** | Editor | Eigene Vokabeln anlegen — erscheinen überall ohne Sonderbehandlung |
+| **Dark Mode** | Fürs Hostel-Bett 🌙 | Warmer, augenschonender Nachtmodus per 🌙/☀️-Schalter; folgt sonst der System-Vorliebe, Wahl wird gemerkt |
 | **Sprachausgabe** | TTS (Web Speech API) | Spricht die spanische Antwort vor, bevorzugt eine LatAm-Stimme |
 | **Sharepics** | Canvas-Bildgenerator | Karte oder Fortschritt als teilbares PNG (1:1 Feed oder 9:16 Story) |
 | **Länderkunde** | 19 Länder | Hauptstadt, Geschichte, Sprache, typische Wörter, Essen, Trinken & Reisetipp |
@@ -253,7 +254,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 | Key | Inhalt |
 |---|---|
 | `spanischcard.progress.v2` | Lernfortschritt pro Karte (SRS-Zustand + Statistik-Felder) |
-| `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format) |
+| `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme) |
 | `spanischcard.usercards.v1` | Vom Nutzer angelegte eigene Karten |
 
 ### Karte

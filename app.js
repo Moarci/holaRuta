@@ -95,6 +95,7 @@
     return {
       mode: state.mode,
       dir: state.dir,
+      theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
       categories,
@@ -328,6 +329,32 @@
     render();
   }
 
+  // ----- Dark Mode ("Nachts im Hostel-Bett") -----
+  // settings.theme ist 'light' | 'dark' (gemerkte Wahl) – ohne Wahl folgt die App
+  // der System-Vorliebe (prefers-color-scheme). Die <html data-theme>-Umschaltung
+  // taucht die CSS-Tokens; ein früher Boot-Schnipsel in index.html verhindert
+  // beim Start das Hell-Aufblitzen.
+  const THEME_COLOR = { light: "#241510", dark: "#0E0907" };
+  function effectiveTheme() {
+    if (settings.theme === "dark" || settings.theme === "light") return settings.theme;
+    try {
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    } catch (e) { return "light"; }
+  }
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", THEME_COLOR[theme] || THEME_COLOR.light);
+  }
+  function toggleTheme() {
+    const next = effectiveTheme() === "dark" ? "light" : "dark";
+    settings = Object.assign({}, settings, { theme: next });
+    store.saveSettings(settings);
+    applyTheme(next);
+    buzz(8);
+    render();
+  }
+
   // Lernrichtung umschalten (DE→ES / ES→DE) und merken.
   function setDir(dir) {
     state.dir = dir === "es2de" ? "es2de" : "de2es";
@@ -549,6 +576,7 @@
     const action = el.dataset.action;
 
     if (action === "set-mode") setMode(el.dataset.mode);
+    else if (action === "toggle-theme") toggleTheme();
     else if (action === "set-dir") setDir(el.dataset.dir);
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
@@ -688,6 +716,15 @@
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });
   root.addEventListener("touchend", onTouchEnd, { passive: true });
+  applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
+  // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).
+  try {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onSys = () => {
+      if (settings.theme !== "dark" && settings.theme !== "light") { applyTheme(effectiveTheme()); render(); }
+    };
+    mq.addEventListener ? mq.addEventListener("change", onSys) : (mq.addListener && mq.addListener(onSys));
+  } catch (e) { /* matchMedia fehlt – egal */ }
   render();
   registerServiceWorker();
 
