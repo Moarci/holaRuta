@@ -1,0 +1,90 @@
+/*
+ * context.js  (SC.context) – hängt den Reise-Kontext an die Karten. LOGIK-Modul
+ * (wie srs/matcher), bewusst getrennt von den reinen Daten in data.js.
+ *
+ * Lädt NACH data.js und contextdata.js. Quelle der handgeschriebenen Inhalte ist
+ * SC.contextData (kompakt { e, d, s, n }); reine Zahlen-Karten bekommen einen
+ * praktischen Preis-/Mengen-Kontext generiert.
+ *
+ * Precedence pro Karte: handgeschriebener Eintrag aus contextData  >  generierte Zahl.
+ * (Karten ohne beides bleiben ohne Kontext – der 🧭-Button erscheint dann nicht.)
+ */
+(function () {
+  "use strict";
+
+  // Praktischer Kontext für reine Zahlen-Karten (id "z" + Ziffern). Statt eines
+  // erfundenen Satzes pro Ziffer bekommen Zahlen die häufigste Reise-Verwendung:
+  // den Preis hören und verstehen. Hinweise variieren nach Größenordnung.
+  //
+  // Spanische Grammatik korrekt halten (LatAm-Inhalte sind "heilig"):
+  //   - genau 1: "Es un peso" (Singular, apokopiertes "un").
+  //   - Zahlen auf "uno": vor dem Nomen "un" / "veintiún" (z. B. veintiún pesos).
+  //   - "de pesos" NUR, wenn die Zahl auf millón/millones ENDET (un millón de pesos),
+  //     nicht bei Tausender-Rest (un millón quinientos mil pesos – ohne "de").
+  function numberContext(card) {
+    const es = card.es;                                   // z.B. "cincuenta y siete"
+    const deNum = String(card.de).replace(/\s*\(.*\)\s*/g, "").trim(); // "57", "1.000"
+    const value = Number(deNum.replace(/[.\s]/g, "")) || 0;
+
+    // "uno" am Wortende vor dem Nomen apokopieren: veintiuno -> veintiún (mit Akzent),
+    // sonst -> un (treinta y uno -> treinta y un, ciento uno -> ciento un).
+    const apocope = (n) => /veintiuno$/i.test(n) ? n.replace(/veintiuno$/i, "veintiún")
+                                                 : n.replace(/uno$/i, "un");
+    const endsInMillion = /mill(?:ó|o)n(?:es)?$/i.test(es);
+    let amountEs, verbEs, pesoDe;
+    if (value === 1) {
+      amountEs = "un peso"; verbEs = "Es"; pesoDe = "Peso";   // genau 1: Singular
+    } else if (endsInMillion) {
+      amountEs = `${es} de pesos`; verbEs = "Son"; pesoDe = "Pesos";
+    } else {
+      amountEs = `${apocope(es)} pesos`; verbEs = "Son"; pesoDe = "Pesos";
+    }
+
+    // 0 ergibt keinen sinnvollen Preis -> echter Reise-Gebrauch von "cero".
+    if (value === 0) {
+      return {
+        sentenceEs: "Me quedan cero pesos, necesito un cajero.",
+        sentenceDe: "Mir bleiben null Pesos, ich brauche einen Geldautomaten.",
+        situation: "Wenn dein Bargeld alle ist.",
+        note: "cero = null; praktisch, um zu sagen, dass etwas leer oder aus ist.",
+      };
+    }
+
+    let situation, note;
+    if (value < 100) {
+      situation = "Beim Bezahlen, bei Mengen, Personen oder einer Zimmernummer.";
+      note = "Kleine Zahlen brauchst du ständig – für Anzahl, Personen oder die Hausnummer.";
+    } else if (value < 10000) {
+      situation = "Beim Bezahlen an der Kasse, im Markt oder im Taxi.";
+      note = "In vielen Ländern (z. B. Kolumbien, Chile) sind selbst kleine Preise schnell vierstellig.";
+    } else {
+      situation = "Beim Bezahlen größerer Beträge: Hostel-Nacht, Tour oder am Geldautomaten.";
+      note = "Große Beträge schnell zu erkennen, schützt dich beim Wechselgeld vor Fehlern.";
+    }
+    return {
+      sentenceEs: `${verbEs} ${amountEs}.`,
+      sentenceDe: `Das macht ${deNum} ${pesoDe}.`,
+      situation,
+      note,
+    };
+  }
+
+  // Kompakte Schreibweise { e, d, s, n } -> volles context-Objekt.
+  const expand = (x) => ({ sentenceEs: x.e, sentenceDe: x.d, situation: x.s, note: x.n });
+
+  // Kontext an die Karten hängen (mutiert die übergebene Liste – einmalig beim Start).
+  function attach(cards, contextData) {
+    const map = contextData || {};
+    (cards || []).forEach((card) => {
+      if (card.context) return;                          // bereits gesetzt? unangetastet
+      if (map[card.id]) { card.context = expand(map[card.id]); return; }
+      if (/^z\d+$/.test(card.id)) card.context = numberContext(card);
+    });
+    return cards;
+  }
+
+  const SC = window.SC || (window.SC = {});
+  SC.context = { numberContext, attach };
+  // Beim Laden direkt auf die echten Karten anwenden (data.js + contextdata.js sind da).
+  if (SC.data && SC.data.CARDS) attach(SC.data.CARDS, SC.contextData);
+})();

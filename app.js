@@ -28,6 +28,7 @@
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Sprechen-Modus: Rückseite sichtbar?
+    contextOpen: false,      // 🧭 Reise-Kontext-Panel aufgeklappt? (Single Source of Truth)
     typeResult: null,        // Schreiben-Modus: { correct, answers, input } | null
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
     cardId: null,            // Detailseite: welche Karte
@@ -149,6 +150,7 @@
       revealed: state.revealed,
       typeResult: state.typeResult,
       context: card.context || null,
+      contextOpen: state.contextOpen,
     };
   }
 
@@ -230,6 +232,7 @@
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
       context: card.context || null,
+      contextOpen: state.contextOpen,
     });
   }
 
@@ -291,26 +294,27 @@
     store.saveGameStats(gamestats);
   }
 
-  // Eine geöffnete Kontext-Ansicht einbuchen: Gesamtzähler hoch, Karte als distinkt
-  // gesehen vermerken, erfüllte Kontext-Badges freischalten. Immutabel.
+  // Eine erstmals geöffnete Kontext-Karte einbuchen und erfüllte Kontext-Badges
+  // freischalten. Dedup: schon gesehene Karten sind ein No-Op – kein erneuter
+  // localStorage-Write, kein Badge-Scan beim wiederholten Auf-/Zuklappen. Immutabel.
   function recordContextView(cardId, now) {
     if (!badges || !cardId) return;
-    const g = Object.assign({}, gamestats);
-    g.contextViews = (g.contextViews || 0) + 1;
-    const seen = Object.assign({}, g.contextCardsSeen);
-    if (!seen[cardId]) seen[cardId] = true;
-    g.contextCardsSeen = seen;
-    gamestats = g;
+    if (gamestats.contextCardsSeen[cardId]) return; // bereits gezählt
+    const seen = Object.assign({}, gamestats.contextCardsSeen, { [cardId]: true });
+    gamestats = Object.assign({}, gamestats, { contextCardsSeen: seen });
     store.saveGameStats(gamestats);
     syncBadges(now, true);
     paintBadgeToast(); // ohne Re-Render einblenden – das Kontext-Panel bleibt offen
   }
 
   // Glückwunsch-Einblendung einfügen, ohne den Screen neu zu rendern (sonst klappt
-  // das gerade geöffnete Kontext-Panel wieder zu). Nur, wenn noch keiner sichtbar ist.
+  // das gerade geöffnete Kontext-Panel wieder zu). Einen evtl. noch sichtbaren
+  // älteren Toast ERSETZEN statt überspringen, damit das frische Badge nicht
+  // verschluckt wird (state.badgeToast wurde gerade aktualisiert).
   function paintBadgeToast() {
     if (!badges || !state.badgeToast || !state.badgeToast.length) return;
-    if (root.querySelector(".btoast")) return;
+    const existing = root.querySelector(".btoast");
+    if (existing) existing.remove();
     root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
   }
 
@@ -549,6 +553,7 @@
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
     state.revealed = false;
+    state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
@@ -558,6 +563,7 @@
   // Frage gedreht werden. Die Bewertungs-Leiste erscheint nur auf der Antwortseite.
   function flip() {
     state.revealed = !state.revealed;
+    setContextOpen(false); // beim Drehen den Reise-Kontext schließen (Zustand + DOM)
     // In-Place-Klasse für die 3D-Animation (kein Voll-Re-Render).
     const flipEl = document.getElementById("flip");
     const controls = document.getElementById("controls");
@@ -568,21 +574,27 @@
     if (controls) controls.toggleAttribute("hidden", !state.revealed);
   }
 
-  // Reise-Kontext auf-/zuklappen. In-Place (kein Re-Render), damit im Schreiben-Modus
-  // nichts verloren geht und das Panel offen bleibt. Der 🧭-Button (rund auf der Karte)
-  // und das Panel (unter der Karte) haben verschiedene Eltern – darum global suchen;
-  // pro Screen existiert ohnehin nur ein Panel. Beim Öffnen wird die Ansicht fürs
-  // Badge-System gezählt (distinkt pro Karte).
-  function toggleContext(btn) {
+  // Reise-Kontext-Panel auf den gewünschten Zustand bringen: state.contextOpen ist
+  // die Wahrheit, das DOM wird in-place nachgezogen (kein Voll-Re-Render – so bleibt
+  // der Fokus auf dem 🧭-Button und im Schreiben-Modus geht nichts verloren). Der
+  // Button (rund auf der Karte) und das Panel (darunter) haben verschiedene Eltern;
+  // pro Screen existiert genau ein Panel, darum global per id auflösen.
+  function setContextOpen(open) {
+    state.contextOpen = !!open;
     const panel = document.getElementById("context-panel");
-    if (!panel) return;
-    const willOpen = panel.hasAttribute("hidden");
-    panel.toggleAttribute("hidden", !willOpen);
-    btn.setAttribute("aria-expanded", String(willOpen));
-    btn.classList.toggle("is-open", willOpen);
-    // Der beschriftete Detail-Button (data-ctx-text) bekommt zusätzlich einen Text-Toggle.
-    if (btn.dataset.ctxText) btn.textContent = willOpen ? "🧭 Kontext ausblenden" : "🧭 Kontext";
-    if (willOpen) {
+    const btn = document.querySelector("[data-action='toggle-context']");
+    if (panel) panel.toggleAttribute("hidden", !open);
+    if (btn) {
+      btn.setAttribute("aria-expanded", String(!!open));
+      btn.classList.toggle("is-open", !!open);
+      if (btn.dataset.ctxText) btn.textContent = open ? "🧭 Kontext ausblenden" : "🧭 Kontext";
+    }
+    return panel;
+  }
+
+  function toggleContext() {
+    const panel = setContextOpen(!state.contextOpen);
+    if (state.contextOpen && panel) {
       buzz(6);
       const id = state.screen === "card" ? state.cardId : state.queue[0];
       recordContextView(id, Date.now());
@@ -597,6 +609,7 @@
     // Richtung ES→DE erwartet die deutsche Antwort, sonst die spanische.
     const field = state.dir === "es2de" ? "de" : "es";
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
+    state.contextOpen = false;
     render();
   }
 
@@ -626,6 +639,7 @@
     if (rating === srs.RATING.AGAIN) state.queue = state.queue.concat(card.id);
 
     state.revealed = false;
+    state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
@@ -633,6 +647,7 @@
 
   function setMode(mode) {
     state.mode = mode;
+    state.contextOpen = false;
     settings = Object.assign({}, settings, { mode });
     store.saveSettings(settings);
     render();
@@ -667,6 +682,7 @@
   // Lernrichtung umschalten (DE→ES / ES→DE) und merken.
   function setDir(dir) {
     state.dir = dir === "es2de" ? "es2de" : "de2es";
+    state.contextOpen = false;
     settings = Object.assign({}, settings, { dir: state.dir });
     store.saveSettings(settings);
     render();
@@ -690,6 +706,7 @@
     dismissBadgeToast();
     state.screen = "home";
     state.revealed = false;
+    state.contextOpen = false;
     state.typeResult = null;
     render();
   }
@@ -842,6 +859,7 @@
     dismissBadgeToast();
     state.cardId = id;
     state.backTo = backTo || "stats";
+    state.contextOpen = false;
     state.screen = "card";
     render();
   }
@@ -855,6 +873,7 @@
     state.queue = [id];
     state.total = 1;
     state.revealed = false;
+    state.contextOpen = false;
     state.typeResult = null;
     state.screen = "study";
     render();
@@ -1004,7 +1023,7 @@
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "flip") flip();
-    else if (action === "toggle-context") toggleContext(el);
+    else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
     else if (action === "speak") speakCurrent();
     else if (action === "open-stats") goStats();
@@ -1082,7 +1101,7 @@
       if ((e.key === " " || e.key === "Enter") && !onButton) {
         e.preventDefault();
         flip(); // beidseitig: Frage ⇄ Antwort
-      } else if (state.revealed && !onButton) rateByKey(e.key);
+      } else if (state.revealed) rateByKey(e.key); // Ziffern 1/2/3 kollidieren nie mit Button-Aktivierung
     } else {
       // Schreiben-Modus: Zahlen nur bewerten, wenn Ergebnis schon sichtbar ist.
       if (state.typeResult && !inInput) rateByKey(e.key);

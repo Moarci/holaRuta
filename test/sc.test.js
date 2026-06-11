@@ -15,8 +15,9 @@ const path = require("path");
 // window-Shim: die Module referenzieren `window`, das hier auf globalThis.window zeigt.
 globalThis.window = {};
 const SRC = path.join(__dirname, "..");
-require(path.join(SRC, "contextdata.js")); // vor data.js: liefert die Kontext-Inhalte
+require(path.join(SRC, "contextdata.js")); // Kontext-Inhalte (vor data.js/context.js)
 require(path.join(SRC, "data.js"));
+require(path.join(SRC, "context.js"));     // hängt den Kontext an die Karten (nach data.js)
 require(path.join(SRC, "srs.js"));
 require(path.join(SRC, "matcher.js"));
 require(path.join(SRC, "stats.js"));
@@ -315,7 +316,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
-    contextViews: 7, contextCardsSeen: { hostel01: true },
+    contextCardsSeen: { hostel01: true },
     unlocked: { first_steps: 1700000000000 },
   };
   storeMem[GKEY] = JSON.stringify(valid);
@@ -414,16 +415,15 @@ test("data.numberContext: spanische Grammatik korrekt (un peso / un / de pesos)"
 });
 
 test("badges.buildMetrics: zählt distinkte Kontext-Karten", () => {
-  const counters = { contextViews: 5, contextCardsSeen: { hostel01: true, social01: true } };
+  const counters = { contextCardsSeen: { hostel01: true, social01: true } };
   const m = badges.buildMetrics(data.CARDS, {}, counters);
-  assert.equal(m.contextViews, 5);
   assert.equal(m.contextCardsViewed, 2);
 });
 
 test("badges.evaluate: Kontext-Badge schaltet bei Schwelle frei", () => {
   const seen = {};
   for (let i = 0; i < 10; i++) seen["c" + i] = true; // 10 distinkte Kontexte
-  const m = badges.buildMetrics(data.CARDS, {}, { contextViews: 14, contextCardsSeen: seen });
+  const m = badges.buildMetrics(data.CARDS, {}, { contextCardsSeen: seen });
   const list = badges.evaluate(m, {});
   const byId = (id) => list.find((b) => b.id === id);
   assert.equal(byId("context_first").unlocked, true);

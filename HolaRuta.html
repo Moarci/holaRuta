@@ -435,39 +435,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .face__tip { margin-top: 14px; font-size: 1.05rem; font-style: italic; color: rgba(251, 243, 228, 0.88); }
 .face__hint { position: absolute; bottom: 16px; font-size: 0.82rem; color: var(--faint); }
 
-/* 🔊 Sprachausgabe-Button (auf der Antwortkarte, unten rechts) */
-.speak {
-  position: absolute; bottom: 16px; right: 16px; z-index: 2;
-  width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
-  display: grid; place-items: center; font-size: 1.1rem; line-height: 1;
-  border: 1.5px solid var(--line-strong); background: var(--card); color: var(--ink);
-  box-shadow: var(--shadow);
-  transition: transform 0.1s ease;
-}
-.speak:active { transform: scale(0.92); }
-/* Variante auf der farbigen Rückseite */
-.speak--on {
-  border-color: rgba(251, 243, 228, 0.55); color: var(--cream);
-  background: rgba(36, 21, 16, 0.22);
-}
-
-/* 🧭 Reise-Kontext-Button (auf der Antwortkarte, unten links – Pendant zum 🔊) */
-.ctxbtn {
-  position: absolute; bottom: 16px; left: 16px; z-index: 2;
+/* Runde Eck-Buttons auf der Antwortkarte: 🔊 (rechts) & 🧭 (links) teilen eine Basis. */
+.cardbtn {
+  position: absolute; bottom: 16px; z-index: 2;
   width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
   display: grid; place-items: center; font-size: 1.1rem; line-height: 1;
   border: 1.5px solid var(--line-strong); background: var(--card); color: var(--ink);
   box-shadow: var(--shadow);
   transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
 }
-.ctxbtn:active { transform: scale(0.92); }
-.ctxbtn.is-open { background: var(--brand); border-color: var(--brand); color: var(--cream); }
-/* Variante auf der farbigen Rückseite */
-.ctxbtn--on {
+.cardbtn:active { transform: scale(0.92); }
+.cardbtn--speak { right: 16px; }   /* 🔊 Sprachausgabe */
+.cardbtn--ctx   { left: 16px; }    /* 🧭 Reise-Kontext */
+/* Variante auf der farbigen Antwort-Rückseite */
+.cardbtn.is-on {
   border-color: rgba(251, 243, 228, 0.55); color: var(--cream);
   background: rgba(36, 21, 16, 0.22);
 }
-.ctxbtn--on.is-open { background: rgba(36, 21, 16, 0.42); border-color: var(--cream); }
+/* 🧭 aktiv (Panel offen) */
+.cardbtn--ctx.is-open { background: var(--brand); border-color: var(--brand); color: var(--cream); }
+.cardbtn--ctx.is-on.is-open { background: rgba(36, 21, 16, 0.42); border-color: var(--cream); }
 
 /* Statische Karte (Schreiben-Modus) */
 .card-static {
@@ -1160,6 +1147,37 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   "use strict";
 
   const C = {
+    // ===================== KERN-KARTEN (Showcase, früher inline) =====================
+    b10: { e: "Perdón, no entiendo. ¿Puede repetir?", d: "Entschuldigung, ich verstehe nicht. Können Sie das wiederholen?", s: "Wenn jemand zu schnell oder undeutlich spricht.", n: "Bleib ruhig und ergänze direkt ¿Puede repetir? – das hilft fast immer weiter." },
+    b16: { e: "Disculpe, ¿dónde está el baño?", d: "Entschuldigung, wo ist die Toilette?", s: "In Restaurants, Hostels, Busbahnhöfen oder Cafés.", n: "In Lateinamerika sagt man meistens el baño, nicht wörtlich el inodoro." },
+    b17: { e: "Por favor, necesito ayuda.", d: "Bitte, ich brauche Hilfe.", s: "Wenn du dich unsicher fühlst oder Unterstützung brauchst.", n: "Kurz und klar. In ernsten Situationen kannst du ergänzen: Es urgente." },
+    e04: { e: "La cuenta, por favor.", d: "Die Rechnung, bitte.", s: "Im Restaurant, Café oder bei Streetfood mit Sitzbereich.", n: "Kurz, höflich und völlig ausreichend. Noch höflicher: ¿Me trae la cuenta, por favor?" },
+    e46: { e: "Para mí sin cebolla, por favor.", d: "Für mich ohne Zwiebeln, bitte.", s: "Beim Bestellen, wenn du eine Zutat vermeiden willst.", n: "Die Struktur sin ... ist extrem praktisch: sin carne, sin queso, sin picante." },
+    hostel01: { e: "Hola, tengo una reserva para esta noche.", d: "Hallo, ich habe eine Reservierung für heute Nacht.", s: "Beim Check-in im Hostel, Hotel oder Guesthouse.", n: "Wenn nach dem Namen gefragt wird, sag: A nombre de Marcel." },
+    hostel02: { e: "Hola, ¿tiene una cama libre para esta noche?", d: "Hallo, haben Sie für heute Nacht noch ein Bett frei?", s: "Wenn du spontan ein Hostel suchst oder verlängern möchtest.", n: "Alternativ kannst du fragen: ¿Hay una cama disponible?" },
+    hostel03: { e: "¿El desayuno está incluido en el precio?", d: "Ist das Frühstück im Preis enthalten?", s: "Beim Check-in oder bei der Buchung vor Ort.", n: "Wenn es nicht inklusive ist, frag einfach: ¿Cuánto cuesta?" },
+    hostel04: { e: "Perdón, ¿dónde está mi cama?", d: "Entschuldigung, wo ist mein Bett?", s: "Im Dorm, wenn dir nur eine Bett- oder Zimmernummer genannt wurde.", n: "Oben oder unten? Man unterscheidet cama de arriba und cama de abajo." },
+    hostel05: { e: "Perdón, mi llave no funciona. ¿Me puede ayudar?", d: "Entschuldigung, mein Schlüssel funktioniert nicht. Können Sie mir helfen?", s: "An der Rezeption, wenn Karte, Schlüssel oder Türcode streiken.", n: "Für eine Schlüsselkarte sag tarjeta: Mi tarjeta no funciona." },
+    hostel06: { e: "¿Puedo dejar mi equipaje aquí hasta la tarde?", d: "Kann ich mein Gepäck hier bis zum Nachmittag lassen?", s: "Vor dem Check-in oder nach dem Check-out.", n: "Sehr praktisch am Reisetag. Für Rucksack sag mochila." },
+    hostel07: { e: "¿Hay un locker para guardar mis cosas?", d: "Gibt es ein Schließfach, um meine Sachen aufzubewahren?", s: "Im Dorm, wenn du Wertsachen sicher verstauen willst.", n: "locker wird fast überall verstanden. Spanischer wäre casillero." },
+    hostel08: { e: "Perdón, mi cama está ocupada. Creo que hay un error.", d: "Entschuldigung, mein Bett ist belegt. Ich glaube, es gibt einen Fehler.", s: "Wenn jemand auf deinem zugewiesenen Bett liegt.", n: "Der Zusatz Creo que hay un error klingt ruhig, nicht aggressiv." },
+    hostel09: { e: "¿Hay cocina para los huéspedes?", d: "Gibt es eine Küche für die Gäste?", s: "Wenn du selbst kochen oder Essen lagern willst.", n: "Gäste heißt huéspedes – im Hostel reicht aber auch nur cocina." },
+    hostel10: { e: "Disculpe, ¿podría cambiar de habitación? Hay mucho ruido.", d: "Entschuldigung, könnte ich das Zimmer wechseln? Es ist sehr laut.", s: "Wenn dein Zimmer zu laut, zu heiß oder problematisch ist.", n: "Podría ist höflicher als puedo und passt gut an der Rezeption." },
+    v05: { e: "Disculpe, ¿de dónde sale el bus a Cartagena?", d: "Entschuldigung, von wo fährt der Bus nach Cartagena ab?", s: "Am Busbahnhof, bei einer Agentur oder an einer Haltestelle.", n: "Je nach Land heißt der Bus auch colectivo, micro, buseta oder camión." },
+    v12: { e: "¿Cuánto cuesta el viaje al centro?", d: "Wie viel kostet die Fahrt ins Zentrum?", s: "Im Taxi oder colectivo, am besten vor dem Einsteigen.", n: "Vorher fragen schützt vor Überraschungen. Für ein Ticket sag boleto oder pasaje." },
+    n11: { e: "Perdí mi celular. ¿Alguien lo encontró?", d: "Ich habe mein Handy verloren. Hat es jemand gefunden?", s: "Im Hostel, Bus, Restaurant oder nach einer Tour.", n: "In Lateinamerika ist celular das übliche Wort für Handy." },
+    n15: { e: "Disculpe, ¿dónde está la farmacia más cercana?", d: "Entschuldigung, wo ist die nächste Apotheke?", s: "Wenn du Medikamente oder etwas gegen Bauchweh brauchst.", n: "Apotheken sind in LatAm oft auch ohne Rezept hilfreich. Nachts: farmacia de turno." },
+    social01: { e: "Hola, ¿de dónde eres?", d: "Hey, woher kommst du?", s: "Beim Frühstück, im Dorm, in einer Tourgruppe oder im Bus.", n: "Perfekter Einstieg. Danach passt: ¿Cuánto tiempo viajas?" },
+    social02: { e: "¿Viajas solo o con amigos?", d: "Reist du alleine oder mit Freunden?", s: "Beim Kennenlernen anderer Backpacker.", n: "Bei Männern solo, bei Frauen sola. Im Hostel eine ganz normale Frage." },
+    social03: { e: "¿Cuánto tiempo estás aquí en Cartagena?", d: "Wie lange bist du hier in Cartagena?", s: "Wenn du wissen willst, ob jemand länger bleibt oder bald weiterreist.", n: "Den Ort einfach austauschen: aquí en Bogotá, aquí en Lima, aquí en Medellín." },
+    social04: { e: "¿A dónde vas después de Cartagena?", d: "Wohin reist du nach Cartagena weiter?", s: "Typischer Backpacker-Smalltalk über Reiserouten.", n: "Super, um Tipps zu bekommen oder gemeinsame Pläne zu entdecken." },
+    social05: { e: "¿Qué haces mañana? Quiero ir a la playa.", d: "Was machst du morgen? Ich möchte an den Strand gehen.", s: "Wenn du gemeinsame Pläne anstoßen willst.", n: "Mach es direkt konkret. Nur ¿Qué haces mañana? kann leicht privat klingen." },
+    social06: { e: "¿Quieres ir a comer algo más tarde?", d: "Hast du Lust, später etwas essen zu gehen?", s: "Im Hostel, nach einer Tour oder vor dem Abend.", n: "más tarde bedeutet später und macht die Einladung locker." },
+    social07: { e: "¿Vamos juntos al centro?", d: "Gehen wir zusammen ins Zentrum?", s: "Wenn ihr dasselbe Ziel habt oder gemeinsam losziehen wollt.", n: "juntos für gemischte Gruppen oder Männer, juntas für nur Frauen." },
+    social08: { e: "Vamos a tomar algo. ¿Te unes?", d: "Wir gehen etwas trinken. Kommst du mit?", s: "Um jemanden locker einzuladen.", n: "Klingt natürlicher als eine sehr formelle Einladung. Perfekt im Hostel." },
+    social09: { e: "Escríbeme por WhatsApp y nos vemos más tarde.", d: "Schreib mir auf WhatsApp, dann sehen wir uns später.", s: "Wenn ihr euch später treffen oder Pläne abstimmen wollt.", n: "WhatsApp ist in Lateinamerika extrem verbreitet – fast jeder nutzt es." },
+    social10: { e: "Mucho gusto. Nos vemos mañana.", d: "Schön, dich kennenzulernen. Wir sehen uns morgen.", s: "Nach einem ersten Gespräch im Hostel oder unterwegs.", n: "Mucho gusto passt beim Kennenlernen. Beim Abschied passt: Fue un gusto conocerte." },
+
     // ===================== GRUNDLAGEN =====================
     b01: { e: "¡Hola! Buenos días.", d: "Hallo! Guten Morgen.", s: "Beim Betreten von Laden, Hostel oder Restaurant.", n: "Ein freundliches Hola öffnet überall Türen – auch unter Fremden völlig normal." },
     b02: { e: "Buenos días, ¿cómo está?", d: "Guten Morgen, wie geht es Ihnen?", s: "Morgens an der Rezeption, im Café oder beim Bäcker.", n: "Bis etwa mittags Buenos días, danach Buenas tardes." },
@@ -1197,7 +1215,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     zo03: { e: "Bájate en la tercera parada.", d: "Steig an der dritten Haltestelle aus.", s: "Beim Busfahren mit Wegbeschreibung.", n: "Vor männlichem Nomen wird tercero zu tercer: el tercer piso." },
     zo04: { e: "Es la cuarta calle a la derecha.", d: "Es ist die vierte Straße rechts.", s: "Bei einer Wegbeschreibung.", n: "cuarto heißt auch Zimmer – aus dem Kontext meist klar." },
     zo05: { e: "Vivo en el quinto piso.", d: "Ich wohne im fünften Stock.", s: "Bei Adressen und Stockwerken.", n: "Gibt es einen Aufzug? Frag: ¿Hay ascensor?" },
-    zo06: { e: "El mirador está en el sexto piso.", d: "Die Aussichtsplattform ist im sechsten Stock.", s: "In Hotels oder Aussichtstürmen.", n: "Das x in sexto klingt wie ks: SEKS-to." },
+    zo06: { e: "El mirador está en el sexto piso.", d: "Die Aussichtsplattform ist im sechsten Stock.", s: "In Hotels oder Aussichtstürmen.", n: "sexto wird in LatAm oft vereinfacht 'ses-to' gesprochen." },
     zo07: { e: "Mi habitación es la séptima puerta.", d: "Mein Zimmer ist die siebte Tür.", s: "Bei der Zimmersuche im Flur.", n: "Das p in séptimo wird oft kaum gesprochen: SE-ti-mo." },
     zo08: { e: "La fiesta es en el octavo piso.", d: "Die Party ist im achten Stock.", s: "Bei Rooftop-Bars oder Events.", n: "Ordnungszahlen über 10 nutzt man im Alltag kaum noch." },
     zo09: { e: "Estamos en el noveno día de viaje.", d: "Wir sind am neunten Reisetag.", s: "Im Gespräch über die Reisedauer.", n: "Ab 11 sagt man im Alltag meist die normale Zahl statt der Ordnungszahl." },
@@ -1241,7 +1259,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     e34: { e: "¿Qué es esto? Se ve rico.", d: "Was ist das? Sieht lecker aus.", s: "Am Marktstand oder bei unbekanntem Gericht.", n: "Neugier kommt gut an – oft bekommst du etwas zum Probieren." },
     e35: { e: "La comida estuvo excelente, gracias.", d: "Das Essen war ausgezeichnet, danke.", s: "Nach dem Essen als Lob.", n: "estuvo (war) für ein abgeschlossenes Erlebnis." },
     e36: { e: "Todo estuvo delicioso.", d: "Alles war köstlich.", s: "Beim Bezahlen oder Verabschieden.", n: "Kommt beim Personal immer gut an." },
-    e37: { e: "Me gustó mucho, estuvo muy rico.", d: "Es hat mir sehr geschmeckt.", s: "Nach dem Essen.", n: "rico = lecker, in ganz LatAm gebräuchlich." },
+    e37: { e: "Me gustó mucho, estuvo muy rico.", d: "Es hat mir sehr gefallen, war richtig lecker.", s: "Nach dem Essen.", n: "rico = lecker, in ganz LatAm gebräuchlich." },
     e38: { e: "Estoy satisfecho, gracias.", d: "Ich bin satt, danke.", s: "Wenn man dir mehr anbietet.", n: "Höflicher als Estoy lleno. Frauen: satisfecha." },
     e39: { e: "Mis felicitaciones al chef.", d: "Mein Kompliment an den Koch.", s: "Bei besonders gutem Essen.", n: "Ein nettes Extra-Lob, das selten jemand sagt." },
     e40: { e: "Fue el mejor plato del viaje.", d: "Das war das beste Gericht der Reise.", s: "Als großes Kompliment.", n: "plato = Teller und Gericht zugleich." },
@@ -1278,7 +1296,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     t10: { e: "¡Salud! Por el viaje.", d: "Prost! Auf die Reise.", s: "Beim Anstoßen.", n: "Salud heißt zugleich Gesundheit – das klassische Prost." },
     t11: { e: "Gracias por el trago.", d: "Danke fürs Getränk.", s: "Wenn dich jemand einlädt.", n: "trago = Drink/Schluck; un trago auszugeben ist eine nette Geste." },
     t12: { e: "¡Por nosotros y el viaje!", d: "Auf uns und die Reise!", s: "Beim Anstoßen mit neuen Leuten.", n: "Por ... = auf ... – flexibel: por la amistad, por Colombia." },
-    t13: { e: "La próxima invito yo.", d: "Das nächste lade ich ein.", s: "In geselliger Runde.", n: "invitar heißt hier spendieren, nicht nur einladen." },
+    t13: { e: "La próxima invito yo.", d: "Das nächste Mal lade ich ein.", s: "In geselliger Runde.", n: "La próxima (vez) = das nächste Mal; invitar heißt hier spendieren." },
     t14: { e: "Este jugo está buenísimo.", d: "Dieser Saft schmeckt richtig gut.", s: "Während des Trinkens.", n: "-ísimo verstärkt: bueno wird zu buenísimo (sehr gut)." },
 
     // ===================== HOTEL =====================
@@ -1526,7 +1544,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     r12: { e: "¿Está lejos el terminal?", d: "Ist der Busbahnhof weit?", s: "Bei der Anreise.", n: "el terminal / la terminal – beide Formen kommen vor." },
     r13: { e: "¿Hay baño en el bus?", d: "Gibt es eine Toilette im Bus?", s: "Vor langen Fahrten.", n: "Bei Nachtbussen meist ja – Papier selbst dabei haben." },
     r14: { e: "¿Cuántas paradas hay?", d: "Wie viele Stopps gibt es?", s: "Vor der Fahrt.", n: "parada = Halt/Stopp." },
-    r15: { e: "¿Para para comer en el camino?", d: "Hält er unterwegs zum Essen an?", s: "Bei langen Fahrten.", n: "Das doppelte para klingt komisch, ist aber korrekt (hält / zum)." },
+    r15: { e: "¿Para a comer en el camino?", d: "Hält er unterwegs zum Essen an?", s: "Bei langen Fahrten.", n: "parar a + Infinitiv = anhalten, um etwas zu tun: para a comer." },
     r16: { e: "¿Me puede llevar hasta el pueblo?", d: "Können Sie mich bis zum Dorf mitnehmen?", s: "Beim Trampen (mit Vorsicht).", n: "llevar = mitnehmen/bringen; nur in sicheren Situationen." },
     r17: { e: "¿Hasta dónde va?", d: "Bis wohin fahren Sie?", s: "Beim colectivo/Sammeltaxi.", n: "Klärt, ob die Fahrt zu deinem Ziel passt." },
     r18: { e: "¿La combi pasa por la playa?", d: "Fährt der Minibus am Strand vorbei?", s: "Beim Nahverkehr.", n: "combi/colectivo/micro/buseta – das lokale Sammeltaxi, günstig." },
@@ -1553,9 +1571,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  *   tip = Aussprache-/Merkhinweis (optional)
  *   alt = explizite Liste akzeptierter Tipp-Antworten (optional, überschreibt es-Split)
  *   context = Reise-Kontext (optional): { sentenceEs, sentenceDe, situation, note }
- *             zeigt einen echten Reisesatz, die typische Situation und einen kurzen
- *             Reisetipp. Per "🧭 Kontext"-Button auf der Antwortseite aufklappbar.
- *             Inhaltsregel: immer ein echter, sprechbarer Satz – kein Lehrbuch-Spanisch.
+ *             Wird NICHT hier gepflegt, sondern von context.js zur Laufzeit angehängt
+ *             (Inhalte aus contextdata.js; Zahlen werden generiert). So bleibt data.js
+ *             reine Daten ohne Logik.
  *
  * Neue Karten: einfach ans passende Array anhängen (lvl nicht vergessen).
  * Neue Kategorie: oben ergänzen. Filtern nach Stufe: über card.lvl.
@@ -1602,17 +1620,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "b07", cat: "basics", lvl: 1, de: "Gern geschehen", es: "De nada", tip: "de NA-da" },
     { id: "b08", cat: "basics", lvl: 1, de: "Entschuldigung", es: "Disculpe", tip: "dis-KUL-pe" },
     { id: "b09", cat: "basics", lvl: 1, de: "Ja / Nein", es: "Sí / No", tip: "" },
-    { id: "b10", cat: "basics", lvl: 2, de: "Ich verstehe nicht", es: "No entiendo", tip: "no en-ti-EN-do",
-      context: { sentenceEs: "Perdón, no entiendo. ¿Puede repetir?", sentenceDe: "Entschuldigung, ich verstehe nicht. Können Sie das wiederholen?", situation: "Wenn jemand zu schnell oder undeutlich spricht.", note: "Bleib ruhig und ergänze direkt ¿Puede repetir? – das hilft fast immer weiter." } },
+    { id: "b10", cat: "basics", lvl: 2, de: "Ich verstehe nicht", es: "No entiendo", tip: "no en-ti-EN-do" },
     { id: "b11", cat: "basics", lvl: 2, de: "Sprechen Sie Englisch?", es: "¿Habla inglés?", tip: "AB-la in-GLES" },
     { id: "b12", cat: "basics", lvl: 2, de: "Wie heißt du?", es: "¿Cómo te llamas?", tip: "KO-mo te YA-mas" },
     { id: "b13", cat: "basics", lvl: 2, de: "Ich heiße ...", es: "Me llamo ...", tip: "me YA-mo", alt: ["me llamo"] },
     { id: "b14", cat: "basics", lvl: 2, de: "Kannst du mir helfen?", es: "¿Me puedes ayudar?", tip: "me PUE-des a-yu-DAR" },
     { id: "b15", cat: "basics", lvl: 2, de: "Langsamer, bitte", es: "Más despacio, por favor", tip: "mas des-PA-si-o" },
-    { id: "b16", cat: "basics", lvl: 1, de: "die Toilette", es: "el baño", tip: "el BA-nyo",
-      context: { sentenceEs: "Disculpe, ¿dónde está el baño?", sentenceDe: "Entschuldigung, wo ist die Toilette?", situation: "In Restaurants, Hostels, Busbahnhöfen oder Cafés.", note: "In Lateinamerika sagt man meistens el baño, nicht wörtlich el inodoro." } },
-    { id: "b17", cat: "basics", lvl: 1, de: "Hilfe!", es: "Ayuda / Socorro", tip: "a-YU-da",
-      context: { sentenceEs: "Por favor, necesito ayuda.", sentenceDe: "Bitte, ich brauche Hilfe.", situation: "Wenn du dich unsicher fühlst oder Unterstützung brauchst.", note: "Kurz und klar. In ernsten Situationen kannst du ergänzen: Es urgente." } },
+    { id: "b16", cat: "basics", lvl: 1, de: "die Toilette", es: "el baño", tip: "el BA-nyo" },
+    { id: "b17", cat: "basics", lvl: 1, de: "Hilfe!", es: "Ayuda / Socorro", tip: "a-YU-da" },
     { id: "b18", cat: "basics", lvl: 2, de: "Ich brauche einen Arzt", es: "Necesito un médico", tip: "ne-se-SI-to un ME-di-ko" },
     { id: "b19", cat: "basics", lvl: 3, de: "Rufen Sie die Polizei", es: "Llame a la policía", tip: "YA-me a la po-li-SI-a" },
     { id: "b20", cat: "basics", lvl: 2, de: "Ich habe mich verlaufen", es: "Estoy perdido/a", tip: "es-TOY per-DI-do", alt: ["estoy perdido", "estoy perdida"] },
@@ -1697,7 +1712,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "z25000", cat: "zahlen", lvl: 3, de: "25.000", es: "veinticinco mil", tip: "wein-ti-SIN-ko mil" },
     { id: "z50000", cat: "zahlen", lvl: 2, de: "50.000", es: "cincuenta mil", tip: "sin-KUEN-ta mil" },
     { id: "z75000", cat: "zahlen", lvl: 3, de: "75.000", es: "setenta y cinco mil", tip: "se-TEN-ta i SIN-ko mil" },
-    { id: "z85000", cat: "zahlen", lvl: 3, de: "85.500", es: "ochenta y cinco mil quinientos", tip: "Tausender + Hunderter" },
+    { id: "z85000", cat: "zahlen", lvl: 3, de: "85.000", es: "ochenta y cinco mil", tip: "o-CHEN-ta i SIN-ko mil" },
     { id: "z100000", cat: "zahlen", lvl: 2, de: "100.000", es: "cien mil", tip: "si-EN mil (nicht 'ciento mil')" },
     { id: "z120000", cat: "zahlen", lvl: 3, de: "120.000", es: "ciento veinte mil", tip: "ab 101.000: 'ciento ... mil'" },
     { id: "z150000", cat: "zahlen", lvl: 3, de: "150.000", es: "ciento cincuenta mil", tip: "SI-en-to sin-KUEN-ta mil" },
@@ -1746,8 +1761,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "e01", cat: "essen", lvl: 1, de: "das Essen", es: "la comida", tip: "la ko-MI-da" },
     { id: "e02", cat: "essen", lvl: 2, de: "Ich habe Hunger", es: "Tengo hambre", tip: "TEN-go AM-bre" },
     { id: "e03", cat: "essen", lvl: 1, de: "die Speisekarte", es: "el menú / la carta", tip: "el me-NU" },
-    { id: "e04", cat: "essen", lvl: 2, de: "Die Rechnung, bitte", es: "La cuenta, por favor", tip: "la KUEN-ta",
-      context: { sentenceEs: "La cuenta, por favor.", sentenceDe: "Die Rechnung, bitte.", situation: "Im Restaurant, Café oder bei Streetfood mit Sitzbereich.", note: "Kurz, höflich und völlig ausreichend. Noch höflicher: ¿Me trae la cuenta, por favor?" } },
+    { id: "e04", cat: "essen", lvl: 2, de: "Die Rechnung, bitte", es: "La cuenta, por favor", tip: "la KUEN-ta" },
     { id: "e05", cat: "essen", lvl: 2, de: "Ich bin Vegetarier", es: "Soy vegetariano/a", tip: "soy we-che-ta-RI-a-no", alt: ["soy vegetariano", "soy vegetariana"] },
     { id: "e06", cat: "essen", lvl: 1, de: "ohne Fleisch", es: "sin carne", tip: "sin KAR-ne" },
     { id: "e07", cat: "essen", lvl: 1, de: "Brot", es: "pan", tip: "pan" },
@@ -1791,8 +1805,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "e43", cat: "essen", lvl: 2, de: "Kann ich die Pommes gegen Salat tauschen?", es: "¿Puedo cambiar las papas por ensalada?", tip: "kam-bi-AR ... por en-sa-LA-da" },
     { id: "e44", cat: "essen", lvl: 3, de: "Statt Reis lieber Bohnen, bitte", es: "En vez de arroz, frijoles, por favor", tip: "en wes de a-RROS, fri-CHO-les" },
     { id: "e45", cat: "essen", lvl: 2, de: "Geht das auch mit einer Beilage nach Wahl?", es: "¿Puede ser con un acompañamiento a elección?", tip: "a-kom-pa-nya-mi-EN-to a e-lek-si-ON" },
-    { id: "e46", cat: "essen", lvl: 2, de: "Können Sie die Zwiebeln weglassen?", es: "¿Puede quitar la cebolla?", tip: "ki-TAR la se-BO-ya",
-      context: { sentenceEs: "Para mí sin cebolla, por favor.", sentenceDe: "Für mich ohne Zwiebeln, bitte.", situation: "Beim Bestellen, wenn du eine Zutat vermeiden willst.", note: "Die Struktur sin ... ist extrem praktisch: sin carne, sin queso, sin picante." } },
+    { id: "e46", cat: "essen", lvl: 2, de: "Können Sie die Zwiebeln weglassen?", es: "¿Puede quitar la cebolla?", tip: "ki-TAR la se-BO-ya" },
     { id: "e47", cat: "essen", lvl: 2, de: "Ohne Koriander, bitte", es: "Sin cilantro, por favor", tip: "sin si-LAN-tro" },
     { id: "e48", cat: "essen", lvl: 2, de: "Dressing bitte separat", es: "El aderezo aparte, por favor", tip: "el a-de-RE-so a-PAR-te" },
     { id: "e49", cat: "essen", lvl: 3, de: "Kann ich das Hähnchen durch Gemüse ersetzen?", es: "¿Puedo reemplazar el pollo por verduras?", tip: "rre-em-pla-SAR el PO-yo" },
@@ -1857,42 +1870,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "h24", cat: "hotel", lvl: 2, de: "Mir ist zu kalt / zu warm", es: "Tengo mucho frío / calor", tip: "FRI-o / ka-LOR" },
 
     // ===================== HOSTEL =====================
-    { id: "hostel01", cat: "hostel", lvl: 1, de: "Ich habe eine Reservierung.", es: "Tengo una reserva.", tip: "TEN-go U-na re-SER-wa",
-      context: { sentenceEs: "Hola, tengo una reserva para esta noche.", sentenceDe: "Hallo, ich habe eine Reservierung für heute Nacht.", situation: "Beim Check-in im Hostel, Hotel oder Guesthouse.", note: "Wenn nach dem Namen gefragt wird, sag: A nombre de Marcel." } },
-    { id: "hostel02", cat: "hostel", lvl: 1, de: "Haben Sie noch ein Bett frei?", es: "¿Tiene una cama libre?", tip: "TI-e-ne U-na KA-ma LI-bre",
-      context: { sentenceEs: "Hola, ¿tiene una cama libre para esta noche?", sentenceDe: "Hallo, haben Sie für heute Nacht noch ein Bett frei?", situation: "Wenn du spontan ein Hostel suchst oder verlängern möchtest.", note: "Alternativ kannst du fragen: ¿Hay una cama disponible?" } },
-    { id: "hostel03", cat: "hostel", lvl: 1, de: "Ist Frühstück inklusive?", es: "¿El desayuno está incluido?", tip: "el de-sa-YU-no es-TA in-klu-I-do",
-      context: { sentenceEs: "¿El desayuno está incluido en el precio?", sentenceDe: "Ist das Frühstück im Preis enthalten?", situation: "Beim Check-in oder bei der Buchung vor Ort.", note: "Wenn es nicht inklusive ist, frag einfach: ¿Cuánto cuesta?" } },
-    { id: "hostel04", cat: "hostel", lvl: 1, de: "Wo ist mein Bett?", es: "¿Dónde está mi cama?", tip: "DON-de es-TA mi KA-ma",
-      context: { sentenceEs: "Perdón, ¿dónde está mi cama?", sentenceDe: "Entschuldigung, wo ist mein Bett?", situation: "Im Dorm, wenn dir nur eine Bett- oder Zimmernummer genannt wurde.", note: "Oben oder unten? Man unterscheidet cama de arriba und cama de abajo." } },
-    { id: "hostel05", cat: "hostel", lvl: 2, de: "Mein Schlüssel funktioniert nicht.", es: "Mi llave no funciona.", tip: "mi YA-we no fun-si-O-na",
-      context: { sentenceEs: "Perdón, mi llave no funciona. ¿Me puede ayudar?", sentenceDe: "Entschuldigung, mein Schlüssel funktioniert nicht. Können Sie mir helfen?", situation: "An der Rezeption, wenn Karte, Schlüssel oder Türcode streiken.", note: "Für eine Schlüsselkarte sag tarjeta: Mi tarjeta no funciona." } },
-    { id: "hostel06", cat: "hostel", lvl: 2, de: "Kann ich mein Gepäck hier lassen?", es: "¿Puedo dejar mi equipaje aquí?", tip: "PUE-do de-CHAR mi e-ki-PA-che a-KI",
-      context: { sentenceEs: "¿Puedo dejar mi equipaje aquí hasta la tarde?", sentenceDe: "Kann ich mein Gepäck hier bis zum Nachmittag lassen?", situation: "Vor dem Check-in oder nach dem Check-out.", note: "Sehr praktisch am Reisetag. Für Rucksack sag mochila." } },
-    { id: "hostel07", cat: "hostel", lvl: 2, de: "Gibt es ein Schließfach?", es: "¿Hay un locker?", tip: "ai un LO-ker",
-      context: { sentenceEs: "¿Hay un locker para guardar mis cosas?", sentenceDe: "Gibt es ein Schließfach, um meine Sachen aufzubewahren?", situation: "Im Dorm, wenn du Wertsachen sicher verstauen willst.", note: "locker wird fast überall verstanden. Spanischer wäre casillero." } },
-    { id: "hostel08", cat: "hostel", lvl: 2, de: "Mein Bett ist belegt.", es: "Mi cama está ocupada.", tip: "mi KA-ma es-TA o-ku-PA-da",
-      context: { sentenceEs: "Perdón, mi cama está ocupada. Creo que hay un error.", sentenceDe: "Entschuldigung, mein Bett ist belegt. Ich glaube, es gibt einen Fehler.", situation: "Wenn jemand auf deinem zugewiesenen Bett liegt.", note: "Der Zusatz Creo que hay un error klingt ruhig, nicht aggressiv." } },
-    { id: "hostel09", cat: "hostel", lvl: 2, de: "Gibt es eine Küche?", es: "¿Hay cocina?", tip: "ai ko-SI-na",
-      context: { sentenceEs: "¿Hay cocina para los huéspedes?", sentenceDe: "Gibt es eine Küche für die Gäste?", situation: "Wenn du selbst kochen oder Essen lagern willst.", note: "Gäste heißt huéspedes – im Hostel reicht aber auch nur cocina." } },
-    { id: "hostel10", cat: "hostel", lvl: 3, de: "Könnte ich das Zimmer wechseln?", es: "¿Podría cambiar de habitación?", tip: "po-DRI-a kam-bi-AR de a-bi-ta-si-ON",
-      context: { sentenceEs: "Disculpe, ¿podría cambiar de habitación? Hay mucho ruido.", sentenceDe: "Entschuldigung, könnte ich das Zimmer wechseln? Es ist sehr laut.", situation: "Wenn dein Zimmer zu laut, zu heiß oder problematisch ist.", note: "Podría ist höflicher als puedo und passt gut an der Rezeption." } },
+    { id: "hostel01", cat: "hostel", lvl: 1, de: "Ich habe eine Reservierung.", es: "Tengo una reserva.", tip: "TEN-go U-na re-SER-wa" },
+    { id: "hostel02", cat: "hostel", lvl: 1, de: "Haben Sie noch ein Bett frei?", es: "¿Tiene una cama libre?", tip: "TI-e-ne U-na KA-ma LI-bre" },
+    { id: "hostel03", cat: "hostel", lvl: 1, de: "Ist Frühstück inklusive?", es: "¿El desayuno está incluido?", tip: "el de-sa-YU-no es-TA in-klu-I-do" },
+    { id: "hostel04", cat: "hostel", lvl: 1, de: "Wo ist mein Bett?", es: "¿Dónde está mi cama?", tip: "DON-de es-TA mi KA-ma" },
+    { id: "hostel05", cat: "hostel", lvl: 2, de: "Mein Schlüssel funktioniert nicht.", es: "Mi llave no funciona.", tip: "mi YA-we no fun-si-O-na" },
+    { id: "hostel06", cat: "hostel", lvl: 2, de: "Kann ich mein Gepäck hier lassen?", es: "¿Puedo dejar mi equipaje aquí?", tip: "PUE-do de-CHAR mi e-ki-PA-che a-KI" },
+    { id: "hostel07", cat: "hostel", lvl: 2, de: "Gibt es ein Schließfach?", es: "¿Hay un locker?", tip: "ai un LO-ker" },
+    { id: "hostel08", cat: "hostel", lvl: 2, de: "Mein Bett ist belegt.", es: "Mi cama está ocupada.", tip: "mi KA-ma es-TA o-ku-PA-da" },
+    { id: "hostel09", cat: "hostel", lvl: 2, de: "Gibt es eine Küche?", es: "¿Hay cocina?", tip: "ai ko-SI-na" },
+    { id: "hostel10", cat: "hostel", lvl: 3, de: "Könnte ich das Zimmer wechseln?", es: "¿Podría cambiar de habitación?", tip: "po-DRI-a kam-bi-AR de a-bi-ta-si-ON" },
 
     // ===================== VERKEHR =====================
     { id: "v01", cat: "verkehr", lvl: 2, de: "Wo ist ...?", es: "¿Dónde está ...?", tip: "DON-de es-TA", alt: ["donde esta"] },
     { id: "v02", cat: "verkehr", lvl: 1, de: "links / rechts", es: "izquierda / derecha", tip: "is-ki-ER-da / de-RE-cha" },
     { id: "v03", cat: "verkehr", lvl: 1, de: "geradeaus", es: "todo recto / derecho", tip: "TO-do REK-to" },
     { id: "v04", cat: "verkehr", lvl: 2, de: "Wie komme ich nach ...?", es: "¿Cómo llego a ...?", tip: "KO-mo YE-go", alt: ["como llego a"] },
-    { id: "v05", cat: "verkehr", lvl: 1, de: "der Bus", es: "el bus / el colectivo", tip: "'colectivo' in vielen Ländern",
-      context: { sentenceEs: "Disculpe, ¿de dónde sale el bus a Cartagena?", sentenceDe: "Entschuldigung, von wo fährt der Bus nach Cartagena ab?", situation: "Am Busbahnhof, bei einer Agentur oder an einer Haltestelle.", note: "Je nach Land heißt der Bus auch colectivo, micro, buseta oder camión." } },
+    { id: "v05", cat: "verkehr", lvl: 1, de: "der Bus", es: "el bus / el colectivo", tip: "'colectivo' in vielen Ländern" },
     { id: "v06", cat: "verkehr", lvl: 1, de: "das Taxi", es: "el taxi", tip: "el TAK-si" },
     { id: "v07", cat: "verkehr", lvl: 1, de: "das Ticket", es: "el boleto / el billete", tip: "bo-LE-to" },
     { id: "v08", cat: "verkehr", lvl: 1, de: "der Bahnhof", es: "la estación", tip: "la es-ta-si-ON" },
     { id: "v09", cat: "verkehr", lvl: 1, de: "der Flughafen", es: "el aeropuerto", tip: "a-e-ro-PUER-to" },
     { id: "v10", cat: "verkehr", lvl: 2, de: "Halten Sie hier, bitte", es: "Pare aquí, por favor", tip: "PA-re a-KI" },
     { id: "v11", cat: "verkehr", lvl: 2, de: "Wann fährt es ab?", es: "¿A qué hora sale?", tip: "a ke O-ra SA-le" },
-    { id: "v12", cat: "verkehr", lvl: 2, de: "Wie viel kostet die Fahrt?", es: "¿Cuánto cuesta el viaje?", tip: "WI-a-che",
-      context: { sentenceEs: "¿Cuánto cuesta el viaje al centro?", sentenceDe: "Wie viel kostet die Fahrt ins Zentrum?", situation: "Im Taxi oder colectivo, am besten vor dem Einsteigen.", note: "Vorher fragen schützt vor Überraschungen. Für ein Ticket sag boleto oder pasaje." } },
+    { id: "v12", cat: "verkehr", lvl: 2, de: "Wie viel kostet die Fahrt?", es: "¿Cuánto cuesta el viaje?", tip: "WI-a-che" },
     { id: "v13", cat: "verkehr", lvl: 2, de: "Ist es weit?", es: "¿Está lejos?", tip: "es-TA LE-chos" },
     { id: "v14", cat: "verkehr", lvl: 1, de: "in der Nähe / nah", es: "cerca", tip: "SER-ka" },
     { id: "v15", cat: "verkehr", lvl: 3, de: "Wie weit ist es?", es: "¿Qué tan lejos está?", tip: "ke tan LE-chos" },
@@ -1971,13 +1972,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "n08", cat: "notfall", lvl: 3, de: "Rufen Sie einen Krankenwagen", es: "Llame a una ambulancia", tip: "am-bu-LAN-si-a" },
     { id: "n09", cat: "notfall", lvl: 2, de: "Ich brauche Medikamente", es: "Necesito medicamentos", tip: "me-di-ka-MEN-tos" },
     { id: "n10", cat: "notfall", lvl: 2, de: "Man hat mich bestohlen", es: "Me robaron", tip: "me ro-BA-ron" },
-    { id: "n11", cat: "notfall", lvl: 2, de: "Ich habe mein ... verloren", es: "Perdí mi ...", tip: "per-DI mi",
-      context: { sentenceEs: "Perdí mi celular. ¿Alguien lo encontró?", sentenceDe: "Ich habe mein Handy verloren. Hat es jemand gefunden?", situation: "Im Hostel, Bus, Restaurant oder nach einer Tour.", note: "In Lateinamerika ist celular das übliche Wort für Handy." } },
+    { id: "n11", cat: "notfall", lvl: 2, de: "Ich habe mein ... verloren", es: "Perdí mi ...", tip: "per-DI mi" },
     { id: "n12", cat: "notfall", lvl: 1, de: "mein Reisepass", es: "mi pasaporte", tip: "pa-sa-POR-te" },
     { id: "n13", cat: "notfall", lvl: 1, de: "mein Handy", es: "mi celular", tip: "se-lu-LAR" },
     { id: "n14", cat: "notfall", lvl: 2, de: "Können Sie mir helfen?", es: "¿Puede ayudarme?", tip: "a-yu-DAR-me" },
-    { id: "n15", cat: "notfall", lvl: 3, de: "Wo ist die nächste Apotheke?", es: "¿Dónde está la farmacia más cercana?", tip: "mas ser-KA-na",
-      context: { sentenceEs: "Disculpe, ¿dónde está la farmacia más cercana?", sentenceDe: "Entschuldigung, wo ist die nächste Apotheke?", situation: "Wenn du Medikamente oder etwas gegen Bauchweh brauchst.", note: "Apotheken sind in LatAm oft auch ohne Rezept hilfreich. Nachts: farmacia de turno." } },
+    { id: "n15", cat: "notfall", lvl: 3, de: "Wo ist die nächste Apotheke?", es: "¿Dónde está la farmacia más cercana?", tip: "mas ser-KA-na" },
 
     // ===================== ZEIT & DATUM =====================
     { id: "ti01", cat: "zeit", lvl: 2, de: "Wie spät ist es?", es: "¿Qué hora es?", tip: "ke O-ra es" },
@@ -2020,26 +2019,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "s24", cat: "talk", lvl: 3, de: "Das nächste Mal lade ich dich ein", es: "La próxima te invito yo", tip: "PROK-si-ma te in-WI-to yo" },
 
     // ===================== SOCIAL & ANSCHLUSS =====================
-    { id: "social01", cat: "social", lvl: 1, de: "Woher kommst du?", es: "¿De dónde eres?", tip: "de DON-de E-res",
-      context: { sentenceEs: "Hola, ¿de dónde eres?", sentenceDe: "Hey, woher kommst du?", situation: "Beim Frühstück, im Dorm, in einer Tourgruppe oder im Bus.", note: "Perfekter Einstieg. Danach passt: ¿Cuánto tiempo viajas?" } },
-    { id: "social02", cat: "social", lvl: 1, de: "Reist du alleine?", es: "¿Viajas solo/a?", tip: "wi-A-chas SO-lo / SO-la", alt: ["viajas solo", "viajas sola"],
-      context: { sentenceEs: "¿Viajas solo o con amigos?", sentenceDe: "Reist du alleine oder mit Freunden?", situation: "Beim Kennenlernen anderer Backpacker.", note: "Bei Männern solo, bei Frauen sola. Im Hostel eine ganz normale Frage." } },
-    { id: "social03", cat: "social", lvl: 1, de: "Wie lange bist du hier?", es: "¿Cuánto tiempo estás aquí?", tip: "KUAN-to TIEM-po es-TAS a-KI",
-      context: { sentenceEs: "¿Cuánto tiempo estás aquí en Cartagena?", sentenceDe: "Wie lange bist du hier in Cartagena?", situation: "Wenn du wissen willst, ob jemand länger bleibt oder bald weiterreist.", note: "Den Ort einfach austauschen: aquí en Bogotá, aquí en Lima, aquí en Medellín." } },
-    { id: "social04", cat: "social", lvl: 1, de: "Wohin reist du danach?", es: "¿A dónde vas después?", tip: "a DON-de bas des-PUES",
-      context: { sentenceEs: "¿A dónde vas después de Cartagena?", sentenceDe: "Wohin reist du nach Cartagena weiter?", situation: "Typischer Backpacker-Smalltalk über Reiserouten.", note: "Super, um Tipps zu bekommen oder gemeinsame Pläne zu entdecken." } },
-    { id: "social05", cat: "social", lvl: 2, de: "Was machst du morgen?", es: "¿Qué haces mañana?", tip: "ke A-ses ma-NYA-na",
-      context: { sentenceEs: "¿Qué haces mañana? Quiero ir a la playa.", sentenceDe: "Was machst du morgen? Ich möchte an den Strand gehen.", situation: "Wenn du gemeinsame Pläne anstoßen willst.", note: "Mach es direkt konkret. Nur ¿Qué haces mañana? kann leicht privat klingen." } },
-    { id: "social06", cat: "social", lvl: 2, de: "Hast du Lust, etwas essen zu gehen?", es: "¿Quieres ir a comer algo?", tip: "KIE-res ir a ko-MER AL-go",
-      context: { sentenceEs: "¿Quieres ir a comer algo más tarde?", sentenceDe: "Hast du Lust, später etwas essen zu gehen?", situation: "Im Hostel, nach einer Tour oder vor dem Abend.", note: "más tarde bedeutet später und macht die Einladung locker." } },
-    { id: "social07", cat: "social", lvl: 2, de: "Sollen wir zusammen gehen?", es: "¿Vamos juntos?", tip: "BA-mos CHUN-tos",
-      context: { sentenceEs: "¿Vamos juntos al centro?", sentenceDe: "Gehen wir zusammen ins Zentrum?", situation: "Wenn ihr dasselbe Ziel habt oder gemeinsam losziehen wollt.", note: "juntos für gemischte Gruppen oder Männer, juntas für nur Frauen." } },
-    { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes",
-      context: { sentenceEs: "Vamos a tomar algo. ¿Te unes?", sentenceDe: "Wir gehen etwas trinken. Kommst du mit?", situation: "Um jemanden locker einzuladen.", note: "Klingt natürlicher als eine sehr formelle Einladung. Perfekt im Hostel." } },
-    { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp",
-      context: { sentenceEs: "Escríbeme por WhatsApp y nos vemos más tarde.", sentenceDe: "Schreib mir auf WhatsApp, dann sehen wir uns später.", situation: "Wenn ihr euch später treffen oder Pläne abstimmen wollt.", note: "WhatsApp ist in Lateinamerika extrem verbreitet – fast jeder nutzt es." } },
-    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen.", es: "Mucho gusto.", tip: "MU-cho GUS-to",
-      context: { sentenceEs: "Mucho gusto. Nos vemos mañana.", sentenceDe: "Schön, dich kennenzulernen. Wir sehen uns morgen.", situation: "Nach einem ersten Gespräch im Hostel oder unterwegs.", note: "Mucho gusto passt beim Kennenlernen. Beim Abschied passt: Fue un gusto conocerte." } },
+    { id: "social01", cat: "social", lvl: 1, de: "Woher kommst du?", es: "¿De dónde eres?", tip: "de DON-de E-res" },
+    { id: "social02", cat: "social", lvl: 1, de: "Reist du alleine?", es: "¿Viajas solo/a?", tip: "wi-A-chas SO-lo / SO-la", alt: ["viajas solo", "viajas sola"] },
+    { id: "social03", cat: "social", lvl: 1, de: "Wie lange bist du hier?", es: "¿Cuánto tiempo estás aquí?", tip: "KUAN-to TIEM-po es-TAS a-KI" },
+    { id: "social04", cat: "social", lvl: 1, de: "Wohin reist du danach?", es: "¿A dónde vas después?", tip: "a DON-de bas des-PUES" },
+    { id: "social05", cat: "social", lvl: 2, de: "Was machst du morgen?", es: "¿Qué haces mañana?", tip: "ke A-ses ma-NYA-na" },
+    { id: "social06", cat: "social", lvl: 2, de: "Hast du Lust, etwas essen zu gehen?", es: "¿Quieres ir a comer algo?", tip: "KIE-res ir a ko-MER AL-go" },
+    { id: "social07", cat: "social", lvl: 2, de: "Sollen wir zusammen gehen?", es: "¿Vamos juntos?", tip: "BA-mos CHUN-tos" },
+    { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes" },
+    { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp" },
+    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen.", es: "Mucho gusto.", tip: "MU-cho GUS-to" },
 
     // ===================== ALLTAG & LEBEN =====================
     { id: "a01", cat: "alltag", lvl: 3, de: "Wie sagt man ... auf Spanisch?", es: "¿Cómo se dice ... en español?", tip: "KO-mo se DI-se" },
@@ -2347,11 +2336,25 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "challenge10", category: "social", level: 1, textDe: "Verabschiede dich von jemandem auf Spanisch.", phraseEs: "Mucho gusto, ¡nos vemos!" },
   ];
 
-  // ===================== REISE-KONTEXT ANHÄNGEN =====================
-  // Quelle der handgeschriebenen Kontexte ist contextdata.js (SC.contextData), in
-  // kompakter Schreibweise { e, d, s, n } -> { sentenceEs, sentenceDe, situation, note }.
-  // Reihenfolge: bereits inline gesetzter context bleibt > handgeschriebener Eintrag >
-  // praktischer Auto-Kontext für reine Zahlen-Karten (Preis/Menge im Reisealltag).
+  window.SC = window.SC || {};
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES };
+})();
+
+</script>
+<script>
+/*
+ * context.js  (SC.context) – hängt den Reise-Kontext an die Karten. LOGIK-Modul
+ * (wie srs/matcher), bewusst getrennt von den reinen Daten in data.js.
+ *
+ * Lädt NACH data.js und contextdata.js. Quelle der handgeschriebenen Inhalte ist
+ * SC.contextData (kompakt { e, d, s, n }); reine Zahlen-Karten bekommen einen
+ * praktischen Preis-/Mengen-Kontext generiert.
+ *
+ * Precedence pro Karte: handgeschriebener Eintrag aus contextData  >  generierte Zahl.
+ * (Karten ohne beides bleiben ohne Kontext – der 🧭-Button erscheint dann nicht.)
+ */
+(function () {
+  "use strict";
 
   // Praktischer Kontext für reine Zahlen-Karten (id "z" + Ziffern). Statt eines
   // erfundenen Satzes pro Ziffer bekommen Zahlen die häufigste Reise-Verwendung:
@@ -2410,18 +2413,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     };
   }
 
-  (function attachContext() {
-    const map = (window.SC && window.SC.contextData) || {};
-    const expand = (x) => ({ sentenceEs: x.e, sentenceDe: x.d, situation: x.s, note: x.n });
-    CARDS.forEach((card) => {
-      if (card.context) return;                       // inline gesetzter Kontext bleibt
+  // Kompakte Schreibweise { e, d, s, n } -> volles context-Objekt.
+  const expand = (x) => ({ sentenceEs: x.e, sentenceDe: x.d, situation: x.s, note: x.n });
+
+  // Kontext an die Karten hängen (mutiert die übergebene Liste – einmalig beim Start).
+  function attach(cards, contextData) {
+    const map = contextData || {};
+    (cards || []).forEach((card) => {
+      if (card.context) return;                          // bereits gesetzt? unangetastet
       if (map[card.id]) { card.context = expand(map[card.id]); return; }
       if (/^z\d+$/.test(card.id)) card.context = numberContext(card);
     });
-  })();
+    return cards;
+  }
 
-  window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES };
+  const SC = window.SC || (window.SC = {});
+  SC.context = { numberContext, attach };
+  // Beim Laden direkt auf die echten Karten anwenden (data.js + contextdata.js sind da).
+  if (SC.data && SC.data.CARDS) attach(SC.data.CARDS, SC.contextData);
 })();
 
 </script>
@@ -5282,7 +5291,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       roleplaysSeen: {},    // Map roleplayId -> true (distinkt gespielte Rollenspiele)
       challengesDone: {},   // Map challengeId -> true (erledigte Real-Life-Challenges)
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
-      contextViews: 0,      // wie oft ein Kontext geöffnet wurde (gesamt)
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
@@ -5308,7 +5316,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       comebacks: num(v.comebacks),
       roleplaysSeen: isPlainObject(v.roleplaysSeen) ? v.roleplaysSeen : {},
       challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
-      contextViews: num(v.contextViews),
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
@@ -5750,8 +5757,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       comebacks: c.comebacks || 0,
       roleplaysCompleted: c.roleplaysSeen ? Object.keys(c.roleplaysSeen).length : 0,
       challengesCompleted: c.challengesDone ? Object.keys(c.challengesDone).length : 0,
-      // Reise-Kontext: geöffnete Kontexte gesamt + distinkte Karten.
-      contextViews: c.contextViews || 0,
+      // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       categoryMastery,
       categoryTotals: catTotal,
@@ -6490,19 +6496,28 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return `<span class="${cls}"${style} title="${esc(vm.level.label)}">${esc(vm.level.short)} · ${esc(vm.level.label)}</span>`;
   }
 
+  // Runder Eck-Button auf der Karte (44px). Gemeinsame Basis für 🔊 (rechts) und
+  // 🧭 (links), damit Markup/Stil nicht doppelt gepflegt werden. base = Modifier-
+  // Klasse (cardbtn--speak | cardbtn--ctx), on = farbige Variante für die Rückseite,
+  // extra = zusätzliche Attribute (z.B. aria-expanded/-controls), icon/label/action.
+  function cornerBtn({ base, on, icon, label, action, extra = "" }) {
+    const cls = `cardbtn ${base}${on ? " is-on" : ""}`;
+    return `<button class="${cls}" type="button" data-action="${action}"
+              aria-label="${esc(label)}" title="${esc(label)}"${extra ? " " + extra : ""}>${icon}</button>`;
+  }
+
   // 🔊-Button für die Sprachausgabe (nur wenn der Browser es kann).
   // on = farbige Variante (für die bunte Rückseite).
   function speakBtn(on) {
     const sp = window.SC && window.SC.speech;
     if (!sp || !sp.isSupported()) return "";
-    const cls = on ? "speak speak--on" : "speak";
-    return `<button class="${cls}" type="button" data-action="speak" aria-label="Antwort anhören" title="Anhören">🔊</button>`;
+    return cornerBtn({ base: "cardbtn--speak", on, icon: "🔊", label: "Antwort anhören", action: "speak" });
   }
 
   // Reise-Kontext-Panel: aufklappbarer Inhalt mit echtem Reisesatz, Situation und
-  // kurzem Reisetipp. Sitzt unter der Karte und wird vom 🧭-Button getoggelt. Der
-  // Controller schaltet es in-place um (kein Re-Render) und zählt die Ansicht.
-  function contextPanel(ctx) {
+  // kurzem Reisetipp. open spiegelt state.contextOpen (Single Source of Truth) –
+  // der Controller hält DOM und Zustand in-place synchron (kein Re-Render nötig).
+  function contextPanel(ctx, open) {
     if (!ctx) return "";
     const line = (es, de) => {
       const e = es ? `<p class="context-panel__es" lang="es">${esc(es)}</p>` : "";
@@ -6513,7 +6528,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ? `<div class="context-panel__block"><div class="context-panel__label">${esc(label)}</div><p class="context-panel__text">${esc(text)}</p></div>`
       : "";
     return `
-      <div class="context-panel" id="context-panel" hidden>
+      <div class="context-panel" id="context-panel"${open ? "" : " hidden"}>
         <h3 class="context-panel__title">🧭 So nutzt du es unterwegs</h3>
         ${line(ctx.sentenceEs, ctx.sentenceDe)}
         ${meta("Situation", ctx.situation)}
@@ -6522,24 +6537,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // Runder 🧭-Icon-Button auf der Lernkarte (unten links) – Pendant zum 🔊 (unten
-  // rechts). on = farbige Variante für die bunte Antwort-Rückseite.
-  function contextIconBtn(ctx, on) {
+  // rechts). on = farbige Variante für die bunte Antwort-Rückseite; open = Panel offen.
+  function contextIconBtn(ctx, on, open) {
     if (!ctx) return "";
-    const cls = on ? "ctxbtn ctxbtn--on" : "ctxbtn";
-    return `<button class="${cls}" type="button" data-action="toggle-context"
-              aria-expanded="false" aria-controls="context-panel"
-              aria-label="Reise-Kontext anzeigen" title="🧭 Kontext">🧭</button>`;
+    return cornerBtn({
+      base: "cardbtn--ctx" + (open ? " is-open" : ""), on, icon: "🧭",
+      label: "Reise-Kontext anzeigen", action: "toggle-context",
+      extra: `aria-expanded="${!!open}" aria-controls="context-panel"`,
+    });
   }
 
   // Detail-Variante (Karten-Detailseite): sichtbar beschrifteter Button + Panel im
   // Textfluss, da hier kein 🔊 zum Spiegeln und mehr Platz vorhanden ist.
-  function contextBlock(ctx) {
+  function contextBlock(ctx, open) {
     if (!ctx) return "";
+    const label = open ? "🧭 Kontext ausblenden" : "🧭 Kontext";
     return `
       <div class="context">
-        <button class="ghostbtn contextbtn" type="button" data-action="toggle-context"
-                data-ctx-text="1" aria-expanded="false" aria-controls="context-panel">🧭 Kontext</button>
-        ${contextPanel(ctx)}
+        <button class="ghostbtn contextbtn${open ? " is-open" : ""}" type="button" data-action="toggle-context"
+                data-ctx-text="1" aria-expanded="${!!open}" aria-controls="context-panel">${label}</button>
+        ${contextPanel(ctx, open)}
       </div>`;
   }
 
@@ -6563,7 +6580,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <div class="face face--back">
             <span class="face__cat">${esc(vm.catLabel)}</span>
             ${levelBadge(vm, true)}
-            ${contextIconBtn(vm.context, true)}
+            ${contextIconBtn(vm.context, true, vm.contextOpen)}
             ${sq ? "" : speakBtn(true)}
             <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
             ${sq ? "" : tip}
@@ -6571,7 +6588,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
       </div>
       <div class="controls" id="controls" ${vm.revealed ? "" : "hidden"}>
-        ${contextPanel(vm.context)}
+        ${contextPanel(vm.context, vm.contextOpen)}
         ${rateButtons()}
       </div>`;
   }
@@ -6609,14 +6626,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
         <span class="face__cat">${esc(vm.catLabel)}</span>
         ${levelBadge(vm, false)}
-        ${contextIconBtn(vm.context, false)}
+        ${contextIconBtn(vm.context, false, vm.contextOpen)}
         ${sq ? "" : speakBtn(false)}
         <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
         ${sq ? "" : tip}
         ${verdict}
       </div>
       <div class="controls" id="controls">
-        ${contextPanel(vm.context)}
+        ${contextPanel(vm.context, vm.contextOpen)}
         ${rateButtons()}
       </div>`;
   }
@@ -6929,7 +6946,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <div class="cardx__es" lang="es">${esc(vm.es)}</div>
           ${tip}
           <div class="cardx__tags">${firstTryBadge}</div>
-          ${contextBlock(vm.context)}
+          ${contextBlock(vm.context, vm.contextOpen)}
         </div>
 
         ${facts}
@@ -7385,6 +7402,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Sprechen-Modus: Rückseite sichtbar?
+    contextOpen: false,      // 🧭 Reise-Kontext-Panel aufgeklappt? (Single Source of Truth)
     typeResult: null,        // Schreiben-Modus: { correct, answers, input } | null
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
     cardId: null,            // Detailseite: welche Karte
@@ -7506,6 +7524,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       revealed: state.revealed,
       typeResult: state.typeResult,
       context: card.context || null,
+      contextOpen: state.contextOpen,
     };
   }
 
@@ -7587,6 +7606,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
       context: card.context || null,
+      contextOpen: state.contextOpen,
     });
   }
 
@@ -7648,26 +7668,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     store.saveGameStats(gamestats);
   }
 
-  // Eine geöffnete Kontext-Ansicht einbuchen: Gesamtzähler hoch, Karte als distinkt
-  // gesehen vermerken, erfüllte Kontext-Badges freischalten. Immutabel.
+  // Eine erstmals geöffnete Kontext-Karte einbuchen und erfüllte Kontext-Badges
+  // freischalten. Dedup: schon gesehene Karten sind ein No-Op – kein erneuter
+  // localStorage-Write, kein Badge-Scan beim wiederholten Auf-/Zuklappen. Immutabel.
   function recordContextView(cardId, now) {
     if (!badges || !cardId) return;
-    const g = Object.assign({}, gamestats);
-    g.contextViews = (g.contextViews || 0) + 1;
-    const seen = Object.assign({}, g.contextCardsSeen);
-    if (!seen[cardId]) seen[cardId] = true;
-    g.contextCardsSeen = seen;
-    gamestats = g;
+    if (gamestats.contextCardsSeen[cardId]) return; // bereits gezählt
+    const seen = Object.assign({}, gamestats.contextCardsSeen, { [cardId]: true });
+    gamestats = Object.assign({}, gamestats, { contextCardsSeen: seen });
     store.saveGameStats(gamestats);
     syncBadges(now, true);
     paintBadgeToast(); // ohne Re-Render einblenden – das Kontext-Panel bleibt offen
   }
 
   // Glückwunsch-Einblendung einfügen, ohne den Screen neu zu rendern (sonst klappt
-  // das gerade geöffnete Kontext-Panel wieder zu). Nur, wenn noch keiner sichtbar ist.
+  // das gerade geöffnete Kontext-Panel wieder zu). Einen evtl. noch sichtbaren
+  // älteren Toast ERSETZEN statt überspringen, damit das frische Badge nicht
+  // verschluckt wird (state.badgeToast wurde gerade aktualisiert).
   function paintBadgeToast() {
     if (!badges || !state.badgeToast || !state.badgeToast.length) return;
-    if (root.querySelector(".btoast")) return;
+    const existing = root.querySelector(".btoast");
+    if (existing) existing.remove();
     root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
   }
 
@@ -7906,6 +7927,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
     state.revealed = false;
+    state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
@@ -7915,6 +7937,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Frage gedreht werden. Die Bewertungs-Leiste erscheint nur auf der Antwortseite.
   function flip() {
     state.revealed = !state.revealed;
+    setContextOpen(false); // beim Drehen den Reise-Kontext schließen (Zustand + DOM)
     // In-Place-Klasse für die 3D-Animation (kein Voll-Re-Render).
     const flipEl = document.getElementById("flip");
     const controls = document.getElementById("controls");
@@ -7925,21 +7948,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (controls) controls.toggleAttribute("hidden", !state.revealed);
   }
 
-  // Reise-Kontext auf-/zuklappen. In-Place (kein Re-Render), damit im Schreiben-Modus
-  // nichts verloren geht und das Panel offen bleibt. Der 🧭-Button (rund auf der Karte)
-  // und das Panel (unter der Karte) haben verschiedene Eltern – darum global suchen;
-  // pro Screen existiert ohnehin nur ein Panel. Beim Öffnen wird die Ansicht fürs
-  // Badge-System gezählt (distinkt pro Karte).
-  function toggleContext(btn) {
+  // Reise-Kontext-Panel auf den gewünschten Zustand bringen: state.contextOpen ist
+  // die Wahrheit, das DOM wird in-place nachgezogen (kein Voll-Re-Render – so bleibt
+  // der Fokus auf dem 🧭-Button und im Schreiben-Modus geht nichts verloren). Der
+  // Button (rund auf der Karte) und das Panel (darunter) haben verschiedene Eltern;
+  // pro Screen existiert genau ein Panel, darum global per id auflösen.
+  function setContextOpen(open) {
+    state.contextOpen = !!open;
     const panel = document.getElementById("context-panel");
-    if (!panel) return;
-    const willOpen = panel.hasAttribute("hidden");
-    panel.toggleAttribute("hidden", !willOpen);
-    btn.setAttribute("aria-expanded", String(willOpen));
-    btn.classList.toggle("is-open", willOpen);
-    // Der beschriftete Detail-Button (data-ctx-text) bekommt zusätzlich einen Text-Toggle.
-    if (btn.dataset.ctxText) btn.textContent = willOpen ? "🧭 Kontext ausblenden" : "🧭 Kontext";
-    if (willOpen) {
+    const btn = document.querySelector("[data-action='toggle-context']");
+    if (panel) panel.toggleAttribute("hidden", !open);
+    if (btn) {
+      btn.setAttribute("aria-expanded", String(!!open));
+      btn.classList.toggle("is-open", !!open);
+      if (btn.dataset.ctxText) btn.textContent = open ? "🧭 Kontext ausblenden" : "🧭 Kontext";
+    }
+    return panel;
+  }
+
+  function toggleContext() {
+    const panel = setContextOpen(!state.contextOpen);
+    if (state.contextOpen && panel) {
       buzz(6);
       const id = state.screen === "card" ? state.cardId : state.queue[0];
       recordContextView(id, Date.now());
@@ -7954,6 +7983,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Richtung ES→DE erwartet die deutsche Antwort, sonst die spanische.
     const field = state.dir === "es2de" ? "de" : "es";
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
+    state.contextOpen = false;
     render();
   }
 
@@ -7983,6 +8013,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (rating === srs.RATING.AGAIN) state.queue = state.queue.concat(card.id);
 
     state.revealed = false;
+    state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
@@ -7990,6 +8021,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   function setMode(mode) {
     state.mode = mode;
+    state.contextOpen = false;
     settings = Object.assign({}, settings, { mode });
     store.saveSettings(settings);
     render();
@@ -8024,6 +8056,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Lernrichtung umschalten (DE→ES / ES→DE) und merken.
   function setDir(dir) {
     state.dir = dir === "es2de" ? "es2de" : "de2es";
+    state.contextOpen = false;
     settings = Object.assign({}, settings, { dir: state.dir });
     store.saveSettings(settings);
     render();
@@ -8047,6 +8080,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dismissBadgeToast();
     state.screen = "home";
     state.revealed = false;
+    state.contextOpen = false;
     state.typeResult = null;
     render();
   }
@@ -8199,6 +8233,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dismissBadgeToast();
     state.cardId = id;
     state.backTo = backTo || "stats";
+    state.contextOpen = false;
     state.screen = "card";
     render();
   }
@@ -8212,6 +8247,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.queue = [id];
     state.total = 1;
     state.revealed = false;
+    state.contextOpen = false;
     state.typeResult = null;
     state.screen = "study";
     render();
@@ -8361,7 +8397,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "flip") flip();
-    else if (action === "toggle-context") toggleContext(el);
+    else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
     else if (action === "speak") speakCurrent();
     else if (action === "open-stats") goStats();
@@ -8439,7 +8475,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       if ((e.key === " " || e.key === "Enter") && !onButton) {
         e.preventDefault();
         flip(); // beidseitig: Frage ⇄ Antwort
-      } else if (state.revealed && !onButton) rateByKey(e.key);
+      } else if (state.revealed) rateByKey(e.key); // Ziffern 1/2/3 kollidieren nie mit Button-Aktivierung
     } else {
       // Schreiben-Modus: Zahlen nur bewerten, wenn Ergebnis schon sichtbar ist.
       if (state.typeResult && !inInput) rateByKey(e.key);

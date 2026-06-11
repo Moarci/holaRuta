@@ -191,8 +191,7 @@
       comebacks: c.comebacks || 0,
       roleplaysCompleted: c.roleplaysSeen ? Object.keys(c.roleplaysSeen).length : 0,
       challengesCompleted: c.challengesDone ? Object.keys(c.challengesDone).length : 0,
-      // Reise-Kontext: geöffnete Kontexte gesamt + distinkte Karten.
-      contextViews: c.contextViews || 0,
+      // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       categoryMastery,
       categoryTotals: catTotal,

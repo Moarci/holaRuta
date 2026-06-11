@@ -394,39 +394,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .face__tip { margin-top: 14px; font-size: 1.05rem; font-style: italic; color: rgba(251, 243, 228, 0.88); }
 .face__hint { position: absolute; bottom: 16px; font-size: 0.82rem; color: var(--faint); }
 
-/* 🔊 Sprachausgabe-Button (auf der Antwortkarte, unten rechts) */
-.speak {
-  position: absolute; bottom: 16px; right: 16px; z-index: 2;
-  width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
-  display: grid; place-items: center; font-size: 1.1rem; line-height: 1;
-  border: 1.5px solid var(--line-strong); background: var(--card); color: var(--ink);
-  box-shadow: var(--shadow);
-  transition: transform 0.1s ease;
-}
-.speak:active { transform: scale(0.92); }
-/* Variante auf der farbigen Rückseite */
-.speak--on {
-  border-color: rgba(251, 243, 228, 0.55); color: var(--cream);
-  background: rgba(36, 21, 16, 0.22);
-}
-
-/* 🧭 Reise-Kontext-Button (auf der Antwortkarte, unten links – Pendant zum 🔊) */
-.ctxbtn {
-  position: absolute; bottom: 16px; left: 16px; z-index: 2;
+/* Runde Eck-Buttons auf der Antwortkarte: 🔊 (rechts) & 🧭 (links) teilen eine Basis. */
+.cardbtn {
+  position: absolute; bottom: 16px; z-index: 2;
   width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
   display: grid; place-items: center; font-size: 1.1rem; line-height: 1;
   border: 1.5px solid var(--line-strong); background: var(--card); color: var(--ink);
   box-shadow: var(--shadow);
   transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
 }
-.ctxbtn:active { transform: scale(0.92); }
-.ctxbtn.is-open { background: var(--brand); border-color: var(--brand); color: var(--cream); }
-/* Variante auf der farbigen Rückseite */
-.ctxbtn--on {
+.cardbtn:active { transform: scale(0.92); }
+.cardbtn--speak { right: 16px; }   /* 🔊 Sprachausgabe */
+.cardbtn--ctx   { left: 16px; }    /* 🧭 Reise-Kontext */
+/* Variante auf der farbigen Antwort-Rückseite */
+.cardbtn.is-on {
   border-color: rgba(251, 243, 228, 0.55); color: var(--cream);
   background: rgba(36, 21, 16, 0.22);
 }
-.ctxbtn--on.is-open { background: rgba(36, 21, 16, 0.42); border-color: var(--cream); }
+/* 🧭 aktiv (Panel offen) */
+.cardbtn--ctx.is-open { background: var(--brand); border-color: var(--brand); color: var(--cream); }
+.cardbtn--ctx.is-on.is-open { background: rgba(36, 21, 16, 0.42); border-color: var(--cream); }
 
 /* Statische Karte (Schreiben-Modus) */
 .card-static {

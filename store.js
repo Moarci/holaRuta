@@ -66,7 +66,6 @@
       roleplaysSeen: {},    // Map roleplayId -> true (distinkt gespielte Rollenspiele)
       challengesDone: {},   // Map challengeId -> true (erledigte Real-Life-Challenges)
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
-      contextViews: 0,      // wie oft ein Kontext geöffnet wurde (gesamt)
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
@@ -92,7 +91,6 @@
       comebacks: num(v.comebacks),
       roleplaysSeen: isPlainObject(v.roleplaysSeen) ? v.roleplaysSeen : {},
       challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
-      contextViews: num(v.contextViews),
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
