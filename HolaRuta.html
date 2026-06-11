@@ -1098,6 +1098,76 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hm-phrases__list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
 .hm-phrases__list li { color: var(--brand-ink); font-weight: 600; line-height: 1.4; }
 
+/* ==========================================================================
+   Definiciones (Zuordnen-Quiz)
+   Eigenständiger Aufgabentyp: spanische Definition lesen, Begriff wählen.
+   Nutzt die Spiel-Bausteine (.hm-scene, .cta, .done) und ergänzt nur das
+   Frage-/Optionen-Layout. Farbtöne kommen aus den Theme-Tokens (Dark-Mode-fest).
+   ========================================================================== */
+.hostelmode--quiz { background: linear-gradient(135deg, #3F7355, #2F6B70); }
+
+/* Listen-Auswahl: Intro-Zeile unter dem Titel. */
+.quiz-set__intro { display: block; margin-top: 3px; font-size: 0.8rem; font-weight: 400; color: var(--muted); line-height: 1.35; }
+.quiz-lvl { font-size: 0.72rem; font-weight: 800; color: var(--muted); }
+
+/* Frage-Zähler über der Definition (Pille, mittig). */
+.quiz-count { display: block; width: fit-content; margin: 0 auto; }
+
+/* Definitionskarte (die "Frage"). */
+.quiz-def {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg);
+  padding: 20px 20px 22px; box-shadow: var(--shadow); border-left: 4px solid var(--brand);
+}
+.quiz-def__cap { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.quiz-def__text { margin: 6px 0 0; font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; line-height: 1.3; color: var(--ink); }
+
+/* Antwort-Optionen. */
+.quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+.quiz-opt {
+  display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer; text-align: left;
+  padding: 13px 15px; border-radius: var(--r-md); background: var(--card);
+  border: 1.5px solid var(--line); border-bottom-width: 3px; box-shadow: var(--shadow);
+  color: var(--ink); transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+.quiz-opt:active { transform: translateY(1px); border-bottom-width: 1.5px; }
+.quiz-opt[disabled] { cursor: default; }
+.quiz-opt__icon { font-size: 1.5rem; line-height: 1; flex: none; }
+.quiz-opt__text { display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0; }
+.quiz-opt__es { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--ink); }
+.quiz-opt__de { font-size: 0.8rem; color: var(--muted); }
+.quiz-opt__mark { flex: none; font-weight: 800; font-size: 1.1rem; }
+
+/* Aufgedeckter Zustand: richtige Lösung grün, falsche Wahl rot, Rest gedämpft. */
+.quiz-opt--correct { border-color: var(--ok); border-bottom-color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, var(--card)); }
+.quiz-opt--correct .quiz-opt__es,
+.quiz-opt--correct .quiz-opt__mark { color: var(--ok); }
+.quiz-opt--wrong { border-color: var(--no); border-bottom-color: var(--no); background: color-mix(in srgb, var(--no) 14%, var(--card)); }
+.quiz-opt--wrong .quiz-opt__es,
+.quiz-opt--wrong .quiz-opt__mark { color: var(--no); }
+.quiz-opt--dim { opacity: 0.55; }
+
+/* Rückmeldung nach der Antwort. */
+.quiz-feedback {
+  width: 100%; text-align: center; border-radius: var(--r-md); padding: 12px 16px;
+  border: 1.5px solid var(--line); display: flex; flex-direction: column; gap: 4px;
+}
+.quiz-feedback.is-correct { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--card)); }
+.quiz-feedback.is-wrong { border-color: var(--no); background: color-mix(in srgb, var(--no) 12%, var(--card)); }
+.quiz-feedback__head { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
+.quiz-feedback.is-correct .quiz-feedback__head { color: var(--ok); }
+.quiz-feedback.is-wrong .quiz-feedback__head { color: var(--no); }
+.quiz-feedback__sol { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.4; }
+.quiz-feedback__sol b { color: var(--brand-ink); }
+
+/* Auswertung. */
+.quiz-result { margin: 4px 0; color: var(--ink-soft); font-size: 1.05rem; }
+.quiz-result b { font-family: var(--font-display); font-size: 1.4rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* Reduced-Motion: keine Transition-Sprünge. */
+@media (prefers-reduced-motion: reduce) {
+  .quiz-opt { transition: none; }
+}
+
 </style>
 </head>
 <body>
@@ -2418,8 +2488,53 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "challenge10", category: "social", level: 1, textDe: "Verabschiede dich von jemandem auf Spanisch.", phraseEs: "Mucho gusto, ¡nos vemos!" },
   ];
 
+  // ----- Definiciones (Zuordnen / Definitions-Quiz) -----
+  // Eigenständiger Aufgabentyp im Stil eines Lehrbuch-Arbeitsblatts: eine spanische
+  // Definition lesen und den passenden Begriff aus mehreren Optionen wählen.
+  // QUIZ_SETS = Themen-Listen; QUIZ_DEFS = Einträge { set, es, de, icon, def }.
+  //   es  = der Begriff (Lösung, Spanisch)   de = deutsche Übersetzung (Lernhilfe)
+  //   def = die spanische Definition (Frage)  icon = kleines Sinnbild
+  const QUIZ_SETS = [
+    { id: "ciudad", label: "En la ciudad", icon: "🏙️", lvl: 1,
+      intro: "Lies die Definition und wähle den richtigen Ort in der Stadt." },
+    { id: "comida", label: "La comida", icon: "🍽️", lvl: 1,
+      intro: "Lies die Definition und wähle das passende Essen oder Getränk." },
+  ];
+
+  const QUIZ_DEFS = [
+    // ----- En la ciudad (Orte in der Stadt) -----
+    { id: "qc01", set: "ciudad", es: "la iglesia",          de: "Kirche",         icon: "⛪", def: "Lugar donde la gente va a rezar y a adorar a Dios." },
+    { id: "qc02", set: "ciudad", es: "el parque",           de: "Park",           icon: "🌳", def: "Lugar con árboles, césped y juegos para relajarse al aire libre." },
+    { id: "qc03", set: "ciudad", es: "el cine",             de: "Kino",           icon: "🎬", def: "Lugar donde se ven películas en una pantalla grande." },
+    { id: "qc04", set: "ciudad", es: "el centro comercial", de: "Einkaufszentrum", icon: "🏬", def: "Lugar con muchas tiendas, zonas de comida y juegos bajo un mismo techo." },
+    { id: "qc05", set: "ciudad", es: "el museo",            de: "Museum",         icon: "🏛️", def: "Lugar donde se ven cosas interesantes como arte, antigüedades o dinosaurios." },
+    { id: "qc06", set: "ciudad", es: "el banco",            de: "Bank",           icon: "🏦", def: "Lugar donde guardas tu dinero y puedes pedir préstamos." },
+    { id: "qc07", set: "ciudad", es: "el gimnasio",         de: "Fitnessstudio",  icon: "🏋️", def: "Lugar donde la gente va a hacer ejercicio y mantenerse en forma." },
+    { id: "qc08", set: "ciudad", es: "el hospital",         de: "Krankenhaus",    icon: "🏥", def: "Lugar donde recibes atención médica cuando estás enfermo o herido." },
+    { id: "qc09", set: "ciudad", es: "el supermercado",     de: "Supermarkt",     icon: "🛒", def: "Lugar donde compras alimentos, bebidas y productos para el día a día." },
+    { id: "qc10", set: "ciudad", es: "la librería",         de: "Buchhandlung",   icon: "📚", def: "Lugar donde puedes comprar libros para leer y disfrutar en casa." },
+    { id: "qc11", set: "ciudad", es: "el restaurante",      de: "Restaurant",     icon: "🍴", def: "Lugar donde vas a comer comida preparada sin tener que cocinar tú mismo." },
+    { id: "qc12", set: "ciudad", es: "la farmacia",         de: "Apotheke",       icon: "💊", def: "Lugar donde compras medicinas y productos de salud." },
+    { id: "qc13", set: "ciudad", es: "el mercado",          de: "Markt",          icon: "🧺", def: "Lugar donde se venden frutas, verduras y comida fresca, a menudo al aire libre." },
+    { id: "qc14", set: "ciudad", es: "la estación",         de: "Bahnhof",        icon: "🚉", def: "Lugar donde tomas el tren o el autobús para viajar a otro sitio." },
+    { id: "qc15", set: "ciudad", es: "la plaza",            de: "Platz",          icon: "⛲", def: "Espacio abierto en el centro de la ciudad donde la gente se reúne." },
+    { id: "qc16", set: "ciudad", es: "el aeropuerto",       de: "Flughafen",      icon: "🛫", def: "Lugar desde donde los aviones despegan y aterrizan." },
+
+    // ----- La comida (Essen & Trinken) -----
+    { id: "qf01", set: "comida", es: "el desayuno", de: "Frühstück",   icon: "🍳", def: "La primera comida del día, por la mañana." },
+    { id: "qf02", set: "comida", es: "el almuerzo", de: "Mittagessen", icon: "🍽️", def: "La comida principal que se come al mediodía." },
+    { id: "qf03", set: "comida", es: "la cena",     de: "Abendessen",  icon: "🌙", def: "La comida que se toma por la noche." },
+    { id: "qf04", set: "comida", es: "la fruta",    de: "Obst",        icon: "🍎", def: "Alimento dulce que crece en los árboles, como la manzana o el plátano." },
+    { id: "qf05", set: "comida", es: "la verdura",  de: "Gemüse",      icon: "🥦", def: "Alimento que viene de las plantas, como la lechuga o la zanahoria." },
+    { id: "qf06", set: "comida", es: "la carne",    de: "Fleisch",     icon: "🥩", def: "Alimento que viene de animales como la vaca, el cerdo o el pollo." },
+    { id: "qf07", set: "comida", es: "el pan",      de: "Brot",        icon: "🍞", def: "Alimento hecho de harina que se hornea." },
+    { id: "qf08", set: "comida", es: "el agua",     de: "Wasser",      icon: "💧", def: "Bebida sin color ni sabor, esencial para vivir." },
+    { id: "qf09", set: "comida", es: "el café",     de: "Kaffee",      icon: "☕", def: "Bebida caliente y oscura que muchos toman por la mañana." },
+    { id: "qf10", set: "comida", es: "el postre",   de: "Nachtisch",   icon: "🍰", def: "Comida dulce que se come al final, como el pastel o el helado." },
+  ];
+
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS };
 })();
 
 </script>
@@ -5372,6 +5487,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       comebacks: 0,         // Battles nach Rückstand gewonnen
       roleplaysSeen: {},    // Map roleplayId -> true (distinkt gespielte Rollenspiele)
       challengesDone: {},   // Map challengeId -> true (erledigte Real-Life-Challenges)
+      // ----- Definiciones (Zuordnen-Quiz) -----
+      quizzesPlayed: 0,     // abgeschlossene Quiz-Runden
+      quizzesPerfect: 0,    // Quiz-Runden ohne Fehler
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
@@ -5398,6 +5516,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       comebacks: num(v.comebacks),
       roleplaysSeen: isPlainObject(v.roleplaysSeen) ? v.roleplaysSeen : {},
       challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
+      quizzesPlayed: num(v.quizzesPlayed),
+      quizzesPerfect: num(v.quizzesPerfect),
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
@@ -5690,6 +5810,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "category", label: "Bereiche",    icon: "🗂️" },
     { id: "context",  label: "Reise-Kontext", icon: "🧭" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
+    { id: "quiz",     label: "Definiciones", icon: "🧩" },
     { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
   ];
@@ -5779,6 +5900,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "roleplay_5",     group: "hostel", icon: "🎬", name: "Scene Collector",    type: "counter", metric: "roleplaysCompleted", threshold: 5,
       description: "Spiele 5 verschiedene Rollenspiele.", unlockedText: "Viele echte Reisesituationen trainiert." },
 
+    // ---------- Definiciones (Zuordnen-Quiz) ----------
+    { id: "quiz_first",   group: "quiz", icon: "🧩", name: "Erste Zuordnung",   type: "counter", metric: "quizzesPlayed", threshold: 1,
+      description: "Schließe dein erstes Definiciones-Quiz ab.", unlockedText: "Du lernst Wörter jetzt auch über ihre Bedeutung." },
+    { id: "quiz_10",      group: "quiz", icon: "📖", name: "Wort-Detektiv",     type: "counter", metric: "quizzesPlayed", threshold: 10,
+      description: "Schließe 10 Definiciones-Quizze ab.",       unlockedText: "Du erkennst Begriffe an ihrer Beschreibung – stark." },
+    { id: "quiz_perfect", group: "quiz", icon: "💯", name: "Sin errores",       type: "counter", metric: "quizzesPerfect", threshold: 1,
+      description: "Beende ein Quiz ohne Fehler.",              unlockedText: "Fehlerfrei durchgespielt – alles richtig zugeordnet." },
+
     // ---------- Mutproben (Real-Life Challenges) ----------
     { id: "challenge_first", group: "reallife", icon: "💬", name: "Mutiger erster Satz", type: "counter", metric: "challengesCompleted", threshold: 1,
       description: "Hake deine erste Real-Life Challenge ab.", unlockedText: "Du hast Spanisch nicht nur gelernt, sondern benutzt." },
@@ -5840,6 +5969,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       comebacks: c.comebacks || 0,
       roleplaysCompleted: c.roleplaysSeen ? Object.keys(c.roleplaysSeen).length : 0,
       challengesCompleted: c.challengesDone ? Object.keys(c.challengesDone).length : 0,
+      // Definiciones: abgeschlossene und fehlerfreie Quiz-Runden.
+      quizzesPlayed: c.quizzesPlayed || 0,
+      quizzesPerfect: c.quizzesPerfect || 0,
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       categoryMastery,
@@ -6537,6 +6669,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <span class="hostelmode__text">
             <span class="hostelmode__title">Hostel Mode</span>
             <span class="hostelmode__sub">Zu zweit üben: Battle &amp; Rollenspiele</span>
+          </span>
+          <span class="hostelmode__chev" aria-hidden="true">›</span>
+        </button>
+
+        <button class="hostelmode hostelmode--quiz" data-action="open-quiz-setup">
+          <span class="hostelmode__icon" aria-hidden="true">🧩</span>
+          <span class="hostelmode__text">
+            <span class="hostelmode__title">Definiciones</span>
+            <span class="hostelmode__sub">Zuordnen: Definition lesen, Begriff wählen</span>
           </span>
           <span class="hostelmode__chev" aria-hidden="true">›</span>
         </button>
@@ -7447,10 +7588,95 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </section>`;
   }
 
+  // ---------- DEFINICIONES (Zuordnen-Quiz) ----------
+  // Liste wählen.
+  function renderQuizSetup(vm) {
+    const list = vm.sets
+      .map((s) =>
+        `<button class="hm-scene" data-action="start-quiz" data-set="${esc(s.id)}">
+           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+           <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
+           <span class="hm-scene__count">${s.count}</span>
+         </button>`)
+      .join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🧩 Definiciones", "home")}
+        <p class="hm-intro">Lies eine spanische Definition und wähle den passenden Begriff. So lernst du Wörter über ihre Bedeutung – ganz ohne Übersetzung.</p>
+        <div class="hm-scenes">${list}</div>
+      </section>`;
+  }
+
+  // Eine Frage: Definition + Antwort-Optionen.
+  function renderQuiz(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
+    const options = vm.options
+      .map((o) => {
+        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
+        // Nach dem Aufdecken sind alle Optionen deaktiviert (kein Umentscheiden).
+        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
+        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
+          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
+        return `
+          <button class="${cls}" type="button" data-action="quiz-answer" data-id="${esc(o.id)}"${dis}>
+            <span class="quiz-opt__icon" aria-hidden="true">${esc(o.icon)}</span>
+            <span class="quiz-opt__text">
+              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+              <span class="quiz-opt__de">${esc(o.de)}</span>
+            </span>
+            ${mark}
+          </button>`;
+      })
+      .join("");
+
+    const feedback = vm.answered
+      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
+           ${vm.isCorrect
+             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
+             : `<span class="quiz-feedback__head">No exactamente.</span>
+                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b> · ${esc(vm.solutionDe)}</span>`}
+         </div>
+         <button class="cta" data-action="quiz-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+      : "";
+
+    return `
+      <section class="screen study">
+        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "quiz-again")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Quiz-Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">Frage ${vm.position + 1}/${vm.total}</div>
+        <div class="quiz-def">
+          <span class="quiz-def__cap">Definición</span>
+          <p class="quiz-def__text" lang="es">${esc(vm.definition)}</p>
+        </div>
+        <div class="quiz-opts">${options}</div>
+        ${feedback}
+      </section>`;
+  }
+
+  // Auswertung.
+  function renderQuizDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Alles richtig. 🏆"
+      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
+      : "Sigue practicando – Übung macht den Meister. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "🧩"}</div>
+          <h2>${esc(vm.setLabel)} geschafft</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="quiz-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
+  }
+
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast,
-                   renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay };
+                   renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
+                   renderQuizSetup, renderQuiz, renderQuizDone };
 })();
 
 </script>
@@ -7477,7 +7703,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone'
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
@@ -7496,6 +7722,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
+    // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
+    quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -7956,6 +8184,139 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     };
   }
 
+  // ----- Definiciones (Zuordnen-Quiz): View-Modelle -----
+  const quizSetById = (id) => data.QUIZ_SETS.find((s) => s.id === id) || null;
+  const quizDefById = (id) => data.QUIZ_DEFS.find((d) => d.id === id) || null;
+  const quizDefsForSet = (setId) => data.QUIZ_DEFS.filter((d) => d.set === setId);
+
+  // Antwort-Optionen einer Frage bauen: die richtige Lösung + bis zu 3 Ablenker aus
+  // derselben Liste, anschließend gemischt. Wird beim Stellen der Frage EINMAL
+  // berechnet und im State gehalten – ein Re-Render darf nicht neu mischen.
+  function buildQuizOptions(correct, pool) {
+    const distractors = shuffle(pool.filter((d) => d.id !== correct.id)).slice(0, 3);
+    return shuffle([correct, ...distractors])
+      .map((d) => ({ id: d.id, es: d.es, de: d.de, icon: d.icon }));
+  }
+
+  function quizSetupVM() {
+    return {
+      sets: data.QUIZ_SETS.map((s) => {
+        const lvl = levelById(s.lvl);
+        return { id: s.id, label: s.label, icon: s.icon, intro: s.intro,
+          count: quizDefsForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
+      }),
+    };
+  }
+
+  function quizVM() {
+    const q = state.quiz;
+    const set = quizSetById(q.setId);
+    const def = quizDefById(q.queue[q.idx]);
+    const answered = q.selected !== null;
+    const options = q.options.map((o) => ({
+      id: o.id, es: o.es, de: o.de, icon: o.icon,
+      // Zustand fürs Einfärben: vor der Antwort neutral, danach Lösung grün,
+      // falsche Wahl rot, der Rest gedämpft.
+      state: !answered ? "idle"
+        : o.id === def.id ? "correct"
+        : o.id === q.selected ? "wrong"
+        : "dim",
+    }));
+    return {
+      setLabel: set ? set.label : "",
+      setIcon: set ? set.icon : "🧩",
+      position: q.idx,
+      total: q.total,
+      definition: def.def,
+      options,
+      answered,
+      isCorrect: q.selected === def.id,
+      solutionEs: def.es,
+      solutionDe: def.de,
+      isLast: q.idx >= q.total - 1,
+    };
+  }
+
+  function quizDoneVM() {
+    const q = state.quiz;
+    const set = quizSetById(q.setId);
+    return {
+      setLabel: set ? set.label : "",
+      setIcon: set ? set.icon : "🧩",
+      correct: q.correct,
+      total: q.total,
+      perfect: q.total > 0 && q.correct === q.total,
+    };
+  }
+
+  // ----- Definiciones: Steuerung -----
+  function openQuizSetup() {
+    dismissBadgeToast();
+    state.screen = "quizSetup";
+    render();
+  }
+
+  function startQuiz(setId) {
+    dismissBadgeToast();
+    const pool = quizDefsForSet(setId);
+    if (!pool.length) return;
+    const queue = shuffle(pool).map((d) => d.id);
+    state.quiz = {
+      setId,
+      queue,
+      idx: 0,
+      total: queue.length,
+      options: buildQuizOptions(quizDefById(queue[0]), pool),
+      selected: null,
+      correct: 0,
+    };
+    state.screen = "quiz";
+    render();
+  }
+
+  // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
+  function answerQuiz(defId) {
+    const q = state.quiz;
+    if (!q || q.selected !== null) return;
+    const current = q.queue[q.idx];
+    q.selected = defId;
+    if (defId === current) { q.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function nextQuiz() {
+    const q = state.quiz;
+    if (!q || q.selected === null) return; // erst antworten, dann weiter
+    if (q.idx >= q.total - 1) {
+      recordQuizResult(q);
+      syncBadges(Date.now(), true); // Quiz-Badges freischalten + einblenden
+      state.screen = "quizDone";
+      render();
+      return;
+    }
+    q.idx += 1;
+    q.selected = null;
+    q.options = buildQuizOptions(quizDefById(q.queue[q.idx]), quizDefsForSet(q.setId));
+    render();
+  }
+
+  function quizAgain() {
+    dismissBadgeToast();
+    state.quiz = null;
+    state.screen = "quizSetup";
+    render();
+  }
+
+  // Ergebnis eines beendeten Quiz in die Spiel-Zähler buchen (Ruta-Pass).
+  function recordQuizResult(q) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.quizzesPlayed = (g.quizzesPlayed || 0) + 1;
+    if (q.total > 0 && q.correct === q.total) g.quizzesPerfect = (g.quizzesPerfect || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
   // ----- Rendern -----
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
@@ -7971,6 +8332,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
     else if (state.screen === "roleplaySetup") root.innerHTML = ui.renderRoleplaySetup(roleplaySetupVM());
     else if (state.screen === "roleplay") root.innerHTML = ui.renderRoleplay(roleplayVM());
+    else if (state.screen === "quizSetup") root.innerHTML = ui.renderQuizSetup(quizSetupVM());
+    else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
+    else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -8506,6 +8870,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "open-roleplay-setup") openRoleplaySetup();
     else if (action === "start-roleplay") startRoleplay(el.dataset.id);
     else if (action === "roleplay-swap") roleplaySwap();
+    else if (action === "open-quiz-setup") openQuizSetup();
+    else if (action === "start-quiz") startQuiz(el.dataset.set);
+    else if (action === "quiz-answer") answerQuiz(el.dataset.id);
+    else if (action === "quiz-next") nextQuiz();
+    else if (action === "quiz-again") quizAgain();
     else if (action === "home") goHome();
   }
 

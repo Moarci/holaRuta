@@ -317,6 +317,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
     contextCardsSeen: { hostel01: true },
+    quizzesPlayed: 7, quizzesPerfect: 2,
     unlocked: { first_steps: 1700000000000 },
   };
   storeMem[GKEY] = JSON.stringify(valid);
@@ -365,6 +366,56 @@ test("data.CHALLENGES: textDe und phraseEs gesetzt", () => {
   data.CHALLENGES.forEach((c) => {
     assert.ok(c.textDe && c.phraseEs, `Challenge unvollständig: ${c.id}`);
   });
+});
+
+// ---------- Definiciones (Zuordnen-Quiz) ----------
+test("data.QUIZ_DEFS: eindeutige IDs, Pflichtfelder, gültiges set, je Liste ≥ 4 Optionen", () => {
+  const setIds = new Set(data.QUIZ_SETS.map((s) => s.id));
+  assert.ok(setIds.size > 0, "keine Quiz-Listen definiert");
+  const ids = data.QUIZ_DEFS.map((d) => d.id);
+  assert.equal(new Set(ids).size, ids.length, "doppelte QUIZ_DEFS-IDs");
+  data.QUIZ_DEFS.forEach((d) => {
+    assert.ok(d.es && d.de && d.def && d.icon, `Felder fehlen: ${d.id}`);
+    assert.ok(setIds.has(d.set), `unbekanntes set: ${d.set} (${d.id})`);
+  });
+  // Multiple-Choice braucht genug Ablenker: jede Liste mindestens 4 Einträge.
+  data.QUIZ_SETS.forEach((s) => {
+    const n = data.QUIZ_DEFS.filter((d) => d.set === s.id).length;
+    assert.ok(n >= 4, `Liste ${s.id} hat nur ${n} Einträge (mind. 4 nötig)`);
+  });
+});
+
+test("data.QUIZ_SETS: lvl verweist auf eine bekannte Stufe", () => {
+  const lvlIds = new Set(data.LEVELS.map((l) => l.id));
+  data.QUIZ_SETS.forEach((s) => {
+    assert.ok(s.label && s.icon && s.intro, `Listen-Felder fehlen: ${s.id}`);
+    assert.ok(lvlIds.has(s.lvl), `unbekannte Stufe in Liste ${s.id}: ${s.lvl}`);
+  });
+});
+
+// ---------- badges: Definiciones ----------
+test("badges.buildMetrics: Quiz-Zähler übernommen", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    quizzesPlayed: 4, quizzesPerfect: 1,
+  });
+  assert.equal(m.quizzesPlayed, 4);
+  assert.equal(m.quizzesPerfect, 1);
+});
+
+test("badges: Quiz-Badges schalten über Zähler frei", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    quizzesPlayed: 10, quizzesPerfect: 1,
+  });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("quiz_first"));
+  assert.ok(ids.includes("quiz_10"));
+  assert.ok(ids.includes("quiz_perfect"));
+});
+
+test("badges: ohne Quiz-Runden bleiben Quiz-Badges gesperrt", () => {
+  const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {}));
+  assert.ok(!ids.includes("quiz_first"));
+  assert.ok(!ids.includes("quiz_perfect"));
 });
 
 // ---------- Reise-Kontext (🧭) ----------
