@@ -47,6 +47,7 @@
     { id: "verbos",  label: "Konjugieren", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
     { id: "tiempos", label: "Zeiten",     icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
     { id: "colores", label: "Farben",     icon: "🎨", grad: ["#7048E8", "#15AABF"] },
+    { id: "contrarios", label: "Gegenteile", icon: "↔️", grad: ["#3F7355", "#B5503F"] },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -857,6 +858,39 @@
     { id: "col22", cat: "colores", lvl: 2, de: "Dunkelgrün", es: "verde oscuro",    tip: "WER-de os-KU-ro = dunkel", swatch: "#1B5E20" },
     { id: "col23", cat: "colores", lvl: 2, de: "Welche Farbe ist das?", es: "¿De qué color es?", tip: "de ke ko-LOR es" },
     { id: "col24", cat: "colores", lvl: 2, de: "Meine Lieblingsfarbe ist ...", es: "Mi color favorito es ...", tip: "mi ko-LOR fa-wo-RI-to", alt: ["mi color favorito es"] },
+
+    // ===================== GEGENTEILE (Contrarios) =====================
+    // Antonym-Paare: Frage und Antwort sind jeweils das ganze Gegensatzpaar,
+    // mit " – " getrennt. Der Matcher (matcher.js) akzeptiert beide Seiten
+    // einzeln oder zusammen; im Hör-Modus liest TTS das spanische Paar vor.
+    // Funktioniert dadurch in allen 3 Modi (Karteikarte/Schreiben/Hören) und
+    // in beiden Richtungen (DE→ES / ES→DE) ohne Sonderbehandlung.
+    { id: "op01", cat: "contrarios", lvl: 1, de: "groß – klein",        es: "grande – pequeño",      tip: "GRAN-de – pe-KE-nyo" },
+    { id: "op02", cat: "contrarios", lvl: 1, de: "gut – schlecht",      es: "bueno – malo",          tip: "BUE-no – MA-lo" },
+    { id: "op03", cat: "contrarios", lvl: 1, de: "viel – wenig",        es: "mucho – poco",          tip: "MU-cho – PO-ko" },
+    { id: "op04", cat: "contrarios", lvl: 1, de: "heiß – kalt",         es: "caliente – frío",       tip: "ka-li-EN-te – FRI-o" },
+    { id: "op05", cat: "contrarios", lvl: 1, de: "neu – alt",           es: "nuevo – viejo",         tip: "NUE-wo – wi-E-cho" },
+    { id: "op06", cat: "contrarios", lvl: 1, de: "teuer – billig",      es: "caro – barato",         tip: "KA-ro – ba-RA-to" },
+    { id: "op07", cat: "contrarios", lvl: 1, de: "offen – geschlossen", es: "abierto – cerrado",     tip: "a-bi-ER-to – se-RRA-do" },
+    { id: "op08", cat: "contrarios", lvl: 1, de: "nah – weit",          es: "cerca – lejos",         tip: "SER-ka – LE-chos" },
+    { id: "op09", cat: "contrarios", lvl: 1, de: "schnell – langsam",   es: "rápido – lento",        tip: "RA-pi-do – LEN-to" },
+    { id: "op10", cat: "contrarios", lvl: 1, de: "leicht – schwierig",  es: "fácil – difícil",       tip: "FA-sil – di-FI-sil" },
+    { id: "op11", cat: "contrarios", lvl: 1, de: "hier – dort",         es: "aquí – allá",           tip: "a-KI – a-YA" },
+    { id: "op12", cat: "contrarios", lvl: 1, de: "ja – nein",           es: "sí – no",               tip: "si – no" },
+    { id: "op13", cat: "contrarios", lvl: 2, de: "voll – leer",         es: "lleno – vacío",         tip: "YE-no – wa-SI-o" },
+    { id: "op14", cat: "contrarios", lvl: 2, de: "früh – spät",         es: "temprano – tarde",      tip: "tem-PRA-no – TAR-de" },
+    { id: "op15", cat: "contrarios", lvl: 2, de: "sauber – schmutzig",  es: "limpio – sucio",        tip: "LIM-pi-o – SU-si-o" },
+    { id: "op16", cat: "contrarios", lvl: 2, de: "mehr – weniger",      es: "más – menos",           tip: "mas – ME-nos" },
+    { id: "op17", cat: "contrarios", lvl: 2, de: "links – rechts",      es: "izquierda – derecha",   tip: "is-ki-ER-da – de-RE-cha" },
+    { id: "op18", cat: "contrarios", lvl: 2, de: "erster – letzter",    es: "primero – último",      tip: "pri-ME-ro – UL-ti-mo" },
+    { id: "op19", cat: "contrarios", lvl: 2, de: "glücklich – traurig", es: "feliz – triste",        tip: "fe-LIS – TRIS-te" },
+    { id: "op20", cat: "contrarios", lvl: 2, de: "öffnen – schließen",  es: "abrir – cerrar",        tip: "a-BRIR – se-RRAR" },
+    { id: "op21", cat: "contrarios", lvl: 3, de: "hell – dunkel",       es: "claro – oscuro",        tip: "KLA-ro – os-KU-ro" },
+    { id: "op22", cat: "contrarios", lvl: 3, de: "stark – schwach",     es: "fuerte – débil",        tip: "FUER-te – DE-bil" },
+    { id: "op23", cat: "contrarios", lvl: 3, de: "lang – kurz",         es: "largo – corto",         tip: "LAR-go – KOR-to" },
+    { id: "op24", cat: "contrarios", lvl: 3, de: "trocken – nass",      es: "seco – mojado",         tip: "SE-ko – mo-CHA-do" },
+    { id: "op25", cat: "contrarios", lvl: 3, de: "laut – leise",        es: "ruidoso – silencioso",  tip: "rui-DO-so – si-len-si-O-so" },
+    { id: "op26", cat: "contrarios", lvl: 3, de: "jung – alt",          es: "joven – viejo",         tip: "CHO-wen – wi-E-cho" },
   ];
 
   /*
