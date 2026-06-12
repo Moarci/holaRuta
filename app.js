@@ -15,6 +15,7 @@
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
+  const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -28,7 +29,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -181,6 +182,7 @@
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
+      hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -363,6 +365,26 @@
       accent: accents[t.id] || "",
     }));
     return { country, groups, topics };
+  }
+
+  // Regatear: Verhandeln/Feilschen – reine Anzeige-Seite (Taktik, Sätze,
+  // Einheiten, Rollenspiele). Reicht die Daten 1:1 durch, hängt nur an den
+  // Rollenspielen das Kurz-Label der Schwierigkeitsstufe an.
+  function regatearVM() {
+    if (!regatear) return { intro: "", tips: [], glossary: [], phrases: [], units: [], regional: [], roleplays: [] };
+    const roleplays = (regatear.ROLEPLAYS || []).map((r) => {
+      const lvl = levelById(r.level);
+      return Object.assign({}, r, { lvlShort: lvl ? lvl.short : "" });
+    });
+    return {
+      intro: regatear.INTRO,
+      tips: regatear.TIPS || [],
+      glossary: regatear.GLOSSARY || [],
+      phrases: regatear.PHRASES || [],
+      units: regatear.UNITS || [],
+      regional: regatear.REGIONAL || [],
+      roleplays,
+    };
   }
 
   // ----- Badge-System ("Mein Ruta-Pass") -----
@@ -1074,6 +1096,22 @@
     return sec.items.reduce((n, it) => n + (seen[it.id] ? 1 : 0), 0);
   }
 
+  // Führenden Artikel (el/la/los/las) abtrennen – für natürlichere Fragen
+  // wie «¿Tienen agua?» statt «¿Tienen el agua?».
+  function shoppingBareNoun(es) {
+    return String(es || "").replace(/^(el|la|los|las)\s+/i, "");
+  }
+
+  // Zwei gebrauchsfertige Supermarkt-Fragen pro Item:
+  // 1) ob sie es haben, 2) wo man es findet. «¿Dónde puedo encontrar …?»
+  // funktioniert für Ein- und Mehrzahl gleich (keine está/están-Falle).
+  function shoppingAskPhrases(item) {
+    return {
+      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: "Haben Sie das?" },
+      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: "Wo finde ich das?" },
+    };
+  }
+
   function comprasVM() {
     const curId = state.compras.section;
     const sec = shoppingSectionById(curId) || shoppingSections()[0];
@@ -1084,6 +1122,7 @@
     }));
     const items = sec.items.map((it) => ({
       id: it.id, de: it.de, es: it.es, tip: it.tip, note: it.note,
+      ask: shoppingAskPhrases(it),
       open: state.compras.open === it.id, seen: !!seen[it.id],
     }));
     return {
@@ -1113,33 +1152,41 @@
     render();
   }
 
-  // Ein Item antippen: auf-/zuklappen. Beim Aufklappen Wort vorlesen und
-  // (einmalig) als „abgehakt" für den Fortschritt vermerken.
+  // Ein Item antippen: nur auf-/zuklappen und beim Aufklappen das Wort
+  // vorlesen. Das Abhaken ist davon getrennt (eigene Checkbox), damit man
+  // ein Wort nachschlagen kann, ohne es gleich abzuhaken.
   function comprasPick(id) {
     const item = shoppingItemById(id);
     if (!item) return;
     const opening = state.compras.open !== id;
     state.compras = { section: state.compras.section, open: opening ? id : null };
-    if (opening) {
-      buzz(8);
-      recordShoppingView(id);
-    }
+    if (opening) buzz(8);
     render();
     if (opening && speech && speech.isSupported()) speech.speak(item.es);
   }
 
-  // Distinkt abgehaktes Item persistent vermerken (No-Op bei erneutem Antippen).
-  function recordShoppingView(id) {
-    if (!id || (gamestats.shoppingSeen && gamestats.shoppingSeen[id])) return;
-    const seen = Object.assign({}, gamestats.shoppingSeen, { [id]: true });
+  // Checkbox antippen: Item ab-/aufhaken (echte Einkaufsliste). Der Stand
+  // wird persistent gemerkt und lässt sich jederzeit wieder zurücknehmen.
+  function comprasToggle(id) {
+    if (!id || !shoppingItemById(id)) return;
+    const cur = gamestats.shoppingSeen || {};
+    const seen = Object.assign({}, cur);
+    if (seen[id]) delete seen[id]; else seen[id] = true;
     gamestats = Object.assign({}, gamestats, { shoppingSeen: seen });
     store.saveGameStats(gamestats);
+    buzz(seen[id] ? 12 : 8);
+    render();
   }
 
   // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
   function speakCompras(id) {
     const item = shoppingItemById(id);
     if (item && speech && speech.isSupported()) speech.speak(item.es);
+  }
+
+  // 🔊-Knopf an einer Supermarkt-Frage: den übergebenen Satz vorlesen.
+  function speakComprasPhrase(text) {
+    if (text && speech && speech.isSupported()) speech.speak(text);
   }
 
   // ----- Einkaufszettel-Quiz (Multiple Choice über die Items einer Rubrik) -----
@@ -1343,6 +1390,7 @@
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
+    else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
@@ -2163,6 +2211,12 @@
     render();
   }
 
+  function openRegatear() {
+    dismissBadgeToast();
+    state.screen = "regatear";
+    render();
+  }
+
   function selectCountry(id) {
     state.countryId = id;
     render();
@@ -2440,6 +2494,7 @@
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
     else if (action === "open-knigge") openKnigge();
+    else if (action === "open-regatear") openRegatear();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
@@ -2500,7 +2555,9 @@
     else if (action === "open-compras") openCompras();
     else if (action === "compras-section") comprasSection(el.dataset.id);
     else if (action === "compras-pick") comprasPick(el.dataset.id);
+    else if (action === "compras-toggle") comprasToggle(el.dataset.id);
     else if (action === "compras-speak") speakCompras(el.dataset.id);
+    else if (action === "compras-speak-phrase") speakComprasPhrase(el.dataset.say);
     else if (action === "open-compras-quiz") openComprasQuiz();
     else if (action === "compras-quiz-answer") answerComprasQuiz(Number(el.dataset.idx));
     else if (action === "compras-quiz-next") nextComprasQuiz();

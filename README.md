@@ -4,7 +4,7 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.14.0** — 710 Karten · 23 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Gegenteile (Contrarios)** · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · Spickzettel · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.16.0** — 710 Karten · 23 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
@@ -109,7 +109,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Hostel Mode** | Üben zu zweit 🛏️ | **Battle** (45 Aufgaben mit Schwierigkeits-Stufen; Ansage auf Deutsch, laut auf Spanisch antworten, Mitspieler bewertet 2/1/0; wählbare Länge 6/10/20 Runden, faire Aufgabenverteilung, optionale Spielernamen, Stichrunde bei Gleichstand) & **Rollenspiele** (kurze Dialoge mit verteilten Rollen) — plus Real-Life-Challenge als Bonus |
 | **Konjugieren** | Verben + Erklärseite 🔁 | Eigener Bereich mit 42 Karten zu den Präsens-Formen der wichtigsten Reiseverben (ir, estar, ser, tener, poder, querer, seguir, doblar …) — Grundlage z. B. für Wegbeschreibungen. Dazu unter Entdecken die Erklärseite **Conjugación**: Personen, die drei regelmäßigen Muster (-ar/-er/-ir), wichtige unregelmäßige Verben und ein Wegbeschreibungs-Dialog, LatAm-korrekt mit *ustedes* statt *vosotros* — mit „Jetzt üben"-Sprung direkt in die Karten |
 | **Definiciones** | Zuordnen-Quiz 🧩 | Eigenständiges Modul im Stil eines Lehrbuch-Arbeitsblatts: **spanische Definition lesen, passenden Begriff aus mehreren Optionen wählen** — mit sofortiger Rückmeldung, Fortschrittsbalken und Auswertung. Themen-Listen (*En la ciudad*, *En la ruta* mit Backpacker-Orten, *La comida*); lernt Wörter über ihre Bedeutung statt nur per Übersetzung. Zahlt auf den Ruta-Pass ein |
-| **Einkaufszettel** | Interaktive Liste 🛒 | Reisebedarf in drei Rubriken (**Supermercado · Ropa · Farmacia**): Item antippen → spanisches Wort, Aussprache und Reisetipp erscheinen, das Wort wird vorgelesen und auf dem Zettel **abgehakt** (Fortschritt bleibt gemerkt). Danach ein **kurzes Quiz** über dieselbe Rubrik („Du brauchst …" → richtiges Wort wählen). LatAm-korrekt (*curitas, medias, lentes de sol, repelente*) inkl. Reise-Klassiker wie Klopapier, Sonnencreme & „algo para la diarrea" |
+| **Einkaufszettel** | Interaktive Liste 🛒 | Reisebedarf in drei Rubriken (**Supermercado · Ropa · Farmacia**): Item antippen → spanisches Wort, Aussprache und Reisetipp erscheinen, das Wort wird vorgelesen; dazu zwei **fertige Fragen fürs Geschäft** (ob sie es haben — *¿Tienen …?* — und wo man es findet — *¿Dónde puedo encontrar …?*) mit Übersetzung und 🔊. Über das Kästchen links **abhaken** (und jederzeit wieder zurücknehmen), Fortschritt bleibt gemerkt. Danach ein **kurzes Quiz** über dieselbe Rubrik („Du brauchst …" → richtiges Wort wählen). LatAm-korrekt (*curitas, medias, lentes de sol, repelente*) inkl. Reise-Klassiker wie Klopapier, Sonnencreme & „algo para la diarrea" |
 | **Reise-Kontext** | 🧭 Kontext-Button | Runder Button unten links auf der Antwortkarte (Pendant zum 🔊): klappt einen Block mit echtem Reisesatz, typischer Situation und kurzem Reisetipp auf — für **alle 710 Karten**. Zeigt, *wie* man den Ausdruck unterwegs wirklich benutzt (statt nur zu übersetzen); Zahlen bekommen praktischen Preis-/Mengen-Kontext |
 | **Statistik** | Lern-Auswertung | Trefferquote, gemeistert / schwierig / neu, **Streckenkarte** (Fortschritt als Bus-Route), sortierte Kartenliste, Detailseite je Karte |
 | **Ruta-Pass** | Badges / Reisestempel 🎖️ | Sammelbare Stempel für Lernmenge, Lern-Serie (Streak), Bereichs-Meisterschaft & Spezielles — inkl. Geheim-Stempel und Freischalt-Einblendung |
@@ -118,6 +118,8 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Sprachausgabe** | TTS (Web Speech API) | Spricht die spanische Antwort vor, bevorzugt eine LatAm-Stimme |
 | **Sharepics** | Canvas-Bildgenerator | Karte oder Fortschritt als teilbares PNG (1:1 Feed oder 9:16 Story) |
 | **Länderkunde** | 19 Länder | Hauptstadt, Geschichte, Sprache, typische Wörter, Essen, Trinken & Reisetipp |
+| **Reise-Knigge** | Verhalten unterwegs 🧭 | DOs & Don'ts für Hostel, Bus, Gruppen und Kultur — mit landesspezifischen Akzenten für alle 19 Länder (mit der Länderkunde verknüpft) |
+| **Regatear** | Gut verhandeln 🤝 | Wie man auf Märkten freundlich feilscht: **Erklärung** der Taktik in 4 Blöcken (Grundhaltung, Verhandlung führen, Abschluss & Weggehen, Taxi/Touren), **Glossar** der Feilsch-Wörter (*regatear, la rebaja, precio fijo, la yapa*), die **wichtigsten Sätze** nach Phasen (*¿A cuánto la unidad?*, *¿Cuánto es lo menos?*, *Trato hecho*, *¿Tiene cambio?*), **Mengen & Einheiten** (unidad, docena, par, libra, kilo, litro, manojo …), **regionale Unterschiede** (México, Guatemala, Perú/Bolivia, Colombia, Argentina, Costa Rica, Cuba) und vier **Rollenspiele** zum lauten Üben (Obst & Gemüse, Souvenir feilschen, erst suchen dann handeln, Taxipreis aushandeln) |
 | **Touch + Tastatur** | Vollständige Bedienung | Wischgesten (←/↑/→), Tasten 1/2/3/Space/p, Haptik-Feedback wo verfügbar |
 | **PWA** | Installierbar & offline | Service Worker, Manifest, Homescreen-Icon, App-Shell-Fallback |
 | **Accessibility** | A11y-Maßnahmen | Fokus-Management nach Render, `aria-live`-Regionen, `prefers-reduced-motion`, ≥44px Tap-Targets |
@@ -179,6 +181,7 @@ SpanischCard/
 ├── context.js     SC.context    # hängt Kontext an die Karten (Zahlen generiert) – REINE FUNKTIONEN
 ├── countries.js   SC.countries  # Länderkunde: 19 Länder in 3 Regionen
 ├── frases.js      SC.frases     # Satzbaukasten: Satzrahmen + Bausteine (REINE DATEN)
+├── regatear.js    SC.regatear   # Regatear: Verhandeln-Taktik, Sätze, Einheiten, Rollenspiele (REINE DATEN)
 │
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
 ├── matcher.js     SC.matcher    # Antwortprüfung, akzent-/satzzeichen-tolerant — REINE FUNKTIONEN
