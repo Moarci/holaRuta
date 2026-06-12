@@ -21,6 +21,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.4.1",
+      date: "2026-06-12",
+      title: "Modus klarer benannt",
+      items: [
+        "„Sprechen“ heißt jetzt „🃏 Karteikarte“ – ehrlicher, denn hier gibt es keine Prüfung: du denkst oder sagst die Antwort, drehst um und bewertest dich selbst (wie eine echte Karteikarte). Geprüft wird nur im Modus „Schreiben“.",
+      ],
+    },
+    {
       version: "1.4.0",
       date: "2026-06-12",
       title: "Update-Hinweis",

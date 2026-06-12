@@ -137,13 +137,13 @@
     const lvlSummary = vm.allLevels
       ? "Alle Stufen"
       : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
-    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🗣️ Sprechen"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🃏 Karteikarte"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
     const setupBody = `
       <div class="setup__body" id="setup-body">
         <div class="switchgroup">
           <span class="switchcap">Modus</span>
           <div class="segmented" role="tablist" aria-label="Lernmodus">
-            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🗣️ Sprechen</button>
+            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🃏 Karteikarte</button>
             <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
           </div>
         </div>
@@ -369,7 +369,7 @@
     return `<div class="swatch" aria-hidden="true" style="--sw:${esc(swatch)}"></div>`;
   }
 
-  // Sprechen-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
+  // Karteikarte-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
   // 🔊 und Aussprache-Tipp sitzen immer auf der spanischen Seite.
   function flipBody(vm) {
     const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";

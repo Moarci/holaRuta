@@ -71,9 +71,9 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 
 <div align="center">
 
-| Startseite | Sprechen (Flip) | Antwort aufgedeckt |
+| Startseite | Karteikarte (Flip) | Antwort aufgedeckt |
 |:----------:|:---------------:|:------------------:|
-| <img src="docs/screenshots/home.png" width="250" alt="Startseite mit 15 Bereichen, Modus-, Richtungs- und Stufen-Auswahl"> | <img src="docs/screenshots/study-flip.png" width="250" alt="Lernkarte im Sprechen-Modus, Frageseite"> | <img src="docs/screenshots/study-flip-revealed.png" width="250" alt="Aufgedeckte Karte mit Aussprache und Bewertungs-Buttons"> |
+| <img src="docs/screenshots/home.png" width="250" alt="Startseite mit 15 Bereichen, Modus-, Richtungs- und Stufen-Auswahl"> | <img src="docs/screenshots/study-flip.png" width="250" alt="Lernkarte im Karteikarte-Modus, Frageseite"> | <img src="docs/screenshots/study-flip-revealed.png" width="250" alt="Aufgedeckte Karte mit Aussprache und Bewertungs-Buttons"> |
 
 | Schreiben (Type) | Antwort geprüft | Statistik |
 |:----------------:|:---------------:|:---------:|
@@ -93,13 +93,13 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 
 | Bereich | Feature | Details |
 |---|---|---|
-| **Lernmodus** | Sprechen (Flip) | Karte antippen / Space → 3D-Flip zeigt die Antwort, dann bewerten |
+| **Lernmodus** | Karteikarte (Flip) | Karte antippen / Space → 3D-Flip zeigt die Antwort, dann selbst bewerten (keine Prüfung) |
 | **Lernmodus** | Schreiben (Type) | Antwort tippen → großzügiger Matcher prüft (akzent- & satzzeichen-tolerant) |
 | **Richtung** | DE→ES / ES→DE | Lernrichtung jederzeit umschaltbar, wird gemerkt |
 | **Spaced Repetition** | Eigene SM-2-Engine | 3-Tasten-Bewertung (Nochmal / Gut / Einfach), Intervall- & Ease-Berechnung |
 | **Stufen-Filter** | A1 / A2 / B1 | Mehrfachauswahl der Schwierigkeitsstufen, kombinierbar mit Bereich |
 | **20 Bereiche** | Themen-Kategorien | Grundlagen, Zahlen, Essen, Trinken, Hotel, Hostel, Social, Verkehr, Einkaufen, Geld, Notfall, Zeit, Smalltalk, Alltag, Sätze, Behörden, Busreise, Kleidungsschmuck, Wegbeschreibung, Farben |
-| **Farben** | Interaktives Farbfeld 🎨 | Eigener Bereich für alle wichtigen Farben (LatAm: café, celeste, morado …): Auf der Antwortseite erscheint die **echte Farbe als Farbfeld** — Farbe sehen statt nur übersetzen. Funktioniert in Sprechen & Schreiben und auf der Karten-Detailseite |
+| **Farben** | Interaktives Farbfeld 🎨 | Eigener Bereich für alle wichtigen Farben (LatAm: café, celeste, morado …): Auf der Antwortseite erscheint die **echte Farbe als Farbfeld** — Farbe sehen statt nur übersetzen. Funktioniert in Karteikarte & Schreiben und auf der Karten-Detailseite |
 | **Hostel Mode** | Üben zu zweit 🛏️ | **Battle** (Aufgabe auf Deutsch, laut auf Spanisch antworten, Mitspieler bewertet 2/1/0 über 10 Runden) & **Rollenspiele** (kurze Dialoge mit verteilten Rollen) — plus Real-Life-Challenge als Bonus |
 | **Definiciones** | Zuordnen-Quiz 🧩 | Eigenständiges Modul im Stil eines Lehrbuch-Arbeitsblatts: **spanische Definition lesen, passenden Begriff aus mehreren Optionen wählen** — mit sofortiger Rückmeldung, Fortschrittsbalken und Auswertung. Themen-Listen (*En la ciudad*, *En la ruta* mit Backpacker-Orten, *La comida*); lernt Wörter über ihre Bedeutung statt nur per Übersetzung. Zahlt auf den Ruta-Pass ein |
 | **Reise-Kontext** | 🧭 Kontext-Button | Runder Button unten links auf der Antwortkarte (Pendant zum 🔊): klappt einen Block mit echtem Reisesatz, typischer Situation und kurzem Reisetipp auf — für **alle 576 Karten**. Zeigt, *wie* man den Ausdruck unterwegs wirklich benutzt (statt nur zu übersetzen); Zahlen bekommen praktischen Preis-/Mengen-Kontext |

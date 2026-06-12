@@ -33,7 +33,7 @@
     scopeId: "all",          // 'all' | Kategorie-Id
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
-    revealed: false,         // Sprechen-Modus: Rückseite sichtbar?
+    revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
     contextOpen: false,      // 🧭 Reise-Kontext-Panel aufgeklappt? (Single Source of Truth)
     typeResult: null,        // Schreiben-Modus: { correct, answers, input } | null
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
@@ -1584,7 +1584,7 @@
   }
 
   // ----- Wischgesten (Lernkarte am Smartphone) -----
-  // Sprechen-Modus: hochwischen/antippen = umdrehen. Nach dem Umdrehen
+  // Karteikarte-Modus: hochwischen/antippen = umdrehen. Nach dem Umdrehen
   // (oder im Schreiben-Modus mit Ergebnis): links = Nochmal, rechts = Einfach,
   // hoch = Gut. So lässt sich die App komplett mit dem Daumen bedienen.
   let touch = null; // { x, y } Startpunkt
