@@ -1664,19 +1664,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   transition: border-color 0.15s ease;
 }
 .sl-item.is-open { border-color: var(--brand); }
-.sl-item.is-checked .sl-item__check { color: var(--brand-ink); }
+.sl-item__head { display: flex; align-items: stretch; }
+/* Eigene Checkbox-Taste: hakt das Item ab und wieder auf. */
+.sl-item__check {
+  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
+  padding: 14px 6px 14px 16px; min-height: 52px; cursor: pointer;
+  background: none; border: 0; color: inherit;
+}
+.sl-item__check:active { transform: translateY(1px); }
+.sl-item__box {
+  width: 22px; height: 22px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid var(--line); font-weight: 900; font-size: 0.9rem; color: transparent;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.sl-item.is-checked .sl-item__box {
+  border-color: transparent; color: #fff;
+  background: linear-gradient(120deg, var(--from), var(--to));
+}
 .sl-item__row {
-  width: 100%; display: flex; align-items: center; gap: 12px;
-  padding: 14px 16px; min-height: 52px; cursor: pointer;
+  flex: 1 1 auto; display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px 14px 6px; min-height: 52px; cursor: pointer;
   background: none; border: 0; text-align: left; color: inherit;
 }
 .sl-item__row:active { transform: translateY(1px); }
-.sl-item__check {
-  flex: 0 0 22px; width: 22px; height: 22px; border-radius: 6px;
-  display: inline-flex; align-items: center; justify-content: center;
-  border: 2px solid var(--line); font-weight: 900; font-size: 0.9rem; color: transparent;
-}
-.sl-item.is-checked .sl-item__check { border-color: var(--brand); }
 .sl-item__de { flex: 1 1 auto; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .sl-item__chev { flex: 0 0 auto; color: var(--muted); font-size: 1.3rem; transition: transform 0.18s ease; }
 .sl-item.is-open .sl-item__chev { transform: rotate(90deg); }
@@ -1691,6 +1702,25 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sl-item__tip { margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--ink-soft); }
 .sl-item__note { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
 .sl-speak { position: static; flex: none; }
+
+/* Fertige Fragen fürs Geschäft (Haben Sie …? / Wo finde ich …?). */
+.sl-ask {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 4px; padding: 12px 14px;
+  border: 1.5px solid var(--line); border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--from) 8%, var(--card));
+}
+.sl-ask__cap {
+  font-family: var(--font-display); font-weight: 800; font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+}
+.sl-ask__line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sl-ask__texts { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.sl-ask__de { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+.sl-ask__es {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.02rem;
+  line-height: 1.2; color: var(--brand-ink);
+}
 .sl-quizbtn { margin-top: 4px; }
 
 /* Listen-Auswahl: Intro-Zeile unter dem Titel. */
@@ -10497,6 +10527,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.15.0",
+      date: "2026-06-12",
+      title: "Einkaufszettel: echtes Abhaken + Fragen fürs Geschäft",
+      items: [
+        "✅ Der Einkaufszettel funktioniert jetzt wie eine echte Liste: Über das Kästchen links hakst du ab, was erledigt ist – und nimmst das Häkchen jederzeit wieder zurück. Vorher ließ sich ein Wort nur antippen, aber nicht mehr abwählen.",
+        "Antippen und Abhaken sind getrennt: Ein Wort aufklappen (Aussprache, Reisetipp, Vorlesen) hakt es nicht mehr automatisch ab – so kannst du nachschlagen, ohne die Liste durcheinanderzubringen.",
+        "🗣️ Neu zu jedem Wort zwei gebrauchsfertige Fragen fürs Geschäft – ob sie es haben («¿Tienen …?») und wo man es findet («¿Dónde puedo encontrar …?») – mit Übersetzung und 🔊 zum Vorlesen.",
+      ],
+    },
+    {
       version: "1.14.0",
       date: "2026-06-12",
       title: "Regatear: gut verhandeln & feilschen",
@@ -13012,6 +13052,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: "Wort anhören",
               action: "compras-speak", extra: `data-id="${esc(it.id)}"` })
           : "";
+        // Eine Supermarkt-Frage mit deutschem Label und 🔊 zum Vorlesen.
+        const askLine = (ask) => `
+          <div class="sl-ask__line">
+            <div class="sl-ask__texts">
+              <span class="sl-ask__de">${esc(ask.de)}</span>
+              <span class="sl-ask__es" lang="es">${esc(ask.es)}</span>
+            </div>
+            ${vm.speakable
+              ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: "Frage anhören",
+                  action: "compras-speak-phrase", extra: `data-say="${esc(ask.es)}"` })
+              : ""}
+          </div>`;
+        const ask = it.ask
+          ? `
+            <div class="sl-ask">
+              <span class="sl-ask__cap">Im Geschäft fragen</span>
+              ${askLine(it.ask.have)}
+              ${askLine(it.ask.find)}
+            </div>`
+          : "";
         const detail = it.open
           ? `
             <div class="sl-item__detail" role="region">
@@ -13021,16 +13081,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
               </div>
               ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">🗣️</span> ${esc(it.tip)}</p>` : ""}
               ${it.note ? `<p class="sl-item__note">${esc(it.note)}</p>` : ""}
+              ${ask}
             </div>`
           : "";
         return `
           <li class="sl-item ${it.open ? "is-open" : ""} ${it.seen ? "is-checked" : ""}">
-            <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
-                    aria-expanded="${it.open ? "true" : "false"}">
-              <span class="sl-item__check" aria-hidden="true">${it.seen ? "✓" : ""}</span>
-              <span class="sl-item__de">${esc(it.de)}</span>
-              <span class="sl-item__chev" aria-hidden="true">›</span>
-            </button>
+            <div class="sl-item__head">
+              <button class="sl-item__check" type="button" data-action="compras-toggle" data-id="${esc(it.id)}"
+                      aria-pressed="${it.seen ? "true" : "false"}"
+                      aria-label="${it.seen ? "Häkchen entfernen" : "Abhaken"}: ${esc(it.de)}">
+                <span class="sl-item__box" aria-hidden="true">✓</span>
+              </button>
+              <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
+                      aria-expanded="${it.open ? "true" : "false"}">
+                <span class="sl-item__de">${esc(it.de)}</span>
+                <span class="sl-item__chev" aria-hidden="true">›</span>
+              </button>
+            </div>
             ${detail}
           </li>`;
       })
@@ -13051,7 +13118,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return `
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
         ${hmTopbar("🛒 Einkaufszettel", "home")}
-        <p class="hm-intro">Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe an, was du brauchst – dann erscheinen Wort, Aussprache und ein Reisetipp, und das Wort wird vorgelesen. Wenn du magst, prüf dich danach im kurzen Quiz.</p>
+        <p class="hm-intro">Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe ein Wort an – dann erscheinen Aussprache, ein Reisetipp und zwei fertige Fragen fürs Geschäft (ob sie es haben und wo man es findet), und alles wird vorgelesen. Über das Kästchen links hakst du ab, was du erledigt hast – und nimmst es bei Bedarf wieder zurück. Wenn du magst, prüf dich danach im kurzen Quiz.</p>
         <div class="sl-chips" role="group" aria-label="Rubrik wählen">${chips}</div>
         ${progress}
         <ul class="sl-list">${items}</ul>
@@ -14228,6 +14295,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return sec.items.reduce((n, it) => n + (seen[it.id] ? 1 : 0), 0);
   }
 
+  // Führenden Artikel (el/la/los/las) abtrennen – für natürlichere Fragen
+  // wie «¿Tienen agua?» statt «¿Tienen el agua?».
+  function shoppingBareNoun(es) {
+    return String(es || "").replace(/^(el|la|los|las)\s+/i, "");
+  }
+
+  // Zwei gebrauchsfertige Supermarkt-Fragen pro Item:
+  // 1) ob sie es haben, 2) wo man es findet. «¿Dónde puedo encontrar …?»
+  // funktioniert für Ein- und Mehrzahl gleich (keine está/están-Falle).
+  function shoppingAskPhrases(item) {
+    return {
+      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: "Haben Sie das?" },
+      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: "Wo finde ich das?" },
+    };
+  }
+
   function comprasVM() {
     const curId = state.compras.section;
     const sec = shoppingSectionById(curId) || shoppingSections()[0];
@@ -14238,6 +14321,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     }));
     const items = sec.items.map((it) => ({
       id: it.id, de: it.de, es: it.es, tip: it.tip, note: it.note,
+      ask: shoppingAskPhrases(it),
       open: state.compras.open === it.id, seen: !!seen[it.id],
     }));
     return {
@@ -14267,33 +14351,41 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
-  // Ein Item antippen: auf-/zuklappen. Beim Aufklappen Wort vorlesen und
-  // (einmalig) als „abgehakt" für den Fortschritt vermerken.
+  // Ein Item antippen: nur auf-/zuklappen und beim Aufklappen das Wort
+  // vorlesen. Das Abhaken ist davon getrennt (eigene Checkbox), damit man
+  // ein Wort nachschlagen kann, ohne es gleich abzuhaken.
   function comprasPick(id) {
     const item = shoppingItemById(id);
     if (!item) return;
     const opening = state.compras.open !== id;
     state.compras = { section: state.compras.section, open: opening ? id : null };
-    if (opening) {
-      buzz(8);
-      recordShoppingView(id);
-    }
+    if (opening) buzz(8);
     render();
     if (opening && speech && speech.isSupported()) speech.speak(item.es);
   }
 
-  // Distinkt abgehaktes Item persistent vermerken (No-Op bei erneutem Antippen).
-  function recordShoppingView(id) {
-    if (!id || (gamestats.shoppingSeen && gamestats.shoppingSeen[id])) return;
-    const seen = Object.assign({}, gamestats.shoppingSeen, { [id]: true });
+  // Checkbox antippen: Item ab-/aufhaken (echte Einkaufsliste). Der Stand
+  // wird persistent gemerkt und lässt sich jederzeit wieder zurücknehmen.
+  function comprasToggle(id) {
+    if (!id || !shoppingItemById(id)) return;
+    const cur = gamestats.shoppingSeen || {};
+    const seen = Object.assign({}, cur);
+    if (seen[id]) delete seen[id]; else seen[id] = true;
     gamestats = Object.assign({}, gamestats, { shoppingSeen: seen });
     store.saveGameStats(gamestats);
+    buzz(seen[id] ? 12 : 8);
+    render();
   }
 
   // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
   function speakCompras(id) {
     const item = shoppingItemById(id);
     if (item && speech && speech.isSupported()) speech.speak(item.es);
+  }
+
+  // 🔊-Knopf an einer Supermarkt-Frage: den übergebenen Satz vorlesen.
+  function speakComprasPhrase(text) {
+    if (text && speech && speech.isSupported()) speech.speak(text);
   }
 
   // ----- Einkaufszettel-Quiz (Multiple Choice über die Items einer Rubrik) -----
@@ -15636,7 +15728,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "open-compras") openCompras();
     else if (action === "compras-section") comprasSection(el.dataset.id);
     else if (action === "compras-pick") comprasPick(el.dataset.id);
+    else if (action === "compras-toggle") comprasToggle(el.dataset.id);
     else if (action === "compras-speak") speakCompras(el.dataset.id);
+    else if (action === "compras-speak-phrase") speakComprasPhrase(el.dataset.say);
     else if (action === "open-compras-quiz") openComprasQuiz();
     else if (action === "compras-quiz-answer") answerComprasQuiz(Number(el.dataset.idx));
     else if (action === "compras-quiz-next") nextComprasQuiz();

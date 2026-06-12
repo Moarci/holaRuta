@@ -1094,6 +1094,22 @@
     return sec.items.reduce((n, it) => n + (seen[it.id] ? 1 : 0), 0);
   }
 
+  // Führenden Artikel (el/la/los/las) abtrennen – für natürlichere Fragen
+  // wie «¿Tienen agua?» statt «¿Tienen el agua?».
+  function shoppingBareNoun(es) {
+    return String(es || "").replace(/^(el|la|los|las)\s+/i, "");
+  }
+
+  // Zwei gebrauchsfertige Supermarkt-Fragen pro Item:
+  // 1) ob sie es haben, 2) wo man es findet. «¿Dónde puedo encontrar …?»
+  // funktioniert für Ein- und Mehrzahl gleich (keine está/están-Falle).
+  function shoppingAskPhrases(item) {
+    return {
+      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: "Haben Sie das?" },
+      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: "Wo finde ich das?" },
+    };
+  }
+
   function comprasVM() {
     const curId = state.compras.section;
     const sec = shoppingSectionById(curId) || shoppingSections()[0];
@@ -1104,6 +1120,7 @@
     }));
     const items = sec.items.map((it) => ({
       id: it.id, de: it.de, es: it.es, tip: it.tip, note: it.note,
+      ask: shoppingAskPhrases(it),
       open: state.compras.open === it.id, seen: !!seen[it.id],
     }));
     return {
@@ -1133,33 +1150,41 @@
     render();
   }
 
-  // Ein Item antippen: auf-/zuklappen. Beim Aufklappen Wort vorlesen und
-  // (einmalig) als „abgehakt" für den Fortschritt vermerken.
+  // Ein Item antippen: nur auf-/zuklappen und beim Aufklappen das Wort
+  // vorlesen. Das Abhaken ist davon getrennt (eigene Checkbox), damit man
+  // ein Wort nachschlagen kann, ohne es gleich abzuhaken.
   function comprasPick(id) {
     const item = shoppingItemById(id);
     if (!item) return;
     const opening = state.compras.open !== id;
     state.compras = { section: state.compras.section, open: opening ? id : null };
-    if (opening) {
-      buzz(8);
-      recordShoppingView(id);
-    }
+    if (opening) buzz(8);
     render();
     if (opening && speech && speech.isSupported()) speech.speak(item.es);
   }
 
-  // Distinkt abgehaktes Item persistent vermerken (No-Op bei erneutem Antippen).
-  function recordShoppingView(id) {
-    if (!id || (gamestats.shoppingSeen && gamestats.shoppingSeen[id])) return;
-    const seen = Object.assign({}, gamestats.shoppingSeen, { [id]: true });
+  // Checkbox antippen: Item ab-/aufhaken (echte Einkaufsliste). Der Stand
+  // wird persistent gemerkt und lässt sich jederzeit wieder zurücknehmen.
+  function comprasToggle(id) {
+    if (!id || !shoppingItemById(id)) return;
+    const cur = gamestats.shoppingSeen || {};
+    const seen = Object.assign({}, cur);
+    if (seen[id]) delete seen[id]; else seen[id] = true;
     gamestats = Object.assign({}, gamestats, { shoppingSeen: seen });
     store.saveGameStats(gamestats);
+    buzz(seen[id] ? 12 : 8);
+    render();
   }
 
   // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
   function speakCompras(id) {
     const item = shoppingItemById(id);
     if (item && speech && speech.isSupported()) speech.speak(item.es);
+  }
+
+  // 🔊-Knopf an einer Supermarkt-Frage: den übergebenen Satz vorlesen.
+  function speakComprasPhrase(text) {
+    if (text && speech && speech.isSupported()) speech.speak(text);
   }
 
   // ----- Einkaufszettel-Quiz (Multiple Choice über die Items einer Rubrik) -----
@@ -2502,7 +2527,9 @@
     else if (action === "open-compras") openCompras();
     else if (action === "compras-section") comprasSection(el.dataset.id);
     else if (action === "compras-pick") comprasPick(el.dataset.id);
+    else if (action === "compras-toggle") comprasToggle(el.dataset.id);
     else if (action === "compras-speak") speakCompras(el.dataset.id);
+    else if (action === "compras-speak-phrase") speakComprasPhrase(el.dataset.say);
     else if (action === "open-compras-quiz") openComprasQuiz();
     else if (action === "compras-quiz-answer") answerComprasQuiz(Number(el.dataset.idx));
     else if (action === "compras-quiz-next") nextComprasQuiz();

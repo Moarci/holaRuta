@@ -2326,6 +2326,26 @@
           ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: "Wort anhören",
               action: "compras-speak", extra: `data-id="${esc(it.id)}"` })
           : "";
+        // Eine Supermarkt-Frage mit deutschem Label und 🔊 zum Vorlesen.
+        const askLine = (ask) => `
+          <div class="sl-ask__line">
+            <div class="sl-ask__texts">
+              <span class="sl-ask__de">${esc(ask.de)}</span>
+              <span class="sl-ask__es" lang="es">${esc(ask.es)}</span>
+            </div>
+            ${vm.speakable
+              ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: "Frage anhören",
+                  action: "compras-speak-phrase", extra: `data-say="${esc(ask.es)}"` })
+              : ""}
+          </div>`;
+        const ask = it.ask
+          ? `
+            <div class="sl-ask">
+              <span class="sl-ask__cap">Im Geschäft fragen</span>
+              ${askLine(it.ask.have)}
+              ${askLine(it.ask.find)}
+            </div>`
+          : "";
         const detail = it.open
           ? `
             <div class="sl-item__detail" role="region">
@@ -2335,16 +2355,23 @@
               </div>
               ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">🗣️</span> ${esc(it.tip)}</p>` : ""}
               ${it.note ? `<p class="sl-item__note">${esc(it.note)}</p>` : ""}
+              ${ask}
             </div>`
           : "";
         return `
           <li class="sl-item ${it.open ? "is-open" : ""} ${it.seen ? "is-checked" : ""}">
-            <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
-                    aria-expanded="${it.open ? "true" : "false"}">
-              <span class="sl-item__check" aria-hidden="true">${it.seen ? "✓" : ""}</span>
-              <span class="sl-item__de">${esc(it.de)}</span>
-              <span class="sl-item__chev" aria-hidden="true">›</span>
-            </button>
+            <div class="sl-item__head">
+              <button class="sl-item__check" type="button" data-action="compras-toggle" data-id="${esc(it.id)}"
+                      aria-pressed="${it.seen ? "true" : "false"}"
+                      aria-label="${it.seen ? "Häkchen entfernen" : "Abhaken"}: ${esc(it.de)}">
+                <span class="sl-item__box" aria-hidden="true">✓</span>
+              </button>
+              <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
+                      aria-expanded="${it.open ? "true" : "false"}">
+                <span class="sl-item__de">${esc(it.de)}</span>
+                <span class="sl-item__chev" aria-hidden="true">›</span>
+              </button>
+            </div>
             ${detail}
           </li>`;
       })
@@ -2365,7 +2392,7 @@
     return `
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
         ${hmTopbar("🛒 Einkaufszettel", "home")}
-        <p class="hm-intro">Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe an, was du brauchst – dann erscheinen Wort, Aussprache und ein Reisetipp, und das Wort wird vorgelesen. Wenn du magst, prüf dich danach im kurzen Quiz.</p>
+        <p class="hm-intro">Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe ein Wort an – dann erscheinen Aussprache, ein Reisetipp und zwei fertige Fragen fürs Geschäft (ob sie es haben und wo man es findet), und alles wird vorgelesen. Über das Kästchen links hakst du ab, was du erledigt hast – und nimmst es bei Bedarf wieder zurück. Wenn du magst, prüf dich danach im kurzen Quiz.</p>
         <div class="sl-chips" role="group" aria-label="Rubrik wählen">${chips}</div>
         ${progress}
         <ul class="sl-list">${items}</ul>
