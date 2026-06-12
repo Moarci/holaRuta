@@ -1510,3 +1510,90 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   .quiz-opt { transition: none; }
 }
+
+/* ====================== FRASES FLEXIBLES (Satzbaukasten) ====================== */
+/* Deutscher Zielsatz (was gebaut werden soll) über dem spanischen Rahmen. */
+.frases-target { margin: 4px 0 8px; font-size: 0.92rem; color: var(--muted); }
+.frases-frame { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+/* Die Lücke "___" als sichtbarer, akzentuierter Platzhalter. */
+.frases-gap {
+  display: inline-block; min-width: 64px; height: 2px; margin: 0 2px 5px;
+  border-bottom: 3px dashed var(--brand); vertical-align: middle;
+}
+
+/* ====================== HÖR-MODUS (Escuchar / Dictado) ====================== */
+/* Drei-Spalten-Variante des Modus-Umschalters (Sprechen · Schreiben · Hören). */
+.segmented--three { grid-template-columns: 1fr 1fr 1fr; }
+.segmented--three .seg { padding: 10px 6px; font-size: 0.86rem; }
+
+/* Hör-Karte vor der Antwort: großes Ohr + Replay, Text bleibt verborgen. */
+.card-listen { gap: 14px; }
+.listen-ear { font-size: 3.4rem; line-height: 1; }
+.listen-replay { margin: 0; }
+/* Deutsche Bedeutung als Verständnis-Hilfe auf der aufgedeckten Hör-Ergebnis-Karte. */
+.listen-de { margin-top: 6px; font-size: 0.95rem; color: var(--muted); }
+/* Aussprache-Tipp ist cremefarben (für die bunte Flip-Rückseite gedacht) – auf der
+   hellen Ergebnis-Karte (Schreiben & Hören) sonst unsichtbar. Hier dunkel einfärben. */
+.card-static .face__tip { color: var(--ink-soft); }
+
+/* ====================== RUTA DEL DÍA + STRECKENKARTE ====================== */
+/* Ruta-del-día-Button in der Heute-Karte (zweizeilig, einladend). */
+.today__ruta {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  border: 1.5px dashed color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+  background: color-mix(in srgb, var(--brand) 7%, var(--surface)); color: var(--brand-ink);
+  cursor: pointer; padding: 11px 14px; border-radius: var(--r-md); box-shadow: var(--shadow);
+}
+.today__ruta:active { transform: translateY(1px); }
+.today__ruta-main { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; }
+.today__ruta-sub { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+
+/* Streckenkarte (Statistik): Lernfortschritt als Bus-Strecke. */
+.route {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg);
+  padding: 16px 18px 20px; box-shadow: var(--shadow); margin-top: 12px;
+}
+.route__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 22px; }
+.route__cap { font-family: var(--font-display); font-weight: 800; font-size: 1rem; color: var(--ink); }
+.route__pct { font-size: 0.82rem; font-weight: 800; color: var(--ok); font-variant-numeric: tabular-nums; }
+.route__track { position: relative; height: 4px; border-radius: 999px; background: rgba(45, 27, 18, 0.12); margin: 0 14px; }
+.route__fill { position: absolute; inset: 0 auto 0 0; height: 100%; border-radius: 999px; background: var(--ok); }
+.route__bus { position: absolute; top: -13px; transform: translateX(-50%); font-size: 1.2rem; transition: left 0.4s ease; }
+.route__stops { position: absolute; inset: 0; display: flex; justify-content: space-between; }
+.route__stop { position: relative; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%); }
+.route__stop:first-child { transform: translateX(0); }
+.route__stop:last-child { transform: translateX(0); margin-left: auto; }
+.route__dot {
+  display: flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+  margin-top: -15px; border-radius: 50%; background: var(--card); border: 2px solid var(--line-strong);
+  font-size: 1rem;
+}
+.route__stop.is-learn .route__dot { border-color: var(--warn); }
+.route__stop.is-master .route__dot { border-color: var(--ok); }
+.route__n { margin-top: 4px; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+.route__lbl { font-size: 0.7rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .route__bus { transition: none; } }
+
+/* ====================== SPICKZETTEL (Survival-Schnellzugriff) ====================== */
+.sz-group { margin-top: 18px; }
+.sz-group__h {
+  margin: 0 0 8px; padding-left: 10px; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.05rem; color: var(--ink); border-left: 4px solid;
+  border-image: linear-gradient(var(--from), var(--to)) 1;
+}
+.sz-list { display: flex; flex-direction: column; gap: 8px; }
+.sz-row {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  box-shadow: var(--shadow);
+}
+.sz-row__main { flex: 1 1 auto; min-width: 0; }
+.sz-row__de { font-size: 0.82rem; color: var(--muted); }
+.sz-row__es { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--ink); line-height: 1.25; overflow-wrap: anywhere; }
+.sz-row__tip { margin-top: 2px; font-size: 0.8rem; font-style: italic; color: var(--ink-soft); }
+.sz-speak {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 1.15rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.sz-speak:active { transform: scale(0.92); }
