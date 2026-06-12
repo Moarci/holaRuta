@@ -1064,17 +1064,20 @@
 
   // Battle: Szene wählen.
   function renderBattleSetup(vm) {
+    // Badge zeigt die tatsächliche Rundenzahl bei der gewählten Länge – ehrlicher
+    // als die reine Aufgabenzahl (kleine Szenen ergeben weniger Runden).
+    const roundsBadge = (n) => `<span class="hm-scene__count">${n} Runden</span>`;
     const scenes = [
       `<button class="hm-scene" data-action="start-battle" data-scene="all">
          <span class="hm-scene__icon" aria-hidden="true">🎲</span>
          <span class="hm-scene__label">Alle Szenen</span>
-         <span class="hm-scene__count">${vm.totalCount}</span>
+         ${roundsBadge(vm.totalRounds)}
        </button>`,
       ...vm.scenes.map((s) =>
         `<button class="hm-scene" data-action="start-battle" data-scene="${esc(s.id)}">
            <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
            <span class="hm-scene__label">${esc(s.label)}</span>
-           <span class="hm-scene__count">${s.count}</span>
+           ${roundsBadge(s.rounds)}
          </button>`),
     ].join("");
     const lengths = vm.lengths.map((l) =>
@@ -1086,12 +1089,31 @@
     return `
       <section class="screen">
         ${hmTopbar("⚔️ Battle", "open-hostel")}
-        <p class="hm-intro">Wählt eine Situation. Die App zeigt eine Aufgabe auf Deutsch – einer antwortet laut auf Spanisch, der andere bewertet.</p>
+        <p class="hm-intro">Ein Sprach-Duell zu zweit: Aufgabe auf Deutsch lesen, laut auf Spanisch antworten – der Mitspieler bewertet. Wer mehr Punkte sammelt, gewinnt.</p>
+        <details class="hm-how" open>
+          <summary class="hm-how__sum">So läuft ein Battle</summary>
+          <ol class="hm-steps">
+            <li><b>Zu zweit:</b> Ihr seid Spieler A und B – ein Handy reicht, ihr reicht es reihum weiter.</li>
+            <li><b>Antworten:</b> Die App zeigt eine Aufgabe auf Deutsch. Wer dran ist, sagt sie laut auf Spanisch.</li>
+            <li><b>Bewerten:</b> „Lösung anzeigen“ – der andere vergleicht und tippt ✅ Richtig&nbsp;(2), 😬 Fast&nbsp;(1) oder ❌ Falsch&nbsp;(0).</li>
+            <li><b>Abwechseln:</b> A, B, A, B … bis alle Runden gespielt sind. Am Ende gewinnt, wer mehr Punkte hat – plus eine Real-Life-Challenge als Bonus.</li>
+          </ol>
+        </details>
         <div class="hm-length">
           <span class="hm-length__cap">Länge</span>
           <div class="segmented segmented--len" role="group" aria-label="Battle-Länge">${lengths}</div>
         </div>
-        <div class="hm-scenes">${scenes}</div>
+        <div class="hm-names">
+          <span class="hm-length__cap">Namen <span class="hm-names__opt">(optional)</span></span>
+          <div class="hm-names__row">
+            <input id="pname-a" class="hm-name" type="text" inputmode="text" autocomplete="off"
+                   maxlength="14" placeholder="Spieler A" aria-label="Name Spieler A" value="${esc(vm.names.A)}">
+            <span class="hm-names__vs" aria-hidden="true">vs</span>
+            <input id="pname-b" class="hm-name" type="text" inputmode="text" autocomplete="off"
+                   maxlength="14" placeholder="Spieler B" aria-label="Name Spieler B" value="${esc(vm.names.B)}">
+          </div>
+        </div>
+        <div class="hm-scenes"><span class="hm-length__cap">Szene wählen &amp; starten</span>${scenes}</div>
       </section>`;
   }
 
@@ -1107,7 +1129,10 @@
             : ""}
         </div>
         <div class="hm-verdict">
-          <p class="hm-verdict__cap">Spieler ${vm.current === "A" ? "B" : "A"} bewertet:</p>
+          <p class="hm-verdict__cap"><b>${esc(vm.raterName)}</b> bewertet die Antwort:</p>
+          ${vm.alsoOk && vm.alsoOk.length
+            ? `<p class="hm-verdict__fair">Diese Varianten zählen auch als richtig.</p>`
+            : ""}
           <div class="ratebar" role="group" aria-label="Antwort bewerten">
             <button class="feel feel--again" data-action="battle-score" data-points="0">
               <span class="feel__emoji" aria-hidden="true">❌</span><span class="feel__txt">Falsch</span>
@@ -1124,16 +1149,20 @@
         ${vm.hint ? `<div class="hm-hint">💡 ${esc(vm.hint)}</div>` : ""}
         <button class="cta" data-action="battle-reveal">Lösung anzeigen</button>`;
 
+    const meta = `
+      <span class="hm-prompt__tag">${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}</span>
+      ${vm.levelShort ? `<span class="hm-prompt__lvl">${esc(vm.levelShort)}</span>` : ""}`;
+
     return `
       <section class="screen study">
-        ${hmTopbar(`${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
+        ${hmTopbar(vm.suddenDeath ? "⚡ Stichrunde" : `${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
         <div class="hm-score">
-          <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">A <b>${vm.scores.A}</b></span>
-          <span class="hm-score__round">Runde ${vm.round}/${vm.totalRounds}</span>
-          <span class="hm-score__p ${vm.current === "B" ? "is-turn" : ""}">B <b>${vm.scores.B}</b></span>
+          <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">${esc(vm.chipA)} <b>${vm.scores.A}</b></span>
+          <span class="hm-score__round">${vm.suddenDeath ? "⚡ " : ""}Runde ${vm.round}/${vm.totalRounds}</span>
+          <span class="hm-score__p ${vm.current === "B" ? "is-turn" : ""}">${esc(vm.chipB)} <b>${vm.scores.B}</b></span>
         </div>
-        <p class="hm-turn" aria-live="polite">Spieler <b>${vm.current}</b> ist dran – laut auf Spanisch!</p>
-        <div class="hm-prompt">${esc(vm.promptDe)}</div>
+        <p class="hm-turn" aria-live="polite"><b>${esc(vm.currentName)}</b> ist dran – laut auf Spanisch!</p>
+        <div class="hm-prompt"><div class="hm-prompt__meta">${meta}</div>${esc(vm.promptDe)}</div>
         <div class="controls">${solution}</div>
       </section>`;
   }
@@ -1142,7 +1171,11 @@
   function renderBattleDone(vm) {
     const verdict = vm.winner === "tie"
       ? "Unentschieden! 🤝"
-      : `Spieler ${vm.winner} gewinnt! 🏆`;
+      : `${esc(vm.winnerName)} gewinnt! 🏆`;
+    // Bei Gleichstand: Stichrunde anbieten (zwei Extra-Runden, A & B).
+    const tieBreak = vm.winner === "tie"
+      ? `<button class="cta cta--tiebreak" data-action="battle-sudden-death">⚡ ${vm.suddenDeath ? "Noch eine Stichrunde" : "Stichrunde spielen"}</button>`
+      : "";
     const challenge = vm.challenge
       ? `
         <div class="hm-challenge">
@@ -1160,11 +1193,12 @@
           <div class="done__emoji">🎉</div>
           <h2>Ihr habt ${esc(vm.sceneLabel)} überlebt</h2>
           <p class="hm-result">
-            <span class="hm-result__p">Spieler A<br><b>${vm.scores.A}</b></span>
+            <span class="hm-result__p ${vm.winner === "A" ? "is-win" : ""}">${esc(vm.nameA)}<br><b>${vm.scores.A}</b></span>
             <span class="hm-result__vs">:</span>
-            <span class="hm-result__p">Spieler B<br><b>${vm.scores.B}</b></span>
+            <span class="hm-result__p ${vm.winner === "B" ? "is-win" : ""}">${esc(vm.nameB)}<br><b>${vm.scores.B}</b></span>
           </p>
           <p class="hm-winner">${verdict}</p>
+          ${tieBreak}
           ${challenge}
           <button class="cta" data-action="battle-again">Nochmal spielen</button>
           <button class="ghostbtn" data-action="home">Zur Übersicht</button>

@@ -338,14 +338,23 @@ test("data.CATEGORIES: Hostel & Social vorhanden, jede Karte hat gültige cat", 
   data.CARDS.forEach((c) => assert.ok(catIds.has(c.cat), `unbekannte cat: ${c.cat} (${c.id})`));
 });
 
-test("data.BATTLES: Pflichtfelder, gültige scene, acceptable nicht leer", () => {
+test("data.BATTLES: Pflichtfelder, gültige scene, acceptable nicht leer, gültige Stufe", () => {
   const scenes = new Set(data.BATTLE_SCENES.map((s) => s.id));
+  const lvlIds = new Set(data.LEVELS.map((l) => l.id));
   const ids = data.BATTLES.map((b) => b.id);
   assert.equal(new Set(ids).size, ids.length); // eindeutige IDs
   data.BATTLES.forEach((b) => {
     assert.ok(b.promptDe && b.answerEs, `Felder fehlen: ${b.id}`);
     assert.ok(scenes.has(b.scene), `unbekannte scene: ${b.scene} (${b.id})`);
     assert.ok(Array.isArray(b.acceptable) && b.acceptable.length > 0, `acceptable leer: ${b.id}`);
+    assert.ok(lvlIds.has(b.level), `ungültige Stufe: ${b.level} (${b.id})`);
+  });
+});
+
+test("data.BATTLES: jede Szene liefert genug für eine faire Mindest-Runde (≥ 4)", () => {
+  data.BATTLE_SCENES.forEach((s) => {
+    const n = data.BATTLES.filter((b) => b.scene === s.id).length;
+    assert.ok(n >= 4, `Szene ${s.id} hat nur ${n} Aufgaben`);
   });
 });
 
