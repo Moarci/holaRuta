@@ -15,6 +15,8 @@
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
+  const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
+  const conjug = window.SC.conjug || null;       // Konjugations-Drill-Generator (optional)
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
@@ -66,6 +68,12 @@
     preciosLevel: [1, 2, 3].includes(settings.preciosLevel) ? settings.preciosLevel : 2,                        // zuletzt gewählte Stufe
     // ----- Frases flexibles (Satzbaukasten, transient) -----
     frases: null,            // { setId, queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
+    // ----- Diálogos (Gesprächs-Simulationen, transient) -----
+    dialogos: null,          // { scenarioId, dialogueId, turnIdx, result:{correct,given}|null, correct, totalUser }
+    // ----- Conjugador (generativer Konjugations-Drill, transient) -----
+    // Items werden pro Runde frisch erzeugt (SC.conjug) aus data.CONJUGATION.
+    conjug: null,            // { level, queue:[{verb,verbHint,personEs,personDe,answer}…], idx, total, result:{correct,input,answer}|null, correct }
+    conjugLevel: [1, 2].includes(settings.conjugLevel) ? settings.conjugLevel : 2, // zuletzt gewählte Stufe
     // ----- Spickzettel (Survival-Schnellzugriff, transient) -----
     szShow: null,            // Großanzeige: Karten-Id des bildschirmfüllend gezeigten Satzes | null
     // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
@@ -75,6 +83,8 @@
     // ----- Einkaufszettel (interaktive Einkaufsliste) -----
     compras: { section: "super", open: null }, // aktuelle Rubrik + aufgeklapptes Item (Id|null)
     comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
+    // ----- Trip-Ziel (Countdown + Tagesziel) -----
+    tripEdit: false,         // Trip-Ziel-Formular auf der Startseite aufgeklappt?
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -182,6 +192,7 @@
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
+      hasDialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length), // Gesprächs-Simulationen
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
@@ -192,6 +203,9 @@
       },
       lastCat,
       setupOpen: setupOpenDefault(),
+      speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
+      trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
+      tripEdit: state.tripEdit, // Formular aufgeklappt?
       tab: state.homeTab,
       install: installVM(),
     };
@@ -417,6 +431,61 @@
     return gap !== null && gap <= 1 ? (gamestats.dailyStreak || 0) : 0;
   }
 
+  // ----- Trip-Ziel (Countdown + Tagesziel) -----
+  // Optionales Reiseziel mit Datum und Karten-pro-Tag-Ziel. Schärft die Habit-
+  // Schleife: „Noch 12 Tage bis Cusco · 8/15 heute". Liegt in gamestats
+  // (tripGoal) und stützt sich auf den Tageszähler dailyCounts aus recordStudyEvent.
+  function tripGoalVM() {
+    const t = gamestats.tripGoal;
+    if (!t) return null;
+    const today = dayKey(Date.now());
+    const daysLeft = daysBetween(today, t.endDate); // null wenn Datum kaputt
+    const todayCount = (gamestats.dailyCounts && gamestats.dailyCounts[today]) || 0;
+    const perDay = t.perDay || 1;
+    return {
+      destination: t.destination,
+      endDate: t.endDate,
+      perDay,
+      daysLeft: daysLeft === null ? 0 : daysLeft, // <0 = Termin vorbei
+      past: daysLeft !== null && daysLeft < 0,
+      today: t.endDate === today,
+      todayCount,
+      todayDone: todayCount >= perDay,
+      todayPct: Math.max(0, Math.min(100, Math.round((todayCount / perDay) * 100))),
+    };
+  }
+
+  function setTripGoal(fields) {
+    const destination = String(fields.destination || "").trim().slice(0, 80);
+    const endDate = /^\d{4}-\d{2}-\d{2}$/.test(fields.endDate) ? fields.endDate : "";
+    // Rohwert ZUERST prüfen: leeres/0/ungültiges Tagesziel ablehnen statt still auf
+    // 1 zu klemmen (sonst wäre die Fehlermeldung toter Code). Danach auf ≤500 deckeln.
+    const perDayRaw = Math.round(Number(fields.perDay));
+    if (!endDate || !(perDayRaw >= 1)) {
+      showNotice("Bitte ein gültiges Datum und ein Tagesziel angeben.");
+      return;
+    }
+    const perDay = Math.min(500, perDayRaw);
+    const goal = { destination, endDate, perDay, startedAt: dayKey(Date.now()) };
+    gamestats = Object.assign({}, gamestats, { tripGoal: goal });
+    store.saveGameStats(gamestats);
+    state.tripEdit = false;
+    buzz(8);
+    render();
+  }
+
+  function clearTripGoal() {
+    gamestats = Object.assign({}, gamestats, { tripGoal: null });
+    store.saveGameStats(gamestats);
+    state.tripEdit = false;
+    render();
+  }
+
+  function toggleTripEdit() {
+    state.tripEdit = !state.tripEdit;
+    render();
+  }
+
   // Einstellungs-Panel des Lernen-Reiters: standardmäßig zu (Set-once-
   // Einstellungen), offen nur, wenn der Nutzer es selbst aufgeklappt hat.
   function setupOpenDefault() {
@@ -451,6 +520,12 @@
     const hour = new Date(now).getHours();
     if (hour >= 22) g.nightOwl = true;   // "Midnight Español" – nach 22 Uhr
     if (hour < 9) g.earlyBird = true;    // "Café con Vocabulario" – vor 9 Uhr
+
+    // Trip-Ziel: Tageszähler der heutigen Bewertungen fortschreiben (Fortschritts-
+    // balken „X/Y heute"). Läuft unabhängig vom Streak, auch ohne gesetztes Ziel.
+    const counts = Object.assign({}, g.dailyCounts);
+    counts[today] = (counts[today] || 0) + 1;
+    g.dailyCounts = counts;
 
     gamestats = g;
     store.saveGameStats(gamestats);
@@ -855,6 +930,7 @@
     return {
       guide: data.CONJUGATION,
       cardCount: data.CARDS.filter((c) => c.cat === "verbos").length,
+      canDrill: conjugReady(), // Conjugador-Drill verfügbar (Modul geladen)?
     };
   }
 
@@ -1024,6 +1100,174 @@
     store.saveGameStats(gamestats);
   }
 
+  // ----- Diálogos: Gesprächs-Simulationen -----
+  // Eine Reisesituation Zug für Zug durchspielen. npc-Züge werden angezeigt und
+  // (falls TTS da ist) vorgelesen; user-Züge sind Multiple-Choice oder freies
+  // Tippen (matcher.normalize). Pro Szenario ein zufälliger Dialog aus dem cat-Pool.
+  const dialogosReady = () => !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length);
+  const dialogueById = (id) => (dialogos ? dialogos.DIALOGOS.find((d) => d.id === id) : null) || null;
+  const scenarioById = (id) => (dialogos ? dialogos.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null;
+
+  function dialogosSetupVM() {
+    return {
+      available: dialogosReady(),
+      scenarios: dialogosReady()
+        ? dialogos.DIALOGOS_SCENARIOS
+            .filter((s) => dialogos.DIALOGOS.some((d) => d.cat === s.id))
+            .map((s) => ({ id: s.id, title: s.title, icon: s.icon, lvl: s.lvl, intro: s.intro }))
+        : [],
+      hasSpeech: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function dialogosVM() {
+    const d = state.dialogos;
+    const dia = dialogueById(d.dialogueId);
+    const turns = (dia && dia.turns) || [];
+    const scn = scenarioById(d.scenarioId);
+    // Verlaufsspur: alle bereits abgehandelten Züge (npc komplett, beantwortete
+    // user-Züge mit der Musterantwort als „gesagter" Zeile).
+    const transcript = [];
+    for (let i = 0; i < d.turnIdx; i++) {
+      const t = turns[i];
+      if (!t) continue;
+      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: t.de });
+      else transcript.push({ who: "user", es: t.solEs, de: "" });
+    }
+    const cur = turns[d.turnIdx] || null;
+    const current = cur
+      ? (cur.who === "npc"
+          ? { who: "npc", es: cur.es, de: cur.de }
+          : {
+              who: "user",
+              kind: cur.kind,
+              de: cur.de,
+              solEs: cur.solEs,
+              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: o.es })) : null,
+            })
+      : null;
+    return {
+      title: dia ? dia.title : "",
+      icon: scn ? scn.icon : "💬",
+      turnIdx: d.turnIdx,
+      total: turns.length,
+      transcript,
+      current,
+      result: d.result, // null | { correct, given }
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function dialogosDoneVM() {
+    const d = state.dialogos;
+    const dia = dialogueById(d.dialogueId);
+    const scn = scenarioById(d.scenarioId);
+    return {
+      title: dia ? dia.title : "",
+      icon: scn ? scn.icon : "💬",
+      correct: d.correct,
+      total: d.totalUser,
+      perfect: d.totalUser > 0 && d.correct === d.totalUser,
+    };
+  }
+
+  function openDialogosSetup() {
+    dismissBadgeToast();
+    if (!dialogosReady()) return;
+    state.screen = "dialogosSetup";
+    render();
+  }
+
+  function startDialogos(scenarioId) {
+    if (!dialogosReady()) return;
+    const pool = dialogos.DIALOGOS.filter((d) => d.cat === scenarioId);
+    if (!pool.length) return;
+    const dia = pool[Math.floor(Math.random() * pool.length)];
+    const totalUser = dia.turns.filter((t) => t.who === "user").length;
+    state.dialogos = { scenarioId, dialogueId: dia.id, turnIdx: 0, result: null, correct: 0, totalUser };
+    state.screen = "dialogos";
+    render(); // maybeAutoSpeak liest den ersten npc-Zug vor
+  }
+
+  // Aktuellen user-Zug holen (oder null, wenn der aktuelle Zug ein npc-Zug ist).
+  function currentUserTurn() {
+    const d = state.dialogos;
+    const dia = dialogueById(d.dialogueId);
+    const t = dia && dia.turns[d.turnIdx];
+    return t && t.who === "user" ? t : null;
+  }
+
+  function answerDialogosMc(idx) {
+    const d = state.dialogos;
+    if (!d || d.result) return;
+    const t = currentUserTurn();
+    if (!t || t.kind !== "mc" || !t.options[idx]) return;
+    const correct = !!t.options[idx].ok;
+    d.result = { correct, given: t.options[idx].es };
+    if (correct) { d.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function submitDialogosType(input) {
+    const d = state.dialogos;
+    if (!d || d.result) return;
+    const t = currentUserTurn();
+    if (!t || t.kind !== "type") return;
+    const norm = matcher.normalize(input);
+    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(s));
+    const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
+    d.result = { correct, given: input };
+    if (correct) { d.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  // Weiter: vom aktuellen Zug zum nächsten. npc-Züge brauchen kein Ergebnis,
+  // user-Züge erst nach einer Antwort. Am Ende -> Done-Screen.
+  function advanceDialogos() {
+    const d = state.dialogos;
+    if (!d) return;
+    const dia = dialogueById(d.dialogueId);
+    if (!dia) return;
+    const cur = dia.turns[d.turnIdx];
+    if (cur && cur.who === "user" && !d.result) return; // user-Zug erst beantworten
+    if (d.turnIdx >= dia.turns.length - 1) {
+      recordDialogosResult(d);
+      syncBadges(Date.now(), true);
+      state.screen = "dialogosDone";
+      render();
+      return;
+    }
+    d.turnIdx += 1;
+    d.result = null;
+    render();
+  }
+
+  function dialogosAgain() {
+    startDialogos(state.dialogos ? state.dialogos.scenarioId : null);
+  }
+
+  function speakDialogosNpc() {
+    const d = state.dialogos;
+    if (!d || !speech) return;
+    const dia = dialogueById(d.dialogueId);
+    const t = dia && dia.turns[d.turnIdx];
+    if (t && t.who === "npc") speech.speak(t.es, settings.speechRate);
+  }
+
+  // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
+  // Runden und das distinkt gespielte Szenario.
+  function recordDialogosResult(d) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.dialogosPlayed = (g.dialogosPlayed || 0) + 1;
+    if (d.totalUser > 0 && d.correct === d.totalUser) g.dialogosPerfect = (g.dialogosPerfect || 0) + 1;
+    const done = Object.assign({}, g.dialogosScenesDone);
+    done[d.scenarioId] = true;
+    g.dialogosScenesDone = done;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
   // ----- El Cuerpo: interaktive Körperkarte -----
   const bodyPartById = (id) => data.BODY_PARTS.find((p) => p.id === id) || null;
 
@@ -1062,7 +1306,7 @@
     buzz(8);
     recordBodyPartView(id, Date.now());
     render();
-    if (speech && speech.isSupported()) speech.speak(part.es);
+    if (speech && speech.isSupported()) speech.speak(part.es, settings.speechRate);
   }
 
   // Distinkt erkundetes Körperteil vermerken und erfüllte 🧍-Badges freischalten.
@@ -1077,7 +1321,7 @@
   // 🔊-Knopf im Körperteil-Panel: das gewählte Wort (er-)neut vorlesen.
   function speakBodyPart() {
     const part = bodyPartById(state.bodyPartId);
-    if (part && speech && speech.isSupported()) speech.speak(part.es);
+    if (part && speech && speech.isSupported()) speech.speak(part.es, settings.speechRate);
   }
 
   // ----- Einkaufszettel (interaktive Einkaufsliste) -----
@@ -1162,7 +1406,7 @@
     state.compras = { section: state.compras.section, open: opening ? id : null };
     if (opening) buzz(8);
     render();
-    if (opening && speech && speech.isSupported()) speech.speak(item.es);
+    if (opening && speech && speech.isSupported()) speech.speak(item.es, settings.speechRate);
   }
 
   // Checkbox antippen: Item ab-/aufhaken (echte Einkaufsliste). Der Stand
@@ -1181,12 +1425,12 @@
   // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
   function speakCompras(id) {
     const item = shoppingItemById(id);
-    if (item && speech && speech.isSupported()) speech.speak(item.es);
+    if (item && speech && speech.isSupported()) speech.speak(item.es, settings.speechRate);
   }
 
   // 🔊-Knopf an einer Supermarkt-Frage: den übergebenen Satz vorlesen.
   function speakComprasPhrase(text) {
-    if (text && speech && speech.isSupported()) speech.speak(text);
+    if (text && speech && speech.isSupported()) speech.speak(text, settings.speechRate);
   }
 
   // ----- Einkaufszettel-Quiz (Multiple Choice über die Items einer Rubrik) -----
@@ -1411,6 +1655,12 @@
     else if (state.screen === "frasesSetup") root.innerHTML = ui.renderFrasesSetup(frasesSetupVM());
     else if (state.screen === "frases") root.innerHTML = ui.renderFrases(frasesVM());
     else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone(frasesDoneVM());
+    else if (state.screen === "conjugSetup") root.innerHTML = ui.renderConjugSetup(conjugSetupVM());
+    else if (state.screen === "conjug") root.innerHTML = ui.renderConjug(conjugVM());
+    else if (state.screen === "conjugDone") root.innerHTML = ui.renderConjugDone(conjugDoneVM());
+    else if (state.screen === "dialogosSetup") root.innerHTML = ui.renderDialogosSetup(dialogosSetupVM());
+    else if (state.screen === "dialogos") root.innerHTML = ui.renderDialogos(dialogosVM());
+    else if (state.screen === "dialogosDone") root.innerHTML = ui.renderDialogosDone(dialogosDoneVM());
     else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
     else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
     else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
@@ -1451,6 +1701,13 @@
       const it = state.precios.queue[state.precios.idx];
       return it ? { key: "precios:" + state.precios.idx + ":" + it.value, text: it.es } : null;
     }
+    // Diálogos: den aktuellen npc-Zug automatisch vorlesen (die Gegenseite spricht).
+    if (state.screen === "dialogos" && state.dialogos) {
+      const d = state.dialogos;
+      const dia = dialogueById(d.dialogueId);
+      const t = dia && dia.turns[d.turnIdx];
+      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: t.es };
+    }
     return null;
   }
   function maybeAutoSpeak() {
@@ -1461,7 +1718,7 @@
     if (!target) { lastAutoSpoke = null; return; }
     if (target.key === lastAutoSpoke) return;
     lastAutoSpoke = target.key;
-    if (target.text) speech.speak(target.text);
+    if (target.text) speech.speak(target.text, settings.speechRate);
   }
 
   // ----- „Was ist neu?"-Hinweis nach einem Update -----
@@ -1714,6 +1971,17 @@
     settings = Object.assign({}, settings, { mode });
     store.saveSettings(settings);
     render();
+  }
+
+  // Sprechgeschwindigkeit der TTS-Ausgabe wählen und merken. Eine kurze Hörprobe
+  // macht die Wahl sofort erlebbar. speech.speak() deckelt den Wert selbst.
+  const SPEECH_RATES = [0.75, 0.95, 1.2];
+  function setSpeechRate(rate) {
+    const r = SPEECH_RATES.indexOf(rate) >= 0 ? rate : 0.95;
+    settings = Object.assign({}, settings, { speechRate: r });
+    store.saveSettings(settings);
+    render();
+    if (speech && speech.isSupported()) speech.speak("¡Vamos!", r);
   }
 
   // ----- Dark Mode ("Nachts im Hostel-Bett") -----
@@ -2043,7 +2311,7 @@
     if (!speech) return;
     const card = cardById(id);
     if (!card) return;
-    speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
+    speech.speak(matcher.acceptedAnswers(card)[0] || card.es, settings.speechRate);
   }
 
   // ----- Precios al oído (Preis-Hörtrainer) -----
@@ -2183,7 +2451,120 @@
     const p = state.precios;
     if (!p || !speech) return;
     const item = p.queue[p.idx];
-    if (item) speech.speak(item.es);
+    if (item) speech.speak(item.es, settings.speechRate);
+  }
+
+  // ----- Conjugador (generativer Konjugations-Drill) -----
+  // Übt aktiv das Konjugieren statt nur die Erklärseite zu lesen: „ir – wir" →
+  // tippe „vamos". Items werden pro Runde frisch aus data.CONJUGATION erzeugt
+  // (SC.conjug). Stufe 1 = regelmäßige Muster, Stufe 2 = + unregelmäßige Verben.
+  const CONJUG_ROUND = 10;
+  const conjugReady = () => !!(conjug && data.CONJUGATION);
+  const CONJUG_LEVELS = [
+    { id: 1, short: "Regelmäßig", label: "Nur regelmäßige Muster", hint: "-ar · -er · -ir" },
+    { id: 2, short: "Alle", label: "Mit unregelmäßigen Verben", hint: "+ ir, estar, tener …" },
+  ];
+
+  function conjugSetupVM() {
+    return {
+      available: conjugReady(),
+      levels: CONJUG_LEVELS.map((l) => ({ ...l, active: l.id === state.conjugLevel })),
+    };
+  }
+
+  function conjugVM() {
+    const c = state.conjug;
+    const item = c.queue[c.idx] || {};
+    return {
+      position: c.idx,
+      total: c.total,
+      result: c.result, // null | { correct, input, answer }
+      verb: item.verb || "",
+      verbHint: item.verbHint || "",
+      personEs: item.personEs || "",
+      personDe: item.personDe || "",
+      isLast: c.idx >= c.total - 1,
+    };
+  }
+
+  function conjugDoneVM() {
+    const c = state.conjug;
+    const lvl = CONJUG_LEVELS.find((l) => l.id === c.level) || null;
+    return {
+      correct: c.correct,
+      total: c.total,
+      perfect: c.total > 0 && c.correct === c.total,
+      levelLabel: lvl ? lvl.label : "",
+    };
+  }
+
+  function openConjugDrill() {
+    dismissBadgeToast();
+    if (!conjugReady()) return;
+    state.screen = "conjugSetup";
+    render();
+  }
+
+  function setConjugLevel(level) {
+    const lvl = Number(level);
+    if (![1, 2].includes(lvl)) return;
+    state.conjugLevel = lvl;
+    settings = Object.assign({}, settings, { conjugLevel: lvl });
+    store.saveSettings(settings);
+    render();
+  }
+
+  function startConjug() {
+    if (!conjugReady()) return;
+    const level = state.conjugLevel;
+    const queue = conjug.buildRound(data.CONJUGATION, level, CONJUG_ROUND);
+    if (!queue.length) return;
+    state.conjug = { level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
+    state.screen = "conjug";
+    render();
+  }
+
+  // Getippte Form akzentnachsichtig prüfen (matcher.normalize: á=a, ñ=n, ohne
+  // Satzzeichen). So zählt „esta" für „está" – Reise-Tastaturen haben oft keine Akzente.
+  function submitConjug(input) {
+    const c = state.conjug;
+    if (!c || c.result) return;
+    const item = c.queue[c.idx];
+    if (!item) return;
+    const norm = matcher.normalize(input);
+    const correct = norm.length > 0 && norm === matcher.normalize(item.answer);
+    c.result = { input, correct, answer: item.answer };
+    if (correct) { c.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function nextConjug() {
+    const c = state.conjug;
+    if (!c || !c.result) return;
+    if (c.idx >= c.total - 1) {
+      recordConjugResult(c);
+      syncBadges(Date.now(), true);
+      state.screen = "conjugDone";
+      render();
+      return;
+    }
+    c.idx += 1;
+    c.result = null;
+    render();
+  }
+
+  function conjugAgain() {
+    startConjug();
+  }
+
+  // Ergebnis einer beendeten Konjugations-Runde in die Spiel-Zähler buchen.
+  function recordConjugResult(c) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.conjugPlayed = (g.conjugPlayed || 0) + 1;
+    if (c.total > 0 && c.correct === c.total) g.conjugPerfect = (g.conjugPerfect || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
   }
 
   // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
@@ -2406,7 +2787,7 @@
     const card = cardById(state.queue[0]);
     if (!card) return;
     const primary = matcher.acceptedAnswers(card)[0] || card.es;
-    speech.speak(primary);
+    speech.speak(primary, settings.speechRate);
   }
 
   // ----- Sharepic (teilbares Bild) -----
@@ -2498,12 +2879,15 @@
     const action = el.dataset.action;
 
     if (action === "set-mode") setMode(el.dataset.mode);
+    else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
     else if (action === "toggle-theme") toggleTheme();
     else if (action === "set-dir") setDir(el.dataset.dir);
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "ruta-del-dia") openRutaDelDia();
+    else if (action === "trip-edit") toggleTripEdit();
+    else if (action === "trip-clear") clearTripGoal();
     else if (action === "resume-last") resumeLast();
     else if (action === "toggle-setup") toggleSetup();
     else if (action === "set-tab") setTab(el.dataset.tab);
@@ -2575,6 +2959,17 @@
     else if (action === "frases-answer") answerFrases(Number(el.dataset.idx));
     else if (action === "frases-next") nextFrases();
     else if (action === "frases-again") frasesAgain();
+    else if (action === "open-conjug-drill") openConjugDrill();
+    else if (action === "conjug-level") setConjugLevel(el.dataset.level);
+    else if (action === "start-conjug") startConjug();
+    else if (action === "conjug-next") nextConjug();
+    else if (action === "conjug-again") conjugAgain();
+    else if (action === "open-dialogos") openDialogosSetup();
+    else if (action === "start-dialogos") startDialogos(el.dataset.id);
+    else if (action === "dialogos-answer") answerDialogosMc(Number(el.dataset.idx));
+    else if (action === "dialogos-next") advanceDialogos();
+    else if (action === "dialogos-again") dialogosAgain();
+    else if (action === "dialogos-speak") speakDialogosNpc();
     else if (action === "open-compras") openCompras();
     else if (action === "compras-section") comprasSection(el.dataset.id);
     else if (action === "compras-pick") comprasPick(el.dataset.id);
@@ -2611,6 +3006,27 @@
       e.preventDefault();
       const input = document.getElementById("precios-answer");
       submitPrecios(input ? input.value : "");
+      return;
+    }
+    // Trip-Ziel speichern (Datum + Tagesziel + optionales Reiseziel).
+    if (e.target.closest('[data-action="save-trip"]')) {
+      e.preventDefault();
+      const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+      setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
+      return;
+    }
+    // Konjugations-Drill: getippte Verbform prüfen.
+    if (e.target.closest('[data-action="submit-conjug"]')) {
+      e.preventDefault();
+      const input = document.getElementById("conjug-answer");
+      submitConjug(input ? input.value : "");
+      return;
+    }
+    // Diálogos: getippte Schlüssel-Replik prüfen.
+    if (e.target.closest('[data-action="submit-dialogos"]')) {
+      e.preventDefault();
+      const input = document.getElementById("dialogos-answer");
+      submitDialogosType(input ? input.value : "");
       return;
     }
     // Getippte Antwort prüfen (Schreiben-/Hör-Modus).

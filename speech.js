@@ -22,10 +22,20 @@
     return latam || spanish[0] || null;
   }
 
+  // Tempo (rate) auf einen vom Browser akzeptierten Bereich begrenzen. Ohne
+  // Angabe bleibt 0.95 (etwas langsamer – besser zum Nachsprechen). Werte
+  // ausserhalb 0.5..1.5 sind unzuverlässig/unverständlich -> gedeckelt.
+  const DEFAULT_RATE = 0.95;
+  function clampRate(rate) {
+    if (typeof rate !== "number" || !isFinite(rate)) return DEFAULT_RATE;
+    return Math.max(0.5, Math.min(1.5, rate));
+  }
+
   // Spricht den Text. Bricht eine eventuell laufende Ausgabe vorher ab.
   // cancel() nur bei Bedarf: ein bedingungsloses cancel() direkt vor speak()
   // verschluckt auf iOS gelegentlich die erste Utterance.
-  function speak(text) {
+  // rate (optional): Sprechgeschwindigkeit; fehlt sie, gilt DEFAULT_RATE.
+  function speak(text, rate) {
     if (!synth || !text) return;
     try {
       if (synth.speaking || synth.pending) synth.cancel();
@@ -37,7 +47,7 @@
       } else {
         u.lang = "es-ES"; // Fallback, falls (noch) keine Stimme geladen ist
       }
-      u.rate = 0.95; // etwas langsamer – besser zum Nachsprechen
+      u.rate = clampRate(rate);
       synth.speak(u);
     } catch (err) {
       console.warn("speech: Ausgabe fehlgeschlagen", err);
