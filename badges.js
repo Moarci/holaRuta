@@ -70,7 +70,7 @@
     { category: "frases",  icon: "🙋", name: "Satz-Sammler",        description: "Meistere 80 % der Sätze-Karten." },
     { category: "grenze",  icon: "🛂", name: "Grenzgänger",         description: "Meistere 80 % der Behörden-Karten." },
     { category: "reise",   icon: "🚐", name: "Roadtrip-Ready",      description: "Meistere 80 % der Busreise-Karten." },
-    { category: "ropa",    icon: "👕", name: "Style auf Ruta",      description: "Meistere 80 % der Kleidungsschmuck-Karten." },
+    { category: "ropa",    icon: "👕", name: "Style auf Ruta",      description: "Meistere 80 % der Kleidung-&-Schmuck-Karten." },
     { category: "rumbo",   icon: "🧭", name: "Wegfinder",           description: "Meistere 80 % der Wegbeschreibung-Karten." },
     { category: "verbos",  icon: "🔁", name: "Verbo-Virtuose",      description: "Meistere 80 % der Konjugieren-Karten." },
     { category: "tiempos", icon: "⏳", name: "Maestro del Tiempo",  description: "Meistere 80 % der Zeiten-Karten." },

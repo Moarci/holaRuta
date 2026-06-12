@@ -103,7 +103,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Richtung** | DE→ES / ES→DE | Lernrichtung jederzeit umschaltbar, wird gemerkt |
 | **Spaced Repetition** | Eigene SM-2-Engine | 3-Tasten-Bewertung (Nochmal / Gut / Einfach), Intervall- & Ease-Berechnung |
 | **Stufen-Filter** | A1 / A2 / B1 | Mehrfachauswahl der Schwierigkeitsstufen, kombinierbar mit Bereich |
-| **23 Bereiche** | Themen-Kategorien | Grundlagen, Zahlen, Essen, Trinken, Hotel, Hostel, Social, Verkehr, Einkaufen, Geld, Notfall, Zeit, Smalltalk, Alltag, Sätze, Behörden, Busreise, Kleidungsschmuck, Wegbeschreibung, Konjugieren, Zeiten, Farben, Gegenteile |
+| **23 Bereiche** | Themen-Kategorien | Grundlagen, Zahlen, Essen, Trinken, Hotel, Hostel, Social, Verkehr, Einkaufen, Geld, Notfall, Zeit, Smalltalk, Alltag, Sätze, Behörden, Busreise, Kleidung & Schmuck, Wegbeschreibung, Konjugieren, Zeiten, Farben, Gegenteile |
 | **Gegenteile** | Antonym-Paare ↔️ | Eigener Bereich mit 26 Gegensatzpaaren (*grande – pequeño*, *caro – barato*, *abierto – cerrado*, *temprano – tarde* …). Frage und Antwort sind jeweils das ganze Paar, mit „–“ getrennt — so lernt man beide Wörter im Kontrast. Funktioniert in allen 3 Lernmodi und beiden Richtungen; im Schreiben-Modus zählt jede Seite des Paares |
 | **Farben** | Interaktives Farbfeld 🎨 | Eigener Bereich für alle wichtigen Farben (LatAm: café, celeste, morado …): Auf der Antwortseite erscheint die **echte Farbe als Farbfeld** — Farbe sehen statt nur übersetzen. Funktioniert in Karteikarte & Schreiben und auf der Karten-Detailseite |
 | **Hostel Mode** | Üben zu zweit 🛏️ | **Battle** (45 Aufgaben mit Schwierigkeits-Stufen; Ansage auf Deutsch, laut auf Spanisch antworten, Mitspieler bewertet 2/1/0; wählbare Länge 6/10/20 Runden, faire Aufgabenverteilung, optionale Spielernamen, Stichrunde bei Gleichstand) & **Rollenspiele** (kurze Dialoge mit verteilten Rollen) — plus Real-Life-Challenge als Bonus |
@@ -144,7 +144,7 @@ Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md
 | Bereich | Karten | Bereich | Karten | Bereich | Karten |
 |---|---:|---|---:|---|---:|
 | Zahlen | 110 | Wegbeschreibung | 65 | Essen | 59 |
-| Kleidungsschmuck | 37 | Compras (Einkaufen) | 32 | Sätze | 30 |
+| Kleidung & Schmuck | 37 | Compras (Einkaufen) | 32 | Sätze | 30 |
 | Verkehr | 24 | Farben | 24 | Hotel | 23 |
 | Smalltalk | 22 | Grundlagen | 21 | Busreise | 20 |
 | Behörden | 20 | Notfall | 15 | Alltag | 15 |

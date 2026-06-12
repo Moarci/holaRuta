@@ -42,7 +42,7 @@
     { id: "frases",  label: "Sätze",      icon: "🙋", grad: ["#A85A6E", "#C2748A"] },
     { id: "grenze",  label: "Behörden",   icon: "🛂", grad: ["#566B8A", "#6E86A3"] },
     { id: "reise",   label: "Busreise",   icon: "🚐", grad: ["#B5503F", "#CE6855"] },
-    { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
+    { id: "ropa",    label: "Kleidung & Schmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
     { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
     { id: "verbos",  label: "Konjugieren", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
     { id: "tiempos", label: "Zeiten",     icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
