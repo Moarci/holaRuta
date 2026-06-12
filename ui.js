@@ -65,18 +65,18 @@
   // need: optionale Voraussetzung ("speech"|"frases"|"countries") – fehlt das
   // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   const FEATURES = [
-    { action: "open-spickzettel", icon: "🆘", title: "Spickzettel",   sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
-    { action: "open-hostel",      icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
     { action: "open-regatear",    icon: "🤝", title: "Regatear",        sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-compras",     icon: "🛒", title: "Einkaufszettel", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
+    { action: "open-compras",     icon: "🛒", title: "Lista de compras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
-    { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
-    { action: "open-knigge",      icon: "🧭", title: "Reise-Knigge",  sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
+    { action: "open-info",        icon: "🌎", title: "Países y culturas", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
+    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -1090,7 +1090,7 @@
       </div>` : "";
     return `
       <section class="screen">
-        ${hmTopbar("🆘 Spickzettel", "home")}
+        ${hmTopbar("🆘 Supervivencia", "home")}
         <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.</p>
         <nav class="sz-nav" aria-label="Bereiche">${nav}</nav>
         ${groups}
@@ -1311,7 +1311,7 @@
     return `
       <div class="topbar">
         <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
-        <div class="topbar__title">🌎 Länderkunde</div>
+        <div class="topbar__title">🌎 Países y culturas</div>
         <span></span>
       </div>`;
   }
@@ -1380,7 +1380,7 @@
     return `
       <div class="topbar">
         <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
-        <div class="topbar__title">🧭 Reise-Knigge</div>
+        <div class="topbar__title">🧭 Etiqueta de viaje</div>
         <span></span>
       </div>`;
   }
@@ -1536,7 +1536,7 @@
   function renderHostel(vm) {
     return `
       <section class="screen">
-        ${hmTopbar("🛏️ Hostel Mode", "home")}
+        ${hmTopbar("🛏️ Modo hostal", "home")}
         <p class="hm-intro">Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.</p>
         <div class="hm-menu">
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
@@ -2419,7 +2419,7 @@
 
     return `
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
-        ${hmTopbar("🛒 Einkaufszettel", "home")}
+        ${hmTopbar("🛒 Lista de compras", "home")}
         <p class="hm-intro">Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe ein Wort an – dann erscheinen Aussprache, ein Reisetipp und zwei fertige Fragen fürs Geschäft (ob sie es haben und wo man es findet), und alles wird vorgelesen. Über das Kästchen links hakst du ab, was du erledigt hast – und nimmst es bei Bedarf wieder zurück. Wenn du magst, prüf dich danach im kurzen Quiz.</p>
         <div class="sl-chips" role="group" aria-label="Rubrik wählen">${chips}</div>
         ${progress}

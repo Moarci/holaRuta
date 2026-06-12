@@ -41,7 +41,7 @@
     { id: "streak",   label: "Dranbleiben", icon: "🔥" },
     { id: "category", label: "Bereiche",    icon: "🗂️" },
     { id: "context",  label: "Reise-Kontext", icon: "🧭" },
-    { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
+    { id: "hostel",   label: "Modo hostal", icon: "🛏️" },
     { id: "quiz",     label: "Definiciones", icon: "🧩" },
     { id: "construir",label: "Satzbaukasten", icon: "🧱" },
     { id: "listening",label: "Hören",       icon: "👂" },
