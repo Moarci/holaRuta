@@ -608,6 +608,40 @@
       </button>`;
   }
 
+  // „Was ist neu?"-Fenster nach einem Update. Zeigt je Version, WAS sich
+  // geändert hat, und erklärt, WIE man aktuell bleibt. Liegt als eigene Ebene
+  // (Scrim + Karte) über dem Screen; Schließen führt zurück zur App.
+  function updateNotice(list) {
+    if (!list || !list.length) return "";
+    const blocks = list.map((e) => {
+      const items = (e.items || []).map((t) => `<li>${esc(t)}</li>`).join("");
+      const meta = e.title ? `${esc(e.title)} · v${esc(e.version)}` : `v${esc(e.version)}`;
+      return `
+        <div class="upd__block">
+          <div class="upd__ver">${meta}</div>
+          <ul class="upd__list">${items}</ul>
+        </div>`;
+    }).join("");
+    return `
+      <div class="upd-scrim" data-action="dismiss-update">
+        <div class="upd" role="dialog" aria-modal="true" aria-labelledby="upd-title"
+             data-action="upd-stop">
+          <div class="upd__head">🎉 <span id="upd-title">HolaRuta wurde aktualisiert</span></div>
+          ${blocks}
+          <div class="upd__how">
+            <div class="upd__how-title">So bleibst du aktuell</div>
+            <p class="upd__how-text">HolaRuta aktualisiert sich automatisch im Hintergrund.
+            Schließe die App ab und zu ganz und öffne sie neu – dann hast du immer die
+            neueste Version. Geht etwas mal nicht, hilft „Jetzt neu laden".</p>
+          </div>
+          <div class="upd__actions">
+            <button class="ghostbtn" data-action="reload-app">Jetzt neu laden</button>
+            <button class="cta upd__ok" data-action="dismiss-update">Verstanden</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
   // ---------- STATISTIK ----------
   // Statusfarben/-texte zentral, damit Liste & Detail gleich aussehen.
   const STATUS_META = {
@@ -1394,7 +1428,7 @@
 
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
-                   renderBadges, badgeToast, noticeToast,
+                   renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
 })();

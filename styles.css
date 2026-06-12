@@ -1047,6 +1047,48 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .btoast__text { display: flex; flex-direction: column; min-width: 0; }
 .btoast__name { font-weight: 700; font-size: 0.9rem; color: var(--ink); }
 .btoast__sub { font-size: 0.76rem; color: var(--muted); line-height: 1.35; }
+
+/* ====================================================================
+ * UPDATE-HINWEIS – „Was ist neu?" nach einem App-Update
+ * ==================================================================== */
+.upd-scrim {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center; padding: 18px;
+  background: rgba(36, 21, 16, 0.55);
+  animation: upd-fade 0.2s ease;
+}
+@keyframes upd-fade { from { opacity: 0; } to { opacity: 1; } }
+.upd {
+  width: min(94%, calc(var(--maxw) - 24px));
+  max-height: min(86vh, 720px); overflow-y: auto;
+  display: flex; flex-direction: column; gap: 14px; text-align: left;
+  background: var(--card); border: 1.5px solid color-mix(in srgb, var(--brand) 45%, var(--line));
+  border-radius: var(--r-lg); padding: 20px;
+  box-shadow: 0 18px 44px -12px rgba(45, 27, 18, 0.5);
+  animation: upd-in 0.25s ease;
+}
+@keyframes upd-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.upd__head {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.25rem;
+  color: var(--brand-ink); line-height: 1.2;
+}
+.upd__block { display: flex; flex-direction: column; gap: 6px; }
+.upd__ver {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--brand-ink);
+}
+.upd__list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+.upd__list li { font-size: 0.92rem; line-height: 1.45; color: var(--ink); }
+.upd__how {
+  display: flex; flex-direction: column; gap: 5px;
+  background: color-mix(in srgb, var(--brand) 8%, transparent);
+  border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px;
+}
+.upd__how-title { font-weight: 800; font-size: 0.86rem; color: var(--brand-ink); }
+.upd__how-text { margin: 0; font-size: 0.86rem; line-height: 1.45; color: var(--ink-soft); }
+.upd__actions { display: flex; gap: 10px; align-items: center; }
+.upd__actions .ghostbtn { flex: none; }
+.upd__ok { flex: 1 1 auto; width: auto; }
 /* ====================================================================
  * HOSTEL MODE – Battle & Rollenspiele (Anwenden zu zweit)
  * ==================================================================== */

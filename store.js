@@ -10,6 +10,11 @@
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  // Zuletzt gesehene App-Version (für den „Was ist neu?"-Hinweis nach Updates).
+  // Bewusst NICHT in KNOWN_KEYS: das ist gerätelokaler Anzeige-Status, kein
+  // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
+  // überschreiben und so einen falschen Update-Hinweis auslösen.
+  const SEENVERSION_KEY = "spanischcard.seenVersion.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
   const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY];
 
@@ -228,5 +233,13 @@
     resetGameStats: () => {
       try { localStorage.removeItem(GAMESTATS_KEY); } catch (e) { /* egal */ }
     },
+    // Zuletzt gesehene App-Version. null = noch nie vermerkt (frische Installation
+    // oder Bestandsnutzer vor diesem Feature) -> dann KEIN Update-Hinweis, nur
+    // still nachtragen.
+    loadSeenVersion() {
+      const v = readJson(SEENVERSION_KEY, null);
+      return typeof v === "string" ? v : null;
+    },
+    saveSeenVersion: (v) => writeJson(SEENVERSION_KEY, String(v)),
   };
 })();
