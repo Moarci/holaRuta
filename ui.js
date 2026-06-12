@@ -1819,6 +1819,59 @@
         </details>`)
       .join("");
 
+    // Kleiner Helfer: Wortpaar-Liste (spanisch fett links, deutsch rechts) –
+    // für Gerundien, Partizipien, Imperativ-, hay- und Signalwort-Listen.
+    const pairList = (rows, esKey, deKey) => `
+      <ul class="cinfo-words">
+        ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
+      </ul>`;
+
+    // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiel.
+    const c = g.continuous;
+    const continuous = `
+      <p class="cinfo-text">${esc(c.intro)}</p>
+      ${table(c.forms)}
+      ${pairList(c.gerunds.map((x) => ({ es: x.inf + " → " + x.ger, de: x.de })), "es", "de")}
+      <div class="context-panel__line">
+        <p class="context-panel__es" lang="es">${esc(c.example.es)}</p>
+        <p class="context-panel__de">${esc(c.example.de)}</p>
+      </div>
+      <p class="cinfo-text cj-note">${esc(c.note)}</p>`;
+
+    // Pretéritos fuertes: je Verb ein kleiner Block mit Überschrift + Tabelle.
+    const sp = g.strongPast;
+    const strongPastBlocks = sp.verbs
+      .map((v) => `
+        <div class="cj-verb">
+          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.verbDe)}</span></h4>
+          ${table(v.forms)}
+        </div>`)
+      .join("");
+    const strongPast = `
+      <p class="cinfo-text">${esc(sp.intro)}</p>
+      <div class="cj-verbs">${strongPastBlocks}</div>
+      <p class="cinfo-text cj-note">${esc(sp.note)}</p>`;
+
+    // Unregelmäßige Partizipien: Infinitiv → Partizip, deutsche Bedeutung.
+    const pp = g.participles;
+    const participles = `
+      <p class="cinfo-text">${esc(pp.intro)}</p>
+      ${pairList(pp.rows.map((x) => ({ es: x.inf + " → " + x.part, de: x.de })), "es", "de")}
+      <p class="cinfo-text cj-note">${esc(pp.note)}</p>`;
+
+    // Imperativo & hay: schlichte Wortpaar-Listen mit Hinweis.
+    const im = g.imperative;
+    const imperative = `
+      <p class="cinfo-text">${esc(im.intro)}</p>
+      ${pairList(im.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(im.note)}</p>`;
+
+    const hy = g.hay;
+    const hayBlock = `
+      <p class="cinfo-text">${esc(hy.intro)}</p>
+      ${pairList(hy.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(hy.note)}</p>`;
+
     const signalRows = g.signals
       .map((s) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(s.es)}</span><span class="cinfo-word__de">${esc(s.de)}</span></li>`)
       .join("");
@@ -1838,6 +1891,11 @@
 
         ${sect("↔️", t.title, timeline)}
         ${sect("🕰️", "Die wichtigsten Zeitformen", `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
+        ${sect("⏯️", c.title, continuous)}
+        ${sect("💪", sp.title, strongPast)}
+        ${sect("🧩", pp.title, participles)}
+        ${sect("🗣️", im.title, imperative)}
+        ${sect("📦", hy.title, hayBlock)}
         ${sect("🔑", "Signalwörter: woran du die Zeit erkennst", `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
         ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
 

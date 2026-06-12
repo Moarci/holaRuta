@@ -23,10 +23,10 @@
     {
       version: "1.7.0",
       date: "2026-06-12",
-      title: "Zeiten: neuer Bereich + Erklärseite",
+      title: "Zeiten: neuer Bereich + große Erklärseite",
       items: [
-        "Neuer Lernbereich „⏳ Zeiten“ mit 30 Karten: echte Reisesätze in Vergangenheit, Gegenwart und Zukunft (Llegué ayer, Ya he comido, Voy a tomar el bus, Llegaré mañana …) – inklusive höflicher Bitten (Querría, ¿Podría?).",
-        "Neu unter Entdecken: „Tiempos“ erklärt kurz und reisetauglich, wie die spanischen Zeitformen funktionieren – ein Verb (tomar) wandert durch alle Zeiten, dazu die wichtigsten Zeitformen zum Aufklappen, Signalwörter (ayer/hoy/mañana) und ein Drei-Zeiten-Reisedialog. Von dort geht es mit „Jetzt üben“ direkt in die neuen Karten.",
+        "Neuer Lernbereich „⏳ Zeiten“ mit 66 Karten: echte Reisesätze in Vergangenheit, Gegenwart und Zukunft (Llegué ayer, Ya he comido, Voy a tomar el bus, Llegaré mañana …), dazu die Verlaufsform (Estoy comiendo), Imperativ-Bitten (Dígame, Tráigame la cuenta), „es gibt“ (¿Hay wifi?) und höfliche Bitten (Querría, ¿Podría?).",
+        "Neu unter Entdecken: „Tiempos“ erklärt kurz und reisetauglich, wie die spanischen Zeitformen funktionieren – ein Verb (tomar) wandert durch alle Zeiten, dazu die wichtigsten Zeitformen zum Aufklappen, die Verlaufsform (estar + Gerundio), die häufigsten unregelmäßigen Vergangenheiten und Partizipien, der Imperativ, „hay/había/habrá“, Signalwörter (ayer/hoy/mañana) und ein Drei-Zeiten-Reisedialog. Von dort geht es mit „Jetzt üben“ direkt in die neuen Karten.",
         "LatAm-tauglich: Fokus auf indefinido fürs Erzählen und „ir a + Infinitiv“ als einfacher Zukunfts-Trick.",
         "Neuer Ruta-Pass-Stempel „Maestro del Tiempo“ für 80 % gemeisterte Zeiten-Karten.",
       ],

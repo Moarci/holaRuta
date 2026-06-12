@@ -785,6 +785,51 @@
     // ---- Zeiten gemischt (Signalwörter erkennen) ----
     { id: "tp29", cat: "tiempos", lvl: 2, de: "Gestern war ich müde, heute geht's mir gut", es: "Ayer estaba cansado, hoy estoy bien", tip: "es-TA-ba … es-TOI – ayer vs. hoy" },
     { id: "tp30", cat: "tiempos", lvl: 1, de: "Morgen fahre ich nach Lima", es: "Mañana voy a Lima", tip: "ma-NYA-na woi – fürs Nahe reicht oft die Gegenwart" },
+    // ---- Verlaufsform: estar + Gerundio (gerade jetzt) ----
+    { id: "tp31", cat: "tiempos", lvl: 1, de: "Ich esse gerade", es: "Estoy comiendo", tip: "es-TOI ko-MIEN-do – estar + Gerundio = genau jetzt" },
+    { id: "tp32", cat: "tiempos", lvl: 2, de: "Was machst du gerade?", es: "¿Qué estás haciendo?", tip: "es-TAS a-SIEN-do – haciendo von hacer" },
+    { id: "tp33", cat: "tiempos", lvl: 2, de: "Wir warten gerade auf den Bus", es: "Estamos esperando el bus", tip: "es-TA-mos es-pe-RAN-do" },
+    { id: "tp34", cat: "tiempos", lvl: 1, de: "Es regnet gerade", es: "Está lloviendo", tip: "es-TA yo-WIEN-do – das Wetter im Moment" },
+    { id: "tp35", cat: "tiempos", lvl: 2, de: "Ich suche gerade ein Hostel", es: "Estoy buscando un hostal", tip: "es-TOI bus-KAN-do" },
+    // ---- Imperativo: Bitten & Anweisungen ----
+    { id: "tp36", cat: "tiempos", lvl: 2, de: "Sagen Sie mir / Erzählen Sie", es: "Dígame", tip: "DI-ga-me – höfliche Aufforderung (usted) von decir" },
+    { id: "tp37", cat: "tiempos", lvl: 1, de: "Gehen Sie geradeaus weiter", es: "Siga derecho", tip: "SI-ga de-RE-cho – Befehl (usted) von seguir" },
+    { id: "tp38", cat: "tiempos", lvl: 1, de: "Warten Sie einen Moment", es: "Espere un momento", tip: "es-PE-re – höflicher Befehl von esperar" },
+    { id: "tp39", cat: "tiempos", lvl: 2, de: "Helfen Sie mir bitte", es: "Ayúdeme, por favor", tip: "a-YU-de-me – ayudar (usted), Pronomen hinten dran" },
+    { id: "tp40", cat: "tiempos", lvl: 2, de: "Bringen Sie mir die Rechnung", es: "Tráigame la cuenta", tip: "TRAI-ga-me la KUEN-ta – von traer" },
+    { id: "tp41", cat: "tiempos", lvl: 1, de: "Sag mir", es: "Dime", tip: "DI-me – vertraute Form (tú) von decir" },
+    { id: "tp42", cat: "tiempos", lvl: 2, de: "Komm her", es: "Ven", tip: "wen – kurzer tú-Befehl von venir" },
+    { id: "tp43", cat: "tiempos", lvl: 1, de: "Schau mal", es: "Mira", tip: "MI-ra – tú-Befehl von mirar; auch um Aufmerksamkeit zu wecken" },
+    // ---- acabar de: gerade eben getan ----
+    { id: "tp44", cat: "tiempos", lvl: 2, de: "Ich bin gerade angekommen", es: "Acabo de llegar", tip: "a-KA-bo de ye-GAR – acabar de + Infinitiv = gerade eben" },
+    { id: "tp45", cat: "tiempos", lvl: 2, de: "Der Bus ist gerade abgefahren", es: "El bus acaba de salir", tip: "a-KA-ba de sa-LIR" },
+    // ---- hay / había / habrá: „es gibt" ----
+    { id: "tp46", cat: "tiempos", lvl: 1, de: "Gibt es hier WLAN?", es: "¿Hay wifi aquí?", tip: "ai WI-fi a-KI – hay = es gibt (Gegenwart)" },
+    { id: "tp47", cat: "tiempos", lvl: 2, de: "Es gab kein warmes Wasser", es: "No había agua caliente", tip: "a-BI-a – había = es gab (Vergangenheit)" },
+    { id: "tp48", cat: "tiempos", lvl: 3, de: "Wird es einen Nachtbus geben?", es: "¿Habrá un bus nocturno?", tip: "a-BRA – habrá = es wird geben (Zukunft)" },
+    // ---- Mehr unregelmäßige Vergangenheit (Indefinido) ----
+    { id: "tp49", cat: "tiempos", lvl: 2, de: "Ich hatte ein Problem", es: "Tuve un problema", tip: "TU-we – tener wird in der Vergangenheit zu tuve" },
+    { id: "tp50", cat: "tiempos", lvl: 3, de: "Ich konnte nicht schlafen", es: "No pude dormir", tip: "PU-de dor-MIR – poder → pude" },
+    { id: "tp51", cat: "tiempos", lvl: 3, de: "Er hat mir gesagt, dass es teuer ist", es: "Me dijo que es caro", tip: "me DI-cho (j wie ch in Bach) – decir → dijo" },
+    { id: "tp52", cat: "tiempos", lvl: 2, de: "Wann bist du gekommen?", es: "¿Cuándo viniste?", tip: "wi-NIS-te – venir → viniste" },
+    { id: "tp53", cat: "tiempos", lvl: 2, de: "Ich gab dem Fahrer das Geld", es: "Le di el dinero al chofer", tip: "le di – dar → di (ganz kurz)" },
+    // ---- Mehr Perfekt mit unregelmäßigem Partizip ----
+    { id: "tp54", cat: "tiempos", lvl: 2, de: "Was hast du gesagt?", es: "¿Qué has dicho?", tip: "as DI-cho – dicho = Partizip von decir" },
+    { id: "tp55", cat: "tiempos", lvl: 2, de: "Ich habe die Tür schon geöffnet", es: "Ya he abierto la puerta", tip: "a-BIER-to – abierto von abrir" },
+    { id: "tp56", cat: "tiempos", lvl: 3, de: "Sie haben das Zimmer noch nicht gemacht", es: "Todavía no han hecho la habitación", tip: "E-cho – hecho von hacer" },
+    { id: "tp57", cat: "tiempos", lvl: 3, de: "Ich habe meine Brille kaputt gemacht", es: "He roto mis lentes", tip: "RO-to – roto von romper; lentes = Brille (LatAm)" },
+    // ---- Mehr Imperfekt (Hintergrund/Zustand) ----
+    { id: "tp58", cat: "tiempos", lvl: 2, de: "Es war schon spät", es: "Ya era tarde", tip: "E-ra – ser-Zustand in der Vergangenheit" },
+    { id: "tp59", cat: "tiempos", lvl: 3, de: "Ich kannte die Stadt nicht", es: "No conocía la ciudad", tip: "ko-no-SI-a – conocer im Imperfekt" },
+    { id: "tp60", cat: "tiempos", lvl: 2, de: "Wir hatten Hunger", es: "Teníamos hambre", tip: "te-NI-a-mos AM-bre – tener im Imperfekt" },
+    // ---- Mehr Zukunft ----
+    { id: "tp61", cat: "tiempos", lvl: 2, de: "Ich werde dich später anrufen", es: "Te voy a llamar más tarde", tip: "te woi a ya-MAR – ir a + Infinitiv" },
+    { id: "tp62", cat: "tiempos", lvl: 3, de: "Wie lange wirst du bleiben?", es: "¿Cuánto tiempo te vas a quedar?", tip: "te was a ke-DAR – quedarse = bleiben" },
+    { id: "tp63", cat: "tiempos", lvl: 3, de: "Es wird sich lohnen", es: "Valdrá la pena", tip: "wal-DRA la PE-na – valer → valdrá (Zukunft)" },
+    // ---- Mehr Höflich: Condicional ----
+    { id: "tp64", cat: "tiempos", lvl: 3, de: "Was würden Sie empfehlen?", es: "¿Qué recomendaría?", tip: "re-ko-men-da-RI-a – recomendar im Konditional" },
+    { id: "tp65", cat: "tiempos", lvl: 3, de: "Ich würde lieber zu Fuß gehen", es: "Preferiría ir a pie", tip: "pre-fe-ri-RI-a – preferir im Konditional" },
+    { id: "tp66", cat: "tiempos", lvl: 3, de: "Sie sollten ein Taxi nehmen", es: "Debería tomar un taxi", tip: "de-be-RI-a – debería = sollte (höflicher Rat)" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
@@ -1680,6 +1725,79 @@
         example: { es: "Mañana tomaré el primer bus.", de: "Morgen nehme ich den ersten Bus." } },
     ],
     tensesNote: "Reise-Faustregel: Gegenwart für jetzt & bald, indefinido fürs Erzählen von gestern, „voy a + Infinitiv“ für Pläne. Damit kommst du fast überall durch.",
+    // estar + Gerundio: was gerade im Moment läuft (Verlaufsform)
+    continuous: {
+      title: "Gerade jetzt: estar + Gerundio",
+      intro: "Wenn etwas genau in diesem Moment passiert, nimmst du estar + Gerundio – wie das englische „I am doing“. Das Gerundio endet auf -ando (bei -ar) bzw. -iendo (bei -er/-ir).",
+      forms: ["estoy tomando", "estás tomando", "está tomando", "estamos tomando", "están tomando"],
+      gerunds: [
+        { inf: "comer", ger: "comiendo", de: "essend (-er → -iendo)" },
+        { inf: "ir", ger: "yendo", de: "gehend (unregelmäßig)" },
+        { inf: "dormir", ger: "durmiendo", de: "schlafend (o → u)" },
+        { inf: "pedir", ger: "pidiendo", de: "bestellend (e → i)" },
+        { inf: "leer", ger: "leyendo", de: "lesend (i → y)" },
+      ],
+      note: "Nicht für die Zukunft nehmen: „estoy yendo mañana“ ist falsch. estar + Gerundio ist nur das Hier-und-Jetzt – für morgen nimmst du „voy a ir“.",
+      example: { es: "Estoy esperando el bus y está lloviendo.", de: "Ich warte gerade auf den Bus, und es regnet." },
+    },
+    // Pretéritos fuertes: die häufigsten unregelmäßigen Vergangenheiten
+    strongPast: {
+      title: "Unregelmäßige Vergangenheit (Indefinido)",
+      intro: "Ein paar Schlüssel-Verben haben eine eigene Vergangenheit – mit verändertem Stamm und OHNE Akzent. Die ich- und die er/sie-Form enden hier auf -e/-o (nicht -é/-ó). Diese sieben hörst du ständig:",
+      verbs: [
+        { verb: "ir / ser", verbDe: "gehen/fahren / sein", forms: ["fui", "fuiste", "fue", "fuimos", "fueron"] },
+        { verb: "estar", verbDe: "sein (Ort/Zustand)", forms: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvieron"] },
+        { verb: "tener", verbDe: "haben", forms: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvieron"] },
+        { verb: "hacer", verbDe: "machen / tun", forms: ["hice", "hiciste", "hizo", "hicimos", "hicieron"] },
+        { verb: "poder", verbDe: "können", forms: ["pude", "pudiste", "pudo", "pudimos", "pudieron"] },
+        { verb: "decir", verbDe: "sagen", forms: ["dije", "dijiste", "dijo", "dijimos", "dijeron"] },
+        { verb: "venir", verbDe: "kommen", forms: ["vine", "viniste", "vino", "vinimos", "vinieron"] },
+      ],
+      note: "Eselsbrücke: ir und ser teilen sich fui/fue – ob „ich ging“ oder „ich war“, verrät der Zusammenhang. Und „hizo“ schreibt man mit z (vor o), gesprochen wie hace.",
+    },
+    // Unregelmäßige Partizipien (fürs Perfekt)
+    participles: {
+      title: "Unregelmäßige Partizipien (fürs Perfekt)",
+      intro: "Das Perfekt braucht das Partizip (he + …ado/…ido). Ein paar wichtige Verben bilden es unregelmäßig – die lernst du am besten als feste Brocken:",
+      rows: [
+        { inf: "ver", part: "visto", de: "gesehen" },
+        { inf: "hacer", part: "hecho", de: "gemacht" },
+        { inf: "decir", part: "dicho", de: "gesagt" },
+        { inf: "poner", part: "puesto", de: "gelegt / gestellt" },
+        { inf: "volver", part: "vuelto", de: "zurückgekehrt" },
+        { inf: "abrir", part: "abierto", de: "geöffnet" },
+        { inf: "escribir", part: "escrito", de: "geschrieben" },
+        { inf: "romper", part: "roto", de: "kaputt gemacht" },
+      ],
+      note: "Beispiel: „¿Has visto mi mochila?“ = Hast du meinen Rucksack gesehen? – nie „has veído“.",
+    },
+    // Imperativo: Bitten und Anweisungen
+    imperative: {
+      title: "Befehle & Bitten: Imperativo",
+      intro: "Für Anweisungen (und mit „por favor“ für höfliche Bitten) gibt es eigene Formen. Höflich (usted) endet meist auf -e/-a, vertraut (tú) klingt oft wie die er/sie-Form. Diese brauchst und hörst du unterwegs am meisten:",
+      rows: [
+        { es: "Dígame", de: "Sagen Sie mir / Erzählen Sie (höflich)" },
+        { es: "Siga derecho", de: "Gehen Sie geradeaus weiter" },
+        { es: "Espere un momento", de: "Warten Sie einen Moment" },
+        { es: "Tráigame la cuenta", de: "Bringen Sie mir die Rechnung" },
+        { es: "Dime", de: "Sag mir (vertraut)" },
+        { es: "Ven", de: "Komm (her)" },
+      ],
+      note: "Mini-Trick: Pronomen kleben hinten dran (di + me = dime, traiga + me = tráigame) – dabei wandert oft ein Akzent mit.",
+    },
+    // hay / había / habrá: „es gibt" durch die Zeiten
+    hay: {
+      title: "„Es gibt“: hay durch die Zeiten",
+      intro: "Für „es gibt“ gibt es ein einziges Wort pro Zeit – immer gleich, egal ob ein Ding oder viele:",
+      rows: [
+        { es: "hay", de: "es gibt (jetzt) – ¿Hay wifi?" },
+        { es: "había", de: "es gab (Hintergrund) – No había agua caliente." },
+        { es: "hubo", de: "es gab (Ereignis) – Hubo un accidente." },
+        { es: "habrá", de: "es wird geben – ¿Habrá un bus mañana?" },
+        { es: "ha habido", de: "es hat gegeben – Ha habido un cambio." },
+      ],
+      note: "Nie „hayn“ oder „han“ für „es gibt“: hay bleibt hay, auch bei vielen Dingen – „Hay dos camas“.",
+    },
     signals: [
       { es: "ayer · anoche", de: "gestern · gestern Nacht → Vergangenheit" },
       { es: "hoy · ahora", de: "heute · jetzt → Gegenwart" },
