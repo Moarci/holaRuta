@@ -25,7 +25,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'spickzettel' | 'precios' | 'preciosDone' | 'frases' | 'frasesDone'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -748,6 +748,99 @@
     store.saveGameStats(gamestats);
   }
 
+  // ----- Frases flexibles (Satzbaukasten): Steuerung -----
+  const frasesById = (id) => (frases ? frases.FRASES.find((f) => f.id === id) : null) || null;
+
+  // Optionen eines Rahmens bauen: korrekter Baustein + Ablenker, gemischt. Einmal
+  // beim Stellen berechnet und im State gehalten (Re-Render darf nicht neu mischen).
+  function buildFrasesOptions(frame) {
+    const opts = [Object.assign({ correct: true }, frame.slot)]
+      .concat((frame.distractors || []).map((d) => Object.assign({ correct: false }, d)));
+    return shuffle(opts);
+  }
+
+  function openFrases() {
+    dismissBadgeToast();
+    if (!frases || !frases.FRASES.length) return;
+    const queue = shuffle(frases.FRASES).map((f) => f.id);
+    state.frases = {
+      queue, idx: 0, total: queue.length,
+      options: buildFrasesOptions(frasesById(queue[0])),
+      selected: null, correct: 0,
+    };
+    state.screen = "frases";
+    render();
+  }
+
+  function frasesVM() {
+    const f = state.frases;
+    const frame = frasesById(f.queue[f.idx]);
+    const answered = f.selected !== null;
+    const options = f.options.map((o, i) => ({
+      es: o.es, de: o.de,
+      // vor der Antwort neutral; danach Lösung grün, falsche Wahl rot, Rest gedämpft.
+      state: !answered ? "idle"
+        : o.correct ? "correct"
+        : i === f.selected ? "wrong"
+        : "dim",
+    }));
+    const sol = f.options.find((o) => o.correct) || {};
+    return {
+      position: f.idx, total: f.total,
+      frameEs: frame ? frame.frameEs : "",
+      targetDe: frame ? frame.targetDe : "",
+      options, answered,
+      isCorrect: answered && !!(f.options[f.selected] && f.options[f.selected].correct),
+      solutionEs: sol.es, solutionDe: sol.de,
+      isLast: f.idx >= f.total - 1,
+    };
+  }
+
+  function frasesDoneVM() {
+    const f = state.frases;
+    return { correct: f.correct, total: f.total, perfect: f.total > 0 && f.correct === f.total };
+  }
+
+  // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
+  function answerFrases(i) {
+    const f = state.frases;
+    if (!f || f.selected !== null) return;
+    f.selected = i;
+    if (f.options[i] && f.options[i].correct) { f.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function nextFrases() {
+    const f = state.frases;
+    if (!f || f.selected === null) return; // erst antworten, dann weiter
+    if (f.idx >= f.total - 1) {
+      recordFrasesResult(f);
+      syncBadges(Date.now(), true);
+      state.screen = "frasesDone";
+      render();
+      return;
+    }
+    f.idx += 1;
+    f.selected = null;
+    f.options = buildFrasesOptions(frasesById(f.queue[f.idx]));
+    render();
+  }
+
+  function frasesAgain() {
+    state.frases = null;
+    openFrases();
+  }
+
+  // Ergebnis einer beendeten Satzbaukasten-Runde buchen (Ruta-Pass).
+  function recordFrasesResult(f) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.frasesPlayed = (g.frasesPlayed || 0) + 1;
+    if (f.total > 0 && f.correct === f.total) g.frasesPerfect = (g.frasesPerfect || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
   // ----- El Cuerpo: interaktive Körperkarte -----
   const bodyPartById = (id) => data.BODY_PARTS.find((p) => p.id === id) || null;
 
@@ -824,6 +917,8 @@
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
     else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
+    else if (state.screen === "frases") root.innerHTML = ui.renderFrases(frasesVM());
+    else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone(frasesDoneVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -1705,6 +1800,10 @@
     else if (action === "precios-next") nextPrecios();
     else if (action === "precios-again") preciosAgain();
     else if (action === "precios-speak") speakPrecios();
+    else if (action === "open-frases") openFrases();
+    else if (action === "frases-answer") answerFrases(Number(el.dataset.idx));
+    else if (action === "frases-next") nextFrases();
+    else if (action === "frases-again") frasesAgain();
     else if (action === "home") goHome();
   }
 

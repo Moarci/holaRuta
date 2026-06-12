@@ -1395,6 +1395,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .quiz-opt { transition: none; }
 }
 
+/* ====================== FRASES FLEXIBLES (Satzbaukasten) ====================== */
+/* Deutscher Zielsatz (was gebaut werden soll) über dem spanischen Rahmen. */
+.frases-target { margin: 4px 0 8px; font-size: 0.92rem; color: var(--muted); }
+.frases-frame { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+/* Die Lücke "___" als sichtbarer, akzentuierter Platzhalter. */
+.frases-gap {
+  display: inline-block; min-width: 64px; height: 2px; margin: 0 2px 5px;
+  border-bottom: 3px dashed var(--brand); vertical-align: middle;
+}
+
 /* ====================== HÖR-MODUS (Escuchar / Dictado) ====================== */
 /* Drei-Spalten-Variante des Modus-Umschalters (Sprechen · Schreiben · Hören). */
 .segmented--three { grid-template-columns: 1fr 1fr 1fr; }

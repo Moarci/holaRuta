@@ -1492,6 +1492,74 @@
       </section>`;
   }
 
+  // ---------- FRASES FLEXIBLES (Satzbaukasten) ----------
+  // Satzrahmen mit Lücke + Multiple Choice. Reuse der Definiciones-Optik
+  // (.quiz-def / .quiz-opt / .quiz-feedback).
+  function renderFrases(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
+    // "___" im Rahmen durch eine sichtbare Lücke ersetzen (frameEs ist intern,
+    // kein User-Input – esc() lässt "___" unverändert).
+    const frameHtml = esc(vm.frameEs).replace("___", '<span class="frases-gap"></span>');
+    const options = vm.options
+      .map((o, i) => {
+        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
+        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
+        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
+          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
+        return `
+          <button class="${cls}" type="button" data-action="frases-answer" data-idx="${i}"${dis}>
+            <span class="quiz-opt__text">
+              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+              <span class="quiz-opt__de">${esc(o.de)}</span>
+            </span>
+            ${mark}
+          </button>`;
+      })
+      .join("");
+
+    const feedback = vm.answered
+      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
+           ${vm.isCorrect
+             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
+             : `<span class="quiz-feedback__head">No exactamente.</span>
+                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b> · ${esc(vm.solutionDe)}</span>`}
+         </div>
+         <button class="cta" data-action="frases-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+      : "";
+
+    return `
+      <section class="screen study">
+        ${hmTopbar("🧱 Frases flexibles", "home")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">Satz ${vm.position + 1}/${vm.total}</div>
+        <div class="quiz-def">
+          <span class="quiz-def__cap">Bilde den Satz</span>
+          <p class="frases-target">${esc(vm.targetDe)}</p>
+          <p class="quiz-def__text frases-frame" lang="es">${frameHtml}</p>
+        </div>
+        <div class="quiz-opts">${options}</div>
+        ${feedback}
+      </section>`;
+  }
+
+  function renderFrasesDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Alle Sätze gebaut. 🏆"
+      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
+      : "Sigue practicando – Satzbauen kommt mit der Übung. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "🧱"}</div>
+          <h2>Frases flexibles geschafft</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="frases-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
+  }
+
   // ---------- EL CUERPO (interaktive Körperkarte) ----------
   // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
   // viewBox 0 0 200 440 – exakt der, auf den sich die Prozent-Koordinaten der Hotspots
@@ -1591,5 +1659,5 @@
                    renderBadges, badgeToast, noticeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderSpickzettel,
-                   renderPrecios, renderPreciosDone };
+                   renderPrecios, renderPreciosDone, renderFrases, renderFrasesDone };
 })();
