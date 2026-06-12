@@ -27,7 +27,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -63,6 +63,9 @@
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
     bodyYaw: -22,            // Drehung der Figur um die Hochachse (Grad)
     bodyPitch: -6,           // Neigung der Figur (Grad), begrenzt ±32
+    // ----- Einkaufszettel (interaktive Einkaufsliste) -----
+    compras: { section: "super", open: null }, // aktuelle Rubrik + aufgeklapptes Item (Id|null)
+    comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -831,6 +834,23 @@
     render();
   }
 
+  // ----- Tiempos: Erklärseite Zeiten -----
+  // Statische Zeitformen-Erklärung (Inhalte: data.TENSES). Wie bei Conjugación
+  // springt der "Jetzt üben"-Button per normaler open-category-Aktion in die
+  // Übungskarten der Kategorie "tiempos".
+  function tiemposVM() {
+    return {
+      guide: data.TENSES,
+      cardCount: data.CARDS.filter((c) => c.cat === "tiempos").length,
+    };
+  }
+
+  function openTiempos() {
+    dismissBadgeToast();
+    state.screen = "tiempos";
+    render();
+  }
+
   // ----- Frases flexibles (Satzbaukasten): Steuerung -----
   // Virtuelle "Gemischt"-Id: spielt alle Rahmen quer durch alle Themen.
   const FRASES_ALL = "all";
@@ -1030,6 +1050,191 @@
     if (part && speech && speech.isSupported()) speech.speak(part.es);
   }
 
+  // ----- Einkaufszettel (interaktive Einkaufsliste) -----
+  const shoppingSections = () => data.SHOPPING || [];
+  const shoppingSectionById = (id) => shoppingSections().find((s) => s.id === id) || null;
+  function shoppingItemById(id) {
+    for (const s of shoppingSections()) {
+      const it = s.items.find((i) => i.id === id);
+      if (it) return it;
+    }
+    return null;
+  }
+  // Wie viele Items einer Rubrik sind schon abgehakt?
+  function shoppingSectionDone(sec) {
+    const seen = gamestats.shoppingSeen || {};
+    return sec.items.reduce((n, it) => n + (seen[it.id] ? 1 : 0), 0);
+  }
+
+  function comprasVM() {
+    const curId = state.compras.section;
+    const sec = shoppingSectionById(curId) || shoppingSections()[0];
+    const seen = gamestats.shoppingSeen || {};
+    const sections = shoppingSections().map((s) => ({
+      id: s.id, icon: s.icon, label: s.label, de: s.de,
+      active: s.id === sec.id, total: s.items.length, done: shoppingSectionDone(s),
+    }));
+    const items = sec.items.map((it) => ({
+      id: it.id, de: it.de, es: it.es, tip: it.tip, note: it.note,
+      open: state.compras.open === it.id, seen: !!seen[it.id],
+    }));
+    return {
+      sections,
+      section: { id: sec.id, icon: sec.icon, label: sec.label, de: sec.de, grad: sec.grad },
+      items,
+      doneCount: shoppingSectionDone(sec),
+      total: sec.items.length,
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function openCompras() {
+    dismissBadgeToast();
+    if (!shoppingSectionById(state.compras.section)) {
+      state.compras = { section: (shoppingSections()[0] || {}).id || null, open: null };
+    } else {
+      state.compras = { section: state.compras.section, open: null };
+    }
+    state.screen = "compras";
+    render();
+  }
+
+  function comprasSection(id) {
+    if (!shoppingSectionById(id)) return;
+    state.compras = { section: id, open: null };
+    render();
+  }
+
+  // Ein Item antippen: auf-/zuklappen. Beim Aufklappen Wort vorlesen und
+  // (einmalig) als „abgehakt" für den Fortschritt vermerken.
+  function comprasPick(id) {
+    const item = shoppingItemById(id);
+    if (!item) return;
+    const opening = state.compras.open !== id;
+    state.compras = { section: state.compras.section, open: opening ? id : null };
+    if (opening) {
+      buzz(8);
+      recordShoppingView(id);
+    }
+    render();
+    if (opening && speech && speech.isSupported()) speech.speak(item.es);
+  }
+
+  // Distinkt abgehaktes Item persistent vermerken (No-Op bei erneutem Antippen).
+  function recordShoppingView(id) {
+    if (!id || (gamestats.shoppingSeen && gamestats.shoppingSeen[id])) return;
+    const seen = Object.assign({}, gamestats.shoppingSeen, { [id]: true });
+    gamestats = Object.assign({}, gamestats, { shoppingSeen: seen });
+    store.saveGameStats(gamestats);
+  }
+
+  // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
+  function speakCompras(id) {
+    const item = shoppingItemById(id);
+    if (item && speech && speech.isSupported()) speech.speak(item.es);
+  }
+
+  // ----- Einkaufszettel-Quiz (Multiple Choice über die Items einer Rubrik) -----
+  // Optionen bauen: richtiges Wort + bis zu 3 Ablenker aus derselben Rubrik,
+  // dann gemischt. Einmal je Frage berechnet (Re-Render mischt nicht neu).
+  function buildComprasOptions(item, pool) {
+    const distractors = shuffle(pool.filter((d) => d.id !== item.id)).slice(0, 3);
+    return shuffle([item, ...distractors]).map((d) => ({ es: d.es, correct: d.id === item.id }));
+  }
+
+  function openComprasQuiz() {
+    const sec = shoppingSectionById(state.compras.section);
+    if (!sec || sec.items.length < 2) return;
+    const queue = shuffle(sec.items).map((it) => it.id);
+    state.comprasQuiz = {
+      section: sec.id,
+      queue,
+      idx: 0,
+      total: queue.length,
+      options: buildComprasOptions(shoppingItemById(queue[0]), sec.items),
+      selected: null,
+      correct: 0,
+    };
+    state.screen = "comprasQuiz";
+    render();
+  }
+
+  function comprasQuizVM() {
+    const q = state.comprasQuiz;
+    const sec = shoppingSectionById(q.section);
+    const item = shoppingItemById(q.queue[q.idx]);
+    const answered = q.selected !== null;
+    const correctEs = item.es;
+    const options = q.options.map((o, i) => ({
+      es: o.es,
+      state: !answered ? "idle"
+        : o.correct ? "correct"
+        : i === q.selected ? "wrong"
+        : "dim",
+    }));
+    return {
+      sectionIcon: sec ? sec.icon : "🛒",
+      sectionLabel: sec ? sec.label : "",
+      position: q.idx,
+      total: q.total,
+      prompt: item.de,
+      options,
+      answered,
+      isCorrect: answered && q.options[q.selected].correct,
+      solutionEs: correctEs,
+      isLast: q.idx >= q.total - 1,
+    };
+  }
+
+  // Eine Option wählen. Erste Wahl zählt; spätere Klicks ignorieren.
+  function answerComprasQuiz(i) {
+    const q = state.comprasQuiz;
+    if (!q || q.selected !== null) return;
+    q.selected = i;
+    if (q.options[i] && q.options[i].correct) { q.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function nextComprasQuiz() {
+    const q = state.comprasQuiz;
+    if (!q || q.selected === null) return;
+    if (q.idx >= q.total - 1) {
+      state.screen = "comprasQuizDone";
+      render();
+      return;
+    }
+    q.idx += 1;
+    q.selected = null;
+    const sec = shoppingSectionById(q.section);
+    q.options = buildComprasOptions(shoppingItemById(q.queue[q.idx]), sec.items);
+    render();
+  }
+
+  function comprasQuizDoneVM() {
+    const q = state.comprasQuiz;
+    const sec = shoppingSectionById(q.section);
+    return {
+      sectionIcon: sec ? sec.icon : "🛒",
+      sectionLabel: sec ? sec.label : "",
+      correct: q.correct,
+      total: q.total,
+      perfect: q.total > 0 && q.correct === q.total,
+    };
+  }
+
+  // „Nochmal" baut die Runde über dieselbe Rubrik neu.
+  function comprasQuizAgain() {
+    openComprasQuiz();
+  }
+
+  // Zurück vom Quiz zum Zettel (gleiche Rubrik bleibt aktiv).
+  function comprasBackToList() {
+    state.comprasQuiz = null;
+    state.compras = { section: state.compras.section, open: null };
+    state.screen = "compras";
+    render();
+  }
+
   // ----- El Cuerpo: drehbares 3D-Modell (in-place, ohne Voll-Re-Render) -----
   // Die Figur ist eine CSS-3D-Szene aus Kugeln (Orbs) und Hotspot-Punkten.
   // Beim Drehen ändert sich nur der eine Eltern-Transform plus pro Element ein
@@ -1142,12 +1347,16 @@
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
     else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
+    else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
     else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
     else if (state.screen === "frasesSetup") root.innerHTML = ui.renderFrasesSetup(frasesSetupVM());
     else if (state.screen === "frases") root.innerHTML = ui.renderFrases(frasesVM());
     else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone(frasesDoneVM());
+    else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
+    else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
+    else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -2153,6 +2362,7 @@
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
     else if (action === "open-conjugacion") openConjugacion();
+    else if (action === "open-tiempos") openTiempos();
     else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
@@ -2167,6 +2377,15 @@
     else if (action === "frases-answer") answerFrases(Number(el.dataset.idx));
     else if (action === "frases-next") nextFrases();
     else if (action === "frases-again") frasesAgain();
+    else if (action === "open-compras") openCompras();
+    else if (action === "compras-section") comprasSection(el.dataset.id);
+    else if (action === "compras-pick") comprasPick(el.dataset.id);
+    else if (action === "compras-speak") speakCompras(el.dataset.id);
+    else if (action === "open-compras-quiz") openComprasQuiz();
+    else if (action === "compras-quiz-answer") answerComprasQuiz(Number(el.dataset.idx));
+    else if (action === "compras-quiz-next") nextComprasQuiz();
+    else if (action === "compras-quiz-again") comprasQuizAgain();
+    else if (action === "compras-back-list") comprasBackToList();
     else if (action === "home") goHome();
   }
 
