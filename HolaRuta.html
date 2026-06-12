@@ -1026,6 +1026,37 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border-radius: var(--r-md); padding: 12px 14px; color: var(--ink); line-height: 1.5; font-size: 0.92rem;
 }
 
+/* ===================== REGATEAR (VERHANDELN & FEILSCHEN) ===================== */
+/* Eine Seite mit vier Abschnitten. Taktik nutzt die Knigge-Bausteine, die
+ * Rollenspiele die Hostel-Mode-Bausteine (hm-line, hm-roles, hm-phrases);
+ * eigen sind nur die Abschnitts-Überschriften, die Satzlisten und die Einheiten. */
+.rg-head {
+  font-family: var(--font-display); font-size: 1.05rem; color: var(--ink);
+  margin: 22px 0 12px; padding-bottom: 6px; border-bottom: 1.5px solid var(--line);
+}
+.rg-head:first-of-type { margin-top: 18px; }
+.rg-group { margin-bottom: 14px; }
+.rg-group__title {
+  font-size: 0.95rem; font-weight: 700; color: var(--brand-ink);
+  margin: 0 0 8px; display: flex; align-items: center; gap: 7px;
+}
+.rg-phrases { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rg-phrase {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 9px 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--card);
+}
+.rg-phrase__es { font-weight: 700; color: var(--ink); line-height: 1.4; }
+.rg-phrase__de { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.4; }
+.rg-units { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rg-unit {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px;
+  padding: 9px 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--card);
+}
+.rg-unit__es { font-weight: 700; color: var(--brand-ink); }
+.rg-unit__de { color: var(--ink-soft); font-size: 0.9rem; text-align: right; }
+.rg-unit__ej { grid-column: 1 / -1; color: var(--muted); font-size: 0.86rem; font-style: italic; margin-top: 2px; }
+.rg-rp .hm-roles { margin-top: 10px; }
+
 /* ===================== CONJUGACIÓN (ERKLÄRSEITE KONJUGIEREN) ===================== */
 /* Baut auf den Länderkunde-Bausteinen (cinfo-sect, cinfo-words, cinfo-dish) auf;
  * eigen sind nur die kompakten Konjugations-Tabellen und der Übungs-CTA. */
@@ -8506,6 +8537,246 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 </script>
 <script>
 /*
+ * regatear.js  (SC.regatear) – Modul "Regatear: gut verhandeln & feilschen".
+ * REINE DATEN, keine Logik (wie knigge.js / frases.js). Lädt vor app.js und
+ * hängt sich an window.SC. Wird von ui.renderRegatear gerendert.
+ *
+ * Idee: auf Märkten in Lateinamerika ist Feilschen (regatear) normal und
+ * erwünscht – aber es folgt Spielregeln. Das Modul erklärt erst die Taktik
+ * (TIPS), gibt dann die wichtigsten Sätze nach Phasen sortiert (PHRASES) und
+ * den Mengen-/Einheiten-Wortschatz (UNITS), und lässt zum Schluss anhand von
+ * Rollenspielen (ROLEPLAYS) üben. Durchgängig LatAm-Spanisch.
+ *
+ * Schemas:
+ *   INTRO   : string – kurze deutsche Einleitung über der Seite.
+ *   TIPS    : [{ icon, title, intro, dos:[…], donts:[…] }]  – aufklappbar.
+ *   UNITS   : [{ es, de, ejemplo }]  – Maß-/Mengeneinheiten am Marktstand.
+ *   PHRASES : [{ id, icon, title, items:[{ es, de }] }]  – nach Phase gruppiert.
+ *   ROLEPLAYS: [{ id, title, situationDe, roleA, roleB, goalA, goalB,
+ *                dialogue:[{ speaker:'A'|'B', es, de }], usefulPhrases:[es…] }]
+ *
+ * Hinweis: Preise/Bräuche sind Backpacker-Faustregeln, keine festen Regeln –
+ * Ton und Gepflogenheiten unterscheiden sich von Land zu Land und von Stand zu
+ * Stand. Im Zweifel zählt: freundlich bleiben, lächeln, fair handeln.
+ */
+(function () {
+  "use strict";
+
+  const INTRO =
+    "Auf Märkten und bei Straßenständen ist Feilschen (regatear) normal – aber " +
+    "freundlich und mit Spielregeln. Erst die Taktik, dann die wichtigsten Sätze, " +
+    "dann üben im Rollenspiel.";
+
+  // ---------- Erklärung: wie man gut verhandelt (aufklappbar, Knigge-Stil) ----------
+  const TIPS = [
+    {
+      icon: "🤝",
+      title: "Die Grundhaltung",
+      intro: "Feilschen ist in Lateinamerika ein freundliches Spiel, kein Streit. Wer lächelt und höflich bleibt, bekommt den besseren Preis.",
+      dos: [
+        "Zuerst grüßen: „Buenos días“, ein kurzer Smalltalk öffnet jeden Stand.",
+        "Mit Humor und Lächeln bleiben – Sympathie senkt den Preis mehr als Härte.",
+        "Den Verkäufer mit „amigo/a“, „caballero“, „seño“ oder „jefe/a“ ansprechen.",
+        "Realistisch bleiben: ein fairer Rabatt ist das Ziel, nicht der Ruin des Standes.",
+      ],
+      donts: [
+        "Nicht aggressiv oder von oben herab auftreten – das blockiert sofort.",
+        "Die Ware nicht schlechtmachen, um den Preis zu drücken; lieber sachlich bleiben.",
+        "Nicht in Geschäften mit festen Preisen (Supermarkt, Apotheke) feilschen – dort ist es unüblich.",
+      ],
+    },
+    {
+      icon: "🎯",
+      title: "Die Verhandlung führen",
+      intro: "Der erste genannte Preis ist fast nie der letzte. Frag nach, biete weniger, treffe dich in der Mitte.",
+      dos: [
+        "Erst nach dem Preis fragen, bevor du Interesse zeigst: „¿A cuánto?“",
+        "Den ersten Preis nie sofort annehmen – freundlich stutzen: „Uy, está caro.“",
+        "Ein Gegenangebot machen (Anker): biete etwa die Hälfte bis zwei Drittel.",
+        "Bei Menge bündeln: „¿Y si llevo tres?“ – mehrere Stücke bringen Rabatt.",
+        "Bar und passend zahlen anbieten: „En efectivo, ¿me lo dejas en…?“",
+      ],
+      donts: [
+        "Nicht das erste Gegenangebot als Endpreis sehen – es gibt ein Hin und Her.",
+        "Nicht zu tief einsteigen, das wirkt respektlos; bleib im realistischen Rahmen.",
+        "Den Preis nicht nennen, den DU zahlen willst, bevor er seinen genannt hat.",
+      ],
+    },
+    {
+      icon: "🚶",
+      title: "Der Abschluss (und das Weggehen)",
+      intro: "Weggehen ist die stärkste Taktik – oft kommt der bessere Preis erst dann. Und ein Nein ist auch okay.",
+      dos: [
+        "Wenn der Preis nicht stimmt, freundlich gehen: „Lo voy a pensar, gracias.“",
+        "Oft ruft man dich zurück: „¡Espera, te lo dejo en…!“ – dann ist der Deal da.",
+        "Beim Ja klar bestätigen: „Listo, me lo llevo.“ und passend bezahlen.",
+        "Auch ohne Kauf nett bleiben: „Gracias, muy amable.“ – man sieht sich wieder.",
+      ],
+      donts: [
+        "Nicht handeln, wenn du gar nicht kaufen willst – das gilt als unfair.",
+        "Nach dem Handschlag-Preis nicht nochmal nachverhandeln – Wort gilt.",
+        "Nicht beleidigt sein, wenn der Verkäufer Nein sagt; dann ist es sein letzter Preis.",
+      ],
+    },
+  ];
+
+  // ---------- Maß- & Mengeneinheiten (Wortschatz vom Marktstand) ----------
+  const UNITS = [
+    { es: "la unidad", de: "das Stück / die Einheit", ejemplo: "¿A cuánto la unidad?" },
+    { es: "la docena", de: "das Dutzend (12 Stück)", ejemplo: "¿Cuánto cuesta la docena?" },
+    { es: "la media docena", de: "das halbe Dutzend (6)", ejemplo: "Deme media docena." },
+    { es: "la libra", de: "das Pfund (≈ 454 g)", ejemplo: "¿Cuánto vale la libra?" },
+    { es: "el kilo", de: "das Kilo(gramm)", ejemplo: "Un kilo de tomates, por favor." },
+    { es: "el medio kilo", de: "das halbe Kilo", ejemplo: "Medio kilo de queso." },
+    { es: "el cuarto", de: "das Viertel(pfund/-kilo)", ejemplo: "Un cuarto de jamón." },
+    { es: "el montón / la pila", de: "das Häufchen (Marktportion)", ejemplo: "¿A cómo el montón?" },
+    { es: "el atado / el manojo", de: "das Bündel (Kräuter, Gemüse)", ejemplo: "Un manojo de cilantro." },
+    { es: "la bolsa", de: "die Tüte (als Menge)", ejemplo: "Una bolsa de naranjas." },
+  ];
+
+  // ---------- Wichtige Sätze, nach Phase gruppiert ----------
+  const PHRASES = [
+    {
+      id: "preguntar",
+      icon: "💬",
+      title: "Nach dem Preis fragen",
+      items: [
+        { es: "¿Cuánto cuesta?", de: "Wie viel kostet das?" },
+        { es: "¿Cuánto vale?", de: "Was kostet es? (wörtl. „was ist es wert“)" },
+        { es: "¿Qué precio tiene?", de: "Welchen Preis hat es?" },
+        { es: "¿A cuánto la unidad?", de: "Wie viel das Stück?" },
+        { es: "¿A cómo está el kilo?", de: "Wie teuer ist das Kilo gerade?" },
+        { es: "¿Cuál es el precio por la libra?", de: "Wie ist der Preis pro Pfund?" },
+        { es: "¿Cuánto por todo?", de: "Wie viel für alles zusammen?" },
+      ],
+    },
+    {
+      id: "regatear",
+      icon: "🤏",
+      title: "Feilschen & verhandeln",
+      items: [
+        { es: "Uy, está un poco caro.", de: "Oh, das ist ein bisschen teuer." },
+        { es: "¿Me hace un descuento?", de: "Geben Sie mir einen Rabatt?" },
+        { es: "¿En cuánto me lo deja?", de: "Für wie viel lassen Sie es mir?" },
+        { es: "¿No me lo deja más barato?", de: "Geht es nicht günstiger?" },
+        { es: "¿Y si llevo dos?", de: "Und wenn ich zwei nehme?" },
+        { es: "Te doy cien y nos arreglamos.", de: "Ich gebe dir hundert, dann sind wir uns einig." },
+        { es: "Es lo que tengo, en efectivo.", de: "Das ist, was ich habe – in bar." },
+      ],
+    },
+    {
+      id: "cerrar",
+      icon: "✅",
+      title: "Abschluss & Bezahlen",
+      items: [
+        { es: "Listo, me lo llevo.", de: "Abgemacht, ich nehme es." },
+        { es: "Está bien, trato hecho.", de: "In Ordnung, abgemacht." },
+        { es: "¿Acepta tarjeta o solo efectivo?", de: "Nehmen Sie Karte oder nur bar?" },
+        { es: "¿Me da una bolsa, por favor?", de: "Geben Sie mir eine Tüte, bitte?" },
+        { es: "Lo voy a pensar, gracias.", de: "Ich überlege es mir, danke. (höfliches Weggehen)" },
+        { es: "Gracias, muy amable.", de: "Danke, sehr nett." },
+      ],
+    },
+    {
+      id: "buscar",
+      icon: "🔎",
+      title: "Finden & danach fragen",
+      items: [
+        { es: "Amigo, ¿hay chancletas?", de: "Freund, gibt es Flip-Flops?" },
+        { es: "Amigo, ¿tienes chancletas?", de: "Freund, hast du Flip-Flops?" },
+        { es: "¿Dónde venden chancletas?", de: "Wo verkaufen sie Flip-Flops?" },
+        { es: "¿Dónde consigo unas chancletas?", de: "Wo bekomme ich Flip-Flops her?" },
+        { es: "¿Tiene otra talla / otro color?", de: "Haben Sie eine andere Größe / Farbe?" },
+        { es: "¿Me lo puede mostrar?", de: "Können Sie es mir zeigen?" },
+      ],
+    },
+  ];
+
+  // ---------- Rollenspiele zum Üben (Dialoge, wie data.ROLEPLAYS) ----------
+  const ROLEPLAYS = [
+    {
+      id: "rg01",
+      title: "Obst & Gemüse auf dem Markt",
+      level: 1,
+      roleA: "Reisender",
+      roleB: "Marktverkäuferin",
+      situationDe: "Du stehst am Obst- und Gemüsestand und willst Tomaten und Orangen kaufen. Frag nach Preis und Menge, bevor du dich entscheidest.",
+      goalA: "Grüße, frag nach dem Preis pro Kilo bzw. Stück, kauf eine Menge und lass dir eine Tüte geben.",
+      goalB: "Begrüße freundlich, nenne die Preise, biete bei mehr Menge einen kleinen Rabatt und pack ein.",
+      dialogue: [
+        { speaker: "A", de: "Guten Morgen! Wie viel kostet das Kilo Tomaten?", es: "¡Buenos días! ¿A cómo está el kilo de tomates?" },
+        { speaker: "B", de: "Guten Morgen! Das Kilo kostet zwanzig.", es: "¡Buenos días! El kilo está a veinte." },
+        { speaker: "A", de: "Und die Orangen, wie viel das Stück?", es: "¿Y las naranjas, a cuánto la unidad?" },
+        { speaker: "B", de: "Drei pro Stück, oder das Dutzend für dreißig.", es: "A tres la unidad, o la docena a treinta." },
+        { speaker: "A", de: "Gut. Geben Sie mir ein Kilo Tomaten und ein halbes Dutzend Orangen.", es: "Bien. Deme un kilo de tomates y media docena de naranjas." },
+        { speaker: "B", de: "Sehr gern. Sonst noch etwas?", es: "Con mucho gusto. ¿Algo más?" },
+        { speaker: "A", de: "Und wenn ich das ganze Dutzend Orangen nehme?", es: "¿Y si llevo la docena completa de naranjas?" },
+        { speaker: "B", de: "Dann lasse ich dir das Dutzend für fünfundzwanzig.", es: "Entonces te dejo la docena en veinticinco." },
+        { speaker: "A", de: "Abgemacht, das nehme ich. Geben Sie mir eine Tüte, bitte?", es: "Trato hecho, me lo llevo. ¿Me da una bolsa, por favor?" },
+        { speaker: "B", de: "Hier bitte. Das macht insgesamt fünfundvierzig.", es: "Aquí tienes. En total son cuarenta y cinco." },
+        { speaker: "A", de: "Hier, in bar. Vielen Dank!", es: "Aquí está, en efectivo. ¡Muchas gracias!" },
+        { speaker: "B", de: "Danke dir, schönen Tag noch!", es: "Gracias a ti, ¡que tengas buen día!" },
+      ],
+      usefulPhrases: ["¿A cómo está el kilo?", "¿A cuánto la unidad?", "la docena / media docena", "¿Y si llevo la docena completa?", "¿Me da una bolsa?", "Trato hecho, me lo llevo."],
+    },
+    {
+      id: "rg02",
+      title: "Souvenir feilschen (chancletas)",
+      level: 2,
+      roleA: "Reisender",
+      roleB: "Standverkäufer",
+      situationDe: "Auf dem Kunsthandwerksmarkt suchst du Flip-Flops. Der erste Preis ist zu hoch – verhandle freundlich, notfalls geh ein Stück weg.",
+      goalA: "Frag nach den Flip-Flops und dem Preis, finde ihn zu teuer, mach ein Gegenangebot und einig dich.",
+      goalB: "Nenne einen Startpreis, wehr dich erst, gib dann etwas nach und mach den Deal.",
+      dialogue: [
+        { speaker: "A", de: "Hallo, Freund! Hast du Flip-Flops?", es: "¡Hola, amigo! ¿Tienes chancletas?" },
+        { speaker: "B", de: "Klar! Diese hier sind sehr gut, achtzig das Paar.", es: "¡Claro! Estas son muy buenas, ochenta el par." },
+        { speaker: "A", de: "Oh, das ist ein bisschen teuer. Geht es günstiger?", es: "Uy, está un poco caro. ¿No me lo deja más barato?" },
+        { speaker: "B", de: "Es ist gute Qualität, mein Freund. Sechzig?", es: "Es buena calidad, amigo. ¿Sesenta?" },
+        { speaker: "A", de: "Für wie viel lassen Sie es mir, wenn ich bar zahle?", es: "¿En cuánto me lo deja si pago en efectivo?" },
+        { speaker: "B", de: "Wie viel willst du denn geben?", es: "¿Cuánto quieres dar?" },
+        { speaker: "A", de: "Ich gebe dir vierzig, das ist, was ich habe.", es: "Te doy cuarenta, es lo que tengo." },
+        { speaker: "B", de: "Nein, mein Freund, da verliere ich. Fünfzig.", es: "No, amigo, ahí pierdo. Cincuenta." },
+        { speaker: "A", de: "Hmm… ich überlege es mir, danke.", es: "Mmm… lo voy a pensar, gracias." },
+        { speaker: "B", de: "Warte, warte! Für fünfundvierzig sind wir uns einig.", es: "¡Espera, espera! En cuarenta y cinco nos arreglamos." },
+        { speaker: "A", de: "Abgemacht, ich nehme sie. Vielen Dank!", es: "Trato hecho, me las llevo. ¡Muchas gracias!" },
+        { speaker: "B", de: "Danke dir, viel Spaß damit!", es: "Gracias a ti, ¡que las disfrutes!" },
+      ],
+      usefulPhrases: ["¿Tienes chancletas?", "Está un poco caro.", "¿No me lo deja más barato?", "¿En cuánto me lo deja?", "Es lo que tengo.", "Lo voy a pensar, gracias.", "En cuarenta y cinco nos arreglamos."],
+    },
+    {
+      id: "rg03",
+      title: "Erst suchen, dann handeln",
+      level: 2,
+      roleA: "Reisender",
+      roleB: "Verkäuferin",
+      situationDe: "Du suchst einen Sonnenhut, weißt aber nicht, wo es ihn gibt. Frag dich durch, finde den Stand und handle einen Mengenrabatt aus.",
+      goalA: "Frag, wo es Hüte gibt, lass dir zwei zeigen und handle einen Preis für beide zusammen aus.",
+      goalB: "Zeig den Weg bzw. die Ware, nenne den Stückpreis und gib bei zwei Stück nach.",
+      dialogue: [
+        { speaker: "A", de: "Entschuldigung, wo bekomme ich einen Sonnenhut her?", es: "Disculpe, ¿dónde consigo un sombrero para el sol?" },
+        { speaker: "B", de: "Hier bei mir, schau mal. Welche Farbe magst du?", es: "Aquí conmigo, mira. ¿De qué color lo quieres?" },
+        { speaker: "A", de: "Können Sie mir den beigen und den braunen zeigen?", es: "¿Me puede mostrar el beige y el café?" },
+        { speaker: "B", de: "Natürlich. Jeder kostet fünfzig.", es: "Por supuesto. Cada uno cuesta cincuenta." },
+        { speaker: "A", de: "Und wenn ich beide nehme, was kosten sie zusammen?", es: "¿Y si llevo los dos, cuánto por todo?" },
+        { speaker: "B", de: "Für beide… lasse ich dir neunzig.", es: "Por los dos… te los dejo en noventa." },
+        { speaker: "A", de: "Geht es für achtzig, in bar?", es: "¿Me los deja en ochenta, en efectivo?" },
+        { speaker: "B", de: "Na gut, weil du zwei nimmst: fünfundachtzig.", es: "Está bien, porque llevas dos: ochenta y cinco." },
+        { speaker: "A", de: "Abgemacht, ich nehme beide. Geben Sie mir eine Tüte?", es: "Trato hecho, me llevo los dos. ¿Me da una bolsa?" },
+        { speaker: "B", de: "Hier bitte. Danke für den Einkauf!", es: "Aquí tienes. ¡Gracias por tu compra!" },
+        { speaker: "A", de: "Danke Ihnen, sehr nett!", es: "Gracias a usted, ¡muy amable!" },
+      ],
+      usefulPhrases: ["¿Dónde consigo…?", "¿Me puede mostrar…?", "¿Y si llevo los dos?", "¿Cuánto por todo?", "¿Me los deja en…?", "Trato hecho, me llevo los dos."],
+    },
+  ];
+
+  window.SC = window.SC || {};
+  window.SC.regatear = { INTRO, TIPS, UNITS, PHRASES, ROLEPLAYS };
+})();
+
+</script>
+<script>
+/*
  * srs.js  (SC.srs) – Spaced Repetition, vereinfachtes SM-2. REINE FUNKTIONEN.
  * Kennt weder UI noch Speicher. Nimmt einen Zustand + Bewertung, gibt NEUEN
  * Zustand zurück (immutabel – nie das Original verändern).
@@ -10109,6 +10380,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.13.0",
+      date: "2026-06-12",
+      title: "Regatear: gut verhandeln & feilschen",
+      items: [
+        "🤝 Neuer Bereich unter Entdecken: „Regatear“ – wie man auf Märkten und an Straßenständen freundlich und richtig verhandelt.",
+        "📖 Erklärung der Taktik in drei aufklappbaren Blöcken: die Grundhaltung (lächeln, grüßen), die Verhandlung führen (Gegenangebot, Menge bündeln) und der Abschluss (Weggehen als Taktik, sauber bezahlen).",
+        "💬 Die wichtigsten Sätze nach Phasen sortiert: nach dem Preis fragen (¿A cuánto la unidad?), feilschen (¿En cuánto me lo deja?), abschließen (Trato hecho) und etwas finden (¿Dónde consigo…?).",
+        "⚖️ Mengen & Einheiten vom Marktstand: unidad, docena, libra, kilo, montón, manojo … – jeweils mit Beispielsatz.",
+        "🎭 Drei Rollenspiele zum Üben: Obst & Gemüse, Souvenir feilschen (chancletas) und erst suchen, dann handeln – Dialoge zum lauten Durchspielen zu zweit.",
+      ],
+    },
+    {
       version: "1.12.0",
       date: "2026-06-12",
       title: "Gegenteile: Antonym-Paare lernen",
@@ -10343,6 +10626,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { action: "open-hostel",      icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
+    { action: "open-regatear",    icon: "🤝", title: "Regatear",        sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
     { action: "open-compras",     icon: "🛒", title: "Einkaufszettel", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
@@ -10495,7 +10779,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, knigge: vm.hasKnigge };
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, knigge: vm.hasKnigge, regatear: vm.hasRegatear };
     const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -11623,6 +11907,119 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`;
   }
 
+  // ---------- REGATEAR (gut verhandeln & feilschen) ----------
+  // Eine Seite, drei Teile: Erklärung/Taktik (aufklappbar), wichtige Sätze nach
+  // Phase, plus Einheiten-Wortschatz, und zum Schluss Rollenspiele zum Üben.
+  function renderRegatear(vm) {
+    // Erklärung: Taktik-Blöcke (DOs/Don'ts) wie im Knigge, aufklappbar.
+    const liList = (items, cls, marker) =>
+      (items || [])
+        .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
+        .join("");
+    const tipBlock = (t) => `
+      <details class="knigge-topic">
+        <summary class="knigge-topic__head">
+          <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
+          <span class="knigge-topic__title">${esc(t.title)}</span>
+          <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="knigge-topic__body">
+          ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
+          ${t.dos && t.dos.length ? `<ul class="knigge-list">${liList(t.dos, "knigge-do", "✅")}</ul>` : ""}
+          ${t.donts && t.donts.length ? `<ul class="knigge-list">${liList(t.donts, "knigge-dont", "🚫")}</ul>` : ""}
+        </div>
+      </details>`;
+    const tips = (vm.tips || []).map(tipBlock).join("");
+
+    // Wichtige Sätze: pro Phase eine kleine zweispaltige Liste (es / de).
+    const phraseGroup = (g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${g.items.map((p) => `
+            <li class="rg-phrase">
+              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+              <span class="rg-phrase__de">${esc(p.de)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    // Einheiten: kompakte Tabelle Spanisch · Deutsch · Beispiel.
+    const units = (vm.units || []).map((u) => `
+      <li class="rg-unit">
+        <span class="rg-unit__es" lang="es">${esc(u.es)}</span>
+        <span class="rg-unit__de">${esc(u.de)}</span>
+        <span class="rg-unit__ej" lang="es">${esc(u.ejemplo)}</span>
+      </li>`).join("");
+
+    // Rollenspiele: pro Szene ein aufklappbarer Dialog (A/B) + nützliche Sätze.
+    const rpBlock = (r) => {
+      const lines = r.dialogue.map((d) => `
+        <div class="hm-line hm-line--${d.speaker === "A" ? "a" : "b"}">
+          <span class="hm-line__who">${esc(d.speaker)}</span>
+          <span class="hm-line__bubble">
+            <span class="hm-line__es" lang="es">${esc(d.es)}</span>
+            <span class="hm-line__de">${esc(d.de)}</span>
+          </span>
+        </div>`).join("");
+      const useful = r.usefulPhrases && r.usefulPhrases.length
+        ? `<div class="hm-phrases">
+             <span class="hm-phrases__cap">Nützliche Sätze</span>
+             <ul class="hm-phrases__list">${r.usefulPhrases.map((p) => `<li lang="es">${esc(p)}</li>`).join("")}</ul>
+           </div>`
+        : "";
+      return `
+        <details class="knigge-topic rg-rp">
+          <summary class="knigge-topic__head">
+            <span class="knigge-topic__icon" aria-hidden="true">🎭</span>
+            <span class="knigge-topic__title">${esc(r.title)}</span>
+            ${r.lvlShort ? `<span class="hm-rp__lvl">${esc(r.lvlShort)}</span>` : ""}
+            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="knigge-topic__body">
+            <p class="hm-rphead__sit">${esc(r.situationDe)}</p>
+            <div class="hm-roles">
+              <div class="hm-role hm-role--a">
+                <span class="hm-role__tag">A · ${esc(r.roleA)}</span>
+                <span class="hm-role__goal">${esc(r.goalA)}</span>
+              </div>
+              <div class="hm-role hm-role--b">
+                <span class="hm-role__tag">B · ${esc(r.roleB)}</span>
+                <span class="hm-role__goal">${esc(r.goalB)}</span>
+              </div>
+            </div>
+            <div class="hm-dialogue">${lines}</div>
+            ${useful}
+          </div>
+        </details>`;
+    };
+    const roleplays = (vm.roleplays || []).map(rpBlock).join("");
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+          <div class="topbar__title">🤝 Regatear</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+
+        <h2 class="rg-head">📖 So verhandelst du gut</h2>
+        ${tips}
+
+        <h2 class="rg-head">💬 Wichtige Sätze</h2>
+        ${phrases}
+
+        <h2 class="rg-head">⚖️ Mengen & Einheiten</h2>
+        <ul class="rg-units">${units}</ul>
+
+        <h2 class="rg-head">🎭 Rollenspiele zum Üben</h2>
+        <p class="hm-intro">Verteilt die Rollen A und B, klappt eine Szene auf und spielt den Dialog laut durch.</p>
+        ${roleplays}
+      </section>`;
+  }
+
   // ---------- HOSTEL MODE ----------
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
   function hmTopbar(title, back) {
@@ -12566,7 +12963,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge,
+  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
@@ -12593,6 +12990,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
+  const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -12606,7 +13004,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -12757,6 +13155,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
+      hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -12939,6 +13338,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       accent: accents[t.id] || "",
     }));
     return { country, groups, topics };
+  }
+
+  // Regatear: Verhandeln/Feilschen – reine Anzeige-Seite (Taktik, Sätze,
+  // Einheiten, Rollenspiele). Reicht die Daten 1:1 durch, hängt nur an den
+  // Rollenspielen das Kurz-Label der Schwierigkeitsstufe an.
+  function regatearVM() {
+    if (!regatear) return { intro: "", tips: [], phrases: [], units: [], roleplays: [] };
+    const roleplays = (regatear.ROLEPLAYS || []).map((r) => {
+      const lvl = levelById(r.level);
+      return Object.assign({}, r, { lvlShort: lvl ? lvl.short : "" });
+    });
+    return {
+      intro: regatear.INTRO,
+      tips: regatear.TIPS || [],
+      phrases: regatear.PHRASES || [],
+      units: regatear.UNITS || [],
+      roleplays,
+    };
   }
 
   // ----- Badge-System ("Mein Ruta-Pass") -----
@@ -13919,6 +14336,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
+    else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
@@ -14699,6 +15117,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  function openRegatear() {
+    dismissBadgeToast();
+    state.screen = "regatear";
+    render();
+  }
+
   function selectCountry(id) {
     state.countryId = id;
     render();
@@ -14975,6 +15399,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
     else if (action === "open-knigge") openKnigge();
+    else if (action === "open-regatear") openRegatear();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");

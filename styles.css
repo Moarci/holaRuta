@@ -988,6 +988,37 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border-radius: var(--r-md); padding: 12px 14px; color: var(--ink); line-height: 1.5; font-size: 0.92rem;
 }
 
+/* ===================== REGATEAR (VERHANDELN & FEILSCHEN) ===================== */
+/* Eine Seite mit vier Abschnitten. Taktik nutzt die Knigge-Bausteine, die
+ * Rollenspiele die Hostel-Mode-Bausteine (hm-line, hm-roles, hm-phrases);
+ * eigen sind nur die Abschnitts-Überschriften, die Satzlisten und die Einheiten. */
+.rg-head {
+  font-family: var(--font-display); font-size: 1.05rem; color: var(--ink);
+  margin: 22px 0 12px; padding-bottom: 6px; border-bottom: 1.5px solid var(--line);
+}
+.rg-head:first-of-type { margin-top: 18px; }
+.rg-group { margin-bottom: 14px; }
+.rg-group__title {
+  font-size: 0.95rem; font-weight: 700; color: var(--brand-ink);
+  margin: 0 0 8px; display: flex; align-items: center; gap: 7px;
+}
+.rg-phrases { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rg-phrase {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 9px 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--card);
+}
+.rg-phrase__es { font-weight: 700; color: var(--ink); line-height: 1.4; }
+.rg-phrase__de { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.4; }
+.rg-units { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rg-unit {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px;
+  padding: 9px 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--card);
+}
+.rg-unit__es { font-weight: 700; color: var(--brand-ink); }
+.rg-unit__de { color: var(--ink-soft); font-size: 0.9rem; text-align: right; }
+.rg-unit__ej { grid-column: 1 / -1; color: var(--muted); font-size: 0.86rem; font-style: italic; margin-top: 2px; }
+.rg-rp .hm-roles { margin-top: 10px; }
+
 /* ===================== CONJUGACIÓN (ERKLÄRSEITE KONJUGIEREN) ===================== */
 /* Baut auf den Länderkunde-Bausteinen (cinfo-sect, cinfo-words, cinfo-dish) auf;
  * eigen sind nur die kompakten Konjugations-Tabellen und der Übungs-CTA. */

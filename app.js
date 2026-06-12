@@ -15,6 +15,7 @@
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
+  const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -28,7 +29,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -179,6 +180,7 @@
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
+      hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -361,6 +363,24 @@
       accent: accents[t.id] || "",
     }));
     return { country, groups, topics };
+  }
+
+  // Regatear: Verhandeln/Feilschen – reine Anzeige-Seite (Taktik, Sätze,
+  // Einheiten, Rollenspiele). Reicht die Daten 1:1 durch, hängt nur an den
+  // Rollenspielen das Kurz-Label der Schwierigkeitsstufe an.
+  function regatearVM() {
+    if (!regatear) return { intro: "", tips: [], phrases: [], units: [], roleplays: [] };
+    const roleplays = (regatear.ROLEPLAYS || []).map((r) => {
+      const lvl = levelById(r.level);
+      return Object.assign({}, r, { lvlShort: lvl ? lvl.short : "" });
+    });
+    return {
+      intro: regatear.INTRO,
+      tips: regatear.TIPS || [],
+      phrases: regatear.PHRASES || [],
+      units: regatear.UNITS || [],
+      roleplays,
+    };
   }
 
   // ----- Badge-System ("Mein Ruta-Pass") -----
@@ -1341,6 +1361,7 @@
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
+    else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
@@ -2121,6 +2142,12 @@
     render();
   }
 
+  function openRegatear() {
+    dismissBadgeToast();
+    state.screen = "regatear";
+    render();
+  }
+
   function selectCountry(id) {
     state.countryId = id;
     render();
@@ -2397,6 +2424,7 @@
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
     else if (action === "open-knigge") openKnigge();
+    else if (action === "open-regatear") openRegatear();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");

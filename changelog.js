@@ -21,6 +21,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.13.0",
+      date: "2026-06-12",
+      title: "Regatear: gut verhandeln & feilschen",
+      items: [
+        "🤝 Neuer Bereich unter Entdecken: „Regatear“ – wie man auf Märkten und an Straßenständen freundlich und richtig verhandelt.",
+        "📖 Erklärung der Taktik in drei aufklappbaren Blöcken: die Grundhaltung (lächeln, grüßen), die Verhandlung führen (Gegenangebot, Menge bündeln) und der Abschluss (Weggehen als Taktik, sauber bezahlen).",
+        "💬 Die wichtigsten Sätze nach Phasen sortiert: nach dem Preis fragen (¿A cuánto la unidad?), feilschen (¿En cuánto me lo deja?), abschließen (Trato hecho) und etwas finden (¿Dónde consigo…?).",
+        "⚖️ Mengen & Einheiten vom Marktstand: unidad, docena, libra, kilo, montón, manojo … – jeweils mit Beispielsatz.",
+        "🎭 Drei Rollenspiele zum Üben: Obst & Gemüse, Souvenir feilschen (chancletas) und erst suchen, dann handeln – Dialoge zum lauten Durchspielen zu zweit.",
+      ],
+    },
+    {
       version: "1.12.0",
       date: "2026-06-12",
       title: "Gegenteile: Antonym-Paare lernen",
