@@ -2453,6 +2453,28 @@
     }, shareFormat());
   }
 
+  // Teilt einen freigeschalteten Ruta-Pass-Stempel als Sharepic. Wertet die
+  // Badges frisch aus, damit Name/Gruppe/Sammelstand stimmen, und teilt nur,
+  // wenn der Stempel auch wirklich freigeschaltet ist.
+  function shareBadge(id) {
+    if (!share || !badges) return;
+    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const all = badges.evaluate(metrics, gamestats.unlocked);
+    const b = all.find((x) => x.id === id);
+    if (!b || !b.unlocked) return;
+    const grp = (badges.GROUPS || []).find((g) => g.id === b.group);
+    buzz(12);
+    share.shareImage("badge", {
+      icon: b.icon,
+      name: b.name,
+      text: b.unlockedText || b.description,
+      groupLabel: grp ? grp.label : "",
+      groupIcon: grp ? grp.icon : "🎖️",
+      unlocked: all.filter((x) => x.unlocked).length,
+      total: all.length,
+    }, shareFormat());
+  }
+
   // Teilt die gerade sichtbare Karte – egal ob Detailseite oder Lern-Sitzung.
   function shareCard() {
     if (!share) return;
@@ -2511,6 +2533,7 @@
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
+    else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
     else if (action === "open-battle-setup") openBattleSetup();

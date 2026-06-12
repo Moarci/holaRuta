@@ -594,12 +594,18 @@
   // Eine Stempel-Kachel. Drei Zustände: freigeschaltet, gesperrt, geheim-gesperrt.
   function badgeCard(b) {
     if (b.unlocked) {
+      // Freigeschaltete Stempel lassen sich als Sharepic teilen (sofern verfügbar).
+      const share = canShare()
+        ? `<button class="badge__share" type="button" data-action="share-badge" data-id="${esc(b.id)}"
+                   aria-label="Stempel „${esc(b.name)}“ als Bild teilen">📤 Teilen</button>`
+        : "";
       return `
         <div class="badge is-unlocked">
           <span class="badge__icon" aria-hidden="true">${esc(b.icon)}</span>
           <span class="badge__check" aria-hidden="true">✓</span>
           <span class="badge__name">${esc(b.name)}</span>
           <span class="badge__desc">${esc(b.unlockedText || b.description)}</span>
+          ${share}
         </div>`;
     }
     if (b.secret) {

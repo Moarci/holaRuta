@@ -21,6 +21,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.17.0",
+      date: "2026-06-12",
+      title: "Ruta-Pass: Stempel als Sharepic teilen",
+      items: [
+        "🎖️ Jeden freigeschalteten Stempel kannst du jetzt direkt aus dem Ruta-Pass als Bild teilen – über den neuen „📤 Teilen“-Knopf auf der Stempel-Kachel.",
+        "Das Sharepic zeigt deinen Stempel wie einen echten Reisestempel im Pass: großes Medaillon mit Emoji, Name, Freischalt-Text und deinem Sammelstand – in 1:1 oder 9:16 (Story).",
+      ],
+    },
+    {
       version: "1.16.0",
       date: "2026-06-12",
       title: "Spickzettel: bessere Auswahl, Großanzeige & Sprungleiste",
