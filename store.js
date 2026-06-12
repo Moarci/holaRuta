@@ -185,8 +185,18 @@
       preciosPlayed: 0,     // abgeschlossene Preis-Hörrunden
       preciosPerfect: 0,    // Preis-Hörrunden ohne Fehler
       preciosMillon: 0,     // fehlerfreie Runden auf der „Große Beträge"-Stufe (L3)
+      // ----- Conjugador (Konjugations-Drill) -----
+      conjugPlayed: 0,      // abgeschlossene Konjugations-Runden
+      conjugPerfect: 0,     // Konjugations-Runden ohne Fehler
+      // ----- Diálogos (Gesprächs-Simulationen) -----
+      dialogosPlayed: 0,    // abgeschlossene Dialog-Runden
+      dialogosPerfect: 0,   // Dialog-Runden ohne Fehler
+      dialogosScenesDone: {}, // Map scenarioId -> true (distinkt gespielte Szenarien)
       // ----- Ruta del día (tägliche Mini-Runde) -----
       rutaDays: {},         // Map "YYYY-MM-DD" -> true (Tage mit gestarteter Ruta del día)
+      // ----- Trip-Ziel (Countdown + Tagesziel) -----
+      tripGoal: null,       // { destination, endDate:"YYYY-MM-DD", perDay, startedAt } | null
+      dailyCounts: {},      // Map "YYYY-MM-DD" -> Anzahl Bewertungen an dem Tag
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       // ----- El Cuerpo (interaktive Körperkarte) -----
@@ -196,6 +206,23 @@
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
   }
+  // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
+  // null (kein Ziel). endDate muss "YYYY-MM-DD" sein, perDay eine sinnvolle Zahl.
+  function sanitizeTripGoal(t) {
+    if (!isPlainObject(t)) return null;
+    const str = (s, max) => (typeof s === "string" && s.length > 0 && s.length <= max ? s : "");
+    const destination = str(t.destination, 80);
+    const endDate = /^\d{4}-\d{2}-\d{2}$/.test(t.endDate) ? t.endDate : "";
+    const perDay = typeof t.perDay === "number" && isFinite(t.perDay) ? Math.max(1, Math.min(500, Math.round(t.perDay))) : 0;
+    if (!endDate || !perDay) return null;
+    return {
+      destination,
+      endDate,
+      perDay,
+      startedAt: /^\d{4}-\d{2}-\d{2}$/.test(t.startedAt) ? t.startedAt : "",
+    };
+  }
+
   function loadGameStats() {
     const v = readJson(GAMESTATS_KEY, null);
     if (!isPlainObject(v)) return freshGameStats();
@@ -226,7 +253,14 @@
       preciosPlayed: num(v.preciosPlayed),
       preciosPerfect: num(v.preciosPerfect),
       preciosMillon: num(v.preciosMillon),
+      conjugPlayed: num(v.conjugPlayed),
+      conjugPerfect: num(v.conjugPerfect),
+      dialogosPlayed: num(v.dialogosPlayed),
+      dialogosPerfect: num(v.dialogosPerfect),
+      dialogosScenesDone: isPlainObject(v.dialogosScenesDone) ? v.dialogosScenesDone : {},
       rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
+      tripGoal: sanitizeTripGoal(v.tripGoal),
+      dailyCounts: isPlainObject(v.dailyCounts) ? v.dailyCounts : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},

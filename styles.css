@@ -1789,6 +1789,47 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    hellen Ergebnis-Karte (Schreiben & Hören) sonst unsichtbar. Hier dunkel einfärben. */
 .card-static .face__tip { color: var(--ink-soft); }
 
+/* ---- Conjugador (Konjugations-Drill): Aufgaben-Karte ---- */
+.cj-prompt { gap: 8px; }
+.cj-prompt__verb { font-size: 2.4rem; font-weight: 800; line-height: 1.1; }
+.cj-prompt__person { font-size: 1.1rem; color: var(--muted); }
+.cj-cta--drill { margin-top: 8px; }
+
+/* ---- Diálogos (Gesprächs-Simulationen) ---- */
+.dlg-nospeak { font-size: 0.85rem; color: var(--muted); margin: 0 0 10px; }
+.dlg-picks { display: flex; flex-direction: column; gap: 10px; }
+.dlg-pick {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  cursor: pointer; padding: 12px 14px; border-radius: var(--r-md); box-shadow: var(--shadow);
+}
+.dlg-pick:active { transform: translateY(1px); }
+.dlg-pick__icon { font-size: 1.7rem; line-height: 1; }
+.dlg-pick__text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.dlg-pick__title { font-family: var(--font-display); font-weight: 800; font-size: 1rem; }
+.dlg-pick__sub { font-size: 0.82rem; color: var(--muted); }
+.dlg-pick__chev { color: var(--muted); font-size: 1.3rem; }
+
+.dlg-thread { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.dlg-row { display: flex; }
+.dlg-row--npc { justify-content: flex-start; }
+.dlg-row--user { justify-content: flex-end; }
+.dlg-bubble {
+  max-width: 82%; padding: 9px 13px; border-radius: 16px;
+  display: flex; flex-direction: column; gap: 3px; box-shadow: var(--shadow);
+}
+.dlg-bubble--npc { background: var(--surface); border: 1.5px solid var(--line-strong); border-bottom-left-radius: 5px; }
+.dlg-bubble--user { background: color-mix(in srgb, var(--brand) 16%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--brand) 40%, var(--line-strong)); border-bottom-right-radius: 5px; }
+.dlg-bubble__es { font-weight: 700; }
+.dlg-bubble__de { font-size: 0.8rem; color: var(--muted); }
+
+.dlg-instr { font-weight: 700; color: var(--brand-ink); margin: 4px 0 8px; text-align: center; }
+.dlg-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.dlg-verdict { margin: 8px 0; padding: 9px 12px; border-radius: var(--r-sm, 10px); font-weight: 600; }
+.dlg-verdict--ok { background: color-mix(in srgb, #2F6B45 14%, var(--surface)); color: var(--ok, #2F6B45); }
+.dlg-verdict--no { background: color-mix(in srgb, #B5302A 12%, var(--surface)); color: var(--ink); display: flex; flex-direction: column; gap: 3px; }
+.dlg-verdict__given { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+
 /* ---- Precios al oído: Setup (Land/Währung + Schwierigkeit) ---- */
 .prc-head { margin: 18px 0 8px; font-family: var(--font-display); font-size: 1.02rem; color: var(--ink); }
 .prc-curs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
@@ -1838,6 +1879,36 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .today__ruta:active { transform: translateY(1px); }
 .today__ruta-main { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; }
 .today__ruta-sub { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+
+/* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
+.trip {
+  display: flex; flex-direction: column; gap: 6px; width: 100%; text-align: left;
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  cursor: pointer; padding: 11px 14px; border-radius: var(--r-md); box-shadow: var(--shadow);
+}
+.trip:active { transform: translateY(1px); }
+.trip--empty {
+  align-items: center; text-align: center; font-weight: 700; color: var(--muted);
+  border-style: dashed; box-shadow: none;
+}
+.trip__top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.trip__dest { font-family: var(--font-display); font-weight: 800; font-size: 1rem; }
+.trip__count { font-size: 0.82rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.trip__count.is-done { color: var(--ok, #2F6B45); }
+.trip__countdown { font-size: 0.86rem; font-weight: 600; color: var(--muted); }
+.trip__bar { height: 7px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.trip__bar-fill { display: block; height: 100%; background: var(--brand); border-radius: 999px; transition: width .25s ease; }
+.trip__bar-fill.is-done { background: var(--ok, #2F6B45); }
+.trip--edit { gap: 9px; cursor: default; }
+.trip--edit:active { transform: none; }
+.trip__cap { font-family: var(--font-display); font-weight: 800; margin: 0; }
+.trip__field { display: flex; flex-direction: column; gap: 3px; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.trip__field input {
+  font: inherit; font-weight: 600; color: var(--ink); padding: 8px 10px;
+  border: 1.5px solid var(--line-strong); border-radius: var(--r-sm, 10px); background: var(--bg, var(--surface));
+}
+.trip__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.trip__actions .cta { flex: 1 1 auto; }
 
 /* Streckenkarte (Statistik): Lernfortschritt als Bus-Strecke. */
 .route {

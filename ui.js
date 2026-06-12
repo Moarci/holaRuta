@@ -69,6 +69,7 @@
     { action: "open-hostel",      icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        sub: "Ganze Gespräche Zug für Zug durchspielen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
     { action: "open-regatear",    icon: "🤝", title: "Regatear",        sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
@@ -156,6 +157,44 @@
         <span class="today__ruta-sub">Kurze Tagesrunde quer durch alle Themen</span>
       </button>`;
 
+    // Trip-Ziel: optionaler Countdown bis zum Reisedatum + Tagesziel. Drei Zustände:
+    // Formular (tripEdit), gesetztes Ziel (Karte mit Balken) oder leerer Anstoßer.
+    const trip = vm.trip;
+    let tripCard = "";
+    if (vm.tripEdit) {
+      tripCard = `
+        <form class="trip trip--edit" data-action="save-trip">
+          <p class="trip__cap">🎯 Trip-Ziel</p>
+          <label class="trip__field"><span>Reiseziel (optional)</span>
+            <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="z. B. Cusco" value="${trip ? esc(trip.destination) : ""}" /></label>
+          <label class="trip__field"><span>Datum (Ankunft/Abreise)</span>
+            <input id="trip-date" type="date" value="${trip ? esc(trip.endDate) : ""}" required /></label>
+          <label class="trip__field"><span>Karten pro Tag</span>
+            <input id="trip-perday" type="number" inputmode="numeric" min="1" max="500" value="${trip ? trip.perDay : 15}" required /></label>
+          <div class="trip__actions">
+            <button class="cta" type="submit">Ziel speichern</button>
+            ${trip ? `<button class="ghostbtn" type="button" data-action="trip-clear">Ziel löschen</button>` : ""}
+            <button class="ghostbtn" type="button" data-action="trip-edit">Abbrechen</button>
+          </div>
+        </form>`;
+    } else if (trip) {
+      const dest = trip.destination ? esc(trip.destination) : "deine Reise";
+      const countdown = trip.past ? "Reisezeit! ¡Buen viaje! 🎒"
+        : trip.today ? "Heute geht's los! 🎒"
+        : `Noch <b>${trip.daysLeft}</b> ${trip.daysLeft === 1 ? "Tag" : "Tage"} bis ${dest}`;
+      tripCard = `
+        <button class="trip" data-action="trip-edit" aria-label="Trip-Ziel bearbeiten">
+          <span class="trip__top">
+            <span class="trip__dest">🎯 ${dest}</span>
+            <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${trip.todayCount}/${trip.perDay} heute${trip.todayDone ? " ✓" : ""}</span>
+          </span>
+          <span class="trip__countdown">${countdown}</span>
+          <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
+        </button>`;
+    } else {
+      tripCard = `<button class="trip trip--empty" data-action="trip-edit">🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel</button>`;
+    }
+
     // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
     // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
     const lvlSummary = vm.allLevels
@@ -167,6 +206,19 @@
     // sonst gäbe es nichts zu hören (graceful degradation).
     const listenSeg = speechReady()
       ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">👂 Hören</button>`
+      : "";
+    // Sprechtempo: nur sinnvoll, wenn der Browser überhaupt vorlesen kann.
+    // 0.75 langsam (zum Nachsprechen) · 0.95 normal · 1.2 schnell (Reise-Realität).
+    const rate = vm.speechRate || 0.95;
+    const speedGroup = speechReady()
+      ? `<div class="switchgroup">
+          <span class="switchcap">Sprechtempo</span>
+          <div class="segmented segmented--three" role="tablist" aria-label="Sprechtempo der Vorlese-Stimme">
+            <button class="seg ${rate === 0.75 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.75" aria-pressed="${rate === 0.75}">🐢 Langsam</button>
+            <button class="seg ${rate === 0.95 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.95" aria-pressed="${rate === 0.95}">Normal</button>
+            <button class="seg ${rate === 1.2 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="1.2" aria-pressed="${rate === 1.2}">⚡ Schnell</button>
+          </div>
+        </div>`
       : "";
     const setupBody = `
       <div class="setup__body" id="setup-body">
@@ -186,6 +238,7 @@
           </div>
         </div>
         <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
+        ${speedGroup}
       </div>`;
 
     return `
@@ -202,6 +255,7 @@
         </button>
         ${resume}
         ${rutaDia}
+        ${tripCard}
       </div>
 
       <div class="setup">
@@ -222,7 +276,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, knigge: vm.hasKnigge, regatear: vm.hasRegatear };
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear };
     const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -2072,6 +2126,217 @@
         <button class="cta cj-cta" data-action="open-category" data-id="verbos">
           Jetzt üben: Konjugieren <span class="cta__count">${vm.cardCount} Karten</span>
         </button>
+        ${vm.canDrill ? `
+        <button class="cta cj-cta cj-cta--drill" data-action="open-conjug-drill">
+          🔁 Conjugador: Formen selbst tippen
+        </button>` : ""}
+      </section>`;
+  }
+
+  // ---------- CONJUGADOR (generativer Konjugations-Drill) ----------
+  // Übt aktiv: „Verb + Person" erscheint, man tippt die konjugierte Form. Items
+  // werden pro Runde frisch aus data.CONJUGATION erzeugt (SC.conjug). Folgt dem
+  // Precios-Drill-Muster (Setup → Lauf → Done).
+  function renderConjugSetup(vm) {
+    if (!vm.available) {
+      return `
+        <section class="screen">
+          ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
+          <p class="stat-empty">Der Konjugations-Drill ist gerade nicht verfügbar.</p>
+        </section>`;
+    }
+    const levels = vm.levels.map((l) => `
+      <button class="prc-lvl ${l.active ? "is-active" : ""}" type="button"
+              data-action="conjug-level" data-level="${l.id}" aria-pressed="${l.active}">
+        <span class="prc-lvl__short">${esc(l.short)}</span>
+        <span class="prc-lvl__label">${esc(l.label)}</span>
+        <span class="prc-lvl__hint">${esc(l.hint)}</span>
+      </button>`).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
+        <p class="hm-intro">Verb und Person erscheinen – du tippst die richtige Form. Akzente sind optional („esta“ zählt für „está“). Wähle, wie schwer es werden soll.</p>
+        <h3 class="prc-head">Schwierigkeit</h3>
+        <div class="prc-lvls">${levels}</div>
+        <button class="cta" data-action="start-conjug">Runde starten</button>
+      </section>`;
+  }
+
+  function renderConjug(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
+    const body = !vm.result
+      ? `
+        <div class="card-static cj-prompt">
+          <span class="cj-prompt__verb" lang="es">${esc(vm.verb)}</span>
+          <span class="cj-prompt__person">${esc(vm.personDe)} · <span lang="es">${esc(vm.personEs)}</span></span>
+          <span class="face__hint">Tippe die passende Form.</span>
+        </div>
+        <form class="typer" data-action="submit-conjug" id="conjug-form">
+          <input class="typer__input" id="conjug-answer" type="text" inputmode="text"
+                 autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="z. B. vamos" />
+          <button class="typer__btn" type="submit">Prüfen</button>
+        </form>`
+      : `
+        <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
+          <div class="face__word" lang="es">${esc(vm.result.answer)}</div>
+          <div class="listen-de">${esc(vm.personDe)} · <span lang="es">${esc(vm.personEs)}</span> · ${esc(vm.verb)}</div>
+          ${vm.result.correct
+            ? `<div class="verdict verdict--ok">✓ Richtig!</div>`
+            : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(vm.result.input || "—")}“</div>`}
+        </div>
+        <button class="cta" data-action="conjug-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`;
+    return `
+      <section class="screen study">
+        ${hmTopbar("🔁 Conjugador", "open-conjug-drill")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+        ${body}
+      </section>`;
+  }
+
+  function renderConjugDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect
+      ? "¡Perfecto! Jede Form saß. 🏆"
+      : rate >= 60 ? "¡Bien! Die Endungen sitzen immer besser. 👏"
+      : "Sigue practicando – Konjugieren ist Übungssache. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "🔁"}</div>
+          <h2>Conjugador</h2>
+          <p class="prc-done-tag">${esc(vm.levelLabel)}</p>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="conjug-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="open-conjug-drill">Andere Stufe</button>
+          <button class="ghostbtn" data-action="open-conjugacion">Zur Erklärseite</button>
+        </div>
+      </section>`;
+  }
+
+  // ---------- DIÁLOGOS (Gesprächs-Simulationen) ----------
+  // Reisesituation Zug für Zug: die Gegenseite (npc) spricht (links), der Nutzer
+  // antwortet (rechts) per Multiple-Choice oder freiem Tippen. Die Verlaufsspur
+  // zeigt die schon gesagten Zeilen als Chat-Blasen.
+  function renderDialogosSetup(vm) {
+    if (!vm.available) {
+      return `
+        <section class="screen">
+          ${hmTopbar("💬 Diálogos", "home")}
+          <p class="stat-empty">Gerade keine Dialoge verfügbar.</p>
+        </section>`;
+    }
+    const hint = vm.hasSpeech ? "" : `<p class="dlg-nospeak">Dein Gerät kann nicht vorlesen – die Gespräche funktionieren trotzdem (zum Mitlesen).</p>`;
+    const cards = vm.scenarios.map((s) => `
+      <button class="dlg-pick" type="button" data-action="start-dialogos" data-id="${esc(s.id)}">
+        <span class="dlg-pick__icon" aria-hidden="true">${esc(s.icon)}</span>
+        <span class="dlg-pick__text">
+          <span class="dlg-pick__title">${esc(s.title)}</span>
+          <span class="dlg-pick__sub">${esc(s.intro)}</span>
+        </span>
+        <span class="dlg-pick__chev" aria-hidden="true">›</span>
+      </button>`).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("💬 Diálogos", "home")}
+        <p class="hm-intro">Spiel ein echtes Reisegespräch Zug für Zug durch. Die andere Person spricht – du antwortest. Wähle eine Situation.</p>
+        ${hint}
+        <div class="dlg-picks">${cards}</div>
+      </section>`;
+  }
+
+  // Eine Chat-Blase (npc links, user rechts). de optional als Unterzeile.
+  function dlgBubble(turn) {
+    const side = turn.who === "npc" ? "npc" : "user";
+    const de = turn.de ? `<span class="dlg-bubble__de">${esc(turn.de)}</span>` : "";
+    return `
+      <div class="dlg-row dlg-row--${side}">
+        <div class="dlg-bubble dlg-bubble--${side}">
+          <span class="dlg-bubble__es" lang="es">${esc(turn.es)}</span>
+          ${de}
+        </div>
+      </div>`;
+  }
+
+  function renderDialogos(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.turnIdx + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
+    const history = vm.transcript.map(dlgBubble).join("");
+
+    let active = "";
+    const cur = vm.current;
+    if (cur && cur.who === "npc") {
+      // npc-Zug: Blase zeigen (+ Vorlesen), dann „Weiter".
+      const replay = vm.speakable
+        ? `<button class="listen-replay ghostbtn" type="button" data-action="dialogos-speak">🔊 Nochmal anhören</button>`
+        : "";
+      active = `
+        ${dlgBubble({ who: "npc", es: cur.es, de: cur.de })}
+        <div class="dlg-actions">
+          ${replay}
+          <button class="cta" data-action="dialogos-next">Weiter</button>
+        </div>`;
+    } else if (cur && cur.who === "user") {
+      const instr = `<p class="dlg-instr">${esc(cur.de)}</p>`;
+      if (!vm.result) {
+        if (cur.kind === "mc") {
+          const opts = cur.options.map((o, i) => `
+            <button class="quiz-opt" type="button" data-action="dialogos-answer" data-idx="${i}">
+              <span class="quiz-opt__text"><span class="quiz-opt__es" lang="es">${esc(o.es)}</span></span>
+            </button>`).join("");
+          active = `${instr}<div class="quiz-opts">${opts}</div>`;
+        } else {
+          active = `
+            ${instr}
+            <form class="typer" data-action="submit-dialogos" id="dialogos-form">
+              <input class="typer__input" id="dialogos-answer" type="text" inputmode="text"
+                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="Tippe deine Antwort …" />
+              <button class="typer__btn" type="submit">Sagen</button>
+            </form>`;
+        }
+      } else {
+        // Beantwortet: die eigene (Muster-)Replik als Blase + Verdict + Weiter.
+        const verdict = vm.result.correct
+          ? `<div class="dlg-verdict dlg-verdict--ok" role="status" aria-live="polite">✓ ¡Bien dicho!</div>`
+          : `<div class="dlg-verdict dlg-verdict--no" role="status" aria-live="polite">
+               Besser so: <b lang="es">${esc(cur.solEs)}</b>
+               <span class="dlg-verdict__given">Du: „${esc(vm.result.given || "—")}“</span>
+             </div>`;
+        active = `
+          ${dlgBubble({ who: "user", es: cur.solEs, de: "" })}
+          ${verdict}
+          <button class="cta" data-action="dialogos-next">Weiter</button>`;
+      }
+    }
+
+    return `
+      <section class="screen study">
+        ${hmTopbar(vm.icon + " " + esc(vm.title), "open-dialogos")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.turnIdx + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="dlg-thread">
+          ${history}
+          ${active}
+        </div>
+      </section>`;
+  }
+
+  function renderDialogosDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect
+      ? "¡Perfecto! Du hast das ganze Gespräch gemeistert. 🏆"
+      : rate >= 60 ? "¡Bien! Das Gespräch läuft schon richtig rund. 👏"
+      : "Sigue practicando – jedes Gespräch macht dich sicherer. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "💬"}</div>
+          <h2>${vm.icon} ${esc(vm.title)}</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> Antworten passend</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="dialogos-again">Nochmal sprechen</button>
+          <button class="ghostbtn" data-action="open-dialogos">Andere Situation</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
       </section>`;
   }
 
@@ -2496,5 +2761,7 @@
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
+                   renderConjugSetup, renderConjug, renderConjugDone,
+                   renderDialogosSetup, renderDialogos, renderDialogosDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone };
 })();

@@ -320,7 +320,11 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     quizzesPlayed: 7, quizzesPerfect: 2,
     frasesPlayed: 3, frasesPerfect: 1, frasesThemesDone: { transporte: true, comida: true },
     listenReviews: 30, preciosPlayed: 4, preciosPerfect: 2, preciosMillon: 1,
+    conjugPlayed: 6, conjugPerfect: 3,
+    dialogosPlayed: 5, dialogosPerfect: 2, dialogosScenesDone: { hotel: true, taxi: true },
     rutaDays: { "2026-06-11": true },
+    tripGoal: { destination: "Cusco", endDate: "2026-07-01", perDay: 15, startedAt: "2026-06-12" },
+    dailyCounts: { "2026-06-11": 12 },
     contextCardsSeen: { hostel01: true },
     bodyPartsSeen: { bp_cabeza: true },
     shoppingSeen: { sl_agua: true },
@@ -328,6 +332,26 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
   };
   storeMem[GKEY] = JSON.stringify(valid);
   assert.deepEqual(store.loadGameStats(), valid);
+});
+
+test("store.loadGameStats: Trip-Ziel wird gesäubert (kaputtes Datum/perDay -> null)", () => {
+  const base = (trip) => JSON.stringify(Object.assign({ reviews: 1 }, { tripGoal: trip }));
+  // Gültig: bleibt erhalten, perDay wird gerundet/gedeckelt.
+  storeMem[GKEY] = base({ destination: "Lima", endDate: "2026-08-01", perDay: 20.6, startedAt: "2026-06-12" });
+  assert.deepEqual(store.loadGameStats().tripGoal,
+    { destination: "Lima", endDate: "2026-08-01", perDay: 21, startedAt: "2026-06-12" });
+  // Kaputtes Datum -> null.
+  storeMem[GKEY] = base({ destination: "X", endDate: "01.08.2026", perDay: 10 });
+  assert.equal(store.loadGameStats().tripGoal, null);
+  // perDay nicht-numerisch/fehlt -> null.
+  storeMem[GKEY] = base({ destination: "X", endDate: "2026-08-01", perDay: "viele" });
+  assert.equal(store.loadGameStats().tripGoal, null);
+  // numerisches perDay 0 wird defensiv auf 1 geklemmt (Ziel bleibt erhalten).
+  storeMem[GKEY] = base({ destination: "X", endDate: "2026-08-01", perDay: 0 });
+  assert.equal(store.loadGameStats().tripGoal.perDay, 1);
+  // perDay über dem Limit wird gedeckelt (500).
+  storeMem[GKEY] = base({ destination: "X", endDate: "2026-08-01", perDay: 9999 });
+  assert.equal(store.loadGameStats().tripGoal.perDay, 500);
 });
 
 // ---------- data-Integrität ----------

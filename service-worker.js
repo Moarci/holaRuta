@@ -7,7 +7,7 @@
  * beim nächsten Start. So mischen sich nie alte und neue Dateien in einer
  * laufenden Sitzung (Mixed-Version-Load).
  */
-const CACHE_VERSION = "holaruta-v29";
+const CACHE_VERSION = "holaruta-v30";
 const ASSETS = [
   "./",
   "./index.html",
@@ -19,6 +19,8 @@ const ASSETS = [
   "./countries.js",
   "./knigge.js",
   "./frases.js",
+  "./dialogos.js",
+  "./conjug.js",
   "./regatear.js",
   "./srs.js",
   "./store.js",
