@@ -71,6 +71,7 @@
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
   ];
 
@@ -762,15 +763,19 @@
   function routeMap(ov) {
     const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
     const stops = [
-      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new" },
-      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn" },
-      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master" },
+      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new",    at: 0 },
+      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn",  at: 50 },
+      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master", at: 100 },
     ];
+    // Haltestellen-Punkte sitzen auf der Linie, Beschriftung läuft im
+    // normalen Fluss darunter – so überlappt nichts (auch bei 0 %).
+    const nodesHtml = stops
+      .map((s) => `<span class="route__node ${s.cls}" style="left:${s.at}%" aria-hidden="true"></span>`)
+      .join("");
     const stopsHtml = stops.map((s) => `
       <div class="route__stop ${s.cls}">
-        <span class="route__dot" aria-hidden="true">${s.icon}</span>
         <span class="route__n">${s.n}</span>
-        <span class="route__lbl">${esc(s.label)}</span>
+        <span class="route__lbl">${s.icon} ${esc(s.label)}</span>
       </div>`).join("");
     return `
       <div class="route" role="img" aria-label="Lern-Strecke: ${ov.neu} neu, ${ov.learning} am Lernen, ${ov.mastered} gemeistert (${pct} %)">
@@ -780,9 +785,10 @@
         </div>
         <div class="route__track">
           <div class="route__fill" style="width:${pct}%"></div>
+          ${nodesHtml}
           <span class="route__bus" style="left:${pct}%" aria-hidden="true">🚌</span>
-          <div class="route__stops">${stopsHtml}</div>
         </div>
+        <div class="route__stops">${stopsHtml}</div>
       </div>`;
   }
 
@@ -1014,6 +1020,16 @@
       </div>`;
   }
 
+  // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der
+  // Infoseiten Länderkunde (renderInfo) und Conjugación (renderConjugacion).
+  function sect(icon, title, body) {
+    return `
+      <div class="cinfo-sect">
+        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
+        ${body}
+      </div>`;
+  }
+
   // ---------- SPICKZETTEL (Survival-Schnellzugriff) ----------
   // Reine Nachschlage-Ansicht (kein SRS): die kritischsten Sätze groß, je mit 🔊.
   function renderSpickzettel(vm) {
@@ -1173,12 +1189,6 @@
     const foods = (c.food || []).map(dish).join("");
     const drinks = (c.drink || []).map(dish).join("");
 
-    // Ein Themenblock (Überschrift + Inhalt).
-    const sect = (icon, title, body) => `
-      <div class="cinfo-sect">
-        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
-        ${body}
-      </div>`;
     const para = (text) => `<p class="cinfo-text">${esc(text)}</p>`;
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
@@ -1681,6 +1691,79 @@
     bp_pie:      { x: -22, y: 178,  z: 38,  az: 0,   d: 24 },
   };
 
+  // ---------- CONJUGACIÓN (Erklärseite Konjugieren) ----------
+  // Kompakte Grammatik-Erklärung (Inhalte aus data.CONJUGATION): Personen,
+  // die drei regelmäßigen Muster, wichtige unregelmäßige Reiseverben und ein
+  // Wegbeschreibungs-Dialog. Unten ein CTA in die Übungskarten – er nutzt die
+  // normale open-category-Aktion, also exakt den gewohnten Lernfluss.
+  function renderConjugacion(vm) {
+    const g = vm.guide;
+
+    const personRows = g.persons
+      .map((p) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(p.es)}</span><span class="cinfo-word__de">${esc(p.de)}</span></li>`)
+      .join("");
+
+    // Eine Konjugations-Tabelle: Person links (gemeinsame tableLabels), Form
+    // rechts. forms = 5 Formen in Personen-Reihenfolge – dieselbe Datenform
+    // für regelmäßige und unregelmäßige Verben.
+    const table = (forms) => `
+      <ul class="cj-table">
+        ${forms.map((f, i) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(g.tableLabels[i])}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
+      </ul>`;
+
+    const regularBlocks = g.regular
+      .map((r) => `
+        <div class="cj-verb">
+          <h4 class="cj-verb__h" lang="es">${esc(r.title)}</h4>
+          ${table(r.forms)}
+          <p class="cj-verb__like">${esc(r.like)}</p>
+        </div>`)
+      .join("");
+
+    // Unregelmäßige Verben als aufklappbare Karten (natives <details> wie bei
+    // den Länderkunde-Gerichten) – Kopf zeigt Verb + Übersetzung, aufgeklappt
+    // die fünf Formen und der Reise-Hinweis.
+    const irregularBlocks = g.irregular
+      .map((v) => `
+        <details class="cinfo-dish">
+          <summary class="cinfo-dish__head">
+            <span class="cinfo-dish__heart">
+              <span class="cinfo-dish__name" lang="es">${esc(v.verb)}</span>
+              <span class="cinfo-dish__desc">${esc(v.verbDe)}</span>
+            </span>
+            <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="cinfo-dish__body">
+            ${table(v.forms)}
+            ${v.note ? `<p class="cj-verb__like">${esc(v.note)}</p>` : ""}
+          </div>
+        </details>`)
+      .join("");
+
+    const exampleLines = g.example.lines
+      .map((l) => `
+        <div class="context-panel__line">
+          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
+          <p class="context-panel__de">${esc(l.de)}</p>
+        </div>`)
+      .join("");
+
+    return `
+      <section class="screen">
+        ${hmTopbar("🔁 Conjugación", "home")}
+        <p class="hm-intro">${esc(g.intro)}</p>
+
+        ${sect("🧑‍🤝‍🧑", "Die Personen", `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
+        ${sect("🧱", "Regelmäßig: drei Muster", `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
+        ${sect("⭐", "Die wichtigsten unregelmäßigen Verben", `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
+        ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
+
+        <button class="cta cj-cta" data-action="open-category" data-id="verbos">
+          Jetzt üben: Konjugieren <span class="cta__count">${vm.cardCount} Karten</span>
+        </button>
+      </section>`;
+  }
+
   function renderCuerpo(vm) {
     const nodes = vm.parts
       .map((p) => {
@@ -1751,6 +1834,6 @@
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderSpickzettel,
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderSpickzettel,
                    renderPrecios, renderPreciosDone, renderFrases, renderFrasesDone };
 })();

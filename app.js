@@ -26,7 +26,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'spickzettel' | 'precios' | 'preciosDone' | 'frases' | 'frasesDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'spickzettel' | 'precios' | 'preciosDone' | 'frases' | 'frasesDone'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -785,6 +785,23 @@
     store.saveGameStats(gamestats);
   }
 
+  // ----- Conjugación: Erklärseite Konjugieren -----
+  // Statische Grammatik-Erklärung (Inhalte: data.CONJUGATION). Der "Jetzt üben"-
+  // Button auf der Seite nutzt die normale open-category-Aktion (Kategorie
+  // "verbos") und startet damit den gewohnten Lernfluss.
+  function conjugacionVM() {
+    return {
+      guide: data.CONJUGATION,
+      cardCount: data.CARDS.filter((c) => c.cat === "verbos").length,
+    };
+  }
+
+  function openConjugacion() {
+    dismissBadgeToast();
+    state.screen = "conjugacion";
+    render();
+  }
+
   // ----- Frases flexibles (Satzbaukasten): Steuerung -----
   const frasesById = (id) => (frases ? frases.FRASES.find((f) => f.id === id) : null) || null;
 
@@ -1045,6 +1062,7 @@
     else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
+    else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
     else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
@@ -2047,6 +2065,7 @@
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
+    else if (action === "open-conjugacion") openConjugacion();
     else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();

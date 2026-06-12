@@ -21,6 +21,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.6.0",
+      date: "2026-06-12",
+      title: "Konjugieren: neuer Bereich + Erklärseite",
+      items: [
+        "Neuer Lernbereich „🔁 Konjugieren“ mit 42 Karten: die Präsens-Formen der wichtigsten Reiseverben (ir, estar, ser, tener, poder, querer, seguir, doblar …) – genau das, was man z. B. für Wegbeschreibungen braucht.",
+        "Neu unter Entdecken: „Conjugación“ erklärt kurz und reisetauglich, wie spanische Verben gebeugt werden – Personen, die drei regelmäßigen Muster (-ar/-er/-ir), die wichtigsten unregelmäßigen Verben und ein Wegbeschreibungs-Dialog. Von dort geht es mit „Jetzt üben“ direkt in die neuen Karten.",
+        "LatAm-korrekt: Tabellen mit ustedes statt vosotros.",
+        "Neuer Ruta-Pass-Stempel „Verbo-Virtuose“ für 80 % gemeisterte Konjugieren-Karten.",
+      ],
+    },
+    {
       version: "1.5.0",
       date: "2026-06-12",
       title: "Hören, Spickzettel, Precios, Satzbaukasten & Ruta del día",
