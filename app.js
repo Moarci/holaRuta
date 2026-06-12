@@ -12,6 +12,7 @@
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
   // Sonst startet ein Neueinsteiger mit "561 fällig" in eine erschlagende
@@ -40,6 +41,7 @@
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
+    updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
     // ----- Hostel Mode (transient, keine Persistenz) -----
     battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
@@ -809,13 +811,48 @@
       root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
     }
 
+    // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
+    if (state.updateNotice && state.updateNotice.length) {
+      root.insertAdjacentHTML("afterbegin", ui.updateNotice(state.updateNotice));
+    }
+
     manageFocus();
+  }
+
+  // ----- „Was ist neu?"-Hinweis nach einem Update -----
+  // Beim Start die laufende Version mit der zuletzt gesehenen vergleichen.
+  // Weichen sie ab -> Hinweis vormerken (render malt ihn). Die ERSTE je
+  // gesehene Version (frische Installation oder Bestandsnutzer von vor diesem
+  // Feature) wird nur still nachgetragen, damit niemand grundlos einen
+  // Update-Hinweis bekommt.
+  function checkForUpdate() {
+    if (!changelog) return;
+    const current = changelog.VERSION;
+    let seen = null;
+    try { seen = store.loadSeenVersion(); } catch (e) { seen = null; }
+    if (seen && seen !== current) {
+      const news = changelog.since(seen);
+      if (news.length) state.updateNotice = news;
+    }
+    if (seen !== current) store.saveSeenVersion(current);
+  }
+
+  function dismissUpdateNotice() {
+    state.updateNotice = null;
+    const el = root.querySelector(".upd-scrim");
+    if (el) el.remove();
   }
 
   // Nach jedem Voll-Re-Render (innerHTML wird ersetzt) den Fokus auf ein sinnvolles
   // Ziel setzen – sonst fällt er auf <body> und Tastatur-/Screenreader-Nutzer verlieren
   // ihre Position. preventScroll vermeidet Sprünge.
   function manageFocus() {
+    // Update-Hinweis liegt als Modal über allem -> Fokus hinein, nicht auf den
+    // verdeckten Screen dahinter (Tastatur/Screenreader).
+    if (state.updateNotice && state.updateNotice.length) {
+      const ok = root.querySelector(".upd .upd__ok");
+      if (ok) { try { ok.focus({ preventScroll: true }); } catch (e) { ok.focus(); } return; }
+    }
     if (state.screen === "study") {
       if (state.mode === "type" && !state.typeResult) {
         const input = document.getElementById("answer");
@@ -1447,6 +1484,9 @@
     else if (action === "export-data") exportData();
     else if (action === "import-data") startImport();
     else if (action === "dismiss-notice") el.remove();
+    else if (action === "dismiss-update") dismissUpdateNotice();
+    else if (action === "reload-app") location.reload();
+    else if (action === "upd-stop") { /* Klick auf die Hinweis-Karte: nicht schließen */ }
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
@@ -1624,6 +1664,7 @@
   if (window.SC && window.SC.install) {
     window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
   }
+  checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass

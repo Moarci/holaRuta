@@ -1085,6 +1085,48 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .btoast__text { display: flex; flex-direction: column; min-width: 0; }
 .btoast__name { font-weight: 700; font-size: 0.9rem; color: var(--ink); }
 .btoast__sub { font-size: 0.76rem; color: var(--muted); line-height: 1.35; }
+
+/* ====================================================================
+ * UPDATE-HINWEIS – „Was ist neu?" nach einem App-Update
+ * ==================================================================== */
+.upd-scrim {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center; padding: 18px;
+  background: rgba(36, 21, 16, 0.55);
+  animation: upd-fade 0.2s ease;
+}
+@keyframes upd-fade { from { opacity: 0; } to { opacity: 1; } }
+.upd {
+  width: min(94%, calc(var(--maxw) - 24px));
+  max-height: min(86vh, 720px); overflow-y: auto;
+  display: flex; flex-direction: column; gap: 14px; text-align: left;
+  background: var(--card); border: 1.5px solid color-mix(in srgb, var(--brand) 45%, var(--line));
+  border-radius: var(--r-lg); padding: 20px;
+  box-shadow: 0 18px 44px -12px rgba(45, 27, 18, 0.5);
+  animation: upd-in 0.25s ease;
+}
+@keyframes upd-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.upd__head {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.25rem;
+  color: var(--brand-ink); line-height: 1.2;
+}
+.upd__block { display: flex; flex-direction: column; gap: 6px; }
+.upd__ver {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--brand-ink);
+}
+.upd__list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+.upd__list li { font-size: 0.92rem; line-height: 1.45; color: var(--ink); }
+.upd__how {
+  display: flex; flex-direction: column; gap: 5px;
+  background: color-mix(in srgb, var(--brand) 8%, transparent);
+  border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px;
+}
+.upd__how-title { font-weight: 800; font-size: 0.86rem; color: var(--brand-ink); }
+.upd__how-text { margin: 0; font-size: 0.86rem; line-height: 1.45; color: var(--ink-soft); }
+.upd__actions { display: flex; gap: 10px; align-items: center; }
+.upd__actions .ghostbtn { flex: none; }
+.upd__ok { flex: 1 1 auto; width: auto; }
 /* ====================================================================
  * HOSTEL MODE – Battle & Rollenspiele (Anwenden zu zweit)
  * ==================================================================== */
@@ -6469,6 +6511,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  // Zuletzt gesehene App-Version (für den „Was ist neu?"-Hinweis nach Updates).
+  // Bewusst NICHT in KNOWN_KEYS: das ist gerätelokaler Anzeige-Status, kein
+  // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
+  // überschreiben und so einen falschen Update-Hinweis auslösen.
+  const SEENVERSION_KEY = "spanischcard.seenVersion.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
   const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY];
 
@@ -6687,6 +6734,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     resetGameStats: () => {
       try { localStorage.removeItem(GAMESTATS_KEY); } catch (e) { /* egal */ }
     },
+    // Zuletzt gesehene App-Version. null = noch nie vermerkt (frische Installation
+    // oder Bestandsnutzer vor diesem Feature) -> dann KEIN Update-Hinweis, nur
+    // still nachtragen.
+    loadSeenVersion() {
+      const v = readJson(SEENVERSION_KEY, null);
+      return typeof v === "string" ? v : null;
+    },
+    saveSeenVersion: (v) => writeJson(SEENVERSION_KEY, String(v)),
   };
 })();
 
@@ -7863,6 +7918,66 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 </script>
 <script>
 /*
+ * changelog.js  (SC.changelog) – Versionsstand & Änderungsverlauf.
+ *
+ * Eine einzige Quelle der Wahrheit für „welche Version ist das" und „was hat
+ * sich geändert". Der Controller (app.js) merkt sich die zuletzt gesehene
+ * Version im Speicher; weicht sie beim Start von VERSION ab, blendet die App
+ * einen Hinweis ein, WAS neu ist und WIE man aktuell bleibt.
+ *
+ * Pflege: bei jeder veröffentlichten Änderung oben einen neuen Eintrag
+ * ergänzen (NEUESTE zuerst) und – falls Dateien dazukamen/sich änderten –
+ * CACHE_VERSION im service-worker.js hochzählen.
+ *
+ * Öffentlich (window.SC.changelog):
+ *   VERSION         – aktuelle App-Version (= neuester entries-Eintrag)
+ *   entries         – Verlauf, NEUESTE zuerst: { version, date, title, items[] }
+ *   since(seen)     – Einträge, die neuer sind als die zuletzt gesehene Version
+ */
+(function () {
+  "use strict";
+
+  // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
+  const entries = [
+    {
+      version: "1.4.0",
+      date: "2026-06-12",
+      title: "Update-Hinweis",
+      items: [
+        "Neu: Nach einem Update zeigt HolaRuta beim nächsten Öffnen kurz, was sich geändert hat – und wie du immer die neueste Version bekommst.",
+      ],
+    },
+    {
+      version: "1.3.0",
+      date: "2026-06-11",
+      title: "Hostel Mode, Quiz & Farben",
+      items: [
+        "Hostel Mode: Battle & Rollenspiele zum Üben zu zweit.",
+        "Definiciones: neues Zuordnen-Quiz.",
+        "Farben mit echtem Farbfeld und 576 Karten in 20 Bereichen.",
+      ],
+    },
+  ];
+
+  const VERSION = entries.length ? entries[0].version : "0";
+
+  // Alle Einträge, die NEUER sind als die zuletzt gesehene Version (NEUESTE
+  // zuerst). Unbekannte/ältere Vorversion (nicht im Verlauf) -> nur das
+  // Neueste zeigen, damit der Hinweis nie leer und nie überfrachtet ist.
+  function since(seen) {
+    if (!seen) return [];
+    const idx = entries.findIndex((e) => e.version === seen);
+    if (idx === -1) return entries.length ? [entries[0]] : [];
+    return entries.slice(0, idx);
+  }
+
+  window.SC = window.SC || {};
+  window.SC.changelog = { VERSION, entries, since };
+})();
+
+</script>
+<script>
+/*
  * ui.js  (SC.ui) – View. Baut HTML aus dem Zustand, kennt KEINE Logik/Speicher.
  * Buttons tragen data-action (+ optional data-*); der Controller (app.js) hört
  * zentral darauf (Event-Delegation). So bleibt View dumm und austauschbar.
@@ -8470,6 +8585,40 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <button class="btoast" data-action="dismiss-notice" aria-live="assertive">
         <span class="btoast__head">⚠️ ${esc(text)}</span>
       </button>`;
+  }
+
+  // „Was ist neu?"-Fenster nach einem Update. Zeigt je Version, WAS sich
+  // geändert hat, und erklärt, WIE man aktuell bleibt. Liegt als eigene Ebene
+  // (Scrim + Karte) über dem Screen; Schließen führt zurück zur App.
+  function updateNotice(list) {
+    if (!list || !list.length) return "";
+    const blocks = list.map((e) => {
+      const items = (e.items || []).map((t) => `<li>${esc(t)}</li>`).join("");
+      const meta = e.title ? `${esc(e.title)} · v${esc(e.version)}` : `v${esc(e.version)}`;
+      return `
+        <div class="upd__block">
+          <div class="upd__ver">${meta}</div>
+          <ul class="upd__list">${items}</ul>
+        </div>`;
+    }).join("");
+    return `
+      <div class="upd-scrim" data-action="dismiss-update">
+        <div class="upd" role="dialog" aria-modal="true" aria-labelledby="upd-title"
+             data-action="upd-stop">
+          <div class="upd__head">🎉 <span id="upd-title">HolaRuta wurde aktualisiert</span></div>
+          ${blocks}
+          <div class="upd__how">
+            <div class="upd__how-title">So bleibst du aktuell</div>
+            <p class="upd__how-text">HolaRuta aktualisiert sich automatisch im Hintergrund.
+            Schließe die App ab und zu ganz und öffne sie neu – dann hast du immer die
+            neueste Version. Geht etwas mal nicht, hilft „Jetzt neu laden".</p>
+          </div>
+          <div class="upd__actions">
+            <button class="ghostbtn" data-action="reload-app">Jetzt neu laden</button>
+            <button class="cta upd__ok" data-action="dismiss-update">Verstanden</button>
+          </div>
+        </div>
+      </div>`;
   }
 
   // ---------- STATISTIK ----------
@@ -9258,7 +9407,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
-                   renderBadges, badgeToast, noticeToast,
+                   renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
 })();
@@ -9279,6 +9428,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
   // Sonst startet ein Neueinsteiger mit "561 fällig" in eine erschlagende
@@ -9307,6 +9457,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
+    updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
     // ----- Hostel Mode (transient, keine Persistenz) -----
     battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
@@ -10076,13 +10227,48 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
     }
 
+    // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
+    if (state.updateNotice && state.updateNotice.length) {
+      root.insertAdjacentHTML("afterbegin", ui.updateNotice(state.updateNotice));
+    }
+
     manageFocus();
+  }
+
+  // ----- „Was ist neu?"-Hinweis nach einem Update -----
+  // Beim Start die laufende Version mit der zuletzt gesehenen vergleichen.
+  // Weichen sie ab -> Hinweis vormerken (render malt ihn). Die ERSTE je
+  // gesehene Version (frische Installation oder Bestandsnutzer von vor diesem
+  // Feature) wird nur still nachgetragen, damit niemand grundlos einen
+  // Update-Hinweis bekommt.
+  function checkForUpdate() {
+    if (!changelog) return;
+    const current = changelog.VERSION;
+    let seen = null;
+    try { seen = store.loadSeenVersion(); } catch (e) { seen = null; }
+    if (seen && seen !== current) {
+      const news = changelog.since(seen);
+      if (news.length) state.updateNotice = news;
+    }
+    if (seen !== current) store.saveSeenVersion(current);
+  }
+
+  function dismissUpdateNotice() {
+    state.updateNotice = null;
+    const el = root.querySelector(".upd-scrim");
+    if (el) el.remove();
   }
 
   // Nach jedem Voll-Re-Render (innerHTML wird ersetzt) den Fokus auf ein sinnvolles
   // Ziel setzen – sonst fällt er auf <body> und Tastatur-/Screenreader-Nutzer verlieren
   // ihre Position. preventScroll vermeidet Sprünge.
   function manageFocus() {
+    // Update-Hinweis liegt als Modal über allem -> Fokus hinein, nicht auf den
+    // verdeckten Screen dahinter (Tastatur/Screenreader).
+    if (state.updateNotice && state.updateNotice.length) {
+      const ok = root.querySelector(".upd .upd__ok");
+      if (ok) { try { ok.focus({ preventScroll: true }); } catch (e) { ok.focus(); } return; }
+    }
     if (state.screen === "study") {
       if (state.mode === "type" && !state.typeResult) {
         const input = document.getElementById("answer");
@@ -10714,6 +10900,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "export-data") exportData();
     else if (action === "import-data") startImport();
     else if (action === "dismiss-notice") el.remove();
+    else if (action === "dismiss-update") dismissUpdateNotice();
+    else if (action === "reload-app") location.reload();
+    else if (action === "upd-stop") { /* Klick auf die Hinweis-Karte: nicht schließen */ }
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
@@ -10891,6 +11080,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   if (window.SC && window.SC.install) {
     window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
   }
+  checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass
