@@ -45,6 +45,7 @@
     { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
     { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
     { id: "verbos",  label: "Konjugieren", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
+    { id: "tiempos", label: "Zeiten",     icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
     { id: "colores", label: "Farben",     icon: "🎨", grad: ["#7048E8", "#15AABF"] },
   ];
 
@@ -741,6 +742,49 @@
     { id: "vb40", cat: "verbos", lvl: 3, de: "Du biegst rechts ab und gehst geradeaus weiter", es: "Doblas a la derecha y sigues derecho", tip: "DO-blas … SI-ges – zwei du-Formen" },
     { id: "vb41", cat: "verbos", lvl: 3, de: "Morgen fahren wir nach Cusco", es: "Mañana vamos a Cusco", tip: "ma-NYA-na WA-mos" },
     { id: "vb42", cat: "verbos", lvl: 3, de: "Können Sie langsamer sprechen?", es: "¿Puede hablar más despacio?", tip: "PUE-de a-BLAR mas des-PA-si-o" },
+
+    // ===================== ZEITEN (Tiempos: Verb-Zeitformen) =====================
+    // Beispielsätze in den wichtigsten Reise-Zeitformen. Die Erklärung (welche
+    // Zeit wann) liegt in TENSES (Entdecken → Tiempos); diese Karten zeigen sie
+    // in echten Reisesätzen. Reihenfolge: Vergangenheit → Gegenwart → Zukunft.
+    // ---- Vergangenheit: Pretérito indefinido (abgeschlossen) ----
+    { id: "tp01", cat: "tiempos", lvl: 1, de: "Ich kam gestern an", es: "Llegué ayer", tip: "ye-GE a-YER – llegar, ich-Form Vergangenheit (-é)" },
+    { id: "tp02", cat: "tiempos", lvl: 1, de: "Ich nahm den Bus", es: "Tomé el bus", tip: "to-ME – abgeschlossene -ar-Vergangenheit: ich = -é" },
+    { id: "tp03", cat: "tiempos", lvl: 2, de: "Wir kauften die Tickets", es: "Compramos los boletos", tip: "kom-PRA-mos – wir-Form klingt wie die Gegenwart" },
+    { id: "tp04", cat: "tiempos", lvl: 2, de: "Ich war in Cusco", es: "Estuve en Cusco", tip: "es-TU-we – estar ist in der Vergangenheit unregelmäßig" },
+    { id: "tp05", cat: "tiempos", lvl: 2, de: "Wir gingen zum Strand", es: "Fuimos a la playa", tip: "FUI-mos – ir & ser teilen fui/fuiste/fue …" },
+    { id: "tp06", cat: "tiempos", lvl: 2, de: "Es hat mir gefallen", es: "Me gustó", tip: "me gus-TO – gustar, er/es-Form (-ó)" },
+    { id: "tp07", cat: "tiempos", lvl: 3, de: "Was hast du gemacht?", es: "¿Qué hiciste?", tip: "i-SIS-te – hacer ist unregelmäßig" },
+    { id: "tp08", cat: "tiempos", lvl: 2, de: "Ich habe meinen Pass verloren", es: "Perdí mi pasaporte", tip: "per-DI – Notfall in der Vergangenheit (-er/-ir: ich = -í)" },
+    { id: "tp09", cat: "tiempos", lvl: 2, de: "Es hat gestern geregnet", es: "Ayer llovió", tip: "yo-WIO – ein einmaliges Ereignis (anders als 'llovía')" },
+    // ---- Vergangenheit: Pretérito perfecto (gerade eben / Erfahrung) ----
+    { id: "tp10", cat: "tiempos", lvl: 2, de: "Ich habe schon gegessen", es: "Ya he comido", tip: "ya e ko-MI-do – haber (he) + Partizip (-ido)" },
+    { id: "tp11", cat: "tiempos", lvl: 2, de: "Hast du Machu Picchu gesehen?", es: "¿Has visto Machu Picchu?", tip: "as WIS-to – visto = unregelmäßiges Partizip von ver" },
+    { id: "tp12", cat: "tiempos", lvl: 3, de: "Ich bin noch nie hier gewesen", es: "Nunca he estado aquí", tip: "NUN-ka e es-TA-do – Erfahrung: 'noch nie'" },
+    { id: "tp13", cat: "tiempos", lvl: 2, de: "Wir sind gerade angekommen", es: "Hemos llegado", tip: "E-mos ye-GA-do – wir-Form: hemos + Partizip" },
+    // ---- Vergangenheit: Imperfecto (Hintergrund / Gewohnheit) ----
+    { id: "tp14", cat: "tiempos", lvl: 3, de: "Das Hostel war sehr schön", es: "El hostal era muy bonito", tip: "E-ra – ser im Imperfekt: Beschreibung von früher" },
+    { id: "tp15", cat: "tiempos", lvl: 3, de: "Als Kind reiste ich viel", es: "De niño viajaba mucho", tip: "wia-CHA-ba – Gewohnheit früher (-aba)" },
+    { id: "tp16", cat: "tiempos", lvl: 3, de: "Ich wollte nur fragen", es: "Solo quería preguntar", tip: "ke-RI-a – höflicher und weicher als 'quiero'" },
+    // ---- Gegenwart (zur Erinnerung & für den Fahrplan) ----
+    { id: "tp17", cat: "tiempos", lvl: 1, de: "Wann fährt der nächste Bus?", es: "¿A qué hora sale el próximo bus?", tip: "SA-le – Gegenwart fürs Feste (Fahrplan)" },
+    { id: "tp18", cat: "tiempos", lvl: 1, de: "Heute bleibe ich im Hostel", es: "Hoy me quedo en el hostal", tip: "me KE-do – Gegenwart für das, was jetzt gilt" },
+    // ---- Zukunft: Futuro próximo (ir a + Infinitiv) ----
+    { id: "tp19", cat: "tiempos", lvl: 1, de: "Ich werde den Bus nehmen", es: "Voy a tomar el bus", tip: "woi a to-MAR – ir a + Infinitiv: der einfache Zukunfts-Trick" },
+    { id: "tp20", cat: "tiempos", lvl: 1, de: "Wir werden morgen losfahren", es: "Vamos a salir mañana", tip: "WA-mos a sa-LIR" },
+    { id: "tp21", cat: "tiempos", lvl: 2, de: "Was wirst du machen?", es: "¿Qué vas a hacer?", tip: "ke was a a-SER" },
+    { id: "tp22", cat: "tiempos", lvl: 1, de: "Es wird regnen", es: "Va a llover", tip: "wa a yo-WER – über das Wetter sprechen" },
+    { id: "tp23", cat: "tiempos", lvl: 2, de: "Ich werde eine Reservierung machen", es: "Voy a hacer una reserva", tip: "woi a a-SER U-na re-SER-wa" },
+    // ---- Zukunft: Futuro simple ----
+    { id: "tp24", cat: "tiempos", lvl: 2, de: "Ich werde morgen ankommen", es: "Llegaré mañana", tip: "ye-ga-RE – Infinitiv + -é" },
+    { id: "tp25", cat: "tiempos", lvl: 3, de: "Das wird teuer sein", es: "Será caro", tip: "se-RA KA-ro – auch als Vermutung: 'das ist wohl teuer'" },
+    { id: "tp26", cat: "tiempos", lvl: 2, de: "Wir werden sehen", es: "Ya veremos", tip: "ya we-RE-mos – beliebte Floskel" },
+    // ---- Höflich: Condicional ----
+    { id: "tp27", cat: "tiempos", lvl: 3, de: "Ich hätte gern ein Zimmer", es: "Querría una habitación", tip: "ke-RRI-a – sehr höflich; geht auch 'Me gustaría'" },
+    { id: "tp28", cat: "tiempos", lvl: 3, de: "Könnten Sie mir helfen?", es: "¿Podría ayudarme?", tip: "po-DRI-a a-yu-DAR-me – höflicher als '¿Puede?'" },
+    // ---- Zeiten gemischt (Signalwörter erkennen) ----
+    { id: "tp29", cat: "tiempos", lvl: 2, de: "Gestern war ich müde, heute geht's mir gut", es: "Ayer estaba cansado, hoy estoy bien", tip: "es-TA-ba … es-TOI – ayer vs. hoy" },
+    { id: "tp30", cat: "tiempos", lvl: 1, de: "Morgen fahre ich nach Lima", es: "Mañana voy a Lima", tip: "ma-NYA-na woi – fürs Nahe reicht oft die Gegenwart" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
@@ -1585,6 +1629,76 @@
     },
   };
 
+  // ===================== TIEMPOS (Erklärseite Zeiten) =====================
+  // Inhalte der Grammatik-Erklärseite (Entdecken → Tiempos). REINE DATEN –
+  // gerendert von ui.renderTiempos. Die passenden Übungskarten liegen in der
+  // Kategorie "tiempos" (Zeiten); die Seite verlinkt per "Jetzt üben" dorthin.
+  // Roter Faden: EIN Verb (tomar) wandert durch alle Zeiten, damit man die
+  // Endungen vergleichen kann.
+  //   timeline = die ich-Form von tomar in Vergangenheit/Gegenwart/Zukunft
+  //   tableLabels = kompakte Personen-Spalte ALLER Zeit-Tabellen
+  //   tenses   = die wichtigsten Reise-Zeitformen (forms = 5 Formen in tableLabels-Reihenfolge)
+  //   signals  = Signalwörter, die die Zeit verraten (ayer/hoy/mañana …)
+  //   example  = Mini-Reise in drei Zeiten (gestern/heute/morgen)
+  const TENSES = {
+    intro: "Spanische Verben verraten mit ihrer Endung, WANN etwas passiert – gestern, jetzt oder morgen. Du musst nicht alle Zeiten perfekt können: Für die Reise reichen ein paar. Am wichtigsten sind die Gegenwart, eine Vergangenheit zum Erzählen und ein einfacher Zukunfts-Trick (ir a + Infinitiv). Hier siehst du sie an einem einzigen Verb – tomar (nehmen) – durch die Zeiten wandern.",
+    timeline: {
+      title: "Ein Verb, drei Zeiten",
+      verb: "tomar (nehmen) – immer die ich-Form",
+      rows: [
+        { when: "Gestern", es: "tomé el bus", de: "ich nahm den Bus" },
+        { when: "Jetzt", es: "tomo el bus", de: "ich nehme den Bus" },
+        { when: "Gleich / morgen", es: "voy a tomar el bus", de: "ich werde den Bus nehmen" },
+      ],
+      note: "Nur die Endung (oder ein kleines Hilfswort wie „voy a“) ändert sich – der Verbstamm tom- bleibt.",
+    },
+    tableLabels: ["yo", "tú", "él/ella/usted", "nosotros", "ustedes/ellos"],
+    tenses: [
+      { name: "Presente", nameDe: "Gegenwart – was jetzt oder allgemein gilt",
+        forms: ["tomo", "tomas", "toma", "tomamos", "toman"],
+        when: "Für alles, was gerade oder grundsätzlich gilt – und sogar für die ganz nahe Zukunft. „Mañana tomo el bus“ klingt völlig normal.",
+        example: { es: "Tomo el bus al centro.", de: "Ich nehme den Bus ins Zentrum." } },
+      { name: "Pretérito perfecto", nameDe: "gerade eben passiert / Erfahrung",
+        forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
+        when: "Für gerade Geschehenes oder Erfahrungen („schon mal / noch nie“). Bildung: haber (he/has/ha/hemos/han) + Partizip (-ado bei -ar, -ido bei -er/-ir).",
+        example: { es: "Ya he tomado el desayuno.", de: "Ich habe schon gefrühstückt." } },
+      { name: "Pretérito indefinido", nameDe: "Vergangenheit, abgeschlossen",
+        forms: ["tomé", "tomaste", "tomó", "tomamos", "tomaron"],
+        when: "Die Erzähl-Vergangenheit Lateinamerikas: abgeschlossene Ereignisse mit klarem Zeitpunkt. „Ayer tomé el bus.“ In LatAm oft auch da, wo Spanien das Perfekt nähme.",
+        example: { es: "Ayer tomé el bus nocturno.", de: "Gestern nahm ich den Nachtbus." } },
+      { name: "Imperfecto", nameDe: "früher / Hintergrund / Gewohnheit",
+        forms: ["tomaba", "tomabas", "tomaba", "tomábamos", "tomaban"],
+        when: "Wie es früher war, was man regelmäßig tat, Wetter und Beschreibungen. „De niño tomaba el bus a la escuela“ – früher, immer wieder.",
+        example: { es: "Antes tomaba mucho café.", de: "Früher trank ich viel Kaffee." } },
+      { name: "Futuro próximo", nameDe: "Zukunft, der einfache Trick: ir a + Infinitiv",
+        forms: ["voy a tomar", "vas a tomar", "va a tomar", "vamos a tomar", "van a tomar"],
+        when: "Der einfachste Weg in die Zukunft: ir (voy/vas/va/vamos/van) + a + Infinitiv. Im Alltag häufiger als das Futur unten – und du musst nur ein Verb beugen.",
+        example: { es: "Voy a tomar el bus de las ocho.", de: "Ich werde den Acht-Uhr-Bus nehmen." } },
+      { name: "Futuro simple", nameDe: "Zukunft mit einer Endung für alle",
+        forms: ["tomaré", "tomarás", "tomará", "tomaremos", "tomarán"],
+        when: "Eine Endung direkt an den Infinitiv: -é/-ás/-á/-emos/-án. Praktisch, weil -ar/-er/-ir gleich gehen. Auch für Vermutungen: „Será caro“ = das wird wohl teuer sein.",
+        example: { es: "Mañana tomaré el primer bus.", de: "Morgen nehme ich den ersten Bus." } },
+    ],
+    tensesNote: "Reise-Faustregel: Gegenwart für jetzt & bald, indefinido fürs Erzählen von gestern, „voy a + Infinitiv“ für Pläne. Damit kommst du fast überall durch.",
+    signals: [
+      { es: "ayer · anoche", de: "gestern · gestern Nacht → Vergangenheit" },
+      { es: "hoy · ahora", de: "heute · jetzt → Gegenwart" },
+      { es: "ya · todavía no", de: "schon · noch nicht → oft Perfekt" },
+      { es: "antes · de niño", de: "früher · als Kind → Imperfekt" },
+      { es: "mañana · luego", de: "morgen · später → Zukunft" },
+    ],
+    signalsNote: "Solche Signalwörter verraten dir die Zeit, noch bevor du das Verb verstehst – ein guter Anker beim Zuhören.",
+    example: {
+      title: "Dieselbe Reise in drei Zeiten",
+      lines: [
+        { es: "Ayer llegué a Cusco y tomé un taxi al hostal.", de: "Gestern kam ich in Cusco an und nahm ein Taxi zum Hostel. (Vergangenheit)" },
+        { es: "Hoy estoy cansado, pero ya he comido algo.", de: "Heute bin ich müde, aber ich habe schon etwas gegessen. (Gegenwart + Perfekt)" },
+        { es: "Mañana voy a subir a Machu Picchu y después tomaré el bus de vuelta.", de: "Morgen werde ich auf Machu Picchu steigen und danach den Rückbus nehmen. (Zukunft)" },
+      ],
+      note: "Eine Reise, drei Zeiten: llegué/tomé (gestern), estoy/he comido (heute), voy a subir/tomaré (morgen). Achte auf die Signalwörter ayer, hoy, mañana.",
+    },
+  };
+
   // ===================== EL CUERPO (interaktive Körperkarte) =====================
   // Anatomie zum Antippen: eine stilisierte Figur, auf der jeder Punkt ein Körperteil
   // markiert. x/y sind PROZENT-Koordinaten (0–100) im Bezugsrahmen der SVG-Figur
@@ -1639,5 +1753,5 @@
   ];
 
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, BODY_PARTS };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS };
 })();

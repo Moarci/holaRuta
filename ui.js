@@ -72,6 +72,7 @@
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
   ];
 
@@ -1764,6 +1765,88 @@
       </section>`;
   }
 
+  // ---------- TIEMPOS (Erklärseite Zeiten) ----------
+  // Kompakte Zeitformen-Erklärung (Inhalte aus data.TENSES): ein Verb durch
+  // die Zeiten, die wichtigsten Reise-Zeitformen als aufklappbare Karten,
+  // Signalwörter und ein Drei-Zeiten-Reisedialog. Unten ein CTA in die
+  // Übungskarten – wieder über die normale open-category-Aktion.
+  function renderTiempos(vm) {
+    const g = vm.guide;
+
+    // Eine Zeit-Tabelle: Person links (gemeinsame tableLabels), Form rechts –
+    // dieselbe Datenform wie bei der Konjugation.
+    const table = (forms) => `
+      <ul class="cj-table">
+        ${forms.map((f, i) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(g.tableLabels[i])}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
+      </ul>`;
+
+    // Zeitstrahl: ein Verb (ich-Form) in drei Zeiten – als kompakte Wortliste.
+    const t = g.timeline;
+    const timelineRows = t.rows
+      .map((r) => `
+        <li class="cinfo-word">
+          <span class="cinfo-word__de">${esc(r.when)}</span>
+          <span class="cinfo-word__es" lang="es">${esc(r.es)}</span>
+          <span class="cinfo-word__de">${esc(r.de)}</span>
+        </li>`)
+      .join("");
+    const timeline = `
+      <p class="cinfo-text cj-note">${esc(t.verb)}</p>
+      <ul class="cinfo-words">${timelineRows}</ul>
+      <p class="cinfo-text cj-note">${esc(t.note)}</p>`;
+
+    // Die einzelnen Zeitformen als aufklappbare Karten (wie die unregelmäßigen
+    // Verben): Kopf = Zeitname + Kurzbeschreibung, aufgeklappt die Formen-
+    // Tabelle, ein „Wann?“-Hinweis und ein Beispielsatz.
+    const tenseBlocks = g.tenses
+      .map((te) => `
+        <details class="cinfo-dish">
+          <summary class="cinfo-dish__head">
+            <span class="cinfo-dish__heart">
+              <span class="cinfo-dish__name" lang="es">${esc(te.name)}</span>
+              <span class="cinfo-dish__desc">${esc(te.nameDe)}</span>
+            </span>
+            <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="cinfo-dish__body">
+            ${table(te.forms)}
+            <p class="cj-verb__like">${esc(te.when)}</p>
+            <div class="context-panel__line">
+              <p class="context-panel__es" lang="es">${esc(te.example.es)}</p>
+              <p class="context-panel__de">${esc(te.example.de)}</p>
+            </div>
+          </div>
+        </details>`)
+      .join("");
+
+    const signalRows = g.signals
+      .map((s) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(s.es)}</span><span class="cinfo-word__de">${esc(s.de)}</span></li>`)
+      .join("");
+
+    const exampleLines = g.example.lines
+      .map((l) => `
+        <div class="context-panel__line">
+          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
+          <p class="context-panel__de">${esc(l.de)}</p>
+        </div>`)
+      .join("");
+
+    return `
+      <section class="screen">
+        ${hmTopbar("⏳ Tiempos", "home")}
+        <p class="hm-intro">${esc(g.intro)}</p>
+
+        ${sect("↔️", t.title, timeline)}
+        ${sect("🕰️", "Die wichtigsten Zeitformen", `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
+        ${sect("🔑", "Signalwörter: woran du die Zeit erkennst", `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
+        ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
+
+        <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
+          Jetzt üben: Zeiten <span class="cta__count">${vm.cardCount} Karten</span>
+        </button>
+      </section>`;
+  }
+
   function renderCuerpo(vm) {
     const nodes = vm.parts
       .map((p) => {
@@ -1834,6 +1917,6 @@
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderSpickzettel,
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPrecios, renderPreciosDone, renderFrases, renderFrasesDone };
 })();
