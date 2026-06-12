@@ -21,7 +21,8 @@
   const W = 1080;             // Breite (beide Formate sind 1080 breit)
   const PAD = 88;             // Außenrand
   const BRAND = "HolaRuta";
-  const TAGLINE = "Dein Reise-Spanisch für echte Situationen";
+  const APP_URL = "https://moarci.github.io/holaRuta/"; // klickbarer Link im Begleittext
+  const APP_URL_LABEL = "moarci.github.io/holaRuta";    // kurze, lesbare Anzeige im Bild
   const FONT = '"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif';
   const INK = "#0f172a";      // dunkler Text
   const MUTE = "#64748b";     // gedämpfter Text
@@ -113,15 +114,32 @@
     ctx.fillRect(0, 0, W, h);
   }
 
-  // Marken-Fußzeile (auf farbigem Grund, weiß).
+  // Marken-Fußzeile (auf farbigem Grund, weiß). Zwei Zeilen: Marke und die
+  // App-Adresse in Link-Optik (Pfeil + unterstrichen) – als Hinweis, wohin man
+  // geht. Im PNG selbst ist nichts klickbar; der echte anklickbare Link steht im
+  // Begleittext (siehe shareText) und erscheint z.B. unter dem geteilten Bild.
+  // (Gleicher Platzbedarf wie zuvor zwei Zeilen, daher keine Kollision mit der
+  // Stats-Legende bzw. Badge-Pille im Quadrat-Format.)
   function brandFooter(ctx, h) {
+    const cx = W / 2;
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.96)";
     ctx.font = font("800", 46);
-    ctx.fillText("🇪🇸 " + BRAND, W / 2, h - 96);
-    ctx.fillStyle = "rgba(255,255,255,0.78)";
-    ctx.font = font("500", 30);
-    ctx.fillText(TAGLINE, W / 2, h - 52);
+    ctx.fillText("🇪🇸 " + BRAND, cx, h - 96);
+
+    // App-Adresse als Link gestaltet: 👉 + unterstrichener Text.
+    const url = "👉  " + APP_URL_LABEL;
+    ctx.font = font("700", 32);
+    ctx.fillStyle = "rgba(255,255,255,0.92)";
+    const urlY = h - 48;
+    ctx.fillText(url, cx, urlY);
+    const uw = ctx.measureText(url).width;
+    ctx.strokeStyle = "rgba(255,255,255,0.55)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - uw / 2, urlY + 8);
+    ctx.lineTo(cx + uw / 2, urlY + 8);
+    ctx.stroke();
   }
 
   function newCanvas(h) {
@@ -447,13 +465,16 @@
   // WhatsApp/Telegram). Bei einer Vokabel wird die Karte selbst zitiert.
   function shareText(kind, payload) {
     const p = payload || {};
+    // Echter, anklickbarer Link – Messenger (WhatsApp/Telegram/…) verlinken die
+    // nackte URL im Begleittext automatisch.
+    const link = `\n\n▶️ Jetzt mitlernen: ${APP_URL}`;
     if (kind === "stats") {
       const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
       const facts = [];
       if (r !== null) facts.push(`${r}% Trefferquote`);
       if (p.mastered) facts.push(`${p.mastered} Vokabeln gemeistert`);
       const tail = facts.length ? " – " + facts.join(", ") : "";
-      return `📍 Mein Reise-Spanisch mit HolaRuta${tail}. Lernst du mit? 🌎`;
+      return `📍 Mein Reise-Spanisch mit HolaRuta${tail}. Lernst du mit? 🌎${link}`;
     }
     if (kind === "badge") {
       const name = String(p.name || "").trim();
@@ -461,7 +482,7 @@
       let t = `🎖️ Neuer Stempel im Ruta-Pass: ${name || "ein Reisestempel"}`;
       if (txt) t += `\n${txt}`;
       t += `\n\nGesammelt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
-      return t;
+      return t + link;
     }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
@@ -470,7 +491,7 @@
     let t = `📍 Spanisch für unterwegs: ${head}`;
     if (tip) t += `\n🗣️ Aussprache: ${tip}`;
     t += `\n\nGelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
-    return t;
+    return t + link;
   }
 
   // Baut das Bild und teilt es. Erst Web Share API (mit Datei), sonst Download.
