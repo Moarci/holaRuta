@@ -89,12 +89,14 @@
         "Trinkgeld ~10 % im Restaurant geben, sofern nicht schon „servicio“ auf der Rechnung steht.",
         "Beim Feilschen freundlich und mit Humor bleiben – ein Lächeln bringt mehr als Härte.",
         "Lokale Gepflogenheiten beobachten und mitmachen, statt sie zu bewerten.",
+        "Toilettenpapier in den Mülleimer (papelera) neben der Toilette werfen – in weiten Teilen Lateinamerikas sind die Rohre zu eng fürs WC (Schild: „No arrojar papeles ni toallas sanitarias“).",
       ],
       donts: [
         "Nicht mit der Tür ins Haus fallen – erst grüßen, dann fragen oder bestellen.",
         "Menschen, Häuser oder Märkte nicht ungefragt fotografieren.",
         "Heikle Themen (Politik, Drogen, Vergleiche mit den USA) zurückhaltend behandeln.",
         "Nicht überall hart verhandeln – in Geschäften mit festen Preisen ist Feilschen unüblich.",
+        "Papier nicht ins WC werfen, wenn ein Eimer danebensteht – das verstopft die Leitungen sofort.",
       ],
     },
   ];
@@ -177,7 +179,7 @@
       hostel: "Quito (Altstadt) und Baños haben gute Hostels; auf 2.800 m Höhe ist es nachts kalt – warme Decke nutzen.",
       bus: "Busnetz ist dicht und günstig; auf Taschen achten und Gepäck im Auge behalten, besonders an Terminals.",
       grupo: "Für den Quilotoa-Loop oder Dschungeltouren finden sich leicht Gruppen übers Hostel.",
-      cultura: "In den Anden indigene Gemeinschaften respektvoll behandeln – fürs Fotografieren um Erlaubnis fragen.",
+      cultura: "In den Anden indigene Gemeinschaften respektvoll behandeln – fürs Fotografieren um Erlaubnis fragen; Toilettenpapier gehört fast überall in die papelera, nicht ins WC.",
     },
     peru: {
       hostel: "In Cusco (3.400 m) erst akklimatisieren – die erste Nacht ruhig angehen, viel Wasser, coca-Tee hilft.",
