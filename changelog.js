@@ -26,10 +26,12 @@
       title: "Regatear: gut verhandeln & feilschen",
       items: [
         "🤝 Neuer Bereich unter Entdecken: „Regatear“ – wie man auf Märkten und an Straßenständen freundlich und richtig verhandelt.",
-        "📖 Erklärung der Taktik in drei aufklappbaren Blöcken: die Grundhaltung (lächeln, grüßen), die Verhandlung führen (Gegenangebot, Menge bündeln) und der Abschluss (Weggehen als Taktik, sauber bezahlen).",
-        "💬 Die wichtigsten Sätze nach Phasen sortiert: nach dem Preis fragen (¿A cuánto la unidad?), feilschen (¿En cuánto me lo deja?), abschließen (Trato hecho) und etwas finden (¿Dónde consigo…?).",
-        "⚖️ Mengen & Einheiten vom Marktstand: unidad, docena, libra, kilo, montón, manojo … – jeweils mit Beispielsatz.",
-        "🎭 Drei Rollenspiele zum Üben: Obst & Gemüse, Souvenir feilschen (chancletas) und erst suchen, dann handeln – Dialoge zum lauten Durchspielen zu zweit.",
+        "📖 Erklärung der Taktik in vier aufklappbaren Blöcken: Grundhaltung, die Verhandlung führen, der Abschluss (Weggehen als Taktik) und Taxi, Tuk-Tuk & Touren (Preis vorher aushandeln).",
+        "🗣️ Glossar der Feilsch-Wörter (regatear, el descuento, la rebaja, precio fijo, la yapa/ñapa, el/la casero/a …).",
+        "💬 Die wichtigsten Sätze nach Phasen sortiert: Preis erfragen (¿A cuánto la unidad?), feilschen (¿Cuánto es lo menos?), abschließen (Trato hecho), bezahlen & Wechselgeld (¿Tiene cambio de cien?) und etwas finden (¿Dónde consigo…?).",
+        "⚖️ Mengen & Einheiten vom Marktstand: unidad/pieza, docena, par, libra, kilo, litro, montón, manojo … – jeweils mit Beispielsatz.",
+        "🌎 Regionale Unterschiede von Land zu Land: México, Guatemala, Perú & Bolivia (la yapa), Colombia, Argentina, Costa Rica und Cuba.",
+        "🎭 Vier Rollenspiele zum Üben: Obst & Gemüse, Souvenir feilschen (chancletas), erst suchen dann handeln und Taxipreis aushandeln – Dialoge zum lauten Durchspielen zu zweit.",
       ],
     },
     {

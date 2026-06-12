@@ -1374,6 +1374,13 @@
       </details>`;
     const tips = (vm.tips || []).map(tipBlock).join("");
 
+    // Glossar: kompakte zweispaltige Wortliste (es · de).
+    const glossary = (vm.glossary || []).map((g) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
+        <span class="rg-gloss__de">${esc(g.de)}</span>
+      </li>`).join("");
+
     // Wichtige Sätze: pro Phase eine kleine zweispaltige Liste (es / de).
     const phraseGroup = (g) => `
       <div class="rg-group">
@@ -1394,6 +1401,16 @@
         <span class="rg-unit__es" lang="es">${esc(u.es)}</span>
         <span class="rg-unit__de">${esc(u.de)}</span>
         <span class="rg-unit__ej" lang="es">${esc(u.ejemplo)}</span>
+      </li>`).join("");
+
+    // Regionale Unterschiede: Flagge + Land + kurze Notiz.
+    const regional = (vm.regional || []).map((r) => `
+      <li class="rg-region">
+        <span class="rg-region__flag" aria-hidden="true">${esc(r.flag)}</span>
+        <span class="rg-region__body">
+          <span class="rg-region__country">${esc(r.country)}</span>
+          <span class="rg-region__note">${esc(r.note)}</span>
+        </span>
       </li>`).join("");
 
     // Rollenspiele: pro Szene ein aufklappbarer Dialog (A/B) + nützliche Sätze.
@@ -1451,11 +1468,17 @@
         <h2 class="rg-head">📖 So verhandelst du gut</h2>
         ${tips}
 
+        <h2 class="rg-head">🗣️ Wörter rund ums Feilschen</h2>
+        <ul class="rg-glosslist">${glossary}</ul>
+
         <h2 class="rg-head">💬 Wichtige Sätze</h2>
         ${phrases}
 
         <h2 class="rg-head">⚖️ Mengen & Einheiten</h2>
         <ul class="rg-units">${units}</ul>
+
+        <h2 class="rg-head">🌎 Von Land zu Land</h2>
+        <ul class="rg-regions">${regional}</ul>
 
         <h2 class="rg-head">🎭 Rollenspiele zum Üben</h2>
         <p class="hm-intro">Verteilt die Rollen A und B, klappt eine Szene auf und spielt den Dialog laut durch.</p>

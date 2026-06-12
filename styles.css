@@ -1019,6 +1019,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .rg-unit__ej { grid-column: 1 / -1; color: var(--muted); font-size: 0.86rem; font-style: italic; margin-top: 2px; }
 .rg-rp .hm-roles { margin-top: 10px; }
 
+/* Glossar: zweispaltige Wortliste (Spanisch · Deutsch). */
+.rg-glosslist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rg-gloss {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  padding: 9px 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--card);
+}
+.rg-gloss__es { font-weight: 700; color: var(--brand-ink); }
+.rg-gloss__de { color: var(--ink-soft); font-size: 0.9rem; text-align: right; }
+
+/* Regionale Unterschiede: Flagge + Land + Notiz. */
+.rg-regions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rg-region {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--card);
+}
+.rg-region__flag { font-size: 1.15rem; flex-shrink: 0; line-height: 1.4; }
+.rg-region__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rg-region__country { font-weight: 700; color: var(--ink); }
+.rg-region__note { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.45; }
+
 /* ===================== CONJUGACIÓN (ERKLÄRSEITE KONJUGIEREN) ===================== */
 /* Baut auf den Länderkunde-Bausteinen (cinfo-sect, cinfo-words, cinfo-dish) auf;
  * eigen sind nur die kompakten Konjugations-Tabellen und der Übungs-CTA. */

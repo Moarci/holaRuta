@@ -369,7 +369,7 @@
   // Einheiten, Rollenspiele). Reicht die Daten 1:1 durch, hängt nur an den
   // Rollenspielen das Kurz-Label der Schwierigkeitsstufe an.
   function regatearVM() {
-    if (!regatear) return { intro: "", tips: [], phrases: [], units: [], roleplays: [] };
+    if (!regatear) return { intro: "", tips: [], glossary: [], phrases: [], units: [], regional: [], roleplays: [] };
     const roleplays = (regatear.ROLEPLAYS || []).map((r) => {
       const lvl = levelById(r.level);
       return Object.assign({}, r, { lvlShort: lvl ? lvl.short : "" });
@@ -377,8 +377,10 @@
     return {
       intro: regatear.INTRO,
       tips: regatear.TIPS || [],
+      glossary: regatear.GLOSSARY || [],
       phrases: regatear.PHRASES || [],
       units: regatear.UNITS || [],
+      regional: regatear.REGIONAL || [],
       roleplays,
     };
   }
