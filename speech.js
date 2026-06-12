@@ -24,7 +24,7 @@
 
   // Tempo (rate) auf einen vom Browser akzeptierten Bereich begrenzen. Ohne
   // Angabe bleibt 0.95 (etwas langsamer – besser zum Nachsprechen). Werte
-  // ausserhalb 0.5..1.5 sind unzuverlässig/unverständlich -> gedeckelt.
+  // außerhalb 0.5..1.5 sind unzuverlässig/unverständlich -> gedeckelt.
   const DEFAULT_RATE = 0.95;
   function clampRate(rate) {
     if (typeof rate !== "number" || !isFinite(rate)) return DEFAULT_RATE;
