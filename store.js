@@ -184,6 +184,7 @@
       listenReviews: 0,     // im Hör-Modus bewertete Karten
       preciosPlayed: 0,     // abgeschlossene Preis-Hörrunden
       preciosPerfect: 0,    // Preis-Hörrunden ohne Fehler
+      preciosMillon: 0,     // fehlerfreie Runden auf der „Große Beträge"-Stufe (L3)
       // ----- Ruta del día (tägliche Mini-Runde) -----
       rutaDays: {},         // Map "YYYY-MM-DD" -> true (Tage mit gestarteter Ruta del día)
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
@@ -224,6 +225,7 @@
       listenReviews: num(v.listenReviews),
       preciosPlayed: num(v.preciosPlayed),
       preciosPerfect: num(v.preciosPerfect),
+      preciosMillon: num(v.preciosMillon),
       rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},

@@ -69,7 +69,7 @@
     { action: "open-hostel",      icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
-    { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
     { action: "open-compras",     icon: "🛒", title: "Einkaufszettel", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
@@ -1063,29 +1063,71 @@
   }
 
   // ---------- PRECIOS AL OÍDO (Preis-Hörtrainer) ----------
-  // Die App sagt einen Betrag auf Spanisch (Auto-Speak), man tippt die Ziffern.
-  // Reuse der Hör-Karten-Optik (card-listen) + matcher (field "de").
+  // Die App sagt einen frisch generierten Betrag auf Spanisch (Auto-Speak), man
+  // tippt die Ziffern. Vorab wählt man Land/Währung und Schwierigkeit – so reicht
+  // die Spanne vom Kleingeld bis zu kolumbianischen Millionenbeträgen.
+
+  // Setup: Land/Währung (mit Flaggen) + Schwierigkeitsstufe wählen, dann starten.
+  function renderPreciosSetup(vm) {
+    if (!vm.speakable) {
+      return `
+        <section class="screen">
+          ${hmTopbar("💵 Precios al oído", "home")}
+          <p class="stat-empty">Dein Gerät kann keine Sprachausgabe – ohne sie gibt es nichts zu hören.</p>
+        </section>`;
+    }
+    const currencies = vm.currencies.map((c) => `
+      <button class="prc-cur ${c.selected ? "is-active" : ""}" type="button"
+              data-action="precios-currency" data-id="${esc(c.key)}" aria-pressed="${c.selected}">
+        <span class="prc-cur__flag" aria-hidden="true">${esc(c.flag)}</span>
+        <span class="prc-cur__name">${esc(c.name)}</span>
+        <span class="prc-cur__code">${esc(c.code)}</span>
+      </button>`).join("");
+    const levels = vm.levels.map((l) => `
+      <button class="prc-lvl ${l.active ? "is-active" : ""}" type="button"
+              data-action="precios-level" data-level="${l.id}" aria-pressed="${l.active}">
+        <span class="prc-lvl__short">${esc(l.short)}</span>
+        <span class="prc-lvl__label">${esc(l.label)}</span>
+        <span class="prc-lvl__hint">${esc(l.hint)}</span>
+      </button>`).join("");
+    const sample = vm.sample
+      ? `<p class="prc-sample">${esc(vm.sample.flag)} ${esc(vm.sample.name)}: Beträge bis <b>${esc(vm.sample.max)}</b> ${esc(vm.sample.many)}.</p>`
+      : "";
+    return `
+      <section class="screen">
+        ${hmTopbar("💵 Precios al oído", "home")}
+        <p class="hm-intro">Hör einen Preis auf Spanisch und tippe die Zahl. Wähle ein Land und wie groß die Beträge werden sollen – von Kleingeld bis zu echten kolumbianischen Millionenpreisen.</p>
+        <h3 class="prc-head">Land &amp; Währung</h3>
+        <div class="prc-curs">${currencies}</div>
+        <h3 class="prc-head">Schwierigkeit</h3>
+        <div class="prc-lvls">${levels}</div>
+        ${sample}
+        <button class="cta" data-action="start-precios">Runde starten</button>
+      </section>`;
+  }
+
   function renderPrecios(vm) {
     const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
     const replay = vm.speakable
       ? `<button class="listen-replay ghostbtn" type="button" data-action="precios-speak">🔊 Nochmal anhören</button>`
       : "";
+    const curTag = `<span class="prc-tag">${esc(vm.flag)} ${esc(vm.currencyCode)}</span>`;
     const body = !vm.result
       ? `
         <div class="card-static card-listen">
           <span class="listen-ear" aria-hidden="true">💵</span>
           ${replay}
-          <span class="face__hint">Welchen Betrag hörst du? Tippe die Zahl.</span>
+          <span class="face__hint">Welchen Betrag hörst du? Tippe die Zahl (ohne Punkte).</span>
         </div>
         <form class="typer" data-action="submit-precios" id="precios-form">
           <input class="typer__input" id="precios-answer" type="text" inputmode="numeric"
-                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="z. B. 4500" />
+                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="z. B. 45000" />
           <button class="typer__btn" type="submit">Prüfen</button>
         </form>`
       : `
         <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
           <div class="face__word" lang="es">${esc(vm.answerEs)}</div>
-          <div class="listen-de">= ${esc(vm.answerDe)}</div>
+          <div class="listen-de">= ${esc(vm.answerDigits)} ${esc(vm.currencyCode)}</div>
           ${vm.result.correct
             ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
             : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(vm.result.input || "—")}“</div>`}
@@ -1093,16 +1135,17 @@
         <button class="cta" data-action="precios-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`;
     return `
       <section class="screen study">
-        ${hmTopbar("💵 Precios al oído", "home")}
+        ${hmTopbar("💵 Precios al oído", "precios-setup")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+        <div class="prc-status"><div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>${curTag}</div>
         ${body}
       </section>`;
   }
 
   function renderPreciosDone(vm) {
     const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect ? "¡Perfecto! Jeden Preis erkannt. 🏆"
+    const verdict = vm.perfect
+      ? (vm.hard ? "¡Perfecto! Auch die großen Beträge sitzen. 🏆" : "¡Perfecto! Jeden Preis erkannt. 🏆")
       : rate >= 60 ? "¡Bien! Dein Ohr für Zahlen wird besser. 👏"
       : "Sigue practicando – Zahlen hören ist Übungssache. 💪";
     return `
@@ -1110,9 +1153,11 @@
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "💵"}</div>
           <h2>Precios al oído</h2>
+          <p class="prc-done-tag">${esc(vm.flag)} ${esc(vm.currencyName)} · ${esc(vm.levelLabel)}</p>
           <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig gehört</p>
           <p class="hm-winner">${verdict}</p>
           <button class="cta" data-action="precios-again">Nochmal hören</button>
+          <button class="ghostbtn" data-action="precios-setup">Anderes Land / Stufe</button>
           <button class="ghostbtn" data-action="home">Zur Übersicht</button>
         </div>
       </section>`;
@@ -2251,6 +2296,6 @@
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
-                   renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
+                   renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone };
 })();

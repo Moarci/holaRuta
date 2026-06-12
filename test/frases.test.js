@@ -13,6 +13,7 @@ globalThis.window = {};
 const SRC = path.join(__dirname, "..");
 require(path.join(SRC, "contextdata.js"));
 require(path.join(SRC, "data.js"));
+require(path.join(SRC, "numbers.js"));
 require(path.join(SRC, "context.js"));
 require(path.join(SRC, "frases.js"));
 require(path.join(SRC, "srs.js"));

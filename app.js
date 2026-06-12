@@ -7,6 +7,7 @@
   "use strict";
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
+  const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
   const speech = window.SC.speech || null; // optional – Browser kann Ausgabe ggf. nicht
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
@@ -27,7 +28,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -56,7 +57,12 @@
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
     quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
     // ----- Precios al oído (Preis-Hörtrainer, transient) -----
-    precios: null,           // { queue:[cardId…], idx, total, result:{correct,answers,input}|null, correct }
+    // Beträge werden pro Runde frisch erzeugt (SC.numbers) – nicht mehr aus den
+    // festen Zahlen-Karten gezogen. So sind beliebig große/krumme Preise möglich
+    // (z. B. kolumbianische Pesos in Millionenhöhe). queue: generierte Preis-Objekte.
+    precios: null,           // { currencyKey, level, queue:[{value,digits,es,…}…], idx, total, result:{correct,input}|null, correct }
+    preciosCurrency: numbers && numbers.CURRENCIES[settings.preciosCurrency] ? settings.preciosCurrency : "CO", // zuletzt gewählte Währung
+    preciosLevel: [1, 2, 3].includes(settings.preciosLevel) ? settings.preciosLevel : 2,                        // zuletzt gewählte Stufe
     // ----- Frases flexibles (Satzbaukasten, transient) -----
     frases: null,            // { setId, queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
     // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
@@ -1349,6 +1355,7 @@
     else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
     else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
+    else if (state.screen === "preciosSetup") root.innerHTML = ui.renderPreciosSetup(preciosSetupVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
     else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
     else if (state.screen === "frasesSetup") root.innerHTML = ui.renderFrasesSetup(frasesSetupVM());
@@ -1381,27 +1388,30 @@
   // Schlüssel je Aufgabe verhindert mehrfaches Vorlesen; nach der Antwort (Ergebnis
   // sichtbar) wird nichts gesprochen.
   let lastAutoSpoke = null;
-  function autoSpeakKey() {
+  // Liefert { key, text } der aktuell automatisch vorzulesenden Vorgabe – oder
+  // null, wenn gerade nichts gesprochen werden soll. Der Schlüssel je Aufgabe
+  // verhindert mehrfaches Vorlesen beim Re-Render derselben Aufgabe.
+  function autoSpeakTarget() {
     if (!speech || !speech.isSupported()) return null;
     if (state.screen === "study" && state.mode === "listen" && !state.typeResult) {
-      return "listen:" + state.queue[0];
+      const card = cardById(state.queue[0]);
+      return card ? { key: "listen:" + state.queue[0], text: matcher.acceptedAnswers(card)[0] || card.es } : null;
     }
     if (state.screen === "precios" && state.precios && !state.precios.result) {
-      return "precios:" + state.precios.queue[state.precios.idx];
+      const it = state.precios.queue[state.precios.idx];
+      return it ? { key: "precios:" + state.precios.idx + ":" + it.value, text: it.es } : null;
     }
     return null;
   }
   function maybeAutoSpeak() {
-    const key = autoSpeakKey();
+    const target = autoSpeakTarget();
     // Außerhalb der Hör-Phase (Ergebnis sichtbar, anderer Screen) zurücksetzen –
     // sonst bliebe die erste Karte einer NEUEN Sitzung stumm, wenn sie zufällig
     // dieselbe ist wie die zuletzt vorgelesene (auch bei „Nochmal" in 1-Karten-Runden).
-    if (!key) { lastAutoSpoke = null; return; }
-    if (key === lastAutoSpoke) return;
-    lastAutoSpoke = key;
-    const id = key.slice(key.indexOf(":") + 1);
-    const card = cardById(id);
-    if (card) speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
+    if (!target) { lastAutoSpoke = null; return; }
+    if (target.key === lastAutoSpoke) return;
+    lastAutoSpoke = target.key;
+    if (target.text) speech.speak(target.text);
   }
 
   // ----- „Was ist neu?"-Hinweis nach einem Update -----
@@ -1947,54 +1957,115 @@
   }
 
   // ----- Precios al oído (Preis-Hörtrainer) -----
+  // Beträge werden pro Runde frisch generiert (SC.numbers) statt aus den festen
+  // Zahlen-Karten gezogen – so sind beliebig große und krumme Preise möglich
+  // (kolumbianische Pesos in Millionenhöhe, chilenische/argentinische Beträge …).
   const PRECIOS_ROUND = 10;
-  // Nur reine Kardinalzahlen (de = nur Ziffern/Punkte) – keine Ordinalzahlen oder
-  // Karten mit Klammerzusatz. So passt „Betrag hören → Ziffern tippen" sauber.
-  const numberCardsForPrecios = () =>
-    data.CARDS.filter((c) => c.cat === "zahlen" && /^[\d.\s]+$/.test(String(c.de)));
+  const preciosReady = () => !!(speech && speech.isSupported() && numbers);
+
+  // Setup-Ansicht (Land/Währung + Schwierigkeit wählen).
+  function preciosSetupVM() {
+    const curKey = state.preciosCurrency;
+    const lvl = state.preciosLevel;
+    return {
+      speakable: preciosReady(),
+      currencies: numbers ? numbers.currencyList().map((c) => ({
+        key: c.key, flag: c.flag, name: c.name, code: c.code, note: c.note,
+        selected: c.key === curKey,
+      })) : [],
+      levels: numbers ? numbers.LEVELS.map((l) => ({
+        id: l.id, short: l.short, label: l.label, hint: l.hint, active: l.id === lvl,
+      })) : [],
+      // Beispiel-Spanne der aktuellen Wahl (gibt eine Vorstellung der Größenordnung).
+      sample: numbers ? (() => {
+        const c = numbers.currency(curKey);
+        const tier = numbers.tierFor(c, lvl);
+        return { flag: c.flag, name: c.name, max: numbers.format(tier.max), one: c.one, many: c.many };
+      })() : null,
+    };
+  }
 
   function preciosVM() {
     const p = state.precios;
-    const card = cardById(p.queue[p.idx]);
+    const item = p.queue[p.idx] || {};
+    const cur = numbers ? numbers.currency(p.currencyKey) : { flag: "💵", name: "", code: "" };
     return {
       position: p.idx,
       total: p.total,
-      result: p.result, // null | { correct, answers, input }
-      answerDe: card ? card.de : "",
-      answerEs: card ? card.es : "",
+      result: p.result, // null | { correct, input }
+      answerEs: item.es || "",
+      answerDigits: item.digits || "",
+      flag: cur.flag,
+      currencyName: cur.name,
+      currencyCode: cur.code,
       isLast: p.idx >= p.total - 1,
-      speakable: !!(speech && speech.isSupported()),
+      speakable: preciosReady(),
     };
   }
 
   function preciosDoneVM() {
     const p = state.precios;
-    return { correct: p.correct, total: p.total, perfect: p.total > 0 && p.correct === p.total };
+    const cur = numbers ? numbers.currency(p.currencyKey) : { flag: "💵", name: "" };
+    const lvl = numbers ? (numbers.LEVELS.find((l) => l.id === p.level) || null) : null;
+    return {
+      correct: p.correct,
+      total: p.total,
+      perfect: p.total > 0 && p.correct === p.total,
+      flag: cur.flag,
+      currencyName: cur.name,
+      levelLabel: lvl ? lvl.label : "",
+      hard: p.level >= 3,
+    };
   }
 
+  // Einstieg: Setup-Ansicht zeigen (Land/Währung + Stufe). Ohne (unterstützte)
+  // Sprachausgabe gibt es nichts zu hören – gleiches Gate wie im UI.
   function openPrecios() {
     dismissBadgeToast();
-    // Ohne (unterstützte) Sprachausgabe gibt es nichts zu hören – gleiche Bedingung
-    // wie das UI-Gate in homeVM/entdeckenBody, damit der Einstieg konsistent bleibt.
-    if (!speech || !speech.isSupported()) return;
-    const pool = numberCardsForPrecios();
-    if (!pool.length) return;
-    const queue = shuffle(pool).slice(0, PRECIOS_ROUND).map((c) => c.id);
-    state.precios = { queue, idx: 0, total: queue.length, result: null, correct: 0 };
+    if (!preciosReady()) return;
+    state.screen = "preciosSetup";
+    render();
+  }
+
+  function setPreciosCurrency(key) {
+    if (!numbers || !numbers.CURRENCIES[key]) return;
+    state.preciosCurrency = key;
+    settings = Object.assign({}, settings, { preciosCurrency: key });
+    store.saveSettings(settings);
+    render();
+  }
+
+  function setPreciosLevel(level) {
+    const lvl = Number(level);
+    if (![1, 2, 3].includes(lvl)) return;
+    state.preciosLevel = lvl;
+    settings = Object.assign({}, settings, { preciosLevel: lvl });
+    store.saveSettings(settings);
+    render();
+  }
+
+  // Runde mit den gewählten Einstellungen starten.
+  function startPrecios() {
+    if (!preciosReady()) return;
+    const curKey = state.preciosCurrency;
+    const level = state.preciosLevel;
+    const queue = numbers.buildRound(curKey, level, PRECIOS_ROUND);
+    state.precios = { currencyKey: curKey, level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
     state.screen = "precios";
     render(); // maybeAutoSpeak spielt den ersten Betrag automatisch ab
   }
 
-  // Getippte Ziffern gegen das Zahlenwort prüfen (field "de"). Matcher entfernt
-  // Punkte/Leerzeichen, also matcht "1000" auch "1.000".
+  // Getippte Ziffern rein numerisch gegen den Wert prüfen: alle Nicht-Ziffern
+  // (Punkte, Leerzeichen, Währungszeichen) ignorieren – "1.250.000" == "1250000".
   function submitPrecios(input) {
     const p = state.precios;
     if (!p || p.result) return;
-    const card = cardById(p.queue[p.idx]);
-    if (!card) return;
-    const r = matcher.check(input, card, "de");
-    p.result = Object.assign({ input }, r);
-    if (r.correct) { p.correct += 1; buzz(12); } else buzz(8);
+    const item = p.queue[p.idx];
+    if (!item) return;
+    const typed = String(input || "").replace(/\D/g, "");
+    const correct = typed.length > 0 && parseInt(typed, 10) === item.value;
+    p.result = { input, correct };
+    if (correct) { p.correct += 1; buzz(12); } else buzz(8);
     render();
   }
 
@@ -2013,18 +2084,16 @@
     render();
   }
 
+  // „Nochmal" auf der Ergebnis-Seite: gleiche Einstellungen, neue Beträge.
   function preciosAgain() {
-    // openPrecios() baut state.precios komplett neu (oder kehrt früh zurück und
-    // lässt den vorherigen, gültigen Stand stehen) – kein vorheriges Nullen nötig,
-    // das sonst bei einem Early-Return einen inkonsistenten Zustand hinterließe.
-    openPrecios();
+    startPrecios();
   }
 
   function speakPrecios() {
     const p = state.precios;
     if (!p || !speech) return;
-    const card = cardById(p.queue[p.idx]);
-    if (card) speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
+    const item = p.queue[p.idx];
+    if (item) speech.speak(item.es);
   }
 
   // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
@@ -2033,6 +2102,8 @@
     const g = Object.assign({}, gamestats);
     g.preciosPlayed = (g.preciosPlayed || 0) + 1;
     if (p.total > 0 && p.correct === p.total) g.preciosPerfect = (g.preciosPerfect || 0) + 1;
+    // Große-Beträge-Runde (Stufe 3) gemeistert: separat zählen (Badge „Millonario").
+    if (p.level >= 3 && p.total > 0 && p.correct === p.total) g.preciosMillon = (g.preciosMillon || 0) + 1;
     gamestats = g;
     store.saveGameStats(gamestats);
   }
@@ -2369,8 +2440,12 @@
     else if (action === "open-spickzettel") openSpickzettel();
     else if (action === "speak-card") speakCardId(el.dataset.id);
     else if (action === "open-precios") openPrecios();
+    else if (action === "precios-currency") setPreciosCurrency(el.dataset.id);
+    else if (action === "precios-level") setPreciosLevel(el.dataset.level);
+    else if (action === "start-precios") startPrecios();
     else if (action === "precios-next") nextPrecios();
     else if (action === "precios-again") preciosAgain();
+    else if (action === "precios-setup") openPrecios();
     else if (action === "precios-speak") speakPrecios();
     else if (action === "open-frases") openFrasesSetup();
     else if (action === "start-frases") startFrases(el.dataset.set);

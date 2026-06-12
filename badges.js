@@ -169,6 +169,8 @@
       description: "Schließe deine erste Preis-Hörrunde ab.", unlockedText: "Preise am Busbahnhof verlieren ihren Schrecken." },
     { id: "precios_perfect",group: "listening", icon: "💯", name: "Sin perder un peso", type: "counter", metric: "preciosPerfect", threshold: 1,
       description: "Beende eine Preis-Hörrunde ohne Fehler.", unlockedText: "Jeden Betrag richtig gehört – kein Wechselgeld-Fehler mehr." },
+    { id: "precios_millon",group: "listening", icon: "🤑", name: "Millonario de oído", type: "counter", metric: "preciosMillon", threshold: 1,
+      description: "Meistere eine Runde „Große Beträge“ fehlerfrei (z. B. kolumbianische Millionenpreise).", unlockedText: "Selbst „un millón quinientos mil“ tippst du jetzt ohne Zögern." },
 
     // ---------- Mutproben (Real-Life Challenges) ----------
     { id: "challenge_first", group: "reallife", icon: "💬", name: "Mutiger erster Satz", type: "counter", metric: "challengesCompleted", threshold: 1,
@@ -251,6 +253,7 @@
       listenReviews: c.listenReviews || 0,
       preciosPlayed: c.preciosPlayed || 0,
       preciosPerfect: c.preciosPerfect || 0,
+      preciosMillon: c.preciosMillon || 0,
       // Ruta del día: distinkte Tage mit gestarteter täglicher Mini-Runde.
       rutaDays: c.rutaDays ? Object.keys(c.rutaDays).length : 0,
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
