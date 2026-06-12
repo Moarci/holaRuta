@@ -46,6 +46,33 @@ test("frases.FRASES: Lösung ist innerhalb des Frames eindeutig (kein Ablenker =
   });
 });
 
+// ---------- Themen (FRASES_SETS) ----------
+test("frases.FRASES_SETS: vorhanden, IDs eindeutig, Felder vollständig", () => {
+  assert.ok(Array.isArray(frases.FRASES_SETS) && frases.FRASES_SETS.length >= 5);
+  const ids = frases.FRASES_SETS.map((s) => s.id);
+  assert.equal(new Set(ids).size, ids.length, "doppelte Themen-Id");
+  frases.FRASES_SETS.forEach((s) => {
+    assert.ok(s.id && s.label && s.icon && s.intro, `Thema unvollständig: ${s.id}`);
+    assert.ok(typeof s.lvl === "number", `lvl fehlt/keine Zahl: ${s.id}`);
+  });
+  // "all" ist eine virtuelle Controller-Id und darf KEIN echtes Thema sein.
+  assert.ok(!ids.includes("all"), "Themen-Id 'all' kollidiert mit Gemischt-Modus");
+});
+
+test("frases.FRASES: jedes Frame verweist über cat auf ein bekanntes Thema", () => {
+  const setIds = new Set(frases.FRASES_SETS.map((s) => s.id));
+  frases.FRASES.forEach((f) => {
+    assert.ok(f.cat && setIds.has(f.cat), `unbekanntes Thema in ${f.id}: ${f.cat}`);
+  });
+});
+
+test("frases.FRASES: jedes Thema hat mindestens 3 Rahmen", () => {
+  frases.FRASES_SETS.forEach((s) => {
+    const n = frases.FRASES.filter((f) => f.cat === s.id).length;
+    assert.ok(n >= 3, `Thema ${s.id} hat nur ${n} Rahmen`);
+  });
+});
+
 // ---------- neue Badge-Metriken ----------
 test("badges.buildMetrics: neue Zähler werden korrekt abgeleitet", () => {
   const counters = {
@@ -60,6 +87,24 @@ test("badges.buildMetrics: neue Zähler werden korrekt abgeleitet", () => {
   assert.equal(m.frasesPlayed, 3);
   assert.equal(m.frasesPerfect, 1);
   assert.equal(m.rutaDays, 2); // distinkte Tage
+});
+
+test("badges.buildMetrics: distinkt abgeschlossene Frases-Themen", () => {
+  const m = badges.buildMetrics(data.CARDS, {}, {
+    frasesThemesDone: { transporte: true, comida: true, social: true },
+  });
+  assert.equal(m.frasesThemesCompleted, 3);
+});
+
+test("badges: frases_themes erfüllt, sobald jedes Thema gespielt wurde", () => {
+  const done = {};
+  frases.FRASES_SETS.forEach((s) => { done[s.id] = true; });
+  const m = badges.buildMetrics(data.CARDS, {}, { frasesThemesDone: done });
+  assert.ok(badges.satisfiedIds(m).includes("frases_themes"),
+    "frases_themes muss bei allen gespielten Themen erfüllt sein");
+  // Mit einem Thema weniger darf der Badge NICHT erfüllt sein.
+  const less = badges.buildMetrics(data.CARDS, {}, { frasesThemesDone: { transporte: true } });
+  assert.ok(!badges.satisfiedIds(less).includes("frases_themes"));
 });
 
 test("badges: neue Badges schalten an ihren Schwellen frei", () => {

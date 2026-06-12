@@ -1572,6 +1572,27 @@
   }
 
   // ---------- FRASES FLEXIBLES (Satzbaukasten) ----------
+  // Themen-Auswahl vor der Runde – Reuse der Hostel-Szenenkacheln (.hm-scene)
+  // wie bei Definiciones. Die "Gemischt"-Kachel steht zuoberst und abgesetzt.
+  function renderFrasesSetup(vm) {
+    const tile = (s, mixed) =>
+      `<button class="hm-scene${mixed ? " hm-scene--mixed" : ""}" data-action="start-frases" data-set="${esc(s.id)}">
+         <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+         <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
+         <span class="hm-scene__count">${s.count}</span>
+       </button>`;
+    const list = vm.sets.map((s) => tile(s, false)).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🧱 Frases flexibles", "home")}
+        <p class="hm-intro">Wähle eine Reise-Situation und fülle die Lücke im Satzrahmen mit dem passenden Baustein – so baust du Sätze selbst, statt nur zu übersetzen.</p>
+        <div class="hm-scenes">
+          ${tile(vm.mixed, true)}
+          ${list}
+        </div>
+      </section>`;
+  }
+
   // Satzrahmen mit Lücke + Multiple Choice. Reuse der Definiciones-Optik
   // (.quiz-def / .quiz-opt / .quiz-feedback).
   function renderFrases(vm) {
@@ -1608,7 +1629,7 @@
 
     return `
       <section class="screen study">
-        ${hmTopbar("🧱 Frases flexibles", "home")}
+        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "open-frases")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">Satz ${vm.position + 1}/${vm.total}</div>
         <div class="quiz-def">
@@ -1630,10 +1651,11 @@
       <section class="screen">
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "🧱"}</div>
-          <h2>Frases flexibles geschafft</h2>
+          <h2>${esc(vm.setLabel)} geschafft</h2>
           <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
           <p class="hm-winner">${verdict}</p>
           <button class="cta" data-action="frases-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="open-frases">Anderes Thema</button>
           <button class="ghostbtn" data-action="home">Zur Übersicht</button>
         </div>
       </section>`;
@@ -2026,5 +2048,5 @@
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
-                   renderPrecios, renderPreciosDone, renderFrases, renderFrasesDone };
+                   renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone };
 })();
