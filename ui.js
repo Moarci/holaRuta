@@ -138,6 +138,13 @@
            <span class="today__resumecount">${vm.lastCat.due} fällig</span>
          </button>`
       : "";
+    // Ruta del día: ein Tap für eine kurze, kategorienübergreifende Tagesrunde –
+    // bevorzugt fällige Karten, sonst neue. Stärkt die Lern-Serie.
+    const rutaDia = `
+      <button class="today__ruta" data-action="ruta-del-dia">
+        <span class="today__ruta-main">🗺️ Ruta del día</span>
+        <span class="today__ruta-sub">Kurze Tagesrunde quer durch alle Themen</span>
+      </button>`;
 
     // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
     // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
@@ -184,6 +191,7 @@
               : `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`}
         </button>
         ${resume}
+        ${rutaDia}
       </div>
 
       <div class="setup">
@@ -708,6 +716,36 @@
     return `<span class="srate ${cls}">${rate}%</span>`;
   }
 
+  // Streckenkarte: der Lernfortschritt als Bus-Strecke (on-brand „Ruta"). Drei
+  // Haltestellen Neu → Am Lernen → Gemeistert; der Bus (🚌) fährt mit der
+  // Meister-Quote voran. Reine Anzeige aus der vorhandenen stats.overview.
+  function routeMap(ov) {
+    const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
+    const stops = [
+      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new" },
+      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn" },
+      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master" },
+    ];
+    const stopsHtml = stops.map((s) => `
+      <div class="route__stop ${s.cls}">
+        <span class="route__dot" aria-hidden="true">${s.icon}</span>
+        <span class="route__n">${s.n}</span>
+        <span class="route__lbl">${esc(s.label)}</span>
+      </div>`).join("");
+    return `
+      <div class="route" role="img" aria-label="Lern-Strecke: ${ov.neu} neu, ${ov.learning} am Lernen, ${ov.mastered} gemeistert (${pct} %)">
+        <div class="route__head">
+          <span class="route__cap">🚌 Deine Ruta</span>
+          <span class="route__pct">${pct} % gemeistert</span>
+        </div>
+        <div class="route__track">
+          <div class="route__fill" style="width:${pct}%"></div>
+          <span class="route__bus" style="left:${pct}%" aria-hidden="true">🚌</span>
+          <div class="route__stops">${stopsHtml}</div>
+        </div>
+      </div>`;
+  }
+
   function renderStats(vm) {
     const ov = vm.overview;
 
@@ -756,6 +794,7 @@
           <div class="topbar__counter">${ov.seenCards}/${ov.total}</div>
         </div>
         ${kpis}
+        ${routeMap(ov)}
         ${distribution}
         ${firstTry}
         ${ov.seenCards > 0 ? shareBlock(vm.shareFormat, "share-stats", "Fortschritt teilen") : ""}

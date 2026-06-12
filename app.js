@@ -894,6 +894,48 @@
     render();
   }
 
+  // ----- Ruta del día (kurze tägliche Mini-Runde) -----
+  const RUTA_DIA_CAP = 10;
+
+  // Tag mit gestarteter Ruta del día vermerken (distinkt, für die 🗺️-Badges).
+  function recordRutaDia(now) {
+    if (!badges) return;
+    const key = dayKey(now);
+    if (gamestats.rutaDays && gamestats.rutaDays[key]) return; // heute schon gezählt
+    const days = Object.assign({}, gamestats.rutaDays, { [key]: true });
+    gamestats = Object.assign({}, gamestats, { rutaDays: days });
+    store.saveGameStats(gamestats);
+  }
+
+  // Eine kurze, kategorienübergreifende Tagesrunde starten: bevorzugt fällige
+  // Karten (gemischt), sonst neue (nie gesehene), sonst irgendeine Auswahl. Nutzt
+  // den normalen Study-/SRS-Pfad – nur kleiner gedeckelt (RUTA_DIA_CAP) und über
+  // alle Bereiche. Stärkt die Lern-Serie.
+  function openRutaDelDia() {
+    dismissBadgeToast();
+    const now = Date.now();
+    const all = scopeCards("all");       // respektiert den Stufen-Filter
+    const due = dueIn(all);
+    let pool;
+    if (due.length) {
+      pool = shuffle(due);
+    } else {
+      const fresh = all.filter((c) => !(progress[c.id] && progress[c.id].seen));
+      pool = shuffle(fresh.length ? fresh : all);
+    }
+    const chosen = pool.slice(0, RUTA_DIA_CAP);
+    recordRutaDia(now);
+    state.scopeId = "all";
+    state.queue = chosen.map((c) => c.id);
+    state.total = state.queue.length;
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = state.queue.length ? "study" : "done";
+    syncBadges(now, true); // 🗺️-Badges freischalten + einblenden
+    render();
+  }
+
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
   // Frage gedreht werden. Die Bewertungs-Leiste erscheint nur auf der Antwortseite.
   function flip() {
@@ -1468,6 +1510,7 @@
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
+    else if (action === "ruta-del-dia") openRutaDelDia();
     else if (action === "resume-last") resumeLast();
     else if (action === "toggle-setup") toggleSetup();
     else if (action === "set-tab") setTab(el.dataset.tab);
