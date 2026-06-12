@@ -59,6 +59,7 @@
     { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
   ];
 
@@ -1404,6 +1405,85 @@
       </g>
     </svg>`;
 
+  // ---------- CONJUGACIÓN (Erklärseite Konjugieren) ----------
+  // Kompakte Grammatik-Erklärung (Inhalte aus data.CONJUGATION): Personen,
+  // die drei regelmäßigen Muster, wichtige unregelmäßige Reiseverben und ein
+  // Wegbeschreibungs-Dialog. Unten ein CTA in die Übungskarten – er nutzt die
+  // normale open-category-Aktion, also exakt den gewohnten Lernfluss.
+  function renderConjugacion(vm) {
+    const g = vm.guide;
+
+    const personRows = g.persons
+      .map((p) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(p.es)}</span><span class="cinfo-word__de">${esc(p.de)}</span></li>`)
+      .join("");
+
+    // Eine Konjugations-Tabelle: Person links, Form rechts. Die Endung steht in
+    // den Daten, hervorgehoben wird nichts – die Tabelle bleibt ruhig lesbar.
+    const table = (forms) => `
+      <ul class="cj-table">
+        ${forms.map(([p, f]) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(p)}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
+      </ul>`;
+
+    const regularBlocks = g.regular
+      .map((r) => `
+        <div class="cj-verb">
+          <h4 class="cj-verb__h" lang="es">${esc(r.title)}</h4>
+          ${table(r.forms)}
+          <p class="cj-verb__like">${esc(r.like)}</p>
+        </div>`)
+      .join("");
+
+    // Unregelmäßige Verben als aufklappbare Karten (natives <details> wie bei
+    // den Länderkunde-Gerichten) – Kopf zeigt Verb + Übersetzung, aufgeklappt
+    // die fünf Formen und der Reise-Hinweis.
+    const personLabels = g.persons.map((p) => p.es);
+    const irregularBlocks = g.irregular
+      .map((v) => `
+        <details class="cinfo-dish">
+          <summary class="cinfo-dish__head">
+            <span class="cinfo-dish__heart">
+              <span class="cinfo-dish__name" lang="es">${esc(v.verb)}</span>
+              <span class="cinfo-dish__desc">${esc(v.verbDe)}</span>
+            </span>
+            <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="cinfo-dish__body">
+            ${table(v.forms.map((f, i) => [personLabels[i], f]))}
+            ${v.note ? `<p class="cj-verb__like">${esc(v.note)}</p>` : ""}
+          </div>
+        </details>`)
+      .join("");
+
+    const exampleLines = g.example.lines
+      .map((l) => `
+        <div class="context-panel__line">
+          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
+          <p class="context-panel__de">${esc(l.de)}</p>
+        </div>`)
+      .join("");
+
+    const sect = (icon, title, body) => `
+      <div class="cinfo-sect">
+        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
+        ${body}
+      </div>`;
+
+    return `
+      <section class="screen">
+        ${hmTopbar("🔁 Conjugación", "home")}
+        <p class="hm-intro">${esc(g.intro)}</p>
+
+        ${sect("🧑‍🤝‍🧑", "Die Personen", `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
+        ${sect("🧱", "Regelmäßig: drei Muster", `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
+        ${sect("⭐", "Die wichtigsten unregelmäßigen Verben", `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
+        ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
+
+        <button class="cta cj-cta" data-action="open-category" data-id="verbos">
+          Jetzt üben: Konjugieren <span class="cta__count">${vm.cardCount} Karten</span>
+        </button>
+      </section>`;
+  }
+
   function renderCuerpo(vm) {
     const dots = vm.parts
       .map((p) => {
@@ -1464,5 +1544,5 @@
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion };
 })();

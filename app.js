@@ -25,7 +25,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
@@ -764,6 +764,23 @@
     store.saveGameStats(gamestats);
   }
 
+  // ----- Conjugación: Erklärseite Konjugieren -----
+  // Statische Grammatik-Erklärung (Inhalte: data.CONJUGATION). Der "Jetzt üben"-
+  // Button auf der Seite nutzt die normale open-category-Aktion (Kategorie
+  // "verbos") und startet damit den gewohnten Lernfluss.
+  function conjugacionVM() {
+    return {
+      guide: data.CONJUGATION,
+      cardCount: data.CARDS.filter((c) => c.cat === "verbos").length,
+    };
+  }
+
+  function openConjugacion() {
+    dismissBadgeToast();
+    state.screen = "conjugacion";
+    render();
+  }
+
   // ----- El Cuerpo: interaktive Körperkarte -----
   const bodyPartById = (id) => data.BODY_PARTS.find((p) => p.id === id) || null;
 
@@ -837,6 +854,7 @@
     else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
+    else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -1617,6 +1635,7 @@
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
+    else if (action === "open-conjugacion") openConjugacion();
     else if (action === "cuerpo-select") selectBodyPart(el.dataset.id);
     else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "home") goHome();

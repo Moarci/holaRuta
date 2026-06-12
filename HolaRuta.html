@@ -990,7 +990,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-weight: 600; line-height: 1.5; margin-bottom: 8px;
 }
 
-/* ===================== RUTA-PASS (BADGES) ===================== */
+/* ===================== CONJUGACIÓN (ERKLÄRSEITE KONJUGIEREN) ===================== */
+/* Baut auf den Länderkunde-Bausteinen (cinfo-sect, cinfo-words, cinfo-dish) auf;
+ * eigen sind nur die kompakten Konjugations-Tabellen und der Übungs-CTA. */
+.cj-table { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.cj-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  padding: 7px 12px; background: var(--surface); border-radius: var(--r-sm);
+}
+.cj-row__p { color: var(--muted); font-size: 0.88rem; }
+.cj-row__f { font-weight: 700; color: var(--brand-ink); }
+
+/* Die drei regelmäßigen Muster untereinander, jeweils Titel + Tabelle + "Genauso". */
+.cj-verbs { display: flex; flex-direction: column; gap: 16px; }
+.cj-verb__h { font-family: var(--font-display); font-size: 1rem; margin: 0 0 8px; color: var(--ink); }
+.cj-verb__like { margin: 8px 0 0; color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
+.cj-note { margin-top: 12px; font-size: 0.88rem; }
+.cj-cta { margin-top: 4px; }
 /* "Mein Ruta-Pass": gesammelte Reisestempel. Freigeschaltete Stempel im
  * warmen Sticker-Look, gesperrte dezent ausgegraut mit Fortschrittsbalken. */
 
@@ -2083,6 +2099,50 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dir64: { e: "¿Se puede ir caminando o mejor tomo un taxi?", d: "Kann man zu Fuß gehen oder nehme ich besser ein Taxi?", s: "Um den Aufwand abzuschätzen.", n: "ir caminando / a pie = zu Fuß gehen." },
     dir65: { e: "¿Cuánto se tarda a pie hasta el centro?", d: "Wie lange dauert es zu Fuß bis ins Zentrum?", s: "Die Gehzeit erfragen.", n: "'a pie' = zu Fuß; 'tardar' = (Zeit) brauchen." },
 
+    // ===================== KONJUGIEREN (Verben im Präsens) =====================
+    vb01: { e: "Voy a la terminal de buses.", d: "Ich fahre zum Busbahnhof.", s: "Wenn dich jemand fragt, wohin du unterwegs bist.", n: "ir + a = hingehen/hinfahren. Vor el wird daraus al: Voy al centro." },
+    vb02: { e: "¿Vas a la fiesta del hostal esta noche?", d: "Gehst du heute Abend zur Hostel-Party?", s: "Smalltalk im Dorm oder in der Gemeinschaftsküche.", n: "Mit ¿Vas a …? lädst du ganz nebenbei zum Mitkommen ein." },
+    vb03: { e: "Este bus va al aeropuerto, ¿verdad?", d: "Dieser Bus fährt zum Flughafen, oder?", s: "Vor dem Einsteigen kurz absichern.", n: "va gilt auch für usted: ¿Va al centro? = Fahren Sie ins Zentrum?" },
+    vb04: { e: "Vamos a la playa, ¿te unes?", d: "Wir gehen an den Strand, kommst du mit?", s: "Pläne in der Hostel-Runde schmieden.", n: "¡Vamos! allein heißt 'Los geht's!' – eines der nützlichsten Wörter überhaupt." },
+    vb05: { e: "Mis amigos van a Medellín mañana.", d: "Meine Freunde fahren morgen nach Medellín.", s: "Wenn du Reisepläne anderer weitergibst.", n: "van gilt für ellos UND ustedes: ¿Van al mismo hostal? = Geht ihr ins selbe Hostel?" },
+    vb06: { e: "Doblo a la derecha en el semáforo, ¿no?", d: "Ich biege an der Ampel rechts ab, oder?", s: "Eine erklärte Route noch einmal rückversichern.", n: "Die ich-Form endet bei fast allen Verben auf -o – daran erkennst du den Sprecher sofort." },
+    vb07: { e: "Doblas a la izquierda y ahí está la plaza.", d: "Du biegst links ab, und da ist der Platz.", s: "So klingt die Antwort, wenn dir jemand den Weg erklärt.", n: "Wegbeschreibungen kommen oft in der du-Form (-as) statt als Befehl – beides ist üblich." },
+    vb08: { e: "El bus dobla en la esquina y para enfrente del mercado.", d: "Der Bus biegt an der Ecke ab und hält gegenüber dem Markt.", s: "Wenn dir jemand die Busroute beschreibt.", n: "Dieselbe Form für er/sie/usted – der Zusammenhang verrät, wer gemeint ist." },
+    vb09: { e: "¿Doblamos aquí o en la próxima calle?", d: "Biegen wir hier ab oder an der nächsten Straße?", s: "Gemeinsam unterwegs, kurz die Route klären.", n: "-amos ist immer die wir-Form bei -ar-Verben: caminamos, tomamos, cruzamos." },
+    vb10: { e: "Los taxis doblan aquí porque la calle está cerrada.", d: "Die Taxis biegen hier ab, weil die Straße gesperrt ist.", s: "Wenn jemand eine Umleitung erklärt.", n: "-an deckt sie UND ihr ab: ¿Doblan ustedes también? = Biegt ihr auch ab?" },
+    vb11: { e: "Camino al centro, no está lejos.", d: "Ich gehe zu Fuß ins Zentrum, es ist nicht weit.", s: "Wenn du ein Taxi-Angebot freundlich ablehnst.", n: "Gleiches Muster wie doblo: Stamm camin- + -o. So funktionieren alle -ar-Verben." },
+    vb12: { e: "Cruzas el puente y el hostal queda a la derecha.", d: "Du überquerst die Brücke, und das Hostel liegt rechts.", s: "Typischer Satz in einer Wegbeschreibung.", n: "cruzar, doblar, caminar, seguir – die vier Verben, mit denen fast jede Route erklärt wird." },
+    vb13: { e: "Tomo el bus de las ocho a Salta.", d: "Ich nehme den Acht-Uhr-Bus nach Salta.", s: "Deine Reisepläne erzählen oder ein Ticket kaufen.", n: "tomar heißt auch trinken: Tomo un café = Ich trinke einen Kaffee." },
+    vb14: { e: "Hablo un poco de español.", d: "Ich spreche ein bisschen Spanisch.", s: "Der ehrliche Eisbrecher in jedem Gespräch.", n: "Bescheiden bleiben lohnt sich – dein Gegenüber spricht dann automatisch langsamer." },
+    vb15: { e: "¿Hablas inglés o solo español?", d: "Sprichst du Englisch oder nur Spanisch?", s: "Beim Kennenlernen im Hostel.", n: "Höflich an Fremde gerichtet: ¿Habla inglés? (usted-Form, ohne -s)." },
+    vb16: { e: "Como en el mercado, es más barato.", d: "Ich esse auf dem Markt, das ist billiger.", s: "Backpacker-Spartipp beim Essen-Smalltalk.", n: "-er-Verben: -o/-es/-e/-emos/-en – fast wie -ar, nur mit e." },
+    vb17: { e: "¿Comes carne o eres vegetariano?", d: "Isst du Fleisch oder bist du Vegetarier?", s: "Vor dem gemeinsamen Kochen oder Restaurantbesuch.", n: "Für Frauen: vegetariana. Praktisch beim Bestellen: sin carne = ohne Fleisch." },
+    vb18: { e: "Hoy comemos todos juntos en el hostal.", d: "Heute essen wir alle zusammen im Hostel.", s: "Gemeinsames Abendessen im Hostel organisieren.", n: "comemos = wir essen; bei -ir-Verben wäre es -imos: vivimos." },
+    vb19: { e: "Vivo en Alemania, pero viajo seis meses.", d: "Ich wohne in Deutschland, aber ich reise sechs Monate.", s: "Die Standard-Vorstellung unter Backpackern.", n: "Der Klassiker nach ¿De dónde eres? – kurz, ehrlich, gesprächsöffnend." },
+    vb20: { e: "¿Vives aquí o también estás de viaje?", d: "Wohnst du hier oder bist du auch auf Reisen?", s: "Smalltalk im Café oder auf einer Tour.", n: "estar de viaje = auf Reisen sein – super Anschlussfrage zum Kennenlernen." },
+    vb21: { e: "Estoy en la esquina, ¿dónde estás tú?", d: "Ich bin an der Ecke – wo bist du?", s: "Wenn ihr euch in der Stadt sucht (z. B. per WhatsApp).", n: "estar für Ort & Zustand: Estoy perdido = Ich habe mich verlaufen." },
+    vb22: { e: "¿Estás cerca o tomamos un taxi?", d: "Bist du in der Nähe, oder nehmen wir ein Taxi?", s: "Treffen koordinieren, wenn die Zeit knapp ist.", n: "estás trägt den Akzent auf dem a – hörbar betont: es-TAS." },
+    vb23: { e: "Disculpe, ¿dónde está la terminal?", d: "Entschuldigung, wo ist der Busbahnhof?", s: "DIE Frage, mit der jede Wegbeschreibung beginnt.", n: "Nach Orten IMMER mit estar fragen, nie mit ser: ¿Dónde está …?" },
+    vb24: { e: "Ya estamos en el centro, ¿ahora a dónde?", d: "Wir sind schon im Zentrum – wohin jetzt?", s: "Unterwegs mit anderen die nächste Etappe klären.", n: "ya = schon/bereits; estamos = wir sind (am Ort)." },
+    vb25: { e: "Soy de Alemania, ¿y tú?", d: "Ich bin aus Deutschland, und du?", s: "Die häufigste Frage im Hostel beantworten.", n: "Herkunft & Eigenschaften mit ser; Ort & Zustand mit estar – die wichtigste Unterscheidung." },
+    vb26: { e: "¿Eres de aquí? Busco una buena arepería.", d: "Bist du von hier? Ich suche ein gutes Arepa-Lokal.", s: "Einheimische nach Geheimtipps fragen.", n: "Lokale Tipps schlagen jede App – die Frage öffnet fast immer ein nettes Gespräch." },
+    vb27: { e: "Ella es mi amiga del hostal.", d: "Sie ist meine Freundin aus dem Hostel.", s: "Reisebekanntschaften einander vorstellen.", n: "es = er/sie/usted-Form von ser. Nicht verwechseln mit está (Ort/Zustand)." },
+    vb28: { e: "Tengo una reserva a nombre de Marcel.", d: "Ich habe eine Reservierung auf den Namen Marcel.", s: "Beim Check-in im Hostel oder Hotel.", n: "tengo brauchst du ständig: Tengo hambre/sed/frío = Ich habe Hunger/Durst/mir ist kalt." },
+    vb29: { e: "¿Tienes cambio para el bus?", d: "Hast du Kleingeld für den Bus?", s: "Unter Reisenden, bevor der colectivo kommt.", n: "cambio = Kleingeld/Wechselgeld – im Bus oft Pflicht, große Scheine sind unbeliebt." },
+    vb30: { e: "¿Tiene una cama libre para esta noche?", d: "Haben Sie ein Bett frei für heute Nacht?", s: "Spontan ohne Buchung im Hostel ankommen.", n: "tiene = usted-Form – die höfliche Standardform an jeder Rezeption." },
+    vb31: { e: "¿Puedo dejar mi mochila aquí?", d: "Kann ich meinen Rucksack hier lassen?", s: "Vor dem Check-in oder nach dem Check-out.", n: "puedo + Infinitiv = ich kann/darf …: ¿Puedo pagar con tarjeta? = Kann ich mit Karte zahlen?" },
+    vb32: { e: "¿Puedes repetir más despacio, por favor?", d: "Kannst du das bitte langsamer wiederholen?", s: "Wenn die Antwort zu schnell kam.", n: "Stammwechsel o→ue: puedo, puedes, puede – nur podemos bleibt beim o." },
+    vb33: { e: "¿Puede mostrarme en el mapa?", d: "Können Sie es mir auf der Karte zeigen?", s: "Wenn die Wegbeschreibung zu kompliziert wird.", n: "puede = höfliche Sie-Form. Der Karten-Trick rettet jede verlorene Wegbeschreibung." },
+    vb34: { e: "Quiero un boleto a Cusco, por favor.", d: "Ich möchte ein Ticket nach Cusco, bitte.", s: "Am Busschalter oder bei der Agentur.", n: "quiero + Nomen oder Infinitiv: Quiero ir a Cusco = Ich will nach Cusco fahren." },
+    vb35: { e: "¿Quieres ir a comer algo?", d: "Willst du etwas essen gehen?", s: "Jemanden aus dem Hostel locker einladen.", n: "Stammwechsel e→ie: quiero, quieres, quiere – queremos bleibt beim e." },
+    vb36: { e: "Sigo derecho hasta la plaza, ¿verdad?", d: "Ich gehe weiter geradeaus bis zum Platz, richtig?", s: "Die gehörte Route zur Sicherheit wiederholen.", n: "Wer die Beschreibung in der ich-Form nachspricht, merkt sie sich doppelt so gut." },
+    vb37: { e: "Sigues derecho dos cuadras más.", d: "Du gehst noch zwei Blocks geradeaus weiter.", s: "Der häufigste Satz in jeder Wegbeschreibung.", n: "seguir + derecho = geradeaus weitergehen; cuadra = Häuserblock (LatAm)." },
+    vb38: { e: "Usted sigue por esta calle hasta el final.", d: "Sie gehen diese Straße bis zum Ende weiter.", s: "So erklären es dir ältere oder förmlichere Menschen.", n: "Auch als Anweisung üblich: ¡Siga derecho! – die höfliche Befehlsform." },
+    vb39: { e: "Voy al centro a buscar un cajero.", d: "Ich gehe ins Zentrum, um einen Geldautomaten zu suchen.", s: "Kurz sagen, wohin du verschwindest.", n: "a + el verschmilzt zu al – Voy a el centro gibt es nicht." },
+    vb40: { e: "Doblas a la derecha y sigues derecho hasta el parque.", d: "Du biegst rechts ab und gehst geradeaus weiter bis zum Park.", s: "Eine komplette Mini-Wegbeschreibung verstehen.", n: "Zwei du-Endungen hintereinander (-as, -es) – hör auf die Endungen, nicht auf Pronomen." },
+    vb41: { e: "Mañana vamos a Cusco en bus nocturno.", d: "Morgen fahren wir mit dem Nachtbus nach Cusco.", s: "Reisepläne mit anderen teilen.", n: "vamos a + Ort = wir fahren nach; vamos a + Verb = wir werden … (nahe Zukunft!)." },
+    vb42: { e: "¿Puede hablar más despacio? Estoy aprendiendo español.", d: "Können Sie langsamer sprechen? Ich lerne gerade Spanisch.", s: "Wenn die Antwort auf deine Frage zu schnell kommt.", n: "Der Zusatz Estoy aprendiendo zaubert fast immer ein Lächeln und viel Geduld hervor." },
+
     // ===================== FARBEN =====================
     col01: { e: "¿Tiene esta camiseta en rojo?", d: "Haben Sie dieses T-Shirt in Rot?", s: "Beim Klamotten-Kauf am Markt oder im Laden.", n: "Farbe steht meist nach dem Nomen: una mochila roja, una bici roja." },
     col02: { e: "Me gusta más la azul.", d: "Die blaue gefällt mir besser.", s: "Wenn du zwischen mehreren Varianten wählst.", n: "Die Farbe passt sich an: el azul / la azul je nach Gegenstand." },
@@ -2162,6 +2222,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "reise",   label: "Busreise",   icon: "🚐", grad: ["#B5503F", "#CE6855"] },
     { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
     { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
+    { id: "verbos",  label: "Konjugieren", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
     { id: "colores", label: "Farben",     icon: "🎨", grad: ["#7048E8", "#15AABF"] },
   ];
 
@@ -2801,6 +2862,63 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "dir63", cat: "rumbo", lvl: 2, de: "Wo gibt es ein Bekleidungsgeschäft?", es: "¿Dónde hay una tienda de ropa?", tip: "DON-de ai U-na TIEN-da de RO-pa" },
     { id: "dir64", cat: "rumbo", lvl: 3, de: "Kann man zu Fuß gehen?", es: "¿Se puede ir caminando?", tip: "se PUE-de ir ka-mi-NAN-do" },
     { id: "dir65", cat: "rumbo", lvl: 3, de: "Wie lange dauert es zu Fuß?", es: "¿Cuánto se tarda a pie?", tip: "KUAN-to se TAR-da a pie" },
+
+    // ===================== KONJUGIEREN (Verben im Präsens) =====================
+    // Die Formen der wichtigsten Reiseverben – die Erklärung dazu (Endungen,
+    // Personen, LatAm-Hinweis) liegt in CONJUGATION (Entdecken → Conjugación).
+    // de-Seite: Alternativen mit " / " (jede zählt beim Tippen), Verb in Klammern
+    // als Hinweis – Klammerzusätze sind beim Antwort-Matcher optional.
+    // -- ir (gehen/fahren) – DAS Reiseverb, komplett unregelmäßig --
+    { id: "vb01", cat: "verbos", lvl: 1, de: "ich gehe / ich fahre (ir)", es: "voy", tip: "woi – ir ist komplett unregelmäßig" },
+    { id: "vb02", cat: "verbos", lvl: 1, de: "du gehst / du fährst (ir)", es: "vas", tip: "was" },
+    { id: "vb03", cat: "verbos", lvl: 1, de: "er geht / sie geht / Sie gehen (ir)", es: "va", tip: "wa – auch für usted (höfliches Sie)" },
+    { id: "vb04", cat: "verbos", lvl: 1, de: "wir gehen / wir fahren (ir)", es: "vamos", tip: "WA-mos – ¡Vamos! heißt auch 'Los geht's!'" },
+    { id: "vb05", cat: "verbos", lvl: 1, de: "sie gehen / ihr geht (ir)", es: "van", tip: "wan – ustedes/ellos teilen sich die Form" },
+    // -- doblar (abbiegen) – Muster für ALLE regelmäßigen -ar-Verben --
+    { id: "vb06", cat: "verbos", lvl: 1, de: "ich biege ab (doblar)", es: "doblo", tip: "DO-blo – -ar: -o/-as/-a/-amos/-an" },
+    { id: "vb07", cat: "verbos", lvl: 1, de: "du biegst ab (doblar)", es: "doblas", tip: "DO-blas" },
+    { id: "vb08", cat: "verbos", lvl: 1, de: "er biegt ab / sie biegt ab / Sie biegen ab (doblar)", es: "dobla", tip: "DO-bla" },
+    { id: "vb09", cat: "verbos", lvl: 2, de: "wir biegen ab (doblar)", es: "doblamos", tip: "do-BLA-mos" },
+    { id: "vb10", cat: "verbos", lvl: 2, de: "sie biegen ab / ihr biegt ab (doblar)", es: "doblan", tip: "DO-blan" },
+    // -- Weitere regelmäßige -ar-Verben (gleiche Endungen wie doblar) --
+    { id: "vb11", cat: "verbos", lvl: 1, de: "ich laufe / ich gehe zu Fuß (caminar)", es: "camino", tip: "ka-MI-no" },
+    { id: "vb12", cat: "verbos", lvl: 2, de: "du überquerst (cruzar)", es: "cruzas", tip: "KRU-sas" },
+    { id: "vb13", cat: "verbos", lvl: 1, de: "ich nehme (tomar)", es: "tomo", tip: "TO-mo – auch 'ich trinke'" },
+    { id: "vb14", cat: "verbos", lvl: 1, de: "ich spreche (hablar)", es: "hablo", tip: "A-blo (h stumm)" },
+    { id: "vb15", cat: "verbos", lvl: 1, de: "du sprichst (hablar)", es: "hablas", tip: "A-blas" },
+    // -- comer / vivir – Muster für -er- und -ir-Verben --
+    { id: "vb16", cat: "verbos", lvl: 2, de: "ich esse (comer)", es: "como", tip: "KO-mo – -er: -o/-es/-e/-emos/-en" },
+    { id: "vb17", cat: "verbos", lvl: 2, de: "du isst (comer)", es: "comes", tip: "KO-mes" },
+    { id: "vb18", cat: "verbos", lvl: 2, de: "wir essen (comer)", es: "comemos", tip: "ko-ME-mos" },
+    { id: "vb19", cat: "verbos", lvl: 2, de: "ich wohne / ich lebe (vivir)", es: "vivo", tip: "WI-wo – -ir: wie -er, nur wir = -imos" },
+    { id: "vb20", cat: "verbos", lvl: 2, de: "du wohnst / du lebst (vivir)", es: "vives", tip: "WI-wes" },
+    // -- estar (sein: Ort & Zustand) – der Wegbeschreibungs-Klassiker --
+    { id: "vb21", cat: "verbos", lvl: 2, de: "ich bin (estar – Ort/Zustand)", es: "estoy", tip: "es-TOI – Estoy en el centro" },
+    { id: "vb22", cat: "verbos", lvl: 2, de: "du bist (estar – Ort/Zustand)", es: "estás", tip: "es-TAS" },
+    { id: "vb23", cat: "verbos", lvl: 2, de: "er ist / sie ist / Sie sind (estar – Ort/Zustand)", es: "está", tip: "es-TA – ¿Dónde está …? fragt nach dem Ort" },
+    { id: "vb24", cat: "verbos", lvl: 2, de: "wir sind (estar – Ort/Zustand)", es: "estamos", tip: "es-TA-mos" },
+    // -- ser (sein: Eigenschaft & Herkunft) --
+    { id: "vb25", cat: "verbos", lvl: 2, de: "ich bin (ser – Eigenschaft/Herkunft)", es: "soy", tip: "soi – Soy de Alemania" },
+    { id: "vb26", cat: "verbos", lvl: 2, de: "du bist (ser – Eigenschaft/Herkunft)", es: "eres", tip: "E-res" },
+    { id: "vb27", cat: "verbos", lvl: 2, de: "er ist / sie ist / Sie sind (ser – Eigenschaft/Herkunft)", es: "es", tip: "es" },
+    // -- tener (haben) --
+    { id: "vb28", cat: "verbos", lvl: 2, de: "ich habe (tener)", es: "tengo", tip: "TEN-go – Tengo una reserva" },
+    { id: "vb29", cat: "verbos", lvl: 2, de: "du hast (tener)", es: "tienes", tip: "ti-E-nes" },
+    { id: "vb30", cat: "verbos", lvl: 2, de: "er hat / sie hat / Sie haben (tener)", es: "tiene", tip: "ti-E-ne – ¿Tiene una cama libre?" },
+    // -- Stammwechsler: poder (o→ue), querer (e→ie), seguir (e→i) --
+    { id: "vb31", cat: "verbos", lvl: 3, de: "ich kann (poder)", es: "puedo", tip: "PUE-do – o→ue: poder wird puedo" },
+    { id: "vb32", cat: "verbos", lvl: 3, de: "du kannst (poder)", es: "puedes", tip: "PUE-des" },
+    { id: "vb33", cat: "verbos", lvl: 3, de: "er kann / sie kann / Sie können (poder)", es: "puede", tip: "PUE-de – ¿Puede ayudarme?" },
+    { id: "vb34", cat: "verbos", lvl: 3, de: "ich will / ich möchte (querer)", es: "quiero", tip: "ki-E-ro – e→ie: querer wird quiero" },
+    { id: "vb35", cat: "verbos", lvl: 3, de: "du willst / du möchtest (querer)", es: "quieres", tip: "ki-E-res" },
+    { id: "vb36", cat: "verbos", lvl: 3, de: "ich folge / ich gehe weiter (seguir)", es: "sigo", tip: "SI-go – e→i, und das u fällt weg" },
+    { id: "vb37", cat: "verbos", lvl: 3, de: "du folgst / du gehst weiter (seguir)", es: "sigues", tip: "SI-ges" },
+    { id: "vb38", cat: "verbos", lvl: 3, de: "er folgt / sie folgt / Sie folgen (seguir)", es: "sigue", tip: "SI-ge – Sigue derecho = Geh geradeaus weiter" },
+    // -- Anwenden: ganze Sätze mit konjugiertem Verb --
+    { id: "vb39", cat: "verbos", lvl: 3, de: "Ich gehe ins Zentrum", es: "Voy al centro", tip: "woi al SEN-tro – a + el = al" },
+    { id: "vb40", cat: "verbos", lvl: 3, de: "Du biegst rechts ab und gehst geradeaus weiter", es: "Doblas a la derecha y sigues derecho", tip: "DO-blas … SI-ges – zwei du-Formen" },
+    { id: "vb41", cat: "verbos", lvl: 3, de: "Morgen fahren wir nach Cusco", es: "Mañana vamos a Cusco", tip: "ma-NYA-na WA-mos" },
+    { id: "vb42", cat: "verbos", lvl: 3, de: "Können Sie langsamer sprechen?", es: "¿Puede hablar más despacio?", tip: "PUE-de a-BLAR mas des-PA-si-o" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
@@ -3589,6 +3707,60 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "qf10", set: "comida", es: "el postre",   de: "Nachtisch",   icon: "🍰", def: "Comida dulce que se come al final, como el pastel o el helado." },
   ];
 
+  // ===================== CONJUGACIÓN (Erklärseite Konjugieren) =====================
+  // Inhalte der Grammatik-Erklärseite (Entdecken → Conjugación). REINE DATEN –
+  // gerendert von ui.renderConjugacion. Die passenden Übungskarten liegen in der
+  // Kategorie "verbos" (Konjugieren); die Seite verlinkt per "Jetzt üben" dorthin.
+  //   persons  = die Personen mit deutscher Entsprechung (LatAm: ustedes, kein vosotros)
+  //   regular  = die drei Muster-Tabellen (-ar/-er/-ir): forms = [Person, Form]-Paare
+  //   irregular = die wichtigsten unregelmäßigen Reiseverben (forms in Personen-Reihenfolge)
+  //   example  = Mini-Dialog Wegbeschreibung, der die Endungen in Aktion zeigt
+  const CONJUGATION = {
+    intro: "Spanische Verben ändern ihre Endung je nach Person – und weil die Endung schon verrät, wer gemeint ist, lässt man yo, tú & Co. meistens weg. „Doblas a la derecha“ heißt also ganz ohne ‚du‘: Du biegst rechts ab. Genau deshalb brauchst du Konjugation z. B. bei der Wegbeschreibung: Wer dir den Weg erklärt, spricht dich in der du- oder Sie-Form an – und du erkennst das nur an der Endung.",
+    persons: [
+      { es: "yo", de: "ich" },
+      { es: "tú", de: "du" },
+      { es: "él / ella / usted", de: "er / sie / Sie (höflich)" },
+      { es: "nosotros / nosotras", de: "wir" },
+      { es: "ustedes / ellos / ellas", de: "ihr & sie (Mehrzahl)" },
+    ],
+    personsNote: "In Lateinamerika sagt man für „ihr“ immer ustedes – das Schulbuch-„vosotros“ hörst du dort nicht. Praktisch: usted(es) benutzt dieselbe Verbform wie er/sie.",
+    regular: [
+      { title: "-ar · doblar (abbiegen)", forms: [["yo", "doblo"], ["tú", "doblas"], ["él/ella/usted", "dobla"], ["nosotros", "doblamos"], ["ustedes/ellos", "doblan"]],
+        like: "Genauso gehen: caminar (laufen), cruzar (überqueren), tomar (nehmen), hablar (sprechen)." },
+      { title: "-er · comer (essen)", forms: [["yo", "como"], ["tú", "comes"], ["él/ella/usted", "come"], ["nosotros", "comemos"], ["ustedes/ellos", "comen"]],
+        like: "Genauso gehen: beber (trinken), comprender (verstehen), vender (verkaufen)." },
+      { title: "-ir · vivir (wohnen/leben)", forms: [["yo", "vivo"], ["tú", "vives"], ["él/ella/usted", "vive"], ["nosotros", "vivimos"], ["ustedes/ellos", "viven"]],
+        like: "Fast wie -er, nur „wir“ = -imos. Genauso: subir (hinauf-/einsteigen), abrir (öffnen)." },
+    ],
+    regularNote: "Merkhilfe: Stamm behalten, Endung tauschen. yo → -o, tú → -as/-es, er/sie/usted → -a/-e, wir → -amos/-emos/-imos, ihr & sie → -an/-en.",
+    irregular: [
+      { verb: "ir", verbDe: "gehen / fahren", forms: ["voy", "vas", "va", "vamos", "van"],
+        note: "Das wichtigste Reiseverb – komplett unregelmäßig. ¡Vamos! = Los geht's!" },
+      { verb: "estar", verbDe: "sein (Ort & Zustand)", forms: ["estoy", "estás", "está", "estamos", "están"],
+        note: "¿Dónde está …? – DIE Frage der Wegbeschreibung." },
+      { verb: "ser", verbDe: "sein (Eigenschaft & Herkunft)", forms: ["soy", "eres", "es", "somos", "son"],
+        note: "Soy de Alemania = Ich komme aus Deutschland." },
+      { verb: "tener", verbDe: "haben", forms: ["tengo", "tienes", "tiene", "tenemos", "tienen"],
+        note: "Tengo una reserva = Ich habe eine Reservierung." },
+      { verb: "poder", verbDe: "können", forms: ["puedo", "puedes", "puede", "podemos", "pueden"],
+        note: "Stammwechsel o→ue (außer wir). ¿Puede ayudarme? = Können Sie mir helfen?" },
+      { verb: "querer", verbDe: "wollen / möchten", forms: ["quiero", "quieres", "quiere", "queremos", "quieren"],
+        note: "Stammwechsel e→ie (außer wir). Quiero ir a la playa = Ich will an den Strand." },
+      { verb: "seguir", verbDe: "folgen / weitergehen", forms: ["sigo", "sigues", "sigue", "seguimos", "siguen"],
+        note: "Stammwechsel e→i. Sigues derecho = Du gehst geradeaus weiter." },
+    ],
+    example: {
+      title: "So klingt das bei der Wegbeschreibung",
+      lines: [
+        { es: "¿Cómo llego a la terminal?", de: "Wie komme ich zum Busbahnhof? (llegar, ich-Form als Frage)" },
+        { es: "Caminas dos cuadras, doblas a la derecha y sigues derecho.", de: "Du gehst zwei Blocks, biegst rechts ab und gehst geradeaus weiter." },
+        { es: "La terminal está al lado del mercado.", de: "Der Busbahnhof ist neben dem Markt." },
+      ],
+      note: "Drei Verben, dreimal die du-Endung: caminas, doblas, sigues. Wenn du nur auf die Endung hörst, weißt du schon, wer gemeint ist – ganz ohne Pronomen.",
+    },
+  };
+
   // ===================== EL CUERPO (interaktive Körperkarte) =====================
   // Anatomie zum Antippen: eine stilisierte Figur, auf der jeder Punkt ein Körperteil
   // markiert. x/y sind PROZENT-Koordinaten (0–100) im Bezugsrahmen der SVG-Figur
@@ -3643,7 +3815,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   ];
 
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, BODY_PARTS };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, BODY_PARTS };
 })();
 
 </script>
@@ -7162,6 +7334,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { category: "reise",   icon: "🚐", name: "Roadtrip-Ready",      description: "Meistere 80 % der Busreise-Karten." },
     { category: "ropa",    icon: "👕", name: "Style auf Ruta",      description: "Meistere 80 % der Kleidungsschmuck-Karten." },
     { category: "rumbo",   icon: "🧭", name: "Wegfinder",           description: "Meistere 80 % der Wegbeschreibung-Karten." },
+    { category: "verbos",  icon: "🔁", name: "Verbo-Virtuose",      description: "Meistere 80 % der Konjugieren-Karten." },
   ].map((b) => Object.assign({
     id: "cat_" + b.category,
     group: "category",
@@ -8014,6 +8187,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.5.0",
+      date: "2026-06-12",
+      title: "Konjugieren: neuer Bereich + Erklärseite",
+      items: [
+        "Neuer Lernbereich „🔁 Konjugieren“ mit 42 Karten: die Präsens-Formen der wichtigsten Reiseverben (ir, estar, ser, tener, poder, querer, seguir, doblar …) – genau das, was man z. B. für Wegbeschreibungen braucht.",
+        "Neu unter Entdecken: „Conjugación“ erklärt kurz und reisetauglich, wie spanische Verben gebeugt werden – Personen, die drei regelmäßigen Muster (-ar/-er/-ir), die wichtigsten unregelmäßigen Verben und ein Wegbeschreibungs-Dialog. Von dort geht es mit „Jetzt üben“ direkt in die neuen Karten.",
+        "LatAm-korrekt: Tabellen mit ustedes statt vosotros.",
+        "Neuer Ruta-Pass-Stempel „Verbo-Virtuose“ für 80 % gemeisterte Konjugieren-Karten.",
+      ],
+    },
+    {
       version: "1.4.3",
       date: "2026-06-12",
       title: "Battle: fairer, mehr Inhalt, Stichrunde",
@@ -8141,6 +8325,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
   ];
 
@@ -9486,6 +9671,85 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </g>
     </svg>`;
 
+  // ---------- CONJUGACIÓN (Erklärseite Konjugieren) ----------
+  // Kompakte Grammatik-Erklärung (Inhalte aus data.CONJUGATION): Personen,
+  // die drei regelmäßigen Muster, wichtige unregelmäßige Reiseverben und ein
+  // Wegbeschreibungs-Dialog. Unten ein CTA in die Übungskarten – er nutzt die
+  // normale open-category-Aktion, also exakt den gewohnten Lernfluss.
+  function renderConjugacion(vm) {
+    const g = vm.guide;
+
+    const personRows = g.persons
+      .map((p) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(p.es)}</span><span class="cinfo-word__de">${esc(p.de)}</span></li>`)
+      .join("");
+
+    // Eine Konjugations-Tabelle: Person links, Form rechts. Die Endung steht in
+    // den Daten, hervorgehoben wird nichts – die Tabelle bleibt ruhig lesbar.
+    const table = (forms) => `
+      <ul class="cj-table">
+        ${forms.map(([p, f]) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(p)}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
+      </ul>`;
+
+    const regularBlocks = g.regular
+      .map((r) => `
+        <div class="cj-verb">
+          <h4 class="cj-verb__h" lang="es">${esc(r.title)}</h4>
+          ${table(r.forms)}
+          <p class="cj-verb__like">${esc(r.like)}</p>
+        </div>`)
+      .join("");
+
+    // Unregelmäßige Verben als aufklappbare Karten (natives <details> wie bei
+    // den Länderkunde-Gerichten) – Kopf zeigt Verb + Übersetzung, aufgeklappt
+    // die fünf Formen und der Reise-Hinweis.
+    const personLabels = g.persons.map((p) => p.es);
+    const irregularBlocks = g.irregular
+      .map((v) => `
+        <details class="cinfo-dish">
+          <summary class="cinfo-dish__head">
+            <span class="cinfo-dish__heart">
+              <span class="cinfo-dish__name" lang="es">${esc(v.verb)}</span>
+              <span class="cinfo-dish__desc">${esc(v.verbDe)}</span>
+            </span>
+            <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="cinfo-dish__body">
+            ${table(v.forms.map((f, i) => [personLabels[i], f]))}
+            ${v.note ? `<p class="cj-verb__like">${esc(v.note)}</p>` : ""}
+          </div>
+        </details>`)
+      .join("");
+
+    const exampleLines = g.example.lines
+      .map((l) => `
+        <div class="context-panel__line">
+          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
+          <p class="context-panel__de">${esc(l.de)}</p>
+        </div>`)
+      .join("");
+
+    const sect = (icon, title, body) => `
+      <div class="cinfo-sect">
+        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
+        ${body}
+      </div>`;
+
+    return `
+      <section class="screen">
+        ${hmTopbar("🔁 Conjugación", "home")}
+        <p class="hm-intro">${esc(g.intro)}</p>
+
+        ${sect("🧑‍🤝‍🧑", "Die Personen", `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
+        ${sect("🧱", "Regelmäßig: drei Muster", `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
+        ${sect("⭐", "Die wichtigsten unregelmäßigen Verben", `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
+        ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
+
+        <button class="cta cj-cta" data-action="open-category" data-id="verbos">
+          Jetzt üben: Konjugieren <span class="cta__count">${vm.cardCount} Karten</span>
+        </button>
+      </section>`;
+  }
+
   function renderCuerpo(vm) {
     const dots = vm.parts
       .map((p) => {
@@ -9546,7 +9810,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion };
 })();
 
 </script>
@@ -9578,7 +9842,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     mode: settings.mode || "flip", // 'flip' | 'type'
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
@@ -10317,6 +10581,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     store.saveGameStats(gamestats);
   }
 
+  // ----- Conjugación: Erklärseite Konjugieren -----
+  // Statische Grammatik-Erklärung (Inhalte: data.CONJUGATION). Der "Jetzt üben"-
+  // Button auf der Seite nutzt die normale open-category-Aktion (Kategorie
+  // "verbos") und startet damit den gewohnten Lernfluss.
+  function conjugacionVM() {
+    return {
+      guide: data.CONJUGATION,
+      cardCount: data.CARDS.filter((c) => c.cat === "verbos").length,
+    };
+  }
+
+  function openConjugacion() {
+    dismissBadgeToast();
+    state.screen = "conjugacion";
+    render();
+  }
+
   // ----- El Cuerpo: interaktive Körperkarte -----
   const bodyPartById = (id) => data.BODY_PARTS.find((p) => p.id === id) || null;
 
@@ -10390,6 +10671,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
+    else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -11170,6 +11452,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
+    else if (action === "open-conjugacion") openConjugacion();
     else if (action === "cuerpo-select") selectBodyPart(el.dataset.id);
     else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "home") goHome();
