@@ -13,6 +13,7 @@
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
+  const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
   // Sonst startet ein Neueinsteiger mit "561 fällig" in eine erschlagende
@@ -35,7 +36,7 @@
     scopeId: "all",          // 'all' | Kategorie-Id
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
-    revealed: false,         // Sprechen-Modus: Rückseite sichtbar?
+    revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
     contextOpen: false,      // 🧭 Reise-Kontext-Panel aufgeklappt? (Single Source of Truth)
     typeResult: null,        // Schreiben-Modus: { correct, answers, input } | null
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
@@ -43,9 +44,12 @@
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
+    updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
     // ----- Hostel Mode (transient, keine Persistenz) -----
-    battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
+    battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
+    battleNames: { A: "", B: "" }, // optionale Spielernamen (sonst „Spieler A/B")
+    battleSeen: [],          // zuletzt verwendete Battle-Ids – vermeidet sofortige Wiederholungen
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
@@ -534,21 +538,41 @@
     { value: 20, label: "Lang" },
   ];
 
+  // Gerade Rundenzahl (A,B,A,B…); bei nur 1 Aufgabe bleibt 1 Runde.
+  const evenRounds = (n) => (n - (n % 2)) || n;
+
   function battleSetupVM() {
     const scenes = data.BATTLE_SCENES
-      .map((s) => ({ id: s.id, label: s.label, icon: s.icon,
-        count: data.BATTLES.filter((b) => b.scene === s.id).length }))
+      .map((s) => {
+        const count = data.BATTLES.filter((b) => b.scene === s.id).length;
+        return { id: s.id, label: s.label, icon: s.icon, count,
+          rounds: evenRounds(Math.min(state.battleLength, count)) };
+      })
       .filter((s) => s.count > 0);
     // Object.assign statt Objekt-Spread: die App verspricht ES2017 (Spread auf
     // Objekten ist ES2018 und wirft auf alten WebViews einen SyntaxError).
     const lengths = BATTLE_LENGTHS.map((l) => Object.assign({}, l, { selected: l.value === state.battleLength }));
-    return { scenes, totalCount: data.BATTLES.length, lengths };
+    const totalCount = data.BATTLES.length;
+    return {
+      scenes,
+      totalCount,
+      totalRounds: evenRounds(Math.min(state.battleLength, totalCount)),
+      lengths,
+      names: { A: state.battleNames.A, B: state.battleNames.B },
+    };
+  }
+
+  // Anzeigename eines Spielers ("A"/"B") – eingegeben oder Fallback "Spieler A/B".
+  function playerName(b, side) {
+    const n = b.names && b.names[side];
+    return n && n.trim() ? n.trim() : "Spieler " + side;
   }
 
   function battleVM() {
     const b = state.battle;
     const prompt = battleById(b.queue[b.round - 1]);
     const scene = data.BATTLE_SCENES.find((s) => s.id === b.sceneId);
+    const lvl = prompt ? levelById(prompt.level) : null;
     // Weitere gültige Antworten (ohne die schon angezeigte Musterlösung) als Hilfe
     // für den bewertenden Mitspieler – damit faire Phrasing-Varianten zählen.
     const alsoOk = prompt
@@ -560,11 +584,18 @@
       round: b.round,
       totalRounds: b.totalRounds,
       current: b.current,
+      currentName: playerName(b, b.current),
+      raterName: playerName(b, b.current === "A" ? "B" : "A"),
+      // Kurze Chip-Beschriftung: eigener Name, sonst „A"/„B" (Score-Zeile bleibt kompakt).
+      chipA: (b.names && b.names.A && b.names.A.trim()) ? b.names.A.trim() : "A",
+      chipB: (b.names && b.names.B && b.names.B.trim()) ? b.names.B.trim() : "B",
       scores: b.scores,
       revealed: b.revealed,
+      suddenDeath: !!b.suddenDeath,
       promptDe: prompt ? prompt.promptDe : "",
       answerEs: prompt ? prompt.answerEs : "",
       alsoOk,
+      levelShort: lvl ? lvl.short : "",
       hint: prompt ? prompt.hint : "",
     };
   }
@@ -579,6 +610,10 @@
       scores: b.scores,
       rounds: b.totalRounds,
       winner,
+      nameA: playerName(b, "A"),
+      nameB: playerName(b, "B"),
+      winnerName: winner === "tie" ? "" : playerName(b, winner),
+      suddenDeath: !!b.suddenDeath, // lief schon eine Stichrunde? (Label „noch eine")
       challenge: b.challenge, // { id, textDe, phraseEs } | null
       challengeDone: !!(b.challenge && gamestats.challengesDone && gamestats.challengesDone[b.challenge.id]),
     };
@@ -927,6 +962,11 @@
       root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
     }
 
+    // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
+    if (state.updateNotice && state.updateNotice.length) {
+      root.insertAdjacentHTML("afterbegin", ui.updateNotice(state.updateNotice));
+    }
+
     manageFocus();
     maybeAutoSpeak();
   }
@@ -959,10 +999,40 @@
     if (card) speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
   }
 
+  // ----- „Was ist neu?"-Hinweis nach einem Update -----
+  // Beim Start die laufende Version mit der zuletzt gesehenen vergleichen.
+  // Weichen sie ab -> Hinweis vormerken (render malt ihn). Die ERSTE je
+  // gesehene Version (frische Installation oder Bestandsnutzer von vor diesem
+  // Feature) wird nur still nachgetragen, damit niemand grundlos einen
+  // Update-Hinweis bekommt.
+  function checkForUpdate() {
+    if (!changelog) return;
+    const current = changelog.VERSION;
+    let seen = null;
+    try { seen = store.loadSeenVersion(); } catch (e) { seen = null; }
+    if (seen && seen !== current) {
+      const news = changelog.since(seen);
+      if (news.length) state.updateNotice = news;
+    }
+    if (seen !== current) store.saveSeenVersion(current);
+  }
+
+  function dismissUpdateNotice() {
+    state.updateNotice = null;
+    const el = root.querySelector(".upd-scrim");
+    if (el) el.remove();
+  }
+
   // Nach jedem Voll-Re-Render (innerHTML wird ersetzt) den Fokus auf ein sinnvolles
   // Ziel setzen – sonst fällt er auf <body> und Tastatur-/Screenreader-Nutzer verlieren
   // ihre Position. preventScroll vermeidet Sprünge.
   function manageFocus() {
+    // Update-Hinweis liegt als Modal über allem -> Fokus hinein, nicht auf den
+    // verdeckten Screen dahinter (Tastatur/Screenreader).
+    if (state.updateNotice && state.updateNotice.length) {
+      const ok = root.querySelector(".upd .upd__ok");
+      if (ok) { try { ok.focus({ preventScroll: true }); } catch (e) { ok.focus(); } return; }
+    }
     if (state.screen === "study") {
       // Schreiben & Hören: vor dem Prüfen gehört der Fokus ins Eingabefeld.
       if ((state.mode === "type" || state.mode === "listen") && !state.typeResult) {
@@ -1263,29 +1333,77 @@
     render();
   }
 
-  // Battle starten: Aufgaben der Szene (oder alle) mischen, begrenzt auf die gewählte Länge.
+  // Spielernamen aus den Setup-Feldern lesen (vor dem Start) und merken.
+  function readBattleNames() {
+    const v = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+    const a = v("pname-a"), bb = v("pname-b");
+    // Nur überschreiben, wenn die Felder gerendert waren (sonst State behalten).
+    state.battleNames = { A: a || state.battleNames.A, B: bb || state.battleNames.B };
+    return { A: state.battleNames.A, B: state.battleNames.B };
+  }
+
+  const battleLevel = (id) => { const b = battleById(id); return b && b.level ? b.level : 1; };
+
+  // Aufgaben für ein Battle ziehen: bevorzugt noch nicht kürzlich gesehene
+  // (kein sofortiges Wiederholen über mehrere Battles), Rest zufällig auffüllen.
+  function pickBattleIds(poolIds, count, excludeIds) {
+    const ex = {};
+    (excludeIds || []).forEach((id) => { ex[id] = true; });
+    let chosen = shuffle(poolIds.filter((id) => !ex[id])).slice(0, count);
+    if (chosen.length < count) {
+      const used = {};
+      chosen.forEach((id) => { used[id] = true; });
+      const rest = shuffle(poolIds.filter((id) => !used[id]));
+      chosen = chosen.concat(rest.slice(0, count - chosen.length));
+    }
+    return chosen;
+  }
+
+  // Faire Verteilung: nach Schwierigkeit sortieren, dann je Runden-Paar (A,B)
+  // die Reihenfolge zufällig drehen. So bekommen beide Spieler pro Paar etwa
+  // gleich schwere Aufgaben und die Schwierigkeit steigert sich über das Battle.
+  function balanceByLevel(ids) {
+    const sorted = ids.slice().sort((x, y) => battleLevel(x) - battleLevel(y));
+    for (let i = 0; i + 1 < sorted.length; i += 2) {
+      if (Math.random() < 0.5) { const t = sorted[i]; sorted[i] = sorted[i + 1]; sorted[i + 1] = t; }
+    }
+    return sorted;
+  }
+
+  // Battle starten: Aufgaben der Szene (oder alle) ziehen, begrenzt auf die gewählte Länge.
   function startBattle(sceneId) {
     dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
-    const queue = shuffle(pool).map((b) => b.id);
-    if (!queue.length) return;
+    if (!pool.length) return;
+    const poolIds = pool.map((b) => b.id);
     // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
-    const cap = Math.min(state.battleLength, queue.length);
-    const rounds = cap - (cap % 2) || cap; // bei nur 1 Aufgabe bleibt 1 Runde
+    const rounds = evenRounds(Math.min(state.battleLength, poolIds.length));
+    const queue = balanceByLevel(pickBattleIds(poolIds, rounds, state.battleSeen));
+    rememberBattleSeen(queue, poolIds.length);
     state.battle = {
       sceneId,
-      queue,
+      poolIds,               // ganzer Pool – für Stichrunden-Nachschlag
+      queue,                 // genau die geplanten Runden, fair sortiert
       round: 1,
       totalRounds: rounds,
       current: "A",
+      names: readBattleNames(),
       scores: { A: 0, B: 0 },
       behindA: false,         // war A irgendwann in Rückstand? (für "Comeback Kid")
       behindB: false,
       revealed: false,
+      recorded: false,        // Ergebnis schon in die Zähler gebucht? (genau einmal)
+      suddenDeath: false,     // läuft/lief eine Stichrunde?
       challenge: null,
     };
     state.screen = "battle";
     render();
+  }
+
+  // Verwendete Ids merken (für den Wiederholungsschutz), Liste begrenzen.
+  function rememberBattleSeen(ids, poolSize) {
+    const cap = Math.max(poolSize - 2, ids.length); // immer etwas „frisches" übrig lassen
+    state.battleSeen = state.battleSeen.concat(ids).slice(-cap);
   }
 
   function battleReveal() {
@@ -1304,17 +1422,43 @@
     if (b.scores.A < b.scores.B) b.behindA = true;
     if (b.scores.B < b.scores.A) b.behindB = true;
     if (b.round >= b.totalRounds) {
-      // Passende Real-Life-Challenge als Bonus (zufällig).
-      const list = data.CHALLENGES || [];
-      b.challenge = list.length ? list[Math.floor(Math.random() * list.length)] : null;
+      // Real-Life-Challenge als Bonus – einmal ziehen, bleibt auch über Stichrunden.
+      if (!b.challenge) {
+        const list = data.CHALLENGES || [];
+        b.challenge = list.length ? list[Math.floor(Math.random() * list.length)] : null;
+      }
+      // Ergebnis genau EINMAL buchen (am Ende der regulären Runden). Eine
+      // Stichrunde kürt nur am Bildschirm einen Sieger und zählt nicht doppelt;
+      // ein Unentschieden bleibt fürs Badge-System ein Unentschieden.
+      if (!b.recorded) {
+        recordBattleResult(b);
+        b.recorded = true;
+        syncBadges(Date.now(), true); // Battle-Badges freischalten + einblenden
+      }
       state.screen = "battleDone";
-      recordBattleResult(b);
-      syncBadges(Date.now(), true); // Battle-Badges freischalten + einblenden
     } else {
       b.round += 1;
       b.current = b.current === "A" ? "B" : "A";
       b.revealed = false;
     }
+    render();
+  }
+
+  // Stichrunde bei Gleichstand: zwei zusätzliche Runden (A, B). Zieht zwei
+  // möglichst neue Aufgaben nach, die noch nicht im Battle vorkamen.
+  function battleSuddenDeath() {
+    const b = state.battle;
+    if (!b || b.scores.A !== b.scores.B) return;
+    const extra = pickBattleIds(b.poolIds, 2, b.queue.concat(state.battleSeen));
+    if (!extra.length) return;
+    b.queue = b.queue.concat(extra);
+    rememberBattleSeen(extra, b.poolIds.length);
+    b.totalRounds += extra.length;
+    b.round += 1;
+    b.current = "A";
+    b.revealed = false;
+    b.suddenDeath = true;
+    state.screen = "battle";
     render();
   }
 
@@ -1779,6 +1923,9 @@
     else if (action === "export-data") exportData();
     else if (action === "import-data") startImport();
     else if (action === "dismiss-notice") el.remove();
+    else if (action === "dismiss-update") dismissUpdateNotice();
+    else if (action === "reload-app") location.reload();
+    else if (action === "upd-stop") { /* Klick auf die Hinweis-Karte: nicht schließen */ }
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
@@ -1790,6 +1937,7 @@
     else if (action === "start-battle") startBattle(el.dataset.scene);
     else if (action === "battle-reveal") battleReveal();
     else if (action === "battle-score") battleScore(Number(el.dataset.points));
+    else if (action === "battle-sudden-death") battleSuddenDeath();
     else if (action === "battle-again") battleAgain();
     else if (action === "challenge-done") markChallengeDone(el.dataset.id);
     else if (action === "open-roleplay-setup") openRoleplaySetup();
@@ -1857,6 +2005,14 @@
       handleImportFile(file);
       return;
     }
+    // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie
+    // nicht verschluckt. 'change' feuert beim Verlassen des Feldes (auch wenn
+    // direkt ein Längen-/Szenen-Button geklickt wird).
+    if (e.target && (e.target.id === "pname-a" || e.target.id === "pname-b")) {
+      const side = e.target.id === "pname-a" ? "A" : "B";
+      state.battleNames = Object.assign({}, state.battleNames, { [side]: e.target.value.trim() });
+      return;
+    }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);
@@ -1893,7 +2049,7 @@
   }
 
   // ----- Wischgesten (Lernkarte am Smartphone) -----
-  // Sprechen-Modus: hochwischen/antippen = umdrehen. Nach dem Umdrehen
+  // Karteikarte-Modus: hochwischen/antippen = umdrehen. Nach dem Umdrehen
   // (oder im Schreiben-Modus mit Ergebnis): links = Nochmal, rechts = Einfach,
   // hoch = Gut. So lässt sich die App komplett mit dem Daumen bedienen.
   let touch = null; // { x, y } Startpunkt
@@ -1973,6 +2129,7 @@
   if (window.SC && window.SC.install) {
     window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
   }
+  checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass
