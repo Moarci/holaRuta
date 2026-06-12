@@ -1,6 +1,6 @@
 {
   "name": "holaruta",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "private": true,
   "description": "HolaRuta – Dein Reise-Spanisch für echte Situationen. Vanilla-JS-Lernkarten-PWA (keine Runtime-Dependencies).",
   "scripts": {

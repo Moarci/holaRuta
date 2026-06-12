@@ -20,6 +20,13 @@
     return !!(window.SC && window.SC.share);
   }
 
+  // Sprachausgabe verfügbar? (TTS-Modul geladen + vom Browser unterstützt).
+  // Steuert, ob der Hör-Modus und 🔊-Buttons überhaupt angeboten werden.
+  function speechReady() {
+    const sp = window.SC && window.SC.speech;
+    return !!(sp && sp.isSupported());
+  }
+
   // Format-Umschalter (1:1 / 9:16) + Teilen-Button als ein Block.
   // fmt = aktuell gewähltes Format ('square'|'story'), action = Teilen-Aktion.
   function shareBlock(fmt, action, label) {
@@ -54,12 +61,17 @@
   // Profil (Fortschritt, Pass, Eigenes). Unten eine feste Tab-Leiste; der aktive
   // Reiter kommt aus vm.tab und wird in den Einstellungen gemerkt.
 
-  // Entdecken-Reiter: die vier großen Einstiege als volle Gradient-Buttons.
+  // Entdecken-Reiter: die großen Einstiege als volle Gradient-Buttons.
+  // need: optionale Voraussetzung ("speech"|"frases"|"countries") – fehlt das
+  // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   const FEATURES = [
-    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
-    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
-    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
+    { action: "open-spickzettel", icon: "🆘", title: "Spickzettel",   sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
+    { action: "open-hostel",      icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -131,20 +143,34 @@
            <span class="today__resumecount">${vm.lastCat.due} fällig</span>
          </button>`
       : "";
+    // Ruta del día: ein Tap für eine kurze, kategorienübergreifende Tagesrunde –
+    // bevorzugt fällige Karten, sonst neue. Stärkt die Lern-Serie.
+    const rutaDia = `
+      <button class="today__ruta" data-action="ruta-del-dia">
+        <span class="today__ruta-main">🗺️ Ruta del día</span>
+        <span class="today__ruta-sub">Kurze Tagesrunde quer durch alle Themen</span>
+      </button>`;
 
     // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
     // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
     const lvlSummary = vm.allLevels
       ? "Alle Stufen"
       : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
-    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🃏 Karteikarte"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const modeLabel = mode === "type" ? "⌨️ Schreiben" : mode === "listen" ? "👂 Hören" : "🃏 Karteikarte";
+    const setupSummary = `${modeLabel} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
+    // sonst gäbe es nichts zu hören (graceful degradation).
+    const listenSeg = speechReady()
+      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">👂 Hören</button>`
+      : "";
     const setupBody = `
       <div class="setup__body" id="setup-body">
         <div class="switchgroup">
           <span class="switchcap">Modus</span>
-          <div class="segmented" role="tablist" aria-label="Lernmodus">
+          <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="Lernmodus">
             <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🃏 Karteikarte</button>
             <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
+            ${listenSeg}
           </div>
         </div>
         <div class="switchgroup">
@@ -170,6 +196,7 @@
               : `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`}
         </button>
         ${resume}
+        ${rutaDia}
       </div>
 
       <div class="setup">
@@ -188,9 +215,10 @@
   }
 
   function entdeckenBody(vm) {
-    // Offline-Guard: Länderkunde nur anbieten, wenn das Modul geladen wurde
-    // (countries.js kann bei unvollständigem Offline-Cache fehlen).
-    const feats = FEATURES.filter((x) => x.action !== "open-info" || vm.hasCountries).map((x) => `
+    // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
+    // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases };
+    const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
@@ -272,6 +300,7 @@
     const accent = vm.accent; // [from,to]
 
     const body =
+      vm.mode === "listen" ? listenBody(vm) :
       vm.mode === "type" ? typeBody(vm) : flipBody(vm);
 
     return `
@@ -310,8 +339,7 @@
   // 🔊-Button für die Sprachausgabe (nur wenn der Browser es kann).
   // on = farbige Variante (für die bunte Rückseite).
   function speakBtn(on) {
-    const sp = window.SC && window.SC.speech;
-    if (!sp || !sp.isSupported()) return "";
+    if (!speechReady()) return "";
     return cornerBtn({ base: "cardbtn--speak", on, icon: "🔊", label: "Antwort anhören", action: "speak" });
   }
 
@@ -441,6 +469,56 @@
         <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
         ${colorSwatch(vm.swatch)}
         ${sq ? "" : tip}
+        ${verdict}
+      </div>
+      <div class="controls" id="controls">
+        ${contextPanel(vm.context, vm.contextOpen)}
+        ${rateButtons()}
+      </div>`;
+  }
+
+  // Hör-Modus (Escuchar / Dictado): die App spricht die spanische Antwort vor (der
+  // Controller stößt das beim Kartenwechsel automatisch an, siehe maybeAutoSpeak).
+  // Der spanische Text bleibt verborgen, bis getippt wurde – getestet wird IMMER
+  // gegen Spanisch (richtungsunabhängig). Danach Aufdecken + Bewerten wie im Schreiben-
+  // Modus. Reuse: 🔊 (data-action="speak"), typer-Formular, rateButtons.
+  function listenBody(vm) {
+    const res = vm.typeResult; // null | {correct, answers, input}
+    const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";
+
+    if (!res) {
+      const replay = speechReady()
+        ? `<button class="listen-replay ghostbtn" type="button" data-action="speak">🔊 Nochmal anhören</button>`
+        : "";
+      return `
+        <div class="card-static card-listen">
+          <span class="face__cat">${esc(vm.catLabel)}</span>
+          ${levelBadge(vm, false)}
+          <span class="listen-ear" aria-hidden="true">👂</span>
+          ${replay}
+          <span class="face__hint">Hör zu und tippe auf Spanisch, was du hörst</span>
+        </div>
+        <form class="typer" data-action="submit-typed" id="typer">
+          <input class="typer__input" id="answer" type="text" autocomplete="off"
+                 autocapitalize="off" autocorrect="off" spellcheck="false"
+                 placeholder="Tippe das Gehörte …" />
+          <button class="typer__btn" type="submit">Prüfen</button>
+        </form>`;
+    }
+
+    const verdict = res.correct
+      ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
+      : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(res.input || "—")}“</div>`;
+    return `
+      <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
+        <span class="face__cat">${esc(vm.catLabel)}</span>
+        ${levelBadge(vm, false)}
+        ${contextIconBtn(vm.context, false, vm.contextOpen)}
+        ${speakBtn(false)}
+        <div class="face__word" lang="es">${esc(vm.es)}</div>
+        ${colorSwatch(vm.swatch)}
+        <div class="listen-de">${esc(vm.de)}</div>
+        ${tip}
         ${verdict}
       </div>
       <div class="controls" id="controls">
@@ -678,6 +756,36 @@
     return `<span class="srate ${cls}">${rate}%</span>`;
   }
 
+  // Streckenkarte: der Lernfortschritt als Bus-Strecke (on-brand „Ruta"). Drei
+  // Haltestellen Neu → Am Lernen → Gemeistert; der Bus (🚌) fährt mit der
+  // Meister-Quote voran. Reine Anzeige aus der vorhandenen stats.overview.
+  function routeMap(ov) {
+    const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
+    const stops = [
+      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new" },
+      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn" },
+      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master" },
+    ];
+    const stopsHtml = stops.map((s) => `
+      <div class="route__stop ${s.cls}">
+        <span class="route__dot" aria-hidden="true">${s.icon}</span>
+        <span class="route__n">${s.n}</span>
+        <span class="route__lbl">${esc(s.label)}</span>
+      </div>`).join("");
+    return `
+      <div class="route" role="img" aria-label="Lern-Strecke: ${ov.neu} neu, ${ov.learning} am Lernen, ${ov.mastered} gemeistert (${pct} %)">
+        <div class="route__head">
+          <span class="route__cap">🚌 Deine Ruta</span>
+          <span class="route__pct">${pct} % gemeistert</span>
+        </div>
+        <div class="route__track">
+          <div class="route__fill" style="width:${pct}%"></div>
+          <span class="route__bus" style="left:${pct}%" aria-hidden="true">🚌</span>
+          <div class="route__stops">${stopsHtml}</div>
+        </div>
+      </div>`;
+  }
+
   function renderStats(vm) {
     const ov = vm.overview;
 
@@ -726,6 +834,7 @@
           <div class="topbar__counter">${ov.seenCards}/${ov.total}</div>
         </div>
         ${kpis}
+        ${routeMap(ov)}
         ${distribution}
         ${firstTry}
         ${ov.seenCards > 0 ? shareBlock(vm.shareFormat, "share-stats", "Fortschritt teilen") : ""}
@@ -903,6 +1012,91 @@
         </div>
         <button class="ed-del" type="button" data-action="delete-card" data-id="${esc(c.id)}" aria-label="Löschen" title="Löschen">🗑️</button>
       </div>`;
+  }
+
+  // ---------- SPICKZETTEL (Survival-Schnellzugriff) ----------
+  // Reine Nachschlage-Ansicht (kein SRS): die kritischsten Sätze groß, je mit 🔊.
+  function renderSpickzettel(vm) {
+    const groups = vm.groups.map((g) => {
+      const rows = g.cards.map((c) => `
+        <div class="sz-row">
+          <div class="sz-row__main">
+            <div class="sz-row__de">${esc(c.de)}</div>
+            <div class="sz-row__es" lang="es">${esc(c.es)}</div>
+            ${c.tip ? `<div class="sz-row__tip">🗣️ ${esc(c.tip)}</div>` : ""}
+          </div>
+          ${vm.speakable
+            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="Anhören" title="Anhören">🔊</button>`
+            : ""}
+        </div>`).join("");
+      return `
+        <div class="sz-group" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+          <h3 class="sz-group__h"><span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}</h3>
+          <div class="sz-list">${rows}</div>
+        </div>`;
+    }).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🆘 Spickzettel", "home")}
+        <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – groß, sofort da und auf Tipp vorgelesen. Kein Lernen, nur schnell nachschlagen.</p>
+        ${groups}
+      </section>`;
+  }
+
+  // ---------- PRECIOS AL OÍDO (Preis-Hörtrainer) ----------
+  // Die App sagt einen Betrag auf Spanisch (Auto-Speak), man tippt die Ziffern.
+  // Reuse der Hör-Karten-Optik (card-listen) + matcher (field "de").
+  function renderPrecios(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
+    const replay = vm.speakable
+      ? `<button class="listen-replay ghostbtn" type="button" data-action="precios-speak">🔊 Nochmal anhören</button>`
+      : "";
+    const body = !vm.result
+      ? `
+        <div class="card-static card-listen">
+          <span class="listen-ear" aria-hidden="true">💵</span>
+          ${replay}
+          <span class="face__hint">Welchen Betrag hörst du? Tippe die Zahl.</span>
+        </div>
+        <form class="typer" data-action="submit-precios" id="precios-form">
+          <input class="typer__input" id="precios-answer" type="text" inputmode="numeric"
+                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="z. B. 4500" />
+          <button class="typer__btn" type="submit">Prüfen</button>
+        </form>`
+      : `
+        <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
+          <div class="face__word" lang="es">${esc(vm.answerEs)}</div>
+          <div class="listen-de">= ${esc(vm.answerDe)}</div>
+          ${vm.result.correct
+            ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
+            : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(vm.result.input || "—")}“</div>`}
+        </div>
+        <button class="cta" data-action="precios-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`;
+    return `
+      <section class="screen study">
+        ${hmTopbar("💵 Precios al oído", "home")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+        ${body}
+      </section>`;
+  }
+
+  function renderPreciosDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Jeden Preis erkannt. 🏆"
+      : rate >= 60 ? "¡Bien! Dein Ohr für Zahlen wird besser. 👏"
+      : "Sigue practicando – Zahlen hören ist Übungssache. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "💵"}</div>
+          <h2>Precios al oído</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig gehört</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="precios-again">Nochmal hören</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
   }
 
   // ---------- LÄNDERKUNDE (INFOSEITE) ----------
@@ -1366,6 +1560,74 @@
       </section>`;
   }
 
+  // ---------- FRASES FLEXIBLES (Satzbaukasten) ----------
+  // Satzrahmen mit Lücke + Multiple Choice. Reuse der Definiciones-Optik
+  // (.quiz-def / .quiz-opt / .quiz-feedback).
+  function renderFrases(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
+    // "___" im Rahmen durch eine sichtbare Lücke ersetzen (frameEs ist intern,
+    // kein User-Input – esc() lässt "___" unverändert).
+    const frameHtml = esc(vm.frameEs).replace("___", '<span class="frases-gap"></span>');
+    const options = vm.options
+      .map((o, i) => {
+        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
+        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
+        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
+          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
+        return `
+          <button class="${cls}" type="button" data-action="frases-answer" data-idx="${i}"${dis}>
+            <span class="quiz-opt__text">
+              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+              <span class="quiz-opt__de">${esc(o.de)}</span>
+            </span>
+            ${mark}
+          </button>`;
+      })
+      .join("");
+
+    const feedback = vm.answered
+      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
+           ${vm.isCorrect
+             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
+             : `<span class="quiz-feedback__head">No exactamente.</span>
+                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b> · ${esc(vm.solutionDe)}</span>`}
+         </div>
+         <button class="cta" data-action="frases-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+      : "";
+
+    return `
+      <section class="screen study">
+        ${hmTopbar("🧱 Frases flexibles", "home")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">Satz ${vm.position + 1}/${vm.total}</div>
+        <div class="quiz-def">
+          <span class="quiz-def__cap">Bilde den Satz</span>
+          <p class="frases-target">${esc(vm.targetDe)}</p>
+          <p class="quiz-def__text frases-frame" lang="es">${frameHtml}</p>
+        </div>
+        <div class="quiz-opts">${options}</div>
+        ${feedback}
+      </section>`;
+  }
+
+  function renderFrasesDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Alle Sätze gebaut. 🏆"
+      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
+      : "Sigue practicando – Satzbauen kommt mit der Übung. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "🧱"}</div>
+          <h2>Frases flexibles geschafft</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="frases-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
+  }
+
   // ---------- EL CUERPO (interaktive Körperkarte) ----------
   // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
   // viewBox 0 0 200 440 – exakt der, auf den sich die Prozent-Koordinaten der Hotspots
@@ -1464,5 +1726,6 @@
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderSpickzettel,
+                   renderPrecios, renderPreciosDone, renderFrases, renderFrasesDone };
 })();
