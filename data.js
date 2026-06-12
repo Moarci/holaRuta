@@ -68,7 +68,7 @@
     { id: "b12", cat: "basics", lvl: 2, de: "Wie heißt du?", es: "¿Cómo te llamas?", tip: "KO-mo te YA-mas" },
     { id: "b13", cat: "basics", lvl: 2, de: "Ich heiße ...", es: "Me llamo ...", tip: "me YA-mo", alt: ["me llamo"] },
     { id: "b14", cat: "basics", lvl: 2, de: "Kannst du mir helfen?", es: "¿Me puedes ayudar?", tip: "me PUE-des a-yu-DAR" },
-    { id: "b15", cat: "basics", lvl: 2, de: "Langsamer, bitte", es: "Más despacio, por favor", tip: "mas des-PA-si-o" },
+    { id: "b15", cat: "basics", lvl: 2, de: "Langsamer, bitte / Bitte langsamer fahren", es: "Más despacio, por favor", tip: "mas des-PA-si-o" },
     { id: "b16", cat: "basics", lvl: 1, de: "die Toilette", es: "el baño", tip: "el BA-nyo" },
     { id: "b17", cat: "basics", lvl: 1, de: "Hilfe!", es: "Ayuda / Socorro", tip: "a-YU-da" },
     { id: "b18", cat: "basics", lvl: 2, de: "Ich brauche einen Arzt", es: "Necesito un médico", tip: "ne-se-SI-to un ME-di-ko" },
@@ -234,7 +234,6 @@
     { id: "e31", cat: "essen", lvl: 2, de: "Ist hier noch frei?", es: "¿Está libre?", tip: "es-TA LI-bre" },
     { id: "e32", cat: "essen", lvl: 3, de: "Können Sie es einpacken? (Reste)", es: "¿Me lo puede empacar para llevar?", tip: "em-pa-KAR" },
     { id: "e33", cat: "essen", lvl: 2, de: "Noch ein Bier, bitte", es: "Otra cerveza, por favor", tip: "O-tra ser-WE-sa" },
-    { id: "e34", cat: "essen", lvl: 2, de: "Was ist das? (Gericht)", es: "¿Qué es esto?", tip: "ke es ES-to" },
     { id: "e35", cat: "essen", lvl: 2, de: "Das Essen war ausgezeichnet", es: "La comida estuvo excelente", tip: "es-TU-wo ek-se-LEN-te" },
     { id: "e36", cat: "essen", lvl: 2, de: "Alles war köstlich", es: "Todo estuvo delicioso", tip: "de-li-si-O-so" },
     { id: "e37", cat: "essen", lvl: 2, de: "Es hat mir sehr geschmeckt", es: "Me gustó mucho / Estuvo muy rico", tip: "me gus-TO MU-cho" },
@@ -308,7 +307,6 @@
     { id: "h19", cat: "hotel", lvl: 2, de: "Ich brauche noch ein Handtuch", es: "Necesito otra toalla", tip: "O-tra to-A-ya" },
     { id: "h20", cat: "hotel", lvl: 3, de: "Können Sie das Zimmer sauber machen?", es: "¿Pueden limpiar la habitación?", tip: "lim-pi-AR" },
     { id: "h21", cat: "hotel", lvl: 3, de: "Kann ich später auschecken?", es: "¿Puedo hacer el check-out más tarde?", tip: "mas TAR-de" },
-    { id: "h22", cat: "hotel", lvl: 3, de: "Kann ich mein Gepäck hier lassen?", es: "¿Puedo dejar mi equipaje aquí?", tip: "e-ki-PA-che a-KI" },
     { id: "h23", cat: "hotel", lvl: 2, de: "Die Toilette ist verstopft", es: "El baño está tapado", tip: "ta-PA-do" },
     { id: "h24", cat: "hotel", lvl: 2, de: "Mir ist zu kalt / zu warm", es: "Tengo mucho frío / calor", tip: "FRI-o / ka-LOR" },
 
@@ -338,9 +336,7 @@
     { id: "v11", cat: "verkehr", lvl: 2, de: "Wann fährt es ab?", es: "¿A qué hora sale?", tip: "a ke O-ra SA-le" },
     { id: "v12", cat: "verkehr", lvl: 2, de: "Wie viel kostet die Fahrt?", es: "¿Cuánto cuesta el viaje?", tip: "WI-a-che" },
     { id: "v13", cat: "verkehr", lvl: 2, de: "Ist es weit?", es: "¿Está lejos?", tip: "es-TA LE-chos" },
-    { id: "v14", cat: "verkehr", lvl: 1, de: "in der Nähe / nah", es: "cerca", tip: "SER-ka" },
     { id: "v15", cat: "verkehr", lvl: 3, de: "Wie weit ist es?", es: "¿Qué tan lejos está?", tip: "ke tan LE-chos" },
-    { id: "v16", cat: "verkehr", lvl: 3, de: "Können Sie es auf der Karte zeigen?", es: "¿Me lo muestra en el mapa?", tip: "en el MA-pa" },
     { id: "v17", cat: "verkehr", lvl: 1, de: "die Tankstelle", es: "la gasolinera", tip: "ga-so-li-NE-ra" },
     { id: "v18", cat: "verkehr", lvl: 1, de: "das Benzin", es: "la gasolina / la bencina", tip: "'bencina' v.a. in Chile" },
     { id: "v19", cat: "verkehr", lvl: 2, de: "der Mietwagen", es: "el auto de alquiler", tip: "AU-to de al-ki-LER" },
@@ -351,7 +347,6 @@
     { id: "v24", cat: "verkehr", lvl: 3, de: "Schalten Sie das Taxameter ein?", es: "¿Puede poner el taxímetro?", tip: "tak-SI-me-tro" },
     { id: "v25", cat: "verkehr", lvl: 3, de: "Können Sie hier kurz warten?", es: "¿Puede esperar aquí?", tip: "es-pe-RAR a-KI" },
     { id: "v26", cat: "verkehr", lvl: 2, de: "Ich steige hier aus", es: "Me bajo aquí", tip: "me BA-cho a-KI" },
-    { id: "v27", cat: "verkehr", lvl: 2, de: "Bitte langsamer fahren", es: "Más despacio, por favor", tip: "mas des-PA-si-o" },
 
     // ===================== EINKAUFEN & SUPERMARKT =====================
     { id: "c01", cat: "compras", lvl: 2, de: "Wie viel kostet das?", es: "¿Cuánto cuesta? / ¿Cuánto vale?", tip: "KUAN-to KUES-ta" },
@@ -365,7 +360,6 @@
     { id: "c09", cat: "compras", lvl: 2, de: "Gibt es einen Rabatt?", es: "¿Hay descuento?", tip: "des-KUEN-to" },
     { id: "c10", cat: "compras", lvl: 1, de: "billiger", es: "más barato", tip: "mas ba-RA-to" },
     { id: "c11", cat: "compras", lvl: 3, de: "Kann ich es anprobieren?", es: "¿Me lo puedo probar?", tip: "PUE-do pro-WAR" },
-    { id: "c12", cat: "compras", lvl: 1, de: "die Größe (Kleidung)", es: "la talla", tip: "la TA-ya" },
     { id: "c13", cat: "compras", lvl: 2, de: "Wo ist die Kasse?", es: "¿Dónde está la caja?", tip: "la KA-cha" },
     { id: "c14", cat: "compras", lvl: 1, de: "geöffnet / geschlossen", es: "abierto / cerrado", tip: "a-bi-ER-to / se-RRA-do" },
     { id: "c15", cat: "compras", lvl: 1, de: "ein Kilo", es: "un kilo", tip: "un KI-lo" },
@@ -375,7 +369,6 @@
     { id: "c19", cat: "compras", lvl: 3, de: "Haben Sie etwas Günstigeres?", es: "¿Tiene algo más barato?", tip: "AL-go mas ba-RA-to" },
     { id: "c20", cat: "compras", lvl: 2, de: "Geben Sie mir bitte ...", es: "Me da ..., por favor", tip: "me da" },
     { id: "c21", cat: "compras", lvl: 2, de: "Ich möchte dieses Kleid", es: "Quiero este vestido", tip: "ki-E-ro ES-te wes-TI-do" },
-    { id: "c22", cat: "compras", lvl: 3, de: "Haben Sie es in einer anderen Größe?", es: "¿Lo tiene en otra talla?", tip: "en O-tra TA-ya" },
     { id: "c23", cat: "compras", lvl: 3, de: "Haben Sie es in einer anderen Farbe?", es: "¿Lo tiene en otro color?", tip: "en O-tro ko-LOR" },
     { id: "c24", cat: "compras", lvl: 3, de: "eine Nummer größer / kleiner", es: "una talla más grande / más chica", tip: "'chica' = kleiner (LatAm)" },
     { id: "c25", cat: "compras", lvl: 3, de: "Geht beim Preis noch was?", es: "¿Me lo deja más barato?", tip: "me lo DE-cha mas ba-RA-to" },
@@ -438,8 +431,6 @@
     // ===================== SMALLTALK & KENNENLERNEN =====================
     { id: "s01", cat: "talk", lvl: 1, de: "Wie geht's?", es: "¿Cómo estás? / ¿Qué tal?", tip: "KO-mo es-TAS" },
     { id: "s02", cat: "talk", lvl: 1, de: "Gut, danke", es: "Bien, gracias", tip: "bien GRA-si-as" },
-    { id: "s03", cat: "talk", lvl: 1, de: "Freut mich", es: "Mucho gusto", tip: "MU-cho GUS-to" },
-    { id: "s04", cat: "talk", lvl: 2, de: "Woher kommst du?", es: "¿De dónde eres?", tip: "de DON-de E-res" },
     { id: "s05", cat: "talk", lvl: 2, de: "Ich komme aus Deutschland", es: "Soy de Alemania", tip: "a-le-MA-ni-a" },
     { id: "s06", cat: "talk", lvl: 2, de: "Ich bin im Urlaub", es: "Estoy de vacaciones", tip: "wa-ka-si-O-nes" },
     { id: "s07", cat: "talk", lvl: 3, de: "Ich bin auf der Durchreise", es: "Estoy de paso", tip: "es-TOY de PA-so" },
@@ -471,7 +462,7 @@
     { id: "social07", cat: "social", lvl: 2, de: "Sollen wir zusammen gehen?", es: "¿Vamos juntos?", tip: "BA-mos CHUN-tos" },
     { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes" },
     { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp" },
-    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen.", es: "Mucho gusto.", tip: "MU-cho GUS-to" },
+    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen. / Freut mich", es: "Fue un gusto conocerte.", tip: "fue un GUS-to ko-no-SER-te", alt: ["fue un gusto", "mucho gusto"] },
 
     // ===================== ALLTAG & LEBEN =====================
     { id: "a01", cat: "alltag", lvl: 3, de: "Wie sagt man ... auf Spanisch?", es: "¿Cómo se dice ... en español?", tip: "KO-mo se DI-se" },
@@ -603,7 +594,7 @@
     { id: "kj32", cat: "ropa", lvl: 3, de: "die Brosche", es: "el broche", tip: "el BRO-che" },
     { id: "kj33", cat: "ropa", lvl: 3, de: "aus Silber / aus Gold", es: "de plata / de oro", tip: "de PLA-ta / de O-ro" },
     // -- Beim Einkaufen --
-    { id: "kj34", cat: "ropa", lvl: 2, de: "die Größe", es: "la talla", tip: "la TA-ya" },
+    { id: "kj34", cat: "ropa", lvl: 2, de: "die Größe (Kleidung)", es: "la talla", tip: "la TA-ya" },
     { id: "kj35", cat: "ropa", lvl: 3, de: "Kann ich das anprobieren?", es: "¿Puedo probármelo?", tip: "PUE-do pro-BAR-me-lo" },
     { id: "kj36", cat: "ropa", lvl: 3, de: "Haben Sie das in einer anderen Größe?", es: "¿Lo tiene en otra talla?", tip: "en O-tra TA-ya" },
     { id: "kj37", cat: "ropa", lvl: 3, de: "Es ist zu groß / zu klein", es: "Es demasiado grande / pequeño", tip: "de-ma-si-A-do GRAN-de" },
@@ -637,7 +628,7 @@
     { id: "dir23", cat: "rumbo", lvl: 2, de: "Ist es weit oder nah?", es: "¿Está lejos o cerca?", tip: "es-TA LE-hos o SER-ka" },
     { id: "dir24", cat: "rumbo", lvl: 3, de: "Wie viele Blocks ist es entfernt?", es: "¿A cuántas cuadras está?", tip: "a KUAN-tas KUA-dras es-TA" },
     { id: "dir25", cat: "rumbo", lvl: 2, de: "Wie lautet die Adresse?", es: "¿Cuál es la dirección?", tip: "kual es la di-rek-si-ON" },
-    { id: "dir26", cat: "rumbo", lvl: 3, de: "Zeigen Sie es mir auf der Karte?", es: "¿Me lo muestra en el mapa?", tip: "me lo MUES-tra en el MA-pa" },
+    { id: "dir26", cat: "rumbo", lvl: 3, de: "Zeigen Sie es mir auf der Karte? / Können Sie es auf der Karte zeigen?", es: "¿Me lo muestra en el mapa?", tip: "me lo MUES-tra en el MA-pa" },
     { id: "dir27", cat: "rumbo", lvl: 2, de: "Gibt es hier in der Nähe eine Bank?", es: "¿Hay un banco por aquí?", tip: "ai un BAN-ko por a-KI" },
 
     // -- Anweisungen geben (den Weg beschreiben) --

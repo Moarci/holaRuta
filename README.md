@@ -4,13 +4,13 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.2.0** — 561 Karten · 19 Bereiche · Hostel Mode (Battle & Rollenspiele) · Definiciones (Zuordnen-Quiz) · Spaced Repetition · Offline · Null Dependencies
+**v1.3.0** — 552 Karten · 19 Bereiche · Hostel Mode (Battle & Rollenspiele) · Definiciones (Zuordnen-Quiz) · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-58_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
-[![Karten](https://img.shields.io/badge/Karten-561-C2502E?style=flat-square)](#datenmodell)
+[![Tests](https://img.shields.io/badge/Tests-93_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Karten](https://img.shields.io/badge/Karten-552-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
 
@@ -101,7 +101,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **19 Bereiche** | Themen-Kategorien | Grundlagen, Zahlen, Essen, Trinken, Hotel, Hostel, Social, Verkehr, Einkaufen, Geld, Notfall, Zeit, Smalltalk, Alltag, Sätze, Behörden, Busreise, Kleidungsschmuck, Wegbeschreibung |
 | **Hostel Mode** | Üben zu zweit 🛏️ | **Battle** (Aufgabe auf Deutsch, laut auf Spanisch antworten, Mitspieler bewertet 2/1/0 über 10 Runden) & **Rollenspiele** (kurze Dialoge mit verteilten Rollen) — plus Real-Life-Challenge als Bonus |
 | **Definiciones** | Zuordnen-Quiz 🧩 | Eigenständiges Modul im Stil eines Lehrbuch-Arbeitsblatts: **spanische Definition lesen, passenden Begriff aus mehreren Optionen wählen** — mit sofortiger Rückmeldung, Fortschrittsbalken und Auswertung. Themen-Listen (*En la ciudad*, *En la ruta* mit Backpacker-Orten, *La comida*); lernt Wörter über ihre Bedeutung statt nur per Übersetzung. Zahlt auf den Ruta-Pass ein |
-| **Reise-Kontext** | 🧭 Kontext-Button | Runder Button unten links auf der Antwortkarte (Pendant zum 🔊): klappt einen Block mit echtem Reisesatz, typischer Situation und kurzem Reisetipp auf — für **alle 561 Karten**. Zeigt, *wie* man den Ausdruck unterwegs wirklich benutzt (statt nur zu übersetzen); Zahlen bekommen praktischen Preis-/Mengen-Kontext |
+| **Reise-Kontext** | 🧭 Kontext-Button | Runder Button unten links auf der Antwortkarte (Pendant zum 🔊): klappt einen Block mit echtem Reisesatz, typischer Situation und kurzem Reisetipp auf — für **alle 552 Karten**. Zeigt, *wie* man den Ausdruck unterwegs wirklich benutzt (statt nur zu übersetzen); Zahlen bekommen praktischen Preis-/Mengen-Kontext |
 | **Statistik** | Lern-Auswertung | Trefferquote, gemeistert / schwierig / neu, sortierte Kartenliste, Detailseite je Karte |
 | **Ruta-Pass** | Badges / Reisestempel 🎖️ | Sammelbare Stempel für Lernmenge, Lern-Serie (Streak), Bereichs-Meisterschaft & Spezielles — inkl. Geheim-Stempel und Freischalt-Einblendung |
 | **Eigene Karten** | Editor | Eigene Vokabeln anlegen — erscheinen überall ohne Sonderbehandlung |
@@ -117,7 +117,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 
 ## 🌎 Die Wörterbasis
 
-**561 Karten · 19 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
+**552 Karten · 19 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
 
 Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md) live im Browser gegengeprüft: **0 Duplikate, 0 fehlende Felder, 0 ¿¡-Mismatches, keine falschen Übersetzungen**.
 
@@ -132,9 +132,9 @@ Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md
 
 | Bereich | Karten | Bereich | Karten | Bereich | Karten |
 |---|---:|---|---:|---|---:|
-| Zahlen | 110 | Wegbeschreibung | 65 | Essen | 60 |
-| Kleidungsschmuck | 37 | Compras (Einkaufen) | 34 | Sätze | 30 |
-| Verkehr | 27 | Smalltalk | 24 | Hotel | 24 |
+| Zahlen | 110 | Wegbeschreibung | 65 | Essen | 59 |
+| Kleidungsschmuck | 37 | Compras (Einkaufen) | 32 | Sätze | 30 |
+| Verkehr | 24 | Hotel | 23 | Smalltalk | 22 |
 | Grundlagen | 21 | Busreise | 20 | Behörden | 20 |
 | Notfall | 15 | Alltag | 15 | Trinken | 14 |
 | Geld | 13 | Zeit | 12 | Social | 10 |
@@ -164,7 +164,7 @@ SpanischCard/
 ├── index.html          # App-Shell + Modul-Ladereihenfolge
 ├── styles.css          # Komplettes Design (Erdton-Palette, 3D-Flip, Responsive)
 │
-├── data.js        SC.data       # Modell: 19 Kategorien, 3 Stufen, 561 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
+├── data.js        SC.data       # Modell: 19 Kategorien, 3 Stufen, 552 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
 ├── contextdata.js SC.contextData # Reise-Kontext-Inhalte je Karte ({e,d,s,n}) – REINE DATEN
 ├── context.js     SC.context    # hängt Kontext an die Karten (Zahlen generiert) – REINE FUNKTIONEN
 ├── countries.js   SC.countries  # Länderkunde: 19 Länder in 3 Regionen
@@ -187,7 +187,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/sc.test.js              # 58 Tests (node:test, keine Dependencies)
+├── test/                        # 93 Tests in 4 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -201,6 +201,8 @@ SpanischCard/
 | **Immutability durchgängig** | Funktionen geben **neue** Objekte zurück, mutieren nie das Original — keine versteckten Seiteneffekte. |
 | **Event-Delegation** | Ein einziger Listener auf `#app`; Buttons tragen `data-action`. Keine Listener-Leaks beim Re-Render. |
 | **Single Source of Truth** | Ein `state`-Objekt im Controller; jede Aktion → `render()`. |
+
+> **Randbedingung GitHub Pages:** Alle Pages-Projekte eines GitHub-Accounts laufen unter derselben Origin (`https://<user>.github.io`) und teilen sich damit `localStorage` und Speicher-Quota. Jedes andere dort gehostete Projekt kann HolaRutas gespeicherte Daten lesen oder überschreiben, und der gemeinsame Speicherplatz zählt auf dasselbe Quota ein. Die `spanischcard.*`-Schlüsselpräfixe vermeiden versehentliche Kollisionen, ersetzen aber keine echte Isolation.
 
 ---
 
@@ -433,8 +435,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 58
-#  ℹ pass 58
+#  ℹ tests 93
+#  ℹ pass 93
 #  ℹ fail 0
 ```
 
@@ -453,12 +455,12 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 
 | Kennzahl | Wert |
 |---|---|
-| Karten | 561 |
+| Karten | 552 |
 | Bereiche / Kategorien | 19 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 15 (`SC.*`) |
-| Tests | 58 (alle grün) |
+| Tests | 93 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

@@ -1,6 +1,16 @@
 # HolaRuta — Tiefe Risikoanalyse
 
 **Datum:** 2026-06-11 · **Stand:** `faf7755` (v1.2.0, 561 Karten) · **Folgt auf:** [AUDIT.md](AUDIT.md) (2026-06-10, damals 419 Karten)
+
+> **Status-Update (2026-06-11, v1.3.0): Alle Findings behoben.** Umsetzung in drei Commits auf diesem Branch
+> (PWA/CI · Kernlogik · Datenbasis): Matcher-ES→DE-Kandidatenlogik, SW-Precache vollständig + Cache v8 + Update-Mechanik,
+> CI-Test-Gate mit Build-Diff und SHA-Pinning, Record-Sanitizer + Ease-Klemme, confirm-Fallback (Reset **und** deleteCard),
+> Export/Import + Quota-Toast + `storage.persist()` + Corrupt-Rescue, Streak-Zeitzonen- und Due-Mitternacht-Fix,
+> Freies-Üben-Shuffle + Early-Review-Dämpfung, Fonts self-hosted, PNG-Icons, Offline-Guards, ES2017-Konformität,
+> 9 Duplikat-Paare konsolidiert (552 Karten), Sprach-Nuancen korrigiert. Testabdeckung 58 → **93** (u. a. neuer
+> ASSETS-Drift-Test gegen index.html). Einzige bewusst offene Punkte: Wikimedia-Bild-URLs in der Länderkunde
+> (featurebedingt, IP-Leak nur beim Öffnen) und der kosmetische `zmilord`-ID-Slug (Umbenennen würde bestehenden
+> Fortschritt verwaisen).
 **Methodik:** 5 parallele spezialisierte Risiko-Agents — (1) Security & Datenfluss, (2) Datenbasis, (3) Kernlogik & Datenverlust, (4) PWA/Offline/Kompatibilität, (5) Tests/CI/Prozess. Kritische Hypothesen wurden **mit Node-Testskripten gegen den echten Code belegt oder widerlegt**, nicht nur statisch behauptet. Duplikate zum AUDIT.md sind ausgelassen; mehrere AUDIT-Findings wurden als inzwischen **gefixt verifiziert** (theme-color, manifest id/scope, reduced-motion, store-Top-Level-Guards, build-Escaping, Doppel-Tap-Races).
 
 ---

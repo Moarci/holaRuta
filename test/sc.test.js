@@ -490,8 +490,9 @@ test("data.numberContext: spanische Grammatik korrekt (un peso / un / de pesos)"
   data.CARDS.forEach((c) => {
     if (/^z\d+$/.test(c.id)) assert.doesNotMatch(c.context.sentenceEs, /uno pesos/, `falsches "uno pesos": ${c.id}`);
   });
-  // "de pesos" nur bei reinem Millionenbetrag, nicht mit Tausender-Rest
-  assert.equal(es("z1000000"), "Son un millón de pesos.");
+  // "de pesos" nur bei reinem Millionenbetrag, nicht mit Tausender-Rest;
+  // genau eine Million ist ein Singular-Subjekt -> "Es", ab zwei Millionen "Son"
+  assert.equal(es("z1000000"), "Es un millón de pesos.");
   assert.equal(es("z2000000"), "Son dos millones de pesos.");
   assert.equal(es("z1500000"), "Son un millón quinientos mil pesos.");
   assert.equal(es("z3500000"), "Son tres millones quinientos mil pesos.");
