@@ -942,6 +942,8 @@
   const bp3d = { fig: null, orbs: [], nodes: [], raf: 0 };
   let bpDrag = null;        // { x, y, yaw, pitch } während einer Ziehgeste, sonst null
   let bpDragMoved = false;  // wurde wirklich gedreht? (unterscheidet Zieh- von Tipp-Geste)
+  let bpDragEndAt = 0;      // Zeitpunkt der letzten echten Drehung – schluckt nur den
+                            // unmittelbar folgenden Maus-Klick, nicht spätere Tastatur-Auswahl
 
   // Nach jedem Render der Cuerpo-Ansicht: Elemente neu einsammeln, Koordinaten
   // aus den data-Attributen cachen und die aktuelle Drehung anwenden.
@@ -1000,8 +1002,9 @@
   // bleibt es ein Tipp (Hotspot wählen); darüber wird es eine Drehung.
   function onBodyPointerDown(e) {
     if (state.screen !== "cuerpo") return;
+    if (e.button != null && e.button > 0) return; // nur primäre Maustaste / Touch / Stift
     const stage = e.target.closest("[data-bp-stage]");
-    if (!stage) return;
+    if (!stage || e.target.closest(".bp-rotor")) return; // Dreh-Knöpfe nicht als Ziehstart werten
     bpDrag = { x: e.clientX, y: e.clientY, yaw: state.bodyYaw || 0, pitch: state.bodyPitch || 0 };
     bpDragMoved = false;
     stage.classList.add("is-grab");
@@ -1017,6 +1020,7 @@
   }
   function onBodyPointerUp() {
     if (!bpDrag) return;
+    if (bpDragMoved) bpDragEndAt = Date.now(); // den gleich folgenden Klick auf den Hotspot schlucken
     bpDrag = null;
     const stage = root.querySelector("[data-bp-stage].is-grab");
     if (stage) stage.classList.remove("is-grab");
@@ -2043,7 +2047,7 @@
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
-    else if (action === "cuerpo-select") { if (bpDragMoved) bpDragMoved = false; else selectBodyPart(el.dataset.id); }
+    else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "open-spickzettel") openSpickzettel();

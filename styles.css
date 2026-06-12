@@ -1354,7 +1354,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Bühne mit Perspektive. touch-action:none, damit das Ziehen die Figur dreht
    statt die Seite zu scrollen. */
 .bp-3d-stage {
-  position: relative; width: 100%; max-width: 320px; height: 430px;
+  position: relative; width: 100%; max-width: 320px; height: 460px;
   margin: 2px auto 0; perspective: 900px; touch-action: none;
   cursor: grab; user-select: none; -webkit-user-select: none;
   /* weiches Spotlight hinter der Figur */
@@ -1367,7 +1367,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .bp-3d-stage * { touch-action: none; }
 /* Bodenschatten – erdet das Modell. */
 .bp-3d-stage::after {
-  content: ""; position: absolute; left: 50%; bottom: 56px; transform: translateX(-50%);
+  content: ""; position: absolute; left: 50%; bottom: 62px; transform: translateX(-50%);
   width: 140px; height: 24px; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(45, 27, 18, 0.26), transparent 80%);
 }
@@ -1375,7 +1375,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Figur-Ursprung in Bühnenmitte; Kinder sitzen per translate3d im Raum. */
 .bp-3d {
-  position: absolute; left: 50%; top: 50%; width: 0; height: 0;
+  position: absolute; left: 50%; top: 46%; width: 0; height: 0; /* etwas höher: lässt unten Platz für die Dreh-Knöpfe */
   transform-style: preserve-3d;
   transform: translateZ(-30px) rotateX(-6deg) rotateY(-22deg); /* JS übersteuert beim Drehen */
 }
@@ -1430,7 +1430,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Dreh-Knöpfe (Tastatur/Klick-Alternative zum Ziehen) + Hinweis. */
 .bp-rotor {
-  position: absolute; left: 0; right: 0; bottom: 6px;
+  position: absolute; left: 0; right: 0; bottom: 8px; z-index: 2;
   display: flex; align-items: center; justify-content: center; gap: 12px;
 }
 .bp-rotor__btn {

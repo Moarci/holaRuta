@@ -1392,7 +1392,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Bühne mit Perspektive. touch-action:none, damit das Ziehen die Figur dreht
    statt die Seite zu scrollen. */
 .bp-3d-stage {
-  position: relative; width: 100%; max-width: 320px; height: 430px;
+  position: relative; width: 100%; max-width: 320px; height: 460px;
   margin: 2px auto 0; perspective: 900px; touch-action: none;
   cursor: grab; user-select: none; -webkit-user-select: none;
   /* weiches Spotlight hinter der Figur */
@@ -1405,7 +1405,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .bp-3d-stage * { touch-action: none; }
 /* Bodenschatten – erdet das Modell. */
 .bp-3d-stage::after {
-  content: ""; position: absolute; left: 50%; bottom: 56px; transform: translateX(-50%);
+  content: ""; position: absolute; left: 50%; bottom: 62px; transform: translateX(-50%);
   width: 140px; height: 24px; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(45, 27, 18, 0.26), transparent 80%);
 }
@@ -1413,7 +1413,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Figur-Ursprung in Bühnenmitte; Kinder sitzen per translate3d im Raum. */
 .bp-3d {
-  position: absolute; left: 50%; top: 50%; width: 0; height: 0;
+  position: absolute; left: 50%; top: 46%; width: 0; height: 0; /* etwas höher: lässt unten Platz für die Dreh-Knöpfe */
   transform-style: preserve-3d;
   transform: translateZ(-30px) rotateX(-6deg) rotateY(-22deg); /* JS übersteuert beim Drehen */
 }
@@ -1468,7 +1468,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Dreh-Knöpfe (Tastatur/Klick-Alternative zum Ziehen) + Hinweis. */
 .bp-rotor {
-  position: absolute; left: 0; right: 0; bottom: 6px;
+  position: absolute; left: 0; right: 0; bottom: 8px; z-index: 2;
   display: flex; align-items: center; justify-content: center; gap: 12px;
 }
 .bp-rotor__btn {
@@ -11069,6 +11069,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const bp3d = { fig: null, orbs: [], nodes: [], raf: 0 };
   let bpDrag = null;        // { x, y, yaw, pitch } während einer Ziehgeste, sonst null
   let bpDragMoved = false;  // wurde wirklich gedreht? (unterscheidet Zieh- von Tipp-Geste)
+  let bpDragEndAt = 0;      // Zeitpunkt der letzten echten Drehung – schluckt nur den
+                            // unmittelbar folgenden Maus-Klick, nicht spätere Tastatur-Auswahl
 
   // Nach jedem Render der Cuerpo-Ansicht: Elemente neu einsammeln, Koordinaten
   // aus den data-Attributen cachen und die aktuelle Drehung anwenden.
@@ -11127,8 +11129,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // bleibt es ein Tipp (Hotspot wählen); darüber wird es eine Drehung.
   function onBodyPointerDown(e) {
     if (state.screen !== "cuerpo") return;
+    if (e.button != null && e.button > 0) return; // nur primäre Maustaste / Touch / Stift
     const stage = e.target.closest("[data-bp-stage]");
-    if (!stage) return;
+    if (!stage || e.target.closest(".bp-rotor")) return; // Dreh-Knöpfe nicht als Ziehstart werten
     bpDrag = { x: e.clientX, y: e.clientY, yaw: state.bodyYaw || 0, pitch: state.bodyPitch || 0 };
     bpDragMoved = false;
     stage.classList.add("is-grab");
@@ -11144,6 +11147,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
   function onBodyPointerUp() {
     if (!bpDrag) return;
+    if (bpDragMoved) bpDragEndAt = Date.now(); // den gleich folgenden Klick auf den Hotspot schlucken
     bpDrag = null;
     const stage = root.querySelector("[data-bp-stage].is-grab");
     if (stage) stage.classList.remove("is-grab");
@@ -12170,7 +12174,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
-    else if (action === "cuerpo-select") { if (bpDragMoved) bpDragMoved = false; else selectBodyPart(el.dataset.id); }
+    else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "open-spickzettel") openSpickzettel();
