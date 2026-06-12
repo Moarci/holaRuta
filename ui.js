@@ -1642,39 +1642,54 @@
   // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
   // viewBox 0 0 200 440 – exakt der, auf den sich die Prozent-Koordinaten der Hotspots
   // beziehen. Gliedmaßen sind runde Striche (currentColor), Rumpf/Kopf gefüllte Flächen.
-  const BP_FIGURE = `
-    <svg class="bp-figure" viewBox="0 0 200 440" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
-      <!-- weicher Bodenschatten – erdet die Figur. -->
-      <ellipse class="bp-figure__ground" cx="100" cy="430" rx="56" ry="8" />
-      <!-- Arme & Beine: runde Striche. -->
-      <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M70 104 L52 168 L46 240" />
-        <path d="M130 104 L148 168 L154 240" />
-      </g>
-      <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M86 236 L82 330 L78 408" />
-        <path d="M114 236 L118 330 L122 408" />
-      </g>
-      <!-- Rumpf, Kopf, Hände/Füße + runde Schulter-/Hüftgelenke (glätten die Übergänge). -->
-      <g class="bp-figure__body" fill="currentColor" stroke="none">
-        <ellipse cx="74" cy="416" rx="17" ry="9" />
-        <ellipse cx="126" cy="416" rx="17" ry="9" />
-        <circle cx="44" cy="248" r="12" />
-        <circle cx="156" cy="248" r="12" />
-        <circle cx="70" cy="104" r="14" />
-        <circle cx="130" cy="104" r="14" />
-        <circle cx="86" cy="238" r="15" />
-        <circle cx="114" cy="238" r="15" />
-        <path d="M68 96 L132 96 C141 96 141 105 139 113 L126 212 C125 232 121 242 100 242 C79 242 75 232 74 212 L61 113 C59 105 59 96 68 96 Z" />
-        <rect x="91" y="68" width="18" height="20" rx="8" />
-        <circle cx="100" cy="44" r="30" />
-      </g>
-      <!-- Lichtkante oben links: gibt der flachen Sticker-Figur etwas Tiefe. -->
-      <g class="bp-figure__shine" fill="#fff" stroke="none">
-        <ellipse cx="89" cy="35" rx="11" ry="13" />
-        <ellipse cx="85" cy="152" rx="12" ry="44" />
-      </g>
-    </svg>`;
+  // ----- 3D-Körperfigur (drehbar) -----
+  // Echte 3D-Geometrie statt der flachen Sticker-Figur: Der Körper ist aus
+  // schattierten Kugel-Impostoren (Orbs) aufgebaut, die per CSS-3D im Raum
+  // sitzen (translate3d). Jeder Orb wird zur Kamera ausgerichtet (Billboard,
+  // siehe app.js → bpApplyRot), darum bleibt er aus jedem Blickwinkel rund –
+  // beim Drehen verschieben sich nur seine Position und seine Verdeckung.
+  // Selbst gerendert -> kein externes Modell, läuft offline (PWA-Prinzip).
+  //
+  // Orb-Daten: [x, y, z, durchmesser] in px, Ursprung in Figurmitte (y nach oben).
+  const BP_ORBS = [
+    [0, -150, 0, 72], [0, -112, 4, 26],                                   // Kopf, Hals
+    [0, -86, 8, 66], [0, -52, 10, 62], [0, -18, 8, 58], [0, 16, 4, 60],   // Rumpf
+    [-40, -92, 2, 34], [40, -92, 2, 34],                                  // Schultern
+    [-50, -64, 2, 30], [-56, -34, 4, 26], [-60, -4, 6, 24], [-62, 22, 8, 28], // li. Arm
+    [50, -64, 2, 30], [56, -34, 4, 26], [60, -4, 6, 24], [62, 22, 8, 28], // re. Arm
+    [-20, 48, 6, 40], [-21, 80, 6, 34], [-22, 106, 8, 30], [-23, 136, 6, 28], [-24, 162, 6, 24], [-22, 176, 20, 30], // li. Bein
+    [20, 48, 6, 40], [21, 80, 6, 34], [22, 106, 8, 30], [23, 136, 6, 28], [24, 162, 6, 24], [22, 176, 20, 30],       // re. Bein
+  ];
+  const BP_FIGURE_3D = BP_ORBS.map(
+    ([x, y, z, d]) => `<i class="bp-orb" data-x="${x}" data-y="${y}" data-z="${z}" style="width:${d}px;height:${d}px"></i>`
+  ).join("");
+
+  // Interaktive Hotspots je Körperteil-Id: Position (x,y,z), Azimut az (Grad um
+  // die Hochachse: 0 = vorne, ±90 = Seite, 180 = Rücken – steuert das Ausblenden
+  // beim Wegdrehen) und Punktgröße d. Bewusst hier (View) statt in den
+  // Vokabeldaten gehalten: data.js bleibt reine Vokabel-Wahrheit.
+  const BP_LAYOUT3D = {
+    bp_pelo:     { x: 0,   y: -182, z: 10,  az: 0,   d: 20 },
+    bp_cabeza:   { x: -20, y: -170, z: 20,  az: -20, d: 20 },
+    bp_ojo:      { x: -12, y: -156, z: 34,  az: -8,  d: 16 },
+    bp_nariz:    { x: 0,   y: -148, z: 39,  az: 0,   d: 15 },
+    bp_boca:     { x: 0,   y: -136, z: 36,  az: 0,   d: 16 },
+    bp_cara:     { x: 18,  y: -146, z: 30,  az: 18,  d: 16 },
+    bp_oreja:    { x: 31,  y: -150, z: 4,   az: 72,  d: 16 },
+    bp_cuello:   { x: 0,   y: -112, z: 18,  az: 0,   d: 22 },
+    bp_hombro:   { x: -40, y: -92,  z: 16,  az: -35, d: 24 },
+    bp_pecho:    { x: 0,   y: -82,  z: 42,  az: 0,   d: 26 },
+    bp_espalda:  { x: 0,   y: -70,  z: -36, az: 180, d: 24 },
+    bp_estomago: { x: 0,   y: -22,  z: 40,  az: 0,   d: 26 },
+    bp_brazo:    { x: -52, y: -60,  z: 18,  az: -50, d: 24 },
+    bp_codo:     { x: -57, y: -32,  z: 20,  az: -55, d: 22 },
+    bp_mano:     { x: -63, y: 22,   z: 22,  az: -55, d: 26 },
+    bp_dedo:     { x: -64, y: 40,   z: 22,  az: -55, d: 18 },
+    bp_pierna:   { x: -22, y: 60,   z: 30,  az: -10, d: 26 },
+    bp_rodilla:  { x: -22, y: 106,  z: 28,  az: -10, d: 24 },
+    bp_tobillo:  { x: -24, y: 160,  z: 24,  az: -10, d: 20 },
+    bp_pie:      { x: -22, y: 178,  z: 38,  az: 0,   d: 24 },
+  };
 
   // ---------- CONJUGACIÓN (Erklärseite Konjugieren) ----------
   // Kompakte Grammatik-Erklärung (Inhalte aus data.CONJUGATION): Personen,
@@ -1750,14 +1765,17 @@
   }
 
   function renderCuerpo(vm) {
-    const dots = vm.parts
+    const nodes = vm.parts
       .map((p) => {
-        const cls = `bp-dot${p.selected ? " is-active" : ""}${p.seen ? " is-seen" : ""}`;
+        const L = BP_LAYOUT3D[p.id] || { x: 0, y: 0, z: 0, az: 0, d: 22 };
+        const cls = `bp-node${p.selected ? " is-active" : ""}${p.seen ? " is-seen" : ""}`;
         return `
           <button class="${cls}" type="button" data-action="cuerpo-select" data-id="${esc(p.id)}"
-                  style="left:${p.x}%;top:${p.y}%" aria-label="${esc(p.de)}" title="${esc(p.de)}"
+                  data-x="${L.x}" data-y="${L.y}" data-z="${L.z}" data-az="${L.az}"
+                  style="width:${L.d}px;height:${L.d}px" aria-label="${esc(p.de)}" title="${esc(p.de)}"
                   aria-pressed="${p.selected ? "true" : "false"}">
-            <span class="bp-dot__ring" aria-hidden="true"></span>
+            <span class="bp-node__hit" aria-hidden="true"></span>
+            <span class="bp-node__ring" aria-hidden="true"></span>
           </button>`;
       })
       .join("");
@@ -1793,12 +1811,19 @@
     return `
       <section class="screen bp-screen">
         ${hmTopbar("🧍 El Cuerpo", "home")}
-        <p class="hm-intro">Der menschliche Körper auf Spanisch – zum Antippen. Wähle ein Körperteil und lerne Wort, Aussprache und den passenden Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
+        <p class="hm-intro">Der menschliche Körper auf Spanisch – als drehbares 3D-Modell. Ziehe die Figur zum Drehen und tippe ein Körperteil an: dann erscheinen Wort, Aussprache und der passende Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
         ${progress}
         <div class="bp-stage">
-          <div class="bp-figwrap">
-            ${BP_FIGURE}
-            ${dots}
+          <div class="bp-3d-stage" data-bp-stage>
+            <div class="bp-3d" data-bp-fig>
+              ${BP_FIGURE_3D}
+              ${nodes}
+            </div>
+            <div class="bp-rotor">
+              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="-1" aria-label="Figur nach links drehen">↺</button>
+              <span class="bp-rotor__hint" aria-hidden="true">↔ ziehen zum Drehen</span>
+              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="1" aria-label="Figur nach rechts drehen">↻</button>
+            </div>
           </div>
           ${panel}
         </div>
