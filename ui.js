@@ -1042,30 +1042,52 @@
 
   // ---------- SPICKZETTEL (Survival-Schnellzugriff) ----------
   // Reine Nachschlage-Ansicht (kein SRS): die kritischsten Sätze groß, je mit 🔊.
+  // Tipp auf den Satz öffnet die Großanzeige – bildschirmfüllend zum Herzeigen.
   function renderSpickzettel(vm) {
+    const nav = vm.groups.map((g) => `
+      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+        <span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}
+      </a>`).join("");
     const groups = vm.groups.map((g) => {
       const rows = g.cards.map((c) => `
         <div class="sz-row">
-          <div class="sz-row__main">
-            <div class="sz-row__de">${esc(c.de)}</div>
-            <div class="sz-row__es" lang="es">${esc(c.es)}</div>
-            ${c.tip ? `<div class="sz-row__tip">🗣️ ${esc(c.tip)}</div>` : ""}
-          </div>
+          <button class="sz-row__main" type="button" data-action="sz-show" data-id="${esc(c.id)}"
+                  title="Groß anzeigen">
+            <span class="sz-row__de">${esc(c.de)}</span>
+            <span class="sz-row__es" lang="es">${esc(c.es)}</span>
+            ${c.tip ? `<span class="sz-row__tip">🗣️ ${esc(c.tip)}</span>` : ""}
+          </button>
           ${vm.speakable
             ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="Anhören" title="Anhören">🔊</button>`
             : ""}
         </div>`).join("");
       return `
-        <div class="sz-group" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+        <div class="sz-group" id="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
           <h3 class="sz-group__h"><span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}</h3>
           <div class="sz-list">${rows}</div>
         </div>`;
     }).join("");
+    // Großanzeige: Satz bildschirmfüllend – zum Herzeigen, wenn Reden nicht reicht.
+    const show = vm.show ? `
+      <div class="sz-show" data-action="sz-close" role="dialog" aria-modal="true" aria-label="Großanzeige">
+        <div class="sz-show__inner">
+          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
+          <p class="sz-show__de">${esc(vm.show.de)}</p>
+          <div class="sz-show__actions">
+            ${vm.speakable
+              ? `<button class="cta" type="button" data-action="speak-card" data-id="${esc(vm.show.id)}">🔊 Anhören</button>`
+              : ""}
+            <button class="ghostbtn" type="button" data-action="sz-close">Schließen</button>
+          </div>
+        </div>
+      </div>` : "";
     return `
       <section class="screen">
         ${hmTopbar("🆘 Spickzettel", "home")}
-        <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – groß, sofort da und auf Tipp vorgelesen. Kein Lernen, nur schnell nachschlagen.</p>
+        <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.</p>
+        <nav class="sz-nav" aria-label="Bereiche">${nav}</nav>
         ${groups}
+        ${show}
       </section>`;
   }
 

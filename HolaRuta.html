@@ -1815,7 +1815,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .route__bus { transition: none; } }
 
 /* ====================== SPICKZETTEL (Survival-Schnellzugriff) ====================== */
-.sz-group { margin-top: 18px; }
+.sz-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.sz-nav__chip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
+  font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
+  border-left: 4px solid; border-image: linear-gradient(var(--from), var(--to)) 1;
+}
+.sz-nav__chip:active { transform: scale(0.96); }
+.sz-group { margin-top: 18px; scroll-margin-top: 12px; }
 .sz-group__h {
   margin: 0 0 8px; padding-left: 10px; font-family: var(--font-display); font-weight: 800;
   font-size: 1.05rem; color: var(--ink); border-left: 4px solid;
@@ -1827,16 +1835,37 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
   box-shadow: var(--shadow);
 }
-.sz-row__main { flex: 1 1 auto; min-width: 0; }
-.sz-row__de { font-size: 0.82rem; color: var(--muted); }
-.sz-row__es { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--ink); line-height: 1.25; overflow-wrap: anywhere; }
-.sz-row__tip { margin-top: 2px; font-size: 0.8rem; font-style: italic; color: var(--ink-soft); }
+.sz-row__main {
+  flex: 1 1 auto; min-width: 0; padding: 0; margin: 0; text-align: left;
+  background: none; border: 0; cursor: pointer; font: inherit; color: inherit;
+}
+.sz-row__de { display: block; font-size: 0.82rem; color: var(--muted); }
+.sz-row__es { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--ink); line-height: 1.25; overflow-wrap: anywhere; }
+.sz-row__tip { display: block; margin-top: 2px; font-size: 0.8rem; font-style: italic; color: var(--ink-soft); }
 .sz-speak {
   flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
   border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 1.15rem;
   display: flex; align-items: center; justify-content: center;
 }
 .sz-speak:active { transform: scale(0.92); }
+
+/* Großanzeige: ein Satz bildschirmfüllend – zum Herzeigen, wenn Reden nicht reicht. */
+.sz-show {
+  position: fixed; inset: 0; z-index: 60; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.sz-show__inner {
+  cursor: auto; width: min(100%, 560px); padding: 28px 22px; text-align: center;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  box-shadow: var(--shadow);
+}
+.sz-show__es {
+  margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--ink);
+  font-size: clamp(1.7rem, 8vw, 2.6rem); line-height: 1.2; overflow-wrap: anywhere;
+}
+.sz-show__de { margin: 10px 0 0; font-size: 1rem; color: var(--muted); }
+.sz-show__actions { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
 
 </style>
 </head>
@@ -10120,6 +10149,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.14.0",
+      date: "2026-06-12",
+      title: "Spickzettel: bessere Auswahl, Großanzeige & Sprungleiste",
+      items: [
+        "🆘 Die Sätze sind jetzt kuratiert statt „die ersten der Kategorie“: Bei Notfall stehen „Hilfe!“, „Necesito un médico“ und „Llame a la policía“ ganz oben, bei Wegbeschreibung echte Survival-Fragen wie „¿Cómo llego al centro?“ statt nur Vokabeln.",
+        "👁️ Satz antippen zeigt ihn bildschirmfüllend in Riesenschrift – zum Herzeigen, wenn Reden nicht reicht. Tippen daneben (oder Escape) schließt wieder.",
+        "🧭 Neue Sprungleiste oben: ein Tipp auf Notfall, Grundlagen, Wegbeschreibung oder Geld springt direkt zum Bereich.",
+        "Jeder Satz erscheint höchstens einmal auf dem Zettel – auch wenn er in mehreren Bereichen passt.",
+      ],
+    },
+    {
       version: "1.13.0",
       date: "2026-06-12",
       title: "Karten überspringen: nicht jede Karte muss durch",
@@ -11337,30 +11377,52 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ---------- SPICKZETTEL (Survival-Schnellzugriff) ----------
   // Reine Nachschlage-Ansicht (kein SRS): die kritischsten Sätze groß, je mit 🔊.
+  // Tipp auf den Satz öffnet die Großanzeige – bildschirmfüllend zum Herzeigen.
   function renderSpickzettel(vm) {
+    const nav = vm.groups.map((g) => `
+      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+        <span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}
+      </a>`).join("");
     const groups = vm.groups.map((g) => {
       const rows = g.cards.map((c) => `
         <div class="sz-row">
-          <div class="sz-row__main">
-            <div class="sz-row__de">${esc(c.de)}</div>
-            <div class="sz-row__es" lang="es">${esc(c.es)}</div>
-            ${c.tip ? `<div class="sz-row__tip">🗣️ ${esc(c.tip)}</div>` : ""}
-          </div>
+          <button class="sz-row__main" type="button" data-action="sz-show" data-id="${esc(c.id)}"
+                  title="Groß anzeigen">
+            <span class="sz-row__de">${esc(c.de)}</span>
+            <span class="sz-row__es" lang="es">${esc(c.es)}</span>
+            ${c.tip ? `<span class="sz-row__tip">🗣️ ${esc(c.tip)}</span>` : ""}
+          </button>
           ${vm.speakable
             ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="Anhören" title="Anhören">🔊</button>`
             : ""}
         </div>`).join("");
       return `
-        <div class="sz-group" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+        <div class="sz-group" id="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
           <h3 class="sz-group__h"><span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}</h3>
           <div class="sz-list">${rows}</div>
         </div>`;
     }).join("");
+    // Großanzeige: Satz bildschirmfüllend – zum Herzeigen, wenn Reden nicht reicht.
+    const show = vm.show ? `
+      <div class="sz-show" data-action="sz-close" role="dialog" aria-modal="true" aria-label="Großanzeige">
+        <div class="sz-show__inner">
+          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
+          <p class="sz-show__de">${esc(vm.show.de)}</p>
+          <div class="sz-show__actions">
+            ${vm.speakable
+              ? `<button class="cta" type="button" data-action="speak-card" data-id="${esc(vm.show.id)}">🔊 Anhören</button>`
+              : ""}
+            <button class="ghostbtn" type="button" data-action="sz-close">Schließen</button>
+          </div>
+        </div>
+      </div>` : "";
     return `
       <section class="screen">
         ${hmTopbar("🆘 Spickzettel", "home")}
-        <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – groß, sofort da und auf Tipp vorgelesen. Kein Lernen, nur schnell nachschlagen.</p>
+        <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.</p>
+        <nav class="sz-nav" aria-label="Bereiche">${nav}</nav>
         ${groups}
+        ${show}
       </section>`;
   }
 
@@ -12671,6 +12733,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     preciosLevel: [1, 2, 3].includes(settings.preciosLevel) ? settings.preciosLevel : 2,                        // zuletzt gewählte Stufe
     // ----- Frases flexibles (Satzbaukasten, transient) -----
     frases: null,            // { setId, queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
+    // ----- Spickzettel (Survival-Schnellzugriff, transient) -----
+    szShow: null,            // Großanzeige: Karten-Id des bildschirmfüllend gezeigten Satzes | null
     // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
     bodyYaw: -22,            // Drehung der Figur um die Hochachse (Grad)
@@ -14536,22 +14600,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // ----- Spickzettel (Survival-Schnellzugriff, kein Lernen) -----
-  // Kuratierte Überlebens-Bereiche: je Kategorie die wichtigsten Karten, gedeckelt.
-  // Bewusst per Kategorie + Cap statt fester IDs, damit es mit der Datenbasis mitwächst.
+  // Kuratierte Überlebens-Bereiche: `pick` hebt die kritischsten Sätze an den
+  // Anfang – auch quer zur Kategorie (z. B. "Hilfe!" steht in den Grundlagen,
+  // gehört im Ernstfall aber nach ganz oben zu Notfall). Der Rest füllt sich
+  // aus der Kategorie bis zum Cap auf, damit es mit der Datenbasis mitwächst.
   const SPICKZETTEL_GROUPS = [
-    { cat: "notfall", limit: 10 },
-    { cat: "basics",  limit: 10 },
-    { cat: "rumbo",   limit: 6 },
-    { cat: "dinero",  limit: 6 },
+    { cat: "notfall", limit: 10, pick: ["b17", "n01", "b18", "b19", "n08", "n10", "n11", "n14", "n06", "n15"] },
+    { cat: "basics",  limit: 10, pick: ["b10", "b11", "b15", "b14", "b08", "b16", "b05", "b06"] },
+    { cat: "rumbo",   limit: 6,  pick: ["b20", "dir20", "dir21", "dir23", "dir26"] },
+    { cat: "dinero",  limit: 6,  pick: ["d01", "d04", "d05", "d06", "d07"] },
   ];
 
   function spickzettelVM() {
+    const used = new Set(); // jede Karte höchstens einmal auf dem Zettel
     const groups = SPICKZETTEL_GROUPS.map((g) => {
       const cat = categoryById(g.cat);
-      const cards = data.CARDS
-        .filter((c) => c.cat === g.cat)
-        .slice(0, g.limit)
-        .map((c) => ({ id: c.id, de: c.de, es: c.es, tip: c.tip || null }));
+      const picked = (g.pick || []).map(cardById).filter(Boolean);
+      const rest = data.CARDS.filter((c) => c.cat === g.cat);
+      const cards = [];
+      for (const c of picked.concat(rest)) {
+        if (cards.length >= g.limit) break;
+        if (used.has(c.id)) continue;
+        used.add(c.id);
+        cards.push({ id: c.id, de: c.de, es: c.es, tip: c.tip || null });
+      }
       return {
         id: g.cat,
         label: cat ? cat.label : g.cat,
@@ -14560,12 +14632,28 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         cards,
       };
     }).filter((g) => g.cards.length);
-    return { groups, speakable: !!(speech && speech.isSupported()) };
+    // Großanzeige: angetippter Satz bildschirmfüllend – zum Herzeigen.
+    const shown = state.szShow ? cardById(state.szShow) : null;
+    const show = shown ? { id: shown.id, de: shown.de, es: shown.es } : null;
+    return { groups, show, speakable: !!(speech && speech.isSupported()) };
   }
 
   function openSpickzettel() {
     dismissBadgeToast();
     state.screen = "spickzettel";
+    state.szShow = null;
+    render();
+  }
+
+  // Großanzeige öffnen/schließen (Satz bildschirmfüllend zum Herzeigen).
+  function szShow(id) {
+    if (!cardById(id)) return;
+    state.szShow = id;
+    render();
+  }
+
+  function szClose() {
+    state.szShow = null;
     render();
   }
 
@@ -15061,6 +15149,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "open-spickzettel") openSpickzettel();
+    else if (action === "sz-show") szShow(el.dataset.id);
+    else if (action === "sz-close") szClose();
     else if (action === "speak-card") speakCardId(el.dataset.id);
     else if (action === "open-precios") openPrecios();
     else if (action === "precios-currency") setPreciosCurrency(el.dataset.id);
@@ -15142,6 +15232,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function onKeydown(e) {
+    // Spickzettel-Großanzeige: Escape schließt.
+    if (state.screen === "spickzettel" && state.szShow && e.key === "Escape") {
+      szClose();
+      return;
+    }
     if (state.screen !== "study") return;
     const inInput = e.target && e.target.tagName === "INPUT";
     // Space/Enter auf einem echten Button (Bewerten, 🔊, 🧭 Kontext) gehört dem Button –

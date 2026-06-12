@@ -65,6 +65,8 @@
     preciosLevel: [1, 2, 3].includes(settings.preciosLevel) ? settings.preciosLevel : 2,                        // zuletzt gewählte Stufe
     // ----- Frases flexibles (Satzbaukasten, transient) -----
     frases: null,            // { setId, queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
+    // ----- Spickzettel (Survival-Schnellzugriff, transient) -----
+    szShow: null,            // Großanzeige: Karten-Id des bildschirmfüllend gezeigten Satzes | null
     // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
     bodyYaw: -22,            // Drehung der Figur um die Hochachse (Grad)
@@ -1930,22 +1932,30 @@
   }
 
   // ----- Spickzettel (Survival-Schnellzugriff, kein Lernen) -----
-  // Kuratierte Überlebens-Bereiche: je Kategorie die wichtigsten Karten, gedeckelt.
-  // Bewusst per Kategorie + Cap statt fester IDs, damit es mit der Datenbasis mitwächst.
+  // Kuratierte Überlebens-Bereiche: `pick` hebt die kritischsten Sätze an den
+  // Anfang – auch quer zur Kategorie (z. B. "Hilfe!" steht in den Grundlagen,
+  // gehört im Ernstfall aber nach ganz oben zu Notfall). Der Rest füllt sich
+  // aus der Kategorie bis zum Cap auf, damit es mit der Datenbasis mitwächst.
   const SPICKZETTEL_GROUPS = [
-    { cat: "notfall", limit: 10 },
-    { cat: "basics",  limit: 10 },
-    { cat: "rumbo",   limit: 6 },
-    { cat: "dinero",  limit: 6 },
+    { cat: "notfall", limit: 10, pick: ["b17", "n01", "b18", "b19", "n08", "n10", "n11", "n14", "n06", "n15"] },
+    { cat: "basics",  limit: 10, pick: ["b10", "b11", "b15", "b14", "b08", "b16", "b05", "b06"] },
+    { cat: "rumbo",   limit: 6,  pick: ["b20", "dir20", "dir21", "dir23", "dir26"] },
+    { cat: "dinero",  limit: 6,  pick: ["d01", "d04", "d05", "d06", "d07"] },
   ];
 
   function spickzettelVM() {
+    const used = new Set(); // jede Karte höchstens einmal auf dem Zettel
     const groups = SPICKZETTEL_GROUPS.map((g) => {
       const cat = categoryById(g.cat);
-      const cards = data.CARDS
-        .filter((c) => c.cat === g.cat)
-        .slice(0, g.limit)
-        .map((c) => ({ id: c.id, de: c.de, es: c.es, tip: c.tip || null }));
+      const picked = (g.pick || []).map(cardById).filter(Boolean);
+      const rest = data.CARDS.filter((c) => c.cat === g.cat);
+      const cards = [];
+      for (const c of picked.concat(rest)) {
+        if (cards.length >= g.limit) break;
+        if (used.has(c.id)) continue;
+        used.add(c.id);
+        cards.push({ id: c.id, de: c.de, es: c.es, tip: c.tip || null });
+      }
       return {
         id: g.cat,
         label: cat ? cat.label : g.cat,
@@ -1954,12 +1964,28 @@
         cards,
       };
     }).filter((g) => g.cards.length);
-    return { groups, speakable: !!(speech && speech.isSupported()) };
+    // Großanzeige: angetippter Satz bildschirmfüllend – zum Herzeigen.
+    const shown = state.szShow ? cardById(state.szShow) : null;
+    const show = shown ? { id: shown.id, de: shown.de, es: shown.es } : null;
+    return { groups, show, speakable: !!(speech && speech.isSupported()) };
   }
 
   function openSpickzettel() {
     dismissBadgeToast();
     state.screen = "spickzettel";
+    state.szShow = null;
+    render();
+  }
+
+  // Großanzeige öffnen/schließen (Satz bildschirmfüllend zum Herzeigen).
+  function szShow(id) {
+    if (!cardById(id)) return;
+    state.szShow = id;
+    render();
+  }
+
+  function szClose() {
+    state.szShow = null;
     render();
   }
 
@@ -2455,6 +2481,8 @@
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "open-spickzettel") openSpickzettel();
+    else if (action === "sz-show") szShow(el.dataset.id);
+    else if (action === "sz-close") szClose();
     else if (action === "speak-card") speakCardId(el.dataset.id);
     else if (action === "open-precios") openPrecios();
     else if (action === "precios-currency") setPreciosCurrency(el.dataset.id);
@@ -2536,6 +2564,11 @@
   }
 
   function onKeydown(e) {
+    // Spickzettel-Großanzeige: Escape schließt.
+    if (state.screen === "spickzettel" && state.szShow && e.key === "Escape") {
+      szClose();
+      return;
+    }
     if (state.screen !== "study") return;
     const inInput = e.target && e.target.tagName === "INPUT";
     // Space/Enter auf einem echten Button (Bewerten, 🔊, 🧭 Kontext) gehört dem Button –

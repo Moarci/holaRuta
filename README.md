@@ -4,7 +4,7 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.12.0** — 710 Karten · 23 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Gegenteile (Contrarios)** · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · Spickzettel · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.14.0** — 710 Karten · 23 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Gegenteile (Contrarios)** · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · Spickzettel · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
@@ -96,7 +96,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Lernmodus** | Karteikarte (Flip) | Karte antippen / Space → 3D-Flip zeigt die Antwort, dann selbst bewerten (keine Prüfung) |
 | **Lernmodus** | Schreiben (Type) | Antwort tippen → großzügiger Matcher prüft (akzent- & satzzeichen-tolerant) |
 | **Lernmodus** | Hören (Escuchar) 👂 | Die App spricht die spanische Antwort vor (Dictado), du tippst das Gehörte – trainiert das Hörverstehen für echtes LatAm-Spanisch. Nur bei TTS-Support |
-| **Schnellzugriff** | Spickzettel 🆘 | Die kritischsten Sätze (Notfall, Grundlagen, Wegbeschreibung, Geld) sofort groß und auf Tipp vorgelesen – reines Nachschlagen, ohne Lernen |
+| **Schnellzugriff** | Spickzettel 🆘 | Die kritischsten Sätze (Notfall, Grundlagen, Wegbeschreibung, Geld) kuratiert, sofort da und auf Tipp vorgelesen – mit Sprungleiste und bildschirmfüllender Großanzeige zum Herzeigen. Reines Nachschlagen, ohne Lernen |
 | **Hörtrainer** | Precios al oído 💵 | Die App sagt einen Betrag auf Spanisch, du tippst die Zahl. Beträge werden pro Runde frisch erzeugt (eigener Zahl→Wort-Wandler, `numbers.js`) – wähle Land/Währung (🇨🇴 Kolumbien, 🇨🇱 Chile, 🇦🇷 Argentinien, 🇨🇷 Costa Rica, 🇲🇽 Mexiko, 🇵🇪 Peru, 🇬🇹 Guatemala) und eine von drei Schwierigkeitsstufen – von Kleingeld bis zu kolumbianischen Millionenpreisen. Grammatisch sauber (un millón quinientos mil, veintiún mil, „de pesos" nur bei vollen Millionen), mit Score |
 | **Satzbaukasten** | Frases flexibles 🧱 | Satzrahmen mit Lücke („Necesito ___"), passenden Baustein wählen – produktives Satzbauen statt bloßem Übersetzen (Multiple Choice). 49 Sätze in 7 Reise-Themen, wählbar vorab oder „🎲 Gemischt" |
 | **Tagesrunde** | Ruta del día 🗺️ | Ein Tap für eine kurze, kategorienübergreifende Tagesrunde (bevorzugt fällige, sonst neue Karten) – stärkt die Lern-Serie |
