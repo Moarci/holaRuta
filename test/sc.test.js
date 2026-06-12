@@ -317,7 +317,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
     quizzesPlayed: 7, quizzesPerfect: 2,
-    frasesPlayed: 3, frasesPerfect: 1,
+    frasesPlayed: 3, frasesPerfect: 1, frasesThemesDone: { transporte: true, comida: true },
     listenReviews: 30, preciosPlayed: 4, preciosPerfect: 2,
     rutaDays: { "2026-06-11": true },
     contextCardsSeen: { hostel01: true },

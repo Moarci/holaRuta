@@ -73,6 +73,7 @@
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
     { action: "open-compras",     icon: "🛒", title: "Einkaufszettel", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
   ];
 
@@ -1572,6 +1573,27 @@
   }
 
   // ---------- FRASES FLEXIBLES (Satzbaukasten) ----------
+  // Themen-Auswahl vor der Runde – Reuse der Hostel-Szenenkacheln (.hm-scene)
+  // wie bei Definiciones. Die "Gemischt"-Kachel steht zuoberst und abgesetzt.
+  function renderFrasesSetup(vm) {
+    const tile = (s, mixed) =>
+      `<button class="hm-scene${mixed ? " hm-scene--mixed" : ""}" data-action="start-frases" data-set="${esc(s.id)}">
+         <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+         <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
+         <span class="hm-scene__count">${s.count}</span>
+       </button>`;
+    const list = vm.sets.map((s) => tile(s, false)).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🧱 Frases flexibles", "home")}
+        <p class="hm-intro">Wähle eine Reise-Situation und fülle die Lücke im Satzrahmen mit dem passenden Baustein – so baust du Sätze selbst, statt nur zu übersetzen.</p>
+        <div class="hm-scenes">
+          ${tile(vm.mixed, true)}
+          ${list}
+        </div>
+      </section>`;
+  }
+
   // Satzrahmen mit Lücke + Multiple Choice. Reuse der Definiciones-Optik
   // (.quiz-def / .quiz-opt / .quiz-feedback).
   function renderFrases(vm) {
@@ -1608,7 +1630,7 @@
 
     return `
       <section class="screen study">
-        ${hmTopbar("🧱 Frases flexibles", "home")}
+        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "open-frases")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">Satz ${vm.position + 1}/${vm.total}</div>
         <div class="quiz-def">
@@ -1630,10 +1652,11 @@
       <section class="screen">
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "🧱"}</div>
-          <h2>Frases flexibles geschafft</h2>
+          <h2>${esc(vm.setLabel)} geschafft</h2>
           <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
           <p class="hm-winner">${verdict}</p>
           <button class="cta" data-action="frases-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="open-frases">Anderes Thema</button>
           <button class="ghostbtn" data-action="home">Zur Übersicht</button>
         </div>
       </section>`;
@@ -1761,6 +1784,196 @@
 
         <button class="cta cj-cta" data-action="open-category" data-id="verbos">
           Jetzt üben: Konjugieren <span class="cta__count">${vm.cardCount} Karten</span>
+        </button>
+      </section>`;
+  }
+
+  // ---------- TIEMPOS (Erklärseite Zeiten) ----------
+  // Ausführliche, reisebezogene Zeitformen-Erklärung (Inhalte aus data.TENSES):
+  // Zeitstrahl, die wichtigsten Zeitformen als aufklappbare Karten (mit Bildungs-
+  // Rezept, Signalwörtern und mehreren Beispielen), Verlaufsform, Indefinido-vs-
+  // Imperfecto, unregelmäßige Vergangenheit & Partizipien, Imperativ, „hay“,
+  // Situations-Zuordnung, Stolperfallen, Signalwörter und drei Reisedialoge.
+  // Unten ein CTA in die Übungskarten – über die normale open-category-Aktion.
+  function renderTiempos(vm) {
+    const g = vm.guide;
+
+    // Eine Zeit-Tabelle: Person links (gemeinsame tableLabels), Form rechts –
+    // dieselbe Datenform wie bei der Konjugation.
+    const table = (forms) => `
+      <ul class="cj-table">
+        ${forms.map((f, i) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(g.tableLabels[i])}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
+      </ul>`;
+
+    // Zeitstrahl: ein Verb (ich-Form) in drei Zeiten – als kompakte Wortliste.
+    const t = g.timeline;
+    const timelineRows = t.rows
+      .map((r) => `
+        <li class="cinfo-word">
+          <span class="cinfo-word__de">${esc(r.when)}</span>
+          <span class="cinfo-word__es" lang="es">${esc(r.es)}</span>
+          <span class="cinfo-word__de">${esc(r.de)}</span>
+        </li>`)
+      .join("");
+    const timeline = `
+      <p class="cinfo-text cj-note">${esc(t.verb)}</p>
+      <ul class="cinfo-words">${timelineRows}</ul>
+      <p class="cinfo-text cj-note">${esc(t.note)}</p>`;
+
+    // Kleiner Helfer: Beispiel-/Dialogzeilen (spanisch + deutsch) als Blöcke.
+    const lines = (arr) => arr
+      .map((l) => `
+        <div class="context-panel__line">
+          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
+          <p class="context-panel__de">${esc(l.de)}</p>
+        </div>`)
+      .join("");
+
+    // Die einzelnen Zeitformen als aufklappbare Karten (wie die unregelmäßigen
+    // Verben): Kopf = Zeitname + Kurzbeschreibung, aufgeklappt die Formen-
+    // Tabelle, das Bildungs-Rezept, Signalwörter, ein „Wann?“-Hinweis und
+    // mehrere Reise-Beispielsätze.
+    const tenseBlocks = g.tenses
+      .map((te) => `
+        <details class="cinfo-dish">
+          <summary class="cinfo-dish__head">
+            <span class="cinfo-dish__heart">
+              <span class="cinfo-dish__name" lang="es">${esc(te.name)}</span>
+              <span class="cinfo-dish__desc">${esc(te.nameDe)}</span>
+            </span>
+            <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="cinfo-dish__body">
+            ${table(te.forms)}
+            <p class="cj-verb__like"><strong>So baust du es:</strong> ${esc(te.recipe)}</p>
+            <p class="cj-verb__like"><strong>Signalwörter:</strong> <span lang="es">${esc(te.signals)}</span></p>
+            <p class="cj-verb__like"><strong>Wann?</strong> ${esc(te.when)}</p>
+            ${lines(te.examples)}
+          </div>
+        </details>`)
+      .join("");
+
+    // Kleiner Helfer: Wortpaar-Liste (spanisch fett links, deutsch rechts) –
+    // für Gerundien, Partizipien, Imperativ-, hay- und Signalwort-Listen.
+    const pairList = (rows, esKey, deKey) => `
+      <ul class="cinfo-words">
+        ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
+      </ul>`;
+
+    // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiele.
+    const c = g.continuous;
+    const continuous = `
+      <p class="cinfo-text">${esc(c.intro)}</p>
+      ${table(c.forms)}
+      ${pairList(c.gerunds.map((x) => ({ es: x.inf + " → " + x.ger, de: x.de })), "es", "de")}
+      ${lines(c.examples)}
+      <p class="cinfo-text cj-note">${esc(c.note)}</p>`;
+
+    // Indefinido vs. Imperfecto: zwei Spalten-Blöcke mit Stichpunkten + ein
+    // kombinierter Beispielsatz (Ereignis vor Hintergrund).
+    const iv = g.indefVsImperf;
+    const ivCol = (col) => `
+      <div class="cj-verb">
+        <h4 class="cj-verb__h">${esc(col.label)}</h4>
+        <ul class="cinfo-words">${col.points.map((p) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(p)}</span></li>`).join("")}</ul>
+      </div>`;
+    const indefVsImperf = `
+      <p class="cinfo-text">${esc(iv.intro)}</p>
+      <div class="cj-verbs">${ivCol(iv.indef)}${ivCol(iv.imperf)}</div>
+      ${lines([iv.combined])}
+      <p class="cinfo-text cj-note">${esc(iv.note)}</p>`;
+
+    // Reise-Situationen: Beispiel-Satz links, Zuordnung zur Zeitform rechts.
+    const sc = g.scenarios;
+    const scenarios = `
+      <p class="cinfo-text">${esc(sc.intro)}</p>
+      ${pairList(sc.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(sc.note)}</p>`;
+
+    // Stolperfallen: falsch (durchgestrichen) → richtig, plus Erklärung.
+    const pf = g.pitfalls;
+    const pitfallRows = pf.rows
+      .map((r) => `
+        <li class="cinfo-word cj-pitfall">
+          <span class="cj-pitfall__pair"><span class="cj-pitfall__wrong" lang="es">${esc(r.wrong)}</span> <span class="cj-pitfall__arrow" aria-hidden="true">→</span> <span class="cj-pitfall__right" lang="es">${esc(r.right)}</span></span>
+          <span class="cinfo-word__de">${esc(r.de)}</span>
+        </li>`)
+      .join("");
+    const pitfalls = `
+      <p class="cinfo-text">${esc(pf.intro)}</p>
+      <ul class="cinfo-words">${pitfallRows}</ul>
+      <p class="cinfo-text cj-note">${esc(pf.note)}</p>`;
+
+    // Pretéritos fuertes: je Verb ein kleiner Block mit Überschrift + Tabelle.
+    const sp = g.strongPast;
+    const strongPastBlocks = sp.verbs
+      .map((v) => `
+        <div class="cj-verb">
+          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.verbDe)}</span></h4>
+          ${table(v.forms)}
+        </div>`)
+      .join("");
+    const strongPast = `
+      <p class="cinfo-text">${esc(sp.intro)}</p>
+      <div class="cj-verbs">${strongPastBlocks}</div>
+      <p class="cinfo-text cj-note">${esc(sp.note)}</p>`;
+
+    // Unregelmäßige Partizipien: Infinitiv → Partizip, deutsche Bedeutung.
+    const pp = g.participles;
+    const participles = `
+      <p class="cinfo-text">${esc(pp.intro)}</p>
+      ${pairList(pp.rows.map((x) => ({ es: x.inf + " → " + x.part, de: x.de })), "es", "de")}
+      <p class="cinfo-text cj-note">${esc(pp.note)}</p>`;
+
+    // Imperativo & hay: schlichte Wortpaar-Listen mit Hinweis.
+    const im = g.imperative;
+    const imperative = `
+      <p class="cinfo-text">${esc(im.intro)}</p>
+      ${pairList(im.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(im.note)}</p>`;
+
+    const hy = g.hay;
+    const hayBlock = `
+      <p class="cinfo-text">${esc(hy.intro)}</p>
+      ${pairList(hy.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(hy.note)}</p>`;
+
+    const signalRows = g.signals
+      .map((s) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(s.es)}</span><span class="cinfo-word__de">${esc(s.de)}</span></li>`)
+      .join("");
+
+    // Reisedialoge: der Drei-Zeiten-Dialog plus die beiden themed Dialoge
+    // (Rückblick & Pläne) – jeder mit Titel, Zeilen und Mini-Hinweis.
+    const allDialogs = [g.example].concat(g.dialogs || []);
+    const dialogsHtml = allDialogs
+      .map((d) => `
+        <div class="cj-dialog">
+          <h4 class="cj-verb__h" lang="es">${esc(d.title)}</h4>
+          ${lines(d.lines)}
+          <p class="cinfo-text cj-note">${esc(d.note)}</p>
+        </div>`)
+      .join("");
+
+    return `
+      <section class="screen">
+        ${hmTopbar("⏳ Tiempos", "home")}
+        <p class="hm-intro">${esc(g.intro)}</p>
+
+        ${sect("↔️", t.title, timeline)}
+        ${sect("🕰️", "Die wichtigsten Zeitformen", `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
+        ${sect("⏯️", c.title, continuous)}
+        ${sect("⚖️", iv.title, indefVsImperf)}
+        ${sect("💪", sp.title, strongPast)}
+        ${sect("🧩", pp.title, participles)}
+        ${sect("🗣️", im.title, imperative)}
+        ${sect("📦", hy.title, hayBlock)}
+        ${sect("🧳", sc.title, scenarios)}
+        ${sect("⚠️", pf.title, pitfalls)}
+        ${sect("🔑", "Signalwörter: woran du die Zeit erkennst", `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
+        ${sect("🧭", "Reisedialoge: die Zeiten im Gespräch", dialogsHtml)}
+
+        <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
+          Jetzt üben: Zeiten <span class="cta__count">${vm.cardCount} Karten</span>
         </button>
       </section>`;
   }
@@ -1967,7 +2180,7 @@
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderSpickzettel,
-                   renderPrecios, renderPreciosDone, renderFrases, renderFrasesDone,
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
+                   renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone };
 })();

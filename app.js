@@ -26,7 +26,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'spickzettel' | 'precios' | 'preciosDone' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -57,7 +57,7 @@
     // ----- Precios al oído (Preis-Hörtrainer, transient) -----
     precios: null,           // { queue:[cardId…], idx, total, result:{correct,answers,input}|null, correct }
     // ----- Frases flexibles (Satzbaukasten, transient) -----
-    frases: null,            // { queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
+    frases: null,            // { setId, queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
     // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
     bodyYaw: -22,            // Drehung der Figur um die Hochachse (Grad)
@@ -805,8 +805,31 @@
     render();
   }
 
+  // ----- Tiempos: Erklärseite Zeiten -----
+  // Statische Zeitformen-Erklärung (Inhalte: data.TENSES). Wie bei Conjugación
+  // springt der "Jetzt üben"-Button per normaler open-category-Aktion in die
+  // Übungskarten der Kategorie "tiempos".
+  function tiemposVM() {
+    return {
+      guide: data.TENSES,
+      cardCount: data.CARDS.filter((c) => c.cat === "tiempos").length,
+    };
+  }
+
+  function openTiempos() {
+    dismissBadgeToast();
+    state.screen = "tiempos";
+    render();
+  }
+
   // ----- Frases flexibles (Satzbaukasten): Steuerung -----
+  // Virtuelle "Gemischt"-Id: spielt alle Rahmen quer durch alle Themen.
+  const FRASES_ALL = "all";
   const frasesById = (id) => (frases ? frases.FRASES.find((f) => f.id === id) : null) || null;
+  const frasesSetById = (id) => (frases && frases.FRASES_SETS ? frases.FRASES_SETS.find((s) => s.id === id) : null) || null;
+  // Rahmen eines Themas (oder alle bei "all"). Reihenfolge der Daten bleibt erhalten.
+  const frasesForSet = (setId) =>
+    frases ? frases.FRASES.filter((f) => setId === FRASES_ALL || f.cat === setId) : [];
 
   // Optionen eines Rahmens bauen: korrekter Baustein + Ablenker, gemischt. Einmal
   // beim Stellen berechnet und im State gehalten (Re-Render darf nicht neu mischen).
@@ -816,12 +839,37 @@
     return shuffle(opts);
   }
 
-  function openFrases() {
+  // Themen-Auswahl: jede Liste mit Zahl + Stufe, plus eine "Gemischt"-Kachel über alles.
+  function frasesSetupVM() {
+    const sets = (frases && frases.FRASES_SETS ? frases.FRASES_SETS : []).map((s) => {
+      const lvl = levelById(s.lvl);
+      return { id: s.id, label: s.label, icon: s.icon, intro: s.intro,
+        count: frasesForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
+    });
+    return {
+      sets,
+      mixed: { id: FRASES_ALL, label: "Gemischt", icon: "🎲",
+        intro: "Alle Themen bunt gemischt – die volle Runde.",
+        count: frases ? frases.FRASES.length : 0 },
+    };
+  }
+
+  function openFrasesSetup() {
     dismissBadgeToast();
-    if (!frases || !frases.FRASES.length) return;
-    const queue = shuffle(frases.FRASES).map((f) => f.id);
+    state.screen = "frasesSetup";
+    render();
+  }
+
+  // Backwards-kompatibler Einsprung (Home-Kachel): führt jetzt zur Themen-Auswahl.
+  function openFrases() { openFrasesSetup(); }
+
+  function startFrases(setId) {
+    dismissBadgeToast();
+    const pool = frasesForSet(setId);
+    if (!pool.length) return;
+    const queue = shuffle(pool).map((f) => f.id);
     state.frases = {
-      queue, idx: 0, total: queue.length,
+      setId, queue, idx: 0, total: queue.length,
       options: buildFrasesOptions(frasesById(queue[0])),
       selected: null, correct: 0,
     };
@@ -829,10 +877,18 @@
     render();
   }
 
+  // Kopf-Infos zum laufenden Set (Label/Icon) – "Gemischt" hat keinen Datensatz.
+  function frasesSetInfo(setId) {
+    if (setId === FRASES_ALL) return { label: "Gemischt", icon: "🎲" };
+    const s = frasesSetById(setId);
+    return { label: s ? s.label : "", icon: s ? s.icon : "🧱" };
+  }
+
   function frasesVM() {
     const f = state.frases;
     const frame = frasesById(f.queue[f.idx]);
     const answered = f.selected !== null;
+    const info = frasesSetInfo(f.setId);
     const options = f.options.map((o, i) => ({
       es: o.es, de: o.de,
       // vor der Antwort neutral; danach Lösung grün, falsche Wahl rot, Rest gedämpft.
@@ -843,6 +899,7 @@
     }));
     const sol = f.options.find((o) => o.correct) || {};
     return {
+      setLabel: info.label, setIcon: info.icon,
       position: f.idx, total: f.total,
       frameEs: frame ? frame.frameEs : "",
       targetDe: frame ? frame.targetDe : "",
@@ -855,7 +912,9 @@
 
   function frasesDoneVM() {
     const f = state.frases;
-    return { correct: f.correct, total: f.total, perfect: f.total > 0 && f.correct === f.total };
+    const info = frasesSetInfo(f.setId);
+    return { setLabel: info.label, setIcon: info.icon,
+      correct: f.correct, total: f.total, perfect: f.total > 0 && f.correct === f.total };
   }
 
   // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
@@ -884,17 +943,24 @@
   }
 
   function frasesAgain() {
-    // Wie preciosAgain: openFrases() baut state.frases neu; kein vorheriges Nullen,
-    // damit ein (theoretischer) Early-Return keinen inkonsistenten Zustand hinterlässt.
-    openFrases();
+    // Dieselbe Themen-Runde noch einmal (startFrases baut state.frases neu auf);
+    // fällt auf "Gemischt" zurück, falls (theoretisch) kein Set hinterlegt ist.
+    startFrases(state.frases ? state.frases.setId : FRASES_ALL);
   }
 
-  // Ergebnis einer beendeten Satzbaukasten-Runde buchen (Ruta-Pass).
+  // Ergebnis einer beendeten Satzbaukasten-Runde buchen (Ruta-Pass). Zusätzlich
+  // das gespielte Thema vermerken – speist den "Alle Themen"-Badge (Gemischt zählt
+  // nicht als einzelnes Thema).
   function recordFrasesResult(f) {
     if (!badges) return;
     const g = Object.assign({}, gamestats);
     g.frasesPlayed = (g.frasesPlayed || 0) + 1;
     if (f.total > 0 && f.correct === f.total) g.frasesPerfect = (g.frasesPerfect || 0) + 1;
+    if (f.setId && f.setId !== FRASES_ALL) {
+      const done = Object.assign({}, g.frasesThemesDone);
+      done[f.setId] = true;
+      g.frasesThemesDone = done;
+    }
     gamestats = g;
     store.saveGameStats(gamestats);
   }
@@ -1251,9 +1317,11 @@
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
     else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
+    else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
     else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
+    else if (state.screen === "frasesSetup") root.innerHTML = ui.renderFrasesSetup(frasesSetupVM());
     else if (state.screen === "frases") root.innerHTML = ui.renderFrases(frasesVM());
     else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone(frasesDoneVM());
     else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
@@ -2257,6 +2325,7 @@
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
     else if (action === "open-conjugacion") openConjugacion();
+    else if (action === "open-tiempos") openTiempos();
     else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
@@ -2266,7 +2335,8 @@
     else if (action === "precios-next") nextPrecios();
     else if (action === "precios-again") preciosAgain();
     else if (action === "precios-speak") speakPrecios();
-    else if (action === "open-frases") openFrases();
+    else if (action === "open-frases") openFrasesSetup();
+    else if (action === "start-frases") startFrases(el.dataset.set);
     else if (action === "frases-answer") answerFrases(Number(el.dataset.idx));
     else if (action === "frases-next") nextFrases();
     else if (action === "frases-again") frasesAgain();
