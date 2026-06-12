@@ -72,7 +72,7 @@
         "Kontakte sichern: „Escríbeme por WhatsApp“ – so bleibt man unterwegs in Verbindung.",
       ],
       donts: [
-        "Niemandem aufdrängen, der sichtbar Ruhe oder Zeit für sich will.",
+        "Sich niemandem aufdrängen, der sichtbar Ruhe oder Zeit für sich will.",
         "Keine versteckten Kosten – die Rechnung sauber und nachvollziehbar splitten.",
         "Niemanden zum Trinken, Feiern oder zu Ausgaben drängen.",
         "Nicht ständig nur in der eigenen Sprachblase bleiben – ein paar Brocken Spanisch öffnen mehr.",
@@ -111,7 +111,7 @@
     },
     guatemala: {
       hostel: "In Antigua und am Lago Atitlán sind Hostels Backpacker-Treffpunkte – Wertsachen trotzdem immer ins Locker.",
-      bus: "Die bunten „chicken buses“ (camionetas) sind günstig und ein Erlebnis, aber voll und nachts gemieden; für lange Strecken Shuttle nehmen.",
+      bus: "Die bunten „chicken buses“ (camionetas) sind günstig und ein Erlebnis, aber voll und nachts zu meiden; für lange Strecken Shuttle nehmen.",
       grupo: "Viele organisieren gemeinsam den Acatenango-Vulkan – frag im Hostel, da findet sich schnell eine Gruppe.",
       cultura: "In den Maya-Dörfern Menschen und Trachten nie ohne Erlaubnis fotografieren.",
     },
@@ -128,7 +128,7 @@
       cultura: "Salvadorianer sind herzlich; ein einfaches „¡Buena onda!“ kommt gut an.",
     },
     nicaragua: {
-      hostel: "In Granada und León sind Hostels mit Hängematten-Höfen die Norm – schön zum Leute treffen, Wertsachen trotzdem wegschließen.",
+      hostel: "In Granada und León sind Hostels mit Hängematten-Höfen die Norm – schön zum Leutetreffen, Wertsachen trotzdem wegschließen.",
       bus: "Auch hier fahren ausrangierte US-Schulbusse als günstige „chicken buses“; für Komfort und Sicherheit Shuttles nutzen.",
       grupo: "Vulkan-Boarding am Cerro Negro bucht man meist als Gruppe übers Hostel.",
       cultura: "Geduld bei „ahorita“ – Zeitangaben sind oft dehnbar, plane Puffer ein.",
@@ -148,7 +148,7 @@
     cuba: {
       hostel: "Statt Hostels übernachtet man in „casas particulares“ (Privatzimmer) – respektiere, dass es ein Familienhaus ist.",
       bus: "Víazul-Busse verbinden Touristenstädte (im Voraus buchen); zwischendurch teilt man sich „colectivos“ (Sammeltaxis).",
-      grupo: "Andere Reisende trifft man in der casa beim Frühstück – Wlan gibt's nur an öffentlichen Plätzen mit Karte.",
+      grupo: "Andere Reisende trifft man in der casa beim Frühstück – WLAN gibt's nur an öffentlichen Plätzen mit Karte.",
       cultura: "Zwei Währungswelten und knappe Waren: kleine Gastgeschenke (Stifte, Seife) werden geschätzt, Politik lieber meiden.",
     },
     "republica-dominicana": {
@@ -182,7 +182,7 @@
       cultura: "In den Anden indigene Gemeinschaften respektvoll behandeln – fürs Fotografieren um Erlaubnis fragen; Toilettenpapier gehört fast überall in die papelera, nicht ins WC.",
     },
     peru: {
-      hostel: "In Cusco (3.400 m) erst akklimatisieren – die erste Nacht ruhig angehen, viel Wasser, coca-Tee hilft.",
+      hostel: "In Cusco (3.400 m) erst akklimatisieren – die erste Nacht ruhig angehen, viel Wasser, Coca-Tee hilft.",
       bus: "Cruz del Sur & Co. bieten sichere, bequeme Fernbusse mit Sitzkontrolle – für lange Strecken klar empfehlenswert.",
       grupo: "Den Salkantay-/Inca-Trek bucht man oft als Gruppe; Trekkingpartner findet man im Hostel.",
       cultura: "Auf Märkten ist moderates Feilschen okay; beim Essen „buen provecho“ wünschen kommt gut an.",
@@ -197,7 +197,7 @@
       hostel: "Hostels sind gut organisiert, aber teuer; in Patagonien (Torres del Paine) Plätze weit im Voraus sichern.",
       bus: "Fernbusse (z. B. Turbus, Pullman) sind komfortabel und pünktlich – Chile ist verlässlicher als viele Nachbarn.",
       grupo: "Für Patagonien-Treks („W“-Trek) Ausrüstung und Camps teilen – Gruppen senken Kosten deutlich.",
-      cultura: "Chilenisches Spanisch ist schnell und voller Slang („cachai?“); ruhig nachfragen, das ist okay.",
+      cultura: "Chilenisches Spanisch ist schnell und voller Slang („¿cachái?“); ruhig nachfragen, das ist okay.",
     },
     argentina: {
       hostel: "In Buenos Aires startet das Nachtleben spät – Dorm-Mitbewohner kommen um 3–4 Uhr, also Ohrstöpsel parat.",

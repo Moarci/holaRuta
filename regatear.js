@@ -53,7 +53,7 @@
     {
       icon: "🎯",
       title: "Die Verhandlung führen",
-      intro: "Der erste genannte Preis ist fast nie der letzte. Frag nach, biete weniger, treffe dich in der Mitte.",
+      intro: "Der erste genannte Preis ist fast nie der letzte. Frag nach, biete weniger, triff dich in der Mitte.",
       dos: [
         "Erst nach dem Preis fragen, bevor du Interesse zeigst: „¿A cuánto?“ / „¿A cómo?“",
         "Den ersten Preis nie sofort annehmen – freundlich stutzen: „Uy, está caro.“",
@@ -93,7 +93,7 @@
         "Den Fahrpreis VOR dem Einsteigen aushandeln: „¿Cuánto me cobra al centro?“",
         "Eine Referenz nennen: „El otro me dijo treinta.“ – das drückt den Preis.",
         "Passend und in lokaler Währung zahlen; vorher fragen: „¿Tiene cambio?“",
-        "Bei Touren den Preis pro Person und was inklusive ist klären: „¿Qué incluye?“",
+        "Bei Touren den Preis pro Person und, was inklusive ist, klären: „¿Qué incluye?“",
       ],
       donts: [
         "Nicht ohne ausgemachten Preis einsteigen, wenn es kein Taxameter gibt.",
@@ -116,7 +116,7 @@
     { es: "en efectivo", de: "in bar" },
     { es: "el cambio / el vuelto", de: "das Wechselgeld" },
     { es: "la yapa / la ñapa", de: "kleine Gratis-Dreingabe (Anden / Karibik)" },
-    { es: "el/la casero/a", de: "Stamm­kunde / -verkäufer (Anrede der Vertrautheit)" },
+    { es: "el/la casero/a", de: "Stammkunde / -verkäufer (Anrede der Vertrautheit)" },
   ];
 
   // ---------- Wichtige Sätze, nach Phase gruppiert ----------
@@ -250,7 +250,7 @@
       roleA: "Reisender",
       roleB: "Standverkäufer",
       situationDe: "Auf dem Kunsthandwerksmarkt suchst du Flip-Flops. Der erste Preis ist zu hoch – verhandle freundlich, notfalls geh ein Stück weg.",
-      goalA: "Frag nach den Flip-Flops und dem Preis, finde ihn zu teuer, mach ein Gegenangebot und einig dich.",
+      goalA: "Frag nach den Flip-Flops und dem Preis, finde ihn zu teuer, mach ein Gegenangebot und einige dich.",
       goalB: "Nenne einen Startpreis, wehr dich erst, gib dann etwas nach und mach den Deal.",
       dialogue: [
         { speaker: "A", de: "Hallo, Freund! Hast du Flip-Flops?", es: "¡Hola, amigo! ¿Tienes chancletas?" },
@@ -299,7 +299,7 @@
       roleA: "Reisender",
       roleB: "Taxifahrer",
       situationDe: "Am Busbahnhof gibt es kein Taxameter. Handle den Preis ins Zentrum aus, BEVOR du einsteigst, und kläre das Wechselgeld.",
-      goalA: "Frag nach dem Preis ins Zentrum, finde ihn zu hoch, nenne eine Referenz, einig dich und kläre das Wechselgeld.",
+      goalA: "Frag nach dem Preis ins Zentrum, finde ihn zu hoch, nenne eine Referenz, einige dich und kläre das Wechselgeld.",
       goalB: "Nenne einen Startpreis, begründe ihn, gib etwas nach und bestätige den Deal.",
       dialogue: [
         { speaker: "A", de: "Guten Tag, wie viel berechnen Sie mir ins Zentrum?", es: "Buenas, ¿cuánto me cobra al centro?" },
