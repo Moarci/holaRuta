@@ -3,9 +3,10 @@
  * auf ein <canvas> und teilt es per Web Share API bzw. lädt es als Fallback
  * herunter. KENNT KEINEN ZUSTAND – bekommt fertige Anzeige-Daten.
  *
- * Zwei Motive (Umschalter):
+ * Drei Motive (Umschalter):
  *   buildCard(payload, aspect)  – eine einzelne Vokabel (DE → ES + Aussprache)
  *   buildStats(payload, aspect) – der eigene Lernfortschritt (Kennzahlen)
+ *   buildBadge(payload, aspect) – ein freigeschalteter Ruta-Pass-Stempel (Badge)
  *
  * Zwei Formate (aspect):
  *   "square" – 1080×1080 (Insta-Feed/WhatsApp)
@@ -317,6 +318,102 @@
     return c;
   }
 
+  // ---------- Motiv 3: Ruta-Pass-Stempel (Badge) ----------
+  // Ein freigeschalteter Stempel als „Reisestempel im Pass": warmes Medaillon
+  // mit dem Badge-Emoji, Name, Freischalt-Text und Sammelstand.
+  // payload: { icon, name, text, groupLabel, groupIcon, unlocked, total, accent? }
+  function buildBadge(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    // Warmer „Pass-Stempel"-Look (Terrakotta→Ocker), passend zum Ruta-Pass.
+    const accent = payload.accent && payload.accent.length === 2 ? payload.accent : ["#C2502E", "#E9A23B"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    // Layout je Format (vertikal gestreckt für Story).
+    const L = isStory
+      ? { kicker: 360, group: 412, medY: 820, R: 250, iconPx: 230, namePx: 88, nameMaxH: 230, textPx: 42, pillPx: 34, pillH: 78 }
+      : { kicker: 150, group: 198, medY: 432, R: 176, iconPx: 162, namePx: 66, nameMaxH: 168, textPx: 34, pillPx: 28, pillH: 64 };
+
+    // Kopf: Ruta-Pass + Badge-Gruppe.
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.font = font("700", 40);
+    ctx.fillText("🎖️ MEIN RUTA-PASS", cx, L.kicker);
+    if (payload.groupLabel) {
+      ctx.fillStyle = "rgba(255,255,255,0.82)";
+      ctx.font = font("600", 30);
+      ctx.fillText(`${payload.groupIcon || ""}  ${payload.groupLabel}`.trim(), cx, L.group);
+    }
+
+    // Stempel-Medaillon: weißer Kreis mit gestricheltem Innenring (Pass-Optik).
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 48;
+    ctx.shadowOffsetY = 22;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, L.medY, L.R, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.strokeStyle = accent[0];
+    ctx.globalAlpha = 0.45;
+    ctx.lineWidth = 6;
+    ctx.setLineDash([18, 16]);
+    ctx.beginPath();
+    ctx.arc(cx, L.medY, L.R - 30, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+
+    // Badge-Emoji zentriert im Medaillon.
+    ctx.fillStyle = INK;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = font("700", L.iconPx);
+    ctx.fillText(payload.icon || "🎖️", cx, L.medY + 6);
+    ctx.textBaseline = "alphabetic";
+
+    // Sammelstand-Pille (fester Platz knapp über der Fußzeile).
+    const pillBottom = h - (isStory ? 230 : 150);
+    const pillTop = pillBottom - L.pillH;
+    if (payload.total) {
+      ctx.font = font("700", L.pillPx);
+      const ptxt = `🎖️ ${payload.unlocked} / ${payload.total} Stempel gesammelt`;
+      const pw = Math.min(W - PAD * 2, ctx.measureText(ptxt).width + 64);
+      ctx.fillStyle = "rgba(255,255,255,0.18)";
+      roundRect(ctx, cx - pw / 2, pillTop, pw, L.pillH, L.pillH / 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.96)";
+      ctx.textBaseline = "middle";
+      ctx.fillText(ptxt, cx, pillTop + L.pillH / 2 + 1);
+      ctx.textBaseline = "alphabetic";
+    }
+
+    // Name + Freischalt-Text zwischen Medaillon und Pille (Höhe gedeckelt, damit
+    // nichts überläuft – egal wie lang Name/Text sind).
+    const blockTop = L.medY + L.R + (isStory ? 64 : 44);
+    const blockBottom = pillTop - (isStory ? 44 : 26);
+    const nameBottom = fitText(ctx, payload.name || "", cx, blockTop, W - PAD * 2, {
+      px: L.namePx, min: 40, weight: "800", color: "#ffffff", maxLines: 2,
+      maxH: Math.min(L.nameMaxH, blockBottom - blockTop),
+    });
+    if (payload.text) {
+      const textTop = nameBottom + (isStory ? 28 : 20);
+      fitText(ctx, payload.text, cx, textTop, W - PAD * 2 - 40, {
+        px: L.textPx, min: 26, weight: "500", color: "rgba(255,255,255,0.9)", maxLines: 3,
+        maxH: Math.max(0, blockBottom - textTop),
+      });
+    }
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Canvas -> Blob ----------
   function toBlob(canvas) {
     return new Promise((resolve, reject) => {
@@ -358,6 +455,14 @@
       const tail = facts.length ? " – " + facts.join(", ") : "";
       return `📍 Mein Reise-Spanisch mit HolaRuta${tail}. Lernst du mit? 🌎`;
     }
+    if (kind === "badge") {
+      const name = String(p.name || "").trim();
+      const txt = String(p.text || "").trim();
+      let t = `🎖️ Neuer Stempel im Ruta-Pass: ${name || "ein Reisestempel"}`;
+      if (txt) t += `\n${txt}`;
+      t += `\n\nGesammelt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
+      return t;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || "eine neue Vokabel");
@@ -374,7 +479,9 @@
     const fmt = aspect === "story" ? "story" : "square";
     let canvas;
     try {
-      canvas = kind === "stats" ? buildStats(payload, fmt) : buildCard(payload, fmt);
+      canvas = kind === "stats" ? buildStats(payload, fmt)
+             : kind === "badge" ? buildBadge(payload, fmt)
+             : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
       return "error";
@@ -388,9 +495,13 @@
       return "error";
     }
 
-    const base = kind === "stats" ? "holaruta-fortschritt" : "holaruta-vokabel";
+    const base = kind === "stats" ? "holaruta-fortschritt"
+               : kind === "badge" ? "holaruta-stempel"
+               : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
-    const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt" : "Reise-Spanisch lernen";
+    const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
+                : kind === "badge" ? "Mein Ruta-Pass-Stempel"
+                : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
     // Web Share API mit Datei (Handy: Insta/WhatsApp etc.)
@@ -417,5 +528,5 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats };
+  window.SC.share = { shareImage, buildCard, buildStats, buildBadge };
 })();
