@@ -17,11 +17,8 @@
   <meta name="apple-mobile-web-app-title" content="HolaRuta" />
   <meta name="mobile-web-app-capable" content="yes" />
 
-  <!-- Schriften: Bricolage Grotesque (Display) + Instrument Sans (Text). Offline
-       greift automatisch der System-Fallback aus der CSS. -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <!-- Schriften: Bricolage Grotesque (Display) + Instrument Sans (Text) – self-hosted
+       unter fonts/ (per @font-face in styles.css, DSGVO-sauber und offline verfügbar). -->
 
   <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
        Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe. -->
@@ -43,6 +40,34 @@
  * flache Sticker-Schatten, Bricolage Grotesque (Display) + Instrument Sans (Text).
  * Token-basiert: Farben/Form zentral, Komponenten erben daraus.
  */
+
+/* Schriften: self-hosted (DSGVO, offline). Variable Fonts, latin-Subset –
+ * deckt Spanisch (á é í ó ú ü ñ ¿ ¡) und Deutsch (äöüß) vollständig ab.
+ * font-display: swap -> Text erscheint sofort im System-Fallback. */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("fonts/bricolage-grotesque-600-800-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/instrument-sans-400-700-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/instrument-sans-italic-400-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 :root {
   /* Flächen */
   --page: #241510;       /* dunkelbrauner Rahmen außen */
@@ -1486,7 +1511,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     social07: { e: "¿Vamos juntos al centro?", d: "Gehen wir zusammen ins Zentrum?", s: "Wenn ihr dasselbe Ziel habt oder gemeinsam losziehen wollt.", n: "juntos für gemischte Gruppen oder Männer, juntas für nur Frauen." },
     social08: { e: "Vamos a tomar algo. ¿Te unes?", d: "Wir gehen etwas trinken. Kommst du mit?", s: "Um jemanden locker einzuladen.", n: "Klingt natürlicher als eine sehr formelle Einladung. Perfekt im Hostel." },
     social09: { e: "Escríbeme por WhatsApp y nos vemos más tarde.", d: "Schreib mir auf WhatsApp, dann sehen wir uns später.", s: "Wenn ihr euch später treffen oder Pläne abstimmen wollt.", n: "WhatsApp ist in Lateinamerika extrem verbreitet – fast jeder nutzt es." },
-    social10: { e: "Mucho gusto. Nos vemos mañana.", d: "Schön, dich kennenzulernen. Wir sehen uns morgen.", s: "Nach einem ersten Gespräch im Hostel oder unterwegs.", n: "Mucho gusto passt beim Kennenlernen. Beim Abschied passt: Fue un gusto conocerte." },
+    social10: { e: "Fue un gusto conocerte. Nos vemos mañana.", d: "War schön, dich kennenzulernen. Wir sehen uns morgen.", s: "Nach einem ersten Gespräch im Hostel oder unterwegs.", n: "Beim Abschied: Fue un gusto (conocerte). Beim Kennenlernen selbst sagst du Mucho gusto – Antwort oft El gusto es mío." },
 
     // ===================== GRUNDLAGEN =====================
     b01: { e: "¡Hola! Buenos días.", d: "Hallo! Guten Morgen.", s: "Beim Betreten von Laden, Hostel oder Restaurant.", n: "Ein freundliches Hola öffnet überall Türen – auch unter Fremden völlig normal." },
@@ -1502,7 +1527,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     b12: { e: "Hola, ¿cómo te llamas?", d: "Hallo, wie heißt du?", s: "Beim Kennenlernen im Hostel oder unterwegs.", n: "Förmlich (Sie): ¿Cómo se llama?" },
     b13: { e: "Me llamo Marcel, ¿y tú?", d: "Ich heiße Marcel, und du?", s: "Wenn du dich vorstellst.", n: "Das ¿y tú? am Ende hält das Gespräch in Gang." },
     b14: { e: "Perdón, ¿me puedes ayudar? Estoy perdido.", d: "Entschuldigung, kannst du mir helfen? Ich habe mich verlaufen.", s: "Wenn du Orientierung oder Unterstützung brauchst.", n: "Höflicher und förmlich: ¿Me puede ayudar?" },
-    b15: { e: "Más despacio, por favor. No entiendo.", d: "Langsamer, bitte. Ich verstehe nicht.", s: "Wenn jemand zu schnell spricht.", n: "Kombiniert mit ¿Puede repetir? klappt es fast immer." },
+    b15: { e: "Más despacio, por favor. No entiendo.", d: "Langsamer, bitte. Ich verstehe nicht.", s: "Wenn jemand zu schnell spricht – oder das Taxi zu schnell fährt.", n: "Kombiniert mit ¿Puede repetir? klappt es fast immer. Gilt fürs Sprechen und fürs Fahren gleichermaßen." },
     b18: { e: "Necesito un médico, por favor.", d: "Ich brauche einen Arzt, bitte.", s: "Bei Krankheit oder Verletzung – im Hostel, in der Apotheke.", n: "Im Notfall ergänzen: Es una emergencia." },
     b19: { e: "¡Llame a la policía, por favor!", d: "Rufen Sie die Polizei, bitte!", s: "In einer echten Notlage.", n: "Der Notruf ist in vielen Ländern die 911." },
     b20: { e: "Disculpe, estoy perdido. ¿Dónde queda el centro?", d: "Entschuldigung, ich habe mich verlaufen. Wo ist das Zentrum?", s: "Wenn du die Orientierung verloren hast.", n: "Männer sagen perdido, Frauen perdida." },
@@ -1566,7 +1591,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     e31: { e: "¿Está libre esta mesa?", d: "Ist dieser Tisch frei?", s: "Im vollen Lokal oder Café.", n: "Besetzt? ¿Está ocupado?" },
     e32: { e: "¿Me lo puede empacar para llevar?", d: "Können Sie es mir einpacken? (Reste)", s: "Wenn du Reste mitnehmen willst.", n: "In manchen Ländern auch envolver oder para llevar." },
     e33: { e: "Otra cerveza, por favor.", d: "Noch ein Bier, bitte.", s: "In Bar oder Restaurant.", n: "Eine Runde für alle: una ronda para todos." },
-    e34: { e: "¿Qué es esto? Se ve rico.", d: "Was ist das? Sieht lecker aus.", s: "Am Marktstand oder bei unbekanntem Gericht.", n: "Neugier kommt gut an – oft bekommst du etwas zum Probieren." },
     e35: { e: "La comida estuvo excelente, gracias.", d: "Das Essen war ausgezeichnet, danke.", s: "Nach dem Essen als Lob.", n: "estuvo (war) für ein abgeschlossenes Erlebnis." },
     e36: { e: "Todo estuvo delicioso.", d: "Alles war köstlich.", s: "Beim Bezahlen oder Verabschieden.", n: "Kommt beim Personal immer gut an." },
     e37: { e: "Me gustó mucho, estuvo muy rico.", d: "Es hat mir sehr gefallen, war richtig lecker.", s: "Nach dem Essen.", n: "rico = lecker, in ganz LatAm gebräuchlich." },
@@ -1631,7 +1655,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     h19: { e: "Necesito otra toalla, por favor.", d: "Ich brauche noch ein Handtuch, bitte.", s: "An der Rezeption.", n: "otra = noch eine/eine weitere." },
     h20: { e: "¿Pueden limpiar la habitación, por favor?", d: "Können Sie das Zimmer sauber machen?", s: "Bei längerem Aufenthalt.", n: "Reinigung: la limpieza." },
     h21: { e: "¿Puedo hacer el check-out más tarde?", d: "Kann ich später auschecken?", s: "Am Abreisetag.", n: "Manchmal gegen Aufpreis möglich – einfach fragen." },
-    h22: { e: "¿Puedo dejar mi equipaje aquí hasta la tarde?", d: "Kann ich mein Gepäck hier bis zum Nachmittag lassen?", s: "Nach dem Check-out.", n: "Fast überall kostenlos möglich." },
     h23: { e: "El baño está tapado.", d: "Die Toilette ist verstopft.", s: "Beim Melden an der Rezeption.", n: "tapado = verstopft. Unangenehm, aber wichtig zu sagen." },
     h24: { e: "Tengo mucho calor, ¿puedo prender el aire?", d: "Mir ist sehr warm, kann ich die Klimaanlage anmachen?", s: "Im Zimmer.", n: "Wichtig: Tengo calor (mir ist warm), NICHT Estoy caliente!" },
 
@@ -1647,7 +1670,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     c09: { e: "¿Hay descuento si llevo dos?", d: "Gibt es Rabatt, wenn ich zwei nehme?", s: "Auf dem Markt oder bei Mengen.", n: "descuento = Rabatt; Mengenrabatt ist oft drin." },
     c10: { e: "¿No tiene algo más barato?", d: "Haben Sie nichts Günstigeres?", s: "Beim Vergleichen.", n: "barato = billig, caro = teuer." },
     c11: { e: "¿Me lo puedo probar?", d: "Kann ich es anprobieren?", s: "Beim Kleiderkauf.", n: "Umkleide: el probador." },
-    c12: { e: "¿Qué talla es?", d: "Welche Größe ist das?", s: "Beim Kleiderkauf.", n: "talla = Kleidergröße; Schuhgröße oft número." },
     c13: { e: "¿Dónde está la caja?", d: "Wo ist die Kasse?", s: "Im Laden zum Bezahlen.", n: "caja = Kasse; cajero = Geldautomat (nicht verwechseln)." },
     c14: { e: "¿Está abierto los domingos?", d: "Ist sonntags geöffnet?", s: "Beim Planen von Einkäufen.", n: "abierto = offen, cerrado = geschlossen." },
     c15: { e: "Un kilo de mangos, por favor.", d: "Ein Kilo Mangos, bitte.", s: "Am Obst-/Gemüsestand.", n: "Mengen mit de: un kilo de ..." },
@@ -1657,7 +1679,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     c19: { e: "¿Tiene algo más barato?", d: "Haben Sie etwas Günstigeres?", s: "Wenn dir der Preis zu hoch ist.", n: "Freundlicher Einstieg ins Handeln." },
     c20: { e: "Me da dos panes, por favor.", d: "Geben Sie mir zwei Brote, bitte.", s: "Am Tresen / Stand.", n: "Me da ... ist die typische LatAm-Bestellformel." },
     c21: { e: "Quiero este vestido, por favor.", d: "Ich möchte dieses Kleid.", s: "Beim Kleiderkauf.", n: "este = dieses (hier), ese = das (dort)." },
-    c22: { e: "¿Lo tiene en otra talla?", d: "Haben Sie es in einer anderen Größe?", s: "Beim Anprobieren.", n: "Größer: más grande; kleiner: más chica/pequeña." },
     c23: { e: "¿Lo tiene en otro color?", d: "Haben Sie es in einer anderen Farbe?", s: "Beim Kleiderkauf.", n: "color = Farbe." },
     c24: { e: "¿Tiene una talla más grande?", d: "Haben Sie eine Nummer größer?", s: "Beim Anprobieren.", n: "chica ist in vielen Ländern üblich für klein (sonst pequeña)." },
     c25: { e: "¿Me lo deja más barato?", d: "Geht beim Preis noch was?", s: "Beim Handeln.", n: "dejar algo más barato = günstiger machen – typische Handelsfloskel." },
@@ -1698,9 +1719,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     v10: { e: "Pare aquí, por favor.", d: "Halten Sie hier, bitte.", s: "Im Taxi/Bus am Ziel.", n: "pare = halten Sie an; déjeme aquí = lassen Sie mich hier." },
     v11: { e: "¿A qué hora sale el próximo?", d: "Wann fährt der nächste?", s: "Am Bahnhof/Busbahnhof.", n: "salir = abfahren, llegar = ankommen." },
     v13: { e: "¿Está lejos de aquí?", d: "Ist es weit von hier?", s: "Bevor du losgehst.", n: "lejos = weit, cerca = nah." },
-    v14: { e: "¿Hay un cajero cerca?", d: "Gibt es einen Geldautomaten in der Nähe?", s: "Bei der Suche nach etwas.", n: "cerca de aquí = in der Nähe." },
     v15: { e: "¿Qué tan lejos está la playa?", d: "Wie weit ist der Strand?", s: "Beim Planen.", n: "¿Qué tan ...? = Wie ... – sehr LatAm (Spanien: ¿Cómo de ...?)." },
-    v16: { e: "¿Me lo muestra en el mapa?", d: "Können Sie es auf der Karte zeigen?", s: "Wenn die Wegbeschreibung unklar ist.", n: "Einfach das Handy mit der Karte hinhalten." },
     v17: { e: "¿Dónde hay una gasolinera?", d: "Wo gibt es eine Tankstelle?", s: "Beim Mietwagen/Roadtrip.", n: "In manchen Ländern bomba oder grifo (Peru)." },
     v18: { e: "Lleno de gasolina, por favor.", d: "Volltanken, bitte.", s: "An der Tankstelle.", n: "In Chile bencina. Lleno = voll." },
     v19: { e: "Quiero alquilar un auto.", d: "Ich möchte ein Auto mieten.", s: "Bei der Autovermietung.", n: "auto/carro/coche – je nach Land." },
@@ -1711,7 +1730,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     v24: { e: "¿Puede poner el taxímetro?", d: "Können Sie das Taxameter einschalten?", s: "Beim Taxieinstieg.", n: "Ohne Taxameter vorher einen Festpreis vereinbaren." },
     v25: { e: "¿Puede esperar aquí un momento?", d: "Können Sie hier kurz warten?", s: "Bei kurzem Stopp mit dem Taxi.", n: "esperar = warten. Wartezeit kostet meist extra." },
     v26: { e: "Me bajo aquí, gracias.", d: "Ich steige hier aus.", s: "Im colectivo/Bus.", n: "Kurz und klar – oft reicht ein lautes aquí." },
-    v27: { e: "Más despacio, por favor.", d: "Bitte langsamer fahren.", s: "Im Taxi, wenn es zu schnell wird.", n: "Gilt fürs Fahren und fürs Sprechen gleichermaßen." },
 
     // ===================== ZEIT =====================
     ti01: { e: "Disculpe, ¿qué hora es?", d: "Entschuldigung, wie spät ist es?", s: "Wenn du die Uhrzeit brauchst.", n: "Antwort meist Son las ... (z. B. Son las tres)." },
@@ -1730,8 +1748,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // ===================== SMALLTALK =====================
     s01: { e: "¡Hola! ¿Cómo estás?", d: "Hallo! Wie geht's?", s: "Bei jeder Begrüßung.", n: "Lockerer: ¿Qué tal? oder ¿Qué más? (Kolumbien)." },
     s02: { e: "Bien, gracias, ¿y tú?", d: "Gut, danke, und dir?", s: "Als Antwort auf ¿Cómo estás?", n: "Das ¿y tú? zurückzugeben gehört dazu." },
-    s03: { e: "Mucho gusto, soy Marcel.", d: "Freut mich, ich bin Marcel.", s: "Beim Kennenlernen.", n: "Antwort oft El gusto es mío (die Freude ist meinerseits)." },
-    s04: { e: "¿De dónde eres?", d: "Woher kommst du?", s: "Beim Kennenlernen.", n: "Klassischer Gesprächsöffner im Hostel." },
     s05: { e: "Soy de Alemania, de Múnich.", d: "Ich komme aus Deutschland, aus München.", s: "Wenn du nach deiner Herkunft gefragt wirst.", n: "Soy de + Land/Stadt." },
     s06: { e: "Estoy de vacaciones por tres meses.", d: "Ich bin für drei Monate im Urlaub.", s: "Im Smalltalk über die Reise.", n: "de vacaciones = im Urlaub." },
     s07: { e: "Solo estoy de paso un par de días.", d: "Ich bin nur für ein paar Tage auf der Durchreise.", s: "Wenn du kurz bleibst.", n: "de paso = auf der Durchreise." },
@@ -1790,7 +1806,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     f17: { e: "¿Hay baño aquí?", d: "Gibt es hier eine Toilette?", s: "Auf der Suche nach etwas.", n: "hay = es gibt – eines der nützlichsten Wörter." },
     f18: { e: "¿Dónde hay un cajero?", d: "Wo gibt es einen Geldautomaten?", s: "Bei der Suche.", n: "¿Dónde hay ...? = Wo gibt es ...?" },
     f19: { e: "Estoy buscando la estación de bus.", d: "Ich suche den Busbahnhof.", s: "Bei der Orientierung.", n: "buscar = suchen." },
-    f20: { e: "¿Qué es esto?", d: "Was ist das?", s: "Bei Unbekanntem.", n: "Neugier öffnet Gespräche – oft mit einer Kostprobe." },
+    f20: { e: "¿Qué es esto? Se ve rico.", d: "Was ist das? Sieht lecker aus.", s: "Am Marktstand oder bei unbekanntem Gericht.", n: "Neugier kommt gut an – oft bekommst du etwas zum Probieren." },
     f21: { e: "¿Cómo se llama esto en español?", d: "Wie nennt man das?", s: "Beim Vokabeln lernen.", n: "Tolle Frage, um Wörter von Locals zu lernen." },
     f22: { e: "Un momento, por favor.", d: "Einen Moment, bitte.", s: "Wenn du kurz Zeit brauchst.", n: "Auch Ya voy = ich komme gleich." },
     f23: { e: "¿Me permite? Con permiso.", d: "Darf ich mal vorbei?", s: "Beim Durchkommen.", n: "Con permiso ist die Standardformel zum Durchgehen." },
@@ -2073,7 +2089,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "b12", cat: "basics", lvl: 2, de: "Wie heißt du?", es: "¿Cómo te llamas?", tip: "KO-mo te YA-mas" },
     { id: "b13", cat: "basics", lvl: 2, de: "Ich heiße ...", es: "Me llamo ...", tip: "me YA-mo", alt: ["me llamo"] },
     { id: "b14", cat: "basics", lvl: 2, de: "Kannst du mir helfen?", es: "¿Me puedes ayudar?", tip: "me PUE-des a-yu-DAR" },
-    { id: "b15", cat: "basics", lvl: 2, de: "Langsamer, bitte", es: "Más despacio, por favor", tip: "mas des-PA-si-o" },
+    { id: "b15", cat: "basics", lvl: 2, de: "Langsamer, bitte / Bitte langsamer fahren", es: "Más despacio, por favor", tip: "mas des-PA-si-o" },
     { id: "b16", cat: "basics", lvl: 1, de: "die Toilette", es: "el baño", tip: "el BA-nyo" },
     { id: "b17", cat: "basics", lvl: 1, de: "Hilfe!", es: "Ayuda / Socorro", tip: "a-YU-da" },
     { id: "b18", cat: "basics", lvl: 2, de: "Ich brauche einen Arzt", es: "Necesito un médico", tip: "ne-se-SI-to un ME-di-ko" },
@@ -2239,7 +2255,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "e31", cat: "essen", lvl: 2, de: "Ist hier noch frei?", es: "¿Está libre?", tip: "es-TA LI-bre" },
     { id: "e32", cat: "essen", lvl: 3, de: "Können Sie es einpacken? (Reste)", es: "¿Me lo puede empacar para llevar?", tip: "em-pa-KAR" },
     { id: "e33", cat: "essen", lvl: 2, de: "Noch ein Bier, bitte", es: "Otra cerveza, por favor", tip: "O-tra ser-WE-sa" },
-    { id: "e34", cat: "essen", lvl: 2, de: "Was ist das? (Gericht)", es: "¿Qué es esto?", tip: "ke es ES-to" },
     { id: "e35", cat: "essen", lvl: 2, de: "Das Essen war ausgezeichnet", es: "La comida estuvo excelente", tip: "es-TU-wo ek-se-LEN-te" },
     { id: "e36", cat: "essen", lvl: 2, de: "Alles war köstlich", es: "Todo estuvo delicioso", tip: "de-li-si-O-so" },
     { id: "e37", cat: "essen", lvl: 2, de: "Es hat mir sehr geschmeckt", es: "Me gustó mucho / Estuvo muy rico", tip: "me gus-TO MU-cho" },
@@ -2313,7 +2328,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "h19", cat: "hotel", lvl: 2, de: "Ich brauche noch ein Handtuch", es: "Necesito otra toalla", tip: "O-tra to-A-ya" },
     { id: "h20", cat: "hotel", lvl: 3, de: "Können Sie das Zimmer sauber machen?", es: "¿Pueden limpiar la habitación?", tip: "lim-pi-AR" },
     { id: "h21", cat: "hotel", lvl: 3, de: "Kann ich später auschecken?", es: "¿Puedo hacer el check-out más tarde?", tip: "mas TAR-de" },
-    { id: "h22", cat: "hotel", lvl: 3, de: "Kann ich mein Gepäck hier lassen?", es: "¿Puedo dejar mi equipaje aquí?", tip: "e-ki-PA-che a-KI" },
     { id: "h23", cat: "hotel", lvl: 2, de: "Die Toilette ist verstopft", es: "El baño está tapado", tip: "ta-PA-do" },
     { id: "h24", cat: "hotel", lvl: 2, de: "Mir ist zu kalt / zu warm", es: "Tengo mucho frío / calor", tip: "FRI-o / ka-LOR" },
 
@@ -2343,9 +2357,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "v11", cat: "verkehr", lvl: 2, de: "Wann fährt es ab?", es: "¿A qué hora sale?", tip: "a ke O-ra SA-le" },
     { id: "v12", cat: "verkehr", lvl: 2, de: "Wie viel kostet die Fahrt?", es: "¿Cuánto cuesta el viaje?", tip: "WI-a-che" },
     { id: "v13", cat: "verkehr", lvl: 2, de: "Ist es weit?", es: "¿Está lejos?", tip: "es-TA LE-chos" },
-    { id: "v14", cat: "verkehr", lvl: 1, de: "in der Nähe / nah", es: "cerca", tip: "SER-ka" },
     { id: "v15", cat: "verkehr", lvl: 3, de: "Wie weit ist es?", es: "¿Qué tan lejos está?", tip: "ke tan LE-chos" },
-    { id: "v16", cat: "verkehr", lvl: 3, de: "Können Sie es auf der Karte zeigen?", es: "¿Me lo muestra en el mapa?", tip: "en el MA-pa" },
     { id: "v17", cat: "verkehr", lvl: 1, de: "die Tankstelle", es: "la gasolinera", tip: "ga-so-li-NE-ra" },
     { id: "v18", cat: "verkehr", lvl: 1, de: "das Benzin", es: "la gasolina / la bencina", tip: "'bencina' v.a. in Chile" },
     { id: "v19", cat: "verkehr", lvl: 2, de: "der Mietwagen", es: "el auto de alquiler", tip: "AU-to de al-ki-LER" },
@@ -2356,7 +2368,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "v24", cat: "verkehr", lvl: 3, de: "Schalten Sie das Taxameter ein?", es: "¿Puede poner el taxímetro?", tip: "tak-SI-me-tro" },
     { id: "v25", cat: "verkehr", lvl: 3, de: "Können Sie hier kurz warten?", es: "¿Puede esperar aquí?", tip: "es-pe-RAR a-KI" },
     { id: "v26", cat: "verkehr", lvl: 2, de: "Ich steige hier aus", es: "Me bajo aquí", tip: "me BA-cho a-KI" },
-    { id: "v27", cat: "verkehr", lvl: 2, de: "Bitte langsamer fahren", es: "Más despacio, por favor", tip: "mas des-PA-si-o" },
 
     // ===================== EINKAUFEN & SUPERMARKT =====================
     { id: "c01", cat: "compras", lvl: 2, de: "Wie viel kostet das?", es: "¿Cuánto cuesta? / ¿Cuánto vale?", tip: "KUAN-to KUES-ta" },
@@ -2370,7 +2381,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "c09", cat: "compras", lvl: 2, de: "Gibt es einen Rabatt?", es: "¿Hay descuento?", tip: "des-KUEN-to" },
     { id: "c10", cat: "compras", lvl: 1, de: "billiger", es: "más barato", tip: "mas ba-RA-to" },
     { id: "c11", cat: "compras", lvl: 3, de: "Kann ich es anprobieren?", es: "¿Me lo puedo probar?", tip: "PUE-do pro-WAR" },
-    { id: "c12", cat: "compras", lvl: 1, de: "die Größe (Kleidung)", es: "la talla", tip: "la TA-ya" },
     { id: "c13", cat: "compras", lvl: 2, de: "Wo ist die Kasse?", es: "¿Dónde está la caja?", tip: "la KA-cha" },
     { id: "c14", cat: "compras", lvl: 1, de: "geöffnet / geschlossen", es: "abierto / cerrado", tip: "a-bi-ER-to / se-RRA-do" },
     { id: "c15", cat: "compras", lvl: 1, de: "ein Kilo", es: "un kilo", tip: "un KI-lo" },
@@ -2380,7 +2390,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "c19", cat: "compras", lvl: 3, de: "Haben Sie etwas Günstigeres?", es: "¿Tiene algo más barato?", tip: "AL-go mas ba-RA-to" },
     { id: "c20", cat: "compras", lvl: 2, de: "Geben Sie mir bitte ...", es: "Me da ..., por favor", tip: "me da" },
     { id: "c21", cat: "compras", lvl: 2, de: "Ich möchte dieses Kleid", es: "Quiero este vestido", tip: "ki-E-ro ES-te wes-TI-do" },
-    { id: "c22", cat: "compras", lvl: 3, de: "Haben Sie es in einer anderen Größe?", es: "¿Lo tiene en otra talla?", tip: "en O-tra TA-ya" },
     { id: "c23", cat: "compras", lvl: 3, de: "Haben Sie es in einer anderen Farbe?", es: "¿Lo tiene en otro color?", tip: "en O-tro ko-LOR" },
     { id: "c24", cat: "compras", lvl: 3, de: "eine Nummer größer / kleiner", es: "una talla más grande / más chica", tip: "'chica' = kleiner (LatAm)" },
     { id: "c25", cat: "compras", lvl: 3, de: "Geht beim Preis noch was?", es: "¿Me lo deja más barato?", tip: "me lo DE-cha mas ba-RA-to" },
@@ -2443,8 +2452,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // ===================== SMALLTALK & KENNENLERNEN =====================
     { id: "s01", cat: "talk", lvl: 1, de: "Wie geht's?", es: "¿Cómo estás? / ¿Qué tal?", tip: "KO-mo es-TAS" },
     { id: "s02", cat: "talk", lvl: 1, de: "Gut, danke", es: "Bien, gracias", tip: "bien GRA-si-as" },
-    { id: "s03", cat: "talk", lvl: 1, de: "Freut mich", es: "Mucho gusto", tip: "MU-cho GUS-to" },
-    { id: "s04", cat: "talk", lvl: 2, de: "Woher kommst du?", es: "¿De dónde eres?", tip: "de DON-de E-res" },
     { id: "s05", cat: "talk", lvl: 2, de: "Ich komme aus Deutschland", es: "Soy de Alemania", tip: "a-le-MA-ni-a" },
     { id: "s06", cat: "talk", lvl: 2, de: "Ich bin im Urlaub", es: "Estoy de vacaciones", tip: "wa-ka-si-O-nes" },
     { id: "s07", cat: "talk", lvl: 3, de: "Ich bin auf der Durchreise", es: "Estoy de paso", tip: "es-TOY de PA-so" },
@@ -2476,7 +2483,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "social07", cat: "social", lvl: 2, de: "Sollen wir zusammen gehen?", es: "¿Vamos juntos?", tip: "BA-mos CHUN-tos" },
     { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes" },
     { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp" },
-    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen.", es: "Mucho gusto.", tip: "MU-cho GUS-to" },
+    { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen. / Freut mich", es: "Fue un gusto conocerte.", tip: "fue un GUS-to ko-no-SER-te", alt: ["fue un gusto", "mucho gusto"] },
 
     // ===================== ALLTAG & LEBEN =====================
     { id: "a01", cat: "alltag", lvl: 3, de: "Wie sagt man ... auf Spanisch?", es: "¿Cómo se dice ... en español?", tip: "KO-mo se DI-se" },
@@ -2608,7 +2615,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "kj32", cat: "ropa", lvl: 3, de: "die Brosche", es: "el broche", tip: "el BRO-che" },
     { id: "kj33", cat: "ropa", lvl: 3, de: "aus Silber / aus Gold", es: "de plata / de oro", tip: "de PLA-ta / de O-ro" },
     // -- Beim Einkaufen --
-    { id: "kj34", cat: "ropa", lvl: 2, de: "die Größe", es: "la talla", tip: "la TA-ya" },
+    { id: "kj34", cat: "ropa", lvl: 2, de: "die Größe (Kleidung)", es: "la talla", tip: "la TA-ya" },
     { id: "kj35", cat: "ropa", lvl: 3, de: "Kann ich das anprobieren?", es: "¿Puedo probármelo?", tip: "PUE-do pro-BAR-me-lo" },
     { id: "kj36", cat: "ropa", lvl: 3, de: "Haben Sie das in einer anderen Größe?", es: "¿Lo tiene en otra talla?", tip: "en O-tra TA-ya" },
     { id: "kj37", cat: "ropa", lvl: 3, de: "Es ist zu groß / zu klein", es: "Es demasiado grande / pequeño", tip: "de-ma-si-A-do GRAN-de" },
@@ -2642,7 +2649,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "dir23", cat: "rumbo", lvl: 2, de: "Ist es weit oder nah?", es: "¿Está lejos o cerca?", tip: "es-TA LE-hos o SER-ka" },
     { id: "dir24", cat: "rumbo", lvl: 3, de: "Wie viele Blocks ist es entfernt?", es: "¿A cuántas cuadras está?", tip: "a KUAN-tas KUA-dras es-TA" },
     { id: "dir25", cat: "rumbo", lvl: 2, de: "Wie lautet die Adresse?", es: "¿Cuál es la dirección?", tip: "kual es la di-rek-si-ON" },
-    { id: "dir26", cat: "rumbo", lvl: 3, de: "Zeigen Sie es mir auf der Karte?", es: "¿Me lo muestra en el mapa?", tip: "me lo MUES-tra en el MA-pa" },
+    { id: "dir26", cat: "rumbo", lvl: 3, de: "Zeigen Sie es mir auf der Karte? / Können Sie es auf der Karte zeigen?", es: "¿Me lo muestra en el mapa?", tip: "me lo MUES-tra en el MA-pa" },
     { id: "dir27", cat: "rumbo", lvl: 2, de: "Gibt es hier in der Nähe eine Bank?", es: "¿Hay un banco por aquí?", tip: "ai un BAN-ko por a-KI" },
 
     // -- Anweisungen geben (den Weg beschreiben) --
@@ -3562,7 +3569,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (value === 1) {
       amountEs = "un peso"; verbEs = "Es"; pesoDe = "Peso";   // genau 1: Singular
     } else if (endsInMillion) {
-      amountEs = `${es} de pesos`; verbEs = "Son"; pesoDe = "Pesos";
+      // Singular/Plural sauber trennen: genau "un millón" ist ein Singular-Subjekt
+      // ("Es un millón de pesos"), ab "dos millones" Plural ("Son dos millones de pesos").
+      const singularMillion = /^un\s+mill(?:ó|o)n$/i.test(es.trim());
+      amountEs = `${es} de pesos`; verbEs = singularMillion ? "Es" : "Son"; pesoDe = "Pesos";
     } else {
       amountEs = `${apocope(es)} pesos`; verbEs = "Son"; pesoDe = "Pesos";
     }
@@ -6354,44 +6364,85 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  * Zustand zurück (immutabel – nie das Original verändern).
  *
  * Karten-Lernzustand: { ease, interval(Tage), due(ms), reps }
+ *
+ * Robustheit: korrupte Eingaben (Strings, NaN, null aus manipuliertem
+ * localStorage) werden auf Defaults gezogen, ease ist auf [1.3, 3.0]
+ * geklemmt – auf ALLEN Pfaden. So kann nie NaN/0 persistiert werden.
  */
 (function () {
   "use strict";
 
   const DAY_MS = 24 * 60 * 60 * 1000;
   const RATING = { AGAIN: "again", GOOD: "good", EASY: "easy" };
+  const EASE_MIN = 1.3;
+  const EASE_MAX = 3.0;
+
+  // Endliche Zahl oder Default (Schutz vor NaN/Strings/null).
+  function num(x, fallback) {
+    return typeof x === "number" && isFinite(x) ? x : fallback;
+  }
+
+  function clampEase(e) {
+    return Math.min(EASE_MAX, Math.max(EASE_MIN, e));
+  }
+
+  // Lokale Mitternacht des Tages "heute + days". Karten mit Intervall >= 1 Tag
+  // sind so den GANZEN Zieltag fällig – sonst klebt die Fälligkeit an der
+  // Uhrzeit der Bewertung (23:30 bewertet -> am Folgetag um 21:00 noch nicht
+  // fällig). Über Date gerechnet, damit Sommer-/Winterzeit korrekt bleibt.
+  function dueAtMidnight(now, days) {
+    const d = new Date(now);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + days);
+    return d.getTime();
+  }
 
   function freshState() {
     return { ease: 2.5, interval: 0, due: 0, reps: 0 };
   }
 
-  function review(state, rating) {
+  // now ist optional (Default: Date.now()) – macht die Funktion testbar und
+  // hält alle Zeitrechnungen einer Bewertung auf demselben Zeitpunkt.
+  function review(state, rating, now) {
+    const t = typeof now === "number" && isFinite(now) ? now : Date.now();
     const s = state || freshState();
-    let ease = s.ease;
-    const reps = s.reps;
-    const interval = s.interval;
+    let ease = clampEase(num(s.ease, 2.5));
+    const reps = Math.max(0, num(s.reps, 0));
+    const interval = Math.max(0, num(s.interval, 0));
+    const due = num(s.due, 0);
 
     if (rating === RATING.AGAIN) {
       return {
-        ease: Math.max(1.3, ease - 0.2),
+        ease: clampEase(ease - 0.2),
         interval: 0,
         reps: 0,
-        due: Date.now() + 60 * 1000, // ~1 Minute -> in derselben Sitzung nochmal
+        due: t + 60 * 1000, // ~1 Minute -> in derselben Sitzung nochmal
       };
     }
 
-    if (rating === RATING.EASY) ease += 0.15;
+    if (rating === RATING.EASY) ease = clampEase(ease + 0.15);
 
     let nextInterval;
     if (reps === 0) nextInterval = rating === RATING.EASY ? 3 : 1;
     else if (reps === 1) nextInterval = rating === RATING.EASY ? 6 : 3;
-    else nextInterval = Math.round((interval || 1) * ease);
+    else {
+      // Early-Review-Dämpfung: wird eine noch nicht fällige Karte bewertet
+      // (freies Üben), zählt nur die tatsächlich verstrichene Zeit seit der
+      // letzten Bewertung – sonst springt z.B. eine erst in 29 Tagen fällige
+      // Karte bei GOOD sofort auf ~75 Tage (Intervall-Inflation).
+      let base = interval || 1;
+      if (due > t) {
+        const elapsedDays = interval - (due - t) / DAY_MS;
+        base = Math.max(1, Math.min(base, elapsedDays)); // Untergrenze 1 Tag
+      }
+      nextInterval = Math.max(1, Math.round(base * ease));
+    }
 
     return {
-      ease: Math.min(3.0, ease),
+      ease,
       interval: nextInterval,
       reps: reps + 1,
-      due: Date.now() + nextInterval * DAY_MS,
+      due: dueAtMidnight(t, nextInterval),
     };
   }
 
@@ -6418,31 +6469,95 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
+  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY];
 
   function readJson(key, fallback) {
+    let raw = null;
     try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
+      raw = localStorage.getItem(key);
     } catch (err) {
       console.warn("store: lesen fehlgeschlagen", key, err);
       return fallback;
     }
+    if (!raw) return fallback;
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      // Korruptes JSON: Roh-String unter <key>.corrupt retten, BEVOR der
+      // Fallback greift – sonst wäre der Stand unwiederbringlich verloren.
+      console.warn("store: korruptes JSON, sichere Rohdaten", key, err);
+      try { localStorage.setItem(key + ".corrupt", raw); } catch (e) { /* egal */ }
+      return fallback;
+    }
   }
 
+  // Gibt zurück, ob das Schreiben geklappt hat (false z.B. bei vollem
+  // Speicher/Private Mode – der Aufrufer kann den Nutzer warnen, R4).
   function writeJson(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      return true;
     } catch (err) {
       console.warn("store: schreiben fehlgeschlagen", key, err);
+      return false;
     }
+  }
+
+  // ----- Schema-Migration -----
+  // Die KEYS oben tragen Versionssuffixe (z.B. progress.v2). Wird eine Version
+  // erhöht, MUSS hier die passende Migration ergänzt werden – sonst verliert
+  // der Nutzer beim Update stillschweigend seinen gesamten Fortschritt.
+  // migrate() läuft einmal beim Laden des Moduls. Schablone für einen
+  // künftigen Bump (v2 -> v3):
+  //   const old = readJson("spanischcard.progress.v2", null);
+  //   if (old && !localStorage.getItem(PROGRESS_KEY)) {
+  //     writeJson(PROGRESS_KEY, transformV2toV3(old));
+  //   }
+  function migrate() {
+    // Aktuell keine ausstehenden Migrationen (no-op).
   }
 
   // Strukturwächter: externes/korrumpiertes localStorage darf die App nicht crashen.
   const isPlainObject = (v) => v && typeof v === "object" && !Array.isArray(v);
 
+  // Endliche Zahl (auch als String, z.B. "2.5" aus manipuliertem Storage)
+  // oder Default. null/true/Objekte zählen NICHT als Zahl.
+  function asNum(x, fallback) {
+    const n = typeof x === "number" ? x
+      : typeof x === "string" && x.trim() !== "" ? Number(x)
+      : NaN;
+    return isFinite(n) ? n : fallback;
+  }
+
+  // Einzel-Record des Lernfortschritts heilen: Zahlenfelder koerzieren,
+  // ease auf [1.3, 3.0] klemmen, history auf gültige Zeichen filtern.
+  // Ohne das macht ein korrupter Record die Karte "für immer fällig"
+  // (due als String) oder "nie wieder lernbar" (ease -> NaN -> 0).
+  function sanitizeRecord(rec) {
+    if (!isPlainObject(rec)) return null;
+    const history = Array.isArray(rec.history)
+      ? rec.history.filter((ch) => ch === "a" || ch === "g" || ch === "e")
+      : [];
+    return Object.assign({}, rec, {
+      ease: Math.min(3.0, Math.max(1.3, asNum(rec.ease, 2.5))),
+      interval: asNum(rec.interval, 0),
+      due: asNum(rec.due, 0),
+      reps: asNum(rec.reps, 0),
+      seen: asNum(rec.seen, 0),
+      history,
+    });
+  }
+
   function loadProgress() {
     const v = readJson(PROGRESS_KEY, {});
-    return isPlainObject(v) ? v : {};
+    if (!isPlainObject(v)) return {};
+    const out = {};
+    Object.keys(v).forEach((id) => {
+      const rec = sanitizeRecord(v[id]);
+      if (rec) out[id] = rec;
+    });
+    return out;
   }
   function loadSettings() {
     const v = readJson(SETTINGS_KEY, { mode: "flip" });
@@ -6451,8 +6566,47 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function loadUserCards() {
     const v = readJson(USERCARDS_KEY, []);
     if (!Array.isArray(v)) return [];
-    // Nur Einträge mit gültiger id behalten (verhindert "undefined"-Karten & Crashes).
-    return v.filter((c) => c && typeof c === "object" && typeof c.id === "string" && c.id);
+    // Nur plausible Karten behalten: gültige id, de/es/cat als nicht-leere
+    // Strings mit vernünftiger Länge (verhindert "undefined"-Karten, Crashes
+    // und absurde Einträge aus fremdem/manipuliertem Storage).
+    const okStr = (s, max) => typeof s === "string" && s.length > 0 && s.length <= max;
+    return v.filter((c) =>
+      c && typeof c === "object" &&
+      okStr(c.id, 100) &&
+      okStr(c.de, 500) &&
+      okStr(c.es, 500) &&
+      okStr(c.cat, 100));
+  }
+
+  // ----- Backup: Export/Import aller HolaRuta-Daten (R4) -----
+  // Export: alle bekannten spanischcard.*-Keys als ein Objekt (für eine
+  // JSON-Datei). Korrupte Einzel-Keys werden ausgelassen statt zu crashen.
+  function exportData() {
+    const data = {};
+    KNOWN_KEYS.forEach((key) => {
+      let raw = null;
+      try { raw = localStorage.getItem(key); } catch (e) { /* egal */ }
+      if (!raw) return;
+      try { data[key] = JSON.parse(raw); } catch (e) { /* korrupt -> auslassen */ }
+    });
+    return {
+      app: "holaruta",
+      format: 1,
+      exportedAt: new Date().toISOString(),
+      data,
+    };
+  }
+
+  // Import: nur bekannte spanischcard.*-Keys übernehmen (fremde Keys werden
+  // ignoriert). Gibt die Anzahl übernommener Keys zurück (0 = ungültig/leer).
+  function importData(payload) {
+    if (!isPlainObject(payload) || !isPlainObject(payload.data)) return 0;
+    let imported = 0;
+    KNOWN_KEYS.forEach((key) => {
+      if (!(key in payload.data)) return;
+      if (writeJson(key, payload.data[key])) imported++;
+    });
+    return imported;
   }
 
   // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
@@ -6512,6 +6666,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     };
   }
 
+  migrate();
+
   window.SC = window.SC || {};
   window.SC.store = {
     loadProgress,
@@ -6523,6 +6679,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     saveSettings: (s) => writeJson(SETTINGS_KEY, s),
     loadUserCards,
     saveUserCards: (c) => writeJson(USERCARDS_KEY, c),
+    exportData,
+    importData,
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),
@@ -6598,9 +6756,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 <script>
 /*
  * matcher.js  (SC.matcher) – prüft getippte Antworten. REINE FUNKTIONEN.
- * Großzügig: ignoriert Groß-/Kleinschreibung, Akzente (á=a), Satzzeichen (¿¡?!.,)
- * und Mehrfach-Leerzeichen. Mehrere gültige Antworten werden mit " / " getrennt
- * oder explizit per card.alt angegeben.
+ * Großzügig: ignoriert Groß-/Kleinschreibung, Akzente (á=a), Satzzeichen
+ * (¿¡?!.,;:), Klammern, Währungszeichen ($/€), Apostrophe, Mehrfach-Leerzeichen
+ * und behandelt ß/ss als gleichwertig (Reise-Handys haben oft keine ß-Taste).
+ * Slash und Gedankenstrich gelten als Wortgrenze.
+ *
+ * Bewusste Toleranz: die Akzent-Normalisierung (NFD) kollabiert auch ñ→n –
+ * "ano" wird für "año" akzeptiert. Das ist gewollt: auf Tastaturen ohne ñ
+ * wäre die Karte sonst unlösbar; die seltene echte Verwechslung (año/ano)
+ * nehmen wir dafür in Kauf.
+ *
+ * Mehrere gültige Antworten: mit " / " getrennt (es UND de), explizit per
+ * card.alt (nur Spanisch). Klammerzusätze sind OPTIONAL – siehe candidates().
  */
 (function () {
   "use strict";
@@ -6608,14 +6775,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function normalize(str) {
     return String(str)
       .toLowerCase()
+      .replace(/ß/g, "ss")                   // ß ↔ ss gleichwertig
       .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "") // Akzente entfernen (á→a)
-      .replace(/[¿?¡!.,;:]/g, "")      // Satzzeichen entfernen
+      .replace(/[̀-ͯ]/g, "")       // Akzente entfernen (á→a, ñ→n – bewusst, s.o.)
+      .replace(/['’`´]/g, "")                // Apostrophe entfernen (geht's → gehts)
+      .replace(/[¿?¡!.,;:()$€"„“”«»]/g, "")  // Satzzeichen, Klammern, Währung entfernen
+      .replace(/[\/\-–—]/g, " ")             // Slash, Binde-/Gedankenstrich als Wortgrenze
       .replace(/\s+/g, " ")
       .trim();
   }
 
-  // Liste der akzeptierten Antworten einer Karte.
+  // Anzeige-Antworten einer Karte (UNnormalisiert, z.B. fürs Vorlesen).
   // field: "es" (Standard, Spanisch) | "de" (Deutsch, für Richtung ES→DE).
   // card.alt gilt nur für die spanische Antwort.
   function acceptedAnswers(card, field) {
@@ -6624,17 +6794,53 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return String(card[field]).split("/").map((s) => s.trim()).filter(Boolean);
   }
 
+  // Kandidaten-Generierung: Liste akzeptierter NORMALISIERTER Eingaben.
+  // Akzeptiert werden (für es ohne alt[] und für de gleichermaßen):
+  //  - die wörtliche Volleingabe ("links / rechts" exakt wie angezeigt)
+  //  - jede Slash-Alternative einzeln ("links", "rechts")
+  //  - " – "/" — "-Teile (Preis-Karten: "$ 45.000 – Hostel-Nacht" → "45.000",
+  //    "Hostel-Nacht")
+  //  - Klammerzusätze sind optional: "1. (erster/erste)" → "1.", "erster",
+  //    "erste" und die Volleingabe zählen alle.
+  function candidates(card, field) {
+    field = field || "es";
+    const out = [];
+    const add = (s) => {
+      const n = normalize(s);
+      if (n && out.indexOf(n) === -1) out.push(n);
+    };
+
+    // card.alt zählt nur für Spanisch und ersetzt dort die generierten Varianten.
+    if (field === "es" && Array.isArray(card.alt) && card.alt.length) {
+      card.alt.forEach(add);
+      return out;
+    }
+
+    const raw = String(card[field]);
+    // Varianten-Basis: Original, ohne Klammerzusätze, jeder Klammerinhalt einzeln.
+    const variants = [raw, raw.replace(/\([^)]*\)/g, " ")];
+    const parens = /\(([^)]*)\)/g;
+    let m;
+    while ((m = parens.exec(raw)) !== null) variants.push(m[1]);
+
+    variants.forEach((v) => {
+      add(v);                                 // Volleingabe der Variante
+      v.split(/\/|\s[–—]\s/).forEach(add);    // jede Alternative einzeln
+    });
+    return out;
+  }
+
   // Prüft Eingabe gegen eine Karte. -> { correct, answers }
-  // field bestimmt die Zielsprache der erwarteten Antwort (siehe acceptedAnswers).
+  // field bestimmt die Zielsprache der erwarteten Antwort (siehe oben).
   function check(input, card, field) {
     const norm = normalize(input);
-    const answers = acceptedAnswers(card, field);
-    const correct = norm.length > 0 && answers.some((a) => normalize(a) === norm);
-    return { correct, answers };
+    const accepted = candidates(card, field);
+    const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
+    return { correct, answers: acceptedAnswers(card, field) };
   }
 
   window.SC = window.SC || {};
-  window.SC.matcher = { normalize, acceptedAnswers, check };
+  window.SC.matcher = { normalize, acceptedAnswers, candidates, check };
 })();
 
 </script>
@@ -7085,10 +7291,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // Spricht den Text. Bricht eine eventuell laufende Ausgabe vorher ab.
+  // cancel() nur bei Bedarf: ein bedingungsloses cancel() direkt vor speak()
+  // verschluckt auf iOS gelegentlich die erste Utterance.
   function speak(text) {
     if (!synth || !text) return;
     try {
-      synth.cancel();
+      if (synth.speaking || synth.pending) synth.cancel();
       const u = new SpeechSynthesisUtterance(String(text));
       const voice = pickVoice();
       if (voice) {
@@ -7844,7 +8052,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function entdeckenBody(vm) {
-    const feats = FEATURES.map((x) => `
+    // Offline-Guard: Länderkunde nur anbieten, wenn das Modul geladen wurde
+    // (countries.js kann bei unvollständigem Offline-Cache fehlen).
+    const feats = FEATURES.filter((x) => x.action !== "open-info" || vm.hasCountries).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
@@ -7882,8 +8092,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>
 
       ${navrow("open-stats", "📊", "Statistik")}
-      ${navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "")}
+      ${vm.hasBadges ? navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "") : ""}
       ${navrow("open-editor", "✍️", "Eigene Karten")}
+
+      <p class="sectioncap">Deine Daten</p>
+      ${navrow("export-data", "📤", "Daten exportieren")}
+      ${navrow("import-data", "📥", "Daten importieren")}
+      <input type="file" id="import-file" accept=".json,application/json" hidden />
+
       ${installBlock(vm.install)}`;
   }
 
@@ -8182,6 +8398,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function renderBadges(vm) {
+    // Offline-Guard: Badge-Modul fehlt (unvollständiger Offline-Cache) ->
+    // Hinweis statt TypeError bei jedem Render.
+    if (!vm) {
+      return `
+        <section class="screen">
+          <div class="topbar">
+            <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+            <div class="topbar__title">🎖️ Mein Ruta-Pass</div>
+            <span></span>
+          </div>
+          <p class="stat-empty">Der Ruta-Pass ist gerade nicht verfügbar – vermutlich wurde die App offline geöffnet, bevor alles geladen war. Mit Netz neu laden, dann klappt's wieder.</p>
+        </section>`;
+    }
     const pct = vm.total ? Math.round((vm.unlocked / vm.total) * 100) : 0;
     const groups = vm.groups
       .map((g) => `
@@ -8234,6 +8463,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </button>`;
   }
 
+  // Schlichter Hinweis-Toast (gleiche Optik/Ebene wie die Badge-Einblendung),
+  // z.B. wenn das Speichern fehlschlägt. Tippen blendet ihn aus.
+  function noticeToast(text) {
+    return `
+      <button class="btoast" data-action="dismiss-notice" aria-live="assertive">
+        <span class="btoast__head">⚠️ ${esc(text)}</span>
+      </button>`;
+  }
+
   // ---------- STATISTIK ----------
   // Statusfarben/-texte zentral, damit Liste & Detail gleich aussehen.
   const STATUS_META = {
@@ -8245,13 +8483,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Verlaufs-Punkte: je Bewertung ein farbiger Punkt (rot/grün/blau).
   function historyDots(hist) {
     if (!hist || !hist.length) return "";
-    const color = { a: "var(--no)", g: "var(--ok)", e: "var(--easy)" };
-    const title = { a: "Nochmal", g: "Gut", e: "Einfach" };
+    // Object.create(null): die Verlaufszeichen kommen aus localStorage –
+    // Lookups dürfen nie Prototype-Properties treffen ("constructor",
+    // "__proto__" …), sonst landet Funktions-Quelltext im style-Attribut.
+    const color = Object.create(null);
+    color.a = "var(--no)"; color.g = "var(--ok)"; color.e = "var(--easy)";
+    const title = Object.create(null);
+    title.a = "Nochmal"; title.g = "Gut"; title.e = "Einfach";
     const dots = hist
       .map((ch) => `<span class="hdot" aria-hidden="true" style="background:${color[ch] || "var(--muted)"}" title="${title[ch] || ""}"></span>`)
       .join("");
     // Textzusammenfassung für Screenreader (Farbe allein reicht nicht).
-    const count = { a: 0, g: 0, e: 0 };
+    const count = Object.create(null);
+    count.a = 0; count.g = 0; count.e = 0;
     hist.forEach((ch) => { if (count[ch] != null) count[ch]++; });
     const label = `Verlauf: ${count.e}× Einfach, ${count.g}× Gut, ${count.a}× Nochmal`;
     return `<div class="hdots" role="img" aria-label="${label}">${dots}</div>`;
@@ -8378,7 +8622,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="fact"><span class="fact__k">Zuerst gelernt</span><span class="fact__v">${esc(vm.firstText)}</span></div>
         <div class="fact"><span class="fact__k">Zuletzt</span><span class="fact__v">${esc(vm.lastText)}</span></div>
         <div class="fact"><span class="fact__k">Nächste Whlg.</span><span class="fact__v">${esc(vm.dueText)}</span></div>
-        <div class="fact"><span class="fact__k">Leichtigkeit</span><span class="fact__v">${s.ease ? s.ease.toFixed(2) : "–"}</span></div>
+        <div class="fact"><span class="fact__k">Leichtigkeit</span><span class="fact__v">${typeof s.ease === "number" && isFinite(s.ease) ? s.ease.toFixed(2) : "–"}</span></div>
       </div>`;
 
     const breakdown = s.seen > 0 ? `
@@ -9014,7 +9258,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
-                   renderBadges, badgeToast,
+                   renderBadges, badgeToast, noticeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
 })();
@@ -9174,6 +9418,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       totalDue: dueIn(all).length,
       sessionCap: SESSION_CAP,
       totalCards: all.length,
+      hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
+      hasCountries: !!countries, // dito für die Länderkunde
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -9217,9 +9463,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       spanishIsQuestion,
       tip: card.tip || null,
       level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
-      catLabel: isAll ? "Alle Bereiche" : cat.label,
-      catIcon: isAll ? "📚" : cat.icon,
-      accent: isAll ? DEFAULT_ACCENT : cat.grad,
+      catLabel: isAll ? "Alle Bereiche" : (cat ? cat.label : ""),
+      catIcon: isAll || !cat ? "📚" : cat.icon,
+      accent: isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
       total: state.total,
       revealed: state.revealed,
@@ -9354,7 +9600,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const last = gamestats.lastStudyDate;
     if (!last) return 0;
     const gap = daysBetween(last, dayKey(Date.now()));
-    return gap === 0 || gap === 1 ? (gamestats.dailyStreak || 0) : 0;
+    // gap < 0: Zeitzonenwechsel nach Westen – die lokale Uhr liegt VOR dem
+    // letzten Lerntag. Zählt wie "heute", die Serie ist nicht gerissen (R7).
+    return gap !== null && gap <= 1 ? (gamestats.dailyStreak || 0) : 0;
   }
 
   // Einstellungs-Panel des Lernen-Reiters: standardmäßig zu (Set-once-
@@ -9374,9 +9622,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const today = dayKey(now);
     if (g.lastStudyDate !== today) {
       const gap = g.lastStudyDate ? daysBetween(g.lastStudyDate, today) : null;
-      g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
-      g.lastStudyDate = today;
-      g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
+      if (gap !== null && gap < 0) {
+        // Westreise (R7): die lokale Uhr sprang über Zeitzonen auf einen
+        // früheren Kalendertag zurück (Berlin -> Bogotá). Das zählt als
+        // DERSELBE Lerntag: Serie weder zurücksetzen noch erneut erhöhen,
+        // lastStudyDate nicht zurückdatieren (sonst doppeltes Inkrement,
+        // sobald die lokale Uhr den Tag wieder erreicht).
+        g.dailyStreak = Math.max(1, g.dailyStreak || 0);
+      } else {
+        g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
+        g.lastStudyDate = today;
+        g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
+      }
     }
 
     const hour = new Date(now).getHours();
@@ -9445,6 +9702,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function badgesVM() {
+    // Offline-Guard: Badge-Modul nicht geladen (z.B. unvollständiger Offline-
+    // Cache) -> null. ui.renderBadges zeigt dann einen Hinweis statt zu crashen
+    // (sonst würde JEDER weitere Render erneut werfen – App friert ein).
+    if (!badges) return null;
     const metrics = badges.buildMetrics(allCards(), progress, gamestats);
     const all = badges.evaluate(metrics, gamestats.unlocked);
     const groups = badges.GROUPS
@@ -9526,7 +9787,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       .map((s) => ({ id: s.id, label: s.label, icon: s.icon,
         count: data.BATTLES.filter((b) => b.scene === s.id).length }))
       .filter((s) => s.count > 0);
-    const lengths = BATTLE_LENGTHS.map((l) => ({ ...l, selected: l.value === state.battleLength }));
+    // Object.assign statt Objekt-Spread: die App verspricht ES2017 (Spread auf
+    // Objekten ist ES2018 und wirft auf alten WebViews einen SyntaxError).
+    const lengths = BATTLE_LENGTHS.map((l) => Object.assign({}, l, { selected: l.value === state.battleLength }));
     return { scenes, totalCount: data.BATTLES.length, lengths };
   }
 
@@ -9840,8 +10103,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dismissBadgeToast();
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
-    // Nichts fällig? -> freies Üben. In beiden Fällen auf eine Runde gedeckelt.
-    const chosen = (due.length ? due : cards).slice(0, SESSION_CAP);
+    // Nichts fällig? -> freies Üben mit GEMISCHTER Auswahl – sonst bestünde
+    // jede freie Runde aus denselben ersten 20 Karten der Datenreihenfolge
+    // (Karte 21+ einer Kategorie wäre nie erreichbar). Fällige Karten behalten
+    // ihre Reihenfolge. In beiden Fällen auf eine Runde gedeckelt.
+    const chosen = (due.length ? due : shuffle(cards)).slice(0, SESSION_CAP);
     // Letzte Kategorie merken (für "Weiter mit …" auf der Startseite).
     if (scopeId !== "all" && settings.lastScope !== scopeId) {
       settings = Object.assign({}, settings, { lastScope: scopeId });
@@ -9924,10 +10190,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // SRS-Zustand neu berechnen und Statistik-Felder mitführen (immutabel).
     const now = Date.now();
     const prev = progress[card.id];
-    const srsNext = srs.review(prev, rating);
+    const srsNext = srs.review(prev, rating, now);
     const merged = stats.record(prev, srsNext, rating, now);
     progress = Object.assign({}, progress, { [card.id]: merged });
-    store.saveProgress(progress);
+    // Schlug das Speichern fehl (Quota voll/Private Mode), den Nutzer EINMAL
+    // pro Session warnen – sonst verliert er still alles beim nächsten Reload.
+    const saved = store.saveProgress(progress);
 
     // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
     recordStudyEvent(rating, now);
@@ -9941,6 +10209,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
+    if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
+  }
+
+  // ----- Hinweis-Toast (gleiche Ebene/Optik wie die Badge-Einblendung) -----
+  let saveFailedNotified = false; // Quota-Warnung höchstens einmal pro Session
+
+  function showNotice(text) {
+    const existing = root.querySelector(".btoast");
+    if (existing) existing.remove();
+    root.insertAdjacentHTML("afterbegin", ui.noticeToast(text));
+  }
+
+  function notifySaveFailed() {
+    if (saveFailedNotified) return;
+    saveFailedNotified = true;
+    showNotice("Speichern fehlgeschlagen – Speicher voll?");
   }
 
   function setMode(mode) {
@@ -10164,11 +10448,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // confirm()-Wrapper: fehlt confirm (manche WebViews), ist die Antwort NEIN –
+  // destruktive Aktionen dürfen nie ohne echte Rückfrage durchlaufen (R5).
+  function confirmAsk(msg) {
+    return typeof confirm === "function" ? confirm(msg) : false;
+  }
+
   // Gesamten Lernfortschritt löschen (nach Rückfrage). Einstellungen bleiben erhalten.
   function resetProgress() {
-    const ok = typeof confirm === "function"
-      ? confirm("Wirklich den gesamten Lernfortschritt löschen?\nDas kann nicht rückgängig gemacht werden.")
-      : true;
+    const ok = confirmAsk("Wirklich den gesamten Lernfortschritt löschen?\nDas kann nicht rückgängig gemacht werden.");
     if (!ok) return;
     store.resetProgress();
     progress = {};
@@ -10257,9 +10545,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   function deleteCard(id) {
     if (!userCards) return;
-    const ok = typeof confirm === "function"
-      ? confirm("Diese eigene Karte wirklich löschen?\nDer Lernfortschritt dieser Karte geht verloren.")
-      : true;
+    const ok = confirmAsk("Diese eigene Karte wirklich löschen?\nDer Lernfortschritt dieser Karte geht verloren.");
     if (!ok) return;
     userCards.remove(id);
     // Lernfortschritt dieser Karte mit entfernen (verwaiste Einträge vermeiden).
@@ -10271,6 +10557,60 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     }
     editorMsg = { type: "ok", text: "Karte gelöscht." };
     render();
+  }
+
+  // ----- Daten-Backup: Export/Import (R4) -----
+  // Export: alle spanischcard.*-Keys als JSON-Datei zum Herunterladen –
+  // der einzige Ausweg, bevor iOS/Quota den localStorage räumt.
+  function exportData() {
+    const payload = store.exportData();
+    let url = null;
+    try {
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "holaruta-backup-" + dayKey(Date.now()) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      buzz(8);
+    } catch (e) {
+      console.warn("Export fehlgeschlagen", e);
+      showNotice("Export fehlgeschlagen.");
+    }
+    if (url) setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* egal */ } }, 1000);
+  }
+
+  // Import: öffnet das versteckte file-input im Profil-Reiter.
+  function startImport() {
+    const input = document.getElementById("import-file");
+    if (input) input.click();
+  }
+
+  // Gewählte Backup-Datei einlesen: Top-Level-Format prüfen, Rückfrage stellen,
+  // nur bekannte spanischcard.*-Keys übernehmen (macht store.importData), dann
+  // neu laden – der sauberste Weg, alle Module auf den importierten Stand zu bringen.
+  function handleImportFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let payload = null;
+      try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
+      if (!payload || typeof payload !== "object" || !payload.data || typeof payload.data !== "object") {
+        showNotice("Import fehlgeschlagen – das ist kein HolaRuta-Backup.");
+        return;
+      }
+      const ok = confirmAsk("Backup importieren?\nDein aktueller Stand auf diesem Gerät wird überschrieben.");
+      if (!ok) return;
+      if (store.importData(payload) > 0) {
+        try { location.reload(); } catch (e) { /* egal */ }
+      } else {
+        showNotice("Import fehlgeschlagen – keine bekannten Daten in der Datei.");
+      }
+    };
+    reader.onerror = () => showNotice("Import fehlgeschlagen – Datei konnte nicht gelesen werden.");
+    reader.readAsText(file);
   }
 
   // Spricht die spanische Antwort der aktuellen Karte vor.
@@ -10371,6 +10711,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "study-one") studyOne(el.dataset.id);
     else if (action === "card-back") (state.backTo === "home" ? goHome() : goStats());
     else if (action === "open-editor") openEditor();
+    else if (action === "export-data") exportData();
+    else if (action === "import-data") startImport();
+    else if (action === "dismiss-notice") el.remove();
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
@@ -10425,6 +10768,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
   function onChange(e) {
+    // Backup-Import: verstecktes file-input im Profil-Reiter.
+    if (e.target && e.target.id === "import-file") {
+      const file = (e.target.files && e.target.files[0]) || null;
+      e.target.value = ""; // erlaubt erneuten Import derselben Datei
+      handleImportFile(file);
+      return;
+    }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);
@@ -10543,6 +10893,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
   render();
   registerServiceWorker();
+  // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass
+  // der Browser den localStorage räumt (z.B. iOS nach 7 Tagen Inaktivität).
+  try {
+    if (navigator.storage && typeof navigator.storage.persist === "function") {
+      navigator.storage.persist().catch(() => { /* egal */ });
+    }
+  } catch (e) { /* Feature fehlt – egal */ }
 
   window.SC.app = { render }; // nach außen minimal
 })();

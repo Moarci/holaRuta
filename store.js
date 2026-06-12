@@ -10,31 +10,95 @@
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
+  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY];
 
   function readJson(key, fallback) {
+    let raw = null;
     try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
+      raw = localStorage.getItem(key);
     } catch (err) {
       console.warn("store: lesen fehlgeschlagen", key, err);
       return fallback;
     }
+    if (!raw) return fallback;
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      // Korruptes JSON: Roh-String unter <key>.corrupt retten, BEVOR der
+      // Fallback greift – sonst wäre der Stand unwiederbringlich verloren.
+      console.warn("store: korruptes JSON, sichere Rohdaten", key, err);
+      try { localStorage.setItem(key + ".corrupt", raw); } catch (e) { /* egal */ }
+      return fallback;
+    }
   }
 
+  // Gibt zurück, ob das Schreiben geklappt hat (false z.B. bei vollem
+  // Speicher/Private Mode – der Aufrufer kann den Nutzer warnen, R4).
   function writeJson(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      return true;
     } catch (err) {
       console.warn("store: schreiben fehlgeschlagen", key, err);
+      return false;
     }
+  }
+
+  // ----- Schema-Migration -----
+  // Die KEYS oben tragen Versionssuffixe (z.B. progress.v2). Wird eine Version
+  // erhöht, MUSS hier die passende Migration ergänzt werden – sonst verliert
+  // der Nutzer beim Update stillschweigend seinen gesamten Fortschritt.
+  // migrate() läuft einmal beim Laden des Moduls. Schablone für einen
+  // künftigen Bump (v2 -> v3):
+  //   const old = readJson("spanischcard.progress.v2", null);
+  //   if (old && !localStorage.getItem(PROGRESS_KEY)) {
+  //     writeJson(PROGRESS_KEY, transformV2toV3(old));
+  //   }
+  function migrate() {
+    // Aktuell keine ausstehenden Migrationen (no-op).
   }
 
   // Strukturwächter: externes/korrumpiertes localStorage darf die App nicht crashen.
   const isPlainObject = (v) => v && typeof v === "object" && !Array.isArray(v);
 
+  // Endliche Zahl (auch als String, z.B. "2.5" aus manipuliertem Storage)
+  // oder Default. null/true/Objekte zählen NICHT als Zahl.
+  function asNum(x, fallback) {
+    const n = typeof x === "number" ? x
+      : typeof x === "string" && x.trim() !== "" ? Number(x)
+      : NaN;
+    return isFinite(n) ? n : fallback;
+  }
+
+  // Einzel-Record des Lernfortschritts heilen: Zahlenfelder koerzieren,
+  // ease auf [1.3, 3.0] klemmen, history auf gültige Zeichen filtern.
+  // Ohne das macht ein korrupter Record die Karte "für immer fällig"
+  // (due als String) oder "nie wieder lernbar" (ease -> NaN -> 0).
+  function sanitizeRecord(rec) {
+    if (!isPlainObject(rec)) return null;
+    const history = Array.isArray(rec.history)
+      ? rec.history.filter((ch) => ch === "a" || ch === "g" || ch === "e")
+      : [];
+    return Object.assign({}, rec, {
+      ease: Math.min(3.0, Math.max(1.3, asNum(rec.ease, 2.5))),
+      interval: asNum(rec.interval, 0),
+      due: asNum(rec.due, 0),
+      reps: asNum(rec.reps, 0),
+      seen: asNum(rec.seen, 0),
+      history,
+    });
+  }
+
   function loadProgress() {
     const v = readJson(PROGRESS_KEY, {});
-    return isPlainObject(v) ? v : {};
+    if (!isPlainObject(v)) return {};
+    const out = {};
+    Object.keys(v).forEach((id) => {
+      const rec = sanitizeRecord(v[id]);
+      if (rec) out[id] = rec;
+    });
+    return out;
   }
   function loadSettings() {
     const v = readJson(SETTINGS_KEY, { mode: "flip" });
@@ -43,8 +107,47 @@
   function loadUserCards() {
     const v = readJson(USERCARDS_KEY, []);
     if (!Array.isArray(v)) return [];
-    // Nur Einträge mit gültiger id behalten (verhindert "undefined"-Karten & Crashes).
-    return v.filter((c) => c && typeof c === "object" && typeof c.id === "string" && c.id);
+    // Nur plausible Karten behalten: gültige id, de/es/cat als nicht-leere
+    // Strings mit vernünftiger Länge (verhindert "undefined"-Karten, Crashes
+    // und absurde Einträge aus fremdem/manipuliertem Storage).
+    const okStr = (s, max) => typeof s === "string" && s.length > 0 && s.length <= max;
+    return v.filter((c) =>
+      c && typeof c === "object" &&
+      okStr(c.id, 100) &&
+      okStr(c.de, 500) &&
+      okStr(c.es, 500) &&
+      okStr(c.cat, 100));
+  }
+
+  // ----- Backup: Export/Import aller HolaRuta-Daten (R4) -----
+  // Export: alle bekannten spanischcard.*-Keys als ein Objekt (für eine
+  // JSON-Datei). Korrupte Einzel-Keys werden ausgelassen statt zu crashen.
+  function exportData() {
+    const data = {};
+    KNOWN_KEYS.forEach((key) => {
+      let raw = null;
+      try { raw = localStorage.getItem(key); } catch (e) { /* egal */ }
+      if (!raw) return;
+      try { data[key] = JSON.parse(raw); } catch (e) { /* korrupt -> auslassen */ }
+    });
+    return {
+      app: "holaruta",
+      format: 1,
+      exportedAt: new Date().toISOString(),
+      data,
+    };
+  }
+
+  // Import: nur bekannte spanischcard.*-Keys übernehmen (fremde Keys werden
+  // ignoriert). Gibt die Anzahl übernommener Keys zurück (0 = ungültig/leer).
+  function importData(payload) {
+    if (!isPlainObject(payload) || !isPlainObject(payload.data)) return 0;
+    let imported = 0;
+    KNOWN_KEYS.forEach((key) => {
+      if (!(key in payload.data)) return;
+      if (writeJson(key, payload.data[key])) imported++;
+    });
+    return imported;
   }
 
   // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
@@ -104,6 +207,8 @@
     };
   }
 
+  migrate();
+
   window.SC = window.SC || {};
   window.SC.store = {
     loadProgress,
@@ -115,6 +220,8 @@
     saveSettings: (s) => writeJson(SETTINGS_KEY, s),
     loadUserCards,
     saveUserCards: (c) => writeJson(USERCARDS_KEY, c),
+    exportData,
+    importData,
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),

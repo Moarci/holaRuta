@@ -35,7 +35,10 @@
     if (value === 1) {
       amountEs = "un peso"; verbEs = "Es"; pesoDe = "Peso";   // genau 1: Singular
     } else if (endsInMillion) {
-      amountEs = `${es} de pesos`; verbEs = "Son"; pesoDe = "Pesos";
+      // Singular/Plural sauber trennen: genau "un millón" ist ein Singular-Subjekt
+      // ("Es un millón de pesos"), ab "dos millones" Plural ("Son dos millones de pesos").
+      const singularMillion = /^un\s+mill(?:ó|o)n$/i.test(es.trim());
+      amountEs = `${es} de pesos`; verbEs = singularMillion ? "Es" : "Son"; pesoDe = "Pesos";
     } else {
       amountEs = `${apocope(es)} pesos`; verbEs = "Son"; pesoDe = "Pesos";
     }

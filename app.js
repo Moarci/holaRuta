@@ -151,6 +151,8 @@
       totalDue: dueIn(all).length,
       sessionCap: SESSION_CAP,
       totalCards: all.length,
+      hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
+      hasCountries: !!countries, // dito für die Länderkunde
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -194,9 +196,9 @@
       spanishIsQuestion,
       tip: card.tip || null,
       level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
-      catLabel: isAll ? "Alle Bereiche" : cat.label,
-      catIcon: isAll ? "📚" : cat.icon,
-      accent: isAll ? DEFAULT_ACCENT : cat.grad,
+      catLabel: isAll ? "Alle Bereiche" : (cat ? cat.label : ""),
+      catIcon: isAll || !cat ? "📚" : cat.icon,
+      accent: isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
       total: state.total,
       revealed: state.revealed,
@@ -331,7 +333,9 @@
     const last = gamestats.lastStudyDate;
     if (!last) return 0;
     const gap = daysBetween(last, dayKey(Date.now()));
-    return gap === 0 || gap === 1 ? (gamestats.dailyStreak || 0) : 0;
+    // gap < 0: Zeitzonenwechsel nach Westen – die lokale Uhr liegt VOR dem
+    // letzten Lerntag. Zählt wie "heute", die Serie ist nicht gerissen (R7).
+    return gap !== null && gap <= 1 ? (gamestats.dailyStreak || 0) : 0;
   }
 
   // Einstellungs-Panel des Lernen-Reiters: standardmäßig zu (Set-once-
@@ -351,9 +355,18 @@
     const today = dayKey(now);
     if (g.lastStudyDate !== today) {
       const gap = g.lastStudyDate ? daysBetween(g.lastStudyDate, today) : null;
-      g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
-      g.lastStudyDate = today;
-      g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
+      if (gap !== null && gap < 0) {
+        // Westreise (R7): die lokale Uhr sprang über Zeitzonen auf einen
+        // früheren Kalendertag zurück (Berlin -> Bogotá). Das zählt als
+        // DERSELBE Lerntag: Serie weder zurücksetzen noch erneut erhöhen,
+        // lastStudyDate nicht zurückdatieren (sonst doppeltes Inkrement,
+        // sobald die lokale Uhr den Tag wieder erreicht).
+        g.dailyStreak = Math.max(1, g.dailyStreak || 0);
+      } else {
+        g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
+        g.lastStudyDate = today;
+        g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
+      }
     }
 
     const hour = new Date(now).getHours();
@@ -422,6 +435,10 @@
   }
 
   function badgesVM() {
+    // Offline-Guard: Badge-Modul nicht geladen (z.B. unvollständiger Offline-
+    // Cache) -> null. ui.renderBadges zeigt dann einen Hinweis statt zu crashen
+    // (sonst würde JEDER weitere Render erneut werfen – App friert ein).
+    if (!badges) return null;
     const metrics = badges.buildMetrics(allCards(), progress, gamestats);
     const all = badges.evaluate(metrics, gamestats.unlocked);
     const groups = badges.GROUPS
@@ -503,7 +520,9 @@
       .map((s) => ({ id: s.id, label: s.label, icon: s.icon,
         count: data.BATTLES.filter((b) => b.scene === s.id).length }))
       .filter((s) => s.count > 0);
-    const lengths = BATTLE_LENGTHS.map((l) => ({ ...l, selected: l.value === state.battleLength }));
+    // Object.assign statt Objekt-Spread: die App verspricht ES2017 (Spread auf
+    // Objekten ist ES2018 und wirft auf alten WebViews einen SyntaxError).
+    const lengths = BATTLE_LENGTHS.map((l) => Object.assign({}, l, { selected: l.value === state.battleLength }));
     return { scenes, totalCount: data.BATTLES.length, lengths };
   }
 
@@ -817,8 +836,11 @@
     dismissBadgeToast();
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
-    // Nichts fällig? -> freies Üben. In beiden Fällen auf eine Runde gedeckelt.
-    const chosen = (due.length ? due : cards).slice(0, SESSION_CAP);
+    // Nichts fällig? -> freies Üben mit GEMISCHTER Auswahl – sonst bestünde
+    // jede freie Runde aus denselben ersten 20 Karten der Datenreihenfolge
+    // (Karte 21+ einer Kategorie wäre nie erreichbar). Fällige Karten behalten
+    // ihre Reihenfolge. In beiden Fällen auf eine Runde gedeckelt.
+    const chosen = (due.length ? due : shuffle(cards)).slice(0, SESSION_CAP);
     // Letzte Kategorie merken (für "Weiter mit …" auf der Startseite).
     if (scopeId !== "all" && settings.lastScope !== scopeId) {
       settings = Object.assign({}, settings, { lastScope: scopeId });
@@ -901,10 +923,12 @@
     // SRS-Zustand neu berechnen und Statistik-Felder mitführen (immutabel).
     const now = Date.now();
     const prev = progress[card.id];
-    const srsNext = srs.review(prev, rating);
+    const srsNext = srs.review(prev, rating, now);
     const merged = stats.record(prev, srsNext, rating, now);
     progress = Object.assign({}, progress, { [card.id]: merged });
-    store.saveProgress(progress);
+    // Schlug das Speichern fehl (Quota voll/Private Mode), den Nutzer EINMAL
+    // pro Session warnen – sonst verliert er still alles beim nächsten Reload.
+    const saved = store.saveProgress(progress);
 
     // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
     recordStudyEvent(rating, now);
@@ -918,6 +942,22 @@
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
+    if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
+  }
+
+  // ----- Hinweis-Toast (gleiche Ebene/Optik wie die Badge-Einblendung) -----
+  let saveFailedNotified = false; // Quota-Warnung höchstens einmal pro Session
+
+  function showNotice(text) {
+    const existing = root.querySelector(".btoast");
+    if (existing) existing.remove();
+    root.insertAdjacentHTML("afterbegin", ui.noticeToast(text));
+  }
+
+  function notifySaveFailed() {
+    if (saveFailedNotified) return;
+    saveFailedNotified = true;
+    showNotice("Speichern fehlgeschlagen – Speicher voll?");
   }
 
   function setMode(mode) {
@@ -1141,11 +1181,15 @@
     render();
   }
 
+  // confirm()-Wrapper: fehlt confirm (manche WebViews), ist die Antwort NEIN –
+  // destruktive Aktionen dürfen nie ohne echte Rückfrage durchlaufen (R5).
+  function confirmAsk(msg) {
+    return typeof confirm === "function" ? confirm(msg) : false;
+  }
+
   // Gesamten Lernfortschritt löschen (nach Rückfrage). Einstellungen bleiben erhalten.
   function resetProgress() {
-    const ok = typeof confirm === "function"
-      ? confirm("Wirklich den gesamten Lernfortschritt löschen?\nDas kann nicht rückgängig gemacht werden.")
-      : true;
+    const ok = confirmAsk("Wirklich den gesamten Lernfortschritt löschen?\nDas kann nicht rückgängig gemacht werden.");
     if (!ok) return;
     store.resetProgress();
     progress = {};
@@ -1234,9 +1278,7 @@
 
   function deleteCard(id) {
     if (!userCards) return;
-    const ok = typeof confirm === "function"
-      ? confirm("Diese eigene Karte wirklich löschen?\nDer Lernfortschritt dieser Karte geht verloren.")
-      : true;
+    const ok = confirmAsk("Diese eigene Karte wirklich löschen?\nDer Lernfortschritt dieser Karte geht verloren.");
     if (!ok) return;
     userCards.remove(id);
     // Lernfortschritt dieser Karte mit entfernen (verwaiste Einträge vermeiden).
@@ -1248,6 +1290,60 @@
     }
     editorMsg = { type: "ok", text: "Karte gelöscht." };
     render();
+  }
+
+  // ----- Daten-Backup: Export/Import (R4) -----
+  // Export: alle spanischcard.*-Keys als JSON-Datei zum Herunterladen –
+  // der einzige Ausweg, bevor iOS/Quota den localStorage räumt.
+  function exportData() {
+    const payload = store.exportData();
+    let url = null;
+    try {
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "holaruta-backup-" + dayKey(Date.now()) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      buzz(8);
+    } catch (e) {
+      console.warn("Export fehlgeschlagen", e);
+      showNotice("Export fehlgeschlagen.");
+    }
+    if (url) setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* egal */ } }, 1000);
+  }
+
+  // Import: öffnet das versteckte file-input im Profil-Reiter.
+  function startImport() {
+    const input = document.getElementById("import-file");
+    if (input) input.click();
+  }
+
+  // Gewählte Backup-Datei einlesen: Top-Level-Format prüfen, Rückfrage stellen,
+  // nur bekannte spanischcard.*-Keys übernehmen (macht store.importData), dann
+  // neu laden – der sauberste Weg, alle Module auf den importierten Stand zu bringen.
+  function handleImportFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let payload = null;
+      try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
+      if (!payload || typeof payload !== "object" || !payload.data || typeof payload.data !== "object") {
+        showNotice("Import fehlgeschlagen – das ist kein HolaRuta-Backup.");
+        return;
+      }
+      const ok = confirmAsk("Backup importieren?\nDein aktueller Stand auf diesem Gerät wird überschrieben.");
+      if (!ok) return;
+      if (store.importData(payload) > 0) {
+        try { location.reload(); } catch (e) { /* egal */ }
+      } else {
+        showNotice("Import fehlgeschlagen – keine bekannten Daten in der Datei.");
+      }
+    };
+    reader.onerror = () => showNotice("Import fehlgeschlagen – Datei konnte nicht gelesen werden.");
+    reader.readAsText(file);
   }
 
   // Spricht die spanische Antwort der aktuellen Karte vor.
@@ -1348,6 +1444,9 @@
     else if (action === "study-one") studyOne(el.dataset.id);
     else if (action === "card-back") (state.backTo === "home" ? goHome() : goStats());
     else if (action === "open-editor") openEditor();
+    else if (action === "export-data") exportData();
+    else if (action === "import-data") startImport();
+    else if (action === "dismiss-notice") el.remove();
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
@@ -1402,6 +1501,13 @@
 
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
   function onChange(e) {
+    // Backup-Import: verstecktes file-input im Profil-Reiter.
+    if (e.target && e.target.id === "import-file") {
+      const file = (e.target.files && e.target.files[0]) || null;
+      e.target.value = ""; // erlaubt erneuten Import derselben Datei
+      handleImportFile(file);
+      return;
+    }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);
@@ -1520,6 +1626,13 @@
   }
   render();
   registerServiceWorker();
+  // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass
+  // der Browser den localStorage räumt (z.B. iOS nach 7 Tagen Inaktivität).
+  try {
+    if (navigator.storage && typeof navigator.storage.persist === "function") {
+      navigator.storage.persist().catch(() => { /* egal */ });
+    }
+  } catch (e) { /* Feature fehlt – egal */ }
 
   window.SC.app = { render }; // nach außen minimal
 })();
