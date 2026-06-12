@@ -1086,7 +1086,16 @@
     return `
       <section class="screen">
         ${hmTopbar("⚔️ Battle", "open-hostel")}
-        <p class="hm-intro">Wählt eine Situation. Die App zeigt eine Aufgabe auf Deutsch – einer antwortet laut auf Spanisch, der andere bewertet.</p>
+        <p class="hm-intro">Ein Sprach-Duell zu zweit: Aufgabe auf Deutsch lesen, laut auf Spanisch antworten – der Mitspieler bewertet. Wer mehr Punkte sammelt, gewinnt.</p>
+        <details class="hm-how" open>
+          <summary class="hm-how__sum">So läuft ein Battle</summary>
+          <ol class="hm-steps">
+            <li><b>Zu zweit:</b> Ihr seid Spieler A und B – ein Handy reicht, ihr reicht es reihum weiter.</li>
+            <li><b>Antworten:</b> Die App zeigt eine Aufgabe auf Deutsch. Wer dran ist, sagt sie laut auf Spanisch.</li>
+            <li><b>Bewerten:</b> „Lösung anzeigen“ – der andere vergleicht und tippt ✅ Richtig&nbsp;(2), 😬 Fast&nbsp;(1) oder ❌ Falsch&nbsp;(0).</li>
+            <li><b>Abwechseln:</b> A, B, A, B … bis alle Runden gespielt sind. Am Ende gewinnt, wer mehr Punkte hat – plus eine Real-Life-Challenge als Bonus.</li>
+          </ol>
+        </details>
         <div class="hm-length">
           <span class="hm-length__cap">Länge</span>
           <div class="segmented segmented--len" role="group" aria-label="Battle-Länge">${lengths}</div>

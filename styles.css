@@ -1095,6 +1095,31 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Gemeinsame Bausteine. */
 .hm-intro { margin: 0; color: var(--ink-soft); line-height: 1.5; font-size: 0.95rem; }
+
+/* Ablauf-Erklärung: aufklappbar, standardmäßig offen für Erstspieler. */
+.hm-how {
+  background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: var(--r-md); padding: 0 14px;
+}
+.hm-how__sum {
+  cursor: pointer; list-style: none; padding: 11px 0;
+  font-weight: 800; font-size: 0.9rem; color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.hm-how__sum::-webkit-details-marker { display: none; }
+.hm-how__sum::before { content: "📋"; }
+.hm-how__sum::after {
+  content: "▸"; margin-left: auto; color: var(--muted);
+  transition: transform 0.15s ease;
+}
+.hm-how[open] .hm-how__sum::after { transform: rotate(90deg); }
+.hm-steps {
+  margin: 0 0 12px; padding: 0 0 0 1.4em;
+  color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5;
+}
+.hm-steps li { margin: 7px 0; }
+.hm-steps b { color: var(--ink); }
+
 .hm-length { display: flex; flex-direction: column; gap: 8px; }
 .hm-length__cap {
   font-size: 0.72rem; font-weight: 800; color: var(--ink-soft);

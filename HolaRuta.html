@@ -1133,6 +1133,31 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Gemeinsame Bausteine. */
 .hm-intro { margin: 0; color: var(--ink-soft); line-height: 1.5; font-size: 0.95rem; }
+
+/* Ablauf-Erklärung: aufklappbar, standardmäßig offen für Erstspieler. */
+.hm-how {
+  background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: var(--r-md); padding: 0 14px;
+}
+.hm-how__sum {
+  cursor: pointer; list-style: none; padding: 11px 0;
+  font-weight: 800; font-size: 0.9rem; color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.hm-how__sum::-webkit-details-marker { display: none; }
+.hm-how__sum::before { content: "📋"; }
+.hm-how__sum::after {
+  content: "▸"; margin-left: auto; color: var(--muted);
+  transition: transform 0.15s ease;
+}
+.hm-how[open] .hm-how__sum::after { transform: rotate(90deg); }
+.hm-steps {
+  margin: 0 0 12px; padding: 0 0 0 1.4em;
+  color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5;
+}
+.hm-steps li { margin: 7px 0; }
+.hm-steps b { color: var(--ink); }
+
 .hm-length { display: flex; flex-direction: column; gap: 8px; }
 .hm-length__cap {
   font-size: 0.72rem; font-weight: 800; color: var(--ink-soft);
@@ -7940,6 +7965,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.4.2",
+      date: "2026-06-12",
+      title: "Battle klarer erklärt",
+      items: [
+        "Hostel Battle: Vor dem Start steht jetzt ein kurzer „So läuft ein Battle“-Ablauf in vier Schritten (zu zweit, antworten, bewerten, abwechseln) – aufklappbar und beim ersten Mal offen. Damit ist sofort klar, dass man zu zweit spielt, das Handy reihum weitergibt und der Mitspieler mit ✅/😬/❌ bewertet.",
+      ],
+    },
+    {
       version: "1.4.1",
       date: "2026-06-12",
       title: "Modus klarer benannt",
@@ -9073,7 +9106,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return `
       <section class="screen">
         ${hmTopbar("⚔️ Battle", "open-hostel")}
-        <p class="hm-intro">Wählt eine Situation. Die App zeigt eine Aufgabe auf Deutsch – einer antwortet laut auf Spanisch, der andere bewertet.</p>
+        <p class="hm-intro">Ein Sprach-Duell zu zweit: Aufgabe auf Deutsch lesen, laut auf Spanisch antworten – der Mitspieler bewertet. Wer mehr Punkte sammelt, gewinnt.</p>
+        <details class="hm-how" open>
+          <summary class="hm-how__sum">So läuft ein Battle</summary>
+          <ol class="hm-steps">
+            <li><b>Zu zweit:</b> Ihr seid Spieler A und B – ein Handy reicht, ihr reicht es reihum weiter.</li>
+            <li><b>Antworten:</b> Die App zeigt eine Aufgabe auf Deutsch. Wer dran ist, sagt sie laut auf Spanisch.</li>
+            <li><b>Bewerten:</b> „Lösung anzeigen“ – der andere vergleicht und tippt ✅ Richtig&nbsp;(2), 😬 Fast&nbsp;(1) oder ❌ Falsch&nbsp;(0).</li>
+            <li><b>Abwechseln:</b> A, B, A, B … bis alle Runden gespielt sind. Am Ende gewinnt, wer mehr Punkte hat – plus eine Real-Life-Challenge als Bonus.</li>
+          </ol>
+        </details>
         <div class="hm-length">
           <span class="hm-length__cap">Länge</span>
           <div class="segmented segmented--len" role="group" aria-label="Battle-Länge">${lengths}</div>

@@ -21,6 +21,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.4.2",
+      date: "2026-06-12",
+      title: "Battle klarer erklärt",
+      items: [
+        "Hostel Battle: Vor dem Start steht jetzt ein kurzer „So läuft ein Battle“-Ablauf in vier Schritten (zu zweit, antworten, bewerten, abwechseln) – aufklappbar und beim ersten Mal offen. Damit ist sofort klar, dass man zu zweit spielt, das Handy reihum weitergibt und der Mitspieler mit ✅/😬/❌ bewertet.",
+      ],
+    },
+    {
       version: "1.4.1",
       date: "2026-06-12",
       title: "Modus klarer benannt",
