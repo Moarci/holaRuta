@@ -458,11 +458,14 @@
   function setTripGoal(fields) {
     const destination = String(fields.destination || "").trim().slice(0, 80);
     const endDate = /^\d{4}-\d{2}-\d{2}$/.test(fields.endDate) ? fields.endDate : "";
-    const perDay = Math.max(1, Math.min(500, Math.round(Number(fields.perDay) || 0)));
-    if (!endDate || !perDay) {
+    // Rohwert ZUERST prüfen: leeres/0/ungültiges Tagesziel ablehnen statt still auf
+    // 1 zu klemmen (sonst wäre die Fehlermeldung toter Code). Danach auf ≤500 deckeln.
+    const perDayRaw = Math.round(Number(fields.perDay));
+    if (!endDate || !(perDayRaw >= 1)) {
       showNotice("Bitte ein gültiges Datum und ein Tagesziel angeben.");
       return;
     }
+    const perDay = Math.min(500, perDayRaw);
     const goal = { destination, endDate, perDay, startedAt: dayKey(Date.now()) };
     gamestats = Object.assign({}, gamestats, { tripGoal: goal });
     store.saveGameStats(gamestats);
@@ -2528,7 +2531,8 @@
     if (!c || c.result) return;
     const item = c.queue[c.idx];
     if (!item) return;
-    const correct = matcher.normalize(input) === matcher.normalize(item.answer) && matcher.normalize(input).length > 0;
+    const norm = matcher.normalize(input);
+    const correct = norm.length > 0 && norm === matcher.normalize(item.answer);
     c.result = { input, correct, answer: item.answer };
     if (correct) { c.correct += 1; buzz(12); } else buzz(8);
     render();

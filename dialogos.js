@@ -69,7 +69,7 @@
           ] },
         { who: "npc", es: "Por supuesto. Aquí tiene. Hoy el plato del día es pollo con arroz.", de: "Natürlich. Hier bitte. Das Tagesgericht ist heute Hähnchen mit Reis." },
         { who: "user", kind: "type", de: "(bestelle das Tagesgericht und ein Wasser)", solEs: "Quiero el plato del día y un agua, por favor.",
-          accept: ["quiero el plato del dia y un agua", "el plato del dia y un agua", "para mi el plato del dia y un agua", "quiero el plato del dia y una agua"] },
+          accept: ["quiero el plato del dia y un agua", "el plato del dia y un agua", "para mi el plato del dia y un agua"] },
         { who: "npc", es: "Excelente. ¿Algo más para tomar?", de: "Ausgezeichnet. Noch etwas zu trinken?" },
         { who: "user", kind: "mc", de: "(lehne höflich ab – nichts weiter)", solEs: "No, así está bien, gracias.",
           options: [
