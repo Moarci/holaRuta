@@ -21,6 +21,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.13.0",
+      date: "2026-06-12",
+      title: "Karten überspringen: nicht jede Karte muss durch",
+      items: [
+        "⏭️ Neuer „Überspringen“-Button beim Lernen: Wer eine Karte gerade nicht machen will, nimmt sie ohne Bewertung aus der Sitzung – so muss niemand jede Karte durchziehen.",
+        "Überspringen zählt nicht als „gewusst“: Der Lernstand (SRS) bleibt unangetastet, die Karte ist beim nächsten Mal wieder fällig.",
+        "Funktioniert in allen drei Modi (🃏 Karteikarte, ✍️ Schreiben, 👂 Hören) – am Schreibtisch geht es auch per Taste „s“.",
+      ],
+    },
+    {
       version: "1.12.0",
       date: "2026-06-12",
       title: "Gegenteile: Antonym-Paare lernen",

@@ -713,6 +713,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sharepic-btn:hover { color: var(--brand-ink); }
 .sharepic-btn:active { opacity: 0.7; }
 
+/* „Überspringen": dezenter, zentrierter Button. Nimmt die aktuelle Karte ohne
+ * Bewertung aus der Sitzung – damit niemand jede Karte durchziehen muss. */
+.skipbtn {
+  align-self: center; margin: 10px auto 2px; padding: 8px 16px; cursor: pointer;
+  font-family: var(--font); font-size: 0.85rem; font-weight: 700; color: var(--muted);
+  background: none; border: 1.5px solid var(--line); border-radius: 999px;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+.skipbtn:hover { color: var(--ink-soft); border-color: var(--line-strong); }
+.skipbtn:active { transform: translateY(1px); opacity: 0.8; }
+
 /* Fertig */
 .done { text-align: center; padding: 36px 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
 .done__emoji { font-size: 3rem; }
@@ -10109,6 +10120,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.13.0",
+      date: "2026-06-12",
+      title: "Karten überspringen: nicht jede Karte muss durch",
+      items: [
+        "⏭️ Neuer „Überspringen“-Button beim Lernen: Wer eine Karte gerade nicht machen will, nimmt sie ohne Bewertung aus der Sitzung – so muss niemand jede Karte durchziehen.",
+        "Überspringen zählt nicht als „gewusst“: Der Lernstand (SRS) bleibt unangetastet, die Karte ist beim nächsten Mal wieder fällig.",
+        "Funktioniert in allen drei Modi (🃏 Karteikarte, ✍️ Schreiben, 👂 Hören) – am Schreibtisch geht es auch per Taste „s“.",
+      ],
+    },
+    {
       version: "1.12.0",
       date: "2026-06-12",
       title: "Gegenteile: Antonym-Paare lernen",
@@ -10592,8 +10613,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Lernfortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
         ${body}
+        ${skipBtn()}
         ${shareCardBtn()}
       </section>`;
+  }
+
+  // Dezenter „Überspringen"-Button: nimmt die aktuelle Karte ohne Bewertung aus der
+  // Sitzung (sie bleibt fällig). So muss niemand jede Karte durchziehen.
+  function skipBtn() {
+    return `<button class="skipbtn" type="button" data-action="skip" aria-label="Diese Karte überspringen">Überspringen ⏭️</button>`;
   }
 
   // Stufen-Badge (oben rechts auf der Karte). on = farbig (Rückseite), sonst dezent.
@@ -14205,6 +14233,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
   }
 
+  // Aktuelle Karte überspringen: ohne Bewertung aus dieser Sitzung nehmen (kein
+  // SRS-/Statistik-Eingriff, die Karte bleibt fällig). So muss niemand jede Karte
+  // durchziehen – Überspringen heißt schlicht „später nochmal", nicht „gewusst".
+  function skip() {
+    const card = cardById(state.queue[0]);
+    if (!card) return;
+    buzz(8);
+
+    state.queue = state.queue.slice(1);
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = state.queue.length ? "study" : "done";
+    render();
+  }
+
   // ----- Hinweis-Toast (gleiche Ebene/Optik wie die Badge-Einblendung) -----
   let saveFailedNotified = false; // Quota-Warnung höchstens einmal pro Session
 
@@ -14970,6 +15014,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
+    else if (action === "skip") skip();
     else if (action === "speak") speakCurrent();
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
@@ -15106,6 +15151,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // 'p' = Antwort anhören (play), sobald die spanische Antwort sichtbar ist.
     if ((e.key === "p" || e.key === "P") && !inInput && canRate()) {
       speakCurrent();
+      return;
+    }
+
+    // 's' = aktuelle Karte überspringen (jederzeit, nur nicht beim Tippen).
+    if ((e.key === "s" || e.key === "S") && !inInput && !onButton) {
+      e.preventDefault();
+      skip();
       return;
     }
 
