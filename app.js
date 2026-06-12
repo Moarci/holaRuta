@@ -1154,6 +1154,7 @@
       transcript,
       current,
       result: d.result, // null | { correct, given }
+      hint: !!d.hint,   // Musterantwort beim Frei-Tippen aufgedeckt?
       speakable: !!(speech && speech.isSupported()),
     };
   }
@@ -1184,7 +1185,7 @@
     if (!pool.length) return;
     const dia = pool[Math.floor(Math.random() * pool.length)];
     const totalUser = dia.turns.filter((t) => t.who === "user").length;
-    state.dialogos = { scenarioId, dialogueId: dia.id, turnIdx: 0, result: null, correct: 0, totalUser };
+    state.dialogos = { scenarioId, dialogueId: dia.id, turnIdx: 0, result: null, hint: false, correct: 0, totalUser };
     state.screen = "dialogos";
     render(); // maybeAutoSpeak liest den ersten npc-Zug vor
   }
@@ -1239,6 +1240,18 @@
     }
     d.turnIdx += 1;
     d.result = null;
+    d.hint = false;
+    render();
+  }
+
+  // Tipp aufdecken: zeigt beim Frei-Tippen die Musterantwort als Hilfe. Reine
+  // Anzeige – die Antwort muss weiterhin getippt werden, der Zug zählt normal.
+  function dialogosHint() {
+    const d = state.dialogos;
+    if (!d || d.result) return;
+    const t = currentUserTurn();
+    if (!t || t.kind !== "type") return;
+    d.hint = true;
     render();
   }
 
@@ -1678,9 +1691,26 @@
 
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
     if (state.screen === "cuerpo") cuerpoInit3D();
+    // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
+    // den sichtbaren Bereich holen – bei langen Gesprächen wächst der Verlauf
+    // sonst unter den Bildschirmrand.
+    if (state.screen === "dialogos") scrollDialogActive();
 
     manageFocus();
     maybeAutoSpeak();
+  }
+
+  // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
+  // requestAnimationFrame, damit das Layout nach dem innerHTML steht; block:"end"
+  // hält den darüberliegenden npc-Satz mit im Bild.
+  function scrollDialogActive() {
+    if (typeof requestAnimationFrame !== "function") return;
+    requestAnimationFrame(function () {
+      const el = root.querySelector("#dlg-active");
+      if (!el) return;
+      const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "end" }); } catch (e) { /* egal */ }
+    });
   }
 
   // Hör-Modus & Preis-Trainer spielen die spanische Vorgabe automatisch ab, sobald
@@ -1768,6 +1798,13 @@
     if (state.screen === "precios" && state.precios && !state.precios.result) {
       const input = document.getElementById("precios-answer");
       if (input) { input.focus(); return; }
+    }
+    // Diálogos: wenn der Nutzer am Zug ist und tippen soll, gehört der Fokus ins
+    // Eingabefeld (Tastatur erscheint, kein extra Tap). preventScroll, damit das
+    // explizite scrollDialogActive() die Sichtbarkeit übernimmt.
+    if (state.screen === "dialogos" && state.dialogos && !state.dialogos.result) {
+      const input = document.getElementById("dialogos-answer");
+      if (input) { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } return; }
     }
     const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
@@ -2968,6 +3005,7 @@
     else if (action === "start-dialogos") startDialogos(el.dataset.id);
     else if (action === "dialogos-answer") answerDialogosMc(Number(el.dataset.idx));
     else if (action === "dialogos-next") advanceDialogos();
+    else if (action === "dialogos-hint") dialogosHint();
     else if (action === "dialogos-again") dialogosAgain();
     else if (action === "dialogos-speak") speakDialogosNpc();
     else if (action === "open-compras") openCompras();

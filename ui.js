@@ -2286,13 +2286,19 @@
             </button>`).join("");
           active = `${instr}<div class="quiz-opts">${opts}</div>`;
         } else {
+          // Frei tippen. Optionaler „Tipp" deckt die Musterantwort auf – als
+          // Hilfe, ohne den Zug vorwegzunehmen (getippt werden muss trotzdem).
+          const help = vm.hint
+            ? `<p class="dlg-tip" role="note">💡 <b lang="es">${esc(cur.solEs)}</b></p>`
+            : `<button class="dlg-tipbtn ghostbtn" type="button" data-action="dialogos-hint">💡 Tipp anzeigen</button>`;
           active = `
             ${instr}
             <form class="typer" data-action="submit-dialogos" id="dialogos-form">
               <input class="typer__input" id="dialogos-answer" type="text" inputmode="text"
                      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="Tippe deine Antwort …" />
               <button class="typer__btn" type="submit">Sagen</button>
-            </form>`;
+            </form>
+            ${help}`;
         }
       } else {
         // Beantwortet: die eigene (Muster-)Replik als Blase + Verdict + Weiter.
@@ -2309,13 +2315,17 @@
       }
     }
 
+    const step = Math.min(vm.turnIdx + 1, vm.total);
     return `
       <section class="screen study">
         ${hmTopbar(vm.icon + " " + esc(vm.title), "open-dialogos")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.turnIdx + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="dlg-progress">
+          <div class="progress" role="progressbar" aria-valuenow="${step}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+          <span class="dlg-step">Schritt ${step} von ${vm.total}</span>
+        </div>
         <div class="dlg-thread">
           ${history}
-          ${active}
+          <div id="dlg-active">${active}</div>
         </div>
       </section>`;
   }

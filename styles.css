@@ -1823,8 +1823,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dlg-bubble__es { font-weight: 700; }
 .dlg-bubble__de { font-size: 0.8rem; color: var(--muted); }
 
+.dlg-progress { display: flex; align-items: center; gap: 10px; }
+.dlg-progress .progress { flex: 1; }
+.dlg-step { flex: none; font-size: 0.78rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
 .dlg-instr { font-weight: 700; color: var(--brand-ink); margin: 4px 0 8px; text-align: center; }
 .dlg-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.dlg-tipbtn { margin-top: 8px; font-size: 0.85rem; padding: 7px 12px; }
+.dlg-tip { margin: 8px 0 0; padding: 8px 12px; border-radius: var(--r-sm, 10px); font-size: 0.9rem;
+  background: color-mix(in srgb, var(--brand) 10%, var(--surface)); color: var(--ink); }
+.dlg-tip b { color: var(--brand-ink); }
 .dlg-verdict { margin: 8px 0; padding: 9px 12px; border-radius: var(--r-sm, 10px); font-weight: 600; }
 .dlg-verdict--ok { background: color-mix(in srgb, #2F6B45 14%, var(--surface)); color: var(--ok, #2F6B45); }
 .dlg-verdict--no { background: color-mix(in srgb, #B5302A 12%, var(--surface)); color: var(--ink); display: flex; flex-direction: column; gap: 3px; }
