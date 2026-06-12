@@ -21,6 +21,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.18.0",
+      date: "2026-06-12",
+      title: "Sharepics: App-Link zum Mitlernen",
+      items: [
+        "🔗 Jedes geteilte Bild zeigt jetzt unten die App-Adresse (moarci.github.io/holaRuta) in Link-Optik – so sieht jede:r sofort, wo es die App gibt.",
+        "👉 Beim Teilen per Handy steht der echte, anklickbare Link „Jetzt mitlernen“ im Begleittext – in WhatsApp, Telegram & Co. direkt antippbar. (Ein PNG selbst kann keinen klickbaren Link enthalten.)",
+      ],
+    },
+    {
       version: "1.17.0",
       date: "2026-06-12",
       title: "Ruta-Pass: Stempel als Sharepic teilen",

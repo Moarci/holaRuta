@@ -7,7 +7,7 @@
  * beim nächsten Start. So mischen sich nie alte und neue Dateien in einer
  * laufenden Sitzung (Mixed-Version-Load).
  */
-const CACHE_VERSION = "holaruta-v28";
+const CACHE_VERSION = "holaruta-v29";
 const ASSETS = [
   "./",
   "./index.html",
