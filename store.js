@@ -179,6 +179,7 @@
       // ----- Frases flexibles (Satzbaukasten) -----
       frasesPlayed: 0,      // abgeschlossene Satzbaukasten-Runden
       frasesPerfect: 0,     // Runden ohne Fehler
+      frasesThemesDone: {}, // Map themaId -> true (distinkt abgeschlossene Themen, ohne "Gemischt")
       // ----- Hören: Escuchar (Dictado) & Precios (Preis-Hörtrainer) -----
       listenReviews: 0,     // im Hör-Modus bewertete Karten
       preciosPlayed: 0,     // abgeschlossene Preis-Hörrunden
@@ -217,6 +218,7 @@
       quizzesPerfect: num(v.quizzesPerfect),
       frasesPlayed: num(v.frasesPlayed),
       frasesPerfect: num(v.frasesPerfect),
+      frasesThemesDone: isPlainObject(v.frasesThemesDone) ? v.frasesThemesDone : {},
       listenReviews: num(v.listenReviews),
       preciosPlayed: num(v.preciosPlayed),
       preciosPerfect: num(v.preciosPerfect),

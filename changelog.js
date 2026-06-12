@@ -21,6 +21,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.7.0",
+      date: "2026-06-12",
+      title: "Frases flexibles: Themen & viel mehr Sätze",
+      items: [
+        "🧱 Frases flexibles deutlich ausgebaut: 49 Satzrahmen (statt 8) in 7 Reise-Themen – En la ruta, En el hostal, Comida y bebida, Compras y dinero, Salud y emergencias, Conocer gente und Orientarse.",
+        "Neue Themen-Auswahl vor der Runde (wie bei Definiciones): wähle eine Situation – oder „🎲 Gemischt“ für alle Sätze quer durch.",
+        "Neuer Ruta-Pass-Stempel „🏛️ Constructor experto“: schließe jedes Thema mindestens einmal ab.",
+      ],
+    },
+    {
       version: "1.6.0",
       date: "2026-06-12",
       title: "Konjugieren: neuer Bereich + Erklärseite",

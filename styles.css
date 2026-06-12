@@ -1562,6 +1562,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   display: inline-block; min-width: 64px; height: 2px; margin: 0 2px 5px;
   border-bottom: 3px dashed var(--brand); vertical-align: middle;
 }
+/* "Gemischt"-Kachel in der Themen-Auswahl: abgesetzt, damit sie als Sammel-Option
+   sofort erkennbar ist (gestrichelter Markenrahmen wie die Ruta-del-día-Karte). */
+.hm-scene--mixed {
+  border: 1.5px dashed color-mix(in srgb, var(--brand) 50%, var(--line-strong));
+  background: color-mix(in srgb, var(--brand) 7%, var(--surface));
+}
 
 /* ====================== HÖR-MODUS (Escuchar / Dictado) ====================== */
 /* Drei-Spalten-Variante des Modus-Umschalters (Sprechen · Schreiben · Hören). */

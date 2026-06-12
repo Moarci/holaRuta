@@ -4,12 +4,12 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.6.0** — 618 Karten · 21 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · Konjugieren mit Erklärseite (Conjugación) · Spickzettel · Precios al oído · Frases flexibles · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.7.0** — 618 Karten · 21 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · Konjugieren mit Erklärseite (Conjugación) · Spickzettel · Precios al oído · Frases flexibles (49 Sätze in 7 Themen) · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-108_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-113_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-618-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -98,7 +98,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Lernmodus** | Hören (Escuchar) 👂 | Die App spricht die spanische Antwort vor (Dictado), du tippst das Gehörte – trainiert das Hörverstehen für echtes LatAm-Spanisch. Nur bei TTS-Support |
 | **Schnellzugriff** | Spickzettel 🆘 | Die kritischsten Sätze (Notfall, Grundlagen, Wegbeschreibung, Geld) sofort groß und auf Tipp vorgelesen – reines Nachschlagen, ohne Lernen |
 | **Hörtrainer** | Precios al oído 💵 | Die App sagt einen Betrag auf Spanisch, du tippst die Zahl – Übung fürs Verstehen gesprochener Preise. Generativ aus den Zahlen-Karten, mit Score |
-| **Satzbaukasten** | Frases flexibles 🧱 | Satzrahmen mit Lücke („Necesito ___"), passenden Baustein wählen – produktives Satzbauen statt bloßem Übersetzen (Multiple Choice) |
+| **Satzbaukasten** | Frases flexibles 🧱 | Satzrahmen mit Lücke („Necesito ___"), passenden Baustein wählen – produktives Satzbauen statt bloßem Übersetzen (Multiple Choice). 49 Sätze in 7 Reise-Themen, wählbar vorab oder „🎲 Gemischt" |
 | **Tagesrunde** | Ruta del día 🗺️ | Ein Tap für eine kurze, kategorienübergreifende Tagesrunde (bevorzugt fällige, sonst neue Karten) – stärkt die Lern-Serie |
 | **Richtung** | DE→ES / ES→DE | Lernrichtung jederzeit umschaltbar, wird gemerkt |
 | **Spaced Repetition** | Eigene SM-2-Engine | 3-Tasten-Bewertung (Nochmal / Gut / Einfach), Intervall- & Ease-Berechnung |
@@ -195,7 +195,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 108 Tests in 6 Dateien (node:test, keine Dependencies)
+├── test/                        # 113 Tests in 6 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -443,8 +443,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 108
-#  ℹ pass 108
+#  ℹ tests 113
+#  ℹ pass 113
 #  ℹ fail 0
 ```
 
@@ -468,7 +468,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 16 (`SC.*`) |
-| Tests | 108 (alle grün) |
+| Tests | 113 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

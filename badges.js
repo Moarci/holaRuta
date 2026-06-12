@@ -156,6 +156,8 @@
       description: "Schließe 10 Satzbaukasten-Runden ab.",        unlockedText: "Aus Bausteinen werden flüssige Reisesätze." },
     { id: "frases_perfect", group: "construir", icon: "💯", name: "Construcción perfecta", type: "counter", metric: "frasesPerfect", threshold: 1,
       description: "Beende eine Runde ohne Fehler.",              unlockedText: "Jede Lücke richtig gefüllt – sauber gebaut." },
+    { id: "frases_themes",  group: "construir", icon: "🏛️", name: "Constructor experto",  type: "counter", metric: "frasesThemesCompleted", threshold: 7,
+      description: "Schließe jedes Frases-Thema mindestens einmal ab.", unlockedText: "Von der Busfahrt bis zum Smalltalk – jede Reise-Situation gebaut." },
 
     // ---------- Hören (Escuchar & Precios) ----------
     { id: "listen_first", group: "listening", icon: "👂", name: "Primer oído",        type: "counter", metric: "listenReviews", threshold: 1,
@@ -239,9 +241,11 @@
       // Definiciones: abgeschlossene und fehlerfreie Quiz-Runden.
       quizzesPlayed: c.quizzesPlayed || 0,
       quizzesPerfect: c.quizzesPerfect || 0,
-      // Frases flexibles (Satzbaukasten): abgeschlossene und fehlerfreie Runden.
+      // Frases flexibles (Satzbaukasten): abgeschlossene und fehlerfreie Runden
+      // sowie distinkt abgeschlossene Themen (für den "Alle Themen"-Badge).
       frasesPlayed: c.frasesPlayed || 0,
       frasesPerfect: c.frasesPerfect || 0,
+      frasesThemesCompleted: c.frasesThemesDone ? Object.keys(c.frasesThemesDone).length : 0,
       // Hören: im Hör-Modus bewertete Karten + Preis-Hörtrainer-Runden.
       listenReviews: c.listenReviews || 0,
       preciosPlayed: c.preciosPlayed || 0,
