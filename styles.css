@@ -952,7 +952,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-weight: 600; line-height: 1.5; margin-bottom: 8px;
 }
 
-/* ===================== RUTA-PASS (BADGES) ===================== */
+/* ===================== CONJUGACIÓN (ERKLÄRSEITE KONJUGIEREN) ===================== */
+/* Baut auf den Länderkunde-Bausteinen (cinfo-sect, cinfo-words, cinfo-dish) auf;
+ * eigen sind nur die kompakten Konjugations-Tabellen und der Übungs-CTA. */
+.cj-table { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.cj-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  padding: 7px 12px; background: var(--surface); border-radius: var(--r-sm);
+}
+.cj-row__p { color: var(--muted); font-size: 0.88rem; }
+.cj-row__f { font-weight: 700; color: var(--brand-ink); }
+
+/* Die drei regelmäßigen Muster untereinander, jeweils Titel + Tabelle + "Genauso". */
+.cj-verbs { display: flex; flex-direction: column; gap: 16px; }
+.cj-verb__h { font-family: var(--font-display); font-size: 1rem; margin: 0 0 8px; color: var(--ink); }
+.cj-verb__like { margin: 8px 0 0; color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
+.cj-note { margin-top: 12px; font-size: 0.88rem; }
+.cj-cta { margin-top: 4px; }
 /* "Mein Ruta-Pass": gesammelte Reisestempel. Freigeschaltete Stempel im
  * warmen Sticker-Look, gesperrte dezent ausgegraut mit Fortschrittsbalken. */
 
