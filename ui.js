@@ -906,6 +906,16 @@
       </div>`;
   }
 
+  // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der
+  // Infoseiten Länderkunde (renderInfo) und Conjugación (renderConjugacion).
+  function sect(icon, title, body) {
+    return `
+      <div class="cinfo-sect">
+        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
+        ${body}
+      </div>`;
+  }
+
   // ---------- LÄNDERKUNDE (INFOSEITE) ----------
   // Dropdown mit Regionen als <optgroup>; darunter das gewählte Land mit
   // Infotexten und der Unterrubrik "Essen & Trinken".
@@ -980,12 +990,6 @@
     const foods = (c.food || []).map(dish).join("");
     const drinks = (c.drink || []).map(dish).join("");
 
-    // Ein Themenblock (Überschrift + Inhalt).
-    const sect = (icon, title, body) => `
-      <div class="cinfo-sect">
-        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
-        ${body}
-      </div>`;
     const para = (text) => `<p class="cinfo-text">${esc(text)}</p>`;
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
@@ -1417,11 +1421,12 @@
       .map((p) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(p.es)}</span><span class="cinfo-word__de">${esc(p.de)}</span></li>`)
       .join("");
 
-    // Eine Konjugations-Tabelle: Person links, Form rechts. Die Endung steht in
-    // den Daten, hervorgehoben wird nichts – die Tabelle bleibt ruhig lesbar.
+    // Eine Konjugations-Tabelle: Person links (gemeinsame tableLabels), Form
+    // rechts. forms = 5 Formen in Personen-Reihenfolge – dieselbe Datenform
+    // für regelmäßige und unregelmäßige Verben.
     const table = (forms) => `
       <ul class="cj-table">
-        ${forms.map(([p, f]) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(p)}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
+        ${forms.map((f, i) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(g.tableLabels[i])}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
       </ul>`;
 
     const regularBlocks = g.regular
@@ -1436,7 +1441,6 @@
     // Unregelmäßige Verben als aufklappbare Karten (natives <details> wie bei
     // den Länderkunde-Gerichten) – Kopf zeigt Verb + Übersetzung, aufgeklappt
     // die fünf Formen und der Reise-Hinweis.
-    const personLabels = g.persons.map((p) => p.es);
     const irregularBlocks = g.irregular
       .map((v) => `
         <details class="cinfo-dish">
@@ -1448,7 +1452,7 @@
             <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="cinfo-dish__body">
-            ${table(v.forms.map((f, i) => [personLabels[i], f]))}
+            ${table(v.forms)}
             ${v.note ? `<p class="cj-verb__like">${esc(v.note)}</p>` : ""}
           </div>
         </details>`)
@@ -1461,12 +1465,6 @@
           <p class="context-panel__de">${esc(l.de)}</p>
         </div>`)
       .join("");
-
-    const sect = (icon, title, body) => `
-      <div class="cinfo-sect">
-        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
-        ${body}
-      </div>`;
 
     return `
       <section class="screen">

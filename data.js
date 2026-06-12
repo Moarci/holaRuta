@@ -1534,8 +1534,9 @@
   // gerendert von ui.renderConjugacion. Die passenden Übungskarten liegen in der
   // Kategorie "verbos" (Konjugieren); die Seite verlinkt per "Jetzt üben" dorthin.
   //   persons  = die Personen mit deutscher Entsprechung (LatAm: ustedes, kein vosotros)
-  //   regular  = die drei Muster-Tabellen (-ar/-er/-ir): forms = [Person, Form]-Paare
-  //   irregular = die wichtigsten unregelmäßigen Reiseverben (forms in Personen-Reihenfolge)
+  //   tableLabels = kompakte Personen-Spalte ALLER Tabellen (eine Quelle für regular & irregular)
+  //   regular  = die drei Muster-Tabellen (-ar/-er/-ir): forms = 5 Formen in tableLabels-Reihenfolge
+  //   irregular = die wichtigsten unregelmäßigen Reiseverben (forms ebenso)
   //   example  = Mini-Dialog Wegbeschreibung, der die Endungen in Aktion zeigt
   const CONJUGATION = {
     intro: "Spanische Verben ändern ihre Endung je nach Person – und weil die Endung schon verrät, wer gemeint ist, lässt man yo, tú & Co. meistens weg. „Doblas a la derecha“ heißt also ganz ohne ‚du‘: Du biegst rechts ab. Genau deshalb brauchst du Konjugation z. B. bei der Wegbeschreibung: Wer dir den Weg erklärt, spricht dich in der du- oder Sie-Form an – und du erkennst das nur an der Endung.",
@@ -1547,12 +1548,13 @@
       { es: "ustedes / ellos / ellas", de: "ihr & sie (Mehrzahl)" },
     ],
     personsNote: "In Lateinamerika sagt man für „ihr“ immer ustedes – das Schulbuch-„vosotros“ hörst du dort nicht. Praktisch: usted(es) benutzt dieselbe Verbform wie er/sie.",
+    tableLabels: ["yo", "tú", "él/ella/usted", "nosotros", "ustedes/ellos"],
     regular: [
-      { title: "-ar · doblar (abbiegen)", forms: [["yo", "doblo"], ["tú", "doblas"], ["él/ella/usted", "dobla"], ["nosotros", "doblamos"], ["ustedes/ellos", "doblan"]],
+      { title: "-ar · doblar (abbiegen)", forms: ["doblo", "doblas", "dobla", "doblamos", "doblan"],
         like: "Genauso gehen: caminar (laufen), cruzar (überqueren), tomar (nehmen), hablar (sprechen)." },
-      { title: "-er · comer (essen)", forms: [["yo", "como"], ["tú", "comes"], ["él/ella/usted", "come"], ["nosotros", "comemos"], ["ustedes/ellos", "comen"]],
+      { title: "-er · comer (essen)", forms: ["como", "comes", "come", "comemos", "comen"],
         like: "Genauso gehen: beber (trinken), comprender (verstehen), vender (verkaufen)." },
-      { title: "-ir · vivir (wohnen/leben)", forms: [["yo", "vivo"], ["tú", "vives"], ["él/ella/usted", "vive"], ["nosotros", "vivimos"], ["ustedes/ellos", "viven"]],
+      { title: "-ir · vivir (wohnen/leben)", forms: ["vivo", "vives", "vive", "vivimos", "viven"],
         like: "Fast wie -er, nur „wir“ = -imos. Genauso: subir (hinauf-/einsteigen), abrir (öffnen)." },
     ],
     regularNote: "Merkhilfe: Stamm behalten, Endung tauschen. yo → -o, tú → -as/-es, er/sie/usted → -a/-e, wir → -amos/-emos/-imos, ihr & sie → -an/-en.",
