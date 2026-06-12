@@ -33,6 +33,15 @@
       ],
     },
     {
+      version: "1.10.1",
+      date: "2026-06-12",
+      title: "Reise-Knigge: Toilettenpapier-Regel",
+      items: [
+        "🚽 Neu im Reise-Knigge (Kultur & Etikette): Toilettenpapier gehört in vielen Ländern in den Mülleimer (papelera) neben der Toilette, nicht ins WC – die Rohre sind oft zu eng (Schild: „No arrojar papeles ni toallas sanitarias“).",
+        "Ecuador-Akzent ergänzt: Hinweis auf die papelera statt WC.",
+      ],
+    },
+    {
       version: "1.10.0",
       date: "2026-06-12",
       title: "Reise-Knigge: Verhalten unterwegs",
