@@ -827,7 +827,8 @@
   }
 
   function frasesAgain() {
-    state.frases = null;
+    // Wie preciosAgain: openFrases() baut state.frases neu; kein vorheriges Nullen,
+    // damit ein (theoretischer) Early-Return keinen inkonsistenten Zustand hinterlässt.
     openFrases();
   }
 
@@ -947,7 +948,11 @@
   }
   function maybeAutoSpeak() {
     const key = autoSpeakKey();
-    if (!key || key === lastAutoSpoke) return;
+    // Außerhalb der Hör-Phase (Ergebnis sichtbar, anderer Screen) zurücksetzen –
+    // sonst bliebe die erste Karte einer NEUEN Sitzung stumm, wenn sie zufällig
+    // dieselbe ist wie die zuletzt vorgelesene (auch bei „Nochmal" in 1-Karten-Runden).
+    if (!key) { lastAutoSpoke = null; return; }
+    if (key === lastAutoSpoke) return;
     lastAutoSpoke = key;
     const id = key.slice(key.indexOf(":") + 1);
     const card = cardById(id);
@@ -1420,7 +1425,9 @@
 
   function openPrecios() {
     dismissBadgeToast();
-    if (!speech) return; // ohne Sprachausgabe gibt es nichts zu hören
+    // Ohne (unterstützte) Sprachausgabe gibt es nichts zu hören – gleiche Bedingung
+    // wie das UI-Gate in homeVM/entdeckenBody, damit der Einstieg konsistent bleibt.
+    if (!speech || !speech.isSupported()) return;
     const pool = numberCardsForPrecios();
     if (!pool.length) return;
     const queue = shuffle(pool).slice(0, PRECIOS_ROUND).map((c) => c.id);
@@ -1458,7 +1465,9 @@
   }
 
   function preciosAgain() {
-    state.precios = null;
+    // openPrecios() baut state.precios komplett neu (oder kehrt früh zurück und
+    // lässt den vorherigen, gültigen Stand stehen) – kein vorheriges Nullen nötig,
+    // das sonst bei einem Early-Return einen inkonsistenten Zustand hinterließe.
     openPrecios();
   }
 
