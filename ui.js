@@ -69,6 +69,7 @@
     { action: "open-hostel",      icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
+    { action: "open-regatear",    icon: "🤝", title: "Regatear",        sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
     { action: "open-compras",     icon: "🛒", title: "Einkaufszettel", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
@@ -221,7 +222,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, knigge: vm.hasKnigge };
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, knigge: vm.hasKnigge, regatear: vm.hasRegatear };
     const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -1356,6 +1357,142 @@
       </div>`;
   }
 
+  // ---------- REGATEAR (gut verhandeln & feilschen) ----------
+  // Eine Seite, drei Teile: Erklärung/Taktik (aufklappbar), wichtige Sätze nach
+  // Phase, plus Einheiten-Wortschatz, und zum Schluss Rollenspiele zum Üben.
+  function renderRegatear(vm) {
+    // Erklärung: Taktik-Blöcke (DOs/Don'ts) wie im Knigge, aufklappbar.
+    const liList = (items, cls, marker) =>
+      (items || [])
+        .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
+        .join("");
+    const tipBlock = (t) => `
+      <details class="knigge-topic">
+        <summary class="knigge-topic__head">
+          <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
+          <span class="knigge-topic__title">${esc(t.title)}</span>
+          <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="knigge-topic__body">
+          ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
+          ${t.dos && t.dos.length ? `<ul class="knigge-list">${liList(t.dos, "knigge-do", "✅")}</ul>` : ""}
+          ${t.donts && t.donts.length ? `<ul class="knigge-list">${liList(t.donts, "knigge-dont", "🚫")}</ul>` : ""}
+        </div>
+      </details>`;
+    const tips = (vm.tips || []).map(tipBlock).join("");
+
+    // Glossar: kompakte zweispaltige Wortliste (es · de).
+    const glossary = (vm.glossary || []).map((g) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
+        <span class="rg-gloss__de">${esc(g.de)}</span>
+      </li>`).join("");
+
+    // Wichtige Sätze: pro Phase eine kleine zweispaltige Liste (es / de).
+    const phraseGroup = (g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${g.items.map((p) => `
+            <li class="rg-phrase">
+              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+              <span class="rg-phrase__de">${esc(p.de)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    // Einheiten: kompakte Tabelle Spanisch · Deutsch · Beispiel.
+    const units = (vm.units || []).map((u) => `
+      <li class="rg-unit">
+        <span class="rg-unit__es" lang="es">${esc(u.es)}</span>
+        <span class="rg-unit__de">${esc(u.de)}</span>
+        <span class="rg-unit__ej" lang="es">${esc(u.ejemplo)}</span>
+      </li>`).join("");
+
+    // Regionale Unterschiede: Flagge + Land + kurze Notiz.
+    const regional = (vm.regional || []).map((r) => `
+      <li class="rg-region">
+        <span class="rg-region__flag" aria-hidden="true">${esc(r.flag)}</span>
+        <span class="rg-region__body">
+          <span class="rg-region__country">${esc(r.country)}</span>
+          <span class="rg-region__note">${esc(r.note)}</span>
+        </span>
+      </li>`).join("");
+
+    // Rollenspiele: pro Szene ein aufklappbarer Dialog (A/B) + nützliche Sätze.
+    const rpBlock = (r) => {
+      const lines = r.dialogue.map((d) => `
+        <div class="hm-line hm-line--${d.speaker === "A" ? "a" : "b"}">
+          <span class="hm-line__who">${esc(d.speaker)}</span>
+          <span class="hm-line__bubble">
+            <span class="hm-line__es" lang="es">${esc(d.es)}</span>
+            <span class="hm-line__de">${esc(d.de)}</span>
+          </span>
+        </div>`).join("");
+      const useful = r.usefulPhrases && r.usefulPhrases.length
+        ? `<div class="hm-phrases">
+             <span class="hm-phrases__cap">Nützliche Sätze</span>
+             <ul class="hm-phrases__list">${r.usefulPhrases.map((p) => `<li lang="es">${esc(p)}</li>`).join("")}</ul>
+           </div>`
+        : "";
+      return `
+        <details class="knigge-topic rg-rp">
+          <summary class="knigge-topic__head">
+            <span class="knigge-topic__icon" aria-hidden="true">🎭</span>
+            <span class="knigge-topic__title">${esc(r.title)}</span>
+            ${r.lvlShort ? `<span class="hm-rp__lvl">${esc(r.lvlShort)}</span>` : ""}
+            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="knigge-topic__body">
+            <p class="hm-rphead__sit">${esc(r.situationDe)}</p>
+            <div class="hm-roles">
+              <div class="hm-role hm-role--a">
+                <span class="hm-role__tag">A · ${esc(r.roleA)}</span>
+                <span class="hm-role__goal">${esc(r.goalA)}</span>
+              </div>
+              <div class="hm-role hm-role--b">
+                <span class="hm-role__tag">B · ${esc(r.roleB)}</span>
+                <span class="hm-role__goal">${esc(r.goalB)}</span>
+              </div>
+            </div>
+            <div class="hm-dialogue">${lines}</div>
+            ${useful}
+          </div>
+        </details>`;
+    };
+    const roleplays = (vm.roleplays || []).map(rpBlock).join("");
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+          <div class="topbar__title">🤝 Regatear</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+
+        <h2 class="rg-head">📖 So verhandelst du gut</h2>
+        ${tips}
+
+        <h2 class="rg-head">🗣️ Wörter rund ums Feilschen</h2>
+        <ul class="rg-glosslist">${glossary}</ul>
+
+        <h2 class="rg-head">💬 Wichtige Sätze</h2>
+        ${phrases}
+
+        <h2 class="rg-head">⚖️ Mengen & Einheiten</h2>
+        <ul class="rg-units">${units}</ul>
+
+        <h2 class="rg-head">🌎 Von Land zu Land</h2>
+        <ul class="rg-regions">${regional}</ul>
+
+        <h2 class="rg-head">🎭 Rollenspiele zum Üben</h2>
+        <p class="hm-intro">Verteilt die Rollen A und B, klappt eine Szene auf und spielt den Dialog laut durch.</p>
+        ${roleplays}
+      </section>`;
+  }
+
   // ---------- HOSTEL MODE ----------
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
   function hmTopbar(title, back) {
@@ -2326,7 +2463,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge,
+  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
