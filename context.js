@@ -21,6 +21,11 @@
   //   - Zahlen auf "uno": vor dem Nomen "un" / "veintiún" (z. B. veintiún pesos).
   //   - "de pesos" NUR, wenn die Zahl auf millón/millones ENDET (un millón de pesos),
   //     nicht bei Tausender-Rest (un millón quinientos mil pesos – ohne "de").
+  // Greift – wenn geladen – auf das zentrale Zahlen-Modul zu (gleiche Apokope-/
+  // Millionen-/„de"-Regeln wie der Preis-Hörtrainer). Fallback unten, falls das
+  // Modul (z. B. in einem isolierten Test) nicht vorhanden ist.
+  const NUM = (window.SC && window.SC.numbers) || null;
+
   function numberContext(card) {
     const es = card.es;                                   // z.B. "cincuenta y siete"
     const deNum = String(card.de).replace(/\s*\(.*\)\s*/g, "").trim(); // "57", "1.000"
@@ -28,19 +33,22 @@
 
     // "uno" am Wortende vor dem Nomen apokopieren: veintiuno -> veintiún (mit Akzent),
     // sonst -> un (treinta y uno -> treinta y un, ciento uno -> ciento un).
-    const apocope = (n) => /veintiuno$/i.test(n) ? n.replace(/veintiuno$/i, "veintiún")
+    const apocope = NUM ? NUM.apocope : (n) => /veintiuno$/i.test(n) ? n.replace(/veintiuno$/i, "veintiún")
                                                  : n.replace(/uno$/i, "un");
     const endsInMillion = /mill(?:ó|o)n(?:es)?$/i.test(es);
+    // Betrag als Preisangabe: zentrale Logik (NUM.amount) erzeugt identische
+    // Strings (un peso / veintiún pesos / un millón de pesos …), nur die deutsche
+    // Seite und das Hilfsverb (Es/Son) bleiben hier lokal.
     let amountEs, verbEs, pesoDe;
     if (value === 1) {
-      amountEs = "un peso"; verbEs = "Es"; pesoDe = "Peso";   // genau 1: Singular
+      amountEs = NUM ? NUM.amount(1, card.cur) : "un peso"; verbEs = "Es"; pesoDe = "Peso";
     } else if (endsInMillion) {
       // Singular/Plural sauber trennen: genau "un millón" ist ein Singular-Subjekt
       // ("Es un millón de pesos"), ab "dos millones" Plural ("Son dos millones de pesos").
       const singularMillion = /^un\s+mill(?:ó|o)n$/i.test(es.trim());
-      amountEs = `${es} de pesos`; verbEs = singularMillion ? "Es" : "Son"; pesoDe = "Pesos";
+      amountEs = NUM ? NUM.amount(value) : `${es} de pesos`; verbEs = singularMillion ? "Es" : "Son"; pesoDe = "Pesos";
     } else {
-      amountEs = `${apocope(es)} pesos`; verbEs = "Son"; pesoDe = "Pesos";
+      amountEs = NUM ? NUM.amount(value) : `${apocope(es)} pesos`; verbEs = "Son"; pesoDe = "Pesos";
     }
 
     // 0 ergibt keinen sinnvollen Preis -> echter Reise-Gebrauch von "cero".

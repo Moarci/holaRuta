@@ -17,6 +17,7 @@ globalThis.window = {};
 const SRC = path.join(__dirname, "..");
 require(path.join(SRC, "contextdata.js")); // Kontext-Inhalte (vor data.js/context.js)
 require(path.join(SRC, "data.js"));
+require(path.join(SRC, "numbers.js"));     // Zahl→Wort & Preis-Generator (vor context.js)
 require(path.join(SRC, "context.js"));     // hängt den Kontext an die Karten (nach data.js)
 require(path.join(SRC, "srs.js"));
 require(path.join(SRC, "matcher.js"));
@@ -318,7 +319,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
     quizzesPlayed: 7, quizzesPerfect: 2,
     frasesPlayed: 3, frasesPerfect: 1, frasesThemesDone: { transporte: true, comida: true },
-    listenReviews: 30, preciosPlayed: 4, preciosPerfect: 2,
+    listenReviews: 30, preciosPlayed: 4, preciosPerfect: 2, preciosMillon: 1,
     rutaDays: { "2026-06-11": true },
     contextCardsSeen: { hostel01: true },
     bodyPartsSeen: { bp_cabeza: true },
