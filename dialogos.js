@@ -21,7 +21,7 @@
   "use strict";
 
   const DIALOGOS_SCENARIOS = [
-    { id: "hotel",      title: "Hotel-Checkin",   icon: "🛎️", lvl: 1, intro: "An der Rezeption einchecken." },
+    { id: "hotel",      title: "Hotel-Check-in",  icon: "🛎️", lvl: 1, intro: "An der Rezeption einchecken." },
     { id: "restaurante",title: "Im Restaurant",   icon: "🍽️", lvl: 1, intro: "Bestellen, fragen, zahlen." },
     { id: "bus",        title: "Busticket kaufen", icon: "🚌", lvl: 1, intro: "Am Schalter ein Ticket lösen." },
     { id: "taxi",       title: "Taxifahrt",       icon: "🚕", lvl: 1, intro: "Ziel nennen und Preis klären." },
@@ -74,7 +74,7 @@
         { who: "user", kind: "mc", de: "(lehne höflich ab – nichts weiter)", solEs: "No, así está bien, gracias.",
           options: [
             { es: "No, así está bien, gracias.", ok: true },
-            { es: "Sí, la cuenta por favor.", ok: false },
+            { es: "Sí, la cuenta, por favor.", ok: false },
             { es: "No tengo hambre.", ok: false },
           ] },
         { who: "npc", es: "Perfecto, enseguida se lo traigo.", de: "Perfekt, ich bringe es Ihnen gleich." },

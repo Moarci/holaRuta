@@ -4,7 +4,7 @@
  * (das die Wort-/Währungslogik mitbenutzt) und vor app.js/ui.js.
  *
  * Warum eigenes Modul: Der Preis-Hörtrainer („Precios al oído") soll nicht mehr
- * nur die handvoll fest in data.js gepflegten Zahlen-Karten abspielen (Deckel bei
+ * nur die Handvoll fest in data.js gepflegten Zahlen-Karten abspielen (Deckel bei
  * 5.000.000), sondern BELIEBIGE, realistische Beträge erzeugen – inkl. der großen
  * Zahlen, die im Alltag in Kolumbien, Chile oder Argentinien völlig normal sind.
  *
