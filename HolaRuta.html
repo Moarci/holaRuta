@@ -1486,6 +1486,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .route__lbl { font-size: 0.7rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .route__bus { transition: none; } }
 
+/* ====================== SPICKZETTEL (Survival-Schnellzugriff) ====================== */
+.sz-group { margin-top: 18px; }
+.sz-group__h {
+  margin: 0 0 8px; padding-left: 10px; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.05rem; color: var(--ink); border-left: 4px solid;
+  border-image: linear-gradient(var(--from), var(--to)) 1;
+}
+.sz-list { display: flex; flex-direction: column; gap: 8px; }
+.sz-row {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  box-shadow: var(--shadow);
+}
+.sz-row__main { flex: 1 1 auto; min-width: 0; }
+.sz-row__de { font-size: 0.82rem; color: var(--muted); }
+.sz-row__es { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--ink); line-height: 1.25; overflow-wrap: anywhere; }
+.sz-row__tip { margin-top: 2px; font-size: 0.8rem; font-style: italic; color: var(--ink-soft); }
+.sz-speak {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 1.15rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.sz-speak:active { transform: scale(0.92); }
+
 </style>
 </head>
 <body>
@@ -8026,12 +8050,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Profil (Fortschritt, Pass, Eigenes). Unten eine feste Tab-Leiste; der aktive
   // Reiter kommt aus vm.tab und wird in den Einstellungen gemerkt.
 
-  // Entdecken-Reiter: die vier großen Einstiege als volle Gradient-Buttons.
+  // Entdecken-Reiter: die großen Einstiege als volle Gradient-Buttons.
+  // need: optionale Voraussetzung ("speech"|"frases"|"countries") – fehlt das
+  // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   const FEATURES = [
-    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
-    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
-    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
+    { action: "open-spickzettel", icon: "🆘", title: "Spickzettel",   sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
+    { action: "open-hostel",      icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -8175,9 +8204,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function entdeckenBody(vm) {
-    // Offline-Guard: Länderkunde nur anbieten, wenn das Modul geladen wurde
-    // (countries.js kann bei unvollständigem Offline-Cache fehlen).
-    const feats = FEATURES.filter((x) => x.action !== "open-info" || vm.hasCountries).map((x) => `
+    // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
+    // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases };
+    const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
@@ -8939,6 +8969,91 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`;
   }
 
+  // ---------- SPICKZETTEL (Survival-Schnellzugriff) ----------
+  // Reine Nachschlage-Ansicht (kein SRS): die kritischsten Sätze groß, je mit 🔊.
+  function renderSpickzettel(vm) {
+    const groups = vm.groups.map((g) => {
+      const rows = g.cards.map((c) => `
+        <div class="sz-row">
+          <div class="sz-row__main">
+            <div class="sz-row__de">${esc(c.de)}</div>
+            <div class="sz-row__es" lang="es">${esc(c.es)}</div>
+            ${c.tip ? `<div class="sz-row__tip">🗣️ ${esc(c.tip)}</div>` : ""}
+          </div>
+          ${vm.speakable
+            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="Anhören" title="Anhören">🔊</button>`
+            : ""}
+        </div>`).join("");
+      return `
+        <div class="sz-group" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+          <h3 class="sz-group__h"><span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}</h3>
+          <div class="sz-list">${rows}</div>
+        </div>`;
+    }).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🆘 Spickzettel", "home")}
+        <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – groß, sofort da und auf Tipp vorgelesen. Kein Lernen, nur schnell nachschlagen.</p>
+        ${groups}
+      </section>`;
+  }
+
+  // ---------- PRECIOS AL OÍDO (Preis-Hörtrainer) ----------
+  // Die App sagt einen Betrag auf Spanisch (Auto-Speak), man tippt die Ziffern.
+  // Reuse der Hör-Karten-Optik (card-listen) + matcher (field "de").
+  function renderPrecios(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
+    const replay = vm.speakable
+      ? `<button class="listen-replay ghostbtn" type="button" data-action="precios-speak">🔊 Nochmal anhören</button>`
+      : "";
+    const body = !vm.result
+      ? `
+        <div class="card-static card-listen">
+          <span class="listen-ear" aria-hidden="true">💵</span>
+          ${replay}
+          <span class="face__hint">Welchen Betrag hörst du? Tippe die Zahl.</span>
+        </div>
+        <form class="typer" data-action="submit-precios" id="precios-form">
+          <input class="typer__input" id="precios-answer" type="text" inputmode="numeric"
+                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="z. B. 4500" />
+          <button class="typer__btn" type="submit">Prüfen</button>
+        </form>`
+      : `
+        <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
+          <div class="face__word" lang="es">${esc(vm.answerEs)}</div>
+          <div class="listen-de">= ${esc(vm.answerDe)}</div>
+          ${vm.result.correct
+            ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
+            : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(vm.result.input || "—")}“</div>`}
+        </div>
+        <button class="cta" data-action="precios-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`;
+    return `
+      <section class="screen study">
+        ${hmTopbar("💵 Precios al oído", "home")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+        ${body}
+      </section>`;
+  }
+
+  function renderPreciosDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Jeden Preis erkannt. 🏆"
+      : rate >= 60 ? "¡Bien! Dein Ohr für Zahlen wird besser. 👏"
+      : "Sigue practicando – Zahlen hören ist Übungssache. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "💵"}</div>
+          <h2>Precios al oído</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig gehört</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="precios-again">Nochmal hören</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
+  }
+
   // ---------- LÄNDERKUNDE (INFOSEITE) ----------
   // Dropdown mit Regionen als <optgroup>; darunter das gewählte Land mit
   // Infotexten und der Unterrubrik "Essen & Trinken".
@@ -9464,7 +9579,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderSpickzettel,
+                   renderPrecios, renderPreciosDone };
 })();
 
 </script>
@@ -9483,6 +9599,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
   // Sonst startet ein Neueinsteiger mit "561 fällig" in eine erschlagende
@@ -9520,6 +9637,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     roleplaySwapped: false,  // Rollen A/B getauscht?
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
     quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
+    // ----- Precios al oído (Preis-Hörtrainer, transient) -----
+    precios: null,           // { queue:[cardId…], idx, total, result:{correct,answers,input}|null, correct }
+    // ----- Frases flexibles (Satzbaukasten, transient) -----
+    frases: null,            // { queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
     // ----- El Cuerpo (interaktive Körperkarte) -----
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
   };
@@ -9626,6 +9747,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
       hasCountries: !!countries, // dito für die Länderkunde
+      hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
+      hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -10285,6 +10408,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
+    else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
+    else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
+    else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -10332,6 +10458,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       }
       const flipEl = document.getElementById("flip");
       if (flipEl) { try { flipEl.focus({ preventScroll: true }); } catch (e) { flipEl.focus(); } return; }
+    }
+    // Preis-Hörtrainer: vor dem Prüfen Fokus ins Ziffern-Feld.
+    if (state.screen === "precios" && state.precios && !state.precios.result) {
+      const input = document.getElementById("precios-answer");
+      if (input) { input.focus(); return; }
     }
     const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
@@ -10710,6 +10841,136 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // ----- Spickzettel (Survival-Schnellzugriff, kein Lernen) -----
+  // Kuratierte Überlebens-Bereiche: je Kategorie die wichtigsten Karten, gedeckelt.
+  // Bewusst per Kategorie + Cap statt fester IDs, damit es mit der Datenbasis mitwächst.
+  const SPICKZETTEL_GROUPS = [
+    { cat: "notfall", limit: 10 },
+    { cat: "basics",  limit: 10 },
+    { cat: "rumbo",   limit: 6 },
+    { cat: "dinero",  limit: 6 },
+  ];
+
+  function spickzettelVM() {
+    const groups = SPICKZETTEL_GROUPS.map((g) => {
+      const cat = categoryById(g.cat);
+      const cards = data.CARDS
+        .filter((c) => c.cat === g.cat)
+        .slice(0, g.limit)
+        .map((c) => ({ id: c.id, de: c.de, es: c.es, tip: c.tip || null }));
+      return {
+        id: g.cat,
+        label: cat ? cat.label : g.cat,
+        icon: cat ? cat.icon : "📌",
+        grad: cat ? cat.grad : DEFAULT_ACCENT,
+        cards,
+      };
+    }).filter((g) => g.cards.length);
+    return { groups, speakable: !!(speech && speech.isSupported()) };
+  }
+
+  function openSpickzettel() {
+    dismissBadgeToast();
+    state.screen = "spickzettel";
+    render();
+  }
+
+  // Eine beliebige Karte per Id vorlesen (Spickzettel / Listen außerhalb der
+  // Lern-Sitzung). Erste akzeptierte Variante, damit "/"-Alternativen sauber klingen.
+  function speakCardId(id) {
+    if (!speech) return;
+    const card = cardById(id);
+    if (!card) return;
+    speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
+  }
+
+  // ----- Precios al oído (Preis-Hörtrainer) -----
+  const PRECIOS_ROUND = 10;
+  // Nur reine Kardinalzahlen (de = nur Ziffern/Punkte) – keine Ordinalzahlen oder
+  // Karten mit Klammerzusatz. So passt „Betrag hören → Ziffern tippen" sauber.
+  const numberCardsForPrecios = () =>
+    data.CARDS.filter((c) => c.cat === "zahlen" && /^[\d.\s]+$/.test(String(c.de)));
+
+  function preciosVM() {
+    const p = state.precios;
+    const card = cardById(p.queue[p.idx]);
+    return {
+      position: p.idx,
+      total: p.total,
+      result: p.result, // null | { correct, answers, input }
+      answerDe: card ? card.de : "",
+      answerEs: card ? card.es : "",
+      isLast: p.idx >= p.total - 1,
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function preciosDoneVM() {
+    const p = state.precios;
+    return { correct: p.correct, total: p.total, perfect: p.total > 0 && p.correct === p.total };
+  }
+
+  function openPrecios() {
+    dismissBadgeToast();
+    if (!speech) return; // ohne Sprachausgabe gibt es nichts zu hören
+    const pool = numberCardsForPrecios();
+    if (!pool.length) return;
+    const queue = shuffle(pool).slice(0, PRECIOS_ROUND).map((c) => c.id);
+    state.precios = { queue, idx: 0, total: queue.length, result: null, correct: 0 };
+    state.screen = "precios";
+    render(); // maybeAutoSpeak spielt den ersten Betrag automatisch ab
+  }
+
+  // Getippte Ziffern gegen das Zahlenwort prüfen (field "de"). Matcher entfernt
+  // Punkte/Leerzeichen, also matcht "1000" auch "1.000".
+  function submitPrecios(input) {
+    const p = state.precios;
+    if (!p || p.result) return;
+    const card = cardById(p.queue[p.idx]);
+    if (!card) return;
+    const r = matcher.check(input, card, "de");
+    p.result = Object.assign({ input }, r);
+    if (r.correct) { p.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function nextPrecios() {
+    const p = state.precios;
+    if (!p || !p.result) return;
+    if (p.idx >= p.total - 1) {
+      recordPreciosResult(p);
+      syncBadges(Date.now(), true);
+      state.screen = "preciosDone";
+      render();
+      return;
+    }
+    p.idx += 1;
+    p.result = null;
+    render();
+  }
+
+  function preciosAgain() {
+    state.precios = null;
+    openPrecios();
+  }
+
+  function speakPrecios() {
+    const p = state.precios;
+    if (!p || !speech) return;
+    const card = cardById(p.queue[p.idx]);
+    if (card) speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
+  }
+
+  // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
+  function recordPreciosResult(p) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.preciosPlayed = (g.preciosPlayed || 0) + 1;
+    if (p.total > 0 && p.correct === p.total) g.preciosPerfect = (g.preciosPerfect || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
   // ----- Länderkunde (Infoseite) -----
   function openInfo() {
     dismissBadgeToast();
@@ -11025,6 +11286,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "open-cuerpo") openCuerpo();
     else if (action === "cuerpo-select") selectBodyPart(el.dataset.id);
     else if (action === "cuerpo-speak") speakBodyPart();
+    else if (action === "open-spickzettel") openSpickzettel();
+    else if (action === "speak-card") speakCardId(el.dataset.id);
+    else if (action === "open-precios") openPrecios();
+    else if (action === "precios-next") nextPrecios();
+    else if (action === "precios-again") preciosAgain();
+    else if (action === "precios-speak") speakPrecios();
     else if (action === "home") goHome();
   }
 
@@ -11045,7 +11312,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       });
       return;
     }
-    // Getippte Antwort prüfen (Schreiben-Modus).
+    // Preis-Hörtrainer: getippte Ziffern prüfen.
+    if (e.target.closest('[data-action="submit-precios"]')) {
+      e.preventDefault();
+      const input = document.getElementById("precios-answer");
+      submitPrecios(input ? input.value : "");
+      return;
+    }
+    // Getippte Antwort prüfen (Schreiben-/Hör-Modus).
     const form = e.target.closest('[data-action="submit-typed"]');
     if (!form) return;
     e.preventDefault();

@@ -12,6 +12,7 @@
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
   // Sonst startet ein Neueinsteiger mit "561 fällig" in eine erschlagende
@@ -49,6 +50,10 @@
     roleplaySwapped: false,  // Rollen A/B getauscht?
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
     quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
+    // ----- Precios al oído (Preis-Hörtrainer, transient) -----
+    precios: null,           // { queue:[cardId…], idx, total, result:{correct,answers,input}|null, correct }
+    // ----- Frases flexibles (Satzbaukasten, transient) -----
+    frases: null,            // { queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
     // ----- El Cuerpo (interaktive Körperkarte) -----
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
   };
@@ -155,6 +160,8 @@
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
       hasCountries: !!countries, // dito für die Länderkunde
+      hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
+      hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -814,6 +821,9 @@
     else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
+    else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
+    else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
+    else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -861,6 +871,11 @@
       }
       const flipEl = document.getElementById("flip");
       if (flipEl) { try { flipEl.focus({ preventScroll: true }); } catch (e) { flipEl.focus(); } return; }
+    }
+    // Preis-Hörtrainer: vor dem Prüfen Fokus ins Ziffern-Feld.
+    if (state.screen === "precios" && state.precios && !state.precios.result) {
+      const input = document.getElementById("precios-answer");
+      if (input) { input.focus(); return; }
     }
     const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
@@ -1239,6 +1254,136 @@
     render();
   }
 
+  // ----- Spickzettel (Survival-Schnellzugriff, kein Lernen) -----
+  // Kuratierte Überlebens-Bereiche: je Kategorie die wichtigsten Karten, gedeckelt.
+  // Bewusst per Kategorie + Cap statt fester IDs, damit es mit der Datenbasis mitwächst.
+  const SPICKZETTEL_GROUPS = [
+    { cat: "notfall", limit: 10 },
+    { cat: "basics",  limit: 10 },
+    { cat: "rumbo",   limit: 6 },
+    { cat: "dinero",  limit: 6 },
+  ];
+
+  function spickzettelVM() {
+    const groups = SPICKZETTEL_GROUPS.map((g) => {
+      const cat = categoryById(g.cat);
+      const cards = data.CARDS
+        .filter((c) => c.cat === g.cat)
+        .slice(0, g.limit)
+        .map((c) => ({ id: c.id, de: c.de, es: c.es, tip: c.tip || null }));
+      return {
+        id: g.cat,
+        label: cat ? cat.label : g.cat,
+        icon: cat ? cat.icon : "📌",
+        grad: cat ? cat.grad : DEFAULT_ACCENT,
+        cards,
+      };
+    }).filter((g) => g.cards.length);
+    return { groups, speakable: !!(speech && speech.isSupported()) };
+  }
+
+  function openSpickzettel() {
+    dismissBadgeToast();
+    state.screen = "spickzettel";
+    render();
+  }
+
+  // Eine beliebige Karte per Id vorlesen (Spickzettel / Listen außerhalb der
+  // Lern-Sitzung). Erste akzeptierte Variante, damit "/"-Alternativen sauber klingen.
+  function speakCardId(id) {
+    if (!speech) return;
+    const card = cardById(id);
+    if (!card) return;
+    speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
+  }
+
+  // ----- Precios al oído (Preis-Hörtrainer) -----
+  const PRECIOS_ROUND = 10;
+  // Nur reine Kardinalzahlen (de = nur Ziffern/Punkte) – keine Ordinalzahlen oder
+  // Karten mit Klammerzusatz. So passt „Betrag hören → Ziffern tippen" sauber.
+  const numberCardsForPrecios = () =>
+    data.CARDS.filter((c) => c.cat === "zahlen" && /^[\d.\s]+$/.test(String(c.de)));
+
+  function preciosVM() {
+    const p = state.precios;
+    const card = cardById(p.queue[p.idx]);
+    return {
+      position: p.idx,
+      total: p.total,
+      result: p.result, // null | { correct, answers, input }
+      answerDe: card ? card.de : "",
+      answerEs: card ? card.es : "",
+      isLast: p.idx >= p.total - 1,
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function preciosDoneVM() {
+    const p = state.precios;
+    return { correct: p.correct, total: p.total, perfect: p.total > 0 && p.correct === p.total };
+  }
+
+  function openPrecios() {
+    dismissBadgeToast();
+    if (!speech) return; // ohne Sprachausgabe gibt es nichts zu hören
+    const pool = numberCardsForPrecios();
+    if (!pool.length) return;
+    const queue = shuffle(pool).slice(0, PRECIOS_ROUND).map((c) => c.id);
+    state.precios = { queue, idx: 0, total: queue.length, result: null, correct: 0 };
+    state.screen = "precios";
+    render(); // maybeAutoSpeak spielt den ersten Betrag automatisch ab
+  }
+
+  // Getippte Ziffern gegen das Zahlenwort prüfen (field "de"). Matcher entfernt
+  // Punkte/Leerzeichen, also matcht "1000" auch "1.000".
+  function submitPrecios(input) {
+    const p = state.precios;
+    if (!p || p.result) return;
+    const card = cardById(p.queue[p.idx]);
+    if (!card) return;
+    const r = matcher.check(input, card, "de");
+    p.result = Object.assign({ input }, r);
+    if (r.correct) { p.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function nextPrecios() {
+    const p = state.precios;
+    if (!p || !p.result) return;
+    if (p.idx >= p.total - 1) {
+      recordPreciosResult(p);
+      syncBadges(Date.now(), true);
+      state.screen = "preciosDone";
+      render();
+      return;
+    }
+    p.idx += 1;
+    p.result = null;
+    render();
+  }
+
+  function preciosAgain() {
+    state.precios = null;
+    openPrecios();
+  }
+
+  function speakPrecios() {
+    const p = state.precios;
+    if (!p || !speech) return;
+    const card = cardById(p.queue[p.idx]);
+    if (card) speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
+  }
+
+  // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
+  function recordPreciosResult(p) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.preciosPlayed = (g.preciosPlayed || 0) + 1;
+    if (p.total > 0 && p.correct === p.total) g.preciosPerfect = (g.preciosPerfect || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
   // ----- Länderkunde (Infoseite) -----
   function openInfo() {
     dismissBadgeToast();
@@ -1554,6 +1699,12 @@
     else if (action === "open-cuerpo") openCuerpo();
     else if (action === "cuerpo-select") selectBodyPart(el.dataset.id);
     else if (action === "cuerpo-speak") speakBodyPart();
+    else if (action === "open-spickzettel") openSpickzettel();
+    else if (action === "speak-card") speakCardId(el.dataset.id);
+    else if (action === "open-precios") openPrecios();
+    else if (action === "precios-next") nextPrecios();
+    else if (action === "precios-again") preciosAgain();
+    else if (action === "precios-speak") speakPrecios();
     else if (action === "home") goHome();
   }
 
@@ -1574,7 +1725,14 @@
       });
       return;
     }
-    // Getippte Antwort prüfen (Schreiben-Modus).
+    // Preis-Hörtrainer: getippte Ziffern prüfen.
+    if (e.target.closest('[data-action="submit-precios"]')) {
+      e.preventDefault();
+      const input = document.getElementById("precios-answer");
+      submitPrecios(input ? input.value : "");
+      return;
+    }
+    // Getippte Antwort prüfen (Schreiben-/Hör-Modus).
     const form = e.target.closest('[data-action="submit-typed"]');
     if (!form) return;
     e.preventDefault();

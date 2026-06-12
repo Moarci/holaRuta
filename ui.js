@@ -61,12 +61,17 @@
   // Profil (Fortschritt, Pass, Eigenes). Unten eine feste Tab-Leiste; der aktive
   // Reiter kommt aus vm.tab und wird in den Einstellungen gemerkt.
 
-  // Entdecken-Reiter: die vier großen Einstiege als volle Gradient-Buttons.
+  // Entdecken-Reiter: die großen Einstiege als volle Gradient-Buttons.
+  // need: optionale Voraussetzung ("speech"|"frases"|"countries") – fehlt das
+  // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   const FEATURES = [
-    { action: "open-hostel",     icon: "🛏️", title: "Hostel Mode",  sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
-    { action: "open-quiz-setup", icon: "🧩", title: "Definiciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
-    { action: "open-cuerpo",     icon: "🧍", title: "El Cuerpo",    sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-info",       icon: "🌎", title: "Länderkunde",  sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"] },
+    { action: "open-spickzettel", icon: "🆘", title: "Spickzettel",   sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
+    { action: "open-hostel",      icon: "🛏️", title: "Hostel Mode",   sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -210,9 +215,10 @@
   }
 
   function entdeckenBody(vm) {
-    // Offline-Guard: Länderkunde nur anbieten, wenn das Modul geladen wurde
-    // (countries.js kann bei unvollständigem Offline-Cache fehlen).
-    const feats = FEATURES.filter((x) => x.action !== "open-info" || vm.hasCountries).map((x) => `
+    // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
+    // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases };
+    const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
@@ -974,6 +980,91 @@
       </div>`;
   }
 
+  // ---------- SPICKZETTEL (Survival-Schnellzugriff) ----------
+  // Reine Nachschlage-Ansicht (kein SRS): die kritischsten Sätze groß, je mit 🔊.
+  function renderSpickzettel(vm) {
+    const groups = vm.groups.map((g) => {
+      const rows = g.cards.map((c) => `
+        <div class="sz-row">
+          <div class="sz-row__main">
+            <div class="sz-row__de">${esc(c.de)}</div>
+            <div class="sz-row__es" lang="es">${esc(c.es)}</div>
+            ${c.tip ? `<div class="sz-row__tip">🗣️ ${esc(c.tip)}</div>` : ""}
+          </div>
+          ${vm.speakable
+            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="Anhören" title="Anhören">🔊</button>`
+            : ""}
+        </div>`).join("");
+      return `
+        <div class="sz-group" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+          <h3 class="sz-group__h"><span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}</h3>
+          <div class="sz-list">${rows}</div>
+        </div>`;
+    }).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("🆘 Spickzettel", "home")}
+        <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – groß, sofort da und auf Tipp vorgelesen. Kein Lernen, nur schnell nachschlagen.</p>
+        ${groups}
+      </section>`;
+  }
+
+  // ---------- PRECIOS AL OÍDO (Preis-Hörtrainer) ----------
+  // Die App sagt einen Betrag auf Spanisch (Auto-Speak), man tippt die Ziffern.
+  // Reuse der Hör-Karten-Optik (card-listen) + matcher (field "de").
+  function renderPrecios(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
+    const replay = vm.speakable
+      ? `<button class="listen-replay ghostbtn" type="button" data-action="precios-speak">🔊 Nochmal anhören</button>`
+      : "";
+    const body = !vm.result
+      ? `
+        <div class="card-static card-listen">
+          <span class="listen-ear" aria-hidden="true">💵</span>
+          ${replay}
+          <span class="face__hint">Welchen Betrag hörst du? Tippe die Zahl.</span>
+        </div>
+        <form class="typer" data-action="submit-precios" id="precios-form">
+          <input class="typer__input" id="precios-answer" type="text" inputmode="numeric"
+                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="z. B. 4500" />
+          <button class="typer__btn" type="submit">Prüfen</button>
+        </form>`
+      : `
+        <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
+          <div class="face__word" lang="es">${esc(vm.answerEs)}</div>
+          <div class="listen-de">= ${esc(vm.answerDe)}</div>
+          ${vm.result.correct
+            ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
+            : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(vm.result.input || "—")}“</div>`}
+        </div>
+        <button class="cta" data-action="precios-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`;
+    return `
+      <section class="screen study">
+        ${hmTopbar("💵 Precios al oído", "home")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+        ${body}
+      </section>`;
+  }
+
+  function renderPreciosDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Jeden Preis erkannt. 🏆"
+      : rate >= 60 ? "¡Bien! Dein Ohr für Zahlen wird besser. 👏"
+      : "Sigue practicando – Zahlen hören ist Übungssache. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "💵"}</div>
+          <h2>Precios al oído</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig gehört</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="precios-again">Nochmal hören</button>
+          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+        </div>
+      </section>`;
+  }
+
   // ---------- LÄNDERKUNDE (INFOSEITE) ----------
   // Dropdown mit Regionen als <optgroup>; darunter das gewählte Land mit
   // Infotexten und der Unterrubrik "Essen & Trinken".
@@ -1499,5 +1590,6 @@
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderSpickzettel,
+                   renderPrecios, renderPreciosDone };
 })();
