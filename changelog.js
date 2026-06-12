@@ -21,6 +21,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.9.0",
+      date: "2026-06-12",
+      title: "Einkaufszettel: interaktiv für Supermarkt, Kleidung & Farmacia",
+      items: [
+        "🛒 Neu unter Entdecken: „Einkaufszettel“ – dein Reisebedarf auf Spanisch in drei Rubriken (Supermercado, Ropa, Farmacia).",
+        "Tippe an, was du brauchst: Wort, Aussprache und Reisetipp erscheinen, das Wort wird vorgelesen und auf dem Zettel abgehakt (bleibt gemerkt).",
+        "Danach prüfst du dich im kurzen Quiz: „Du brauchst …“ → das passende spanische Wort wählen, mit Auswertung.",
+        "LatAm-korrekt: curitas, medias, lentes de sol, repelente & Co. – plus Klassiker wie Klopapier, Sonnencreme und „algo para la diarrea“.",
+      ],
+    },
+    {
       version: "1.8.0",
       date: "2026-06-12",
       title: "Zeiten: neuer Bereich + große Erklärseite",

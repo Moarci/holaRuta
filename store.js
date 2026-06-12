@@ -190,6 +190,8 @@
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       // ----- El Cuerpo (interaktive Körperkarte) -----
       bodyPartsSeen: {},    // Map bodyPartId -> true (distinkt erkundete Körperteile)
+      // ----- Einkaufszettel (interaktive Einkaufsliste) -----
+      shoppingSeen: {},     // Map shoppingItemId -> true (distinkt abgehakte Einkaufs-Items)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
   }
@@ -225,6 +227,7 @@
       rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
+      shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
   }

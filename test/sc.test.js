@@ -322,6 +322,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     rutaDays: { "2026-06-11": true },
     contextCardsSeen: { hostel01: true },
     bodyPartsSeen: { bp_cabeza: true },
+    shoppingSeen: { sl_agua: true },
     unlocked: { first_steps: 1700000000000 },
   };
   storeMem[GKEY] = JSON.stringify(valid);
@@ -415,6 +416,21 @@ test("data.BODY_PARTS: eindeutige IDs, Pflichtfelder, Koordinaten im Rahmen", ()
     assert.ok(typeof p.x === "number" && p.x >= 0 && p.x <= 100, `x außerhalb 0–100: ${p.id}`);
     assert.ok(typeof p.y === "number" && p.y >= 0 && p.y <= 100, `y außerhalb 0–100: ${p.id}`);
   });
+});
+
+test("data.SHOPPING: drei Rubriken, eindeutige Item-IDs, Pflichtfelder", () => {
+  assert.ok(Array.isArray(data.SHOPPING) && data.SHOPPING.length === 3, "drei Rubriken erwartet");
+  const allIds = [];
+  data.SHOPPING.forEach((s) => {
+    assert.ok(s.id && s.icon && s.label && s.de, `Rubrik-Felder fehlen: ${s.id}`);
+    assert.ok(Array.isArray(s.grad) && s.grad.length === 2, `grad fehlt: ${s.id}`);
+    assert.ok(Array.isArray(s.items) && s.items.length >= 4, `zu wenige Items: ${s.id}`);
+    s.items.forEach((it) => {
+      assert.ok(it.id && it.es && it.de && it.tip && it.note, `Item-Felder fehlen: ${it.id}`);
+      allIds.push(it.id);
+    });
+  });
+  assert.equal(new Set(allIds).size, allIds.length, "doppelte SHOPPING-Item-IDs");
 });
 
 // ---------- badges: El Cuerpo ----------

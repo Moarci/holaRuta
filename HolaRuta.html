@@ -1537,6 +1537,64 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .bp-panel { flex: 1 1 auto; align-self: stretch; }
 }
 
+/* ---- Einkaufszettel (Lista de compras) ---- */
+.sl-screen { display: flex; flex-direction: column; gap: 16px; }
+.sl-fill { background: linear-gradient(90deg, var(--from), var(--to)); }
+
+/* Rubrik-Chips (Supermercado / Ropa / Farmacia). */
+.sl-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.sl-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 14px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink-soft);
+  font-family: var(--font-display); font-weight: 800; font-size: 0.92rem;
+  min-height: 44px; transition: border-color 0.15s ease, background 0.15s ease;
+}
+.sl-chip:active { transform: translateY(1px); }
+.sl-chip.is-active {
+  border-color: transparent; color: #fff;
+  background: linear-gradient(120deg, var(--from), var(--to));
+}
+.sl-chip__icon { font-size: 1.05rem; }
+.sl-chip__done { font-weight: 900; }
+
+/* Die Liste: eine Zeile je Item, aufklappbar. */
+.sl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sl-item {
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow);
+  transition: border-color 0.15s ease;
+}
+.sl-item.is-open { border-color: var(--brand); }
+.sl-item.is-checked .sl-item__check { color: var(--brand-ink); }
+.sl-item__row {
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; min-height: 52px; cursor: pointer;
+  background: none; border: 0; text-align: left; color: inherit;
+}
+.sl-item__row:active { transform: translateY(1px); }
+.sl-item__check {
+  flex: 0 0 22px; width: 22px; height: 22px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid var(--line); font-weight: 900; font-size: 0.9rem; color: transparent;
+}
+.sl-item.is-checked .sl-item__check { border-color: var(--brand); }
+.sl-item__de { flex: 1 1 auto; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
+.sl-item__chev { flex: 0 0 auto; color: var(--muted); font-size: 1.3rem; transition: transform 0.18s ease; }
+.sl-item.is-open .sl-item__chev { transform: rotate(90deg); }
+
+/* Aufgeklappter Detail-Block. */
+.sl-item__detail { padding: 0 16px 16px 50px; display: flex; flex-direction: column; gap: 8px; }
+.sl-item__estop { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sl-item__es {
+  margin: 0; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.01em; color: var(--brand-ink);
+}
+.sl-item__tip { margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--ink-soft); }
+.sl-item__note { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
+.sl-speak { position: static; flex: none; }
+.sl-quizbtn { margin-top: 4px; }
+
 /* Listen-Auswahl: Intro-Zeile unter dem Titel. */
 .quiz-set__intro { display: block; margin-top: 3px; font-size: 0.8rem; font-weight: 400; color: var(--muted); line-height: 1.35; }
 .quiz-lvl { font-size: 0.72rem; font-weight: 800; color: var(--muted); }
@@ -4385,8 +4443,106 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       note: "Zu Fuß = «a pie». Mehrzahl «los pies». «Me duelen los pies» nach dem Stadtbummel." },
   ];
 
+  // ----- Einkaufszettel (interaktiver „Lista de compras") ------------------
+  // Drei Rubriken für typischen Reisebedarf: Supermarkt, Kleidung, Apotheke.
+  // Je Item: de (was man braucht), es (LatAm-korrektes Wort), tip (Aussprache),
+  // note (kurzer Reise-/Gebrauchstipp). Wird im Entdecken-Modul „Einkaufszettel"
+  // zum Antippen/Abhaken und für ein kurzes Quiz genutzt – REINE DATEN.
+  const SHOPPING = [
+    {
+      id: "super", icon: "🛒", label: "Supermercado", de: "Supermarkt",
+      grad: ["#3F7355", "#5E7D3A"],
+      items: [
+        { id: "sl_agua",   es: "el agua",            de: "Wasser",        tip: "el A-gua",
+          note: "«agua sin gas» = still, «agua con gas» = mit Sprudel. Die wichtigste Reise-Frage." },
+        { id: "sl_pan",    es: "el pan",             de: "Brot",          tip: "el pan",
+          note: "Brötchen heißen oft «pancito»; in Chile «marraqueta»." },
+        { id: "sl_leche",  es: "la leche",           de: "Milch",         tip: "la LE-che",
+          note: "«leche descremada» = fettarm. Im Café: «¿con leche?»." },
+        { id: "sl_huevos", es: "los huevos",         de: "Eier",          tip: "los UE-bos",
+          note: "Mehrzahl. «un cartón de huevos» = eine Schachtel Eier." },
+        { id: "sl_frutas", es: "las frutas",         de: "Obst",          tip: "las FRU-tas",
+          note: "Am Markt frischer und billiger: «¿A cómo el kilo?» = Was kostet das Kilo?" },
+        { id: "sl_verduras", es: "las verduras",     de: "Gemüse",        tip: "las ber-DU-ras",
+          note: "«las legumbres» sind eher Hülsenfrüchte." },
+        { id: "sl_arroz",  es: "el arroz",           de: "Reis",          tip: "el a-RROS",
+          note: "Grundnahrungsmittel in LatAm. Das «rr» wird gerollt." },
+        { id: "sl_cafe",   es: "el café",            de: "Kaffee",        tip: "el ka-FE",
+          note: "Steht für Getränk und Bohne: «café molido» = gemahlener Kaffee." },
+        { id: "sl_queso",  es: "el queso",           de: "Käse",          tip: "el KE-so",
+          note: "«queso fresco» ist der typische milde LatAm-Frischkäse." },
+        { id: "sl_galletas", es: "las galletas",     de: "Kekse",         tip: "las ga-YE-tas",
+          note: "Perfekter Proviant für lange Busfahrten." },
+        { id: "sl_papel",  es: "el papel higiénico", de: "Klopapier",     tip: "el pa-PEL i-CHI-e-ni-ko",
+          note: "Im Hostel selten gratis – immer etwas dabei haben!" },
+        { id: "sl_bolsa",  es: "la bolsa",           de: "Tüte / Beutel", tip: "la BOL-sa",
+          note: "«¿Me da una bolsa?» – an der Kasse oft kostenpflichtig." },
+      ],
+    },
+    {
+      id: "ropa", icon: "👕", label: "Ropa", de: "Kleidung",
+      grad: ["#B97C24", "#C2502E"],
+      items: [
+        { id: "sl_camiseta", es: "la camiseta",        de: "T-Shirt",      tip: "la ka-mi-SE-ta",
+          note: "Auch «la playera» (México) oder «la polera» (Chile)." },
+        { id: "sl_pantalon", es: "el pantalón",        de: "Hose",         tip: "el pan-ta-LON",
+          note: "Auch im Plural «los pantalones» für ein einzelnes Stück." },
+        { id: "sl_chaqueta", es: "la chaqueta",        de: "Jacke",        tip: "la cha-KE-ta",
+          note: "In den Anden wird es nachts kalt – immer dabei haben." },
+        { id: "sl_zapatos",  es: "los zapatos",        de: "Schuhe",       tip: "los sa-PA-tos",
+          note: "«¿Qué número calza?» = Welche Schuhgröße haben Sie?" },
+        { id: "sl_medias",   es: "las medias",         de: "Socken",       tip: "las ME-dias",
+          note: "LatAm-Wort; in Spanien «los calcetines»." },
+        { id: "sl_interior", es: "la ropa interior",   de: "Unterwäsche",  tip: "la RO-pa in-te-RIOR",
+          note: "Wörtlich «innere Kleidung»." },
+        { id: "sl_gorra",    es: "la gorra",           de: "Cap / Mütze",  tip: "la GO-rra",
+          note: "Sonnenschutz vom Markt; «el gorro» ist die Wollmütze." },
+        { id: "sl_sandalias", es: "las sandalias",     de: "Sandalen",     tip: "las san-DA-lias",
+          note: "«las chanclas» = Flip-Flops, ideal fürs Hostel-Bad." },
+        { id: "sl_traje",    es: "el traje de baño",   de: "Badesachen",   tip: "el TRA-che de BA-nio",
+          note: "Anzug und Hose; in Argentinien auch «la malla»." },
+        { id: "sl_impermeable", es: "el impermeable",  de: "Regenjacke",   tip: "el im-per-me-A-ble",
+          note: "Im Regenwald Gold wert – wörtlich «wasserdicht»." },
+        { id: "sl_lentes",   es: "los lentes de sol",  de: "Sonnenbrille", tip: "los LEN-tes de sol",
+          note: "LatAm; in Spanien «las gafas de sol»." },
+        { id: "sl_talla",    es: "la talla",           de: "Größe",        tip: "la TA-ya",
+          note: "«¿Tiene una talla más grande?» = Haben Sie eine Nummer größer?" },
+      ],
+    },
+    {
+      id: "farmacia", icon: "💊", label: "Farmacia", de: "Apotheke",
+      grad: ["#B5302A", "#7048E8"],
+      items: [
+        { id: "sl_protector", es: "el protector solar", de: "Sonnencreme",   tip: "el pro-tek-TOR so-LAR",
+          note: "In der Höhe brennt die Sonne doppelt – unverzichtbar." },
+        { id: "sl_repelente",  es: "el repelente",       de: "Mückenspray",   tip: "el re-pe-LEN-te",
+          note: "«repelente de mosquitos» – Pflicht im Tiefland und Dschungel." },
+        { id: "sl_analgesico", es: "el analgésico",      de: "Schmerzmittel", tip: "el a-nal-CHE-si-ko",
+          note: "Notfalls einfach: «algo para el dolor» = etwas gegen Schmerzen." },
+        { id: "sl_pastillas",  es: "las pastillas",      de: "Tabletten",     tip: "las pas-TI-yas",
+          note: "«pastillas para la garganta» = Halstabletten." },
+        { id: "sl_curitas",    es: "las curitas",        de: "Pflaster",      tip: "las ku-RI-tas",
+          note: "LatAm-Wort; in Spanien «las tiritas»." },
+        { id: "sl_panuelos",   es: "los pañuelos",       de: "Taschentücher", tip: "los pa-NIUE-los",
+          note: "«pañuelos de papel» = Papiertücher." },
+        { id: "sl_pasta",      es: "la pasta de dientes", de: "Zahnpasta",    tip: "la PAS-ta de DIEN-tes",
+          note: "Auch «la crema dental»." },
+        { id: "sl_jabon",      es: "el jabón",           de: "Seife",         tip: "el cha-BON",
+          note: "«jabón de manos» = Handseife." },
+        { id: "sl_desinfectante", es: "el desinfectante", de: "Desinfektionsmittel", tip: "el des-in-fek-TAN-te",
+          note: "«el alcohol en gel» = Handdesinfektions-Gel." },
+        { id: "sl_diarrea",    es: "algo para la diarrea", de: "Mittel gegen Durchfall", tip: "AL-go PA-ra la dia-RRE-a",
+          note: "Der Klassiker auf Reisen – diese Bitte rettet manche Busfahrt." },
+        { id: "sl_termometro", es: "el termómetro",      de: "Fieberthermometer", tip: "el ter-MO-me-tro",
+          note: "Dazu nützlich: «Tengo fiebre» = Ich habe Fieber." },
+        { id: "sl_tapones",    es: "los tapones para los oídos", de: "Ohrstöpsel", tip: "los ta-PO-nes PA-ra los o-I-dos",
+          note: "Rettung im lauten Hostel-Schlafsaal." },
+      ],
+    },
+  ];
+
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING };
 })();
 
 </script>
@@ -8013,6 +8169,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       // ----- El Cuerpo (interaktive Körperkarte) -----
       bodyPartsSeen: {},    // Map bodyPartId -> true (distinkt erkundete Körperteile)
+      // ----- Einkaufszettel (interaktive Einkaufsliste) -----
+      shoppingSeen: {},     // Map shoppingItemId -> true (distinkt abgehakte Einkaufs-Items)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
     };
   }
@@ -8048,6 +8206,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
+      shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
     };
   }
@@ -9318,6 +9477,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.9.0",
+      date: "2026-06-12",
+      title: "Einkaufszettel: interaktiv für Supermarkt, Kleidung & Farmacia",
+      items: [
+        "🛒 Neu unter Entdecken: „Einkaufszettel“ – dein Reisebedarf auf Spanisch in drei Rubriken (Supermercado, Ropa, Farmacia).",
+        "Tippe an, was du brauchst: Wort, Aussprache und Reisetipp erscheinen, das Wort wird vorgelesen und auf dem Zettel abgehakt (bleibt gemerkt).",
+        "Danach prüfst du dich im kurzen Quiz: „Du brauchst …“ → das passende spanische Wort wählen, mit Auswertung.",
+        "LatAm-korrekt: curitas, medias, lentes de sol, repelente & Co. – plus Klassiker wie Klopapier, Sonnencreme und „algo para la diarrea“.",
+      ],
+    },
+    {
       version: "1.8.0",
       date: "2026-06-12",
       title: "Zeiten: neuer Bereich + große Erklärseite",
@@ -9501,6 +9671,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-compras",     icon: "🛒", title: "Einkaufszettel", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
@@ -11473,12 +11644,145 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </section>`;
   }
 
+  // ---------- EINKAUFSZETTEL (Lista de compras) ----------
+  // Interaktive Einkaufsliste: Rubrik wählen (Supermercado/Ropa/Farmacia),
+  // Items antippen -> spanisches Wort, Aussprache, Reisetipp + Vorlesen, und
+  // das Item wird abgehakt. Dazu ein kurzes Quiz über dieselbe Rubrik.
+  function renderCompras(vm) {
+    const chips = vm.sections
+      .map((s) => `
+        <button class="sl-chip ${s.active ? "is-active" : ""}" type="button"
+                data-action="compras-section" data-id="${esc(s.id)}"
+                aria-pressed="${s.active ? "true" : "false"}"
+                title="${esc(s.de)} – ${s.done}/${s.total} abgehakt">
+          <span class="sl-chip__icon" aria-hidden="true">${esc(s.icon)}</span>
+          <span class="sl-chip__label">${esc(s.label)}</span>
+          ${s.done >= s.total ? `<span class="sl-chip__done" aria-hidden="true">✓</span>` : ""}
+        </button>`)
+      .join("");
+
+    const items = vm.items
+      .map((it) => {
+        const speak = it.open && vm.speakable
+          ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: "Wort anhören",
+              action: "compras-speak", extra: `data-id="${esc(it.id)}"` })
+          : "";
+        const detail = it.open
+          ? `
+            <div class="sl-item__detail" role="region">
+              <div class="sl-item__estop">
+                <p class="sl-item__es" lang="es">${esc(it.es)}</p>
+                ${speak}
+              </div>
+              ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">🗣️</span> ${esc(it.tip)}</p>` : ""}
+              ${it.note ? `<p class="sl-item__note">${esc(it.note)}</p>` : ""}
+            </div>`
+          : "";
+        return `
+          <li class="sl-item ${it.open ? "is-open" : ""} ${it.seen ? "is-checked" : ""}">
+            <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
+                    aria-expanded="${it.open ? "true" : "false"}">
+              <span class="sl-item__check" aria-hidden="true">${it.seen ? "✓" : ""}</span>
+              <span class="sl-item__de">${esc(it.de)}</span>
+              <span class="sl-item__chev" aria-hidden="true">›</span>
+            </button>
+            ${detail}
+          </li>`;
+      })
+      .join("");
+
+    const pct = vm.total > 0 ? Math.round((vm.doneCount / vm.total) * 100) : 0;
+    const done = vm.total > 0 && vm.doneCount >= vm.total;
+    const progress = `
+      <div class="bp-progress">
+        <div class="bp-progress__bar"><div class="bp-progress__fill sl-fill" style="width:${pct}%"></div></div>
+        <span class="bp-progress__label">${done ? "¡Lista lista! 🎉 Alle " + vm.total + " abgehakt" : "Abgehakt: " + vm.doneCount + "/" + vm.total}</span>
+      </div>`;
+
+    const quizBtn = vm.total >= 2
+      ? `<button class="cta sl-quizbtn" data-action="open-compras-quiz">🧩 Quiz: ${esc(vm.section.label)}</button>`
+      : "";
+
+    return `
+      <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
+        ${hmTopbar("🛒 Einkaufszettel", "home")}
+        <p class="hm-intro">Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe an, was du brauchst – dann erscheinen Wort, Aussprache und ein Reisetipp, und das Wort wird vorgelesen. Wenn du magst, prüf dich danach im kurzen Quiz.</p>
+        <div class="sl-chips" role="group" aria-label="Rubrik wählen">${chips}</div>
+        ${progress}
+        <ul class="sl-list">${items}</ul>
+        ${quizBtn}
+      </section>`;
+  }
+
+  // Quiz: „Du brauchst X" (Deutsch) -> richtiges spanisches Wort wählen.
+  // Reuse der Definiciones-Optik (.quiz-def / .quiz-opt / .quiz-feedback).
+  function renderComprasQuiz(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
+    const options = vm.options
+      .map((o, i) => {
+        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
+        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
+        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
+          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
+        return `
+          <button class="${cls}" type="button" data-action="compras-quiz-answer" data-idx="${i}"${dis}>
+            <span class="quiz-opt__text">
+              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+            </span>
+            ${mark}
+          </button>`;
+      })
+      .join("");
+
+    const feedback = vm.answered
+      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
+           ${vm.isCorrect
+             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
+             : `<span class="quiz-feedback__head">No exactamente.</span>
+                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b></span>`}
+         </div>
+         <button class="cta" data-action="compras-quiz-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+      : "";
+
+    return `
+      <section class="screen study">
+        ${hmTopbar(`${esc(vm.sectionIcon)} ${esc(vm.sectionLabel)}`, "compras-back-list")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Quiz-Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">Frage ${vm.position + 1}/${vm.total}</div>
+        <div class="quiz-def">
+          <span class="quiz-def__cap">Du brauchst …</span>
+          <p class="quiz-def__text">${esc(vm.prompt)}</p>
+        </div>
+        <div class="quiz-opts">${options}</div>
+        ${feedback}
+      </section>`;
+  }
+
+  function renderComprasQuizDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Alles richtig. 🏆"
+      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
+      : "Sigue practicando – Übung macht den Meister. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "🛒"}</div>
+          <h2>${esc(vm.sectionLabel)} geschafft</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="compras-quiz-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="compras-back-list">Zurück zum Zettel</button>
+        </div>
+      </section>`;
+  }
+
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
-                   renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone };
+                   renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
+                   renderCompras, renderComprasQuiz, renderComprasQuizDone };
 })();
 
 </script>
@@ -11511,7 +11815,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -11547,6 +11851,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
     bodyYaw: -22,            // Drehung der Figur um die Hochachse (Grad)
     bodyPitch: -6,           // Neigung der Figur (Grad), begrenzt ±32
+    // ----- Einkaufszettel (interaktive Einkaufsliste) -----
+    compras: { section: "super", open: null }, // aktuelle Rubrik + aufgeklapptes Item (Id|null)
+    comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -12503,6 +12810,191 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (part && speech && speech.isSupported()) speech.speak(part.es);
   }
 
+  // ----- Einkaufszettel (interaktive Einkaufsliste) -----
+  const shoppingSections = () => data.SHOPPING || [];
+  const shoppingSectionById = (id) => shoppingSections().find((s) => s.id === id) || null;
+  function shoppingItemById(id) {
+    for (const s of shoppingSections()) {
+      const it = s.items.find((i) => i.id === id);
+      if (it) return it;
+    }
+    return null;
+  }
+  // Wie viele Items einer Rubrik sind schon abgehakt?
+  function shoppingSectionDone(sec) {
+    const seen = gamestats.shoppingSeen || {};
+    return sec.items.reduce((n, it) => n + (seen[it.id] ? 1 : 0), 0);
+  }
+
+  function comprasVM() {
+    const curId = state.compras.section;
+    const sec = shoppingSectionById(curId) || shoppingSections()[0];
+    const seen = gamestats.shoppingSeen || {};
+    const sections = shoppingSections().map((s) => ({
+      id: s.id, icon: s.icon, label: s.label, de: s.de,
+      active: s.id === sec.id, total: s.items.length, done: shoppingSectionDone(s),
+    }));
+    const items = sec.items.map((it) => ({
+      id: it.id, de: it.de, es: it.es, tip: it.tip, note: it.note,
+      open: state.compras.open === it.id, seen: !!seen[it.id],
+    }));
+    return {
+      sections,
+      section: { id: sec.id, icon: sec.icon, label: sec.label, de: sec.de, grad: sec.grad },
+      items,
+      doneCount: shoppingSectionDone(sec),
+      total: sec.items.length,
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function openCompras() {
+    dismissBadgeToast();
+    if (!shoppingSectionById(state.compras.section)) {
+      state.compras = { section: (shoppingSections()[0] || {}).id || null, open: null };
+    } else {
+      state.compras = { section: state.compras.section, open: null };
+    }
+    state.screen = "compras";
+    render();
+  }
+
+  function comprasSection(id) {
+    if (!shoppingSectionById(id)) return;
+    state.compras = { section: id, open: null };
+    render();
+  }
+
+  // Ein Item antippen: auf-/zuklappen. Beim Aufklappen Wort vorlesen und
+  // (einmalig) als „abgehakt" für den Fortschritt vermerken.
+  function comprasPick(id) {
+    const item = shoppingItemById(id);
+    if (!item) return;
+    const opening = state.compras.open !== id;
+    state.compras = { section: state.compras.section, open: opening ? id : null };
+    if (opening) {
+      buzz(8);
+      recordShoppingView(id);
+    }
+    render();
+    if (opening && speech && speech.isSupported()) speech.speak(item.es);
+  }
+
+  // Distinkt abgehaktes Item persistent vermerken (No-Op bei erneutem Antippen).
+  function recordShoppingView(id) {
+    if (!id || (gamestats.shoppingSeen && gamestats.shoppingSeen[id])) return;
+    const seen = Object.assign({}, gamestats.shoppingSeen, { [id]: true });
+    gamestats = Object.assign({}, gamestats, { shoppingSeen: seen });
+    store.saveGameStats(gamestats);
+  }
+
+  // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
+  function speakCompras(id) {
+    const item = shoppingItemById(id);
+    if (item && speech && speech.isSupported()) speech.speak(item.es);
+  }
+
+  // ----- Einkaufszettel-Quiz (Multiple Choice über die Items einer Rubrik) -----
+  // Optionen bauen: richtiges Wort + bis zu 3 Ablenker aus derselben Rubrik,
+  // dann gemischt. Einmal je Frage berechnet (Re-Render mischt nicht neu).
+  function buildComprasOptions(item, pool) {
+    const distractors = shuffle(pool.filter((d) => d.id !== item.id)).slice(0, 3);
+    return shuffle([item, ...distractors]).map((d) => ({ es: d.es, correct: d.id === item.id }));
+  }
+
+  function openComprasQuiz() {
+    const sec = shoppingSectionById(state.compras.section);
+    if (!sec || sec.items.length < 2) return;
+    const queue = shuffle(sec.items).map((it) => it.id);
+    state.comprasQuiz = {
+      section: sec.id,
+      queue,
+      idx: 0,
+      total: queue.length,
+      options: buildComprasOptions(shoppingItemById(queue[0]), sec.items),
+      selected: null,
+      correct: 0,
+    };
+    state.screen = "comprasQuiz";
+    render();
+  }
+
+  function comprasQuizVM() {
+    const q = state.comprasQuiz;
+    const sec = shoppingSectionById(q.section);
+    const item = shoppingItemById(q.queue[q.idx]);
+    const answered = q.selected !== null;
+    const correctEs = item.es;
+    const options = q.options.map((o, i) => ({
+      es: o.es,
+      state: !answered ? "idle"
+        : o.correct ? "correct"
+        : i === q.selected ? "wrong"
+        : "dim",
+    }));
+    return {
+      sectionIcon: sec ? sec.icon : "🛒",
+      sectionLabel: sec ? sec.label : "",
+      position: q.idx,
+      total: q.total,
+      prompt: item.de,
+      options,
+      answered,
+      isCorrect: answered && q.options[q.selected].correct,
+      solutionEs: correctEs,
+      isLast: q.idx >= q.total - 1,
+    };
+  }
+
+  // Eine Option wählen. Erste Wahl zählt; spätere Klicks ignorieren.
+  function answerComprasQuiz(i) {
+    const q = state.comprasQuiz;
+    if (!q || q.selected !== null) return;
+    q.selected = i;
+    if (q.options[i] && q.options[i].correct) { q.correct += 1; buzz(12); } else buzz(8);
+    render();
+  }
+
+  function nextComprasQuiz() {
+    const q = state.comprasQuiz;
+    if (!q || q.selected === null) return;
+    if (q.idx >= q.total - 1) {
+      state.screen = "comprasQuizDone";
+      render();
+      return;
+    }
+    q.idx += 1;
+    q.selected = null;
+    const sec = shoppingSectionById(q.section);
+    q.options = buildComprasOptions(shoppingItemById(q.queue[q.idx]), sec.items);
+    render();
+  }
+
+  function comprasQuizDoneVM() {
+    const q = state.comprasQuiz;
+    const sec = shoppingSectionById(q.section);
+    return {
+      sectionIcon: sec ? sec.icon : "🛒",
+      sectionLabel: sec ? sec.label : "",
+      correct: q.correct,
+      total: q.total,
+      perfect: q.total > 0 && q.correct === q.total,
+    };
+  }
+
+  // „Nochmal" baut die Runde über dieselbe Rubrik neu.
+  function comprasQuizAgain() {
+    openComprasQuiz();
+  }
+
+  // Zurück vom Quiz zum Zettel (gleiche Rubrik bleibt aktiv).
+  function comprasBackToList() {
+    state.comprasQuiz = null;
+    state.compras = { section: state.compras.section, open: null };
+    state.screen = "compras";
+    render();
+  }
+
   // ----- El Cuerpo: drehbares 3D-Modell (in-place, ohne Voll-Re-Render) -----
   // Die Figur ist eine CSS-3D-Szene aus Kugeln (Orbs) und Hotspot-Punkten.
   // Beim Drehen ändert sich nur der eine Eltern-Transform plus pro Element ein
@@ -12621,6 +13113,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "frasesSetup") root.innerHTML = ui.renderFrasesSetup(frasesSetupVM());
     else if (state.screen === "frases") root.innerHTML = ui.renderFrases(frasesVM());
     else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone(frasesDoneVM());
+    else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
+    else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
+    else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -13634,6 +14129,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "frases-answer") answerFrases(Number(el.dataset.idx));
     else if (action === "frases-next") nextFrases();
     else if (action === "frases-again") frasesAgain();
+    else if (action === "open-compras") openCompras();
+    else if (action === "compras-section") comprasSection(el.dataset.id);
+    else if (action === "compras-pick") comprasPick(el.dataset.id);
+    else if (action === "compras-speak") speakCompras(el.dataset.id);
+    else if (action === "open-compras-quiz") openComprasQuiz();
+    else if (action === "compras-quiz-answer") answerComprasQuiz(Number(el.dataset.idx));
+    else if (action === "compras-quiz-next") nextComprasQuiz();
+    else if (action === "compras-quiz-again") comprasQuizAgain();
+    else if (action === "compras-back-list") comprasBackToList();
     else if (action === "home") goHome();
   }
 
