@@ -7940,6 +7940,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.4.1",
+      date: "2026-06-12",
+      title: "Modus klarer benannt",
+      items: [
+        "„Sprechen“ heißt jetzt „🃏 Karteikarte“ – ehrlicher, denn hier gibt es keine Prüfung: du denkst oder sagst die Antwort, drehst um und bewertest dich selbst (wie eine echte Karteikarte). Geprüft wird nur im Modus „Schreiben“.",
+      ],
+    },
+    {
       version: "1.4.0",
       date: "2026-06-12",
       title: "Update-Hinweis",
@@ -8116,13 +8124,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const lvlSummary = vm.allLevels
       ? "Alle Stufen"
       : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
-    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🗣️ Sprechen"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🃏 Karteikarte"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
     const setupBody = `
       <div class="setup__body" id="setup-body">
         <div class="switchgroup">
           <span class="switchcap">Modus</span>
           <div class="segmented" role="tablist" aria-label="Lernmodus">
-            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🗣️ Sprechen</button>
+            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🃏 Karteikarte</button>
             <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
           </div>
         </div>
@@ -8348,7 +8356,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return `<div class="swatch" aria-hidden="true" style="--sw:${esc(swatch)}"></div>`;
   }
 
-  // Sprechen-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
+  // Karteikarte-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
   // 🔊 und Aussprache-Tipp sitzen immer auf der spanischen Seite.
   function flipBody(vm) {
     const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";
@@ -9449,7 +9457,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     scopeId: "all",          // 'all' | Kategorie-Id
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
-    revealed: false,         // Sprechen-Modus: Rückseite sichtbar?
+    revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
     contextOpen: false,      // 🧭 Reise-Kontext-Panel aufgeklappt? (Single Source of Truth)
     typeResult: null,        // Schreiben-Modus: { correct, answers, input } | null
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
@@ -11000,7 +11008,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // ----- Wischgesten (Lernkarte am Smartphone) -----
-  // Sprechen-Modus: hochwischen/antippen = umdrehen. Nach dem Umdrehen
+  // Karteikarte-Modus: hochwischen/antippen = umdrehen. Nach dem Umdrehen
   // (oder im Schreiben-Modus mit Ergebnis): links = Nochmal, rechts = Einfach,
   // hoch = Gut. So lässt sich die App komplett mit dem Daumen bedienen.
   let touch = null; // { x, y } Startpunkt
