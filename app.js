@@ -26,7 +26,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -802,6 +802,23 @@
     render();
   }
 
+  // ----- Tiempos: Erklärseite Zeiten -----
+  // Statische Zeitformen-Erklärung (Inhalte: data.TENSES). Wie bei Conjugación
+  // springt der "Jetzt üben"-Button per normaler open-category-Aktion in die
+  // Übungskarten der Kategorie "tiempos".
+  function tiemposVM() {
+    return {
+      guide: data.TENSES,
+      cardCount: data.CARDS.filter((c) => c.cat === "tiempos").length,
+    };
+  }
+
+  function openTiempos() {
+    dismissBadgeToast();
+    state.screen = "tiempos";
+    render();
+  }
+
   // ----- Frases flexibles (Satzbaukasten): Steuerung -----
   // Virtuelle "Gemischt"-Id: spielt alle Rahmen quer durch alle Themen.
   const FRASES_ALL = "all";
@@ -1112,6 +1129,7 @@
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
     else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
+    else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
     else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
@@ -2116,6 +2134,7 @@
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
     else if (action === "open-conjugacion") openConjugacion();
+    else if (action === "open-tiempos") openTiempos();
     else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();

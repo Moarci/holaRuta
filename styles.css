@@ -969,6 +969,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .cj-verb__like { margin: 8px 0 0; color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
 .cj-note { margin-top: 12px; font-size: 0.88rem; }
 .cj-cta { margin-top: 4px; }
+/* Reisedialoge auf der Tiempos-Seite: Abstand zwischen mehreren Dialogen. */
+.cj-dialog + .cj-dialog { margin-top: 18px; }
+/* Stolperfallen: falsch (durchgestrichen, rot) -> richtig (grün), Erklärung darunter. */
+.cj-pitfall { flex-direction: column; align-items: stretch; gap: 5px; }
+.cj-pitfall__pair { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.cj-pitfall__wrong { text-decoration: line-through; color: var(--no); }
+.cj-pitfall__arrow { color: var(--muted); }
+.cj-pitfall__right { font-weight: 700; color: var(--ok); }
 /* "Mein Ruta-Pass": gesammelte Reisestempel. Freigeschaltete Stempel im
  * warmen Sticker-Look, gesperrte dezent ausgegraut mit Fortschrittsbalken. */
 

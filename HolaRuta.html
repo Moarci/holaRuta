@@ -1007,6 +1007,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .cj-verb__like { margin: 8px 0 0; color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
 .cj-note { margin-top: 12px; font-size: 0.88rem; }
 .cj-cta { margin-top: 4px; }
+/* Reisedialoge auf der Tiempos-Seite: Abstand zwischen mehreren Dialogen. */
+.cj-dialog + .cj-dialog { margin-top: 18px; }
+/* Stolperfallen: falsch (durchgestrichen, rot) -> richtig (grün), Erklärung darunter. */
+.cj-pitfall { flex-direction: column; align-items: stretch; gap: 5px; }
+.cj-pitfall__pair { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.cj-pitfall__wrong { text-decoration: line-through; color: var(--no); }
+.cj-pitfall__arrow { color: var(--muted); }
+.cj-pitfall__right { font-weight: 700; color: var(--ok); }
 /* "Mein Ruta-Pass": gesammelte Reisestempel. Freigeschaltete Stempel im
  * warmen Sticker-Look, gesperrte dezent ausgegraut mit Fortschrittsbalken. */
 
@@ -2281,6 +2289,74 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     vb41: { e: "Mañana vamos a Cusco en bus nocturno.", d: "Morgen fahren wir mit dem Nachtbus nach Cusco.", s: "Reisepläne mit anderen teilen.", n: "vamos a + Ort = wir fahren nach; vamos a + Verb = wir werden … (nahe Zukunft!)." },
     vb42: { e: "¿Puede hablar más despacio? Estoy aprendiendo español.", d: "Können Sie langsamer sprechen? Ich lerne gerade Spanisch.", s: "Wenn die Antwort auf deine Frage zu schnell kommt.", n: "Der Zusatz Estoy aprendiendo zaubert fast immer ein Lächeln und viel Geduld hervor." },
 
+    // ===================== ZEITEN (Tiempos) =====================
+    tp01: { e: "Llegué ayer en la noche.", d: "Ich bin gestern Abend angekommen.", s: "Im Hostel erzählen, seit wann du da bist.", n: "Indefinido: abgeschlossene Vergangenheit mit klarem Zeitpunkt (ayer). llegar → llegué (g→gu vor e)." },
+    tp02: { e: "Tomé el bus equivocado.", d: "Ich habe den falschen Bus genommen.", s: "Erklären, warum du zu spät oder am falschen Ort bist.", n: "tomar → tomé. Die -ar-Vergangenheit der ich-Form endet immer auf -é." },
+    tp03: { e: "Compramos los boletos en la terminal.", d: "Wir haben die Tickets am Busbahnhof gekauft.", s: "Erzählen, wo ihr eure Fahrkarten besorgt habt.", n: "Bei -ar-Verben ist die wir-Form im Indefinido gleich wie in der Gegenwart (compramos) – der Satz verrät die Zeit." },
+    tp04: { e: "Estuve en Cusco tres días.", d: "Ich war drei Tage in Cusco.", s: "Von deiner Route und vergangenen Stationen erzählen.", n: "estar ist unregelmäßig: estuve/estuviste/estuvo. Nicht 'esté'." },
+    tp05: { e: "Ayer fuimos a la playa todo el día.", d: "Gestern waren wir den ganzen Tag am Strand.", s: "Vom gestrigen Ausflug erzählen.", n: "ir und ser teilen dieselbe Vergangenheit: fui/fuiste/fue/fuimos/fueron. Der Kontext sagt, welches gemeint ist." },
+    tp06: { e: "Me gustó mucho el ceviche.", d: "Das Ceviche hat mir sehr gefallen.", s: "Nach dem Essen ein Kompliment machen.", n: "gustar in der Vergangenheit: me gustó (Einzahl), me gustaron (Mehrzahl)." },
+    tp07: { e: "¿Qué hiciste el fin de semana?", d: "Was hast du am Wochenende gemacht?", s: "Smalltalk im Hostel oder mit Reisebekanntschaften.", n: "hacer ist unregelmäßig: hice/hiciste/hizo. Beliebte Gesprächs-Eröffnung." },
+    tp08: { e: "Perdí mi pasaporte en el bus.", d: "Ich habe meinen Pass im Bus verloren.", s: "Der Ernstfall – bei Polizei, Botschaft oder Hostel-Rezeption.", n: "perder → perdí. -er/-ir-Verben enden in der ich-Vergangenheit auf -í." },
+    tp09: { e: "Ayer llovió toda la tarde.", d: "Gestern hat es den ganzen Nachmittag geregnet.", s: "Übers Wetter und verschobene Pläne reden.", n: "llovió = es regnete (einmaliges Ereignis). 'llovía' wäre der andauernde Hintergrund." },
+    tp10: { e: "Ya he comido, gracias.", d: "Ich habe schon gegessen, danke.", s: "Ein Angebot höflich ablehnen.", n: "Perfecto: haber + Partizip (he comido). 'ya' (schon) ist das typische Signalwort." },
+    tp11: { e: "¿Has visto Machu Picchu alguna vez?", d: "Hast du Machu Picchu schon mal gesehen?", s: "Nach Reise-Erfahrungen fragen.", n: "ver hat ein unregelmäßiges Partizip: visto (nicht 'veído')." },
+    tp12: { e: "Nunca he estado aquí, soy nuevo.", d: "Ich war noch nie hier, ich bin neu.", s: "Um eine Empfehlung oder Hilfe bitten.", n: "Perfecto für Lebens-Erfahrung: 'nunca he estado' = noch nie gewesen." },
+    tp13: { e: "Hemos llegado hace cinco minutos.", d: "Wir sind vor fünf Minuten angekommen.", s: "An der Rezeption beim Einchecken.", n: "wir-Form des Perfekts: hemos + Partizip. Für gerade eben Geschehenes." },
+    tp14: { e: "El hostal era muy bonito y tranquilo.", d: "Das Hostel war sehr schön und ruhig.", s: "Eine Unterkunft weiterempfehlen oder beschreiben.", n: "Imperfecto für Beschreibungen: era (ser). Kein klarer Endpunkt, sondern ein Zustand." },
+    tp15: { e: "De niño viajaba mucho con mi familia.", d: "Als Kind bin ich viel mit meiner Familie gereist.", s: "Beim Erzählen aus der Vergangenheit, von Gewohnheiten.", n: "Imperfecto für Gewohnheiten: viajaba = reiste regelmäßig (-aba bei -ar-Verben)." },
+    tp16: { e: "Hola, solo quería preguntar una cosa.", d: "Hallo, ich wollte nur etwas fragen.", s: "Höflich ein Anliegen einleiten.", n: "'quería' (Imperfekt) klingt sanfter und höflicher als das direkte 'quiero'." },
+    tp17: { e: "¿A qué hora sale el próximo bus?", d: "Wann fährt der nächste Bus?", s: "Am Schalter oder Busbahnhof nach dem Fahrplan fragen.", n: "Gegenwart für Festes wie Fahrpläne: sale (salir) = fährt ab." },
+    tp18: { e: "Hoy me quedo en el hostal a descansar.", d: "Heute bleibe ich zum Ausruhen im Hostel.", s: "Pläne für den Tag mitteilen.", n: "Gegenwart für das, was heute gilt. quedarse = bleiben (reflexiv: me quedo)." },
+    tp19: { e: "Voy a tomar el bus de las ocho.", d: "Ich werde den Acht-Uhr-Bus nehmen.", s: "Deinen nächsten Schritt ankündigen.", n: "ir a + Infinitiv = nahe Zukunft. Der einfachste Weg, Pläne auszudrücken." },
+    tp20: { e: "Vamos a salir mañana temprano.", d: "Wir werden morgen früh aufbrechen.", s: "Eine gemeinsame Abfahrt planen.", n: "vamos a + Infinitiv = wir werden … Achtung: 'vamos a' kann auch 'lass uns …' heißen." },
+    tp21: { e: "¿Qué vas a hacer en La Paz?", d: "Was wirst du in La Paz machen?", s: "Nach den Plänen deiner Reisebekanntschaft fragen.", n: "vas a + Infinitiv. Sehr häufige Frage unter Reisenden." },
+    tp22: { e: "Lleva paraguas, va a llover.", d: "Nimm einen Schirm mit, es wird regnen.", s: "Eine Wetter-Warnung oder einen Tipp geben.", n: "va a llover = es wird regnen. Wetter-Verben gibt es nur in der er/es-Form." },
+    tp23: { e: "Voy a hacer una reserva para dos noches.", d: "Ich werde eine Reservierung für zwei Nächte machen.", s: "An der Rezeption oder am Telefon buchen.", n: "ir a + hacer. hacer una reserva = reservieren/buchen." },
+    tp24: { e: "Llegaré mañana por la mañana.", d: "Ich werde morgen früh ankommen.", s: "Deine Ankunft beim Gastgeber ankündigen.", n: "Futuro simple: Infinitiv llegar + é. Endung -é/-ás/-á/-emos/-án für alle Verben." },
+    tp25: { e: "Un taxi al aeropuerto será caro.", d: "Ein Taxi zum Flughafen wird teuer sein.", s: "Kosten abschätzen, bevor du dich entscheidest.", n: "Futur auch für Vermutungen: 'será caro' = das ist wohl/wird teuer." },
+    tp26: { e: "No sé todavía, ya veremos.", d: "Ich weiß noch nicht, wir werden sehen.", s: "Eine Entscheidung offen lassen.", n: "'Ya veremos' ist eine feste Floskel – sehr gebräuchlich in ganz LatAm." },
+    tp27: { e: "Querría una habitación privada, por favor.", d: "Ich hätte gern ein Privatzimmer, bitte.", s: "Höflich an der Rezeption nach einem Zimmer fragen.", n: "Condicional 'querría' (oder 'me gustaría') ist die höflichste Art zu bestellen." },
+    tp28: { e: "¿Podría ayudarme con la dirección?", d: "Könnten Sie mir mit der Adresse helfen?", s: "Jemanden höflich um Hilfe bitten.", n: "'¿Podría?' ist höflicher als '¿Puede?' – ideal bei Fremden und in Ämtern." },
+    tp29: { e: "Ayer estaba cansado, pero hoy estoy bien.", d: "Gestern war ich müde, aber heute geht's mir gut.", s: "Übers eigene Befinden reden.", n: "estaba (Imperfekt, Zustand gestern) vs. estoy (Gegenwart, jetzt). Signalwörter: ayer/hoy." },
+    tp30: { e: "Mañana voy a Lima en avión.", d: "Morgen fliege ich nach Lima.", s: "Den nächsten Reise-Abschnitt ankündigen.", n: "Fürs ganz Nahe reicht oft die Gegenwart: 'mañana voy' statt 'iré'. Das Wort mañana macht die Zukunft klar." },
+    tp31: { e: "Estoy comiendo, te llamo después.", d: "Ich esse gerade, ich rufe dich später an.", s: "Kurz sagen, dass du gerade beschäftigt bist.", n: "estar + Gerundio (-ando/-iendo) = genau jetzt im Gange. Nicht für die Zukunft verwenden." },
+    tp32: { e: "¿Qué estás haciendo aquí?", d: "Was machst du gerade hier?", s: "Eine bekannte Person überrascht antreffen.", n: "haciendo ist das Gerundio von hacer. estás + Gerundio fragt nach dem Moment." },
+    tp33: { e: "Estamos esperando el bus desde hace una hora.", d: "Wir warten schon seit einer Stunde auf den Bus.", s: "Sich über eine lange Wartezeit austauschen.", n: "esperando = wartend. 'desde hace' drückt aus, seit wann etwas läuft." },
+    tp34: { e: "No salgas, está lloviendo fuerte.", d: "Geh nicht raus, es regnet stark.", s: "Vor schlechtem Wetter warnen.", n: "Wetter im Moment: está lloviendo. Das Gerundio von llover ist lloviendo." },
+    tp35: { e: "Estoy buscando un hostal barato cerca del centro.", d: "Ich suche gerade ein günstiges Hostel nahe dem Zentrum.", s: "Bei der Ankunft nach einer Unterkunft fragen.", n: "buscando = suchend. Tipp: 'estoy buscando' klingt aktiver als nur 'busco'." },
+    tp36: { e: "Dígame, ¿en qué le puedo ayudar?", d: "Sagen Sie, womit kann ich Ihnen helfen?", s: "So wirst du oft an der Rezeption begrüßt.", n: "Dígame ist der höfliche Befehl (usted) von decir – am Telefon auch einfach 'Hallo?'." },
+    tp37: { e: "Siga derecho y doble en la esquina.", d: "Gehen Sie geradeaus und biegen Sie an der Ecke ab.", s: "Eine Wegbeschreibung verstehen oder geben.", n: "Siga = höflicher Befehl von seguir. Befehle an 'usted' enden bei -ir/-er-Verben auf -a." },
+    tp38: { e: "Espere un momento, por favor.", d: "Warten Sie bitte einen Moment.", s: "Jemanden höflich um kurze Geduld bitten.", n: "Espere = Befehl (usted) von esperar. -ar-Verben enden im usted-Befehl auf -e." },
+    tp39: { e: "Ayúdeme, por favor, estoy perdido.", d: "Helfen Sie mir bitte, ich habe mich verlaufen.", s: "Im Notfall oder bei Orientierungslosigkeit.", n: "ayudar → ayude (usted) + me = ayúdeme. Das angehängte me bekommt einen Akzent." },
+    tp40: { e: "Tráigame la cuenta, por favor.", d: "Bringen Sie mir bitte die Rechnung.", s: "Im Restaurant nach der Rechnung fragen.", n: "traer → traiga (usted) + me = tráigame. la cuenta = die Rechnung." },
+    tp41: { e: "Dime, ¿cómo llego a la plaza?", d: "Sag mir, wie komme ich zum Platz?", s: "Vertraut jemanden um eine Auskunft bitten.", n: "Dime ist die vertraute Form (tú) von decir. Locker unter Reisenden gleichen Alters." },
+    tp42: { e: "Ven, el bus ya está aquí.", d: "Komm, der Bus ist schon da.", s: "Eine vertraute Person zur Eile antreiben.", n: "Ven ist ein unregelmäßiger tú-Befehl von venir – ganz kurz, nur ein Wort." },
+    tp43: { e: "Mira, ese es nuestro hostal.", d: "Schau, das ist unser Hostel.", s: "Jemanden auf etwas aufmerksam machen.", n: "Mira (von mirar) heißt wörtlich 'schau' – wird oft nur als 'hey, pass auf' benutzt." },
+    tp44: { e: "Acabo de llegar a la ciudad.", d: "Ich bin gerade in der Stadt angekommen.", s: "Sagen, dass du eben erst da bist.", n: "acabar de + Infinitiv = gerade eben getan. Praktischer als das Perfekt für 'soeben'." },
+    tp45: { e: "El bus acaba de salir, hay otro en una hora.", d: "Der Bus ist gerade abgefahren, in einer Stunde gibt es einen anderen.", s: "Wenn du den Anschluss knapp verpasst hast.", n: "acaba de salir = ist gerade abgefahren. acabar passt sich der Person an (acabo/acaba)." },
+    tp46: { e: "¿Hay wifi aquí? ¿Cuál es la contraseña?", d: "Gibt es hier WLAN? Wie lautet das Passwort?", s: "Im Café, Hostel oder am Busbahnhof.", n: "hay = es gibt (für eins oder viele gleich). Sehr häufige Reise-Frage." },
+    tp47: { e: "No había agua caliente en la ducha.", d: "Es gab kein warmes Wasser in der Dusche.", s: "An der Rezeption ein Problem melden.", n: "había = es gab (Imperfekt von hay), für andauernde Zustände in der Vergangenheit." },
+    tp48: { e: "¿Habrá un bus nocturno a Arequipa?", d: "Wird es einen Nachtbus nach Arequipa geben?", s: "Nach künftigen Verbindungen fragen.", n: "habrá = es wird geben (Futur von hay). Eine Form für eins oder viele." },
+    tp49: { e: "Tuve un problema con la reserva.", d: "Ich hatte ein Problem mit der Reservierung.", s: "Eine Schwierigkeit beim Einchecken erklären.", n: "tener wird in der Vergangenheit zu tuve/tuvo – Stammwechsel, kein Akzent." },
+    tp50: { e: "No pude dormir por el ruido.", d: "Ich konnte wegen des Lärms nicht schlafen.", s: "Über eine schlechte Nacht im Hostel klagen.", n: "poder → pude (kein Akzent). 'No pude' = ich schaffte es nicht / konnte nicht." },
+    tp51: { e: "El taxista me dijo que es caro.", d: "Der Taxifahrer hat mir gesagt, dass es teuer ist.", s: "Etwas weitergeben, das dir jemand gesagt hat.", n: "decir → dijo (mit j). 'me dijo que …' = er/sie sagte mir, dass …" },
+    tp52: { e: "¿Cuándo viniste a Bolivia?", d: "Wann bist du nach Bolivien gekommen?", s: "Smalltalk über die Reise des anderen.", n: "venir → viniste (du). Stammwechsel ven- → vin-, ohne Akzent." },
+    tp53: { e: "Le di el dinero al chofer y bajé.", d: "Ich gab dem Fahrer das Geld und stieg aus.", s: "Vom Bezahlen im Sammeltaxi oder Bus erzählen.", n: "dar → di (nur zwei Buchstaben!). chofer = Fahrer in LatAm." },
+    tp54: { e: "Perdón, ¿qué has dicho?", d: "Entschuldigung, was hast du gesagt?", s: "Höflich um Wiederholung bitten.", n: "dicho ist das unregelmäßige Partizip von decir (nicht 'decido')." },
+    tp55: { e: "Ya he abierto la puerta, pasa.", d: "Ich habe die Tür schon geöffnet, komm rein.", s: "Jemandem signalisieren, dass offen ist.", n: "abierto = Partizip von abrir. Auch als Schild: 'Abierto' = geöffnet." },
+    tp56: { e: "Todavía no han hecho la habitación.", d: "Sie haben das Zimmer noch nicht gemacht.", s: "Wenn dein Zimmer beim Check-in noch nicht fertig ist.", n: "hecho = Partizip von hacer. 'hacer la habitación' = das Zimmer herrichten." },
+    tp57: { e: "He roto mis lentes, necesito una óptica.", d: "Ich habe meine Brille kaputt gemacht, ich brauche einen Optiker.", s: "Ein kleines Reise-Missgeschick erklären.", n: "roto = Partizip von romper. lentes (auch gafas/anteojos) = Brille." },
+    tp58: { e: "Cuando llegué, ya era tarde.", d: "Als ich ankam, war es schon spät.", s: "Den Hintergrund einer Geschichte schildern.", n: "era (Imperfekt von ser) beschreibt den Rahmen; llegué (Indefinido) ist das Ereignis." },
+    tp59: { e: "No conocía la ciudad, así que usé el mapa.", d: "Ich kannte die Stadt nicht, also benutzte ich die Karte.", s: "Erklären, warum du dich erst orientieren musstest.", n: "conocer im Imperfekt (conocía) = kannte (Zustand). conocer = kennen/kennenlernen." },
+    tp60: { e: "Teníamos hambre y buscamos un mercado.", d: "Wir hatten Hunger und suchten einen Markt.", s: "Von einer gemeinsamen Situation erzählen.", n: "tener hambre = Hunger haben. Im Imperfekt: teníamos (andauernder Zustand)." },
+    tp61: { e: "Te voy a llamar más tarde, ¿está bien?", d: "Ich rufe dich später an, okay?", s: "Ein Treffen oder einen Anruf vereinbaren.", n: "ir a + Infinitiv für die nahe Zukunft. te … llamar = dich anrufen." },
+    tp62: { e: "¿Cuánto tiempo te vas a quedar en Cusco?", d: "Wie lange wirst du in Cusco bleiben?", s: "Reisepläne der anderen Person erfragen.", n: "quedarse = bleiben (reflexiv). vas a quedarte / te vas a quedar – beides geht." },
+    tp63: { e: "El tour es caro, pero valdrá la pena.", d: "Die Tour ist teuer, aber es wird sich lohnen.", s: "Eine Ausgabe vor dir selbst rechtfertigen.", n: "valer → valdrá (unregelmäßiges Futur). valer la pena = sich lohnen." },
+    tp64: { e: "¿Qué me recomendaría para comer aquí?", d: "Was würden Sie mir hier zu essen empfehlen?", s: "Im Restaurant höflich um einen Tipp bitten.", n: "Condicional (recomendaría) klingt höflicher als die direkte Frage 'qué recomienda'." },
+    tp65: { e: "Preferiría ir a pie, no está lejos.", d: "Ich würde lieber zu Fuß gehen, es ist nicht weit.", s: "Höflich eine Vorliebe äußern.", n: "preferir → preferiría (Condicional). ir a pie = zu Fuß gehen." },
+    tp66: { e: "Debería tomar un taxi, ya es de noche.", d: "Sie sollten ein Taxi nehmen, es ist schon dunkel.", s: "Jemandem einen vorsichtigen Rat geben.", n: "debería (von deber) = sollte – die höfliche Art, einen Rat zu geben." },
+
     // ===================== FARBEN =====================
     col01: { e: "¿Tiene esta camiseta en rojo?", d: "Haben Sie dieses T-Shirt in Rot?", s: "Beim Klamotten-Kauf am Markt oder im Laden.", n: "Farbe steht meist nach dem Nomen: una mochila roja, una bici roja." },
     col02: { e: "Me gusta más la azul.", d: "Die blaue gefällt mir besser.", s: "Wenn du zwischen mehreren Varianten wählst.", n: "Die Farbe passt sich an: el azul / la azul je nach Gegenstand." },
@@ -2361,6 +2437,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
     { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
     { id: "verbos",  label: "Konjugieren", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
+    { id: "tiempos", label: "Zeiten",     icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
     { id: "colores", label: "Farben",     icon: "🎨", grad: ["#7048E8", "#15AABF"] },
   ];
 
@@ -3057,6 +3134,94 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "vb40", cat: "verbos", lvl: 3, de: "Du biegst rechts ab und gehst geradeaus weiter", es: "Doblas a la derecha y sigues derecho", tip: "DO-blas … SI-ges – zwei du-Formen" },
     { id: "vb41", cat: "verbos", lvl: 3, de: "Morgen fahren wir nach Cusco", es: "Mañana vamos a Cusco", tip: "ma-NYA-na WA-mos" },
     { id: "vb42", cat: "verbos", lvl: 3, de: "Können Sie langsamer sprechen?", es: "¿Puede hablar más despacio?", tip: "PUE-de a-BLAR mas des-PA-si-o" },
+
+    // ===================== ZEITEN (Tiempos: Verb-Zeitformen) =====================
+    // Beispielsätze in den wichtigsten Reise-Zeitformen. Die Erklärung (welche
+    // Zeit wann) liegt in TENSES (Entdecken → Tiempos); diese Karten zeigen sie
+    // in echten Reisesätzen. Reihenfolge: Vergangenheit → Gegenwart → Zukunft.
+    // ---- Vergangenheit: Pretérito indefinido (abgeschlossen) ----
+    { id: "tp01", cat: "tiempos", lvl: 1, de: "Ich kam gestern an", es: "Llegué ayer", tip: "ye-GE a-YER – llegar, ich-Form Vergangenheit (-é)" },
+    { id: "tp02", cat: "tiempos", lvl: 1, de: "Ich nahm den Bus", es: "Tomé el bus", tip: "to-ME – abgeschlossene -ar-Vergangenheit: ich = -é" },
+    { id: "tp03", cat: "tiempos", lvl: 2, de: "Wir kauften die Tickets", es: "Compramos los boletos", tip: "kom-PRA-mos – wir-Form klingt wie die Gegenwart" },
+    { id: "tp04", cat: "tiempos", lvl: 2, de: "Ich war in Cusco", es: "Estuve en Cusco", tip: "es-TU-we – estar ist in der Vergangenheit unregelmäßig" },
+    { id: "tp05", cat: "tiempos", lvl: 2, de: "Wir gingen zum Strand", es: "Fuimos a la playa", tip: "FUI-mos – ir & ser teilen fui/fuiste/fue …" },
+    { id: "tp06", cat: "tiempos", lvl: 2, de: "Es hat mir gefallen", es: "Me gustó", tip: "me gus-TO – gustar, er/es-Form (-ó)" },
+    { id: "tp07", cat: "tiempos", lvl: 3, de: "Was hast du gemacht?", es: "¿Qué hiciste?", tip: "i-SIS-te – hacer ist unregelmäßig" },
+    { id: "tp08", cat: "tiempos", lvl: 2, de: "Ich habe meinen Pass verloren", es: "Perdí mi pasaporte", tip: "per-DI – Notfall in der Vergangenheit (-er/-ir: ich = -í)" },
+    { id: "tp09", cat: "tiempos", lvl: 2, de: "Es hat gestern geregnet", es: "Ayer llovió", tip: "yo-WIO – ein einmaliges Ereignis (anders als 'llovía')" },
+    // ---- Vergangenheit: Pretérito perfecto (gerade eben / Erfahrung) ----
+    { id: "tp10", cat: "tiempos", lvl: 2, de: "Ich habe schon gegessen", es: "Ya he comido", tip: "ya e ko-MI-do – haber (he) + Partizip (-ido)" },
+    { id: "tp11", cat: "tiempos", lvl: 2, de: "Hast du Machu Picchu gesehen?", es: "¿Has visto Machu Picchu?", tip: "as WIS-to – visto = unregelmäßiges Partizip von ver" },
+    { id: "tp12", cat: "tiempos", lvl: 3, de: "Ich bin noch nie hier gewesen", es: "Nunca he estado aquí", tip: "NUN-ka e es-TA-do – Erfahrung: 'noch nie'" },
+    { id: "tp13", cat: "tiempos", lvl: 2, de: "Wir sind gerade angekommen", es: "Hemos llegado", tip: "E-mos ye-GA-do – wir-Form: hemos + Partizip" },
+    // ---- Vergangenheit: Imperfecto (Hintergrund / Gewohnheit) ----
+    { id: "tp14", cat: "tiempos", lvl: 3, de: "Das Hostel war sehr schön", es: "El hostal era muy bonito", tip: "E-ra – ser im Imperfekt: Beschreibung von früher" },
+    { id: "tp15", cat: "tiempos", lvl: 3, de: "Als Kind reiste ich viel", es: "De niño viajaba mucho", tip: "wia-CHA-ba – Gewohnheit früher (-aba)" },
+    { id: "tp16", cat: "tiempos", lvl: 3, de: "Ich wollte nur fragen", es: "Solo quería preguntar", tip: "ke-RI-a – höflicher und weicher als 'quiero'" },
+    // ---- Gegenwart (zur Erinnerung & für den Fahrplan) ----
+    { id: "tp17", cat: "tiempos", lvl: 1, de: "Wann fährt der nächste Bus?", es: "¿A qué hora sale el próximo bus?", tip: "SA-le – Gegenwart fürs Feste (Fahrplan)" },
+    { id: "tp18", cat: "tiempos", lvl: 1, de: "Heute bleibe ich im Hostel", es: "Hoy me quedo en el hostal", tip: "me KE-do – Gegenwart für das, was jetzt gilt" },
+    // ---- Zukunft: Futuro próximo (ir a + Infinitiv) ----
+    { id: "tp19", cat: "tiempos", lvl: 1, de: "Ich werde den Bus nehmen", es: "Voy a tomar el bus", tip: "woi a to-MAR – ir a + Infinitiv: der einfache Zukunfts-Trick" },
+    { id: "tp20", cat: "tiempos", lvl: 1, de: "Wir werden morgen losfahren", es: "Vamos a salir mañana", tip: "WA-mos a sa-LIR" },
+    { id: "tp21", cat: "tiempos", lvl: 2, de: "Was wirst du machen?", es: "¿Qué vas a hacer?", tip: "ke was a a-SER" },
+    { id: "tp22", cat: "tiempos", lvl: 1, de: "Es wird regnen", es: "Va a llover", tip: "wa a yo-WER – über das Wetter sprechen" },
+    { id: "tp23", cat: "tiempos", lvl: 2, de: "Ich werde eine Reservierung machen", es: "Voy a hacer una reserva", tip: "woi a a-SER U-na re-SER-wa" },
+    // ---- Zukunft: Futuro simple ----
+    { id: "tp24", cat: "tiempos", lvl: 2, de: "Ich werde morgen ankommen", es: "Llegaré mañana", tip: "ye-ga-RE – Infinitiv + -é" },
+    { id: "tp25", cat: "tiempos", lvl: 3, de: "Das wird teuer sein", es: "Será caro", tip: "se-RA KA-ro – auch als Vermutung: 'das ist wohl teuer'" },
+    { id: "tp26", cat: "tiempos", lvl: 2, de: "Wir werden sehen", es: "Ya veremos", tip: "ya we-RE-mos – beliebte Floskel" },
+    // ---- Höflich: Condicional ----
+    { id: "tp27", cat: "tiempos", lvl: 3, de: "Ich hätte gern ein Zimmer", es: "Querría una habitación", tip: "ke-RRI-a – sehr höflich; geht auch 'Me gustaría'" },
+    { id: "tp28", cat: "tiempos", lvl: 3, de: "Könnten Sie mir helfen?", es: "¿Podría ayudarme?", tip: "po-DRI-a a-yu-DAR-me – höflicher als '¿Puede?'" },
+    // ---- Zeiten gemischt (Signalwörter erkennen) ----
+    { id: "tp29", cat: "tiempos", lvl: 2, de: "Gestern war ich müde, heute geht's mir gut", es: "Ayer estaba cansado, hoy estoy bien", tip: "es-TA-ba … es-TOI – ayer vs. hoy" },
+    { id: "tp30", cat: "tiempos", lvl: 1, de: "Morgen fahre ich nach Lima", es: "Mañana voy a Lima", tip: "ma-NYA-na woi – fürs Nahe reicht oft die Gegenwart" },
+    // ---- Verlaufsform: estar + Gerundio (gerade jetzt) ----
+    { id: "tp31", cat: "tiempos", lvl: 1, de: "Ich esse gerade", es: "Estoy comiendo", tip: "es-TOI ko-MIEN-do – estar + Gerundio = genau jetzt" },
+    { id: "tp32", cat: "tiempos", lvl: 2, de: "Was machst du gerade?", es: "¿Qué estás haciendo?", tip: "es-TAS a-SIEN-do – haciendo von hacer" },
+    { id: "tp33", cat: "tiempos", lvl: 2, de: "Wir warten gerade auf den Bus", es: "Estamos esperando el bus", tip: "es-TA-mos es-pe-RAN-do" },
+    { id: "tp34", cat: "tiempos", lvl: 1, de: "Es regnet gerade", es: "Está lloviendo", tip: "es-TA yo-WIEN-do – das Wetter im Moment" },
+    { id: "tp35", cat: "tiempos", lvl: 2, de: "Ich suche gerade ein Hostel", es: "Estoy buscando un hostal", tip: "es-TOI bus-KAN-do" },
+    // ---- Imperativo: Bitten & Anweisungen ----
+    { id: "tp36", cat: "tiempos", lvl: 2, de: "Sagen Sie mir / Erzählen Sie", es: "Dígame", tip: "DI-ga-me – höfliche Aufforderung (usted) von decir" },
+    { id: "tp37", cat: "tiempos", lvl: 1, de: "Gehen Sie geradeaus weiter", es: "Siga derecho", tip: "SI-ga de-RE-cho – Befehl (usted) von seguir" },
+    { id: "tp38", cat: "tiempos", lvl: 1, de: "Warten Sie einen Moment", es: "Espere un momento", tip: "es-PE-re – höflicher Befehl von esperar" },
+    { id: "tp39", cat: "tiempos", lvl: 2, de: "Helfen Sie mir bitte", es: "Ayúdeme, por favor", tip: "a-YU-de-me – ayudar (usted), Pronomen hinten dran" },
+    { id: "tp40", cat: "tiempos", lvl: 2, de: "Bringen Sie mir die Rechnung", es: "Tráigame la cuenta", tip: "TRAI-ga-me la KUEN-ta – von traer" },
+    { id: "tp41", cat: "tiempos", lvl: 1, de: "Sag mir", es: "Dime", tip: "DI-me – vertraute Form (tú) von decir" },
+    { id: "tp42", cat: "tiempos", lvl: 2, de: "Komm her", es: "Ven", tip: "wen – kurzer tú-Befehl von venir" },
+    { id: "tp43", cat: "tiempos", lvl: 1, de: "Schau mal", es: "Mira", tip: "MI-ra – tú-Befehl von mirar; auch um Aufmerksamkeit zu wecken" },
+    // ---- acabar de: gerade eben getan ----
+    { id: "tp44", cat: "tiempos", lvl: 2, de: "Ich bin gerade angekommen", es: "Acabo de llegar", tip: "a-KA-bo de ye-GAR – acabar de + Infinitiv = gerade eben" },
+    { id: "tp45", cat: "tiempos", lvl: 2, de: "Der Bus ist gerade abgefahren", es: "El bus acaba de salir", tip: "a-KA-ba de sa-LIR" },
+    // ---- hay / había / habrá: „es gibt" ----
+    { id: "tp46", cat: "tiempos", lvl: 1, de: "Gibt es hier WLAN?", es: "¿Hay wifi aquí?", tip: "ai WI-fi a-KI – hay = es gibt (Gegenwart)" },
+    { id: "tp47", cat: "tiempos", lvl: 2, de: "Es gab kein warmes Wasser", es: "No había agua caliente", tip: "a-BI-a – había = es gab (Vergangenheit)" },
+    { id: "tp48", cat: "tiempos", lvl: 3, de: "Wird es einen Nachtbus geben?", es: "¿Habrá un bus nocturno?", tip: "a-BRA – habrá = es wird geben (Zukunft)" },
+    // ---- Mehr unregelmäßige Vergangenheit (Indefinido) ----
+    { id: "tp49", cat: "tiempos", lvl: 2, de: "Ich hatte ein Problem", es: "Tuve un problema", tip: "TU-we – tener wird in der Vergangenheit zu tuve" },
+    { id: "tp50", cat: "tiempos", lvl: 3, de: "Ich konnte nicht schlafen", es: "No pude dormir", tip: "PU-de dor-MIR – poder → pude" },
+    { id: "tp51", cat: "tiempos", lvl: 3, de: "Er hat mir gesagt, dass es teuer ist", es: "Me dijo que es caro", tip: "me DI-cho (j wie ch in Bach) – decir → dijo" },
+    { id: "tp52", cat: "tiempos", lvl: 2, de: "Wann bist du gekommen?", es: "¿Cuándo viniste?", tip: "wi-NIS-te – venir → viniste" },
+    { id: "tp53", cat: "tiempos", lvl: 2, de: "Ich gab dem Fahrer das Geld", es: "Le di el dinero al chofer", tip: "le di – dar → di (ganz kurz)" },
+    // ---- Mehr Perfekt mit unregelmäßigem Partizip ----
+    { id: "tp54", cat: "tiempos", lvl: 2, de: "Was hast du gesagt?", es: "¿Qué has dicho?", tip: "as DI-cho – dicho = Partizip von decir" },
+    { id: "tp55", cat: "tiempos", lvl: 2, de: "Ich habe die Tür schon geöffnet", es: "Ya he abierto la puerta", tip: "a-BIER-to – abierto von abrir" },
+    { id: "tp56", cat: "tiempos", lvl: 3, de: "Sie haben das Zimmer noch nicht gemacht", es: "Todavía no han hecho la habitación", tip: "E-cho – hecho von hacer" },
+    { id: "tp57", cat: "tiempos", lvl: 3, de: "Ich habe meine Brille kaputt gemacht", es: "He roto mis lentes", tip: "RO-to – roto von romper; lentes = Brille (LatAm)" },
+    // ---- Mehr Imperfekt (Hintergrund/Zustand) ----
+    { id: "tp58", cat: "tiempos", lvl: 2, de: "Es war schon spät", es: "Ya era tarde", tip: "E-ra – ser-Zustand in der Vergangenheit" },
+    { id: "tp59", cat: "tiempos", lvl: 3, de: "Ich kannte die Stadt nicht", es: "No conocía la ciudad", tip: "ko-no-SI-a – conocer im Imperfekt" },
+    { id: "tp60", cat: "tiempos", lvl: 2, de: "Wir hatten Hunger", es: "Teníamos hambre", tip: "te-NI-a-mos AM-bre – tener im Imperfekt" },
+    // ---- Mehr Zukunft ----
+    { id: "tp61", cat: "tiempos", lvl: 2, de: "Ich werde dich später anrufen", es: "Te voy a llamar más tarde", tip: "te woi a ya-MAR – ir a + Infinitiv" },
+    { id: "tp62", cat: "tiempos", lvl: 3, de: "Wie lange wirst du bleiben?", es: "¿Cuánto tiempo te vas a quedar?", tip: "te was a ke-DAR – quedarse = bleiben" },
+    { id: "tp63", cat: "tiempos", lvl: 3, de: "Es wird sich lohnen", es: "Valdrá la pena", tip: "wal-DRA la PE-na – valer → valdrá (Zukunft)" },
+    // ---- Mehr Höflich: Condicional ----
+    { id: "tp64", cat: "tiempos", lvl: 3, de: "Was würden Sie empfehlen?", es: "¿Qué recomendaría?", tip: "re-ko-men-da-RI-a – recomendar im Konditional" },
+    { id: "tp65", cat: "tiempos", lvl: 3, de: "Ich würde lieber zu Fuß gehen", es: "Preferiría ir a pie", tip: "pre-fe-ri-RI-a – preferir im Konditional" },
+    { id: "tp66", cat: "tiempos", lvl: 3, de: "Sie sollten ein Taxi nehmen", es: "Debería tomar un taxi", tip: "de-be-RI-a – debería = sollte (höflicher Rat)" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
@@ -3901,6 +4066,272 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     },
   };
 
+  // ===================== TIEMPOS (Erklärseite Zeiten) =====================
+  // Inhalte der Grammatik-Erklärseite (Entdecken → Tiempos). REINE DATEN –
+  // gerendert von ui.renderTiempos. Die passenden Übungskarten liegen in der
+  // Kategorie "tiempos" (Zeiten); die Seite verlinkt per "Jetzt üben" dorthin.
+  // Roter Faden: EIN Verb (tomar) wandert durch alle Zeiten, damit man die
+  // Endungen vergleichen kann. Alle Beispiele sind reisebezogen.
+  //   timeline  = die ich-Form von tomar in Vergangenheit/Gegenwart/Zukunft
+  //   tableLabels = kompakte Personen-Spalte ALLER Zeit-Tabellen
+  //   tenses    = die wichtigsten Reise-Zeitformen; je Form: forms (5), recipe
+  //               (Bildung), signals (Signalwörter), when (Gebrauch), examples (3 Sätze)
+  //   continuous = estar + Gerundio (Verlaufsform) inkl. unregelmäßiger Gerundien
+  //   strongPast = die 7 häufigsten unregelmäßigen Vergangenheiten (pretéritos fuertes)
+  //   participles = unregelmäßige Partizipien fürs Perfekt
+  //   imperative = Bitten & Anweisungen (Imperativo)
+  //   hay        = „es gibt“ durch die Zeiten (hay/había/hubo/habrá/ha habido)
+  //   indefVsImperf = Vergleich Indefinido (Ereignis) vs. Imperfecto (Hintergrund)
+  //   scenarios  = Reise-Situation → passende Zeitform
+  //   pitfalls   = häufige Anfängerfehler (falsch → richtig)
+  //   signals    = Signalwörter, die die Zeit verraten (ayer/hoy/mañana …)
+  //   example    = Mini-Reise in drei Zeiten; dialogs = zwei weitere Reisedialoge
+  const TENSES = {
+    intro: "Spanische Verben verraten mit ihrer Endung, WANN etwas passiert – gestern, jetzt oder morgen. Du musst nicht alle Zeiten perfekt können: Für die Reise reichen ein paar. Am wichtigsten sind die Gegenwart, eine Vergangenheit zum Erzählen und ein einfacher Zukunfts-Trick (ir a + Infinitiv). Hier siehst du sie an einem einzigen Verb – tomar (nehmen) – durch die Zeiten wandern.",
+    timeline: {
+      title: "Ein Verb, drei Zeiten",
+      verb: "tomar (nehmen) – immer die ich-Form",
+      rows: [
+        { when: "Gestern", es: "tomé el bus", de: "ich nahm den Bus" },
+        { when: "Jetzt", es: "tomo el bus", de: "ich nehme den Bus" },
+        { when: "Gleich / morgen", es: "voy a tomar el bus", de: "ich werde den Bus nehmen" },
+      ],
+      note: "Nur die Endung (oder ein kleines Hilfswort wie „voy a“) ändert sich – der Verbstamm tom- bleibt.",
+    },
+    tableLabels: ["yo", "tú", "él/ella/usted", "nosotros", "ustedes/ellos"],
+    tenses: [
+      { name: "Presente", nameDe: "Gegenwart – was jetzt oder allgemein gilt",
+        forms: ["tomo", "tomas", "toma", "tomamos", "toman"],
+        recipe: "Stamm + -o/-as/-a/-amos/-an (-ar) bzw. -o/-es/-e/-emos/-en (-er/-ir).",
+        signals: "hoy, ahora, normalmente, siempre",
+        when: "Für alles, was gerade oder grundsätzlich gilt – und sogar für die ganz nahe Zukunft („Mañana tomo el bus“ ist völlig normal). Auch für Fahrpläne und feste Abläufe.",
+        examples: [
+          { es: "Tomo el bus al centro.", de: "Ich nehme den Bus ins Zentrum." },
+          { es: "El mercado abre a las siete.", de: "Der Markt öffnet um sieben." },
+          { es: "¿Cuánto cuesta la habitación?", de: "Was kostet das Zimmer?" },
+        ] },
+      { name: "Pretérito perfecto", nameDe: "gerade eben passiert / Erfahrung",
+        forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
+        recipe: "haber (he/has/ha/hemos/han) + Partizip (-ado bei -ar, -ido bei -er/-ir).",
+        signals: "ya, todavía no, alguna vez, nunca, hoy, esta semana",
+        when: "Für gerade Geschehenes oder Erfahrungen („schon mal / noch nie“) – ohne festen Zeitpunkt. Tipp: Mit „ya“ (schon) und „todavía no“ (noch nicht) brauchst du es ständig.",
+        examples: [
+          { es: "Ya he tomado el desayuno.", de: "Ich habe schon gefrühstückt." },
+          { es: "¿Alguna vez has probado el cuy?", de: "Hast du schon mal Meerschweinchen probiert?" },
+          { es: "Hoy he caminado mucho.", de: "Heute bin ich viel gelaufen." },
+        ] },
+      { name: "Pretérito indefinido", nameDe: "Vergangenheit, abgeschlossen",
+        forms: ["tomé", "tomaste", "tomó", "tomamos", "tomaron"],
+        recipe: "Stamm + -é/-aste/-ó/-amos/-aron (-ar) bzw. -í/-iste/-ió/-imos/-ieron (-er/-ir).",
+        signals: "ayer, anoche, el lunes, hace dos días, en 2019",
+        when: "Die Erzähl-Vergangenheit Lateinamerikas: abgeschlossene Ereignisse mit klarem Zeitpunkt. In LatAm oft auch da, wo Spanien das Perfekt nähme („Ayer llegué“ statt „he llegado“).",
+        examples: [
+          { es: "Ayer tomé el bus nocturno.", de: "Gestern nahm ich den Nachtbus." },
+          { es: "Llegamos a Cusco el lunes.", de: "Wir kamen am Montag in Cusco an." },
+          { es: "¿Qué te pareció el tour?", de: "Wie fandest du die Tour?" },
+        ] },
+      { name: "Imperfecto", nameDe: "früher / Hintergrund / Gewohnheit",
+        forms: ["tomaba", "tomabas", "tomaba", "tomábamos", "tomaban"],
+        recipe: "Stamm + -aba/-abas/-aba/-ábamos/-aban (-ar) bzw. -ía/-ías/-ía/-íamos/-ían (-er/-ir). Nur 3 unregelmäßig: ser → era, ir → iba, ver → veía.",
+        signals: "antes, siempre, todos los días, de niño, mientras",
+        when: "Wie es früher war, was man regelmäßig tat, Wetter und Beschreibungen. Auch für Uhrzeit, Alter und Gefühl in der Vergangenheit: „Eran las diez y estaba cansado.“",
+        examples: [
+          { es: "Antes tomaba mucho café.", de: "Früher trank ich viel Kaffee." },
+          { es: "El hostal era viejo pero limpio.", de: "Das Hostel war alt, aber sauber." },
+          { es: "Hacía mucho calor en la costa.", de: "An der Küste war es sehr heiß." },
+        ] },
+      { name: "Futuro próximo", nameDe: "Zukunft, der einfache Trick: ir a + Infinitiv",
+        forms: ["voy a tomar", "vas a tomar", "va a tomar", "vamos a tomar", "van a tomar"],
+        recipe: "ir (voy/vas/va/vamos/van) + a + Infinitiv – du beugst nur ir, das zweite Verb bleibt im Infinitiv.",
+        signals: "mañana, luego, esta noche, el próximo …",
+        when: "Der einfachste Weg in die Zukunft – im Alltag häufiger als das Futur unten. Perfekt für Pläne: „¿Qué vas a hacer?“ = Was hast du vor?",
+        examples: [
+          { es: "Voy a tomar el bus de las ocho.", de: "Ich werde den Acht-Uhr-Bus nehmen." },
+          { es: "Vamos a quedarnos dos noches.", de: "Wir bleiben zwei Nächte." },
+          { es: "¿Vas a venir con nosotros?", de: "Kommst du mit uns mit?" },
+        ] },
+      { name: "Futuro simple", nameDe: "Zukunft mit einer Endung für alle",
+        forms: ["tomaré", "tomarás", "tomará", "tomaremos", "tomarán"],
+        recipe: "Infinitiv + -é/-ás/-á/-emos/-án – für -ar/-er/-ir gleich. Ein paar Stämme sind kurz: tener → tendré, hacer → haré, poder → podré.",
+        signals: "mañana, algún día, la próxima semana",
+        when: "Etwas förmlicher als „ir a“. Auch für Vermutungen über die Gegenwart: „Será caro“ = das ist wohl/wird teuer; „¿Qué hora será?“ = wie spät mag es sein?",
+        examples: [
+          { es: "Mañana tomaré el primer bus.", de: "Morgen nehme ich den ersten Bus." },
+          { es: "Algún día volveré aquí.", de: "Eines Tages komme ich hierher zurück." },
+          { es: "Será una gran aventura.", de: "Es wird ein großes Abenteuer." },
+        ] },
+    ],
+    tensesNote: "Reise-Faustregel: Gegenwart für jetzt & bald, indefinido fürs Erzählen von gestern, „voy a + Infinitiv“ für Pläne. Damit kommst du fast überall durch.",
+    // estar + Gerundio: was gerade im Moment läuft (Verlaufsform)
+    continuous: {
+      title: "Gerade jetzt: estar + Gerundio",
+      intro: "Wenn etwas genau in diesem Moment passiert, nimmst du estar + Gerundio – wie das englische „I am doing“. Das Gerundio endet auf -ando (bei -ar) bzw. -iendo (bei -er/-ir).",
+      forms: ["estoy tomando", "estás tomando", "está tomando", "estamos tomando", "están tomando"],
+      gerunds: [
+        { inf: "comer", ger: "comiendo", de: "essend (-er → -iendo)" },
+        { inf: "ir", ger: "yendo", de: "gehend (unregelmäßig)" },
+        { inf: "dormir", ger: "durmiendo", de: "schlafend (o → u)" },
+        { inf: "pedir", ger: "pidiendo", de: "bestellend (e → i)" },
+        { inf: "leer", ger: "leyendo", de: "lesend (i → y)" },
+      ],
+      note: "Nicht für die Zukunft nehmen: „estoy yendo mañana“ ist falsch. estar + Gerundio ist nur das Hier-und-Jetzt – für morgen nimmst du „voy a ir“.",
+      examples: [
+        { es: "Estoy esperando el bus y está lloviendo.", de: "Ich warte gerade auf den Bus, und es regnet." },
+        { es: "Estamos buscando la terminal.", de: "Wir suchen gerade den Busbahnhof." },
+        { es: "¿Qué estás comiendo? Se ve rico.", de: "Was isst du gerade? Sieht lecker aus." },
+      ],
+    },
+    // Pretéritos fuertes: die häufigsten unregelmäßigen Vergangenheiten
+    strongPast: {
+      title: "Unregelmäßige Vergangenheit (Indefinido)",
+      intro: "Ein paar Schlüssel-Verben haben eine eigene Vergangenheit – mit verändertem Stamm und OHNE Akzent. Die ich- und die er/sie-Form enden hier auf -e/-o (nicht -é/-ó). Diese sieben hörst du ständig:",
+      verbs: [
+        { verb: "ir / ser", verbDe: "gehen/fahren / sein", forms: ["fui", "fuiste", "fue", "fuimos", "fueron"] },
+        { verb: "estar", verbDe: "sein (Ort/Zustand)", forms: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvieron"] },
+        { verb: "tener", verbDe: "haben", forms: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvieron"] },
+        { verb: "hacer", verbDe: "machen / tun", forms: ["hice", "hiciste", "hizo", "hicimos", "hicieron"] },
+        { verb: "poder", verbDe: "können", forms: ["pude", "pudiste", "pudo", "pudimos", "pudieron"] },
+        { verb: "decir", verbDe: "sagen", forms: ["dije", "dijiste", "dijo", "dijimos", "dijeron"] },
+        { verb: "venir", verbDe: "kommen", forms: ["vine", "viniste", "vino", "vinimos", "vinieron"] },
+      ],
+      note: "Eselsbrücke: ir und ser teilen sich fui/fue – ob „ich ging“ oder „ich war“, verrät der Zusammenhang. Und „hizo“ schreibt man mit z (vor o), gesprochen wie hace.",
+    },
+    // Unregelmäßige Partizipien (fürs Perfekt)
+    participles: {
+      title: "Unregelmäßige Partizipien (fürs Perfekt)",
+      intro: "Das Perfekt braucht das Partizip (he + …ado/…ido). Ein paar wichtige Verben bilden es unregelmäßig – die lernst du am besten als feste Brocken:",
+      rows: [
+        { inf: "ver", part: "visto", de: "gesehen" },
+        { inf: "hacer", part: "hecho", de: "gemacht" },
+        { inf: "decir", part: "dicho", de: "gesagt" },
+        { inf: "poner", part: "puesto", de: "gelegt / gestellt" },
+        { inf: "volver", part: "vuelto", de: "zurückgekehrt" },
+        { inf: "abrir", part: "abierto", de: "geöffnet" },
+        { inf: "escribir", part: "escrito", de: "geschrieben" },
+        { inf: "romper", part: "roto", de: "kaputt gemacht" },
+      ],
+      note: "Beispiel: „¿Has visto mi mochila?“ = Hast du meinen Rucksack gesehen? – nie „has veído“.",
+    },
+    // Imperativo: Bitten und Anweisungen
+    imperative: {
+      title: "Befehle & Bitten: Imperativo",
+      intro: "Für Anweisungen (und mit „por favor“ für höfliche Bitten) gibt es eigene Formen. Höflich (usted) endet meist auf -e/-a, vertraut (tú) klingt oft wie die er/sie-Form. Diese brauchst und hörst du unterwegs am meisten:",
+      rows: [
+        { es: "Dígame", de: "Sagen Sie mir / Erzählen Sie (höflich)" },
+        { es: "Siga derecho", de: "Gehen Sie geradeaus weiter" },
+        { es: "Espere un momento", de: "Warten Sie einen Moment" },
+        { es: "Tráigame la cuenta", de: "Bringen Sie mir die Rechnung" },
+        { es: "Dime", de: "Sag mir (vertraut)" },
+        { es: "Ven", de: "Komm (her)" },
+      ],
+      note: "Mini-Trick: Pronomen kleben hinten dran (di + me = dime, traiga + me = tráigame) – dabei wandert oft ein Akzent mit.",
+    },
+    // hay / había / habrá: „es gibt" durch die Zeiten
+    hay: {
+      title: "„Es gibt“: hay durch die Zeiten",
+      intro: "Für „es gibt“ gibt es ein einziges Wort pro Zeit – immer gleich, egal ob ein Ding oder viele:",
+      rows: [
+        { es: "hay", de: "es gibt (jetzt) – ¿Hay wifi?" },
+        { es: "había", de: "es gab (Hintergrund) – No había agua caliente." },
+        { es: "hubo", de: "es gab (Ereignis) – Hubo un accidente." },
+        { es: "habrá", de: "es wird geben – ¿Habrá un bus mañana?" },
+        { es: "ha habido", de: "es hat gegeben – Ha habido un cambio." },
+      ],
+      note: "Nie „hayn“ oder „han“ für „es gibt“: hay bleibt hay, auch bei vielen Dingen – „Hay dos camas“.",
+    },
+    // Die klassische Reise-Frage: Indefinido oder Imperfecto?
+    indefVsImperf: {
+      title: "Indefinido oder Imperfecto?",
+      intro: "Beide sind Vergangenheit – aber sie erzählen Verschiedenes. Faustregel für Reisegeschichten: Was ist passiert? → Indefinido. Wie war es drumherum? → Imperfecto.",
+      indef: {
+        label: "Indefinido – was passierte (Klick / ein Foto)",
+        points: [
+          "Abgeschlossene Ereignisse: Llegué, tomé el bus, perdí el celular.",
+          "Eine Kette von Aktionen: Bajé, pagué y salí.",
+          "Mit klarem Zeitpunkt: ayer, el lunes, a las ocho.",
+        ],
+      },
+      imperf: {
+        label: "Imperfecto – wie es war (Film im Hintergrund)",
+        points: [
+          "Beschreibungen: El cuarto era pequeño, hacía frío.",
+          "Gewohnheiten früher: Siempre viajábamos en bus.",
+          "Uhrzeit, Alter, Gefühl: Eran las diez, estaba cansado.",
+        ],
+      },
+      combined: { es: "Cuando llegué al hostal, llovía y no había luz.", de: "Als ich am Hostel ankam, regnete es und es gab kein Licht." },
+      note: "Oft beides im selben Satz: das Ereignis (llegué) vor dem Hintergrund (llovía, había). Frag dich: Klick (Indefinido) oder Film (Imperfecto)?",
+    },
+    // Schnellzuordnung Situation → Zeitform
+    scenarios: {
+      title: "Welche Zeit in welcher Situation?",
+      intro: "Schnellzuordnung für typische Reise-Momente:",
+      rows: [
+        { es: "Estoy buscando la parada.", de: "Gerade jetzt erklären → estar + Gerundio" },
+        { es: "Ayer perdí el bus.", de: "Was gestern passierte → Indefinido" },
+        { es: "El hostal era ruidoso.", de: "Wie etwas war → Imperfecto" },
+        { es: "Ya he pagado la cuenta.", de: "Gerade erledigt → Perfekt" },
+        { es: "Mañana voy a hacer una caminata.", de: "Pläne → ir a + Infinitiv" },
+        { es: "¿Podría ayudarme?", de: "Höflich bitten → Condicional" },
+      ],
+      note: "Unsicher? Gegenwart oder „voy a + Infinitiv“ verstehen dich fast überall – die feineren Zeiten kommen mit der Zeit.",
+    },
+    // Häufige Anfängerfehler – reisetypisch
+    pitfalls: {
+      title: "Häufige Stolperfallen",
+      intro: "Diese Fehler macht fast jeder am Anfang – so umgehst du sie:",
+      rows: [
+        { wrong: "Estoy yendo mañana.", right: "Voy a ir mañana.", de: "estar + Gerundio ist nur jetzt, nie für morgen." },
+        { wrong: "Soy en el hostal.", right: "Estoy en el hostal.", de: "Ort & Befinden immer mit estar, nicht ser." },
+        { wrong: "Han dos camas.", right: "Hay dos camas.", de: "„es gibt“ ist immer hay – egal wie viele." },
+        { wrong: "He veído el mapa.", right: "He visto el mapa.", de: "ver hat ein unregelmäßiges Partizip: visto." },
+        { wrong: "Ayer he llegado.", right: "Ayer llegué.", de: "Mit „ayer“ nimmt LatAm das Indefinido, nicht das Perfekt." },
+      ],
+      note: "Der letzte Punkt ist regional: In Spanien ginge „he llegado“ auch – in Lateinamerika klingt mit ayer das indefinido (llegué) natürlicher.",
+    },
+    signals: [
+      { es: "ayer · anoche", de: "gestern · gestern Nacht → Vergangenheit" },
+      { es: "hoy · ahora", de: "heute · jetzt → Gegenwart" },
+      { es: "ya · todavía no", de: "schon · noch nicht → oft Perfekt" },
+      { es: "antes · de niño", de: "früher · als Kind → Imperfekt" },
+      { es: "mañana · luego", de: "morgen · später → Zukunft" },
+    ],
+    signalsNote: "Solche Signalwörter verraten dir die Zeit, noch bevor du das Verb verstehst – ein guter Anker beim Zuhören.",
+    example: {
+      title: "Dieselbe Reise in drei Zeiten",
+      lines: [
+        { es: "Ayer llegué a Cusco y tomé un taxi al hostal.", de: "Gestern kam ich in Cusco an und nahm ein Taxi zum Hostel. (Vergangenheit)" },
+        { es: "Hoy estoy cansado, pero ya he comido algo.", de: "Heute bin ich müde, aber ich habe schon etwas gegessen. (Gegenwart + Perfekt)" },
+        { es: "Mañana voy a subir a Machu Picchu y después tomaré el bus de vuelta.", de: "Morgen werde ich auf Machu Picchu steigen und danach den Rückbus nehmen. (Zukunft)" },
+      ],
+      note: "Eine Reise, drei Zeiten: llegué/tomé (gestern), estoy/he comido (heute), voy a subir/tomaré (morgen). Achte auf die Signalwörter ayer, hoy, mañana.",
+    },
+    // Zwei weitere Reisedialoge: einer rückblickend (Vergangenheit), einer
+    // vorausplanend (Zukunft) – zeigen die Zeiten im echten Gespräch.
+    dialogs: [
+      {
+        title: "Smalltalk: „¿Cómo te fue?“ (Rückblick)",
+        lines: [
+          { es: "¿Cómo te fue en Bolivia?", de: "Wie ist es dir in Bolivien ergangen?" },
+          { es: "¡Genial! Subí al salar de Uyuni. Hacía frío, pero el paisaje era increíble.", de: "Super! Ich war auf dem Salar de Uyuni. Es war kalt, aber die Landschaft war unglaublich." },
+          { es: "¿Cuánto tiempo estuviste?", de: "Wie lange warst du da?" },
+          { es: "Estuve cuatro días y conocí a mucha gente.", de: "Ich war vier Tage da und habe viele Leute kennengelernt." },
+        ],
+        note: "Ereignisse im Indefinido (subí, estuve, conocí), die Stimmung drumherum im Imperfecto (hacía, era).",
+      },
+      {
+        title: "Pläne: „¿Qué vas a hacer?“ (Vorausblick)",
+        lines: [
+          { es: "¿Qué vas a hacer mañana?", de: "Was wirst du morgen machen?" },
+          { es: "Voy a hacer una caminata y luego tomaré el bus a Cusco.", de: "Ich mache eine Wanderung und nehme dann den Bus nach Cusco." },
+          { es: "¿A qué hora sale?", de: "Wann fährt er ab?" },
+          { es: "Sale a las seis. ¿Vienes conmigo?", de: "Er fährt um sechs. Kommst du mit?" },
+        ],
+        note: "„voy a + Infinitiv“ und das Futur (tomaré) mischen sich frei; der Fahrplan steht in der Gegenwart (sale).",
+      },
+    ],
+  };
+
   // ===================== EL CUERPO (interaktive Körperkarte) =====================
   // Anatomie zum Antippen: eine stilisierte Figur, auf der jeder Punkt ein Körperteil
   // markiert. x/y sind PROZENT-Koordinaten (0–100) im Bezugsrahmen der SVG-Figur
@@ -3955,7 +4386,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   ];
 
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, BODY_PARTS };
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS };
 })();
 
 </script>
@@ -7999,6 +8430,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { category: "ropa",    icon: "👕", name: "Style auf Ruta",      description: "Meistere 80 % der Kleidungsschmuck-Karten." },
     { category: "rumbo",   icon: "🧭", name: "Wegfinder",           description: "Meistere 80 % der Wegbeschreibung-Karten." },
     { category: "verbos",  icon: "🔁", name: "Verbo-Virtuose",      description: "Meistere 80 % der Konjugieren-Karten." },
+    { category: "tiempos", icon: "⏳", name: "Maestro del Tiempo",  description: "Meistere 80 % der Zeiten-Karten." },
   ].map((b) => Object.assign({
     id: "cat_" + b.category,
     group: "category",
@@ -8886,6 +9318,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.8.0",
+      date: "2026-06-12",
+      title: "Zeiten: neuer Bereich + große Erklärseite",
+      items: [
+        "Neuer Lernbereich „⏳ Zeiten“ mit 66 Karten: echte Reisesätze in Vergangenheit, Gegenwart und Zukunft (Llegué ayer, Ya he comido, Voy a tomar el bus, Llegaré mañana …), dazu die Verlaufsform (Estoy comiendo), Imperativ-Bitten (Dígame, Tráigame la cuenta), „es gibt“ (¿Hay wifi?) und höfliche Bitten (Querría, ¿Podría?).",
+        "Neu unter Entdecken: „Tiempos“ erklärt ausführlich und durchweg reisebezogen, wie die spanischen Zeitformen funktionieren – ein Verb (tomar) wandert durch alle Zeiten; jede Zeitform mit Bildungs-Rezept, Signalwörtern und mehreren Reise-Beispielen. Dazu die Verlaufsform (estar + Gerundio), der Vergleich Indefinido vs. Imperfecto, die häufigsten unregelmäßigen Vergangenheiten und Partizipien, der Imperativ, „hay/había/habrá“, eine Situations-Zuordnung, häufige Stolperfallen und drei Reisedialoge. Von dort geht es mit „Jetzt üben“ direkt in die Karten.",
+        "LatAm-tauglich: Fokus auf indefinido fürs Erzählen und „ir a + Infinitiv“ als einfacher Zukunfts-Trick.",
+        "Neuer Ruta-Pass-Stempel „Maestro del Tiempo“ für 80 % gemeisterte Zeiten-Karten.",
+      ],
+    },
+    {
       version: "1.7.0",
       date: "2026-06-12",
       title: "Frases flexibles: Themen & viel mehr Sätze",
@@ -9059,6 +9502,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
   ];
 
@@ -10773,6 +11217,196 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </section>`;
   }
 
+  // ---------- TIEMPOS (Erklärseite Zeiten) ----------
+  // Ausführliche, reisebezogene Zeitformen-Erklärung (Inhalte aus data.TENSES):
+  // Zeitstrahl, die wichtigsten Zeitformen als aufklappbare Karten (mit Bildungs-
+  // Rezept, Signalwörtern und mehreren Beispielen), Verlaufsform, Indefinido-vs-
+  // Imperfecto, unregelmäßige Vergangenheit & Partizipien, Imperativ, „hay“,
+  // Situations-Zuordnung, Stolperfallen, Signalwörter und drei Reisedialoge.
+  // Unten ein CTA in die Übungskarten – über die normale open-category-Aktion.
+  function renderTiempos(vm) {
+    const g = vm.guide;
+
+    // Eine Zeit-Tabelle: Person links (gemeinsame tableLabels), Form rechts –
+    // dieselbe Datenform wie bei der Konjugation.
+    const table = (forms) => `
+      <ul class="cj-table">
+        ${forms.map((f, i) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(g.tableLabels[i])}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
+      </ul>`;
+
+    // Zeitstrahl: ein Verb (ich-Form) in drei Zeiten – als kompakte Wortliste.
+    const t = g.timeline;
+    const timelineRows = t.rows
+      .map((r) => `
+        <li class="cinfo-word">
+          <span class="cinfo-word__de">${esc(r.when)}</span>
+          <span class="cinfo-word__es" lang="es">${esc(r.es)}</span>
+          <span class="cinfo-word__de">${esc(r.de)}</span>
+        </li>`)
+      .join("");
+    const timeline = `
+      <p class="cinfo-text cj-note">${esc(t.verb)}</p>
+      <ul class="cinfo-words">${timelineRows}</ul>
+      <p class="cinfo-text cj-note">${esc(t.note)}</p>`;
+
+    // Kleiner Helfer: Beispiel-/Dialogzeilen (spanisch + deutsch) als Blöcke.
+    const lines = (arr) => arr
+      .map((l) => `
+        <div class="context-panel__line">
+          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
+          <p class="context-panel__de">${esc(l.de)}</p>
+        </div>`)
+      .join("");
+
+    // Die einzelnen Zeitformen als aufklappbare Karten (wie die unregelmäßigen
+    // Verben): Kopf = Zeitname + Kurzbeschreibung, aufgeklappt die Formen-
+    // Tabelle, das Bildungs-Rezept, Signalwörter, ein „Wann?“-Hinweis und
+    // mehrere Reise-Beispielsätze.
+    const tenseBlocks = g.tenses
+      .map((te) => `
+        <details class="cinfo-dish">
+          <summary class="cinfo-dish__head">
+            <span class="cinfo-dish__heart">
+              <span class="cinfo-dish__name" lang="es">${esc(te.name)}</span>
+              <span class="cinfo-dish__desc">${esc(te.nameDe)}</span>
+            </span>
+            <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="cinfo-dish__body">
+            ${table(te.forms)}
+            <p class="cj-verb__like"><strong>So baust du es:</strong> ${esc(te.recipe)}</p>
+            <p class="cj-verb__like"><strong>Signalwörter:</strong> <span lang="es">${esc(te.signals)}</span></p>
+            <p class="cj-verb__like"><strong>Wann?</strong> ${esc(te.when)}</p>
+            ${lines(te.examples)}
+          </div>
+        </details>`)
+      .join("");
+
+    // Kleiner Helfer: Wortpaar-Liste (spanisch fett links, deutsch rechts) –
+    // für Gerundien, Partizipien, Imperativ-, hay- und Signalwort-Listen.
+    const pairList = (rows, esKey, deKey) => `
+      <ul class="cinfo-words">
+        ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
+      </ul>`;
+
+    // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiele.
+    const c = g.continuous;
+    const continuous = `
+      <p class="cinfo-text">${esc(c.intro)}</p>
+      ${table(c.forms)}
+      ${pairList(c.gerunds.map((x) => ({ es: x.inf + " → " + x.ger, de: x.de })), "es", "de")}
+      ${lines(c.examples)}
+      <p class="cinfo-text cj-note">${esc(c.note)}</p>`;
+
+    // Indefinido vs. Imperfecto: zwei Spalten-Blöcke mit Stichpunkten + ein
+    // kombinierter Beispielsatz (Ereignis vor Hintergrund).
+    const iv = g.indefVsImperf;
+    const ivCol = (col) => `
+      <div class="cj-verb">
+        <h4 class="cj-verb__h">${esc(col.label)}</h4>
+        <ul class="cinfo-words">${col.points.map((p) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(p)}</span></li>`).join("")}</ul>
+      </div>`;
+    const indefVsImperf = `
+      <p class="cinfo-text">${esc(iv.intro)}</p>
+      <div class="cj-verbs">${ivCol(iv.indef)}${ivCol(iv.imperf)}</div>
+      ${lines([iv.combined])}
+      <p class="cinfo-text cj-note">${esc(iv.note)}</p>`;
+
+    // Reise-Situationen: Beispiel-Satz links, Zuordnung zur Zeitform rechts.
+    const sc = g.scenarios;
+    const scenarios = `
+      <p class="cinfo-text">${esc(sc.intro)}</p>
+      ${pairList(sc.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(sc.note)}</p>`;
+
+    // Stolperfallen: falsch (durchgestrichen) → richtig, plus Erklärung.
+    const pf = g.pitfalls;
+    const pitfallRows = pf.rows
+      .map((r) => `
+        <li class="cinfo-word cj-pitfall">
+          <span class="cj-pitfall__pair"><span class="cj-pitfall__wrong" lang="es">${esc(r.wrong)}</span> <span class="cj-pitfall__arrow" aria-hidden="true">→</span> <span class="cj-pitfall__right" lang="es">${esc(r.right)}</span></span>
+          <span class="cinfo-word__de">${esc(r.de)}</span>
+        </li>`)
+      .join("");
+    const pitfalls = `
+      <p class="cinfo-text">${esc(pf.intro)}</p>
+      <ul class="cinfo-words">${pitfallRows}</ul>
+      <p class="cinfo-text cj-note">${esc(pf.note)}</p>`;
+
+    // Pretéritos fuertes: je Verb ein kleiner Block mit Überschrift + Tabelle.
+    const sp = g.strongPast;
+    const strongPastBlocks = sp.verbs
+      .map((v) => `
+        <div class="cj-verb">
+          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.verbDe)}</span></h4>
+          ${table(v.forms)}
+        </div>`)
+      .join("");
+    const strongPast = `
+      <p class="cinfo-text">${esc(sp.intro)}</p>
+      <div class="cj-verbs">${strongPastBlocks}</div>
+      <p class="cinfo-text cj-note">${esc(sp.note)}</p>`;
+
+    // Unregelmäßige Partizipien: Infinitiv → Partizip, deutsche Bedeutung.
+    const pp = g.participles;
+    const participles = `
+      <p class="cinfo-text">${esc(pp.intro)}</p>
+      ${pairList(pp.rows.map((x) => ({ es: x.inf + " → " + x.part, de: x.de })), "es", "de")}
+      <p class="cinfo-text cj-note">${esc(pp.note)}</p>`;
+
+    // Imperativo & hay: schlichte Wortpaar-Listen mit Hinweis.
+    const im = g.imperative;
+    const imperative = `
+      <p class="cinfo-text">${esc(im.intro)}</p>
+      ${pairList(im.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(im.note)}</p>`;
+
+    const hy = g.hay;
+    const hayBlock = `
+      <p class="cinfo-text">${esc(hy.intro)}</p>
+      ${pairList(hy.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(hy.note)}</p>`;
+
+    const signalRows = g.signals
+      .map((s) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(s.es)}</span><span class="cinfo-word__de">${esc(s.de)}</span></li>`)
+      .join("");
+
+    // Reisedialoge: der Drei-Zeiten-Dialog plus die beiden themed Dialoge
+    // (Rückblick & Pläne) – jeder mit Titel, Zeilen und Mini-Hinweis.
+    const allDialogs = [g.example].concat(g.dialogs || []);
+    const dialogsHtml = allDialogs
+      .map((d) => `
+        <div class="cj-dialog">
+          <h4 class="cj-verb__h" lang="es">${esc(d.title)}</h4>
+          ${lines(d.lines)}
+          <p class="cinfo-text cj-note">${esc(d.note)}</p>
+        </div>`)
+      .join("");
+
+    return `
+      <section class="screen">
+        ${hmTopbar("⏳ Tiempos", "home")}
+        <p class="hm-intro">${esc(g.intro)}</p>
+
+        ${sect("↔️", t.title, timeline)}
+        ${sect("🕰️", "Die wichtigsten Zeitformen", `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
+        ${sect("⏯️", c.title, continuous)}
+        ${sect("⚖️", iv.title, indefVsImperf)}
+        ${sect("💪", sp.title, strongPast)}
+        ${sect("🧩", pp.title, participles)}
+        ${sect("🗣️", im.title, imperative)}
+        ${sect("📦", hy.title, hayBlock)}
+        ${sect("🧳", sc.title, scenarios)}
+        ${sect("⚠️", pf.title, pitfalls)}
+        ${sect("🔑", "Signalwörter: woran du die Zeit erkennst", `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
+        ${sect("🧭", "Reisedialoge: die Zeiten im Gespräch", dialogsHtml)}
+
+        <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
+          Jetzt üben: Zeiten <span class="cta__count">${vm.cardCount} Karten</span>
+        </button>
+      </section>`;
+  }
+
   function renderCuerpo(vm) {
     const nodes = vm.parts
       .map((p) => {
@@ -10843,7 +11477,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderSpickzettel,
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone };
 })();
 
@@ -10877,7 +11511,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -11653,6 +12287,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // ----- Tiempos: Erklärseite Zeiten -----
+  // Statische Zeitformen-Erklärung (Inhalte: data.TENSES). Wie bei Conjugación
+  // springt der "Jetzt üben"-Button per normaler open-category-Aktion in die
+  // Übungskarten der Kategorie "tiempos".
+  function tiemposVM() {
+    return {
+      guide: data.TENSES,
+      cardCount: data.CARDS.filter((c) => c.cat === "tiempos").length,
+    };
+  }
+
+  function openTiempos() {
+    dismissBadgeToast();
+    state.screen = "tiempos";
+    render();
+  }
+
   // ----- Frases flexibles (Satzbaukasten): Steuerung -----
   // Virtuelle "Gemischt"-Id: spielt alle Rahmen quer durch alle Themen.
   const FRASES_ALL = "all";
@@ -11963,6 +12614,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
     else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
+    else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
     else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
@@ -12967,6 +13619,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
     else if (action === "open-conjugacion") openConjugacion();
+    else if (action === "open-tiempos") openTiempos();
     else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
     else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
