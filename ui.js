@@ -361,6 +361,14 @@
       </div>`;
   }
 
+  // Interaktives Farbfeld: zeigt die echte Farbe einer Farben-Karte. Erscheint nur,
+  // wenn die Karte ein swatch trägt (sonst leerer String). Der dünne Rahmen hält auch
+  // Weiß/Beige sichtbar; der Farbwert kommt aus reinen Daten (data.js), nie aus Logik.
+  function colorSwatch(swatch) {
+    if (!swatch) return "";
+    return `<div class="swatch" aria-hidden="true" style="--sw:${esc(swatch)}"></div>`;
+  }
+
   // Sprechen-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
   // 🔊 und Aussprache-Tipp sitzen immer auf der spanischen Seite.
   function flipBody(vm) {
@@ -384,6 +392,7 @@
             ${contextIconBtn(vm.context, true, vm.contextOpen)}
             ${sq ? "" : speakBtn(true)}
             <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
+            ${colorSwatch(vm.swatch)}
             ${sq ? "" : tip}
           </div>
         </div>
@@ -430,6 +439,7 @@
         ${contextIconBtn(vm.context, false, vm.contextOpen)}
         ${sq ? "" : speakBtn(false)}
         <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
+        ${colorSwatch(vm.swatch)}
         ${sq ? "" : tip}
         ${verdict}
       </div>
@@ -773,6 +783,7 @@
         <div class="cardx">
           <div class="cardx__de">${esc(vm.de)}</div>
           <div class="cardx__es" lang="es">${esc(vm.es)}</div>
+          ${colorSwatch(vm.swatch)}
           ${tip}
           <div class="cardx__tags">${firstTryBadge}</div>
           ${contextBlock(vm.context, vm.contextOpen)}

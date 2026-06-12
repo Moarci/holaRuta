@@ -205,6 +205,7 @@
       typeResult: state.typeResult,
       context: card.context || null,
       contextOpen: state.contextOpen,
+      swatch: card.swatch || null,
     };
   }
 
@@ -228,6 +229,7 @@
       catIcon: cat ? cat.icon : "📚",
       accent: cat ? cat.grad : DEFAULT_ACCENT,
       level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
+      swatch: card.swatch || null,
       s,
     };
   }

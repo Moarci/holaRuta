@@ -3,13 +3,15 @@
  *
  * Kategorie: { id, label, icon, grad:[from,to] }  – grad = Farbverlauf der Kachel
  * Stufe:     { id, label, short, color }           – Schwierigkeitsstufe (1–3)
- * Karte:     { id, cat, lvl, de, es, tip?, alt?, context? }
+ * Karte:     { id, cat, lvl, de, es, tip?, alt?, swatch?, context? }
  *   cat = Kategorie-id
  *   lvl = Schwierigkeitsstufe: 1 = Einsteiger, 2 = Mittel, 3 = Fortgeschritten
  *   de  = Frage (Deutsch bzw. Ziffer)
  *   es  = Antwort (Anzeige). Mehrere gültige Antworten mit " / " trennen.
  *   tip = Aussprache-/Merkhinweis (optional)
  *   alt = explizite Liste akzeptierter Tipp-Antworten (optional, überschreibt es-Split)
+ *   swatch = CSS-Farbwert (optional, nur Farben-Karten): zeigt die echte Farbe als
+ *            interaktives Farbfeld auf der Antwortseite. REINE DATEN, keine Logik.
  *   context = Reise-Kontext (optional): { sentenceEs, sentenceDe, situation, note }
  *             Wird NICHT hier gepflegt, sondern von context.js zur Laufzeit angehängt
  *             (Inhalte aus contextdata.js; Zahlen werden generiert). So bleibt data.js
@@ -42,6 +44,7 @@
     { id: "reise",   label: "Busreise",   icon: "🚐", grad: ["#B5503F", "#CE6855"] },
     { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
     { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
+    { id: "colores", label: "Farben",     icon: "🎨", grad: ["#7048E8", "#15AABF"] },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -680,6 +683,33 @@
     { id: "dir63", cat: "rumbo", lvl: 2, de: "Wo gibt es ein Bekleidungsgeschäft?", es: "¿Dónde hay una tienda de ropa?", tip: "DON-de ai U-na TIEN-da de RO-pa" },
     { id: "dir64", cat: "rumbo", lvl: 3, de: "Kann man zu Fuß gehen?", es: "¿Se puede ir caminando?", tip: "se PUE-de ir ka-mi-NAN-do" },
     { id: "dir65", cat: "rumbo", lvl: 3, de: "Wie lange dauert es zu Fuß?", es: "¿Cuánto se tarda a pie?", tip: "KUAN-to se TAR-da a pie" },
+
+    // ===================== FARBEN (mit echtem Farbfeld) =====================
+    // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
+    { id: "col01", cat: "colores", lvl: 1, de: "Rot",        es: "rojo",            tip: "RO-cho",        swatch: "#E03131" },
+    { id: "col02", cat: "colores", lvl: 1, de: "Blau",       es: "azul",            tip: "a-SUL",         swatch: "#1C7ED6" },
+    { id: "col03", cat: "colores", lvl: 1, de: "Grün",       es: "verde",           tip: "WER-de",        swatch: "#2F9E44" },
+    { id: "col04", cat: "colores", lvl: 1, de: "Gelb",       es: "amarillo",        tip: "a-ma-RI-yo",    swatch: "#F2C200" },
+    { id: "col05", cat: "colores", lvl: 1, de: "Orange",     es: "naranja",         tip: "na-RAN-cha",    swatch: "#E8590C" },
+    { id: "col06", cat: "colores", lvl: 1, de: "Schwarz",    es: "negro",           tip: "NE-gro",        swatch: "#1A1A1A" },
+    { id: "col07", cat: "colores", lvl: 1, de: "Weiß",       es: "blanco",          tip: "BLAN-ko",       swatch: "#FFFFFF" },
+    { id: "col08", cat: "colores", lvl: 1, de: "Grau",       es: "gris",            tip: "gris",          swatch: "#868E96" },
+    { id: "col09", cat: "colores", lvl: 1, de: "Rosa",       es: "rosado / rosa",   tip: "ro-SA-do",      swatch: "#F06595", alt: ["rosado", "rosa"] },
+    { id: "col10", cat: "colores", lvl: 1, de: "Braun",      es: "café / marrón",   tip: "ka-FE — in LatAm meist „café“", swatch: "#8A5A2B", alt: ["cafe", "marrón", "marron"] },
+    { id: "col11", cat: "colores", lvl: 1, de: "die Farbe",  es: "el color",        tip: "el ko-LOR" },
+    { id: "col12", cat: "colores", lvl: 1, de: "hell / dunkel", es: "claro / oscuro", tip: "KLA-ro / os-KU-ro", alt: ["claro", "oscuro"] },
+    { id: "col13", cat: "colores", lvl: 2, de: "Lila / Violett", es: "morado",      tip: "mo-RA-do",      swatch: "#7048E8" },
+    { id: "col14", cat: "colores", lvl: 2, de: "Himmelblau / Hellblau", es: "celeste", tip: "se-LES-te",  swatch: "#4DABF7" },
+    { id: "col15", cat: "colores", lvl: 2, de: "Violett",    es: "violeta",         tip: "wio-LE-ta",     swatch: "#9C36B5" },
+    { id: "col16", cat: "colores", lvl: 2, de: "Türkis",     es: "turquesa",        tip: "tur-KE-sa",     swatch: "#15AABF" },
+    { id: "col17", cat: "colores", lvl: 2, de: "Beige",      es: "beige",           tip: "BEISH",         swatch: "#D6C7A1" },
+    { id: "col18", cat: "colores", lvl: 2, de: "Golden",     es: "dorado",          tip: "do-RA-do",      swatch: "#C99A2E" },
+    { id: "col19", cat: "colores", lvl: 2, de: "Silbern",    es: "plateado",        tip: "pla-te-A-do",   swatch: "#ADB5BD" },
+    { id: "col20", cat: "colores", lvl: 2, de: "Weinrot",    es: "vino / bordó",    tip: "BOR-do",        swatch: "#842029", alt: ["vino", "bordó", "bordo"] },
+    { id: "col21", cat: "colores", lvl: 2, de: "Hellblau (wörtlich)", es: "azul claro", tip: "a-SUL KLA-ro = hell", swatch: "#A5D8FF" },
+    { id: "col22", cat: "colores", lvl: 2, de: "Dunkelgrün", es: "verde oscuro",    tip: "WER-de os-KU-ro = dunkel", swatch: "#1B5E20" },
+    { id: "col23", cat: "colores", lvl: 2, de: "Welche Farbe ist das?", es: "¿De qué color es?", tip: "de ke ko-LOR es" },
+    { id: "col24", cat: "colores", lvl: 2, de: "Meine Lieblingsfarbe ist ...", es: "Mi color favorito es ...", tip: "mi ko-LOR fa-wo-RI-to", alt: ["mi color favorito es"] },
   ];
 
   /*

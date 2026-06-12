@@ -560,6 +560,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .face__tip { margin-top: 14px; font-size: 1.05rem; font-style: italic; color: rgba(251, 243, 228, 0.88); }
 .face__hint { position: absolute; bottom: 16px; font-size: 0.82rem; color: var(--faint); }
 
+/* Interaktives Farbfeld der Farben-Karten: zeigt die echte Farbe (--sw). Der helle
+   Ring hält auch Weiß/Beige sichtbar; der Soft-Shadow lässt das Feld „schweben". */
+.swatch {
+  width: 84px; height: 84px; margin: 16px auto 2px; border-radius: var(--r-md, 14px);
+  background: var(--sw, #888);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.55), 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+.face--back .swatch { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7), 0 8px 22px rgba(0, 0, 0, 0.32); }
+.cardx .swatch { box-shadow: 0 0 0 2px var(--line, rgba(0,0,0,0.15)), 0 6px 16px rgba(0, 0, 0, 0.18); }
+
 /* Runde Eck-Buttons auf der Antwortkarte: 🔊 (rechts) & 🧭 (links) teilen eine Basis. */
 .cardbtn {
   position: absolute; bottom: 16px; z-index: 2;

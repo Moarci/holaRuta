@@ -598,6 +598,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .face__tip { margin-top: 14px; font-size: 1.05rem; font-style: italic; color: rgba(251, 243, 228, 0.88); }
 .face__hint { position: absolute; bottom: 16px; font-size: 0.82rem; color: var(--faint); }
 
+/* Interaktives Farbfeld der Farben-Karten: zeigt die echte Farbe (--sw). Der helle
+   Ring hält auch Weiß/Beige sichtbar; der Soft-Shadow lässt das Feld „schweben". */
+.swatch {
+  width: 84px; height: 84px; margin: 16px auto 2px; border-radius: var(--r-md, 14px);
+  background: var(--sw, #888);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.55), 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+.face--back .swatch { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7), 0 8px 22px rgba(0, 0, 0, 0.32); }
+.cardx .swatch { box-shadow: 0 0 0 2px var(--line, rgba(0,0,0,0.15)), 0 6px 16px rgba(0, 0, 0, 0.18); }
+
 /* Runde Eck-Buttons auf der Antwortkarte: 🔊 (rechts) & 🧭 (links) teilen eine Basis. */
 .cardbtn {
   position: absolute; bottom: 16px; z-index: 2;
@@ -1972,6 +1982,32 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dir63: { e: "¿Dónde hay una tienda de ropa por aquí?", d: "Wo gibt es hier in der Nähe ein Bekleidungsgeschäft?", s: "Auf der Suche nach einem bestimmten Laden.", n: "'¿Dónde hay…?' fragt allgemein nach 'wo gibt es…?'." },
     dir64: { e: "¿Se puede ir caminando o mejor tomo un taxi?", d: "Kann man zu Fuß gehen oder nehme ich besser ein Taxi?", s: "Um den Aufwand abzuschätzen.", n: "ir caminando / a pie = zu Fuß gehen." },
     dir65: { e: "¿Cuánto se tarda a pie hasta el centro?", d: "Wie lange dauert es zu Fuß bis ins Zentrum?", s: "Die Gehzeit erfragen.", n: "'a pie' = zu Fuß; 'tardar' = (Zeit) brauchen." },
+
+    // ===================== FARBEN =====================
+    col01: { e: "¿Tiene esta camiseta en rojo?", d: "Haben Sie dieses T-Shirt in Rot?", s: "Beim Klamotten-Kauf am Markt oder im Laden.", n: "Farbe steht meist nach dem Nomen: una mochila roja, una bici roja." },
+    col02: { e: "Me gusta más la azul.", d: "Die blaue gefällt mir besser.", s: "Wenn du zwischen mehreren Varianten wählst.", n: "Die Farbe passt sich an: el azul / la azul je nach Gegenstand." },
+    col03: { e: "¿El semáforo ya está en verde?", d: "Ist die Ampel schon grün?", s: "An der Straße, bevor du losgehst.", n: "verde bleibt gleich für männlich/weiblich: un carro verde, una puerta verde." },
+    col04: { e: "El taxi amarillo es el oficial.", d: "Das gelbe Taxi ist das offizielle.", s: "Beim Taxi-Suchen in vielen Städten.", n: "amarillo/-a passt sich an: una flor amarilla." },
+    col05: { e: "Quiero el jugo de naranja, el de color naranja.", d: "Ich möchte den Orangensaft, den orangefarbenen.", s: "Beim Bestellen, wenn die Farbe hilft zu zeigen.", n: "naranja als Farbe bleibt oft unverändert: dos camisetas naranja." },
+    col06: { e: "Mi mochila es la negra, la grande.", d: "Mein Rucksack ist der schwarze, der große.", s: "Am Gepäckband oder im Sammeltaxi dein Gepäck beschreiben.", n: "negro/-a passt sich an: una maleta negra." },
+    col07: { e: "Busco una casa blanca con puerta azul.", d: "Ich suche ein weißes Haus mit blauer Tür.", s: "Beim Suchen einer Unterkunft nach Beschreibung.", n: "blanco/-a passt sich an: una pared blanca." },
+    col08: { e: "El edificio gris, a la derecha.", d: "Das graue Gebäude, rechts.", s: "Wegbeschreibung an Merkmalen festmachen.", n: "gris bleibt gleich für beide Geschlechter: una nube gris." },
+    col09: { e: "La casa rosada de la esquina es el hostal.", d: "Das rosa Haus an der Ecke ist das Hostel.", s: "Eine Adresse über die Hausfarbe finden.", n: "In LatAm sehr oft rosado/-a; rosa bleibt meist unverändert." },
+    col10: { e: "¿Lo tiene en café en vez de negro?", d: "Haben Sie es in Braun statt Schwarz?", s: "Beim Schuh- oder Taschenkauf nach der Farbe fragen.", n: "In LatAm sagt man meist café für Braun, seltener marrón." },
+    col11: { e: "¿De qué color es tu mochila? Es café.", d: "Welche Farbe hat dein Rucksack? Er ist braun.", s: "Wenn du Gepäck oder einen Gegenstand beschreibst.", n: "el color = die Farbe; ¿De qué color? = welche Farbe?" },
+    col12: { e: "¿Lo quiere claro u oscuro?", d: "Möchten Sie es hell oder dunkel?", s: "Bei Kaffee, Bier oder beim Aussuchen einer Farbnuance.", n: "claro = hell, oscuro = dunkel – auch für café claro / café oscuro." },
+    col13: { e: "La línea morada del metro va al centro.", d: "Die lila Metro-Linie fährt ins Zentrum.", s: "Beim Orientieren im Nahverkehr nach Linienfarben.", n: "In LatAm meist morado für Lila/Violett, in Spanien eher violeta." },
+    col14: { e: "El agua aquí es de un celeste increíble.", d: "Das Wasser ist hier von einem unglaublichen Himmelblau.", s: "Beim Schwärmen über Strände, Lagunen oder Flüsse.", n: "celeste = himmelblau/hellblau; sehr verbreitet in ganz LatAm." },
+    col15: { e: "El uniforme es violeta, no azul.", d: "Die Uniform ist violett, nicht blau.", s: "Wenn du etwas genauer von einer Farbe abgrenzt.", n: "violeta bleibt meist unverändert: dos camisas violeta." },
+    col16: { e: "Las aguas termales tienen un color turquesa.", d: "Die heißen Quellen haben eine türkise Farbe.", s: "Beim Beschreiben von Natur, Pools oder Schmuck.", n: "turquesa bleibt unverändert: un mar turquesa, una piedra turquesa." },
+    col17: { e: "Los pantalones beige van con todo.", d: "Die beigen Hosen passen zu allem.", s: "Beim Klamotten-Kauf oder Outfit-Tipp.", n: "beige bleibt unverändert; sprich es etwa „BEISCH“." },
+    col18: { e: "¿Tiene aretes dorados?", d: "Haben Sie goldene Ohrringe?", s: "Beim Schmuck- oder Souvenir-Kauf am Markt.", n: "dorado/-a = golden; plateado/-a = silbern." },
+    col19: { e: "Prefiero el reloj plateado.", d: "Ich bevorzuge die silberne Uhr.", s: "Bei der Auswahl von Schmuck, Uhren oder Deko.", n: "plateado/-a passt sich an: una cadena plateada." },
+    col20: { e: "El atardecer se pone color vino.", d: "Der Sonnenuntergang wird weinrot.", s: "Beim Beschreiben einer dunkelroten Farbe.", n: "vino oder bordó für Weinrot; tinto meint speziell den Rotwein selbst." },
+    col21: { e: "Quiero unos jeans azul claro.", d: "Ich möchte eine hellblaue Jeans.", s: "Beim Kleiderkauf, wenn du den Farbton genau angibst.", n: "Nuance über claro/oscuro: azul claro = hellblau, azul oscuro = dunkelblau." },
+    col22: { e: "La selva se ve verde oscuro desde el mirador.", d: "Der Dschungel sieht vom Aussichtspunkt dunkelgrün aus.", s: "Beim Beschreiben von Landschaft oder Farbnuancen.", n: "verde oscuro = dunkelgrün, verde claro = hellgrün." },
+    col23: { e: "¿De qué color es el bus para Salento?", d: "Welche Farbe hat der Bus nach Salento?", s: "Am Busterminal das richtige Fahrzeug finden.", n: "Busse sind oft nach Farbe oder Linie unterscheidbar – praktische Rückfrage." },
+    col24: { e: "Mi color favorito es el verde, como la selva.", d: "Meine Lieblingsfarbe ist Grün, wie der Dschungel.", s: "Beim Smalltalk im Hostel oder mit Locals.", n: "Mi color favorito es ... – ein lockerer Einstieg für ein Gespräch." },
   };
 
   window.SC = window.SC || {};
@@ -1985,13 +2021,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  *
  * Kategorie: { id, label, icon, grad:[from,to] }  – grad = Farbverlauf der Kachel
  * Stufe:     { id, label, short, color }           – Schwierigkeitsstufe (1–3)
- * Karte:     { id, cat, lvl, de, es, tip?, alt?, context? }
+ * Karte:     { id, cat, lvl, de, es, tip?, alt?, swatch?, context? }
  *   cat = Kategorie-id
  *   lvl = Schwierigkeitsstufe: 1 = Einsteiger, 2 = Mittel, 3 = Fortgeschritten
  *   de  = Frage (Deutsch bzw. Ziffer)
  *   es  = Antwort (Anzeige). Mehrere gültige Antworten mit " / " trennen.
  *   tip = Aussprache-/Merkhinweis (optional)
  *   alt = explizite Liste akzeptierter Tipp-Antworten (optional, überschreibt es-Split)
+ *   swatch = CSS-Farbwert (optional, nur Farben-Karten): zeigt die echte Farbe als
+ *            interaktives Farbfeld auf der Antwortseite. REINE DATEN, keine Logik.
  *   context = Reise-Kontext (optional): { sentenceEs, sentenceDe, situation, note }
  *             Wird NICHT hier gepflegt, sondern von context.js zur Laufzeit angehängt
  *             (Inhalte aus contextdata.js; Zahlen werden generiert). So bleibt data.js
@@ -2024,6 +2062,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "reise",   label: "Busreise",   icon: "🚐", grad: ["#B5503F", "#CE6855"] },
     { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
     { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
+    { id: "colores", label: "Farben",     icon: "🎨", grad: ["#7048E8", "#15AABF"] },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -2662,6 +2701,33 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "dir63", cat: "rumbo", lvl: 2, de: "Wo gibt es ein Bekleidungsgeschäft?", es: "¿Dónde hay una tienda de ropa?", tip: "DON-de ai U-na TIEN-da de RO-pa" },
     { id: "dir64", cat: "rumbo", lvl: 3, de: "Kann man zu Fuß gehen?", es: "¿Se puede ir caminando?", tip: "se PUE-de ir ka-mi-NAN-do" },
     { id: "dir65", cat: "rumbo", lvl: 3, de: "Wie lange dauert es zu Fuß?", es: "¿Cuánto se tarda a pie?", tip: "KUAN-to se TAR-da a pie" },
+
+    // ===================== FARBEN (mit echtem Farbfeld) =====================
+    // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
+    { id: "col01", cat: "colores", lvl: 1, de: "Rot",        es: "rojo",            tip: "RO-cho",        swatch: "#E03131" },
+    { id: "col02", cat: "colores", lvl: 1, de: "Blau",       es: "azul",            tip: "a-SUL",         swatch: "#1C7ED6" },
+    { id: "col03", cat: "colores", lvl: 1, de: "Grün",       es: "verde",           tip: "WER-de",        swatch: "#2F9E44" },
+    { id: "col04", cat: "colores", lvl: 1, de: "Gelb",       es: "amarillo",        tip: "a-ma-RI-yo",    swatch: "#F2C200" },
+    { id: "col05", cat: "colores", lvl: 1, de: "Orange",     es: "naranja",         tip: "na-RAN-cha",    swatch: "#E8590C" },
+    { id: "col06", cat: "colores", lvl: 1, de: "Schwarz",    es: "negro",           tip: "NE-gro",        swatch: "#1A1A1A" },
+    { id: "col07", cat: "colores", lvl: 1, de: "Weiß",       es: "blanco",          tip: "BLAN-ko",       swatch: "#FFFFFF" },
+    { id: "col08", cat: "colores", lvl: 1, de: "Grau",       es: "gris",            tip: "gris",          swatch: "#868E96" },
+    { id: "col09", cat: "colores", lvl: 1, de: "Rosa",       es: "rosado / rosa",   tip: "ro-SA-do",      swatch: "#F06595", alt: ["rosado", "rosa"] },
+    { id: "col10", cat: "colores", lvl: 1, de: "Braun",      es: "café / marrón",   tip: "ka-FE — in LatAm meist „café“", swatch: "#8A5A2B", alt: ["cafe", "marrón", "marron"] },
+    { id: "col11", cat: "colores", lvl: 1, de: "die Farbe",  es: "el color",        tip: "el ko-LOR" },
+    { id: "col12", cat: "colores", lvl: 1, de: "hell / dunkel", es: "claro / oscuro", tip: "KLA-ro / os-KU-ro", alt: ["claro", "oscuro"] },
+    { id: "col13", cat: "colores", lvl: 2, de: "Lila / Violett", es: "morado",      tip: "mo-RA-do",      swatch: "#7048E8" },
+    { id: "col14", cat: "colores", lvl: 2, de: "Himmelblau / Hellblau", es: "celeste", tip: "se-LES-te",  swatch: "#4DABF7" },
+    { id: "col15", cat: "colores", lvl: 2, de: "Violett",    es: "violeta",         tip: "wio-LE-ta",     swatch: "#9C36B5" },
+    { id: "col16", cat: "colores", lvl: 2, de: "Türkis",     es: "turquesa",        tip: "tur-KE-sa",     swatch: "#15AABF" },
+    { id: "col17", cat: "colores", lvl: 2, de: "Beige",      es: "beige",           tip: "BEISH",         swatch: "#D6C7A1" },
+    { id: "col18", cat: "colores", lvl: 2, de: "Golden",     es: "dorado",          tip: "do-RA-do",      swatch: "#C99A2E" },
+    { id: "col19", cat: "colores", lvl: 2, de: "Silbern",    es: "plateado",        tip: "pla-te-A-do",   swatch: "#ADB5BD" },
+    { id: "col20", cat: "colores", lvl: 2, de: "Weinrot",    es: "vino / bordó",    tip: "BOR-do",        swatch: "#842029", alt: ["vino", "bordó", "bordo"] },
+    { id: "col21", cat: "colores", lvl: 2, de: "Hellblau (wörtlich)", es: "azul claro", tip: "a-SUL KLA-ro = hell", swatch: "#A5D8FF" },
+    { id: "col22", cat: "colores", lvl: 2, de: "Dunkelgrün", es: "verde oscuro",    tip: "WER-de os-KU-ro = dunkel", swatch: "#1B5E20" },
+    { id: "col23", cat: "colores", lvl: 2, de: "Welche Farbe ist das?", es: "¿De qué color es?", tip: "de ke ko-LOR es" },
+    { id: "col24", cat: "colores", lvl: 2, de: "Meine Lieblingsfarbe ist ...", es: "Mi color favorito es ...", tip: "mi ko-LOR fa-wo-RI-to", alt: ["mi color favorito es"] },
   ];
 
   /*
@@ -8159,6 +8225,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`;
   }
 
+  // Interaktives Farbfeld: zeigt die echte Farbe einer Farben-Karte. Erscheint nur,
+  // wenn die Karte ein swatch trägt (sonst leerer String). Der dünne Rahmen hält auch
+  // Weiß/Beige sichtbar; der Farbwert kommt aus reinen Daten (data.js), nie aus Logik.
+  function colorSwatch(swatch) {
+    if (!swatch) return "";
+    return `<div class="swatch" aria-hidden="true" style="--sw:${esc(swatch)}"></div>`;
+  }
+
   // Sprechen-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
   // 🔊 und Aussprache-Tipp sitzen immer auf der spanischen Seite.
   function flipBody(vm) {
@@ -8182,6 +8256,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             ${contextIconBtn(vm.context, true, vm.contextOpen)}
             ${sq ? "" : speakBtn(true)}
             <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
+            ${colorSwatch(vm.swatch)}
             ${sq ? "" : tip}
           </div>
         </div>
@@ -8228,6 +8303,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${contextIconBtn(vm.context, false, vm.contextOpen)}
         ${sq ? "" : speakBtn(false)}
         <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
+        ${colorSwatch(vm.swatch)}
         ${sq ? "" : tip}
         ${verdict}
       </div>
@@ -8571,6 +8647,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="cardx">
           <div class="cardx__de">${esc(vm.de)}</div>
           <div class="cardx__es" lang="es">${esc(vm.es)}</div>
+          ${colorSwatch(vm.swatch)}
           ${tip}
           <div class="cardx__tags">${firstTryBadge}</div>
           ${contextBlock(vm.context, vm.contextOpen)}
@@ -9395,6 +9472,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       typeResult: state.typeResult,
       context: card.context || null,
       contextOpen: state.contextOpen,
+      swatch: card.swatch || null,
     };
   }
 
@@ -9418,6 +9496,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       catIcon: cat ? cat.icon : "📚",
       accent: cat ? cat.grad : DEFAULT_ACCENT,
       level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
+      swatch: card.swatch || null,
       s,
     };
   }

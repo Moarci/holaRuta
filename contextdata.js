@@ -518,6 +518,32 @@
     dir63: { e: "¿Dónde hay una tienda de ropa por aquí?", d: "Wo gibt es hier in der Nähe ein Bekleidungsgeschäft?", s: "Auf der Suche nach einem bestimmten Laden.", n: "'¿Dónde hay…?' fragt allgemein nach 'wo gibt es…?'." },
     dir64: { e: "¿Se puede ir caminando o mejor tomo un taxi?", d: "Kann man zu Fuß gehen oder nehme ich besser ein Taxi?", s: "Um den Aufwand abzuschätzen.", n: "ir caminando / a pie = zu Fuß gehen." },
     dir65: { e: "¿Cuánto se tarda a pie hasta el centro?", d: "Wie lange dauert es zu Fuß bis ins Zentrum?", s: "Die Gehzeit erfragen.", n: "'a pie' = zu Fuß; 'tardar' = (Zeit) brauchen." },
+
+    // ===================== FARBEN =====================
+    col01: { e: "¿Tiene esta camiseta en rojo?", d: "Haben Sie dieses T-Shirt in Rot?", s: "Beim Klamotten-Kauf am Markt oder im Laden.", n: "Farbe steht meist nach dem Nomen: una mochila roja, una bici roja." },
+    col02: { e: "Me gusta más la azul.", d: "Die blaue gefällt mir besser.", s: "Wenn du zwischen mehreren Varianten wählst.", n: "Die Farbe passt sich an: el azul / la azul je nach Gegenstand." },
+    col03: { e: "¿El semáforo ya está en verde?", d: "Ist die Ampel schon grün?", s: "An der Straße, bevor du losgehst.", n: "verde bleibt gleich für männlich/weiblich: un carro verde, una puerta verde." },
+    col04: { e: "El taxi amarillo es el oficial.", d: "Das gelbe Taxi ist das offizielle.", s: "Beim Taxi-Suchen in vielen Städten.", n: "amarillo/-a passt sich an: una flor amarilla." },
+    col05: { e: "Quiero el jugo de naranja, el de color naranja.", d: "Ich möchte den Orangensaft, den orangefarbenen.", s: "Beim Bestellen, wenn die Farbe hilft zu zeigen.", n: "naranja als Farbe bleibt oft unverändert: dos camisetas naranja." },
+    col06: { e: "Mi mochila es la negra, la grande.", d: "Mein Rucksack ist der schwarze, der große.", s: "Am Gepäckband oder im Sammeltaxi dein Gepäck beschreiben.", n: "negro/-a passt sich an: una maleta negra." },
+    col07: { e: "Busco una casa blanca con puerta azul.", d: "Ich suche ein weißes Haus mit blauer Tür.", s: "Beim Suchen einer Unterkunft nach Beschreibung.", n: "blanco/-a passt sich an: una pared blanca." },
+    col08: { e: "El edificio gris, a la derecha.", d: "Das graue Gebäude, rechts.", s: "Wegbeschreibung an Merkmalen festmachen.", n: "gris bleibt gleich für beide Geschlechter: una nube gris." },
+    col09: { e: "La casa rosada de la esquina es el hostal.", d: "Das rosa Haus an der Ecke ist das Hostel.", s: "Eine Adresse über die Hausfarbe finden.", n: "In LatAm sehr oft rosado/-a; rosa bleibt meist unverändert." },
+    col10: { e: "¿Lo tiene en café en vez de negro?", d: "Haben Sie es in Braun statt Schwarz?", s: "Beim Schuh- oder Taschenkauf nach der Farbe fragen.", n: "In LatAm sagt man meist café für Braun, seltener marrón." },
+    col11: { e: "¿De qué color es tu mochila? Es café.", d: "Welche Farbe hat dein Rucksack? Er ist braun.", s: "Wenn du Gepäck oder einen Gegenstand beschreibst.", n: "el color = die Farbe; ¿De qué color? = welche Farbe?" },
+    col12: { e: "¿Lo quiere claro u oscuro?", d: "Möchten Sie es hell oder dunkel?", s: "Bei Kaffee, Bier oder beim Aussuchen einer Farbnuance.", n: "claro = hell, oscuro = dunkel – auch für café claro / café oscuro." },
+    col13: { e: "La línea morada del metro va al centro.", d: "Die lila Metro-Linie fährt ins Zentrum.", s: "Beim Orientieren im Nahverkehr nach Linienfarben.", n: "In LatAm meist morado für Lila/Violett, in Spanien eher violeta." },
+    col14: { e: "El agua aquí es de un celeste increíble.", d: "Das Wasser ist hier von einem unglaublichen Himmelblau.", s: "Beim Schwärmen über Strände, Lagunen oder Flüsse.", n: "celeste = himmelblau/hellblau; sehr verbreitet in ganz LatAm." },
+    col15: { e: "El uniforme es violeta, no azul.", d: "Die Uniform ist violett, nicht blau.", s: "Wenn du etwas genauer von einer Farbe abgrenzt.", n: "violeta bleibt meist unverändert: dos camisas violeta." },
+    col16: { e: "Las aguas termales tienen un color turquesa.", d: "Die heißen Quellen haben eine türkise Farbe.", s: "Beim Beschreiben von Natur, Pools oder Schmuck.", n: "turquesa bleibt unverändert: un mar turquesa, una piedra turquesa." },
+    col17: { e: "Los pantalones beige van con todo.", d: "Die beigen Hosen passen zu allem.", s: "Beim Klamotten-Kauf oder Outfit-Tipp.", n: "beige bleibt unverändert; sprich es etwa „BEISCH“." },
+    col18: { e: "¿Tiene aretes dorados?", d: "Haben Sie goldene Ohrringe?", s: "Beim Schmuck- oder Souvenir-Kauf am Markt.", n: "dorado/-a = golden; plateado/-a = silbern." },
+    col19: { e: "Prefiero el reloj plateado.", d: "Ich bevorzuge die silberne Uhr.", s: "Bei der Auswahl von Schmuck, Uhren oder Deko.", n: "plateado/-a passt sich an: una cadena plateada." },
+    col20: { e: "El atardecer se pone color vino.", d: "Der Sonnenuntergang wird weinrot.", s: "Beim Beschreiben einer dunkelroten Farbe.", n: "vino oder bordó für Weinrot; tinto meint speziell den Rotwein selbst." },
+    col21: { e: "Quiero unos jeans azul claro.", d: "Ich möchte eine hellblaue Jeans.", s: "Beim Kleiderkauf, wenn du den Farbton genau angibst.", n: "Nuance über claro/oscuro: azul claro = hellblau, azul oscuro = dunkelblau." },
+    col22: { e: "La selva se ve verde oscuro desde el mirador.", d: "Der Dschungel sieht vom Aussichtspunkt dunkelgrün aus.", s: "Beim Beschreiben von Landschaft oder Farbnuancen.", n: "verde oscuro = dunkelgrün, verde claro = hellgrün." },
+    col23: { e: "¿De qué color es el bus para Salento?", d: "Welche Farbe hat der Bus nach Salento?", s: "Am Busterminal das richtige Fahrzeug finden.", n: "Busse sind oft nach Farbe oder Linie unterscheidbar – praktische Rückfrage." },
+    col24: { e: "Mi color favorito es el verde, como la selva.", d: "Meine Lieblingsfarbe ist Grün, wie der Dschungel.", s: "Beim Smalltalk im Hostel oder mit Locals.", n: "Mi color favorito es ... – ein lockerer Einstieg für ein Gespräch." },
   };
 
   window.SC = window.SC || {};
