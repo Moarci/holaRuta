@@ -1573,26 +1573,29 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Streckenkarte (Statistik): Lernfortschritt als Bus-Strecke. */
 .route {
   background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg);
-  padding: 16px 18px 20px; box-shadow: var(--shadow); margin-top: 12px;
+  padding: 16px 18px 18px; box-shadow: var(--shadow);
 }
-.route__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 22px; }
+.route__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 26px; }
 .route__cap { font-family: var(--font-display); font-weight: 800; font-size: 1rem; color: var(--ink); }
 .route__pct { font-size: 0.82rem; font-weight: 800; color: var(--ok); font-variant-numeric: tabular-nums; }
-.route__track { position: relative; height: 4px; border-radius: 999px; background: rgba(45, 27, 18, 0.12); margin: 0 14px; }
+.route__track { position: relative; height: 4px; border-radius: 999px; background: rgba(45, 27, 18, 0.12); margin: 0 9px; }
 .route__fill { position: absolute; inset: 0 auto 0 0; height: 100%; border-radius: 999px; background: var(--ok); }
-.route__bus { position: absolute; top: -13px; transform: translateX(-50%); font-size: 1.2rem; transition: left 0.4s ease; }
-.route__stops { position: absolute; inset: 0; display: flex; justify-content: space-between; }
-.route__stop { position: relative; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%); }
-.route__stop:first-child { transform: translateX(0); }
-.route__stop:last-child { transform: translateX(0); margin-left: auto; }
-.route__dot {
-  display: flex; align-items: center; justify-content: center; width: 34px; height: 34px;
-  margin-top: -15px; border-radius: 50%; background: var(--card); border: 2px solid var(--line-strong);
-  font-size: 1rem;
+.route__bus { position: absolute; top: -23px; transform: translateX(-50%); font-size: 1.2rem; transition: left 0.4s ease; }
+/* Haltestellen-Punkte auf der Linie */
+.route__node {
+  position: absolute; top: 50%; width: 11px; height: 11px;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background: var(--card); border: 2px solid var(--line-strong);
 }
-.route__stop.is-learn .route__dot { border-color: var(--warn); }
-.route__stop.is-master .route__dot { border-color: var(--ok); }
-.route__n { margin-top: 4px; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+.route__node.is-learn { border-color: var(--warn); }
+.route__node.is-master { border-color: var(--ok); }
+/* Beschriftung im normalen Fluss unter der Linie – kollidiert nie. */
+.route__stops { display: flex; justify-content: space-between; gap: 8px; margin-top: 16px; }
+.route__stop { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.route__stop.is-new { align-items: flex-start; text-align: left; }
+.route__stop.is-learn { align-items: center; text-align: center; }
+.route__stop.is-master { align-items: flex-end; text-align: right; }
+.route__n { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); font-variant-numeric: tabular-nums; }
 .route__lbl { font-size: 0.7rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .route__bus { transition: none; } }
 
@@ -9088,15 +9091,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function routeMap(ov) {
     const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
     const stops = [
-      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new" },
-      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn" },
-      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master" },
+      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new",    at: 0 },
+      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn",  at: 50 },
+      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master", at: 100 },
     ];
+    // Haltestellen-Punkte sitzen auf der Linie, Beschriftung läuft im
+    // normalen Fluss darunter – so überlappt nichts (auch bei 0 %).
+    const nodesHtml = stops
+      .map((s) => `<span class="route__node ${s.cls}" style="left:${s.at}%" aria-hidden="true"></span>`)
+      .join("");
     const stopsHtml = stops.map((s) => `
       <div class="route__stop ${s.cls}">
-        <span class="route__dot" aria-hidden="true">${s.icon}</span>
         <span class="route__n">${s.n}</span>
-        <span class="route__lbl">${esc(s.label)}</span>
+        <span class="route__lbl">${s.icon} ${esc(s.label)}</span>
       </div>`).join("");
     return `
       <div class="route" role="img" aria-label="Lern-Strecke: ${ov.neu} neu, ${ov.learning} am Lernen, ${ov.mastered} gemeistert (${pct} %)">
@@ -9106,9 +9113,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
         <div class="route__track">
           <div class="route__fill" style="width:${pct}%"></div>
+          ${nodesHtml}
           <span class="route__bus" style="left:${pct}%" aria-hidden="true">🚌</span>
-          <div class="route__stops">${stopsHtml}</div>
         </div>
+        <div class="route__stops">${stopsHtml}</div>
       </div>`;
   }
 

@@ -762,15 +762,19 @@
   function routeMap(ov) {
     const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
     const stops = [
-      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new" },
-      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn" },
-      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master" },
+      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new",    at: 0 },
+      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn",  at: 50 },
+      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master", at: 100 },
     ];
+    // Haltestellen-Punkte sitzen auf der Linie, Beschriftung läuft im
+    // normalen Fluss darunter – so überlappt nichts (auch bei 0 %).
+    const nodesHtml = stops
+      .map((s) => `<span class="route__node ${s.cls}" style="left:${s.at}%" aria-hidden="true"></span>`)
+      .join("");
     const stopsHtml = stops.map((s) => `
       <div class="route__stop ${s.cls}">
-        <span class="route__dot" aria-hidden="true">${s.icon}</span>
         <span class="route__n">${s.n}</span>
-        <span class="route__lbl">${esc(s.label)}</span>
+        <span class="route__lbl">${s.icon} ${esc(s.label)}</span>
       </div>`).join("");
     return `
       <div class="route" role="img" aria-label="Lern-Strecke: ${ov.neu} neu, ${ov.learning} am Lernen, ${ov.mastered} gemeistert (${pct} %)">
@@ -780,9 +784,10 @@
         </div>
         <div class="route__track">
           <div class="route__fill" style="width:${pct}%"></div>
+          ${nodesHtml}
           <span class="route__bus" style="left:${pct}%" aria-hidden="true">🚌</span>
-          <div class="route__stops">${stopsHtml}</div>
         </div>
+        <div class="route__stops">${stopsHtml}</div>
       </div>`;
   }
 
