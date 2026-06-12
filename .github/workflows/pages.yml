@@ -22,6 +22,12 @@ permissions:
   pages: write
   id-token: write
 
+# Die gepinnten checkout-/setup-node-Actions laufen noch auf der Node-20-Runtime,
+# die GitHub ab dem 16.06.2026 abkündigt. Bis neue Action-Versionen gepinnt werden,
+# zwingen wir sie schon jetzt auf Node 24 (offiziell empfohlener Übergangsweg).
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 # Gleichzeitige Deployments serialisieren; laufende nicht abbrechen.
 concurrency:
   group: pages
