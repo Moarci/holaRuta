@@ -23,10 +23,12 @@
   }
 
   // Spricht den Text. Bricht eine eventuell laufende Ausgabe vorher ab.
+  // cancel() nur bei Bedarf: ein bedingungsloses cancel() direkt vor speak()
+  // verschluckt auf iOS gelegentlich die erste Utterance.
   function speak(text) {
     if (!synth || !text) return;
     try {
-      synth.cancel();
+      if (synth.speaking || synth.pending) synth.cancel();
       const u = new SpeechSynthesisUtterance(String(text));
       const voice = pickVoice();
       if (voice) {

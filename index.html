@@ -10,7 +10,7 @@
   <!-- Als App installierbar + offline (PWA) -->
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
 
   <!-- Auf dem iPhone-Homescreen wie eine native App -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -18,11 +18,8 @@
   <meta name="apple-mobile-web-app-title" content="HolaRuta" />
   <meta name="mobile-web-app-capable" content="yes" />
 
-  <!-- Schriften: Bricolage Grotesque (Display) + Instrument Sans (Text). Offline
-       greift automatisch der System-Fallback aus der CSS. -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <!-- Schriften: Bricolage Grotesque (Display) + Instrument Sans (Text) – self-hosted
+       unter fonts/ (per @font-face in styles.css, DSGVO-sauber und offline verfügbar). -->
 
   <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
        Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe. -->
