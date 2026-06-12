@@ -51,7 +51,7 @@ Diese statisch gemeldeten Findings wurden durch direkte Browser-Tests als **Fals
 
 ### H1 · A11y: Kein `prefers-reduced-motion` *(verifiziert: keine Regel im CSS)*
 `styles.css` hat keinen `@media (prefers-reduced-motion)`-Block. Der 0,55 s-3D-Flip (`styles.css:314`) und die `fade`-Animation
-bei **jedem** Screen-Wechsel (`styles.css:101`) laufen immer — problematisch für vestibулäre Empfindlichkeit.
+bei **jedem** Screen-Wechsel (`styles.css:101`) laufen immer — problematisch für vestibuläre Empfindlichkeit.
 **Fix:** Reduced-Motion-Block am CSS-Ende, Flip auf sofortigen State-Swap reduzieren.
 
 ### H2 · A11y: Fokus geht bei jedem Render verloren *(verifiziert: `activeElement === BODY` nach Navigation)*

@@ -216,7 +216,7 @@ SpanischCard/
 | **Event-Delegation** | Ein einziger Listener auf `#app`; Buttons tragen `data-action`. Keine Listener-Leaks beim Re-Render. |
 | **Single Source of Truth** | Ein `state`-Objekt im Controller; jede Aktion → `render()`. |
 
-> **Randbedingung GitHub Pages:** Alle Pages-Projekte eines GitHub-Accounts laufen unter derselben Origin (`https://<user>.github.io`) und teilen sich damit `localStorage` und Speicher-Quota. Jedes andere dort gehostete Projekt kann HolaRutas gespeicherte Daten lesen oder überschreiben, und der gemeinsame Speicherplatz zählt auf dasselbe Quota ein. Die `spanischcard.*`-Schlüsselpräfixe vermeiden versehentliche Kollisionen, ersetzen aber keine echte Isolation.
+> **Randbedingung GitHub Pages:** Alle Pages-Projekte eines GitHub-Accounts laufen unter derselben Origin (`https://<user>.github.io`) und teilen sich damit `localStorage` und Speicher-Quota. Jedes andere dort gehostete Projekt kann HolaRutas gespeicherte Daten lesen oder überschreiben, und der gemeinsame Speicherplatz zahlt auf dasselbe Quota ein. Die `spanischcard.*`-Schlüsselpräfixe vermeiden versehentliche Kollisionen, ersetzen aber keine echte Isolation.
 
 ---
 
@@ -373,7 +373,7 @@ progress + gamestats  →  buildMetrics()  →  metrics  →  evaluate()  →  S
 
 **Gruppen:** Lernreise (Lernmenge), Dranbleiben (Streak), Bereiche (je Kategorie ein Stempel — inkl. **Hostel** & **Social**), **Reise-Kontext** (geöffnete 🧭-Kontexte: *Erster Aha-Moment* → *Kontext-Kompass* → *Real-Life Ready*), **Hostel Mode** (Battle & Rollenspiele), **Definiciones** (abgeschlossene & fehlerfreie Zuordnen-Quizze), **Mutproben** (Real-Life Challenges) und Spezial (inkl. **Geheim-Stempel**, die erst nach Freischaltung sichtbar werden).
 
-Der **Hostel Mode** zahlt direkt auf den Pass ein: ein beendetes Battle schaltet *First Duel* frei, ein klarer Sieg *Dorm Champion*, eine fehlerfreie Partie *Perfect Check-in*, ein Sieg nach Rückstand *Comeback Kid*; gespielte Rollenspiele füllen *First Scene* und *Scene Collector*. Hakst du die **Real-Life Challenge** nach einem Battle als „geschafft“ ab, zählt das auf *Mutiger erster Satz* und *Comfort Zone Exit*. Gezählt wird in denselben `gamestats` (battlesPlayed/-Won/perfect/comebacks, distinkte Rollenspiele & Challenges).
+Der **Hostel Mode** zahlt direkt auf den Pass ein: ein beendetes Battle schaltet *First Duel* frei, ein klarer Sieg *Dorm Champion*, eine fehlerfreie Partie *Perfect Check-in*, ein Sieg nach Rückstand *Comeback Kid*; gespielte Rollenspiele füllen *First Scene* und *Scene Collector*. Hakst du die **Real-Life Challenge** nach einem Battle als „geschafft“ ab, zahlt das auf *Mutiger erster Satz* und *Comfort Zone Exit* ein. Gezählt wird in denselben `gamestats` (battlesPlayed/-Won/perfect/comebacks, distinkte Rollenspiele & Challenges).
 
 - **Tracking:** Beim Bewerten bucht der Controller einen kleinen Satz Spiel-Zähler in `gamestats` (Gesamt-Bewertungen, Lern-Serie/Streak, Tageszeit-Marken, „Nochmal“-Drücke) und schaltet erfüllte Badges frei.
 - **Freischaltung bleibt erhalten:** Einmal vergeben, bleibt ein Stempel im Pass — auch wenn sich abgeleitete Werte später ändern. Eine kurze Glückwunsch-Einblendung zeigt frische Stempel.
