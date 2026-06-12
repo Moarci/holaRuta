@@ -343,7 +343,7 @@
     f18: { e: "¿Dónde hay un cajero?", d: "Wo gibt es einen Geldautomaten?", s: "Bei der Suche.", n: "¿Dónde hay ...? = Wo gibt es ...?" },
     f19: { e: "Estoy buscando la estación de bus.", d: "Ich suche den Busbahnhof.", s: "Bei der Orientierung.", n: "buscar = suchen." },
     f20: { e: "¿Qué es esto? Se ve rico.", d: "Was ist das? Sieht lecker aus.", s: "Am Marktstand oder bei unbekanntem Gericht.", n: "Neugier kommt gut an – oft bekommst du etwas zum Probieren." },
-    f21: { e: "¿Cómo se llama esto en español?", d: "Wie nennt man das?", s: "Beim Vokabeln lernen.", n: "Tolle Frage, um Wörter von Locals zu lernen." },
+    f21: { e: "¿Cómo se llama esto en español?", d: "Wie nennt man das auf Spanisch?", s: "Beim Vokabeln lernen.", n: "Tolle Frage, um Wörter von Locals zu lernen." },
     f22: { e: "Un momento, por favor.", d: "Einen Moment, bitte.", s: "Wenn du kurz Zeit brauchst.", n: "Auch Ya voy = ich komme gleich." },
     f23: { e: "¿Me permite? Con permiso.", d: "Darf ich mal vorbei?", s: "Beim Durchkommen.", n: "Con permiso ist die Standardformel zum Durchgehen." },
     f24: { e: "Disculpe, una pregunta.", d: "Entschuldigung, eine Frage.", s: "Bevor du jemanden etwas fragst.", n: "Höflicher Einstieg, der fast immer gut ankommt." },

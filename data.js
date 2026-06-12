@@ -42,7 +42,7 @@
     { id: "frases",  label: "Sätze",      icon: "🙋", grad: ["#A85A6E", "#C2748A"] },
     { id: "grenze",  label: "Behörden",   icon: "🛂", grad: ["#566B8A", "#6E86A3"] },
     { id: "reise",   label: "Busreise",   icon: "🚐", grad: ["#B5503F", "#CE6855"] },
-    { id: "ropa",    label: "Kleidungsschmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
+    { id: "ropa",    label: "Kleidung & Schmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
     { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
     { id: "verbos",  label: "Konjugieren", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
     { id: "tiempos", label: "Zeiten",     icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
@@ -947,7 +947,7 @@
     { id: "hb17", mode: "battle", cat: "social", scene: "plan", promptDe: "Schlag vor, zusammen zu gehen.", answerEs: "¿Vamos juntos?", acceptable: ["vamos juntos", "vamos juntas", "podemos ir juntos"], points: 2, level: 1, hint: "juntos = zusammen" },
     { id: "hb18", mode: "battle", cat: "social", scene: "plan", promptDe: "Bitte, dir auf WhatsApp zu schreiben.", answerEs: "Escríbeme por WhatsApp.", acceptable: ["escribeme por whatsapp", "mandame un mensaje por whatsapp", "pasame tu whatsapp"], points: 2, level: 3, hint: "escríbeme = schreib mir" },
     { id: "hb37", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, ob die Person mit zum Wasserfall kommt.", answerEs: "¿Vienes a la cascada?", acceptable: ["vienes a la cascada", "quieres venir a la cascada", "vamos a la cascada"], points: 2, level: 2, hint: "cascada = Wasserfall" },
-    { id: "hb38", mode: "battle", cat: "social", scene: "plan", promptDe: "Schlag vor, euch um acht zu treffen.", answerEs: "¿Nos vemos a las ocho?", acceptable: ["nos vemos a las ocho", "quedamos a las ocho", "vemonos a las ocho"], points: 2, level: 2, hint: "nos vemos = wir sehen uns" },
+    { id: "hb38", mode: "battle", cat: "social", scene: "plan", promptDe: "Schlag vor, euch um acht zu treffen.", answerEs: "¿Nos vemos a las ocho?", acceptable: ["nos vemos a las ocho", "quedamos a las ocho", "veamonos a las ocho"], points: 2, level: 2, hint: "nos vemos = wir sehen uns" },
 
     // ----- Essen & Trinken -----
     { id: "hb19", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag nach der Speisekarte.", answerEs: "¿Me trae la carta?", acceptable: ["me trae la carta", "la carta por favor", "me da el menu", "me trae el menu"], points: 2, level: 1, hint: "carta / menú" },
@@ -961,7 +961,7 @@
     { id: "hb23", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wo die nächste Bushaltestelle ist.", answerEs: "¿Dónde está la parada de bus?", acceptable: ["donde esta la parada de bus", "donde esta la parada del bus", "donde queda la parada"], points: 2, level: 2, hint: "parada = Haltestelle" },
     { id: "hb24", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Schlag vor, ein Taxi zu teilen.", answerEs: "¿Compartimos un taxi?", acceptable: ["compartimos un taxi", "vamos juntos en taxi", "tomamos un taxi juntos"], points: 2, level: 3, hint: "compartir = teilen" },
     { id: "hb25", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wie man zum Zentrum kommt.", answerEs: "¿Cómo llego al centro?", acceptable: ["como llego al centro", "como se va al centro", "como llegar al centro"], points: 2, level: 2, hint: "¿Cómo llego...?" },
-    { id: "hb26", mode: "battle", cat: "social", scene: "out", promptDe: "Frag eine Empfehlung, wohin man abends gehen kann.", answerEs: "¿Qué me recomiendas para la noche?", acceptable: ["que me recomiendas para la noche", "adonde puedo ir en la noche", "que hay para hacer en la noche"], points: 2, level: 3, hint: "para la noche = für abends" },
+    { id: "hb26", mode: "battle", cat: "social", scene: "out", promptDe: "Frag nach einer Empfehlung, wohin man abends gehen kann.", answerEs: "¿Qué me recomiendas para la noche?", acceptable: ["que me recomiendas para la noche", "adonde puedo ir en la noche", "que hay para hacer en la noche"], points: 2, level: 3, hint: "para la noche = für abends" },
     { id: "hb41", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, ob es zu Fuß weit ist.", answerEs: "¿Está lejos a pie?", acceptable: ["esta lejos a pie", "queda lejos caminando", "se puede ir caminando"], points: 2, level: 2, hint: "a pie = zu Fuß" },
     { id: "hb42", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wann der letzte Bus zurückfährt.", answerEs: "¿A qué hora sale el último bus?", acceptable: ["a que hora sale el ultimo bus", "cuando sale el ultimo bus", "hasta que hora hay bus"], points: 2, level: 3, hint: "último = letzter" },
 
@@ -1521,7 +1521,7 @@
         { speaker: "A", de: "Ehrlich gesagt hätte ich nicht gedacht, dass es so beeindruckend ist.", es: "La verdad, no pensaba que fuera tan impresionante." },
         { speaker: "B", de: "Falls du wenig Zeit hast, konzentrier dich lieber auf eine Region.", es: "En caso de que tengas poco tiempo, mejor concéntrate en una sola región." },
         { speaker: "A", de: "Das ergibt Sinn. Ich neige dazu, zu viel auf einmal zu wollen.", es: "Tiene sentido. Tiendo a querer abarcar demasiado." },
-        { speaker: "B", de: "Das passiert allen. Es ist besser, wenn du in Ruhe reist.", es: "Le pasa a todos. Es mejor que viajes con calma." },
+        { speaker: "B", de: "Das passiert allen. Es ist besser, wenn du in Ruhe reist.", es: "Les pasa a todos. Es mejor que viajes con calma." },
         { speaker: "A", de: "Hättest du eine günstige Unterkunft, die du empfehlen könntest?", es: "¿Tendrías algún alojamiento económico que pudieras recomendar?" },
         { speaker: "B", de: "Ich schick dir den Kontakt eines Hostels, das mir sehr gefallen hat.", es: "Te paso el contacto de un hostal que me gustó mucho." },
         { speaker: "A", de: "Das wäre super, das würde mir viel Zeit sparen.", es: "Eso sería genial, me ahorraría mucho tiempo." },
@@ -1557,7 +1557,7 @@
       roles: { a: "Reisender", b: "Mitreisender" },
       situationDe: "Nach einer gemeinsamen Reise wollt ihr die Ausgaben fair aufteilen und über das Budget sprechen.",
       goalA: "Sprich an, wie ihr die gemeinsamen Kosten aufteilt, und klär offene Beträge.",
-      goalB: "Geh auf die Vorschläge ein, mach Gegenvorschläge und einig dich fair.",
+      goalB: "Geh auf die Vorschläge ein, mach Gegenvorschläge und einige dich fair.",
       dialogue: [
         { speaker: "A", de: "Sollen wir die Ausgaben der Woche durchgehen, bevor jeder seinen Weg geht?", es: "¿Repasamos los gastos de la semana antes de que cada uno siga su camino?" },
         { speaker: "B", de: "Gute Idee. Ich fürchte, ich habe vergessen, einiges aufzuschreiben.", es: "Buena idea. Me temo que olvidé anotar algunas cosas." },

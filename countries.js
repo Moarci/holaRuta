@@ -174,7 +174,7 @@
       "flag": "🇬🇹",
       "region": "Mittelamerika",
       "capital": "Guatemala-Stadt",
-      "tagline": "Vulkane, Maya-Kultur und der türkise Atitlán-See",
+      "tagline": "Vulkane, Maya-Kultur und der türkisfarbene Atitlán-See",
       "about": "Guatemala ist das Herz der Maya-Welt mit über 30 Vulkanen, dichtem Regenwald und dem kolonialen Juwel Antigua. Backpacker lieben den Atitlán-See, die Ruinen von Tikal und die Vulkanwanderung zum aktiven Acatenango. Das Hochland ist kühl, die Küsten tropisch-heiß.",
       "history": "Guatemala war Zentrum der klassischen Maya-Zivilisation, deren größte Stadt Tikal war. 1524 eroberte Pedro de Alvarado die Region für Spanien. 1821 wurde das Land unabhängig, später folgte ein brutaler Bürgerkrieg (1960–1996). Die indigene Maya-Bevölkerung macht bis heute einen großen Teil der Gesellschaft aus.",
       "language": "Das guatemaltekische Spanisch wird langsam und deutlich gesprochen, ideal für Lernende. Voseo ist verbreitet – statt 'tú' hört man oft 'vos'. Daneben werden über 20 Maya-Sprachen wie K'iche', Kaqchikel und Mam gesprochen. Viele Indigene sprechen Spanisch als Zweitsprache.",
@@ -399,7 +399,7 @@
         },
         {
           "name": "Yuca con chicharrón",
-          "desc": "Gekochte Maniok mit knusprigem Schweinefleisch.",
+          "desc": "Gekochter Maniok mit knusprigem Schweinefleisch.",
           "long": "Gekochte oder frittierte Yuca, serviert mit knusprigem Schweinefleisch und eingelegtem Krautsalat. Die Kombination ist herzhaft, knusprig und säuerlich-frisch. Ein populäres Gericht von Straßenständen.",
           "ingredients": "Yuca, knuspriges Schweinefleisch (chicharrón), eingelegter Krautsalat (curtido), Limette",
           "origin": "Ein traditionelles Gericht Mittelamerikas, das die Stärkeknolle Yuca mit frittiertem Schwein verbindet.",
@@ -511,7 +511,7 @@
         },
         {
           "name": "Yuca frita",
-          "desc": "Frittierte Maniok mit Schweinefleisch und Salat.",
+          "desc": "Frittierter Maniok mit Schweinefleisch und Salat.",
           "long": "Frittierte Yuca-Stücke, außen knusprig und innen weich, oft mit Schweinefleisch oder Fisch und Krautsalat serviert. Herzhaft und sättigend. Ein klassisches Straßengericht.",
           "ingredients": "Yuca, Öl zum Frittieren, Schweinefleisch oder Fisch, Krautsalat (curtido), Salsa",
           "origin": "Ein traditionelles Gericht El Salvadors auf Basis der für die Region wichtigen Yuca-Knolle.",
@@ -1629,7 +1629,7 @@
           "name": "Arepa",
           "desc": "Gefüllter Maisfladen, das venezolanische Grundnahrungsmittel schlechthin.",
           "long": "In Venezuela ist die Arepa ein dicker Maisfladen, der aufgeschnitten und großzügig gefüllt wird, fast wie ein Sandwich. Die zahlreichen Füllvarianten haben eigene Namen, etwa die Reina Pepiada mit Avocado und Hähnchen.",
-          "ingredients": "Maismehl (Harina P.A.N.), Wasser, Salz, Füllungen wie Käse, Schwarze Bohnen, Avocado, Hähnchen",
+          "ingredients": "Maismehl (Harina P.A.N.), Wasser, Salz, Füllungen wie Käse, schwarze Bohnen, Avocado, Hähnchen",
           "origin": "Eine vorkolumbianische Maisspeise, die in Venezuela als tägliches Grundnahrungsmittel und nationales Symbol gilt.",
           "occasions": "Wird zum Frühstück, Abendessen oder als gefüllte Hauptmahlzeit gegessen.",
           "order": "Una arepa reina pepiada, por favor.",
@@ -1905,7 +1905,7 @@
         },
         {
           "es": "al toque",
-          "de": "sofort, ruck zuck"
+          "de": "sofort, ruckzuck"
         }
       ],
       "food": [
@@ -1931,7 +1931,7 @@
         },
         {
           "name": "Ají de gallina",
-          "desc": "Cremiges Hühnerragout mit gelber Chili (Ají amarillo).",
+          "desc": "Cremiges Hühnerragout mit gelbem Chili (Ají amarillo).",
           "long": "Ein cremiges Gericht aus zerzupftem Hähnchen in einer würzigen, leicht scharfen gelben Sauce auf Basis von Ají amarillo. Es wird mit Reis, Kartoffeln, Oliven und Ei serviert und ist mild-pikant im Geschmack.",
           "ingredients": "Hähnchen, Ají amarillo, Brot oder Cracker, Milch, Walnüsse, Parmesan, Kartoffeln",
           "origin": "Das Gericht hat Wurzeln in der spanischen Kolonialküche und gilt als peruanischer Klassiker.",
@@ -2135,7 +2135,7 @@
         },
         {
           "name": "Mate de coca",
-          "desc": "Tee aus Cocablättern, hilft gegen Höhenkrankheit (soroche).",
+          "desc": "Tee aus Kokablättern, hilft gegen Höhenkrankheit (soroche).",
           "long": "Mate de coca ist ein Aufguss aus getrockneten Kokablättern, der in den Anden alltäglich getrunken wird. Er gilt als hilfreich gegen die Höhenkrankheit und wirkt leicht anregend, ähnlich wie eine milde Tasse Tee.",
           "ingredients": "Getrocknete Kokablätter, heißes Wasser",
           "origin": "Das Getränk hat eine lange Tradition in den Andenregionen Boliviens und der Nachbarländer.",

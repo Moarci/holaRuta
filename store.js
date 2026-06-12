@@ -227,7 +227,7 @@
     const v = readJson(GAMESTATS_KEY, null);
     if (!isPlainObject(v)) return freshGameStats();
     // Strukturwächter: jedes Feld typisieren. Korruptes/manipuliertes localStorage
-    // (z.B. "5" statt 5) darf sonst Streak-/Badge-Logik verfälschen (Streichketten
+    // (z.B. "5" statt 5) darf sonst Streak-/Badge-Logik verfälschen (String-Verkettungen
     // wie "5"+1 = "51"). unlocked muss ein Objekt sein (sonst Crash beim Diffen).
     const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
     return {

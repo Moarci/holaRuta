@@ -10,7 +10,7 @@
 > 9 Duplikat-Paare konsolidiert (552 Karten), Sprach-Nuancen korrigiert. Testabdeckung 58 → **93** (u. a. neuer
 > ASSETS-Drift-Test gegen index.html). Einzige bewusst offene Punkte: Wikimedia-Bild-URLs in der Länderkunde
 > (featurebedingt, IP-Leak nur beim Öffnen) und der kosmetische `zmilord`-ID-Slug (Umbenennen würde bestehenden
-> Fortschritt verwaisen).
+> Fortschritt verwaisen lassen).
 **Methodik:** 5 parallele spezialisierte Risiko-Agents — (1) Security & Datenfluss, (2) Datenbasis, (3) Kernlogik & Datenverlust, (4) PWA/Offline/Kompatibilität, (5) Tests/CI/Prozess. Kritische Hypothesen wurden **mit Node-Testskripten gegen den echten Code belegt oder widerlegt**, nicht nur statisch behauptet. Duplikate zum AUDIT.md sind ausgelassen; mehrere AUDIT-Findings wurden als inzwischen **gefixt verifiziert** (theme-color, manifest id/scope, reduced-motion, store-Top-Level-Guards, build-Escaping, Doppel-Tap-Races).
 
 ---

@@ -326,7 +326,7 @@
       ${installBlock(vm.install)}`;
   }
 
-  // „Auf den Startbildschirm"-Hinweis (nur wenn sinnvoll, siehe install.js).
+  // „Auf den Startbildschirm“-Hinweis (nur wenn sinnvoll, siehe install.js).
   // Android zeigt einen Knopf für den nativen Installations-Dialog; iOS bekommt
   // eine kurze Schritt-für-Schritt-Anleitung, weil Safari keinen Prompt kennt.
   function installBlock(install) {
@@ -378,7 +378,7 @@
       </section>`;
   }
 
-  // Dezenter „Überspringen"-Button: nimmt die aktuelle Karte ohne Bewertung aus der
+  // Dezenter „Überspringen“-Button: nimmt die aktuelle Karte ohne Bewertung aus der
   // Sitzung (sie bleibt fällig). So muss niemand jede Karte durchziehen.
   function skipBtn() {
     return `<button class="skipbtn" type="button" data-action="skip" aria-label="Diese Karte überspringen">Überspringen ⏭️</button>`;
@@ -758,7 +758,7 @@
       </button>`;
   }
 
-  // „Was ist neu?"-Fenster nach einem Update. Zeigt je Version, WAS sich
+  // „Was ist neu?“-Fenster nach einem Update. Zeigt je Version, WAS sich
   // geändert hat, und erklärt, WIE man aktuell bleibt. Liegt als eigene Ebene
   // (Scrim + Karte) über dem Screen; Schließen führt zurück zur App.
   function updateNotice(list) {
@@ -782,7 +782,7 @@
             <div class="upd__how-title">So bleibst du aktuell</div>
             <p class="upd__how-text">HolaRuta aktualisiert sich automatisch im Hintergrund.
             Schließe die App ab und zu ganz und öffne sie neu – dann hast du immer die
-            neueste Version. Geht etwas mal nicht, hilft „Jetzt neu laden".</p>
+            neueste Version. Geht etwas mal nicht, hilft „Jetzt neu laden“.</p>
           </div>
           <div class="upd__actions">
             <button class="ghostbtn" data-action="reload-app">Jetzt neu laden</button>
@@ -828,7 +828,7 @@
     return `<span class="srate ${cls}">${rate}%</span>`;
   }
 
-  // Streckenkarte: der Lernfortschritt als Bus-Strecke (on-brand „Ruta"). Drei
+  // Streckenkarte: der Lernfortschritt als Bus-Strecke (on-brand „Ruta“). Drei
   // Haltestellen Neu → Am Lernen → Gemeistert; der Bus (🚌) fährt mit der
   // Meister-Quote voran. Reine Anzeige aus der vorhandenen stats.overview.
   function routeMap(ov) {
@@ -1054,7 +1054,7 @@
             <span class="ed-label">Antwort (Spanisch)</span>
             <input class="ed-input" id="card-es" type="text" autocomplete="off" autocapitalize="off"
                    placeholder="z. B. ¿Dónde está la playa?" />
-            <span class="ed-hint">Mehrere gültige Antworten mit „ / " trennen.</span>
+            <span class="ed-hint">Mehrere gültige Antworten mit „ / “ trennen.</span>
           </label>
           <label class="ed-field">
             <span class="ed-label">Tipp / Aussprache <em>(optional)</em></span>
@@ -2134,7 +2134,7 @@
   }
 
   // ---------- CONJUGADOR (generativer Konjugations-Drill) ----------
-  // Übt aktiv: „Verb + Person" erscheint, man tippt die konjugierte Form. Items
+  // Übt aktiv: „Verb + Person“ erscheint, man tippt die konjugierte Form. Items
   // werden pro Runde frisch aus data.CONJUGATION erzeugt (SC.conjug). Folgt dem
   // Precios-Drill-Muster (Setup → Lauf → Done).
   function renderConjugSetup(vm) {
@@ -2266,7 +2266,7 @@
     let active = "";
     const cur = vm.current;
     if (cur && cur.who === "npc") {
-      // npc-Zug: Blase zeigen (+ Vorlesen), dann „Weiter".
+      // npc-Zug: Blase zeigen (+ Vorlesen), dann „Weiter“.
       const replay = vm.speakable
         ? `<button class="listen-replay ghostbtn" type="button" data-action="dialogos-speak">🔊 Nochmal anhören</button>`
         : "";
@@ -2587,7 +2587,7 @@
     return `
       <section class="screen bp-screen">
         ${hmTopbar("🧍 El Cuerpo", "home")}
-        <p class="hm-intro">Der menschliche Körper auf Spanisch – als drehbares 3D-Modell. Ziehe die Figur zum Drehen und tippe ein Körperteil an: dann erscheinen Wort, Aussprache und der passende Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
+        <p class="hm-intro">Der menschliche Körper auf Spanisch – als drehbares 3D-Modell. Ziehe die Figur zum Drehen und tippe ein Körperteil an: Dann erscheinen Wort, Aussprache und der passende Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
         ${progress}
         <div class="bp-stage">
           <div class="bp-3d-stage" data-bp-stage>
@@ -2703,7 +2703,7 @@
       </section>`;
   }
 
-  // Quiz: „Du brauchst X" (Deutsch) -> richtiges spanisches Wort wählen.
+  // Quiz: „Du brauchst X“ (Deutsch) -> richtiges spanisches Wort wählen.
   // Reuse der Definiciones-Optik (.quiz-def / .quiz-opt / .quiz-feedback).
   function renderComprasQuiz(vm) {
     const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
