@@ -26,7 +26,9 @@
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
-    mode: settings.mode || "flip", // 'flip' | 'type'
+    // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
+    // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
+    mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
@@ -193,6 +195,8 @@
       card,
       question: spanishIsQuestion ? card.es : card.de,
       answer: spanishIsQuestion ? card.de : card.es,
+      es: card.es, // Hör-Modus deckt immer das Spanische auf (richtungsunabhängig)
+      de: card.de, // dazu die deutsche Bedeutung als Verständnis-Hilfe
       spanishIsQuestion,
       tip: card.tip || null,
       level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
@@ -374,6 +378,14 @@
     if (hour < 9) g.earlyBird = true;    // "Café con Vocabulario" – vor 9 Uhr
 
     gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
+  // Hör-Modus (Escuchar): eine im Hör-Modus bewertete Karte einbuchen (für die
+  // 👂-Badges). Immutabel, eigener kleiner Zähler – läuft additiv zu recordStudyEvent.
+  function recordListenReview() {
+    if (!badges) return;
+    gamestats = Object.assign({}, gamestats, { listenReviews: (gamestats.listenReviews || 0) + 1 });
     store.saveGameStats(gamestats);
   }
 
@@ -810,6 +822,31 @@
     }
 
     manageFocus();
+    maybeAutoSpeak();
+  }
+
+  // Hör-Modus & Preis-Trainer spielen die spanische Vorgabe automatisch ab, sobald
+  // eine NEUE Aufgabe erscheint (nicht beim Aufdecken/Re-Render derselben). Der
+  // Schlüssel je Aufgabe verhindert mehrfaches Vorlesen; nach der Antwort (Ergebnis
+  // sichtbar) wird nichts gesprochen.
+  let lastAutoSpoke = null;
+  function autoSpeakKey() {
+    if (!speech || !speech.isSupported()) return null;
+    if (state.screen === "study" && state.mode === "listen" && !state.typeResult) {
+      return "listen:" + state.queue[0];
+    }
+    if (state.screen === "precios" && state.precios && !state.precios.result) {
+      return "precios:" + state.precios.queue[state.precios.idx];
+    }
+    return null;
+  }
+  function maybeAutoSpeak() {
+    const key = autoSpeakKey();
+    if (!key || key === lastAutoSpoke) return;
+    lastAutoSpoke = key;
+    const id = key.slice(key.indexOf(":") + 1);
+    const card = cardById(id);
+    if (card) speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
   }
 
   // Nach jedem Voll-Re-Render (innerHTML wird ersetzt) den Fokus auf ein sinnvolles
@@ -817,7 +854,8 @@
   // ihre Position. preventScroll vermeidet Sprünge.
   function manageFocus() {
     if (state.screen === "study") {
-      if (state.mode === "type" && !state.typeResult) {
+      // Schreiben & Hören: vor dem Prüfen gehört der Fokus ins Eingabefeld.
+      if ((state.mode === "type" || state.mode === "listen") && !state.typeResult) {
         const input = document.getElementById("answer");
         if (input) { input.focus(); return; }
       }
@@ -903,8 +941,9 @@
   function submitTyped(input) {
     const card = cardById(state.queue[0]);
     if (!card) return;
-    // Richtung ES→DE erwartet die deutsche Antwort, sonst die spanische.
-    const field = state.dir === "es2de" ? "de" : "es";
+    // Hör-Modus prüft immer gegen Spanisch (man tippt das Gehörte). Sonst nach
+    // Richtung: ES→DE erwartet die deutsche Antwort, DE→ES die spanische.
+    const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "de" : "es");
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
     state.contextOpen = false;
     render();
@@ -932,6 +971,7 @@
 
     // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
     recordStudyEvent(rating, now);
+    if (state.mode === "listen") recordListenReview();
     syncBadges(now, true);
 
     state.queue = state.queue.slice(1);

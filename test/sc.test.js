@@ -316,8 +316,11 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
-    contextCardsSeen: { hostel01: true },
     quizzesPlayed: 7, quizzesPerfect: 2,
+    frasesPlayed: 3, frasesPerfect: 1,
+    listenReviews: 30, preciosPlayed: 4, preciosPerfect: 2,
+    rutaDays: { "2026-06-11": true },
+    contextCardsSeen: { hostel01: true },
     bodyPartsSeen: { bp_cabeza: true },
     unlocked: { first_steps: 1700000000000 },
   };

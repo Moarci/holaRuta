@@ -1433,6 +1433,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .quiz-opt { transition: none; }
 }
 
+/* ====================== HÖR-MODUS (Escuchar / Dictado) ====================== */
+/* Drei-Spalten-Variante des Modus-Umschalters (Sprechen · Schreiben · Hören). */
+.segmented--three { grid-template-columns: 1fr 1fr 1fr; }
+.segmented--three .seg { padding: 10px 6px; font-size: 0.86rem; }
+
+/* Hör-Karte vor der Antwort: großes Ohr + Replay, Text bleibt verborgen. */
+.card-listen { gap: 14px; }
+.listen-ear { font-size: 3.4rem; line-height: 1; }
+.listen-replay { margin: 0; }
+/* Deutsche Bedeutung als Verständnis-Hilfe auf der aufgedeckten Hör-Ergebnis-Karte. */
+.listen-de { margin-top: 6px; font-size: 0.95rem; color: var(--muted); }
+/* Aussprache-Tipp ist cremefarben (für die bunte Flip-Rückseite gedacht) – auf der
+   hellen Ergebnis-Karte (Schreiben & Hören) sonst unsichtbar. Hier dunkel einfärben. */
+.card-static .face__tip { color: var(--ink-soft); }
+
 </style>
 </head>
 <body>
@@ -6630,6 +6645,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       // ----- Definiciones (Zuordnen-Quiz) -----
       quizzesPlayed: 0,     // abgeschlossene Quiz-Runden
       quizzesPerfect: 0,    // Quiz-Runden ohne Fehler
+      // ----- Frases flexibles (Satzbaukasten) -----
+      frasesPlayed: 0,      // abgeschlossene Satzbaukasten-Runden
+      frasesPerfect: 0,     // Runden ohne Fehler
+      // ----- Hören: Escuchar (Dictado) & Precios (Preis-Hörtrainer) -----
+      listenReviews: 0,     // im Hör-Modus bewertete Karten
+      preciosPlayed: 0,     // abgeschlossene Preis-Hörrunden
+      preciosPerfect: 0,    // Preis-Hörrunden ohne Fehler
+      // ----- Ruta del día (tägliche Mini-Runde) -----
+      rutaDays: {},         // Map "YYYY-MM-DD" -> true (Tage mit gestarteter Ruta del día)
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       // ----- El Cuerpo (interaktive Körperkarte) -----
@@ -6660,6 +6684,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
       quizzesPlayed: num(v.quizzesPlayed),
       quizzesPerfect: num(v.quizzesPerfect),
+      frasesPlayed: num(v.frasesPlayed),
+      frasesPerfect: num(v.frasesPerfect),
+      listenReviews: num(v.listenReviews),
+      preciosPlayed: num(v.preciosPlayed),
+      preciosPerfect: num(v.preciosPerfect),
+      rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
@@ -7006,6 +7036,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "context",  label: "Reise-Kontext", icon: "🧭" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
     { id: "quiz",     label: "Definiciones", icon: "🧩" },
+    { id: "construir",label: "Satzbaukasten", icon: "🧱" },
+    { id: "listening",label: "Hören",       icon: "👂" },
     { id: "cuerpo",   label: "El Cuerpo",   icon: "🧍" },
     { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
@@ -7069,6 +7101,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       description: "Lerne 14 Tage in Folge.",  unlockedText: "Spanisch ist Teil deiner Reiseroutine." },
     { id: "streak_30", group: "streak", icon: "🔥", name: "Ruta Ritual",         type: "counter", metric: "longestStreak", threshold: 30,
       description: "Lerne 30 Tage in Folge.",  unlockedText: "Aus Lernen ist eine echte Gewohnheit geworden." },
+    { id: "ruta_dia_first", group: "streak", icon: "🗺️", name: "Ruta del día",   type: "counter", metric: "rutaDays", threshold: 1,
+      description: "Starte deine erste Ruta del día.", unlockedText: "Dein täglicher Mini-Plan ist gesetzt." },
+    { id: "ruta_dia_7",     group: "streak", icon: "📆", name: "Sieben Etappen",  type: "counter", metric: "rutaDays", threshold: 7,
+      description: "Mache an 7 Tagen eine Ruta del día.", unlockedText: "Sieben tägliche Etappen – die Reise läuft." },
 
     // ---------- Bereiche (Kategorie-Meisterschaft) ----------
     ...CATEGORY_BADGES,
@@ -7104,6 +7140,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       description: "Schließe 10 Definiciones-Quizze ab.",       unlockedText: "Du erkennst Begriffe an ihrer Beschreibung – stark." },
     { id: "quiz_perfect", group: "quiz", icon: "💯", name: "Sin errores",       type: "counter", metric: "quizzesPerfect", threshold: 1,
       description: "Beende ein Quiz ohne Fehler.",              unlockedText: "Fehlerfrei durchgespielt – alles richtig zugeordnet." },
+
+    // ---------- Satzbaukasten (Frases flexibles) ----------
+    { id: "frases_first",   group: "construir", icon: "🧱", name: "Erster Baustein",   type: "counter", metric: "frasesPlayed", threshold: 1,
+      description: "Schließe deine erste Satzbaukasten-Runde ab.", unlockedText: "Du baust Sätze jetzt selbst zusammen, statt nur zu übersetzen." },
+    { id: "frases_10",      group: "construir", icon: "🏗️", name: "Satz-Architekt",    type: "counter", metric: "frasesPlayed", threshold: 10,
+      description: "Schließe 10 Satzbaukasten-Runden ab.",        unlockedText: "Aus Bausteinen werden flüssige Reisesätze." },
+    { id: "frases_perfect", group: "construir", icon: "💯", name: "Construcción perfecta", type: "counter", metric: "frasesPerfect", threshold: 1,
+      description: "Beende eine Runde ohne Fehler.",              unlockedText: "Jede Lücke richtig gefüllt – sauber gebaut." },
+
+    // ---------- Hören (Escuchar & Precios) ----------
+    { id: "listen_first", group: "listening", icon: "👂", name: "Primer oído",        type: "counter", metric: "listenReviews", threshold: 1,
+      description: "Lerne deine erste Karte im Hör-Modus.",   unlockedText: "Du trainierst jetzt auch dein Ohr für echtes LatAm-Spanisch." },
+    { id: "listen_25",    group: "listening", icon: "🎧", name: "Buen oído",          type: "counter", metric: "listenReviews", threshold: 25,
+      description: "Bewerte 25 Karten im Hör-Modus.",         unlockedText: "Gesprochenes Spanisch zu verstehen fällt dir spürbar leichter." },
+    { id: "precios_first",group: "listening", icon: "💵", name: "Oído para precios",  type: "counter", metric: "preciosPlayed", threshold: 1,
+      description: "Schließe deine erste Preis-Hörrunde ab.", unlockedText: "Preise am Busbahnhof verlieren ihren Schrecken." },
+    { id: "precios_perfect",group: "listening", icon: "💯", name: "Sin perder un peso", type: "counter", metric: "preciosPerfect", threshold: 1,
+      description: "Beende eine Preis-Hörrunde ohne Fehler.", unlockedText: "Jeden Betrag richtig gehört – kein Wechselgeld-Fehler mehr." },
 
     // ---------- Mutproben (Real-Life Challenges) ----------
     { id: "challenge_first", group: "reallife", icon: "💬", name: "Mutiger erster Satz", type: "counter", metric: "challengesCompleted", threshold: 1,
@@ -7177,6 +7231,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       // Definiciones: abgeschlossene und fehlerfreie Quiz-Runden.
       quizzesPlayed: c.quizzesPlayed || 0,
       quizzesPerfect: c.quizzesPerfect || 0,
+      // Frases flexibles (Satzbaukasten): abgeschlossene und fehlerfreie Runden.
+      frasesPlayed: c.frasesPlayed || 0,
+      frasesPerfect: c.frasesPerfect || 0,
+      // Hören: im Hör-Modus bewertete Karten + Preis-Hörtrainer-Runden.
+      listenReviews: c.listenReviews || 0,
+      preciosPlayed: c.preciosPlayed || 0,
+      preciosPerfect: c.preciosPerfect || 0,
+      // Ruta del día: distinkte Tage mit gestarteter täglicher Mini-Runde.
+      rutaDays: c.rutaDays ? Object.keys(c.rutaDays).length : 0,
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       // El Cuerpo: distinkt angetippte Körperteile (für die 🧍-Badges).
@@ -7884,6 +7947,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return !!(window.SC && window.SC.share);
   }
 
+  // Sprachausgabe verfügbar? (TTS-Modul geladen + vom Browser unterstützt).
+  // Steuert, ob der Hör-Modus und 🔊-Buttons überhaupt angeboten werden.
+  function speechReady() {
+    const sp = window.SC && window.SC.speech;
+    return !!(sp && sp.isSupported());
+  }
+
   // Format-Umschalter (1:1 / 9:16) + Teilen-Button als ein Block.
   // fmt = aktuell gewähltes Format ('square'|'story'), action = Teilen-Aktion.
   function shareBlock(fmt, action, label) {
@@ -8001,14 +8071,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const lvlSummary = vm.allLevels
       ? "Alle Stufen"
       : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
-    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🗣️ Sprechen"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const modeLabel = mode === "type" ? "⌨️ Schreiben" : mode === "listen" ? "👂 Hören" : "🗣️ Sprechen";
+    const setupSummary = `${modeLabel} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
+    // sonst gäbe es nichts zu hören (graceful degradation).
+    const listenSeg = speechReady()
+      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">👂 Hören</button>`
+      : "";
     const setupBody = `
       <div class="setup__body" id="setup-body">
         <div class="switchgroup">
           <span class="switchcap">Modus</span>
-          <div class="segmented" role="tablist" aria-label="Lernmodus">
+          <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="Lernmodus">
             <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🗣️ Sprechen</button>
             <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
+            ${listenSeg}
           </div>
         </div>
         <div class="switchgroup">
@@ -8136,6 +8213,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const accent = vm.accent; // [from,to]
 
     const body =
+      vm.mode === "listen" ? listenBody(vm) :
       vm.mode === "type" ? typeBody(vm) : flipBody(vm);
 
     return `
@@ -8174,8 +8252,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // 🔊-Button für die Sprachausgabe (nur wenn der Browser es kann).
   // on = farbige Variante (für die bunte Rückseite).
   function speakBtn(on) {
-    const sp = window.SC && window.SC.speech;
-    if (!sp || !sp.isSupported()) return "";
+    if (!speechReady()) return "";
     return cornerBtn({ base: "cardbtn--speak", on, icon: "🔊", label: "Antwort anhören", action: "speak" });
   }
 
@@ -8305,6 +8382,56 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
         ${colorSwatch(vm.swatch)}
         ${sq ? "" : tip}
+        ${verdict}
+      </div>
+      <div class="controls" id="controls">
+        ${contextPanel(vm.context, vm.contextOpen)}
+        ${rateButtons()}
+      </div>`;
+  }
+
+  // Hör-Modus (Escuchar / Dictado): die App spricht die spanische Antwort vor (der
+  // Controller stößt das beim Kartenwechsel automatisch an, siehe maybeAutoSpeak).
+  // Der spanische Text bleibt verborgen, bis getippt wurde – getestet wird IMMER
+  // gegen Spanisch (richtungsunabhängig). Danach Aufdecken + Bewerten wie im Schreiben-
+  // Modus. Reuse: 🔊 (data-action="speak"), typer-Formular, rateButtons.
+  function listenBody(vm) {
+    const res = vm.typeResult; // null | {correct, answers, input}
+    const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";
+
+    if (!res) {
+      const replay = speechReady()
+        ? `<button class="listen-replay ghostbtn" type="button" data-action="speak">🔊 Nochmal anhören</button>`
+        : "";
+      return `
+        <div class="card-static card-listen">
+          <span class="face__cat">${esc(vm.catLabel)}</span>
+          ${levelBadge(vm, false)}
+          <span class="listen-ear" aria-hidden="true">👂</span>
+          ${replay}
+          <span class="face__hint">Hör zu und tippe auf Spanisch, was du hörst</span>
+        </div>
+        <form class="typer" data-action="submit-typed" id="typer">
+          <input class="typer__input" id="answer" type="text" autocomplete="off"
+                 autocapitalize="off" autocorrect="off" spellcheck="false"
+                 placeholder="Tippe das Gehörte …" />
+          <button class="typer__btn" type="submit">Prüfen</button>
+        </form>`;
+    }
+
+    const verdict = res.correct
+      ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
+      : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(res.input || "—")}“</div>`;
+    return `
+      <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
+        <span class="face__cat">${esc(vm.catLabel)}</span>
+        ${levelBadge(vm, false)}
+        ${contextIconBtn(vm.context, false, vm.contextOpen)}
+        ${speakBtn(false)}
+        <div class="face__word" lang="es">${esc(vm.es)}</div>
+        ${colorSwatch(vm.swatch)}
+        <div class="listen-de">${esc(vm.de)}</div>
+        ${tip}
         ${verdict}
       </div>
       <div class="controls" id="controls">
@@ -9293,7 +9420,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
-    mode: settings.mode || "flip", // 'flip' | 'type'
+    // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
+    // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
+    mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
@@ -9460,6 +9589,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       card,
       question: spanishIsQuestion ? card.es : card.de,
       answer: spanishIsQuestion ? card.de : card.es,
+      es: card.es, // Hör-Modus deckt immer das Spanische auf (richtungsunabhängig)
+      de: card.de, // dazu die deutsche Bedeutung als Verständnis-Hilfe
       spanishIsQuestion,
       tip: card.tip || null,
       level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
@@ -9641,6 +9772,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (hour < 9) g.earlyBird = true;    // "Café con Vocabulario" – vor 9 Uhr
 
     gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
+  // Hör-Modus (Escuchar): eine im Hör-Modus bewertete Karte einbuchen (für die
+  // 👂-Badges). Immutabel, eigener kleiner Zähler – läuft additiv zu recordStudyEvent.
+  function recordListenReview() {
+    if (!badges) return;
+    gamestats = Object.assign({}, gamestats, { listenReviews: (gamestats.listenReviews || 0) + 1 });
     store.saveGameStats(gamestats);
   }
 
@@ -10077,6 +10216,31 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     }
 
     manageFocus();
+    maybeAutoSpeak();
+  }
+
+  // Hör-Modus & Preis-Trainer spielen die spanische Vorgabe automatisch ab, sobald
+  // eine NEUE Aufgabe erscheint (nicht beim Aufdecken/Re-Render derselben). Der
+  // Schlüssel je Aufgabe verhindert mehrfaches Vorlesen; nach der Antwort (Ergebnis
+  // sichtbar) wird nichts gesprochen.
+  let lastAutoSpoke = null;
+  function autoSpeakKey() {
+    if (!speech || !speech.isSupported()) return null;
+    if (state.screen === "study" && state.mode === "listen" && !state.typeResult) {
+      return "listen:" + state.queue[0];
+    }
+    if (state.screen === "precios" && state.precios && !state.precios.result) {
+      return "precios:" + state.precios.queue[state.precios.idx];
+    }
+    return null;
+  }
+  function maybeAutoSpeak() {
+    const key = autoSpeakKey();
+    if (!key || key === lastAutoSpoke) return;
+    lastAutoSpoke = key;
+    const id = key.slice(key.indexOf(":") + 1);
+    const card = cardById(id);
+    if (card) speech.speak(matcher.acceptedAnswers(card)[0] || card.es);
   }
 
   // Nach jedem Voll-Re-Render (innerHTML wird ersetzt) den Fokus auf ein sinnvolles
@@ -10084,7 +10248,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // ihre Position. preventScroll vermeidet Sprünge.
   function manageFocus() {
     if (state.screen === "study") {
-      if (state.mode === "type" && !state.typeResult) {
+      // Schreiben & Hören: vor dem Prüfen gehört der Fokus ins Eingabefeld.
+      if ((state.mode === "type" || state.mode === "listen") && !state.typeResult) {
         const input = document.getElementById("answer");
         if (input) { input.focus(); return; }
       }
@@ -10170,8 +10335,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function submitTyped(input) {
     const card = cardById(state.queue[0]);
     if (!card) return;
-    // Richtung ES→DE erwartet die deutsche Antwort, sonst die spanische.
-    const field = state.dir === "es2de" ? "de" : "es";
+    // Hör-Modus prüft immer gegen Spanisch (man tippt das Gehörte). Sonst nach
+    // Richtung: ES→DE erwartet die deutsche Antwort, DE→ES die spanische.
+    const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "de" : "es");
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
     state.contextOpen = false;
     render();
@@ -10199,6 +10365,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
     recordStudyEvent(rating, now);
+    if (state.mode === "listen") recordListenReview();
     syncBadges(now, true);
 
     state.queue = state.queue.slice(1);

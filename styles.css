@@ -1394,3 +1394,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   .quiz-opt { transition: none; }
 }
+
+/* ====================== HÖR-MODUS (Escuchar / Dictado) ====================== */
+/* Drei-Spalten-Variante des Modus-Umschalters (Sprechen · Schreiben · Hören). */
+.segmented--three { grid-template-columns: 1fr 1fr 1fr; }
+.segmented--three .seg { padding: 10px 6px; font-size: 0.86rem; }
+
+/* Hör-Karte vor der Antwort: großes Ohr + Replay, Text bleibt verborgen. */
+.card-listen { gap: 14px; }
+.listen-ear { font-size: 3.4rem; line-height: 1; }
+.listen-replay { margin: 0; }
+/* Deutsche Bedeutung als Verständnis-Hilfe auf der aufgedeckten Hör-Ergebnis-Karte. */
+.listen-de { margin-top: 6px; font-size: 0.95rem; color: var(--muted); }
+/* Aussprache-Tipp ist cremefarben (für die bunte Flip-Rückseite gedacht) – auf der
+   hellen Ergebnis-Karte (Schreiben & Hören) sonst unsichtbar. Hier dunkel einfärben. */
+.card-static .face__tip { color: var(--ink-soft); }

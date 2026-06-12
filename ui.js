@@ -20,6 +20,13 @@
     return !!(window.SC && window.SC.share);
   }
 
+  // Sprachausgabe verfügbar? (TTS-Modul geladen + vom Browser unterstützt).
+  // Steuert, ob der Hör-Modus und 🔊-Buttons überhaupt angeboten werden.
+  function speechReady() {
+    const sp = window.SC && window.SC.speech;
+    return !!(sp && sp.isSupported());
+  }
+
   // Format-Umschalter (1:1 / 9:16) + Teilen-Button als ein Block.
   // fmt = aktuell gewähltes Format ('square'|'story'), action = Teilen-Aktion.
   function shareBlock(fmt, action, label) {
@@ -137,14 +144,21 @@
     const lvlSummary = vm.allLevels
       ? "Alle Stufen"
       : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
-    const setupSummary = `${mode === "type" ? "⌨️ Schreiben" : "🗣️ Sprechen"} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const modeLabel = mode === "type" ? "⌨️ Schreiben" : mode === "listen" ? "👂 Hören" : "🗣️ Sprechen";
+    const setupSummary = `${modeLabel} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
+    // sonst gäbe es nichts zu hören (graceful degradation).
+    const listenSeg = speechReady()
+      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">👂 Hören</button>`
+      : "";
     const setupBody = `
       <div class="setup__body" id="setup-body">
         <div class="switchgroup">
           <span class="switchcap">Modus</span>
-          <div class="segmented" role="tablist" aria-label="Lernmodus">
+          <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="Lernmodus">
             <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🗣️ Sprechen</button>
             <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
+            ${listenSeg}
           </div>
         </div>
         <div class="switchgroup">
@@ -272,6 +286,7 @@
     const accent = vm.accent; // [from,to]
 
     const body =
+      vm.mode === "listen" ? listenBody(vm) :
       vm.mode === "type" ? typeBody(vm) : flipBody(vm);
 
     return `
@@ -310,8 +325,7 @@
   // 🔊-Button für die Sprachausgabe (nur wenn der Browser es kann).
   // on = farbige Variante (für die bunte Rückseite).
   function speakBtn(on) {
-    const sp = window.SC && window.SC.speech;
-    if (!sp || !sp.isSupported()) return "";
+    if (!speechReady()) return "";
     return cornerBtn({ base: "cardbtn--speak", on, icon: "🔊", label: "Antwort anhören", action: "speak" });
   }
 
@@ -441,6 +455,56 @@
         <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
         ${colorSwatch(vm.swatch)}
         ${sq ? "" : tip}
+        ${verdict}
+      </div>
+      <div class="controls" id="controls">
+        ${contextPanel(vm.context, vm.contextOpen)}
+        ${rateButtons()}
+      </div>`;
+  }
+
+  // Hör-Modus (Escuchar / Dictado): die App spricht die spanische Antwort vor (der
+  // Controller stößt das beim Kartenwechsel automatisch an, siehe maybeAutoSpeak).
+  // Der spanische Text bleibt verborgen, bis getippt wurde – getestet wird IMMER
+  // gegen Spanisch (richtungsunabhängig). Danach Aufdecken + Bewerten wie im Schreiben-
+  // Modus. Reuse: 🔊 (data-action="speak"), typer-Formular, rateButtons.
+  function listenBody(vm) {
+    const res = vm.typeResult; // null | {correct, answers, input}
+    const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";
+
+    if (!res) {
+      const replay = speechReady()
+        ? `<button class="listen-replay ghostbtn" type="button" data-action="speak">🔊 Nochmal anhören</button>`
+        : "";
+      return `
+        <div class="card-static card-listen">
+          <span class="face__cat">${esc(vm.catLabel)}</span>
+          ${levelBadge(vm, false)}
+          <span class="listen-ear" aria-hidden="true">👂</span>
+          ${replay}
+          <span class="face__hint">Hör zu und tippe auf Spanisch, was du hörst</span>
+        </div>
+        <form class="typer" data-action="submit-typed" id="typer">
+          <input class="typer__input" id="answer" type="text" autocomplete="off"
+                 autocapitalize="off" autocorrect="off" spellcheck="false"
+                 placeholder="Tippe das Gehörte …" />
+          <button class="typer__btn" type="submit">Prüfen</button>
+        </form>`;
+    }
+
+    const verdict = res.correct
+      ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
+      : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(res.input || "—")}“</div>`;
+    return `
+      <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
+        <span class="face__cat">${esc(vm.catLabel)}</span>
+        ${levelBadge(vm, false)}
+        ${contextIconBtn(vm.context, false, vm.contextOpen)}
+        ${speakBtn(false)}
+        <div class="face__word" lang="es">${esc(vm.es)}</div>
+        ${colorSwatch(vm.swatch)}
+        <div class="listen-de">${esc(vm.de)}</div>
+        ${tip}
         ${verdict}
       </div>
       <div class="controls" id="controls">

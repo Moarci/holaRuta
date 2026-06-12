@@ -43,6 +43,8 @@
     { id: "context",  label: "Reise-Kontext", icon: "🧭" },
     { id: "hostel",   label: "Hostel Mode", icon: "🛏️" },
     { id: "quiz",     label: "Definiciones", icon: "🧩" },
+    { id: "construir",label: "Satzbaukasten", icon: "🧱" },
+    { id: "listening",label: "Hören",       icon: "👂" },
     { id: "cuerpo",   label: "El Cuerpo",   icon: "🧍" },
     { id: "reallife", label: "Mutproben",   icon: "🚪" },
     { id: "special",  label: "Spezial",     icon: "✨" },
@@ -106,6 +108,10 @@
       description: "Lerne 14 Tage in Folge.",  unlockedText: "Spanisch ist Teil deiner Reiseroutine." },
     { id: "streak_30", group: "streak", icon: "🔥", name: "Ruta Ritual",         type: "counter", metric: "longestStreak", threshold: 30,
       description: "Lerne 30 Tage in Folge.",  unlockedText: "Aus Lernen ist eine echte Gewohnheit geworden." },
+    { id: "ruta_dia_first", group: "streak", icon: "🗺️", name: "Ruta del día",   type: "counter", metric: "rutaDays", threshold: 1,
+      description: "Starte deine erste Ruta del día.", unlockedText: "Dein täglicher Mini-Plan ist gesetzt." },
+    { id: "ruta_dia_7",     group: "streak", icon: "📆", name: "Sieben Etappen",  type: "counter", metric: "rutaDays", threshold: 7,
+      description: "Mache an 7 Tagen eine Ruta del día.", unlockedText: "Sieben tägliche Etappen – die Reise läuft." },
 
     // ---------- Bereiche (Kategorie-Meisterschaft) ----------
     ...CATEGORY_BADGES,
@@ -141,6 +147,24 @@
       description: "Schließe 10 Definiciones-Quizze ab.",       unlockedText: "Du erkennst Begriffe an ihrer Beschreibung – stark." },
     { id: "quiz_perfect", group: "quiz", icon: "💯", name: "Sin errores",       type: "counter", metric: "quizzesPerfect", threshold: 1,
       description: "Beende ein Quiz ohne Fehler.",              unlockedText: "Fehlerfrei durchgespielt – alles richtig zugeordnet." },
+
+    // ---------- Satzbaukasten (Frases flexibles) ----------
+    { id: "frases_first",   group: "construir", icon: "🧱", name: "Erster Baustein",   type: "counter", metric: "frasesPlayed", threshold: 1,
+      description: "Schließe deine erste Satzbaukasten-Runde ab.", unlockedText: "Du baust Sätze jetzt selbst zusammen, statt nur zu übersetzen." },
+    { id: "frases_10",      group: "construir", icon: "🏗️", name: "Satz-Architekt",    type: "counter", metric: "frasesPlayed", threshold: 10,
+      description: "Schließe 10 Satzbaukasten-Runden ab.",        unlockedText: "Aus Bausteinen werden flüssige Reisesätze." },
+    { id: "frases_perfect", group: "construir", icon: "💯", name: "Construcción perfecta", type: "counter", metric: "frasesPerfect", threshold: 1,
+      description: "Beende eine Runde ohne Fehler.",              unlockedText: "Jede Lücke richtig gefüllt – sauber gebaut." },
+
+    // ---------- Hören (Escuchar & Precios) ----------
+    { id: "listen_first", group: "listening", icon: "👂", name: "Primer oído",        type: "counter", metric: "listenReviews", threshold: 1,
+      description: "Lerne deine erste Karte im Hör-Modus.",   unlockedText: "Du trainierst jetzt auch dein Ohr für echtes LatAm-Spanisch." },
+    { id: "listen_25",    group: "listening", icon: "🎧", name: "Buen oído",          type: "counter", metric: "listenReviews", threshold: 25,
+      description: "Bewerte 25 Karten im Hör-Modus.",         unlockedText: "Gesprochenes Spanisch zu verstehen fällt dir spürbar leichter." },
+    { id: "precios_first",group: "listening", icon: "💵", name: "Oído para precios",  type: "counter", metric: "preciosPlayed", threshold: 1,
+      description: "Schließe deine erste Preis-Hörrunde ab.", unlockedText: "Preise am Busbahnhof verlieren ihren Schrecken." },
+    { id: "precios_perfect",group: "listening", icon: "💯", name: "Sin perder un peso", type: "counter", metric: "preciosPerfect", threshold: 1,
+      description: "Beende eine Preis-Hörrunde ohne Fehler.", unlockedText: "Jeden Betrag richtig gehört – kein Wechselgeld-Fehler mehr." },
 
     // ---------- Mutproben (Real-Life Challenges) ----------
     { id: "challenge_first", group: "reallife", icon: "💬", name: "Mutiger erster Satz", type: "counter", metric: "challengesCompleted", threshold: 1,
@@ -214,6 +238,15 @@
       // Definiciones: abgeschlossene und fehlerfreie Quiz-Runden.
       quizzesPlayed: c.quizzesPlayed || 0,
       quizzesPerfect: c.quizzesPerfect || 0,
+      // Frases flexibles (Satzbaukasten): abgeschlossene und fehlerfreie Runden.
+      frasesPlayed: c.frasesPlayed || 0,
+      frasesPerfect: c.frasesPerfect || 0,
+      // Hören: im Hör-Modus bewertete Karten + Preis-Hörtrainer-Runden.
+      listenReviews: c.listenReviews || 0,
+      preciosPlayed: c.preciosPlayed || 0,
+      preciosPerfect: c.preciosPerfect || 0,
+      // Ruta del día: distinkte Tage mit gestarteter täglicher Mini-Runde.
+      rutaDays: c.rutaDays ? Object.keys(c.rutaDays).length : 0,
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       // El Cuerpo: distinkt angetippte Körperteile (für die 🧍-Badges).

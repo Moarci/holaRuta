@@ -171,6 +171,15 @@
       // ----- Definiciones (Zuordnen-Quiz) -----
       quizzesPlayed: 0,     // abgeschlossene Quiz-Runden
       quizzesPerfect: 0,    // Quiz-Runden ohne Fehler
+      // ----- Frases flexibles (Satzbaukasten) -----
+      frasesPlayed: 0,      // abgeschlossene Satzbaukasten-Runden
+      frasesPerfect: 0,     // Runden ohne Fehler
+      // ----- Hören: Escuchar (Dictado) & Precios (Preis-Hörtrainer) -----
+      listenReviews: 0,     // im Hör-Modus bewertete Karten
+      preciosPlayed: 0,     // abgeschlossene Preis-Hörrunden
+      preciosPerfect: 0,    // Preis-Hörrunden ohne Fehler
+      // ----- Ruta del día (tägliche Mini-Runde) -----
+      rutaDays: {},         // Map "YYYY-MM-DD" -> true (Tage mit gestarteter Ruta del día)
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       // ----- El Cuerpo (interaktive Körperkarte) -----
@@ -201,6 +210,12 @@
       challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
       quizzesPlayed: num(v.quizzesPlayed),
       quizzesPerfect: num(v.quizzesPerfect),
+      frasesPlayed: num(v.frasesPlayed),
+      frasesPerfect: num(v.frasesPerfect),
+      listenReviews: num(v.listenReviews),
+      preciosPlayed: num(v.preciosPlayed),
+      preciosPerfect: num(v.preciosPerfect),
+      rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
