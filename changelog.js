@@ -21,6 +21,19 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.4.3",
+      date: "2026-06-12",
+      title: "Battle: fairer, mehr Inhalt, Stichrunde",
+      items: [
+        "15 neue Battle-Aufgaben (jetzt 45) und jede Aufgabe hat eine Schwierigkeits-Stufe (A1/A2/B1), die während der Runde angezeigt wird.",
+        "Faire Verteilung: A und B bekommen pro Runden-Paar etwa gleich schwere Aufgaben, und die Schwierigkeit steigert sich über das Battle.",
+        "Keine sofortigen Wiederholungen mehr: zuletzt gespielte Aufgaben werden über mehrere Battles gemieden.",
+        "Optionale Spielernamen – sie erscheinen in Punktestand, am Zug und in der Auswertung.",
+        "Stichrunde bei Gleichstand: zwei Extra-Runden küren doch noch einen Sieger.",
+        "Die Szenen-Auswahl zeigt jetzt die echte Rundenzahl der gewählten Länge statt nur der Aufgabenzahl.",
+      ],
+    },
+    {
       version: "1.4.2",
       date: "2026-06-12",
       title: "Battle klarer erklärt",

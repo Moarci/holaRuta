@@ -1247,15 +1247,48 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hm-solution__also span { color: var(--ink-soft); font-weight: 600; }
 .hm-verdict { width: 100%; display: flex; flex-direction: column; gap: 8px; }
 .hm-verdict__cap { margin: 0; text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.hm-verdict__cap b { color: var(--brand-ink); }
+.hm-verdict__fair { margin: -2px 0 0; text-align: center; font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+
+/* Battle-Setup: Spielernamen (optional). */
+.hm-names { display: flex; flex-direction: column; gap: 8px; }
+.hm-names__opt { font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--muted); }
+.hm-names__row { display: flex; align-items: center; gap: 10px; }
+.hm-names__vs { flex: none; font-family: var(--font-display); font-weight: 800; color: var(--muted); font-size: 0.9rem; }
+.hm-name {
+  flex: 1 1 0; min-width: 0; padding: 11px 14px; font-size: 1rem; color: var(--ink);
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  box-shadow: var(--shadow); -webkit-appearance: none; appearance: none;
+}
+.hm-name:focus { outline: none; border-color: var(--brand); }
+
+/* Battle: Szene/Stufe über der Aufgabe. */
+.hm-prompt__meta {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px;
+}
+.hm-prompt__tag {
+  font-family: var(--font-body, inherit); font-size: 0.74rem; font-weight: 800;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;
+}
+.hm-prompt__lvl {
+  font-size: 0.7rem; font-weight: 800; color: var(--muted);
+  background: var(--surface); border-radius: 999px; padding: 2px 8px;
+}
+
+/* Score-Chips: eigene Namen dürfen die Zeile nicht sprengen. */
+.hm-score__p { max-width: 42%; white-space: nowrap; overflow: hidden; }
 
 /* Battle: Auswertung. */
 .hm-result {
   display: flex; align-items: center; justify-content: center; gap: 18px; margin: 6px 0;
 }
-.hm-result__p { color: var(--ink-soft); font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
+.hm-result__p { color: var(--ink-soft); font-size: 0.9rem; font-weight: 600; line-height: 1.3; max-width: 44%; word-break: break-word; }
 .hm-result__p b { display: block; font-family: var(--font-display); font-size: 2.2rem; font-weight: 800; color: var(--ink); }
+.hm-result__p.is-win { color: var(--brand-ink); }
+.hm-result__p.is-win b { color: var(--brand-ink); }
 .hm-result__vs { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--muted); }
 .hm-winner { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--brand-ink); }
+.cta--tiebreak { background: var(--brand-ink); }
 .hm-challenge {
   width: 100%; max-width: 320px; text-align: center; margin: 6px auto 2px;
   background: rgba(63, 115, 85, 0.12); border: 1.5px solid rgba(63, 115, 85, 0.35);
@@ -2817,50 +2850,66 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Battle-Aufgaben: Ansage auf Deutsch (promptDe), laut auf Spanisch antworten.
   // answerEs = Musterlösung (Anzeige), acceptable = weitere gültige Varianten (LatAm).
   // points = Maximalpunkte (Mitspieler bewertet manuell: 2/1/0). scene -> BATTLE_SCENES.
+  // level  = Schwierigkeit 1..3 (steuert die faire Verteilung & das Stufen-Badge).
   const BATTLES = [
     // ----- Check-in -----
-    { id: "hb01", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob noch ein Bett frei ist.", answerEs: "¿Tiene una cama libre?", acceptable: ["tiene una cama libre", "hay una cama libre", "hay una cama disponible"], points: 2, hint: "Du brauchst: ¿Tiene...? oder ¿Hay...?" },
-    { id: "hb02", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Sag, dass du eine Reservierung hast.", answerEs: "Tengo una reserva.", acceptable: ["tengo una reserva", "tengo una reservacion"], points: 2, hint: "Tengo una ..." },
-    { id: "hb03", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob das Frühstück inklusive ist.", answerEs: "¿El desayuno está incluido?", acceptable: ["el desayuno esta incluido", "esta incluido el desayuno", "incluye desayuno"], points: 2, hint: "desayuno = Frühstück" },
-    { id: "hb04", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag nach dem WLAN-Passwort.", answerEs: "¿Cuál es la contraseña del wifi?", acceptable: ["cual es la contrasena del wifi", "cual es la clave del wifi"], points: 2, hint: "contraseña / clave = Passwort" },
-    { id: "hb05", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, um wie viel Uhr Check-out ist.", answerEs: "¿A qué hora es el check-out?", acceptable: ["a que hora es el check out", "a que hora es el checkout", "a que hora hay que salir"], points: 2, hint: "¿A qué hora...?" },
+    { id: "hb01", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob noch ein Bett frei ist.", answerEs: "¿Tiene una cama libre?", acceptable: ["tiene una cama libre", "hay una cama libre", "hay una cama disponible"], points: 2, level: 1, hint: "Du brauchst: ¿Tiene...? oder ¿Hay...?" },
+    { id: "hb02", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Sag, dass du eine Reservierung hast.", answerEs: "Tengo una reserva.", acceptable: ["tengo una reserva", "tengo una reservacion"], points: 2, level: 1, hint: "Tengo una ..." },
+    { id: "hb03", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob das Frühstück inklusive ist.", answerEs: "¿El desayuno está incluido?", acceptable: ["el desayuno esta incluido", "esta incluido el desayuno", "incluye desayuno"], points: 2, level: 1, hint: "desayuno = Frühstück" },
+    { id: "hb04", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag nach dem WLAN-Passwort.", answerEs: "¿Cuál es la contraseña del wifi?", acceptable: ["cual es la contrasena del wifi", "cual es la clave del wifi"], points: 2, level: 2, hint: "contraseña / clave = Passwort" },
+    { id: "hb05", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, um wie viel Uhr Check-out ist.", answerEs: "¿A qué hora es el check-out?", acceptable: ["a que hora es el check out", "a que hora es el checkout", "a que hora hay que salir"], points: 2, level: 2, hint: "¿A qué hora...?" },
+    { id: "hb31", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, wie viel eine Nacht kostet.", answerEs: "¿Cuánto cuesta la noche?", acceptable: ["cuanto cuesta la noche", "cuanto sale la noche", "cuanto es por noche"], points: 2, level: 1, hint: "¿Cuánto cuesta...?" },
+    { id: "hb32", mode: "battle", cat: "hostel", scene: "checkin", promptDe: "Frag, ob ihr früher einchecken könnt.", answerEs: "¿Podemos hacer el check-in temprano?", acceptable: ["podemos hacer el check in temprano", "se puede hacer check in temprano", "podemos entrar mas temprano"], points: 2, level: 3, hint: "temprano = früh" },
 
     // ----- Dorm & Zimmer -----
-    { id: "hb06", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, wo dein Bett ist.", answerEs: "¿Dónde está mi cama?", acceptable: ["donde esta mi cama"], points: 2, hint: "¿Dónde está...?" },
-    { id: "hb07", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Sag, dass dein Bett belegt ist.", answerEs: "Mi cama está ocupada.", acceptable: ["mi cama esta ocupada", "hay alguien en mi cama"], points: 2, hint: "ocupada = belegt" },
-    { id: "hb08", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, ob es ein Schließfach gibt.", answerEs: "¿Hay un locker?", acceptable: ["hay un locker", "hay casilleros", "hay un casillero"], points: 2, hint: "locker / casillero" },
-    { id: "hb09", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Sag, dass dein Schlüssel nicht funktioniert.", answerEs: "Mi llave no funciona.", acceptable: ["mi llave no funciona", "la llave no funciona", "la tarjeta no funciona"], points: 2, hint: "llave = Schlüssel" },
-    { id: "hb10", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Bitte höflich, das Zimmer wechseln zu dürfen.", answerEs: "¿Podría cambiar de habitación?", acceptable: ["podria cambiar de habitacion", "puedo cambiar de habitacion", "puedo cambiar de cuarto"], points: 2, hint: "¿Podría...? ist höflicher" },
+    { id: "hb06", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, wo dein Bett ist.", answerEs: "¿Dónde está mi cama?", acceptable: ["donde esta mi cama"], points: 2, level: 1, hint: "¿Dónde está...?" },
+    { id: "hb07", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Sag, dass dein Bett belegt ist.", answerEs: "Mi cama está ocupada.", acceptable: ["mi cama esta ocupada", "hay alguien en mi cama"], points: 2, level: 2, hint: "ocupada = belegt" },
+    { id: "hb08", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, ob es ein Schließfach gibt.", answerEs: "¿Hay un locker?", acceptable: ["hay un locker", "hay casilleros", "hay un casillero"], points: 2, level: 1, hint: "locker / casillero" },
+    { id: "hb09", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Sag, dass dein Schlüssel nicht funktioniert.", answerEs: "Mi llave no funciona.", acceptable: ["mi llave no funciona", "la llave no funciona", "la tarjeta no funciona"], points: 2, level: 2, hint: "llave = Schlüssel" },
+    { id: "hb10", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Bitte höflich, das Zimmer wechseln zu dürfen.", answerEs: "¿Podría cambiar de habitación?", acceptable: ["podria cambiar de habitacion", "puedo cambiar de habitacion", "puedo cambiar de cuarto"], points: 2, level: 3, hint: "¿Podría...? ist höflicher" },
+    { id: "hb33", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Frag, ob es eine Decke gibt.", answerEs: "¿Hay una manta?", acceptable: ["hay una manta", "hay una cobija", "hay una frazada"], points: 2, level: 1, hint: "manta / cobija / frazada = Decke" },
+    { id: "hb34", mode: "battle", cat: "hostel", scene: "dorm", promptDe: "Bitte die anderen höflich, leiser zu sein.", answerEs: "¿Pueden hacer menos ruido?", acceptable: ["pueden hacer menos ruido", "podrian bajar el ruido", "menos ruido por favor"], points: 2, level: 3, hint: "ruido = Lärm" },
 
     // ----- Leute kennenlernen -----
-    { id: "hb11", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag jemanden, woher er/sie kommt.", answerEs: "¿De dónde eres?", acceptable: ["de donde eres", "de donde vienes"], points: 2, hint: "¿De dónde...?" },
-    { id: "hb12", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, ob die Person alleine reist.", answerEs: "¿Viajas solo/a?", acceptable: ["viajas solo", "viajas sola", "viajas solo a", "estas viajando solo", "estas viajando sola"], points: 2, hint: "viajar = reisen" },
-    { id: "hb13", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, wie lange die Person schon hier ist.", answerEs: "¿Cuánto tiempo estás aquí?", acceptable: ["cuanto tiempo estas aqui", "cuanto tiempo llevas aqui"], points: 2, hint: "¿Cuánto tiempo...?" },
-    { id: "hb14", mode: "battle", cat: "social", scene: "meet", promptDe: "Sag, dass es schön war, kennenzulernen.", answerEs: "Mucho gusto.", acceptable: ["mucho gusto", "un placer", "encantado", "encantada"], points: 2, hint: "Mucho gusto" },
+    { id: "hb11", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag jemanden, woher er/sie kommt.", answerEs: "¿De dónde eres?", acceptable: ["de donde eres", "de donde vienes"], points: 2, level: 1, hint: "¿De dónde...?" },
+    { id: "hb12", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, ob die Person alleine reist.", answerEs: "¿Viajas solo/a?", acceptable: ["viajas solo", "viajas sola", "viajas solo a", "estas viajando solo", "estas viajando sola"], points: 2, level: 2, hint: "viajar = reisen" },
+    { id: "hb13", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, wie lange die Person schon hier ist.", answerEs: "¿Cuánto tiempo estás aquí?", acceptable: ["cuanto tiempo estas aqui", "cuanto tiempo llevas aqui"], points: 2, level: 2, hint: "¿Cuánto tiempo...?" },
+    { id: "hb14", mode: "battle", cat: "social", scene: "meet", promptDe: "Sag, dass es schön war, kennenzulernen.", answerEs: "Mucho gusto.", acceptable: ["mucho gusto", "un placer", "encantado", "encantada"], points: 2, level: 1, hint: "Mucho gusto" },
+    { id: "hb35", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, wie die Person heißt.", answerEs: "¿Cómo te llamas?", acceptable: ["como te llamas", "cual es tu nombre"], points: 2, level: 1, hint: "¿Cómo te llamas?" },
+    { id: "hb36", mode: "battle", cat: "social", scene: "meet", promptDe: "Frag, wohin die Person als Nächstes weiterreist.", answerEs: "¿A dónde vas después?", acceptable: ["a donde vas despues", "cual es tu proximo destino", "para donde sigues"], points: 2, level: 3, hint: "después = danach" },
 
     // ----- Gemeinsam planen -----
-    { id: "hb15", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, was die Person morgen macht.", answerEs: "¿Qué haces mañana?", acceptable: ["que haces manana", "que vas a hacer manana"], points: 2, hint: "¿Qué haces...?" },
-    { id: "hb16", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, ob die Person Lust hat, etwas essen zu gehen.", answerEs: "¿Quieres ir a comer algo?", acceptable: ["quieres ir a comer algo", "quieres comer algo", "vamos a comer algo"], points: 2, hint: "¿Quieres...?" },
-    { id: "hb17", mode: "battle", cat: "social", scene: "plan", promptDe: "Schlag vor, zusammen zu gehen.", answerEs: "¿Vamos juntos?", acceptable: ["vamos juntos", "vamos juntas", "podemos ir juntos"], points: 2, hint: "juntos = zusammen" },
-    { id: "hb18", mode: "battle", cat: "social", scene: "plan", promptDe: "Bitte, dir auf WhatsApp zu schreiben.", answerEs: "Escríbeme por WhatsApp.", acceptable: ["escribeme por whatsapp", "mandame un mensaje por whatsapp", "pasame tu whatsapp"], points: 2, hint: "escríbeme = schreib mir" },
+    { id: "hb15", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, was die Person morgen macht.", answerEs: "¿Qué haces mañana?", acceptable: ["que haces manana", "que vas a hacer manana"], points: 2, level: 2, hint: "¿Qué haces...?" },
+    { id: "hb16", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, ob die Person Lust hat, etwas essen zu gehen.", answerEs: "¿Quieres ir a comer algo?", acceptable: ["quieres ir a comer algo", "quieres comer algo", "vamos a comer algo"], points: 2, level: 2, hint: "¿Quieres...?" },
+    { id: "hb17", mode: "battle", cat: "social", scene: "plan", promptDe: "Schlag vor, zusammen zu gehen.", answerEs: "¿Vamos juntos?", acceptable: ["vamos juntos", "vamos juntas", "podemos ir juntos"], points: 2, level: 1, hint: "juntos = zusammen" },
+    { id: "hb18", mode: "battle", cat: "social", scene: "plan", promptDe: "Bitte, dir auf WhatsApp zu schreiben.", answerEs: "Escríbeme por WhatsApp.", acceptable: ["escribeme por whatsapp", "mandame un mensaje por whatsapp", "pasame tu whatsapp"], points: 2, level: 3, hint: "escríbeme = schreib mir" },
+    { id: "hb37", mode: "battle", cat: "social", scene: "plan", promptDe: "Frag, ob die Person mit zum Wasserfall kommt.", answerEs: "¿Vienes a la cascada?", acceptable: ["vienes a la cascada", "quieres venir a la cascada", "vamos a la cascada"], points: 2, level: 2, hint: "cascada = Wasserfall" },
+    { id: "hb38", mode: "battle", cat: "social", scene: "plan", promptDe: "Schlag vor, euch um acht zu treffen.", answerEs: "¿Nos vemos a las ocho?", acceptable: ["nos vemos a las ocho", "quedamos a las ocho", "vemonos a las ocho"], points: 2, level: 2, hint: "nos vemos = wir sehen uns" },
 
     // ----- Essen & Trinken -----
-    { id: "hb19", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag nach der Speisekarte.", answerEs: "¿Me trae la carta?", acceptable: ["me trae la carta", "la carta por favor", "me da el menu", "me trae el menu"], points: 2, hint: "carta / menú" },
-    { id: "hb20", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag, was die Person empfiehlt.", answerEs: "¿Qué me recomienda?", acceptable: ["que me recomienda", "que recomiendas", "que me recomiendas"], points: 2, hint: "recomendar = empfehlen" },
-    { id: "hb21", mode: "battle", cat: "trinken", scene: "food", promptDe: "Bestell zwei Bier.", answerEs: "Dos cervezas, por favor.", acceptable: ["dos cervezas por favor", "dos cervezas", "queremos dos cervezas"], points: 2, hint: "cerveza = Bier" },
-    { id: "hb22", mode: "battle", cat: "essen", scene: "food", promptDe: "Bitte um die Rechnung.", answerEs: "La cuenta, por favor.", acceptable: ["la cuenta por favor", "me trae la cuenta", "nos trae la cuenta"], points: 2, hint: "cuenta = Rechnung" },
+    { id: "hb19", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag nach der Speisekarte.", answerEs: "¿Me trae la carta?", acceptable: ["me trae la carta", "la carta por favor", "me da el menu", "me trae el menu"], points: 2, level: 1, hint: "carta / menú" },
+    { id: "hb20", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag, was die Person empfiehlt.", answerEs: "¿Qué me recomienda?", acceptable: ["que me recomienda", "que recomiendas", "que me recomiendas"], points: 2, level: 2, hint: "recomendar = empfehlen" },
+    { id: "hb21", mode: "battle", cat: "trinken", scene: "food", promptDe: "Bestell zwei Bier.", answerEs: "Dos cervezas, por favor.", acceptable: ["dos cervezas por favor", "dos cervezas", "queremos dos cervezas"], points: 2, level: 1, hint: "cerveza = Bier" },
+    { id: "hb22", mode: "battle", cat: "essen", scene: "food", promptDe: "Bitte um die Rechnung.", answerEs: "La cuenta, por favor.", acceptable: ["la cuenta por favor", "me trae la cuenta", "nos trae la cuenta"], points: 2, level: 1, hint: "cuenta = Rechnung" },
+    { id: "hb39", mode: "battle", cat: "essen", scene: "food", promptDe: "Sag, dass du Vegetarier/in bist.", answerEs: "Soy vegetariano/a.", acceptable: ["soy vegetariano", "soy vegetariana", "no como carne"], points: 2, level: 1, hint: "vegetariano / vegetariana" },
+    { id: "hb40", mode: "battle", cat: "essen", scene: "food", promptDe: "Frag, ob es etwas ohne Fleisch gibt.", answerEs: "¿Hay algo sin carne?", acceptable: ["hay algo sin carne", "tienen algo sin carne", "que hay sin carne"], points: 2, level: 2, hint: "sin carne = ohne Fleisch" },
 
     // ----- Unterwegs (vom Hostel aus) -----
-    { id: "hb23", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wo die nächste Bushaltestelle ist.", answerEs: "¿Dónde está la parada de bus?", acceptable: ["donde esta la parada de bus", "donde esta la parada del bus", "donde queda la parada"], points: 2, hint: "parada = Haltestelle" },
-    { id: "hb24", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Schlag vor, ein Taxi zu teilen.", answerEs: "¿Compartimos un taxi?", acceptable: ["compartimos un taxi", "vamos juntos en taxi", "tomamos un taxi juntos"], points: 2, hint: "compartir = teilen" },
-    { id: "hb25", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wie man zum Zentrum kommt.", answerEs: "¿Cómo llego al centro?", acceptable: ["como llego al centro", "como se va al centro", "como llegar al centro"], points: 2, hint: "¿Cómo llego...?" },
-    { id: "hb26", mode: "battle", cat: "social", scene: "out", promptDe: "Frag eine Empfehlung, wohin man abends gehen kann.", answerEs: "¿Qué me recomiendas para la noche?", acceptable: ["que me recomiendas para la noche", "adonde puedo ir en la noche", "que hay para hacer en la noche"], points: 2, hint: "para la noche = für abends" },
+    { id: "hb23", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wo die nächste Bushaltestelle ist.", answerEs: "¿Dónde está la parada de bus?", acceptable: ["donde esta la parada de bus", "donde esta la parada del bus", "donde queda la parada"], points: 2, level: 2, hint: "parada = Haltestelle" },
+    { id: "hb24", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Schlag vor, ein Taxi zu teilen.", answerEs: "¿Compartimos un taxi?", acceptable: ["compartimos un taxi", "vamos juntos en taxi", "tomamos un taxi juntos"], points: 2, level: 3, hint: "compartir = teilen" },
+    { id: "hb25", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wie man zum Zentrum kommt.", answerEs: "¿Cómo llego al centro?", acceptable: ["como llego al centro", "como se va al centro", "como llegar al centro"], points: 2, level: 2, hint: "¿Cómo llego...?" },
+    { id: "hb26", mode: "battle", cat: "social", scene: "out", promptDe: "Frag eine Empfehlung, wohin man abends gehen kann.", answerEs: "¿Qué me recomiendas para la noche?", acceptable: ["que me recomiendas para la noche", "adonde puedo ir en la noche", "que hay para hacer en la noche"], points: 2, level: 3, hint: "para la noche = für abends" },
+    { id: "hb41", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, ob es zu Fuß weit ist.", answerEs: "¿Está lejos a pie?", acceptable: ["esta lejos a pie", "queda lejos caminando", "se puede ir caminando"], points: 2, level: 2, hint: "a pie = zu Fuß" },
+    { id: "hb42", mode: "battle", cat: "verkehr", scene: "out", promptDe: "Frag, wann der letzte Bus zurückfährt.", answerEs: "¿A qué hora sale el último bus?", acceptable: ["a que hora sale el ultimo bus", "cuando sale el ultimo bus", "hasta que hora hay bus"], points: 2, level: 3, hint: "último = letzter" },
 
     // ----- Problem lösen -----
-    { id: "hb27", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass dein Handy gestohlen wurde.", answerEs: "Me robaron el celular.", acceptable: ["me robaron el celular", "me robaron mi celular", "me robaron el telefono"], points: 2, hint: "robar = stehlen" },
-    { id: "hb28", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du dich nicht gut fühlst.", answerEs: "Me siento mal.", acceptable: ["me siento mal", "no me siento bien"], points: 2, hint: "sentirse = sich fühlen" },
-    { id: "hb29", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du deinen Rucksack verloren hast.", answerEs: "Perdí mi mochila.", acceptable: ["perdi mi mochila", "perdi la mochila"], points: 2, hint: "perder = verlieren · mochila = Rucksack" },
-    { id: "hb30", mode: "battle", cat: "basics", scene: "problem", promptDe: "Bitte jemanden um Hilfe.", answerEs: "¿Me puedes ayudar?", acceptable: ["me puedes ayudar", "me puede ayudar", "necesito ayuda", "ayudame por favor"], points: 2, hint: "ayudar = helfen" },
+    { id: "hb27", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass dein Handy gestohlen wurde.", answerEs: "Me robaron el celular.", acceptable: ["me robaron el celular", "me robaron mi celular", "me robaron el telefono"], points: 2, level: 2, hint: "robar = stehlen" },
+    { id: "hb28", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du dich nicht gut fühlst.", answerEs: "Me siento mal.", acceptable: ["me siento mal", "no me siento bien"], points: 2, level: 1, hint: "sentirse = sich fühlen" },
+    { id: "hb29", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du deinen Rucksack verloren hast.", answerEs: "Perdí mi mochila.", acceptable: ["perdi mi mochila", "perdi la mochila"], points: 2, level: 2, hint: "perder = verlieren · mochila = Rucksack" },
+    { id: "hb30", mode: "battle", cat: "basics", scene: "problem", promptDe: "Bitte jemanden um Hilfe.", answerEs: "¿Me puedes ayudar?", acceptable: ["me puedes ayudar", "me puede ayudar", "necesito ayuda", "ayudame por favor"], points: 2, level: 1, hint: "ayudar = helfen" },
+    { id: "hb43", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du den Schlüssel im Zimmer vergessen hast.", answerEs: "Dejé la llave en el cuarto.", acceptable: ["deje la llave en el cuarto", "olvide la llave adentro", "deje la llave adentro"], points: 2, level: 2, hint: "dejé = ich ließ / vergaß" },
+    { id: "hb44", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Frag, wo es eine Apotheke gibt.", answerEs: "¿Dónde hay una farmacia?", acceptable: ["donde hay una farmacia", "donde esta la farmacia", "hay una farmacia cerca"], points: 2, level: 1, hint: "farmacia = Apotheke" },
+    { id: "hb45", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Bitte jemanden, einen Arzt zu rufen.", answerEs: "¿Puede llamar a un médico?", acceptable: ["puede llamar a un medico", "llamen a un medico", "necesito un medico"], points: 2, level: 3, hint: "médico = Arzt" },
   ];
 
   // Rollenspiele: kurze Dialoge zum lauten Durchspielen zu zweit.
@@ -7965,6 +8014,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.4.3",
+      date: "2026-06-12",
+      title: "Battle: fairer, mehr Inhalt, Stichrunde",
+      items: [
+        "15 neue Battle-Aufgaben (jetzt 45) und jede Aufgabe hat eine Schwierigkeits-Stufe (A1/A2/B1), die während der Runde angezeigt wird.",
+        "Faire Verteilung: A und B bekommen pro Runden-Paar etwa gleich schwere Aufgaben, und die Schwierigkeit steigert sich über das Battle.",
+        "Keine sofortigen Wiederholungen mehr: zuletzt gespielte Aufgaben werden über mehrere Battles gemieden.",
+        "Optionale Spielernamen – sie erscheinen in Punktestand, am Zug und in der Auswertung.",
+        "Stichrunde bei Gleichstand: zwei Extra-Runden küren doch noch einen Sieger.",
+        "Die Szenen-Auswahl zeigt jetzt die echte Rundenzahl der gewählten Länge statt nur der Aufgabenzahl.",
+      ],
+    },
+    {
       version: "1.4.2",
       date: "2026-06-12",
       title: "Battle klarer erklärt",
@@ -9084,17 +9146,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Battle: Szene wählen.
   function renderBattleSetup(vm) {
+    // Badge zeigt die tatsächliche Rundenzahl bei der gewählten Länge – ehrlicher
+    // als die reine Aufgabenzahl (kleine Szenen ergeben weniger Runden).
+    const roundsBadge = (n) => `<span class="hm-scene__count">${n} Runden</span>`;
     const scenes = [
       `<button class="hm-scene" data-action="start-battle" data-scene="all">
          <span class="hm-scene__icon" aria-hidden="true">🎲</span>
          <span class="hm-scene__label">Alle Szenen</span>
-         <span class="hm-scene__count">${vm.totalCount}</span>
+         ${roundsBadge(vm.totalRounds)}
        </button>`,
       ...vm.scenes.map((s) =>
         `<button class="hm-scene" data-action="start-battle" data-scene="${esc(s.id)}">
            <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
            <span class="hm-scene__label">${esc(s.label)}</span>
-           <span class="hm-scene__count">${s.count}</span>
+           ${roundsBadge(s.rounds)}
          </button>`),
     ].join("");
     const lengths = vm.lengths.map((l) =>
@@ -9120,7 +9185,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <span class="hm-length__cap">Länge</span>
           <div class="segmented segmented--len" role="group" aria-label="Battle-Länge">${lengths}</div>
         </div>
-        <div class="hm-scenes">${scenes}</div>
+        <div class="hm-names">
+          <span class="hm-length__cap">Namen <span class="hm-names__opt">(optional)</span></span>
+          <div class="hm-names__row">
+            <input id="pname-a" class="hm-name" type="text" inputmode="text" autocomplete="off"
+                   maxlength="14" placeholder="Spieler A" aria-label="Name Spieler A" value="${esc(vm.names.A)}">
+            <span class="hm-names__vs" aria-hidden="true">vs</span>
+            <input id="pname-b" class="hm-name" type="text" inputmode="text" autocomplete="off"
+                   maxlength="14" placeholder="Spieler B" aria-label="Name Spieler B" value="${esc(vm.names.B)}">
+          </div>
+        </div>
+        <div class="hm-scenes"><span class="hm-length__cap">Szene wählen &amp; starten</span>${scenes}</div>
       </section>`;
   }
 
@@ -9136,7 +9211,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             : ""}
         </div>
         <div class="hm-verdict">
-          <p class="hm-verdict__cap">Spieler ${vm.current === "A" ? "B" : "A"} bewertet:</p>
+          <p class="hm-verdict__cap"><b>${esc(vm.raterName)}</b> bewertet die Antwort:</p>
+          ${vm.alsoOk && vm.alsoOk.length
+            ? `<p class="hm-verdict__fair">Diese Varianten zählen auch als richtig.</p>`
+            : ""}
           <div class="ratebar" role="group" aria-label="Antwort bewerten">
             <button class="feel feel--again" data-action="battle-score" data-points="0">
               <span class="feel__emoji" aria-hidden="true">❌</span><span class="feel__txt">Falsch</span>
@@ -9153,16 +9231,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${vm.hint ? `<div class="hm-hint">💡 ${esc(vm.hint)}</div>` : ""}
         <button class="cta" data-action="battle-reveal">Lösung anzeigen</button>`;
 
+    const meta = `
+      <span class="hm-prompt__tag">${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}</span>
+      ${vm.levelShort ? `<span class="hm-prompt__lvl">${esc(vm.levelShort)}</span>` : ""}`;
+
     return `
       <section class="screen study">
-        ${hmTopbar(`${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
+        ${hmTopbar(vm.suddenDeath ? "⚡ Stichrunde" : `${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
         <div class="hm-score">
-          <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">A <b>${vm.scores.A}</b></span>
-          <span class="hm-score__round">Runde ${vm.round}/${vm.totalRounds}</span>
-          <span class="hm-score__p ${vm.current === "B" ? "is-turn" : ""}">B <b>${vm.scores.B}</b></span>
+          <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">${esc(vm.chipA)} <b>${vm.scores.A}</b></span>
+          <span class="hm-score__round">${vm.suddenDeath ? "⚡ " : ""}Runde ${vm.round}/${vm.totalRounds}</span>
+          <span class="hm-score__p ${vm.current === "B" ? "is-turn" : ""}">${esc(vm.chipB)} <b>${vm.scores.B}</b></span>
         </div>
-        <p class="hm-turn" aria-live="polite">Spieler <b>${vm.current}</b> ist dran – laut auf Spanisch!</p>
-        <div class="hm-prompt">${esc(vm.promptDe)}</div>
+        <p class="hm-turn" aria-live="polite"><b>${esc(vm.currentName)}</b> ist dran – laut auf Spanisch!</p>
+        <div class="hm-prompt"><div class="hm-prompt__meta">${meta}</div>${esc(vm.promptDe)}</div>
         <div class="controls">${solution}</div>
       </section>`;
   }
@@ -9171,7 +9253,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function renderBattleDone(vm) {
     const verdict = vm.winner === "tie"
       ? "Unentschieden! 🤝"
-      : `Spieler ${vm.winner} gewinnt! 🏆`;
+      : `${esc(vm.winnerName)} gewinnt! 🏆`;
+    // Bei Gleichstand: Stichrunde anbieten (zwei Extra-Runden, A & B).
+    const tieBreak = vm.winner === "tie"
+      ? `<button class="cta cta--tiebreak" data-action="battle-sudden-death">⚡ ${vm.suddenDeath ? "Noch eine Stichrunde" : "Stichrunde spielen"}</button>`
+      : "";
     const challenge = vm.challenge
       ? `
         <div class="hm-challenge">
@@ -9189,11 +9275,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <div class="done__emoji">🎉</div>
           <h2>Ihr habt ${esc(vm.sceneLabel)} überlebt</h2>
           <p class="hm-result">
-            <span class="hm-result__p">Spieler A<br><b>${vm.scores.A}</b></span>
+            <span class="hm-result__p ${vm.winner === "A" ? "is-win" : ""}">${esc(vm.nameA)}<br><b>${vm.scores.A}</b></span>
             <span class="hm-result__vs">:</span>
-            <span class="hm-result__p">Spieler B<br><b>${vm.scores.B}</b></span>
+            <span class="hm-result__p ${vm.winner === "B" ? "is-win" : ""}">${esc(vm.nameB)}<br><b>${vm.scores.B}</b></span>
           </p>
           <p class="hm-winner">${verdict}</p>
+          ${tieBreak}
           ${challenge}
           <button class="cta" data-action="battle-again">Nochmal spielen</button>
           <button class="ghostbtn" data-action="home">Zur Übersicht</button>
@@ -9509,8 +9596,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
     // ----- Hostel Mode (transient, keine Persistenz) -----
-    battle: null,            // { sceneId, queue:[battleId…], round, totalRounds, current:'A'|'B', scores:{A,B}, revealed, challenge }
+    battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
+    battleNames: { A: "", B: "" }, // optionale Spielernamen (sonst „Spieler A/B")
+    battleSeen: [],          // zuletzt verwendete Battle-Ids – vermeidet sofortige Wiederholungen
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
@@ -9983,21 +10072,41 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { value: 20, label: "Lang" },
   ];
 
+  // Gerade Rundenzahl (A,B,A,B…); bei nur 1 Aufgabe bleibt 1 Runde.
+  const evenRounds = (n) => (n - (n % 2)) || n;
+
   function battleSetupVM() {
     const scenes = data.BATTLE_SCENES
-      .map((s) => ({ id: s.id, label: s.label, icon: s.icon,
-        count: data.BATTLES.filter((b) => b.scene === s.id).length }))
+      .map((s) => {
+        const count = data.BATTLES.filter((b) => b.scene === s.id).length;
+        return { id: s.id, label: s.label, icon: s.icon, count,
+          rounds: evenRounds(Math.min(state.battleLength, count)) };
+      })
       .filter((s) => s.count > 0);
     // Object.assign statt Objekt-Spread: die App verspricht ES2017 (Spread auf
     // Objekten ist ES2018 und wirft auf alten WebViews einen SyntaxError).
     const lengths = BATTLE_LENGTHS.map((l) => Object.assign({}, l, { selected: l.value === state.battleLength }));
-    return { scenes, totalCount: data.BATTLES.length, lengths };
+    const totalCount = data.BATTLES.length;
+    return {
+      scenes,
+      totalCount,
+      totalRounds: evenRounds(Math.min(state.battleLength, totalCount)),
+      lengths,
+      names: { A: state.battleNames.A, B: state.battleNames.B },
+    };
+  }
+
+  // Anzeigename eines Spielers ("A"/"B") – eingegeben oder Fallback "Spieler A/B".
+  function playerName(b, side) {
+    const n = b.names && b.names[side];
+    return n && n.trim() ? n.trim() : "Spieler " + side;
   }
 
   function battleVM() {
     const b = state.battle;
     const prompt = battleById(b.queue[b.round - 1]);
     const scene = data.BATTLE_SCENES.find((s) => s.id === b.sceneId);
+    const lvl = prompt ? levelById(prompt.level) : null;
     // Weitere gültige Antworten (ohne die schon angezeigte Musterlösung) als Hilfe
     // für den bewertenden Mitspieler – damit faire Phrasing-Varianten zählen.
     const alsoOk = prompt
@@ -10009,11 +10118,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       round: b.round,
       totalRounds: b.totalRounds,
       current: b.current,
+      currentName: playerName(b, b.current),
+      raterName: playerName(b, b.current === "A" ? "B" : "A"),
+      // Kurze Chip-Beschriftung: eigener Name, sonst „A"/„B" (Score-Zeile bleibt kompakt).
+      chipA: (b.names && b.names.A && b.names.A.trim()) ? b.names.A.trim() : "A",
+      chipB: (b.names && b.names.B && b.names.B.trim()) ? b.names.B.trim() : "B",
       scores: b.scores,
       revealed: b.revealed,
+      suddenDeath: !!b.suddenDeath,
       promptDe: prompt ? prompt.promptDe : "",
       answerEs: prompt ? prompt.answerEs : "",
       alsoOk,
+      levelShort: lvl ? lvl.short : "",
       hint: prompt ? prompt.hint : "",
     };
   }
@@ -10028,6 +10144,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       scores: b.scores,
       rounds: b.totalRounds,
       winner,
+      nameA: playerName(b, "A"),
+      nameB: playerName(b, "B"),
+      winnerName: winner === "tie" ? "" : playerName(b, winner),
+      suddenDeath: !!b.suddenDeath, // lief schon eine Stichrunde? (Label „noch eine")
       challenge: b.challenge, // { id, textDe, phraseEs } | null
       challengeDone: !!(b.challenge && gamestats.challengesDone && gamestats.challengesDone[b.challenge.id]),
     };
@@ -10569,29 +10689,77 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
-  // Battle starten: Aufgaben der Szene (oder alle) mischen, begrenzt auf die gewählte Länge.
+  // Spielernamen aus den Setup-Feldern lesen (vor dem Start) und merken.
+  function readBattleNames() {
+    const v = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+    const a = v("pname-a"), bb = v("pname-b");
+    // Nur überschreiben, wenn die Felder gerendert waren (sonst State behalten).
+    state.battleNames = { A: a || state.battleNames.A, B: bb || state.battleNames.B };
+    return { A: state.battleNames.A, B: state.battleNames.B };
+  }
+
+  const battleLevel = (id) => { const b = battleById(id); return b && b.level ? b.level : 1; };
+
+  // Aufgaben für ein Battle ziehen: bevorzugt noch nicht kürzlich gesehene
+  // (kein sofortiges Wiederholen über mehrere Battles), Rest zufällig auffüllen.
+  function pickBattleIds(poolIds, count, excludeIds) {
+    const ex = {};
+    (excludeIds || []).forEach((id) => { ex[id] = true; });
+    let chosen = shuffle(poolIds.filter((id) => !ex[id])).slice(0, count);
+    if (chosen.length < count) {
+      const used = {};
+      chosen.forEach((id) => { used[id] = true; });
+      const rest = shuffle(poolIds.filter((id) => !used[id]));
+      chosen = chosen.concat(rest.slice(0, count - chosen.length));
+    }
+    return chosen;
+  }
+
+  // Faire Verteilung: nach Schwierigkeit sortieren, dann je Runden-Paar (A,B)
+  // die Reihenfolge zufällig drehen. So bekommen beide Spieler pro Paar etwa
+  // gleich schwere Aufgaben und die Schwierigkeit steigert sich über das Battle.
+  function balanceByLevel(ids) {
+    const sorted = ids.slice().sort((x, y) => battleLevel(x) - battleLevel(y));
+    for (let i = 0; i + 1 < sorted.length; i += 2) {
+      if (Math.random() < 0.5) { const t = sorted[i]; sorted[i] = sorted[i + 1]; sorted[i + 1] = t; }
+    }
+    return sorted;
+  }
+
+  // Battle starten: Aufgaben der Szene (oder alle) ziehen, begrenzt auf die gewählte Länge.
   function startBattle(sceneId) {
     dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
-    const queue = shuffle(pool).map((b) => b.id);
-    if (!queue.length) return;
+    if (!pool.length) return;
+    const poolIds = pool.map((b) => b.id);
     // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
-    const cap = Math.min(state.battleLength, queue.length);
-    const rounds = cap - (cap % 2) || cap; // bei nur 1 Aufgabe bleibt 1 Runde
+    const rounds = evenRounds(Math.min(state.battleLength, poolIds.length));
+    const queue = balanceByLevel(pickBattleIds(poolIds, rounds, state.battleSeen));
+    rememberBattleSeen(queue, poolIds.length);
     state.battle = {
       sceneId,
-      queue,
+      poolIds,               // ganzer Pool – für Stichrunden-Nachschlag
+      queue,                 // genau die geplanten Runden, fair sortiert
       round: 1,
       totalRounds: rounds,
       current: "A",
+      names: readBattleNames(),
       scores: { A: 0, B: 0 },
       behindA: false,         // war A irgendwann in Rückstand? (für "Comeback Kid")
       behindB: false,
       revealed: false,
+      recorded: false,        // Ergebnis schon in die Zähler gebucht? (genau einmal)
+      suddenDeath: false,     // läuft/lief eine Stichrunde?
       challenge: null,
     };
     state.screen = "battle";
     render();
+  }
+
+  // Verwendete Ids merken (für den Wiederholungsschutz), Liste begrenzen.
+  function rememberBattleSeen(ids, poolSize) {
+    const cap = Math.max(poolSize - 2, ids.length); // immer etwas „frisches" übrig lassen
+    state.battleSeen = state.battleSeen.concat(ids).slice(-cap);
   }
 
   function battleReveal() {
@@ -10610,17 +10778,43 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (b.scores.A < b.scores.B) b.behindA = true;
     if (b.scores.B < b.scores.A) b.behindB = true;
     if (b.round >= b.totalRounds) {
-      // Passende Real-Life-Challenge als Bonus (zufällig).
-      const list = data.CHALLENGES || [];
-      b.challenge = list.length ? list[Math.floor(Math.random() * list.length)] : null;
+      // Real-Life-Challenge als Bonus – einmal ziehen, bleibt auch über Stichrunden.
+      if (!b.challenge) {
+        const list = data.CHALLENGES || [];
+        b.challenge = list.length ? list[Math.floor(Math.random() * list.length)] : null;
+      }
+      // Ergebnis genau EINMAL buchen (am Ende der regulären Runden). Eine
+      // Stichrunde kürt nur am Bildschirm einen Sieger und zählt nicht doppelt;
+      // ein Unentschieden bleibt fürs Badge-System ein Unentschieden.
+      if (!b.recorded) {
+        recordBattleResult(b);
+        b.recorded = true;
+        syncBadges(Date.now(), true); // Battle-Badges freischalten + einblenden
+      }
       state.screen = "battleDone";
-      recordBattleResult(b);
-      syncBadges(Date.now(), true); // Battle-Badges freischalten + einblenden
     } else {
       b.round += 1;
       b.current = b.current === "A" ? "B" : "A";
       b.revealed = false;
     }
+    render();
+  }
+
+  // Stichrunde bei Gleichstand: zwei zusätzliche Runden (A, B). Zieht zwei
+  // möglichst neue Aufgaben nach, die noch nicht im Battle vorkamen.
+  function battleSuddenDeath() {
+    const b = state.battle;
+    if (!b || b.scores.A !== b.scores.B) return;
+    const extra = pickBattleIds(b.poolIds, 2, b.queue.concat(state.battleSeen));
+    if (!extra.length) return;
+    b.queue = b.queue.concat(extra);
+    rememberBattleSeen(extra, b.poolIds.length);
+    b.totalRounds += extra.length;
+    b.round += 1;
+    b.current = "A";
+    b.revealed = false;
+    b.suddenDeath = true;
+    state.screen = "battle";
     render();
   }
 
@@ -10964,6 +11158,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "start-battle") startBattle(el.dataset.scene);
     else if (action === "battle-reveal") battleReveal();
     else if (action === "battle-score") battleScore(Number(el.dataset.points));
+    else if (action === "battle-sudden-death") battleSuddenDeath();
     else if (action === "battle-again") battleAgain();
     else if (action === "challenge-done") markChallengeDone(el.dataset.id);
     else if (action === "open-roleplay-setup") openRoleplaySetup();
@@ -11012,6 +11207,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const file = (e.target.files && e.target.files[0]) || null;
       e.target.value = ""; // erlaubt erneuten Import derselben Datei
       handleImportFile(file);
+      return;
+    }
+    // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie
+    // nicht verschluckt. 'change' feuert beim Verlassen des Feldes (auch wenn
+    // direkt ein Längen-/Szenen-Button geklickt wird).
+    if (e.target && (e.target.id === "pname-a" || e.target.id === "pname-b")) {
+      const side = e.target.id === "pname-a" ? "A" : "B";
+      state.battleNames = Object.assign({}, state.battleNames, { [side]: e.target.value.trim() });
       return;
     }
     const el = e.target.closest('[data-action="select-country"]');
