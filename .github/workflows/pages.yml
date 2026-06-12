@@ -25,6 +25,10 @@ permissions:
 # Die gepinnten checkout-/setup-node-Actions laufen noch auf der Node-20-Runtime,
 # die GitHub ab dem 16.06.2026 abkündigt. Bis neue Action-Versionen gepinnt werden,
 # zwingen wir sie schon jetzt auf Node 24 (offiziell empfohlener Übergangsweg).
+#
+# AUFRÄUMEN: Ab dem 16.06.2026 ist Node 24 der Standard auf den Runnern — dann
+# ist dieser env-Block überflüssig und kann ersatzlos gelöscht werden. (Die
+# Actions selbst laufen auf Node 24 problemlos; ein v5-Upgrade ist optional.)
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
