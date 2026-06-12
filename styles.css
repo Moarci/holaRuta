@@ -1491,6 +1491,64 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .bp-panel { flex: 1 1 auto; align-self: stretch; }
 }
 
+/* ---- Einkaufszettel (Lista de compras) ---- */
+.sl-screen { display: flex; flex-direction: column; gap: 16px; }
+.sl-fill { background: linear-gradient(90deg, var(--from), var(--to)); }
+
+/* Rubrik-Chips (Supermercado / Ropa / Farmacia). */
+.sl-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.sl-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 14px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink-soft);
+  font-family: var(--font-display); font-weight: 800; font-size: 0.92rem;
+  min-height: 44px; transition: border-color 0.15s ease, background 0.15s ease;
+}
+.sl-chip:active { transform: translateY(1px); }
+.sl-chip.is-active {
+  border-color: transparent; color: #fff;
+  background: linear-gradient(120deg, var(--from), var(--to));
+}
+.sl-chip__icon { font-size: 1.05rem; }
+.sl-chip__done { font-weight: 900; }
+
+/* Die Liste: eine Zeile je Item, aufklappbar. */
+.sl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sl-item {
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow);
+  transition: border-color 0.15s ease;
+}
+.sl-item.is-open { border-color: var(--brand); }
+.sl-item.is-checked .sl-item__check { color: var(--brand-ink); }
+.sl-item__row {
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; min-height: 52px; cursor: pointer;
+  background: none; border: 0; text-align: left; color: inherit;
+}
+.sl-item__row:active { transform: translateY(1px); }
+.sl-item__check {
+  flex: 0 0 22px; width: 22px; height: 22px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid var(--line); font-weight: 900; font-size: 0.9rem; color: transparent;
+}
+.sl-item.is-checked .sl-item__check { border-color: var(--brand); }
+.sl-item__de { flex: 1 1 auto; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
+.sl-item__chev { flex: 0 0 auto; color: var(--muted); font-size: 1.3rem; transition: transform 0.18s ease; }
+.sl-item.is-open .sl-item__chev { transform: rotate(90deg); }
+
+/* Aufgeklappter Detail-Block. */
+.sl-item__detail { padding: 0 16px 16px 50px; display: flex; flex-direction: column; gap: 8px; }
+.sl-item__estop { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sl-item__es {
+  margin: 0; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.01em; color: var(--brand-ink);
+}
+.sl-item__tip { margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--ink-soft); }
+.sl-item__note { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
+.sl-speak { position: static; flex: none; }
+.sl-quizbtn { margin-top: 4px; }
+
 /* Listen-Auswahl: Intro-Zeile unter dem Titel. */
 .quiz-set__intro { display: block; margin-top: 3px; font-size: 0.8rem; font-weight: 400; color: var(--muted); line-height: 1.35; }
 .quiz-lvl { font-size: 0.72rem; font-weight: 800; color: var(--muted); }

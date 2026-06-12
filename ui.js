@@ -71,6 +71,7 @@
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören, die Zahl eintippen",     grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-compras",     icon: "🛒", title: "Einkaufszettel", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
   ];
@@ -1830,10 +1831,143 @@
       </section>`;
   }
 
+  // ---------- EINKAUFSZETTEL (Lista de compras) ----------
+  // Interaktive Einkaufsliste: Rubrik wählen (Supermercado/Ropa/Farmacia),
+  // Items antippen -> spanisches Wort, Aussprache, Reisetipp + Vorlesen, und
+  // das Item wird abgehakt. Dazu ein kurzes Quiz über dieselbe Rubrik.
+  function renderCompras(vm) {
+    const chips = vm.sections
+      .map((s) => `
+        <button class="sl-chip ${s.active ? "is-active" : ""}" type="button"
+                data-action="compras-section" data-id="${esc(s.id)}"
+                aria-pressed="${s.active ? "true" : "false"}"
+                title="${esc(s.de)} – ${s.done}/${s.total} abgehakt">
+          <span class="sl-chip__icon" aria-hidden="true">${esc(s.icon)}</span>
+          <span class="sl-chip__label">${esc(s.label)}</span>
+          ${s.done >= s.total ? `<span class="sl-chip__done" aria-hidden="true">✓</span>` : ""}
+        </button>`)
+      .join("");
+
+    const items = vm.items
+      .map((it) => {
+        const speak = it.open && vm.speakable
+          ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: "Wort anhören",
+              action: "compras-speak", extra: `data-id="${esc(it.id)}"` })
+          : "";
+        const detail = it.open
+          ? `
+            <div class="sl-item__detail" role="region">
+              <div class="sl-item__estop">
+                <p class="sl-item__es" lang="es">${esc(it.es)}</p>
+                ${speak}
+              </div>
+              ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">🗣️</span> ${esc(it.tip)}</p>` : ""}
+              ${it.note ? `<p class="sl-item__note">${esc(it.note)}</p>` : ""}
+            </div>`
+          : "";
+        return `
+          <li class="sl-item ${it.open ? "is-open" : ""} ${it.seen ? "is-checked" : ""}">
+            <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
+                    aria-expanded="${it.open ? "true" : "false"}">
+              <span class="sl-item__check" aria-hidden="true">${it.seen ? "✓" : ""}</span>
+              <span class="sl-item__de">${esc(it.de)}</span>
+              <span class="sl-item__chev" aria-hidden="true">${it.open ? "›" : "›"}</span>
+            </button>
+            ${detail}
+          </li>`;
+      })
+      .join("");
+
+    const pct = vm.total > 0 ? Math.round((vm.doneCount / vm.total) * 100) : 0;
+    const done = vm.total > 0 && vm.doneCount >= vm.total;
+    const progress = `
+      <div class="bp-progress">
+        <div class="bp-progress__bar"><div class="bp-progress__fill sl-fill" style="width:${pct}%"></div></div>
+        <span class="bp-progress__label">${done ? "¡Lista lista! 🎉 Alle " + vm.total + " abgehakt" : "Abgehakt: " + vm.doneCount + "/" + vm.total}</span>
+      </div>`;
+
+    const quizBtn = vm.total >= 2
+      ? `<button class="cta sl-quizbtn" data-action="open-compras-quiz">🧩 Quiz: ${esc(vm.section.label)}</button>`
+      : "";
+
+    return `
+      <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
+        ${hmTopbar("🛒 Einkaufszettel", "home")}
+        <p class="hm-intro">Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe an, was du brauchst – dann erscheinen Wort, Aussprache und ein Reisetipp, und das Wort wird vorgelesen. Wenn du magst, prüf dich danach im kurzen Quiz.</p>
+        <div class="sl-chips" role="group" aria-label="Rubrik wählen">${chips}</div>
+        ${progress}
+        <ul class="sl-list">${items}</ul>
+        ${quizBtn}
+      </section>`;
+  }
+
+  // Quiz: „Du brauchst X" (Deutsch) -> richtiges spanisches Wort wählen.
+  // Reuse der Definiciones-Optik (.quiz-def / .quiz-opt / .quiz-feedback).
+  function renderComprasQuiz(vm) {
+    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
+    const options = vm.options
+      .map((o, i) => {
+        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
+        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
+        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
+          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
+        return `
+          <button class="${cls}" type="button" data-action="compras-quiz-answer" data-idx="${i}"${dis}>
+            <span class="quiz-opt__text">
+              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+            </span>
+            ${mark}
+          </button>`;
+      })
+      .join("");
+
+    const feedback = vm.answered
+      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
+           ${vm.isCorrect
+             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
+             : `<span class="quiz-feedback__head">No exactamente.</span>
+                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b></span>`}
+         </div>
+         <button class="cta" data-action="compras-quiz-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+      : "";
+
+    return `
+      <section class="screen study">
+        ${hmTopbar(`${esc(vm.sectionIcon)} ${esc(vm.sectionLabel)}`, "compras-back-list")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Quiz-Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">Frage ${vm.position + 1}/${vm.total}</div>
+        <div class="quiz-def">
+          <span class="quiz-def__cap">Du brauchst …</span>
+          <p class="quiz-def__text">${esc(vm.prompt)}</p>
+        </div>
+        <div class="quiz-opts">${options}</div>
+        ${feedback}
+      </section>`;
+  }
+
+  function renderComprasQuizDone(vm) {
+    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
+    const verdict = vm.perfect ? "¡Perfecto! Alles richtig. 🏆"
+      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
+      : "Sigue practicando – Übung macht den Meister. 💪";
+    return `
+      <section class="screen">
+        <div class="done">
+          <div class="done__emoji">${vm.perfect ? "🏆" : "🛒"}</div>
+          <h2>${esc(vm.sectionLabel)} geschafft</h2>
+          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <p class="hm-winner">${verdict}</p>
+          <button class="cta" data-action="compras-quiz-again">Nochmal üben</button>
+          <button class="ghostbtn" data-action="compras-back-list">Zurück zum Zettel</button>
+        </div>
+      </section>`;
+  }
+
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderSpickzettel,
-                   renderPrecios, renderPreciosDone, renderFrases, renderFrasesDone };
+                   renderPrecios, renderPreciosDone, renderFrases, renderFrasesDone,
+                   renderCompras, renderComprasQuiz, renderComprasQuizDone };
 })();
