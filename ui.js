@@ -1871,7 +1871,7 @@
                     aria-expanded="${it.open ? "true" : "false"}">
               <span class="sl-item__check" aria-hidden="true">${it.seen ? "✓" : ""}</span>
               <span class="sl-item__de">${esc(it.de)}</span>
-              <span class="sl-item__chev" aria-hidden="true">${it.open ? "›" : "›"}</span>
+              <span class="sl-item__chev" aria-hidden="true">›</span>
             </button>
             ${detail}
           </li>`;
