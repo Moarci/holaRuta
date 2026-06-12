@@ -75,6 +75,7 @@
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Länderkunde",   sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
+    { action: "open-knigge",      icon: "🧭", title: "Reise-Knigge",  sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -220,7 +221,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases };
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, knigge: vm.hasKnigge };
     const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -1234,6 +1235,75 @@
       </div>`;
   }
 
+  // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
+  // Allgemeine DOs & Don'ts (Hostel, Bus, Gruppen, Kultur) plus landesspezifische
+  // Akzente. Land-Dropdown wie in renderInfo (teilt state.countryId). Themenblöcke
+  // sind natives <details> (kein JS-State) – analog zu dish() in renderInfo.
+  function renderKnigge(vm) {
+    const options = vm.groups
+      .map((g) => {
+        const opts = g.countries
+          .map((c) => `<option value="${esc(c.id)}"${c.selected ? " selected" : ""}>${c.flag} ${esc(c.name)}</option>`)
+          .join("");
+        return `<optgroup label="${esc(g.region)}">${opts}</optgroup>`;
+      })
+      .join("");
+
+    const selector = `
+      <label class="cinfo-pick">
+        <span class="cinfo-pick__cap">Land wählen</span>
+        <select class="cinfo-pick__sel" id="country-select" data-action="select-country">${options}</select>
+      </label>`;
+
+    const countryName = vm.country ? vm.country.name : "";
+
+    const liList = (items, cls, marker) =>
+      (items || [])
+        .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
+        .join("");
+
+    const block = (t) => {
+      const dos = liList(t.dos, "knigge-do", "✅");
+      const donts = liList(t.donts, "knigge-dont", "🚫");
+      const accent = t.accent
+        ? `<div class="knigge-accent">💡 <strong>In ${esc(countryName)}:</strong> ${esc(t.accent)}</div>`
+        : "";
+      return `
+        <details class="knigge-topic">
+          <summary class="knigge-topic__head">
+            <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
+            <span class="knigge-topic__title">${esc(t.title)}</span>
+            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="knigge-topic__body">
+            ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
+            ${dos ? `<ul class="knigge-list">${dos}</ul>` : ""}
+            ${donts ? `<ul class="knigge-list">${donts}</ul>` : ""}
+            ${accent}
+          </div>
+        </details>`;
+    };
+
+    const topics = (vm.topics || []).map(block).join("");
+
+    return `
+      <section class="screen">
+        ${kniggeTopbar()}
+        ${selector}
+        <p class="pageintro">Allgemeine DOs &amp; Don'ts plus Besonderheiten${countryName ? ` für ${esc(countryName)}` : ""}.</p>
+        ${topics}
+      </section>`;
+  }
+
+  function kniggeTopbar() {
+    return `
+      <div class="topbar">
+        <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+        <div class="topbar__title">🧭 Reise-Knigge</div>
+        <span></span>
+      </div>`;
+  }
+
   // ---------- HOSTEL MODE ----------
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
   function hmTopbar(title, back) {
@@ -2177,7 +2247,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
+  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge,
                    renderBadges, badgeToast, noticeToast, updateNotice,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

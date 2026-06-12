@@ -12,6 +12,7 @@
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
@@ -169,6 +170,7 @@
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
       hasCountries: !!countries, // dito für die Länderkunde
+      hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
@@ -326,6 +328,33 @@
       }))
       .filter((g) => g.countries.length > 0);
     return { country, groups };
+  }
+
+  // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
+  // Region-Gruppen fürs Dropdown wie infoVM, plus die allgemeinen Themenblöcke
+  // mit eingehängtem landesspezifischem Akzent.
+  function kniggeVM() {
+    const list = countries ? countries.LIST : [];
+    const regions = countries ? countries.REGIONS : [];
+    const country = list.find((c) => c.id === state.countryId) || list[0] || null;
+    const groups = regions
+      .map((region) => ({
+        region,
+        countries: list
+          .filter((c) => c.region === region)
+          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+      }))
+      .filter((g) => g.countries.length > 0);
+    const accents = (country && knigge && knigge.ACCENTS[country.id]) || {};
+    const topics = (knigge ? knigge.TOPICS : []).map((t) => ({
+      icon: t.icon,
+      title: t.title,
+      intro: t.intro,
+      dos: t.dos,
+      donts: t.donts,
+      accent: accents[t.id] || "",
+    }));
+    return { country, groups, topics };
   }
 
   // ----- Badge-System ("Mein Ruta-Pass") -----
@@ -1305,6 +1334,7 @@
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
+    else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
@@ -2014,6 +2044,12 @@
     render();
   }
 
+  function openKnigge() {
+    dismissBadgeToast();
+    state.screen = "knigge";
+    render();
+  }
+
   function selectCountry(id) {
     state.countryId = id;
     render();
@@ -2289,6 +2325,7 @@
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
+    else if (action === "open-knigge") openKnigge();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");

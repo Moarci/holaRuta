@@ -21,6 +21,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.10.0",
+      date: "2026-06-12",
+      title: "Reise-Knigge: Verhalten unterwegs",
+      items: [
+        "🧭 Neuer Bereich unter Entdecken: „Reise-Knigge“ mit DOs & Don'ts zum Verhalten auf Reisen – Hostel & Dorm, Bus & Transport, Gruppen & Leute sowie Kultur & Etikette.",
+        "Praktische Faustregeln: Nachtruhe im Schlafsaal, Licht/Lärm, Wertsachen im Bus, wie man unterwegs auf Leute zugeht, Trinkgeld und Begrüßung.",
+        "Pro Land Besonderheiten („Akzente“) für alle 19 Länder – z. B. „chicken buses“ in Guatemala, Voseo & Mate-Etikette in Argentinien, „pura vida“ in Costa Rica oder casas particulares in Kuba.",
+        "Das gewählte Land ist mit der Länderkunde verknüpft: einmal auswählen, überall passend.",
+      ],
+    },
+    {
       version: "1.9.0",
       date: "2026-06-12",
       title: "Einkaufszettel: interaktiv für Supermarkt, Kleidung & Farmacia",
