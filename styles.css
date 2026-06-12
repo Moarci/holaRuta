@@ -540,7 +540,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .flip.is-flipped .flip__inner { transform: rotateY(180deg); }
 .face {
   position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden;
-  border-radius: var(--r-lg); padding: 30px;
+  border-radius: var(--r-lg); padding: 52px 30px 30px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; box-shadow: var(--shadow-lg);
 }
@@ -593,7 +593,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Statische Karte (Schreiben-Modus) */
 .card-static {
-  position: relative; min-height: 220px; border-radius: var(--r-lg); padding: 30px;
+  position: relative; min-height: 220px; border-radius: var(--r-lg); padding: 52px 30px 30px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; background: var(--card); border: 1.5px solid var(--line);
   box-shadow: var(--shadow-lg); animation: pop 0.25s ease;
