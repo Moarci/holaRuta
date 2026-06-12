@@ -1388,60 +1388,102 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Bühne: Figur links/oben, Info-Panel daneben/darunter. */
 .bp-stage { display: flex; flex-direction: column; gap: 16px; align-items: stretch; }
 
-.bp-figwrap {
-  position: relative; width: 100%; max-width: 290px; margin: 4px auto 0;
-  aspect-ratio: 200 / 440; /* exakt der SVG-Bezugsrahmen → Prozent-Hotspots sitzen */
-  /* weiches Spotlight hinter der Figur – hebt sie sanft von der Fläche ab */
-  background: radial-gradient(58% 44% at 50% 33%, rgba(194, 80, 46, 0.12), transparent 72%);
+/* ---- Drehbares 3D-Körpermodell ---- */
+/* Bühne mit Perspektive. touch-action:none, damit das Ziehen die Figur dreht
+   statt die Seite zu scrollen. */
+.bp-3d-stage {
+  position: relative; width: 100%; max-width: 320px; height: 430px;
+  margin: 2px auto 0; perspective: 900px; touch-action: none;
+  cursor: grab; user-select: none; -webkit-user-select: none;
+  /* weiches Spotlight hinter der Figur */
+  background: radial-gradient(54% 40% at 50% 38%, rgba(194, 80, 46, 0.12), transparent 72%);
 }
-[data-theme="dark"] .bp-figwrap {
-  background: radial-gradient(58% 44% at 50% 33%, rgba(224, 106, 64, 0.16), transparent 72%);
+[data-theme="dark"] .bp-3d-stage {
+  background: radial-gradient(54% 40% at 50% 38%, rgba(224, 106, 64, 0.16), transparent 72%);
 }
-.bp-figure {
-  width: 100%; height: 100%; display: block;
-  color: #C9A37E; /* Körperfarbe (warm), via currentColor an Flächen & Striche */
-  filter: drop-shadow(0 5px 7px rgba(45, 27, 18, 0.20));
+.bp-3d-stage.is-grab { cursor: grabbing; }
+.bp-3d-stage * { touch-action: none; }
+/* Bodenschatten – erdet das Modell. */
+.bp-3d-stage::after {
+  content: ""; position: absolute; left: 50%; bottom: 56px; transform: translateX(-50%);
+  width: 140px; height: 24px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(45, 27, 18, 0.26), transparent 80%);
 }
-[data-theme="dark"] .bp-figure { color: #6E5142; filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.45)); }
-/* Bodenschatten & Lichtkante: erden bzw. modellieren die Sticker-Figur. */
-.bp-figure__ground { fill: rgba(45, 27, 18, 0.12); }
-[data-theme="dark"] .bp-figure__ground { fill: rgba(0, 0, 0, 0.38); }
-.bp-figure__shine { opacity: 0.16; }
-[data-theme="dark"] .bp-figure__shine { opacity: 0.09; }
+[data-theme="dark"] .bp-3d-stage::after { background: radial-gradient(closest-side, rgba(0, 0, 0, 0.45), transparent 80%); }
 
-/* Hotspot: runder, pulsierender Punkt – sitzt mittig auf seiner Koordinate. */
-.bp-dot {
-  position: absolute; transform: translate(-50%, -50%);
-  width: 23px; height: 23px; padding: 0; border-radius: 50%; cursor: pointer;
-  border: 2.5px solid var(--cream);
-  background: rgba(46, 110, 134, 0.62);
-  box-shadow: 0 2px 5px rgba(45, 27, 18, 0.4);
-  display: grid; place-items: center;
+/* Figur-Ursprung in Bühnenmitte; Kinder sitzen per translate3d im Raum. */
+.bp-3d {
+  position: absolute; left: 50%; top: 50%; width: 0; height: 0;
+  transform-style: preserve-3d;
+  transform: translateZ(-30px) rotateX(-6deg) rotateY(-22deg); /* JS übersteuert beim Drehen */
+}
+/* Sanfte Drehung nur für die ↺/↻-Knöpfe (Klasse kurz gesetzt). Beim Ziehen und
+   beim Neu-Rendern bewusst ohne Transition – sonst „fliegen" die Kugeln bei
+   jedem Tipp neu ein. */
+.bp-3d-stage.is-anim .bp-3d,
+.bp-3d-stage.is-anim .bp-orb,
+.bp-3d-stage.is-anim .bp-node { transition: transform 0.28s ease; }
+
+/* Kugel-Impostor: bildet die Körperform. Warmer Hautton mit Licht oben links. */
+.bp-orb {
+  position: absolute; left: 0; top: 0; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 34% 28%, #f0d3ad, #d3ac82 42%, #b88a5f 72%, #9a6f49);
+  box-shadow: inset -4px -5px 9px rgba(96, 58, 30, 0.38), inset 3px 3px 7px rgba(255, 242, 222, 0.55);
+}
+[data-theme="dark"] .bp-orb {
+  background: radial-gradient(circle at 34% 28%, #8a6750, #6e5142 46%, #533a2c 74%, #3c2a20);
+  box-shadow: inset -4px -5px 9px rgba(0, 0, 0, 0.45), inset 3px 3px 7px rgba(255, 225, 200, 0.16);
+}
+
+/* Hotspot: antippbarer Punkt auf der Figur. */
+.bp-node { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; cursor: pointer; }
+.bp-node__hit {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2.5px solid var(--cream); background: rgba(46, 110, 134, 0.72);
+  box-shadow: 0 2px 6px rgba(45, 27, 18, 0.45);
   transition: transform 0.14s ease, background 0.15s ease, box-shadow 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
 }
-.bp-dot:active { transform: translate(-50%, -50%) scale(0.88); }
-.bp-dot:hover { background: rgba(46, 110, 134, 0.8); }
-.bp-dot__ring {
+.bp-node__ring {
   position: absolute; inset: -6px; border-radius: 50%;
-  border: 2px solid rgba(46, 110, 134, 0.55); opacity: 0;
+  border: 2px solid rgba(46, 110, 134, 0.5); opacity: 0; pointer-events: none;
 }
-.bp-dot.is-seen { background: rgba(63, 115, 85, 0.85); }      /* schon erkundet */
-.bp-dot.is-active {
-  background: var(--brand); border-color: var(--cream);
-  transform: translate(-50%, -50%) scale(1.2); z-index: 3;
-  box-shadow: 0 2px 9px rgba(194, 80, 46, 0.55);
+.bp-node:hover .bp-node__hit { background: rgba(46, 110, 134, 0.9); }
+.bp-node:active .bp-node__hit { transform: scale(0.86); }
+.bp-node.is-seen .bp-node__hit { background: rgba(63, 115, 85, 0.9); }   /* schon erkundet */
+.bp-node.is-active .bp-node__hit {
+  background: var(--brand); transform: scale(1.18);
+  box-shadow: 0 2px 10px rgba(194, 80, 46, 0.6);
 }
-.bp-dot.is-active .bp-dot__ring {
-  border-color: var(--brand); opacity: 1;
-  animation: bp-pulse 1.4s ease-out infinite;
+.bp-node.is-active .bp-node__ring {
+  border-color: var(--brand); opacity: 1; animation: bp-pulse 1.4s ease-out infinite;
 }
+/* Weggedreht (zur Rückseite): gedämpft und für Maus/Touch nicht treffbar. */
+.bp-node.is-back { opacity: 0.16; pointer-events: none; }
+.bp-node.is-back .bp-node__ring { display: none; }
+
 @keyframes bp-pulse {
   0%   { transform: scale(0.7); opacity: 0.9; }
   100% { transform: scale(1.7); opacity: 0; }
 }
+
+/* Dreh-Knöpfe (Tastatur/Klick-Alternative zum Ziehen) + Hinweis. */
+.bp-rotor {
+  position: absolute; left: 0; right: 0; bottom: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.bp-rotor__btn {
+  width: 40px; height: 40px; border-radius: 50%; flex: none;
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink-soft);
+  font-size: 1.2rem; line-height: 1; cursor: pointer; box-shadow: var(--shadow);
+}
+.bp-rotor__btn:active { transform: translateY(1px); }
+.bp-rotor__hint { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+
 @media (prefers-reduced-motion: reduce) {
-  .bp-dot.is-active .bp-dot__ring { animation: none; opacity: 1; }
+  .bp-3d-stage.is-anim .bp-3d,
+  .bp-3d-stage.is-anim .bp-orb,
+  .bp-3d-stage.is-anim .bp-node { transition: none; }
+  .bp-node.is-active .bp-node__ring { animation: none; opacity: 1; }
   .bp-progress__fill { transition: none; }
 }
 
@@ -1467,7 +1509,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Ab ~560px: Figur und Panel nebeneinander. */
 @media (min-width: 560px) {
   .bp-stage { flex-direction: row; align-items: flex-start; gap: 22px; }
-  .bp-figwrap { margin: 0; flex: 0 0 240px; }
+  .bp-3d-stage { margin: 0; flex: 0 0 300px; }
   .bp-panel { flex: 1 1 auto; align-self: stretch; }
 }
 
@@ -9958,49 +10000,67 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
   // viewBox 0 0 200 440 – exakt der, auf den sich die Prozent-Koordinaten der Hotspots
   // beziehen. Gliedmaßen sind runde Striche (currentColor), Rumpf/Kopf gefüllte Flächen.
-  const BP_FIGURE = `
-    <svg class="bp-figure" viewBox="0 0 200 440" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
-      <!-- weicher Bodenschatten – erdet die Figur. -->
-      <ellipse class="bp-figure__ground" cx="100" cy="430" rx="56" ry="8" />
-      <!-- Arme & Beine: runde Striche. -->
-      <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M70 104 L52 168 L46 240" />
-        <path d="M130 104 L148 168 L154 240" />
-      </g>
-      <g class="bp-figure__limbs" fill="none" stroke="currentColor" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M86 236 L82 330 L78 408" />
-        <path d="M114 236 L118 330 L122 408" />
-      </g>
-      <!-- Rumpf, Kopf, Hände/Füße + runde Schulter-/Hüftgelenke (glätten die Übergänge). -->
-      <g class="bp-figure__body" fill="currentColor" stroke="none">
-        <ellipse cx="74" cy="416" rx="17" ry="9" />
-        <ellipse cx="126" cy="416" rx="17" ry="9" />
-        <circle cx="44" cy="248" r="12" />
-        <circle cx="156" cy="248" r="12" />
-        <circle cx="70" cy="104" r="14" />
-        <circle cx="130" cy="104" r="14" />
-        <circle cx="86" cy="238" r="15" />
-        <circle cx="114" cy="238" r="15" />
-        <path d="M68 96 L132 96 C141 96 141 105 139 113 L126 212 C125 232 121 242 100 242 C79 242 75 232 74 212 L61 113 C59 105 59 96 68 96 Z" />
-        <rect x="91" y="68" width="18" height="20" rx="8" />
-        <circle cx="100" cy="44" r="30" />
-      </g>
-      <!-- Lichtkante oben links: gibt der flachen Sticker-Figur etwas Tiefe. -->
-      <g class="bp-figure__shine" fill="#fff" stroke="none">
-        <ellipse cx="89" cy="35" rx="11" ry="13" />
-        <ellipse cx="85" cy="152" rx="12" ry="44" />
-      </g>
-    </svg>`;
+  // ----- 3D-Körperfigur (drehbar) -----
+  // Echte 3D-Geometrie statt der flachen Sticker-Figur: Der Körper ist aus
+  // schattierten Kugel-Impostoren (Orbs) aufgebaut, die per CSS-3D im Raum
+  // sitzen (translate3d). Jeder Orb wird zur Kamera ausgerichtet (Billboard,
+  // siehe app.js → bpApplyRot), darum bleibt er aus jedem Blickwinkel rund –
+  // beim Drehen verschieben sich nur seine Position und seine Verdeckung.
+  // Selbst gerendert -> kein externes Modell, läuft offline (PWA-Prinzip).
+  //
+  // Orb-Daten: [x, y, z, durchmesser] in px, Ursprung in Figurmitte (y nach oben).
+  const BP_ORBS = [
+    [0, -150, 0, 72], [0, -112, 4, 26],                                   // Kopf, Hals
+    [0, -86, 8, 66], [0, -52, 10, 62], [0, -18, 8, 58], [0, 16, 4, 60],   // Rumpf
+    [-40, -92, 2, 34], [40, -92, 2, 34],                                  // Schultern
+    [-50, -64, 2, 30], [-56, -34, 4, 26], [-60, -4, 6, 24], [-62, 22, 8, 28], // li. Arm
+    [50, -64, 2, 30], [56, -34, 4, 26], [60, -4, 6, 24], [62, 22, 8, 28], // re. Arm
+    [-20, 48, 6, 40], [-21, 80, 6, 34], [-22, 106, 8, 30], [-23, 136, 6, 28], [-24, 162, 6, 24], [-22, 176, 20, 30], // li. Bein
+    [20, 48, 6, 40], [21, 80, 6, 34], [22, 106, 8, 30], [23, 136, 6, 28], [24, 162, 6, 24], [22, 176, 20, 30],       // re. Bein
+  ];
+  const BP_FIGURE_3D = BP_ORBS.map(
+    ([x, y, z, d]) => `<i class="bp-orb" data-x="${x}" data-y="${y}" data-z="${z}" style="width:${d}px;height:${d}px"></i>`
+  ).join("");
+
+  // Interaktive Hotspots je Körperteil-Id: Position (x,y,z), Azimut az (Grad um
+  // die Hochachse: 0 = vorne, ±90 = Seite, 180 = Rücken – steuert das Ausblenden
+  // beim Wegdrehen) und Punktgröße d. Bewusst hier (View) statt in den
+  // Vokabeldaten gehalten: data.js bleibt reine Vokabel-Wahrheit.
+  const BP_LAYOUT3D = {
+    bp_pelo:     { x: 0,   y: -182, z: 10,  az: 0,   d: 20 },
+    bp_cabeza:   { x: -20, y: -170, z: 20,  az: -20, d: 20 },
+    bp_ojo:      { x: -12, y: -156, z: 34,  az: -8,  d: 16 },
+    bp_nariz:    { x: 0,   y: -148, z: 39,  az: 0,   d: 15 },
+    bp_boca:     { x: 0,   y: -136, z: 36,  az: 0,   d: 16 },
+    bp_cara:     { x: 18,  y: -146, z: 30,  az: 18,  d: 16 },
+    bp_oreja:    { x: 31,  y: -150, z: 4,   az: 72,  d: 16 },
+    bp_cuello:   { x: 0,   y: -112, z: 18,  az: 0,   d: 22 },
+    bp_hombro:   { x: -40, y: -92,  z: 16,  az: -35, d: 24 },
+    bp_pecho:    { x: 0,   y: -82,  z: 42,  az: 0,   d: 26 },
+    bp_espalda:  { x: 0,   y: -70,  z: -36, az: 180, d: 24 },
+    bp_estomago: { x: 0,   y: -22,  z: 40,  az: 0,   d: 26 },
+    bp_brazo:    { x: -52, y: -60,  z: 18,  az: -50, d: 24 },
+    bp_codo:     { x: -57, y: -32,  z: 20,  az: -55, d: 22 },
+    bp_mano:     { x: -63, y: 22,   z: 22,  az: -55, d: 26 },
+    bp_dedo:     { x: -64, y: 40,   z: 22,  az: -55, d: 18 },
+    bp_pierna:   { x: -22, y: 60,   z: 30,  az: -10, d: 26 },
+    bp_rodilla:  { x: -22, y: 106,  z: 28,  az: -10, d: 24 },
+    bp_tobillo:  { x: -24, y: 160,  z: 24,  az: -10, d: 20 },
+    bp_pie:      { x: -22, y: 178,  z: 38,  az: 0,   d: 24 },
+  };
 
   function renderCuerpo(vm) {
-    const dots = vm.parts
+    const nodes = vm.parts
       .map((p) => {
-        const cls = `bp-dot${p.selected ? " is-active" : ""}${p.seen ? " is-seen" : ""}`;
+        const L = BP_LAYOUT3D[p.id] || { x: 0, y: 0, z: 0, az: 0, d: 22 };
+        const cls = `bp-node${p.selected ? " is-active" : ""}${p.seen ? " is-seen" : ""}`;
         return `
           <button class="${cls}" type="button" data-action="cuerpo-select" data-id="${esc(p.id)}"
-                  style="left:${p.x}%;top:${p.y}%" aria-label="${esc(p.de)}" title="${esc(p.de)}"
+                  data-x="${L.x}" data-y="${L.y}" data-z="${L.z}" data-az="${L.az}"
+                  style="width:${L.d}px;height:${L.d}px" aria-label="${esc(p.de)}" title="${esc(p.de)}"
                   aria-pressed="${p.selected ? "true" : "false"}">
-            <span class="bp-dot__ring" aria-hidden="true"></span>
+            <span class="bp-node__hit" aria-hidden="true"></span>
+            <span class="bp-node__ring" aria-hidden="true"></span>
           </button>`;
       })
       .join("");
@@ -10036,12 +10096,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return `
       <section class="screen bp-screen">
         ${hmTopbar("🧍 El Cuerpo", "home")}
-        <p class="hm-intro">Der menschliche Körper auf Spanisch – zum Antippen. Wähle ein Körperteil und lerne Wort, Aussprache und den passenden Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
+        <p class="hm-intro">Der menschliche Körper auf Spanisch – als drehbares 3D-Modell. Ziehe die Figur zum Drehen und tippe ein Körperteil an: dann erscheinen Wort, Aussprache und der passende Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
         ${progress}
         <div class="bp-stage">
-          <div class="bp-figwrap">
-            ${BP_FIGURE}
-            ${dots}
+          <div class="bp-3d-stage" data-bp-stage>
+            <div class="bp-3d" data-bp-fig>
+              ${BP_FIGURE_3D}
+              ${nodes}
+            </div>
+            <div class="bp-rotor">
+              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="-1" aria-label="Figur nach links drehen">↺</button>
+              <span class="bp-rotor__hint" aria-hidden="true">↔ ziehen zum Drehen</span>
+              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="1" aria-label="Figur nach rechts drehen">↻</button>
+            </div>
           </div>
           ${panel}
         </div>
@@ -10118,8 +10185,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     precios: null,           // { queue:[cardId…], idx, total, result:{correct,answers,input}|null, correct }
     // ----- Frases flexibles (Satzbaukasten, transient) -----
     frases: null,            // { queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
-    // ----- El Cuerpo (interaktive Körperkarte) -----
+    // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
+    bodyYaw: -22,            // Drehung der Figur um die Hochachse (Grad)
+    bodyPitch: -6,           // Neigung der Figur (Grad), begrenzt ±32
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -10960,6 +11029,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function openCuerpo() {
     dismissBadgeToast();
     state.bodyPartId = null;
+    state.bodyYaw = -22; // beim Öffnen in die Drei-Viertel-Ansicht zurücksetzen
+    state.bodyPitch = -6;
     state.screen = "cuerpo";
     render();
   }
@@ -10989,6 +11060,93 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function speakBodyPart() {
     const part = bodyPartById(state.bodyPartId);
     if (part && speech && speech.isSupported()) speech.speak(part.es);
+  }
+
+  // ----- El Cuerpo: drehbares 3D-Modell (in-place, ohne Voll-Re-Render) -----
+  // Die Figur ist eine CSS-3D-Szene aus Kugeln (Orbs) und Hotspot-Punkten.
+  // Beim Drehen ändert sich nur der eine Eltern-Transform plus pro Element ein
+  // Billboard-Konter (rotateY/X invers), damit jede Kugel rund zur Kamera bleibt.
+  const bp3d = { fig: null, orbs: [], nodes: [], raf: 0 };
+  let bpDrag = null;        // { x, y, yaw, pitch } während einer Ziehgeste, sonst null
+  let bpDragMoved = false;  // wurde wirklich gedreht? (unterscheidet Zieh- von Tipp-Geste)
+
+  // Nach jedem Render der Cuerpo-Ansicht: Elemente neu einsammeln, Koordinaten
+  // aus den data-Attributen cachen und die aktuelle Drehung anwenden.
+  function cuerpoInit3D() {
+    bp3d.fig = root.querySelector("[data-bp-fig]");
+    if (!bp3d.fig) { bp3d.orbs = []; bp3d.nodes = []; return; }
+    const num = (el, k) => Number(el.dataset[k]);
+    bp3d.orbs = Array.prototype.map.call(bp3d.fig.querySelectorAll(".bp-orb"), (el) => {
+      el._x = num(el, "x"); el._y = num(el, "y"); el._z = num(el, "z"); return el;
+    });
+    bp3d.nodes = Array.prototype.map.call(bp3d.fig.querySelectorAll(".bp-node"), (el) => {
+      el._x = num(el, "x"); el._y = num(el, "y"); el._z = num(el, "z"); el._az = num(el, "az"); return el;
+    });
+    bpApplyRot();
+  }
+
+  // Drehung auf Figur (Eltern) und alle Kinder schreiben. Kinder bekommen den
+  // inversen Dreh-Anteil (Billboard) -> bleiben runde, zur Kamera gerichtete
+  // Scheiben. Hotspots auf der abgewandten Seite werden gedämpft/gesperrt.
+  function bpApplyRot() {
+    if (!bp3d.fig) return;
+    const yaw = state.bodyYaw, pitch = state.bodyPitch;
+    bp3d.fig.style.transform = `translateZ(-30px) rotateX(${pitch}deg) rotateY(${yaw}deg)`;
+    const inv = `rotateY(${-yaw}deg) rotateX(${-pitch}deg)`;
+    for (let i = 0; i < bp3d.orbs.length; i++) {
+      const el = bp3d.orbs[i];
+      el.style.transform = `translate3d(${el._x}px,${el._y}px,${el._z}px) ${inv} translate(-50%,-50%)`;
+    }
+    for (let i = 0; i < bp3d.nodes.length; i++) {
+      const n = bp3d.nodes[i];
+      n.style.transform = `translate3d(${n._x}px,${n._y}px,${n._z}px) ${inv} translate(-50%,-50%)`;
+      const back = Math.cos((n._az + yaw) * Math.PI / 180) < -0.15;
+      n.classList.toggle("is-back", back);
+    }
+  }
+
+  function bpScheduleApply() {
+    if (!bp3d.raf) bp3d.raf = requestAnimationFrame(() => { bp3d.raf = 0; bpApplyRot(); });
+  }
+
+  // Dreh-Knöpfe ↺/↻ (Tastatur-/Klick-Alternative zum Ziehen). Kurz mit
+  // Transition (is-anim), damit der Sprung weich statt hart wirkt.
+  let bpAnimTimer = null;
+  function rotateBody(dir) {
+    state.bodyYaw = (state.bodyYaw || 0) + dir * 32;
+    const stage = root.querySelector("[data-bp-stage]");
+    if (stage) {
+      stage.classList.add("is-anim");
+      clearTimeout(bpAnimTimer);
+      bpAnimTimer = setTimeout(() => stage.classList.remove("is-anim"), 320);
+    }
+    bpApplyRot();
+  }
+
+  // Zeigegesten: Ziehen über der Bühne dreht die Figur. Unter dem 6px-Schwellwert
+  // bleibt es ein Tipp (Hotspot wählen); darüber wird es eine Drehung.
+  function onBodyPointerDown(e) {
+    if (state.screen !== "cuerpo") return;
+    const stage = e.target.closest("[data-bp-stage]");
+    if (!stage) return;
+    bpDrag = { x: e.clientX, y: e.clientY, yaw: state.bodyYaw || 0, pitch: state.bodyPitch || 0 };
+    bpDragMoved = false;
+    stage.classList.add("is-grab");
+  }
+  function onBodyPointerMove(e) {
+    if (!bpDrag) return;
+    const dx = e.clientX - bpDrag.x, dy = e.clientY - bpDrag.y;
+    if (!bpDragMoved && Math.hypot(dx, dy) > 6) bpDragMoved = true;
+    if (!bpDragMoved) return;
+    state.bodyYaw = bpDrag.yaw + dx * 0.6;
+    state.bodyPitch = Math.max(-32, Math.min(32, bpDrag.pitch - dy * 0.4));
+    bpScheduleApply();
+  }
+  function onBodyPointerUp() {
+    if (!bpDrag) return;
+    bpDrag = null;
+    const stage = root.querySelector("[data-bp-stage].is-grab");
+    if (stage) stage.classList.remove("is-grab");
   }
 
   // ----- Rendern -----
@@ -11026,6 +11184,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (state.updateNotice && state.updateNotice.length) {
       root.insertAdjacentHTML("afterbegin", ui.updateNotice(state.updateNotice));
     }
+
+    // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
+    if (state.screen === "cuerpo") cuerpoInit3D();
 
     manageFocus();
     maybeAutoSpeak();
@@ -12009,7 +12170,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
-    else if (action === "cuerpo-select") selectBodyPart(el.dataset.id);
+    else if (action === "cuerpo-select") { if (bpDragMoved) bpDragMoved = false; else selectBodyPart(el.dataset.id); }
+    else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "open-spickzettel") openSpickzettel();
     else if (action === "speak-card") speakCardId(el.dataset.id);
@@ -12173,6 +12335,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });
   root.addEventListener("touchend", onTouchEnd, { passive: true });
+  // Drehen des 3D-Körpermodells (greift nur auf der Cuerpo-Bühne).
+  root.addEventListener("pointerdown", onBodyPointerDown);
+  window.addEventListener("pointermove", onBodyPointerMove);
+  window.addEventListener("pointerup", onBodyPointerUp);
+  window.addEventListener("pointercancel", onBodyPointerUp);
   applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
   // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).
   try {

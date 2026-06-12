@@ -58,8 +58,10 @@
     precios: null,           // { queue:[cardId…], idx, total, result:{correct,answers,input}|null, correct }
     // ----- Frases flexibles (Satzbaukasten, transient) -----
     frases: null,            // { queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
-    // ----- El Cuerpo (interaktive Körperkarte) -----
+    // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
     bodyPartId: null,        // aktuell angetipptes Körperteil (Id) | null
+    bodyYaw: -22,            // Drehung der Figur um die Hochachse (Grad)
+    bodyPitch: -6,           // Neigung der Figur (Grad), begrenzt ±32
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -900,6 +902,8 @@
   function openCuerpo() {
     dismissBadgeToast();
     state.bodyPartId = null;
+    state.bodyYaw = -22; // beim Öffnen in die Drei-Viertel-Ansicht zurücksetzen
+    state.bodyPitch = -6;
     state.screen = "cuerpo";
     render();
   }
@@ -929,6 +933,93 @@
   function speakBodyPart() {
     const part = bodyPartById(state.bodyPartId);
     if (part && speech && speech.isSupported()) speech.speak(part.es);
+  }
+
+  // ----- El Cuerpo: drehbares 3D-Modell (in-place, ohne Voll-Re-Render) -----
+  // Die Figur ist eine CSS-3D-Szene aus Kugeln (Orbs) und Hotspot-Punkten.
+  // Beim Drehen ändert sich nur der eine Eltern-Transform plus pro Element ein
+  // Billboard-Konter (rotateY/X invers), damit jede Kugel rund zur Kamera bleibt.
+  const bp3d = { fig: null, orbs: [], nodes: [], raf: 0 };
+  let bpDrag = null;        // { x, y, yaw, pitch } während einer Ziehgeste, sonst null
+  let bpDragMoved = false;  // wurde wirklich gedreht? (unterscheidet Zieh- von Tipp-Geste)
+
+  // Nach jedem Render der Cuerpo-Ansicht: Elemente neu einsammeln, Koordinaten
+  // aus den data-Attributen cachen und die aktuelle Drehung anwenden.
+  function cuerpoInit3D() {
+    bp3d.fig = root.querySelector("[data-bp-fig]");
+    if (!bp3d.fig) { bp3d.orbs = []; bp3d.nodes = []; return; }
+    const num = (el, k) => Number(el.dataset[k]);
+    bp3d.orbs = Array.prototype.map.call(bp3d.fig.querySelectorAll(".bp-orb"), (el) => {
+      el._x = num(el, "x"); el._y = num(el, "y"); el._z = num(el, "z"); return el;
+    });
+    bp3d.nodes = Array.prototype.map.call(bp3d.fig.querySelectorAll(".bp-node"), (el) => {
+      el._x = num(el, "x"); el._y = num(el, "y"); el._z = num(el, "z"); el._az = num(el, "az"); return el;
+    });
+    bpApplyRot();
+  }
+
+  // Drehung auf Figur (Eltern) und alle Kinder schreiben. Kinder bekommen den
+  // inversen Dreh-Anteil (Billboard) -> bleiben runde, zur Kamera gerichtete
+  // Scheiben. Hotspots auf der abgewandten Seite werden gedämpft/gesperrt.
+  function bpApplyRot() {
+    if (!bp3d.fig) return;
+    const yaw = state.bodyYaw, pitch = state.bodyPitch;
+    bp3d.fig.style.transform = `translateZ(-30px) rotateX(${pitch}deg) rotateY(${yaw}deg)`;
+    const inv = `rotateY(${-yaw}deg) rotateX(${-pitch}deg)`;
+    for (let i = 0; i < bp3d.orbs.length; i++) {
+      const el = bp3d.orbs[i];
+      el.style.transform = `translate3d(${el._x}px,${el._y}px,${el._z}px) ${inv} translate(-50%,-50%)`;
+    }
+    for (let i = 0; i < bp3d.nodes.length; i++) {
+      const n = bp3d.nodes[i];
+      n.style.transform = `translate3d(${n._x}px,${n._y}px,${n._z}px) ${inv} translate(-50%,-50%)`;
+      const back = Math.cos((n._az + yaw) * Math.PI / 180) < -0.15;
+      n.classList.toggle("is-back", back);
+    }
+  }
+
+  function bpScheduleApply() {
+    if (!bp3d.raf) bp3d.raf = requestAnimationFrame(() => { bp3d.raf = 0; bpApplyRot(); });
+  }
+
+  // Dreh-Knöpfe ↺/↻ (Tastatur-/Klick-Alternative zum Ziehen). Kurz mit
+  // Transition (is-anim), damit der Sprung weich statt hart wirkt.
+  let bpAnimTimer = null;
+  function rotateBody(dir) {
+    state.bodyYaw = (state.bodyYaw || 0) + dir * 32;
+    const stage = root.querySelector("[data-bp-stage]");
+    if (stage) {
+      stage.classList.add("is-anim");
+      clearTimeout(bpAnimTimer);
+      bpAnimTimer = setTimeout(() => stage.classList.remove("is-anim"), 320);
+    }
+    bpApplyRot();
+  }
+
+  // Zeigegesten: Ziehen über der Bühne dreht die Figur. Unter dem 6px-Schwellwert
+  // bleibt es ein Tipp (Hotspot wählen); darüber wird es eine Drehung.
+  function onBodyPointerDown(e) {
+    if (state.screen !== "cuerpo") return;
+    const stage = e.target.closest("[data-bp-stage]");
+    if (!stage) return;
+    bpDrag = { x: e.clientX, y: e.clientY, yaw: state.bodyYaw || 0, pitch: state.bodyPitch || 0 };
+    bpDragMoved = false;
+    stage.classList.add("is-grab");
+  }
+  function onBodyPointerMove(e) {
+    if (!bpDrag) return;
+    const dx = e.clientX - bpDrag.x, dy = e.clientY - bpDrag.y;
+    if (!bpDragMoved && Math.hypot(dx, dy) > 6) bpDragMoved = true;
+    if (!bpDragMoved) return;
+    state.bodyYaw = bpDrag.yaw + dx * 0.6;
+    state.bodyPitch = Math.max(-32, Math.min(32, bpDrag.pitch - dy * 0.4));
+    bpScheduleApply();
+  }
+  function onBodyPointerUp() {
+    if (!bpDrag) return;
+    bpDrag = null;
+    const stage = root.querySelector("[data-bp-stage].is-grab");
+    if (stage) stage.classList.remove("is-grab");
   }
 
   // ----- Rendern -----
@@ -966,6 +1057,9 @@
     if (state.updateNotice && state.updateNotice.length) {
       root.insertAdjacentHTML("afterbegin", ui.updateNotice(state.updateNotice));
     }
+
+    // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
+    if (state.screen === "cuerpo") cuerpoInit3D();
 
     manageFocus();
     maybeAutoSpeak();
@@ -1949,7 +2043,8 @@
     else if (action === "quiz-next") nextQuiz();
     else if (action === "quiz-again") quizAgain();
     else if (action === "open-cuerpo") openCuerpo();
-    else if (action === "cuerpo-select") selectBodyPart(el.dataset.id);
+    else if (action === "cuerpo-select") { if (bpDragMoved) bpDragMoved = false; else selectBodyPart(el.dataset.id); }
+    else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
     else if (action === "cuerpo-speak") speakBodyPart();
     else if (action === "open-spickzettel") openSpickzettel();
     else if (action === "speak-card") speakCardId(el.dataset.id);
@@ -2113,6 +2208,11 @@
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });
   root.addEventListener("touchend", onTouchEnd, { passive: true });
+  // Drehen des 3D-Körpermodells (greift nur auf der Cuerpo-Bühne).
+  root.addEventListener("pointerdown", onBodyPointerDown);
+  window.addEventListener("pointermove", onBodyPointerMove);
+  window.addEventListener("pointerup", onBodyPointerUp);
+  window.addEventListener("pointercancel", onBodyPointerUp);
   applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
   // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).
   try {
