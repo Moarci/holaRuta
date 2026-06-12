@@ -70,12 +70,12 @@
       ],
     },
     {
-      id: "tr04", cat: "transporte", frameEs: "¿Este bus va a ___?", targetDe: "Fährt dieser Bus ins Zentrum?",
-      slot: { es: "el centro", de: "ins Zentrum" },
+      id: "tr04", cat: "transporte", frameEs: "¿Este bus va ___?", targetDe: "Fährt dieser Bus ins Zentrum?",
+      slot: { es: "al centro", de: "ins Zentrum" },
       distractors: [
-        { es: "la playa", de: "zum Strand" },
-        { es: "el aeropuerto", de: "zum Flughafen" },
-        { es: "la frontera", de: "zur Grenze" },
+        { es: "a la playa", de: "zum Strand" },
+        { es: "al aeropuerto", de: "zum Flughafen" },
+        { es: "a la frontera", de: "zur Grenze" },
       ],
     },
     {
@@ -218,7 +218,7 @@
       ],
     },
     {
-      id: "co06", cat: "comida", frameEs: "La cuenta, ___.", targetDe: "Die Rechnung, getrennt bitte.",
+      id: "co06", cat: "comida", frameEs: "La cuenta ___, por favor.", targetDe: "Die Rechnung getrennt, bitte.",
       slot: { es: "separada", de: "getrennt" },
       distractors: [
         { es: "completa", de: "komplett" },
@@ -269,8 +269,8 @@
       slot: { es: "otra talla", de: "einer anderen Größe" },
       distractors: [
         { es: "otro color", de: "einer anderen Farbe" },
+        { es: "otro modelo", de: "einem anderen Modell" },
         { es: "oferta", de: "im Angebot" },
-        { es: "efectivo", de: "bar" },
       ],
     },
     {
@@ -321,12 +321,12 @@
       ],
     },
     {
-      id: "em03", cat: "emergencia", frameEs: "Soy alérgico a ___.", targetDe: "Ich bin allergisch gegen Penicillin.",
-      slot: { es: "la penicilina", de: "Penicillin" },
+      id: "em03", cat: "emergencia", frameEs: "Soy alérgico ___.", targetDe: "Ich bin allergisch gegen Penicillin.",
+      slot: { es: "a la penicilina", de: "gegen Penicillin" },
       distractors: [
-        { es: "los mariscos", de: "Meeresfrüchte" },
-        { es: "el polen", de: "Pollen" },
-        { es: "los gatos", de: "Katzen" },
+        { es: "a los mariscos", de: "gegen Meeresfrüchte" },
+        { es: "al polen", de: "gegen Pollen" },
+        { es: "a los gatos", de: "gegen Katzen" },
       ],
     },
     {
@@ -398,9 +398,9 @@
       id: "so04", cat: "social", frameEs: "Mucho ___.", targetDe: "Sehr erfreut.",
       slot: { es: "gusto", de: "erfreut" },
       distractors: [
-        { es: "gracias", de: "Dank" },
         { es: "tiempo", de: "Zeit" },
-        { es: "favor", de: "Gefallen" },
+        { es: "dinero", de: "Geld" },
+        { es: "calor", de: "Hitze" },
       ],
     },
     {
@@ -408,7 +408,7 @@
       slot: { es: "tomar", de: "trinken" },
       distractors: [
         { es: "comer", de: "essen" },
-        { es: "bailar", de: "tanzen" },
+        { es: "decir", de: "sagen" },
         { es: "preguntar", de: "fragen" },
       ],
     },
@@ -446,8 +446,8 @@
       slot: { es: "lejos", de: "weit" },
       distractors: [
         { es: "cerca", de: "nah" },
-        { es: "abierto", de: "offen" },
-        { es: "libre", de: "frei" },
+        { es: "a dos cuadras", de: "zwei Häuserblocks" },
+        { es: "a diez minutos", de: "zehn Minuten" },
       ],
     },
     {
@@ -456,16 +456,16 @@
       distractors: [
         { es: "a la derecha", de: "nach rechts" },
         { es: "a la izquierda", de: "nach links" },
-        { es: "atrás", de: "zurück" },
+        { es: "por aquí", de: "hier entlang" },
       ],
     },
     {
-      id: "or04", cat: "orientacion", frameEs: "Doble a ___.", targetDe: "Biegen Sie nach links ab.",
-      slot: { es: "la izquierda", de: "nach links" },
+      id: "or04", cat: "orientacion", frameEs: "Doble ___.", targetDe: "Biegen Sie nach links ab.",
+      slot: { es: "a la izquierda", de: "nach links" },
       distractors: [
-        { es: "la derecha", de: "nach rechts" },
-        { es: "el centro", de: "zum Zentrum" },
-        { es: "la esquina", de: "zur Ecke" },
+        { es: "a la derecha", de: "nach rechts" },
+        { es: "en la esquina", de: "an der Ecke" },
+        { es: "al final de la calle", de: "am Ende der Straße" },
       ],
     },
     {
