@@ -675,6 +675,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sharepic-btn:hover { color: var(--brand-ink); }
 .sharepic-btn:active { opacity: 0.7; }
 
+/* „Überspringen": dezenter, zentrierter Button. Nimmt die aktuelle Karte ohne
+ * Bewertung aus der Sitzung – damit niemand jede Karte durchziehen muss. */
+.skipbtn {
+  align-self: center; margin: 10px auto 2px; padding: 8px 16px; cursor: pointer;
+  font-family: var(--font); font-size: 0.85rem; font-weight: 700; color: var(--muted);
+  background: none; border: 1.5px solid var(--line); border-radius: 999px;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+.skipbtn:hover { color: var(--ink-soft); border-color: var(--line-strong); }
+.skipbtn:active { transform: translateY(1px); opacity: 0.8; }
+
 /* Fertig */
 .done { text-align: center; padding: 36px 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
 .done__emoji { font-size: 3rem; }

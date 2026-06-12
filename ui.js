@@ -319,8 +319,15 @@
         </div>
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Lernfortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
         ${body}
+        ${skipBtn()}
         ${shareCardBtn()}
       </section>`;
+  }
+
+  // Dezenter „Überspringen"-Button: nimmt die aktuelle Karte ohne Bewertung aus der
+  // Sitzung (sie bleibt fällig). So muss niemand jede Karte durchziehen.
+  function skipBtn() {
+    return `<button class="skipbtn" type="button" data-action="skip" aria-label="Diese Karte überspringen">Überspringen ⏭️</button>`;
   }
 
   // Stufen-Badge (oben rechts auf der Karte). on = farbig (Rückseite), sonst dezent.

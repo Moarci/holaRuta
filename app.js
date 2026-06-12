@@ -1650,6 +1650,22 @@
     if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
   }
 
+  // Aktuelle Karte überspringen: ohne Bewertung aus dieser Sitzung nehmen (kein
+  // SRS-/Statistik-Eingriff, die Karte bleibt fällig). So muss niemand jede Karte
+  // durchziehen – Überspringen heißt schlicht „später nochmal", nicht „gewusst".
+  function skip() {
+    const card = cardById(state.queue[0]);
+    if (!card) return;
+    buzz(8);
+
+    state.queue = state.queue.slice(1);
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = state.queue.length ? "study" : "done";
+    render();
+  }
+
   // ----- Hinweis-Toast (gleiche Ebene/Optik wie die Badge-Einblendung) -----
   let saveFailedNotified = false; // Quota-Warnung höchstens einmal pro Session
 
@@ -2421,6 +2437,7 @@
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
+    else if (action === "skip") skip();
     else if (action === "speak") speakCurrent();
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
@@ -2558,6 +2575,13 @@
     // 'p' = Antwort anhören (play), sobald die spanische Antwort sichtbar ist.
     if ((e.key === "p" || e.key === "P") && !inInput && canRate()) {
       speakCurrent();
+      return;
+    }
+
+    // 's' = aktuelle Karte überspringen (jederzeit, nur nicht beim Tippen).
+    if ((e.key === "s" || e.key === "S") && !inInput && !onButton) {
+      e.preventDefault();
+      skip();
       return;
     }
 
