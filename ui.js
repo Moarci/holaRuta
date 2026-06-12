@@ -188,7 +188,9 @@
   }
 
   function entdeckenBody(vm) {
-    const feats = FEATURES.map((x) => `
+    // Offline-Guard: Länderkunde nur anbieten, wenn das Modul geladen wurde
+    // (countries.js kann bei unvollständigem Offline-Cache fehlen).
+    const feats = FEATURES.filter((x) => x.action !== "open-info" || vm.hasCountries).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
@@ -226,8 +228,14 @@
       </div>
 
       ${navrow("open-stats", "📊", "Statistik")}
-      ${navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "")}
+      ${vm.hasBadges ? navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "") : ""}
       ${navrow("open-editor", "✍️", "Eigene Karten")}
+
+      <p class="sectioncap">Deine Daten</p>
+      ${navrow("export-data", "📤", "Daten exportieren")}
+      ${navrow("import-data", "📥", "Daten importieren")}
+      <input type="file" id="import-file" accept=".json,application/json" hidden />
+
       ${installBlock(vm.install)}`;
   }
 
@@ -516,6 +524,19 @@
   }
 
   function renderBadges(vm) {
+    // Offline-Guard: Badge-Modul fehlt (unvollständiger Offline-Cache) ->
+    // Hinweis statt TypeError bei jedem Render.
+    if (!vm) {
+      return `
+        <section class="screen">
+          <div class="topbar">
+            <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+            <div class="topbar__title">🎖️ Mein Ruta-Pass</div>
+            <span></span>
+          </div>
+          <p class="stat-empty">Der Ruta-Pass ist gerade nicht verfügbar – vermutlich wurde die App offline geöffnet, bevor alles geladen war. Mit Netz neu laden, dann klappt's wieder.</p>
+        </section>`;
+    }
     const pct = vm.total ? Math.round((vm.unlocked / vm.total) * 100) : 0;
     const groups = vm.groups
       .map((g) => `
@@ -568,6 +589,15 @@
       </button>`;
   }
 
+  // Schlichter Hinweis-Toast (gleiche Optik/Ebene wie die Badge-Einblendung),
+  // z.B. wenn das Speichern fehlschlägt. Tippen blendet ihn aus.
+  function noticeToast(text) {
+    return `
+      <button class="btoast" data-action="dismiss-notice" aria-live="assertive">
+        <span class="btoast__head">⚠️ ${esc(text)}</span>
+      </button>`;
+  }
+
   // ---------- STATISTIK ----------
   // Statusfarben/-texte zentral, damit Liste & Detail gleich aussehen.
   const STATUS_META = {
@@ -579,13 +609,19 @@
   // Verlaufs-Punkte: je Bewertung ein farbiger Punkt (rot/grün/blau).
   function historyDots(hist) {
     if (!hist || !hist.length) return "";
-    const color = { a: "var(--no)", g: "var(--ok)", e: "var(--easy)" };
-    const title = { a: "Nochmal", g: "Gut", e: "Einfach" };
+    // Object.create(null): die Verlaufszeichen kommen aus localStorage –
+    // Lookups dürfen nie Prototype-Properties treffen ("constructor",
+    // "__proto__" …), sonst landet Funktions-Quelltext im style-Attribut.
+    const color = Object.create(null);
+    color.a = "var(--no)"; color.g = "var(--ok)"; color.e = "var(--easy)";
+    const title = Object.create(null);
+    title.a = "Nochmal"; title.g = "Gut"; title.e = "Einfach";
     const dots = hist
       .map((ch) => `<span class="hdot" aria-hidden="true" style="background:${color[ch] || "var(--muted)"}" title="${title[ch] || ""}"></span>`)
       .join("");
     // Textzusammenfassung für Screenreader (Farbe allein reicht nicht).
-    const count = { a: 0, g: 0, e: 0 };
+    const count = Object.create(null);
+    count.a = 0; count.g = 0; count.e = 0;
     hist.forEach((ch) => { if (count[ch] != null) count[ch]++; });
     const label = `Verlauf: ${count.e}× Einfach, ${count.g}× Gut, ${count.a}× Nochmal`;
     return `<div class="hdots" role="img" aria-label="${label}">${dots}</div>`;
@@ -712,7 +748,7 @@
         <div class="fact"><span class="fact__k">Zuerst gelernt</span><span class="fact__v">${esc(vm.firstText)}</span></div>
         <div class="fact"><span class="fact__k">Zuletzt</span><span class="fact__v">${esc(vm.lastText)}</span></div>
         <div class="fact"><span class="fact__k">Nächste Whlg.</span><span class="fact__v">${esc(vm.dueText)}</span></div>
-        <div class="fact"><span class="fact__k">Leichtigkeit</span><span class="fact__v">${s.ease ? s.ease.toFixed(2) : "–"}</span></div>
+        <div class="fact"><span class="fact__k">Leichtigkeit</span><span class="fact__v">${typeof s.ease === "number" && isFinite(s.ease) ? s.ease.toFixed(2) : "–"}</span></div>
       </div>`;
 
     const breakdown = s.seen > 0 ? `
@@ -1347,7 +1383,7 @@
 
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo,
-                   renderBadges, badgeToast,
+                   renderBadges, badgeToast, noticeToast,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo };
 })();
