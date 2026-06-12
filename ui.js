@@ -1766,10 +1766,12 @@
   }
 
   // ---------- TIEMPOS (Erklärseite Zeiten) ----------
-  // Kompakte Zeitformen-Erklärung (Inhalte aus data.TENSES): ein Verb durch
-  // die Zeiten, die wichtigsten Reise-Zeitformen als aufklappbare Karten,
-  // Signalwörter und ein Drei-Zeiten-Reisedialog. Unten ein CTA in die
-  // Übungskarten – wieder über die normale open-category-Aktion.
+  // Ausführliche, reisebezogene Zeitformen-Erklärung (Inhalte aus data.TENSES):
+  // Zeitstrahl, die wichtigsten Zeitformen als aufklappbare Karten (mit Bildungs-
+  // Rezept, Signalwörtern und mehreren Beispielen), Verlaufsform, Indefinido-vs-
+  // Imperfecto, unregelmäßige Vergangenheit & Partizipien, Imperativ, „hay“,
+  // Situations-Zuordnung, Stolperfallen, Signalwörter und drei Reisedialoge.
+  // Unten ein CTA in die Übungskarten – über die normale open-category-Aktion.
   function renderTiempos(vm) {
     const g = vm.guide;
 
@@ -1795,9 +1797,19 @@
       <ul class="cinfo-words">${timelineRows}</ul>
       <p class="cinfo-text cj-note">${esc(t.note)}</p>`;
 
+    // Kleiner Helfer: Beispiel-/Dialogzeilen (spanisch + deutsch) als Blöcke.
+    const lines = (arr) => arr
+      .map((l) => `
+        <div class="context-panel__line">
+          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
+          <p class="context-panel__de">${esc(l.de)}</p>
+        </div>`)
+      .join("");
+
     // Die einzelnen Zeitformen als aufklappbare Karten (wie die unregelmäßigen
     // Verben): Kopf = Zeitname + Kurzbeschreibung, aufgeklappt die Formen-
-    // Tabelle, ein „Wann?“-Hinweis und ein Beispielsatz.
+    // Tabelle, das Bildungs-Rezept, Signalwörter, ein „Wann?“-Hinweis und
+    // mehrere Reise-Beispielsätze.
     const tenseBlocks = g.tenses
       .map((te) => `
         <details class="cinfo-dish">
@@ -1810,11 +1822,10 @@
           </summary>
           <div class="cinfo-dish__body">
             ${table(te.forms)}
-            <p class="cj-verb__like">${esc(te.when)}</p>
-            <div class="context-panel__line">
-              <p class="context-panel__es" lang="es">${esc(te.example.es)}</p>
-              <p class="context-panel__de">${esc(te.example.de)}</p>
-            </div>
+            <p class="cj-verb__like"><strong>So baust du es:</strong> ${esc(te.recipe)}</p>
+            <p class="cj-verb__like"><strong>Signalwörter:</strong> <span lang="es">${esc(te.signals)}</span></p>
+            <p class="cj-verb__like"><strong>Wann?</strong> ${esc(te.when)}</p>
+            ${lines(te.examples)}
           </div>
         </details>`)
       .join("");
@@ -1826,17 +1837,49 @@
         ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
       </ul>`;
 
-    // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiel.
+    // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiele.
     const c = g.continuous;
     const continuous = `
       <p class="cinfo-text">${esc(c.intro)}</p>
       ${table(c.forms)}
       ${pairList(c.gerunds.map((x) => ({ es: x.inf + " → " + x.ger, de: x.de })), "es", "de")}
-      <div class="context-panel__line">
-        <p class="context-panel__es" lang="es">${esc(c.example.es)}</p>
-        <p class="context-panel__de">${esc(c.example.de)}</p>
-      </div>
+      ${lines(c.examples)}
       <p class="cinfo-text cj-note">${esc(c.note)}</p>`;
+
+    // Indefinido vs. Imperfecto: zwei Spalten-Blöcke mit Stichpunkten + ein
+    // kombinierter Beispielsatz (Ereignis vor Hintergrund).
+    const iv = g.indefVsImperf;
+    const ivCol = (col) => `
+      <div class="cj-verb">
+        <h4 class="cj-verb__h">${esc(col.label)}</h4>
+        <ul class="cinfo-words">${col.points.map((p) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(p)}</span></li>`).join("")}</ul>
+      </div>`;
+    const indefVsImperf = `
+      <p class="cinfo-text">${esc(iv.intro)}</p>
+      <div class="cj-verbs">${ivCol(iv.indef)}${ivCol(iv.imperf)}</div>
+      ${lines([iv.combined])}
+      <p class="cinfo-text cj-note">${esc(iv.note)}</p>`;
+
+    // Reise-Situationen: Beispiel-Satz links, Zuordnung zur Zeitform rechts.
+    const sc = g.scenarios;
+    const scenarios = `
+      <p class="cinfo-text">${esc(sc.intro)}</p>
+      ${pairList(sc.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(sc.note)}</p>`;
+
+    // Stolperfallen: falsch (durchgestrichen) → richtig, plus Erklärung.
+    const pf = g.pitfalls;
+    const pitfallRows = pf.rows
+      .map((r) => `
+        <li class="cinfo-word cj-pitfall">
+          <span class="cj-pitfall__pair"><span class="cj-pitfall__wrong" lang="es">${esc(r.wrong)}</span> <span class="cj-pitfall__arrow" aria-hidden="true">→</span> <span class="cj-pitfall__right" lang="es">${esc(r.right)}</span></span>
+          <span class="cinfo-word__de">${esc(r.de)}</span>
+        </li>`)
+      .join("");
+    const pitfalls = `
+      <p class="cinfo-text">${esc(pf.intro)}</p>
+      <ul class="cinfo-words">${pitfallRows}</ul>
+      <p class="cinfo-text cj-note">${esc(pf.note)}</p>`;
 
     // Pretéritos fuertes: je Verb ein kleiner Block mit Überschrift + Tabelle.
     const sp = g.strongPast;
@@ -1876,11 +1919,15 @@
       .map((s) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(s.es)}</span><span class="cinfo-word__de">${esc(s.de)}</span></li>`)
       .join("");
 
-    const exampleLines = g.example.lines
-      .map((l) => `
-        <div class="context-panel__line">
-          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
-          <p class="context-panel__de">${esc(l.de)}</p>
+    // Reisedialoge: der Drei-Zeiten-Dialog plus die beiden themed Dialoge
+    // (Rückblick & Pläne) – jeder mit Titel, Zeilen und Mini-Hinweis.
+    const allDialogs = [g.example].concat(g.dialogs || []);
+    const dialogsHtml = allDialogs
+      .map((d) => `
+        <div class="cj-dialog">
+          <h4 class="cj-verb__h" lang="es">${esc(d.title)}</h4>
+          ${lines(d.lines)}
+          <p class="cinfo-text cj-note">${esc(d.note)}</p>
         </div>`)
       .join("");
 
@@ -1892,12 +1939,15 @@
         ${sect("↔️", t.title, timeline)}
         ${sect("🕰️", "Die wichtigsten Zeitformen", `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
         ${sect("⏯️", c.title, continuous)}
+        ${sect("⚖️", iv.title, indefVsImperf)}
         ${sect("💪", sp.title, strongPast)}
         ${sect("🧩", pp.title, participles)}
         ${sect("🗣️", im.title, imperative)}
         ${sect("📦", hy.title, hayBlock)}
+        ${sect("🧳", sc.title, scenarios)}
+        ${sect("⚠️", pf.title, pitfalls)}
         ${sect("🔑", "Signalwörter: woran du die Zeit erkennst", `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
-        ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
+        ${sect("🧭", "Reisedialoge: die Zeiten im Gespräch", dialogsHtml)}
 
         <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
           Jetzt üben: Zeiten <span class="cta__count">${vm.cardCount} Karten</span>
