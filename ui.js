@@ -106,6 +106,62 @@
       </div>`;
   }
 
+  // Lern-Voreinstellungen (Modus · Richtung · Stufen · Sprechtempo). Sie leben im
+  // Profil-Reiter als globale Vorgaben – das Dashboard zeigt davon nur noch die
+  // Zusammenfassung (früher klappte hier ein volles Panel auf, das wurde zu
+  // unübersichtlich). Jede Gruppe trägt ihre eigene Beschriftung.
+  function learnPrefs(vm) {
+    const mode = vm.mode;
+    // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit Kartenzahl).
+    const levelChips = [
+      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
+      ...vm.levels.map((l) =>
+        `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
+                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
+           <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
+         </button>`),
+    ].join("");
+    // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
+    // sonst gäbe es nichts zu hören (graceful degradation).
+    const listenSeg = speechReady()
+      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">${esc(t("home.modeListen"))}</button>`
+      : "";
+    // Sprechtempo: nur sinnvoll, wenn der Browser überhaupt vorlesen kann.
+    // 0.75 langsam (zum Nachsprechen) · 0.95 normal · 1.2 schnell (Reise-Realität).
+    const rate = vm.speechRate || 0.95;
+    const speedGroup = speechReady()
+      ? `<div class="switchgroup">
+          <span class="switchcap">${esc(t("home.speechRate"))}</span>
+          <div class="segmented segmented--three" role="tablist" aria-label="${esc(t("home.speechRateAria"))}">
+            <button class="seg ${rate === 0.75 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.75" aria-pressed="${rate === 0.75}">${esc(t("home.rateSlow"))}</button>
+            <button class="seg ${rate === 0.95 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.95" aria-pressed="${rate === 0.95}">${esc(t("home.rateNormal"))}</button>
+            <button class="seg ${rate === 1.2 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="1.2" aria-pressed="${rate === 1.2}">${esc(t("home.rateFast"))}</button>
+          </div>
+        </div>`
+      : "";
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.modeLabel"))}</span>
+        <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="${esc(t("home.modeAria"))}">
+          <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">${esc(t("home.modeFlip"))}</button>
+          <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">${esc(t("home.modeType"))}</button>
+          ${listenSeg}
+        </div>
+      </div>
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.dirLabel"))}</span>
+        <div class="segmented" role="tablist" aria-label="${esc(t("home.dirAria"))}">
+          <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">${vm.nativeFlag} → 🇪🇸 ${esc(vm.nativeLabel)}</button>
+          <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → ${vm.nativeFlag} Español</button>
+        </div>
+      </div>
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.levelsGroup"))}</span>
+        <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
+      </div>
+      ${speedGroup}`;
+  }
+
   function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
@@ -128,16 +184,6 @@
       .join("");
 
     const mode = vm.mode;
-
-    // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit Kartenzahl).
-    const levelChips = [
-      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
-      ...vm.levels.map((l) =>
-        `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
-                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
-           <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
-         </button>`),
-    ].join("");
 
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
     // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
@@ -196,54 +242,15 @@
       tripCard = `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
     }
 
-    // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
-    // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
+    // Einstellungs-Zeile: fasst die aktive Wahl zusammen und führt per Tap in den
+    // Profil-Reiter, wo Modus/Richtung/Stufen/Tempo zentral eingestellt werden.
+    // (Früher klappte hier ein volles Panel auf – das wurde zu unübersichtlich.)
     const lvlSummary = vm.allLevels
       ? t("home.setupAllLevels")
       : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
     const modeLabel = mode === "type" ? t("home.modeType") : mode === "listen" ? t("home.modeListen") : t("home.modeFlip");
     const dirSummary = vm.dir === "es2de" ? `🇪🇸→${vm.nativeFlag}` : `${vm.nativeFlag}→🇪🇸`;
     const setupSummary = `${modeLabel} · ${dirSummary} · ${esc(lvlSummary)}`;
-    // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
-    // sonst gäbe es nichts zu hören (graceful degradation).
-    const listenSeg = speechReady()
-      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">${esc(t("home.modeListen"))}</button>`
-      : "";
-    // Sprechtempo: nur sinnvoll, wenn der Browser überhaupt vorlesen kann.
-    // 0.75 langsam (zum Nachsprechen) · 0.95 normal · 1.2 schnell (Reise-Realität).
-    const rate = vm.speechRate || 0.95;
-    const speedGroup = speechReady()
-      ? `<div class="switchgroup">
-          <span class="switchcap">${esc(t("home.speechRate"))}</span>
-          <div class="segmented segmented--three" role="tablist" aria-label="${esc(t("home.speechRateAria"))}">
-            <button class="seg ${rate === 0.75 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.75" aria-pressed="${rate === 0.75}">${esc(t("home.rateSlow"))}</button>
-            <button class="seg ${rate === 0.95 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.95" aria-pressed="${rate === 0.95}">${esc(t("home.rateNormal"))}</button>
-            <button class="seg ${rate === 1.2 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="1.2" aria-pressed="${rate === 1.2}">${esc(t("home.rateFast"))}</button>
-          </div>
-        </div>`
-      : "";
-    // Sprachumschalter lebt im Profil-Reiter (siehe profilBody), nicht hier im
-    // Dashboard-Setup – die UI-/Muttersprache ist eine globale Voreinstellung.
-    const setupBody = `
-      <div class="setup__body" id="setup-body">
-        <div class="switchgroup">
-          <span class="switchcap">${esc(t("home.modeLabel"))}</span>
-          <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="${esc(t("home.modeAria"))}">
-            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">${esc(t("home.modeFlip"))}</button>
-            <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">${esc(t("home.modeType"))}</button>
-            ${listenSeg}
-          </div>
-        </div>
-        <div class="switchgroup">
-          <span class="switchcap">${esc(t("home.dirLabel"))}</span>
-          <div class="segmented" role="tablist" aria-label="${esc(t("home.dirAria"))}">
-            <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">${vm.nativeFlag} → 🇪🇸 ${esc(vm.nativeLabel)}</button>
-            <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → ${vm.nativeFlag} Español</button>
-          </div>
-        </div>
-        <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
-        ${speedGroup}
-      </div>`;
 
     return `
       ${pagehead(esc(t("home.homePrompt")), vm)}
@@ -263,12 +270,11 @@
       </div>
 
       <div class="setup">
-        <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
+        <button class="setup__head" data-action="set-tab" data-tab="profil" aria-label="${esc(t("home.settingsToProfile"))}">
           <span class="setup__cap">${esc(t("home.settingsCap"))}</span>
           <span class="setup__summary">${setupSummary}</span>
           <span class="setup__chev" aria-hidden="true">›</span>
         </button>
-        ${vm.setupOpen ? setupBody : ""}
       </div>
 
       <p class="sectioncap">${esc(t("home.sectionTopics"))}</p>
@@ -307,9 +313,9 @@
         ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
         <span class="navrow__chev" aria-hidden="true">›</span>
       </button>`;
-    // Sprachumschalter: deutsche oder englische Bedienoberfläche (und damit auch
-    // die muttersprachliche Seite der Karten). Globale Voreinstellung, daher hier
-    // im Profil statt im Dashboard-Setup.
+    // Lern-Einstellungen: Bediensprache (de/en) plus die Lern-Voreinstellungen
+    // (Modus/Richtung/Stufen/Tempo). Alles globale Vorgaben, daher gebündelt hier
+    // im Profil – das Dashboard zeigt davon nur noch die Zusammenfassung.
     const langGroup = `
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
@@ -329,8 +335,11 @@
         <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
       </div>
 
-      <p class="sectioncap">${esc(t("home.uiLanguage"))}</p>
-      ${langGroup}
+      <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
+      <div class="prefs">
+        ${langGroup}
+        ${learnPrefs(vm)}
+      </div>
 
       ${navrow("open-stats", "📊", t("profile.statistics"))}
       ${vm.hasBadges ? navrow("open-badges", "🎖️", t("profile.rutaPass"), vm.badgeCount || "") : ""}

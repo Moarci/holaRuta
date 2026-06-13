@@ -233,7 +233,6 @@
         pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
       },
       lastCat,
-      setupOpen: setupOpenDefault(),
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
@@ -523,12 +522,6 @@
   function toggleTripEdit() {
     state.tripEdit = !state.tripEdit;
     render();
-  }
-
-  // Einstellungs-Panel des Lernen-Reiters: standardmäßig zu (Set-once-
-  // Einstellungen), offen nur, wenn der Nutzer es selbst aufgeklappt hat.
-  function setupOpenDefault() {
-    return settings.setupOpen === true;
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -2212,13 +2205,6 @@
     if (settings.lastScope && categoryById(settings.lastScope)) startStudy(settings.lastScope);
   }
 
-  // Einstellungs-Panel der Startseite auf-/zuklappen und die Wahl merken.
-  function toggleSetup() {
-    settings = Object.assign({}, settings, { setupOpen: !setupOpenDefault() });
-    store.saveSettings(settings);
-    render();
-  }
-
   // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
   function setTab(tab) {
     const valid = tab === "entdecken" || tab === "profil" ? tab : "lernen";
@@ -3066,7 +3052,6 @@
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "resume-last") resumeLast();
-    else if (action === "toggle-setup") toggleSetup();
     else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
