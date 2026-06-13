@@ -282,8 +282,12 @@
     ti08: { e: "Me quedo una semana.", d: "Ich bleibe eine Woche.", s: "Bei der Aufenthaltsdauer.", n: "día = Tag, semana = Woche, mes = Monat." },
     ti09: { e: "Mejor salimos temprano.", d: "Wir gehen besser früh los.", s: "Bei der Planung.", n: "temprano = früh, tarde = spät (und Nachmittag)." },
     ti10: { e: "El bus sale el lunes.", d: "Der Bus fährt am Montag.", s: "Bei Reiseplänen.", n: "Wochentage klein und ohne am: el lunes." },
-    ti11: { e: "Llego el miércoles.", d: "Ich komme am Mittwoch an.", s: "Bei Verabredungen.", n: "miércoles hat einen Akzent: mi-ÉR-co-les." },
-    ti12: { e: "El sábado hay fiesta en el hostel.", d: "Am Samstag ist Party im Hostel.", s: "Beim Wochenende planen.", n: "Am Wochenende: el fin de semana." },
+    ti11: { e: "El martes hay tour a la montaña.", d: "Am Dienstag gibt es eine Tour zum Berg.", s: "Bei Reiseplänen.", n: "martes 13 ist im Spanischen der Unglückstag – nicht Freitag der 13." },
+    ti12: { e: "Llego el miércoles.", d: "Ich komme am Mittwoch an.", s: "Bei Verabredungen.", n: "miércoles hat einen Akzent: mi-ÉR-co-les." },
+    ti13: { e: "El jueves salgo de viaje.", d: "Am Donnerstag breche ich zur Reise auf.", s: "Bei Verabredungen.", n: "jueves: das j klingt wie ein hartes deutsches ch (ach)." },
+    ti14: { e: "El viernes hay fiesta.", d: "Am Freitag ist Party.", s: "Beim Wochenende planen.", n: "el fin de semana = das Wochenende." },
+    ti15: { e: "El sábado hay fiesta en el hostel.", d: "Am Samstag ist Party im Hostel.", s: "Beim Wochenende planen.", n: "sábado hat einen Akzent: SÁ-ba-do." },
+    ti16: { e: "El domingo descanso.", d: "Am Sonntag ruhe ich mich aus.", s: "Beim Wochenende planen.", n: "domingo = Sonntag; viele Geschäfte haben geschlossen." },
 
     // ===================== SMALLTALK =====================
     s01: { e: "¡Hola! ¿Cómo estás?", d: "Hallo! Wie geht's?", s: "Bei jeder Begrüßung.", n: "Lockerer: ¿Qué tal? oder ¿Qué más? (Kolumbien)." },

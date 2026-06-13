@@ -430,9 +430,13 @@
     { id: "ti07", cat: "zeit", lvl: 2, de: "am Morgen / am Abend", es: "en la mañana / en la noche", tip: "ma-NYA-na / NO-che" },
     { id: "ti08", cat: "zeit", lvl: 1, de: "der Tag / die Woche", es: "el día / la semana", tip: "DI-a / se-MA-na" },
     { id: "ti09", cat: "zeit", lvl: 1, de: "früh / spät", es: "temprano / tarde", tip: "tem-PRA-no / TAR-de" },
-    { id: "ti10", cat: "zeit", lvl: 1, de: "Montag / Dienstag", es: "lunes / martes", tip: "LU-nes / MAR-tes" },
-    { id: "ti11", cat: "zeit", lvl: 1, de: "Mittwoch / Donnerstag", es: "miércoles / jueves", tip: "mi-ER-ko-les / CHUE-wes" },
-    { id: "ti12", cat: "zeit", lvl: 1, de: "Freitag / Samstag / Sonntag", es: "viernes / sábado / domingo", tip: "wi-ER-nes / SA-ba-do / do-MIN-go" },
+    { id: "ti10", cat: "zeit", lvl: 1, de: "Montag", es: "lunes", tip: "LU-nes" },
+    { id: "ti11", cat: "zeit", lvl: 1, de: "Dienstag", es: "martes", tip: "MAR-tes" },
+    { id: "ti12", cat: "zeit", lvl: 1, de: "Mittwoch", es: "miércoles", tip: "mi-ER-ko-les" },
+    { id: "ti13", cat: "zeit", lvl: 1, de: "Donnerstag", es: "jueves", tip: "CHUE-wes" },
+    { id: "ti14", cat: "zeit", lvl: 1, de: "Freitag", es: "viernes", tip: "wi-ER-nes" },
+    { id: "ti15", cat: "zeit", lvl: 1, de: "Samstag", es: "sábado", tip: "SA-ba-do" },
+    { id: "ti16", cat: "zeit", lvl: 1, de: "Sonntag", es: "domingo", tip: "do-MIN-go" },
 
     // ===================== SMALLTALK & KENNENLERNEN =====================
     { id: "s01", cat: "talk", lvl: 1, de: "Wie geht's?", es: "¿Cómo estás? / ¿Qué tal?", tip: "KO-mo es-TAS" },
