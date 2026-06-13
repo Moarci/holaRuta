@@ -469,6 +469,10 @@
     { id: "social08", cat: "social", lvl: 2, de: "Kommst du mit?", es: "¿Te unes?", tip: "te U-nes" },
     { id: "social09", cat: "social", lvl: 2, de: "Schreib mir auf WhatsApp.", es: "Escríbeme por WhatsApp.", tip: "es-KRI-be-me por WatsApp" },
     { id: "social10", cat: "social", lvl: 1, de: "War schön, dich kennenzulernen. / Freut mich", es: "Fue un gusto conocerte.", tip: "fue un GUS-to ko-no-SER-te", alt: ["fue un gusto", "mucho gusto"] },
+    { id: "social11", cat: "social", lvl: 1, de: "Möchtest du mit uns Uno spielen?", es: "¿Quieres jugar Uno con nosotros?", tip: "KIE-res chu-GAR U-no kon no-SO-tros", alt: ["quieres jugar uno con nosotros", "quieres jugar al uno con nosotros"] },
+    { id: "social12", cat: "social", lvl: 1, de: "Möchtest du mit mir spielen?", es: "¿Quieres jugar conmigo?", tip: "KIE-res chu-GAR kon-MI-go" },
+    { id: "social13", cat: "social", lvl: 2, de: "Sollen wir Karten spielen?", es: "¿Jugamos a las cartas?", tip: "chu-GA-mos a las KAR-tas", alt: ["jugamos a las cartas", "quieres jugar a las cartas"] },
+    { id: "social14", cat: "social", lvl: 1, de: "Karten spielen", es: "jugar a las cartas", tip: "chu-GAR a las KAR-tas" },
 
     // ===================== ALLTAG & LEBEN =====================
     { id: "a01", cat: "alltag", lvl: 3, de: "Wie sagt man ... auf Spanisch?", es: "¿Cómo se dice ... en español?", tip: "KO-mo se DI-se" },
