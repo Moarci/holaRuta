@@ -25,37 +25,37 @@
 
   // Akzentfarben in warmer "HolaRuta"-Erdton-Palette (Lateinamerika-Look).
   const CATEGORIES = [
-    { id: "basics",  label: "Grundlagen", icon: "💬", grad: ["#C2502E", "#D4673F"] },
-    { id: "zahlen",  label: "Zahlen",     icon: "🔢", grad: ["#B97C24", "#CE9438"] },
-    { id: "essen",   label: "Essen",      icon: "🍽️", grad: ["#CB5A2B", "#E0743C"] },
-    { id: "trinken", label: "Trinken",    icon: "🥤", grad: ["#2F6B70", "#3E8388"] },
-    { id: "hotel",   label: "Hotel",      icon: "🏨", grad: ["#7D4A8E", "#9763A6"] },
-    { id: "hostel",  label: "Hostel",     icon: "🛏️", grad: ["#C25A45", "#DB7A5E"] },
-    { id: "social",  label: "Social",     icon: "🤝", grad: ["#8E4FA8", "#A96DBE"] },
-    { id: "verkehr", label: "Verkehr",    icon: "🚌", grad: ["#3F7355", "#52906C"] },
-    { id: "compras", label: "Einkaufen",  icon: "🛒", grad: ["#A86A2D", "#C2853F"] },
-    { id: "dinero",  label: "Geld",       icon: "💵", grad: ["#5E7D3A", "#76954E"] },
-    { id: "notfall", label: "Notfall",    icon: "🆘", grad: ["#B5302A", "#CE463E"] },
-    { id: "zeit",    label: "Zeit",       icon: "📅", grad: ["#2E6E86", "#3E89A2"] },
-    { id: "talk",    label: "Smalltalk",  icon: "🗣️", grad: ["#9B5BA0", "#B173B5"] },
-    { id: "alltag",  label: "Alltag",     icon: "🏙️", grad: ["#8A6A52", "#A3846B"] },
-    { id: "frases",  label: "Sätze",      icon: "🙋", grad: ["#A85A6E", "#C2748A"] },
-    { id: "grenze",  label: "Behörden",   icon: "🛂", grad: ["#566B8A", "#6E86A3"] },
-    { id: "reise",   label: "Busreise",   icon: "🚐", grad: ["#B5503F", "#CE6855"] },
-    { id: "ropa",    label: "Kleidung & Schmuck", icon: "👕", grad: ["#A8497E", "#C2629A"] },
-    { id: "rumbo",   label: "Wegbeschreibung", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
-    { id: "verbos",  label: "Konjugieren", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
-    { id: "tiempos", label: "Zeiten",     icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
-    { id: "colores", label: "Farben",     icon: "🎨", grad: ["#7048E8", "#15AABF"] },
-    { id: "contrarios", label: "Gegenteile", icon: "↔️", grad: ["#3F7355", "#B5503F"] },
+    { id: "basics",  label: "Grundlagen", labelEn: "Basics", icon: "💬", grad: ["#C2502E", "#D4673F"] },
+    { id: "zahlen",  label: "Zahlen",     labelEn: "Numbers", icon: "🔢", grad: ["#B97C24", "#CE9438"] },
+    { id: "essen",   label: "Essen",      labelEn: "Food", icon: "🍽️", grad: ["#CB5A2B", "#E0743C"] },
+    { id: "trinken", label: "Trinken",    labelEn: "Drinks", icon: "🥤", grad: ["#2F6B70", "#3E8388"] },
+    { id: "hotel",   label: "Hotel",      labelEn: "Hotel", icon: "🏨", grad: ["#7D4A8E", "#9763A6"] },
+    { id: "hostel",  label: "Hostel",     labelEn: "Hostel", icon: "🛏️", grad: ["#C25A45", "#DB7A5E"] },
+    { id: "social",  label: "Social",     labelEn: "Social", icon: "🤝", grad: ["#8E4FA8", "#A96DBE"] },
+    { id: "verkehr", label: "Verkehr",    labelEn: "Transport", icon: "🚌", grad: ["#3F7355", "#52906C"] },
+    { id: "compras", label: "Einkaufen",  labelEn: "Shopping", icon: "🛒", grad: ["#A86A2D", "#C2853F"] },
+    { id: "dinero",  label: "Geld",       labelEn: "Money", icon: "💵", grad: ["#5E7D3A", "#76954E"] },
+    { id: "notfall", label: "Notfall",    labelEn: "Emergency", icon: "🆘", grad: ["#B5302A", "#CE463E"] },
+    { id: "zeit",    label: "Zeit",       labelEn: "Time", icon: "📅", grad: ["#2E6E86", "#3E89A2"] },
+    { id: "talk",    label: "Smalltalk",  labelEn: "Small talk", icon: "🗣️", grad: ["#9B5BA0", "#B173B5"] },
+    { id: "alltag",  label: "Alltag",     labelEn: "Everyday", icon: "🏙️", grad: ["#8A6A52", "#A3846B"] },
+    { id: "frases",  label: "Sätze",      labelEn: "Phrases", icon: "🙋", grad: ["#A85A6E", "#C2748A"] },
+    { id: "grenze",  label: "Behörden",   labelEn: "Officials", icon: "🛂", grad: ["#566B8A", "#6E86A3"] },
+    { id: "reise",   label: "Busreise",   labelEn: "Bus travel", icon: "🚐", grad: ["#B5503F", "#CE6855"] },
+    { id: "ropa",    label: "Kleidung & Schmuck", labelEn: "Clothes & jewellery", icon: "👕", grad: ["#A8497E", "#C2629A"] },
+    { id: "rumbo",   label: "Wegbeschreibung", labelEn: "Directions", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
+    { id: "verbos",  label: "Konjugieren", labelEn: "Conjugating", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
+    { id: "tiempos", label: "Zeiten",     labelEn: "Tenses", icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
+    { id: "colores", label: "Farben",     labelEn: "Colours", icon: "🎨", grad: ["#7048E8", "#15AABF"] },
+    { id: "contrarios", label: "Gegenteile", labelEn: "Opposites", icon: "↔️", grad: ["#3F7355", "#B5503F"] },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
   const LEVELS = [
-    { id: 1, label: "Einsteiger",      short: "A1", color: "#3F7355" },
-    { id: 2, label: "Mittel",          short: "A2", color: "#B97C24" },
-    { id: 3, label: "Fortgeschritten", short: "B1", color: "#B5302A" },
-    { id: 4, label: "Profi",           short: "B2", color: "#6B3FA0" },
+    { id: 1, label: "Einsteiger",      labelEn: "Beginner",     short: "A1", color: "#3F7355" },
+    { id: 2, label: "Mittel",          labelEn: "Intermediate", short: "A2", color: "#B97C24" },
+    { id: 3, label: "Fortgeschritten", labelEn: "Advanced",     short: "B1", color: "#B5302A" },
+    { id: 4, label: "Profi",           labelEn: "Expert",       short: "B2", color: "#6B3FA0" },
   ];
 
   const CARDS = [
@@ -909,13 +909,13 @@
 
   // Battle-Szenen (Auswahl vor einer Runde). icon nur fürs UI.
   const BATTLE_SCENES = [
-    { id: "checkin", label: "Check-in",          icon: "🛎️" },
-    { id: "dorm",    label: "Dorm & Zimmer",     icon: "🛏️" },
-    { id: "meet",    label: "Leute kennenlernen", icon: "🤝" },
-    { id: "plan",    label: "Gemeinsam planen",  icon: "🗓️" },
-    { id: "food",    label: "Essen & Trinken",   icon: "🍽️" },
-    { id: "out",     label: "Unterwegs",         icon: "🧭" },
-    { id: "problem", label: "Problem lösen",     icon: "🛠️" },
+    { id: "checkin", label: "Check-in",          labelEn: "Check-in",        icon: "🛎️" },
+    { id: "dorm",    label: "Dorm & Zimmer",     labelEn: "Dorm & room",     icon: "🛏️" },
+    { id: "meet",    label: "Leute kennenlernen", labelEn: "Meeting people", icon: "🤝" },
+    { id: "plan",    label: "Gemeinsam planen",  labelEn: "Planning together", icon: "🗓️" },
+    { id: "food",    label: "Essen & Trinken",   labelEn: "Food & drink",    icon: "🍽️" },
+    { id: "out",     label: "Unterwegs",         labelEn: "Out and about",   icon: "🧭" },
+    { id: "problem", label: "Problem lösen",     labelEn: "Solving a problem", icon: "🛠️" },
   ];
 
   // Battle-Aufgaben: Ansage auf Deutsch (promptDe), laut auf Spanisch antworten.

@@ -160,7 +160,7 @@
           active: state.levels.length === 0 || state.levels.includes(l.id),
         }))
         .filter((b) => b.count > 0);
-      return { id: c.id, label: c.label, icon: c.icon, grad: c.grad,
+      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
     // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
@@ -175,7 +175,7 @@
     // Stufen ohne Karten (z. B. B2, das nur in Rollenspielen vorkommt) im
     // Karten-Filter ausblenden – sie würden sonst als leere 0-Stufe erscheinen.
     const levels = data.LEVELS.map((l) => ({
-      id: l.id, label: l.label, short: l.short, color: l.color,
+      id: l.id, label: natk(l, "label"), short: l.short, color: l.color,
       count: everyCard.filter((c) => c.lvl === l.id).length,
       active: state.levels.includes(l.id),
     })).filter((l) => l.count > 0);
@@ -187,7 +187,7 @@
     if (settings.lastScope) {
       const c = categoryById(settings.lastScope);
       const due = c ? dueIn(scopeCards(c.id)).length : 0;
-      if (c && due > 0) lastCat = { id: c.id, label: c.label, icon: c.icon, due };
+      if (c && due > 0) lastCat = { id: c.id, label: natk(c, "label"), icon: c.icon, due };
     }
     return {
       mode: state.mode,
@@ -234,7 +234,7 @@
     return {
       show: true,
       canPrompt: inst.canPrompt(),
-      hint: 'Tippe unten in der Leiste auf „Teilen" und dann auf „Zum Home-Bildschirm" – schon hast du HolaRuta als App-Icon, ganz ohne Datei-Suchen, auch offline.',
+      hint: t("app.installHintIos"),
     };
   }
 
@@ -257,8 +257,8 @@
       de: native, // dazu die muttersprachliche Bedeutung als Verständnis-Hilfe
       spanishIsQuestion,
       tip: card.tip || null,
-      level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
-      catLabel: isAll ? t("app.allTopics") : (cat ? cat.label : ""),
+      level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
+      catLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
       catIcon: isAll || !cat ? "📚" : cat.icon,
       accent: isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
@@ -274,7 +274,7 @@
   function doneVM() {
     const isAll = state.scopeId === "all";
     const cat = categoryById(state.scopeId);
-    return { scopeLabel: isAll ? "Alle Bereiche" : (cat ? cat.label : "") };
+    return { scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : "") };
   }
 
   // Eine Karte für Listen/Detail aufbereiten (Karte + Statistik + Anzeige-Texte).
@@ -287,10 +287,10 @@
       de: nat(card),
       es: card.es,
       tip: card.tip || null,
-      catLabel: cat ? cat.label : "",
+      catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
       accent: cat ? cat.grad : DEFAULT_ACCENT,
-      level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
+      level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
       swatch: card.swatch || null,
       s,
     };
@@ -328,10 +328,10 @@
       overview: ov,
       filter,
       filters: [
-        { id: "answered", label: "Beantwortet", count: ov.seenCards },
-        { id: "hard", label: "Schwierig", count: ov.hard },
-        { id: "mastered", label: "Gemeistert", count: ov.mastered },
-        { id: "new", label: "Neu", count: ov.neu },
+        { id: "answered", label: t("app.statAnswered"), count: ov.seenCards },
+        { id: "hard", label: t("app.statHard"), count: ov.hard },
+        { id: "mastered", label: t("app.statMastered"), count: ov.mastered },
+        { id: "new", label: t("app.statNew"), count: ov.neu },
         { id: "all", label: t("app.all"), count: ov.total },
       ],
       list,
@@ -695,9 +695,9 @@
   // Szenen-Auswahl: "Alle" + je Szene mit Anzahl verfügbarer Aufgaben.
   // Wählbare Battle-Längen (Runden). Werte gerade halten, damit A/B gleich oft drankommen.
   const BATTLE_LENGTHS = [
-    { value: 6, label: "Kurz" },
-    { value: 10, label: "Mittel" },
-    { value: 20, label: "Lang" },
+    { value: 6, labelKey: "app.battleLenShort" },
+    { value: 10, labelKey: "app.battleLenMedium" },
+    { value: 20, labelKey: "app.battleLenLong" },
   ];
 
   // Gerade Rundenzahl (A,B,A,B…); bei nur 1 Aufgabe bleibt 1 Runde.
@@ -707,13 +707,13 @@
     const scenes = data.BATTLE_SCENES
       .map((s) => {
         const count = data.BATTLES.filter((b) => b.scene === s.id).length;
-        return { id: s.id, label: s.label, icon: s.icon, count,
+        return { id: s.id, label: natk(s, "label"), icon: s.icon, count,
           rounds: evenRounds(Math.min(state.battleLength, count)) };
       })
       .filter((s) => s.count > 0);
     // Object.assign statt Objekt-Spread: die App verspricht ES2017 (Spread auf
     // Objekten ist ES2018 und wirft auf alten WebViews einen SyntaxError).
-    const lengths = BATTLE_LENGTHS.map((l) => Object.assign({}, l, { selected: l.value === state.battleLength }));
+    const lengths = BATTLE_LENGTHS.map((l) => Object.assign({}, l, { label: t(l.labelKey), selected: l.value === state.battleLength }));
     const totalCount = data.BATTLES.length;
     return {
       scenes,
@@ -741,7 +741,7 @@
       ? prompt.acceptable.filter((a) => matcher.normalize(a) !== matcher.normalize(prompt.answerEs))
       : [];
     return {
-      sceneLabel: b.sceneId === "all" ? t("app.allScenes") : (scene ? scene.label : ""),
+      sceneLabel: b.sceneId === "all" ? t("app.allScenes") : (scene ? natk(scene, "label") : ""),
       sceneIcon: b.sceneId === "all" ? "🎲" : (scene ? scene.icon : "🛏️"),
       round: b.round,
       totalRounds: b.totalRounds,
@@ -768,7 +768,7 @@
     const winner = a === bb ? "tie" : (a > bb ? "A" : "B");
     return {
       sceneLabel: b.sceneId === "all" ? t("app.allScenes")
-        : ((data.BATTLE_SCENES.find((s) => s.id === b.sceneId) || {}).label || ""),
+        : natk(data.BATTLE_SCENES.find((s) => s.id === b.sceneId) || {}, "label"),
       scores: b.scores,
       rounds: b.totalRounds,
       winner,
@@ -969,7 +969,7 @@
   // Übungskarten der Kategorie "tiempos".
   function tiemposVM() {
     return {
-      guide: data.TENSES,
+      guide: loc(data.TENSES),
       cardCount: data.CARDS.filter((c) => c.cat === "tiempos").length,
     };
   }
@@ -1913,7 +1913,7 @@
     const controls = document.getElementById("controls");
     if (flipEl) {
       flipEl.classList.toggle("is-flipped", state.revealed);
-      flipEl.setAttribute("aria-label", state.revealed ? "Karte ist umgedreht – tippen zum Zurückdrehen" : "Karte umdrehen");
+      flipEl.setAttribute("aria-label", state.revealed ? t("app.cardFlipped") : t("app.cardFlip"));
     }
     if (controls) controls.toggleAttribute("hidden", !state.revealed);
   }
@@ -2351,7 +2351,7 @@
       }
       return {
         id: g.cat,
-        label: cat ? cat.label : g.cat,
+        label: cat ? natk(cat, "label") : g.cat,
         icon: cat ? cat.icon : "📌",
         grad: cat ? cat.grad : DEFAULT_ACCENT,
         cards,
@@ -2409,13 +2409,13 @@
         selected: c.key === curKey,
       })) : [],
       levels: numbers ? numbers.LEVELS.map((l) => ({
-        id: l.id, short: l.short, label: l.label, hint: l.hint, active: l.id === lvl,
+        id: l.id, short: l.short, label: natk(l, "label"), hint: natk(l, "hint"), active: l.id === lvl,
       })) : [],
       // Beispiel-Spanne der aktuellen Wahl (gibt eine Vorstellung der Größenordnung).
       sample: numbers ? (() => {
         const c = numbers.currency(curKey);
         const tier = numbers.tierFor(c, lvl);
-        return { flag: c.flag, name: c.name, max: numbers.format(tier.max), one: c.one, many: c.many };
+        return { flag: c.flag, name: natk(c, "name"), max: numbers.format(tier.max), one: c.one, many: c.many };
       })() : null,
     };
   }
@@ -2431,7 +2431,7 @@
       answerEs: item.es || "",
       answerDigits: item.digits || "",
       flag: cur.flag,
-      currencyName: cur.name,
+      currencyName: natk(cur, "name"),
       currencyCode: cur.code,
       isLast: p.idx >= p.total - 1,
       speakable: preciosReady(),
@@ -2447,8 +2447,8 @@
       total: p.total,
       perfect: p.total > 0 && p.correct === p.total,
       flag: cur.flag,
-      currencyName: cur.name,
-      levelLabel: lvl ? lvl.label : "",
+      currencyName: natk(cur, "name"),
+      levelLabel: lvl ? natk(lvl, "label") : "",
       hard: p.level >= 3,
     };
   }
@@ -2573,7 +2573,7 @@
       correct: c.correct,
       total: c.total,
       perfect: c.total > 0 && c.correct === c.total,
-      levelLabel: lvl ? lvl.label : "",
+      levelLabel: lvl ? t(`app.conjL${lvl.id}Label`) : "",
     };
   }
 
@@ -2745,8 +2745,8 @@
     const cards = userCards ? userCards.list() : [];
     return {
       supported: !!userCards,
-      categories: data.CATEGORIES.map((c) => ({ id: c.id, label: c.label, icon: c.icon })),
-      levels: data.LEVELS.map((l) => ({ id: l.id, label: l.label, short: l.short })),
+      categories: data.CATEGORIES.map((c) => ({ id: c.id, label: natk(c, "label"), icon: c.icon })),
+      levels: data.LEVELS.map((l) => ({ id: l.id, label: natk(l, "label"), short: l.short })),
       msg: editorMsg,
       cards: cards.map((c) => {
         const cat = categoryById(c.cat);
@@ -2754,7 +2754,7 @@
         return {
           id: c.id, de: c.de, es: c.es, tip: c.tip,
           catIcon: cat ? cat.icon : "🗂️",
-          catLabel: cat ? cat.label : c.cat,
+          catLabel: cat ? natk(cat, "label") : c.cat,
           lvlShort: lvl ? lvl.short : "",
         };
       }),
@@ -2889,10 +2889,10 @@
       de: nat(card),
       es: card.es,
       tip: card.tip || null,
-      catLabel: cat ? cat.label : "",
+      catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
       accent: cat ? cat.grad : DEFAULT_ACCENT,
-      levelLabel: lvl ? `${lvl.short} · ${lvl.label}` : null,
+      levelLabel: lvl ? `${lvl.short} · ${natk(lvl, "label")}` : null,
     };
   }
 

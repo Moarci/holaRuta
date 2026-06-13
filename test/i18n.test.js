@@ -71,6 +71,18 @@ test("Matcher native/Englisch: nativeText wird geprüft, Artikel sind tolerant",
   assert.equal(matcher.check("die Haltestelle", card, "de").correct, true);
 });
 
+test("Coverage: CATEGORIES/LEVELS/BATTLE_SCENES haben labelEn", () => {
+  // Strukturelle Labels (nicht im de/es-Muster) müssen ein englisches Pendant haben,
+  // sonst zeigen Themen-Kacheln/Stufen/Battle-Szenen im EN-Modus Deutsch.
+  const lacks = (arr, name) => {
+    const m = arr.filter((o) => o.label != null && (o.labelEn == null || o.labelEn === ""));
+    assert.equal(m.length, 0, `${name} ohne labelEn: ${m.map((o) => o.id).join(", ")}`);
+  };
+  lacks(data.CATEGORIES, "CATEGORIES");
+  lacks(data.LEVELS, "LEVELS");
+  lacks(data.BATTLE_SCENES, "BATTLE_SCENES");
+});
+
 test("Coverage: jede Karte mit de: hat ein nicht-leeres en:", () => {
   // Schützt davor, dass eine Karte ohne englische Übersetzung still auf Deutsch
   // zurückfällt. localizeDeep/nativeText fangen das ab, aber Lücken sollen auffallen.

@@ -978,6 +978,14 @@
     importReadError: "Import fehlgeschlagen – Datei konnte nicht gelesen werden.",
     edNeedQuestion: "Bitte die Frage (Deutsch) ausfüllen.",
     edNeedAnswer: "Bitte die Antwort (Spanisch) ausfüllen.",
+    // Statistik-Filter
+    statAnswered: "Beantwortet", statHard: "Schwierig", statMastered: "Gemeistert", statNew: "Neu",
+    // Battle-Längen (Runden)
+    battleLenShort: "Kurz", battleLenMedium: "Mittel", battleLenLong: "Lang",
+    // Karten-Flip (aria-label)
+    cardFlip: "Karte umdrehen", cardFlipped: "Karte ist umgedreht – tippen zum Zurückdrehen",
+    // iOS-Installationshinweis
+    installHintIos: 'Tippe unten in der Leiste auf „Teilen" und dann auf „Zum Home-Bildschirm" – schon hast du HolaRuta als App-Icon, ganz ohne Datei-Suchen, auch offline.',
   }, {
     allTopics: "All topics",
     all: "All",
@@ -1002,6 +1010,10 @@
     importReadError: "Import failed – the file could not be read.",
     edNeedQuestion: "Please fill in the question (English).",
     edNeedAnswer: "Please fill in the answer (Spanish).",
+    statAnswered: "Answered", statHard: "Hard", statMastered: "Mastered", statNew: "New",
+    battleLenShort: "Short", battleLenMedium: "Medium", battleLenLong: "Long",
+    cardFlip: "Flip card", cardFlipped: "Card is flipped – tap to flip back",
+    installHintIos: 'Tap “Share” in the bar below, then “Add to Home Screen” – and HolaRuta sits there as an app icon, no file-hunting, works offline too.',
   });
 
   // ---------- share: ins Sharepic-Bild gezeichnete Labels (share.js) ----------
