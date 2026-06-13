@@ -137,6 +137,15 @@
  * umgedreht werden, sonst verschwinden sie auf den dunklen Flächen. */
 [data-theme="dark"] .segmented,
 [data-theme="dark"] .fmtrow { background: rgba(251, 243, 228, 0.05); }
+/* Aktive Pille in Pillen-Leisten (Umschalter + Format-Chips): --card (#221811)
+ * ist im Dunkeln fast deckungsgleich mit dem Track, und der Sticker-Schatten
+ * verschwindet – die Auswahl wäre kaum sichtbar. Deutlich hellere Pille + feiner
+ * Rand machen klar, was angewählt ist. */
+[data-theme="dark"] .seg.is-active,
+[data-theme="dark"] .fmtchip.is-active {
+  background: #3C2C1E;
+  box-shadow: 0 0 0 1.5px var(--line-strong);
+}
 [data-theme="dark"] .progress,
 [data-theme="dark"] .dist__bar,
 [data-theme="dark"] .today__bar,
