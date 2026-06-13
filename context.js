@@ -80,8 +80,15 @@
     };
   }
 
-  // Kompakte Schreibweise { e, d, s, n } -> volles context-Objekt.
-  const expand = (x) => ({ sentenceEs: x.e, sentenceDe: x.d, situation: x.s, note: x.n });
+  // Kompakte Schreibweise { e, d, s, n } -> volles context-Objekt. Englische
+  // Pendants (dEn/sEn/nEn) werden mitgeführt; die aktive Sprache wählt erst die
+  // View (per natk), weil der Kontext einmalig beim Laden angehängt wird.
+  const expand = (x) => ({
+    sentenceEs: x.e,
+    sentenceDe: x.d, sentenceEn: x.dEn,
+    situation: x.s, situationEn: x.sEn,
+    note: x.n, noteEn: x.nEn,
+  });
 
   // Kontext an die Karten hängen (mutiert die übergebene Liste – einmalig beim Start).
   function attach(cards, contextData) {

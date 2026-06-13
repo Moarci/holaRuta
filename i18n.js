@@ -79,6 +79,58 @@
     return (v != null && v !== "") ? v : (obj.de != null ? obj.de : "");
   }
 
+  // Wie nativeText, aber für Felder mit Suffix-Konvention (base + "En"), z.B.
+  // { situationDe, situationEn } oder { title, titleEn } oder { d, dEn }.
+  // base ist der deutsche Feldname (mit oder ohne "De"-Suffix). lang==="en" nimmt
+  // base+"En", sonst (oder wenn leer/fehlend) den deutschen Wert. Sicher: fehlt
+  // das En-Pendant, kommt automatisch der deutsche Text (Rückfall).
+  function natKey(obj, base) {
+    if (!obj) return "";
+    const de = obj[base];
+    if (lang === "en") {
+      // "situationDe" -> "situationEn"; "title" -> "titleEn"
+      const enKey = /De$/.test(base) ? base.slice(0, -2) + "En" : base + "En";
+      const en = obj[enKey];
+      if (en != null && en !== "") return en;
+    }
+    return de != null ? de : "";
+  }
+
+  // Den zu einem deutschen Feldnamen passenden En-Schlüssel bilden:
+  //   "de" -> "en", "situationDe" -> "situationEn", "title" -> "titleEn",
+  //   "d" -> "dEn". (Spiegelt die Konvention der Inhaltsdateien.)
+  function enKeyFor(base) {
+    if (base === "de") return "en";
+    if (/De$/.test(base)) return base.slice(0, -2) + "En";
+    return base + "En";
+  }
+
+  // Tiefe Lokalisierung: liefert für lang==="en" eine Kopie, in der jedes deutsche
+  // Feld durch sein englisches Pendant (base+"En") ersetzt ist – rekursiv durch
+  // Objekte und Arrays. Die …En-Hilfsfelder selbst werden im Ergebnis weggelassen.
+  // Für lang==="de" wird der Wert unverändert zurückgegeben (kein Overhead).
+  // So leuchten alle von den Inhaltsdateien ergänzten …En-Felder auf, ohne dass
+  // jede einzelne Render-Stelle umgebaut werden muss (Pass-Through-Ansichten).
+  function localizeDeep(value) {
+    if (lang !== "en") return value;
+    return _loc(value);
+  }
+  function _loc(value) {
+    if (Array.isArray(value)) return value.map(_loc);
+    if (value && typeof value === "object") {
+      const out = {};
+      for (const k in value) {
+        if (!Object.prototype.hasOwnProperty.call(value, k)) continue;
+        if (/(?:^en$|[a-z]En$)/.test(k)) continue; // En-Hilfsfelder nicht direkt kopieren
+        const ek = enKeyFor(k);
+        const en = value[ek];
+        out[k] = (en != null && en !== "") ? _loc(en) : _loc(value[k]);
+      }
+      return out;
+    }
+    return value;
+  }
+
   // Locale-Tag für Datums-/Zahlformatierung (toLocaleDateString u.ä.).
   function locale() {
     return lang === "en" ? "en-GB" : "de-DE";
@@ -92,6 +144,8 @@
     setLang,
     init,
     nativeText,
+    natKey,
+    localizeDeep,
     locale,
   };
   // Bequemer globaler Helfer – im selben Stil wie window.SC, damit ui.js/app.js

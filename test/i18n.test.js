@@ -15,7 +15,8 @@ globalThis.window = globalThis.window || {};
 require(path.join(__dirname, "..", "i18n.js"));
 require(path.join(__dirname, "..", "i18n.strings.js"));
 require(path.join(__dirname, "..", "matcher.js"));
-const { i18n, matcher } = globalThis.window.SC;
+require(path.join(__dirname, "..", "data.js"));
+const { i18n, matcher, data } = globalThis.window.SC;
 
 test("nativeText: liefert das Feld der aktiven Sprache, sonst Rückfall auf de", () => {
   i18n.setLang("de");
@@ -68,6 +69,25 @@ test("Matcher native/Englisch: nativeText wird geprüft, Artikel sind tolerant",
   assert.equal(matcher.check("the wrong thing", card, "native").correct, false);
   // de-Alias bleibt unangetastet: prüft weiter gegen das deutsche Feld.
   assert.equal(matcher.check("die Haltestelle", card, "de").correct, true);
+});
+
+test("Coverage: jede Karte mit de: hat ein nicht-leeres en:", () => {
+  // Schützt davor, dass eine Karte ohne englische Übersetzung still auf Deutsch
+  // zurückfällt. localizeDeep/nativeText fangen das ab, aber Lücken sollen auffallen.
+  const missing = data.CARDS.filter((c) => c.de != null && (c.en == null || c.en === ""));
+  assert.equal(missing.length, 0, `Karten ohne en: ${missing.map((c) => c.id).join(", ")}`);
+});
+
+test("localizeDeep: überlagert …En-Felder, lässt es/Spanisch unangetastet", () => {
+  const obj = { de: "Bus", en: "bus", es: "autobús", situationDe: "am Bahnhof", situationEn: "at the station" };
+  i18n.setLang("en");
+  const en = i18n.localizeDeep(obj);
+  assert.equal(en.de, "bus");
+  assert.equal(en.situationDe, "at the station");
+  assert.equal(en.es, "autobús"); // Spanisch bleibt
+  assert.equal(en.en, undefined);  // En-Hilfsfeld wird nicht durchgereicht
+  i18n.setLang("de");
+  assert.equal(i18n.localizeDeep(obj), obj); // de: unveränderte Referenz (kein Overhead)
 });
 
 test("Matcher native/Deutsch: prüft gegen das deutsche Feld, keine Artikel-Toleranz", () => {

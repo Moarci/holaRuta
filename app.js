@@ -110,6 +110,10 @@
   // Muttersprachlicher Text eines Inhaltsobjekts (obj[uiLang] || obj.de). Kapselt
   // den i18n-Zugriff für alle VM-Builder; ohne i18n-Modul Rückfall auf Deutsch.
   const nat = (o) => (i18n ? i18n.nativeText(o) : (o && o.de));
+  // Suffix-Felder (base+"En"), z. B. situationDe/situationEn oder title/titleEn.
+  const natk = (o, base) => (i18n ? i18n.natKey(o, base) : (o && o[base]));
+  // Tiefe Lokalisierung für Pass-Through-Daten (überlagert alle …En-Felder).
+  const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
   const allCards = () => userCards ? data.CARDS.concat(userCards.list()) : data.CARDS;
   const cardById = (id) => allCards().find((c) => c.id === id) || null;
   const categoryById = (id) => data.CATEGORIES.find((c) => c.id === id) || null;
@@ -261,7 +265,7 @@
       total: state.total,
       revealed: state.revealed,
       typeResult: state.typeResult,
-      context: card.context || null,
+      context: card.context ? loc(card.context) : null,
       contextOpen: state.contextOpen,
       swatch: card.swatch || null,
     };
@@ -345,7 +349,7 @@
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
-      context: card.context || null,
+      context: card.context ? loc(card.context) : null,
       contextOpen: state.contextOpen,
     });
   }
@@ -363,7 +367,9 @@
           .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
-    return { country, groups };
+    // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
+    // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
+    return { country: country ? loc(country) : null, groups };
   }
 
   // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
@@ -384,11 +390,11 @@
     const accents = (country && knigge && knigge.ACCENTS[country.id]) || {};
     const topics = (knigge ? knigge.TOPICS : []).map((t) => ({
       icon: t.icon,
-      title: t.title,
-      intro: t.intro,
-      dos: t.dos,
-      donts: t.donts,
-      accent: accents[t.id] || "",
+      title: natk(t, "title"),
+      intro: natk(t, "intro"),
+      dos: natk(t, "dos"),
+      donts: natk(t, "donts"),
+      accent: natk(accents, t.id) || "",
     }));
     return { country, groups, topics };
   }
@@ -402,14 +408,19 @@
       const lvl = levelById(r.level);
       return Object.assign({}, r, { lvlShort: lvl ? lvl.short : "" });
     });
+    // Pass-Through-Ansicht: alle …En-Felder (Tipps, Glossar, Sätze, Regionales,
+    // Rollenspiele) per localizeDeep für die aktive Sprache überlagern. INTRO ist
+    // eine eigenständige Konstante (INTRO_EN) und wird separat aufgelöst.
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
     return {
-      intro: regatear.INTRO,
-      tips: regatear.TIPS || [],
-      glossary: regatear.GLOSSARY || [],
-      phrases: regatear.PHRASES || [],
-      units: regatear.UNITS || [],
-      regional: regatear.REGIONAL || [],
-      roleplays,
+      intro: (en && regatear.INTRO_EN) ? regatear.INTRO_EN : regatear.INTRO,
+      tips: loc(regatear.TIPS || []),
+      glossary: loc(regatear.GLOSSARY || []),
+      phrases: loc(regatear.PHRASES || []),
+      units: loc(regatear.UNITS || []),
+      regional: loc(regatear.REGIONAL || []),
+      roleplays: loc(roleplays),
     };
   }
 
@@ -603,7 +614,7 @@
   // Einblendung zeigen und nach kurzer Zeit selbst wieder ausblenden.
   function showBadgeToast(list) {
     if (!list.length) return;
-    state.badgeToast = list;
+    state.badgeToast = loc(list); // Badge-Namen/Texte in aktiver Sprache (…En überlagert)
     if (badgeToastTimer) clearTimeout(badgeToastTimer);
     badgeToastTimer = setTimeout(dismissBadgeToast, 5000);
   }
@@ -619,8 +630,8 @@
       .map((g) => {
         const list = all.filter((b) => b.group === g.id);
         return {
-          id: g.id, label: g.label, icon: g.icon,
-          badges: list,
+          id: g.id, label: natk(g, "label"), icon: g.icon,
+          badges: loc(list), // …En-Felder (nameEn/descriptionEn/unlockedTextEn) überlagern
           unlocked: list.filter((b) => b.unlocked).length,
           total: list.length,
         };
@@ -743,11 +754,11 @@
       scores: b.scores,
       revealed: b.revealed,
       suddenDeath: !!b.suddenDeath,
-      promptDe: prompt ? prompt.promptDe : "",
+      promptDe: prompt ? natk(prompt, "promptDe") : "",
       answerEs: prompt ? prompt.answerEs : "",
       alsoOk,
       levelShort: lvl ? lvl.short : "",
-      hint: prompt ? prompt.hint : "",
+      hint: prompt ? natk(prompt, "hint") : "",
     };
   }
 
@@ -765,7 +776,7 @@
       nameB: playerName(b, "B"),
       winnerName: winner === "tie" ? "" : playerName(b, winner),
       suddenDeath: !!b.suddenDeath, // lief schon eine Stichrunde? (Label „noch eine")
-      challenge: b.challenge, // { id, textDe, phraseEs } | null
+      challenge: b.challenge ? Object.assign({}, b.challenge, { textDe: natk(b.challenge, "textDe") }) : null, // { id, textDe, phraseEs } | null
       challengeDone: !!(b.challenge && gamestats.challengesDone && gamestats.challengesDone[b.challenge.id]),
     };
   }
@@ -774,7 +785,7 @@
     return {
       scenes: data.ROLEPLAYS.map((r) => {
         const lvl = levelById(r.level);
-        return { id: r.id, title: r.title, roleA: r.roles.a, roleB: r.roles.b,
+        return { id: r.id, title: natk(r, "title"), roleA: r.roles.a, roleB: r.roles.b,
           lvlShort: lvl ? lvl.short : "" };
       }),
     };
@@ -787,15 +798,15 @@
     // Rollen-Tausch: A↔B (Ziele & Sprecher-Labels), Dialog-Reihenfolge bleibt gleich.
     const swapped = state.roleplaySwapped;
     return {
-      title: r.title,
+      title: natk(r, "title"),
       lvlShort: lvl ? lvl.short : "",
-      situationDe: r.situationDe,
+      situationDe: natk(r, "situationDe"),
       swapped,
-      roleA: { name: swapped ? r.roles.b : r.roles.a, goal: swapped ? r.goalB : r.goalA },
-      roleB: { name: swapped ? r.roles.a : r.roles.b, goal: swapped ? r.goalA : r.goalB },
+      roleA: { name: swapped ? r.roles.b : r.roles.a, goal: natk(r, swapped ? "goalB" : "goalA") },
+      roleB: { name: swapped ? r.roles.a : r.roles.b, goal: natk(r, swapped ? "goalA" : "goalB") },
       dialogue: r.dialogue.map((d) => ({
         speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
-        de: d.de, es: d.es,
+        de: nat(d), es: d.es,
       })),
       usefulPhrases: r.usefulPhrases,
     };
@@ -819,7 +830,7 @@
     return {
       sets: data.QUIZ_SETS.map((s) => {
         const lvl = levelById(s.lvl);
-        return { id: s.id, label: s.label, icon: s.icon, intro: s.intro,
+        return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
           count: quizDefsForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
       }),
     };
@@ -990,7 +1001,7 @@
   function frasesSetupVM() {
     const sets = (frases && frases.FRASES_SETS ? frases.FRASES_SETS : []).map((s) => {
       const lvl = levelById(s.lvl);
-      return { id: s.id, label: s.label, icon: s.icon, intro: s.intro,
+      return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
         count: frasesForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
     });
     return {
@@ -1049,7 +1060,7 @@
       setLabel: info.label, setIcon: info.icon,
       position: f.idx, total: f.total,
       frameEs: frame ? frame.frameEs : "",
-      targetDe: frame ? frame.targetDe : "",
+      targetDe: frame ? natk(frame, "targetDe") : "",
       options, answered,
       isCorrect: answered && !!(f.options[f.selected] && f.options[f.selected].correct),
       solutionEs: sol.es, solutionDe: nat(sol),
@@ -1126,7 +1137,7 @@
       scenarios: dialogosReady()
         ? dialogos.DIALOGOS_SCENARIOS
             .filter((s) => dialogos.DIALOGOS.some((d) => d.cat === s.id))
-            .map((s) => ({ id: s.id, title: s.title, icon: s.icon, lvl: s.lvl, intro: s.intro }))
+            .map((s) => ({ id: s.id, title: natk(s, "title"), icon: s.icon, lvl: s.lvl, intro: natk(s, "intro") }))
         : [],
       hasSpeech: !!(speech && speech.isSupported()),
     };
@@ -1159,7 +1170,7 @@
             })
       : null;
     return {
-      title: dia ? dia.title : "",
+      title: dia ? natk(dia, "title") : "",
       icon: scn ? scn.icon : "💬",
       turnIdx: d.turnIdx,
       total: turns.length,
@@ -1176,7 +1187,7 @@
     const dia = dialogueById(d.dialogueId);
     const scn = scenarioById(d.scenarioId);
     return {
-      title: dia ? dia.title : "",
+      title: dia ? natk(dia, "title") : "",
       icon: scn ? scn.icon : "💬",
       correct: d.correct,
       total: d.totalUser,
@@ -2394,7 +2405,7 @@
     return {
       speakable: preciosReady(),
       currencies: numbers ? numbers.currencyList().map((c) => ({
-        key: c.key, flag: c.flag, name: c.name, code: c.code, note: c.note,
+        key: c.key, flag: c.flag, name: natk(c, "name"), code: c.code, note: natk(c, "note"),
         selected: c.key === curKey,
       })) : [],
       levels: numbers ? numbers.LEVELS.map((l) => ({
@@ -2546,9 +2557,9 @@
       total: c.total,
       result: c.result, // null | { correct, input, answer }
       verb: item.verb || "",
-      verbHint: item.verbHint || "",
+      verbHint: natk(item, "verbHint") || "",
       personEs: item.personEs || "",
-      personDe: item.personDe || "",
+      personDe: natk(item, "personDe") || "",
       isLast: c.idx >= c.total - 1,
     };
   }
