@@ -166,6 +166,10 @@
     tripCountdown: (p) => `Noch <b>${p.n}</b> ${p.n === 1 ? "Tag" : "Tage"} bis ${p.dest}`,
     tripTodayCount: (p) => `${p.done}/${p.perDay} heute${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
+    // Onboarding (einmaliger Willkommens-Schritt)
+    onboardTitle: "Wohin geht deine Reise?",
+    onboardIntro: "Setz dein Trip-Ziel: Wir zählen die Tage bis zur Abreise und schlagen dir ein machbares Tagespensum vor. Du kannst das später jederzeit im Profil ändern.",
+    onboardSkip: "Später",
     // Einstellungen
     modeFlip: "🃏 Karteikarte",
     modeType: "⌨️ Schreiben",
@@ -220,6 +224,9 @@
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripTodayCount: (p) => `${p.done}/${p.perDay} today${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
+    onboardTitle: "Where are you headed?",
+    onboardIntro: "Set your trip goal: we'll count down the days to departure and suggest a doable daily target. You can change this anytime later in your profile.",
+    onboardSkip: "Skip",
     modeFlip: "🃏 Flashcard",
     modeType: "⌨️ Writing",
     modeListen: "👂 Listening",

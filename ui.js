@@ -149,6 +149,71 @@
       ${speedGroup}`;
   }
 
+  // Trip-Ziel: read-only Countdown-Karte (bis zum Reisedatum + Tages-Fortschritt).
+  // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
+  function tripDisplayCard(trip, action) {
+    const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
+    const countdown = trip.past ? t("home.tripTime")
+      : trip.today ? t("home.tripToday")
+      : t("home.tripCountdown", { n: trip.daysLeft, dest });
+    return `
+      <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
+        <span class="trip__top">
+          <span class="trip__dest">🎯 ${dest}</span>
+          <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripTodayCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
+        </span>
+        <span class="trip__countdown">${countdown}</span>
+        <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
+      </button>`;
+  }
+
+  // Trip-Ziel-Formular (anlegen/bearbeiten). Wird im Profil und beim Onboarding
+  // genutzt. extraButtons = zusätzliche Knöpfe rechts neben „Ziel speichern".
+  function tripForm(trip, extraButtons) {
+    return `
+      <form class="trip trip--edit" data-action="save-trip">
+        <p class="trip__cap">${esc(t("home.tripCap"))}</p>
+        <label class="trip__field"><span>${esc(t("home.tripDest"))}</span>
+          <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="${esc(t("home.tripDestPlaceholder"))}" value="${trip ? esc(trip.destination) : ""}" /></label>
+        <label class="trip__field"><span>${esc(t("home.tripDate"))}</span>
+          <input id="trip-date" type="date" value="${trip ? esc(trip.endDate) : ""}" required /></label>
+        <label class="trip__field"><span>${esc(t("home.tripPerDay"))}</span>
+          <input id="trip-perday" type="number" inputmode="numeric" min="1" max="500" value="${trip ? trip.perDay : 15}" required /></label>
+        <div class="trip__actions">
+          <button class="cta" type="submit">${esc(t("home.tripSave"))}</button>
+          ${extraButtons || ""}
+        </div>
+      </form>`;
+  }
+
+  // Profil: vollständige Trip-Ziel-Verwaltung. Drei Zustände – Formular (tripEdit),
+  // gesetztes Ziel (Karte, Tap öffnet das Formular) oder leerer Anstoßer.
+  function tripManage(vm) {
+    const trip = vm.trip;
+    if (vm.tripEdit) {
+      const extra =
+        `${trip ? `<button class="ghostbtn" type="button" data-action="trip-clear">${esc(t("home.tripClear"))}</button>` : ""}` +
+        `<button class="ghostbtn" type="button" data-action="trip-edit">${esc(t("common.cancel"))}</button>`;
+      return tripForm(trip, extra);
+    }
+    if (trip) return tripDisplayCard(trip, "trip-edit");
+    return `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
+  }
+
+  // Onboarding: einmaliger Willkommens-Bildschirm beim allerersten Start. Fragt das
+  // Trip-Ziel ab (überspringbar), damit der Countdown direkt motiviert.
+  function renderOnboarding(vm) {
+    const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
+    return `
+      <section class="screen onboarding">
+        <div class="onboarding__inner">
+          <h1 class="onboarding__title">🧭 ${esc(t("home.onboardTitle"))}</h1>
+          <p class="onboarding__intro">${esc(t("home.onboardIntro"))}</p>
+          ${tripForm(vm.trip, skip)}
+        </div>
+      </section>`;
+  }
+
   function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
@@ -189,43 +254,10 @@
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
       </button>`;
 
-    // Trip-Ziel: optionaler Countdown bis zum Reisedatum + Tagesziel. Drei Zustände:
-    // Formular (tripEdit), gesetztes Ziel (Karte mit Balken) oder leerer Anstoßer.
-    const trip = vm.trip;
-    let tripCard = "";
-    if (vm.tripEdit) {
-      tripCard = `
-        <form class="trip trip--edit" data-action="save-trip">
-          <p class="trip__cap">${esc(t("home.tripCap"))}</p>
-          <label class="trip__field"><span>${esc(t("home.tripDest"))}</span>
-            <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="${esc(t("home.tripDestPlaceholder"))}" value="${trip ? esc(trip.destination) : ""}" /></label>
-          <label class="trip__field"><span>${esc(t("home.tripDate"))}</span>
-            <input id="trip-date" type="date" value="${trip ? esc(trip.endDate) : ""}" required /></label>
-          <label class="trip__field"><span>${esc(t("home.tripPerDay"))}</span>
-            <input id="trip-perday" type="number" inputmode="numeric" min="1" max="500" value="${trip ? trip.perDay : 15}" required /></label>
-          <div class="trip__actions">
-            <button class="cta" type="submit">${esc(t("home.tripSave"))}</button>
-            ${trip ? `<button class="ghostbtn" type="button" data-action="trip-clear">${esc(t("home.tripClear"))}</button>` : ""}
-            <button class="ghostbtn" type="button" data-action="trip-edit">${esc(t("common.cancel"))}</button>
-          </div>
-        </form>`;
-    } else if (trip) {
-      const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
-      const countdown = trip.past ? t("home.tripTime")
-        : trip.today ? t("home.tripToday")
-        : t("home.tripCountdown", { n: trip.daysLeft, dest });
-      tripCard = `
-        <button class="trip" data-action="trip-edit" aria-label="${esc(t("home.tripEditLabel"))}">
-          <span class="trip__top">
-            <span class="trip__dest">🎯 ${dest}</span>
-            <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripTodayCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
-          </span>
-          <span class="trip__countdown">${countdown}</span>
-          <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
-        </button>`;
-    } else {
-      tripCard = `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
-    }
+    // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
+    // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
+    // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
+    const tripCard = vm.trip ? tripDisplayCard(vm.trip, "manage-trip") : "";
 
     // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit
     // Kartenzahl). Bleibt direkt aufs Dashboard – die ändert man laufend beim
@@ -316,6 +348,9 @@
         </div>
         <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
       </div>
+
+      <p class="sectioncap">${esc(t("home.tripCap"))}</p>
+      ${tripManage(vm)}
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
@@ -2787,7 +2822,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
+  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

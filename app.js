@@ -503,7 +503,7 @@
     const perDayRaw = Math.round(Number(fields.perDay));
     if (!endDate || !(perDayRaw >= 1)) {
       showNotice(t("app.tripInvalid"));
-      return;
+      return false;
     }
     const perDay = Math.min(500, perDayRaw);
     const goal = { destination, endDate, perDay, startedAt: dayKey(Date.now()) };
@@ -511,6 +511,17 @@
     store.saveGameStats(gamestats);
     state.tripEdit = false;
     buzz(8);
+    render();
+    return true;
+  }
+
+  // Onboarding einmalig als erledigt vermerken und aufs Dashboard wechseln. Der
+  // Reiter bleibt „Lernen" (Standard); ein gesetztes Trip-Ziel taucht dort direkt auf.
+  function finishOnboarding() {
+    settings = Object.assign({}, settings, { onboarded: true });
+    store.saveSettings(settings);
+    state.tripEdit = false;
+    state.screen = "home";
     render();
   }
 
@@ -524,6 +535,13 @@
   function toggleTripEdit() {
     state.tripEdit = !state.tripEdit;
     render();
+  }
+
+  // Dashboard-Tap auf die Trip-Karte: ins Profil wechseln und das Bearbeiten-
+  // Formular aufklappen (dort wird das Ziel verwaltet). setTab() rendert selbst.
+  function openTripManage() {
+    state.tripEdit = true;
+    setTab("profil");
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -1725,6 +1743,8 @@
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
     // 2) Schon auf dem Dashboard: App freigeben.
     if (state.screen === "home") return false;
+    // Onboarding mit „Zurück" überspringen (zählt als erledigt, kein Wiederzeigen).
+    if (state.screen === "onboarding") { finishOnboarding(); return true; }
     // 3) Eine Ebene höher.
     const target = backTarget();
     if (target === "home") goHome();
@@ -1788,6 +1808,7 @@
     else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
     else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
     else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
+    else if (state.screen === "onboarding") root.innerHTML = ui.renderOnboarding(homeVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -3059,6 +3080,8 @@
     else if (action === "ruta-del-dia") openRutaDelDia();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
+    else if (action === "manage-trip") openTripManage();
+    else if (action === "skip-onboarding") finishOnboarding();
     else if (action === "resume-last") resumeLast();
     else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "flip") flip();
@@ -3181,11 +3204,14 @@
       submitPrecios(input ? input.value : "");
       return;
     }
-    // Trip-Ziel speichern (Datum + Tagesziel + optionales Reiseziel).
+    // Trip-Ziel speichern (Datum + Tagesziel + optionales Reiseziel). Beim
+    // Onboarding schließt ein erfolgreiches Speichern den Willkommens-Schritt ab.
     if (e.target.closest('[data-action="save-trip"]')) {
       e.preventDefault();
       const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
-      setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
+      const onboarding = state.screen === "onboarding";
+      const ok = setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
+      if (ok && onboarding) finishOnboarding();
       return;
     }
     // Konjugations-Drill: getippte Verbform prüfen.
@@ -3413,6 +3439,18 @@
   }
   applyUiLang(state.uiLang); // UI-Sprache setzen (i18n + <html lang>) VOR dem ersten render
   checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
+  // Erstkontakt: beim allerersten Start (noch nichts gespeichert) ins Onboarding
+  // führen, das das Trip-Ziel abfragt. Bestandsnutzer (mit Fortschritt, Bewertungen
+  // oder bereits gesetztem Ziel) werden still als „onboarded" markiert.
+  if (settings.onboarded !== true) {
+    const hasData = Object.keys(progress).length > 0 || (gamestats.reviews | 0) > 0 || !!gamestats.tripGoal;
+    if (hasData) {
+      settings = Object.assign({}, settings, { onboarded: true });
+      store.saveSettings(settings);
+    } else {
+      state.screen = "onboarding";
+    }
+  }
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass
