@@ -258,7 +258,7 @@
       spanishIsQuestion,
       tip: card.tip || null,
       level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
-      catLabel: isAll ? "Alle Bereiche" : (cat ? cat.label : ""),
+      catLabel: isAll ? t("app.allTopics") : (cat ? cat.label : ""),
       catIcon: isAll || !cat ? "📚" : cat.icon,
       accent: isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
@@ -332,7 +332,7 @@
         { id: "hard", label: "Schwierig", count: ov.hard },
         { id: "mastered", label: "Gemeistert", count: ov.mastered },
         { id: "new", label: "Neu", count: ov.neu },
-        { id: "all", label: "Alle", count: ov.total },
+        { id: "all", label: t("app.all"), count: ov.total },
       ],
       list,
       shareFormat: shareFormat(),
@@ -485,7 +485,7 @@
     // 1 zu klemmen (sonst wäre die Fehlermeldung toter Code). Danach auf ≤500 deckeln.
     const perDayRaw = Math.round(Number(fields.perDay));
     if (!endDate || !(perDayRaw >= 1)) {
-      showNotice("Bitte ein gültiges Datum und ein Tagesziel angeben.");
+      showNotice(t("app.tripInvalid"));
       return;
     }
     const perDay = Math.min(500, perDayRaw);
@@ -727,7 +727,7 @@
   // Anzeigename eines Spielers ("A"/"B") – eingegeben oder Fallback "Spieler A/B".
   function playerName(b, side) {
     const n = b.names && b.names[side];
-    return n && n.trim() ? n.trim() : "Spieler " + side;
+    return n && n.trim() ? n.trim() : t("app.player", { side });
   }
 
   function battleVM() {
@@ -741,7 +741,7 @@
       ? prompt.acceptable.filter((a) => matcher.normalize(a) !== matcher.normalize(prompt.answerEs))
       : [];
     return {
-      sceneLabel: b.sceneId === "all" ? "Alle Szenen" : (scene ? scene.label : ""),
+      sceneLabel: b.sceneId === "all" ? t("app.allScenes") : (scene ? scene.label : ""),
       sceneIcon: b.sceneId === "all" ? "🎲" : (scene ? scene.icon : "🛏️"),
       round: b.round,
       totalRounds: b.totalRounds,
@@ -767,7 +767,7 @@
     const a = b.scores.A, bb = b.scores.B;
     const winner = a === bb ? "tie" : (a > bb ? "A" : "B");
     return {
-      sceneLabel: b.sceneId === "all" ? "Alle Szenen"
+      sceneLabel: b.sceneId === "all" ? t("app.allScenes")
         : ((data.BATTLE_SCENES.find((s) => s.id === b.sceneId) || {}).label || ""),
       scores: b.scores,
       rounds: b.totalRounds,
@@ -1006,8 +1006,8 @@
     });
     return {
       sets,
-      mixed: { id: FRASES_ALL, label: "Gemischt", icon: "🎲",
-        intro: "Alle Themen bunt gemischt – die volle Runde.",
+      mixed: { id: FRASES_ALL, label: t("app.mixed"), icon: "🎲",
+        intro: t("app.frasesMixedIntro"),
         count: frases ? frases.FRASES.length : 0 },
     };
   }
@@ -1037,7 +1037,7 @@
 
   // Kopf-Infos zum laufenden Set (Label/Icon) – "Gemischt" hat keinen Datensatz.
   function frasesSetInfo(setId) {
-    if (setId === FRASES_ALL) return { label: "Gemischt", icon: "🎲" };
+    if (setId === FRASES_ALL) return { label: t("app.mixed"), icon: "🎲" };
     const s = frasesSetById(setId);
     return { label: s ? s.label : "", icon: s ? s.icon : "🧱" };
   }
@@ -1931,7 +1931,7 @@
     if (btn) {
       btn.setAttribute("aria-expanded", String(!!open));
       btn.classList.toggle("is-open", !!open);
-      if (btn.dataset.ctxText) btn.textContent = open ? "🧭 Kontext ausblenden" : "🧭 Kontext";
+      if (btn.dataset.ctxText) btn.textContent = open ? t("app.contextHide") : t("app.contextShow");
     }
     return panel;
   }
@@ -2022,7 +2022,7 @@
   function notifySaveFailed() {
     if (saveFailedNotified) return;
     saveFailedNotified = true;
-    showNotice("Speichern fehlgeschlagen – Speicher voll?");
+    showNotice(t("app.saveFailed"));
   }
 
   function setMode(mode) {
@@ -2545,7 +2545,9 @@
   function conjugSetupVM() {
     return {
       available: conjugReady(),
-      levels: CONJUG_LEVELS.map((l) => ({ ...l, active: l.id === state.conjugLevel })),
+      levels: CONJUG_LEVELS.map((l) => ({ ...l,
+        short: t(`app.conjL${l.id}Short`), label: t(`app.conjL${l.id}Label`),
+        active: l.id === state.conjugLevel })),
     };
   }
 
@@ -2700,7 +2702,7 @@
 
   // Gesamten Lernfortschritt löschen (nach Rückfrage). Einstellungen bleiben erhalten.
   function resetProgress() {
-    const ok = confirmAsk("Wirklich den gesamten Lernfortschritt löschen?\nDas kann nicht rückgängig gemacht werden.");
+    const ok = confirmAsk(t("app.confirmResetProgress"));
     if (!ok) return;
     store.resetProgress();
     progress = {};
@@ -2781,7 +2783,7 @@
       editorMsg = { type: "error", text: errs.join(" ") };
     } else {
       const card = userCards.add(input);
-      editorMsg = { type: "ok", text: `„${card.de}" → „${card.es}" gespeichert ✓` };
+      editorMsg = { type: "ok", text: t("app.cardSaved", { de: card.de, es: card.es }) };
       buzz(12);
     }
     render();
@@ -2789,7 +2791,7 @@
 
   function deleteCard(id) {
     if (!userCards) return;
-    const ok = confirmAsk("Diese eigene Karte wirklich löschen?\nDer Lernfortschritt dieser Karte geht verloren.");
+    const ok = confirmAsk(t("app.confirmDeleteCard"));
     if (!ok) return;
     userCards.remove(id);
     // Lernfortschritt dieser Karte mit entfernen (verwaiste Einträge vermeiden).
@@ -2799,7 +2801,7 @@
       progress = next;
       store.saveProgress(progress);
     }
-    editorMsg = { type: "ok", text: "Karte gelöscht." };
+    editorMsg = { type: "ok", text: t("app.cardDeleted") };
     render();
   }
 
@@ -2821,7 +2823,7 @@
       buzz(8);
     } catch (e) {
       console.warn("Export fehlgeschlagen", e);
-      showNotice("Export fehlgeschlagen.");
+      showNotice(t("app.exportFailed"));
     }
     if (url) setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* egal */ } }, 1000);
   }
@@ -2842,18 +2844,18 @@
       let payload = null;
       try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
       if (!payload || typeof payload !== "object" || !payload.data || typeof payload.data !== "object") {
-        showNotice("Import fehlgeschlagen – das ist kein HolaRuta-Backup.");
+        showNotice(t("app.importNotBackup"));
         return;
       }
-      const ok = confirmAsk("Backup importieren?\nDein aktueller Stand auf diesem Gerät wird überschrieben.");
+      const ok = confirmAsk(t("app.confirmImport"));
       if (!ok) return;
       if (store.importData(payload) > 0) {
         try { location.reload(); } catch (e) { /* egal */ }
       } else {
-        showNotice("Import fehlgeschlagen – keine bekannten Daten in der Datei.");
+        showNotice(t("app.importNoData"));
       }
     };
-    reader.onerror = () => showNotice("Import fehlgeschlagen – Datei konnte nicht gelesen werden.");
+    reader.onerror = () => showNotice(t("app.importReadError"));
     reader.readAsText(file);
   }
 
