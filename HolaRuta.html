@@ -1975,6 +1975,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .trip__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
 .trip__actions .cta { flex: 1 1 auto; }
 
+/* Onboarding: einmaliger Willkommens-Bildschirm beim ersten Start. */
+.onboarding { min-height: 70vh; justify-content: center; }
+.onboarding__inner { display: flex; flex-direction: column; gap: 12px; max-width: 28rem; margin: 0 auto; width: 100%; }
+.onboarding__title { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; line-height: 1.2; margin: 0; }
+.onboarding__intro { color: var(--muted); margin: 0 0 4px; }
+
 /* Streckenkarte (Statistik): Lernfortschritt als Bus-Strecke. */
 .route {
   background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-lg);
@@ -2412,6 +2418,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tripCountdown: (p) => `Noch <b>${p.n}</b> ${p.n === 1 ? "Tag" : "Tage"} bis ${p.dest}`,
     tripTodayCount: (p) => `${p.done}/${p.perDay} heute${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
+    // Onboarding (einmaliger Willkommens-Schritt)
+    onboardTitle: "Wohin geht deine Reise?",
+    onboardIntro: "Setz dein Trip-Ziel: Wir zählen die Tage bis zur Abreise und schlagen dir ein machbares Tagespensum vor. Du kannst das später jederzeit im Profil ändern.",
+    onboardSkip: "Später",
     // Einstellungen
     modeFlip: "🃏 Karteikarte",
     modeType: "⌨️ Schreiben",
@@ -2466,6 +2476,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripTodayCount: (p) => `${p.done}/${p.perDay} today${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
+    onboardTitle: "Where are you headed?",
+    onboardIntro: "Set your trip goal: we'll count down the days to departure and suggest a doable daily target. You can change this anytime later in your profile.",
+    onboardSkip: "Skip",
     modeFlip: "🃏 Flashcard",
     modeType: "⌨️ Writing",
     modeListen: "👂 Listening",
@@ -14168,6 +14181,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.24.0",
+      date: "2026-06-13",
+      title: "Trip-Ziel: gleich zu Beginn gesetzt, im Profil verwaltet",
+      items: [
+        "🧭 Beim allerersten Start fragt dich HolaRuta jetzt nach deinem Trip-Ziel – Reisedatum und Tagespensum sind in einem Schritt gesetzt (oder per „Später“ übersprungen).",
+        "🎯 Das Dashboard bleibt ruhig: Die Trip-Karte mit Countdown erscheint nur noch, wenn ein Ziel gesetzt ist. Ein Tap darauf führt direkt zur Verwaltung.",
+        "👤 Anlegen, Ändern und Löschen des Trip-Ziels wohnt jetzt gebündelt im Profil-Reiter.",
+      ],
+    },
+    {
       version: "1.23.0",
       date: "2026-06-13",
       title: "Aufgeräumte Einstellungen & automatische Updates",
@@ -14594,6 +14617,71 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ${speedGroup}`;
   }
 
+  // Trip-Ziel: read-only Countdown-Karte (bis zum Reisedatum + Tages-Fortschritt).
+  // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
+  function tripDisplayCard(trip, action) {
+    const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
+    const countdown = trip.past ? t("home.tripTime")
+      : trip.today ? t("home.tripToday")
+      : t("home.tripCountdown", { n: trip.daysLeft, dest });
+    return `
+      <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
+        <span class="trip__top">
+          <span class="trip__dest">🎯 ${dest}</span>
+          <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripTodayCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
+        </span>
+        <span class="trip__countdown">${countdown}</span>
+        <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
+      </button>`;
+  }
+
+  // Trip-Ziel-Formular (anlegen/bearbeiten). Wird im Profil und beim Onboarding
+  // genutzt. extraButtons = zusätzliche Knöpfe rechts neben „Ziel speichern".
+  function tripForm(trip, extraButtons) {
+    return `
+      <form class="trip trip--edit" data-action="save-trip">
+        <p class="trip__cap">${esc(t("home.tripCap"))}</p>
+        <label class="trip__field"><span>${esc(t("home.tripDest"))}</span>
+          <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="${esc(t("home.tripDestPlaceholder"))}" value="${trip ? esc(trip.destination) : ""}" /></label>
+        <label class="trip__field"><span>${esc(t("home.tripDate"))}</span>
+          <input id="trip-date" type="date" value="${trip ? esc(trip.endDate) : ""}" required /></label>
+        <label class="trip__field"><span>${esc(t("home.tripPerDay"))}</span>
+          <input id="trip-perday" type="number" inputmode="numeric" min="1" max="500" value="${trip ? trip.perDay : 15}" required /></label>
+        <div class="trip__actions">
+          <button class="cta" type="submit">${esc(t("home.tripSave"))}</button>
+          ${extraButtons || ""}
+        </div>
+      </form>`;
+  }
+
+  // Profil: vollständige Trip-Ziel-Verwaltung. Drei Zustände – Formular (tripEdit),
+  // gesetztes Ziel (Karte, Tap öffnet das Formular) oder leerer Anstoßer.
+  function tripManage(vm) {
+    const trip = vm.trip;
+    if (vm.tripEdit) {
+      const extra =
+        `${trip ? `<button class="ghostbtn" type="button" data-action="trip-clear">${esc(t("home.tripClear"))}</button>` : ""}` +
+        `<button class="ghostbtn" type="button" data-action="trip-edit">${esc(t("common.cancel"))}</button>`;
+      return tripForm(trip, extra);
+    }
+    if (trip) return tripDisplayCard(trip, "trip-edit");
+    return `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
+  }
+
+  // Onboarding: einmaliger Willkommens-Bildschirm beim allerersten Start. Fragt das
+  // Trip-Ziel ab (überspringbar), damit der Countdown direkt motiviert.
+  function renderOnboarding(vm) {
+    const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
+    return `
+      <section class="screen onboarding">
+        <div class="onboarding__inner">
+          <h1 class="onboarding__title">🧭 ${esc(t("home.onboardTitle"))}</h1>
+          <p class="onboarding__intro">${esc(t("home.onboardIntro"))}</p>
+          ${tripForm(vm.trip, skip)}
+        </div>
+      </section>`;
+  }
+
   function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
@@ -14634,43 +14722,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
       </button>`;
 
-    // Trip-Ziel: optionaler Countdown bis zum Reisedatum + Tagesziel. Drei Zustände:
-    // Formular (tripEdit), gesetztes Ziel (Karte mit Balken) oder leerer Anstoßer.
-    const trip = vm.trip;
-    let tripCard = "";
-    if (vm.tripEdit) {
-      tripCard = `
-        <form class="trip trip--edit" data-action="save-trip">
-          <p class="trip__cap">${esc(t("home.tripCap"))}</p>
-          <label class="trip__field"><span>${esc(t("home.tripDest"))}</span>
-            <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="${esc(t("home.tripDestPlaceholder"))}" value="${trip ? esc(trip.destination) : ""}" /></label>
-          <label class="trip__field"><span>${esc(t("home.tripDate"))}</span>
-            <input id="trip-date" type="date" value="${trip ? esc(trip.endDate) : ""}" required /></label>
-          <label class="trip__field"><span>${esc(t("home.tripPerDay"))}</span>
-            <input id="trip-perday" type="number" inputmode="numeric" min="1" max="500" value="${trip ? trip.perDay : 15}" required /></label>
-          <div class="trip__actions">
-            <button class="cta" type="submit">${esc(t("home.tripSave"))}</button>
-            ${trip ? `<button class="ghostbtn" type="button" data-action="trip-clear">${esc(t("home.tripClear"))}</button>` : ""}
-            <button class="ghostbtn" type="button" data-action="trip-edit">${esc(t("common.cancel"))}</button>
-          </div>
-        </form>`;
-    } else if (trip) {
-      const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
-      const countdown = trip.past ? t("home.tripTime")
-        : trip.today ? t("home.tripToday")
-        : t("home.tripCountdown", { n: trip.daysLeft, dest });
-      tripCard = `
-        <button class="trip" data-action="trip-edit" aria-label="${esc(t("home.tripEditLabel"))}">
-          <span class="trip__top">
-            <span class="trip__dest">🎯 ${dest}</span>
-            <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripTodayCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
-          </span>
-          <span class="trip__countdown">${countdown}</span>
-          <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
-        </button>`;
-    } else {
-      tripCard = `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
-    }
+    // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
+    // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
+    // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
+    const tripCard = vm.trip ? tripDisplayCard(vm.trip, "manage-trip") : "";
 
     // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit
     // Kartenzahl). Bleibt direkt aufs Dashboard – die ändert man laufend beim
@@ -14761,6 +14816,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
         <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
       </div>
+
+      <p class="sectioncap">${esc(t("home.tripCap"))}</p>
+      ${tripManage(vm)}
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
@@ -17232,7 +17290,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
+  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
@@ -17749,7 +17807,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const perDayRaw = Math.round(Number(fields.perDay));
     if (!endDate || !(perDayRaw >= 1)) {
       showNotice(t("app.tripInvalid"));
-      return;
+      return false;
     }
     const perDay = Math.min(500, perDayRaw);
     const goal = { destination, endDate, perDay, startedAt: dayKey(Date.now()) };
@@ -17757,6 +17815,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     store.saveGameStats(gamestats);
     state.tripEdit = false;
     buzz(8);
+    render();
+    return true;
+  }
+
+  // Onboarding einmalig als erledigt vermerken und aufs Dashboard wechseln. Der
+  // Reiter bleibt „Lernen" (Standard); ein gesetztes Trip-Ziel taucht dort direkt auf.
+  function finishOnboarding() {
+    settings = Object.assign({}, settings, { onboarded: true });
+    store.saveSettings(settings);
+    state.tripEdit = false;
+    state.screen = "home";
     render();
   }
 
@@ -17770,6 +17839,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function toggleTripEdit() {
     state.tripEdit = !state.tripEdit;
     render();
+  }
+
+  // Dashboard-Tap auf die Trip-Karte: ins Profil wechseln und das Bearbeiten-
+  // Formular aufklappen (dort wird das Ziel verwaltet). setTab() rendert selbst.
+  function openTripManage() {
+    state.tripEdit = true;
+    setTab("profil");
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -18971,6 +19047,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
     // 2) Schon auf dem Dashboard: App freigeben.
     if (state.screen === "home") return false;
+    // Onboarding mit „Zurück" überspringen (zählt als erledigt, kein Wiederzeigen).
+    if (state.screen === "onboarding") { finishOnboarding(); return true; }
     // 3) Eine Ebene höher.
     const target = backTarget();
     if (target === "home") goHome();
@@ -19034,6 +19112,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
     else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
     else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
+    else if (state.screen === "onboarding") root.innerHTML = ui.renderOnboarding(homeVM());
     else root.innerHTML = ui.renderHome(homeVM());
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
@@ -20305,6 +20384,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "ruta-del-dia") openRutaDelDia();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
+    else if (action === "manage-trip") openTripManage();
+    else if (action === "skip-onboarding") finishOnboarding();
     else if (action === "resume-last") resumeLast();
     else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "flip") flip();
@@ -20427,11 +20508,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       submitPrecios(input ? input.value : "");
       return;
     }
-    // Trip-Ziel speichern (Datum + Tagesziel + optionales Reiseziel).
+    // Trip-Ziel speichern (Datum + Tagesziel + optionales Reiseziel). Beim
+    // Onboarding schließt ein erfolgreiches Speichern den Willkommens-Schritt ab.
     if (e.target.closest('[data-action="save-trip"]')) {
       e.preventDefault();
       const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
-      setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
+      const onboarding = state.screen === "onboarding";
+      const ok = setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
+      if (ok && onboarding) finishOnboarding();
       return;
     }
     // Konjugations-Drill: getippte Verbform prüfen.
@@ -20659,6 +20743,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
   applyUiLang(state.uiLang); // UI-Sprache setzen (i18n + <html lang>) VOR dem ersten render
   checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
+  // Erstkontakt: beim allerersten Start (noch nichts gespeichert) ins Onboarding
+  // führen, das das Trip-Ziel abfragt. Bestandsnutzer (mit Fortschritt, Bewertungen
+  // oder bereits gesetztem Ziel) werden still als „onboarded" markiert.
+  if (settings.onboarded !== true) {
+    const hasData = Object.keys(progress).length > 0 || (gamestats.reviews | 0) > 0 || !!gamestats.tripGoal;
+    if (hasData) {
+      settings = Object.assign({}, settings, { onboarded: true });
+      store.saveSettings(settings);
+    } else {
+      state.screen = "onboarding";
+    }
+  }
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass

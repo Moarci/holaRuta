@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.24.0",
+      date: "2026-06-13",
+      title: "Trip-Ziel: gleich zu Beginn gesetzt, im Profil verwaltet",
+      items: [
+        "🧭 Beim allerersten Start fragt dich HolaRuta jetzt nach deinem Trip-Ziel – Reisedatum und Tagespensum sind in einem Schritt gesetzt (oder per „Später“ übersprungen).",
+        "🎯 Das Dashboard bleibt ruhig: Die Trip-Karte mit Countdown erscheint nur noch, wenn ein Ziel gesetzt ist. Ein Tap darauf führt direkt zur Verwaltung.",
+        "👤 Anlegen, Ändern und Löschen des Trip-Ziels wohnt jetzt gebündelt im Profil-Reiter.",
+      ],
+    },
+    {
       version: "1.23.0",
       date: "2026-06-13",
       title: "Aufgeräumte Einstellungen & automatische Updates",
