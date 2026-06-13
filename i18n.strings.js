@@ -136,6 +136,7 @@
     tileDone: "✓ erledigt",
     tileCards: (p) => `${p.n} Karten`,
     sectionTopics: "Themen",
+    sectionLevels: "Stufen",
     // Stufen-Filter
     levelsAll: "Alle",
     levelsGroup: "Schwierigkeitsstufe",
@@ -166,12 +167,10 @@
     tripTodayCount: (p) => `${p.done}/${p.perDay} heute${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Einstellungen
-    setupAllLevels: "Alle Stufen",
     modeFlip: "🃏 Karteikarte",
     modeType: "⌨️ Schreiben",
     modeListen: "👂 Hören",
     settingsCap: "⚙️ Einstellungen",
-    settingsToProfile: "Einstellungen im Profil öffnen",
     speechRate: "Sprechtempo",
     speechRateAria: "Sprechtempo der Vorlese-Stimme",
     rateSlow: "🐢 Langsam",
@@ -194,6 +193,7 @@
     tileDone: "✓ done",
     tileCards: (p) => `${p.n} cards`,
     sectionTopics: "Topics",
+    sectionLevels: "Levels",
     levelsAll: "All",
     levelsGroup: "Level",
     levelTitle: (p) => `${p.label} · ${p.n} cards`,
@@ -220,12 +220,10 @@
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripTodayCount: (p) => `${p.done}/${p.perDay} today${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
-    setupAllLevels: "All levels",
     modeFlip: "🃏 Flashcard",
     modeType: "⌨️ Writing",
     modeListen: "👂 Listening",
     settingsCap: "⚙️ Settings",
-    settingsToProfile: "Open settings in Profile",
     speechRate: "Speech rate",
     speechRateAria: "Speech rate of the read-aloud voice",
     rateSlow: "🐢 Slow",
@@ -792,9 +790,11 @@
     // Update-Hinweis
     updTitle: "HolaRuta wurde aktualisiert",
     updHowTitle: "So bleibst du aktuell",
-    updHowText: "HolaRuta aktualisiert sich automatisch im Hintergrund.\n            Schließe die App ab und zu ganz und öffne sie neu – dann hast du immer die\n            neueste Version. Geht etwas mal nicht, hilft „Jetzt neu laden“.",
+    updHowText: "HolaRuta aktualisiert sich automatisch im Hintergrund.\n            Sobald eine neue Version bereitsteht, erscheint unten ein „Neue Version –\n            jetzt laden“-Banner – ein Tap genügt, die App musst du nicht mehr schließen.",
     updReload: "Jetzt neu laden",
     updUnderstood: "Verstanden",
+    updReadyText: "✨ Neue Version verfügbar",
+    updReadyBtn: "Jetzt laden",
 
     // Statistik
     statHistory: (p) => `Verlauf: ${p.easy}× Einfach, ${p.good}× Gut, ${p.again}× Nochmal`,
@@ -891,9 +891,11 @@
 
     updTitle: "HolaRuta has been updated",
     updHowTitle: "How to stay up to date",
-    updHowText: "HolaRuta updates itself automatically in the background.\n            Close the app fully now and then and reopen it – then you always have the\n            latest version. If something doesn't work, “Reload now” helps.",
+    updHowText: "HolaRuta updates itself automatically in the background.\n            As soon as a new version is ready, a “New version – reload now” banner\n            appears at the bottom – one tap is enough, no need to close the app.",
     updReload: "Reload now",
     updUnderstood: "Got it",
+    updReadyText: "✨ New version available",
+    updReadyBtn: "Reload now",
 
     statHistory: (p) => `History: ${p.easy}× Easy, ${p.good}× Good, ${p.again}× Again`,
     statAgain: "Again",
