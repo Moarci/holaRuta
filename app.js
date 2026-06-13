@@ -31,14 +31,30 @@
   let settings = store.loadSettings();
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
+  // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
+  // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
+  // deutschsprachigem System, sonst die internationale Variante Englisch.
+  function detectUiLang() {
+    try {
+      const langs = (navigator.languages && navigator.languages.length)
+        ? navigator.languages
+        : [navigator.language || ""];
+      for (const l of langs) {
+        if (typeof l === "string" && /^de(-|$)/i.test(l)) return "de";
+      }
+    } catch (e) { /* kein navigator (z.B. Test) -> Standard unten */ }
+    return "en";
+  }
+
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
-    // UI-/Muttersprache: "de" (Standard) | "en". Steuert t() und nativeText.
-    uiLang: settings.uiLang === "en" ? "en" : "de",
+    // UI-/Muttersprache: "de" | "en". Gespeicherte Wahl gewinnt; beim ersten
+    // Öffnen (noch nichts gespeichert) nach Betriebssystem-Sprache vorbelegen.
+    uiLang: settings.uiLang === "en" ? "en" : settings.uiLang === "de" ? "de" : detectUiLang(),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
