@@ -201,7 +201,8 @@
       ? "Alle Stufen"
       : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
     const modeLabel = mode === "type" ? "⌨️ Schreiben" : mode === "listen" ? "👂 Hören" : "🃏 Karteikarte";
-    const setupSummary = `${modeLabel} · ${vm.dir === "es2de" ? "🇪🇸→🇩🇪" : "🇩🇪→🇪🇸"} · ${esc(lvlSummary)}`;
+    const dirSummary = vm.dir === "es2de" ? `🇪🇸→${vm.nativeFlag}` : `${vm.nativeFlag}→🇪🇸`;
+    const setupSummary = `${modeLabel} · ${dirSummary} · ${esc(lvlSummary)}`;
     // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
     // sonst gäbe es nichts zu hören (graceful degradation).
     const listenSeg = speechReady()
@@ -220,8 +221,19 @@
           </div>
         </div>`
       : "";
+    // Sprachumschalter: deutsche oder englische Bedienoberfläche (und damit auch
+    // die muttersprachliche Seite der Karten). Spiegelt das Richtungs-Muster.
+    const langGroup = `
+        <div class="switchgroup">
+          <span class="switchcap">${t("home.uiLanguage")}</span>
+          <div class="segmented" role="tablist" aria-label="${esc(t("home.uiLanguage"))}">
+            <button class="seg ${vm.uiLang === "de" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="de" aria-pressed="${vm.uiLang === "de"}">🇩🇪 Deutsch</button>
+            <button class="seg ${vm.uiLang === "en" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="en" aria-pressed="${vm.uiLang === "en"}">🇬🇧 English</button>
+          </div>
+        </div>`;
     const setupBody = `
       <div class="setup__body" id="setup-body">
+        ${langGroup}
         <div class="switchgroup">
           <span class="switchcap">Modus</span>
           <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="Lernmodus">
@@ -233,8 +245,8 @@
         <div class="switchgroup">
           <span class="switchcap">Richtung</span>
           <div class="segmented" role="tablist" aria-label="Lernrichtung">
-            <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">🇩🇪 → 🇪🇸 Deutsch</button>
-            <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → 🇩🇪 Español</button>
+            <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">${vm.nativeFlag} → 🇪🇸 ${esc(vm.nativeLabel)}</button>
+            <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → ${vm.nativeFlag} Español</button>
           </div>
         </div>
         <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>

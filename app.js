@@ -7,6 +7,7 @@
   "use strict";
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
+  const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
   const speech = window.SC.speech || null; // optional – Browser kann Ausgabe ggf. nicht
@@ -36,7 +37,9 @@
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
-    dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
+    // UI-/Muttersprache: "de" (Standard) | "en". Steuert t() und nativeText.
+    uiLang: settings.uiLang === "en" ? "en" : "de",
+    dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
@@ -104,6 +107,9 @@
   // ----- Helfer -----
   // Eingebaute + eigene Karten als eine Liste. Eigene Karten erscheinen dadurch
   // überall (Kategorien, Lernen, Zähler) ohne Sonderbehandlung.
+  // Muttersprachlicher Text eines Inhaltsobjekts (obj[uiLang] || obj.de). Kapselt
+  // den i18n-Zugriff für alle VM-Builder; ohne i18n-Modul Rückfall auf Deutsch.
+  const nat = (o) => (i18n ? i18n.nativeText(o) : (o && o.de));
   const allCards = () => userCards ? data.CARDS.concat(userCards.list()) : data.CARDS;
   const cardById = (id) => allCards().find((c) => c.id === id) || null;
   const categoryById = (id) => data.CATEGORIES.find((c) => c.id === id) || null;
@@ -120,18 +126,20 @@
   function fmtDate(ms) {
     if (!ms) return "—";
     try {
-      return new Date(ms).toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" });
+      const loc = i18n ? i18n.locale() : "de-DE";
+      return new Date(ms).toLocaleDateString(loc, { day: "numeric", month: "long", year: "numeric" });
     } catch (e) { return "—"; }
   }
-  // Nächste Fälligkeit relativ zu jetzt: "fällig", "heute", "morgen", "in N Tagen".
+  // Nächste Fälligkeit relativ zu jetzt: "fällig", "heute", "morgen", "in N Tagen"
+  // (bzw. die englischen Pendants – Texte/Plural kommen aus i18n.strings.js).
   function fmtDue(ms) {
-    if (!ms) return "fällig";
+    if (!ms) return t("common.dueNow");
     const diff = ms - Date.now();
-    if (diff <= 0) return "fällig";
+    if (diff <= 0) return t("common.dueNow");
     const days = Math.round(diff / DAY_MS);
-    if (days <= 0) return "heute";
-    if (days === 1) return "morgen";
-    return `in ${days} Tagen`;
+    if (days <= 0) return t("common.today");
+    if (days === 1) return t("common.tomorrow");
+    return t("common.inNDays", { n: days });
   }
 
   // ----- View-Modelle (Zustand -> einfache Objekte für die UI) -----
@@ -180,6 +188,9 @@
     return {
       mode: state.mode,
       dir: state.dir,
+      uiLang: state.uiLang,                                   // gewählte UI-/Muttersprache (de/en)
+      nativeFlag: state.uiLang === "en" ? "🇬🇧" : "🇩🇪",         // Flagge der Muttersprache (für Richtungs-Labels)
+      nativeLabel: state.uiLang === "en" ? "English" : "Deutsch", // Klartext der Muttersprache
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
@@ -228,17 +239,18 @@
     const cat = categoryById(card.cat);
     const isAll = state.scopeId === "all";
     const lvl = levelById(card.lvl);
-    // Lernrichtung: DE→ES zeigt Deutsch als Frage und Spanisch als Antwort;
-    // ES→DE dreht das um. Die Aussprache-Tipps gehören immer zum Spanischen.
+    // Lernrichtung: native→ES zeigt die Muttersprache als Frage und Spanisch als
+    // Antwort; ES→native dreht das um. Aussprache-Tipps gehören immer zum Spanischen.
     const spanishIsQuestion = state.dir === "es2de";
+    const native = nat(card); // muttersprachlicher Text (de oder en)
     return {
       mode: state.mode,
       dir: state.dir,
       card,
-      question: spanishIsQuestion ? card.es : card.de,
-      answer: spanishIsQuestion ? card.de : card.es,
+      question: spanishIsQuestion ? card.es : native,
+      answer: spanishIsQuestion ? native : card.es,
       es: card.es, // Hör-Modus deckt immer das Spanische auf (richtungsunabhängig)
-      de: card.de, // dazu die deutsche Bedeutung als Verständnis-Hilfe
+      de: native, // dazu die muttersprachliche Bedeutung als Verständnis-Hilfe
       spanishIsQuestion,
       tip: card.tip || null,
       level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
@@ -268,7 +280,7 @@
     const s = stats.cardSummary(progress[card.id]);
     return {
       id: card.id,
-      de: card.de,
+      de: nat(card),
       es: card.es,
       tip: card.tip || null,
       catLabel: cat ? cat.label : "",
@@ -800,7 +812,7 @@
   function buildQuizOptions(correct, pool) {
     const distractors = shuffle(pool.filter((d) => d.id !== correct.id)).slice(0, 3);
     return shuffle([correct, ...distractors])
-      .map((d) => ({ id: d.id, es: d.es, de: d.de, icon: d.icon }));
+      .map((d) => ({ id: d.id, es: d.es, de: d.de, en: d.en, icon: d.icon }));
   }
 
   function quizSetupVM() {
@@ -819,7 +831,7 @@
     const def = quizDefById(q.queue[q.idx]);
     const answered = q.selected !== null;
     const options = q.options.map((o) => ({
-      id: o.id, es: o.es, de: o.de, icon: o.icon,
+      id: o.id, es: o.es, de: nat(o), icon: o.icon,
       // Zustand fürs Einfärben: vor der Antwort neutral, danach Lösung grün,
       // falsche Wahl rot, der Rest gedämpft.
       state: !answered ? "idle"
@@ -837,7 +849,7 @@
       answered,
       isCorrect: q.selected === def.id,
       solutionEs: def.es,
-      solutionDe: def.de,
+      solutionDe: nat(def),
       isLast: q.idx >= q.total - 1,
     };
   }
@@ -1025,7 +1037,7 @@
     const answered = f.selected !== null;
     const info = frasesSetInfo(f.setId);
     const options = f.options.map((o, i) => ({
-      es: o.es, de: o.de,
+      es: o.es, de: nat(o),
       // vor der Antwort neutral; danach Lösung grün, falsche Wahl rot, Rest gedämpft.
       state: !answered ? "idle"
         : o.correct ? "correct"
@@ -1040,7 +1052,7 @@
       targetDe: frame ? frame.targetDe : "",
       options, answered,
       isCorrect: answered && !!(f.options[f.selected] && f.options[f.selected].correct),
-      solutionEs: sol.es, solutionDe: sol.de,
+      solutionEs: sol.es, solutionDe: nat(sol),
       isLast: f.idx >= f.total - 1,
     };
   }
@@ -1131,17 +1143,17 @@
     for (let i = 0; i < d.turnIdx; i++) {
       const t = turns[i];
       if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: t.de });
+      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: nat(t) });
       else transcript.push({ who: "user", es: t.solEs, de: "" });
     }
     const cur = turns[d.turnIdx] || null;
     const current = cur
       ? (cur.who === "npc"
-          ? { who: "npc", es: cur.es, de: cur.de }
+          ? { who: "npc", es: cur.es, de: nat(cur) }
           : {
               who: "user",
               kind: cur.kind,
-              de: cur.de,
+              de: nat(cur),
               solEs: cur.solEs,
               options: cur.kind === "mc" ? cur.options.map((o) => ({ es: o.es })) : null,
             })
@@ -1287,14 +1299,14 @@
   function cuerpoVM() {
     const selId = state.bodyPartId;
     const parts = data.BODY_PARTS.map((p) => ({
-      id: p.id, de: p.de, x: p.x, y: p.y,
+      id: p.id, de: nat(p), x: p.x, y: p.y,
       selected: p.id === selId,
       seen: !!(gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[p.id]),
     }));
     const sel = bodyPartById(selId);
     return {
       parts,
-      selected: sel ? { id: sel.id, es: sel.es, de: sel.de, tip: sel.tip, note: sel.note } : null,
+      selected: sel ? { id: sel.id, es: sel.es, de: nat(sel), tip: sel.tip, note: sel.note } : null,
       exploredCount: gamestats.bodyPartsSeen ? Object.keys(gamestats.bodyPartsSeen).length : 0,
       total: data.BODY_PARTS.length,
       speakable: !!(speech && speech.isSupported()),
@@ -1364,8 +1376,8 @@
   // funktioniert für Ein- und Mehrzahl gleich (keine está/están-Falle).
   function shoppingAskPhrases(item) {
     return {
-      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: "Haben Sie das?" },
-      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: "Wo finde ich das?" },
+      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: t("common.askHave") },
+      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: t("common.askFind") },
     };
   }
 
@@ -1374,17 +1386,17 @@
     const sec = shoppingSectionById(curId) || shoppingSections()[0];
     const seen = gamestats.shoppingSeen || {};
     const sections = shoppingSections().map((s) => ({
-      id: s.id, icon: s.icon, label: s.label, de: s.de,
+      id: s.id, icon: s.icon, label: s.label, de: nat(s),
       active: s.id === sec.id, total: s.items.length, done: shoppingSectionDone(s),
     }));
     const items = sec.items.map((it) => ({
-      id: it.id, de: it.de, es: it.es, tip: it.tip, note: it.note,
+      id: it.id, de: nat(it), es: it.es, tip: it.tip, note: it.note,
       ask: shoppingAskPhrases(it),
       open: state.compras.open === it.id, seen: !!seen[it.id],
     }));
     return {
       sections,
-      section: { id: sec.id, icon: sec.icon, label: sec.label, de: sec.de, grad: sec.grad },
+      section: { id: sec.id, icon: sec.icon, label: sec.label, de: nat(sec), grad: sec.grad },
       items,
       doneCount: shoppingSectionDone(sec),
       total: sec.items.length,
@@ -1928,8 +1940,8 @@
     const card = cardById(state.queue[0]);
     if (!card) return;
     // Hör-Modus prüft immer gegen Spanisch (man tippt das Gehörte). Sonst nach
-    // Richtung: ES→DE erwartet die deutsche Antwort, DE→ES die spanische.
-    const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "de" : "es");
+    // Richtung: ES→native erwartet die muttersprachliche Antwort, native→ES die spanische.
+    const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "native" : "es");
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
     state.contextOpen = false;
     render();
@@ -2047,7 +2059,24 @@
     render();
   }
 
-  // Lernrichtung umschalten (DE→ES / ES→DE) und merken.
+  // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
+  // Wird beim Start UND bei jedem Wechsel aufgerufen (Single Source of Truth).
+  function applyUiLang(l) {
+    const next = l === "en" ? "en" : "de";
+    state.uiLang = next;
+    if (i18n) i18n.setLang(next);
+    try { document.documentElement.lang = next; } catch (e) { /* egal */ }
+  }
+
+  // UI-/Muttersprache umschalten (de/en), merken und neu rendern.
+  function setUiLang(l) {
+    applyUiLang(l);
+    settings = Object.assign({}, settings, { uiLang: state.uiLang });
+    store.saveSettings(settings);
+    render();
+  }
+
+  // Lernrichtung umschalten (native→ES / ES→native) und merken.
   function setDir(dir) {
     state.dir = dir === "es2de" ? "es2de" : "de2es";
     state.contextOpen = false;
@@ -2307,7 +2336,7 @@
         if (cards.length >= g.limit) break;
         if (used.has(c.id)) continue;
         used.add(c.id);
-        cards.push({ id: c.id, de: c.de, es: c.es, tip: c.tip || null });
+        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null });
       }
       return {
         id: g.cat,
@@ -2844,7 +2873,7 @@
     const cat = categoryById(card.cat);
     const lvl = levelById(card.lvl);
     return {
-      de: card.de,
+      de: nat(card),
       es: card.es,
       tip: card.tip || null,
       catLabel: cat ? cat.label : "",
@@ -2919,6 +2948,7 @@
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
     else if (action === "toggle-theme") toggleTheme();
     else if (action === "set-dir") setDir(el.dataset.dir);
+    else if (action === "set-ui-lang") setUiLang(el.dataset.lang);
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
@@ -3225,6 +3255,7 @@
   if (window.SC && window.SC.install) {
     window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
   }
+  applyUiLang(state.uiLang); // UI-Sprache setzen (i18n + <html lang>) VOR dem ersten render
   checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
   render();
   registerServiceWorker();

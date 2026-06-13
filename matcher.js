@@ -29,13 +29,34 @@
       .trim();
   }
 
+  // Wert des erwarteten Antwortfeldes einer Karte.
+  // field: "es" (Spanisch) | "de" (Deutsch, Alias – hält Bestands-Tests grün)
+  //        | "native" (Muttersprache = aktive UI-Sprache, via SC.i18n.nativeText).
+  function fieldText(card, field) {
+    if (field === "native") {
+      const i18n = window.SC && window.SC.i18n;
+      return i18n ? i18n.nativeText(card) : String(card.de);
+    }
+    return String(card[field]);
+  }
+
+  // Artikel-Toleranz fürs Englische: führendes the/a/an darf fehlen
+  // ("the bus stop" == "bus stop"). Nur sinnvoll, wenn die Muttersprache gerade
+  // Englisch ist – sonst (de/es) unverändert. Greift auf NORMALISIERTEN Text.
+  function nativeIsEnglish(field) {
+    const i18n = window.SC && window.SC.i18n;
+    return field === "native" && i18n && i18n.getLang() === "en";
+  }
+  function stripArticle(norm) {
+    return norm.replace(/^(?:the|a|an)\s+/, "");
+  }
+
   // Anzeige-Antworten einer Karte (UNnormalisiert, z.B. fürs Vorlesen).
-  // field: "es" (Standard, Spanisch) | "de" (Deutsch, für Richtung ES→DE).
   // card.alt gilt nur für die spanische Antwort.
   function acceptedAnswers(card, field) {
     field = field || "es";
     if (field === "es" && Array.isArray(card.alt) && card.alt.length) return card.alt;
-    return String(card[field]).split("/").map((s) => s.trim()).filter(Boolean);
+    return fieldText(card, field).split("/").map((s) => s.trim()).filter(Boolean);
   }
 
   // Kandidaten-Generierung: Liste akzeptierter NORMALISIERTER Eingaben.
@@ -49,9 +70,15 @@
   function candidates(card, field) {
     field = field || "es";
     const out = [];
+    const stripEn = nativeIsEnglish(field);
     const add = (s) => {
       const n = normalize(s);
       if (n && out.indexOf(n) === -1) out.push(n);
+      // Englische Muttersprache: zusätzlich die artikellose Form akzeptieren.
+      if (stripEn && n) {
+        const ns = stripArticle(n);
+        if (ns && ns !== n && out.indexOf(ns) === -1) out.push(ns);
+      }
     };
 
     // card.alt zählt nur für Spanisch und ersetzt dort die generierten Varianten.
@@ -60,7 +87,7 @@
       return out;
     }
 
-    const raw = String(card[field]);
+    const raw = fieldText(card, field);
     // Varianten-Basis: Original, ohne Klammerzusätze, jeder Klammerinhalt einzeln.
     const variants = [raw, raw.replace(/\([^)]*\)/g, " ")];
     const parens = /\(([^)]*)\)/g;
@@ -79,7 +106,10 @@
   function check(input, card, field) {
     const norm = normalize(input);
     const accepted = candidates(card, field);
-    const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
+    // Englische Muttersprache: auch die artikellose Eingabe gegen die Liste prüfen,
+    // damit „the bus stop" und „bus stop" beidseitig passen.
+    const tries = nativeIsEnglish(field) ? [norm, stripArticle(norm)] : [norm];
+    const correct = tries.some((n) => n.length > 0 && accepted.indexOf(n) !== -1);
     return { correct, answers: acceptedAnswers(card, field) };
   }
 
