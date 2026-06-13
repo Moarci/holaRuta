@@ -37,7 +37,7 @@
                aria-pressed="${fmt === id}">${txt}</button>`;
     return `
       <div class="sharebar">
-        <div class="fmtrow" role="group" aria-label="Bildformat">
+        <div class="fmtrow" role="group" aria-label="${esc(t("common.imageFormat"))}">
           ${chip("square", "▢ 1:1")}${chip("story", "▯ 9:16")}
         </div>
         <button class="ghostbtn" data-action="${action}">📤 ${esc(label)}</button>
@@ -49,8 +49,8 @@
   function themeToggle(theme) {
     const dark = theme === "dark";
     const icon = dark ? "☀️" : "🌙";
-    const label = dark ? "Hellen Modus einschalten" : "Dunklen Modus einschalten";
-    const title = dark ? "Heller Modus" : "Dunkler Modus – fürs Hostel-Bett 🌙";
+    const label = dark ? t("common.themeLight") : t("common.themeDark");
+    const title = dark ? t("common.themeLightTitle") : t("common.themeDarkTitle");
     return `<button class="iconbtn" data-action="toggle-theme"
                     aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
   }
@@ -64,34 +64,35 @@
   // Entdecken-Reiter: die großen Einstiege als volle Gradient-Buttons.
   // need: optionale Voraussetzung ("speech"|"frases"|"countries") – fehlt das
   // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
+  // sub = deutscher Fallback; subKey = i18n-Schlüssel (zur Laufzeit via t() übersetzt).
   const FEATURES = [
-    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
-    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
-    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
-    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
-    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        sub: "Ganze Gespräche Zug für Zug durchspielen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
-    { action: "open-regatear",    icon: "🤝", title: "Regatear",        sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
-    { action: "open-precios",     icon: "💵", title: "Precios al oído", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
-    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-compras",     icon: "🛒", title: "Lista de compras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
-    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
-    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
-    { action: "open-info",        icon: "🌎", title: "Países y culturas", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
-    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
+    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Ganze Gespräche Zug für Zug durchspielen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
+    { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
+    { action: "open-compras",     icon: "🛒", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
+    { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
+    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
   // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
   // ist ehrlicher und für Screenreader genauso klar (Seiten-Navigation).
   function tabbar(tab) {
-    const t = (id, icon, label) =>
+    const tb = (id, icon, label) =>
       `<button class="tab ${tab === id ? "is-active" : ""}"${tab === id ? ' aria-current="page"' : ""}
                data-action="set-tab" data-tab="${id}">
          <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
        </button>`;
     return `
-      <nav class="tabbar" aria-label="Bereiche">
-        ${t("lernen", "🎒", "Lernen")}${t("entdecken", "🧭", "Entdecken")}${t("profil", "👤", "Profil")}
+      <nav class="tabbar" aria-label="${esc(t("home.tabsAreas"))}">
+        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${tb("profil", "👤", t("home.tabProfile"))}
       </nav>`;
   }
 
@@ -108,7 +109,7 @@
   function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
-        const badge = c.due > 0 ? `<span class="tile__due">${c.due} fällig</span>` : `<span class="tile__due tile__due--ok">✓ erledigt</span>`;
+        const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
         // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
         // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
         const breakdown = vm.allLevels ? "" : c.byLevel
@@ -120,7 +121,7 @@
                   style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
             <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
             <span class="tile__label">${esc(c.label)}</span>
-            <span class="tile__meta">${c.total} Karten · ${badge}</span>
+            <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
             ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
           </button>`;
       })
@@ -130,10 +131,10 @@
 
     // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit Kartenzahl).
     const levelChips = [
-      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">Alle</button>`,
+      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
       ...vm.levels.map((l) =>
         `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
-                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(l.label)} · ${l.count} Karten">
+                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
            <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
          </button>`),
     ].join("");
@@ -141,20 +142,20 @@
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
     // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
     const streakChip = vm.streak > 0
-      ? `<span class="today__streak">🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} Serie</span>`
-      : `<span class="today__streak today__streak--new">🌱 Starte deine Serie</span>`;
+      ? `<span class="today__streak">${esc(t("home.streakDays", { n: vm.streak }))}</span>`
+      : `<span class="today__streak today__streak--new">${esc(t("home.streakNew"))}</span>`;
     const resume = vm.lastCat
       ? `<button class="today__resume" data-action="resume-last">
-           ↩ Weiter mit ${esc(vm.lastCat.icon)} ${esc(vm.lastCat.label)}
-           <span class="today__resumecount">${vm.lastCat.due} fällig</span>
+           ${esc(t("home.resumeWith", { cat: vm.lastCat.icon + " " + vm.lastCat.label }))}
+           <span class="today__resumecount">${esc(t("home.tileDue", { n: vm.lastCat.due }))}</span>
          </button>`
       : "";
     // Ruta del día: ein Tap für eine kurze, kategorienübergreifende Tagesrunde –
     // bevorzugt fällige Karten, sonst neue. Stärkt die Lern-Serie.
     const rutaDia = `
       <button class="today__ruta" data-action="ruta-del-dia">
-        <span class="today__ruta-main">🗺️ Ruta del día</span>
-        <span class="today__ruta-sub">Kurze Tagesrunde quer durch alle Themen</span>
+        <span class="today__ruta-main">${esc(t("home.rutaTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
       </button>`;
 
     // Trip-Ziel: optionaler Countdown bis zum Reisedatum + Tagesziel. Drei Zustände:
@@ -164,60 +165,60 @@
     if (vm.tripEdit) {
       tripCard = `
         <form class="trip trip--edit" data-action="save-trip">
-          <p class="trip__cap">🎯 Trip-Ziel</p>
-          <label class="trip__field"><span>Reiseziel (optional)</span>
-            <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="z. B. Cusco" value="${trip ? esc(trip.destination) : ""}" /></label>
-          <label class="trip__field"><span>Datum (Ankunft/Abreise)</span>
+          <p class="trip__cap">${esc(t("home.tripCap"))}</p>
+          <label class="trip__field"><span>${esc(t("home.tripDest"))}</span>
+            <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="${esc(t("home.tripDestPlaceholder"))}" value="${trip ? esc(trip.destination) : ""}" /></label>
+          <label class="trip__field"><span>${esc(t("home.tripDate"))}</span>
             <input id="trip-date" type="date" value="${trip ? esc(trip.endDate) : ""}" required /></label>
-          <label class="trip__field"><span>Karten pro Tag</span>
+          <label class="trip__field"><span>${esc(t("home.tripPerDay"))}</span>
             <input id="trip-perday" type="number" inputmode="numeric" min="1" max="500" value="${trip ? trip.perDay : 15}" required /></label>
           <div class="trip__actions">
-            <button class="cta" type="submit">Ziel speichern</button>
-            ${trip ? `<button class="ghostbtn" type="button" data-action="trip-clear">Ziel löschen</button>` : ""}
-            <button class="ghostbtn" type="button" data-action="trip-edit">Abbrechen</button>
+            <button class="cta" type="submit">${esc(t("home.tripSave"))}</button>
+            ${trip ? `<button class="ghostbtn" type="button" data-action="trip-clear">${esc(t("home.tripClear"))}</button>` : ""}
+            <button class="ghostbtn" type="button" data-action="trip-edit">${esc(t("common.cancel"))}</button>
           </div>
         </form>`;
     } else if (trip) {
-      const dest = trip.destination ? esc(trip.destination) : "deine Reise";
-      const countdown = trip.past ? "Reisezeit! ¡Buen viaje! 🎒"
-        : trip.today ? "Heute geht's los! 🎒"
-        : `Noch <b>${trip.daysLeft}</b> ${trip.daysLeft === 1 ? "Tag" : "Tage"} bis ${dest}`;
+      const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
+      const countdown = trip.past ? t("home.tripTime")
+        : trip.today ? t("home.tripToday")
+        : t("home.tripCountdown", { n: trip.daysLeft, dest });
       tripCard = `
-        <button class="trip" data-action="trip-edit" aria-label="Trip-Ziel bearbeiten">
+        <button class="trip" data-action="trip-edit" aria-label="${esc(t("home.tripEditLabel"))}">
           <span class="trip__top">
             <span class="trip__dest">🎯 ${dest}</span>
-            <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${trip.todayCount}/${trip.perDay} heute${trip.todayDone ? " ✓" : ""}</span>
+            <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripTodayCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
           </span>
           <span class="trip__countdown">${countdown}</span>
           <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
         </button>`;
     } else {
-      tripCard = `<button class="trip trip--empty" data-action="trip-edit">🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel</button>`;
+      tripCard = `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
     }
 
     // Einstellungs-Panel: Kopfzeile fasst die aktive Wahl zusammen, Inhalt
     // (Modus/Richtung/Stufen) erscheint nur aufgeklappt.
     const lvlSummary = vm.allLevels
-      ? "Alle Stufen"
+      ? t("home.setupAllLevels")
       : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
-    const modeLabel = mode === "type" ? "⌨️ Schreiben" : mode === "listen" ? "👂 Hören" : "🃏 Karteikarte";
+    const modeLabel = mode === "type" ? t("home.modeType") : mode === "listen" ? t("home.modeListen") : t("home.modeFlip");
     const dirSummary = vm.dir === "es2de" ? `🇪🇸→${vm.nativeFlag}` : `${vm.nativeFlag}→🇪🇸`;
     const setupSummary = `${modeLabel} · ${dirSummary} · ${esc(lvlSummary)}`;
     // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
     // sonst gäbe es nichts zu hören (graceful degradation).
     const listenSeg = speechReady()
-      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">👂 Hören</button>`
+      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">${esc(t("home.modeListen"))}</button>`
       : "";
     // Sprechtempo: nur sinnvoll, wenn der Browser überhaupt vorlesen kann.
     // 0.75 langsam (zum Nachsprechen) · 0.95 normal · 1.2 schnell (Reise-Realität).
     const rate = vm.speechRate || 0.95;
     const speedGroup = speechReady()
       ? `<div class="switchgroup">
-          <span class="switchcap">Sprechtempo</span>
-          <div class="segmented segmented--three" role="tablist" aria-label="Sprechtempo der Vorlese-Stimme">
-            <button class="seg ${rate === 0.75 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.75" aria-pressed="${rate === 0.75}">🐢 Langsam</button>
-            <button class="seg ${rate === 0.95 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.95" aria-pressed="${rate === 0.95}">Normal</button>
-            <button class="seg ${rate === 1.2 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="1.2" aria-pressed="${rate === 1.2}">⚡ Schnell</button>
+          <span class="switchcap">${esc(t("home.speechRate"))}</span>
+          <div class="segmented segmented--three" role="tablist" aria-label="${esc(t("home.speechRateAria"))}">
+            <button class="seg ${rate === 0.75 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.75" aria-pressed="${rate === 0.75}">${esc(t("home.rateSlow"))}</button>
+            <button class="seg ${rate === 0.95 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="0.95" aria-pressed="${rate === 0.95}">${esc(t("home.rateNormal"))}</button>
+            <button class="seg ${rate === 1.2 ? "is-active" : ""}" data-action="set-speech-rate" data-rate="1.2" aria-pressed="${rate === 1.2}">${esc(t("home.rateFast"))}</button>
           </div>
         </div>`
       : "";
@@ -235,35 +236,35 @@
       <div class="setup__body" id="setup-body">
         ${langGroup}
         <div class="switchgroup">
-          <span class="switchcap">Modus</span>
-          <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="Lernmodus">
-            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">🃏 Karteikarte</button>
-            <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">⌨️ Schreiben</button>
+          <span class="switchcap">${esc(t("home.modeLabel"))}</span>
+          <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="${esc(t("home.modeAria"))}">
+            <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">${esc(t("home.modeFlip"))}</button>
+            <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">${esc(t("home.modeType"))}</button>
             ${listenSeg}
           </div>
         </div>
         <div class="switchgroup">
-          <span class="switchcap">Richtung</span>
-          <div class="segmented" role="tablist" aria-label="Lernrichtung">
+          <span class="switchcap">${esc(t("home.dirLabel"))}</span>
+          <div class="segmented" role="tablist" aria-label="${esc(t("home.dirAria"))}">
             <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">${vm.nativeFlag} → 🇪🇸 ${esc(vm.nativeLabel)}</button>
             <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → ${vm.nativeFlag} Español</button>
           </div>
         </div>
-        <div class="levels" role="group" aria-label="Schwierigkeitsstufe">${levelChips}</div>
+        <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
         ${speedGroup}
       </div>`;
 
     return `
-      ${pagehead("¿Qué aprendemos hoy?", vm)}
+      ${pagehead(esc(t("home.homePrompt")), vm)}
 
       <div class="today">
         ${streakChip}
         <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
           ${vm.totalDue === 0
-            ? `Alles wiederholt 🎉 <span class="cta__count">${vm.totalCards}</span>`
+            ? `${esc(t("home.allReviewed"))} <span class="cta__count">${vm.totalCards}</span>`
             : vm.totalDue > vm.sessionCap
-              ? `Lernrunde starten <span class="cta__count">${vm.sessionCap} von ${vm.totalDue}</span>`
-              : `Alle fälligen lernen <span class="cta__count">${vm.totalDue}</span>`}
+              ? `${esc(t("home.startSession"))} <span class="cta__count">${esc(t("home.sessionOf", { cap: vm.sessionCap, due: vm.totalDue }))}</span>`
+              : `${esc(t("home.studyAllDue"))} <span class="cta__count">${vm.totalDue}</span>`}
         </button>
         ${resume}
         ${rutaDia}
@@ -272,17 +273,17 @@
 
       <div class="setup">
         <button class="setup__head" data-action="toggle-setup" aria-expanded="${vm.setupOpen}"${vm.setupOpen ? ' aria-controls="setup-body"' : ""}>
-          <span class="setup__cap">⚙️ Einstellungen</span>
+          <span class="setup__cap">${esc(t("home.settingsCap"))}</span>
           <span class="setup__summary">${setupSummary}</span>
           <span class="setup__chev" aria-hidden="true">›</span>
         </button>
         ${vm.setupOpen ? setupBody : ""}
       </div>
 
-      <p class="sectioncap">Themen</p>
+      <p class="sectioncap">${esc(t("home.sectionTopics"))}</p>
       <div class="tiles">${tiles}</div>
 
-      <p class="dedication">Für meine liebe Lisa. <span class="dedication__heart">♥</span></p>`;
+      <p class="dedication">${esc(t("home.dedication"))} <span class="dedication__heart">♥</span></p>`;
   }
 
   function entdeckenBody(vm) {
@@ -294,20 +295,20 @@
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
           <span class="feat__title">${esc(x.title)}</span>
-          <span class="feat__sub">${esc(x.sub)}</span>
+          <span class="feat__sub">${esc(x.subKey ? t(x.subKey) : x.sub)}</span>
         </span>
         <span class="feat__chev" aria-hidden="true">›</span>
       </button>`).join("");
     return `
-      ${pagehead("Entdecken", vm)}
-      <p class="pageintro">Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.</p>
+      ${pagehead(esc(t("discover.discoverTitle")), vm)}
+      <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
       ${feats}`;
   }
 
   function profilBody(vm) {
     const streakLine = vm.streak > 0
-      ? `🔥 ${vm.streak} ${vm.streak === 1 ? "Tag" : "Tage"} in Folge`
-      : `🌱 Heute die erste Karte lernen`;
+      ? t("profile.streakInRow", { n: vm.streak })
+      : t("profile.streakFirst");
     const navrow = (action, icon, label, chip) => `
       <button class="navrow" data-action="${action}">
         <span class="navrow__icon" aria-hidden="true">${icon}</span>
@@ -316,23 +317,23 @@
         <span class="navrow__chev" aria-hidden="true">›</span>
       </button>`;
     return `
-      ${pagehead("Dein Fortschritt", vm)}
+      ${pagehead(esc(t("profile.progressTitle")), vm)}
 
       <div class="profcard">
         <p class="profcard__streak">${streakLine}</p>
-        <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Gemeisterte Karten">
+        <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(t("profile.masteredCardsLabel"))}">
           <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
         </div>
-        <p class="profcard__meta">${vm.overall.mastered} von ${vm.overall.total} Karten gemeistert · ${vm.overall.pct} %</p>
+        <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
       </div>
 
-      ${navrow("open-stats", "📊", "Statistik")}
-      ${vm.hasBadges ? navrow("open-badges", "🎖️", "Mein Ruta-Pass", vm.badgeCount || "") : ""}
-      ${navrow("open-editor", "✍️", "Eigene Karten")}
+      ${navrow("open-stats", "📊", t("profile.statistics"))}
+      ${vm.hasBadges ? navrow("open-badges", "🎖️", t("profile.rutaPass"), vm.badgeCount || "") : ""}
+      ${navrow("open-editor", "✍️", t("profile.ownCards"))}
 
-      <p class="sectioncap">Deine Daten</p>
-      ${navrow("export-data", "📤", "Daten exportieren")}
-      ${navrow("import-data", "📥", "Daten importieren")}
+      <p class="sectioncap">${esc(t("profile.yourData"))}</p>
+      ${navrow("export-data", "📤", t("profile.exportData"))}
+      ${navrow("import-data", "📥", t("profile.importData"))}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
       ${installBlock(vm.install)}`;
@@ -344,12 +345,12 @@
   function installBlock(install) {
     if (!install || !install.show) return "";
     const body = install.canPrompt
-      ? `<p class="installcard__text">Leg HolaRuta als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.</p>
-         <button class="ghostbtn installcard__btn" data-action="install-app">📲 App installieren</button>`
+      ? `<p class="installcard__text">${esc(t("profile.installText"))}</p>
+         <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
       : `<p class="installcard__text">${esc(install.hint)}</p>`;
     return `
       <div class="installcard">
-        <p class="installcard__title"><span aria-hidden="true">📲</span> Auf den Startbildschirm</p>
+        <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.installTitle"))}</p>
         ${body}
       </div>`;
   }
@@ -377,13 +378,13 @@
     return `
       <section class="screen study" style="--from:${esc(accent[0])};--to:${esc(accent[1])}">
         <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
             <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
           </div>
         </div>
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Lernfortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("study.studyProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         ${body}
         ${skipBtn()}
         ${shareCardBtn()}
@@ -393,7 +394,7 @@
   // Dezenter „Überspringen“-Button: nimmt die aktuelle Karte ohne Bewertung aus der
   // Sitzung (sie bleibt fällig). So muss niemand jede Karte durchziehen.
   function skipBtn() {
-    return `<button class="skipbtn" type="button" data-action="skip" aria-label="Diese Karte überspringen">Überspringen ⏭️</button>`;
+    return `<button class="skipbtn" type="button" data-action="skip" aria-label="${esc(t("study.skipLabel"))}">${esc(t("study.skip"))}</button>`;
   }
 
   // Stufen-Badge (oben rechts auf der Karte). on = farbig (Rückseite), sonst dezent.
@@ -418,7 +419,7 @@
   // on = farbige Variante (für die bunte Rückseite).
   function speakBtn(on) {
     if (!speechReady()) return "";
-    return cornerBtn({ base: "cardbtn--speak", on, icon: "🔊", label: "Antwort anhören", action: "speak" });
+    return cornerBtn({ base: "cardbtn--speak", on, icon: "🔊", label: t("study.speakAnswer"), action: "speak" });
   }
 
   // Reise-Kontext-Panel: aufklappbarer Inhalt mit echtem Reisesatz, Situation und
@@ -436,10 +437,10 @@
       : "";
     return `
       <div class="context-panel" id="context-panel"${open ? "" : " hidden"}>
-        <h3 class="context-panel__title">🧭 So nutzt du es unterwegs</h3>
+        <h3 class="context-panel__title">${esc(t("study.contextTitle"))}</h3>
         ${line(ctx.sentenceEs, ctx.sentenceDe)}
-        ${meta("Situation", ctx.situation)}
-        ${meta("Reisetipp", ctx.note)}
+        ${meta(t("study.contextSituation"), ctx.situation)}
+        ${meta(t("study.contextNote"), ctx.note)}
       </div>`;
   }
 
@@ -449,7 +450,7 @@
     if (!ctx) return "";
     return cornerBtn({
       base: "cardbtn--ctx" + (open ? " is-open" : ""), on, icon: "🧭",
-      label: "Reise-Kontext anzeigen", action: "toggle-context",
+      label: t("study.contextShow"), action: "toggle-context",
       extra: `aria-expanded="${!!open}" aria-controls="context-panel"`,
     });
   }
@@ -458,7 +459,7 @@
   // Textfluss, da hier kein 🔊 zum Spiegeln und mehr Platz vorhanden ist.
   function contextBlock(ctx, open) {
     if (!ctx) return "";
-    const label = open ? "🧭 Kontext ausblenden" : "🧭 Kontext";
+    const label = open ? t("study.contextHide") : t("study.context");
     return `
       <div class="context">
         <button class="ghostbtn contextbtn${open ? " is-open" : ""}" type="button" data-action="toggle-context"
@@ -482,7 +483,7 @@
     const sq = vm.spanishIsQuestion; // Spanisch steht vorne (Frage)?
     return `
       <div class="flip ${vm.revealed ? "is-flipped" : ""}" data-action="flip" id="flip"
-           role="button" tabindex="0" aria-label="${vm.revealed ? "Karte ist umgedreht" : "Karte umdrehen"}">
+           role="button" tabindex="0" aria-label="${vm.revealed ? esc(t("study.cardBack")) : esc(t("study.cardFlip"))}">
         <div class="flip__inner">
           <div class="face face--front">
             <span class="face__cat">${esc(vm.catLabel)}</span>
@@ -490,7 +491,7 @@
             ${sq ? speakBtn(false) : ""}
             <div class="face__word"${sq ? ' lang="es"' : ""}>${esc(vm.question)}</div>
             ${sq ? tip : ""}
-            <span class="face__hint">Tippen oder ↑ wischen zum Umdrehen 🔄</span>
+            <span class="face__hint">${esc(t("study.flipHint"))}</span>
           </div>
           <div class="face face--back">
             <span class="face__cat">${esc(vm.catLabel)}</span>
@@ -517,8 +518,8 @@
     const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";
 
     if (!res) {
-      const inputHint = sq ? "Antwort auf Deutsch eingeben" : "Antwort auf Spanisch eingeben";
-      const placeholder = sq ? "Tippe die deutsche Antwort …" : "Tippe die spanische Antwort …";
+      const inputHint = sq ? t("study.inputDe") : t("study.inputEs");
+      const placeholder = sq ? t("study.placeholderDe") : t("study.placeholderEs");
       return `
         <div class="card-static">
           <span class="face__cat">${esc(vm.catLabel)}</span>
@@ -530,14 +531,14 @@
         <form class="typer" data-action="submit-typed" id="typer">
           <input class="typer__input" id="answer" type="text" autocomplete="off"
                  autocapitalize="off" autocorrect="off" spellcheck="false"
-                 placeholder="${placeholder}" />
-          <button class="typer__btn" type="submit">Prüfen</button>
+                 placeholder="${esc(placeholder)}" />
+          <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`;
     }
 
     const verdict = res.correct
-      ? `<div class="verdict verdict--ok">✓ Richtig!</div>`
-      : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(res.input || "—")}“</div>`;
+      ? `<div class="verdict verdict--ok">${esc(t("common.correctShort"))}</div>`
+      : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: res.input || "—" }))}</div>`;
     return `
       <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
         <span class="face__cat">${esc(vm.catLabel)}</span>
@@ -566,7 +567,7 @@
 
     if (!res) {
       const replay = speechReady()
-        ? `<button class="listen-replay ghostbtn" type="button" data-action="speak">🔊 Nochmal anhören</button>`
+        ? `<button class="listen-replay ghostbtn" type="button" data-action="speak">${esc(t("common.listenAgain"))}</button>`
         : "";
       return `
         <div class="card-static card-listen">
@@ -574,19 +575,19 @@
           ${levelBadge(vm, false)}
           <span class="listen-ear" aria-hidden="true">👂</span>
           ${replay}
-          <span class="face__hint">Hör zu und tippe auf Spanisch, was du hörst</span>
+          <span class="face__hint">${esc(t("study.listenHint"))}</span>
         </div>
         <form class="typer" data-action="submit-typed" id="typer">
           <input class="typer__input" id="answer" type="text" autocomplete="off"
                  autocapitalize="off" autocorrect="off" spellcheck="false"
-                 placeholder="Tippe das Gehörte …" />
-          <button class="typer__btn" type="submit">Prüfen</button>
+                 placeholder="${esc(t("study.listenPlaceholder"))}" />
+          <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`;
     }
 
     const verdict = res.correct
-      ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
-      : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(res.input || "—")}“</div>`;
+      ? `<div class="verdict verdict--ok">${esc(t("common.correctHeard"))}</div>`
+      : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: res.input || "—" }))}</div>`;
     return `
       <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
         <span class="face__cat">${esc(vm.catLabel)}</span>
@@ -609,18 +610,18 @@
     return `
       <div class="rateprompt">
         <span class="rateprompt__es">¿Cómo fue?</span>
-        <span class="rateprompt__de">Wie gut saß die Antwort?</span>
+        <span class="rateprompt__de">${esc(t("study.ratePromptDe"))}</span>
       </div>
-      <div class="ratebar" role="group" aria-label="Wie gut saß die Antwort?">
-        <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="Otra vez – nochmal üben">
+      <div class="ratebar" role="group" aria-label="${esc(t("study.ratePromptDe"))}">
+        <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="${esc(t("study.rateAgainLabel"))}">
           <span class="feel__emoji" aria-hidden="true">😅</span>
           <span class="feel__txt">Otra vez</span>
         </button>
-        <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="Vale – saß ganz gut">
+        <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="${esc(t("study.rateGoodLabel"))}">
           <span class="feel__emoji" aria-hidden="true">🙂</span>
           <span class="feel__txt">Vale</span>
         </button>
-        <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="¡Fácil! – mühelos gewusst">
+        <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="${esc(t("study.rateEasyLabel"))}">
           <span class="feel__emoji" aria-hidden="true">😎</span>
           <span class="feel__txt">¡Fácil!</span>
         </button>
@@ -630,7 +631,7 @@
   // Dezenter Teilen-Link ganz unten: erzeugt aus der aktuellen Karte ein Sharepic.
   function shareCardBtn() {
     if (!canShare()) return "";
-    return `<button class="sharepic-btn" type="button" data-action="share-card" aria-label="Diese Karte als Bild teilen">Teilen</button>`;
+    return `<button class="sharepic-btn" type="button" data-action="share-card" aria-label="${esc(t("study.shareCardLabel"))}">${esc(t("study.shareCard"))}</button>`;
   }
 
   // ---------- DONE ----------
@@ -639,11 +640,10 @@
       <section class="screen">
         <div class="done">
           <div class="done__emoji">🎉</div>
-          <h2>¡Muy bien!</h2>
-          <p>${esc(vm.scopeLabel)} – für jetzt alles wiederholt.<br>
-             Die schweren Karten kommen früher zurück.</p>
-          <button class="cta" data-action="home">Zur Übersicht</button>
-          <button class="ghostbtn" data-action="open-stats">📊 Statistik ansehen</button>
+          <h2>${esc(t("study.doneOk"))}</h2>
+          <p>${esc(vm.scopeLabel)} ${t("study.doneText")}</p>
+          <button class="cta" data-action="home">${esc(t("common.overview"))}</button>
+          <button class="ghostbtn" data-action="open-stats">${esc(t("common.statsView"))}</button>
         </div>
       </section>`;
   }
@@ -651,8 +651,8 @@
   // ---------- RUTA-PASS (BADGES) ----------
   // Fortschrittstext eines noch nicht erreichten Badges (je nach Metrik-Typ).
   function badgeProgressText(b) {
-    if (b.type === "categoryMastery") return `${Math.round((b.value || 0) * 100)} % · Ziel 80 %`;
-    if (b.type === "flag") return "Noch nicht freigeschaltet";
+    if (b.type === "categoryMastery") return t("profile.badgeMasteryGoal", { pct: Math.round((b.value || 0) * 100) });
+    if (b.type === "flag") return t("profile.badgeLocked");
     const cur = Math.min(Math.round(b.value || 0), b.target);
     return `${cur} / ${b.target}`;
   }
@@ -663,7 +663,7 @@
       // Freigeschaltete Stempel lassen sich als Sharepic teilen (sofern verfügbar).
       const share = canShare()
         ? `<button class="badge__share" type="button" data-action="share-badge" data-id="${esc(b.id)}"
-                   aria-label="Stempel „${esc(b.name)}“ als Bild teilen">📤 Teilen</button>`
+                   aria-label="${esc(t("profile.badgeShareLabel", { name: b.name }))}">${esc(t("profile.badgeShare"))}</button>`
         : "";
       return `
         <div class="badge is-unlocked">
@@ -676,10 +676,10 @@
     }
     if (b.secret) {
       return `
-        <div class="badge is-locked badge--secret" aria-label="Geheimes Badge, noch nicht freigeschaltet">
+        <div class="badge is-locked badge--secret" aria-label="${esc(t("profile.badgeSecretLabel"))}">
           <span class="badge__icon" aria-hidden="true">❓</span>
-          <span class="badge__name">Geheim-Stempel</span>
-          <span class="badge__desc">Noch nicht freigeschaltet.</span>
+          <span class="badge__name">${esc(t("profile.badgeSecretName"))}</span>
+          <span class="badge__desc">${esc(t("profile.badgeSecretDesc"))}</span>
         </div>`;
     }
     const pct = Math.round((b.progress || 0) * 100);
@@ -702,11 +702,11 @@
       return `
         <section class="screen">
           <div class="topbar">
-            <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
-            <div class="topbar__title">🎖️ Mein Ruta-Pass</div>
+            <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+            <div class="topbar__title">🎖️ ${esc(t("profile.rutaPass"))}</div>
             <span></span>
           </div>
-          <p class="stat-empty">Der Ruta-Pass ist gerade nicht verfügbar – vermutlich wurde die App offline geöffnet, bevor alles geladen war. Mit Netz neu laden, dann klappt's wieder.</p>
+          <p class="stat-empty">${esc(t("profile.passUnavailable"))}</p>
         </section>`;
     }
     const pct = vm.total ? Math.round((vm.unlocked / vm.total) * 100) : 0;
@@ -724,15 +724,15 @@
     return `
       <section class="screen">
         <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
-          <div class="topbar__title">🎖️ Mein Ruta-Pass</div>
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">🎖️ ${esc(t("profile.rutaPass"))}</div>
           <div class="topbar__counter">${vm.unlocked}/${vm.total}</div>
         </div>
 
         <div class="passhero">
-          <p class="passhero__sub">Sammle Stempel für deine Reise-Skills.</p>
+          <p class="passhero__sub">${esc(t("profile.passHero"))}</p>
           <div class="passhero__bar"><div class="passhero__fill" style="width:${pct}%"></div></div>
-          <p class="passhero__meta">${vm.unlocked} von ${vm.total} Stempeln gesammelt · ${pct} %</p>
+          <p class="passhero__meta">${esc(t("profile.passMeta", { unlocked: vm.unlocked, total: vm.total, pct }))}</p>
         </div>
 
         ${groups}
@@ -753,9 +753,9 @@
           </span>
         </span>`)
       .join("");
-    const head = list.length > 1 ? `${list.length} neue Stempel!` : "Neuer Stempel!";
+    const head = list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne");
     return `
-      <button class="btoast" data-action="open-badges" aria-label="${esc(head)} Ruta-Pass öffnen">
+      <button class="btoast" data-action="open-badges" aria-label="${esc(t("profile.badgeToastLabel", { head }))}">
         <span class="btoast__head">🎖️ ${esc(head)}</span>
         ${items}
       </button>`;
@@ -788,17 +788,15 @@
       <div class="upd-scrim" data-action="dismiss-update">
         <div class="upd" role="dialog" aria-modal="true" aria-labelledby="upd-title"
              data-action="upd-stop">
-          <div class="upd__head">🎉 <span id="upd-title">HolaRuta wurde aktualisiert</span></div>
+          <div class="upd__head">🎉 <span id="upd-title">${esc(t("profile.updTitle"))}</span></div>
           ${blocks}
           <div class="upd__how">
-            <div class="upd__how-title">So bleibst du aktuell</div>
-            <p class="upd__how-text">HolaRuta aktualisiert sich automatisch im Hintergrund.
-            Schließe die App ab und zu ganz und öffne sie neu – dann hast du immer die
-            neueste Version. Geht etwas mal nicht, hilft „Jetzt neu laden“.</p>
+            <div class="upd__how-title">${esc(t("profile.updHowTitle"))}</div>
+            <p class="upd__how-text">${esc(t("profile.updHowText"))}</p>
           </div>
           <div class="upd__actions">
-            <button class="ghostbtn" data-action="reload-app">Jetzt neu laden</button>
-            <button class="cta upd__ok" data-action="dismiss-update">Verstanden</button>
+            <button class="ghostbtn" data-action="reload-app">${esc(t("profile.updReload"))}</button>
+            <button class="cta upd__ok" data-action="dismiss-update">${esc(t("profile.updUnderstood"))}</button>
           </div>
         </div>
       </div>`;
@@ -806,10 +804,11 @@
 
   // ---------- STATISTIK ----------
   // Statusfarben/-texte zentral, damit Liste & Detail gleich aussehen.
+  // label als Funktion, damit der Text der aktiven UI-Sprache folgt (kein einmaliges Binden).
   const STATUS_META = {
-    new:      { label: "Neu",        color: "var(--muted)" },
-    learning: { label: "Am Lernen",  color: "var(--warn)" },
-    mastered: { label: "Gemeistert", color: "var(--ok)" },
+    new:      { label: () => t("profile.statNew"),       color: "var(--muted)" },
+    learning: { label: () => t("profile.statLearning"),  color: "var(--warn)" },
+    mastered: { label: () => t("profile.statMastered"),  color: "var(--ok)" },
   };
 
   // Verlaufs-Punkte: je Bewertung ein farbiger Punkt (rot/grün/blau).
@@ -821,7 +820,7 @@
     const color = Object.create(null);
     color.a = "var(--no)"; color.g = "var(--ok)"; color.e = "var(--easy)";
     const title = Object.create(null);
-    title.a = "Nochmal"; title.g = "Gut"; title.e = "Einfach";
+    title.a = t("profile.statAgain"); title.g = t("profile.statGood"); title.e = t("profile.statEasy");
     const dots = hist
       .map((ch) => `<span class="hdot" aria-hidden="true" style="background:${color[ch] || "var(--muted)"}" title="${title[ch] || ""}"></span>`)
       .join("");
@@ -829,7 +828,7 @@
     const count = Object.create(null);
     count.a = 0; count.g = 0; count.e = 0;
     hist.forEach((ch) => { if (count[ch] != null) count[ch]++; });
-    const label = `Verlauf: ${count.e}× Einfach, ${count.g}× Gut, ${count.a}× Nochmal`;
+    const label = t("profile.statHistory", { easy: count.e, good: count.g, again: count.a });
     return `<div class="hdots" role="img" aria-label="${label}">${dots}</div>`;
   }
 
@@ -846,9 +845,9 @@
   function routeMap(ov) {
     const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
     const stops = [
-      { icon: "🆕", label: "Neu",        n: ov.neu,      cls: "is-new",    at: 0 },
-      { icon: "📚", label: "Am Lernen",  n: ov.learning, cls: "is-learn",  at: 50 },
-      { icon: "🏁", label: "Gemeistert", n: ov.mastered, cls: "is-master", at: 100 },
+      { icon: "🆕", label: t("profile.routeNew"),       n: ov.neu,      cls: "is-new",    at: 0 },
+      { icon: "📚", label: t("profile.routeLearning"),  n: ov.learning, cls: "is-learn",  at: 50 },
+      { icon: "🏁", label: t("profile.routeMastered"),  n: ov.mastered, cls: "is-master", at: 100 },
     ];
     // Haltestellen-Punkte sitzen auf der Linie, Beschriftung läuft im
     // normalen Fluss darunter – so überlappt nichts (auch bei 0 %).
@@ -861,10 +860,10 @@
         <span class="route__lbl">${s.icon} ${esc(s.label)}</span>
       </div>`).join("");
     return `
-      <div class="route" role="img" aria-label="Lern-Strecke: ${ov.neu} neu, ${ov.learning} am Lernen, ${ov.mastered} gemeistert (${pct} %)">
+      <div class="route" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct }))}">
         <div class="route__head">
-          <span class="route__cap">🚌 Deine Ruta</span>
-          <span class="route__pct">${pct} % gemeistert</span>
+          <span class="route__cap">${esc(t("profile.routeCap"))}</span>
+          <span class="route__pct">${esc(t("profile.routePct", { pct }))}</span>
         </div>
         <div class="route__track">
           <div class="route__fill" style="width:${pct}%"></div>
@@ -880,10 +879,10 @@
 
     const kpis = `
       <div class="kpis">
-        <div class="kpi"><div class="kpi__num">${ov.rate === null ? "–" : ov.rate + "%"}</div><div class="kpi__lbl">Trefferquote</div></div>
-        <div class="kpi"><div class="kpi__num">${ov.seenCards}<span class="kpi__of">/${ov.total}</span></div><div class="kpi__lbl">Gelernt</div></div>
-        <div class="kpi"><div class="kpi__num">${ov.mastered}</div><div class="kpi__lbl">Gemeistert</div></div>
-        <div class="kpi"><div class="kpi__num">${ov.hard}</div><div class="kpi__lbl">Schwierig</div></div>
+        <div class="kpi"><div class="kpi__num">${ov.rate === null ? "–" : ov.rate + "%"}</div><div class="kpi__lbl">${esc(t("profile.kpiHitRate"))}</div></div>
+        <div class="kpi"><div class="kpi__num">${ov.seenCards}<span class="kpi__of">/${ov.total}</span></div><div class="kpi__lbl">${esc(t("profile.kpiLearned"))}</div></div>
+        <div class="kpi"><div class="kpi__num">${ov.mastered}</div><div class="kpi__lbl">${esc(t("profile.kpiMastered"))}</div></div>
+        <div class="kpi"><div class="kpi__num">${ov.hard}</div><div class="kpi__lbl">${esc(t("profile.kpiHard"))}</div></div>
       </div>`;
 
     // Status-Verteilung als gestapelter Balken.
@@ -894,17 +893,17 @@
           ${seg(ov.mastered, "var(--ok)")}${seg(ov.learning, "var(--warn)")}${seg(ov.neu, "rgba(45,27,18,0.16)")}
         </div>
         <div class="dist__legend">
-          <span><i style="background:var(--ok)"></i>Gemeistert ${ov.mastered}</span>
-          <span><i style="background:var(--warn)"></i>Am Lernen ${ov.learning}</span>
-          <span><i style="background:rgba(45,27,18,0.16)"></i>Neu ${ov.neu}</span>
+          <span><i style="background:var(--ok)"></i>${esc(t("profile.distMastered", { n: ov.mastered }))}</span>
+          <span><i style="background:var(--warn)"></i>${esc(t("profile.distLearning", { n: ov.learning }))}</span>
+          <span><i style="background:rgba(45,27,18,0.16)"></i>${esc(t("profile.distNew", { n: ov.neu }))}</span>
         </div>
       </div>`;
 
     // Auf Anhieb vs. nach Übung.
     const firstTry = `
       <div class="splitstat">
-        <div class="splitstat__item"><b>${ov.firstTry}</b> auf Anhieb gewusst 🎯</div>
-        <div class="splitstat__item"><b>${ov.needPractice}</b> brauchten Übung 🔁</div>
+        <div class="splitstat__item">${t("profile.splitFirstTry", { n: ov.firstTry })}</div>
+        <div class="splitstat__item">${t("profile.splitNeedPractice", { n: ov.needPractice })}</div>
       </div>`;
 
     const chips = vm.filters
@@ -913,24 +912,24 @@
 
     const rows = vm.list.length
       ? vm.list.map(statRow).join("")
-      : `<p class="stat-empty">Hier erscheinen deine Karten, sobald du sie bewertet hast.</p>`;
+      : `<p class="stat-empty">${esc(t("profile.statsEmpty"))}</p>`;
 
     return `
       <section class="screen">
         <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
-          <div class="topbar__title">📊 Statistik</div>
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">${esc(t("profile.statsTitle"))}</div>
           <div class="topbar__counter">${ov.seenCards}/${ov.total}</div>
         </div>
         ${kpis}
         ${routeMap(ov)}
         ${distribution}
         ${firstTry}
-        ${ov.seenCards > 0 ? shareBlock(vm.shareFormat, "share-stats", "Fortschritt teilen") : ""}
-        <div class="schips" role="group" aria-label="Filter">${chips}</div>
+        ${ov.seenCards > 0 ? shareBlock(vm.shareFormat, "share-stats", t("common.shareProgress")) : ""}
+        <div class="schips" role="group" aria-label="${esc(t("profile.statsFilter"))}">${chips}</div>
         <div class="statlist">${rows}</div>
         ${ov.seenCards > 0
-          ? `<button class="dangerbtn" data-action="reset-progress">🗑️ Fortschritt zurücksetzen</button>`
+          ? `<button class="dangerbtn" data-action="reset-progress">${esc(t("profile.resetProgress"))}</button>`
           : ""}
       </section>`;
   }
@@ -938,14 +937,14 @@
   // Eine Zeile in der Statistik-Liste (klickbar -> Detailseite).
   function statRow(r) {
     const meta = STATUS_META[r.s.status] || STATUS_META.new;
-    const seen = r.s.seen > 0 ? `${r.s.seen}× gesehen` : "neu";
+    const seen = r.s.seen > 0 ? t("profile.seenTimes", { n: r.s.seen }) : t("profile.statNewWord");
     return `
       <button class="statrow" data-action="open-card" data-id="${esc(r.id)}" data-back="stats">
-        <span class="statrow__dot" style="background:${meta.color}" title="${esc(meta.label)}"></span>
+        <span class="statrow__dot" style="background:${meta.color}" title="${esc(meta.label())}"></span>
         <span class="statrow__main">
           <span class="statrow__de">${esc(r.de)}</span>
           <span class="statrow__es" lang="es">${esc(r.es)}</span>
-          <span class="statrow__meta">${esc(r.catIcon)} ${esc(r.catLabel)} · ${seen}${r.s.lapses ? ` · ${r.s.lapses}× vergessen` : ""}</span>
+          <span class="statrow__meta">${esc(r.catIcon)} ${esc(r.catLabel)} · ${esc(seen)}${r.s.lapses ? ` · ${esc(t("profile.forgotTimes", { n: r.s.lapses }))}` : ""}</span>
         </span>
         <span class="statrow__right">
           ${rateBadge(r.s.rate)}
@@ -959,8 +958,8 @@
     if (!vm) {
       return `
         <section class="screen">
-          <div class="topbar"><button class="iconbtn" data-action="card-back" aria-label="Zurück">‹</button><div class="topbar__title">Karte</div><span></span></div>
-          <p class="stat-empty">Karte nicht gefunden.</p>
+          <div class="topbar"><button class="iconbtn" data-action="card-back" aria-label="${esc(t("common.backShort"))}">‹</button><div class="topbar__title">${esc(t("common.cardWord"))}</div><span></span></div>
+          <p class="stat-empty">${esc(t("common.cardNotFound"))}</p>
         </section>`;
     }
     const s = vm.s;
@@ -978,36 +977,36 @@
 
     const firstTryBadge = s.seen === 0 ? ""
       : s.firstTry
-        ? `<span class="tagok">🎯 Auf Anhieb gewusst</span>`
-        : `<span class="tagwarn">🔁 Brauchte Übung</span>`;
+        ? `<span class="tagok">${esc(t("profile.cardFirstTry"))}</span>`
+        : `<span class="tagwarn">${esc(t("profile.cardNeededPractice"))}</span>`;
 
     const facts = `
       <div class="facts">
-        <div class="fact"><span class="fact__k">Status</span><span class="fact__v" style="color:${meta.color}">${esc(meta.label)}</span></div>
-        <div class="fact"><span class="fact__k">Trefferquote</span><span class="fact__v">${s.rate === null ? "–" : s.rate + "%"}</span></div>
-        <div class="fact"><span class="fact__k">Gesehen</span><span class="fact__v">${s.seen}×</span></div>
-        <div class="fact"><span class="fact__k">Vergessen</span><span class="fact__v">${s.lapses}×</span></div>
-        <div class="fact"><span class="fact__k">Zuerst gelernt</span><span class="fact__v">${esc(vm.firstText)}</span></div>
-        <div class="fact"><span class="fact__k">Zuletzt</span><span class="fact__v">${esc(vm.lastText)}</span></div>
-        <div class="fact"><span class="fact__k">Nächste Whlg.</span><span class="fact__v">${esc(vm.dueText)}</span></div>
-        <div class="fact"><span class="fact__k">Leichtigkeit</span><span class="fact__v">${typeof s.ease === "number" && isFinite(s.ease) ? s.ease.toFixed(2) : "–"}</span></div>
+        <div class="fact"><span class="fact__k">${esc(t("profile.factStatus"))}</span><span class="fact__v" style="color:${meta.color}">${esc(meta.label())}</span></div>
+        <div class="fact"><span class="fact__k">${esc(t("profile.factHitRate"))}</span><span class="fact__v">${s.rate === null ? "–" : s.rate + "%"}</span></div>
+        <div class="fact"><span class="fact__k">${esc(t("profile.factSeen"))}</span><span class="fact__v">${s.seen}×</span></div>
+        <div class="fact"><span class="fact__k">${esc(t("profile.factForgotten"))}</span><span class="fact__v">${s.lapses}×</span></div>
+        <div class="fact"><span class="fact__k">${esc(t("profile.factFirstLearned"))}</span><span class="fact__v">${esc(vm.firstText)}</span></div>
+        <div class="fact"><span class="fact__k">${esc(t("profile.factLast"))}</span><span class="fact__v">${esc(vm.lastText)}</span></div>
+        <div class="fact"><span class="fact__k">${esc(t("profile.factNextReview"))}</span><span class="fact__v">${esc(vm.dueText)}</span></div>
+        <div class="fact"><span class="fact__k">${esc(t("profile.factEase"))}</span><span class="fact__v">${typeof s.ease === "number" && isFinite(s.ease) ? s.ease.toFixed(2) : "–"}</span></div>
       </div>`;
 
     const breakdown = s.seen > 0 ? `
       <div class="breakdown">
-        ${bar("✓ Einfach", s.easy, "var(--easy)")}
-        ${bar("✓ Gut", s.good, "var(--ok)")}
-        ${bar("✗ Nochmal", s.again, "var(--no)")}
+        ${bar(t("profile.brkEasy"), s.easy, "var(--easy)")}
+        ${bar(t("profile.brkGood"), s.good, "var(--ok)")}
+        ${bar(t("profile.brkAgain"), s.again, "var(--no)")}
       </div>` : "";
 
     const history = s.history.length
-      ? `<div class="cardx__history"><span class="cardx__history-lbl">Verlauf</span>${historyDots(s.history)}</div>`
+      ? `<div class="cardx__history"><span class="cardx__history-lbl">${esc(t("profile.cardHistory"))}</span>${historyDots(s.history)}</div>`
       : "";
 
     return `
       <section class="screen" style="--from:${esc(accent[0])};--to:${esc(accent[1])}">
         <div class="topbar">
-          <button class="iconbtn" data-action="card-back" aria-label="Zurück">‹</button>
+          <button class="iconbtn" data-action="card-back" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
           <span></span>
         </div>
@@ -1025,8 +1024,8 @@
         ${breakdown}
         ${history}
 
-        <button class="cta" data-action="study-one" data-id="${esc(vm.id)}">Diese Karte üben</button>
-        ${shareBlock(vm.shareFormat, "share-card", "Als Bild teilen")}
+        <button class="cta" data-action="study-one" data-id="${esc(vm.id)}">${esc(t("profile.studyThisCard"))}</button>
+        ${shareBlock(vm.shareFormat, "share-card", t("common.shareImage"))}
       </section>`;
   }
 
@@ -1045,13 +1044,13 @@
 
     const list = vm.cards.length
       ? vm.cards.map(editorItem).join("")
-      : `<p class="stat-empty">Noch keine eigenen Karten. Leg oben deine erste an! ✍️</p>`;
+      : `<p class="stat-empty">${esc(t("profile.editorEmpty"))}</p>`;
 
     return `
       <section class="screen">
         <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
-          <div class="topbar__title">✍️ Eigene Karten</div>
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">${esc(t("profile.editorTitle"))}</div>
           <div class="topbar__counter">${vm.cards.length}</div>
         </div>
 
@@ -1059,33 +1058,33 @@
 
         <form class="editor" data-action="save-card">
           <label class="ed-field">
-            <span class="ed-label">Frage (Deutsch)</span>
-            <input class="ed-input" id="card-de" type="text" autocomplete="off" placeholder="z. B. Wo ist der Strand?" />
+            <span class="ed-label">${esc(t("profile.edQuestionDe"))}</span>
+            <input class="ed-input" id="card-de" type="text" autocomplete="off" placeholder="${esc(t("profile.edQuestionDePlaceholder"))}" />
           </label>
           <label class="ed-field">
-            <span class="ed-label">Antwort (Spanisch)</span>
+            <span class="ed-label">${esc(t("profile.edAnswerEs"))}</span>
             <input class="ed-input" id="card-es" type="text" autocomplete="off" autocapitalize="off"
-                   placeholder="z. B. ¿Dónde está la playa?" />
-            <span class="ed-hint">Mehrere gültige Antworten mit „ / “ trennen.</span>
+                   placeholder="${esc(t("profile.edAnswerEsPlaceholder"))}" />
+            <span class="ed-hint">${esc(t("profile.edAnswerHint"))}</span>
           </label>
           <label class="ed-field">
-            <span class="ed-label">Tipp / Aussprache <em>(optional)</em></span>
-            <input class="ed-input" id="card-tip" type="text" autocomplete="off" placeholder="z. B. DON-de es-TA la PLA-ya" />
+            <span class="ed-label">${esc(t("profile.edTip"))} <em>${esc(t("profile.edTipOptional"))}</em></span>
+            <input class="ed-input" id="card-tip" type="text" autocomplete="off" placeholder="${esc(t("profile.edTipPlaceholder"))}" />
           </label>
           <div class="ed-row">
             <label class="ed-field">
-              <span class="ed-label">Bereich</span>
+              <span class="ed-label">${esc(t("profile.edArea"))}</span>
               <select class="ed-input" id="card-cat">${catOpts}</select>
             </label>
             <label class="ed-field">
-              <span class="ed-label">Stufe</span>
+              <span class="ed-label">${esc(t("profile.edLevel"))}</span>
               <select class="ed-input" id="card-lvl">${lvlOpts}</select>
             </label>
           </div>
-          <button class="cta" type="submit">➕ Karte hinzufügen</button>
+          <button class="cta" type="submit">${esc(t("profile.edAddCard"))}</button>
         </form>
 
-        <h3 class="ed-h">Deine Karten</h3>
+        <h3 class="ed-h">${esc(t("profile.edYourCards"))}</h3>
         <div class="ed-list">${list}</div>
       </section>`;
   }
@@ -1099,7 +1098,7 @@
           <div class="ed-item__es" lang="es">${esc(c.es)}</div>
           <div class="ed-item__meta">${esc(c.catIcon)} ${esc(c.catLabel)}${c.lvlShort ? ` · ${esc(c.lvlShort)}` : ""}${tip}</div>
         </div>
-        <button class="ed-del" type="button" data-action="delete-card" data-id="${esc(c.id)}" aria-label="Löschen" title="Löschen">🗑️</button>
+        <button class="ed-del" type="button" data-action="delete-card" data-id="${esc(c.id)}" aria-label="${esc(t("common.delete"))}" title="${esc(t("common.deleteTitle"))}">🗑️</button>
       </div>`;
   }
 
@@ -1125,13 +1124,13 @@
       const rows = g.cards.map((c) => `
         <div class="sz-row">
           <button class="sz-row__main" type="button" data-action="sz-show" data-id="${esc(c.id)}"
-                  title="Groß anzeigen">
+                  title="${esc(t("discover.szShowTitle"))}">
             <span class="sz-row__de">${esc(c.de)}</span>
             <span class="sz-row__es" lang="es">${esc(c.es)}</span>
             ${c.tip ? `<span class="sz-row__tip">🗣️ ${esc(c.tip)}</span>` : ""}
           </button>
           ${vm.speakable
-            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="Anhören" title="Anhören">🔊</button>`
+            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="${esc(t("discover.szListen"))}" title="${esc(t("discover.szListen"))}">🔊</button>`
             : ""}
         </div>`).join("");
       return `
@@ -1142,23 +1141,23 @@
     }).join("");
     // Großanzeige: Satz bildschirmfüllend – zum Herzeigen, wenn Reden nicht reicht.
     const show = vm.show ? `
-      <div class="sz-show" data-action="sz-close" role="dialog" aria-modal="true" aria-label="Großanzeige">
+      <div class="sz-show" data-action="sz-close" role="dialog" aria-modal="true" aria-label="${esc(t("discover.szShowLabel"))}">
         <div class="sz-show__inner">
           <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
           <p class="sz-show__de">${esc(vm.show.de)}</p>
           <div class="sz-show__actions">
             ${vm.speakable
-              ? `<button class="cta" type="button" data-action="speak-card" data-id="${esc(vm.show.id)}">🔊 Anhören</button>`
+              ? `<button class="cta" type="button" data-action="speak-card" data-id="${esc(vm.show.id)}">${esc(t("discover.szListenBig"))}</button>`
               : ""}
-            <button class="ghostbtn" type="button" data-action="sz-close">Schließen</button>
+            <button class="ghostbtn" type="button" data-action="sz-close">${esc(t("common.close"))}</button>
           </div>
         </div>
       </div>` : "";
     return `
       <section class="screen">
         ${hmTopbar("🆘 Supervivencia", "home")}
-        <p class="hm-intro">Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.</p>
-        <nav class="sz-nav" aria-label="Bereiche">${nav}</nav>
+        <p class="hm-intro">${esc(t("discover.szIntro"))}</p>
+        <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
         ${groups}
         ${show}
       </section>`;
@@ -1175,7 +1174,7 @@
       return `
         <section class="screen">
           ${hmTopbar("💵 Precios al oído", "home")}
-          <p class="stat-empty">Dein Gerät kann keine Sprachausgabe – ohne sie gibt es nichts zu hören.</p>
+          <p class="stat-empty">${esc(t("discover.prcNoSpeech"))}</p>
         </section>`;
     }
     const currencies = vm.currencies.map((c) => `
@@ -1193,25 +1192,25 @@
         <span class="prc-lvl__hint">${esc(l.hint)}</span>
       </button>`).join("");
     const sample = vm.sample
-      ? `<p class="prc-sample">${esc(vm.sample.flag)} ${esc(vm.sample.name)}: Beträge bis <b>${esc(vm.sample.max)}</b> ${esc(vm.sample.many)}.</p>`
+      ? `<p class="prc-sample">${t("discover.prcSample", { flag: esc(vm.sample.flag), name: esc(vm.sample.name), max: esc(vm.sample.max), many: esc(vm.sample.many) })}</p>`
       : "";
     return `
       <section class="screen">
         ${hmTopbar("💵 Precios al oído", "home")}
-        <p class="hm-intro">Hör einen Preis auf Spanisch und tippe die Zahl. Wähle ein Land und wie groß die Beträge werden sollen – von Kleingeld bis zu echten kolumbianischen Millionenpreisen.</p>
-        <h3 class="prc-head">Land &amp; Währung</h3>
+        <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
+        <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
         <div class="prc-curs">${currencies}</div>
-        <h3 class="prc-head">Schwierigkeit</h3>
+        <h3 class="prc-head">${esc(t("discover.prcDifficulty"))}</h3>
         <div class="prc-lvls">${levels}</div>
         ${sample}
-        <button class="cta" data-action="start-precios">Runde starten</button>
+        <button class="cta" data-action="start-precios">${esc(t("discover.prcStart"))}</button>
       </section>`;
   }
 
   function renderPrecios(vm) {
     const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
     const replay = vm.speakable
-      ? `<button class="listen-replay ghostbtn" type="button" data-action="precios-speak">🔊 Nochmal anhören</button>`
+      ? `<button class="listen-replay ghostbtn" type="button" data-action="precios-speak">${esc(t("discover.prcReplay"))}</button>`
       : "";
     const curTag = `<span class="prc-tag">${esc(vm.flag)} ${esc(vm.currencyCode)}</span>`;
     const body = !vm.result
@@ -1219,26 +1218,26 @@
         <div class="card-static card-listen">
           <span class="listen-ear" aria-hidden="true">💵</span>
           ${replay}
-          <span class="face__hint">Welchen Betrag hörst du? Tippe die Zahl (ohne Punkte).</span>
+          <span class="face__hint">${esc(t("discover.prcWhich"))}</span>
         </div>
         <form class="typer" data-action="submit-precios" id="precios-form">
           <input class="typer__input" id="precios-answer" type="text" inputmode="numeric"
-                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="z. B. 45000" />
-          <button class="typer__btn" type="submit">Prüfen</button>
+                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(t("discover.prcPlaceholder"))}" />
+          <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`
       : `
         <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
           <div class="face__word" lang="es">${esc(vm.answerEs)}</div>
           <div class="listen-de">= ${esc(vm.answerDigits)} ${esc(vm.currencyCode)}</div>
           ${vm.result.correct
-            ? `<div class="verdict verdict--ok">✓ Richtig gehört!</div>`
-            : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(vm.result.input || "—")}“</div>`}
+            ? `<div class="verdict verdict--ok">${esc(t("common.correctHeard"))}</div>`
+            : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: vm.result.input || "—" }))}</div>`}
         </div>
-        <button class="cta" data-action="precios-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`;
+        <button class="cta" data-action="precios-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
     return `
       <section class="screen study">
         ${hmTopbar("💵 Precios al oído", "precios-setup")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.prcProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="prc-status"><div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>${curTag}</div>
         ${body}
       </section>`;
@@ -1247,20 +1246,20 @@
   function renderPreciosDone(vm) {
     const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
     const verdict = vm.perfect
-      ? (vm.hard ? "¡Perfecto! Auch die großen Beträge sitzen. 🏆" : "¡Perfecto! Jeden Preis erkannt. 🏆")
-      : rate >= 60 ? "¡Bien! Dein Ohr für Zahlen wird besser. 👏"
-      : "Sigue practicando – Zahlen hören ist Übungssache. 💪";
+      ? (vm.hard ? t("discover.prcPerfectHard") : t("discover.prcPerfect"))
+      : rate >= 60 ? t("discover.prcGood")
+      : t("discover.prcKeep");
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "💵"}</div>
           <h2>Precios al oído</h2>
           <p class="prc-done-tag">${esc(vm.flag)} ${esc(vm.currencyName)} · ${esc(vm.levelLabel)}</p>
-          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig gehört</p>
+          <p class="quiz-result">${t("discover.prcResult", { correct: vm.correct, total: vm.total })}</p>
           <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="precios-again">Nochmal hören</button>
-          <button class="ghostbtn" data-action="precios-setup">Anderes Land / Stufe</button>
-          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+          <button class="cta" data-action="precios-again">${esc(t("discover.prcAgain"))}</button>
+          <button class="ghostbtn" data-action="precios-setup">${esc(t("discover.prcOtherCountry"))}</button>
+          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
         </div>
       </section>`;
   }
@@ -1280,7 +1279,7 @@
 
     const selector = `
       <label class="cinfo-pick">
-        <span class="cinfo-pick__cap">Land wählen</span>
+        <span class="cinfo-pick__cap">${esc(t("discover.infoPickCountry"))}</span>
         <select class="cinfo-pick__sel" id="country-select" data-action="select-country">${options}</select>
       </label>`;
 
@@ -1289,7 +1288,7 @@
         <section class="screen">
           ${infoTopbar()}
           ${selector}
-          <p class="stat-empty">Kein Land verfügbar.</p>
+          <p class="stat-empty">${esc(t("discover.infoNoCountry"))}</p>
         </section>`;
     }
 
@@ -1313,7 +1312,7 @@
         : "";
       const long = d.long ? `<p class="cinfo-dish__long">${esc(d.long)}</p>` : "";
       const order = d.order
-        ? `<div class="cinfo-dish__order"><span class="cinfo-dish__order-cap">So bestellst du:</span> <span class="cinfo-dish__order-es">„${esc(d.order)}“</span></div>`
+        ? `<div class="cinfo-dish__order"><span class="cinfo-dish__order-cap">${esc(t("discover.infoOrder"))}</span> <span class="cinfo-dish__order-es">„${esc(d.order)}“</span></div>`
         : "";
       return `
         <details class="cinfo-dish">
@@ -1328,9 +1327,9 @@
             ${img}
             ${long}
             <div class="cinfo-facts">
-              ${factRow("Zutaten", d.ingredients)}
-              ${factRow("Herkunft", d.origin)}
-              ${factRow("Wann", d.occasions)}
+              ${factRow(t("discover.infoIngredients"), d.ingredients)}
+              ${factRow(t("discover.infoOrigin"), d.origin)}
+              ${factRow(t("discover.infoWhen"), d.occasions)}
             </div>
             ${order}
           </div>
@@ -1353,19 +1352,19 @@
           <div class="cinfo-head__main">
             <h2 class="cinfo-head__name">${esc(c.name)}</h2>
             <p class="cinfo-head__tag">${esc(c.tagline)}</p>
-            <p class="cinfo-head__cap">🏛️ Hauptstadt: ${esc(c.capital)}</p>
+            <p class="cinfo-head__cap">${t("discover.infoCapital", { capital: esc(c.capital) })}</p>
           </div>
         </div>
 
-        ${sect("🌎", "Über das Land", para(c.about))}
-        ${sect("📜", "Geschichte", para(c.history))}
-        ${sect("🗣️", "Sprache", para(c.language) + wordsBlock)}
+        ${sect("🌎", t("discover.infoAbout"), para(c.about))}
+        ${sect("📜", t("discover.infoHistory"), para(c.history))}
+        ${sect("🗣️", t("discover.infoLanguage"), para(c.language) + wordsBlock)}
 
         <div class="cinfo-sect cinfo-sect--food">
-          <h3 class="cinfo-sect__h">🍽️ Essen &amp; Trinken</h3>
-          <h4 class="cinfo-sub">Lokale Speisen</h4>
+          <h3 class="cinfo-sect__h">${t("discover.infoFood")}</h3>
+          <h4 class="cinfo-sub">${esc(t("discover.infoLocalDishes"))}</h4>
           <div class="cinfo-dishes">${foods || `<p class="cinfo-text">—</p>`}</div>
-          <h4 class="cinfo-sub">Getränke</h4>
+          <h4 class="cinfo-sub">${esc(t("discover.infoDrinks"))}</h4>
           <div class="cinfo-dishes">${drinks || `<p class="cinfo-text">—</p>`}</div>
         </div>
 
@@ -1376,7 +1375,7 @@
   function infoTopbar() {
     return `
       <div class="topbar">
-        <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+        <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
         <div class="topbar__title">🌎 Países y culturas</div>
         <span></span>
       </div>`;
@@ -1398,7 +1397,7 @@
 
     const selector = `
       <label class="cinfo-pick">
-        <span class="cinfo-pick__cap">Land wählen</span>
+        <span class="cinfo-pick__cap">${esc(t("discover.infoPickCountry"))}</span>
         <select class="cinfo-pick__sel" id="country-select" data-action="select-country">${options}</select>
       </label>`;
 
@@ -1413,7 +1412,7 @@
       const dos = liList(t.dos, "knigge-do", "✅");
       const donts = liList(t.donts, "knigge-dont", "🚫");
       const accent = t.accent
-        ? `<div class="knigge-accent">💡 <strong>In ${esc(countryName)}:</strong> ${esc(t.accent)}</div>`
+        ? `<div class="knigge-accent">💡 <strong>${esc(window.t("discover.kniggeAccentIn", { country: countryName }))}</strong> ${esc(t.accent)}</div>`
         : "";
       return `
         <details class="knigge-topic">
@@ -1437,7 +1436,7 @@
       <section class="screen">
         ${kniggeTopbar()}
         ${selector}
-        <p class="pageintro">Allgemeine DOs &amp; Don'ts plus Besonderheiten${countryName ? ` für ${esc(countryName)}` : ""}.</p>
+        <p class="pageintro">${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.</p>
         ${topics}
       </section>`;
   }
@@ -1445,7 +1444,7 @@
   function kniggeTopbar() {
     return `
       <div class="topbar">
-        <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+        <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
         <div class="topbar__title">🧭 Etiqueta de viaje</div>
         <span></span>
       </div>`;
@@ -1526,7 +1525,7 @@
         </div>`).join("");
       const useful = r.usefulPhrases && r.usefulPhrases.length
         ? `<div class="hm-phrases">
-             <span class="hm-phrases__cap">Nützliche Sätze</span>
+             <span class="hm-phrases__cap">${esc(t("discover.rgUseful"))}</span>
              <ul class="hm-phrases__list">${r.usefulPhrases.map((p) => `<li lang="es">${esc(p)}</li>`).join("")}</ul>
            </div>`
         : "";
@@ -1560,29 +1559,29 @@
     return `
       <section class="screen">
         <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="Zurück">‹</button>
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">🤝 Regatear</div>
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
 
-        <h2 class="rg-head">📖 So verhandelst du gut</h2>
+        <h2 class="rg-head">${esc(t("discover.rgTactics"))}</h2>
         ${tips}
 
-        <h2 class="rg-head">🗣️ Wörter rund ums Feilschen</h2>
+        <h2 class="rg-head">${esc(t("discover.rgWords"))}</h2>
         <ul class="rg-glosslist">${glossary}</ul>
 
-        <h2 class="rg-head">💬 Wichtige Sätze</h2>
+        <h2 class="rg-head">${esc(t("discover.rgPhrases"))}</h2>
         ${phrases}
 
-        <h2 class="rg-head">⚖️ Mengen & Einheiten</h2>
+        <h2 class="rg-head">${esc(t("discover.rgUnits"))}</h2>
         <ul class="rg-units">${units}</ul>
 
-        <h2 class="rg-head">🌎 Von Land zu Land</h2>
+        <h2 class="rg-head">${esc(t("discover.rgRegions"))}</h2>
         <ul class="rg-regions">${regional}</ul>
 
-        <h2 class="rg-head">🎭 Rollenspiele zum Üben</h2>
-        <p class="hm-intro">Verteilt die Rollen A und B, klappt eine Szene auf und spielt den Dialog laut durch.</p>
+        <h2 class="rg-head">${esc(t("discover.rgRoleplays"))}</h2>
+        <p class="hm-intro">${esc(t("discover.rgRoleplayHint"))}</p>
         ${roleplays}
       </section>`;
   }
@@ -1592,7 +1591,7 @@
   function hmTopbar(title, back) {
     return `
       <div class="topbar">
-        <button class="iconbtn" data-action="${back}" aria-label="Zurück">‹</button>
+        <button class="iconbtn" data-action="${back}" aria-label="${esc(t("common.backShort"))}">‹</button>
         <div class="topbar__title">${title}</div>
         <span></span>
       </div>`;
@@ -1603,19 +1602,19 @@
     return `
       <section class="screen">
         ${hmTopbar("🛏️ Modo hostal", "home")}
-        <p class="hm-intro">Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.</p>
+        <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
         <div class="hm-menu">
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
             <span class="hm-card__icon" aria-hidden="true">⚔️</span>
-            <span class="hm-card__title">Battle</span>
-            <span class="hm-card__desc">Tretet gegeneinander an und übt echte Reisesätze laut. Der Mitspieler bewertet.</span>
-            <span class="hm-card__meta">${vm.battleCount} Aufgaben</span>
+            <span class="hm-card__title">${esc(t("discover.battleTitle"))}</span>
+            <span class="hm-card__desc">${esc(t("discover.battleDesc"))}</span>
+            <span class="hm-card__meta">${esc(t("discover.battleTasks", { n: vm.battleCount }))}</span>
           </button>
           <button class="hm-card hm-card--roleplay" data-action="open-roleplay-setup">
             <span class="hm-card__icon" aria-hidden="true">🎭</span>
-            <span class="hm-card__title">Rollenspiele</span>
-            <span class="hm-card__desc">Übernehmt Rollen und spielt echte Situationen als Dialog durch.</span>
-            <span class="hm-card__meta">${vm.roleplayCount} Szenen</span>
+            <span class="hm-card__title">${esc(t("discover.roleplaysTitle"))}</span>
+            <span class="hm-card__desc">${esc(t("discover.roleplaysDesc"))}</span>
+            <span class="hm-card__meta">${esc(t("discover.roleplaysScenes", { n: vm.roleplayCount }))}</span>
           </button>
         </div>
       </section>`;
@@ -1625,11 +1624,11 @@
   function renderBattleSetup(vm) {
     // Badge zeigt die tatsächliche Rundenzahl bei der gewählten Länge – ehrlicher
     // als die reine Aufgabenzahl (kleine Szenen ergeben weniger Runden).
-    const roundsBadge = (n) => `<span class="hm-scene__count">${n} Runden</span>`;
+    const roundsBadge = (n) => `<span class="hm-scene__count">${esc(t("discover.battleRounds", { n }))}</span>`;
     const scenes = [
       `<button class="hm-scene" data-action="start-battle" data-scene="all">
          <span class="hm-scene__icon" aria-hidden="true">🎲</span>
-         <span class="hm-scene__label">Alle Szenen</span>
+         <span class="hm-scene__label">${esc(t("discover.battleAllScenes"))}</span>
          ${roundsBadge(vm.totalRounds)}
        </button>`,
       ...vm.scenes.map((s) =>
@@ -1643,36 +1642,36 @@
       `<button class="seg seg--len ${l.selected ? "is-active" : ""}" data-action="set-battle-length" data-len="${l.value}"
                aria-pressed="${l.selected}">
          <span class="seg__name">${esc(l.label)}</span>
-         <span class="seg__sub">${l.value} Runden</span>
+         <span class="seg__sub">${esc(t("discover.battleRounds", { n: l.value }))}</span>
        </button>`).join("");
     return `
       <section class="screen">
         ${hmTopbar("⚔️ Battle", "open-hostel")}
-        <p class="hm-intro">Ein Sprach-Duell zu zweit: Aufgabe auf Deutsch lesen, laut auf Spanisch antworten – der Mitspieler bewertet. Wer mehr Punkte sammelt, gewinnt.</p>
+        <p class="hm-intro">${esc(t("discover.battleSetupIntro"))}</p>
         <details class="hm-how" open>
-          <summary class="hm-how__sum">So läuft ein Battle</summary>
+          <summary class="hm-how__sum">${esc(t("discover.battleHowSum"))}</summary>
           <ol class="hm-steps">
-            <li><b>Zu zweit:</b> Ihr seid Spieler A und B – ein Handy reicht, ihr reicht es reihum weiter.</li>
-            <li><b>Antworten:</b> Die App zeigt eine Aufgabe auf Deutsch. Wer dran ist, sagt sie laut auf Spanisch.</li>
-            <li><b>Bewerten:</b> „Lösung anzeigen“ – der andere vergleicht und tippt ✅ Richtig&nbsp;(2), 😬 Fast&nbsp;(1) oder ❌ Falsch&nbsp;(0).</li>
-            <li><b>Abwechseln:</b> A, B, A, B … bis alle Runden gespielt sind. Am Ende gewinnt, wer mehr Punkte hat – plus eine Real-Life-Challenge als Bonus.</li>
+            <li>${t("discover.battleStep1")}</li>
+            <li>${t("discover.battleStep2")}</li>
+            <li>${t("discover.battleStep3")}</li>
+            <li>${t("discover.battleStep4")}</li>
           </ol>
         </details>
         <div class="hm-length">
-          <span class="hm-length__cap">Länge</span>
-          <div class="segmented segmented--len" role="group" aria-label="Battle-Länge">${lengths}</div>
+          <span class="hm-length__cap">${esc(t("discover.battleLength"))}</span>
+          <div class="segmented segmented--len" role="group" aria-label="${esc(t("discover.battleLengthAria"))}">${lengths}</div>
         </div>
         <div class="hm-names">
-          <span class="hm-length__cap">Namen <span class="hm-names__opt">(optional)</span></span>
+          <span class="hm-length__cap">${esc(t("discover.battleNames"))} <span class="hm-names__opt">${esc(t("discover.battleNamesOpt"))}</span></span>
           <div class="hm-names__row">
             <input id="pname-a" class="hm-name" type="text" inputmode="text" autocomplete="off"
-                   maxlength="14" placeholder="Spieler A" aria-label="Name Spieler A" value="${esc(vm.names.A)}">
-            <span class="hm-names__vs" aria-hidden="true">vs</span>
+                   maxlength="14" placeholder="${esc(t("discover.battlePlayerA"))}" aria-label="${esc(t("discover.battleNameA"))}" value="${esc(vm.names.A)}">
+            <span class="hm-names__vs" aria-hidden="true">${esc(t("discover.battleVs"))}</span>
             <input id="pname-b" class="hm-name" type="text" inputmode="text" autocomplete="off"
-                   maxlength="14" placeholder="Spieler B" aria-label="Name Spieler B" value="${esc(vm.names.B)}">
+                   maxlength="14" placeholder="${esc(t("discover.battlePlayerB"))}" aria-label="${esc(t("discover.battleNameB"))}" value="${esc(vm.names.B)}">
           </div>
         </div>
-        <div class="hm-scenes"><span class="hm-length__cap">Szene wählen &amp; starten</span>${scenes}</div>
+        <div class="hm-scenes"><span class="hm-length__cap">${t("discover.battlePickScene")}</span>${scenes}</div>
       </section>`;
   }
 
@@ -1681,32 +1680,32 @@
     const solution = vm.revealed
       ? `
         <div class="hm-solution" role="status" aria-live="polite">
-          <span class="hm-solution__cap">Musterlösung</span>
+          <span class="hm-solution__cap">${esc(t("discover.battleSolution"))}</span>
           <div class="hm-solution__es" lang="es">${esc(vm.answerEs)}</div>
           ${vm.alsoOk && vm.alsoOk.length
-            ? `<div class="hm-solution__also">auch ok: ${vm.alsoOk.map((a) => `<span lang="es">${esc(a)}</span>`).join(", ")}</div>`
+            ? `<div class="hm-solution__also">${esc(t("discover.battleAlsoOk"))} ${vm.alsoOk.map((a) => `<span lang="es">${esc(a)}</span>`).join(", ")}</div>`
             : ""}
         </div>
         <div class="hm-verdict">
-          <p class="hm-verdict__cap"><b>${esc(vm.raterName)}</b> bewertet die Antwort:</p>
+          <p class="hm-verdict__cap">${t("discover.battleRates", { name: esc(vm.raterName) })}</p>
           ${vm.alsoOk && vm.alsoOk.length
-            ? `<p class="hm-verdict__fair">Diese Varianten zählen auch als richtig.</p>`
+            ? `<p class="hm-verdict__fair">${esc(t("discover.battleFair"))}</p>`
             : ""}
-          <div class="ratebar" role="group" aria-label="Antwort bewerten">
+          <div class="ratebar" role="group" aria-label="${esc(t("discover.battleRateAria"))}">
             <button class="feel feel--again" data-action="battle-score" data-points="0">
-              <span class="feel__emoji" aria-hidden="true">❌</span><span class="feel__txt">Falsch</span>
+              <span class="feel__emoji" aria-hidden="true">❌</span><span class="feel__txt">${esc(t("discover.battleWrong"))}</span>
             </button>
             <button class="feel feel--good" data-action="battle-score" data-points="1">
-              <span class="feel__emoji" aria-hidden="true">😬</span><span class="feel__txt">Fast</span>
+              <span class="feel__emoji" aria-hidden="true">😬</span><span class="feel__txt">${esc(t("discover.battleAlmost"))}</span>
             </button>
             <button class="feel feel--easy" data-action="battle-score" data-points="2">
-              <span class="feel__emoji" aria-hidden="true">✅</span><span class="feel__txt">Richtig</span>
+              <span class="feel__emoji" aria-hidden="true">✅</span><span class="feel__txt">${esc(t("discover.battleCorrect"))}</span>
             </button>
           </div>
         </div>`
       : `
         ${vm.hint ? `<div class="hm-hint">💡 ${esc(vm.hint)}</div>` : ""}
-        <button class="cta" data-action="battle-reveal">Lösung anzeigen</button>`;
+        <button class="cta" data-action="battle-reveal">${esc(t("discover.battleReveal"))}</button>`;
 
     const meta = `
       <span class="hm-prompt__tag">${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}</span>
@@ -1714,13 +1713,13 @@
 
     return `
       <section class="screen study">
-        ${hmTopbar(vm.suddenDeath ? "⚡ Stichrunde" : `${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
+        ${hmTopbar(vm.suddenDeath ? esc(t("discover.battleSudden")) : `${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
         <div class="hm-score">
           <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">${esc(vm.chipA)} <b>${vm.scores.A}</b></span>
-          <span class="hm-score__round">${vm.suddenDeath ? "⚡ " : ""}Runde ${vm.round}/${vm.totalRounds}</span>
+          <span class="hm-score__round">${esc(t("discover.battleScoreRound", { sudden: vm.suddenDeath, round: vm.round, total: vm.totalRounds }))}</span>
           <span class="hm-score__p ${vm.current === "B" ? "is-turn" : ""}">${esc(vm.chipB)} <b>${vm.scores.B}</b></span>
         </div>
-        <p class="hm-turn" aria-live="polite"><b>${esc(vm.currentName)}</b> ist dran – laut auf Spanisch!</p>
+        <p class="hm-turn" aria-live="polite">${t("discover.battleTurn", { name: esc(vm.currentName) })}</p>
         <div class="hm-prompt"><div class="hm-prompt__meta">${meta}</div>${esc(vm.promptDe)}</div>
         <div class="controls">${solution}</div>
       </section>`;
@@ -1729,28 +1728,28 @@
   // Battle: Auswertung.
   function renderBattleDone(vm) {
     const verdict = vm.winner === "tie"
-      ? "Unentschieden! 🤝"
-      : `${esc(vm.winnerName)} gewinnt! 🏆`;
+      ? t("discover.battleTie")
+      : t("discover.battleWins", { name: esc(vm.winnerName) });
     // Bei Gleichstand: Stichrunde anbieten (zwei Extra-Runden, A & B).
     const tieBreak = vm.winner === "tie"
-      ? `<button class="cta cta--tiebreak" data-action="battle-sudden-death">⚡ ${vm.suddenDeath ? "Noch eine Stichrunde" : "Stichrunde spielen"}</button>`
+      ? `<button class="cta cta--tiebreak" data-action="battle-sudden-death">${vm.suddenDeath ? esc(t("discover.battleAnotherSudden")) : esc(t("discover.battlePlaySudden"))}</button>`
       : "";
     const challenge = vm.challenge
       ? `
         <div class="hm-challenge">
-          <span class="hm-challenge__cap">🎯 Real-Life Challenge</span>
+          <span class="hm-challenge__cap">${esc(t("discover.battleChallengeCap"))}</span>
           <p class="hm-challenge__text">${esc(vm.challenge.textDe)}</p>
           <p class="hm-challenge__es" lang="es">${esc(vm.challenge.phraseEs)}</p>
           ${vm.challengeDone
-            ? `<span class="hm-challenge__done">✓ Geschafft – ¡bien hecho!</span>`
-            : `<button class="hm-challenge__btn" data-action="challenge-done" data-id="${esc(vm.challenge.id)}">Challenge gemeistert ✓</button>`}
+            ? `<span class="hm-challenge__done">${esc(t("discover.battleChallengeDone"))}</span>`
+            : `<button class="hm-challenge__btn" data-action="challenge-done" data-id="${esc(vm.challenge.id)}">${esc(t("discover.battleChallengeBtn"))}</button>`}
         </div>`
       : "";
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">🎉</div>
-          <h2>Ihr habt ${esc(vm.sceneLabel)} überlebt</h2>
+          <h2>${t("discover.battleSurvived", { scene: esc(vm.sceneLabel) })}</h2>
           <p class="hm-result">
             <span class="hm-result__p ${vm.winner === "A" ? "is-win" : ""}">${esc(vm.nameA)}<br><b>${vm.scores.A}</b></span>
             <span class="hm-result__vs">:</span>
@@ -1759,8 +1758,8 @@
           <p class="hm-winner">${verdict}</p>
           ${tieBreak}
           ${challenge}
-          <button class="cta" data-action="battle-again">Nochmal spielen</button>
-          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+          <button class="cta" data-action="battle-again">${esc(t("discover.battleAgain"))}</button>
+          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
         </div>
       </section>`;
   }
@@ -1779,8 +1778,8 @@
       .join("");
     return `
       <section class="screen">
-        ${hmTopbar("🎭 Rollenspiele", "open-hostel")}
-        <p class="hm-intro">Wählt eine Szene, verteilt die Rollen und spielt den Dialog laut durch.</p>
+        ${hmTopbar(t("discover.roleplaysHead"), "open-hostel")}
+        <p class="hm-intro">${esc(t("discover.roleplaySetupIntro"))}</p>
         <div class="hm-rps">${list}</div>
       </section>`;
   }
@@ -1790,18 +1789,18 @@
     if (!vm) {
       return `
         <section class="screen">
-          ${hmTopbar("🎭 Rollenspiel", "open-roleplay-setup")}
-          <p class="stat-empty">Szene nicht gefunden.</p>
+          ${hmTopbar(t("discover.roleplayHead"), "open-roleplay-setup")}
+          <p class="stat-empty">${esc(t("discover.roleplayNotFound"))}</p>
         </section>`;
     }
     const roles = `
       <div class="hm-roles">
         <div class="hm-role hm-role--a">
-          <span class="hm-role__tag">Spieler A · ${esc(vm.roleA.name)}</span>
+          <span class="hm-role__tag">${esc(t("discover.roleplayPlayerA", { name: vm.roleA.name }))}</span>
           <span class="hm-role__goal">${esc(vm.roleA.goal)}</span>
         </div>
         <div class="hm-role hm-role--b">
-          <span class="hm-role__tag">Spieler B · ${esc(vm.roleB.name)}</span>
+          <span class="hm-role__tag">${esc(t("discover.roleplayPlayerB", { name: vm.roleB.name }))}</span>
           <span class="hm-role__goal">${esc(vm.roleB.goal)}</span>
         </div>
       </div>`;
@@ -1819,7 +1818,7 @@
 
     const phrases = vm.usefulPhrases && vm.usefulPhrases.length
       ? `<div class="hm-phrases">
-           <span class="hm-phrases__cap">Nützliche Sätze</span>
+           <span class="hm-phrases__cap">${esc(t("discover.rgUseful"))}</span>
            <ul class="hm-phrases__list">
              ${vm.usefulPhrases.map((p) => `<li lang="es">${esc(p)}</li>`).join("")}
            </ul>
@@ -1828,16 +1827,16 @@
 
     return `
       <section class="screen">
-        ${hmTopbar("🎭 Rollenspiel", "open-roleplay-setup")}
+        ${hmTopbar(t("discover.roleplayHead"), "open-roleplay-setup")}
         <div class="hm-rphead">
           <h2 class="hm-rphead__title">${esc(vm.title)}${vm.lvlShort ? ` <span class="hm-rphead__lvl">${esc(vm.lvlShort)}</span>` : ""}</h2>
           <p class="hm-rphead__sit">${esc(vm.situationDe)}</p>
         </div>
         ${roles}
-        <button class="ghostbtn hm-swap" data-action="roleplay-swap">🔄 Rollen tauschen</button>
+        <button class="ghostbtn hm-swap" data-action="roleplay-swap">${esc(t("discover.roleplaySwap"))}</button>
         <div class="hm-dialogue">${lines}</div>
         ${phrases}
-        <button class="ghostbtn" data-action="open-roleplay-setup">Andere Szene wählen</button>
+        <button class="ghostbtn" data-action="open-roleplay-setup">${esc(t("discover.roleplayOther"))}</button>
       </section>`;
   }
 
@@ -1855,7 +1854,7 @@
     return `
       <section class="screen">
         ${hmTopbar("🧩 Definiciones", "home")}
-        <p class="hm-intro">Lies eine spanische Definition und wähle den passenden Begriff. So lernst du Wörter über ihre Bedeutung – ganz ohne Übersetzung.</p>
+        <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
         <div class="hm-scenes">${list}</div>
       </section>`;
   }
@@ -1885,20 +1884,20 @@
     const feedback = vm.answered
       ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
            ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
-             : `<span class="quiz-feedback__head">No exactamente.</span>
-                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b> · ${esc(vm.solutionDe)}</span>`}
+             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
+             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
+                <span class="quiz-feedback__sol">${t("discover.quizSolution", { es: esc(vm.solutionEs), de: esc(vm.solutionDe) })}</span>`}
          </div>
-         <button class="cta" data-action="quiz-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+         <button class="cta" data-action="quiz-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
       : "";
 
     return `
       <section class="screen study">
         ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "quiz-again")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Quiz-Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">Frage ${vm.position + 1}/${vm.total}</div>
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.quizProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.quizQuestion", { pos: vm.position + 1, total: vm.total }))}</div>
         <div class="quiz-def">
-          <span class="quiz-def__cap">Definición</span>
+          <span class="quiz-def__cap">${esc(t("discover.quizDefinicion"))}</span>
           <p class="quiz-def__text" lang="es">${esc(vm.definition)}</p>
         </div>
         <div class="quiz-opts">${options}</div>
@@ -1909,18 +1908,18 @@
   // Auswertung.
   function renderQuizDone(vm) {
     const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect ? "¡Perfecto! Alles richtig. 🏆"
-      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
-      : "Sigue practicando – Übung macht den Meister. 💪";
+    const verdict = vm.perfect ? t("discover.quizPerfect")
+      : rate >= 60 ? t("discover.quizGood")
+      : t("discover.quizKeep");
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "🧩"}</div>
-          <h2>${esc(vm.setLabel)} geschafft</h2>
-          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <h2>${t("discover.quizDoneTitle", { label: esc(vm.setLabel) })}</h2>
+          <p class="quiz-result">${t("discover.quizResult", { correct: vm.correct, total: vm.total })}</p>
           <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="quiz-again">Nochmal üben</button>
-          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+          <button class="cta" data-action="quiz-again">${esc(t("discover.quizAgain"))}</button>
+          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
         </div>
       </section>`;
   }
@@ -1939,7 +1938,7 @@
     return `
       <section class="screen">
         ${hmTopbar("🧱 Frases flexibles", "home")}
-        <p class="hm-intro">Wähle eine Reise-Situation und fülle die Lücke im Satzrahmen mit dem passenden Baustein – so baust du Sätze selbst, statt nur zu übersetzen.</p>
+        <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
         <div class="hm-scenes">
           ${tile(vm.mixed, true)}
           ${list}
@@ -1974,20 +1973,20 @@
     const feedback = vm.answered
       ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
            ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
-             : `<span class="quiz-feedback__head">No exactamente.</span>
-                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b> · ${esc(vm.solutionDe)}</span>`}
+             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
+             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
+                <span class="quiz-feedback__sol">${t("discover.quizSolution", { es: esc(vm.solutionEs), de: esc(vm.solutionDe) })}</span>`}
          </div>
-         <button class="cta" data-action="frases-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+         <button class="cta" data-action="frases-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
       : "";
 
     return `
       <section class="screen study">
         ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "open-frases")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">Satz ${vm.position + 1}/${vm.total}</div>
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.frasesSentence", { pos: vm.position + 1, total: vm.total }))}</div>
         <div class="quiz-def">
-          <span class="quiz-def__cap">Bilde den Satz</span>
+          <span class="quiz-def__cap">${esc(t("discover.frasesBuild"))}</span>
           <p class="frases-target">${esc(vm.targetDe)}</p>
           <p class="quiz-def__text frases-frame" lang="es">${frameHtml}</p>
         </div>
@@ -1998,19 +1997,19 @@
 
   function renderFrasesDone(vm) {
     const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect ? "¡Perfecto! Alle Sätze gebaut. 🏆"
-      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
-      : "Sigue practicando – Satzbauen kommt mit der Übung. 💪";
+    const verdict = vm.perfect ? t("discover.frasesPerfect")
+      : rate >= 60 ? t("discover.frasesGood")
+      : t("discover.frasesKeep");
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "🧱"}</div>
-          <h2>${esc(vm.setLabel)} geschafft</h2>
-          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <h2>${t("discover.quizDoneTitle", { label: esc(vm.setLabel) })}</h2>
+          <p class="quiz-result">${t("discover.quizResult", { correct: vm.correct, total: vm.total })}</p>
           <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="frases-again">Nochmal üben</button>
-          <button class="ghostbtn" data-action="open-frases">Anderes Thema</button>
-          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+          <button class="cta" data-action="frases-again">${esc(t("discover.quizAgain"))}</button>
+          <button class="ghostbtn" data-action="open-frases">${esc(t("discover.frasesOther"))}</button>
+          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
         </div>
       </section>`;
   }
@@ -2130,17 +2129,17 @@
         ${hmTopbar("🔁 Conjugación", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
 
-        ${sect("🧑‍🤝‍🧑", "Die Personen", `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
-        ${sect("🧱", "Regelmäßig: drei Muster", `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
-        ${sect("⭐", "Die wichtigsten unregelmäßigen Verben", `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
+        ${sect("🧑‍🤝‍🧑", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
+        ${sect("🧱", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
+        ${sect("⭐", t("discover.cjIrregulars"), `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
         ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
 
         <button class="cta cj-cta" data-action="open-category" data-id="verbos">
-          Jetzt üben: Konjugieren <span class="cta__count">${vm.cardCount} Karten</span>
+          ${esc(t("discover.cjPractice"))} <span class="cta__count">${esc(t("home.tileCards", { n: vm.cardCount }))}</span>
         </button>
         ${vm.canDrill ? `
         <button class="cta cj-cta cj-cta--drill" data-action="open-conjug-drill">
-          🔁 Conjugador: Formen selbst tippen
+          ${esc(t("discover.cjDrill"))}
         </button>` : ""}
       </section>`;
   }
@@ -2154,7 +2153,7 @@
       return `
         <section class="screen">
           ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
-          <p class="stat-empty">Der Konjugations-Drill ist gerade nicht verfügbar.</p>
+          <p class="stat-empty">${esc(t("discover.cjDrillUnavailable"))}</p>
         </section>`;
     }
     const levels = vm.levels.map((l) => `
@@ -2167,10 +2166,10 @@
     return `
       <section class="screen">
         ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
-        <p class="hm-intro">Verb und Person erscheinen – du tippst die richtige Form. Akzente sind optional („esta“ zählt für „está“). Wähle, wie schwer es werden soll.</p>
-        <h3 class="prc-head">Schwierigkeit</h3>
+        <p class="hm-intro">${esc(t("discover.cjDrillIntro"))}</p>
+        <h3 class="prc-head">${esc(t("discover.cjDifficulty"))}</h3>
         <div class="prc-lvls">${levels}</div>
-        <button class="cta" data-action="start-conjug">Runde starten</button>
+        <button class="cta" data-action="start-conjug">${esc(t("discover.cjStart"))}</button>
       </section>`;
   }
 
@@ -2181,26 +2180,26 @@
         <div class="card-static cj-prompt">
           <span class="cj-prompt__verb" lang="es">${esc(vm.verb)}</span>
           <span class="cj-prompt__person">${esc(vm.personDe)} · <span lang="es">${esc(vm.personEs)}</span></span>
-          <span class="face__hint">Tippe die passende Form.</span>
+          <span class="face__hint">${esc(t("discover.cjPromptHint"))}</span>
         </div>
         <form class="typer" data-action="submit-conjug" id="conjug-form">
           <input class="typer__input" id="conjug-answer" type="text" inputmode="text"
-                 autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="z. B. vamos" />
-          <button class="typer__btn" type="submit">Prüfen</button>
+                 autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="${esc(t("discover.cjPlaceholder"))}" />
+          <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`
       : `
         <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
           <div class="face__word" lang="es">${esc(vm.result.answer)}</div>
           <div class="listen-de">${esc(vm.personDe)} · <span lang="es">${esc(vm.personEs)}</span> · ${esc(vm.verb)}</div>
           ${vm.result.correct
-            ? `<div class="verdict verdict--ok">✓ Richtig!</div>`
-            : `<div class="verdict verdict--no">✗ Nicht ganz – deine Eingabe: „${esc(vm.result.input || "—")}“</div>`}
+            ? `<div class="verdict verdict--ok">${esc(t("common.correctShort"))}</div>`
+            : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: vm.result.input || "—" }))}</div>`}
         </div>
-        <button class="cta" data-action="conjug-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`;
+        <button class="cta" data-action="conjug-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
     return `
       <section class="screen study">
         ${hmTopbar("🔁 Conjugador", "open-conjug-drill")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
         ${body}
       </section>`;
@@ -2209,20 +2208,20 @@
   function renderConjugDone(vm) {
     const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
     const verdict = vm.perfect
-      ? "¡Perfecto! Jede Form saß. 🏆"
-      : rate >= 60 ? "¡Bien! Die Endungen sitzen immer besser. 👏"
-      : "Sigue practicando – Konjugieren ist Übungssache. 💪";
+      ? t("discover.cjPerfect")
+      : rate >= 60 ? t("discover.cjGood")
+      : t("discover.cjKeep");
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "🔁"}</div>
           <h2>Conjugador</h2>
           <p class="prc-done-tag">${esc(vm.levelLabel)}</p>
-          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <p class="quiz-result">${t("discover.quizResult", { correct: vm.correct, total: vm.total })}</p>
           <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="conjug-again">Nochmal üben</button>
-          <button class="ghostbtn" data-action="open-conjug-drill">Andere Stufe</button>
-          <button class="ghostbtn" data-action="open-conjugacion">Zur Erklärseite</button>
+          <button class="cta" data-action="conjug-again">${esc(t("discover.cjAgain"))}</button>
+          <button class="ghostbtn" data-action="open-conjug-drill">${esc(t("discover.cjOtherLevel"))}</button>
+          <button class="ghostbtn" data-action="open-conjugacion">${esc(t("discover.cjToGuide"))}</button>
         </div>
       </section>`;
   }
@@ -2236,10 +2235,10 @@
       return `
         <section class="screen">
           ${hmTopbar("💬 Diálogos", "home")}
-          <p class="stat-empty">Gerade keine Dialoge verfügbar.</p>
+          <p class="stat-empty">${esc(t("discover.dlgUnavailable"))}</p>
         </section>`;
     }
-    const hint = vm.hasSpeech ? "" : `<p class="dlg-nospeak">Dein Gerät kann nicht vorlesen – die Gespräche funktionieren trotzdem (zum Mitlesen).</p>`;
+    const hint = vm.hasSpeech ? "" : `<p class="dlg-nospeak">${esc(t("discover.dlgNoSpeak"))}</p>`;
     const cards = vm.scenarios.map((s) => `
       <button class="dlg-pick" type="button" data-action="start-dialogos" data-id="${esc(s.id)}">
         <span class="dlg-pick__icon" aria-hidden="true">${esc(s.icon)}</span>
@@ -2252,7 +2251,7 @@
     return `
       <section class="screen">
         ${hmTopbar("💬 Diálogos", "home")}
-        <p class="hm-intro">Spiel ein echtes Reisegespräch Zug für Zug durch. Die andere Person spricht – du antwortest. Wähle eine Situation.</p>
+        <p class="hm-intro">${esc(t("discover.dlgIntro"))}</p>
         ${hint}
         <div class="dlg-picks">${cards}</div>
       </section>`;
@@ -2280,13 +2279,13 @@
     if (cur && cur.who === "npc") {
       // npc-Zug: Blase zeigen (+ Vorlesen), dann „Weiter“.
       const replay = vm.speakable
-        ? `<button class="listen-replay ghostbtn" type="button" data-action="dialogos-speak">🔊 Nochmal anhören</button>`
+        ? `<button class="listen-replay ghostbtn" type="button" data-action="dialogos-speak">${esc(t("discover.dlgReplay"))}</button>`
         : "";
       active = `
         ${dlgBubble({ who: "npc", es: cur.es, de: cur.de })}
         <div class="dlg-actions">
           ${replay}
-          <button class="cta" data-action="dialogos-next">Weiter</button>
+          <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>
         </div>`;
     } else if (cur && cur.who === "user") {
       const instr = `<p class="dlg-instr">${esc(cur.de)}</p>`;
@@ -2302,28 +2301,28 @@
           // Hilfe, ohne den Zug vorwegzunehmen (getippt werden muss trotzdem).
           const help = vm.hint
             ? `<p class="dlg-tip" role="note">💡 <b lang="es">${esc(cur.solEs)}</b></p>`
-            : `<button class="dlg-tipbtn ghostbtn" type="button" data-action="dialogos-hint">💡 Tipp anzeigen</button>`;
+            : `<button class="dlg-tipbtn ghostbtn" type="button" data-action="dialogos-hint">${esc(t("discover.dlgTipShow"))}</button>`;
           active = `
             ${instr}
             <form class="typer" data-action="submit-dialogos" id="dialogos-form">
               <input class="typer__input" id="dialogos-answer" type="text" inputmode="text"
-                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="Tippe deine Antwort …" />
-              <button class="typer__btn" type="submit">Sagen</button>
+                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="${esc(t("discover.dlgPlaceholder"))}" />
+              <button class="typer__btn" type="submit">${esc(t("discover.dlgSay"))}</button>
             </form>
             ${help}`;
         }
       } else {
         // Beantwortet: die eigene (Muster-)Replik als Blase + Verdict + Weiter.
         const verdict = vm.result.correct
-          ? `<div class="dlg-verdict dlg-verdict--ok" role="status" aria-live="polite">✓ ¡Bien dicho!</div>`
+          ? `<div class="dlg-verdict dlg-verdict--ok" role="status" aria-live="polite">${esc(t("discover.dlgWellSaid"))}</div>`
           : `<div class="dlg-verdict dlg-verdict--no" role="status" aria-live="polite">
-               Besser so: <b lang="es">${esc(cur.solEs)}</b>
-               <span class="dlg-verdict__given">Du: „${esc(vm.result.given || "—")}“</span>
+               ${t("discover.dlgBetter", { es: esc(cur.solEs) })}
+               <span class="dlg-verdict__given">${esc(t("discover.dlgYou", { given: vm.result.given || "—" }))}</span>
              </div>`;
         active = `
           ${dlgBubble({ who: "user", es: cur.solEs, de: "" })}
           ${verdict}
-          <button class="cta" data-action="dialogos-next">Weiter</button>`;
+          <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>`;
       }
     }
 
@@ -2332,8 +2331,8 @@
       <section class="screen study">
         ${hmTopbar(vm.icon + " " + esc(vm.title), "open-dialogos")}
         <div class="dlg-progress">
-          <div class="progress" role="progressbar" aria-valuenow="${step}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
-          <span class="dlg-step">Schritt ${step} von ${vm.total}</span>
+          <div class="progress" role="progressbar" aria-valuenow="${step}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
+          <span class="dlg-step">${esc(t("discover.dlgStep", { step, total: vm.total }))}</span>
         </div>
         <div class="dlg-thread">
           ${history}
@@ -2345,19 +2344,19 @@
   function renderDialogosDone(vm) {
     const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
     const verdict = vm.perfect
-      ? "¡Perfecto! Du hast das ganze Gespräch gemeistert. 🏆"
-      : rate >= 60 ? "¡Bien! Das Gespräch läuft schon richtig rund. 👏"
-      : "Sigue practicando – jedes Gespräch macht dich sicherer. 💪";
+      ? t("discover.dlgPerfect")
+      : rate >= 60 ? t("discover.dlgGood")
+      : t("discover.dlgKeep");
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "💬"}</div>
           <h2>${vm.icon} ${esc(vm.title)}</h2>
-          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> Antworten passend</p>
+          <p class="quiz-result">${t("discover.dlgResult", { correct: vm.correct, total: vm.total })}</p>
           <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="dialogos-again">Nochmal sprechen</button>
-          <button class="ghostbtn" data-action="open-dialogos">Andere Situation</button>
-          <button class="ghostbtn" data-action="home">Zur Übersicht</button>
+          <button class="cta" data-action="dialogos-again">${esc(t("discover.dlgAgain"))}</button>
+          <button class="ghostbtn" data-action="open-dialogos">${esc(t("discover.dlgOther"))}</button>
+          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
         </div>
       </section>`;
   }
@@ -2371,6 +2370,8 @@
   // Unten ein CTA in die Übungskarten – über die normale open-category-Aktion.
   function renderTiempos(vm) {
     const g = vm.guide;
+    // `t` wird unten als g.timeline gebunden – darum den globalen Übersetzer hier als tt sichern.
+    const tt = window.t;
 
     // Eine Zeit-Tabelle: Person links (gemeinsame tableLabels), Form rechts –
     // dieselbe Datenform wie bei der Konjugation.
@@ -2419,9 +2420,9 @@
           </summary>
           <div class="cinfo-dish__body">
             ${table(te.forms)}
-            <p class="cj-verb__like"><strong>So baust du es:</strong> ${esc(te.recipe)}</p>
-            <p class="cj-verb__like"><strong>Signalwörter:</strong> <span lang="es">${esc(te.signals)}</span></p>
-            <p class="cj-verb__like"><strong>Wann?</strong> ${esc(te.when)}</p>
+            <p class="cj-verb__like"><strong>${esc(t("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
+            <p class="cj-verb__like"><strong>${esc(t("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
+            <p class="cj-verb__like"><strong>${esc(t("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
             ${lines(te.examples)}
           </div>
         </details>`)
@@ -2534,7 +2535,7 @@
         <p class="hm-intro">${esc(g.intro)}</p>
 
         ${sect("↔️", t.title, timeline)}
-        ${sect("🕰️", "Die wichtigsten Zeitformen", `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
+        ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
         ${sect("⏯️", c.title, continuous)}
         ${sect("⚖️", iv.title, indefVsImperf)}
         ${sect("💪", sp.title, strongPast)}
@@ -2543,11 +2544,11 @@
         ${sect("📦", hy.title, hayBlock)}
         ${sect("🧳", sc.title, scenarios)}
         ${sect("⚠️", pf.title, pitfalls)}
-        ${sect("🔑", "Signalwörter: woran du die Zeit erkennst", `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
-        ${sect("🧭", "Reisedialoge: die Zeiten im Gespräch", dialogsHtml)}
+        ${sect("🔑", tt("discover.tiSignalWords"), `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
+        ${sect("🧭", tt("discover.tiDialogs"), dialogsHtml)}
 
         <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
-          Jetzt üben: Zeiten <span class="cta__count">${vm.cardCount} Karten</span>
+          ${esc(tt("discover.tiPracticeTenses"))} <span class="cta__count">${esc(tt("home.tileCards", { n: vm.cardCount }))}</span>
         </button>
       </section>`;
   }
@@ -2570,7 +2571,7 @@
 
     const sel = vm.selected;
     const speak = sel && vm.speakable
-      ? cornerBtn({ base: "cardbtn--speak bp-speak", on: false, icon: "🔊", label: "Wort anhören", action: "cuerpo-speak" })
+      ? cornerBtn({ base: "cardbtn--speak bp-speak", on: false, icon: "🔊", label: t("discover.cuerpoSpeak"), action: "cuerpo-speak" })
       : "";
     const panel = sel
       ? `
@@ -2585,7 +2586,7 @@
         </div>`
       : `
         <div class="bp-panel" role="status" aria-live="polite">
-          <p class="bp-panel__hint">👆 Tippe einen Punkt auf der Figur an – dann erscheinen das spanische Wort, die Aussprache und ein Reisetipp.</p>
+          <p class="bp-panel__hint">${esc(t("discover.cuerpoHint"))}</p>
         </div>`;
 
     const pct = vm.total > 0 ? Math.round((vm.exploredCount / vm.total) * 100) : 0;
@@ -2593,13 +2594,13 @@
     const progress = `
       <div class="bp-progress">
         <div class="bp-progress__bar"><div class="bp-progress__fill" style="width:${pct}%"></div></div>
-        <span class="bp-progress__label">${done ? "¡Cuerpo completo! 🎉 Alle " + vm.total + " erkundet" : "Erkundet: " + vm.exploredCount + "/" + vm.total}</span>
+        <span class="bp-progress__label">${done ? t("discover.cuerpoComplete", { total: vm.total }) : t("discover.cuerpoExplored", { n: vm.exploredCount, total: vm.total })}</span>
       </div>`;
 
     return `
       <section class="screen bp-screen">
         ${hmTopbar("🧍 El Cuerpo", "home")}
-        <p class="hm-intro">Der menschliche Körper auf Spanisch – als drehbares 3D-Modell. Ziehe die Figur zum Drehen und tippe ein Körperteil an: Dann erscheinen Wort, Aussprache und der passende Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).</p>
+        <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
         ${progress}
         <div class="bp-stage">
           <div class="bp-3d-stage" data-bp-stage>
@@ -2608,9 +2609,9 @@
               ${nodes}
             </div>
             <div class="bp-rotor">
-              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="-1" aria-label="Figur nach links drehen">↺</button>
-              <span class="bp-rotor__hint" aria-hidden="true">↔ ziehen zum Drehen</span>
-              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="1" aria-label="Figur nach rechts drehen">↻</button>
+              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="-1" aria-label="${esc(t("discover.cuerpoRotateLeft"))}">↺</button>
+              <span class="bp-rotor__hint" aria-hidden="true">${esc(t("discover.cuerpoDragHint"))}</span>
+              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="1" aria-label="${esc(t("discover.cuerpoRotateRight"))}">↻</button>
             </div>
           </div>
           ${panel}
@@ -2628,7 +2629,7 @@
         <button class="sl-chip ${s.active ? "is-active" : ""}" type="button"
                 data-action="compras-section" data-id="${esc(s.id)}"
                 aria-pressed="${s.active ? "true" : "false"}"
-                title="${esc(s.de)} – ${s.done}/${s.total} abgehakt">
+                title="${esc(t("discover.comprasCheckedTitle", { de: s.de, done: s.done, total: s.total }))}">
           <span class="sl-chip__icon" aria-hidden="true">${esc(s.icon)}</span>
           <span class="sl-chip__label">${esc(s.label)}</span>
           ${s.done >= s.total ? `<span class="sl-chip__done" aria-hidden="true">✓</span>` : ""}
@@ -2638,7 +2639,7 @@
     const items = vm.items
       .map((it) => {
         const speak = it.open && vm.speakable
-          ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: "Wort anhören",
+          ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: t("discover.comprasSpeakWord"),
               action: "compras-speak", extra: `data-id="${esc(it.id)}"` })
           : "";
         // Eine Supermarkt-Frage mit deutschem Label und 🔊 zum Vorlesen.
@@ -2649,14 +2650,14 @@
               <span class="sl-ask__es" lang="es">${esc(ask.es)}</span>
             </div>
             ${vm.speakable
-              ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: "Frage anhören",
+              ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: t("discover.comprasSpeakPhrase"),
                   action: "compras-speak-phrase", extra: `data-say="${esc(ask.es)}"` })
               : ""}
           </div>`;
         const ask = it.ask
           ? `
             <div class="sl-ask">
-              <span class="sl-ask__cap">Im Geschäft fragen</span>
+              <span class="sl-ask__cap">${esc(t("discover.comprasAsk"))}</span>
               ${askLine(it.ask.have)}
               ${askLine(it.ask.find)}
             </div>`
@@ -2678,7 +2679,7 @@
             <div class="sl-item__head">
               <button class="sl-item__check" type="button" data-action="compras-toggle" data-id="${esc(it.id)}"
                       aria-pressed="${it.seen ? "true" : "false"}"
-                      aria-label="${it.seen ? "Häkchen entfernen" : "Abhaken"}: ${esc(it.de)}">
+                      aria-label="${it.seen ? esc(t("discover.comprasUncheck")) : esc(t("discover.comprasCheckOff"))}: ${esc(it.de)}">
                 <span class="sl-item__box" aria-hidden="true">✓</span>
               </button>
               <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
@@ -2697,18 +2698,18 @@
     const progress = `
       <div class="bp-progress">
         <div class="bp-progress__bar"><div class="bp-progress__fill sl-fill" style="width:${pct}%"></div></div>
-        <span class="bp-progress__label">${done ? "¡Lista lista! 🎉 Alle " + vm.total + " abgehakt" : "Abgehakt: " + vm.doneCount + "/" + vm.total}</span>
+        <span class="bp-progress__label">${done ? t("discover.comprasComplete", { total: vm.total }) : t("discover.comprasCheckedCount", { n: vm.doneCount, total: vm.total })}</span>
       </div>`;
 
     const quizBtn = vm.total >= 2
-      ? `<button class="cta sl-quizbtn" data-action="open-compras-quiz">🧩 Quiz: ${esc(vm.section.label)}</button>`
+      ? `<button class="cta sl-quizbtn" data-action="open-compras-quiz">${t("discover.comprasQuiz", { section: esc(vm.section.label) })}</button>`
       : "";
 
     return `
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
         ${hmTopbar("🛒 Lista de compras", "home")}
-        <p class="hm-intro">Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe ein Wort an – dann erscheinen Aussprache, ein Reisetipp und zwei fertige Fragen fürs Geschäft (ob sie es haben und wo man es findet), und alles wird vorgelesen. Über das Kästchen links hakst du ab, was du erledigt hast – und nimmst es bei Bedarf wieder zurück. Wenn du magst, prüf dich danach im kurzen Quiz.</p>
-        <div class="sl-chips" role="group" aria-label="Rubrik wählen">${chips}</div>
+        <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
+        <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>
         ${progress}
         <ul class="sl-list">${items}</ul>
         ${quizBtn}
@@ -2738,20 +2739,20 @@
     const feedback = vm.answered
       ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
            ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">¡Correcto! 🎉</span>`
-             : `<span class="quiz-feedback__head">No exactamente.</span>
-                <span class="quiz-feedback__sol">Richtig: <b lang="es">${esc(vm.solutionEs)}</b></span>`}
+             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
+             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
+                <span class="quiz-feedback__sol">${t("discover.comprasSolution", { es: esc(vm.solutionEs) })}</span>`}
          </div>
-         <button class="cta" data-action="compras-quiz-next">${vm.isLast ? "Ergebnis anzeigen" : "Weiter"}</button>`
+         <button class="cta" data-action="compras-quiz-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
       : "";
 
     return `
       <section class="screen study">
         ${hmTopbar(`${esc(vm.sectionIcon)} ${esc(vm.sectionLabel)}`, "compras-back-list")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="Quiz-Fortschritt"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">Frage ${vm.position + 1}/${vm.total}</div>
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.quizProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.quizQuestion", { pos: vm.position + 1, total: vm.total }))}</div>
         <div class="quiz-def">
-          <span class="quiz-def__cap">Du brauchst …</span>
+          <span class="quiz-def__cap">${esc(t("discover.comprasNeed"))}</span>
           <p class="quiz-def__text">${esc(vm.prompt)}</p>
         </div>
         <div class="quiz-opts">${options}</div>
@@ -2761,18 +2762,18 @@
 
   function renderComprasQuizDone(vm) {
     const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect ? "¡Perfecto! Alles richtig. 🏆"
-      : rate >= 60 ? "¡Muy bien! Weiter so. 👏"
-      : "Sigue practicando – Übung macht den Meister. 💪";
+    const verdict = vm.perfect ? t("discover.quizPerfect")
+      : rate >= 60 ? t("discover.quizGood")
+      : t("discover.quizKeep");
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">${vm.perfect ? "🏆" : "🛒"}</div>
-          <h2>${esc(vm.sectionLabel)} geschafft</h2>
-          <p class="quiz-result"><b>${vm.correct}</b> von <b>${vm.total}</b> richtig</p>
+          <h2>${t("discover.quizDoneTitle", { label: esc(vm.sectionLabel) })}</h2>
+          <p class="quiz-result">${t("discover.quizResult", { correct: vm.correct, total: vm.total })}</p>
           <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="compras-quiz-again">Nochmal üben</button>
-          <button class="ghostbtn" data-action="compras-back-list">Zurück zum Zettel</button>
+          <button class="cta" data-action="compras-quiz-again">${esc(t("discover.quizAgain"))}</button>
+          <button class="ghostbtn" data-action="compras-back-list">${esc(t("discover.comprasBackList"))}</button>
         </div>
       </section>`;
   }
