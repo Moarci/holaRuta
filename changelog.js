@@ -21,6 +21,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.21.0",
+      date: "2026-06-13",
+      title: "Wochentage: je ein Tag, eine Karte",
+      items: [
+        "📅 Die Wochentage stecken nicht mehr gebündelt in drei Karten (Montag/Dienstag, Mittwoch/Donnerstag, Freitag/Samstag/Sonntag), sondern haben jede einen eigenen Eintrag – von lunes bis domingo. So lernst (und prüfst) du jeden Tag wirklich einzeln, statt mit einem Wort eine ganze Gruppe „richtig“ abzuhaken.",
+        "🧭 Jeder Wochentag bekommt einen eigenen Reise-Kontext mit Beispielsatz und Tipp.",
+      ],
+    },
+    {
       version: "1.20.0",
       date: "2026-06-12",
       title: "Diálogos: längere Gespräche & runderer Ablauf",

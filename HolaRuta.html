@@ -2351,8 +2351,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ti08: { e: "Me quedo una semana.", d: "Ich bleibe eine Woche.", s: "Bei der Aufenthaltsdauer.", n: "día = Tag, semana = Woche, mes = Monat." },
     ti09: { e: "Mejor salimos temprano.", d: "Wir gehen besser früh los.", s: "Bei der Planung.", n: "temprano = früh, tarde = spät (und Nachmittag)." },
     ti10: { e: "El bus sale el lunes.", d: "Der Bus fährt am Montag.", s: "Bei Reiseplänen.", n: "Wochentage klein und ohne am: el lunes." },
-    ti11: { e: "Llego el miércoles.", d: "Ich komme am Mittwoch an.", s: "Bei Verabredungen.", n: "miércoles hat einen Akzent: mi-ÉR-co-les." },
-    ti12: { e: "El sábado hay fiesta en el hostel.", d: "Am Samstag ist Party im Hostel.", s: "Beim Wochenende planen.", n: "Am Wochenende: el fin de semana." },
+    ti11: { e: "El martes hay tour a la montaña.", d: "Am Dienstag gibt es eine Tour zum Berg.", s: "Bei Reiseplänen.", n: "martes 13 ist im Spanischen der Unglückstag – nicht Freitag der 13." },
+    ti12: { e: "Llego el miércoles.", d: "Ich komme am Mittwoch an.", s: "Bei Verabredungen.", n: "miércoles hat einen Akzent: mi-ÉR-co-les." },
+    ti13: { e: "El jueves salgo de viaje.", d: "Am Donnerstag breche ich zur Reise auf.", s: "Bei Verabredungen.", n: "jueves: das j klingt wie ein hartes deutsches ch (ach)." },
+    ti14: { e: "El viernes hay fiesta.", d: "Am Freitag ist Party.", s: "Beim Wochenende planen.", n: "el fin de semana = das Wochenende." },
+    ti15: { e: "El sábado hay fiesta en el hostel.", d: "Am Samstag ist Party im Hostel.", s: "Beim Wochenende planen.", n: "sábado hat einen Akzent: SÁ-ba-do." },
+    ti16: { e: "El domingo descanso.", d: "Am Sonntag ruhe ich mich aus.", s: "Beim Wochenende planen.", n: "domingo = Sonntag; viele Geschäfte haben geschlossen." },
 
     // ===================== SMALLTALK =====================
     s01: { e: "¡Hola! ¿Cómo estás?", d: "Hallo! Wie geht's?", s: "Bei jeder Begrüßung.", n: "Lockerer: ¿Qué tal? oder ¿Qué más? (Kolumbien)." },
@@ -3197,9 +3201,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "ti07", cat: "zeit", lvl: 2, de: "am Morgen / am Abend", es: "en la mañana / en la noche", tip: "ma-NYA-na / NO-che" },
     { id: "ti08", cat: "zeit", lvl: 1, de: "der Tag / die Woche", es: "el día / la semana", tip: "DI-a / se-MA-na" },
     { id: "ti09", cat: "zeit", lvl: 1, de: "früh / spät", es: "temprano / tarde", tip: "tem-PRA-no / TAR-de" },
-    { id: "ti10", cat: "zeit", lvl: 1, de: "Montag / Dienstag", es: "lunes / martes", tip: "LU-nes / MAR-tes" },
-    { id: "ti11", cat: "zeit", lvl: 1, de: "Mittwoch / Donnerstag", es: "miércoles / jueves", tip: "mi-ER-ko-les / CHUE-wes" },
-    { id: "ti12", cat: "zeit", lvl: 1, de: "Freitag / Samstag / Sonntag", es: "viernes / sábado / domingo", tip: "wi-ER-nes / SA-ba-do / do-MIN-go" },
+    { id: "ti10", cat: "zeit", lvl: 1, de: "Montag", es: "lunes", tip: "LU-nes" },
+    { id: "ti11", cat: "zeit", lvl: 1, de: "Dienstag", es: "martes", tip: "MAR-tes" },
+    { id: "ti12", cat: "zeit", lvl: 1, de: "Mittwoch", es: "miércoles", tip: "mi-ER-ko-les" },
+    { id: "ti13", cat: "zeit", lvl: 1, de: "Donnerstag", es: "jueves", tip: "CHUE-wes" },
+    { id: "ti14", cat: "zeit", lvl: 1, de: "Freitag", es: "viernes", tip: "wi-ER-nes" },
+    { id: "ti15", cat: "zeit", lvl: 1, de: "Samstag", es: "sábado", tip: "SA-ba-do" },
+    { id: "ti16", cat: "zeit", lvl: 1, de: "Sonntag", es: "domingo", tip: "do-MIN-go" },
 
     // ===================== SMALLTALK & KENNENLERNEN =====================
     { id: "s01", cat: "talk", lvl: 1, de: "Wie geht's?", es: "¿Cómo estás? / ¿Qué tal?", tip: "KO-mo es-TAS" },
@@ -11428,6 +11436,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.21.0",
+      date: "2026-06-13",
+      title: "Wochentage: je ein Tag, eine Karte",
+      items: [
+        "📅 Die Wochentage stecken nicht mehr gebündelt in drei Karten (Montag/Dienstag, Mittwoch/Donnerstag, Freitag/Samstag/Sonntag), sondern haben jede einen eigenen Eintrag – von lunes bis domingo. So lernst (und prüfst) du jeden Tag wirklich einzeln, statt mit einem Wort eine ganze Gruppe „richtig“ abzuhaken.",
+        "🧭 Jeder Wochentag bekommt einen eigenen Reise-Kontext mit Beispielsatz und Tipp.",
+      ],
+    },
     {
       version: "1.20.0",
       date: "2026-06-12",
