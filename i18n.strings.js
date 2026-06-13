@@ -976,6 +976,8 @@
     confirmImport: "Backup importieren?\nDein aktueller Stand auf diesem Gerät wird überschrieben.",
     importNoData: "Import fehlgeschlagen – keine bekannten Daten in der Datei.",
     importReadError: "Import fehlgeschlagen – Datei konnte nicht gelesen werden.",
+    edNeedQuestion: "Bitte die Frage (Deutsch) ausfüllen.",
+    edNeedAnswer: "Bitte die Antwort (Spanisch) ausfüllen.",
   }, {
     allTopics: "All topics",
     all: "All",
@@ -998,5 +1000,47 @@
     confirmImport: "Import backup?\nYour current data on this device will be overwritten.",
     importNoData: "Import failed – no known data in the file.",
     importReadError: "Import failed – the file could not be read.",
+    edNeedQuestion: "Please fill in the question (English).",
+    edNeedAnswer: "Please fill in the answer (Spanish).",
+  });
+
+  // ---------- share: ins Sharepic-Bild gezeichnete Labels (share.js) ----------
+  i18n.register("share", {
+    sideNative: "DEUTSCH",
+    myProgress: "MEIN FORTSCHRITT",
+    accuracy: "Trefferquote",
+    statsLine: (p) => `Gemeistert ${p.mastered}  ·  Am Lernen ${p.learning}  ·  Neu ${p.neu}`,
+    myPass: "🎖️ MEIN RUTA-PASS",
+    stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} Stempel gesammelt`,
+    // Begleittexte beim Teilen (Bildunterschrift in WhatsApp/Telegram …)
+    captionJoin: "▶️ Jetzt mitlernen:",
+    factAccuracy: (p) => `${p.r}% Trefferquote`,
+    factMastered: (p) => `${p.n} Vokabeln gemeistert`,
+    captionStats: (p) => `📍 Mein Reise-Spanisch mit HolaRuta${p.tail}. Lernst du mit? 🌎`,
+    captionBadgeHead: (p) => `🎖️ Neuer Stempel im Ruta-Pass: ${p.name}`,
+    defaultStamp: "ein Reisestempel",
+    captionCollected: "Gesammelt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
+    defaultVocab: "eine neue Vokabel",
+    captionVocabHead: (p) => `📍 Spanisch für unterwegs: ${p.head}`,
+    captionPron: (p) => `🗣️ Aussprache: ${p.tip}`,
+    captionLearned: "Gelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
+  }, {
+    sideNative: "ENGLISH",
+    myProgress: "MY PROGRESS",
+    accuracy: "Accuracy",
+    statsLine: (p) => `Mastered ${p.mastered}  ·  Learning ${p.learning}  ·  New ${p.neu}`,
+    myPass: "🎖️ MY RUTA-PASS",
+    stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} stamps collected`,
+    captionJoin: "▶️ Start learning too:",
+    factAccuracy: (p) => `${p.r}% accuracy`,
+    factMastered: (p) => `${p.n} words mastered`,
+    captionStats: (p) => `📍 My travel Spanish with HolaRuta${p.tail}. Care to join? 🌎`,
+    captionBadgeHead: (p) => `🎖️ New stamp in my Ruta-Pass: ${p.name}`,
+    defaultStamp: "a travel stamp",
+    captionCollected: "Collected with HolaRuta – your travel Spanish for real situations. 🌎",
+    defaultVocab: "a new word",
+    captionVocabHead: (p) => `📍 Spanish on the go: ${p.head}`,
+    captionPron: (p) => `🗣️ Pronunciation: ${p.tip}`,
+    captionLearned: "Learned with HolaRuta – your travel Spanish for real situations. 🌎",
   });
 })();

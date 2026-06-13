@@ -3203,6 +3203,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     confirmImport: "Backup importieren?\nDein aktueller Stand auf diesem Gerät wird überschrieben.",
     importNoData: "Import fehlgeschlagen – keine bekannten Daten in der Datei.",
     importReadError: "Import fehlgeschlagen – Datei konnte nicht gelesen werden.",
+    edNeedQuestion: "Bitte die Frage (Deutsch) ausfüllen.",
+    edNeedAnswer: "Bitte die Antwort (Spanisch) ausfüllen.",
   }, {
     allTopics: "All topics",
     all: "All",
@@ -3225,6 +3227,48 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     confirmImport: "Import backup?\nYour current data on this device will be overwritten.",
     importNoData: "Import failed – no known data in the file.",
     importReadError: "Import failed – the file could not be read.",
+    edNeedQuestion: "Please fill in the question (English).",
+    edNeedAnswer: "Please fill in the answer (Spanish).",
+  });
+
+  // ---------- share: ins Sharepic-Bild gezeichnete Labels (share.js) ----------
+  i18n.register("share", {
+    sideNative: "DEUTSCH",
+    myProgress: "MEIN FORTSCHRITT",
+    accuracy: "Trefferquote",
+    statsLine: (p) => `Gemeistert ${p.mastered}  ·  Am Lernen ${p.learning}  ·  Neu ${p.neu}`,
+    myPass: "🎖️ MEIN RUTA-PASS",
+    stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} Stempel gesammelt`,
+    // Begleittexte beim Teilen (Bildunterschrift in WhatsApp/Telegram …)
+    captionJoin: "▶️ Jetzt mitlernen:",
+    factAccuracy: (p) => `${p.r}% Trefferquote`,
+    factMastered: (p) => `${p.n} Vokabeln gemeistert`,
+    captionStats: (p) => `📍 Mein Reise-Spanisch mit HolaRuta${p.tail}. Lernst du mit? 🌎`,
+    captionBadgeHead: (p) => `🎖️ Neuer Stempel im Ruta-Pass: ${p.name}`,
+    defaultStamp: "ein Reisestempel",
+    captionCollected: "Gesammelt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
+    defaultVocab: "eine neue Vokabel",
+    captionVocabHead: (p) => `📍 Spanisch für unterwegs: ${p.head}`,
+    captionPron: (p) => `🗣️ Aussprache: ${p.tip}`,
+    captionLearned: "Gelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
+  }, {
+    sideNative: "ENGLISH",
+    myProgress: "MY PROGRESS",
+    accuracy: "Accuracy",
+    statsLine: (p) => `Mastered ${p.mastered}  ·  Learning ${p.learning}  ·  New ${p.neu}`,
+    myPass: "🎖️ MY RUTA-PASS",
+    stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} stamps collected`,
+    captionJoin: "▶️ Start learning too:",
+    factAccuracy: (p) => `${p.r}% accuracy`,
+    factMastered: (p) => `${p.n} words mastered`,
+    captionStats: (p) => `📍 My travel Spanish with HolaRuta${p.tail}. Care to join? 🌎`,
+    captionBadgeHead: (p) => `🎖️ New stamp in my Ruta-Pass: ${p.name}`,
+    defaultStamp: "a travel stamp",
+    captionCollected: "Collected with HolaRuta – your travel Spanish for real situations. 🌎",
+    defaultVocab: "a new word",
+    captionVocabHead: (p) => `📍 Spanish on the go: ${p.head}`,
+    captionPron: (p) => `🗣️ Pronunciation: ${p.tip}`,
+    captionLearned: "Learned with HolaRuta – your travel Spanish for real situations. 🌎",
   });
 })();
 
@@ -12660,10 +12704,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // Pflichtfelder prüfen -> Liste von Fehlertexten (leer = ok).
+  // Übersetzer optional: ohne i18n (z.B. isolierter Test) deutscher Fallback.
+  function tr(key, fallback) {
+    return (typeof window !== "undefined" && window.t) ? window.t(key) : fallback;
+  }
   function validate(input) {
     const errs = [];
-    if (!String(input && input.de || "").trim()) errs.push("Bitte die Frage (Deutsch) ausfüllen.");
-    if (!String(input && input.es || "").trim()) errs.push("Bitte die Antwort (Spanisch) ausfüllen.");
+    if (!String(input && input.de || "").trim()) errs.push(tr("app.edNeedQuestion", "Bitte die Frage (Deutsch) ausfüllen."));
+    if (!String(input && input.es || "").trim()) errs.push(tr("app.edNeedAnswer", "Bitte die Antwort (Spanisch) ausfüllen."));
     return errs;
   }
 
@@ -13553,7 +13601,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ctx.fillStyle = MUTE;
     ctx.textAlign = "center";
     ctx.font = font("600", 30);
-    ctx.fillText("DEUTSCH", cx, contentTop + 30);
+    ctx.fillText(t("share.sideNative"), cx, contentTop + 30);
     const deTop = contentTop + 50;
     fitText(ctx, payload.de, cx, deTop, innerW, {
       px: 58, min: 32, weight: "600", color: INK, maxLines: 2,
@@ -13612,7 +13660,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = font("700", 40);
-    ctx.fillText("MEIN FORTSCHRITT", cx, L.kicker);
+    ctx.fillText(t("share.myProgress"), cx, L.kicker);
     ctx.font = font("800", 66);
     ctx.fillText("¡Estoy aprendiendo!", cx, L.title);
 
@@ -13633,7 +13681,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ctx.textBaseline = "middle";
     ctx.fillText(payload.rate === null || payload.rate === undefined ? "–" : rate + "%", cx, L.ringY - 6);
     ctx.font = font("600", L.ringLbl);
-    ctx.fillText("Trefferquote", cx, L.ringY + L.R - 6);
+    ctx.fillText(t("share.accuracy"), cx, L.ringY + L.R - 6);
     ctx.textBaseline = "alphabetic";
 
     // drei Kennzahl-Kacheln
@@ -13682,7 +13730,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.font = font("600", 28);
-    ctx.fillText(`Gemeistert ${payload.mastered}  ·  Am Lernen ${payload.learning}  ·  Neu ${payload.neu}`, cx, barY + barH + 48);
+    ctx.fillText(t("share.statsLine", { mastered: payload.mastered, learning: payload.learning, neu: payload.neu }), cx, barY + barH + 48);
 
     brandFooter(ctx, h);
     return c;
@@ -13712,7 +13760,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = font("700", 40);
-    ctx.fillText("🎖️ MEIN RUTA-PASS", cx, L.kicker);
+    ctx.fillText(t("share.myPass"), cx, L.kicker);
     if (payload.groupLabel) {
       ctx.fillStyle = "rgba(255,255,255,0.82)";
       ctx.font = font("600", 30);
@@ -13753,7 +13801,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const pillTop = pillBottom - L.pillH;
     if (payload.total) {
       ctx.font = font("700", L.pillPx);
-      const ptxt = `🎖️ ${payload.unlocked} / ${payload.total} Stempel gesammelt`;
+      const ptxt = t("share.stampsCollected", { unlocked: payload.unlocked, total: payload.total });
       const pw = Math.min(W - PAD * 2, ctx.measureText(ptxt).width + 64);
       ctx.fillStyle = "rgba(255,255,255,0.18)";
       roundRect(ctx, cx - pw / 2, pillTop, pw, L.pillH, L.pillH / 2);
@@ -13819,31 +13867,31 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const p = payload || {};
     // Echter, anklickbarer Link – Messenger (WhatsApp/Telegram/…) verlinken die
     // nackte URL im Begleittext automatisch.
-    const link = `\n\n▶️ Jetzt mitlernen: ${APP_URL}`;
+    const link = `\n\n${t("share.captionJoin")} ${APP_URL}`;
     if (kind === "stats") {
       const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
       const facts = [];
-      if (r !== null) facts.push(`${r}% Trefferquote`);
-      if (p.mastered) facts.push(`${p.mastered} Vokabeln gemeistert`);
+      if (r !== null) facts.push(t("share.factAccuracy", { r }));
+      if (p.mastered) facts.push(t("share.factMastered", { n: p.mastered }));
       const tail = facts.length ? " – " + facts.join(", ") : "";
-      return `📍 Mein Reise-Spanisch mit HolaRuta${tail}. Lernst du mit? 🌎${link}`;
+      return t("share.captionStats", { tail }) + link;
     }
     if (kind === "badge") {
       const name = String(p.name || "").trim();
       const txt = String(p.text || "").trim();
-      let t = `🎖️ Neuer Stempel im Ruta-Pass: ${name || "ein Reisestempel"}`;
-      if (txt) t += `\n${txt}`;
-      t += `\n\nGesammelt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
-      return t + link;
+      let out = t("share.captionBadgeHead", { name: name || t("share.defaultStamp") });
+      if (txt) out += `\n${txt}`;
+      out += `\n\n${t("share.captionCollected")}`;
+      return out + link;
     }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
-    const head = es && de ? `„${es}" = ${de}` : (es || de || "eine neue Vokabel");
+    const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
     const tip = String(p.tip || "").trim();
-    let t = `📍 Spanisch für unterwegs: ${head}`;
-    if (tip) t += `\n🗣️ Aussprache: ${tip}`;
-    t += `\n\nGelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
-    return t + link;
+    let out = t("share.captionVocabHead", { head });
+    if (tip) out += `\n${t("share.captionPron", { tip })}`;
+    out += `\n\n${t("share.captionLearned")}`;
+    return out + link;
   }
 
   // Baut das Bild und teilt es. Erst Web Share API (mit Datei), sonst Download.

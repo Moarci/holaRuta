@@ -201,7 +201,7 @@
     ctx.fillStyle = MUTE;
     ctx.textAlign = "center";
     ctx.font = font("600", 30);
-    ctx.fillText("DEUTSCH", cx, contentTop + 30);
+    ctx.fillText(t("share.sideNative"), cx, contentTop + 30);
     const deTop = contentTop + 50;
     fitText(ctx, payload.de, cx, deTop, innerW, {
       px: 58, min: 32, weight: "600", color: INK, maxLines: 2,
@@ -260,7 +260,7 @@
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = font("700", 40);
-    ctx.fillText("MEIN FORTSCHRITT", cx, L.kicker);
+    ctx.fillText(t("share.myProgress"), cx, L.kicker);
     ctx.font = font("800", 66);
     ctx.fillText("¡Estoy aprendiendo!", cx, L.title);
 
@@ -281,7 +281,7 @@
     ctx.textBaseline = "middle";
     ctx.fillText(payload.rate === null || payload.rate === undefined ? "–" : rate + "%", cx, L.ringY - 6);
     ctx.font = font("600", L.ringLbl);
-    ctx.fillText("Trefferquote", cx, L.ringY + L.R - 6);
+    ctx.fillText(t("share.accuracy"), cx, L.ringY + L.R - 6);
     ctx.textBaseline = "alphabetic";
 
     // drei Kennzahl-Kacheln
@@ -330,7 +330,7 @@
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.font = font("600", 28);
-    ctx.fillText(`Gemeistert ${payload.mastered}  ·  Am Lernen ${payload.learning}  ·  Neu ${payload.neu}`, cx, barY + barH + 48);
+    ctx.fillText(t("share.statsLine", { mastered: payload.mastered, learning: payload.learning, neu: payload.neu }), cx, barY + barH + 48);
 
     brandFooter(ctx, h);
     return c;
@@ -360,7 +360,7 @@
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = font("700", 40);
-    ctx.fillText("🎖️ MEIN RUTA-PASS", cx, L.kicker);
+    ctx.fillText(t("share.myPass"), cx, L.kicker);
     if (payload.groupLabel) {
       ctx.fillStyle = "rgba(255,255,255,0.82)";
       ctx.font = font("600", 30);
@@ -401,7 +401,7 @@
     const pillTop = pillBottom - L.pillH;
     if (payload.total) {
       ctx.font = font("700", L.pillPx);
-      const ptxt = `🎖️ ${payload.unlocked} / ${payload.total} Stempel gesammelt`;
+      const ptxt = t("share.stampsCollected", { unlocked: payload.unlocked, total: payload.total });
       const pw = Math.min(W - PAD * 2, ctx.measureText(ptxt).width + 64);
       ctx.fillStyle = "rgba(255,255,255,0.18)";
       roundRect(ctx, cx - pw / 2, pillTop, pw, L.pillH, L.pillH / 2);
@@ -467,31 +467,31 @@
     const p = payload || {};
     // Echter, anklickbarer Link – Messenger (WhatsApp/Telegram/…) verlinken die
     // nackte URL im Begleittext automatisch.
-    const link = `\n\n▶️ Jetzt mitlernen: ${APP_URL}`;
+    const link = `\n\n${t("share.captionJoin")} ${APP_URL}`;
     if (kind === "stats") {
       const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
       const facts = [];
-      if (r !== null) facts.push(`${r}% Trefferquote`);
-      if (p.mastered) facts.push(`${p.mastered} Vokabeln gemeistert`);
+      if (r !== null) facts.push(t("share.factAccuracy", { r }));
+      if (p.mastered) facts.push(t("share.factMastered", { n: p.mastered }));
       const tail = facts.length ? " – " + facts.join(", ") : "";
-      return `📍 Mein Reise-Spanisch mit HolaRuta${tail}. Lernst du mit? 🌎${link}`;
+      return t("share.captionStats", { tail }) + link;
     }
     if (kind === "badge") {
       const name = String(p.name || "").trim();
       const txt = String(p.text || "").trim();
-      let t = `🎖️ Neuer Stempel im Ruta-Pass: ${name || "ein Reisestempel"}`;
-      if (txt) t += `\n${txt}`;
-      t += `\n\nGesammelt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
-      return t + link;
+      let out = t("share.captionBadgeHead", { name: name || t("share.defaultStamp") });
+      if (txt) out += `\n${txt}`;
+      out += `\n\n${t("share.captionCollected")}`;
+      return out + link;
     }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
-    const head = es && de ? `„${es}" = ${de}` : (es || de || "eine neue Vokabel");
+    const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
     const tip = String(p.tip || "").trim();
-    let t = `📍 Spanisch für unterwegs: ${head}`;
-    if (tip) t += `\n🗣️ Aussprache: ${tip}`;
-    t += `\n\nGelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎`;
-    return t + link;
+    let out = t("share.captionVocabHead", { head });
+    if (tip) out += `\n${t("share.captionPron", { tip })}`;
+    out += `\n\n${t("share.captionLearned")}`;
+    return out + link;
   }
 
   // Baut das Bild und teilt es. Erst Web Share API (mit Datei), sonst Download.
