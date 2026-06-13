@@ -21,6 +21,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.22.0",
+      date: "2026-06-13",
+      title: "Zurück-Wischen führt zurück, statt die App zu schließen",
+      items: [
+        "↩️ Die Zurück-Geste (Wischen vom Bildschirmrand bzw. die Zurück-Taste) bringt dich jetzt Schritt für Schritt eine Ebene höher – aus einer Übung zurück zur Auswahl und von dort aufs Dashboard – statt die App sofort zu schließen.",
+        "🏠 Erst wenn du wieder auf dem Dashboard bist, verlässt die nächste Zurück-Geste die App. Offene Einblendungen (z. B. der Spickzettel-Großbildschirm oder der Update-Hinweis) schließt Zurück zuerst.",
+      ],
+    },
+    {
       version: "1.21.0",
       date: "2026-06-13",
       title: "Wochentage: je ein Tag, eine Karte",

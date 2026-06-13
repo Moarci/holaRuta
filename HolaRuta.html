@@ -11437,6 +11437,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.22.0",
+      date: "2026-06-13",
+      title: "Zurück-Wischen führt zurück, statt die App zu schließen",
+      items: [
+        "↩️ Die Zurück-Geste (Wischen vom Bildschirmrand bzw. die Zurück-Taste) bringt dich jetzt Schritt für Schritt eine Ebene höher – aus einer Übung zurück zur Auswahl und von dort aufs Dashboard – statt die App sofort zu schließen.",
+        "🏠 Erst wenn du wieder auf dem Dashboard bist, verlässt die nächste Zurück-Geste die App. Offene Einblendungen (z. B. der Spickzettel-Großbildschirm oder der Update-Hinweis) schließt Zurück zuerst.",
+      ],
+    },
+    {
       version: "1.21.0",
       date: "2026-06-13",
       title: "Wochentage: je ein Tag, eine Karte",
@@ -16114,6 +16123,83 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (stage) stage.classList.remove("is-grab");
   }
 
+  // ----- Zurück-Geste (Android-Gestensteuerung / Browser-Zurück) -----
+  // Standardmäßig schließt eine Zurück-Geste die installierte PWA sofort. Das
+  // fühlt sich falsch an, wenn man gerade tief in einer Übung steckt. Wir
+  // halten deshalb einen „Puffer"-Eintrag in der Browser-History vor: Jede
+  // Zurück-Geste löst dann ein popstate aus, das uns EINE Ebene höher bringt
+  // (z.B. Übung → Setup → Dashboard) statt die App zu verlassen. Erst auf dem
+  // Dashboard („home") gibt die nächste Zurück-Geste die App regulär frei.
+
+  // Übergeordneter Screen je Ebene („eins höher"). Was hier nicht steht, führt
+  // direkt aufs Dashboard. So landet man stufenweise wieder auf der Startseite,
+  // statt mit einem Wisch unabsichtlich die ganze App zu schließen.
+  const SCREEN_PARENT = {
+    quiz: "quizSetup", quizDone: "quizSetup",
+    battle: "battleSetup", battleDone: "battleSetup",
+    roleplay: "roleplaySetup",
+    precios: "preciosSetup", preciosDone: "preciosSetup",
+    frases: "frasesSetup", frasesDone: "frasesSetup",
+    conjug: "conjugSetup", conjugDone: "conjugSetup",
+    dialogos: "dialogosSetup", dialogosDone: "dialogosSetup",
+    comprasQuiz: "compras", comprasQuizDone: "compras",
+    editor: "home",
+  };
+
+  let backGuardArmed = false; // liegt aktuell ein Puffer-Eintrag auf dem Stack?
+
+  function historyAvailable() {
+    return typeof history !== "undefined" && typeof history.pushState === "function";
+  }
+
+  // Einen Puffer-Eintrag legen (idempotent), falls noch keiner liegt. Same-URL
+  // pushState (kein url-Argument) – die Adresse bleibt unverändert.
+  function armBackGuard() {
+    if (!historyAvailable() || backGuardArmed) return;
+    try { history.pushState({ scGuard: true }, ""); backGuardArmed = true; } catch (e) { /* z.B. file:// – Feature bleibt inert */ }
+  }
+
+  // Wohin führt „eins höher" vom aktuellen Screen? Die Detailseite kehrt dahin
+  // zurück, wo der Zurück-Knopf ohnehin hinführt (Startseite oder Statistik).
+  function backTarget() {
+    if (state.screen === "card") return state.backTo === "home" ? "home" : "stats";
+    return SCREEN_PARENT[state.screen] || "home";
+  }
+
+  // Reagiert auf eine Zurück-Geste: erst offene Einblendungen schließen, sonst
+  // eine Ebene höher navigieren. Liefert false, wenn nichts mehr abzufangen ist
+  // (wir sind auf dem Dashboard) – dann darf die App sich regulär schließen.
+  function handleBack() {
+    // 1) Offene Overlays/Panels zuerst schließen (wie ein „Schließen").
+    if (state.updateNotice && state.updateNotice.length) { dismissUpdateNotice(); return true; }
+    if (state.szShow) { szClose(); return true; }
+    if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
+    // 2) Schon auf dem Dashboard: App freigeben.
+    if (state.screen === "home") return false;
+    // 3) Eine Ebene höher.
+    const target = backTarget();
+    if (target === "home") goHome();
+    else if (target === "stats") goStats();
+    else {
+      dismissBadgeToast();
+      state.revealed = false;
+      state.contextOpen = false;
+      state.typeResult = null;
+      state.screen = target;
+      render();
+    }
+    return true;
+  }
+
+  function onPopState() {
+    backGuardArmed = false; // der Puffer-Eintrag wurde gerade konsumiert
+    const handled = handleBack();
+    // Sind wir noch in der App, sofort einen neuen Puffer legen, damit die
+    // nächste Zurück-Geste wieder bei uns landet (render() macht das beim
+    // Navigieren bereits – das hier deckt overlay-Fälle ohne Re-Render ab).
+    if (handled && state.screen !== "home") armBackGuard();
+  }
+
   // ----- Rendern -----
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
@@ -16174,6 +16260,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     manageFocus();
     maybeAutoSpeak();
+
+    // Abseits des Dashboards einen Puffer-Eintrag vorhalten, damit die nächste
+    // Zurück-Geste eine Ebene höher führt statt die App zu schließen.
+    if (state.screen !== "home") armBackGuard();
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
@@ -17680,6 +17770,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });
   root.addEventListener("touchend", onTouchEnd, { passive: true });
+  window.addEventListener("popstate", onPopState); // Zurück-Geste: eine Ebene höher statt App schließen
   // Drehen des 3D-Körpermodells (greift nur auf der Cuerpo-Bühne).
   root.addEventListener("pointerdown", onBodyPointerDown);
   window.addEventListener("pointermove", onBodyPointerMove);
