@@ -97,9 +97,10 @@
   // (un/veintiún passt), Beträge sind ganzzahlig (keine Centavos im Reisealltag).
   const CURRENCIES = {
     CO: {
-      key: "CO", flag: "🇨🇴", name: "Kolumbien", code: "COP", symbol: "$",
+      key: "CO", flag: "🇨🇴", name: "Kolumbien", nameEn: "Colombia", code: "COP", symbol: "$",
       one: "peso", many: "pesos",
       note: "Hier wird alles schnell sechs- bis siebenstellig – das Königsland der großen Zahlen.",
+      noteEn: "Everything goes six or seven digits fast here – the homeland of big numbers.",
       levels: [
         { min: 500, max: 20000, step: 500 },
         { min: 10000, max: 200000, step: 1000, fine: 500 },
@@ -107,9 +108,10 @@
       ],
     },
     CL: {
-      key: "CL", flag: "🇨🇱", name: "Chile", code: "CLP", symbol: "$",
+      key: "CL", flag: "🇨🇱", name: "Chile", nameEn: "Chile", code: "CLP", symbol: "$",
       one: "peso", many: "pesos",
       note: "Chilenische Pesos kennen keine Centavos – dafür viele Nullen.",
+      noteEn: "Chilean pesos have no centavos – but plenty of zeros.",
       levels: [
         { min: 300, max: 15000, step: 100 },
         { min: 5000, max: 150000, step: 1000, fine: 500 },
@@ -117,9 +119,10 @@
       ],
     },
     AR: {
-      key: "AR", flag: "🇦🇷", name: "Argentinien", code: "ARS", symbol: "$",
+      key: "AR", flag: "🇦🇷", name: "Argentinien", nameEn: "Argentina", code: "ARS", symbol: "$",
       one: "peso", many: "pesos",
       note: "Durch die Inflation sind selbst Kleinigkeiten vier- bis fünfstellig.",
+      noteEn: "Thanks to inflation, even small things run to four or five digits.",
       levels: [
         { min: 500, max: 20000, step: 100 },
         { min: 10000, max: 300000, step: 1000, fine: 500 },
@@ -127,9 +130,10 @@
       ],
     },
     CR: {
-      key: "CR", flag: "🇨🇷", name: "Costa Rica", code: "CRC", symbol: "₡",
+      key: "CR", flag: "🇨🇷", name: "Costa Rica", nameEn: "Costa Rica", code: "CRC", symbol: "₡",
       one: "colón", many: "colones",
       note: "Colones gehen schnell in die Hunderttausende und Millionen.",
+      noteEn: "Colones quickly run into the hundreds of thousands and millions.",
       levels: [
         { min: 100, max: 5000, step: 100 },
         { min: 1000, max: 50000, step: 500, fine: 100 },
@@ -137,9 +141,10 @@
       ],
     },
     MX: {
-      key: "MX", flag: "🇲🇽", name: "Mexiko", code: "MXN", symbol: "$",
+      key: "MX", flag: "🇲🇽", name: "Mexiko", nameEn: "Mexico", code: "MXN", symbol: "$",
       one: "peso", many: "pesos",
       note: "Kleinere Zahlen als in Kolumbien – gut zum Einsteigen.",
+      noteEn: "Smaller numbers than in Colombia – a good place to start.",
       levels: [
         { min: 5, max: 200, step: 5 },
         { min: 50, max: 2000, step: 10, fine: 5 },
@@ -147,9 +152,10 @@
       ],
     },
     PE: {
-      key: "PE", flag: "🇵🇪", name: "Peru", code: "PEN", symbol: "S/",
+      key: "PE", flag: "🇵🇪", name: "Peru", nameEn: "Peru", code: "PEN", symbol: "S/",
       one: "sol", many: "soles",
       note: "Soles sind „stark“ – die Beträge bleiben angenehm überschaubar.",
+      noteEn: "Soles are „strong“ – the amounts stay pleasantly manageable.",
       levels: [
         { min: 2, max: 100, step: 1 },
         { min: 20, max: 500, step: 5 },
@@ -157,9 +163,10 @@
       ],
     },
     GT: {
-      key: "GT", flag: "🇬🇹", name: "Guatemala", code: "GTQ", symbol: "Q",
+      key: "GT", flag: "🇬🇹", name: "Guatemala", nameEn: "Guatemala", code: "GTQ", symbol: "Q",
       one: "quetzal", many: "quetzales",
       note: "Quetzales – kleine bis mittlere Beträge, mit eigener Pluralform.",
+      noteEn: "Quetzales – small to mid-sized amounts, with their own plural form.",
       levels: [
         { min: 5, max: 150, step: 5 },
         { min: 50, max: 1500, step: 10 },
@@ -173,9 +180,9 @@
 
   // Drei generische Schwierigkeitsstufen (währungsunabhängig benannt).
   const LEVELS = [
-    { id: 1, short: "Fácil", label: "Kleine Beträge", hint: "Snacks, Kaffee, Kleinkram" },
-    { id: 2, short: "Medio", label: "Alltag", hint: "Essen, Hostel, kurze Fahrten" },
-    { id: 3, short: "Difícil", label: "Große Beträge", hint: "Fernbus, Tour, Miete – die dicken Zahlen" },
+    { id: 1, short: "Fácil", label: "Kleine Beträge", labelEn: "Small amounts", hint: "Snacks, Kaffee, Kleinkram", hintEn: "Snacks, coffee, odds and ends" },
+    { id: 2, short: "Medio", label: "Alltag", labelEn: "Everyday", hint: "Essen, Hostel, kurze Fahrten", hintEn: "Food, hostel, short rides" },
+    { id: 3, short: "Difícil", label: "Große Beträge", labelEn: "Big amounts", hint: "Fernbus, Tour, Miete – die dicken Zahlen", hintEn: "Long-distance bus, tour, rent – the big numbers" },
   ];
 
   function currency(key) {
