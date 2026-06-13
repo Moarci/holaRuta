@@ -9,7 +9,7 @@
  *   level 1 = nur die drei regelmäßigen Muster (-ar/-er/-ir)
  *   level 2 = zusätzlich die wichtigsten unregelmäßigen Reiseverben
  *
- * Ein Item: { verb, verbHint, personEs, personDe, answer }
+ * Ein Item: { verb, verbHint, verbHintEn, personEs, personDe, personEn, answer }
  *   answer = die korrekte konjugierte Form (forms[personIndex]).
  */
 (function () {
@@ -32,12 +32,12 @@
     const pool = [];
     const reg = (conjugation && conjugation.regular) || [];
     reg.forEach((v) => {
-      pool.push({ verb: infinitiveFromTitle(v.title), hint: v.title, forms: v.forms });
+      pool.push({ verb: infinitiveFromTitle(v.title), hint: v.title, hintEn: v.titleEn || v.title, forms: v.forms });
     });
     if ((Number(level) || 1) >= 2) {
       const irr = (conjugation && conjugation.irregular) || [];
       irr.forEach((v) => {
-        pool.push({ verb: v.verb, hint: v.verb + " – " + v.verbDe, forms: v.forms });
+        pool.push({ verb: v.verb, hint: v.verb + " – " + v.verbDe, hintEn: v.verb + " – " + (v.verbEn || v.verbDe), forms: v.forms });
       });
     }
     return pool;
@@ -53,8 +53,10 @@
     return {
       verb: v.verb,
       verbHint: v.hint,
+      verbHintEn: v.hintEn,
       personEs: persons[pi].es,
       personDe: persons[pi].de,
+      personEn: persons[pi].en,
       answer: v.forms[pi],
     };
   }

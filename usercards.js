@@ -25,10 +25,14 @@
   }
 
   // Pflichtfelder prüfen -> Liste von Fehlertexten (leer = ok).
+  // Übersetzer optional: ohne i18n (z.B. isolierter Test) deutscher Fallback.
+  function tr(key, fallback) {
+    return (typeof window !== "undefined" && window.t) ? window.t(key) : fallback;
+  }
   function validate(input) {
     const errs = [];
-    if (!String(input && input.de || "").trim()) errs.push("Bitte die Frage (Deutsch) ausfüllen.");
-    if (!String(input && input.es || "").trim()) errs.push("Bitte die Antwort (Spanisch) ausfüllen.");
+    if (!String(input && input.de || "").trim()) errs.push(tr("app.edNeedQuestion", "Bitte die Frage (Deutsch) ausfüllen."));
+    if (!String(input && input.es || "").trim()) errs.push(tr("app.edNeedAnswer", "Bitte die Antwort (Spanisch) ausfüllen."));
     return errs;
   }
 

@@ -64,6 +64,9 @@
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
+  <!-- Mehrsprachigkeit zuerst: Engine + UI-Wörterbuch, damit t()/nativeText überall stehen. -->
+  <script src="i18n.js"></script>
+  <script src="i18n.strings.js"></script>
   <script src="contextdata.js"></script>
   <script src="data.js"></script>
   <script src="numbers.js"></script>

@@ -12,6 +12,8 @@ const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
+  "./i18n.js",
+  "./i18n.strings.js",
   "./contextdata.js",
   "./data.js",
   "./numbers.js",

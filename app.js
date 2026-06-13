@@ -7,6 +7,7 @@
   "use strict";
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
+  const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
   const speech = window.SC.speech || null; // optional – Browser kann Ausgabe ggf. nicht
@@ -36,7 +37,9 @@
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
-    dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: DE→ES (Standard) | ES→DE
+    // UI-/Muttersprache: "de" (Standard) | "en". Steuert t() und nativeText.
+    uiLang: settings.uiLang === "en" ? "en" : "de",
+    dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
@@ -104,6 +107,13 @@
   // ----- Helfer -----
   // Eingebaute + eigene Karten als eine Liste. Eigene Karten erscheinen dadurch
   // überall (Kategorien, Lernen, Zähler) ohne Sonderbehandlung.
+  // Muttersprachlicher Text eines Inhaltsobjekts (obj[uiLang] || obj.de). Kapselt
+  // den i18n-Zugriff für alle VM-Builder; ohne i18n-Modul Rückfall auf Deutsch.
+  const nat = (o) => (i18n ? i18n.nativeText(o) : (o && o.de));
+  // Suffix-Felder (base+"En"), z. B. situationDe/situationEn oder title/titleEn.
+  const natk = (o, base) => (i18n ? i18n.natKey(o, base) : (o && o[base]));
+  // Tiefe Lokalisierung für Pass-Through-Daten (überlagert alle …En-Felder).
+  const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
   const allCards = () => userCards ? data.CARDS.concat(userCards.list()) : data.CARDS;
   const cardById = (id) => allCards().find((c) => c.id === id) || null;
   const categoryById = (id) => data.CATEGORIES.find((c) => c.id === id) || null;
@@ -120,18 +130,20 @@
   function fmtDate(ms) {
     if (!ms) return "—";
     try {
-      return new Date(ms).toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" });
+      const loc = i18n ? i18n.locale() : "de-DE";
+      return new Date(ms).toLocaleDateString(loc, { day: "numeric", month: "long", year: "numeric" });
     } catch (e) { return "—"; }
   }
-  // Nächste Fälligkeit relativ zu jetzt: "fällig", "heute", "morgen", "in N Tagen".
+  // Nächste Fälligkeit relativ zu jetzt: "fällig", "heute", "morgen", "in N Tagen"
+  // (bzw. die englischen Pendants – Texte/Plural kommen aus i18n.strings.js).
   function fmtDue(ms) {
-    if (!ms) return "fällig";
+    if (!ms) return t("common.dueNow");
     const diff = ms - Date.now();
-    if (diff <= 0) return "fällig";
+    if (diff <= 0) return t("common.dueNow");
     const days = Math.round(diff / DAY_MS);
-    if (days <= 0) return "heute";
-    if (days === 1) return "morgen";
-    return `in ${days} Tagen`;
+    if (days <= 0) return t("common.today");
+    if (days === 1) return t("common.tomorrow");
+    return t("common.inNDays", { n: days });
   }
 
   // ----- View-Modelle (Zustand -> einfache Objekte für die UI) -----
@@ -148,7 +160,7 @@
           active: state.levels.length === 0 || state.levels.includes(l.id),
         }))
         .filter((b) => b.count > 0);
-      return { id: c.id, label: c.label, icon: c.icon, grad: c.grad,
+      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
     // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
@@ -163,7 +175,7 @@
     // Stufen ohne Karten (z. B. B2, das nur in Rollenspielen vorkommt) im
     // Karten-Filter ausblenden – sie würden sonst als leere 0-Stufe erscheinen.
     const levels = data.LEVELS.map((l) => ({
-      id: l.id, label: l.label, short: l.short, color: l.color,
+      id: l.id, label: natk(l, "label"), short: l.short, color: l.color,
       count: everyCard.filter((c) => c.lvl === l.id).length,
       active: state.levels.includes(l.id),
     })).filter((l) => l.count > 0);
@@ -175,11 +187,14 @@
     if (settings.lastScope) {
       const c = categoryById(settings.lastScope);
       const due = c ? dueIn(scopeCards(c.id)).length : 0;
-      if (c && due > 0) lastCat = { id: c.id, label: c.label, icon: c.icon, due };
+      if (c && due > 0) lastCat = { id: c.id, label: natk(c, "label"), icon: c.icon, due };
     }
     return {
       mode: state.mode,
       dir: state.dir,
+      uiLang: state.uiLang,                                   // gewählte UI-/Muttersprache (de/en)
+      nativeFlag: state.uiLang === "en" ? "🇬🇧" : "🇩🇪",         // Flagge der Muttersprache (für Richtungs-Labels)
+      nativeLabel: state.uiLang === "en" ? "English" : "Deutsch", // Klartext der Muttersprache
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
@@ -219,7 +234,7 @@
     return {
       show: true,
       canPrompt: inst.canPrompt(),
-      hint: 'Tippe unten in der Leiste auf „Teilen" und dann auf „Zum Home-Bildschirm" – schon hast du HolaRuta als App-Icon, ganz ohne Datei-Suchen, auch offline.',
+      hint: t("app.installHintIos"),
     };
   }
 
@@ -228,28 +243,29 @@
     const cat = categoryById(card.cat);
     const isAll = state.scopeId === "all";
     const lvl = levelById(card.lvl);
-    // Lernrichtung: DE→ES zeigt Deutsch als Frage und Spanisch als Antwort;
-    // ES→DE dreht das um. Die Aussprache-Tipps gehören immer zum Spanischen.
+    // Lernrichtung: native→ES zeigt die Muttersprache als Frage und Spanisch als
+    // Antwort; ES→native dreht das um. Aussprache-Tipps gehören immer zum Spanischen.
     const spanishIsQuestion = state.dir === "es2de";
+    const native = nat(card); // muttersprachlicher Text (de oder en)
     return {
       mode: state.mode,
       dir: state.dir,
       card,
-      question: spanishIsQuestion ? card.es : card.de,
-      answer: spanishIsQuestion ? card.de : card.es,
+      question: spanishIsQuestion ? card.es : native,
+      answer: spanishIsQuestion ? native : card.es,
       es: card.es, // Hör-Modus deckt immer das Spanische auf (richtungsunabhängig)
-      de: card.de, // dazu die deutsche Bedeutung als Verständnis-Hilfe
+      de: native, // dazu die muttersprachliche Bedeutung als Verständnis-Hilfe
       spanishIsQuestion,
       tip: card.tip || null,
-      level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
-      catLabel: isAll ? "Alle Bereiche" : (cat ? cat.label : ""),
+      level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
+      catLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
       catIcon: isAll || !cat ? "📚" : cat.icon,
       accent: isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
       total: state.total,
       revealed: state.revealed,
       typeResult: state.typeResult,
-      context: card.context || null,
+      context: card.context ? loc(card.context) : null,
       contextOpen: state.contextOpen,
       swatch: card.swatch || null,
     };
@@ -258,7 +274,7 @@
   function doneVM() {
     const isAll = state.scopeId === "all";
     const cat = categoryById(state.scopeId);
-    return { scopeLabel: isAll ? "Alle Bereiche" : (cat ? cat.label : "") };
+    return { scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : "") };
   }
 
   // Eine Karte für Listen/Detail aufbereiten (Karte + Statistik + Anzeige-Texte).
@@ -268,13 +284,13 @@
     const s = stats.cardSummary(progress[card.id]);
     return {
       id: card.id,
-      de: card.de,
+      de: nat(card),
       es: card.es,
       tip: card.tip || null,
-      catLabel: cat ? cat.label : "",
+      catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
       accent: cat ? cat.grad : DEFAULT_ACCENT,
-      level: lvl ? { label: lvl.label, short: lvl.short, color: lvl.color } : null,
+      level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
       swatch: card.swatch || null,
       s,
     };
@@ -312,11 +328,11 @@
       overview: ov,
       filter,
       filters: [
-        { id: "answered", label: "Beantwortet", count: ov.seenCards },
-        { id: "hard", label: "Schwierig", count: ov.hard },
-        { id: "mastered", label: "Gemeistert", count: ov.mastered },
-        { id: "new", label: "Neu", count: ov.neu },
-        { id: "all", label: "Alle", count: ov.total },
+        { id: "answered", label: t("app.statAnswered"), count: ov.seenCards },
+        { id: "hard", label: t("app.statHard"), count: ov.hard },
+        { id: "mastered", label: t("app.statMastered"), count: ov.mastered },
+        { id: "new", label: t("app.statNew"), count: ov.neu },
+        { id: "all", label: t("app.all"), count: ov.total },
       ],
       list,
       shareFormat: shareFormat(),
@@ -333,7 +349,7 @@
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
-      context: card.context || null,
+      context: card.context ? loc(card.context) : null,
       contextOpen: state.contextOpen,
     });
   }
@@ -351,7 +367,9 @@
           .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
-    return { country, groups };
+    // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
+    // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
+    return { country: country ? loc(country) : null, groups };
   }
 
   // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
@@ -372,11 +390,11 @@
     const accents = (country && knigge && knigge.ACCENTS[country.id]) || {};
     const topics = (knigge ? knigge.TOPICS : []).map((t) => ({
       icon: t.icon,
-      title: t.title,
-      intro: t.intro,
-      dos: t.dos,
-      donts: t.donts,
-      accent: accents[t.id] || "",
+      title: natk(t, "title"),
+      intro: natk(t, "intro"),
+      dos: natk(t, "dos"),
+      donts: natk(t, "donts"),
+      accent: natk(accents, t.id) || "",
     }));
     return { country, groups, topics };
   }
@@ -390,14 +408,19 @@
       const lvl = levelById(r.level);
       return Object.assign({}, r, { lvlShort: lvl ? lvl.short : "" });
     });
+    // Pass-Through-Ansicht: alle …En-Felder (Tipps, Glossar, Sätze, Regionales,
+    // Rollenspiele) per localizeDeep für die aktive Sprache überlagern. INTRO ist
+    // eine eigenständige Konstante (INTRO_EN) und wird separat aufgelöst.
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
     return {
-      intro: regatear.INTRO,
-      tips: regatear.TIPS || [],
-      glossary: regatear.GLOSSARY || [],
-      phrases: regatear.PHRASES || [],
-      units: regatear.UNITS || [],
-      regional: regatear.REGIONAL || [],
-      roleplays,
+      intro: (en && regatear.INTRO_EN) ? regatear.INTRO_EN : regatear.INTRO,
+      tips: loc(regatear.TIPS || []),
+      glossary: loc(regatear.GLOSSARY || []),
+      phrases: loc(regatear.PHRASES || []),
+      units: loc(regatear.UNITS || []),
+      regional: loc(regatear.REGIONAL || []),
+      roleplays: loc(roleplays),
     };
   }
 
@@ -462,7 +485,7 @@
     // 1 zu klemmen (sonst wäre die Fehlermeldung toter Code). Danach auf ≤500 deckeln.
     const perDayRaw = Math.round(Number(fields.perDay));
     if (!endDate || !(perDayRaw >= 1)) {
-      showNotice("Bitte ein gültiges Datum und ein Tagesziel angeben.");
+      showNotice(t("app.tripInvalid"));
       return;
     }
     const perDay = Math.min(500, perDayRaw);
@@ -591,7 +614,7 @@
   // Einblendung zeigen und nach kurzer Zeit selbst wieder ausblenden.
   function showBadgeToast(list) {
     if (!list.length) return;
-    state.badgeToast = list;
+    state.badgeToast = loc(list); // Badge-Namen/Texte in aktiver Sprache (…En überlagert)
     if (badgeToastTimer) clearTimeout(badgeToastTimer);
     badgeToastTimer = setTimeout(dismissBadgeToast, 5000);
   }
@@ -607,8 +630,8 @@
       .map((g) => {
         const list = all.filter((b) => b.group === g.id);
         return {
-          id: g.id, label: g.label, icon: g.icon,
-          badges: list,
+          id: g.id, label: natk(g, "label"), icon: g.icon,
+          badges: loc(list), // …En-Felder (nameEn/descriptionEn/unlockedTextEn) überlagern
           unlocked: list.filter((b) => b.unlocked).length,
           total: list.length,
         };
@@ -672,9 +695,9 @@
   // Szenen-Auswahl: "Alle" + je Szene mit Anzahl verfügbarer Aufgaben.
   // Wählbare Battle-Längen (Runden). Werte gerade halten, damit A/B gleich oft drankommen.
   const BATTLE_LENGTHS = [
-    { value: 6, label: "Kurz" },
-    { value: 10, label: "Mittel" },
-    { value: 20, label: "Lang" },
+    { value: 6, labelKey: "app.battleLenShort" },
+    { value: 10, labelKey: "app.battleLenMedium" },
+    { value: 20, labelKey: "app.battleLenLong" },
   ];
 
   // Gerade Rundenzahl (A,B,A,B…); bei nur 1 Aufgabe bleibt 1 Runde.
@@ -684,13 +707,13 @@
     const scenes = data.BATTLE_SCENES
       .map((s) => {
         const count = data.BATTLES.filter((b) => b.scene === s.id).length;
-        return { id: s.id, label: s.label, icon: s.icon, count,
+        return { id: s.id, label: natk(s, "label"), icon: s.icon, count,
           rounds: evenRounds(Math.min(state.battleLength, count)) };
       })
       .filter((s) => s.count > 0);
     // Object.assign statt Objekt-Spread: die App verspricht ES2017 (Spread auf
     // Objekten ist ES2018 und wirft auf alten WebViews einen SyntaxError).
-    const lengths = BATTLE_LENGTHS.map((l) => Object.assign({}, l, { selected: l.value === state.battleLength }));
+    const lengths = BATTLE_LENGTHS.map((l) => Object.assign({}, l, { label: t(l.labelKey), selected: l.value === state.battleLength }));
     const totalCount = data.BATTLES.length;
     return {
       scenes,
@@ -704,7 +727,7 @@
   // Anzeigename eines Spielers ("A"/"B") – eingegeben oder Fallback "Spieler A/B".
   function playerName(b, side) {
     const n = b.names && b.names[side];
-    return n && n.trim() ? n.trim() : "Spieler " + side;
+    return n && n.trim() ? n.trim() : t("app.player", { side });
   }
 
   function battleVM() {
@@ -718,7 +741,7 @@
       ? prompt.acceptable.filter((a) => matcher.normalize(a) !== matcher.normalize(prompt.answerEs))
       : [];
     return {
-      sceneLabel: b.sceneId === "all" ? "Alle Szenen" : (scene ? scene.label : ""),
+      sceneLabel: b.sceneId === "all" ? t("app.allScenes") : (scene ? natk(scene, "label") : ""),
       sceneIcon: b.sceneId === "all" ? "🎲" : (scene ? scene.icon : "🛏️"),
       round: b.round,
       totalRounds: b.totalRounds,
@@ -731,11 +754,11 @@
       scores: b.scores,
       revealed: b.revealed,
       suddenDeath: !!b.suddenDeath,
-      promptDe: prompt ? prompt.promptDe : "",
+      promptDe: prompt ? natk(prompt, "promptDe") : "",
       answerEs: prompt ? prompt.answerEs : "",
       alsoOk,
       levelShort: lvl ? lvl.short : "",
-      hint: prompt ? prompt.hint : "",
+      hint: prompt ? natk(prompt, "hint") : "",
     };
   }
 
@@ -744,8 +767,8 @@
     const a = b.scores.A, bb = b.scores.B;
     const winner = a === bb ? "tie" : (a > bb ? "A" : "B");
     return {
-      sceneLabel: b.sceneId === "all" ? "Alle Szenen"
-        : ((data.BATTLE_SCENES.find((s) => s.id === b.sceneId) || {}).label || ""),
+      sceneLabel: b.sceneId === "all" ? t("app.allScenes")
+        : natk(data.BATTLE_SCENES.find((s) => s.id === b.sceneId) || {}, "label"),
       scores: b.scores,
       rounds: b.totalRounds,
       winner,
@@ -753,7 +776,7 @@
       nameB: playerName(b, "B"),
       winnerName: winner === "tie" ? "" : playerName(b, winner),
       suddenDeath: !!b.suddenDeath, // lief schon eine Stichrunde? (Label „noch eine")
-      challenge: b.challenge, // { id, textDe, phraseEs } | null
+      challenge: b.challenge ? Object.assign({}, b.challenge, { textDe: natk(b.challenge, "textDe") }) : null, // { id, textDe, phraseEs } | null
       challengeDone: !!(b.challenge && gamestats.challengesDone && gamestats.challengesDone[b.challenge.id]),
     };
   }
@@ -762,7 +785,7 @@
     return {
       scenes: data.ROLEPLAYS.map((r) => {
         const lvl = levelById(r.level);
-        return { id: r.id, title: r.title, roleA: r.roles.a, roleB: r.roles.b,
+        return { id: r.id, title: natk(r, "title"), roleA: r.roles.a, roleB: r.roles.b,
           lvlShort: lvl ? lvl.short : "" };
       }),
     };
@@ -775,15 +798,15 @@
     // Rollen-Tausch: A↔B (Ziele & Sprecher-Labels), Dialog-Reihenfolge bleibt gleich.
     const swapped = state.roleplaySwapped;
     return {
-      title: r.title,
+      title: natk(r, "title"),
       lvlShort: lvl ? lvl.short : "",
-      situationDe: r.situationDe,
+      situationDe: natk(r, "situationDe"),
       swapped,
-      roleA: { name: swapped ? r.roles.b : r.roles.a, goal: swapped ? r.goalB : r.goalA },
-      roleB: { name: swapped ? r.roles.a : r.roles.b, goal: swapped ? r.goalA : r.goalB },
+      roleA: { name: swapped ? r.roles.b : r.roles.a, goal: natk(r, swapped ? "goalB" : "goalA") },
+      roleB: { name: swapped ? r.roles.a : r.roles.b, goal: natk(r, swapped ? "goalA" : "goalB") },
       dialogue: r.dialogue.map((d) => ({
         speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
-        de: d.de, es: d.es,
+        de: nat(d), es: d.es,
       })),
       usefulPhrases: r.usefulPhrases,
     };
@@ -800,14 +823,14 @@
   function buildQuizOptions(correct, pool) {
     const distractors = shuffle(pool.filter((d) => d.id !== correct.id)).slice(0, 3);
     return shuffle([correct, ...distractors])
-      .map((d) => ({ id: d.id, es: d.es, de: d.de, icon: d.icon }));
+      .map((d) => ({ id: d.id, es: d.es, de: d.de, en: d.en, icon: d.icon }));
   }
 
   function quizSetupVM() {
     return {
       sets: data.QUIZ_SETS.map((s) => {
         const lvl = levelById(s.lvl);
-        return { id: s.id, label: s.label, icon: s.icon, intro: s.intro,
+        return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
           count: quizDefsForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
       }),
     };
@@ -819,7 +842,7 @@
     const def = quizDefById(q.queue[q.idx]);
     const answered = q.selected !== null;
     const options = q.options.map((o) => ({
-      id: o.id, es: o.es, de: o.de, icon: o.icon,
+      id: o.id, es: o.es, de: nat(o), icon: o.icon,
       // Zustand fürs Einfärben: vor der Antwort neutral, danach Lösung grün,
       // falsche Wahl rot, der Rest gedämpft.
       state: !answered ? "idle"
@@ -837,7 +860,7 @@
       answered,
       isCorrect: q.selected === def.id,
       solutionEs: def.es,
-      solutionDe: def.de,
+      solutionDe: nat(def),
       isLast: q.idx >= q.total - 1,
     };
   }
@@ -946,7 +969,7 @@
   // Übungskarten der Kategorie "tiempos".
   function tiemposVM() {
     return {
-      guide: data.TENSES,
+      guide: loc(data.TENSES),
       cardCount: data.CARDS.filter((c) => c.cat === "tiempos").length,
     };
   }
@@ -978,13 +1001,13 @@
   function frasesSetupVM() {
     const sets = (frases && frases.FRASES_SETS ? frases.FRASES_SETS : []).map((s) => {
       const lvl = levelById(s.lvl);
-      return { id: s.id, label: s.label, icon: s.icon, intro: s.intro,
+      return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
         count: frasesForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
     });
     return {
       sets,
-      mixed: { id: FRASES_ALL, label: "Gemischt", icon: "🎲",
-        intro: "Alle Themen bunt gemischt – die volle Runde.",
+      mixed: { id: FRASES_ALL, label: t("app.mixed"), icon: "🎲",
+        intro: t("app.frasesMixedIntro"),
         count: frases ? frases.FRASES.length : 0 },
     };
   }
@@ -1014,7 +1037,7 @@
 
   // Kopf-Infos zum laufenden Set (Label/Icon) – "Gemischt" hat keinen Datensatz.
   function frasesSetInfo(setId) {
-    if (setId === FRASES_ALL) return { label: "Gemischt", icon: "🎲" };
+    if (setId === FRASES_ALL) return { label: t("app.mixed"), icon: "🎲" };
     const s = frasesSetById(setId);
     return { label: s ? s.label : "", icon: s ? s.icon : "🧱" };
   }
@@ -1025,7 +1048,7 @@
     const answered = f.selected !== null;
     const info = frasesSetInfo(f.setId);
     const options = f.options.map((o, i) => ({
-      es: o.es, de: o.de,
+      es: o.es, de: nat(o),
       // vor der Antwort neutral; danach Lösung grün, falsche Wahl rot, Rest gedämpft.
       state: !answered ? "idle"
         : o.correct ? "correct"
@@ -1037,10 +1060,10 @@
       setLabel: info.label, setIcon: info.icon,
       position: f.idx, total: f.total,
       frameEs: frame ? frame.frameEs : "",
-      targetDe: frame ? frame.targetDe : "",
+      targetDe: frame ? natk(frame, "targetDe") : "",
       options, answered,
       isCorrect: answered && !!(f.options[f.selected] && f.options[f.selected].correct),
-      solutionEs: sol.es, solutionDe: sol.de,
+      solutionEs: sol.es, solutionDe: nat(sol),
       isLast: f.idx >= f.total - 1,
     };
   }
@@ -1114,7 +1137,7 @@
       scenarios: dialogosReady()
         ? dialogos.DIALOGOS_SCENARIOS
             .filter((s) => dialogos.DIALOGOS.some((d) => d.cat === s.id))
-            .map((s) => ({ id: s.id, title: s.title, icon: s.icon, lvl: s.lvl, intro: s.intro }))
+            .map((s) => ({ id: s.id, title: natk(s, "title"), icon: s.icon, lvl: s.lvl, intro: natk(s, "intro") }))
         : [],
       hasSpeech: !!(speech && speech.isSupported()),
     };
@@ -1131,23 +1154,23 @@
     for (let i = 0; i < d.turnIdx; i++) {
       const t = turns[i];
       if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: t.de });
+      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: nat(t) });
       else transcript.push({ who: "user", es: t.solEs, de: "" });
     }
     const cur = turns[d.turnIdx] || null;
     const current = cur
       ? (cur.who === "npc"
-          ? { who: "npc", es: cur.es, de: cur.de }
+          ? { who: "npc", es: cur.es, de: nat(cur) }
           : {
               who: "user",
               kind: cur.kind,
-              de: cur.de,
+              de: nat(cur),
               solEs: cur.solEs,
               options: cur.kind === "mc" ? cur.options.map((o) => ({ es: o.es })) : null,
             })
       : null;
     return {
-      title: dia ? dia.title : "",
+      title: dia ? natk(dia, "title") : "",
       icon: scn ? scn.icon : "💬",
       turnIdx: d.turnIdx,
       total: turns.length,
@@ -1164,7 +1187,7 @@
     const dia = dialogueById(d.dialogueId);
     const scn = scenarioById(d.scenarioId);
     return {
-      title: dia ? dia.title : "",
+      title: dia ? natk(dia, "title") : "",
       icon: scn ? scn.icon : "💬",
       correct: d.correct,
       total: d.totalUser,
@@ -1287,14 +1310,14 @@
   function cuerpoVM() {
     const selId = state.bodyPartId;
     const parts = data.BODY_PARTS.map((p) => ({
-      id: p.id, de: p.de, x: p.x, y: p.y,
+      id: p.id, de: nat(p), x: p.x, y: p.y,
       selected: p.id === selId,
       seen: !!(gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[p.id]),
     }));
     const sel = bodyPartById(selId);
     return {
       parts,
-      selected: sel ? { id: sel.id, es: sel.es, de: sel.de, tip: sel.tip, note: sel.note } : null,
+      selected: sel ? { id: sel.id, es: sel.es, de: nat(sel), tip: sel.tip, note: sel.note } : null,
       exploredCount: gamestats.bodyPartsSeen ? Object.keys(gamestats.bodyPartsSeen).length : 0,
       total: data.BODY_PARTS.length,
       speakable: !!(speech && speech.isSupported()),
@@ -1364,8 +1387,8 @@
   // funktioniert für Ein- und Mehrzahl gleich (keine está/están-Falle).
   function shoppingAskPhrases(item) {
     return {
-      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: "Haben Sie das?" },
-      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: "Wo finde ich das?" },
+      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: t("common.askHave") },
+      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: t("common.askFind") },
     };
   }
 
@@ -1374,17 +1397,17 @@
     const sec = shoppingSectionById(curId) || shoppingSections()[0];
     const seen = gamestats.shoppingSeen || {};
     const sections = shoppingSections().map((s) => ({
-      id: s.id, icon: s.icon, label: s.label, de: s.de,
+      id: s.id, icon: s.icon, label: s.label, de: nat(s),
       active: s.id === sec.id, total: s.items.length, done: shoppingSectionDone(s),
     }));
     const items = sec.items.map((it) => ({
-      id: it.id, de: it.de, es: it.es, tip: it.tip, note: it.note,
+      id: it.id, de: nat(it), es: it.es, tip: it.tip, note: it.note,
       ask: shoppingAskPhrases(it),
       open: state.compras.open === it.id, seen: !!seen[it.id],
     }));
     return {
       sections,
-      section: { id: sec.id, icon: sec.icon, label: sec.label, de: sec.de, grad: sec.grad },
+      section: { id: sec.id, icon: sec.icon, label: sec.label, de: nat(sec), grad: sec.grad },
       items,
       doneCount: shoppingSectionDone(sec),
       total: sec.items.length,
@@ -1971,7 +1994,7 @@
     const controls = document.getElementById("controls");
     if (flipEl) {
       flipEl.classList.toggle("is-flipped", state.revealed);
-      flipEl.setAttribute("aria-label", state.revealed ? "Karte ist umgedreht – tippen zum Zurückdrehen" : "Karte umdrehen");
+      flipEl.setAttribute("aria-label", state.revealed ? t("app.cardFlipped") : t("app.cardFlip"));
     }
     if (controls) controls.toggleAttribute("hidden", !state.revealed);
   }
@@ -1989,7 +2012,7 @@
     if (btn) {
       btn.setAttribute("aria-expanded", String(!!open));
       btn.classList.toggle("is-open", !!open);
-      if (btn.dataset.ctxText) btn.textContent = open ? "🧭 Kontext ausblenden" : "🧭 Kontext";
+      if (btn.dataset.ctxText) btn.textContent = open ? t("app.contextHide") : t("app.contextShow");
     }
     return panel;
   }
@@ -2009,8 +2032,8 @@
     const card = cardById(state.queue[0]);
     if (!card) return;
     // Hör-Modus prüft immer gegen Spanisch (man tippt das Gehörte). Sonst nach
-    // Richtung: ES→DE erwartet die deutsche Antwort, DE→ES die spanische.
-    const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "de" : "es");
+    // Richtung: ES→native erwartet die muttersprachliche Antwort, native→ES die spanische.
+    const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "native" : "es");
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
     state.contextOpen = false;
     render();
@@ -2080,7 +2103,7 @@
   function notifySaveFailed() {
     if (saveFailedNotified) return;
     saveFailedNotified = true;
-    showNotice("Speichern fehlgeschlagen – Speicher voll?");
+    showNotice(t("app.saveFailed"));
   }
 
   function setMode(mode) {
@@ -2128,7 +2151,24 @@
     render();
   }
 
-  // Lernrichtung umschalten (DE→ES / ES→DE) und merken.
+  // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
+  // Wird beim Start UND bei jedem Wechsel aufgerufen (Single Source of Truth).
+  function applyUiLang(l) {
+    const next = l === "en" ? "en" : "de";
+    state.uiLang = next;
+    if (i18n) i18n.setLang(next);
+    try { document.documentElement.lang = next; } catch (e) { /* egal */ }
+  }
+
+  // UI-/Muttersprache umschalten (de/en), merken und neu rendern.
+  function setUiLang(l) {
+    applyUiLang(l);
+    settings = Object.assign({}, settings, { uiLang: state.uiLang });
+    store.saveSettings(settings);
+    render();
+  }
+
+  // Lernrichtung umschalten (native→ES / ES→native) und merken.
   function setDir(dir) {
     state.dir = dir === "es2de" ? "es2de" : "de2es";
     state.contextOpen = false;
@@ -2388,11 +2428,11 @@
         if (cards.length >= g.limit) break;
         if (used.has(c.id)) continue;
         used.add(c.id);
-        cards.push({ id: c.id, de: c.de, es: c.es, tip: c.tip || null });
+        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null });
       }
       return {
         id: g.cat,
-        label: cat ? cat.label : g.cat,
+        label: cat ? natk(cat, "label") : g.cat,
         icon: cat ? cat.icon : "📌",
         grad: cat ? cat.grad : DEFAULT_ACCENT,
         cards,
@@ -2446,17 +2486,17 @@
     return {
       speakable: preciosReady(),
       currencies: numbers ? numbers.currencyList().map((c) => ({
-        key: c.key, flag: c.flag, name: c.name, code: c.code, note: c.note,
+        key: c.key, flag: c.flag, name: natk(c, "name"), code: c.code, note: natk(c, "note"),
         selected: c.key === curKey,
       })) : [],
       levels: numbers ? numbers.LEVELS.map((l) => ({
-        id: l.id, short: l.short, label: l.label, hint: l.hint, active: l.id === lvl,
+        id: l.id, short: l.short, label: natk(l, "label"), hint: natk(l, "hint"), active: l.id === lvl,
       })) : [],
       // Beispiel-Spanne der aktuellen Wahl (gibt eine Vorstellung der Größenordnung).
       sample: numbers ? (() => {
         const c = numbers.currency(curKey);
         const tier = numbers.tierFor(c, lvl);
-        return { flag: c.flag, name: c.name, max: numbers.format(tier.max), one: c.one, many: c.many };
+        return { flag: c.flag, name: natk(c, "name"), max: numbers.format(tier.max), one: c.one, many: c.many };
       })() : null,
     };
   }
@@ -2472,7 +2512,7 @@
       answerEs: item.es || "",
       answerDigits: item.digits || "",
       flag: cur.flag,
-      currencyName: cur.name,
+      currencyName: natk(cur, "name"),
       currencyCode: cur.code,
       isLast: p.idx >= p.total - 1,
       speakable: preciosReady(),
@@ -2488,8 +2528,8 @@
       total: p.total,
       perfect: p.total > 0 && p.correct === p.total,
       flag: cur.flag,
-      currencyName: cur.name,
-      levelLabel: lvl ? lvl.label : "",
+      currencyName: natk(cur, "name"),
+      levelLabel: lvl ? natk(lvl, "label") : "",
       hard: p.level >= 3,
     };
   }
@@ -2586,7 +2626,9 @@
   function conjugSetupVM() {
     return {
       available: conjugReady(),
-      levels: CONJUG_LEVELS.map((l) => ({ ...l, active: l.id === state.conjugLevel })),
+      levels: CONJUG_LEVELS.map((l) => ({ ...l,
+        short: t(`app.conjL${l.id}Short`), label: t(`app.conjL${l.id}Label`),
+        active: l.id === state.conjugLevel })),
     };
   }
 
@@ -2598,9 +2640,9 @@
       total: c.total,
       result: c.result, // null | { correct, input, answer }
       verb: item.verb || "",
-      verbHint: item.verbHint || "",
+      verbHint: natk(item, "verbHint") || "",
       personEs: item.personEs || "",
-      personDe: item.personDe || "",
+      personDe: natk(item, "personDe") || "",
       isLast: c.idx >= c.total - 1,
     };
   }
@@ -2612,7 +2654,7 @@
       correct: c.correct,
       total: c.total,
       perfect: c.total > 0 && c.correct === c.total,
-      levelLabel: lvl ? lvl.label : "",
+      levelLabel: lvl ? t(`app.conjL${lvl.id}Label`) : "",
     };
   }
 
@@ -2741,7 +2783,7 @@
 
   // Gesamten Lernfortschritt löschen (nach Rückfrage). Einstellungen bleiben erhalten.
   function resetProgress() {
-    const ok = confirmAsk("Wirklich den gesamten Lernfortschritt löschen?\nDas kann nicht rückgängig gemacht werden.");
+    const ok = confirmAsk(t("app.confirmResetProgress"));
     if (!ok) return;
     store.resetProgress();
     progress = {};
@@ -2784,8 +2826,8 @@
     const cards = userCards ? userCards.list() : [];
     return {
       supported: !!userCards,
-      categories: data.CATEGORIES.map((c) => ({ id: c.id, label: c.label, icon: c.icon })),
-      levels: data.LEVELS.map((l) => ({ id: l.id, label: l.label, short: l.short })),
+      categories: data.CATEGORIES.map((c) => ({ id: c.id, label: natk(c, "label"), icon: c.icon })),
+      levels: data.LEVELS.map((l) => ({ id: l.id, label: natk(l, "label"), short: l.short })),
       msg: editorMsg,
       cards: cards.map((c) => {
         const cat = categoryById(c.cat);
@@ -2793,7 +2835,7 @@
         return {
           id: c.id, de: c.de, es: c.es, tip: c.tip,
           catIcon: cat ? cat.icon : "🗂️",
-          catLabel: cat ? cat.label : c.cat,
+          catLabel: cat ? natk(cat, "label") : c.cat,
           lvlShort: lvl ? lvl.short : "",
         };
       }),
@@ -2822,7 +2864,7 @@
       editorMsg = { type: "error", text: errs.join(" ") };
     } else {
       const card = userCards.add(input);
-      editorMsg = { type: "ok", text: `„${card.de}" → „${card.es}" gespeichert ✓` };
+      editorMsg = { type: "ok", text: t("app.cardSaved", { de: card.de, es: card.es }) };
       buzz(12);
     }
     render();
@@ -2830,7 +2872,7 @@
 
   function deleteCard(id) {
     if (!userCards) return;
-    const ok = confirmAsk("Diese eigene Karte wirklich löschen?\nDer Lernfortschritt dieser Karte geht verloren.");
+    const ok = confirmAsk(t("app.confirmDeleteCard"));
     if (!ok) return;
     userCards.remove(id);
     // Lernfortschritt dieser Karte mit entfernen (verwaiste Einträge vermeiden).
@@ -2840,7 +2882,7 @@
       progress = next;
       store.saveProgress(progress);
     }
-    editorMsg = { type: "ok", text: "Karte gelöscht." };
+    editorMsg = { type: "ok", text: t("app.cardDeleted") };
     render();
   }
 
@@ -2862,7 +2904,7 @@
       buzz(8);
     } catch (e) {
       console.warn("Export fehlgeschlagen", e);
-      showNotice("Export fehlgeschlagen.");
+      showNotice(t("app.exportFailed"));
     }
     if (url) setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* egal */ } }, 1000);
   }
@@ -2883,18 +2925,18 @@
       let payload = null;
       try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
       if (!payload || typeof payload !== "object" || !payload.data || typeof payload.data !== "object") {
-        showNotice("Import fehlgeschlagen – das ist kein HolaRuta-Backup.");
+        showNotice(t("app.importNotBackup"));
         return;
       }
-      const ok = confirmAsk("Backup importieren?\nDein aktueller Stand auf diesem Gerät wird überschrieben.");
+      const ok = confirmAsk(t("app.confirmImport"));
       if (!ok) return;
       if (store.importData(payload) > 0) {
         try { location.reload(); } catch (e) { /* egal */ }
       } else {
-        showNotice("Import fehlgeschlagen – keine bekannten Daten in der Datei.");
+        showNotice(t("app.importNoData"));
       }
     };
-    reader.onerror = () => showNotice("Import fehlgeschlagen – Datei konnte nicht gelesen werden.");
+    reader.onerror = () => showNotice(t("app.importReadError"));
     reader.readAsText(file);
   }
 
@@ -2925,13 +2967,13 @@
     const cat = categoryById(card.cat);
     const lvl = levelById(card.lvl);
     return {
-      de: card.de,
+      de: nat(card),
       es: card.es,
       tip: card.tip || null,
-      catLabel: cat ? cat.label : "",
+      catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
       accent: cat ? cat.grad : DEFAULT_ACCENT,
-      levelLabel: lvl ? `${lvl.short} · ${lvl.label}` : null,
+      levelLabel: lvl ? `${lvl.short} · ${natk(lvl, "label")}` : null,
     };
   }
 
@@ -3000,6 +3042,7 @@
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
     else if (action === "toggle-theme") toggleTheme();
     else if (action === "set-dir") setDir(el.dataset.dir);
+    else if (action === "set-ui-lang") setUiLang(el.dataset.lang);
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
@@ -3307,6 +3350,7 @@
   if (window.SC && window.SC.install) {
     window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
   }
+  applyUiLang(state.uiLang); // UI-Sprache setzen (i18n + <html lang>) VOR dem ersten render
   checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
   render();
   registerServiceWorker();
