@@ -1,13 +1,20 @@
 /*
  * service-worker.js – macht HolaRuta offline-tauglich (PWA).
  * Strategie: "Cache zuerst" für die App-Dateien, damit sie unterwegs ohne
- * Internet startet. Bei jeder Version CACHE_VERSION hochzählen -> alte Caches
- * werden beim Aktivieren entfernt und die App lädt frisch.
+ * Internet startet. Ändert sich der Cache-Name, werden alte Caches beim
+ * Aktivieren entfernt und die App lädt frisch.
+ *
+ * CACHE_VERSION wird NICHT von Hand gepflegt: `node build.js` stempelt hier
+ * automatisch einen Inhalts-Hash über alle precachten Assets (siehe
+ * swversion.js). Sobald sich eine ausgelieferte Datei ändert, ändert sich der
+ * Name -> der alte Cache wird verworfen. (Früher musste man von Hand
+ * hochzählen; wurde das vergessen, blieben installierte PWAs auf alten Dateien.)
+ *
  * Hinweis: kein skipWaiting/clients.claim – die neue Version übernimmt erst
  * beim nächsten Start. So mischen sich nie alte und neue Dateien in einer
  * laufenden Sitzung (Mixed-Version-Load).
  */
-const CACHE_VERSION = "holaruta-v33";
+const CACHE_VERSION = "holaruta-d003dba0778d"; // von build.js gestempelt – nicht von Hand ändern
 const ASSETS = [
   "./",
   "./index.html",

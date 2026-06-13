@@ -405,7 +405,7 @@ Normalisiert wird über:
 [service-worker.js](service-worker.js) macht HolaRuta zur installierbaren, offline-fähigen App:
 
 - **Strategie:** *Cache-first* für die App-Shell — startet sofort, auch ohne Netz
-- **Versionierung:** `CACHE_VERSION` bumpen → alte Caches werden beim Aktivieren entfernt, frische Inhalte geladen
+- **Versionierung:** `CACHE_VERSION` = Inhalts-Hash der Assets, automatisch von `node build.js` gestempelt (nie von Hand) → ändert sich eine ausgelieferte Datei, wird der alte Cache beim Aktivieren entfernt und frische Inhalte geladen. Ein Test (`test/sw-version.test.js`) + der CI-Drift-Check blockieren einen veralteten Cache.
 - **Navigations-Fallback:** Bei Seitenaufrufen ohne Treffer liefert der SW `index.html` statt eines Netzwerkfehlers
 - **Manifest:** Standalone-Display, Portrait, Markenfarbe `#241510`, Kategorien `education` + `travel`
 

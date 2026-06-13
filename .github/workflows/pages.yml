@@ -39,8 +39,10 @@ concurrency:
 
 jobs:
   # Test-Gate: kaputter Code darf nicht live gehen (und würde von PWA-Nutzern
-  # offline gecacht). Prüft außerdem, dass das eingecheckte Single-File-Build
-  # HolaRuta.html zum Quellcode passt (kein Build-Drift).
+  # offline gecacht). Prüft außerdem, dass die generierten Artefakte zum
+  # Quellcode passen (kein Build-Drift): das Single-File-Build HolaRuta.html UND
+  # der gestempelte Service-Worker-Cache-Name (CACHE_VERSION). Letzterer sorgt
+  # dafür, dass ausgelieferte Änderungen nie in einem alten Cache hängenbleiben.
   # Hinweis: Das Projekt hat keine Dependencies/keinen Lockfile — kein npm ci nötig.
   test:
     runs-on: ubuntu-latest
@@ -56,10 +58,10 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Verify single-file build is up to date
+      - name: Verify generated artifacts are up to date
         run: |
           node build.js
-          git diff --exit-code HolaRuta.html
+          git diff --exit-code HolaRuta.html service-worker.js
 
   deploy:
     needs: test

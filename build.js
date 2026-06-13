@@ -1,20 +1,23 @@
 /*
  * build.js – Erzeugt die eigenständige Versand-Datei HolaRuta.html
- * aus der modularen Quelle (index.html + styles.css + *.js).
+ * aus der modularen Quelle (index.html + styles.css + *.js) UND stempelt den
+ * Service-Worker-Cache-Namen (siehe swversion.js).
  *
  * Aufruf:  node build.js
  *
- * Quelle der Wahrheit sind die Module. HolaRuta.html ist NUR ein Ergebnis
- * dieses Skripts und sollte nie von Hand bearbeitet werden.
+ * Quelle der Wahrheit sind die Module. HolaRuta.html und CACHE_VERSION sind NUR
+ * Ergebnisse dieses Skripts und sollten nie von Hand bearbeitet werden.
  *
  * Was passiert:
  *   - <link rel="stylesheet" href="styles.css"> -> Inhalt als <style> eingebettet
  *   - jedes <script src="x.js">                  -> Inhalt als <script> eingebettet
  *   - PWA-Verweise (manifest/icon)               -> entfernt (lösen offline/als Datei nicht auf)
+ *   - service-worker.js: CACHE_VERSION           -> auf Inhalts-Hash der Assets gestempelt
  */
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const { stampServiceWorker } = require("./swversion.js");
 
 const DIR = __dirname;
 const SOURCE = "index.html";
@@ -62,6 +65,11 @@ try {
   const files = build();
   console.log(`✓ ${OUTPUT} erzeugt.`);
   console.log(`  Eingebettet: ${files.join(", ")}`);
+  // Service-Worker-Cache-Namen aus dem Inhalts-Hash der Assets stempeln, damit
+  // ausgelieferte Änderungen immer einen frischen Cache bekommen (kein manuelles
+  // Hochzählen mehr – das wurde sonst vergessen).
+  const sw = stampServiceWorker();
+  console.log(`✓ service-worker.js: CACHE_VERSION = ${sw.version}${sw.changed ? " (aktualisiert)" : " (unverändert)"}`);
 } catch (err) {
   console.error("✗ Build fehlgeschlagen:", err.message);
   process.exit(1);

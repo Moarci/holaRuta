@@ -7,8 +7,9 @@
  * einen Hinweis ein, WAS neu ist und WIE man aktuell bleibt.
  *
  * Pflege: bei jeder veröffentlichten Änderung oben einen neuen Eintrag
- * ergänzen (NEUESTE zuerst) und – falls Dateien dazukamen/sich änderten –
- * CACHE_VERSION im service-worker.js hochzählen.
+ * ergänzen (NEUESTE zuerst). Den Service-Worker-Cache muss man NICHT mehr von
+ * Hand hochzählen – `node build.js` stempelt CACHE_VERSION automatisch aus dem
+ * Inhalts-Hash der Assets (siehe swversion.js).
  *
  * Öffentlich (window.SC.changelog):
  *   VERSION         – aktuelle App-Version (= neuester entries-Eintrag)
