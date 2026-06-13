@@ -337,25 +337,6 @@ body {
   border-radius: 999px; padding: 2px 9px; font-size: 0.78rem; font-weight: 800;
 }
 
-/* Einstellungs-Zusammenfassung auf dem Dashboard – führt per Tap ins Profil */
-.setup {
-  border: 1.5px solid var(--line); border-radius: var(--r-md);
-  background: var(--card); box-shadow: var(--shadow); overflow: hidden;
-}
-.setup__head {
-  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px;
-  border: none; background: transparent; cursor: pointer; padding: 12px 14px; text-align: left;
-  color: inherit; font-family: inherit;
-}
-.setup__cap {
-  flex: none; font-size: 0.78rem; font-weight: 800;
-  letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft);
-}
-.setup__summary {
-  flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  text-align: right; font-size: 0.82rem; font-weight: 700; color: var(--muted);
-}
-.setup__chev { flex: none; font-size: 1.2rem; font-weight: 700; color: var(--muted); }
 
 /* Abschnitts-Überschriften der Startseite ("Themen") */
 .sectioncap {
@@ -2365,6 +2346,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tileDone: "✓ erledigt",
     tileCards: (p) => `${p.n} Karten`,
     sectionTopics: "Themen",
+    sectionLevels: "Stufen",
     // Stufen-Filter
     levelsAll: "Alle",
     levelsGroup: "Schwierigkeitsstufe",
@@ -2395,12 +2377,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tripTodayCount: (p) => `${p.done}/${p.perDay} heute${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Einstellungen
-    setupAllLevels: "Alle Stufen",
     modeFlip: "🃏 Karteikarte",
     modeType: "⌨️ Schreiben",
     modeListen: "👂 Hören",
     settingsCap: "⚙️ Einstellungen",
-    settingsToProfile: "Einstellungen im Profil öffnen",
     speechRate: "Sprechtempo",
     speechRateAria: "Sprechtempo der Vorlese-Stimme",
     rateSlow: "🐢 Langsam",
@@ -2423,6 +2403,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tileDone: "✓ done",
     tileCards: (p) => `${p.n} cards`,
     sectionTopics: "Topics",
+    sectionLevels: "Levels",
     levelsAll: "All",
     levelsGroup: "Level",
     levelTitle: (p) => `${p.label} · ${p.n} cards`,
@@ -2449,12 +2430,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripTodayCount: (p) => `${p.done}/${p.perDay} today${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
-    setupAllLevels: "All levels",
     modeFlip: "🃏 Flashcard",
     modeType: "⌨️ Writing",
     modeListen: "👂 Listening",
     settingsCap: "⚙️ Settings",
-    settingsToProfile: "Open settings in Profile",
     speechRate: "Speech rate",
     speechRateAria: "Speech rate of the read-aloud voice",
     rateSlow: "🐢 Slow",
@@ -14523,21 +14502,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`;
   }
 
-  // Lern-Voreinstellungen (Modus · Richtung · Stufen · Sprechtempo). Sie leben im
-  // Profil-Reiter als globale Vorgaben – das Dashboard zeigt davon nur noch die
-  // Zusammenfassung (früher klappte hier ein volles Panel auf, das wurde zu
-  // unübersichtlich). Jede Gruppe trägt ihre eigene Beschriftung.
+  // Lern-Voreinstellungen (Modus · Richtung · Sprechtempo). Set-once-Vorgaben,
+  // deshalb gebündelt im Profil-Reiter. Die Stufen-Auswahl bleibt dagegen aufs
+  // Dashboard (siehe lernenBody) – die ändert man laufend beim Lernen.
+  // Jede Gruppe trägt ihre eigene Beschriftung.
   function learnPrefs(vm) {
     const mode = vm.mode;
-    // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit Kartenzahl).
-    const levelChips = [
-      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
-      ...vm.levels.map((l) =>
-        `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
-                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
-           <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
-         </button>`),
-    ].join("");
     // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
     // sonst gäbe es nichts zu hören (graceful degradation).
     const listenSeg = speechReady()
@@ -14572,10 +14542,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → ${vm.nativeFlag} Español</button>
         </div>
       </div>
-      <div class="switchgroup">
-        <span class="switchcap">${esc(t("home.levelsGroup"))}</span>
-        <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
-      </div>
       ${speedGroup}`;
   }
 
@@ -14599,8 +14565,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </button>`;
       })
       .join("");
-
-    const mode = vm.mode;
 
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
     // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
@@ -14659,15 +14623,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       tripCard = `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
     }
 
-    // Einstellungs-Zeile: fasst die aktive Wahl zusammen und führt per Tap in den
-    // Profil-Reiter, wo Modus/Richtung/Stufen/Tempo zentral eingestellt werden.
-    // (Früher klappte hier ein volles Panel auf – das wurde zu unübersichtlich.)
-    const lvlSummary = vm.allLevels
-      ? t("home.setupAllLevels")
-      : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
-    const modeLabel = mode === "type" ? t("home.modeType") : mode === "listen" ? t("home.modeListen") : t("home.modeFlip");
-    const dirSummary = vm.dir === "es2de" ? `🇪🇸→${vm.nativeFlag}` : `${vm.nativeFlag}→🇪🇸`;
-    const setupSummary = `${modeLabel} · ${dirSummary} · ${esc(lvlSummary)}`;
+    // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit
+    // Kartenzahl). Bleibt direkt aufs Dashboard – die ändert man laufend beim
+    // Lernen. Modus/Richtung/Tempo/Sprache leben dagegen im Profil-Reiter.
+    const levelChips = [
+      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
+      ...vm.levels.map((l) =>
+        `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
+                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
+           <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
+         </button>`),
+    ].join("");
 
     return `
       ${pagehead(esc(t("home.homePrompt")), vm)}
@@ -14686,13 +14652,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${tripCard}
       </div>
 
-      <div class="setup">
-        <button class="setup__head" data-action="set-tab" data-tab="profil" aria-label="${esc(t("home.settingsToProfile"))}">
-          <span class="setup__cap">${esc(t("home.settingsCap"))}</span>
-          <span class="setup__summary">${setupSummary}</span>
-          <span class="setup__chev" aria-hidden="true">›</span>
-        </button>
-      </div>
+      <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
+      <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
 
       <p class="sectioncap">${esc(t("home.sectionTopics"))}</p>
       <div class="tiles">${tiles}</div>

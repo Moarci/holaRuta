@@ -14,7 +14,7 @@
  * beim nächsten Start. So mischen sich nie alte und neue Dateien in einer
  * laufenden Sitzung (Mixed-Version-Load).
  */
-const CACHE_VERSION = "holaruta-d003dba0778d"; // von build.js gestempelt – nicht von Hand ändern
+const CACHE_VERSION = "holaruta-f21aee689ccb"; // von build.js gestempelt – nicht von Hand ändern
 const ASSETS = [
   "./",
   "./index.html",

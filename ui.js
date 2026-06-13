@@ -106,21 +106,12 @@
       </div>`;
   }
 
-  // Lern-Voreinstellungen (Modus · Richtung · Stufen · Sprechtempo). Sie leben im
-  // Profil-Reiter als globale Vorgaben – das Dashboard zeigt davon nur noch die
-  // Zusammenfassung (früher klappte hier ein volles Panel auf, das wurde zu
-  // unübersichtlich). Jede Gruppe trägt ihre eigene Beschriftung.
+  // Lern-Voreinstellungen (Modus · Richtung · Sprechtempo). Set-once-Vorgaben,
+  // deshalb gebündelt im Profil-Reiter. Die Stufen-Auswahl bleibt dagegen aufs
+  // Dashboard (siehe lernenBody) – die ändert man laufend beim Lernen.
+  // Jede Gruppe trägt ihre eigene Beschriftung.
   function learnPrefs(vm) {
     const mode = vm.mode;
-    // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit Kartenzahl).
-    const levelChips = [
-      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
-      ...vm.levels.map((l) =>
-        `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
-                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
-           <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
-         </button>`),
-    ].join("");
     // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
     // sonst gäbe es nichts zu hören (graceful degradation).
     const listenSeg = speechReady()
@@ -155,10 +146,6 @@
           <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → ${vm.nativeFlag} Español</button>
         </div>
       </div>
-      <div class="switchgroup">
-        <span class="switchcap">${esc(t("home.levelsGroup"))}</span>
-        <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
-      </div>
       ${speedGroup}`;
   }
 
@@ -182,8 +169,6 @@
           </button>`;
       })
       .join("");
-
-    const mode = vm.mode;
 
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
     // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
@@ -242,15 +227,17 @@
       tripCard = `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
     }
 
-    // Einstellungs-Zeile: fasst die aktive Wahl zusammen und führt per Tap in den
-    // Profil-Reiter, wo Modus/Richtung/Stufen/Tempo zentral eingestellt werden.
-    // (Früher klappte hier ein volles Panel auf – das wurde zu unübersichtlich.)
-    const lvlSummary = vm.allLevels
-      ? t("home.setupAllLevels")
-      : vm.levels.filter((l) => l.active).map((l) => l.short).join(" + ");
-    const modeLabel = mode === "type" ? t("home.modeType") : mode === "listen" ? t("home.modeListen") : t("home.modeFlip");
-    const dirSummary = vm.dir === "es2de" ? `🇪🇸→${vm.nativeFlag}` : `${vm.nativeFlag}→🇪🇸`;
-    const setupSummary = `${modeLabel} · ${dirSummary} · ${esc(lvlSummary)}`;
+    // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit
+    // Kartenzahl). Bleibt direkt aufs Dashboard – die ändert man laufend beim
+    // Lernen. Modus/Richtung/Tempo/Sprache leben dagegen im Profil-Reiter.
+    const levelChips = [
+      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
+      ...vm.levels.map((l) =>
+        `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
+                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
+           <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
+         </button>`),
+    ].join("");
 
     return `
       ${pagehead(esc(t("home.homePrompt")), vm)}
@@ -269,13 +256,8 @@
         ${tripCard}
       </div>
 
-      <div class="setup">
-        <button class="setup__head" data-action="set-tab" data-tab="profil" aria-label="${esc(t("home.settingsToProfile"))}">
-          <span class="setup__cap">${esc(t("home.settingsCap"))}</span>
-          <span class="setup__summary">${setupSummary}</span>
-          <span class="setup__chev" aria-hidden="true">›</span>
-        </button>
-      </div>
+      <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
+      <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
 
       <p class="sectioncap">${esc(t("home.sectionTopics"))}</p>
       <div class="tiles">${tiles}</div>

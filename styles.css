@@ -299,25 +299,6 @@ body {
   border-radius: 999px; padding: 2px 9px; font-size: 0.78rem; font-weight: 800;
 }
 
-/* Einstellungs-Zusammenfassung auf dem Dashboard – führt per Tap ins Profil */
-.setup {
-  border: 1.5px solid var(--line); border-radius: var(--r-md);
-  background: var(--card); box-shadow: var(--shadow); overflow: hidden;
-}
-.setup__head {
-  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px;
-  border: none; background: transparent; cursor: pointer; padding: 12px 14px; text-align: left;
-  color: inherit; font-family: inherit;
-}
-.setup__cap {
-  flex: none; font-size: 0.78rem; font-weight: 800;
-  letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft);
-}
-.setup__summary {
-  flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  text-align: right; font-size: 0.82rem; font-weight: 700; color: var(--muted);
-}
-.setup__chev { flex: none; font-size: 1.2rem; font-weight: 700; color: var(--muted); }
 
 /* Abschnitts-Überschriften der Startseite ("Themen") */
 .sectioncap {
