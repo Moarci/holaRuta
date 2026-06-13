@@ -236,6 +236,7 @@
       },
       lastCat,
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
+      rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       tab: state.homeTab,

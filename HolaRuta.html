@@ -1944,6 +1944,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .today__ruta:active { transform: translateY(1px); }
 .today__ruta-main { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; }
 .today__ruta-sub { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+/* Erledigt-Zustand: heute schon gelaufen – ruhiges Grün statt Marken-Akzent,
+   durchgezogener Rahmen statt der einladenden gestrichelten Linie. */
+.today__ruta--done {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--ok) 50%, var(--line-strong));
+  background: color-mix(in srgb, var(--ok) 10%, var(--surface));
+  color: var(--ink);
+}
+.today__ruta--done .today__ruta-main { color: var(--ok); }
 
 /* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
 .trip {
@@ -2399,6 +2408,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     resumeWith: (p) => `↩ Weiter mit ${p.cat}`,
     rutaTitle: "🗺️ Ruta del día",
     rutaSub: "Kurze Tagesrunde quer durch alle Themen",
+    rutaDoneTitle: "✓ Ruta del día geschafft",
+    rutaDoneSub: "Für heute erledigt – noch eine Runde?",
     allReviewed: "Alles wiederholt 🎉",
     startSession: "Lernrunde starten",
     sessionOf: (p) => `${p.cap} von ${p.due}`,
@@ -2458,6 +2469,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     resumeWith: (p) => `↩ Carry on with ${p.cat}`,
     rutaTitle: "🗺️ Ruta del día",
     rutaSub: "A short daily round across all topics",
+    rutaDoneTitle: "✓ Ruta del día done",
+    rutaDoneSub: "Done for today – one more round?",
     allReviewed: "All reviewed 🎉",
     startSession: "Start study session",
     sessionOf: (p) => `${p.cap} of ${p.due}`,
@@ -14715,8 +14728,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
          </button>`
       : "";
     // Ruta del día: ein Tap für eine kurze, kategorienübergreifende Tagesrunde –
-    // bevorzugt fällige Karten, sonst neue. Stärkt die Lern-Serie.
-    const rutaDia = `
+    // bevorzugt fällige Karten, sonst neue. Stärkt die Lern-Serie. Ist die heutige
+    // Runde schon gelaufen, zeigt der Button das mit Häkchen + erledigt-Text an
+    // (bleibt antippbar für eine optionale Extra-Runde).
+    const rutaDia = vm.rutaDone
+      ? `
+      <button class="today__ruta today__ruta--done" data-action="ruta-del-dia">
+        <span class="today__ruta-main">${esc(t("home.rutaDoneTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.rutaDoneSub"))}</span>
+      </button>`
+      : `
       <button class="today__ruta" data-action="ruta-del-dia">
         <span class="today__ruta-main">${esc(t("home.rutaTitle"))}</span>
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
@@ -17540,6 +17561,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       },
       lastCat,
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
+      rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       tab: state.homeTab,

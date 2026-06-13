@@ -1906,6 +1906,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .today__ruta:active { transform: translateY(1px); }
 .today__ruta-main { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; }
 .today__ruta-sub { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+/* Erledigt-Zustand: heute schon gelaufen – ruhiges Grün statt Marken-Akzent,
+   durchgezogener Rahmen statt der einladenden gestrichelten Linie. */
+.today__ruta--done {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--ok) 50%, var(--line-strong));
+  background: color-mix(in srgb, var(--ok) 10%, var(--surface));
+  color: var(--ink);
+}
+.today__ruta--done .today__ruta-main { color: var(--ok); }
 
 /* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
 .trip {
