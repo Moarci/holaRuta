@@ -226,7 +226,7 @@
     // die muttersprachliche Seite der Karten). Spiegelt das Richtungs-Muster.
     const langGroup = `
         <div class="switchgroup">
-          <span class="switchcap">${t("home.uiLanguage")}</span>
+          <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
           <div class="segmented" role="tablist" aria-label="${esc(t("home.uiLanguage"))}">
             <button class="seg ${vm.uiLang === "de" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="de" aria-pressed="${vm.uiLang === "de"}">🇩🇪 Deutsch</button>
             <button class="seg ${vm.uiLang === "en" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="en" aria-pressed="${vm.uiLang === "en"}">🇬🇧 English</button>

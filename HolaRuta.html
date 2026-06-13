@@ -2407,6 +2407,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeAria: "Lernmodus",
     dirLabel: "Richtung",
     dirAria: "Lernrichtung",
+    uiLanguage: "Sprache",
     // Karten-Prompt (Spanisch, beide Sprachen gleich)
     homePrompt: "¿Qué aprendemos hoy?",
     dedication: "Für meine liebe Lisa.",
@@ -2459,6 +2460,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeAria: "Study mode",
     dirLabel: "Direction",
     dirAria: "Study direction",
+    uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
     dedication: "For my dear Lisa.",
   });
@@ -14636,7 +14638,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // die muttersprachliche Seite der Karten). Spiegelt das Richtungs-Muster.
     const langGroup = `
         <div class="switchgroup">
-          <span class="switchcap">${t("home.uiLanguage")}</span>
+          <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
           <div class="segmented" role="tablist" aria-label="${esc(t("home.uiLanguage"))}">
             <button class="seg ${vm.uiLang === "de" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="de" aria-pressed="${vm.uiLang === "de"}">🇩🇪 Deutsch</button>
             <button class="seg ${vm.uiLang === "en" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="en" aria-pressed="${vm.uiLang === "en"}">🇬🇧 English</button>
