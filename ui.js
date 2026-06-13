@@ -247,8 +247,16 @@
          </button>`
       : "";
     // Ruta del día: ein Tap für eine kurze, kategorienübergreifende Tagesrunde –
-    // bevorzugt fällige Karten, sonst neue. Stärkt die Lern-Serie.
-    const rutaDia = `
+    // bevorzugt fällige Karten, sonst neue. Stärkt die Lern-Serie. Ist die heutige
+    // Runde schon gelaufen, zeigt der Button das mit Häkchen + erledigt-Text an
+    // (bleibt antippbar für eine optionale Extra-Runde).
+    const rutaDia = vm.rutaDone
+      ? `
+      <button class="today__ruta today__ruta--done" data-action="ruta-del-dia">
+        <span class="today__ruta-main">${esc(t("home.rutaDoneTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.rutaDoneSub"))}</span>
+      </button>`
+      : `
       <button class="today__ruta" data-action="ruta-del-dia">
         <span class="today__ruta-main">${esc(t("home.rutaTitle"))}</span>
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
