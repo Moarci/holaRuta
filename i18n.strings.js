@@ -180,6 +180,7 @@
     modeAria: "Lernmodus",
     dirLabel: "Richtung",
     dirAria: "Lernrichtung",
+    uiLanguage: "Sprache",
     // Karten-Prompt (Spanisch, beide Sprachen gleich)
     homePrompt: "¿Qué aprendemos hoy?",
     dedication: "Für meine liebe Lisa.",
@@ -232,6 +233,7 @@
     modeAria: "Study mode",
     dirLabel: "Direction",
     dirAria: "Study direction",
+    uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
     dedication: "For my dear Lisa.",
   });

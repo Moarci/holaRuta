@@ -2407,6 +2407,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeAria: "Lernmodus",
     dirLabel: "Richtung",
     dirAria: "Lernrichtung",
+    uiLanguage: "Sprache",
     // Karten-Prompt (Spanisch, beide Sprachen gleich)
     homePrompt: "¿Qué aprendemos hoy?",
     dedication: "Für meine liebe Lisa.",
@@ -2459,6 +2460,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeAria: "Study mode",
     dirLabel: "Direction",
     dirAria: "Study direction",
+    uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
     dedication: "For my dear Lisa.",
   });
@@ -14632,19 +14634,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </div>
         </div>`
       : "";
-    // Sprachumschalter: deutsche oder englische Bedienoberfläche (und damit auch
-    // die muttersprachliche Seite der Karten). Spiegelt das Richtungs-Muster.
-    const langGroup = `
-        <div class="switchgroup">
-          <span class="switchcap">${t("home.uiLanguage")}</span>
-          <div class="segmented" role="tablist" aria-label="${esc(t("home.uiLanguage"))}">
-            <button class="seg ${vm.uiLang === "de" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="de" aria-pressed="${vm.uiLang === "de"}">🇩🇪 Deutsch</button>
-            <button class="seg ${vm.uiLang === "en" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="en" aria-pressed="${vm.uiLang === "en"}">🇬🇧 English</button>
-          </div>
-        </div>`;
+    // Sprachumschalter lebt im Profil-Reiter (siehe profilBody), nicht hier im
+    // Dashboard-Setup – die UI-/Muttersprache ist eine globale Voreinstellung.
     const setupBody = `
       <div class="setup__body" id="setup-body">
-        ${langGroup}
         <div class="switchgroup">
           <span class="switchcap">${esc(t("home.modeLabel"))}</span>
           <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="${esc(t("home.modeAria"))}">
@@ -14726,6 +14719,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
         <span class="navrow__chev" aria-hidden="true">›</span>
       </button>`;
+    // Sprachumschalter: deutsche oder englische Bedienoberfläche (und damit auch
+    // die muttersprachliche Seite der Karten). Globale Voreinstellung, daher hier
+    // im Profil statt im Dashboard-Setup.
+    const langGroup = `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
+        <div class="segmented" role="tablist" aria-label="${esc(t("home.uiLanguage"))}">
+          <button class="seg ${vm.uiLang === "de" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="de" aria-pressed="${vm.uiLang === "de"}">🇩🇪 Deutsch</button>
+          <button class="seg ${vm.uiLang === "en" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="en" aria-pressed="${vm.uiLang === "en"}">🇬🇧 English</button>
+        </div>
+      </div>`;
     return `
       ${pagehead(esc(t("profile.progressTitle")), vm)}
 
@@ -14736,6 +14740,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
         <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
       </div>
+
+      <p class="sectioncap">${esc(t("home.uiLanguage"))}</p>
+      ${langGroup}
 
       ${navrow("open-stats", "📊", t("profile.statistics"))}
       ${vm.hasBadges ? navrow("open-badges", "🎖️", t("profile.rutaPass"), vm.badgeCount || "") : ""}
@@ -17234,14 +17241,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let settings = store.loadSettings();
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
 
+  // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
+  // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
+  // deutschsprachigem System, sonst die internationale Variante Englisch.
+  function detectUiLang() {
+    try {
+      const langs = (navigator.languages && navigator.languages.length)
+        ? navigator.languages
+        : [navigator.language || ""];
+      for (const l of langs) {
+        if (typeof l === "string" && /^de(-|$)/i.test(l)) return "de";
+      }
+    } catch (e) { /* kein navigator (z.B. Test) -> Standard unten */ }
+    return "en";
+  }
+
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
     homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
-    // UI-/Muttersprache: "de" (Standard) | "en". Steuert t() und nativeText.
-    uiLang: settings.uiLang === "en" ? "en" : "de",
+    // UI-/Muttersprache: "de" | "en". Gespeicherte Wahl gewinnt; beim ersten
+    // Öffnen (noch nichts gespeichert) nach Betriebssystem-Sprache vorbelegen.
+    uiLang: settings.uiLang === "en" ? "en" : settings.uiLang === "de" ? "de" : detectUiLang(),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
