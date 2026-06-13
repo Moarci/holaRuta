@@ -197,6 +197,10 @@ body {
 }
 .pageintro { margin: -6px 0 0; font-size: 0.92rem; color: var(--ink-soft); line-height: 1.45; }
 
+/* Lern-Einstellungen im Profil: gestapelte Umschalter-Gruppen (Sprache, Modus,
+ * Richtung, Stufen, Tempo) mit ruhigem Abstand. */
+.prefs { display: flex; flex-direction: column; gap: 14px; margin: 14px 0 4px; }
+
 /* Umschalter-Gruppe mit kleiner Beschriftung (Modus / Richtung) */
 .switchgroup { display: flex; flex-direction: column; gap: 6px; }
 .switchcap {
@@ -295,7 +299,7 @@ body {
   border-radius: 999px; padding: 2px 9px; font-size: 0.78rem; font-weight: 800;
 }
 
-/* Einklappbares Einstellungs-Panel (Modus/Richtung/Stufen) */
+/* Einstellungs-Zusammenfassung auf dem Dashboard – führt per Tap ins Profil */
 .setup {
   border: 1.5px solid var(--line); border-radius: var(--r-md);
   background: var(--card); box-shadow: var(--shadow); overflow: hidden;
@@ -313,9 +317,7 @@ body {
   flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   text-align: right; font-size: 0.82rem; font-weight: 700; color: var(--muted);
 }
-.setup__chev { flex: none; font-size: 1.2rem; font-weight: 700; color: var(--muted); transition: transform 0.18s ease; }
-.setup__head[aria-expanded="true"] .setup__chev { transform: rotate(90deg); }
-.setup__body { display: flex; flex-direction: column; gap: 14px; padding: 2px 14px 16px; animation: pop 0.2s ease; }
+.setup__chev { flex: none; font-size: 1.2rem; font-weight: 700; color: var(--muted); }
 
 /* Abschnitts-Überschriften der Startseite ("Themen") */
 .sectioncap {
