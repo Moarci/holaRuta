@@ -368,6 +368,33 @@ body {
 .tab.is-active .tab__icon { filter: none; opacity: 1; }
 .screen--tabbed { padding-bottom: 86px; } /* Platz für die feste Tab-Leiste */
 
+/* „Neue Version – jetzt laden"-Banner: schwebt unten über der Reiter-Leiste */
+.updbar {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 40;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  width: calc(100% - 24px); max-width: calc(var(--maxw) - 24px);
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--r-md);
+  background: var(--brand); color: #fff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+  animation: updbar-in 0.2s ease;
+}
+.updbar__text { flex: 1 1 auto; font-weight: 800; font-size: 0.9rem; }
+.updbar__btn {
+  flex: none; border: none; cursor: pointer; font-family: inherit; font-weight: 800;
+  padding: 9px 16px; border-radius: 999px; min-height: 40px;
+  background: #fff; color: var(--brand-ink);
+}
+.updbar__close {
+  flex: none; border: none; background: transparent; cursor: pointer;
+  color: #fff; opacity: 0.75; font-size: 1rem; line-height: 1; min-height: 40px; min-width: 32px;
+}
+.updbar__close:hover { opacity: 1; }
+@keyframes updbar-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 /* ---------- ENTDECKEN-REITER: große Einstiegs-Buttons ---------- */
 .feat {
   display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;
@@ -3000,9 +3027,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Update-Hinweis
     updTitle: "HolaRuta wurde aktualisiert",
     updHowTitle: "So bleibst du aktuell",
-    updHowText: "HolaRuta aktualisiert sich automatisch im Hintergrund.\n            Schließe die App ab und zu ganz und öffne sie neu – dann hast du immer die\n            neueste Version. Geht etwas mal nicht, hilft „Jetzt neu laden“.",
+    updHowText: "HolaRuta aktualisiert sich automatisch im Hintergrund.\n            Sobald eine neue Version bereitsteht, erscheint unten ein „Neue Version –\n            jetzt laden“-Banner – ein Tap genügt, die App musst du nicht mehr schließen.",
     updReload: "Jetzt neu laden",
     updUnderstood: "Verstanden",
+    updReadyText: "✨ Neue Version verfügbar",
+    updReadyBtn: "Jetzt laden",
 
     // Statistik
     statHistory: (p) => `Verlauf: ${p.easy}× Einfach, ${p.good}× Gut, ${p.again}× Nochmal`,
@@ -3099,9 +3128,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     updTitle: "HolaRuta has been updated",
     updHowTitle: "How to stay up to date",
-    updHowText: "HolaRuta updates itself automatically in the background.\n            Close the app fully now and then and reopen it – then you always have the\n            latest version. If something doesn't work, “Reload now” helps.",
+    updHowText: "HolaRuta updates itself automatically in the background.\n            As soon as a new version is ready, a “New version – reload now” banner\n            appears at the bottom – one tap is enough, no need to close the app.",
     updReload: "Reload now",
     updUnderstood: "Got it",
+    updReadyText: "✨ New version available",
+    updReadyBtn: "Reload now",
 
     statHistory: (p) => `History: ${p.easy}× Easy, ${p.good}× Good, ${p.again}× Again`,
     statAgain: "Again",
@@ -14128,6 +14159,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.23.0",
+      date: "2026-06-13",
+      title: "Aufgeräumte Einstellungen & automatische Updates",
+      items: [
+        "⚙️ Die Einstellungen sind aufgeräumt: Die Stufen-Auswahl (Alle, A1, A2, B1) liegt jetzt direkt auf dem Dashboard – die änderst du ja laufend beim Lernen. Sprache, Modus, Richtung und Sprechtempo wohnen gebündelt im Profil-Reiter.",
+        "✨ Neue Versionen kommen jetzt von allein an: Sobald eine bereitsteht, erscheint unten ein „Neue Version – jetzt laden“-Banner. Ein Tap lädt die App frisch – du musst sie dafür nicht mehr ganz schließen.",
+      ],
+    },
+    {
       version: "1.22.0",
       date: "2026-06-13",
       title: "Zurück-Wischen führt zurück, statt die App zu schließen",
@@ -15160,6 +15200,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <button class="btoast" data-action="dismiss-notice" aria-live="assertive">
         <span class="btoast__head">⚠️ ${esc(text)}</span>
       </button>`;
+  }
+
+  // „Neue Version – jetzt laden“-Banner. Schwebt unten über der Reiter-Leiste,
+  // wenn ein neuer Service Worker installiert ist und auf Aktivierung wartet.
+  // Ein Tap aktiviert ihn und lädt die App kontrolliert neu (siehe applyUpdate).
+  function updateBanner() {
+    return `
+      <div class="updbar" role="status" aria-live="polite">
+        <span class="updbar__text">${esc(t("profile.updReadyText"))}</span>
+        <button class="updbar__btn" data-action="apply-update">${esc(t("profile.updReadyBtn"))}</button>
+        <button class="updbar__close" data-action="dismiss-sw-update" aria-label="${esc(t("common.cancel"))}">✕</button>
+      </div>`;
   }
 
   // „Was ist neu?“-Fenster nach einem Update. Zeigt je Version, WAS sich
@@ -17172,7 +17224,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
-                   renderBadges, badgeToast, noticeToast, updateNotice,
+                   renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
@@ -17254,6 +17306,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
+    swUpdate: false,         // wartet eine neue SW-Version? -> "jetzt laden"-Banner
+    swWaiting: null,         // Referenz auf den wartenden Service Worker (für SKIP_WAITING)
     // ----- Hostel Mode (transient, keine Persistenz) -----
     battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
@@ -18983,6 +19037,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       root.insertAdjacentHTML("afterbegin", ui.updateNotice(state.updateNotice));
     }
 
+    // „Neue Version – jetzt laden"-Banner (schwebt unten über der Reiter-Leiste),
+    // wenn ein neuer Service Worker installiert ist und auf Aktivierung wartet.
+    if (state.swUpdate) {
+      root.insertAdjacentHTML("beforeend", ui.updateBanner());
+    }
+
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
     if (state.screen === "cuerpo") cuerpoInit3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
@@ -20259,6 +20319,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "dismiss-notice") el.remove();
     else if (action === "dismiss-update") dismissUpdateNotice();
     else if (action === "reload-app") location.reload();
+    else if (action === "apply-update") applyUpdate();
+    else if (action === "dismiss-sw-update") dismissSwUpdate();
     else if (action === "upd-stop") { /* Klick auf die Hinweis-Karte: nicht schließen */ }
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
@@ -20500,11 +20562,61 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ----- Offline-Fähigkeit (PWA) -----
   // Service Worker cacht alle Dateien, damit die App unterwegs ohne Netz läuft.
+  // Zusätzlich: erkennt eine neue Version und bietet sie per Banner zum Laden an
+  // (markUpdateReady -> applyUpdate -> controllerchange -> einmaliges Reload).
   function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
     if (location.protocol === "file:") return; // SW braucht http(s)
+
+    // Übernimmt der neue Worker die Kontrolle (nach SKIP_WAITING), genau EINMAL
+    // neu laden, damit die frischen Dateien greifen. Guard gegen Reload-Schleife.
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
+
     navigator.serviceWorker.register("service-worker.js")
+      .then((reg) => {
+        // Wartet schon ein fertig installierter Worker (z. B. aus einem früheren
+        // Besuch)? Dann ist das Update sofort startklar.
+        if (reg.waiting && navigator.serviceWorker.controller) markUpdateReady(reg.waiting);
+        // Neue Version gefunden -> Installation abwarten -> Banner zeigen.
+        reg.addEventListener("updatefound", () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener("statechange", () => {
+            // "installed" + es gibt bereits einen Controller => echtes Update
+            // (keine Erstinstallation, bei der nichts zu ersetzen wäre).
+            if (nw.state === "installed" && navigator.serviceWorker.controller) markUpdateReady(nw);
+          });
+        });
+      })
       .catch((err) => console.warn("Service Worker nicht registriert", err));
+  }
+
+  // Wartenden Worker vormerken und das "Neue Version – jetzt laden"-Banner zeigen.
+  function markUpdateReady(worker) {
+    state.swWaiting = worker || state.swWaiting;
+    if (state.swUpdate) return; // Banner schon sichtbar
+    state.swUpdate = true;
+    render();
+  }
+
+  // "Jetzt laden": den wartenden Worker aktivieren -> controllerchange -> Reload.
+  // Fällt der Worker-Bezug weg, tut ein einfaches Reload denselben Dienst.
+  function applyUpdate() {
+    const w = state.swWaiting;
+    if (w) { try { w.postMessage({ type: "SKIP_WAITING" }); } catch (e) { location.reload(); } }
+    else location.reload();
+  }
+
+  // Banner wegtippen: die neue Version übernimmt dann beim nächsten App-Start.
+  function dismissSwUpdate() {
+    state.swUpdate = false;
+    const el = root.querySelector(".updbar");
+    if (el) el.remove();
   }
 
   // ----- Start -----

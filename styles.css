@@ -330,6 +330,33 @@ body {
 .tab.is-active .tab__icon { filter: none; opacity: 1; }
 .screen--tabbed { padding-bottom: 86px; } /* Platz für die feste Tab-Leiste */
 
+/* „Neue Version – jetzt laden"-Banner: schwebt unten über der Reiter-Leiste */
+.updbar {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 40;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  width: calc(100% - 24px); max-width: calc(var(--maxw) - 24px);
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--r-md);
+  background: var(--brand); color: #fff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+  animation: updbar-in 0.2s ease;
+}
+.updbar__text { flex: 1 1 auto; font-weight: 800; font-size: 0.9rem; }
+.updbar__btn {
+  flex: none; border: none; cursor: pointer; font-family: inherit; font-weight: 800;
+  padding: 9px 16px; border-radius: 999px; min-height: 40px;
+  background: #fff; color: var(--brand-ink);
+}
+.updbar__close {
+  flex: none; border: none; background: transparent; cursor: pointer;
+  color: #fff; opacity: 0.75; font-size: 1rem; line-height: 1; min-height: 40px; min-width: 32px;
+}
+.updbar__close:hover { opacity: 1; }
+@keyframes updbar-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 /* ---------- ENTDECKEN-REITER: große Einstiegs-Buttons ---------- */
 .feat {
   display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;

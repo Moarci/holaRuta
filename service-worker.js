@@ -10,11 +10,15 @@
  * Name -> der alte Cache wird verworfen. (Früher musste man von Hand
  * hochzählen; wurde das vergessen, blieben installierte PWAs auf alten Dateien.)
  *
- * Hinweis: kein skipWaiting/clients.claim – die neue Version übernimmt erst
- * beim nächsten Start. So mischen sich nie alte und neue Dateien in einer
- * laufenden Sitzung (Mixed-Version-Load).
+ * Update-Übernahme: standardmäßig kein automatisches skipWaiting – eine neue
+ * Version wartet, bis die App neu startet. Die App bietet dem Nutzer aber ein
+ * "Neue Version – jetzt laden"-Banner an; tippt er es, schickt sie SKIP_WAITING
+ * (siehe message-Handler unten). Der neue Worker wird dann sofort aktiv, und die
+ * App lädt bei "controllerchange" genau einmal neu. So mischen sich nie alte und
+ * neue Dateien in einer laufenden Sitzung (Mixed-Version-Load): das Aktivieren
+ * ist immer an ein vollständiges Reload gekoppelt.
  */
-const CACHE_VERSION = "holaruta-f21aee689ccb"; // von build.js gestempelt – nicht von Hand ändern
+const CACHE_VERSION = "holaruta-3a82f36d9e1c"; // von build.js gestempelt – nicht von Hand ändern
 const ASSETS = [
   "./",
   "./index.html",
@@ -64,6 +68,13 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) => cache.addAll(ASSETS))
   );
+});
+
+// Auf Wunsch der App (Nutzer tippt "jetzt laden") sofort aktiv werden, statt erst
+// beim nächsten Start. Der dadurch ausgelöste controllerchange lässt die App
+// kontrolliert neu laden – kein Mixed-Version-Load.
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
 // Aktivieren: veraltete Caches früherer Versionen wegräumen.

@@ -766,6 +766,18 @@
       </button>`;
   }
 
+  // „Neue Version – jetzt laden“-Banner. Schwebt unten über der Reiter-Leiste,
+  // wenn ein neuer Service Worker installiert ist und auf Aktivierung wartet.
+  // Ein Tap aktiviert ihn und lädt die App kontrolliert neu (siehe applyUpdate).
+  function updateBanner() {
+    return `
+      <div class="updbar" role="status" aria-live="polite">
+        <span class="updbar__text">${esc(t("profile.updReadyText"))}</span>
+        <button class="updbar__btn" data-action="apply-update">${esc(t("profile.updReadyBtn"))}</button>
+        <button class="updbar__close" data-action="dismiss-sw-update" aria-label="${esc(t("common.cancel"))}">✕</button>
+      </div>`;
+  }
+
   // „Was ist neu?“-Fenster nach einem Update. Zeigt je Version, WAS sich
   // geändert hat, und erklärt, WIE man aktuell bleibt. Liegt als eigene Ebene
   // (Scrim + Karte) über dem Screen; Schließen führt zurück zur App.
@@ -2776,7 +2788,7 @@
 
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
-                   renderBadges, badgeToast, noticeToast, updateNotice,
+                   renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,

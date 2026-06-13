@@ -69,6 +69,8 @@
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
+    swUpdate: false,         // wartet eine neue SW-Version? -> "jetzt laden"-Banner
+    swWaiting: null,         // Referenz auf den wartenden Service Worker (für SKIP_WAITING)
     // ----- Hostel Mode (transient, keine Persistenz) -----
     battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
@@ -1798,6 +1800,12 @@
       root.insertAdjacentHTML("afterbegin", ui.updateNotice(state.updateNotice));
     }
 
+    // „Neue Version – jetzt laden"-Banner (schwebt unten über der Reiter-Leiste),
+    // wenn ein neuer Service Worker installiert ist und auf Aktivierung wartet.
+    if (state.swUpdate) {
+      root.insertAdjacentHTML("beforeend", ui.updateBanner());
+    }
+
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
     if (state.screen === "cuerpo") cuerpoInit3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
@@ -3074,6 +3082,8 @@
     else if (action === "dismiss-notice") el.remove();
     else if (action === "dismiss-update") dismissUpdateNotice();
     else if (action === "reload-app") location.reload();
+    else if (action === "apply-update") applyUpdate();
+    else if (action === "dismiss-sw-update") dismissSwUpdate();
     else if (action === "upd-stop") { /* Klick auf die Hinweis-Karte: nicht schließen */ }
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
@@ -3315,11 +3325,61 @@
 
   // ----- Offline-Fähigkeit (PWA) -----
   // Service Worker cacht alle Dateien, damit die App unterwegs ohne Netz läuft.
+  // Zusätzlich: erkennt eine neue Version und bietet sie per Banner zum Laden an
+  // (markUpdateReady -> applyUpdate -> controllerchange -> einmaliges Reload).
   function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
     if (location.protocol === "file:") return; // SW braucht http(s)
+
+    // Übernimmt der neue Worker die Kontrolle (nach SKIP_WAITING), genau EINMAL
+    // neu laden, damit die frischen Dateien greifen. Guard gegen Reload-Schleife.
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
+
     navigator.serviceWorker.register("service-worker.js")
+      .then((reg) => {
+        // Wartet schon ein fertig installierter Worker (z. B. aus einem früheren
+        // Besuch)? Dann ist das Update sofort startklar.
+        if (reg.waiting && navigator.serviceWorker.controller) markUpdateReady(reg.waiting);
+        // Neue Version gefunden -> Installation abwarten -> Banner zeigen.
+        reg.addEventListener("updatefound", () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener("statechange", () => {
+            // "installed" + es gibt bereits einen Controller => echtes Update
+            // (keine Erstinstallation, bei der nichts zu ersetzen wäre).
+            if (nw.state === "installed" && navigator.serviceWorker.controller) markUpdateReady(nw);
+          });
+        });
+      })
       .catch((err) => console.warn("Service Worker nicht registriert", err));
+  }
+
+  // Wartenden Worker vormerken und das "Neue Version – jetzt laden"-Banner zeigen.
+  function markUpdateReady(worker) {
+    state.swWaiting = worker || state.swWaiting;
+    if (state.swUpdate) return; // Banner schon sichtbar
+    state.swUpdate = true;
+    render();
+  }
+
+  // "Jetzt laden": den wartenden Worker aktivieren -> controllerchange -> Reload.
+  // Fällt der Worker-Bezug weg, tut ein einfaches Reload denselben Dienst.
+  function applyUpdate() {
+    const w = state.swWaiting;
+    if (w) { try { w.postMessage({ type: "SKIP_WAITING" }); } catch (e) { location.reload(); } }
+    else location.reload();
+  }
+
+  // Banner wegtippen: die neue Version übernimmt dann beim nächsten App-Start.
+  function dismissSwUpdate() {
+    state.swUpdate = false;
+    const el = root.querySelector(".updbar");
+    if (el) el.remove();
   }
 
   // ----- Start -----
