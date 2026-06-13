@@ -5597,11 +5597,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   //   def = die spanische Definition (Frage)  icon = kleines Sinnbild
   const QUIZ_SETS = [
     { id: "ciudad", label: "En la ciudad", icon: "🏙️", lvl: 1,
-      intro: "Lies die Definition und wähle den richtigen Ort in der Stadt." },
+      intro: "Lies die Definition und wähle den richtigen Ort in der Stadt.",
+      introEn: "Read the definition and pick the right place in the city." },
     { id: "ruta", label: "En la ruta", icon: "🎒", lvl: 1,
-      intro: "Orte, die du als Backpacker unterwegs ständig brauchst." },
+      intro: "Orte, die du als Backpacker unterwegs ständig brauchst.",
+      introEn: "Places you'll need all the time as a backpacker on the road." },
     { id: "comida", label: "La comida", icon: "🍽️", lvl: 1,
-      intro: "Lies die Definition und wähle das passende Essen oder Getränk." },
+      intro: "Lies die Definition und wähle das passende Essen oder Getränk.",
+      introEn: "Read the definition and pick the matching food or drink." },
   ];
 
   const QUIZ_DEFS = [
@@ -5728,13 +5731,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   //   example    = Mini-Reise in drei Zeiten; dialogs = zwei weitere Reisedialoge
   const TENSES = {
     intro: "Spanische Verben verraten mit ihrer Endung, WANN etwas passiert – gestern, jetzt oder morgen. Du musst nicht alle Zeiten perfekt können: Für die Reise reichen ein paar. Am wichtigsten sind die Gegenwart, eine Vergangenheit zum Erzählen und ein einfacher Zukunfts-Trick (ir a + Infinitiv). Hier siehst du sie an einem einzigen Verb – tomar (nehmen) – durch die Zeiten wandern.",
+    introEn: "Spanish verbs reveal WHEN something happens through their ending – yesterday, now or tomorrow. You don't need to master every tense: a few are enough for travelling. The most important are the present, one past tense for telling stories and a simple future trick (ir a + infinitive). Here you'll watch them travel through the tenses with a single verb – tomar (to take).",
     timeline: {
       title: "Ein Verb, drei Zeiten",
+      titleEn: "One verb, three tenses",
       verb: "tomar (nehmen) – immer die ich-Form",
+      verbEn: "tomar (to take) – always the I-form",
       rows: [
-        { when: "Gestern", es: "tomé el bus", de: "ich nahm den Bus", en: "I took the bus" },
-        { when: "Jetzt", es: "tomo el bus", de: "ich nehme den Bus", en: "I take the bus" },
-        { when: "Gleich / morgen", es: "voy a tomar el bus", de: "ich werde den Bus nehmen", en: "I'm going to take the bus" },
+        { when: "Gestern", whenEn: "Yesterday", es: "tomé el bus", de: "ich nahm den Bus", en: "I took the bus" },
+        { when: "Jetzt", whenEn: "Now", es: "tomo el bus", de: "ich nehme den Bus", en: "I take the bus" },
+        { when: "Gleich / morgen", whenEn: "Soon / tomorrow", es: "voy a tomar el bus", de: "ich werde den Bus nehmen", en: "I'm going to take the bus" },
       ],
       note: "Nur die Endung (oder ein kleines Hilfswort wie „voy a“) ändert sich – der Verbstamm tom- bleibt.", noteEn: "Only the ending (or a little helper like \"voy a\") changes – the verb stem tom- stays the same.",
     },
@@ -5743,8 +5749,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { name: "Presente", nameDe: "Gegenwart – was jetzt oder allgemein gilt", nameEn: "Present – what's true now or in general",
         forms: ["tomo", "tomas", "toma", "tomamos", "toman"],
         recipe: "Stamm + -o/-as/-a/-amos/-an (-ar) bzw. -o/-es/-e/-emos/-en (-er/-ir).",
+        recipeEn: "Stem + -o/-as/-a/-amos/-an (-ar) or -o/-es/-e/-emos/-en (-er/-ir).",
         signals: "hoy, ahora, normalmente, siempre",
         when: "Für alles, was gerade oder grundsätzlich gilt – und sogar für die ganz nahe Zukunft („Mañana tomo el bus“ ist völlig normal). Auch für Fahrpläne und feste Abläufe.",
+        whenEn: "For anything true right now or in general – and even for the very near future (\"Mañana tomo el bus\" is perfectly normal). Also for timetables and fixed routines.",
         examples: [
           { es: "Tomo el bus al centro.", de: "Ich nehme den Bus ins Zentrum.", en: "I'm taking the bus to the centre." },
           { es: "El mercado abre a las siete.", de: "Der Markt öffnet um sieben.", en: "The market opens at seven." },
@@ -5753,8 +5761,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { name: "Pretérito perfecto", nameDe: "gerade eben passiert / Erfahrung", nameEn: "just happened / experience",
         forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
         recipe: "haber (he/has/ha/hemos/han) + Partizip (-ado bei -ar, -ido bei -er/-ir).",
+        recipeEn: "haber (he/has/ha/hemos/han) + participle (-ado for -ar, -ido for -er/-ir).",
         signals: "ya, todavía no, alguna vez, nunca, hoy, esta semana",
         when: "Für gerade Geschehenes oder Erfahrungen („schon mal / noch nie“) – ohne festen Zeitpunkt. Tipp: Mit „ya“ (schon) und „todavía no“ (noch nicht) brauchst du es ständig.",
+        whenEn: "For things that have just happened or for experiences (\"ever / never\") – with no fixed point in time. Tip: with \"ya\" (already) and \"todavía no\" (not yet) you'll use it constantly.",
         examples: [
           { es: "Ya he tomado el desayuno.", de: "Ich habe schon gefrühstückt.", en: "I've already had breakfast." },
           { es: "¿Alguna vez has probado el cuy?", de: "Hast du schon mal Meerschweinchen probiert?", en: "Have you ever tried guinea pig?" },
@@ -5763,8 +5773,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { name: "Pretérito indefinido", nameDe: "Vergangenheit, abgeschlossen", nameEn: "past, completed",
         forms: ["tomé", "tomaste", "tomó", "tomamos", "tomaron"],
         recipe: "Stamm + -é/-aste/-ó/-amos/-aron (-ar) bzw. -í/-iste/-ió/-imos/-ieron (-er/-ir).",
+        recipeEn: "Stem + -é/-aste/-ó/-amos/-aron (-ar) or -í/-iste/-ió/-imos/-ieron (-er/-ir).",
         signals: "ayer, anoche, el lunes, hace dos días, en 2019",
         when: "Die Erzähl-Vergangenheit Lateinamerikas: abgeschlossene Ereignisse mit klarem Zeitpunkt. In LatAm oft auch da, wo Spanien das Perfekt nähme („Ayer llegué“ statt „he llegado“).",
+        whenEn: "Latin America's storytelling past: completed events with a clear point in time. In LatAm it's often used where Spain would use the perfect (\"Ayer llegué\" instead of \"he llegado\").",
         examples: [
           { es: "Ayer tomé el bus nocturno.", de: "Gestern nahm ich den Nachtbus.", en: "Yesterday I took the night bus." },
           { es: "Llegamos a Cusco el lunes.", de: "Wir kamen am Montag in Cusco an.", en: "We arrived in Cusco on Monday." },
@@ -5773,8 +5785,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { name: "Imperfecto", nameDe: "früher / Hintergrund / Gewohnheit", nameEn: "back then / background / habit",
         forms: ["tomaba", "tomabas", "tomaba", "tomábamos", "tomaban"],
         recipe: "Stamm + -aba/-abas/-aba/-ábamos/-aban (-ar) bzw. -ía/-ías/-ía/-íamos/-ían (-er/-ir). Nur 3 unregelmäßig: ser → era, ir → iba, ver → veía.",
+        recipeEn: "Stem + -aba/-abas/-aba/-ábamos/-aban (-ar) or -ía/-ías/-ía/-íamos/-ían (-er/-ir). Only 3 are irregular: ser → era, ir → iba, ver → veía.",
         signals: "antes, siempre, todos los días, de niño, mientras",
         when: "Wie es früher war, was man regelmäßig tat, Wetter und Beschreibungen. Auch für Uhrzeit, Alter und Gefühl in der Vergangenheit: „Eran las diez y estaba cansado.“",
+        whenEn: "How things used to be, what you did regularly, weather and descriptions. Also for time of day, age and feelings in the past: \"Eran las diez y estaba cansado.\"",
         examples: [
           { es: "Antes tomaba mucho café.", de: "Früher trank ich viel Kaffee.", en: "I used to drink a lot of coffee." },
           { es: "El hostal era viejo pero limpio.", de: "Das Hostel war alt, aber sauber.", en: "The hostel was old but clean." },
@@ -5783,8 +5797,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { name: "Futuro próximo", nameDe: "Zukunft, der einfache Trick: ir a + Infinitiv", nameEn: "Future, the easy trick: ir a + infinitive",
         forms: ["voy a tomar", "vas a tomar", "va a tomar", "vamos a tomar", "van a tomar"],
         recipe: "ir (voy/vas/va/vamos/van) + a + Infinitiv – du beugst nur ir, das zweite Verb bleibt im Infinitiv.",
+        recipeEn: "ir (voy/vas/va/vamos/van) + a + infinitive – you only conjugate ir, the second verb stays in the infinitive.",
         signals: "mañana, luego, esta noche, el próximo …",
         when: "Der einfachste Weg in die Zukunft – im Alltag häufiger als das Futur unten. Perfekt für Pläne: „¿Qué vas a hacer?“ = Was hast du vor?",
+        whenEn: "The easiest way into the future – more common day to day than the future below. Perfect for plans: \"¿Qué vas a hacer?\" = What are you up to?",
         examples: [
           { es: "Voy a tomar el bus de las ocho.", de: "Ich werde den Acht-Uhr-Bus nehmen.", en: "I'm going to take the eight o'clock bus." },
           { es: "Vamos a quedarnos dos noches.", de: "Wir bleiben zwei Nächte.", en: "We're staying two nights." },
@@ -5793,8 +5809,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { name: "Futuro simple", nameDe: "Zukunft mit einer Endung für alle", nameEn: "Future with one ending for all",
         forms: ["tomaré", "tomarás", "tomará", "tomaremos", "tomarán"],
         recipe: "Infinitiv + -é/-ás/-á/-emos/-án – für -ar/-er/-ir gleich. Ein paar Stämme sind kurz: tener → tendré, hacer → haré, poder → podré.",
+        recipeEn: "Infinitive + -é/-ás/-á/-emos/-án – the same for -ar/-er/-ir. A few stems are short: tener → tendré, hacer → haré, poder → podré.",
         signals: "mañana, algún día, la próxima semana",
         when: "Etwas förmlicher als „ir a“. Auch für Vermutungen über die Gegenwart: „Será caro“ = das ist wohl/wird teuer; „¿Qué hora será?“ = wie spät mag es sein?",
+        whenEn: "A bit more formal than \"ir a\". Also for guesses about the present: \"Será caro\" = that's probably/will be expensive; \"¿Qué hora será?\" = what time might it be?",
         examples: [
           { es: "Mañana tomaré el primer bus.", de: "Morgen nehme ich den ersten Bus.", en: "Tomorrow I'm taking the first bus." },
           { es: "Algún día volveré aquí.", de: "Eines Tages komme ich hierher zurück.", en: "One day I'll come back here." },
@@ -5802,10 +5820,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ] },
     ],
     tensesNote: "Reise-Faustregel: Gegenwart für jetzt & bald, indefinido fürs Erzählen von gestern, „voy a + Infinitiv“ für Pläne. Damit kommst du fast überall durch.",
+    tensesNoteEn: "Travel rule of thumb: present for now & soon, indefinido for telling stories about yesterday, \"voy a + infinitive\" for plans. That'll get you through almost anything.",
     // estar + Gerundio: was gerade im Moment läuft (Verlaufsform)
     continuous: {
       title: "Gerade jetzt: estar + Gerundio",
+      titleEn: "Right now: estar + Gerundio",
       intro: "Wenn etwas genau in diesem Moment passiert, nimmst du estar + Gerundio – wie das englische „I am doing“. Das Gerundio endet auf -ando (bei -ar) bzw. -iendo (bei -er/-ir).",
+      introEn: "When something is happening at this very moment, you use estar + Gerundio – like the English \"I am doing\". The Gerundio ends in -ando (for -ar) or -iendo (for -er/-ir).",
       forms: ["estoy tomando", "estás tomando", "está tomando", "estamos tomando", "están tomando"],
       gerunds: [
         { inf: "comer", ger: "comiendo", de: "essend (-er → -iendo)", en: "eating (-er → -iendo)" },
@@ -5824,7 +5845,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Pretéritos fuertes: die häufigsten unregelmäßigen Vergangenheiten
     strongPast: {
       title: "Unregelmäßige Vergangenheit (Indefinido)",
+      titleEn: "Irregular past (Indefinido)",
       intro: "Ein paar Schlüssel-Verben haben eine eigene Vergangenheit – mit verändertem Stamm und OHNE Akzent. Die ich- und die er/sie-Form enden hier auf -e/-o (nicht -é/-ó). Diese sieben hörst du ständig:",
+      introEn: "A few key verbs have their own past – with a changed stem and NO accent. Here the I-form and the he/she-form end in -e/-o (not -é/-ó). You'll hear these seven all the time:",
       verbs: [
         { verb: "ir / ser", verbDe: "gehen/fahren / sein", verbEn: "to go / to be", forms: ["fui", "fuiste", "fue", "fuimos", "fueron"] },
         { verb: "estar", verbDe: "sein (Ort/Zustand)", verbEn: "to be (location/state)", forms: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvieron"] },
@@ -5839,7 +5862,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Unregelmäßige Partizipien (fürs Perfekt)
     participles: {
       title: "Unregelmäßige Partizipien (fürs Perfekt)",
+      titleEn: "Irregular participles (for the perfect)",
       intro: "Das Perfekt braucht das Partizip (he + …ado/…ido). Ein paar wichtige Verben bilden es unregelmäßig – die lernst du am besten als feste Brocken:",
+      introEn: "The perfect needs the participle (he + …ado/…ido). A few important verbs form it irregularly – best learnt as fixed chunks:",
       rows: [
         { inf: "ver", part: "visto", de: "gesehen", en: "seen" },
         { inf: "hacer", part: "hecho", de: "gemacht", en: "done / made" },
@@ -5855,7 +5880,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Imperativo: Bitten und Anweisungen
     imperative: {
       title: "Befehle & Bitten: Imperativo",
+      titleEn: "Commands & requests: Imperativo",
       intro: "Für Anweisungen (und mit „por favor“ für höfliche Bitten) gibt es eigene Formen. Höflich (usted) endet meist auf -e/-a, vertraut (tú) klingt oft wie die er/sie-Form. Diese brauchst und hörst du unterwegs am meisten:",
+      introEn: "There are special forms for instructions (and, with \"por favor\", for polite requests). The polite (usted) form usually ends in -e/-a, the familiar (tú) form often sounds like the he/she-form. These are the ones you'll need and hear most on the road:",
       rows: [
         { es: "Dígame", de: "Sagen Sie mir / Erzählen Sie (höflich)", en: "Tell me (formal)" },
         { es: "Siga derecho", de: "Gehen Sie geradeaus weiter", en: "Carry straight on" },
@@ -5869,7 +5896,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // hay / había / habrá: „es gibt" durch die Zeiten
     hay: {
       title: "„Es gibt“: hay durch die Zeiten",
+      titleEn: "\"There is/are\": hay through the tenses",
       intro: "Für „es gibt“ gibt es ein einziges Wort pro Zeit – immer gleich, egal ob ein Ding oder viele:",
+      introEn: "For \"there is/are\" there's a single word per tense – always the same, whether it's one thing or many:",
       rows: [
         { es: "hay", de: "es gibt (jetzt) – ¿Hay wifi?", en: "there is (now) – ¿Hay wifi?" },
         { es: "había", de: "es gab (Hintergrund) – No había agua caliente.", en: "there was (background) – No había agua caliente." },
@@ -5882,9 +5911,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Die klassische Reise-Frage: Indefinido oder Imperfecto?
     indefVsImperf: {
       title: "Indefinido oder Imperfecto?",
+      titleEn: "Indefinido or Imperfecto?",
       intro: "Beide sind Vergangenheit – aber sie erzählen Verschiedenes. Faustregel für Reisegeschichten: Was ist passiert? → Indefinido. Wie war es drumherum? → Imperfecto.",
+      introEn: "Both are past tenses – but they tell different things. Rule of thumb for travel stories: What happened? → Indefinido. What was it like around it? → Imperfecto.",
       indef: {
         label: "Indefinido – was passierte (Klick / ein Foto)",
+        labelEn: "Indefinido – what happened (snapshot / a photo)",
         points: [
           "Abgeschlossene Ereignisse: Llegué, tomé el bus, perdí el celular.",
           "Eine Kette von Aktionen: Bajé, pagué y salí.",
@@ -5893,6 +5925,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       },
       imperf: {
         label: "Imperfecto – wie es war (Film im Hintergrund)",
+        labelEn: "Imperfecto – how it was (film in the background)",
         points: [
           "Beschreibungen: El cuarto era pequeño, hacía frío.",
           "Gewohnheiten früher: Siempre viajábamos en bus.",
@@ -5905,7 +5938,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Schnellzuordnung Situation → Zeitform
     scenarios: {
       title: "Welche Zeit in welcher Situation?",
+      titleEn: "Which tense in which situation?",
       intro: "Schnellzuordnung für typische Reise-Momente:",
+      introEn: "A quick match-up for typical travel moments:",
       rows: [
         { es: "Estoy buscando la parada.", de: "Gerade jetzt erklären → estar + Gerundio", en: "Describing right now → estar + gerund" },
         { es: "Ayer perdí el bus.", de: "Was gestern passierte → Indefinido", en: "What happened yesterday → Indefinido" },
@@ -5919,7 +5954,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Häufige Anfängerfehler – reisetypisch
     pitfalls: {
       title: "Häufige Stolperfallen",
+      titleEn: "Common pitfalls",
       intro: "Diese Fehler macht fast jeder am Anfang – so umgehst du sie:",
+      introEn: "Almost everyone makes these mistakes at first – here's how to avoid them:",
       rows: [
         { wrong: "Estoy yendo mañana.", right: "Voy a ir mañana.", de: "estar + Gerundio ist nur jetzt, nie für morgen.", en: "estar + gerund is only for now, never for tomorrow." },
         { wrong: "Soy en el hostal.", right: "Estoy en el hostal.", de: "Ort & Befinden immer mit estar, nicht ser.", en: "Location & how you feel always take estar, not ser." },
@@ -5937,8 +5974,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { es: "mañana · luego", de: "morgen · später → Zukunft", en: "tomorrow · later → future" },
     ],
     signalsNote: "Solche Signalwörter verraten dir die Zeit, noch bevor du das Verb verstehst – ein guter Anker beim Zuhören.",
+    signalsNoteEn: "Such signal words give away the tense before you even understand the verb – a great anchor when listening.",
     example: {
       title: "Dieselbe Reise in drei Zeiten",
+      titleEn: "The same trip in three tenses",
       lines: [
         { es: "Ayer llegué a Cusco y tomé un taxi al hostal.", de: "Gestern kam ich in Cusco an und nahm ein Taxi zum Hostel. (Vergangenheit)", en: "Yesterday I arrived in Cusco and took a taxi to the hostel. (past)" },
         { es: "Hoy estoy cansado, pero ya he comido algo.", de: "Heute bin ich müde, aber ich habe schon etwas gegessen. (Gegenwart + Perfekt)", en: "Today I'm tired, but I've already eaten something. (present + perfect)" },
@@ -5951,6 +5990,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dialogs: [
       {
         title: "Smalltalk: „¿Cómo te fue?“ (Rückblick)",
+        titleEn: "Small talk: „¿Cómo te fue?“ (looking back)",
         lines: [
           { es: "¿Cómo te fue en Bolivia?", de: "Wie ist es dir in Bolivien ergangen?", en: "How did you get on in Bolivia?" },
           { es: "¡Genial! Subí al salar de Uyuni. Hacía frío, pero el paisaje era increíble.", de: "Super! Ich war auf dem Salar de Uyuni. Es war kalt, aber die Landschaft war unglaublich.", en: "Great! I went to the Salar de Uyuni. It was cold, but the scenery was incredible." },
@@ -5961,6 +6001,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       },
       {
         title: "Pläne: „¿Qué vas a hacer?“ (Vorausblick)",
+        titleEn: "Plans: „¿Qué vas a hacer?“ (looking ahead)",
         lines: [
           { es: "¿Qué vas a hacer mañana?", de: "Was wirst du morgen machen?", en: "What are you doing tomorrow?" },
           { es: "Voy a hacer una caminata y luego tomaré el bus a Cusco.", de: "Ich mache eine Wanderung und nehme dann den Bus nach Cusco.", en: "I'm doing a hike and then taking the bus to Cusco." },
