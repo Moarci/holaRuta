@@ -1352,13 +1352,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border: none; box-shadow: var(--shadow); transition: transform 0.12s ease;
 }
 .hm-card:active { transform: translateY(1px); }
-.hm-card--coordinator { background: linear-gradient(135deg, #3F7355, #5E9A6F); }
-.hm-card--battle { background: linear-gradient(135deg, #C25A45, #DB7A5E); }
-.hm-card--roleplay { background: linear-gradient(135deg, #8E4FA8, #A96DBE); }
+/* Gradienten vertieft, damit der creme Text auch am hellen Stopp WCAG-AA erreicht
+   (Kleintext desc/meta ≥ 4.5:1, Title als Large Text ≥ 3:1). Opacity entfernt, da
+   sie den Kontrast zusätzlich gesenkt hätte – Hierarchie kommt aus Größe/Gewicht. */
+.hm-card--coordinator { background: linear-gradient(135deg, #315A42, #497857); }
+.hm-card--battle { background: linear-gradient(135deg, #904333, #A25A46); }
+.hm-card--roleplay { background: linear-gradient(135deg, #76428B, #8C5A9E); }
 .hm-card__icon { font-size: 2rem; line-height: 1; }
 .hm-card__title { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
-.hm-card__desc { font-size: 0.9rem; line-height: 1.45; opacity: 0.94; }
-.hm-card__meta { margin-top: 4px; font-size: 0.78rem; font-weight: 700; opacity: 0.85; }
+.hm-card__desc { font-size: 0.9rem; line-height: 1.45; }
+.hm-card__meta { margin-top: 4px; font-size: 0.78rem; font-weight: 700; }
 
 /* Battle: Szenen-Auswahl. */
 .hm-scenes { display: flex; flex-direction: column; gap: 10px; }
