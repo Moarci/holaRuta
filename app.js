@@ -108,6 +108,8 @@
     comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
     // ----- Trip-Ziel (Countdown + Tagesziel) -----
     tripEdit: false,         // Trip-Ziel-Formular auf der Startseite aufgeklappt?
+    // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
+    searchQuery: "",         // aktueller Suchbegriff (lebt nur in der Sitzung)
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -1776,7 +1778,7 @@
   // Wohin führt „eins höher" vom aktuellen Screen? Die Detailseite kehrt dahin
   // zurück, wo der Zurück-Knopf ohnehin hinführt (Startseite oder Statistik).
   function backTarget() {
-    if (state.screen === "card") return state.backTo === "home" ? "home" : "stats";
+    if (state.screen === "card") return state.backTo === "home" ? "home" : state.backTo === "search" ? "search" : "stats";
     return SCREEN_PARENT[state.screen] || "home";
   }
 
@@ -1817,6 +1819,27 @@
   }
 
   // ----- Rendern -----
+  // Merkt sich die zuletzt gerenderte Ansicht, um beim ECHTEN Ansichtswechsel
+  // (anderer Screen oder – im Dashboard – anderer Reiter) den Fenster-Scroll auf
+  // 0 zu setzen. Sonst „erbt“ die neue Seite die Scroll-Position der alten: wer im
+  // Entdecken-Reiter nach unten scrollt und eine Kategorie öffnet, landet sonst
+  // mitten in der neuen Seite statt oben. Re-Renders DERSELBEN Ansicht (Karte
+  // umdrehen, Antwort prüfen, Dialog-Zug) lassen den Scroll bewusst stehen.
+  let lastScrollKey = null;
+  function scrollKey() {
+    return state.screen === "home" ? "home:" + state.homeTab : state.screen;
+  }
+  function resetScrollOnViewChange() {
+    const key = scrollKey();
+    if (key === lastScrollKey) return;
+    lastScrollKey = key;
+    try {
+      window.scrollTo(0, 0);
+    } catch (e) {
+      try { document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch (e2) { /* egal */ }
+    }
+  }
+
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
     else if (state.screen === "done") root.innerHTML = ui.renderDone(doneVM());
@@ -1857,8 +1880,12 @@
     else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
     else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
     else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
+    else if (state.screen === "search") root.innerHTML = ui.renderSearch(searchVM());
     else if (state.screen === "onboarding") root.innerHTML = ui.renderOnboarding(homeVM());
     else root.innerHTML = ui.renderHome(homeVM());
+
+    // Nach dem Austausch des Inhalts: bei echtem Ansichtswechsel oben anfangen.
+    resetScrollOnViewChange();
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
     if (badges && state.badgeToast && state.badgeToast.length) {
@@ -1996,6 +2023,17 @@
     if (state.screen === "dialogos" && state.dialogos && !state.dialogos.result) {
       const input = document.getElementById("dialogos-answer");
       if (input) { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } return; }
+    }
+    // Suche: Fokus direkt ins Eingabefeld (Tastatur erscheint, sofort lostippen).
+    // Der Cursor ans Ende, damit ein gemerkter Suchbegriff weitergetippt werden kann.
+    if (state.screen === "search") {
+      const input = document.getElementById("search-input");
+      if (input) {
+        try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+        const len = input.value.length;
+        try { input.setSelectionRange(len, len); } catch (e) { /* type=search erlaubt das nicht überall */ }
+        return;
+      }
     }
     const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
@@ -2252,6 +2290,7 @@
     applyUiLang(l);
     settings = Object.assign({}, settings, { uiLang: state.uiLang });
     store.saveSettings(settings);
+    invalidateSearchIndex(); // Titel/Untertitel & Gruppen hängen an der UI-Sprache
     render();
   }
 
@@ -2819,6 +2858,169 @@
   }
 
   // ----- Länderkunde (Infoseite) -----
+  // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
+  // Eine flache Volltext-Suche über alle Inhalte: Vokabelkarten, Lern-Kategorien
+  // und Übungs-Features ("Übungen") sowie Länderkunde, Reise-Knigge, Logística und
+  // Salud ("Informationen"). Jeder Treffer trägt die schon bestehende data-action,
+  // mit der die jeweilige Ansicht geöffnet wird – die Suche ist also nur ein
+  // zweiter Einstieg, kein eigener Inhaltsspeicher.
+
+  // Übungs-Features (spiegelt die FEATURES-Liste in ui.js, ohne die reinen
+  // Infoseiten – die kommen unten als „Informationen" mit reichem Suchindex).
+  const SEARCH_FEATURES = [
+    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",       subKey: "discover.subHostel" },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",      subKey: "discover.subDefiniciones" },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos" },
+    { action: "open-regatear",    icon: "🤝", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",         subKey: "discover.subCuerpo" },
+    { action: "open-compras",     icon: "🛒", title: "Lista de compras",  subKey: "discover.subCompras" },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
+  ];
+  const searchHas = {
+    countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
+    dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
+    knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
+  };
+
+  // Such-Kern (normalisieren/indexieren/ranken) lebt als reines Modul in search.js.
+  const searchEngine = window.SC.search || null;
+  const searchHay = (parts) => (searchEngine ? searchEngine.haystack(parts) : "");
+
+  // Index wird einmal aufgebaut und gemerkt; bei Sprachwechsel oder geänderten
+  // eigenen Karten neu (siehe invalidateSearchIndex).
+  let searchIndex = null;
+  function invalidateSearchIndex() { searchIndex = null; }
+  function getSearchIndex() {
+    if (!searchIndex) searchIndex = buildSearchIndex();
+    return searchIndex;
+  }
+  function buildSearchIndex() {
+    const idx = [];
+
+    // --- Übungen: Vokabelkarten (eigene inklusive) ---
+    allCards().forEach((c) => {
+      const cat = categoryById(c.cat);
+      idx.push({
+        group: "ex", kind: "card", kindLabel: t("search.kindCard"),
+        icon: cat ? cat.icon : "🃏",
+        title: c.es, titleLang: "es", sub: nat(c),
+        action: "open-card", id: c.id, back: "search",
+        hay: searchHay([c.es, c.de, c.en, c.tip, c.tipEn, cat && natk(cat, "label")]),
+      });
+    });
+
+    // --- Übungen: Lern-Kategorien (ganze Themen-Decks) ---
+    data.CATEGORIES.forEach((c) => {
+      idx.push({
+        group: "ex", kind: "category", kindLabel: t("search.kindCategory"),
+        icon: c.icon, title: natk(c, "label"), sub: t("search.subCategory"),
+        action: "open-category", id: c.id,
+        hay: searchHay([c.label, c.labelEn, c.id]),
+      });
+    });
+
+    // --- Übungen: Übungs-Features (nur die geladenen/verfügbaren) ---
+    SEARCH_FEATURES.forEach((f) => {
+      if (f.need && !searchHas[f.need]) return;
+      idx.push({
+        group: "ex", kind: "feature", kindLabel: t("search.kindFeature"),
+        icon: f.icon, title: f.title, sub: t(f.subKey),
+        action: f.action,
+        hay: searchHay([f.title, t(f.subKey)]),
+      });
+    });
+
+    // --- Informationen: Länderkunde (ein Treffer je Land) ---
+    if (countries && Array.isArray(countries.LIST)) {
+      countries.LIST.forEach((c) => {
+        const words = (c.words || []).map((w) => [w.es, w.de, w.en]);
+        idx.push({
+          group: "info", kind: "country", kindLabel: t("search.kindCountry"),
+          icon: c.flag || "🌎", title: natk(c, "name") || c.name, sub: natk(c, "tagline"),
+          action: "search-country", id: c.id,
+          hay: searchHay([c.name, c.nameEn, c.capital, c.region, c.tagline, c.taglineEn,
+            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn, words]),
+        });
+      });
+    }
+
+    // --- Informationen: Inhaltsseiten mit reichem Heuhaufen (ein Treffer je Seite,
+    //     ein Stichwort aus irgendeinem Thema bringt die ganze Seite nach vorn) ---
+    if (knigge && Array.isArray(knigge.TOPICS)) {
+      const topics = knigge.TOPICS.map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn,
+        tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "🧭", title: "Etiqueta de viaje", sub: t("discover.subKnigge"),
+        action: "open-knigge",
+        hay: searchHay(["etiqueta knigge benehmen verhalten etiquette manners", topics]),
+      });
+    }
+    const pageMod = (mod, icon, title, subKey, action) => {
+      if (!mod) return;
+      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
+      const phrases = (mod.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
+      const gloss = (mod.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
+      const checklist = (mod.CHECKLIST || []).map((c) => [c.item, c.itemEn, c.why, c.whyEn]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: icon, title: title, sub: t(subKey),
+        action: action,
+        hay: searchHay([title, mod.INTRO, mod.INTRO_EN, topics, phrases, gloss, checklist]),
+      });
+    };
+    pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
+    pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
+
+    return idx;
+  }
+
+  const SEARCH_GROUP_CAP = 60; // pro Gruppe deckeln – hält die Liste schlank
+  function searchResultsData(query) {
+    if (!searchEngine || !String(query || "").trim()) return { groups: [] };
+    const ranked = searchEngine.rank(getSearchIndex(), query); // beste zuerst
+    const groups = [];
+    [["ex", t("search.groupExercises")], ["info", t("search.groupInfo")]].forEach(([gid, label]) => {
+      const items = ranked.filter((it) => it.group === gid).slice(0, SEARCH_GROUP_CAP);
+      if (items.length) groups.push({ id: gid, label, items });
+    });
+    return { groups };
+  }
+
+  function searchVM() {
+    const q = state.searchQuery || "";
+    const res = searchResultsData(q);
+    return { query: q, groups: res.groups };
+  }
+
+  function openSearch() {
+    dismissBadgeToast();
+    state.screen = "search";
+    render();
+  }
+
+  // Live-Eingabe: nur die Trefferliste neu zeichnen, NICHT die ganze Seite – so
+  // behält das Eingabefeld Fokus und Cursor (ein Voll-Re-Render würde sie verlieren).
+  function updateSearchResults() {
+    const box = document.getElementById("search-results");
+    if (box) box.innerHTML = ui.searchResults(searchVM());
+  }
+
+  function clearSearch() {
+    state.searchQuery = "";
+    render(); // Voll-Re-Render: setzt das Feld zurück und fokussiert es neu
+  }
+
+  // Treffer „Land" öffnet die Länderkunde direkt beim gewählten Land.
+  function openSearchCountry(id) {
+    state.countryId = id;
+    openInfo();
+  }
+
   function openInfo() {
     dismissBadgeToast();
     state.screen = "info";
@@ -2957,6 +3159,7 @@
       const card = userCards.add(input);
       editorMsg = { type: "ok", text: t("app.cardSaved", { de: card.de, es: card.es }) };
       buzz(12);
+      invalidateSearchIndex(); // neue eigene Karte muss auffindbar werden
     }
     render();
   }
@@ -2974,6 +3177,7 @@
       store.saveProgress(progress);
     }
     editorMsg = { type: "ok", text: t("app.cardDeleted") };
+    invalidateSearchIndex(); // gelöschte Karte aus dem Suchindex nehmen
     render();
   }
 
@@ -3144,6 +3348,9 @@
     else if (action === "skip-onboarding") finishOnboarding();
     else if (action === "resume-last") resumeLast();
     else if (action === "set-tab") setTab(el.dataset.tab);
+    else if (action === "open-search") openSearch();
+    else if (action === "search-clear") clearSearch();
+    else if (action === "search-country") openSearchCountry(el.dataset.id);
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
@@ -3160,7 +3367,7 @@
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
     else if (action === "study-one") studyOne(el.dataset.id);
-    else if (action === "card-back") (state.backTo === "home" ? goHome() : goStats());
+    else if (action === "card-back") (state.backTo === "home" ? goHome() : state.backTo === "search" ? openSearch() : goStats());
     else if (action === "open-editor") openEditor();
     else if (action === "export-data") exportData();
     else if (action === "import-data") startImport();
@@ -3296,6 +3503,14 @@
     e.preventDefault();
     const input = document.getElementById("answer");
     submitTyped(input ? input.value : "");
+  }
+
+  // Live-Suche: Tippen im Suchfeld zeichnet nur die Trefferliste neu (Fokus bleibt).
+  function onInput(e) {
+    if (state.screen !== "search") return;
+    if (!e.target || e.target.id !== "search-input") return;
+    state.searchQuery = e.target.value;
+    updateSearchResults();
   }
 
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
@@ -3473,6 +3688,7 @@
   // ----- Start -----
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
+  root.addEventListener("input", onInput);
   root.addEventListener("submit", onSubmit);
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });

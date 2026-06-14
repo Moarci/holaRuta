@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.27.0",
+      date: "2026-06-14",
+      title: "Suche & sauberes Scrollen",
+      items: [
+        "🔍 Neue Suche: Tippe oben auf „Suchen …“ (im Lernen- und Entdecken-Reiter) und finde gezielt, was du brauchst – Vokabelkarten, ganze Themen und Übungen unter „Übungen“, Länderkunde, Reise-Knigge, Logística und Salud unter „Informationen“. Sucht auf Deutsch wie Spanisch und ist nachsichtig mit Akzenten („nino“ findet „niño“, „mexico“ findet „México“).",
+        "🧭 Treffer führen direkt ans Ziel: Eine Karte öffnet ihre Detailseite (mit ‹ zurück zur Suche), ein Thema startet die Lernrunde, ein Land öffnet die Länderkunde gleich beim richtigen Eintrag.",
+        "⬆️ Sauberes Scrollen beim Wechsel: Öffnest du aus einer weiter unten gescrollten Liste eine Kategorie oder Übung, beginnt die neue Seite jetzt zuverlässig oben – statt die alte Scroll-Position zu erben.",
+      ],
+    },
+    {
       version: "1.26.0",
       date: "2026-06-14",
       title: "Salud y energía: gesund & fit unterwegs",

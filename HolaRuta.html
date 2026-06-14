@@ -419,6 +419,74 @@ body {
 .feat__sub { font-size: 0.82rem; opacity: 0.92; }
 .feat__chev { font-size: 1.4rem; font-weight: 700; flex: none; opacity: 0.85; }
 
+/* ---------- SUCHE (gezielt nach Karten/Übungen & Informationen) ---------- */
+/* Sucheinstieg im Dashboard/Entdecken: sieht aus wie ein Feld, ist ein Knopf. */
+.searchbar {
+  display: flex; align-items: center; gap: 10px; width: 100%; cursor: pointer;
+  text-align: left; padding: 13px 16px; border-radius: var(--r-md);
+  background: var(--card); border: 1.5px solid var(--line); color: var(--muted);
+  box-shadow: var(--shadow);
+}
+.searchbar:active { transform: translateY(1px); }
+.searchbar__icon { font-size: 1.05rem; line-height: 1; flex: none; }
+.searchbar__text { font-size: 0.95rem; font-weight: 600; }
+
+/* Echtes Eingabefeld auf der Such-Seite. */
+.searchfield {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card); border: 1.5px solid var(--line-strong);
+  border-radius: var(--r-md); padding: 0 12px; box-shadow: var(--shadow);
+}
+.searchfield:focus-within { border-color: var(--brand); box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 30%, transparent); }
+.searchfield__icon { font-size: 1.05rem; flex: none; opacity: 0.8; }
+.searchfield__input {
+  flex: 1 1 auto; min-width: 0; border: none; background: transparent; color: var(--ink);
+  font-family: inherit; font-size: 1rem; padding: 14px 0; outline: none;
+}
+.searchfield__input::placeholder { color: var(--muted); }
+/* native Lösch-Kreuze der type=search-Felder verstecken (eigener Knopf existiert) */
+.searchfield__input::-webkit-search-decoration,
+.searchfield__input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.searchfield__clear {
+  flex: none; border: none; background: transparent; color: var(--muted);
+  font-size: 1.05rem; cursor: pointer; padding: 8px; line-height: 1; border-radius: 999px;
+}
+.searchfield__clear:active { transform: translateY(1px); }
+/* Lösch-Knopf nur zeigen, wenn etwas im Feld steht (rein per CSS, kein Re-Render). */
+.searchfield__input:placeholder-shown ~ .searchfield__clear { display: none; }
+
+.search-hint { margin: 8px 2px; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.5; }
+.search-cap { display: flex; align-items: center; gap: 8px; }
+.search-count {
+  font-size: 0.72rem; font-weight: 800; color: var(--muted);
+  background: rgba(45, 27, 18, 0.08); border-radius: 999px; padding: 1px 8px;
+}
+[data-theme="dark"] .search-count { background: rgba(251, 243, 228, 0.12); }
+.search-list { display: flex; flex-direction: column; gap: 8px; }
+.search-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer;
+  text-align: left; padding: 12px 14px; border-radius: var(--r-md);
+  background: var(--card); border: 1.5px solid var(--line); color: var(--ink);
+}
+.search-row:active { transform: translateY(1px); }
+.search-row__icon { font-size: 1.35rem; line-height: 1; flex: none; }
+.search-row__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.search-row__title {
+  font-weight: 700; font-size: 0.98rem; line-height: 1.25;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.search-row__sub {
+  font-size: 0.82rem; color: var(--muted); line-height: 1.3;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.search-row__kind {
+  flex: none; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--brand-ink);
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  border-radius: 999px; padding: 3px 9px;
+}
+.search-row__chev { flex: none; font-size: 1.25rem; font-weight: 700; opacity: 0.6; }
+
 /* ---------- PROFIL-REITER: Fortschritts-Karte + Navigations-Zeilen ---------- */
 .profcard {
   display: flex; flex-direction: column; gap: 10px;
@@ -2514,6 +2582,41 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
     dedication: "For my dear Lisa.",
+  });
+
+  // ---------- search: Suche (gezielt nach Karten/Übungen & Informationen) ----------
+  i18n.register("search", {
+    open: "Suche öffnen",
+    placeholder: "Suchen …",
+    title: "Suche",
+    inputPlaceholder: "Karten, Übungen, Länder …",
+    clear: "Suche leeren",
+    hintEmpty: "Suche nach Wörtern, Sätzen, Themen, Übungen oder Ländern – auf Deutsch oder Spanisch.",
+    noResults: (p) => `Nichts gefunden für „${p.q}“. Versuch ein anderes Wort.`,
+    groupExercises: "Übungen",
+    groupInfo: "Informationen",
+    kindCard: "Karte",
+    kindCategory: "Thema",
+    kindFeature: "Übung",
+    kindCountry: "Land",
+    kindInfo: "Info",
+    subCategory: "Ganzes Thema lernen",
+  }, {
+    open: "Open search",
+    placeholder: "Search …",
+    title: "Search",
+    inputPlaceholder: "Cards, exercises, countries …",
+    clear: "Clear search",
+    hintEmpty: "Search for words, phrases, topics, exercises or countries – in English or Spanish.",
+    noResults: (p) => `Nothing found for “${p.q}”. Try another word.`,
+    groupExercises: "Exercises",
+    groupInfo: "Information",
+    kindCard: "Card",
+    kindCategory: "Topic",
+    kindFeature: "Exercise",
+    kindCountry: "Country",
+    kindInfo: "Info",
+    subCategory: "Study the whole topic",
   });
 
   // ---------- study: Lernkarte (Vorder-/Rückseite, Tippen, Hören, Fertig) ----------
@@ -13664,6 +13767,94 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 </script>
 <script>
 /*
+ * search.js  (SC.search) – Such-Kern: normalisieren, indexieren, ranken.
+ * REINE FUNKTIONEN (keine Daten, kein DOM). Der Controller (app.js) baut aus
+ * data.js/countries.js/… eine flache Liste durchsuchbarer Einträge und lässt
+ * sie hier ranken; die Such-Ansicht (ui.renderSearch) zeigt das Ergebnis.
+ *
+ * Nachsichtig wie der Antwort-Matcher: Groß-/Kleinschreibung und Akzente egal
+ * („nino" findet „niño", „mexico" findet „México"). Mehrere Tokens werden
+ * UND-verknüpft (alle müssen vorkommen).
+ *
+ * Datenformat eines Eintrags (vom Controller gebaut):
+ *   { hay, title, … beliebige weitere Anzeige-/Navigationsfelder }
+ *     hay   = vorab normalisierter Such-Heuhaufen (search.haystack(...))
+ *     title = Anzeigetitel (für den Anfangstreffer-Bonus, roh – wird hier normalisiert)
+ */
+(function () {
+  "use strict";
+
+  // Klein schreiben + Akzente entfernen (NFD spaltet Kombizeichen ab, die dann
+  // wegfallen). Bewusst simpler als matcher.normalize: hier zählt breites Finden,
+  // Satzzeichen im Heuhaufen stören die Teilstring-Suche nicht.
+  function normalize(str) {
+    return String(str == null ? "" : str)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "");
+  }
+
+  // Beliebig verschachtelte Teile (Strings, Arrays, null) zu EINEM normalisierten
+  // Heuhaufen-String zusammenziehen. Leere/fehlende Werte fallen still weg, damit
+  // der Aufrufer optionale …En-Felder bedenkenlos mitgeben kann.
+  function haystack(parts) {
+    const out = [];
+    const add = (v) => {
+      if (v == null) return;
+      if (Array.isArray(v)) { v.forEach(add); return; }
+      const s = String(v).trim();
+      if (s) out.push(s);
+    };
+    add(parts);
+    return normalize(out.join(" "));
+  }
+
+  // Suchbegriff in Tokens zerlegen (Leerzeichen-getrennt, normalisiert).
+  function tokenize(query) {
+    return normalize(String(query == null ? "" : query).trim())
+      .split(/\s+/)
+      .filter(Boolean);
+  }
+
+  // Bewertet einen Eintrag gegen die Tokens. ALLE Tokens müssen im Heuhaufen
+  // vorkommen (sonst Infinity = kein Treffer). Kleinere Punktzahl = besser:
+  // frühe Vorkommen zählen weniger, ein Titel-Anfangstreffer bekommt einen großen
+  // Bonus (negativ!). Deshalb ist Infinity das EINZIGE „nicht gefunden"-Signal –
+  // 0 oder negativ sind gültige (gute) Punktzahlen.
+  function score(item, tokens) {
+    if (!tokens.length) return Infinity;
+    let s = 0;
+    for (let i = 0; i < tokens.length; i++) {
+      const pos = item.hay.indexOf(tokens[i]);
+      if (pos === -1) return Infinity;
+      s += pos;
+    }
+    if (normalize(item.title).indexOf(tokens[0]) === 0) s -= 1000;
+    return s;
+  }
+
+  // Liste ranken: matchende Einträge nach Punktzahl aufsteigend (beste zuerst).
+  // Stabil bei Gleichstand (Original-Reihenfolge bleibt) – verhindert „springende"
+  // Trefferlisten beim Tippen. Gibt die Einträge selbst zurück (mit .score ergänzt).
+  function rank(items, query) {
+    const tokens = tokenize(query);
+    if (!tokens.length) return [];
+    const hits = [];
+    for (let i = 0; i < items.length; i++) {
+      const sc = score(items[i], tokens);
+      if (Number.isFinite(sc)) hits.push({ item: items[i], sc: sc, i: i });
+    }
+    hits.sort((a, b) => (a.sc - b.sc) || (a.i - b.i));
+    return hits.map((h) => h.item);
+  }
+
+  window.SC = window.SC || {};
+  window.SC.search = { normalize, haystack, tokenize, score, rank };
+})();
+
+</script>
+<script>
+/*
  * stats.js  (SC.stats) – Auswertung pro Karte. REINE FUNKTIONEN, kein Speicher/UI.
  *
  * Der Lern-Datensatz einer Karte (in progress[id]) trägt zusätzlich zu den
@@ -14890,6 +15081,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.27.0",
+      date: "2026-06-14",
+      title: "Suche & sauberes Scrollen",
+      items: [
+        "🔍 Neue Suche: Tippe oben auf „Suchen …“ (im Lernen- und Entdecken-Reiter) und finde gezielt, was du brauchst – Vokabelkarten, ganze Themen und Übungen unter „Übungen“, Länderkunde, Reise-Knigge, Logística und Salud unter „Informationen“. Sucht auf Deutsch wie Spanisch und ist nachsichtig mit Akzenten („nino“ findet „niño“, „mexico“ findet „México“).",
+        "🧭 Treffer führen direkt ans Ziel: Eine Karte öffnet ihre Detailseite (mit ‹ zurück zur Suche), ein Thema startet die Lernrunde, ein Land öffnet die Länderkunde gleich beim richtigen Eintrag.",
+        "⬆️ Sauberes Scrollen beim Wechsel: Öffnest du aus einer weiter unten gescrollten Liste eine Kategorie oder Übung, beginnt die neue Seite jetzt zuverlässig oben – statt die alte Scroll-Position zu erben.",
+      ],
+    },
+    {
       version: "1.26.0",
       date: "2026-06-14",
       title: "Salud y energía: gesund & fit unterwegs",
@@ -15415,6 +15616,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </section>`;
   }
 
+  // Sucheinstieg: sieht aus wie ein Suchfeld, ist aber ein Knopf, der die
+  // Such-Ansicht öffnet (ein echtes Eingabefeld im Dashboard würde bei jedem
+  // Re-Render den Fokus verlieren – darum erst auf der eigenen Seite tippen).
+  function searchBar() {
+    return `
+      <button class="searchbar" data-action="open-search" aria-label="${esc(t("search.open"))}">
+        <span class="searchbar__icon" aria-hidden="true">🔍</span>
+        <span class="searchbar__text">${esc(t("search.placeholder"))}</span>
+      </button>`;
+  }
+
   function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
@@ -15482,6 +15694,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     return `
       ${pagehead(esc(t("home.homePrompt")), vm)}
+      ${searchBar()}
 
       <div class="today">
         ${streakChip}
@@ -15521,6 +15734,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </button>`).join("");
     return `
       ${pagehead(esc(t("discover.discoverTitle")), vm)}
+      ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
       ${feats}`;
   }
@@ -15614,6 +15828,57 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return `
       <section class="screen screen--tabbed">${body}</section>
       ${tabbar(vm.tab)}`;
+  }
+
+  // ---------- SUCHE (gezielt nach Karten/Übungen & Informationen suchen) ----------
+  // Eigenes echtes Eingabefeld (autofokussiert in app.js). Die Trefferliste lebt in
+  // #search-results und wird beim Tippen separat aktualisiert (Fokus bleibt erhalten).
+  function renderSearch(vm) {
+    return `
+      <section class="screen screen--search">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">🔍 ${esc(t("search.title"))}</div>
+          <span></span>
+        </div>
+        <div class="searchfield">
+          <span class="searchfield__icon" aria-hidden="true">🔍</span>
+          <input id="search-input" class="searchfield__input" type="search" inputmode="search"
+                 autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
+                 placeholder="${esc(t("search.inputPlaceholder"))}" aria-label="${esc(t("search.inputPlaceholder"))}"
+                 value="${esc(vm.query)}" />
+          <button class="searchfield__clear" data-action="search-clear" aria-label="${esc(t("search.clear"))}">✕</button>
+        </div>
+        <div id="search-results">${searchResults(vm)}</div>
+      </section>`;
+  }
+
+  // Nur die Trefferliste – wird sowohl im Voll-Render als auch beim Live-Tippen
+  // (app.js updateSearchResults) verwendet, deshalb als eigene Funktion exportiert.
+  function searchResults(vm) {
+    const q = (vm.query || "").trim();
+    if (!q) return `<p class="search-hint">${esc(t("search.hintEmpty"))}</p>`;
+    if (!vm.groups.length) return `<p class="stat-empty">${esc(t("search.noResults", { q: q }))}</p>`;
+    return vm.groups.map((g) => `
+      <p class="sectioncap search-cap">${esc(g.label)} <span class="search-count">${g.items.length}</span></p>
+      <div class="search-list">${g.items.map(searchRow).join("")}</div>`).join("");
+  }
+
+  function searchRow(it) {
+    const dataId = it.id ? ` data-id="${esc(it.id)}"` : "";
+    const dataBack = it.back ? ` data-back="${esc(it.back)}"` : "";
+    const titleLang = it.titleLang ? ` lang="${esc(it.titleLang)}"` : "";
+    const sub = it.sub ? `<span class="search-row__sub">${esc(it.sub)}</span>` : "";
+    return `
+      <button class="search-row" data-action="${esc(it.action)}"${dataId}${dataBack}>
+        <span class="search-row__icon" aria-hidden="true">${esc(it.icon)}</span>
+        <span class="search-row__text">
+          <span class="search-row__title"${titleLang}>${esc(it.title)}</span>
+          ${sub}
+        </span>
+        <span class="search-row__kind">${esc(it.kindLabel)}</span>
+        <span class="search-row__chev" aria-hidden="true">›</span>
+      </button>`;
   }
 
   // ---------- STUDY ----------
@@ -18143,7 +18408,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear, renderLogistica, renderSalud,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear, renderLogistica, renderSalud,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
@@ -18265,6 +18530,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
     // ----- Trip-Ziel (Countdown + Tagesziel) -----
     tripEdit: false,         // Trip-Ziel-Formular auf der Startseite aufgeklappt?
+    // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
+    searchQuery: "",         // aktueller Suchbegriff (lebt nur in der Sitzung)
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -19933,7 +20200,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Wohin führt „eins höher" vom aktuellen Screen? Die Detailseite kehrt dahin
   // zurück, wo der Zurück-Knopf ohnehin hinführt (Startseite oder Statistik).
   function backTarget() {
-    if (state.screen === "card") return state.backTo === "home" ? "home" : "stats";
+    if (state.screen === "card") return state.backTo === "home" ? "home" : state.backTo === "search" ? "search" : "stats";
     return SCREEN_PARENT[state.screen] || "home";
   }
 
@@ -19974,6 +20241,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // ----- Rendern -----
+  // Merkt sich die zuletzt gerenderte Ansicht, um beim ECHTEN Ansichtswechsel
+  // (anderer Screen oder – im Dashboard – anderer Reiter) den Fenster-Scroll auf
+  // 0 zu setzen. Sonst „erbt“ die neue Seite die Scroll-Position der alten: wer im
+  // Entdecken-Reiter nach unten scrollt und eine Kategorie öffnet, landet sonst
+  // mitten in der neuen Seite statt oben. Re-Renders DERSELBEN Ansicht (Karte
+  // umdrehen, Antwort prüfen, Dialog-Zug) lassen den Scroll bewusst stehen.
+  let lastScrollKey = null;
+  function scrollKey() {
+    return state.screen === "home" ? "home:" + state.homeTab : state.screen;
+  }
+  function resetScrollOnViewChange() {
+    const key = scrollKey();
+    if (key === lastScrollKey) return;
+    lastScrollKey = key;
+    try {
+      window.scrollTo(0, 0);
+    } catch (e) {
+      try { document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch (e2) { /* egal */ }
+    }
+  }
+
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
     else if (state.screen === "done") root.innerHTML = ui.renderDone(doneVM());
@@ -20014,8 +20302,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
     else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
     else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
+    else if (state.screen === "search") root.innerHTML = ui.renderSearch(searchVM());
     else if (state.screen === "onboarding") root.innerHTML = ui.renderOnboarding(homeVM());
     else root.innerHTML = ui.renderHome(homeVM());
+
+    // Nach dem Austausch des Inhalts: bei echtem Ansichtswechsel oben anfangen.
+    resetScrollOnViewChange();
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
     if (badges && state.badgeToast && state.badgeToast.length) {
@@ -20153,6 +20445,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (state.screen === "dialogos" && state.dialogos && !state.dialogos.result) {
       const input = document.getElementById("dialogos-answer");
       if (input) { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } return; }
+    }
+    // Suche: Fokus direkt ins Eingabefeld (Tastatur erscheint, sofort lostippen).
+    // Der Cursor ans Ende, damit ein gemerkter Suchbegriff weitergetippt werden kann.
+    if (state.screen === "search") {
+      const input = document.getElementById("search-input");
+      if (input) {
+        try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+        const len = input.value.length;
+        try { input.setSelectionRange(len, len); } catch (e) { /* type=search erlaubt das nicht überall */ }
+        return;
+      }
     }
     const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
@@ -20409,6 +20712,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     applyUiLang(l);
     settings = Object.assign({}, settings, { uiLang: state.uiLang });
     store.saveSettings(settings);
+    invalidateSearchIndex(); // Titel/Untertitel & Gruppen hängen an der UI-Sprache
     render();
   }
 
@@ -20976,6 +21280,169 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // ----- Länderkunde (Infoseite) -----
+  // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
+  // Eine flache Volltext-Suche über alle Inhalte: Vokabelkarten, Lern-Kategorien
+  // und Übungs-Features ("Übungen") sowie Länderkunde, Reise-Knigge, Logística und
+  // Salud ("Informationen"). Jeder Treffer trägt die schon bestehende data-action,
+  // mit der die jeweilige Ansicht geöffnet wird – die Suche ist also nur ein
+  // zweiter Einstieg, kein eigener Inhaltsspeicher.
+
+  // Übungs-Features (spiegelt die FEATURES-Liste in ui.js, ohne die reinen
+  // Infoseiten – die kommen unten als „Informationen" mit reichem Suchindex).
+  const SEARCH_FEATURES = [
+    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",       subKey: "discover.subHostel" },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",      subKey: "discover.subDefiniciones" },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos" },
+    { action: "open-regatear",    icon: "🤝", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",         subKey: "discover.subCuerpo" },
+    { action: "open-compras",     icon: "🛒", title: "Lista de compras",  subKey: "discover.subCompras" },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
+  ];
+  const searchHas = {
+    countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
+    dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
+    knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
+  };
+
+  // Such-Kern (normalisieren/indexieren/ranken) lebt als reines Modul in search.js.
+  const searchEngine = window.SC.search || null;
+  const searchHay = (parts) => (searchEngine ? searchEngine.haystack(parts) : "");
+
+  // Index wird einmal aufgebaut und gemerkt; bei Sprachwechsel oder geänderten
+  // eigenen Karten neu (siehe invalidateSearchIndex).
+  let searchIndex = null;
+  function invalidateSearchIndex() { searchIndex = null; }
+  function getSearchIndex() {
+    if (!searchIndex) searchIndex = buildSearchIndex();
+    return searchIndex;
+  }
+  function buildSearchIndex() {
+    const idx = [];
+
+    // --- Übungen: Vokabelkarten (eigene inklusive) ---
+    allCards().forEach((c) => {
+      const cat = categoryById(c.cat);
+      idx.push({
+        group: "ex", kind: "card", kindLabel: t("search.kindCard"),
+        icon: cat ? cat.icon : "🃏",
+        title: c.es, titleLang: "es", sub: nat(c),
+        action: "open-card", id: c.id, back: "search",
+        hay: searchHay([c.es, c.de, c.en, c.tip, c.tipEn, cat && natk(cat, "label")]),
+      });
+    });
+
+    // --- Übungen: Lern-Kategorien (ganze Themen-Decks) ---
+    data.CATEGORIES.forEach((c) => {
+      idx.push({
+        group: "ex", kind: "category", kindLabel: t("search.kindCategory"),
+        icon: c.icon, title: natk(c, "label"), sub: t("search.subCategory"),
+        action: "open-category", id: c.id,
+        hay: searchHay([c.label, c.labelEn, c.id]),
+      });
+    });
+
+    // --- Übungen: Übungs-Features (nur die geladenen/verfügbaren) ---
+    SEARCH_FEATURES.forEach((f) => {
+      if (f.need && !searchHas[f.need]) return;
+      idx.push({
+        group: "ex", kind: "feature", kindLabel: t("search.kindFeature"),
+        icon: f.icon, title: f.title, sub: t(f.subKey),
+        action: f.action,
+        hay: searchHay([f.title, t(f.subKey)]),
+      });
+    });
+
+    // --- Informationen: Länderkunde (ein Treffer je Land) ---
+    if (countries && Array.isArray(countries.LIST)) {
+      countries.LIST.forEach((c) => {
+        const words = (c.words || []).map((w) => [w.es, w.de, w.en]);
+        idx.push({
+          group: "info", kind: "country", kindLabel: t("search.kindCountry"),
+          icon: c.flag || "🌎", title: natk(c, "name") || c.name, sub: natk(c, "tagline"),
+          action: "search-country", id: c.id,
+          hay: searchHay([c.name, c.nameEn, c.capital, c.region, c.tagline, c.taglineEn,
+            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn, words]),
+        });
+      });
+    }
+
+    // --- Informationen: Inhaltsseiten mit reichem Heuhaufen (ein Treffer je Seite,
+    //     ein Stichwort aus irgendeinem Thema bringt die ganze Seite nach vorn) ---
+    if (knigge && Array.isArray(knigge.TOPICS)) {
+      const topics = knigge.TOPICS.map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn,
+        tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "🧭", title: "Etiqueta de viaje", sub: t("discover.subKnigge"),
+        action: "open-knigge",
+        hay: searchHay(["etiqueta knigge benehmen verhalten etiquette manners", topics]),
+      });
+    }
+    const pageMod = (mod, icon, title, subKey, action) => {
+      if (!mod) return;
+      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
+      const phrases = (mod.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
+      const gloss = (mod.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
+      const checklist = (mod.CHECKLIST || []).map((c) => [c.item, c.itemEn, c.why, c.whyEn]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: icon, title: title, sub: t(subKey),
+        action: action,
+        hay: searchHay([title, mod.INTRO, mod.INTRO_EN, topics, phrases, gloss, checklist]),
+      });
+    };
+    pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
+    pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
+
+    return idx;
+  }
+
+  const SEARCH_GROUP_CAP = 60; // pro Gruppe deckeln – hält die Liste schlank
+  function searchResultsData(query) {
+    if (!searchEngine || !String(query || "").trim()) return { groups: [] };
+    const ranked = searchEngine.rank(getSearchIndex(), query); // beste zuerst
+    const groups = [];
+    [["ex", t("search.groupExercises")], ["info", t("search.groupInfo")]].forEach(([gid, label]) => {
+      const items = ranked.filter((it) => it.group === gid).slice(0, SEARCH_GROUP_CAP);
+      if (items.length) groups.push({ id: gid, label, items });
+    });
+    return { groups };
+  }
+
+  function searchVM() {
+    const q = state.searchQuery || "";
+    const res = searchResultsData(q);
+    return { query: q, groups: res.groups };
+  }
+
+  function openSearch() {
+    dismissBadgeToast();
+    state.screen = "search";
+    render();
+  }
+
+  // Live-Eingabe: nur die Trefferliste neu zeichnen, NICHT die ganze Seite – so
+  // behält das Eingabefeld Fokus und Cursor (ein Voll-Re-Render würde sie verlieren).
+  function updateSearchResults() {
+    const box = document.getElementById("search-results");
+    if (box) box.innerHTML = ui.searchResults(searchVM());
+  }
+
+  function clearSearch() {
+    state.searchQuery = "";
+    render(); // Voll-Re-Render: setzt das Feld zurück und fokussiert es neu
+  }
+
+  // Treffer „Land" öffnet die Länderkunde direkt beim gewählten Land.
+  function openSearchCountry(id) {
+    state.countryId = id;
+    openInfo();
+  }
+
   function openInfo() {
     dismissBadgeToast();
     state.screen = "info";
@@ -21114,6 +21581,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const card = userCards.add(input);
       editorMsg = { type: "ok", text: t("app.cardSaved", { de: card.de, es: card.es }) };
       buzz(12);
+      invalidateSearchIndex(); // neue eigene Karte muss auffindbar werden
     }
     render();
   }
@@ -21131,6 +21599,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       store.saveProgress(progress);
     }
     editorMsg = { type: "ok", text: t("app.cardDeleted") };
+    invalidateSearchIndex(); // gelöschte Karte aus dem Suchindex nehmen
     render();
   }
 
@@ -21301,6 +21770,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "skip-onboarding") finishOnboarding();
     else if (action === "resume-last") resumeLast();
     else if (action === "set-tab") setTab(el.dataset.tab);
+    else if (action === "open-search") openSearch();
+    else if (action === "search-clear") clearSearch();
+    else if (action === "search-country") openSearchCountry(el.dataset.id);
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
@@ -21317,7 +21789,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
     else if (action === "study-one") studyOne(el.dataset.id);
-    else if (action === "card-back") (state.backTo === "home" ? goHome() : goStats());
+    else if (action === "card-back") (state.backTo === "home" ? goHome() : state.backTo === "search" ? openSearch() : goStats());
     else if (action === "open-editor") openEditor();
     else if (action === "export-data") exportData();
     else if (action === "import-data") startImport();
@@ -21453,6 +21925,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     e.preventDefault();
     const input = document.getElementById("answer");
     submitTyped(input ? input.value : "");
+  }
+
+  // Live-Suche: Tippen im Suchfeld zeichnet nur die Trefferliste neu (Fokus bleibt).
+  function onInput(e) {
+    if (state.screen !== "search") return;
+    if (!e.target || e.target.id !== "search-input") return;
+    state.searchQuery = e.target.value;
+    updateSearchResults();
   }
 
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
@@ -21630,6 +22110,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // ----- Start -----
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
+  root.addEventListener("input", onInput);
   root.addEventListener("submit", onSubmit);
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });
