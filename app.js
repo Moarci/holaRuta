@@ -239,6 +239,7 @@
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
+      showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
       tab: state.homeTab,
       install: installVM(),
     };
@@ -486,6 +487,19 @@
   // Optionales Reiseziel mit Datum und Karten-pro-Tag-Ziel. Schärft die Habit-
   // Schleife: „Noch 12 Tage bis Cusco · 8/15 heute". Liegt in gamestats
   // (tripGoal) und stützt sich auf den Tageszähler dailyCounts aus recordStudyEvent.
+  // Erkennt am freien Trip-Ziel-Text, ob die Reise nach Kolumbien geht – steuert,
+  // ob die „Pre-Arrival Kolumbien"-Kachel auf dem Dashboard erscheint (sonst bliebe
+  // sie auch z. B. bei einer Mexiko-Reise sichtbar). Akzent-/Groß-Schreibung egal.
+  const COLOMBIA_HINTS = ["colombia", "kolumbien", "cartagena", "medellin", "bogota",
+    "cali", "santa marta", "tayrona", "palomino", "minca", "guatape", "barranquilla",
+    "getsemani", "caribe", "rosario"];
+  function tripMentionsColombia() {
+    const t = gamestats.tripGoal;
+    if (!t || !t.destination) return false;
+    const norm = String(t.destination).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return COLOMBIA_HINTS.some((h) => norm.includes(h));
+  }
+
   function tripGoalVM() {
     const t = gamestats.tripGoal;
     if (!t) return null;
@@ -2034,21 +2048,14 @@
   }
 
   // ----- Kuratierte Presets (benannte Karten-Auswahl, z. B. Pre-Arrival-Pack) -----
-  // Reine ID-Liste im Stil von SPICKZETTEL_GROUPS. Läuft über den normalen Study-
-  // Pfad, aber in kuratierter Reihenfolge (statt fällig-zuerst) – ideal als
-  // Onboarding-Set „die wichtigsten Sätze vor der Ankunft". scope = zugrunde-
-  // liegende Kategorie, damit der Done-Screen korrekt beschriftet ist.
-  const PRESETS = [
-    {
-      id: "prearrival-co", scope: "colombia",
-      pick: ["co57", "co58", "co61", "co60", "co01", "co02", "co04", "co07", "co10", "co15",
-             "co37", "co40", "co42", "co43", "co36", "co47", "co48", "co50", "co71", "co75"],
-    },
-  ];
-
+  // Die Preset-Definitionen sind reine Daten (data.PRESETS, ID-Liste im Stil von
+  // SPICKZETTEL_GROUPS). startPreset baut die Queue direkt aus der kuratierten
+  // Liste – BEWUSST OHNE Stufen-Filter (matchesLevel), damit ein „Essentials"-Set
+  // vollständig bleibt, egal welcher A1/A2/B1-Filter gerade aktiv ist. Läuft sonst
+  // über den normalen Study-/SRS-Pfad; scope = Kategorie (für die Done-Beschriftung).
   function startPreset(presetId) {
     dismissBadgeToast();
-    const p = PRESETS.find((x) => x.id === presetId);
+    const p = (data.PRESETS || []).find((x) => x.id === presetId);
     if (!p) return;
     const cards = p.pick.map(cardById).filter(Boolean);
     const chosen = cards.slice(0, SESSION_CAP);

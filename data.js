@@ -2265,5 +2265,18 @@
   ];
 
   window.SC = window.SC || {};
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING };
+
+  // Kuratierte Presets: benannte Karten-Auswahl (reine ID-Listen, wie ein
+  // Spickzettel) für einen Ein-Tap-Einstieg. scope = zugrundeliegende Kategorie
+  // (für die korrekte Beschriftung des Done-Screens). Die IDs müssen in CARDS
+  // existieren – ein Test (sc.test.js) wacht über Tippfehler/ID-Drift.
+  const PRESETS = [
+    {
+      id: "prearrival-co", scope: "colombia",
+      pick: ["co57", "co58", "co61", "co60", "co01", "co02", "co04", "co07", "co10", "co15",
+             "co37", "co40", "co42", "co43", "co36", "co47", "co48", "co50", "co71", "co75"],
+    },
+  ];
+
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS };
 })();

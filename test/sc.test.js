@@ -626,3 +626,21 @@ test("badges: challenge_5 ab 5 distinkten Challenges", () => {
   assert.equal(m.challengesCompleted, 5);
   assert.ok(badges.satisfiedIds(m).includes("challenge_5"));
 });
+
+// ---------- Kuratierte Presets ----------
+test("data.PRESETS: jede Preset-ID existiert, scope gültig, keine Dubletten", () => {
+  const cardIds = new Set(data.CARDS.map((c) => c.id));
+  const scopes = new Set(data.CATEGORIES.map((c) => c.id).concat("all"));
+  assert.ok(Array.isArray(data.PRESETS) && data.PRESETS.length, "PRESETS fehlt/leer");
+  data.PRESETS.forEach((p) => {
+    assert.ok(p.id && typeof p.id === "string", "Preset ohne id");
+    assert.ok(scopes.has(p.scope), `Preset ${p.id}: unbekannter scope ${p.scope}`);
+    assert.ok(Array.isArray(p.pick) && p.pick.length, `Preset ${p.id}: pick leer`);
+    const seen = new Set();
+    p.pick.forEach((cid) => {
+      assert.ok(cardIds.has(cid), `Preset ${p.id}: unbekannte Karte ${cid}`);
+      assert.ok(!seen.has(cid), `Preset ${p.id}: Dublette ${cid}`);
+      seen.add(cid);
+    });
+  });
+});
