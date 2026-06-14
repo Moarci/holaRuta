@@ -242,6 +242,8 @@
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
+      showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
+      showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
@@ -522,6 +524,36 @@
     const t = gamestats.tripGoal;
     const cfg = window.SC && window.SC.config;
     return isPeruDest(t && t.destination) || isPeruDest(cfg && cfg.defaultDestination);
+  }
+
+  // Mexiko-Bezug für die „Pre-Arrival Mexiko"-Kachel.
+  const MEXICO_HINTS = ["mexico", "méxico", "mexiko", "cdmx", "ciudad de mexico", "oaxaca",
+    "chiapas", "san cristobal", "palenque", "merida", "yucatan", "yucatán", "tulum", "cancun",
+    "cancún", "valladolid", "bacalar", "playa del carmen", "riviera maya", "teotihuacan"];
+  function isMexicoDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return MEXICO_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsMexico() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isMexicoDest(t && t.destination) || isMexicoDest(cfg && cfg.defaultDestination);
+  }
+
+  // Costa-Rica-Bezug für die „Pre-Arrival Costa Rica"-Kachel.
+  const COSTARICA_HINTS = ["costa rica", "costarica", "san jose", "san josé", "la fortuna",
+    "arenal", "monteverde", "manuel antonio", "tortuguero", "puerto viejo", "cahuita", "tamarindo",
+    "rio celeste", "río celeste", "pacuare", "nicoya", "guanacaste", "uvita", "santa teresa"];
+  function isCostaRicaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return COSTARICA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsCostaRica() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isCostaRicaDest(t && t.destination) || isCostaRicaDest(cfg && cfg.defaultDestination);
   }
 
   // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----

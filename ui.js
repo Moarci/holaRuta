@@ -284,6 +284,22 @@
       </button>`
       : "";
 
+    const presetMx = vm.showMexicoPreset
+      ? `
+      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-mx">
+        <span class="today__ruta-main">${esc(t("home.presetMxTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.presetMxSub"))}</span>
+      </button>`
+      : "";
+
+    const presetCr = vm.showCostaRicaPreset
+      ? `
+      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-cr">
+        <span class="today__ruta-main">${esc(t("home.presetCrTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.presetCrSub"))}</span>
+      </button>`
+      : "";
+
     // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
     // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
     // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
@@ -317,6 +333,8 @@
         ${rutaDia}
         ${presetCo}
         ${presetPe}
+        ${presetMx}
+        ${presetCr}
         ${tripCard}
       </div>
 

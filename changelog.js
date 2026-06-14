@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.34.0",
+      date: "2026-06-14",
+      title: "Zwei neue Reise-Pakete: Mexiko & Costa Rica",
+      items: [
+        "🇲🇽 Neuer Bereich „Mexiko“ mit 41 Karten entlang der „Mexiko 360°“-Route: CDMX, Teotihuacán, Oaxaca (Mezcal, chapulines), Chiapas (Sumidero-Canyon, San Cristóbal, Palenque) und Yucatán (Cenoten, Chichén Itzá, Tulum, Bacalar) – mit Día de Muertos und mexikanischem Slang (¿mande?, ¡órale!, ¡aguas!, chido).",
+        "🇨🇷 Neuer Bereich „Costa Rica“ mit 40 Karten: San José, Karibik (Tortuguero, Puerto Viejo, Bribri-Kakao), Arenal/Río Celeste, Monteverde (Nebelwald, Canopy), Manuel Antonio – mit Wildlife (perezoso, tucán), Tico-Slang (pura vida, mae, tuanis) und gallo pinto/casado.",
+        "🇲🇽🇨🇷 Pre-Arrival-Kacheln für Mexiko und Costa Rica plus vier neue Real-Life-Mutproben.",
+      ],
+    },
+    {
       version: "1.33.0",
       date: "2026-06-14",
       title: "Pre-Arrival Peru: die wichtigsten Sätze auf einen Tap",
