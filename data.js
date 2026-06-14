@@ -959,7 +959,7 @@
     { id: "co47", cat: "colombia", lvl: 2, de: "Was kostet das Pfund?", en: "How much is it per pound?", es: "¿A cómo está la libra?", tip: "a cómo está = wie teuer (auf dem Markt)", tipEn: "a cómo está = how much (at the market)" },
     { id: "co48", cat: "colombia", lvl: 2, de: "Akzeptieren Sie Karte oder nur bar?", en: "Do you accept card or only cash?", es: "¿Aceptan tarjeta o solo efectivo?", tip: "tar-CHE-ta = Karte", tipEn: "tar-CHE-ta = card" },
     { id: "co49", cat: "colombia", lvl: 2, de: "Gibt es einen Geldautomaten in der Nähe?", en: "Is there an ATM nearby?", es: "¿Hay un cajero cerca?", tip: "ka-CHE-ro = Geldautomat", tipEn: "ka-CHE-ro = ATM" },
-    { id: "co50", cat: "colombia", lvl: 2, de: "Geben Sie mir bitte das Wechselgeld?", en: "Can you give me the change, please?", es: "¿Me da el vuelto, por favor?", tip: "vuelto = Wechselgeld (Kolumbien)", tipEn: "vuelto = change (Colombia)" },
+    { id: "co50", cat: "colombia", lvl: 2, de: "Bekomme ich bitte mein Wechselgeld?", en: "Can you give me the change, please?", es: "¿Me da el vuelto, por favor?", tip: "vuelto = Wechselgeld (Kolumbien)", tipEn: "vuelto = change (Colombia)" },
     { id: "co51", cat: "colombia", lvl: 3, de: "Ist die Bedienung schon inbegriffen?", en: "Is the service charge already included?", es: "¿El servicio ya está incluido?", tip: "propina = Trinkgeld", tipEn: "propina = tip" },
     // ----- Transport vor Ort -----
     { id: "co52", cat: "colombia", lvl: 2, de: "Fährt diese Buseta zum Zentrum?", en: "Does this little bus go to the centre?", es: "¿Esta buseta va al centro?", tip: "buseta = Kleinbus", tipEn: "buseta = minibus" },
@@ -971,7 +971,7 @@
     { id: "co57", cat: "colombia", lvl: 1, de: "Hallo, wie läuft's?", en: "Hi, how's it going?", es: "¿Quiubo? ¿Qué más?", tip: "sehr typisch kolumbianisch", tipEn: "very typically Colombian" },
     { id: "co58", cat: "colombia", lvl: 1, de: "Alles gut, danke.", en: "All good, thanks.", es: "Todo bien, gracias.", tip: "TO-do bien" },
     { id: "co59", cat: "colombia", lvl: 1, de: "Das ist super!", en: "That's awesome!", es: "¡Qué bacano!", tip: "bacano = super/cool", tipEn: "bacano = great/cool" },
-    { id: "co60", cat: "colombia", lvl: 1, de: "Wie schade! / Entschuldigung!", en: "What a shame! / Sorry!", es: "¡Qué pena!", tip: "auch als höfliches 'Entschuldigung'", tipEn: "also a polite 'excuse me'" },
+    { id: "co60", cat: "colombia", lvl: 1, de: "Wie peinlich! / Entschuldigung!", en: "How embarrassing! / Sorry!", es: "¡Qué pena!", tip: "in Kolumbien oft höfliches 'Entschuldigung'", tipEn: "in Colombia often a polite 'excuse me'" },
     { id: "co61", cat: "colombia", lvl: 1, de: "Gern geschehen.", en: "You're welcome.", es: "A la orden.", tip: "sehr kolumbianisch, auch beim Anbieten", tipEn: "very Colombian, also when offering service" },
     { id: "co62", cat: "colombia", lvl: 1, de: "Alles klar, abgemacht.", en: "Okay, sounds good.", es: "Listo.", tip: "LIS-to = klar/fertig", tipEn: "LIS-to = ready/done" },
     { id: "co63", cat: "colombia", lvl: 2, de: "Auf geht's, sofort!", en: "Let's do it, right now!", es: "¡De una!", tip: "de una = sofort/auf jeden Fall", tipEn: "de una = right away/for sure" },

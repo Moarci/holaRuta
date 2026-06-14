@@ -27,6 +27,12 @@ const SOURCE = "index.html";
 // identischer Build. Ohne Flag entsteht wie bisher das pure HolaRuta.html.
 const editionArg = process.argv.find((a) => a.startsWith("--edition="));
 const EDITION = editionArg ? editionArg.split("=")[1].trim() : null;
+// Edition-Name validieren: leer oder ungültig (Path-Traversal/Sonderzeichen) bricht
+// klar ab, statt still den Default-Build zu überschreiben.
+if (editionArg && (!EDITION || !/^[a-z0-9_-]+$/.test(EDITION))) {
+  console.error(`✗ Ungültiger Edition-Name: "${EDITION}". Erlaubt sind a–z, 0–9, _ und - (z. B. --edition=ecos).`);
+  process.exit(1);
+}
 const OUTPUT = EDITION ? `HolaRuta-${EDITION}.html` : "HolaRuta.html";
 
 function read(file) {

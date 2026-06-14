@@ -395,9 +395,11 @@
   // Dezenter Co-Branding-Hinweis im Profil (nur in einer Edition sichtbar).
   function editionCredit(e) {
     if (!e) return "";
+    // Nur echte http(s)-Links verlinken; alles andere (z.B. javascript:) als Text.
+    const url = e.partner && e.partner.url && /^https?:\/\//i.test(e.partner.url) ? e.partner.url : null;
     const partner = e.partner
-      ? (e.partner.url
-          ? `<a href="${esc(e.partner.url)}" target="_blank" rel="noopener noreferrer">${esc(e.partner.name)}</a>`
+      ? (url
+          ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(e.partner.name)}</a>`
           : esc(e.partner.name))
       : "";
     return `<p class="edition-credit">${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
