@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="de" data-lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HolaRuta · WeRoad Colombia – Proposal</title>
+<link rel="stylesheet" href="../anleitungen/handout.css">
+<style>
+  /* WeRoad-Coral als Akzent (= editions/weroad.js), damit die Seite wie die
+     „WeRoad Colombia Edition" wirkt. Nur Akzentfarbe, kein Partnerlogo. */
+  :root { --brand: #E0533A; --brand-ink: #B53C28; }
+  .pill { display:inline-block; font-size:.8rem; font-weight:800; letter-spacing:.04em;
+          text-transform:uppercase; color:#fff; background:var(--brand);
+          border-radius:999px; padding:4px 12px; margin:2px 4px 2px 0; }
+  .phase { display:grid; grid-template-columns:64px 1fr; gap:14px; align-items:start;
+           background:var(--card); border:1px solid var(--line); border-left:4px solid var(--brand);
+           border-radius:0 var(--r) var(--r) 0; padding:14px 16px; margin:12px 0; }
+  .phase .ph-ico { font-size:2rem; text-align:center; }
+  .phase h3 { margin:0 0 4px; }
+  .es { white-space:nowrap; }
+  @media (max-width:520px){ .phase{ grid-template-columns:1fr; } .phase .ph-ico{ text-align:left; } }
+</style>
+</head>
+<body>
+
+<nav class="langbar" aria-label="Sprache / Language">
+  <button data-lang="de" aria-pressed="true">Deutsch</button>
+  <button data-lang="en" aria-pressed="false">English</button>
+</nav>
+
+<main class="sheet">
+
+  <!-- ============================== DEUTSCH ============================== -->
+  <section lang="de" class="lang lang--de">
+    <div class="brand">🌶️ HolaRuta · WeRoad Colombia</div>
+    <h1>Der Reise-Spanisch-Begleiter für eure Kolumbien-Trips</h1>
+    <p class="lead">Eine leichte Offline-App, die WeRoadies vor, während und nach der Reise sicherer
+      und neugieriger macht – Taxi, Unterkunft, Essen, Geld, Notfall, Smalltalk und kleine
+      Gruppen-Challenges. Kein Sprachkurs, sondern ein <strong>Travel-Language-Companion</strong>,
+      der direkt auf euren Markenkern einzahlt: kleine Gruppen, Community, echte lokale Momente.</p>
+
+    <p>
+      <span class="pill">Offline · ohne Konto</span>
+      <span class="pill">Im Browser & als App</span>
+      <span class="pill">Kolumbien-Paket: 75 Karten</span>
+      <span class="pill">DSGVO-freundlich</span>
+    </p>
+
+    <h2>Warum das zu WeRoad Colombia passt</h2>
+    <ul>
+      <li><strong>Soziale DNA.</strong> Eure Reisen leben von kleinen, altershomogenen Gruppen und
+        gemeinsamen Momenten. HolaRuta hat genau dafür einen Gruppenmodus mit Sprach-Battles und
+        Rollenspielen – ein fertiger 5-Minuten-Icebreaker, den der Coordinator unterwegs starten kann.</li>
+      <li><strong>Direkt auf der Route.</strong> Typische WeRoad-Kolumbien-Reisen führen u. a. nach
+        <em>Medellín</em>, an die <em>Karibikküste</em> (Santa Marta / Tayrona) und nach
+        <em>Cartagena</em>. Das Kolumbien-Paket ist genau für diese Stationen geschrieben – inkl.
+        Metrocable zur Comuna 13, Bus nach Tayrona, Boot zu den Islas del Rosario und Champeta-Abend.</li>
+      <li><strong>Mehr Mut, weniger Hilflosigkeit.</strong> Wer selbst einen <span class="es">tinto</span>
+        bestellt, nach dem <span class="es">vuelto</span> fragt oder beim Salsa-Abend mitredet, erlebt
+        die Reise intensiver – und erzählt davon. Das ist Reisequalität, nicht „Vokabeln pauken".</li>
+      <li><strong>Null Reibung.</strong> Offline-PWA, kein App-Store, kein Konto, kein Tracking –
+        nur ein QR-Code. Funktioniert auch im Bus ohne Empfang.</li>
+    </ul>
+
+    <h2>Die Reise in drei Phasen</h2>
+
+    <div class="phase">
+      <div class="ph-ico">📅</div>
+      <div>
+        <h3>Vor der Reise – die Vorfreude beginnt 2 Wochen früher</h3>
+        <p>Ein geordneter <strong>7-Tage-Pre-Trip-Plan</strong> (kein Zufall, sondern sequenziert):
+          jeder Tag schaltet den nächsten frei und endet mit einer kleinen Real-Life-Challenge.
+          Tag 1 Begrüßung &amp; Höflichkeit · Tag 2 Taxi &amp; Ankunft · Tag 3 Unterkunft · Tag 4 Essen
+          &amp; Trinken · Tag 5 Geld &amp; Markt · Tag 6 Unterwegs &amp; Orientierung · Tag 7 Ausgehen.
+          Die Gruppe steigt schon vor dem Abflug ins Reisegefühl ein.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-ico">🧭</div>
+      <div>
+        <h3>Unterwegs – das 5-Minuten-Tool für den Coordinator</h3>
+        <p>Ein Tap startet eine Gruppen-Battle-Runde („Modo hostal → 5-Minuten-Icebreaker"): einer
+          fragt, einer antwortet, der Rest bewertet. Dazu Rollenspiele, Real-Life-Missions
+          („Bestell den nächsten <span class="es">jugo natural</span> auf Spanisch") und ein
+          offline-Spickzettel mit Notfall-Sätzen – auch ohne Empfang im Bus oder in Tayrona.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-ico">🏅</div>
+      <div>
+        <h3>Nach der Reise – ein digitales Souvenir</h3>
+        <p>Sammel-Stempel, gemeisterte Challenges und ein persönliches Sharepic bleiben auf dem
+          Gerät. Die App ist installiert, das Spanisch ein bisschen besser – ein netter Nachhall,
+          der die Community-Bindung verlängert und Lust auf die nächste Reise macht.</p>
+      </div>
+    </div>
+
+    <h2>Route ↔ Inhalt: was zu welcher Station passt</h2>
+    <table>
+      <tr><th>Station</th><th>Beispielsätze aus dem Kolumbien-Paket</th></tr>
+      <tr>
+        <td><strong>Medellín &amp; Antioquia</strong><br>Metro, Comuna 13, Guatapé</td>
+        <td>„¿Cómo llego al metro?" · „¿Este metrocable va a la Comuna 13?" · „¿Me recomiendas
+          Guatapé?" · „¿Bien o qué, parce?" (Paisa-Slang) · „¿Qué lleva una bandeja paisa?"</td>
+      </tr>
+      <tr>
+        <td><strong>Karibikküste</strong><br>Santa Marta · Tayrona · Minca · Palomino</td>
+        <td>„¿A qué hora sale el bus a Santa Marta?" · „¿Cuánto cuesta la entrada al parque Tayrona?"
+          · „¿Puedo alquilar una hamaca?" · „¿Vale la pena ir a Minca?" · „En Palomino se puede
+          flotar en el río."</td>
+      </tr>
+      <tr>
+        <td><strong>Cartagena &amp; Inseln</strong><br>Getsemaní · Centro · Islas del Rosario</td>
+        <td>„¿Cómo llego a Getsemaní?" · „Quiero ir al centro histórico." · „¿A qué hora sale la
+          lancha a las Islas del Rosario?" · „¿Podemos visitar el Castillo San Felipe?" · „Una
+          limonada de coco."</td>
+      </tr>
+      <tr>
+        <td><strong>Essen, Geld &amp; Alltag</strong><br>überall auf der Reise</td>
+        <td>„Una arepa, por favor." · „Un tinto, por favor." · „Quiero el menú del día." · „¿Me
+          regala una cerveza fría?" · „¿Me da el vuelto, por favor?" · „¿Hay un cajero cerca?"</td>
+      </tr>
+      <tr>
+        <td><strong>Ausgehen &amp; Community</strong><br>Salsa, Champeta, Parche</td>
+        <td>„¡Vamos a bailar!" · „¿Me enseñas a bailar salsa?" · „Esta noche hay champeta y salsa."
+          · „¿Dónde se puede rumbear bien?" · „¿Hacemos un parche esta noche?"</td>
+      </tr>
+      <tr>
+        <td><strong>Sicherheit &amp; Orientierung</strong></td>
+        <td>„¿Es seguro caminar aquí de noche?" · „¿Me recomienda un buen barrio?" · „Me siento
+          mareado por la altura." · Notfall-/Apotheken-Sätze offline im Spickzettel.</td>
+      </tr>
+    </table>
+    <p style="font-size:.9rem;color:var(--muted)">Alle Sätze stammen 1:1 aus der App – mit
+      Aussprache-Hilfe, Reise-Kontext und kolumbianischen Eigenheiten (<span class="es">parce,
+      tinto, vuelto, a la orden, bacano</span>).</p>
+
+    <h2>Coordinator-Playbook: 5-Minuten-Bausteine</h2>
+    <ul>
+      <li><strong>Bus-Icebreaker</strong> – eine schnelle Battle-Runde zum Aufwärmen der Gruppe.</li>
+      <li><strong>Themen-Warm-up vor der Aktivität</strong> – vor dem Salsa-Abend kurz „¡Vamos a
+        bailar!" &amp; Co. üben, vor dem Markt die Geld-Sätze.</li>
+      <li><strong>Real-Life-Mission</strong> – „Wer bestellt heute den ersten <span class="es">tinto</span>
+        auf Spanisch?" Kleine Mutprobe, großer Effekt.</li>
+      <li><strong>Rollenspiel zu zweit</strong> – Taxi, Hostel-Checkin oder Bestellung im Restaurant.</li>
+    </ul>
+    <div class="tip"><strong>Wichtig:</strong> Der Coordinator braucht keine Vorbereitung und kein
+      Spanisch-Niveau. Ein Tap startet die Runde, die App moderiert. Gedacht als 5-Minuten-Auflockerung,
+      nicht als Unterricht.</div>
+
+    <h2>Die „WeRoad Colombia Edition"</h2>
+    <p>HolaRuta lässt sich als eigene <strong>Edition</strong> ausspielen: WeRoad-Akzentfarbe (Coral),
+      ein angepasster Name und Kolumbien als voreingestelltes Ziel. Technisch ist das eine
+      Build-Variante – kein Fork, keine zweite Codebasis. <strong>Partner-Logo und -Name verwenden wir
+      erst nach eurer ausdrücklichen Freigabe;</strong> bis dahin bleibt die Edition neutral
+      co-branded (nur Akzentfarbe + Textzusatz). Diese Seite ist bereits in der Coral-Akzentfarbe
+      gehalten, damit ihr den Look seht.</p>
+
+    <h2>Partnerschaft &amp; Preise</h2>
+    <p>Ehrlich und einfach: Wir starten mit einem <strong>kostenlosen Pilot</strong>. Erst wenn es bei
+      euren Reisenden ankommt, reden wir über eine faire Lizenz.</p>
+    <table>
+      <tr><th>Modell</th><th>Richtwert</th><th>Wann sinnvoll</th></tr>
+      <tr><td><strong>Pilot</strong></td><td>0 USD</td><td>1 Kolumbien-Gruppe, Feedback statt Verkauf</td></tr>
+      <tr><td><strong>Destination Pack</strong> (Colombia Edition)</td><td>500–1.500 USD</td>
+        <td>Kolumbien-Inhalt + Coordinator-Material + Co-Branding</td></tr>
+      <tr><td><strong>Jahres-Partnerlizenz</strong></td><td>5.000–15.000 USD</td>
+        <td>laufender Einsatz über viele Reisen/Routen</td></tr>
+      <tr><td><strong>Per-Seat</strong></td><td>0,50–2,00 USD / Reisendem</td>
+        <td>erst bei Volumen, optional statt Pauschale</td></tr>
+    </table>
+    <p style="font-size:.9rem;color:var(--muted)">Per-Seat-Abrechnung setzt eine Account-/Sync-Ebene
+      voraus, die heute (bewusst) noch nicht existiert – sie ist Roadmap, kein Bestand. Der Einstieg
+      braucht sie nicht.</p>
+
+    <h2>Konkreter Pilot-Vorschlag</h2>
+    <ol>
+      <li>Eine einzige <strong>Kolumbien-Gruppe (5–10 Reisende)</strong> testet HolaRuta – 2 Wochen
+        Pre-Trip-Plan vorab, unterwegs als Coordinator-Tool.</li>
+      <li>Wir liefern fertig: das Kolumbien-Paket, die Coordinator-Anleitung und das QR-Material.</li>
+      <li>Danach sammeln wir ehrliches Feedback ein – Nutzen, Verständlichkeit, Spaß, fehlende
+        Situationen. <strong>Kein offizieller Beschaffungsprozess nötig.</strong></li>
+      <li>Passt es, machen wir daraus eine WeRoad Colombia Edition und reden über die Lizenz.</li>
+    </ol>
+
+    <h2>Nächste Schritte</h2>
+    <p>Am einfachsten über einen <strong>Warm-Intro</strong> (z. B. eine Reiseleiterin), die das
+      einmal ausprobiert und intern den richtigen Kontakt herstellt – Product, Partnerships,
+      Operations oder Community/DACH. Die wichtigste Frage ist nicht „kauft ihr das?", sondern
+      <em>„wäre das für eure Kolumbien-Reisen nützlich, und wen müsste man dafür ansprechen?"</em></p>
+    <p style="text-align:center;margin-top:18px">
+      <span class="url">moarci.github.io/holaRuta</span></p>
+    <p style="text-align:center"><em>Hinweis: Die App-Oberfläche ist Deutsch/Englisch; die Lerninhalte
+      sind kolumbianisches Reise-Spanisch.</em></p>
+
+    <p class="foot">Offline · kein Konto · kostenlos testbar &nbsp;·&nbsp; Kontakt: [deine E-Mail]
+      &nbsp;·&nbsp; Stand: Juni 2026 &nbsp;·&nbsp; „WeRoad" wird nur mit Freigabe des Partners verwendet.</p>
+  </section>
+
+  <!-- ============================== ENGLISH ============================== -->
+  <section lang="en" class="lang lang--en">
+    <div class="brand">🌶️ HolaRuta · WeRoad Colombia</div>
+    <h1>The travel-Spanish companion for your Colombia trips</h1>
+    <p class="lead">A lightweight offline app that makes WeRoadies more confident and curious before,
+      during and after the trip – taxi, accommodation, food, money, emergencies, small talk and small
+      group challenges. Not a language course, but a <strong>travel-language companion</strong> that
+      feeds straight into your brand core: small groups, community, real local moments.</p>
+
+    <p>
+      <span class="pill">Offline · no account</span>
+      <span class="pill">Browser & app</span>
+      <span class="pill">Colombia pack: 75 cards</span>
+      <span class="pill">GDPR-friendly</span>
+    </p>
+
+    <h2>Why it fits WeRoad Colombia</h2>
+    <ul>
+      <li><strong>Social DNA.</strong> Your trips run on small, age-similar groups and shared moments.
+        HolaRuta has a group mode built for exactly that – language battles and role-plays, a ready
+        5-minute icebreaker the coordinator can start on the road.</li>
+      <li><strong>Right on the route.</strong> Typical WeRoad Colombia trips run through
+        <em>Medellín</em>, the <em>Caribbean coast</em> (Santa Marta / Tayrona) and
+        <em>Cartagena</em>. The Colombia pack is written for exactly these stops – cable car to
+        Comuna 13, bus to Tayrona, boat to the Islas del Rosario, champeta night.</li>
+      <li><strong>More courage, less helplessness.</strong> Ordering your own <span class="es">tinto</span>,
+        asking for the <span class="es">vuelto</span> or joining in on a salsa night makes the trip
+        richer – and gives people stories to tell. That's travel quality, not vocabulary drilling.</li>
+      <li><strong>Zero friction.</strong> Offline PWA, no app store, no account, no tracking – just a
+        QR code. Works on the bus with no signal.</li>
+    </ul>
+
+    <h2>The trip in three phases</h2>
+
+    <div class="phase">
+      <div class="ph-ico">📅</div>
+      <div>
+        <h3>Before the trip – anticipation starts 2 weeks earlier</h3>
+        <p>An ordered <strong>7-day pre-trip plan</strong> (sequenced, not random): each day unlocks
+          the next and ends with a small real-life challenge. Day 1 greetings &amp; courtesy · Day 2
+          taxi &amp; arrival · Day 3 settling in · Day 4 food &amp; drink · Day 5 money &amp; market ·
+          Day 6 getting around · Day 7 going out. The group is in the travel mood before take-off.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-ico">🧭</div>
+      <div>
+        <h3>On the road – the coordinator's 5-minute tool</h3>
+        <p>One tap starts a group battle round (“Modo hostal → 5-minute icebreaker”): one asks, one
+          answers, the rest score. Plus role-plays, real-life missions (“order the next
+          <span class="es">jugo natural</span> in Spanish”) and an offline cheat sheet with emergency
+          phrases – even with no signal on the bus or in Tayrona.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-ico">🏅</div>
+      <div>
+        <h3>After the trip – a digital souvenir</h3>
+        <p>Collectible stamps, completed challenges and a personal share-pic stay on the device. The
+          app is installed, the Spanish a little better – a nice afterglow that extends the community
+          bond and builds appetite for the next trip.</p>
+      </div>
+    </div>
+
+    <h2>Route ↔ content: what fits which stop</h2>
+    <table>
+      <tr><th>Stop</th><th>Example phrases from the Colombia pack</th></tr>
+      <tr>
+        <td><strong>Medellín &amp; Antioquia</strong><br>metro, Comuna 13, Guatapé</td>
+        <td>“¿Cómo llego al metro?” · “¿Este metrocable va a la Comuna 13?” · “¿Me recomiendas
+          Guatapé?” · “¿Bien o qué, parce?” (paisa slang) · “¿Qué lleva una bandeja paisa?”</td>
+      </tr>
+      <tr>
+        <td><strong>Caribbean coast</strong><br>Santa Marta · Tayrona · Minca · Palomino</td>
+        <td>“¿A qué hora sale el bus a Santa Marta?” · “¿Cuánto cuesta la entrada al parque Tayrona?”
+          · “¿Puedo alquilar una hamaca?” · “¿Vale la pena ir a Minca?” · “En Palomino se puede
+          flotar en el río.”</td>
+      </tr>
+      <tr>
+        <td><strong>Cartagena &amp; islands</strong><br>Getsemaní · old town · Islas del Rosario</td>
+        <td>“¿Cómo llego a Getsemaní?” · “Quiero ir al centro histórico.” · “¿A qué hora sale la
+          lancha a las Islas del Rosario?” · “¿Podemos visitar el Castillo San Felipe?” · “Una
+          limonada de coco.”</td>
+      </tr>
+      <tr>
+        <td><strong>Food, money &amp; daily life</strong><br>everywhere on the trip</td>
+        <td>“Una arepa, por favor.” · “Un tinto, por favor.” · “Quiero el menú del día.” · “¿Me
+          regala una cerveza fría?” · “¿Me da el vuelto, por favor?” · “¿Hay un cajero cerca?”</td>
+      </tr>
+      <tr>
+        <td><strong>Going out &amp; community</strong><br>salsa, champeta, parche</td>
+        <td>“¡Vamos a bailar!” · “¿Me enseñas a bailar salsa?” · “Esta noche hay champeta y salsa.” ·
+          “¿Dónde se puede rumbear bien?” · “¿Hacemos un parche esta noche?”</td>
+      </tr>
+      <tr>
+        <td><strong>Safety &amp; orientation</strong></td>
+        <td>“¿Es seguro caminar aquí de noche?” · “¿Me recomienda un buen barrio?” · “Me siento
+          mareado por la altura.” · Emergency/pharmacy phrases offline in the cheat sheet.</td>
+      </tr>
+    </table>
+    <p style="font-size:.9rem;color:var(--muted)">Every phrase is taken straight from the app – with
+      pronunciation help, travel context and Colombian quirks (<span class="es">parce, tinto, vuelto,
+      a la orden, bacano</span>).</p>
+
+    <h2>Coordinator playbook: 5-minute building blocks</h2>
+    <ul>
+      <li><strong>Bus icebreaker</strong> – a quick battle round to warm up the group.</li>
+      <li><strong>Topic warm-up before an activity</strong> – practise “¡Vamos a bailar!” &amp; co.
+        before the salsa night, the money phrases before the market.</li>
+      <li><strong>Real-life mission</strong> – “who orders the first <span class="es">tinto</span> in
+        Spanish today?” A small dare, a big effect.</li>
+      <li><strong>Role-play in pairs</strong> – taxi, hostel check-in or ordering in a restaurant.</li>
+    </ul>
+    <div class="tip"><strong>Important:</strong> the coordinator needs no preparation and no Spanish
+      level. One tap starts the round, the app hosts it. Designed as a 5-minute warm-up, not a lesson.</div>
+
+    <h2>The “WeRoad Colombia Edition”</h2>
+    <p>HolaRuta can ship as its own <strong>edition</strong>: WeRoad accent colour (coral), a tailored
+      name and Colombia as the default destination. Technically it's a build variant – no fork, no
+      second codebase. <strong>We only use a partner's logo and name after your explicit approval;</strong>
+      until then the edition stays neutrally co-branded (accent colour + text note only). This page
+      already uses the coral accent so you can see the look.</p>
+
+    <h2>Partnership &amp; pricing</h2>
+    <p>Honest and simple: we start with a <strong>free pilot</strong>. Only once it lands with your
+      travellers do we talk about a fair licence.</p>
+    <table>
+      <tr><th>Model</th><th>Guide price</th><th>When it makes sense</th></tr>
+      <tr><td><strong>Pilot</strong></td><td>$0</td><td>1 Colombia group, feedback not sales</td></tr>
+      <tr><td><strong>Destination Pack</strong> (Colombia Edition)</td><td>$500–1,500</td>
+        <td>Colombia content + coordinator material + co-branding</td></tr>
+      <tr><td><strong>Annual partner licence</strong></td><td>$5,000–15,000</td>
+        <td>ongoing use across many trips/routes</td></tr>
+      <tr><td><strong>Per-seat</strong></td><td>$0.50–2.00 / traveller</td>
+        <td>only at volume, optional instead of a flat fee</td></tr>
+    </table>
+    <p style="font-size:.9rem;color:var(--muted)">Per-seat billing requires an account/sync layer that
+      (deliberately) doesn't exist yet – it's roadmap, not stock. The entry point doesn't need it.</p>
+
+    <h2>A concrete pilot proposal</h2>
+    <ol>
+      <li>A single <strong>Colombia group (5–10 travellers)</strong> tries HolaRuta – the 2-week
+        pre-trip plan beforehand, then as a coordinator tool on the road.</li>
+      <li>We deliver everything ready: the Colombia pack, the coordinator guide and the QR material.</li>
+      <li>Afterwards we gather honest feedback – usefulness, clarity, fun, missing situations.
+        <strong>No formal procurement process needed.</strong></li>
+      <li>If it fits, we turn it into a WeRoad Colombia Edition and talk about the licence.</li>
+    </ol>
+
+    <h2>Next steps</h2>
+    <p>The easiest path is a <strong>warm intro</strong> (e.g. a tour leader) who tries it once and
+      makes the right internal connection – product, partnerships, operations or community/DACH. The
+      key question isn't “will you buy this?” but <em>“would this be useful for your Colombia trips,
+      and who would one talk to about it?”</em></p>
+    <p style="text-align:center;margin-top:18px">
+      <span class="url">moarci.github.io/holaRuta</span></p>
+    <p style="text-align:center"><em>Note: the app interface is in German/English; the learning content
+      is Colombian travel Spanish.</em></p>
+
+    <p class="foot">Offline · no account · free to try &nbsp;·&nbsp; Contact: [your email]
+      &nbsp;·&nbsp; As of: June 2026 &nbsp;·&nbsp; “WeRoad” is used only with the partner's approval.</p>
+  </section>
+
+</main>
+
+<script>
+/* Inline 2-Sprachen-Umschalter (DE/EN). Bewusst NICHT handout.js, das eine
+   dritte Sprache (ES) erwartet und auf ES-Browsern eine leere Seite zeigen würde. */
+(function () {
+  "use strict";
+  var html = document.documentElement, LANGS = ["de", "en"];
+  function setLang(l) {
+    if (LANGS.indexOf(l) < 0) l = "de";
+    html.setAttribute("data-lang", l);
+    html.setAttribute("lang", l);
+    var bar = document.querySelector(".langbar");
+    if (bar) bar.querySelectorAll("button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.lang === l));
+    });
+  }
+  var nav = (navigator.language || "de").slice(0, 2).toLowerCase();
+  setLang(nav === "en" ? "en" : "de");
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-lang]");
+    if (btn) setLang(btn.dataset.lang);
+  });
+})();
+</script>
+</body>
+</html>
