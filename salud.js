@@ -202,13 +202,15 @@
       dos: [
         "Die Stadt zu Fuß erkunden, Treppen statt Aufzug, Wanderungen und Schwimmen mitnehmen.",
         "Kurzes Eigengewichts-Workout (Kniebeugen, Liegestütze, Plank) – kein Equipment nötig.",
-        "Manche Hostels haben einen kleinen Gym-Bereich – einfach nachfragen.",
+        "Manche Hostels bieten Yoga an oder haben einen kleinen Gym-Bereich – am Check-in oder Schwarzen Brett fragen.",
+        "In größeren Städten im Gym einen Tagespass kaufen: meist günstig und ein gutes Erlebnis, weil dort die Locals trainieren.",
         "Nach Nachtbussen dehnen und den Körper kurz lockern.",
       ],
       dosEn: [
         "Explore the city on foot, take the stairs not the lift, fit in hikes and swimming.",
         "A short bodyweight workout (squats, push-ups, plank) – no equipment needed.",
-        "Some hostels have a small gym area – just ask.",
+        "Some hostels offer yoga or have a small gym area – ask at check-in or check the noticeboard.",
+        "In bigger cities buy a day pass at a gym: usually cheap and a good experience, since the locals train there.",
         "After night buses, stretch and loosen up the body a little.",
       ],
       donts: [
@@ -255,6 +257,19 @@
       ],
     },
     {
+      id: "deporte",
+      icon: "🏋️",
+      title: "Yoga, Gym & Bewegung",
+      titleEn: "Yoga, gym & moving",
+      items: [
+        { es: "¿Tienen clases de yoga aquí?", de: "Bietet ihr hier Yoga-Kurse an?", en: "Do you have yoga classes here?" },
+        { es: "¿Hay un gimnasio cerca?", de: "Gibt es ein Fitnessstudio in der Nähe?", en: "Is there a gym nearby?" },
+        { es: "¿Venden pase por un día?", de: "Verkauft ihr einen Tagespass?", en: "Do you sell a day pass?" },
+        { es: "¿Cuánto cuesta la entrada por un día?", de: "Wie viel kostet der Tageseintritt?", en: "How much is entry for one day?" },
+        { es: "¿Puedo entrenar hoy sin ser socio?", de: "Kann ich heute trainieren, ohne Mitglied zu sein?", en: "Can I train today without being a member?" },
+      ],
+    },
+    {
       id: "farmacia",
       icon: "💊",
       title: "Apotheke & Bauch",
@@ -286,6 +301,8 @@
     { es: "el repelente", de: "der Mückenschutz", en: "(insect) repellent" },
     { es: "el mal de altura / el soroche", de: "die Höhenkrankheit", en: "altitude sickness" },
     { es: "la manzanilla", de: "die Kamille / der Kamillentee", en: "chamomile (tea)" },
+    { es: "el gimnasio", de: "das Fitnessstudio", en: "the gym" },
+    { es: "el pase diario / la entrada por un día", de: "der Tagespass / Tageseintritt", en: "the day pass / day entry" },
   ];
 
   // ---------- „Gesund-unterwegs-Kit": kleine Packliste (Icon + Sache + Warum) ----------
