@@ -79,6 +79,8 @@
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
+    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica" },
+    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -308,7 +310,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear };
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
     const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -1648,6 +1650,107 @@
       </section>`;
   }
 
+  // ---------- INFO-MODUL-SHEET (Logística, Salud …) ----------
+  // Gemeinsame Nachschlage-Seite im Regatear-Stil für Module mit dem Schema
+  // { intro, topics[], phrases[], glossary[], checklist[] }: erst die praktischen
+  // Tipps (aufklappbar, DOs/Don'ts), dann die wichtigsten Sätze nach Thema, ein
+  // kleines Glossar und zum Schluss eine Packliste. cfg trägt nur das Spezifische
+  // (Icon, Titel, i18n-Schlüssel der Überschriften). Leere Abschnitte fallen weg.
+  // Reine Anzeige – nutzt durchgehend die vorhandenen Regatear/Knigge-CSS-Klassen.
+  function moduleSheet(vm, cfg) {
+    const liList = (items, cls, marker) =>
+      (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+        .join("");
+    const topicBlock = (tp) => `
+      <details class="knigge-topic">
+        <summary class="knigge-topic__head">
+          <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
+          <span class="knigge-topic__title">${esc(tp.title)}</span>
+          <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="knigge-topic__body">
+          ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
+          ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
+          ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+        </div>
+      </details>`;
+    const topics = (vm.topics || []).map(topicBlock).join("");
+
+    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Regatear.
+    const phraseGroup = (g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${g.items.map((p) => `
+            <li class="rg-phrase">
+              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+              <span class="rg-phrase__de">${esc(p.de)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    // Glossar: kompakte zweispaltige Wortliste (es · de).
+    const glossary = (vm.glossary || []).map((g) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
+        <span class="rg-gloss__de">${esc(g.de)}</span>
+      </li>`).join("");
+
+    // Packliste/Checkliste: Icon + Sache + kurze Begründung (Region-Listen-Stil).
+    const checklist = (vm.checklist || []).map((c) => `
+      <li class="rg-region">
+        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__body">
+          <span class="rg-region__country">${esc(c.item)}</span>
+          <span class="rg-region__note">${esc(c.why)}</span>
+        </span>
+      </li>`).join("");
+
+    const section = (cond, head, body) =>
+      cond ? `<h2 class="rg-head">${esc(t(head))}</h2>${body}` : "";
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">${cfg.icon} ${esc(cfg.title)}</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+
+        ${section(topics, cfg.headTips, topics)}
+        ${section(phrases, cfg.headPhrases, phrases)}
+        ${section(glossary, cfg.headWords, `<ul class="rg-glosslist">${glossary}</ul>`)}
+        ${(vm.checklist && vm.checklist.length)
+          ? `<h2 class="rg-head">${esc(t(cfg.headChecklist))}</h2>
+             <p class="hm-intro">${esc(t(cfg.headChecklistHint))}</p>
+             <ul class="rg-regions">${checklist}</ul>`
+          : ""}
+      </section>`;
+  }
+
+  // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
+  function renderLogistica(vm) {
+    return moduleSheet(vm, {
+      icon: "🧳", title: "Logística de viaje",
+      headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
+      headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
+      headChecklistHint: "discover.lgChecklistHint",
+    });
+  }
+
+  // Salud y energía: ausgewogen essen, günstig trinken, Bauch, Sonne/Höhe, Bewegung.
+  function renderSalud(vm) {
+    return moduleSheet(vm, {
+      icon: "🥗", title: "Salud y energía",
+      headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
+      headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
+      headChecklistHint: "discover.sdChecklistHint",
+    });
+  }
+
   // ---------- HOSTEL MODE ----------
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
   function hmTopbar(title, back) {
@@ -2841,7 +2944,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
+  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear, renderLogistica, renderSalud,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

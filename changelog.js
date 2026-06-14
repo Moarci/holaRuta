@@ -22,6 +22,28 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.26.0",
+      date: "2026-06-14",
+      title: "Salud y energía: gesund & fit unterwegs",
+      items: [
+        "🥗 Neues Entdecken-Modul fürs Gesundbleiben auf der Straße: ausgewogen essen statt nur Streetfood (Protein, Ballaststoffe, Vitamine gezielt holen), Frühstück selbst machen – Porridge mit Proteinpulver & Früchten, ganz ohne Küche.",
+        "💧 Günstig & mit Geschmack trinken: Zero-Sirup und Elektrolytpulver (suero) peppen billiges Wasser auf, sparen Geld und gleichen das Schwitzen aus. Dazu Tipps zu Bauch & Verdauung, Sonne/Höhe/Mücken und Bewegung – plus ein „Gesund-unterwegs-Kit“.",
+        "💬 Mit den passenden Sätzen als Karten: gesund einkaufen, gesünder bestellen („a la plancha, no frito“), nach Yoga & Gym-Tagespass fragen und in der Apotheke nach suero, Sonnencreme & Co. fragen.",
+        "🏋️ In Bewegung bleiben ohne Studio-Abo: manche Hostels bieten Yoga, in größeren Städten gibt es im Gym oft einen günstigen Tagespass – ein gutes Erlebnis, weil dort die Locals trainieren.",
+        "📅 Logística de viaje ergänzt: Tipp zum Vorausplanen – beliebte Hostels und knappe Plätze in der Hochsaison früher buchen.",
+      ],
+    },
+    {
+      version: "1.25.0",
+      date: "2026-06-14",
+      title: "Logística de viaje: clever & sicher ankommen",
+      items: [
+        "🧳 Neues Modul unter Entdecken: die praktischen Handgriffe, die kein Sprachkurs lehrt – SIM-Karte (chip) kaufen & online sein, Geld wechseln und am cajero abheben (ohne teure Umrechnung), Geld & Wertsachen auf mehrere Gepäckstücke aufteilen, das Gepäck per Tracker (AirTag & Co.) im Blick behalten.",
+        "✈️ Handgepäck-Notfallset als Packliste: das Wichtigste – Medikamente, Wechselwäsche, Hygiene, Powerbank, Dokumente – kommt ins Handgepäck, falls der große Rucksack später (oder gar nicht) ankommt.",
+        "💬 Dazu die passenden Sätze als Karten: nach SIM, Geld und verlorenem Gepäck fragen – jeweils auf Spanisch mit Übersetzung.",
+      ],
+    },
+    {
       version: "1.24.0",
       date: "2026-06-13",
       title: "Trip-Ziel: gleich zu Beginn gesetzt, im Profil verwaltet",

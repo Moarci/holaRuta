@@ -19,6 +19,8 @@
   const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
   const conjug = window.SC.conjug || null;       // Konjugations-Drill-Generator (optional)
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
+  const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
+  const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -47,7 +49,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud'
     homeTab: "lernen",       // Start hat Vorrang: jeder App-Start landet auf dem Lernen-Reiter; Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -227,6 +229,8 @@
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
       hasDialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length), // Gesprächs-Simulationen
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
+      hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
+      hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -449,6 +453,38 @@
       units: loc(regatear.UNITS || []),
       regional: loc(regatear.REGIONAL || []),
       roleplays: loc(roleplays),
+    };
+  }
+
+  // Logística de viaje: praktische Reise-Logistik (SIM, Geld, Gepäck, Tracker,
+  // Handgepäck-Notfallset) – reine Anzeige-Seite. Reicht die Daten 1:1 durch und
+  // überlagert per localizeDeep alle …En-Felder für die aktive Sprache (wie
+  // regatearVM). INTRO ist eine eigene Konstante und wird separat aufgelöst.
+  function logisticaVM() {
+    if (!logistica) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && logistica.INTRO_EN) ? logistica.INTRO_EN : logistica.INTRO,
+      topics: loc(logistica.TOPICS || []),
+      phrases: loc(logistica.PHRASES || []),
+      glossary: loc(logistica.GLOSSARY || []),
+      checklist: loc(logistica.CHECKLIST || []),
+    };
+  }
+
+  // Salud y energía: gesund & fit unterwegs (Essen, Trinken, Bauch, Sonne/Höhe,
+  // Bewegung). Gleiches Schema und Pass-Through wie logisticaVM.
+  function saludVM() {
+    if (!salud) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && salud.INTRO_EN) ? salud.INTRO_EN : salud.INTRO,
+      topics: loc(salud.TOPICS || []),
+      phrases: loc(salud.PHRASES || []),
+      glossary: loc(salud.GLOSSARY || []),
+      checklist: loc(salud.CHECKLIST || []),
     };
   }
 
@@ -1790,6 +1826,8 @@
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
+    else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
+    else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
@@ -2799,6 +2837,18 @@
     render();
   }
 
+  function openLogistica() {
+    dismissBadgeToast();
+    state.screen = "logistica";
+    render();
+  }
+
+  function openSalud() {
+    dismissBadgeToast();
+    state.screen = "salud";
+    render();
+  }
+
   function selectCountry(id) {
     state.countryId = id;
     render();
@@ -3104,6 +3154,8 @@
     else if (action === "open-info") openInfo();
     else if (action === "open-knigge") openKnigge();
     else if (action === "open-regatear") openRegatear();
+    else if (action === "open-logistica") openLogistica();
+    else if (action === "open-salud") openSalud();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
