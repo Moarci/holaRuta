@@ -329,6 +329,7 @@
     subInfo: "Land & Leute – von México bis Chile",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
+    subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
@@ -393,6 +394,13 @@
     lgWords: "🗣️ Wörter rund um SIM, Geld & Gepäck",
     lgChecklist: "✈️ Handgepäck-Notfallset",
     lgChecklistHint: "Das Wichtigste ins Handgepäck, falls der große Rucksack später (oder gar nicht) kommt.",
+
+    // Salud y energía
+    sdTips: "🧭 Gesund & fit bleiben",
+    sdPhrases: "💬 Wichtige Sätze",
+    sdWords: "🗣️ Wörter rund um Essen, Trinken & Apotheke",
+    sdChecklist: "🎒 Gesund-unterwegs-Kit",
+    sdChecklistHint: "Ein paar günstige Sachen, mit denen Essen, Trinken und der Bauch unterwegs funktionieren.",
 
     // Hostel
     hostelIntro: "Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.",
@@ -572,6 +580,7 @@
     subInfo: "Country & people – from México to Chile",
     subKnigge: "How to behave on the road: hostel, bus, groups",
     subLogistica: "SIM, money & luggage – arrive smart and safe",
+    subSalud: "Stay healthy & fit: food, drink, movement",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
     szAreas: "Sections",
@@ -631,6 +640,13 @@
     lgWords: "🗣️ Words for SIM, money & luggage",
     lgChecklist: "✈️ Carry-on emergency kit",
     lgChecklistHint: "The essentials in your carry-on, in case the big backpack comes late (or not at all).",
+
+    // Salud y energía
+    sdTips: "🧭 Stay healthy & fit",
+    sdPhrases: "💬 Important phrases",
+    sdWords: "🗣️ Words for food, drink & the pharmacy",
+    sdChecklist: "🎒 Stay-healthy kit",
+    sdChecklistHint: "A few cheap things that keep eating, drinking and your stomach working on the road.",
 
     hostelIntro: "Use travel Spanish in pairs – not just learning, but speaking aloud.",
     battleTitle: "Battle",

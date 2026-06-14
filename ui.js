@@ -80,6 +80,7 @@
     { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica" },
+    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -309,7 +310,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica };
+    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
     const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -1649,12 +1650,14 @@
       </section>`;
   }
 
-  // ---------- LOGÍSTICA DE VIAJE (SIM, Geld, Gepäck, Tracker, Handgepäck) ----------
-  // Eine Nachschlage-Seite im Regatear-Stil: erst die praktischen Tipps
-  // (aufklappbar, DOs/Don'ts), dann die wichtigsten Sätze nach Thema, ein kleines
-  // Glossar und zum Schluss die Packliste fürs Handgepäck-Notfallset. Reine
-  // Anzeige – nutzt durchgehend die vorhandenen Regatear/Knigge-CSS-Klassen.
-  function renderLogistica(vm) {
+  // ---------- INFO-MODUL-SHEET (Logística, Salud …) ----------
+  // Gemeinsame Nachschlage-Seite im Regatear-Stil für Module mit dem Schema
+  // { intro, topics[], phrases[], glossary[], checklist[] }: erst die praktischen
+  // Tipps (aufklappbar, DOs/Don'ts), dann die wichtigsten Sätze nach Thema, ein
+  // kleines Glossar und zum Schluss eine Packliste. cfg trägt nur das Spezifische
+  // (Icon, Titel, i18n-Schlüssel der Überschriften). Leere Abschnitte fallen weg.
+  // Reine Anzeige – nutzt durchgehend die vorhandenen Regatear/Knigge-CSS-Klassen.
+  function moduleSheet(vm, cfg) {
     const liList = (items, cls, marker) =>
       (items || [])
         .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
@@ -1695,7 +1698,7 @@
         <span class="rg-gloss__de">${esc(g.de)}</span>
       </li>`).join("");
 
-    // Handgepäck-Notfallset: Icon + Sache + kurze Begründung (Region-Listen-Stil).
+    // Packliste/Checkliste: Icon + Sache + kurze Begründung (Region-Listen-Stil).
     const checklist = (vm.checklist || []).map((c) => `
       <li class="rg-region">
         <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
@@ -1705,28 +1708,47 @@
         </span>
       </li>`).join("");
 
+    const section = (cond, head, body) =>
+      cond ? `<h2 class="rg-head">${esc(t(head))}</h2>${body}` : "";
+
     return `
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">🧳 Logística de viaje</div>
+          <div class="topbar__title">${cfg.icon} ${esc(cfg.title)}</div>
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
 
-        <h2 class="rg-head">${esc(t("discover.lgTips"))}</h2>
-        ${topics}
-
-        <h2 class="rg-head">${esc(t("discover.lgPhrases"))}</h2>
-        ${phrases}
-
-        <h2 class="rg-head">${esc(t("discover.lgWords"))}</h2>
-        <ul class="rg-glosslist">${glossary}</ul>
-
-        <h2 class="rg-head">${esc(t("discover.lgChecklist"))}</h2>
-        <p class="hm-intro">${esc(t("discover.lgChecklistHint"))}</p>
-        <ul class="rg-regions">${checklist}</ul>
+        ${section(topics, cfg.headTips, topics)}
+        ${section(phrases, cfg.headPhrases, phrases)}
+        ${section(glossary, cfg.headWords, `<ul class="rg-glosslist">${glossary}</ul>`)}
+        ${(vm.checklist && vm.checklist.length)
+          ? `<h2 class="rg-head">${esc(t(cfg.headChecklist))}</h2>
+             <p class="hm-intro">${esc(t(cfg.headChecklistHint))}</p>
+             <ul class="rg-regions">${checklist}</ul>`
+          : ""}
       </section>`;
+  }
+
+  // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
+  function renderLogistica(vm) {
+    return moduleSheet(vm, {
+      icon: "🧳", title: "Logística de viaje",
+      headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
+      headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
+      headChecklistHint: "discover.lgChecklistHint",
+    });
+  }
+
+  // Salud y energía: ausgewogen essen, günstig trinken, Bauch, Sonne/Höhe, Bewegung.
+  function renderSalud(vm) {
+    return moduleSheet(vm, {
+      icon: "🥗", title: "Salud y energía",
+      headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
+      headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
+      headChecklistHint: "discover.sdChecklistHint",
+    });
   }
 
   // ---------- HOSTEL MODE ----------
@@ -2922,7 +2944,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear, renderLogistica,
+  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear, renderLogistica, renderSalud,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

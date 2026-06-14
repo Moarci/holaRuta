@@ -196,6 +196,35 @@
         "Don't overload the big backpack – the emergency kit stays with you, not in the hold.",
       ],
     },
+    {
+      icon: "📅",
+      title: "Vorausplanen: Hostels & Transport",
+      titleEn: "Planning ahead: hostels & transport",
+      intro: "In manchen Regionen und zu Stoßzeiten ist das Angebot knapp – oder die bekannten Top-Hostels sind schnell weg. Dann lohnt es sich, früher zu buchen statt auf gut Glück anzukommen.",
+      introEn: "In some regions and at peak times beds are scarce – or the well-known top hostels sell out fast. Then it pays to book earlier rather than turning up and hoping for the best.",
+      dos: [
+        "In Hotspots und zur Hochsaison (Patagonien, Cusco/Machu Picchu, Inseln, Festivals) Betten und Touren Tage bis Wochen vorher sichern.",
+        "Sehr beliebte oder bekannte Hostels früh buchen – die sind oft als Erste ausgebucht.",
+        "Die erste Nacht nach einer langen Anreise immer vorab buchen (müde ankommen und erst suchen ist mies).",
+        "Nachtbusse und Fähren mit begrenzten Plätzen rechtzeitig reservieren.",
+      ],
+      dosEn: [
+        "In hotspots and high season (Patagonia, Cusco/Machu Picchu, islands, festivals) secure beds and tours days to weeks ahead.",
+        "Book very popular or famous hostels early – they're often the first to sell out.",
+        "Always book the first night after a long journey in advance (arriving tired and then hunting is miserable).",
+        "Reserve night buses and ferries with limited seats in good time.",
+      ],
+      donts: [
+        "Nicht überall vorbuchen – abseits der Hotspots flexibel bleiben spart Geld und Freiheit.",
+        "Nicht ohne Plan mitten in der Hochsaison an einem Hotspot ankommen.",
+        "Sich nicht nur auf Laufkundschaft verlassen, wenn ein Ort als „immer voll“ bekannt ist.",
+      ],
+      dontsEn: [
+        "Don't pre-book everywhere – away from the hotspots, staying flexible saves money and freedom.",
+        "Don't arrive at a hotspot in peak season with no plan.",
+        "Don't rely on walk-ins alone when a place is known for being „always full“.",
+      ],
+    },
   ];
 
   // ---------- Wichtige Sätze, nach Thema gruppiert (es / de / en) ----------
