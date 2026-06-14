@@ -1694,12 +1694,12 @@
     { id: "challenge14", category: "compras", level: 1, textDe: "Kauf etwas und sag nur auf Spanisch, was du möchtest.", textEn: "Buy something and say what you want only in Spanish.", phraseEs: "Quiero esto, por favor." },
     { id: "challenge15", category: "dinero", level: 2, textDe: "Bitte beim Bezahlen um dein Wechselgeld.", textEn: "Ask for your change when paying.", phraseEs: "¿Me da el vuelto, por favor?" },
     // ----- Orientierung & Verkehr -----
-    { id: "challenge16", category: "rumbo", level: 1, textDe: "Frag einen Passanten nach dem Weg.", textEn: "Ask a passer-by for directions.", phraseEs: "Disculpe, ¿dónde queda…?" },
+    { id: "challenge16", category: "rumbo", level: 1, textDe: "Frag einen Passanten nach dem Weg.", textEn: "Ask a passer-by for directions.", phraseEs: "Disculpe, ¿dónde queda el centro?" },
     { id: "challenge17", category: "verkehr", level: 2, textDe: "Frag den Fahrer, ob der Bus zu deinem Ziel fährt.", textEn: "Ask the driver if the bus goes to your stop.", phraseEs: "¿Este bus va al centro?" },
     { id: "challenge18", category: "verkehr", level: 1, textDe: "Sag dem Taxifahrer dein Ziel auf Spanisch.", textEn: "Tell the taxi driver your destination in Spanish.", phraseEs: "Al centro, por favor." },
     // ----- Social & Gruppe (gut für Reisegruppen) -----
     { id: "challenge19", category: "social", level: 1, textDe: "Frag jemanden aus der Gruppe nach dem Namen.", textEn: "Ask someone in the group their name.", phraseEs: "¿Cómo te llamas?" },
-    { id: "challenge20", category: "social", level: 1, textDe: "Sag jemandem, dass dir etwas richtig gut gefällt.", textEn: "Tell someone you really like something.", phraseEs: "¡Qué chévere!" },
+    { id: "challenge20", category: "social", level: 1, textDe: "Reagiere auf etwas begeistert auf Spanisch.", textEn: "React to something with genuine enthusiasm in Spanish.", phraseEs: "¡Qué chévere!" },
     { id: "challenge21", category: "social", level: 2, textDe: "Frag jemanden nach einem Reisetipp für die Gegend.", textEn: "Ask someone for a travel tip for the area.", phraseEs: "¿Qué me recomiendas ver?" },
     { id: "challenge22", category: "talk", level: 2, textDe: "Frag jemanden, was er/sie morgen vorhat.", textEn: "Ask someone what they're up to tomorrow.", phraseEs: "¿Qué haces mañana?" },
     { id: "challenge23", category: "social", level: 2, textDe: "Stoße mit der Gruppe einen Plan für heute Abend an.", textEn: "Get a plan going with the group for tonight.", phraseEs: "¿Hacemos algo esta noche?" },
