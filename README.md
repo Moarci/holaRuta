@@ -484,6 +484,18 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 
 ---
 
+## 🏫 Für Schulen, Reisen & Hostels
+
+Druckfertige Anleitungen (DE · EN · ES) für den Einsatz in Sprachschulen, auf Gruppenreisen und in Hostels liegen unter [`docs/anleitungen/`](docs/anleitungen/index.html) — im Browser öffnen, Sprache wählen, per **Strg/Cmd + P → „Als PDF speichern“** ausdrucken:
+
+- **[Für den Unterricht](docs/anleitungen/lehrer.html)** — Stundenaufbau + 10 Stunden-Rezepte für Lehrkräfte.
+- **[Für Reiseleiter](docs/anleitungen/coordinator.html)** — kleine Gruppen-Aktivitäten, in Sekunden startklar.
+- **[Hostel-Aushang „Spanish Night“](docs/anleitungen/hostel.html)** — Poster mit QR-Code für den Common Room.
+
+> Hintergrund & Vertriebsstrategie: [MARKT.md](MARKT.md) · technische Roadmap: [BAUPLAN.md](BAUPLAN.md).
+
+---
+
 ## 🤝 Beitragen
 
 - **Neue Karte:** ans passende Array in [data.js](data.js) anhängen (`lvl` nicht vergessen).
