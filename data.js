@@ -48,6 +48,7 @@
     { id: "tiempos", label: "Zeiten",     labelEn: "Tenses", icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
     { id: "colores", label: "Farben",     labelEn: "Colours", icon: "🎨", grad: ["#7048E8", "#15AABF"] },
     { id: "contrarios", label: "Gegenteile", labelEn: "Opposites", icon: "↔️", grad: ["#3F7355", "#B5503F"] },
+    { id: "colombia", label: "Kolumbien", labelEn: "Colombia", icon: "🇨🇴", grad: ["#F2C94C", "#2F80ED"] },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -899,6 +900,95 @@
     { id: "op24", cat: "contrarios", lvl: 3, de: "trocken – nass", en: "dry – wet",      es: "seco – mojado",         tip: "SE-ko – mo-CHA-do" },
     { id: "op25", cat: "contrarios", lvl: 3, de: "laut – leise", en: "loud – quiet",        es: "ruidoso – silencioso",  tip: "rui-DO-so – si-len-si-O-so" },
     { id: "op26", cat: "contrarios", lvl: 3, de: "jung – alt", en: "young – old",          es: "joven – viejo",         tip: "CHO-wen – wi-E-cho" },
+
+    // ============ KOLUMBIEN-PAKET (Destination Pack: Cartagena · Medellín · Bogotá · Karibikküste) ============
+    // ----- Ankunft & Taxi -----
+    { id: "co01", cat: "colombia", lvl: 1, de: "Wo kann ich ein Taxi nehmen?", en: "Where can I get a taxi?", es: "¿Dónde puedo tomar un taxi?", tip: "DON-de PUE-do to-MAR un TAK-si" },
+    { id: "co02", cat: "colombia", lvl: 1, de: "Bringen Sie mich bitte ins Zentrum.", en: "Take me to the centre, please.", es: "Lléveme al centro, por favor.", tip: "LYE-we-me al SEN-tro" },
+    { id: "co03", cat: "colombia", lvl: 2, de: "Wie viel kostet die Fahrt zum Hostel?", en: "How much is the ride to the hostel?", es: "¿Cuánto cuesta la carrera hasta el hostal?", tip: "carrera = Taxifahrt", tipEn: "carrera = the taxi ride" },
+    { id: "co04", cat: "colombia", lvl: 2, de: "Können wir vorher den Festpreis vereinbaren?", en: "Can we agree the fixed price first?", es: "¿Podemos acordar la tarifa antes?", tip: "ta-RI-fa = Tarif/Preis", tipEn: "ta-RI-fa = fare/price" },
+    { id: "co05", cat: "colombia", lvl: 1, de: "Können Sie mich an der Ecke absetzen?", en: "Can you drop me at the corner?", es: "¿Me deja en la esquina?", tip: "es-KI-na = Ecke", tipEn: "es-KI-na = corner" },
+    { id: "co06", cat: "colombia", lvl: 2, de: "Geht es über eine App oder bar?", en: "Is it via an app or cash?", es: "¿Es por aplicación o en efectivo?", tip: "e-fek-TI-wo = bar", tipEn: "e-fek-TI-wo = in cash" },
+    // ----- Unterkunft & Gastfamilie -----
+    { id: "co07", cat: "colombia", lvl: 1, de: "Ich habe eine Reservierung auf den Namen Marcel.", en: "I have a reservation under the name Marcel.", es: "Tengo una reserva a nombre de Marcel.", tip: "a nombre de = auf den Namen", tipEn: "a nombre de = under the name" },
+    { id: "co08", cat: "colombia", lvl: 2, de: "Um wie viel Uhr ist der Check-out?", en: "What time is check-out?", es: "¿A qué hora es el check-out?", tip: "salida = Auschecken", tipEn: "salida = check-out" },
+    { id: "co09", cat: "colombia", lvl: 2, de: "Gibt es eine Gastfamilie in der Nähe?", en: "Is there a host family nearby?", es: "¿Hay una familia anfitriona cerca?", tip: "an-fi-tri-O-na = gastgebend", tipEn: "an-fi-tri-O-na = hosting" },
+    { id: "co10", cat: "colombia", lvl: 1, de: "Gibt es heißes Wasser in der Dusche?", en: "Is there hot water in the shower?", es: "¿Hay agua caliente en la ducha?", tip: "DU-cha = Dusche", tipEn: "DU-cha = shower" },
+    // ----- Cartagena -----
+    { id: "co11", cat: "colombia", lvl: 2, de: "Wie komme ich nach Getsemaní?", en: "How do I get to Getsemaní?", es: "¿Cómo llego a Getsemaní?", tip: "Getsemaní = Szeneviertel", tipEn: "Getsemaní = the hip neighbourhood" },
+    { id: "co12", cat: "colombia", lvl: 1, de: "Ich möchte in die Altstadt.", en: "I want to go to the old town.", es: "Quiero ir al centro histórico.", tip: "is-TO-ri-ko = historisch", tipEn: "is-TO-ri-ko = historic" },
+    { id: "co13", cat: "colombia", lvl: 2, de: "Wann fährt das Boot zu den Islas del Rosario?", en: "When does the boat to the Islas del Rosario leave?", es: "¿A qué hora sale la lancha a las Islas del Rosario?", tip: "LAN-cha = (Motor-)Boot", tipEn: "LAN-cha = (motor) boat" },
+    { id: "co14", cat: "colombia", lvl: 2, de: "Was kostet eine Kokoslimonade?", en: "How much is a coconut lemonade?", es: "¿Cuánto vale una limonada de coco?", tip: "limonada de coco = Klassiker an der Küste", tipEn: "limonada de coco = a coastal classic" },
+    { id: "co15", cat: "colombia", lvl: 1, de: "Es ist sehr heiß, ich brauche Wasser.", en: "It's very hot, I need water.", es: "Hace mucho calor, necesito agua.", tip: "ka-LOR = Hitze", tipEn: "ka-LOR = heat" },
+    { id: "co16", cat: "colombia", lvl: 2, de: "Verkaufen Sie Sonnencreme?", en: "Do you sell sunscreen?", es: "¿Venden bloqueador solar?", tip: "blo-ke-a-DOR = Sonnencreme", tipEn: "blo-ke-a-DOR = sunscreen" },
+    { id: "co17", cat: "colombia", lvl: 3, de: "Können wir die Festung San Felipe besuchen?", en: "Can we visit the San Felipe fortress?", es: "¿Podemos visitar el Castillo San Felipe?", tip: "kas-TI-yo = Festung/Burg", tipEn: "kas-TI-yo = castle/fortress" },
+    { id: "co18", cat: "colombia", lvl: 2, de: "Eine Palenquera verkauft Obst.", en: "A palenquera is selling fruit.", es: "Una palenquera vende fruta.", tip: "palenquera = Obstverkäuferin in Tracht", tipEn: "palenquera = fruit seller in traditional dress" },
+    // ----- Medellín -----
+    { id: "co19", cat: "colombia", lvl: 1, de: "Wie komme ich zur Metro?", en: "How do I get to the metro?", es: "¿Cómo llego al metro?", tip: "ME-tro = U-Bahn", tipEn: "ME-tro = metro" },
+    { id: "co20", cat: "colombia", lvl: 2, de: "Fährt diese Seilbahn zur Comuna 13?", en: "Does this cable car go to Comuna 13?", es: "¿Este metrocable va a la Comuna 13?", tip: "metrocable = Seilbahn", tipEn: "metrocable = cable car" },
+    { id: "co21", cat: "colombia", lvl: 2, de: "Empfiehlst du mir Guatapé?", en: "Do you recommend Guatapé to me?", es: "¿Me recomiendas Guatapé?", tip: "Guatapé = bunter Ausflugsort", tipEn: "Guatapé = colourful day-trip town" },
+    { id: "co22", cat: "colombia", lvl: 1, de: "Alles klar, Kumpel?", en: "All good, mate?", es: "¿Bien o qué, parce?", tip: "parce = Kumpel (paisa-Slang)", tipEn: "parce = mate (paisa slang)" },
+    { id: "co23", cat: "colombia", lvl: 1, de: "Wie cool!", en: "How cool!", es: "¡Qué nota!", tip: "auch: ¡qué bacano!", tipEn: "also: ¡qué bacano!" },
+    { id: "co24", cat: "colombia", lvl: 2, de: "Medellín ist die Stadt des ewigen Frühlings.", en: "Medellín is the city of eternal spring.", es: "Medellín es la ciudad de la eterna primavera.", tip: "pri-ma-WE-ra = Frühling", tipEn: "pri-ma-WE-ra = spring" },
+    // ----- Bogotá & Anden -----
+    { id: "co25", cat: "colombia", lvl: 1, de: "Hier ist es kalt.", en: "It's cold here.", es: "Aquí hace frío.", tip: "FRI-o = Kälte/kalt", tipEn: "FRI-o = cold" },
+    { id: "co26", cat: "colombia", lvl: 2, de: "Mir ist von der Höhe schwindelig.", en: "I feel dizzy from the altitude.", es: "Me siento mareado por la altura.", tip: "ma-re-A-do = schwindelig", tipEn: "ma-re-A-do = dizzy" },
+    { id: "co27", cat: "colombia", lvl: 2, de: "Wie komme ich nach Monserrate hinauf?", en: "How do I get up to Monserrate?", es: "¿Cómo subo a Monserrate?", tip: "SU-bo = ich steige hinauf", tipEn: "SU-bo = I go up" },
+    { id: "co28", cat: "colombia", lvl: 2, de: "Ich möchte einen Ajiaco probieren.", en: "I'd like to try an ajiaco.", es: "Quiero probar un ajiaco.", tip: "ajiaco = Hühnersuppe aus Bogotá", tipEn: "ajiaco = Bogotá chicken soup" },
+    { id: "co29", cat: "colombia", lvl: 3, de: "Wo geht es zum Viertel La Candelaria?", en: "Which way to the La Candelaria district?", es: "¿Por dónde queda La Candelaria?", tip: "queda = liegt/befindet sich", tipEn: "queda = is located" },
+    { id: "co30", cat: "colombia", lvl: 2, de: "Fährt dieser TransMilenio zum Zentrum?", en: "Does this TransMilenio go to the centre?", es: "¿Este TransMilenio va al centro?", tip: "TransMilenio = Schnellbus in Bogotá", tipEn: "TransMilenio = Bogotá's rapid bus" },
+    // ----- Karibikküste & Tayrona -----
+    { id: "co31", cat: "colombia", lvl: 2, de: "Wann fährt der Bus nach Santa Marta?", en: "When does the bus to Santa Marta leave?", es: "¿A qué hora sale el bus a Santa Marta?", tip: "SA-le = fährt ab", tipEn: "SA-le = departs" },
+    { id: "co32", cat: "colombia", lvl: 2, de: "Wie viel kostet der Eintritt zum Tayrona-Park?", en: "How much is entry to Tayrona park?", es: "¿Cuánto cuesta la entrada al parque Tayrona?", tip: "en-TRA-da = Eintritt", tipEn: "en-TRA-da = entry" },
+    { id: "co33", cat: "colombia", lvl: 2, de: "Kann ich eine Hängematte mieten?", en: "Can I rent a hammock?", es: "¿Puedo alquilar una hamaca?", tip: "a-MA-ka = Hängematte", tipEn: "a-MA-ka = hammock" },
+    { id: "co34", cat: "colombia", lvl: 3, de: "Lohnt sich ein Ausflug nach Minca?", en: "Is a trip to Minca worth it?", es: "¿Vale la pena ir a Minca?", tip: "vale la pena = es lohnt sich", tipEn: "vale la pena = it's worth it" },
+    { id: "co35", cat: "colombia", lvl: 3, de: "In Palomino kann man auf dem Fluss treiben.", en: "In Palomino you can tube down the river.", es: "En Palomino se puede flotar en el río.", tip: "flo-TAR = treiben/schwimmen lassen", tipEn: "flo-TAR = to float/tube" },
+    // ----- Essen & Trinken (kolumbianisch) -----
+    { id: "co36", cat: "colombia", lvl: 1, de: "Was empfehlen Sie mir?", en: "What do you recommend?", es: "¿Qué me recomienda?", tip: "re-ko-mi-EN-da" },
+    { id: "co37", cat: "colombia", lvl: 1, de: "Eine Arepa, bitte.", en: "An arepa, please.", es: "Una arepa, por favor.", tip: "a-RE-pa = Maisfladen", tipEn: "a-RE-pa = corn flatbread" },
+    { id: "co38", cat: "colombia", lvl: 2, de: "Ich nehme das Tagesmenü.", en: "I'll have the menu of the day.", es: "Quiero el menú del día.", tip: "umgangssprachlich: corrientazo", tipEn: "casually: corrientazo" },
+    { id: "co39", cat: "colombia", lvl: 2, de: "Was ist in einer Bandeja Paisa?", en: "What's in a bandeja paisa?", es: "¿Qué lleva una bandeja paisa?", tip: "bandeja paisa = großer Teller aus Antioquia", tipEn: "bandeja paisa = big platter from Antioquia" },
+    { id: "co40", cat: "colombia", lvl: 1, de: "Einen schwarzen Kaffee, bitte.", en: "A black coffee, please.", es: "Un tinto, por favor.", tip: "tinto = schwarzer Kaffee (Kolumbien)", tipEn: "tinto = black coffee (Colombia)" },
+    { id: "co41", cat: "colombia", lvl: 2, de: "Mit Wasser oder mit Milch?", en: "With water or with milk?", es: "¿En agua o en leche?", tip: "typische Saft-Frage in Kolumbien", tipEn: "the typical juice question in Colombia" },
+    { id: "co42", cat: "colombia", lvl: 1, de: "Einen frischen Saft, bitte.", en: "A fresh juice, please.", es: "Un jugo natural, por favor.", tip: "CHU-go = Saft", tipEn: "CHU-go = juice" },
+    { id: "co43", cat: "colombia", lvl: 2, de: "Könnte ich ein kaltes Bier haben?", en: "Could I have a cold beer?", es: "¿Me regala una cerveza fría?", tip: "regalar = höfliches 'geben' (Kolumbien)", tipEn: "regalar = polite 'to give' (Colombia)" },
+    { id: "co44", cat: "colombia", lvl: 3, de: "Ist der Aguardiente sehr stark?", en: "Is the aguardiente very strong?", es: "¿El aguardiente es muy fuerte?", tip: "Spitzname: guaro", tipEn: "nickname: guaro" },
+    { id: "co45", cat: "colombia", lvl: 2, de: "Ich hätte gern einen Patacón.", en: "I'd like a patacón.", es: "Quiero un patacón.", tip: "patacón = frittierte Kochbanane", tipEn: "patacón = fried plantain" },
+    { id: "co46", cat: "colombia", lvl: 2, de: "Gibt es etwas Vegetarisches?", en: "Is there anything vegetarian?", es: "¿Hay algo vegetariano?", tip: "we-che-ta-ri-A-no" },
+    // ----- Geld & Preise -----
+    { id: "co47", cat: "colombia", lvl: 1, de: "Wie viel kostet das?", en: "How much does this cost?", es: "¿Cuánto cuesta esto?", tip: "KUAN-to KUES-ta" },
+    { id: "co48", cat: "colombia", lvl: 2, de: "Akzeptieren Sie Karte?", en: "Do you accept card?", es: "¿Aceptan tarjeta?", tip: "tar-CHE-ta = Karte", tipEn: "tar-CHE-ta = card" },
+    { id: "co49", cat: "colombia", lvl: 2, de: "Gibt es einen Geldautomaten in der Nähe?", en: "Is there an ATM nearby?", es: "¿Hay un cajero cerca?", tip: "ka-CHE-ro = Geldautomat", tipEn: "ka-CHE-ro = ATM" },
+    { id: "co50", cat: "colombia", lvl: 2, de: "Geben Sie mir bitte das Wechselgeld?", en: "Can you give me the change, please?", es: "¿Me da el vuelto, por favor?", tip: "vuelto = Wechselgeld (Kolumbien)", tipEn: "vuelto = change (Colombia)" },
+    { id: "co51", cat: "colombia", lvl: 3, de: "Ist die Bedienung schon inbegriffen?", en: "Is the service charge already included?", es: "¿El servicio ya está incluido?", tip: "propina = Trinkgeld", tipEn: "propina = tip" },
+    // ----- Transport vor Ort -----
+    { id: "co52", cat: "colombia", lvl: 2, de: "Fährt diese Buseta zum Zentrum?", en: "Does this little bus go to the centre?", es: "¿Esta buseta va al centro?", tip: "buseta = Kleinbus", tipEn: "buseta = minibus" },
+    { id: "co53", cat: "colombia", lvl: 2, de: "Hält der Bus in der Nähe der Altstadt?", en: "Does the bus stop near the old town?", es: "¿El bus para cerca del centro histórico?", tip: "PA-ra = hält", tipEn: "PA-ra = stops" },
+    { id: "co54", cat: "colombia", lvl: 2, de: "Können Sie mich etwas weiter vorne rauslassen?", en: "Can you let me off a bit further on?", es: "¿Me deja más adelante?", tip: "a-de-LAN-te = weiter vorn", tipEn: "a-de-LAN-te = further ahead" },
+    { id: "co55", cat: "colombia", lvl: 3, de: "Gibt es ein Moto-Taxi hierher?", en: "Is there a moto-taxi to here?", es: "¿Hay mototaxi para acá?", tip: "mototaxi = Motorrad-Taxi", tipEn: "mototaxi = motorbike taxi" },
+    { id: "co56", cat: "colombia", lvl: 3, de: "Lass uns mit einer Chiva zur Party fahren.", en: "Let's take a chiva to the party.", es: "Vamos en chiva a la fiesta.", tip: "chiva = bunter Partybus", tipEn: "chiva = colourful party bus" },
+    // ----- Social & kolumbianischer Slang -----
+    { id: "co57", cat: "colombia", lvl: 1, de: "Hallo, wie läuft's?", en: "Hi, how's it going?", es: "¿Quiubo? ¿Qué más?", tip: "sehr typisch kolumbianisch", tipEn: "very typically Colombian" },
+    { id: "co58", cat: "colombia", lvl: 1, de: "Alles gut, danke.", en: "All good, thanks.", es: "Todo bien, gracias.", tip: "TO-do bien" },
+    { id: "co59", cat: "colombia", lvl: 1, de: "Das ist super!", en: "That's awesome!", es: "¡Qué bacano!", tip: "bacano = super/cool", tipEn: "bacano = great/cool" },
+    { id: "co60", cat: "colombia", lvl: 1, de: "Wie schade! / Entschuldigung!", en: "What a shame! / Sorry!", es: "¡Qué pena!", tip: "auch als höfliches 'Entschuldigung'", tipEn: "also a polite 'excuse me'" },
+    { id: "co61", cat: "colombia", lvl: 1, de: "Gern geschehen.", en: "You're welcome.", es: "A la orden.", tip: "sehr kolumbianisch, auch beim Anbieten", tipEn: "very Colombian, also when offering service" },
+    { id: "co62", cat: "colombia", lvl: 1, de: "Alles klar, abgemacht.", en: "Okay, sounds good.", es: "Listo.", tip: "LIS-to = klar/fertig", tipEn: "LIS-to = ready/done" },
+    { id: "co63", cat: "colombia", lvl: 2, de: "Auf geht's, sofort!", en: "Let's do it, right now!", es: "¡De una!", tip: "de una = sofort/auf jeden Fall", tipEn: "de una = right away/for sure" },
+    { id: "co64", cat: "colombia", lvl: 2, de: "Machen wir heute Abend etwas zusammen?", en: "Shall we do something together tonight?", es: "¿Hacemos un parche esta noche?", tip: "parche = Treffen/gemeinsamer Plan", tipEn: "parche = hangout/joint plan" },
+    // ----- Salsa & Ausgehen -----
+    { id: "co65", cat: "colombia", lvl: 1, de: "Lass uns tanzen gehen!", en: "Let's go dancing!", es: "¡Vamos a bailar!", tip: "bai-LAR = tanzen", tipEn: "bai-LAR = to dance" },
+    { id: "co66", cat: "colombia", lvl: 2, de: "Bringst du mir Salsa bei?", en: "Will you teach me salsa?", es: "¿Me enseñas a bailar salsa?", tip: "enseñar = beibringen", tipEn: "enseñar = to teach" },
+    { id: "co67", cat: "colombia", lvl: 1, de: "Ein kaltes Bier, bitte.", en: "A cold one, please.", es: "Una fría, por favor.", tip: "una fría = ein kaltes Bier", tipEn: "una fría = a cold beer" },
+    { id: "co68", cat: "colombia", lvl: 3, de: "Heute Abend gibt es Champeta und Salsa.", en: "Tonight there's champeta and salsa.", es: "Esta noche hay champeta y salsa.", tip: "champeta = Musik der Karibikküste", tipEn: "champeta = Caribbean coast music" },
+    { id: "co69", cat: "colombia", lvl: 2, de: "Wo kann man hier gut feiern?", en: "Where's a good place to party here?", es: "¿Dónde se puede rumbear bien?", tip: "rumbear = feiern gehen", tipEn: "rumbear = to go out partying" },
+    { id: "co70", cat: "colombia", lvl: 2, de: "Lass uns ein Foto machen.", en: "Let's take a photo.", es: "Tomémonos una foto.", tip: "to-ME-mo-nos = lass uns ... machen", tipEn: "to-ME-mo-nos = let's ... " },
+    // ----- Sicherheit & Allgemeines -----
+    { id: "co71", cat: "colombia", lvl: 2, de: "Ist es sicher, hier nachts zu laufen?", en: "Is it safe to walk here at night?", es: "¿Es seguro caminar aquí de noche?", tip: "se-GU-ro = sicher", tipEn: "se-GU-ro = safe" },
+    { id: "co72", cat: "colombia", lvl: 2, de: "Können Sie ein gutes Viertel empfehlen?", en: "Can you recommend a good neighbourhood?", es: "¿Me recomienda un buen barrio?", tip: "BA-rrio = Viertel", tipEn: "BA-rrio = neighbourhood" },
+    { id: "co73", cat: "colombia", lvl: 3, de: "Gibt es gerade ein Fest in der Stadt?", en: "Is there a festival in town right now?", es: "¿Hay algún festival en la ciudad?", tip: "fes-ti-WAL = Fest/Festival", tipEn: "fes-ti-WAL = festival" },
+    { id: "co74", cat: "colombia", lvl: 2, de: "Wie lange dauert die Fahrt nach Cali?", en: "How long is the trip to Cali?", es: "¿Cuánto dura el viaje a Cali?", tip: "Cali = Welthauptstadt der Salsa", tipEn: "Cali = world capital of salsa" },
+    { id: "co75", cat: "colombia", lvl: 1, de: "Ich liebe Kolumbien!", en: "I love Colombia!", es: "¡Me encanta Colombia!", tip: "en-KAN-ta = gefällt sehr", tipEn: "en-KAN-ta = I love it" },
   ];
 
   /*

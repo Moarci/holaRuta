@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.25.0",
+      date: "2026-06-14",
+      title: "Kolumbien-Paket: 75 ortsspezifische Reise-Karten",
+      items: [
+        "🇨🇴 Neuer Bereich „Kolumbien“ mit 75 Karten für echte Situationen in Cartagena, Medellín, Bogotá und an der Karibikküste – mit Reise-Kontext für jede Karte.",
+        "🗺️ Von Flughafen-Taxi, Unterkunft und Islas-del-Rosario-Boot über Bandeja Paisa, Tinto und Aguardiente bis zu kolumbianischem Slang (parce, bacano, a la orden, ¡de una!) und Salsa-/Champeta-Abenden.",
+        "🎒 Erstes Destination-Pack – Grundlage für Sprachschul-, Gruppenreise- und Hostel-Angebote.",
+      ],
+    },
+    {
       version: "1.24.0",
       date: "2026-06-13",
       title: "Trip-Ziel: gleich zu Beginn gesetzt, im Profil verwaltet",
