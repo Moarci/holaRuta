@@ -644,3 +644,32 @@ test("data.PRESETS: jede Preset-ID existiert, scope gültig, keine Dubletten", (
     });
   });
 });
+
+// ---------- Editionen (Co-Branding) ----------
+test("editions: jede Edition-Config ist valide", () => {
+  const fs = require("fs");
+  const dir = path.join(SRC, "editions");
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".js"));
+  assert.ok(files.length > 0, "keine Editionen gefunden");
+  files.forEach((f) => {
+    const code = fs.readFileSync(path.join(dir, f), "utf8");
+    const w = {};
+    new Function("window", code)(w); // isoliert ausführen, kein globaler Seiteneffekt
+    const c = w.SC && w.SC.editionConfig;
+    assert.ok(c && c.edition, `${f}: edition fehlt`);
+    assert.ok(c.brandName, `${f}: brandName fehlt`);
+    if (c.accent) {
+      ["brand", "brandInk"].forEach((k) =>
+        assert.match(String(c.accent[k] || ""), /^#[0-9a-fA-F]{6}$/, `${f}: accent.${k} kein Hex`));
+    }
+    if (c.partner) assert.ok(c.partner.name, `${f}: partner.name fehlt`);
+  });
+});
+
+test("config.js: Default = HolaRuta pur (ohne Edition)", () => {
+  const fs = require("fs");
+  const w = {};
+  new Function("window", fs.readFileSync(path.join(SRC, "config.js"), "utf8"))(w);
+  assert.equal(w.SC.config.edition, null);
+  assert.equal(w.SC.config.brandName, "HolaRuta");
+});

@@ -240,6 +240,7 @@
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
+      edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
     };
@@ -493,11 +494,43 @@
   const COLOMBIA_HINTS = ["colombia", "kolumbien", "cartagena", "medellin", "bogota",
     "cali", "santa marta", "tayrona", "palomino", "minca", "guatape", "barranquilla",
     "getsemani", "caribe", "rosario"];
+  function isColombiaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return COLOMBIA_HINTS.some((h) => norm.includes(h));
+  }
+  // Pre-Arrival-Kachel zeigen, wenn das Trip-Ziel ODER eine Edition Kolumbien meint.
   function tripMentionsColombia() {
     const t = gamestats.tripGoal;
-    if (!t || !t.destination) return false;
-    const norm = String(t.destination).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return COLOMBIA_HINTS.some((h) => norm.includes(h));
+    const cfg = window.SC && window.SC.config;
+    return isColombiaDest(t && t.destination) || isColombiaDest(cfg && cfg.defaultDestination);
+  }
+
+  // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----
+  // Überschreibt nur den Akzent (--brand/--brand-ink, wirkt in Hell & Dunkel) und
+  // die theme-color-Meta; NICHT --page, damit der Hell/Dunkel-Rahmen intakt bleibt.
+  function applyEdition() {
+    const c = window.SC && window.SC.config;
+    if (!c || !c.edition) return; // keine Edition → exakt wie heute
+    try {
+      if (c.brandName) document.title = c.brandName + " – Reise-Spanisch";
+      if (c.accent) {
+        const r = document.documentElement.style;
+        if (c.accent.brand) r.setProperty("--brand", c.accent.brand);
+        if (c.accent.brandInk) r.setProperty("--brand-ink", c.accent.brandInk);
+        if (c.accent.theme) {
+          const m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", c.accent.theme);
+        }
+      }
+    } catch (e) { /* Edition ist optional – nie crashen */ }
+  }
+
+  // Edition-Infos für den dezenten Profil-Credit (null = keine Edition).
+  function editionInfo() {
+    const c = window.SC && window.SC.config;
+    if (!c || !c.edition) return null;
+    return { name: c.brandName, partner: c.partner || null };
   }
 
   function tripGoalVM() {
@@ -3503,6 +3536,7 @@
   if (window.SC && window.SC.install) {
     window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
   }
+  applyEdition();            // Co-Branding (Akzentfarbe/Titel/theme-color) VOR dem ersten render
   applyUiLang(state.uiLang); // UI-Sprache setzen (i18n + <html lang>) VOR dem ersten render
   checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
   // Erstkontakt: beim allerersten Start (noch nichts gespeichert) ins Onboarding

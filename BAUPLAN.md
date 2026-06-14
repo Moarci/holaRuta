@@ -121,10 +121,15 @@ mit Hinweis, dass die App-Oberfläche selbst nur DE/EN ist. Verweist auf vorhand
 
 ## STUFE 2 — Edition & geführte Modi (mittlerer Aufwand)
 
-### 2.1 Branding-/Edition-Schalter  · MODUS · **M**
+### 2.1 Branding-/Edition-Schalter  · MODUS · **M** · ✅ UMGESETZT
 
-**Was:** Name/Logo/Akzentfarbe/Start-Reiter per Konfig → „ECOS Edition", „WeRoad Colombia Pack",
-„Hostel XY Edition". Co-Branding ohne Code-Fork.
+**Was:** Name/Akzentfarbe/theme-color/Default-Ziel per Konfig → „ECOS Edition", „WeRoad Colombia
+Pack". Co-Branding ohne Code-Fork.
+
+**Geliefert:** `config.js` (SC.config, Default = HolaRuta pur) + `editions/<id>.js` (reine Daten) +
+Apply-Schicht in `app.js` (`applyEdition`: Akzent/Titel/theme-color, nur `--brand`/`--brand-ink` →
+Dark Mode bleibt heil) + Profil-Credit + `build.js --edition=<id>` → `HolaRuta-<id>.html` +
+Guard-Test. Beispiel-Editionen: `ecos`, `weroad`. Default unverändert, 157 Tests grün.
 
 **Dateien & Reuse:**
 - Neues Mini-Modul `config.js` (`SC.config`) mit `{ edition, brandName, accent, logo, startTab,
@@ -217,7 +222,7 @@ schon den `localStorage`-Zustand) → Schüler zeigt/teilt seinen Stand.
 | 3 | Lehrer-/Coordinator-/Hostel-PDF (1.3) ✅ | 1 | S | Vertriebsmaterial, kein Code |
 | 4 | Challenges 10→30 (2.4) | 2 | S | Immersion-Kern, additiv |
 | 5 | Coordinator-Launcher (2.3) | 2 | S–M | Hostel-/Gruppen-Aktivität |
-| 6 | Edition-/Branding-Schalter (2.1) | 2 | M | Co-Branding für ECOS/WeRoad |
+| 6 | Edition-/Branding-Schalter (2.1) ✅ | 2 | M | Co-Branding für ECOS/WeRoad |
 | 7 | Pre-Trip-Modus (2.2) | 2 | M | Pre-Trip-Engagement |
 | 8 | Kurs-Modus / Export (3.1/3.2) | 3 | M | erst mit Pilot |
 | 9 | Accounts/Sync/Backend (3.3) | 3 | L | erst mit zahlendem Kunden |

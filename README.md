@@ -289,6 +289,19 @@ node build.js
 
 > **Wichtig:** `HolaRuta.html` ist ein **Ergebnis** des Builds und wird nie von Hand bearbeitet.
 
+### Co-Branding-Editionen
+
+Für Partner (Sprachschulen, Reiseanbieter, Hostels) lässt sich eine **Edition** bauen — gleiche App, nur mit Akzentfarbe, App-Name, dezentem Credit und vorbelegtem Reiseziel:
+
+```bash
+node build.js --edition=ecos     #  ✓ HolaRuta-ecos.html   (Karibik-Teal · „· ECOS“ · Cartagena)
+node build.js --edition=weroad   #  ✓ HolaRuta-weroad.html (Coral · „· WeRoad Colombia“)
+```
+
+Eine Edition ist **reine Daten** in [`editions/<id>.js`](editions/) (Name, Akzent, Partner, Default-Ziel); [config.js](config.js) merged sie über die Standardwerte. Ohne Flag entsteht das pure HolaRuta — **der Default bleibt unangetastet** (graceful). Überschrieben wird nur der Akzent (`--brand`, wirkt in Hell & Dunkel) und die `theme-color`, nie der Hell/Dunkel-Rahmen. Die `HolaRuta-*.html`-Editionen sind reproduzierbare Build-Ausgaben und nicht eingecheckt.
+
+> Logo/Name eines Partners nur mit dessen Freigabe verwenden; bis dahin neutral co-branded (Farbe + Textzusatz, ohne Logo). Auf GitHub Pages teilen sich Editionen derselben Origin den `localStorage` — echte Trennung erst bei eigenem Deploy/Domain.
+
 ---
 
 ## Datenmodell

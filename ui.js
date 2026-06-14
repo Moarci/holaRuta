@@ -388,7 +388,19 @@
       ${navrow("import-data", "📥", t("profile.importData"))}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
-      ${installBlock(vm.install)}`;
+      ${installBlock(vm.install)}
+      ${editionCredit(vm.edition)}`;
+  }
+
+  // Dezenter Co-Branding-Hinweis im Profil (nur in einer Edition sichtbar).
+  function editionCredit(e) {
+    if (!e) return "";
+    const partner = e.partner
+      ? (e.partner.url
+          ? `<a href="${esc(e.partner.url)}" target="_blank" rel="noopener noreferrer">${esc(e.partner.name)}</a>`
+          : esc(e.partner.name))
+      : "";
+    return `<p class="edition-credit">${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
   }
 
   // „Auf den Startbildschirm“-Hinweis (nur wenn sinnvoll, siehe install.js).

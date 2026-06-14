@@ -453,6 +453,11 @@ body {
   border: 1.5px dashed color-mix(in srgb, var(--brand) 38%, var(--line));
   border-radius: var(--r-md); padding: 16px;
 }
+.edition-credit {
+  margin: 18px 0 4px; text-align: center; font-size: 0.82rem;
+  font-weight: 700; color: var(--brand-ink); letter-spacing: 0.02em;
+}
+.edition-credit a { color: var(--brand-ink); }
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
@@ -2107,6 +2112,35 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
+  <!-- Marken-/Edition-Konfiguration zuerst (Standard = HolaRuta pur). -->
+<script>
+/*
+ * config.js  (SC.config) – Marken-/Edition-Konfiguration.
+ *
+ * Standard = HolaRuta pur. Eine Co-Branding-Edition setzt VOR diesem Modul
+ * window.SC.editionConfig (siehe editions/*.js); der Edition-Build
+ * (`node build.js --edition=<id>`) schiebt diese Datei automatisch davor.
+ * Ohne Edition bleibt alles exakt wie heute (graceful).
+ *
+ * REINE DATEN/MERGE – kein DOM-Zugriff. Angewandt wird die Config einmalig
+ * beim Start (app.js → applyEdition: Akzentfarbe, Titel, theme-color, Credit).
+ */
+(function () {
+  "use strict";
+  var SC = window.SC || (window.SC = {});
+
+  var DEFAULT = {
+    edition: null,            // null = keine Edition (Standard HolaRuta)
+    brandName: "HolaRuta",    // Tab-Titel & installierter App-Name
+    accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk, theme }
+    partner: null,            // { name, url? } für einen dezenten Credit im Profil
+    defaultDestination: null, // z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
+  };
+
+  SC.config = Object.assign({}, DEFAULT, SC.editionConfig || {});
+})();
+
+</script>
   <!-- Mehrsprachigkeit zuerst: Engine + UI-Wörterbuch, damit t()/nativeText überall stehen. -->
 <script>
 /*
@@ -15141,7 +15175,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ${navrow("import-data", "📥", t("profile.importData"))}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
-      ${installBlock(vm.install)}`;
+      ${installBlock(vm.install)}
+      ${editionCredit(vm.edition)}`;
+  }
+
+  // Dezenter Co-Branding-Hinweis im Profil (nur in einer Edition sichtbar).
+  function editionCredit(e) {
+    if (!e) return "";
+    const partner = e.partner
+      ? (e.partner.url
+          ? `<a href="${esc(e.partner.url)}" target="_blank" rel="noopener noreferrer">${esc(e.partner.name)}</a>`
+          : esc(e.partner.name))
+      : "";
+    return `<p class="edition-credit">${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
   }
 
   // „Auf den Startbildschirm“-Hinweis (nur wenn sinnvoll, siehe install.js).
@@ -17867,6 +17913,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
+      edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
     };
@@ -18120,11 +18167,43 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const COLOMBIA_HINTS = ["colombia", "kolumbien", "cartagena", "medellin", "bogota",
     "cali", "santa marta", "tayrona", "palomino", "minca", "guatape", "barranquilla",
     "getsemani", "caribe", "rosario"];
+  function isColombiaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return COLOMBIA_HINTS.some((h) => norm.includes(h));
+  }
+  // Pre-Arrival-Kachel zeigen, wenn das Trip-Ziel ODER eine Edition Kolumbien meint.
   function tripMentionsColombia() {
     const t = gamestats.tripGoal;
-    if (!t || !t.destination) return false;
-    const norm = String(t.destination).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return COLOMBIA_HINTS.some((h) => norm.includes(h));
+    const cfg = window.SC && window.SC.config;
+    return isColombiaDest(t && t.destination) || isColombiaDest(cfg && cfg.defaultDestination);
+  }
+
+  // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----
+  // Überschreibt nur den Akzent (--brand/--brand-ink, wirkt in Hell & Dunkel) und
+  // die theme-color-Meta; NICHT --page, damit der Hell/Dunkel-Rahmen intakt bleibt.
+  function applyEdition() {
+    const c = window.SC && window.SC.config;
+    if (!c || !c.edition) return; // keine Edition → exakt wie heute
+    try {
+      if (c.brandName) document.title = c.brandName + " – Reise-Spanisch";
+      if (c.accent) {
+        const r = document.documentElement.style;
+        if (c.accent.brand) r.setProperty("--brand", c.accent.brand);
+        if (c.accent.brandInk) r.setProperty("--brand-ink", c.accent.brandInk);
+        if (c.accent.theme) {
+          const m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", c.accent.theme);
+        }
+      }
+    } catch (e) { /* Edition ist optional – nie crashen */ }
+  }
+
+  // Edition-Infos für den dezenten Profil-Credit (null = keine Edition).
+  function editionInfo() {
+    const c = window.SC && window.SC.config;
+    if (!c || !c.edition) return null;
+    return { name: c.brandName, partner: c.partner || null };
   }
 
   function tripGoalVM() {
@@ -21130,6 +21209,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   if (window.SC && window.SC.install) {
     window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
   }
+  applyEdition();            // Co-Branding (Akzentfarbe/Titel/theme-color) VOR dem ersten render
   applyUiLang(state.uiLang); // UI-Sprache setzen (i18n + <html lang>) VOR dem ersten render
   checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
   // Erstkontakt: beim allerersten Start (noch nichts gespeichert) ins Onboarding

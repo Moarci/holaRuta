@@ -415,6 +415,11 @@ body {
   border: 1.5px dashed color-mix(in srgb, var(--brand) 38%, var(--line));
   border-radius: var(--r-md); padding: 16px;
 }
+.edition-credit {
+  margin: 18px 0 4px; text-align: center; font-size: 0.82rem;
+  font-weight: 700; color: var(--brand-ink); letter-spacing: 0.02em;
+}
+.edition-credit a { color: var(--brand-ink); }
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
