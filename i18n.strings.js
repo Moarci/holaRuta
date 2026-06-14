@@ -249,6 +249,41 @@
     dedication: "For my dear Lisa.",
   });
 
+  // ---------- search: Suche (gezielt nach Karten/Übungen & Informationen) ----------
+  i18n.register("search", {
+    open: "Suche öffnen",
+    placeholder: "Suchen …",
+    title: "Suche",
+    inputPlaceholder: "Karten, Übungen, Länder …",
+    clear: "Suche leeren",
+    hintEmpty: "Suche nach Wörtern, Sätzen, Themen, Übungen oder Ländern – auf Deutsch oder Spanisch.",
+    noResults: (p) => `Nichts gefunden für „${p.q}“. Versuch ein anderes Wort.`,
+    groupExercises: "Übungen",
+    groupInfo: "Informationen",
+    kindCard: "Karte",
+    kindCategory: "Thema",
+    kindFeature: "Übung",
+    kindCountry: "Land",
+    kindInfo: "Info",
+    subCategory: "Ganzes Thema lernen",
+  }, {
+    open: "Open search",
+    placeholder: "Search …",
+    title: "Search",
+    inputPlaceholder: "Cards, exercises, countries …",
+    clear: "Clear search",
+    hintEmpty: "Search for words, phrases, topics, exercises or countries – in English or Spanish.",
+    noResults: (p) => `Nothing found for “${p.q}”. Try another word.`,
+    groupExercises: "Exercises",
+    groupInfo: "Information",
+    kindCard: "Card",
+    kindCategory: "Topic",
+    kindFeature: "Exercise",
+    kindCountry: "Country",
+    kindInfo: "Info",
+    subCategory: "Study the whole topic",
+  });
+
   // ---------- study: Lernkarte (Vorder-/Rückseite, Tippen, Hören, Fertig) ----------
   i18n.register("study", {
     studyProgress: "Lernfortschritt",

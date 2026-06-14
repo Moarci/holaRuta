@@ -29,14 +29,15 @@
   const INTRO =
     "Gesund und fit zu bleiben hält dich länger auf der Straße: ausgewogen essen " +
     "(nicht nur Streetfood), genug und günstig trinken, den Bauch in Ruhe lassen, " +
-    "dich vor Sonne und Höhe schützen und in Bewegung bleiben. Erst die Tipps, " +
-    "dann die Sätze fürs Einkaufen, Bestellen und die Apotheke.";
+    "dich vor Sonne und Höhe schützen, auf Ausflügen vorbereitet sein und in " +
+    "Bewegung bleiben. Erst die Tipps, dann die Sätze fürs Einkaufen, Bestellen " +
+    "und die Apotheke.";
 
   const INTRO_EN =
     "Staying healthy and fit keeps you travelling longer: eat a balanced diet " +
     "(not just street food), drink enough and cheaply, look after your stomach, " +
-    "protect yourself from sun and altitude, and keep moving. First the tips, then " +
-    "the phrases for shopping, ordering and the pharmacy.";
+    "protect yourself from sun and altitude, head out prepared on trips, and keep " +
+    "moving. First the tips, then the phrases for shopping, ordering and the pharmacy.";
 
   // ---------- Erklärung: gesund & fit unterwegs (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
@@ -194,6 +195,41 @@
       ],
     },
     {
+      icon: "🎒",
+      title: "Ausflüge & lange Fahrten: vorbereitet losziehen",
+      titleEn: "Day trips & long journeys: head out prepared",
+      intro: "Auf Tagesausflügen und langen Fahrten ist selten ein Shop in der Nähe – und auf abgelegenen Straßen mit forschen Fahrern wird einem schnell mal schlecht. Ein paar Kleinigkeiten am Körper retten den Tag.",
+      introEn: "On day trips and long journeys there's rarely a shop nearby – and on remote roads with reckless drivers you can quickly feel sick. A few small things on you save the day.",
+      dos: [
+        "Immer etwas Zucker am Körper haben (Snack, Riegel, Traubenzucker): Wenn der Kreislauf schlappmacht, ist unterwegs oft kein Laden in der Nähe.",
+        "Eigenen Proviant einpacken, auch wenn Verpflegung „inklusive“ ist – du weißt nie, was und wann es etwas gibt. Lieber etwas Kleines dabei, als dass Hunger den ganzen (teuren) Ausflug sabotiert.",
+        "Mini-Reiseapotheke für die Tasche: Schmerztablette, Reisetablette gegen Übelkeit und ein Pflaster. Eine holprige Busfahrt auf kleinen Straßen reicht oft schon.",
+        "Gerade als Frau Schmerzmittel dabeihaben: Auf langen Ausflügen sind sie schwer zu bekommen – und wenn die Periode einsetzt, willst du nur durchkommen.",
+        "Etwas Langärmliges zum Überziehen für längere (Bus-)Fahrten: Die Klimaanlage läuft gern auf eiskalt.",
+        "Genug Wasser mitnehmen – nachfüllen ist unterwegs nicht immer möglich.",
+      ],
+      dosEn: [
+        "Always keep some sugar on you (snack, bar, glucose tablets): if your circulation dips, there's often no shop nearby out there.",
+        "Pack your own provisions, even if meals are „included“ – you never know what or when. Better a little something with you than hunger sabotaging the whole (pricey) trip.",
+        "A mini first-aid kit for your bag: a painkiller, a motion-sickness tablet and a plaster. One bumpy bus ride on small roads is often all it takes.",
+        "Especially as a woman, carry painkillers: on long trips they're hard to get – and when your period starts, you just want to get through it.",
+        "Something long-sleeved to pull on for longer (bus) journeys: the air conditioning is often cranked to freezing.",
+        "Take enough water – refilling isn't always possible on the road.",
+      ],
+      donts: [
+        "Verlass dich nicht auf „Verpflegung inklusive“ – ohne eigenen Snack kann ein verspätetes oder mageres Essen den ganzen Tag verderben.",
+        "Geh nicht ohne Schmerz- und Reisetablette auf eine lange Fahrt – Nachschub gibt es unterwegs selten.",
+        "Bei Kreislaufproblemen nicht einfach weiterquälen – kurz hinsetzen, etwas Zuckerhaltiges essen, trinken.",
+        "Im kalten Bus nicht durchfrieren – die Jacke gehört ins Handgepäck, nicht in den großen Rucksack im Laderaum.",
+      ],
+      dontsEn: [
+        "Don't rely on „meals included“ – with no snack of your own, a late or meagre meal can ruin the whole day.",
+        "Don't set off on a long journey without a painkiller and a motion-sickness tablet – resupply on the road is rare.",
+        "With circulation trouble, don't just push through – sit down for a moment, eat something sugary, drink.",
+        "Don't freeze through on a cold bus – your jacket belongs in your hand luggage, not in the big pack in the hold.",
+      ],
+    },
+    {
       icon: "💪",
       title: "In Bewegung bleiben",
       titleEn: "Keep moving",
@@ -287,6 +323,11 @@
         { es: "Necesito repelente de mosquitos.", de: "Ich brauche Mückenschutz.", en: "I need mosquito repellent." },
         { es: "¿Tiene algo para el mal de altura?", de: "Haben Sie etwas gegen Höhenkrankheit?", en: "Do you have anything for altitude sickness?" },
         { es: "Necesito algo para el dolor de estómago.", de: "Ich brauche etwas gegen Bauchschmerzen.", en: "I need something for a stomach ache." },
+        { es: "¿Tiene un analgésico / algo para el dolor?", de: "Haben Sie ein Schmerzmittel / etwas gegen Schmerzen?", en: "Do you have a painkiller / something for pain?" },
+        { es: "¿Tiene pastillas para el mareo?", de: "Haben Sie Reisetabletten (gegen Übelkeit)?", en: "Do you have motion-sickness tablets?" },
+        { es: "¿Tiene curitas?", de: "Haben Sie Pflaster?", en: "Do you have plasters / band-aids?" },
+        { es: "Necesito algo para los cólicos menstruales.", de: "Ich brauche etwas gegen Menstruationsschmerzen.", en: "I need something for period cramps." },
+        { es: "¿Tiene toallas higiénicas o tampones?", de: "Haben Sie Damenbinden oder Tampons?", en: "Do you have sanitary pads or tampons?" },
       ],
     },
   ];
@@ -309,6 +350,13 @@
     { es: "la manzanilla", de: "die Kamille / der Kamillentee", en: "chamomile (tea)" },
     { es: "el gimnasio", de: "das Fitnessstudio", en: "the gym" },
     { es: "el pase diario / la entrada por un día", de: "der Tagespass / Tageseintritt", en: "the day pass / day entry" },
+    { es: "el analgésico / algo para el dolor", de: "das Schmerzmittel", en: "painkiller" },
+    { es: "la pastilla para el mareo", de: "die Reisetablette (gegen Übelkeit)", en: "motion-sickness tablet" },
+    { es: "el mareo", de: "die (Reise-)Übelkeit", en: "(travel/motion) sickness" },
+    { es: "la curita", de: "das Pflaster", en: "plaster / band-aid" },
+    { es: "los cólicos menstruales", de: "die Menstruationsschmerzen", en: "period cramps" },
+    { es: "las toallas higiénicas / los tampones", de: "die Damenbinden / die Tampons", en: "sanitary pads / tampons" },
+    { es: "el snack / algo de comer", de: "der Snack / etwas zu essen", en: "snack / something to eat" },
   ];
 
   // ---------- „Gesund-unterwegs-Kit": kleine Packliste (Icon + Sache + Warum) ----------
@@ -321,6 +369,10 @@
     { icon: "💊", item: "Bauch-Set", itemEn: "Stomach kit", why: "„Algo para la diarrea“, Rehydratationssalze und ggf. Probiotika für den Notfall.", whyEn: "„Algo para la diarrea“, rehydration salts and maybe probiotics for emergencies." },
     { icon: "🧴", item: "Sonnencreme & Repelente", itemEn: "Sunscreen & repellent", why: "Schutz vor Sonne (auch in der Höhe) und vor Mücken in Dengue-/Malariagebieten.", whyEn: "Protection from the sun (also at altitude) and from mosquitoes in dengue/malaria areas." },
     { icon: "🥜", item: "Nüsse & Obst als Snack", itemEn: "Nuts & fruit as a snack", why: "Protein, Ballaststoffe und Vitamine für unterwegs statt Chips.", whyEn: "Protein, fibre and vitamins on the go instead of crisps." },
+    { icon: "🍬", item: "Zucker-Snack (Riegel/Traubenzucker)", itemEn: "Sugary snack (bar/glucose)", why: "Rettet den Kreislauf auf Ausflügen, wo oft kein Shop in der Nähe ist.", whyEn: "Saves your circulation on trips where there's often no shop nearby." },
+    { icon: "🥪", item: "Eigener Proviant", itemEn: "Your own provisions", why: "Auch bei „Verpflegung inklusive“ weißt du nie, was und wann – ein Snack rettet den teuren Ausflug.", whyEn: "Even with „meals included“ you never know what or when – a snack saves the pricey trip." },
+    { icon: "🩹", item: "Mini-Reiseapotheke", itemEn: "Mini first-aid kit", why: "Schmerztablette, Reisetablette (Übelkeit) und Pflaster – auf holprigen Busfahrten Gold wert; Schmerzmittel sind unterwegs schwer zu bekommen (für Frauen besonders wichtig).", whyEn: "Painkiller, motion-sickness tablet and a plaster – worth gold on bumpy bus rides; painkillers are hard to get on the road (especially important for women)." },
+    { icon: "🧥", item: "Langärmliges zum Überziehen", itemEn: "A long-sleeved layer", why: "Für lange (Bus-)Fahrten – die Klimaanlage läuft oft eiskalt.", whyEn: "For long (bus) journeys – the AC is often freezing." },
   ];
 
   window.SC = window.SC || {};

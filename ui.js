@@ -216,6 +216,17 @@
       </section>`;
   }
 
+  // Sucheinstieg: sieht aus wie ein Suchfeld, ist aber ein Knopf, der die
+  // Such-Ansicht öffnet (ein echtes Eingabefeld im Dashboard würde bei jedem
+  // Re-Render den Fokus verlieren – darum erst auf der eigenen Seite tippen).
+  function searchBar() {
+    return `
+      <button class="searchbar" data-action="open-search" aria-label="${esc(t("search.open"))}">
+        <span class="searchbar__icon" aria-hidden="true">🔍</span>
+        <span class="searchbar__text">${esc(t("search.placeholder"))}</span>
+      </button>`;
+  }
+
   function lernenBody(vm) {
     const tiles = vm.categories
       .map((c) => {
@@ -283,6 +294,7 @@
 
     return `
       ${pagehead(esc(t("home.homePrompt")), vm)}
+      ${searchBar()}
 
       <div class="today">
         ${streakChip}
@@ -322,6 +334,7 @@
       </button>`).join("");
     return `
       ${pagehead(esc(t("discover.discoverTitle")), vm)}
+      ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
       ${feats}`;
   }
@@ -415,6 +428,57 @@
     return `
       <section class="screen screen--tabbed">${body}</section>
       ${tabbar(vm.tab)}`;
+  }
+
+  // ---------- SUCHE (gezielt nach Karten/Übungen & Informationen suchen) ----------
+  // Eigenes echtes Eingabefeld (autofokussiert in app.js). Die Trefferliste lebt in
+  // #search-results und wird beim Tippen separat aktualisiert (Fokus bleibt erhalten).
+  function renderSearch(vm) {
+    return `
+      <section class="screen screen--search">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">🔍 ${esc(t("search.title"))}</div>
+          <span></span>
+        </div>
+        <div class="searchfield">
+          <span class="searchfield__icon" aria-hidden="true">🔍</span>
+          <input id="search-input" class="searchfield__input" type="search" inputmode="search"
+                 autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
+                 placeholder="${esc(t("search.inputPlaceholder"))}" aria-label="${esc(t("search.inputPlaceholder"))}"
+                 value="${esc(vm.query)}" />
+          <button class="searchfield__clear" data-action="search-clear" aria-label="${esc(t("search.clear"))}">✕</button>
+        </div>
+        <div id="search-results">${searchResults(vm)}</div>
+      </section>`;
+  }
+
+  // Nur die Trefferliste – wird sowohl im Voll-Render als auch beim Live-Tippen
+  // (app.js updateSearchResults) verwendet, deshalb als eigene Funktion exportiert.
+  function searchResults(vm) {
+    const q = (vm.query || "").trim();
+    if (!q) return `<p class="search-hint">${esc(t("search.hintEmpty"))}</p>`;
+    if (!vm.groups.length) return `<p class="stat-empty">${esc(t("search.noResults", { q: q }))}</p>`;
+    return vm.groups.map((g) => `
+      <p class="sectioncap search-cap">${esc(g.label)} <span class="search-count">${g.items.length}</span></p>
+      <div class="search-list">${g.items.map(searchRow).join("")}</div>`).join("");
+  }
+
+  function searchRow(it) {
+    const dataId = it.id ? ` data-id="${esc(it.id)}"` : "";
+    const dataBack = it.back ? ` data-back="${esc(it.back)}"` : "";
+    const titleLang = it.titleLang ? ` lang="${esc(it.titleLang)}"` : "";
+    const sub = it.sub ? `<span class="search-row__sub">${esc(it.sub)}</span>` : "";
+    return `
+      <button class="search-row" data-action="${esc(it.action)}"${dataId}${dataBack}>
+        <span class="search-row__icon" aria-hidden="true">${esc(it.icon)}</span>
+        <span class="search-row__text">
+          <span class="search-row__title"${titleLang}>${esc(it.title)}</span>
+          ${sub}
+        </span>
+        <span class="search-row__kind">${esc(it.kindLabel)}</span>
+        <span class="search-row__chev" aria-hidden="true">›</span>
+      </button>`;
   }
 
   // ---------- STUDY ----------
@@ -2944,7 +3008,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear, renderLogistica, renderSalud,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear, renderLogistica, renderSalud,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
