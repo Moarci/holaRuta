@@ -391,13 +391,16 @@
           <p class="installcard__text">${esc(t("profile.installedText"))}</p>
         </div>`;
     }
+    // Noch nicht installiert: Status klar zeigen, nächster Schritt je nach Browser.
     const body = install.canPrompt
       ? `<p class="installcard__text">${esc(t("profile.installText"))}</p>
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
-      : `<p class="installcard__text">${esc(install.hint)}</p>`;
+      : install.isIOS
+        ? `<p class="installcard__text">${esc(install.hint)}</p>`
+        : `<p class="installcard__text">${esc(t("profile.installHintBrowser"))}</p>`;
     return `
       <div class="installcard">
-        <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.installTitle"))}</p>
+        <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.notInstalledTitle"))}</p>
         ${body}
       </div>`;
   }

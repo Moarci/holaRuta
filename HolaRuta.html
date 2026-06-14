@@ -3049,6 +3049,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     installTitle: "Auf den Startbildschirm",
     installText: "Leg HolaRuta als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.",
     installBtn: "📲 App installieren",
+    notInstalledTitle: "Noch nicht installiert",
+    installHintBrowser: 'Über das Browser-Menü („App installieren" bzw. „Zum Startbildschirm hinzufügen") legst du HolaRuta als eigenes App-Icon ab – startet dann offline, ohne Datei-Suchen.',
     installedTitle: "Als App installiert · offline bereit",
     installedText: "HolaRuta läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
 
@@ -3154,6 +3156,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     installTitle: "Add to home screen",
     installText: "Add HolaRuta as an app icon – it then starts straight away, without hunting for the file, and runs offline.",
     installBtn: "📲 Install app",
+    notInstalledTitle: "Not installed yet",
+    installHintBrowser: "Use your browser menu (“Install app” or “Add to Home Screen”) to add HolaRuta as its own app icon – it then starts offline, no file-hunting.",
     installedTitle: "Installed as an app · ready offline",
     installedText: "HolaRuta is running as an installed app with its own icon on your home screen – offline too.",
 
@@ -14172,6 +14176,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     shouldOffer,
     canPrompt,
     isIOS,
+    isHosted: hosted,
     promptInstall,
     isInstalled,
     setOnChange(fn) { onChange = typeof fn === "function" ? fn : null; },
@@ -14882,13 +14887,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <p class="installcard__text">${esc(t("profile.installedText"))}</p>
         </div>`;
     }
+    // Noch nicht installiert: Status klar zeigen, nächster Schritt je nach Browser.
     const body = install.canPrompt
       ? `<p class="installcard__text">${esc(t("profile.installText"))}</p>
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
-      : `<p class="installcard__text">${esc(install.hint)}</p>`;
+      : install.isIOS
+        ? `<p class="installcard__text">${esc(install.hint)}</p>`
+        : `<p class="installcard__text">${esc(t("profile.installHintBrowser"))}</p>`;
     return `
       <div class="installcard">
-        <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.installTitle"))}</p>
+        <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.notInstalledTitle"))}</p>
         ${body}
       </div>`;
   }
@@ -17592,14 +17600,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function installVM() {
     const inst = window.SC && window.SC.install;
     if (!inst) return { show: false };
-    // Läuft die App bereits installiert (standalone), zeigen wir statt des
-    // Installations-Hinweises eine klare „offline installiert"-Bestätigung.
+    // Läuft die App bereits installiert (standalone), zeigen wir eine klare
+    // „offline installiert"-Bestätigung.
     if (inst.isInstalled()) return { show: true, installed: true };
-    if (!inst.shouldOffer()) return { show: false };
+    // Als file://-Einzeldatei ist keine PWA-Installation möglich -> nichts zeigen.
+    if (inst.isHosted && !inst.isHosted()) return { show: false };
+    // Sonst: Status „noch nicht installiert" immer anzeigen. Der nächste Schritt
+    // hängt vom Browser ab: nativer Dialog (Android), iOS-Anleitung oder der
+    // generische Menü-Hinweis (Desktop / Android ohne beforeinstallprompt).
     return {
       show: true,
       installed: false,
       canPrompt: inst.canPrompt(),
+      isIOS: inst.isIOS(),
       hint: t("app.installHintIos"),
     };
   }
