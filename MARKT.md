@@ -51,12 +51,18 @@ gegen `main` v1.24.0:
 | Spickzettel (Survival, offline, vorgelesen) | README / `ui.js` | ✅ existiert |
 | Offline / PWA / zero-dependency / kein Tracking | Service Worker, `localStorage` | ✅ existiert |
 | Niveau A1/A2/B1 | `lvl`-Mehrfach-Filter, 3 Stufen | ✅ existiert (s. u.) |
-| Lehrer-/Kurs-/Coordinator-Modus | — | ❌ fehlt komplett |
-| White-Label / Co-Branding | hartkodiert (Name, Erdton-Palette) | ❌ fehlt |
-| Backend / Accounts / Pro-Kauf / Per-Seat | nur `localStorage`, ein Gerät, kein Sync | ❌ fehlt |
-| Cartagena-/Destination-/„Colombia Pack" | generisches LatAm, **kein** Stadt-/Trip-Pack | ❌ fehlt |
-| Kuratierte Pakete / Pre-Trip-Tage | nur freier Filter, Ruta del día (zufällig) | ❌ fehlt |
-| Lehrer-/Coordinator-PDF | — | ❌ fehlt |
+| Coordinator-Modus (5-Min-Icebreaker) | `startCoordinatorRound` (Modo hostal) | ✅ umgesetzt |
+| Lehrer-/Kurs-Modus (geführt, Zuweisung/Sync) | — | ❌ fehlt (Stufe 3) |
+| White-Label / Co-Branding | `config.js` + `editions/*` + `build.js --edition` | ✅ umgesetzt (ecos/weroad) |
+| Backend / Accounts / Pro-Kauf / Per-Seat | nur `localStorage`, ein Gerät, kein Sync | ❌ fehlt (bewusst, Stufe 3) |
+| Cartagena-/Destination-/„Colombia Pack" | Kategorie `colombia`, **75 Karten** | ✅ umgesetzt |
+| Kuratierte Pakete / Pre-Trip-Plan | `PRESETS` (Pre-Arrival) + `PRETRIP` (7 Etappen) | ✅ umgesetzt |
+| Lehrer-/Coordinator-/Hostel-Handouts | druckbare HTML (DE·EN·ES) unter `docs/anleitungen/` | ✅ umgesetzt |
+
+> **Stand-Update (Juni 2026):** Mehrere der ursprünglich als „❌ fehlt" notierten MVP-Lücken wurden
+> inzwischen gebaut (Colombia-Pack, Pre-Arrival-Preset, Pre-Trip-Plan, 30 Challenges, Coordinator-
+> Schnellstart, dreisprachige Handouts, Edition-Schalter) — Details und Status in [BAUPLAN.md](BAUPLAN.md).
+> Offen bleiben bewusst die Stufe-3-Punkte (echtes Lehrer-Dashboard, Accounts/Sync/Backend).
 
 **Vier Klarstellungen, die man im Pitch nicht übersehen darf:**
 
