@@ -14,7 +14,7 @@
 | Prio | Ziel | Typ | Warum zuerst | Kontaktweg (zu verifizieren) |
 |---|---|---|---|---|
 | 1 | **Centro Catalina** | Sprachschule, Cartagena + Medellín | Zwei Kolumbien-Standorte, Immersion/Backpacker-Vibe – nächste am Produkt | Website-Kontaktformular / Schulleitung; ggf. Instagram-DM |
-| 2 | **ECOS · Cartagena** | Sprachschule (Eaquals) | Cartagena-Fokus, Kultur/Aktivitäten/Salsa – deckt sich mit dem Colombia-Pack | Website / „admisiones"/Direktion; ggf. über Buchungsportale |
+| 2 | **ECOS · Cartagena** | Sprachschule | Cartagena-Fokus, Kultur/Aktivitäten/Salsa – deckt sich mit dem Colombia-Pack | Website / „admisiones"/Direktion; ggf. über Buchungsportale |
 | 3 | **Cartagena-Hostels** (Getsemaní) | Hostels | Direkter Bezug, niedrigste Hürde; „Spanish Night" als kostenlose Aktivität → Testimonials | Vor Ort / E-Mail / Instagram; Poster (docs/anleitungen/hostel.html) mitschicken |
 
 **Ziel Stufe A:** 1 zahlende Schule **oder** 1 aktives Hostel + **1 Testimonial**. Das ist der erste echte Meilenstein (MARKT.md §9).
@@ -43,11 +43,16 @@
 ---
 
 ## Vorgehen (kompakt)
+0. **Vor dem ersten Versand:** in `anschreiben.md` und auf der Pitch-Seite die Platzhalter (`[dein Name]`, `[deine E-Mail]`) durch deine echten Kontaktdaten/Absenderzeile ersetzen.
 1. **Warm-Intros zuerst** nutzen (persönliche Kontakte zu Schule/Hostel/Reiseleiter) – siehe `anschreiben.md`.
 2. Pro Kontakt: kurze Nachricht (anschreiben.md) + Link zur **Pitch-Seite** (`docs/pitch/`) + **Live-Demo**.
 3. Bei Schulen Lehrer-Anleitung, bei Hostels das QR-Poster, bei Gruppen die Coordinator-Karte beilegen (`docs/anleitungen/`).
 4. Ziel jedes Erstkontakts: **kein Verkauf, sondern Feedback + Mini-Pilot** (die 5 Fragen aus anschreiben.md).
 5. Nach dem ersten Pilot: **Testimonial einsammeln** → es macht jeden weiteren Pitch glaubwürdiger.
+
+> **Rechtlicher Hinweis:** Partner-Logo/-Name (z. B. „ECOS Edition", „WeRoad Colombia") erst **nach
+> ausdrücklicher Freigabe** des Partners verwenden – bis dahin neutral co-branded (Akzentfarbe +
+> Textzusatz, ohne Logo). Vgl. README §Co-Branding-Editionen.
 
 > Realistischer Aufbaupfad (MARKT.md §9): Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ USD – als Richtung, keine Prognose.
 > Der erste Meilenstein ist nicht Umsatz, sondern **1 zahlende Schule · 1 Testimonial · 1 Edition · 1 klarer Pitch** – Edition &amp; Pitch liegen vor.

@@ -43,7 +43,7 @@
 >
 > Creo que encaja con su enfoque de inmersión: como preparación antes del curso, un calentamiento de 5 minutos en clase y un “reto de la vida real” para la calle.
 >
-> ¿Les interesaría un **piloto gratuito de 4 semanas** con 1–2 grupos? Llevo ideas de clase listas y solo recojo su opinión al final.
+> ¿Les interesaría un **piloto gratuito de 4 semanas** con 1–2 grupos? Llevo ideas de clase listas y al final me encantaría escuchar su opinión.
 >
 > Un vistazo rápido: https://moarci.github.io/holaRuta/
 > *(La interfaz está en alemán/inglés; el contenido es español de viaje.)*
@@ -59,22 +59,22 @@
 **English**
 > Hi [name],
 >
-> I made HolaRuta – a free travel-Spanish web app. It has a “Modo Hostal” with a quick language battle that works as a fun 5-minute group activity in the common room. No app install, works offline, just a QR code.
+> I made HolaRuta – a free travel-Spanish web app. It has a “Modo hostal” with a one-tap **5-minute icebreaker** – a quick language battle round that works as a fun group activity in the common room. No app install, works offline, just a QR code.
 >
 > Would you be open to trying it as a casual “Spanish Night” with your guests? I can send a ready-to-print poster with the QR code. No cost – I’d just love your honest take on whether guests enjoy it.
 >
-> Try it: https://moarci.github.io/holaRuta/  →  Modo Hostal  →  5-minute icebreaker
+> Try it: https://moarci.github.io/holaRuta/  →  Modo hostal  →  5-minute icebreaker
 >
 > Cheers, [your name]
 
 **Español**
 > Hola [nombre]:
 >
-> Hice HolaRuta, una app web gratuita de español de viaje. Tiene un “Modo Hostal” con un battle de idioma rápido, ideal como actividad grupal de 5 minutos en la zona común. Sin instalar nada, funciona sin conexión, solo un código QR.
+> Hice HolaRuta, una app web gratuita de español de viaje. Tiene un “Modo hostal” con un **icebreaker de 5 minutos** de un toque – una ronda rápida tipo battle, ideal como actividad grupal en la zona común. Sin instalar nada, funciona sin conexión, solo un código QR.
 >
-> ¿Se animarían a probarlo como una “Spanish Night" informal con sus huéspedes? Les puedo enviar un cartel listo para imprimir con el QR. Sin costo: solo me encantaría saber si a los huéspedes les gusta.
+> ¿Se animarían a probarlo como una “Spanish Night” informal con sus huéspedes? Les puedo enviar un cartel listo para imprimir con el QR. Sin costo: solo me encantaría saber si a los huéspedes les gusta.
 >
-> Pruébenlo: https://moarci.github.io/holaRuta/  →  Modo Hostal  →  icebreaker de 5 minutos
+> Pruébenlo: https://moarci.github.io/holaRuta/  →  Modo hostal  →  icebreaker de 5 minutos
 >
 > Saludos, [tu nombre]
 
@@ -91,7 +91,7 @@
 >
 > Könnte so was für eure Lateinamerika-Reisen spannend sein – als kleines Pre-Trip-Tool oder als 5-Minuten-Challenge unterwegs? Magst du kurz reinschauen und mir ehrlich sagen, ob das für Reisegruppen praktisch wäre? Und: wen müsste man bei euch ansprechen, um einen Mini-Pilot zu testen?
 >
-> https://moarci.github.io/holaRuta/  →  schau dir am besten an: Karten + Kontext, Modo Hostal/Battle, Spickzettel
+> https://moarci.github.io/holaRuta/  →  schau dir am besten an: Karten + Kontext, Modo hostal/Battle, Spickzettel
 >
 > Danke dir! [dein Name]
 
@@ -102,7 +102,7 @@
 >
 > Could this be interesting for your Latin-America trips – as a small pre-trip tool or a 5-minute challenge on the road? Mind taking a quick look and telling me honestly whether it’d be practical for travel groups? And: who would one talk to on your side to test a mini-pilot?
 >
-> https://moarci.github.io/holaRuta/  →  best to look at: cards + context, Modo Hostal/battle, cheat sheet
+> https://moarci.github.io/holaRuta/  →  best to look at: cards + context, Modo hostal/battle, cheat sheet
 >
 > Thanks! [your name]
 
