@@ -989,6 +989,22 @@
     { id: "co73", cat: "colombia", lvl: 3, de: "Gibt es gerade ein Fest in der Stadt?", en: "Is there a festival in town right now?", es: "¿Hay algún festival en la ciudad?", tip: "fes-ti-WAL = Fest/Festival", tipEn: "fes-ti-WAL = festival" },
     { id: "co74", cat: "colombia", lvl: 2, de: "Wie lange dauert die Fahrt nach Cali?", en: "How long is the trip to Cali?", es: "¿Cuánto dura el viaje a Cali?", tip: "Cali = Welthauptstadt der Salsa", tipEn: "Cali = world capital of salsa" },
     { id: "co75", cat: "colombia", lvl: 1, de: "Ich liebe Kolumbien!", en: "I love Colombia!", es: "¡Me encanta Colombia!", tip: "en-KAN-ta = gefällt sehr", tipEn: "en-KAN-ta = I love it" },
+
+    // ----- Kaffeeregion: Salento · Valle del Cocora · Kaffee-Finca (WeRoad-Stopp) -----
+    { id: "co76", cat: "colombia", lvl: 1, de: "Wie komme ich nach Salento?", en: "How do I get to Salento?", es: "¿Cómo llego a Salento?", tip: "Salento = buntes Dorf in der Kaffeezone (Quindío)", tipEn: "Salento = colourful town in the coffee zone (Quindío)" },
+    { id: "co77", cat: "colombia", lvl: 2, de: "Von wo fährt der Jeep zum Valle del Cocora?", en: "Where does the jeep to the Cocora Valley leave from?", es: "¿De dónde sale el Willys al Valle del Cocora?", tip: "Willys = der typische alte Jeep", tipEn: "Willys = the classic old jeep" },
+    { id: "co78", cat: "colombia", lvl: 1, de: "Ich möchte die Wachspalmen sehen.", en: "I'd like to see the wax palms.", es: "Quiero ver las palmas de cera.", tip: "palma de cera = Kolumbiens Nationalbaum", tipEn: "palma de cera = Colombia's national tree" },
+    { id: "co79", cat: "colombia", lvl: 2, de: "Wie lange dauert die Wanderung?", en: "How long is the hike?", es: "¿Cuánto dura la caminata?", tip: "ca-mi-NA-ta = Wanderung", tipEn: "ca-mi-NA-ta = hike" },
+    { id: "co80", cat: "colombia", lvl: 2, de: "Macht ihr eine Kaffeetour auf der Finca?", en: "Do you run a coffee tour on the farm?", es: "¿Hacen un tour de café en la finca?", tip: "finca = Kaffeehof/Landgut", tipEn: "finca = coffee farm/estate" },
+    { id: "co81", cat: "colombia", lvl: 3, de: "Können wir den Kaffee selbst pflücken?", en: "Can we pick the coffee ourselves?", es: "¿Podemos recoger el café nosotros mismos?", tip: "recoger = pflücken/ernten", tipEn: "recoger = to pick/harvest" },
+    { id: "co82", cat: "colombia", lvl: 3, de: "Wie wird der Kaffee hier geröstet?", en: "How is the coffee roasted here?", es: "¿Cómo se tuesta el café aquí?", tip: "tos-TAR = rösten", tipEn: "tos-TAR = to roast" },
+    { id: "co83", cat: "colombia", lvl: 2, de: "Ich hätte gern einen milden Kaffee.", en: "I'd like a mild coffee, please.", es: "Quiero un café suave, por favor.", tip: "SUA-we = mild/sanft", tipEn: "SUA-we = mild/smooth" },
+    { id: "co84", cat: "colombia", lvl: 2, de: "Was kostet die Kaffeeverkostung?", en: "How much is the coffee tasting?", es: "¿Cuánto cuesta la cata de café?", tip: "cata = Verkostung", tipEn: "cata = tasting" },
+    { id: "co85", cat: "colombia", lvl: 2, de: "Wo gibt es einen guten Aussichtspunkt?", en: "Where's a good viewpoint?", es: "¿Dónde hay un buen mirador?", tip: "mi-ra-DOR = Aussichtspunkt", tipEn: "mi-ra-DOR = viewpoint" },
+    { id: "co86", cat: "colombia", lvl: 3, de: "Kann man hier Kolibris sehen?", en: "Can you see hummingbirds around here?", es: "¿Se pueden ver colibríes por aquí?", tip: "co-li-BRI = Kolibri", tipEn: "co-li-BRI = hummingbird" },
+    { id: "co87", cat: "colombia", lvl: 2, de: "Eine Forelle mit Kochbanane, bitte.", en: "A trout with fried plantain, please.", es: "Una trucha con patacón, por favor.", tip: "trucha = Forelle (Salento-Spezialität)", tipEn: "trucha = trout (a Salento specialty)" },
+    { id: "co88", cat: "colombia", lvl: 3, de: "Sollen wir Tejo spielen?", en: "Shall we play tejo?", es: "¿Vamos a jugar tejo?", tip: "tejo = traditionelles Wurfspiel (mit Knall!)", tipEn: "tejo = traditional throwing game (with a bang!)" },
+    { id: "co89", cat: "colombia", lvl: 1, de: "Dieser Kaffee ist köstlich.", en: "This coffee is delicious.", es: "Este café está delicioso.", tip: "de-li-SIO-so = köstlich", tipEn: "de-li-SIO-so = delicious" },
   ];
 
   /*
@@ -1713,6 +1729,7 @@
     { id: "challenge28", category: "colombia", level: 1, textDe: "Begrüße jemanden auf kolumbianische Art.", textEn: "Greet someone the Colombian way.", phraseEs: "¿Quiubo? ¿Qué más?" },
     { id: "challenge29", category: "colombia", level: 1, textDe: "Bestell einen Tinto wie ein Local.", textEn: "Order a tinto like a local.", phraseEs: "Un tinto, por favor." },
     { id: "challenge30", category: "colombia", level: 3, textDe: "Frag jemanden, ob er dir einen Tanzschritt beibringt.", textEn: "Ask someone to teach you a dance step.", phraseEs: "¿Me enseñas a bailar?" },
+    { id: "challenge31", category: "colombia", level: 2, textDe: "Frag auf einer Finca nach einer Kaffeetour.", textEn: "Ask for a coffee tour on a finca.", phraseEs: "¿Hacen un tour de café en la finca?" },
   ];
 
   // ----- Definiciones (Zuordnen / Definitions-Quiz) -----

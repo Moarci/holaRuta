@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.31.0",
+      date: "2026-06-14",
+      title: "Kolumbien-Paket: Kaffeeregion ergänzt (Salento & Valle del Cocora)",
+      items: [
+        "☕ 14 neue Kolumbien-Karten für die Kaffeezone: nach Salento kommen, der Willys-Jeep ins Valle del Cocora, Wachspalmen, Kaffeetour & -verkostung auf der Finca, Forelle (trucha), Aussichtspunkte, Kolibris und ein Tejo-Abend.",
+        "🗺️ Damit hat jede typische Kolumbien-Reisestation (Bogotá, Kaffeeregion, Medellín, Karibikküste, Cartagena) ihr eigenes Reise-Vokabular – mit Kontext für jede Karte.",
+        "🚪 Neue Real-Life-Mutprobe: auf einer Finca nach einer Kaffeetour fragen.",
+      ],
+    },
+    {
       version: "1.30.0",
       date: "2026-06-14",
       title: "Bessere Lesbarkeit im Dunkelmodus",
