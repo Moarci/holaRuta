@@ -1308,6 +1308,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border: none; box-shadow: var(--shadow); transition: transform 0.12s ease;
 }
 .hm-card:active { transform: translateY(1px); }
+.hm-card--coordinator { background: linear-gradient(135deg, #3F7355, #5E9A6F); }
 .hm-card--battle { background: linear-gradient(135deg, #C25A45, #DB7A5E); }
 .hm-card--roleplay { background: linear-gradient(135deg, #8E4FA8, #A96DBE); }
 .hm-card__icon { font-size: 2rem; line-height: 1; }

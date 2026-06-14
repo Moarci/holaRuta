@@ -2311,6 +2311,14 @@
     render();
   }
 
+  // Coordinator-Schnellstart („5-Minuten-Icebreaker"): springt ohne Setup direkt
+  // in eine kurze 6-Runden-Battle der Kennenlern-Szene („meet"). Für Reiseleiter,
+  // Hostel-Personal oder Lehrkräfte, die der Gruppe in Sekunden eine Aktivität
+  // geben wollen. Reuse des kompletten bestehenden Battle-Flows.
+  function startCoordinatorRound() {
+    startBattle("meet", 6);
+  }
+
   // Vor dem Start gewählte Battle-Länge merken (nur Umschalten, kein Start).
   function setBattleLength(value) {
     state.battleLength = value;
@@ -2355,13 +2363,15 @@
   }
 
   // Battle starten: Aufgaben der Szene (oder alle) ziehen, begrenzt auf die gewählte Länge.
-  function startBattle(sceneId) {
+  function startBattle(sceneId, lengthOverride) {
     dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     if (!pool.length) return;
     const poolIds = pool.map((b) => b.id);
     // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
-    const rounds = evenRounds(Math.min(state.battleLength, poolIds.length));
+    // lengthOverride erlaubt einen Direktstart ohne Setup (Coordinator-Runde),
+    // ohne die im Setup gewählte Länge (state.battleLength) zu überschreiben.
+    const rounds = evenRounds(Math.min(lengthOverride || state.battleLength, poolIds.length));
     const queue = balanceByLevel(pickBattleIds(poolIds, rounds, state.battleSeen));
     rememberBattleSeen(queue, poolIds.length);
     state.battle = {
@@ -3163,6 +3173,7 @@
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
     else if (action === "open-battle-setup") openBattleSetup();
+    else if (action === "coordinator-round") startCoordinatorRound();
     else if (action === "set-battle-length") setBattleLength(Number(el.dataset.len));
     else if (action === "start-battle") startBattle(el.dataset.scene);
     else if (action === "battle-reveal") battleReveal();

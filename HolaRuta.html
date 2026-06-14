@@ -1346,6 +1346,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border: none; box-shadow: var(--shadow); transition: transform 0.12s ease;
 }
 .hm-card:active { transform: translateY(1px); }
+.hm-card--coordinator { background: linear-gradient(135deg, #3F7355, #5E9A6F); }
 .hm-card--battle { background: linear-gradient(135deg, #C25A45, #DB7A5E); }
 .hm-card--roleplay { background: linear-gradient(135deg, #8E4FA8, #A96DBE); }
 .hm-card__icon { font-size: 2rem; line-height: 1; }
@@ -2659,6 +2660,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     // Hostel
     hostelIntro: "Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.",
+    coordinatorTitle: "5-Minuten-Icebreaker",
+    coordinatorDesc: "Für Gruppen & Kurse: ein Tap startet sofort eine kurze Kennenlern-Runde – ohne Setup.",
+    coordinatorMeta: "6 Runden · sofort los",
     battleTitle: "Battle",
     battleDesc: "Tretet gegeneinander an und übt echte Reisesätze laut. Der Mitspieler bewertet.",
     battleTasks: (p) => `${p.n} Aufgaben`,
@@ -2888,6 +2892,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     rgUseful: "Useful phrases",
 
     hostelIntro: "Use travel Spanish in pairs – not just learning, but speaking aloud.",
+    coordinatorTitle: "5-minute icebreaker",
+    coordinatorDesc: "For groups & classes: one tap starts a quick getting-to-know round – no setup.",
+    coordinatorMeta: "6 rounds · starts instantly",
     battleTitle: "Battle",
     battleDesc: "Compete against each other and practise real travel phrases aloud. Your partner scores you.",
     battleTasks: (p) => `${p.n} tasks`,
@@ -14421,6 +14428,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.28.0",
+      date: "2026-06-14",
+      title: "Coordinator-Schnellstart: 5-Minuten-Icebreaker",
+      items: [
+        "⚡ Neue Karte im Modo Hostal: „5-Minuten-Icebreaker“ startet auf einen Tap eine kurze 6-Runden-Kennenlern-Battle – ganz ohne Setup.",
+        "🧑‍🏫 Gedacht für Reiseleiter, Hostel-Personal und Lehrkräfte, die einer Gruppe in Sekunden eine Sprach-Aktivität geben wollen.",
+      ],
+    },
+    {
       version: "1.27.0",
       date: "2026-06-14",
       title: "Mehr Real-Life Challenges: 30 statt 10",
@@ -16416,6 +16432,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${hmTopbar("🛏️ Modo hostal", "home")}
         <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
         <div class="hm-menu">
+          <button class="hm-card hm-card--coordinator" data-action="coordinator-round">
+            <span class="hm-card__icon" aria-hidden="true">⚡</span>
+            <span class="hm-card__title">${esc(t("discover.coordinatorTitle"))}</span>
+            <span class="hm-card__desc">${esc(t("discover.coordinatorDesc"))}</span>
+            <span class="hm-card__meta">${esc(t("discover.coordinatorMeta"))}</span>
+          </button>
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
             <span class="hm-card__icon" aria-hidden="true">⚔️</span>
             <span class="hm-card__title">${esc(t("discover.battleTitle"))}</span>
@@ -19916,6 +19938,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // Coordinator-Schnellstart („5-Minuten-Icebreaker"): springt ohne Setup direkt
+  // in eine kurze 6-Runden-Battle der Kennenlern-Szene („meet"). Für Reiseleiter,
+  // Hostel-Personal oder Lehrkräfte, die der Gruppe in Sekunden eine Aktivität
+  // geben wollen. Reuse des kompletten bestehenden Battle-Flows.
+  function startCoordinatorRound() {
+    startBattle("meet", 6);
+  }
+
   // Vor dem Start gewählte Battle-Länge merken (nur Umschalten, kein Start).
   function setBattleLength(value) {
     state.battleLength = value;
@@ -19960,13 +19990,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // Battle starten: Aufgaben der Szene (oder alle) ziehen, begrenzt auf die gewählte Länge.
-  function startBattle(sceneId) {
+  function startBattle(sceneId, lengthOverride) {
     dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     if (!pool.length) return;
     const poolIds = pool.map((b) => b.id);
     // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
-    const rounds = evenRounds(Math.min(state.battleLength, poolIds.length));
+    // lengthOverride erlaubt einen Direktstart ohne Setup (Coordinator-Runde),
+    // ohne die im Setup gewählte Länge (state.battleLength) zu überschreiben.
+    const rounds = evenRounds(Math.min(lengthOverride || state.battleLength, poolIds.length));
     const queue = balanceByLevel(pickBattleIds(poolIds, rounds, state.battleSeen));
     rememberBattleSeen(queue, poolIds.length);
     state.battle = {
@@ -20768,6 +20800,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
     else if (action === "open-battle-setup") openBattleSetup();
+    else if (action === "coordinator-round") startCoordinatorRound();
     else if (action === "set-battle-length") setBattleLength(Number(el.dataset.len));
     else if (action === "start-battle") startBattle(el.dataset.scene);
     else if (action === "battle-reveal") battleReveal();

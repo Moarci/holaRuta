@@ -1679,6 +1679,12 @@
         ${hmTopbar("🛏️ Modo hostal", "home")}
         <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
         <div class="hm-menu">
+          <button class="hm-card hm-card--coordinator" data-action="coordinator-round">
+            <span class="hm-card__icon" aria-hidden="true">⚡</span>
+            <span class="hm-card__title">${esc(t("discover.coordinatorTitle"))}</span>
+            <span class="hm-card__desc">${esc(t("discover.coordinatorDesc"))}</span>
+            <span class="hm-card__meta">${esc(t("discover.coordinatorMeta"))}</span>
+          </button>
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
             <span class="hm-card__icon" aria-hidden="true">⚔️</span>
             <span class="hm-card__title">${esc(t("discover.battleTitle"))}</span>

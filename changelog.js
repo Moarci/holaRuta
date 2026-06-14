@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.28.0",
+      date: "2026-06-14",
+      title: "Coordinator-Schnellstart: 5-Minuten-Icebreaker",
+      items: [
+        "⚡ Neue Karte im Modo Hostal: „5-Minuten-Icebreaker“ startet auf einen Tap eine kurze 6-Runden-Kennenlern-Battle – ganz ohne Setup.",
+        "🧑‍🏫 Gedacht für Reiseleiter, Hostel-Personal und Lehrkräfte, die einer Gruppe in Sekunden eine Sprach-Aktivität geben wollen.",
+      ],
+    },
+    {
       version: "1.27.0",
       date: "2026-06-14",
       title: "Mehr Real-Life Challenges: 30 statt 10",

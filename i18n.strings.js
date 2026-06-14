@@ -392,6 +392,9 @@
 
     // Hostel
     hostelIntro: "Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.",
+    coordinatorTitle: "5-Minuten-Icebreaker",
+    coordinatorDesc: "Für Gruppen & Kurse: ein Tap startet sofort eine kurze Kennenlern-Runde – ohne Setup.",
+    coordinatorMeta: "6 Runden · sofort los",
     battleTitle: "Battle",
     battleDesc: "Tretet gegeneinander an und übt echte Reisesätze laut. Der Mitspieler bewertet.",
     battleTasks: (p) => `${p.n} Aufgaben`,
@@ -621,6 +624,9 @@
     rgUseful: "Useful phrases",
 
     hostelIntro: "Use travel Spanish in pairs – not just learning, but speaking aloud.",
+    coordinatorTitle: "5-minute icebreaker",
+    coordinatorDesc: "For groups & classes: one tap starts a quick getting-to-know round – no setup.",
+    coordinatorMeta: "6 rounds · starts instantly",
     battleTitle: "Battle",
     battleDesc: "Compete against each other and practise real travel phrases aloud. Your partner scores you.",
     battleTasks: (p) => `${p.n} tasks`,
