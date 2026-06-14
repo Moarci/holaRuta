@@ -160,6 +160,9 @@ Das Herzstück. Was müsste tatsächlich entstehen, damit die Kanäle tragen? Ge
 **Inhalte / Modi / Pakete / Infrastruktur**, jeweils mit Aufwand (S/M/L), Reuse-Hinweis und
 Ziel-Kanal (**S**chule / **G**ruppenreise / **H**ostel / **B2C**).
 
+> **Datei-/datenstruktur-genaue Bauanleitung** zu jedem Punkt hier: [BAUPLAN.md](BAUPLAN.md) —
+> mit konkreten Strukturen, betroffenen Dateien, Wiederverwendungs-Vorlagen und Akzeptanzkriterien.
+
 ### 6a — Fehlende INHALTE (reine Daten, additiv, zero-dependency)
 
 | Lücke | Was genau | Aufwand | Reuse | Kanal |
