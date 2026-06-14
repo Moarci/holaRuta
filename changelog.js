@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.30.0",
+      date: "2026-06-14",
+      title: "Bessere Lesbarkeit im Dunkelmodus",
+      items: [
+        "🌙 Knöpfe und Badges mit farbiger Fläche (z. B. „Lernrunde starten“, Pre-Trip-Etappen, Hostel-Punktestand) bekommen im Dunkelmodus dunklen statt hellen Text – jetzt durchgängig WCAG-AA-konform lesbar.",
+      ],
+    },
+    {
       version: "1.29.0",
       date: "2026-06-14",
       title: "Pre-Trip-Plan: in 7 Etappen reisefertig",

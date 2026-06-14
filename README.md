@@ -4,7 +4,7 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.29.0** — 793 Karten · 24 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.30.0** — 793 Karten · 24 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
