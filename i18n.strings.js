@@ -782,6 +782,8 @@
     installTitle: "Auf den Startbildschirm",
     installText: "Leg HolaRuta als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.",
     installBtn: "📲 App installieren",
+    notInstalledTitle: "Noch nicht installiert",
+    installHintBrowser: 'Über das Browser-Menü („App installieren" bzw. „Zum Startbildschirm hinzufügen") legst du HolaRuta als eigenes App-Icon ab – startet dann offline, ohne Datei-Suchen.',
     installedTitle: "Als App installiert · offline bereit",
     installedText: "HolaRuta läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
 
@@ -887,6 +889,8 @@
     installTitle: "Add to home screen",
     installText: "Add HolaRuta as an app icon – it then starts straight away, without hunting for the file, and runs offline.",
     installBtn: "📲 Install app",
+    notInstalledTitle: "Not installed yet",
+    installHintBrowser: "Use your browser menu (“Install app” or “Add to Home Screen”) to add HolaRuta as its own app icon – it then starts offline, no file-hunting.",
     installedTitle: "Installed as an app · ready offline",
     installedText: "HolaRuta is running as an installed app with its own icon on your home screen – offline too.",
 

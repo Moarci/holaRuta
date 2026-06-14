@@ -249,14 +249,19 @@
   function installVM() {
     const inst = window.SC && window.SC.install;
     if (!inst) return { show: false };
-    // Läuft die App bereits installiert (standalone), zeigen wir statt des
-    // Installations-Hinweises eine klare „offline installiert"-Bestätigung.
+    // Läuft die App bereits installiert (standalone), zeigen wir eine klare
+    // „offline installiert"-Bestätigung.
     if (inst.isInstalled()) return { show: true, installed: true };
-    if (!inst.shouldOffer()) return { show: false };
+    // Als file://-Einzeldatei ist keine PWA-Installation möglich -> nichts zeigen.
+    if (inst.isHosted && !inst.isHosted()) return { show: false };
+    // Sonst: Status „noch nicht installiert" immer anzeigen. Der nächste Schritt
+    // hängt vom Browser ab: nativer Dialog (Android), iOS-Anleitung oder der
+    // generische Menü-Hinweis (Desktop / Android ohne beforeinstallprompt).
     return {
       show: true,
       installed: false,
       canPrompt: inst.canPrompt(),
+      isIOS: inst.isIOS(),
       hint: t("app.installHintIos"),
     };
   }

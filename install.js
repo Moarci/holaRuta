@@ -102,6 +102,7 @@
     shouldOffer,
     canPrompt,
     isIOS,
+    isHosted: hosted,
     promptInstall,
     isInstalled,
     setOnChange(fn) { onChange = typeof fn === "function" ? fn : null; },
