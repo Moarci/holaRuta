@@ -2322,7 +2322,7 @@
     { day: 6, titleDe: "Unterwegs & Orientierung", titleEn: "Getting around",
       cardIds: ["co19", "co52", "co53", "co54", "co72", "co26"], challengeId: "challenge16" },
     { day: 7, titleDe: "Social & Ausgehen", titleEn: "Socialising & going out",
-      cardIds: ["co63", "co64", "co65", "co68", "co69", "co43"], challengeId: "challenge30" },
+      cardIds: ["co63", "co64", "co65", "co66", "co68", "co43"], challengeId: "challenge30" },
   ];
 
   window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP };

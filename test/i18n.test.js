@@ -109,3 +109,12 @@ test("Matcher native/Deutsch: prüft gegen das deutsche Feld, keine Artikel-Tole
   // ohne en-Sonderfall keine englische Artikel-Logik – „Haltestelle" allein passt nicht
   assert.equal(matcher.check("Haltestelle", card, "native").correct, false);
 });
+
+test("i18n: DE⟷EN Key-Parität im UI-Wörterbuch (keine fehlenden/überzähligen Schlüssel)", () => {
+  const { de, en } = i18n.dictKeys();
+  const setDe = new Set(de), setEn = new Set(en);
+  const missingEn = de.filter((k) => !setEn.has(k)).sort();
+  const missingDe = en.filter((k) => !setDe.has(k)).sort();
+  assert.deepEqual(missingEn, [], `Schlüssel ohne EN-Pendant: ${missingEn.join(", ")}`);
+  assert.deepEqual(missingDe, [], `Schlüssel ohne DE-Pendant: ${missingDe.join(", ")}`);
+});

@@ -176,8 +176,20 @@ Nach mehreren spezialisierten Parallel-Reviews wurde der Kontrast systematisch n
 **Bewusst NICHT geändert (akzeptierte Designentscheidung):** Die **festen Kategorie- und Feature-Gradienten**
 (Home-Kacheln, Entdecken-Buttons, Karteikarten-Rückseite, Einkaufszettel-Chips) behalten ihre bunte Erdton-Palette.
 Auf den helleren Gradient-Stopps erreicht der hell **über**lagerte Text dort nicht durchgängig den Kleintext-Wert
-(4.5:1) — gemessen verfehlen 23/24 Kategorie-Gradienten 4.5:1, 8 davon auch 3:1. Der Text ist dort überwiegend
-**groß** (Icon + fetter Titel/Wort), und die bunte Palette ist Teil der Marken-Identität; eine vollflächige
-Abdunklung würde sie stark verändern. Die **bindenden, interaktiven** Steuerelemente sind durchgängig AA — die
-Gradient-Kacheln sind dekorativ. Falls künftig strikte AA überall gewünscht ist: Optionen sind Palette-Abdunklung,
-ein Text-Scrim oder large-text-only (3:1) für die 8 schwächsten Gradienten (siehe Review-Notiz).
+(4.5:1) — gemessen verfehlen 23/24 Kategorie-Gradienten 4.5:1, 8 davon auch 3:1. Die bunte Palette ist Teil der
+Marken-Identität; eine vollflächige Abdunklung würde sie stark verändern.
+
+Betroffen ist konkret **Text, der auf diesen Gradienten liegt** — und das umfasst auch **Kleintext** und teils
+**interaktive** Elemente, nicht nur große, dekorative Labels:
+
+- **`.feat__sub`** (Untertitel der Entdecken-Buttons, 0.82rem) — interaktiv, auf den helleren `--to`-Stopps teils < 3:1.
+- **Flashcard-Rückseite** (`.face__tip`/`.face__hint`/`.face__cat`) — Hinweis-/Kontext-Kleintext auf dem Kategorie-Gradienten.
+- **`.sl-chip.is-active`** (Einkaufszettel-Rubrik) — heller Text auf Rubrik-Gradient.
+
+*Nicht* betroffen: die Home-Kategorie-Kacheln (`.tile`) — deren Text steht auf `--card`, nicht auf dem Gradienten
+(der erscheint nur in Icon-Feld/Leiste); `.tile__meta` erreicht ~6.5:1.
+
+Die **soliden Akzent-Bedienelemente** (`.cta`, Pre-Trip-Buttons, Hostel-Punktestand, Update-Banner, `.schip` u. a.)
+sind hingegen über das `--on-accent`-Token durchgängig AA (s. o.). Falls künftig strikte AA **auch** auf den
+Gradienten gewünscht ist: Optionen sind Palette-Abdunklung der `--to`-Stopps, ein Text-Scrim hinter dem
+Kleintext, oder large-text-only (3:1) für die 8 schwächsten Gradienten. Bis dahin **bewusst akzeptiert**.
