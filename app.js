@@ -2033,6 +2033,35 @@
     render();
   }
 
+  // ----- Kuratierte Presets (benannte Karten-Auswahl, z. B. Pre-Arrival-Pack) -----
+  // Reine ID-Liste im Stil von SPICKZETTEL_GROUPS. Läuft über den normalen Study-
+  // Pfad, aber in kuratierter Reihenfolge (statt fällig-zuerst) – ideal als
+  // Onboarding-Set „die wichtigsten Sätze vor der Ankunft". scope = zugrunde-
+  // liegende Kategorie, damit der Done-Screen korrekt beschriftet ist.
+  const PRESETS = [
+    {
+      id: "prearrival-co", scope: "colombia",
+      pick: ["co57", "co58", "co61", "co60", "co01", "co02", "co04", "co07", "co10", "co15",
+             "co37", "co40", "co42", "co43", "co36", "co47", "co48", "co50", "co71", "co75"],
+    },
+  ];
+
+  function startPreset(presetId) {
+    dismissBadgeToast();
+    const p = PRESETS.find((x) => x.id === presetId);
+    if (!p) return;
+    const cards = p.pick.map(cardById).filter(Boolean);
+    const chosen = cards.slice(0, SESSION_CAP);
+    state.scopeId = p.scope || "all";
+    state.queue = chosen.map((c) => c.id);
+    state.total = state.queue.length;
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = state.queue.length ? "study" : "done";
+    render();
+  }
+
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
   // Frage gedreht werden. Die Bewertungs-Leiste erscheint nur auf der Antwortseite.
   function flip() {
@@ -3088,6 +3117,7 @@
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "ruta-del-dia") openRutaDelDia();
+    else if (action === "open-preset") startPreset(el.dataset.preset);
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();

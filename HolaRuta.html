@@ -2416,6 +2416,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     rutaSub: "Kurze Tagesrunde quer durch alle Themen",
     rutaDoneTitle: "✓ Ruta del día geschafft",
     rutaDoneSub: "Für heute erledigt – noch eine Runde?",
+    presetCoTitle: "🇨🇴 Pre-Arrival Kolumbien",
+    presetCoSub: "Die wichtigsten Sätze vor der Ankunft",
     allReviewed: "Alles wiederholt 🎉",
     startSession: "Lernrunde starten",
     sessionOf: (p) => `${p.cap} von ${p.due}`,
@@ -2477,6 +2479,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     rutaSub: "A short daily round across all topics",
     rutaDoneTitle: "✓ Ruta del día done",
     rutaDoneSub: "Done for today – one more round?",
+    presetCoTitle: "🇨🇴 Pre-Arrival Colombia",
+    presetCoSub: "The key phrases before you arrive",
     allReviewed: "All reviewed 🎉",
     startSession: "Start study session",
     sessionOf: (p) => `${p.cap} of ${p.due}`,
@@ -14376,6 +14380,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.26.0",
+      date: "2026-06-14",
+      title: "Pre-Arrival-Preset: die wichtigsten Sätze auf einen Tap",
+      items: [
+        "🇨🇴 Neue Dashboard-Kachel „Pre-Arrival Kolumbien“ – ein Tap startet die 20 wichtigsten Sätze für die Ankunft (Begrüßung, Taxi, Unterkunft, Essen, Geld, Sicherheit).",
+        "🎯 Kuratierte, benannte Karten-Auswahl statt freiem Filter – ideal zur Reisevorbereitung oder als Einstieg für Sprachschüler und Reisegruppen.",
+      ],
+    },
+    {
       version: "1.25.0",
       date: "2026-06-14",
       title: "Kolumbien-Paket: 75 ortsspezifische Reise-Karten",
@@ -14935,6 +14948,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
       </button>`;
 
+    // Kuratiertes Pre-Arrival-Preset: ein Tap startet die wichtigsten Sätze für die
+    // Ankunft in Kolumbien (benannte Karten-Auswahl, nicht der freie Filter). Nutzt
+    // dieselbe Kachel-Optik wie Ruta del día.
+    const presetCo = `
+      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-co">
+        <span class="today__ruta-main">${esc(t("home.presetCoTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.presetCoSub"))}</span>
+      </button>`;
+
     // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
     // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
     // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
@@ -14966,6 +14988,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </button>
         ${resume}
         ${rutaDia}
+        ${presetCo}
         ${tripCard}
       </div>
 
@@ -19561,6 +19584,35 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // ----- Kuratierte Presets (benannte Karten-Auswahl, z. B. Pre-Arrival-Pack) -----
+  // Reine ID-Liste im Stil von SPICKZETTEL_GROUPS. Läuft über den normalen Study-
+  // Pfad, aber in kuratierter Reihenfolge (statt fällig-zuerst) – ideal als
+  // Onboarding-Set „die wichtigsten Sätze vor der Ankunft". scope = zugrunde-
+  // liegende Kategorie, damit der Done-Screen korrekt beschriftet ist.
+  const PRESETS = [
+    {
+      id: "prearrival-co", scope: "colombia",
+      pick: ["co57", "co58", "co61", "co60", "co01", "co02", "co04", "co07", "co10", "co15",
+             "co37", "co40", "co42", "co43", "co36", "co47", "co48", "co50", "co71", "co75"],
+    },
+  ];
+
+  function startPreset(presetId) {
+    dismissBadgeToast();
+    const p = PRESETS.find((x) => x.id === presetId);
+    if (!p) return;
+    const cards = p.pick.map(cardById).filter(Boolean);
+    const chosen = cards.slice(0, SESSION_CAP);
+    state.scopeId = p.scope || "all";
+    state.queue = chosen.map((c) => c.id);
+    state.total = state.queue.length;
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = state.queue.length ? "study" : "done";
+    render();
+  }
+
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
   // Frage gedreht werden. Die Bewertungs-Leiste erscheint nur auf der Antwortseite.
   function flip() {
@@ -20616,6 +20668,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "ruta-del-dia") openRutaDelDia();
+    else if (action === "open-preset") startPreset(el.dataset.preset);
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();

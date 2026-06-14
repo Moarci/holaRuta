@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.26.0",
+      date: "2026-06-14",
+      title: "Pre-Arrival-Preset: die wichtigsten Sätze auf einen Tap",
+      items: [
+        "🇨🇴 Neue Dashboard-Kachel „Pre-Arrival Kolumbien“ – ein Tap startet die 20 wichtigsten Sätze für die Ankunft (Begrüßung, Taxi, Unterkunft, Essen, Geld, Sicherheit).",
+        "🎯 Kuratierte, benannte Karten-Auswahl statt freiem Filter – ideal zur Reisevorbereitung oder als Einstieg für Sprachschüler und Reisegruppen.",
+      ],
+    },
+    {
       version: "1.25.0",
       date: "2026-06-14",
       title: "Kolumbien-Paket: 75 ortsspezifische Reise-Karten",

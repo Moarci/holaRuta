@@ -262,6 +262,15 @@
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
       </button>`;
 
+    // Kuratiertes Pre-Arrival-Preset: ein Tap startet die wichtigsten Sätze für die
+    // Ankunft in Kolumbien (benannte Karten-Auswahl, nicht der freie Filter). Nutzt
+    // dieselbe Kachel-Optik wie Ruta del día.
+    const presetCo = `
+      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-co">
+        <span class="today__ruta-main">${esc(t("home.presetCoTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.presetCoSub"))}</span>
+      </button>`;
+
     // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
     // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
     // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
@@ -293,6 +302,7 @@
         </button>
         ${resume}
         ${rutaDia}
+        ${presetCo}
         ${tripCard}
       </div>
 
