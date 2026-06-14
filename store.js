@@ -194,6 +194,8 @@
       dialogosScenesDone: {}, // Map scenarioId -> true (distinkt gespielte Szenarien)
       // ----- Ruta del día (tägliche Mini-Runde) -----
       rutaDays: {},         // Map "YYYY-MM-DD" -> true (Tage mit gestarteter Ruta del día)
+      // ----- Pre-Trip-Plan (mehrtägiger Onboarding-Pfad) -----
+      pretripDays: {},      // Map Tagesnummer (1..N) -> true (abgeschlossene Pre-Trip-Tage)
       // ----- Trip-Ziel (Countdown + Tagesziel) -----
       tripGoal: null,       // { destination, endDate:"YYYY-MM-DD", perDay, startedAt } | null
       dailyCounts: {},      // Map "YYYY-MM-DD" -> Anzahl Bewertungen an dem Tag
@@ -259,6 +261,7 @@
       dialogosPerfect: num(v.dialogosPerfect),
       dialogosScenesDone: isPlainObject(v.dialogosScenesDone) ? v.dialogosScenesDone : {},
       rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
+      pretripDays: isPlainObject(v.pretripDays) ? v.pretripDays : {},
       tripGoal: sanitizeTripGoal(v.tripGoal),
       dailyCounts: isPlainObject(v.dailyCounts) ? v.dailyCounts : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},

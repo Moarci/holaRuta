@@ -2304,5 +2304,26 @@
     },
   ];
 
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS };
+  // Pre-Trip-Plan: ein geordneter, mehrtägiger Onboarding-Pfad (Tag 1 → Tag N) als
+  // Gegenstück zur zufälligen Ruta del día. Jeder Tag = kuratierte Kartenliste +
+  // optionale Real-Life-Challenge (challengeId verweist auf CHALLENGES). Tag N+1
+  // wird erst nach Abschluss von Tag N freigeschaltet (Logik in app.js). REINE DATEN.
+  const PRETRIP = [
+    { day: 1, titleDe: "Begrüßung & Höflichkeit", titleEn: "Greetings & courtesy",
+      cardIds: ["co57", "co58", "co61", "co60", "co62", "co75"], challengeId: "challenge28" },
+    { day: 2, titleDe: "Taxi & Ankunft", titleEn: "Taxi & arrival",
+      cardIds: ["co01", "co02", "co04", "co05", "co06"], challengeId: "challenge18" },
+    { day: 3, titleDe: "Unterkunft", titleEn: "Accommodation",
+      cardIds: ["co07", "co08", "co10", "co72", "co71"], challengeId: "challenge24" },
+    { day: 4, titleDe: "Essen & Trinken", titleEn: "Food & drink",
+      cardIds: ["co36", "co37", "co40", "co41", "co42", "co43"], challengeId: "challenge11" },
+    { day: 5, titleDe: "Geld & Markt", titleEn: "Money & market",
+      cardIds: ["co47", "co48", "co49", "co50"], challengeId: "challenge13" },
+    { day: 6, titleDe: "Unterwegs & Orientierung", titleEn: "Getting around",
+      cardIds: ["co19", "co52", "co53", "co54"], challengeId: "challenge16" },
+    { day: 7, titleDe: "Social & Ausgehen", titleEn: "Socialising & going out",
+      cardIds: ["co63", "co64", "co65", "co67", "co69"], challengeId: "challenge20" },
+  ];
+
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP };
 })();

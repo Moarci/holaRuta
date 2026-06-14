@@ -66,6 +66,7 @@
   // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   // sub = deutscher Fallback; subKey = i18n-Schlüssel (zur Laufzeit via t() übersetzt).
   const FEATURES = [
+    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig für Kolumbien", grad: ["#2E6E86", "#B97C24"] },
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
@@ -1715,6 +1716,41 @@
       </section>`;
   }
 
+  // Pre-Trip-Plan: mehrtägiger Onboarding-Pfad. Tage sequenziell freischaltbar
+  // (erledigt ✓ / aktuell startbar / gesperrt 🔒); jeder Tag mit Karten + optionaler
+  // Mutprobe. Reuse der Screen-/Topbar-Struktur der übrigen Entdecken-Module.
+  function renderPretrip(vm) {
+    const rows = vm.days.map((d) => {
+      const status = d.done ? "done" : (d.unlocked ? "current" : "locked");
+      const mark = d.done ? "✓" : (d.unlocked ? String(d.day) : "🔒");
+      const challenge = d.challenge
+        ? `<span class="pretrip-day__challenge">🚪 ${esc(d.challenge)}</span>` : "";
+      const right = status === "locked"
+        ? `<span class="pretrip-day__lock" aria-label="${esc(t("discover.pretripLocked"))}">🔒</span>`
+        : `<button class="pretrip-day__btn" data-action="start-pretrip-day" data-day="${d.day}">${esc(d.done ? t("discover.pretripReplay") : t("discover.pretripStart"))}</button>`;
+      return `
+        <li class="pretrip-day pretrip-day--${status}">
+          <span class="pretrip-day__num" aria-hidden="true">${mark}</span>
+          <span class="pretrip-day__body">
+            <span class="pretrip-day__title">${esc(d.title)}</span>
+            <span class="pretrip-day__meta">${esc(t("discover.pretripCards", { n: d.count }))}</span>
+            ${challenge}
+          </span>
+          ${right}
+        </li>`;
+    }).join("");
+    const banner = vm.allDone
+      ? `<p class="pretrip-alldone">🎉 ${esc(t("discover.pretripAllDone"))}</p>`
+      : `<p class="pretrip-progress">${esc(t("discover.pretripProgress", { done: vm.doneCount, total: vm.total }))}</p>`;
+    return `
+      <section class="screen">
+        ${hmTopbar("🗓️ " + esc(t("discover.pretripTitle")), "home")}
+        <p class="hm-intro">${esc(t("discover.pretripIntro"))}</p>
+        ${banner}
+        <ol class="pretrip">${rows}</ol>
+      </section>`;
+  }
+
   // Battle: Szene wählen.
   function renderBattleSetup(vm) {
     // Badge zeigt die tatsächliche Rundenzahl bei der gewählten Länge – ehrlicher
@@ -2876,7 +2912,7 @@
   window.SC = window.SC || {};
   window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
-                   renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
+                   renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderConjugSetup, renderConjug, renderConjugDone,

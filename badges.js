@@ -113,6 +113,8 @@
       description: "Lerne 30 Tage in Folge.",  descriptionEn: "Learn 30 days in a row.",  unlockedText: "Aus Lernen ist eine echte Gewohnheit geworden.", unlockedTextEn: "Learning has turned into a real habit." },
     { id: "ruta_dia_first", group: "streak", icon: "🗺️", name: "Ruta del día",   nameEn: "Ruta del día",       type: "counter", metric: "rutaDays", threshold: 1,
       description: "Starte deine erste Ruta del día.", descriptionEn: "Start your first Ruta del día.", unlockedText: "Dein täglicher Mini-Plan ist gesetzt.", unlockedTextEn: "Your daily mini-plan is set." },
+    { id: "pretrip_done",   group: "streak", icon: "🧳", name: "Reisefertig",     nameEn: "Trip-ready",         type: "counter", metric: "pretripDaysDone", threshold: 7,
+      description: "Schließe alle 7 Etappen des Pre-Trip-Plans ab.", descriptionEn: "Complete all 7 stages of the pre-trip plan.", unlockedText: "Vorbereitet wie ein Profi – jetzt kann die Reise kommen.", unlockedTextEn: "Prepared like a pro – bring on the trip." },
     { id: "ruta_dia_7",     group: "streak", icon: "📆", name: "Sieben Etappen",  nameEn: "Seven stages",       type: "counter", metric: "rutaDays", threshold: 7,
       description: "Mache an 7 Tagen eine Ruta del día.", descriptionEn: "Do a Ruta del día on 7 days.", unlockedText: "Sieben tägliche Etappen – die Reise läuft.", unlockedTextEn: "Seven daily stages – the journey's rolling." },
 
@@ -259,6 +261,7 @@
       preciosMillon: c.preciosMillon || 0,
       // Ruta del día: distinkte Tage mit gestarteter täglicher Mini-Runde.
       rutaDays: c.rutaDays ? Object.keys(c.rutaDays).length : 0,
+      pretripDaysDone: c.pretripDays ? Object.keys(c.pretripDays).length : 0,
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       // El Cuerpo: distinkt angetippte Körperteile (für die 🧍-Badges).

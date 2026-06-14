@@ -58,6 +58,7 @@
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
+    pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -1859,6 +1860,7 @@
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
+    else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -2048,6 +2050,7 @@
       settings = Object.assign({}, settings, { lastScope: scopeId });
       store.saveSettings(settings);
     }
+    state.pretripDay = null;
     state.scopeId = scopeId;
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
@@ -2089,6 +2092,7 @@
     }
     const chosen = pool.slice(0, RUTA_DIA_CAP);
     recordRutaDia(now);
+    state.pretripDay = null;
     state.scopeId = "all";
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
@@ -2112,6 +2116,7 @@
     if (!p) return;
     const cards = p.pick.map(cardById).filter(Boolean);
     const chosen = cards.slice(0, SESSION_CAP);
+    state.pretripDay = null;   // normale Preset-Runde, kein Pre-Trip-Tag
     state.scopeId = p.scope || "all";
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
@@ -2120,6 +2125,63 @@
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
+  }
+
+  // ----- Pre-Trip-Plan (mehrtägiger, sequenziell freischaltender Onboarding-Pfad) -----
+  // Reuse des Study-Pfads wie startPreset; ein Tag gilt als abgeschlossen, sobald
+  // seine Sitzung leer durchläuft (Hook in rate()). Tag N ist freigeschaltet, wenn
+  // Tag N-1 abgeschlossen ist (oder es Tag 1 ist). Fortschritt persistent in gamestats.
+  const PRETRIP = () => data.PRETRIP || [];
+  const pretripDone = (day) => !!(gamestats.pretripDays && gamestats.pretripDays[day]);
+  const pretripUnlocked = (day) => day === 1 || pretripDone(day - 1);
+
+  function openPretrip() {
+    dismissBadgeToast();
+    state.screen = "pretrip";
+    render();
+  }
+
+  function pretripVM() {
+    const days = PRETRIP().map((d) => {
+      const ch = d.challengeId ? (data.CHALLENGES || []).find((c) => c.id === d.challengeId) : null;
+      return {
+        day: d.day,
+        title: natk(d, "titleDe"),
+        count: d.cardIds.length,
+        challenge: ch ? natk(ch, "textDe") : null,
+        done: pretripDone(d.day),
+        unlocked: pretripUnlocked(d.day),
+      };
+    });
+    const total = days.length;
+    const doneCount = days.filter((d) => d.done).length;
+    return { days, total, doneCount, allDone: total > 0 && doneCount === total };
+  }
+
+  function startPretripDay(day) {
+    dismissBadgeToast();
+    const d = PRETRIP().find((x) => x.day === day);
+    if (!d || !pretripUnlocked(day)) return;       // gesperrte Tage nicht startbar
+    const cards = d.cardIds.map(cardById).filter(Boolean);
+    if (!cards.length) { recordPretripDay(day); openPretrip(); return; }
+    state.pretripDay = day;
+    state.scopeId = "colombia";                    // korrektes Done-Label
+    state.queue = cards.map((c) => c.id);
+    state.total = state.queue.length;
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = "study";
+    render();
+  }
+
+  // Einen Pre-Trip-Tag als abgeschlossen vermerken (distinkt, idempotent).
+  function recordPretripDay(day) {
+    if (!day || pretripDone(day)) return;
+    const days = Object.assign({}, gamestats.pretripDays, { [day]: true });
+    gamestats = Object.assign({}, gamestats, { pretripDays: days });
+    store.saveGameStats(gamestats);
+    syncBadges(Date.now(), true); // „Reisefertig"-Badge freischalten, wenn alle Tage geschafft
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -2209,6 +2271,8 @@
     state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
+    // Pre-Trip-Tag abgeschlossen (Queue leer durchgelaufen)? distinkt vermerken.
+    if (!state.queue.length && state.pretripDay != null) recordPretripDay(state.pretripDay);
     render();
     if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
   }
@@ -3188,6 +3252,8 @@
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "ruta-del-dia") openRutaDelDia();
     else if (action === "open-preset") startPreset(el.dataset.preset);
+    else if (action === "open-pretrip") openPretrip();
+    else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();

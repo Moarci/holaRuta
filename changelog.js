@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.29.0",
+      date: "2026-06-14",
+      title: "Pre-Trip-Plan: in 7 Etappen reisefertig",
+      items: [
+        "🗓️ Neuer Pre-Trip-Plan unter Entdecken: ein geordneter, mehrtägiger Onboarding-Pfad für Kolumbien (Begrüßung, Taxi, Unterkunft, Essen, Geld, Unterwegs, Ausgehen) – die nächste Etappe öffnet sich, sobald du die aktuelle geschafft hast.",
+        "🚪 Jede Etappe mit kuratierten Karten und einer passenden Real-Life-Mutprobe.",
+        "🧳 Neuer Ruta-Pass-Stempel „Reisefertig“, wenn alle 7 Etappen geschafft sind.",
+      ],
+    },
+    {
       version: "1.28.0",
       date: "2026-06-14",
       title: "Coordinator-Schnellstart: 5-Minuten-Icebreaker",
