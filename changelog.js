@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.33.0",
+      date: "2026-06-14",
+      title: "Pre-Arrival Peru: die wichtigsten Sätze auf einen Tap",
+      items: [
+        "🇵🇪 Neue Dashboard-Kachel „Pre-Arrival Peru“ – ein Tap startet die 20 wichtigsten Sätze für die Ankunft (Gruß, Taxi, Höhe & Kokatee, Geld, Essen, Sicherheit). Erscheint automatisch, wenn dein Trip-Ziel Peru meint (Lima, Cusco, Machu Picchu …).",
+      ],
+    },
+    {
       version: "1.32.0",
       date: "2026-06-14",
       title: "Neues Reise-Paket: Peru (Cusco, Machu Picchu & Anden)",

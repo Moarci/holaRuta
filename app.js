@@ -241,6 +241,7 @@
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
+      showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
@@ -505,6 +506,22 @@
     const t = gamestats.tripGoal;
     const cfg = window.SC && window.SC.config;
     return isColombiaDest(t && t.destination) || isColombiaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
+  // die „Pre-Arrival Peru"-Kachel auf dem Dashboard.
+  const PERU_HINTS = ["peru", "perú", "lima", "cusco", "cuzco", "machu picchu", "machupicchu",
+    "arequipa", "titicaca", "puno", "colca", "ollantaytambo", "sacsayhuaman", "valle sagrado",
+    "aguas calientes", "vinicunca", "nazca", "paracas", "huacachina"];
+  function isPeruDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return PERU_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsPeru() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isPeruDest(t && t.destination) || isPeruDest(cfg && cfg.defaultDestination);
   }
 
   // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----

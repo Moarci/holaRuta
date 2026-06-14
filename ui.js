@@ -275,6 +275,15 @@
       </button>`
       : "";
 
+    // Analog für Peru – erscheint nur bei Peru-Bezug des Trip-Ziels/der Edition.
+    const presetPe = vm.showPeruPreset
+      ? `
+      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-pe">
+        <span class="today__ruta-main">${esc(t("home.presetPeTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.presetPeSub"))}</span>
+      </button>`
+      : "";
+
     // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
     // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
     // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
@@ -307,6 +316,7 @@
         ${resume}
         ${rutaDia}
         ${presetCo}
+        ${presetPe}
         ${tripCard}
       </div>
 

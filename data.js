@@ -1062,7 +1062,7 @@
     { id: "pe42", cat: "peru", lvl: 2, de: "Können Sie mir einen kleinen Rabatt geben?", en: "Can you give me a little discount?", es: "¿Me puede hacer una rebaja?", tip: "rebaja = Preisnachlass; auf Märkten üblich", tipEn: "rebaja = discount; common at markets" },
     { id: "pe43", cat: "peru", lvl: 2, de: "Akzeptieren Sie Soles oder nur Karte?", en: "Do you take soles or only card?", es: "¿Aceptan soles o solo tarjeta?", tip: "sol = Landeswährung Perus", tipEn: "sol = Peru's currency" },
     { id: "pe44", cat: "peru", lvl: 1, de: "Hallo! (auf Quechua)", en: "Hello! (in Quechua)", es: "¡Allillanchu!", tip: "Quechua-Gruß; Antwort: allillanmi", tipEn: "Quechua greeting; reply: allillanmi" },
-    { id: "pe45", cat: "peru", lvl: 1, de: "Ich liebe Peru!", en: "I love Peru!", es: "¡Me encanta Perú!", tip: "auf Quechua heißt danke „añay“", tipEn: "in Quechua 'thank you' is „añay“" },
+    { id: "pe45", cat: "peru", lvl: 1, de: "Ich liebe Peru!", en: "I love Peru!", es: "¡Me encanta Perú!", tip: "Quechua-Danke: „sulpayki“ (in Cusco auch „añay“)", tipEn: "Quechua 'thank you': „sulpayki“ (around Cusco also „añay“)" },
   ];
 
   /*
@@ -2379,6 +2379,11 @@
       id: "prearrival-co", scope: "colombia",
       pick: ["co57", "co58", "co61", "co60", "co01", "co02", "co04", "co07", "co10", "co15",
              "co37", "co40", "co42", "co43", "co36", "co47", "co48", "co50", "co71", "co75"],
+    },
+    {
+      id: "prearrival-pe", scope: "peru",
+      pick: ["pe44", "pe01", "pe02", "pe03", "pe09", "pe06", "pe07", "pe05", "pe14", "pe13",
+             "pe43", "pe42", "pe36", "pe38", "pe37", "pe25", "pe31", "pe18", "pe08", "pe45"],
     },
   ];
 
