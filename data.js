@@ -911,7 +911,7 @@
     { id: "co06", cat: "colombia", lvl: 2, de: "Geht es über eine App oder bar?", en: "Is it via an app or cash?", es: "¿Es por aplicación o en efectivo?", tip: "e-fek-TI-wo = bar", tipEn: "e-fek-TI-wo = in cash" },
     // ----- Unterkunft & Gastfamilie -----
     { id: "co07", cat: "colombia", lvl: 1, de: "Ich habe eine Reservierung auf den Namen Marcel.", en: "I have a reservation under the name Marcel.", es: "Tengo una reserva a nombre de Marcel.", tip: "a nombre de = auf den Namen", tipEn: "a nombre de = under the name" },
-    { id: "co08", cat: "colombia", lvl: 2, de: "Um wie viel Uhr ist der Check-out?", en: "What time is check-out?", es: "¿A qué hora es el check-out?", tip: "salida = Auschecken", tipEn: "salida = check-out" },
+    { id: "co08", cat: "colombia", lvl: 2, de: "Gibt es einen Ventilator oder Klimaanlage?", en: "Is there a fan or air conditioning?", es: "¿Hay ventilador o aire acondicionado?", tip: "ventilador = Ventilator", tipEn: "ventilador = fan" },
     { id: "co09", cat: "colombia", lvl: 2, de: "Gibt es eine Gastfamilie in der Nähe?", en: "Is there a host family nearby?", es: "¿Hay una familia anfitriona cerca?", tip: "an-fi-tri-O-na = gastgebend", tipEn: "an-fi-tri-O-na = hosting" },
     { id: "co10", cat: "colombia", lvl: 1, de: "Gibt es heißes Wasser in der Dusche?", en: "Is there hot water in the shower?", es: "¿Hay agua caliente en la ducha?", tip: "DU-cha = Dusche", tipEn: "DU-cha = shower" },
     // ----- Cartagena -----
@@ -944,7 +944,7 @@
     { id: "co34", cat: "colombia", lvl: 3, de: "Lohnt sich ein Ausflug nach Minca?", en: "Is a trip to Minca worth it?", es: "¿Vale la pena ir a Minca?", tip: "vale la pena = es lohnt sich", tipEn: "vale la pena = it's worth it" },
     { id: "co35", cat: "colombia", lvl: 3, de: "In Palomino kann man auf dem Fluss treiben.", en: "In Palomino you can tube down the river.", es: "En Palomino se puede flotar en el río.", tip: "flo-TAR = treiben/schwimmen lassen", tipEn: "flo-TAR = to float/tube" },
     // ----- Essen & Trinken (kolumbianisch) -----
-    { id: "co36", cat: "colombia", lvl: 1, de: "Was empfehlen Sie mir?", en: "What do you recommend?", es: "¿Qué me recomienda?", tip: "re-ko-mi-EN-da" },
+    { id: "co36", cat: "colombia", lvl: 1, de: "Welches typische Gericht empfehlen Sie?", en: "Which typical dish do you recommend?", es: "¿Qué plato típico me recomienda?", tip: "plato típico = typisches Gericht", tipEn: "plato típico = typical dish" },
     { id: "co37", cat: "colombia", lvl: 1, de: "Eine Arepa, bitte.", en: "An arepa, please.", es: "Una arepa, por favor.", tip: "a-RE-pa = Maisfladen", tipEn: "a-RE-pa = corn flatbread" },
     { id: "co38", cat: "colombia", lvl: 2, de: "Ich nehme das Tagesmenü.", en: "I'll have the menu of the day.", es: "Quiero el menú del día.", tip: "umgangssprachlich: corrientazo", tipEn: "casually: corrientazo" },
     { id: "co39", cat: "colombia", lvl: 2, de: "Was ist in einer Bandeja Paisa?", en: "What's in a bandeja paisa?", es: "¿Qué lleva una bandeja paisa?", tip: "bandeja paisa = großer Teller aus Antioquia", tipEn: "bandeja paisa = big platter from Antioquia" },
@@ -956,8 +956,8 @@
     { id: "co45", cat: "colombia", lvl: 2, de: "Ich hätte gern einen Patacón.", en: "I'd like a patacón.", es: "Quiero un patacón.", tip: "patacón = frittierte Kochbanane", tipEn: "patacón = fried plantain" },
     { id: "co46", cat: "colombia", lvl: 2, de: "Gibt es etwas Vegetarisches?", en: "Is there anything vegetarian?", es: "¿Hay algo vegetariano?", tip: "we-che-ta-ri-A-no" },
     // ----- Geld & Preise -----
-    { id: "co47", cat: "colombia", lvl: 1, de: "Wie viel kostet das?", en: "How much does this cost?", es: "¿Cuánto cuesta esto?", tip: "KUAN-to KUES-ta" },
-    { id: "co48", cat: "colombia", lvl: 2, de: "Akzeptieren Sie Karte?", en: "Do you accept card?", es: "¿Aceptan tarjeta?", tip: "tar-CHE-ta = Karte", tipEn: "tar-CHE-ta = card" },
+    { id: "co47", cat: "colombia", lvl: 2, de: "Was kostet das Pfund?", en: "How much is it per pound?", es: "¿A cómo está la libra?", tip: "a cómo está = wie teuer (auf dem Markt)", tipEn: "a cómo está = how much (at the market)" },
+    { id: "co48", cat: "colombia", lvl: 2, de: "Akzeptieren Sie Karte oder nur bar?", en: "Do you accept card or only cash?", es: "¿Aceptan tarjeta o solo efectivo?", tip: "tar-CHE-ta = Karte", tipEn: "tar-CHE-ta = card" },
     { id: "co49", cat: "colombia", lvl: 2, de: "Gibt es einen Geldautomaten in der Nähe?", en: "Is there an ATM nearby?", es: "¿Hay un cajero cerca?", tip: "ka-CHE-ro = Geldautomat", tipEn: "ka-CHE-ro = ATM" },
     { id: "co50", cat: "colombia", lvl: 2, de: "Geben Sie mir bitte das Wechselgeld?", en: "Can you give me the change, please?", es: "¿Me da el vuelto, por favor?", tip: "vuelto = Wechselgeld (Kolumbien)", tipEn: "vuelto = change (Colombia)" },
     { id: "co51", cat: "colombia", lvl: 3, de: "Ist die Bedienung schon inbegriffen?", en: "Is the service charge already included?", es: "¿El servicio ya está incluido?", tip: "propina = Trinkgeld", tipEn: "propina = tip" },
