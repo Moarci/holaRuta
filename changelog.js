@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.27.0",
+      date: "2026-06-14",
+      title: "Mehr Real-Life Challenges: 30 statt 10",
+      items: [
+        "🚪 20 neue Real-Life Challenges (jetzt 30) – Essen bestellen, Preis fragen, nach dem Weg fragen, Gruppen-Icebreaker, Apotheke, plus Kolumbien-Spezial (Tinto bestellen, ¿quiubo? begrüßen, Tanzschritt lernen).",
+        "🗣️ Neuer Ruta-Pass-Stempel „Straßen-Spanisch“ für 10 abgehakte Challenges.",
+        "🎯 Ideal als Unterrichts-/Gruppenaufgabe: kleine Mutproben, die vom Klassenzimmer in echte Situationen führen.",
+      ],
+    },
+    {
       version: "1.26.0",
       date: "2026-06-14",
       title: "Pre-Arrival-Preset: die wichtigsten Sätze auf einen Tap",

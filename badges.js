@@ -178,6 +178,8 @@
       description: "Hake deine erste Real-Life Challenge ab.", descriptionEn: "Tick off your first Real-Life Challenge.", unlockedText: "Du hast Spanisch nicht nur gelernt, sondern benutzt.", unlockedTextEn: "You didn't just learn Spanish, you used it." },
     { id: "challenge_5",     group: "reallife", icon: "🚪", name: "Comfort Zone Exit",   nameEn: "Comfort Zone Exit",   type: "counter", metric: "challengesCompleted", threshold: 5,
       description: "Hake 5 Real-Life Challenges ab.", descriptionEn: "Tick off 5 Real-Life Challenges.", unlockedText: "Raus aus der App, rein ins echte Sprechen.", unlockedTextEn: "Out of the app and into real speaking." },
+    { id: "challenge_10",    group: "reallife", icon: "🗣️", name: "Straßen-Spanisch",     nameEn: "Street Spanish",      type: "counter", metric: "challengesCompleted", threshold: 10,
+      description: "Hake 10 Real-Life Challenges ab.", descriptionEn: "Tick off 10 Real-Life Challenges.", unlockedText: "Zehn echte Gespräche – das ist gelebtes Spanisch.", unlockedTextEn: "Ten real conversations – that's Spanish in the wild." },
 
     // ---------- El Cuerpo (interaktive Körperkarte) ----------
     { id: "cuerpo_first", group: "cuerpo", icon: "👆", name: "Primer toque",   nameEn: "Primer toque",    type: "counter", metric: "bodyPartsExplored", threshold: 1,

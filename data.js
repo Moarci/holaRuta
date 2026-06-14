@@ -1687,6 +1687,32 @@
     { id: "challenge08", category: "social", level: 2, textDe: "Tausch mit jemandem die WhatsApp-Nummer.", textEn: "Swap WhatsApp numbers with someone.", phraseEs: "Escríbeme por WhatsApp." },
     { id: "challenge09", category: "hostel", level: 2, textDe: "Frag, ob du dein Gepäck lagern kannst.", textEn: "Ask whether you can store your luggage.", phraseEs: "¿Puedo dejar mi equipaje aquí?" },
     { id: "challenge10", category: "social", level: 1, textDe: "Verabschiede dich von jemandem auf Spanisch.", textEn: "Say goodbye to someone in Spanish.", phraseEs: "Mucho gusto, ¡nos vemos!" },
+    // ----- Essen, Geld & Einkaufen -----
+    { id: "challenge11", category: "essen", level: 1, textDe: "Bestelle heute dein Getränk auf Spanisch.", textEn: "Order your drink in Spanish today.", phraseEs: "Una limonada, por favor." },
+    { id: "challenge12", category: "essen", level: 1, textDe: "Frag im Café nach der Rechnung.", textEn: "Ask for the bill at the café.", phraseEs: "La cuenta, por favor." },
+    { id: "challenge13", category: "dinero", level: 2, textDe: "Frag auf dem Markt nach dem Preis von etwas.", textEn: "Ask the price of something at the market.", phraseEs: "¿A cómo está?" },
+    { id: "challenge14", category: "compras", level: 1, textDe: "Kauf etwas und sag nur auf Spanisch, was du möchtest.", textEn: "Buy something and say what you want only in Spanish.", phraseEs: "Quiero esto, por favor." },
+    { id: "challenge15", category: "dinero", level: 2, textDe: "Bitte beim Bezahlen um dein Wechselgeld.", textEn: "Ask for your change when paying.", phraseEs: "¿Me da el vuelto, por favor?" },
+    // ----- Orientierung & Verkehr -----
+    { id: "challenge16", category: "rumbo", level: 1, textDe: "Frag einen Passanten nach dem Weg.", textEn: "Ask a passer-by for directions.", phraseEs: "Disculpe, ¿dónde queda…?" },
+    { id: "challenge17", category: "verkehr", level: 2, textDe: "Frag den Fahrer, ob der Bus zu deinem Ziel fährt.", textEn: "Ask the driver if the bus goes to your stop.", phraseEs: "¿Este bus va al centro?" },
+    { id: "challenge18", category: "verkehr", level: 1, textDe: "Sag dem Taxifahrer dein Ziel auf Spanisch.", textEn: "Tell the taxi driver your destination in Spanish.", phraseEs: "Al centro, por favor." },
+    // ----- Social & Gruppe (gut für Reisegruppen) -----
+    { id: "challenge19", category: "social", level: 1, textDe: "Frag jemanden aus der Gruppe nach dem Namen.", textEn: "Ask someone in the group their name.", phraseEs: "¿Cómo te llamas?" },
+    { id: "challenge20", category: "social", level: 1, textDe: "Sag jemandem, dass dir etwas richtig gut gefällt.", textEn: "Tell someone you really like something.", phraseEs: "¡Qué chévere!" },
+    { id: "challenge21", category: "social", level: 2, textDe: "Frag jemanden nach einem Reisetipp für die Gegend.", textEn: "Ask someone for a travel tip for the area.", phraseEs: "¿Qué me recomiendas ver?" },
+    { id: "challenge22", category: "talk", level: 2, textDe: "Frag jemanden, was er/sie morgen vorhat.", textEn: "Ask someone what they're up to tomorrow.", phraseEs: "¿Qué haces mañana?" },
+    { id: "challenge23", category: "social", level: 2, textDe: "Stoße mit der Gruppe einen Plan für heute Abend an.", textEn: "Get a plan going with the group for tonight.", phraseEs: "¿Hacemos algo esta noche?" },
+    // ----- Hostel -----
+    { id: "challenge24", category: "hostel", level: 1, textDe: "Frag, wann es Frühstück gibt.", textEn: "Ask what time breakfast is.", phraseEs: "¿A qué hora es el desayuno?" },
+    { id: "challenge25", category: "hostel", level: 2, textDe: "Bitte an der Rezeption um ein zusätzliches Handtuch.", textEn: "Ask reception for an extra towel.", phraseEs: "¿Me da una toalla, por favor?" },
+    // ----- Sicherheit & Gesundheit -----
+    { id: "challenge26", category: "notfall", level: 2, textDe: "Frag, wo die nächste Apotheke ist.", textEn: "Ask where the nearest pharmacy is.", phraseEs: "¿Dónde está la farmacia más cercana?" },
+    { id: "challenge27", category: "notfall", level: 1, textDe: "Frag jemanden, ob es hier in der Gegend sicher ist.", textEn: "Ask someone if it's safe around here.", phraseEs: "¿Es seguro por aquí?" },
+    // ----- Kolumbien-Spezial -----
+    { id: "challenge28", category: "colombia", level: 1, textDe: "Begrüße jemanden auf kolumbianische Art.", textEn: "Greet someone the Colombian way.", phraseEs: "¿Quiubo? ¿Qué más?" },
+    { id: "challenge29", category: "colombia", level: 1, textDe: "Bestell einen Tinto wie ein Local.", textEn: "Order a tinto like a local.", phraseEs: "Un tinto, por favor." },
+    { id: "challenge30", category: "colombia", level: 3, textDe: "Frag jemanden, ob er dir einen Tanzschritt beibringt.", textEn: "Ask someone to teach you a dance step.", phraseEs: "¿Me enseñas a bailar?" },
   ];
 
   // ----- Definiciones (Zuordnen / Definitions-Quiz) -----
