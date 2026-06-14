@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="de" data-lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HolaRuta · Anleitungen für Schulen, Reisen & Hostels</title>
+<link rel="stylesheet" href="handout.css">
+<style>
+  .cards { display: grid; gap: 14px; margin-top: 18px; }
+  .cards a {
+    display: block; background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--r); padding: 16px 18px; text-decoration: none; color: var(--ink);
+  }
+  .cards a:hover { border-color: var(--brand); }
+  .cards strong { color: var(--brand-ink); font-size: 1.1rem; }
+  .cards span { display: block; color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<nav class="langbar" aria-label="Sprache / Language / Idioma">
+  <button data-lang="de" aria-pressed="true">Deutsch</button>
+  <button data-lang="en" aria-pressed="false">English</button>
+  <button data-lang="es" aria-pressed="false">Español</button>
+</nav>
+
+<main class="sheet">
+  <div class="brand">🌶️ HolaRuta</div>
+
+  <section class="lang lang--de">
+    <h1>Anleitungen</h1>
+    <p class="lead">Druckfertige Handouts für den Einsatz von HolaRuta in Sprachschulen, auf Gruppenreisen und in Hostels. Jede Seite hat oben einen Sprachschalter (DE · EN · ES). Zum PDF: im Browser öffnen und <strong>Strg/Cmd + P → „Als PDF speichern“</strong>.</p>
+    <div class="cards">
+      <a href="lehrer.html"><strong>Für den Unterricht</strong><span>Stundenaufbau + 10 Stunden-Rezepte für Sprachlehrer.</span></a>
+      <a href="coordinator.html"><strong>Für Reiseleiter</strong><span>Kleine Gruppen-Aktivitäten, in Sekunden startklar.</span></a>
+      <a href="hostel.html"><strong>Hostel-Aushang „Spanish Night“</strong><span>Poster mit QR-Code zum Aufhängen im Common Room.</span></a>
+    </div>
+  </section>
+
+  <section class="lang lang--en">
+    <h1>Guides</h1>
+    <p class="lead">Print-ready handouts for using HolaRuta in language schools, on group trips and in hostels. Each page has a language switch at the top (DE · EN · ES). For a PDF: open in your browser and press <strong>Ctrl/Cmd + P → “Save as PDF”</strong>.</p>
+    <div class="cards">
+      <a href="lehrer.html"><strong>For the classroom</strong><span>Lesson structure + 10 lesson recipes for teachers.</span></a>
+      <a href="coordinator.html"><strong>For tour leaders</strong><span>Small group activities, ready in seconds.</span></a>
+      <a href="hostel.html"><strong>Hostel poster “Spanish Night”</strong><span>Poster with QR code for the common room.</span></a>
+    </div>
+  </section>
+
+  <section class="lang lang--es">
+    <h1>Guías</h1>
+    <p class="lead">Folletos listos para imprimir para usar HolaRuta en escuelas de idiomas, viajes en grupo y hostales. Cada página tiene un selector de idioma arriba (DE · EN · ES). Para un PDF: abre en el navegador y pulsa <strong>Ctrl/Cmd + P → “Guardar como PDF”</strong>.</p>
+    <div class="cards">
+      <a href="lehrer.html"><strong>Para la clase</strong><span>Estructura de clase + 10 recetas para docentes.</span></a>
+      <a href="coordinator.html"><strong>Para coordinadores</strong><span>Pequeñas actividades de grupo, listas en segundos.</span></a>
+      <a href="hostel.html"><strong>Cartel de hostal “Spanish Night”</strong><span>Póster con código QR para la zona común.</span></a>
+    </div>
+  </section>
+
+  <p class="foot">moarci.github.io/holaRuta &nbsp;·&nbsp; Stand / as of / actualizado: Juni 2026</p>
+</main>
+
+<script src="handout.js"></script>
+</body>
+</html>
