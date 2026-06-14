@@ -1385,10 +1385,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   flex: 0 0 auto; font: inherit; font-weight: 700; cursor: pointer;
   border: none; border-radius: 999px; padding: 8px 16px; background: var(--brand); color: #fff;
 }
-.pretrip-day__lock { flex: 0 0 auto; opacity: 0.5; font-size: 1.1rem; }
+.pretrip-day__lock { flex: 0 0 auto; font-size: 0.8rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
 .pretrip-day--done .pretrip-day__num { background: var(--ok); }
 .pretrip-day--done .pretrip-day__btn { background: transparent; color: var(--brand-ink); border: 1px solid var(--line); }
-.pretrip-day--locked { opacity: 0.55; }
+.pretrip-day--locked { opacity: 0.7; }
 .pretrip-day--locked .pretrip-day__num { background: var(--muted); }
 
 /* Battle: Szenen-Auswahl. */
@@ -2731,7 +2731,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     coordinatorMeta: (p) => `${p.n} Runden · sofort los`,
     subPretrip: "In 7 Etappen reisefertig für Kolumbien",
     pretripTitle: "Pre-Trip-Plan",
-    pretripIntro: "Werde Schritt für Schritt reisefertig: ein Tag pro Etappe, der nächste öffnet sich, sobald du den aktuellen geschafft hast.",
+    pretripIntro: "Werde Schritt für Schritt reisefertig für Kolumbien: ein Tag pro Etappe, der nächste öffnet sich, sobald du den aktuellen geschafft hast.",
     pretripProgress: (p) => `${p.done} von ${p.total} Etappen geschafft`,
     pretripAllDone: "Alle Etappen geschafft – du bist reisefertig!",
     pretripCards: (p) => `${p.n} Karten`,
@@ -2972,7 +2972,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     coordinatorMeta: (p) => `${p.n} rounds · starts instantly`,
     subPretrip: "Get trip-ready for Colombia in 7 stages",
     pretripTitle: "Pre-trip plan",
-    pretripIntro: "Get trip-ready step by step: one stage at a time – the next unlocks once you finish the current one.",
+    pretripIntro: "Get trip-ready for Colombia step by step: one stage at a time – the next unlocks once you finish the current one.",
     pretripProgress: (p) => `${p.done} of ${p.total} stages done`,
     pretripAllDone: "All stages done – you're trip-ready!",
     pretripCards: (p) => `${p.n} cards`,
@@ -6537,19 +6537,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // wird erst nach Abschluss von Tag N freigeschaltet (Logik in app.js). REINE DATEN.
   const PRETRIP = [
     { day: 1, titleDe: "Begrüßung & Höflichkeit", titleEn: "Greetings & courtesy",
-      cardIds: ["co57", "co58", "co61", "co60", "co62", "co75"], challengeId: "challenge28" },
+      cardIds: ["co57", "co58", "co59", "co60", "co62", "co75"], challengeId: "challenge28" },
     { day: 2, titleDe: "Taxi & Ankunft", titleEn: "Taxi & arrival",
-      cardIds: ["co01", "co02", "co04", "co05", "co06"], challengeId: "challenge18" },
-    { day: 3, titleDe: "Unterkunft", titleEn: "Accommodation",
-      cardIds: ["co07", "co08", "co10", "co72", "co71"], challengeId: "challenge24" },
+      cardIds: ["co01", "co02", "co03", "co04", "co05", "co06"], challengeId: "challenge18" },
+    { day: 3, titleDe: "Unterkunft & Ankommen", titleEn: "Settling in",
+      cardIds: ["co07", "co10", "co08", "co71", "co15", "n15"], challengeId: "challenge26" },
     { day: 4, titleDe: "Essen & Trinken", titleEn: "Food & drink",
-      cardIds: ["co36", "co37", "co40", "co41", "co42", "co43"], challengeId: "challenge11" },
+      cardIds: ["co36", "co37", "co40", "co41", "co42", "co14"], challengeId: "challenge11" },
     { day: 5, titleDe: "Geld & Markt", titleEn: "Money & market",
-      cardIds: ["co47", "co48", "co49", "co50"], challengeId: "challenge13" },
+      cardIds: ["co47", "co48", "co49", "co50", "co61", "co16"], challengeId: "challenge13" },
     { day: 6, titleDe: "Unterwegs & Orientierung", titleEn: "Getting around",
-      cardIds: ["co19", "co52", "co53", "co54"], challengeId: "challenge16" },
+      cardIds: ["co19", "co52", "co53", "co54", "co72", "co26"], challengeId: "challenge16" },
     { day: 7, titleDe: "Social & Ausgehen", titleEn: "Socialising & going out",
-      cardIds: ["co63", "co64", "co65", "co67", "co69"], challengeId: "challenge20" },
+      cardIds: ["co63", "co64", "co65", "co68", "co69", "co43"], challengeId: "challenge30" },
   ];
 
   window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP };
@@ -16600,7 +16600,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const challenge = d.challenge
         ? `<span class="pretrip-day__challenge">🚪 ${esc(d.challenge)}</span>` : "";
       const right = status === "locked"
-        ? `<span class="pretrip-day__lock" aria-label="${esc(t("discover.pretripLocked"))}">🔒</span>`
+        ? `<span class="pretrip-day__lock"><span aria-hidden="true">🔒</span> ${esc(t("discover.pretripLocked"))}</span>`
         : `<button class="pretrip-day__btn" data-action="start-pretrip-day" data-day="${d.day}">${esc(d.done ? t("discover.pretripReplay") : t("discover.pretripStart"))}</button>`;
       return `
         <li class="pretrip-day pretrip-day--${status}">
@@ -20088,6 +20088,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
+    // Bewusst KEIN recordPretripDay hier: Überspringen ist „später nochmal", kein
+    // echter Abschluss. Eine Pre-Trip-Etappe gilt erst als geschafft, wenn alle
+    // Karten bewertet wurden (Hook in rate()).
     render();
   }
 
@@ -20210,6 +20213,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
+    state.pretripDay = null;   // eine abgebrochene Pre-Trip-Sitzung beim Verlassen lösen
     render();
   }
 
@@ -20811,6 +20815,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const card = cardById(id);
     if (!card) return;
     dismissBadgeToast();
+    state.pretripDay = null;   // Einzelkarten-Übung ist kein Pre-Trip-Tag
     state.scopeId = card.cat;
     state.queue = [id];
     state.total = 1;

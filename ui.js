@@ -1726,7 +1726,7 @@
       const challenge = d.challenge
         ? `<span class="pretrip-day__challenge">🚪 ${esc(d.challenge)}</span>` : "";
       const right = status === "locked"
-        ? `<span class="pretrip-day__lock" aria-label="${esc(t("discover.pretripLocked"))}">🔒</span>`
+        ? `<span class="pretrip-day__lock"><span aria-hidden="true">🔒</span> ${esc(t("discover.pretripLocked"))}</span>`
         : `<button class="pretrip-day__btn" data-action="start-pretrip-day" data-day="${d.day}">${esc(d.done ? t("discover.pretripReplay") : t("discover.pretripStart"))}</button>`;
       return `
         <li class="pretrip-day pretrip-day--${status}">

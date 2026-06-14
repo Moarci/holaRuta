@@ -1347,10 +1347,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   flex: 0 0 auto; font: inherit; font-weight: 700; cursor: pointer;
   border: none; border-radius: 999px; padding: 8px 16px; background: var(--brand); color: #fff;
 }
-.pretrip-day__lock { flex: 0 0 auto; opacity: 0.5; font-size: 1.1rem; }
+.pretrip-day__lock { flex: 0 0 auto; font-size: 0.8rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
 .pretrip-day--done .pretrip-day__num { background: var(--ok); }
 .pretrip-day--done .pretrip-day__btn { background: transparent; color: var(--brand-ink); border: 1px solid var(--line); }
-.pretrip-day--locked { opacity: 0.55; }
+.pretrip-day--locked { opacity: 0.7; }
 .pretrip-day--locked .pretrip-day__num { background: var(--muted); }
 
 /* Battle: Szenen-Auswahl. */

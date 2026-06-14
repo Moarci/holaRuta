@@ -687,6 +687,12 @@ test("data.PRETRIP: Tage sequenziell, Karten/Challenges existieren, Badge passt"
     d.cardIds.forEach((id) => assert.ok(cardIds.has(id), `Tag ${d.day}: unbekannte Karte ${id}`));
     if (d.challengeId) assert.ok(challengeIds.has(d.challengeId), `Tag ${d.day}: unbekannte Challenge ${d.challengeId}`);
   });
+  // Keine Karte doppelt über Etappen hinweg (sauberer, abwechslungsreicher Plan).
+  const seen = new Set();
+  data.PRETRIP.forEach((d) => d.cardIds.forEach((id) => {
+    assert.ok(!seen.has(id), `Karte ${id} in mehreren Etappen`);
+    seen.add(id);
+  }));
   // „Reisefertig"-Badge muss bei genau allen Etappen freischalten.
   const badge = badges.byId("pretrip_done");
   assert.ok(badge, "pretrip_done-Badge fehlt");

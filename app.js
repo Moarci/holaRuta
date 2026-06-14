@@ -2290,6 +2290,9 @@
     state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
+    // Bewusst KEIN recordPretripDay hier: Überspringen ist „später nochmal", kein
+    // echter Abschluss. Eine Pre-Trip-Etappe gilt erst als geschafft, wenn alle
+    // Karten bewertet wurden (Hook in rate()).
     render();
   }
 
@@ -2412,6 +2415,7 @@
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
+    state.pretripDay = null;   // eine abgebrochene Pre-Trip-Sitzung beim Verlassen lösen
     render();
   }
 
@@ -3013,6 +3017,7 @@
     const card = cardById(id);
     if (!card) return;
     dismissBadgeToast();
+    state.pretripDay = null;   // Einzelkarten-Übung ist kein Pre-Trip-Tag
     state.scopeId = card.cat;
     state.queue = [id];
     state.total = 1;
