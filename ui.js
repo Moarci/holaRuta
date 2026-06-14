@@ -67,10 +67,10 @@
   // sub = deutscher Fallback; subKey = i18n-Schlüssel (zur Laufzeit via t() übersetzt).
   const FEATURES = [
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
-    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
-    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Ganze Gespräche Zug für Zug durchspielen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
     { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
@@ -383,6 +383,14 @@
   // eine kurze Schritt-für-Schritt-Anleitung, weil Safari keinen Prompt kennt.
   function installBlock(install) {
     if (!install || !install.show) return "";
+    // Bereits installiert: klare Bestätigung statt Installations-Aufforderung.
+    if (install.installed) {
+      return `
+        <div class="installcard installcard--done">
+          <p class="installcard__title"><span aria-hidden="true">✅</span> ${esc(t("profile.installedTitle"))}</p>
+          <p class="installcard__text">${esc(t("profile.installedText"))}</p>
+        </div>`;
+    }
     const body = install.canPrompt
       ? `<p class="installcard__text">${esc(t("profile.installText"))}</p>
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`

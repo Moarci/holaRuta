@@ -48,7 +48,7 @@
 
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
-    homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
+    homeTab: "lernen",       // Start hat Vorrang: jeder App-Start landet auf dem Lernen-Reiter; Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
@@ -248,9 +248,14 @@
   // installiert ist oder als Einzeldatei läuft (siehe install.js).
   function installVM() {
     const inst = window.SC && window.SC.install;
-    if (!inst || !inst.shouldOffer()) return { show: false };
+    if (!inst) return { show: false };
+    // Läuft die App bereits installiert (standalone), zeigen wir statt des
+    // Installations-Hinweises eine klare „offline installiert"-Bestätigung.
+    if (inst.isInstalled()) return { show: true, installed: true };
+    if (!inst.shouldOffer()) return { show: false };
     return {
       show: true,
+      installed: false,
       canPrompt: inst.canPrompt(),
       hint: t("app.installHintIos"),
     };
@@ -2237,10 +2242,9 @@
 
   // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
   function setTab(tab) {
-    const valid = tab === "entdecken" || tab === "profil" ? tab : "lernen";
-    state.homeTab = valid;
-    settings = Object.assign({}, settings, { homeTab: valid });
-    store.saveSettings(settings);
+    // Reiter-Wechsel gilt nur für die laufende Sitzung – beim nächsten App-Start
+    // hat die Startseite (Lernen) wieder Vorrang, deshalb wird er nicht persistiert.
+    state.homeTab = tab === "entdecken" || tab === "profil" ? tab : "lernen";
     render();
   }
 

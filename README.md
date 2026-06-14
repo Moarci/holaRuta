@@ -4,13 +4,13 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.16.0** — 718 Karten · 23 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.24.0** — 718 Karten · 23 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
 [![Tests](https://img.shields.io/badge/Tests-114_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
-[![Karten](https://img.shields.io/badge/Karten-710-C2502E?style=flat-square)](#datenmodell)
+[![Karten](https://img.shields.io/badge/Karten-718-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
 
@@ -143,13 +143,14 @@ Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md
 
 | Bereich | Karten | Bereich | Karten | Bereich | Karten |
 |---|---:|---|---:|---|---:|
-| Zahlen | 110 | Wegbeschreibung | 65 | Essen | 59 |
-| Kleidung & Schmuck | 37 | Compras (Einkaufen) | 32 | Sätze | 30 |
+| Zahlen | 110 | Zeiten | 66 | Wegbeschreibung | 65 |
+| Essen | 59 | Konjugieren | 42 | Kleidung & Schmuck | 37 |
+| Compras (Einkaufen) | 32 | Sätze | 30 | Gegenteile | 26 |
 | Verkehr | 24 | Farben | 24 | Hotel | 23 |
-| Smalltalk | 22 | Grundlagen | 21 | Busreise | 20 |
-| Behörden | 20 | Notfall | 15 | Alltag | 15 |
-| Trinken | 14 | Geld | 13 | Zeit | 16 |
-| Gegenteile | 26 | Social | 10 | Hostel | 10 |
+| Smalltalk | 22 | Grundlagen | 21 | Behörden | 20 |
+| Busreise | 20 | Zeit | 16 | Notfall | 15 |
+| Alltag | 15 | Trinken | 14 | Social | 14 |
+| Geld | 13 | Hostel | 10 | | |
 
 > Hinzu kommen die **Hostel-Mode-Daten** (`BATTLES`, `ROLEPLAYS`, `CHALLENGES`) für das Üben zu zweit — separate Arrays, die nicht in die Kartenzählung eingehen.
 
@@ -296,7 +297,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 | Key | Inhalt |
 |---|---|
 | `spanischcard.progress.v2` | Lernfortschritt pro Karte (SRS-Zustand + Statistik-Felder) |
-| `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme, letzte Kategorie, Einstellungs-Panel auf/zu, aktiver Start-Reiter) |
+| `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme, letzte Kategorie, Einstellungs-Panel auf/zu) |
 | `spanischcard.usercards.v1` | Vom Nutzer angelegte eigene Karten |
 | `spanischcard.gamestats.v1` | Ruta-Pass: Spiel-Zähler (Streak, Tageszeit-Marken, „Nochmal“, Hostel-Mode-Battles & -Rollenspiele, Definiciones-Quizze, Hör-Reviews, Precios- & Frases-Runden, Ruta-del-día-Tage, geöffnete Reise-Kontexte) + freigeschaltete Badges |
 
@@ -469,7 +470,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 
 | Kennzahl | Wert |
 |---|---|
-| Karten | 710 |
+| Karten | 718 |
 | Bereiche / Kategorien | 23 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |

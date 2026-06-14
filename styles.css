@@ -418,6 +418,12 @@ body {
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
+/* Bereits installiert: ruhige „erledigt"-Optik (durchgezogen statt gestrichelt). */
+.installcard--done {
+  background: color-mix(in srgb, var(--ok, #3F7355) 10%, var(--card));
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--ok, #3F7355) 40%, var(--line));
+}
 
 /* ---------- EIGENE KARTEN (EDITOR) ---------- */
 .editor {
