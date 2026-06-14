@@ -316,10 +316,10 @@
     discoverIntro: "Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.",
     // FEATURES-Untertitel
     subSupervivencia: "Die wichtigsten Sätze sofort griffbereit",
-    subHostel: "Zu zweit üben: Battle & Rollenspiele",
+    subHostel: "Zu zweit & laut: Battle und Rollenspiele",
     subDefiniciones: "Definition lesen, Begriff wählen",
     subFrases: "Bausteine einsetzen – selbst Sätze bauen",
-    subDialogos: "Ganze Gespräche Zug für Zug durchspielen",
+    subDialogos: "Allein ein Gespräch Zug für Zug führen",
     subRegatear: "Gut verhandeln & feilschen auf dem Markt",
     subPrecios: "Preise hören & eintippen – bis zu Millionenbeträgen",
     subCuerpo: "Körperteile antippen: Wort & Reisetipp",
@@ -551,10 +551,10 @@
     discoverTitle: "Discover",
     discoverIntro: "Play, match, look things up – Spanish beyond the cards.",
     subSupervivencia: "The most important phrases right to hand",
-    subHostel: "Practise in pairs: battle & role-plays",
+    subHostel: "In pairs & out loud: battle and role-plays",
     subDefiniciones: "Read the definition, pick the term",
     subFrases: "Slot in building blocks – build sentences yourself",
-    subDialogos: "Play through whole conversations turn by turn",
+    subDialogos: "Solo: work through one conversation turn by turn",
     subRegatear: "Bargain and haggle well at the market",
     subPrecios: "Hear and type prices – up to millions",
     subCuerpo: "Tap body parts: word & travel tip",
@@ -782,6 +782,8 @@
     installTitle: "Auf den Startbildschirm",
     installText: "Leg HolaRuta als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.",
     installBtn: "📲 App installieren",
+    installedTitle: "Als App installiert · offline bereit",
+    installedText: "HolaRuta läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
 
     // Ruta-Pass
     passUnavailable: "Der Ruta-Pass ist gerade nicht verfügbar – vermutlich wurde die App offline geöffnet, bevor alles geladen war. Mit Netz neu laden, dann klappt's wieder.",
@@ -885,6 +887,8 @@
     installTitle: "Add to home screen",
     installText: "Add HolaRuta as an app icon – it then starts straight away, without hunting for the file, and runs offline.",
     installBtn: "📲 Install app",
+    installedTitle: "Installed as an app · ready offline",
+    installedText: "HolaRuta is running as an installed app with its own icon on your home screen – offline too.",
 
     passUnavailable: "The Ruta pass isn't available right now – the app was probably opened offline before everything loaded. Reload with a connection and it'll work again.",
     passHero: "Collect stamps for your travel skills.",

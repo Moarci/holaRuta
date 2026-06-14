@@ -456,6 +456,12 @@ body {
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
+/* Bereits installiert: ruhige „erledigt"-Optik (durchgezogen statt gestrichelt). */
+.installcard--done {
+  background: color-mix(in srgb, var(--ok, #3F7355) 10%, var(--card));
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--ok, #3F7355) 40%, var(--line));
+}
 
 /* ---------- EIGENE KARTEN (EDITOR) ---------- */
 .editor {
@@ -2577,10 +2583,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     discoverIntro: "Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.",
     // FEATURES-Untertitel
     subSupervivencia: "Die wichtigsten Sätze sofort griffbereit",
-    subHostel: "Zu zweit üben: Battle & Rollenspiele",
+    subHostel: "Zu zweit & laut: Battle und Rollenspiele",
     subDefiniciones: "Definition lesen, Begriff wählen",
     subFrases: "Bausteine einsetzen – selbst Sätze bauen",
-    subDialogos: "Ganze Gespräche Zug für Zug durchspielen",
+    subDialogos: "Allein ein Gespräch Zug für Zug führen",
     subRegatear: "Gut verhandeln & feilschen auf dem Markt",
     subPrecios: "Preise hören & eintippen – bis zu Millionenbeträgen",
     subCuerpo: "Körperteile antippen: Wort & Reisetipp",
@@ -2812,10 +2818,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     discoverTitle: "Discover",
     discoverIntro: "Play, match, look things up – Spanish beyond the cards.",
     subSupervivencia: "The most important phrases right to hand",
-    subHostel: "Practise in pairs: battle & role-plays",
+    subHostel: "In pairs & out loud: battle and role-plays",
     subDefiniciones: "Read the definition, pick the term",
     subFrases: "Slot in building blocks – build sentences yourself",
-    subDialogos: "Play through whole conversations turn by turn",
+    subDialogos: "Solo: work through one conversation turn by turn",
     subRegatear: "Bargain and haggle well at the market",
     subPrecios: "Hear and type prices – up to millions",
     subCuerpo: "Tap body parts: word & travel tip",
@@ -3043,6 +3049,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     installTitle: "Auf den Startbildschirm",
     installText: "Leg HolaRuta als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.",
     installBtn: "📲 App installieren",
+    installedTitle: "Als App installiert · offline bereit",
+    installedText: "HolaRuta läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
 
     // Ruta-Pass
     passUnavailable: "Der Ruta-Pass ist gerade nicht verfügbar – vermutlich wurde die App offline geöffnet, bevor alles geladen war. Mit Netz neu laden, dann klappt's wieder.",
@@ -3146,6 +3154,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     installTitle: "Add to home screen",
     installText: "Add HolaRuta as an app icon – it then starts straight away, without hunting for the file, and runs offline.",
     installBtn: "📲 Install app",
+    installedTitle: "Installed as an app · ready offline",
+    installedText: "HolaRuta is running as an installed app with its own icon on your home screen – offline too.",
 
     passUnavailable: "The Ruta pass isn't available right now – the app was probably opened offline before everything loaded. Reload with a connection and it'll work again.",
     passHero: "Collect stamps for your travel skills.",
@@ -13143,8 +13153,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { category: "zahlen",  icon: "🔢", name: "Zahlen-Zähmer",       nameEn: "Number tamer",         description: "Meistere 80 % der Zahlen-Karten.", descriptionEn: "Master 80% of the numbers cards." },
     { category: "essen",   icon: "🌮", name: "Taco Tactician",      nameEn: "Taco Tactician",       description: "Meistere 80 % der Essen-Karten.", descriptionEn: "Master 80% of the food cards." },
     { category: "trinken", icon: "🥤", name: "Agua, por favor",     nameEn: "Agua, por favor",      description: "Meistere 80 % der Trinken-Karten.", descriptionEn: "Master 80% of the drinks cards." },
-    { category: "hotel",   icon: "🛏️", name: "Dorm Diplomat",       nameEn: "Dorm Diplomat",        description: "Meistere 80 % der Hotel-Karten.", descriptionEn: "Master 80% of the hotel cards." },
-    { category: "hostel",  icon: "🔑", name: "Check-in Champion",    nameEn: "Check-in Champion",    description: "Meistere 80 % der Hostel-Karten.", descriptionEn: "Master 80% of the hostel cards." },
+    { category: "hotel",   icon: "🔑", name: "Check-in Champion",    nameEn: "Check-in Champion",    description: "Meistere 80 % der Hotel-Karten.", descriptionEn: "Master 80% of the hotel cards." },
+    { category: "hostel",  icon: "🛏️", name: "Dorm Diplomat",        nameEn: "Dorm Diplomat",        description: "Meistere 80 % der Hostel-Karten.", descriptionEn: "Master 80% of the hostel cards." },
     { category: "social",  icon: "👋", name: "Neue Bekanntschaften", nameEn: "New acquaintances",    description: "Meistere 80 % der Social-Karten.", descriptionEn: "Master 80% of the social cards." },
     { category: "verkehr", icon: "🚌", name: "Busbahnhof-Boss",     nameEn: "Bus station boss",     description: "Meistere 80 % der Verkehr-Karten.", descriptionEn: "Master 80% of the transport cards." },
     { category: "compras", icon: "🛍️", name: "Markt-Meister",       nameEn: "Market master",        description: "Meistere 80 % der Einkaufen-Karten.", descriptionEn: "Master 80% of the shopping cards." },
@@ -14548,10 +14558,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // sub = deutscher Fallback; subKey = i18n-Schlüssel (zur Laufzeit via t() übersetzt).
   const FEATURES = [
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
-    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit üben: Battle & Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
-    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Ganze Gespräche Zug für Zug durchspielen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
     { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
@@ -14864,6 +14874,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // eine kurze Schritt-für-Schritt-Anleitung, weil Safari keinen Prompt kennt.
   function installBlock(install) {
     if (!install || !install.show) return "";
+    // Bereits installiert: klare Bestätigung statt Installations-Aufforderung.
+    if (install.installed) {
+      return `
+        <div class="installcard installcard--done">
+          <p class="installcard__title"><span aria-hidden="true">✅</span> ${esc(t("profile.installedTitle"))}</p>
+          <p class="installcard__text">${esc(t("profile.installedText"))}</p>
+        </div>`;
+    }
     const body = install.canPrompt
       ? `<p class="installcard__text">${esc(t("profile.installText"))}</p>
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
@@ -17373,7 +17391,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
-    homeTab: ["lernen", "entdecken", "profil"].includes(settings.homeTab) ? settings.homeTab : "lernen", // aktiver Start-Reiter
+    homeTab: "lernen",       // Start hat Vorrang: jeder App-Start landet auf dem Lernen-Reiter; Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
@@ -17573,9 +17591,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // installiert ist oder als Einzeldatei läuft (siehe install.js).
   function installVM() {
     const inst = window.SC && window.SC.install;
-    if (!inst || !inst.shouldOffer()) return { show: false };
+    if (!inst) return { show: false };
+    // Läuft die App bereits installiert (standalone), zeigen wir statt des
+    // Installations-Hinweises eine klare „offline installiert"-Bestätigung.
+    if (inst.isInstalled()) return { show: true, installed: true };
+    if (!inst.shouldOffer()) return { show: false };
     return {
       show: true,
+      installed: false,
       canPrompt: inst.canPrompt(),
       hint: t("app.installHintIos"),
     };
@@ -19562,10 +19585,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
   function setTab(tab) {
-    const valid = tab === "entdecken" || tab === "profil" ? tab : "lernen";
-    state.homeTab = valid;
-    settings = Object.assign({}, settings, { homeTab: valid });
-    store.saveSettings(settings);
+    // Reiter-Wechsel gilt nur für die laufende Sitzung – beim nächsten App-Start
+    // hat die Startseite (Lernen) wieder Vorrang, deshalb wird er nicht persistiert.
+    state.homeTab = tab === "entdecken" || tab === "profil" ? tab : "lernen";
     render();
   }
 
