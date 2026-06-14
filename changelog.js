@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.32.0",
+      date: "2026-06-14",
+      title: "Neues Reise-Paket: Peru (Cusco, Machu Picchu & Anden)",
+      items: [
+        "🇵🇪 Neuer Bereich „Peru“ mit 45 ortsspezifischen Karten entlang der klassischen Route: Lima, Höhe & Kokatee (soroche), Arequipa & Colca-Canyon (Kondore), Titicacasee/Puno (schwimmende Inseln), Cusco & Heiliges Tal, Machu Picchu, Regenbogenberg – mit Reise-Kontext für jede Karte.",
+        "🍽️ Inklusive Essen & Kultur: Ceviche, Lomo Saltado, Pisco Sour, Cuy, Chicha Morada, Alpaka-Markt, Soles handeln und ein Quechua-Gruß (¡Allillanchu!).",
+        "🚪 Zwei neue Real-Life-Mutproben (Peru-Spezial): Ceviche bestellen und nach Kokatee gegen die Höhe fragen.",
+      ],
+    },
+    {
       version: "1.31.0",
       date: "2026-06-14",
       title: "Kolumbien-Paket: Kaffeeregion ergänzt (Salento & Valle del Cocora)",

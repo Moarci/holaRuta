@@ -77,7 +77,7 @@ mehrere Stadt-Kategorien (`colombia`, später `peru`, `mexico`).
 - `data.js` — Eintrag in `CATEGORIES` (id/label/labelEn/icon `🌴`/grad), neue Karten ans `CARDS`-Array.
 - `contextdata.js` — `{ e,d,s,n }`-Eintrag je neuer Karten-id (Pflicht: alle Karten haben Kontext).
 
-**Reuse:** identisches Karten-/Kontext-Schema wie alle 718 bestehenden Karten — keine Logikänderung.
+**Reuse:** identisches Karten-/Kontext-Schema wie alle bestehenden Karten — keine Logikänderung.
 Die Kategorie erscheint automatisch auf Home, im Filter, in Statistik und im Ruta-Pass (Bereichs-Badge).
 
 **Schritte:** Karten kuratieren (LatAm-/Kolumbien-korrekt, *colectivo*, *plata*, *¡qué chimba!* nur

@@ -49,6 +49,7 @@
     { id: "colores", label: "Farben",     labelEn: "Colours", icon: "🎨", grad: ["#7048E8", "#15AABF"] },
     { id: "contrarios", label: "Gegenteile", labelEn: "Opposites", icon: "↔️", grad: ["#3F7355", "#B5503F"] },
     { id: "colombia", label: "Kolumbien", labelEn: "Colombia", icon: "🇨🇴", grad: ["#F2C94C", "#2F80ED"] },
+    { id: "peru", label: "Peru", labelEn: "Peru", icon: "🇵🇪", grad: ["#C1121F", "#E09F3E"] },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -992,7 +993,7 @@
 
     // ----- Kaffeeregion: Salento · Valle del Cocora · Kaffee-Finca (WeRoad-Stopp) -----
     { id: "co76", cat: "colombia", lvl: 1, de: "Wie komme ich nach Salento?", en: "How do I get to Salento?", es: "¿Cómo llego a Salento?", tip: "Salento = buntes Dorf in der Kaffeezone (Quindío)", tipEn: "Salento = colourful town in the coffee zone (Quindío)" },
-    { id: "co77", cat: "colombia", lvl: 2, de: "Von wo fährt der Jeep zum Valle del Cocora?", en: "Where does the jeep to the Cocora Valley leave from?", es: "¿De dónde sale el Willys al Valle del Cocora?", tip: "Willys = der typische alte Jeep", tipEn: "Willys = the classic old jeep" },
+    { id: "co77", cat: "colombia", lvl: 2, de: "Von wo fährt der Jeep zum Valle del Cocora?", en: "Where does the jeep to the Cocora Valley leave from?", es: "¿De dónde sale el Willys al Valle del Cocora?", tip: "Willys = der typische alte Jeep (sprich „wi-lis“)", tipEn: "Willys = the classic old jeep (say „wi-lis“)" },
     { id: "co78", cat: "colombia", lvl: 1, de: "Ich möchte die Wachspalmen sehen.", en: "I'd like to see the wax palms.", es: "Quiero ver las palmas de cera.", tip: "palma de cera = Kolumbiens Nationalbaum", tipEn: "palma de cera = Colombia's national tree" },
     { id: "co79", cat: "colombia", lvl: 2, de: "Wie lange dauert die Wanderung?", en: "How long is the hike?", es: "¿Cuánto dura la caminata?", tip: "ca-mi-NA-ta = Wanderung", tipEn: "ca-mi-NA-ta = hike" },
     { id: "co80", cat: "colombia", lvl: 2, de: "Macht ihr eine Kaffeetour auf der Finca?", en: "Do you run a coffee tour on the farm?", es: "¿Hacen un tour de café en la finca?", tip: "finca = Kaffeehof/Landgut", tipEn: "finca = coffee farm/estate" },
@@ -1005,6 +1006,63 @@
     { id: "co87", cat: "colombia", lvl: 2, de: "Eine Forelle mit Kochbanane, bitte.", en: "A trout with fried plantain, please.", es: "Una trucha con patacón, por favor.", tip: "trucha = Forelle (Salento-Spezialität)", tipEn: "trucha = trout (a Salento specialty)" },
     { id: "co88", cat: "colombia", lvl: 3, de: "Sollen wir Tejo spielen?", en: "Shall we play tejo?", es: "¿Vamos a jugar tejo?", tip: "tejo = traditionelles Wurfspiel (mit Knall!)", tipEn: "tejo = traditional throwing game (with a bang!)" },
     { id: "co89", cat: "colombia", lvl: 1, de: "Dieser Kaffee ist köstlich.", en: "This coffee is delicious.", es: "Este café está delicioso.", tip: "de-li-SIO-so = köstlich", tipEn: "de-li-SIO-so = delicious" },
+
+    // ===================== PERU (Destination-Pack, WeRoad-Route) =====================
+    // Lima · Arequipa/Colca · Titicaca/Puno · Cusco/Heiliges Tal · Machu Picchu · Regenbogenberg
+    // ----- Lima & Ankunft -----
+    { id: "pe01", cat: "peru", lvl: 1, de: "Wo bekomme ich ein Taxi vom Flughafen?", en: "Where do I get a taxi from the airport?", es: "¿Dónde tomo un taxi del aeropuerto?", tip: "in Lima besser den Preis vorher vereinbaren", tipEn: "in Lima it's better to agree the price first" },
+    { id: "pe02", cat: "peru", lvl: 1, de: "Bringen Sie mich bitte nach Miraflores.", en: "Take me to Miraflores, please.", es: "Lléveme a Miraflores, por favor.", tip: "Miraflores = sicheres Küstenviertel in Lima", tipEn: "Miraflores = safe coastal district of Lima" },
+    { id: "pe03", cat: "peru", lvl: 2, de: "Wie viel kostet die Fahrt ins Zentrum?", en: "How much is the ride to the centre?", es: "¿Cuánto cobra hasta el centro?", tip: "cobrar = berechnen/verlangen", tipEn: "cobrar = to charge" },
+    { id: "pe04", cat: "peru", lvl: 2, de: "Ich möchte am Meer den Malecón entlanggehen.", en: "I'd like to walk along the seafront malecón.", es: "Quiero caminar por el malecón.", tip: "malecón = Uferpromenade", tipEn: "malecón = seafront promenade" },
+    { id: "pe05", cat: "peru", lvl: 2, de: "Ist diese Gegend sicher zum Laufen?", en: "Is this area safe to walk in?", es: "¿Es seguro caminar por esta zona?", tip: "se-GU-ro = sicher", tipEn: "se-GU-ro = safe" },
+    // ----- Höhe & Gesundheit (soroche) -----
+    { id: "pe06", cat: "peru", lvl: 2, de: "Mir ist von der Höhe schlecht.", en: "I feel sick from the altitude.", es: "Me siento mal por la altura.", tip: "soroche = Höhenkrankheit", tipEn: "soroche = altitude sickness" },
+    { id: "pe07", cat: "peru", lvl: 1, de: "Haben Sie Kokatee gegen die Höhe?", en: "Do you have coca tea for the altitude?", es: "¿Tiene mate de coca para el soroche?", tip: "mate de coca = klassisches Anden-Mittel", tipEn: "mate de coca = the classic Andean remedy" },
+    { id: "pe08", cat: "peru", lvl: 1, de: "Gibt es hier in der Nähe eine Apotheke?", en: "Is there a pharmacy near here?", es: "¿Hay una farmacia por aquí?", tip: "far-MA-sia = Apotheke", tipEn: "far-MA-sia = pharmacy" },
+    { id: "pe09", cat: "peru", lvl: 1, de: "Ich brauche Wasser, bitte.", en: "I need water, please.", es: "Necesito agua, por favor.", tip: "A-gua = Wasser", tipEn: "A-gua = water" },
+    { id: "pe10", cat: "peru", lvl: 2, de: "Heute muss ich mich an die Höhe gewöhnen.", en: "Today I need to acclimatise to the altitude.", es: "Hoy necesito aclimatarme a la altura.", tip: "aclimatarse = sich akklimatisieren", tipEn: "aclimatarse = to acclimatise" },
+    // ----- Transport (Nachtbus · Zug · Colectivo) -----
+    { id: "pe11", cat: "peru", lvl: 2, de: "Wann fährt der Nachtbus nach Arequipa?", en: "When does the night bus to Arequipa leave?", es: "¿A qué hora sale el bus cama a Arequipa?", tip: "bus cama = Nachtbus mit Liegesitzen", tipEn: "bus cama = night bus with reclining seats" },
+    { id: "pe12", cat: "peru", lvl: 3, de: "Ich habe ein Zugticket nach Aguas Calientes.", en: "I have a train ticket to Aguas Calientes.", es: "Tengo un boleto de tren a Aguas Calientes.", tip: "boleto = Ticket; Bahnhof für Machu Picchu", tipEn: "boleto = ticket; the station for Machu Picchu" },
+    { id: "pe13", cat: "peru", lvl: 2, de: "Fährt ein Sammeltaxi ins Heilige Tal?", en: "Is there a shared taxi to the Sacred Valley?", es: "¿Hay colectivo al Valle Sagrado?", tip: "colectivo = Sammeltaxi/-bus", tipEn: "colectivo = shared taxi/van" },
+    { id: "pe14", cat: "peru", lvl: 1, de: "Wie lange dauert die Fahrt?", en: "How long is the journey?", es: "¿Cuánto dura el viaje?", tip: "du-RAR = dauern", tipEn: "du-RAR = to last" },
+    { id: "pe15", cat: "peru", lvl: 3, de: "Hält der Bus in Chivay am Colca?", en: "Does the bus stop in Chivay at the Colca?", es: "¿El bus para en Chivay, en el Colca?", tip: "Chivay = Tor zum Colca-Canyon", tipEn: "Chivay = gateway to the Colca Canyon" },
+    // ----- Arequipa & Colca -----
+    { id: "pe16", cat: "peru", lvl: 1, de: "Wie schön der Vulkan Misti ist!", en: "How beautiful the Misti volcano is!", es: "¡Qué bonito el volcán Misti!", tip: "Misti = Hausvulkan von Arequipa", tipEn: "Misti = Arequipa's iconic volcano" },
+    { id: "pe17", cat: "peru", lvl: 2, de: "Wann sieht man die Kondore am Cruz del Cóndor?", en: "When can you see the condors at Cruz del Cóndor?", es: "¿A qué hora se ven los cóndores en la Cruz del Cóndor?", tip: "CÓN-dor = Kondor; morgens am besten", tipEn: "CÓN-dor = condor; best in the morning" },
+    { id: "pe18", cat: "peru", lvl: 2, de: "Können wir zum Aussichtspunkt gehen?", en: "Can we go to the viewpoint?", es: "¿Podemos ir al mirador?", tip: "mi-ra-DOR = Aussichtspunkt", tipEn: "mi-ra-DOR = viewpoint" },
+    { id: "pe19", cat: "peru", lvl: 2, de: "Die Altstadt ist aus weißem Sillar-Stein.", en: "The old town is built of white sillar stone.", es: "El centro es de sillar blanco.", tip: "sillar = weißer Vulkanstein (Arequipa)", tipEn: "sillar = white volcanic stone (Arequipa)" },
+    { id: "pe20", cat: "peru", lvl: 3, de: "Wie tief ist der Colca-Canyon?", en: "How deep is the Colca Canyon?", es: "¿Qué tan profundo es el cañón del Colca?", tip: "einer der tiefsten Canyons der Welt", tipEn: "one of the deepest canyons in the world" },
+    // ----- Titicacasee & Puno -----
+    { id: "pe21", cat: "peru", lvl: 2, de: "Wann fährt das Boot zu den schwimmenden Inseln?", en: "When does the boat to the floating islands leave?", es: "¿A qué hora sale la lancha a las islas flotantes?", tip: "LAN-cha = (Motor-)Boot", tipEn: "LAN-cha = (motor) boat" },
+    { id: "pe22", cat: "peru", lvl: 2, de: "Die Uros leben auf Schilfinseln.", en: "The Uros live on reed islands.", es: "Los uros viven en islas de totora.", tip: "totora = Andenschilf am Titicacasee", tipEn: "totora = Andean reed on Lake Titicaca" },
+    { id: "pe23", cat: "peru", lvl: 3, de: "Übernachten wir bei einer Familie auf Taquile?", en: "Are we staying with a family on Taquile?", es: "¿Dormimos con una familia en Taquile?", tip: "Taquile = Insel mit Textiltradition", tipEn: "Taquile = island known for its weaving" },
+    { id: "pe24", cat: "peru", lvl: 1, de: "Der Titicacasee ist riesig.", en: "Lake Titicaca is huge.", es: "El lago Titicaca es enorme.", tip: "höchster schiffbarer See der Welt", tipEn: "the highest navigable lake in the world" },
+    // ----- Cusco & Heiliges Tal -----
+    { id: "pe25", cat: "peru", lvl: 1, de: "Wo ist die Plaza de Armas?", en: "Where is the Plaza de Armas?", es: "¿Dónde está la Plaza de Armas?", tip: "Hauptplatz jeder peruanischen Stadt", tipEn: "the main square of every Peruvian town" },
+    { id: "pe26", cat: "peru", lvl: 2, de: "Ich möchte Sacsayhuamán besuchen.", en: "I'd like to visit Sacsayhuamán.", es: "Quiero visitar Sacsayhuamán.", tip: "Inka-Festung über Cusco (klingt wie „sexy woman“)", tipEn: "Inca fortress above Cusco (sounds like 'sexy woman')" },
+    { id: "pe27", cat: "peru", lvl: 2, de: "Was kostet der Eintritt zur Ruine?", en: "How much is entry to the ruins?", es: "¿Cuánto cuesta la entrada a la ruina?", tip: "boleto turístico = Sammelticket in Cusco", tipEn: "boleto turístico = combined ticket in Cusco" },
+    { id: "pe28", cat: "peru", lvl: 2, de: "Gibt es heute Markt in Pisac?", en: "Is there a market in Pisac today?", es: "¿Hoy hay mercado en Pisac?", tip: "Pisac = berühmter Handwerksmarkt", tipEn: "Pisac = famous artisan market" },
+    { id: "pe29", cat: "peru", lvl: 3, de: "Wie komme ich zu den Terrassen von Ollantaytambo?", en: "How do I get to the terraces of Ollantaytambo?", es: "¿Cómo llego a las terrazas de Ollantaytambo?", tip: "Ollantaytambo = Inka-Ort, Zugstart Richtung MP", tipEn: "Ollantaytambo = Inca town, train start towards MP" },
+    { id: "pe30", cat: "peru", lvl: 2, de: "Diese Mauern sind noch von den Inka.", en: "These walls are still from the Incas.", es: "Estas paredes todavía son de los incas.", tip: "fugenlose Steinmauern in Cusco", tipEn: "the seamless stone walls in Cusco" },
+    // ----- Machu Picchu & Regenbogenberg -----
+    { id: "pe31", cat: "peru", lvl: 2, de: "Ich habe mein Machu-Picchu-Ticket für morgen.", en: "I have my Machu Picchu ticket for tomorrow.", es: "Tengo mi boleto a Machu Picchu para mañana.", tip: "Eintritt ist zeitlich gebunden", tipEn: "entry is tied to a time slot" },
+    { id: "pe32", cat: "peru", lvl: 3, de: "Um wie viel Uhr müssen wir am Eingang sein?", en: "What time do we need to be at the entrance?", es: "¿A qué hora debemos estar en la entrada?", tip: "de-BE-mos = wir müssen", tipEn: "de-BE-mos = we must" },
+    { id: "pe33", cat: "peru", lvl: 2, de: "Brauche ich einen Führer für die Ruinen?", en: "Do I need a guide for the ruins?", es: "¿Necesito un guía para las ruinas?", tip: "GI-a = Reiseführer:in (Person)", tipEn: "GI-a = guide (person)" },
+    { id: "pe34", cat: "peru", lvl: 3, de: "Die Wanderung zum Regenbogenberg ist anstrengend.", en: "The hike to Rainbow Mountain is exhausting.", es: "La caminata a la Montaña de Colores es agotadora.", tip: "Vinicunca, auf über 5.000 m", tipEn: "Vinicunca, at over 5,000 m" },
+    { id: "pe35", cat: "peru", lvl: 2, de: "Kann ich hier ein Pferd mieten?", en: "Can I rent a horse here?", es: "¿Puedo alquilar un caballo aquí?", tip: "ka-BA-yo = Pferd; üblich am Regenbogenberg", tipEn: "ka-BA-yo = horse; common at Rainbow Mountain" },
+    // ----- Essen & Trinken -----
+    { id: "pe36", cat: "peru", lvl: 1, de: "Einen Ceviche, bitte.", en: "A ceviche, please.", es: "Un ceviche, por favor.", tip: "se-WI-che = roher Fisch in Limette", tipEn: "se-WI-che = raw fish cured in lime" },
+    { id: "pe37", cat: "peru", lvl: 2, de: "Ich möchte ein Lomo Saltado probieren.", en: "I'd like to try a lomo saltado.", es: "Quiero probar un lomo saltado.", tip: "Rindfleisch-Pfanne, peruanisch-chinesisch", tipEn: "stir-fried beef, Peruvian-Chinese fusion" },
+    { id: "pe38", cat: "peru", lvl: 2, de: "Einen Pisco Sour, bitte.", en: "A pisco sour, please.", es: "Un pisco sour, por favor.", tip: "Nationalcocktail aus Traubenschnaps", tipEn: "the national cocktail made from grape brandy" },
+    { id: "pe39", cat: "peru", lvl: 3, de: "Was ist Cuy?", en: "What is cuy?", es: "¿Qué es el cuy?", tip: "cuy = Meerschweinchen, Anden-Spezialität", tipEn: "cuy = guinea pig, an Andean specialty" },
+    { id: "pe40", cat: "peru", lvl: 2, de: "Eine Chicha Morada, bitte.", en: "A chicha morada, please.", es: "Una chicha morada, por favor.", tip: "süßes Getränk aus violettem Mais", tipEn: "a sweet drink made from purple corn" },
+    // ----- Markt, Geld, Quechua & Social -----
+    { id: "pe41", cat: "peru", lvl: 2, de: "Wie viel kostet diese Alpaka-Jacke?", en: "How much is this alpaca jumper?", es: "¿Cuánto cuesta esta chompa de alpaca?", tip: "chompa = Pullover/Jacke (Peru)", tipEn: "chompa = jumper/sweater (Peru)" },
+    { id: "pe42", cat: "peru", lvl: 2, de: "Können Sie mir einen kleinen Rabatt geben?", en: "Can you give me a little discount?", es: "¿Me puede hacer una rebaja?", tip: "rebaja = Preisnachlass; auf Märkten üblich", tipEn: "rebaja = discount; common at markets" },
+    { id: "pe43", cat: "peru", lvl: 2, de: "Akzeptieren Sie Soles oder nur Karte?", en: "Do you take soles or only card?", es: "¿Aceptan soles o solo tarjeta?", tip: "sol = Landeswährung Perus", tipEn: "sol = Peru's currency" },
+    { id: "pe44", cat: "peru", lvl: 1, de: "Hallo! (auf Quechua)", en: "Hello! (in Quechua)", es: "¡Allillanchu!", tip: "Quechua-Gruß; Antwort: allillanmi", tipEn: "Quechua greeting; reply: allillanmi" },
+    { id: "pe45", cat: "peru", lvl: 1, de: "Ich liebe Peru!", en: "I love Peru!", es: "¡Me encanta Perú!", tip: "auf Quechua heißt danke „añay“", tipEn: "in Quechua 'thank you' is „añay“" },
   ];
 
   /*
@@ -1730,6 +1788,9 @@
     { id: "challenge29", category: "colombia", level: 1, textDe: "Bestell einen Tinto wie ein Local.", textEn: "Order a tinto like a local.", phraseEs: "Un tinto, por favor." },
     { id: "challenge30", category: "colombia", level: 3, textDe: "Frag jemanden, ob er dir einen Tanzschritt beibringt.", textEn: "Ask someone to teach you a dance step.", phraseEs: "¿Me enseñas a bailar?" },
     { id: "challenge31", category: "colombia", level: 2, textDe: "Frag auf einer Finca nach einer Kaffeetour.", textEn: "Ask for a coffee tour on a finca.", phraseEs: "¿Hacen un tour de café en la finca?" },
+    // ----- Peru-Spezial -----
+    { id: "challenge32", category: "peru", level: 1, textDe: "Bestell einen Ceviche wie ein Local.", textEn: "Order a ceviche like a local.", phraseEs: "Un ceviche, por favor." },
+    { id: "challenge33", category: "peru", level: 2, textDe: "Frag nach Kokatee gegen die Höhe.", textEn: "Ask for coca tea for the altitude.", phraseEs: "¿Tiene mate de coca para el soroche?" },
   ];
 
   // ----- Definiciones (Zuordnen / Definitions-Quiz) -----
