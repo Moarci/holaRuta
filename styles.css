@@ -418,7 +418,12 @@ body {
 .searchfield__input:placeholder-shown ~ .searchfield__clear { display: none; }
 
 .search-hint { margin: 8px 2px; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.5; }
-.search-cap { display: flex; align-items: center; gap: 8px; }
+/* Eigene Abstände statt des negativen Rands von .sectioncap (der für die
+ * Kachel-Gitter der Startseite gedacht ist und hier die erste Karte über die
+ * Überschrift ziehen würde). Positiver Rand unten = klarer Abstand zur Liste,
+ * großzügiger Rand oben = Luft zwischen den Gruppen. */
+.search-cap { display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; }
+.search-cap:first-child { margin-top: 4px; }
 .search-count {
   font-size: 0.72rem; font-weight: 800; color: var(--muted);
   background: rgba(45, 27, 18, 0.08); border-radius: 999px; padding: 1px 8px;
