@@ -136,6 +136,11 @@ Das verstärkt WeRoads Markenkern (kleine Gruppen, Community, Vibe):
 > **Achtung:** Gruppenreise-Anbieter haben *keinen* Sprachfokus. Der Pitch muss zeigen, dass
 > HolaRuta die **Reisequalität** verbessert — nicht „Vokabeln trainiert".
 
+> **Ausgearbeitetes WeRoad-Colombia-Proposal** (DE/EN, druckbar, in der WeRoad-Akzentfarbe):
+> [docs/pitch/weroad-colombia.html](docs/pitch/weroad-colombia.html) — Route↔Inhalt-Mapping
+> (Medellín / Karibikküste / Cartagena), 3-Phasen-Modell, Coordinator-Playbook, 7-Tage-Pre-Trip-Plan,
+> Edition-Look, Preise und konkreter Pilot-Vorschlag. Alle Inhalte am realen Code-Stand belegt.
+
 ---
 
 ## 5. Kanal C — Hostels & Hostel-Ketten

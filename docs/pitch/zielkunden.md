@@ -35,7 +35,7 @@
 
 | Prio | Ziel | Typ | Hinweis | Kontaktweg |
 |---|---|---|---|---|
-| 7 | **WeRoad** (DACH) | Gruppenreisen | Erst über **Warm-Intro** (Reiseleiter:in) – siehe anschreiben.md §3 | Reiseleiter-Kontakt → intern Produkt/Partnerships |
+| 7 | **WeRoad** (DACH) | Gruppenreisen | Erst über **Warm-Intro** (Reiseleiter:in) – siehe anschreiben.md §3; ausgearbeitetes Proposal: [pitch/weroad-colombia.html](weroad-colombia.html) | Reiseleiter-Kontakt → intern Produkt/Partnerships |
 | 8 | **Sprachcaffe** | Sprachreisen | Junge Zielgruppe, Aktivitäten | Zentrale / Partnerships |
 | 9 | **Selina / Viajero / Masaya / Los Patios** | Hostel-Ketten | „Hostel Edition" mit Budget – erst mit Hostel-Referenz | Partnerships/Marketing-Team |
 | 10 | **Enforex/don Quijote · EF · G Adventures/Intrepid** | Große Ketten | Strukturiert, anspruchsvoll – nur mit Referenz + ggf. White-Label | Partnerships, langer Zyklus |
