@@ -201,6 +201,7 @@
       introEn: "Long bus rides and comfy hostels – it's easy to stop moving altogether. Staying fit works without a gym, too.",
       dos: [
         "Die Stadt zu Fuß erkunden, Treppen statt Aufzug, Wanderungen und Schwimmen mitnehmen.",
+        "Joggen gehen – aber bewusst wo und wann: früh oder abends gegen die Hitze, und nur in sicheren, belebten Gegenden (Parks, Strandpromenade, Fluss).",
         "Kurzes Eigengewichts-Workout (Kniebeugen, Liegestütze, Plank) – kein Equipment nötig.",
         "Manche Hostels bieten Yoga an oder haben einen kleinen Gym-Bereich – am Check-in oder Schwarzen Brett fragen.",
         "In größeren Städten im Gym einen Tagespass kaufen: meist günstig und ein gutes Erlebnis, weil dort die Locals trainieren.",
@@ -208,16 +209,21 @@
       ],
       dosEn: [
         "Explore the city on foot, take the stairs not the lift, fit in hikes and swimming.",
+        "Go for a run – but mind where and when: early or in the evening against the heat, and only in safe, busy areas (parks, seafront, riverside).",
         "A short bodyweight workout (squats, push-ups, plank) – no equipment needed.",
         "Some hostels offer yoga or have a small gym area – ask at check-in or check the noticeboard.",
         "In bigger cities buy a day pass at a gym: usually cheap and a good experience, since the locals train there.",
         "After night buses, stretch and loosen up the body a little.",
       ],
       donts: [
+        "Nicht bei Dunkelheit oder in unguten Gegenden joggen – lieber Tageslicht und belebte Strecken.",
+        "In praller Mittagshitze keine harten Einheiten – früh oder spät laufen und genug trinken.",
         "Nicht den ganzen Tag im Hostel-Sofa versacken.",
         "Bewegung nicht komplett pausieren, nur weil gerade Urlaub ist.",
       ],
       dontsEn: [
+        "Don't run in the dark or in dodgy areas – stick to daylight and busy routes.",
+        "No hard sessions in the blazing midday heat – run early or late and drink enough.",
         "Don't sink into the hostel sofa all day.",
         "Don't put movement on hold entirely just because you're on holiday.",
       ],
