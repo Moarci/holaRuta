@@ -2662,7 +2662,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     hostelIntro: "Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.",
     coordinatorTitle: "5-Minuten-Icebreaker",
     coordinatorDesc: "Für Gruppen & Kurse: ein Tap startet sofort eine kurze Kennenlern-Runde – ohne Setup.",
-    coordinatorMeta: "6 Runden · sofort los",
+    coordinatorMeta: (p) => `${p.n} Runden · sofort los`,
     battleTitle: "Battle",
     battleDesc: "Tretet gegeneinander an und übt echte Reisesätze laut. Der Mitspieler bewertet.",
     battleTasks: (p) => `${p.n} Aufgaben`,
@@ -2894,7 +2894,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     hostelIntro: "Use travel Spanish in pairs – not just learning, but speaking aloud.",
     coordinatorTitle: "5-minute icebreaker",
     coordinatorDesc: "For groups & classes: one tap starts a quick getting-to-know round – no setup.",
-    coordinatorMeta: "6 rounds · starts instantly",
+    coordinatorMeta: (p) => `${p.n} rounds · starts instantly`,
     battleTitle: "Battle",
     battleDesc: "Compete against each other and practise real travel phrases aloud. Your partner scores you.",
     battleTasks: (p) => `${p.n} tasks`,
@@ -16436,7 +16436,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             <span class="hm-card__icon" aria-hidden="true">⚡</span>
             <span class="hm-card__title">${esc(t("discover.coordinatorTitle"))}</span>
             <span class="hm-card__desc">${esc(t("discover.coordinatorDesc"))}</span>
-            <span class="hm-card__meta">${esc(t("discover.coordinatorMeta"))}</span>
+            <span class="hm-card__meta">${esc(t("discover.coordinatorMeta", { n: vm.coordinatorRounds }))}</span>
           </button>
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
             <span class="hm-card__icon" aria-hidden="true">⚔️</span>
@@ -18366,10 +18366,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const battleById = (id) => data.BATTLES.find((b) => b.id === id) || null;
   const roleplayById = (id) => data.ROLEPLAYS.find((r) => r.id === id) || null;
 
+  // Coordinator-Schnellstart: Szene + Wunschlänge an EINER Stelle, damit das
+  // Label (Rundenzahl) und der tatsächliche Start nie auseinanderlaufen.
+  const COORDINATOR_SCENE = "meet";  // Kennenlern-Szene = Icebreaker
+  const COORDINATOR_ROUNDS = 6;      // kurze 5-Minuten-Runde
+
   function hostelVM() {
+    const meetCount = data.BATTLES.filter((b) => b.scene === COORDINATOR_SCENE).length;
     return {
       battleCount: data.BATTLES.length,
       roleplayCount: data.ROLEPLAYS.length,
+      // tatsächliche Rundenzahl des Schnellstarts (gerade, durch den Pool gedeckelt)
+      coordinatorRounds: evenRounds(Math.min(COORDINATOR_ROUNDS, meetCount)),
     };
   }
 
@@ -19943,7 +19951,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Hostel-Personal oder Lehrkräfte, die der Gruppe in Sekunden eine Aktivität
   // geben wollen. Reuse des kompletten bestehenden Battle-Flows.
   function startCoordinatorRound() {
-    startBattle("meet", 6);
+    startBattle(COORDINATOR_SCENE, COORDINATOR_ROUNDS);
   }
 
   // Vor dem Start gewählte Battle-Länge merken (nur Umschalten, kein Start).

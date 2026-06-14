@@ -739,10 +739,18 @@
   const battleById = (id) => data.BATTLES.find((b) => b.id === id) || null;
   const roleplayById = (id) => data.ROLEPLAYS.find((r) => r.id === id) || null;
 
+  // Coordinator-Schnellstart: Szene + Wunschlänge an EINER Stelle, damit das
+  // Label (Rundenzahl) und der tatsächliche Start nie auseinanderlaufen.
+  const COORDINATOR_SCENE = "meet";  // Kennenlern-Szene = Icebreaker
+  const COORDINATOR_ROUNDS = 6;      // kurze 5-Minuten-Runde
+
   function hostelVM() {
+    const meetCount = data.BATTLES.filter((b) => b.scene === COORDINATOR_SCENE).length;
     return {
       battleCount: data.BATTLES.length,
       roleplayCount: data.ROLEPLAYS.length,
+      // tatsächliche Rundenzahl des Schnellstarts (gerade, durch den Pool gedeckelt)
+      coordinatorRounds: evenRounds(Math.min(COORDINATOR_ROUNDS, meetCount)),
     };
   }
 
@@ -2316,7 +2324,7 @@
   // Hostel-Personal oder Lehrkräfte, die der Gruppe in Sekunden eine Aktivität
   // geben wollen. Reuse des kompletten bestehenden Battle-Flows.
   function startCoordinatorRound() {
-    startBattle("meet", 6);
+    startBattle(COORDINATOR_SCENE, COORDINATOR_ROUNDS);
   }
 
   // Vor dem Start gewählte Battle-Länge merken (nur Umschalten, kein Start).
