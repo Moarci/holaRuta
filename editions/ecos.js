@@ -11,7 +11,7 @@ window.SC = window.SC || {};
 window.SC.editionConfig = {
   edition: "ecos",
   brandName: "HolaRuta · ECOS",
-  accent: { brand: "#1F7A8C", brandInk: "#155C69", theme: "#0F2A31" }, // Karibik-Teal
+  accent: { brand: "#1F7A8C", brandInk: "#155C69" }, // Karibik-Teal
   partner: { name: "ECOS · Cartagena" }, // url erst mit Partner-Freigabe
   defaultDestination: "Cartagena",        // surft die Pre-Arrival-Kachel an
 };

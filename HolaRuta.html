@@ -227,6 +227,7 @@ body {
 .appbar__logo svg { display: block; width: 100%; height: 100%; }
 .appbar__name { font-family: var(--font-display); font-size: 1.18rem; font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
 .appbar__name span { color: var(--brand); }
+.appbar__name .appbar__edition { color: var(--ink-soft); font-size: 0.72rem; font-weight: 700; letter-spacing: 0; margin-left: 4px; }
 
 #app {
   flex: 1;
@@ -2132,7 +2133,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   var DEFAULT = {
     edition: null,            // null = keine Edition (Standard HolaRuta)
     brandName: "HolaRuta",    // Tab-Titel & installierter App-Name
-    accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk, theme }
+    accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk }
     partner: null,            // { name, url? } für einen dezenten Credit im Profil
     defaultDestination: null, // z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
   };
@@ -18188,12 +18189,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     try {
       if (c.brandName) document.title = c.brandName + " – Reise-Spanisch";
       if (c.accent) {
+        // Nur den Akzent überschreiben (wirkt in Hell & Dunkel). --page und die
+        // theme-color-Meta bleiben der HolaRuta-Rahmen – sonst bräche der Dark Mode,
+        // und applyTheme würde die theme-color beim Umschalten ohnehin zurücksetzen.
         const r = document.documentElement.style;
         if (c.accent.brand) r.setProperty("--brand", c.accent.brand);
         if (c.accent.brandInk) r.setProperty("--brand-ink", c.accent.brandInk);
-        if (c.accent.theme) {
-          const m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute("content", c.accent.theme);
+      }
+      // Appbar-Wortmarke um den Edition-Zusatz ergänzen (Teil nach „· "), damit die
+      // Edition am sichtbarsten Ort erkennbar ist. Die Wortmarke liegt im statischen
+      // Appshell (außerhalb von #app) und wird hier einmalig gesetzt.
+      const parts = String(c.brandName || "").split("·");
+      if (parts.length > 1) {
+        const name = document.querySelector(".appbar__name");
+        if (name && !name.querySelector(".appbar__edition")) {
+          const tag = document.createElement("span");
+          tag.className = "appbar__edition";
+          tag.textContent = "· " + parts.slice(1).join("·").trim();
+          name.appendChild(tag);
         }
       }
     } catch (e) { /* Edition ist optional – nie crashen */ }

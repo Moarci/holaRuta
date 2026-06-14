@@ -127,9 +127,9 @@ mit Hinweis, dass die App-Oberfläche selbst nur DE/EN ist. Verweist auf vorhand
 Pack". Co-Branding ohne Code-Fork.
 
 **Geliefert:** `config.js` (SC.config, Default = HolaRuta pur) + `editions/<id>.js` (reine Daten) +
-Apply-Schicht in `app.js` (`applyEdition`: Akzent/Titel/theme-color, nur `--brand`/`--brand-ink` →
-Dark Mode bleibt heil) + Profil-Credit + `build.js --edition=<id>` → `HolaRuta-<id>.html` +
-Guard-Test. Beispiel-Editionen: `ecos`, `weroad`. Default unverändert, 157 Tests grün.
+Apply-Schicht in `app.js` (`applyEdition`: nur `--brand`/`--brand-ink` + Tab-Titel + Appbar-Zusatz
+„· ECOS"; `--page`/theme-color bleiben → Dark Mode heil) + Profil-Credit + `build.js --edition=<id>`
+→ `HolaRuta-<id>.html` + Guard-Test. Beispiel-Editionen: `ecos`, `weroad`. Default unverändert, 157 Tests grün.
 
 **Dateien & Reuse:**
 - Neues Mini-Modul `config.js` (`SC.config`) mit `{ edition, brandName, accent, logo, startTab,

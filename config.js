@@ -16,7 +16,7 @@
   var DEFAULT = {
     edition: null,            // null = keine Edition (Standard HolaRuta)
     brandName: "HolaRuta",    // Tab-Titel & installierter App-Name
-    accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk, theme }
+    accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk }
     partner: null,            // { name, url? } für einen dezenten Credit im Profil
     defaultDestination: null, // z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
   };

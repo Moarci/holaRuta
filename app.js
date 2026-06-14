@@ -515,12 +515,24 @@
     try {
       if (c.brandName) document.title = c.brandName + " – Reise-Spanisch";
       if (c.accent) {
+        // Nur den Akzent überschreiben (wirkt in Hell & Dunkel). --page und die
+        // theme-color-Meta bleiben der HolaRuta-Rahmen – sonst bräche der Dark Mode,
+        // und applyTheme würde die theme-color beim Umschalten ohnehin zurücksetzen.
         const r = document.documentElement.style;
         if (c.accent.brand) r.setProperty("--brand", c.accent.brand);
         if (c.accent.brandInk) r.setProperty("--brand-ink", c.accent.brandInk);
-        if (c.accent.theme) {
-          const m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute("content", c.accent.theme);
+      }
+      // Appbar-Wortmarke um den Edition-Zusatz ergänzen (Teil nach „· "), damit die
+      // Edition am sichtbarsten Ort erkennbar ist. Die Wortmarke liegt im statischen
+      // Appshell (außerhalb von #app) und wird hier einmalig gesetzt.
+      const parts = String(c.brandName || "").split("·");
+      if (parts.length > 1) {
+        const name = document.querySelector(".appbar__name");
+        if (name && !name.querySelector(".appbar__edition")) {
+          const tag = document.createElement("span");
+          tag.className = "appbar__edition";
+          tag.textContent = "· " + parts.slice(1).join("·").trim();
+          name.appendChild(tag);
         }
       }
     } catch (e) { /* Edition ist optional – nie crashen */ }
