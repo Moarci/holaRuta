@@ -160,3 +160,24 @@ binden; CSP; Onboarding-Overlay für Gesten (H8); Undo nach Rating; minimale Tes
 - Live (Playwright): Home, Flip (Space/Tap), Rating (Taste/Fortschritt), Type-Matcher (Akzent/Slash), Persistenz nach Reload,
   Editor + XSS-Probe, Stats — **0 Konsolen-Errors**.
 - Nach den Fixes: Reduced-Motion, Fokus-Ziel, `aria-live`, Tap-Größen und Manifest erneut im Browser gegengeprüft.
+
+---
+
+## Nachtrag 2026-06-14 · Kontrast/A11y (WCAG)
+
+Nach mehreren spezialisierten Parallel-Reviews wurde der Kontrast systematisch nachgezogen:
+
+- **Interaktive Akzentflächen → WCAG AA in beiden Themes.** Solide `--brand`/`--ok`/`--muted`/`--easy`-Flächen
+  mit hellem Text (`.cta`, Pre-Trip-Buttons, Hostel-Punktestand, Update-Banner, Schreiben-Button, Badge-Häkchen,
+  `.schip.is-active` u. a.) nutzen jetzt das Token `--on-accent` (Light `#fff` ≥ 4.69:1, Dark `#241510` ≥ 5.30:1).
+  Zuvor fiel heller Text im Dunkelmodus auf ~3:1 und cremefarbener Text im Hellmodus auf 4.25:1.
+- **Hostel-Karten-Gradienten (`hm-card--*`)** vertieft, sodass auch der Kleintext (desc/meta) AA erreicht (4.64–4.68:1).
+
+**Bewusst NICHT geändert (akzeptierte Designentscheidung):** Die **festen Kategorie- und Feature-Gradienten**
+(Home-Kacheln, Entdecken-Buttons, Karteikarten-Rückseite, Einkaufszettel-Chips) behalten ihre bunte Erdton-Palette.
+Auf den helleren Gradient-Stopps erreicht der hell **über**lagerte Text dort nicht durchgängig den Kleintext-Wert
+(4.5:1) — gemessen verfehlen 23/24 Kategorie-Gradienten 4.5:1, 8 davon auch 3:1. Der Text ist dort überwiegend
+**groß** (Icon + fetter Titel/Wort), und die bunte Palette ist Teil der Marken-Identität; eine vollflächige
+Abdunklung würde sie stark verändern. Die **bindenden, interaktiven** Steuerelemente sind durchgängig AA — die
+Gradient-Kacheln sind dekorativ. Falls künftig strikte AA überall gewünscht ist: Optionen sind Palette-Abdunklung,
+ein Text-Scrim oder large-text-only (3:1) für die 8 schwächsten Gradienten (siehe Review-Notiz).
