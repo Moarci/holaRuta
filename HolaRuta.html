@@ -1137,7 +1137,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hist-era {
   position: relative; margin-bottom: 12px;
   background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
-  overflow: hidden;
 }
 .hist-era[open] { border-color: var(--line-strong); box-shadow: var(--shadow); }
 .hist-era__head {
@@ -11106,8 +11105,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       years: "1795–1830",
       flag: "🇧🇴",
       img: "Jose Antonio de Sucre.JPG",
-      text: "Bolívars genialer junger General. In der Schlacht von Ayacucho 1824 zerschlug er die letzte große spanische Armee und besiegelte damit die Unabhängigkeit ganz Südamerikas. Er wurde erster Präsident Boliviens, dessen Hauptstadt Sucre seinen Namen trägt. Mit nur 35 Jahren wurde er aus dem Hinterhalt ermordet.",
-      textEn: "Bolívar's brilliant young general. At the Battle of Ayacucho in 1824 he smashed the last great Spanish army and thereby sealed the independence of all South America. He became the first president of Bolivia, whose capital Sucre bears his name. At just 35 he was assassinated in an ambush.",
+      text: "Bolívars genialer junger General. In der Schlacht von Ayacucho 1824 zerschlug er die letzte große spanische Armee und besiegelte damit die Unabhängigkeit ganz Südamerikas. Als Präsident regierte er das neue Bolivien, dessen Hauptstadt Sucre bis heute seinen Namen trägt. Mit nur 35 Jahren wurde er aus dem Hinterhalt ermordet.",
+      textEn: "Bolívar's brilliant young general. At the Battle of Ayacucho in 1824 he smashed the last great Spanish army and thereby sealed the independence of all South America. As president he governed the new Bolivia, whose capital Sucre still bears his name today. At just 35 he was assassinated in an ambush.",
       quote: "",
       quoteEn: "",
     },
@@ -17703,7 +17702,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const figure = (f) => {
       const img = f.img
         ? `<img class="hist-fig__img" src="${esc(commonsImg(f.img, 320))}" alt="${esc(f.name)}"
-                loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'" />`
+                loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
         : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">👤</span>`;
       const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
       return `

@@ -1577,7 +1577,7 @@
     const figure = (f) => {
       const img = f.img
         ? `<img class="hist-fig__img" src="${esc(commonsImg(f.img, 320))}" alt="${esc(f.name)}"
-                loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'" />`
+                loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
         : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">👤</span>`;
       const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
       return `
