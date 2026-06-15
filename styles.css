@@ -1759,6 +1759,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   background: var(--card); color: var(--ink);
 }
 .task-label { display: block; font-weight: 700; margin: 12px 0 6px; }
+/* Modo-profe-Einstieg im Tarea-Reiter (Editionen). */
+.teacher-btn--profe { width: 100%; justify-content: center; }
+.task-profe-hint { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); text-align: center; }
 .task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }
 .task-target-line { font-weight: 800; color: var(--brand-ink); margin: 0 0 4px; }
 .task-title-line { font-size: 1.1rem; margin: 4px 0; }

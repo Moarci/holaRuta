@@ -984,6 +984,7 @@
   // ---------- teacher: Lehrer-/Coordinator-Modus (backend-frei) ----------
   i18n.register("teacher", {
     title: "Modo profe",
+    openHint: "Für Lehrkräfte & Reiseleitung: Klassenübersicht und Aufgaben erstellen.",
     intro: "Klassenübersicht für Lehrkräfte und Reiseleiter: Lass deine Schüler ihren Fortschritt im Profil als Backup-Datei exportieren und importiere die Dateien hier. Tipp: vorher die Datei auf den Schülernamen umbenennen.",
     privacy: "🔒 Alles bleibt offline und nur in dieser Sitzung – nichts wird gespeichert, nichts gesendet. Beim Neuladen ist die Übersicht wieder leer. Kein Konto, keine Cloud.",
     importBtn: "Schüler-Backup(s) importieren",
@@ -1018,6 +1019,7 @@
     grpCategory: "Ganzes Paket (üben)",
   }, {
     title: "Teacher mode",
+    openHint: "For teachers & tour leaders: class overview and creating tasks.",
     intro: "Class overview for teachers and tour leaders: have your students export their progress as a backup file in their profile, then import the files here. Tip: rename each file to the student's name first.",
     privacy: "🔒 Everything stays offline and only in this session – nothing is stored, nothing is sent. Reloading clears the overview. No account, no cloud.",
     importBtn: "Import student backup(s)",

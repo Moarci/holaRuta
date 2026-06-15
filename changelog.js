@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.52.0",
+      date: "2026-06-15",
+      title: "Modo profe wandert in den Tarea-Reiter (Editionen) + Ruta-Check-Feinschliff",
+      items: [
+        "🧑‍🏫 In Schul-/Reise-Editionen gibt es jetzt EINEN „Tarea“-Reiter statt zwei: Modo profe hängt direkt im Tarea-Bereich mit drin (ein Tipp weiter), die untere Navigation bleibt aufgeräumt.",
+        "🔧 Review-Fixes am Ruta-Check: der Zurück-Pfeil während des Onboarding-Tests schließt das Onboarding jetzt sauber ab (vorher konnte es erneut erscheinen), Doppeltipp auf eine Antwort wird abgefangen, und der Test-Zustand wird beim Verlassen ordentlich gelöst.",
+        "🗣️ Inhaltliche Korrektur zweier Testfragen (eindeutige Höflichkeitsform statt Mehrdeutigkeit; mehr akzeptierte Schreibweisen bei einer freien Antwort).",
+      ],
+    },
+    {
       version: "1.51.0",
       date: "2026-06-15",
       title: "Ruta-Check wird adaptiv – und Teil des Onboardings",

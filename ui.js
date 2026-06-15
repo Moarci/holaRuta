@@ -97,11 +97,13 @@
                data-action="set-tab" data-tab="${id}">
          <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
        </button>`;
-    // Eigene Reiter „Tarea“/„Modo profe“ nur, wenn eine Edition sie aktiviert.
+    // Ein einziger „Tarea“-Reiter, wenn eine Edition Aufgaben ODER Modo profe nutzt.
+    // Der Modo-profe-Bereich hängt im Tarea-Screen mit drin (kein eigener Reiter).
     const cfg = window.SC.config || {};
+    const showTask = !!(cfg.taskTab || cfg.teacherTab);
     return `
       <nav class="tabbar" aria-label="${esc(t("home.tabsAreas"))}">
-        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${cfg.taskTab ? tb("tarea", "📝", t("home.tabTask")) : ""}${cfg.teacherTab ? tb("teacher", "🧑‍🏫", t("home.tabTeacher")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
+        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${showTask ? tb("tarea", "📝", t("home.tabTask")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
       </nav>`;
   }
 
@@ -2387,10 +2389,13 @@
         <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
       </div>` : ""}`;
 
-    const withTab = !!(window.SC.config && window.SC.config.teacherTab);
+    // In Editionen hängt Modo profe unter dem Tarea-Reiter: Tab-Leiste mit „Tarea“
+    // aktiv, und der Zurück-Pfeil führt zurück in den Tarea-Screen (nicht Home).
+    const cfg = window.SC.config || {};
+    const withTab = !!(cfg.taskTab || cfg.teacherTab);
     return `
       <section class="screen${withTab ? " screen--tabbed" : ""}">
-        ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), "home")}
+        ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), withTab ? "open-task" : "home")}
         <p class="hm-intro">${esc(t("teacher.intro"))}</p>
         <div class="tip">${esc(t("teacher.privacy"))}</div>
         ${actions}
@@ -2398,7 +2403,7 @@
         <hr class="teacher-sep">
         ${taskForm}
       </section>
-      ${withTab ? tabbar("teacher") : ""}`;
+      ${withTab ? tabbar("tarea") : ""}`;
   }
 
   // Lernenden-Seite: Aufgaben-Code öffnen und in die zugewiesene Übung starten.
@@ -2423,12 +2428,20 @@
       </div>`;
     // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
     // hervorheben; sonst die schlichte Einzelseite mit Zurück-Knopf wie bisher.
-    const withTab = !!(window.SC.config && window.SC.config.taskTab);
+    const cfg = window.SC.config || {};
+    const withTab = !!(cfg.taskTab || cfg.teacherTab);
+    // Modo profe ist im Tarea-Reiter mit eingehängt (kein eigener Reiter mehr).
+    const profe = cfg.teacherTab
+      ? `<hr class="teacher-sep">
+         <button class="teacher-btn teacher-btn--profe" data-action="open-teacher">🧑‍🏫 ${esc(t("teacher.title"))}</button>
+         <p class="task-profe-hint">${esc(t("teacher.openHint"))}</p>`
+      : "";
     return `
       <section class="screen${withTab ? " screen--tabbed" : ""}">
         ${hmTopbar("📝 " + esc(t("task.title")), "home")}
         <p class="hm-intro">${esc(t("task.intro"))}</p>
         ${body}
+        ${profe}
       </section>
       ${withTab ? tabbar("tarea") : ""}`;
   }
@@ -2486,9 +2499,14 @@
          </div>`;
     const unknown = `<button class="pl-unknown" data-action="placement-unknown">🤷 ${esc(t("placement.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("placement.unknownHint"))}</p>` : "";
+    // Im Onboarding KEIN „Home“-Zurück-Pfeil (würde das Onboarding nicht abschließen);
+    // Abbrechen geht über die Wisch-Geste (markiert onboarded) – sonst regulär zurück.
+    const topbar = vm.fromOnboarding
+      ? `<div class="pagehead"><h2 class="pagehead__title">🎯 ${esc(t("placement.title"))}</h2></div>`
+      : hmTopbar("🎯 " + esc(t("placement.title")), "home");
     return `
       <section class="screen">
-        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        ${topbar}
         ${head}
         ${prompt}
         ${body}
@@ -2506,9 +2524,12 @@
         <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
         <span class="pl-skill__val">${s.accuracy}%</span>
       </li>`;
+    // Im Onboarding führt der Zurück-Pfeil über „placement-finish“ (schließt das
+    // Onboarding ab), sonst regulär nach Home.
+    const topbar = hmTopbar("🎯 " + esc(t("placement.title")), vm.fromOnboarding ? "placement-finish" : "home");
     return `
       <section class="screen">
-        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        ${topbar}
         <div class="pl-result">
           <p class="pl-result__cap">${esc(t("placement.yourLevel"))}</p>
           <p class="pl-result__level">${esc(vm.level)}</p>

@@ -2759,6 +2759,7 @@
   function pushPlacementQuestion(q) {
     const p = state.placement;
     p.asked.push(q.id);
+    p.answeredFor = null;      // Doppel-Tap-Schutz: pro Frage nur eine Antwort
     p.qStartedAt = Date.now();
   }
 
@@ -2779,6 +2780,8 @@
     if (!p || p.phase !== "running") return;
     const q = currentPlacementQ();
     if (!q) return;
+    if (p.answeredFor === q.id) return; // gepufferter Doppel-Tap auf dieselbe Frage ignorieren
+    p.answeredFor = q.id;
     const now = Date.now();
     ans.responseTimeMs = Math.max(0, now - (p.qStartedAt || now));
     p.answers.push(ans);
@@ -3139,6 +3142,7 @@
     state.pretripDay = null;   // eine abgebrochene Pre-Trip-Sitzung beim Verlassen lösen
     state.studyOrigin = null;  // Herkunft zurücksetzen (Dashboard ist Neustart)
     state.pretripLock = null;  // Aufgaben-Sperre lösen (frei wählbar im Entdecken-Plan)
+    state.placement = null;    // Ruta-Check-Sitzung beim Verlassen lösen (kein hängender „done“-State)
     render();
   }
 
