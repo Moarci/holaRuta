@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.76.0",
+      date: "2026-06-15",
+      title: "Neuer Stadt-Pack: Cusco ⛰️",
+      items: [
+        "⛰️ Neuer Cusco-Pack mit 34 reisepraktischen Karten – von Höhe & soroche (mate de coca) über Plaza de Armas, San Blas und Sacsayhuamán, das Heilige Tal und die komplette Machu-Picchu-Logistik (Zug, Bus, Tickets) bis zu Anden-Küche (cuy, chicha morada), Markt San Pedro, Quechua-Grüßen (Allillanchu, Sulpayki) und Höhen-Tagestrips (Vinicunca). Jede Karte mit echtem Reise-Kontext.",
+        "🗓️ Dazu ein 7-Etappen-Pre-Trip-Plan „Cusco“ und ein zuweisbares „Pre-Arrival: Cusco“-Paket; die Dashboard-Kachel erscheint bei Cusco-Bezug.",
+      ],
+    },
+    {
       version: "1.75.0",
       date: "2026-06-15",
       title: "Neuer Stadt-Pack: Medellín 🌆",

@@ -269,6 +269,7 @@
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
       showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
       showMedellinPreset: tripMentionsMedellin(), // Stadt-Pack-Kachel nur bei Medellín-Bezug
+      showCuscoPreset: tripMentionsCusco(),       // Stadt-Pack-Kachel nur bei Cusco-Bezug
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
@@ -283,7 +284,8 @@
         const m = {};
         const shown = {
           "prearrival-co": tripMentionsColombia(), "prearrival-ctg": tripMentionsCartagena(),
-          "prearrival-med": tripMentionsMedellin(), "prearrival-pe": tripMentionsPeru(),
+          "prearrival-med": tripMentionsMedellin(), "prearrival-cus": tripMentionsCusco(),
+          "prearrival-pe": tripMentionsPeru(),
           "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
           "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
           "prearrival-ar": tripMentionsArgentina(), "prearrival-cl": tripMentionsChile(),
@@ -644,6 +646,20 @@
     const t = gamestats.tripGoal;
     const cfg = window.SC && window.SC.config;
     return isMedellinDest(t && t.destination) || isMedellinDest(cfg && cfg.defaultDestination);
+  }
+
+  // Cusco: Stadt-Pack innerhalb Perus (Anden/Machu Picchu).
+  const CUSCO_HINTS = ["cusco", "cuzco", "machu picchu", "machupicchu", "ollantaytambo",
+    "valle sagrado", "aguas calientes", "sacsayhuaman", "pisac", "vinicunca"];
+  function isCuscoDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return CUSCO_HINTS.some((h) => norm.includes(h));
+  }
+  function tripMentionsCusco() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isCuscoDest(t && t.destination) || isCuscoDest(cfg && cfg.defaultDestination);
   }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
@@ -2470,6 +2486,7 @@
   // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
   // sonst der erste Plan (Kolumbien).
   function defaultPretripScope() {
+    if (tripMentionsCusco()) return "cusco"; // konkretes Cusco vor dem breiten Peru
     if (tripMentionsPeru()) return "peru";
     if (tripMentionsMexico()) return "mexico";
     if (tripMentionsCostaRica()) return "costarica";
