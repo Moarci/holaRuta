@@ -2129,6 +2129,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .sl-chip__icon { font-size: 1.05rem; }
 .sl-chip__done { font-weight: 900; }
+/* Zugewiesenes (gesperrtes) Reiseziel: nicht klickbar, kein Hover/Press-Effekt. */
+.sl-chip--locked { cursor: default; }
+.sl-chip--locked:active { transform: none; }
+.pretrip-assigned { margin: 8px 0 2px; font-size: 0.85rem; font-weight: 700; color: var(--brand-ink); }
 
 /* Die Liste: eine Zeile je Item, aufklappbar. */
 .sl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }

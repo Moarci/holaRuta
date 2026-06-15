@@ -63,6 +63,7 @@
     scopeId: "all",          // 'all' | Kategorie-Id
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
+    pretripLock: null,       // per zugewiesener Aufgabe festgelegtes Reiseziel (nur dieses zeigen, nicht wechselbar) | null
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
     taskTarget: "",          // gewähltes Aufgaben-Ziel im Formular (überlebt Re-Render)
@@ -2405,13 +2406,16 @@
   }
 
   function setPretripScope(scope) {
+    if (state.pretripLock) return; // zugewiesene Aufgabe: Ziel ist fix, kein Wechsel
     if (!PRETRIP().some((p) => p.scope === scope)) return;
     state.pretripScope = scope;
     render();
   }
 
   function pretripVM() {
-    const scope = state.pretripScope || defaultPretripScope();
+    // Zugewiesene Aufgabe: Ziel ist auf das vom Lehrer gewählte Land fixiert.
+    const locked = !!(state.pretripLock && PRETRIP().some((p) => p.scope === state.pretripLock));
+    const scope = locked ? state.pretripLock : (state.pretripScope || defaultPretripScope());
     const plan = pretripPlan(scope);
     const days = plan.days.map((d) => {
       const ch = d.challengeId ? (data.CHALLENGES || []).find((c) => c.id === d.challengeId) : null;
@@ -2426,13 +2430,15 @@
     });
     const total = days.length;
     const doneCount = days.filter((d) => d.done).length;
-    const plans = PRETRIP().map((p) => ({
+    // Im gesperrten Modus NUR das zugewiesene Land anbieten (kein Wechsel).
+    const plans = (locked ? PRETRIP().filter((p) => p.scope === scope) : PRETRIP()).map((p) => ({
       scope: p.scope,
       label: natk(categoryById(p.scope) || {}, "label") || p.scope,
       active: p.scope === scope,
       done: planAllDone(p),
     }));
-    return { scope, plans, days, total, doneCount, allDone: total > 0 && doneCount === total };
+    const scopeLabel = natk(categoryById(scope) || {}, "label") || scope;
+    return { scope, scopeLabel, locked, plans, days, total, doneCount, allDone: total > 0 && doneCount === total };
   }
 
   function startPretripDay(day) {
@@ -2622,32 +2628,56 @@
     }, 1600);
   }
 
+  // Auswählen + legacy execCommand("copy") – funktioniert auch dort, wo die
+  // moderne Clipboard-API gesperrt ist (file://, Android-WebView, content://).
+  function execCopyFrom(el, len) {
+    if (!el) return false;
+    try {
+      el.focus();
+      el.select();
+      if (el.setSelectionRange) el.setSelectionRange(0, len);
+      const ok = !!(document.execCommand && document.execCommand("copy"));
+      try { if (window.getSelection) window.getSelection().removeAllRanges(); el.blur(); } catch (e2) {}
+      return ok;
+    } catch (e) { return false; }
+  }
+
   function copyTaskCode() {
     const code = state.teacherTaskCode;
     if (!code) return;
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(function () { flashButton("task-copy", t("teacher.taskCopied")); }, function () {
-          const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); showNotice(t("task.copyManual")); }
-        });
-      } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); showNotice(t("task.copyManual")); } }
-    } catch (e) { /* egal */ }
+    const el = document.getElementById("task-code");
+    // 1) execCommand zuerst (robust im mobilen/Datei-Kontext).
+    if (execCopyFrom(el, code.length)) { flashButton("task-copy", t("teacher.taskCopied")); return; }
+    // 2) Moderne API als Zweitversuch (sichere Kontexte, in denen execCommand fehlt).
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(
+        function () { flashButton("task-copy", t("teacher.taskCopied")); },
+        function () { if (el) { el.focus(); el.select(); } showNotice(t("task.copyManual")); }
+      );
+      return;
+    }
+    // 3) Letzter Ausweg: markiert lassen, Hinweis zum manuellen Kopieren.
+    if (el) { el.focus(); el.select(); }
+    showNotice(t("task.copyManual"));
   }
 
   // Lernenden-Seite: Code aus der Zwischenablage ins Eingabefeld holen (mit Feedback).
+  // In gesperrten Kontexten (file://, content://, WebView) ist das Lesen der
+  // Zwischenablage blockiert – dann das Feld fokussieren/markieren, damit der native
+  // „Einfügen“-Befehl direkt greift, plus ein klarer Hinweis.
   function pasteTaskCode() {
     const el = document.getElementById("task-code-input");
     if (!el) return;
-    function fill(text) {
-      el.value = (text || "").trim();
-      flashButton("task-paste", t("task.pasted"));
-      el.focus();
-    }
+    function fallback() { try { el.focus(); el.select(); } catch (e) {} showNotice(t("task.pasteHint")); }
     try {
       if (navigator.clipboard && navigator.clipboard.readText) {
-        navigator.clipboard.readText().then(fill, function () { el.focus(); showNotice(t("task.pasteFail")); });
-      } else { el.focus(); showNotice(t("task.pasteFail")); }
-    } catch (e) { el.focus(); showNotice(t("task.pasteFail")); }
+        navigator.clipboard.readText().then(function (text) {
+          text = (text || "").trim();
+          if (text) { el.value = text; flashButton("task-paste", t("task.pasted")); el.focus(); }
+          else fallback();
+        }, fallback);
+      } else { fallback(); }
+    } catch (e) { fallback(); }
   }
 
   // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
@@ -2674,11 +2704,18 @@
     // öffnet sich der Plan-Screen; dessen Etappen tragen ihre eigene Herkunft
     // ("pretrip"), sodass man dort nach jeder Etappe wieder landet.
     if (task.kind === "preset") startPreset(task.scope, "task");
-    else if (task.kind === "pretrip") { setPretripScope(task.scope); openPretrip(); }
+    else if (task.kind === "pretrip") {
+      // Zugewiesenes Reiseziel FESTLEGEN: nur dieses Land zeigen, nicht wechselbar.
+      if (PRETRIP().some((p) => p.scope === task.scope)) {
+        state.pretripLock = task.scope;
+        state.pretripScope = task.scope;
+      }
+      openPretrip();
+    }
     else startStudy(task.scope, "task"); // ganzes Paket
   }
 
-  function clearOpenedTask() { state.openedTask = null; render(); }
+  function clearOpenedTask() { state.openedTask = null; state.pretripLock = null; render(); }
 
   function taskVM() {
     const t0 = state.openedTask;
@@ -2924,6 +2961,7 @@
     state.typeResult = null;
     state.pretripDay = null;   // eine abgebrochene Pre-Trip-Sitzung beim Verlassen lösen
     state.studyOrigin = null;  // Herkunft zurücksetzen (Dashboard ist Neustart)
+    state.pretripLock = null;  // Aufgaben-Sperre lösen (frei wählbar im Entdecken-Plan)
     render();
   }
 
@@ -4136,7 +4174,7 @@
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "ruta-del-dia") openRutaDelDia();
     else if (action === "open-preset") startPreset(el.dataset.preset);
-    else if (action === "open-pretrip") openPretrip();
+    else if (action === "open-pretrip") { state.pretripLock = null; openPretrip(); }
     else if (action === "set-pretrip-scope") setPretripScope(el.dataset.scope);
     else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
     else if (action === "open-teacher") openTeacher();

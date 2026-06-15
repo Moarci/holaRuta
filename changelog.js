@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.49.0",
+      date: "2026-06-15",
+      title: "Zugewiesenes Reiseziel ist fix + Kopieren/Einfügen funktioniert mobil",
+      items: [
+        "🎯 Öffnet ein Lernender eine zugewiesene Pre-Trip-Aufgabe, ist das Reiseziel jetzt fest auf das vom Lehrer gewählte Land gestellt – es erscheint nur dieses (z. B. Mexiko), nicht mehr die ganze Länder-Auswahl mit Kolumbien vorausgewählt.",
+        "📋 Kopieren klappt jetzt auch in der heruntergeladenen Einzeldatei/WebView (per execCommand statt nur moderner Zwischenablage-API) – mit „✓ Kopiert!“ statt „mit Strg+C kopieren“.",
+        "📥 „Einfügen“ holt den Code, wo der Browser es erlaubt; sonst springt der Cursor ins Feld mit dem Hinweis, lang zu tippen und „Einfügen“ zu wählen – statt wirkungslos zu sein.",
+      ],
+    },
+    {
       version: "1.48.0",
       date: "2026-06-15",
       title: "Editionen: Modo profe & Tarea als eigene Reiter, raus aus Entdecken",

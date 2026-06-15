@@ -2301,14 +2301,20 @@
       ? `<p class="pretrip-alldone">🎉 ${esc(t("discover.pretripAllDone"))}</p>`
       : `<p class="pretrip-progress">${esc(t("discover.pretripProgress", { done: vm.doneCount, total: vm.total }))}</p>`;
     // Destination-Auswahl: ein Plan je Reiseziel; ✓ markiert vollständig geschaffte Pläne.
-    const chips = (vm.plans || []).map((p) =>
-      `<button class="sl-chip ${p.active ? "is-active" : ""}" data-action="set-pretrip-scope" data-scope="${p.scope}"${p.active ? ' aria-current="true"' : ""}>${p.done ? "✓ " : ""}${esc(p.label)}</button>`
-    ).join("");
+    // Bei zugewiesener Aufgabe ist das Ziel fix -> nur ein nicht-klickbares Abzeichen.
+    const dest = vm.locked
+      ? `<div class="sl-chips sl-chips--locked">
+           <span class="sl-chip sl-chip--locked is-active" aria-current="true" style="--from:var(--brand);--to:var(--brand-ink)">📌 ${esc(vm.scopeLabel)}</span>
+         </div>
+         <p class="pretrip-assigned">${esc(t("discover.pretripAssigned"))}</p>`
+      : `<div class="sl-chips" role="group" aria-label="${esc(t("discover.pretripDestLabel"))}">${(vm.plans || []).map((p) =>
+          `<button class="sl-chip ${p.active ? "is-active" : ""}" data-action="set-pretrip-scope" data-scope="${p.scope}"${p.active ? ' aria-current="true"' : ""}>${p.done ? "✓ " : ""}${esc(p.label)}</button>`
+        ).join("")}</div>`;
     return `
       <section class="screen">
         ${hmTopbar("🗓️ " + esc(t("discover.pretripTitle")), "home")}
         <p class="hm-intro">${esc(t("discover.pretripIntro"))}</p>
-        <div class="sl-chips" role="group" aria-label="${esc(t("discover.pretripDestLabel"))}">${chips}</div>
+        ${dest}
         ${banner}
         <ol class="pretrip">${rows}</ol>
       </section>`;
