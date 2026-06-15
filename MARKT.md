@@ -55,7 +55,7 @@ gegen `main` v1.24.0:
 | Coordinator-Modus (5-Min-Icebreaker) | `startCoordinatorRound` (Modo hostal) | ✅ umgesetzt |
 | Lehrer-/Coordinator-Übersicht + Zuweisung | „Modo profe" (Import von Schüler-Backups → Klassenübersicht) + Aufgaben-Codes („Tarea") – offline, kein Backend | ✅ teilweise (echter Sync/Accounts bleibt Stufe 3) |
 | White-Label / Co-Branding | `config.js` + `editions/*` + `build.js --edition` | ✅ umgesetzt (ecos/weroad) |
-| Backend / Accounts / Pro-Kauf / Per-Seat | nur `localStorage`, ein Gerät, kein Sync | ❌ fehlt (bewusst, Stufe 3) |
+| Backend / Accounts / Pro-Kauf / Per-Seat | nur `localStorage`, ein Gerät, kein Sync | ❌ fehlt (bewusst, Stufe 3) — anschlussfähige Spec: [BACKEND.md](BACKEND.md) |
 | Cartagena-/Destination-/„Colombia Pack" | Kategorie `colombia`, **89 Karten** (inkl. Kaffeeregion Salento/Cocora) | ✅ umgesetzt |
 | Kuratierte Pakete / Pre-Trip-Plan | `PRESETS` (Pre-Arrival je Ziel) + `PRETRIP` (9 Ziele × 7 Etappen) | ✅ umgesetzt |
 | Lehrer-/Coordinator-/Hostel-Handouts | druckbare HTML (DE·EN·ES) unter `docs/anleitungen/` | ✅ umgesetzt |
@@ -64,7 +64,9 @@ gegen `main` v1.24.0:
 > inzwischen gebaut (**9 Destination-Packs**: Colombia 89 · Peru 45 · Mexiko 41 · Costa Rica 40 · Ecuador 40 ·
 > Guatemala 40 · Argentinien 40 · Chile 40 · Bolivien 40, Pre-Arrival-Presets je Pack, Pre-Trip-Plan (9 Ziele),
 > 47 Challenges, Coordinator-Schnellstart, dreisprachige Handouts, Edition-Schalter) — Details in [BAUPLAN.md](BAUPLAN.md).
-> Offen bleiben bewusst die Stufe-3-Punkte (echtes Lehrer-Dashboard, Accounts/Sync/Backend).
+> Offen bleiben bewusst die Stufe-3-Punkte (Accounts/Sync/Per-Seat-Backend) — als anschlussfähige
+> Technik-Spec vorbereitet in [BACKEND.md](BACKEND.md), Umsetzung erst mit zahlendem Referenzkunden.
+> Backend-frei bereits gebaut: „Modo profe" (Klassenübersicht) + „Tarea" (Aufgaben-Zuweisung).
 
 **Vier Klarstellungen, die man im Pitch nicht übersehen darf:**
 

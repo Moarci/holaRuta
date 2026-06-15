@@ -515,7 +515,7 @@ Druckfertige Anleitungen (DE · EN · ES) für den Einsatz in Sprachschulen, auf
 - **[Outreach-Anschreiben](docs/pitch/anschreiben.md)** — copy-paste, je Zielgruppe (Schule/Hostel/Reiseleiter), DE·EN·ES.
 - **[Zielkunden-Fahrplan](docs/pitch/zielkunden.md)** — priorisierte Kontaktliste + Vorgehen.
 
-> Hintergrund & Vertriebsstrategie: [MARKT.md](MARKT.md) · technische Roadmap: [BAUPLAN.md](BAUPLAN.md).
+> Hintergrund & Vertriebsstrategie: [MARKT.md](MARKT.md) · technische Roadmap: [BAUPLAN.md](BAUPLAN.md) · optionales Stufe-3-Backend (Spec): [BACKEND.md](BACKEND.md).
 
 ---
 
