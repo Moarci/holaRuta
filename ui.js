@@ -2942,9 +2942,18 @@
                ${t("discover.dlgBetter", { es: esc(cur.solEs) })}
                <span class="dlg-verdict__given">${esc(t("discover.dlgYou", { given: vm.result.given || "—" }))}</span>
              </div>`;
+        // Kurzer Hintergrund zur Musterantwort – zum Ausklappen, damit er nur
+        // stört, wenn man ihn wirklich lesen will.
+        const why = cur.why
+          ? `<details class="dlg-why">
+               <summary class="dlg-why__sum">${esc(t("discover.dlgWhy"))}</summary>
+               <p class="dlg-why__body">${esc(cur.why)}</p>
+             </details>`
+          : "";
         active = `
           ${dlgBubble({ who: "user", es: cur.solEs, de: "" })}
           ${verdict}
+          ${why}
           <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>`;
       }
     }

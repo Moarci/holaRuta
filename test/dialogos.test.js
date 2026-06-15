@@ -58,6 +58,17 @@ test("Züge: npc hat es/de, user hat Anweisung + Musterantwort", () => {
   });
 });
 
+test("User-Züge: erklärender Hintergrund (why/whyEn) ist gesetzt", () => {
+  DIALOGOS.forEach((d) => {
+    d.turns.forEach((t, i) => {
+      if (t.who !== "user") return;
+      const where = `${d.id}#${i}`;
+      assert.ok(typeof t.why === "string" && t.why.trim().length > 0, `why fehlt: ${where}`);
+      assert.ok(typeof t.whyEn === "string" && t.whyEn.trim().length > 0, `whyEn fehlt: ${where}`);
+    });
+  });
+});
+
 test("MC-Züge: genau eine richtige Option, mindestens zwei Optionen", () => {
   DIALOGOS.forEach((d) => {
     d.turns.forEach((t, i) => {
