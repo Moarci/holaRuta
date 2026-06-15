@@ -851,6 +851,7 @@
     colPacks: "Gemeisterte Pakete (≥80 %)",
     reviewed: (p) => `${p.n} gelernt`,
     remove: "Entfernen",
+    defaultName: "Schüler",
   }, {
     title: "Teacher mode",
     intro: "Class overview for teachers and tour leaders: have your students export their progress as a backup file in their profile, then import the files here. Tip: rename each file to the student's name first.",
@@ -871,6 +872,7 @@
     colPacks: "Mastered packs (≥80%)",
     reviewed: (p) => `${p.n} reviewed`,
     remove: "Remove",
+    defaultName: "Student",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------

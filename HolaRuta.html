@@ -3225,6 +3225,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     colPacks: "Gemeisterte Pakete (≥80 %)",
     reviewed: (p) => `${p.n} gelernt`,
     remove: "Entfernen",
+    defaultName: "Schüler",
   }, {
     title: "Teacher mode",
     intro: "Class overview for teachers and tour leaders: have your students export their progress as a backup file in their profile, then import the files here. Tip: rename each file to the student's name first.",
@@ -3245,6 +3246,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     colPacks: "Mastered packs (≥80%)",
     reviewed: (p) => `${p.n} reviewed`,
     remove: "Remove",
+    defaultName: "Student",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------
@@ -17925,7 +17927,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
               <td>${s.cardsMastered} / ${s.totalCards}<span class="teacher-sub"> · ${esc(t("teacher.reviewed", { n: s.cardsReviewed }))}</span></td>
               <td>${s.streak}${s.longestStreak > s.streak ? `<span class="teacher-sub"> (max ${s.longestStreak})</span>` : ""}</td>
               <td>${s.challenges}</td>
-              <td>${s.pretripDays} / 7</td>
+              <td>${s.pretripDays} / ${s.pretripMax}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
               <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
@@ -21489,12 +21491,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const b = store.readBackup(payload);
     if (!b) return null;
     const m = badges.buildMetrics(allCards(), b.progress, b.gamestats);
+    const planMax = (data.PRETRIP && data.PRETRIP[0] && data.PRETRIP[0].days.length) || 7;
     // Gemeisterte Destination-Pakete: Kategorien mit ≥80 % Mastery (wie cat-Badges).
     const masteredCats = Object.keys(m.categoryMastery || {})
       .filter((cat) => (m.categoryMastery[cat] || 0) >= 0.8)
       .map((cat) => { const c = categoryById(cat); return c ? natk(c, "label") : cat; });
     return {
-      name: name || "Schüler",
+      name: name || t("teacher.defaultName"),
       cardsReviewed: m.cardsReviewed,
       cardsMastered: m.cardsMastered,
       totalCards: m.totalCards,
@@ -21502,7 +21505,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       streak: m.dailyStreak,
       longestStreak: m.longestStreak,
       challenges: m.challengesCompleted,
-      pretripDays: m.pretripDaysDone,
+      pretripDays: Math.min(m.pretripDaysDone, planMax),
+      pretripMax: planMax,
       masteredCats,
     };
   }
@@ -21512,22 +21516,25 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const list = Array.prototype.slice.call(files || []);
     if (!list.length) return;
     let added = 0, skipped = 0, pending = list.length;
+    const finalize = () => {
+      if (--pending > 0) return;
+      if (!added) showNotice(t("teacher.noneAdded"));
+      else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
+      render();
+    };
     list.forEach((file) => {
       const reader = new FileReader();
       reader.onload = () => {
         let payload = null;
         try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
-        const name = String(file.name || "Schüler").replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || "Schüler";
+        const fallback = t("teacher.defaultName");
+        const name = String(file.name || fallback).replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || fallback;
         const summary = payload ? studentSummaryFromBackup(name, payload) : null;
         if (summary) { state.teacherStudents = state.teacherStudents.concat([summary]); added++; }
         else skipped++;
-        if (--pending === 0) {
-          if (!added) showNotice(t("teacher.noneAdded"));
-          else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
-          render();
-        }
+        finalize();
       };
-      reader.onerror = () => { if (--pending === 0) render(); };
+      reader.onerror = () => { skipped++; finalize(); };
       reader.readAsText(file);
     });
   }

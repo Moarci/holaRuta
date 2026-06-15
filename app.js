@@ -2372,12 +2372,13 @@
     const b = store.readBackup(payload);
     if (!b) return null;
     const m = badges.buildMetrics(allCards(), b.progress, b.gamestats);
+    const planMax = (data.PRETRIP && data.PRETRIP[0] && data.PRETRIP[0].days.length) || 7;
     // Gemeisterte Destination-Pakete: Kategorien mit ≥80 % Mastery (wie cat-Badges).
     const masteredCats = Object.keys(m.categoryMastery || {})
       .filter((cat) => (m.categoryMastery[cat] || 0) >= 0.8)
       .map((cat) => { const c = categoryById(cat); return c ? natk(c, "label") : cat; });
     return {
-      name: name || "Schüler",
+      name: name || t("teacher.defaultName"),
       cardsReviewed: m.cardsReviewed,
       cardsMastered: m.cardsMastered,
       totalCards: m.totalCards,
@@ -2385,7 +2386,8 @@
       streak: m.dailyStreak,
       longestStreak: m.longestStreak,
       challenges: m.challengesCompleted,
-      pretripDays: m.pretripDaysDone,
+      pretripDays: Math.min(m.pretripDaysDone, planMax),
+      pretripMax: planMax,
       masteredCats,
     };
   }
@@ -2395,22 +2397,25 @@
     const list = Array.prototype.slice.call(files || []);
     if (!list.length) return;
     let added = 0, skipped = 0, pending = list.length;
+    const finalize = () => {
+      if (--pending > 0) return;
+      if (!added) showNotice(t("teacher.noneAdded"));
+      else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
+      render();
+    };
     list.forEach((file) => {
       const reader = new FileReader();
       reader.onload = () => {
         let payload = null;
         try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
-        const name = String(file.name || "Schüler").replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || "Schüler";
+        const fallback = t("teacher.defaultName");
+        const name = String(file.name || fallback).replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || fallback;
         const summary = payload ? studentSummaryFromBackup(name, payload) : null;
         if (summary) { state.teacherStudents = state.teacherStudents.concat([summary]); added++; }
         else skipped++;
-        if (--pending === 0) {
-          if (!added) showNotice(t("teacher.noneAdded"));
-          else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
-          render();
-        }
+        finalize();
       };
-      reader.onerror = () => { if (--pending === 0) render(); };
+      reader.onerror = () => { skipped++; finalize(); };
       reader.readAsText(file);
     });
   }
