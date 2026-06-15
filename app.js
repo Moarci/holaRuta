@@ -267,6 +267,7 @@
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
+      showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
@@ -280,7 +281,8 @@
       presetStatus: (function () {
         const m = {};
         const shown = {
-          "prearrival-co": tripMentionsColombia(), "prearrival-pe": tripMentionsPeru(),
+          "prearrival-co": tripMentionsColombia(), "prearrival-ctg": tripMentionsCartagena(),
+          "prearrival-pe": tripMentionsPeru(),
           "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
           "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
           "prearrival-ar": tripMentionsArgentina(), "prearrival-cl": tripMentionsChile(),
@@ -613,6 +615,21 @@
     const t = gamestats.tripGoal;
     const cfg = window.SC && window.SC.config;
     return isColombiaDest(t && t.destination) || isColombiaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Cartagena ist ein Stadt-Pack INNERHALB Kolumbiens. Eigene, engere Stichwörter, damit
+  // ein konkreter Cartagena-Trip auch den Cartagena-Plan/-Pack vorschlägt (zusätzlich
+  // zur Kolumbien-Kachel, die über die breiteren COLOMBIA_HINTS ohnehin greift).
+  const CARTAGENA_HINTS = ["cartagena", "getsemani", "bocagrande", "islas del rosario", "san felipe"];
+  function isCartagenaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return CARTAGENA_HINTS.some((h) => norm.includes(h));
+  }
+  function tripMentionsCartagena() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isCartagenaDest(t && t.destination) || isCartagenaDest(cfg && cfg.defaultDestination);
   }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
@@ -2446,6 +2463,7 @@
     if (tripMentionsArgentina()) return "argentina";
     if (tripMentionsChile()) return "chile";
     if (tripMentionsBolivia()) return "bolivia";
+    if (tripMentionsCartagena()) return "cartagena"; // konkretes Cartagena vor dem breiten Kolumbien
     if (tripMentionsColombia()) return "colombia";
     return (PRETRIP()[0] || {}).scope || "colombia";
   }

@@ -335,6 +335,7 @@
     // Häkchen + „geschafft" an (bleibt antippbar zum Wiederholen).
     const PRESET_CARDS = [
       { id: "prearrival-co", show: vm.showColombiaPreset, titleKey: "home.presetCoTitle", subKey: "home.presetCoSub" },
+      { id: "prearrival-ctg", show: vm.showCartagenaPreset, titleKey: "home.presetCtgTitle", subKey: "home.presetCtgSub" },
       { id: "prearrival-pe", show: vm.showPeruPreset, titleKey: "home.presetPeTitle", subKey: "home.presetPeSub" },
       { id: "prearrival-mx", show: vm.showMexicoPreset, titleKey: "home.presetMxTitle", subKey: "home.presetMxSub" },
       { id: "prearrival-cr", show: vm.showCostaRicaPreset, titleKey: "home.presetCrTitle", subKey: "home.presetCrSub" },

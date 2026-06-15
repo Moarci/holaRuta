@@ -1030,7 +1030,7 @@
     { id: "cg07", cat: "cartagena", lvl: 2, de: "Um wie viel Uhr gibt es Abendessen?", en: "What time is dinner?", es: "¿A qué hora es la cena?", tip: "cena = Abendessen; in der Gastfamilie gut zu wissen", tipEn: "cena = dinner; handy in the host family" },
     { id: "cg08", cat: "cartagena", lvl: 2, de: "Darf ich die Waschmaschine benutzen?", en: "May I use the washing machine?", es: "¿Puedo usar la lavadora?", tip: "lavadora = Waschmaschine", tipEn: "lavadora = washing machine" },
     { id: "cg09", cat: "cartagena", lvl: 1, de: "Wo ist mein Zimmer?", en: "Where is my room?", es: "¿Dónde está mi habitación?", tip: "habitación = Zimmer", tipEn: "habitación = room" },
-    { id: "cg10", cat: "cartagena", lvl: 2, de: "Gibt es WLAN im Haus?", en: "Is there wifi in the house?", es: "¿Hay wifi en la casa?", tip: "wifi wird „UI-fi“ ausgesprochen", tipEn: "wifi is pronounced \"WEE-fee\"" },
+    { id: "cg10", cat: "cartagena", lvl: 2, de: "Gibt es WLAN im Haus?", en: "Is there wifi in the house?", es: "¿Hay wifi en la casa?", tip: "wifi spricht man „güi-fi“", tipEn: "wifi is pronounced \"WEE-fee\"" },
     { id: "cg11", cat: "cartagena", lvl: 1, de: "Entschuldigung, wo ist die Plaza de la Trinidad?", en: "Excuse me, where is the Plaza de la Trinidad?", es: "Disculpe, ¿dónde está la Plaza de la Trinidad?", tip: "Plaza de la Trinidad = abends der Treffpunkt in Getsemaní", tipEn: "Plaza de la Trinidad = Getsemaní's evening meeting spot" },
     { id: "cg12", cat: "cartagena", lvl: 2, de: "Ist dieses Viertel nachts sicher?", en: "Is this neighbourhood safe at night?", es: "¿Este barrio es seguro de noche?", tip: "barrio = Viertel; ruhig fragen, nicht ängstlich", tipEn: "barrio = neighbourhood; ask calmly, not anxiously" },
     { id: "cg13", cat: "cartagena", lvl: 1, de: "Wo ist der Uhrenturm?", en: "Where is the clock tower?", es: "¿Dónde está la Torre del Reloj?", tip: "Torre del Reloj = das Haupttor zur Altstadt", tipEn: "Torre del Reloj = the main gate to the old town" },
@@ -1049,10 +1049,12 @@
     { id: "cg26", cat: "cartagena", lvl: 2, de: "Um wie viel Uhr fährt das Boot zurück?", en: "What time does the boat go back?", es: "¿A qué hora regresa la lancha?", tip: "lancha = (Schnell-)Boot", tipEn: "lancha = (speed)boat" },
     { id: "cg27", cat: "cartagena", lvl: 2, de: "Können Sie mir einen Ort zum Salsa-Tanzen empfehlen?", en: "Can you recommend a place to dance salsa?", es: "¿Me recomienda un sitio para bailar salsa?", tip: "Café Havana in Getsemaní ist der Klassiker", tipEn: "Café Havana in Getsemaní is the classic" },
     { id: "cg28", cat: "cartagena", lvl: 1, de: "Ich tanze nicht so gut, aber ich versuche es!", en: "I don't dance very well, but I'll try!", es: "No bailo muy bien, ¡pero lo intento!", tip: "Lockerheit zählt mehr als Technik", tipEn: "Being easy-going counts more than technique" },
-    { id: "cg29", cat: "cartagena", lvl: 3, de: "Gibt es heute Abend Live-Musik?", en: "Is there live music tonight?", es: "¿Hay música en vivo esta noche?", tip: "música en vivo = Live-Musik", tipEn: "música en vivo = live music" },
+    { id: "cg29", cat: "cartagena", lvl: 2, de: "Gibt es heute Abend Live-Musik?", en: "Is there live music tonight?", es: "¿Hay música en vivo esta noche?", tip: "música en vivo = Live-Musik", tipEn: "música en vivo = live music" },
     { id: "cg30", cat: "cartagena", lvl: 2, de: "Von wo fährt der Bus nach Santa Marta?", en: "Where does the bus to Santa Marta leave from?", es: "¿De dónde sale el bus a Santa Marta?", tip: "Santa Marta = Tor zum Tayrona-Nationalpark", tipEn: "Santa Marta = gateway to Tayrona National Park" },
     { id: "cg31", cat: "cartagena", lvl: 3, de: "Wie lange dauert die Fahrt nach Tayrona?", en: "How long is the trip to Tayrona?", es: "¿Cuánto dura el viaje al Tayrona?", tip: "Tayrona = Nationalpark mit Dschungel-Stränden", tipEn: "Tayrona = national park with jungle beaches" },
     { id: "cg32", cat: "cartagena", lvl: 2, de: "Muss ich das Ticket im Voraus kaufen?", en: "Do I need to buy the ticket in advance?", es: "¿Necesito comprar el boleto con anticipación?", tip: "con anticipación = im Voraus; boleto = Ticket", tipEn: "con anticipación = in advance; boleto = ticket" },
+    { id: "cg33", cat: "cartagena", lvl: 2, de: "Wie viel kostet der Eintritt zum Castillo San Felipe?", en: "How much is the entrance to the Castillo San Felipe?", es: "¿Cuánto cuesta la entrada al Castillo San Felipe?", tip: "Castillo San Felipe de Barajas = die große Festung über der Stadt", tipEn: "Castillo San Felipe de Barajas = the great fortress above the city" },
+    { id: "cg34", cat: "cartagena", lvl: 1, de: "Nehmen Sie Karte oder nur Bargeld?", en: "Do you take card or only cash?", es: "¿Aceptan tarjeta o solo efectivo?", tip: "efectivo = Bargeld; an der Küste haben viele Stände kein Kartengerät", tipEn: "efectivo = cash; on the coast many stalls have no card reader" },
 
     // ===================== PERU (Destination-Pack, WeRoad-Route) =====================
     // Lima · Arequipa/Colca · Titicaca/Puno · Cusco/Heiliges Tal · Machu Picchu · Regenbogenberg
@@ -2752,8 +2754,8 @@
     },
     {
       id: "prearrival-ctg", scope: "cartagena",
-      pick: ["cg01", "cg02", "cg04", "cg06", "cg07", "cg09", "cg11", "cg13", "cg15", "cg16",
-             "cg17", "cg20", "cg21", "cg24", "cg25", "cg22", "cg27", "cg30"],
+      pick: ["cg01", "cg02", "cg03", "cg04", "cg06", "cg07", "cg09", "cg11", "cg13", "cg15",
+             "cg16", "cg17", "cg20", "cg22", "cg24", "cg25", "cg27", "cg30", "cg33", "cg34"],
     },
     {
       id: "prearrival-pe", scope: "peru",
@@ -2826,9 +2828,9 @@
       { day: 2, titleDe: "Gastfamilie & Ankommen", titleEn: "Host family & settling in",
         cardIds: ["cg06", "cg07", "cg08", "cg09", "cg10"], challengeId: null },
       { day: 3, titleDe: "Altstadt & Orientierung", titleEn: "Old town & orientation",
-        cardIds: ["cg11", "cg12", "cg13", "cg14"], challengeId: "challenge16" },
-      { day: 4, titleDe: "Essen lokal", titleEn: "Local food",
-        cardIds: ["cg15", "cg16", "cg17", "cg18", "cg19", "cg20"], challengeId: "challenge11" },
+        cardIds: ["cg11", "cg12", "cg13", "cg14", "cg33"], challengeId: "challenge16" },
+      { day: 4, titleDe: "Essen & Bezahlen", titleEn: "Food & paying",
+        cardIds: ["cg15", "cg16", "cg17", "cg18", "cg19", "cg20", "cg34"], challengeId: "challenge11" },
       { day: 5, titleDe: "Strand & Verkäufer", titleEn: "Beach & vendors",
         cardIds: ["cg21", "cg24", "cg25"], challengeId: null },
       { day: 6, titleDe: "Islas del Rosario", titleEn: "Islas del Rosario",

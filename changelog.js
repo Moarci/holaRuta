@@ -22,6 +22,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.72.0",
+      date: "2026-06-15",
+      title: "Cartagena-Pack: Review-Feinschliff & Dashboard-Kachel",
+      items: [
+        "🏖️ Zwei Karten ergänzt: Eintritt zum Castillo San Felipe (das Wahrzeichen) und „Nehmen Sie Karte oder nur Bargeld?“ – jetzt 34 Cartagena-Karten.",
+        "🏠 Die „Pre-Arrival Cartagena“-Kachel erscheint nun auf der Startseite, sobald dein Reiseziel Cartagena meint – und der Cartagena-Pre-Trip-Plan wird passend vorgeschlagen.",
+        "✍️ Sprachlicher Feinschliff (Gastfamilie-Satz, Aussprache von „wifi“, Hafensteuer-Begriff) und ein Niveau korrigiert.",
+        "🧪 Zwei neue Tests sichern künftig die englische Übersetzung neuer Pack-Karten und die Dashboard-Verdrahtung der Pre-Arrival-Pakete ab.",
+      ],
+    },
+    {
       version: "1.71.0",
       date: "2026-06-15",
       title: "Neuer Stadt-Pack: Cartagena 🏖️",
