@@ -996,7 +996,7 @@
       dialogue: [
         { speaker: "A", de: "Hallo, guten Abend! Ich habe eine Reservierung.", en: "Hello, good evening! I have a reservation.", es: "¡Hola, buenas noches! Tengo una reserva." },
         { speaker: "B", de: "Willkommen! Auf welchen Namen läuft die Reservierung?", en: "Welcome! What name is the reservation under?", es: "¡Bienvenido! ¿A nombre de quién está la reserva?" },
-        { speaker: "A", de: "Auf den Namen Marcel, für drei Nächte.", en: "Under the name Marcel, for three nights.", es: "A nombre de Marcel, por tres noches." },
+        { speaker: "A", de: "Auf den Namen {name}, für drei Nächte.", en: "Under the name {name}, for three nights.", es: "A nombre de {name}, por tres noches." },
         { speaker: "B", de: "Perfekt, ich sehe sie hier. Kannst du mir deinen Pass zeigen?", en: "Perfect, I can see it here. Can you show me your passport?", es: "Perfecto, aquí la veo. ¿Me puedes mostrar tu pasaporte?" },
         { speaker: "A", de: "Ja, klar, hier bitte.", en: "Yes, of course, here you go.", es: "Sí, claro, aquí tienes." },
         { speaker: "B", de: "Danke. Hast du schon online bezahlt oder zahlst du jetzt?", en: "Thanks. Have you already paid online or are you paying now?", es: "Gracias. ¿Ya pagaste en línea o pagas ahora?" },
@@ -1068,7 +1068,7 @@
       dialogue: [
         { speaker: "A", de: "Hallo! Ist hier noch frei?", en: "Hi! Is this seat free?", es: "¡Hola! ¿Está libre aquí?" },
         { speaker: "B", de: "Ja, klar, setz dich.", en: "Yes, of course, sit down.", es: "Sí, claro, siéntate." },
-        { speaker: "A", de: "Danke. Ich bin Marcel. Wie heißt du?", en: "Thanks. I'm Marcel. What's your name?", es: "Gracias. Soy Marcel. ¿Cómo te llamas?" },
+        { speaker: "A", de: "Danke. Ich bin {name}. Wie heißt du?", en: "Thanks. I'm {name}. What's your name?", es: "Gracias. Soy {name}. ¿Cómo te llamas?" },
         { speaker: "B", de: "Ich bin Sofía. Freut mich!", en: "I'm Sofía. Nice to meet you!", es: "Soy Sofía. ¡Mucho gusto!" },
         { speaker: "A", de: "Freut mich auch. Woher kommst du?", en: "Nice to meet you too. Where are you from?", es: "Igualmente. ¿De dónde eres?" },
         { speaker: "B", de: "Ich komme aus Argentinien. Und du?", en: "I'm from Argentina. And you?", es: "Soy de Argentina. ¿Y tú?" },
@@ -1417,7 +1417,7 @@
       dialogue: [
         { speaker: "A", de: "Hallo, guten Tag.", en: "Hello, good day.", es: "Hola, buenos días." },
         { speaker: "B", de: "Hallo! Wie heißt du?", en: "Hi! What's your name?", es: "¡Hola! ¿Cómo te llamas?" },
-        { speaker: "A", de: "Ich heiße Marcel.", en: "My name is Marcel.", es: "Me llamo Marcel." },
+        { speaker: "A", de: "Ich heiße {name}.", en: "My name is {name}.", es: "Me llamo {name}." },
         { speaker: "B", de: "Hast du eine Reservierung?", en: "Do you have a reservation?", es: "¿Tienes una reserva?" },
         { speaker: "A", de: "Ja, für zwei Nächte.", en: "Yes, for two nights.", es: "Sí, por dos noches." },
         { speaker: "B", de: "Sehr gut. Dein Bett ist Nummer fünf.", en: "Very good. Your bed is number five.", es: "Muy bien. Tu cama es la número cinco." },
@@ -1455,8 +1455,8 @@
       goalA: "Begrüße, stell dich vor und frag nach dem Namen und der Herkunft.",
       goalB: "Antworte freundlich und einfach und stell eine Gegenfrage.",
       dialogue: [
-        { speaker: "A", de: "Hallo! Ich bin Marcel.", en: "Hi! I'm Marcel.", es: "¡Hola! Soy Marcel." },
-        { speaker: "B", de: "Hallo Marcel! Ich bin Ana.", en: "Hi Marcel! I'm Ana.", es: "¡Hola Marcel! Soy Ana." },
+        { speaker: "A", de: "Hallo! Ich bin {name}.", en: "Hi! I'm {name}.", es: "¡Hola! Soy {name}." },
+        { speaker: "B", de: "Hallo {name}! Ich bin Ana.", en: "Hi {name}! I'm Ana.", es: "¡Hola {name}! Soy Ana." },
         { speaker: "A", de: "Freut mich. Woher kommst du?", en: "Nice to meet you. Where are you from?", es: "Mucho gusto. ¿De dónde eres?" },
         { speaker: "B", de: "Aus Chile. Und du?", en: "From Chile. And you?", es: "De Chile. ¿Y tú?" },
         { speaker: "A", de: "Aus Deutschland.", en: "From Germany.", es: "De Alemania." },
@@ -1465,7 +1465,7 @@
         { speaker: "B", de: "Cool. Bis später!", en: "Cool. See you later!", es: "Genial. ¡Nos vemos!" },
         { speaker: "A", de: "Bis später!", en: "See you later!", es: "¡Nos vemos!" },
       ],
-      usefulPhrases: ["Soy Marcel.", "Mucho gusto.", "¿De dónde eres?", "¿Y tú?", "¿Cuánto te quedas?", "¡Nos vemos!"],
+      usefulPhrases: ["Soy {name}.", "Mucho gusto.", "¿De dónde eres?", "¿Y tú?", "¿Cuánto te quedas?", "¡Nos vemos!"],
     },
 
     // ===== Fortgeschritten (B1) – Nebensätze, höfliche Konditionale =====

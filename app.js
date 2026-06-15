@@ -304,7 +304,7 @@
       total: state.total,
       revealed: state.revealed,
       typeResult: state.typeResult,
-      context: card.context ? loc(card.context) : null,
+      context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
       swatch: card.swatch || null,
     };
@@ -388,7 +388,7 @@
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
-      context: card.context ? loc(card.context) : null,
+      context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
     });
   }
@@ -910,9 +910,9 @@
       roleB: { name: swapped ? r.roles.a : r.roles.b, goal: natk(r, swapped ? "goalA" : "goalB") },
       dialogue: r.dialogue.map((d) => ({
         speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
-        de: nat(d), es: d.es,
+        de: withName(nat(d)), es: withName(d.es),
       })),
-      usefulPhrases: r.usefulPhrases,
+      usefulPhrases: r.usefulPhrases.map(withName),
     };
   }
 
@@ -1250,6 +1250,14 @@
   // durch den Reise-Namen ersetzen.
   function withName(s) {
     return typeof s === "string" ? s.replace(/\{name\}/g, travelerName()) : s;
+  }
+  // {name} in allen String-Feldern eines (flachen) Objekts ersetzen – z. B. im
+  // lokalisierten Reise-Kontext einer Karte (sentenceEs/sentenceDe/situation/note).
+  function withNameObj(o) {
+    if (!o || typeof o !== "object") return o;
+    const out = {};
+    for (const k in o) out[k] = withName(o[k]);
+    return out;
   }
 
   function dialogosSetupVM() {
