@@ -44,15 +44,57 @@
       </div>`;
   }
 
-  // Dark-Mode-Umschalter (Startseite, oben rechts). Zeigt das Ziel der nächsten
-  // Aktion: Mond = "in den Dunkelmodus" (fürs Hostel-Bett), Sonne = "zurück ins Helle".
+  // Dark-Mode-Umschalter (Startseite, oben rechts): ein kleines, doppelseitiges
+  // Emaille-Schild. Hell = Kaffee am Morgen (AM, Dampf steigt), Dunkel = Wein am
+  // Abend (PM, Glas voll). Das jeweils inaktive Schild liegt gedimmt darunter.
+  // role="switch" + aria-checked (dunkel = an); die Logik hängt wie gehabt an
+  // data-action="toggle-theme". Das Schild reagiert per CSS auf [data-theme].
   function themeToggle(theme) {
     const dark = theme === "dark";
-    const icon = dark ? "☀️" : "🌙";
     const label = dark ? t("common.themeLight") : t("common.themeDark");
     const title = dark ? t("common.themeLightTitle") : t("common.themeDarkTitle");
-    return `<button class="iconbtn" data-action="toggle-theme"
-                    aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
+    return `<button class="themesign" data-action="toggle-theme" role="switch"
+                    aria-checked="${dark}" aria-label="${esc(label)}" title="${esc(title)}">
+      <span class="themesign__plank">
+        <span class="themesign__plaque themesign__plaque--am">
+          <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
+            <g filter="url(#signGrain)">
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="#EDE4CD"/>
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="none" stroke="rgba(33,28,21,.10)" stroke-width="2"/>
+            </g>
+            <g filter="url(#signPaint)" fill="#1B1712" stroke="#1B1712">
+              <text x="92" y="62" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="2" stroke="none">AM</text>
+              <g class="themesign__steam" fill="none" stroke-width="4.5" stroke-linecap="round">
+                <path d="M80 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+                <path d="M92 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+                <path d="M104 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+              </g>
+              <path stroke="none" d="M52 128 h66 a6 6 0 0 1 6 6 q-2 34 -10 44 a16 16 0 0 1 -13 7 h-32 a16 16 0 0 1 -13 -7 q-8 -10 -10 -44 a6 6 0 0 1 6 -6 z"/>
+              <path fill="none" stroke-width="9" d="M124 138 q22 0 22 18 q0 18 -20 19"/>
+              <path stroke="none" d="M44 190 h80 q6 0 4 5 q-3 7 -44 7 q-41 0 -44 -7 q-2 -5 4 -5 z"/>
+            </g>
+          </svg>
+        </span>
+        <span class="themesign__plaque themesign__plaque--pm">
+          <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
+            <g filter="url(#signGrain)">
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="#1B1712"/>
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="none" stroke="rgba(236,226,202,.10)" stroke-width="2"/>
+            </g>
+            <g filter="url(#signPaint)">
+              <text x="92" y="60" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="2" fill="#ECE2CA">PM</text>
+              <clipPath id="signBowlClip">
+                <path d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+              </clipPath>
+              <rect class="themesign__wine" clip-path="url(#signBowlClip)" x="50" y="118" width="84" height="40" fill="#7C2A33"/>
+              <path fill="none" stroke="#ECE2CA" stroke-width="6.5" stroke-linejoin="round" d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+              <rect x="89" y="146" width="6" height="42" rx="3" fill="#ECE2CA"/>
+              <path stroke="none" fill="#ECE2CA" d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z"/>
+            </g>
+          </svg>
+        </span>
+      </span>
+    </button>`;
   }
 
   // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
