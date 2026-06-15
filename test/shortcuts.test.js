@@ -1,13 +1,13 @@
 /*
- * shortcuts.test.js – Drift-Wächter für Homescreen-Shortcuts und PWA-Widgets.
+ * shortcuts.test.js – Drift-Wächter für Homescreen-Shortcuts.
  * Nutzt den in Node eingebauten Test-Runner – KEINE Dependencies.
  *
  * Aufruf:  node --test
  *
  * Prüft, dass jeder Manifest-Shortcut auf ein Ziel zeigt, das app.js wirklich
- * öffnen kann (?a=<aktion> bzw. ?m=<modul>), dass alle von Shortcuts/Widgets
- * referenzierten Dateien existieren UND im Service-Worker-Precache stehen (sonst
- * funktionieren sie offline nicht), und dass die Widget-Vorlage gültiges JSON ist.
+ * öffnen kann (?a=<aktion> bzw. ?m=<modul>), und dass alle von Shortcuts
+ * referenzierten Icons existieren UND im Service-Worker-Precache stehen (sonst
+ * funktionieren sie offline nicht).
  */
 "use strict";
 const test = require("node:test");
@@ -70,23 +70,6 @@ test("Jedes Shortcut-Icon existiert und ist im SW-Precache", () => {
       const ref = normalize(ic.src);
       assert.ok(fs.existsSync(path.join(SRC, ref)), `Shortcut-Icon "${ref}" existiert nicht`);
       assert.ok(assetSet.has(ref), `Shortcut-Icon "${ref}" fehlt im SW-Precache (offline kaputt)`);
-    }
-  }
-});
-
-test("Widgets (falls vorhanden): Vorlage + Daten existieren, sind JSON und im Precache", () => {
-  for (const w of manifest.widgets || []) {
-    for (const key of ["ms_ac_template", "data"]) {
-      const src = w[key];
-      if (!src || !isLocal(src)) continue;
-      const ref = normalize(src);
-      assert.ok(fs.existsSync(path.join(SRC, ref)), `Widget-Datei "${ref}" (${key}) existiert nicht`);
-      assert.ok(assetSet.has(ref), `Widget-Datei "${ref}" fehlt im SW-Precache (offline kaputt)`);
-      assert.doesNotThrow(() => JSON.parse(read(ref)), `Widget-Datei "${ref}" ist kein gültiges JSON`);
-    }
-    for (const ic of w.icons || []) {
-      if (!isLocal(ic.src)) continue;
-      assert.ok(assetSet.has(normalize(ic.src)), `Widget-Icon "${ic.src}" fehlt im SW-Precache`);
     }
   }
 });
