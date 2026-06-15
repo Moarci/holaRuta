@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.36.0",
+      date: "2026-06-15",
+      title: "Zwei neue Reise-Pakete: Ecuador & Guatemala",
+      items: [
+        "🇪🇨 Neuer Bereich „Ecuador“ mit 40 Karten: Quito & Mitad del Mundo, Otavalo-Markt, Cotopaxi & Quilotoa, Baños, Amazonas/Tena (+ Galápagos-Verlängerung) – mit US-Dollar-Hinweis und Anden-Slang (achachay, ¿qué fue?, Alli puncha).",
+        "🇬🇹 Neuer Bereich „Guatemala“ mit 40 Karten: Antigua, Lago de Atitlán, Chichicastenango-Markt, Tikal/Flores, Acatenango/Fuego, Semuc Champey – mit Quetzal, Chicken Bus/Tuk-Tuk und Maya-Kultur (Saqʼarik, chapín, chilero).",
+        "🗓️ Beide auch im Pre-Trip-Plan wählbar, je mit Pre-Arrival-Kachel und zwei Real-Life-Mutproben.",
+      ],
+    },
+    {
       version: "1.35.0",
       date: "2026-06-15",
       title: "Pre-Trip-Plan jetzt für vier Reiseziele",

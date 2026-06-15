@@ -245,6 +245,8 @@
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
+      showEcuadorPreset: tripMentionsEcuador(),   // Pre-Arrival-Kachel nur bei Ecuador-Bezug
+      showGuatemalaPreset: tripMentionsGuatemala(), // Pre-Arrival-Kachel nur bei Guatemala-Bezug
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
@@ -555,6 +557,36 @@
     const t = gamestats.tripGoal;
     const cfg = window.SC && window.SC.config;
     return isCostaRicaDest(t && t.destination) || isCostaRicaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Ecuador-Bezug für die „Pre-Arrival Ecuador"-Kachel.
+  const ECUADOR_HINTS = ["ecuador", "quito", "guayaquil", "cuenca", "otavalo", "cotopaxi",
+    "quilotoa", "banos", "baños", "tena", "amazonia", "amazonía", "galapagos", "galápagos",
+    "mitad del mundo", "montañita"];
+  function isEcuadorDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return ECUADOR_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsEcuador() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isEcuadorDest(t && t.destination) || isEcuadorDest(cfg && cfg.defaultDestination);
+  }
+
+  // Guatemala-Bezug für die „Pre-Arrival Guatemala"-Kachel.
+  const GUATEMALA_HINTS = ["guatemala", "antigua", "atitlan", "atitlán", "panajachel", "san pedro la laguna",
+    "chichicastenango", "tikal", "flores", "semuc champey", "lanquin", "lanquín", "acatenango", "xela",
+    "quetzaltenango"];
+  function isGuatemalaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return GUATEMALA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsGuatemala() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isGuatemalaDest(t && t.destination) || isGuatemalaDest(cfg && cfg.defaultDestination);
   }
 
   // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----
@@ -2193,6 +2225,8 @@
     if (tripMentionsPeru()) return "peru";
     if (tripMentionsMexico()) return "mexico";
     if (tripMentionsCostaRica()) return "costarica";
+    if (tripMentionsEcuador()) return "ecuador";
+    if (tripMentionsGuatemala()) return "guatemala";
     if (tripMentionsColombia()) return "colombia";
     return (PRETRIP()[0] || {}).scope || "colombia";
   }
