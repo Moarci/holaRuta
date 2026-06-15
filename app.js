@@ -14,11 +14,14 @@
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const historia = window.SC.historia || null;   // Geschichte Südamerikas (Erklärseite, optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
   const conjug = window.SC.conjug || null;       // Konjugations-Drill-Generator (optional)
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
+  const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
+  const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -47,7 +50,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud'
     homeTab: "lernen",       // Start hat Vorrang: jeder App-Start landet auf dem Lernen-Reiter; Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -111,6 +114,8 @@
     comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
     // ----- Trip-Ziel (Countdown + Tagesziel) -----
     tripEdit: false,         // Trip-Ziel-Formular auf der Startseite aufgeklappt?
+    // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
+    searchQuery: "",         // aktueller Suchbegriff (lebt nur in der Sitzung)
   };
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -230,11 +235,14 @@
       syncLoggedIn: !!(window.SC.sync && window.SC.sync.loggedIn && window.SC.sync.loggedIn()),
       syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
       hasCountries: !!countries, // dito für die Länderkunde
+      hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
       hasDialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length), // Gesprächs-Simulationen
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
+      hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
+      hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -415,7 +423,21 @@
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
     // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
-    return { country: country ? loc(country) : null, groups };
+    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia };
+  }
+
+  // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
+  // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
+  // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
+  function historiaVM() {
+    if (!historia) return { intro: "", eras: [], figures: [], tensions: [], facts: [] };
+    return {
+      intro: nat(historia.INTRO),
+      eras: loc(historia.ERAS || []),
+      figures: loc(historia.FIGURES || []),
+      tensions: loc(historia.TENSIONS || []),
+      facts: (historia.FACTS || []).map(nat),
+    };
   }
 
   // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
@@ -467,6 +489,38 @@
       units: loc(regatear.UNITS || []),
       regional: loc(regatear.REGIONAL || []),
       roleplays: loc(roleplays),
+    };
+  }
+
+  // Logística de viaje: praktische Reise-Logistik (SIM, Geld, Gepäck, Tracker,
+  // Handgepäck-Notfallset) – reine Anzeige-Seite. Reicht die Daten 1:1 durch und
+  // überlagert per localizeDeep alle …En-Felder für die aktive Sprache (wie
+  // regatearVM). INTRO ist eine eigene Konstante und wird separat aufgelöst.
+  function logisticaVM() {
+    if (!logistica) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && logistica.INTRO_EN) ? logistica.INTRO_EN : logistica.INTRO,
+      topics: loc(logistica.TOPICS || []),
+      phrases: loc(logistica.PHRASES || []),
+      glossary: loc(logistica.GLOSSARY || []),
+      checklist: loc(logistica.CHECKLIST || []),
+    };
+  }
+
+  // Salud y energía: gesund & fit unterwegs (Essen, Trinken, Bauch, Sonne/Höhe,
+  // Bewegung). Gleiches Schema und Pass-Through wie logisticaVM.
+  function saludVM() {
+    if (!salud) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && salud.INTRO_EN) ? salud.INTRO_EN : salud.INTRO,
+      topics: loc(salud.TOPICS || []),
+      phrases: loc(salud.PHRASES || []),
+      glossary: loc(salud.GLOSSARY || []),
+      checklist: loc(salud.CHECKLIST || []),
     };
   }
 
@@ -1944,7 +1998,7 @@
   // Wohin führt „eins höher" vom aktuellen Screen? Die Detailseite kehrt dahin
   // zurück, wo der Zurück-Knopf ohnehin hinführt (Startseite oder Statistik).
   function backTarget() {
-    if (state.screen === "card") return state.backTo === "home" ? "home" : "stats";
+    if (state.screen === "card") return state.backTo === "home" ? "home" : state.backTo === "search" ? "search" : "stats";
     return SCREEN_PARENT[state.screen] || "home";
   }
 
@@ -1985,6 +2039,27 @@
   }
 
   // ----- Rendern -----
+  // Merkt sich die zuletzt gerenderte Ansicht, um beim ECHTEN Ansichtswechsel
+  // (anderer Screen oder – im Dashboard – anderer Reiter) den Fenster-Scroll auf
+  // 0 zu setzen. Sonst „erbt“ die neue Seite die Scroll-Position der alten: wer im
+  // Entdecken-Reiter nach unten scrollt und eine Kategorie öffnet, landet sonst
+  // mitten in der neuen Seite statt oben. Re-Renders DERSELBEN Ansicht (Karte
+  // umdrehen, Antwort prüfen, Dialog-Zug) lassen den Scroll bewusst stehen.
+  let lastScrollKey = null;
+  function scrollKey() {
+    return state.screen === "home" ? "home:" + state.homeTab : state.screen;
+  }
+  function resetScrollOnViewChange() {
+    const key = scrollKey();
+    if (key === lastScrollKey) return;
+    lastScrollKey = key;
+    try {
+      window.scrollTo(0, 0);
+    } catch (e) {
+      try { document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch (e2) { /* egal */ }
+    }
+  }
+
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
     else if (state.screen === "done") root.innerHTML = ui.renderDone(doneVM());
@@ -1992,8 +2067,11 @@
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
+    else if (state.screen === "historia") root.innerHTML = ui.renderHistoria(historiaVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
+    else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
+    else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
@@ -2026,8 +2104,12 @@
     else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
     else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
     else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
+    else if (state.screen === "search") root.innerHTML = ui.renderSearch(searchVM());
     else if (state.screen === "onboarding") root.innerHTML = ui.renderOnboarding(homeVM());
     else root.innerHTML = ui.renderHome(homeVM());
+
+    // Nach dem Austausch des Inhalts: bei echtem Ansichtswechsel oben anfangen.
+    resetScrollOnViewChange();
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
     if (badges && state.badgeToast && state.badgeToast.length) {
@@ -2165,6 +2247,17 @@
     if (state.screen === "dialogos" && state.dialogos && !state.dialogos.result) {
       const input = document.getElementById("dialogos-answer");
       if (input) { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } return; }
+    }
+    // Suche: Fokus direkt ins Eingabefeld (Tastatur erscheint, sofort lostippen).
+    // Der Cursor ans Ende, damit ein gemerkter Suchbegriff weitergetippt werden kann.
+    if (state.screen === "search") {
+      const input = document.getElementById("search-input");
+      if (input) {
+        try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+        const len = input.value.length;
+        try { input.setSelectionRange(len, len); } catch (e) { /* type=search erlaubt das nicht überall */ }
+        return;
+      }
     }
     const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
@@ -2718,6 +2811,7 @@
     applyUiLang(l);
     settings = Object.assign({}, settings, { uiLang: state.uiLang });
     store.saveSettings(settings);
+    invalidateSearchIndex(); // Titel/Untertitel & Gruppen hängen an der UI-Sprache
     render();
   }
 
@@ -3296,9 +3390,194 @@
   }
 
   // ----- Länderkunde (Infoseite) -----
+  // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
+  // Eine flache Volltext-Suche über alle Inhalte: Vokabelkarten, Lern-Kategorien
+  // und Übungs-Features ("Übungen") sowie Länderkunde, Reise-Knigge, Logística und
+  // Salud ("Informationen"). Jeder Treffer trägt die schon bestehende data-action,
+  // mit der die jeweilige Ansicht geöffnet wird – die Suche ist also nur ein
+  // zweiter Einstieg, kein eigener Inhaltsspeicher.
+
+  // Übungs-Features (spiegelt die FEATURES-Liste in ui.js, ohne die reinen
+  // Infoseiten – die kommen unten als „Informationen" mit reichem Suchindex).
+  const SEARCH_FEATURES = [
+    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",       subKey: "discover.subHostel" },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",      subKey: "discover.subDefiniciones" },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos" },
+    { action: "open-regatear",    icon: "🤝", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",         subKey: "discover.subCuerpo" },
+    { action: "open-compras",     icon: "🛒", title: "Lista de compras",  subKey: "discover.subCompras" },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
+  ];
+  const searchHas = {
+    countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
+    dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
+    knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
+  };
+
+  // Such-Kern (normalisieren/indexieren/ranken) lebt als reines Modul in search.js.
+  const searchEngine = window.SC.search || null;
+  const searchHay = (parts) => (searchEngine ? searchEngine.haystack(parts) : "");
+
+  // Index wird einmal aufgebaut und gemerkt; bei Sprachwechsel oder geänderten
+  // eigenen Karten neu (siehe invalidateSearchIndex).
+  let searchIndex = null;
+  function invalidateSearchIndex() { searchIndex = null; }
+  function getSearchIndex() {
+    if (!searchIndex) searchIndex = buildSearchIndex();
+    return searchIndex;
+  }
+  function buildSearchIndex() {
+    const idx = [];
+
+    // --- Übungen: Vokabelkarten (eigene inklusive) ---
+    allCards().forEach((c) => {
+      const cat = categoryById(c.cat);
+      idx.push({
+        group: "ex", kind: "card", kindLabel: t("search.kindCard"),
+        icon: cat ? cat.icon : "🃏",
+        title: c.es, titleLang: "es", sub: nat(c),
+        action: "open-card", id: c.id, back: "search",
+        hay: searchHay([c.es, c.de, c.en, c.tip, c.tipEn, cat && natk(cat, "label")]),
+      });
+    });
+
+    // --- Übungen: Lern-Kategorien (ganze Themen-Decks) ---
+    data.CATEGORIES.forEach((c) => {
+      idx.push({
+        group: "ex", kind: "category", kindLabel: t("search.kindCategory"),
+        icon: c.icon, title: natk(c, "label"), sub: t("search.subCategory"),
+        action: "open-category", id: c.id,
+        hay: searchHay([c.label, c.labelEn, c.id]),
+      });
+    });
+
+    // --- Übungen: Übungs-Features (nur die geladenen/verfügbaren) ---
+    SEARCH_FEATURES.forEach((f) => {
+      if (f.need && !searchHas[f.need]) return;
+      idx.push({
+        group: "ex", kind: "feature", kindLabel: t("search.kindFeature"),
+        icon: f.icon, title: f.title, sub: t(f.subKey),
+        action: f.action,
+        hay: searchHay([f.title, t(f.subKey)]),
+      });
+    });
+
+    // --- Informationen: Länderkunde (ein Treffer je Land) ---
+    if (countries && Array.isArray(countries.LIST)) {
+      countries.LIST.forEach((c) => {
+        const words = (c.words || []).map((w) => [w.es, w.de, w.en]);
+        idx.push({
+          group: "info", kind: "country", kindLabel: t("search.kindCountry"),
+          icon: c.flag || "🌎", title: natk(c, "name") || c.name, sub: natk(c, "tagline"),
+          action: "search-country", id: c.id,
+          hay: searchHay([c.name, c.nameEn, c.capital, c.region, c.tagline, c.taglineEn,
+            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn, words]),
+        });
+      });
+    }
+
+    // --- Informationen: Inhaltsseiten mit reichem Heuhaufen (ein Treffer je Seite,
+    //     ein Stichwort aus irgendeinem Thema bringt die ganze Seite nach vorn) ---
+    if (knigge && Array.isArray(knigge.TOPICS)) {
+      const topics = knigge.TOPICS.map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn,
+        tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "🧭", title: "Etiqueta de viaje", sub: t("discover.subKnigge"),
+        action: "open-knigge",
+        hay: searchHay(["etiqueta knigge benehmen verhalten etiquette manners", topics]),
+      });
+    }
+    const pageMod = (mod, icon, title, subKey, action) => {
+      if (!mod) return;
+      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
+      const phrases = (mod.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
+      const gloss = (mod.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
+      const checklist = (mod.CHECKLIST || []).map((c) => [c.item, c.itemEn, c.why, c.whyEn]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: icon, title: title, sub: t(subKey),
+        action: action,
+        hay: searchHay([title, mod.INTRO, mod.INTRO_EN, topics, phrases, gloss, checklist]),
+      });
+    };
+    pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
+    pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
+
+    // Historia de Sudamérica: ein Treffer für die ganze Erklärseite (Epochen,
+    // Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
+    if (historia) {
+      const eras = (historia.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
+      const figs = (historia.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
+      const tens = (historia.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
+      const facts = (historia.FACTS || []).map((f) => [f.de, f.en]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "📜", title: "Historia de Sudamérica", sub: t("discover.subHistoria"),
+        action: "open-historia",
+        hay: searchHay(["historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit",
+          historia.INTRO && historia.INTRO.de, historia.INTRO && historia.INTRO.en, eras, figs, tens, facts]),
+      });
+    }
+
+    return idx;
+  }
+
+  const SEARCH_GROUP_CAP = 60; // pro Gruppe deckeln – hält die Liste schlank
+  function searchResultsData(query) {
+    if (!searchEngine || !String(query || "").trim()) return { groups: [] };
+    const ranked = searchEngine.rank(getSearchIndex(), query); // beste zuerst
+    const groups = [];
+    [["ex", t("search.groupExercises")], ["info", t("search.groupInfo")]].forEach(([gid, label]) => {
+      const items = ranked.filter((it) => it.group === gid).slice(0, SEARCH_GROUP_CAP);
+      if (items.length) groups.push({ id: gid, label, items });
+    });
+    return { groups };
+  }
+
+  function searchVM() {
+    const q = state.searchQuery || "";
+    const res = searchResultsData(q);
+    return { query: q, groups: res.groups };
+  }
+
+  function openSearch() {
+    dismissBadgeToast();
+    state.screen = "search";
+    render();
+  }
+
+  // Live-Eingabe: nur die Trefferliste neu zeichnen, NICHT die ganze Seite – so
+  // behält das Eingabefeld Fokus und Cursor (ein Voll-Re-Render würde sie verlieren).
+  function updateSearchResults() {
+    const box = document.getElementById("search-results");
+    if (box) box.innerHTML = ui.searchResults(searchVM());
+  }
+
+  function clearSearch() {
+    state.searchQuery = "";
+    render(); // Voll-Re-Render: setzt das Feld zurück und fokussiert es neu
+  }
+
+  // Treffer „Land" öffnet die Länderkunde direkt beim gewählten Land.
+  function openSearchCountry(id) {
+    state.countryId = id;
+    openInfo();
+  }
+
   function openInfo() {
     dismissBadgeToast();
     state.screen = "info";
+    render();
+  }
+
+  function openHistoria() {
+    dismissBadgeToast();
+    state.screen = "historia";
     render();
   }
 
@@ -3311,6 +3590,18 @@
   function openRegatear() {
     dismissBadgeToast();
     state.screen = "regatear";
+    render();
+  }
+
+  function openLogistica() {
+    dismissBadgeToast();
+    state.screen = "logistica";
+    render();
+  }
+
+  function openSalud() {
+    dismissBadgeToast();
+    state.screen = "salud";
     render();
   }
 
@@ -3423,6 +3714,7 @@
       const card = userCards.add(input);
       editorMsg = { type: "ok", text: t("app.cardSaved", { de: card.de, es: card.es }) };
       buzz(12);
+      invalidateSearchIndex(); // neue eigene Karte muss auffindbar werden
     }
     render();
   }
@@ -3440,6 +3732,7 @@
       store.saveProgress(progress);
     }
     editorMsg = { type: "ok", text: t("app.cardDeleted") };
+    invalidateSearchIndex(); // gelöschte Karte aus dem Suchindex nehmen
     render();
   }
 
@@ -3607,6 +3900,111 @@
     share.shareImage("card", cardSharePayload(card), shareFormat());
   }
 
+  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Sucht den
+  // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
+  // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
+  function findHistItem(id) {
+    if (!historia) return null;
+    const lists = [historia.ERAS, historia.FIGURES, historia.TENSIONS];
+    for (let i = 0; i < lists.length; i++) {
+      const it = (lists[i] || []).find((x) => x.id === id);
+      if (it) return it;
+    }
+    return null;
+  }
+  function shareHistoria(id) {
+    if (!share) return;
+    const raw = findHistItem(id);
+    if (!raw) return;
+    const e = loc(raw);
+    const esText = (e.es || []).join("\n\n").replace(/\*/g, "");
+    const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
+    buzz(12);
+    share.shareImage("histtext", {
+      title: e.title || e.name || "Historia de Sudamérica",
+      levelCode: e.level || "",
+      levelWord: e.level ? t("discover.histLvl" + e.level) : "",
+      esText,
+      words,
+    }, shareFormat());
+  }
+
+  // Sharepic auf Modul-Ebene: das ganze Modul „Historia de Sudamérica" als
+  // Einladung (Modulname, Einleitung, Zeitstrahl-Teaser mit den Epochen) – zum
+  // Weiterempfehlen des gesamten Moduls, nicht nur eines einzelnen Textes.
+  function shareHistModule() {
+    if (!share || !historia) return;
+    const eras = loc(historia.ERAS || []).map((e) => ({
+      icon: e.icon || "•",
+      period: e.period || "",
+      title: e.title || "",
+    }));
+    buzz(12);
+    share.shareImage("histmodule", {
+      kicker: "Historia de Sudamérica",
+      title: "Historia de Sudamérica",
+      intro: nat(historia.INTRO),
+      timelineLabel: t("discover.histNavTimeline"),
+      eras,
+    }, shareFormat());
+  }
+
+  // Sharepic für die übrigen Entdecken-Kategorien (Knigge, Regatear, Logística,
+  // Salud): ein Thema mit seinen DOs/Don'ts als teilbares Bild „zum Versenden".
+  // kicker/icon/accent passen zur jeweiligen Kategorie-Kachel (siehe FEATURES).
+  const TIPS_META = {
+    knigge:    { kicker: "Etiqueta de viaje", icon: "🧭", accent: ["#3F6B8E", "#6B4FA8"] },
+    regatear:  { kicker: "Regatear",          icon: "🤝", accent: ["#B97C24", "#3F7355"] },
+    logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
+    salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
+  };
+
+  function shareTips(cat, idx) {
+    if (!share) return;
+    const src = cat === "knigge" ? (knigge && knigge.TOPICS)
+              : cat === "regatear" ? (regatear && regatear.TIPS)
+              : cat === "logistica" ? (logistica && logistica.TOPICS)
+              : cat === "salud" ? (salud && salud.TOPICS)
+              : null;
+    const meta = TIPS_META[cat];
+    if (!src || !src[idx] || !meta) return;
+    const o = loc(src[idx]); // …En-Felder für die aktive Sprache überlagern
+    const lines = []
+      .concat((o.dos || []).map((text) => ({ mark: "✅", text })))
+      .concat((o.donts || []).map((text) => ({ mark: "🚫", text })));
+    buzz(12);
+    share.shareImage("tips", {
+      kicker: meta.kicker,
+      icon: meta.icon,
+      title: o.title || meta.kicker,
+      intro: o.intro || "",
+      lines,
+      accent: meta.accent,
+    }, shareFormat());
+  }
+
+  // Sharepic für die Länderkunde (Países y culturas): das aktuell gewählte Land
+  // als kompakte Steckbrief-Karte (Hauptstadt, Kurzporträt, etwas lokaler Slang).
+  function shareCountry() {
+    if (!share || !countries) return;
+    const list = countries.LIST || [];
+    const c = loc(list.find((x) => x.id === state.countryId) || list[0]);
+    if (!c) return;
+    const lines = [];
+    if (c.capital) lines.push({ mark: "🏛️", text: c.capital });
+    if (c.about) lines.push({ mark: "🌎", text: c.about });
+    (c.words || []).slice(0, 4).forEach((w) => lines.push({ mark: "🗣️", text: `${w.es} — ${w.de}` }));
+    buzz(12);
+    share.shareImage("tips", {
+      kicker: "Países y culturas",
+      icon: "🌎",
+      title: `${c.flag || ""} ${c.name || ""}`.trim(),
+      intro: c.tagline || "",
+      lines,
+      accent: ["#B97C24", "#C2502E"],
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -3617,6 +4015,50 @@
     const el = e.target.closest("[data-action]");
     if (!el) return;
     const action = el.dataset.action;
+
+    // Schwierigkeits-Wort im Lesetext: Übersetzungs-Popover umschalten – per
+    // Klasse direkt im DOM (kein Re-Render, damit Scrollposition & offene
+    // Akkordeons bleiben). Robust auf Mobil, wo :focus auf Buttons unzuverlässig
+    // ist. Tippt man ein anderes Wort, schließt das vorige.
+    if (action === "hist-word") {
+      const open = el.classList.contains("is-open");
+      const root = document.getElementById("app") || document;
+      root.querySelectorAll(".hist-w.is-open").forEach((b) => b.classList.remove("is-open"));
+      if (!open) el.classList.add("is-open");
+      return;
+    }
+
+    // Quiz-Antwort im Lesetext: prüft direkt im DOM (kein Re-Render). Pro Frage
+    // nur einmal; markiert die Wahl und deckt bei Fehler die richtige Antwort auf.
+    if (action === "hist-quiz-answer") {
+      const q = el.closest(".hist-quiz__q");
+      if (!q || q.classList.contains("is-done")) return;
+      q.classList.add("is-done");
+      if (el.dataset.correct === "1") {
+        el.classList.add("is-correct");
+      } else {
+        el.classList.add("is-wrong");
+        const right = q.querySelector('.hist-quiz__opt[data-correct="1"]');
+        if (right) right.classList.add("is-correct");
+      }
+      return;
+    }
+
+    // Sprungmarken-Leiste (Historia, Supervivencia …): sanft zum Abschnitt
+    // scrollen, OHNE die URL-Raute zu ändern. Eine echte #-Navigation legt sonst
+    // einen History-Eintrag an und kollidiert mit dem Zurück-Puffer (armBackGuard)
+    // – die nächste Geste/der Klick würde dann eine Ebene höher springen statt zu
+    // scrollen. preventDefault hält den nativen Anker-Sprung auf.
+    if (action === "scroll-to") {
+      e.preventDefault();
+      const target = el.dataset.target && document.getElementById(el.dataset.target);
+      if (target) {
+        const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "start" }); }
+        catch (e2) { try { target.scrollIntoView(); } catch (e3) { /* egal */ } }
+      }
+      return;
+    }
 
     if (action === "set-mode") setMode(el.dataset.mode);
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
@@ -3648,6 +4090,9 @@
     else if (action === "skip-onboarding") finishOnboarding();
     else if (action === "resume-last") resumeLast();
     else if (action === "set-tab") setTab(el.dataset.tab);
+    else if (action === "open-search") openSearch();
+    else if (action === "search-clear") clearSearch();
+    else if (action === "search-country") openSearchCountry(el.dataset.id);
     else if (action === "flip") flip();
     else if (action === "toggle-context") toggleContext();
     else if (action === "rate") rate(el.dataset.rating);
@@ -3656,13 +4101,16 @@
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
+    else if (action === "open-historia") openHistoria();
     else if (action === "open-knigge") openKnigge();
     else if (action === "open-regatear") openRegatear();
+    else if (action === "open-logistica") openLogistica();
+    else if (action === "open-salud") openSalud();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
     else if (action === "study-one") studyOne(el.dataset.id);
-    else if (action === "card-back") (state.backTo === "home" ? goHome() : goStats());
+    else if (action === "card-back") (state.backTo === "home" ? goHome() : state.backTo === "search" ? openSearch() : goStats());
     else if (action === "open-editor") openEditor();
     else if (action === "export-data") exportData();
     else if (action === "cloud-sync") cloudSync();
@@ -3677,6 +4125,10 @@
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
+    else if (action === "share-historia") shareHistoria(el.dataset.id);
+    else if (action === "share-hist-module") shareHistModule();
+    else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
+    else if (action === "share-country") shareCountry();
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
@@ -3800,6 +4252,14 @@
     e.preventDefault();
     const input = document.getElementById("answer");
     submitTyped(input ? input.value : "");
+  }
+
+  // Live-Suche: Tippen im Suchfeld zeichnet nur die Trefferliste neu (Fokus bleibt).
+  function onInput(e) {
+    if (state.screen !== "search") return;
+    if (!e.target || e.target.id !== "search-input") return;
+    state.searchQuery = e.target.value;
+    updateSearchResults();
   }
 
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
@@ -3984,6 +4444,7 @@
   // ----- Start -----
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
+  root.addEventListener("input", onInput);
   root.addEventListener("submit", onSubmit);
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });

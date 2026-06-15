@@ -79,7 +79,10 @@
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
+    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia" },
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
+    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica" },
+    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud" },
     { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben", grad: ["#3F7355", "#2E6E86"] },
     { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
   ];
@@ -215,6 +218,17 @@
           ${tripForm(vm.trip, skip)}
         </div>
       </section>`;
+  }
+
+  // Sucheinstieg: sieht aus wie ein Suchfeld, ist aber ein Knopf, der die
+  // Such-Ansicht öffnet (ein echtes Eingabefeld im Dashboard würde bei jedem
+  // Re-Render den Fokus verlieren – darum erst auf der eigenen Seite tippen).
+  function searchBar() {
+    return `
+      <button class="searchbar" data-action="open-search" aria-label="${esc(t("search.open"))}">
+        <span class="searchbar__icon" aria-hidden="true">🔍</span>
+        <span class="searchbar__text">${esc(t("search.placeholder"))}</span>
+      </button>`;
   }
 
   function lernenBody(vm) {
@@ -361,6 +375,7 @@
 
     return `
       ${pagehead(esc(t("home.homePrompt")), vm)}
+      ${searchBar()}
 
       <div class="today">
         ${streakChip}
@@ -397,7 +412,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
     const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -409,6 +424,7 @@
       </button>`).join("");
     return `
       ${pagehead(esc(t("discover.discoverTitle")), vm)}
+      ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
       ${feats}`;
   }
@@ -524,6 +540,57 @@
     return `
       <section class="screen screen--tabbed">${body}</section>
       ${tabbar(vm.tab)}`;
+  }
+
+  // ---------- SUCHE (gezielt nach Karten/Übungen & Informationen suchen) ----------
+  // Eigenes echtes Eingabefeld (autofokussiert in app.js). Die Trefferliste lebt in
+  // #search-results und wird beim Tippen separat aktualisiert (Fokus bleibt erhalten).
+  function renderSearch(vm) {
+    return `
+      <section class="screen screen--search">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">🔍 ${esc(t("search.title"))}</div>
+          <span></span>
+        </div>
+        <div class="searchfield">
+          <span class="searchfield__icon" aria-hidden="true">🔍</span>
+          <input id="search-input" class="searchfield__input" type="search" inputmode="search"
+                 autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
+                 placeholder="${esc(t("search.inputPlaceholder"))}" aria-label="${esc(t("search.inputPlaceholder"))}"
+                 value="${esc(vm.query)}" />
+          <button class="searchfield__clear" data-action="search-clear" aria-label="${esc(t("search.clear"))}">✕</button>
+        </div>
+        <div id="search-results">${searchResults(vm)}</div>
+      </section>`;
+  }
+
+  // Nur die Trefferliste – wird sowohl im Voll-Render als auch beim Live-Tippen
+  // (app.js updateSearchResults) verwendet, deshalb als eigene Funktion exportiert.
+  function searchResults(vm) {
+    const q = (vm.query || "").trim();
+    if (!q) return `<p class="search-hint">${esc(t("search.hintEmpty"))}</p>`;
+    if (!vm.groups.length) return `<p class="stat-empty">${esc(t("search.noResults", { q: q }))}</p>`;
+    return vm.groups.map((g) => `
+      <p class="sectioncap search-cap">${esc(g.label)} <span class="search-count">${g.items.length}</span></p>
+      <div class="search-list">${g.items.map(searchRow).join("")}</div>`).join("");
+  }
+
+  function searchRow(it) {
+    const dataId = it.id ? ` data-id="${esc(it.id)}"` : "";
+    const dataBack = it.back ? ` data-back="${esc(it.back)}"` : "";
+    const titleLang = it.titleLang ? ` lang="${esc(it.titleLang)}"` : "";
+    const sub = it.sub ? `<span class="search-row__sub">${esc(it.sub)}</span>` : "";
+    return `
+      <button class="search-row" data-action="${esc(it.action)}"${dataId}${dataBack}>
+        <span class="search-row__icon" aria-hidden="true">${esc(it.icon)}</span>
+        <span class="search-row__text">
+          <span class="search-row__title"${titleLang}>${esc(it.title)}</span>
+          ${sub}
+        </span>
+        <span class="search-row__kind">${esc(it.kindLabel)}</span>
+        <span class="search-row__chev" aria-hidden="true">›</span>
+      </button>`;
   }
 
   // ---------- STUDY ----------
@@ -1290,7 +1357,7 @@
   // Tipp auf den Satz öffnet die Großanzeige – bildschirmfüllend zum Herzeigen.
   function renderSpickzettel(vm) {
     const nav = vm.groups.map((g) => `
-      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" data-action="scroll-to" data-target="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
         <span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}
       </a>`).join("");
     const groups = vm.groups.map((g) => {
@@ -1515,10 +1582,22 @@
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
 
+    // Brücke zur kontinentweiten Geschichte (nur wenn das Modul geladen ist).
+    const histBanner = vm.hasHistoria ? `
+      <button class="hist-banner" data-action="open-historia">
+        <span class="hist-banner__icon" aria-hidden="true">📜</span>
+        <span class="hist-banner__text">
+          <span class="hist-banner__title">${esc(t("discover.histBannerTitle"))}</span>
+          <span class="hist-banner__sub">${esc(t("discover.histBannerSub"))}</span>
+        </span>
+        <span class="hist-banner__chev" aria-hidden="true">›</span>
+      </button>` : "";
+
     return `
       <section class="screen">
         ${infoTopbar()}
         ${selector}
+        ${histBanner}
 
         <div class="cinfo-head">
           <div class="cinfo-head__flag">${c.flag}</div>
@@ -1528,6 +1607,7 @@
             <p class="cinfo-head__cap">${t("discover.infoCapital", { capital: esc(c.capital) })}</p>
           </div>
         </div>
+        <button class="hist-share cinfo-share" type="button" data-action="share-country">📤 ${esc(t("discover.tipsShare"))}</button>
 
         ${sect("🌎", t("discover.infoAbout"), para(c.about))}
         ${sect("📜", t("discover.infoHistory"), para(c.history))}
@@ -1552,6 +1632,278 @@
         <div class="topbar__title">🌎 Países y culturas</div>
         <span></span>
       </div>`;
+  }
+
+  // ---------- HISTORIA DE SUDAMÉRICA (ERKLÄRSEITE) ----------
+  // Interaktiver Zeitstrahl (aufklappbare Epochen, natives <details>), eine
+  // Galerie der Protagonisten, der „Heute"-Block mit Spannungen und ein paar
+  // „¿Sabías que…?"-Häppchen. Bilder kommen über Wikimedia Special:FilePath –
+  // so muss kein Hash geraten werden; offline/bei Fehler blendet onerror sie aus.
+  function commonsImg(file, w) {
+    if (!file) return "";
+    return "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(file) + "?width=" + (w || 960);
+  }
+
+  // CEFR-Schwierigkeit → Punkte-Meter + lokalisiertes Wort (Selbst-Einstufung).
+  const HIST_LEVEL_DOTS = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
+  function levelMeta(level) {
+    if (!level) return null;
+    const dots = HIST_LEVEL_DOTS[level] || 3;
+    return { code: level, word: t("discover.histLvl" + level), meter: "●".repeat(dots) + "○".repeat(5 - dots) };
+  }
+  // Spanischer Lesetext: *markierte* Wörter werden zu antippbaren Chips, die die
+  // Übersetzung (aus der Wörterliste der Epoche, in der aktiven Sprache) zeigen.
+  function esRich(paras, vocab) {
+    const vmap = {};
+    (vocab || []).forEach((v) => { vmap[String(v.es).toLowerCase().trim()] = v; });
+    return (paras || []).map((p) => {
+      let html = "", last = 0; const re = /\*([^*]+)\*/g; let m;
+      while ((m = re.exec(p))) {
+        html += esc(p.slice(last, m.index));
+        const w = m[1];
+        const v = vmap[w.toLowerCase().trim()];
+        const tr = v ? v.de : "";
+        html += `<button class="hist-w" type="button" data-action="hist-word" aria-label="${esc(w + " – " + tr)}">${esc(w)}<span class="hist-w__pop" aria-hidden="true">${esc(tr)}</span></button>`;
+        last = re.lastIndex;
+      }
+      html += esc(p.slice(last));
+      return `<p class="hist-es__p" lang="es">${html}</p>`;
+    }).join("");
+  }
+  // Wörterliste pro Text: zum schnellen Nachschlagen, gruppiert in „mitnehmen"
+  // (lohnt sich) und „nicht so wichtig" (kannst du überspringen).
+  function vocabBlock(vocab) {
+    if (!vocab || !vocab.length) return "";
+    const row = (v) => `<li class="hist-voc__row"><span class="hist-voc__es" lang="es">${esc(v.es)}</span><span class="hist-voc__de">${esc(v.de)}</span></li>`;
+    const take = vocab.filter((v) => v.take), skip = vocab.filter((v) => !v.take);
+    const takeList = take.length
+      ? `<p class="hist-voc__cap hist-voc__cap--take">✅ ${esc(t("discover.histTake"))}</p><ul class="hist-voc__list">${take.map(row).join("")}</ul>`
+      : "";
+    const skipList = skip.length
+      ? `<p class="hist-voc__cap hist-voc__cap--skip">○ ${esc(t("discover.histSkip"))}</p><ul class="hist-voc__list hist-voc__list--skip">${skip.map(row).join("")}</ul>`
+      : "";
+    return `
+      <details class="hist-voc">
+        <summary class="hist-voc__sum">📒 ${esc(t("discover.histVocab"))} <span class="hist-voc__n">${vocab.length}</span><span class="hist-voc__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-voc__body">${takeList}${skipList}</div>
+      </details>`;
+  }
+  // Mini-Quiz zum Text: Spanisches Wort → richtige Übersetzung wählen. Distraktoren
+  // aus denselben Vokabeln. Selbstprüfung per DOM-Klasse (kein Re-Render, s. app.js).
+  function quizBlock(vocab) {
+    const items = vocab || [];
+    const pool = items.filter((v) => v.take);
+    if (pool.length < 3 || items.length < 4) return ""; // zu wenige für sinnvolle Optionen
+    const qs = pool.slice(0, 4);
+    const questions = qs.map((v, i) => {
+      const others = items.filter((x) => x.es !== v.es).map((x) => x.de);
+      const opts = [v.de];
+      for (let k = 0; k < others.length && opts.length < 4; k++) {
+        if (opts.indexOf(others[k]) === -1) opts.push(others[k]);
+      }
+      const rot = (i + 1) % opts.length; // richtige Antwort nicht immer oben
+      const rotated = opts.slice(rot).concat(opts.slice(0, rot));
+      const optsHtml = rotated
+        .map((o) => `<button class="hist-quiz__opt" type="button" data-action="hist-quiz-answer" data-correct="${o === v.de ? "1" : "0"}">${esc(o)}</button>`)
+        .join("");
+      return `
+        <div class="hist-quiz__q">
+          <p class="hist-quiz__prompt" lang="es">${esc(v.es)}</p>
+          <div class="hist-quiz__opts">${optsHtml}</div>
+        </div>`;
+    }).join("");
+    return `
+      <details class="hist-quiz">
+        <summary class="hist-quiz__sum">🧩 ${esc(t("discover.histQuiz"))}<span class="hist-quiz__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-quiz__body">
+          <p class="hist-quiz__intro">${esc(t("discover.histQuizIntro"))}</p>
+          ${questions}
+        </div>
+      </details>`;
+  }
+  // Gemeinsamer Lesetraining-Block (Epoche, Protagonist, Spannung teilen ihn).
+  // opts: { es:[Absatz], vocab, level, trans?:[Absatz], shareId, quiz?:bool }
+  // trans = optionale „Ganze Übersetzung", nur wo der Text nicht ohnehin schon
+  // in der UI-Sprache danebensteht (Epochen ja, Karten nein).
+  function readingBlock(opts) {
+    const o = opts || {};
+    if (!o.es || !o.es.length) return "";
+    const lvl = levelMeta(o.level);
+    const bar = `
+      <div class="hist-es__bar">
+        <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
+        ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
+      </div>`;
+    const text = `<div class="hist-es">${bar}${esRich(o.es, o.vocab)}<p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p></div>`;
+    const vocab = vocabBlock(o.vocab);
+    const quiz = o.quiz ? quizBlock(o.vocab) : "";
+    const trans = (o.trans && o.trans.length)
+      ? `<details class="hist-trans"><summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary><div class="hist-trans__body">${o.trans.map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div></details>`
+      : "";
+    const share = o.shareId
+      ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(o.shareId)}">📤 ${esc(t("discover.histShare"))}</button>`
+      : "";
+    return `${text}${vocab}${quiz}${trans}${share}`;
+  }
+  function renderHistoria(vm) {
+    // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
+    const nav = `
+      <nav class="hist-nav" aria-label="${esc(t("discover.histAreas"))}">
+        <a class="hist-nav__chip" href="#hist-zeitstrahl" data-action="scroll-to" data-target="hist-zeitstrahl">🕰️ ${esc(t("discover.histNavTimeline"))}</a>
+        <a class="hist-nav__chip" href="#hist-protagonisten" data-action="scroll-to" data-target="hist-protagonisten">👤 ${esc(t("discover.histNavFigures"))}</a>
+        <a class="hist-nav__chip" href="#hist-heute" data-action="scroll-to" data-target="hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
+      </nav>`;
+
+    // Auf Modul-Ebene teilbar: ein Sharepic des ganzen Moduls (Titel, Einleitung
+    // und Zeitstrahl-Teaser) – damit man „Historia de Sudamérica" weiterempfehlen
+    // kann, nicht nur einen einzelnen Text. Logik in app.shareHistModule.
+    const moduleShare = canShare()
+      ? `<div class="hist-modshare"><button class="hist-share" type="button" data-action="share-hist-module">📤 ${esc(t("discover.histModuleShare"))}</button></div>`
+      : "";
+
+    // Eine Epoche als aufklappbare Karte am Zeitstrahl. Aufbau wie bei den
+    // Protagonisten: zuerst der erklärende Text in der UI-Sprache, darunter das
+    // spanische Lesetraining als eigener aufklappbarer Block.
+    const era = (e) => {
+      const img = e.img
+        ? `<figure class="hist-era__fig">
+             <img class="hist-era__img" src="${esc(commonsImg(e.img))}" alt="${esc(e.imgCaption || e.title)}"
+                  loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').style.display='none'" />
+             ${e.imgCaption ? `<figcaption class="hist-era__cap">${esc(e.imgCaption)}</figcaption>` : ""}
+           </figure>`
+        : "";
+      const lvl = levelMeta(e.level);
+      const bodyText = (e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("");
+      const reading = (e.es && e.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: e.es, vocab: e.vocab, level: e.level, shareId: e.id, quiz: true })}</div>
+           </details>`
+        : "";
+      const points = (e.points || []).length
+        ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
+        : "";
+      return `
+        <details class="hist-era">
+          <summary class="hist-era__head">
+            <span class="hist-era__dot" aria-hidden="true">${esc(e.icon || "•")}</span>
+            <span class="hist-era__heart">
+              <span class="hist-era__metarow">
+                <span class="hist-era__period">${esc(e.period)}</span>
+                ${lvl ? `<span class="hist-era__lvlchip hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}
+              </span>
+              <span class="hist-era__title">${esc(e.title)}</span>
+              <span class="hist-era__lead">${esc(e.lead)}</span>
+            </span>
+            <span class="hist-era__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="hist-era__body">
+            ${img}
+            ${bodyText}
+            ${reading}
+            ${points}
+          </div>
+        </details>`;
+    };
+    const eras = (vm.eras || []).map(era).join("");
+
+    // Ein Protagonist als Karte mit Porträt.
+    const figure = (f) => {
+      const img = f.img
+        ? `<img class="hist-fig__img" src="${esc(commonsImg(f.img, 320))}" alt="${esc(f.name)}"
+                loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
+        : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">👤</span>`;
+      const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
+      const lvl = levelMeta(f.level);
+      const reading = (f.es && f.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: f.es, vocab: f.vocab, level: f.level, shareId: f.id, quiz: false })}</div>
+           </details>`
+        : "";
+      return `
+        <article class="hist-fig">
+          <div class="hist-fig__top">
+            ${img}
+            <div class="hist-fig__id">
+              <h4 class="hist-fig__name">${f.flag ? `<span aria-hidden="true">${f.flag}</span> ` : ""}${esc(f.name)}</h4>
+              <p class="hist-fig__role">${esc(f.role)}</p>
+              <p class="hist-fig__years">${esc(f.years)}</p>
+            </div>
+          </div>
+          <p class="hist-fig__text">${esc(f.text)}</p>
+          ${quote}
+          ${reading}
+        </article>`;
+    };
+    const figures = (vm.figures || []).map(figure).join("");
+
+    // Eine aktuelle Spannung/Lage als Karte mit Status-Plakette.
+    const tension = (s) => {
+      const lvl = levelMeta(s.level);
+      const reading = (s.es && s.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: s.es, vocab: s.vocab, level: s.level, shareId: s.id, quiz: false })}</div>
+           </details>`
+        : "";
+      return `
+      <article class="hist-ten hist-ten--${esc(s.tone || "shift")}">
+        <div class="hist-ten__head">
+          <span class="hist-ten__icon" aria-hidden="true">${esc(s.icon || "•")}</span>
+          <h4 class="hist-ten__title">${esc(s.title)}</h4>
+          <span class="hist-ten__badge">${esc(s.status)}</span>
+        </div>
+        <p class="hist-ten__where">${esc(s.where)}</p>
+        <p class="hist-ten__text">${esc(s.text)}</p>
+        ${reading}
+      </article>`;
+    };
+    const tensions = (vm.tensions || []).map(tension).join("");
+
+    const facts = (vm.facts || []).length
+      ? `<div class="hist-facts">
+           <h3 class="hist-block__h">💡 ${esc(t("discover.histFactsTitle"))}</h3>
+           <div class="hist-facts__grid">
+             ${vm.facts.map((f) => `<div class="hist-fact">${esc(f)}</div>`).join("")}
+           </div>
+         </div>`
+      : "";
+
+    return `
+      <section class="screen">
+        ${hmTopbar("📜 Historia de Sudamérica", "home")}
+        <p class="hm-intro">${esc(vm.intro)}</p>
+        ${nav}
+        ${moduleShare}
+
+        <div class="hist-block" id="hist-zeitstrahl">
+          <h3 class="hist-block__h">🕰️ ${esc(t("discover.histTimelineTitle"))}</h3>
+          <p class="hist-block__sub">${esc(t("discover.histTimelineSub"))}</p>
+          <div class="hist-timeline">${eras}</div>
+        </div>
+
+        <div class="hist-block" id="hist-protagonisten">
+          <h3 class="hist-block__h">👤 ${esc(t("discover.histFiguresTitle"))}</h3>
+          <p class="hist-block__sub">${esc(t("discover.histFiguresSub"))}</p>
+          <div class="hist-figs">${figures}</div>
+        </div>
+
+        <div class="hist-block" id="hist-heute">
+          <h3 class="hist-block__h">📰 ${esc(t("discover.histTodayTitle"))}</h3>
+          <p class="hist-block__sub">${esc(t("discover.histTodaySub"))}</p>
+          <div class="hist-tens">${tensions}</div>
+        </div>
+
+        ${facts}
+      </section>`;
+  }
+
+  // Teilen-Knopf für die Entdecken-Tipp-Kategorien (Knigge/Regatear/Logística/
+  // Salud): erzeugt ein Sharepic des Themas mit seinen DOs/Don'ts „zum
+  // Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
+  function tipsShareBtn(cat, i) {
+    return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
   }
 
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
@@ -1581,7 +1933,7 @@
         .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
         .join("");
 
-    const block = (t) => {
+    const block = (t, i) => {
       const dos = liList(t.dos, "knigge-do", "✅");
       const donts = liList(t.donts, "knigge-dont", "🚫");
       const accent = t.accent
@@ -1599,6 +1951,7 @@
             ${dos ? `<ul class="knigge-list">${dos}</ul>` : ""}
             ${donts ? `<ul class="knigge-list">${donts}</ul>` : ""}
             ${accent}
+            ${tipsShareBtn("knigge", i)}
           </div>
         </details>`;
     };
@@ -1632,7 +1985,7 @@
       (items || [])
         .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
         .join("");
-    const tipBlock = (t) => `
+    const tipBlock = (t, i) => `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
           <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
@@ -1643,6 +1996,7 @@
           ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
           ${t.dos && t.dos.length ? `<ul class="knigge-list">${liList(t.dos, "knigge-do", "✅")}</ul>` : ""}
           ${t.donts && t.donts.length ? `<ul class="knigge-list">${liList(t.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${tipsShareBtn("regatear", i)}
         </div>
       </details>`;
     const tips = (vm.tips || []).map(tipBlock).join("");
@@ -1757,6 +2111,108 @@
         <p class="hm-intro">${esc(t("discover.rgRoleplayHint"))}</p>
         ${roleplays}
       </section>`;
+  }
+
+  // ---------- INFO-MODUL-SHEET (Logística, Salud …) ----------
+  // Gemeinsame Nachschlage-Seite im Regatear-Stil für Module mit dem Schema
+  // { intro, topics[], phrases[], glossary[], checklist[] }: erst die praktischen
+  // Tipps (aufklappbar, DOs/Don'ts), dann die wichtigsten Sätze nach Thema, ein
+  // kleines Glossar und zum Schluss eine Packliste. cfg trägt nur das Spezifische
+  // (Icon, Titel, i18n-Schlüssel der Überschriften). Leere Abschnitte fallen weg.
+  // Reine Anzeige – nutzt durchgehend die vorhandenen Regatear/Knigge-CSS-Klassen.
+  function moduleSheet(vm, cfg) {
+    const liList = (items, cls, marker) =>
+      (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+        .join("");
+    const topicBlock = (tp, i) => `
+      <details class="knigge-topic">
+        <summary class="knigge-topic__head">
+          <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
+          <span class="knigge-topic__title">${esc(tp.title)}</span>
+          <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="knigge-topic__body">
+          ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
+          ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
+          ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
+        </div>
+      </details>`;
+    const topics = (vm.topics || []).map(topicBlock).join("");
+
+    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Regatear.
+    const phraseGroup = (g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${g.items.map((p) => `
+            <li class="rg-phrase">
+              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+              <span class="rg-phrase__de">${esc(p.de)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    // Glossar: kompakte zweispaltige Wortliste (es · de).
+    const glossary = (vm.glossary || []).map((g) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
+        <span class="rg-gloss__de">${esc(g.de)}</span>
+      </li>`).join("");
+
+    // Packliste/Checkliste: Icon + Sache + kurze Begründung (Region-Listen-Stil).
+    const checklist = (vm.checklist || []).map((c) => `
+      <li class="rg-region">
+        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__body">
+          <span class="rg-region__country">${esc(c.item)}</span>
+          <span class="rg-region__note">${esc(c.why)}</span>
+        </span>
+      </li>`).join("");
+
+    const section = (cond, head, body) =>
+      cond ? `<h2 class="rg-head">${esc(t(head))}</h2>${body}` : "";
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">${cfg.icon} ${esc(cfg.title)}</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+
+        ${section(topics, cfg.headTips, topics)}
+        ${section(phrases, cfg.headPhrases, phrases)}
+        ${section(glossary, cfg.headWords, `<ul class="rg-glosslist">${glossary}</ul>`)}
+        ${(vm.checklist && vm.checklist.length)
+          ? `<h2 class="rg-head">${esc(t(cfg.headChecklist))}</h2>
+             <p class="hm-intro">${esc(t(cfg.headChecklistHint))}</p>
+             <ul class="rg-regions">${checklist}</ul>`
+          : ""}
+      </section>`;
+  }
+
+  // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
+  function renderLogistica(vm) {
+    return moduleSheet(vm, {
+      icon: "🧳", title: "Logística de viaje", cat: "logistica",
+      headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
+      headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
+      headChecklistHint: "discover.lgChecklistHint",
+    });
+  }
+
+  // Salud y energía: ausgewogen essen, günstig trinken, Bauch, Sonne/Höhe, Bewegung.
+  function renderSalud(vm) {
+    return moduleSheet(vm, {
+      icon: "🥗", title: "Salud y energía", cat: "salud",
+      headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
+      headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
+      headChecklistHint: "discover.sdChecklistHint",
+    });
   }
 
   // ---------- HOSTEL MODE ----------
@@ -3100,7 +3556,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

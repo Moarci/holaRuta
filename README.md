@@ -4,12 +4,12 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.40.0** — 1133 Karten · 32 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes) · Cloud-Sync (opt-in) · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.45.0** — 1133 Karten · 32 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Suche** (Karten, Übungen & Informationen) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes) · Cloud-Sync (opt-in) · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-169_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-181_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-1133-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -120,7 +120,12 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Sprachausgabe** | TTS (Web Speech API) | Spricht die spanische Antwort vor, bevorzugt eine LatAm-Stimme |
 | **Sharepics** | Canvas-Bildgenerator | Karte oder Fortschritt als teilbares PNG (1:1 Feed oder 9:16 Story) |
 | **Länderkunde** | 19 Länder | Hauptstadt, Geschichte, Sprache, typische Wörter, Essen, Trinken & Reisetipp |
+| **Historia de Sudamérica** | Geschichts-Erklärseite 📜 | Interaktiver Zeitstrahl (7 Epochen: Hochkulturen → Conquista → Kolonialzeit → Freiheitskampf → Bolívar → Abspaltung → heute), Galerie der Protagonisten (Bolívar, San Martín, Sucre, O'Higgins, Manuela Sáenz, Atahualpa) und „Heute: Lage & Spannungen“ (Venezuela, Essequibo, Bolivien–Chile, Kolumbien, Peru, Argentinien, Amazonas, Darién) — mit Wikimedia-Bildern, zweisprachig |
+| **Lesetraining (Historia)** | Spanisch lesen 📖 | Jeder Text (alle 7 Epochen, 6 Protagonisten & 8 „Heute“-Karten) zusätzlich als spanischer Lesetext mit antippbaren Schwierigkeitswörtern (Übersetzung im Popover), Wörterliste pro Text (getrennt in „mitnehmen“ / „nicht so wichtig“), CEFR-Schwierigkeitsscore (A1–C1) zur Selbst-Einstufung, „Ganze Übersetzung“ und Sharepic von Text & Wörterliste |
+| **Quiz zum Text** | Vokabel-Mini-Quiz 🧩 | Pro Epoche ein kurzes Selbsttest-Quiz (spanisches Wort → richtige Übersetzung antippen) mit sofortiger Richtig/Falsch-Rückmeldung, direkt am Lesetext |
 | **Reise-Knigge** | Verhalten unterwegs 🧭 | DOs & Don'ts für Hostel, Bus, Gruppen und Kultur — mit landesspezifischen Akzenten für alle 19 Länder (mit der Länderkunde verknüpft) |
+| **Logística de viaje** | Clever & sicher ankommen 🧳 | Die praktischen Handgriffe, die kein Sprachkurs lehrt: **SIM-Karte (chip) kaufen & online sein**, **Geld wechseln und am cajero abheben** (ohne teure Umrechnung), **Geld & Wertsachen auf mehrere Gepäckstücke aufteilen**, das Gepäck per **Tracker (AirTag & Co.)** im Blick behalten, beim Fliegen das **Handgepäck-Notfallset** packen (Medikamente, Wechselwäsche, Hygiene, Powerbank, Dokumente) und in der Hochsaison **beliebte Hostels vorausplanen**. Pro Thema aufklappbare DOs & Don'ts, die passenden **Sätze als Karten** (es/de) und eine Packliste |
+| **Salud y energía** | Gesund & fit unterwegs 🥗 | Lange auf der Straße bleibt nur, wer auf den Körper achtet: **ausgewogen essen statt nur Streetfood** (Protein, Ballaststoffe, Vitamine), **Frühstück selbst machen** – Porridge mit Proteinpulver & Früchten ganz ohne Küche, **günstig & mit Geschmack trinken** (Zero-Sirup, Elektrolytpulver/suero), **Bauch & Verdauung**, **Sonne, Höhe & Mücken** und **in Bewegung bleiben**. Mit aufklappbaren DOs & Don'ts, den **Sätzen als Karten** fürs Einkaufen, Bestellen (*a la plancha, no frito*) und die Apotheke, sowie einem **Gesund-unterwegs-Kit** |
 | **Regatear** | Gut verhandeln 🤝 | Wie man auf Märkten freundlich feilscht: **Erklärung** der Taktik in 4 Blöcken (Grundhaltung, Verhandlung führen, Abschluss & Weggehen, Taxi/Touren), **Glossar** der Feilsch-Wörter (*regatear, la rebaja, precio fijo, la yapa*), die **wichtigsten Sätze** nach Phasen (*¿A cuánto la unidad?*, *¿Cuánto es lo menos?*, *Trato hecho*, *¿Tiene cambio?*), **Mengen & Einheiten** (unidad, docena, par, libra, kilo, litro, manojo …), **regionale Unterschiede** (México, Guatemala, Perú/Bolivia, Colombia, Argentina, Costa Rica, Cuba) und vier **Rollenspiele** zum lauten Üben (Obst & Gemüse, Souvenir feilschen, erst suchen dann handeln, Taxipreis aushandeln) |
 | **Touch + Tastatur** | Vollständige Bedienung | Wischgesten (←/↑/→), Tasten 1/2/3/Space/p, Haptik-Feedback wo verfügbar |
 | **PWA** | Installierbar & offline | Service Worker, Manifest, Homescreen-Icon, App-Shell-Fallback |
@@ -186,15 +191,20 @@ SpanischCard/
 ├── numbers.js     SC.numbers    # Zahl→spanisches Wort + Preis-Generator (Precios al oído, 7 Währungen) – REINE FUNKTIONEN
 ├── context.js     SC.context    # hängt Kontext an die Karten (Zahlen generiert) – REINE FUNKTIONEN
 ├── countries.js   SC.countries  # Länderkunde: 19 Länder in 3 Regionen
+├── historia.js    SC.historia   # Historia de Sudamérica: Zeitstrahl, Protagonisten, aktuelle Spannungen (REINE DATEN)
 ├── frases.js      SC.frases     # Satzbaukasten: Satzrahmen + Bausteine (REINE DATEN)
 ├── regatear.js    SC.regatear   # Regatear: Verhandeln-Taktik, Sätze, Einheiten, Rollenspiele (REINE DATEN)
+├── logistica.js   SC.logistica  # Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung (REINE DATEN)
+├── salud.js       SC.salud      # Salud y energía: Essen, Trinken, Bauch, Sonne/Höhe, Bewegung (REINE DATEN)
 │
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
 ├── matcher.js     SC.matcher    # Antwortprüfung, akzent-/satzzeichen-tolerant — REINE FUNKTIONEN
+├── search.js      SC.search     # Suche über Karten, Übungen & Informationen — REINE FUNKTIONEN
 ├── stats.js       SC.stats      # Auswertung pro Karte & gesamt — REINE FUNKTIONEN
 ├── badges.js      SC.badges     # Ruta-Pass: Badge-Definitionen + Auswertung — REINE FUNKTIONEN
 │
 ├── store.js       SC.store      # Persistenz — kapselt localStorage komplett weg
+├── sync.js        SC.sync       # Optionale, opt-in Cloud-Sync: reine Merge-Funktionen + dünner Adapter (BACKEND.md)
 ├── usercards.js   SC.userCards  # Eigene Karten (anlegen/löschen/validieren)
 ├── speech.js      SC.speech     # Sprachausgabe via Web Speech API (LatAm-Stimme)
 ├── share.js       SC.share      # Sharepic-Generator (Canvas → PNG, Web Share API)
@@ -207,7 +217,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 160 Tests in 11 Dateien (node:test, keine Dependencies)
+├── test/                        # 181 Tests in 13 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -468,8 +478,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 160
-#  ℹ pass 155
+#  ℹ tests 181
+#  ℹ pass 181
 #  ℹ fail 0
 ```
 
@@ -489,11 +499,11 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Kennzahl | Wert |
 |---|---|
 | Karten | 1133 |
-| Bereiche / Kategorien | 24 |
+| Bereiche / Kategorien | 32 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
-| JS-Module | 16 (`SC.*`) |
-| Tests | 160 (alle grün) |
+| JS-Module | 27 (`SC.*`) |
+| Tests | 181 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

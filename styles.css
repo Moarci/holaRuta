@@ -390,6 +390,79 @@ body {
 .feat__sub { font-size: 0.82rem; opacity: 0.92; }
 .feat__chev { font-size: 1.4rem; font-weight: 700; flex: none; opacity: 0.85; }
 
+/* ---------- SUCHE (gezielt nach Karten/Übungen & Informationen) ---------- */
+/* Sucheinstieg im Dashboard/Entdecken: sieht aus wie ein Feld, ist ein Knopf. */
+.searchbar {
+  display: flex; align-items: center; gap: 10px; width: 100%; cursor: pointer;
+  text-align: left; padding: 13px 16px; border-radius: var(--r-md);
+  background: var(--card); border: 1.5px solid var(--line); color: var(--muted);
+  box-shadow: var(--shadow);
+}
+.searchbar:active { transform: translateY(1px); }
+.searchbar__icon { font-size: 1.05rem; line-height: 1; flex: none; }
+.searchbar__text { font-size: 0.95rem; font-weight: 600; }
+
+/* Echtes Eingabefeld auf der Such-Seite. */
+.searchfield {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card); border: 1.5px solid var(--line-strong);
+  border-radius: var(--r-md); padding: 0 12px; box-shadow: var(--shadow);
+}
+.searchfield:focus-within { border-color: var(--brand); box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 30%, transparent); }
+.searchfield__icon { font-size: 1.05rem; flex: none; opacity: 0.8; }
+.searchfield__input {
+  flex: 1 1 auto; min-width: 0; border: none; background: transparent; color: var(--ink);
+  font-family: inherit; font-size: 1rem; padding: 14px 0; outline: none;
+}
+.searchfield__input::placeholder { color: var(--muted); }
+/* native Lösch-Kreuze der type=search-Felder verstecken (eigener Knopf existiert) */
+.searchfield__input::-webkit-search-decoration,
+.searchfield__input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.searchfield__clear {
+  flex: none; border: none; background: transparent; color: var(--muted);
+  font-size: 1.05rem; cursor: pointer; padding: 8px; line-height: 1; border-radius: 999px;
+}
+.searchfield__clear:active { transform: translateY(1px); }
+/* Lösch-Knopf nur zeigen, wenn etwas im Feld steht (rein per CSS, kein Re-Render). */
+.searchfield__input:placeholder-shown ~ .searchfield__clear { display: none; }
+
+.search-hint { margin: 8px 2px; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.5; }
+/* Eigene Abstände statt des negativen Rands von .sectioncap (der für die
+ * Kachel-Gitter der Startseite gedacht ist und hier die erste Karte über die
+ * Überschrift ziehen würde). Positiver Rand unten = klarer Abstand zur Liste,
+ * großzügiger Rand oben = Luft zwischen den Gruppen. */
+.search-cap { display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; }
+.search-cap:first-child { margin-top: 4px; }
+.search-count {
+  font-size: 0.72rem; font-weight: 800; color: var(--muted);
+  background: rgba(45, 27, 18, 0.08); border-radius: 999px; padding: 1px 8px;
+}
+[data-theme="dark"] .search-count { background: rgba(251, 243, 228, 0.12); }
+.search-list { display: flex; flex-direction: column; gap: 8px; }
+.search-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer;
+  text-align: left; padding: 12px 14px; border-radius: var(--r-md);
+  background: var(--card); border: 1.5px solid var(--line); color: var(--ink);
+}
+.search-row:active { transform: translateY(1px); }
+.search-row__icon { font-size: 1.35rem; line-height: 1; flex: none; }
+.search-row__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.search-row__title {
+  font-weight: 700; font-size: 0.98rem; line-height: 1.25;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.search-row__sub {
+  font-size: 0.82rem; color: var(--muted); line-height: 1.3;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.search-row__kind {
+  flex: none; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--brand-ink);
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  border-radius: 999px; padding: 3px 9px;
+}
+.search-row__chev { flex: none; font-size: 1.25rem; font-weight: 700; opacity: 0.6; }
+
 /* ---------- PROFIL-REITER: Fortschritts-Karte + Navigations-Zeilen ---------- */
 .profcard {
   display: flex; flex-direction: column; gap: 10px;
@@ -1003,6 +1076,307 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border-radius: var(--r-md); padding: 14px 16px; color: var(--brand-ink);
   font-weight: 600; line-height: 1.5; margin-bottom: 8px;
 }
+
+/* ===================== HISTORIA DE SUDAMÉRICA (ERKLÄRSEITE) ===================== */
+/* Brücke von der Länderkunde zur kontinentweiten Geschichte. */
+.hist-banner {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  margin: 12px 0 4px; padding: 14px 16px; cursor: pointer;
+  color: #FBF3E4; border: 0; border-radius: var(--r-md);
+  background: linear-gradient(135deg, #8E5A2E, #5A3A24); box-shadow: var(--shadow);
+}
+.hist-banner:active { transform: scale(0.99); }
+.hist-banner__icon { font-size: 1.6rem; flex-shrink: 0; }
+.hist-banner__text { flex: 1; min-width: 0; }
+.hist-banner__title { display: block; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
+.hist-banner__sub { display: block; font-size: 0.82rem; opacity: 0.9; line-height: 1.35; margin-top: 1px; }
+.hist-banner__chev { flex-shrink: 0; font-size: 1.3rem; opacity: 0.8; }
+
+/* Sprungmarken-Leiste (wie sz-nav). */
+.hist-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
+  font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
+}
+.hist-nav__chip:active { transform: scale(0.96); }
+
+/* Block-Überschriften. */
+.hist-block { margin-top: 22px; scroll-margin-top: 12px; }
+.hist-block__h { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; margin: 0 0 4px; color: var(--ink); }
+.hist-block__sub { margin: 0 0 12px; color: var(--muted); font-size: 0.88rem; line-height: 1.4; }
+
+/* Zeitstrahl: vertikale Linie, an der die Epochen hängen. */
+.hist-timeline { position: relative; padding-left: 26px; }
+.hist-timeline::before {
+  content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px;
+  background: linear-gradient(var(--brand), #8E5A2E); border-radius: 2px;
+}
+.hist-era {
+  position: relative; margin-bottom: 12px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+}
+.hist-era[open] { border-color: var(--line-strong); box-shadow: var(--shadow); }
+.hist-era__head {
+  display: flex; align-items: flex-start; gap: 10px; cursor: pointer; list-style: none;
+  padding: 13px 14px; -webkit-user-select: none; user-select: none;
+}
+.hist-era__head::-webkit-details-marker { display: none; }
+.hist-era__head:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+/* Knoten auf der Zeitstrahl-Linie (sitzt links außerhalb der Karte). */
+.hist-era__dot {
+  position: absolute; left: -25px; top: 12px; width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+  background: var(--card); border: 2px solid var(--brand); border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--surface);
+}
+.hist-era__heart { flex: 1; min-width: 0; }
+.hist-era__period {
+  display: inline-block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em;
+  text-transform: uppercase; color: var(--brand-ink);
+  background: rgba(185, 124, 36, 0.14); border-radius: 999px; padding: 2px 9px; margin-bottom: 4px;
+}
+.hist-era__title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--ink); line-height: 1.25; }
+.hist-era__lead { display: block; color: var(--ink-soft); font-size: 0.86rem; line-height: 1.4; margin-top: 3px; }
+.hist-era__chev { flex-shrink: 0; color: var(--muted); font-size: 0.9rem; transition: transform 0.2s ease; margin-top: 2px; }
+.hist-era[open] .hist-era__chev { transform: rotate(180deg); }
+.hist-era__body { padding: 0 14px 14px; }
+.hist-era__fig { margin: 0 0 12px; }
+.hist-era__img {
+  display: block; width: 100%; height: 190px; object-fit: cover;
+  border-radius: var(--r-sm); background: var(--surface);
+}
+.hist-era__cap { margin: 6px 2px 0; font-size: 0.78rem; font-style: italic; color: var(--muted); line-height: 1.35; }
+.hist-era__p { margin: 0 0 9px; color: var(--ink-soft); line-height: 1.55; font-size: 0.93rem; }
+.hist-era__points {
+  list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px;
+}
+.hist-era__points li {
+  position: relative; padding: 8px 12px 8px 30px; font-size: 0.86rem; line-height: 1.4;
+  color: var(--ink); background: var(--surface); border-radius: var(--r-sm);
+}
+.hist-era__points li::before { content: "📌"; position: absolute; left: 10px; top: 8px; font-size: 0.8rem; }
+
+/* Schwierigkeits-Plakette (CEFR) – im Kopf der Epoche und über dem Lesetext. */
+.hist-era__metarow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.hist-era__metarow .hist-era__period { margin-bottom: 0; }
+.hist-era__lvlchip {
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
+  color: #fff; border-radius: 999px; padding: 2px 7px; background: var(--muted);
+}
+.hist-lvl--A1, .hist-lvl--A2 { background: #3F7355; }
+.hist-lvl--B1 { background: #B97C24; }
+.hist-lvl--B2 { background: #C2502E; }
+.hist-lvl--C1 { background: #B5302A; }
+
+/* Spanische Lesefassung. */
+.hist-es {
+  margin: 0 0 12px; padding: 14px; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-es__bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.hist-es__label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand-ink); }
+.hist-lvl {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700;
+  color: #fff; border-radius: 999px; padding: 3px 10px; background: var(--muted);
+}
+.hist-lvl__code { font-weight: 800; }
+.hist-lvl__meter { font-size: 0.6rem; letter-spacing: 1px; opacity: 0.9; }
+.hist-es__p { margin: 0 0 9px; color: var(--ink); line-height: 1.7; font-size: 1rem; }
+.hist-es__p:last-of-type { margin-bottom: 0; }
+.hist-es__hint { margin: 10px 0 0; font-size: 0.78rem; color: var(--muted); font-style: italic; }
+
+/* Antippbares Schwierigkeits-Wort mit Übersetzungs-Popover (reines CSS via :focus). */
+.hist-w {
+  position: relative; display: inline; margin: 0; padding: 0 1px; font: inherit; cursor: pointer;
+  color: var(--brand-ink); font-weight: 700; background: rgba(185, 124, 36, 0.16);
+  border: 0; border-bottom: 2px dotted var(--brand); border-radius: 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.hist-w:hover, .hist-w.is-open { background: rgba(185, 124, 36, 0.30); }
+.hist-w__pop {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  display: none; z-index: 5; white-space: normal; width: max-content; max-width: 240px;
+  padding: 7px 11px; font-size: 0.85rem; font-weight: 600; line-height: 1.35; text-align: center;
+  color: var(--card); background: var(--ink); border-radius: var(--r-sm); box-shadow: var(--shadow);
+}
+.hist-w__pop::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: var(--ink);
+}
+.hist-w.is-open .hist-w__pop, .hist-w:focus-visible .hist-w__pop, .hist-w:hover .hist-w__pop { display: block; }
+.hist-w:focus { outline: none; }
+.hist-w:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+/* Wörterliste pro Text (aufklappbar), gruppiert in mitnehmen / überspringen. */
+.hist-voc, .hist-trans {
+  margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-voc[open], .hist-trans[open] { border-color: var(--line-strong); }
+.hist-voc__sum, .hist-trans__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 11px 13px; font-weight: 700; color: var(--ink); font-size: 0.92rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-voc__sum::-webkit-details-marker, .hist-trans__sum::-webkit-details-marker { display: none; }
+.hist-voc__sum:focus-visible, .hist-trans__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-voc__n {
+  font-size: 0.72rem; font-weight: 800; color: var(--brand-ink);
+  background: rgba(185, 124, 36, 0.16); border-radius: 999px; padding: 1px 8px;
+}
+.hist-voc__chev, .hist-trans__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-voc[open] .hist-voc__chev, .hist-trans[open] .hist-trans__chev { transform: rotate(180deg); }
+.hist-voc__body { padding: 0 13px 12px; }
+.hist-voc__cap { margin: 10px 0 6px; font-size: 0.78rem; font-weight: 700; }
+.hist-voc__cap--take { color: #3F7355; }
+.hist-voc__cap--skip { color: var(--muted); }
+[data-theme="dark"] .hist-voc__cap--take { color: #6FB58A; }
+.hist-voc__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.hist-voc__list--skip { opacity: 0.75; }
+.hist-voc__row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px;
+  padding: 7px 11px; background: var(--surface); border-radius: var(--r-sm);
+}
+.hist-voc__es { font-weight: 700; color: var(--brand-ink); }
+.hist-voc__es::before { content: "›"; margin-right: 6px; color: var(--muted); }
+.hist-voc__de { color: var(--ink-soft); font-size: 0.9rem; }
+
+/* Übersetzungs-Aufklapper + Teilen-Knopf. */
+.hist-trans__body { padding: 0 13px 12px; }
+.hist-trans__body .hist-era__p:first-child { margin-top: 2px; }
+.hist-share {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 2px; padding: 10px 16px;
+  font-weight: 700; font-size: 0.9rem; color: #fff; cursor: pointer;
+  background: linear-gradient(135deg, #8E5A2E, #5A3A24); border: 0; border-radius: var(--r-md);
+}
+.hist-share:active { transform: scale(0.98); }
+
+/* Teilen-Knopf auf Modul-Ebene (ganzes Historia-Modul weiterempfehlen). */
+.hist-modshare { margin-top: 12px; }
+
+/* Teilen-Knopf in den übrigen Entdecken-Kategorien (Knigge/Regatear/Logística/
+   Salud) und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und
+   etwas Abstand zum übrigen Karteninhalt. */
+.knigge-topic__body .hist-share { margin-top: 12px; }
+.cinfo-share { margin: 0 0 14px; }
+.knigge-topic__body .hist-share,
+.cinfo-share { background: linear-gradient(135deg, #475569, #334155); }
+
+/* Mini-Quiz zum Text (Selbstprüfung). */
+.hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
+.hist-quiz[open] { border-color: var(--line-strong); }
+.hist-quiz__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 11px 13px; font-weight: 700; color: var(--ink); font-size: 0.92rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-quiz__sum::-webkit-details-marker { display: none; }
+.hist-quiz__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-quiz__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-quiz[open] .hist-quiz__chev { transform: rotate(180deg); }
+.hist-quiz__body { padding: 0 13px 12px; }
+.hist-quiz__intro { margin: 2px 0 10px; font-size: 0.85rem; color: var(--muted); }
+.hist-quiz__q { margin-bottom: 12px; }
+.hist-quiz__q:last-child { margin-bottom: 0; }
+.hist-quiz__prompt {
+  margin: 0 0 7px; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;
+  color: var(--brand-ink);
+}
+.hist-quiz__opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.hist-quiz__opt {
+  flex: 1 1 calc(50% - 6px); min-width: 120px; padding: 9px 11px; cursor: pointer;
+  font: inherit; font-size: 0.88rem; text-align: left; color: var(--ink);
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-quiz__opt:active { transform: scale(0.98); }
+/* Nach der Antwort: Auswahl einfärben, weitere Klicks sperren. */
+.hist-quiz__q.is-done .hist-quiz__opt { cursor: default; opacity: 0.6; }
+.hist-quiz__q.is-done .hist-quiz__opt.is-correct {
+  opacity: 1; color: #fff; background: #3F7355; border-color: #3F7355; font-weight: 700;
+}
+.hist-quiz__q.is-done .hist-quiz__opt.is-wrong {
+  opacity: 1; color: #fff; background: #B5302A; border-color: #B5302A; font-weight: 700;
+}
+.hist-quiz__opt.is-correct::after { content: "  ✓"; }
+.hist-quiz__opt.is-wrong::after { content: "  ✗"; }
+
+/* Aufklappbarer Lese-Block in Protagonisten-/Heute-Karten (Lesetraining überall). */
+.hist-read {
+  margin-top: 10px; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-read[open] { border-color: var(--line-strong); }
+.hist-read__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 10px 12px; font-weight: 700; color: var(--brand-ink); font-size: 0.88rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-read__sum::-webkit-details-marker { display: none; }
+.hist-read__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-read__lvl { font-size: 0.66rem; font-weight: 800; color: #fff; border-radius: 999px; padding: 2px 7px; background: var(--muted); }
+.hist-read__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-read[open] .hist-read__chev { transform: rotate(180deg); }
+.hist-read__body { padding: 0 12px 12px; }
+/* Im Lese-Block sitzt der Spanisch-Kasten direkt unter dem Kopf – Doppelrahmen vermeiden. */
+.hist-read__body .hist-es { background: var(--card); margin-top: 2px; }
+
+/* Protagonisten-Galerie. */
+.hist-figs { display: flex; flex-direction: column; gap: 12px; }
+.hist-fig {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  padding: 14px; box-shadow: var(--shadow);
+}
+.hist-fig__top { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+.hist-fig__img {
+  width: 70px; height: 84px; flex-shrink: 0; object-fit: cover; object-position: top center;
+  border-radius: var(--r-sm); background: var(--surface); border: 1.5px solid var(--line);
+}
+.hist-fig__img--ph { display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+.hist-fig__id { min-width: 0; }
+.hist-fig__name { margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--ink); line-height: 1.2; }
+.hist-fig__role { margin: 3px 0 0; color: var(--brand-ink); font-weight: 600; font-size: 0.85rem; line-height: 1.3; }
+.hist-fig__years { margin: 2px 0 0; color: var(--muted); font-size: 0.8rem; }
+.hist-fig__text { margin: 0; color: var(--ink-soft); line-height: 1.55; font-size: 0.92rem; }
+.hist-fig__quote {
+  margin: 10px 0 0; padding: 8px 12px; font-style: italic; color: var(--ink);
+  background: var(--surface); border-left: 3px solid var(--brand); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-size: 0.9rem; line-height: 1.45;
+}
+
+/* „Heute": Spannungen mit Status-Plakette. */
+.hist-tens { display: flex; flex-direction: column; gap: 12px; }
+.hist-ten {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  border-left: 5px solid var(--muted); padding: 13px 14px; box-shadow: var(--shadow);
+}
+.hist-ten__head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.hist-ten__icon { font-size: 1.2rem; flex-shrink: 0; }
+.hist-ten__title { flex: 1; min-width: 0; margin: 0; font-family: var(--font-display); font-size: 1.02rem; color: var(--ink); line-height: 1.25; }
+.hist-ten__badge {
+  flex-shrink: 0; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;
+  color: #fff; background: var(--muted); border-radius: 999px; padding: 3px 9px;
+}
+.hist-ten__where { margin: 0 0 7px; color: var(--muted); font-size: 0.8rem; font-weight: 600; }
+.hist-ten__text { margin: 0; color: var(--ink-soft); line-height: 1.55; font-size: 0.92rem; }
+/* Farbtöne je Status. */
+.hist-ten--crisis { border-left-color: #C0392B; }
+.hist-ten--crisis .hist-ten__badge { background: #C0392B; }
+.hist-ten--tense { border-left-color: #C2502E; }
+.hist-ten--tense .hist-ten__badge { background: #C2502E; }
+.hist-ten--shift { border-left-color: #2F6B70; }
+.hist-ten--shift .hist-ten__badge { background: #2F6B70; }
+.hist-ten--progress { border-left-color: #3F7355; }
+.hist-ten--progress .hist-ten__badge { background: #3F7355; }
+
+/* „¿Sabías que…?"-Häppchen. */
+.hist-facts { margin-top: 22px; }
+.hist-facts__grid { display: flex; flex-direction: column; gap: 8px; }
+.hist-fact {
+  padding: 12px 14px 12px 38px; position: relative; font-size: 0.9rem; line-height: 1.5;
+  color: var(--ink); background: rgba(185, 124, 36, 0.10);
+  border: 1.5px solid rgba(185, 124, 36, 0.30); border-radius: var(--r-sm);
+}
+.hist-fact::before { content: "💡"; position: absolute; left: 12px; top: 11px; }
 
 /* ===================== REISE-KNIGGE (VERHALTEN UNTERWEGS) ===================== */
 /* Aufklappbare Themenblöcke (natives <details>) im Stil von cinfo-dish, mit

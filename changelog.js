@@ -22,7 +22,7 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
-      version: "1.40.0",
+      version: "1.45.0",
       date: "2026-06-15",
       title: "Optionale Cloud-Sync – Fundament für Schul-/Partner-Editionen",
       items: [
@@ -31,7 +31,7 @@
       ],
     },
     {
-      version: "1.39.0",
+      version: "1.44.0",
       date: "2026-06-15",
       title: "Aufgaben teilen: Zuweisung per Code – ganz ohne Konto",
       items: [
@@ -40,7 +40,7 @@
       ],
     },
     {
-      version: "1.38.0",
+      version: "1.43.0",
       date: "2026-06-15",
       title: "Modo profe: Klassenübersicht für Lehrkräfte & Reiseleiter",
       items: [
@@ -49,7 +49,7 @@
       ],
     },
     {
-      version: "1.37.0",
+      version: "1.42.0",
       date: "2026-06-15",
       title: "Drei neue Reise-Pakete: Argentinien, Chile & Bolivien",
       items: [
@@ -60,7 +60,7 @@
       ],
     },
     {
-      version: "1.36.0",
+      version: "1.41.0",
       date: "2026-06-15",
       title: "Zwei neue Reise-Pakete: Ecuador & Guatemala",
       items: [
@@ -70,7 +70,7 @@
       ],
     },
     {
-      version: "1.35.0",
+      version: "1.40.0",
       date: "2026-06-15",
       title: "Pre-Trip-Plan jetzt für vier Reiseziele",
       items: [
@@ -80,8 +80,8 @@
       ],
     },
     {
-      version: "1.34.0",
-      date: "2026-06-14",
+      version: "1.39.0",
+      date: "2026-06-15",
       title: "Zwei neue Reise-Pakete: Mexiko & Costa Rica",
       items: [
         "🇲🇽 Neuer Bereich „Mexiko“ mit 41 Karten entlang der „Mexiko 360°“-Route: CDMX, Teotihuacán, Oaxaca (Mezcal, chapulines), Chiapas (Sumidero-Canyon, San Cristóbal, Palenque) und Yucatán (Cenoten, Chichén Itzá, Tulum, Bacalar) – mit Día de Muertos und mexikanischem Slang (¿mande?, ¡órale!, ¡aguas!, chido).",
@@ -90,16 +90,16 @@
       ],
     },
     {
-      version: "1.33.0",
-      date: "2026-06-14",
+      version: "1.38.0",
+      date: "2026-06-15",
       title: "Pre-Arrival Peru: die wichtigsten Sätze auf einen Tap",
       items: [
         "🇵🇪 Neue Dashboard-Kachel „Pre-Arrival Peru“ – ein Tap startet die 20 wichtigsten Sätze für die Ankunft (Gruß, Taxi, Höhe & Kokatee, Geld, Essen, Sicherheit). Erscheint automatisch, wenn dein Trip-Ziel Peru meint (Lima, Cusco, Machu Picchu …).",
       ],
     },
     {
-      version: "1.32.0",
-      date: "2026-06-14",
+      version: "1.37.0",
+      date: "2026-06-15",
       title: "Neues Reise-Paket: Peru (Cusco, Machu Picchu & Anden)",
       items: [
         "🇵🇪 Neuer Bereich „Peru“ mit 45 ortsspezifischen Karten entlang der klassischen Route: Lima, Höhe & Kokatee (soroche), Arequipa & Colca-Canyon (Kondore), Titicacasee/Puno (schwimmende Inseln), Cusco & Heiliges Tal, Machu Picchu, Regenbogenberg – mit Reise-Kontext für jede Karte.",
@@ -108,8 +108,8 @@
       ],
     },
     {
-      version: "1.31.0",
-      date: "2026-06-14",
+      version: "1.36.0",
+      date: "2026-06-15",
       title: "Kolumbien-Paket: Kaffeeregion ergänzt (Salento & Valle del Cocora)",
       items: [
         "☕ 14 neue Kolumbien-Karten für die Kaffeezone: nach Salento kommen, der Willys-Jeep ins Valle del Cocora, Wachspalmen, Kaffeetour & -verkostung auf der Finca, Forelle (trucha), Aussichtspunkte, Kolibris und ein Tejo-Abend.",
@@ -118,16 +118,16 @@
       ],
     },
     {
-      version: "1.30.0",
-      date: "2026-06-14",
+      version: "1.35.0",
+      date: "2026-06-15",
       title: "Bessere Lesbarkeit im Dunkelmodus",
       items: [
         "🌙 Knöpfe und Badges mit farbiger Fläche (z. B. „Lernrunde starten“, Pre-Trip-Etappen, Hostel-Punktestand) bekommen im Dunkelmodus dunklen statt hellen Text – jetzt durchgängig WCAG-AA-konform lesbar.",
       ],
     },
     {
-      version: "1.29.0",
-      date: "2026-06-14",
+      version: "1.34.0",
+      date: "2026-06-15",
       title: "Pre-Trip-Plan: in 7 Etappen reisefertig",
       items: [
         "🗓️ Neuer Pre-Trip-Plan unter Entdecken: ein geordneter, mehrtägiger Onboarding-Pfad für Kolumbien (Begrüßung, Taxi, Unterkunft, Essen, Geld, Unterwegs, Ausgehen) – die nächste Etappe öffnet sich, sobald du die aktuelle geschafft hast.",
@@ -136,8 +136,8 @@
       ],
     },
     {
-      version: "1.28.0",
-      date: "2026-06-14",
+      version: "1.33.0",
+      date: "2026-06-15",
       title: "Coordinator-Schnellstart: 5-Minuten-Icebreaker",
       items: [
         "⚡ Neue Karte im Modo Hostal: „5-Minuten-Icebreaker“ startet auf einen Tap eine kurze 6-Runden-Kennenlern-Battle – ganz ohne Setup.",
@@ -145,8 +145,8 @@
       ],
     },
     {
-      version: "1.27.0",
-      date: "2026-06-14",
+      version: "1.32.0",
+      date: "2026-06-15",
       title: "Mehr Real-Life Challenges: 30 statt 10",
       items: [
         "🚪 20 neue Real-Life Challenges (jetzt 30) – Essen bestellen, Preis fragen, nach dem Weg fragen, Gruppen-Icebreaker, Apotheke, plus Kolumbien-Spezial (Tinto bestellen, ¿quiubo? begrüßen, Tanzschritt lernen).",
@@ -155,8 +155,8 @@
       ],
     },
     {
-      version: "1.26.0",
-      date: "2026-06-14",
+      version: "1.31.0",
+      date: "2026-06-15",
       title: "Pre-Arrival-Preset: die wichtigsten Sätze auf einen Tap",
       items: [
         "🇨🇴 Neue Dashboard-Kachel „Pre-Arrival Kolumbien“ – ein Tap startet die 20 wichtigsten Sätze für die Ankunft (Begrüßung, Taxi, Unterkunft, Essen, Geld, Sicherheit).",
@@ -164,13 +164,70 @@
       ],
     },
     {
-      version: "1.25.0",
-      date: "2026-06-14",
+      version: "1.30.0",
+      date: "2026-06-15",
       title: "Kolumbien-Paket: 75 ortsspezifische Reise-Karten",
       items: [
         "🇨🇴 Neuer Bereich „Kolumbien“ mit 75 Karten für echte Situationen in Cartagena, Medellín, Bogotá und an der Karibikküste – mit Reise-Kontext für jede Karte.",
         "🗺️ Von Flughafen-Taxi, Unterkunft und Islas-del-Rosario-Boot über Bandeja Paisa, Tinto und Aguardiente bis zu kolumbianischem Slang (parce, bacano, a la orden, ¡de una!) und Salsa-/Champeta-Abenden.",
         "🎒 Erstes Destination-Pack – Grundlage für Sprachschul-, Gruppenreise- und Hostel-Angebote.",
+      ],
+    },
+    {
+      version: "1.29.0",
+      date: "2026-06-15",
+      title: "Historia-Modul als Ganzes teilen",
+      items: [
+        "📤 Neues Sharepic auf Modul-Ebene: „Historia de Sudamérica“ lässt sich jetzt komplett weiterempfehlen – ein Bild mit Modulname, Einleitung und einem Zeitstrahl-Teaser der Epochen, in 1:1 oder 9:16 (Story). Der „Modul teilen“-Knopf sitzt oben direkt unter der Bereichs-Navigation.",
+      ],
+    },
+    {
+      version: "1.28.0",
+      date: "2026-06-15",
+      title: "Historia de Sudamérica: die große Geschichte",
+      items: [
+        "📜 Neue Erklärseite unter Entdecken (und als Banner in „Países y culturas“): die ganze Geschichte Südamerikas auf einen Blick – von den Inka über die spanische Eroberung und die Kolonialzeit bis zu Bolívar, San Martín und der Unabhängigkeit.",
+        "🕰️ Interaktiver Zeitstrahl: sieben aufklappbare Epochen – Hochkulturen, Conquista, Vizekönigreiche & Silber, der Funke (Napoleon & die Junten), der Freiheitskampf, die Abspaltung in viele Nationen und der Weg bis heute. Jede Epoche mit Bild von Wikimedia, Kernpunkten und Erklärung.",
+        "👤 Galerie der Protagonisten: Bolívar, San Martín, Sucre, O’Higgins, Manuela Sáenz und Atahualpa – mit Porträt, Lebensdaten und Zitat.",
+        "📰 „Heute: Lage & Spannungen“: aktuelle Konflikte verständlich erklärt – Venezuela-Krise & Massenflucht, Grenzstreit um Essequibo, Boliviens Meereszugang, Kolumbiens Friedensprozess, Perus politische Dauerkrise, Argentiniens Kurswechsel, Amazonas & indigene Rechte und der Darién.",
+        "📖 Lesetraining auf Spanisch: jede Epoche gibt es zusätzlich als spanischen Lesetext. Schwierige Wörter sind markiert – antippen zeigt die Übersetzung. Pro Text eine Wörterliste zum schnellen Nachschlagen, sauber getrennt in „lohnt sich mitzunehmen“ und „nicht so wichtig“.",
+        "📊 Schwierigkeits-Score (CEFR A1–C1) pro Text zur Selbst-Einstufung, plus „Ganze Übersetzung anzeigen“ und ein teilbares Sharepic von Text & Wörterliste.",
+        "🧩 Mini-Quiz pro Epoche: spanisches Wort lesen, die richtige Übersetzung antippen – mit sofortiger Rückmeldung (richtig/falsch).",
+        "📖 Lesetraining jetzt überall: auch jede Protagonisten- und jede „Heute“-Karte hat einen aufklappbaren spanischen Lesetext mit antippbaren Vokabeln, Wörterliste und Sharepic.",
+        "💡 „¿Sabías que…?“-Häppchen und durchgängig zweisprachig (Deutsch/Englisch).",
+      ],
+    },
+    {
+      version: "1.27.0",
+      date: "2026-06-14",
+      title: "Suche & sauberes Scrollen",
+      items: [
+        "🔍 Neue Suche: Tippe oben auf „Suchen …“ (im Lernen- und Entdecken-Reiter) und finde gezielt, was du brauchst – Vokabelkarten, ganze Themen und Übungen unter „Übungen“, Länderkunde, Reise-Knigge, Logística und Salud unter „Informationen“. Sucht auf Deutsch wie Spanisch und ist nachsichtig mit Akzenten („nino“ findet „niño“, „mexico“ findet „México“).",
+        "🧭 Treffer führen direkt ans Ziel: Eine Karte öffnet ihre Detailseite (mit ‹ zurück zur Suche), ein Thema startet die Lernrunde, ein Land öffnet die Länderkunde gleich beim richtigen Eintrag.",
+        "⬆️ Sauberes Scrollen beim Wechsel: Öffnest du aus einer weiter unten gescrollten Liste eine Kategorie oder Übung, beginnt die neue Seite jetzt zuverlässig oben – statt die alte Scroll-Position zu erben.",
+        "🎒 Salud y energía erweitert: neuer Tipp-Block „Ausflüge & lange Fahrten“ – immer etwas Zucker am Körper (Kreislauf!), eigener Proviant trotz „Verpflegung inklusive“, Mini-Reiseapotheke (Schmerz- & Reisetablette, Pflaster – für Frauen besonders wichtig) und etwas Langärmliges gegen eiskalte Bus-Klimaanlagen. Dazu passende Apotheken-Sätze und Begriffe.",
+      ],
+    },
+    {
+      version: "1.26.0",
+      date: "2026-06-14",
+      title: "Salud y energía: gesund & fit unterwegs",
+      items: [
+        "🥗 Neues Entdecken-Modul fürs Gesundbleiben auf der Straße: ausgewogen essen statt nur Streetfood (Protein, Ballaststoffe, Vitamine gezielt holen), Frühstück selbst machen – Porridge mit Proteinpulver & Früchten, ganz ohne Küche.",
+        "💧 Günstig & mit Geschmack trinken: Zero-Sirup und Elektrolytpulver (suero) peppen billiges Wasser auf, sparen Geld und gleichen das Schwitzen aus. Dazu Tipps zu Bauch & Verdauung, Sonne/Höhe/Mücken und Bewegung – plus ein „Gesund-unterwegs-Kit“.",
+        "💬 Mit den passenden Sätzen als Karten: gesund einkaufen, gesünder bestellen („a la plancha, no frito“), nach Yoga & Gym-Tagespass fragen und in der Apotheke nach suero, Sonnencreme & Co. fragen.",
+        "🏋️ In Bewegung bleiben ohne Studio-Abo: manche Hostels bieten Yoga, in größeren Städten gibt es im Gym oft einen günstigen Tagespass – ein gutes Erlebnis, weil dort die Locals trainieren.",
+        "📅 Logística de viaje ergänzt: Tipp zum Vorausplanen – beliebte Hostels und knappe Plätze in der Hochsaison früher buchen.",
+      ],
+    },
+    {
+      version: "1.25.0",
+      date: "2026-06-14",
+      title: "Logística de viaje: clever & sicher ankommen",
+      items: [
+        "🧳 Neues Modul unter Entdecken: die praktischen Handgriffe, die kein Sprachkurs lehrt – SIM-Karte (chip) kaufen & online sein, Geld wechseln und am cajero abheben (ohne teure Umrechnung), Geld & Wertsachen auf mehrere Gepäckstücke aufteilen, das Gepäck per Tracker (AirTag & Co.) im Blick behalten.",
+        "✈️ Handgepäck-Notfallset als Packliste: das Wichtigste – Medikamente, Wechselwäsche, Hygiene, Powerbank, Dokumente – kommt ins Handgepäck, falls der große Rucksack später (oder gar nicht) ankommt.",
+        "💬 Dazu die passenden Sätze als Karten: nach SIM, Geld und verlorenem Gepäck fragen – jeweils auf Spanisch mit Übersetzung.",
       ],
     },
     {

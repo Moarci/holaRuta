@@ -285,6 +285,41 @@
     dedication: "For my dear Lisa.",
   });
 
+  // ---------- search: Suche (gezielt nach Karten/Übungen & Informationen) ----------
+  i18n.register("search", {
+    open: "Suche öffnen",
+    placeholder: "Suchen …",
+    title: "Suche",
+    inputPlaceholder: "Karten, Übungen, Länder …",
+    clear: "Suche leeren",
+    hintEmpty: "Suche nach Wörtern, Sätzen, Themen, Übungen oder Ländern – auf Deutsch oder Spanisch.",
+    noResults: (p) => `Nichts gefunden für „${p.q}“. Versuch ein anderes Wort.`,
+    groupExercises: "Übungen",
+    groupInfo: "Informationen",
+    kindCard: "Karte",
+    kindCategory: "Thema",
+    kindFeature: "Übung",
+    kindCountry: "Land",
+    kindInfo: "Info",
+    subCategory: "Ganzes Thema lernen",
+  }, {
+    open: "Open search",
+    placeholder: "Search …",
+    title: "Search",
+    inputPlaceholder: "Cards, exercises, countries …",
+    clear: "Clear search",
+    hintEmpty: "Search for words, phrases, topics, exercises or countries – in English or Spanish.",
+    noResults: (p) => `Nothing found for “${p.q}”. Try another word.`,
+    groupExercises: "Exercises",
+    groupInfo: "Information",
+    kindCard: "Card",
+    kindCategory: "Topic",
+    kindFeature: "Exercise",
+    kindCountry: "Country",
+    kindInfo: "Info",
+    subCategory: "Study the whole topic",
+  });
+
   // ---------- study: Lernkarte (Vorder-/Rückseite, Tippen, Hören, Fertig) ----------
   i18n.register("study", {
     studyProgress: "Lernfortschritt",
@@ -363,9 +398,12 @@
     subConjugacion: "Verben beugen – kurz erklärt, dann üben",
     subTiempos: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben",
     subInfo: "Land & Leute – von México bis Chile",
+    subHistoria: "Von den Inka über Bolívar bis heute",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
     subTeacher: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren",
     subTask: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben",
+    subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
+    subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
@@ -409,6 +447,40 @@
     infoOrigin: "Herkunft",
     infoWhen: "Wann",
 
+    // Historia de Sudamérica
+    histBannerTitle: "Historia de Sudamérica",
+    histBannerSub: "Die große Geschichte: Inka, Kolonialzeit, Bolívar & heute",
+    histAreas: "Bereiche",
+    histNavTimeline: "Zeitstrahl",
+    histNavFigures: "Protagonisten",
+    histNavToday: "Heute",
+    histTimelineTitle: "Der Zeitstrahl",
+    histTimelineSub: "Tippe eine Epoche an, um mehr zu erfahren.",
+    histFiguresTitle: "Die Protagonisten",
+    histFiguresSub: "Die Köpfe, die den Kontinent geprägt haben.",
+    histTodayTitle: "Heute: Lage & Spannungen",
+    histTodaySub: "Wie es jetzt ist – die wichtigsten aktuellen Konflikte.",
+    histFactsTitle: "¿Sabías que…? – Wusstest du schon?",
+    // Lesetraining (Spanisch) je Epoche
+    histReadEs: "Lies auf Spanisch",
+    histLevelTitle: "Schwierigkeit – zum Selbst-Einstufen",
+    histTapHint: "Tippe ein markiertes Wort für die Übersetzung.",
+    histVocab: "Wörterliste",
+    histTake: "Mitnehmen – die lohnen sich",
+    histSkip: "Nicht so wichtig – kannst du überspringen",
+    histTranslation: "Ganze Übersetzung anzeigen",
+    histShare: "Text & Vokabeln teilen",
+    histModuleShare: "Modul teilen",
+    tipsShare: "Als Bild teilen",
+    histReadToggle: "Auf Spanisch lesen",
+    histQuiz: "Mini-Quiz: Vokabeln testen",
+    histQuizIntro: "Welche Übersetzung passt? Tippe die richtige an.",
+    histLvlA1: "ganz leicht",
+    histLvlA2: "leicht",
+    histLvlB1: "mittel",
+    histLvlB2: "fortgeschritten",
+    histLvlC1: "schwer",
+
     // Knigge
     kniggeIntroPre: "Allgemeine DOs &amp; Don'ts plus Besonderheiten",
     kniggeIntroFor: (p) => ` für ${p.country}`,
@@ -423,6 +495,20 @@
     rgRoleplays: "🎭 Rollenspiele zum Üben",
     rgRoleplayHint: "Verteilt die Rollen A und B, klappt eine Szene auf und spielt den Dialog laut durch.",
     rgUseful: "Nützliche Sätze",
+
+    // Logística de viaje
+    lgTips: "🧭 Praktische Handgriffe",
+    lgPhrases: "💬 Wichtige Sätze",
+    lgWords: "🗣️ Wörter rund um SIM, Geld & Gepäck",
+    lgChecklist: "✈️ Handgepäck-Notfallset",
+    lgChecklistHint: "Das Wichtigste ins Handgepäck, falls der große Rucksack später (oder gar nicht) kommt.",
+
+    // Salud y energía
+    sdTips: "🧭 Gesund & fit bleiben",
+    sdPhrases: "💬 Wichtige Sätze",
+    sdWords: "🗣️ Wörter rund um Essen, Trinken & Apotheke",
+    sdChecklist: "🎒 Gesund-unterwegs-Kit",
+    sdChecklistHint: "Ein paar günstige Sachen, mit denen Essen, Trinken und der Bauch unterwegs funktionieren.",
 
     // Hostel
     hostelIntro: "Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.",
@@ -613,9 +699,12 @@
     subConjugacion: "Conjugate verbs – briefly explained, then practise",
     subTiempos: "Tenses: yesterday, now, tomorrow – briefly explained, then practise",
     subInfo: "Country & people – from México to Chile",
+    subHistoria: "From the Inca through Bolívar to today",
     subKnigge: "How to behave on the road: hostel, bus, groups",
     subTeacher: "Teacher/coordinator overview: import student progress",
     subTask: "Open a task: enter the code from your teacher/tour leader",
+    subLogistica: "SIM, money & luggage – arrive smart and safe",
+    subSalud: "Stay healthy & fit: food, drink, movement",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
     szAreas: "Sections",
@@ -656,6 +745,40 @@
     infoOrigin: "Origin",
     infoWhen: "When",
 
+    // Historia de Sudamérica
+    histBannerTitle: "Historia de Sudamérica",
+    histBannerSub: "The big story: Inca, colonial era, Bolívar & today",
+    histAreas: "Sections",
+    histNavTimeline: "Timeline",
+    histNavFigures: "Key figures",
+    histNavToday: "Today",
+    histTimelineTitle: "The timeline",
+    histTimelineSub: "Tap an era to find out more.",
+    histFiguresTitle: "The key figures",
+    histFiguresSub: "The people who shaped the continent.",
+    histTodayTitle: "Today: situation & tensions",
+    histTodaySub: "How it is now – the most important current conflicts.",
+    histFactsTitle: "¿Sabías que…? – Did you know?",
+    // Reading practice (Spanish) per era
+    histReadEs: "Read in Spanish",
+    histLevelTitle: "Difficulty – for self-assessment",
+    histTapHint: "Tap a highlighted word for the translation.",
+    histVocab: "Word list",
+    histTake: "Worth taking with you",
+    histSkip: "Less important – you can skip these",
+    histTranslation: "Show full translation",
+    histShare: "Share text & vocab",
+    histModuleShare: "Share module",
+    tipsShare: "Share as image",
+    histReadToggle: "Read in Spanish",
+    histQuiz: "Mini-quiz: test the vocab",
+    histQuizIntro: "Which translation fits? Tap the right one.",
+    histLvlA1: "very easy",
+    histLvlA2: "easy",
+    histLvlB1: "intermediate",
+    histLvlB2: "advanced",
+    histLvlC1: "hard",
+
     kniggeIntroPre: "General dos &amp; don'ts plus particulars",
     kniggeIntroFor: (p) => ` for ${p.country}`,
     kniggeAccentIn: (p) => `In ${p.country}:`,
@@ -668,6 +791,20 @@
     rgRoleplays: "🎭 Role-plays to practise",
     rgRoleplayHint: "Split roles A and B, open a scene and play the dialogue aloud.",
     rgUseful: "Useful phrases",
+
+    // Logística de viaje
+    lgTips: "🧭 Practical moves",
+    lgPhrases: "💬 Important phrases",
+    lgWords: "🗣️ Words for SIM, money & luggage",
+    lgChecklist: "✈️ Carry-on emergency kit",
+    lgChecklistHint: "The essentials in your carry-on, in case the big backpack comes late (or not at all).",
+
+    // Salud y energía
+    sdTips: "🧭 Stay healthy & fit",
+    sdPhrases: "💬 Important phrases",
+    sdWords: "🗣️ Words for food, drink & the pharmacy",
+    sdChecklist: "🎒 Stay-healthy kit",
+    sdChecklistHint: "A few cheap things that keep eating, drinking and your stomach working on the road.",
 
     hostelIntro: "Use travel Spanish in pairs – not just learning, but speaking aloud.",
     coordinatorTitle: "5-minute icebreaker",
@@ -1237,6 +1374,13 @@
     captionVocabHead: (p) => `📍 Spanisch für unterwegs: ${p.head}`,
     captionPron: (p) => `🗣️ Aussprache: ${p.tip}`,
     captionLearned: "Gelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
+    captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
+    captionHistoriaLevel: (p) => `📊 Niveau: ${p.level}`,
+    captionHistoria: "Spanisch lesen lernen mit echten Texten – HolaRuta. 🌎",
+    captionHistModuleHead: "📜 Historia de Sudamérica – Südamerikas Geschichte in einem Modul",
+    captionHistModule: "Von den Inka über Bolívar bis heute – verständlich erzählt, mit Spanisch-Lesetraining. HolaRuta. 🌎",
+    captionTipsHead: (p) => `📋 ${p.title} – Reise-Tipps von HolaRuta`,
+    captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -1255,5 +1399,12 @@
     captionVocabHead: (p) => `📍 Spanish on the go: ${p.head}`,
     captionPron: (p) => `🗣️ Pronunciation: ${p.tip}`,
     captionLearned: "Learned with HolaRuta – your travel Spanish for real situations. 🌎",
+    captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
+    captionHistoriaLevel: (p) => `📊 Level: ${p.level}`,
+    captionHistoria: "Learning to read Spanish with real texts – HolaRuta. 🌎",
+    captionHistModuleHead: "📜 Historia de Sudamérica – South America's history in one module",
+    captionHistModule: "From the Inca via Bolívar to today – clearly told, with Spanish reading practice. HolaRuta. 🌎",
+    captionTipsHead: (p) => `📋 ${p.title} – travel tips from HolaRuta`,
+    captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
   });
 })();

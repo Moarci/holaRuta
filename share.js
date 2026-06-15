@@ -432,6 +432,317 @@
     return c;
   }
 
+  // Zeichnet einen umgebrochenen Text links-bündig, geklammert auf maxBottom
+  // (letzte Zeile bekommt „…"). Liefert die ungefähre Unterkante zurück.
+  function drawWrapped(ctx, text, x, top, maxW, opts) {
+    const o = opts || {};
+    const px = o.px || 32, lh = o.lineHeight || 1.4;
+    ctx.font = font(o.weight || "500", px);
+    ctx.fillStyle = o.color || INK;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    const all = wrap(ctx, text, maxW);
+    const maxBottom = o.maxBottom || Infinity;
+    const step = px * lh;
+    const shown = [];
+    let y = top + px;
+    for (let i = 0; i < all.length; i++) {
+      if (y > maxBottom) {
+        if (shown.length) shown[shown.length - 1] = shown[shown.length - 1].replace(/\s+\S*$/, "") + " …";
+        break;
+      }
+      shown.push(all[i]);
+      y += step;
+    }
+    let yy = top + px;
+    shown.forEach((ln) => { ctx.fillText(ln, x, yy); yy += step; });
+    return yy - step + px * (lh - 1);
+  }
+
+  // ---------- Motiv 4: Geschichts-Lesetext + Wörterliste ----------
+  // payload: { title, levelCode, levelWord, esText, words:[{es,de}] }
+  function buildHistoria(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = ["#8E5A2E", "#5A3A24"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText("📜  HISTORIA DE SUDAMÉRICA", cx, isStory ? 140 : 104);
+
+    // Titel der Epoche
+    const titleTop = isStory ? 168 : 130;
+    const titleBottom = fitText(ctx, payload.title || "", cx, titleTop, pw - 40, {
+      px: 60, min: 36, weight: "800", color: "#ffffff", maxLines: 3,
+    });
+
+    // Schwierigkeits-Pille (Selbst-Einstufung)
+    let y = titleBottom + 34;
+    if (payload.levelCode) {
+      const pill = payload.levelWord ? `${payload.levelCode}  ·  ${payload.levelWord}` : payload.levelCode;
+      ctx.font = font("700", 30);
+      const plw = ctx.measureText(pill).width + 60;
+      ctx.fillStyle = "rgba(255,255,255,0.16)";
+      roundRect(ctx, cx - plw / 2, y, plw, 58, 29);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(pill, cx, y + 30);
+      ctx.textBaseline = "alphabetic";
+      y += 58;
+    }
+    y += 40;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+
+    // Label + spanischer Lesetext
+    ctx.textAlign = "left";
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.fillText("LEE EN ESPAÑOL", innerX, iy + 20);
+    iy += 56;
+
+    const words = (payload.words || []).slice(0, isStory ? 9 : 5);
+    const vocabH = 60 + words.length * 54;
+    const textMaxBottom = panelY + panelH - vocabH - 56;
+    drawWrapped(ctx, payload.esText || "", innerX, iy, innerW, {
+      px: isStory ? 34 : 31, weight: "500", color: INK, lineHeight: 1.42, maxBottom: textMaxBottom,
+    });
+
+    // Trenner + Wörterliste
+    let vy = panelY + panelH - vocabH - 8;
+    ctx.strokeStyle = "rgba(15,23,42,0.10)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(innerX, vy);
+    ctx.lineTo(innerX + innerW, vy);
+    ctx.stroke();
+    vy += 46;
+
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.textAlign = "left";
+    ctx.fillText("📒  VOCABULARIO", innerX, vy);
+    vy += 46;
+
+    words.forEach((w) => {
+      ctx.textAlign = "left";
+      ctx.font = font("800", 30);
+      ctx.fillStyle = accent[0];
+      const esW = String(w.es || "");
+      ctx.fillText(esW, innerX, vy);
+      const offset = ctx.measureText(esW + "   ").width;
+      ctx.font = font("500", 27);
+      ctx.fillStyle = MUTE;
+      let de = String(w.de || "");
+      let trimmed = false;
+      while (ctx.measureText(de).width > innerW - offset && de.length > 5) { de = de.slice(0, -2); trimmed = true; }
+      ctx.fillText(trimmed ? de + "…" : de, innerX + offset, vy);
+      vy += 54;
+    });
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
+  // ---------- Motiv 6: Historia-Modul-Übersicht (ganzes Modul teilen) ----------
+  // Stellt nicht einen einzelnen Text dar, sondern das KOMPLETTE Modul „Historia
+  // de Sudamérica" als Einladung: Modulname, Einleitung und ein Zeitstrahl-Teaser
+  // mit den Epochen (Symbol · Zeitraum · Titel).
+  // payload: { kicker, title, intro, timelineLabel, eras:[{icon,period,title}] }
+  function buildHistOverview(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = ["#8E5A2E", "#5A3A24"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker (kleiner Hinweis über dem Titel)
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText(`📜  ${String(payload.kicker || "").toUpperCase()}`, cx, isStory ? 140 : 104);
+
+    // Großer Modul-Titel
+    const titleTop = isStory ? 172 : 132;
+    const titleBottom = fitText(ctx, payload.title || "Historia de Sudamérica", cx, titleTop, pw - 20, {
+      px: 76, min: 44, weight: "800", color: "#ffffff", maxLines: 2,
+    });
+    let y = titleBottom + 44;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+    const bottom = panelY + panelH - 40;
+
+    // Einleitung (gedämpft)
+    if (payload.intro) {
+      iy = drawWrapped(ctx, payload.intro, innerX, iy, innerW, {
+        px: isStory ? 31 : 29, weight: "600", color: MUTE, lineHeight: 1.4,
+        maxBottom: panelY + (isStory ? 540 : 340),
+      }) + 44;
+    }
+
+    // Zeitstrahl-Teaser: die Epochen als Liste (Symbol · Zeitraum · Titel).
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillText(`🕰️  ${String(payload.timelineLabel || "").toUpperCase()}`, innerX, iy);
+    iy += 52;
+
+    const eras = payload.eras || [];
+    const rowH = isStory ? 98 : 86;
+    for (let i = 0; i < eras.length; i++) {
+      const e = eras[i] || {};
+      if (iy + rowH > bottom) break;
+      // Symbol-Punkt
+      ctx.font = font("700", 40);
+      ctx.fillStyle = accent[0];
+      ctx.textAlign = "left";
+      ctx.fillText(e.icon || "•", innerX, iy + 40);
+      const tx = innerX + 64;
+      // Zeitraum (klein, gedämpft)
+      ctx.font = font("700", 24);
+      ctx.fillStyle = MUTE;
+      ctx.fillText(String(e.period || ""), tx, iy + 26);
+      // Titel der Epoche (gekürzt, falls zu breit)
+      ctx.font = font("800", 30);
+      ctx.fillStyle = INK;
+      let title = String(e.title || "");
+      let trimmed = false;
+      while (ctx.measureText(title).width > innerW - 64 && title.length > 6) { title = title.slice(0, -2); trimmed = true; }
+      ctx.fillText(trimmed ? title + "…" : title, tx, iy + 62);
+      iy += rowH;
+    }
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
+  // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
+  // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
+  // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
+  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild.
+  function buildTips(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = payload.accent && payload.accent.length === 2 ? payload.accent : ["#3F6B8E", "#6B4FA8"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker (Kategorie)
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText(`${payload.icon || "🧭"}  ${String(payload.kicker || "").toUpperCase()}`, cx, isStory ? 140 : 104);
+
+    // Titel des Themas
+    const titleTop = isStory ? 168 : 130;
+    const titleBottom = fitText(ctx, payload.title || "", cx, titleTop, pw - 40, {
+      px: 58, min: 34, weight: "800", color: "#ffffff", maxLines: 3,
+    });
+    let y = titleBottom + 50;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+    const bottom = panelY + panelH - 44;
+
+    // Kurze Einleitung (optional, gedämpft)
+    if (payload.intro) {
+      iy = drawWrapped(ctx, payload.intro, innerX, iy, innerW, {
+        px: isStory ? 30 : 28, weight: "600", color: MUTE, lineHeight: 1.34,
+        maxBottom: panelY + (isStory ? 360 : 240),
+      }) + 40;
+    }
+
+    // Liste der DOs & DON'Ts. Marker (✅/🚫) links, Text mit hängendem Einzug.
+    const px = isStory ? 31 : 29;
+    const markW = 54;
+    const lineGap = 24;
+    const lines = payload.lines || [];
+    let truncated = false;
+    for (let i = 0; i < lines.length; i++) {
+      const ln = lines[i] || {};
+      if (iy + px > bottom) { truncated = i < lines.length; break; }
+      ctx.font = font("700", px);
+      ctx.fillStyle = INK;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText(ln.mark || "•", innerX, iy + px);
+      const endY = drawWrapped(ctx, ln.text || "", innerX + markW, iy, innerW - markW, {
+        px, weight: "500", color: INK, lineHeight: 1.34, maxBottom: bottom,
+      });
+      iy = endY + lineGap;
+      if (iy > bottom && i < lines.length - 1) { truncated = true; break; }
+    }
+    if (truncated) {
+      ctx.font = font("800", 30);
+      ctx.fillStyle = MUTE;
+      ctx.textAlign = "center";
+      ctx.fillText("…", cx, Math.min(iy + px * 0.5, bottom + 24));
+    }
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Canvas -> Blob ----------
   function toBlob(canvas) {
     return new Promise((resolve, reject) => {
@@ -484,6 +795,26 @@
       out += `\n\n${t("share.captionCollected")}`;
       return out + link;
     }
+    if (kind === "histtext") {
+      const title = String(p.title || "").trim();
+      let out = t("share.captionHistoriaHead", { title: title || "Historia de Sudamérica" });
+      if (p.levelCode) out += `\n${t("share.captionHistoriaLevel", { level: p.levelCode })}`;
+      out += `\n\n${t("share.captionHistoria")}`;
+      return out + link;
+    }
+    if (kind === "histmodule") {
+      let out = t("share.captionHistModuleHead");
+      out += `\n\n${t("share.captionHistModule")}`;
+      return out + link;
+    }
+    if (kind === "tips") {
+      const title = String(p.title || "").trim();
+      const cat = String(p.kicker || "").trim();
+      let out = t("share.captionTipsHead", { title: title || cat || BRAND });
+      if (cat && title) out += `\n${cat}`;
+      out += `\n\n${t("share.captionTips")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -502,6 +833,9 @@
     try {
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
+             : kind === "histtext" ? buildHistoria(payload, fmt)
+             : kind === "histmodule" ? buildHistOverview(payload, fmt)
+             : kind === "tips" ? buildTips(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -518,10 +852,16 @@
 
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "badge" ? "holaruta-stempel"
+               : kind === "histtext" ? "holaruta-historia"
+               : kind === "histmodule" ? "holaruta-historia-modul"
+               : kind === "tips" ? "holaruta-tipps"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
+                : kind === "histtext" ? "Historia de Sudamérica"
+                : kind === "histmodule" ? "Historia de Sudamérica"
+                : kind === "tips" ? ((payload && payload.title) || "HolaRuta")
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
@@ -549,5 +889,5 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildBadge };
+  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria, buildHistOverview, buildTips };
 })();
