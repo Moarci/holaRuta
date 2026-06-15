@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.33.0",
+      date: "2026-06-15",
+      title: "Länderkunde: Bevölkerung, Politik & Wirtschaft",
+      items: [
+        "👥 Jedes Land unter „Países y culturas“ hat jetzt einen neuen Abschnitt „Land & Wirtschaft“: Einwohnerzahl, Altersstruktur, politische Regierungsform, wirtschaftliche Lage und wovon das Land hauptsächlich lebt – mit aktuellen Werten (Stand 2025) kompakt auf einen Blick.",
+        "🔎 Die neuen Angaben fließen auch in die Suche ein und sind wie alle Länderinhalte auf Deutsch und Englisch verfügbar.",
+      ],
+    },
+    {
       version: "1.32.0",
       date: "2026-06-15",
       title: "Geteilte Modul-Links öffnen direkt das Modul",
