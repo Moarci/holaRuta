@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.65.0",
+      date: "2026-06-15",
+      title: "Editions-Footer: sauberer Text-Credit statt Platzhalter-Logo",
+      items: [
+        "🏷️ Das nachgebaute Platzhalter-Logo wirkte klein und billig. Der Profil-Footer zeigt jetzt den Partnernamen klar in der Markenfarbe (großzügig, zentriert) mit dezentem „mit HolaRuta“ darunter. Sobald ein echtes, freigegebenes Logo hinterlegt wird, erscheint es automatisch als Bild.",
+      ],
+    },
+    {
       version: "1.64.0",
       date: "2026-06-15",
       title: "Aufgaben-Code einfügen funktioniert jetzt überall",

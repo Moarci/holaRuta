@@ -508,16 +508,21 @@ body {
   border-radius: var(--r-md); padding: 16px;
 }
 .edition-credit {
-  margin: 22px auto 6px; text-align: center; display: flex;
-  flex-direction: column; align-items: center; gap: 2px;
+  margin: 26px auto 10px; padding: 14px 12px 0; text-align: center; display: flex;
+  flex-direction: column; align-items: center; gap: 3px;
+  border-top: 1px solid var(--line);
 }
 .edition-credit__name {
-  font-size: 0.95rem; font-weight: 800; color: var(--brand-ink); letter-spacing: 0.02em;
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 800;
+  color: var(--brand-ink); letter-spacing: 0.01em; line-height: 1.15;
 }
-.edition-credit__powered { font-size: 0.72rem; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
-.edition-credit a { color: var(--brand-ink); }
-/* Optionales Partner-Logo (nur wenn eine Edition mit Freigabe eines setzt). */
-.edition-logo { display: block; max-height: 40px; max-width: 64%; margin: 0 auto 2px; }
+.edition-credit__powered {
+  font-size: 0.72rem; font-weight: 700; color: var(--muted);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.edition-credit a { color: var(--brand-ink); text-decoration: none; }
+/* Optionales Partner-Logo (nur wenn eine Edition mit Freigabe ein echtes setzt). */
+.edition-logo { display: block; max-height: 46px; max-width: 72%; margin: 0 auto 4px; }
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
