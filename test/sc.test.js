@@ -335,6 +335,19 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
   assert.deepEqual(store.loadGameStats(), valid);
 });
 
+test("store.loadGameStats: pretripDays – altes flaches Format wird nach { colombia: … } migriert", () => {
+  // Bestandsgerät mit altem, flachem Kolumbien-Fortschritt.
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, pretripDays: { 1: true, 2: true, 3: true } });
+  assert.deepEqual(store.loadGameStats().pretripDays, { colombia: { 1: true, 2: true, 3: true } });
+  // Bereits verschachtelte Daten bleiben unverändert (kein erneutes Wrappen).
+  const nested = { colombia: { 1: true }, peru: { 1: true, 2: true } };
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, pretripDays: nested });
+  assert.deepEqual(store.loadGameStats().pretripDays, nested);
+  // Kaputt/gemischt -> leer (defensiv).
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, pretripDays: { 1: true, peru: { 1: true } } });
+  assert.deepEqual(store.loadGameStats().pretripDays, {});
+});
+
 test("store.loadGameStats: Trip-Ziel wird gesäubert (kaputtes Datum/perDay -> null)", () => {
   const base = (trip) => JSON.stringify(Object.assign({ reviews: 1 }, { tripGoal: trip }));
   // Gültig: bleibt erhalten, perDay wird gerundet/gedeckelt.
