@@ -2871,6 +2871,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     uiLanguage: "Sprache",
     // Karten-Prompt (Spanisch, beide Sprachen gleich)
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "Für meine liebe Lisa.",
   }, {
     tabsAreas: "Sections",
@@ -2937,6 +2938,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dirAria: "Study direction",
     uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "For my dear Lisa.",
   });
 
@@ -3662,6 +3664,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     badgeLocked: "Noch nicht freigeschaltet",
     badgeNewMulti: (p) => `${p.n} neue Stempel!`,
     badgeNewOne: "Neuer Stempel!",
+    badgeNewMultiName: (p) => `${p.n} neue Stempel, ${p.name}!`,
+    badgeNewOneName: (p) => `Neuer Stempel, ${p.name}!`,
     badgeToastLabel: (p) => `${p.head} Ruta-Pass öffnen`,
 
     // Update-Hinweis
@@ -3773,6 +3777,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     badgeLocked: "Not unlocked yet",
     badgeNewMulti: (p) => `${p.n} new stamps!`,
     badgeNewOne: "New stamp!",
+    badgeNewMultiName: (p) => `${p.n} new stamps, ${p.name}!`,
+    badgeNewOneName: (p) => `New stamp, ${p.name}!`,
     badgeToastLabel: (p) => `${p.head} Open Ruta pass`,
 
     updTitle: "HolaRuta has been updated",
@@ -3912,9 +3918,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   i18n.register("share", {
     sideNative: "DEUTSCH",
     myProgress: "MEIN FORTSCHRITT",
+    myProgressName: (p) => `FORTSCHRITT VON ${String(p.name).toUpperCase()}`,
     accuracy: "Trefferquote",
     statsLine: (p) => `Gemeistert ${p.mastered}  ·  Am Lernen ${p.learning}  ·  Neu ${p.neu}`,
     myPass: "🎖️ MEIN RUTA-PASS",
+    myPassName: (p) => `🎖️ RUTA-PASS VON ${String(p.name).toUpperCase()}`,
     stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} Stempel gesammelt`,
     // Begleittexte beim Teilen (Bildunterschrift in WhatsApp/Telegram …)
     captionJoin: "▶️ Jetzt mitlernen:",
@@ -3940,9 +3948,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
+    myProgressName: (p) => `${String(p.name).toUpperCase()}'S PROGRESS`,
     accuracy: "Accuracy",
     statsLine: (p) => `Mastered ${p.mastered}  ·  Learning ${p.learning}  ·  New ${p.neu}`,
     myPass: "🎖️ MY RUTA-PASS",
+    myPassName: (p) => `🎖️ ${String(p.name).toUpperCase()}'S RUTA-PASS`,
     stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} stamps collected`,
     captionJoin: "▶️ Start learning too:",
     factAccuracy: (p) => `${p.r}% accuracy`,
@@ -16950,7 +16960,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = font("700", 40);
-    ctx.fillText(t("share.myProgress"), cx, L.kicker);
+    ctx.fillText(payload.userName ? t("share.myProgressName", { name: payload.userName }) : t("share.myProgress"), cx, L.kicker);
     ctx.font = font("800", 66);
     ctx.fillText("¡Estoy aprendiendo!", cx, L.title);
 
@@ -17050,7 +17060,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = font("700", 40);
-    ctx.fillText(t("share.myPass"), cx, L.kicker);
+    ctx.fillText(payload.userName ? t("share.myPassName", { name: payload.userName }) : t("share.myPass"), cx, L.kicker);
     if (payload.groupLabel) {
       ctx.fillStyle = "rgba(255,255,255,0.82)";
       ctx.font = font("600", 30);
@@ -18326,8 +18336,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
   function tripDisplayCard(trip, action) {
     const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
-    const countdown = trip.past ? t("home.tripTime")
-      : trip.today ? t("home.tripToday")
+    // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
+    const who = trip.userName ? esc(trip.userName) + ", " : "";
+    const countdown = trip.past ? who + t("home.tripTime")
+      : trip.today ? who + t("home.tripToday")
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
@@ -18472,7 +18484,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ].join("");
 
     return `
-      ${pagehead(esc(t("home.homePrompt")), vm)}
+      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")), vm)}
       ${searchBar()}
 
       <div class="today">
@@ -19066,7 +19078,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Kurze Glückwunsch-Einblendung nach frisch freigeschalteten Badges.
   // Liegt als eigene Ebene über dem Screen; tippen führt zum Ruta-Pass.
-  function badgeToast(list) {
+  function badgeToast(list, name) {
     if (!list || !list.length) return "";
     const items = list
       .map((b) => `
@@ -19078,7 +19090,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </span>
         </span>`)
       .join("");
-    const head = list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne");
+    const head = name
+      ? (list.length > 1 ? t("profile.badgeNewMultiName", { n: list.length, name }) : t("profile.badgeNewOneName", { name }))
+      : (list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne"));
     return `
       <button class="btoast" data-action="open-badges" aria-label="${esc(t("profile.badgeToastLabel", { head }))}">
         <span class="btoast__head">🎖️ ${esc(head)}</span>
@@ -22123,6 +22137,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       destination: t.destination,
       endDate: t.endDate,
       perDay,
+      userName: profileName(), // persönliche Ansprache auf der Countdown-Karte (leer = neutral)
       daysLeft: daysLeft === null ? 0 : daysLeft, // <0 = Termin vorbei
       past: daysLeft !== null && daysLeft < 0,
       today: t.endDate === today,
@@ -22249,7 +22264,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!badges || !state.badgeToast || !state.badgeToast.length) return;
     const existing = root.querySelector(".btoast");
     if (existing) existing.remove();
-    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
   }
 
   // Erfüllte, aber noch nicht vermerkte Badges freischalten. announce=true sammelt
@@ -23503,7 +23518,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
     if (badges && state.badgeToast && state.badgeToast.length) {
-      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
     }
 
     // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
@@ -24948,6 +24963,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const ov = stats.overview(allCards(), progress);
     buzz(12);
     share.shareImage("stats", {
+      userName: profileName(),
       rate: ov.rate,
       mastered: ov.mastered,
       seenCards: ov.seenCards,
@@ -24971,6 +24987,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const grp = (badges.GROUPS || []).find((g) => g.id === b.group);
     buzz(12);
     share.shareImage("badge", {
+      userName: profileName(),
       icon: b.icon,
       name: b.name,
       text: b.unlockedText || b.description,

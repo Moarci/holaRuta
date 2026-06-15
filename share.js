@@ -260,7 +260,7 @@
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = font("700", 40);
-    ctx.fillText(t("share.myProgress"), cx, L.kicker);
+    ctx.fillText(payload.userName ? t("share.myProgressName", { name: payload.userName }) : t("share.myProgress"), cx, L.kicker);
     ctx.font = font("800", 66);
     ctx.fillText("¡Estoy aprendiendo!", cx, L.title);
 
@@ -360,7 +360,7 @@
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = font("700", 40);
-    ctx.fillText(t("share.myPass"), cx, L.kicker);
+    ctx.fillText(payload.userName ? t("share.myPassName", { name: payload.userName }) : t("share.myPass"), cx, L.kicker);
     if (payload.groupLabel) {
       ctx.fillStyle = "rgba(255,255,255,0.82)";
       ctx.font = font("600", 30);

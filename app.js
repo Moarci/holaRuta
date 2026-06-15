@@ -561,6 +561,7 @@
       destination: t.destination,
       endDate: t.endDate,
       perDay,
+      userName: profileName(), // persönliche Ansprache auf der Countdown-Karte (leer = neutral)
       daysLeft: daysLeft === null ? 0 : daysLeft, // <0 = Termin vorbei
       past: daysLeft !== null && daysLeft < 0,
       today: t.endDate === today,
@@ -687,7 +688,7 @@
     if (!badges || !state.badgeToast || !state.badgeToast.length) return;
     const existing = root.querySelector(".btoast");
     if (existing) existing.remove();
-    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
   }
 
   // Erfüllte, aber noch nicht vermerkte Badges freischalten. announce=true sammelt
@@ -1941,7 +1942,7 @@
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
     if (badges && state.badgeToast && state.badgeToast.length) {
-      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
     }
 
     // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
@@ -3386,6 +3387,7 @@
     const ov = stats.overview(allCards(), progress);
     buzz(12);
     share.shareImage("stats", {
+      userName: profileName(),
       rate: ov.rate,
       mastered: ov.mastered,
       seenCards: ov.seenCards,
@@ -3409,6 +3411,7 @@
     const grp = (badges.GROUPS || []).find((g) => g.id === b.group);
     buzz(12);
     share.shareImage("badge", {
+      userName: profileName(),
       icon: b.icon,
       name: b.name,
       text: b.unlockedText || b.description,

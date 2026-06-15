@@ -199,6 +199,7 @@
     uiLanguage: "Sprache",
     // Karten-Prompt (Spanisch, beide Sprachen gleich)
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "Für meine liebe Lisa.",
   }, {
     tabsAreas: "Sections",
@@ -265,6 +266,7 @@
     dirAria: "Study direction",
     uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "For my dear Lisa.",
   });
 
@@ -990,6 +992,8 @@
     badgeLocked: "Noch nicht freigeschaltet",
     badgeNewMulti: (p) => `${p.n} neue Stempel!`,
     badgeNewOne: "Neuer Stempel!",
+    badgeNewMultiName: (p) => `${p.n} neue Stempel, ${p.name}!`,
+    badgeNewOneName: (p) => `Neuer Stempel, ${p.name}!`,
     badgeToastLabel: (p) => `${p.head} Ruta-Pass öffnen`,
 
     // Update-Hinweis
@@ -1101,6 +1105,8 @@
     badgeLocked: "Not unlocked yet",
     badgeNewMulti: (p) => `${p.n} new stamps!`,
     badgeNewOne: "New stamp!",
+    badgeNewMultiName: (p) => `${p.n} new stamps, ${p.name}!`,
+    badgeNewOneName: (p) => `New stamp, ${p.name}!`,
     badgeToastLabel: (p) => `${p.head} Open Ruta pass`,
 
     updTitle: "HolaRuta has been updated",
@@ -1240,9 +1246,11 @@
   i18n.register("share", {
     sideNative: "DEUTSCH",
     myProgress: "MEIN FORTSCHRITT",
+    myProgressName: (p) => `FORTSCHRITT VON ${String(p.name).toUpperCase()}`,
     accuracy: "Trefferquote",
     statsLine: (p) => `Gemeistert ${p.mastered}  ·  Am Lernen ${p.learning}  ·  Neu ${p.neu}`,
     myPass: "🎖️ MEIN RUTA-PASS",
+    myPassName: (p) => `🎖️ RUTA-PASS VON ${String(p.name).toUpperCase()}`,
     stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} Stempel gesammelt`,
     // Begleittexte beim Teilen (Bildunterschrift in WhatsApp/Telegram …)
     captionJoin: "▶️ Jetzt mitlernen:",
@@ -1268,9 +1276,11 @@
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
+    myProgressName: (p) => `${String(p.name).toUpperCase()}'S PROGRESS`,
     accuracy: "Accuracy",
     statsLine: (p) => `Mastered ${p.mastered}  ·  Learning ${p.learning}  ·  New ${p.neu}`,
     myPass: "🎖️ MY RUTA-PASS",
+    myPassName: (p) => `🎖️ ${String(p.name).toUpperCase()}'S RUTA-PASS`,
     stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} stamps collected`,
     captionJoin: "▶️ Start learning too:",
     factAccuracy: (p) => `${p.r}% accuracy`,

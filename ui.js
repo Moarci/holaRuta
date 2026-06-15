@@ -179,8 +179,10 @@
   // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
   function tripDisplayCard(trip, action) {
     const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
-    const countdown = trip.past ? t("home.tripTime")
-      : trip.today ? t("home.tripToday")
+    // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
+    const who = trip.userName ? esc(trip.userName) + ", " : "";
+    const countdown = trip.past ? who + t("home.tripTime")
+      : trip.today ? who + t("home.tripToday")
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
@@ -325,7 +327,7 @@
     ].join("");
 
     return `
-      ${pagehead(esc(t("home.homePrompt")), vm)}
+      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")), vm)}
       ${searchBar()}
 
       <div class="today">
@@ -919,7 +921,7 @@
 
   // Kurze Glückwunsch-Einblendung nach frisch freigeschalteten Badges.
   // Liegt als eigene Ebene über dem Screen; tippen führt zum Ruta-Pass.
-  function badgeToast(list) {
+  function badgeToast(list, name) {
     if (!list || !list.length) return "";
     const items = list
       .map((b) => `
@@ -931,7 +933,9 @@
           </span>
         </span>`)
       .join("");
-    const head = list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne");
+    const head = name
+      ? (list.length > 1 ? t("profile.badgeNewMultiName", { n: list.length, name }) : t("profile.badgeNewOneName", { name }))
+      : (list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne"));
     return `
       <button class="btoast" data-action="open-badges" aria-label="${esc(t("profile.badgeToastLabel", { head }))}">
         <span class="btoast__head">🎖️ ${esc(head)}</span>
