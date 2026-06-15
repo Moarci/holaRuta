@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.34.0",
+      date: "2026-06-15",
+      title: "Diálogos: Hintergrund zu „Besser so“",
+      items: [
+        "💡 Wenn in den Diálogos beim „Besser so“ die Musterantwort gezeigt wird, gibt es jetzt zu jeder Antwort einen kurzen Hintergrund – warum sie so lautet (Grammatik, Wortschatz oder Höflichkeit). Er sitzt direkt darunter und lässt sich zum Lesen aufklappen.",
+        "🇩🇪🇬🇧 Die Erklärungen sind auf Deutsch und Englisch verfügbar und stören nicht beim schnellen Weiterspielen – aufklappen nur, wenn du magst.",
+      ],
+    },
+    {
       version: "1.33.0",
       date: "2026-06-15",
       title: "Länderkunde: Bevölkerung, Politik & Wirtschaft",

@@ -2268,6 +2268,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dlg-verdict--no { background: color-mix(in srgb, #B5302A 12%, var(--surface)); color: var(--ink); display: flex; flex-direction: column; gap: 3px; }
 .dlg-verdict__given { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
 
+/* Aufklappbarer Hintergrund zur Musterantwort (natives <details>). */
+.dlg-why { margin: -2px 0 8px; background: color-mix(in srgb, var(--brand) 8%, var(--surface));
+  border: 1.5px solid var(--line); border-radius: var(--r-sm, 10px); padding: 0 12px; }
+.dlg-why[open] { border-color: var(--line-strong); }
+.dlg-why__sum { cursor: pointer; list-style: none; padding: 9px 0;
+  font-weight: 700; font-size: 0.85rem; color: var(--brand-ink);
+  display: flex; align-items: center; gap: 8px; -webkit-user-select: none; user-select: none; }
+.dlg-why__sum::-webkit-details-marker { display: none; }
+.dlg-why__sum::before { content: "💡"; }
+.dlg-why__sum::after { content: "▸"; margin-left: auto; color: var(--muted); transition: transform 0.15s ease; }
+.dlg-why[open] .dlg-why__sum::after { transform: rotate(90deg); }
+.dlg-why__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.dlg-why__body { margin: 0 0 11px; color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
+
 /* ---- Precios al oído: Setup (Land/Währung + Schwierigkeit) ---- */
 .prc-head { margin: 18px 0 8px; font-family: var(--font-display); font-size: 1.02rem; color: var(--ink); }
 .prc-curs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }

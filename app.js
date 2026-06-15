@@ -1306,6 +1306,7 @@
               kind: cur.kind,
               de: withName(nat(cur)),
               solEs: withName(cur.solEs),
+              why: withName(natk(cur, "why") || ""),
               options: cur.kind === "mc" ? cur.options.map((o) => ({ es: withName(o.es) })) : null,
             })
       : null;
