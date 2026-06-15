@@ -363,6 +363,7 @@
     subTiempos: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben",
     subInfo: "Land & Leute – von México bis Chile",
     subHistoria: "Von den Inka über Bolívar bis heute",
+    subHistoriaCentro: "Von den Maya über Morazán bis heute",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
@@ -412,6 +413,8 @@
     // Historia de Sudamérica
     histBannerTitle: "Historia de Sudamérica",
     histBannerSub: "Die große Geschichte: Inka, Kolonialzeit, Bolívar & heute",
+    histBannerCentroTitle: "Historia de Centroamérica",
+    histBannerCentroSub: "Die große Geschichte: Maya, Kolonialzeit, Morazán & heute",
     histAreas: "Bereiche",
     histNavTimeline: "Zeitstrahl",
     histNavFigures: "Protagonisten",
@@ -649,6 +652,7 @@
     subTiempos: "Tenses: yesterday, now, tomorrow – briefly explained, then practise",
     subInfo: "Country & people – from México to Chile",
     subHistoria: "From the Inca through Bolívar to today",
+    subHistoriaCentro: "From the Maya through Morazán to today",
     subKnigge: "How to behave on the road: hostel, bus, groups",
     subLogistica: "SIM, money & luggage – arrive smart and safe",
     subSalud: "Stay healthy & fit: food, drink, movement",
@@ -695,6 +699,8 @@
     // Historia de Sudamérica
     histBannerTitle: "Historia de Sudamérica",
     histBannerSub: "The big story: Inca, colonial era, Bolívar & today",
+    histBannerCentroTitle: "Historia de Centroamérica",
+    histBannerCentroSub: "The big story: Maya, colonial era, Morazán & today",
     histAreas: "Sections",
     histNavTimeline: "Timeline",
     histNavFigures: "Key figures",
