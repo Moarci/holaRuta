@@ -3996,20 +3996,39 @@
     if (el) el.remove();
   }
 
-  // Deep-Link aus einem „Modul teilen"-Link: ?m=<modul> öffnet beim Start direkt
-  // das empfohlene Modul (statt der Startseite). Hat Vorrang vor dem Onboarding –
-  // wer eingeladen wird, soll sofort sehen, worum es geht. Danach wird der
-  // Parameter aus der Adresse geputzt, damit Reload/Zurück-Geste normal laufen.
-  // Liefert true, wenn ein gültiges Modul geöffnet wurde.
+  // Deep-Link beim Start:
+  //   ?m=<modul>  – öffnet ein empfohlenes Modul (aus einem „Modul teilen"-Link)
+  //   ?a=<aktion> – öffnet eine App-Aktion ohne eigenes Modul (Homescreen-Shortcuts
+  //                 aus dem Manifest, z.B. „Ruta del día" oder „Suchen")
+  // Beides hat Vorrang vor dem Onboarding – wer per Link/Shortcut kommt, soll sofort
+  // am Ziel landen. Danach wird der Parameter aus der Adresse geputzt, damit Reload/
+  // Zurück-Geste normal laufen. Liefert true, wenn ein gültiges Ziel geöffnet wurde.
   function applyModuleDeepLink() {
-    let slug = "";
-    try {
-      slug = (new URLSearchParams(location.search).get("m") || "").trim().toLowerCase();
-      if (!slug && location.hash) {
-        const m = location.hash.match(/[#&]m=([^&]+)/);
-        if (m) slug = decodeURIComponent(m[1]).trim().toLowerCase();
-      }
-    } catch (e) { return false; }
+    // Kleiner Helfer: Parameter aus Query (?x=) oder Hash (#x=/&x=) lesen.
+    function param(key) {
+      try {
+        const q = (new URLSearchParams(location.search).get(key) || "").trim().toLowerCase();
+        if (q) return q;
+        if (location.hash) {
+          const h = location.hash.match(new RegExp("[#&]" + key + "=([^&]+)"));
+          if (h) return decodeURIComponent(h[1]).trim().toLowerCase();
+        }
+      } catch (e) { /* file:// o.ä. – kein Deep-Link */ }
+      return "";
+    }
+    // App-Aktionen (Homescreen-Shortcuts): direkte Einstiege ohne eigenes Modul.
+    const actions = {
+      ruta: openRutaDelDia,   // ?a=ruta   → heutige Lernrunde
+      buscar: openSearch,     // ?a=buscar → Suche
+    };
+    const aSlug = param("a");
+    if (aSlug && actions[aSlug]) {
+      markSeen();
+      actions[aSlug]();
+      cleanUrl();
+      return true;
+    }
+    const slug = param("m");
     if (!slug) return false;
     const openers = {
       supervivencia: openSpickzettel,
@@ -4032,16 +4051,24 @@
     };
     const open = openers[slug];
     if (!open) return false;
-    // Eingeladene gelten als „gesehen": kein Onboarding-Zwang vor dem Modul.
-    if (settings.onboarded !== true) {
-      settings = Object.assign({}, settings, { onboarded: true });
-      store.saveSettings(settings);
-    }
+    markSeen();
     open(); // setzt state.screen + rendert
-    // Parameter aus der Adresse entfernen (ohne Reload), damit ein späterer
-    // Reload nicht erneut deep-linkt und die Adresse sauber bleibt.
-    try { history.replaceState(history.state, "", location.pathname); } catch (e) { /* file:// o.ä. – egal */ }
+    cleanUrl();
     return true;
+
+    // Eingeladene/per Shortcut Gekommene gelten als „gesehen": kein Onboarding-
+    // Zwang vor dem Ziel.
+    function markSeen() {
+      if (settings.onboarded !== true) {
+        settings = Object.assign({}, settings, { onboarded: true });
+        store.saveSettings(settings);
+      }
+    }
+    // Parameter aus der Adresse entfernen (ohne Reload), damit ein späterer Reload
+    // nicht erneut deep-linkt und die Adresse sauber bleibt.
+    function cleanUrl() {
+      try { history.replaceState(history.state, "", location.pathname); } catch (e) { /* file:// o.ä. – egal */ }
+    }
   }
 
   // ----- Start -----
