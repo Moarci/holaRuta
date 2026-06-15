@@ -3485,6 +3485,22 @@
       return;
     }
 
+    // Sprungmarken-Leiste (Historia, Supervivencia …): sanft zum Abschnitt
+    // scrollen, OHNE die URL-Raute zu ändern. Eine echte #-Navigation legt sonst
+    // einen History-Eintrag an und kollidiert mit dem Zurück-Puffer (armBackGuard)
+    // – die nächste Geste/der Klick würde dann eine Ebene höher springen statt zu
+    // scrollen. preventDefault hält den nativen Anker-Sprung auf.
+    if (action === "scroll-to") {
+      e.preventDefault();
+      const target = el.dataset.target && document.getElementById(el.dataset.target);
+      if (target) {
+        const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "start" }); }
+        catch (e2) { try { target.scrollIntoView(); } catch (e3) { /* egal */ } }
+      }
+      return;
+    }
+
     if (action === "set-mode") setMode(el.dataset.mode);
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
     else if (action === "toggle-theme") toggleTheme();

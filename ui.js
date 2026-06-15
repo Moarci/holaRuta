@@ -1246,7 +1246,7 @@
   // Tipp auf den Satz öffnet die Großanzeige – bildschirmfüllend zum Herzeigen.
   function renderSpickzettel(vm) {
     const nav = vm.groups.map((g) => `
-      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" data-action="scroll-to" data-target="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
         <span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}
       </a>`).join("");
     const groups = vm.groups.map((g) => {
@@ -1638,9 +1638,9 @@
     // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
     const nav = `
       <nav class="hist-nav" aria-label="${esc(t("discover.histAreas"))}">
-        <a class="hist-nav__chip" href="#hist-zeitstrahl">🕰️ ${esc(t("discover.histNavTimeline"))}</a>
-        <a class="hist-nav__chip" href="#hist-protagonisten">👤 ${esc(t("discover.histNavFigures"))}</a>
-        <a class="hist-nav__chip" href="#hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
+        <a class="hist-nav__chip" href="#hist-zeitstrahl" data-action="scroll-to" data-target="hist-zeitstrahl">🕰️ ${esc(t("discover.histNavTimeline"))}</a>
+        <a class="hist-nav__chip" href="#hist-protagonisten" data-action="scroll-to" data-target="hist-protagonisten">👤 ${esc(t("discover.histNavFigures"))}</a>
+        <a class="hist-nav__chip" href="#hist-heute" data-action="scroll-to" data-target="hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
       </nav>`;
 
     // Eine Epoche als aufklappbare Karte am Zeitstrahl. Aufbau wie bei den
