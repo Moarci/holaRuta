@@ -14,6 +14,7 @@
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const historia = window.SC.historia || null;   // Geschichte Südamerikas (Erklärseite, optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
@@ -226,6 +227,7 @@
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
       hasCountries: !!countries, // dito für die Länderkunde
+      hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
@@ -403,7 +405,21 @@
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
     // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
-    return { country: country ? loc(country) : null, groups };
+    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia };
+  }
+
+  // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
+  // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
+  // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
+  function historiaVM() {
+    if (!historia) return { intro: "", eras: [], figures: [], tensions: [], facts: [] };
+    return {
+      intro: nat(historia.INTRO),
+      eras: loc(historia.ERAS || []),
+      figures: loc(historia.FIGURES || []),
+      tensions: loc(historia.TENSIONS || []),
+      facts: (historia.FACTS || []).map(nat),
+    };
   }
 
   // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
@@ -1847,6 +1863,7 @@
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
+    else if (state.screen === "historia") root.innerHTML = ui.renderHistoria(historiaVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
@@ -2976,6 +2993,22 @@
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
 
+    // Historia de Sudamérica: ein Treffer für die ganze Erklärseite (Epochen,
+    // Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
+    if (historia) {
+      const eras = (historia.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
+      const figs = (historia.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
+      const tens = (historia.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
+      const facts = (historia.FACTS || []).map((f) => [f.de, f.en]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "📜", title: "Historia de Sudamérica", sub: t("discover.subHistoria"),
+        action: "open-historia",
+        hay: searchHay(["historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit",
+          historia.INTRO && historia.INTRO.de, historia.INTRO && historia.INTRO.en, eras, figs, tens, facts]),
+      });
+    }
+
     return idx;
   }
 
@@ -3024,6 +3057,12 @@
   function openInfo() {
     dismissBadgeToast();
     state.screen = "info";
+    render();
+  }
+
+  function openHistoria() {
+    dismissBadgeToast();
+    state.screen = "historia";
     render();
   }
 
@@ -3322,6 +3361,35 @@
     share.shareImage("card", cardSharePayload(card), shareFormat());
   }
 
+  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Sucht den
+  // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
+  // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
+  function findHistItem(id) {
+    if (!historia) return null;
+    const lists = [historia.ERAS, historia.FIGURES, historia.TENSIONS];
+    for (let i = 0; i < lists.length; i++) {
+      const it = (lists[i] || []).find((x) => x.id === id);
+      if (it) return it;
+    }
+    return null;
+  }
+  function shareHistoria(id) {
+    if (!share) return;
+    const raw = findHistItem(id);
+    if (!raw) return;
+    const e = loc(raw);
+    const esText = (e.es || []).join("\n\n").replace(/\*/g, "");
+    const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
+    buzz(12);
+    share.shareImage("histtext", {
+      title: e.title || e.name || "Historia de Sudamérica",
+      levelCode: e.level || "",
+      levelWord: e.level ? t("discover.histLvl" + e.level) : "",
+      esText,
+      words,
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -3332,6 +3400,34 @@
     const el = e.target.closest("[data-action]");
     if (!el) return;
     const action = el.dataset.action;
+
+    // Schwierigkeits-Wort im Lesetext: Übersetzungs-Popover umschalten – per
+    // Klasse direkt im DOM (kein Re-Render, damit Scrollposition & offene
+    // Akkordeons bleiben). Robust auf Mobil, wo :focus auf Buttons unzuverlässig
+    // ist. Tippt man ein anderes Wort, schließt das vorige.
+    if (action === "hist-word") {
+      const open = el.classList.contains("is-open");
+      const root = document.getElementById("app") || document;
+      root.querySelectorAll(".hist-w.is-open").forEach((b) => b.classList.remove("is-open"));
+      if (!open) el.classList.add("is-open");
+      return;
+    }
+
+    // Quiz-Antwort im Lesetext: prüft direkt im DOM (kein Re-Render). Pro Frage
+    // nur einmal; markiert die Wahl und deckt bei Fehler die richtige Antwort auf.
+    if (action === "hist-quiz-answer") {
+      const q = el.closest(".hist-quiz__q");
+      if (!q || q.classList.contains("is-done")) return;
+      q.classList.add("is-done");
+      if (el.dataset.correct === "1") {
+        el.classList.add("is-correct");
+      } else {
+        el.classList.add("is-wrong");
+        const right = q.querySelector('.hist-quiz__opt[data-correct="1"]');
+        if (right) right.classList.add("is-correct");
+      }
+      return;
+    }
 
     if (action === "set-mode") setMode(el.dataset.mode);
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
@@ -3359,6 +3455,7 @@
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
+    else if (action === "open-historia") openHistoria();
     else if (action === "open-knigge") openKnigge();
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
@@ -3381,6 +3478,7 @@
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
+    else if (action === "share-historia") shareHistoria(el.dataset.id);
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();

@@ -432,6 +432,142 @@
     return c;
   }
 
+  // Zeichnet einen umgebrochenen Text links-bündig, geklammert auf maxBottom
+  // (letzte Zeile bekommt „…"). Liefert die ungefähre Unterkante zurück.
+  function drawWrapped(ctx, text, x, top, maxW, opts) {
+    const o = opts || {};
+    const px = o.px || 32, lh = o.lineHeight || 1.4;
+    ctx.font = font(o.weight || "500", px);
+    ctx.fillStyle = o.color || INK;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    const all = wrap(ctx, text, maxW);
+    const maxBottom = o.maxBottom || Infinity;
+    const step = px * lh;
+    const shown = [];
+    let y = top + px;
+    for (let i = 0; i < all.length; i++) {
+      if (y > maxBottom) {
+        if (shown.length) shown[shown.length - 1] = shown[shown.length - 1].replace(/\s+\S*$/, "") + " …";
+        break;
+      }
+      shown.push(all[i]);
+      y += step;
+    }
+    let yy = top + px;
+    shown.forEach((ln) => { ctx.fillText(ln, x, yy); yy += step; });
+    return yy - step + px * (lh - 1);
+  }
+
+  // ---------- Motiv 4: Geschichts-Lesetext + Wörterliste ----------
+  // payload: { title, levelCode, levelWord, esText, words:[{es,de}] }
+  function buildHistoria(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = ["#8E5A2E", "#5A3A24"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText("📜  HISTORIA DE SUDAMÉRICA", cx, isStory ? 140 : 104);
+
+    // Titel der Epoche
+    const titleTop = isStory ? 168 : 130;
+    const titleBottom = fitText(ctx, payload.title || "", cx, titleTop, pw - 40, {
+      px: 60, min: 36, weight: "800", color: "#ffffff", maxLines: 3,
+    });
+
+    // Schwierigkeits-Pille (Selbst-Einstufung)
+    let y = titleBottom + 34;
+    if (payload.levelCode) {
+      const pill = payload.levelWord ? `${payload.levelCode}  ·  ${payload.levelWord}` : payload.levelCode;
+      ctx.font = font("700", 30);
+      const plw = ctx.measureText(pill).width + 60;
+      ctx.fillStyle = "rgba(255,255,255,0.16)";
+      roundRect(ctx, cx - plw / 2, y, plw, 58, 29);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(pill, cx, y + 30);
+      ctx.textBaseline = "alphabetic";
+      y += 58;
+    }
+    y += 40;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+
+    // Label + spanischer Lesetext
+    ctx.textAlign = "left";
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.fillText("LEE EN ESPAÑOL", innerX, iy + 20);
+    iy += 56;
+
+    const words = (payload.words || []).slice(0, isStory ? 9 : 5);
+    const vocabH = 60 + words.length * 54;
+    const textMaxBottom = panelY + panelH - vocabH - 56;
+    drawWrapped(ctx, payload.esText || "", innerX, iy, innerW, {
+      px: isStory ? 34 : 31, weight: "500", color: INK, lineHeight: 1.42, maxBottom: textMaxBottom,
+    });
+
+    // Trenner + Wörterliste
+    let vy = panelY + panelH - vocabH - 8;
+    ctx.strokeStyle = "rgba(15,23,42,0.10)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(innerX, vy);
+    ctx.lineTo(innerX + innerW, vy);
+    ctx.stroke();
+    vy += 46;
+
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.textAlign = "left";
+    ctx.fillText("📒  VOCABULARIO", innerX, vy);
+    vy += 46;
+
+    words.forEach((w) => {
+      ctx.textAlign = "left";
+      ctx.font = font("800", 30);
+      ctx.fillStyle = accent[0];
+      const esW = String(w.es || "");
+      ctx.fillText(esW, innerX, vy);
+      const offset = ctx.measureText(esW + "   ").width;
+      ctx.font = font("500", 27);
+      ctx.fillStyle = MUTE;
+      let de = String(w.de || "");
+      let trimmed = false;
+      while (ctx.measureText(de).width > innerW - offset && de.length > 5) { de = de.slice(0, -2); trimmed = true; }
+      ctx.fillText(trimmed ? de + "…" : de, innerX + offset, vy);
+      vy += 54;
+    });
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Canvas -> Blob ----------
   function toBlob(canvas) {
     return new Promise((resolve, reject) => {
@@ -484,6 +620,13 @@
       out += `\n\n${t("share.captionCollected")}`;
       return out + link;
     }
+    if (kind === "histtext") {
+      const title = String(p.title || "").trim();
+      let out = t("share.captionHistoriaHead", { title: title || "Historia de Sudamérica" });
+      if (p.levelCode) out += `\n${t("share.captionHistoriaLevel", { level: p.levelCode })}`;
+      out += `\n\n${t("share.captionHistoria")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -502,6 +645,7 @@
     try {
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
+             : kind === "histtext" ? buildHistoria(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -518,10 +662,12 @@
 
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "badge" ? "holaruta-stempel"
+               : kind === "histtext" ? "holaruta-historia"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
+                : kind === "histtext" ? "Historia de Sudamérica"
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
@@ -549,5 +695,5 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildBadge };
+  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria };
 })();

@@ -1099,6 +1099,296 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-weight: 600; line-height: 1.5; margin-bottom: 8px;
 }
 
+/* ===================== HISTORIA DE SUDAMÉRICA (ERKLÄRSEITE) ===================== */
+/* Brücke von der Länderkunde zur kontinentweiten Geschichte. */
+.hist-banner {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  margin: 12px 0 4px; padding: 14px 16px; cursor: pointer;
+  color: #FBF3E4; border: 0; border-radius: var(--r-md);
+  background: linear-gradient(135deg, #8E5A2E, #5A3A24); box-shadow: var(--shadow);
+}
+.hist-banner:active { transform: scale(0.99); }
+.hist-banner__icon { font-size: 1.6rem; flex-shrink: 0; }
+.hist-banner__text { flex: 1; min-width: 0; }
+.hist-banner__title { display: block; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
+.hist-banner__sub { display: block; font-size: 0.82rem; opacity: 0.9; line-height: 1.35; margin-top: 1px; }
+.hist-banner__chev { flex-shrink: 0; font-size: 1.3rem; opacity: 0.8; }
+
+/* Sprungmarken-Leiste (wie sz-nav). */
+.hist-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
+  font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
+}
+.hist-nav__chip:active { transform: scale(0.96); }
+
+/* Block-Überschriften. */
+.hist-block { margin-top: 22px; scroll-margin-top: 12px; }
+.hist-block__h { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; margin: 0 0 4px; color: var(--ink); }
+.hist-block__sub { margin: 0 0 12px; color: var(--muted); font-size: 0.88rem; line-height: 1.4; }
+
+/* Zeitstrahl: vertikale Linie, an der die Epochen hängen. */
+.hist-timeline { position: relative; padding-left: 26px; }
+.hist-timeline::before {
+  content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px;
+  background: linear-gradient(var(--brand), #8E5A2E); border-radius: 2px;
+}
+.hist-era {
+  position: relative; margin-bottom: 12px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+}
+.hist-era[open] { border-color: var(--line-strong); box-shadow: var(--shadow); }
+.hist-era__head {
+  display: flex; align-items: flex-start; gap: 10px; cursor: pointer; list-style: none;
+  padding: 13px 14px; -webkit-user-select: none; user-select: none;
+}
+.hist-era__head::-webkit-details-marker { display: none; }
+.hist-era__head:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+/* Knoten auf der Zeitstrahl-Linie (sitzt links außerhalb der Karte). */
+.hist-era__dot {
+  position: absolute; left: -25px; top: 12px; width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+  background: var(--card); border: 2px solid var(--brand); border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--surface);
+}
+.hist-era__heart { flex: 1; min-width: 0; }
+.hist-era__period {
+  display: inline-block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em;
+  text-transform: uppercase; color: var(--brand-ink);
+  background: rgba(185, 124, 36, 0.14); border-radius: 999px; padding: 2px 9px; margin-bottom: 4px;
+}
+.hist-era__title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--ink); line-height: 1.25; }
+.hist-era__lead { display: block; color: var(--ink-soft); font-size: 0.86rem; line-height: 1.4; margin-top: 3px; }
+.hist-era__chev { flex-shrink: 0; color: var(--muted); font-size: 0.9rem; transition: transform 0.2s ease; margin-top: 2px; }
+.hist-era[open] .hist-era__chev { transform: rotate(180deg); }
+.hist-era__body { padding: 0 14px 14px; }
+.hist-era__fig { margin: 0 0 12px; }
+.hist-era__img {
+  display: block; width: 100%; height: 190px; object-fit: cover;
+  border-radius: var(--r-sm); background: var(--surface);
+}
+.hist-era__cap { margin: 6px 2px 0; font-size: 0.78rem; font-style: italic; color: var(--muted); line-height: 1.35; }
+.hist-era__p { margin: 0 0 9px; color: var(--ink-soft); line-height: 1.55; font-size: 0.93rem; }
+.hist-era__points {
+  list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px;
+}
+.hist-era__points li {
+  position: relative; padding: 8px 12px 8px 30px; font-size: 0.86rem; line-height: 1.4;
+  color: var(--ink); background: var(--surface); border-radius: var(--r-sm);
+}
+.hist-era__points li::before { content: "📌"; position: absolute; left: 10px; top: 8px; font-size: 0.8rem; }
+
+/* Schwierigkeits-Plakette (CEFR) – im Kopf der Epoche und über dem Lesetext. */
+.hist-era__metarow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.hist-era__metarow .hist-era__period { margin-bottom: 0; }
+.hist-era__lvlchip {
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
+  color: #fff; border-radius: 999px; padding: 2px 7px; background: var(--muted);
+}
+.hist-lvl--A1, .hist-lvl--A2 { background: #3F7355; }
+.hist-lvl--B1 { background: #B97C24; }
+.hist-lvl--B2 { background: #C2502E; }
+.hist-lvl--C1 { background: #B5302A; }
+
+/* Spanische Lesefassung. */
+.hist-es {
+  margin: 0 0 12px; padding: 14px; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-es__bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.hist-es__label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand-ink); }
+.hist-lvl {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700;
+  color: #fff; border-radius: 999px; padding: 3px 10px; background: var(--muted);
+}
+.hist-lvl__code { font-weight: 800; }
+.hist-lvl__meter { font-size: 0.6rem; letter-spacing: 1px; opacity: 0.9; }
+.hist-es__p { margin: 0 0 9px; color: var(--ink); line-height: 1.7; font-size: 1rem; }
+.hist-es__p:last-of-type { margin-bottom: 0; }
+.hist-es__hint { margin: 10px 0 0; font-size: 0.78rem; color: var(--muted); font-style: italic; }
+
+/* Antippbares Schwierigkeits-Wort mit Übersetzungs-Popover (reines CSS via :focus). */
+.hist-w {
+  position: relative; display: inline; margin: 0; padding: 0 1px; font: inherit; cursor: pointer;
+  color: var(--brand-ink); font-weight: 700; background: rgba(185, 124, 36, 0.16);
+  border: 0; border-bottom: 2px dotted var(--brand); border-radius: 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.hist-w:hover, .hist-w.is-open { background: rgba(185, 124, 36, 0.30); }
+.hist-w__pop {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  display: none; z-index: 5; white-space: normal; width: max-content; max-width: 240px;
+  padding: 7px 11px; font-size: 0.85rem; font-weight: 600; line-height: 1.35; text-align: center;
+  color: var(--card); background: var(--ink); border-radius: var(--r-sm); box-shadow: var(--shadow);
+}
+.hist-w__pop::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: var(--ink);
+}
+.hist-w.is-open .hist-w__pop, .hist-w:focus-visible .hist-w__pop, .hist-w:hover .hist-w__pop { display: block; }
+.hist-w:focus { outline: none; }
+.hist-w:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+/* Wörterliste pro Text (aufklappbar), gruppiert in mitnehmen / überspringen. */
+.hist-voc, .hist-trans {
+  margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-voc[open], .hist-trans[open] { border-color: var(--line-strong); }
+.hist-voc__sum, .hist-trans__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 11px 13px; font-weight: 700; color: var(--ink); font-size: 0.92rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-voc__sum::-webkit-details-marker, .hist-trans__sum::-webkit-details-marker { display: none; }
+.hist-voc__sum:focus-visible, .hist-trans__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-voc__n {
+  font-size: 0.72rem; font-weight: 800; color: var(--brand-ink);
+  background: rgba(185, 124, 36, 0.16); border-radius: 999px; padding: 1px 8px;
+}
+.hist-voc__chev, .hist-trans__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-voc[open] .hist-voc__chev, .hist-trans[open] .hist-trans__chev { transform: rotate(180deg); }
+.hist-voc__body { padding: 0 13px 12px; }
+.hist-voc__cap { margin: 10px 0 6px; font-size: 0.78rem; font-weight: 700; }
+.hist-voc__cap--take { color: #3F7355; }
+.hist-voc__cap--skip { color: var(--muted); }
+[data-theme="dark"] .hist-voc__cap--take { color: #6FB58A; }
+.hist-voc__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.hist-voc__list--skip { opacity: 0.75; }
+.hist-voc__row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px;
+  padding: 7px 11px; background: var(--surface); border-radius: var(--r-sm);
+}
+.hist-voc__es { font-weight: 700; color: var(--brand-ink); }
+.hist-voc__es::before { content: "›"; margin-right: 6px; color: var(--muted); }
+.hist-voc__de { color: var(--ink-soft); font-size: 0.9rem; }
+
+/* Übersetzungs-Aufklapper + Teilen-Knopf. */
+.hist-trans__body { padding: 0 13px 12px; }
+.hist-trans__body .hist-era__p:first-child { margin-top: 2px; }
+.hist-share {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 2px; padding: 10px 16px;
+  font-weight: 700; font-size: 0.9rem; color: #fff; cursor: pointer;
+  background: linear-gradient(135deg, #8E5A2E, #5A3A24); border: 0; border-radius: var(--r-md);
+}
+.hist-share:active { transform: scale(0.98); }
+
+/* Mini-Quiz zum Text (Selbstprüfung). */
+.hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
+.hist-quiz[open] { border-color: var(--line-strong); }
+.hist-quiz__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 11px 13px; font-weight: 700; color: var(--ink); font-size: 0.92rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-quiz__sum::-webkit-details-marker { display: none; }
+.hist-quiz__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-quiz__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-quiz[open] .hist-quiz__chev { transform: rotate(180deg); }
+.hist-quiz__body { padding: 0 13px 12px; }
+.hist-quiz__intro { margin: 2px 0 10px; font-size: 0.85rem; color: var(--muted); }
+.hist-quiz__q { margin-bottom: 12px; }
+.hist-quiz__q:last-child { margin-bottom: 0; }
+.hist-quiz__prompt {
+  margin: 0 0 7px; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;
+  color: var(--brand-ink);
+}
+.hist-quiz__opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.hist-quiz__opt {
+  flex: 1 1 calc(50% - 6px); min-width: 120px; padding: 9px 11px; cursor: pointer;
+  font: inherit; font-size: 0.88rem; text-align: left; color: var(--ink);
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-quiz__opt:active { transform: scale(0.98); }
+/* Nach der Antwort: Auswahl einfärben, weitere Klicks sperren. */
+.hist-quiz__q.is-done .hist-quiz__opt { cursor: default; opacity: 0.6; }
+.hist-quiz__q.is-done .hist-quiz__opt.is-correct {
+  opacity: 1; color: #fff; background: #3F7355; border-color: #3F7355; font-weight: 700;
+}
+.hist-quiz__q.is-done .hist-quiz__opt.is-wrong {
+  opacity: 1; color: #fff; background: #B5302A; border-color: #B5302A; font-weight: 700;
+}
+.hist-quiz__opt.is-correct::after { content: "  ✓"; }
+.hist-quiz__opt.is-wrong::after { content: "  ✗"; }
+
+/* Aufklappbarer Lese-Block in Protagonisten-/Heute-Karten (Lesetraining überall). */
+.hist-read {
+  margin-top: 10px; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-read[open] { border-color: var(--line-strong); }
+.hist-read__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 10px 12px; font-weight: 700; color: var(--brand-ink); font-size: 0.88rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-read__sum::-webkit-details-marker { display: none; }
+.hist-read__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-read__lvl { font-size: 0.66rem; font-weight: 800; color: #fff; border-radius: 999px; padding: 2px 7px; background: var(--muted); }
+.hist-read__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-read[open] .hist-read__chev { transform: rotate(180deg); }
+.hist-read__body { padding: 0 12px 12px; }
+/* Im Lese-Block sitzt der Spanisch-Kasten direkt unter dem Kopf – Doppelrahmen vermeiden. */
+.hist-read__body .hist-es { background: var(--card); margin-top: 2px; }
+
+/* Protagonisten-Galerie. */
+.hist-figs { display: flex; flex-direction: column; gap: 12px; }
+.hist-fig {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  padding: 14px; box-shadow: var(--shadow);
+}
+.hist-fig__top { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+.hist-fig__img {
+  width: 70px; height: 84px; flex-shrink: 0; object-fit: cover; object-position: top center;
+  border-radius: var(--r-sm); background: var(--surface); border: 1.5px solid var(--line);
+}
+.hist-fig__img--ph { display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+.hist-fig__id { min-width: 0; }
+.hist-fig__name { margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--ink); line-height: 1.2; }
+.hist-fig__role { margin: 3px 0 0; color: var(--brand-ink); font-weight: 600; font-size: 0.85rem; line-height: 1.3; }
+.hist-fig__years { margin: 2px 0 0; color: var(--muted); font-size: 0.8rem; }
+.hist-fig__text { margin: 0; color: var(--ink-soft); line-height: 1.55; font-size: 0.92rem; }
+.hist-fig__quote {
+  margin: 10px 0 0; padding: 8px 12px; font-style: italic; color: var(--ink);
+  background: var(--surface); border-left: 3px solid var(--brand); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-size: 0.9rem; line-height: 1.45;
+}
+
+/* „Heute": Spannungen mit Status-Plakette. */
+.hist-tens { display: flex; flex-direction: column; gap: 12px; }
+.hist-ten {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  border-left: 5px solid var(--muted); padding: 13px 14px; box-shadow: var(--shadow);
+}
+.hist-ten__head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.hist-ten__icon { font-size: 1.2rem; flex-shrink: 0; }
+.hist-ten__title { flex: 1; min-width: 0; margin: 0; font-family: var(--font-display); font-size: 1.02rem; color: var(--ink); line-height: 1.25; }
+.hist-ten__badge {
+  flex-shrink: 0; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;
+  color: #fff; background: var(--muted); border-radius: 999px; padding: 3px 9px;
+}
+.hist-ten__where { margin: 0 0 7px; color: var(--muted); font-size: 0.8rem; font-weight: 600; }
+.hist-ten__text { margin: 0; color: var(--ink-soft); line-height: 1.55; font-size: 0.92rem; }
+/* Farbtöne je Status. */
+.hist-ten--crisis { border-left-color: #C0392B; }
+.hist-ten--crisis .hist-ten__badge { background: #C0392B; }
+.hist-ten--tense { border-left-color: #C2502E; }
+.hist-ten--tense .hist-ten__badge { background: #C2502E; }
+.hist-ten--shift { border-left-color: #2F6B70; }
+.hist-ten--shift .hist-ten__badge { background: #2F6B70; }
+.hist-ten--progress { border-left-color: #3F7355; }
+.hist-ten--progress .hist-ten__badge { background: #3F7355; }
+
+/* „¿Sabías que…?"-Häppchen. */
+.hist-facts { margin-top: 22px; }
+.hist-facts__grid { display: flex; flex-direction: column; gap: 8px; }
+.hist-fact {
+  padding: 12px 14px 12px 38px; position: relative; font-size: 0.9rem; line-height: 1.5;
+  color: var(--ink); background: rgba(185, 124, 36, 0.10);
+  border: 1.5px solid rgba(185, 124, 36, 0.30); border-radius: var(--r-sm);
+}
+.hist-fact::before { content: "💡"; position: absolute; left: 12px; top: 11px; }
+
 /* ===================== REISE-KNIGGE (VERHALTEN UNTERWEGS) ===================== */
 /* Aufklappbare Themenblöcke (natives <details>) im Stil von cinfo-dish, mit
  * DO-/Don't-Listen und einer landesspezifischen Akzent-Box (wie cinfo-tip). */
@@ -2702,6 +2992,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subConjugacion: "Verben beugen – kurz erklärt, dann üben",
     subTiempos: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben",
     subInfo: "Land & Leute – von México bis Chile",
+    subHistoria: "Von den Inka über Bolívar bis heute",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
@@ -2747,6 +3038,38 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     infoIngredients: "Zutaten",
     infoOrigin: "Herkunft",
     infoWhen: "Wann",
+
+    // Historia de Sudamérica
+    histBannerTitle: "Historia de Sudamérica",
+    histBannerSub: "Die große Geschichte: Inka, Kolonialzeit, Bolívar & heute",
+    histAreas: "Bereiche",
+    histNavTimeline: "Zeitstrahl",
+    histNavFigures: "Protagonisten",
+    histNavToday: "Heute",
+    histTimelineTitle: "Der Zeitstrahl",
+    histTimelineSub: "Tippe eine Epoche an, um mehr zu erfahren.",
+    histFiguresTitle: "Die Protagonisten",
+    histFiguresSub: "Die Köpfe, die den Kontinent geprägt haben.",
+    histTodayTitle: "Heute: Lage & Spannungen",
+    histTodaySub: "Wie es jetzt ist – die wichtigsten aktuellen Konflikte.",
+    histFactsTitle: "¿Sabías que…? – Wusstest du schon?",
+    // Lesetraining (Spanisch) je Epoche
+    histReadEs: "Lies auf Spanisch",
+    histLevelTitle: "Schwierigkeit – zum Selbst-Einstufen",
+    histTapHint: "Tippe ein markiertes Wort für die Übersetzung.",
+    histVocab: "Wörterliste",
+    histTake: "Mitnehmen – die lohnen sich",
+    histSkip: "Nicht so wichtig – kannst du überspringen",
+    histTranslation: "Ganze Übersetzung anzeigen",
+    histShare: "Text & Vokabeln teilen",
+    histReadToggle: "Auf Spanisch lesen",
+    histQuiz: "Mini-Quiz: Vokabeln testen",
+    histQuizIntro: "Welche Übersetzung passt? Tippe die richtige an.",
+    histLvlA1: "ganz leicht",
+    histLvlA2: "leicht",
+    histLvlB1: "mittel",
+    histLvlB2: "fortgeschritten",
+    histLvlC1: "schwer",
 
     // Knigge
     kniggeIntroPre: "Allgemeine DOs &amp; Don'ts plus Besonderheiten",
@@ -2953,6 +3276,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subConjugacion: "Conjugate verbs – briefly explained, then practise",
     subTiempos: "Tenses: yesterday, now, tomorrow – briefly explained, then practise",
     subInfo: "Country & people – from México to Chile",
+    subHistoria: "From the Inca through Bolívar to today",
     subKnigge: "How to behave on the road: hostel, bus, groups",
     subLogistica: "SIM, money & luggage – arrive smart and safe",
     subSalud: "Stay healthy & fit: food, drink, movement",
@@ -2995,6 +3319,38 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     infoIngredients: "Ingredients",
     infoOrigin: "Origin",
     infoWhen: "When",
+
+    // Historia de Sudamérica
+    histBannerTitle: "Historia de Sudamérica",
+    histBannerSub: "The big story: Inca, colonial era, Bolívar & today",
+    histAreas: "Sections",
+    histNavTimeline: "Timeline",
+    histNavFigures: "Key figures",
+    histNavToday: "Today",
+    histTimelineTitle: "The timeline",
+    histTimelineSub: "Tap an era to find out more.",
+    histFiguresTitle: "The key figures",
+    histFiguresSub: "The people who shaped the continent.",
+    histTodayTitle: "Today: situation & tensions",
+    histTodaySub: "How it is now – the most important current conflicts.",
+    histFactsTitle: "¿Sabías que…? – Did you know?",
+    // Reading practice (Spanish) per era
+    histReadEs: "Read in Spanish",
+    histLevelTitle: "Difficulty – for self-assessment",
+    histTapHint: "Tap a highlighted word for the translation.",
+    histVocab: "Word list",
+    histTake: "Worth taking with you",
+    histSkip: "Less important – you can skip these",
+    histTranslation: "Show full translation",
+    histShare: "Share text & vocab",
+    histReadToggle: "Read in Spanish",
+    histQuiz: "Mini-quiz: test the vocab",
+    histQuizIntro: "Which translation fits? Tap the right one.",
+    histLvlA1: "very easy",
+    histLvlA2: "easy",
+    histLvlB1: "intermediate",
+    histLvlB2: "advanced",
+    histLvlC1: "hard",
 
     kniggeIntroPre: "General dos &amp; don'ts plus particulars",
     kniggeIntroFor: (p) => ` for ${p.country}`,
@@ -3468,6 +3824,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionVocabHead: (p) => `📍 Spanisch für unterwegs: ${p.head}`,
     captionPron: (p) => `🗣️ Aussprache: ${p.tip}`,
     captionLearned: "Gelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
+    captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
+    captionHistoriaLevel: (p) => `📊 Niveau: ${p.level}`,
+    captionHistoria: "Spanisch lesen lernen mit echten Texten – HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -3486,6 +3845,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionVocabHead: (p) => `📍 Spanish on the go: ${p.head}`,
     captionPron: (p) => `🗣️ Pronunciation: ${p.tip}`,
     captionLearned: "Learned with HolaRuta – your travel Spanish for real situations. 🌎",
+    captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
+    captionHistoriaLevel: (p) => `📊 Level: ${p.level}`,
+    captionHistoria: "Learning to read Spanish with real texts – HolaRuta. 🌎",
   });
 })();
 
@@ -10638,6 +11000,750 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 </script>
 <script>
 /*
+ * historia.js  (SC.historia) – Modell für die Erklärseite "Historia de
+ * Sudamérica". REINE DATEN, keine Logik (wie countries.js / data.js). Wird von
+ * ui.renderHistoria gerendert; der Controller (app.js) reicht die Daten per
+ * localizeDeep für die aktive Sprache durch (deutsche Felder + …En-Pendants).
+ *
+ * Aufbau:
+ *   INTRO     { de, en }                       – Einleitungstext (Hero)
+ *   ERAS      [ Epoche ]                        – der interaktive Zeitstrahl
+ *   FIGURES   [ Person ]                        – die Protagonisten (Galerie)
+ *   TENSIONS  [ Spannung ]                      – "Heute": Lage & Konflikte
+ *   FACTS     [ { de, en } ]                    – "¿Sabías que…?"-Häppchen
+ *
+ * Epoche:   { id, icon, period, title, lead, body:[Absatz], points:[Punkt],
+ *             img, imgCaption }  (+ …En-Pendants für die Übersetzung)
+ * Person:   { id, name, role, years, flag, img, text, quote }  (+ …En)
+ * Spannung: { id, icon, title, where, tone, status, text }  (+ …En)
+ *   tone = "crisis" | "tense" | "shift" | "progress"  (Farbe der Status-Plakette)
+ *
+ * img = nur der Wikimedia-Commons-Dateiname (z. B. "Bolivar Arturo Michelena.jpg").
+ *       ui.js baut daraus eine Special:FilePath-URL (kein Hash-Raten nötig).
+ *       Offline/bei Fehler wird das Bild ausgeblendet (onerror in ui.js).
+ */
+(function () {
+  "use strict";
+  window.SC = window.SC || {};
+
+  // ---------- Einleitung ----------
+  const INTRO = {
+    de: "Ein Kontinent, eine bewegte Geschichte: In wenigen Jahrzehnten wurde aus uralten Hochkulturen ein spanisches Kolonialreich – und daraus, im Feuer eines gemeinsamen Freiheitskampfes, ein Dutzend junger Republiken. Hier ist die große Linie: wie es war, wie aus einem Traum von Einheit viele Nationen wurden, und wie es heute weitergeht.",
+    en: "One continent, one turbulent story: in just a few decades, ancient civilisations became a Spanish colonial empire – and out of that, in the fire of a shared struggle for freedom, came a dozen young republics. Here's the big picture: how it was, how a dream of unity turned into many nations, and where it all stands today.",
+  };
+
+  // ---------- Zeitstrahl: die Epochen ----------
+  const ERAS = [
+    {
+      id: "precolombino",
+      icon: "🏔️",
+      period: "bis 1492",
+      periodEn: "before 1492",
+      title: "Vor den Spaniern – die Hochkulturen",
+      titleEn: "Before the Spanish – the great civilisations",
+      lead: "Lange vor Kolumbus blühten in den Anden und im Amazonas hochentwickelte Reiche.",
+      leadEn: "Long before Columbus, sophisticated empires flourished in the Andes and the Amazon.",
+      body: [
+        "Das größte war das Reich der Inka, Tawantinsuyu, „Land der vier Teile“. Von ihrer Hauptstadt Cusco aus beherrschten die Inka im 15. Jahrhundert ein Gebiet von Kolumbien bis Chile – über 4.000 Kilometer Anden, verbunden durch ein gigantisches Straßennetz (Qhapaq Ñan) mit Hängebrücken und Läuferstaffeten (chasquis).",
+        "Ohne Schrift im klassischen Sinn verwalteten sie alles über Knotenschnüre (quipus); ohne Eisen und Rad bauten sie Terrassen, Bewässerung und steinerne Festungen wie Machu Picchu oder Sacsayhuamán, deren fugenlose Mauern bis heute Erdbeben überstehen.",
+        "Daneben gab es viele weitere Kulturen: die Muisca im Hochland von Kolumbien (deren Goldritual die El-Dorado-Legende auslöste), die kriegerischen Mapuche im Süden Chiles, die nie ganz unterworfen wurden, und unzählige Völker im Amazonasbecken.",
+      ],
+      bodyEn: [
+        "The largest was the empire of the Inca, Tawantinsuyu, \"the land of the four parts\". From their capital Cusco, the Inca ruled in the 15th century over a territory stretching from Colombia to Chile – more than 4,000 kilometres of Andes, linked by a vast road network (Qhapaq Ñan) with rope bridges and relay runners (chasquis).",
+        "Without writing in the classic sense, they administered everything through knotted cords (quipus); without iron or the wheel, they built terraces, irrigation and stone fortresses such as Machu Picchu and Sacsayhuamán, whose seamless walls still survive earthquakes today.",
+        "Alongside them were many other cultures: the Muisca in the highlands of Colombia (whose gold ritual sparked the legend of El Dorado), the warlike Mapuche in southern Chile, who were never fully subdued, and countless peoples of the Amazon basin.",
+      ],
+      points: [
+        "Inka-Reich: ~12 Mio. Menschen, von Kolumbien bis Chile",
+        "Quechua, die Sprache der Inka, sprechen bis heute Millionen",
+        "Machu Picchu wurde erst 1911 weltweit bekannt",
+      ],
+      pointsEn: [
+        "Inca Empire: ~12 million people, from Colombia to Chile",
+        "Quechua, the language of the Inca, is still spoken by millions",
+        "Machu Picchu only became world-famous in 1911",
+      ],
+      level: "B1",
+      es: [
+        "Antes de la llegada de los españoles, en los Andes y en el Amazonas *florecieron* grandes civilizaciones. La más poderosa fue el *imperio* de los incas, llamado Tawantinsuyu. Desde su capital, Cusco, los incas dominaban un *territorio* enorme, desde Colombia hasta Chile.",
+        "No conocían la escritura ni la *rueda*, pero construían *caminos*, *puentes* colgantes y terrazas para cultivar en la montaña. Ciudades de piedra como Machu Picchu todavía *sorprenden* hoy.",
+        "También existían otros *pueblos*: los muiscas en Colombia, cuyo oro inspiró la *leyenda* de El Dorado, y los mapuches del sur de Chile, que nunca fueron *conquistados* del todo.",
+      ],
+      vocab: [
+        { es: "florecieron", de: "blühten (florecer)", en: "flourished (florecer)", take: true },
+        { es: "imperio", de: "das Reich", en: "empire", take: true },
+        { es: "territorio", de: "das Gebiet", en: "territory", take: true },
+        { es: "rueda", de: "das Rad", en: "wheel", take: true },
+        { es: "caminos", de: "die Wege, Straßen", en: "roads, paths", take: true },
+        { es: "puentes", de: "die Brücken", en: "bridges", take: true },
+        { es: "sorprenden", de: "überraschen (sorprender)", en: "surprise (sorprender)", take: true },
+        { es: "pueblos", de: "die Völker, Dörfer", en: "peoples, villages", take: true },
+        { es: "leyenda", de: "die Legende", en: "legend", take: false },
+        { es: "conquistados", de: "erobert (conquistar)", en: "conquered (conquistar)", take: false },
+      ],
+      img: "Machu Picchu, Peru.jpg",
+      imgCaption: "Machu Picchu – Inka-Stadt in den Anden Perus",
+      imgCaptionEn: "Machu Picchu – Inca city in the Peruvian Andes",
+    },
+    {
+      id: "conquista",
+      icon: "⚔️",
+      period: "1492–1572",
+      title: "Die Conquista – die Eroberung",
+      titleEn: "The Conquista – the conquest",
+      lead: "Wenige hundert Spanier brachten in einer Generation ganze Reiche zu Fall.",
+      leadEn: "A few hundred Spaniards brought entire empires down in a single generation.",
+      body: [
+        "1492 erreichte Kolumbus die Karibik. Innerhalb weniger Jahrzehnte stießen die conquistadores aufs Festland vor. In Südamerika nutzte Francisco Pizarro 1532 einen blutigen Inka-Bürgerkrieg aus: In Cajamarca nahm er den Herrscher Atahualpa gefangen, ließ ihn ein riesiges Lösegeld an Gold zahlen – und hinrichten.",
+        "Der eigentliche Verbündete der Eroberer waren jedoch eingeschleppte Krankheiten. Pocken, Masern und Grippe töteten Schätzungen zufolge bis zu 90 Prozent der indigenen Bevölkerung – ein demografischer Zusammenbruch, der den Widerstand brach, bevor die meisten je einen Spanier sahen.",
+        "Mit Schwert, Pferd, Feuerwaffen und einheimischen Bündnispartnern unterwarfen die Spanier bis 1572 (Fall des letzten Inka-Rückzugsorts Vilcabamba) den Kontinent. Begründet wurde das mit Kreuz und Krone: Mission und Reichtum gingen Hand in Hand.",
+      ],
+      bodyEn: [
+        "In 1492 Columbus reached the Caribbean. Within a few decades the conquistadors pushed onto the mainland. In South America, Francisco Pizarro exploited a bloody Inca civil war in 1532: at Cajamarca he captured the ruler Atahualpa, had him pay an enormous ransom in gold – and then executed him.",
+        "The conquerors' real ally, however, was imported disease. Smallpox, measles and influenza killed up to 90 per cent of the indigenous population by some estimates – a demographic collapse that broke resistance before most people ever saw a Spaniard.",
+        "With swords, horses, firearms and native allies, the Spanish subjugated the continent by 1572 (the fall of the last Inca refuge of Vilcabamba). It was all justified by cross and crown: mission and riches went hand in hand.",
+      ],
+      points: [
+        "Pizarro nahm Atahualpa mit nur ~170 Mann gefangen",
+        "Krankheiten töteten weit mehr Menschen als Waffen",
+        "1572 fiel Vilcabamba, der letzte Inka-Widerstand",
+      ],
+      pointsEn: [
+        "Pizarro captured Atahualpa with only ~170 men",
+        "Disease killed far more people than weapons did",
+        "In 1572 Vilcabamba fell, the last Inca resistance",
+      ],
+      level: "B1",
+      es: [
+        "En 1492, Cristóbal Colón llegó al Caribe. Pocas décadas después, los *conquistadores* avanzaron hacia el continente. En 1532, Francisco Pizarro *aprovechó* una guerra civil entre los incas: en Cajamarca *capturó* al rey Atahualpa, pidió un enorme *rescate* de oro y luego lo mandó *matar*.",
+        "Pero el verdadero *aliado* de los españoles fueron las *enfermedades*. La viruela y la gripe mataron hasta el noventa por ciento de la población indígena.",
+        "Con caballos, *armas* de fuego y aliados locales, los españoles *conquistaron* el continente. Lo justificaban con la cruz y la corona: la religión y la *riqueza* iban juntas.",
+      ],
+      vocab: [
+        { es: "conquistadores", de: "die Eroberer", en: "conquerors", take: false },
+        { es: "aprovechó", de: "nutzte aus (aprovechar)", en: "took advantage (aprovechar)", take: true },
+        { es: "capturó", de: "nahm gefangen (capturar)", en: "captured (capturar)", take: true },
+        { es: "rescate", de: "das Lösegeld; die Rettung", en: "ransom; rescue", take: true },
+        { es: "matar", de: "töten", en: "to kill", take: true },
+        { es: "aliado", de: "der Verbündete", en: "ally", take: true },
+        { es: "enfermedades", de: "die Krankheiten", en: "diseases", take: true },
+        { es: "armas", de: "die Waffen", en: "weapons", take: true },
+        { es: "conquistaron", de: "eroberten (conquistar)", en: "conquered (conquistar)", take: true },
+        { es: "riqueza", de: "der Reichtum", en: "wealth", take: true },
+      ],
+      img: "John Everett Millais - Pizarro seizing the Inca of Peru.jpg",
+      imgCaption: "Pizarro nimmt den Inka gefangen (J. E. Millais, 1846)",
+      imgCaptionEn: "Pizarro seizing the Inca (J. E. Millais, 1846)",
+    },
+    {
+      id: "colonial",
+      icon: "👑",
+      period: "1542–1808",
+      title: "Die Kolonialzeit – Vizekönige & Silber",
+      titleEn: "The colonial era – viceroys & silver",
+      lead: "Fast drei Jahrhunderte regierte Spanien von Lima und Bogotá aus – getragen vom Silber.",
+      leadEn: "For almost three centuries Spain ruled from Lima and Bogotá – carried by silver.",
+      body: [
+        "Südamerika wurde in Vizekönigreiche (virreinatos) gegliedert. Lange war das Virreinato del Perú mit Hauptstadt Lima das Herzstück; später kamen Nueva Granada (Bogotá, 1717) und Río de la Plata (Buenos Aires, 1776) hinzu. Ein Vizekönig vertrat den spanischen König direkt.",
+        "Den Motor bildete der Silberberg Cerro Rico in Potosí (heute Bolivien): Über zwei Jahrhunderte kam von hier ein großer Teil des Weltsilbers – geschürft in der mita, einer Zwangsarbeit, die unzählige indigene und versklavte afrikanische Menschen das Leben kostete.",
+        "Die Gesellschaft war streng nach Herkunft geschichtet: oben die in Spanien geborenen peninsulares, darunter die im Land geborenen Weißen (criollos), dann mestizos, indígenas und versklavte Afrikaner. Genau dieser Riss – reiche, gebildete criollos ohne politische Macht – sollte später den Freiheitskampf entzünden.",
+      ],
+      bodyEn: [
+        "South America was organised into viceroyalties (virreinatos). For a long time the Viceroyalty of Peru, with its capital Lima, was the heart of it; later came New Granada (Bogotá, 1717) and Río de la Plata (Buenos Aires, 1776). A viceroy represented the Spanish king directly.",
+        "The engine was the silver mountain Cerro Rico at Potosí (in today's Bolivia): for over two centuries a large share of the world's silver came from here – mined under the mita, a forced-labour system that cost countless indigenous and enslaved African people their lives.",
+        "Society was strictly layered by origin: at the top the Spanish-born peninsulares, below them the locally born whites (criollos), then mestizos, indígenas and enslaved Africans. It was precisely this fault line – wealthy, educated criollos with no political power – that would later ignite the struggle for freedom.",
+      ],
+      points: [
+        "Potosí war um 1600 eine der größten Städte der Welt",
+        "Drei Vizekönigreiche: Perú, Nueva Granada, Río de la Plata",
+        "Die Kirche prägte Sprache, Bildung und Alltag tief",
+      ],
+      pointsEn: [
+        "Around 1600 Potosí was one of the largest cities in the world",
+        "Three viceroyalties: Peru, New Granada, Río de la Plata",
+        "The Church deeply shaped language, education and daily life",
+      ],
+      level: "B2",
+      es: [
+        "Durante casi tres siglos, España *gobernó* desde Lima y Bogotá. El continente se dividió en virreinatos, *mandados* por un virrey que representaba al rey.",
+        "El motor económico era la plata del cerro Rico de Potosí. Durante dos siglos, gran parte de la plata del mundo salió de allí, *extraída* con trabajo *forzado* que costó muchísimas *vidas*.",
+        "La sociedad estaba *dividida* por origen: arriba los nacidos en España, después los criollos, y abajo los indígenas y los *esclavos*. Esa *desigualdad* encendería más tarde la lucha por la *libertad*.",
+      ],
+      vocab: [
+        { es: "gobernó", de: "regierte (gobernar)", en: "governed (gobernar)", take: true },
+        { es: "mandados", de: "befehligt (mandar)", en: "commanded (mandar)", take: true },
+        { es: "extraída", de: "gefördert, abgebaut (extraer)", en: "extracted (extraer)", take: false },
+        { es: "forzado", de: "Zwangs-, erzwungen", en: "forced", take: true },
+        { es: "vidas", de: "die Leben (Pl. von vida)", en: "lives", take: true },
+        { es: "dividida", de: "geteilt (dividir)", en: "divided (dividir)", take: true },
+        { es: "esclavos", de: "die Sklaven", en: "slaves", take: true },
+        { es: "desigualdad", de: "die Ungleichheit", en: "inequality", take: true },
+        { es: "libertad", de: "die Freiheit", en: "freedom", take: true },
+      ],
+      img: "Virreinato del Perú en el mapa de la América del Sur de Agustín Ibáñez y Bojons, 1800.jpg",
+      imgCaption: "Südamerika unter spanischer Herrschaft (Karte, 1800)",
+      imgCaptionEn: "South America under Spanish rule (map, 1800)",
+    },
+    {
+      id: "chispa",
+      icon: "🔥",
+      period: "1780–1810",
+      title: "Der Funke – Aufklärung, Napoleon & die ersten Junten",
+      titleEn: "The spark – Enlightenment, Napoleon & the first juntas",
+      lead: "Neue Ideen und eine Krise in Europa öffneten plötzlich das Fenster zur Freiheit.",
+      leadEn: "New ideas and a crisis in Europe suddenly opened a window to freedom.",
+      body: [
+        "Schon 1780 erhob sich im Hochland Perus Túpac Amaru II., Nachfahre der Inka, gegen die Ausbeutung – ein gewaltiger indigener Aufstand, blutig niedergeschlagen, aber unvergessen. Gleichzeitig sickerten die Ideen der Aufklärung und das Vorbild der US-amerikanischen und der Französischen Revolution ins Land.",
+        "Den entscheidenden Stoß gab Europa selbst: 1808 besetzte Napoleon Spanien und setzte König Fernando VII. ab. Damit fehlte plötzlich die Legitimität – in wessen Namen sollten die Kolonien regiert werden?",
+        "Die Antwort der criollos: 1810 bildeten sie eigene Regierungsräte (juntas) – in Caracas, Buenos Aires, Bogotá und Santiago. Offiziell „bis zur Rückkehr des Königs“, in Wahrheit der erste Schritt in die Unabhängigkeit.",
+      ],
+      bodyEn: [
+        "As early as 1780, Túpac Amaru II, a descendant of the Inca, rose up in the Peruvian highlands against exploitation – a massive indigenous revolt, brutally crushed but never forgotten. At the same time, the ideas of the Enlightenment and the example of the American and French Revolutions seeped into the land.",
+        "The decisive push came from Europe itself: in 1808 Napoleon occupied Spain and deposed King Ferdinand VII. Suddenly legitimacy was gone – in whose name were the colonies to be governed?",
+        "The criollos' answer: in 1810 they formed their own governing councils (juntas) – in Caracas, Buenos Aires, Bogotá and Santiago. Officially \"until the king returns\", but in truth the first step towards independence.",
+      ],
+      points: [
+        "1780: Aufstand des Túpac Amaru II. in Peru",
+        "1808: Napoleon besetzt Spanien – Machtvakuum",
+        "1810: die ersten Junten von Caracas bis Santiago",
+      ],
+      pointsEn: [
+        "1780: revolt of Túpac Amaru II in Peru",
+        "1808: Napoleon occupies Spain – a power vacuum",
+        "1810: the first juntas from Caracas to Santiago",
+      ],
+      level: "B2",
+      es: [
+        "En 1780, en los Andes del Perú, Túpac Amaru II se *rebeló* contra la *explotación*. Fue una gran revuelta indígena, *aplastada* con violencia, pero nunca olvidada.",
+        "El *empujón* decisivo vino de Europa: en 1808, Napoleón *invadió* España y quitó del trono al rey Fernando VII. De repente faltaba la *legitimidad*: ¿en nombre de quién se debía gobernar?",
+        "La respuesta de los criollos: en 1810 formaron sus propias juntas de gobierno en Caracas, Buenos Aires, Bogotá y Santiago. Oficialmente, hasta el *regreso* del rey; en realidad, el primer *paso* hacia la independencia.",
+      ],
+      vocab: [
+        { es: "rebeló", de: "lehnte sich auf (rebelarse)", en: "rebelled (rebelarse)", take: true },
+        { es: "explotación", de: "die Ausbeutung", en: "exploitation", take: true },
+        { es: "aplastada", de: "niedergeschlagen (aplastar)", en: "crushed (aplastar)", take: false },
+        { es: "empujón", de: "der Stoß, Schubs (empujar)", en: "push, shove (empujar)", take: true },
+        { es: "invadió", de: "fiel ein (invadir)", en: "invaded (invadir)", take: true },
+        { es: "legitimidad", de: "die Legitimität", en: "legitimacy", take: false },
+        { es: "regreso", de: "die Rückkehr (regresar)", en: "return (regresar)", take: true },
+        { es: "paso", de: "der Schritt", en: "step", take: true },
+      ],
+      img: "Túpac Amaru II.JPG",
+      imgCaption: "Túpac Amaru II. – früher Aufstand gegen die Kolonialmacht",
+      imgCaptionEn: "Túpac Amaru II – an early revolt against colonial power",
+    },
+    {
+      id: "independencia",
+      icon: "🗡️",
+      period: "1810–1825",
+      title: "Der Freiheitskampf – Bolívar & San Martín",
+      titleEn: "The fight for freedom – Bolívar & San Martín",
+      lead: "Zwei große Befreiungszüge – aus dem Norden und dem Süden – trafen sich in der Mitte.",
+      leadEn: "Two great campaigns of liberation – from the north and the south – met in the middle.",
+      body: [
+        "Aus dem Norden kämpfte Simón Bolívar, „El Libertador“. Nach Jahren der Niederlagen gelang ihm 1819 ein kühner Marsch über die eisigen Anden und der Sieg bei Boyacá – Kolumbien war frei. 1821 entschied Carabobo Venezuela, 1822 Pichincha Ecuador.",
+        "Aus dem Süden zog José de San Martín. Argentinien hatte sich 1816 in Tucumán für unabhängig erklärt. San Martín überquerte mit seiner Armee die Anden, befreite 1818 mit Bernardo O'Higgins Chile (Schlacht von Maipú) und landete 1821 in Peru, wo er die Unabhängigkeit ausrief.",
+        "1822 trafen sich die beiden Befreier in Guayaquil. Was genau besprochen wurde, ist bis heute ein Rätsel – doch San Martín zog sich danach zurück und überließ Bolívar das Feld. Dessen General Antonio José de Sucre besiegte 1824 bei Ayacucho die letzte große spanische Armee. 1825 war ganz Südamerika frei; das neue Land Bolivien trug Bolívars Namen.",
+      ],
+      bodyEn: [
+        "From the north fought Simón Bolívar, \"El Libertador\". After years of defeats, in 1819 he pulled off a daring march across the icy Andes and won at Boyacá – Colombia was free. In 1821 Carabobo decided Venezuela, in 1822 Pichincha decided Ecuador.",
+        "From the south came José de San Martín. Argentina had declared independence at Tucumán in 1816. San Martín led his army across the Andes, liberated Chile with Bernardo O'Higgins in 1818 (Battle of Maipú) and landed in Peru in 1821, where he proclaimed independence.",
+        "In 1822 the two liberators met in Guayaquil. Exactly what was said remains a mystery to this day – but San Martín then withdrew and left the field to Bolívar. Bolívar's general Antonio José de Sucre defeated the last great Spanish army at Ayacucho in 1824. By 1825 all of South America was free; the new country of Bolivia bore Bolívar's name.",
+      ],
+      points: [
+        "1819 Boyacá · 1821 Carabobo · 1822 Pichincha · 1824 Ayacucho",
+        "San Martín & Bolívar trafen sich 1822 in Guayaquil",
+        "1825: Bolivien entsteht – benannt nach Bolívar",
+      ],
+      pointsEn: [
+        "1819 Boyacá · 1821 Carabobo · 1822 Pichincha · 1824 Ayacucho",
+        "San Martín & Bolívar met in Guayaquil in 1822",
+        "1825: Bolivia is founded – named after Bolívar",
+      ],
+      level: "B1",
+      es: [
+        "Desde el norte luchó Simón Bolívar, „El Libertador“. Tras años de *derrotas*, en 1819 cruzó los Andes *helados* y *venció* en Boyacá. Colombia quedó libre.",
+        "Desde el sur avanzó José de San Martín. Cruzó los Andes con un *ejército* entero, *liberó* Chile junto a O'Higgins y llegó al Perú en 1821.",
+        "En 1822, los dos libertadores se *reunieron* en Guayaquil. San Martín se *retiró* y dejó el camino a Bolívar. En 1824, el general Sucre *ganó* la *batalla* de Ayacucho: toda Sudamérica era libre.",
+      ],
+      vocab: [
+        { es: "derrotas", de: "die Niederlagen (derrota)", en: "defeats (derrota)", take: true },
+        { es: "helados", de: "eisig; auch: Eis", en: "icy; also: ice cream", take: true },
+        { es: "venció", de: "siegte (vencer)", en: "won, defeated (vencer)", take: true },
+        { es: "ejército", de: "das Heer, die Armee", en: "army", take: true },
+        { es: "liberó", de: "befreite (liberar)", en: "liberated (liberar)", take: true },
+        { es: "reunieron", de: "trafen sich (reunirse)", en: "met (reunirse)", take: true },
+        { es: "retiró", de: "zog sich zurück (retirarse)", en: "withdrew (retirarse)", take: true },
+        { es: "ganó", de: "gewann (ganar)", en: "won (ganar)", take: true },
+        { es: "batalla", de: "die Schlacht", en: "battle", take: false },
+      ],
+      img: "Batalla de Ayacucho by Martín Tovar y Tovar (1827 - 1902).jpg",
+      imgCaption: "Schlacht von Ayacucho 1824 – das Ende der Kolonialherrschaft",
+      imgCaptionEn: "Battle of Ayacucho 1824 – the end of colonial rule",
+    },
+    {
+      id: "naciones",
+      icon: "🗺️",
+      period: "1819–1860",
+      title: "Die Abspaltung – vom Traum zu vielen Nationen",
+      titleEn: "The break-up – from one dream to many nations",
+      lead: "Bolívars Vision eines geeinten Südamerika zerbrach an Entfernungen und Rivalitäten.",
+      leadEn: "Bolívar's vision of a united South America shattered on distance and rivalry.",
+      body: [
+        "Bolívar träumte von einem großen, geeinten Staat. Aus dem Norden formte er Gran Colombia – das heutige Venezuela, Kolumbien, Ecuador und Panama in einem Land. Doch das Reich war riesig, die Regionen eigensinnig, und lokale Anführer (caudillos) wollten selbst herrschen.",
+        "Schon 1830 zerfiel Gran Colombia in Venezuela, Kolumbien und Ecuador. Im selben Jahr starb Bolívar verbittert und mittellos. Sein berühmter Satz: „Wer einer Revolution dient, pflügt im Meer.“ Auch im Süden splitterten die Vereinigten Provinzen des Río de la Plata in Argentinien, Uruguay, Paraguay und Bolivien.",
+        "Brasilien ging einen ganz eigenen Weg: portugiesisch statt spanisch, und zunächst ein Kaiserreich statt einer Republik. Überall folgten Jahrzehnte der Bürgerkriege zwischen Zentralisten und Föderalisten – die Landkarte Südamerikas, wie wir sie heute kennen, war geboren.",
+      ],
+      bodyEn: [
+        "Bolívar dreamed of one great, united state. In the north he forged Gran Colombia – today's Venezuela, Colombia, Ecuador and Panama in a single country. But the realm was vast, the regions headstrong, and local strongmen (caudillos) wanted to rule themselves.",
+        "By 1830 Gran Colombia had already broken apart into Venezuela, Colombia and Ecuador. That same year Bolívar died, bitter and penniless. His famous line: \"He who serves a revolution ploughs the sea.\" In the south, too, the United Provinces of the Río de la Plata splintered into Argentina, Uruguay, Paraguay and Bolivia.",
+        "Brazil took an entirely separate path: Portuguese rather than Spanish, and at first an empire rather than a republic. Everywhere there followed decades of civil war between centralists and federalists – and the map of South America as we know it today was born.",
+      ],
+      points: [
+        "Gran Colombia: Venezuela + Kolumbien + Ecuador + Panama",
+        "1830: Zerfall – und Bolívars Tod",
+        "Brasilien blieb portugiesisch und war erst ein Kaiserreich",
+      ],
+      pointsEn: [
+        "Gran Colombia: Venezuela + Colombia + Ecuador + Panama",
+        "1830: the break-up – and Bolívar's death",
+        "Brazil stayed Portuguese and was at first an empire",
+      ],
+      level: "B2",
+      es: [
+        "Bolívar *soñaba* con un solo país unido. En el norte creó la Gran Colombia: Venezuela, Colombia, Ecuador y Panamá juntos. Pero el territorio era inmenso y los *caudillos* locales querían mandar ellos mismos.",
+        "Ya en 1830 la Gran Colombia se *deshizo*. Ese mismo año Bolívar murió, *amargado* y pobre. Su frase famosa: „El que sirve una revolución *ara* en el mar.“",
+        "En el sur pasó lo mismo: las provincias se *separaron* en Argentina, Uruguay, Paraguay y Bolivia. Brasil siguió otro camino, *portugués* y primero *imperio*. Así nació el *mapa* actual de Sudamérica.",
+      ],
+      vocab: [
+        { es: "soñaba", de: "träumte (soñar)", en: "dreamed (soñar)", take: true },
+        { es: "caudillos", de: "die Machthaber, Anführer", en: "strongmen, warlords", take: false },
+        { es: "deshizo", de: "zerfiel (deshacerse)", en: "fell apart (deshacerse)", take: true },
+        { es: "amargado", de: "verbittert", en: "embittered", take: false },
+        { es: "ara", de: "pflügt (arar)", en: "ploughs (arar)", take: false },
+        { es: "separaron", de: "trennten sich (separarse)", en: "separated (separarse)", take: true },
+        { es: "portugués", de: "portugiesisch", en: "Portuguese", take: true },
+        { es: "imperio", de: "das Kaiserreich, Reich", en: "empire", take: true },
+        { es: "mapa", de: "die Karte", en: "map", take: true },
+      ],
+      img: "Gran Colombia in 1824.svg",
+      imgCaption: "Gran Colombia 1824 – Bolívars Traum von der Einheit",
+      imgCaptionEn: "Gran Colombia in 1824 – Bolívar's dream of unity",
+    },
+    {
+      id: "moderno",
+      icon: "⏳",
+      period: "1860–heute",
+      periodEn: "1860–today",
+      title: "Bis heute – Kriege, Diktaturen, Demokratie",
+      titleEn: "Up to today – wars, dictatorships, democracy",
+      lead: "Grenzkriege, ein dunkles Jahrhundert der Militärregime – und die Rückkehr der Demokratie.",
+      leadEn: "Border wars, a dark century of military regimes – and the return of democracy.",
+      body: [
+        "Die jungen Staaten stritten um Grenzen. Im Salpeterkrieg (1879–1883) verlor Bolivien seinen Zugang zum Meer an Chile – ein Trauma bis heute. Im Krieg der Tripel-Allianz (1864–1870) wurde Paraguay verheert und verlor einen großen Teil seiner Bevölkerung.",
+        "Das 20. Jahrhundert brachte Populismus (etwa Juan Perón in Argentinien) und im Kalten Krieg eine Welle von Militärdiktaturen: Chile unter Pinochet ab 1973, die argentinische Junta mit ihren „Verschwundenen“, dazu Brasilien, Uruguay und andere – grenzüberschreitend vernetzt in der „Operación Cóndor“.",
+        "In den 1980er- und 90er-Jahren kehrten fast überall Demokratie und Wahlen zurück. Heute ist Südamerika ein Kontinent demokratischer Republiken – mit lebendiger Kultur und großem Reichtum, aber auch mit Ungleichheit, Korruption und politischen Erschütterungen, die bis in die Gegenwart reichen.",
+      ],
+      bodyEn: [
+        "The young states fought over borders. In the War of the Pacific (1879–1883) Bolivia lost its access to the sea to Chile – a trauma to this day. In the War of the Triple Alliance (1864–1870) Paraguay was devastated and lost a huge share of its population.",
+        "The 20th century brought populism (such as Juan Perón in Argentina) and, during the Cold War, a wave of military dictatorships: Chile under Pinochet from 1973, the Argentine junta with its \"disappeared\", along with Brazil, Uruguay and others – networked across borders in \"Operation Condor\".",
+        "In the 1980s and 90s, democracy and elections returned almost everywhere. Today South America is a continent of democratic republics – with vibrant culture and great wealth, but also with inequality, corruption and political upheavals that reach into the present.",
+      ],
+      points: [
+        "1879–83 Salpeterkrieg: Bolivien verliert die Küste",
+        "1973–1990: Militärdiktaturen & „Operación Cóndor“",
+        "Ab ~1985: Rückkehr zu Demokratie und Wahlen",
+      ],
+      pointsEn: [
+        "1879–83 War of the Pacific: Bolivia loses its coast",
+        "1973–1990: military dictatorships & \"Operation Condor\"",
+        "From ~1985: a return to democracy and elections",
+      ],
+      level: "B1",
+      es: [
+        "Los nuevos países *pelearon* por sus *fronteras*. En la Guerra del Pacífico (1879–1883), Bolivia *perdió* su salida al mar. Paraguay quedó *destrozado* tras la Guerra de la Triple Alianza.",
+        "El siglo XX trajo *populismo* y, durante la Guerra Fría, muchas *dictaduras* militares: Chile con Pinochet, la junta argentina con sus *desaparecidos*, y otras más.",
+        "En los años ochenta y noventa *volvió* la *democracia* casi en todas partes. Hoy Sudamérica es un continente de *repúblicas*, con cultura *viva* pero también con desigualdad y crisis políticas.",
+      ],
+      vocab: [
+        { es: "pelearon", de: "kämpften (pelear)", en: "fought (pelear)", take: true },
+        { es: "fronteras", de: "die Grenzen", en: "borders", take: true },
+        { es: "perdió", de: "verlor (perder)", en: "lost (perder)", take: true },
+        { es: "destrozado", de: "zerstört (destrozar)", en: "destroyed (destrozar)", take: true },
+        { es: "populismo", de: "der Populismus", en: "populism", take: false },
+        { es: "dictaduras", de: "die Diktaturen", en: "dictatorships", take: true },
+        { es: "desaparecidos", de: "die Verschwundenen", en: "the disappeared", take: false },
+        { es: "volvió", de: "kehrte zurück (volver)", en: "returned (volver)", take: true },
+        { es: "democracia", de: "die Demokratie", en: "democracy", take: true },
+        { es: "repúblicas", de: "die Republiken", en: "republics", take: true },
+        { es: "viva", de: "lebendig (vivo/viva)", en: "lively, alive", take: true },
+      ],
+      img: "",
+      imgCaption: "",
+    },
+  ];
+
+  // ---------- Die Protagonisten (Galerie) ----------
+  const FIGURES = [
+    {
+      id: "bolivar",
+      name: "Simón Bolívar",
+      level: "B1",
+      es: [
+        "Es el nombre más grande del continente. Este criollo rico de Caracas *lideró* la *lucha* por la libertad en el norte y *liberó* cinco países. Soñaba con una Sudamérica unida, pero murió *decepcionado* cuando su sueño se rompió.",
+      ],
+      vocab: [
+        { es: "lideró", de: "führte an (liderar)", en: "led (liderar)", take: true },
+        { es: "lucha", de: "der Kampf (luchar)", en: "struggle, fight (luchar)", take: true },
+        { es: "liberó", de: "befreite (liberar)", en: "liberated (liberar)", take: true },
+        { es: "decepcionado", de: "enttäuscht", en: "disappointed", take: true },
+      ],
+      role: "„El Libertador“ – befreite sechs Länder",
+      roleEn: "\"El Libertador\" – liberated six countries",
+      years: "1783–1830",
+      flag: "🇻🇪",
+      img: "Bolivar Arturo Michelena.jpg",
+      text: "Der wohl größte Name des Kontinents. Der reiche criollo aus Caracas führte den Freiheitskampf im Norden, befreite das heutige Venezuela, Kolumbien, Ecuador, Peru und Bolivien und träumte von einem geeinten Südamerika. Er starb desillusioniert, als sein Traum zerbrach – heute ehren ihn gleich mehrere Länder als Nationalhelden.",
+      textEn: "Probably the greatest name on the continent. The wealthy criollo from Caracas led the fight for freedom in the north, liberated today's Venezuela, Colombia, Ecuador, Peru and Bolivia, and dreamed of a united South America. He died disillusioned as his dream fell apart – today several countries honour him as a national hero.",
+      quote: "„Die Kunst des Siegens lernt man in Niederlagen.“",
+      quoteEn: "\"The art of victory is learned in defeat.\"",
+    },
+    {
+      id: "sanmartin",
+      name: "José de San Martín",
+      level: "B1",
+      es: [
+        "El *estratega* del sur. Liberó Argentina, *cruzó* los Andes con un ejército y liberó Chile y Perú. Tras reunirse con Bolívar, *renunció* al poder y se fue a Europa para *evitar* una guerra entre patriotas.",
+      ],
+      vocab: [
+        { es: "estratega", de: "der Stratege", en: "strategist", take: false },
+        { es: "cruzó", de: "überquerte (cruzar)", en: "crossed (cruzar)", take: true },
+        { es: "renunció", de: "verzichtete (renunciar)", en: "renounced, gave up (renunciar)", take: true },
+        { es: "evitar", de: "vermeiden", en: "to avoid", take: true },
+      ],
+      role: "Befreier des Südens",
+      roleEn: "Liberator of the south",
+      years: "1778–1850",
+      flag: "🇦🇷",
+      img: "José de San Martín (retrato, c.1828).jpg",
+      text: "Der nüchterne Stratege des Südens. Er machte Argentinien frei, überquerte mit einer ganzen Armee die Anden, befreite Chile und Peru. Nach dem geheimnisvollen Treffen mit Bolívar in Guayaquil 1822 trat er freiwillig zurück, um einen Machtkampf zu vermeiden, und ging ins Exil nach Frankreich – ein seltener Fall von Verzicht aus Staatsräson.",
+      textEn: "The sober strategist of the south. He freed Argentina, crossed the Andes with an entire army, and liberated Chile and Peru. After the mysterious meeting with Bolívar in Guayaquil in 1822, he voluntarily stepped down to avoid a power struggle and went into exile in France – a rare case of renunciation for reasons of state.",
+      quote: "„Du wirst sein, was du sein musst, oder du wirst nichts sein.“",
+      quoteEn: "\"You shall be what you must be, or you shall be nothing.\"",
+    },
+    {
+      id: "sucre",
+      name: "Antonio José de Sucre",
+      level: "B2",
+      es: [
+        "El joven general más brillante de Bolívar. En Ayacucho *derrotó* al último ejército español y *aseguró* la independencia. Fue presidente de Bolivia, pero lo *asesinaron* a los 35 años.",
+      ],
+      vocab: [
+        { es: "derrotó", de: "besiegte (derrotar)", en: "defeated (derrotar)", take: true },
+        { es: "aseguró", de: "sicherte (asegurar)", en: "secured (asegurar)", take: true },
+        { es: "asesinaron", de: "ermordeten (asesinar)", en: "assassinated (asesinar)", take: false },
+      ],
+      role: "Der Sieger von Ayacucho",
+      roleEn: "The victor of Ayacucho",
+      years: "1795–1830",
+      flag: "🇧🇴",
+      img: "Jose Antonio de Sucre.JPG",
+      text: "Bolívars genialer junger General. In der Schlacht von Ayacucho 1824 zerschlug er die letzte große spanische Armee und besiegelte damit die Unabhängigkeit ganz Südamerikas. Als Präsident regierte er das neue Bolivien, dessen Hauptstadt Sucre bis heute seinen Namen trägt. Mit nur 35 Jahren wurde er aus dem Hinterhalt ermordet.",
+      textEn: "Bolívar's brilliant young general. At the Battle of Ayacucho in 1824 he smashed the last great Spanish army and thereby sealed the independence of all South America. As president he governed the new Bolivia, whose capital Sucre still bears his name today. At just 35 he was assassinated in an ambush.",
+      quote: "",
+      quoteEn: "",
+    },
+    {
+      id: "ohiggins",
+      name: "Bernardo O'Higgins",
+      level: "B1",
+      es: [
+        "Hijo de un virrey de origen irlandés, se convirtió en *héroe* de Chile. Junto a San Martín *ganó* la batalla de Maipú y llevó a Chile a la independencia. Después tuvo que *exiliarse* en Perú.",
+      ],
+      vocab: [
+        { es: "héroe", de: "der Held", en: "hero", take: true },
+        { es: "ganó", de: "gewann (ganar)", en: "won (ganar)", take: true },
+        { es: "exiliarse", de: "ins Exil gehen", en: "to go into exile", take: false },
+      ],
+      role: "Vater des unabhängigen Chile",
+      roleEn: "Father of independent Chile",
+      years: "1778–1842",
+      flag: "🇨🇱",
+      img: "Retrato de Don Bernardo O'Higgins (José Gil de Castro, 1820).jpg",
+      text: "Sohn eines irischstämmigen Vizekönigs, wurde er zum Helden Chiles. Gemeinsam mit San Martín gewann er die Schlacht von Maipú 1818 und führte Chile in die Unabhängigkeit. Als erster Regierungschef („Director Supremo“) modernisierte er das Land – musste aber bald ins Exil nach Peru, wo er starb.",
+      textEn: "Son of a viceroy of Irish descent, he became the hero of Chile. Together with San Martín he won the Battle of Maipú in 1818 and led Chile to independence. As the first head of government (\"Supreme Director\") he modernised the country – but soon had to go into exile in Peru, where he died.",
+      quote: "",
+      quoteEn: "",
+    },
+    {
+      id: "manuela",
+      name: "Manuela Sáenz",
+      level: "B1",
+      es: [
+        "Revolucionaria, espía y compañera de Bolívar. En 1828 le *salvó* la vida al *frustrar* un *atentado*. Hoy se la reconoce como heroína de la independencia y símbolo del papel de las mujeres.",
+      ],
+      vocab: [
+        { es: "salvó", de: "rettete (salvar)", en: "saved (salvar)", take: true },
+        { es: "frustrar", de: "vereiteln", en: "to foil, thwart", take: true },
+        { es: "atentado", de: "das Attentat, der Anschlag", en: "assassination attempt", take: false },
+      ],
+      role: "„Libertadora del Libertador“",
+      roleEn: "\"Liberator of the Liberator\"",
+      years: "1797–1856",
+      flag: "🇪🇨",
+      img: "Manuela Saenz 1825.jpg",
+      text: "Revolutionärin, Spionin und Bolívars Gefährtin. Sie rettete ihm 1828 in Bogotá das Leben, indem sie einen Mordanschlag vereitelte – daher ihr Beiname. Lange als bloße Geliebte abgetan, gilt sie heute als eigenständige Heldin der Unabhängigkeit und Ikone für die Rolle der Frauen im Freiheitskampf.",
+      textEn: "Revolutionary, spy and Bolívar's companion. She saved his life in Bogotá in 1828 by foiling an assassination attempt – hence her nickname. Long dismissed as a mere lover, she is today regarded as an independence heroine in her own right and an icon for the role of women in the struggle for freedom.",
+      quote: "",
+      quoteEn: "",
+    },
+    {
+      id: "atahualpa",
+      name: "Atahualpa",
+      level: "B1",
+      es: [
+        "El último rey de los incas. Acababa de ganar una guerra civil cuando llegaron los españoles. En Cajamarca lo *capturaron* y llenó un cuarto de oro como *rescate*, pero igual lo *ejecutaron*. Su *caída* marca el fin de un mundo.",
+      ],
+      vocab: [
+        { es: "capturaron", de: "nahmen gefangen (capturar)", en: "captured (capturar)", take: true },
+        { es: "rescate", de: "das Lösegeld; die Rettung", en: "ransom; rescue", take: true },
+        { es: "ejecutaron", de: "hinrichteten (ejecutar)", en: "executed (ejecutar)", take: false },
+        { es: "caída", de: "der Fall, Sturz (caer)", en: "fall, downfall (caer)", take: true },
+      ],
+      role: "Der letzte Herrscher der Inka",
+      roleEn: "The last Inca ruler",
+      years: "≈1500–1533",
+      flag: "🇵🇪",
+      img: "Brooklyn Museum - Atahualpa, Fourteenth Inca, 1 of 14 Portraits of Inca Kings - overall.jpg",
+      text: "Hatte gerade einen Bürgerkrieg um den Inka-Thron gewonnen, als die Spanier kamen. In Cajamarca von Pizarro überrumpelt und gefangen genommen, füllte er einen ganzen Raum mit Gold als Lösegeld – und wurde dennoch hingerichtet. Sein Sturz steht für das jähe Ende einer ganzen Welt.",
+      textEn: "He had just won a civil war for the Inca throne when the Spanish arrived. Ambushed and captured by Pizarro at Cajamarca, he filled an entire room with gold as ransom – and was executed anyway. His downfall stands for the abrupt end of a whole world.",
+      quote: "",
+      quoteEn: "",
+    },
+  ];
+
+  // ---------- Heute: Lage & Spannungen ----------
+  const TENSIONS = [
+    {
+      id: "venezuela",
+      icon: "🇻🇪",
+      level: "B1",
+      es: [
+        "El país con más petróleo del mundo vive un *colapso* económico y político. Bajo Maduro, la economía se *hundió* y millones de personas *huyeron* del país: la mayor *crisis* migratoria de la región.",
+      ],
+      vocab: [
+        { es: "colapso", de: "der Kollaps, Zusammenbruch", en: "collapse", take: false },
+        { es: "hundió", de: "brach zusammen (hundirse)", en: "collapsed, sank (hundirse)", take: true },
+        { es: "huyeron", de: "flohen (huir)", en: "fled (huir)", take: true },
+        { es: "crisis", de: "die Krise", en: "crisis", take: true },
+      ],
+      title: "Venezuela: Krise & Massenflucht",
+      titleEn: "Venezuela: crisis & mass exodus",
+      where: "Venezuela → ganz Lateinamerika",
+      whereEn: "Venezuela → all of Latin America",
+      tone: "crisis",
+      status: "Krise",
+      statusEn: "Crisis",
+      text: "Das ölreichste Land der Welt steckt in einem wirtschaftlichen und politischen Kollaps. Unter Hugo Chávez und seinem Nachfolger Nicolás Maduro brachen Wirtschaft und Versorgung zusammen; nach der umstrittenen Wahl 2024 hält Maduro trotz breiter Zweifel an der Macht fest. Rund 8 Millionen Venezolaner sind geflohen – die größte Fluchtbewegung der Region.",
+      textEn: "The most oil-rich country in the world is mired in economic and political collapse. Under Hugo Chávez and his successor Nicolás Maduro, the economy and basic supplies broke down; after the disputed 2024 election Maduro is clinging to power despite widespread doubts. Around 8 million Venezuelans have fled – the largest displacement in the region.",
+    },
+    {
+      id: "essequibo",
+      icon: "🛢️",
+      level: "B2",
+      es: [
+        "Desde que se *descubrió* mucho petróleo, Venezuela vuelve a *reclamar* la región del Esequibo, dos tercios de Guyana. En 2023, Maduro *amenazó* con anexarla. Sigue siendo uno de los *conflictos* fronterizos más calientes del continente.",
+      ],
+      vocab: [
+        { es: "descubrió", de: "entdeckte (descubrir)", en: "discovered (descubrir)", take: true },
+        { es: "reclamar", de: "beanspruchen; reklamieren", en: "to claim; to complain", take: true },
+        { es: "amenazó", de: "drohte (amenazar)", en: "threatened (amenazar)", take: true },
+        { es: "conflictos", de: "die Konflikte", en: "conflicts", take: true },
+      ],
+      title: "Essequibo: Grenzstreit mit Guyana",
+      titleEn: "Essequibo: border dispute with Guyana",
+      where: "Venezuela ↔ Guyana",
+      whereEn: "Venezuela ↔ Guyana",
+      tone: "tense",
+      status: "Spannung",
+      statusEn: "Tension",
+      text: "Seit riesige Ölfunde das kleine Guyana reich machen, beansprucht Venezuela wieder lautstark die Region Essequibo – zwei Drittel des Nachbarlandes. 2023 ließ Maduro darüber abstimmen und drohte mit Annexion. Der Internationale Gerichtshof mahnt zur Ruhe; die Lage bleibt einer der heißesten Grenzkonflikte des Kontinents.",
+      textEn: "Ever since huge oil discoveries made tiny Guyana rich, Venezuela has again loudly claimed the Essequibo region – two thirds of its neighbour. In 2023 Maduro held a vote on it and threatened annexation. The International Court of Justice urges calm; the situation remains one of the hottest border conflicts on the continent.",
+    },
+    {
+      id: "salida-al-mar",
+      icon: "🌊",
+      level: "B1",
+      es: [
+        "En la Guerra del Pacífico, Bolivia *perdió* su costa y desde entonces no tiene *mar*. Recuperar una *salida* al mar es un asunto nacional. En 2018, un tribunal internacional *rechazó* la demanda boliviana.",
+      ],
+      vocab: [
+        { es: "perdió", de: "verlor (perder)", en: "lost (perder)", take: true },
+        { es: "mar", de: "das Meer", en: "sea", take: true },
+        { es: "salida", de: "der Ausgang, Zugang", en: "exit, way out", take: true },
+        { es: "rechazó", de: "lehnte ab (rechazar)", en: "rejected (rechazar)", take: true },
+      ],
+      title: "Bolivien ohne Meer",
+      titleEn: "Bolivia without a coast",
+      where: "Bolivien ↔ Chile",
+      whereEn: "Bolivia ↔ Chile",
+      tone: "tense",
+      status: "Altlast",
+      statusEn: "Old wound",
+      text: "Im Salpeterkrieg (1879–1883) verlor Bolivien seine Pazifikküste an Chile und ist seither ein Binnenland. Die „salida al mar“, die Rückkehr zum Meer, ist bis heute nationale Herzensangelegenheit. 2018 wies der Internationale Gerichtshof Boliviens Klage ab – Chile muss nicht verhandeln. Das Thema vergiftet die Beziehung weiter.",
+      textEn: "In the War of the Pacific (1879–1883) Bolivia lost its Pacific coast to Chile and has been landlocked ever since. The \"salida al mar\", the return to the sea, remains a deeply emotional national cause. In 2018 the International Court of Justice rejected Bolivia's claim – Chile is not obliged to negotiate. The issue keeps poisoning the relationship.",
+    },
+    {
+      id: "colombia-paz",
+      icon: "🕊️",
+      level: "B2",
+      es: [
+        "En 2016, un acuerdo histórico *terminó* la guerra con la guerrilla de las FARC, *premiado* con el Nobel de la Paz. Pero quedan grupos *disidentes* y el país todavía *busca* una paz total.",
+      ],
+      vocab: [
+        { es: "terminó", de: "beendete (terminar)", en: "ended (terminar)", take: true },
+        { es: "premiado", de: "ausgezeichnet (premiar)", en: "awarded (premiar)", take: false },
+        { es: "disidentes", de: "die Abtrünnigen, Dissidenten", en: "dissidents", take: false },
+        { es: "busca", de: "sucht (buscar)", en: "seeks (buscar)", take: true },
+      ],
+      title: "Kolumbien: ein fragiler Frieden",
+      titleEn: "Colombia: a fragile peace",
+      where: "Kolumbien",
+      whereEn: "Colombia",
+      tone: "shift",
+      status: "Wandel",
+      statusEn: "In flux",
+      text: "2016 beendete ein historisches Friedensabkommen den über 50 Jahre währenden Krieg mit der FARC-Guerilla – ein Erfolg, der mit dem Friedensnobelpreis geehrt wurde. Doch abtrünnige Gruppen, die ELN und Drogenkartelle bleiben aktiv. Unter Präsident Gustavo Petro, dem ersten linken Staatschef des Landes, ringt Kolumbien um eine „paz total“, einen vollständigen Frieden.",
+      textEn: "In 2016 a historic peace deal ended the more than 50-year war with the FARC guerrillas – a success honoured with the Nobel Peace Prize. But splinter groups, the ELN and drug cartels remain active. Under President Gustavo Petro, the country's first left-wing leader, Colombia is striving for a \"paz total\", a complete peace.",
+    },
+    {
+      id: "peru-politica",
+      icon: "🏛️",
+      level: "B2",
+      es: [
+        "Pocos países *cambian* de presidente tan rápido. Entre 2016 y 2023, Perú tuvo media docena de gobernantes y muchos *escándalos*. En 2022, el presidente Castillo fue *destituido* y *detenido*.",
+      ],
+      vocab: [
+        { es: "cambian", de: "wechseln (cambiar)", en: "change (cambiar)", take: true },
+        { es: "escándalos", de: "die Skandale", en: "scandals", take: true },
+        { es: "destituido", de: "abgesetzt (destituir)", en: "removed from office (destituir)", take: false },
+        { es: "detenido", de: "festgenommen (detener)", en: "detained, arrested (detener)", take: true },
+      ],
+      title: "Peru: politische Dauerkrise",
+      titleEn: "Peru: permanent political crisis",
+      where: "Peru",
+      whereEn: "Peru",
+      tone: "tense",
+      status: "Instabil",
+      statusEn: "Unstable",
+      text: "Kaum ein Land wechselt seine Präsidenten so schnell: Allein zwischen 2016 und 2023 erlebte Peru rund ein halbes Dutzend Staatschefs, Amtsenthebungen und Skandale. 2022 wurde Präsident Pedro Castillo nach einem Selbstputsch-Versuch abgesetzt und verhaftet; die folgenden Proteste forderten Dutzende Tote. Das Vertrauen in die Politik ist tief erschüttert.",
+      textEn: "Few countries change presidents so quickly: between 2016 and 2023 alone, Peru went through roughly half a dozen heads of state, impeachments and scandals. In 2022 President Pedro Castillo was removed and arrested after an attempted self-coup; the protests that followed cost dozens of lives. Trust in politics is deeply shaken.",
+    },
+    {
+      id: "argentina-economia",
+      icon: "💸",
+      level: "B1",
+      es: [
+        "Antes uno de los países más ricos, Argentina *lucha* desde hace décadas contra la *inflación*. En 2023 *eligió* al liberal Javier Milei, que *recorta* el gasto del Estado con medidas drásticas.",
+      ],
+      vocab: [
+        { es: "lucha", de: "kämpft (luchar)", en: "fights (luchar)", take: true },
+        { es: "inflación", de: "die Inflation", en: "inflation", take: true },
+        { es: "eligió", de: "wählte (elegir)", en: "elected, chose (elegir)", take: true },
+        { es: "recorta", de: "kürzt (recortar)", en: "cuts (recortar)", take: false },
+      ],
+      title: "Argentinien: Inflation & Kurswechsel",
+      titleEn: "Argentina: inflation & a sharp turn",
+      where: "Argentinien",
+      whereEn: "Argentina",
+      tone: "shift",
+      status: "Wandel",
+      statusEn: "In flux",
+      text: "Einst eines der reichsten Länder der Welt, kämpft Argentinien seit Jahrzehnten mit Staatspleiten und galoppierender Inflation. 2023 wählte das Land den radikalen Liberalen Javier Milei, der mit drastischen Sparmaßnahmen („la motosierra“, die Kettensäge) das Defizit bekämpft. Ob die schmerzhafte Schocktherapie aufgeht, entscheidet sich gerade.",
+      textEn: "Once one of the richest countries in the world, Argentina has struggled for decades with debt defaults and runaway inflation. In 2023 the country elected the radical libertarian Javier Milei, who is fighting the deficit with drastic austerity (\"la motosierra\", the chainsaw). Whether the painful shock therapy works is being decided right now.",
+    },
+    {
+      id: "amazonia",
+      icon: "🌳",
+      level: "B2",
+      es: [
+        "La selva amazónica, hogar de cientos de *pueblos* indígenas, está *amenazada* por la *deforestación* y la minería. Al mismo tiempo, los movimientos indígenas *ganan* voz y derechos.",
+      ],
+      vocab: [
+        { es: "pueblos", de: "die Völker, Dörfer", en: "peoples, villages", take: true },
+        { es: "amenazada", de: "bedroht (amenazar)", en: "threatened (amenazar)", take: true },
+        { es: "deforestación", de: "die Abholzung", en: "deforestation", take: false },
+        { es: "ganan", de: "gewinnen (ganar)", en: "gain, win (ganar)", take: true },
+      ],
+      title: "Amazonas & indigene Rechte",
+      titleEn: "The Amazon & indigenous rights",
+      where: "Brasilien, Peru, Bolivien, Ecuador …",
+      whereEn: "Brazil, Peru, Bolivia, Ecuador …",
+      tone: "shift",
+      status: "Wandel",
+      statusEn: "In flux",
+      text: "Der Amazonas-Regenwald – die „grüne Lunge“ und Heimat hunderter indigener Völker – steht unter Druck durch Abholzung, Goldsuche und Viehzucht. Zugleich erkämpfen sich indigene Bewegungen mehr Mitsprache, Landrechte und politische Sichtbarkeit. Klimaschutz und Entwicklung gegeneinander auszubalancieren ist eine der großen Zukunftsfragen des Kontinents.",
+      textEn: "The Amazon rainforest – the \"green lung\" and home to hundreds of indigenous peoples – is under pressure from deforestation, gold mining and cattle ranching. At the same time, indigenous movements are winning more of a voice, land rights and political visibility. Balancing climate protection against development is one of the continent's great questions for the future.",
+    },
+    {
+      id: "migracion",
+      icon: "🚶",
+      level: "B1",
+      es: [
+        "Cientos de miles de personas *viajan* hacia el norte y *cruzan* la peligrosa selva del Darién, entre Colombia y Panamá. Es una de las *rutas* migratorias más *peligrosas* del mundo.",
+      ],
+      vocab: [
+        { es: "viajan", de: "reisen (viajar)", en: "travel (viajar)", take: true },
+        { es: "cruzan", de: "überqueren (cruzar)", en: "cross (cruzar)", take: true },
+        { es: "rutas", de: "die Routen, Strecken", en: "routes", take: true },
+        { es: "peligrosas", de: "gefährlich (peligroso)", en: "dangerous (peligroso)", take: true },
+      ],
+      title: "Migration & der Darién",
+      titleEn: "Migration & the Darién Gap",
+      where: "Kolumbien ↔ Panama (Richtung Norden)",
+      whereEn: "Colombia ↔ Panama (heading north)",
+      tone: "crisis",
+      status: "Krise",
+      statusEn: "Crisis",
+      text: "Hunderttausende Menschen – viele aus Venezuela – ziehen Richtung Norden und durchqueren dabei den Darién-Dschungel zwischen Kolumbien und Panama, eine der gefährlichsten Migrationsrouten der Welt. Die Wanderungsbewegungen belasten die Aufnahmeländer und prägen die Politik von Santiago bis an die US-Grenze.",
+      textEn: "Hundreds of thousands of people – many from Venezuela – are moving north, crossing the Darién jungle between Colombia and Panama, one of the most dangerous migration routes in the world. These movements strain the receiving countries and shape politics from Santiago all the way to the US border.",
+    },
+  ];
+
+  // ---------- ¿Sabías que…? (kurze Häppchen) ----------
+  const FACTS = [
+    {
+      de: "Bolivien und Kolumbien sind nach Menschen benannt: nach Bolívar und Christoph Kolumbus.",
+      en: "Bolivia and Colombia are named after people: after Bolívar and Christopher Columbus.",
+    },
+    {
+      de: "San Martíns Marsch über die Anden wird oft mit Hannibals Alpenüberquerung verglichen.",
+      en: "San Martín's march across the Andes is often compared to Hannibal crossing the Alps.",
+    },
+    {
+      de: "Quechua, die Sprache der Inka, ist bis heute in mehreren Ländern Amtssprache.",
+      en: "Quechua, the language of the Inca, is still an official language in several countries today.",
+    },
+    {
+      de: "Das Silber aus Potosí finanzierte über zwei Jahrhunderte das spanische Weltreich.",
+      en: "The silver from Potosí financed the Spanish world empire for over two centuries.",
+    },
+    {
+      de: "Brasilien spricht Portugiesisch und war bis 1889 ein Kaiserreich – ein Sonderweg in Südamerika.",
+      en: "Brazil speaks Portuguese and was an empire until 1889 – a path all its own in South America.",
+    },
+    {
+      de: "Bolívar und San Martín trafen sich nur ein einziges Mal: 1822 in Guayaquil, hinter verschlossenen Türen.",
+      en: "Bolívar and San Martín met only once: in Guayaquil in 1822, behind closed doors.",
+    },
+  ];
+
+  window.SC.historia = { INTRO, ERAS, FIGURES, TENSIONS, FACTS };
+})();
+
+</script>
+<script>
+/*
  * knigge.js  (SC.knigge) – Modell für "Reise-Knigge: Verhalten unterwegs".
  * REINE DATEN, keine Logik (wie countries.js / frases.js). Wird von
  * ui.renderKnigge gerendert; der Controller (app.js) wählt per Dropdown ein
@@ -14879,6 +15985,142 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return c;
   }
 
+  // Zeichnet einen umgebrochenen Text links-bündig, geklammert auf maxBottom
+  // (letzte Zeile bekommt „…"). Liefert die ungefähre Unterkante zurück.
+  function drawWrapped(ctx, text, x, top, maxW, opts) {
+    const o = opts || {};
+    const px = o.px || 32, lh = o.lineHeight || 1.4;
+    ctx.font = font(o.weight || "500", px);
+    ctx.fillStyle = o.color || INK;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    const all = wrap(ctx, text, maxW);
+    const maxBottom = o.maxBottom || Infinity;
+    const step = px * lh;
+    const shown = [];
+    let y = top + px;
+    for (let i = 0; i < all.length; i++) {
+      if (y > maxBottom) {
+        if (shown.length) shown[shown.length - 1] = shown[shown.length - 1].replace(/\s+\S*$/, "") + " …";
+        break;
+      }
+      shown.push(all[i]);
+      y += step;
+    }
+    let yy = top + px;
+    shown.forEach((ln) => { ctx.fillText(ln, x, yy); yy += step; });
+    return yy - step + px * (lh - 1);
+  }
+
+  // ---------- Motiv 4: Geschichts-Lesetext + Wörterliste ----------
+  // payload: { title, levelCode, levelWord, esText, words:[{es,de}] }
+  function buildHistoria(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = ["#8E5A2E", "#5A3A24"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText("📜  HISTORIA DE SUDAMÉRICA", cx, isStory ? 140 : 104);
+
+    // Titel der Epoche
+    const titleTop = isStory ? 168 : 130;
+    const titleBottom = fitText(ctx, payload.title || "", cx, titleTop, pw - 40, {
+      px: 60, min: 36, weight: "800", color: "#ffffff", maxLines: 3,
+    });
+
+    // Schwierigkeits-Pille (Selbst-Einstufung)
+    let y = titleBottom + 34;
+    if (payload.levelCode) {
+      const pill = payload.levelWord ? `${payload.levelCode}  ·  ${payload.levelWord}` : payload.levelCode;
+      ctx.font = font("700", 30);
+      const plw = ctx.measureText(pill).width + 60;
+      ctx.fillStyle = "rgba(255,255,255,0.16)";
+      roundRect(ctx, cx - plw / 2, y, plw, 58, 29);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(pill, cx, y + 30);
+      ctx.textBaseline = "alphabetic";
+      y += 58;
+    }
+    y += 40;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+
+    // Label + spanischer Lesetext
+    ctx.textAlign = "left";
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.fillText("LEE EN ESPAÑOL", innerX, iy + 20);
+    iy += 56;
+
+    const words = (payload.words || []).slice(0, isStory ? 9 : 5);
+    const vocabH = 60 + words.length * 54;
+    const textMaxBottom = panelY + panelH - vocabH - 56;
+    drawWrapped(ctx, payload.esText || "", innerX, iy, innerW, {
+      px: isStory ? 34 : 31, weight: "500", color: INK, lineHeight: 1.42, maxBottom: textMaxBottom,
+    });
+
+    // Trenner + Wörterliste
+    let vy = panelY + panelH - vocabH - 8;
+    ctx.strokeStyle = "rgba(15,23,42,0.10)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(innerX, vy);
+    ctx.lineTo(innerX + innerW, vy);
+    ctx.stroke();
+    vy += 46;
+
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.textAlign = "left";
+    ctx.fillText("📒  VOCABULARIO", innerX, vy);
+    vy += 46;
+
+    words.forEach((w) => {
+      ctx.textAlign = "left";
+      ctx.font = font("800", 30);
+      ctx.fillStyle = accent[0];
+      const esW = String(w.es || "");
+      ctx.fillText(esW, innerX, vy);
+      const offset = ctx.measureText(esW + "   ").width;
+      ctx.font = font("500", 27);
+      ctx.fillStyle = MUTE;
+      let de = String(w.de || "");
+      let trimmed = false;
+      while (ctx.measureText(de).width > innerW - offset && de.length > 5) { de = de.slice(0, -2); trimmed = true; }
+      ctx.fillText(trimmed ? de + "…" : de, innerX + offset, vy);
+      vy += 54;
+    });
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Canvas -> Blob ----------
   function toBlob(canvas) {
     return new Promise((resolve, reject) => {
@@ -14931,6 +16173,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       out += `\n\n${t("share.captionCollected")}`;
       return out + link;
     }
+    if (kind === "histtext") {
+      const title = String(p.title || "").trim();
+      let out = t("share.captionHistoriaHead", { title: title || "Historia de Sudamérica" });
+      if (p.levelCode) out += `\n${t("share.captionHistoriaLevel", { level: p.levelCode })}`;
+      out += `\n\n${t("share.captionHistoria")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -14949,6 +16198,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     try {
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
+             : kind === "histtext" ? buildHistoria(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -14965,10 +16215,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "badge" ? "holaruta-stempel"
+               : kind === "histtext" ? "holaruta-historia"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
+                : kind === "histtext" ? "Historia de Sudamérica"
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
@@ -14996,7 +16248,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildBadge };
+  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria };
 })();
 
 </script>
@@ -15137,6 +16389,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.28.0",
+      date: "2026-06-15",
+      title: "Historia de Sudamérica: die große Geschichte",
+      items: [
+        "📜 Neue Erklärseite unter Entdecken (und als Banner in „Países y culturas“): die ganze Geschichte Südamerikas auf einen Blick – von den Inka über die spanische Eroberung und die Kolonialzeit bis zu Bolívar, San Martín und der Unabhängigkeit.",
+        "🕰️ Interaktiver Zeitstrahl: sieben aufklappbare Epochen – Hochkulturen, Conquista, Vizekönigreiche & Silber, der Funke (Napoleon & die Junten), der Freiheitskampf, die Abspaltung in viele Nationen und der Weg bis heute. Jede Epoche mit Bild von Wikimedia, Kernpunkten und Erklärung.",
+        "👤 Galerie der Protagonisten: Bolívar, San Martín, Sucre, O’Higgins, Manuela Sáenz und Atahualpa – mit Porträt, Lebensdaten und Zitat.",
+        "📰 „Heute: Lage & Spannungen“: aktuelle Konflikte verständlich erklärt – Venezuela-Krise & Massenflucht, Grenzstreit um Essequibo, Boliviens Meereszugang, Kolumbiens Friedensprozess, Perus politische Dauerkrise, Argentiniens Kurswechsel, Amazonas & indigene Rechte und der Darién.",
+        "📖 Lesetraining auf Spanisch: jede Epoche gibt es zusätzlich als spanischen Lesetext. Schwierige Wörter sind markiert – antippen zeigt die Übersetzung. Pro Text eine Wörterliste zum schnellen Nachschlagen, sauber getrennt in „lohnt sich mitzunehmen“ und „nicht so wichtig“.",
+        "📊 Schwierigkeits-Score (CEFR A1–C1) pro Text zur Selbst-Einstufung, plus „Ganze Übersetzung anzeigen“ und ein teilbares Sharepic von Text & Wörterliste.",
+        "🧩 Mini-Quiz pro Epoche: spanisches Wort lesen, die richtige Übersetzung antippen – mit sofortiger Rückmeldung (richtig/falsch).",
+        "📖 Lesetraining jetzt überall: auch jede Protagonisten- und jede „Heute“-Karte hat einen aufklappbaren spanischen Lesetext mit antippbaren Vokabeln, Wörterliste und Sharepic.",
+        "💡 „¿Sabías que…?“-Häppchen und durchgängig zweisprachig (Deutsch/Englisch).",
+      ],
+    },
     {
       version: "1.27.0",
       date: "2026-06-14",
@@ -15536,6 +16804,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
+    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia" },
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud" },
@@ -15780,7 +17049,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
     const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -16928,10 +18197,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
 
+    // Brücke zur kontinentweiten Geschichte (nur wenn das Modul geladen ist).
+    const histBanner = vm.hasHistoria ? `
+      <button class="hist-banner" data-action="open-historia">
+        <span class="hist-banner__icon" aria-hidden="true">📜</span>
+        <span class="hist-banner__text">
+          <span class="hist-banner__title">${esc(t("discover.histBannerTitle"))}</span>
+          <span class="hist-banner__sub">${esc(t("discover.histBannerSub"))}</span>
+        </span>
+        <span class="hist-banner__chev" aria-hidden="true">›</span>
+      </button>` : "";
+
     return `
       <section class="screen">
         ${infoTopbar()}
         ${selector}
+        ${histBanner}
 
         <div class="cinfo-head">
           <div class="cinfo-head__flag">${c.flag}</div>
@@ -16965,6 +18246,254 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="topbar__title">🌎 Países y culturas</div>
         <span></span>
       </div>`;
+  }
+
+  // ---------- HISTORIA DE SUDAMÉRICA (ERKLÄRSEITE) ----------
+  // Interaktiver Zeitstrahl (aufklappbare Epochen, natives <details>), eine
+  // Galerie der Protagonisten, der „Heute"-Block mit Spannungen und ein paar
+  // „¿Sabías que…?"-Häppchen. Bilder kommen über Wikimedia Special:FilePath –
+  // so muss kein Hash geraten werden; offline/bei Fehler blendet onerror sie aus.
+  function commonsImg(file, w) {
+    if (!file) return "";
+    return "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(file) + "?width=" + (w || 960);
+  }
+
+  // CEFR-Schwierigkeit → Punkte-Meter + lokalisiertes Wort (Selbst-Einstufung).
+  const HIST_LEVEL_DOTS = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
+  function levelMeta(level) {
+    if (!level) return null;
+    const dots = HIST_LEVEL_DOTS[level] || 3;
+    return { code: level, word: t("discover.histLvl" + level), meter: "●".repeat(dots) + "○".repeat(5 - dots) };
+  }
+  // Spanischer Lesetext: *markierte* Wörter werden zu antippbaren Chips, die die
+  // Übersetzung (aus der Wörterliste der Epoche, in der aktiven Sprache) zeigen.
+  function esRich(paras, vocab) {
+    const vmap = {};
+    (vocab || []).forEach((v) => { vmap[String(v.es).toLowerCase().trim()] = v; });
+    return (paras || []).map((p) => {
+      let html = "", last = 0; const re = /\*([^*]+)\*/g; let m;
+      while ((m = re.exec(p))) {
+        html += esc(p.slice(last, m.index));
+        const w = m[1];
+        const v = vmap[w.toLowerCase().trim()];
+        const tr = v ? v.de : "";
+        html += `<button class="hist-w" type="button" data-action="hist-word" aria-label="${esc(w + " – " + tr)}">${esc(w)}<span class="hist-w__pop" aria-hidden="true">${esc(tr)}</span></button>`;
+        last = re.lastIndex;
+      }
+      html += esc(p.slice(last));
+      return `<p class="hist-es__p" lang="es">${html}</p>`;
+    }).join("");
+  }
+  // Wörterliste pro Text: zum schnellen Nachschlagen, gruppiert in „mitnehmen"
+  // (lohnt sich) und „nicht so wichtig" (kannst du überspringen).
+  function vocabBlock(vocab) {
+    if (!vocab || !vocab.length) return "";
+    const row = (v) => `<li class="hist-voc__row"><span class="hist-voc__es" lang="es">${esc(v.es)}</span><span class="hist-voc__de">${esc(v.de)}</span></li>`;
+    const take = vocab.filter((v) => v.take), skip = vocab.filter((v) => !v.take);
+    const takeList = take.length
+      ? `<p class="hist-voc__cap hist-voc__cap--take">✅ ${esc(t("discover.histTake"))}</p><ul class="hist-voc__list">${take.map(row).join("")}</ul>`
+      : "";
+    const skipList = skip.length
+      ? `<p class="hist-voc__cap hist-voc__cap--skip">○ ${esc(t("discover.histSkip"))}</p><ul class="hist-voc__list hist-voc__list--skip">${skip.map(row).join("")}</ul>`
+      : "";
+    return `
+      <details class="hist-voc">
+        <summary class="hist-voc__sum">📒 ${esc(t("discover.histVocab"))} <span class="hist-voc__n">${vocab.length}</span><span class="hist-voc__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-voc__body">${takeList}${skipList}</div>
+      </details>`;
+  }
+  // Mini-Quiz zum Text: Spanisches Wort → richtige Übersetzung wählen. Distraktoren
+  // aus denselben Vokabeln. Selbstprüfung per DOM-Klasse (kein Re-Render, s. app.js).
+  function quizBlock(vocab) {
+    const items = vocab || [];
+    const pool = items.filter((v) => v.take);
+    if (pool.length < 3 || items.length < 4) return ""; // zu wenige für sinnvolle Optionen
+    const qs = pool.slice(0, 4);
+    const questions = qs.map((v, i) => {
+      const others = items.filter((x) => x.es !== v.es).map((x) => x.de);
+      const opts = [v.de];
+      for (let k = 0; k < others.length && opts.length < 4; k++) {
+        if (opts.indexOf(others[k]) === -1) opts.push(others[k]);
+      }
+      const rot = (i + 1) % opts.length; // richtige Antwort nicht immer oben
+      const rotated = opts.slice(rot).concat(opts.slice(0, rot));
+      const optsHtml = rotated
+        .map((o) => `<button class="hist-quiz__opt" type="button" data-action="hist-quiz-answer" data-correct="${o === v.de ? "1" : "0"}">${esc(o)}</button>`)
+        .join("");
+      return `
+        <div class="hist-quiz__q">
+          <p class="hist-quiz__prompt" lang="es">${esc(v.es)}</p>
+          <div class="hist-quiz__opts">${optsHtml}</div>
+        </div>`;
+    }).join("");
+    return `
+      <details class="hist-quiz">
+        <summary class="hist-quiz__sum">🧩 ${esc(t("discover.histQuiz"))}<span class="hist-quiz__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-quiz__body">
+          <p class="hist-quiz__intro">${esc(t("discover.histQuizIntro"))}</p>
+          ${questions}
+        </div>
+      </details>`;
+  }
+  // Gemeinsamer Lesetraining-Block (Epoche, Protagonist, Spannung teilen ihn).
+  // opts: { es:[Absatz], vocab, level, trans?:[Absatz], shareId, quiz?:bool }
+  // trans = optionale „Ganze Übersetzung", nur wo der Text nicht ohnehin schon
+  // in der UI-Sprache danebensteht (Epochen ja, Karten nein).
+  function readingBlock(opts) {
+    const o = opts || {};
+    if (!o.es || !o.es.length) return "";
+    const lvl = levelMeta(o.level);
+    const bar = `
+      <div class="hist-es__bar">
+        <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
+        ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
+      </div>`;
+    const text = `<div class="hist-es">${bar}${esRich(o.es, o.vocab)}<p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p></div>`;
+    const vocab = vocabBlock(o.vocab);
+    const quiz = o.quiz ? quizBlock(o.vocab) : "";
+    const trans = (o.trans && o.trans.length)
+      ? `<details class="hist-trans"><summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary><div class="hist-trans__body">${o.trans.map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div></details>`
+      : "";
+    const share = o.shareId
+      ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(o.shareId)}">📤 ${esc(t("discover.histShare"))}</button>`
+      : "";
+    return `${text}${vocab}${quiz}${trans}${share}`;
+  }
+  function renderHistoria(vm) {
+    // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
+    const nav = `
+      <nav class="hist-nav" aria-label="${esc(t("discover.histAreas"))}">
+        <a class="hist-nav__chip" href="#hist-zeitstrahl">🕰️ ${esc(t("discover.histNavTimeline"))}</a>
+        <a class="hist-nav__chip" href="#hist-protagonisten">👤 ${esc(t("discover.histNavFigures"))}</a>
+        <a class="hist-nav__chip" href="#hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
+      </nav>`;
+
+    // Eine Epoche als aufklappbare Karte am Zeitstrahl.
+    const era = (e) => {
+      const img = e.img
+        ? `<figure class="hist-era__fig">
+             <img class="hist-era__img" src="${esc(commonsImg(e.img))}" alt="${esc(e.imgCaption || e.title)}"
+                  loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').style.display='none'" />
+             ${e.imgCaption ? `<figcaption class="hist-era__cap">${esc(e.imgCaption)}</figcaption>` : ""}
+           </figure>`
+        : "";
+      const lvl = levelMeta(e.level);
+      const reading = readingBlock({ es: e.es, vocab: e.vocab, level: e.level, trans: e.body, shareId: e.id, quiz: true });
+      const points = (e.points || []).length
+        ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
+        : "";
+      return `
+        <details class="hist-era">
+          <summary class="hist-era__head">
+            <span class="hist-era__dot" aria-hidden="true">${esc(e.icon || "•")}</span>
+            <span class="hist-era__heart">
+              <span class="hist-era__metarow">
+                <span class="hist-era__period">${esc(e.period)}</span>
+                ${lvl ? `<span class="hist-era__lvlchip hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}
+              </span>
+              <span class="hist-era__title">${esc(e.title)}</span>
+              <span class="hist-era__lead">${esc(e.lead)}</span>
+            </span>
+            <span class="hist-era__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="hist-era__body">
+            ${img}
+            ${reading}
+            ${points}
+          </div>
+        </details>`;
+    };
+    const eras = (vm.eras || []).map(era).join("");
+
+    // Ein Protagonist als Karte mit Porträt.
+    const figure = (f) => {
+      const img = f.img
+        ? `<img class="hist-fig__img" src="${esc(commonsImg(f.img, 320))}" alt="${esc(f.name)}"
+                loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
+        : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">👤</span>`;
+      const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
+      const lvl = levelMeta(f.level);
+      const reading = (f.es && f.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: f.es, vocab: f.vocab, level: f.level, shareId: f.id, quiz: false })}</div>
+           </details>`
+        : "";
+      return `
+        <article class="hist-fig">
+          <div class="hist-fig__top">
+            ${img}
+            <div class="hist-fig__id">
+              <h4 class="hist-fig__name">${f.flag ? `<span aria-hidden="true">${f.flag}</span> ` : ""}${esc(f.name)}</h4>
+              <p class="hist-fig__role">${esc(f.role)}</p>
+              <p class="hist-fig__years">${esc(f.years)}</p>
+            </div>
+          </div>
+          <p class="hist-fig__text">${esc(f.text)}</p>
+          ${quote}
+          ${reading}
+        </article>`;
+    };
+    const figures = (vm.figures || []).map(figure).join("");
+
+    // Eine aktuelle Spannung/Lage als Karte mit Status-Plakette.
+    const tension = (s) => {
+      const lvl = levelMeta(s.level);
+      const reading = (s.es && s.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: s.es, vocab: s.vocab, level: s.level, shareId: s.id, quiz: false })}</div>
+           </details>`
+        : "";
+      return `
+      <article class="hist-ten hist-ten--${esc(s.tone || "shift")}">
+        <div class="hist-ten__head">
+          <span class="hist-ten__icon" aria-hidden="true">${esc(s.icon || "•")}</span>
+          <h4 class="hist-ten__title">${esc(s.title)}</h4>
+          <span class="hist-ten__badge">${esc(s.status)}</span>
+        </div>
+        <p class="hist-ten__where">${esc(s.where)}</p>
+        <p class="hist-ten__text">${esc(s.text)}</p>
+        ${reading}
+      </article>`;
+    };
+    const tensions = (vm.tensions || []).map(tension).join("");
+
+    const facts = (vm.facts || []).length
+      ? `<div class="hist-facts">
+           <h3 class="hist-block__h">💡 ${esc(t("discover.histFactsTitle"))}</h3>
+           <div class="hist-facts__grid">
+             ${vm.facts.map((f) => `<div class="hist-fact">${esc(f)}</div>`).join("")}
+           </div>
+         </div>`
+      : "";
+
+    return `
+      <section class="screen">
+        ${hmTopbar("📜 Historia de Sudamérica", "home")}
+        <p class="hm-intro">${esc(vm.intro)}</p>
+        ${nav}
+
+        <div class="hist-block" id="hist-zeitstrahl">
+          <h3 class="hist-block__h">🕰️ ${esc(t("discover.histTimelineTitle"))}</h3>
+          <p class="hist-block__sub">${esc(t("discover.histTimelineSub"))}</p>
+          <div class="hist-timeline">${eras}</div>
+        </div>
+
+        <div class="hist-block" id="hist-protagonisten">
+          <h3 class="hist-block__h">👤 ${esc(t("discover.histFiguresTitle"))}</h3>
+          <p class="hist-block__sub">${esc(t("discover.histFiguresSub"))}</p>
+          <div class="hist-figs">${figures}</div>
+        </div>
+
+        <div class="hist-block" id="hist-heute">
+          <h3 class="hist-block__h">📰 ${esc(t("discover.histTodayTitle"))}</h3>
+          <p class="hist-block__sub">${esc(t("discover.histTodaySub"))}</p>
+          <div class="hist-tens">${tensions}</div>
+        </div>
+
+        ${facts}
+      </section>`;
   }
 
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
@@ -18466,7 +19995,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderKnigge, renderRegatear, renderLogistica, renderSalud,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
@@ -18494,6 +20023,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const historia = window.SC.historia || null;   // Geschichte Südamerikas (Erklärseite, optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
@@ -18706,6 +20236,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
       hasCountries: !!countries, // dito für die Länderkunde
+      hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
@@ -18883,7 +20414,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
     // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
-    return { country: country ? loc(country) : null, groups };
+    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia };
+  }
+
+  // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
+  // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
+  // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
+  function historiaVM() {
+    if (!historia) return { intro: "", eras: [], figures: [], tensions: [], facts: [] };
+    return {
+      intro: nat(historia.INTRO),
+      eras: loc(historia.ERAS || []),
+      figures: loc(historia.FIGURES || []),
+      tensions: loc(historia.TENSIONS || []),
+      facts: (historia.FACTS || []).map(nat),
+    };
   }
 
   // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
@@ -20327,6 +21872,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
+    else if (state.screen === "historia") root.innerHTML = ui.renderHistoria(historiaVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
@@ -21456,6 +23002,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
 
+    // Historia de Sudamérica: ein Treffer für die ganze Erklärseite (Epochen,
+    // Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
+    if (historia) {
+      const eras = (historia.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
+      const figs = (historia.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
+      const tens = (historia.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
+      const facts = (historia.FACTS || []).map((f) => [f.de, f.en]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "📜", title: "Historia de Sudamérica", sub: t("discover.subHistoria"),
+        action: "open-historia",
+        hay: searchHay(["historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit",
+          historia.INTRO && historia.INTRO.de, historia.INTRO && historia.INTRO.en, eras, figs, tens, facts]),
+      });
+    }
+
     return idx;
   }
 
@@ -21504,6 +23066,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function openInfo() {
     dismissBadgeToast();
     state.screen = "info";
+    render();
+  }
+
+  function openHistoria() {
+    dismissBadgeToast();
+    state.screen = "historia";
     render();
   }
 
@@ -21802,6 +23370,35 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     share.shareImage("card", cardSharePayload(card), shareFormat());
   }
 
+  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Sucht den
+  // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
+  // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
+  function findHistItem(id) {
+    if (!historia) return null;
+    const lists = [historia.ERAS, historia.FIGURES, historia.TENSIONS];
+    for (let i = 0; i < lists.length; i++) {
+      const it = (lists[i] || []).find((x) => x.id === id);
+      if (it) return it;
+    }
+    return null;
+  }
+  function shareHistoria(id) {
+    if (!share) return;
+    const raw = findHistItem(id);
+    if (!raw) return;
+    const e = loc(raw);
+    const esText = (e.es || []).join("\n\n").replace(/\*/g, "");
+    const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
+    buzz(12);
+    share.shareImage("histtext", {
+      title: e.title || e.name || "Historia de Sudamérica",
+      levelCode: e.level || "",
+      levelWord: e.level ? t("discover.histLvl" + e.level) : "",
+      esText,
+      words,
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -21812,6 +23409,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const el = e.target.closest("[data-action]");
     if (!el) return;
     const action = el.dataset.action;
+
+    // Schwierigkeits-Wort im Lesetext: Übersetzungs-Popover umschalten – per
+    // Klasse direkt im DOM (kein Re-Render, damit Scrollposition & offene
+    // Akkordeons bleiben). Robust auf Mobil, wo :focus auf Buttons unzuverlässig
+    // ist. Tippt man ein anderes Wort, schließt das vorige.
+    if (action === "hist-word") {
+      const open = el.classList.contains("is-open");
+      const root = document.getElementById("app") || document;
+      root.querySelectorAll(".hist-w.is-open").forEach((b) => b.classList.remove("is-open"));
+      if (!open) el.classList.add("is-open");
+      return;
+    }
+
+    // Quiz-Antwort im Lesetext: prüft direkt im DOM (kein Re-Render). Pro Frage
+    // nur einmal; markiert die Wahl und deckt bei Fehler die richtige Antwort auf.
+    if (action === "hist-quiz-answer") {
+      const q = el.closest(".hist-quiz__q");
+      if (!q || q.classList.contains("is-done")) return;
+      q.classList.add("is-done");
+      if (el.dataset.correct === "1") {
+        el.classList.add("is-correct");
+      } else {
+        el.classList.add("is-wrong");
+        const right = q.querySelector('.hist-quiz__opt[data-correct="1"]');
+        if (right) right.classList.add("is-correct");
+      }
+      return;
+    }
 
     if (action === "set-mode") setMode(el.dataset.mode);
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
@@ -21839,6 +23464,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
+    else if (action === "open-historia") openHistoria();
     else if (action === "open-knigge") openKnigge();
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
@@ -21861,6 +23487,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
+    else if (action === "share-historia") shareHistoria(el.dataset.id);
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
