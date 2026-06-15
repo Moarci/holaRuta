@@ -1235,6 +1235,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hist-share:active { transform: scale(0.98); }
 
+/* Teilen-Knopf auf Modul-Ebene (ganzes Historia-Modul weiterempfehlen). */
+.hist-modshare { margin-top: 12px; }
+
 /* Teilen-Knopf in den übrigen Entdecken-Kategorien (Knigge/Regatear/Logística/
    Salud) und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und
    etwas Abstand zum übrigen Karteninhalt. */

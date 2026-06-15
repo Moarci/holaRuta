@@ -1273,6 +1273,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hist-share:active { transform: scale(0.98); }
 
+/* Teilen-Knopf auf Modul-Ebene (ganzes Historia-Modul weiterempfehlen). */
+.hist-modshare { margin-top: 12px; }
+
 /* Teilen-Knopf in den übrigen Entdecken-Kategorien (Knigge/Regatear/Logística/
    Salud) und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und
    etwas Abstand zum übrigen Karteninhalt. */
@@ -3070,6 +3073,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histSkip: "Nicht so wichtig – kannst du überspringen",
     histTranslation: "Ganze Übersetzung anzeigen",
     histShare: "Text & Vokabeln teilen",
+    histModuleShare: "Modul teilen",
     tipsShare: "Als Bild teilen",
     histReadToggle: "Auf Spanisch lesen",
     histQuiz: "Mini-Quiz: Vokabeln testen",
@@ -3352,6 +3356,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histSkip: "Less important – you can skip these",
     histTranslation: "Show full translation",
     histShare: "Share text & vocab",
+    histModuleShare: "Share module",
     tipsShare: "Share as image",
     histReadToggle: "Read in Spanish",
     histQuiz: "Mini-quiz: test the vocab",
@@ -3837,6 +3842,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
     captionHistoriaLevel: (p) => `📊 Niveau: ${p.level}`,
     captionHistoria: "Spanisch lesen lernen mit echten Texten – HolaRuta. 🌎",
+    captionHistModuleHead: "📜 Historia de Sudamérica – Südamerikas Geschichte in einem Modul",
+    captionHistModule: "Von den Inka über Bolívar bis heute – verständlich erzählt, mit Spanisch-Lesetraining. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – Reise-Tipps von HolaRuta`,
     captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
   }, {
@@ -3860,6 +3867,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
     captionHistoriaLevel: (p) => `📊 Level: ${p.level}`,
     captionHistoria: "Learning to read Spanish with real texts – HolaRuta. 🌎",
+    captionHistModuleHead: "📜 Historia de Sudamérica – South America's history in one module",
+    captionHistModule: "From the Inca via Bolívar to today – clearly told, with Spanish reading practice. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – travel tips from HolaRuta`,
     captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
   });
@@ -16213,6 +16222,97 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return c;
   }
 
+  // ---------- Motiv 6: Historia-Modul-Übersicht (ganzes Modul teilen) ----------
+  // Stellt nicht einen einzelnen Text dar, sondern das KOMPLETTE Modul „Historia
+  // de Sudamérica" als Einladung: Modulname, Einleitung und ein Zeitstrahl-Teaser
+  // mit den Epochen (Symbol · Zeitraum · Titel).
+  // payload: { kicker, title, intro, timelineLabel, eras:[{icon,period,title}] }
+  function buildHistOverview(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = ["#8E5A2E", "#5A3A24"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker (kleiner Hinweis über dem Titel)
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText(`📜  ${String(payload.kicker || "").toUpperCase()}`, cx, isStory ? 140 : 104);
+
+    // Großer Modul-Titel
+    const titleTop = isStory ? 172 : 132;
+    const titleBottom = fitText(ctx, payload.title || "Historia de Sudamérica", cx, titleTop, pw - 20, {
+      px: 76, min: 44, weight: "800", color: "#ffffff", maxLines: 2,
+    });
+    let y = titleBottom + 44;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+    const bottom = panelY + panelH - 40;
+
+    // Einleitung (gedämpft)
+    if (payload.intro) {
+      iy = drawWrapped(ctx, payload.intro, innerX, iy, innerW, {
+        px: isStory ? 31 : 29, weight: "600", color: MUTE, lineHeight: 1.4,
+        maxBottom: panelY + (isStory ? 540 : 340),
+      }) + 44;
+    }
+
+    // Zeitstrahl-Teaser: die Epochen als Liste (Symbol · Zeitraum · Titel).
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillText(`🕰️  ${String(payload.timelineLabel || "").toUpperCase()}`, innerX, iy);
+    iy += 52;
+
+    const eras = payload.eras || [];
+    const rowH = isStory ? 98 : 86;
+    for (let i = 0; i < eras.length; i++) {
+      const e = eras[i] || {};
+      if (iy + rowH > bottom) break;
+      // Symbol-Punkt
+      ctx.font = font("700", 40);
+      ctx.fillStyle = accent[0];
+      ctx.textAlign = "left";
+      ctx.fillText(e.icon || "•", innerX, iy + 40);
+      const tx = innerX + 64;
+      // Zeitraum (klein, gedämpft)
+      ctx.font = font("700", 24);
+      ctx.fillStyle = MUTE;
+      ctx.fillText(String(e.period || ""), tx, iy + 26);
+      // Titel der Epoche (gekürzt, falls zu breit)
+      ctx.font = font("800", 30);
+      ctx.fillStyle = INK;
+      let title = String(e.title || "");
+      let trimmed = false;
+      while (ctx.measureText(title).width > innerW - 64 && title.length > 6) { title = title.slice(0, -2); trimmed = true; }
+      ctx.fillText(trimmed ? title + "…" : title, tx, iy + 62);
+      iy += rowH;
+    }
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
   // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
   // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
@@ -16356,6 +16456,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       out += `\n\n${t("share.captionHistoria")}`;
       return out + link;
     }
+    if (kind === "histmodule") {
+      let out = t("share.captionHistModuleHead");
+      out += `\n\n${t("share.captionHistModule")}`;
+      return out + link;
+    }
     if (kind === "tips") {
       const title = String(p.title || "").trim();
       const cat = String(p.kicker || "").trim();
@@ -16383,6 +16488,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
              : kind === "histtext" ? buildHistoria(payload, fmt)
+             : kind === "histmodule" ? buildHistOverview(payload, fmt)
              : kind === "tips" ? buildTips(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
@@ -16401,12 +16507,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "badge" ? "holaruta-stempel"
                : kind === "histtext" ? "holaruta-historia"
+               : kind === "histmodule" ? "holaruta-historia-modul"
                : kind === "tips" ? "holaruta-tipps"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
                 : kind === "histtext" ? "Historia de Sudamérica"
+                : kind === "histmodule" ? "Historia de Sudamérica"
                 : kind === "tips" ? ((payload && payload.title) || "HolaRuta")
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
@@ -16435,7 +16543,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria, buildTips };
+  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria, buildHistOverview, buildTips };
 })();
 
 </script>
@@ -16576,6 +16684,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.29.0",
+      date: "2026-06-15",
+      title: "Historia-Modul als Ganzes teilen",
+      items: [
+        "📤 Neues Sharepic auf Modul-Ebene: „Historia de Sudamérica“ lässt sich jetzt komplett weiterempfehlen – ein Bild mit Modulname, Einleitung und einem Zeitstrahl-Teaser der Epochen, in 1:1 oder 9:16 (Story). Der „Modul teilen“-Knopf sitzt oben direkt unter der Bereichs-Navigation.",
+      ],
+    },
     {
       version: "1.28.0",
       date: "2026-06-15",
@@ -18556,6 +18672,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <a class="hist-nav__chip" href="#hist-heute" data-action="scroll-to" data-target="hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
       </nav>`;
 
+    // Auf Modul-Ebene teilbar: ein Sharepic des ganzen Moduls (Titel, Einleitung
+    // und Zeitstrahl-Teaser) – damit man „Historia de Sudamérica" weiterempfehlen
+    // kann, nicht nur einen einzelnen Text. Logik in app.shareHistModule.
+    const moduleShare = canShare()
+      ? `<div class="hist-modshare"><button class="hist-share" type="button" data-action="share-hist-module">📤 ${esc(t("discover.histModuleShare"))}</button></div>`
+      : "";
+
     // Eine Epoche als aufklappbare Karte am Zeitstrahl. Aufbau wie bei den
     // Protagonisten: zuerst der erklärende Text in der UI-Sprache, darunter das
     // spanische Lesetraining als eigener aufklappbarer Block.
@@ -18670,6 +18793,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${hmTopbar("📜 Historia de Sudamérica", "home")}
         <p class="hm-intro">${esc(vm.intro)}</p>
         ${nav}
+        ${moduleShare}
 
         <div class="hist-block" id="hist-zeitstrahl">
           <h3 class="hist-block__h">🕰️ ${esc(t("discover.histTimelineTitle"))}</h3>
@@ -23606,6 +23730,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     }, shareFormat());
   }
 
+  // Sharepic auf Modul-Ebene: das ganze Modul „Historia de Sudamérica" als
+  // Einladung (Modulname, Einleitung, Zeitstrahl-Teaser mit den Epochen) – zum
+  // Weiterempfehlen des gesamten Moduls, nicht nur eines einzelnen Textes.
+  function shareHistModule() {
+    if (!share || !historia) return;
+    const eras = loc(historia.ERAS || []).map((e) => ({
+      icon: e.icon || "•",
+      period: e.period || "",
+      title: e.title || "",
+    }));
+    buzz(12);
+    share.shareImage("histmodule", {
+      kicker: "Historia de Sudamérica",
+      title: "Historia de Sudamérica",
+      intro: nat(historia.INTRO),
+      timelineLabel: t("discover.histNavTimeline"),
+      eras,
+    }, shareFormat());
+  }
+
   // Sharepic für die übrigen Entdecken-Kategorien (Knigge, Regatear, Logística,
   // Salud): ein Thema mit seinen DOs/Don'ts als teilbares Bild „zum Versenden".
   // kicker/icon/accent passen zur jeweiligen Kategorie-Kachel (siehe FEATURES).
@@ -23767,6 +23911,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
     else if (action === "share-historia") shareHistoria(el.dataset.id);
+    else if (action === "share-hist-module") shareHistModule();
     else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
     else if (action === "share-country") shareCountry();
     else if (action === "share-badge") shareBadge(el.dataset.id);

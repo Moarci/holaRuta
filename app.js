@@ -3390,6 +3390,26 @@
     }, shareFormat());
   }
 
+  // Sharepic auf Modul-Ebene: das ganze Modul „Historia de Sudamérica" als
+  // Einladung (Modulname, Einleitung, Zeitstrahl-Teaser mit den Epochen) – zum
+  // Weiterempfehlen des gesamten Moduls, nicht nur eines einzelnen Textes.
+  function shareHistModule() {
+    if (!share || !historia) return;
+    const eras = loc(historia.ERAS || []).map((e) => ({
+      icon: e.icon || "•",
+      period: e.period || "",
+      title: e.title || "",
+    }));
+    buzz(12);
+    share.shareImage("histmodule", {
+      kicker: "Historia de Sudamérica",
+      title: "Historia de Sudamérica",
+      intro: nat(historia.INTRO),
+      timelineLabel: t("discover.histNavTimeline"),
+      eras,
+    }, shareFormat());
+  }
+
   // Sharepic für die übrigen Entdecken-Kategorien (Knigge, Regatear, Logística,
   // Salud): ein Thema mit seinen DOs/Don'ts als teilbares Bild „zum Versenden".
   // kicker/icon/accent passen zur jeweiligen Kategorie-Kachel (siehe FEATURES).
@@ -3551,6 +3571,7 @@
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
     else if (action === "share-historia") shareHistoria(el.dataset.id);
+    else if (action === "share-hist-module") shareHistModule();
     else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
     else if (action === "share-country") shareCountry();
     else if (action === "share-badge") shareBadge(el.dataset.id);
