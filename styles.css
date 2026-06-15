@@ -1796,6 +1796,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .task-item__title { font-size: 0.95rem; }
 .task-item__due { font-size: 0.8rem; color: var(--muted); }
 .task-item__due.is-overdue { color: var(--bad, #B5302A); font-weight: 700; }
+/* Absolvierte Aufgabe: klar als erledigt markiert (grüner Rahmen + Abzeichen). */
+.task-item--done { border-color: color-mix(in srgb, var(--ok, #3F7355) 55%, var(--line)); background: color-mix(in srgb, var(--ok, #3F7355) 8%, var(--card)); }
+.task-item--done .task-item__target { color: var(--ok, #3F7355); }
+.task-item__badge {
+  display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px;
+  border-radius: 999px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em;
+  background: var(--ok, #3F7355); color: #fff;
+}
 .task-item__actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .task-empty { color: var(--muted); margin: 6px 0 0; }
 .task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }

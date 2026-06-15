@@ -1834,6 +1834,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .task-item__title { font-size: 0.95rem; }
 .task-item__due { font-size: 0.8rem; color: var(--muted); }
 .task-item__due.is-overdue { color: var(--bad, #B5302A); font-weight: 700; }
+/* Absolvierte Aufgabe: klar als erledigt markiert (grüner Rahmen + Abzeichen). */
+.task-item--done { border-color: color-mix(in srgb, var(--ok, #3F7355) 55%, var(--line)); background: color-mix(in srgb, var(--ok, #3F7355) 8%, var(--card)); }
+.task-item--done .task-item__target { color: var(--ok, #3F7355); }
+.task-item__badge {
+  display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px;
+  border-radius: 999px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em;
+  background: var(--ok, #3F7355); color: #fff;
+}
 .task-item__actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .task-empty { color: var(--muted); margin: 6px 0 0; }
 .task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }
@@ -4068,6 +4076,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dueLabel: (p) => `Frist: ${p.date}`,
     overdue: (p) => `Frist abgelaufen: ${p.date}`,
     start: "Starten",
+    replay: "Wiederholen",
+    done: "Erledigt",
     add: "Aufgabe hinzufügen",
     remove: "Entfernen",
     yours: (p) => `Deine Aufgaben (${p.n})`,
@@ -4090,6 +4100,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dueLabel: (p) => `Due: ${p.date}`,
     overdue: (p) => `Past due: ${p.date}`,
     start: "Start",
+    replay: "Repeat",
+    done: "Done",
     add: "Add task",
     remove: "Remove",
     yours: (p) => `Your tasks (${p.n})`,
@@ -20264,6 +20276,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.66.0",
+      date: "2026-06-15",
+      title: "Absolvierte Aufgaben werden als erledigt markiert",
+      items: [
+        "✅ Hast du eine zugewiesene Aufgabe geschafft, ist sie in der Tarea-Liste jetzt klar als erledigt markiert: grünes Häkchen, „Erledigt“-Abzeichen und grüner Rahmen; aus „Starten“ wird „Wiederholen“. Erledigt heißt: beim Pre-Trip-Plan alle Etappen geschafft, beim Pre-Arrival/ganzen Paket alle Karten mindestens einmal gelernt.",
+      ],
+    },
+    {
       version: "1.65.0",
       date: "2026-06-15",
       title: "Editions-Footer: sauberer Text-Credit statt Platzhalter-Logo",
@@ -23452,14 +23472,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ? `<p class="sectioncap">${esc(t("task.yours", { n: tasks.length }))}</p>
          <ul class="task-list">
            ${tasks.map((tk) => `
-             <li class="task-item">
+             <li class="task-item${tk.done ? " task-item--done" : ""}">
                <div class="task-item__body">
-                 <span class="task-item__target">🎯 ${esc(tk.targetLabel)}</span>
+                 <span class="task-item__target">${tk.done ? "✅" : "🎯"} ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge">${esc(t("task.done"))}</span>` : ""}</span>
                  ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
-                 ${tk.due ? `<span class="task-item__due${tk.overdue ? " is-overdue" : ""}">${esc(t(tk.overdue ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
+                 ${tk.due ? `<span class="task-item__due${tk.overdue && !tk.done ? " is-overdue" : ""}">${esc(t(tk.overdue && !tk.done ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
                </div>
                <div class="task-item__actions">
-                 <button class="teacher-btn teacher-btn--main" data-action="task-start" data-idx="${tk.idx}">▶️ ${esc(t("task.start"))}</button>
+                 <button class="teacher-btn${tk.done ? "" : " teacher-btn--main"}" data-action="task-start" data-idx="${tk.idx}">${tk.done ? "🔁 " + esc(t("task.replay")) : "▶️ " + esc(t("task.start"))}</button>
                  <button class="teacher-x" data-action="task-remove" data-idx="${tk.idx}" aria-label="${esc(t("task.remove"))}" title="${esc(t("task.remove"))}">✕</button>
                </div>
              </li>`).join("")}
@@ -27593,12 +27613,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (addSubscribedTask(el ? el.value : "")) { if (el) el.value = ""; render(); }
   }
 
+  // Ist eine zugewiesene Aufgabe „absolviert"? Pre-Trip-Plan: alle Etappen geschafft;
+  // Pre-Arrival-/ganzes Paket: alle zugehörigen Karten mindestens einmal gelernt
+  // (gesehen) – konsistent mit dem „einmal durch"-Maßstab des Pre-Trip-Plans.
+  function taskDone(task) {
+    if (!task) return false;
+    if (task.kind === "pretrip") return planAllDone(pretripPlan(task.scope));
+    let cards;
+    if (task.kind === "preset") {
+      const p = (data.PRESETS || []).find((x) => x.id === task.scope);
+      cards = p ? p.pick.map(cardById).filter(Boolean) : [];
+    } else { // category = ganzes Themen-Paket
+      cards = (data.CARDS || []).filter((c) => c.cat === task.scope);
+    }
+    if (!cards.length) return false;
+    return cards.every((c) => (stats.cardSummary(progress[c.id]).seen || 0) > 0);
+  }
+
   function taskVM() {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, mit der Frist (Datums-String) vergleichbar
     return {
       tasks: subscribedTasks.map((tk, i) => ({
         idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
         overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
+        done: taskDone(tk),                    // absolviert? -> optisch als erledigt markieren
       })),
     };
   }

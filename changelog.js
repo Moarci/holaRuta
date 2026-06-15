@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.66.0",
+      date: "2026-06-15",
+      title: "Absolvierte Aufgaben werden als erledigt markiert",
+      items: [
+        "✅ Hast du eine zugewiesene Aufgabe geschafft, ist sie in der Tarea-Liste jetzt klar als erledigt markiert: grünes Häkchen, „Erledigt“-Abzeichen und grüner Rahmen; aus „Starten“ wird „Wiederholen“. Erledigt heißt: beim Pre-Trip-Plan alle Etappen geschafft, beim Pre-Arrival/ganzen Paket alle Karten mindestens einmal gelernt.",
+      ],
+    },
+    {
       version: "1.65.0",
       date: "2026-06-15",
       title: "Editions-Footer: sauberer Text-Credit statt Platzhalter-Logo",

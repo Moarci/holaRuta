@@ -2811,12 +2811,30 @@
     if (addSubscribedTask(el ? el.value : "")) { if (el) el.value = ""; render(); }
   }
 
+  // Ist eine zugewiesene Aufgabe „absolviert"? Pre-Trip-Plan: alle Etappen geschafft;
+  // Pre-Arrival-/ganzes Paket: alle zugehörigen Karten mindestens einmal gelernt
+  // (gesehen) – konsistent mit dem „einmal durch"-Maßstab des Pre-Trip-Plans.
+  function taskDone(task) {
+    if (!task) return false;
+    if (task.kind === "pretrip") return planAllDone(pretripPlan(task.scope));
+    let cards;
+    if (task.kind === "preset") {
+      const p = (data.PRESETS || []).find((x) => x.id === task.scope);
+      cards = p ? p.pick.map(cardById).filter(Boolean) : [];
+    } else { // category = ganzes Themen-Paket
+      cards = (data.CARDS || []).filter((c) => c.cat === task.scope);
+    }
+    if (!cards.length) return false;
+    return cards.every((c) => (stats.cardSummary(progress[c.id]).seen || 0) > 0);
+  }
+
   function taskVM() {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, mit der Frist (Datums-String) vergleichbar
     return {
       tasks: subscribedTasks.map((tk, i) => ({
         idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
         overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
+        done: taskDone(tk),                    // absolviert? -> optisch als erledigt markieren
       })),
     };
   }

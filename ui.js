@@ -2504,14 +2504,14 @@
       ? `<p class="sectioncap">${esc(t("task.yours", { n: tasks.length }))}</p>
          <ul class="task-list">
            ${tasks.map((tk) => `
-             <li class="task-item">
+             <li class="task-item${tk.done ? " task-item--done" : ""}">
                <div class="task-item__body">
-                 <span class="task-item__target">🎯 ${esc(tk.targetLabel)}</span>
+                 <span class="task-item__target">${tk.done ? "✅" : "🎯"} ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge">${esc(t("task.done"))}</span>` : ""}</span>
                  ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
-                 ${tk.due ? `<span class="task-item__due${tk.overdue ? " is-overdue" : ""}">${esc(t(tk.overdue ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
+                 ${tk.due ? `<span class="task-item__due${tk.overdue && !tk.done ? " is-overdue" : ""}">${esc(t(tk.overdue && !tk.done ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
                </div>
                <div class="task-item__actions">
-                 <button class="teacher-btn teacher-btn--main" data-action="task-start" data-idx="${tk.idx}">▶️ ${esc(t("task.start"))}</button>
+                 <button class="teacher-btn${tk.done ? "" : " teacher-btn--main"}" data-action="task-start" data-idx="${tk.idx}">${tk.done ? "🔁 " + esc(t("task.replay")) : "▶️ " + esc(t("task.start"))}</button>
                  <button class="teacher-x" data-action="task-remove" data-idx="${tk.idx}" aria-label="${esc(t("task.remove"))}" title="${esc(t("task.remove"))}">✕</button>
                </div>
              </li>`).join("")}
