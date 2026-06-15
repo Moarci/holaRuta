@@ -1313,7 +1313,7 @@
     { id: "cl22", cat: "chile", lvl: 3, de: "In Chiloé möchte ich unbedingt Curanto probieren.", en: "In Chiloé I really want to try curanto.", es: "En Chiloé quiero probar curanto sí o sí.", tip: "Curanto = Meeresfrüchte, Fleisch und Kartoffeln, im Erdofen gegart", tipEn: "Curanto = seafood, meat and potatoes cooked in an earth oven" },
     { id: "cl23", cat: "chile", lvl: 1, de: "Einen Pisco Sour, bitte.", en: "A pisco sour, please.", es: "Un pisco sour, por favor.", tip: "Pisco = Traubenbrand; das Nationalgetränk-Duell mit Peru", tipEn: "Pisco = grape brandy; the national-drink rivalry with Peru" },
     { id: "cl24", cat: "chile", lvl: 2, de: "Was ist ein Terremoto? Ist der stark?", en: "What's a terremoto? Is it strong?", es: "¿Qué es un terremoto? ¿Es fuerte?", tip: "„Erdbeben“-Drink: süßer Wein mit Ananaseis – haut rein!", tipEn: "„Earthquake“ drink: sweet wine with pineapple ice cream – hits hard!" },
-    { id: "cl25", cat: "chile", lvl: 2, de: "Kommst du heute Abend zur Once?", en: "Are you coming for once this evening?", es: "¿Vení a la once en la tarde?", tip: "„once“ = chilenische Abendvesper mit Tee, Brot und Käse", tipEn: "„once“ = Chilean late-afternoon tea with bread and cheese" },
+    { id: "cl25", cat: "chile", lvl: 2, de: "Kommst du heute Abend zur Once?", en: "Are you coming for once this evening?", es: "¿Vienes a la once en la tarde?", tip: "„once“ = chilenische Abendvesper mit Tee, Brot und Käse", tipEn: "„once“ = Chilean late-afternoon tea with bread and cheese" },
     { id: "cl26", cat: "chile", lvl: 1, de: "Kann ich mit Pesos in bar zahlen?", en: "Can I pay in pesos in cash?", es: "¿Puedo pagar en pesos en efectivo?", tip: "Währung = chilenischer Peso (CLP)", tipEn: "Currency = Chilean peso (CLP)" },
     { id: "cl27", cat: "chile", lvl: 2, de: "Das kostet fünf Luca, oder?", en: "That's five luca, right?", es: "Eso cuesta cinco lucas, ¿cierto?", tip: "„luca“ = 1.000 Pesos; „cinco lucas“ = 5.000 CLP", tipEn: "„luca“ = 1,000 pesos; „cinco lucas“ = 5,000 CLP" },
     { id: "cl28", cat: "chile", lvl: 1, de: "Gibt es hier in der Nähe einen Geldautomaten?", en: "Is there an ATM nearby?", es: "¿Hay un cajero automático por acá?", tip: "„cajero“ = Geldautomat; „acá“ = hier (chilenisch häufig)", tipEn: "„cajero“ = ATM; „acá“ = here (common in Chile)" },
@@ -1338,7 +1338,7 @@
     { id: "bo04", cat: "bolivia", lvl: 1, de: "Ich spüre die Höhe. Haben Sie Kokatee?", en: "I feel the altitude. Do you have coca tea?", es: "Me afecta la altura. ¿Tiene mate de coca?", tip: "soroche = Höhenkrankheit; mate de coca hilft", tipEn: "soroche = altitude sickness; mate de coca helps" },
     { id: "bo05", cat: "bolivia", lvl: 2, de: "Mir ist schwindelig wegen der Höhe.", en: "I feel dizzy because of the altitude.", es: "Tengo mareo por la altura.", tip: "La Paz liegt auf ~3.600 m, El Alto ~4.100 m", tipEn: "La Paz is at ~3,600 m, El Alto ~4,100 m" },
     { id: "bo06", cat: "bolivia", lvl: 1, de: "Guten Tag, wie geht es Ihnen?", en: "Good afternoon, how are you?", es: "Buenas tardes, ¿cómo está?", tip: "Bolivien ist höflich und förmlich – lieber „usted“", tipEn: "Bolivia is polite and formal – prefer „usted“" },
-    { id: "bo07", cat: "bolivia", lvl: 2, de: "Guten Morgen! (auf Aymara)", en: "Good morning! (in Aymara)", es: "¡Kamisaraki! Buenos días.", tip: "Aymara-Gruß „Kamisaraki“ – Antwort: „Waliki“", tipEn: "Aymara greeting „Kamisaraki“ – reply: „Waliki“" },
+    { id: "bo07", cat: "bolivia", lvl: 2, de: "Hallo! (Gruß auf Aymara)", en: "Hello! (greeting in Aymara)", es: "¡Kamisaraki!", tip: "Aymara-Gruß „Kamisaraki“ – Antwort: „Waliki“", tipEn: "Aymara greeting „Kamisaraki“ – reply: „Waliki“" },
     { id: "bo08", cat: "bolivia", lvl: 1, de: "Mir geht es gut, danke. (Antwort auf Aymara)", en: "I'm fine, thanks. (reply in Aymara)", es: "Waliki, gracias.", tip: "„Waliki“ heißt „gut/alles in Ordnung“ auf Aymara", tipEn: "„Waliki“ means „good/all well“ in Aymara" },
     { id: "bo09", cat: "bolivia", lvl: 1, de: "Wo kann ich Bolivianos abheben?", en: "Where can I withdraw bolivianos?", es: "¿Dónde puedo sacar bolivianos?", tip: "Währung: boliviano (Bs / BOB)", tipEn: "Currency: boliviano (Bs / BOB)" },
     { id: "bo10", cat: "bolivia", lvl: 2, de: "Können Sie mir Geld wechseln?", en: "Can you change money for me?", es: "¿Me puede cambiar dinero?", tip: "Wechselstuben heißen „casa de cambio“", tipEn: "Exchange offices are „casa de cambio“" },
@@ -2116,7 +2116,7 @@
     { id: "challenge42", category: "argentina", level: 1, textDe: "Teile mit jemandem einen Mate: biete ihn auf Spanisch an und sag erst „gracias“, wenn du wirklich keinen mehr möchtest.", textEn: "Share a mate with someone: offer it in Spanish and only say „gracias“ when you really don't want any more.", phraseEs: "¿Querés cebar un mate?" },
     { id: "challenge43", category: "argentina", level: 1, textDe: "Bestell in einer parrilla ein bife de chorizo und gib die Garstufe an (jugoso, a punto oder bien cocido).", textEn: "Order a bife de chorizo at a parrilla and state how you'd like it done (jugoso, a punto or bien cocido).", phraseEs: "Quiero un bife de chorizo, a punto, por favor." },
     // ----- Chile-Spezial -----
-    { id: "challenge44", category: "chile", level: 1, textDe: "Frag jemanden mit einem echten „¿cachái?“, ob er dich versteht.", textEn: "Ask someone with a real „¿cachái?“ whether they follow you.", phraseEs: "¿Me entendí? ¿Cachái?" },
+    { id: "challenge44", category: "chile", level: 1, textDe: "Frag jemanden mit einem echten „¿cachái?“, ob er dich versteht.", textEn: "Ask someone with a real „¿cachái?“ whether they follow you.", phraseEs: "¿Me entendís? ¿Cachái?" },
     { id: "challenge45", category: "chile", level: 2, textDe: "Bestell einen Completo wie ein Chilene – mit allem drauf.", textEn: "Order a completo like a Chilean – with everything on it.", phraseEs: "Un completo italiano, por favor." },
     // ----- Bolivien-Spezial -----
     { id: "challenge46", category: "bolivia", level: 1, textDe: "Bestell eine Salteña wie ein Local am Vormittag.", textEn: "Order a salteña like a local in the morning.", phraseEs: "Quisiera una salteña, por favor." },
@@ -2869,7 +2869,7 @@
       { day: 6, titleDe: "Tango, Smalltalk & Slang", titleEn: "Tango, small talk & slang",
         cardIds: ["ar04", "ar05", "ar19", "ar20", "ar39"], challengeId: null },
       { day: 7, titleDe: "Patagonien, Wein & Norden", titleEn: "Patagonia, wine & the north",
-        cardIds: ["ar28", "ar29", "ar30", "ar31", "ar32", "ar33"], challengeId: null },
+        cardIds: ["ar28", "ar29", "ar30", "ar31", "ar32", "ar33", "ar34", "ar35", "ar36", "ar37"], challengeId: null },
     ] },
     { scope: "chile", days: [
       { day: 1, titleDe: "Ankunft & chilenischer Gruß", titleEn: "Arrival & Chilean greeting",
@@ -2889,7 +2889,7 @@
     ] },
     { scope: "bolivia", days: [
       { day: 1, titleDe: "Ankunft in La Paz & Höhe", titleEn: "Arrival in La Paz & altitude",
-        cardIds: ["bo01", "bo02", "bo04", "bo05", "bo06", "bo39"], challengeId: null },
+        cardIds: ["bo01", "bo02", "bo03", "bo04", "bo05", "bo06", "bo39"], challengeId: null },
       { day: 2, titleDe: "Gruß auf Aymara & Smalltalk", titleEn: "Aymara greeting & small talk",
         cardIds: ["bo07", "bo08", "bo38", "bo33", "bo40"], challengeId: "challenge47" },
       { day: 3, titleDe: "Geld & unterwegs (Teleférico, Trufi)", titleEn: "Money & getting around (cable car, trufi)",
