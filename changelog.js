@@ -22,6 +22,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.70.0",
+      date: "2026-06-15",
+      title: "Politur: Paste-Hinweis & Barrierearmut",
+      items: [
+        "📋 Fügst du einen Text ein, der wie ein Aufgaben-Code aussieht (HRT1.…) sich aber nicht lesen lässt, bekommst du jetzt einen kurzen Hinweis – statt dass nichts passiert. Bei normalem Text bleibt das Einfügen weiterhin still.",
+        "♿ Ruta-Check: Der Fortschritt („Frage 3 von 12“) wird Screenreadern jetzt beim Weiterblättern angesagt, und die Antwort-Knöpfe sind als zusammengehörige Auswahl ausgezeichnet.",
+        "♿ Pre-Trip: Ein zugewiesenes, festgelegtes Reiseziel wird Screenreadern klar als solches benannt.",
+        "🛠️ Eine entfernte Aufgabe gilt erst dann als entfernt, wenn das Speichern wirklich geklappt hat (sonst kurzer Hinweis) – konsistent zum Hinzufügen.",
+      ],
+    },
+    {
       version: "1.69.0",
       date: "2026-06-15",
       title: "Angefangene Aufgaben heben sich ab",

@@ -2806,8 +2806,11 @@
 
   function removeSubscribedTask(idx) {
     if (idx < 0 || idx >= subscribedTasks.length) return;
-    subscribedTasks = subscribedTasks.filter((_, i) => i !== idx);
-    store.saveTasks(subscribedTasks);
+    const next = subscribedTasks.filter((_, i) => i !== idx);
+    // Persistenz prüfen (wie beim Hinzufügen): scheitert das Speichern, NICHT so tun,
+    // als wäre die Aufgabe weg – sonst taucht sie beim Neuladen wieder auf.
+    if (!store.saveTasks(next)) { showNotice(t("task.saveFailed")); return; }
+    subscribedTasks = next;
     render();
   }
 
@@ -4839,7 +4842,15 @@
     if (!el || el.id !== "task-code-input") return;
     setTimeout(function () {
       const v = String(el.value || "").trim();
-      if (v && store.decodeTask(v) && addSubscribedTask(v)) { el.value = ""; render(); }
+      if (!v) return;
+      if (store.decodeTask(v)) {
+        // Gültiger Code -> abonnieren (addSubscribedTask meldet selbst Dopplung/Fehler).
+        if (addSubscribedTask(v)) { el.value = ""; render(); }
+        return;
+      }
+      // Sieht wie ein Aufgaben-Code aus (HRT1.…), lässt sich aber nicht lesen ->
+      // kurzer Hinweis. Bei beliebigem Fremd-Text bleibt das Einfügen still.
+      if (v.indexOf("HRT1.") !== -1) showNotice(t("task.invalid"));
     }, 0);
   }
 

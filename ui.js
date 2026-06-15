@@ -2337,9 +2337,9 @@
     // Bei zugewiesener Aufgabe ist das Ziel fix -> nur ein nicht-klickbares Abzeichen.
     const dest = vm.locked
       ? `<div class="sl-chips sl-chips--locked">
-           <span class="sl-chip sl-chip--locked is-active" aria-current="true" style="--from:var(--brand);--to:var(--brand-ink)">📌 ${esc(vm.scopeLabel)}</span>
+           <span class="sl-chip sl-chip--locked is-active" role="status" aria-label="${esc(vm.scopeLabel + " – " + t("discover.pretripAssigned"))}" style="--from:var(--brand);--to:var(--brand-ink)"><span aria-hidden="true">📌 ${esc(vm.scopeLabel)}</span></span>
          </div>
-         <p class="pretrip-assigned">${esc(t("discover.pretripAssigned"))}</p>`
+         <p class="pretrip-assigned" aria-hidden="true">${esc(t("discover.pretripAssigned"))}</p>`
       : `<div class="sl-chips" role="group" aria-label="${esc(t("discover.pretripDestLabel"))}">${(vm.plans || []).map((p) =>
           `<button class="sl-chip ${p.active ? "is-active" : ""}" data-action="set-pretrip-scope" data-scope="${p.scope}"${p.active ? ' aria-current="true"' : ""}>${p.done ? "✓ " : ""}${esc(p.label)}</button>`
         ).join("")}</div>`;
@@ -2530,8 +2530,8 @@
     const pct = Math.round(((vm.index + 1) / (vm.total || 1)) * 100);
     const head = `
       <div class="pl-progress">
-        <div class="pl-progress__bar"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
-        <span class="pl-progress__label">${esc(t("placement.qOf", { i: vm.index + 1, n: vm.total }))} · ${esc(q.level)}</span>
+        <div class="pl-progress__bar" aria-hidden="true"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
+        <span class="pl-progress__label" role="status" aria-live="polite">${esc(t("placement.qOf", { i: vm.index + 1, n: vm.total }))} · ${esc(q.level)}</span>
       </div>`;
     const prompt = `
       <p class="pl-prompt">${esc(q.promptDe)}</p>
@@ -2541,7 +2541,7 @@
          <div class="teacher-actions">
            <button class="teacher-btn teacher-btn--main" data-action="placement-free-submit">${esc(t("placement.answer"))}</button>
          </div>`
-      : `<div class="pl-options">
+      : `<div class="pl-options" role="group" aria-label="${esc(t("placement.optionsLabel"))}">
            ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
          </div>`;
     const unknown = `<button class="pl-unknown" data-action="placement-unknown">🤷 ${esc(t("placement.unknown"))}</button>`;
