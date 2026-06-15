@@ -2156,6 +2156,7 @@
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
     else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
+    else if (state.screen === "printsheet") root.innerHTML = ui.renderPrintSheet(sheetVM());
     else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
     else if (state.screen === "placement") root.innerHTML = ui.renderPlacement(placementVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
@@ -2685,6 +2686,84 @@
     });
     render();
   }
+
+  // ----- Druckbares Aktivitätsblatt (Lehrkraft / Coordinator) -----
+  // Aus einem gewählten Ziel (Pre-Trip-Plan / Pre-Arrival-Paket / Kategorie) ein
+  // druckfertiges Blatt bauen: Wortschatz + Reisetipps, Stundenrezept, Real-Life
+  // Challenge und Selbst-Abo-Code/Link. Bei Pre-Trip-Plänen wahlweise das ganze
+  // Ziel (alle Etappen) ODER eine einzelne Etappe. window.print() macht das PDF.
+  const LVL_NAME = ["", "A1", "A2", "B1"];
+
+  function sheetTargetTask() {
+    const tgt = state.sheetTarget || (taskTargets()[0] || {}).value || "";
+    const parts = String(tgt).split(":");
+    return { value: tgt, kind: parts[0], scope: parts.slice(1).join(":") };
+  }
+
+  function sheetChallenge(id) {
+    const ch = id ? (data.CHALLENGES || []).find((c) => c.id === id) : null;
+    return ch ? { text: natk(ch, "textDe"), phrase: ch.phraseEs || "" } : null;
+  }
+
+  function sheetCardLine(c) {
+    const ctx = c.context || {};
+    return { es: c.es, de: natk(c, "de"), note: natk(ctx, "note") || "" };
+  }
+
+  function sheetVM() {
+    const tt = sheetTargetTask();
+    const task = { kind: tt.kind, scope: tt.scope, title: "" };
+    const isPretrip = tt.kind === "pretrip";
+    const plan = isPretrip ? pretripPlan(tt.scope) : null;
+    const stageSel = state.sheetStage || "all";
+    const stages = [];
+    let allCards = [];
+    if (isPretrip) {
+      (plan.days || []).filter((d) => stageSel === "all" || String(d.day) === String(stageSel)).forEach((d) => {
+        const cards = d.cardIds.map(cardById).filter(Boolean);
+        allCards = allCards.concat(cards);
+        stages.push({
+          heading: t("sheet.stageLabel", { day: d.day }) + ": " + natk(d, "titleDe"),
+          cards: cards.map(sheetCardLine),
+          challenge: sheetChallenge(d.challengeId),
+        });
+      });
+    } else {
+      const cards = taskCardsFor(task);
+      allCards = cards;
+      stages.push({ heading: null, cards: cards.map(sheetCardLine), challenge: null });
+    }
+    const lvls = allCards.map((c) => c.lvl).filter(Boolean);
+    const levelRange = lvls.length
+      ? (Math.min.apply(null, lvls) === Math.max.apply(null, lvls)
+          ? LVL_NAME[lvls[0]]
+          : LVL_NAME[Math.min.apply(null, lvls)] + "–" + LVL_NAME[Math.max.apply(null, lvls)])
+      : "";
+    // Selbst-Abo-Code für das GANZE Ziel (Schüler öffnen damit Plan/Paket in der App).
+    const code = store.encodeTask({ kind: tt.kind, scope: tt.scope, title: "", due: "" }) || "";
+    const stageOpts = isPretrip
+      ? [{ value: "all", label: t("sheet.allStages") }].concat(
+          (plan.days || []).map((d) => ({ value: String(d.day), label: t("sheet.stageLabel", { day: d.day }) + ": " + natk(d, "titleDe") })))
+      : null;
+    return {
+      targets: taskTargets(), sheetTarget: tt.value,
+      stageOpts: stageOpts, sheetStage: stageSel,
+      title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
+      stages: stages,
+      code: code, link: code ? taskShareLink(code) : "",
+      edition: editionInfo(), date: new Date().toISOString().slice(0, 10),
+    };
+  }
+
+  function openPrintSheet() {
+    dismissBadgeToast();
+    if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
+    if (!state.sheetStage) state.sheetStage = "all";
+    state.screen = "printsheet";
+    render();
+  }
+
+  function printSheet() { try { window.print(); } catch (e) { /* egal */ } }
 
   // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
   // Beschriftung & Klasse kurz tauschen und danach zurücksetzen.
@@ -4650,6 +4729,8 @@
     else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
     else if (action === "teacher-clear") clearTeacher();
     else if (action === "teacher-print") printTeacher();
+    else if (action === "open-printsheet") openPrintSheet();
+    else if (action === "printsheet-print") printSheet();
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
     else if (action === "task-copy-link") copyTaskLink();
@@ -4901,6 +4982,9 @@
     if (e.target && e.target.id === "task-target") { state.taskTarget = e.target.value; return; }
     if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
     if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
+    // Aktivitätsblatt: Ziel-/Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
+    if (e.target && e.target.id === "sheet-target") { state.sheetTarget = e.target.value; state.sheetStage = "all"; render(); return; }
+    if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; render(); return; }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);

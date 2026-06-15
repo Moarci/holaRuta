@@ -1760,8 +1760,40 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .teacher-x:hover { color: var(--brand-ink); }
 @media print {
-  .teacher-actions, .teacher-x, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result { display: none !important; }
+  .teacher-actions, .teacher-x, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
+  .no-print, .sheet-controls { display: none !important; }
+  /* Aktivitätsblatt randlos, schwarz auf weiß drucken (unabhängig vom Theme). */
+  .screen { padding: 0 !important; }
+  .sheet { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; }
 }
+
+/* Druckbares Aktivitätsblatt (Lehrkraft/Coordinator). Bewusst feste, helle
+   Dokumentfarben – ein Blatt ist immer hell, egal welches App-Theme aktiv ist. */
+.sheet-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 14px; }
+.sheet {
+  background: #fff; color: #1c140e; border: 1px solid var(--line);
+  border-radius: var(--r-md, 12px); padding: 22px 24px; max-width: 760px;
+  margin: 0 auto; line-height: 1.5;
+}
+.sheet-head { border-bottom: 2px solid #1c140e; padding-bottom: 8px; margin-bottom: 14px; }
+.sheet-title { font-size: 1.5rem; margin: 0 0 2px; color: #1c140e; }
+.sheet-meta, .sheet-credit { color: #6b5a4c; font-size: 0.85rem; margin: 0; }
+.sheet-credit { margin-top: 2px; }
+.sheet-h2 { font-size: 1.05rem; margin: 16px 0 6px; color: #1c140e; border-bottom: 1px solid #ddd; padding-bottom: 2px; }
+.sheet-goal { margin: 8px 0; }
+.sheet-recipe, .sheet-cards { margin: 6px 0; padding-left: 1.4em; }
+.sheet-recipe li { margin: 3px 0; }
+.sheet-cards li { margin: 7px 0; break-inside: avoid; }
+.sheet-es { display: block; font-weight: 700; color: #1c140e; }
+.sheet-de { display: block; color: #3a2c22; }
+.sheet-note { display: block; font-size: 0.85rem; color: #6b5a4c; }
+.sheet-stage { font-size: 1rem; margin: 14px 0 4px; color: #a23e20; break-after: avoid; }
+.sheet-challenge { background: #f6efe3; border-left: 3px solid #c2502e; padding: 6px 10px; margin: 6px 0 12px; border-radius: 4px; break-inside: avoid; }
+.sheet-sub { font-size: 0.9rem; color: #3a2c22; margin: 4px 0; }
+.sheet-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.8rem; word-break: break-all; background: #f3ece0; padding: 8px 10px; border-radius: 6px; margin: 6px 0; }
+.sheet-link { font-size: 0.8rem; word-break: break-all; color: #2f6b70; margin: 2px 0; }
+.sheet-subscribe, .sheet-recipe-box { break-inside: avoid; }
+.sheet-coord { margin-top: 16px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 0.88rem; color: #3a2c22; }
 
 /* Aufgaben/Zuweisung (backend-frei) */
 .teacher-sep { border: none; border-top: 1px solid var(--line); margin: 22px 0 8px; }

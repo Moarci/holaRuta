@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.73.0",
+      date: "2026-06-15",
+      title: "Druckbares Aktivitätsblatt für Lehrkraft & Reiseleitung 📄",
+      items: [
+        "📄 Neu im Modo profe: „Aktivitätsblatt erstellen“ – ein druckfertiges Unterrichts-/Aktivitätsblatt zu jedem Ziel (Pre-Trip-Plan, Pre-Arrival-Paket oder Kategorie), wahlweise das ganze Ziel oder eine einzelne Etappe.",
+        "🖨️ Das Blatt enthält Lernziel, Stundenrezept (Lernen → Kontext → Rollenspiel → Real-Life Challenge), den Wortschatz mit Reisetipps je Karte, die passende Real-Life Challenge sowie den Aufgaben-Code + Link zum Selbst-Abonnieren. Über „Drucken“ als PDF speicherbar.",
+      ],
+    },
+    {
       version: "1.72.0",
       date: "2026-06-15",
       title: "Cartagena-Pack: Review-Feinschliff & Dashboard-Kachel",

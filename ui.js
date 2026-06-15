@@ -2437,8 +2437,96 @@
         ${body}
         <hr class="teacher-sep">
         ${taskForm}
+        <hr class="teacher-sep">
+        <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
+        <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+        </div>
       </section>
       ${withTab ? tabbar("tarea") : ""}`;
+  }
+
+  // Druckbares Aktivitätsblatt (Lehrkraft/Coordinator): oben eine NICHT gedruckte
+  // Steuerleiste (Ziel-/Etappenwahl + Drucken), darunter das druckoptimierte Blatt.
+  // window.print() macht daraus ein PDF; @media print blendet alles außer .sheet aus.
+  function renderPrintSheet(vm) {
+    const grp = (g) => (vm.targets || []).filter((x) => x.group === g)
+      .map((x) => `<option value="${esc(x.value)}"${x.value === vm.sheetTarget ? " selected" : ""}>${esc(x.label)}</option>`).join("");
+    const stagePick = vm.stageOpts
+      ? `<select id="sheet-stage" class="task-input" aria-label="${esc(t("sheet.stageSelect"))}">
+           ${vm.stageOpts.map((o) => `<option value="${esc(o.value)}"${o.value === vm.sheetStage ? " selected" : ""}>${esc(o.label)}</option>`).join("")}
+         </select>`
+      : "";
+    const controls = `
+      <div class="sheet-controls no-print">
+        <select id="sheet-target" class="task-input" aria-label="${esc(t("sheet.targetSelect"))}">
+          <optgroup label="${esc(t("teacher.grpPretrip"))}">${grp("pretrip")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
+        </select>
+        ${stagePick}
+        <button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>
+      </div>`;
+
+    const stagesHtml = (vm.stages || []).map((st) => `
+      ${st.heading ? `<h3 class="sheet-stage">${esc(st.heading)}</h3>` : ""}
+      <ol class="sheet-cards">
+        ${st.cards.map((c) => `<li>
+          <span class="sheet-es" lang="es">${esc(c.es)}</span>
+          <span class="sheet-de">${esc(c.de)}</span>
+          ${c.note ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
+        </li>`).join("")}
+      </ol>
+      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${st.challenge.phrase ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
+    `).join("");
+
+    const credit = vm.edition && vm.edition.name ? esc(vm.edition.name) + " · " + esc(t("profile.poweredBy")) : "HolaRuta";
+
+    const sheet = `
+      <article class="sheet">
+        <header class="sheet-head">
+          <h1 class="sheet-title">${esc(vm.title)}</h1>
+          <p class="sheet-meta">${vm.levelRange ? esc(vm.levelRange) + " · " : ""}${esc(t("sheet.cardCount", { n: vm.cardCount }))} · ${esc(vm.date)}</p>
+          <p class="sheet-credit">${credit}</p>
+        </header>
+
+        <p class="sheet-goal"><strong>${esc(t("sheet.goalLabel"))}:</strong> ${esc(t("sheet.goalText"))}</p>
+
+        <section class="sheet-recipe-box">
+          <h2 class="sheet-h2">${esc(t("sheet.recipeHeading"))}</h2>
+          <ol class="sheet-recipe">
+            <li>${esc(t("sheet.recipe1"))}</li>
+            <li>${esc(t("sheet.recipe2"))}</li>
+            <li>${esc(t("sheet.recipe3"))}</li>
+            <li>${esc(t("sheet.recipe4"))}</li>
+          </ol>
+        </section>
+
+        <section class="sheet-vocab">
+          <h2 class="sheet-h2">${esc(t("sheet.vocabHeading"))}</h2>
+          ${stagesHtml}
+        </section>
+
+        ${vm.code ? `
+        <section class="sheet-subscribe">
+          <h2 class="sheet-h2">${esc(t("sheet.subscribeHeading"))}</h2>
+          <p class="sheet-sub">${esc(t("sheet.subscribeHint"))}</p>
+          <p class="sheet-code">${esc(vm.code)}</p>
+          ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
+        </section>` : ""}
+
+        <footer class="sheet-coord">
+          <strong>${esc(t("sheet.coordHeading"))}:</strong> ${esc(t("sheet.coordNote"))}
+        </footer>
+      </article>`;
+
+    return `
+      <section class="screen">
+        ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher")}
+        ${controls}
+        ${sheet}
+      </section>`;
   }
 
   // Lernenden-Seite: mehrere abonnierte Aufgaben (parallel), plus Code-Eingabe zum
@@ -3768,7 +3856,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement, renderPrintSheet,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
