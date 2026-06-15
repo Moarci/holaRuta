@@ -83,6 +83,26 @@
 
   installed = standalone();
 
+  // Best effort: Manche Browser (Chrome/Android) verraten über
+  // getInstalledRelatedApps(), dass HolaRuta bereits installiert ist – selbst
+  // wenn man die Seite gerade in einem normalen Browser-Tab offen hat (also
+  // NICHT im standalone-App-Fenster). Ohne diese Prüfung würde dort
+  // irreführend „Noch nicht installiert" stehen, obwohl das App-Icon längst da
+  // ist. Voraussetzung ist der related_applications-Selbstverweis im Manifest;
+  // wird die API nicht unterstützt oder liefert nichts, bleibt alles wie bisher.
+  function probeInstalled() {
+    if (installed || typeof navigator.getInstalledRelatedApps !== "function") return;
+    navigator.getInstalledRelatedApps().then((apps) => {
+      if (apps && apps.some((a) => a && a.platform === "webapp")) {
+        installed = true;
+        deferred = null;
+        if (onChange) onChange();
+      }
+    }).catch(() => { /* unsupported / Berechtigung -> still ignorieren */ });
+  }
+
+  if (hosted() && !installed) probeInstalled();
+
   // Android/Chromium: Mini-Infobar unterdrücken und Event für unseren Knopf merken.
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
