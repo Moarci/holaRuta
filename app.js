@@ -708,6 +708,25 @@
     return isBoliviaDest(t && t.destination) || isBoliviaDest(cfg && cfg.defaultDestination);
   }
 
+  // ----- Link-Parameter lesen/aufräumen (für geteilte Onboarding-Links) -----
+  function urlParam(name) {
+    try {
+      var search = (location.search && location.search.length > 1) ? location.search : "";
+      if (!search && location.hash && location.hash.indexOf("=") >= 0) search = location.hash.replace(/^#/, "?");
+      return (new URLSearchParams(search).get(name) || "").toLowerCase();
+    } catch (e) { return ""; }
+  }
+  function stripUrlParam(name) {
+    try {
+      if (!window.history || !history.replaceState || !location.search) return;
+      var p = new URLSearchParams(location.search);
+      if (!p.has(name)) return;
+      p.delete(name);
+      var qs = p.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + (location.hash || ""));
+    } catch (e) { /* egal */ }
+  }
+
   // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----
   // Überschreibt nur den Akzent (--brand/--brand-ink, wirkt in Hell & Dunkel) und
   // die theme-color-Meta; NICHT --page, damit der Hell/Dunkel-Rahmen intakt bleibt.
@@ -4790,6 +4809,12 @@
     } else {
       state.screen = "onboarding";
     }
+  }
+  // Geteilter Link einer Schule/Partnerfirma (?start=onboarding): immer ins Onboarding
+  // – auch auf einem Bestandsgerät. Branding kommt aus der Edition (?edition=…, registry.js).
+  if (urlParam("start") === "onboarding") {
+    state.screen = "onboarding";
+    stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
   render();
   registerServiceWorker();

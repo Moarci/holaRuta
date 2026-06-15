@@ -703,23 +703,32 @@ test("data.PRESETS: jede Preset-ID existiert, scope gültig, keine Dubletten", (
 });
 
 // ---------- Editionen (Co-Branding) ----------
-test("editions: jede Edition-Config ist valide", () => {
+test("editions: Registry-Configs valide + Anker-Dateien zeigen darauf", () => {
   const fs = require("fs");
   const dir = path.join(SRC, "editions");
-  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".js"));
-  assert.ok(files.length > 0, "keine Editionen gefunden");
-  files.forEach((f) => {
-    const code = fs.readFileSync(path.join(dir, f), "utf8");
-    const w = {};
-    new Function("window", code)(w); // isoliert ausführen, kein globaler Seiteneffekt
-    const c = w.SC && w.SC.editionConfig;
-    assert.ok(c && c.edition, `${f}: edition fehlt`);
-    assert.ok(c.brandName, `${f}: brandName fehlt`);
+  // 1) registry.js = Quelle der Wahrheit für alle Editionen.
+  const w = {};
+  new Function("window", fs.readFileSync(path.join(dir, "registry.js"), "utf8"))(w);
+  const editions = w.SC && w.SC.editions;
+  assert.ok(editions && Object.keys(editions).length > 0, "keine Editionen in der Registry");
+  Object.keys(editions).forEach((id) => {
+    const c = editions[id];
+    assert.equal(c && c.edition, id, `${id}: edition-Feld stimmt nicht mit Schlüssel überein`);
+    assert.ok(c.brandName, `${id}: brandName fehlt`);
     if (c.accent) {
       ["brand", "brandInk"].forEach((k) =>
-        assert.match(String(c.accent[k] || ""), /^#[0-9a-fA-F]{6}$/, `${f}: accent.${k} kein Hex`));
+        assert.match(String(c.accent[k] || ""), /^#[0-9a-fA-F]{6}$/, `${id}: accent.${k} kein Hex`));
     }
-    if (c.partner) assert.ok(c.partner.name, `${f}: partner.name fehlt`);
+    if (c.partner) assert.ok(c.partner.name, `${id}: partner.name fehlt`);
+    if (c.logo) assert.match(String(c.logo), /^(https:\/\/|data:image\/)/, `${id}: logo nur https:/data:image erlaubt`);
+  });
+  // 2) Anker-Dateien (ecos.js/weroad.js) setzen editionConfig aus der Registry.
+  fs.readdirSync(dir).filter((f) => f.endsWith(".js") && f !== "registry.js").forEach((f) => {
+    const w2 = { SC: { editions } }; // Registry ist im Build VOR dem Anker geladen
+    new Function("window", fs.readFileSync(path.join(dir, f), "utf8"))(w2);
+    const c = w2.SC.editionConfig;
+    assert.ok(c && c.edition, `${f}: editionConfig nicht aus Registry gesetzt`);
+    assert.ok(editions[c.edition], `${f}: zeigt auf unbekannte Edition ${c.edition}`);
   });
 });
 

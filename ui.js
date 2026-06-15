@@ -215,9 +215,20 @@
   // Trip-Ziel ab (überspringbar), damit der Countdown direkt motiviert.
   function renderOnboarding(vm) {
     const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
+    // Partner-Branding zuerst: in einer Edition (auch per Link ?edition=…) das Logo
+    // + den Namen oben zeigen, sonst nur die HolaRuta-Begrüßung.
+    const e = vm.edition;
+    const logoOk = e && e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
+    const brand = e
+      ? `<div class="onboarding__brand">
+           ${logoOk ? `<img class="onboarding__logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />` : ""}
+           ${e.partner && e.partner.name ? `<p class="onboarding__partner">${esc(e.partner.name)}</p>` : ""}
+         </div>`
+      : "";
     return `
       <section class="screen onboarding">
         <div class="onboarding__inner">
+          ${brand}
           <h1 class="onboarding__title">🧭 ${esc(t("home.onboardTitle"))}</h1>
           <p class="onboarding__intro">${esc(t("home.onboardIntro"))}</p>
           ${tripForm(vm.trip, skip)}

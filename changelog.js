@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.54.0",
+      date: "2026-06-15",
+      title: "Gebrandeter Einstiegslink: direkt ins Onboarding, mit Partner-Logo",
+      items: [
+        "🔗 Eine Schule oder Partnerfirma kann jetzt EINEN Link verschicken, der die App direkt im Onboarding öffnet – inkl. Reiseziel und Ruta-Check. Parameter: ?start=onboarding (und ?edition=… fürs Branding).",
+        "🎨 Branding per Link: ?edition=ecos bzw. ?edition=weroad öffnet die App in den Farben, mit Namen und Logo des Partners – ohne eine eigene Datei zu verteilen. Eine fest gebaute Edition lässt sich per URL nicht überschreiben.",
+        "🏷️ Das Partner-Logo erscheint beim ersten Start (Onboarding) oben – nicht nur im Profil.",
+      ],
+    },
+    {
       version: "1.53.0",
       date: "2026-06-15",
       title: "Ruta-Check: fairere Einstufung + Qualitäts-Hinweis",

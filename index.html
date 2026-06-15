@@ -64,7 +64,9 @@
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
-  <!-- Marken-/Edition-Konfiguration zuerst (Standard = HolaRuta pur). -->
+  <!-- Edition-Verzeichnis zuerst: erlaubt Partner-Branding per Link (?edition=ecos). -->
+  <script src="editions/registry.js"></script>
+  <!-- Marken-/Edition-Konfiguration (Standard = HolaRuta pur; Edition aus Registry/URL). -->
   <script src="config.js"></script>
   <!-- Mehrsprachigkeit zuerst: Engine + UI-Wörterbuch, damit t()/nativeText überall stehen. -->
   <script src="i18n.js"></script>

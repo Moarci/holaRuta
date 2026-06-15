@@ -2481,6 +2481,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .onboarding { min-height: 70vh; justify-content: center; }
 .onboarding__inner { display: flex; flex-direction: column; gap: 12px; max-width: 28rem; margin: 0 auto; width: 100%; }
 .onboarding__title { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; line-height: 1.2; margin: 0; }
+/* Partner-Branding im Onboarding (Edition / geteilter Link). */
+.onboarding__brand { text-align: center; margin: 0 0 4px; }
+.onboarding__logo { display: block; max-height: 48px; max-width: 70%; margin: 0 auto 6px; }
+.onboarding__partner { margin: 0; font-weight: 800; font-size: 0.9rem; color: var(--brand-ink); letter-spacing: 0.02em; }
 .onboarding__intro { color: var(--muted); margin: 0 0 4px; }
 
 /* Streckenkarte (Statistik): Lernfortschritt als Bus-Strecke. */

@@ -2519,6 +2519,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .onboarding { min-height: 70vh; justify-content: center; }
 .onboarding__inner { display: flex; flex-direction: column; gap: 12px; max-width: 28rem; margin: 0 auto; width: 100%; }
 .onboarding__title { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; line-height: 1.2; margin: 0; }
+/* Partner-Branding im Onboarding (Edition / geteilter Link). */
+.onboarding__brand { text-align: center; margin: 0 0 4px; }
+.onboarding__logo { display: block; max-height: 48px; max-width: 70%; margin: 0 auto 6px; }
+.onboarding__partner { margin: 0; font-weight: 800; font-size: 0.9rem; color: var(--brand-ink); letter-spacing: 0.02em; }
 .onboarding__intro { color: var(--muted); margin: 0 0 4px; }
 
 /* Streckenkarte (Statistik): Lernfortschritt als Bus-Strecke. */
@@ -2631,7 +2635,71 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
-  <!-- Marken-/Edition-Konfiguration zuerst (Standard = HolaRuta pur). -->
+  <!-- Edition-Verzeichnis zuerst: erlaubt Partner-Branding per Link (?edition=ecos). -->
+<script>
+/*
+ * editions/registry.js – Verzeichnis aller Co-Branding-Editionen (QUELLE DER WAHRHEIT)
+ * + Laufzeit-Auswahl per Link.
+ *
+ * Zweck: Eine Schule/Partnerfirma kann EINEN Link verschicken, der die App in ihrem
+ * Branding (Logo, Farben, Name) öffnet – ohne eine eigene Datei zu verteilen:
+ *     https://…/holaRuta/?edition=ecos
+ * und optional direkt ins Onboarding (siehe app.js, Parameter `start=onboarding`):
+ *     https://…/holaRuta/?edition=ecos&start=onboarding
+ *
+ * Lädt VOR config.js. Ist bereits eine Edition fest eingebaut (Edition-Build via
+ * `node build.js --edition=ecos`), bleibt diese gesetzt – der URL-Parameter kann eine
+ * fest gebaute Edition NICHT überschreiben.
+ *
+ * Hinweis: Demo-Logos sind nachgebaute Wortmarken (kein Original-Asset). Vor einer
+ * Veröffentlichung durch das echte, freigegebene Logo ersetzen ODER logo:null setzen.
+ */
+(function () {
+  "use strict";
+  var SC = window.SC || (window.SC = {});
+
+  var EDITIONS = {
+    ecos: {
+      edition: "ecos",
+      brandName: "HolaRuta · ECOS",
+      // Karibik-Teal als thematischer Akzent (Cartagena). NÄHERUNG – bei Freigabe ersetzen.
+      accent: { brand: "#1F7A8C", brandInk: "#155C69" },
+      partner: { name: "ECOS · Cartagena" }, // url erst mit Partner-Freigabe
+      logo: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMzIgNzIiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iRUNPUyBFc2N1ZWxhIGRlIEVzcGFub2wiPjx0ZXh0IHg9IjAiIHk9IjQ0IiBmb250LWZhbWlseT0iR2VvcmdpYSxUaW1lcyxzZXJpZiIgZm9udC1zaXplPSI0NiIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjYiIGZpbGw9IiMxRjdBOEMiPkVDT1M8L3RleHQ+PHRleHQgeD0iMyIgeT0iNjQiIGZvbnQtZmFtaWx5PSJWZXJkYW5hLEdlbmV2YSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iNjAwIiBsZXR0ZXItc3BhY2luZz0iMiIgZmlsbD0iIzE1NUM2OSI+RXNjdWVsYSBkZSBFc3BhJiMyNDE7b2w8L3RleHQ+PC9zdmc+",
+      defaultDestination: "Cartagena",
+      sync: { enabled: false, apiBase: "https://sync.example-ecos.org", orgLabel: "ECOS Cartagena" },
+      taskTab: true,
+      teacherTab: true,
+    },
+    weroad: {
+      edition: "weroad",
+      brandName: "HolaRuta · WeRoad Colombia",
+      // Lebhaftes Koralle nahe WeRoads Markenauftritt. NÄHERUNG – bei Freigabe ersetzen.
+      accent: { brand: "#FB5A47", brandInk: "#D33A2C" },
+      partner: { name: "WeRoad Colombia" }, // url erst mit Partner-Freigabe
+      logo: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMzIgNDgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iV2VSb2FkIj48dGV4dCB4PSIwIiB5PSIzNyIgZm9udC1mYW1pbHk9IlZlcmRhbmEsR2VuZXZhLFRhaG9tYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iNzAwIiBsZXR0ZXItc3BhY2luZz0iLTEuNSIgZmlsbD0iI0ZCNUE0NyI+V2VSb2FkPC90ZXh0Pjwvc3ZnPg==",
+      defaultDestination: "Colombia",
+      sync: { enabled: false, apiBase: "https://sync.example-weroad.com", orgLabel: "WeRoad Colombia" },
+      taskTab: true,
+      teacherTab: true,
+    },
+  };
+
+  SC.editions = EDITIONS;
+
+  // Laufzeit-Auswahl per ?edition=… (oder #edition=…) – nur wenn nicht fest gebaut.
+  if (!SC.editionConfig) {
+    try {
+      var search = (location.search && location.search.length > 1) ? location.search : "";
+      if (!search && location.hash && location.hash.indexOf("=") >= 0) search = location.hash.replace(/^#/, "?");
+      var id = (new URLSearchParams(search).get("edition") || "").toLowerCase();
+      if (id && EDITIONS[id]) SC.editionConfig = EDITIONS[id];
+    } catch (e) { /* URL/URLSearchParams fehlt – ohne Edition starten */ }
+  }
+})();
+
+</script>
+  <!-- Marken-/Edition-Konfiguration (Standard = HolaRuta pur; Edition aus Registry/URL). -->
 <script>
 /*
  * config.js  (SC.config) – Marken-/Edition-Konfiguration.
@@ -19116,6 +19184,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.54.0",
+      date: "2026-06-15",
+      title: "Gebrandeter Einstiegslink: direkt ins Onboarding, mit Partner-Logo",
+      items: [
+        "🔗 Eine Schule oder Partnerfirma kann jetzt EINEN Link verschicken, der die App direkt im Onboarding öffnet – inkl. Reiseziel und Ruta-Check. Parameter: ?start=onboarding (und ?edition=… fürs Branding).",
+        "🎨 Branding per Link: ?edition=ecos bzw. ?edition=weroad öffnet die App in den Farben, mit Namen und Logo des Partners – ohne eine eigene Datei zu verteilen. Eine fest gebaute Edition lässt sich per URL nicht überschreiben.",
+        "🏷️ Das Partner-Logo erscheint beim ersten Start (Onboarding) oben – nicht nur im Profil.",
+      ],
+    },
+    {
       version: "1.53.0",
       date: "2026-06-15",
       title: "Ruta-Check: fairere Einstufung + Qualitäts-Hinweis",
@@ -19906,9 +19984,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Trip-Ziel ab (überspringbar), damit der Countdown direkt motiviert.
   function renderOnboarding(vm) {
     const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
+    // Partner-Branding zuerst: in einer Edition (auch per Link ?edition=…) das Logo
+    // + den Namen oben zeigen, sonst nur die HolaRuta-Begrüßung.
+    const e = vm.edition;
+    const logoOk = e && e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
+    const brand = e
+      ? `<div class="onboarding__brand">
+           ${logoOk ? `<img class="onboarding__logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />` : ""}
+           ${e.partner && e.partner.name ? `<p class="onboarding__partner">${esc(e.partner.name)}</p>` : ""}
+         </div>`
+      : "";
     return `
       <section class="screen onboarding">
         <div class="onboarding__inner">
+          ${brand}
           <h1 class="onboarding__title">🧭 ${esc(t("home.onboardTitle"))}</h1>
           <p class="onboarding__intro">${esc(t("home.onboardIntro"))}</p>
           ${tripForm(vm.trip, skip)}
@@ -24126,6 +24215,25 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return isBoliviaDest(t && t.destination) || isBoliviaDest(cfg && cfg.defaultDestination);
   }
 
+  // ----- Link-Parameter lesen/aufräumen (für geteilte Onboarding-Links) -----
+  function urlParam(name) {
+    try {
+      var search = (location.search && location.search.length > 1) ? location.search : "";
+      if (!search && location.hash && location.hash.indexOf("=") >= 0) search = location.hash.replace(/^#/, "?");
+      return (new URLSearchParams(search).get(name) || "").toLowerCase();
+    } catch (e) { return ""; }
+  }
+  function stripUrlParam(name) {
+    try {
+      if (!window.history || !history.replaceState || !location.search) return;
+      var p = new URLSearchParams(location.search);
+      if (!p.has(name)) return;
+      p.delete(name);
+      var qs = p.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + (location.hash || ""));
+    } catch (e) { /* egal */ }
+  }
+
   // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----
   // Überschreibt nur den Akzent (--brand/--brand-ink, wirkt in Hell & Dunkel) und
   // die theme-color-Meta; NICHT --page, damit der Hell/Dunkel-Rahmen intakt bleibt.
@@ -28208,6 +28316,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     } else {
       state.screen = "onboarding";
     }
+  }
+  // Geteilter Link einer Schule/Partnerfirma (?start=onboarding): immer ins Onboarding
+  // – auch auf einem Bestandsgerät. Branding kommt aus der Edition (?edition=…, registry.js).
+  if (urlParam("start") === "onboarding") {
+    state.screen = "onboarding";
+    stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
   render();
   registerServiceWorker();
