@@ -275,8 +275,24 @@
       showArgentinaPreset: tripMentionsArgentina(), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
       showChilePreset: tripMentionsChile(),       // Pre-Arrival-Kachel nur bei Chile-Bezug
       showBoliviaPreset: tripMentionsBolivia(),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
-      // Welche Pre-Arrival-Pakete sind absolviert (alle Karten einmal gelernt)? -> Häkchen.
-      presetDone: (function () { const m = {}; (data.PRESETS || []).forEach((p) => { m[p.id] = taskDone({ kind: "preset", scope: p.id }); }); return m; })(),
+      // Status der Pre-Arrival-Pakete (Häkchen + „12/40"-Fortschritt). Nur für die
+      // tatsächlich SICHTBAREN Kacheln rechnen (spart Arbeit pro Render).
+      presetStatus: (function () {
+        const m = {};
+        const shown = {
+          "prearrival-co": tripMentionsColombia(), "prearrival-pe": tripMentionsPeru(),
+          "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
+          "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
+          "prearrival-ar": tripMentionsArgentina(), "prearrival-cl": tripMentionsChile(),
+          "prearrival-bo": tripMentionsBolivia(),
+        };
+        (data.PRESETS || []).forEach((p) => {
+          if (!shown[p.id]) return;
+          const prog = taskProgress({ kind: "preset", scope: p.id });
+          m[p.id] = { done: prog.total > 0 && prog.seen >= prog.total, seen: prog.seen, total: prog.total };
+        });
+        return m;
+      })(),
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
@@ -2813,31 +2829,52 @@
     if (addSubscribedTask(el ? el.value : "")) { if (el) el.value = ""; render(); }
   }
 
-  // Ist eine zugewiesene Aufgabe „absolviert"? Pre-Trip-Plan: alle Etappen geschafft;
-  // Pre-Arrival-/ganzes Paket: alle zugehörigen Karten mindestens einmal gelernt
-  // (gesehen) – konsistent mit dem „einmal durch"-Maßstab des Pre-Trip-Plans.
+  // Die zu einer Aufgabe gehörenden Karten (Preset = kuratierte Liste, Kategorie =
+  // ganzes Paket). Für Pre-Trip-Pläne zählen wir Etappen statt Karten (siehe taskProgress).
+  function taskCardsFor(task) {
+    if (!task) return [];
+    if (task.kind === "preset") {
+      const p = (data.PRESETS || []).find((x) => x.id === task.scope);
+      return p ? p.pick.map(cardById).filter(Boolean) : [];
+    }
+    if (task.kind === "category") return (data.CARDS || []).filter((c) => c.cat === task.scope);
+    return [];
+  }
+
+  // Fortschritt einer Aufgabe als { seen, total, kind }. Pre-Trip-Plan: geschaffte
+  // Etappen / alle Etappen. Sonst: gelernte (mind. einmal gesehene) Karten / alle.
+  function taskProgress(task) {
+    if (task && task.kind === "pretrip") {
+      const plan = pretripPlan(task.scope);
+      const total = plan.days.length;
+      const seen = plan.days.filter((d) => pretripDone(plan.scope, d.day)).length;
+      return { seen, total, kind: "stages" };
+    }
+    const cards = taskCardsFor(task);
+    const seen = cards.reduce((n, c) => n + ((stats.cardSummary(progress[c.id]).seen || 0) > 0 ? 1 : 0), 0);
+    return { seen, total: cards.length, kind: "cards" };
+  }
+
+  // Ist eine Aufgabe „absolviert"? = alle Etappen bzw. alle Karten einmal durch.
   function taskDone(task) {
     if (!task) return false;
     if (task.kind === "pretrip") return planAllDone(pretripPlan(task.scope));
-    let cards;
-    if (task.kind === "preset") {
-      const p = (data.PRESETS || []).find((x) => x.id === task.scope);
-      cards = p ? p.pick.map(cardById).filter(Boolean) : [];
-    } else { // category = ganzes Themen-Paket
-      cards = (data.CARDS || []).filter((c) => c.cat === task.scope);
-    }
-    if (!cards.length) return false;
-    return cards.every((c) => (stats.cardSummary(progress[c.id]).seen || 0) > 0);
+    const p = taskProgress(task);
+    return p.total > 0 && p.seen >= p.total;
   }
 
   function taskVM() {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, mit der Frist (Datums-String) vergleichbar
     return {
-      tasks: subscribedTasks.map((tk, i) => ({
-        idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
-        overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
-        done: taskDone(tk),                    // absolviert? -> optisch als erledigt markieren
-      })),
+      tasks: subscribedTasks.map((tk, i) => {
+        const prog = taskProgress(tk);
+        return {
+          idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
+          overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
+          done: prog.total > 0 && prog.seen >= prog.total, // absolviert? -> als erledigt markieren
+          seen: prog.seen, total: prog.total, progressKind: prog.kind, // „12/40" / „3/7 Etappen"
+        };
+      }),
     };
   }
 

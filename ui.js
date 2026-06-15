@@ -246,7 +246,8 @@
     const brand = e
       ? `<div class="onboarding__brand">
            ${logoOk ? `<img class="onboarding__logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />` : ""}
-           ${e.partner && e.partner.name ? `<p class="onboarding__partner">${esc(e.partner.name)}</p>` : ""}
+           ${e.partner && e.partner.name ? `<p class="onboarding__partner">${esc(e.partner.name)}</p>
+           <p class="onboarding__powered">${esc(t("profile.poweredBy"))}</p>` : ""}
          </div>`
       : "";
     return `
@@ -344,11 +345,14 @@
       { id: "prearrival-bo", show: vm.showBoliviaPreset, titleKey: "home.presetBoTitle", subKey: "home.presetBoSub" },
     ];
     const presetCards = PRESET_CARDS.filter((p) => p.show).map((p) => {
-      const done = !!(vm.presetDone && vm.presetDone[p.id]);
+      const st = (vm.presetStatus && vm.presetStatus[p.id]) || { done: false, seen: 0, total: 0 };
+      const sub = st.done ? t("home.presetDoneSub")
+        : (st.seen > 0 && st.total > 0) ? t("home.presetProgress", { seen: st.seen, total: st.total })
+        : t(p.subKey);
       return `
-      <button class="today__ruta${done ? " today__ruta--done" : ""}" data-action="open-preset" data-preset="${p.id}">
-        <span class="today__ruta-main">${done ? "✓ " : ""}${esc(t(p.titleKey))}${done ? ` <span class="today__ruta-badge">${esc(t("home.presetDone"))}</span>` : ""}</span>
-        <span class="today__ruta-sub">${esc(done ? t("home.presetDoneSub") : t(p.subKey))}</span>
+      <button class="today__ruta${st.done ? " today__ruta--done" : ""}" data-action="open-preset" data-preset="${p.id}">
+        <span class="today__ruta-main">${st.done ? "✓ " : ""}${esc(t(p.titleKey))}${st.done ? ` <span class="today__ruta-badge" role="status">${esc(t("home.presetDone"))}</span>` : ""}</span>
+        <span class="today__ruta-sub">${esc(sub)}</span>
       </button>`;
     }).join("");
 
@@ -2444,10 +2448,11 @@
       ? `<p class="sectioncap">${esc(t("task.yours", { n: tasks.length }))}</p>
          <ul class="task-list">
            ${tasks.map((tk) => `
-             <li class="task-item${tk.done ? " task-item--done" : ""}">
+             <li class="task-item${tk.done ? " task-item--done" : ""}"${tk.done ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.done"))}"` : ""}>
                <div class="task-item__body">
-                 <span class="task-item__target">${tk.done ? "✅" : "🎯"} ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge">${esc(t("task.done"))}</span>` : ""}</span>
+                 <span class="task-item__target"><span aria-hidden="true">${tk.done ? "✅" : "🎯"}</span> ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge" role="status" title="${esc(t("task.doneHint"))}">${esc(t("task.done"))}</span>` : ""}</span>
                  ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
+                 ${!tk.done && tk.total > 0 ? `<span class="task-item__progress">${esc(t(tk.progressKind === "stages" ? "task.progStages" : "task.progCards", { seen: tk.seen, total: tk.total }))}</span>` : ""}
                  ${tk.due ? `<span class="task-item__due${tk.overdue && !tk.done ? " is-overdue" : ""}">${esc(t(tk.overdue && !tk.done ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
                </div>
                <div class="task-item__actions">
@@ -2465,7 +2470,8 @@
       <div class="teacher-actions">
         <button class="teacher-btn teacher-btn--main" data-action="task-open">➕ ${esc(t("task.add"))}</button>
         <button class="teacher-btn" data-action="task-paste">📋 ${esc(t("task.paste"))}</button>
-      </div>`;
+      </div>
+      <p class="task-paste-hint">${esc(t("task.pasteHelp"))}</p>`;
     // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
     // hervorheben; sonst die schlichte Einzelseite mit Zurück-Knopf wie bisher.
     const cfg = window.SC.config || {};

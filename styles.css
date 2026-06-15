@@ -1784,6 +1784,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Modo-profe-Einstieg im Tarea-Reiter (Editionen). */
 .teacher-btn--profe { width: 100%; justify-content: center; }
 .task-profe-hint { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); text-align: center; }
+.task-paste-hint { margin: 8px 2px 0; font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
 .task-result__btns { margin-top: 0; }
 /* Abonnierte Aufgaben (Liste, mehrere parallel). */
 .task-list { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-direction: column; gap: 8px; }
@@ -1802,8 +1803,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .task-item__badge {
   display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px;
   border-radius: 999px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em;
-  background: var(--ok, #3F7355); color: #fff;
+  background: color-mix(in srgb, var(--ok, #3F7355) 88%, #000); color: #fff;
 }
+/* Fortschritt „12/40" einer noch offenen Aufgabe. */
+.task-item__progress { font-size: 0.8rem; font-weight: 700; color: var(--brand-ink); }
 .task-item__actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .task-empty { color: var(--muted); margin: 6px 0 0; }
 .task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }
@@ -2493,7 +2496,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .today__ruta-badge {
   display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px;
   border-radius: 999px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.04em;
-  text-transform: uppercase; background: var(--ok); color: #fff;
+  text-transform: uppercase; background: color-mix(in srgb, var(--ok) 88%, #000); color: #fff;
 }
 
 /* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
@@ -2534,6 +2537,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .onboarding__brand { text-align: center; margin: 0 0 4px; }
 .onboarding__logo { display: block; max-height: 48px; max-width: 70%; margin: 0 auto 6px; }
 .onboarding__partner { margin: 0; font-weight: 800; font-size: 0.9rem; color: var(--brand-ink); letter-spacing: 0.02em; }
+.onboarding__powered { margin: 1px 0 0; font-size: 0.68rem; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
 .onboarding__intro { color: var(--muted); margin: 0 0 4px; }
 
 /* Streckenkarte (Statistik): Lernfortschritt als Bus-Strecke. */

@@ -1822,6 +1822,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Modo-profe-Einstieg im Tarea-Reiter (Editionen). */
 .teacher-btn--profe { width: 100%; justify-content: center; }
 .task-profe-hint { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); text-align: center; }
+.task-paste-hint { margin: 8px 2px 0; font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
 .task-result__btns { margin-top: 0; }
 /* Abonnierte Aufgaben (Liste, mehrere parallel). */
 .task-list { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-direction: column; gap: 8px; }
@@ -1840,8 +1841,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .task-item__badge {
   display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px;
   border-radius: 999px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em;
-  background: var(--ok, #3F7355); color: #fff;
+  background: color-mix(in srgb, var(--ok, #3F7355) 88%, #000); color: #fff;
 }
+/* Fortschritt „12/40" einer noch offenen Aufgabe. */
+.task-item__progress { font-size: 0.8rem; font-weight: 700; color: var(--brand-ink); }
 .task-item__actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .task-empty { color: var(--muted); margin: 6px 0 0; }
 .task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }
@@ -2531,7 +2534,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .today__ruta-badge {
   display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px;
   border-radius: 999px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.04em;
-  text-transform: uppercase; background: var(--ok); color: #fff;
+  text-transform: uppercase; background: color-mix(in srgb, var(--ok) 88%, #000); color: #fff;
 }
 
 /* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
@@ -2572,6 +2575,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .onboarding__brand { text-align: center; margin: 0 0 4px; }
 .onboarding__logo { display: block; max-height: 48px; max-width: 70%; margin: 0 auto 6px; }
 .onboarding__partner { margin: 0; font-weight: 800; font-size: 0.9rem; color: var(--brand-ink); letter-spacing: 0.02em; }
+.onboarding__powered { margin: 1px 0 0; font-size: 0.68rem; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
 .onboarding__intro { color: var(--muted); margin: 0 0 4px; }
 
 /* Streckenkarte (Statistik): Lernfortschritt als Bus-Strecke. */
@@ -3123,6 +3127,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     rutaDoneSub: "Für heute erledigt – noch eine Runde?",
     presetDone: "geschafft",
     presetDoneSub: "Alle Sätze einmal gelernt – noch eine Runde?",
+    presetProgress: (p) => `${p.seen}/${p.total} Sätze gelernt – weiter geht's`,
     presetCoTitle: "🇨🇴 Pre-Arrival Kolumbien",
     presetCoSub: "Die wichtigsten Sätze vor der Ankunft",
     presetPeTitle: "🇵🇪 Pre-Arrival Peru",
@@ -3211,6 +3216,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     rutaDoneSub: "Done for today – one more round?",
     presetDone: "done",
     presetDoneSub: "All phrases learned once – one more round?",
+    presetProgress: (p) => `${p.seen}/${p.total} phrases learned – keep going`,
     presetCoTitle: "🇨🇴 Pre-Arrival Colombia",
     presetCoSub: "The key phrases before you arrive",
     presetPeTitle: "🇵🇪 Pre-Arrival Peru",
@@ -4087,10 +4093,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     start: "Starten",
     replay: "Wiederholen",
     done: "Erledigt",
+    doneHint: "Alle Karten einmal gelernt (noch nicht zwingend sicher beherrscht).",
+    progCards: (p) => `${p.seen}/${p.total} gelernt`,
+    progStages: (p) => `${p.seen}/${p.total} Etappen`,
+    pasteHelp: "„Einfügen“ übernimmt einen kopierten Code automatisch. „Aufgabe hinzufügen“ nimmt, was im Feld steht.",
     add: "Aufgabe hinzufügen",
     remove: "Entfernen",
     yours: (p) => `Deine Aufgaben (${p.n})`,
-    empty: "Noch keine Aufgaben. Tippe den Link deiner Lehrkraft an oder füge unten den Code ein.",
+    empty: "Noch keine Aufgaben. Tippe den Link deiner Lehrkraft oder Reiseleitung an oder füge unten den Code ein.",
     added: "Aufgabe hinzugefügt.",
     already: "Diese Aufgabe ist schon in deiner Liste.",
   }, {
@@ -4111,10 +4121,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     start: "Start",
     replay: "Repeat",
     done: "Done",
+    doneHint: "All cards learned once (not necessarily fully mastered yet).",
+    progCards: (p) => `${p.seen}/${p.total} learned`,
+    progStages: (p) => `${p.seen}/${p.total} stages`,
+    pasteHelp: "“Paste” picks up a copied code automatically. “Add task” uses whatever is in the field.",
     add: "Add task",
     remove: "Remove",
     yours: (p) => `Your tasks (${p.n})`,
-    empty: "No tasks yet. Tap your teacher's link, or paste the code below.",
+    empty: "No tasks yet. Tap your teacher's or tour leader's link, or paste the code below.",
     added: "Task added.",
     already: "This task is already in your list.",
   });
@@ -20285,6 +20299,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.68.0",
+      date: "2026-06-15",
+      title: "Aufgaben-Fortschritt sichtbar + Feinschliff (Review-Block)",
+      items: [
+        "📊 Offene Aufgaben zeigen jetzt ihren Fortschritt als „12/40 gelernt“ (bzw. „3/7 Etappen“) – in der Tarea-Liste und auf der Pre-Arrival-Kachel. So sieht man den Teilfortschritt, nicht nur erledigt/offen.",
+        "💡 Unter den Aufgaben-Knöpfen erklärt jetzt ein fester Hinweis „Einfügen“ vs. „Aufgabe hinzufügen“ – statt nur als flüchtige Meldung.",
+        "♿ Barrierearmut & Klarheit: „Erledigt“ wird Screenreadern angesagt, und ein Tooltip stellt klar, dass erledigt „alle Karten einmal gelernt“ heißt (nicht zwingend schon gemeistert).",
+        "🛠️ Empty-State nennt jetzt Lehrkraft UND Reiseleitung; kleinere Politur (Badge-Kontrast); Startseite rechnet den Paket-Status nur noch für sichtbare Kacheln (schneller).",
+      ],
+    },
+    {
       version: "1.67.0",
       date: "2026-06-15",
       title: "Pre-Arrival-Kachel zeigt „geschafft“",
@@ -21231,7 +21256,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const brand = e
       ? `<div class="onboarding__brand">
            ${logoOk ? `<img class="onboarding__logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />` : ""}
-           ${e.partner && e.partner.name ? `<p class="onboarding__partner">${esc(e.partner.name)}</p>` : ""}
+           ${e.partner && e.partner.name ? `<p class="onboarding__partner">${esc(e.partner.name)}</p>
+           <p class="onboarding__powered">${esc(t("profile.poweredBy"))}</p>` : ""}
          </div>`
       : "";
     return `
@@ -21329,11 +21355,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { id: "prearrival-bo", show: vm.showBoliviaPreset, titleKey: "home.presetBoTitle", subKey: "home.presetBoSub" },
     ];
     const presetCards = PRESET_CARDS.filter((p) => p.show).map((p) => {
-      const done = !!(vm.presetDone && vm.presetDone[p.id]);
+      const st = (vm.presetStatus && vm.presetStatus[p.id]) || { done: false, seen: 0, total: 0 };
+      const sub = st.done ? t("home.presetDoneSub")
+        : (st.seen > 0 && st.total > 0) ? t("home.presetProgress", { seen: st.seen, total: st.total })
+        : t(p.subKey);
       return `
-      <button class="today__ruta${done ? " today__ruta--done" : ""}" data-action="open-preset" data-preset="${p.id}">
-        <span class="today__ruta-main">${done ? "✓ " : ""}${esc(t(p.titleKey))}${done ? ` <span class="today__ruta-badge">${esc(t("home.presetDone"))}</span>` : ""}</span>
-        <span class="today__ruta-sub">${esc(done ? t("home.presetDoneSub") : t(p.subKey))}</span>
+      <button class="today__ruta${st.done ? " today__ruta--done" : ""}" data-action="open-preset" data-preset="${p.id}">
+        <span class="today__ruta-main">${st.done ? "✓ " : ""}${esc(t(p.titleKey))}${st.done ? ` <span class="today__ruta-badge" role="status">${esc(t("home.presetDone"))}</span>` : ""}</span>
+        <span class="today__ruta-sub">${esc(sub)}</span>
       </button>`;
     }).join("");
 
@@ -23429,10 +23458,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ? `<p class="sectioncap">${esc(t("task.yours", { n: tasks.length }))}</p>
          <ul class="task-list">
            ${tasks.map((tk) => `
-             <li class="task-item${tk.done ? " task-item--done" : ""}">
+             <li class="task-item${tk.done ? " task-item--done" : ""}"${tk.done ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.done"))}"` : ""}>
                <div class="task-item__body">
-                 <span class="task-item__target">${tk.done ? "✅" : "🎯"} ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge">${esc(t("task.done"))}</span>` : ""}</span>
+                 <span class="task-item__target"><span aria-hidden="true">${tk.done ? "✅" : "🎯"}</span> ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge" role="status" title="${esc(t("task.doneHint"))}">${esc(t("task.done"))}</span>` : ""}</span>
                  ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
+                 ${!tk.done && tk.total > 0 ? `<span class="task-item__progress">${esc(t(tk.progressKind === "stages" ? "task.progStages" : "task.progCards", { seen: tk.seen, total: tk.total }))}</span>` : ""}
                  ${tk.due ? `<span class="task-item__due${tk.overdue && !tk.done ? " is-overdue" : ""}">${esc(t(tk.overdue && !tk.done ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
                </div>
                <div class="task-item__actions">
@@ -23450,7 +23480,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <div class="teacher-actions">
         <button class="teacher-btn teacher-btn--main" data-action="task-open">➕ ${esc(t("task.add"))}</button>
         <button class="teacher-btn" data-action="task-paste">📋 ${esc(t("task.paste"))}</button>
-      </div>`;
+      </div>
+      <p class="task-paste-hint">${esc(t("task.pasteHelp"))}</p>`;
     // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
     // hervorheben; sonst die schlichte Einzelseite mit Zurück-Knopf wie bisher.
     const cfg = window.SC.config || {};
@@ -25034,8 +25065,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       showArgentinaPreset: tripMentionsArgentina(), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
       showChilePreset: tripMentionsChile(),       // Pre-Arrival-Kachel nur bei Chile-Bezug
       showBoliviaPreset: tripMentionsBolivia(),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
-      // Welche Pre-Arrival-Pakete sind absolviert (alle Karten einmal gelernt)? -> Häkchen.
-      presetDone: (function () { const m = {}; (data.PRESETS || []).forEach((p) => { m[p.id] = taskDone({ kind: "preset", scope: p.id }); }); return m; })(),
+      // Status der Pre-Arrival-Pakete (Häkchen + „12/40"-Fortschritt). Nur für die
+      // tatsächlich SICHTBAREN Kacheln rechnen (spart Arbeit pro Render).
+      presetStatus: (function () {
+        const m = {};
+        const shown = {
+          "prearrival-co": tripMentionsColombia(), "prearrival-pe": tripMentionsPeru(),
+          "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
+          "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
+          "prearrival-ar": tripMentionsArgentina(), "prearrival-cl": tripMentionsChile(),
+          "prearrival-bo": tripMentionsBolivia(),
+        };
+        (data.PRESETS || []).forEach((p) => {
+          if (!shown[p.id]) return;
+          const prog = taskProgress({ kind: "preset", scope: p.id });
+          m[p.id] = { done: prog.total > 0 && prog.seen >= prog.total, seen: prog.seen, total: prog.total };
+        });
+        return m;
+      })(),
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
@@ -27572,31 +27619,52 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (addSubscribedTask(el ? el.value : "")) { if (el) el.value = ""; render(); }
   }
 
-  // Ist eine zugewiesene Aufgabe „absolviert"? Pre-Trip-Plan: alle Etappen geschafft;
-  // Pre-Arrival-/ganzes Paket: alle zugehörigen Karten mindestens einmal gelernt
-  // (gesehen) – konsistent mit dem „einmal durch"-Maßstab des Pre-Trip-Plans.
+  // Die zu einer Aufgabe gehörenden Karten (Preset = kuratierte Liste, Kategorie =
+  // ganzes Paket). Für Pre-Trip-Pläne zählen wir Etappen statt Karten (siehe taskProgress).
+  function taskCardsFor(task) {
+    if (!task) return [];
+    if (task.kind === "preset") {
+      const p = (data.PRESETS || []).find((x) => x.id === task.scope);
+      return p ? p.pick.map(cardById).filter(Boolean) : [];
+    }
+    if (task.kind === "category") return (data.CARDS || []).filter((c) => c.cat === task.scope);
+    return [];
+  }
+
+  // Fortschritt einer Aufgabe als { seen, total, kind }. Pre-Trip-Plan: geschaffte
+  // Etappen / alle Etappen. Sonst: gelernte (mind. einmal gesehene) Karten / alle.
+  function taskProgress(task) {
+    if (task && task.kind === "pretrip") {
+      const plan = pretripPlan(task.scope);
+      const total = plan.days.length;
+      const seen = plan.days.filter((d) => pretripDone(plan.scope, d.day)).length;
+      return { seen, total, kind: "stages" };
+    }
+    const cards = taskCardsFor(task);
+    const seen = cards.reduce((n, c) => n + ((stats.cardSummary(progress[c.id]).seen || 0) > 0 ? 1 : 0), 0);
+    return { seen, total: cards.length, kind: "cards" };
+  }
+
+  // Ist eine Aufgabe „absolviert"? = alle Etappen bzw. alle Karten einmal durch.
   function taskDone(task) {
     if (!task) return false;
     if (task.kind === "pretrip") return planAllDone(pretripPlan(task.scope));
-    let cards;
-    if (task.kind === "preset") {
-      const p = (data.PRESETS || []).find((x) => x.id === task.scope);
-      cards = p ? p.pick.map(cardById).filter(Boolean) : [];
-    } else { // category = ganzes Themen-Paket
-      cards = (data.CARDS || []).filter((c) => c.cat === task.scope);
-    }
-    if (!cards.length) return false;
-    return cards.every((c) => (stats.cardSummary(progress[c.id]).seen || 0) > 0);
+    const p = taskProgress(task);
+    return p.total > 0 && p.seen >= p.total;
   }
 
   function taskVM() {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, mit der Frist (Datums-String) vergleichbar
     return {
-      tasks: subscribedTasks.map((tk, i) => ({
-        idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
-        overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
-        done: taskDone(tk),                    // absolviert? -> optisch als erledigt markieren
-      })),
+      tasks: subscribedTasks.map((tk, i) => {
+        const prog = taskProgress(tk);
+        return {
+          idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
+          overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
+          done: prog.total > 0 && prog.seen >= prog.total, // absolviert? -> als erledigt markieren
+          seen: prog.seen, total: prog.total, progressKind: prog.kind, // „12/40" / „3/7 Etappen"
+        };
+      }),
     };
   }
 

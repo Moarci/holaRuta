@@ -22,6 +22,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.68.0",
+      date: "2026-06-15",
+      title: "Aufgaben-Fortschritt sichtbar + Feinschliff (Review-Block)",
+      items: [
+        "📊 Offene Aufgaben zeigen jetzt ihren Fortschritt als „12/40 gelernt“ (bzw. „3/7 Etappen“) – in der Tarea-Liste und auf der Pre-Arrival-Kachel. So sieht man den Teilfortschritt, nicht nur erledigt/offen.",
+        "💡 Unter den Aufgaben-Knöpfen erklärt jetzt ein fester Hinweis „Einfügen“ vs. „Aufgabe hinzufügen“ – statt nur als flüchtige Meldung.",
+        "♿ Barrierearmut & Klarheit: „Erledigt“ wird Screenreadern angesagt, und ein Tooltip stellt klar, dass erledigt „alle Karten einmal gelernt“ heißt (nicht zwingend schon gemeistert).",
+        "🛠️ Empty-State nennt jetzt Lehrkraft UND Reiseleitung; kleinere Politur (Badge-Kontrast); Startseite rechnet den Paket-Status nur noch für sichtbare Kacheln (schneller).",
+      ],
+    },
+    {
       version: "1.67.0",
       date: "2026-06-15",
       title: "Pre-Arrival-Kachel zeigt „geschafft“",
