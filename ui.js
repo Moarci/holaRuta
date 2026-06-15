@@ -2480,7 +2480,7 @@
   function renderPlacementQuestion(vm) {
     const q = vm.q;
     if (!q) return renderPlacementIntro(vm);
-    const pct = Math.round(((vm.index) / (vm.total || 1)) * 100);
+    const pct = Math.round(((vm.index + 1) / (vm.total || 1)) * 100);
     const head = `
       <div class="pl-progress">
         <div class="pl-progress__bar"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
@@ -2518,6 +2518,8 @@
   function renderPlacementDone(vm) {
     const noteText = vm.note === "commStrong" ? t("placement.noteComm")
       : vm.note === "grammarStrong" ? t("placement.noteGrammar") : "";
+    // Zuverlässigkeits-Hinweis (Qualität des Tests, fließt NICHT in den Score).
+    const relText = vm.reliability ? t("placement.rel_" + vm.reliability) : "";
     const skillRow = (s) => `
       <li class="pl-skill">
         <span class="pl-skill__name">${esc(t("placement.skill_" + s.skill))}</span>
@@ -2543,6 +2545,7 @@
         <p class="sectioncap">${esc(t("placement.skillsCap"))}</p>
         <ul class="pl-skills">${vm.skills.map(skillRow).join("")}</ul>
         ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
+        ${relText ? `<div class="tip pl-reliability pl-reliability--${esc(vm.reliability)}">${esc(relText)}</div>` : ""}
         <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>

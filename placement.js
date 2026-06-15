@@ -202,7 +202,8 @@
   // Schwierigkeit als Index 0..3. Richtig -> eine Stufe höher, falsch/„weiß nicht“
   // -> eine Stufe tiefer. So konvergiert der Test aufs Niveau (leicht↔schwer),
   // ohne dass jemand alle 33 Fragen durchmachen muss.
-  var LEVEL_ORDER = ["A0", "A1", "A2", "B1"];
+  var LEVEL_ORDER = ["A0", "A1", "A2", "B1"];          // Item-Schwierigkeit (= q.level, Treppe)
+  var DISPLAY_LEVELS = ["A0", "A1", "A2", "B1-"];      // Anzeige-Niveau (B1- = „nahe B1“)
   var START_DIFFICULTY = 1;   // Start bei A1
   var MC_TARGET = 12;         // so viele Multiple-Choice-Fragen, dann die freien
   var GRAMMAR_CAP = 4;        // höchstens so viele Grammatik-Fragen (~30 % von 12)
@@ -248,6 +249,53 @@
   }
 
   function freeQuestions(questions) { return (questions || QUESTIONS).filter(function (q) { return q.type === "free"; }); }
+
+  // ---------- IRT-artige Einschätzung + Zuverlässigkeit ----------
+  // „Demonstriertes“ Niveau: die höchste Stufe, auf der mehr richtig als falsch
+  // gelöst wurde (mind. eine richtige MC-Antwort). Belohnt es, schwere Items
+  // richtig zu lösen – im adaptiven Test erreicht man hohe Stufen nur, wenn man
+  // sich hochgearbeitet hat. So wird ein starker Lerner nicht durch ein paar
+  // schwere Treffer-Fehlversuche unter Wert eingestuft.
+  function demonstratedIndex(questions, answers) {
+    questions = Array.isArray(questions) ? questions : [];
+    answers = Array.isArray(answers) ? answers : [];
+    var correctAt = [0, 0, 0, 0], wrongAt = [0, 0, 0, 0];
+    for (var i = 0; i < questions.length; i++) {
+      var q = questions[i];
+      if (!q || q.type !== "mc") continue;
+      var r = scoreAnswer(q, answers[i] || { isUnknown: true });
+      var idx = levelIndex(q.level);
+      if (r.result === "correct") correctAt[idx]++;
+      else if (r.result === "wrong") wrongAt[idx]++;
+    }
+    var demo = 0;
+    for (var L = 0; L < LEVEL_ORDER.length; L++) {
+      if (correctAt[L] >= 1 && correctAt[L] >= wrongAt[L]) demo = L;
+    }
+    return demo;
+  }
+
+  // Endgültiges Level: das höhere aus Score-basiertem und demonstriertem Niveau;
+  // viel „weiß nicht“ deckelt weiterhin auf A0 (ehrliches Nichtwissen).
+  function levelBlended(finalScore, unknownRate, questions, answers) {
+    if (unknownRate > 0.55) return DISPLAY_LEVELS[0]; // A0
+    var sIdx = scoreIndex(finalScore, unknownRate);
+    var demoIdx = demonstratedIndex(questions, answers);
+    return DISPLAY_LEVELS[Math.max(sIdx, demoIdx)]; // Anzeige-Niveau (höheres aus Score & demonstriert)
+  }
+
+  // Zuverlässigkeit des Ergebnisses (Anti-Cheating/Qualität, NICHT in den Score):
+  //  "guessing" – viele falsche, kaum „weiß nicht“, sehr schnell -> wirkt geraten
+  //  "fast"     – insgesamt sehr schnell -> evtl. weniger zuverlässig
+  //  "manyUnknown" – über die Hälfte „weiß nicht“ -> ehrlich offen (Hinweis, keine Warnung)
+  function reliabilityFor(s) {
+    s = s || {};
+    var med = s.medianMs || 0;
+    if (s.wrongRate >= 0.4 && s.unknownRate <= 0.1 && med > 0 && med < 4000) return "guessing";
+    if (med > 0 && med < 2000) return "fast";
+    if (s.unknownRate > 0.5) return "manyUnknown";
+    return "";
+  }
 
   // ---------- reine Hilfsfunktionen ----------
   function normalizeFree(s) {
@@ -297,12 +345,16 @@
     };
   }
 
-  // Startlevel aus Gesamtscore + Unknown-Rate (bewusst einfache V1-Formel).
+  // Score-Stufe als Index (0..3) – eine Quelle für Schwellen + Unknown-Override.
+  function scoreIndex(finalScore, unknownRate) {
+    if (finalScore < 0.30 || unknownRate > 0.55) return 0;
+    if (finalScore < 0.55) return 1;
+    if (finalScore < 0.78) return 2;
+    return 3;
+  }
+  // Startlevel aus Gesamtscore + Unknown-Rate (Anzeige-Niveau, bewusst einfache V1-Formel).
   function levelFor(finalScore, unknownRate) {
-    if (finalScore < 0.30 || unknownRate > 0.55) return "A0";
-    if (finalScore < 0.55) return "A1";
-    if (finalScore < 0.78) return "A2";
-    return "B1-";
+    return DISPLAY_LEVELS[scoreIndex(finalScore, unknownRate)];
   }
 
   function tempoFor(medianMs) {
@@ -363,6 +415,8 @@
     if (communicationAccuracy >= 0.70 && grammarAccuracy < 0.45) note = "commStrong";
     else if (grammarAccuracy >= 0.70 && communicationAccuracy < 0.50) note = "grammarStrong";
 
+    var reliability = reliabilityFor({ medianMs: medianMs, wrongRate: wrongRate, unknownRate: unknownRate });
+
     return {
       total: total, correct: correct, wrong: wrong, unknown: unknown,
       accuracy: accuracy, confidence: confidence, finalScore: finalScore,
@@ -370,7 +424,9 @@
       medianMs: medianMs, tempo: tempoFor(medianMs),
       communicationAccuracy: communicationAccuracy, grammarAccuracy: grammarAccuracy,
       skillBreakdown: skillBreakdown, note: note,
-      level: levelFor(finalScore, unknownRate),
+      reliability: reliability,
+      // IRT-artig: Score-Level mit demonstriertem Niveau (richtig gelöste schwere Items) verschmolzen.
+      level: levelBlended(finalScore, unknownRate, questions, answers),
     };
   }
 
@@ -393,5 +449,8 @@
     nextDifficulty: nextDifficulty,
     pickNextMc: pickNextMc,
     freeQuestions: freeQuestions,
+    demonstratedIndex: demonstratedIndex,
+    levelBlended: levelBlended,
+    reliabilityFor: reliabilityFor,
   };
 })();

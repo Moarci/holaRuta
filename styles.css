@@ -1810,6 +1810,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .pl-skill__fill { display: block; height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-ink)); }
 .pl-skill__val { text-align: right; font-weight: 700; color: var(--muted); }
 .pl-disclaimer { font-size: 0.8rem; color: var(--muted); margin: 6px 0 14px; }
+.pl-reliability--guessing { border-color: color-mix(in srgb, #C2502E 45%, var(--line)); }
+.pl-reliability--fast { border-color: color-mix(in srgb, #B97C24 45%, var(--line)); }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);

@@ -2851,6 +2851,7 @@
           accuracy: Math.round(result.accuracy * 100) / 100,
           unknownRate: Math.round(result.unknownRate * 100) / 100,
           tempo: result.tempo,
+          reliability: result.reliability || "",
           at: new Date().toISOString().slice(0, 10),
         },
       });
@@ -2898,6 +2899,7 @@
       correct: r.correct, total: r.total,
       tempo: r.tempo,
       note: r.note, // "" | "commStrong" | "grammarStrong"
+      reliability: r.reliability, // "" | "fast" | "guessing" | "manyUnknown"
       skills,
     };
   }

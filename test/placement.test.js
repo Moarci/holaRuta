@@ -180,6 +180,44 @@ test("summarize: Empfehlungs-Notiz – kommunikativ stark, Grammatik schwach", (
   assert.equal(s.note, "commStrong");
 });
 
+test("demonstratedIndex + levelBlended: schwere Items richtig -> höheres Level (IRT-artig)", () => {
+  // Lerner beantwortet eine A2- und eine B1-Frage richtig, eine A1 falsch.
+  const questions = [
+    { id: "a1", skill: "understanding", level: "A1", type: "mc", correctIndex: 0, expectedTimeSec: 10 },
+    { id: "a2", skill: "reaction", level: "A2", type: "mc", correctIndex: 0, expectedTimeSec: 10 },
+    { id: "b1", skill: "vocab", level: "B1", type: "mc", correctIndex: 0, expectedTimeSec: 10 },
+  ];
+  const answers = [
+    { selectedIndex: 1, responseTimeMs: 9000 }, // A1 falsch
+    { selectedIndex: 0, responseTimeMs: 9000 }, // A2 richtig
+    { selectedIndex: 0, responseTimeMs: 9000 }, // B1 richtig
+  ];
+  // demonstriert: höchste Stufe mit richtig>=falsch und >=1 richtig -> B1 (Index 3)
+  assert.equal(placement.demonstratedIndex(questions, answers), 3);
+  // Blended hebt das (eher mittelmäßige) Score-Level aufs demonstrierte B1 an.
+  const lvl = placement.levelBlended(0.6, 0.0, questions, answers);
+  assert.equal(lvl, "B1-");
+  // Aber viel „weiß nicht“ deckelt weiterhin auf A0.
+  assert.equal(placement.levelBlended(0.9, 0.6, questions, answers), "A0");
+});
+
+test("reliabilityFor: erkennt Raten, Tempo und ehrliches Nichtwissen", () => {
+  assert.equal(placement.reliabilityFor({ medianMs: 3000, wrongRate: 0.5, unknownRate: 0.0 }), "guessing");
+  assert.equal(placement.reliabilityFor({ medianMs: 1500, wrongRate: 0.2, unknownRate: 0.1 }), "fast");
+  assert.equal(placement.reliabilityFor({ medianMs: 9000, wrongRate: 0.1, unknownRate: 0.6 }), "manyUnknown");
+  assert.equal(placement.reliabilityFor({ medianMs: 9000, wrongRate: 0.1, unknownRate: 0.1 }), "");
+  // „guessing“ hat Vorrang vor „fast“.
+  assert.equal(placement.reliabilityFor({ medianMs: 1500, wrongRate: 0.5, unknownRate: 0.0 }), "guessing");
+});
+
+test("summarize: liefert reliability-Feld + blended level", () => {
+  const questions = placement.QUESTIONS.filter((q) => q.type === "mc").slice(0, 4);
+  const answers = questions.map(() => ({ isUnknown: true, responseTimeMs: 1000 }));
+  const s = placement.summarize(questions, answers);
+  assert.ok("reliability" in s, "reliability vorhanden");
+  assert.equal(s.level, "A0"); // alles unbekannt -> A0
+});
+
 test("summarize: leere/fehlende Antworten zählen als unbekannt (kein Crash)", () => {
   const questions = placement.QUESTIONS.slice(0, 3);
   const s = placement.summarize(questions, []);

@@ -1848,6 +1848,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .pl-skill__fill { display: block; height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-ink)); }
 .pl-skill__val { text-align: right; font-weight: 700; color: var(--muted); }
 .pl-disclaimer { font-size: 0.8rem; color: var(--muted); margin: 6px 0 14px; }
+.pl-reliability--guessing { border-color: color-mix(in srgb, #C2502E 45%, var(--line)); }
+.pl-reliability--fast { border-color: color-mix(in srgb, #B97C24 45%, var(--line)); }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);
@@ -3961,6 +3963,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     skill_free: "Freie Antwort",
     noteComm: "Kommunikativ stärker als grammatikalisch – du kommst durch, Formen dürfen noch wachsen.",
     noteGrammar: "Grammatik sitzt, aber Reise-Reaktionen sind noch zögerlich – übe echte Situationen.",
+    rel_fast: "⏱️ Sehr schnell beantwortet – das Ergebnis ist vielleicht weniger zuverlässig. Im Zweifel den Test in Ruhe wiederholen.",
+    rel_guessing: "🎲 Wirkt eher geraten (viele Fehler, kaum „weiß nicht“, sehr schnell). Eine Wiederholung – oder ein Blick der Lehrkraft – gibt ein ehrlicheres Bild.",
+    rel_manyUnknown: "🙌 Viele Antworten ehrlich offen gelassen – das ist hilfreich. Für dich passt ein Einstieg mit den Basics.",
     schoolNote: "Die Einstufung ist eine Orientierung. In einer Schule kann die Lehrkraft die Gruppe anpassen.",
     retake: "Nochmal",
     later: "Später",
@@ -3995,6 +4000,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     skill_free: "Free answer",
     noteComm: "Stronger at communicating than at grammar – you get by; forms can still grow.",
     noteGrammar: "Grammar is solid, but real-situation reactions are still hesitant – practise real situations.",
+    rel_fast: "⏱️ Answered very fast – the result may be less reliable. If unsure, retake the test calmly.",
+    rel_guessing: "🎲 Looks like guessing (many wrong, almost no “I don't know”, very fast). A retake – or a look from your teacher – gives a fairer picture.",
+    rel_manyUnknown: "🙌 You honestly left many open – that's helpful. A start with the basics fits you.",
     schoolNote: "This placement is a guide. At a school, the teacher can adjust your group.",
     retake: "Retake",
     later: "Later",
@@ -17181,7 +17189,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Schwierigkeit als Index 0..3. Richtig -> eine Stufe höher, falsch/„weiß nicht“
   // -> eine Stufe tiefer. So konvergiert der Test aufs Niveau (leicht↔schwer),
   // ohne dass jemand alle 33 Fragen durchmachen muss.
-  var LEVEL_ORDER = ["A0", "A1", "A2", "B1"];
+  var LEVEL_ORDER = ["A0", "A1", "A2", "B1"];          // Item-Schwierigkeit (= q.level, Treppe)
+  var DISPLAY_LEVELS = ["A0", "A1", "A2", "B1-"];      // Anzeige-Niveau (B1- = „nahe B1“)
   var START_DIFFICULTY = 1;   // Start bei A1
   var MC_TARGET = 12;         // so viele Multiple-Choice-Fragen, dann die freien
   var GRAMMAR_CAP = 4;        // höchstens so viele Grammatik-Fragen (~30 % von 12)
@@ -17227,6 +17236,53 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function freeQuestions(questions) { return (questions || QUESTIONS).filter(function (q) { return q.type === "free"; }); }
+
+  // ---------- IRT-artige Einschätzung + Zuverlässigkeit ----------
+  // „Demonstriertes“ Niveau: die höchste Stufe, auf der mehr richtig als falsch
+  // gelöst wurde (mind. eine richtige MC-Antwort). Belohnt es, schwere Items
+  // richtig zu lösen – im adaptiven Test erreicht man hohe Stufen nur, wenn man
+  // sich hochgearbeitet hat. So wird ein starker Lerner nicht durch ein paar
+  // schwere Treffer-Fehlversuche unter Wert eingestuft.
+  function demonstratedIndex(questions, answers) {
+    questions = Array.isArray(questions) ? questions : [];
+    answers = Array.isArray(answers) ? answers : [];
+    var correctAt = [0, 0, 0, 0], wrongAt = [0, 0, 0, 0];
+    for (var i = 0; i < questions.length; i++) {
+      var q = questions[i];
+      if (!q || q.type !== "mc") continue;
+      var r = scoreAnswer(q, answers[i] || { isUnknown: true });
+      var idx = levelIndex(q.level);
+      if (r.result === "correct") correctAt[idx]++;
+      else if (r.result === "wrong") wrongAt[idx]++;
+    }
+    var demo = 0;
+    for (var L = 0; L < LEVEL_ORDER.length; L++) {
+      if (correctAt[L] >= 1 && correctAt[L] >= wrongAt[L]) demo = L;
+    }
+    return demo;
+  }
+
+  // Endgültiges Level: das höhere aus Score-basiertem und demonstriertem Niveau;
+  // viel „weiß nicht“ deckelt weiterhin auf A0 (ehrliches Nichtwissen).
+  function levelBlended(finalScore, unknownRate, questions, answers) {
+    if (unknownRate > 0.55) return DISPLAY_LEVELS[0]; // A0
+    var sIdx = scoreIndex(finalScore, unknownRate);
+    var demoIdx = demonstratedIndex(questions, answers);
+    return DISPLAY_LEVELS[Math.max(sIdx, demoIdx)]; // Anzeige-Niveau (höheres aus Score & demonstriert)
+  }
+
+  // Zuverlässigkeit des Ergebnisses (Anti-Cheating/Qualität, NICHT in den Score):
+  //  "guessing" – viele falsche, kaum „weiß nicht“, sehr schnell -> wirkt geraten
+  //  "fast"     – insgesamt sehr schnell -> evtl. weniger zuverlässig
+  //  "manyUnknown" – über die Hälfte „weiß nicht“ -> ehrlich offen (Hinweis, keine Warnung)
+  function reliabilityFor(s) {
+    s = s || {};
+    var med = s.medianMs || 0;
+    if (s.wrongRate >= 0.4 && s.unknownRate <= 0.1 && med > 0 && med < 4000) return "guessing";
+    if (med > 0 && med < 2000) return "fast";
+    if (s.unknownRate > 0.5) return "manyUnknown";
+    return "";
+  }
 
   // ---------- reine Hilfsfunktionen ----------
   function normalizeFree(s) {
@@ -17276,12 +17332,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     };
   }
 
-  // Startlevel aus Gesamtscore + Unknown-Rate (bewusst einfache V1-Formel).
+  // Score-Stufe als Index (0..3) – eine Quelle für Schwellen + Unknown-Override.
+  function scoreIndex(finalScore, unknownRate) {
+    if (finalScore < 0.30 || unknownRate > 0.55) return 0;
+    if (finalScore < 0.55) return 1;
+    if (finalScore < 0.78) return 2;
+    return 3;
+  }
+  // Startlevel aus Gesamtscore + Unknown-Rate (Anzeige-Niveau, bewusst einfache V1-Formel).
   function levelFor(finalScore, unknownRate) {
-    if (finalScore < 0.30 || unknownRate > 0.55) return "A0";
-    if (finalScore < 0.55) return "A1";
-    if (finalScore < 0.78) return "A2";
-    return "B1-";
+    return DISPLAY_LEVELS[scoreIndex(finalScore, unknownRate)];
   }
 
   function tempoFor(medianMs) {
@@ -17342,6 +17402,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (communicationAccuracy >= 0.70 && grammarAccuracy < 0.45) note = "commStrong";
     else if (grammarAccuracy >= 0.70 && communicationAccuracy < 0.50) note = "grammarStrong";
 
+    var reliability = reliabilityFor({ medianMs: medianMs, wrongRate: wrongRate, unknownRate: unknownRate });
+
     return {
       total: total, correct: correct, wrong: wrong, unknown: unknown,
       accuracy: accuracy, confidence: confidence, finalScore: finalScore,
@@ -17349,7 +17411,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       medianMs: medianMs, tempo: tempoFor(medianMs),
       communicationAccuracy: communicationAccuracy, grammarAccuracy: grammarAccuracy,
       skillBreakdown: skillBreakdown, note: note,
-      level: levelFor(finalScore, unknownRate),
+      reliability: reliability,
+      // IRT-artig: Score-Level mit demonstriertem Niveau (richtig gelöste schwere Items) verschmolzen.
+      level: levelBlended(finalScore, unknownRate, questions, answers),
     };
   }
 
@@ -17372,6 +17436,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     nextDifficulty: nextDifficulty,
     pickNextMc: pickNextMc,
     freeQuestions: freeQuestions,
+    demonstratedIndex: demonstratedIndex,
+    levelBlended: levelBlended,
+    reliabilityFor: reliabilityFor,
   };
 })();
 
@@ -19048,6 +19115,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.53.0",
+      date: "2026-06-15",
+      title: "Ruta-Check: fairere Einstufung + Qualitäts-Hinweis",
+      items: [
+        "🧠 Genauere Einstufung: Wer im adaptiven Test schwere Fragen richtig löst, wird jetzt nicht mehr durch ein paar Treffer-Fehlversuche unter Wert eingestuft – das demonstrierte Niveau zählt mit (IRT-artig).",
+        "🛡️ Neuer Zuverlässigkeits-Hinweis am Ende: erkennt sehr schnelles Klicken oder wahlloses Raten und schlägt eine ruhige Wiederholung vor; viele ehrliche „weiß nicht“ werden positiv eingeordnet. Fließt NICHT in den Score, nur als Einordnung.",
+        "📊 Der Fortschrittsbalken füllt sich nun bis 100 %.",
+      ],
+    },
     {
       version: "1.52.0",
       date: "2026-06-15",
@@ -22094,7 +22171,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function renderPlacementQuestion(vm) {
     const q = vm.q;
     if (!q) return renderPlacementIntro(vm);
-    const pct = Math.round(((vm.index) / (vm.total || 1)) * 100);
+    const pct = Math.round(((vm.index + 1) / (vm.total || 1)) * 100);
     const head = `
       <div class="pl-progress">
         <div class="pl-progress__bar"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
@@ -22132,6 +22209,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function renderPlacementDone(vm) {
     const noteText = vm.note === "commStrong" ? t("placement.noteComm")
       : vm.note === "grammarStrong" ? t("placement.noteGrammar") : "";
+    // Zuverlässigkeits-Hinweis (Qualität des Tests, fließt NICHT in den Score).
+    const relText = vm.reliability ? t("placement.rel_" + vm.reliability) : "";
     const skillRow = (s) => `
       <li class="pl-skill">
         <span class="pl-skill__name">${esc(t("placement.skill_" + s.skill))}</span>
@@ -22157,6 +22236,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <p class="sectioncap">${esc(t("placement.skillsCap"))}</p>
         <ul class="pl-skills">${vm.skills.map(skillRow).join("")}</ul>
         ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
+        ${relText ? `<div class="tip pl-reliability pl-reliability--${esc(vm.reliability)}">${esc(relText)}</div>` : ""}
         <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>
@@ -26189,6 +26269,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           accuracy: Math.round(result.accuracy * 100) / 100,
           unknownRate: Math.round(result.unknownRate * 100) / 100,
           tempo: result.tempo,
+          reliability: result.reliability || "",
           at: new Date().toISOString().slice(0, 10),
         },
       });
@@ -26236,6 +26317,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       correct: r.correct, total: r.total,
       tempo: r.tempo,
       note: r.note, // "" | "commStrong" | "grammarStrong"
+      reliability: r.reliability, // "" | "fast" | "guessing" | "manyUnknown"
       skills,
     };
   }

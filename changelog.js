@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.53.0",
+      date: "2026-06-15",
+      title: "Ruta-Check: fairere Einstufung + Qualitäts-Hinweis",
+      items: [
+        "🧠 Genauere Einstufung: Wer im adaptiven Test schwere Fragen richtig löst, wird jetzt nicht mehr durch ein paar Treffer-Fehlversuche unter Wert eingestuft – das demonstrierte Niveau zählt mit (IRT-artig).",
+        "🛡️ Neuer Zuverlässigkeits-Hinweis am Ende: erkennt sehr schnelles Klicken oder wahlloses Raten und schlägt eine ruhige Wiederholung vor; viele ehrliche „weiß nicht“ werden positiv eingeordnet. Fließt NICHT in den Score, nur als Einordnung.",
+        "📊 Der Fortschrittsbalken füllt sich nun bis 100 %.",
+      ],
+    },
+    {
       version: "1.52.0",
       date: "2026-06-15",
       title: "Modo profe wandert in den Tarea-Reiter (Editionen) + Ruta-Check-Feinschliff",
