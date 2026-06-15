@@ -467,6 +467,8 @@ body {
   font-weight: 700; color: var(--brand-ink); letter-spacing: 0.02em;
 }
 .edition-credit a { color: var(--brand-ink); }
+/* Optionales Partner-Logo (nur wenn eine Edition mit Freigabe eines setzt). */
+.edition-logo { display: block; max-height: 40px; max-width: 60%; margin: 0 auto 8px; }
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
@@ -2224,6 +2226,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     brandName: "HolaRuta",    // Tab-Titel & installierter App-Name
     accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk }
     partner: null,            // { name, url? } für einen dezenten Credit im Profil
+    logo: null,               // Partner-Logo (data:- oder https:-URL) – NUR mit schriftlicher
+                              //   Freigabe setzen; null = kein Logo (rechtlich sichere Vorgabe)
     defaultDestination: null, // z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
     // Optionale Cloud-Sync (Stufe 3, BACKEND.md). null = aus (Standard, kein
     // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
@@ -16930,7 +16934,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(e.partner.name)}</a>`
           : esc(e.partner.name))
       : "";
-    return `<p class="edition-credit">${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
+    // Partner-Logo NUR rendern, wenn eine Edition es ausdrücklich setzt (mit Freigabe).
+    // Erlaubt sind ausschließlich https:- oder eingebettete data:image-URLs – kein
+    // javascript:/sonstiges. Standardmäßig ist logo=null → es erscheint kein Bild.
+    const logoOk = e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
+    const logo = logoOk
+      ? `<img class="edition-logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />`
+      : "";
+    return `<p class="edition-credit">${logo}${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
   }
 
   // „Auf den Startbildschirm“-Hinweis (nur wenn sinnvoll, siehe install.js).
@@ -20237,7 +20248,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function editionInfo() {
     const c = window.SC && window.SC.config;
     if (!c || !c.edition) return null;
-    return { name: c.brandName, partner: c.partner || null };
+    return { name: c.brandName, partner: c.partner || null, logo: c.logo || null };
   }
 
   function tripGoalVM() {

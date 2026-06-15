@@ -429,6 +429,8 @@ body {
   font-weight: 700; color: var(--brand-ink); letter-spacing: 0.02em;
 }
 .edition-credit a { color: var(--brand-ink); }
+/* Optionales Partner-Logo (nur wenn eine Edition mit Freigabe eines setzt). */
+.edition-logo { display: block; max-height: 40px; max-width: 60%; margin: 0 auto 8px; }
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }

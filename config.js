@@ -18,6 +18,8 @@
     brandName: "HolaRuta",    // Tab-Titel & installierter App-Name
     accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk }
     partner: null,            // { name, url? } für einen dezenten Credit im Profil
+    logo: null,               // Partner-Logo (data:- oder https:-URL) – NUR mit schriftlicher
+                              //   Freigabe setzen; null = kein Logo (rechtlich sichere Vorgabe)
     defaultDestination: null, // z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
     // Optionale Cloud-Sync (Stufe 3, BACKEND.md). null = aus (Standard, kein
     // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:

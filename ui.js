@@ -479,7 +479,14 @@
           ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(e.partner.name)}</a>`
           : esc(e.partner.name))
       : "";
-    return `<p class="edition-credit">${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
+    // Partner-Logo NUR rendern, wenn eine Edition es ausdrücklich setzt (mit Freigabe).
+    // Erlaubt sind ausschließlich https:- oder eingebettete data:image-URLs – kein
+    // javascript:/sonstiges. Standardmäßig ist logo=null → es erscheint kein Bild.
+    const logoOk = e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
+    const logo = logoOk
+      ? `<img class="edition-logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />`
+      : "";
+    return `<p class="edition-credit">${logo}${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
   }
 
   // „Auf den Startbildschirm“-Hinweis (nur wenn sinnvoll, siehe install.js).

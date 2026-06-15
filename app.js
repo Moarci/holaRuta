@@ -679,7 +679,7 @@
   function editionInfo() {
     const c = window.SC && window.SC.config;
     if (!c || !c.edition) return null;
-    return { name: c.brandName, partner: c.partner || null };
+    return { name: c.brandName, partner: c.partner || null, logo: c.logo || null };
   }
 
   function tripGoalVM() {

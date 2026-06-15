@@ -10,8 +10,11 @@ window.SC = window.SC || {};
 window.SC.editionConfig = {
   edition: "weroad",
   brandName: "HolaRuta · WeRoad Colombia",
-  accent: { brand: "#E0533A", brandInk: "#B53C28" }, // kräftiges Coral
+  // Lebhaftes Koralle nahe WeRoads Markenauftritt. NÄHERUNG – exakte Brand-Hex
+  // konnten online nicht verifiziert werden; bei Freigabe gegen Brand-Guide ersetzen.
+  accent: { brand: "#FB5A47", brandInk: "#D33A2C" },
   partner: { name: "WeRoad Colombia" }, // url erst mit Partner-Freigabe
+  // logo: "https://…/weroad.svg",       // NUR mit schriftlicher Freigabe setzen (data: oder https:)
   defaultDestination: "Colombia",         // surft die Pre-Arrival-Kachel an
   // Beispiel-Vorverdrahtung der optionalen Cloud-Sync (Stufe 3, BACKEND.md).
   // enabled: false, bis WeRoad einen echten Endpunkt bereitstellt; für die lokale

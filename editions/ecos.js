@@ -11,8 +11,11 @@ window.SC = window.SC || {};
 window.SC.editionConfig = {
   edition: "ecos",
   brandName: "HolaRuta · ECOS",
-  accent: { brand: "#1F7A8C", brandInk: "#155C69" }, // Karibik-Teal
+  // Karibik-Teal als thematischer Akzent (Cartagena). NÄHERUNG – ECOS' exakte
+  // Brand-Hex konnten online nicht verifiziert werden; bei Freigabe ersetzen.
+  accent: { brand: "#1F7A8C", brandInk: "#155C69" },
   partner: { name: "ECOS · Cartagena" }, // url erst mit Partner-Freigabe
+  // logo: "https://…/ecos.svg",          // NUR mit schriftlicher Freigabe setzen (data: oder https:)
   defaultDestination: "Cartagena",        // surft die Pre-Arrival-Kachel an
   // Beispiel-Vorverdrahtung der optionalen Cloud-Sync (Stufe 3, BACKEND.md).
   // enabled: false, bis ECOS einen echten Endpunkt bereitstellt; für die lokale
