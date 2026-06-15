@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.29.0",
+      date: "2026-06-15",
+      title: "Historia-Modul als Ganzes teilen",
+      items: [
+        "📤 Neues Sharepic auf Modul-Ebene: „Historia de Sudamérica“ lässt sich jetzt komplett weiterempfehlen – ein Bild mit Modulname, Einleitung und einem Zeitstrahl-Teaser der Epochen, in 1:1 oder 9:16 (Story). Der „Modul teilen“-Knopf sitzt oben direkt unter der Bereichs-Navigation.",
+      ],
+    },
+    {
       version: "1.28.0",
       date: "2026-06-15",
       title: "Historia de Sudamérica: die große Geschichte",

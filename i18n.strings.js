@@ -432,6 +432,7 @@
     histSkip: "Nicht so wichtig – kannst du überspringen",
     histTranslation: "Ganze Übersetzung anzeigen",
     histShare: "Text & Vokabeln teilen",
+    histModuleShare: "Modul teilen",
     tipsShare: "Als Bild teilen",
     histReadToggle: "Auf Spanisch lesen",
     histQuiz: "Mini-Quiz: Vokabeln testen",
@@ -714,6 +715,7 @@
     histSkip: "Less important – you can skip these",
     histTranslation: "Show full translation",
     histShare: "Share text & vocab",
+    histModuleShare: "Share module",
     tipsShare: "Share as image",
     histReadToggle: "Read in Spanish",
     histQuiz: "Mini-quiz: test the vocab",
@@ -1199,6 +1201,8 @@
     captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
     captionHistoriaLevel: (p) => `📊 Niveau: ${p.level}`,
     captionHistoria: "Spanisch lesen lernen mit echten Texten – HolaRuta. 🌎",
+    captionHistModuleHead: "📜 Historia de Sudamérica – Südamerikas Geschichte in einem Modul",
+    captionHistModule: "Von den Inka über Bolívar bis heute – verständlich erzählt, mit Spanisch-Lesetraining. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – Reise-Tipps von HolaRuta`,
     captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
   }, {
@@ -1222,6 +1226,8 @@
     captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
     captionHistoriaLevel: (p) => `📊 Level: ${p.level}`,
     captionHistoria: "Learning to read Spanish with real texts – HolaRuta. 🌎",
+    captionHistModuleHead: "📜 Historia de Sudamérica – South America's history in one module",
+    captionHistModule: "From the Inca via Bolívar to today – clearly told, with Spanish reading practice. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – travel tips from HolaRuta`,
     captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
   });

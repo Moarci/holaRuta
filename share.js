@@ -568,6 +568,97 @@
     return c;
   }
 
+  // ---------- Motiv 6: Historia-Modul-Übersicht (ganzes Modul teilen) ----------
+  // Stellt nicht einen einzelnen Text dar, sondern das KOMPLETTE Modul „Historia
+  // de Sudamérica" als Einladung: Modulname, Einleitung und ein Zeitstrahl-Teaser
+  // mit den Epochen (Symbol · Zeitraum · Titel).
+  // payload: { kicker, title, intro, timelineLabel, eras:[{icon,period,title}] }
+  function buildHistOverview(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = ["#8E5A2E", "#5A3A24"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker (kleiner Hinweis über dem Titel)
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText(`📜  ${String(payload.kicker || "").toUpperCase()}`, cx, isStory ? 140 : 104);
+
+    // Großer Modul-Titel
+    const titleTop = isStory ? 172 : 132;
+    const titleBottom = fitText(ctx, payload.title || "Historia de Sudamérica", cx, titleTop, pw - 20, {
+      px: 76, min: 44, weight: "800", color: "#ffffff", maxLines: 2,
+    });
+    let y = titleBottom + 44;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+    const bottom = panelY + panelH - 40;
+
+    // Einleitung (gedämpft)
+    if (payload.intro) {
+      iy = drawWrapped(ctx, payload.intro, innerX, iy, innerW, {
+        px: isStory ? 31 : 29, weight: "600", color: MUTE, lineHeight: 1.4,
+        maxBottom: panelY + (isStory ? 540 : 340),
+      }) + 44;
+    }
+
+    // Zeitstrahl-Teaser: die Epochen als Liste (Symbol · Zeitraum · Titel).
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillText(`🕰️  ${String(payload.timelineLabel || "").toUpperCase()}`, innerX, iy);
+    iy += 52;
+
+    const eras = payload.eras || [];
+    const rowH = isStory ? 98 : 86;
+    for (let i = 0; i < eras.length; i++) {
+      const e = eras[i] || {};
+      if (iy + rowH > bottom) break;
+      // Symbol-Punkt
+      ctx.font = font("700", 40);
+      ctx.fillStyle = accent[0];
+      ctx.textAlign = "left";
+      ctx.fillText(e.icon || "•", innerX, iy + 40);
+      const tx = innerX + 64;
+      // Zeitraum (klein, gedämpft)
+      ctx.font = font("700", 24);
+      ctx.fillStyle = MUTE;
+      ctx.fillText(String(e.period || ""), tx, iy + 26);
+      // Titel der Epoche (gekürzt, falls zu breit)
+      ctx.font = font("800", 30);
+      ctx.fillStyle = INK;
+      let title = String(e.title || "");
+      let trimmed = false;
+      while (ctx.measureText(title).width > innerW - 64 && title.length > 6) { title = title.slice(0, -2); trimmed = true; }
+      ctx.fillText(trimmed ? title + "…" : title, tx, iy + 62);
+      iy += rowH;
+    }
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
   // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
   // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
@@ -711,6 +802,11 @@
       out += `\n\n${t("share.captionHistoria")}`;
       return out + link;
     }
+    if (kind === "histmodule") {
+      let out = t("share.captionHistModuleHead");
+      out += `\n\n${t("share.captionHistModule")}`;
+      return out + link;
+    }
     if (kind === "tips") {
       const title = String(p.title || "").trim();
       const cat = String(p.kicker || "").trim();
@@ -738,6 +834,7 @@
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
              : kind === "histtext" ? buildHistoria(payload, fmt)
+             : kind === "histmodule" ? buildHistOverview(payload, fmt)
              : kind === "tips" ? buildTips(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
@@ -756,12 +853,14 @@
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "badge" ? "holaruta-stempel"
                : kind === "histtext" ? "holaruta-historia"
+               : kind === "histmodule" ? "holaruta-historia-modul"
                : kind === "tips" ? "holaruta-tipps"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
                 : kind === "histtext" ? "Historia de Sudamérica"
+                : kind === "histmodule" ? "Historia de Sudamérica"
                 : kind === "tips" ? ((payload && payload.title) || "HolaRuta")
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
@@ -790,5 +889,5 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria, buildTips };
+  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria, buildHistOverview, buildTips };
 })();

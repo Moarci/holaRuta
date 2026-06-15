@@ -1643,6 +1643,13 @@
         <a class="hist-nav__chip" href="#hist-heute" data-action="scroll-to" data-target="hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
       </nav>`;
 
+    // Auf Modul-Ebene teilbar: ein Sharepic des ganzen Moduls (Titel, Einleitung
+    // und Zeitstrahl-Teaser) – damit man „Historia de Sudamérica" weiterempfehlen
+    // kann, nicht nur einen einzelnen Text. Logik in app.shareHistModule.
+    const moduleShare = canShare()
+      ? `<div class="hist-modshare"><button class="hist-share" type="button" data-action="share-hist-module">📤 ${esc(t("discover.histModuleShare"))}</button></div>`
+      : "";
+
     // Eine Epoche als aufklappbare Karte am Zeitstrahl. Aufbau wie bei den
     // Protagonisten: zuerst der erklärende Text in der UI-Sprache, darunter das
     // spanische Lesetraining als eigener aufklappbarer Block.
@@ -1757,6 +1764,7 @@
         ${hmTopbar("📜 Historia de Sudamérica", "home")}
         <p class="hm-intro">${esc(vm.intro)}</p>
         ${nav}
+        ${moduleShare}
 
         <div class="hist-block" id="hist-zeitstrahl">
           <h3 class="hist-block__h">🕰️ ${esc(t("discover.histTimelineTitle"))}</h3>
