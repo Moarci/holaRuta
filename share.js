@@ -100,6 +100,19 @@
     return y - step + px * (lh - 1); // ungefähre Unterkante
   }
 
+  // Eine zentrierte Zeile zeichnen und die Schrift bei Bedarf schrumpfen, bis sie
+  // in maxW passt. Für personalisierte Kicker („FORTSCHRITT VON …"), deren Name
+  // bis zu 40 Zeichen lang sein darf und sonst über den Bildrand liefe.
+  function drawFittedLine(ctx, text, cx, y, maxW, basePx, weight) {
+    let px = basePx;
+    ctx.font = font(weight, px);
+    while (px > 22 && ctx.measureText(text).width > maxW) {
+      px -= 2;
+      ctx.font = font(weight, px);
+    }
+    ctx.fillText(text, cx, y);
+  }
+
   function bgGradient(ctx, from, to, h) {
     const g = ctx.createLinearGradient(0, 0, W, h);
     g.addColorStop(0, from);
@@ -259,8 +272,7 @@
     // Titel
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = font("700", 40);
-    ctx.fillText(t("share.myProgress"), cx, L.kicker);
+    drawFittedLine(ctx, payload.userName ? t("share.myProgressName", { name: payload.userName }) : t("share.myProgress"), cx, L.kicker, W - PAD * 2, 40, "700");
     ctx.font = font("800", 66);
     ctx.fillText("¡Estoy aprendiendo!", cx, L.title);
 
@@ -359,8 +371,7 @@
     // Kopf: Ruta-Pass + Badge-Gruppe.
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = font("700", 40);
-    ctx.fillText(t("share.myPass"), cx, L.kicker);
+    drawFittedLine(ctx, payload.userName ? t("share.myPassName", { name: payload.userName }) : t("share.myPass"), cx, L.kicker, W - PAD * 2, 40, "700");
     if (payload.groupLabel) {
       ctx.fillStyle = "rgba(255,255,255,0.82)";
       ctx.font = font("600", 30);

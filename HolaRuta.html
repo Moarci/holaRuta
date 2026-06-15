@@ -255,6 +255,17 @@ body {
   color: var(--ink-soft); padding-left: 4px;
 }
 
+/* Reise-Name (Profil): Eingabefeld + Speichern in einer Zeile, kurzer Hinweis darunter */
+.namefield__row { display: flex; gap: 8px; align-items: stretch; }
+.namefield__input {
+  flex: 1 1 auto; min-width: 0; font: inherit; font-weight: 600; color: var(--ink);
+  padding: 10px 12px; min-height: 44px;
+  border: 1.5px solid var(--line-strong); border-radius: var(--r-sm, 10px);
+  background: var(--bg, var(--surface));
+}
+.namefield__save { flex: 0 0 auto; min-height: 44px; }
+.namefield__hint { margin: 0; padding-left: 4px; font-size: 0.78rem; color: var(--muted); }
+
 /* Segmented control (Modus) */
 .segmented {
   display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
@@ -2844,6 +2855,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeType: "⌨️ Schreiben",
     modeListen: "👂 Hören",
     settingsCap: "⚙️ Einstellungen",
+    nameCap: "🙋 Dein Name",
+    namePlaceholder: "z. B. Marco",
+    nameSave: "Speichern",
+    nameHint: "Wird in den Diálogos automatisch eingesetzt, wenn du dich vorstellst.",
     speechRate: "Sprechtempo",
     speechRateAria: "Sprechtempo der Vorlese-Stimme",
     rateSlow: "🐢 Langsam",
@@ -2856,6 +2871,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     uiLanguage: "Sprache",
     // Karten-Prompt (Spanisch, beide Sprachen gleich)
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "Für meine liebe Lisa.",
   }, {
     tabsAreas: "Sections",
@@ -2907,6 +2923,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeType: "⌨️ Writing",
     modeListen: "👂 Listening",
     settingsCap: "⚙️ Settings",
+    nameCap: "🙋 Your name",
+    namePlaceholder: "e.g. Marco",
+    nameSave: "Save",
+    nameHint: "Used automatically in the Diálogos when you introduce yourself.",
     speechRate: "Speech rate",
     speechRateAria: "Speech rate of the read-aloud voice",
     rateSlow: "🐢 Slow",
@@ -2918,6 +2938,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dirAria: "Study direction",
     uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "For my dear Lisa.",
   });
 
@@ -3643,6 +3664,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     badgeLocked: "Noch nicht freigeschaltet",
     badgeNewMulti: (p) => `${p.n} neue Stempel!`,
     badgeNewOne: "Neuer Stempel!",
+    badgeNewMultiName: (p) => `${p.n} neue Stempel, ${p.name}!`,
+    badgeNewOneName: (p) => `Neuer Stempel, ${p.name}!`,
     badgeToastLabel: (p) => `${p.head} Ruta-Pass öffnen`,
 
     // Update-Hinweis
@@ -3754,6 +3777,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     badgeLocked: "Not unlocked yet",
     badgeNewMulti: (p) => `${p.n} new stamps!`,
     badgeNewOne: "New stamp!",
+    badgeNewMultiName: (p) => `${p.n} new stamps, ${p.name}!`,
+    badgeNewOneName: (p) => `New stamp, ${p.name}!`,
     badgeToastLabel: (p) => `${p.head} Open Ruta pass`,
 
     updTitle: "HolaRuta has been updated",
@@ -3893,9 +3918,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   i18n.register("share", {
     sideNative: "DEUTSCH",
     myProgress: "MEIN FORTSCHRITT",
+    myProgressName: (p) => `FORTSCHRITT VON ${String(p.name).toUpperCase()}`,
     accuracy: "Trefferquote",
     statsLine: (p) => `Gemeistert ${p.mastered}  ·  Am Lernen ${p.learning}  ·  Neu ${p.neu}`,
     myPass: "🎖️ MEIN RUTA-PASS",
+    myPassName: (p) => `🎖️ RUTA-PASS VON ${String(p.name).toUpperCase()}`,
     stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} Stempel gesammelt`,
     // Begleittexte beim Teilen (Bildunterschrift in WhatsApp/Telegram …)
     captionJoin: "▶️ Jetzt mitlernen:",
@@ -3921,9 +3948,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
+    myProgressName: (p) => `${String(p.name).toUpperCase()}'S PROGRESS`,
     accuracy: "Accuracy",
     statsLine: (p) => `Mastered ${p.mastered}  ·  Learning ${p.learning}  ·  New ${p.neu}`,
     myPass: "🎖️ MY RUTA-PASS",
+    myPassName: (p) => `🎖️ ${String(p.name).toUpperCase()}'S RUTA-PASS`,
     stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} stamps collected`,
     captionJoin: "▶️ Start learning too:",
     factAccuracy: (p) => `${p.r}% accuracy`,
@@ -3976,7 +4005,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     b17: { e: "Por favor, necesito ayuda.", d: "Bitte, ich brauche Hilfe.", dEn: "Please, I need help.", s: "Wenn du dich unsicher fühlst oder Unterstützung brauchst.", sEn: "When you feel unsure or need support.", n: "Kurz und klar. In ernsten Situationen kannst du ergänzen: Es urgente.", nEn: "Short and clear. In serious situations you can add: Es urgente." },
     e04: { e: "La cuenta, por favor.", d: "Die Rechnung, bitte.", dEn: "The bill, please.", s: "Im Restaurant, Café oder bei Streetfood mit Sitzbereich.", sEn: "At a restaurant, café or street food with seating.", n: "Kurz, höflich und völlig ausreichend. Noch höflicher: ¿Me trae la cuenta, por favor?", nEn: "Short, polite and perfectly enough. Even more polite: ¿Me trae la cuenta, por favor?" },
     e46: { e: "Para mí sin cebolla, por favor.", d: "Für mich ohne Zwiebeln, bitte.", dEn: "Without onions for me, please.", s: "Beim Bestellen, wenn du eine Zutat vermeiden willst.", sEn: "When ordering, if you want to avoid an ingredient.", n: "Die Struktur sin ... ist extrem praktisch: sin carne, sin queso, sin picante.", nEn: "The sin ... structure is super handy: sin carne, sin queso, sin picante." },
-    hostel01: { e: "Hola, tengo una reserva para esta noche.", d: "Hallo, ich habe eine Reservierung für heute Nacht.", dEn: "Hi, I have a reservation for tonight.", s: "Beim Check-in im Hostel, Hotel oder Guesthouse.", sEn: "At check-in at a hostel, hotel or guesthouse.", n: "Wenn nach dem Namen gefragt wird, sag: A nombre de Marcel.", nEn: "If asked for the name, say: A nombre de Marcel." },
+    hostel01: { e: "Hola, tengo una reserva para esta noche.", d: "Hallo, ich habe eine Reservierung für heute Nacht.", dEn: "Hi, I have a reservation for tonight.", s: "Beim Check-in im Hostel, Hotel oder Guesthouse.", sEn: "At check-in at a hostel, hotel or guesthouse.", n: "Wenn nach dem Namen gefragt wird, sag: A nombre de {name}.", nEn: "If asked for the name, say: A nombre de {name}." },
     hostel02: { e: "Hola, ¿tiene una cama libre para esta noche?", d: "Hallo, haben Sie für heute Nacht noch ein Bett frei?", dEn: "Hi, do you have a bed free for tonight?", s: "Wenn du spontan ein Hostel suchst oder verlängern möchtest.", sEn: "When you're looking for a hostel on the spot or want to extend.", n: "Alternativ kannst du fragen: ¿Hay una cama disponible?", nEn: "Alternatively you can ask: ¿Hay una cama disponible?" },
     hostel03: { e: "¿El desayuno está incluido en el precio?", d: "Ist das Frühstück im Preis enthalten?", dEn: "Is breakfast included in the price?", s: "Beim Check-in oder bei der Buchung vor Ort.", sEn: "At check-in or when booking on the spot.", n: "Wenn es nicht inklusive ist, frag einfach: ¿Cuánto cuesta?", nEn: "If it's not included, just ask: ¿Cuánto cuesta?" },
     hostel04: { e: "Perdón, ¿dónde está mi cama?", d: "Entschuldigung, wo ist mein Bett?", dEn: "Excuse me, where's my bed?", s: "Im Dorm, wenn dir nur eine Bett- oder Zimmernummer genannt wurde.", sEn: "In the dorm, when you've only been given a bed or room number.", n: "Oben oder unten? Man unterscheidet cama de arriba und cama de abajo.", nEn: "Top or bottom? There's cama de arriba and cama de abajo." },
@@ -4017,7 +4046,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     b09: { e: "– ¿Todo bien? – Sí, gracias.", d: "– Alles gut? – Ja, danke.", dEn: "– All good? – Yes, thanks.", s: "In jeder kurzen Rückfrage.", sEn: "In any quick check-in.", n: "Ein klares Sí oder No mit einem Lächeln reicht oft völlig.", nEn: "A clear Sí or No with a smile is often plenty." },
     b11: { e: "Disculpe, ¿habla inglés?", d: "Entschuldigung, sprechen Sie Englisch?", dEn: "Excuse me, do you speak English?", s: "Wenn du sprachlich nicht weiterkommst.", sEn: "When you're stuck with the language.", n: "Oft hilft die Frage – außerhalb von Touristenorten ist die Antwort aber meist no.", nEn: "The question often helps – but outside tourist spots the answer is usually no." },
     b12: { e: "Hola, ¿cómo te llamas?", d: "Hallo, wie heißt du?", dEn: "Hi, what's your name?", s: "Beim Kennenlernen im Hostel oder unterwegs.", sEn: "When getting to know someone at the hostel or on the road.", n: "Förmlich (Sie): ¿Cómo se llama?", nEn: "Formal (you): ¿Cómo se llama?" },
-    b13: { e: "Me llamo Marcel, ¿y tú?", d: "Ich heiße Marcel, und du?", dEn: "My name's Marcel, and you?", s: "Wenn du dich vorstellst.", sEn: "When you introduce yourself.", n: "Das ¿y tú? am Ende hält das Gespräch in Gang.", nEn: "The ¿y tú? at the end keeps the conversation going." },
+    b13: { e: "Me llamo {name}, ¿y tú?", d: "Ich heiße {name}, und du?", dEn: "My name's {name}, and you?", s: "Wenn du dich vorstellst.", sEn: "When you introduce yourself.", n: "Das ¿y tú? am Ende hält das Gespräch in Gang.", nEn: "The ¿y tú? at the end keeps the conversation going." },
     b14: { e: "Perdón, ¿me puedes ayudar? Estoy perdido.", d: "Entschuldigung, kannst du mir helfen? Ich habe mich verlaufen.", dEn: "Excuse me, can you help me? I'm lost.", s: "Wenn du Orientierung oder Unterstützung brauchst.", sEn: "When you need directions or support.", n: "Höflicher und förmlich: ¿Me puede ayudar?", nEn: "More polite and formal: ¿Me puede ayudar?" },
     b15: { e: "Más despacio, por favor. No entiendo.", d: "Langsamer, bitte. Ich verstehe nicht.", dEn: "Slower, please. I don't understand.", s: "Wenn jemand zu schnell spricht – oder das Taxi zu schnell fährt.", sEn: "When someone speaks too fast – or the taxi drives too fast.", n: "Kombiniert mit ¿Puede repetir? klappt es fast immer. Gilt fürs Sprechen und fürs Fahren gleichermaßen.", nEn: "Combined with ¿Puede repetir? it almost always works. Applies to speaking and driving alike." },
     b18: { e: "Necesito un médico, por favor.", d: "Ich brauche einen Arzt, bitte.", dEn: "I need a doctor, please.", s: "Bei Krankheit oder Verletzung – im Hostel, in der Apotheke.", sEn: "When ill or injured – at the hostel, at the pharmacy.", n: "Im Notfall ergänzen: Es una emergencia.", nEn: "In an emergency add: Es una emergencia." },
@@ -4507,7 +4536,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     vb25: { e: "Soy de Alemania, ¿y tú?", d: "Ich bin aus Deutschland, und du?", dEn: "I'm from Germany, and you?", s: "Die häufigste Frage im Hostel beantworten.", sEn: "Answering the most common hostel question.", n: "Herkunft & Eigenschaften mit ser; Ort & Zustand mit estar – die wichtigste Unterscheidung.", nEn: "Origin & qualities with ser; location & state with estar – the most important distinction." },
     vb26: { e: "¿Eres de aquí? Busco una buena arepería.", d: "Bist du von hier? Ich suche ein gutes Arepa-Lokal.", dEn: "Are you from here? I'm looking for a good arepa place.", s: "Einheimische nach Geheimtipps fragen.", sEn: "Asking locals for insider tips.", n: "Lokale Tipps schlagen jede App – die Frage öffnet fast immer ein nettes Gespräch.", nEn: "Local tips beat any app – the question almost always opens a nice chat." },
     vb27: { e: "Ella es mi amiga del hostal.", d: "Sie ist meine Freundin aus dem Hostel.", dEn: "She's my friend from the hostel.", s: "Reisebekanntschaften einander vorstellen.", sEn: "Introducing travel acquaintances to each other.", n: "es = er/sie/usted-Form von ser. Nicht verwechseln mit está (Ort/Zustand).", nEn: "es = the he/she/usted form of ser. Don't confuse it with está (location/state)." },
-    vb28: { e: "Tengo una reserva a nombre de Marcel.", d: "Ich habe eine Reservierung auf den Namen Marcel.", dEn: "I have a reservation under the name Marcel.", s: "Beim Check-in im Hostel oder Hotel.", sEn: "At check-in at the hostel or hotel.", n: "tengo brauchst du ständig: Tengo hambre/sed/frío = Ich habe Hunger/Durst/mir ist kalt.", nEn: "tengo comes up constantly: Tengo hambre/sed/frío = I'm hungry/thirsty/cold." },
+    vb28: { e: "Tengo una reserva a nombre de {name}.", d: "Ich habe eine Reservierung auf den Namen {name}.", dEn: "I have a reservation under the name {name}.", s: "Beim Check-in im Hostel oder Hotel.", sEn: "At check-in at the hostel or hotel.", n: "tengo brauchst du ständig: Tengo hambre/sed/frío = Ich habe Hunger/Durst/mir ist kalt.", nEn: "tengo comes up constantly: Tengo hambre/sed/frío = I'm hungry/thirsty/cold." },
     vb29: { e: "¿Tienes cambio para el bus?", d: "Hast du Kleingeld für den Bus?", dEn: "Do you have small change for the bus?", s: "Unter Reisenden, bevor der colectivo kommt.", sEn: "Among travellers, before the colectivo arrives.", n: "cambio = Kleingeld/Wechselgeld – im Bus oft Pflicht, große Scheine sind unbeliebt.", nEn: "cambio = small change – often required on the bus, large notes are unwelcome." },
     vb30: { e: "¿Tiene una cama libre para esta noche?", d: "Haben Sie ein Bett frei für heute Nacht?", dEn: "Do you have a bed free for tonight?", s: "Spontan ohne Buchung im Hostel ankommen.", sEn: "Arriving at the hostel on the spot, without a booking.", n: "tiene = usted-Form – die höfliche Standardform an jeder Rezeption.", nEn: "tiene = the usted form – the polite standard form at any reception." },
     vb31: { e: "¿Puedo dejar mi mochila aquí?", d: "Kann ich meinen Rucksack hier lassen?", dEn: "Can I leave my backpack here?", s: "Vor dem Check-in oder nach dem Check-out.", sEn: "Before check-in or after check-out.", n: "puedo + Infinitiv = ich kann/darf …: ¿Puedo pagar con tarjeta? = Kann ich mit Karte zahlen?", nEn: "puedo + infinitive = I can/may …: ¿Puedo pagar con tarjeta? = Can I pay by card?" },
@@ -5650,7 +5679,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       dialogue: [
         { speaker: "A", de: "Hallo, guten Abend! Ich habe eine Reservierung.", en: "Hello, good evening! I have a reservation.", es: "¡Hola, buenas noches! Tengo una reserva." },
         { speaker: "B", de: "Willkommen! Auf welchen Namen läuft die Reservierung?", en: "Welcome! What name is the reservation under?", es: "¡Bienvenido! ¿A nombre de quién está la reserva?" },
-        { speaker: "A", de: "Auf den Namen Marcel, für drei Nächte.", en: "Under the name Marcel, for three nights.", es: "A nombre de Marcel, por tres noches." },
+        { speaker: "A", de: "Auf den Namen {name}, für drei Nächte.", en: "Under the name {name}, for three nights.", es: "A nombre de {name}, por tres noches." },
         { speaker: "B", de: "Perfekt, ich sehe sie hier. Kannst du mir deinen Pass zeigen?", en: "Perfect, I can see it here. Can you show me your passport?", es: "Perfecto, aquí la veo. ¿Me puedes mostrar tu pasaporte?" },
         { speaker: "A", de: "Ja, klar, hier bitte.", en: "Yes, of course, here you go.", es: "Sí, claro, aquí tienes." },
         { speaker: "B", de: "Danke. Hast du schon online bezahlt oder zahlst du jetzt?", en: "Thanks. Have you already paid online or are you paying now?", es: "Gracias. ¿Ya pagaste en línea o pagas ahora?" },
@@ -5722,7 +5751,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       dialogue: [
         { speaker: "A", de: "Hallo! Ist hier noch frei?", en: "Hi! Is this seat free?", es: "¡Hola! ¿Está libre aquí?" },
         { speaker: "B", de: "Ja, klar, setz dich.", en: "Yes, of course, sit down.", es: "Sí, claro, siéntate." },
-        { speaker: "A", de: "Danke. Ich bin Marcel. Wie heißt du?", en: "Thanks. I'm Marcel. What's your name?", es: "Gracias. Soy Marcel. ¿Cómo te llamas?" },
+        { speaker: "A", de: "Danke. Ich bin {name}. Wie heißt du?", en: "Thanks. I'm {name}. What's your name?", es: "Gracias. Soy {name}. ¿Cómo te llamas?" },
         { speaker: "B", de: "Ich bin Sofía. Freut mich!", en: "I'm Sofía. Nice to meet you!", es: "Soy Sofía. ¡Mucho gusto!" },
         { speaker: "A", de: "Freut mich auch. Woher kommst du?", en: "Nice to meet you too. Where are you from?", es: "Igualmente. ¿De dónde eres?" },
         { speaker: "B", de: "Ich komme aus Argentinien. Und du?", en: "I'm from Argentina. And you?", es: "Soy de Argentina. ¿Y tú?" },
@@ -6071,7 +6100,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       dialogue: [
         { speaker: "A", de: "Hallo, guten Tag.", en: "Hello, good day.", es: "Hola, buenos días." },
         { speaker: "B", de: "Hallo! Wie heißt du?", en: "Hi! What's your name?", es: "¡Hola! ¿Cómo te llamas?" },
-        { speaker: "A", de: "Ich heiße Marcel.", en: "My name is Marcel.", es: "Me llamo Marcel." },
+        { speaker: "A", de: "Ich heiße {name}.", en: "My name is {name}.", es: "Me llamo {name}." },
         { speaker: "B", de: "Hast du eine Reservierung?", en: "Do you have a reservation?", es: "¿Tienes una reserva?" },
         { speaker: "A", de: "Ja, für zwei Nächte.", en: "Yes, for two nights.", es: "Sí, por dos noches." },
         { speaker: "B", de: "Sehr gut. Dein Bett ist Nummer fünf.", en: "Very good. Your bed is number five.", es: "Muy bien. Tu cama es la número cinco." },
@@ -6109,8 +6138,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       goalA: "Begrüße, stell dich vor und frag nach dem Namen und der Herkunft.",
       goalB: "Antworte freundlich und einfach und stell eine Gegenfrage.",
       dialogue: [
-        { speaker: "A", de: "Hallo! Ich bin Marcel.", en: "Hi! I'm Marcel.", es: "¡Hola! Soy Marcel." },
-        { speaker: "B", de: "Hallo Marcel! Ich bin Ana.", en: "Hi Marcel! I'm Ana.", es: "¡Hola Marcel! Soy Ana." },
+        { speaker: "A", de: "Hallo! Ich bin {name}.", en: "Hi! I'm {name}.", es: "¡Hola! Soy {name}." },
+        { speaker: "B", de: "Hallo {name}! Ich bin Ana.", en: "Hi {name}! I'm Ana.", es: "¡Hola {name}! Soy Ana." },
         { speaker: "A", de: "Freut mich. Woher kommst du?", en: "Nice to meet you. Where are you from?", es: "Mucho gusto. ¿De dónde eres?" },
         { speaker: "B", de: "Aus Chile. Und du?", en: "From Chile. And you?", es: "De Chile. ¿Y tú?" },
         { speaker: "A", de: "Aus Deutschland.", en: "From Germany.", es: "De Alemania." },
@@ -6119,7 +6148,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         { speaker: "B", de: "Cool. Bis später!", en: "Cool. See you later!", es: "Genial. ¡Nos vemos!" },
         { speaker: "A", de: "Bis später!", en: "See you later!", es: "¡Nos vemos!" },
       ],
-      usefulPhrases: ["Soy Marcel.", "Mucho gusto.", "¿De dónde eres?", "¿Y tú?", "¿Cuánto te quedas?", "¡Nos vemos!"],
+      usefulPhrases: ["Soy {name}.", "Mucho gusto.", "¿De dónde eres?", "¿Y tú?", "¿Cuánto te quedas?", "¡Nos vemos!"],
     },
 
     // ===== Fortgeschritten (B1) – Nebensätze, höfliche Konditionale =====
@@ -13757,6 +13786,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  *       de    = Handlungsanweisung („(sag, dass du einchecken willst)")
  *       solEs = die Musterantwort (erscheint in der Verlaufsspur)
  *       accept= zusätzlich akzeptierte (normalisierte) Eingaben neben solEs
+ *
+ * Platzhalter {name}: wird beim Anzeigen/Prüfen durch den im Profil hinterlegten
+ * Reise-Namen ersetzt (ohne Eintrag bleibt der Beispielname „Marco"). So nennt
+ * der Nutzer in den Dialogen seinen eigenen Namen statt eines fremden.
  */
 (function () {
   "use strict";
@@ -13786,8 +13819,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             { es: "¿Dónde está el baño?", ok: false },
           ] },
         { who: "npc", es: "Claro que sí. ¿A nombre de quién está la reserva?", de: "Aber natürlich. Auf welchen Namen läuft die Reservierung?", en: "Of course. What name is the booking under?" },
-        { who: "user", kind: "type", de: "(antworte: auf den Namen Marco)", en: "(answer: under the name Marco)", solEs: "A nombre de Marco.",
-          accept: ["a nombre de marco", "marco", "es marco", "me llamo marco", "esta a nombre de marco"] },
+        { who: "user", kind: "type", de: "(antworte: auf den Namen {name})", en: "(answer: under the name {name})", solEs: "A nombre de {name}.",
+          accept: ["a nombre de {name}", "{name}", "es {name}", "me llamo {name}", "esta a nombre de {name}"] },
         { who: "npc", es: "Perfecto, aquí la tengo. Una habitación doble por tres noches, ¿verdad?", de: "Perfekt, hier habe ich sie. Ein Doppelzimmer für drei Nächte, richtig?", en: "Perfect, here it is. A double room for three nights, right?" },
         { who: "user", kind: "mc", de: "(bestätige: ja, genau, drei Nächte)", en: "(confirm: yes, exactly, three nights)", solEs: "Sí, exacto, tres noches.",
           options: [
@@ -13905,8 +13938,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             { es: "Me da igual el horario.", ok: false },
           ] },
         { who: "npc", es: "Listo. ¿Me da su nombre completo, por favor?", de: "Geht klar. Geben Sie mir bitte Ihren vollständigen Namen?", en: "Right. Could you give me your full name, please?" },
-        { who: "user", kind: "type", de: "(nenne deinen Namen: Marco Pérez)", en: "(give your name: Marco Pérez)", solEs: "Marco Pérez.",
-          accept: ["marco perez", "me llamo marco perez", "soy marco perez", "mi nombre es marco perez"] },
+        { who: "user", kind: "type", de: "(nenne deinen Namen: {name} Pérez)", en: "(give your name: {name} Pérez)", solEs: "{name} Pérez.",
+          accept: ["{name} perez", "me llamo {name} perez", "soy {name} perez", "mi nombre es {name} perez"] },
         { who: "npc", es: "Gracias. Son cuarenta soles. ¿Cómo va a pagar?", de: "Danke. Das macht vierzig Soles. Wie möchten Sie zahlen?", en: "Thanks. That's forty soles. How would you like to pay?" },
         { who: "user", kind: "mc", de: "(sag: bar)", en: "(say: cash)", solEs: "En efectivo.",
           options: [
@@ -14170,9 +14203,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         { who: "user", kind: "type", de: "(sag: ja, bitte ruf einen Krankenwagen)", en: "(say: yes, please call an ambulance)", solEs: "Sí, llame a una ambulancia, por favor.",
           accept: ["si llame a una ambulancia", "llame a una ambulancia", "llame una ambulancia por favor", "si una ambulancia", "llame a la ambulancia"] },
         { who: "npc", es: "Ya la estoy llamando. ¿Cómo se llama usted?", de: "Ich rufe ihn schon. Wie heißen Sie?", en: "I'm calling it now. What's your name?" },
-        { who: "user", kind: "type", de: "(nenne deinen Namen: Marco)", en: "(give your name: Marco)", solEs: "Me llamo Marco.",
-          accept: ["me llamo marco", "soy marco", "marco", "mi nombre es marco", "me llaman marco"] },
-        { who: "npc", es: "Marco, ¿puede mover los dedos del pie?", de: "Marco, können Sie die Zehen bewegen?", en: "Marco, can you move your toes?" },
+        { who: "user", kind: "type", de: "(nenne deinen Namen: {name})", en: "(give your name: {name})", solEs: "Me llamo {name}.",
+          accept: ["me llamo {name}", "soy {name}", "{name}", "mi nombre es {name}", "me llaman {name}"] },
+        { who: "npc", es: "{name}, ¿puede mover los dedos del pie?", de: "{name}, können Sie die Zehen bewegen?", en: "{name}, can you move your toes?" },
         { who: "user", kind: "mc", de: "(sag, ja, ein bisschen)", en: "(say yes, a little)", solEs: "Sí, un poco.",
           options: [
             { es: "Sí, un poco.", ok: true },
@@ -16767,6 +16800,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return y - step + px * (lh - 1); // ungefähre Unterkante
   }
 
+  // Eine zentrierte Zeile zeichnen und die Schrift bei Bedarf schrumpfen, bis sie
+  // in maxW passt. Für personalisierte Kicker („FORTSCHRITT VON …"), deren Name
+  // bis zu 40 Zeichen lang sein darf und sonst über den Bildrand liefe.
+  function drawFittedLine(ctx, text, cx, y, maxW, basePx, weight) {
+    let px = basePx;
+    ctx.font = font(weight, px);
+    while (px > 22 && ctx.measureText(text).width > maxW) {
+      px -= 2;
+      ctx.font = font(weight, px);
+    }
+    ctx.fillText(text, cx, y);
+  }
+
   function bgGradient(ctx, from, to, h) {
     const g = ctx.createLinearGradient(0, 0, W, h);
     g.addColorStop(0, from);
@@ -16926,8 +16972,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Titel
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = font("700", 40);
-    ctx.fillText(t("share.myProgress"), cx, L.kicker);
+    drawFittedLine(ctx, payload.userName ? t("share.myProgressName", { name: payload.userName }) : t("share.myProgress"), cx, L.kicker, W - PAD * 2, 40, "700");
     ctx.font = font("800", 66);
     ctx.fillText("¡Estoy aprendiendo!", cx, L.title);
 
@@ -17026,8 +17071,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Kopf: Ruta-Pass + Badge-Gruppe.
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = font("700", 40);
-    ctx.fillText(t("share.myPass"), cx, L.kicker);
+    drawFittedLine(ctx, payload.userName ? t("share.myPassName", { name: payload.userName }) : t("share.myPass"), cx, L.kicker, W - PAD * 2, 40, "700");
     if (payload.groupLabel) {
       ctx.fillStyle = "rgba(255,255,255,0.82)";
       ctx.font = font("600", 30);
@@ -18303,8 +18347,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
   function tripDisplayCard(trip, action) {
     const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
-    const countdown = trip.past ? t("home.tripTime")
-      : trip.today ? t("home.tripToday")
+    // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
+    const who = trip.userName ? esc(trip.userName) + ", " : "";
+    const countdown = trip.past ? who + t("home.tripTime")
+      : trip.today ? who + t("home.tripToday")
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
@@ -18449,7 +18495,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ].join("");
 
     return `
-      ${pagehead(esc(t("home.homePrompt")), vm)}
+      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")), vm)}
       ${searchBar()}
 
       <div class="today">
@@ -18517,6 +18563,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Lern-Einstellungen: Bediensprache (de/en) plus die Lern-Voreinstellungen
     // (Modus/Richtung/Stufen/Tempo). Alles globale Vorgaben, daher gebündelt hier
     // im Profil – das Dashboard zeigt davon nur noch die Zusammenfassung.
+    // Reise-Name: wird in den Diálogos automatisch eingesetzt (Hotel, Notfall …),
+    // damit der Nutzer dort seinen eigenen Namen nennt statt eines Beispielnamens.
+    // Eigenes <form>, damit Enter speichert; zusätzlich sichert ein Blur den Stand
+    // (change-Handler in app.js), falls ohne „Speichern" weggetippt wird.
+    const nameGroup = `
+      <form class="switchgroup namefield" data-action="save-name">
+        <label class="switchcap" for="profile-name">${esc(t("home.nameCap"))}</label>
+        <div class="namefield__row">
+          <input id="profile-name" class="namefield__input" type="text" maxlength="40"
+                 autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
+                 placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" />
+          <button class="ghostbtn namefield__save" type="submit">${esc(t("home.nameSave"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.nameHint"))}</p>
+      </form>`;
     const langGroup = `
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
@@ -18541,6 +18602,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
+        ${nameGroup}
         ${langGroup}
         ${learnPrefs(vm)}
       </div>
@@ -19027,7 +19089,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Kurze Glückwunsch-Einblendung nach frisch freigeschalteten Badges.
   // Liegt als eigene Ebene über dem Screen; tippen führt zum Ruta-Pass.
-  function badgeToast(list) {
+  function badgeToast(list, name) {
     if (!list || !list.length) return "";
     const items = list
       .map((b) => `
@@ -19039,7 +19101,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </span>
         </span>`)
       .join("");
-    const head = list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne");
+    const head = name
+      ? (list.length > 1 ? t("profile.badgeNewMultiName", { n: list.length, name }) : t("profile.badgeNewOneName", { name }))
+      : (list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne"));
     return `
       <button class="btoast" data-action="open-badges" aria-label="${esc(t("profile.badgeToastLabel", { head }))}">
         <span class="btoast__head">🎖️ ${esc(head)}</span>
@@ -21602,6 +21666,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
     battleNames: { A: "", B: "" }, // optionale Spielernamen (sonst „Spieler A/B")
+    battleNameEdited: false,  // hat der Nutzer ein Battle-Namensfeld angefasst? (dann Profil-Namen nicht mehr vorbelegen)
     battleSeen: [],          // zuletzt verwendete Battle-Ids – vermeidet sofortige Wiederholungen
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
@@ -21768,6 +21833,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
       },
       lastCat,
+      userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
@@ -21826,7 +21892,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       total: state.total,
       revealed: state.revealed,
       typeResult: state.typeResult,
-      context: card.context ? loc(card.context) : null,
+      context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
       swatch: card.swatch || null,
     };
@@ -21910,7 +21976,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
-      context: card.context ? loc(card.context) : null,
+      context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
     });
   }
@@ -22002,7 +22068,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       phrases: loc(regatear.PHRASES || []),
       units: loc(regatear.UNITS || []),
       regional: loc(regatear.REGIONAL || []),
-      roleplays: loc(roleplays),
+      // {name} auch hier auflösen – symmetrisch zu roleplayVM, falls künftig ein
+      // Regatear-Rollenspiel den Platzhalter nutzt (sonst stünde „{name}" im Text).
+      roleplays: loc(roleplays).map((r) => Object.assign({}, r, {
+        dialogue: (r.dialogue || []).map((d) => Object.assign({}, d, { es: withName(d.es), de: withName(d.de) })),
+        usefulPhrases: (r.usefulPhrases || []).map(withName),
+      })),
     };
   }
 
@@ -22083,6 +22154,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       destination: t.destination,
       endDate: t.endDate,
       perDay,
+      userName: profileName(), // persönliche Ansprache auf der Countdown-Karte (leer = neutral)
       daysLeft: daysLeft === null ? 0 : daysLeft, // <0 = Termin vorbei
       past: daysLeft !== null && daysLeft < 0,
       today: t.endDate === today,
@@ -22209,7 +22281,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!badges || !state.badgeToast || !state.badgeToast.length) return;
     const existing = root.querySelector(".btoast");
     if (existing) existing.remove();
-    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
   }
 
   // Erfüllte, aber noch nicht vermerkte Badges freischalten. announce=true sammelt
@@ -22432,9 +22504,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       roleB: { name: swapped ? r.roles.a : r.roles.b, goal: natk(r, swapped ? "goalA" : "goalB") },
       dialogue: r.dialogue.map((d) => ({
         speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
-        de: nat(d), es: d.es,
+        de: withName(nat(d)), es: withName(d.es),
       })),
-      usefulPhrases: r.usefulPhrases,
+      usefulPhrases: r.usefulPhrases.map(withName),
     };
   }
 
@@ -22757,6 +22829,35 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const dialogueById = (id) => (dialogos ? dialogos.DIALOGOS.find((d) => d.id === id) : null) || null;
   const scenarioById = (id) => (dialogos ? dialogos.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null;
 
+  // Reise-Name aus dem Profil: erscheint in Diálogos überall dort, wo der Nutzer
+  // sich vorstellt (Hotel, Busticket, Notfall …). Ohne Eintrag bleibt der
+  // Beispielname „Marco", damit die Dialoge auch ungenutzt stimmig sind.
+  // profileName() liefert den rohen (ggf. leeren) Profil-Namen – für Stellen, die
+  // OHNE Eintrag lieber nichts vorbelegen sollen (z. B. Battle-Spielername).
+  function profileName() {
+    return (settings.userName || "").trim().replace(/\s+/g, " ").slice(0, 40);
+  }
+  function travelerName() {
+    const n = profileName();
+    // Ein Name, der bei der Antwortprüfung zu nichts normalisiert (nur Emoji/
+    // Satzzeichen), machte die „Wie heißt du?"-Tippzüge unlösbar → Beispielname.
+    return (n && matcher.normalize(n)) ? n : "Marco";
+  }
+  // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
+  // durch den Reise-Namen ersetzen. Ersatz als Funktion übergeben, damit Sonder-
+  // zeichen im Namen ($&, $1 …) nicht als replace-Muster interpretiert werden.
+  function withName(s) {
+    return typeof s === "string" ? s.replace(/\{name\}/g, () => travelerName()) : s;
+  }
+  // {name} in allen String-Feldern eines (flachen) Objekts ersetzen – z. B. im
+  // lokalisierten Reise-Kontext einer Karte (sentenceEs/sentenceDe/situation/note).
+  function withNameObj(o) {
+    if (!o || typeof o !== "object") return o;
+    const out = {};
+    for (const k in o) out[k] = withName(o[k]);
+    return out;
+  }
+
   function dialogosSetupVM() {
     return {
       available: dialogosReady(),
@@ -22780,19 +22881,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     for (let i = 0; i < d.turnIdx; i++) {
       const t = turns[i];
       if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: nat(t) });
-      else transcript.push({ who: "user", es: t.solEs, de: "" });
+      if (t.who === "npc") transcript.push({ who: "npc", es: withName(t.es), de: withName(nat(t)) });
+      else transcript.push({ who: "user", es: withName(t.solEs), de: "" });
     }
     const cur = turns[d.turnIdx] || null;
     const current = cur
       ? (cur.who === "npc"
-          ? { who: "npc", es: cur.es, de: nat(cur) }
+          ? { who: "npc", es: withName(cur.es), de: withName(nat(cur)) }
           : {
               who: "user",
               kind: cur.kind,
-              de: nat(cur),
-              solEs: cur.solEs,
-              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: o.es })) : null,
+              de: withName(nat(cur)),
+              solEs: withName(cur.solEs),
+              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: withName(o.es) })) : null,
             })
       : null;
     return {
@@ -22853,7 +22954,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const t = currentUserTurn();
     if (!t || t.kind !== "mc" || !t.options[idx]) return;
     const correct = !!t.options[idx].ok;
-    d.result = { correct, given: t.options[idx].es };
+    d.result = { correct, given: withName(t.options[idx].es) };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
     render();
   }
@@ -22864,7 +22965,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const t = currentUserTurn();
     if (!t || t.kind !== "type") return;
     const norm = matcher.normalize(input);
-    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(s));
+    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(withName(s)));
     const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
     d.result = { correct, given: input };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
@@ -22913,7 +23014,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!d || !speech) return;
     const dia = dialogueById(d.dialogueId);
     const t = dia && dia.turns[d.turnIdx];
-    if (t && t.who === "npc") speech.speak(t.es, settings.speechRate);
+    if (t && t.who === "npc") speech.speak(withName(t.es), settings.speechRate);
   }
 
   // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
@@ -23438,7 +23539,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
     if (badges && state.badgeToast && state.badgeToast.length) {
-      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
     }
 
     // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
@@ -23468,15 +23569,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
-  // requestAnimationFrame, damit das Layout nach dem innerHTML steht; block:"end"
-  // hält den darüberliegenden npc-Satz mit im Bild.
+  // requestAnimationFrame, damit das Layout nach dem innerHTML steht.
+  // Normalfall (npc-Satz, Optionen, Verdikt): block:"end" hält den darüber-
+  // liegenden npc-Satz mit im Bild. Tipp-Zug dagegen: das Eingabefeld mittig
+  // halten – mit block:"end" schöbe es sonst genau hinter die eingeblendete
+  // Tastatur, und der Nutzer sähe nicht, was er tippt.
   function scrollDialogActive() {
     if (typeof requestAnimationFrame !== "function") return;
     requestAnimationFrame(function () {
-      const el = root.querySelector("#dlg-active");
-      if (!el) return;
+      const active = root.querySelector("#dlg-active");
+      if (!active) return;
+      const input = active.querySelector("#dialogos-answer");
+      const target = input || active;
+      const block = input ? "center" : "end";
       const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "end" }); } catch (e) { /* egal */ }
+      try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block }); } catch (e) { /* egal */ }
     });
   }
 
@@ -23503,7 +23610,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const d = state.dialogos;
       const dia = dialogueById(d.dialogueId);
       const t = dia && dia.turns[d.turnIdx];
-      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: t.es };
+      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: withName(t.es) };
     }
     return null;
   }
@@ -23825,6 +23932,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // Reise-Namen aus dem Profil speichern. Getrimmt, Mehrfach-Leerzeichen zusammen-
+  // gezogen, auf 40 Zeichen begrenzt. rerender:true (Knopf „Speichern") bestätigt
+  // mit Haptik und zeichnet neu; ohne (Blur via change-Handler) wird nur still
+  // gesichert, damit ein direkt danach getippter Knopf nicht durch ein Re-Render
+  // verloren geht.
+  function saveUserName(value, rerender) {
+    const name = String(value || "").trim().replace(/\s+/g, " ").slice(0, 40);
+    if (name !== (settings.userName || "")) {
+      settings = Object.assign({}, settings, { userName: name });
+      store.saveSettings(settings);
+    }
+    if (rerender) { buzz(8); render(); }
+  }
+
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
   // Wird beim Start UND bei jedem Wechsel aufgerufen (Single Source of Truth).
   function applyUiLang(l) {
@@ -23897,6 +24018,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   function openBattleSetup() {
     dismissBadgeToast();
+    // Spieler A mit dem Profil-Namen vorbelegen (Gerätebesitzer spielt meist A) –
+    // aber nur, solange der Nutzer die Battle-Namensfelder noch NIE angefasst hat.
+    // So bleibt ein bewusst geleertes Feld auch nach einem erneuten Öffnen leer.
+    if (!state.battleNameEdited && !state.battleNames.A) {
+      const n = profileName().slice(0, 14);
+      if (n) state.battleNames = Object.assign({}, state.battleNames, { A: n });
+    }
     state.screen = "battleSetup";
     render();
   }
@@ -24856,6 +24984,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const ov = stats.overview(allCards(), progress);
     buzz(12);
     share.shareImage("stats", {
+      userName: profileName(),
       rate: ov.rate,
       mastered: ov.mastered,
       seenCards: ov.seenCards,
@@ -24879,6 +25008,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const grp = (badges.GROUPS || []).find((g) => g.id === b.group);
     buzz(12);
     share.shareImage("badge", {
+      userName: profileName(),
       icon: b.icon,
       name: b.name,
       text: b.unlockedText || b.description,
@@ -25331,6 +25461,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       submitDialogosType(input ? input.value : "");
       return;
     }
+    // Profil: Reise-Namen speichern (Enter oder „Speichern"-Knopf).
+    if (e.target.closest('[data-action="save-name"]')) {
+      e.preventDefault();
+      const input = document.getElementById("profile-name");
+      saveUserName(input ? input.value : "", true);
+      return;
+    }
     // Getippte Antwort prüfen (Schreiben-/Hör-Modus).
     const form = e.target.closest('[data-action="submit-typed"]');
     if (!form) return;
@@ -25356,12 +25493,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       handleImportFile(file);
       return;
     }
+    // Profil-Name still sichern, sobald das Feld verlassen wird (auch ohne
+    // „Speichern"). Kein Re-Render hier, damit ein direkt danach getippter Knopf
+    // nicht ins Leere greift; die Persistenz reicht.
+    if (e.target && e.target.id === "profile-name") {
+      saveUserName(e.target.value, false);
+      return;
+    }
     // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie
     // nicht verschluckt. 'change' feuert beim Verlassen des Feldes (auch wenn
     // direkt ein Längen-/Szenen-Button geklickt wird).
     if (e.target && (e.target.id === "pname-a" || e.target.id === "pname-b")) {
       const side = e.target.id === "pname-a" ? "A" : "B";
       state.battleNames = Object.assign({}, state.battleNames, { [side]: e.target.value.trim() });
+      state.battleNameEdited = true; // ab jetzt nicht mehr automatisch mit dem Profil-Namen vorbelegen
       return;
     }
     const el = e.target.closest('[data-action="select-country"]');
