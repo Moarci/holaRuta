@@ -22824,9 +22824,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return profileName() || "Marco";
   }
   // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
-  // durch den Reise-Namen ersetzen.
+  // durch den Reise-Namen ersetzen. Ersatz als Funktion übergeben, damit Sonder-
+  // zeichen im Namen ($&, $1 …) nicht als replace-Muster interpretiert werden.
   function withName(s) {
-    return typeof s === "string" ? s.replace(/\{name\}/g, travelerName()) : s;
+    return typeof s === "string" ? s.replace(/\{name\}/g, () => travelerName()) : s;
   }
   // {name} in allen String-Feldern eines (flachen) Objekts ersetzen – z. B. im
   // lokalisierten Reise-Kontext einer Karte (sentenceEs/sentenceDe/situation/note).
