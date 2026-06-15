@@ -3,6 +3,7 @@
   "short_name": "HolaRuta",
   "description": "Dein Reise-Spanisch für echte Situationen – Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk. Funktioniert offline.",
   "lang": "de",
+  "dir": "ltr",
   "id": ".",
   "start_url": ".",
   "scope": ".",
@@ -11,6 +12,38 @@
   "background_color": "#F7EFE3",
   "theme_color": "#241510",
   "categories": ["education", "travel"],
+  "launch_handler": { "client_mode": "navigate-existing" },
+  "handle_links": "preferred",
+  "screenshots": [
+    {
+      "src": "docs/screenshots/study-flip.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Karteikarte – Frage auf Deutsch, Antwort auf Spanisch"
+    },
+    {
+      "src": "docs/screenshots/study-flip-revealed.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Aufgedeckte Karte mit Aussprache-Tipp"
+    },
+    {
+      "src": "docs/screenshots/stats.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Fortschritt und Statistik"
+    },
+    {
+      "src": "docs/screenshots/info.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Länderkunde mit Reise-Infos"
+    }
+  ],
   "icons": [
     {
       "src": "icon-192.png",
