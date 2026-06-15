@@ -15,6 +15,7 @@
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const historia = window.SC.historia || null;   // Geschichte Südamerikas (Erklärseite, optional)
+  const historiaCentro = window.SC.historiaCentro || null; // Geschichte Mittelamerikas (Erklärseite, optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
@@ -228,6 +229,7 @@
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
       hasCountries: !!countries, // dito für die Länderkunde
       hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
+      hasHistoriaCentro: !!historiaCentro, // dito für die Geschichte Mittelamerikas
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
@@ -411,14 +413,21 @@
   // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
   // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
   // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
+  // Aktives Geschichts-Modul nach Region (state.histRegion: "sur" | "centro").
+  // So teilen sich Süd- und Mittelamerika dieselbe Render-/Share-Mechanik.
+  function histMod() { return state.histRegion === "centro" ? historiaCentro : historia; }
+  function histTitle() { return state.histRegion === "centro" ? "🌋 Historia de Centroamérica" : "📜 Historia de Sudamérica"; }
+
   function historiaVM() {
-    if (!historia) return { intro: "", eras: [], figures: [], tensions: [], facts: [] };
+    const mod = histMod();
+    if (!mod) return { intro: "", eras: [], figures: [], tensions: [], facts: [], topTitle: histTitle() };
     return {
-      intro: nat(historia.INTRO),
-      eras: loc(historia.ERAS || []),
-      figures: loc(historia.FIGURES || []),
-      tensions: loc(historia.TENSIONS || []),
-      facts: (historia.FACTS || []).map(nat),
+      topTitle: histTitle(),
+      intro: nat(mod.INTRO),
+      eras: loc(mod.ERAS || []),
+      figures: loc(mod.FIGURES || []),
+      tensions: loc(mod.TENSIONS || []),
+      facts: (mod.FACTS || []).map(nat),
     };
   }
 
@@ -2993,21 +3002,25 @@
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
 
-    // Historia de Sudamérica: ein Treffer für die ganze Erklärseite (Epochen,
-    // Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
-    if (historia) {
-      const eras = (historia.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
-      const figs = (historia.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
-      const tens = (historia.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
-      const facts = (historia.FACTS || []).map((f) => [f.de, f.en]);
+    // Historia (Süd- & Mittelamerika): je ein Treffer für die ganze Erklärseite
+    // (Epochen, Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
+    const histPage = (mod, icon, title, subKey, action, keywords) => {
+      if (!mod) return;
+      const eras = (mod.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
+      const figs = (mod.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
+      const tens = (mod.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
+      const facts = (mod.FACTS || []).map((f) => [f.de, f.en]);
       idx.push({
         group: "info", kind: "page", kindLabel: t("search.kindInfo"),
-        icon: "📜", title: "Historia de Sudamérica", sub: t("discover.subHistoria"),
-        action: "open-historia",
-        hay: searchHay(["historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit",
-          historia.INTRO && historia.INTRO.de, historia.INTRO && historia.INTRO.en, eras, figs, tens, facts]),
+        icon: icon, title: title, sub: t(subKey),
+        action: action,
+        hay: searchHay([keywords, mod.INTRO && mod.INTRO.de, mod.INTRO && mod.INTRO.en, eras, figs, tens, facts]),
       });
-    }
+    };
+    histPage(historia, "📜", "Historia de Sudamérica", "discover.subHistoria", "open-historia",
+      "historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit");
+    histPage(historiaCentro, "🌋", "Historia de Centroamérica", "discover.subHistoriaCentro", "open-historia-centro",
+      "historia geschichte history mittelamerika centroamérica maya morazán sandino romero menchú independencia conquista bukele panama panamá kanal");
 
     return idx;
   }
@@ -3060,8 +3073,9 @@
     render();
   }
 
-  function openHistoria() {
+  function openHistoria(region) {
     dismissBadgeToast();
+    state.histRegion = region === "centro" ? "centro" : "sur";
     state.screen = "historia";
     render();
   }
@@ -3365,8 +3379,9 @@
   // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
   // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
   function findHistItem(id) {
-    if (!historia) return null;
-    const lists = [historia.ERAS, historia.FIGURES, historia.TENSIONS];
+    const mod = histMod();
+    if (!mod) return null;
+    const lists = [mod.ERAS, mod.FIGURES, mod.TENSIONS];
     for (let i = 0; i < lists.length; i++) {
       const it = (lists[i] || []).find((x) => x.id === id);
       if (it) return it;
@@ -3382,7 +3397,7 @@
     const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
     buzz(12);
     share.shareImage("histtext", {
-      title: e.title || e.name || "Historia de Sudamérica",
+      title: e.title || e.name || (state.histRegion === "centro" ? "Historia de Centroamérica" : "Historia de Sudamérica"),
       levelCode: e.level || "",
       levelWord: e.level ? t("discover.histLvl" + e.level) : "",
       esText,
@@ -3394,17 +3409,19 @@
   // Einladung (Modulname, Einleitung, Zeitstrahl-Teaser mit den Epochen) – zum
   // Weiterempfehlen des gesamten Moduls, nicht nur eines einzelnen Textes.
   function shareHistModule() {
-    if (!share || !historia) return;
-    const eras = loc(historia.ERAS || []).map((e) => ({
+    const mod = histMod();
+    if (!share || !mod) return;
+    const name = state.histRegion === "centro" ? "Historia de Centroamérica" : "Historia de Sudamérica";
+    const eras = loc(mod.ERAS || []).map((e) => ({
       icon: e.icon || "•",
       period: e.period || "",
       title: e.title || "",
     }));
     buzz(12);
     share.shareImage("histmodule", {
-      kicker: "Historia de Sudamérica",
-      title: "Historia de Sudamérica",
-      intro: nat(historia.INTRO),
+      kicker: name,
+      title: name,
+      intro: nat(mod.INTRO),
       timelineLabel: t("discover.histNavTimeline"),
       eras,
     }, shareFormat());
@@ -3547,7 +3564,8 @@
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
-    else if (action === "open-historia") openHistoria();
+    else if (action === "open-historia") openHistoria("sur");
+    else if (action === "open-historia-centro") openHistoria("centro");
     else if (action === "open-knigge") openKnigge();
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
