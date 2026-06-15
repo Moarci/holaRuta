@@ -2396,12 +2396,12 @@
       ${vm.taskCode ? `
       <div class="task-result">
         ${vm.taskCodeLabel ? `<p class="task-codefor">🎯 ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
-        <textarea id="task-code" class="task-code" readonly rows="2">${esc(vm.taskCode)}</textarea>
+        <textarea id="task-code" class="task-code" readonly rows="2" aria-label="${esc(t("teacher.taskTarget"))}">${esc(vm.taskCode)}</textarea>
+        <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
         <div class="teacher-actions task-result__btns">
           <button class="teacher-btn teacher-btn--main" data-action="task-copy-link">🔗 ${esc(t("teacher.taskCopyLink"))}</button>
           <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
         </div>
-        <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
       </div>` : ""}`;
 
     // In Editionen hängt Modo profe unter dem Tarea-Reiter: Tab-Leiste mit „Tarea“
@@ -2433,7 +2433,7 @@
                <div class="task-item__body">
                  <span class="task-item__target">🎯 ${esc(tk.targetLabel)}</span>
                  ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
-                 ${tk.due ? `<span class="task-item__due">${esc(t("task.dueLabel", { date: tk.due }))}</span>` : ""}
+                 ${tk.due ? `<span class="task-item__due${tk.overdue ? " is-overdue" : ""}">${esc(t(tk.overdue ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
                </div>
                <div class="task-item__actions">
                  <button class="teacher-btn teacher-btn--main" data-action="task-start" data-idx="${tk.idx}">▶️ ${esc(t("task.start"))}</button>

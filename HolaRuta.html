@@ -1811,6 +1811,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .task-item__target { font-weight: 800; color: var(--brand-ink); }
 .task-item__title { font-size: 0.95rem; }
 .task-item__due { font-size: 0.8rem; color: var(--muted); }
+.task-item__due.is-overdue { color: var(--bad, #B5302A); font-weight: 700; }
 .task-item__actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .task-empty { color: var(--muted); margin: 6px 0 0; }
 .task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }
@@ -3055,7 +3056,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tabLearn: "Lernen",
     tabDiscover: "Entdecken",
     tabTask: "Tarea",
-    tabTeacher: "Profe",
     tabProfile: "Profil",
     // Kacheln / Themen
     tileDue: (p) => `${p.n} fällig`,
@@ -3139,7 +3139,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tabLearn: "Learn",
     tabDiscover: "Discover",
     tabTask: "Tarea",
-    tabTeacher: "Profe",
     tabProfile: "Profile",
     tileDue: (p) => `${p.n} due`,
     tileDone: "✓ done",
@@ -3149,7 +3148,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     levelsAll: "All",
     levelsGroup: "Level",
     levelTitle: (p) => `${p.label} · ${p.n} cards`,
-    streakDays: (p) => `🔥 ${p.n}-${p.n === 1 ? "day" : "day"} streak`,
+    streakDays: (p) => `🔥 ${p.n}-${p.n === 1 ? "day" : "days"} streak`,
     streakNew: "🌱 Start your streak",
     resumeWith: (p) => `↩ Carry on with ${p.cat}`,
     rutaTitle: "🗺️ Ruta del día",
@@ -3332,7 +3331,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subInfo: "Land & Leute – von México bis Chile",
     subHistoria: "Von den Inka über Bolívar bis heute",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
-    subTeacher: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren",
+    subTeacher: "Übersicht für Lehrkräfte & Reiseleitung: Schüler-Fortschritt importieren",
     subTask: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben",
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
@@ -3909,7 +3908,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   i18n.register("teacher", {
     title: "Modo profe",
     openHint: "Für Lehrkräfte & Reiseleitung: Klassenübersicht und Aufgaben erstellen.",
-    intro: "Klassenübersicht für Lehrkräfte und Reiseleiter: Lass deine Schüler ihren Fortschritt im Profil als Backup-Datei exportieren und importiere die Dateien hier. Tipp: vorher die Datei auf den Schülernamen umbenennen.",
+    intro: "Klassenübersicht für Lehrkräfte und Reiseleitung: Lass deine Schüler:innen ihren Fortschritt im Profil als Backup-Datei exportieren und importiere die Dateien hier. Tipp: vorher die Datei auf den Schülernamen umbenennen.",
     privacy: "🔒 Alles bleibt offline und nur in dieser Sitzung – nichts wird gespeichert, nichts gesendet. Beim Neuladen ist die Übersicht wieder leer. Kein Konto, keine Cloud.",
     importBtn: "Schüler-Backup(s) importieren",
     printBtn: "Drucken",
@@ -3924,13 +3923,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     colStreak: "Serie",
     colChallenges: "Challenges",
     colPretrip: "Pre-Trip",
-    colLevel: "Ruta-Check",
+    colLevel: "Ruta-Check (Level · Score)",
     colPacks: "Gemeisterte Pakete (≥80 %)",
     reviewed: (p) => `${p.n} gelernt`,
     remove: "Entfernen",
     defaultName: "Schüler",
     taskHeading: "Aufgabe erstellen & teilen",
-    taskHint: "Wähle ein Ziel, erzeuge einen Code und schick ihn deinen Schülern (z. B. per WhatsApp). Sie öffnen ihn unter „Tarea“ und starten direkt die zugewiesene Übung.",
+    taskHint: "Wähle ein Ziel, erzeuge einen Code und teile ihn als Link (z. B. per WhatsApp). Ein Antippen abonniert die Aufgabe. Du kannst mehrere Aufgaben erstellen – sie laufen bei den Lernenden parallel.",
     taskTarget: "Aufgaben-Ziel",
     taskTitlePh: "Titel (optional), z. B. „Hausaufgabe 1“",
     taskDue: "Frist (optional)",
@@ -3939,7 +3938,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     taskCopyLink: "Link kopieren",
     taskCopied: "Kopiert!",
     linkCopied: "Link kopiert!",
-    taskShareHint: "Schick den Link per WhatsApp/Mail – ein Tipp abonniert die Aufgabe. Mehrere Aufgaben gehen parallel. (Der Code funktioniert weiterhin zum Einfügen.)",
+    taskShareHint: "Schick den Link per WhatsApp/Mail – ein Antippen abonniert die Aufgabe. „Code kopieren“ ist die Notlösung zum manuellen Einfügen. Mehrere Aufgaben laufen parallel.",
     taskCodeFor: (p) => `Code für: ${p.label}`,
     grpPretrip: "Pre-Trip-Pläne",
     grpPreset: "Pre-Arrival-Pakete",
@@ -3962,13 +3961,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     colStreak: "Streak",
     colChallenges: "Challenges",
     colPretrip: "Pre-trip",
-    colLevel: "Ruta-Check",
+    colLevel: "Ruta-Check (level · score)",
     colPacks: "Mastered packs (≥80%)",
     reviewed: (p) => `${p.n} reviewed`,
     remove: "Remove",
     defaultName: "Student",
     taskHeading: "Create & share a task",
-    taskHint: "Pick a target, generate a code and send it to your students (e.g. via WhatsApp). They open it under “Tarea” and start the assigned practice right away.",
+    taskHint: "Pick a target, generate a code and share it as a link (e.g. via WhatsApp). One tap subscribes the task. You can create several tasks – they run in parallel for your students.",
     taskTarget: "Task target",
     taskTitlePh: "Title (optional), e.g. “Homework 1”",
     taskDue: "Due date (optional)",
@@ -3977,7 +3976,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     taskCopyLink: "Copy link",
     taskCopied: "Copied!",
     linkCopied: "Link copied!",
-    taskShareHint: "Send the link via WhatsApp/email – one tap subscribes the task. Multiple tasks run in parallel. (The code still works for pasting.)",
+    taskShareHint: "Send the link via WhatsApp/email – one tap subscribes the task. “Copy code” is the fallback for manual pasting. Multiple tasks run in parallel.",
     taskCodeFor: (p) => `Code for: ${p.label}`,
     grpPretrip: "Pre-trip plans",
     grpPreset: "Pre-arrival packs",
@@ -3987,54 +3986,48 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // ---------- task: Aufgabe öffnen (Lernenden-Seite) ----------
   i18n.register("task", {
     title: "Tarea",
-    intro: "Hast du einen Aufgaben-Code von deiner Lehrkraft oder Reiseleitung bekommen? Füg ihn hier ein und leg los.",
+    intro: "Hast du einen Aufgaben-Code oder -Link von deiner Lehrkraft oder Reiseleitung bekommen? Tippe den Link an oder füge unten den Code ein – deine Aufgaben bleiben gespeichert, auch nach dem Schließen.",
     pasteLabel: "Aufgaben-Code einfügen",
-    open: "Öffnen",
     paste: "Einfügen",
-    pasted: "Eingefügt.",
-    pasteFail: "Zwischenablage nicht lesbar – bitte den Code von Hand einfügen.",
     pasteHint: "Lange ins Feld tippen und „Einfügen“ wählen.",
     invalid: "Das ist kein gültiger Aufgaben-Code.",
     unknownTarget: "Die Aufgabe verweist auf einen unbekannten Inhalt.",
-    copied: "Code kopiert.",
     copyManual: "Markiert – jetzt mit Strg+C kopieren.",
+    saveFailed: "Konnte nicht gespeichert werden – ist der Speicher voll?",
     kindPretrip: "Pre-Trip-Plan",
     kindPreset: "Pre-Arrival",
     kindCategory: "Paket",
     dueLabel: (p) => `Frist: ${p.date}`,
+    overdue: (p) => `Frist abgelaufen: ${p.date}`,
     start: "Starten",
-    other: "Andere Aufgabe",
     add: "Aufgabe hinzufügen",
     remove: "Entfernen",
     yours: (p) => `Deine Aufgaben (${p.n})`,
-    empty: "Noch keine Aufgaben. Füge eine per Code oder Link hinzu.",
+    empty: "Noch keine Aufgaben. Tippe den Link deiner Lehrkraft an oder füge unten den Code ein.",
     added: "Aufgabe hinzugefügt.",
-    already: "Diese Aufgabe hattest du schon – nach oben geholt.",
+    already: "Diese Aufgabe ist schon in deiner Liste.",
   }, {
     title: "Tarea",
-    intro: "Got a task code from your teacher or tour leader? Paste it here and get started.",
+    intro: "Got a task code or link from your teacher or tour leader? Tap the link or paste the code below – your tasks stay saved, even after you close the app.",
     pasteLabel: "Paste task code",
-    open: "Open",
     paste: "Paste",
-    pasted: "Pasted.",
-    pasteFail: "Couldn't read the clipboard – please paste the code manually.",
     pasteHint: "Long-press the field and choose “Paste”.",
     invalid: "That's not a valid task code.",
     unknownTarget: "The task points to unknown content.",
-    copied: "Code copied.",
     copyManual: "Selected – now copy with Ctrl+C.",
+    saveFailed: "Couldn't save – is storage full?",
     kindPretrip: "Pre-trip plan",
     kindPreset: "Pre-arrival",
     kindCategory: "Pack",
     dueLabel: (p) => `Due: ${p.date}`,
+    overdue: (p) => `Past due: ${p.date}`,
     start: "Start",
-    other: "Another task",
     add: "Add task",
     remove: "Remove",
     yours: (p) => `Your tasks (${p.n})`,
-    empty: "No tasks yet. Add one via code or link.",
+    empty: "No tasks yet. Tap your teacher's link, or paste the code below.",
     added: "Task added.",
-    already: "You already had this task – moved to top.",
+    already: "This task is already in your list.",
   });
 
   // ---------- placement: Ruta-Check (Einstufungstest) ----------
@@ -19242,6 +19235,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.56.0",
+      date: "2026-06-15",
+      title: "Abnahme-Politur: Onboarding, Aufgaben-Robustheit & klarere Texte",
+      items: [
+        "🧭 Behoben: Wer beim ersten Start das Reiseziel übersprang und den Ruta-Check abbrach, bekam das Onboarding beim nächsten Mal erneut – jetzt gilt es zuverlässig als erledigt.",
+        "🧱 Robuster: Aufgaben-Liste mit Obergrenze und ehrlichem Hinweis, falls der Speicher voll ist (statt still zu scheitern); abgelaufene Fristen werden jetzt klar als „Frist abgelaufen“ markiert.",
+        "✍️ Klarere Texte: „mehrere Aufgaben parallel“ und „Link vs. Code“ werden zur richtigen Zeit erklärt; Aufgaben-Liste bleibt-gespeichert-Hinweis; durchgängig „Reiseleitung“; ein englischer Plural-Tippfehler korrigiert. Aufgeräumte, ungenutzte Texte entfernt.",
+      ],
+    },
+    {
       version: "1.55.0",
       date: "2026-06-15",
       title: "Mehrere Aufgaben parallel – per Link teilbar & abonnierbar",
@@ -22233,12 +22236,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ${vm.taskCode ? `
       <div class="task-result">
         ${vm.taskCodeLabel ? `<p class="task-codefor">🎯 ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
-        <textarea id="task-code" class="task-code" readonly rows="2">${esc(vm.taskCode)}</textarea>
+        <textarea id="task-code" class="task-code" readonly rows="2" aria-label="${esc(t("teacher.taskTarget"))}">${esc(vm.taskCode)}</textarea>
+        <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
         <div class="teacher-actions task-result__btns">
           <button class="teacher-btn teacher-btn--main" data-action="task-copy-link">🔗 ${esc(t("teacher.taskCopyLink"))}</button>
           <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
         </div>
-        <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
       </div>` : ""}`;
 
     // In Editionen hängt Modo profe unter dem Tarea-Reiter: Tab-Leiste mit „Tarea“
@@ -22270,7 +22273,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                <div class="task-item__body">
                  <span class="task-item__target">🎯 ${esc(tk.targetLabel)}</span>
                  ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
-                 ${tk.due ? `<span class="task-item__due">${esc(t("task.dueLabel", { date: tk.due }))}</span>` : ""}
+                 ${tk.due ? `<span class="task-item__due${tk.overdue ? " is-overdue" : ""}">${esc(t(tk.overdue ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
                </div>
                <div class="task-item__actions">
                  <button class="teacher-btn teacher-btn--main" data-action="task-start" data-idx="${tk.idx}">▶️ ${esc(t("task.start"))}</button>
@@ -23624,6 +23627,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let settings = store.loadSettings();
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
   let subscribedTasks = store.loadTasks(); // abonnierte Aufgaben (mehrere parallel, persistent)
+  const MAX_SUBSCRIBED_TASKS = 50;          // Deckel gegen Speicher-Überlauf
 
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
@@ -26304,7 +26308,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function taskShareLink(code) {
     const cfg = (window.SC && window.SC.config) || {};
     let base = cfg.appUrl || "";
-    if (!base) { try { base = location.origin + location.pathname; } catch (e) { base = ""; } }
+    // Nur https als Link-Basis akzeptieren (Härtung); sonst die aktuelle Adresse.
+    if (!/^https:\/\//i.test(base)) { try { base = location.origin + location.pathname; } catch (e) { base = ""; } }
     base = String(base).replace(/[?#].*$/, "");
     const parts = [];
     if (cfg.edition) parts.push("edition=" + encodeURIComponent(cfg.edition));
@@ -26353,9 +26358,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const norm = String(code).trim();
     const idx = subscribedTasks.findIndex((x) => x.code === norm);
     const entry = { code: norm, kind: task.kind, scope: task.scope, title: task.title || "", due: task.due || "", addedAt: new Date().toISOString().slice(0, 10) };
-    if (idx >= 0) subscribedTasks = [entry].concat(subscribedTasks.filter((_, i) => i !== idx)); // schon da -> nach oben
-    else subscribedTasks = [entry].concat(subscribedTasks);
-    store.saveTasks(subscribedTasks);
+    let next = idx >= 0
+      ? [entry].concat(subscribedTasks.filter((_, i) => i !== idx)) // schon da -> nach oben
+      : [entry].concat(subscribedTasks);
+    if (next.length > MAX_SUBSCRIBED_TASKS) next = next.slice(0, MAX_SUBSCRIBED_TASKS); // Speicher schützen
+    // Persistenz prüfen: bei vollem Speicher nicht so tun, als wäre es gespeichert.
+    if (!store.saveTasks(next)) { if (!silent) showNotice(t("task.saveFailed")); return false; }
+    subscribedTasks = next;
     if (!silent) showNotice(idx >= 0 ? t("task.already") : t("task.added"));
     return true;
   }
@@ -26386,8 +26395,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function taskVM() {
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, mit der Frist (Datums-String) vergleichbar
     return {
-      tasks: subscribedTasks.map((tk, i) => ({ idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due })),
+      tasks: subscribedTasks.map((tk, i) => ({
+        idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
+        overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
+      })),
     };
   }
 
@@ -26408,6 +26421,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   function openPlacement(fromOnboarding) {
     dismissBadgeToast();
+    // Aus dem Onboarding heraus geöffnet -> das Onboarding gilt ab jetzt als erledigt
+    // (sonst erscheint es erneut, wenn jemand den überspringbaren Test abbricht).
+    if (fromOnboarding && settings.onboarded !== true) {
+      settings = Object.assign({}, settings, { onboarded: true });
+      store.saveSettings(settings);
+    }
     state.placement = {
       phase: "intro", fromOnboarding: !!fromOnboarding,
       asked: [], answers: [], difficulty: placement.START_DIFFICULTY,

@@ -35,6 +35,7 @@
   let settings = store.loadSettings();
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
   let subscribedTasks = store.loadTasks(); // abonnierte Aufgaben (mehrere parallel, persistent)
+  const MAX_SUBSCRIBED_TASKS = 50;          // Deckel gegen Speicher-Überlauf
 
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
@@ -2715,7 +2716,8 @@
   function taskShareLink(code) {
     const cfg = (window.SC && window.SC.config) || {};
     let base = cfg.appUrl || "";
-    if (!base) { try { base = location.origin + location.pathname; } catch (e) { base = ""; } }
+    // Nur https als Link-Basis akzeptieren (Härtung); sonst die aktuelle Adresse.
+    if (!/^https:\/\//i.test(base)) { try { base = location.origin + location.pathname; } catch (e) { base = ""; } }
     base = String(base).replace(/[?#].*$/, "");
     const parts = [];
     if (cfg.edition) parts.push("edition=" + encodeURIComponent(cfg.edition));
@@ -2764,9 +2766,13 @@
     const norm = String(code).trim();
     const idx = subscribedTasks.findIndex((x) => x.code === norm);
     const entry = { code: norm, kind: task.kind, scope: task.scope, title: task.title || "", due: task.due || "", addedAt: new Date().toISOString().slice(0, 10) };
-    if (idx >= 0) subscribedTasks = [entry].concat(subscribedTasks.filter((_, i) => i !== idx)); // schon da -> nach oben
-    else subscribedTasks = [entry].concat(subscribedTasks);
-    store.saveTasks(subscribedTasks);
+    let next = idx >= 0
+      ? [entry].concat(subscribedTasks.filter((_, i) => i !== idx)) // schon da -> nach oben
+      : [entry].concat(subscribedTasks);
+    if (next.length > MAX_SUBSCRIBED_TASKS) next = next.slice(0, MAX_SUBSCRIBED_TASKS); // Speicher schützen
+    // Persistenz prüfen: bei vollem Speicher nicht so tun, als wäre es gespeichert.
+    if (!store.saveTasks(next)) { if (!silent) showNotice(t("task.saveFailed")); return false; }
+    subscribedTasks = next;
     if (!silent) showNotice(idx >= 0 ? t("task.already") : t("task.added"));
     return true;
   }
@@ -2797,8 +2803,12 @@
   }
 
   function taskVM() {
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, mit der Frist (Datums-String) vergleichbar
     return {
-      tasks: subscribedTasks.map((tk, i) => ({ idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due })),
+      tasks: subscribedTasks.map((tk, i) => ({
+        idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
+        overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
+      })),
     };
   }
 
@@ -2819,6 +2829,12 @@
 
   function openPlacement(fromOnboarding) {
     dismissBadgeToast();
+    // Aus dem Onboarding heraus geöffnet -> das Onboarding gilt ab jetzt als erledigt
+    // (sonst erscheint es erneut, wenn jemand den überspringbaren Test abbricht).
+    if (fromOnboarding && settings.onboarded !== true) {
+      settings = Object.assign({}, settings, { onboarded: true });
+      store.saveSettings(settings);
+    }
     state.placement = {
       phase: "intro", fromOnboarding: !!fromOnboarding,
       asked: [], answers: [], difficulty: placement.START_DIFFICULTY,

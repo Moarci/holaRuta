@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.56.0",
+      date: "2026-06-15",
+      title: "Abnahme-Politur: Onboarding, Aufgaben-Robustheit & klarere Texte",
+      items: [
+        "🧭 Behoben: Wer beim ersten Start das Reiseziel übersprang und den Ruta-Check abbrach, bekam das Onboarding beim nächsten Mal erneut – jetzt gilt es zuverlässig als erledigt.",
+        "🧱 Robuster: Aufgaben-Liste mit Obergrenze und ehrlichem Hinweis, falls der Speicher voll ist (statt still zu scheitern); abgelaufene Fristen werden jetzt klar als „Frist abgelaufen“ markiert.",
+        "✍️ Klarere Texte: „mehrere Aufgaben parallel“ und „Link vs. Code“ werden zur richtigen Zeit erklärt; Aufgaben-Liste bleibt-gespeichert-Hinweis; durchgängig „Reiseleitung“; ein englischer Plural-Tippfehler korrigiert. Aufgeräumte, ungenutzte Texte entfernt.",
+      ],
+    },
+    {
       version: "1.55.0",
       date: "2026-06-15",
       title: "Mehrere Aufgaben parallel – per Link teilbar & abonnierbar",
