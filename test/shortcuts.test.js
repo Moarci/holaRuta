@@ -5,9 +5,10 @@
  * Aufruf:  node --test
  *
  * Prüft, dass jeder Manifest-Shortcut auf ein Ziel zeigt, das app.js wirklich
- * öffnen kann (?a=<aktion> bzw. ?m=<modul>), und dass alle von Shortcuts
+ * öffnen kann (?a=<aktion> bzw. ?m=<modul>), dass alle von Shortcuts
  * referenzierten Icons existieren UND im Service-Worker-Precache stehen (sonst
- * funktionieren sie offline nicht).
+ * funktionieren sie offline nicht), und dass jeder Shortcut für Deutsch und
+ * Englisch lokalisiert ist (Manifest-"_localized"-Mechanismus; Default = Spanisch).
  */
 "use strict";
 const test = require("node:test");
@@ -60,6 +61,34 @@ test("Jeder Shortcut hat Name + relativen url + öffenbares Ziel", () => {
     assert.ok(t, `Shortcut "${sc.name}": url "${sc.url}" hat kein ?a=/?m= Ziel`);
     assert.ok(hasOpener(t.slug),
       `Shortcut "${sc.name}": app.js kann "${t.slug}" nicht öffnen (Opener/Aktion fehlt)`);
+  }
+});
+
+// Lokalisierten Wert einer Sprache lesen: Eintrag ist ein String oder {value}.
+function locValue(map, lang) {
+  if (!map || typeof map !== "object") return "";
+  const v = map[lang];
+  if (typeof v === "string") return v;
+  if (v && typeof v === "object" && typeof v.value === "string") return v.value;
+  return "";
+}
+
+test("Jeder Shortcut ist für de und en lokalisiert (name oder description)", () => {
+  for (const sc of manifest.shortcuts) {
+    for (const lang of ["de", "en"]) {
+      const hasName = !!locValue(sc.name_localized, lang);
+      const hasDesc = !!locValue(sc.description_localized, lang);
+      assert.ok(hasName || hasDesc,
+        `Shortcut "${sc.name}": keine ${lang}-Lokalisierung (weder name_localized noch description_localized)`);
+    }
+    // Wenn ein *_localized-Feld existiert, müssen de UND en gefüllt sein (kein Halbstand).
+    for (const key of ["name_localized", "short_name_localized", "description_localized"]) {
+      if (!sc[key]) continue;
+      for (const lang of ["de", "en"]) {
+        assert.ok(locValue(sc[key], lang),
+          `Shortcut "${sc.name}": ${key} fehlt der ${lang}-Wert`);
+      }
+    }
   }
 });
 
