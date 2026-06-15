@@ -3,7 +3,7 @@
 > **Datum:** 2026-06-14 · **Folgt auf:** [IDEEN.md](IDEEN.md), [RISIKO.md](RISIKO.md), [AUDIT.md](AUDIT.md)
 > **Fokus:** Vermarktung (B2B + B2C) — *nicht* Code-Hygiene (die ist in AUDIT/RISIKO behandelt).
 > **Stand der Faktenbasis (historische Analyse-Basis):** `main` v1.24.0 — 718 Karten · 23 Bereiche · 3 Stufen · 3 Lernmodi · 154 Tests grün.
-> **Seitdem auf dem Branch ausgebaut** → heute **1013 Karten · 29 Bereiche · 41 Challenges · 160 Tests grün** (inkl. Colombia 89, Peru 45, Mexiko 41, Costa Rica 40, Ecuador 40, Guatemala 40 Karten). Siehe Stand-Update in §2/§3.
+> **Seitdem auf dem Branch ausgebaut** → heute **1013 Karten · 29 Bereiche · 41 Challenges · 161 Tests grün** (inkl. Colombia 89, Peru 45, Mexiko 41, Costa Rica 40, Ecuador 40, Guatemala 40 Karten). Siehe Stand-Update in §2/§3.
 
 Dieses Dokument gleicht eine ausführliche Geschäftsanalyse mit dem **echten Code-Stand** ab und
 leitet daraus einen realistischen Vertriebsweg ab: Wer sind die Kanäle, was trägt der heutige
