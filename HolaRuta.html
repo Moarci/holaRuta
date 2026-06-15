@@ -23587,6 +23587,53 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     });
   }
 
+  // Hält das fokussierte Eingabefeld über der eingeblendeten Bildschirmtastatur.
+  // scrollDialogActive() & manageFocus() laufen beim Render – also BEVOR die
+  // Tastatur auftaucht – und können deren Höhe nicht kennen. Sobald die Tastatur
+  // erscheint, schrumpft der visuelle Viewport (visualViewport.resize); das Feld
+  // verschwindet dann sonst hinter der Tastatur, und der Nutzer muss von Hand
+  // nachscrollen. Dieser Handler holt es genau dann sanft zurück in den Blick.
+  function setupKeyboardScroll() {
+    const vv = window.visualViewport;
+    if (!vv || typeof vv.addEventListener !== "function") return;
+    // Nur echte Tipp-Felder berücksichtigen (Buttons/Slider lösen keine Tastatur aus).
+    function focusedField() {
+      const el = document.activeElement;
+      if (!el) return null;
+      if (el.tagName === "TEXTAREA") return el;
+      if (el.tagName === "INPUT") {
+        const t = (el.getAttribute("type") || "text").toLowerCase();
+        if (t === "text" || t === "search" || t === "email" || t === "number" ||
+            t === "tel" || t === "url" || t === "password") return el;
+      }
+      return null;
+    }
+    function ensureVisible() {
+      const el = focusedField();
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // Untere Kante des sichtbaren Bereichs = obere Tastaturkante.
+      const visibleBottom = vv.offsetTop + vv.height;
+      const margin = 16;
+      // Feld ragt unter die Tastatur oder über den oberen Rand? Dann zentriert
+      // in den verbleibenden Sichtbereich holen.
+      if (rect.bottom > visibleBottom - margin || rect.top < vv.offsetTop) {
+        const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "center" }); } catch (e) { /* egal */ }
+      }
+    }
+    // Mehrere resize-Events (Tastatur-Einblend-Animation) zu einem rAF bündeln.
+    let scheduled = false;
+    function onViewportChange() {
+      if (scheduled) return;
+      scheduled = true;
+      const run = function () { scheduled = false; ensureVisible(); };
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(run); else run();
+    }
+    vv.addEventListener("resize", onViewportChange);
+    vv.addEventListener("scroll", onViewportChange);
+  }
+
   // Hör-Modus & Preis-Trainer spielen die spanische Vorgabe automatisch ab, sobald
   // eine NEUE Aufgabe erscheint (nicht beim Aufdecken/Re-Render derselben). Der
   // Schlüssel je Aufgabe verhindert mehrfaches Vorlesen; nach der Antwort (Ergebnis
@@ -25753,6 +25800,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   window.addEventListener("pointermove", onBodyPointerMove);
   window.addEventListener("pointerup", onBodyPointerUp);
   window.addEventListener("pointercancel", onBodyPointerUp);
+  setupKeyboardScroll(); // fokussiertes Eingabefeld über der Tastatur halten (Diálogos, Schreiben, Suche …)
   applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
   // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).
   try {
