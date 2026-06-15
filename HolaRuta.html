@@ -1801,6 +1801,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .task-target-line { font-weight: 800; color: var(--brand-ink); margin: 0 0 4px; }
 .task-title-line { font-size: 1.1rem; margin: 4px 0; }
 .task-due-line { color: var(--muted); margin: 2px 0 8px; }
+/* Lesbare Bestätigung „Code für: …“ über dem Code-Feld (volle Zeilenbreite). */
+.task-codefor { flex: 1 0 100%; margin: 0 0 2px; font-weight: 800; color: var(--brand-ink); }
+/* Kurzes Erfolgs-Feedback auf Kopieren/Einfügen-Knöpfen. */
+.btn-flash { background: var(--ok, #3F7355) !important; border-color: var(--ok, #3F7355) !important; color: #fff !important; }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);
@@ -3786,6 +3790,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     taskDue: "Frist (optional)",
     taskGenerate: "Code erzeugen",
     taskCopy: "Kopieren",
+    taskCopied: "Kopiert!",
+    taskCodeFor: (p) => `Code für: ${p.label}`,
     grpPretrip: "Pre-Trip-Pläne",
     grpPreset: "Pre-Arrival-Pakete",
     grpCategory: "Ganzes Paket (üben)",
@@ -3817,6 +3823,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     taskDue: "Due date (optional)",
     taskGenerate: "Generate code",
     taskCopy: "Copy",
+    taskCopied: "Copied!",
+    taskCodeFor: (p) => `Code for: ${p.label}`,
     grpPretrip: "Pre-trip plans",
     grpPreset: "Pre-arrival packs",
     grpCategory: "Whole pack (practice)",
@@ -3828,6 +3836,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     intro: "Hast du einen Aufgaben-Code von deiner Lehrkraft oder Reiseleitung bekommen? Füg ihn hier ein und leg los.",
     pasteLabel: "Aufgaben-Code einfügen",
     open: "Öffnen",
+    paste: "Einfügen",
+    pasted: "Eingefügt.",
+    pasteFail: "Zwischenablage nicht lesbar – bitte den Code von Hand einfügen.",
     invalid: "Das ist kein gültiger Aufgaben-Code.",
     unknownTarget: "Die Aufgabe verweist auf einen unbekannten Inhalt.",
     copied: "Code kopiert.",
@@ -3843,6 +3854,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     intro: "Got a task code from your teacher or tour leader? Paste it here and get started.",
     pasteLabel: "Paste task code",
     open: "Open",
+    paste: "Paste",
+    pasted: "Pasted.",
+    pasteFail: "Couldn't read the clipboard – please paste the code manually.",
     invalid: "That's not a valid task code.",
     unknownTarget: "The task points to unknown content.",
     copied: "Code copied.",
@@ -18501,6 +18515,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.47.0",
+      date: "2026-06-15",
+      title: "Aufgaben erstellen: Auswahl bleibt stehen + klares Kopieren/Einfügen",
+      items: [
+        "🎯 Im „Modo profe“ bleibt das gewählte Aufgaben-Ziel (Land/Paket), der Titel und die Frist jetzt nach „Code erzeugen“ stehen – vorher sprang die Auswahl zurück auf das erste Land.",
+        "🧾 Unter dem erzeugten Code steht jetzt im Klartext, wofür er ist (z. B. „Code für: Pre-Trip-Plan: Peru“) – so siehst du sofort, dass deine Auswahl übernommen wurde.",
+        "📋 Kopieren bestätigt mit einem kurzen „✓ Kopiert!“ direkt am Knopf; auf der Lernenden-Seite gibt es einen „Einfügen“-Knopf, der den Code aus der Zwischenablage holt – beides mit sichtbarer Rückmeldung.",
+      ],
+    },
+    {
       version: "1.46.0",
       date: "2026-06-15",
       title: "Nach der Etappe zurück zum Plan – und ein eigener „Tarea“-Reiter",
@@ -21356,7 +21380,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
 
     const grp = (g) => (vm.taskTargets || []).filter((x) => x.group === g)
-      .map((x) => `<option value="${esc(x.value)}">${esc(x.label)}</option>`).join("");
+      .map((x) => `<option value="${esc(x.value)}"${x.value === vm.taskTarget ? " selected" : ""}>${esc(x.label)}</option>`).join("");
     const taskForm = `
       <h3 class="teacher-h3">${esc(t("teacher.taskHeading"))}</h3>
       <p class="teacher-sub2">${esc(t("teacher.taskHint"))}</p>
@@ -21366,12 +21390,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
           <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
         </select>
-        <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}">
-        <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}">
+        <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}" value="${esc(vm.taskTitle || "")}">
+        <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}" value="${esc(vm.taskDue || "")}">
         <button class="teacher-btn teacher-btn--main" data-action="task-generate">${esc(t("teacher.taskGenerate"))}</button>
       </div>
       ${vm.taskCode ? `
       <div class="task-result">
+        ${vm.taskCodeLabel ? `<p class="task-codefor">🎯 ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
         <textarea id="task-code" class="task-code" readonly rows="2">${esc(vm.taskCode)}</textarea>
         <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
       </div>` : ""}`;
@@ -21405,7 +21430,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <label class="task-label" for="task-code-input">${esc(t("task.pasteLabel"))}</label>
       <textarea id="task-code-input" class="task-code" rows="3" placeholder="HRT1.…"></textarea>
       <div class="teacher-actions">
-        <button class="teacher-btn teacher-btn--main" data-action="task-open">${esc(t("task.open"))}</button>
+        <button class="teacher-btn teacher-btn--main" data-action="task-open">▶️ ${esc(t("task.open"))}</button>
+        <button class="teacher-btn" data-action="task-paste">📋 ${esc(t("task.paste"))}</button>
       </div>`;
     // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
     // hervorheben; sonst die schlichte Einzelseite mit Zurück-Knopf wie bisher.
@@ -22657,6 +22683,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
+    taskTarget: "",          // gewähltes Aufgaben-Ziel im Formular (überlebt Re-Render)
+    taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
+    taskDue: "",             // optionale Frist (überlebt Re-Render)
     openedTask: null,        // vom Lernenden geöffnete Aufgabe { kind, scope, title, due } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
@@ -25142,7 +25171,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
       totalCards: students.length ? students[0].totalCards : 0,
       taskTargets: taskTargets(),
+      taskTarget: state.taskTarget,   // gewähltes Ziel (für <option selected>)
+      taskTitle: state.taskTitle,     // Titel-Feld vorbelegen
+      taskDue: state.taskDue,         // Frist-Feld vorbelegen
       taskCode: state.teacherTaskCode,
+      // Lesbare Bestätigung, WOFÜR der erzeugte Code ist (statt nur Base64-Blob).
+      taskCodeLabel: state.teacherTaskCode ? taskTargetLabel(store.decodeTask(state.teacherTaskCode)) : "",
     };
   }
 
@@ -25171,18 +25205,39 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Aufgabe erzeugen (Lehrkraft): aus dem Formular einen Code bauen.
   function generateTask() {
+    // Aktuelle Formularwerte übernehmen (DOM ist die Wahrheit beim Klick), in den
+    // State spiegeln, damit der Re-Render Auswahl/Titel/Frist beibehält.
     const sel = document.getElementById("task-target");
-    if (!sel || !sel.value) return;
     const titleEl = document.getElementById("task-title");
     const dueEl = document.getElementById("task-due");
-    const parts = sel.value.split(":");
+    if (sel && sel.value) state.taskTarget = sel.value;
+    if (titleEl) state.taskTitle = titleEl.value;
+    if (dueEl) state.taskDue = dueEl.value;
+    if (!state.taskTarget) return;
+    const parts = state.taskTarget.split(":");
     state.teacherTaskCode = store.encodeTask({
       kind: parts[0],
       scope: parts.slice(1).join(":"),
-      title: titleEl ? titleEl.value.trim() : "",
-      due: dueEl ? dueEl.value : "",
+      title: (state.taskTitle || "").trim(),
+      due: state.taskDue || "",
     });
     render();
+  }
+
+  // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
+  // Beschriftung & Klasse kurz tauschen und danach zurücksetzen.
+  function flashButton(action, label) {
+    const btn = root.querySelector('[data-action="' + action + '"]');
+    if (!btn) return;
+    if (btn.dataset.flashing === "1") return; // nicht stapeln
+    const prev = btn.textContent;
+    btn.dataset.flashing = "1";
+    btn.textContent = "✓ " + label;
+    btn.classList.add("btn-flash");
+    setTimeout(function () {
+      const b = root.querySelector('[data-action="' + action + '"]');
+      if (b) { b.textContent = prev; b.classList.remove("btn-flash"); delete b.dataset.flashing; }
+    }, 1600);
   }
 
   function copyTaskCode() {
@@ -25190,9 +25245,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!code) return;
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(() => showNotice(t("task.copied")), () => {});
+        navigator.clipboard.writeText(code).then(function () { flashButton("task-copy", t("teacher.taskCopied")); }, function () {
+          const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); showNotice(t("task.copyManual")); }
+        });
       } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); showNotice(t("task.copyManual")); } }
     } catch (e) { /* egal */ }
+  }
+
+  // Lernenden-Seite: Code aus der Zwischenablage ins Eingabefeld holen (mit Feedback).
+  function pasteTaskCode() {
+    const el = document.getElementById("task-code-input");
+    if (!el) return;
+    function fill(text) {
+      el.value = (text || "").trim();
+      flashButton("task-paste", t("task.pasted"));
+      el.focus();
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        navigator.clipboard.readText().then(fill, function () { el.focus(); showNotice(t("task.pasteFail")); });
+      } else { el.focus(); showNotice(t("task.pasteFail")); }
+    } catch (e) { el.focus(); showNotice(t("task.pasteFail")); }
   }
 
   // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
@@ -26690,6 +26763,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "teacher-print") printTeacher();
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
+    else if (action === "task-paste") pasteTaskCode();
     else if (action === "open-task") openTaskScreen();
     else if (action === "back-pretrip") openPretrip();
     else if (action === "back-task") openTaskScreen();
@@ -26898,6 +26972,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       state.battleNames = Object.assign({}, state.battleNames, { [side]: e.target.value.trim() });
       return;
     }
+    // Aufgaben-Formular (Modo profe): Auswahl merken, damit ein Re-Render (z. B.
+    // nach „Code erzeugen“) das gewählte Ziel/Titel/Frist nicht zurücksetzt.
+    if (e.target && e.target.id === "task-target") { state.taskTarget = e.target.value; return; }
+    if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
+    if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);

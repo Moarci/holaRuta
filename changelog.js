@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.47.0",
+      date: "2026-06-15",
+      title: "Aufgaben erstellen: Auswahl bleibt stehen + klares Kopieren/Einfügen",
+      items: [
+        "🎯 Im „Modo profe“ bleibt das gewählte Aufgaben-Ziel (Land/Paket), der Titel und die Frist jetzt nach „Code erzeugen“ stehen – vorher sprang die Auswahl zurück auf das erste Land.",
+        "🧾 Unter dem erzeugten Code steht jetzt im Klartext, wofür er ist (z. B. „Code für: Pre-Trip-Plan: Peru“) – so siehst du sofort, dass deine Auswahl übernommen wurde.",
+        "📋 Kopieren bestätigt mit einem kurzen „✓ Kopiert!“ direkt am Knopf; auf der Lernenden-Seite gibt es einen „Einfügen“-Knopf, der den Code aus der Zwischenablage holt – beides mit sichtbarer Rückmeldung.",
+      ],
+    },
+    {
       version: "1.46.0",
       date: "2026-06-15",
       title: "Nach der Etappe zurück zum Plan – und ein eigener „Tarea“-Reiter",

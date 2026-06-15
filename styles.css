@@ -1763,6 +1763,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .task-target-line { font-weight: 800; color: var(--brand-ink); margin: 0 0 4px; }
 .task-title-line { font-size: 1.1rem; margin: 4px 0; }
 .task-due-line { color: var(--muted); margin: 2px 0 8px; }
+/* Lesbare Bestätigung „Code für: …“ über dem Code-Feld (volle Zeilenbreite). */
+.task-codefor { flex: 1 0 100%; margin: 0 0 2px; font-weight: 800; color: var(--brand-ink); }
+/* Kurzes Erfolgs-Feedback auf Kopieren/Einfügen-Knöpfen. */
+.btn-flash { background: var(--ok, #3F7355) !important; border-color: var(--ok, #3F7355) !important; color: #fff !important; }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);

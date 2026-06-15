@@ -2350,7 +2350,7 @@
       : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
 
     const grp = (g) => (vm.taskTargets || []).filter((x) => x.group === g)
-      .map((x) => `<option value="${esc(x.value)}">${esc(x.label)}</option>`).join("");
+      .map((x) => `<option value="${esc(x.value)}"${x.value === vm.taskTarget ? " selected" : ""}>${esc(x.label)}</option>`).join("");
     const taskForm = `
       <h3 class="teacher-h3">${esc(t("teacher.taskHeading"))}</h3>
       <p class="teacher-sub2">${esc(t("teacher.taskHint"))}</p>
@@ -2360,12 +2360,13 @@
           <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
           <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
         </select>
-        <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}">
-        <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}">
+        <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}" value="${esc(vm.taskTitle || "")}">
+        <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}" value="${esc(vm.taskDue || "")}">
         <button class="teacher-btn teacher-btn--main" data-action="task-generate">${esc(t("teacher.taskGenerate"))}</button>
       </div>
       ${vm.taskCode ? `
       <div class="task-result">
+        ${vm.taskCodeLabel ? `<p class="task-codefor">🎯 ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
         <textarea id="task-code" class="task-code" readonly rows="2">${esc(vm.taskCode)}</textarea>
         <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
       </div>` : ""}`;
@@ -2399,7 +2400,8 @@
       <label class="task-label" for="task-code-input">${esc(t("task.pasteLabel"))}</label>
       <textarea id="task-code-input" class="task-code" rows="3" placeholder="HRT1.…"></textarea>
       <div class="teacher-actions">
-        <button class="teacher-btn teacher-btn--main" data-action="task-open">${esc(t("task.open"))}</button>
+        <button class="teacher-btn teacher-btn--main" data-action="task-open">▶️ ${esc(t("task.open"))}</button>
+        <button class="teacher-btn" data-action="task-paste">📋 ${esc(t("task.paste"))}</button>
       </div>`;
     // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
     // hervorheben; sonst die schlichte Einzelseite mit Zurück-Knopf wie bisher.

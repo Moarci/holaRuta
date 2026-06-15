@@ -65,6 +65,9 @@
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
+    taskTarget: "",          // gewähltes Aufgaben-Ziel im Formular (überlebt Re-Render)
+    taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
+    taskDue: "",             // optionale Frist (überlebt Re-Render)
     openedTask: null,        // vom Lernenden geöffnete Aufgabe { kind, scope, title, due } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
@@ -2550,7 +2553,12 @@
         ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
       totalCards: students.length ? students[0].totalCards : 0,
       taskTargets: taskTargets(),
+      taskTarget: state.taskTarget,   // gewähltes Ziel (für <option selected>)
+      taskTitle: state.taskTitle,     // Titel-Feld vorbelegen
+      taskDue: state.taskDue,         // Frist-Feld vorbelegen
       taskCode: state.teacherTaskCode,
+      // Lesbare Bestätigung, WOFÜR der erzeugte Code ist (statt nur Base64-Blob).
+      taskCodeLabel: state.teacherTaskCode ? taskTargetLabel(store.decodeTask(state.teacherTaskCode)) : "",
     };
   }
 
@@ -2579,18 +2587,39 @@
 
   // Aufgabe erzeugen (Lehrkraft): aus dem Formular einen Code bauen.
   function generateTask() {
+    // Aktuelle Formularwerte übernehmen (DOM ist die Wahrheit beim Klick), in den
+    // State spiegeln, damit der Re-Render Auswahl/Titel/Frist beibehält.
     const sel = document.getElementById("task-target");
-    if (!sel || !sel.value) return;
     const titleEl = document.getElementById("task-title");
     const dueEl = document.getElementById("task-due");
-    const parts = sel.value.split(":");
+    if (sel && sel.value) state.taskTarget = sel.value;
+    if (titleEl) state.taskTitle = titleEl.value;
+    if (dueEl) state.taskDue = dueEl.value;
+    if (!state.taskTarget) return;
+    const parts = state.taskTarget.split(":");
     state.teacherTaskCode = store.encodeTask({
       kind: parts[0],
       scope: parts.slice(1).join(":"),
-      title: titleEl ? titleEl.value.trim() : "",
-      due: dueEl ? dueEl.value : "",
+      title: (state.taskTitle || "").trim(),
+      due: state.taskDue || "",
     });
     render();
+  }
+
+  // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
+  // Beschriftung & Klasse kurz tauschen und danach zurücksetzen.
+  function flashButton(action, label) {
+    const btn = root.querySelector('[data-action="' + action + '"]');
+    if (!btn) return;
+    if (btn.dataset.flashing === "1") return; // nicht stapeln
+    const prev = btn.textContent;
+    btn.dataset.flashing = "1";
+    btn.textContent = "✓ " + label;
+    btn.classList.add("btn-flash");
+    setTimeout(function () {
+      const b = root.querySelector('[data-action="' + action + '"]');
+      if (b) { b.textContent = prev; b.classList.remove("btn-flash"); delete b.dataset.flashing; }
+    }, 1600);
   }
 
   function copyTaskCode() {
@@ -2598,9 +2627,27 @@
     if (!code) return;
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(() => showNotice(t("task.copied")), () => {});
+        navigator.clipboard.writeText(code).then(function () { flashButton("task-copy", t("teacher.taskCopied")); }, function () {
+          const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); showNotice(t("task.copyManual")); }
+        });
       } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); showNotice(t("task.copyManual")); } }
     } catch (e) { /* egal */ }
+  }
+
+  // Lernenden-Seite: Code aus der Zwischenablage ins Eingabefeld holen (mit Feedback).
+  function pasteTaskCode() {
+    const el = document.getElementById("task-code-input");
+    if (!el) return;
+    function fill(text) {
+      el.value = (text || "").trim();
+      flashButton("task-paste", t("task.pasted"));
+      el.focus();
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        navigator.clipboard.readText().then(fill, function () { el.focus(); showNotice(t("task.pasteFail")); });
+      } else { el.focus(); showNotice(t("task.pasteFail")); }
+    } catch (e) { el.focus(); showNotice(t("task.pasteFail")); }
   }
 
   // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
@@ -4098,6 +4145,7 @@
     else if (action === "teacher-print") printTeacher();
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
+    else if (action === "task-paste") pasteTaskCode();
     else if (action === "open-task") openTaskScreen();
     else if (action === "back-pretrip") openPretrip();
     else if (action === "back-task") openTaskScreen();
@@ -4306,6 +4354,11 @@
       state.battleNames = Object.assign({}, state.battleNames, { [side]: e.target.value.trim() });
       return;
     }
+    // Aufgaben-Formular (Modo profe): Auswahl merken, damit ein Re-Render (z. B.
+    // nach „Code erzeugen“) das gewählte Ziel/Titel/Frist nicht zurücksetzt.
+    if (e.target && e.target.id === "task-target") { state.taskTarget = e.target.value; return; }
+    if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
+    if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);
