@@ -1276,14 +1276,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Teilen-Knopf auf Modul-Ebene (ganzes Historia-Modul weiterempfehlen). */
 .hist-modshare { margin-top: 12px; }
 
-/* Teilen-Knopf in den übrigen Entdecken-Kategorien (Knigge/Regatear/Logística/
-   Salud) und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und
-   etwas Abstand zum übrigen Karteninhalt. */
+/* Teilen-Knopf für einzelne Tipps/Kategorien (Knigge/Regatear/Logística/Salud)
+   und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und etwas
+   Abstand zum übrigen Karteninhalt. Der „Modul teilen“-Knopf (.mod-share) bleibt
+   bewusst im prominenten Historia-Orange (.hist-share) – einheitlich über alle
+   Entdecken-Module und damit gut auffindbar. */
 .knigge-topic__body .hist-share { margin-top: 12px; }
 .cinfo-share { margin: 0 0 14px; }
 .knigge-topic__body .hist-share,
-.cinfo-share,
-.mod-share { background: linear-gradient(135deg, #475569, #334155); }
+.cinfo-share { background: linear-gradient(135deg, #475569, #334155); }
 
 /* Mini-Quiz zum Text (Selbstprüfung). */
 .hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
@@ -17457,6 +17458,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.31.1",
+      date: "2026-06-15",
+      title: "„Modul teilen“ besser sichtbar",
+      items: [
+        "📤 Der „Modul teilen“-Knopf erscheint jetzt in allen Entdecken-Modulen im selben auffälligen Orange wie bei „Historia de Sudamérica“ – vorher war er außerhalb von Historia unscheinbar grau und leicht zu übersehen.",
+      ],
+    },
     {
       version: "1.31.0",
       date: "2026-06-15",
