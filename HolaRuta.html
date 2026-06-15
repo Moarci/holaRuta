@@ -16800,6 +16800,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return y - step + px * (lh - 1); // ungefähre Unterkante
   }
 
+  // Eine zentrierte Zeile zeichnen und die Schrift bei Bedarf schrumpfen, bis sie
+  // in maxW passt. Für personalisierte Kicker („FORTSCHRITT VON …"), deren Name
+  // bis zu 40 Zeichen lang sein darf und sonst über den Bildrand liefe.
+  function drawFittedLine(ctx, text, cx, y, maxW, basePx, weight) {
+    let px = basePx;
+    ctx.font = font(weight, px);
+    while (px > 22 && ctx.measureText(text).width > maxW) {
+      px -= 2;
+      ctx.font = font(weight, px);
+    }
+    ctx.fillText(text, cx, y);
+  }
+
   function bgGradient(ctx, from, to, h) {
     const g = ctx.createLinearGradient(0, 0, W, h);
     g.addColorStop(0, from);
@@ -16959,8 +16972,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Titel
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = font("700", 40);
-    ctx.fillText(payload.userName ? t("share.myProgressName", { name: payload.userName }) : t("share.myProgress"), cx, L.kicker);
+    drawFittedLine(ctx, payload.userName ? t("share.myProgressName", { name: payload.userName }) : t("share.myProgress"), cx, L.kicker, W - PAD * 2, 40, "700");
     ctx.font = font("800", 66);
     ctx.fillText("¡Estoy aprendiendo!", cx, L.title);
 
@@ -17059,8 +17071,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Kopf: Ruta-Pass + Badge-Gruppe.
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = font("700", 40);
-    ctx.fillText(payload.userName ? t("share.myPassName", { name: payload.userName }) : t("share.myPass"), cx, L.kicker);
+    drawFittedLine(ctx, payload.userName ? t("share.myPassName", { name: payload.userName }) : t("share.myPass"), cx, L.kicker, W - PAD * 2, 40, "700");
     if (payload.groupLabel) {
       ctx.fillStyle = "rgba(255,255,255,0.82)";
       ctx.font = font("600", 30);
@@ -21655,6 +21666,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
     battleNames: { A: "", B: "" }, // optionale Spielernamen (sonst „Spieler A/B")
+    battleNameEdited: false,  // hat der Nutzer ein Battle-Namensfeld angefasst? (dann Profil-Namen nicht mehr vorbelegen)
     battleSeen: [],          // zuletzt verwendete Battle-Ids – vermeidet sofortige Wiederholungen
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
@@ -21821,7 +21833,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
       },
       lastCat,
-      userName: settings.userName || "",       // Reise-Name (für Diálogos automatisch eingesetzt)
+      userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
@@ -22056,7 +22068,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       phrases: loc(regatear.PHRASES || []),
       units: loc(regatear.UNITS || []),
       regional: loc(regatear.REGIONAL || []),
-      roleplays: loc(roleplays),
+      // {name} auch hier auflösen – symmetrisch zu roleplayVM, falls künftig ein
+      // Regatear-Rollenspiel den Platzhalter nutzt (sonst stünde „{name}" im Text).
+      roleplays: loc(roleplays).map((r) => Object.assign({}, r, {
+        dialogue: (r.dialogue || []).map((d) => Object.assign({}, d, { es: withName(d.es), de: withName(d.de) })),
+        usefulPhrases: (r.usefulPhrases || []).map(withName),
+      })),
     };
   }
 
@@ -22821,7 +22838,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return (settings.userName || "").trim().replace(/\s+/g, " ").slice(0, 40);
   }
   function travelerName() {
-    return profileName() || "Marco";
+    const n = profileName();
+    // Ein Name, der bei der Antwortprüfung zu nichts normalisiert (nur Emoji/
+    // Satzzeichen), machte die „Wie heißt du?"-Tippzüge unlösbar → Beispielname.
+    return (n && matcher.normalize(n)) ? n : "Marco";
   }
   // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
   // durch den Reise-Namen ersetzen. Ersatz als Funktion übergeben, damit Sonder-
@@ -22934,7 +22954,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const t = currentUserTurn();
     if (!t || t.kind !== "mc" || !t.options[idx]) return;
     const correct = !!t.options[idx].ok;
-    d.result = { correct, given: t.options[idx].es };
+    d.result = { correct, given: withName(t.options[idx].es) };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
     render();
   }
@@ -23998,10 +24018,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   function openBattleSetup() {
     dismissBadgeToast();
-    // Spieler A mit dem Profil-Namen vorbelegen (Gerätebesitzer spielt meist A),
-    // solange noch kein Name eingetippt wurde. Das Feld bleibt frei editier- und
-    // leerbar; auf 14 Zeichen gekürzt wie das Eingabefeld selbst.
-    if (!state.battleNames.A) {
+    // Spieler A mit dem Profil-Namen vorbelegen (Gerätebesitzer spielt meist A) –
+    // aber nur, solange der Nutzer die Battle-Namensfelder noch NIE angefasst hat.
+    // So bleibt ein bewusst geleertes Feld auch nach einem erneuten Öffnen leer.
+    if (!state.battleNameEdited && !state.battleNames.A) {
       const n = profileName().slice(0, 14);
       if (n) state.battleNames = Object.assign({}, state.battleNames, { A: n });
     }
@@ -25486,6 +25506,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (e.target && (e.target.id === "pname-a" || e.target.id === "pname-b")) {
       const side = e.target.id === "pname-a" ? "A" : "B";
       state.battleNames = Object.assign({}, state.battleNames, { [side]: e.target.value.trim() });
+      state.battleNameEdited = true; // ab jetzt nicht mehr automatisch mit dem Profil-Namen vorbelegen
       return;
     }
     const el = e.target.closest('[data-action="select-country"]');
