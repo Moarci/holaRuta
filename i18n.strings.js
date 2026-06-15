@@ -349,11 +349,10 @@
     // Reiter-Kopf
     discoverTitle: "Entdecken",
     discoverIntro: "Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.",
-    // Abschnitts-Überschriften (Gruppierung der Einstiege)
-    groupTravel: "Unterwegs",
-    groupPlay: "Spielen & sprechen",
-    groupWords: "Wortschatz & Grammatik",
-    groupCulture: "Land, Leute & Geschichte",
+    // Abschnitts-Überschriften (Gruppierung der Einstiege nach Aktivität)
+    groupPlay: "Spielen",
+    groupPractice: "Üben",
+    groupReference: "Nachschlagen",
     // FEATURES-Untertitel
     subSupervivencia: "Die wichtigsten Sätze sofort griffbereit",
     subHostel: "Zu zweit & laut: Battle und Rollenspiele",
@@ -646,10 +645,9 @@
     quizProgress: "Quiz progress",
     discoverTitle: "Discover",
     discoverIntro: "Play, match, look things up – Spanish beyond the cards.",
-    groupTravel: "On the road",
-    groupPlay: "Play & speak",
-    groupWords: "Vocabulary & grammar",
-    groupCulture: "Country, people & history",
+    groupPlay: "Play",
+    groupPractice: "Practise",
+    groupReference: "Look up",
     subSupervivencia: "The most important phrases right to hand",
     subHostel: "In pairs & out loud: battle and role-plays",
     subDefiniciones: "Read the definition, pick the term",

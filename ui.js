@@ -65,36 +65,35 @@
   // need: optionale Voraussetzung ("speech"|"frases"|"countries") – fehlt das
   // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   // sub = deutscher Fallback; subKey = i18n-Schlüssel (zur Laufzeit via t() übersetzt).
-  // group = thematischer Abschnitt (siehe FEATURE_GROUPS); damit die inzwischen
-  // lange Liste in scanbare Blöcke statt einer endlosen Kette zerfällt.
+  // group = thematischer Abschnitt (siehe FEATURE_GROUPS); gegliedert nach
+  // Aktivität (Spielen · Üben · Nachschlagen) – deckt sich mit dem Intro-Text
+  // und gibt der inzwischen langen Liste eine klare, einheitliche Achse.
   const FEATURES = [
-    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "travel" },
+    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
-    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "play" },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
     { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
     { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
     { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
-    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "words" },
-    { action: "open-compras",     icon: "🛒", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "words" },
-    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"], group: "words" },
-    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"], group: "words" },
-    { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries", group: "culture" },
-    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia", group: "culture" },
-    { action: "open-historia-centro", icon: "🌋", title: "Historia de Centroamérica", subKey: "discover.subHistoriaCentro", sub: "Von den Maya über Morazán bis heute", grad: ["#2E6E5A", "#1F4A3A"], need: "historiaCentro", group: "culture" },
-    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "travel" },
-    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "travel" },
-    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "travel" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
+    { action: "open-compras",     icon: "🛒", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"], group: "practice" },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"], group: "practice" },
+    { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries", group: "reference" },
+    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia", group: "reference" },
+    { action: "open-historia-centro", icon: "🌋", title: "Historia de Centroamérica", subKey: "discover.subHistoriaCentro", sub: "Von den Maya über Morazán bis heute", grad: ["#2E6E5A", "#1F4A3A"], need: "historiaCentro", group: "reference" },
+    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
+    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
+    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
   ];
 
-  // Reihenfolge & Beschriftung der Entdecken-Abschnitte. Die Reise-Praxis steht
-  // bewusst zuerst (Supervivencia gehört sofort griffbereit), dann Spielmodi,
-  // Wortschatz/Grammatik und zuletzt Land & Leute. titleKey wird via t() übersetzt.
+  // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),
+  // Reihenfolge wie im Intro „Spielen, zuordnen, nachschlagen". titleKey via t().
   const FEATURE_GROUPS = [
-    { id: "travel",  titleKey: "discover.groupTravel" },
-    { id: "play",    titleKey: "discover.groupPlay" },
-    { id: "words",   titleKey: "discover.groupWords" },
-    { id: "culture", titleKey: "discover.groupCulture" },
+    { id: "play",      titleKey: "discover.groupPlay" },
+    { id: "practice",  titleKey: "discover.groupPractice" },
+    { id: "reference", titleKey: "discover.groupReference" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -344,7 +343,6 @@
           <span class="feat__title">${esc(x.title)}</span>
           <span class="feat__sub">${esc(x.subKey ? t(x.subKey) : x.sub)}</span>
         </span>
-        <span class="feat__chev" aria-hidden="true">›</span>
       </button>`;
     // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
     // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
