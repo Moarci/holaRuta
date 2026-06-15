@@ -2868,10 +2868,13 @@
     return {
       tasks: subscribedTasks.map((tk, i) => {
         const prog = taskProgress(tk);
+        const done = prog.total > 0 && prog.seen >= prog.total;
         return {
           idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
           overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
-          done: prog.total > 0 && prog.seen >= prog.total, // absolviert? -> als erledigt markieren
+          done, // absolviert? -> als erledigt markieren
+          started: !done && prog.seen > 0, // angefangen, aber noch nicht fertig -> optisch abheben
+          pct: prog.total > 0 ? Math.round((prog.seen / prog.total) * 100) : 0, // Füllstand der Fortschrittsleiste
           seen: prog.seen, total: prog.total, progressKind: prog.kind, // „12/40" / „3/7 Etappen"
         };
       }),

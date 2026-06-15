@@ -1805,8 +1805,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border-radius: 999px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em;
   background: color-mix(in srgb, var(--ok, #3F7355) 88%, #000); color: #fff;
 }
+/* Angefangene Aufgabe: klar von „noch nicht begonnen“ abgehoben (Terrakotta-Akzent
+   statt Grün; Grün bleibt für „erledigt“). Linker Akzentbalken + leicht getönte Fläche. */
+.task-item--active { border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); background: color-mix(in srgb, var(--brand) 7%, var(--card)); border-left: 4px solid var(--brand); }
+.task-item--active .task-item__target { color: var(--brand-ink); }
+.task-item__badge--active { background: var(--brand); }
 /* Fortschritt „12/40" einer noch offenen Aufgabe. */
 .task-item__progress { font-size: 0.8rem; font-weight: 700; color: var(--brand-ink); }
+/* Fortschrittsleiste – nur bei angefangenen Aufgaben; macht den Füllstand sichtbar. */
+.task-item__bar { display: block; height: 6px; border-radius: 999px; margin-top: 4px; background: color-mix(in srgb, var(--brand) 18%, var(--card)); overflow: hidden; }
+.task-item__bar-fill { display: block; height: 100%; border-radius: 999px; background: var(--brand); transition: width 0.3s ease; }
 .task-item__actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .task-empty { color: var(--muted); margin: 6px 0 0; }
 .task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }

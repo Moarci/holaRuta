@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.69.0",
+      date: "2026-06-15",
+      title: "Angefangene Aufgaben heben sich ab",
+      items: [
+        "⏳ Aufgaben, die du schon begonnen hast, sind in der Tarea-Liste jetzt klar zu erkennen – mit Terrakotta-Akzent, „Angefangen“-Abzeichen und einer Fortschrittsleiste, die den Füllstand zeigt. So unterscheiden sie sich auf einen Blick von noch nicht begonnenen und von erledigten Aufgaben.",
+      ],
+    },
+    {
       version: "1.68.0",
       date: "2026-06-15",
       title: "Aufgaben-Fortschritt sichtbar + Feinschliff (Review-Block)",

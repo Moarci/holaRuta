@@ -2448,11 +2448,12 @@
       ? `<p class="sectioncap">${esc(t("task.yours", { n: tasks.length }))}</p>
          <ul class="task-list">
            ${tasks.map((tk) => `
-             <li class="task-item${tk.done ? " task-item--done" : ""}"${tk.done ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.done"))}"` : ""}>
+             <li class="task-item${tk.done ? " task-item--done" : tk.started ? " task-item--active" : ""}"${tk.done ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.done"))}"` : tk.started ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.inProgress"))}"` : ""}>
                <div class="task-item__body">
-                 <span class="task-item__target"><span aria-hidden="true">${tk.done ? "✅" : "🎯"}</span> ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge" role="status" title="${esc(t("task.doneHint"))}">${esc(t("task.done"))}</span>` : ""}</span>
+                 <span class="task-item__target"><span aria-hidden="true">${tk.done ? "✅" : tk.started ? "⏳" : "🎯"}</span> ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge" role="status" title="${esc(t("task.doneHint"))}">${esc(t("task.done"))}</span>` : tk.started ? ` <span class="task-item__badge task-item__badge--active" role="status" title="${esc(t("task.inProgressHint"))}">${esc(t("task.inProgress"))}</span>` : ""}</span>
                  ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
-                 ${!tk.done && tk.total > 0 ? `<span class="task-item__progress">${esc(t(tk.progressKind === "stages" ? "task.progStages" : "task.progCards", { seen: tk.seen, total: tk.total }))}</span>` : ""}
+                 ${!tk.done && tk.total > 0 ? `<span class="task-item__progress">${esc(t(tk.progressKind === "stages" ? "task.progStages" : "task.progCards", { seen: tk.seen, total: tk.total }))}</span>
+                 ${tk.started ? `<span class="task-item__bar" aria-hidden="true"><span class="task-item__bar-fill" style="width:${tk.pct}%"></span></span>` : ""}` : ""}
                  ${tk.due ? `<span class="task-item__due${tk.overdue && !tk.done ? " is-overdue" : ""}">${esc(t(tk.overdue && !tk.done ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
                </div>
                <div class="task-item__actions">
