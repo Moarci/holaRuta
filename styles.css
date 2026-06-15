@@ -2490,6 +2490,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   color: var(--ink);
 }
 .today__ruta--done .today__ruta-main { color: var(--ok); }
+.today__ruta-badge {
+  display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px;
+  border-radius: 999px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; background: var(--ok); color: #fff;
+}
 
 /* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
 .trip {

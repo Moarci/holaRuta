@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.67.0",
+      date: "2026-06-15",
+      title: "Pre-Arrival-Kachel zeigt „geschafft“",
+      items: [
+        "✅ Die Pre-Arrival-Kachel auf der Startseite ist jetzt klar als erledigt markiert, sobald du alle Ankunfts-Sätze einmal gelernt hast – mit Häkchen, grünem „geschafft“-Abzeichen und grüner Optik, genau wie bei „Ruta del día“. Antippbar bleibt sie zum Wiederholen.",
+      ],
+    },
+    {
       version: "1.66.0",
       date: "2026-06-15",
       title: "Absolvierte Aufgaben werden als erledigt markiert",

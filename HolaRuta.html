@@ -2528,6 +2528,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   color: var(--ink);
 }
 .today__ruta--done .today__ruta-main { color: var(--ok); }
+.today__ruta-badge {
+  display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px;
+  border-radius: 999px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; background: var(--ok); color: #fff;
+}
 
 /* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
 .trip {
@@ -3116,6 +3121,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     rutaSub: "Kurze Tagesrunde quer durch alle Themen",
     rutaDoneTitle: "✓ Ruta del día geschafft",
     rutaDoneSub: "Für heute erledigt – noch eine Runde?",
+    presetDone: "geschafft",
+    presetDoneSub: "Alle Sätze einmal gelernt – noch eine Runde?",
     presetCoTitle: "🇨🇴 Pre-Arrival Kolumbien",
     presetCoSub: "Die wichtigsten Sätze vor der Ankunft",
     presetPeTitle: "🇵🇪 Pre-Arrival Peru",
@@ -3202,6 +3209,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     rutaSub: "A short daily round across all topics",
     rutaDoneTitle: "✓ Ruta del día done",
     rutaDoneSub: "Done for today – one more round?",
+    presetDone: "done",
+    presetDoneSub: "All phrases learned once – one more round?",
     presetCoTitle: "🇨🇴 Pre-Arrival Colombia",
     presetCoSub: "The key phrases before you arrive",
     presetPeTitle: "🇵🇪 Pre-Arrival Peru",
@@ -20276,6 +20285,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.67.0",
+      date: "2026-06-15",
+      title: "Pre-Arrival-Kachel zeigt „geschafft“",
+      items: [
+        "✅ Die Pre-Arrival-Kachel auf der Startseite ist jetzt klar als erledigt markiert, sobald du alle Ankunfts-Sätze einmal gelernt hast – mit Häkchen, grünem „geschafft“-Abzeichen und grüner Optik, genau wie bei „Ruta del día“. Antippbar bleibt sie zum Wiederholen.",
+      ],
+    },
+    {
       version: "1.66.0",
       date: "2026-06-15",
       title: "Absolvierte Aufgaben werden als erledigt markiert",
@@ -21295,82 +21312,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
       </button>`;
 
-    // Kuratiertes Pre-Arrival-Preset: ein Tap startet die wichtigsten Sätze für die
-    // Ankunft in Kolumbien (benannte Karten-Auswahl, nicht der freie Filter). Nutzt
-    // dieselbe Kachel-Optik wie Ruta del día. Erscheint nur, wenn das Trip-Ziel
-    // einen Kolumbien-Bezug hat – sonst bliebe die Kachel auch bei anderen Reisen.
-    const presetCo = vm.showColombiaPreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-co">
-        <span class="today__ruta-main">${esc(t("home.presetCoTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetCoSub"))}</span>
-      </button>`
-      : "";
-
-    // Analog für Peru – erscheint nur bei Peru-Bezug des Trip-Ziels/der Edition.
-    const presetPe = vm.showPeruPreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-pe">
-        <span class="today__ruta-main">${esc(t("home.presetPeTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetPeSub"))}</span>
-      </button>`
-      : "";
-
-    const presetMx = vm.showMexicoPreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-mx">
-        <span class="today__ruta-main">${esc(t("home.presetMxTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetMxSub"))}</span>
-      </button>`
-      : "";
-
-    const presetCr = vm.showCostaRicaPreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-cr">
-        <span class="today__ruta-main">${esc(t("home.presetCrTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetCrSub"))}</span>
-      </button>`
-      : "";
-
-    const presetEc = vm.showEcuadorPreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-ec">
-        <span class="today__ruta-main">${esc(t("home.presetEcTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetEcSub"))}</span>
-      </button>`
-      : "";
-
-    const presetGt = vm.showGuatemalaPreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-gt">
-        <span class="today__ruta-main">${esc(t("home.presetGtTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetGtSub"))}</span>
-      </button>`
-      : "";
-
-    const presetAr = vm.showArgentinaPreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-ar">
-        <span class="today__ruta-main">${esc(t("home.presetArTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetArSub"))}</span>
-      </button>`
-      : "";
-
-    const presetCl2 = vm.showChilePreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-cl">
-        <span class="today__ruta-main">${esc(t("home.presetClTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetClSub"))}</span>
-      </button>`
-      : "";
-
-    const presetBo = vm.showBoliviaPreset
-      ? `
-      <button class="today__ruta" data-action="open-preset" data-preset="prearrival-bo">
-        <span class="today__ruta-main">${esc(t("home.presetBoTitle"))}</span>
-        <span class="today__ruta-sub">${esc(t("home.presetBoSub"))}</span>
-      </button>`
-      : "";
+    // Kuratierte Pre-Arrival-Presets: ein Tap startet die wichtigsten Ankunfts-Sätze
+    // fürs jeweilige Reiseziel (benannte Auswahl, nicht der freie Filter). Nutzt die
+    // Ruta-del-día-Optik; erscheint nur bei passendem Trip-/Edition-Bezug. Ist das
+    // Paket absolviert (alle Karten einmal gelernt), zeigt die Kachel das mit
+    // Häkchen + „geschafft" an (bleibt antippbar zum Wiederholen).
+    const PRESET_CARDS = [
+      { id: "prearrival-co", show: vm.showColombiaPreset, titleKey: "home.presetCoTitle", subKey: "home.presetCoSub" },
+      { id: "prearrival-pe", show: vm.showPeruPreset, titleKey: "home.presetPeTitle", subKey: "home.presetPeSub" },
+      { id: "prearrival-mx", show: vm.showMexicoPreset, titleKey: "home.presetMxTitle", subKey: "home.presetMxSub" },
+      { id: "prearrival-cr", show: vm.showCostaRicaPreset, titleKey: "home.presetCrTitle", subKey: "home.presetCrSub" },
+      { id: "prearrival-ec", show: vm.showEcuadorPreset, titleKey: "home.presetEcTitle", subKey: "home.presetEcSub" },
+      { id: "prearrival-gt", show: vm.showGuatemalaPreset, titleKey: "home.presetGtTitle", subKey: "home.presetGtSub" },
+      { id: "prearrival-ar", show: vm.showArgentinaPreset, titleKey: "home.presetArTitle", subKey: "home.presetArSub" },
+      { id: "prearrival-cl", show: vm.showChilePreset, titleKey: "home.presetClTitle", subKey: "home.presetClSub" },
+      { id: "prearrival-bo", show: vm.showBoliviaPreset, titleKey: "home.presetBoTitle", subKey: "home.presetBoSub" },
+    ];
+    const presetCards = PRESET_CARDS.filter((p) => p.show).map((p) => {
+      const done = !!(vm.presetDone && vm.presetDone[p.id]);
+      return `
+      <button class="today__ruta${done ? " today__ruta--done" : ""}" data-action="open-preset" data-preset="${p.id}">
+        <span class="today__ruta-main">${done ? "✓ " : ""}${esc(t(p.titleKey))}${done ? ` <span class="today__ruta-badge">${esc(t("home.presetDone"))}</span>` : ""}</span>
+        <span class="today__ruta-sub">${esc(done ? t("home.presetDoneSub") : t(p.subKey))}</span>
+      </button>`;
+    }).join("");
 
     // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
     // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
@@ -21404,15 +21369,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </button>
         ${resume}
         ${rutaDia}
-        ${presetCo}
-        ${presetPe}
-        ${presetMx}
-        ${presetCr}
-        ${presetEc}
-        ${presetGt}
-        ${presetAr}
-        ${presetCl2}
-        ${presetBo}
+        ${presetCards}
         ${tripCard}
       </div>
 
@@ -25077,6 +25034,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       showArgentinaPreset: tripMentionsArgentina(), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
       showChilePreset: tripMentionsChile(),       // Pre-Arrival-Kachel nur bei Chile-Bezug
       showBoliviaPreset: tripMentionsBolivia(),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
+      // Welche Pre-Arrival-Pakete sind absolviert (alle Karten einmal gelernt)? -> Häkchen.
+      presetDone: (function () { const m = {}; (data.PRESETS || []).forEach((p) => { m[p.id] = taskDone({ kind: "preset", scope: p.id }); }); return m; })(),
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),

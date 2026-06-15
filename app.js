@@ -275,6 +275,8 @@
       showArgentinaPreset: tripMentionsArgentina(), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
       showChilePreset: tripMentionsChile(),       // Pre-Arrival-Kachel nur bei Chile-Bezug
       showBoliviaPreset: tripMentionsBolivia(),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
+      // Welche Pre-Arrival-Pakete sind absolviert (alle Karten einmal gelernt)? -> Häkchen.
+      presetDone: (function () { const m = {}; (data.PRESETS || []).forEach((p) => { m[p.id] = taskDone({ kind: "preset", scope: p.id }); }); return m; })(),
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
