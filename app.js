@@ -2456,7 +2456,8 @@
     const out = [];
     (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
     (data.PRESETS || []).forEach((pr) => out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" }));
-    (data.PRETRIP || []).forEach((p) => out.push({ value: "category:" + p.scope, label: labelOf(p.scope), group: "category" }));
+    // Ganzes Paket = beliebiger Themenbereich (Destinationen UND Klassiker wie Notfall/Essen).
+    (data.CATEGORIES || []).forEach((c) => out.push({ value: "category:" + c.id, label: natk(c, "label"), group: "category" }));
     return out;
   }
 
@@ -2492,7 +2493,7 @@
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(code).then(() => showNotice(t("task.copied")), () => {});
-      } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); } }
+      } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); showNotice(t("task.copyManual")); } }
     } catch (e) { /* egal */ }
   }
 

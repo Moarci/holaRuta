@@ -3283,9 +3283,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     remove: "Remove",
     defaultName: "Student",
     taskHeading: "Create & share a task",
-    taskHint: "Pick a target, generate a code and send it to your students (e.g. via WhatsApp). They open it under „Tarea“ and start the assigned practice right away.",
+    taskHint: "Pick a target, generate a code and send it to your students (e.g. via WhatsApp). They open it under “Tarea” and start the assigned practice right away.",
     taskTarget: "Task target",
-    taskTitlePh: "Title (optional), e.g. „Homework 1“",
+    taskTitlePh: "Title (optional), e.g. “Homework 1”",
     taskDue: "Due date (optional)",
     taskGenerate: "Generate code",
     taskCopy: "Copy",
@@ -3303,6 +3303,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     invalid: "Das ist kein gültiger Aufgaben-Code.",
     unknownTarget: "Die Aufgabe verweist auf einen unbekannten Inhalt.",
     copied: "Code kopiert.",
+    copyManual: "Markiert – jetzt mit Strg+C kopieren.",
     kindPretrip: "Pre-Trip-Plan",
     kindPreset: "Pre-Arrival",
     kindCategory: "Paket",
@@ -3317,6 +3318,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     invalid: "That's not a valid task code.",
     unknownTarget: "The task points to unknown content.",
     copied: "Code copied.",
+    copyManual: "Selected – now copy with Ctrl+C.",
     kindPretrip: "Pre-trip plan",
     kindPreset: "Pre-arrival",
     kindCategory: "Pack",
@@ -21749,7 +21751,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const out = [];
     (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
     (data.PRESETS || []).forEach((pr) => out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" }));
-    (data.PRETRIP || []).forEach((p) => out.push({ value: "category:" + p.scope, label: labelOf(p.scope), group: "category" }));
+    // Ganzes Paket = beliebiger Themenbereich (Destinationen UND Klassiker wie Notfall/Essen).
+    (data.CATEGORIES || []).forEach((c) => out.push({ value: "category:" + c.id, label: natk(c, "label"), group: "category" }));
     return out;
   }
 
@@ -21785,7 +21788,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(code).then(() => showNotice(t("task.copied")), () => {});
-      } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); } }
+      } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); showNotice(t("task.copyManual")); } }
     } catch (e) { /* egal */ }
   }
 
