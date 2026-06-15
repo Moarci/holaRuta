@@ -1244,7 +1244,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .knigge-topic__body .hist-share { margin-top: 12px; }
 .cinfo-share { margin: 0 0 14px; }
 .knigge-topic__body .hist-share,
-.cinfo-share { background: linear-gradient(135deg, #475569, #334155); }
+.cinfo-share,
+.mod-share { background: linear-gradient(135deg, #475569, #334155); }
 
 /* Mini-Quiz zum Text (Selbstprüfung). */
 .hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
