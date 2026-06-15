@@ -432,6 +432,7 @@
     histSkip: "Nicht so wichtig – kannst du überspringen",
     histTranslation: "Ganze Übersetzung anzeigen",
     histShare: "Text & Vokabeln teilen",
+    tipsShare: "Als Bild teilen",
     histReadToggle: "Auf Spanisch lesen",
     histQuiz: "Mini-Quiz: Vokabeln testen",
     histQuizIntro: "Welche Übersetzung passt? Tippe die richtige an.",
@@ -713,6 +714,7 @@
     histSkip: "Less important – you can skip these",
     histTranslation: "Show full translation",
     histShare: "Share text & vocab",
+    tipsShare: "Share as image",
     histReadToggle: "Read in Spanish",
     histQuiz: "Mini-quiz: test the vocab",
     histQuizIntro: "Which translation fits? Tap the right one.",
@@ -1197,6 +1199,8 @@
     captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
     captionHistoriaLevel: (p) => `📊 Niveau: ${p.level}`,
     captionHistoria: "Spanisch lesen lernen mit echten Texten – HolaRuta. 🌎",
+    captionTipsHead: (p) => `📋 ${p.title} – Reise-Tipps von HolaRuta`,
+    captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -1218,5 +1222,7 @@
     captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
     captionHistoriaLevel: (p) => `📊 Level: ${p.level}`,
     captionHistoria: "Learning to read Spanish with real texts – HolaRuta. 🌎",
+    captionTipsHead: (p) => `📋 ${p.title} – travel tips from HolaRuta`,
+    captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
   });
 })();

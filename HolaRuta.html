@@ -1273,6 +1273,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hist-share:active { transform: scale(0.98); }
 
+/* Teilen-Knopf in den übrigen Entdecken-Kategorien (Knigge/Regatear/Logística/
+   Salud) und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und
+   etwas Abstand zum übrigen Karteninhalt. */
+.knigge-topic__body .hist-share { margin-top: 12px; }
+.cinfo-share { margin: 0 0 14px; }
+.knigge-topic__body .hist-share,
+.cinfo-share { background: linear-gradient(135deg, #475569, #334155); }
+
 /* Mini-Quiz zum Text (Selbstprüfung). */
 .hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
 .hist-quiz[open] { border-color: var(--line-strong); }
@@ -3062,6 +3070,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histSkip: "Nicht so wichtig – kannst du überspringen",
     histTranslation: "Ganze Übersetzung anzeigen",
     histShare: "Text & Vokabeln teilen",
+    tipsShare: "Als Bild teilen",
     histReadToggle: "Auf Spanisch lesen",
     histQuiz: "Mini-Quiz: Vokabeln testen",
     histQuizIntro: "Welche Übersetzung passt? Tippe die richtige an.",
@@ -3343,6 +3352,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histSkip: "Less important – you can skip these",
     histTranslation: "Show full translation",
     histShare: "Share text & vocab",
+    tipsShare: "Share as image",
     histReadToggle: "Read in Spanish",
     histQuiz: "Mini-quiz: test the vocab",
     histQuizIntro: "Which translation fits? Tap the right one.",
@@ -3827,6 +3837,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
     captionHistoriaLevel: (p) => `📊 Niveau: ${p.level}`,
     captionHistoria: "Spanisch lesen lernen mit echten Texten – HolaRuta. 🌎",
+    captionTipsHead: (p) => `📋 ${p.title} – Reise-Tipps von HolaRuta`,
+    captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -3848,6 +3860,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
     captionHistoriaLevel: (p) => `📊 Level: ${p.level}`,
     captionHistoria: "Learning to read Spanish with real texts – HolaRuta. 🌎",
+    captionTipsHead: (p) => `📋 ${p.title} – travel tips from HolaRuta`,
+    captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
   });
 })();
 
@@ -11065,18 +11079,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ],
       level: "B1",
       es: [
-        "Antes de la llegada de los españoles, en los Andes y en el Amazonas *florecieron* grandes civilizaciones. La más poderosa fue el *imperio* de los incas, llamado Tawantinsuyu. Desde su capital, Cusco, los incas dominaban un *territorio* enorme, desde Colombia hasta Chile.",
-        "No conocían la escritura ni la *rueda*, pero construían *caminos*, *puentes* colgantes y terrazas para cultivar en la montaña. Ciudades de piedra como Machu Picchu todavía *sorprenden* hoy.",
-        "También existían otros *pueblos*: los muiscas en Colombia, cuyo oro inspiró la *leyenda* de El Dorado, y los mapuches del sur de Chile, que nunca fueron *conquistados* del todo.",
+        "Mucho antes de la llegada de los españoles, en los Andes y en la selva del Amazonas *florecieron* grandes civilizaciones. La más poderosa de todas fue el *imperio* de los incas, que ellos mismos llamaban Tawantinsuyu, „la tierra de las cuatro partes“. Desde su capital, Cusco, los incas dominaban en el siglo XV un *territorio* enorme, que iba desde el sur de Colombia hasta el centro de Chile.",
+        "Lo más increíble es que lograron todo esto sin escritura, sin *rueda* y sin hierro. Para gobernar y llevar las cuentas usaban cuerdas con *nudos*, los quipus. Construían largos *caminos* de montaña, *puentes* colgantes sobre los ríos y terrazas para cultivar en las laderas. Ciudades de piedra como Machu Picchu, con muros tan perfectos que todavía *resisten* los terremotos, siguen *asombrando* al mundo entero.",
+        "Pero los incas no estaban solos. También existían otros *pueblos* importantes: los muiscas, en las montañas de Colombia, cuyo ritual del oro dio origen a la *leyenda* de El Dorado; los mapuches del sur de Chile, guerreros que nunca fueron *conquistados* del todo; y cientos de comunidades en la inmensa selva amazónica, cada una con su propia lengua y sus costumbres.",
       ],
       vocab: [
         { es: "florecieron", de: "blühten (florecer)", en: "flourished (florecer)", take: true },
         { es: "imperio", de: "das Reich", en: "empire", take: true },
         { es: "territorio", de: "das Gebiet", en: "territory", take: true },
         { es: "rueda", de: "das Rad", en: "wheel", take: true },
+        { es: "nudos", de: "die Knoten", en: "knots", take: true },
         { es: "caminos", de: "die Wege, Straßen", en: "roads, paths", take: true },
         { es: "puentes", de: "die Brücken", en: "bridges", take: true },
-        { es: "sorprenden", de: "überraschen (sorprender)", en: "surprise (sorprender)", take: true },
+        { es: "resisten", de: "halten stand (resistir)", en: "withstand (resistir)", take: true },
+        { es: "asombrando", de: "in Staunen versetzen (asombrar)", en: "amazing (asombrar)", take: false },
         { es: "pueblos", de: "die Völker, Dörfer", en: "peoples, villages", take: true },
         { es: "leyenda", de: "die Legende", en: "legend", take: false },
         { es: "conquistados", de: "erobert (conquistar)", en: "conquered (conquistar)", take: false },
@@ -11115,18 +11131,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ],
       level: "B1",
       es: [
-        "En 1492, Cristóbal Colón llegó al Caribe. Pocas décadas después, los *conquistadores* avanzaron hacia el continente. En 1532, Francisco Pizarro *aprovechó* una guerra civil entre los incas: en Cajamarca *capturó* al rey Atahualpa, pidió un enorme *rescate* de oro y luego lo mandó *matar*.",
-        "Pero el verdadero *aliado* de los españoles fueron las *enfermedades*. La viruela y la gripe mataron hasta el noventa por ciento de la población indígena.",
-        "Con caballos, *armas* de fuego y aliados locales, los españoles *conquistaron* el continente. Lo justificaban con la cruz y la corona: la religión y la *riqueza* iban juntas.",
+        "En 1492, Cristóbal Colón llegó al Caribe sin saber que había encontrado un continente nuevo. Pocas décadas después, los conquistadores avanzaron hacia tierra firme en busca de oro y gloria. En 1532, Francisco Pizarro *aprovechó* una sangrienta guerra civil entre dos hermanos incas: en la ciudad de Cajamarca *capturó* por sorpresa al rey Atahualpa, le pidió un enorme *rescate* de oro y plata y, aun así, lo mandó *matar*.",
+        "Sin embargo, el *aliado* más poderoso de los españoles no fueron las armas, sino las *enfermedades* que trajeron de Europa. La viruela, el sarampión y la gripe mataron, según algunos cálculos, hasta el noventa por ciento de la población indígena. Fue un *desastre* tan grande que muchos pueblos se *derrumbaron* antes de ver siquiera a un español.",
+        "Con caballos, *armas* de fuego, acero y la ayuda de pueblos locales que odiaban a los incas, los españoles *conquistaron* poco a poco el continente. En 1572 cayó Vilcabamba, el último refugio inca. Todo se justificaba con la cruz y la corona: la religión y la *riqueza* siempre iban de la mano.",
       ],
       vocab: [
-        { es: "conquistadores", de: "die Eroberer", en: "conquerors", take: false },
         { es: "aprovechó", de: "nutzte aus (aprovechar)", en: "took advantage (aprovechar)", take: true },
         { es: "capturó", de: "nahm gefangen (capturar)", en: "captured (capturar)", take: true },
         { es: "rescate", de: "das Lösegeld; die Rettung", en: "ransom; rescue", take: true },
         { es: "matar", de: "töten", en: "to kill", take: true },
         { es: "aliado", de: "der Verbündete", en: "ally", take: true },
         { es: "enfermedades", de: "die Krankheiten", en: "diseases", take: true },
+        { es: "desastre", de: "die Katastrophe", en: "disaster", take: true },
+        { es: "derrumbaron", de: "brachen zusammen (derrumbarse)", en: "collapsed (derrumbarse)", take: false },
         { es: "armas", de: "die Waffen", en: "weapons", take: true },
         { es: "conquistaron", de: "eroberten (conquistar)", en: "conquered (conquistar)", take: true },
         { es: "riqueza", de: "der Reichtum", en: "wealth", take: true },
@@ -11165,16 +11182,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ],
       level: "B2",
       es: [
-        "Durante casi tres siglos, España *gobernó* desde Lima y Bogotá. El continente se dividió en virreinatos, *mandados* por un virrey que representaba al rey.",
-        "El motor económico era la plata del cerro Rico de Potosí. Durante dos siglos, gran parte de la plata del mundo salió de allí, *extraída* con trabajo *forzado* que costó muchísimas *vidas*.",
-        "La sociedad estaba *dividida* por origen: arriba los nacidos en España, después los criollos, y abajo los indígenas y los *esclavos*. Esa *desigualdad* encendería más tarde la lucha por la *libertad*.",
+        "Durante casi tres siglos, España *gobernó* sus colonias americanas desde ciudades como Lima y Bogotá. El continente se dividió en grandes virreinatos, *mandados* por un virrey que representaba directamente al rey español y tenía un poder casi total.",
+        "El verdadero motor de todo era la plata. Del cerro Rico de Potosí, en la actual Bolivia, salió durante dos siglos gran parte de la plata del mundo. Se *extraía* con trabajo *forzado*, un sistema llamado mita, que costó la *vida* a muchísimos indígenas y a africanos *esclavizados*. Ese metal financió guerras y palacios al otro lado del *océano*.",
+        "La sociedad colonial estaba *dividida* de forma muy estricta según el origen de cada persona: arriba, los nacidos en España; después, los criollos (hijos de españoles nacidos en América); y abajo, los indígenas, los mestizos y los *esclavos*. Justamente esa profunda *desigualdad* —criollos ricos y cultos, pero sin poder político— encendería más tarde la lucha por la *libertad*.",
       ],
       vocab: [
         { es: "gobernó", de: "regierte (gobernar)", en: "governed (gobernar)", take: true },
         { es: "mandados", de: "befehligt (mandar)", en: "commanded (mandar)", take: true },
-        { es: "extraída", de: "gefördert, abgebaut (extraer)", en: "extracted (extraer)", take: false },
+        { es: "extraía", de: "förderte, baute ab (extraer)", en: "extracted (extraer)", take: false },
         { es: "forzado", de: "Zwangs-, erzwungen", en: "forced", take: true },
-        { es: "vidas", de: "die Leben (Pl. von vida)", en: "lives", take: true },
+        { es: "vida", de: "das Leben", en: "life", take: true },
+        { es: "esclavizados", de: "versklavt (esclavizar)", en: "enslaved (esclavizar)", take: false },
+        { es: "océano", de: "der Ozean", en: "ocean", take: true },
         { es: "dividida", de: "geteilt (dividir)", en: "divided (dividir)", take: true },
         { es: "esclavos", de: "die Sklaven", en: "slaves", take: true },
         { es: "desigualdad", de: "die Ungleichheit", en: "inequality", take: true },
@@ -11214,14 +11233,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ],
       level: "B2",
       es: [
-        "En 1780, en los Andes del Perú, Túpac Amaru II se *rebeló* contra la *explotación*. Fue una gran revuelta indígena, *aplastada* con violencia, pero nunca olvidada.",
-        "El *empujón* decisivo vino de Europa: en 1808, Napoleón *invadió* España y quitó del trono al rey Fernando VII. De repente faltaba la *legitimidad*: ¿en nombre de quién se debía gobernar?",
-        "La respuesta de los criollos: en 1810 formaron sus propias juntas de gobierno en Caracas, Buenos Aires, Bogotá y Santiago. Oficialmente, hasta el *regreso* del rey; en realidad, el primer *paso* hacia la independencia.",
+        "Ya en 1780, en los Andes del Perú, un descendiente de los incas llamado Túpac Amaru II se *rebeló* contra la *explotación* de su pueblo. Fue una enorme revuelta indígena, *aplastada* con mucha violencia, pero que nunca se olvidó y se convirtió en un símbolo.",
+        "Al mismo tiempo, las ideas de la Ilustración y el ejemplo de las revoluciones de Estados Unidos y Francia *entraban* poco a poco en las colonias. Muchos criollos empezaron a *soñar* con gobernarse a sí mismos y a leer libros que hablaban de libertad e igualdad.",
+        "El *empujón* decisivo vino de Europa: en 1808, Napoleón *invadió* España y quitó del trono al rey Fernando VII. De repente faltaba la *legitimidad*: ¿en nombre de quién había que gobernar? La respuesta de los criollos llegó en 1810, cuando formaron sus propias juntas de gobierno en Caracas, Buenos Aires, Bogotá y Santiago. Decían que era „hasta el *regreso* del rey“, pero en realidad era el primer *paso* hacia la independencia.",
       ],
       vocab: [
         { es: "rebeló", de: "lehnte sich auf (rebelarse)", en: "rebelled (rebelarse)", take: true },
         { es: "explotación", de: "die Ausbeutung", en: "exploitation", take: true },
         { es: "aplastada", de: "niedergeschlagen (aplastar)", en: "crushed (aplastar)", take: false },
+        { es: "entraban", de: "drangen ein, kamen herein (entrar)", en: "were entering (entrar)", take: true },
+        { es: "soñar", de: "träumen", en: "to dream", take: true },
         { es: "empujón", de: "der Stoß, Schubs (empujar)", en: "push, shove (empujar)", take: true },
         { es: "invadió", de: "fiel ein (invadir)", en: "invaded (invadir)", take: true },
         { es: "legitimidad", de: "die Legitimität", en: "legitimacy", take: false },
@@ -11262,9 +11283,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ],
       level: "B1",
       es: [
-        "Desde el norte luchó Simón Bolívar, „El Libertador“. Tras años de *derrotas*, en 1819 cruzó los Andes *helados* y *venció* en Boyacá. Colombia quedó libre.",
-        "Desde el sur avanzó José de San Martín. Cruzó los Andes con un *ejército* entero, *liberó* Chile junto a O'Higgins y llegó al Perú en 1821.",
-        "En 1822, los dos libertadores se *reunieron* en Guayaquil. San Martín se *retiró* y dejó el camino a Bolívar. En 1824, el general Sucre *ganó* la *batalla* de Ayacucho: toda Sudamérica era libre.",
+        "La independencia llegó en dos grandes oleadas que avanzaban una hacia la otra. Desde el norte luchó Simón Bolívar, „El Libertador“. Tras años de *derrotas* y exilios, en 1819 cruzó los Andes *helados* con su ejército y *venció* por sorpresa en la batalla de Boyacá. Colombia quedó libre, y poco después también Venezuela y Ecuador.",
+        "Desde el sur avanzó José de San Martín. Después de liberar Argentina, hizo algo casi imposible: cruzó la enorme cordillera de los Andes con un *ejército* entero, *liberó* Chile junto a Bernardo O'Higgins y llegó por mar hasta el Perú, donde *proclamó* la independencia en 1821.",
+        "En 1822, los dos grandes libertadores se *reunieron* en secreto en Guayaquil. Nadie sabe con certeza qué hablaron, pero después San Martín se *retiró* de la política y dejó todo el camino libre a Bolívar. Dos años más tarde, en 1824, el joven general Sucre *ganó* la *batalla* de Ayacucho contra el último ejército español. Toda Sudamérica era por fin libre.",
       ],
       vocab: [
         { es: "derrotas", de: "die Niederlagen (derrota)", en: "defeats (derrota)", take: true },
@@ -11272,6 +11293,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         { es: "venció", de: "siegte (vencer)", en: "won, defeated (vencer)", take: true },
         { es: "ejército", de: "das Heer, die Armee", en: "army", take: true },
         { es: "liberó", de: "befreite (liberar)", en: "liberated (liberar)", take: true },
+        { es: "proclamó", de: "rief aus (proclamar)", en: "proclaimed (proclamar)", take: false },
         { es: "reunieron", de: "trafen sich (reunirse)", en: "met (reunirse)", take: true },
         { es: "retiró", de: "zog sich zurück (retirarse)", en: "withdrew (retirarse)", take: true },
         { es: "ganó", de: "gewann (ganar)", en: "won (ganar)", take: true },
@@ -11311,13 +11333,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ],
       level: "B2",
       es: [
-        "Bolívar *soñaba* con un solo país unido. En el norte creó la Gran Colombia: Venezuela, Colombia, Ecuador y Panamá juntos. Pero el territorio era inmenso y los *caudillos* locales querían mandar ellos mismos.",
-        "Ya en 1830 la Gran Colombia se *deshizo*. Ese mismo año Bolívar murió, *amargado* y pobre. Su frase famosa: „El que sirve una revolución *ara* en el mar.“",
-        "En el sur pasó lo mismo: las provincias se *separaron* en Argentina, Uruguay, Paraguay y Bolivia. Brasil siguió otro camino, *portugués* y primero *imperio*. Así nació el *mapa* actual de Sudamérica.",
+        "Bolívar *soñaba* con un solo país grande y unido, como una „patria americana“. En el norte logró crear la Gran Colombia, que reunía a Venezuela, Colombia, Ecuador y Panamá en un mismo Estado. Pero el *territorio* era inmenso, las distancias enormes y los jefes locales, los *caudillos*, querían mandar cada uno en su región.",
+        "El sueño se *rompió* muy rápido. Ya en 1830 la Gran Colombia se *deshizo* en varios países. Ese mismo año Bolívar murió, *amargado* y pobre, lejos del poder. Una frase suya resume su tristeza: „El que sirve una revolución *ara* en el mar“. En el sur pasó algo parecido: las antiguas provincias se *separaron* en Argentina, Uruguay, Paraguay y Bolivia.",
+        "Brasil siguió un camino totalmente distinto: hablaba *portugués* en vez de español y, al principio, fue un *imperio* con su propio emperador, no una república. En casi todos los países nuevos vinieron después décadas de guerras civiles entre quienes querían un gobierno central fuerte y quienes preferían más poder para las regiones. Así nació, poco a poco, el *mapa* de Sudamérica que conocemos hoy.",
       ],
       vocab: [
         { es: "soñaba", de: "träumte (soñar)", en: "dreamed (soñar)", take: true },
+        { es: "territorio", de: "das Gebiet", en: "territory", take: true },
         { es: "caudillos", de: "die Machthaber, Anführer", en: "strongmen, warlords", take: false },
+        { es: "rompió", de: "zerbrach (romperse)", en: "broke (romperse)", take: true },
         { es: "deshizo", de: "zerfiel (deshacerse)", en: "fell apart (deshacerse)", take: true },
         { es: "amargado", de: "verbittert", en: "embittered", take: false },
         { es: "ara", de: "pflügt (arar)", en: "ploughs (arar)", take: false },
@@ -11361,18 +11385,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ],
       level: "B1",
       es: [
-        "Los nuevos países *pelearon* por sus *fronteras*. En la Guerra del Pacífico (1879–1883), Bolivia *perdió* su salida al mar. Paraguay quedó *destrozado* tras la Guerra de la Triple Alianza.",
-        "El siglo XX trajo *populismo* y, durante la Guerra Fría, muchas *dictaduras* militares: Chile con Pinochet, la junta argentina con sus *desaparecidos*, y otras más.",
-        "En los años ochenta y noventa *volvió* la *democracia* casi en todas partes. Hoy Sudamérica es un continente de *repúblicas*, con cultura *viva* pero también con desigualdad y crisis políticas.",
+        "Una vez libres, los nuevos países empezaron a *pelear* entre sí por sus *fronteras*. En la Guerra del Pacífico (1879–1883), Bolivia *perdió* toda su costa y se quedó sin salida al mar, una herida que todavía duele hoy. Antes, en la Guerra de la Triple Alianza, Paraguay quedó *destrozado* y perdió a una gran parte de su población.",
+        "El siglo XX trajo líderes *populistas* muy queridos, como Juan Perón en Argentina, pero también una época muy oscura. Durante la Guerra Fría, varios países cayeron bajo *dictaduras* militares: Chile con Pinochet desde 1973, la junta de Argentina con sus miles de *desaparecidos*, y también Brasil, Uruguay y otros. Muchos opositores fueron *perseguidos*, torturados o asesinados.",
+        "Por suerte, en los años ochenta y noventa *volvió* la *democracia* a casi toda la región, con elecciones y libertad de prensa. Hoy Sudamérica es un continente de *repúblicas*, con una cultura muy *viva* y mucha riqueza natural, pero todavía con grandes problemas de desigualdad, corrupción y crisis políticas que llegan hasta el presente.",
       ],
       vocab: [
-        { es: "pelearon", de: "kämpften (pelear)", en: "fought (pelear)", take: true },
+        { es: "pelear", de: "kämpfen, streiten", en: "to fight", take: true },
         { es: "fronteras", de: "die Grenzen", en: "borders", take: true },
         { es: "perdió", de: "verlor (perder)", en: "lost (perder)", take: true },
         { es: "destrozado", de: "zerstört (destrozar)", en: "destroyed (destrozar)", take: true },
-        { es: "populismo", de: "der Populismus", en: "populism", take: false },
+        { es: "populistas", de: "populistisch; Populisten", en: "populist", take: false },
         { es: "dictaduras", de: "die Diktaturen", en: "dictatorships", take: true },
         { es: "desaparecidos", de: "die Verschwundenen", en: "the disappeared", take: false },
+        { es: "perseguidos", de: "verfolgt (perseguir)", en: "persecuted (perseguir)", take: true },
         { es: "volvió", de: "kehrte zurück (volver)", en: "returned (volver)", take: true },
         { es: "democracia", de: "die Demokratie", en: "democracy", take: true },
         { es: "repúblicas", de: "die Republiken", en: "republics", take: true },
@@ -11390,13 +11415,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       name: "Simón Bolívar",
       level: "B1",
       es: [
-        "Es el nombre más grande del continente. Este criollo rico de Caracas *lideró* la *lucha* por la libertad en el norte y *liberó* cinco países. Soñaba con una Sudamérica unida, pero murió *decepcionado* cuando su sueño se rompió.",
+        "Es, sin duda, el nombre más grande de todo el continente. Simón Bolívar nació en una familia *rica* de criollos en Caracas y, de joven, viajó por Europa, donde *juró* dedicar su vida a liberar a su tierra de España.",
+        "Cumplió esa promesa con creces. *Lideró* la dura *lucha* por la libertad en el norte y *liberó* nada menos que cinco países: Venezuela, Colombia, Ecuador, Perú y Bolivia, que lleva su nombre en su honor. Por eso lo llaman „El Libertador“.",
+        "Pero su gran sueño era otro: una sola Sudamérica unida y fuerte. Cuando vio que ese sueño se *rompía* en pedazos y que cada región tiraba por su lado, murió *decepcionado*, enfermo y casi sin dinero. Hoy varios países lo *honran* como su héroe nacional.",
       ],
       vocab: [
+        { es: "rica", de: "reich (rico/rica)", en: "rich", take: true },
+        { es: "juró", de: "schwor (jurar)", en: "swore (jurar)", take: true },
         { es: "lideró", de: "führte an (liderar)", en: "led (liderar)", take: true },
         { es: "lucha", de: "der Kampf (luchar)", en: "struggle, fight (luchar)", take: true },
         { es: "liberó", de: "befreite (liberar)", en: "liberated (liberar)", take: true },
+        { es: "rompía", de: "zerbrach (romperse)", en: "was breaking (romperse)", take: true },
         { es: "decepcionado", de: "enttäuscht", en: "disappointed", take: true },
+        { es: "honran", de: "ehren (honrar)", en: "honour (honrar)", take: false },
       ],
       role: "„El Libertador“ – befreite sechs Länder",
       roleEn: "\"El Libertador\" – liberated six countries",
@@ -11413,13 +11444,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       name: "José de San Martín",
       level: "B1",
       es: [
-        "El *estratega* del sur. Liberó Argentina, *cruzó* los Andes con un ejército y liberó Chile y Perú. Tras reunirse con Bolívar, *renunció* al poder y se fue a Europa para *evitar* una guerra entre patriotas.",
+        "Si Bolívar era pura pasión, José de San Martín era el *estratega* frío y paciente del sur. Militar de profesión, pensaba cada campaña con mucho cuidado antes de actuar.",
+        "Primero aseguró la independencia de Argentina. Después *cruzó* la enorme cordillera de los Andes con todo un ejército, una *hazaña* casi imposible, y *liberó* Chile y el Perú uno tras otro.",
+        "En 1822 se *reunió* con Bolívar en Guayaquil. Para evitar una guerra entre patriotas y dejar que Bolívar terminara la obra, San Martín tomó una decisión sorprendente: *renunció* a todo su poder y se marchó a vivir a Europa, donde murió pobre y casi olvidado. Hoy se le admira justamente por esa *humildad*.",
       ],
       vocab: [
         { es: "estratega", de: "der Stratege", en: "strategist", take: false },
         { es: "cruzó", de: "überquerte (cruzar)", en: "crossed (cruzar)", take: true },
+        { es: "hazaña", de: "die Heldentat, Meisterleistung", en: "feat, exploit", take: false },
+        { es: "liberó", de: "befreite (liberar)", en: "liberated (liberar)", take: true },
+        { es: "reunió", de: "traf sich (reunirse)", en: "met (reunirse)", take: true },
         { es: "renunció", de: "verzichtete (renunciar)", en: "renounced, gave up (renunciar)", take: true },
-        { es: "evitar", de: "vermeiden", en: "to avoid", take: true },
+        { es: "humildad", de: "die Bescheidenheit", en: "humility", take: true },
       ],
       role: "Befreier des Südens",
       roleEn: "Liberator of the south",
@@ -11436,12 +11472,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       name: "Antonio José de Sucre",
       level: "B2",
       es: [
-        "El joven general más brillante de Bolívar. En Ayacucho *derrotó* al último ejército español y *aseguró* la independencia. Fue presidente de Bolivia, pero lo *asesinaron* a los 35 años.",
+        "Antonio José de Sucre fue el general más joven y más *brillante* de Bolívar, su mano derecha y la persona de mayor *confianza*.",
+        "Su gran momento llegó en 1824, en la batalla de Ayacucho. Allí *derrotó* por completo al último gran ejército español de Sudamérica y *aseguró* la independencia de todo el continente. Tenía apenas treinta años.",
+        "Después se convirtió en el primer presidente de Bolivia, el país que tomó el nombre de Bolívar. Gobernó con *honradez*, pero la política de la época era muy violenta: lo *asesinaron* en una *emboscada* cuando solo tenía treinta y cinco años. La capital del país, Sucre, lleva su nombre para recordarlo.",
       ],
       vocab: [
+        { es: "brillante", de: "brillant, glänzend", en: "brilliant", take: false },
+        { es: "confianza", de: "das Vertrauen", en: "trust", take: true },
         { es: "derrotó", de: "besiegte (derrotar)", en: "defeated (derrotar)", take: true },
         { es: "aseguró", de: "sicherte (asegurar)", en: "secured (asegurar)", take: true },
+        { es: "honradez", de: "die Ehrlichkeit", en: "honesty", take: false },
         { es: "asesinaron", de: "ermordeten (asesinar)", en: "assassinated (asesinar)", take: false },
+        { es: "emboscada", de: "der Hinterhalt", en: "ambush", take: false },
       ],
       role: "Der Sieger von Ayacucho",
       roleEn: "The victor of Ayacucho",
@@ -11458,12 +11500,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       name: "Bernardo O'Higgins",
       level: "B1",
       es: [
-        "Hijo de un virrey de origen irlandés, se convirtió en *héroe* de Chile. Junto a San Martín *ganó* la batalla de Maipú y llevó a Chile a la independencia. Después tuvo que *exiliarse* en Perú.",
+        "Bernardo O'Higgins tuvo una vida de novela. Era hijo de un virrey español de origen irlandés, pero terminó convirtiéndose en el gran *héroe* de la independencia de Chile.",
+        "Junto a San Martín *ganó* la decisiva batalla de Maipú en 1818 y llevó por fin a Chile a la *libertad*. Como primer jefe del país, con el título de „Director Supremo“, intentó *modernizar* la joven nación.",
+        "Sin embargo, muchas de sus reformas molestaron a los poderosos, y O'Higgins tuvo que *renunciar* al poder. Se marchó al *exilio* en el Perú, donde vivió sus últimos años y murió sin volver a ver su país. Hoy es uno de los grandes símbolos de Chile.",
       ],
       vocab: [
         { es: "héroe", de: "der Held", en: "hero", take: true },
         { es: "ganó", de: "gewann (ganar)", en: "won (ganar)", take: true },
-        { es: "exiliarse", de: "ins Exil gehen", en: "to go into exile", take: false },
+        { es: "libertad", de: "die Freiheit", en: "freedom", take: true },
+        { es: "modernizar", de: "modernisieren", en: "to modernise", take: false },
+        { es: "renunciar", de: "verzichten, zurücktreten", en: "to renounce, resign", take: true },
+        { es: "exilio", de: "das Exil", en: "exile", take: false },
       ],
       role: "Vater des unabhängigen Chile",
       roleEn: "Father of independent Chile",
@@ -11480,12 +11527,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       name: "Manuela Sáenz",
       level: "B1",
       es: [
-        "Revolucionaria, espía y compañera de Bolívar. En 1828 le *salvó* la vida al *frustrar* un *atentado*. Hoy se la reconoce como heroína de la independencia y símbolo del papel de las mujeres.",
+        "Manuela Sáenz fue mucho más que „la novia de Bolívar“, como la pintaron durante mucho tiempo. Fue una verdadera *revolucionaria*: luchó por la independencia, transmitió mensajes secretos y trabajó como *espía*.",
+        "Su momento más famoso llegó en 1828, en Bogotá. Un grupo de enemigos entró de noche en el palacio para *matar* a Bolívar, pero Manuela los *frustró* y lo ayudó a *escapar* por una ventana. Desde entonces la llaman „la Libertadora del Libertador“.",
+        "Durante años, la historia oficial la trató con desprecio y casi la *olvidó*. Hoy, en cambio, se la reconoce como una heroína por derecho propio y como un *símbolo* del papel, muchas veces escondido, de las mujeres en la lucha por la libertad.",
       ],
       vocab: [
-        { es: "salvó", de: "rettete (salvar)", en: "saved (salvar)", take: true },
-        { es: "frustrar", de: "vereiteln", en: "to foil, thwart", take: true },
-        { es: "atentado", de: "das Attentat, der Anschlag", en: "assassination attempt", take: false },
+        { es: "revolucionaria", de: "Revolutionärin; revolutionär", en: "revolutionary", take: false },
+        { es: "espía", de: "der/die Spion(in)", en: "spy", take: false },
+        { es: "matar", de: "töten", en: "to kill", take: true },
+        { es: "frustró", de: "vereitelte (frustrar)", en: "foiled, thwarted (frustrar)", take: true },
+        { es: "escapar", de: "entkommen, fliehen", en: "to escape", take: true },
+        { es: "olvidó", de: "vergaß (olvidar)", en: "forgot (olvidar)", take: true },
+        { es: "símbolo", de: "das Symbol", en: "symbol", take: true },
       ],
       role: "„Libertadora del Libertador“",
       roleEn: "\"Liberator of the Liberator\"",
@@ -11502,11 +11555,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       name: "Atahualpa",
       level: "B1",
       es: [
-        "El último rey de los incas. Acababa de ganar una guerra civil cuando llegaron los españoles. En Cajamarca lo *capturaron* y llenó un cuarto de oro como *rescate*, pero igual lo *ejecutaron*. Su *caída* marca el fin de un mundo.",
+        "Atahualpa fue el último gran rey de los incas. Acababa de *ganar* una larga guerra civil contra su hermano por el trono cuando, de repente, aparecieron los españoles de Pizarro.",
+        "En la ciudad de Cajamarca cayó en una *trampa*: los españoles lo *capturaron* por sorpresa en medio de una matanza. Para recuperar su libertad, ofreció algo increíble: llenar un cuarto entero de oro como *rescate*.",
+        "Atahualpa cumplió su promesa y entregó un enorme *tesoro*, pero los españoles, aun así, lo *ejecutaron*. Su muerte fue mucho más que la de un rey: marcó la *caída* de todo un mundo, el de los incas, y el comienzo de una nueva era.",
       ],
       vocab: [
+        { es: "ganar", de: "gewinnen", en: "to win", take: true },
+        { es: "trampa", de: "die Falle", en: "trap", take: true },
         { es: "capturaron", de: "nahmen gefangen (capturar)", en: "captured (capturar)", take: true },
         { es: "rescate", de: "das Lösegeld; die Rettung", en: "ransom; rescue", take: true },
+        { es: "tesoro", de: "der Schatz", en: "treasure", take: true },
         { es: "ejecutaron", de: "hinrichteten (ejecutar)", en: "executed (ejecutar)", take: false },
         { es: "caída", de: "der Fall, Sturz (caer)", en: "fall, downfall (caer)", take: true },
       ],
@@ -11529,12 +11587,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       icon: "🇻🇪",
       level: "B1",
       es: [
-        "El país con más petróleo del mundo vive un *colapso* económico y político. Bajo Maduro, la economía se *hundió* y millones de personas *huyeron* del país: la mayor *crisis* migratoria de la región.",
+        "Venezuela tiene las mayores reservas de *petróleo* del mundo y, sin embargo, vive una de las peores crisis de su historia. Bajo los gobiernos de Hugo Chávez y, después, de Nicolás Maduro, la economía se *hundió* casi por completo.",
+        "Durante años faltaron alimentos, medicinas y dinero, y los precios subían sin parar (una *inflación* altísima). Tras unas elecciones muy *discutidas* en 2024, Maduro sigue en el poder, aunque gran parte del mundo duda de que ganara de verdad.",
+        "El resultado humano es enorme: alrededor de ocho millones de venezolanos han *huido* del país en busca de una vida mejor. Es la mayor *crisis* migratoria de toda la historia reciente de América Latina, y se nota en casi todos los países vecinos.",
       ],
       vocab: [
-        { es: "colapso", de: "der Kollaps, Zusammenbruch", en: "collapse", take: false },
+        { es: "petróleo", de: "das Erdöl", en: "oil, petroleum", take: true },
         { es: "hundió", de: "brach zusammen (hundirse)", en: "collapsed, sank (hundirse)", take: true },
-        { es: "huyeron", de: "flohen (huir)", en: "fled (huir)", take: true },
+        { es: "inflación", de: "die Inflation", en: "inflation", take: true },
+        { es: "discutidas", de: "umstritten (discutir)", en: "disputed (discutir)", take: false },
+        { es: "huido", de: "geflohen (huir)", en: "fled (huir)", take: true },
         { es: "crisis", de: "die Krise", en: "crisis", take: true },
       ],
       title: "Venezuela: Krise & Massenflucht",
@@ -11552,12 +11614,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       icon: "🛢️",
       level: "B2",
       es: [
-        "Desde que se *descubrió* mucho petróleo, Venezuela vuelve a *reclamar* la región del Esequibo, dos tercios de Guyana. En 2023, Maduro *amenazó* con anexarla. Sigue siendo uno de los *conflictos* fronterizos más calientes del continente.",
+        "El Esequibo es una enorme región de selva que forma casi dos tercios del pequeño país de Guyana. Venezuela dice que ese territorio le pertenece desde hace más de un siglo.",
+        "El conflicto estaba casi dormido, pero todo cambió cuando se *descubrió* muchísimo *petróleo* frente a sus costas. De repente, esa zona se volvió riquísima, y Venezuela empezó a *reclamarla* otra vez con mucha fuerza.",
+        "En 2023, Maduro organizó una votación y *amenazó* incluso con *anexar* la región. El tribunal más importante del mundo, en La Haya, ha pedido calma a los dos países. Aun así, sigue siendo uno de los *conflictos* de fronteras más peligrosos del continente.",
       ],
       vocab: [
         { es: "descubrió", de: "entdeckte (descubrir)", en: "discovered (descubrir)", take: true },
-        { es: "reclamar", de: "beanspruchen; reklamieren", en: "to claim; to complain", take: true },
+        { es: "petróleo", de: "das Erdöl", en: "oil, petroleum", take: true },
+        { es: "reclamarla", de: "sie beanspruchen (reclamar)", en: "to claim it (reclamar)", take: true },
         { es: "amenazó", de: "drohte (amenazar)", en: "threatened (amenazar)", take: true },
+        { es: "anexar", de: "annektieren, angliedern", en: "to annex", take: false },
         { es: "conflictos", de: "die Konflikte", en: "conflicts", take: true },
       ],
       title: "Essequibo: Grenzstreit mit Guyana",
@@ -11575,13 +11641,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       icon: "🌊",
       level: "B1",
       es: [
-        "En la Guerra del Pacífico, Bolivia *perdió* su costa y desde entonces no tiene *mar*. Recuperar una *salida* al mar es un asunto nacional. En 2018, un tribunal internacional *rechazó* la demanda boliviana.",
+        "Hace más de cien años, en la Guerra del Pacífico (1879–1883), Bolivia *perdió* contra Chile toda su costa. Desde entonces es un país sin *mar*, rodeado por completo de tierra.",
+        "Para los bolivianos, esto no es solo un tema de mapas: es una herida nacional. Recuperar una *salida* al mar es un sueño que aparece en los discursos, en las canciones y hasta en el ejército, que todavía tiene una marina sin costa.",
+        "Bolivia llevó el caso ante el tribunal internacional de La Haya, pero en 2018 los jueces *rechazaron* su *demanda*: Chile no está obligado a *negociar*. El asunto sigue *envenenando* la relación entre los dos países vecinos.",
       ],
       vocab: [
         { es: "perdió", de: "verlor (perder)", en: "lost (perder)", take: true },
         { es: "mar", de: "das Meer", en: "sea", take: true },
         { es: "salida", de: "der Ausgang, Zugang", en: "exit, way out", take: true },
-        { es: "rechazó", de: "lehnte ab (rechazar)", en: "rejected (rechazar)", take: true },
+        { es: "rechazaron", de: "lehnten ab (rechazar)", en: "rejected (rechazar)", take: true },
+        { es: "demanda", de: "die Klage; die Nachfrage", en: "lawsuit; demand", take: true },
+        { es: "negociar", de: "verhandeln", en: "to negotiate", take: true },
+        { es: "envenenando", de: "vergiftend (envenenar)", en: "poisoning (envenenar)", take: false },
       ],
       title: "Bolivien ohne Meer",
       titleEn: "Bolivia without a coast",
@@ -11598,13 +11669,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       icon: "🕊️",
       level: "B2",
       es: [
-        "En 2016, un acuerdo histórico *terminó* la guerra con la guerrilla de las FARC, *premiado* con el Nobel de la Paz. Pero quedan grupos *disidentes* y el país todavía *busca* una paz total.",
+        "Durante más de cincuenta años, Colombia vivió una guerra interna durísima entre el Estado y la guerrilla de las FARC, con miles de muertos, secuestrados y desplazados.",
+        "En 2016 llegó un momento histórico: el gobierno y la guerrilla firmaron un *acuerdo* de paz que *terminó* oficialmente con ese conflicto. El presidente que lo logró fue *premiado* con el Premio Nobel de la Paz.",
+        "Pero la paz todavía es *frágil*. Quedan grupos *disidentes* que no aceptaron el acuerdo, otra guerrilla llamada ELN y poderosos carteles del narcotráfico. Por eso, bajo el presidente Gustavo Petro, el país sigue *buscando* lo que llaman una „paz total“.",
       ],
       vocab: [
+        { es: "acuerdo", de: "das Abkommen, die Einigung", en: "agreement", take: true },
         { es: "terminó", de: "beendete (terminar)", en: "ended (terminar)", take: true },
         { es: "premiado", de: "ausgezeichnet (premiar)", en: "awarded (premiar)", take: false },
+        { es: "frágil", de: "zerbrechlich, fragil", en: "fragile", take: true },
         { es: "disidentes", de: "die Abtrünnigen, Dissidenten", en: "dissidents", take: false },
-        { es: "busca", de: "sucht (buscar)", en: "seeks (buscar)", take: true },
+        { es: "buscando", de: "suchend (buscar)", en: "seeking (buscar)", take: true },
       ],
       title: "Kolumbien: ein fragiler Frieden",
       titleEn: "Colombia: a fragile peace",
@@ -11621,13 +11696,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       icon: "🏛️",
       level: "B2",
       es: [
-        "Pocos países *cambian* de presidente tan rápido. Entre 2016 y 2023, Perú tuvo media docena de gobernantes y muchos *escándalos*. En 2022, el presidente Castillo fue *destituido* y *detenido*.",
+        "Pocos países del mundo *cambian* de presidente tan rápido como el Perú. Entre 2016 y 2023, el país tuvo cerca de media docena de gobernantes, además de muchos *escándalos* de corrupción.",
+        "El momento más dramático llegó en 2022: el presidente Pedro Castillo intentó cerrar el Congreso por su cuenta, una especie de autogolpe. El plan fracasó y, ese mismo día, fue *destituido* y *detenido*.",
+        "Lo que vino después fue muy grave: estallaron grandes *protestas*, sobre todo en el sur del país, y la represión dejó decenas de muertos. La *confianza* de la gente en sus políticos quedó muy *dañada*, y la crisis aún no termina.",
       ],
       vocab: [
         { es: "cambian", de: "wechseln (cambiar)", en: "change (cambiar)", take: true },
         { es: "escándalos", de: "die Skandale", en: "scandals", take: true },
         { es: "destituido", de: "abgesetzt (destituir)", en: "removed from office (destituir)", take: false },
         { es: "detenido", de: "festgenommen (detener)", en: "detained, arrested (detener)", take: true },
+        { es: "protestas", de: "die Proteste", en: "protests", take: true },
+        { es: "confianza", de: "das Vertrauen", en: "trust", take: true },
+        { es: "dañada", de: "beschädigt (dañar)", en: "damaged (dañar)", take: true },
       ],
       title: "Peru: politische Dauerkrise",
       titleEn: "Peru: permanent political crisis",
@@ -11644,13 +11724,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       icon: "💸",
       level: "B1",
       es: [
-        "Antes uno de los países más ricos, Argentina *lucha* desde hace décadas contra la *inflación*. En 2023 *eligió* al liberal Javier Milei, que *recorta* el gasto del Estado con medidas drásticas.",
+        "Hace cien años, Argentina era uno de los países más *ricos* del mundo. Hoy, en cambio, lleva décadas luchando contra la *inflación*, las deudas y crisis económicas que se repiten una y otra vez.",
+        "El dinero pierde su valor tan rápido que ahorrar es casi imposible, y muchas familias ven cómo los precios suben cada semana. Cansados de tantos años de problemas, en 2023 los argentinos *eligieron* a un presidente muy diferente: el liberal radical Javier Milei.",
+        "Milei promete arreglar la economía con medidas muy duras: *recortar* el gasto del Estado con „la motosierra“, como él mismo dice. Es una *apuesta* arriesgada y dolorosa, y ahora mismo se está *decidiendo* si funciona o no.",
       ],
       vocab: [
-        { es: "lucha", de: "kämpft (luchar)", en: "fights (luchar)", take: true },
+        { es: "ricos", de: "reich (rico)", en: "rich", take: true },
         { es: "inflación", de: "die Inflation", en: "inflation", take: true },
-        { es: "eligió", de: "wählte (elegir)", en: "elected, chose (elegir)", take: true },
-        { es: "recorta", de: "kürzt (recortar)", en: "cuts (recortar)", take: false },
+        { es: "eligieron", de: "wählten (elegir)", en: "elected, chose (elegir)", take: true },
+        { es: "recortar", de: "kürzen", en: "to cut", take: false },
+        { es: "apuesta", de: "die Wette, das Wagnis (apostar)", en: "bet, gamble (apostar)", take: true },
+        { es: "decidiendo", de: "am Entscheiden (decidir)", en: "being decided (decidir)", take: true },
       ],
       title: "Argentinien: Inflation & Kurswechsel",
       titleEn: "Argentina: inflation & a sharp turn",
@@ -11667,13 +11751,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       icon: "🌳",
       level: "B2",
       es: [
-        "La selva amazónica, hogar de cientos de *pueblos* indígenas, está *amenazada* por la *deforestación* y la minería. Al mismo tiempo, los movimientos indígenas *ganan* voz y derechos.",
+        "La selva amazónica es mucho más que un bosque: es el hogar de cientos de *pueblos* indígenas y una pieza clave para el clima de todo el planeta. Por eso muchos la llaman „el pulmón verde“ del mundo.",
+        "Pero la selva está *amenazada*. La *deforestación* para criar ganado, plantar soja o buscar oro destruye cada año enormes zonas de bosque. La minería ilegal, además, *contamina* los ríos con mercurio y enferma a la gente que vive allí.",
+        "Al mismo tiempo, hay esperanza: los movimientos indígenas *ganan* cada vez más voz, derechos sobre sus tierras y presencia en la política. Cómo *equilibrar* el cuidado del medio ambiente con el desarrollo es una de las grandes preguntas del futuro de Sudamérica.",
       ],
       vocab: [
         { es: "pueblos", de: "die Völker, Dörfer", en: "peoples, villages", take: true },
         { es: "amenazada", de: "bedroht (amenazar)", en: "threatened (amenazar)", take: true },
         { es: "deforestación", de: "die Abholzung", en: "deforestation", take: false },
+        { es: "contamina", de: "verschmutzt (contaminar)", en: "pollutes (contaminar)", take: true },
         { es: "ganan", de: "gewinnen (ganar)", en: "gain, win (ganar)", take: true },
+        { es: "equilibrar", de: "ins Gleichgewicht bringen", en: "to balance", take: false },
       ],
       title: "Amazonas & indigene Rechte",
       titleEn: "The Amazon & indigenous rights",
@@ -11690,13 +11778,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       icon: "🚶",
       level: "B1",
       es: [
-        "Cientos de miles de personas *viajan* hacia el norte y *cruzan* la peligrosa selva del Darién, entre Colombia y Panamá. Es una de las *rutas* migratorias más *peligrosas* del mundo.",
+        "En los últimos años, cientos de miles de personas, muchas de ellas venezolanas, han salido de sus países en busca de trabajo y seguridad. La mayoría *viaja* hacia el norte, soñando con llegar a Estados Unidos.",
+        "En el camino tienen que *cruzar* el Tapón del Darién, una selva espesa y sin carreteras entre Colombia y Panamá. Es una de las *rutas* migratorias más *peligrosas* del mundo: hay ríos, enfermedades y bandas criminales que *asaltan* a los viajeros.",
+        "Estos grandes movimientos de gente ponen a prueba a los países que los reciben y se han convertido en un tema político central, desde Chile hasta la *frontera* con Estados Unidos. La migración marca hoy la vida de toda la región.",
       ],
       vocab: [
-        { es: "viajan", de: "reisen (viajar)", en: "travel (viajar)", take: true },
-        { es: "cruzan", de: "überqueren (cruzar)", en: "cross (cruzar)", take: true },
+        { es: "viaja", de: "reist (viajar)", en: "travels (viajar)", take: true },
+        { es: "cruzar", de: "überqueren", en: "to cross", take: true },
         { es: "rutas", de: "die Routen, Strecken", en: "routes", take: true },
         { es: "peligrosas", de: "gefährlich (peligroso)", en: "dangerous (peligroso)", take: true },
+        { es: "asaltan", de: "überfallen (asaltar)", en: "assault, rob (asaltar)", take: false },
+        { es: "frontera", de: "die Grenze", en: "border", take: true },
       ],
       title: "Migration & der Darién",
       titleEn: "Migration & the Darién Gap",
@@ -16121,6 +16213,90 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return c;
   }
 
+  // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
+  // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
+  // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
+  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild.
+  function buildTips(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = payload.accent && payload.accent.length === 2 ? payload.accent : ["#3F6B8E", "#6B4FA8"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker (Kategorie)
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText(`${payload.icon || "🧭"}  ${String(payload.kicker || "").toUpperCase()}`, cx, isStory ? 140 : 104);
+
+    // Titel des Themas
+    const titleTop = isStory ? 168 : 130;
+    const titleBottom = fitText(ctx, payload.title || "", cx, titleTop, pw - 40, {
+      px: 58, min: 34, weight: "800", color: "#ffffff", maxLines: 3,
+    });
+    let y = titleBottom + 50;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+    const bottom = panelY + panelH - 44;
+
+    // Kurze Einleitung (optional, gedämpft)
+    if (payload.intro) {
+      iy = drawWrapped(ctx, payload.intro, innerX, iy, innerW, {
+        px: isStory ? 30 : 28, weight: "600", color: MUTE, lineHeight: 1.34,
+        maxBottom: panelY + (isStory ? 360 : 240),
+      }) + 40;
+    }
+
+    // Liste der DOs & DON'Ts. Marker (✅/🚫) links, Text mit hängendem Einzug.
+    const px = isStory ? 31 : 29;
+    const markW = 54;
+    const lineGap = 24;
+    const lines = payload.lines || [];
+    let truncated = false;
+    for (let i = 0; i < lines.length; i++) {
+      const ln = lines[i] || {};
+      if (iy + px > bottom) { truncated = i < lines.length; break; }
+      ctx.font = font("700", px);
+      ctx.fillStyle = INK;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText(ln.mark || "•", innerX, iy + px);
+      const endY = drawWrapped(ctx, ln.text || "", innerX + markW, iy, innerW - markW, {
+        px, weight: "500", color: INK, lineHeight: 1.34, maxBottom: bottom,
+      });
+      iy = endY + lineGap;
+      if (iy > bottom && i < lines.length - 1) { truncated = true; break; }
+    }
+    if (truncated) {
+      ctx.font = font("800", 30);
+      ctx.fillStyle = MUTE;
+      ctx.textAlign = "center";
+      ctx.fillText("…", cx, Math.min(iy + px * 0.5, bottom + 24));
+    }
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Canvas -> Blob ----------
   function toBlob(canvas) {
     return new Promise((resolve, reject) => {
@@ -16180,6 +16356,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       out += `\n\n${t("share.captionHistoria")}`;
       return out + link;
     }
+    if (kind === "tips") {
+      const title = String(p.title || "").trim();
+      const cat = String(p.kicker || "").trim();
+      let out = t("share.captionTipsHead", { title: title || cat || BRAND });
+      if (cat && title) out += `\n${cat}`;
+      out += `\n\n${t("share.captionTips")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -16199,6 +16383,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
              : kind === "histtext" ? buildHistoria(payload, fmt)
+             : kind === "tips" ? buildTips(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -16216,11 +16401,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "badge" ? "holaruta-stempel"
                : kind === "histtext" ? "holaruta-historia"
+               : kind === "tips" ? "holaruta-tipps"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
                 : kind === "histtext" ? "Historia de Sudamérica"
+                : kind === "tips" ? ((payload && payload.title) || "HolaRuta")
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
@@ -16248,7 +16435,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria };
+  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria, buildTips };
 })();
 
 </script>
@@ -17972,7 +18159,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Tipp auf den Satz öffnet die Großanzeige – bildschirmfüllend zum Herzeigen.
   function renderSpickzettel(vm) {
     const nav = vm.groups.map((g) => `
-      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
+      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" data-action="scroll-to" data-target="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
         <span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}
       </a>`).join("");
     const groups = vm.groups.map((g) => {
@@ -18222,6 +18409,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             <p class="cinfo-head__cap">${t("discover.infoCapital", { capital: esc(c.capital) })}</p>
           </div>
         </div>
+        <button class="hist-share cinfo-share" type="button" data-action="share-country">📤 ${esc(t("discover.tipsShare"))}</button>
 
         ${sect("🌎", t("discover.infoAbout"), para(c.about))}
         ${sect("📜", t("discover.infoHistory"), para(c.history))}
@@ -18363,12 +18551,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
     const nav = `
       <nav class="hist-nav" aria-label="${esc(t("discover.histAreas"))}">
-        <a class="hist-nav__chip" href="#hist-zeitstrahl">🕰️ ${esc(t("discover.histNavTimeline"))}</a>
-        <a class="hist-nav__chip" href="#hist-protagonisten">👤 ${esc(t("discover.histNavFigures"))}</a>
-        <a class="hist-nav__chip" href="#hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
+        <a class="hist-nav__chip" href="#hist-zeitstrahl" data-action="scroll-to" data-target="hist-zeitstrahl">🕰️ ${esc(t("discover.histNavTimeline"))}</a>
+        <a class="hist-nav__chip" href="#hist-protagonisten" data-action="scroll-to" data-target="hist-protagonisten">👤 ${esc(t("discover.histNavFigures"))}</a>
+        <a class="hist-nav__chip" href="#hist-heute" data-action="scroll-to" data-target="hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
       </nav>`;
 
-    // Eine Epoche als aufklappbare Karte am Zeitstrahl.
+    // Eine Epoche als aufklappbare Karte am Zeitstrahl. Aufbau wie bei den
+    // Protagonisten: zuerst der erklärende Text in der UI-Sprache, darunter das
+    // spanische Lesetraining als eigener aufklappbarer Block.
     const era = (e) => {
       const img = e.img
         ? `<figure class="hist-era__fig">
@@ -18378,7 +18568,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
            </figure>`
         : "";
       const lvl = levelMeta(e.level);
-      const reading = readingBlock({ es: e.es, vocab: e.vocab, level: e.level, trans: e.body, shareId: e.id, quiz: true });
+      const bodyText = (e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("");
+      const reading = (e.es && e.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: e.es, vocab: e.vocab, level: e.level, shareId: e.id, quiz: true })}</div>
+           </details>`
+        : "";
       const points = (e.points || []).length
         ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
         : "";
@@ -18398,6 +18594,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </summary>
           <div class="hist-era__body">
             ${img}
+            ${bodyText}
             ${reading}
             ${points}
           </div>
@@ -18496,6 +18693,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </section>`;
   }
 
+  // Teilen-Knopf für die Entdecken-Tipp-Kategorien (Knigge/Regatear/Logística/
+  // Salud): erzeugt ein Sharepic des Themas mit seinen DOs/Don'ts „zum
+  // Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
+  function tipsShareBtn(cat, i) {
+    return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
+  }
+
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
   // Allgemeine DOs & Don'ts (Hostel, Bus, Gruppen, Kultur) plus landesspezifische
   // Akzente. Land-Dropdown wie in renderInfo (teilt state.countryId). Themenblöcke
@@ -18523,7 +18727,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
         .join("");
 
-    const block = (t) => {
+    const block = (t, i) => {
       const dos = liList(t.dos, "knigge-do", "✅");
       const donts = liList(t.donts, "knigge-dont", "🚫");
       const accent = t.accent
@@ -18541,6 +18745,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             ${dos ? `<ul class="knigge-list">${dos}</ul>` : ""}
             ${donts ? `<ul class="knigge-list">${donts}</ul>` : ""}
             ${accent}
+            ${tipsShareBtn("knigge", i)}
           </div>
         </details>`;
     };
@@ -18574,7 +18779,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       (items || [])
         .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
         .join("");
-    const tipBlock = (t) => `
+    const tipBlock = (t, i) => `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
           <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
@@ -18585,6 +18790,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
           ${t.dos && t.dos.length ? `<ul class="knigge-list">${liList(t.dos, "knigge-do", "✅")}</ul>` : ""}
           ${t.donts && t.donts.length ? `<ul class="knigge-list">${liList(t.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${tipsShareBtn("regatear", i)}
         </div>
       </details>`;
     const tips = (vm.tips || []).map(tipBlock).join("");
@@ -18713,7 +18919,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       (items || [])
         .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
         .join("");
-    const topicBlock = (tp) => `
+    const topicBlock = (tp, i) => `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
           <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
@@ -18724,6 +18930,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
           ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
           ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
         </div>
       </details>`;
     const topics = (vm.topics || []).map(topicBlock).join("");
@@ -18785,7 +18992,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
   function renderLogistica(vm) {
     return moduleSheet(vm, {
-      icon: "🧳", title: "Logística de viaje",
+      icon: "🧳", title: "Logística de viaje", cat: "logistica",
       headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
       headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
       headChecklistHint: "discover.lgChecklistHint",
@@ -18795,7 +19002,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Salud y energía: ausgewogen essen, günstig trinken, Bauch, Sonne/Höhe, Bewegung.
   function renderSalud(vm) {
     return moduleSheet(vm, {
-      icon: "🥗", title: "Salud y energía",
+      icon: "🥗", title: "Salud y energía", cat: "salud",
       headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
       headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
       headChecklistHint: "discover.sdChecklistHint",
@@ -23399,6 +23606,62 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     }, shareFormat());
   }
 
+  // Sharepic für die übrigen Entdecken-Kategorien (Knigge, Regatear, Logística,
+  // Salud): ein Thema mit seinen DOs/Don'ts als teilbares Bild „zum Versenden".
+  // kicker/icon/accent passen zur jeweiligen Kategorie-Kachel (siehe FEATURES).
+  const TIPS_META = {
+    knigge:    { kicker: "Etiqueta de viaje", icon: "🧭", accent: ["#3F6B8E", "#6B4FA8"] },
+    regatear:  { kicker: "Regatear",          icon: "🤝", accent: ["#B97C24", "#3F7355"] },
+    logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
+    salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
+  };
+
+  function shareTips(cat, idx) {
+    if (!share) return;
+    const src = cat === "knigge" ? (knigge && knigge.TOPICS)
+              : cat === "regatear" ? (regatear && regatear.TIPS)
+              : cat === "logistica" ? (logistica && logistica.TOPICS)
+              : cat === "salud" ? (salud && salud.TOPICS)
+              : null;
+    const meta = TIPS_META[cat];
+    if (!src || !src[idx] || !meta) return;
+    const o = loc(src[idx]); // …En-Felder für die aktive Sprache überlagern
+    const lines = []
+      .concat((o.dos || []).map((text) => ({ mark: "✅", text })))
+      .concat((o.donts || []).map((text) => ({ mark: "🚫", text })));
+    buzz(12);
+    share.shareImage("tips", {
+      kicker: meta.kicker,
+      icon: meta.icon,
+      title: o.title || meta.kicker,
+      intro: o.intro || "",
+      lines,
+      accent: meta.accent,
+    }, shareFormat());
+  }
+
+  // Sharepic für die Länderkunde (Países y culturas): das aktuell gewählte Land
+  // als kompakte Steckbrief-Karte (Hauptstadt, Kurzporträt, etwas lokaler Slang).
+  function shareCountry() {
+    if (!share || !countries) return;
+    const list = countries.LIST || [];
+    const c = loc(list.find((x) => x.id === state.countryId) || list[0]);
+    if (!c) return;
+    const lines = [];
+    if (c.capital) lines.push({ mark: "🏛️", text: c.capital });
+    if (c.about) lines.push({ mark: "🌎", text: c.about });
+    (c.words || []).slice(0, 4).forEach((w) => lines.push({ mark: "🗣️", text: `${w.es} — ${w.de}` }));
+    buzz(12);
+    share.shareImage("tips", {
+      kicker: "Países y culturas",
+      icon: "🌎",
+      title: `${c.flag || ""} ${c.name || ""}`.trim(),
+      intro: c.tagline || "",
+      lines,
+      accent: ["#B97C24", "#C2502E"],
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -23434,6 +23697,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         el.classList.add("is-wrong");
         const right = q.querySelector('.hist-quiz__opt[data-correct="1"]');
         if (right) right.classList.add("is-correct");
+      }
+      return;
+    }
+
+    // Sprungmarken-Leiste (Historia, Supervivencia …): sanft zum Abschnitt
+    // scrollen, OHNE die URL-Raute zu ändern. Eine echte #-Navigation legt sonst
+    // einen History-Eintrag an und kollidiert mit dem Zurück-Puffer (armBackGuard)
+    // – die nächste Geste/der Klick würde dann eine Ebene höher springen statt zu
+    // scrollen. preventDefault hält den nativen Anker-Sprung auf.
+    if (action === "scroll-to") {
+      e.preventDefault();
+      const target = el.dataset.target && document.getElementById(el.dataset.target);
+      if (target) {
+        const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "start" }); }
+        catch (e2) { try { target.scrollIntoView(); } catch (e3) { /* egal */ } }
       }
       return;
     }
@@ -23488,6 +23767,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
     else if (action === "share-historia") shareHistoria(el.dataset.id);
+    else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
+    else if (action === "share-country") shareCountry();
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
