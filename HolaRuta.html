@@ -14409,16 +14409,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return a !== undefined ? a : b;
   }
 
-  // Felder, die je Gerät kumulieren: über Geräte hinweg MAX (statt Summe),
-  // damit sich nichts durch überlappende Historie aufbläht.
-  var MAX_FIELDS = {
-    reviews: 1, againPresses: 1, dailyStreak: 1, longestStreak: 1,
-    battlesPlayed: 1, battlesWon: 1, perfectBattles: 1, comebacks: 1,
-    quizzesPlayed: 1, quizzesPerfect: 1, frasesPlayed: 1, frasesPerfect: 1,
-    listenReviews: 1, preciosPlayed: 1, preciosPerfect: 1, preciosMillon: 1,
-    conjugPlayed: 1, conjugPerfect: 1, dialogosPlayed: 1, dialogosPerfect: 1,
-  };
-
   function mergeGamestats(a, b) {
     a = isObj(a) ? a : {}; b = isObj(b) ? b : {};
     var out = {}, k;
@@ -14434,7 +14424,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         var sa = (isObj(va) && va.startedAt) || "", sb = (isObj(vb) && vb.startedAt) || "";
         out[k] = (sb > sa) ? vb : (va || vb);
       } else if (typeof va === "number" && typeof vb === "number") {
-        out[k] = MAX_FIELDS[k] ? Math.max(va, vb) : Math.max(va, vb);
+        out[k] = Math.max(va, vb); // Zähler über Geräte: max (nie Summe -> kein Aufblähen)
       } else if (typeof va === "boolean" && typeof vb === "boolean") {
         out[k] = va || vb;
       } else if (typeof va === "string" && typeof vb === "string") {
@@ -14448,12 +14438,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return out;
   }
 
-  // Eigene Karten: Vereinigung per id (lokale Variante gewinnt bei Kollision).
+  // Eigene Karten: Vereinigung per id. Bei id-Kollision DETERMINISTISCH (egal in
+  // welcher Reihenfolge gemergt wird): die inhaltsreichere Variante gewinnt
+  // (längere JSON-Repräsentation) – reihenfolgeunabhängig, kein Karten-Verlust.
   function mergeUsercards(a, b) {
     var la = Array.isArray(a) ? a : [], lb = Array.isArray(b) ? b : [];
-    var byId = {}, order = [], i, c;
-    for (i = 0; i < lb.length; i++) { c = lb[i]; if (c && c.id) { if (!(c.id in byId)) order.push(c.id); byId[c.id] = c; } }
-    for (i = 0; i < la.length; i++) { c = la[i]; if (c && c.id) { if (!(c.id in byId)) order.push(c.id); byId[c.id] = c; } }
+    var byId = {}, order = [];
+    function add(c) {
+      if (!c || !c.id) return;
+      var id = c.id;
+      if (!(id in byId)) { byId[id] = c; order.push(id); }
+      else if (JSON.stringify(c).length > JSON.stringify(byId[id]).length) byId[id] = c;
+    }
+    var i;
+    for (i = 0; i < la.length; i++) add(la[i]);
+    for (i = 0; i < lb.length; i++) add(lb[i]);
     return order.map(function (id) { return byId[id]; });
   }
 
@@ -14468,7 +14467,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       else if (k === GAMESTATS_KEY) out[k] = mergeGamestats(l[k], r[k]);
       else if (k === USERCARDS_KEY) out[k] = mergeUsercards(l[k], r[k]);
       else if (k === SETTINGS_KEY) out[k] = (k in l) ? l[k] : r[k]; // Einstellungen bleiben gerätelokal
-      else out[k] = (k in l) ? l[k] : r[k];
+      else out[k] = deepUnion(l[k], r[k]); // unbekannte/künftige Keys konservativ vereinen
     }
     return out;
   }
@@ -14544,6 +14543,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       var changedLocal = JSON.stringify(local.data) !== JSON.stringify(merged.data);
       if (changedLocal) store.importData(merged); // wendet das gemergte Ergebnis lokal an
       return push(merged.data, baseRev).then(function (pr) {
+        // Konflikt (ein anderes Gerät war schneller): mit dessen Stand neu mergen
+        // und genau einmal erneut pushen (BACKEND.md §8: 409 -> merge -> retry).
+        if (pr.status === 409 && pr.body && pr.body.payload) {
+          var remerged = mergePayloads(merged, { data: pr.body.payload });
+          var changed2 = JSON.stringify(merged.data) !== JSON.stringify(remerged.data);
+          if (changed2) store.importData(remerged);
+          return push(remerged.data, pr.body.rev || 0).then(function (pr2) {
+            return { ok: !!pr2.ok, changedLocal: changedLocal || changed2, rev: (pr2.body && pr2.body.rev) || 0, status: pr2.status };
+          });
+        }
         return { ok: !!pr.ok, changedLocal: changedLocal, rev: (pr.body && pr.body.rev) || baseRev, status: pr.status };
       });
     });

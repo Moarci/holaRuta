@@ -104,6 +104,25 @@ test("merge ist kommutativ im Ergebnis (gleiche Mengen/Maxima, egal welche Reihe
   assert.equal(ab[PROGRESS].c.reps, ba[PROGRESS].c.reps);
 });
 
+test("mergeUsercards: id-Kollision deterministisch (inhaltsreichere gewinnt, reihenfolgeunabhängig)", () => {
+  const a = [{ id: "u1", es: "hola" }];
+  const b = [{ id: "u1", es: "hola", de: "hallo", note: "Begrüßung" }]; // reicher
+  const ab = sync.mergeUsercards(a, b);
+  const ba = sync.mergeUsercards(b, a);
+  assert.equal(ab.length, 1);
+  assert.deepEqual(ab[0], b[0], "reicheres Objekt gewinnt");
+  assert.deepEqual(ba[0], b[0], "auch in umgekehrter Reihenfolge -> gleiches Ergebnis");
+});
+
+test("mergeData: unbekannte/künftige Keys werden konservativ vereint (kein Verlust)", () => {
+  const local = { data: { "spanischcard.future.v3": { a: 1 } } };
+  const remote = { data: { "spanischcard.future.v3": { b: 2 } } };
+  const m = sync.merge(local, remote);
+  assert.deepEqual(m.data["spanischcard.future.v3"], { a: 1, b: 2 }, "Tiefen-Union statt lokal-gewinnt");
+  // nur remote vorhanden -> bleibt erhalten
+  assert.deepEqual(sync.merge({ data: {} }, { data: { "x.v1": { k: true } } }).data["x.v1"], { k: true });
+});
+
 test("merge toleriert leere/kaputte Eingaben (kein Crash)", () => {
   assert.deepEqual(sync.mergeProgress(null, undefined), {});
   assert.deepEqual(sync.mergeGamestats(null, null), {});
