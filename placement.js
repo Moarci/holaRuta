@@ -72,10 +72,10 @@
       correctIndex: 1, expectedTimeSec: 9,
       explanationDe: "„Buenas tardes“ = Guten Tag/Nachmittag (ab Mittag)." },
     { id: "pt_re_004", block: "reaction", skill: "reaction", level: "A2", type: "mc",
-      promptDe: "An der Rezeption willst du höflich fragen, ob man dir helfen kann. Was passt?",
-      options: ["¿Puedes ayudarme?", "¿Puedo ayudarme?", "¿Puede ayudarme?", "¿Pueden ayudarme?"],
+      promptDe: "An der Rezeption willst du EINE Person höflich fragen, ob sie dir helfen kann. Was passt?",
+      options: ["¿Puedes ayudarme?", "¿Puedo ayudarme?", "¿Puede ayudarme?", "¿Ayudo a usted?"],
       correctIndex: 2, expectedTimeSec: 12,
-      explanationDe: "„¿Puede…?“ ist die höfliche usted-Form – für Rezeption, Polizei, Buspersonal." },
+      explanationDe: "„¿Puede…?“ ist die höfliche usted-Form (eine Person) – für Rezeption, Polizei, Buspersonal." },
     { id: "pt_re_005", block: "reaction", skill: "reaction", level: "A2", type: "mc",
       promptDe: "Du suchst den Weg zum Busbahnhof. Was fragst du?",
       options: ["¿Cuánto cuesta el bus?", "¿Cómo llego a la terminal de buses?", "¿A qué hora sale el bus?", "¿Dónde compro el boleto?"],
@@ -190,7 +190,7 @@
       explanationDe: "„gracias“ = danke." },
     { id: "pt_fr_002", block: "free", skill: "free", level: "A2", type: "free",
       promptDe: "Schreib auf Spanisch die Frage: Wie viel kostet das?",
-      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto vale", "cuanto cuesta eso"], expectedTimeSec: 16,
+      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto cuesta eso", "cuanto vale", "cuanto vale esto", "cuanto vale eso"], expectedTimeSec: 16,
       explanationDe: "„¿Cuánto cuesta?“ ist die Standardfrage nach dem Preis (Akzente/Satzzeichen egal)." },
   ];
 
