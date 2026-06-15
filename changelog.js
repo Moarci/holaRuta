@@ -22,6 +22,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.50.0",
+      date: "2026-06-15",
+      title: "Ruta-Check: kurzer, reisepraktischer Einstufungstest",
+      items: [
+        "🎯 Neuer „Ruta-Check“ unter Entdecken: 24 Fragen in echten Reisesituationen (Verstehen, Reagieren, Wortschatz) plus dosiert Konjugation & Zeiten (~30 %) – Kommunikation steht im Vordergrund, nicht trockene Grammatik.",
+        "🤷 Jede Frage hat „Ich weiß es nicht“ – ehrliches Nichtwissen statt Raten. Das macht die Einstufung fairer und genauer.",
+        "📊 Am Ende ein Profil statt nur einer Note: Startlevel (A0–B1−), Trefferquote, „weiß-nicht“-Anteil, Tempo und eine Aufschlüsselung nach Bereichen – plus ein Hinweis, ob jemand kommunikativ oder grammatikalisch stärker ist.",
+        "🧑‍🏫 Das Ergebnis erscheint im „Modo profe“ als eigene Spalte (Level · Score), sobald ein Schüler sein Backup teilt – hilfreich für die Gruppenzuteilung.",
+      ],
+    },
+    {
       version: "1.49.0",
       date: "2026-06-15",
       title: "Zugewiesenes Reiseziel ist fix + Kopieren/Einfügen funktioniert mobil",

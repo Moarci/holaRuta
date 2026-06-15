@@ -22,6 +22,7 @@
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
+  const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -70,6 +71,7 @@
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
     openedTask: null,        // vom Lernenden geöffnete Aufgabe { kind, scope, title, due } | null
+    placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -248,6 +250,7 @@
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
+      hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -2087,6 +2090,7 @@
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
     else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
     else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
+    else if (state.screen === "placement") root.innerHTML = ui.renderPlacement(placementVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -2507,6 +2511,8 @@
       pretripDays: Math.min(m.pretripDaysDone, planMax),
       pretripMax: planMax,
       masteredCats,
+      // Ruta-Check: letztes Einstufungsergebnis (falls der Schüler den Test gemacht hat).
+      placement: (b.gamestats && typeof b.gamestats.placement === "object" && b.gamestats.placement) || null,
     };
   }
 
@@ -2720,6 +2726,133 @@
   function taskVM() {
     const t0 = state.openedTask;
     return { opened: t0 ? { title: t0.title, due: t0.due, targetLabel: taskTargetLabel(t0) } : null };
+  }
+
+  // ----- Ruta-Check (Einstufungstest, reisepraktisch + ehrlich) -----
+  // Logik/Bewertung leben rein in placement.js; hier nur der Ablauf + Persistenz.
+  // „Ich weiß es nicht“ ist eine echte Option (ehrliches Nichtwissen statt Raten),
+  // die Antwortzeit je Frage wird erfasst und fließt LEICHT in die Sicherheit ein.
+  function placementQuestions() { return (placement && placement.QUESTIONS) || []; }
+
+  function openPlacement() {
+    dismissBadgeToast();
+    state.placement = { phase: "intro", idx: 0, answers: [], startedAt: 0, qStartedAt: 0, result: null };
+    state.screen = "placement";
+    render();
+  }
+
+  function startPlacementTest() {
+    if (!state.placement) return;
+    const now = Date.now();
+    state.placement.phase = "running";
+    state.placement.idx = 0;
+    state.placement.answers = [];
+    state.placement.startedAt = now;
+    state.placement.qStartedAt = now;
+    render();
+  }
+
+  // Eine Antwort verbuchen und zur nächsten Frage (oder zum Ergebnis) gehen.
+  function recordPlacementAnswer(ans) {
+    const p = state.placement;
+    if (!p || p.phase !== "running") return;
+    const now = Date.now();
+    ans.responseTimeMs = Math.max(0, now - (p.qStartedAt || now));
+    p.answers[p.idx] = ans;
+    const total = placementQuestions().length;
+    if (p.idx + 1 < total) {
+      p.idx += 1;
+      p.qStartedAt = Date.now();
+      render();
+    } else {
+      finishPlacement();
+    }
+  }
+
+  function placementChoose(index) {
+    const q = placementQuestions()[state.placement ? state.placement.idx : -1];
+    if (!q || q.type === "free") return;
+    recordPlacementAnswer({ isUnknown: false, selectedIndex: index });
+  }
+  function placementUnknown() {
+    if (!state.placement || state.placement.phase !== "running") return;
+    recordPlacementAnswer({ isUnknown: true, selectedIndex: null });
+  }
+  function placementSubmitFree() {
+    const p = state.placement;
+    if (!p || p.phase !== "running") return;
+    const q = placementQuestions()[p.idx];
+    if (!q || q.type !== "free") return;
+    const el = document.getElementById("placement-free");
+    const text = el ? String(el.value || "").trim() : "";
+    if (!text) { placementUnknown(); return; } // leeres Feld zählt als „weiß nicht“
+    recordPlacementAnswer({ isUnknown: false, text: text });
+  }
+
+  function finishPlacement() {
+    const p = state.placement;
+    if (!p) return;
+    const result = placement.summarize(placementQuestions(), p.answers);
+    p.result = result;
+    p.phase = "done";
+    // Letztes Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
+    try {
+      gamestats = Object.assign({}, gamestats, {
+        placement: {
+          level: result.level,
+          finalScore: Math.round(result.finalScore * 100) / 100,
+          accuracy: Math.round(result.accuracy * 100) / 100,
+          unknownRate: Math.round(result.unknownRate * 100) / 100,
+          tempo: result.tempo,
+          at: new Date().toISOString().slice(0, 10),
+        },
+      });
+      store.saveGameStats(gamestats);
+    } catch (e) { /* Persistenz optional – nie crashen */ }
+    render();
+  }
+
+  // VM für die drei Phasen (intro/running/done) – eine Render-Route „placement“.
+  function placementVM() {
+    const p = state.placement;
+    if (!p) return { phase: "intro", total: placementQuestions().length };
+    if (p.phase === "running") {
+      const qs = placementQuestions();
+      const q = qs[p.idx];
+      return {
+        phase: "running",
+        index: p.idx, total: qs.length,
+        // erste 3 Fragen: sanften „lieber weiß-nicht als raten“-Hinweis zeigen.
+        showHint: p.idx < 3,
+        q: q ? {
+          id: q.id, type: q.type, level: q.level,
+          promptDe: q.promptDe, questionEs: q.questionEs || null,
+          options: q.type === "mc" ? q.options.slice() : null,
+        } : null,
+      };
+    }
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done" }, placementResultView(p.result));
+    return { phase: "intro", total: placementQuestions().length };
+  }
+
+  // Ergebnis in eine anzeigefertige Form bringen (Prozente, Skill-Zeilen, Notiz).
+  function placementResultView(r) {
+    const pct = (x) => Math.round((x || 0) * 100);
+    const skillOrder = ["understanding", "reaction", "vocab", "conjugation", "tenses", "free"];
+    const skills = skillOrder
+      .filter((k) => r.skillBreakdown[k])
+      .map((k) => ({ skill: k, accuracy: pct(r.skillBreakdown[k].accuracy), unknownRate: pct(r.skillBreakdown[k].unknownRate) }));
+    return {
+      level: r.level,
+      scorePct: pct(r.finalScore),
+      accuracyPct: pct(r.accuracy),
+      unknownPct: pct(r.unknownRate),
+      wrongPct: pct(r.wrongRate),
+      correct: r.correct, total: r.total,
+      tempo: r.tempo,
+      note: r.note, // "" | "commStrong" | "grammarStrong"
+      skills,
+    };
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -4191,6 +4324,12 @@
     else if (action === "task-open") openTaskFromInput();
     else if (action === "task-start") startOpenedTask();
     else if (action === "task-clear") clearOpenedTask();
+    else if (action === "open-placement") openPlacement();
+    else if (action === "placement-start") startPlacementTest();
+    else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
+    else if (action === "placement-unknown") placementUnknown();
+    else if (action === "placement-free-submit") placementSubmitFree();
+    else if (action === "placement-retake") openPlacement();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();

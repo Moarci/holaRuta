@@ -330,6 +330,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     bodyPartsSeen: { bp_cabeza: true },
     shoppingSeen: { sl_agua: true },
     unlocked: { first_steps: 1700000000000 },
+    placement: { level: "A2", finalScore: 0.62, accuracy: 0.6, unknownRate: 0.2, tempo: "medium", at: "2026-06-15" },
   };
   storeMem[GKEY] = JSON.stringify(valid);
   assert.deepEqual(store.loadGameStats(), valid);

@@ -4,12 +4,12 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.49.0** — 1133 Karten · 32 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Suche** (Karten, Übungen & Informationen) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes) · Cloud-Sync (opt-in) · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.50.0** — 1133 Karten · 32 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Ruta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes) · Cloud-Sync (opt-in) · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-181_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-189_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-1133-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -199,6 +199,7 @@ SpanischCard/
 │
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
 ├── matcher.js     SC.matcher    # Antwortprüfung, akzent-/satzzeichen-tolerant — REINE FUNKTIONEN
+├── placement.js   SC.placement  # Ruta-Check: Fragenkatalog + Bewertung/Level-Logik — REINE DATEN + FUNKTIONEN
 ├── search.js      SC.search     # Suche über Karten, Übungen & Informationen — REINE FUNKTIONEN
 ├── stats.js       SC.stats      # Auswertung pro Karte & gesamt — REINE FUNKTIONEN
 ├── badges.js      SC.badges     # Ruta-Pass: Badge-Definitionen + Auswertung — REINE FUNKTIONEN
@@ -217,7 +218,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 181 Tests in 13 Dateien (node:test, keine Dependencies)
+├── test/                        # 189 Tests in 14 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -502,8 +503,8 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Bereiche / Kategorien | 32 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
-| JS-Module | 27 (`SC.*`) |
-| Tests | 181 (alle grün) |
+| JS-Module | 28 (`SC.*`) |
+| Tests | 189 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

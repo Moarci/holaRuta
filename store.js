@@ -258,6 +258,7 @@
       // ----- Einkaufszettel (interaktive Einkaufsliste) -----
       shoppingSeen: {},     // Map shoppingItemId -> true (distinkt abgehakte Einkaufs-Items)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
+      placement: null,      // letztes Ruta-Check-Ergebnis { level, finalScore, accuracy, unknownRate, tempo, at } | null
     };
   }
   // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
@@ -336,6 +337,7 @@
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
+      placement: isPlainObject(v.placement) ? v.placement : null,
     };
   }
 

@@ -83,6 +83,7 @@
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud" },
+    { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement" },
     { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben", grad: ["#3F7355", "#2E6E86"] },
     { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
   ];
@@ -414,7 +415,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
     // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
     const cfg = window.SC.config || {};
     const feats = FEATURES.filter((x) => {
@@ -2343,6 +2344,7 @@
             <th>${esc(t("teacher.colStreak"))}</th>
             <th>${esc(t("teacher.colChallenges"))}</th>
             <th>${esc(t("teacher.colPretrip"))}</th>
+            <th>${esc(t("teacher.colLevel"))}</th>
             <th>${esc(t("teacher.colPacks"))}</th>
             <th aria-label="${esc(t("teacher.remove"))}"></th>
           </tr></thead>
@@ -2354,6 +2356,7 @@
               <td>${s.streak}${s.longestStreak > s.streak ? `<span class="teacher-sub"> (max ${s.longestStreak})</span>` : ""}</td>
               <td>${s.challenges}</td>
               <td>${s.pretripDays} / ${s.pretripMax}</td>
+              <td>${s.placement ? `${esc(s.placement.level)}<span class="teacher-sub"> · ${Math.round((s.placement.finalScore || 0) * 100)}%</span>` : "—"}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
               <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
@@ -2428,6 +2431,96 @@
         ${body}
       </section>
       ${withTab ? tabbar("tarea") : ""}`;
+  }
+
+  // ---------- Ruta-Check (Einstufungstest) ----------
+  function renderPlacement(vm) {
+    if (vm.phase === "running") return renderPlacementQuestion(vm);
+    if (vm.phase === "done") return renderPlacementDone(vm);
+    return renderPlacementIntro(vm);
+  }
+
+  function renderPlacementIntro(vm) {
+    return `
+      <section class="screen">
+        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        <p class="hm-intro">${esc(t("placement.introLead", { n: vm.total }))}</p>
+        <div class="tip">${esc(t("placement.introHonest"))}</div>
+        <ul class="pl-introlist">
+          <li>${esc(t("placement.introB1"))}</li>
+          <li>${esc(t("placement.introB2"))}</li>
+          <li>${esc(t("placement.introB3"))}</li>
+        </ul>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="placement-start">▶️ ${esc(t("placement.start"))}</button>
+        </div>
+      </section>`;
+  }
+
+  function renderPlacementQuestion(vm) {
+    const q = vm.q;
+    if (!q) return renderPlacementIntro(vm);
+    const pct = Math.round(((vm.index) / (vm.total || 1)) * 100);
+    const head = `
+      <div class="pl-progress">
+        <div class="pl-progress__bar"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
+        <span class="pl-progress__label">${esc(t("placement.qOf", { i: vm.index + 1, n: vm.total }))} · ${esc(q.level)}</span>
+      </div>`;
+    const prompt = `
+      <p class="pl-prompt">${esc(q.promptDe)}</p>
+      ${q.questionEs ? `<p class="pl-prompt-es" lang="es">„${esc(q.questionEs)}“</p>` : ""}`;
+    const body = q.type === "free"
+      ? `<input id="placement-free" class="task-input pl-free" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t("placement.freePh"))}" lang="es">
+         <div class="teacher-actions">
+           <button class="teacher-btn teacher-btn--main" data-action="placement-free-submit">${esc(t("placement.answer"))}</button>
+         </div>`
+      : `<div class="pl-options">
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
+         </div>`;
+    const unknown = `<button class="pl-unknown" data-action="placement-unknown">🤷 ${esc(t("placement.unknown"))}</button>`;
+    const hint = vm.showHint ? `<p class="pl-hint">${esc(t("placement.unknownHint"))}</p>` : "";
+    return `
+      <section class="screen">
+        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        ${head}
+        ${prompt}
+        ${body}
+        ${unknown}
+        ${hint}
+      </section>`;
+  }
+
+  function renderPlacementDone(vm) {
+    const noteText = vm.note === "commStrong" ? t("placement.noteComm")
+      : vm.note === "grammarStrong" ? t("placement.noteGrammar") : "";
+    const skillRow = (s) => `
+      <li class="pl-skill">
+        <span class="pl-skill__name">${esc(t("placement.skill_" + s.skill))}</span>
+        <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
+        <span class="pl-skill__val">${s.accuracy}%</span>
+      </li>`;
+    return `
+      <section class="screen">
+        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        <div class="pl-result">
+          <p class="pl-result__cap">${esc(t("placement.yourLevel"))}</p>
+          <p class="pl-result__level">${esc(vm.level)}</p>
+          <p class="pl-result__score">${esc(t("placement.resultLine", { correct: vm.correct, total: vm.total, score: vm.scorePct }))}</p>
+        </div>
+        <ul class="pl-stats">
+          <li><b>${vm.accuracyPct}%</b> ${esc(t("placement.statAccuracy"))}</li>
+          <li><b>${vm.unknownPct}%</b> ${esc(t("placement.statUnknown"))}</li>
+          <li>${esc(t("placement.statTempo"))}: <b>${esc(t("placement.tempo_" + vm.tempo))}</b></li>
+        </ul>
+        <p class="sectioncap">${esc(t("placement.skillsCap"))}</p>
+        <ul class="pl-skills">${vm.skills.map(skillRow).join("")}</ul>
+        ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
+        <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="home">${esc(t("common.overview"))}</button>
+          <button class="teacher-btn" data-action="placement-retake">🔁 ${esc(t("placement.retake"))}</button>
+        </div>
+      </section>`;
   }
 
   // Battle: Szene wählen.
@@ -3589,7 +3682,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

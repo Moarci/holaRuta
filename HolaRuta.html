@@ -1805,6 +1805,46 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .task-codefor { flex: 1 0 100%; margin: 0 0 2px; font-weight: 800; color: var(--brand-ink); }
 /* Kurzes Erfolgs-Feedback auf Kopieren/Einfügen-Knöpfen. */
 .btn-flash { background: var(--ok, #3F7355) !important; border-color: var(--ok, #3F7355) !important; color: #fff !important; }
+
+/* ---------- Ruta-Check (Einstufungstest) ---------- */
+.pl-introlist { margin: 12px 0 18px; padding-left: 20px; line-height: 1.7; color: var(--ink-soft); }
+.pl-progress { display: flex; align-items: center; gap: 10px; margin: 6px 0 14px; }
+.pl-progress__bar { flex: 1; height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.pl-progress__fill { height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-ink)); transition: width 0.25s ease; }
+.pl-progress__label { font-size: 0.78rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.pl-prompt { font-size: 1.08rem; font-weight: 700; margin: 4px 0 4px; line-height: 1.4; }
+.pl-prompt-es { font-size: 1.18rem; font-weight: 800; color: var(--brand-ink); margin: 0 0 14px; }
+.pl-options { display: flex; flex-direction: column; gap: 10px; }
+.pl-option {
+  text-align: left; padding: 14px 16px; border-radius: var(--r-md, 12px);
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+  font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; min-height: 52px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.pl-option:hover { border-color: var(--brand); }
+.pl-option:active { transform: translateY(1px); }
+.pl-free { width: 100%; margin: 2px 0 12px; font-size: 1.05rem; }
+.pl-unknown {
+  display: block; margin: 16px 0 0; padding: 11px 14px; width: 100%;
+  border: 1px dashed var(--line); border-radius: var(--r-md, 12px);
+  background: transparent; color: var(--muted); font-family: inherit;
+  font-size: 0.92rem; font-weight: 700; cursor: pointer;
+}
+.pl-unknown:hover { color: var(--ink); border-color: var(--muted); }
+.pl-hint { margin: 8px 2px 0; font-size: 0.82rem; color: var(--muted); }
+.pl-result { text-align: center; margin: 10px 0 18px; }
+.pl-result__cap { margin: 0; font-size: 0.85rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.pl-result__level { margin: 4px 0; font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; color: var(--brand-ink); }
+.pl-result__score { margin: 0; font-weight: 700; color: var(--ink-soft); }
+.pl-stats { list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; font-size: 0.92rem; }
+.pl-stats b { color: var(--brand-ink); }
+.pl-skills { list-style: none; padding: 0; margin: 6px 0 14px; }
+.pl-skill { display: grid; grid-template-columns: 6.5em 1fr 3em; align-items: center; gap: 8px; margin: 7px 0; font-size: 0.9rem; }
+.pl-skill__name { font-weight: 700; }
+.pl-skill__bar { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.pl-skill__fill { display: block; height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-ink)); }
+.pl-skill__val { text-align: right; font-weight: 700; color: var(--muted); }
+.pl-disclaimer { font-size: 0.8rem; color: var(--muted); margin: 6px 0 14px; }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);
@@ -3204,6 +3244,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subTask: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben",
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
+    subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
@@ -3506,6 +3547,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subTask: "Open a task: enter the code from your teacher/tour leader",
     subLogistica: "SIM, money & luggage – arrive smart and safe",
     subSalud: "Stay healthy & fit: food, drink, movement",
+    subPlacement: "Short placement test: find your starting level",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
     szAreas: "Sections",
@@ -3789,6 +3831,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     colStreak: "Serie",
     colChallenges: "Challenges",
     colPretrip: "Pre-Trip",
+    colLevel: "Ruta-Check",
     colPacks: "Gemeisterte Pakete (≥80 %)",
     reviewed: (p) => `${p.n} gelernt`,
     remove: "Entfernen",
@@ -3822,6 +3865,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     colStreak: "Streak",
     colChallenges: "Challenges",
     colPretrip: "Pre-trip",
+    colLevel: "Ruta-Check",
     colPacks: "Mastered packs (≥80%)",
     reviewed: (p) => `${p.n} reviewed`,
     remove: "Remove",
@@ -3879,6 +3923,73 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dueLabel: (p) => `Due: ${p.date}`,
     start: "Start task",
     other: "Another task",
+  });
+
+  // ---------- placement: Ruta-Check (Einstufungstest) ----------
+  i18n.register("placement", {
+    title: "Ruta-Check",
+    introLead: (p) => `Dieser kurze Test (${p.n} Fragen) hilft dir, dein Startlevel zu finden – mit echten Reisesätzen, nicht mit trockener Grammatik.`,
+    introHonest: "Bitte rate nicht wild. Wenn du etwas nicht weißt, wähle „Ich weiß es nicht“. So bekommst du eine ehrlichere Empfehlung und landest nicht in einer zu schweren Gruppe.",
+    introB1: "Verstehen & Reagieren in echten Reisesituationen",
+    introB2: "Ein bisschen Konjugation & Zeiten – reisepraktisch",
+    introB3: "Misst auch, wie sicher du antwortest (Tempo zählt leicht mit)",
+    start: "Test starten",
+    qOf: (p) => `Frage ${p.i} von ${p.n}`,
+    answer: "Antwort prüfen",
+    freePh: "Auf Spanisch schreiben …",
+    unknown: "Ich weiß es nicht",
+    unknownHint: "Nicht sicher? Wähle lieber „Ich weiß es nicht“ statt zu raten.",
+    yourLevel: "Dein Startlevel",
+    resultLine: (p) => `${p.correct} von ${p.total} richtig · Score ${p.score} %`,
+    statAccuracy: "Trefferquote",
+    statUnknown: "„weiß ich nicht“",
+    statTempo: "Tempo",
+    tempo_fast: "zügig",
+    tempo_medium: "ruhig",
+    tempo_slow: "bedächtig",
+    skillsCap: "Nach Bereich",
+    skill_understanding: "Verstehen",
+    skill_reaction: "Reagieren",
+    skill_vocab: "Wortschatz",
+    skill_conjugation: "Konjugation",
+    skill_tenses: "Zeiten",
+    skill_free: "Freie Antwort",
+    noteComm: "Kommunikativ stärker als grammatikalisch – du kommst durch, Formen dürfen noch wachsen.",
+    noteGrammar: "Grammatik sitzt, aber Reise-Reaktionen sind noch zögerlich – übe echte Situationen.",
+    schoolNote: "Die Einstufung ist eine Orientierung. In einer Schule kann die Lehrkraft die Gruppe anpassen.",
+    retake: "Nochmal",
+  }, {
+    title: "Ruta-Check",
+    introLead: (p) => `This short test (${p.n} questions) helps you find your starting level – with real travel phrases, not dry grammar.`,
+    introHonest: "Please don't guess wildly. If you don't know an answer, choose “I don't know”. That gives you a fairer recommendation and keeps you out of a group that's too hard.",
+    introB1: "Understand & react in real travel situations",
+    introB2: "A little conjugation & tenses – travel-practical",
+    introB3: "Also measures how confidently you answer (speed counts a little)",
+    start: "Start test",
+    qOf: (p) => `Question ${p.i} of ${p.n}`,
+    answer: "Check answer",
+    freePh: "Write in Spanish …",
+    unknown: "I don't know",
+    unknownHint: "Not sure? Better choose “I don't know” than guess.",
+    yourLevel: "Your starting level",
+    resultLine: (p) => `${p.correct} of ${p.total} correct · score ${p.score}%`,
+    statAccuracy: "Accuracy",
+    statUnknown: "“I don't know”",
+    statTempo: "Pace",
+    tempo_fast: "brisk",
+    tempo_medium: "steady",
+    tempo_slow: "deliberate",
+    skillsCap: "By area",
+    skill_understanding: "Understanding",
+    skill_reaction: "Reacting",
+    skill_vocab: "Vocabulary",
+    skill_conjugation: "Conjugation",
+    skill_tenses: "Tenses",
+    skill_free: "Free answer",
+    noteComm: "Stronger at communicating than at grammar – you get by; forms can still grow.",
+    noteGrammar: "Grammar is solid, but real-situation reactions are still hesitant – practise real situations.",
+    schoolNote: "This placement is a guide. At a school, the teacher can adjust your group.",
+    retake: "Retake",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------
@@ -16313,6 +16424,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       // ----- Einkaufszettel (interaktive Einkaufsliste) -----
       shoppingSeen: {},     // Map shoppingItemId -> true (distinkt abgehakte Einkaufs-Items)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
+      placement: null,      // letztes Ruta-Check-Ergebnis { level, finalScore, accuracy, unknownRate, tempo, at } | null
     };
   }
   // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
@@ -16391,6 +16503,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
+      placement: isPlainObject(v.placement) ? v.placement : null,
     };
   }
 
@@ -16851,6 +16964,307 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   window.SC = window.SC || {};
   window.SC.matcher = { normalize, acceptedAnswers, candidates, check };
+})();
+
+</script>
+<script>
+/*
+ * placement.js  (SC.placement) – „Ruta-Check“: kurzer, reisepraktischer
+ * Einstufungstest (Placement). REINE DATEN + REINE FUNKTIONEN (kein DOM).
+ *
+ * Leitlinie (siehe School-Edition-Konzept):
+ *  - Kommunikation zuerst (~70 %), Grammatik als Diagnose (~30 %).
+ *  - Jede Frage hat „Ich weiß es nicht“ – ehrliches Nichtwissen statt Raten.
+ *  - Antwortzeit wird je Frage erfasst, fließt aber nur LEICHT in den Score (10 %).
+ *  - Ergebnis ist ein Profil (Trefferquote, Sicherheit, Unknown-Rate, Tempo,
+ *    Skill-Aufschlüsselung) + ein Startlevel – nützlicher als eine harte Note.
+ *
+ * Blöcke/Skills: understanding · reaction · vocab (= Kommunikation),
+ *                conjugation · tenses (= Grammatik), free (= Kommunikation).
+ *
+ * Die Fragen sind LatAm-tauglich (ustedes statt vosotros) und an echten
+ * Reisesituationen orientiert, nicht an abstrakter Schulgrammatik.
+ */
+(function () {
+  "use strict";
+  var SC = window.SC || (window.SC = {});
+
+  // ---------- Fragenkatalog (V1: 24 Fragen) ----------
+  // type "mc": options + correctIndex.  type "free": accept[] (akzeptierte Antworten).
+  // skill steuert die Skill-Aufschlüsselung; block die Anzeige-Gruppierung.
+  var QUESTIONS = [
+    // --- Block 1: Verstehen (Spanisch lesen → Bedeutung wählen) ---
+    { id: "pt_un_001", block: "understanding", skill: "understanding", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "¿Cuánto cuesta?",
+      options: ["Wo ist es?", "Wie viel kostet es?", "Ich brauche Hilfe.", "Ich habe eine Reservierung."],
+      correctIndex: 1, expectedTimeSec: 8,
+      explanationDe: "„¿Cuánto cuesta?“ = Wie viel kostet es? Einer der wichtigsten Reisesätze." },
+    { id: "pt_un_002", block: "understanding", skill: "understanding", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "La cuenta, por favor.",
+      options: ["Die Rechnung, bitte.", "Einen Tisch, bitte.", "Das Zimmer, bitte.", "Die Speisekarte, bitte."],
+      correctIndex: 0, expectedTimeSec: 8,
+      explanationDe: "„La cuenta, por favor“ = Die Rechnung, bitte." },
+    { id: "pt_un_003", block: "understanding", skill: "understanding", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "¿Dónde está el baño?",
+      options: ["Wo ist der Bus?", "Wo ist die Toilette?", "Wo ist das Hostel?", "Wo ist der Markt?"],
+      correctIndex: 1, expectedTimeSec: 8,
+      explanationDe: "„el baño“ ist in LatAm die Toilette." },
+    { id: "pt_un_004", block: "understanding", skill: "understanding", level: "A2", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Estoy en el hostel.",
+      options: ["Ich war im Hostel.", "Ich bin im Hostel.", "Ich werde im Hostel sein.", "Ich gehe zum Hostel."],
+      correctIndex: 1, expectedTimeSec: 9,
+      explanationDe: "„estoy“ = ich bin (gerade). Präsens von estar." },
+    { id: "pt_un_005", block: "understanding", skill: "understanding", level: "A2", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "No había agua caliente.",
+      options: ["Es gibt kein warmes Wasser.", "Es gab kein warmes Wasser.", "Es wird kein warmes Wasser geben.", "Ich brauche warmes Wasser."],
+      correctIndex: 1, expectedTimeSec: 11,
+      explanationDe: "„había“ = es gab. Nützlich, um ein Problem zu erklären." },
+    { id: "pt_un_006", block: "understanding", skill: "understanding", level: "B1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Estaba esperando el bus cuando empezó a llover.",
+      options: ["Ich werde auf den Bus warten, wenn es regnet.", "Ich wartete gerade auf den Bus, als es zu regnen begann.", "Ich habe den Bus genommen, weil es regnete.", "Ich warte auf den Bus, sobald es regnet."],
+      correctIndex: 1, expectedTimeSec: 15,
+      explanationDe: "„estaba esperando“ (Verlauf in der Vergangenheit) + „empezó“ (Indefinido) = lief gerade, als etwas passierte." },
+
+    // --- Block 2: Reagieren (Situation → passende spanische Äußerung) ---
+    { id: "pt_re_001", block: "reaction", skill: "reaction", level: "A1", type: "mc",
+      promptDe: "Du willst im Restaurant bezahlen. Was sagst du?",
+      options: ["La cuenta, por favor.", "Tengo una reserva.", "¿Dónde está el bus?", "No entiendo."],
+      correctIndex: 0, expectedTimeSec: 9,
+      explanationDe: "Kurz, höflich und im Restaurant sehr realistisch." },
+    { id: "pt_re_002", block: "reaction", skill: "reaction", level: "A1", type: "mc",
+      promptDe: "Du verstehst etwas nicht. Was sagst du?",
+      options: ["Estoy bien.", "No entiendo.", "Mucho gusto.", "Hasta luego."],
+      correctIndex: 1, expectedTimeSec: 9,
+      explanationDe: "„No entiendo“ = Ich verstehe nicht." },
+    { id: "pt_re_003", block: "reaction", skill: "reaction", level: "A1", type: "mc",
+      promptDe: "Du begrüßt jemanden am Nachmittag. Was passt?",
+      options: ["Buenos días.", "Buenas tardes.", "Buenas noches.", "Hasta mañana."],
+      correctIndex: 1, expectedTimeSec: 9,
+      explanationDe: "„Buenas tardes“ = Guten Tag/Nachmittag (ab Mittag)." },
+    { id: "pt_re_004", block: "reaction", skill: "reaction", level: "A2", type: "mc",
+      promptDe: "An der Rezeption willst du höflich fragen, ob man dir helfen kann. Was passt?",
+      options: ["¿Puedes ayudarme?", "¿Puedo ayudarme?", "¿Puede ayudarme?", "¿Pueden ayudarme?"],
+      correctIndex: 2, expectedTimeSec: 12,
+      explanationDe: "„¿Puede…?“ ist die höfliche usted-Form – für Rezeption, Polizei, Buspersonal." },
+    { id: "pt_re_005", block: "reaction", skill: "reaction", level: "A2", type: "mc",
+      promptDe: "Du suchst den Weg zum Busbahnhof. Was fragst du?",
+      options: ["¿Cuánto cuesta el bus?", "¿Cómo llego a la terminal de buses?", "¿A qué hora sale el bus?", "¿Dónde compro el boleto?"],
+      correctIndex: 1, expectedTimeSec: 12,
+      explanationDe: "„¿Cómo llego a…?“ = Wie komme ich nach/zu…? – fragt nach dem Weg." },
+
+    // --- Block 3: Wortschatz / Kontext ---
+    { id: "pt_vo_001", block: "vocab", skill: "vocab", level: "A1", type: "mc",
+      promptDe: "Was bedeutet „el boleto“ (LatAm)?",
+      options: ["das Gepäck", "die Fahrkarte / das Ticket", "der Schlüssel", "die Rechnung"],
+      correctIndex: 1, expectedTimeSec: 8,
+      explanationDe: "In LatAm ist „el boleto“ das Ticket/die Fahrkarte (in Spanien eher „el billete“)." },
+    { id: "pt_vo_002", block: "vocab", skill: "vocab", level: "A1", type: "mc",
+      promptDe: "Was bedeutet „la llave“?",
+      options: ["der Schlüssel", "das Zimmer", "die Tür", "das Bett"],
+      correctIndex: 0, expectedTimeSec: 8,
+      explanationDe: "„la llave“ = der Schlüssel." },
+    { id: "pt_vo_003", block: "vocab", skill: "vocab", level: "A2", type: "mc",
+      promptDe: "Du hast Kopfschmerzen und gehst in die Apotheke. Was brauchst du?",
+      options: ["una almohada", "una pastilla", "una toalla", "una manta"],
+      correctIndex: 1, expectedTimeSec: 10,
+      explanationDe: "„una pastilla“ = eine Tablette. (almohada = Kissen, toalla = Handtuch, manta = Decke)" },
+    { id: "pt_vo_004", block: "vocab", skill: "vocab", level: "A2", type: "mc",
+      promptDe: "Was bedeutet „¿Tiene una habitación libre?“",
+      options: ["Haben Sie ein freies Zimmer?", "Haben Sie einen freien Tisch?", "Ist das Zimmer sauber?", "Wie viel kostet das Zimmer?"],
+      correctIndex: 0, expectedTimeSec: 11,
+      explanationDe: "„habitación libre“ = freies/verfügbares Zimmer." },
+
+    // --- Block 4: Konjugation (reisepraktisch, nicht abstrakt) ---
+    { id: "pt_cj_001", block: "conjugation", skill: "conjugation", level: "A1", type: "mc",
+      promptDe: "Du willst sagen: Ich brauche Hilfe. Welche Form passt?",
+      options: ["Necesitas ayuda.", "Necesito ayuda.", "Necesitamos ayuda.", "Necesitan ayuda."],
+      correctIndex: 1, expectedTimeSec: 10,
+      explanationDe: "„necesito“ = ich brauche (yo-Form)." },
+    { id: "pt_cj_002", block: "conjugation", skill: "conjugation", level: "A1", type: "mc",
+      promptDe: "Du fragst einen anderen Reisenden: Reist du allein? Was passt?",
+      options: ["¿Viajo solo?", "¿Viajas solo?", "¿Viajan solo?", "¿Viajamos solos?"],
+      correctIndex: 1, expectedTimeSec: 11,
+      explanationDe: "„viajas“ = du reist (tú-Form). Bei Frauen: ¿Viajas sola?" },
+    { id: "pt_cj_003", block: "conjugation", skill: "conjugation", level: "A1", type: "mc",
+      promptDe: "Du und ein anderer Reisender wollt zusammen gehen. Was passt?",
+      options: ["Vamos juntos.", "Van juntos.", "Voy juntos.", "Vas juntos."],
+      correctIndex: 0, expectedTimeSec: 11,
+      explanationDe: "„vamos“ = wir gehen / lass uns gehen (nosotros). Sehr nützlich in der Gruppe." },
+    { id: "pt_cj_004", block: "conjugation", skill: "conjugation", level: "A2", type: "mc",
+      promptDe: "Die Rezeption sagt zu mehreren Gästen: Ihr könnt hier warten. Was passt in Lateinamerika?",
+      options: ["Podéis esperar aquí.", "Pueden esperar aquí.", "Puedes esperar aquí.", "Podemos esperar aquí."],
+      correctIndex: 1, expectedTimeSec: 13,
+      explanationDe: "In LatAm ist „ihr“ = ustedes + 3. Person Plural: „pueden“ (nicht „podéis“)." },
+
+    // --- Block 5: Zeiten (Gegenwart / Verlauf / Zukunft / Vergangenheit) ---
+    { id: "pt_ti_001", block: "tenses", skill: "tenses", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Voy a tomar el bus mañana.",
+      options: ["Ich nehme morgen den Bus.", "Ich habe gestern den Bus genommen.", "Ich nehme gerade den Bus.", "Ich habe keinen Bus."],
+      correctIndex: 0, expectedTimeSec: 11,
+      explanationDe: "„ir a + Infinitiv“ ist die einfache Zukunft: voy a tomar = ich werde nehmen." },
+    { id: "pt_ti_002", block: "tenses", skill: "tenses", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Estoy esperando un taxi.",
+      options: ["Ich habe ein Taxi genommen.", "Ich warte gerade auf ein Taxi.", "Ich werde ein Taxi bestellen.", "Ich brauche kein Taxi."],
+      correctIndex: 1, expectedTimeSec: 11,
+      explanationDe: "„estoy + -ando/-iendo“ beschreibt, was gerade passiert (Verlaufsform)." },
+    { id: "pt_ti_003", block: "tenses", skill: "tenses", level: "A2", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Llegué ayer.",
+      options: ["Ich komme morgen an.", "Ich komme gerade an.", "Ich bin gestern angekommen.", "Ich möchte ankommen."],
+      correctIndex: 2, expectedTimeSec: 11,
+      explanationDe: "„ayer“ (gestern) signalisiert abgeschlossene Vergangenheit (Indefinido): llegué = ich kam an." },
+
+    // --- Block 6: Freie Antwort (kurz schreiben; akzent-/satzzeichentolerant) ---
+    { id: "pt_fr_001", block: "free", skill: "free", level: "A1", type: "free",
+      promptDe: "Schreib auf Spanisch: Danke.",
+      accept: ["gracias", "muchas gracias", "mil gracias"], expectedTimeSec: 12,
+      explanationDe: "„gracias“ = danke." },
+    { id: "pt_fr_002", block: "free", skill: "free", level: "A2", type: "free",
+      promptDe: "Schreib auf Spanisch die Frage: Wie viel kostet das?",
+      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto vale", "cuanto cuesta eso"], expectedTimeSec: 16,
+      explanationDe: "„¿Cuánto cuesta?“ ist die Standardfrage nach dem Preis (Akzente/Satzzeichen egal)." },
+  ];
+
+  // Kommunikation vs. Grammatik (für das Profil + die Empfehlung).
+  var COMM_SKILLS = { understanding: 1, reaction: 1, vocab: 1, free: 1 };
+  var GRAMMAR_SKILLS = { conjugation: 1, tenses: 1 };
+
+  // ---------- reine Hilfsfunktionen ----------
+  function normalizeFree(s) {
+    // Bevorzugt den App-Matcher (akzent-/satzzeichentolerant), mit lokalem Fallback
+    // (damit Tests ohne matcher.js laufen).
+    if (SC.matcher && typeof SC.matcher.normalize === "function") return SC.matcher.normalize(s);
+    return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[¿?¡!.,;:()]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function median(nums) {
+    var a = nums.filter(function (n) { return typeof n === "number" && isFinite(n); }).slice().sort(function (x, y) { return x - y; });
+    if (!a.length) return 0;
+    var m = Math.floor(a.length / 2);
+    return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+  }
+
+  // Sicherheits-Faktor aus der Antwortzeit (nur für RICHTIGE Antworten relevant).
+  function timeConfidence(responseTimeMs, expectedTimeSec) {
+    var sec = (Number(responseTimeMs) || 0) / 1000;
+    var exp = Number(expectedTimeSec) || 10;
+    if (sec <= exp * 0.75) return 1.0;   // sicher
+    if (sec <= exp * 1.5) return 0.7;    // normal
+    if (sec <= exp * 2.5) return 0.4;    // langsam
+    return 0.2;                          // sehr langsam / unsicher
+  }
+
+  function questionById(id) {
+    for (var i = 0; i < QUESTIONS.length; i++) if (QUESTIONS[i].id === id) return QUESTIONS[i];
+    return null;
+  }
+
+  // Eine einzelne Antwort bewerten. answer: { isUnknown, selectedIndex, text, responseTimeMs }
+  function scoreAnswer(q, answer) {
+    answer = answer || {};
+    if (answer.isUnknown) return { result: "unknown", isCorrect: false, timeConfidence: 0 };
+    var isCorrect;
+    if (q.type === "free") {
+      var got = normalizeFree(answer.text || "");
+      isCorrect = !!got && (q.accept || []).some(function (a) { return normalizeFree(a) === got; });
+    } else {
+      isCorrect = answer.selectedIndex === q.correctIndex;
+    }
+    return {
+      result: isCorrect ? "correct" : "wrong",
+      isCorrect: isCorrect,
+      timeConfidence: isCorrect ? timeConfidence(answer.responseTimeMs, q.expectedTimeSec) : 0,
+    };
+  }
+
+  // Startlevel aus Gesamtscore + Unknown-Rate (bewusst einfache V1-Formel).
+  function levelFor(finalScore, unknownRate) {
+    if (finalScore < 0.30 || unknownRate > 0.55) return "A0";
+    if (finalScore < 0.55) return "A1";
+    if (finalScore < 0.78) return "A2";
+    return "B1-";
+  }
+
+  function tempoFor(medianMs) {
+    if (!medianMs) return "medium";
+    if (medianMs < 6000) return "fast";
+    if (medianMs < 12000) return "medium";
+    return "slow";
+  }
+
+  // Gesamtauswertung. answers: Array gleicher Länge/Reihenfolge wie questions,
+  // jedes { isUnknown, selectedIndex, text, responseTimeMs }.
+  function summarize(questions, answers) {
+    questions = Array.isArray(questions) ? questions : [];
+    answers = Array.isArray(answers) ? answers : [];
+    var total = questions.length || 1;
+    var correct = 0, wrong = 0, unknown = 0;
+    var confSum = 0, confCount = 0;
+    var times = [];
+    var skill = {}; // skill -> { correct, total, unknown, timeSum, timeCount }
+    var commCorrect = 0, commTotal = 0, gramCorrect = 0, gramTotal = 0;
+
+    for (var i = 0; i < questions.length; i++) {
+      var q = questions[i];
+      var a = answers[i] || { isUnknown: true };
+      var r = scoreAnswer(q, a);
+      var sk = skill[q.skill] || (skill[q.skill] = { correct: 0, total: 0, unknown: 0, timeSum: 0, timeCount: 0 });
+      sk.total++;
+      if (typeof a.responseTimeMs === "number" && isFinite(a.responseTimeMs)) { times.push(a.responseTimeMs); sk.timeSum += a.responseTimeMs; sk.timeCount++; }
+      if (r.result === "correct") { correct++; sk.correct++; confSum += r.timeConfidence; confCount++; }
+      else if (r.result === "unknown") { unknown++; sk.unknown++; }
+      else { wrong++; }
+
+      if (COMM_SKILLS[q.skill]) { commTotal++; if (r.isCorrect) commCorrect++; }
+      if (GRAMMAR_SKILLS[q.skill]) { gramTotal++; if (r.isCorrect) gramCorrect++; }
+    }
+
+    var accuracy = correct / total;
+    var confidence = confCount ? confSum / confCount : 0;
+    var finalScore = accuracy * 0.9 + confidence * 0.1;
+    var unknownRate = unknown / total;
+    var wrongRate = wrong / total;
+    var medianMs = median(times);
+
+    var skillBreakdown = {};
+    Object.keys(skill).forEach(function (k) {
+      var s = skill[k];
+      skillBreakdown[k] = {
+        accuracy: s.total ? s.correct / s.total : 0,
+        unknownRate: s.total ? s.unknown / s.total : 0,
+        avgTimeMs: s.timeCount ? Math.round(s.timeSum / s.timeCount) : 0,
+        total: s.total,
+      };
+    });
+
+    var communicationAccuracy = commTotal ? commCorrect / commTotal : 0;
+    var grammarAccuracy = gramTotal ? gramCorrect / gramTotal : 0;
+    var note = "";
+    if (communicationAccuracy >= 0.70 && grammarAccuracy < 0.45) note = "commStrong";
+    else if (grammarAccuracy >= 0.70 && communicationAccuracy < 0.50) note = "grammarStrong";
+
+    return {
+      total: total, correct: correct, wrong: wrong, unknown: unknown,
+      accuracy: accuracy, confidence: confidence, finalScore: finalScore,
+      unknownRate: unknownRate, wrongRate: wrongRate,
+      medianMs: medianMs, tempo: tempoFor(medianMs),
+      communicationAccuracy: communicationAccuracy, grammarAccuracy: grammarAccuracy,
+      skillBreakdown: skillBreakdown, note: note,
+      level: levelFor(finalScore, unknownRate),
+    };
+  }
+
+  SC.placement = {
+    QUESTIONS: QUESTIONS,
+    COMM_SKILLS: COMM_SKILLS,
+    GRAMMAR_SKILLS: GRAMMAR_SKILLS,
+    // reine Funktionen (getestet)
+    timeConfidence: timeConfidence,
+    scoreAnswer: scoreAnswer,
+    levelFor: levelFor,
+    summarize: summarize,
+    questionById: questionById,
+    normalizeFree: normalizeFree,
+  };
 })();
 
 </script>
@@ -18527,6 +18941,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.50.0",
+      date: "2026-06-15",
+      title: "Ruta-Check: kurzer, reisepraktischer Einstufungstest",
+      items: [
+        "🎯 Neuer „Ruta-Check“ unter Entdecken: 24 Fragen in echten Reisesituationen (Verstehen, Reagieren, Wortschatz) plus dosiert Konjugation & Zeiten (~30 %) – Kommunikation steht im Vordergrund, nicht trockene Grammatik.",
+        "🤷 Jede Frage hat „Ich weiß es nicht“ – ehrliches Nichtwissen statt Raten. Das macht die Einstufung fairer und genauer.",
+        "📊 Am Ende ein Profil statt nur einer Note: Startlevel (A0–B1−), Trefferquote, „weiß-nicht“-Anteil, Tempo und eine Aufschlüsselung nach Bereichen – plus ein Hinweis, ob jemand kommunikativ oder grammatikalisch stärker ist.",
+        "🧑‍🏫 Das Ergebnis erscheint im „Modo profe“ als eigene Spalte (Level · Score), sobald ein Schüler sein Backup teilt – hilfreich für die Gruppenzuteilung.",
+      ],
+    },
+    {
       version: "1.49.0",
       date: "2026-06-15",
       title: "Zugewiesenes Reiseziel ist fix + Kopieren/Einfügen funktioniert mobil",
@@ -19144,6 +19569,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud" },
+    { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement" },
     { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben", grad: ["#3F7355", "#2E6E86"] },
     { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
   ];
@@ -19475,7 +19901,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
     // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
     const cfg = window.SC.config || {};
     const feats = FEATURES.filter((x) => {
@@ -21404,6 +21830,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             <th>${esc(t("teacher.colStreak"))}</th>
             <th>${esc(t("teacher.colChallenges"))}</th>
             <th>${esc(t("teacher.colPretrip"))}</th>
+            <th>${esc(t("teacher.colLevel"))}</th>
             <th>${esc(t("teacher.colPacks"))}</th>
             <th aria-label="${esc(t("teacher.remove"))}"></th>
           </tr></thead>
@@ -21415,6 +21842,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
               <td>${s.streak}${s.longestStreak > s.streak ? `<span class="teacher-sub"> (max ${s.longestStreak})</span>` : ""}</td>
               <td>${s.challenges}</td>
               <td>${s.pretripDays} / ${s.pretripMax}</td>
+              <td>${s.placement ? `${esc(s.placement.level)}<span class="teacher-sub"> · ${Math.round((s.placement.finalScore || 0) * 100)}%</span>` : "—"}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
               <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
@@ -21489,6 +21917,96 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${body}
       </section>
       ${withTab ? tabbar("tarea") : ""}`;
+  }
+
+  // ---------- Ruta-Check (Einstufungstest) ----------
+  function renderPlacement(vm) {
+    if (vm.phase === "running") return renderPlacementQuestion(vm);
+    if (vm.phase === "done") return renderPlacementDone(vm);
+    return renderPlacementIntro(vm);
+  }
+
+  function renderPlacementIntro(vm) {
+    return `
+      <section class="screen">
+        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        <p class="hm-intro">${esc(t("placement.introLead", { n: vm.total }))}</p>
+        <div class="tip">${esc(t("placement.introHonest"))}</div>
+        <ul class="pl-introlist">
+          <li>${esc(t("placement.introB1"))}</li>
+          <li>${esc(t("placement.introB2"))}</li>
+          <li>${esc(t("placement.introB3"))}</li>
+        </ul>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="placement-start">▶️ ${esc(t("placement.start"))}</button>
+        </div>
+      </section>`;
+  }
+
+  function renderPlacementQuestion(vm) {
+    const q = vm.q;
+    if (!q) return renderPlacementIntro(vm);
+    const pct = Math.round(((vm.index) / (vm.total || 1)) * 100);
+    const head = `
+      <div class="pl-progress">
+        <div class="pl-progress__bar"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
+        <span class="pl-progress__label">${esc(t("placement.qOf", { i: vm.index + 1, n: vm.total }))} · ${esc(q.level)}</span>
+      </div>`;
+    const prompt = `
+      <p class="pl-prompt">${esc(q.promptDe)}</p>
+      ${q.questionEs ? `<p class="pl-prompt-es" lang="es">„${esc(q.questionEs)}“</p>` : ""}`;
+    const body = q.type === "free"
+      ? `<input id="placement-free" class="task-input pl-free" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t("placement.freePh"))}" lang="es">
+         <div class="teacher-actions">
+           <button class="teacher-btn teacher-btn--main" data-action="placement-free-submit">${esc(t("placement.answer"))}</button>
+         </div>`
+      : `<div class="pl-options">
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
+         </div>`;
+    const unknown = `<button class="pl-unknown" data-action="placement-unknown">🤷 ${esc(t("placement.unknown"))}</button>`;
+    const hint = vm.showHint ? `<p class="pl-hint">${esc(t("placement.unknownHint"))}</p>` : "";
+    return `
+      <section class="screen">
+        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        ${head}
+        ${prompt}
+        ${body}
+        ${unknown}
+        ${hint}
+      </section>`;
+  }
+
+  function renderPlacementDone(vm) {
+    const noteText = vm.note === "commStrong" ? t("placement.noteComm")
+      : vm.note === "grammarStrong" ? t("placement.noteGrammar") : "";
+    const skillRow = (s) => `
+      <li class="pl-skill">
+        <span class="pl-skill__name">${esc(t("placement.skill_" + s.skill))}</span>
+        <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
+        <span class="pl-skill__val">${s.accuracy}%</span>
+      </li>`;
+    return `
+      <section class="screen">
+        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        <div class="pl-result">
+          <p class="pl-result__cap">${esc(t("placement.yourLevel"))}</p>
+          <p class="pl-result__level">${esc(vm.level)}</p>
+          <p class="pl-result__score">${esc(t("placement.resultLine", { correct: vm.correct, total: vm.total, score: vm.scorePct }))}</p>
+        </div>
+        <ul class="pl-stats">
+          <li><b>${vm.accuracyPct}%</b> ${esc(t("placement.statAccuracy"))}</li>
+          <li><b>${vm.unknownPct}%</b> ${esc(t("placement.statUnknown"))}</li>
+          <li>${esc(t("placement.statTempo"))}: <b>${esc(t("placement.tempo_" + vm.tempo))}</b></li>
+        </ul>
+        <p class="sectioncap">${esc(t("placement.skillsCap"))}</p>
+        <ul class="pl-skills">${vm.skills.map(skillRow).join("")}</ul>
+        ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
+        <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="home">${esc(t("common.overview"))}</button>
+          <button class="teacher-btn" data-action="placement-retake">🔁 ${esc(t("placement.retake"))}</button>
+        </div>
+      </section>`;
   }
 
   // Battle: Szene wählen.
@@ -22650,7 +23168,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
@@ -22686,6 +23204,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
+  const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -22734,6 +23253,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
     openedTask: null,        // vom Lernenden geöffnete Aufgabe { kind, scope, title, due } | null
+    placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -22912,6 +23432,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
+      hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -24751,6 +25272,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
     else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
     else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
+    else if (state.screen === "placement") root.innerHTML = ui.renderPlacement(placementVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -25171,6 +25693,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       pretripDays: Math.min(m.pretripDaysDone, planMax),
       pretripMax: planMax,
       masteredCats,
+      // Ruta-Check: letztes Einstufungsergebnis (falls der Schüler den Test gemacht hat).
+      placement: (b.gamestats && typeof b.gamestats.placement === "object" && b.gamestats.placement) || null,
     };
   }
 
@@ -25384,6 +25908,133 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function taskVM() {
     const t0 = state.openedTask;
     return { opened: t0 ? { title: t0.title, due: t0.due, targetLabel: taskTargetLabel(t0) } : null };
+  }
+
+  // ----- Ruta-Check (Einstufungstest, reisepraktisch + ehrlich) -----
+  // Logik/Bewertung leben rein in placement.js; hier nur der Ablauf + Persistenz.
+  // „Ich weiß es nicht“ ist eine echte Option (ehrliches Nichtwissen statt Raten),
+  // die Antwortzeit je Frage wird erfasst und fließt LEICHT in die Sicherheit ein.
+  function placementQuestions() { return (placement && placement.QUESTIONS) || []; }
+
+  function openPlacement() {
+    dismissBadgeToast();
+    state.placement = { phase: "intro", idx: 0, answers: [], startedAt: 0, qStartedAt: 0, result: null };
+    state.screen = "placement";
+    render();
+  }
+
+  function startPlacementTest() {
+    if (!state.placement) return;
+    const now = Date.now();
+    state.placement.phase = "running";
+    state.placement.idx = 0;
+    state.placement.answers = [];
+    state.placement.startedAt = now;
+    state.placement.qStartedAt = now;
+    render();
+  }
+
+  // Eine Antwort verbuchen und zur nächsten Frage (oder zum Ergebnis) gehen.
+  function recordPlacementAnswer(ans) {
+    const p = state.placement;
+    if (!p || p.phase !== "running") return;
+    const now = Date.now();
+    ans.responseTimeMs = Math.max(0, now - (p.qStartedAt || now));
+    p.answers[p.idx] = ans;
+    const total = placementQuestions().length;
+    if (p.idx + 1 < total) {
+      p.idx += 1;
+      p.qStartedAt = Date.now();
+      render();
+    } else {
+      finishPlacement();
+    }
+  }
+
+  function placementChoose(index) {
+    const q = placementQuestions()[state.placement ? state.placement.idx : -1];
+    if (!q || q.type === "free") return;
+    recordPlacementAnswer({ isUnknown: false, selectedIndex: index });
+  }
+  function placementUnknown() {
+    if (!state.placement || state.placement.phase !== "running") return;
+    recordPlacementAnswer({ isUnknown: true, selectedIndex: null });
+  }
+  function placementSubmitFree() {
+    const p = state.placement;
+    if (!p || p.phase !== "running") return;
+    const q = placementQuestions()[p.idx];
+    if (!q || q.type !== "free") return;
+    const el = document.getElementById("placement-free");
+    const text = el ? String(el.value || "").trim() : "";
+    if (!text) { placementUnknown(); return; } // leeres Feld zählt als „weiß nicht“
+    recordPlacementAnswer({ isUnknown: false, text: text });
+  }
+
+  function finishPlacement() {
+    const p = state.placement;
+    if (!p) return;
+    const result = placement.summarize(placementQuestions(), p.answers);
+    p.result = result;
+    p.phase = "done";
+    // Letztes Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
+    try {
+      gamestats = Object.assign({}, gamestats, {
+        placement: {
+          level: result.level,
+          finalScore: Math.round(result.finalScore * 100) / 100,
+          accuracy: Math.round(result.accuracy * 100) / 100,
+          unknownRate: Math.round(result.unknownRate * 100) / 100,
+          tempo: result.tempo,
+          at: new Date().toISOString().slice(0, 10),
+        },
+      });
+      store.saveGameStats(gamestats);
+    } catch (e) { /* Persistenz optional – nie crashen */ }
+    render();
+  }
+
+  // VM für die drei Phasen (intro/running/done) – eine Render-Route „placement“.
+  function placementVM() {
+    const p = state.placement;
+    if (!p) return { phase: "intro", total: placementQuestions().length };
+    if (p.phase === "running") {
+      const qs = placementQuestions();
+      const q = qs[p.idx];
+      return {
+        phase: "running",
+        index: p.idx, total: qs.length,
+        // erste 3 Fragen: sanften „lieber weiß-nicht als raten“-Hinweis zeigen.
+        showHint: p.idx < 3,
+        q: q ? {
+          id: q.id, type: q.type, level: q.level,
+          promptDe: q.promptDe, questionEs: q.questionEs || null,
+          options: q.type === "mc" ? q.options.slice() : null,
+        } : null,
+      };
+    }
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done" }, placementResultView(p.result));
+    return { phase: "intro", total: placementQuestions().length };
+  }
+
+  // Ergebnis in eine anzeigefertige Form bringen (Prozente, Skill-Zeilen, Notiz).
+  function placementResultView(r) {
+    const pct = (x) => Math.round((x || 0) * 100);
+    const skillOrder = ["understanding", "reaction", "vocab", "conjugation", "tenses", "free"];
+    const skills = skillOrder
+      .filter((k) => r.skillBreakdown[k])
+      .map((k) => ({ skill: k, accuracy: pct(r.skillBreakdown[k].accuracy), unknownRate: pct(r.skillBreakdown[k].unknownRate) }));
+    return {
+      level: r.level,
+      scorePct: pct(r.finalScore),
+      accuracyPct: pct(r.accuracy),
+      unknownPct: pct(r.unknownRate),
+      wrongPct: pct(r.wrongRate),
+      correct: r.correct, total: r.total,
+      tempo: r.tempo,
+      note: r.note, // "" | "commStrong" | "grammarStrong"
+      skills,
+    };
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -26855,6 +27506,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "task-open") openTaskFromInput();
     else if (action === "task-start") startOpenedTask();
     else if (action === "task-clear") clearOpenedTask();
+    else if (action === "open-placement") openPlacement();
+    else if (action === "placement-start") startPlacementTest();
+    else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
+    else if (action === "placement-unknown") placementUnknown();
+    else if (action === "placement-free-submit") placementSubmitFree();
+    else if (action === "placement-retake") openPlacement();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
