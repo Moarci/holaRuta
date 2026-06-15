@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.64.0",
+      date: "2026-06-15",
+      title: "Aufgaben-Code einfügen funktioniert jetzt überall",
+      items: [
+        "📥 Einen Aufgaben-Code ins Feld einfügen abonniert die Aufgabe jetzt SOFORT – auch in der heruntergeladenen Einzeldatei/WebView, wo das Lesen der Zwischenablage gesperrt ist. Kein extra „Hinzufügen“-Tipp nötig (der mit offener Tastatur oft nur die Tastatur schloss).",
+        "🔢 Mehrere verschiedene Kurse landen damit zuverlässig in der Liste; ein identischer Code wird (wie gehabt) nicht doppelt aufgenommen.",
+      ],
+    },
+    {
       version: "1.63.0",
       date: "2026-06-15",
       title: "Editions-Credit aufgeräumt (Logo + „mit HolaRuta“)",

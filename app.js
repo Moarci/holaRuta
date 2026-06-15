@@ -4769,6 +4769,20 @@
     updateSearchResults();
   }
 
+  // Aufgaben-Code direkt beim Einfügen abonnieren. Das paste-Event feuert auch dort,
+  // wo das Lesen der Zwischenablage per API gesperrt ist (file://, content://, WebView)
+  // – so muss niemand extra „Hinzufügen" tippen (das schließt mit offener Tastatur oft
+  // nur die Tastatur). Nach dem Einfügen den Feldinhalt prüfen; gültigen Code sofort
+  // hinzufügen, sonst stehen lassen (zum Korrigieren).
+  function onPaste(e) {
+    const el = e.target;
+    if (!el || el.id !== "task-code-input") return;
+    setTimeout(function () {
+      const v = String(el.value || "").trim();
+      if (v && store.decodeTask(v) && addSubscribedTask(v)) { el.value = ""; render(); }
+    }, 0);
+  }
+
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
   function onChange(e) {
     // Backup-Import: verstecktes file-input im Profil-Reiter.
@@ -5032,6 +5046,7 @@
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
   root.addEventListener("input", onInput);
+  root.addEventListener("paste", onPaste);
   root.addEventListener("submit", onSubmit);
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });

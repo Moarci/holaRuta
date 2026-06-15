@@ -4048,7 +4048,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     intro: "Hast du einen Aufgaben-Code oder -Link von deiner Lehrkraft oder Reiseleitung bekommen? Tippe den Link an oder füge unten den Code ein – deine Aufgaben bleiben gespeichert, auch nach dem Schließen.",
     pasteLabel: "Aufgaben-Code einfügen",
     paste: "Einfügen",
-    pasteHint: "Lange ins Feld tippen und „Einfügen“ wählen.",
+    pasteHint: "Lange ins Feld tippen und „Einfügen“ wählen – die Aufgabe wird dann automatisch hinzugefügt.",
     invalid: "Das ist kein gültiger Aufgaben-Code.",
     unknownTarget: "Die Aufgabe verweist auf einen unbekannten Inhalt.",
     copyManual: "Markiert – jetzt mit Strg+C kopieren.",
@@ -4070,7 +4070,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     intro: "Got a task code or link from your teacher or tour leader? Tap the link or paste the code below – your tasks stay saved, even after you close the app.",
     pasteLabel: "Paste task code",
     paste: "Paste",
-    pasteHint: "Long-press the field and choose “Paste”.",
+    pasteHint: "Long-press the field and choose “Paste” – the task is then added automatically.",
     invalid: "That's not a valid task code.",
     unknownTarget: "The task points to unknown content.",
     copyManual: "Selected – now copy with Ctrl+C.",
@@ -20255,6 +20255,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.64.0",
+      date: "2026-06-15",
+      title: "Aufgaben-Code einfügen funktioniert jetzt überall",
+      items: [
+        "📥 Einen Aufgaben-Code ins Feld einfügen abonniert die Aufgabe jetzt SOFORT – auch in der heruntergeladenen Einzeldatei/WebView, wo das Lesen der Zwischenablage gesperrt ist. Kein extra „Hinzufügen“-Tipp nötig (der mit offener Tastatur oft nur die Tastatur schloss).",
+        "🔢 Mehrere verschiedene Kurse landen damit zuverlässig in der Liste; ein identischer Code wird (wie gehabt) nicht doppelt aufgenommen.",
+      ],
+    },
+    {
       version: "1.63.0",
       date: "2026-06-15",
       title: "Editions-Credit aufgeräumt (Logo + „mit HolaRuta“)",
@@ -29525,6 +29534,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     updateSearchResults();
   }
 
+  // Aufgaben-Code direkt beim Einfügen abonnieren. Das paste-Event feuert auch dort,
+  // wo das Lesen der Zwischenablage per API gesperrt ist (file://, content://, WebView)
+  // – so muss niemand extra „Hinzufügen" tippen (das schließt mit offener Tastatur oft
+  // nur die Tastatur). Nach dem Einfügen den Feldinhalt prüfen; gültigen Code sofort
+  // hinzufügen, sonst stehen lassen (zum Korrigieren).
+  function onPaste(e) {
+    const el = e.target;
+    if (!el || el.id !== "task-code-input") return;
+    setTimeout(function () {
+      const v = String(el.value || "").trim();
+      if (v && store.decodeTask(v) && addSubscribedTask(v)) { el.value = ""; render(); }
+    }, 0);
+  }
+
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
   function onChange(e) {
     // Backup-Import: verstecktes file-input im Profil-Reiter.
@@ -29788,6 +29811,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
   root.addEventListener("input", onInput);
+  root.addEventListener("paste", onPaste);
   root.addEventListener("submit", onSubmit);
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });
