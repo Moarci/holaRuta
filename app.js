@@ -1238,9 +1238,13 @@
   // Reise-Name aus dem Profil: erscheint in Diálogos überall dort, wo der Nutzer
   // sich vorstellt (Hotel, Busticket, Notfall …). Ohne Eintrag bleibt der
   // Beispielname „Marco", damit die Dialoge auch ungenutzt stimmig sind.
+  // profileName() liefert den rohen (ggf. leeren) Profil-Namen – für Stellen, die
+  // OHNE Eintrag lieber nichts vorbelegen sollen (z. B. Battle-Spielername).
+  function profileName() {
+    return (settings.userName || "").trim().replace(/\s+/g, " ").slice(0, 40);
+  }
   function travelerName() {
-    const raw = (settings.userName || "").trim().replace(/\s+/g, " ");
-    return raw || "Marco";
+    return profileName() || "Marco";
   }
   // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
   // durch den Reise-Namen ersetzen.
@@ -2408,6 +2412,13 @@
 
   function openBattleSetup() {
     dismissBadgeToast();
+    // Spieler A mit dem Profil-Namen vorbelegen (Gerätebesitzer spielt meist A),
+    // solange noch kein Name eingetippt wurde. Das Feld bleibt frei editier- und
+    // leerbar; auf 14 Zeichen gekürzt wie das Eingabefeld selbst.
+    if (!state.battleNames.A) {
+      const n = profileName().slice(0, 14);
+      if (n) state.battleNames = Object.assign({}, state.battleNames, { A: n });
+    }
     state.screen = "battleSetup";
     render();
   }
