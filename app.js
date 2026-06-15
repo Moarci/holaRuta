@@ -3424,6 +3424,7 @@
       intro: nat(mod.INTRO),
       timelineLabel: t("discover.histNavTimeline"),
       eras,
+      moduleSlug: state.histRegion === "centro" ? "historia-centro" : "historia",
     }, shareFormat());
   }
 
@@ -3575,6 +3576,7 @@
       intro: t(meta.sub),
       lines: moduleShareLines(id),
       accent: meta.accent,
+      moduleSlug: id, // Begleittext-Link zeigt per ?m=<id> direkt in dieses Modul
     }, shareFormat());
   }
 
@@ -3992,6 +3994,54 @@
     if (el) el.remove();
   }
 
+  // Deep-Link aus einem „Modul teilen"-Link: ?m=<modul> öffnet beim Start direkt
+  // das empfohlene Modul (statt der Startseite). Hat Vorrang vor dem Onboarding –
+  // wer eingeladen wird, soll sofort sehen, worum es geht. Danach wird der
+  // Parameter aus der Adresse geputzt, damit Reload/Zurück-Geste normal laufen.
+  // Liefert true, wenn ein gültiges Modul geöffnet wurde.
+  function applyModuleDeepLink() {
+    let slug = "";
+    try {
+      slug = (new URLSearchParams(location.search).get("m") || "").trim().toLowerCase();
+      if (!slug && location.hash) {
+        const m = location.hash.match(/[#&]m=([^&]+)/);
+        if (m) slug = decodeURIComponent(m[1]).trim().toLowerCase();
+      }
+    } catch (e) { return false; }
+    if (!slug) return false;
+    const openers = {
+      supervivencia: openSpickzettel,
+      hostel: openHostel,
+      definiciones: openQuizSetup,
+      frases: openFrasesSetup,
+      dialogos: openDialogosSetup,
+      regatear: openRegatear,
+      precios: openPrecios,
+      cuerpo: openCuerpo,
+      compras: openCompras,
+      conjugacion: openConjugacion,
+      tiempos: openTiempos,
+      paises: openInfo,
+      knigge: openKnigge,
+      logistica: openLogistica,
+      salud: openSalud,
+      historia: () => openHistoria("sur"),
+      "historia-centro": () => openHistoria("centro"),
+    };
+    const open = openers[slug];
+    if (!open) return false;
+    // Eingeladene gelten als „gesehen": kein Onboarding-Zwang vor dem Modul.
+    if (settings.onboarded !== true) {
+      settings = Object.assign({}, settings, { onboarded: true });
+      store.saveSettings(settings);
+    }
+    open(); // setzt state.screen + rendert
+    // Parameter aus der Adresse entfernen (ohne Reload), damit ein späterer
+    // Reload nicht erneut deep-linkt und die Adresse sauber bleibt.
+    try { history.replaceState(history.state, "", location.pathname); } catch (e) { /* file:// o.ä. – egal */ }
+    return true;
+  }
+
   // ----- Start -----
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
@@ -4036,6 +4086,11 @@
       state.screen = "onboarding";
     }
   }
+  // Deep-Link aus einem geteilten „Modul teilen"-Link hat Vorrang vor Startseite/
+  // Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das abschließende
+  // render() deckt zusätzlich die Fälle ab, in denen ein Opener vorab abbricht
+  // (z.B. Precios ohne Sprachausgabe) – so bleibt der Bildschirm nie leer.
+  applyModuleDeepLink();
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass
