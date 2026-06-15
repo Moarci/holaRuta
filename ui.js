@@ -80,6 +80,7 @@
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
+    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -1826,6 +1827,58 @@
         <div class="sl-chips" role="group" aria-label="${esc(t("discover.pretripDestLabel"))}">${chips}</div>
         ${banner}
         <ol class="pretrip">${rows}</ol>
+      </section>`;
+  }
+
+  // Lehrer-/Coordinator-Modus: Klassenübersicht aus importierten Schüler-Backups.
+  // Backend-frei und offline – die Daten leben nur in dieser Sitzung. Reuse der
+  // Screen-/Topbar-Struktur; Tabelle bewusst schlicht und druckbar (window.print).
+  function renderTeacher(vm) {
+    const actions = `
+      <div class="teacher-actions">
+        <button class="teacher-btn teacher-btn--main" data-action="teacher-import">📥 ${esc(t("teacher.importBtn"))}</button>
+        ${vm.count ? `<button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-clear">🗑️ ${esc(t("teacher.clearBtn"))}</button>` : ""}
+      </div>
+      <input type="file" id="teacher-file" accept="application/json,.json" multiple hidden>`;
+
+    const body = vm.count
+      ? `
+      <p class="teacher-summary">${esc(t("teacher.classSummary", { n: vm.count, avg: vm.avgMastered, total: vm.totalCards }))}</p>
+      <div class="teacher-tablewrap">
+        <table class="teacher-table">
+          <thead><tr>
+            <th>${esc(t("teacher.colName"))}</th>
+            <th>${esc(t("teacher.colMastered"))}</th>
+            <th>${esc(t("teacher.colStreak"))}</th>
+            <th>${esc(t("teacher.colChallenges"))}</th>
+            <th>${esc(t("teacher.colPretrip"))}</th>
+            <th>${esc(t("teacher.colPacks"))}</th>
+            <th aria-label="${esc(t("teacher.remove"))}"></th>
+          </tr></thead>
+          <tbody>
+            ${vm.students.map((s, i) => `
+            <tr>
+              <td class="teacher-name">${esc(s.name)}</td>
+              <td>${s.cardsMastered} / ${s.totalCards}<span class="teacher-sub"> · ${esc(t("teacher.reviewed", { n: s.cardsReviewed }))}</span></td>
+              <td>${s.streak}${s.longestStreak > s.streak ? `<span class="teacher-sub"> (max ${s.longestStreak})</span>` : ""}</td>
+              <td>${s.challenges}</td>
+              <td>${s.pretripDays} / 7</td>
+              <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
+              <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>`
+      : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
+
+    return `
+      <section class="screen">
+        ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), "home")}
+        <p class="hm-intro">${esc(t("teacher.intro"))}</p>
+        <div class="tip">${esc(t("teacher.privacy"))}</div>
+        ${actions}
+        ${body}
       </section>`;
   }
 

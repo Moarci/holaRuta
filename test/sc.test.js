@@ -348,6 +348,26 @@ test("store.loadGameStats: pretripDays – altes flaches Format wird nach { colo
   assert.deepEqual(store.loadGameStats().pretripDays, {});
 });
 
+test("store.readBackup: liest Backup ohne Schreiben, tolerant gegen Müll (Lehrer-Modus)", () => {
+  const payload = { app: "holaruta", format: 1, data: {
+    "spanischcard.progress.v2": { co01: { seen: 3, box: 5 } },
+    "spanischcard.gamestats.v1": { reviews: 5, challengesDone: { challenge01: true } },
+  } };
+  const b = store.readBackup(payload);
+  assert.deepEqual(b.progress, { co01: { seen: 3, box: 5 } });
+  assert.deepEqual(b.gamestats, { reviews: 5, challengesDone: { challenge01: true } });
+  // Fremde App / fehlendes data / null -> null (kein Crash).
+  assert.equal(store.readBackup({ app: "other", data: {} }), null);
+  assert.equal(store.readBackup({ app: "holaruta" }), null);
+  assert.equal(store.readBackup(null), null);
+  // Fehlende Keys -> leere Objekte statt Absturz.
+  assert.deepEqual(store.readBackup({ data: {} }), { progress: {}, gamestats: {} });
+  // Reiner Lesevorgang: schreibt NICHTS in den Speicher (eigener Fortschritt bleibt unangetastet).
+  const before = JSON.stringify(storeMem);
+  store.readBackup(payload);
+  assert.equal(JSON.stringify(storeMem), before, "readBackup darf nicht in localStorage schreiben");
+});
+
 test("store.loadGameStats: Trip-Ziel wird gesäubert (kaputtes Datum/perDay -> null)", () => {
   const base = (trip) => JSON.stringify(Object.assign({ reviews: 1 }, { tripGoal: trip }));
   // Gültig: bleibt erhalten, perDay wird gerundet/gedeckelt.

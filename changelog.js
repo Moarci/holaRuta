@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.38.0",
+      date: "2026-06-15",
+      title: "Modo profe: Klassenübersicht für Lehrkräfte & Reiseleiter",
+      items: [
+        "🧑‍🏫 Neuer „Modo profe“ unter Entdecken: Schüler exportieren ihren Fortschritt im Profil als Backup-Datei, du importierst die Dateien und bekommst eine Klassenübersicht – gemeisterte Karten, Destination-Pakete, Pre-Trip-Etappen, Challenges und Lern-Serie pro Person.",
+        "🔒 Komplett offline und ohne Konto: die Schülerdaten bleiben nur in dieser Sitzung, nichts wird gespeichert oder gesendet, dein eigener Fortschritt bleibt unangetastet. Druckbar für die Unterlagen.",
+      ],
+    },
+    {
       version: "1.37.0",
       date: "2026-06-15",
       title: "Drei neue Reise-Pakete: Argentinien, Chile & Bolivien",

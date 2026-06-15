@@ -364,6 +364,7 @@
     subTiempos: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben",
     subInfo: "Land & Leute – von México bis Chile",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
+    subTeacher: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren",
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
@@ -612,6 +613,7 @@
     subTiempos: "Tenses: yesterday, now, tomorrow – briefly explained, then practise",
     subInfo: "Country & people – from México to Chile",
     subKnigge: "How to behave on the road: hostel, bus, groups",
+    subTeacher: "Teacher/coordinator overview: import student progress",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
     szAreas: "Sections",
@@ -826,6 +828,49 @@
     comprasNeed: "You need …",
     comprasSolution: (p) => `Correct: <b lang="es">${p.es}</b>`,
     comprasBackList: "Back to the list",
+  });
+
+  // ---------- teacher: Lehrer-/Coordinator-Modus (backend-frei) ----------
+  i18n.register("teacher", {
+    title: "Modo profe",
+    intro: "Klassenübersicht für Lehrkräfte und Reiseleiter: Lass deine Schüler ihren Fortschritt im Profil als Backup-Datei exportieren und importiere die Dateien hier. Tipp: vorher die Datei auf den Schülernamen umbenennen.",
+    privacy: "🔒 Alles bleibt offline und nur in dieser Sitzung – nichts wird gespeichert, nichts gesendet. Beim Neuladen ist die Übersicht wieder leer. Kein Konto, keine Cloud.",
+    importBtn: "Schüler-Backup(s) importieren",
+    printBtn: "Drucken",
+    clearBtn: "Liste leeren",
+    confirmClear: "Die gesamte Klassenübersicht leeren?",
+    empty: "Noch keine Schüler importiert. Tippe oben auf „Schüler-Backup(s) importieren“ und wähle eine oder mehrere holaruta-backup-*.json-Dateien.",
+    noneAdded: "Keine gültige HolaRuta-Backup-Datei gefunden.",
+    someSkipped: (p) => `${p.n} Datei(en) übersprungen (kein gültiges Backup).`,
+    classSummary: (p) => `Klasse: ${p.n} Schüler · Ø ${p.avg} von ${p.total} Karten gemeistert`,
+    colName: "Schüler",
+    colMastered: "Gemeistert",
+    colStreak: "Serie",
+    colChallenges: "Challenges",
+    colPretrip: "Pre-Trip",
+    colPacks: "Gemeisterte Pakete (≥80 %)",
+    reviewed: (p) => `${p.n} gelernt`,
+    remove: "Entfernen",
+  }, {
+    title: "Teacher mode",
+    intro: "Class overview for teachers and tour leaders: have your students export their progress as a backup file in their profile, then import the files here. Tip: rename each file to the student's name first.",
+    privacy: "🔒 Everything stays offline and only in this session – nothing is stored, nothing is sent. Reloading clears the overview. No account, no cloud.",
+    importBtn: "Import student backup(s)",
+    printBtn: "Print",
+    clearBtn: "Clear list",
+    confirmClear: "Clear the whole class overview?",
+    empty: "No students imported yet. Tap „Import student backup(s)“ above and pick one or more holaruta-backup-*.json files.",
+    noneAdded: "No valid HolaRuta backup file found.",
+    someSkipped: (p) => `${p.n} file(s) skipped (not a valid backup).`,
+    classSummary: (p) => `Class: ${p.n} students · avg ${p.avg} of ${p.total} cards mastered`,
+    colName: "Student",
+    colMastered: "Mastered",
+    colStreak: "Streak",
+    colChallenges: "Challenges",
+    colPretrip: "Pre-trip",
+    colPacks: "Mastered packs (≥80%)",
+    reviewed: (p) => `${p.n} reviewed`,
+    remove: "Remove",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------

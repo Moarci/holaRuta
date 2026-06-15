@@ -60,6 +60,7 @@
     scopeId: "all",          // 'all' | Kategorie-Id
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
+    teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -1991,6 +1992,7 @@
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
+    else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -2350,6 +2352,90 @@
     gamestats = Object.assign({}, gamestats, { pretripDays: days });
     store.saveGameStats(gamestats);
     syncBadges(Date.now(), true); // „Reisefertig"-Badge freischalten, wenn ein ganzer Plan geschafft
+  }
+
+  // ----- Lehrer-/Coordinator-Modus (backend-frei, offline, ohne Konto) -----
+  // Eine Lehrkraft importiert die Fortschritts-Backups ihrer Schüler (dieselben
+  // holaruta-backup-*.json, die jede:r über „Export" erzeugt) und sieht eine
+  // Klassenübersicht. Alles bleibt NUR im Sitzungsspeicher (state.teacherStudents)
+  // – nichts wird in localStorage geschrieben oder gesendet (DSGVO-freundlich).
+  // store.readBackup liest das Backup OHNE den eigenen Fortschritt zu überschreiben;
+  // badges.buildMetrics berechnet daraus dieselben Kennzahlen wie für den Ruta-Pass.
+  function openTeacher() {
+    dismissBadgeToast();
+    state.screen = "teacher";
+    render();
+  }
+
+  // Aus einem Backup-Payload eine kompakte Schüler-Auswertung bauen (rein).
+  function studentSummaryFromBackup(name, payload) {
+    const b = store.readBackup(payload);
+    if (!b) return null;
+    const m = badges.buildMetrics(allCards(), b.progress, b.gamestats);
+    // Gemeisterte Destination-Pakete: Kategorien mit ≥80 % Mastery (wie cat-Badges).
+    const masteredCats = Object.keys(m.categoryMastery || {})
+      .filter((cat) => (m.categoryMastery[cat] || 0) >= 0.8)
+      .map((cat) => { const c = categoryById(cat); return c ? natk(c, "label") : cat; });
+    return {
+      name: name || "Schüler",
+      cardsReviewed: m.cardsReviewed,
+      cardsMastered: m.cardsMastered,
+      totalCards: m.totalCards,
+      reviews: m.totalReviews,
+      streak: m.dailyStreak,
+      longestStreak: m.longestStreak,
+      challenges: m.challengesCompleted,
+      pretripDays: m.pretripDaysDone,
+      masteredCats,
+    };
+  }
+
+  // Mehrere ausgewählte Backup-Dateien einlesen (Dateiname = Schülername).
+  function handleTeacherFiles(files) {
+    const list = Array.prototype.slice.call(files || []);
+    if (!list.length) return;
+    let added = 0, skipped = 0, pending = list.length;
+    list.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        let payload = null;
+        try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
+        const name = String(file.name || "Schüler").replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || "Schüler";
+        const summary = payload ? studentSummaryFromBackup(name, payload) : null;
+        if (summary) { state.teacherStudents = state.teacherStudents.concat([summary]); added++; }
+        else skipped++;
+        if (--pending === 0) {
+          if (!added) showNotice(t("teacher.noneAdded"));
+          else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
+          render();
+        }
+      };
+      reader.onerror = () => { if (--pending === 0) render(); };
+      reader.readAsText(file);
+    });
+  }
+
+  function removeTeacherStudent(idx) {
+    state.teacherStudents = state.teacherStudents.filter((_, i) => i !== idx);
+    render();
+  }
+  function clearTeacher() {
+    if (state.teacherStudents.length && !confirmAsk(t("teacher.confirmClear"))) return;
+    state.teacherStudents = [];
+    render();
+  }
+  function printTeacher() { try { window.print(); } catch (e) { /* egal */ } }
+
+  function teacherVM() {
+    const students = state.teacherStudents.slice();
+    return {
+      students,
+      count: students.length,
+      // Klassen-Aggregat für die Kopfzeile.
+      avgMastered: students.length
+        ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
+      totalCards: students.length ? students[0].totalCards : 0,
+    };
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -3428,6 +3514,11 @@
     else if (action === "open-pretrip") openPretrip();
     else if (action === "set-pretrip-scope") setPretripScope(el.dataset.scope);
     else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
+    else if (action === "open-teacher") openTeacher();
+    else if (action === "teacher-import") { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); }
+    else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
+    else if (action === "teacher-clear") clearTeacher();
+    else if (action === "teacher-print") printTeacher();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
@@ -3594,6 +3685,13 @@
       const file = (e.target.files && e.target.files[0]) || null;
       e.target.value = ""; // erlaubt erneuten Import derselben Datei
       handleImportFile(file);
+      return;
+    }
+    // Lehrer-Modus: mehrere Schüler-Backups auf einmal.
+    if (e.target && e.target.id === "teacher-file") {
+      const files = e.target.files;
+      handleTeacherFiles(files);
+      e.target.value = "";
       return;
     }
     // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie

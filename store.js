@@ -155,6 +155,22 @@
     return imported;
   }
 
+  // Lehrer-/Coordinator-Modus: ein Backup-Payload (von exportData) NUR LESEN,
+  // ohne irgendetwas in den eigenen localStorage zu schreiben. Liefert die für
+  // eine Fortschritts-Auswertung nötigen Rohdaten (Karten-Fortschritt + Spiel-
+  // Zähler) oder null, wenn es kein gültiges HolaRuta-Backup ist. Rein, ohne
+  // Seiteneffekt – damit eine Lehrkraft Schüler-Stände einsehen kann, ohne den
+  // eigenen Fortschritt zu überschreiben.
+  function readBackup(payload) {
+    if (!isPlainObject(payload) || !isPlainObject(payload.data)) return null;
+    if (payload.app && payload.app !== "holaruta") return null;
+    const d = payload.data;
+    return {
+      progress: isPlainObject(d[PROGRESS_KEY]) ? d[PROGRESS_KEY] : {},
+      gamestats: isPlainObject(d[GAMESTATS_KEY]) ? d[GAMESTATS_KEY] : {},
+    };
+  }
+
   // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
   // Drücke und die Map freigeschalteter Badges. Defaults für alte/leere Stände.
   function freshGameStats() {
@@ -302,6 +318,7 @@
     saveUserCards: (c) => writeJson(USERCARDS_KEY, c),
     exportData,
     importData,
+    readBackup,
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),

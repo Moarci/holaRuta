@@ -1375,6 +1375,33 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .pretrip { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .pretrip-progress, .pretrip-alldone { text-align: center; font-weight: 700; color: var(--brand-ink); margin: 6px 0 0; }
 .pretrip-alldone { color: var(--ok); }
+
+/* Lehrer-/Coordinator-Modus: Klassenübersicht */
+.teacher-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.teacher-btn {
+  font: inherit; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  border-radius: 999px; padding: 8px 16px;
+}
+.teacher-btn--main { background: var(--brand); border-color: var(--brand); color: var(--on-accent); }
+.teacher-btn:active { transform: translateY(1px); }
+.teacher-summary { font-weight: 700; color: var(--brand-ink); margin: 10px 0; }
+.teacher-empty { color: var(--muted); margin: 12px 0; }
+.teacher-tablewrap { overflow-x: auto; }
+.teacher-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.teacher-table th, .teacher-table td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.teacher-table th { color: var(--brand-ink); font-weight: 800; white-space: nowrap; }
+.teacher-name { font-weight: 700; }
+.teacher-sub { color: var(--muted); font-weight: 400; font-size: 0.85em; }
+.teacher-packs { color: var(--muted); max-width: 16em; }
+.teacher-x {
+  font: inherit; cursor: pointer; border: none; background: transparent;
+  color: var(--muted); padding: 2px 6px; border-radius: 6px;
+}
+.teacher-x:hover { color: var(--brand-ink); }
+@media print {
+  .teacher-actions, .teacher-x, .hm-topbar, .tabbar { display: none !important; }
+}
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);
@@ -2711,6 +2738,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subTiempos: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben",
     subInfo: "Land & Leute – von México bis Chile",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
+    subTeacher: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren",
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
@@ -2959,6 +2987,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subTiempos: "Tenses: yesterday, now, tomorrow – briefly explained, then practise",
     subInfo: "Country & people – from México to Chile",
     subKnigge: "How to behave on the road: hostel, bus, groups",
+    subTeacher: "Teacher/coordinator overview: import student progress",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
     szAreas: "Sections",
@@ -3173,6 +3202,49 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     comprasNeed: "You need …",
     comprasSolution: (p) => `Correct: <b lang="es">${p.es}</b>`,
     comprasBackList: "Back to the list",
+  });
+
+  // ---------- teacher: Lehrer-/Coordinator-Modus (backend-frei) ----------
+  i18n.register("teacher", {
+    title: "Modo profe",
+    intro: "Klassenübersicht für Lehrkräfte und Reiseleiter: Lass deine Schüler ihren Fortschritt im Profil als Backup-Datei exportieren und importiere die Dateien hier. Tipp: vorher die Datei auf den Schülernamen umbenennen.",
+    privacy: "🔒 Alles bleibt offline und nur in dieser Sitzung – nichts wird gespeichert, nichts gesendet. Beim Neuladen ist die Übersicht wieder leer. Kein Konto, keine Cloud.",
+    importBtn: "Schüler-Backup(s) importieren",
+    printBtn: "Drucken",
+    clearBtn: "Liste leeren",
+    confirmClear: "Die gesamte Klassenübersicht leeren?",
+    empty: "Noch keine Schüler importiert. Tippe oben auf „Schüler-Backup(s) importieren“ und wähle eine oder mehrere holaruta-backup-*.json-Dateien.",
+    noneAdded: "Keine gültige HolaRuta-Backup-Datei gefunden.",
+    someSkipped: (p) => `${p.n} Datei(en) übersprungen (kein gültiges Backup).`,
+    classSummary: (p) => `Klasse: ${p.n} Schüler · Ø ${p.avg} von ${p.total} Karten gemeistert`,
+    colName: "Schüler",
+    colMastered: "Gemeistert",
+    colStreak: "Serie",
+    colChallenges: "Challenges",
+    colPretrip: "Pre-Trip",
+    colPacks: "Gemeisterte Pakete (≥80 %)",
+    reviewed: (p) => `${p.n} gelernt`,
+    remove: "Entfernen",
+  }, {
+    title: "Teacher mode",
+    intro: "Class overview for teachers and tour leaders: have your students export their progress as a backup file in their profile, then import the files here. Tip: rename each file to the student's name first.",
+    privacy: "🔒 Everything stays offline and only in this session – nothing is stored, nothing is sent. Reloading clears the overview. No account, no cloud.",
+    importBtn: "Import student backup(s)",
+    printBtn: "Print",
+    clearBtn: "Clear list",
+    confirmClear: "Clear the whole class overview?",
+    empty: "No students imported yet. Tap „Import student backup(s)“ above and pick one or more holaruta-backup-*.json files.",
+    noneAdded: "No valid HolaRuta backup file found.",
+    someSkipped: (p) => `${p.n} file(s) skipped (not a valid backup).`,
+    classSummary: (p) => `Class: ${p.n} students · avg ${p.avg} of ${p.total} cards mastered`,
+    colName: "Student",
+    colMastered: "Mastered",
+    colStreak: "Streak",
+    colChallenges: "Challenges",
+    colPretrip: "Pre-trip",
+    colPacks: "Mastered packs (≥80%)",
+    reviewed: (p) => `${p.n} reviewed`,
+    remove: "Remove",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------
@@ -13955,6 +14027,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return imported;
   }
 
+  // Lehrer-/Coordinator-Modus: ein Backup-Payload (von exportData) NUR LESEN,
+  // ohne irgendetwas in den eigenen localStorage zu schreiben. Liefert die für
+  // eine Fortschritts-Auswertung nötigen Rohdaten (Karten-Fortschritt + Spiel-
+  // Zähler) oder null, wenn es kein gültiges HolaRuta-Backup ist. Rein, ohne
+  // Seiteneffekt – damit eine Lehrkraft Schüler-Stände einsehen kann, ohne den
+  // eigenen Fortschritt zu überschreiben.
+  function readBackup(payload) {
+    if (!isPlainObject(payload) || !isPlainObject(payload.data)) return null;
+    if (payload.app && payload.app !== "holaruta") return null;
+    const d = payload.data;
+    return {
+      progress: isPlainObject(d[PROGRESS_KEY]) ? d[PROGRESS_KEY] : {},
+      gamestats: isPlainObject(d[GAMESTATS_KEY]) ? d[GAMESTATS_KEY] : {},
+    };
+  }
+
   // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
   // Drücke und die Map freigeschalteter Badges. Defaults für alte/leere Stände.
   function freshGameStats() {
@@ -14102,6 +14190,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     saveUserCards: (c) => writeJson(USERCARDS_KEY, c),
     exportData,
     importData,
+    readBackup,
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),
@@ -15552,6 +15641,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.38.0",
+      date: "2026-06-15",
+      title: "Modo profe: Klassenübersicht für Lehrkräfte & Reiseleiter",
+      items: [
+        "🧑‍🏫 Neuer „Modo profe“ unter Entdecken: Schüler exportieren ihren Fortschritt im Profil als Backup-Datei, du importierst die Dateien und bekommst eine Klassenübersicht – gemeisterte Karten, Destination-Pakete, Pre-Trip-Etappen, Challenges und Lern-Serie pro Person.",
+        "🔒 Komplett offline und ohne Konto: die Schülerdaten bleiben nur in dieser Sitzung, nichts wird gespeichert oder gesendet, dein eigener Fortschritt bleibt unangetastet. Druckbar für die Unterlagen.",
+      ],
+    },
+    {
       version: "1.37.0",
       date: "2026-06-15",
       title: "Drei neue Reise-Pakete: Argentinien, Chile & Bolivien",
@@ -16044,6 +16142,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
+    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -17793,6 +17892,58 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </section>`;
   }
 
+  // Lehrer-/Coordinator-Modus: Klassenübersicht aus importierten Schüler-Backups.
+  // Backend-frei und offline – die Daten leben nur in dieser Sitzung. Reuse der
+  // Screen-/Topbar-Struktur; Tabelle bewusst schlicht und druckbar (window.print).
+  function renderTeacher(vm) {
+    const actions = `
+      <div class="teacher-actions">
+        <button class="teacher-btn teacher-btn--main" data-action="teacher-import">📥 ${esc(t("teacher.importBtn"))}</button>
+        ${vm.count ? `<button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-clear">🗑️ ${esc(t("teacher.clearBtn"))}</button>` : ""}
+      </div>
+      <input type="file" id="teacher-file" accept="application/json,.json" multiple hidden>`;
+
+    const body = vm.count
+      ? `
+      <p class="teacher-summary">${esc(t("teacher.classSummary", { n: vm.count, avg: vm.avgMastered, total: vm.totalCards }))}</p>
+      <div class="teacher-tablewrap">
+        <table class="teacher-table">
+          <thead><tr>
+            <th>${esc(t("teacher.colName"))}</th>
+            <th>${esc(t("teacher.colMastered"))}</th>
+            <th>${esc(t("teacher.colStreak"))}</th>
+            <th>${esc(t("teacher.colChallenges"))}</th>
+            <th>${esc(t("teacher.colPretrip"))}</th>
+            <th>${esc(t("teacher.colPacks"))}</th>
+            <th aria-label="${esc(t("teacher.remove"))}"></th>
+          </tr></thead>
+          <tbody>
+            ${vm.students.map((s, i) => `
+            <tr>
+              <td class="teacher-name">${esc(s.name)}</td>
+              <td>${s.cardsMastered} / ${s.totalCards}<span class="teacher-sub"> · ${esc(t("teacher.reviewed", { n: s.cardsReviewed }))}</span></td>
+              <td>${s.streak}${s.longestStreak > s.streak ? `<span class="teacher-sub"> (max ${s.longestStreak})</span>` : ""}</td>
+              <td>${s.challenges}</td>
+              <td>${s.pretripDays} / 7</td>
+              <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
+              <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>`
+      : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
+
+    return `
+      <section class="screen">
+        ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), "home")}
+        <p class="hm-intro">${esc(t("teacher.intro"))}</p>
+        <div class="tip">${esc(t("teacher.privacy"))}</div>
+        ${actions}
+        ${body}
+      </section>`;
+  }
+
   // Battle: Szene wählen.
   function renderBattleSetup(vm) {
     // Badge zeigt die tatsächliche Rundenzahl bei der gewählten Länge – ehrlicher
@@ -19026,6 +19177,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     scopeId: "all",          // 'all' | Kategorie-Id
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
+    teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -20957,6 +21109,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
+    else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -21316,6 +21469,90 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     gamestats = Object.assign({}, gamestats, { pretripDays: days });
     store.saveGameStats(gamestats);
     syncBadges(Date.now(), true); // „Reisefertig"-Badge freischalten, wenn ein ganzer Plan geschafft
+  }
+
+  // ----- Lehrer-/Coordinator-Modus (backend-frei, offline, ohne Konto) -----
+  // Eine Lehrkraft importiert die Fortschritts-Backups ihrer Schüler (dieselben
+  // holaruta-backup-*.json, die jede:r über „Export" erzeugt) und sieht eine
+  // Klassenübersicht. Alles bleibt NUR im Sitzungsspeicher (state.teacherStudents)
+  // – nichts wird in localStorage geschrieben oder gesendet (DSGVO-freundlich).
+  // store.readBackup liest das Backup OHNE den eigenen Fortschritt zu überschreiben;
+  // badges.buildMetrics berechnet daraus dieselben Kennzahlen wie für den Ruta-Pass.
+  function openTeacher() {
+    dismissBadgeToast();
+    state.screen = "teacher";
+    render();
+  }
+
+  // Aus einem Backup-Payload eine kompakte Schüler-Auswertung bauen (rein).
+  function studentSummaryFromBackup(name, payload) {
+    const b = store.readBackup(payload);
+    if (!b) return null;
+    const m = badges.buildMetrics(allCards(), b.progress, b.gamestats);
+    // Gemeisterte Destination-Pakete: Kategorien mit ≥80 % Mastery (wie cat-Badges).
+    const masteredCats = Object.keys(m.categoryMastery || {})
+      .filter((cat) => (m.categoryMastery[cat] || 0) >= 0.8)
+      .map((cat) => { const c = categoryById(cat); return c ? natk(c, "label") : cat; });
+    return {
+      name: name || "Schüler",
+      cardsReviewed: m.cardsReviewed,
+      cardsMastered: m.cardsMastered,
+      totalCards: m.totalCards,
+      reviews: m.totalReviews,
+      streak: m.dailyStreak,
+      longestStreak: m.longestStreak,
+      challenges: m.challengesCompleted,
+      pretripDays: m.pretripDaysDone,
+      masteredCats,
+    };
+  }
+
+  // Mehrere ausgewählte Backup-Dateien einlesen (Dateiname = Schülername).
+  function handleTeacherFiles(files) {
+    const list = Array.prototype.slice.call(files || []);
+    if (!list.length) return;
+    let added = 0, skipped = 0, pending = list.length;
+    list.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        let payload = null;
+        try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
+        const name = String(file.name || "Schüler").replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || "Schüler";
+        const summary = payload ? studentSummaryFromBackup(name, payload) : null;
+        if (summary) { state.teacherStudents = state.teacherStudents.concat([summary]); added++; }
+        else skipped++;
+        if (--pending === 0) {
+          if (!added) showNotice(t("teacher.noneAdded"));
+          else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
+          render();
+        }
+      };
+      reader.onerror = () => { if (--pending === 0) render(); };
+      reader.readAsText(file);
+    });
+  }
+
+  function removeTeacherStudent(idx) {
+    state.teacherStudents = state.teacherStudents.filter((_, i) => i !== idx);
+    render();
+  }
+  function clearTeacher() {
+    if (state.teacherStudents.length && !confirmAsk(t("teacher.confirmClear"))) return;
+    state.teacherStudents = [];
+    render();
+  }
+  function printTeacher() { try { window.print(); } catch (e) { /* egal */ } }
+
+  function teacherVM() {
+    const students = state.teacherStudents.slice();
+    return {
+      students,
+      count: students.length,
+      // Klassen-Aggregat für die Kopfzeile.
+      avgMastered: students.length
+        ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
+      totalCards: students.length ? students[0].totalCards : 0,
+    };
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -22394,6 +22631,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "open-pretrip") openPretrip();
     else if (action === "set-pretrip-scope") setPretripScope(el.dataset.scope);
     else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
+    else if (action === "open-teacher") openTeacher();
+    else if (action === "teacher-import") { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); }
+    else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
+    else if (action === "teacher-clear") clearTeacher();
+    else if (action === "teacher-print") printTeacher();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
@@ -22560,6 +22802,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const file = (e.target.files && e.target.files[0]) || null;
       e.target.value = ""; // erlaubt erneuten Import derselben Datei
       handleImportFile(file);
+      return;
+    }
+    // Lehrer-Modus: mehrere Schüler-Backups auf einmal.
+    if (e.target && e.target.id === "teacher-file") {
+      const files = e.target.files;
+      handleTeacherFiles(files);
+      e.target.value = "";
       return;
     }
     // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie
