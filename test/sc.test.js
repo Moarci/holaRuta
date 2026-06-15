@@ -368,6 +368,28 @@ test("store.readBackup: liest Backup ohne Schreiben, tolerant gegen Müll (Lehre
   assert.equal(JSON.stringify(storeMem), before, "readBackup darf nicht in localStorage schreiben");
 });
 
+test("store.encodeTask/decodeTask: Round-Trip + Validierung (Aufgaben-Code)", () => {
+  const task = { kind: "pretrip", scope: "peru", title: "Übung für Cusco", due: "2026-07-01" };
+  const code = store.encodeTask(task);
+  assert.ok(typeof code === "string" && code.indexOf("HRT1.") === 0, "Code hat Tag-Präfix");
+  const back = store.decodeTask(code);
+  assert.deepEqual(back, { kind: "pretrip", scope: "peru", title: "Übung für Cusco", due: "2026-07-01" });
+  // Code ohne Präfix wird auch akzeptiert.
+  assert.deepEqual(store.decodeTask(code.slice(5)).scope, "peru");
+  // Optionale Felder weggelassen.
+  assert.deepEqual(store.decodeTask(store.encodeTask({ kind: "preset", scope: "prearrival-co" })),
+    { kind: "preset", scope: "prearrival-co", title: "", due: "" });
+  // Müll / falsche app / kaputtes Datum.
+  assert.equal(store.decodeTask("nonsense"), null);
+  assert.equal(store.decodeTask(""), null);
+  assert.equal(store.decodeTask(null), null);
+  assert.equal(store.decodeTask(store.encodeTask({ kind: "weird", scope: "x" })), null);
+  assert.equal(store.decodeTask(store.encodeTask({ kind: "category" })), null); // scope fehlt
+  assert.equal(store.decodeTask("HRT1." + Buffer.from('{"app":"other","kind":"preset","scope":"x"}').toString("base64")), null);
+  const badDue = store.decodeTask(store.encodeTask({ kind: "category", scope: "colombia", due: "01.07.2026" }));
+  assert.equal(badDue.due, ""); // ungültiges Datum -> leer
+});
+
 test("store.loadGameStats: Trip-Ziel wird gesäubert (kaputtes Datum/perDay -> null)", () => {
   const base = (trip) => JSON.stringify(Object.assign({ reviews: 1 }, { tripGoal: trip }));
   // Gültig: bleibt erhalten, perDay wird gerundet/gedeckelt.

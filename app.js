@@ -61,6 +61,8 @@
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
+    teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
+    openedTask: null,        // vom Lernenden geöffnete Aufgabe { kind, scope, title, due } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -1993,6 +1995,7 @@
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
     else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
+    else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -2440,7 +2443,89 @@
       avgMastered: students.length
         ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
       totalCards: students.length ? students[0].totalCards : 0,
+      taskTargets: taskTargets(),
+      taskCode: state.teacherTaskCode,
     };
+  }
+
+  // ----- Aufgaben/Zuweisung (backend-frei): teilbarer Aufgaben-Code -----
+  // Verfügbare Aufgaben-Ziele aus den vorhandenen Daten: Pre-Trip-Pläne,
+  // Pre-Arrival-Pakete und ganze Destination-Pakete.
+  function taskTargets() {
+    const labelOf = (sc) => { const c = categoryById(sc); return c ? natk(c, "label") : sc; };
+    const out = [];
+    (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
+    (data.PRESETS || []).forEach((pr) => out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" }));
+    (data.PRETRIP || []).forEach((p) => out.push({ value: "category:" + p.scope, label: labelOf(p.scope), group: "category" }));
+    return out;
+  }
+
+  function taskTargetLabel(task) {
+    if (!task) return "";
+    let sc = task.scope;
+    if (task.kind === "preset") { const pr = (data.PRESETS || []).find((p) => p.id === task.scope); sc = pr ? pr.scope : task.scope; }
+    const c = categoryById(sc);
+    const name = c ? natk(c, "label") : sc;
+    const prefix = task.kind === "pretrip" ? t("task.kindPretrip") : task.kind === "preset" ? t("task.kindPreset") : t("task.kindCategory");
+    return prefix + ": " + name;
+  }
+
+  // Aufgabe erzeugen (Lehrkraft): aus dem Formular einen Code bauen.
+  function generateTask() {
+    const sel = document.getElementById("task-target");
+    if (!sel || !sel.value) return;
+    const titleEl = document.getElementById("task-title");
+    const dueEl = document.getElementById("task-due");
+    const parts = sel.value.split(":");
+    state.teacherTaskCode = store.encodeTask({
+      kind: parts[0],
+      scope: parts.slice(1).join(":"),
+      title: titleEl ? titleEl.value.trim() : "",
+      due: dueEl ? dueEl.value : "",
+    });
+    render();
+  }
+
+  function copyTaskCode() {
+    const code = state.teacherTaskCode;
+    if (!code) return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => showNotice(t("task.copied")), () => {});
+      } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); } }
+    } catch (e) { /* egal */ }
+  }
+
+  // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
+  function openTaskScreen() { dismissBadgeToast(); state.screen = "task"; render(); }
+
+  function openTaskFromInput() {
+    const el = document.getElementById("task-code-input");
+    const task = el ? store.decodeTask(el.value) : null;
+    if (!task) { showNotice(t("task.invalid")); return; }
+    const exists = task.kind === "preset"
+      ? (data.PRESETS || []).some((p) => p.id === task.scope)
+      : task.kind === "pretrip"
+        ? (data.PRETRIP || []).some((p) => p.scope === task.scope)
+        : !!categoryById(task.scope);
+    if (!exists) { showNotice(t("task.unknownTarget")); return; }
+    state.openedTask = task;
+    render();
+  }
+
+  function startOpenedTask() {
+    const task = state.openedTask;
+    if (!task) return;
+    if (task.kind === "preset") startPreset(task.scope);
+    else if (task.kind === "pretrip") { setPretripScope(task.scope); openPretrip(); }
+    else startStudy(task.scope); // ganzes Paket
+  }
+
+  function clearOpenedTask() { state.openedTask = null; render(); }
+
+  function taskVM() {
+    const t0 = state.openedTask;
+    return { opened: t0 ? { title: t0.title, due: t0.due, targetLabel: taskTargetLabel(t0) } : null };
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -3524,6 +3609,12 @@
     else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
     else if (action === "teacher-clear") clearTeacher();
     else if (action === "teacher-print") printTeacher();
+    else if (action === "task-generate") generateTask();
+    else if (action === "task-copy") copyTaskCode();
+    else if (action === "open-task") openTaskScreen();
+    else if (action === "task-open") openTaskFromInput();
+    else if (action === "task-start") startOpenedTask();
+    else if (action === "task-clear") clearOpenedTask();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();

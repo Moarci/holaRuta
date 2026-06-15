@@ -1362,8 +1362,31 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .teacher-x:hover { color: var(--brand-ink); }
 @media print {
-  .teacher-actions, .teacher-x, .hm-topbar, .tabbar { display: none !important; }
+  .teacher-actions, .teacher-x, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result { display: none !important; }
 }
+
+/* Aufgaben/Zuweisung (backend-frei) */
+.teacher-sep { border: none; border-top: 1px solid var(--line); margin: 22px 0 8px; }
+.teacher-h3 { font-size: 1.05rem; margin: 8px 0 2px; }
+.teacher-sub2 { color: var(--muted); margin: 0 0 10px; font-size: 0.92rem; }
+.task-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.task-input {
+  font: inherit; padding: 8px 12px; border: 1px solid var(--line);
+  border-radius: var(--r-md, 10px); background: var(--card); color: var(--ink); min-width: 0;
+}
+.task-input[type="text"] { flex: 1 1 12em; }
+.task-result { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; margin: 12px 0; }
+.task-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem; width: 100%; padding: 10px 12px; resize: vertical;
+  border: 1px solid var(--line); border-radius: var(--r-md, 10px);
+  background: var(--card); color: var(--ink);
+}
+.task-label { display: block; font-weight: 700; margin: 12px 0 6px; }
+.task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }
+.task-target-line { font-weight: 800; color: var(--brand-ink); margin: 0 0 4px; }
+.task-title-line { font-size: 1.1rem; margin: 4px 0; }
+.task-due-line { color: var(--muted); margin: 2px 0 8px; }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);

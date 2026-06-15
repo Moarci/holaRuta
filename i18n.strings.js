@@ -365,6 +365,7 @@
     subInfo: "Land & Leute – von México bis Chile",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
     subTeacher: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren",
+    subTask: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben",
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
@@ -614,6 +615,7 @@
     subInfo: "Country & people – from México to Chile",
     subKnigge: "How to behave on the road: hostel, bus, groups",
     subTeacher: "Teacher/coordinator overview: import student progress",
+    subTask: "Open a task: enter the code from your teacher/tour leader",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
     szAreas: "Sections",
@@ -852,6 +854,16 @@
     reviewed: (p) => `${p.n} gelernt`,
     remove: "Entfernen",
     defaultName: "Schüler",
+    taskHeading: "Aufgabe erstellen & teilen",
+    taskHint: "Wähle ein Ziel, erzeuge einen Code und schick ihn deinen Schülern (z. B. per WhatsApp). Sie öffnen ihn unter „Tarea“ und starten direkt die zugewiesene Übung.",
+    taskTarget: "Aufgaben-Ziel",
+    taskTitlePh: "Titel (optional), z. B. „Hausaufgabe 1“",
+    taskDue: "Frist (optional)",
+    taskGenerate: "Code erzeugen",
+    taskCopy: "Kopieren",
+    grpPretrip: "Pre-Trip-Pläne",
+    grpPreset: "Pre-Arrival-Pakete",
+    grpCategory: "Ganzes Paket (üben)",
   }, {
     title: "Teacher mode",
     intro: "Class overview for teachers and tour leaders: have your students export their progress as a backup file in their profile, then import the files here. Tip: rename each file to the student's name first.",
@@ -873,6 +885,47 @@
     reviewed: (p) => `${p.n} reviewed`,
     remove: "Remove",
     defaultName: "Student",
+    taskHeading: "Create & share a task",
+    taskHint: "Pick a target, generate a code and send it to your students (e.g. via WhatsApp). They open it under „Tarea“ and start the assigned practice right away.",
+    taskTarget: "Task target",
+    taskTitlePh: "Title (optional), e.g. „Homework 1“",
+    taskDue: "Due date (optional)",
+    taskGenerate: "Generate code",
+    taskCopy: "Copy",
+    grpPretrip: "Pre-trip plans",
+    grpPreset: "Pre-arrival packs",
+    grpCategory: "Whole pack (practice)",
+  });
+
+  // ---------- task: Aufgabe öffnen (Lernenden-Seite) ----------
+  i18n.register("task", {
+    title: "Tarea",
+    intro: "Hast du einen Aufgaben-Code von deiner Lehrkraft oder Reiseleitung bekommen? Füg ihn hier ein und leg los.",
+    pasteLabel: "Aufgaben-Code einfügen",
+    open: "Öffnen",
+    invalid: "Das ist kein gültiger Aufgaben-Code.",
+    unknownTarget: "Die Aufgabe verweist auf einen unbekannten Inhalt.",
+    copied: "Code kopiert.",
+    kindPretrip: "Pre-Trip-Plan",
+    kindPreset: "Pre-Arrival",
+    kindCategory: "Paket",
+    dueLabel: (p) => `Frist: ${p.date}`,
+    start: "Aufgabe starten",
+    other: "Andere Aufgabe",
+  }, {
+    title: "Tarea",
+    intro: "Got a task code from your teacher or tour leader? Paste it here and get started.",
+    pasteLabel: "Paste task code",
+    open: "Open",
+    invalid: "That's not a valid task code.",
+    unknownTarget: "The task points to unknown content.",
+    copied: "Code copied.",
+    kindPretrip: "Pre-trip plan",
+    kindPreset: "Pre-arrival",
+    kindCategory: "Pack",
+    dueLabel: (p) => `Due: ${p.date}`,
+    start: "Start task",
+    other: "Another task",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------

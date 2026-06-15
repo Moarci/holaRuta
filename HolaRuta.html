@@ -1400,8 +1400,31 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .teacher-x:hover { color: var(--brand-ink); }
 @media print {
-  .teacher-actions, .teacher-x, .hm-topbar, .tabbar { display: none !important; }
+  .teacher-actions, .teacher-x, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result { display: none !important; }
 }
+
+/* Aufgaben/Zuweisung (backend-frei) */
+.teacher-sep { border: none; border-top: 1px solid var(--line); margin: 22px 0 8px; }
+.teacher-h3 { font-size: 1.05rem; margin: 8px 0 2px; }
+.teacher-sub2 { color: var(--muted); margin: 0 0 10px; font-size: 0.92rem; }
+.task-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.task-input {
+  font: inherit; padding: 8px 12px; border: 1px solid var(--line);
+  border-radius: var(--r-md, 10px); background: var(--card); color: var(--ink); min-width: 0;
+}
+.task-input[type="text"] { flex: 1 1 12em; }
+.task-result { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; margin: 12px 0; }
+.task-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem; width: 100%; padding: 10px 12px; resize: vertical;
+  border: 1px solid var(--line); border-radius: var(--r-md, 10px);
+  background: var(--card); color: var(--ink);
+}
+.task-label { display: block; font-weight: 700; margin: 12px 0 6px; }
+.task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }
+.task-target-line { font-weight: 800; color: var(--brand-ink); margin: 0 0 4px; }
+.task-title-line { font-size: 1.1rem; margin: 4px 0; }
+.task-due-line { color: var(--muted); margin: 2px 0 8px; }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);
@@ -2739,6 +2762,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subInfo: "Land & Leute – von México bis Chile",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
     subTeacher: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren",
+    subTask: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben",
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
@@ -2988,6 +3012,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subInfo: "Country & people – from México to Chile",
     subKnigge: "How to behave on the road: hostel, bus, groups",
     subTeacher: "Teacher/coordinator overview: import student progress",
+    subTask: "Open a task: enter the code from your teacher/tour leader",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
     szAreas: "Sections",
@@ -3226,6 +3251,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     reviewed: (p) => `${p.n} gelernt`,
     remove: "Entfernen",
     defaultName: "Schüler",
+    taskHeading: "Aufgabe erstellen & teilen",
+    taskHint: "Wähle ein Ziel, erzeuge einen Code und schick ihn deinen Schülern (z. B. per WhatsApp). Sie öffnen ihn unter „Tarea“ und starten direkt die zugewiesene Übung.",
+    taskTarget: "Aufgaben-Ziel",
+    taskTitlePh: "Titel (optional), z. B. „Hausaufgabe 1“",
+    taskDue: "Frist (optional)",
+    taskGenerate: "Code erzeugen",
+    taskCopy: "Kopieren",
+    grpPretrip: "Pre-Trip-Pläne",
+    grpPreset: "Pre-Arrival-Pakete",
+    grpCategory: "Ganzes Paket (üben)",
   }, {
     title: "Teacher mode",
     intro: "Class overview for teachers and tour leaders: have your students export their progress as a backup file in their profile, then import the files here. Tip: rename each file to the student's name first.",
@@ -3247,6 +3282,47 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     reviewed: (p) => `${p.n} reviewed`,
     remove: "Remove",
     defaultName: "Student",
+    taskHeading: "Create & share a task",
+    taskHint: "Pick a target, generate a code and send it to your students (e.g. via WhatsApp). They open it under „Tarea“ and start the assigned practice right away.",
+    taskTarget: "Task target",
+    taskTitlePh: "Title (optional), e.g. „Homework 1“",
+    taskDue: "Due date (optional)",
+    taskGenerate: "Generate code",
+    taskCopy: "Copy",
+    grpPretrip: "Pre-trip plans",
+    grpPreset: "Pre-arrival packs",
+    grpCategory: "Whole pack (practice)",
+  });
+
+  // ---------- task: Aufgabe öffnen (Lernenden-Seite) ----------
+  i18n.register("task", {
+    title: "Tarea",
+    intro: "Hast du einen Aufgaben-Code von deiner Lehrkraft oder Reiseleitung bekommen? Füg ihn hier ein und leg los.",
+    pasteLabel: "Aufgaben-Code einfügen",
+    open: "Öffnen",
+    invalid: "Das ist kein gültiger Aufgaben-Code.",
+    unknownTarget: "Die Aufgabe verweist auf einen unbekannten Inhalt.",
+    copied: "Code kopiert.",
+    kindPretrip: "Pre-Trip-Plan",
+    kindPreset: "Pre-Arrival",
+    kindCategory: "Paket",
+    dueLabel: (p) => `Frist: ${p.date}`,
+    start: "Aufgabe starten",
+    other: "Andere Aufgabe",
+  }, {
+    title: "Tarea",
+    intro: "Got a task code from your teacher or tour leader? Paste it here and get started.",
+    pasteLabel: "Paste task code",
+    open: "Open",
+    invalid: "That's not a valid task code.",
+    unknownTarget: "The task points to unknown content.",
+    copied: "Code copied.",
+    kindPretrip: "Pre-trip plan",
+    kindPreset: "Pre-arrival",
+    kindCategory: "Pack",
+    dueLabel: (p) => `Due: ${p.date}`,
+    start: "Start task",
+    other: "Another task",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------
@@ -14045,6 +14121,42 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     };
   }
 
+  // ----- Aufgaben/Zuweisung (backend-frei): teilbarer Aufgaben-Code -----
+  // Eine Lehrkraft/ein Coordinator kodiert eine Aufgabe (kuratierte Runde) als
+  // kurzen, kopierbaren Code; Lernende dekodieren ihn und werden in die Übung
+  // geführt. Kein Server, kein Konto – nur ein String, den man per WhatsApp/Mail
+  // teilt. UTF-8-sicher base64-kodiert mit Tag-Präfix zur Validierung.
+  function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
+  function b64decode(b) { return decodeURIComponent(escape(atob(b))); }
+
+  function encodeTask(task) {
+    if (!isPlainObject(task)) return "";
+    try {
+      const payload = { app: "holaruta-task", v: 1, kind: task.kind, scope: task.scope };
+      if (task.title) payload.title = String(task.title).slice(0, 80);
+      if (task.due) payload.due = String(task.due);
+      return "HRT1." + b64encode(JSON.stringify(payload));
+    } catch (e) { return ""; }
+  }
+
+  function decodeTask(code) {
+    if (typeof code !== "string") return null;
+    let s = code.trim();
+    if (s.indexOf("HRT1.") === 0) s = s.slice(5);
+    if (!s) return null;
+    let obj = null;
+    try { obj = JSON.parse(b64decode(s)); } catch (e) { return null; }
+    if (!isPlainObject(obj) || obj.app !== "holaruta-task") return null;
+    if (["pretrip", "preset", "category"].indexOf(obj.kind) < 0) return null;
+    if (typeof obj.scope !== "string" || !obj.scope) return null;
+    return {
+      kind: obj.kind,
+      scope: obj.scope,
+      title: typeof obj.title === "string" ? obj.title.slice(0, 80) : "",
+      due: /^\d{4}-\d{2}-\d{2}$/.test(obj.due) ? obj.due : "",
+    };
+  }
+
   // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
   // Drücke und die Map freigeschalteter Badges. Defaults für alte/leere Stände.
   function freshGameStats() {
@@ -14193,6 +14305,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     exportData,
     importData,
     readBackup,
+    encodeTask,
+    decodeTask,
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),
@@ -15643,6 +15757,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.39.0",
+      date: "2026-06-15",
+      title: "Aufgaben teilen: Zuweisung per Code – ganz ohne Konto",
+      items: [
+        "📝 Lehrkräfte und Reiseleiter können unter „Modo profe“ eine Aufgabe erstellen – ein Pre-Trip-Plan, ein Pre-Arrival-Paket oder ein ganzes Reise-Paket, optional mit Titel und Frist – und sie als kurzen Code teilen (WhatsApp, Mail, QR).",
+        "🎯 Lernende öffnen unter „Tarea“ den Code und werden direkt in die zugewiesene Übung geführt. Komplett offline, ohne Konto und ohne Server.",
+      ],
+    },
+    {
       version: "1.38.0",
       date: "2026-06-15",
       title: "Modo profe: Klassenübersicht für Lehrkräfte & Reiseleiter",
@@ -16144,6 +16267,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
+    { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben", grad: ["#3F7355", "#2E6E86"] },
     { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
   ];
 
@@ -17936,12 +18060,62 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`
       : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
 
+    const grp = (g) => (vm.taskTargets || []).filter((x) => x.group === g)
+      .map((x) => `<option value="${esc(x.value)}">${esc(x.label)}</option>`).join("");
+    const taskForm = `
+      <h3 class="teacher-h3">${esc(t("teacher.taskHeading"))}</h3>
+      <p class="teacher-sub2">${esc(t("teacher.taskHint"))}</p>
+      <div class="task-form">
+        <select id="task-target" class="task-input" aria-label="${esc(t("teacher.taskTarget"))}">
+          <optgroup label="${esc(t("teacher.grpPretrip"))}">${grp("pretrip")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
+        </select>
+        <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}">
+        <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}">
+        <button class="teacher-btn teacher-btn--main" data-action="task-generate">${esc(t("teacher.taskGenerate"))}</button>
+      </div>
+      ${vm.taskCode ? `
+      <div class="task-result">
+        <textarea id="task-code" class="task-code" readonly rows="2">${esc(vm.taskCode)}</textarea>
+        <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
+      </div>` : ""}`;
+
     return `
       <section class="screen">
         ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), "home")}
         <p class="hm-intro">${esc(t("teacher.intro"))}</p>
         <div class="tip">${esc(t("teacher.privacy"))}</div>
         ${actions}
+        ${body}
+        <hr class="teacher-sep">
+        ${taskForm}
+      </section>`;
+  }
+
+  // Lernenden-Seite: Aufgaben-Code öffnen und in die zugewiesene Übung starten.
+  function renderTask(vm) {
+    const body = vm.opened
+      ? `
+      <div class="task-preview">
+        <p class="task-target-line">🎯 ${esc(vm.opened.targetLabel)}</p>
+        ${vm.opened.title ? `<p class="task-title-line">„${esc(vm.opened.title)}“</p>` : ""}
+        ${vm.opened.due ? `<p class="task-due-line">${esc(t("task.dueLabel", { date: vm.opened.due }))}</p>` : ""}
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="task-start">▶️ ${esc(t("task.start"))}</button>
+          <button class="teacher-btn" data-action="task-clear">${esc(t("task.other"))}</button>
+        </div>
+      </div>`
+      : `
+      <label class="task-label" for="task-code-input">${esc(t("task.pasteLabel"))}</label>
+      <textarea id="task-code-input" class="task-code" rows="3" placeholder="HRT1.…"></textarea>
+      <div class="teacher-actions">
+        <button class="teacher-btn teacher-btn--main" data-action="task-open">${esc(t("task.open"))}</button>
+      </div>`;
+    return `
+      <section class="screen">
+        ${hmTopbar("📝 " + esc(t("task.title")), "home")}
+        <p class="hm-intro">${esc(t("task.intro"))}</p>
         ${body}
       </section>`;
   }
@@ -19180,6 +19354,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
+    teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
+    openedTask: null,        // vom Lernenden geöffnete Aufgabe { kind, scope, title, due } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -21112,6 +21288,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
     else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
+    else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -21559,7 +21736,89 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       avgMastered: students.length
         ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
       totalCards: students.length ? students[0].totalCards : 0,
+      taskTargets: taskTargets(),
+      taskCode: state.teacherTaskCode,
     };
+  }
+
+  // ----- Aufgaben/Zuweisung (backend-frei): teilbarer Aufgaben-Code -----
+  // Verfügbare Aufgaben-Ziele aus den vorhandenen Daten: Pre-Trip-Pläne,
+  // Pre-Arrival-Pakete und ganze Destination-Pakete.
+  function taskTargets() {
+    const labelOf = (sc) => { const c = categoryById(sc); return c ? natk(c, "label") : sc; };
+    const out = [];
+    (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
+    (data.PRESETS || []).forEach((pr) => out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" }));
+    (data.PRETRIP || []).forEach((p) => out.push({ value: "category:" + p.scope, label: labelOf(p.scope), group: "category" }));
+    return out;
+  }
+
+  function taskTargetLabel(task) {
+    if (!task) return "";
+    let sc = task.scope;
+    if (task.kind === "preset") { const pr = (data.PRESETS || []).find((p) => p.id === task.scope); sc = pr ? pr.scope : task.scope; }
+    const c = categoryById(sc);
+    const name = c ? natk(c, "label") : sc;
+    const prefix = task.kind === "pretrip" ? t("task.kindPretrip") : task.kind === "preset" ? t("task.kindPreset") : t("task.kindCategory");
+    return prefix + ": " + name;
+  }
+
+  // Aufgabe erzeugen (Lehrkraft): aus dem Formular einen Code bauen.
+  function generateTask() {
+    const sel = document.getElementById("task-target");
+    if (!sel || !sel.value) return;
+    const titleEl = document.getElementById("task-title");
+    const dueEl = document.getElementById("task-due");
+    const parts = sel.value.split(":");
+    state.teacherTaskCode = store.encodeTask({
+      kind: parts[0],
+      scope: parts.slice(1).join(":"),
+      title: titleEl ? titleEl.value.trim() : "",
+      due: dueEl ? dueEl.value : "",
+    });
+    render();
+  }
+
+  function copyTaskCode() {
+    const code = state.teacherTaskCode;
+    if (!code) return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => showNotice(t("task.copied")), () => {});
+      } else { const el = document.getElementById("task-code"); if (el) { el.focus(); el.select(); } }
+    } catch (e) { /* egal */ }
+  }
+
+  // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
+  function openTaskScreen() { dismissBadgeToast(); state.screen = "task"; render(); }
+
+  function openTaskFromInput() {
+    const el = document.getElementById("task-code-input");
+    const task = el ? store.decodeTask(el.value) : null;
+    if (!task) { showNotice(t("task.invalid")); return; }
+    const exists = task.kind === "preset"
+      ? (data.PRESETS || []).some((p) => p.id === task.scope)
+      : task.kind === "pretrip"
+        ? (data.PRETRIP || []).some((p) => p.scope === task.scope)
+        : !!categoryById(task.scope);
+    if (!exists) { showNotice(t("task.unknownTarget")); return; }
+    state.openedTask = task;
+    render();
+  }
+
+  function startOpenedTask() {
+    const task = state.openedTask;
+    if (!task) return;
+    if (task.kind === "preset") startPreset(task.scope);
+    else if (task.kind === "pretrip") { setPretripScope(task.scope); openPretrip(); }
+    else startStudy(task.scope); // ganzes Paket
+  }
+
+  function clearOpenedTask() { state.openedTask = null; render(); }
+
+  function taskVM() {
+    const t0 = state.openedTask;
+    return { opened: t0 ? { title: t0.title, due: t0.due, targetLabel: taskTargetLabel(t0) } : null };
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -22643,6 +22902,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
     else if (action === "teacher-clear") clearTeacher();
     else if (action === "teacher-print") printTeacher();
+    else if (action === "task-generate") generateTask();
+    else if (action === "task-copy") copyTaskCode();
+    else if (action === "open-task") openTaskScreen();
+    else if (action === "task-open") openTaskFromInput();
+    else if (action === "task-start") startOpenedTask();
+    else if (action === "task-clear") clearOpenedTask();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();

@@ -171,6 +171,42 @@
     };
   }
 
+  // ----- Aufgaben/Zuweisung (backend-frei): teilbarer Aufgaben-Code -----
+  // Eine Lehrkraft/ein Coordinator kodiert eine Aufgabe (kuratierte Runde) als
+  // kurzen, kopierbaren Code; Lernende dekodieren ihn und werden in die Übung
+  // geführt. Kein Server, kein Konto – nur ein String, den man per WhatsApp/Mail
+  // teilt. UTF-8-sicher base64-kodiert mit Tag-Präfix zur Validierung.
+  function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
+  function b64decode(b) { return decodeURIComponent(escape(atob(b))); }
+
+  function encodeTask(task) {
+    if (!isPlainObject(task)) return "";
+    try {
+      const payload = { app: "holaruta-task", v: 1, kind: task.kind, scope: task.scope };
+      if (task.title) payload.title = String(task.title).slice(0, 80);
+      if (task.due) payload.due = String(task.due);
+      return "HRT1." + b64encode(JSON.stringify(payload));
+    } catch (e) { return ""; }
+  }
+
+  function decodeTask(code) {
+    if (typeof code !== "string") return null;
+    let s = code.trim();
+    if (s.indexOf("HRT1.") === 0) s = s.slice(5);
+    if (!s) return null;
+    let obj = null;
+    try { obj = JSON.parse(b64decode(s)); } catch (e) { return null; }
+    if (!isPlainObject(obj) || obj.app !== "holaruta-task") return null;
+    if (["pretrip", "preset", "category"].indexOf(obj.kind) < 0) return null;
+    if (typeof obj.scope !== "string" || !obj.scope) return null;
+    return {
+      kind: obj.kind,
+      scope: obj.scope,
+      title: typeof obj.title === "string" ? obj.title.slice(0, 80) : "",
+      due: /^\d{4}-\d{2}-\d{2}$/.test(obj.due) ? obj.due : "",
+    };
+  }
+
   // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
   // Drücke und die Map freigeschalteter Badges. Defaults für alte/leere Stände.
   function freshGameStats() {
@@ -319,6 +355,8 @@
     exportData,
     importData,
     readBackup,
+    encodeTask,
+    decodeTask,
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),

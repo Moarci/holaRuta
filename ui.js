@@ -80,6 +80,7 @@
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
     { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
+    { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben", grad: ["#3F7355", "#2E6E86"] },
     { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
   ];
 
@@ -1872,12 +1873,62 @@
       </div>`
       : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
 
+    const grp = (g) => (vm.taskTargets || []).filter((x) => x.group === g)
+      .map((x) => `<option value="${esc(x.value)}">${esc(x.label)}</option>`).join("");
+    const taskForm = `
+      <h3 class="teacher-h3">${esc(t("teacher.taskHeading"))}</h3>
+      <p class="teacher-sub2">${esc(t("teacher.taskHint"))}</p>
+      <div class="task-form">
+        <select id="task-target" class="task-input" aria-label="${esc(t("teacher.taskTarget"))}">
+          <optgroup label="${esc(t("teacher.grpPretrip"))}">${grp("pretrip")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
+        </select>
+        <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}">
+        <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}">
+        <button class="teacher-btn teacher-btn--main" data-action="task-generate">${esc(t("teacher.taskGenerate"))}</button>
+      </div>
+      ${vm.taskCode ? `
+      <div class="task-result">
+        <textarea id="task-code" class="task-code" readonly rows="2">${esc(vm.taskCode)}</textarea>
+        <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
+      </div>` : ""}`;
+
     return `
       <section class="screen">
         ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), "home")}
         <p class="hm-intro">${esc(t("teacher.intro"))}</p>
         <div class="tip">${esc(t("teacher.privacy"))}</div>
         ${actions}
+        ${body}
+        <hr class="teacher-sep">
+        ${taskForm}
+      </section>`;
+  }
+
+  // Lernenden-Seite: Aufgaben-Code öffnen und in die zugewiesene Übung starten.
+  function renderTask(vm) {
+    const body = vm.opened
+      ? `
+      <div class="task-preview">
+        <p class="task-target-line">🎯 ${esc(vm.opened.targetLabel)}</p>
+        ${vm.opened.title ? `<p class="task-title-line">„${esc(vm.opened.title)}“</p>` : ""}
+        ${vm.opened.due ? `<p class="task-due-line">${esc(t("task.dueLabel", { date: vm.opened.due }))}</p>` : ""}
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="task-start">▶️ ${esc(t("task.start"))}</button>
+          <button class="teacher-btn" data-action="task-clear">${esc(t("task.other"))}</button>
+        </div>
+      </div>`
+      : `
+      <label class="task-label" for="task-code-input">${esc(t("task.pasteLabel"))}</label>
+      <textarea id="task-code-input" class="task-code" rows="3" placeholder="HRT1.…"></textarea>
+      <div class="teacher-actions">
+        <button class="teacher-btn teacher-btn--main" data-action="task-open">${esc(t("task.open"))}</button>
+      </div>`;
+    return `
+      <section class="screen">
+        ${hmTopbar("📝 " + esc(t("task.title")), "home")}
+        <p class="hm-intro">${esc(t("task.intro"))}</p>
         ${body}
       </section>`;
   }

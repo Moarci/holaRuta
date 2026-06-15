@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.39.0",
+      date: "2026-06-15",
+      title: "Aufgaben teilen: Zuweisung per Code – ganz ohne Konto",
+      items: [
+        "📝 Lehrkräfte und Reiseleiter können unter „Modo profe“ eine Aufgabe erstellen – ein Pre-Trip-Plan, ein Pre-Arrival-Paket oder ein ganzes Reise-Paket, optional mit Titel und Frist – und sie als kurzen Code teilen (WhatsApp, Mail, QR).",
+        "🎯 Lernende öffnen unter „Tarea“ den Code und werden direkt in die zugewiesene Übung geführt. Komplett offline, ohne Konto und ohne Server.",
+      ],
+    },
+    {
       version: "1.38.0",
       date: "2026-06-15",
       title: "Modo profe: Klassenübersicht für Lehrkräfte & Reiseleiter",

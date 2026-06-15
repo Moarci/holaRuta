@@ -3,7 +3,7 @@
 > **Datum:** 2026-06-14 · **Folgt auf:** [IDEEN.md](IDEEN.md), [RISIKO.md](RISIKO.md), [AUDIT.md](AUDIT.md)
 > **Fokus:** Vermarktung (B2B + B2C) — *nicht* Code-Hygiene (die ist in AUDIT/RISIKO behandelt).
 > **Stand der Faktenbasis (historische Analyse-Basis):** `main` v1.24.0 — 718 Karten · 23 Bereiche · 3 Stufen · 3 Lernmodi · 154 Tests grün.
-> **Seitdem auf dem Branch ausgebaut** → heute **1133 Karten · 32 Bereiche · 47 Challenges · 161 Tests grün** (inkl. 9 Destination-Packs: Colombia 89, Peru 45, Mexiko 41, Costa Rica 40, Ecuador 40, Guatemala 40, Argentinien 40, Chile 40, Bolivien 40 Karten). Siehe Stand-Update in §2/§3.
+> **Seitdem auf dem Branch ausgebaut** → heute **1133 Karten · 32 Bereiche · 47 Challenges · 163 Tests grün** (inkl. 9 Destination-Packs: Colombia 89, Peru 45, Mexiko 41, Costa Rica 40, Ecuador 40, Guatemala 40, Argentinien 40, Chile 40, Bolivien 40 Karten). Siehe Stand-Update in §2/§3.
 
 Dieses Dokument gleicht eine ausführliche Geschäftsanalyse mit dem **echten Code-Stand** ab und
 leitet daraus einen realistischen Vertriebsweg ab: Wer sind die Kanäle, was trägt der heutige
@@ -53,7 +53,7 @@ gegen `main` v1.24.0:
 | Offline / PWA / zero-dependency / kein Tracking | Service Worker, `localStorage` | ✅ existiert |
 | Niveau A1/A2/B1 | `lvl`-Mehrfach-Filter, 3 Stufen | ✅ existiert (s. u.) |
 | Coordinator-Modus (5-Min-Icebreaker) | `startCoordinatorRound` (Modo hostal) | ✅ umgesetzt |
-| Lehrer-/Coordinator-Übersicht | „Modo profe": Import von Schüler-Backups → Klassenübersicht (offline, kein Backend) | ✅ teilweise (Zuweisung/Sync bleibt Stufe 3) |
+| Lehrer-/Coordinator-Übersicht + Zuweisung | „Modo profe" (Import von Schüler-Backups → Klassenübersicht) + Aufgaben-Codes („Tarea") – offline, kein Backend | ✅ teilweise (echter Sync/Accounts bleibt Stufe 3) |
 | White-Label / Co-Branding | `config.js` + `editions/*` + `build.js --edition` | ✅ umgesetzt (ecos/weroad) |
 | Backend / Accounts / Pro-Kauf / Per-Seat | nur `localStorage`, ein Gerät, kein Sync | ❌ fehlt (bewusst, Stufe 3) |
 | Cartagena-/Destination-/„Colombia Pack" | Kategorie `colombia`, **89 Karten** (inkl. Kaffeeregion Salento/Cocora) | ✅ umgesetzt |
