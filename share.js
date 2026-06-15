@@ -779,8 +779,13 @@
   function shareText(kind, payload) {
     const p = payload || {};
     // Echter, anklickbarer Link – Messenger (WhatsApp/Telegram/…) verlinken die
-    // nackte URL im Begleittext automatisch.
-    const link = `\n\n${t("share.captionJoin")} ${APP_URL}`;
+    // nackte URL im Begleittext automatisch. Trägt das Sharepic eine Modul-Kennung
+    // (moduleSlug), zeigt der Link per ?m=<modul> direkt in dieses Modul: Wer den
+    // Link antippt, landet nicht auf der Startseite, sondern im empfohlenen Modul.
+    const url = p.moduleSlug
+      ? APP_URL + (APP_URL.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(p.moduleSlug)
+      : APP_URL;
+    const link = `\n\n${t("share.captionJoin")} ${url}`;
     if (kind === "stats") {
       const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
       const facts = [];

@@ -1287,14 +1287,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Teilen-Knopf auf Modul-Ebene (ganzes Historia-Modul weiterempfehlen). */
 .hist-modshare { margin-top: 12px; }
 
-/* Teilen-Knopf in den übrigen Entdecken-Kategorien (Knigge/Regatear/Logística/
-   Salud) und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und
-   etwas Abstand zum übrigen Karteninhalt. */
+/* Teilen-Knopf für einzelne Tipps/Kategorien (Knigge/Regatear/Logística/Salud)
+   und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und etwas
+   Abstand zum übrigen Karteninhalt. Der „Modul teilen“-Knopf (.mod-share) bleibt
+   bewusst im prominenten Historia-Orange (.hist-share) – einheitlich über alle
+   Entdecken-Module und damit gut auffindbar. */
 .knigge-topic__body .hist-share { margin-top: 12px; }
 .cinfo-share { margin: 0 0 14px; }
 .knigge-topic__body .hist-share,
-.cinfo-share,
-.mod-share { background: linear-gradient(135deg, #475569, #334155); }
+.cinfo-share { background: linear-gradient(135deg, #475569, #334155); }
 
 /* Mini-Quiz zum Text (Selbstprüfung). */
 .hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
@@ -17213,8 +17214,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function shareText(kind, payload) {
     const p = payload || {};
     // Echter, anklickbarer Link – Messenger (WhatsApp/Telegram/…) verlinken die
-    // nackte URL im Begleittext automatisch.
-    const link = `\n\n${t("share.captionJoin")} ${APP_URL}`;
+    // nackte URL im Begleittext automatisch. Trägt das Sharepic eine Modul-Kennung
+    // (moduleSlug), zeigt der Link per ?m=<modul> direkt in dieses Modul: Wer den
+    // Link antippt, landet nicht auf der Startseite, sondern im empfohlenen Modul.
+    const url = p.moduleSlug
+      ? APP_URL + (APP_URL.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(p.moduleSlug)
+      : APP_URL;
+    const link = `\n\n${t("share.captionJoin")} ${url}`;
     if (kind === "stats") {
       const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
       const facts = [];
@@ -17475,6 +17481,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.32.0",
+      date: "2026-06-15",
+      title: "Geteilte Modul-Links öffnen direkt das Modul",
+      items: [
+        "🔗 Tippt jemand auf den Link unter einem „Modul teilen“-Sharepic, landet er jetzt direkt im empfohlenen Modul (z.B. Precios al oído) statt nur auf der Startseite – der Link trägt dafür eine Modul-Kennung (?m=…).",
+      ],
+    },
+    {
+      version: "1.31.1",
+      date: "2026-06-15",
+      title: "„Modul teilen“ besser sichtbar",
+      items: [
+        "📤 Der „Modul teilen“-Knopf erscheint jetzt in allen Entdecken-Modulen im selben auffälligen Orange wie bei „Historia de Sudamérica“ – vorher war er außerhalb von Historia unscheinbar grau und leicht zu übersehen.",
+      ],
+    },
     {
       version: "1.31.0",
       date: "2026-06-15",
@@ -24626,6 +24648,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       intro: nat(mod.INTRO),
       timelineLabel: t("discover.histNavTimeline"),
       eras,
+      moduleSlug: state.histRegion === "centro" ? "historia-centro" : "historia",
     }, shareFormat());
   }
 
@@ -24777,6 +24800,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       intro: t(meta.sub),
       lines: moduleShareLines(id),
       accent: meta.accent,
+      moduleSlug: id, // Begleittext-Link zeigt per ?m=<id> direkt in dieses Modul
     }, shareFormat());
   }
 
@@ -25194,6 +25218,54 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (el) el.remove();
   }
 
+  // Deep-Link aus einem „Modul teilen"-Link: ?m=<modul> öffnet beim Start direkt
+  // das empfohlene Modul (statt der Startseite). Hat Vorrang vor dem Onboarding –
+  // wer eingeladen wird, soll sofort sehen, worum es geht. Danach wird der
+  // Parameter aus der Adresse geputzt, damit Reload/Zurück-Geste normal laufen.
+  // Liefert true, wenn ein gültiges Modul geöffnet wurde.
+  function applyModuleDeepLink() {
+    let slug = "";
+    try {
+      slug = (new URLSearchParams(location.search).get("m") || "").trim().toLowerCase();
+      if (!slug && location.hash) {
+        const m = location.hash.match(/[#&]m=([^&]+)/);
+        if (m) slug = decodeURIComponent(m[1]).trim().toLowerCase();
+      }
+    } catch (e) { return false; }
+    if (!slug) return false;
+    const openers = {
+      supervivencia: openSpickzettel,
+      hostel: openHostel,
+      definiciones: openQuizSetup,
+      frases: openFrasesSetup,
+      dialogos: openDialogosSetup,
+      regatear: openRegatear,
+      precios: openPrecios,
+      cuerpo: openCuerpo,
+      compras: openCompras,
+      conjugacion: openConjugacion,
+      tiempos: openTiempos,
+      paises: openInfo,
+      knigge: openKnigge,
+      logistica: openLogistica,
+      salud: openSalud,
+      historia: () => openHistoria("sur"),
+      "historia-centro": () => openHistoria("centro"),
+    };
+    const open = openers[slug];
+    if (!open) return false;
+    // Eingeladene gelten als „gesehen": kein Onboarding-Zwang vor dem Modul.
+    if (settings.onboarded !== true) {
+      settings = Object.assign({}, settings, { onboarded: true });
+      store.saveSettings(settings);
+    }
+    open(); // setzt state.screen + rendert
+    // Parameter aus der Adresse entfernen (ohne Reload), damit ein späterer
+    // Reload nicht erneut deep-linkt und die Adresse sauber bleibt.
+    try { history.replaceState(history.state, "", location.pathname); } catch (e) { /* file:// o.ä. – egal */ }
+    return true;
+  }
+
   // ----- Start -----
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
@@ -25238,6 +25310,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       state.screen = "onboarding";
     }
   }
+  // Deep-Link aus einem geteilten „Modul teilen"-Link hat Vorrang vor Startseite/
+  // Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das abschließende
+  // render() deckt zusätzlich die Fälle ab, in denen ein Opener vorab abbricht
+  // (z.B. Precios ohne Sprachausgabe) – so bleibt der Bildschirm nie leer.
+  applyModuleDeepLink();
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass

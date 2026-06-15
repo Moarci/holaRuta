@@ -22,6 +22,22 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.32.0",
+      date: "2026-06-15",
+      title: "Geteilte Modul-Links öffnen direkt das Modul",
+      items: [
+        "🔗 Tippt jemand auf den Link unter einem „Modul teilen“-Sharepic, landet er jetzt direkt im empfohlenen Modul (z.B. Precios al oído) statt nur auf der Startseite – der Link trägt dafür eine Modul-Kennung (?m=…).",
+      ],
+    },
+    {
+      version: "1.31.1",
+      date: "2026-06-15",
+      title: "„Modul teilen“ besser sichtbar",
+      items: [
+        "📤 Der „Modul teilen“-Knopf erscheint jetzt in allen Entdecken-Modulen im selben auffälligen Orange wie bei „Historia de Sudamérica“ – vorher war er außerhalb von Historia unscheinbar grau und leicht zu übersehen.",
+      ],
+    },
+    {
       version: "1.31.0",
       date: "2026-06-15",
       title: "„Modul teilen“ jetzt in allen Entdecken-Modulen",
