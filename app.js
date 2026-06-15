@@ -2969,7 +2969,9 @@
           icon: c.flag || "🌎", title: natk(c, "name") || c.name, sub: natk(c, "tagline"),
           action: "search-country", id: c.id,
           hay: searchHay([c.name, c.nameEn, c.capital, c.region, c.tagline, c.taglineEn,
-            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn, words]),
+            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn,
+            c.population, c.populationEn, c.ageStructure, c.ageStructureEn,
+            c.government, c.governmentEn, c.economy, c.economyEn, c.livelihood, c.livelihoodEn, words]),
         });
       });
     }

@@ -1512,6 +1512,19 @@
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
 
+    // Bevölkerung & Wirtschaft: Faktenzeilen (gleiche Optik wie die Speise-Fakten).
+    // Nur Zeilen mit Inhalt erscheinen; fehlt alles, entfällt die ganze Sektion.
+    const peopleFacts = [
+      factRow(t("discover.infoPopulation"), c.population),
+      factRow(t("discover.infoAgeStructure"), c.ageStructure),
+      factRow(t("discover.infoGovernment"), c.government),
+      factRow(t("discover.infoEconomy"), c.economy),
+      factRow(t("discover.infoLivelihood"), c.livelihood),
+    ].join("");
+    const peopleSect = peopleFacts
+      ? sect("👥", t("discover.infoPeople"), `<div class="cinfo-facts">${peopleFacts}</div>`)
+      : "";
+
     // Brücke zur passenden kontinentalen Geschichte: mittelamerikanische Länder
     // führen zur Historia de Centroamérica, alle anderen (Südamerika/Karibik) zur
     // Historia de Sudamérica. Jeweils nur, wenn das Modul geladen ist.
@@ -1547,6 +1560,7 @@
         <button class="hist-share cinfo-share" type="button" data-action="share-country">📤 ${esc(t("discover.tipsShare"))}</button>
 
         ${sect("🌎", t("discover.infoAbout"), para(c.about))}
+        ${peopleSect}
         ${sect("📜", t("discover.infoHistory"), para(c.history))}
         ${sect("🗣️", t("discover.infoLanguage"), para(c.language) + wordsBlock)}
 
