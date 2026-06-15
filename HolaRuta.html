@@ -2790,6 +2790,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tileDone: "✓ erledigt",
     tileCards: (p) => `${p.n} Karten`,
     sectionTopics: "Themen",
+    // Themen-Abschnitte (Gruppierung der Lern-Kacheln)
+    catGroupBasics: "Grundlagen",
+    catGroupGrammar: "Grammatik",
+    catGroupPeople: "Leute & Alltag",
+    catGroupFood: "Essen & Einkaufen",
+    catGroupTravel: "Unterwegs",
     sectionLevels: "Stufen",
     // Stufen-Filter
     levelsAll: "Alle",
@@ -2853,6 +2859,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tileDone: "✓ done",
     tileCards: (p) => `${p.n} cards`,
     sectionTopics: "Topics",
+    catGroupBasics: "Basics",
+    catGroupGrammar: "Grammar",
+    catGroupPeople: "People & everyday",
+    catGroupFood: "Food & shopping",
+    catGroupTravel: "Getting around",
     sectionLevels: "Levels",
     levelsAll: "All",
     levelsGroup: "Level",
@@ -4638,30 +4649,32 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   "use strict";
 
   // Akzentfarben in warmer "HolaRuta"-Erdton-Palette (Lateinamerika-Look).
+  // group = thematischer Abschnitt im Lernen-Reiter (siehe CATEGORY_GROUPS in
+  // ui.js): bündelt die 23 Themen in scanbare Blöcke statt einer langen Kachelflut.
   const CATEGORIES = [
-    { id: "basics",  label: "Grundlagen", labelEn: "Basics", icon: "💬", grad: ["#C2502E", "#D4673F"] },
-    { id: "zahlen",  label: "Zahlen",     labelEn: "Numbers", icon: "🔢", grad: ["#B97C24", "#CE9438"] },
-    { id: "essen",   label: "Essen",      labelEn: "Food", icon: "🍽️", grad: ["#CB5A2B", "#E0743C"] },
-    { id: "trinken", label: "Trinken",    labelEn: "Drinks", icon: "🥤", grad: ["#2F6B70", "#3E8388"] },
-    { id: "hotel",   label: "Hotel",      labelEn: "Hotel", icon: "🏨", grad: ["#7D4A8E", "#9763A6"] },
-    { id: "hostel",  label: "Hostel",     labelEn: "Hostel", icon: "🛏️", grad: ["#C25A45", "#DB7A5E"] },
-    { id: "social",  label: "Social",     labelEn: "Social", icon: "🤝", grad: ["#8E4FA8", "#A96DBE"] },
-    { id: "verkehr", label: "Verkehr",    labelEn: "Transport", icon: "🚌", grad: ["#3F7355", "#52906C"] },
-    { id: "compras", label: "Einkaufen",  labelEn: "Shopping", icon: "🛒", grad: ["#A86A2D", "#C2853F"] },
-    { id: "dinero",  label: "Geld",       labelEn: "Money", icon: "💵", grad: ["#5E7D3A", "#76954E"] },
-    { id: "notfall", label: "Notfall",    labelEn: "Emergency", icon: "🆘", grad: ["#B5302A", "#CE463E"] },
-    { id: "zeit",    label: "Zeit",       labelEn: "Time", icon: "📅", grad: ["#2E6E86", "#3E89A2"] },
-    { id: "talk",    label: "Smalltalk",  labelEn: "Small talk", icon: "🗣️", grad: ["#9B5BA0", "#B173B5"] },
-    { id: "alltag",  label: "Alltag",     labelEn: "Everyday", icon: "🏙️", grad: ["#8A6A52", "#A3846B"] },
-    { id: "frases",  label: "Sätze",      labelEn: "Phrases", icon: "🙋", grad: ["#A85A6E", "#C2748A"] },
-    { id: "grenze",  label: "Behörden",   labelEn: "Officials", icon: "🛂", grad: ["#566B8A", "#6E86A3"] },
-    { id: "reise",   label: "Busreise",   labelEn: "Bus travel", icon: "🚐", grad: ["#B5503F", "#CE6855"] },
-    { id: "ropa",    label: "Kleidung & Schmuck", labelEn: "Clothes & jewellery", icon: "👕", grad: ["#A8497E", "#C2629A"] },
-    { id: "rumbo",   label: "Wegbeschreibung", labelEn: "Directions", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
-    { id: "verbos",  label: "Konjugieren", labelEn: "Conjugating", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
-    { id: "tiempos", label: "Zeiten",     labelEn: "Tenses", icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
-    { id: "colores", label: "Farben",     labelEn: "Colours", icon: "🎨", grad: ["#7048E8", "#15AABF"] },
-    { id: "contrarios", label: "Gegenteile", labelEn: "Opposites", icon: "↔️", grad: ["#3F7355", "#B5503F"] },
+    { id: "basics",  label: "Grundlagen", labelEn: "Basics", icon: "💬", grad: ["#C2502E", "#D4673F"], group: "basics" },
+    { id: "zahlen",  label: "Zahlen",     labelEn: "Numbers", icon: "🔢", grad: ["#B97C24", "#CE9438"], group: "basics" },
+    { id: "essen",   label: "Essen",      labelEn: "Food", icon: "🍽️", grad: ["#CB5A2B", "#E0743C"], group: "food" },
+    { id: "trinken", label: "Trinken",    labelEn: "Drinks", icon: "🥤", grad: ["#2F6B70", "#3E8388"], group: "food" },
+    { id: "hotel",   label: "Hotel",      labelEn: "Hotel", icon: "🏨", grad: ["#7D4A8E", "#9763A6"], group: "travel" },
+    { id: "hostel",  label: "Hostel",     labelEn: "Hostel", icon: "🛏️", grad: ["#C25A45", "#DB7A5E"], group: "travel" },
+    { id: "social",  label: "Social",     labelEn: "Social", icon: "🤝", grad: ["#8E4FA8", "#A96DBE"], group: "people" },
+    { id: "verkehr", label: "Verkehr",    labelEn: "Transport", icon: "🚌", grad: ["#3F7355", "#52906C"], group: "travel" },
+    { id: "compras", label: "Einkaufen",  labelEn: "Shopping", icon: "🛒", grad: ["#A86A2D", "#C2853F"], group: "food" },
+    { id: "dinero",  label: "Geld",       labelEn: "Money", icon: "💵", grad: ["#5E7D3A", "#76954E"], group: "food" },
+    { id: "notfall", label: "Notfall",    labelEn: "Emergency", icon: "🆘", grad: ["#B5302A", "#CE463E"], group: "travel" },
+    { id: "zeit",    label: "Zeit",       labelEn: "Time", icon: "📅", grad: ["#2E6E86", "#3E89A2"], group: "basics" },
+    { id: "talk",    label: "Smalltalk",  labelEn: "Small talk", icon: "🗣️", grad: ["#9B5BA0", "#B173B5"], group: "people" },
+    { id: "alltag",  label: "Alltag",     labelEn: "Everyday", icon: "🏙️", grad: ["#8A6A52", "#A3846B"], group: "people" },
+    { id: "frases",  label: "Sätze",      labelEn: "Phrases", icon: "🙋", grad: ["#A85A6E", "#C2748A"], group: "basics" },
+    { id: "grenze",  label: "Behörden",   labelEn: "Officials", icon: "🛂", grad: ["#566B8A", "#6E86A3"], group: "travel" },
+    { id: "reise",   label: "Busreise",   labelEn: "Bus travel", icon: "🚐", grad: ["#B5503F", "#CE6855"], group: "travel" },
+    { id: "ropa",    label: "Kleidung & Schmuck", labelEn: "Clothes & jewellery", icon: "👕", grad: ["#A8497E", "#C2629A"], group: "food" },
+    { id: "rumbo",   label: "Wegbeschreibung", labelEn: "Directions", icon: "🧭", grad: ["#2B7A78", "#3AA89F"], group: "travel" },
+    { id: "verbos",  label: "Konjugieren", labelEn: "Conjugating", icon: "🔁", grad: ["#4C5FA8", "#6377C4"], group: "grammar" },
+    { id: "tiempos", label: "Zeiten",     labelEn: "Tenses", icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"], group: "grammar" },
+    { id: "colores", label: "Farben",     labelEn: "Colours", icon: "🎨", grad: ["#7048E8", "#15AABF"], group: "basics" },
+    { id: "contrarios", label: "Gegenteile", labelEn: "Opposites", icon: "↔️", grad: ["#3F7355", "#B5503F"], group: "basics" },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -17959,6 +17972,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "reference", titleKey: "discover.groupReference" },
   ];
 
+  // Reihenfolge & Beschriftung der Themen-Abschnitte im Lernen-Reiter. Wie bei
+  // Entdecken sortiert ein fester thematischer Rahmen die inzwischen 23 Themen;
+  // innerhalb einer Gruppe bleibt die Fälligkeits-Sortierung aus homeVM erhalten.
+  const CATEGORY_GROUPS = [
+    { id: "basics",  titleKey: "home.catGroupBasics" },
+    { id: "grammar", titleKey: "home.catGroupGrammar" },
+    { id: "people",  titleKey: "home.catGroupPeople" },
+    { id: "food",    titleKey: "home.catGroupFood" },
+    { id: "travel",  titleKey: "home.catGroupTravel" },
+  ];
+
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
   // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
   // ist ehrlicher und für Screenreader genauso klar (Seiten-Navigation).
@@ -18104,25 +18128,33 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function lernenBody(vm) {
-    const tiles = vm.categories
-      .map((c) => {
-        const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
-        // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
-        // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
-        const breakdown = vm.allLevels ? "" : c.byLevel
-          .map((b) =>
-            `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
-          .join("");
-        return `
-          <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
-                  style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
-            <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
-            <span class="tile__label">${esc(c.label)}</span>
-            <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
-            ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
-          </button>`;
-      })
-      .join("");
+    const tileBtn = (c) => {
+      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
+      // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
+      // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
+      const breakdown = vm.allLevels ? "" : c.byLevel
+        .map((b) =>
+          `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
+        .join("");
+      return `
+        <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
+                style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
+          <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
+          <span class="tile__label">${esc(c.label)}</span>
+          <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
+          ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
+        </button>`;
+    };
+    // Themen in feste thematische Abschnitte gruppieren (Reihenfolge & Titel aus
+    // CATEGORY_GROUPS); innerhalb behalten sie die Fälligkeits-Sortierung aus
+    // homeVM. Leere Gruppen (z. B. durch künftige Filter) fallen samt Titel weg.
+    const topicSections = CATEGORY_GROUPS.map((g) => {
+      const items = vm.categories.filter((c) => c.group === g.id);
+      if (!items.length) return "";
+      return `
+        <p class="sectioncap">${esc(t(g.titleKey))}</p>
+        <div class="tiles">${items.map(tileBtn).join("")}</div>`;
+    }).join("");
 
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
     // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
@@ -18189,8 +18221,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
       <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
 
-      <p class="sectioncap">${esc(t("home.sectionTopics"))}</p>
-      <div class="tiles">${tiles}</div>
+      ${topicSections}
 
       <p class="dedication">${esc(t("home.dedication"))} <span class="dedication__heart">♥</span></p>`;
   }
@@ -21408,7 +21439,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           active: state.levels.length === 0 || state.levels.includes(l.id),
         }))
         .filter((b) => b.count > 0);
-      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad,
+      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad, group: c.group,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
     // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält

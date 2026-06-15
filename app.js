@@ -184,7 +184,7 @@
           active: state.levels.length === 0 || state.levels.includes(l.id),
         }))
         .filter((b) => b.count > 0);
-      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad,
+      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad, group: c.group,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
     // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält

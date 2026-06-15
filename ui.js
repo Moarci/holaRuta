@@ -96,6 +96,17 @@
     { id: "reference", titleKey: "discover.groupReference" },
   ];
 
+  // Reihenfolge & Beschriftung der Themen-Abschnitte im Lernen-Reiter. Wie bei
+  // Entdecken sortiert ein fester thematischer Rahmen die inzwischen 23 Themen;
+  // innerhalb einer Gruppe bleibt die Fälligkeits-Sortierung aus homeVM erhalten.
+  const CATEGORY_GROUPS = [
+    { id: "basics",  titleKey: "home.catGroupBasics" },
+    { id: "grammar", titleKey: "home.catGroupGrammar" },
+    { id: "people",  titleKey: "home.catGroupPeople" },
+    { id: "food",    titleKey: "home.catGroupFood" },
+    { id: "travel",  titleKey: "home.catGroupTravel" },
+  ];
+
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
   // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
   // ist ehrlicher und für Screenreader genauso klar (Seiten-Navigation).
@@ -241,25 +252,33 @@
   }
 
   function lernenBody(vm) {
-    const tiles = vm.categories
-      .map((c) => {
-        const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
-        // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
-        // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
-        const breakdown = vm.allLevels ? "" : c.byLevel
-          .map((b) =>
-            `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
-          .join("");
-        return `
-          <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
-                  style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
-            <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
-            <span class="tile__label">${esc(c.label)}</span>
-            <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
-            ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
-          </button>`;
-      })
-      .join("");
+    const tileBtn = (c) => {
+      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
+      // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
+      // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
+      const breakdown = vm.allLevels ? "" : c.byLevel
+        .map((b) =>
+          `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
+        .join("");
+      return `
+        <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
+                style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
+          <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
+          <span class="tile__label">${esc(c.label)}</span>
+          <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
+          ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
+        </button>`;
+    };
+    // Themen in feste thematische Abschnitte gruppieren (Reihenfolge & Titel aus
+    // CATEGORY_GROUPS); innerhalb behalten sie die Fälligkeits-Sortierung aus
+    // homeVM. Leere Gruppen (z. B. durch künftige Filter) fallen samt Titel weg.
+    const topicSections = CATEGORY_GROUPS.map((g) => {
+      const items = vm.categories.filter((c) => c.group === g.id);
+      if (!items.length) return "";
+      return `
+        <p class="sectioncap">${esc(t(g.titleKey))}</p>
+        <div class="tiles">${items.map(tileBtn).join("")}</div>`;
+    }).join("");
 
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
     // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
@@ -326,8 +345,7 @@
       <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
       <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
 
-      <p class="sectioncap">${esc(t("home.sectionTopics"))}</p>
-      <div class="tiles">${tiles}</div>
+      ${topicSections}
 
       <p class="dedication">${esc(t("home.dedication"))} <span class="dedication__heart">♥</span></p>`;
   }
