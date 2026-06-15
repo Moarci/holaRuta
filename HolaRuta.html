@@ -2754,9 +2754,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     coordinatorTitle: "5-Minuten-Icebreaker",
     coordinatorDesc: "Für Gruppen & Kurse: ein Tap startet sofort eine kurze Kennenlern-Runde – ohne Setup.",
     coordinatorMeta: (p) => `${p.n} Runden · sofort los`,
-    subPretrip: "In 7 Etappen reisefertig für Kolumbien",
+    subPretrip: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica",
     pretripTitle: "Pre-Trip-Plan",
-    pretripIntro: "Werde Schritt für Schritt reisefertig für Kolumbien: ein Tag pro Etappe, der nächste öffnet sich, sobald du den aktuellen geschafft hast.",
+    pretripIntro: "Werde Schritt für Schritt reisefertig für dein Reiseziel: wähle ein Land, dann ein Tag pro Etappe – der nächste öffnet sich, sobald du den aktuellen geschafft hast.",
+    pretripDestLabel: "Reiseziel wählen",
     pretripProgress: (p) => `${p.done} von ${p.total} Etappen geschafft`,
     pretripAllDone: "Alle Etappen geschafft – du bist reisefertig!",
     pretripCards: (p) => `${p.n} Karten`,
@@ -2995,9 +2996,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     coordinatorTitle: "5-minute icebreaker",
     coordinatorDesc: "For groups & classes: one tap starts a quick getting-to-know round – no setup.",
     coordinatorMeta: (p) => `${p.n} rounds · starts instantly`,
-    subPretrip: "Get trip-ready for Colombia in 7 stages",
+    subPretrip: "Get trip-ready in 7 stages – Colombia, Peru, Mexico, Costa Rica",
     pretripTitle: "Pre-trip plan",
-    pretripIntro: "Get trip-ready for Colombia step by step: one stage at a time – the next unlocks once you finish the current one.",
+    pretripIntro: "Get trip-ready for your destination step by step: pick a country, then one stage at a time – the next unlocks once you finish the current one.",
+    pretripDestLabel: "Choose destination",
     pretripProgress: (p) => `${p.done} of ${p.total} stages done`,
     pretripAllDone: "All stages done – you're trip-ready!",
     pretripCards: (p) => `${p.n} cards`,
@@ -6896,21 +6898,73 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Gegenstück zur zufälligen Ruta del día. Jeder Tag = kuratierte Kartenliste +
   // optionale Real-Life-Challenge (challengeId verweist auf CHALLENGES). Tag N+1
   // wird erst nach Abschluss von Tag N freigeschaltet (Logik in app.js). REINE DATEN.
+  // Pre-Trip-Pläne je Destination. Jeder Plan: { scope (= Kategorie-Id), days[] }.
+  // Tage sequenziell freischaltbar; Fortschritt wird je scope getrennt gespeichert.
   const PRETRIP = [
-    { day: 1, titleDe: "Begrüßung & Höflichkeit", titleEn: "Greetings & courtesy",
-      cardIds: ["co57", "co58", "co59", "co60", "co62", "co75"], challengeId: "challenge28" },
-    { day: 2, titleDe: "Taxi & Ankunft", titleEn: "Taxi & arrival",
-      cardIds: ["co01", "co02", "co03", "co04", "co05", "co06"], challengeId: "challenge18" },
-    { day: 3, titleDe: "Unterkunft & Ankommen", titleEn: "Settling in",
-      cardIds: ["co07", "co10", "co08", "co71", "co15", "n15"], challengeId: "challenge26" },
-    { day: 4, titleDe: "Essen & Trinken", titleEn: "Food & drink",
-      cardIds: ["co36", "co37", "co40", "co41", "co42", "co14"], challengeId: "challenge11" },
-    { day: 5, titleDe: "Geld & Markt", titleEn: "Money & market",
-      cardIds: ["co47", "co48", "co49", "co50", "co61", "co16"], challengeId: "challenge13" },
-    { day: 6, titleDe: "Unterwegs & Orientierung", titleEn: "Getting around",
-      cardIds: ["co19", "co52", "co53", "co54", "co72", "co26"], challengeId: "challenge16" },
-    { day: 7, titleDe: "Social & Ausgehen", titleEn: "Socialising & going out",
-      cardIds: ["co63", "co64", "co65", "co66", "co68", "co43"], challengeId: "challenge30" },
+    { scope: "colombia", days: [
+      { day: 1, titleDe: "Begrüßung & Höflichkeit", titleEn: "Greetings & courtesy",
+        cardIds: ["co57", "co58", "co59", "co60", "co62", "co75"], challengeId: "challenge28" },
+      { day: 2, titleDe: "Taxi & Ankunft", titleEn: "Taxi & arrival",
+        cardIds: ["co01", "co02", "co03", "co04", "co05", "co06"], challengeId: "challenge18" },
+      { day: 3, titleDe: "Unterkunft & Ankommen", titleEn: "Settling in",
+        cardIds: ["co07", "co10", "co08", "co71", "co15", "n15"], challengeId: "challenge26" },
+      { day: 4, titleDe: "Essen & Trinken", titleEn: "Food & drink",
+        cardIds: ["co36", "co37", "co40", "co41", "co42", "co14"], challengeId: "challenge11" },
+      { day: 5, titleDe: "Geld & Markt", titleEn: "Money & market",
+        cardIds: ["co47", "co48", "co49", "co50", "co61", "co16"], challengeId: "challenge13" },
+      { day: 6, titleDe: "Unterwegs & Orientierung", titleEn: "Getting around",
+        cardIds: ["co19", "co52", "co53", "co54", "co72", "co26"], challengeId: "challenge16" },
+      { day: 7, titleDe: "Social & Ausgehen", titleEn: "Socialising & going out",
+        cardIds: ["co63", "co64", "co65", "co66", "co68", "co43"], challengeId: "challenge30" },
+    ] },
+    { scope: "peru", days: [
+      { day: 1, titleDe: "Ankunft & Gruß", titleEn: "Arrival & greetings",
+        cardIds: ["pe44", "pe01", "pe02", "pe03", "pe05", "pe25"], challengeId: null },
+      { day: 2, titleDe: "Höhe & Gesundheit", titleEn: "Altitude & health",
+        cardIds: ["pe06", "pe07", "pe08", "pe09", "pe10", "pe24"], challengeId: "challenge33" },
+      { day: 3, titleDe: "Unterwegs", titleEn: "Getting around",
+        cardIds: ["pe11", "pe12", "pe13", "pe14", "pe15", "pe18"], challengeId: null },
+      { day: 4, titleDe: "Essen & Trinken", titleEn: "Food & drink",
+        cardIds: ["pe36", "pe37", "pe38", "pe39", "pe40", "pe43"], challengeId: "challenge32" },
+      { day: 5, titleDe: "Cusco & Heiliges Tal", titleEn: "Cusco & Sacred Valley",
+        cardIds: ["pe26", "pe27", "pe28", "pe29", "pe30", "pe31"], challengeId: null },
+      { day: 6, titleDe: "Anden & Natur", titleEn: "Andes & nature",
+        cardIds: ["pe16", "pe17", "pe19", "pe20", "pe21", "pe22"], challengeId: null },
+      { day: 7, titleDe: "Machu Picchu & Markt", titleEn: "Machu Picchu & market",
+        cardIds: ["pe32", "pe33", "pe34", "pe35", "pe41", "pe42"], challengeId: null },
+    ] },
+    { scope: "mexico", days: [
+      { day: 1, titleDe: "Ankunft & Sprache", titleEn: "Arrival & language",
+        cardIds: ["mx01", "mx02", "mx03", "mx03b", "mx04", "mx05"], challengeId: null },
+      { day: 2, titleDe: "Höflichkeit & Smalltalk", titleEn: "Courtesy & small talk",
+        cardIds: ["mx06", "mx07", "mx08", "mx31", "mx32", "mx33"], challengeId: null },
+      { day: 3, titleDe: "Essen & Antojitos", titleEn: "Food & antojitos",
+        cardIds: ["mx09", "mx10", "mx11", "mx12", "mx13", "mx14"], challengeId: "challenge34" },
+      { day: 4, titleDe: "Geld & Markt", titleEn: "Money & market",
+        cardIds: ["mx15", "mx16", "mx17", "mx18", "mx19", "mx20"], challengeId: null },
+      { day: 5, titleDe: "Unterwegs", titleEn: "Getting around",
+        cardIds: ["mx21", "mx22", "mx23", "mx24", "mx25", "mx30"], challengeId: null },
+      { day: 6, titleDe: "Kultur & Natur", titleEn: "Culture & nature",
+        cardIds: ["mx26", "mx27", "mx28", "mx29", "mx35", "mx36"], challengeId: null },
+      { day: 7, titleDe: "Ausgehen & Küste", titleEn: "Going out & coast",
+        cardIds: ["mx34", "mx37", "mx38", "mx39", "mx40"], challengeId: "challenge35" },
+    ] },
+    { scope: "costarica", days: [
+      { day: 1, titleDe: "Ankunft & Pura Vida", titleEn: "Arrival & pura vida",
+        cardIds: ["cr01", "cr02", "cr03", "cr04", "cr05", "cr36"], challengeId: "challenge36" },
+      { day: 2, titleDe: "Essen in der Soda", titleEn: "Eating at the soda",
+        cardIds: ["cr06", "cr07", "cr08", "cr09", "cr10", "cr11"], challengeId: "challenge37" },
+      { day: 3, titleDe: "Kaffee, Geld & Alltag", titleEn: "Coffee, money & daily life",
+        cardIds: ["cr12", "cr13", "cr17", "cr35", "cr37", "cr38"], challengeId: null },
+      { day: 4, titleDe: "Unterwegs", titleEn: "Getting around",
+        cardIds: ["cr14", "cr15", "cr16", "cr18", "cr30", "cr39"], challengeId: null },
+      { day: 5, titleDe: "Wildlife & Natur", titleEn: "Wildlife & nature",
+        cardIds: ["cr19", "cr20", "cr21", "cr22", "cr23", "cr33"], challengeId: null },
+      { day: 6, titleDe: "Abenteuer am Arenal", titleEn: "Adventure at Arenal",
+        cardIds: ["cr24", "cr25", "cr26", "cr27", "cr28", "cr29"], challengeId: null },
+      { day: 7, titleDe: "Strand & Karibik", titleEn: "Beach & Caribbean",
+        cardIds: ["cr31", "cr32", "cr34", "cr40"], challengeId: null },
+    ] },
   ];
 
   window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP };
@@ -13386,6 +13440,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
   // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
   // null (kein Ziel). endDate muss "YYYY-MM-DD" sein, perDay eine sinnvolle Zahl.
+  // Pre-Trip-Fortschritt: neues Format ist verschachtelt { scope: { day: true } }.
+  // Altes flaches Format ({ day: true }) wird einmalig nach { colombia: … } migriert,
+  // damit bestehende Geräte ihren Kolumbien-Fortschritt behalten.
+  function sanitizePretripDays(v) {
+    if (!isPlainObject(v)) return {};
+    const keys = Object.keys(v);
+    if (!keys.length) return {};
+    if (keys.every((k) => isPlainObject(v[k]))) {
+      const out = {};
+      keys.forEach((k) => { out[k] = v[k]; });
+      return out; // bereits verschachtelt (je Destination)
+    }
+    if (keys.every((k) => /^\d+$/.test(k))) return { colombia: v }; // Migration alt-flach
+    return {};
+  }
+
   function sanitizeTripGoal(t) {
     if (!isPlainObject(t)) return null;
     const str = (s, max) => (typeof s === "string" && s.length > 0 && s.length <= max ? s : "");
@@ -13437,7 +13507,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       dialogosPerfect: num(v.dialogosPerfect),
       dialogosScenesDone: isPlainObject(v.dialogosScenesDone) ? v.dialogosScenesDone : {},
       rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
-      pretripDays: isPlainObject(v.pretripDays) ? v.pretripDays : {},
+      pretripDays: sanitizePretripDays(v.pretripDays),
       tripGoal: sanitizeTripGoal(v.tripGoal),
       dailyCounts: isPlainObject(v.dailyCounts) ? v.dailyCounts : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
@@ -13991,6 +14061,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const BY_ID = BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
   const byId = (id) => BY_ID[id] || null;
 
+  // Pre-Trip: meiste abgeschlossene Etappen innerhalb EINES Plans. Verträgt beide
+  // Formate: neu (verschachtelt { scope: { day: true } }) und alt-flach ({ day: true }).
+  function pretripMaxDays(pt) {
+    if (!pt || typeof pt !== "object") return 0;
+    const vals = Object.values(pt);
+    if (!vals.length) return 0;
+    if (vals.every((v) => v && typeof v === "object")) {
+      return Math.max.apply(null, vals.map((m) => Object.keys(m).length));
+    }
+    return Object.keys(pt).length; // alt-flaches Format = ein Plan
+  }
+
   // ----- Metriken aus Lernfortschritt + Zählern ableiten (rein) -----
   // cards    : vollständige Kartenliste (eingebaut + eigene)
   // progress : Map cardId -> Lern-Datensatz
@@ -14047,7 +14129,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       preciosMillon: c.preciosMillon || 0,
       // Ruta del día: distinkte Tage mit gestarteter täglicher Mini-Runde.
       rutaDays: c.rutaDays ? Object.keys(c.rutaDays).length : 0,
-      pretripDaysDone: c.pretripDays ? Object.keys(c.pretripDays).length : 0,
+      pretripDaysDone: pretripMaxDays(c.pretripDays),
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       // El Cuerpo: distinkt angetippte Körperteile (für die 🧍-Badges).
@@ -14900,6 +14982,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.35.0",
+      date: "2026-06-15",
+      title: "Pre-Trip-Plan jetzt für vier Reiseziele",
+      items: [
+        "🗓️ Der Pre-Trip-Plan deckt jetzt Kolumbien, Peru, Mexiko und Costa Rica ab – wähle dein Reiseziel oben über die Chips. Jedes Ziel hat seine eigenen 7 Etappen mit kuratierten Karten und Real-Life-Mutprobe.",
+        "🧳 Der Fortschritt wird je Reiseziel getrennt gespeichert; den Stempel „Reisefertig“ gibt es, sobald du einen kompletten Plan geschafft hast. Bestehender Kolumbien-Fortschritt bleibt erhalten.",
+        "🎯 Welches Ziel vorausgewählt ist, richtet sich nach deinem Trip-Ziel (z. B. „Cusco“ → Peru).",
+      ],
+    },
+    {
       version: "1.34.0",
       date: "2026-06-14",
       title: "Zwei neue Reise-Pakete: Mexiko & Costa Rica",
@@ -15347,7 +15439,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   // sub = deutscher Fallback; subKey = i18n-Schlüssel (zur Laufzeit via t() übersetzt).
   const FEATURES = [
-    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig für Kolumbien", grad: ["#2E6E86", "#B97C24"] },
+    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica", grad: ["#2E6E86", "#B97C24"] },
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
@@ -17051,10 +17143,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const banner = vm.allDone
       ? `<p class="pretrip-alldone">🎉 ${esc(t("discover.pretripAllDone"))}</p>`
       : `<p class="pretrip-progress">${esc(t("discover.pretripProgress", { done: vm.doneCount, total: vm.total }))}</p>`;
+    // Destination-Auswahl: ein Plan je Reiseziel; ✓ markiert vollständig geschaffte Pläne.
+    const chips = (vm.plans || []).map((p) =>
+      `<button class="sl-chip ${p.active ? "is-active" : ""}" data-action="set-pretrip-scope" data-scope="${p.scope}"${p.active ? ' aria-current="true"' : ""}>${p.done ? "✓ " : ""}${esc(p.label)}</button>`
+    ).join("");
     return `
       <section class="screen">
         ${hmTopbar("🗓️ " + esc(t("discover.pretripTitle")), "home")}
         <p class="hm-intro">${esc(t("discover.pretripIntro"))}</p>
+        <div class="sl-chips" role="group" aria-label="${esc(t("discover.pretripDestLabel"))}">${chips}</div>
         ${banner}
         <ol class="pretrip">${rows}</ol>
       </section>`;
@@ -18292,6 +18389,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
+    pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -20414,40 +20512,72 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // seine Sitzung leer durchläuft (Hook in rate()). Tag N ist freigeschaltet, wenn
   // Tag N-1 abgeschlossen ist (oder es Tag 1 ist). Fortschritt persistent in gamestats.
   const PRETRIP = () => data.PRETRIP || [];
-  const pretripDone = (day) => !!(gamestats.pretripDays && gamestats.pretripDays[day]);
-  const pretripUnlocked = (day) => day === 1 || pretripDone(day - 1);
+  const pretripPlan = (scope) => PRETRIP().find((p) => p.scope === scope) || PRETRIP()[0] || { scope: null, days: [] };
+  const pretripDone = (scope, day) => !!(gamestats.pretripDays && gamestats.pretripDays[scope] && gamestats.pretripDays[scope][day]);
+  const pretripUnlocked = (scope, day) => day === 1 || pretripDone(scope, day - 1);
+  const planAllDone = (p) => p.days.length > 0 && p.days.every((d) => pretripDone(p.scope, d.day));
+
+  // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
+  // sonst der erste Plan (Kolumbien).
+  function defaultPretripScope() {
+    if (tripMentionsPeru()) return "peru";
+    if (tripMentionsMexico()) return "mexico";
+    if (tripMentionsCostaRica()) return "costarica";
+    if (tripMentionsColombia()) return "colombia";
+    return (PRETRIP()[0] || {}).scope || "colombia";
+  }
 
   function openPretrip() {
     dismissBadgeToast();
+    if (!state.pretripScope || !PRETRIP().some((p) => p.scope === state.pretripScope)) {
+      state.pretripScope = defaultPretripScope();
+    }
     state.screen = "pretrip";
     render();
   }
 
+  function setPretripScope(scope) {
+    if (!PRETRIP().some((p) => p.scope === scope)) return;
+    state.pretripScope = scope;
+    render();
+  }
+
   function pretripVM() {
-    const days = PRETRIP().map((d) => {
+    const scope = state.pretripScope || defaultPretripScope();
+    const plan = pretripPlan(scope);
+    const days = plan.days.map((d) => {
       const ch = d.challengeId ? (data.CHALLENGES || []).find((c) => c.id === d.challengeId) : null;
       return {
         day: d.day,
         title: natk(d, "titleDe"),
         count: d.cardIds.length,
         challenge: ch ? natk(ch, "textDe") : null,
-        done: pretripDone(d.day),
-        unlocked: pretripUnlocked(d.day),
+        done: pretripDone(scope, d.day),
+        unlocked: pretripUnlocked(scope, d.day),
       };
     });
     const total = days.length;
     const doneCount = days.filter((d) => d.done).length;
-    return { days, total, doneCount, allDone: total > 0 && doneCount === total };
+    const plans = PRETRIP().map((p) => ({
+      scope: p.scope,
+      label: natk(categoryById(p.scope) || {}, "label") || p.scope,
+      active: p.scope === scope,
+      done: planAllDone(p),
+    }));
+    return { scope, plans, days, total, doneCount, allDone: total > 0 && doneCount === total };
   }
 
   function startPretripDay(day) {
     dismissBadgeToast();
-    const d = PRETRIP().find((x) => x.day === day);
-    if (!d || !pretripUnlocked(day)) return;       // gesperrte Tage nicht startbar
+    const scope = state.pretripScope || defaultPretripScope();
+    const plan = pretripPlan(scope);
+    const d = plan.days.find((x) => x.day === day);
+    if (!d || !pretripUnlocked(scope, day)) return; // gesperrte Tage nicht startbar
     const cards = d.cardIds.map(cardById).filter(Boolean);
-    if (!cards.length) { recordPretripDay(day); openPretrip(); return; }
+    if (!cards.length) { recordPretripDay(scope, day); openPretrip(); return; }
     state.pretripDay = day;
-    state.scopeId = "colombia";                    // korrektes Done-Label
+    state.pretripScope = scope;
+    state.scopeId = scope;                          // korrektes Done-Label
     state.queue = cards.map((c) => c.id);
     state.total = state.queue.length;
     state.revealed = false;
@@ -20457,13 +20587,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
-  // Einen Pre-Trip-Tag als abgeschlossen vermerken (distinkt, idempotent).
-  function recordPretripDay(day) {
-    if (!day || pretripDone(day)) return;
-    const days = Object.assign({}, gamestats.pretripDays, { [day]: true });
+  // Einen Pre-Trip-Tag als abgeschlossen vermerken (je Destination, distinkt, idempotent).
+  function recordPretripDay(scope, day) {
+    if (!scope || !day || pretripDone(scope, day)) return;
+    const scopeDays = Object.assign({}, gamestats.pretripDays && gamestats.pretripDays[scope], { [day]: true });
+    const days = Object.assign({}, gamestats.pretripDays, { [scope]: scopeDays });
     gamestats = Object.assign({}, gamestats, { pretripDays: days });
     store.saveGameStats(gamestats);
-    syncBadges(Date.now(), true); // „Reisefertig"-Badge freischalten, wenn alle Tage geschafft
+    syncBadges(Date.now(), true); // „Reisefertig"-Badge freischalten, wenn ein ganzer Plan geschafft
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -20554,7 +20685,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     // Pre-Trip-Tag abgeschlossen (Queue leer durchgelaufen)? distinkt vermerken.
-    if (!state.queue.length && state.pretripDay != null) recordPretripDay(state.pretripDay);
+    if (!state.queue.length && state.pretripDay != null) recordPretripDay(state.pretripScope, state.pretripDay);
     render();
     if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
   }
@@ -21540,6 +21671,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "ruta-del-dia") openRutaDelDia();
     else if (action === "open-preset") startPreset(el.dataset.preset);
     else if (action === "open-pretrip") openPretrip();
+    else if (action === "set-pretrip-scope") setPretripScope(el.dataset.scope);
     else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();

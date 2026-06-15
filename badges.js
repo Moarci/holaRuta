@@ -205,6 +205,18 @@
   const BY_ID = BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
   const byId = (id) => BY_ID[id] || null;
 
+  // Pre-Trip: meiste abgeschlossene Etappen innerhalb EINES Plans. Verträgt beide
+  // Formate: neu (verschachtelt { scope: { day: true } }) und alt-flach ({ day: true }).
+  function pretripMaxDays(pt) {
+    if (!pt || typeof pt !== "object") return 0;
+    const vals = Object.values(pt);
+    if (!vals.length) return 0;
+    if (vals.every((v) => v && typeof v === "object")) {
+      return Math.max.apply(null, vals.map((m) => Object.keys(m).length));
+    }
+    return Object.keys(pt).length; // alt-flaches Format = ein Plan
+  }
+
   // ----- Metriken aus Lernfortschritt + Zählern ableiten (rein) -----
   // cards    : vollständige Kartenliste (eingebaut + eigene)
   // progress : Map cardId -> Lern-Datensatz
@@ -261,7 +273,7 @@
       preciosMillon: c.preciosMillon || 0,
       // Ruta del día: distinkte Tage mit gestarteter täglicher Mini-Runde.
       rutaDays: c.rutaDays ? Object.keys(c.rutaDays).length : 0,
-      pretripDaysDone: c.pretripDays ? Object.keys(c.pretripDays).length : 0,
+      pretripDaysDone: pretripMaxDays(c.pretripDays),
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       // El Cuerpo: distinkt angetippte Körperteile (für die 🧍-Badges).

@@ -210,6 +210,22 @@
   }
   // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
   // null (kein Ziel). endDate muss "YYYY-MM-DD" sein, perDay eine sinnvolle Zahl.
+  // Pre-Trip-Fortschritt: neues Format ist verschachtelt { scope: { day: true } }.
+  // Altes flaches Format ({ day: true }) wird einmalig nach { colombia: … } migriert,
+  // damit bestehende Geräte ihren Kolumbien-Fortschritt behalten.
+  function sanitizePretripDays(v) {
+    if (!isPlainObject(v)) return {};
+    const keys = Object.keys(v);
+    if (!keys.length) return {};
+    if (keys.every((k) => isPlainObject(v[k]))) {
+      const out = {};
+      keys.forEach((k) => { out[k] = v[k]; });
+      return out; // bereits verschachtelt (je Destination)
+    }
+    if (keys.every((k) => /^\d+$/.test(k))) return { colombia: v }; // Migration alt-flach
+    return {};
+  }
+
   function sanitizeTripGoal(t) {
     if (!isPlainObject(t)) return null;
     const str = (s, max) => (typeof s === "string" && s.length > 0 && s.length <= max ? s : "");
@@ -261,7 +277,7 @@
       dialogosPerfect: num(v.dialogosPerfect),
       dialogosScenesDone: isPlainObject(v.dialogosScenesDone) ? v.dialogosScenesDone : {},
       rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
-      pretripDays: isPlainObject(v.pretripDays) ? v.pretripDays : {},
+      pretripDays: sanitizePretripDays(v.pretripDays),
       tripGoal: sanitizeTripGoal(v.tripGoal),
       dailyCounts: isPlainObject(v.dailyCounts) ? v.dailyCounts : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},

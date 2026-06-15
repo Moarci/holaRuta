@@ -59,6 +59,7 @@
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
+    pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -2181,40 +2182,72 @@
   // seine Sitzung leer durchläuft (Hook in rate()). Tag N ist freigeschaltet, wenn
   // Tag N-1 abgeschlossen ist (oder es Tag 1 ist). Fortschritt persistent in gamestats.
   const PRETRIP = () => data.PRETRIP || [];
-  const pretripDone = (day) => !!(gamestats.pretripDays && gamestats.pretripDays[day]);
-  const pretripUnlocked = (day) => day === 1 || pretripDone(day - 1);
+  const pretripPlan = (scope) => PRETRIP().find((p) => p.scope === scope) || PRETRIP()[0] || { scope: null, days: [] };
+  const pretripDone = (scope, day) => !!(gamestats.pretripDays && gamestats.pretripDays[scope] && gamestats.pretripDays[scope][day]);
+  const pretripUnlocked = (scope, day) => day === 1 || pretripDone(scope, day - 1);
+  const planAllDone = (p) => p.days.length > 0 && p.days.every((d) => pretripDone(p.scope, d.day));
+
+  // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
+  // sonst der erste Plan (Kolumbien).
+  function defaultPretripScope() {
+    if (tripMentionsPeru()) return "peru";
+    if (tripMentionsMexico()) return "mexico";
+    if (tripMentionsCostaRica()) return "costarica";
+    if (tripMentionsColombia()) return "colombia";
+    return (PRETRIP()[0] || {}).scope || "colombia";
+  }
 
   function openPretrip() {
     dismissBadgeToast();
+    if (!state.pretripScope || !PRETRIP().some((p) => p.scope === state.pretripScope)) {
+      state.pretripScope = defaultPretripScope();
+    }
     state.screen = "pretrip";
     render();
   }
 
+  function setPretripScope(scope) {
+    if (!PRETRIP().some((p) => p.scope === scope)) return;
+    state.pretripScope = scope;
+    render();
+  }
+
   function pretripVM() {
-    const days = PRETRIP().map((d) => {
+    const scope = state.pretripScope || defaultPretripScope();
+    const plan = pretripPlan(scope);
+    const days = plan.days.map((d) => {
       const ch = d.challengeId ? (data.CHALLENGES || []).find((c) => c.id === d.challengeId) : null;
       return {
         day: d.day,
         title: natk(d, "titleDe"),
         count: d.cardIds.length,
         challenge: ch ? natk(ch, "textDe") : null,
-        done: pretripDone(d.day),
-        unlocked: pretripUnlocked(d.day),
+        done: pretripDone(scope, d.day),
+        unlocked: pretripUnlocked(scope, d.day),
       };
     });
     const total = days.length;
     const doneCount = days.filter((d) => d.done).length;
-    return { days, total, doneCount, allDone: total > 0 && doneCount === total };
+    const plans = PRETRIP().map((p) => ({
+      scope: p.scope,
+      label: natk(categoryById(p.scope) || {}, "label") || p.scope,
+      active: p.scope === scope,
+      done: planAllDone(p),
+    }));
+    return { scope, plans, days, total, doneCount, allDone: total > 0 && doneCount === total };
   }
 
   function startPretripDay(day) {
     dismissBadgeToast();
-    const d = PRETRIP().find((x) => x.day === day);
-    if (!d || !pretripUnlocked(day)) return;       // gesperrte Tage nicht startbar
+    const scope = state.pretripScope || defaultPretripScope();
+    const plan = pretripPlan(scope);
+    const d = plan.days.find((x) => x.day === day);
+    if (!d || !pretripUnlocked(scope, day)) return; // gesperrte Tage nicht startbar
     const cards = d.cardIds.map(cardById).filter(Boolean);
-    if (!cards.length) { recordPretripDay(day); openPretrip(); return; }
+    if (!cards.length) { recordPretripDay(scope, day); openPretrip(); return; }
     state.pretripDay = day;
-    state.scopeId = "colombia";                    // korrektes Done-Label
+    state.pretripScope = scope;
+    state.scopeId = scope;                          // korrektes Done-Label
     state.queue = cards.map((c) => c.id);
     state.total = state.queue.length;
     state.revealed = false;
@@ -2224,13 +2257,14 @@
     render();
   }
 
-  // Einen Pre-Trip-Tag als abgeschlossen vermerken (distinkt, idempotent).
-  function recordPretripDay(day) {
-    if (!day || pretripDone(day)) return;
-    const days = Object.assign({}, gamestats.pretripDays, { [day]: true });
+  // Einen Pre-Trip-Tag als abgeschlossen vermerken (je Destination, distinkt, idempotent).
+  function recordPretripDay(scope, day) {
+    if (!scope || !day || pretripDone(scope, day)) return;
+    const scopeDays = Object.assign({}, gamestats.pretripDays && gamestats.pretripDays[scope], { [day]: true });
+    const days = Object.assign({}, gamestats.pretripDays, { [scope]: scopeDays });
     gamestats = Object.assign({}, gamestats, { pretripDays: days });
     store.saveGameStats(gamestats);
-    syncBadges(Date.now(), true); // „Reisefertig"-Badge freischalten, wenn alle Tage geschafft
+    syncBadges(Date.now(), true); // „Reisefertig"-Badge freischalten, wenn ein ganzer Plan geschafft
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -2321,7 +2355,7 @@
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     // Pre-Trip-Tag abgeschlossen (Queue leer durchgelaufen)? distinkt vermerken.
-    if (!state.queue.length && state.pretripDay != null) recordPretripDay(state.pretripDay);
+    if (!state.queue.length && state.pretripDay != null) recordPretripDay(state.pretripScope, state.pretripDay);
     render();
     if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
   }
@@ -3307,6 +3341,7 @@
     else if (action === "ruta-del-dia") openRutaDelDia();
     else if (action === "open-preset") startPreset(el.dataset.preset);
     else if (action === "open-pretrip") openPretrip();
+    else if (action === "set-pretrip-scope") setPretripScope(el.dataset.scope);
     else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();

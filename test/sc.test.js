@@ -323,7 +323,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     conjugPlayed: 6, conjugPerfect: 3,
     dialogosPlayed: 5, dialogosPerfect: 2, dialogosScenesDone: { hotel: true, taxi: true },
     rutaDays: { "2026-06-11": true },
-    pretripDays: { 1: true, 2: true },
+    pretripDays: { colombia: { 1: true, 2: true }, peru: { 1: true } },
     tripGoal: { destination: "Cusco", endDate: "2026-07-01", perDay: 15, startedAt: "2026-06-12" },
     dailyCounts: { "2026-06-11": 12 },
     contextCardsSeen: { hostel01: true },
@@ -676,33 +676,43 @@ test("config.js: Default = HolaRuta pur (ohne Edition)", () => {
 });
 
 // ---------- Pre-Trip-Plan ----------
-test("data.PRETRIP: Tage sequenziell, Karten/Challenges existieren, Badge passt", () => {
+test("data.PRETRIP: Pläne je Destination, Tage sequenziell, Karten/Challenges existieren, Badge passt", () => {
   const cardIds = new Set(data.CARDS.map((c) => c.id));
   const challengeIds = new Set(data.CHALLENGES.map((c) => c.id));
+  const scopes = new Set(data.CATEGORIES.map((c) => c.id));
   assert.ok(Array.isArray(data.PRETRIP) && data.PRETRIP.length, "PRETRIP fehlt/leer");
-  data.PRETRIP.forEach((d, i) => {
-    assert.equal(d.day, i + 1, `Tag ${i + 1}: day-Nummer nicht sequenziell`);
-    assert.ok(d.titleDe && d.titleEn, `Tag ${d.day}: Titel fehlt`);
-    assert.ok(Array.isArray(d.cardIds) && d.cardIds.length, `Tag ${d.day}: cardIds leer`);
-    d.cardIds.forEach((id) => assert.ok(cardIds.has(id), `Tag ${d.day}: unbekannte Karte ${id}`));
-    if (d.challengeId) assert.ok(challengeIds.has(d.challengeId), `Tag ${d.day}: unbekannte Challenge ${d.challengeId}`);
+  data.PRETRIP.forEach((plan) => {
+    assert.ok(scopes.has(plan.scope), `Plan: unbekannter scope ${plan.scope}`);
+    assert.ok(Array.isArray(plan.days) && plan.days.length, `Plan ${plan.scope}: days leer`);
+    plan.days.forEach((d, i) => {
+      assert.equal(d.day, i + 1, `${plan.scope} Tag ${i + 1}: day-Nummer nicht sequenziell`);
+      assert.ok(d.titleDe && d.titleEn, `${plan.scope} Tag ${d.day}: Titel fehlt`);
+      assert.ok(Array.isArray(d.cardIds) && d.cardIds.length, `${plan.scope} Tag ${d.day}: cardIds leer`);
+      d.cardIds.forEach((id) => assert.ok(cardIds.has(id), `${plan.scope} Tag ${d.day}: unbekannte Karte ${id}`));
+      if (d.challengeId) assert.ok(challengeIds.has(d.challengeId), `${plan.scope} Tag ${d.day}: unbekannte Challenge ${d.challengeId}`);
+    });
+    // Keine Karte doppelt innerhalb eines Plans (sauberer, abwechslungsreicher Pfad).
+    const seen = new Set();
+    plan.days.forEach((d) => d.cardIds.forEach((id) => {
+      assert.ok(!seen.has(id), `${plan.scope}: Karte ${id} in mehreren Etappen`);
+      seen.add(id);
+    }));
   });
-  // Keine Karte doppelt über Etappen hinweg (sauberer, abwechslungsreicher Plan).
-  const seen = new Set();
-  data.PRETRIP.forEach((d) => d.cardIds.forEach((id) => {
-    assert.ok(!seen.has(id), `Karte ${id} in mehreren Etappen`);
-    seen.add(id);
-  }));
-  // „Reisefertig"-Badge muss bei genau allen Etappen freischalten.
+  // „Reisefertig"-Badge schaltet frei, wenn EIN ganzer Plan geschafft ist; alle Pläne gleich lang.
   const badge = badges.byId("pretrip_done");
   assert.ok(badge, "pretrip_done-Badge fehlt");
-  assert.equal(badge.threshold, data.PRETRIP.length, "Badge-Schwelle != Anzahl Pre-Trip-Tage");
+  const lengths = new Set(data.PRETRIP.map((p) => p.days.length));
+  assert.equal(lengths.size, 1, "Pläne haben unterschiedliche Etappenzahl");
+  assert.equal(badge.threshold, data.PRETRIP[0].days.length, "Badge-Schwelle != Etappen pro Plan");
 });
 
-test("badges: pretrip_done erst ab allen Etappen", () => {
+test("badges: pretrip_done erst ab einem vollständigen Plan", () => {
   const cards = [{ id: "a", cat: "hostel" }];
-  const partial = {}; for (let i = 1; i <= data.PRETRIP.length - 1; i++) partial[i] = true;
+  const N = data.PRETRIP[0].days.length;
+  // verschachteltes Format, ein Plan teilweise -> kein Badge
+  const partial = { colombia: {} }; for (let i = 1; i <= N - 1; i++) partial.colombia[i] = true;
   assert.ok(!badges.satisfiedIds(badges.buildMetrics(cards, {}, { pretripDays: partial })).includes("pretrip_done"));
-  const full = {}; for (let i = 1; i <= data.PRETRIP.length; i++) full[i] = true;
+  // ein Plan vollständig -> Badge
+  const full = { peru: {} }; for (let i = 1; i <= N; i++) full.peru[i] = true;
   assert.ok(badges.satisfiedIds(badges.buildMetrics(cards, {}, { pretripDays: full })).includes("pretrip_done"));
 });

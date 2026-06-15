@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.35.0",
+      date: "2026-06-15",
+      title: "Pre-Trip-Plan jetzt für vier Reiseziele",
+      items: [
+        "🗓️ Der Pre-Trip-Plan deckt jetzt Kolumbien, Peru, Mexiko und Costa Rica ab – wähle dein Reiseziel oben über die Chips. Jedes Ziel hat seine eigenen 7 Etappen mit kuratierten Karten und Real-Life-Mutprobe.",
+        "🧳 Der Fortschritt wird je Reiseziel getrennt gespeichert; den Stempel „Reisefertig“ gibt es, sobald du einen kompletten Plan geschafft hast. Bestehender Kolumbien-Fortschritt bleibt erhalten.",
+        "🎯 Welches Ziel vorausgewählt ist, richtet sich nach deinem Trip-Ziel (z. B. „Cusco“ → Peru).",
+      ],
+    },
+    {
       version: "1.34.0",
       date: "2026-06-14",
       title: "Zwei neue Reise-Pakete: Mexiko & Costa Rica",
