@@ -391,6 +391,30 @@ test("store.encodeTask/decodeTask: Round-Trip + Validierung (Aufgaben-Code)", ()
   assert.equal(badDue.due, ""); // ungültiges Datum -> leer
 });
 
+test("store.loadTasks/saveTasks: abonnierte Aufgaben (mehrere, defensiv typisiert)", () => {
+  const TKEY = "spanischcard.tasks.v1";
+  // Round-Trip einer gültigen Liste.
+  const list = [
+    { code: "HRT1.aaa", kind: "pretrip", scope: "peru", title: "HA1", due: "2026-07-01", addedAt: "2026-06-15" },
+    { code: "HRT1.bbb", kind: "preset", scope: "prearrival-co", title: "", due: "", addedAt: "2026-06-15" },
+  ];
+  store.saveTasks(list);
+  assert.deepEqual(store.loadTasks(), list);
+  // Müll-Einträge werden verworfen (kein Crash): fehlender code/kind/scope, falscher Typ.
+  storeMem[TKEY] = JSON.stringify([
+    { code: "HRT1.ok", kind: "category", scope: "colombia" }, // gültig (Optional-Felder ergänzt)
+    { kind: "preset", scope: "x" },        // code fehlt
+    { code: "x", kind: "weird", scope: "y" }, // kind ungültig
+    "nonsense", 42, null,                  // keine Objekte
+  ]);
+  const loaded = store.loadTasks();
+  assert.equal(loaded.length, 1);
+  assert.deepEqual(loaded[0], { code: "HRT1.ok", kind: "category", scope: "colombia", title: "", due: "", addedAt: "" });
+  // Kaputter Storage -> leere Liste.
+  storeMem[TKEY] = "{not json";
+  assert.deepEqual(store.loadTasks(), []);
+});
+
 test("store.loadGameStats: Trip-Ziel wird gesäubert (kaputtes Datum/perDay -> null)", () => {
   const base = (trip) => JSON.stringify(Object.assign({ reviews: 1 }, { tripGoal: trip }));
   // Gültig: bleibt erhalten, perDay wird gerundet/gedeckelt.

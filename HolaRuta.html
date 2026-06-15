@@ -1800,6 +1800,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Modo-profe-Einstieg im Tarea-Reiter (Editionen). */
 .teacher-btn--profe { width: 100%; justify-content: center; }
 .task-profe-hint { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); text-align: center; }
+.task-result__btns { margin-top: 0; }
+/* Abonnierte Aufgaben (Liste, mehrere parallel). */
+.task-list { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.task-item {
+  display: flex; align-items: center; gap: 10px; justify-content: space-between;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 10px 12px;
+}
+.task-item__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.task-item__target { font-weight: 800; color: var(--brand-ink); }
+.task-item__title { font-size: 0.95rem; }
+.task-item__due { font-size: 0.8rem; color: var(--muted); }
+.task-item__actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.task-empty { color: var(--muted); margin: 6px 0 0; }
 .task-preview { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 14px 16px; margin: 12px 0; }
 .task-target-line { font-weight: 800; color: var(--brand-ink); margin: 0 0 4px; }
 .task-title-line { font-size: 1.1rem; margin: 4px 0; }
@@ -2667,6 +2680,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       partner: { name: "ECOS · Cartagena" }, // url erst mit Partner-Freigabe
       logo: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMzIgNzIiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iRUNPUyBFc2N1ZWxhIGRlIEVzcGFub2wiPjx0ZXh0IHg9IjAiIHk9IjQ0IiBmb250LWZhbWlseT0iR2VvcmdpYSxUaW1lcyxzZXJpZiIgZm9udC1zaXplPSI0NiIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjYiIGZpbGw9IiMxRjdBOEMiPkVDT1M8L3RleHQ+PHRleHQgeD0iMyIgeT0iNjQiIGZvbnQtZmFtaWx5PSJWZXJkYW5hLEdlbmV2YSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iNjAwIiBsZXR0ZXItc3BhY2luZz0iMiIgZmlsbD0iIzE1NUM2OSI+RXNjdWVsYSBkZSBFc3BhJiMyNDE7b2w8L3RleHQ+PC9zdmc+",
       defaultDestination: "Cartagena",
+      appUrl: "https://moarci.github.io/holaRuta/",
       sync: { enabled: false, apiBase: "https://sync.example-ecos.org", orgLabel: "ECOS Cartagena" },
       taskTab: true,
       teacherTab: true,
@@ -2679,6 +2693,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       partner: { name: "WeRoad Colombia" }, // url erst mit Partner-Freigabe
       logo: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMzIgNDgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iV2VSb2FkIj48dGV4dCB4PSIwIiB5PSIzNyIgZm9udC1mYW1pbHk9IlZlcmRhbmEsR2VuZXZhLFRhaG9tYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iNzAwIiBsZXR0ZXItc3BhY2luZz0iLTEuNSIgZmlsbD0iI0ZCNUE0NyI+V2VSb2FkPC90ZXh0Pjwvc3ZnPg==",
       defaultDestination: "Colombia",
+      appUrl: "https://moarci.github.io/holaRuta/",
       sync: { enabled: false, apiBase: "https://sync.example-weroad.com", orgLabel: "WeRoad Colombia" },
       taskTab: true,
       teacherTab: true,
@@ -2728,6 +2743,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
     //   sync: { enabled: true, apiBase: "https://…", orgLabel: "ECOS" }
     sync: null,
+    // Kanonische Web-Adresse der App (für teilbare Aufgaben-/Onboarding-Links).
+    // null = aktuelle Adresse (location) verwenden. Editionen setzen ihre Pages-URL,
+    // damit ein Link auch dann stimmt, wenn die Lehrkraft die App als Datei öffnet.
+    appUrl: null,
     // Eigene Reiter „Tarea“ / „Modo profe“ in der unteren Navigation (statt nur als
     // Kachel unter Entdecken). Für Schul-/Reise-Editionen, wo Aufgaben-Codes bzw.
     // die Klassenübersicht der Hauptweg sind. Aktiv -> Kachel verschwindet aus Entdecken.
@@ -3916,8 +3935,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     taskTitlePh: "Titel (optional), z. B. „Hausaufgabe 1“",
     taskDue: "Frist (optional)",
     taskGenerate: "Code erzeugen",
-    taskCopy: "Kopieren",
+    taskCopy: "Code kopieren",
+    taskCopyLink: "Link kopieren",
     taskCopied: "Kopiert!",
+    linkCopied: "Link kopiert!",
+    taskShareHint: "Schick den Link per WhatsApp/Mail – ein Tipp abonniert die Aufgabe. Mehrere Aufgaben gehen parallel. (Der Code funktioniert weiterhin zum Einfügen.)",
     taskCodeFor: (p) => `Code für: ${p.label}`,
     grpPretrip: "Pre-Trip-Pläne",
     grpPreset: "Pre-Arrival-Pakete",
@@ -3951,8 +3973,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     taskTitlePh: "Title (optional), e.g. “Homework 1”",
     taskDue: "Due date (optional)",
     taskGenerate: "Generate code",
-    taskCopy: "Copy",
+    taskCopy: "Copy code",
+    taskCopyLink: "Copy link",
     taskCopied: "Copied!",
+    linkCopied: "Link copied!",
+    taskShareHint: "Send the link via WhatsApp/email – one tap subscribes the task. Multiple tasks run in parallel. (The code still works for pasting.)",
     taskCodeFor: (p) => `Code for: ${p.label}`,
     grpPretrip: "Pre-trip plans",
     grpPreset: "Pre-arrival packs",
@@ -3977,8 +4002,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     kindPreset: "Pre-Arrival",
     kindCategory: "Paket",
     dueLabel: (p) => `Frist: ${p.date}`,
-    start: "Aufgabe starten",
+    start: "Starten",
     other: "Andere Aufgabe",
+    add: "Aufgabe hinzufügen",
+    remove: "Entfernen",
+    yours: (p) => `Deine Aufgaben (${p.n})`,
+    empty: "Noch keine Aufgaben. Füge eine per Code oder Link hinzu.",
+    added: "Aufgabe hinzugefügt.",
+    already: "Diese Aufgabe hattest du schon – nach oben geholt.",
   }, {
     title: "Tarea",
     intro: "Got a task code from your teacher or tour leader? Paste it here and get started.",
@@ -3996,8 +4027,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     kindPreset: "Pre-arrival",
     kindCategory: "Pack",
     dueLabel: (p) => `Due: ${p.date}`,
-    start: "Start task",
+    start: "Start",
     other: "Another task",
+    add: "Add task",
+    remove: "Remove",
+    yours: (p) => `Your tasks (${p.n})`,
+    empty: "No tasks yet. Add one via code or link.",
+    added: "Task added.",
+    already: "You already had this task – moved to top.",
   });
 
   // ---------- placement: Ruta-Check (Einstufungstest) ----------
@@ -16261,13 +16298,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  const TASKS_KEY = "spanischcard.tasks.v1"; // abonnierte Aufgaben (mehrere parallel)
   // Zuletzt gesehene App-Version (für den „Was ist neu?"-Hinweis nach Updates).
   // Bewusst NICHT in KNOWN_KEYS: das ist gerätelokaler Anzeige-Status, kein
   // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
   // überschreiben und so einen falschen Update-Hinweis auslösen.
   const SEENVERSION_KEY = "spanischcard.seenVersion.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
-  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY];
+  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY];
 
   function readJson(key, fallback) {
     let raw = null;
@@ -16373,6 +16411,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       okStr(c.de, 500) &&
       okStr(c.es, 500) &&
       okStr(c.cat, 100));
+  }
+
+  // Abonnierte Aufgaben (mehrere parallel): Liste { code, kind, scope, title, due, addedAt }.
+  // Defensiv typisiert gegen fremdes/manipuliertes Storage; verworfen wird Ungültiges.
+  function sanitizeTask(t) {
+    if (!isPlainObject(t)) return null;
+    const str = (s, max) => (typeof s === "string" && s.length <= max ? s : "");
+    const kind = t.kind === "preset" || t.kind === "pretrip" || t.kind === "category" ? t.kind : "";
+    const code = str(t.code, 4000), scope = str(t.scope, 100);
+    if (!kind || !scope || !code) return null;
+    return { code, kind, scope, title: str(t.title, 200), due: str(t.due, 20), addedAt: str(t.addedAt, 30) };
+  }
+  function loadTasks() {
+    const v = readJson(TASKS_KEY, []);
+    if (!Array.isArray(v)) return [];
+    const out = [];
+    v.forEach((t) => { const c = sanitizeTask(t); if (c) out.push(c); });
+    return out;
   }
 
   // ----- Backup: Export/Import aller HolaRuta-Daten (R4) -----
@@ -16610,6 +16666,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     readBackup,
     encodeTask,
     decodeTask,
+    loadTasks,
+    saveTasks: (l) => writeJson(TASKS_KEY, Array.isArray(l) ? l : []),
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),
@@ -19183,6 +19241,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.55.0",
+      date: "2026-06-15",
+      title: "Mehrere Aufgaben parallel – per Link teilbar & abonnierbar",
+      items: [
+        "📋 Lernende können jetzt MEHRERE Aufgaben gleichzeitig haben: die Tarea-Seite zeigt eine Liste deiner abonnierten Aufgaben, jede einzeln startbar und entfernbar – und sie bleiben gespeichert (auch nach dem Neuladen).",
+        "🔗 Lehrkräfte/Reiseleitung teilen eine Aufgabe jetzt als Link („Link kopieren“): ein Tipp darauf abonniert sie direkt – kein Einfügen nötig. Der Code funktioniert weiter zum manuellen Hinzufügen.",
+        "🧷 Aufgaben reisen im Backup mit (für die Lehreransicht/das eigene Gerät).",
+      ],
+    },
     {
       version: "1.54.0",
       date: "2026-06-15",
@@ -22166,7 +22234,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <div class="task-result">
         ${vm.taskCodeLabel ? `<p class="task-codefor">🎯 ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
         <textarea id="task-code" class="task-code" readonly rows="2">${esc(vm.taskCode)}</textarea>
-        <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
+        <div class="teacher-actions task-result__btns">
+          <button class="teacher-btn teacher-btn--main" data-action="task-copy-link">🔗 ${esc(t("teacher.taskCopyLink"))}</button>
+          <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
+        </div>
+        <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
       </div>` : ""}`;
 
     // In Editionen hängt Modo profe unter dem Tarea-Reiter: Tab-Leiste mit „Tarea“
@@ -22186,24 +22258,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ${withTab ? tabbar("tarea") : ""}`;
   }
 
-  // Lernenden-Seite: Aufgaben-Code öffnen und in die zugewiesene Übung starten.
+  // Lernenden-Seite: mehrere abonnierte Aufgaben (parallel), plus Code-Eingabe zum
+  // Hinzufügen weiterer. Jede Aufgabe ist einzeln startbar und entfernbar.
   function renderTask(vm) {
-    const body = vm.opened
-      ? `
-      <div class="task-preview">
-        <p class="task-target-line">🎯 ${esc(vm.opened.targetLabel)}</p>
-        ${vm.opened.title ? `<p class="task-title-line">„${esc(vm.opened.title)}“</p>` : ""}
-        ${vm.opened.due ? `<p class="task-due-line">${esc(t("task.dueLabel", { date: vm.opened.due }))}</p>` : ""}
-        <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="task-start">▶️ ${esc(t("task.start"))}</button>
-          <button class="teacher-btn" data-action="task-clear">${esc(t("task.other"))}</button>
-        </div>
-      </div>`
-      : `
+    const tasks = vm.tasks || [];
+    const list = tasks.length
+      ? `<p class="sectioncap">${esc(t("task.yours", { n: tasks.length }))}</p>
+         <ul class="task-list">
+           ${tasks.map((tk) => `
+             <li class="task-item">
+               <div class="task-item__body">
+                 <span class="task-item__target">🎯 ${esc(tk.targetLabel)}</span>
+                 ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
+                 ${tk.due ? `<span class="task-item__due">${esc(t("task.dueLabel", { date: tk.due }))}</span>` : ""}
+               </div>
+               <div class="task-item__actions">
+                 <button class="teacher-btn teacher-btn--main" data-action="task-start" data-idx="${tk.idx}">▶️ ${esc(t("task.start"))}</button>
+                 <button class="teacher-x" data-action="task-remove" data-idx="${tk.idx}" aria-label="${esc(t("task.remove"))}" title="${esc(t("task.remove"))}">✕</button>
+               </div>
+             </li>`).join("")}
+         </ul>
+         <hr class="teacher-sep">`
+      : `<p class="task-empty">${esc(t("task.empty"))}</p>`;
+    const body = `
+      ${list}
       <label class="task-label" for="task-code-input">${esc(t("task.pasteLabel"))}</label>
       <textarea id="task-code-input" class="task-code" rows="3" placeholder="HRT1.…"></textarea>
       <div class="teacher-actions">
-        <button class="teacher-btn teacher-btn--main" data-action="task-open">▶️ ${esc(t("task.open"))}</button>
+        <button class="teacher-btn teacher-btn--main" data-action="task-open">➕ ${esc(t("task.add"))}</button>
         <button class="teacher-btn" data-action="task-paste">📋 ${esc(t("task.paste"))}</button>
       </div>`;
     // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
@@ -23541,6 +23623,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   let progress = store.loadProgress();
   let settings = store.loadSettings();
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
+  let subscribedTasks = store.loadTasks(); // abonnierte Aufgaben (mehrere parallel, persistent)
 
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
@@ -23577,7 +23660,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     taskTarget: "",          // gewähltes Aufgaben-Ziel im Formular (überlebt Re-Render)
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
-    openedTask: null,        // vom Lernenden geöffnete Aufgabe { kind, scope, title, due } | null
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
@@ -24216,11 +24298,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // ----- Link-Parameter lesen/aufräumen (für geteilte Onboarding-Links) -----
+  // Roher Parameterwert (NICHT kleinschreiben – Aufgaben-Codes sind base64, case-sensitiv).
   function urlParam(name) {
     try {
       var search = (location.search && location.search.length > 1) ? location.search : "";
       if (!search && location.hash && location.hash.indexOf("=") >= 0) search = location.hash.replace(/^#/, "?");
-      return (new URLSearchParams(search).get(name) || "").toLowerCase();
+      return new URLSearchParams(search).get(name) || "";
     } catch (e) { return ""; }
   }
   function stripUrlParam(name) {
@@ -26207,53 +26290,105 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       if (navigator.clipboard && navigator.clipboard.readText) {
         navigator.clipboard.readText().then(function (text) {
           text = (text || "").trim();
-          if (text) { el.value = text; flashButton("task-paste", t("task.pasted")); el.focus(); }
+          // Eingefügten Code direkt abonnieren (mehrere parallel möglich).
+          if (text) { if (addSubscribedTask(text)) { el.value = ""; render(); } else { el.value = text; el.focus(); } }
           else fallback();
         }, fallback);
       } else { fallback(); }
     } catch (e) { fallback(); }
   }
 
+  // Teilbarer Link für eine erzeugte Aufgabe: <appUrl>?edition=<id>&task=<code>.
+  // appUrl aus der Edition (sonst aktuelle Adresse), damit der Link auch stimmt,
+  // wenn die Lehrkraft die App als Datei öffnet.
+  function taskShareLink(code) {
+    const cfg = (window.SC && window.SC.config) || {};
+    let base = cfg.appUrl || "";
+    if (!base) { try { base = location.origin + location.pathname; } catch (e) { base = ""; } }
+    base = String(base).replace(/[?#].*$/, "");
+    const parts = [];
+    if (cfg.edition) parts.push("edition=" + encodeURIComponent(cfg.edition));
+    parts.push("task=" + encodeURIComponent(code));
+    return base + (parts.length ? "?" + parts.join("&") : "");
+  }
+  function copyTaskLink() {
+    const code = state.teacherTaskCode;
+    if (!code) return;
+    const link = taskShareLink(code);
+    // execCommand-Kopie über ein temporäres Feld (robust im WebView/Datei-Kontext).
+    let ok = false;
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = link; ta.setAttribute("readonly", "readonly");
+      ta.style.position = "fixed"; ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ok = execCopyFrom(ta, link.length);
+      document.body.removeChild(ta);
+    } catch (e) { ok = false; }
+    if (ok) { flashButton("task-copy-link", t("teacher.linkCopied")); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(function () { flashButton("task-copy-link", t("teacher.linkCopied")); }, function () { showNotice(link); });
+      return;
+    }
+    showNotice(link);
+  }
+
   // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
   function openTaskScreen() { dismissBadgeToast(); state.screen = "task"; render(); }
 
-  function openTaskFromInput() {
-    const el = document.getElementById("task-code-input");
-    const task = el ? store.decodeTask(el.value) : null;
-    if (!task) { showNotice(t("task.invalid")); return; }
-    const exists = task.kind === "preset"
-      ? (data.PRESETS || []).some((p) => p.id === task.scope)
-      : task.kind === "pretrip"
-        ? (data.PRETRIP || []).some((p) => p.scope === task.scope)
-        : !!categoryById(task.scope);
-    if (!exists) { showNotice(t("task.unknownTarget")); return; }
-    state.openedTask = task;
+  // Verweist eine Aufgabe auf existierende Inhalte?
+  function taskTargetExists(task) {
+    if (!task || !task.scope) return false;
+    if (task.kind === "preset") return (data.PRESETS || []).some((p) => p.id === task.scope);
+    if (task.kind === "pretrip") return (data.PRETRIP || []).some((p) => p.scope === task.scope);
+    return !!categoryById(task.scope);
+  }
+
+  // Eine Aufgabe (per Code) abonnieren: dekodieren, prüfen, doppelte vermeiden,
+  // persistent oben in die Liste legen. Gibt true bei Erfolg zurück (mit Toast).
+  function addSubscribedTask(code, silent) {
+    const task = store.decodeTask(code);
+    if (!task) { if (!silent) showNotice(t("task.invalid")); return false; }
+    if (!taskTargetExists(task)) { if (!silent) showNotice(t("task.unknownTarget")); return false; }
+    const norm = String(code).trim();
+    const idx = subscribedTasks.findIndex((x) => x.code === norm);
+    const entry = { code: norm, kind: task.kind, scope: task.scope, title: task.title || "", due: task.due || "", addedAt: new Date().toISOString().slice(0, 10) };
+    if (idx >= 0) subscribedTasks = [entry].concat(subscribedTasks.filter((_, i) => i !== idx)); // schon da -> nach oben
+    else subscribedTasks = [entry].concat(subscribedTasks);
+    store.saveTasks(subscribedTasks);
+    if (!silent) showNotice(idx >= 0 ? t("task.already") : t("task.added"));
+    return true;
+  }
+
+  function removeSubscribedTask(idx) {
+    if (idx < 0 || idx >= subscribedTasks.length) return;
+    subscribedTasks = subscribedTasks.filter((_, i) => i !== idx);
+    store.saveTasks(subscribedTasks);
     render();
   }
 
-  function startOpenedTask() {
-    const task = state.openedTask;
+  function startSubscribedTask(idx) {
+    const task = subscribedTasks[idx];
     if (!task) return;
-    // Herkunft "task" -> der Fertig-Screen führt zurück zur Aufgabe. Beim Pre-Trip
-    // öffnet sich der Plan-Screen; dessen Etappen tragen ihre eigene Herkunft
-    // ("pretrip"), sodass man dort nach jeder Etappe wieder landet.
+    // Herkunft "task" -> der Fertig-Screen führt zurück zur Aufgabenliste. Beim Pre-Trip
+    // öffnet sich der Plan-Screen (gesperrt aufs zugewiesene Land).
     if (task.kind === "preset") startPreset(task.scope, "task");
     else if (task.kind === "pretrip") {
-      // Zugewiesenes Reiseziel FESTLEGEN: nur dieses Land zeigen, nicht wechselbar.
-      if (PRETRIP().some((p) => p.scope === task.scope)) {
-        state.pretripLock = task.scope;
-        state.pretripScope = task.scope;
-      }
+      if (PRETRIP().some((p) => p.scope === task.scope)) { state.pretripLock = task.scope; state.pretripScope = task.scope; }
       openPretrip();
     }
-    else startStudy(task.scope, "task"); // ganzes Paket
+    else startStudy(task.scope, "task");
   }
 
-  function clearOpenedTask() { state.openedTask = null; state.pretripLock = null; render(); }
+  function openTaskFromInput() {
+    const el = document.getElementById("task-code-input");
+    if (addSubscribedTask(el ? el.value : "")) { if (el) el.value = ""; render(); }
+  }
 
   function taskVM() {
-    const t0 = state.openedTask;
-    return { opened: t0 ? { title: t0.title, due: t0.due, targetLabel: taskTargetLabel(t0) } : null };
+    return {
+      tasks: subscribedTasks.map((tk, i) => ({ idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due })),
+    };
   }
 
   // ----- Ruta-Check (Einstufungstest, reisepraktisch + ehrlich) -----
@@ -27893,13 +28028,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "teacher-print") printTeacher();
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
+    else if (action === "task-copy-link") copyTaskLink();
     else if (action === "task-paste") pasteTaskCode();
     else if (action === "open-task") openTaskScreen();
     else if (action === "back-pretrip") openPretrip();
     else if (action === "back-task") openTaskScreen();
     else if (action === "task-open") openTaskFromInput();
-    else if (action === "task-start") startOpenedTask();
-    else if (action === "task-clear") clearOpenedTask();
+    else if (action === "task-start") startSubscribedTask(Number(el.dataset.idx));
+    else if (action === "task-remove") removeSubscribedTask(Number(el.dataset.idx));
     else if (action === "open-placement") openPlacement();
     else if (action === "placement-start") startPlacementTest();
     else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
@@ -28317,9 +28453,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       state.screen = "onboarding";
     }
   }
+  // Geteilter Aufgaben-Link (?task=<code>): die Aufgabe still abonnieren (mehrere
+  // parallel möglich) und den Parameter entfernen. Onboarding hat Vorrang vor dem Screen.
+  const taskCode = urlParam("task");
+  if (taskCode) {
+    if (addSubscribedTask(taskCode, true) && settings.onboarded === true && state.screen !== "onboarding") {
+      openTaskScreen(); // direkt zur Aufgabenliste, wenn schon eingerichtet
+    }
+    stripUrlParam("task");
+  }
   // Geteilter Link einer Schule/Partnerfirma (?start=onboarding): immer ins Onboarding
   // – auch auf einem Bestandsgerät. Branding kommt aus der Edition (?edition=…, registry.js).
-  if (urlParam("start") === "onboarding") {
+  if (urlParam("start").toLowerCase() === "onboarding") {
     state.screen = "onboarding";
     stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }

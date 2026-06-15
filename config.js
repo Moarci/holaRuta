@@ -25,6 +25,10 @@
     // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
     //   sync: { enabled: true, apiBase: "https://…", orgLabel: "ECOS" }
     sync: null,
+    // Kanonische Web-Adresse der App (für teilbare Aufgaben-/Onboarding-Links).
+    // null = aktuelle Adresse (location) verwenden. Editionen setzen ihre Pages-URL,
+    // damit ein Link auch dann stimmt, wenn die Lehrkraft die App als Datei öffnet.
+    appUrl: null,
     // Eigene Reiter „Tarea“ / „Modo profe“ in der unteren Navigation (statt nur als
     // Kachel unter Entdecken). Für Schul-/Reise-Editionen, wo Aufgaben-Codes bzw.
     // die Klassenübersicht der Hauptweg sind. Aktiv -> Kachel verschwindet aus Entdecken.

@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.55.0",
+      date: "2026-06-15",
+      title: "Mehrere Aufgaben parallel – per Link teilbar & abonnierbar",
+      items: [
+        "📋 Lernende können jetzt MEHRERE Aufgaben gleichzeitig haben: die Tarea-Seite zeigt eine Liste deiner abonnierten Aufgaben, jede einzeln startbar und entfernbar – und sie bleiben gespeichert (auch nach dem Neuladen).",
+        "🔗 Lehrkräfte/Reiseleitung teilen eine Aufgabe jetzt als Link („Link kopieren“): ein Tipp darauf abonniert sie direkt – kein Einfügen nötig. Der Code funktioniert weiter zum manuellen Hinzufügen.",
+        "🧷 Aufgaben reisen im Backup mit (für die Lehreransicht/das eigene Gerät).",
+      ],
+    },
+    {
       version: "1.54.0",
       date: "2026-06-15",
       title: "Gebrandeter Einstiegslink: direkt ins Onboarding, mit Partner-Logo",

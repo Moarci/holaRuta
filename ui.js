@@ -2397,7 +2397,11 @@
       <div class="task-result">
         ${vm.taskCodeLabel ? `<p class="task-codefor">🎯 ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
         <textarea id="task-code" class="task-code" readonly rows="2">${esc(vm.taskCode)}</textarea>
-        <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
+        <div class="teacher-actions task-result__btns">
+          <button class="teacher-btn teacher-btn--main" data-action="task-copy-link">🔗 ${esc(t("teacher.taskCopyLink"))}</button>
+          <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
+        </div>
+        <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
       </div>` : ""}`;
 
     // In Editionen hängt Modo profe unter dem Tarea-Reiter: Tab-Leiste mit „Tarea“
@@ -2417,24 +2421,34 @@
       ${withTab ? tabbar("tarea") : ""}`;
   }
 
-  // Lernenden-Seite: Aufgaben-Code öffnen und in die zugewiesene Übung starten.
+  // Lernenden-Seite: mehrere abonnierte Aufgaben (parallel), plus Code-Eingabe zum
+  // Hinzufügen weiterer. Jede Aufgabe ist einzeln startbar und entfernbar.
   function renderTask(vm) {
-    const body = vm.opened
-      ? `
-      <div class="task-preview">
-        <p class="task-target-line">🎯 ${esc(vm.opened.targetLabel)}</p>
-        ${vm.opened.title ? `<p class="task-title-line">„${esc(vm.opened.title)}“</p>` : ""}
-        ${vm.opened.due ? `<p class="task-due-line">${esc(t("task.dueLabel", { date: vm.opened.due }))}</p>` : ""}
-        <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="task-start">▶️ ${esc(t("task.start"))}</button>
-          <button class="teacher-btn" data-action="task-clear">${esc(t("task.other"))}</button>
-        </div>
-      </div>`
-      : `
+    const tasks = vm.tasks || [];
+    const list = tasks.length
+      ? `<p class="sectioncap">${esc(t("task.yours", { n: tasks.length }))}</p>
+         <ul class="task-list">
+           ${tasks.map((tk) => `
+             <li class="task-item">
+               <div class="task-item__body">
+                 <span class="task-item__target">🎯 ${esc(tk.targetLabel)}</span>
+                 ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
+                 ${tk.due ? `<span class="task-item__due">${esc(t("task.dueLabel", { date: tk.due }))}</span>` : ""}
+               </div>
+               <div class="task-item__actions">
+                 <button class="teacher-btn teacher-btn--main" data-action="task-start" data-idx="${tk.idx}">▶️ ${esc(t("task.start"))}</button>
+                 <button class="teacher-x" data-action="task-remove" data-idx="${tk.idx}" aria-label="${esc(t("task.remove"))}" title="${esc(t("task.remove"))}">✕</button>
+               </div>
+             </li>`).join("")}
+         </ul>
+         <hr class="teacher-sep">`
+      : `<p class="task-empty">${esc(t("task.empty"))}</p>`;
+    const body = `
+      ${list}
       <label class="task-label" for="task-code-input">${esc(t("task.pasteLabel"))}</label>
       <textarea id="task-code-input" class="task-code" rows="3" placeholder="HRT1.…"></textarea>
       <div class="teacher-actions">
-        <button class="teacher-btn teacher-btn--main" data-action="task-open">▶️ ${esc(t("task.open"))}</button>
+        <button class="teacher-btn teacher-btn--main" data-action="task-open">➕ ${esc(t("task.add"))}</button>
         <button class="teacher-btn" data-action="task-paste">📋 ${esc(t("task.paste"))}</button>
       </div>`;
     // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“

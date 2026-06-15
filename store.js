@@ -10,13 +10,14 @@
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  const TASKS_KEY = "spanischcard.tasks.v1"; // abonnierte Aufgaben (mehrere parallel)
   // Zuletzt gesehene App-Version (für den „Was ist neu?"-Hinweis nach Updates).
   // Bewusst NICHT in KNOWN_KEYS: das ist gerätelokaler Anzeige-Status, kein
   // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
   // überschreiben und so einen falschen Update-Hinweis auslösen.
   const SEENVERSION_KEY = "spanischcard.seenVersion.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
-  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY];
+  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY];
 
   function readJson(key, fallback) {
     let raw = null;
@@ -122,6 +123,24 @@
       okStr(c.de, 500) &&
       okStr(c.es, 500) &&
       okStr(c.cat, 100));
+  }
+
+  // Abonnierte Aufgaben (mehrere parallel): Liste { code, kind, scope, title, due, addedAt }.
+  // Defensiv typisiert gegen fremdes/manipuliertes Storage; verworfen wird Ungültiges.
+  function sanitizeTask(t) {
+    if (!isPlainObject(t)) return null;
+    const str = (s, max) => (typeof s === "string" && s.length <= max ? s : "");
+    const kind = t.kind === "preset" || t.kind === "pretrip" || t.kind === "category" ? t.kind : "";
+    const code = str(t.code, 4000), scope = str(t.scope, 100);
+    if (!kind || !scope || !code) return null;
+    return { code, kind, scope, title: str(t.title, 200), due: str(t.due, 20), addedAt: str(t.addedAt, 30) };
+  }
+  function loadTasks() {
+    const v = readJson(TASKS_KEY, []);
+    if (!Array.isArray(v)) return [];
+    const out = [];
+    v.forEach((t) => { const c = sanitizeTask(t); if (c) out.push(c); });
+    return out;
   }
 
   // ----- Backup: Export/Import aller HolaRuta-Daten (R4) -----
@@ -359,6 +378,8 @@
     readBackup,
     encodeTask,
     decodeTask,
+    loadTasks,
+    saveTasks: (l) => writeJson(TASKS_KEY, Array.isArray(l) ? l : []),
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),

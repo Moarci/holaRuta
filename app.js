@@ -34,6 +34,7 @@
   let progress = store.loadProgress();
   let settings = store.loadSettings();
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
+  let subscribedTasks = store.loadTasks(); // abonnierte Aufgaben (mehrere parallel, persistent)
 
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
@@ -70,7 +71,6 @@
     taskTarget: "",          // gewähltes Aufgaben-Ziel im Formular (überlebt Re-Render)
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
-    openedTask: null,        // vom Lernenden geöffnete Aufgabe { kind, scope, title, due } | null
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
@@ -709,11 +709,12 @@
   }
 
   // ----- Link-Parameter lesen/aufräumen (für geteilte Onboarding-Links) -----
+  // Roher Parameterwert (NICHT kleinschreiben – Aufgaben-Codes sind base64, case-sensitiv).
   function urlParam(name) {
     try {
       var search = (location.search && location.search.length > 1) ? location.search : "";
       if (!search && location.hash && location.hash.indexOf("=") >= 0) search = location.hash.replace(/^#/, "?");
-      return (new URLSearchParams(search).get(name) || "").toLowerCase();
+      return new URLSearchParams(search).get(name) || "";
     } catch (e) { return ""; }
   }
   function stripUrlParam(name) {
@@ -2700,53 +2701,105 @@
       if (navigator.clipboard && navigator.clipboard.readText) {
         navigator.clipboard.readText().then(function (text) {
           text = (text || "").trim();
-          if (text) { el.value = text; flashButton("task-paste", t("task.pasted")); el.focus(); }
+          // Eingefügten Code direkt abonnieren (mehrere parallel möglich).
+          if (text) { if (addSubscribedTask(text)) { el.value = ""; render(); } else { el.value = text; el.focus(); } }
           else fallback();
         }, fallback);
       } else { fallback(); }
     } catch (e) { fallback(); }
   }
 
+  // Teilbarer Link für eine erzeugte Aufgabe: <appUrl>?edition=<id>&task=<code>.
+  // appUrl aus der Edition (sonst aktuelle Adresse), damit der Link auch stimmt,
+  // wenn die Lehrkraft die App als Datei öffnet.
+  function taskShareLink(code) {
+    const cfg = (window.SC && window.SC.config) || {};
+    let base = cfg.appUrl || "";
+    if (!base) { try { base = location.origin + location.pathname; } catch (e) { base = ""; } }
+    base = String(base).replace(/[?#].*$/, "");
+    const parts = [];
+    if (cfg.edition) parts.push("edition=" + encodeURIComponent(cfg.edition));
+    parts.push("task=" + encodeURIComponent(code));
+    return base + (parts.length ? "?" + parts.join("&") : "");
+  }
+  function copyTaskLink() {
+    const code = state.teacherTaskCode;
+    if (!code) return;
+    const link = taskShareLink(code);
+    // execCommand-Kopie über ein temporäres Feld (robust im WebView/Datei-Kontext).
+    let ok = false;
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = link; ta.setAttribute("readonly", "readonly");
+      ta.style.position = "fixed"; ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ok = execCopyFrom(ta, link.length);
+      document.body.removeChild(ta);
+    } catch (e) { ok = false; }
+    if (ok) { flashButton("task-copy-link", t("teacher.linkCopied")); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(function () { flashButton("task-copy-link", t("teacher.linkCopied")); }, function () { showNotice(link); });
+      return;
+    }
+    showNotice(link);
+  }
+
   // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
   function openTaskScreen() { dismissBadgeToast(); state.screen = "task"; render(); }
 
-  function openTaskFromInput() {
-    const el = document.getElementById("task-code-input");
-    const task = el ? store.decodeTask(el.value) : null;
-    if (!task) { showNotice(t("task.invalid")); return; }
-    const exists = task.kind === "preset"
-      ? (data.PRESETS || []).some((p) => p.id === task.scope)
-      : task.kind === "pretrip"
-        ? (data.PRETRIP || []).some((p) => p.scope === task.scope)
-        : !!categoryById(task.scope);
-    if (!exists) { showNotice(t("task.unknownTarget")); return; }
-    state.openedTask = task;
+  // Verweist eine Aufgabe auf existierende Inhalte?
+  function taskTargetExists(task) {
+    if (!task || !task.scope) return false;
+    if (task.kind === "preset") return (data.PRESETS || []).some((p) => p.id === task.scope);
+    if (task.kind === "pretrip") return (data.PRETRIP || []).some((p) => p.scope === task.scope);
+    return !!categoryById(task.scope);
+  }
+
+  // Eine Aufgabe (per Code) abonnieren: dekodieren, prüfen, doppelte vermeiden,
+  // persistent oben in die Liste legen. Gibt true bei Erfolg zurück (mit Toast).
+  function addSubscribedTask(code, silent) {
+    const task = store.decodeTask(code);
+    if (!task) { if (!silent) showNotice(t("task.invalid")); return false; }
+    if (!taskTargetExists(task)) { if (!silent) showNotice(t("task.unknownTarget")); return false; }
+    const norm = String(code).trim();
+    const idx = subscribedTasks.findIndex((x) => x.code === norm);
+    const entry = { code: norm, kind: task.kind, scope: task.scope, title: task.title || "", due: task.due || "", addedAt: new Date().toISOString().slice(0, 10) };
+    if (idx >= 0) subscribedTasks = [entry].concat(subscribedTasks.filter((_, i) => i !== idx)); // schon da -> nach oben
+    else subscribedTasks = [entry].concat(subscribedTasks);
+    store.saveTasks(subscribedTasks);
+    if (!silent) showNotice(idx >= 0 ? t("task.already") : t("task.added"));
+    return true;
+  }
+
+  function removeSubscribedTask(idx) {
+    if (idx < 0 || idx >= subscribedTasks.length) return;
+    subscribedTasks = subscribedTasks.filter((_, i) => i !== idx);
+    store.saveTasks(subscribedTasks);
     render();
   }
 
-  function startOpenedTask() {
-    const task = state.openedTask;
+  function startSubscribedTask(idx) {
+    const task = subscribedTasks[idx];
     if (!task) return;
-    // Herkunft "task" -> der Fertig-Screen führt zurück zur Aufgabe. Beim Pre-Trip
-    // öffnet sich der Plan-Screen; dessen Etappen tragen ihre eigene Herkunft
-    // ("pretrip"), sodass man dort nach jeder Etappe wieder landet.
+    // Herkunft "task" -> der Fertig-Screen führt zurück zur Aufgabenliste. Beim Pre-Trip
+    // öffnet sich der Plan-Screen (gesperrt aufs zugewiesene Land).
     if (task.kind === "preset") startPreset(task.scope, "task");
     else if (task.kind === "pretrip") {
-      // Zugewiesenes Reiseziel FESTLEGEN: nur dieses Land zeigen, nicht wechselbar.
-      if (PRETRIP().some((p) => p.scope === task.scope)) {
-        state.pretripLock = task.scope;
-        state.pretripScope = task.scope;
-      }
+      if (PRETRIP().some((p) => p.scope === task.scope)) { state.pretripLock = task.scope; state.pretripScope = task.scope; }
       openPretrip();
     }
-    else startStudy(task.scope, "task"); // ganzes Paket
+    else startStudy(task.scope, "task");
   }
 
-  function clearOpenedTask() { state.openedTask = null; state.pretripLock = null; render(); }
+  function openTaskFromInput() {
+    const el = document.getElementById("task-code-input");
+    if (addSubscribedTask(el ? el.value : "")) { if (el) el.value = ""; render(); }
+  }
 
   function taskVM() {
-    const t0 = state.openedTask;
-    return { opened: t0 ? { title: t0.title, due: t0.due, targetLabel: taskTargetLabel(t0) } : null };
+    return {
+      tasks: subscribedTasks.map((tk, i) => ({ idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due })),
+    };
   }
 
   // ----- Ruta-Check (Einstufungstest, reisepraktisch + ehrlich) -----
@@ -4386,13 +4439,14 @@
     else if (action === "teacher-print") printTeacher();
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
+    else if (action === "task-copy-link") copyTaskLink();
     else if (action === "task-paste") pasteTaskCode();
     else if (action === "open-task") openTaskScreen();
     else if (action === "back-pretrip") openPretrip();
     else if (action === "back-task") openTaskScreen();
     else if (action === "task-open") openTaskFromInput();
-    else if (action === "task-start") startOpenedTask();
-    else if (action === "task-clear") clearOpenedTask();
+    else if (action === "task-start") startSubscribedTask(Number(el.dataset.idx));
+    else if (action === "task-remove") removeSubscribedTask(Number(el.dataset.idx));
     else if (action === "open-placement") openPlacement();
     else if (action === "placement-start") startPlacementTest();
     else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
@@ -4810,9 +4864,18 @@
       state.screen = "onboarding";
     }
   }
+  // Geteilter Aufgaben-Link (?task=<code>): die Aufgabe still abonnieren (mehrere
+  // parallel möglich) und den Parameter entfernen. Onboarding hat Vorrang vor dem Screen.
+  const taskCode = urlParam("task");
+  if (taskCode) {
+    if (addSubscribedTask(taskCode, true) && settings.onboarded === true && state.screen !== "onboarding") {
+      openTaskScreen(); // direkt zur Aufgabenliste, wenn schon eingerichtet
+    }
+    stripUrlParam("task");
+  }
   // Geteilter Link einer Schule/Partnerfirma (?start=onboarding): immer ins Onboarding
   // – auch auf einem Bestandsgerät. Branding kommt aus der Edition (?edition=…, registry.js).
-  if (urlParam("start") === "onboarding") {
+  if (urlParam("start").toLowerCase() === "onboarding") {
     state.screen = "onboarding";
     stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
