@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.28.0",
+      date: "2026-06-15",
+      title: "Historia de Sudamérica: die große Geschichte",
+      items: [
+        "📜 Neue Erklärseite unter Entdecken (und als Banner in „Países y culturas“): die ganze Geschichte Südamerikas auf einen Blick – von den Inka über die spanische Eroberung und die Kolonialzeit bis zu Bolívar, San Martín und der Unabhängigkeit.",
+        "🕰️ Interaktiver Zeitstrahl: sieben aufklappbare Epochen – Hochkulturen, Conquista, Vizekönigreiche & Silber, der Funke (Napoleon & die Junten), der Freiheitskampf, die Abspaltung in viele Nationen und der Weg bis heute. Jede Epoche mit Bild von Wikimedia, Kernpunkten und Erklärung.",
+        "👤 Galerie der Protagonisten: Bolívar, San Martín, Sucre, O’Higgins, Manuela Sáenz und Atahualpa – mit Porträt, Lebensdaten und Zitat.",
+        "📰 „Heute: Lage & Spannungen“: aktuelle Konflikte verständlich erklärt – Venezuela-Krise & Massenflucht, Grenzstreit um Essequibo, Boliviens Meereszugang, Kolumbiens Friedensprozess, Perus politische Dauerkrise, Argentiniens Kurswechsel, Amazonas & indigene Rechte und der Darién.",
+        "💡 „¿Sabías que…?“-Häppchen und durchgängig zweisprachig (Deutsch/Englisch).",
+      ],
+    },
+    {
       version: "1.27.0",
       date: "2026-06-14",
       title: "Suche & sauberes Scrollen",

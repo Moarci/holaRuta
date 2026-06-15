@@ -14,6 +14,7 @@
   const share = window.SC.share || null;   // optional – Sharepic teilen/herunterladen
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
+  const historia = window.SC.historia || null;   // Geschichte Südamerikas (Erklärseite, optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
@@ -226,6 +227,7 @@
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
       hasCountries: !!countries, // dito für die Länderkunde
+      hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
@@ -403,7 +405,21 @@
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
     // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
-    return { country: country ? loc(country) : null, groups };
+    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia };
+  }
+
+  // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
+  // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
+  // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
+  function historiaVM() {
+    if (!historia) return { intro: "", eras: [], figures: [], tensions: [], facts: [] };
+    return {
+      intro: nat(historia.INTRO),
+      eras: loc(historia.ERAS || []),
+      figures: loc(historia.FIGURES || []),
+      tensions: loc(historia.TENSIONS || []),
+      facts: (historia.FACTS || []).map(nat),
+    };
   }
 
   // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
@@ -1847,6 +1863,7 @@
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
+    else if (state.screen === "historia") root.innerHTML = ui.renderHistoria(historiaVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
@@ -2976,6 +2993,22 @@
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
 
+    // Historia de Sudamérica: ein Treffer für die ganze Erklärseite (Epochen,
+    // Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
+    if (historia) {
+      const eras = (historia.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
+      const figs = (historia.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
+      const tens = (historia.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
+      const facts = (historia.FACTS || []).map((f) => [f.de, f.en]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "📜", title: "Historia de Sudamérica", sub: t("discover.subHistoria"),
+        action: "open-historia",
+        hay: searchHay(["historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit",
+          historia.INTRO && historia.INTRO.de, historia.INTRO && historia.INTRO.en, eras, figs, tens, facts]),
+      });
+    }
+
     return idx;
   }
 
@@ -3024,6 +3057,12 @@
   function openInfo() {
     dismissBadgeToast();
     state.screen = "info";
+    render();
+  }
+
+  function openHistoria() {
+    dismissBadgeToast();
+    state.screen = "historia";
     render();
   }
 
@@ -3359,6 +3398,7 @@
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
+    else if (action === "open-historia") openHistoria();
     else if (action === "open-knigge") openKnigge();
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
