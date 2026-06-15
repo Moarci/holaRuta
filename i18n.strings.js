@@ -188,8 +188,8 @@
     tripTodayCount: (p) => `${p.done}/${p.perDay} heute${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Onboarding (einmaliger Willkommens-Schritt)
-    onboardTitle: "Wohin geht deine Reise?",
-    onboardIntro: "Setz dein Trip-Ziel: Wir zählen die Tage bis zur Abreise und schlagen dir ein machbares Tagespensum vor. Du kannst das später jederzeit im Profil ändern.",
+    onboardTitle: "Reisefertig in zwei Schritten",
+    onboardIntro: "Zuerst dein Reiseziel: Wir zählen die Tage bis zur Abreise und schlagen ein machbares Tagespensum vor. Danach ein kurzer Einstufungstest. Beides später jederzeit im Profil änderbar.",
     onboardSkip: "Später",
     // Einstellungen
     modeFlip: "🃏 Karteikarte",
@@ -266,8 +266,8 @@
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripTodayCount: (p) => `${p.done}/${p.perDay} today${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
-    onboardTitle: "Where are you headed?",
-    onboardIntro: "Set your trip goal: we'll count down the days to departure and suggest a doable daily target. You can change this anytime later in your profile.",
+    onboardTitle: "Trip-ready in two steps",
+    onboardIntro: "First, your trip goal: we'll count down the days to departure and suggest a doable daily target. Then a short placement test. You can change both anytime later in your profile.",
     onboardSkip: "Skip",
     modeFlip: "🃏 Flashcard",
     modeType: "⌨️ Writing",

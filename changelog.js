@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.57.0",
+      date: "2026-06-15",
+      title: "Klarere Onboarding-Überschrift",
+      items: [
+        "🧭 Der Erststart heißt jetzt „Reisefertig in zwei Schritten“ (Reiseziel + kurzer Einstufungstest) statt der etwas verspielten Frage – sachlicher, gerade für Schul-Editionen, und sagt vorab, was kommt.",
+      ],
+    },
+    {
       version: "1.56.0",
       date: "2026-06-15",
       title: "Abnahme-Politur: Onboarding, Aufgaben-Robustheit & klarere Texte",

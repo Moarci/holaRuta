@@ -229,7 +229,7 @@
       <section class="screen onboarding">
         <div class="onboarding__inner">
           ${brand}
-          <h1 class="onboarding__title">🧭 ${esc(t("home.onboardTitle"))}</h1>
+          <h1 class="onboarding__title">${esc(t("home.onboardTitle"))}</h1>
           <p class="onboarding__intro">${esc(t("home.onboardIntro"))}</p>
           ${tripForm(vm.trip, skip)}
         </div>

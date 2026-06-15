@@ -3113,8 +3113,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tripTodayCount: (p) => `${p.done}/${p.perDay} heute${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Onboarding (einmaliger Willkommens-Schritt)
-    onboardTitle: "Wohin geht deine Reise?",
-    onboardIntro: "Setz dein Trip-Ziel: Wir zählen die Tage bis zur Abreise und schlagen dir ein machbares Tagespensum vor. Du kannst das später jederzeit im Profil ändern.",
+    onboardTitle: "Reisefertig in zwei Schritten",
+    onboardIntro: "Zuerst dein Reiseziel: Wir zählen die Tage bis zur Abreise und schlagen ein machbares Tagespensum vor. Danach ein kurzer Einstufungstest. Beides später jederzeit im Profil änderbar.",
     onboardSkip: "Später",
     // Einstellungen
     modeFlip: "🃏 Karteikarte",
@@ -3191,8 +3191,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripTodayCount: (p) => `${p.done}/${p.perDay} today${p.complete ? " ✓" : ""}`,
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
-    onboardTitle: "Where are you headed?",
-    onboardIntro: "Set your trip goal: we'll count down the days to departure and suggest a doable daily target. You can change this anytime later in your profile.",
+    onboardTitle: "Trip-ready in two steps",
+    onboardIntro: "First, your trip goal: we'll count down the days to departure and suggest a doable daily target. Then a short placement test. You can change both anytime later in your profile.",
     onboardSkip: "Skip",
     modeFlip: "🃏 Flashcard",
     modeType: "⌨️ Writing",
@@ -19235,6 +19235,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.57.0",
+      date: "2026-06-15",
+      title: "Klarere Onboarding-Überschrift",
+      items: [
+        "🧭 Der Erststart heißt jetzt „Reisefertig in zwei Schritten“ (Reiseziel + kurzer Einstufungstest) statt der etwas verspielten Frage – sachlicher, gerade für Schul-Editionen, und sagt vorab, was kommt.",
+      ],
+    },
+    {
       version: "1.56.0",
       date: "2026-06-15",
       title: "Abnahme-Politur: Onboarding, Aufgaben-Robustheit & klarere Texte",
@@ -20069,7 +20077,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen onboarding">
         <div class="onboarding__inner">
           ${brand}
-          <h1 class="onboarding__title">🧭 ${esc(t("home.onboardTitle"))}</h1>
+          <h1 class="onboarding__title">${esc(t("home.onboardTitle"))}</h1>
           <p class="onboarding__intro">${esc(t("home.onboardIntro"))}</p>
           ${tripForm(vm.trip, skip)}
         </div>
