@@ -65,27 +65,51 @@
   // need: optionale Voraussetzung ("speech"|"frases"|"countries") – fehlt das
   // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   // sub = deutscher Fallback; subKey = i18n-Schlüssel (zur Laufzeit via t() übersetzt).
+  // group = thematischer Abschnitt (siehe FEATURE_GROUPS); gegliedert nach
+  // Aktivität (Spielen · Üben · Nachschlagen) – deckt sich mit dem Intro-Text
+  // und gibt der inzwischen langen Liste eine klare, einheitliche Achse.
   const FEATURES = [
-    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica", grad: ["#2E6E86", "#B97C24"] },
-    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
-    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
-    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
-    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
-    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
-    { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
-    { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
-    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-compras",     icon: "🛒", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
-    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
-    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
-    { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
-    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia" },
-    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
-    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica" },
-    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud" },
-    { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement" },
-    { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben", grad: ["#3F7355", "#2E6E86"] },
-    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
+    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
+    { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
+    { action: "open-compras",     icon: "🛒", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"], group: "practice" },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"], group: "practice" },
+    { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries", group: "reference" },
+    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia", group: "reference" },
+    { action: "open-historia-centro", icon: "🌋", title: "Historia de Centroamérica", subKey: "discover.subHistoriaCentro", sub: "Von den Maya über Morazán bis heute", grad: ["#2E6E5A", "#1F4A3A"], need: "historiaCentro", group: "reference" },
+    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
+    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
+    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
+    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
+    { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
+    { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
+    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Übersicht für Lehrkräfte & Reiseleitung", grad: ["#2F6B70", "#A23E20"], group: "reference" },
+  ];
+
+  // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),
+  // Reihenfolge wie im Intro „Spielen, zuordnen, nachschlagen". titleKey via t().
+  const FEATURE_GROUPS = [
+    { id: "play",      titleKey: "discover.groupPlay" },
+    { id: "practice",  titleKey: "discover.groupPractice" },
+    { id: "reference", titleKey: "discover.groupReference" },
+  ];
+
+  // Reihenfolge & Beschriftung der Themen-Abschnitte im Lernen-Reiter. Wie bei
+  // Entdecken sortiert ein fester thematischer Rahmen die inzwischen 23 Themen;
+  // innerhalb einer Gruppe bleibt die Fälligkeits-Sortierung aus homeVM erhalten.
+  const CATEGORY_GROUPS = [
+    { id: "basics",  titleKey: "home.catGroupBasics" },
+    { id: "grammar", titleKey: "home.catGroupGrammar" },
+    { id: "people",  titleKey: "home.catGroupPeople" },
+    { id: "food",    titleKey: "home.catGroupFood" },
+    { id: "travel",  titleKey: "home.catGroupTravel" },
+    { id: "destinos", titleKey: "home.catGroupDestinos" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -248,25 +272,33 @@
   }
 
   function lernenBody(vm) {
-    const tiles = vm.categories
-      .map((c) => {
-        const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
-        // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
-        // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
-        const breakdown = vm.allLevels ? "" : c.byLevel
-          .map((b) =>
-            `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
-          .join("");
-        return `
-          <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
-                  style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
-            <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
-            <span class="tile__label">${esc(c.label)}</span>
-            <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
-            ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
-          </button>`;
-      })
-      .join("");
+    const tileBtn = (c) => {
+      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
+      // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
+      // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
+      const breakdown = vm.allLevels ? "" : c.byLevel
+        .map((b) =>
+          `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
+        .join("");
+      return `
+        <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
+                style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
+          <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
+          <span class="tile__label">${esc(c.label)}</span>
+          <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
+          ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
+        </button>`;
+    };
+    // Themen in feste thematische Abschnitte gruppieren (Reihenfolge & Titel aus
+    // CATEGORY_GROUPS); innerhalb behalten sie die Fälligkeits-Sortierung aus
+    // homeVM. Leere Gruppen (z. B. durch künftige Filter) fallen samt Titel weg.
+    const topicSections = CATEGORY_GROUPS.map((g) => {
+      const items = vm.categories.filter((c) => c.group === g.id);
+      if (!items.length) return "";
+      return `
+        <p class="sectioncap">${esc(t(g.titleKey))}</p>
+        <div class="tiles">${items.map(tileBtn).join("")}</div>`;
+    }).join("");
 
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
     // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
@@ -419,8 +451,7 @@
       <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
       <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
 
-      <p class="sectioncap">${esc(t("home.sectionTopics"))}</p>
-      <div class="tiles">${tiles}</div>
+      ${topicSections}
 
       <p class="dedication">${esc(t("home.dedication"))} <span class="dedication__heart">♥</span></p>`;
   }
@@ -428,28 +459,38 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
     // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
     const cfg = window.SC.config || {};
-    const feats = FEATURES.filter((x) => {
-      if (x.need && !has[x.need]) return false;
-      if (x.action === "open-task" && cfg.taskTab) return false;
-      if (x.action === "open-teacher" && cfg.teacherTab) return false;
-      return true;
-    }).map((x) => `
+    const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
           <span class="feat__title">${esc(x.title)}</span>
           <span class="feat__sub">${esc(x.subKey ? t(x.subKey) : x.sub)}</span>
         </span>
-        <span class="feat__chev" aria-hidden="true">›</span>
-      </button>`).join("");
+      </button>`;
+    // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
+    // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
+    // In Editionen mit eigenem Reiter Tarea/Modo profe NICHT doppelt als Kachel zeigen.
+    const available = FEATURES.filter((x) => {
+      if (x.need && !has[x.need]) return false;
+      if (x.action === "open-task" && cfg.taskTab) return false;
+      if (x.action === "open-teacher" && cfg.teacherTab) return false;
+      return true;
+    });
+    const sections = FEATURE_GROUPS.map((g) => {
+      const items = available.filter((x) => x.group === g.id);
+      if (!items.length) return "";
+      return `
+        <p class="sectioncap">${esc(t(g.titleKey))}</p>
+        <div class="featgroup">${items.map(featBtn).join("")}</div>`;
+    }).join("");
     return `
       ${pagehead(esc(t("discover.discoverTitle")), vm)}
       ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
-      ${feats}`;
+      ${sections}`;
   }
 
   function profilBody(vm) {
@@ -1430,6 +1471,7 @@
       <section class="screen">
         ${hmTopbar("🆘 Supervivencia", "home")}
         <p class="hm-intro">${esc(t("discover.szIntro"))}</p>
+        ${moduleShareBtn("supervivencia")}
         <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
         ${groups}
         ${show}
@@ -1471,6 +1513,7 @@
       <section class="screen">
         ${hmTopbar("💵 Precios al oído", "home")}
         <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
+        ${moduleShareBtn("precios")}
         <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
         <div class="prc-curs">${currencies}</div>
         <h3 class="prc-head">${esc(t("discover.prcDifficulty"))}</h3>
@@ -1615,13 +1658,32 @@
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
 
-    // Brücke zur kontinentweiten Geschichte (nur wenn das Modul geladen ist).
-    const histBanner = vm.hasHistoria ? `
-      <button class="hist-banner" data-action="open-historia">
-        <span class="hist-banner__icon" aria-hidden="true">📜</span>
+    // Bevölkerung & Wirtschaft: Faktenzeilen (gleiche Optik wie die Speise-Fakten).
+    // Nur Zeilen mit Inhalt erscheinen; fehlt alles, entfällt die ganze Sektion.
+    const peopleFacts = [
+      factRow(t("discover.infoPopulation"), c.population),
+      factRow(t("discover.infoAgeStructure"), c.ageStructure),
+      factRow(t("discover.infoGovernment"), c.government),
+      factRow(t("discover.infoEconomy"), c.economy),
+      factRow(t("discover.infoLivelihood"), c.livelihood),
+    ].join("");
+    const peopleSect = peopleFacts
+      ? sect("👥", t("discover.infoPeople"), `<div class="cinfo-facts">${peopleFacts}</div>`)
+      : "";
+
+    // Brücke zur passenden kontinentalen Geschichte: mittelamerikanische Länder
+    // führen zur Historia de Centroamérica, alle anderen (Südamerika/Karibik) zur
+    // Historia de Sudamérica. Jeweils nur, wenn das Modul geladen ist.
+    const inCentro = vm.country && vm.country.region === "Mittelamerika";
+    const histTarget = inCentro
+      ? (vm.hasHistoriaCentro ? { action: "open-historia-centro", icon: "🌋", title: t("discover.histBannerCentroTitle"), sub: t("discover.histBannerCentroSub") } : null)
+      : (vm.hasHistoria ? { action: "open-historia", icon: "📜", title: t("discover.histBannerTitle"), sub: t("discover.histBannerSub") } : null);
+    const histBanner = histTarget ? `
+      <button class="hist-banner" data-action="${histTarget.action}">
+        <span class="hist-banner__icon" aria-hidden="true">${histTarget.icon}</span>
         <span class="hist-banner__text">
-          <span class="hist-banner__title">${esc(t("discover.histBannerTitle"))}</span>
-          <span class="hist-banner__sub">${esc(t("discover.histBannerSub"))}</span>
+          <span class="hist-banner__title">${esc(histTarget.title)}</span>
+          <span class="hist-banner__sub">${esc(histTarget.sub)}</span>
         </span>
         <span class="hist-banner__chev" aria-hidden="true">›</span>
       </button>` : "";
@@ -1630,6 +1692,7 @@
       <section class="screen">
         ${infoTopbar()}
         ${selector}
+        ${moduleShareBtn("paises")}
         ${histBanner}
 
         <div class="cinfo-head">
@@ -1643,6 +1706,7 @@
         <button class="hist-share cinfo-share" type="button" data-action="share-country">📤 ${esc(t("discover.tipsShare"))}</button>
 
         ${sect("🌎", t("discover.infoAbout"), para(c.about))}
+        ${peopleSect}
         ${sect("📜", t("discover.infoHistory"), para(c.history))}
         ${sect("🗣️", t("discover.infoLanguage"), para(c.language) + wordsBlock)}
 
@@ -1905,7 +1969,7 @@
 
     return `
       <section class="screen">
-        ${hmTopbar("📜 Historia de Sudamérica", "home")}
+        ${hmTopbar(esc(vm.topTitle || "📜 Historia de Sudamérica"), "home")}
         <p class="hm-intro">${esc(vm.intro)}</p>
         ${nav}
         ${moduleShare}
@@ -1937,6 +2001,15 @@
   // Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
   function tipsShareBtn(cat, i) {
     return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
+  }
+
+  // „Modul teilen"-Knopf für die Entdecken-Module: empfiehlt das ganze Modul als
+  // Sharepic weiter (Logik in app.shareModule, Motiv „module"). mod = Modul-Id
+  // (siehe MODULE_SHARE in app.js). Sitzt oben direkt unter der Einleitung – wie
+  // bei Historia. Ohne Teilen-Fähigkeit (kein Share-Modul) entfällt der Knopf.
+  function moduleShareBtn(mod) {
+    if (!canShare()) return "";
+    return `<div class="hist-modshare"><button class="hist-share mod-share" type="button" data-action="share-module" data-mod="${esc(mod)}">📤 ${esc(t("discover.moduleShare"))}</button></div>`;
   }
 
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
@@ -1996,6 +2069,7 @@
         ${kniggeTopbar()}
         ${selector}
         <p class="pageintro">${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.</p>
+        ${moduleShareBtn("knigge")}
         ${topics}
       </section>`;
   }
@@ -2124,6 +2198,7 @@
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
+        ${moduleShareBtn("regatear")}
 
         <h2 class="rg-head">${esc(t("discover.rgTactics"))}</h2>
         ${tips}
@@ -2216,6 +2291,7 @@
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
+        ${cfg.cat ? moduleShareBtn(cfg.cat) : ""}
 
         ${section(topics, cfg.headTips, topics)}
         ${section(phrases, cfg.headPhrases, phrases)}
@@ -2265,6 +2341,7 @@
       <section class="screen">
         ${hmTopbar("🛏️ Modo hostal", "home")}
         <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
+        ${moduleShareBtn("hostel")}
         <div class="hm-menu">
           <button class="hm-card hm-card--coordinator" data-action="coordinator-round">
             <span class="hm-card__icon" aria-hidden="true">⚡</span>
@@ -2814,6 +2891,7 @@
       <section class="screen">
         ${hmTopbar("🧩 Definiciones", "home")}
         <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
+        ${moduleShareBtn("definiciones")}
         <div class="hm-scenes">${list}</div>
       </section>`;
   }
@@ -2898,6 +2976,7 @@
       <section class="screen">
         ${hmTopbar("🧱 Frases flexibles", "home")}
         <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
+        ${moduleShareBtn("frases")}
         <div class="hm-scenes">
           ${tile(vm.mixed, true)}
           ${list}
@@ -3087,6 +3166,7 @@
       <section class="screen">
         ${hmTopbar("🔁 Conjugación", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
+        ${moduleShareBtn("conjugacion")}
 
         ${sect("🧑‍🤝‍🧑", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
         ${sect("🧱", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
@@ -3211,6 +3291,7 @@
       <section class="screen">
         ${hmTopbar("💬 Diálogos", "home")}
         <p class="hm-intro">${esc(t("discover.dlgIntro"))}</p>
+        ${moduleShareBtn("dialogos")}
         ${hint}
         <div class="dlg-picks">${cards}</div>
       </section>`;
@@ -3492,6 +3573,7 @@
       <section class="screen">
         ${hmTopbar("⏳ Tiempos", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
+        ${moduleShareBtn("tiempos")}
 
         ${sect("↔️", t.title, timeline)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
@@ -3560,6 +3642,7 @@
       <section class="screen bp-screen">
         ${hmTopbar("🧍 El Cuerpo", "home")}
         <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
+        ${moduleShareBtn("cuerpo")}
         ${progress}
         <div class="bp-stage">
           <div class="bp-3d-stage" data-bp-stage>
@@ -3668,6 +3751,7 @@
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
         ${hmTopbar("🛒 Lista de compras", "home")}
         <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
+        ${moduleShareBtn("compras")}
         <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>
         ${progress}
         <ul class="sl-list">${items}</ul>

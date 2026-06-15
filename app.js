@@ -15,6 +15,7 @@
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const historia = window.SC.historia || null;   // Geschichte Südamerikas (Erklärseite, optional)
+  const historiaCentro = window.SC.historiaCentro || null; // Geschichte Mittelamerikas (Erklärseite, optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
@@ -196,7 +197,7 @@
           active: state.levels.length === 0 || state.levels.includes(l.id),
         }))
         .filter((b) => b.count > 0);
-      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad,
+      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad, group: c.group,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
     // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
@@ -244,6 +245,7 @@
       syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
       hasCountries: !!countries, // dito für die Länderkunde
       hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
+      hasHistoriaCentro: !!historiaCentro, // dito für die Geschichte Mittelamerikas
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
@@ -435,20 +437,27 @@
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
     // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
-    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia };
+    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia, hasHistoriaCentro: !!historiaCentro };
   }
 
   // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
   // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
   // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
+  // Aktives Geschichts-Modul nach Region (state.histRegion: "sur" | "centro").
+  // So teilen sich Süd- und Mittelamerika dieselbe Render-/Share-Mechanik.
+  function histMod() { return state.histRegion === "centro" ? historiaCentro : historia; }
+  function histTitle() { return state.histRegion === "centro" ? "🌋 Historia de Centroamérica" : "📜 Historia de Sudamérica"; }
+
   function historiaVM() {
-    if (!historia) return { intro: "", eras: [], figures: [], tensions: [], facts: [] };
+    const mod = histMod();
+    if (!mod) return { intro: "", eras: [], figures: [], tensions: [], facts: [], topTitle: histTitle() };
     return {
-      intro: nat(historia.INTRO),
-      eras: loc(historia.ERAS || []),
-      figures: loc(historia.FIGURES || []),
-      tensions: loc(historia.TENSIONS || []),
-      facts: (historia.FACTS || []).map(nat),
+      topTitle: histTitle(),
+      intro: nat(mod.INTRO),
+      eras: loc(mod.ERAS || []),
+      figures: loc(mod.FIGURES || []),
+      tensions: loc(mod.TENSIONS || []),
+      facts: (mod.FACTS || []).map(nat),
     };
   }
 
@@ -3850,7 +3859,9 @@
           icon: c.flag || "🌎", title: natk(c, "name") || c.name, sub: natk(c, "tagline"),
           action: "search-country", id: c.id,
           hay: searchHay([c.name, c.nameEn, c.capital, c.region, c.tagline, c.taglineEn,
-            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn, words]),
+            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn,
+            c.population, c.populationEn, c.ageStructure, c.ageStructureEn,
+            c.government, c.governmentEn, c.economy, c.economyEn, c.livelihood, c.livelihoodEn, words]),
         });
       });
     }
@@ -3883,21 +3894,25 @@
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
 
-    // Historia de Sudamérica: ein Treffer für die ganze Erklärseite (Epochen,
-    // Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
-    if (historia) {
-      const eras = (historia.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
-      const figs = (historia.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
-      const tens = (historia.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
-      const facts = (historia.FACTS || []).map((f) => [f.de, f.en]);
+    // Historia (Süd- & Mittelamerika): je ein Treffer für die ganze Erklärseite
+    // (Epochen, Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
+    const histPage = (mod, icon, title, subKey, action, keywords) => {
+      if (!mod) return;
+      const eras = (mod.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
+      const figs = (mod.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
+      const tens = (mod.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
+      const facts = (mod.FACTS || []).map((f) => [f.de, f.en]);
       idx.push({
         group: "info", kind: "page", kindLabel: t("search.kindInfo"),
-        icon: "📜", title: "Historia de Sudamérica", sub: t("discover.subHistoria"),
-        action: "open-historia",
-        hay: searchHay(["historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit",
-          historia.INTRO && historia.INTRO.de, historia.INTRO && historia.INTRO.en, eras, figs, tens, facts]),
+        icon: icon, title: title, sub: t(subKey),
+        action: action,
+        hay: searchHay([keywords, mod.INTRO && mod.INTRO.de, mod.INTRO && mod.INTRO.en, eras, figs, tens, facts]),
       });
-    }
+    };
+    histPage(historia, "📜", "Historia de Sudamérica", "discover.subHistoria", "open-historia",
+      "historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit");
+    histPage(historiaCentro, "🌋", "Historia de Centroamérica", "discover.subHistoriaCentro", "open-historia-centro",
+      "historia geschichte history mittelamerika centroamérica maya morazán sandino romero menchú independencia conquista bukele panama panamá kanal");
 
     return idx;
   }
@@ -3950,8 +3965,9 @@
     render();
   }
 
-  function openHistoria() {
+  function openHistoria(region) {
     dismissBadgeToast();
+    state.histRegion = region === "centro" ? "centro" : "sur";
     state.screen = "historia";
     render();
   }
@@ -4279,8 +4295,9 @@
   // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
   // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
   function findHistItem(id) {
-    if (!historia) return null;
-    const lists = [historia.ERAS, historia.FIGURES, historia.TENSIONS];
+    const mod = histMod();
+    if (!mod) return null;
+    const lists = [mod.ERAS, mod.FIGURES, mod.TENSIONS];
     for (let i = 0; i < lists.length; i++) {
       const it = (lists[i] || []).find((x) => x.id === id);
       if (it) return it;
@@ -4296,7 +4313,7 @@
     const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
     buzz(12);
     share.shareImage("histtext", {
-      title: e.title || e.name || "Historia de Sudamérica",
+      title: e.title || e.name || (state.histRegion === "centro" ? "Historia de Centroamérica" : "Historia de Sudamérica"),
       levelCode: e.level || "",
       levelWord: e.level ? t("discover.histLvl" + e.level) : "",
       esText,
@@ -4308,19 +4325,22 @@
   // Einladung (Modulname, Einleitung, Zeitstrahl-Teaser mit den Epochen) – zum
   // Weiterempfehlen des gesamten Moduls, nicht nur eines einzelnen Textes.
   function shareHistModule() {
-    if (!share || !historia) return;
-    const eras = loc(historia.ERAS || []).map((e) => ({
+    const mod = histMod();
+    if (!share || !mod) return;
+    const name = state.histRegion === "centro" ? "Historia de Centroamérica" : "Historia de Sudamérica";
+    const eras = loc(mod.ERAS || []).map((e) => ({
       icon: e.icon || "•",
       period: e.period || "",
       title: e.title || "",
     }));
     buzz(12);
     share.shareImage("histmodule", {
-      kicker: "Historia de Sudamérica",
-      title: "Historia de Sudamérica",
-      intro: nat(historia.INTRO),
+      kicker: name,
+      title: name,
+      intro: nat(mod.INTRO),
       timelineLabel: t("discover.histNavTimeline"),
       eras,
+      moduleSlug: state.histRegion === "centro" ? "historia-centro" : "historia",
     }, shareFormat());
   }
 
@@ -4377,6 +4397,102 @@
       intro: c.tagline || "",
       lines,
       accent: ["#B97C24", "#C2502E"],
+    }, shareFormat());
+  }
+
+  // Sharepic auf Modul-Ebene für ALLE Entdecken-Module: das ganze Modul als
+  // Einladung weiterempfehlen (Motiv „module" = generische Modul-Karte: Icon,
+  // Titel, Kurz-Intro, ein paar Highlight-Zeilen). Inhalt ist pro Modul
+  // maßgeschneidert (echte Vokabel-Beispiele, Themen- oder Szenenlisten) – die
+  // Optik teilt es sich mit den Reise-Tipps. Icon/Titel/Akzent spiegeln die
+  // jeweilige Entdecken-Kachel (siehe FEATURES in ui.js); der Intro-Einzeiler
+  // kommt aus dem Kachel-Untertitel (discover.sub…), damit DE/EN gepflegt sind.
+  // Historia hat ein eigenes Motiv (shareHistModule) und ist hier nicht gelistet.
+  const MODULE_SHARE = {
+    supervivencia: { icon: "🆘", title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
+    hostel:        { icon: "🛏️", title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
+    definiciones:  { icon: "🧩", title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
+    frases:        { icon: "🧱", title: "Frases flexibles",     sub: "discover.subFrases",        accent: ["#7048E8", "#5A3FB8"] },
+    dialogos:      { icon: "💬", title: "Diálogos",             sub: "discover.subDialogos",      accent: ["#9B5A8C", "#5A4FA8"] },
+    regatear:      { icon: "🤝", title: "Regatear",             sub: "discover.subRegatear",      accent: ["#B97C24", "#3F7355"] },
+    precios:       { icon: "💵", title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
+    cuerpo:        { icon: "🧍", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
+    compras:       { icon: "🛒", title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
+    conjugacion:   { icon: "🔁", title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
+    tiempos:       { icon: "⏳", title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
+    paises:        { icon: "🌎", title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
+    knigge:        { icon: "🧭", title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
+    logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
+    salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+  };
+
+  // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
+  function cardSampleLines(cat, n, mark) {
+    return data.CARDS
+      .filter((c) => c.cat === cat)
+      .slice(0, n)
+      .map((c) => ({ mark: mark || "🗣️", text: `${c.es} — ${nat(c)}` }));
+  }
+
+  // Pro Modul ein paar repräsentative Highlight-Zeilen aus den echten Modul-Daten
+  // ziehen. Quelle ist jeweils derselbe View-Model-Builder, der auch den Screen
+  // füllt – der Knopf erscheint nur im geöffneten Modul, dessen State steht also.
+  function moduleShareLines(id) {
+    const CAP = 6;
+    const cut = (arr) => (arr || []).filter(Boolean).slice(0, CAP);
+    switch (id) {
+      case "supervivencia": {
+        const out = [];
+        spickzettelVM().groups.forEach((g) => {
+          (g.cards || []).slice(0, 2).forEach((c) => out.push({ mark: g.icon || "🆘", text: `${c.es} — ${c.de}` }));
+        });
+        return cut(out);
+      }
+      case "hostel":
+        return cut(battleSetupVM().scenes.map((s) => ({ mark: s.icon || "⚔️", text: s.label })));
+      case "definiciones":
+        return cut(quizSetupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
+      case "frases":
+        return cut(frasesSetupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
+      case "dialogos":
+        return cut(dialogosSetupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
+      case "regatear":
+        return cut((regatearVM().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
+      case "precios":
+        return cut(preciosSetupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
+      case "cuerpo":
+        return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
+      case "compras":
+        return cut(comprasVM().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
+      case "conjugacion":
+        return cardSampleLines("verbos", CAP, "🔁");
+      case "tiempos":
+        return cardSampleLines("tiempos", CAP, "⏳");
+      case "paises":
+        return cut((countries ? countries.LIST : []).map((c) => loc(c)).map((c) => ({ mark: c.flag || "🌎", text: c.name })));
+      case "knigge":
+        return cut((kniggeVM().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
+      case "logistica":
+        return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
+      case "salud":
+        return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
+      default:
+        return [];
+    }
+  }
+
+  function shareModule(id) {
+    const meta = MODULE_SHARE[id];
+    if (!share || !meta) return;
+    buzz(12);
+    share.shareImage("module", {
+      kicker: t("discover.moduleShareKicker"),
+      icon: meta.icon,
+      title: meta.title,
+      intro: t(meta.sub),
+      lines: moduleShareLines(id),
+      accent: meta.accent,
+      moduleSlug: id, // Begleittext-Link zeigt per ?m=<id> direkt in dieses Modul
     }, shareFormat());
   }
 
@@ -4488,7 +4604,8 @@
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
-    else if (action === "open-historia") openHistoria();
+    else if (action === "open-historia") openHistoria("sur");
+    else if (action === "open-historia-centro") openHistoria("centro");
     else if (action === "open-knigge") openKnigge();
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
@@ -4516,6 +4633,7 @@
     else if (action === "share-hist-module") shareHistModule();
     else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
     else if (action === "share-country") shareCountry();
+    else if (action === "share-module") shareModule(el.dataset.mod);
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
@@ -4835,6 +4953,81 @@
     if (el) el.remove();
   }
 
+  // Deep-Link beim Start:
+  //   ?m=<modul>  – öffnet ein empfohlenes Modul (aus einem „Modul teilen"-Link)
+  //   ?a=<aktion> – öffnet eine App-Aktion ohne eigenes Modul (Homescreen-Shortcuts
+  //                 aus dem Manifest, z.B. „Ruta del día" oder „Suchen")
+  // Beides hat Vorrang vor dem Onboarding – wer per Link/Shortcut kommt, soll sofort
+  // am Ziel landen. Danach wird der Parameter aus der Adresse geputzt, damit Reload/
+  // Zurück-Geste normal laufen. Liefert true, wenn ein gültiges Ziel geöffnet wurde.
+  function applyModuleDeepLink() {
+    // Kleiner Helfer: Parameter aus Query (?x=) oder Hash (#x=/&x=) lesen.
+    function param(key) {
+      try {
+        const q = (new URLSearchParams(location.search).get(key) || "").trim().toLowerCase();
+        if (q) return q;
+        if (location.hash) {
+          const h = location.hash.match(new RegExp("[#&]" + key + "=([^&]+)"));
+          if (h) return decodeURIComponent(h[1]).trim().toLowerCase();
+        }
+      } catch (e) { /* file:// o.ä. – kein Deep-Link */ }
+      return "";
+    }
+    // App-Aktionen (Homescreen-Shortcuts): direkte Einstiege ohne eigenes Modul.
+    const actions = {
+      ruta: openRutaDelDia,   // ?a=ruta   → heutige Lernrunde
+      buscar: openSearch,     // ?a=buscar → Suche
+    };
+    const aSlug = param("a");
+    if (aSlug && actions[aSlug]) {
+      markSeen();
+      actions[aSlug]();
+      cleanUrl();
+      return true;
+    }
+    const slug = param("m");
+    if (!slug) return false;
+    const openers = {
+      supervivencia: openSpickzettel,
+      hostel: openHostel,
+      definiciones: openQuizSetup,
+      frases: openFrasesSetup,
+      dialogos: openDialogosSetup,
+      regatear: openRegatear,
+      precios: openPrecios,
+      cuerpo: openCuerpo,
+      compras: openCompras,
+      conjugacion: openConjugacion,
+      tiempos: openTiempos,
+      paises: openInfo,
+      knigge: openKnigge,
+      logistica: openLogistica,
+      salud: openSalud,
+      historia: () => openHistoria("sur"),
+      "historia-centro": () => openHistoria("centro"),
+    };
+    const open = openers[slug];
+    if (!open) return false;
+    markSeen();
+    open(); // setzt state.screen + rendert
+    cleanUrl();
+    return true;
+
+    // Eingeladene/per Shortcut Gekommene gelten als „gesehen": kein Onboarding-
+    // Zwang vor dem Ziel.
+    function markSeen() {
+      if (settings.onboarded !== true) {
+        settings = Object.assign({}, settings, { onboarded: true });
+        store.saveSettings(settings);
+      }
+    }
+    // Parameter aus der Adresse entfernen (ohne Reload), damit ein späterer Reload
+    // nicht erneut deep-linkt und die Adresse sauber bleibt.
+    function cleanUrl() {
+      try { history.replaceState(history.state, "", location.pathname); } catch (e) { /* file:// o.ä. – egal */ }
+    }
+  }
+
   // ----- Start -----
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
@@ -4895,6 +5088,11 @@
     state.screen = "onboarding";
     stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
+  // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
+  // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
+  // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
+  // abbricht (z.B. Precios ohne Sprachausgabe) – so bleibt der Bildschirm nie leer.
+  applyModuleDeepLink();
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass

@@ -662,7 +662,9 @@
   // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
   // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
   // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
-  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild.
+  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild. Dient außerdem (kind
+  // "module") als generische Modul-Einladung: Icon · Titel · Kurz-Intro · ein paar
+  // Highlight-Zeilen (Marker frei wählbar, z.B. Vokabel-Beispiele oder Themen).
   function buildTips(payload, aspect) {
     const h = heightFor(aspect);
     const c = newCanvas(h);
@@ -777,8 +779,13 @@
   function shareText(kind, payload) {
     const p = payload || {};
     // Echter, anklickbarer Link – Messenger (WhatsApp/Telegram/…) verlinken die
-    // nackte URL im Begleittext automatisch.
-    const link = `\n\n${t("share.captionJoin")} ${APP_URL}`;
+    // nackte URL im Begleittext automatisch. Trägt das Sharepic eine Modul-Kennung
+    // (moduleSlug), zeigt der Link per ?m=<modul> direkt in dieses Modul: Wer den
+    // Link antippt, landet nicht auf der Startseite, sondern im empfohlenen Modul.
+    const url = p.moduleSlug
+      ? APP_URL + (APP_URL.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(p.moduleSlug)
+      : APP_URL;
+    const link = `\n\n${t("share.captionJoin")} ${url}`;
     if (kind === "stats") {
       const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
       const facts = [];
@@ -815,6 +822,12 @@
       out += `\n\n${t("share.captionTips")}`;
       return out + link;
     }
+    if (kind === "module") {
+      const title = String(p.title || "").trim();
+      let out = t("share.captionModuleHead", { title: title || BRAND });
+      out += `\n\n${t("share.captionModule")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -836,6 +849,7 @@
              : kind === "histtext" ? buildHistoria(payload, fmt)
              : kind === "histmodule" ? buildHistOverview(payload, fmt)
              : kind === "tips" ? buildTips(payload, fmt)
+             : kind === "module" ? buildTips(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -855,6 +869,7 @@
                : kind === "histtext" ? "holaruta-historia"
                : kind === "histmodule" ? "holaruta-historia-modul"
                : kind === "tips" ? "holaruta-tipps"
+               : kind === "module" ? "holaruta-modul"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
@@ -862,6 +877,7 @@
                 : kind === "histtext" ? "Historia de Sudamérica"
                 : kind === "histmodule" ? "Historia de Sudamérica"
                 : kind === "tips" ? ((payload && payload.title) || "HolaRuta")
+                : kind === "module" ? ((payload && payload.title) || "HolaRuta")
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 

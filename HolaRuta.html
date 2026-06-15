@@ -413,20 +413,30 @@ body {
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* ---------- ENTDECKEN-REITER: große Einstiegs-Buttons ---------- */
+/* ---------- ENTDECKEN-REITER: Einstiegs-Kacheln ---------- */
+/* 2-spaltiges Raster (wie die Themen-Kacheln im Lernen-Reiter) statt einer
+ * Kette voller-Breite-Buttons: halbiert die Höhe, die 17 Einträge sind ohne
+ * endloses Scrollen erfassbar. Gleiche Kachelhöhe für ein ruhiges Rasterbild. */
+.featgroup { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .feat {
-  display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;
-  text-align: left; padding: 16px; border-radius: var(--r-tile);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  width: 100%; min-height: 118px; cursor: pointer; text-align: left;
+  padding: 14px; border-radius: var(--r-tile);
   background: linear-gradient(135deg, var(--from), var(--to));
   border: none; color: var(--cream); box-shadow: var(--shadow);
   transition: transform 0.12s ease;
 }
-.feat:active { transform: translateY(1px); }
-.feat__icon { font-size: 1.7rem; line-height: 1; flex: none; }
-.feat__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
-.feat__title { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; }
-.feat__sub { font-size: 0.82rem; opacity: 0.92; }
-.feat__chev { font-size: 1.4rem; font-weight: 700; flex: none; opacity: 0.85; }
+.feat:active { transform: scale(0.98); }
+.feat__icon { font-size: 1.6rem; line-height: 1; }
+.feat__text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.feat__title { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; line-height: 1.2; }
+/* Untertitel auf zwei Zeilen begrenzen – hält das Raster gleichmäßig, ohne die
+ * andernorts (Suche, Modul-Köpfe) genutzten Langtexte kürzen zu müssen. */
+.feat__sub {
+  font-size: 0.76rem; opacity: 0.92; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
 
 /* ---------- SUCHE (gezielt nach Karten/Übungen & Informationen) ---------- */
 /* Sucheinstieg im Dashboard/Entdecken: sieht aus wie ein Feld, ist ein Knopf. */
@@ -998,6 +1008,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 @media (min-width: 560px) {
   .tiles { grid-template-columns: 1fr 1fr 1fr; }
+  .featgroup { grid-template-columns: 1fr 1fr 1fr; }
 }
 
 /* Bewegung reduzieren: Animationen/Übergänge entschärfen, Reveal bleibt funktional
@@ -1292,9 +1303,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Teilen-Knopf auf Modul-Ebene (ganzes Historia-Modul weiterempfehlen). */
 .hist-modshare { margin-top: 12px; }
 
-/* Teilen-Knopf in den übrigen Entdecken-Kategorien (Knigge/Regatear/Logística/
-   Salud) und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und
-   etwas Abstand zum übrigen Karteninhalt. */
+/* Teilen-Knopf für einzelne Tipps/Kategorien (Knigge/Regatear/Logística/Salud)
+   und der Länderkunde: neutrale Farbe statt der Historia-Brauntöne und etwas
+   Abstand zum übrigen Karteninhalt. Der „Modul teilen“-Knopf (.mod-share) bleibt
+   bewusst im prominenten Historia-Orange (.hist-share) – einheitlich über alle
+   Entdecken-Module und damit gut auffindbar. */
 .knigge-topic__body .hist-share { margin-top: 12px; }
 .cinfo-share { margin: 0 0 14px; }
 .knigge-topic__body .hist-share,
@@ -3062,6 +3075,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tileDone: "✓ erledigt",
     tileCards: (p) => `${p.n} Karten`,
     sectionTopics: "Themen",
+    // Themen-Abschnitte (Gruppierung der Lern-Kacheln)
+    catGroupBasics: "Grundlagen",
+    catGroupGrammar: "Grammatik",
+    catGroupPeople: "Leute & Alltag",
+    catGroupFood: "Essen & Einkaufen",
+    catGroupTravel: "Unterwegs",
+    catGroupDestinos: "Reiseziele",
     sectionLevels: "Stufen",
     // Stufen-Filter
     levelsAll: "Alle",
@@ -3144,6 +3164,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tileDone: "✓ done",
     tileCards: (p) => `${p.n} cards`,
     sectionTopics: "Topics",
+    catGroupBasics: "Basics",
+    catGroupGrammar: "Grammar",
+    catGroupPeople: "People & everyday",
+    catGroupFood: "Food & shopping",
+    catGroupTravel: "Getting around",
+    catGroupDestinos: "Destinations",
     sectionLevels: "Levels",
     levelsAll: "All",
     levelsGroup: "Level",
@@ -3316,6 +3342,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Reiter-Kopf
     discoverTitle: "Entdecken",
     discoverIntro: "Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.",
+    // Abschnitts-Überschriften (Gruppierung der Einstiege nach Aktivität)
+    groupPlay: "Spielen",
+    groupPractice: "Üben",
+    groupReference: "Nachschlagen",
     // FEATURES-Untertitel
     subSupervivencia: "Die wichtigsten Sätze sofort griffbereit",
     subHostel: "Zu zweit & laut: Battle und Rollenspiele",
@@ -3330,6 +3360,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subTiempos: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben",
     subInfo: "Land & Leute – von México bis Chile",
     subHistoria: "Von den Inka über Bolívar bis heute",
+    subHistoriaCentro: "Von den Maya über Morazán bis heute",
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
     subTeacher: "Übersicht für Lehrkräfte & Reiseleitung: Schüler-Fortschritt importieren",
     subTask: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben",
@@ -3369,6 +3400,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     infoNoCountry: "Kein Land verfügbar.",
     infoCapital: (p) => `🏛️ Hauptstadt: ${p.capital}`,
     infoAbout: "Über das Land",
+    infoPeople: "Land & Wirtschaft",
+    infoPopulation: "Einwohner",
+    infoAgeStructure: "Altersstruktur",
+    infoGovernment: "Regierung",
+    infoEconomy: "Wirtschaft",
+    infoLivelihood: "Wovon das Land lebt",
     infoHistory: "Geschichte",
     infoLanguage: "Sprache",
     infoFood: "🍽️ Essen &amp; Trinken",
@@ -3382,6 +3419,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Historia de Sudamérica
     histBannerTitle: "Historia de Sudamérica",
     histBannerSub: "Die große Geschichte: Inka, Kolonialzeit, Bolívar & heute",
+    histBannerCentroTitle: "Historia de Centroamérica",
+    histBannerCentroSub: "Die große Geschichte: Maya, Kolonialzeit, Morazán & heute",
     histAreas: "Bereiche",
     histNavTimeline: "Zeitstrahl",
     histNavFigures: "Protagonisten",
@@ -3403,6 +3442,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histTranslation: "Ganze Übersetzung anzeigen",
     histShare: "Text & Vokabeln teilen",
     histModuleShare: "Modul teilen",
+    moduleShare: "Modul teilen",
+    moduleShareKicker: "Entdecken",
     tipsShare: "Als Bild teilen",
     histReadToggle: "Auf Spanisch lesen",
     histQuiz: "Mini-Quiz: Vokabeln testen",
@@ -3620,6 +3661,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     quizProgress: "Quiz progress",
     discoverTitle: "Discover",
     discoverIntro: "Play, match, look things up – Spanish beyond the cards.",
+    groupPlay: "Play",
+    groupPractice: "Practise",
+    groupReference: "Look up",
     subSupervivencia: "The most important phrases right to hand",
     subHostel: "In pairs & out loud: battle and role-plays",
     subDefiniciones: "Read the definition, pick the term",
@@ -3633,6 +3677,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     subTiempos: "Tenses: yesterday, now, tomorrow – briefly explained, then practise",
     subInfo: "Country & people – from México to Chile",
     subHistoria: "From the Inca through Bolívar to today",
+    subHistoriaCentro: "From the Maya through Morazán to today",
     subKnigge: "How to behave on the road: hostel, bus, groups",
     subTeacher: "Teacher/coordinator overview: import student progress",
     subTask: "Open a task: enter the code from your teacher/tour leader",
@@ -3669,6 +3714,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     infoNoCountry: "No country available.",
     infoCapital: (p) => `🏛️ Capital: ${p.capital}`,
     infoAbout: "About the country",
+    infoPeople: "Country & economy",
+    infoPopulation: "Population",
+    infoAgeStructure: "Age structure",
+    infoGovernment: "Government",
+    infoEconomy: "Economy",
+    infoLivelihood: "What the country lives on",
     infoHistory: "History",
     infoLanguage: "Language",
     infoFood: "🍽️ Food &amp; drink",
@@ -3682,6 +3733,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Historia de Sudamérica
     histBannerTitle: "Historia de Sudamérica",
     histBannerSub: "The big story: Inca, colonial era, Bolívar & today",
+    histBannerCentroTitle: "Historia de Centroamérica",
+    histBannerCentroSub: "The big story: Maya, colonial era, Morazán & today",
     histAreas: "Sections",
     histNavTimeline: "Timeline",
     histNavFigures: "Key figures",
@@ -3703,6 +3756,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histTranslation: "Show full translation",
     histShare: "Share text & vocab",
     histModuleShare: "Share module",
+    moduleShare: "Share module",
+    moduleShareKicker: "Discover",
     tipsShare: "Share as image",
     histReadToggle: "Read in Spanish",
     histQuiz: "Mini-quiz: test the vocab",
@@ -4421,6 +4476,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionHistModule: "Von den Inka über Bolívar bis heute – verständlich erzählt, mit Spanisch-Lesetraining. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – Reise-Tipps von HolaRuta`,
     captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
+    captionModuleHead: (p) => `🧭 ${p.title} – ein Modul aus HolaRuta`,
+    captionModule: "Reise-Spanisch für Lateinamerika – spielerisch lernen mit HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -4446,6 +4503,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionHistModule: "From the Inca via Bolívar to today – clearly told, with Spanish reading practice. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – travel tips from HolaRuta`,
     captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
+    captionModuleHead: (p) => `🧭 ${p.title} – a module from HolaRuta`,
+    captionModule: "Travel Spanish for Latin America – learn it the fun way with HolaRuta. 🌎",
   });
 })();
 
@@ -5614,39 +5673,41 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   "use strict";
 
   // Akzentfarben in warmer "HolaRuta"-Erdton-Palette (Lateinamerika-Look).
+  // group = thematischer Abschnitt im Lernen-Reiter (siehe CATEGORY_GROUPS in
+  // ui.js): bündelt die 23 Themen in scanbare Blöcke statt einer langen Kachelflut.
   const CATEGORIES = [
-    { id: "basics",  label: "Grundlagen", labelEn: "Basics", icon: "💬", grad: ["#C2502E", "#D4673F"] },
-    { id: "zahlen",  label: "Zahlen",     labelEn: "Numbers", icon: "🔢", grad: ["#B97C24", "#CE9438"] },
-    { id: "essen",   label: "Essen",      labelEn: "Food", icon: "🍽️", grad: ["#CB5A2B", "#E0743C"] },
-    { id: "trinken", label: "Trinken",    labelEn: "Drinks", icon: "🥤", grad: ["#2F6B70", "#3E8388"] },
-    { id: "hotel",   label: "Hotel",      labelEn: "Hotel", icon: "🏨", grad: ["#7D4A8E", "#9763A6"] },
-    { id: "hostel",  label: "Hostel",     labelEn: "Hostel", icon: "🛏️", grad: ["#C25A45", "#DB7A5E"] },
-    { id: "social",  label: "Social",     labelEn: "Social", icon: "🤝", grad: ["#8E4FA8", "#A96DBE"] },
-    { id: "verkehr", label: "Verkehr",    labelEn: "Transport", icon: "🚌", grad: ["#3F7355", "#52906C"] },
-    { id: "compras", label: "Einkaufen",  labelEn: "Shopping", icon: "🛒", grad: ["#A86A2D", "#C2853F"] },
-    { id: "dinero",  label: "Geld",       labelEn: "Money", icon: "💵", grad: ["#5E7D3A", "#76954E"] },
-    { id: "notfall", label: "Notfall",    labelEn: "Emergency", icon: "🆘", grad: ["#B5302A", "#CE463E"] },
-    { id: "zeit",    label: "Zeit",       labelEn: "Time", icon: "📅", grad: ["#2E6E86", "#3E89A2"] },
-    { id: "talk",    label: "Smalltalk",  labelEn: "Small talk", icon: "🗣️", grad: ["#9B5BA0", "#B173B5"] },
-    { id: "alltag",  label: "Alltag",     labelEn: "Everyday", icon: "🏙️", grad: ["#8A6A52", "#A3846B"] },
-    { id: "frases",  label: "Sätze",      labelEn: "Phrases", icon: "🙋", grad: ["#A85A6E", "#C2748A"] },
-    { id: "grenze",  label: "Behörden",   labelEn: "Officials", icon: "🛂", grad: ["#566B8A", "#6E86A3"] },
-    { id: "reise",   label: "Busreise",   labelEn: "Bus travel", icon: "🚐", grad: ["#B5503F", "#CE6855"] },
-    { id: "ropa",    label: "Kleidung & Schmuck", labelEn: "Clothes & jewellery", icon: "👕", grad: ["#A8497E", "#C2629A"] },
-    { id: "rumbo",   label: "Wegbeschreibung", labelEn: "Directions", icon: "🧭", grad: ["#2B7A78", "#3AA89F"] },
-    { id: "verbos",  label: "Konjugieren", labelEn: "Conjugating", icon: "🔁", grad: ["#4C5FA8", "#6377C4"] },
-    { id: "tiempos", label: "Zeiten",     labelEn: "Tenses", icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"] },
-    { id: "colores", label: "Farben",     labelEn: "Colours", icon: "🎨", grad: ["#7048E8", "#15AABF"] },
-    { id: "contrarios", label: "Gegenteile", labelEn: "Opposites", icon: "↔️", grad: ["#3F7355", "#B5503F"] },
-    { id: "colombia", label: "Kolumbien", labelEn: "Colombia", icon: "🇨🇴", grad: ["#F2C94C", "#2F80ED"] },
-    { id: "peru", label: "Peru", labelEn: "Peru", icon: "🇵🇪", grad: ["#C1121F", "#E09F3E"] },
-    { id: "mexico", label: "Mexiko", labelEn: "Mexico", icon: "🇲🇽", grad: ["#0E7C5A", "#E84A3C"] },
-    { id: "costarica", label: "Costa Rica", labelEn: "Costa Rica", icon: "🇨🇷", grad: ["#1E8A5A", "#2E7DC4"] },
-    { id: "ecuador", label: "Ecuador", labelEn: "Ecuador", icon: "🇪🇨", grad: ["#0B6E4F", "#F4B400"] },
-    { id: "guatemala", label: "Guatemala", labelEn: "Guatemala", icon: "🇬🇹", grad: ["#0E7F8C", "#5BC2B8"] },
-    { id: "argentina", label: "Argentinien", labelEn: "Argentina", icon: "🇦🇷", grad: ["#5AA9E6", "#3A6EA5"] },
-    { id: "chile", label: "Chile", labelEn: "Chile", icon: "🇨🇱", grad: ["#0F4C81", "#D52B1E"] },
-    { id: "bolivia", label: "Bolivien", labelEn: "Bolivia", icon: "🇧🇴", grad: ["#1B7A3D", "#C8102E"] },
+    { id: "basics",  label: "Grundlagen", labelEn: "Basics", icon: "💬", grad: ["#C2502E", "#D4673F"], group: "basics" },
+    { id: "zahlen",  label: "Zahlen",     labelEn: "Numbers", icon: "🔢", grad: ["#B97C24", "#CE9438"], group: "basics" },
+    { id: "essen",   label: "Essen",      labelEn: "Food", icon: "🍽️", grad: ["#CB5A2B", "#E0743C"], group: "food" },
+    { id: "trinken", label: "Trinken",    labelEn: "Drinks", icon: "🥤", grad: ["#2F6B70", "#3E8388"], group: "food" },
+    { id: "hotel",   label: "Hotel",      labelEn: "Hotel", icon: "🏨", grad: ["#7D4A8E", "#9763A6"], group: "travel" },
+    { id: "hostel",  label: "Hostel",     labelEn: "Hostel", icon: "🛏️", grad: ["#C25A45", "#DB7A5E"], group: "travel" },
+    { id: "social",  label: "Social",     labelEn: "Social", icon: "🤝", grad: ["#8E4FA8", "#A96DBE"], group: "people" },
+    { id: "verkehr", label: "Verkehr",    labelEn: "Transport", icon: "🚌", grad: ["#3F7355", "#52906C"], group: "travel" },
+    { id: "compras", label: "Einkaufen",  labelEn: "Shopping", icon: "🛒", grad: ["#A86A2D", "#C2853F"], group: "food" },
+    { id: "dinero",  label: "Geld",       labelEn: "Money", icon: "💵", grad: ["#5E7D3A", "#76954E"], group: "food" },
+    { id: "notfall", label: "Notfall",    labelEn: "Emergency", icon: "🆘", grad: ["#B5302A", "#CE463E"], group: "travel" },
+    { id: "zeit",    label: "Zeit",       labelEn: "Time", icon: "📅", grad: ["#2E6E86", "#3E89A2"], group: "basics" },
+    { id: "talk",    label: "Smalltalk",  labelEn: "Small talk", icon: "🗣️", grad: ["#9B5BA0", "#B173B5"], group: "people" },
+    { id: "alltag",  label: "Alltag",     labelEn: "Everyday", icon: "🏙️", grad: ["#8A6A52", "#A3846B"], group: "people" },
+    { id: "frases",  label: "Sätze",      labelEn: "Phrases", icon: "🙋", grad: ["#A85A6E", "#C2748A"], group: "basics" },
+    { id: "grenze",  label: "Behörden",   labelEn: "Officials", icon: "🛂", grad: ["#566B8A", "#6E86A3"], group: "travel" },
+    { id: "reise",   label: "Busreise",   labelEn: "Bus travel", icon: "🚐", grad: ["#B5503F", "#CE6855"], group: "travel" },
+    { id: "ropa",    label: "Kleidung & Schmuck", labelEn: "Clothes & jewellery", icon: "👕", grad: ["#A8497E", "#C2629A"], group: "food" },
+    { id: "rumbo",   label: "Wegbeschreibung", labelEn: "Directions", icon: "🧭", grad: ["#2B7A78", "#3AA89F"], group: "travel" },
+    { id: "verbos",  label: "Konjugieren", labelEn: "Conjugating", icon: "🔁", grad: ["#4C5FA8", "#6377C4"], group: "grammar" },
+    { id: "tiempos", label: "Zeiten",     labelEn: "Tenses", icon: "⏳", grad: ["#3E7CA8", "#5A9BC4"], group: "grammar" },
+    { id: "colores", label: "Farben",     labelEn: "Colours", icon: "🎨", grad: ["#7048E8", "#15AABF"], group: "basics" },
+    { id: "contrarios", label: "Gegenteile", labelEn: "Opposites", icon: "↔️", grad: ["#3F7355", "#B5503F"], group: "basics" },
+    { id: "colombia", label: "Kolumbien", labelEn: "Colombia", icon: "🇨🇴", grad: ["#F2C94C", "#2F80ED"], group: "destinos" },
+    { id: "peru", label: "Peru", labelEn: "Peru", icon: "🇵🇪", grad: ["#C1121F", "#E09F3E"], group: "destinos" },
+    { id: "mexico", label: "Mexiko", labelEn: "Mexico", icon: "🇲🇽", grad: ["#0E7C5A", "#E84A3C"], group: "destinos" },
+    { id: "costarica", label: "Costa Rica", labelEn: "Costa Rica", icon: "🇨🇷", grad: ["#1E8A5A", "#2E7DC4"], group: "destinos" },
+    { id: "ecuador", label: "Ecuador", labelEn: "Ecuador", icon: "🇪🇨", grad: ["#0B6E4F", "#F4B400"], group: "destinos" },
+    { id: "guatemala", label: "Guatemala", labelEn: "Guatemala", icon: "🇬🇹", grad: ["#0E7F8C", "#5BC2B8"], group: "destinos" },
+    { id: "argentina", label: "Argentinien", labelEn: "Argentina", icon: "🇦🇷", grad: ["#5AA9E6", "#3A6EA5"], group: "destinos" },
+    { id: "chile", label: "Chile", labelEn: "Chile", icon: "🇨🇱", grad: ["#0F4C81", "#D52B1E"], group: "destinos" },
+    { id: "bolivia", label: "Bolivien", labelEn: "Bolivia", icon: "🇧🇴", grad: ["#1B7A3D", "#C8102E"], group: "destinos" },
   ];
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
@@ -8910,6 +8971,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Mexiko-Stadt",
       "tagline": "Tacos, Maya-Ruinen und endlose Karibikstrände",
       "taglineEn": "Tacos, Maya ruins and endless Caribbean beaches",
+      "population": "Rund 132 Millionen Menschen (2025) – das bevölkerungsreichste spanischsprachige Land der Welt.",
+      "populationEn": "Around 132 million people (2025) – the most populous Spanish-speaking country in the world.",
+      "ageStructure": "Noch junge, aber langsam alternde Bevölkerung mit einem Medianalter von etwa 31 Jahren.",
+      "ageStructureEn": "A still young but slowly ageing population with a median age of about 31.",
+      "government": "Föderale präsidentielle Republik aus 31 Bundesstaaten und der Hauptstadt Mexiko-Stadt; das Staatsoberhaupt wird für sechs Jahre gewählt und nie wiedergewählt.",
+      "governmentEn": "A federal presidential republic of 31 states plus the capital, Mexico City; the head of state is elected for six years and never re-elected.",
+      "economy": "Zweitgrößte Volkswirtschaft Lateinamerikas und eng mit den USA verflochten; wachsende Mittelschicht, aber starke regionale Ungleichheit.",
+      "economyEn": "The second-largest economy in Latin America, closely intertwined with the USA; a growing middle class but strong regional inequality.",
+      "livelihood": "Industrie (Auto- und Elektronikfertigung), Erdöl, Tourismus sowie Überweisungen (remesas) von Auswanderern in den USA.",
+      "livelihoodEn": "Industry (car and electronics manufacturing), oil, tourism and remittances (remesas) from emigrants in the USA.",
       "about": "Mexiko ist das nördlichste Land Lateinamerikas mit über 9.000 km Küste an Pazifik und Karibik. Backpacker zieht es zu den Maya-Ruinen von Yucatán, den Cenoten, kolonialen Städten wie Oaxaca und dem pulsierenden Mexiko-Stadt. Wüsten, Vulkane und Dschungel machen die Geografie extrem vielfältig.",
       "aboutEn": "Mexico is the northernmost country in Latin America, with over 9,000 km of coastline along the Pacific and the Caribbean. Backpackers are drawn to the Maya ruins of Yucatán, the cenotes, colonial cities like Oaxaca and the buzzing Mexico City. Deserts, volcanoes and jungle make for an extremely varied landscape.",
       "history": "Vor der Eroberung blühten hier die Hochkulturen der Olmeken, Maya und Azteken. 1521 unterwarf Hernán Cortés das Aztekenreich, woraufhin drei Jahrhunderte spanische Kolonialherrschaft folgten. 1810 begann der Unabhängigkeitskampf, 1821 wurde Mexiko unabhängig. Die Revolution von 1910 prägt bis heute das nationale Selbstverständnis.",
@@ -9113,6 +9184,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Guatemala-Stadt",
       "tagline": "Vulkane, Maya-Kultur und der türkisfarbene Atitlán-See",
       "taglineEn": "Volcanoes, Maya culture and the turquoise Lake Atitlán",
+      "population": "Rund 18 Millionen Einwohner (2025) – nach Mexiko das bevölkerungsreichste Land Mittelamerikas.",
+      "populationEn": "Around 18 million inhabitants (2025) – after Mexico the most populous country in Central America.",
+      "ageStructure": "Sehr junge Bevölkerung mit einem Medianalter von nur etwa 23 Jahren und hohem Anteil indigener Maya.",
+      "ageStructureEn": "A very young population with a median age of only about 23 and a high proportion of indigenous Maya.",
+      "government": "Präsidentielle Republik; der Präsident wird für vier Jahre gewählt und darf nicht wiedergewählt werden.",
+      "governmentEn": "A presidential republic; the president is elected for four years and may not be re-elected.",
+      "economy": "Nach Mexiko die größte Volkswirtschaft Mittelamerikas, aber mit hoher Armut und großer Einkommensungleichheit.",
+      "economyEn": "After Mexico the largest economy in Central America, but with high poverty and great income inequality.",
+      "livelihood": "Landwirtschaft (Kaffee, Zucker, Bananen, Kardamom), Textilindustrie und Überweisungen aus dem Ausland.",
+      "livelihoodEn": "Agriculture (coffee, sugar, bananas, cardamom), the textile industry and remittances from abroad.",
       "about": "Guatemala ist das Herz der Maya-Welt mit über 30 Vulkanen, dichtem Regenwald und dem kolonialen Juwel Antigua. Backpacker lieben den Atitlán-See, die Ruinen von Tikal und die Vulkanwanderung zum aktiven Acatenango. Das Hochland ist kühl, die Küsten tropisch-heiß.",
       "aboutEn": "Guatemala is the heart of the Maya world, with over 30 volcanoes, dense rainforest and the colonial gem of Antigua. Backpackers love Lake Atitlán, the ruins of Tikal and the volcano hike up the active Acatenango. The highlands are cool and the coasts tropically hot.",
       "history": "Guatemala war Zentrum der klassischen Maya-Zivilisation, deren größte Stadt Tikal war. 1524 eroberte Pedro de Alvarado die Region für Spanien. 1821 wurde das Land unabhängig, später folgte ein brutaler Bürgerkrieg (1960–1996). Die indigene Maya-Bevölkerung macht bis heute einen großen Teil der Gesellschaft aus.",
@@ -9316,6 +9397,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Tegucigalpa",
       "tagline": "Karibische Tauchparadiese und Maya-Ruinen",
       "taglineEn": "Caribbean diving paradises and Maya ruins",
+      "population": "Rund 10,8 Millionen Einwohner (2025).",
+      "populationEn": "Around 10.8 million inhabitants (2025).",
+      "ageStructure": "Junge Bevölkerung mit einem Medianalter von etwa 26 Jahren.",
+      "ageStructureEn": "A young population with a median age of about 26.",
+      "government": "Präsidentielle Republik; 2022 wählte das Land mit Xiomara Castro erstmals eine Frau zur Präsidentin.",
+      "governmentEn": "A presidential republic; in 2022 the country elected Xiomara Castro as its first female president.",
+      "economy": "Eines der ärmsten Länder der Region mit hoher Ungleichheit und Abhängigkeit von Exporten.",
+      "economyEn": "One of the poorest countries in the region, with high inequality and reliance on exports.",
+      "livelihood": "Kaffee- und Bananenexport, Textilfabriken (maquilas) und Überweisungen von Migranten.",
+      "livelihoodEn": "Coffee and banana exports, textile factories (maquilas) and remittances from migrants.",
       "about": "Honduras lockt mit den Bay Islands Roatán und Utila, einem der günstigsten Tauchreviere der Welt am zweitgrößten Riff der Erde. Im Landesinneren liegen die Maya-Ruinen von Copán und üppige Bergnebelwälder. Die Karibikküste ist tropisch, das Hochland angenehm mild.",
       "aboutEn": "Honduras tempts you with the Bay Islands of Roatán and Utila, one of the cheapest diving spots in the world on the planet's second-largest reef. Inland lie the Maya ruins of Copán and lush mountain cloud forests. The Caribbean coast is tropical and the highlands pleasantly mild.",
       "history": "In Copán blühte eine bedeutende Maya-Stadt mit kunstvollen Stelen. 1502 erreichte Kolumbus die Küste, danach kam das Gebiet unter spanische Herrschaft. 1821 wurde Honduras unabhängig und war kurz Teil der Zentralamerikanischen Föderation. Im 20. Jahrhundert prägten Bananenkonzerne die Wirtschaft – daher der Begriff 'Bananenrepublik'.",
@@ -9519,6 +9610,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "San Salvador",
       "tagline": "Surfer-Wellen, Vulkane und Bitcoin-Pionier",
       "taglineEn": "Surfers' waves, volcanoes and Bitcoin pioneer",
+      "population": "Etwa 6,4 Millionen Einwohner (2025) – das am dichtesten besiedelte Land des amerikanischen Festlands.",
+      "populationEn": "About 6.4 million inhabitants (2025) – the most densely populated country on the American mainland.",
+      "ageStructure": "Medianalter von rund 29 Jahren; viele Salvadorianer leben im Ausland.",
+      "ageStructureEn": "A median age of around 29; many Salvadorans live abroad.",
+      "government": "Präsidentielle Republik; das Bitcoin-Experiment von 2021 wurde 2025 zurückgefahren – Bitcoin ist kein gesetzliches Zahlungsmittel mehr, Hauptwährung bleibt der US-Dollar.",
+      "governmentEn": "A presidential republic; the 2021 Bitcoin experiment was scaled back in 2025 – Bitcoin is no longer legal tender and the main currency remains the US dollar.",
+      "economy": "Dollarisierte Wirtschaft; nach Jahren hoher Kriminalität stark verbessertes Sicherheitsgefühl, aber weiter abhängig von Überweisungen.",
+      "economyEn": "A dollarised economy; after years of high crime a much improved sense of safety, but still dependent on remittances.",
+      "livelihood": "Überweisungen (über ein Fünftel des BIP), Textilindustrie, Kaffee und zunehmend Tourismus.",
+      "livelihoodEn": "Remittances (over a fifth of GDP), the textile industry, coffee and increasingly tourism.",
       "about": "El Salvador ist das kleinste Land Mittelamerikas, aber ein Surf-Mekka mit erstklassigen Pazifikwellen bei El Tunco und El Zonte. Die 'Ruta de las Flores' führt durch Kaffeedörfer und Vulkanlandschaften. Das Land hat als erstes der Welt Bitcoin als gesetzliches Zahlungsmittel eingeführt.",
       "aboutEn": "El Salvador is the smallest country in Central America, yet a surfing mecca with world-class Pacific waves at El Tunco and El Zonte. The 'Ruta de las Flores' winds through coffee villages and volcanic landscapes. It was the first country in the world to adopt Bitcoin as legal tender.",
       "history": "Vor der Eroberung lebten hier die Pipil, ein Nahua-Volk. 1524 begann die spanische Eroberung durch Pedro de Alvarado. 1821 wurde El Salvador unabhängig. Nach einem blutigen Bürgerkrieg (1980–1992) kämpfte das Land lange mit Bandengewalt, gilt heute aber als deutlich sicherer.",
@@ -9722,6 +9823,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Managua",
       "tagline": "Vulkane, Seen und koloniale Farbenpracht",
       "taglineEn": "Volcanoes, lakes and colonial splendour",
+      "population": "Rund 6,6 Millionen Einwohner (2025).",
+      "populationEn": "Around 6.6 million inhabitants (2025).",
+      "ageStructure": "Junge Bevölkerung mit einem Medianalter von etwa 26 Jahren.",
+      "ageStructureEn": "A young population with a median age of about 26.",
+      "government": "Präsidialrepublik, faktisch autoritär regiert durch Daniel Ortega und seine Frau als Co-Präsidentin.",
+      "governmentEn": "A presidential republic, in practice ruled authoritatively by Daniel Ortega and his wife as co-president.",
+      "economy": "Eines der ärmsten Länder der Hemisphäre; die politische Krise seit 2018 belastet die Wirtschaft.",
+      "economyEn": "One of the poorest countries in the hemisphere; a political crisis since 2018 weighs on the economy.",
+      "livelihood": "Landwirtschaft (Kaffee, Rindfleisch, Zucker, Gold), Textilfabriken und Überweisungen.",
+      "livelihoodEn": "Agriculture (coffee, beef, sugar, gold), textile factories and remittances.",
       "about": "Nicaragua ist das größte Land Mittelamerikas und bekannt für die kolonialen Schmuckstädte Granada und León sowie den riesigen Nicaragua-See. Backpacker surfen in San Juan del Sur, fahren Vulkan-Boarding am Cerro Negro und erkunden die Insel Ometepe mit ihren zwei Vulkanen. Preise sind niedrig, die Natur spektakulär.",
       "aboutEn": "Nicaragua is the largest country in Central America, known for the colonial gems of Granada and León and the vast Lake Nicaragua. Backpackers surf in San Juan del Sur, go volcano boarding on Cerro Negro and explore the island of Ometepe with its two volcanoes. Prices are low and the scenery spectacular.",
       "history": "Vor der Eroberung lebten hier Völker wie die Nicarao und Chorotega. 1524 gründete Spanien Granada und León. 1821 wurde Nicaragua unabhängig. Das 20. Jahrhundert war geprägt von der Somoza-Diktatur und der Sandinistischen Revolution 1979, deren Folgen die Politik bis heute bestimmen.",
@@ -9925,6 +10036,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "San José",
       "tagline": "Pura Vida: Regenwald, Wildtiere und Traumstrände",
       "taglineEn": "Pura Vida: rainforest, wildlife and dream beaches",
+      "population": "Etwa 5,3 Millionen Einwohner (2025).",
+      "populationEn": "About 5.3 million inhabitants (2025).",
+      "ageStructure": "Älter als die Nachbarn: Medianalter um die 33 Jahre, mit einer der höchsten Lebenserwartungen der Region.",
+      "ageStructureEn": "Older than its neighbours: a median age of around 33 and one of the highest life expectancies in the region.",
+      "government": "Stabile präsidentielle Demokratie ohne eigenes Militär (1948 abgeschafft).",
+      "governmentEn": "A stable presidential democracy with no army of its own (abolished in 1948).",
+      "economy": "Eine der wohlhabendsten und stabilsten Volkswirtschaften Mittelamerikas mit starker Mittelschicht.",
+      "economyEn": "One of the wealthiest and most stable economies in Central America, with a strong middle class.",
+      "livelihood": "Ökotourismus, Hightech- und Medizintechnik-Exporte, Dienstleistungen sowie Kaffee und Ananas.",
+      "livelihoodEn": "Eco-tourism, high-tech and medical-device exports, services as well as coffee and pineapple.",
       "about": "Costa Rica ist ein Öko-Tourismus-Paradies mit Nebelwäldern, Vulkanen und Stränden an Pazifik und Karibik. Rund ein Viertel des Landes steht unter Naturschutz – ideal für Faultiere, Tukane und Zip-Lining. Die entspannte 'Pura Vida'-Lebenshaltung ist überall spürbar.",
       "aboutEn": "Costa Rica is an ecotourism paradise with cloud forests, volcanoes and beaches on both the Pacific and the Caribbean. Around a quarter of the country is protected nature reserve, ideal for sloths, toucans and zip-lining. The laid-back 'Pura Vida' attitude is everywhere you go.",
       "history": "Die Region war dünn besiedelt von indigenen Völkern, ohne große Hochkultur. 1502 landete Kolumbus an der Karibikküste. Nach der spanischen Kolonialzeit wurde Costa Rica 1821 unabhängig. 1948 schaffte das Land sein Militär ab und investierte stattdessen in Bildung und Naturschutz.",
@@ -10128,6 +10249,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Panama-Stadt",
       "tagline": "Kanal, Karibikinseln und Großstadt-Skyline",
       "taglineEn": "Canal, Caribbean islands and a big-city skyline",
+      "population": "Rund 4,5 Millionen Einwohner (2025).",
+      "populationEn": "Around 4.5 million inhabitants (2025).",
+      "ageStructure": "Junge Bevölkerung mit einem Medianalter von etwa 30 Jahren.",
+      "ageStructureEn": "A young population with a median age of about 30.",
+      "government": "Präsidentielle Republik; nutzt den US-Dollar (Balboa) als Währung.",
+      "governmentEn": "A presidential republic; it uses the US dollar (balboa) as its currency.",
+      "economy": "Eine der dynamischsten Volkswirtschaften der Region, getragen vom Kanal und vom Finanzsektor.",
+      "economyEn": "One of the most dynamic economies in the region, driven by the canal and the financial sector.",
+      "livelihood": "Der Panamakanal, Logistik und Häfen, Bankwesen, Handel in der Freihandelszone Colón und Tourismus.",
+      "livelihoodEn": "The Panama Canal, logistics and ports, banking, trade in the Colón free-trade zone and tourism.",
       "about": "Panama verbindet als Landbrücke Nord- und Südamerika und beherbergt den weltberühmten Panamakanal. Backpacker zieht es zu den paradiesischen San-Blas-Inseln der Guna, zum Surferort Bocas del Toro und in die moderne Hauptstadt mit kolonialer Altstadt. Pazifik und Karibik liegen nur Stunden auseinander.",
       "aboutEn": "As a land bridge, Panama connects North and South America and is home to the world-famous Panama Canal. Backpackers are drawn to the Guna's idyllic San Blas Islands, the surf town of Bocas del Toro and the modern capital with its colonial old town. The Pacific and the Caribbean are just hours apart.",
       "history": "Vor der Eroberung lebten hier Völker wie die Guna, Emberá und Ngäbe. 1501 kamen die Spanier, Panama wurde wichtiger Umschlagplatz für Silber. 1821 löste sich das Land von Spanien und schloss sich Großkolumbien an. 1903 wurde Panama mit US-Hilfe von Kolumbien unabhängig; der Kanal wurde 1914 eröffnet und 1999 an Panama übergeben.",
@@ -10331,6 +10462,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Havanna",
       "tagline": "Oldtimer, Rum und Salsa zwischen Verfall und Charme",
       "taglineEn": "Vintage cars, rum and salsa, between decay and charm",
+      "population": "Etwa 11 Millionen Einwohner (2025) – durch starke Auswanderung zuletzt rückläufig.",
+      "populationEn": "About 11 million inhabitants (2025) – recently declining due to heavy emigration.",
+      "ageStructure": "Älteste Bevölkerung Lateinamerikas mit einem Medianalter von rund 43 Jahren.",
+      "ageStructureEn": "The oldest population in Latin America, with a median age of around 43.",
+      "government": "Sozialistischer Einparteienstaat unter Führung der Kommunistischen Partei.",
+      "governmentEn": "A socialist one-party state led by the Communist Party.",
+      "economy": "Staatlich gelenkte Wirtschaft in schwerer Krise mit Versorgungsengpässen und US-Embargo.",
+      "economyEn": "A state-run economy in deep crisis, with supply shortages and the US embargo.",
+      "livelihood": "Tourismus, Export von Ärzten und medizinischen Diensten, Tabak (Zigarren), Rum und Nickel.",
+      "livelihoodEn": "Tourism, the export of doctors and medical services, tobacco (cigars), rum and nickel.",
       "about": "Kuba ist die größte Insel der Karibik und besticht durch koloniale Altstädte, Tabakfelder im Viñales-Tal und kilometerlange Strände wie Varadero. Backpacker reisen oft per Colectivo und übernachten in privaten Casas Particulares, die einen authentischen Einblick ins Alltagsleben geben.",
       "aboutEn": "Cuba is the largest island in the Caribbean and captivates with colonial old towns, tobacco fields in the Viñales valley and miles of beaches like Varadero. Backpackers often travel by colectivo and stay in private casas particulares, which give an authentic glimpse into everyday life.",
       "history": "Vor der Ankunft von Kolumbus 1492 lebten Taíno und Ciboney auf der Insel, bevor Spanien Kuba als Kolonie und Sklavenhalter-Zentrum für Zuckerrohr ausbeutete. 1898 endete die spanische Herrschaft, doch erst die Revolution von 1959 unter Fidel Castro und Che Guevara machte Kuba zum sozialistischen Staat. Nach Jahrzehnten unter US-Embargo öffnet sich das Land langsam, bleibt politisch aber ein Einparteienstaat.",
@@ -10534,6 +10675,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Santo Domingo",
       "tagline": "Traumstrände, Merengue und der älteste Kolonialkern Amerikas",
       "taglineEn": "Dream beaches, merengue and the oldest colonial quarter in the Americas",
+      "population": "Rund 11,5 Millionen Einwohner (2025).",
+      "populationEn": "Around 11.5 million inhabitants (2025).",
+      "ageStructure": "Junge Bevölkerung mit einem Medianalter von etwa 29 Jahren.",
+      "ageStructureEn": "A young population with a median age of about 29.",
+      "government": "Präsidentielle Republik mit regelmäßigen demokratischen Wahlen.",
+      "governmentEn": "A presidential republic with regular democratic elections.",
+      "economy": "Eine der am schnellsten wachsenden Volkswirtschaften Lateinamerikas.",
+      "economyEn": "One of the fastest-growing economies in Latin America.",
+      "livelihood": "Tourismus (Punta Cana), Freihandelszonen, Bergbau (Gold), Landwirtschaft und Überweisungen.",
+      "livelihoodEn": "Tourism (Punta Cana), free-trade zones, mining (gold), agriculture and remittances.",
       "about": "Die Dominikanische Republik teilt sich die Insel Hispaniola mit Haiti und lockt mit Palmenstränden, dem Bergmassiv Pico Duarte und der historischen Zona Colonial von Santo Domingo. Backpacker finden neben den Pauschalresorts auch authentische Orte wie Las Terrenas oder die Wasserfälle von Damajagua.",
       "aboutEn": "The Dominican Republic shares the island of Hispaniola with Haiti and tempts you with palm-fringed beaches, the Pico Duarte mountain range and the historic Zona Colonial of Santo Domingo. Beyond the package resorts, backpackers also find authentic spots like Las Terrenas or the Damajagua waterfalls.",
       "history": "Die Insel war von Taíno besiedelt, als Kolumbus 1492 landete und Santo Domingo zur ältesten dauerhaften europäischen Siedlung Amerikas wurde. Nach spanischer und kurzer haitianischer Herrschaft erlangte das Land 1844 seine Unabhängigkeit von Haiti. Das 20. Jahrhundert war von der brutalen Diktatur Trujillos geprägt, bevor sich eine Demokratie und ein tourismusgetriebener Aufschwung entwickelten.",
@@ -10737,6 +10888,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "San Juan",
       "tagline": "US-Karibik mit Regenwald, Altstadtcharme und Reggaetón",
       "taglineEn": "American Caribbean with rainforest, old-town charm and reggaeton",
+      "population": "Etwa 3,2 Millionen Einwohner (2025), mit anhaltender Abwanderung aufs US-Festland.",
+      "populationEn": "About 3.2 million inhabitants (2025), with continuing migration to the US mainland.",
+      "ageStructure": "Stark alternde Bevölkerung mit einem Medianalter von rund 45 Jahren – eine der höchsten Amerikas.",
+      "ageStructureEn": "A markedly ageing population with a median age of around 45 – one of the highest in the Americas.",
+      "government": "Nicht inkorporiertes Außengebiet der USA mit eigenem Gouverneur; die Einwohner sind US-Bürger.",
+      "governmentEn": "An unincorporated US territory with its own governor; residents are US citizens.",
+      "economy": "Mit dem US-Dollar; nach Staatsschuldenkrise und Hurrikan María im Wiederaufbau.",
+      "economyEn": "On the US dollar; rebuilding after a debt crisis and Hurricane María.",
+      "livelihood": "Pharma- und Medizintechnikindustrie, Tourismus und Dienstleistungen; eng an die US-Wirtschaft gebunden.",
+      "livelihoodEn": "Pharmaceutical and medical-device industry, tourism and services; tightly tied to the US economy.",
       "about": "Puerto Rico ist ein US-Außengebiet mit karibischem Flair, vom kopfsteingepflasterten Old San Juan über den Regenwald El Yunque bis zu den biolumineszenten Buchten. Als Backpacker reist du ohne Visum (für US-Einreiseberechtigte) und zahlst bequem in US-Dollar.",
       "aboutEn": "Puerto Rico is a US territory with Caribbean flair, from cobblestoned Old San Juan to the El Yunque rainforest and the bioluminescent bays. As a backpacker you travel without a visa (if you're allowed into the US) and pay conveniently in US dollars.",
       "history": "Die Taíno nannten die Insel Borikén, bevor Spanien sie ab 1493 kolonisierte und San Juan stark befestigte. 1898 trat Spanien Puerto Rico nach dem Spanisch-Amerikanischen Krieg an die USA ab, deren Bürger die Puertoricaner seit 1917 sind. Heute ist die Insel ein nicht inkorporiertes US-Territorium mit eigener Kultur und anhaltender Debatte über ihren politischen Status.",
@@ -10940,6 +11101,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Bogotá",
       "tagline": "Karibikküste, Anden, Kaffeezone und überschwängliche Herzlichkeit",
       "taglineEn": "Caribbean coast, Andes, coffee country and exuberant warmth",
+      "population": "Rund 53 Millionen Einwohner (2025) – das zweitbevölkerungsreichste Land Südamerikas.",
+      "populationEn": "Around 53 million inhabitants (2025) – the second most populous country in South America.",
+      "ageStructure": "Medianalter von etwa 32 Jahren; aufgenommen wurden fast drei Millionen venezolanische Migranten.",
+      "ageStructureEn": "A median age of about 32; it has taken in nearly three million Venezuelan migrants.",
+      "government": "Präsidentielle Republik; 2022 wählte das Land mit Gustavo Petro erstmals einen linksgerichteten Präsidenten.",
+      "governmentEn": "A presidential republic; in 2022 the country elected Gustavo Petro as its first left-wing president.",
+      "economy": "Drittgrößte Volkswirtschaft Südamerikas, im Aufschwung nach dem Friedensprozess mit der FARC.",
+      "economyEn": "The third-largest economy in South America, recovering after the peace process with the FARC.",
+      "livelihood": "Erdöl und Kohle, Kaffee, Blumen, Bergbau (Gold, Smaragde) und wachsender Tourismus.",
+      "livelihoodEn": "Oil and coal, coffee, flowers, mining (gold, emeralds) and growing tourism.",
       "about": "Kolumbien reicht von Karibikstränden über die dreigeteilten Anden bis zum Amazonas. Backpacker-Highlights sind die Kolonialstadt Cartagena, das Kaffee-Dreieck um Salento, Medellín und die Karibikküste rund um Tayrona. Das Land bietet enorme landschaftliche und kulturelle Vielfalt.",
       "aboutEn": "Colombia stretches from Caribbean beaches across the three branches of the Andes all the way to the Amazon. Backpacker highlights include the colonial city of Cartagena, the coffee triangle around Salento, Medellín and the Caribbean coast around Tayrona. The country offers enormous scenic and cultural variety.",
       "history": "Vor der Kolonialzeit lebten hier u. a. die Muisca, bekannt für ihren Goldreichtum (El-Dorado-Legende). Ab dem 16. Jahrhundert wurde das Gebiet von Spanien kolonialisiert, 1819 erkämpfte Simón Bolívar die Unabhängigkeit von Großkolumbien. Das 20. Jahrhundert war von Bürgerkrieg, Guerillas (FARC) und Drogenkartellen geprägt. Seit dem Friedensabkommen von 2016 hat sich die Sicherheitslage in vielen Regionen deutlich verbessert.",
@@ -11143,6 +11314,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Caracas",
       "tagline": "Karibikstrände, Tafelberge und der höchste Wasserfall der Welt",
       "taglineEn": "Caribbean beaches, table mountains and the world's highest waterfall",
+      "population": "Etwa 28 Millionen Einwohner (2025); über 7 Millionen sind seit 2015 ausgewandert.",
+      "populationEn": "About 28 million inhabitants (2025); over 7 million have emigrated since 2015.",
+      "ageStructure": "Medianalter von rund 30 Jahren, durch die Auswanderung junger Menschen im Wandel.",
+      "ageStructureEn": "A median age of around 30, shifting as young people emigrate.",
+      "government": "Präsidialrepublik, international umstritten und autoritär regiert unter Nicolás Maduro.",
+      "governmentEn": "A presidential republic, internationally disputed and ruled authoritatively under Nicolás Maduro.",
+      "economy": "Tiefe, langjährige Wirtschaftskrise mit Hyperinflation trotz der größten Ölreserven der Welt.",
+      "economyEn": "A deep, long-running economic crisis with hyperinflation despite the world's largest oil reserves.",
+      "livelihood": "Erdöl (über 90 % der Exporte), zunehmend Bergbau (Gold) und Überweisungen aus dem Ausland.",
+      "livelihoodEn": "Oil (over 90% of exports), increasingly mining (gold) and remittances from abroad.",
       "about": "Venezuela liegt an der Karibikküste und reicht von Stränden über die Anden bis zum Amazonas und der Gran Sabana mit ihren Tafelbergen (Tepuis). Hier stürzt der Salto Ángel, der höchste Wasserfall der Erde, in die Tiefe. Wegen der politischen und wirtschaftlichen Krise ist Reisen aktuell schwierig und erfordert gute Vorbereitung.",
       "aboutEn": "Venezuela sits on the Caribbean coast and ranges from beaches across the Andes to the Amazon and the Gran Sabana with its table mountains (tepuis). This is where Angel Falls, the highest waterfall on Earth, plunges into the depths. Because of the political and economic crisis, travel is currently difficult and takes careful preparation.",
       "history": "Vor der Kolonialzeit lebten hier indigene Völker wie Caribe und Arawak. Spanien kolonialisierte das Gebiet ab dem 16. Jahrhundert; 1811 begann unter Simón Bolívar, hier geboren, der Unabhängigkeitskampf. Im 20. Jahrhundert machte Erdöl Venezuela zeitweise reich. Seit den 2000er-Jahren führten Misswirtschaft und Hyperinflation zu einer schweren Krise und massiver Auswanderung.",
@@ -11346,6 +11527,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Quito",
       "tagline": "Galápagos, Vulkane und der Äquator auf kleinstem Raum",
       "taglineEn": "The Galápagos, volcanoes and the equator, all in a tiny space",
+      "population": "Rund 18 Millionen Einwohner (2025).",
+      "populationEn": "Around 18 million inhabitants (2025).",
+      "ageStructure": "Junge Bevölkerung mit einem Medianalter von etwa 29 Jahren.",
+      "ageStructureEn": "A young population with a median age of about 29.",
+      "government": "Präsidentielle Republik; nutzt seit 2000 den US-Dollar als Währung.",
+      "governmentEn": "A presidential republic; it has used the US dollar as its currency since 2000.",
+      "economy": "Dollarisierte Wirtschaft; zuletzt belastet durch stark gestiegene Drogenkriminalität.",
+      "economyEn": "A dollarised economy; recently strained by a sharp rise in drug-related crime.",
+      "livelihood": "Erdöl, Bananen (weltgrößter Exporteur), Garnelen, Blumen und Kakao.",
+      "livelihoodEn": "Oil, bananas (the world's largest exporter), shrimp, flowers and cocoa.",
       "about": "Ecuador ist eines der kleinsten, aber vielfältigsten Länder Südamerikas: Küste, Anden mit Vulkanen, Amazonas und die einzigartigen Galápagos-Inseln. Backpacker lieben Quitos Altstadt, die Vulkanstraße ('Avenida de los Volcanes') und Baños als Abenteuer-Hub. Dank kompakter Größe sind die Regionen schnell erreichbar.",
       "aboutEn": "Ecuador is one of the smallest yet most diverse countries in South America: coast, volcano-studded Andes, Amazon and the unique Galápagos Islands. Backpackers love Quito's old town, the volcano road ('Avenida de los Volcanes') and Baños as an adventure hub. Thanks to its compact size, the regions are quick to reach.",
       "history": "Vor der spanischen Eroberung war das Andenhochland Teil des Inkareichs, mit Quito als wichtigem Zentrum. Spanien kolonialisierte das Gebiet ab dem 16. Jahrhundert; 1822 wurde es nach der Schlacht von Pichincha unabhängig und gehörte zunächst zu Großkolumbien. 1830 entstand der eigenständige Staat Ecuador. Seit 2000 ist der US-Dollar offizielle Währung.",
@@ -11549,6 +11740,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Lima",
       "tagline": "Machu Picchu, Inka-Erbe und eine der besten Küchen der Welt",
       "taglineEn": "Machu Picchu, Inca heritage and one of the world's finest cuisines",
+      "population": "Etwa 34,5 Millionen Einwohner (2025).",
+      "populationEn": "About 34.5 million inhabitants (2025).",
+      "ageStructure": "Medianalter von rund 31 Jahren; großer Anteil indigener Quechua und Aymara.",
+      "ageStructureEn": "A median age of around 31; a large share of indigenous Quechua and Aymara.",
+      "government": "Präsidentielle Republik mit anhaltender politischer Instabilität und häufigen Präsidentenwechseln.",
+      "governmentEn": "A presidential republic with ongoing political instability and frequent changes of president.",
+      "economy": "Rohstoffabhängige Volkswirtschaft mit langem Wachstum, aber großer Informalität.",
+      "economyEn": "A commodity-dependent economy with long growth but high informality.",
+      "livelihood": "Bergbau (Kupfer, Gold, Silber – weltweit führend), Fischmehl, Landwirtschaft und Tourismus (Machu Picchu).",
+      "livelihoodEn": "Mining (copper, gold, silver – among the world's leaders), fishmeal, agriculture and tourism (Machu Picchu).",
       "about": "Peru vereint Wüstenküste, hohe Anden und Amazonasregenwald. Das absolute Highlight ist Machu Picchu, dazu kommen Cusco, das Heilige Tal, der Titicacasee und der Canyon von Colca. Lima gilt zudem als kulinarische Hauptstadt Lateinamerikas.",
       "aboutEn": "Peru brings together desert coastline, high Andes and Amazon rainforest. The absolute highlight is Machu Picchu, along with Cusco, the Sacred Valley, Lake Titicaca and the Colca Canyon. Lima is also regarded as the culinary capital of Latin America.",
       "history": "Peru war das Kernland des Inkareichs mit Cusco als Hauptstadt, dem ältere Hochkulturen wie Nazca, Moche und Chimú vorausgingen. 1532 eroberte Francisco Pizarro das Reich für Spanien, das daraufhin das mächtige Vizekönigreich Peru errichtete. 1821 erklärte José de San Martín die Unabhängigkeit. Heute ist Peru ein Zentrum andiner Kultur, in der Quechua-Tradition bis heute lebendig ist.",
@@ -11752,6 +11953,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Sucre (konstitutionell), La Paz (Regierungssitz)",
       "tagline": "Anden, Altiplano und der größte Salzsee der Welt",
       "taglineEn": "The Andes, the Altiplano and the world's largest salt flat",
+      "population": "Rund 12,4 Millionen Einwohner (2025).",
+      "populationEn": "Around 12.4 million inhabitants (2025).",
+      "ageStructure": "Junge Bevölkerung mit einem Medianalter von etwa 26 Jahren und hohem indigenen Anteil.",
+      "ageStructureEn": "A young population with a median age of about 26 and a high indigenous share.",
+      "government": "Plurinationale präsidentielle Republik mit zwei Hauptstädten (Sucre und La Paz); 2025 endete nach fast 20 Jahren die Regierung der sozialistischen MAS.",
+      "governmentEn": "A plurinational presidential republic with two capitals (Sucre and La Paz); in 2025 nearly 20 years of socialist MAS government came to an end.",
+      "economy": "Eine der ärmsten Volkswirtschaften Südamerikas, stark von Rohstoffen abhängig.",
+      "economyEn": "One of the poorest economies in South America, heavily dependent on commodities.",
+      "livelihood": "Erdgas, Bergbau (Zinn, Silber, Lithium), Landwirtschaft (Soja, Quinoa) und Coca.",
+      "livelihoodEn": "Natural gas, mining (tin, silver, lithium), agriculture (soya, quinoa) and coca.",
       "about": "Bolivien ist ein Binnenstaat im Herzen der Anden mit enormer Höhenlage: La Paz liegt auf rund 3.600 m, El Alto noch höher. Backpacker-Highlights sind der Salar de Uyuni, der Titicacasee und die Todesstraße bei La Paz. Das Land gehört zu den günstigsten Reisezielen Südamerikas.",
       "aboutEn": "Bolivia is a landlocked country in the heart of the Andes at staggering altitude: La Paz sits at around 3,600 m, and El Alto higher still. Backpacker highlights include the Salar de Uyuni, Lake Titicaca and the Death Road near La Paz. It's one of the cheapest destinations in South America.",
       "history": "Vor der Kolonialzeit war das Hochland Teil des Inkareichs, davor blühte die Tiwanaku-Kultur am Titicacasee. Ab dem 16. Jahrhundert beuteten die Spanier die Silberminen von Potosí aus, die den Kolonialreichtum trugen. 1825 wurde Bolivien unabhängig und nach Simón Bolívar benannt. Heute hat das Land einen der höchsten indigenen Bevölkerungsanteile Südamerikas und versteht sich als plurinationaler Staat.",
@@ -11955,6 +12166,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Santiago de Chile",
       "tagline": "Vom Wüstenhimmel der Atacama bis zu Patagoniens Gletschern",
       "taglineEn": "From the desert skies of the Atacama to Patagonia's glaciers",
+      "population": "Etwa 19,6 Millionen Einwohner (2025).",
+      "populationEn": "About 19.6 million inhabitants (2025).",
+      "ageStructure": "Alternde Gesellschaft mit einem Medianalter von rund 37 Jahren und hoher Lebenserwartung.",
+      "ageStructureEn": "An ageing society with a median age of around 37 and high life expectancy.",
+      "government": "Stabile präsidentielle Demokratie mit friedlichen Machtwechseln; 2022 wählte das Land mit Gabriel Boric einen der jüngsten Präsidenten der Welt.",
+      "governmentEn": "A stable presidential democracy with peaceful transfers of power; in 2022 it elected Gabriel Boric, one of the world's youngest presidents.",
+      "economy": "Eine der wohlhabendsten und offensten Volkswirtschaften Lateinamerikas.",
+      "economyEn": "One of the wealthiest and most open economies in Latin America.",
+      "livelihood": "Kupfer (weltgrößter Produzent) und Lithium, Wein, Obst, Lachs und Forstwirtschaft.",
+      "livelihoodEn": "Copper (the world's largest producer) and lithium, wine, fruit, salmon and forestry.",
       "about": "Chile ist ein extrem langes, schmales Land, das sich über mehr als 4.000 km entlang des Pazifiks erstreckt. Es reicht von der Atacama-Wüste im Norden über das zentrale Weinland bis zu den Fjorden und Bergen Patagoniens. Highlights für Backpacker sind die Sternenhimmel der Atacama, der Nationalpark Torres del Paine und die Osterinsel.",
       "aboutEn": "Chile is an extremely long, narrow country stretching over more than 4,000 km along the Pacific. It ranges from the Atacama Desert in the north through the central wine country to the fjords and mountains of Patagonia. Highlights for backpackers are the starry skies of the Atacama, Torres del Paine National Park and Easter Island.",
       "history": "Vor der Kolonialzeit lebten im Süden die Mapuche, die der spanischen Eroberung lange erfolgreich Widerstand leisteten. Ab 1541 gründeten die Spanier Santiago, 1818 erlangte Chile seine Unabhängigkeit. Das 20. Jahrhundert war geprägt vom Sturz Salvador Allendes 1973 und der Militärdiktatur unter Pinochet bis 1990. Heute gilt Chile als eines der wirtschaftlich stabilsten Länder der Region.",
@@ -12158,6 +12379,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Buenos Aires",
       "tagline": "Tango, Asado und endlose Weiten von Patagonien bis zu den Wasserfällen",
       "taglineEn": "Tango, asado and endless expanses from Patagonia to the waterfalls",
+      "population": "Rund 46 Millionen Einwohner (2025).",
+      "populationEn": "Around 46 million inhabitants (2025).",
+      "ageStructure": "Medianalter von etwa 34 Jahren; überwiegend europäisch geprägte Bevölkerung.",
+      "ageStructureEn": "A median age of about 34; a largely European-descended population.",
+      "government": "Föderale präsidentielle Republik; seit Ende 2023 mit dem libertären Präsidenten Javier Milei an der Spitze.",
+      "governmentEn": "A federal presidential republic; since late 2023 headed by libertarian president Javier Milei.",
+      "economy": "Drittgrößte Volkswirtschaft der Region, aber chronisch von hoher Inflation und Schulden geplagt.",
+      "economyEn": "The third-largest economy in the region, but chronically plagued by high inflation and debt.",
+      "livelihood": "Agrarexporte (Soja, Rind, Mais, Wein), Energie (Vaca-Muerta-Schiefer) und Industrie.",
+      "livelihoodEn": "Agricultural exports (soya, beef, maize, wine), energy (Vaca Muerta shale) and industry.",
       "about": "Argentinien ist das zweitgrößte Land Südamerikas und reicht von den subtropischen Iguazú-Wasserfällen bis zum windigen Patagonien und Feuerland im Süden. Buenos Aires gilt als eine der lebendigsten Metropolen des Kontinents. Highlights sind der Perito-Moreno-Gletscher, die Weinregion Mendoza und die bunten Anden im Nordwesten.",
       "aboutEn": "Argentina is the second-largest country in South America, stretching from the subtropical Iguazú Falls to windswept Patagonia and Tierra del Fuego in the south. Buenos Aires is one of the liveliest cities on the continent. Highlights include the Perito Moreno glacier, the Mendoza wine region and the colourful Andes of the north-west.",
       "history": "Vor der Kolonialzeit lebten im Norden Andenvölker, in der Pampa und Patagonien nomadische Gruppen. Die Spanier gründeten ab dem 16. Jahrhundert Siedlungen, 1816 erklärte Argentinien seine Unabhängigkeit. Im späten 19. und frühen 20. Jahrhundert kamen Millionen europäischer Einwanderer, vor allem aus Italien und Spanien. Die jüngere Geschichte ist geprägt vom Peronismus, der Militärdiktatur (1976–1983) und wiederkehrenden Wirtschaftskrisen.",
@@ -12361,6 +12592,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Montevideo",
       "tagline": "Entspannte Strände, Mate-Kultur und Südamerikas ruhigste Ecke",
       "taglineEn": "Laid-back beaches, mate culture and South America's most peaceful corner",
+      "population": "Etwa 3,4 Millionen Einwohner (2025).",
+      "populationEn": "About 3.4 million inhabitants (2025).",
+      "ageStructure": "Alternde Bevölkerung mit einem Medianalter von rund 36 Jahren.",
+      "ageStructureEn": "An ageing population with a median age of around 36.",
+      "government": "Stabile präsidentielle Demokratie; gilt als eines der am wenigsten korrupten Länder der Region.",
+      "governmentEn": "A stable presidential democracy; regarded as one of the least corrupt countries in the region.",
+      "economy": "Hohes Pro-Kopf-Einkommen, starke Mittelschicht und solider Sozialstaat.",
+      "economyEn": "High per-capita income, a strong middle class and a solid welfare state.",
+      "livelihood": "Agrarexporte (Rindfleisch, Soja, Milchprodukte, Wolle), Forstwirtschaft, Software und Tourismus.",
+      "livelihoodEn": "Agricultural exports (beef, soya, dairy, wool), forestry, software and tourism.",
       "about": "Uruguay ist das kleinste spanischsprachige Land Südamerikas und liegt zwischen Argentinien und Brasilien am Río de la Plata. Es ist bekannt für seine entspannte Atmosphäre, lange Atlantikstrände und eine ausgeprägte Mate-Kultur. Highlights sind die Altstadt von Colonia del Sacramento, die Strände von Punta del Este und das gemütliche Montevideo.",
       "aboutEn": "Uruguay is the smallest Spanish-speaking country in South America, lying between Argentina and Brazil on the Río de la Plata. It's known for its laid-back atmosphere, long Atlantic beaches and a strong mate culture. Highlights are the old town of Colonia del Sacramento, the beaches of Punta del Este and easy-going Montevideo.",
       "history": "Vor der Kolonialzeit lebte hier das indigene Volk der Charrúa. Spanier und Portugiesen stritten lange um das Gebiet, bis Uruguay 1828 als Pufferstaat zwischen Argentinien und Brasilien unabhängig wurde. Im 20. Jahrhundert galt es dank seines Sozialstaats als 'Schweiz Südamerikas'. Heute ist Uruguay eines der stabilsten und liberalsten Länder der Region.",
@@ -12559,6 +12800,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       "capital": "Asunción",
       "tagline": "Südamerikas unentdecktes Herz mit lebendiger Guaraní-Kultur",
       "taglineEn": "South America's undiscovered heart with a vibrant Guaraní culture",
+      "population": "Rund 6,9 Millionen Einwohner (2025).",
+      "populationEn": "Around 6.9 million inhabitants (2025).",
+      "ageStructure": "Junge Bevölkerung mit einem Medianalter von etwa 27 Jahren; Guaraní ist neben Spanisch Amtssprache.",
+      "ageStructureEn": "A young population with a median age of about 27; Guaraní is an official language alongside Spanish.",
+      "government": "Präsidentielle Republik, lange von der Colorado-Partei dominiert.",
+      "governmentEn": "A presidential republic, long dominated by the Colorado Party.",
+      "economy": "Wachsende, agrarisch geprägte Volkswirtschaft mit niedrigen Steuern und billiger Energie.",
+      "economyEn": "A growing, agriculture-based economy with low taxes and cheap energy.",
+      "livelihood": "Soja- und Rindfleischexport, riesige Wasserkraft (Itaipú) und Landwirtschaft.",
+      "livelihoodEn": "Soya and beef exports, huge hydropower (Itaipú) and agriculture.",
       "about": "Paraguay ist ein wenig bereister Binnenstaat im Herzen Südamerikas, geteilt durch den Río Paraguay in den feuchten Osten und den trockenen Chaco im Westen. Das Land ist authentisch, günstig und touristisch kaum erschlossen. Highlights sind die jesuitischen Missionsruinen, die weite Chaco-Wildnis und die entspannte Hauptstadt Asunción.",
       "aboutEn": "Paraguay is a little-visited landlocked country in the heart of South America, split by the Río Paraguay into the humid east and the dry Chaco in the west. It's authentic, cheap and barely developed for tourism. Highlights include the Jesuit mission ruins, the vast Chaco wilderness and the laid-back capital Asunción.",
       "history": "Vor der Kolonialzeit war das Gebiet von Guaraní-Völkern besiedelt. Die Spanier gründeten 1537 Asunción, eine der ältesten Städte des Kontinents; berühmt wurden die jesuitischen Reduktionen. 1811 wurde Paraguay unabhängig. Der verheerende Tripel-Allianz-Krieg (1864–1870) gegen Brasilien, Argentinien und Uruguay kostete einen Großteil der männlichen Bevölkerung das Leben.",
@@ -13580,6 +13831,753 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   ];
 
   window.SC.historia = { INTRO, ERAS, FIGURES, TENSIONS, FACTS };
+})();
+
+</script>
+<script>
+/*
+ * historiaCentro.js  (SC.historiaCentro) – Modell für die Erklärseite "Historia
+ * de Centroamérica". REINE DATEN, keine Logik – exakt dieselbe Struktur wie
+ * historia.js (Sudamérica), damit ui.renderHistoria / app.historiaVM beide
+ * Sektionen über dieselbe Render- und Lesetraining-Mechanik bedienen können.
+ *
+ * Aufbau (wie historia.js):
+ *   INTRO     { de, en }                       – Einleitungstext (Hero)
+ *   ERAS      [ Epoche ]                        – der interaktive Zeitstrahl
+ *   FIGURES   [ Person ]                        – die Protagonisten (Galerie)
+ *   TENSIONS  [ Spannung ]                      – "Heute": Lage & Konflikte
+ *   FACTS     [ { de, en } ]                    – "¿Sabías que…?"-Häppchen
+ *
+ * Epoche:   { id, icon, period, title, lead, body:[Absatz], points:[Punkt],
+ *             level, es:[Absatz], vocab:[{es,de,en,take}], img, imgCaption } (+ …En)
+ * Person:   { id, name, role, years, flag, img, text, quote, level, es, vocab } (+ …En)
+ * Spannung: { id, icon, title, where, tone, status, text, level, es, vocab } (+ …En)
+ *   tone = "crisis" | "tense" | "shift" | "progress"
+ *
+ * img = nur der Wikimedia-Commons-Dateiname; ui.js baut die Special:FilePath-URL.
+ *       Offline/bei Fehler blendet onerror das Bild aus (graceful degradation).
+ */
+(function () {
+  "use strict";
+  window.SC = window.SC || {};
+
+  // ---------- Einleitung ----------
+  const INTRO = {
+    de: "Eine schmale Landbrücke zwischen zwei Kontinenten – und eine erstaunlich große Geschichte: Hier rechneten die Maya schon mit der Null, hier wurde aus einem spanischen Königreich für kurze Zeit eine einzige Republik, und hier rangen im Kalten Krieg ganze Völker um ihre Zukunft. Das ist die große Linie Mittelamerikas: von den Maya über Morazáns Traum von Einheit bis zu den sieben Republiken von heute.",
+    en: "A narrow land bridge between two continents – and a surprisingly big story: here the Maya were already counting with zero, here a Spanish kingdom briefly became a single republic, and here whole peoples fought for their future during the Cold War. This is the big picture of Central America: from the Maya through Morazán's dream of unity to today's seven republics.",
+  };
+
+  // ---------- Zeitstrahl: die Epochen ----------
+  const ERAS = [
+    {
+      id: "maya",
+      icon: "🗿",
+      period: "bis 1523",
+      periodEn: "before 1523",
+      title: "Vor den Spaniern – die Welt der Maya",
+      titleEn: "Before the Spanish – the world of the Maya",
+      lead: "Lange vor den Spaniern blühte hier eine der genialsten Hochkulturen Amerikas.",
+      leadEn: "Long before the Spanish, one of the most brilliant civilisations of the Americas flourished here.",
+      body: [
+        "Die Maya lebten über tausend Jahre in dutzenden Stadtstaaten – im Tiefland von Guatemala, in Yucatán, Belize und Honduras. Städte wie Tikal, Copán oder Palenque hatten Tempelpyramiden, Paläste und Ballspielplätze; in ihrer Blütezeit (250–900 n. Chr.) lebten in der Region Millionen Menschen.",
+        "Die Maya entwickelten eine echte Schrift mit Hunderten von Zeichen, einen extrem genauen Kalender und eine Mathematik, die – Jahrhunderte vor Europa – die Null kannte. Ihre Astronomen sagten Sonnenfinsternisse voraus.",
+        "Um 900 n. Chr. wurden viele der großen Tieflandstädte rätselhaft aufgegeben – wohl wegen Dürren, Überbevölkerung und Krieg. Doch „die Maya“ verschwanden nie: Millionen ihrer Nachfahren leben bis heute in Guatemala und Südmexiko. Daneben gab es viele weitere Völker – Lenca, Pipil, Miskito und die Kuna.",
+      ],
+      bodyEn: [
+        "The Maya lived for over a thousand years in dozens of city-states – in the lowlands of Guatemala, in Yucatán, Belize and Honduras. Cities like Tikal, Copán and Palenque had temple pyramids, palaces and ball courts; at their peak (250–900 AD) millions of people lived in the region.",
+        "The Maya developed a true writing system with hundreds of signs, an extremely precise calendar, and a mathematics that – centuries before Europe – knew the zero. Their astronomers predicted solar eclipses.",
+        "Around 900 AD many of the great lowland cities were mysteriously abandoned – probably because of droughts, overpopulation and war. But \"the Maya\" never disappeared: millions of their descendants still live in Guatemala and southern Mexico today. Alongside them lived many other peoples – the Lenca, Pipil, Miskito and Kuna.",
+      ],
+      points: [
+        "Tikal: Tempelpyramiden bis 70 Meter hoch, mitten im Dschungel",
+        "Die Maya kannten die Null – lange vor Europa",
+        "Über 6 Millionen Menschen sprechen heute noch Maya-Sprachen",
+      ],
+      pointsEn: [
+        "Tikal: temple pyramids up to 70 metres high, deep in the jungle",
+        "The Maya knew the zero – long before Europe",
+        "Over 6 million people still speak Maya languages today",
+      ],
+      level: "B1",
+      es: [
+        "Mucho antes de la llegada de los españoles, en las selvas de Guatemala, Belice y el sur de México, *floreció* una de las civilizaciones más *asombrosas* de América: los mayas. No formaban un solo país, sino decenas de ciudades-estado como Tikal, Copán o Palenque, con grandes pirámides, palacios y canchas para el juego de pelota.",
+        "Lo más sorprendente es lo que lograron con las matemáticas y el cielo. Los mayas inventaron una verdadera *escritura* con cientos de signos, crearon un *calendario* muy exacto y usaron el *cero* siglos antes que Europa. Sus *sacerdotes* observaban las estrellas y podían *predecir* los eclipses de sol.",
+        "Hacia el año 900, muchas de las grandes ciudades del *bosque* fueron *abandonadas*, quizá por sequías, guerras y demasiada gente. Pero los mayas nunca *desaparecieron*: hoy millones de sus *descendientes* siguen vivos en Guatemala, y hablan más de veinte lenguas mayas distintas.",
+      ],
+      vocab: [
+        { es: "floreció", de: "blühte (florecer)", en: "flourished (florecer)", take: true },
+        { es: "asombrosas", de: "erstaunlich", en: "amazing", take: false },
+        { es: "escritura", de: "die Schrift", en: "writing", take: true },
+        { es: "calendario", de: "der Kalender", en: "calendar", take: true },
+        { es: "cero", de: "die Null", en: "zero", take: true },
+        { es: "sacerdotes", de: "die Priester", en: "priests", take: false },
+        { es: "predecir", de: "vorhersagen", en: "to predict", take: true },
+        { es: "bosque", de: "der Wald", en: "forest", take: true },
+        { es: "abandonadas", de: "verlassen (abandonar)", en: "abandoned", take: true },
+        { es: "desaparecieron", de: "verschwanden (desaparecer)", en: "disappeared", take: true },
+        { es: "descendientes", de: "die Nachfahren", en: "descendants", take: false },
+      ],
+      img: "Tikal temple 1 2009u.JPG",
+      imgCaption: "Tikal – Tempel I, im Tiefland-Dschungel Guatemalas",
+      imgCaptionEn: "Tikal – Temple I, in the lowland jungle of Guatemala",
+    },
+    {
+      id: "conquista",
+      icon: "⚔️",
+      period: "1519–1540",
+      periodEn: "1519–1540",
+      title: "Die Conquista – Eroberung der Landbrücke",
+      titleEn: "The Conquista – conquering the land bridge",
+      lead: "In nur zwei Jahrzehnten unterwarfen die Spanier die ganze Region.",
+      leadEn: "In just two decades, the Spanish subdued the whole region.",
+      body: [
+        "Nach dem Fall des Aztekenreichs (1521) zogen die Spanier weiter nach Süden. Pedro de Alvarado, ein brutaler Hauptmann von Hernán Cortés, eroberte ab 1524 das heutige Guatemala und El Salvador. Andere Truppen kamen von Panama aus nach Norden.",
+        "Die Spanier nutzten die alten Rivalitäten zwischen den Maya-Reichen und verbündeten sich mit dem einen Volk gegen das andere. Ihre größte Waffe war jedoch unsichtbar: eingeschleppte Krankheiten wie Pocken töteten oft mehr Menschen als jedes Schwert.",
+        "Panama war schon seit 1519 spanisch und wurde zum Tor zwischen den Ozeanen: Über die schmale Landenge schleppten die Spanier das Silber Perus zum Atlantik. Nur die Maya im Hochland und Völker wie die Miskito an der Karibikküste leisteten noch lange Widerstand.",
+      ],
+      bodyEn: [
+        "After the fall of the Aztec Empire (1521), the Spanish pushed further south. Pedro de Alvarado, a brutal captain of Hernán Cortés, conquered today's Guatemala and El Salvador from 1524. Other forces came north from Panama.",
+        "The Spanish exploited the old rivalries between the Maya kingdoms, allying with one people against another. But their greatest weapon was invisible: imported diseases such as smallpox often killed more people than any sword.",
+        "Panama had been Spanish since 1519 and became the gateway between the oceans: across the narrow isthmus the Spanish hauled the silver of Peru to the Atlantic. Only the Maya of the highlands and peoples like the Miskito of the Caribbean coast held out for a long time.",
+      ],
+      points: [
+        "Pedro de Alvarado eroberte Guatemala ab 1524",
+        "Krankheiten töteten mehr Menschen als die Waffen",
+        "Panama wurde Spaniens Tor zwischen den Ozeanen",
+      ],
+      pointsEn: [
+        "Pedro de Alvarado conquered Guatemala from 1524",
+        "Diseases killed more people than weapons did",
+        "Panama became Spain's gateway between the oceans",
+      ],
+      level: "B1",
+      es: [
+        "Después de *vencer* al imperio azteca, los españoles siguieron hacia el sur. En 1524, Pedro de Alvarado, un capitán muy *cruel*, entró en lo que hoy es Guatemala y El Salvador. Otros soldados subieron desde Panamá, que ya era español desde 1519.",
+        "Para *conquistar* la región, los españoles aprovecharon las viejas *rivalidades* entre los pueblos mayas: se aliaban con unos para luchar contra otros. Pero su arma más terrible no se veía: las *enfermedades* traídas de Europa, como la *viruela*, mataron a muchísima gente.",
+        "Panamá se convirtió en la *puerta* entre los dos océanos. Por aquella *estrecha* franja de tierra, los españoles llevaban la plata del Perú hasta el Atlántico. Solo algunos pueblos, como los mayas de las montañas y los miskitos de la *costa* caribeña, *resistieron* durante mucho tiempo.",
+      ],
+      vocab: [
+        { es: "vencer", de: "besiegen", en: "to defeat", take: true },
+        { es: "cruel", de: "grausam", en: "cruel", take: true },
+        { es: "conquistar", de: "erobern", en: "to conquer", take: true },
+        { es: "rivalidades", de: "die Rivalitäten", en: "rivalries", take: false },
+        { es: "enfermedades", de: "die Krankheiten", en: "diseases", take: true },
+        { es: "viruela", de: "die Pocken", en: "smallpox", take: false },
+        { es: "puerta", de: "die Tür, das Tor", en: "door, gateway", take: true },
+        { es: "estrecha", de: "schmal, eng", en: "narrow", take: true },
+        { es: "costa", de: "die Küste", en: "coast", take: true },
+        { es: "resistieron", de: "leisteten Widerstand (resistir)", en: "resisted", take: true },
+      ],
+      img: "Pedro de Alvarado.JPG",
+      imgCaption: "Pedro de Alvarado, Eroberer Guatemalas",
+      imgCaptionEn: "Pedro de Alvarado, conqueror of Guatemala",
+    },
+    {
+      id: "colonial",
+      icon: "⛪",
+      period: "1540–1821",
+      periodEn: "1540–1821",
+      title: "Die Kolonialzeit – das Königreich Guatemala",
+      titleEn: "The colonial era – the Kingdom of Guatemala",
+      lead: "Fast drei Jahrhunderte war die Region eine einzige Verwaltungseinheit.",
+      leadEn: "For almost three centuries the region was a single administrative unit.",
+      body: [
+        "Spanien fasste fast ganz Mittelamerika zur Capitanía General de Guatemala zusammen – von Chiapas im Norden bis Costa Rica im Süden. Verwaltet wurde sie von der prächtigen Hauptstadt Antigua, bis ein schweres Erdbeben sie 1773 zerstörte und die Regierung in die heutige Stadt Guatemala umzog.",
+        "Es gab hier kein Gold und kaum Silber wie in Peru. Reich wurde man mit Färbemitteln: Indigoblau und der Cochenille-Laus für leuchtendes Rot, später mit Kaffee. Die Wirtschaft ruhte auf der Arbeit der indigenen Bevölkerung, die in einer strengen Ständegesellschaft ganz unten stand.",
+        "Weil die Region arm und abgelegen war, kümmerte sich Madrid wenig um sie. Costa Rica zum Beispiel war so dünn besiedelt, dass selbst der Gouverneur sein Feld selbst bestellen musste – eine Armut, aus der später ein eigenes, gleicheres Selbstbild wuchs.",
+      ],
+      bodyEn: [
+        "Spain combined almost all of Central America into the Captaincy General of Guatemala – from Chiapas in the north to Costa Rica in the south. It was governed from the splendid capital Antigua, until a severe earthquake destroyed it in 1773 and the government moved to today's Guatemala City.",
+        "There was no gold here and barely any silver as in Peru. People grew rich on dyes: indigo blue and the cochineal insect for brilliant red, and later coffee. The economy rested on the labour of the indigenous population, who stood at the very bottom of a rigid class society.",
+        "Because the region was poor and remote, Madrid paid it little attention. Costa Rica, for example, was so sparsely populated that even the governor had to till his own field – a poverty out of which a more equal self-image later grew.",
+      ],
+      points: [
+        "Eine Verwaltung: von Chiapas bis Costa Rica",
+        "Reichtum aus Färbemitteln statt aus Silber",
+        "Ein Erdbeben zerstörte 1773 die Hauptstadt Antigua",
+      ],
+      pointsEn: [
+        "One administration: from Chiapas to Costa Rica",
+        "Wealth from dyes instead of silver",
+        "An earthquake destroyed the capital Antigua in 1773",
+      ],
+      level: "B2",
+      es: [
+        "Durante casi trescientos años, España unió a casi toda la región en un solo territorio: la Capitanía General de Guatemala, que iba desde Chiapas hasta Costa Rica. Se *gobernaba* desde la hermosa ciudad de Antigua, hasta que un fuerte *terremoto* la destruyó en 1773.",
+        "Aquí no había oro ni mucha plata como en el Perú. La *riqueza* venía de los tintes: el añil, de color azul, y la cochinilla, un pequeño insecto del que se sacaba un rojo *brillante*. Toda la economía se *apoyaba* en el trabajo de los pueblos indígenas, que vivían en lo más bajo de una sociedad muy *desigual*.",
+        "Como la región era *pobre* y estaba lejos de todo, Madrid casi no se *ocupaba* de ella. Costa Rica tenía tan poca gente que hasta el gobernador tenía que cultivar su propia *tierra*. De esa pobreza nació, con el tiempo, una idea de igualdad que el país todavía recuerda con orgullo.",
+      ],
+      vocab: [
+        { es: "gobernaba", de: "wurde regiert (gobernar)", en: "was governed", take: true },
+        { es: "terremoto", de: "das Erdbeben", en: "earthquake", take: true },
+        { es: "riqueza", de: "der Reichtum", en: "wealth", take: true },
+        { es: "brillante", de: "leuchtend, glänzend", en: "brilliant, bright", take: true },
+        { es: "apoyaba", de: "stützte sich (apoyarse)", en: "rested on (apoyarse)", take: false },
+        { es: "desigual", de: "ungleich", en: "unequal", take: true },
+        { es: "pobre", de: "arm", en: "poor", take: true },
+        { es: "ocupaba", de: "kümmerte sich (ocuparse)", en: "took care of (ocuparse)", take: false },
+        { es: "tierra", de: "die Erde, das Land", en: "land, earth", take: true },
+      ],
+      img: "Arco de Santa Catarina, Antigua Guatemala.jpg",
+      imgCaption: "Antigua Guatemala – einst Hauptstadt des Königreichs",
+      imgCaptionEn: "Antigua Guatemala – once capital of the kingdom",
+    },
+    {
+      id: "independencia",
+      icon: "🔔",
+      period: "1821",
+      periodEn: "1821",
+      title: "Die Unabhängigkeit – fast ohne einen Schuss",
+      titleEn: "Independence – almost without a shot",
+      lead: "Mittelamerika wurde 1821 frei – friedlich, fast über Nacht.",
+      leadEn: "Central America became free in 1821 – peacefully, almost overnight.",
+      body: [
+        "Während im Süden Bolívar und San Martín jahrelang blutige Kriege führten, ging es hier erstaunlich ruhig zu. Als Mexiko sich von Spanien löste, unterschrieben die Honoratioren in Guatemala am 15. September 1821 einfach eine Unabhängigkeitserklärung. Bis heute feiern fünf Länder an diesem Tag.",
+        "Kaum frei, schloss sich die Region für kurze Zeit dem Kaiserreich Mexiko unter Agustín de Iturbide an. Doch als dieser Kaiser schon 1823 stürzte, war Mittelamerika wieder auf sich gestellt.",
+        "Nun stand die große Frage im Raum: Sollten die Provinzen ein einziges Land bilden – oder jede ihren eigenen Weg gehen? Aus dieser Frage wuchs der nächste, bittere Streit.",
+      ],
+      bodyEn: [
+        "While in the south Bolívar and San Martín fought bloody wars for years, here things stayed remarkably calm. When Mexico broke away from Spain, the notables in Guatemala simply signed a declaration of independence on 15 September 1821. Five countries still celebrate on this day.",
+        "Barely free, the region briefly joined the Mexican Empire under Agustín de Iturbide. But when that emperor fell as early as 1823, Central America was on its own again.",
+        "Now the big question loomed: should the provinces form a single country – or should each go its own way? Out of this question grew the next, bitter quarrel.",
+      ],
+      points: [
+        "15. September 1821: Unabhängigkeit – bis heute Nationalfeiertag",
+        "Kurzer Anschluss an Mexikos Kaiserreich (bis 1823)",
+        "Ein Land oder viele? Diese Frage spaltete die Region",
+      ],
+      pointsEn: [
+        "15 September 1821: independence – still a national holiday",
+        "Brief annexation to the Mexican Empire (until 1823)",
+        "One country or many? This question split the region",
+      ],
+      level: "B1",
+      es: [
+        "Mientras en el sur Bolívar luchaba durante años en guerras *sangrientas*, en Centroamérica todo fue mucho más *tranquilo*. Cuando México se *separó* de España, los líderes reunidos en Guatemala simplemente *firmaron* un acta de independencia el 15 de septiembre de 1821. Por eso, todavía hoy, cinco países celebran su fiesta nacional ese día.",
+        "Apenas libres, los centroamericanos se *unieron* por poco tiempo al imperio de México, gobernado por Agustín de Iturbide. Pero ese emperador *cayó* muy pronto, en 1823, y la región se quedó otra vez sola.",
+        "Entonces apareció la gran *pregunta*: ¿debían formar un solo país o debía cada provincia seguir su propio camino? De esa duda nació la siguiente gran *pelea*.",
+      ],
+      vocab: [
+        { es: "sangrientas", de: "blutig", en: "bloody", take: false },
+        { es: "tranquilo", de: "ruhig", en: "calm", take: true },
+        { es: "separó", de: "trennte sich (separarse)", en: "broke away (separarse)", take: true },
+        { es: "firmaron", de: "unterschrieben (firmar)", en: "signed (firmar)", take: true },
+        { es: "unieron", de: "schlossen sich an (unirse)", en: "joined (unirse)", take: true },
+        { es: "cayó", de: "fiel, stürzte (caer)", en: "fell (caer)", take: true },
+        { es: "pregunta", de: "die Frage", en: "question", take: true },
+        { es: "pelea", de: "der Streit, Kampf", en: "fight, quarrel", take: true },
+      ],
+    },
+    {
+      id: "federacion",
+      icon: "⭐",
+      period: "1823–1839",
+      periodEn: "1823–1839",
+      title: "Die Föderation – ein Traum von Einheit",
+      titleEn: "The Federation – a dream of unity",
+      lead: "Für 15 Jahre waren fünf Länder ein einziger Staat.",
+      leadEn: "For 15 years, five countries were a single state.",
+      body: [
+        "1823 gründeten Guatemala, El Salvador, Honduras, Nicaragua und Costa Rica gemeinsam die Republik Mittelamerika – die Provincias Unidas del Centro de América. Es war derselbe Traum, den Bolívar im Süden hatte: ein großer, geeinter Staat statt vieler kleiner Länder.",
+        "Ihr großer Held wurde Francisco Morazán, ein liberaler Präsident aus Honduras. Er wollte Schulen, Religionsfreiheit und weniger Macht für die Kirche. Genau das brachte ihm die erbitterte Feindschaft der Konservativen und der Großgrundbesitzer ein.",
+        "Liberale gegen Konservative, Stadt gegen Land, Provinz gegen Provinz: Die junge Föderation zerriss im Bürgerkrieg. Bis 1841 hatte sich jeder der fünf Staaten für unabhängig erklärt. Morazán wurde 1842 in Costa Rica erschossen – sein Traum war gescheitert.",
+      ],
+      bodyEn: [
+        "In 1823 Guatemala, El Salvador, Honduras, Nicaragua and Costa Rica together founded the Republic of Central America – the United Provinces of Central America. It was the same dream Bolívar had in the south: one large, united state instead of many small countries.",
+        "Their great hero was Francisco Morazán, a liberal president from Honduras. He wanted schools, freedom of religion and less power for the Church. That earned him the bitter enmity of the conservatives and the big landowners.",
+        "Liberals against conservatives, city against countryside, province against province: the young federation tore apart in civil war. By 1841 each of the five states had declared itself independent. Morazán was shot in Costa Rica in 1842 – his dream had failed.",
+      ],
+      points: [
+        "Fünf Länder, ein Staat (1823–1839)",
+        "Francisco Morazán: der „Bolívar Mittelamerikas“",
+        "Liberale gegen Konservative – die Föderation zerriss",
+      ],
+      pointsEn: [
+        "Five countries, one state (1823–1839)",
+        "Francisco Morazán: the \"Bolívar of Central America\"",
+        "Liberals against conservatives – the federation tore apart",
+      ],
+      level: "B2",
+      es: [
+        "En 1823, Guatemala, El Salvador, Honduras, Nicaragua y Costa Rica decidieron *unirse* en un solo país: las Provincias Unidas del Centro de América. Era el mismo *sueño* que tenía Bolívar en el sur: un gran Estado *unido* en lugar de muchos países pequeños y débiles.",
+        "Su gran héroe fue Francisco Morazán, un presidente *liberal* nacido en Honduras. Quería escuelas, libertad de religión y menos poder para la Iglesia. Por eso se ganó el odio de los *conservadores* y de los dueños de las grandes tierras.",
+        "Liberales contra conservadores, una región contra otra: la joven federación se *rompió* en una guerra civil. Hacia 1841, cada uno de los cinco estados ya se había declarado *independiente*. Morazán fue *fusilado* en Costa Rica en 1842, y con él murió el sueño de una Centroamérica unida.",
+      ],
+      vocab: [
+        { es: "unirse", de: "sich vereinen", en: "to unite", take: true },
+        { es: "sueño", de: "der Traum", en: "dream", take: true },
+        { es: "unido", de: "geeint, vereint", en: "united", take: true },
+        { es: "liberal", de: "liberal", en: "liberal", take: false },
+        { es: "conservadores", de: "die Konservativen", en: "conservatives", take: true },
+        { es: "rompió", de: "zerbrach (romperse)", en: "broke apart (romperse)", take: true },
+        { es: "independiente", de: "unabhängig", en: "independent", take: true },
+        { es: "fusilado", de: "erschossen (fusilar)", en: "shot (executed)", take: true },
+      ],
+      img: "Francisco Morazán Quesada.JPG",
+      imgCaption: "Francisco Morazán – Held der mittelamerikanischen Einheit",
+      imgCaptionEn: "Francisco Morazán – hero of Central American unity",
+    },
+    {
+      id: "cafe-bananas",
+      icon: "🍌",
+      period: "1840–1930",
+      periodEn: "1840–1930",
+      title: "Kaffee & Bananen – die Exportzeit",
+      titleEn: "Coffee & bananas – the export era",
+      lead: "Zwei Pflanzen prägten Wirtschaft und Politik – und holten die USA ins Land.",
+      leadEn: "Two plants shaped economy and politics – and drew the USA into the region.",
+      body: [
+        "Im 19. Jahrhundert wurde Kaffee zum großen Geschäft. Eine kleine Schicht von Großgrundbesitzern – die „Kaffee-Oligarchie“ – wurde reich und mächtig, während die meisten Menschen arm blieben und auf den Plantagen schufteten.",
+        "Dann kamen die Bananen. US-Konzerne wie die United Fruit Company kauften riesige Flächen, bauten Eisenbahnen und Häfen – und wurden so mächtig, dass sie Regierungen ein- und absetzen konnten. Der Spottname „Bananenrepublik“ wurde genau hier, in Honduras, geboren.",
+        "Wer der Firma im Weg stand, bekam Probleme; mehrmals landeten US-Marines „zum Schutz amerikanischer Interessen“. 1903 half Washington Panama sogar bei der Abspaltung von Kolumbien – um den Panamakanal bauen zu können, der 1914 eröffnet wurde.",
+      ],
+      bodyEn: [
+        "In the 19th century coffee became big business. A small layer of large landowners – the \"coffee oligarchy\" – grew rich and powerful, while most people stayed poor and toiled on the plantations.",
+        "Then came the bananas. US corporations like the United Fruit Company bought up vast tracts of land, built railways and ports – and grew so powerful they could install and remove governments. The mocking term \"banana republic\" was born right here, in Honduras.",
+        "Anyone who stood in the company's way ran into trouble; several times US Marines landed \"to protect American interests\". In 1903 Washington even helped Panama break away from Colombia – in order to build the Panama Canal, which opened in 1914.",
+      ],
+      points: [
+        "Kaffee machte eine kleine Oberschicht reich",
+        "„Bananenrepublik“ – der Begriff stammt aus Honduras",
+        "1914: Eröffnung des Panamakanals",
+      ],
+      pointsEn: [
+        "Coffee made a small upper class rich",
+        "\"Banana republic\" – the term comes from Honduras",
+        "1914: opening of the Panama Canal",
+      ],
+      level: "B2",
+      es: [
+        "En el siglo XIX, el café se convirtió en un gran negocio. Un pequeño grupo de *dueños* de grandes tierras se hizo muy rico y *poderoso*, mientras la mayoría de la gente seguía siendo pobre y *trabajaba* en las plantaciones.",
+        "Después llegaron los bananos. Empresas de Estados Unidos, como la United Fruit Company, compraron tierras enormes y construyeron *ferrocarriles* y puertos. Se hicieron tan fuertes que podían *poner* y quitar gobiernos. Por eso nació aquí, en Honduras, el nombre burlón de „república bananera“.",
+        "Quien *molestaba* a la compañía tenía problemas, y varias veces llegaron soldados estadounidenses „para *proteger* sus intereses“. En 1903, Washington incluso ayudó a Panamá a separarse de Colombia para poder construir el *canal*, que se abrió en 1914.",
+      ],
+      vocab: [
+        { es: "dueños", de: "die Besitzer", en: "owners", take: true },
+        { es: "poderoso", de: "mächtig", en: "powerful", take: true },
+        { es: "trabajaba", de: "arbeitete (trabajar)", en: "worked (trabajar)", take: false },
+        { es: "ferrocarriles", de: "die Eisenbahnen", en: "railways", take: true },
+        { es: "poner", de: "setzen, einsetzen", en: "to put, install", take: false },
+        { es: "molestaba", de: "störte (molestar)", en: "bothered (molestar)", take: true },
+        { es: "proteger", de: "schützen", en: "to protect", take: true },
+        { es: "canal", de: "der Kanal", en: "canal", take: true },
+      ],
+    },
+    {
+      id: "guerras",
+      icon: "🕊️",
+      period: "1960–1996",
+      periodEn: "1960–1996",
+      title: "Bürgerkriege & Kalter Krieg",
+      titleEn: "Civil wars & the Cold War",
+      lead: "Drei Länder versanken im Krieg zwischen links und rechts.",
+      leadEn: "Three countries sank into war between left and right.",
+      body: [
+        "Im Kalten Krieg wurde Mittelamerika zum Schlachtfeld. In Guatemala stürzte 1954 ein von der CIA unterstützter Putsch eine gewählte Regierung. Es folgte ein 36 Jahre langer Bürgerkrieg (1960–1996), in dem das Militär ganze Maya-Dörfer auslöschte – ein Völkermord mit rund 200.000 Toten.",
+        "In El Salvador kämpfte die linke Guerilla FMLN gegen die Armee (1980–1992). 1980 wurde Erzbischof Óscar Romero, der für die Armen sprach, am Altar erschossen. In Nicaragua stürzten die Sandinisten 1979 den Diktator Somoza – dann finanzierten die USA die „Contra“-Rebellen gegen die neue Regierung.",
+        "Hunderttausende starben, Millionen flohen. Ab 1987 ebnete ein Friedensplan des costa-ricanischen Präsidenten Óscar Arias (Friedensnobelpreis) den Weg; bis 1996 schwiegen überall die Waffen. Costa Rica war die große Ausnahme: Es hatte seine Armee schon 1948 abgeschafft.",
+      ],
+      bodyEn: [
+        "During the Cold War, Central America became a battlefield. In Guatemala a CIA-backed coup overthrew an elected government in 1954. A 36-year civil war followed (1960–1996), in which the military wiped out entire Maya villages – a genocide with around 200,000 dead.",
+        "In El Salvador the leftist FMLN guerrillas fought the army (1980–1992). In 1980 Archbishop Óscar Romero, who spoke for the poor, was shot at the altar. In Nicaragua the Sandinistas overthrew the dictator Somoza in 1979 – then the USA funded the \"Contra\" rebels against the new government.",
+        "Hundreds of thousands died, millions fled. From 1987 a peace plan by Costa Rican president Óscar Arias (Nobel Peace Prize) paved the way; by 1996 the guns fell silent everywhere. Costa Rica was the great exception: it had abolished its army back in 1948.",
+      ],
+      points: [
+        "Guatemala: 36 Jahre Krieg, Völkermord an den Maya",
+        "El Salvador & Nicaragua: Guerilla, Contras, US-Eingriffe",
+        "Costa Rica schaffte schon 1948 seine Armee ab",
+      ],
+      pointsEn: [
+        "Guatemala: 36 years of war, genocide of the Maya",
+        "El Salvador & Nicaragua: guerrillas, Contras, US intervention",
+        "Costa Rica abolished its army back in 1948",
+      ],
+      level: "B2",
+      es: [
+        "Durante la Guerra Fría, Centroamérica se convirtió en un *campo* de batalla. En Guatemala, un golpe apoyado por la CIA *derrocó* en 1954 a un gobierno elegido. Después vino una guerra civil de 36 años, en la que el ejército *destruyó* pueblos mayas enteros: un genocidio con unos 200.000 muertos.",
+        "En El Salvador, la guerrilla de izquierda luchó contra el ejército. En 1980, el arzobispo Óscar Romero, que defendía a los *pobres*, fue *asesinado* mientras daba misa. En Nicaragua, los sandinistas *derribaron* en 1979 al dictador Somoza, y entonces Estados Unidos pagó a los rebeldes „contras“ para luchar contra el nuevo gobierno.",
+        "Murieron cientos de miles de personas y millones *huyeron*. Desde 1987, un plan de *paz* del presidente costarricense Óscar Arias abrió el camino, y hacia 1996 callaron las armas. Costa Rica fue la gran excepción: había *eliminado* su ejército ya en 1948.",
+      ],
+      vocab: [
+        { es: "campo", de: "das Feld", en: "field", take: true },
+        { es: "derrocó", de: "stürzte (derrocar)", en: "overthrew (derrocar)", take: true },
+        { es: "destruyó", de: "zerstörte (destruir)", en: "destroyed (destruir)", take: true },
+        { es: "pobres", de: "die Armen", en: "the poor", take: true },
+        { es: "asesinado", de: "ermordet (asesinar)", en: "murdered (asesinar)", take: true },
+        { es: "derribaron", de: "stürzten (derribar)", en: "overthrew (derribar)", take: false },
+        { es: "huyeron", de: "flohen (huir)", en: "fled (huir)", take: true },
+        { es: "paz", de: "der Frieden", en: "peace", take: true },
+        { es: "eliminado", de: "abgeschafft (eliminar)", en: "abolished (eliminar)", take: false },
+      ],
+    },
+    {
+      id: "hoy",
+      icon: "🌎",
+      period: "heute",
+      periodEn: "today",
+      title: "Bis heute – Demokratie, Migration, Wandel",
+      titleEn: "Up to today – democracy, migration, change",
+      lead: "Sieben Republiken zwischen Hoffnung, Gewalt und Aufbruch.",
+      leadEn: "Seven republics between hope, violence and new beginnings.",
+      body: [
+        "Nach den Kriegen kehrten fast überall Wahlen und Demokratie zurück. Doch der Frieden blieb fragil: Armut, Korruption und die Banden (maras) wie die MS-13 machten den „Nördlichen Dreieck“-Ländern Guatemala, Honduras und El Salvador schwer zu schaffen – und trieben viele Menschen auf die gefährliche Reise Richtung USA.",
+        "Heute geht jedes Land seinen eigenen Weg: El Salvador setzt unter Präsident Bukele auf eine extrem harte Hand gegen die Banden, Nicaragua rutscht unter Daniel Ortega zurück in die Autokratie, und Guatemala ringt mit einem Antikorruptions-Präsidenten um einen Neuanfang.",
+        "Costa Rica und Panama gelten als die stabilsten und wohlhabendsten Länder. Geld von Verwandten im Ausland (remesas) hält ganze Volkswirtschaften am Laufen. Mittelamerika bleibt eine Region voller Energie – jung, eng vernetzt und mitten im Wandel.",
+      ],
+      bodyEn: [
+        "After the wars, elections and democracy returned almost everywhere. But peace stayed fragile: poverty, corruption and gangs (maras) like MS-13 hit the \"Northern Triangle\" countries Guatemala, Honduras and El Salvador hard – and drove many people onto the dangerous journey towards the USA.",
+        "Today each country goes its own way: El Salvador, under President Bukele, relies on an extremely hard hand against the gangs; Nicaragua, under Daniel Ortega, slides back into autocracy; and Guatemala wrestles with an anti-corruption president for a fresh start.",
+        "Costa Rica and Panama are considered the most stable and prosperous countries. Money from relatives abroad (remesas) keeps whole economies running. Central America remains a region full of energy – young, closely connected and in the middle of change.",
+      ],
+      points: [
+        "Banden (maras) & Armut treiben die Migration nach Norden",
+        "El Salvador, Nicaragua, Guatemala: drei sehr verschiedene Wege",
+        "Remesas aus dem Ausland tragen ganze Volkswirtschaften",
+      ],
+      pointsEn: [
+        "Gangs (maras) & poverty drive migration north",
+        "El Salvador, Nicaragua, Guatemala: three very different paths",
+        "Remittances from abroad carry whole economies",
+      ],
+      level: "B1",
+      es: [
+        "Después de las guerras, casi en todas partes *volvieron* las elecciones y la democracia. Pero la paz quedó *frágil*: la pobreza, la corrupción y las pandillas, las *maras*, golpearon con fuerza a Guatemala, Honduras y El Salvador, y empujaron a mucha gente a *viajar* hacia el norte.",
+        "Hoy cada país sigue su propio camino. El Salvador, con el presidente Bukele, usa mano muy dura contra las pandillas; Nicaragua, con Daniel Ortega, vuelve poco a poco a la *dictadura*; y Guatemala *lucha* por un nuevo comienzo contra la corrupción.",
+        "Costa Rica y Panamá son los países más *estables* y ricos. El dinero que *envían* los familiares desde el extranjero, las remesas, mantiene vivas economías enteras. Centroamérica sigue siendo una región joven, muy *conectada* y en pleno cambio.",
+      ],
+      vocab: [
+        { es: "volvieron", de: "kehrten zurück (volver)", en: "returned (volver)", take: true },
+        { es: "frágil", de: "zerbrechlich, fragil", en: "fragile", take: true },
+        { es: "maras", de: "die Jugendbanden", en: "gangs", take: true },
+        { es: "viajar", de: "reisen", en: "to travel", take: false },
+        { es: "dictadura", de: "die Diktatur", en: "dictatorship", take: true },
+        { es: "lucha", de: "kämpft (luchar)", en: "fights (luchar)", take: true },
+        { es: "estables", de: "stabil", en: "stable", take: true },
+        { es: "envían", de: "schicken (enviar)", en: "send (enviar)", take: true },
+        { es: "conectada", de: "vernetzt, verbunden", en: "connected", take: false },
+      ],
+    },
+  ];
+
+  // ---------- Die Protagonisten ----------
+  const FIGURES = [
+    {
+      id: "morazan",
+      name: "Francisco Morazán",
+      role: "Präsident der Föderation, liberaler Held",
+      roleEn: "President of the Federation, liberal hero",
+      years: "1792–1842",
+      flag: "🇭🇳",
+      img: "Francisco Morazán Quesada.JPG",
+      text: "Der „Bolívar Mittelamerikas“: Als Präsident der jungen Föderation kämpfte er für Schulen, Religionsfreiheit und ein einziges, geeintes Mittelamerika. Gegen ihn standen die Kirche und die Konservativen. Als sein Staat zerfiel, wurde er 1842 in Costa Rica erschossen – heute ehren ihn mehrere Länder als Helden.",
+      textEn: "The \"Bolívar of Central America\": as president of the young federation he fought for schools, freedom of religion and a single, united Central America. Against him stood the Church and the conservatives. When his state fell apart, he was shot in Costa Rica in 1842 – today several countries honour him as a hero.",
+      quote: "„Die Nachwelt wird uns Gerechtigkeit widerfahren lassen.“",
+      quoteEn: "\"Posterity will do us justice.\"",
+      level: "B1",
+      es: [
+        "A Francisco Morazán lo llaman el „Bolívar de Centroamérica“. Como presidente de la joven federación, *luchó* por escuelas públicas, por la libertad de religión y por mantener a los cinco países *unidos* en una sola nación.",
+        "Contra él estaban la Iglesia y los conservadores, que no querían perder su poder. Cuando la federación se *deshizo*, Morazán fue *fusilado* en Costa Rica en 1842. Hoy varios países lo *honran* como un héroe que soñó con una Centroamérica unida.",
+      ],
+      vocab: [
+        { es: "luchó", de: "kämpfte (luchar)", en: "fought (luchar)", take: true },
+        { es: "unidos", de: "geeint, vereint", en: "united", take: true },
+        { es: "deshizo", de: "zerfiel (deshacerse)", en: "fell apart (deshacerse)", take: true },
+        { es: "fusilado", de: "erschossen (fusilar)", en: "shot (executed)", take: true },
+        { es: "honran", de: "ehren (honrar)", en: "honour (honrar)", take: true },
+      ],
+    },
+    {
+      id: "sandino",
+      name: "Augusto César Sandino",
+      role: "Guerillaführer gegen die US-Besatzung",
+      roleEn: "Guerrilla leader against the US occupation",
+      years: "1895–1934",
+      flag: "🇳🇮",
+      img: "Sandino.jpg",
+      text: "Mit einer kleinen Bauern-Guerilla kämpfte er jahrelang gegen die US-Marines, die Nicaragua besetzt hielten – und wurde zum Symbol des Widerstands in ganz Lateinamerika. 1934 wurde er bei Friedensgesprächen heimtückisch ermordet. Sein Name lebt weiter: Die „Sandinisten“ benannten sich nach ihm.",
+      textEn: "With a small peasant guerrilla force he fought for years against the US Marines occupying Nicaragua – and became a symbol of resistance across Latin America. In 1934 he was treacherously murdered during peace talks. His name lives on: the \"Sandinistas\" named themselves after him.",
+      quote: "„Die Souveränität eines Volkes verhandelt man nicht – man verteidigt sie mit den Waffen in der Hand.“",
+      quoteEn: "\"A people's sovereignty is not up for debate – it is defended with weapons in hand.\"",
+      level: "B2",
+      es: [
+        "Con un pequeño *ejército* de campesinos, Augusto César Sandino luchó durante años contra los soldados estadounidenses que *ocupaban* Nicaragua. Por eso se convirtió en un *símbolo* de la resistencia en toda América Latina.",
+        "En 1934, cuando ya había negociaciones de paz, fue *asesinado* a *traición*. Pero su nombre no murió: muchos años después, los „sandinistas“ que *derribaron* al dictador Somoza tomaron su nombre para honrar su lucha.",
+      ],
+      vocab: [
+        { es: "ejército", de: "das Heer, die Armee", en: "army", take: true },
+        { es: "ocupaban", de: "besetzten (ocupar)", en: "occupied (ocupar)", take: true },
+        { es: "símbolo", de: "das Symbol", en: "symbol", take: false },
+        { es: "asesinado", de: "ermordet (asesinar)", en: "murdered (asesinar)", take: true },
+        { es: "traición", de: "der Verrat", en: "betrayal", take: true },
+        { es: "derribaron", de: "stürzten (derribar)", en: "overthrew (derribar)", take: true },
+      ],
+    },
+    {
+      id: "romero",
+      name: "Óscar Romero",
+      role: "Erzbischof & Stimme der Armen",
+      roleEn: "Archbishop & voice of the poor",
+      years: "1917–1980",
+      flag: "🇸🇻",
+      text: "Als Erzbischof von San Salvador prangerte er mutig die Gewalt des Militärs gegen die einfachen Leute an. Einen Tag nach der Bitte an die Soldaten, das Töten einzustellen, wurde er 1980 am Altar erschossen – der Funke, der den Bürgerkrieg entzündete. 2018 sprach ihn die Kirche heilig.",
+      textEn: "As archbishop of San Salvador he courageously denounced the military's violence against ordinary people. A day after pleading with the soldiers to stop the killing, he was shot at the altar in 1980 – the spark that ignited the civil war. In 2018 the Church canonised him as a saint.",
+      quote: "„Hört auf mit der Unterdrückung!“",
+      quoteEn: "\"Stop the repression!\"",
+      level: "B2",
+      es: [
+        "Como arzobispo de San Salvador, Óscar Romero *denunció* con valentía la violencia del ejército contra la gente más pobre. Cada domingo, miles de personas escuchaban sus *sermones* por la radio.",
+        "Un día después de *pedir* a los soldados que dejaran de matar, fue *asesinado* mientras daba misa, en 1980. Su muerte fue la *chispa* que encendió la guerra civil. En 2018, la Iglesia lo declaró *santo*.",
+      ],
+      vocab: [
+        { es: "denunció", de: "prangerte an (denunciar)", en: "denounced (denunciar)", take: true },
+        { es: "sermones", de: "die Predigten", en: "sermons", take: false },
+        { es: "pedir", de: "bitten", en: "to ask, plead", take: true },
+        { es: "asesinado", de: "ermordet (asesinar)", en: "murdered (asesinar)", take: true },
+        { es: "chispa", de: "der Funke", en: "spark", take: true },
+        { es: "santo", de: "der Heilige", en: "saint", take: true },
+      ],
+    },
+    {
+      id: "menchu",
+      name: "Rigoberta Menchú",
+      role: "Maya-Aktivistin, Friedensnobelpreis",
+      roleEn: "Maya activist, Nobel Peace Prize",
+      years: "1959–",
+      flag: "🇬🇹",
+      img: "Rigoberta Menchu.jpg",
+      text: "Aus einer armen Maya-Familie, verlor sie im Bürgerkrieg Eltern und Bruder. Sie machte die Verfolgung der indigenen Völker Guatemalas weltweit bekannt und erhielt 1992 den Friedensnobelpreis – als erste indigene Frau überhaupt. Bis heute kämpft sie für die Rechte der Ureinwohner.",
+      textEn: "From a poor Maya family, she lost her parents and brother in the civil war. She brought the persecution of Guatemala's indigenous peoples to the world's attention and received the Nobel Peace Prize in 1992 – the first indigenous woman ever to do so. To this day she fights for the rights of native peoples.",
+      quote: "„… und so erwachte in mir das Bewusstsein.“",
+      quoteEn: "\"… and so my consciousness was born.\"",
+      level: "B1",
+      es: [
+        "Rigoberta Menchú nació en una familia maya muy *pobre*. Durante la guerra civil de Guatemala perdió a sus padres y a un hermano, *asesinados* por el ejército.",
+        "En lugar de callar, *contó* al mundo entero el sufrimiento de los pueblos indígenas. En 1992 recibió el Premio Nobel de la Paz, la primera mujer indígena en *lograrlo*. Todavía hoy *defiende* los derechos de los pueblos originarios.",
+      ],
+      vocab: [
+        { es: "pobre", de: "arm", en: "poor", take: true },
+        { es: "asesinados", de: "ermordet (asesinar)", en: "murdered (asesinar)", take: true },
+        { es: "contó", de: "erzählte (contar)", en: "told (contar)", take: true },
+        { es: "lograrlo", de: "es schaffen (lograr)", en: "to achieve it (lograr)", take: true },
+        { es: "defiende", de: "verteidigt (defender)", en: "defends (defender)", take: true },
+      ],
+    },
+    {
+      id: "figueres",
+      name: "José Figueres Ferrer",
+      role: "Costa Rica: schaffte die Armee ab",
+      roleEn: "Costa Rica: abolished the army",
+      years: "1906–1990",
+      flag: "🇨🇷",
+      text: "Nach einem kurzen Bürgerkrieg traf er 1948 eine historische Entscheidung: Er schaffte das Heer Costa Ricas komplett ab und steckte das Geld in Schulen und Gesundheit. Er führte das Frauenwahlrecht ein. Bis heute hat Costa Rica keine Armee – und gilt als die stabilste Demokratie der Region.",
+      textEn: "After a short civil war he made a historic decision in 1948: he abolished Costa Rica's army entirely and put the money into schools and health. He introduced women's suffrage. To this day Costa Rica has no army – and is considered the most stable democracy in the region.",
+      quote: "„Wozu Traktoren ohne Geigen?“",
+      quoteEn: "\"What is the point of tractors without violins?\"",
+      level: "B1",
+      es: [
+        "Después de una corta guerra civil, en 1948 José Figueres tomó una decisión *histórica*: *eliminó* por completo el ejército de Costa Rica y puso ese dinero en escuelas y hospitales. También dio a las mujeres el *derecho* a votar.",
+        "Desde entonces, Costa Rica no tiene *ejército*. Gracias a esa decisión, el país se convirtió en la *democracia* más estable y *tranquila* de toda Centroamérica.",
+      ],
+      vocab: [
+        { es: "histórica", de: "historisch", en: "historic", take: false },
+        { es: "eliminó", de: "schaffte ab (eliminar)", en: "abolished (eliminar)", take: true },
+        { es: "derecho", de: "das Recht", en: "right", take: true },
+        { es: "ejército", de: "das Heer, die Armee", en: "army", take: true },
+        { es: "democracia", de: "die Demokratie", en: "democracy", take: true },
+        { es: "tranquila", de: "ruhig, friedlich", en: "calm, peaceful", take: true },
+      ],
+    },
+  ];
+
+  // ---------- "Heute": Lage & Spannungen ----------
+  const TENSIONS = [
+    {
+      id: "el-salvador-bukele",
+      icon: "🦅",
+      title: "El Salvador: Bukeles harte Hand",
+      titleEn: "El Salvador: Bukele's hard hand",
+      where: "El Salvador",
+      whereEn: "El Salvador",
+      tone: "shift",
+      status: "Umbruch",
+      statusEn: "Shift",
+      text: "Präsident Nayib Bukele ließ unter einem Ausnahmezustand zehntausende mutmaßliche Bandenmitglieder einsperren – in einem riesigen Mega-Gefängnis (CECOT). Die einst höchste Mordrate der Welt fiel drastisch, und Bukele ist enorm beliebt. Kritiker warnen jedoch vor Massenverhaftungen ohne fairen Prozess und dem Abbau der Demokratie.",
+      textEn: "Under a state of emergency, President Nayib Bukele had tens of thousands of suspected gang members locked up – in a huge mega-prison (CECOT). Once the highest murder rate in the world fell drastically, and Bukele is hugely popular. Critics, however, warn of mass arrests without fair trial and the erosion of democracy.",
+      level: "B1",
+      es: [
+        "El presidente Nayib Bukele declaró un „régimen de excepción“ y *encarceló* a decenas de miles de presuntos *pandilleros* en una cárcel enorme. La violencia *bajó* muchísimo, y por eso Bukele es muy *popular* entre la gente.",
+        "Pero muchos *critican* que hay personas inocentes en prisión, sin un juicio justo, y *temen* que el país pierda poco a poco su democracia.",
+      ],
+      vocab: [
+        { es: "encarceló", de: "sperrte ein (encarcelar)", en: "imprisoned (encarcelar)", take: true },
+        { es: "pandilleros", de: "die Bandenmitglieder", en: "gang members", take: true },
+        { es: "bajó", de: "sank (bajar)", en: "dropped (bajar)", take: true },
+        { es: "popular", de: "beliebt", en: "popular", take: true },
+        { es: "critican", de: "kritisieren (criticar)", en: "criticise (criticar)", take: true },
+        { es: "temen", de: "fürchten (temer)", en: "fear (temer)", take: true },
+      ],
+    },
+    {
+      id: "nicaragua-ortega",
+      icon: "✊",
+      title: "Nicaragua: Ortegas Machtkonzentration",
+      titleEn: "Nicaragua: Ortega's grip on power",
+      where: "Nicaragua",
+      whereEn: "Nicaragua",
+      tone: "crisis",
+      status: "Krise",
+      statusEn: "Crisis",
+      text: "Der einstige Revolutionsheld Daniel Ortega regiert Nicaragua heute zusammen mit seiner Frau autoritär. Proteste 2018 wurden blutig niedergeschlagen, die Opposition sitzt im Gefängnis oder im Exil; manchen Gegnern wurde sogar die Staatsbürgerschaft entzogen. Auch die katholische Kirche wird verfolgt.",
+      textEn: "The former revolutionary hero Daniel Ortega now rules Nicaragua authoritatively together with his wife. Protests in 2018 were crushed bloodily, the opposition is in prison or in exile; some opponents were even stripped of their citizenship. The Catholic Church, too, is persecuted.",
+      level: "B2",
+      es: [
+        "Daniel Ortega, que de joven fue un héroe de la *revolución* sandinista, hoy gobierna Nicaragua junto a su esposa de forma *autoritaria*. En 2018, las protestas en las calles fueron *reprimidas* con mucha violencia.",
+        "Desde entonces, la *oposición* está en la cárcel o en el *exilio*, y el gobierno incluso quitó la *ciudadanía* a algunos de sus críticos. También persigue a la Iglesia católica.",
+      ],
+      vocab: [
+        { es: "revolución", de: "die Revolution", en: "revolution", take: false },
+        { es: "autoritaria", de: "autoritär", en: "authoritarian", take: true },
+        { es: "reprimidas", de: "niedergeschlagen (reprimir)", en: "repressed (reprimir)", take: true },
+        { es: "oposición", de: "die Opposition", en: "opposition", take: true },
+        { es: "exilio", de: "das Exil", en: "exile", take: true },
+        { es: "ciudadanía", de: "die Staatsbürgerschaft", en: "citizenship", take: true },
+      ],
+    },
+    {
+      id: "panama-canal",
+      icon: "🚢",
+      title: "Panamá: der Kanal & der Druck aus dem Norden",
+      titleEn: "Panama: the canal & pressure from the north",
+      where: "Panama",
+      whereEn: "Panama",
+      tone: "tense",
+      status: "Angespannt",
+      statusEn: "Tense",
+      text: "Der Panamakanal, seit 1999 vollständig in panamaischer Hand, ist das Herz der Weltwirtschaft – fast jedes Containerschiff zwischen Asien und Amerika fährt hindurch. 2025 forderte US-Präsident Trump den Kanal lautstark „zurück“ und warf China zu großen Einfluss vor. Dürren lassen zudem den Wasserstand sinken.",
+      textEn: "The Panama Canal, fully in Panamanian hands since 1999, is the heart of the world economy – almost every container ship between Asia and the Americas passes through it. In 2025 US President Trump loudly demanded the canal \"back\" and accused China of too much influence. Droughts are also lowering the water level.",
+      level: "B1",
+      es: [
+        "El canal de Panamá, que es totalmente panameño desde 1999, es uno de los lugares más importantes del *comercio* mundial: casi todos los grandes barcos entre Asia y América pasan por él.",
+        "En 2025, el presidente Trump pidió en voz alta *recuperar* el canal y *acusó* a China de tener demasiada *influencia*. Además, las *sequías* hacen bajar el nivel del agua y *amenazan* el paso de los barcos.",
+      ],
+      vocab: [
+        { es: "comercio", de: "der Handel", en: "trade", take: true },
+        { es: "recuperar", de: "zurückholen", en: "to take back", take: true },
+        { es: "acusó", de: "beschuldigte (acusar)", en: "accused (acusar)", take: true },
+        { es: "influencia", de: "der Einfluss", en: "influence", take: true },
+        { es: "sequías", de: "die Dürren", en: "droughts", take: true },
+        { es: "amenazan", de: "bedrohen (amenazar)", en: "threaten (amenazar)", take: true },
+      ],
+    },
+    {
+      id: "maras-migracion",
+      icon: "🛣️",
+      title: "Maras & Migration nach Norden",
+      titleEn: "Gangs & migration northward",
+      where: "Guatemala · Honduras · El Salvador",
+      whereEn: "Guatemala · Honduras · El Salvador",
+      tone: "crisis",
+      status: "Krise",
+      statusEn: "Crisis",
+      text: "Die Jugendbanden MS-13 und Barrio 18 entstanden einst in den USA und wurden nach Mittelamerika abgeschoben. Zusammen mit Armut und Korruption machten sie das „Nördliche Dreieck“ jahrelang zu einer der gefährlichsten Regionen der Welt – und treiben bis heute viele Menschen auf den langen Weg Richtung US-Grenze.",
+      textEn: "The youth gangs MS-13 and Barrio 18 originally formed in the USA and were deported to Central America. Together with poverty and corruption they made the \"Northern Triangle\" one of the most dangerous regions in the world for years – and still drive many people onto the long road towards the US border.",
+      level: "B2",
+      es: [
+        "Las pandillas MS-13 y Barrio 18 *nacieron* en realidad en Estados Unidos, y desde allí fueron *deportadas* a Centroamérica. Junto con la pobreza y la corrupción, convirtieron al „Triángulo Norte“ en una de las regiones más *peligrosas* del mundo.",
+        "Por eso, muchas familias *deciden* dejar su país y *emprender* un viaje largo y arriesgado hacia la *frontera* de Estados Unidos, buscando una vida más segura.",
+      ],
+      vocab: [
+        { es: "nacieron", de: "entstanden (nacer)", en: "were born (nacer)", take: true },
+        { es: "deportadas", de: "abgeschoben (deportar)", en: "deported (deportar)", take: true },
+        { es: "peligrosas", de: "gefährlich", en: "dangerous", take: true },
+        { es: "deciden", de: "entscheiden (decidir)", en: "decide (decidir)", take: true },
+        { es: "emprender", de: "antreten, beginnen", en: "to undertake", take: false },
+        { es: "frontera", de: "die Grenze", en: "border", take: true },
+      ],
+    },
+    {
+      id: "guatemala-arevalo",
+      icon: "🗳️",
+      title: "Guatemala: ein fragiler Neuanfang",
+      titleEn: "Guatemala: a fragile fresh start",
+      where: "Guatemala",
+      whereEn: "Guatemala",
+      tone: "shift",
+      status: "Umbruch",
+      statusEn: "Shift",
+      text: "Überraschend gewann 2023 der Antikorruptions-Kandidat Bernardo Arévalo die Wahl. Die alte Elite – der „Pakt der Korrupten“ – versuchte mit allen Mitteln, seinen Amtsantritt zu verhindern. Nach Massenprotesten, getragen besonders von den indigenen Gemeinden, wurde er Anfang 2024 doch vereidigt.",
+      textEn: "Surprisingly, the anti-corruption candidate Bernardo Arévalo won the 2023 election. The old elite – the \"pact of the corrupt\" – tried by every means to prevent his inauguration. After mass protests, carried especially by the indigenous communities, he was finally sworn in in early 2024.",
+      level: "B2",
+      es: [
+        "En 2023, para sorpresa de todos, el candidato contra la corrupción, Bernardo Arévalo, *ganó* las elecciones. La vieja *élite* del país intentó por todos los medios *impedir* que llegara al poder.",
+        "Pero hubo grandes *protestas* en las calles, *apoyadas* sobre todo por los pueblos indígenas, y al final Arévalo pudo *asumir* la presidencia a principios de 2024.",
+      ],
+      vocab: [
+        { es: "ganó", de: "gewann (ganar)", en: "won (ganar)", take: true },
+        { es: "élite", de: "die Elite", en: "elite", take: false },
+        { es: "impedir", de: "verhindern", en: "to prevent", take: true },
+        { es: "protestas", de: "die Proteste", en: "protests", take: true },
+        { es: "apoyadas", de: "unterstützt (apoyar)", en: "supported (apoyar)", take: true },
+        { es: "asumir", de: "übernehmen (Amt)", en: "to take office", take: true },
+      ],
+    },
+    {
+      id: "costa-rica",
+      icon: "🌿",
+      title: "Costa Rica: die stabile Ausnahme",
+      titleEn: "Costa Rica: the stable exception",
+      where: "Costa Rica",
+      whereEn: "Costa Rica",
+      tone: "progress",
+      status: "Stabil",
+      statusEn: "Stable",
+      text: "Ohne Armee seit 1948, mit lebendiger Demokratie und berühmtem Naturschutz gilt Costa Rica als die ruhige Ausnahme der Region – „pura vida“. Der Tourismus floriert, ein großer Teil des Stroms ist erneuerbar. Doch zuletzt steigt auch hier die Gewalt durch den internationalen Drogenhandel spürbar an.",
+      textEn: "With no army since 1948, a lively democracy and famous nature conservation, Costa Rica is seen as the calm exception of the region – \"pura vida\". Tourism flourishes, much of its electricity is renewable. But lately violence from international drug trafficking has been noticeably rising here too.",
+      level: "B1",
+      es: [
+        "Sin ejército desde 1948 y con una democracia *viva*, Costa Rica es la gran excepción tranquila de la región: aquí la gente dice „pura vida“. El *turismo* y la protección de la *naturaleza* son el orgullo del país.",
+        "Casi toda su *electricidad* es de energías limpias. Sin embargo, en los últimos años también ha *crecido* la violencia por culpa del *narcotráfico* internacional.",
+      ],
+      vocab: [
+        { es: "viva", de: "lebendig", en: "alive, lively", take: true },
+        { es: "turismo", de: "der Tourismus", en: "tourism", take: true },
+        { es: "naturaleza", de: "die Natur", en: "nature", take: true },
+        { es: "electricidad", de: "die Elektrizität, der Strom", en: "electricity", take: true },
+        { es: "crecido", de: "gewachsen (crecer)", en: "grown (crecer)", take: true },
+        { es: "narcotráfico", de: "der Drogenhandel", en: "drug trafficking", take: false },
+      ],
+    },
+  ];
+
+  // ---------- ¿Sabías que…? (kurze Häppchen) ----------
+  const FACTS = [
+    {
+      de: "Costa Rica hat seit 1948 keine Armee – das gesparte Geld floss in Bildung und Gesundheit.",
+      en: "Costa Rica has had no army since 1948 – the money saved went into education and health.",
+    },
+    {
+      de: "Das Wort „Bananenrepublik“ erfand der US-Autor O. Henry, inspiriert von Honduras.",
+      en: "The term \"banana republic\" was coined by the US author O. Henry, inspired by Honduras.",
+    },
+    {
+      de: "Die Maya kannten die Null und eine echte Schrift – Jahrhunderte vor Europa.",
+      en: "The Maya knew the zero and a true writing system – centuries before Europe.",
+    },
+    {
+      de: "Belize ist das einzige Land Mittelamerikas mit Englisch als Amtssprache (früher Britisch-Honduras).",
+      en: "Belize is the only country in Central America with English as its official language (formerly British Honduras).",
+    },
+    {
+      de: "Morazán träumte – wie Bolívar im Süden – von einem einzigen Land; beide Träume scheiterten.",
+      en: "Morazán dreamed – like Bolívar in the south – of a single country; both dreams failed.",
+    },
+    {
+      de: "El Salvador machte 2021 als erstes Land der Welt Bitcoin zum gesetzlichen Zahlungsmittel.",
+      en: "In 2021 El Salvador became the first country in the world to make Bitcoin legal tender.",
+    },
+  ];
+
+  window.SC.historiaCentro = { INTRO, ERAS, FIGURES, TENSIONS, FACTS };
 })();
 
 </script>
@@ -18866,7 +19864,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
   // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
   // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
-  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild.
+  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild. Dient außerdem (kind
+  // "module") als generische Modul-Einladung: Icon · Titel · Kurz-Intro · ein paar
+  // Highlight-Zeilen (Marker frei wählbar, z.B. Vokabel-Beispiele oder Themen).
   function buildTips(payload, aspect) {
     const h = heightFor(aspect);
     const c = newCanvas(h);
@@ -18981,8 +19981,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function shareText(kind, payload) {
     const p = payload || {};
     // Echter, anklickbarer Link – Messenger (WhatsApp/Telegram/…) verlinken die
-    // nackte URL im Begleittext automatisch.
-    const link = `\n\n${t("share.captionJoin")} ${APP_URL}`;
+    // nackte URL im Begleittext automatisch. Trägt das Sharepic eine Modul-Kennung
+    // (moduleSlug), zeigt der Link per ?m=<modul> direkt in dieses Modul: Wer den
+    // Link antippt, landet nicht auf der Startseite, sondern im empfohlenen Modul.
+    const url = p.moduleSlug
+      ? APP_URL + (APP_URL.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(p.moduleSlug)
+      : APP_URL;
+    const link = `\n\n${t("share.captionJoin")} ${url}`;
     if (kind === "stats") {
       const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
       const facts = [];
@@ -19019,6 +20024,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       out += `\n\n${t("share.captionTips")}`;
       return out + link;
     }
+    if (kind === "module") {
+      const title = String(p.title || "").trim();
+      let out = t("share.captionModuleHead", { title: title || BRAND });
+      out += `\n\n${t("share.captionModule")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -19040,6 +20051,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
              : kind === "histtext" ? buildHistoria(payload, fmt)
              : kind === "histmodule" ? buildHistOverview(payload, fmt)
              : kind === "tips" ? buildTips(payload, fmt)
+             : kind === "module" ? buildTips(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -19059,6 +20071,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                : kind === "histtext" ? "holaruta-historia"
                : kind === "histmodule" ? "holaruta-historia-modul"
                : kind === "tips" ? "holaruta-tipps"
+               : kind === "module" ? "holaruta-modul"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
@@ -19066,6 +20079,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                 : kind === "histtext" ? "Historia de Sudamérica"
                 : kind === "histmodule" ? "Historia de Sudamérica"
                 : kind === "tips" ? ((payload && payload.title) || "HolaRuta")
+                : kind === "module" ? ((payload && payload.title) || "HolaRuta")
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
@@ -19234,6 +20248,52 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.62.0",
+      date: "2026-06-15",
+      title: "Länderkunde: Bevölkerung, Politik & Wirtschaft",
+      items: [
+        "👥 Jedes Land unter „Países y culturas“ hat jetzt einen neuen Abschnitt „Land & Wirtschaft“: Einwohnerzahl, Altersstruktur, politische Regierungsform, wirtschaftliche Lage und wovon das Land hauptsächlich lebt – mit aktuellen Werten (Stand 2025) kompakt auf einen Blick.",
+        "🔎 Die neuen Angaben fließen auch in die Suche ein und sind wie alle Länderinhalte auf Deutsch und Englisch verfügbar.",
+      ],
+    },
+    {
+      version: "1.61.0",
+      date: "2026-06-15",
+      title: "Geteilte Modul-Links öffnen direkt das Modul",
+      items: [
+        "🔗 Tippt jemand auf den Link unter einem „Modul teilen“-Sharepic, landet er jetzt direkt im empfohlenen Modul (z.B. Precios al oído) statt nur auf der Startseite – der Link trägt dafür eine Modul-Kennung (?m=…).",
+      ],
+    },
+    {
+      version: "1.60.0",
+      date: "2026-06-15",
+      title: "„Modul teilen“ besser sichtbar",
+      items: [
+        "📤 Der „Modul teilen“-Knopf erscheint jetzt in allen Entdecken-Modulen im selben auffälligen Orange wie bei „Historia de Sudamérica“ – vorher war er außerhalb von Historia unscheinbar grau und leicht zu übersehen.",
+      ],
+    },
+    {
+      version: "1.59.0",
+      date: "2026-06-15",
+      title: "„Modul teilen“ jetzt in allen Entdecken-Modulen",
+      items: [
+        "📤 Der „Modul teilen“-Knopf sitzt jetzt oben in jedem Entdecken-Modul – nicht mehr nur bei „Historia de Sudamérica“. Damit lässt sich jedes Modul (Supervivencia, Modo hostal, Definiciones, Frases flexibles, Diálogos, Regatear, Precios al oído, El Cuerpo, Lista de compras, Conjugación, Tiempos, Países y culturas, Etiqueta de viaje, Logística de viaje und Salud y energía) als Einladung weiterempfehlen.",
+        "🎨 Jedes Sharepic ist auf sein Modul zugeschnitten: Icon, Titel und ein paar echte Highlights – je nach Modul Beispiel-Vokabeln, Themen- oder Szenenlisten – in 1:1 oder 9:16 (Story).",
+      ],
+    },
+    {
+      version: "1.58.0",
+      date: "2026-06-15",
+      title: "Historia de Centroamérica: die zweite große Geschichte",
+      items: [
+        "🌋 Neue Erklärseite unter Entdecken: die ganze Geschichte Mittelamerikas auf einen Blick – von den Maya über die spanische Eroberung und das Königreich Guatemala bis zu Morazáns Traum von Einheit, den Bürgerkriegen des Kalten Krieges und den sieben Republiken von heute.",
+        "🕰️ Interaktiver Zeitstrahl: acht aufklappbare Epochen – die Welt der Maya, Conquista, Kolonialzeit, Unabhängigkeit 1821, die Föderation, Kaffee & Bananen, Bürgerkriege und der Weg bis heute. Jede Epoche mit Kernpunkten, Erklärung und (wo verfügbar) Bild.",
+        "👤 Galerie der Protagonisten: Francisco Morazán, Augusto César Sandino, Óscar Romero, Rigoberta Menchú und José Figueres – mit Lebensdaten und Zitat.",
+        "📰 „Heute: Lage & Spannungen“: aktuelle Themen verständlich erklärt – El Salvador unter Bukele, Nicaragua unter Ortega, der Panamakanal, Maras & Migration, Guatemalas Neuanfang und Costa Rica als stabile Ausnahme.",
+        "📖 Komplett mit Lesetraining: jede Epoche, jeder Protagonist und jede „Heute“-Karte gibt es zusätzlich als spanischen Lesetext mit antippbaren Vokabeln, Wörterliste, Quiz, Schwierigkeits-Score und teilbarem Sharepic – genau wie bei „Historia de Sudamérica“.",
+      ],
+    },
     {
       version: "1.57.0",
       date: "2026-06-15",
@@ -19913,27 +20973,51 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // need: optionale Voraussetzung ("speech"|"frases"|"countries") – fehlt das
   // jeweilige Modul/Feature, wird der Eintrag ausgeblendet (graceful degradation).
   // sub = deutscher Fallback; subKey = i18n-Schlüssel (zur Laufzeit via t() übersetzt).
+  // group = thematischer Abschnitt (siehe FEATURE_GROUPS); gegliedert nach
+  // Aktivität (Spielen · Üben · Nachschlagen) – deckt sich mit dem Intro-Text
+  // und gibt der inzwischen langen Liste eine klare, einheitliche Achse.
   const FEATURES = [
-    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica", grad: ["#2E6E86", "#B97C24"] },
-    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"] },
-    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"] },
-    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"] },
-    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases" },
-    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos" },
-    { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear" },
-    { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech" },
-    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"] },
-    { action: "open-compras",     icon: "🛒", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"] },
-    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"] },
-    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"] },
-    { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries" },
-    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia" },
-    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge" },
-    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica" },
-    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud" },
-    { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement" },
-    { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben", grad: ["#3F7355", "#2E6E86"] },
-    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Lehrer-/Coordinator-Übersicht: Schüler-Fortschritt importieren", grad: ["#2F6B70", "#A23E20"] },
+    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
+    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
+    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
+    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
+    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
+    { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
+    { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
+    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
+    { action: "open-compras",     icon: "🛒", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
+    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"], group: "practice" },
+    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"], group: "practice" },
+    { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries", group: "reference" },
+    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia", group: "reference" },
+    { action: "open-historia-centro", icon: "🌋", title: "Historia de Centroamérica", subKey: "discover.subHistoriaCentro", sub: "Von den Maya über Morazán bis heute", grad: ["#2E6E5A", "#1F4A3A"], need: "historiaCentro", group: "reference" },
+    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
+    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
+    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
+    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
+    { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
+    { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
+    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Übersicht für Lehrkräfte & Reiseleitung", grad: ["#2F6B70", "#A23E20"], group: "reference" },
+  ];
+
+  // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),
+  // Reihenfolge wie im Intro „Spielen, zuordnen, nachschlagen". titleKey via t().
+  const FEATURE_GROUPS = [
+    { id: "play",      titleKey: "discover.groupPlay" },
+    { id: "practice",  titleKey: "discover.groupPractice" },
+    { id: "reference", titleKey: "discover.groupReference" },
+  ];
+
+  // Reihenfolge & Beschriftung der Themen-Abschnitte im Lernen-Reiter. Wie bei
+  // Entdecken sortiert ein fester thematischer Rahmen die inzwischen 23 Themen;
+  // innerhalb einer Gruppe bleibt die Fälligkeits-Sortierung aus homeVM erhalten.
+  const CATEGORY_GROUPS = [
+    { id: "basics",  titleKey: "home.catGroupBasics" },
+    { id: "grammar", titleKey: "home.catGroupGrammar" },
+    { id: "people",  titleKey: "home.catGroupPeople" },
+    { id: "food",    titleKey: "home.catGroupFood" },
+    { id: "travel",  titleKey: "home.catGroupTravel" },
+    { id: "destinos", titleKey: "home.catGroupDestinos" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -20096,25 +21180,33 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function lernenBody(vm) {
-    const tiles = vm.categories
-      .map((c) => {
-        const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
-        // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
-        // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
-        const breakdown = vm.allLevels ? "" : c.byLevel
-          .map((b) =>
-            `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
-          .join("");
-        return `
-          <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
-                  style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
-            <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
-            <span class="tile__label">${esc(c.label)}</span>
-            <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
-            ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
-          </button>`;
-      })
-      .join("");
+    const tileBtn = (c) => {
+      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
+      // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
+      // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
+      const breakdown = vm.allLevels ? "" : c.byLevel
+        .map((b) =>
+          `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
+        .join("");
+      return `
+        <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
+                style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
+          <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
+          <span class="tile__label">${esc(c.label)}</span>
+          <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
+          ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
+        </button>`;
+    };
+    // Themen in feste thematische Abschnitte gruppieren (Reihenfolge & Titel aus
+    // CATEGORY_GROUPS); innerhalb behalten sie die Fälligkeits-Sortierung aus
+    // homeVM. Leere Gruppen (z. B. durch künftige Filter) fallen samt Titel weg.
+    const topicSections = CATEGORY_GROUPS.map((g) => {
+      const items = vm.categories.filter((c) => c.group === g.id);
+      if (!items.length) return "";
+      return `
+        <p class="sectioncap">${esc(t(g.titleKey))}</p>
+        <div class="tiles">${items.map(tileBtn).join("")}</div>`;
+    }).join("");
 
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
     // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
@@ -20267,8 +21359,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
       <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
 
-      <p class="sectioncap">${esc(t("home.sectionTopics"))}</p>
-      <div class="tiles">${tiles}</div>
+      ${topicSections}
 
       <p class="dedication">${esc(t("home.dedication"))} <span class="dedication__heart">♥</span></p>`;
   }
@@ -20276,28 +21367,38 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
     // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
     const cfg = window.SC.config || {};
-    const feats = FEATURES.filter((x) => {
-      if (x.need && !has[x.need]) return false;
-      if (x.action === "open-task" && cfg.taskTab) return false;
-      if (x.action === "open-teacher" && cfg.teacherTab) return false;
-      return true;
-    }).map((x) => `
+    const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
           <span class="feat__title">${esc(x.title)}</span>
           <span class="feat__sub">${esc(x.subKey ? t(x.subKey) : x.sub)}</span>
         </span>
-        <span class="feat__chev" aria-hidden="true">›</span>
-      </button>`).join("");
+      </button>`;
+    // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
+    // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
+    // In Editionen mit eigenem Reiter Tarea/Modo profe NICHT doppelt als Kachel zeigen.
+    const available = FEATURES.filter((x) => {
+      if (x.need && !has[x.need]) return false;
+      if (x.action === "open-task" && cfg.taskTab) return false;
+      if (x.action === "open-teacher" && cfg.teacherTab) return false;
+      return true;
+    });
+    const sections = FEATURE_GROUPS.map((g) => {
+      const items = available.filter((x) => x.group === g.id);
+      if (!items.length) return "";
+      return `
+        <p class="sectioncap">${esc(t(g.titleKey))}</p>
+        <div class="featgroup">${items.map(featBtn).join("")}</div>`;
+    }).join("");
     return `
       ${pagehead(esc(t("discover.discoverTitle")), vm)}
       ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
-      ${feats}`;
+      ${sections}`;
   }
 
   function profilBody(vm) {
@@ -21278,6 +22379,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🆘 Supervivencia", "home")}
         <p class="hm-intro">${esc(t("discover.szIntro"))}</p>
+        ${moduleShareBtn("supervivencia")}
         <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
         ${groups}
         ${show}
@@ -21319,6 +22421,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("💵 Precios al oído", "home")}
         <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
+        ${moduleShareBtn("precios")}
         <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
         <div class="prc-curs">${currencies}</div>
         <h3 class="prc-head">${esc(t("discover.prcDifficulty"))}</h3>
@@ -21463,13 +22566,32 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
 
-    // Brücke zur kontinentweiten Geschichte (nur wenn das Modul geladen ist).
-    const histBanner = vm.hasHistoria ? `
-      <button class="hist-banner" data-action="open-historia">
-        <span class="hist-banner__icon" aria-hidden="true">📜</span>
+    // Bevölkerung & Wirtschaft: Faktenzeilen (gleiche Optik wie die Speise-Fakten).
+    // Nur Zeilen mit Inhalt erscheinen; fehlt alles, entfällt die ganze Sektion.
+    const peopleFacts = [
+      factRow(t("discover.infoPopulation"), c.population),
+      factRow(t("discover.infoAgeStructure"), c.ageStructure),
+      factRow(t("discover.infoGovernment"), c.government),
+      factRow(t("discover.infoEconomy"), c.economy),
+      factRow(t("discover.infoLivelihood"), c.livelihood),
+    ].join("");
+    const peopleSect = peopleFacts
+      ? sect("👥", t("discover.infoPeople"), `<div class="cinfo-facts">${peopleFacts}</div>`)
+      : "";
+
+    // Brücke zur passenden kontinentalen Geschichte: mittelamerikanische Länder
+    // führen zur Historia de Centroamérica, alle anderen (Südamerika/Karibik) zur
+    // Historia de Sudamérica. Jeweils nur, wenn das Modul geladen ist.
+    const inCentro = vm.country && vm.country.region === "Mittelamerika";
+    const histTarget = inCentro
+      ? (vm.hasHistoriaCentro ? { action: "open-historia-centro", icon: "🌋", title: t("discover.histBannerCentroTitle"), sub: t("discover.histBannerCentroSub") } : null)
+      : (vm.hasHistoria ? { action: "open-historia", icon: "📜", title: t("discover.histBannerTitle"), sub: t("discover.histBannerSub") } : null);
+    const histBanner = histTarget ? `
+      <button class="hist-banner" data-action="${histTarget.action}">
+        <span class="hist-banner__icon" aria-hidden="true">${histTarget.icon}</span>
         <span class="hist-banner__text">
-          <span class="hist-banner__title">${esc(t("discover.histBannerTitle"))}</span>
-          <span class="hist-banner__sub">${esc(t("discover.histBannerSub"))}</span>
+          <span class="hist-banner__title">${esc(histTarget.title)}</span>
+          <span class="hist-banner__sub">${esc(histTarget.sub)}</span>
         </span>
         <span class="hist-banner__chev" aria-hidden="true">›</span>
       </button>` : "";
@@ -21478,6 +22600,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${infoTopbar()}
         ${selector}
+        ${moduleShareBtn("paises")}
         ${histBanner}
 
         <div class="cinfo-head">
@@ -21491,6 +22614,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <button class="hist-share cinfo-share" type="button" data-action="share-country">📤 ${esc(t("discover.tipsShare"))}</button>
 
         ${sect("🌎", t("discover.infoAbout"), para(c.about))}
+        ${peopleSect}
         ${sect("📜", t("discover.infoHistory"), para(c.history))}
         ${sect("🗣️", t("discover.infoLanguage"), para(c.language) + wordsBlock)}
 
@@ -21753,7 +22877,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     return `
       <section class="screen">
-        ${hmTopbar("📜 Historia de Sudamérica", "home")}
+        ${hmTopbar(esc(vm.topTitle || "📜 Historia de Sudamérica"), "home")}
         <p class="hm-intro">${esc(vm.intro)}</p>
         ${nav}
         ${moduleShare}
@@ -21785,6 +22909,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
   function tipsShareBtn(cat, i) {
     return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
+  }
+
+  // „Modul teilen"-Knopf für die Entdecken-Module: empfiehlt das ganze Modul als
+  // Sharepic weiter (Logik in app.shareModule, Motiv „module"). mod = Modul-Id
+  // (siehe MODULE_SHARE in app.js). Sitzt oben direkt unter der Einleitung – wie
+  // bei Historia. Ohne Teilen-Fähigkeit (kein Share-Modul) entfällt der Knopf.
+  function moduleShareBtn(mod) {
+    if (!canShare()) return "";
+    return `<div class="hist-modshare"><button class="hist-share mod-share" type="button" data-action="share-module" data-mod="${esc(mod)}">📤 ${esc(t("discover.moduleShare"))}</button></div>`;
   }
 
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
@@ -21844,6 +22977,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${kniggeTopbar()}
         ${selector}
         <p class="pageintro">${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.</p>
+        ${moduleShareBtn("knigge")}
         ${topics}
       </section>`;
   }
@@ -21972,6 +23106,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
+        ${moduleShareBtn("regatear")}
 
         <h2 class="rg-head">${esc(t("discover.rgTactics"))}</h2>
         ${tips}
@@ -22064,6 +23199,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
+        ${cfg.cat ? moduleShareBtn(cfg.cat) : ""}
 
         ${section(topics, cfg.headTips, topics)}
         ${section(phrases, cfg.headPhrases, phrases)}
@@ -22113,6 +23249,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🛏️ Modo hostal", "home")}
         <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
+        ${moduleShareBtn("hostel")}
         <div class="hm-menu">
           <button class="hm-card hm-card--coordinator" data-action="coordinator-round">
             <span class="hm-card__icon" aria-hidden="true">⚡</span>
@@ -22662,6 +23799,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🧩 Definiciones", "home")}
         <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
+        ${moduleShareBtn("definiciones")}
         <div class="hm-scenes">${list}</div>
       </section>`;
   }
@@ -22746,6 +23884,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🧱 Frases flexibles", "home")}
         <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
+        ${moduleShareBtn("frases")}
         <div class="hm-scenes">
           ${tile(vm.mixed, true)}
           ${list}
@@ -22935,6 +24074,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🔁 Conjugación", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
+        ${moduleShareBtn("conjugacion")}
 
         ${sect("🧑‍🤝‍🧑", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
         ${sect("🧱", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
@@ -23059,6 +24199,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("💬 Diálogos", "home")}
         <p class="hm-intro">${esc(t("discover.dlgIntro"))}</p>
+        ${moduleShareBtn("dialogos")}
         ${hint}
         <div class="dlg-picks">${cards}</div>
       </section>`;
@@ -23340,6 +24481,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("⏳ Tiempos", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
+        ${moduleShareBtn("tiempos")}
 
         ${sect("↔️", t.title, timeline)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
@@ -23408,6 +24550,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen bp-screen">
         ${hmTopbar("🧍 El Cuerpo", "home")}
         <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
+        ${moduleShareBtn("cuerpo")}
         ${progress}
         <div class="bp-stage">
           <div class="bp-3d-stage" data-bp-stage>
@@ -23516,6 +24659,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
         ${hmTopbar("🛒 Lista de compras", "home")}
         <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
+        ${moduleShareBtn("compras")}
         <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>
         ${progress}
         <ul class="sl-list">${items}</ul>
@@ -23615,6 +24759,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const userCards = window.SC.userCards || null; // eigene Karten (optional)
   const countries = window.SC.countries || null; // Länderkunde-Infoseite (optional)
   const historia = window.SC.historia || null;   // Geschichte Südamerikas (Erklärseite, optional)
+  const historiaCentro = window.SC.historiaCentro || null; // Geschichte Mittelamerikas (Erklärseite, optional)
   const knigge = window.SC.knigge || null;       // Reise-Knigge (Verhalten unterwegs, optional)
   const frases = window.SC.frases || null;       // Satzbaukasten-Daten (optional)
   const dialogos = window.SC.dialogos || null;   // Gesprächs-Simulationen (optional)
@@ -23796,7 +24941,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           active: state.levels.length === 0 || state.levels.includes(l.id),
         }))
         .filter((b) => b.count > 0);
-      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad,
+      return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad, group: c.group,
                total: cards.length, due: dueIn(cards).length, byLevel };
     });
     // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
@@ -23844,6 +24989,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
       hasCountries: !!countries, // dito für die Länderkunde
       hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
+      hasHistoriaCentro: !!historiaCentro, // dito für die Geschichte Mittelamerikas
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
       hasFrases: !!frases,       // Satzbaukasten braucht das frases-Modul
@@ -24035,20 +25181,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
     // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
-    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia };
+    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia, hasHistoriaCentro: !!historiaCentro };
   }
 
   // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
   // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
   // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
+  // Aktives Geschichts-Modul nach Region (state.histRegion: "sur" | "centro").
+  // So teilen sich Süd- und Mittelamerika dieselbe Render-/Share-Mechanik.
+  function histMod() { return state.histRegion === "centro" ? historiaCentro : historia; }
+  function histTitle() { return state.histRegion === "centro" ? "🌋 Historia de Centroamérica" : "📜 Historia de Sudamérica"; }
+
   function historiaVM() {
-    if (!historia) return { intro: "", eras: [], figures: [], tensions: [], facts: [] };
+    const mod = histMod();
+    if (!mod) return { intro: "", eras: [], figures: [], tensions: [], facts: [], topTitle: histTitle() };
     return {
-      intro: nat(historia.INTRO),
-      eras: loc(historia.ERAS || []),
-      figures: loc(historia.FIGURES || []),
-      tensions: loc(historia.TENSIONS || []),
-      facts: (historia.FACTS || []).map(nat),
+      topTitle: histTitle(),
+      intro: nat(mod.INTRO),
+      eras: loc(mod.ERAS || []),
+      figures: loc(mod.FIGURES || []),
+      tensions: loc(mod.TENSIONS || []),
+      facts: (mod.FACTS || []).map(nat),
     };
   }
 
@@ -27450,7 +28603,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           icon: c.flag || "🌎", title: natk(c, "name") || c.name, sub: natk(c, "tagline"),
           action: "search-country", id: c.id,
           hay: searchHay([c.name, c.nameEn, c.capital, c.region, c.tagline, c.taglineEn,
-            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn, words]),
+            c.about, c.aboutEn, c.history, c.historyEn, c.language, c.languageEn,
+            c.population, c.populationEn, c.ageStructure, c.ageStructureEn,
+            c.government, c.governmentEn, c.economy, c.economyEn, c.livelihood, c.livelihoodEn, words]),
         });
       });
     }
@@ -27483,21 +28638,25 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
 
-    // Historia de Sudamérica: ein Treffer für die ganze Erklärseite (Epochen,
-    // Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
-    if (historia) {
-      const eras = (historia.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
-      const figs = (historia.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
-      const tens = (historia.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
-      const facts = (historia.FACTS || []).map((f) => [f.de, f.en]);
+    // Historia (Süd- & Mittelamerika): je ein Treffer für die ganze Erklärseite
+    // (Epochen, Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
+    const histPage = (mod, icon, title, subKey, action, keywords) => {
+      if (!mod) return;
+      const eras = (mod.ERAS || []).map((e) => [e.title, e.titleEn, e.period, e.lead, e.leadEn, e.body, e.bodyEn, e.points, e.pointsEn]);
+      const figs = (mod.FIGURES || []).map((f) => [f.name, f.role, f.roleEn, f.text, f.textEn]);
+      const tens = (mod.TENSIONS || []).map((s) => [s.title, s.titleEn, s.where, s.whereEn, s.text, s.textEn]);
+      const facts = (mod.FACTS || []).map((f) => [f.de, f.en]);
       idx.push({
         group: "info", kind: "page", kindLabel: t("search.kindInfo"),
-        icon: "📜", title: "Historia de Sudamérica", sub: t("discover.subHistoria"),
-        action: "open-historia",
-        hay: searchHay(["historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit",
-          historia.INTRO && historia.INTRO.de, historia.INTRO && historia.INTRO.en, eras, figs, tens, facts]),
+        icon: icon, title: title, sub: t(subKey),
+        action: action,
+        hay: searchHay([keywords, mod.INTRO && mod.INTRO.de, mod.INTRO && mod.INTRO.en, eras, figs, tens, facts]),
       });
-    }
+    };
+    histPage(historia, "📜", "Historia de Sudamérica", "discover.subHistoria", "open-historia",
+      "historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit");
+    histPage(historiaCentro, "🌋", "Historia de Centroamérica", "discover.subHistoriaCentro", "open-historia-centro",
+      "historia geschichte history mittelamerika centroamérica maya morazán sandino romero menchú independencia conquista bukele panama panamá kanal");
 
     return idx;
   }
@@ -27550,8 +28709,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
-  function openHistoria() {
+  function openHistoria(region) {
     dismissBadgeToast();
+    state.histRegion = region === "centro" ? "centro" : "sur";
     state.screen = "historia";
     render();
   }
@@ -27879,8 +29039,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
   // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
   function findHistItem(id) {
-    if (!historia) return null;
-    const lists = [historia.ERAS, historia.FIGURES, historia.TENSIONS];
+    const mod = histMod();
+    if (!mod) return null;
+    const lists = [mod.ERAS, mod.FIGURES, mod.TENSIONS];
     for (let i = 0; i < lists.length; i++) {
       const it = (lists[i] || []).find((x) => x.id === id);
       if (it) return it;
@@ -27896,7 +29057,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
     buzz(12);
     share.shareImage("histtext", {
-      title: e.title || e.name || "Historia de Sudamérica",
+      title: e.title || e.name || (state.histRegion === "centro" ? "Historia de Centroamérica" : "Historia de Sudamérica"),
       levelCode: e.level || "",
       levelWord: e.level ? t("discover.histLvl" + e.level) : "",
       esText,
@@ -27908,19 +29069,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Einladung (Modulname, Einleitung, Zeitstrahl-Teaser mit den Epochen) – zum
   // Weiterempfehlen des gesamten Moduls, nicht nur eines einzelnen Textes.
   function shareHistModule() {
-    if (!share || !historia) return;
-    const eras = loc(historia.ERAS || []).map((e) => ({
+    const mod = histMod();
+    if (!share || !mod) return;
+    const name = state.histRegion === "centro" ? "Historia de Centroamérica" : "Historia de Sudamérica";
+    const eras = loc(mod.ERAS || []).map((e) => ({
       icon: e.icon || "•",
       period: e.period || "",
       title: e.title || "",
     }));
     buzz(12);
     share.shareImage("histmodule", {
-      kicker: "Historia de Sudamérica",
-      title: "Historia de Sudamérica",
-      intro: nat(historia.INTRO),
+      kicker: name,
+      title: name,
+      intro: nat(mod.INTRO),
       timelineLabel: t("discover.histNavTimeline"),
       eras,
+      moduleSlug: state.histRegion === "centro" ? "historia-centro" : "historia",
     }, shareFormat());
   }
 
@@ -27977,6 +29141,102 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       intro: c.tagline || "",
       lines,
       accent: ["#B97C24", "#C2502E"],
+    }, shareFormat());
+  }
+
+  // Sharepic auf Modul-Ebene für ALLE Entdecken-Module: das ganze Modul als
+  // Einladung weiterempfehlen (Motiv „module" = generische Modul-Karte: Icon,
+  // Titel, Kurz-Intro, ein paar Highlight-Zeilen). Inhalt ist pro Modul
+  // maßgeschneidert (echte Vokabel-Beispiele, Themen- oder Szenenlisten) – die
+  // Optik teilt es sich mit den Reise-Tipps. Icon/Titel/Akzent spiegeln die
+  // jeweilige Entdecken-Kachel (siehe FEATURES in ui.js); der Intro-Einzeiler
+  // kommt aus dem Kachel-Untertitel (discover.sub…), damit DE/EN gepflegt sind.
+  // Historia hat ein eigenes Motiv (shareHistModule) und ist hier nicht gelistet.
+  const MODULE_SHARE = {
+    supervivencia: { icon: "🆘", title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
+    hostel:        { icon: "🛏️", title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
+    definiciones:  { icon: "🧩", title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
+    frases:        { icon: "🧱", title: "Frases flexibles",     sub: "discover.subFrases",        accent: ["#7048E8", "#5A3FB8"] },
+    dialogos:      { icon: "💬", title: "Diálogos",             sub: "discover.subDialogos",      accent: ["#9B5A8C", "#5A4FA8"] },
+    regatear:      { icon: "🤝", title: "Regatear",             sub: "discover.subRegatear",      accent: ["#B97C24", "#3F7355"] },
+    precios:       { icon: "💵", title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
+    cuerpo:        { icon: "🧍", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
+    compras:       { icon: "🛒", title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
+    conjugacion:   { icon: "🔁", title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
+    tiempos:       { icon: "⏳", title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
+    paises:        { icon: "🌎", title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
+    knigge:        { icon: "🧭", title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
+    logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
+    salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+  };
+
+  // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
+  function cardSampleLines(cat, n, mark) {
+    return data.CARDS
+      .filter((c) => c.cat === cat)
+      .slice(0, n)
+      .map((c) => ({ mark: mark || "🗣️", text: `${c.es} — ${nat(c)}` }));
+  }
+
+  // Pro Modul ein paar repräsentative Highlight-Zeilen aus den echten Modul-Daten
+  // ziehen. Quelle ist jeweils derselbe View-Model-Builder, der auch den Screen
+  // füllt – der Knopf erscheint nur im geöffneten Modul, dessen State steht also.
+  function moduleShareLines(id) {
+    const CAP = 6;
+    const cut = (arr) => (arr || []).filter(Boolean).slice(0, CAP);
+    switch (id) {
+      case "supervivencia": {
+        const out = [];
+        spickzettelVM().groups.forEach((g) => {
+          (g.cards || []).slice(0, 2).forEach((c) => out.push({ mark: g.icon || "🆘", text: `${c.es} — ${c.de}` }));
+        });
+        return cut(out);
+      }
+      case "hostel":
+        return cut(battleSetupVM().scenes.map((s) => ({ mark: s.icon || "⚔️", text: s.label })));
+      case "definiciones":
+        return cut(quizSetupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
+      case "frases":
+        return cut(frasesSetupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
+      case "dialogos":
+        return cut(dialogosSetupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
+      case "regatear":
+        return cut((regatearVM().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
+      case "precios":
+        return cut(preciosSetupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
+      case "cuerpo":
+        return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
+      case "compras":
+        return cut(comprasVM().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
+      case "conjugacion":
+        return cardSampleLines("verbos", CAP, "🔁");
+      case "tiempos":
+        return cardSampleLines("tiempos", CAP, "⏳");
+      case "paises":
+        return cut((countries ? countries.LIST : []).map((c) => loc(c)).map((c) => ({ mark: c.flag || "🌎", text: c.name })));
+      case "knigge":
+        return cut((kniggeVM().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
+      case "logistica":
+        return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
+      case "salud":
+        return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
+      default:
+        return [];
+    }
+  }
+
+  function shareModule(id) {
+    const meta = MODULE_SHARE[id];
+    if (!share || !meta) return;
+    buzz(12);
+    share.shareImage("module", {
+      kicker: t("discover.moduleShareKicker"),
+      icon: meta.icon,
+      title: meta.title,
+      intro: t(meta.sub),
+      lines: moduleShareLines(id),
+      accent: meta.accent,
+      moduleSlug: id, // Begleittext-Link zeigt per ?m=<id> direkt in dieses Modul
     }, shareFormat());
   }
 
@@ -28088,7 +29348,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "open-stats") goStats();
     else if (action === "open-badges") openBadges();
     else if (action === "open-info") openInfo();
-    else if (action === "open-historia") openHistoria();
+    else if (action === "open-historia") openHistoria("sur");
+    else if (action === "open-historia-centro") openHistoria("centro");
     else if (action === "open-knigge") openKnigge();
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
@@ -28116,6 +29377,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "share-hist-module") shareHistModule();
     else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
     else if (action === "share-country") shareCountry();
+    else if (action === "share-module") shareModule(el.dataset.mod);
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
@@ -28435,6 +29697,81 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (el) el.remove();
   }
 
+  // Deep-Link beim Start:
+  //   ?m=<modul>  – öffnet ein empfohlenes Modul (aus einem „Modul teilen"-Link)
+  //   ?a=<aktion> – öffnet eine App-Aktion ohne eigenes Modul (Homescreen-Shortcuts
+  //                 aus dem Manifest, z.B. „Ruta del día" oder „Suchen")
+  // Beides hat Vorrang vor dem Onboarding – wer per Link/Shortcut kommt, soll sofort
+  // am Ziel landen. Danach wird der Parameter aus der Adresse geputzt, damit Reload/
+  // Zurück-Geste normal laufen. Liefert true, wenn ein gültiges Ziel geöffnet wurde.
+  function applyModuleDeepLink() {
+    // Kleiner Helfer: Parameter aus Query (?x=) oder Hash (#x=/&x=) lesen.
+    function param(key) {
+      try {
+        const q = (new URLSearchParams(location.search).get(key) || "").trim().toLowerCase();
+        if (q) return q;
+        if (location.hash) {
+          const h = location.hash.match(new RegExp("[#&]" + key + "=([^&]+)"));
+          if (h) return decodeURIComponent(h[1]).trim().toLowerCase();
+        }
+      } catch (e) { /* file:// o.ä. – kein Deep-Link */ }
+      return "";
+    }
+    // App-Aktionen (Homescreen-Shortcuts): direkte Einstiege ohne eigenes Modul.
+    const actions = {
+      ruta: openRutaDelDia,   // ?a=ruta   → heutige Lernrunde
+      buscar: openSearch,     // ?a=buscar → Suche
+    };
+    const aSlug = param("a");
+    if (aSlug && actions[aSlug]) {
+      markSeen();
+      actions[aSlug]();
+      cleanUrl();
+      return true;
+    }
+    const slug = param("m");
+    if (!slug) return false;
+    const openers = {
+      supervivencia: openSpickzettel,
+      hostel: openHostel,
+      definiciones: openQuizSetup,
+      frases: openFrasesSetup,
+      dialogos: openDialogosSetup,
+      regatear: openRegatear,
+      precios: openPrecios,
+      cuerpo: openCuerpo,
+      compras: openCompras,
+      conjugacion: openConjugacion,
+      tiempos: openTiempos,
+      paises: openInfo,
+      knigge: openKnigge,
+      logistica: openLogistica,
+      salud: openSalud,
+      historia: () => openHistoria("sur"),
+      "historia-centro": () => openHistoria("centro"),
+    };
+    const open = openers[slug];
+    if (!open) return false;
+    markSeen();
+    open(); // setzt state.screen + rendert
+    cleanUrl();
+    return true;
+
+    // Eingeladene/per Shortcut Gekommene gelten als „gesehen": kein Onboarding-
+    // Zwang vor dem Ziel.
+    function markSeen() {
+      if (settings.onboarded !== true) {
+        settings = Object.assign({}, settings, { onboarded: true });
+        store.saveSettings(settings);
+      }
+    }
+    // Parameter aus der Adresse entfernen (ohne Reload), damit ein späterer Reload
+    // nicht erneut deep-linkt und die Adresse sauber bleibt.
+    function cleanUrl() {
+      try { history.replaceState(history.state, "", location.pathname); } catch (e) { /* file:// o.ä. – egal */ }
+    }
+  }
+
   // ----- Start -----
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
@@ -28495,6 +29832,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.screen = "onboarding";
     stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
+  // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
+  // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
+  // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
+  // abbricht (z.B. Precios ohne Sprachausgabe) – so bleibt der Bildschirm nie leer.
+  applyModuleDeepLink();
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass

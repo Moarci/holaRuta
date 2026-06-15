@@ -22,6 +22,52 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.62.0",
+      date: "2026-06-15",
+      title: "Länderkunde: Bevölkerung, Politik & Wirtschaft",
+      items: [
+        "👥 Jedes Land unter „Países y culturas“ hat jetzt einen neuen Abschnitt „Land & Wirtschaft“: Einwohnerzahl, Altersstruktur, politische Regierungsform, wirtschaftliche Lage und wovon das Land hauptsächlich lebt – mit aktuellen Werten (Stand 2025) kompakt auf einen Blick.",
+        "🔎 Die neuen Angaben fließen auch in die Suche ein und sind wie alle Länderinhalte auf Deutsch und Englisch verfügbar.",
+      ],
+    },
+    {
+      version: "1.61.0",
+      date: "2026-06-15",
+      title: "Geteilte Modul-Links öffnen direkt das Modul",
+      items: [
+        "🔗 Tippt jemand auf den Link unter einem „Modul teilen“-Sharepic, landet er jetzt direkt im empfohlenen Modul (z.B. Precios al oído) statt nur auf der Startseite – der Link trägt dafür eine Modul-Kennung (?m=…).",
+      ],
+    },
+    {
+      version: "1.60.0",
+      date: "2026-06-15",
+      title: "„Modul teilen“ besser sichtbar",
+      items: [
+        "📤 Der „Modul teilen“-Knopf erscheint jetzt in allen Entdecken-Modulen im selben auffälligen Orange wie bei „Historia de Sudamérica“ – vorher war er außerhalb von Historia unscheinbar grau und leicht zu übersehen.",
+      ],
+    },
+    {
+      version: "1.59.0",
+      date: "2026-06-15",
+      title: "„Modul teilen“ jetzt in allen Entdecken-Modulen",
+      items: [
+        "📤 Der „Modul teilen“-Knopf sitzt jetzt oben in jedem Entdecken-Modul – nicht mehr nur bei „Historia de Sudamérica“. Damit lässt sich jedes Modul (Supervivencia, Modo hostal, Definiciones, Frases flexibles, Diálogos, Regatear, Precios al oído, El Cuerpo, Lista de compras, Conjugación, Tiempos, Países y culturas, Etiqueta de viaje, Logística de viaje und Salud y energía) als Einladung weiterempfehlen.",
+        "🎨 Jedes Sharepic ist auf sein Modul zugeschnitten: Icon, Titel und ein paar echte Highlights – je nach Modul Beispiel-Vokabeln, Themen- oder Szenenlisten – in 1:1 oder 9:16 (Story).",
+      ],
+    },
+    {
+      version: "1.58.0",
+      date: "2026-06-15",
+      title: "Historia de Centroamérica: die zweite große Geschichte",
+      items: [
+        "🌋 Neue Erklärseite unter Entdecken: die ganze Geschichte Mittelamerikas auf einen Blick – von den Maya über die spanische Eroberung und das Königreich Guatemala bis zu Morazáns Traum von Einheit, den Bürgerkriegen des Kalten Krieges und den sieben Republiken von heute.",
+        "🕰️ Interaktiver Zeitstrahl: acht aufklappbare Epochen – die Welt der Maya, Conquista, Kolonialzeit, Unabhängigkeit 1821, die Föderation, Kaffee & Bananen, Bürgerkriege und der Weg bis heute. Jede Epoche mit Kernpunkten, Erklärung und (wo verfügbar) Bild.",
+        "👤 Galerie der Protagonisten: Francisco Morazán, Augusto César Sandino, Óscar Romero, Rigoberta Menchú und José Figueres – mit Lebensdaten und Zitat.",
+        "📰 „Heute: Lage & Spannungen“: aktuelle Themen verständlich erklärt – El Salvador unter Bukele, Nicaragua unter Ortega, der Panamakanal, Maras & Migration, Guatemalas Neuanfang und Costa Rica als stabile Ausnahme.",
+        "📖 Komplett mit Lesetraining: jede Epoche, jeder Protagonist und jede „Heute“-Karte gibt es zusätzlich als spanischen Lesetext mit antippbaren Vokabeln, Wörterliste, Quiz, Schwierigkeits-Score und teilbarem Sharepic – genau wie bei „Historia de Sudamérica“.",
+      ],
+    },
+    {
       version: "1.57.0",
       date: "2026-06-15",
       title: "Klarere Onboarding-Überschrift",
