@@ -1761,7 +1761,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .teacher-x:hover { color: var(--brand-ink); }
 @media print {
   .teacher-actions, .teacher-x, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
-  .no-print, .sheet-controls { display: none !important; }
+  .no-print, .sheet-controls,
+  /* schwebende Overlays nie mitdrucken (Toasts, Update-Banner/-Scrim) */
+  .btoast, .updbar, .upd-scrim { display: none !important; }
   /* Aktivitätsblatt randlos, schwarz auf weiß drucken (unabhängig vom Theme). */
   .screen { padding: 0 !important; }
   .sheet { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; }
@@ -1794,6 +1796,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-link { font-size: 0.8rem; word-break: break-all; color: #2f6b70; margin: 2px 0; }
 .sheet-subscribe, .sheet-recipe-box { break-inside: avoid; }
 .sheet-coord { margin-top: 16px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 0.88rem; color: #3a2c22; }
+.sheet-audio { font-size: 0.85rem; color: #6b5a4c; margin: 4px 0 0; }
+.sheet-notes { margin-top: 14px; break-inside: avoid; }
+.sheet-notes-lines { border: 1px solid #ccc; border-radius: 6px; height: 70px; margin-top: 4px; background: repeating-linear-gradient(#fff, #fff 22px, #e6ddcf 23px); }
 
 /* Aufgaben/Zuweisung (backend-frei) */
 .teacher-sep { border: none; border-top: 1px solid var(--line); margin: 22px 0 8px; }

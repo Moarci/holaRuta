@@ -1799,7 +1799,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .teacher-x:hover { color: var(--brand-ink); }
 @media print {
   .teacher-actions, .teacher-x, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
-  .no-print, .sheet-controls { display: none !important; }
+  .no-print, .sheet-controls,
+  /* schwebende Overlays nie mitdrucken (Toasts, Update-Banner/-Scrim) */
+  .btoast, .updbar, .upd-scrim { display: none !important; }
   /* Aktivitätsblatt randlos, schwarz auf weiß drucken (unabhängig vom Theme). */
   .screen { padding: 0 !important; }
   .sheet { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; }
@@ -1832,6 +1834,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-link { font-size: 0.8rem; word-break: break-all; color: #2f6b70; margin: 2px 0; }
 .sheet-subscribe, .sheet-recipe-box { break-inside: avoid; }
 .sheet-coord { margin-top: 16px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 0.88rem; color: #3a2c22; }
+.sheet-audio { font-size: 0.85rem; color: #6b5a4c; margin: 4px 0 0; }
+.sheet-notes { margin-top: 14px; break-inside: avoid; }
+.sheet-notes-lines { border: 1px solid #ccc; border-radius: 6px; height: 70px; margin-top: 4px; background: repeating-linear-gradient(#fff, #fff 22px, #e6ddcf 23px); }
 
 /* Aufgaben/Zuweisung (backend-frei) */
 .teacher-sep { border: none; border-top: 1px solid var(--line); margin: 22px 0 8px; }
@@ -4052,16 +4057,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     cardCount: (p) => `${p.n} Karten`,
     goalLabel: "Lernziel",
     goalText: "Die wichtigsten Sätze dieses Ziels verstehen, aussprechen und unterwegs anwenden.",
-    recipeHeading: "Ablauf (ca. 30–45 Min.)",
+    recipeHeading: "Ablauf (ca. 30–45 Min. pro Einheit)",
     recipe1: "① Karten lernen: die Sätze unten gemeinsam durchgehen und nachsprechen.",
     recipe2: "② Kontext: zu jeder Karte die Situation klären – wann sagt man das?",
-    recipe3: "③ Rollenspiel: zu zweit eine Szene spielen (z. B. im „Modo hostal“ der App).",
+    recipe3: "③ Rollenspiel: zu zweit eine Szene spielen – z. B. die Rollenspiele im „Modo hostal“ der App.",
     recipe4: "④ Real-Life Challenge: die Aufgabe draußen/in der Gruppe umsetzen.",
     vocabHeading: "Wortschatz & Sätze",
+    audioHint: "🔊 Aussprache anhören? Dieselbe Karte in der App antippen.",
     challengeLabel: "Real-Life Challenge",
-    subscribeHeading: "In der App öffnen",
+    subscribeHeading: "In der App starten",
     subscribeHint: "Diesen Code in der App unter „Tarea“ einfügen – oder den Link öffnen – um das Ziel direkt zu starten.",
-    coordHeading: "Hinweis",
+    notesHeading: "Notizen",
+    coordHeading: "Hinweis für die Leitung",
     coordNote: "Ideal für Gruppen von 2–12 Personen. Tipp: zuerst gemeinsam lernen, dann in Paaren üben, zum Schluss die Challenge.",
   }, {
     heading: "Activity sheet",
@@ -4075,16 +4082,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     cardCount: (p) => `${p.n} cards`,
     goalLabel: "Learning goal",
     goalText: "Understand, pronounce and use the key phrases of this target while travelling.",
-    recipeHeading: "Flow (approx. 30–45 min)",
+    recipeHeading: "Flow (approx. 30–45 min per unit)",
     recipe1: "① Learn the cards: go through the phrases below together and repeat them.",
     recipe2: "② Context: for each card, clarify the situation – when do you say it?",
-    recipe3: "③ Role-play: act out a scene in pairs (e.g. in the app's \"Hostel mode\").",
+    recipe3: "③ Role-play: act out a scene in pairs – e.g. the role-plays in the app's „Modo hostal“.",
     recipe4: "④ Real-life challenge: do the task outside / in the group.",
     vocabHeading: "Vocabulary & phrases",
+    audioHint: "🔊 Want to hear the pronunciation? Tap the same card in the app.",
     challengeLabel: "Real-life challenge",
-    subscribeHeading: "Open in the app",
+    subscribeHeading: "Start in the app",
     subscribeHint: "Paste this code in the app under \"Tarea\" – or open the link – to start the target directly.",
-    coordHeading: "Note",
+    notesHeading: "Notes",
+    coordHeading: "Tip for the group leader",
     coordNote: "Ideal for groups of 2–12. Tip: learn together first, then practise in pairs, finish with the challenge.",
   });
 
@@ -20494,6 +20503,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.74.0",
+      date: "2026-06-15",
+      title: "Aktivitätsblatt: Review-Feinschliff",
+      items: [
+        "🖨️ Beim Drucken werden schwebende Hinweise (Toasts, Update-Banner) jetzt zuverlässig ausgeblendet – sie landen nicht mehr auf dem PDF.",
+        "📝 Das Blatt hat jetzt einen Aussprache-Hinweis (Karte in der App antippen) und eine Notizfläche für die Leitung; klarere Überschriften.",
+      ],
+    },
+    {
       version: "1.73.0",
       date: "2026-06-15",
       title: "Druckbares Aktivitätsblatt für Lehrkraft & Reiseleitung 📄",
@@ -23759,6 +23777,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
         <section class="sheet-vocab">
           <h2 class="sheet-h2">${esc(t("sheet.vocabHeading"))}</h2>
+          <p class="sheet-audio">${esc(t("sheet.audioHint"))}</p>
           ${stagesHtml}
         </section>
 
@@ -23769,6 +23788,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <p class="sheet-code">${esc(vm.code)}</p>
           ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
         </section>` : ""}
+
+        <section class="sheet-notes">
+          <h2 class="sheet-h2">${esc(t("sheet.notesHeading"))}</h2>
+          <div class="sheet-notes-lines" aria-hidden="true"></div>
+        </section>
 
         <footer class="sheet-coord">
           <strong>${esc(t("sheet.coordHeading"))}:</strong> ${esc(t("sheet.coordNote"))}

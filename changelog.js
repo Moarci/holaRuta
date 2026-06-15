@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.74.0",
+      date: "2026-06-15",
+      title: "Aktivitätsblatt: Review-Feinschliff",
+      items: [
+        "🖨️ Beim Drucken werden schwebende Hinweise (Toasts, Update-Banner) jetzt zuverlässig ausgeblendet – sie landen nicht mehr auf dem PDF.",
+        "📝 Das Blatt hat jetzt einen Aussprache-Hinweis (Karte in der App antippen) und eine Notizfläche für die Leitung; klarere Überschriften.",
+      ],
+    },
+    {
       version: "1.73.0",
       date: "2026-06-15",
       title: "Druckbares Aktivitätsblatt für Lehrkraft & Reiseleitung 📄",

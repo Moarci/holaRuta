@@ -2505,6 +2505,7 @@
 
         <section class="sheet-vocab">
           <h2 class="sheet-h2">${esc(t("sheet.vocabHeading"))}</h2>
+          <p class="sheet-audio">${esc(t("sheet.audioHint"))}</p>
           ${stagesHtml}
         </section>
 
@@ -2515,6 +2516,11 @@
           <p class="sheet-code">${esc(vm.code)}</p>
           ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
         </section>` : ""}
+
+        <section class="sheet-notes">
+          <h2 class="sheet-h2">${esc(t("sheet.notesHeading"))}</h2>
+          <div class="sheet-notes-lines" aria-hidden="true"></div>
+        </section>
 
         <footer class="sheet-coord">
           <strong>${esc(t("sheet.coordHeading"))}:</strong> ${esc(t("sheet.coordNote"))}
