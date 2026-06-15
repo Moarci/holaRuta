@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.71.0",
+      date: "2026-06-15",
+      title: "Neuer Stadt-Pack: Cartagena 🏖️",
+      items: [
+        "🏖️ Neuer Cartagena-Pack mit 32 reisepraktischen Karten – vom Flughafen-Taxi nach Getsemaní über die Gastfamilie und die Altstadt bis zu lokalem Essen (arepa de huevo, menú del día), Strand, Islas del Rosario, Salsa und den Bussen nach Santa Marta/Tayrona. Jede Karte mit echtem Reise-Kontext.",
+        "🗓️ Dazu ein 7-Etappen-Pre-Trip-Plan „Cartagena“ (Ankunft → Gastfamilie → Altstadt → Essen → Strand → Islas → Salsa & Tagestrips) und ein zuweisbares „Pre-Arrival: Cartagena“-Paket.",
+        "🧑‍🏫 Lehrkraft/Reiseleitung können Cartagena – Plan, Pre-Arrival-Paket oder ganze Kategorie – direkt als Aufgabe zuweisen.",
+      ],
+    },
+    {
       version: "1.70.0",
       date: "2026-06-15",
       title: "Politur: Paste-Hinweis & Barrierearmut",
