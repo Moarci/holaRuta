@@ -1235,6 +1235,64 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hist-share:active { transform: scale(0.98); }
 
+/* Mini-Quiz zum Text (Selbstprüfung). */
+.hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
+.hist-quiz[open] { border-color: var(--line-strong); }
+.hist-quiz__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 11px 13px; font-weight: 700; color: var(--ink); font-size: 0.92rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-quiz__sum::-webkit-details-marker { display: none; }
+.hist-quiz__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-quiz__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-quiz[open] .hist-quiz__chev { transform: rotate(180deg); }
+.hist-quiz__body { padding: 0 13px 12px; }
+.hist-quiz__intro { margin: 2px 0 10px; font-size: 0.85rem; color: var(--muted); }
+.hist-quiz__q { margin-bottom: 12px; }
+.hist-quiz__q:last-child { margin-bottom: 0; }
+.hist-quiz__prompt {
+  margin: 0 0 7px; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;
+  color: var(--brand-ink);
+}
+.hist-quiz__opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.hist-quiz__opt {
+  flex: 1 1 calc(50% - 6px); min-width: 120px; padding: 9px 11px; cursor: pointer;
+  font: inherit; font-size: 0.88rem; text-align: left; color: var(--ink);
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-quiz__opt:active { transform: scale(0.98); }
+/* Nach der Antwort: Auswahl einfärben, weitere Klicks sperren. */
+.hist-quiz__q.is-done .hist-quiz__opt { cursor: default; opacity: 0.6; }
+.hist-quiz__q.is-done .hist-quiz__opt.is-correct {
+  opacity: 1; color: #fff; background: #3F7355; border-color: #3F7355; font-weight: 700;
+}
+.hist-quiz__q.is-done .hist-quiz__opt.is-wrong {
+  opacity: 1; color: #fff; background: #B5302A; border-color: #B5302A; font-weight: 700;
+}
+.hist-quiz__opt.is-correct::after { content: "  ✓"; }
+.hist-quiz__opt.is-wrong::after { content: "  ✗"; }
+
+/* Aufklappbarer Lese-Block in Protagonisten-/Heute-Karten (Lesetraining überall). */
+.hist-read {
+  margin-top: 10px; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-read[open] { border-color: var(--line-strong); }
+.hist-read__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 10px 12px; font-weight: 700; color: var(--brand-ink); font-size: 0.88rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-read__sum::-webkit-details-marker { display: none; }
+.hist-read__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-read__lvl { font-size: 0.66rem; font-weight: 800; color: #fff; border-radius: 999px; padding: 2px 7px; background: var(--muted); }
+.hist-read__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-read[open] .hist-read__chev { transform: rotate(180deg); }
+.hist-read__body { padding: 0 12px 12px; }
+/* Im Lese-Block sitzt der Spanisch-Kasten direkt unter dem Kopf – Doppelrahmen vermeiden. */
+.hist-read__body .hist-es { background: var(--card); margin-top: 2px; }
+
 /* Protagonisten-Galerie. */
 .hist-figs { display: flex; flex-direction: column; gap: 12px; }
 .hist-fig {

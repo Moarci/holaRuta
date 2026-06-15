@@ -387,6 +387,16 @@
     {
       id: "bolivar",
       name: "Simón Bolívar",
+      level: "B1",
+      es: [
+        "Es el nombre más grande del continente. Este criollo rico de Caracas *lideró* la *lucha* por la libertad en el norte y *liberó* cinco países. Soñaba con una Sudamérica unida, pero murió *decepcionado* cuando su sueño se rompió.",
+      ],
+      vocab: [
+        { es: "lideró", de: "führte an (liderar)", en: "led (liderar)", take: true },
+        { es: "lucha", de: "der Kampf (luchar)", en: "struggle, fight (luchar)", take: true },
+        { es: "liberó", de: "befreite (liberar)", en: "liberated (liberar)", take: true },
+        { es: "decepcionado", de: "enttäuscht", en: "disappointed", take: true },
+      ],
       role: "„El Libertador“ – befreite sechs Länder",
       roleEn: "\"El Libertador\" – liberated six countries",
       years: "1783–1830",
@@ -400,6 +410,16 @@
     {
       id: "sanmartin",
       name: "José de San Martín",
+      level: "B1",
+      es: [
+        "El *estratega* del sur. Liberó Argentina, *cruzó* los Andes con un ejército y liberó Chile y Perú. Tras reunirse con Bolívar, *renunció* al poder y se fue a Europa para *evitar* una guerra entre patriotas.",
+      ],
+      vocab: [
+        { es: "estratega", de: "der Stratege", en: "strategist", take: false },
+        { es: "cruzó", de: "überquerte (cruzar)", en: "crossed (cruzar)", take: true },
+        { es: "renunció", de: "verzichtete (renunciar)", en: "renounced, gave up (renunciar)", take: true },
+        { es: "evitar", de: "vermeiden", en: "to avoid", take: true },
+      ],
       role: "Befreier des Südens",
       roleEn: "Liberator of the south",
       years: "1778–1850",
@@ -413,6 +433,15 @@
     {
       id: "sucre",
       name: "Antonio José de Sucre",
+      level: "B2",
+      es: [
+        "El joven general más brillante de Bolívar. En Ayacucho *derrotó* al último ejército español y *aseguró* la independencia. Fue presidente de Bolivia, pero lo *asesinaron* a los 35 años.",
+      ],
+      vocab: [
+        { es: "derrotó", de: "besiegte (derrotar)", en: "defeated (derrotar)", take: true },
+        { es: "aseguró", de: "sicherte (asegurar)", en: "secured (asegurar)", take: true },
+        { es: "asesinaron", de: "ermordeten (asesinar)", en: "assassinated (asesinar)", take: false },
+      ],
       role: "Der Sieger von Ayacucho",
       roleEn: "The victor of Ayacucho",
       years: "1795–1830",
@@ -426,6 +455,15 @@
     {
       id: "ohiggins",
       name: "Bernardo O'Higgins",
+      level: "B1",
+      es: [
+        "Hijo de un virrey de origen irlandés, se convirtió en *héroe* de Chile. Junto a San Martín *ganó* la batalla de Maipú y llevó a Chile a la independencia. Después tuvo que *exiliarse* en Perú.",
+      ],
+      vocab: [
+        { es: "héroe", de: "der Held", en: "hero", take: true },
+        { es: "ganó", de: "gewann (ganar)", en: "won (ganar)", take: true },
+        { es: "exiliarse", de: "ins Exil gehen", en: "to go into exile", take: false },
+      ],
       role: "Vater des unabhängigen Chile",
       roleEn: "Father of independent Chile",
       years: "1778–1842",
@@ -439,6 +477,15 @@
     {
       id: "manuela",
       name: "Manuela Sáenz",
+      level: "B1",
+      es: [
+        "Revolucionaria, espía y compañera de Bolívar. En 1828 le *salvó* la vida al *frustrar* un *atentado*. Hoy se la reconoce como heroína de la independencia y símbolo del papel de las mujeres.",
+      ],
+      vocab: [
+        { es: "salvó", de: "rettete (salvar)", en: "saved (salvar)", take: true },
+        { es: "frustrar", de: "vereiteln", en: "to foil, thwart", take: true },
+        { es: "atentado", de: "das Attentat, der Anschlag", en: "assassination attempt", take: false },
+      ],
       role: "„Libertadora del Libertador“",
       roleEn: "\"Liberator of the Liberator\"",
       years: "1797–1856",
@@ -452,6 +499,16 @@
     {
       id: "atahualpa",
       name: "Atahualpa",
+      level: "B1",
+      es: [
+        "El último rey de los incas. Acababa de ganar una guerra civil cuando llegaron los españoles. En Cajamarca lo *capturaron* y llenó un cuarto de oro como *rescate*, pero igual lo *ejecutaron*. Su *caída* marca el fin de un mundo.",
+      ],
+      vocab: [
+        { es: "capturaron", de: "nahmen gefangen (capturar)", en: "captured (capturar)", take: true },
+        { es: "rescate", de: "das Lösegeld; die Rettung", en: "ransom; rescue", take: true },
+        { es: "ejecutaron", de: "hinrichteten (ejecutar)", en: "executed (ejecutar)", take: false },
+        { es: "caída", de: "der Fall, Sturz (caer)", en: "fall, downfall (caer)", take: true },
+      ],
       role: "Der letzte Herrscher der Inka",
       roleEn: "The last Inca ruler",
       years: "≈1500–1533",
@@ -469,6 +526,16 @@
     {
       id: "venezuela",
       icon: "🇻🇪",
+      level: "B1",
+      es: [
+        "El país con más petróleo del mundo vive un *colapso* económico y político. Bajo Maduro, la economía se *hundió* y millones de personas *huyeron* del país: la mayor *crisis* migratoria de la región.",
+      ],
+      vocab: [
+        { es: "colapso", de: "der Kollaps, Zusammenbruch", en: "collapse", take: false },
+        { es: "hundió", de: "brach zusammen (hundirse)", en: "collapsed, sank (hundirse)", take: true },
+        { es: "huyeron", de: "flohen (huir)", en: "fled (huir)", take: true },
+        { es: "crisis", de: "die Krise", en: "crisis", take: true },
+      ],
       title: "Venezuela: Krise & Massenflucht",
       titleEn: "Venezuela: crisis & mass exodus",
       where: "Venezuela → ganz Lateinamerika",
@@ -482,6 +549,16 @@
     {
       id: "essequibo",
       icon: "🛢️",
+      level: "B2",
+      es: [
+        "Desde que se *descubrió* mucho petróleo, Venezuela vuelve a *reclamar* la región del Esequibo, dos tercios de Guyana. En 2023, Maduro *amenazó* con anexarla. Sigue siendo uno de los *conflictos* fronterizos más calientes del continente.",
+      ],
+      vocab: [
+        { es: "descubrió", de: "entdeckte (descubrir)", en: "discovered (descubrir)", take: true },
+        { es: "reclamar", de: "beanspruchen; reklamieren", en: "to claim; to complain", take: true },
+        { es: "amenazó", de: "drohte (amenazar)", en: "threatened (amenazar)", take: true },
+        { es: "conflictos", de: "die Konflikte", en: "conflicts", take: true },
+      ],
       title: "Essequibo: Grenzstreit mit Guyana",
       titleEn: "Essequibo: border dispute with Guyana",
       where: "Venezuela ↔ Guyana",
@@ -495,6 +572,16 @@
     {
       id: "salida-al-mar",
       icon: "🌊",
+      level: "B1",
+      es: [
+        "En la Guerra del Pacífico, Bolivia *perdió* su costa y desde entonces no tiene *mar*. Recuperar una *salida* al mar es un asunto nacional. En 2018, un tribunal internacional *rechazó* la demanda boliviana.",
+      ],
+      vocab: [
+        { es: "perdió", de: "verlor (perder)", en: "lost (perder)", take: true },
+        { es: "mar", de: "das Meer", en: "sea", take: true },
+        { es: "salida", de: "der Ausgang, Zugang", en: "exit, way out", take: true },
+        { es: "rechazó", de: "lehnte ab (rechazar)", en: "rejected (rechazar)", take: true },
+      ],
       title: "Bolivien ohne Meer",
       titleEn: "Bolivia without a coast",
       where: "Bolivien ↔ Chile",
@@ -508,6 +595,16 @@
     {
       id: "colombia-paz",
       icon: "🕊️",
+      level: "B2",
+      es: [
+        "En 2016, un acuerdo histórico *terminó* la guerra con la guerrilla de las FARC, *premiado* con el Nobel de la Paz. Pero quedan grupos *disidentes* y el país todavía *busca* una paz total.",
+      ],
+      vocab: [
+        { es: "terminó", de: "beendete (terminar)", en: "ended (terminar)", take: true },
+        { es: "premiado", de: "ausgezeichnet (premiar)", en: "awarded (premiar)", take: false },
+        { es: "disidentes", de: "die Abtrünnigen, Dissidenten", en: "dissidents", take: false },
+        { es: "busca", de: "sucht (buscar)", en: "seeks (buscar)", take: true },
+      ],
       title: "Kolumbien: ein fragiler Frieden",
       titleEn: "Colombia: a fragile peace",
       where: "Kolumbien",
@@ -521,6 +618,16 @@
     {
       id: "peru-politica",
       icon: "🏛️",
+      level: "B2",
+      es: [
+        "Pocos países *cambian* de presidente tan rápido. Entre 2016 y 2023, Perú tuvo media docena de gobernantes y muchos *escándalos*. En 2022, el presidente Castillo fue *destituido* y *detenido*.",
+      ],
+      vocab: [
+        { es: "cambian", de: "wechseln (cambiar)", en: "change (cambiar)", take: true },
+        { es: "escándalos", de: "die Skandale", en: "scandals", take: true },
+        { es: "destituido", de: "abgesetzt (destituir)", en: "removed from office (destituir)", take: false },
+        { es: "detenido", de: "festgenommen (detener)", en: "detained, arrested (detener)", take: true },
+      ],
       title: "Peru: politische Dauerkrise",
       titleEn: "Peru: permanent political crisis",
       where: "Peru",
@@ -534,6 +641,16 @@
     {
       id: "argentina-economia",
       icon: "💸",
+      level: "B1",
+      es: [
+        "Antes uno de los países más ricos, Argentina *lucha* desde hace décadas contra la *inflación*. En 2023 *eligió* al liberal Javier Milei, que *recorta* el gasto del Estado con medidas drásticas.",
+      ],
+      vocab: [
+        { es: "lucha", de: "kämpft (luchar)", en: "fights (luchar)", take: true },
+        { es: "inflación", de: "die Inflation", en: "inflation", take: true },
+        { es: "eligió", de: "wählte (elegir)", en: "elected, chose (elegir)", take: true },
+        { es: "recorta", de: "kürzt (recortar)", en: "cuts (recortar)", take: false },
+      ],
       title: "Argentinien: Inflation & Kurswechsel",
       titleEn: "Argentina: inflation & a sharp turn",
       where: "Argentinien",
@@ -547,6 +664,16 @@
     {
       id: "amazonia",
       icon: "🌳",
+      level: "B2",
+      es: [
+        "La selva amazónica, hogar de cientos de *pueblos* indígenas, está *amenazada* por la *deforestación* y la minería. Al mismo tiempo, los movimientos indígenas *ganan* voz y derechos.",
+      ],
+      vocab: [
+        { es: "pueblos", de: "die Völker, Dörfer", en: "peoples, villages", take: true },
+        { es: "amenazada", de: "bedroht (amenazar)", en: "threatened (amenazar)", take: true },
+        { es: "deforestación", de: "die Abholzung", en: "deforestation", take: false },
+        { es: "ganan", de: "gewinnen (ganar)", en: "gain, win (ganar)", take: true },
+      ],
       title: "Amazonas & indigene Rechte",
       titleEn: "The Amazon & indigenous rights",
       where: "Brasilien, Peru, Bolivien, Ecuador …",
@@ -560,6 +687,16 @@
     {
       id: "migracion",
       icon: "🚶",
+      level: "B1",
+      es: [
+        "Cientos de miles de personas *viajan* hacia el norte y *cruzan* la peligrosa selva del Darién, entre Colombia y Panamá. Es una de las *rutas* migratorias más *peligrosas* del mundo.",
+      ],
+      vocab: [
+        { es: "viajan", de: "reisen (viajar)", en: "travel (viajar)", take: true },
+        { es: "cruzan", de: "überqueren (cruzar)", en: "cross (cruzar)", take: true },
+        { es: "rutas", de: "die Routen, Strecken", en: "routes", take: true },
+        { es: "peligrosas", de: "gefährlich (peligroso)", en: "dangerous (peligroso)", take: true },
+      ],
       title: "Migration & der Darién",
       titleEn: "Migration & the Darién Gap",
       where: "Kolumbien ↔ Panama (Richtung Norden)",

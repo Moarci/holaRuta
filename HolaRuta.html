@@ -1273,6 +1273,64 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hist-share:active { transform: scale(0.98); }
 
+/* Mini-Quiz zum Text (Selbstprüfung). */
+.hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
+.hist-quiz[open] { border-color: var(--line-strong); }
+.hist-quiz__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 11px 13px; font-weight: 700; color: var(--ink); font-size: 0.92rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-quiz__sum::-webkit-details-marker { display: none; }
+.hist-quiz__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-quiz__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-quiz[open] .hist-quiz__chev { transform: rotate(180deg); }
+.hist-quiz__body { padding: 0 13px 12px; }
+.hist-quiz__intro { margin: 2px 0 10px; font-size: 0.85rem; color: var(--muted); }
+.hist-quiz__q { margin-bottom: 12px; }
+.hist-quiz__q:last-child { margin-bottom: 0; }
+.hist-quiz__prompt {
+  margin: 0 0 7px; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;
+  color: var(--brand-ink);
+}
+.hist-quiz__opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.hist-quiz__opt {
+  flex: 1 1 calc(50% - 6px); min-width: 120px; padding: 9px 11px; cursor: pointer;
+  font: inherit; font-size: 0.88rem; text-align: left; color: var(--ink);
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-quiz__opt:active { transform: scale(0.98); }
+/* Nach der Antwort: Auswahl einfärben, weitere Klicks sperren. */
+.hist-quiz__q.is-done .hist-quiz__opt { cursor: default; opacity: 0.6; }
+.hist-quiz__q.is-done .hist-quiz__opt.is-correct {
+  opacity: 1; color: #fff; background: #3F7355; border-color: #3F7355; font-weight: 700;
+}
+.hist-quiz__q.is-done .hist-quiz__opt.is-wrong {
+  opacity: 1; color: #fff; background: #B5302A; border-color: #B5302A; font-weight: 700;
+}
+.hist-quiz__opt.is-correct::after { content: "  ✓"; }
+.hist-quiz__opt.is-wrong::after { content: "  ✗"; }
+
+/* Aufklappbarer Lese-Block in Protagonisten-/Heute-Karten (Lesetraining überall). */
+.hist-read {
+  margin-top: 10px; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-read[open] { border-color: var(--line-strong); }
+.hist-read__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 10px 12px; font-weight: 700; color: var(--brand-ink); font-size: 0.88rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-read__sum::-webkit-details-marker { display: none; }
+.hist-read__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-read__lvl { font-size: 0.66rem; font-weight: 800; color: #fff; border-radius: 999px; padding: 2px 7px; background: var(--muted); }
+.hist-read__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-read[open] .hist-read__chev { transform: rotate(180deg); }
+.hist-read__body { padding: 0 12px 12px; }
+/* Im Lese-Block sitzt der Spanisch-Kasten direkt unter dem Kopf – Doppelrahmen vermeiden. */
+.hist-read__body .hist-es { background: var(--card); margin-top: 2px; }
+
 /* Protagonisten-Galerie. */
 .hist-figs { display: flex; flex-direction: column; gap: 12px; }
 .hist-fig {
@@ -3004,6 +3062,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histSkip: "Nicht so wichtig – kannst du überspringen",
     histTranslation: "Ganze Übersetzung anzeigen",
     histShare: "Text & Vokabeln teilen",
+    histReadToggle: "Auf Spanisch lesen",
+    histQuiz: "Mini-Quiz: Vokabeln testen",
+    histQuizIntro: "Welche Übersetzung passt? Tippe die richtige an.",
     histLvlA1: "ganz leicht",
     histLvlA2: "leicht",
     histLvlB1: "mittel",
@@ -3282,6 +3343,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histSkip: "Less important – you can skip these",
     histTranslation: "Show full translation",
     histShare: "Share text & vocab",
+    histReadToggle: "Read in Spanish",
+    histQuiz: "Mini-quiz: test the vocab",
+    histQuizIntro: "Which translation fits? Tap the right one.",
     histLvlA1: "very easy",
     histLvlA2: "easy",
     histLvlB1: "intermediate",
@@ -11324,6 +11388,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "bolivar",
       name: "Simón Bolívar",
+      level: "B1",
+      es: [
+        "Es el nombre más grande del continente. Este criollo rico de Caracas *lideró* la *lucha* por la libertad en el norte y *liberó* cinco países. Soñaba con una Sudamérica unida, pero murió *decepcionado* cuando su sueño se rompió.",
+      ],
+      vocab: [
+        { es: "lideró", de: "führte an (liderar)", en: "led (liderar)", take: true },
+        { es: "lucha", de: "der Kampf (luchar)", en: "struggle, fight (luchar)", take: true },
+        { es: "liberó", de: "befreite (liberar)", en: "liberated (liberar)", take: true },
+        { es: "decepcionado", de: "enttäuscht", en: "disappointed", take: true },
+      ],
       role: "„El Libertador“ – befreite sechs Länder",
       roleEn: "\"El Libertador\" – liberated six countries",
       years: "1783–1830",
@@ -11337,6 +11411,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "sanmartin",
       name: "José de San Martín",
+      level: "B1",
+      es: [
+        "El *estratega* del sur. Liberó Argentina, *cruzó* los Andes con un ejército y liberó Chile y Perú. Tras reunirse con Bolívar, *renunció* al poder y se fue a Europa para *evitar* una guerra entre patriotas.",
+      ],
+      vocab: [
+        { es: "estratega", de: "der Stratege", en: "strategist", take: false },
+        { es: "cruzó", de: "überquerte (cruzar)", en: "crossed (cruzar)", take: true },
+        { es: "renunció", de: "verzichtete (renunciar)", en: "renounced, gave up (renunciar)", take: true },
+        { es: "evitar", de: "vermeiden", en: "to avoid", take: true },
+      ],
       role: "Befreier des Südens",
       roleEn: "Liberator of the south",
       years: "1778–1850",
@@ -11350,6 +11434,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "sucre",
       name: "Antonio José de Sucre",
+      level: "B2",
+      es: [
+        "El joven general más brillante de Bolívar. En Ayacucho *derrotó* al último ejército español y *aseguró* la independencia. Fue presidente de Bolivia, pero lo *asesinaron* a los 35 años.",
+      ],
+      vocab: [
+        { es: "derrotó", de: "besiegte (derrotar)", en: "defeated (derrotar)", take: true },
+        { es: "aseguró", de: "sicherte (asegurar)", en: "secured (asegurar)", take: true },
+        { es: "asesinaron", de: "ermordeten (asesinar)", en: "assassinated (asesinar)", take: false },
+      ],
       role: "Der Sieger von Ayacucho",
       roleEn: "The victor of Ayacucho",
       years: "1795–1830",
@@ -11363,6 +11456,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "ohiggins",
       name: "Bernardo O'Higgins",
+      level: "B1",
+      es: [
+        "Hijo de un virrey de origen irlandés, se convirtió en *héroe* de Chile. Junto a San Martín *ganó* la batalla de Maipú y llevó a Chile a la independencia. Después tuvo que *exiliarse* en Perú.",
+      ],
+      vocab: [
+        { es: "héroe", de: "der Held", en: "hero", take: true },
+        { es: "ganó", de: "gewann (ganar)", en: "won (ganar)", take: true },
+        { es: "exiliarse", de: "ins Exil gehen", en: "to go into exile", take: false },
+      ],
       role: "Vater des unabhängigen Chile",
       roleEn: "Father of independent Chile",
       years: "1778–1842",
@@ -11376,6 +11478,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "manuela",
       name: "Manuela Sáenz",
+      level: "B1",
+      es: [
+        "Revolucionaria, espía y compañera de Bolívar. En 1828 le *salvó* la vida al *frustrar* un *atentado*. Hoy se la reconoce como heroína de la independencia y símbolo del papel de las mujeres.",
+      ],
+      vocab: [
+        { es: "salvó", de: "rettete (salvar)", en: "saved (salvar)", take: true },
+        { es: "frustrar", de: "vereiteln", en: "to foil, thwart", take: true },
+        { es: "atentado", de: "das Attentat, der Anschlag", en: "assassination attempt", take: false },
+      ],
       role: "„Libertadora del Libertador“",
       roleEn: "\"Liberator of the Liberator\"",
       years: "1797–1856",
@@ -11389,6 +11500,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "atahualpa",
       name: "Atahualpa",
+      level: "B1",
+      es: [
+        "El último rey de los incas. Acababa de ganar una guerra civil cuando llegaron los españoles. En Cajamarca lo *capturaron* y llenó un cuarto de oro como *rescate*, pero igual lo *ejecutaron*. Su *caída* marca el fin de un mundo.",
+      ],
+      vocab: [
+        { es: "capturaron", de: "nahmen gefangen (capturar)", en: "captured (capturar)", take: true },
+        { es: "rescate", de: "das Lösegeld; die Rettung", en: "ransom; rescue", take: true },
+        { es: "ejecutaron", de: "hinrichteten (ejecutar)", en: "executed (ejecutar)", take: false },
+        { es: "caída", de: "der Fall, Sturz (caer)", en: "fall, downfall (caer)", take: true },
+      ],
       role: "Der letzte Herrscher der Inka",
       roleEn: "The last Inca ruler",
       years: "≈1500–1533",
@@ -11406,6 +11527,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "venezuela",
       icon: "🇻🇪",
+      level: "B1",
+      es: [
+        "El país con más petróleo del mundo vive un *colapso* económico y político. Bajo Maduro, la economía se *hundió* y millones de personas *huyeron* del país: la mayor *crisis* migratoria de la región.",
+      ],
+      vocab: [
+        { es: "colapso", de: "der Kollaps, Zusammenbruch", en: "collapse", take: false },
+        { es: "hundió", de: "brach zusammen (hundirse)", en: "collapsed, sank (hundirse)", take: true },
+        { es: "huyeron", de: "flohen (huir)", en: "fled (huir)", take: true },
+        { es: "crisis", de: "die Krise", en: "crisis", take: true },
+      ],
       title: "Venezuela: Krise & Massenflucht",
       titleEn: "Venezuela: crisis & mass exodus",
       where: "Venezuela → ganz Lateinamerika",
@@ -11419,6 +11550,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "essequibo",
       icon: "🛢️",
+      level: "B2",
+      es: [
+        "Desde que se *descubrió* mucho petróleo, Venezuela vuelve a *reclamar* la región del Esequibo, dos tercios de Guyana. En 2023, Maduro *amenazó* con anexarla. Sigue siendo uno de los *conflictos* fronterizos más calientes del continente.",
+      ],
+      vocab: [
+        { es: "descubrió", de: "entdeckte (descubrir)", en: "discovered (descubrir)", take: true },
+        { es: "reclamar", de: "beanspruchen; reklamieren", en: "to claim; to complain", take: true },
+        { es: "amenazó", de: "drohte (amenazar)", en: "threatened (amenazar)", take: true },
+        { es: "conflictos", de: "die Konflikte", en: "conflicts", take: true },
+      ],
       title: "Essequibo: Grenzstreit mit Guyana",
       titleEn: "Essequibo: border dispute with Guyana",
       where: "Venezuela ↔ Guyana",
@@ -11432,6 +11573,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "salida-al-mar",
       icon: "🌊",
+      level: "B1",
+      es: [
+        "En la Guerra del Pacífico, Bolivia *perdió* su costa y desde entonces no tiene *mar*. Recuperar una *salida* al mar es un asunto nacional. En 2018, un tribunal internacional *rechazó* la demanda boliviana.",
+      ],
+      vocab: [
+        { es: "perdió", de: "verlor (perder)", en: "lost (perder)", take: true },
+        { es: "mar", de: "das Meer", en: "sea", take: true },
+        { es: "salida", de: "der Ausgang, Zugang", en: "exit, way out", take: true },
+        { es: "rechazó", de: "lehnte ab (rechazar)", en: "rejected (rechazar)", take: true },
+      ],
       title: "Bolivien ohne Meer",
       titleEn: "Bolivia without a coast",
       where: "Bolivien ↔ Chile",
@@ -11445,6 +11596,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "colombia-paz",
       icon: "🕊️",
+      level: "B2",
+      es: [
+        "En 2016, un acuerdo histórico *terminó* la guerra con la guerrilla de las FARC, *premiado* con el Nobel de la Paz. Pero quedan grupos *disidentes* y el país todavía *busca* una paz total.",
+      ],
+      vocab: [
+        { es: "terminó", de: "beendete (terminar)", en: "ended (terminar)", take: true },
+        { es: "premiado", de: "ausgezeichnet (premiar)", en: "awarded (premiar)", take: false },
+        { es: "disidentes", de: "die Abtrünnigen, Dissidenten", en: "dissidents", take: false },
+        { es: "busca", de: "sucht (buscar)", en: "seeks (buscar)", take: true },
+      ],
       title: "Kolumbien: ein fragiler Frieden",
       titleEn: "Colombia: a fragile peace",
       where: "Kolumbien",
@@ -11458,6 +11619,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "peru-politica",
       icon: "🏛️",
+      level: "B2",
+      es: [
+        "Pocos países *cambian* de presidente tan rápido. Entre 2016 y 2023, Perú tuvo media docena de gobernantes y muchos *escándalos*. En 2022, el presidente Castillo fue *destituido* y *detenido*.",
+      ],
+      vocab: [
+        { es: "cambian", de: "wechseln (cambiar)", en: "change (cambiar)", take: true },
+        { es: "escándalos", de: "die Skandale", en: "scandals", take: true },
+        { es: "destituido", de: "abgesetzt (destituir)", en: "removed from office (destituir)", take: false },
+        { es: "detenido", de: "festgenommen (detener)", en: "detained, arrested (detener)", take: true },
+      ],
       title: "Peru: politische Dauerkrise",
       titleEn: "Peru: permanent political crisis",
       where: "Peru",
@@ -11471,6 +11642,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "argentina-economia",
       icon: "💸",
+      level: "B1",
+      es: [
+        "Antes uno de los países más ricos, Argentina *lucha* desde hace décadas contra la *inflación*. En 2023 *eligió* al liberal Javier Milei, que *recorta* el gasto del Estado con medidas drásticas.",
+      ],
+      vocab: [
+        { es: "lucha", de: "kämpft (luchar)", en: "fights (luchar)", take: true },
+        { es: "inflación", de: "die Inflation", en: "inflation", take: true },
+        { es: "eligió", de: "wählte (elegir)", en: "elected, chose (elegir)", take: true },
+        { es: "recorta", de: "kürzt (recortar)", en: "cuts (recortar)", take: false },
+      ],
       title: "Argentinien: Inflation & Kurswechsel",
       titleEn: "Argentina: inflation & a sharp turn",
       where: "Argentinien",
@@ -11484,6 +11665,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "amazonia",
       icon: "🌳",
+      level: "B2",
+      es: [
+        "La selva amazónica, hogar de cientos de *pueblos* indígenas, está *amenazada* por la *deforestación* y la minería. Al mismo tiempo, los movimientos indígenas *ganan* voz y derechos.",
+      ],
+      vocab: [
+        { es: "pueblos", de: "die Völker, Dörfer", en: "peoples, villages", take: true },
+        { es: "amenazada", de: "bedroht (amenazar)", en: "threatened (amenazar)", take: true },
+        { es: "deforestación", de: "die Abholzung", en: "deforestation", take: false },
+        { es: "ganan", de: "gewinnen (ganar)", en: "gain, win (ganar)", take: true },
+      ],
       title: "Amazonas & indigene Rechte",
       titleEn: "The Amazon & indigenous rights",
       where: "Brasilien, Peru, Bolivien, Ecuador …",
@@ -11497,6 +11688,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     {
       id: "migracion",
       icon: "🚶",
+      level: "B1",
+      es: [
+        "Cientos de miles de personas *viajan* hacia el norte y *cruzan* la peligrosa selva del Darién, entre Colombia y Panamá. Es una de las *rutas* migratorias más *peligrosas* del mundo.",
+      ],
+      vocab: [
+        { es: "viajan", de: "reisen (viajar)", en: "travel (viajar)", take: true },
+        { es: "cruzan", de: "überqueren (cruzar)", en: "cross (cruzar)", take: true },
+        { es: "rutas", de: "die Routen, Strecken", en: "routes", take: true },
+        { es: "peligrosas", de: "gefährlich (peligroso)", en: "dangerous (peligroso)", take: true },
+      ],
       title: "Migration & der Darién",
       titleEn: "Migration & the Darién Gap",
       where: "Kolumbien ↔ Panama (Richtung Norden)",
@@ -16199,6 +16400,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "📰 „Heute: Lage & Spannungen“: aktuelle Konflikte verständlich erklärt – Venezuela-Krise & Massenflucht, Grenzstreit um Essequibo, Boliviens Meereszugang, Kolumbiens Friedensprozess, Perus politische Dauerkrise, Argentiniens Kurswechsel, Amazonas & indigene Rechte und der Darién.",
         "📖 Lesetraining auf Spanisch: jede Epoche gibt es zusätzlich als spanischen Lesetext. Schwierige Wörter sind markiert – antippen zeigt die Übersetzung. Pro Text eine Wörterliste zum schnellen Nachschlagen, sauber getrennt in „lohnt sich mitzunehmen“ und „nicht so wichtig“.",
         "📊 Schwierigkeits-Score (CEFR A1–C1) pro Text zur Selbst-Einstufung, plus „Ganze Übersetzung anzeigen“ und ein teilbares Sharepic von Text & Wörterliste.",
+        "🧩 Mini-Quiz pro Epoche: spanisches Wort lesen, die richtige Übersetzung antippen – mit sofortiger Rückmeldung (richtig/falsch).",
+        "📖 Lesetraining jetzt überall: auch jede Protagonisten- und jede „Heute“-Karte hat einen aufklappbaren spanischen Lesetext mit antippbaren Vokabeln, Wörterliste und Sharepic.",
         "💡 „¿Sabías que…?“-Häppchen und durchgängig zweisprachig (Deutsch/Englisch).",
       ],
     },
@@ -18099,6 +18302,63 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="hist-voc__body">${takeList}${skipList}</div>
       </details>`;
   }
+  // Mini-Quiz zum Text: Spanisches Wort → richtige Übersetzung wählen. Distraktoren
+  // aus denselben Vokabeln. Selbstprüfung per DOM-Klasse (kein Re-Render, s. app.js).
+  function quizBlock(vocab) {
+    const items = vocab || [];
+    const pool = items.filter((v) => v.take);
+    if (pool.length < 3 || items.length < 4) return ""; // zu wenige für sinnvolle Optionen
+    const qs = pool.slice(0, 4);
+    const questions = qs.map((v, i) => {
+      const others = items.filter((x) => x.es !== v.es).map((x) => x.de);
+      const opts = [v.de];
+      for (let k = 0; k < others.length && opts.length < 4; k++) {
+        if (opts.indexOf(others[k]) === -1) opts.push(others[k]);
+      }
+      const rot = (i + 1) % opts.length; // richtige Antwort nicht immer oben
+      const rotated = opts.slice(rot).concat(opts.slice(0, rot));
+      const optsHtml = rotated
+        .map((o) => `<button class="hist-quiz__opt" type="button" data-action="hist-quiz-answer" data-correct="${o === v.de ? "1" : "0"}">${esc(o)}</button>`)
+        .join("");
+      return `
+        <div class="hist-quiz__q">
+          <p class="hist-quiz__prompt" lang="es">${esc(v.es)}</p>
+          <div class="hist-quiz__opts">${optsHtml}</div>
+        </div>`;
+    }).join("");
+    return `
+      <details class="hist-quiz">
+        <summary class="hist-quiz__sum">🧩 ${esc(t("discover.histQuiz"))}<span class="hist-quiz__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-quiz__body">
+          <p class="hist-quiz__intro">${esc(t("discover.histQuizIntro"))}</p>
+          ${questions}
+        </div>
+      </details>`;
+  }
+  // Gemeinsamer Lesetraining-Block (Epoche, Protagonist, Spannung teilen ihn).
+  // opts: { es:[Absatz], vocab, level, trans?:[Absatz], shareId, quiz?:bool }
+  // trans = optionale „Ganze Übersetzung", nur wo der Text nicht ohnehin schon
+  // in der UI-Sprache danebensteht (Epochen ja, Karten nein).
+  function readingBlock(opts) {
+    const o = opts || {};
+    if (!o.es || !o.es.length) return "";
+    const lvl = levelMeta(o.level);
+    const bar = `
+      <div class="hist-es__bar">
+        <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
+        ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
+      </div>`;
+    const text = `<div class="hist-es">${bar}${esRich(o.es, o.vocab)}<p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p></div>`;
+    const vocab = vocabBlock(o.vocab);
+    const quiz = o.quiz ? quizBlock(o.vocab) : "";
+    const trans = (o.trans && o.trans.length)
+      ? `<details class="hist-trans"><summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary><div class="hist-trans__body">${o.trans.map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div></details>`
+      : "";
+    const share = o.shareId
+      ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(o.shareId)}">📤 ${esc(t("discover.histShare"))}</button>`
+      : "";
+    return `${text}${vocab}${quiz}${trans}${share}`;
+  }
   function renderHistoria(vm) {
     // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
     const nav = `
@@ -18118,31 +18378,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
            </figure>`
         : "";
       const lvl = levelMeta(e.level);
-      const hasEs = (e.es || []).length > 0;
-      // Spanische Lesefassung mit Schwierigkeits-Plakette und Tipp-Hinweis.
-      const esText = hasEs
-        ? `<div class="hist-es">
-             <div class="hist-es__bar">
-               <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
-               ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
-             </div>
-             ${esRich(e.es, e.vocab)}
-             <p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p>
-           </div>`
-        : "";
-      const vocab = vocabBlock(e.vocab);
-      // Volle Übersetzung in der UI-Sprache – auf Wunsch, damit der Lesefluss bleibt.
-      const trans = (e.body || []).length
-        ? `<details class="hist-trans">
-             <summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-trans__body">${(e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div>
-           </details>`
-        : "";
+      const reading = readingBlock({ es: e.es, vocab: e.vocab, level: e.level, trans: e.body, shareId: e.id, quiz: true });
       const points = (e.points || []).length
         ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
-        : "";
-      const share = hasEs
-        ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(e.id)}">📤 ${esc(t("discover.histShare"))}</button>`
         : "";
       return `
         <details class="hist-era">
@@ -18160,11 +18398,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </summary>
           <div class="hist-era__body">
             ${img}
-            ${esText}
-            ${vocab}
-            ${trans}
+            ${reading}
             ${points}
-            ${share}
           </div>
         </details>`;
     };
@@ -18177,6 +18412,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                 loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
         : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">👤</span>`;
       const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
+      const lvl = levelMeta(f.level);
+      const reading = (f.es && f.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: f.es, vocab: f.vocab, level: f.level, shareId: f.id, quiz: false })}</div>
+           </details>`
+        : "";
       return `
         <article class="hist-fig">
           <div class="hist-fig__top">
@@ -18189,12 +18431,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </div>
           <p class="hist-fig__text">${esc(f.text)}</p>
           ${quote}
+          ${reading}
         </article>`;
     };
     const figures = (vm.figures || []).map(figure).join("");
 
     // Eine aktuelle Spannung/Lage als Karte mit Status-Plakette.
-    const tension = (s) => `
+    const tension = (s) => {
+      const lvl = levelMeta(s.level);
+      const reading = (s.es && s.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: s.es, vocab: s.vocab, level: s.level, shareId: s.id, quiz: false })}</div>
+           </details>`
+        : "";
+      return `
       <article class="hist-ten hist-ten--${esc(s.tone || "shift")}">
         <div class="hist-ten__head">
           <span class="hist-ten__icon" aria-hidden="true">${esc(s.icon || "•")}</span>
@@ -18203,7 +18454,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
         <p class="hist-ten__where">${esc(s.where)}</p>
         <p class="hist-ten__text">${esc(s.text)}</p>
+        ${reading}
       </article>`;
+    };
     const tensions = (vm.tensions || []).map(tension).join("");
 
     const facts = (vm.facts || []).length
@@ -23117,19 +23370,28 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     share.shareImage("card", cardSharePayload(card), shareFormat());
   }
 
-  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Holt die
-  // Epoche frisch, lokalisiert sie (de/en), entfernt die *Markierungen* aus dem
-  // Spanischtext und reicht die „mitnehmen"-Vokabeln durch.
+  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Sucht den
+  // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
+  // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
+  function findHistItem(id) {
+    if (!historia) return null;
+    const lists = [historia.ERAS, historia.FIGURES, historia.TENSIONS];
+    for (let i = 0; i < lists.length; i++) {
+      const it = (lists[i] || []).find((x) => x.id === id);
+      if (it) return it;
+    }
+    return null;
+  }
   function shareHistoria(id) {
-    if (!share || !historia) return;
-    const era = (historia.ERAS || []).find((e) => e.id === id);
-    if (!era) return;
-    const e = loc(era);
+    if (!share) return;
+    const raw = findHistItem(id);
+    if (!raw) return;
+    const e = loc(raw);
     const esText = (e.es || []).join("\n\n").replace(/\*/g, "");
     const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
     buzz(12);
     share.shareImage("histtext", {
-      title: e.title,
+      title: e.title || e.name || "Historia de Sudamérica",
       levelCode: e.level || "",
       levelWord: e.level ? t("discover.histLvl" + e.level) : "",
       esText,
@@ -23157,6 +23419,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const root = document.getElementById("app") || document;
       root.querySelectorAll(".hist-w.is-open").forEach((b) => b.classList.remove("is-open"));
       if (!open) el.classList.add("is-open");
+      return;
+    }
+
+    // Quiz-Antwort im Lesetext: prüft direkt im DOM (kein Re-Render). Pro Frage
+    // nur einmal; markiert die Wahl und deckt bei Fehler die richtige Antwort auf.
+    if (action === "hist-quiz-answer") {
+      const q = el.closest(".hist-quiz__q");
+      if (!q || q.classList.contains("is-done")) return;
+      q.classList.add("is-done");
+      if (el.dataset.correct === "1") {
+        el.classList.add("is-correct");
+      } else {
+        el.classList.add("is-wrong");
+        const right = q.querySelector('.hist-quiz__opt[data-correct="1"]');
+        if (right) right.classList.add("is-correct");
+      }
       return;
     }
 

@@ -1576,6 +1576,63 @@
         <div class="hist-voc__body">${takeList}${skipList}</div>
       </details>`;
   }
+  // Mini-Quiz zum Text: Spanisches Wort → richtige Übersetzung wählen. Distraktoren
+  // aus denselben Vokabeln. Selbstprüfung per DOM-Klasse (kein Re-Render, s. app.js).
+  function quizBlock(vocab) {
+    const items = vocab || [];
+    const pool = items.filter((v) => v.take);
+    if (pool.length < 3 || items.length < 4) return ""; // zu wenige für sinnvolle Optionen
+    const qs = pool.slice(0, 4);
+    const questions = qs.map((v, i) => {
+      const others = items.filter((x) => x.es !== v.es).map((x) => x.de);
+      const opts = [v.de];
+      for (let k = 0; k < others.length && opts.length < 4; k++) {
+        if (opts.indexOf(others[k]) === -1) opts.push(others[k]);
+      }
+      const rot = (i + 1) % opts.length; // richtige Antwort nicht immer oben
+      const rotated = opts.slice(rot).concat(opts.slice(0, rot));
+      const optsHtml = rotated
+        .map((o) => `<button class="hist-quiz__opt" type="button" data-action="hist-quiz-answer" data-correct="${o === v.de ? "1" : "0"}">${esc(o)}</button>`)
+        .join("");
+      return `
+        <div class="hist-quiz__q">
+          <p class="hist-quiz__prompt" lang="es">${esc(v.es)}</p>
+          <div class="hist-quiz__opts">${optsHtml}</div>
+        </div>`;
+    }).join("");
+    return `
+      <details class="hist-quiz">
+        <summary class="hist-quiz__sum">🧩 ${esc(t("discover.histQuiz"))}<span class="hist-quiz__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-quiz__body">
+          <p class="hist-quiz__intro">${esc(t("discover.histQuizIntro"))}</p>
+          ${questions}
+        </div>
+      </details>`;
+  }
+  // Gemeinsamer Lesetraining-Block (Epoche, Protagonist, Spannung teilen ihn).
+  // opts: { es:[Absatz], vocab, level, trans?:[Absatz], shareId, quiz?:bool }
+  // trans = optionale „Ganze Übersetzung", nur wo der Text nicht ohnehin schon
+  // in der UI-Sprache danebensteht (Epochen ja, Karten nein).
+  function readingBlock(opts) {
+    const o = opts || {};
+    if (!o.es || !o.es.length) return "";
+    const lvl = levelMeta(o.level);
+    const bar = `
+      <div class="hist-es__bar">
+        <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
+        ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
+      </div>`;
+    const text = `<div class="hist-es">${bar}${esRich(o.es, o.vocab)}<p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p></div>`;
+    const vocab = vocabBlock(o.vocab);
+    const quiz = o.quiz ? quizBlock(o.vocab) : "";
+    const trans = (o.trans && o.trans.length)
+      ? `<details class="hist-trans"><summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary><div class="hist-trans__body">${o.trans.map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div></details>`
+      : "";
+    const share = o.shareId
+      ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(o.shareId)}">📤 ${esc(t("discover.histShare"))}</button>`
+      : "";
+    return `${text}${vocab}${quiz}${trans}${share}`;
+  }
   function renderHistoria(vm) {
     // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
     const nav = `
@@ -1595,31 +1652,9 @@
            </figure>`
         : "";
       const lvl = levelMeta(e.level);
-      const hasEs = (e.es || []).length > 0;
-      // Spanische Lesefassung mit Schwierigkeits-Plakette und Tipp-Hinweis.
-      const esText = hasEs
-        ? `<div class="hist-es">
-             <div class="hist-es__bar">
-               <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
-               ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
-             </div>
-             ${esRich(e.es, e.vocab)}
-             <p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p>
-           </div>`
-        : "";
-      const vocab = vocabBlock(e.vocab);
-      // Volle Übersetzung in der UI-Sprache – auf Wunsch, damit der Lesefluss bleibt.
-      const trans = (e.body || []).length
-        ? `<details class="hist-trans">
-             <summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-trans__body">${(e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div>
-           </details>`
-        : "";
+      const reading = readingBlock({ es: e.es, vocab: e.vocab, level: e.level, trans: e.body, shareId: e.id, quiz: true });
       const points = (e.points || []).length
         ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
-        : "";
-      const share = hasEs
-        ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(e.id)}">📤 ${esc(t("discover.histShare"))}</button>`
         : "";
       return `
         <details class="hist-era">
@@ -1637,11 +1672,8 @@
           </summary>
           <div class="hist-era__body">
             ${img}
-            ${esText}
-            ${vocab}
-            ${trans}
+            ${reading}
             ${points}
-            ${share}
           </div>
         </details>`;
     };
@@ -1654,6 +1686,13 @@
                 loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
         : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">👤</span>`;
       const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
+      const lvl = levelMeta(f.level);
+      const reading = (f.es && f.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: f.es, vocab: f.vocab, level: f.level, shareId: f.id, quiz: false })}</div>
+           </details>`
+        : "";
       return `
         <article class="hist-fig">
           <div class="hist-fig__top">
@@ -1666,12 +1705,21 @@
           </div>
           <p class="hist-fig__text">${esc(f.text)}</p>
           ${quote}
+          ${reading}
         </article>`;
     };
     const figures = (vm.figures || []).map(figure).join("");
 
     // Eine aktuelle Spannung/Lage als Karte mit Status-Plakette.
-    const tension = (s) => `
+    const tension = (s) => {
+      const lvl = levelMeta(s.level);
+      const reading = (s.es && s.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: s.es, vocab: s.vocab, level: s.level, shareId: s.id, quiz: false })}</div>
+           </details>`
+        : "";
+      return `
       <article class="hist-ten hist-ten--${esc(s.tone || "shift")}">
         <div class="hist-ten__head">
           <span class="hist-ten__icon" aria-hidden="true">${esc(s.icon || "•")}</span>
@@ -1680,7 +1728,9 @@
         </div>
         <p class="hist-ten__where">${esc(s.where)}</p>
         <p class="hist-ten__text">${esc(s.text)}</p>
+        ${reading}
       </article>`;
+    };
     const tensions = (vm.tensions || []).map(tension).join("");
 
     const facts = (vm.facts || []).length

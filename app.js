@@ -3361,19 +3361,28 @@
     share.shareImage("card", cardSharePayload(card), shareFormat());
   }
 
-  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Holt die
-  // Epoche frisch, lokalisiert sie (de/en), entfernt die *Markierungen* aus dem
-  // Spanischtext und reicht die „mitnehmen"-Vokabeln durch.
+  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Sucht den
+  // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
+  // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
+  function findHistItem(id) {
+    if (!historia) return null;
+    const lists = [historia.ERAS, historia.FIGURES, historia.TENSIONS];
+    for (let i = 0; i < lists.length; i++) {
+      const it = (lists[i] || []).find((x) => x.id === id);
+      if (it) return it;
+    }
+    return null;
+  }
   function shareHistoria(id) {
-    if (!share || !historia) return;
-    const era = (historia.ERAS || []).find((e) => e.id === id);
-    if (!era) return;
-    const e = loc(era);
+    if (!share) return;
+    const raw = findHistItem(id);
+    if (!raw) return;
+    const e = loc(raw);
     const esText = (e.es || []).join("\n\n").replace(/\*/g, "");
     const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
     buzz(12);
     share.shareImage("histtext", {
-      title: e.title,
+      title: e.title || e.name || "Historia de Sudamérica",
       levelCode: e.level || "",
       levelWord: e.level ? t("discover.histLvl" + e.level) : "",
       esText,
@@ -3401,6 +3410,22 @@
       const root = document.getElementById("app") || document;
       root.querySelectorAll(".hist-w.is-open").forEach((b) => b.classList.remove("is-open"));
       if (!open) el.classList.add("is-open");
+      return;
+    }
+
+    // Quiz-Antwort im Lesetext: prüft direkt im DOM (kein Re-Render). Pro Frage
+    // nur einmal; markiert die Wahl und deckt bei Fehler die richtige Antwort auf.
+    if (action === "hist-quiz-answer") {
+      const q = el.closest(".hist-quiz__q");
+      if (!q || q.classList.contains("is-done")) return;
+      q.classList.add("is-done");
+      if (el.dataset.correct === "1") {
+        el.classList.add("is-correct");
+      } else {
+        el.classList.add("is-wrong");
+        const right = q.querySelector('.hist-quiz__opt[data-correct="1"]');
+        if (right) right.classList.add("is-correct");
+      }
       return;
     }
 
