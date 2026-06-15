@@ -247,6 +247,9 @@
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
       showEcuadorPreset: tripMentionsEcuador(),   // Pre-Arrival-Kachel nur bei Ecuador-Bezug
       showGuatemalaPreset: tripMentionsGuatemala(), // Pre-Arrival-Kachel nur bei Guatemala-Bezug
+      showArgentinaPreset: tripMentionsArgentina(), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
+      showChilePreset: tripMentionsChile(),       // Pre-Arrival-Kachel nur bei Chile-Bezug
+      showBoliviaPreset: tripMentionsBolivia(),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
@@ -587,6 +590,51 @@
     const t = gamestats.tripGoal;
     const cfg = window.SC && window.SC.config;
     return isGuatemalaDest(t && t.destination) || isGuatemalaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Argentinien-Bezug für die „Pre-Arrival Argentinien"-Kachel.
+  const ARGENTINA_HINTS = ["argentina", "argentinien", "buenos aires", "patagonia", "patagonien",
+    "el calafate", "el chalten", "el chaltén", "ushuaia", "bariloche", "mendoza", "iguazu", "iguazú",
+    "salta", "fitz roy", "perito moreno"];
+  function isArgentinaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return ARGENTINA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsArgentina() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isArgentinaDest(t && t.destination) || isArgentinaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Chile-Bezug für die „Pre-Arrival Chile"-Kachel.
+  const CHILE_HINTS = ["chile", "santiago", "valparaiso", "valparaíso", "atacama", "san pedro de atacama",
+    "torres del paine", "puerto natales", "punta arenas", "pucon", "pucón", "chiloe", "chiloé",
+    "isla de pascua", "rapa nui", "valle de la luna"];
+  function isChileDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return CHILE_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsChile() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isChileDest(t && t.destination) || isChileDest(cfg && cfg.defaultDestination);
+  }
+
+  // Bolivien-Bezug für die „Pre-Arrival Bolivien"-Kachel.
+  const BOLIVIA_HINTS = ["bolivia", "bolivien", "la paz", "el alto", "uyuni", "salar de uyuni",
+    "potosi", "potosí", "sucre", "copacabana", "isla del sol", "titicaca", "tiwanaku", "coroico",
+    "rurrenabaque"];
+  function isBoliviaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return BOLIVIA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsBolivia() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isBoliviaDest(t && t.destination) || isBoliviaDest(cfg && cfg.defaultDestination);
   }
 
   // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----
@@ -2227,6 +2275,9 @@
     if (tripMentionsCostaRica()) return "costarica";
     if (tripMentionsEcuador()) return "ecuador";
     if (tripMentionsGuatemala()) return "guatemala";
+    if (tripMentionsArgentina()) return "argentina";
+    if (tripMentionsChile()) return "chile";
+    if (tripMentionsBolivia()) return "bolivia";
     if (tripMentionsColombia()) return "colombia";
     return (PRETRIP()[0] || {}).scope || "colombia";
   }

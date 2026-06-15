@@ -22,6 +22,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.37.0",
+      date: "2026-06-15",
+      title: "Drei neue Reise-Pakete: Argentinien, Chile & Bolivien",
+      items: [
+        "🇦🇷 Neuer Bereich „Argentinien“ mit 40 Karten: Buenos Aires (Tango, San Telmo), Patagonien (Perito Moreno, Fitz Roy, Ushuaia), Iguazú und Mendoza – mit rioplatense Voseo (che, dale, bárbaro), Asado, Mate und Wechselkurs-Tipps.",
+        "🇨🇱 Neuer Bereich „Chile“ mit 40 Karten: Santiago, Valparaíso, Atacama (Valle de la Luna, El Tatio) und Torres del Paine – mit Chilenismen (cachái, bacán, al tiro, po), Completo, Once und Pisco.",
+        "🇧🇴 Neuer Bereich „Bolivien“ mit 40 Karten: La Paz (Teleférico, Hexenmarkt), Salar de Uyuni, Titicaca, Potosí und Sucre – mit Aymara-Gruß (Kamisaraki), Höhe/soroche, Cholita, Trufi und Salteña.",
+        "🗓️ Alle drei auch im Pre-Trip-Plan wählbar, je mit Pre-Arrival-Kachel und zwei Real-Life-Mutproben.",
+      ],
+    },
+    {
       version: "1.36.0",
       date: "2026-06-15",
       title: "Zwei neue Reise-Pakete: Ecuador & Guatemala",
