@@ -22,6 +22,14 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.63.0",
+      date: "2026-06-15",
+      title: "Editions-Credit aufgeräumt (Logo + „mit HolaRuta“)",
+      items: [
+        "🏷️ Der Co-Branding-Hinweis im Profil zeigt jetzt sauber zentriert das Partner-Logo (bzw. den Namen) und darunter ein dezentes „mit HolaRuta“ – statt den Partnernamen doppelt (er steckte schon im App-Namen).",
+      ],
+    },
+    {
       version: "1.62.0",
       date: "2026-06-15",
       title: "Länderkunde: Bevölkerung, Politik & Wirtschaft",

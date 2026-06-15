@@ -552,21 +552,19 @@
   // Dezenter Co-Branding-Hinweis im Profil (nur in einer Edition sichtbar).
   function editionCredit(e) {
     if (!e) return "";
+    // Co-Branding-Credit: das Partner-Logo (oder, ohne Logo, der Partnername) plus
+    // ein dezentes „mit HolaRuta". Bewusst OHNE den vollen brandName, der den
+    // Partnernamen schon enthält (sonst stünde „WeRoad Colombia" doppelt da).
+    const partnerName = (e.partner && e.partner.name) || e.name || "";
     // Nur echte http(s)-Links verlinken; alles andere (z.B. javascript:) als Text.
     const url = e.partner && e.partner.url && /^https?:\/\//i.test(e.partner.url) ? e.partner.url : null;
-    const partner = e.partner
-      ? (url
-          ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(e.partner.name)}</a>`
-          : esc(e.partner.name))
-      : "";
     // Partner-Logo NUR rendern, wenn eine Edition es ausdrücklich setzt (mit Freigabe).
-    // Erlaubt sind ausschließlich https:- oder eingebettete data:image-URLs – kein
-    // javascript:/sonstiges. Standardmäßig ist logo=null → es erscheint kein Bild.
+    // Erlaubt sind ausschließlich https:- oder eingebettete data:image-URLs.
     const logoOk = e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
-    const logo = logoOk
-      ? `<img class="edition-logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />`
-      : "";
-    return `<p class="edition-credit">${logo}${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
+    const head = logoOk
+      ? `<img class="edition-logo" src="${esc(e.logo)}" alt="${esc(partnerName)}" />`
+      : `<span class="edition-credit__name">${url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(partnerName)}</a>` : esc(partnerName)}</span>`;
+    return `<div class="edition-credit">${head}<span class="edition-credit__powered">${esc(t("profile.poweredBy"))}</span></div>`;
   }
 
   // „Auf den Startbildschirm“-Hinweis (nur wenn sinnvoll, siehe install.js).

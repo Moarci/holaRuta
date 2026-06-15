@@ -546,12 +546,16 @@ body {
   border-radius: var(--r-md); padding: 16px;
 }
 .edition-credit {
-  margin: 18px 0 4px; text-align: center; font-size: 0.82rem;
-  font-weight: 700; color: var(--brand-ink); letter-spacing: 0.02em;
+  margin: 22px auto 6px; text-align: center; display: flex;
+  flex-direction: column; align-items: center; gap: 2px;
 }
+.edition-credit__name {
+  font-size: 0.95rem; font-weight: 800; color: var(--brand-ink); letter-spacing: 0.02em;
+}
+.edition-credit__powered { font-size: 0.72rem; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
 .edition-credit a { color: var(--brand-ink); }
 /* Optionales Partner-Logo (nur wenn eine Edition mit Freigabe eines setzt). */
-.edition-logo { display: block; max-height: 40px; max-width: 60%; margin: 0 auto 8px; }
+.edition-logo { display: block; max-height: 40px; max-width: 64%; margin: 0 auto 2px; }
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
@@ -4167,6 +4171,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     streakInRow: (p) => `🔥 ${p.n} ${p.n === 1 ? "Tag" : "Tage"} in Folge`,
     streakFirst: "🌱 Heute die erste Karte lernen",
     progressTitle: "Dein Fortschritt",
+    poweredBy: "mit HolaRuta",
     masteredCardsLabel: "Gemeisterte Karten",
     progressMeta: (p) => `${p.mastered} von ${p.total} Karten gemeistert · ${p.pct} %`,
     statistics: "Statistik",
@@ -4280,6 +4285,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     streakInRow: (p) => `🔥 ${p.n} ${p.n === 1 ? "day" : "days"} in a row`,
     streakFirst: "🌱 Learn your first card today",
     progressTitle: "Your progress",
+    poweredBy: "with HolaRuta",
     masteredCardsLabel: "Mastered cards",
     progressMeta: (p) => `${p.mastered} of ${p.total} cards mastered · ${p.pct} %`,
     statistics: "Statistics",
@@ -20249,6 +20255,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.63.0",
+      date: "2026-06-15",
+      title: "Editions-Credit aufgeräumt (Logo + „mit HolaRuta“)",
+      items: [
+        "🏷️ Der Co-Branding-Hinweis im Profil zeigt jetzt sauber zentriert das Partner-Logo (bzw. den Namen) und darunter ein dezentes „mit HolaRuta“ – statt den Partnernamen doppelt (er steckte schon im App-Namen).",
+      ],
+    },
+    {
       version: "1.62.0",
       date: "2026-06-15",
       title: "Länderkunde: Bevölkerung, Politik & Wirtschaft",
@@ -21460,21 +21474,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Dezenter Co-Branding-Hinweis im Profil (nur in einer Edition sichtbar).
   function editionCredit(e) {
     if (!e) return "";
+    // Co-Branding-Credit: das Partner-Logo (oder, ohne Logo, der Partnername) plus
+    // ein dezentes „mit HolaRuta". Bewusst OHNE den vollen brandName, der den
+    // Partnernamen schon enthält (sonst stünde „WeRoad Colombia" doppelt da).
+    const partnerName = (e.partner && e.partner.name) || e.name || "";
     // Nur echte http(s)-Links verlinken; alles andere (z.B. javascript:) als Text.
     const url = e.partner && e.partner.url && /^https?:\/\//i.test(e.partner.url) ? e.partner.url : null;
-    const partner = e.partner
-      ? (url
-          ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(e.partner.name)}</a>`
-          : esc(e.partner.name))
-      : "";
     // Partner-Logo NUR rendern, wenn eine Edition es ausdrücklich setzt (mit Freigabe).
-    // Erlaubt sind ausschließlich https:- oder eingebettete data:image-URLs – kein
-    // javascript:/sonstiges. Standardmäßig ist logo=null → es erscheint kein Bild.
+    // Erlaubt sind ausschließlich https:- oder eingebettete data:image-URLs.
     const logoOk = e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
-    const logo = logoOk
-      ? `<img class="edition-logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />`
-      : "";
-    return `<p class="edition-credit">${logo}${esc(e.name)}${partner ? " · " + partner : ""}</p>`;
+    const head = logoOk
+      ? `<img class="edition-logo" src="${esc(e.logo)}" alt="${esc(partnerName)}" />`
+      : `<span class="edition-credit__name">${url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(partnerName)}</a>` : esc(partnerName)}</span>`;
+    return `<div class="edition-credit">${head}<span class="edition-credit__powered">${esc(t("profile.poweredBy"))}</span></div>`;
   }
 
   // „Auf den Startbildschirm“-Hinweis (nur wenn sinnvoll, siehe install.js).
