@@ -452,7 +452,13 @@
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
       : install.isIOS
         ? `<p class="installcard__text">${esc(install.hint)}</p>`
-        : `<p class="installcard__text">${esc(t("profile.installHintBrowser"))}</p>`;
+        : `<p class="installcard__text">${esc(t("profile.installHintLead"))}</p>
+           <ol class="installcard__steps">
+             <li>${esc(t("profile.installStep1"))}</li>
+             <li>${esc(t("profile.installStep2"))}</li>
+             <li>${esc(t("profile.installStep3"))}</li>
+           </ol>
+           <p class="installcard__note">${esc(t("profile.installHintNote"))}</p>`;
     return `
       <div class="installcard">
         <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.notInstalledTitle"))}</p>

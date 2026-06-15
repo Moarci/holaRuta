@@ -501,6 +501,13 @@ body {
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
+.installcard__steps {
+  margin: 0; padding-left: 1.25rem;
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted);
+}
+.installcard__steps li { padding-left: 2px; }
+.installcard__note { margin: 0; font-size: 0.82rem; font-weight: 500; line-height: 1.4; color: var(--muted); opacity: 0.85; }
 /* Bereits installiert: ruhige „erledigt"-Optik (durchgezogen statt gestrichelt). */
 .installcard--done {
   background: color-mix(in srgb, var(--ok, #3F7355) 10%, var(--card));

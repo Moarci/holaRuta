@@ -961,6 +961,11 @@
     installBtn: "📲 App installieren",
     notInstalledTitle: "Noch nicht installiert",
     installHintBrowser: 'Über das Browser-Menü („App installieren" bzw. „Zum Startbildschirm hinzufügen") legst du HolaRuta als eigenes App-Icon ab – startet dann offline, ohne Datei-Suchen.',
+    installHintLead: "Dein Browser bietet hier gerade keinen Ein-Tipp-Knopf an. So legst du HolaRuta trotzdem als App ab:",
+    installStep1: "Oben rechts auf das Browser-Menü tippen (⋮ bzw. Teilen-Symbol).",
+    installStep2: 'Dort „App installieren" bzw. „Zum Startbildschirm hinzufügen" wählen.',
+    installStep3: "Bestätigen – fertig. HolaRuta startet künftig über ihr eigenes Icon, offline und ohne Datei-Suchen.",
+    installHintNote: "Tipp: Am zuverlässigsten klappt das in Chrome. Manche Browser (z. B. Firefox) bieten die App-Installation nicht an.",
     installedTitle: "Als App installiert · offline bereit",
     installedText: "HolaRuta läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
 
@@ -1068,6 +1073,11 @@
     installBtn: "📲 Install app",
     notInstalledTitle: "Not installed yet",
     installHintBrowser: "Use your browser menu (“Install app” or “Add to Home Screen”) to add HolaRuta as its own app icon – it then starts offline, no file-hunting.",
+    installHintLead: "Your browser isn't offering a one-tap button here right now. Here's how to add HolaRuta as an app anyway:",
+    installStep1: "Tap the browser menu in the top right (⋮ or the share icon).",
+    installStep2: "Choose “Install app” or “Add to Home Screen”.",
+    installStep3: "Confirm – done. HolaRuta will launch from its own icon, offline and without file-hunting.",
+    installHintNote: "Tip: this works most reliably in Chrome. Some browsers (e.g. Firefox) don't offer app installation.",
     installedTitle: "Installed as an app · ready offline",
     installedText: "HolaRuta is running as an installed app with its own icon on your home screen – offline too.",
 

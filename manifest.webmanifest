@@ -14,6 +14,9 @@
   "categories": ["education", "travel"],
   "launch_handler": { "client_mode": "navigate-existing" },
   "handle_links": "preferred",
+  "related_applications": [
+    { "platform": "webapp", "url": "manifest.webmanifest" }
+  ],
   "screenshots": [
     {
       "src": "docs/screenshots/study-flip.png",
