@@ -393,6 +393,21 @@
     // Lern-Einstellungen: Bediensprache (de/en) plus die Lern-Voreinstellungen
     // (Modus/Richtung/Stufen/Tempo). Alles globale Vorgaben, daher gebündelt hier
     // im Profil – das Dashboard zeigt davon nur noch die Zusammenfassung.
+    // Reise-Name: wird in den Diálogos automatisch eingesetzt (Hotel, Notfall …),
+    // damit der Nutzer dort seinen eigenen Namen nennt statt eines Beispielnamens.
+    // Eigenes <form>, damit Enter speichert; zusätzlich sichert ein Blur den Stand
+    // (change-Handler in app.js), falls ohne „Speichern" weggetippt wird.
+    const nameGroup = `
+      <form class="switchgroup namefield" data-action="save-name">
+        <label class="switchcap" for="profile-name">${esc(t("home.nameCap"))}</label>
+        <div class="namefield__row">
+          <input id="profile-name" class="namefield__input" type="text" maxlength="40"
+                 autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
+                 placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" />
+          <button class="ghostbtn namefield__save" type="submit">${esc(t("home.nameSave"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.nameHint"))}</p>
+      </form>`;
     const langGroup = `
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
@@ -417,6 +432,7 @@
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
+        ${nameGroup}
         ${langGroup}
         ${learnPrefs(vm)}
       </div>

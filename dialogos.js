@@ -19,6 +19,10 @@
  *       de    = Handlungsanweisung („(sag, dass du einchecken willst)")
  *       solEs = die Musterantwort (erscheint in der Verlaufsspur)
  *       accept= zusätzlich akzeptierte (normalisierte) Eingaben neben solEs
+ *
+ * Platzhalter {name}: wird beim Anzeigen/Prüfen durch den im Profil hinterlegten
+ * Reise-Namen ersetzt (ohne Eintrag bleibt der Beispielname „Marco"). So nennt
+ * der Nutzer in den Dialogen seinen eigenen Namen statt eines fremden.
  */
 (function () {
   "use strict";
@@ -48,8 +52,8 @@
             { es: "¿Dónde está el baño?", ok: false },
           ] },
         { who: "npc", es: "Claro que sí. ¿A nombre de quién está la reserva?", de: "Aber natürlich. Auf welchen Namen läuft die Reservierung?", en: "Of course. What name is the booking under?" },
-        { who: "user", kind: "type", de: "(antworte: auf den Namen Marco)", en: "(answer: under the name Marco)", solEs: "A nombre de Marco.",
-          accept: ["a nombre de marco", "marco", "es marco", "me llamo marco", "esta a nombre de marco"] },
+        { who: "user", kind: "type", de: "(antworte: auf den Namen {name})", en: "(answer: under the name {name})", solEs: "A nombre de {name}.",
+          accept: ["a nombre de {name}", "{name}", "es {name}", "me llamo {name}", "esta a nombre de {name}"] },
         { who: "npc", es: "Perfecto, aquí la tengo. Una habitación doble por tres noches, ¿verdad?", de: "Perfekt, hier habe ich sie. Ein Doppelzimmer für drei Nächte, richtig?", en: "Perfect, here it is. A double room for three nights, right?" },
         { who: "user", kind: "mc", de: "(bestätige: ja, genau, drei Nächte)", en: "(confirm: yes, exactly, three nights)", solEs: "Sí, exacto, tres noches.",
           options: [
@@ -167,8 +171,8 @@
             { es: "Me da igual el horario.", ok: false },
           ] },
         { who: "npc", es: "Listo. ¿Me da su nombre completo, por favor?", de: "Geht klar. Geben Sie mir bitte Ihren vollständigen Namen?", en: "Right. Could you give me your full name, please?" },
-        { who: "user", kind: "type", de: "(nenne deinen Namen: Marco Pérez)", en: "(give your name: Marco Pérez)", solEs: "Marco Pérez.",
-          accept: ["marco perez", "me llamo marco perez", "soy marco perez", "mi nombre es marco perez"] },
+        { who: "user", kind: "type", de: "(nenne deinen Namen: {name} Pérez)", en: "(give your name: {name} Pérez)", solEs: "{name} Pérez.",
+          accept: ["{name} perez", "me llamo {name} perez", "soy {name} perez", "mi nombre es {name} perez"] },
         { who: "npc", es: "Gracias. Son cuarenta soles. ¿Cómo va a pagar?", de: "Danke. Das macht vierzig Soles. Wie möchten Sie zahlen?", en: "Thanks. That's forty soles. How would you like to pay?" },
         { who: "user", kind: "mc", de: "(sag: bar)", en: "(say: cash)", solEs: "En efectivo.",
           options: [
@@ -432,9 +436,9 @@
         { who: "user", kind: "type", de: "(sag: ja, bitte ruf einen Krankenwagen)", en: "(say: yes, please call an ambulance)", solEs: "Sí, llame a una ambulancia, por favor.",
           accept: ["si llame a una ambulancia", "llame a una ambulancia", "llame una ambulancia por favor", "si una ambulancia", "llame a la ambulancia"] },
         { who: "npc", es: "Ya la estoy llamando. ¿Cómo se llama usted?", de: "Ich rufe ihn schon. Wie heißen Sie?", en: "I'm calling it now. What's your name?" },
-        { who: "user", kind: "type", de: "(nenne deinen Namen: Marco)", en: "(give your name: Marco)", solEs: "Me llamo Marco.",
-          accept: ["me llamo marco", "soy marco", "marco", "mi nombre es marco", "me llaman marco"] },
-        { who: "npc", es: "Marco, ¿puede mover los dedos del pie?", de: "Marco, können Sie die Zehen bewegen?", en: "Marco, can you move your toes?" },
+        { who: "user", kind: "type", de: "(nenne deinen Namen: {name})", en: "(give your name: {name})", solEs: "Me llamo {name}.",
+          accept: ["me llamo {name}", "soy {name}", "{name}", "mi nombre es {name}", "me llaman {name}"] },
+        { who: "npc", es: "{name}, ¿puede mover los dedos del pie?", de: "{name}, können Sie die Zehen bewegen?", en: "{name}, can you move your toes?" },
         { who: "user", kind: "mc", de: "(sag, ja, ein bisschen)", en: "(say yes, a little)", solEs: "Sí, un poco.",
           options: [
             { es: "Sí, un poco.", ok: true },

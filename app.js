@@ -245,6 +245,7 @@
         pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
       },
       lastCat,
+      userName: settings.userName || "",       // Reise-Name (für Diálogos automatisch eingesetzt)
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
@@ -1234,6 +1235,19 @@
   const dialogueById = (id) => (dialogos ? dialogos.DIALOGOS.find((d) => d.id === id) : null) || null;
   const scenarioById = (id) => (dialogos ? dialogos.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null;
 
+  // Reise-Name aus dem Profil: erscheint in Diálogos überall dort, wo der Nutzer
+  // sich vorstellt (Hotel, Busticket, Notfall …). Ohne Eintrag bleibt der
+  // Beispielname „Marco", damit die Dialoge auch ungenutzt stimmig sind.
+  function travelerName() {
+    const raw = (settings.userName || "").trim().replace(/\s+/g, " ");
+    return raw || "Marco";
+  }
+  // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
+  // durch den Reise-Namen ersetzen.
+  function withName(s) {
+    return typeof s === "string" ? s.replace(/\{name\}/g, travelerName()) : s;
+  }
+
   function dialogosSetupVM() {
     return {
       available: dialogosReady(),
@@ -1257,19 +1271,19 @@
     for (let i = 0; i < d.turnIdx; i++) {
       const t = turns[i];
       if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: nat(t) });
-      else transcript.push({ who: "user", es: t.solEs, de: "" });
+      if (t.who === "npc") transcript.push({ who: "npc", es: withName(t.es), de: withName(nat(t)) });
+      else transcript.push({ who: "user", es: withName(t.solEs), de: "" });
     }
     const cur = turns[d.turnIdx] || null;
     const current = cur
       ? (cur.who === "npc"
-          ? { who: "npc", es: cur.es, de: nat(cur) }
+          ? { who: "npc", es: withName(cur.es), de: withName(nat(cur)) }
           : {
               who: "user",
               kind: cur.kind,
-              de: nat(cur),
-              solEs: cur.solEs,
-              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: o.es })) : null,
+              de: withName(nat(cur)),
+              solEs: withName(cur.solEs),
+              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: withName(o.es) })) : null,
             })
       : null;
     return {
@@ -1341,7 +1355,7 @@
     const t = currentUserTurn();
     if (!t || t.kind !== "type") return;
     const norm = matcher.normalize(input);
-    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(s));
+    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(withName(s)));
     const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
     d.result = { correct, given: input };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
@@ -1390,7 +1404,7 @@
     if (!d || !speech) return;
     const dia = dialogueById(d.dialogueId);
     const t = dia && dia.turns[d.turnIdx];
-    if (t && t.who === "npc") speech.speak(t.es, settings.speechRate);
+    if (t && t.who === "npc") speech.speak(withName(t.es), settings.speechRate);
   }
 
   // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
@@ -1945,15 +1959,21 @@
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
-  // requestAnimationFrame, damit das Layout nach dem innerHTML steht; block:"end"
-  // hält den darüberliegenden npc-Satz mit im Bild.
+  // requestAnimationFrame, damit das Layout nach dem innerHTML steht.
+  // Normalfall (npc-Satz, Optionen, Verdikt): block:"end" hält den darüber-
+  // liegenden npc-Satz mit im Bild. Tipp-Zug dagegen: das Eingabefeld mittig
+  // halten – mit block:"end" schöbe es sonst genau hinter die eingeblendete
+  // Tastatur, und der Nutzer sähe nicht, was er tippt.
   function scrollDialogActive() {
     if (typeof requestAnimationFrame !== "function") return;
     requestAnimationFrame(function () {
-      const el = root.querySelector("#dlg-active");
-      if (!el) return;
+      const active = root.querySelector("#dlg-active");
+      if (!active) return;
+      const input = active.querySelector("#dialogos-answer");
+      const target = input || active;
+      const block = input ? "center" : "end";
       const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "end" }); } catch (e) { /* egal */ }
+      try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block }); } catch (e) { /* egal */ }
     });
   }
 
@@ -1980,7 +2000,7 @@
       const d = state.dialogos;
       const dia = dialogueById(d.dialogueId);
       const t = dia && dia.turns[d.turnIdx];
-      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: t.es };
+      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: withName(t.es) };
     }
     return null;
   }
@@ -2300,6 +2320,20 @@
     applyTheme(next);
     buzz(8);
     render();
+  }
+
+  // Reise-Namen aus dem Profil speichern. Getrimmt, Mehrfach-Leerzeichen zusammen-
+  // gezogen, auf 40 Zeichen begrenzt. rerender:true (Knopf „Speichern") bestätigt
+  // mit Haptik und zeichnet neu; ohne (Blur via change-Handler) wird nur still
+  // gesichert, damit ein direkt danach getippter Knopf nicht durch ein Re-Render
+  // verloren geht.
+  function saveUserName(value, rerender) {
+    const name = String(value || "").trim().replace(/\s+/g, " ").slice(0, 40);
+    if (name !== (settings.userName || "")) {
+      settings = Object.assign({}, settings, { userName: name });
+      store.saveSettings(settings);
+    }
+    if (rerender) { buzz(8); render(); }
   }
 
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
@@ -3808,6 +3842,13 @@
       submitDialogosType(input ? input.value : "");
       return;
     }
+    // Profil: Reise-Namen speichern (Enter oder „Speichern"-Knopf).
+    if (e.target.closest('[data-action="save-name"]')) {
+      e.preventDefault();
+      const input = document.getElementById("profile-name");
+      saveUserName(input ? input.value : "", true);
+      return;
+    }
     // Getippte Antwort prüfen (Schreiben-/Hör-Modus).
     const form = e.target.closest('[data-action="submit-typed"]');
     if (!form) return;
@@ -3831,6 +3872,13 @@
       const file = (e.target.files && e.target.files[0]) || null;
       e.target.value = ""; // erlaubt erneuten Import derselben Datei
       handleImportFile(file);
+      return;
+    }
+    // Profil-Name still sichern, sobald das Feld verlassen wird (auch ohne
+    // „Speichern"). Kein Re-Render hier, damit ein direkt danach getippter Knopf
+    // nicht ins Leere greift; die Persistenz reicht.
+    if (e.target && e.target.id === "profile-name") {
+      saveUserName(e.target.value, false);
       return;
     }
     // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie

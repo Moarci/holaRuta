@@ -255,6 +255,17 @@ body {
   color: var(--ink-soft); padding-left: 4px;
 }
 
+/* Reise-Name (Profil): Eingabefeld + Speichern in einer Zeile, kurzer Hinweis darunter */
+.namefield__row { display: flex; gap: 8px; align-items: stretch; }
+.namefield__input {
+  flex: 1 1 auto; min-width: 0; font: inherit; font-weight: 600; color: var(--ink);
+  padding: 10px 12px; min-height: 44px;
+  border: 1.5px solid var(--line-strong); border-radius: var(--r-sm, 10px);
+  background: var(--bg, var(--surface));
+}
+.namefield__save { flex: 0 0 auto; min-height: 44px; }
+.namefield__hint { margin: 0; padding-left: 4px; font-size: 0.78rem; color: var(--muted); }
+
 /* Segmented control (Modus) */
 .segmented {
   display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
@@ -2844,6 +2855,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeType: "⌨️ Schreiben",
     modeListen: "👂 Hören",
     settingsCap: "⚙️ Einstellungen",
+    nameCap: "🙋 Dein Name",
+    namePlaceholder: "z. B. Marco",
+    nameSave: "Speichern",
+    nameHint: "Wird in den Diálogos automatisch eingesetzt, wenn du dich vorstellst.",
     speechRate: "Sprechtempo",
     speechRateAria: "Sprechtempo der Vorlese-Stimme",
     rateSlow: "🐢 Langsam",
@@ -2907,6 +2922,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeType: "⌨️ Writing",
     modeListen: "👂 Listening",
     settingsCap: "⚙️ Settings",
+    nameCap: "🙋 Your name",
+    namePlaceholder: "e.g. Marco",
+    nameSave: "Save",
+    nameHint: "Used automatically in the Diálogos when you introduce yourself.",
     speechRate: "Speech rate",
     speechRateAria: "Speech rate of the read-aloud voice",
     rateSlow: "🐢 Slow",
@@ -13757,6 +13776,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  *       de    = Handlungsanweisung („(sag, dass du einchecken willst)")
  *       solEs = die Musterantwort (erscheint in der Verlaufsspur)
  *       accept= zusätzlich akzeptierte (normalisierte) Eingaben neben solEs
+ *
+ * Platzhalter {name}: wird beim Anzeigen/Prüfen durch den im Profil hinterlegten
+ * Reise-Namen ersetzt (ohne Eintrag bleibt der Beispielname „Marco"). So nennt
+ * der Nutzer in den Dialogen seinen eigenen Namen statt eines fremden.
  */
 (function () {
   "use strict";
@@ -13786,8 +13809,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             { es: "¿Dónde está el baño?", ok: false },
           ] },
         { who: "npc", es: "Claro que sí. ¿A nombre de quién está la reserva?", de: "Aber natürlich. Auf welchen Namen läuft die Reservierung?", en: "Of course. What name is the booking under?" },
-        { who: "user", kind: "type", de: "(antworte: auf den Namen Marco)", en: "(answer: under the name Marco)", solEs: "A nombre de Marco.",
-          accept: ["a nombre de marco", "marco", "es marco", "me llamo marco", "esta a nombre de marco"] },
+        { who: "user", kind: "type", de: "(antworte: auf den Namen {name})", en: "(answer: under the name {name})", solEs: "A nombre de {name}.",
+          accept: ["a nombre de {name}", "{name}", "es {name}", "me llamo {name}", "esta a nombre de {name}"] },
         { who: "npc", es: "Perfecto, aquí la tengo. Una habitación doble por tres noches, ¿verdad?", de: "Perfekt, hier habe ich sie. Ein Doppelzimmer für drei Nächte, richtig?", en: "Perfect, here it is. A double room for three nights, right?" },
         { who: "user", kind: "mc", de: "(bestätige: ja, genau, drei Nächte)", en: "(confirm: yes, exactly, three nights)", solEs: "Sí, exacto, tres noches.",
           options: [
@@ -13905,8 +13928,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
             { es: "Me da igual el horario.", ok: false },
           ] },
         { who: "npc", es: "Listo. ¿Me da su nombre completo, por favor?", de: "Geht klar. Geben Sie mir bitte Ihren vollständigen Namen?", en: "Right. Could you give me your full name, please?" },
-        { who: "user", kind: "type", de: "(nenne deinen Namen: Marco Pérez)", en: "(give your name: Marco Pérez)", solEs: "Marco Pérez.",
-          accept: ["marco perez", "me llamo marco perez", "soy marco perez", "mi nombre es marco perez"] },
+        { who: "user", kind: "type", de: "(nenne deinen Namen: {name} Pérez)", en: "(give your name: {name} Pérez)", solEs: "{name} Pérez.",
+          accept: ["{name} perez", "me llamo {name} perez", "soy {name} perez", "mi nombre es {name} perez"] },
         { who: "npc", es: "Gracias. Son cuarenta soles. ¿Cómo va a pagar?", de: "Danke. Das macht vierzig Soles. Wie möchten Sie zahlen?", en: "Thanks. That's forty soles. How would you like to pay?" },
         { who: "user", kind: "mc", de: "(sag: bar)", en: "(say: cash)", solEs: "En efectivo.",
           options: [
@@ -14170,9 +14193,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         { who: "user", kind: "type", de: "(sag: ja, bitte ruf einen Krankenwagen)", en: "(say: yes, please call an ambulance)", solEs: "Sí, llame a una ambulancia, por favor.",
           accept: ["si llame a una ambulancia", "llame a una ambulancia", "llame una ambulancia por favor", "si una ambulancia", "llame a la ambulancia"] },
         { who: "npc", es: "Ya la estoy llamando. ¿Cómo se llama usted?", de: "Ich rufe ihn schon. Wie heißen Sie?", en: "I'm calling it now. What's your name?" },
-        { who: "user", kind: "type", de: "(nenne deinen Namen: Marco)", en: "(give your name: Marco)", solEs: "Me llamo Marco.",
-          accept: ["me llamo marco", "soy marco", "marco", "mi nombre es marco", "me llaman marco"] },
-        { who: "npc", es: "Marco, ¿puede mover los dedos del pie?", de: "Marco, können Sie die Zehen bewegen?", en: "Marco, can you move your toes?" },
+        { who: "user", kind: "type", de: "(nenne deinen Namen: {name})", en: "(give your name: {name})", solEs: "Me llamo {name}.",
+          accept: ["me llamo {name}", "soy {name}", "{name}", "mi nombre es {name}", "me llaman {name}"] },
+        { who: "npc", es: "{name}, ¿puede mover los dedos del pie?", de: "{name}, können Sie die Zehen bewegen?", en: "{name}, can you move your toes?" },
         { who: "user", kind: "mc", de: "(sag, ja, ein bisschen)", en: "(say yes, a little)", solEs: "Sí, un poco.",
           options: [
             { es: "Sí, un poco.", ok: true },
@@ -18517,6 +18540,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Lern-Einstellungen: Bediensprache (de/en) plus die Lern-Voreinstellungen
     // (Modus/Richtung/Stufen/Tempo). Alles globale Vorgaben, daher gebündelt hier
     // im Profil – das Dashboard zeigt davon nur noch die Zusammenfassung.
+    // Reise-Name: wird in den Diálogos automatisch eingesetzt (Hotel, Notfall …),
+    // damit der Nutzer dort seinen eigenen Namen nennt statt eines Beispielnamens.
+    // Eigenes <form>, damit Enter speichert; zusätzlich sichert ein Blur den Stand
+    // (change-Handler in app.js), falls ohne „Speichern" weggetippt wird.
+    const nameGroup = `
+      <form class="switchgroup namefield" data-action="save-name">
+        <label class="switchcap" for="profile-name">${esc(t("home.nameCap"))}</label>
+        <div class="namefield__row">
+          <input id="profile-name" class="namefield__input" type="text" maxlength="40"
+                 autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
+                 placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" />
+          <button class="ghostbtn namefield__save" type="submit">${esc(t("home.nameSave"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.nameHint"))}</p>
+      </form>`;
     const langGroup = `
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
@@ -18541,6 +18579,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
+        ${nameGroup}
         ${langGroup}
         ${learnPrefs(vm)}
       </div>
@@ -21768,6 +21807,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
       },
       lastCat,
+      userName: settings.userName || "",       // Reise-Name (für Diálogos automatisch eingesetzt)
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
@@ -22757,6 +22797,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const dialogueById = (id) => (dialogos ? dialogos.DIALOGOS.find((d) => d.id === id) : null) || null;
   const scenarioById = (id) => (dialogos ? dialogos.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null;
 
+  // Reise-Name aus dem Profil: erscheint in Diálogos überall dort, wo der Nutzer
+  // sich vorstellt (Hotel, Busticket, Notfall …). Ohne Eintrag bleibt der
+  // Beispielname „Marco", damit die Dialoge auch ungenutzt stimmig sind.
+  function travelerName() {
+    const raw = (settings.userName || "").trim().replace(/\s+/g, " ");
+    return raw || "Marco";
+  }
+  // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
+  // durch den Reise-Namen ersetzen.
+  function withName(s) {
+    return typeof s === "string" ? s.replace(/\{name\}/g, travelerName()) : s;
+  }
+
   function dialogosSetupVM() {
     return {
       available: dialogosReady(),
@@ -22780,19 +22833,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     for (let i = 0; i < d.turnIdx; i++) {
       const t = turns[i];
       if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: nat(t) });
-      else transcript.push({ who: "user", es: t.solEs, de: "" });
+      if (t.who === "npc") transcript.push({ who: "npc", es: withName(t.es), de: withName(nat(t)) });
+      else transcript.push({ who: "user", es: withName(t.solEs), de: "" });
     }
     const cur = turns[d.turnIdx] || null;
     const current = cur
       ? (cur.who === "npc"
-          ? { who: "npc", es: cur.es, de: nat(cur) }
+          ? { who: "npc", es: withName(cur.es), de: withName(nat(cur)) }
           : {
               who: "user",
               kind: cur.kind,
-              de: nat(cur),
-              solEs: cur.solEs,
-              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: o.es })) : null,
+              de: withName(nat(cur)),
+              solEs: withName(cur.solEs),
+              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: withName(o.es) })) : null,
             })
       : null;
     return {
@@ -22864,7 +22917,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const t = currentUserTurn();
     if (!t || t.kind !== "type") return;
     const norm = matcher.normalize(input);
-    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(s));
+    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(withName(s)));
     const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
     d.result = { correct, given: input };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
@@ -22913,7 +22966,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!d || !speech) return;
     const dia = dialogueById(d.dialogueId);
     const t = dia && dia.turns[d.turnIdx];
-    if (t && t.who === "npc") speech.speak(t.es, settings.speechRate);
+    if (t && t.who === "npc") speech.speak(withName(t.es), settings.speechRate);
   }
 
   // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
@@ -23468,15 +23521,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
-  // requestAnimationFrame, damit das Layout nach dem innerHTML steht; block:"end"
-  // hält den darüberliegenden npc-Satz mit im Bild.
+  // requestAnimationFrame, damit das Layout nach dem innerHTML steht.
+  // Normalfall (npc-Satz, Optionen, Verdikt): block:"end" hält den darüber-
+  // liegenden npc-Satz mit im Bild. Tipp-Zug dagegen: das Eingabefeld mittig
+  // halten – mit block:"end" schöbe es sonst genau hinter die eingeblendete
+  // Tastatur, und der Nutzer sähe nicht, was er tippt.
   function scrollDialogActive() {
     if (typeof requestAnimationFrame !== "function") return;
     requestAnimationFrame(function () {
-      const el = root.querySelector("#dlg-active");
-      if (!el) return;
+      const active = root.querySelector("#dlg-active");
+      if (!active) return;
+      const input = active.querySelector("#dialogos-answer");
+      const target = input || active;
+      const block = input ? "center" : "end";
       const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "end" }); } catch (e) { /* egal */ }
+      try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block }); } catch (e) { /* egal */ }
     });
   }
 
@@ -23503,7 +23562,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const d = state.dialogos;
       const dia = dialogueById(d.dialogueId);
       const t = dia && dia.turns[d.turnIdx];
-      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: t.es };
+      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: withName(t.es) };
     }
     return null;
   }
@@ -23823,6 +23882,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     applyTheme(next);
     buzz(8);
     render();
+  }
+
+  // Reise-Namen aus dem Profil speichern. Getrimmt, Mehrfach-Leerzeichen zusammen-
+  // gezogen, auf 40 Zeichen begrenzt. rerender:true (Knopf „Speichern") bestätigt
+  // mit Haptik und zeichnet neu; ohne (Blur via change-Handler) wird nur still
+  // gesichert, damit ein direkt danach getippter Knopf nicht durch ein Re-Render
+  // verloren geht.
+  function saveUserName(value, rerender) {
+    const name = String(value || "").trim().replace(/\s+/g, " ").slice(0, 40);
+    if (name !== (settings.userName || "")) {
+      settings = Object.assign({}, settings, { userName: name });
+      store.saveSettings(settings);
+    }
+    if (rerender) { buzz(8); render(); }
   }
 
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
@@ -25331,6 +25404,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       submitDialogosType(input ? input.value : "");
       return;
     }
+    // Profil: Reise-Namen speichern (Enter oder „Speichern"-Knopf).
+    if (e.target.closest('[data-action="save-name"]')) {
+      e.preventDefault();
+      const input = document.getElementById("profile-name");
+      saveUserName(input ? input.value : "", true);
+      return;
+    }
     // Getippte Antwort prüfen (Schreiben-/Hör-Modus).
     const form = e.target.closest('[data-action="submit-typed"]');
     if (!form) return;
@@ -25354,6 +25434,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const file = (e.target.files && e.target.files[0]) || null;
       e.target.value = ""; // erlaubt erneuten Import derselben Datei
       handleImportFile(file);
+      return;
+    }
+    // Profil-Name still sichern, sobald das Feld verlassen wird (auch ohne
+    // „Speichern"). Kein Re-Render hier, damit ein direkt danach getippter Knopf
+    // nicht ins Leere greift; die Persistenz reicht.
+    if (e.target && e.target.id === "profile-name") {
+      saveUserName(e.target.value, false);
       return;
     }
     // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie
