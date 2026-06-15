@@ -367,6 +367,9 @@ body {
 }
 
 /* ---------- ENTDECKEN-REITER: große Einstiegs-Buttons ---------- */
+/* Einträge eines Abschnitts stehen enger beieinander (10px) als die 18px
+ * zwischen den .sectioncap-Gruppen – so liest sich die Liste als Blöcke. */
+.featgroup { display: flex; flex-direction: column; gap: 10px; }
 .feat {
   display: flex; align-items: center; gap: 14px; width: 100%; cursor: pointer;
   text-align: left; padding: 16px; border-radius: var(--r-tile);
