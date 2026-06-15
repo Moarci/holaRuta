@@ -68,10 +68,16 @@ const ASSETS = [
 // (z. B. URLs mit Query-Parametern) unbegrenzt wächst.
 const ASSET_URLS = new Set(ASSETS.map((p) => new URL(p, self.location.href).href));
 
-// Installieren: alle App-Dateien in den Cache legen.
+// Installieren: alle App-Dateien in den Cache legen. Jede Datei wird mit
+// cache:"reload" geholt, damit der Precache am Browser-HTTP-Cache vorbei frisch
+// aus dem Netz lädt. Sonst kann ein neuer Worker (neue CACHE_VERSION) versehentlich
+// noch HTTP-gecachte alte Dateien einlagern – dann zeigt die App trotz Update die
+// alte Version, bis der HTTP-Cache abläuft.
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_VERSION).then((cache) =>
+      cache.addAll(ASSETS.map((url) => new Request(url, { cache: "reload" })))
+    )
   );
 });
 
