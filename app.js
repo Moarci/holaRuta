@@ -3361,6 +3361,26 @@
     share.shareImage("card", cardSharePayload(card), shareFormat());
   }
 
+  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Holt die
+  // Epoche frisch, lokalisiert sie (de/en), entfernt die *Markierungen* aus dem
+  // Spanischtext und reicht die „mitnehmen"-Vokabeln durch.
+  function shareHistoria(id) {
+    if (!share || !historia) return;
+    const era = (historia.ERAS || []).find((e) => e.id === id);
+    if (!era) return;
+    const e = loc(era);
+    const esText = (e.es || []).join("\n\n").replace(/\*/g, "");
+    const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
+    buzz(12);
+    share.shareImage("histtext", {
+      title: e.title,
+      levelCode: e.level || "",
+      levelWord: e.level ? t("discover.histLvl" + e.level) : "",
+      esText,
+      words,
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -3421,6 +3441,7 @@
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
+    else if (action === "share-historia") shareHistoria(el.dataset.id);
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();

@@ -1179,6 +1179,99 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hist-era__points li::before { content: "📌"; position: absolute; left: 10px; top: 8px; font-size: 0.8rem; }
 
+/* Schwierigkeits-Plakette (CEFR) – im Kopf der Epoche und über dem Lesetext. */
+.hist-era__metarow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.hist-era__metarow .hist-era__period { margin-bottom: 0; }
+.hist-era__lvlchip {
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
+  color: #fff; border-radius: 999px; padding: 2px 7px; background: var(--muted);
+}
+.hist-lvl--A1, .hist-lvl--A2 { background: #3F7355; }
+.hist-lvl--B1 { background: #B97C24; }
+.hist-lvl--B2 { background: #C2502E; }
+.hist-lvl--C1 { background: #B5302A; }
+
+/* Spanische Lesefassung. */
+.hist-es {
+  margin: 0 0 12px; padding: 14px; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-es__bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.hist-es__label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand-ink); }
+.hist-lvl {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700;
+  color: #fff; border-radius: 999px; padding: 3px 10px; background: var(--muted);
+}
+.hist-lvl__code { font-weight: 800; }
+.hist-lvl__meter { font-size: 0.6rem; letter-spacing: 1px; opacity: 0.9; }
+.hist-es__p { margin: 0 0 9px; color: var(--ink); line-height: 1.7; font-size: 1rem; }
+.hist-es__p:last-of-type { margin-bottom: 0; }
+.hist-es__hint { margin: 10px 0 0; font-size: 0.78rem; color: var(--muted); font-style: italic; }
+
+/* Antippbares Schwierigkeits-Wort mit Übersetzungs-Popover (reines CSS via :focus). */
+.hist-w {
+  position: relative; display: inline; margin: 0; padding: 0 1px; font: inherit; cursor: pointer;
+  color: var(--brand-ink); font-weight: 700; background: rgba(185, 124, 36, 0.16);
+  border: 0; border-bottom: 2px dotted var(--brand); border-radius: 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.hist-w:hover { background: rgba(185, 124, 36, 0.28); }
+.hist-w__pop {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  display: none; z-index: 5; white-space: normal; width: max-content; max-width: 240px;
+  padding: 7px 11px; font-size: 0.85rem; font-weight: 600; line-height: 1.35; text-align: center;
+  color: var(--card); background: var(--ink); border-radius: var(--r-sm); box-shadow: var(--shadow);
+}
+.hist-w__pop::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: var(--ink);
+}
+.hist-w:focus .hist-w__pop, .hist-w:focus-visible .hist-w__pop, .hist-w:hover .hist-w__pop { display: block; }
+.hist-w:focus { outline: none; }
+
+/* Wörterliste pro Text (aufklappbar), gruppiert in mitnehmen / überspringen. */
+.hist-voc, .hist-trans {
+  margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-voc[open], .hist-trans[open] { border-color: var(--line-strong); }
+.hist-voc__sum, .hist-trans__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 11px 13px; font-weight: 700; color: var(--ink); font-size: 0.92rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-voc__sum::-webkit-details-marker, .hist-trans__sum::-webkit-details-marker { display: none; }
+.hist-voc__sum:focus-visible, .hist-trans__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-voc__n {
+  font-size: 0.72rem; font-weight: 800; color: var(--brand-ink);
+  background: rgba(185, 124, 36, 0.16); border-radius: 999px; padding: 1px 8px;
+}
+.hist-voc__chev, .hist-trans__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-voc[open] .hist-voc__chev, .hist-trans[open] .hist-trans__chev { transform: rotate(180deg); }
+.hist-voc__body { padding: 0 13px 12px; }
+.hist-voc__cap { margin: 10px 0 6px; font-size: 0.78rem; font-weight: 700; }
+.hist-voc__cap--take { color: #3F7355; }
+.hist-voc__cap--skip { color: var(--muted); }
+[data-theme="dark"] .hist-voc__cap--take { color: #6FB58A; }
+.hist-voc__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.hist-voc__list--skip { opacity: 0.75; }
+.hist-voc__row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px;
+  padding: 7px 11px; background: var(--surface); border-radius: var(--r-sm);
+}
+.hist-voc__es { font-weight: 700; color: var(--brand-ink); }
+.hist-voc__es::before { content: "›"; margin-right: 6px; color: var(--muted); }
+.hist-voc__de { color: var(--ink-soft); font-size: 0.9rem; }
+
+/* Übersetzungs-Aufklapper + Teilen-Knopf. */
+.hist-trans__body { padding: 0 13px 12px; }
+.hist-trans__body .hist-era__p:first-child { margin-top: 2px; }
+.hist-share {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 2px; padding: 10px 16px;
+  font-weight: 700; font-size: 0.9rem; color: #fff; cursor: pointer;
+  background: linear-gradient(135deg, #8E5A2E, #5A3A24); border: 0; border-radius: var(--r-md);
+}
+.hist-share:active { transform: scale(0.98); }
+
 /* Protagonisten-Galerie. */
 .hist-figs { display: flex; flex-direction: column; gap: 12px; }
 .hist-fig {
@@ -2901,6 +2994,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histTodayTitle: "Heute: Lage & Spannungen",
     histTodaySub: "Wie es jetzt ist – die wichtigsten aktuellen Konflikte.",
     histFactsTitle: "¿Sabías que…? – Wusstest du schon?",
+    // Lesetraining (Spanisch) je Epoche
+    histReadEs: "Lies auf Spanisch",
+    histLevelTitle: "Schwierigkeit – zum Selbst-Einstufen",
+    histTapHint: "Tippe ein markiertes Wort für die Übersetzung.",
+    histVocab: "Wörterliste",
+    histTake: "Mitnehmen – die lohnen sich",
+    histSkip: "Nicht so wichtig – kannst du überspringen",
+    histTranslation: "Ganze Übersetzung anzeigen",
+    histShare: "Text & Vokabeln teilen",
+    histLvlA1: "ganz leicht",
+    histLvlA2: "leicht",
+    histLvlB1: "mittel",
+    histLvlB2: "fortgeschritten",
+    histLvlC1: "schwer",
 
     // Knigge
     kniggeIntroPre: "Allgemeine DOs &amp; Don'ts plus Besonderheiten",
@@ -3165,6 +3272,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histTodayTitle: "Today: situation & tensions",
     histTodaySub: "How it is now – the most important current conflicts.",
     histFactsTitle: "¿Sabías que…? – Did you know?",
+    // Reading practice (Spanish) per era
+    histReadEs: "Read in Spanish",
+    histLevelTitle: "Difficulty – for self-assessment",
+    histTapHint: "Tap a highlighted word for the translation.",
+    histVocab: "Word list",
+    histTake: "Worth taking with you",
+    histSkip: "Less important – you can skip these",
+    histTranslation: "Show full translation",
+    histShare: "Share text & vocab",
+    histLvlA1: "very easy",
+    histLvlA2: "easy",
+    histLvlB1: "intermediate",
+    histLvlB2: "advanced",
+    histLvlC1: "hard",
 
     kniggeIntroPre: "General dos &amp; don'ts plus particulars",
     kniggeIntroFor: (p) => ` for ${p.country}`,
@@ -3638,6 +3759,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionVocabHead: (p) => `📍 Spanisch für unterwegs: ${p.head}`,
     captionPron: (p) => `🗣️ Aussprache: ${p.tip}`,
     captionLearned: "Gelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
+    captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
+    captionHistoriaLevel: (p) => `📊 Niveau: ${p.level}`,
+    captionHistoria: "Spanisch lesen lernen mit echten Texten – HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -3656,6 +3780,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionVocabHead: (p) => `📍 Spanish on the go: ${p.head}`,
     captionPron: (p) => `🗣️ Pronunciation: ${p.tip}`,
     captionLearned: "Learned with HolaRuta – your travel Spanish for real situations. 🌎",
+    captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
+    captionHistoriaLevel: (p) => `📊 Level: ${p.level}`,
+    captionHistoria: "Learning to read Spanish with real texts – HolaRuta. 🌎",
   });
 })();
 
@@ -10871,6 +10998,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "Quechua, the language of the Inca, is still spoken by millions",
         "Machu Picchu only became world-famous in 1911",
       ],
+      level: "B1",
+      es: [
+        "Antes de la llegada de los españoles, en los Andes y en el Amazonas *florecieron* grandes civilizaciones. La más poderosa fue el *imperio* de los incas, llamado Tawantinsuyu. Desde su capital, Cusco, los incas dominaban un *territorio* enorme, desde Colombia hasta Chile.",
+        "No conocían la escritura ni la *rueda*, pero construían *caminos*, *puentes* colgantes y terrazas para cultivar en la montaña. Ciudades de piedra como Machu Picchu todavía *sorprenden* hoy.",
+        "También existían otros *pueblos*: los muiscas en Colombia, cuyo oro inspiró la *leyenda* de El Dorado, y los mapuches del sur de Chile, que nunca fueron *conquistados* del todo.",
+      ],
+      vocab: [
+        { es: "florecieron", de: "blühten (florecer)", en: "flourished (florecer)", take: true },
+        { es: "imperio", de: "das Reich", en: "empire", take: true },
+        { es: "territorio", de: "das Gebiet", en: "territory", take: true },
+        { es: "rueda", de: "das Rad", en: "wheel", take: true },
+        { es: "caminos", de: "die Wege, Straßen", en: "roads, paths", take: true },
+        { es: "puentes", de: "die Brücken", en: "bridges", take: true },
+        { es: "sorprenden", de: "überraschen (sorprender)", en: "surprise (sorprender)", take: true },
+        { es: "pueblos", de: "die Völker, Dörfer", en: "peoples, villages", take: true },
+        { es: "leyenda", de: "die Legende", en: "legend", take: false },
+        { es: "conquistados", de: "erobert (conquistar)", en: "conquered (conquistar)", take: false },
+      ],
       img: "Machu Picchu, Peru.jpg",
       imgCaption: "Machu Picchu – Inka-Stadt in den Anden Perus",
       imgCaptionEn: "Machu Picchu – Inca city in the Peruvian Andes",
@@ -10902,6 +11047,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "Pizarro captured Atahualpa with only ~170 men",
         "Disease killed far more people than weapons did",
         "In 1572 Vilcabamba fell, the last Inca resistance",
+      ],
+      level: "B1",
+      es: [
+        "En 1492, Cristóbal Colón llegó al Caribe. Pocas décadas después, los *conquistadores* avanzaron hacia el continente. En 1532, Francisco Pizarro *aprovechó* una guerra civil entre los incas: en Cajamarca *capturó* al rey Atahualpa, pidió un enorme *rescate* de oro y luego lo mandó *matar*.",
+        "Pero el verdadero *aliado* de los españoles fueron las *enfermedades*. La viruela y la gripe mataron hasta el noventa por ciento de la población indígena.",
+        "Con caballos, *armas* de fuego y aliados locales, los españoles *conquistaron* el continente. Lo justificaban con la cruz y la corona: la religión y la *riqueza* iban juntas.",
+      ],
+      vocab: [
+        { es: "conquistadores", de: "die Eroberer", en: "conquerors", take: false },
+        { es: "aprovechó", de: "nutzte aus (aprovechar)", en: "took advantage (aprovechar)", take: true },
+        { es: "capturó", de: "nahm gefangen (capturar)", en: "captured (capturar)", take: true },
+        { es: "rescate", de: "das Lösegeld; die Rettung", en: "ransom; rescue", take: true },
+        { es: "matar", de: "töten", en: "to kill", take: true },
+        { es: "aliado", de: "der Verbündete", en: "ally", take: true },
+        { es: "enfermedades", de: "die Krankheiten", en: "diseases", take: true },
+        { es: "armas", de: "die Waffen", en: "weapons", take: true },
+        { es: "conquistaron", de: "eroberten (conquistar)", en: "conquered (conquistar)", take: true },
+        { es: "riqueza", de: "der Reichtum", en: "wealth", take: true },
       ],
       img: "John Everett Millais - Pizarro seizing the Inca of Peru.jpg",
       imgCaption: "Pizarro nimmt den Inka gefangen (J. E. Millais, 1846)",
@@ -10935,6 +11098,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "Three viceroyalties: Peru, New Granada, Río de la Plata",
         "The Church deeply shaped language, education and daily life",
       ],
+      level: "B2",
+      es: [
+        "Durante casi tres siglos, España *gobernó* desde Lima y Bogotá. El continente se dividió en virreinatos, *mandados* por un virrey que representaba al rey.",
+        "El motor económico era la plata del cerro Rico de Potosí. Durante dos siglos, gran parte de la plata del mundo salió de allí, *extraída* con trabajo *forzado* que costó muchísimas *vidas*.",
+        "La sociedad estaba *dividida* por origen: arriba los nacidos en España, después los criollos, y abajo los indígenas y los *esclavos*. Esa *desigualdad* encendería más tarde la lucha por la *libertad*.",
+      ],
+      vocab: [
+        { es: "gobernó", de: "regierte (gobernar)", en: "governed (gobernar)", take: true },
+        { es: "mandados", de: "befehligt (mandar)", en: "commanded (mandar)", take: true },
+        { es: "extraída", de: "gefördert, abgebaut (extraer)", en: "extracted (extraer)", take: false },
+        { es: "forzado", de: "Zwangs-, erzwungen", en: "forced", take: true },
+        { es: "vidas", de: "die Leben (Pl. von vida)", en: "lives", take: true },
+        { es: "dividida", de: "geteilt (dividir)", en: "divided (dividir)", take: true },
+        { es: "esclavos", de: "die Sklaven", en: "slaves", take: true },
+        { es: "desigualdad", de: "die Ungleichheit", en: "inequality", take: true },
+        { es: "libertad", de: "die Freiheit", en: "freedom", take: true },
+      ],
       img: "Virreinato del Perú en el mapa de la América del Sur de Agustín Ibáñez y Bojons, 1800.jpg",
       imgCaption: "Südamerika unter spanischer Herrschaft (Karte, 1800)",
       imgCaptionEn: "South America under Spanish rule (map, 1800)",
@@ -10966,6 +11146,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "1780: revolt of Túpac Amaru II in Peru",
         "1808: Napoleon occupies Spain – a power vacuum",
         "1810: the first juntas from Caracas to Santiago",
+      ],
+      level: "B2",
+      es: [
+        "En 1780, en los Andes del Perú, Túpac Amaru II se *rebeló* contra la *explotación*. Fue una gran revuelta indígena, *aplastada* con violencia, pero nunca olvidada.",
+        "El *empujón* decisivo vino de Europa: en 1808, Napoleón *invadió* España y quitó del trono al rey Fernando VII. De repente faltaba la *legitimidad*: ¿en nombre de quién se debía gobernar?",
+        "La respuesta de los criollos: en 1810 formaron sus propias juntas de gobierno en Caracas, Buenos Aires, Bogotá y Santiago. Oficialmente, hasta el *regreso* del rey; en realidad, el primer *paso* hacia la independencia.",
+      ],
+      vocab: [
+        { es: "rebeló", de: "lehnte sich auf (rebelarse)", en: "rebelled (rebelarse)", take: true },
+        { es: "explotación", de: "die Ausbeutung", en: "exploitation", take: true },
+        { es: "aplastada", de: "niedergeschlagen (aplastar)", en: "crushed (aplastar)", take: false },
+        { es: "empujón", de: "der Stoß, Schubs (empujar)", en: "push, shove (empujar)", take: true },
+        { es: "invadió", de: "fiel ein (invadir)", en: "invaded (invadir)", take: true },
+        { es: "legitimidad", de: "die Legitimität", en: "legitimacy", take: false },
+        { es: "regreso", de: "die Rückkehr (regresar)", en: "return (regresar)", take: true },
+        { es: "paso", de: "der Schritt", en: "step", take: true },
       ],
       img: "Túpac Amaru II.JPG",
       imgCaption: "Túpac Amaru II. – früher Aufstand gegen die Kolonialmacht",
@@ -10999,6 +11195,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "San Martín & Bolívar met in Guayaquil in 1822",
         "1825: Bolivia is founded – named after Bolívar",
       ],
+      level: "B1",
+      es: [
+        "Desde el norte luchó Simón Bolívar, „El Libertador“. Tras años de *derrotas*, en 1819 cruzó los Andes *helados* y *venció* en Boyacá. Colombia quedó libre.",
+        "Desde el sur avanzó José de San Martín. Cruzó los Andes con un *ejército* entero, *liberó* Chile junto a O'Higgins y llegó al Perú en 1821.",
+        "En 1822, los dos libertadores se *reunieron* en Guayaquil. San Martín se *retiró* y dejó el camino a Bolívar. En 1824, el general Sucre *ganó* la *batalla* de Ayacucho: toda Sudamérica era libre.",
+      ],
+      vocab: [
+        { es: "derrotas", de: "die Niederlagen (derrota)", en: "defeats (derrota)", take: true },
+        { es: "helados", de: "eisig; auch: Eis", en: "icy; also: ice cream", take: true },
+        { es: "venció", de: "siegte (vencer)", en: "won, defeated (vencer)", take: true },
+        { es: "ejército", de: "das Heer, die Armee", en: "army", take: true },
+        { es: "liberó", de: "befreite (liberar)", en: "liberated (liberar)", take: true },
+        { es: "reunieron", de: "trafen sich (reunirse)", en: "met (reunirse)", take: true },
+        { es: "retiró", de: "zog sich zurück (retirarse)", en: "withdrew (retirarse)", take: true },
+        { es: "ganó", de: "gewann (ganar)", en: "won (ganar)", take: true },
+        { es: "batalla", de: "die Schlacht", en: "battle", take: false },
+      ],
       img: "Batalla de Ayacucho by Martín Tovar y Tovar (1827 - 1902).jpg",
       imgCaption: "Schlacht von Ayacucho 1824 – das Ende der Kolonialherrschaft",
       imgCaptionEn: "Battle of Ayacucho 1824 – the end of colonial rule",
@@ -11030,6 +11243,23 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "Gran Colombia: Venezuela + Colombia + Ecuador + Panama",
         "1830: the break-up – and Bolívar's death",
         "Brazil stayed Portuguese and was at first an empire",
+      ],
+      level: "B2",
+      es: [
+        "Bolívar *soñaba* con un solo país unido. En el norte creó la Gran Colombia: Venezuela, Colombia, Ecuador y Panamá juntos. Pero el territorio era inmenso y los *caudillos* locales querían mandar ellos mismos.",
+        "Ya en 1830 la Gran Colombia se *deshizo*. Ese mismo año Bolívar murió, *amargado* y pobre. Su frase famosa: „El que sirve una revolución *ara* en el mar.“",
+        "En el sur pasó lo mismo: las provincias se *separaron* en Argentina, Uruguay, Paraguay y Bolivia. Brasil siguió otro camino, *portugués* y primero *imperio*. Así nació el *mapa* actual de Sudamérica.",
+      ],
+      vocab: [
+        { es: "soñaba", de: "träumte (soñar)", en: "dreamed (soñar)", take: true },
+        { es: "caudillos", de: "die Machthaber, Anführer", en: "strongmen, warlords", take: false },
+        { es: "deshizo", de: "zerfiel (deshacerse)", en: "fell apart (deshacerse)", take: true },
+        { es: "amargado", de: "verbittert", en: "embittered", take: false },
+        { es: "ara", de: "pflügt (arar)", en: "ploughs (arar)", take: false },
+        { es: "separaron", de: "trennten sich (separarse)", en: "separated (separarse)", take: true },
+        { es: "portugués", de: "portugiesisch", en: "Portuguese", take: true },
+        { es: "imperio", de: "das Kaiserreich, Reich", en: "empire", take: true },
+        { es: "mapa", de: "die Karte", en: "map", take: true },
       ],
       img: "Gran Colombia in 1824.svg",
       imgCaption: "Gran Colombia 1824 – Bolívars Traum von der Einheit",
@@ -11063,6 +11293,25 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "1879–83 War of the Pacific: Bolivia loses its coast",
         "1973–1990: military dictatorships & \"Operation Condor\"",
         "From ~1985: a return to democracy and elections",
+      ],
+      level: "B1",
+      es: [
+        "Los nuevos países *pelearon* por sus *fronteras*. En la Guerra del Pacífico (1879–1883), Bolivia *perdió* su salida al mar. Paraguay quedó *destrozado* tras la Guerra de la Triple Alianza.",
+        "El siglo XX trajo *populismo* y, durante la Guerra Fría, muchas *dictaduras* militares: Chile con Pinochet, la junta argentina con sus *desaparecidos*, y otras más.",
+        "En los años ochenta y noventa *volvió* la *democracia* casi en todas partes. Hoy Sudamérica es un continente de *repúblicas*, con cultura *viva* pero también con desigualdad y crisis políticas.",
+      ],
+      vocab: [
+        { es: "pelearon", de: "kämpften (pelear)", en: "fought (pelear)", take: true },
+        { es: "fronteras", de: "die Grenzen", en: "borders", take: true },
+        { es: "perdió", de: "verlor (perder)", en: "lost (perder)", take: true },
+        { es: "destrozado", de: "zerstört (destrozar)", en: "destroyed (destrozar)", take: true },
+        { es: "populismo", de: "der Populismus", en: "populism", take: false },
+        { es: "dictaduras", de: "die Diktaturen", en: "dictatorships", take: true },
+        { es: "desaparecidos", de: "die Verschwundenen", en: "the disappeared", take: false },
+        { es: "volvió", de: "kehrte zurück (volver)", en: "returned (volver)", take: true },
+        { es: "democracia", de: "die Demokratie", en: "democracy", take: true },
+        { es: "repúblicas", de: "die Republiken", en: "republics", take: true },
+        { es: "viva", de: "lebendig (vivo/viva)", en: "lively, alive", take: true },
       ],
       img: "",
       imgCaption: "",
@@ -15534,6 +15783,142 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return c;
   }
 
+  // Zeichnet einen umgebrochenen Text links-bündig, geklammert auf maxBottom
+  // (letzte Zeile bekommt „…"). Liefert die ungefähre Unterkante zurück.
+  function drawWrapped(ctx, text, x, top, maxW, opts) {
+    const o = opts || {};
+    const px = o.px || 32, lh = o.lineHeight || 1.4;
+    ctx.font = font(o.weight || "500", px);
+    ctx.fillStyle = o.color || INK;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    const all = wrap(ctx, text, maxW);
+    const maxBottom = o.maxBottom || Infinity;
+    const step = px * lh;
+    const shown = [];
+    let y = top + px;
+    for (let i = 0; i < all.length; i++) {
+      if (y > maxBottom) {
+        if (shown.length) shown[shown.length - 1] = shown[shown.length - 1].replace(/\s+\S*$/, "") + " …";
+        break;
+      }
+      shown.push(all[i]);
+      y += step;
+    }
+    let yy = top + px;
+    shown.forEach((ln) => { ctx.fillText(ln, x, yy); yy += step; });
+    return yy - step + px * (lh - 1);
+  }
+
+  // ---------- Motiv 4: Geschichts-Lesetext + Wörterliste ----------
+  // payload: { title, levelCode, levelWord, esText, words:[{es,de}] }
+  function buildHistoria(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    const accent = ["#8E5A2E", "#5A3A24"];
+    const cx = W / 2;
+    const isStory = aspect === "story";
+    bgGradient(ctx, accent[0], accent[1], h);
+
+    const pw = W - PAD * 2;
+
+    // Kicker
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = font("700", 32);
+    ctx.fillText("📜  HISTORIA DE SUDAMÉRICA", cx, isStory ? 140 : 104);
+
+    // Titel der Epoche
+    const titleTop = isStory ? 168 : 130;
+    const titleBottom = fitText(ctx, payload.title || "", cx, titleTop, pw - 40, {
+      px: 60, min: 36, weight: "800", color: "#ffffff", maxLines: 3,
+    });
+
+    // Schwierigkeits-Pille (Selbst-Einstufung)
+    let y = titleBottom + 34;
+    if (payload.levelCode) {
+      const pill = payload.levelWord ? `${payload.levelCode}  ·  ${payload.levelWord}` : payload.levelCode;
+      ctx.font = font("700", 30);
+      const plw = ctx.measureText(pill).width + 60;
+      ctx.fillStyle = "rgba(255,255,255,0.16)";
+      roundRect(ctx, cx - plw / 2, y, plw, 58, 29);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(pill, cx, y + 30);
+      ctx.textBaseline = "alphabetic";
+      y += 58;
+    }
+    y += 40;
+
+    // Weißes Panel bis über die Marken-Fußzeile
+    const panelY = y;
+    const panelH = h - 175 - panelY;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 44;
+    ctx.shadowOffsetY = 20;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, PAD, panelY, pw, panelH, 48);
+    ctx.fill();
+    ctx.restore();
+
+    const innerX = PAD + 56;
+    const innerW = pw - 112;
+    let iy = panelY + 54;
+
+    // Label + spanischer Lesetext
+    ctx.textAlign = "left";
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.fillText("LEE EN ESPAÑOL", innerX, iy + 20);
+    iy += 56;
+
+    const words = (payload.words || []).slice(0, isStory ? 9 : 5);
+    const vocabH = 60 + words.length * 54;
+    const textMaxBottom = panelY + panelH - vocabH - 56;
+    drawWrapped(ctx, payload.esText || "", innerX, iy, innerW, {
+      px: isStory ? 34 : 31, weight: "500", color: INK, lineHeight: 1.42, maxBottom: textMaxBottom,
+    });
+
+    // Trenner + Wörterliste
+    let vy = panelY + panelH - vocabH - 8;
+    ctx.strokeStyle = "rgba(15,23,42,0.10)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(innerX, vy);
+    ctx.lineTo(innerX + innerW, vy);
+    ctx.stroke();
+    vy += 46;
+
+    ctx.fillStyle = accent[0];
+    ctx.font = font("800", 26);
+    ctx.textAlign = "left";
+    ctx.fillText("📒  VOCABULARIO", innerX, vy);
+    vy += 46;
+
+    words.forEach((w) => {
+      ctx.textAlign = "left";
+      ctx.font = font("800", 30);
+      ctx.fillStyle = accent[0];
+      const esW = String(w.es || "");
+      ctx.fillText(esW, innerX, vy);
+      const offset = ctx.measureText(esW + "   ").width;
+      ctx.font = font("500", 27);
+      ctx.fillStyle = MUTE;
+      let de = String(w.de || "");
+      let trimmed = false;
+      while (ctx.measureText(de).width > innerW - offset && de.length > 5) { de = de.slice(0, -2); trimmed = true; }
+      ctx.fillText(trimmed ? de + "…" : de, innerX + offset, vy);
+      vy += 54;
+    });
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Canvas -> Blob ----------
   function toBlob(canvas) {
     return new Promise((resolve, reject) => {
@@ -15586,6 +15971,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       out += `\n\n${t("share.captionCollected")}`;
       return out + link;
     }
+    if (kind === "histtext") {
+      const title = String(p.title || "").trim();
+      let out = t("share.captionHistoriaHead", { title: title || "Historia de Sudamérica" });
+      if (p.levelCode) out += `\n${t("share.captionHistoriaLevel", { level: p.levelCode })}`;
+      out += `\n\n${t("share.captionHistoria")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -15604,6 +15996,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     try {
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
+             : kind === "histtext" ? buildHistoria(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -15620,10 +16013,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "badge" ? "holaruta-stempel"
+               : kind === "histtext" ? "holaruta-historia"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
+                : kind === "histtext" ? "Historia de Sudamérica"
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
@@ -15651,7 +16046,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildBadge };
+  window.SC.share = { shareImage, buildCard, buildStats, buildBadge, buildHistoria };
 })();
 
 </script>
@@ -15801,6 +16196,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         "🕰️ Interaktiver Zeitstrahl: sieben aufklappbare Epochen – Hochkulturen, Conquista, Vizekönigreiche & Silber, der Funke (Napoleon & die Junten), der Freiheitskampf, die Abspaltung in viele Nationen und der Weg bis heute. Jede Epoche mit Bild von Wikimedia, Kernpunkten und Erklärung.",
         "👤 Galerie der Protagonisten: Bolívar, San Martín, Sucre, O’Higgins, Manuela Sáenz und Atahualpa – mit Porträt, Lebensdaten und Zitat.",
         "📰 „Heute: Lage & Spannungen“: aktuelle Konflikte verständlich erklärt – Venezuela-Krise & Massenflucht, Grenzstreit um Essequibo, Boliviens Meereszugang, Kolumbiens Friedensprozess, Perus politische Dauerkrise, Argentiniens Kurswechsel, Amazonas & indigene Rechte und der Darién.",
+        "📖 Lesetraining auf Spanisch: jede Epoche gibt es zusätzlich als spanischen Lesetext. Schwierige Wörter sind markiert – antippen zeigt die Übersetzung. Pro Text eine Wörterliste zum schnellen Nachschlagen, sauber getrennt in „lohnt sich mitzunehmen“ und „nicht so wichtig“.",
+        "📊 Schwierigkeits-Score (CEFR A1–C1) pro Text zur Selbst-Einstufung, plus „Ganze Übersetzung anzeigen“ und ein teilbares Sharepic von Text & Wörterliste.",
         "💡 „¿Sabías que…?“-Häppchen und durchgängig zweisprachig (Deutsch/Englisch).",
       ],
     },
@@ -17656,6 +18053,51 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!file) return "";
     return "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(file) + "?width=" + (w || 960);
   }
+
+  // CEFR-Schwierigkeit → Punkte-Meter + lokalisiertes Wort (Selbst-Einstufung).
+  const HIST_LEVEL_DOTS = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
+  function levelMeta(level) {
+    if (!level) return null;
+    const dots = HIST_LEVEL_DOTS[level] || 3;
+    return { code: level, word: t("discover.histLvl" + level), meter: "●".repeat(dots) + "○".repeat(5 - dots) };
+  }
+  // Spanischer Lesetext: *markierte* Wörter werden zu antippbaren Chips, die die
+  // Übersetzung (aus der Wörterliste der Epoche, in der aktiven Sprache) zeigen.
+  function esRich(paras, vocab) {
+    const vmap = {};
+    (vocab || []).forEach((v) => { vmap[String(v.es).toLowerCase().trim()] = v; });
+    return (paras || []).map((p) => {
+      let html = "", last = 0; const re = /\*([^*]+)\*/g; let m;
+      while ((m = re.exec(p))) {
+        html += esc(p.slice(last, m.index));
+        const w = m[1];
+        const v = vmap[w.toLowerCase().trim()];
+        const tr = v ? v.de : "";
+        html += `<button class="hist-w" type="button" aria-label="${esc(w + " – " + tr)}">${esc(w)}<span class="hist-w__pop" aria-hidden="true">${esc(tr)}</span></button>`;
+        last = re.lastIndex;
+      }
+      html += esc(p.slice(last));
+      return `<p class="hist-es__p" lang="es">${html}</p>`;
+    }).join("");
+  }
+  // Wörterliste pro Text: zum schnellen Nachschlagen, gruppiert in „mitnehmen"
+  // (lohnt sich) und „nicht so wichtig" (kannst du überspringen).
+  function vocabBlock(vocab) {
+    if (!vocab || !vocab.length) return "";
+    const row = (v) => `<li class="hist-voc__row"><span class="hist-voc__es" lang="es">${esc(v.es)}</span><span class="hist-voc__de">${esc(v.de)}</span></li>`;
+    const take = vocab.filter((v) => v.take), skip = vocab.filter((v) => !v.take);
+    const takeList = take.length
+      ? `<p class="hist-voc__cap hist-voc__cap--take">✅ ${esc(t("discover.histTake"))}</p><ul class="hist-voc__list">${take.map(row).join("")}</ul>`
+      : "";
+    const skipList = skip.length
+      ? `<p class="hist-voc__cap hist-voc__cap--skip">○ ${esc(t("discover.histSkip"))}</p><ul class="hist-voc__list hist-voc__list--skip">${skip.map(row).join("")}</ul>`
+      : "";
+    return `
+      <details class="hist-voc">
+        <summary class="hist-voc__sum">📒 ${esc(t("discover.histVocab"))} <span class="hist-voc__n">${vocab.length}</span><span class="hist-voc__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-voc__body">${takeList}${skipList}</div>
+      </details>`;
+  }
   function renderHistoria(vm) {
     // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
     const nav = `
@@ -17674,16 +18116,42 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
              ${e.imgCaption ? `<figcaption class="hist-era__cap">${esc(e.imgCaption)}</figcaption>` : ""}
            </figure>`
         : "";
-      const paras = (e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("");
+      const lvl = levelMeta(e.level);
+      const hasEs = (e.es || []).length > 0;
+      // Spanische Lesefassung mit Schwierigkeits-Plakette und Tipp-Hinweis.
+      const esText = hasEs
+        ? `<div class="hist-es">
+             <div class="hist-es__bar">
+               <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
+               ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
+             </div>
+             ${esRich(e.es, e.vocab)}
+             <p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p>
+           </div>`
+        : "";
+      const vocab = vocabBlock(e.vocab);
+      // Volle Übersetzung in der UI-Sprache – auf Wunsch, damit der Lesefluss bleibt.
+      const trans = (e.body || []).length
+        ? `<details class="hist-trans">
+             <summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-trans__body">${(e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div>
+           </details>`
+        : "";
       const points = (e.points || []).length
         ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
+        : "";
+      const share = hasEs
+        ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(e.id)}">📤 ${esc(t("discover.histShare"))}</button>`
         : "";
       return `
         <details class="hist-era">
           <summary class="hist-era__head">
             <span class="hist-era__dot" aria-hidden="true">${esc(e.icon || "•")}</span>
             <span class="hist-era__heart">
-              <span class="hist-era__period">${esc(e.period)}</span>
+              <span class="hist-era__metarow">
+                <span class="hist-era__period">${esc(e.period)}</span>
+                ${lvl ? `<span class="hist-era__lvlchip hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}
+              </span>
               <span class="hist-era__title">${esc(e.title)}</span>
               <span class="hist-era__lead">${esc(e.lead)}</span>
             </span>
@@ -17691,8 +18159,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </summary>
           <div class="hist-era__body">
             ${img}
-            ${paras}
+            ${esText}
+            ${vocab}
+            ${trans}
             ${points}
+            ${share}
           </div>
         </details>`;
     };
@@ -22645,6 +23116,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     share.shareImage("card", cardSharePayload(card), shareFormat());
   }
 
+  // Teilt einen Geschichts-Lesetext samt Wörterliste als Sharepic. Holt die
+  // Epoche frisch, lokalisiert sie (de/en), entfernt die *Markierungen* aus dem
+  // Spanischtext und reicht die „mitnehmen"-Vokabeln durch.
+  function shareHistoria(id) {
+    if (!share || !historia) return;
+    const era = (historia.ERAS || []).find((e) => e.id === id);
+    if (!era) return;
+    const e = loc(era);
+    const esText = (e.es || []).join("\n\n").replace(/\*/g, "");
+    const words = (e.vocab || []).filter((v) => v.take).map((v) => ({ es: v.es, de: v.de }));
+    buzz(12);
+    share.shareImage("histtext", {
+      title: e.title,
+      levelCode: e.level || "",
+      levelWord: e.level ? t("discover.histLvl" + e.level) : "",
+      esText,
+      words,
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -22705,6 +23196,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
+    else if (action === "share-historia") shareHistoria(el.dataset.id);
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();

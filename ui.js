@@ -1531,6 +1531,51 @@
     if (!file) return "";
     return "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(file) + "?width=" + (w || 960);
   }
+
+  // CEFR-Schwierigkeit → Punkte-Meter + lokalisiertes Wort (Selbst-Einstufung).
+  const HIST_LEVEL_DOTS = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
+  function levelMeta(level) {
+    if (!level) return null;
+    const dots = HIST_LEVEL_DOTS[level] || 3;
+    return { code: level, word: t("discover.histLvl" + level), meter: "●".repeat(dots) + "○".repeat(5 - dots) };
+  }
+  // Spanischer Lesetext: *markierte* Wörter werden zu antippbaren Chips, die die
+  // Übersetzung (aus der Wörterliste der Epoche, in der aktiven Sprache) zeigen.
+  function esRich(paras, vocab) {
+    const vmap = {};
+    (vocab || []).forEach((v) => { vmap[String(v.es).toLowerCase().trim()] = v; });
+    return (paras || []).map((p) => {
+      let html = "", last = 0; const re = /\*([^*]+)\*/g; let m;
+      while ((m = re.exec(p))) {
+        html += esc(p.slice(last, m.index));
+        const w = m[1];
+        const v = vmap[w.toLowerCase().trim()];
+        const tr = v ? v.de : "";
+        html += `<button class="hist-w" type="button" aria-label="${esc(w + " – " + tr)}">${esc(w)}<span class="hist-w__pop" aria-hidden="true">${esc(tr)}</span></button>`;
+        last = re.lastIndex;
+      }
+      html += esc(p.slice(last));
+      return `<p class="hist-es__p" lang="es">${html}</p>`;
+    }).join("");
+  }
+  // Wörterliste pro Text: zum schnellen Nachschlagen, gruppiert in „mitnehmen"
+  // (lohnt sich) und „nicht so wichtig" (kannst du überspringen).
+  function vocabBlock(vocab) {
+    if (!vocab || !vocab.length) return "";
+    const row = (v) => `<li class="hist-voc__row"><span class="hist-voc__es" lang="es">${esc(v.es)}</span><span class="hist-voc__de">${esc(v.de)}</span></li>`;
+    const take = vocab.filter((v) => v.take), skip = vocab.filter((v) => !v.take);
+    const takeList = take.length
+      ? `<p class="hist-voc__cap hist-voc__cap--take">✅ ${esc(t("discover.histTake"))}</p><ul class="hist-voc__list">${take.map(row).join("")}</ul>`
+      : "";
+    const skipList = skip.length
+      ? `<p class="hist-voc__cap hist-voc__cap--skip">○ ${esc(t("discover.histSkip"))}</p><ul class="hist-voc__list hist-voc__list--skip">${skip.map(row).join("")}</ul>`
+      : "";
+    return `
+      <details class="hist-voc">
+        <summary class="hist-voc__sum">📒 ${esc(t("discover.histVocab"))} <span class="hist-voc__n">${vocab.length}</span><span class="hist-voc__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-voc__body">${takeList}${skipList}</div>
+      </details>`;
+  }
   function renderHistoria(vm) {
     // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
     const nav = `
@@ -1549,16 +1594,42 @@
              ${e.imgCaption ? `<figcaption class="hist-era__cap">${esc(e.imgCaption)}</figcaption>` : ""}
            </figure>`
         : "";
-      const paras = (e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("");
+      const lvl = levelMeta(e.level);
+      const hasEs = (e.es || []).length > 0;
+      // Spanische Lesefassung mit Schwierigkeits-Plakette und Tipp-Hinweis.
+      const esText = hasEs
+        ? `<div class="hist-es">
+             <div class="hist-es__bar">
+               <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
+               ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
+             </div>
+             ${esRich(e.es, e.vocab)}
+             <p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p>
+           </div>`
+        : "";
+      const vocab = vocabBlock(e.vocab);
+      // Volle Übersetzung in der UI-Sprache – auf Wunsch, damit der Lesefluss bleibt.
+      const trans = (e.body || []).length
+        ? `<details class="hist-trans">
+             <summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-trans__body">${(e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div>
+           </details>`
+        : "";
       const points = (e.points || []).length
         ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
+        : "";
+      const share = hasEs
+        ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(e.id)}">📤 ${esc(t("discover.histShare"))}</button>`
         : "";
       return `
         <details class="hist-era">
           <summary class="hist-era__head">
             <span class="hist-era__dot" aria-hidden="true">${esc(e.icon || "•")}</span>
             <span class="hist-era__heart">
-              <span class="hist-era__period">${esc(e.period)}</span>
+              <span class="hist-era__metarow">
+                <span class="hist-era__period">${esc(e.period)}</span>
+                ${lvl ? `<span class="hist-era__lvlchip hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}
+              </span>
               <span class="hist-era__title">${esc(e.title)}</span>
               <span class="hist-era__lead">${esc(e.lead)}</span>
             </span>
@@ -1566,8 +1637,11 @@
           </summary>
           <div class="hist-era__body">
             ${img}
-            ${paras}
+            ${esText}
+            ${vocab}
+            ${trans}
             ${points}
+            ${share}
           </div>
         </details>`;
     };

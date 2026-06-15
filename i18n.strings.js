@@ -423,6 +423,20 @@
     histTodayTitle: "Heute: Lage & Spannungen",
     histTodaySub: "Wie es jetzt ist – die wichtigsten aktuellen Konflikte.",
     histFactsTitle: "¿Sabías que…? – Wusstest du schon?",
+    // Lesetraining (Spanisch) je Epoche
+    histReadEs: "Lies auf Spanisch",
+    histLevelTitle: "Schwierigkeit – zum Selbst-Einstufen",
+    histTapHint: "Tippe ein markiertes Wort für die Übersetzung.",
+    histVocab: "Wörterliste",
+    histTake: "Mitnehmen – die lohnen sich",
+    histSkip: "Nicht so wichtig – kannst du überspringen",
+    histTranslation: "Ganze Übersetzung anzeigen",
+    histShare: "Text & Vokabeln teilen",
+    histLvlA1: "ganz leicht",
+    histLvlA2: "leicht",
+    histLvlB1: "mittel",
+    histLvlB2: "fortgeschritten",
+    histLvlC1: "schwer",
 
     // Knigge
     kniggeIntroPre: "Allgemeine DOs &amp; Don'ts plus Besonderheiten",
@@ -687,6 +701,20 @@
     histTodayTitle: "Today: situation & tensions",
     histTodaySub: "How it is now – the most important current conflicts.",
     histFactsTitle: "¿Sabías que…? – Did you know?",
+    // Reading practice (Spanish) per era
+    histReadEs: "Read in Spanish",
+    histLevelTitle: "Difficulty – for self-assessment",
+    histTapHint: "Tap a highlighted word for the translation.",
+    histVocab: "Word list",
+    histTake: "Worth taking with you",
+    histSkip: "Less important – you can skip these",
+    histTranslation: "Show full translation",
+    histShare: "Share text & vocab",
+    histLvlA1: "very easy",
+    histLvlA2: "easy",
+    histLvlB1: "intermediate",
+    histLvlB2: "advanced",
+    histLvlC1: "hard",
 
     kniggeIntroPre: "General dos &amp; don'ts plus particulars",
     kniggeIntroFor: (p) => ` for ${p.country}`,
@@ -1160,6 +1188,9 @@
     captionVocabHead: (p) => `📍 Spanisch für unterwegs: ${p.head}`,
     captionPron: (p) => `🗣️ Aussprache: ${p.tip}`,
     captionLearned: "Gelernt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
+    captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
+    captionHistoriaLevel: (p) => `📊 Niveau: ${p.level}`,
+    captionHistoria: "Spanisch lesen lernen mit echten Texten – HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -1178,5 +1209,8 @@
     captionVocabHead: (p) => `📍 Spanish on the go: ${p.head}`,
     captionPron: (p) => `🗣️ Pronunciation: ${p.tip}`,
     captionLearned: "Learned with HolaRuta – your travel Spanish for real situations. 🌎",
+    captionHistoriaHead: (p) => `📜 ${p.title} – Historia de Sudamérica`,
+    captionHistoriaLevel: (p) => `📊 Level: ${p.level}`,
+    captionHistoria: "Learning to read Spanish with real texts – HolaRuta. 🌎",
   });
 })();

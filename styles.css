@@ -1141,6 +1141,99 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .hist-era__points li::before { content: "📌"; position: absolute; left: 10px; top: 8px; font-size: 0.8rem; }
 
+/* Schwierigkeits-Plakette (CEFR) – im Kopf der Epoche und über dem Lesetext. */
+.hist-era__metarow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.hist-era__metarow .hist-era__period { margin-bottom: 0; }
+.hist-era__lvlchip {
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
+  color: #fff; border-radius: 999px; padding: 2px 7px; background: var(--muted);
+}
+.hist-lvl--A1, .hist-lvl--A2 { background: #3F7355; }
+.hist-lvl--B1 { background: #B97C24; }
+.hist-lvl--B2 { background: #C2502E; }
+.hist-lvl--C1 { background: #B5302A; }
+
+/* Spanische Lesefassung. */
+.hist-es {
+  margin: 0 0 12px; padding: 14px; background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-es__bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.hist-es__label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand-ink); }
+.hist-lvl {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700;
+  color: #fff; border-radius: 999px; padding: 3px 10px; background: var(--muted);
+}
+.hist-lvl__code { font-weight: 800; }
+.hist-lvl__meter { font-size: 0.6rem; letter-spacing: 1px; opacity: 0.9; }
+.hist-es__p { margin: 0 0 9px; color: var(--ink); line-height: 1.7; font-size: 1rem; }
+.hist-es__p:last-of-type { margin-bottom: 0; }
+.hist-es__hint { margin: 10px 0 0; font-size: 0.78rem; color: var(--muted); font-style: italic; }
+
+/* Antippbares Schwierigkeits-Wort mit Übersetzungs-Popover (reines CSS via :focus). */
+.hist-w {
+  position: relative; display: inline; margin: 0; padding: 0 1px; font: inherit; cursor: pointer;
+  color: var(--brand-ink); font-weight: 700; background: rgba(185, 124, 36, 0.16);
+  border: 0; border-bottom: 2px dotted var(--brand); border-radius: 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.hist-w:hover { background: rgba(185, 124, 36, 0.28); }
+.hist-w__pop {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  display: none; z-index: 5; white-space: normal; width: max-content; max-width: 240px;
+  padding: 7px 11px; font-size: 0.85rem; font-weight: 600; line-height: 1.35; text-align: center;
+  color: var(--card); background: var(--ink); border-radius: var(--r-sm); box-shadow: var(--shadow);
+}
+.hist-w__pop::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: var(--ink);
+}
+.hist-w:focus .hist-w__pop, .hist-w:focus-visible .hist-w__pop, .hist-w:hover .hist-w__pop { display: block; }
+.hist-w:focus { outline: none; }
+
+/* Wörterliste pro Text (aufklappbar), gruppiert in mitnehmen / überspringen. */
+.hist-voc, .hist-trans {
+  margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.hist-voc[open], .hist-trans[open] { border-color: var(--line-strong); }
+.hist-voc__sum, .hist-trans__sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 11px 13px; font-weight: 700; color: var(--ink); font-size: 0.92rem;
+  -webkit-user-select: none; user-select: none;
+}
+.hist-voc__sum::-webkit-details-marker, .hist-trans__sum::-webkit-details-marker { display: none; }
+.hist-voc__sum:focus-visible, .hist-trans__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.hist-voc__n {
+  font-size: 0.72rem; font-weight: 800; color: var(--brand-ink);
+  background: rgba(185, 124, 36, 0.16); border-radius: 999px; padding: 1px 8px;
+}
+.hist-voc__chev, .hist-trans__chev { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: transform 0.2s ease; }
+.hist-voc[open] .hist-voc__chev, .hist-trans[open] .hist-trans__chev { transform: rotate(180deg); }
+.hist-voc__body { padding: 0 13px 12px; }
+.hist-voc__cap { margin: 10px 0 6px; font-size: 0.78rem; font-weight: 700; }
+.hist-voc__cap--take { color: #3F7355; }
+.hist-voc__cap--skip { color: var(--muted); }
+[data-theme="dark"] .hist-voc__cap--take { color: #6FB58A; }
+.hist-voc__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.hist-voc__list--skip { opacity: 0.75; }
+.hist-voc__row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px;
+  padding: 7px 11px; background: var(--surface); border-radius: var(--r-sm);
+}
+.hist-voc__es { font-weight: 700; color: var(--brand-ink); }
+.hist-voc__es::before { content: "›"; margin-right: 6px; color: var(--muted); }
+.hist-voc__de { color: var(--ink-soft); font-size: 0.9rem; }
+
+/* Übersetzungs-Aufklapper + Teilen-Knopf. */
+.hist-trans__body { padding: 0 13px 12px; }
+.hist-trans__body .hist-era__p:first-child { margin-top: 2px; }
+.hist-share {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 2px; padding: 10px 16px;
+  font-weight: 700; font-size: 0.9rem; color: #fff; cursor: pointer;
+  background: linear-gradient(135deg, #8E5A2E, #5A3A24); border: 0; border-radius: var(--r-md);
+}
+.hist-share:active { transform: scale(0.98); }
+
 /* Protagonisten-Galerie. */
 .hist-figs { display: flex; flex-direction: column; gap: 12px; }
 .hist-fig {
