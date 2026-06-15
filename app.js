@@ -268,6 +268,7 @@
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
       showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
+      showMedellinPreset: tripMentionsMedellin(), // Stadt-Pack-Kachel nur bei Medellín-Bezug
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
@@ -282,7 +283,7 @@
         const m = {};
         const shown = {
           "prearrival-co": tripMentionsColombia(), "prearrival-ctg": tripMentionsCartagena(),
-          "prearrival-pe": tripMentionsPeru(),
+          "prearrival-med": tripMentionsMedellin(), "prearrival-pe": tripMentionsPeru(),
           "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
           "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
           "prearrival-ar": tripMentionsArgentina(), "prearrival-cl": tripMentionsChile(),
@@ -630,6 +631,19 @@
     const t = gamestats.tripGoal;
     const cfg = window.SC && window.SC.config;
     return isCartagenaDest(t && t.destination) || isCartagenaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Medellín: ebenfalls ein Stadt-Pack innerhalb Kolumbiens (eigene, engere Stichwörter).
+  const MEDELLIN_HINTS = ["medellin", "poblado", "laureles", "comuna 13", "envigado", "guatape"];
+  function isMedellinDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return MEDELLIN_HINTS.some((h) => norm.includes(h));
+  }
+  function tripMentionsMedellin() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isMedellinDest(t && t.destination) || isMedellinDest(cfg && cfg.defaultDestination);
   }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
@@ -2464,7 +2478,8 @@
     if (tripMentionsArgentina()) return "argentina";
     if (tripMentionsChile()) return "chile";
     if (tripMentionsBolivia()) return "bolivia";
-    if (tripMentionsCartagena()) return "cartagena"; // konkretes Cartagena vor dem breiten Kolumbien
+    if (tripMentionsCartagena()) return "cartagena"; // konkrete Städte vor dem breiten Kolumbien
+    if (tripMentionsMedellin()) return "medellin";
     if (tripMentionsColombia()) return "colombia";
     return (PRETRIP()[0] || {}).scope || "colombia";
   }

@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.75.0",
+      date: "2026-06-15",
+      title: "Neuer Stadt-Pack: Medellín 🌆",
+      items: [
+        "🌆 Neuer Medellín-Pack mit 34 reisepraktischen Karten – vom Flughafen über Metro & Metrocable, die Viertel (El Poblado, Laureles, Comuna 13) und Paisa-Kultur/-Sprache (parce, pues, „¿Bien o qué?“) bis zu Paisa-Küche (bandeja paisa, tinto), Tagestrips (Guatapé, El Peñol) und Alltag/Sicherheit (Nequi, „no dar papaya“). Jede Karte mit echtem Reise-Kontext.",
+        "🗓️ Dazu ein 7-Etappen-Pre-Trip-Plan „Medellín“ und ein zuweisbares „Pre-Arrival: Medellín“-Paket; die Dashboard-Kachel erscheint bei Medellín-Bezug.",
+      ],
+    },
+    {
       version: "1.74.0",
       date: "2026-06-15",
       title: "Aktivitätsblatt: Review-Feinschliff",
