@@ -226,6 +226,9 @@
       sessionCap: SESSION_CAP,
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
+      syncEnabled: !!(window.SC.sync && window.SC.sync.enabled()), // optionale Cloud-Sync (nur per Edition)
+      syncLoggedIn: !!(window.SC.sync && window.SC.sync.loggedIn && window.SC.sync.loggedIn()),
+      syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
       hasCountries: !!countries, // dito für die Länderkunde
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
@@ -3494,6 +3497,29 @@
     reader.readAsText(file);
   }
 
+  // ----- Optionale Cloud-Sync (Stufe 3, nur per Edition aktiv) -----
+  // Pull → merge → lokal anwenden → push (sync.syncNow). Login passwortlos;
+  // der Demo-Mock liefert direkt ein Token, der echte Flow schickt einen
+  // Magic-Link. Ohne aktive Edition existiert dieser Pfad gar nicht (Nav-Eintrag
+  // ist dann ausgeblendet).
+  function cloudSync() {
+    const sync = window.SC.sync;
+    if (!(sync && sync.enabled())) return;
+    const run = () => sync.syncNow().then((r) => {
+      if (r && r.changedLocal) { showNotice(t("profile.cloudSynced")); try { location.reload(); } catch (e) { /* egal */ } }
+      else showNotice(t("profile.cloudUpToDate"));
+    }).catch(() => showNotice(t("profile.cloudFailed")));
+    if (sync.loggedIn()) { run(); return; }
+    let email = "";
+    try { email = window.prompt(t("profile.cloudEmailPrompt")) || ""; } catch (e) { email = ""; }
+    email = email.trim();
+    if (!email) return;
+    sync.login(email).then(() => {
+      if (sync.loggedIn()) run();             // Mock: direkt eingeloggt
+      else showNotice(t("profile.cloudCheckMail")); // echter Flow: Magic-Link/OTP
+    }).catch(() => showNotice(t("profile.cloudFailed")));
+  }
+
   // Spricht die spanische Antwort der aktuellen Karte vor.
   // Erste akzeptierte Variante (ohne "/"-Alternativen), damit es sauber klingt.
   function speakCurrent() {
@@ -3639,6 +3665,7 @@
     else if (action === "card-back") (state.backTo === "home" ? goHome() : goStats());
     else if (action === "open-editor") openEditor();
     else if (action === "export-data") exportData();
+    else if (action === "cloud-sync") cloudSync();
     else if (action === "import-data") startImport();
     else if (action === "dismiss-notice") el.remove();
     else if (action === "dismiss-update") dismissUpdateNotice();

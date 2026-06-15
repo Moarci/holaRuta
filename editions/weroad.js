@@ -13,4 +13,9 @@ window.SC.editionConfig = {
   accent: { brand: "#E0533A", brandInk: "#B53C28" }, // kräftiges Coral
   partner: { name: "WeRoad Colombia" }, // url erst mit Partner-Freigabe
   defaultDestination: "Colombia",         // surft die Pre-Arrival-Kachel an
+  // Beispiel-Vorverdrahtung der optionalen Cloud-Sync (Stufe 3, BACKEND.md).
+  // enabled: false, bis WeRoad einen echten Endpunkt bereitstellt; für die lokale
+  // Demo `node tools/mock-sync-server.js` starten und enabled:true + apiBase
+  // auf http://localhost:8788 setzen.
+  sync: { enabled: false, apiBase: "https://sync.example-weroad.com", orgLabel: "WeRoad Colombia" },
 };

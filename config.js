@@ -19,6 +19,10 @@
     accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk }
     partner: null,            // { name, url? } für einen dezenten Credit im Profil
     defaultDestination: null, // z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
+    // Optionale Cloud-Sync (Stufe 3, BACKEND.md). null = aus (Standard, kein
+    // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
+    //   sync: { enabled: true, apiBase: "https://…", orgLabel: "ECOS" }
+    sync: null,
   };
 
   SC.config = Object.assign({}, DEFAULT, SC.editionConfig || {});

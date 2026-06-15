@@ -2225,6 +2225,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     accent: null,             // null = Standard-Terrakotta; sonst { brand, brandInk }
     partner: null,            // { name, url? } für einen dezenten Credit im Profil
     defaultDestination: null, // z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
+    // Optionale Cloud-Sync (Stufe 3, BACKEND.md). null = aus (Standard, kein
+    // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
+    //   sync: { enabled: true, apiBase: "https://…", orgLabel: "ECOS" }
+    sync: null,
   };
 
   SC.config = Object.assign({}, DEFAULT, SC.editionConfig || {});
@@ -3340,6 +3344,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     yourData: "Deine Daten",
     exportData: "Daten exportieren",
     importData: "Daten importieren",
+    cloudSync: "Cloud-Sync",
+    cloudEmailPrompt: "E-Mail für die Cloud-Sync eingeben:",
+    cloudSynced: "Synchronisiert – Fortschritt zusammengeführt.",
+    cloudUpToDate: "Schon aktuell – nichts zu synchronisieren.",
+    cloudCheckMail: "Bitte den Anmelde-Link in deiner E-Mail bestätigen.",
+    cloudFailed: "Sync fehlgeschlagen. Später erneut versuchen.",
     installTitle: "Auf den Startbildschirm",
     installText: "Leg HolaRuta als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.",
     installBtn: "📲 App installieren",
@@ -3447,6 +3457,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     yourData: "Your data",
     exportData: "Export data",
     importData: "Import data",
+    cloudSync: "Cloud sync",
+    cloudEmailPrompt: "Enter your email for cloud sync:",
+    cloudSynced: "Synced – progress merged.",
+    cloudUpToDate: "Already up to date – nothing to sync.",
+    cloudCheckMail: "Please confirm the sign-in link in your email.",
+    cloudFailed: "Sync failed. Try again later.",
     installTitle: "Add to home screen",
     installText: "Add HolaRuta as an app icon – it then starts straight away, without hunting for the file, and runs offline.",
     installBtn: "📲 Install app",
@@ -14329,6 +14345,234 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 </script>
 <script>
 /*
+ * sync.js  (SC.sync) – OPTIONALE, opt-in Cloud-Sync-Schicht (Stufe 3).
+ *
+ * Vollständige Spezifikation: BACKEND.md. Dieses Modul ist der schlanke
+ * Client-Adapter + die ARCHITEKTUR-KERNFUNKTION `merge` (rein, testbar) aus
+ * Phase 1/2 des Migrationspfads.
+ *
+ * Prinzipien (wie BACKEND.md §1):
+ *  - Opt-in: ohne `SC.config.sync.enabled` macht das Modul NICHTS (kein fetch,
+ *    kein Netzwerk) – die App bleibt exakt offline-first wie heute.
+ *  - Anschlussfähig: Sync-Einheit ist das BESTEHENDE Backup-Payload aus
+ *    store.exportData() ({ data: { <key>: … } }); store.importData wendet das
+ *    gemergte Ergebnis an. Kein neues Datenformat.
+ *  - Reiner Kern: `merge*` sind seiteneffektfreie Funktionen (wie srs/matcher)
+ *    und werden in test/sync.test.js geprüft – ganz ohne Server.
+ *
+ * REIN-DATEN + ein dünner fetch-Adapter. Kein DOM. Kein Framework.
+ */
+(function () {
+  "use strict";
+  var SC = window.SC || (window.SC = {});
+
+  // Kanonische lokale Keys (stabil; identisch zu store.js).
+  var PROGRESS_KEY = "spanischcard.progress.v2";
+  var SETTINGS_KEY = "spanischcard.settings.v1";
+  var USERCARDS_KEY = "spanischcard.usercards.v1";
+  var GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  // Auth-Token: bewusst NICHT in store.KNOWN_KEYS -> reist nicht im Backup mit.
+  var TOKEN_KEY = "spanischcard.synctoken.v1";
+
+  function isObj(v) { return v && typeof v === "object" && !Array.isArray(v); }
+  function num(v) { return typeof v === "number" && isFinite(v) ? v : 0; }
+
+  // ---------- reine Merge-Funktionen (Phase 2, BACKEND.md §8) ----------
+
+  // Karten-Fortschritt: pro Karte gewinnt der Datensatz mit MEHR Wiederholungen
+  // (reps ist monoton), Gleichstand -> spätere Fälligkeit (due). Verlustarm.
+  function progressScore(r) { return num(r && r.reps) * 1e15 + num(r && r.due); }
+  function mergeProgress(a, b) {
+    a = isObj(a) ? a : {}; b = isObj(b) ? b : {};
+    var out = {}, id;
+    for (id in a) if (Object.prototype.hasOwnProperty.call(a, id)) out[id] = a[id];
+    for (id in b) if (Object.prototype.hasOwnProperty.call(b, id)) {
+      if (!(id in out) || progressScore(b[id]) > progressScore(out[id])) out[id] = b[id];
+    }
+    return out;
+  }
+
+  // Tiefe Vereinigung zweier Mengen-/Zähler-Maps: Zahlen -> max, true/true ->
+  // true, Objekte -> rekursiv. Für gamestats-Maps (challengesDone, pretripDays
+  // {scope:{day}}, rutaDays, dailyCounts …) – verlustfrei über Geräte.
+  function deepUnion(a, b) {
+    if (isObj(a) && isObj(b)) {
+      var out = {}, k;
+      for (k in a) if (Object.prototype.hasOwnProperty.call(a, k)) out[k] = a[k];
+      for (k in b) if (Object.prototype.hasOwnProperty.call(b, k)) {
+        out[k] = (k in out) ? deepUnion(out[k], b[k]) : b[k];
+      }
+      return out;
+    }
+    if (typeof a === "number" && typeof b === "number") return Math.max(a, b);
+    if (typeof a === "boolean" && typeof b === "boolean") return a || b;
+    return a !== undefined ? a : b;
+  }
+
+  // Felder, die je Gerät kumulieren: über Geräte hinweg MAX (statt Summe),
+  // damit sich nichts durch überlappende Historie aufbläht.
+  var MAX_FIELDS = {
+    reviews: 1, againPresses: 1, dailyStreak: 1, longestStreak: 1,
+    battlesPlayed: 1, battlesWon: 1, perfectBattles: 1, comebacks: 1,
+    quizzesPlayed: 1, quizzesPerfect: 1, frasesPlayed: 1, frasesPerfect: 1,
+    listenReviews: 1, preciosPlayed: 1, preciosPerfect: 1, preciosMillon: 1,
+    conjugPlayed: 1, conjugPerfect: 1, dialogosPlayed: 1, dialogosPerfect: 1,
+  };
+
+  function mergeGamestats(a, b) {
+    a = isObj(a) ? a : {}; b = isObj(b) ? b : {};
+    var out = {}, k;
+    var keys = {};
+    for (k in a) keys[k] = 1;
+    for (k in b) keys[k] = 1;
+    for (k in keys) {
+      var va = a[k], vb = b[k];
+      if (vb === undefined) { out[k] = va; continue; }
+      if (va === undefined) { out[k] = vb; continue; }
+      if (k === "tripGoal") {
+        // Späteres Ziel gewinnt (startedAt), sonst das nicht-leere, sonst a.
+        var sa = (isObj(va) && va.startedAt) || "", sb = (isObj(vb) && vb.startedAt) || "";
+        out[k] = (sb > sa) ? vb : (va || vb);
+      } else if (typeof va === "number" && typeof vb === "number") {
+        out[k] = MAX_FIELDS[k] ? Math.max(va, vb) : Math.max(va, vb);
+      } else if (typeof va === "boolean" && typeof vb === "boolean") {
+        out[k] = va || vb;
+      } else if (typeof va === "string" && typeof vb === "string") {
+        out[k] = va >= vb ? va : vb; // z. B. lastStudyDate (YYYY-MM-DD)
+      } else if (isObj(va) && isObj(vb)) {
+        out[k] = deepUnion(va, vb);
+      } else {
+        out[k] = va;
+      }
+    }
+    return out;
+  }
+
+  // Eigene Karten: Vereinigung per id (lokale Variante gewinnt bei Kollision).
+  function mergeUsercards(a, b) {
+    var la = Array.isArray(a) ? a : [], lb = Array.isArray(b) ? b : [];
+    var byId = {}, order = [], i, c;
+    for (i = 0; i < lb.length; i++) { c = lb[i]; if (c && c.id) { if (!(c.id in byId)) order.push(c.id); byId[c.id] = c; } }
+    for (i = 0; i < la.length; i++) { c = la[i]; if (c && c.id) { if (!(c.id in byId)) order.push(c.id); byId[c.id] = c; } }
+    return order.map(function (id) { return byId[id]; });
+  }
+
+  // Zwei `data`-Maps (aus exportData().data) verschmelzen.
+  function mergeData(localData, remoteData) {
+    var l = isObj(localData) ? localData : {}, r = isObj(remoteData) ? remoteData : {};
+    var out = {}, keys = {}, k;
+    for (k in l) keys[k] = 1;
+    for (k in r) keys[k] = 1;
+    for (k in keys) {
+      if (k === PROGRESS_KEY) out[k] = mergeProgress(l[k], r[k]);
+      else if (k === GAMESTATS_KEY) out[k] = mergeGamestats(l[k], r[k]);
+      else if (k === USERCARDS_KEY) out[k] = mergeUsercards(l[k], r[k]);
+      else if (k === SETTINGS_KEY) out[k] = (k in l) ? l[k] : r[k]; // Einstellungen bleiben gerätelokal
+      else out[k] = (k in l) ? l[k] : r[k];
+    }
+    return out;
+  }
+
+  // Vollständige Backup-Payloads mergen -> neue Payload (Phase 1/2).
+  function mergePayloads(localPayload, remotePayload) {
+    var l = isObj(localPayload) ? localPayload : {}, r = isObj(remotePayload) ? remotePayload : {};
+    return {
+      app: "holaruta",
+      format: l.format || r.format || 1,
+      exportedAt: new Date().toISOString(),
+      data: mergeData(l.data, r.data),
+    };
+  }
+
+  // ---------- dünner Client-Adapter (opt-in, fetch-basiert) ----------
+
+  function cfg() { return (SC.config && SC.config.sync) || null; }
+  function enabled() { return !!(cfg() && cfg().enabled && cfg().apiBase && typeof fetch === "function"); }
+  function apiBase() { return (cfg() && cfg().apiBase || "").replace(/\/+$/, ""); }
+
+  function getToken() { try { return localStorage.getItem(TOKEN_KEY) || null; } catch (e) { return null; } }
+  function setToken(t) { try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) { /* egal */ } }
+  function loggedIn() { return !!getToken(); }
+
+  function request(method, path, body) {
+    var headers = { "Content-Type": "application/json" };
+    var tok = getToken();
+    if (tok) headers.Authorization = "Bearer " + tok;
+    return fetch(apiBase() + path, {
+      method: method,
+      headers: headers,
+      body: body ? JSON.stringify(body) : undefined,
+    }).then(function (res) {
+      return res.text().then(function (txt) {
+        var json = null; try { json = txt ? JSON.parse(txt) : null; } catch (e) { json = null; }
+        return { ok: res.ok, status: res.status, body: json };
+      });
+    });
+  }
+
+  // Passwortloser Login (BACKEND.md §7): start -> (E-Mail/OTP) -> confirm.
+  // Der Mock-Server (tools/mock-sync-server.js) liefert für die Demo direkt
+  // einen devToken zurück, sodass `login` allein schon anmeldet.
+  function login(email) {
+    if (!enabled()) return Promise.reject(new Error("sync disabled"));
+    return request("POST", "/v1/auth/start", { email: String(email || "").trim() })
+      .then(function (r) {
+        if (r.ok && r.body && r.body.devToken) { setToken(r.body.devToken); return { account: r.body.account || { email: email } }; }
+        return { pending: true }; // echter Flow: auf Magic-Link/OTP warten
+      });
+  }
+  function confirm(email, token) {
+    if (!enabled()) return Promise.reject(new Error("sync disabled"));
+    return request("POST", "/v1/auth/confirm", { email: email, token: token })
+      .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("confirm failed"); });
+  }
+  function logout() { setToken(null); }
+
+  function pull() { return request("GET", "/v1/sync"); }
+  function push(payload, baseRev) { return request("PUT", "/v1/sync", { baseRev: baseRev || 0, payload: payload }); }
+
+  // Ein vollständiger Sync: pull -> merge(local, remote) -> lokal anwenden -> push.
+  // Gibt { ok, changedLocal, rev } zurück. store wird für Export/Import genutzt.
+  function syncNow() {
+    if (!enabled() || !loggedIn()) return Promise.reject(new Error("not ready"));
+    var store = SC.store;
+    var local = store.exportData();
+    return pull().then(function (r) {
+      var remote = (r.ok && r.body && r.body.payload) ? { data: r.body.payload } : { data: {} };
+      var baseRev = (r.ok && r.body && r.body.rev) || 0;
+      var merged = mergePayloads(local, remote);
+      var changedLocal = JSON.stringify(local.data) !== JSON.stringify(merged.data);
+      if (changedLocal) store.importData(merged); // wendet das gemergte Ergebnis lokal an
+      return push(merged.data, baseRev).then(function (pr) {
+        return { ok: !!pr.ok, changedLocal: changedLocal, rev: (pr.body && pr.body.rev) || baseRev, status: pr.status };
+      });
+    });
+  }
+
+  SC.sync = {
+    // Adapter
+    enabled: enabled,
+    loggedIn: loggedIn,
+    account: function () { return loggedIn() ? {} : null; },
+    login: login,
+    confirm: confirm,
+    logout: logout,
+    pull: pull,
+    push: push,
+    syncNow: syncNow,
+    // Reiner Kern (für Tests + Wiederverwendung serverseitig)
+    merge: mergePayloads,
+    mergeData: mergeData,
+    mergeProgress: mergeProgress,
+    mergeGamestats: mergeGamestats,
+    mergeUsercards: mergeUsercards,
+    deepUnion: deepUnion,
+  };
+})();
+
+</script>
+<script>
+/*
  * usercards.js  (SC.userCards) – Eigene, vom Nutzer angelegte Karten.
  * Domänen-Logik (Anlegen/Löschen/Prüfen). Persistenz läuft über SC.store.
  *
@@ -16651,6 +16895,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <p class="sectioncap">${esc(t("profile.yourData"))}</p>
       ${navrow("export-data", "📤", t("profile.exportData"))}
       ${navrow("import-data", "📥", t("profile.importData"))}
+      ${vm.syncEnabled ? navrow("cloud-sync", "☁️", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
       ${installBlock(vm.install)}
@@ -19521,6 +19766,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       sessionCap: SESSION_CAP,
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
+      syncEnabled: !!(window.SC.sync && window.SC.sync.enabled()), // optionale Cloud-Sync (nur per Edition)
+      syncLoggedIn: !!(window.SC.sync && window.SC.sync.loggedIn && window.SC.sync.loggedIn()),
+      syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
       hasCountries: !!countries, // dito für die Länderkunde
       hasKnigge: !!knigge,       // dito für den Reise-Knigge
       hasSpeech: !!(speech && speech.isSupported()), // Precios braucht Sprachausgabe
@@ -22789,6 +23037,29 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     reader.readAsText(file);
   }
 
+  // ----- Optionale Cloud-Sync (Stufe 3, nur per Edition aktiv) -----
+  // Pull → merge → lokal anwenden → push (sync.syncNow). Login passwortlos;
+  // der Demo-Mock liefert direkt ein Token, der echte Flow schickt einen
+  // Magic-Link. Ohne aktive Edition existiert dieser Pfad gar nicht (Nav-Eintrag
+  // ist dann ausgeblendet).
+  function cloudSync() {
+    const sync = window.SC.sync;
+    if (!(sync && sync.enabled())) return;
+    const run = () => sync.syncNow().then((r) => {
+      if (r && r.changedLocal) { showNotice(t("profile.cloudSynced")); try { location.reload(); } catch (e) { /* egal */ } }
+      else showNotice(t("profile.cloudUpToDate"));
+    }).catch(() => showNotice(t("profile.cloudFailed")));
+    if (sync.loggedIn()) { run(); return; }
+    let email = "";
+    try { email = window.prompt(t("profile.cloudEmailPrompt")) || ""; } catch (e) { email = ""; }
+    email = email.trim();
+    if (!email) return;
+    sync.login(email).then(() => {
+      if (sync.loggedIn()) run();             // Mock: direkt eingeloggt
+      else showNotice(t("profile.cloudCheckMail")); // echter Flow: Magic-Link/OTP
+    }).catch(() => showNotice(t("profile.cloudFailed")));
+  }
+
   // Spricht die spanische Antwort der aktuellen Karte vor.
   // Erste akzeptierte Variante (ohne "/"-Alternativen), damit es sauber klingt.
   function speakCurrent() {
@@ -22934,6 +23205,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "card-back") (state.backTo === "home" ? goHome() : goStats());
     else if (action === "open-editor") openEditor();
     else if (action === "export-data") exportData();
+    else if (action === "cloud-sync") cloudSync();
     else if (action === "import-data") startImport();
     else if (action === "dismiss-notice") el.remove();
     else if (action === "dismiss-update") dismissUpdateNotice();

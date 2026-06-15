@@ -3,7 +3,7 @@
 > **Datum:** 2026-06-14 · **Folgt auf:** [IDEEN.md](IDEEN.md), [RISIKO.md](RISIKO.md), [AUDIT.md](AUDIT.md)
 > **Fokus:** Vermarktung (B2B + B2C) — *nicht* Code-Hygiene (die ist in AUDIT/RISIKO behandelt).
 > **Stand der Faktenbasis (historische Analyse-Basis):** `main` v1.24.0 — 718 Karten · 23 Bereiche · 3 Stufen · 3 Lernmodi · 154 Tests grün.
-> **Seitdem auf dem Branch ausgebaut** → heute **1133 Karten · 32 Bereiche · 47 Challenges · 163 Tests grün** (inkl. 9 Destination-Packs: Colombia 89, Peru 45, Mexiko 41, Costa Rica 40, Ecuador 40, Guatemala 40, Argentinien 40, Chile 40, Bolivien 40 Karten). Siehe Stand-Update in §2/§3.
+> **Seitdem auf dem Branch ausgebaut** → heute **1133 Karten · 32 Bereiche · 47 Challenges · 169 Tests grün** (inkl. 9 Destination-Packs: Colombia 89, Peru 45, Mexiko 41, Costa Rica 40, Ecuador 40, Guatemala 40, Argentinien 40, Chile 40, Bolivien 40 Karten). Siehe Stand-Update in §2/§3.
 
 Dieses Dokument gleicht eine ausführliche Geschäftsanalyse mit dem **echten Code-Stand** ab und
 leitet daraus einen realistischen Vertriebsweg ab: Wer sind die Kanäle, was trägt der heutige
@@ -55,7 +55,7 @@ gegen `main` v1.24.0:
 | Coordinator-Modus (5-Min-Icebreaker) | `startCoordinatorRound` (Modo hostal) | ✅ umgesetzt |
 | Lehrer-/Coordinator-Übersicht + Zuweisung | „Modo profe" (Import von Schüler-Backups → Klassenübersicht) + Aufgaben-Codes („Tarea") – offline, kein Backend | ✅ teilweise (echter Sync/Accounts bleibt Stufe 3) |
 | White-Label / Co-Branding | `config.js` + `editions/*` + `build.js --edition` | ✅ umgesetzt (ecos/weroad) |
-| Backend / Accounts / Pro-Kauf / Per-Seat | nur `localStorage`, ein Gerät, kein Sync | ❌ fehlt (bewusst, Stufe 3) — anschlussfähige Spec: [BACKEND.md](BACKEND.md) |
+| Backend / Accounts / Pro-Kauf / Per-Seat | opt-in Cloud-Sync-Client (`sync.js`, getestetes verlustarmes `merge`) + Edition-Vorverdrahtung (ECOS/WeRoad) + Mock-Server; echtes Hosting/Accounts/Per-Seat per Spec [BACKEND.md](BACKEND.md) | 🟡 Client-Fundament da, Server = Stufe 3 (zahlender Kunde) |
 | Cartagena-/Destination-/„Colombia Pack" | Kategorie `colombia`, **89 Karten** (inkl. Kaffeeregion Salento/Cocora) | ✅ umgesetzt |
 | Kuratierte Pakete / Pre-Trip-Plan | `PRESETS` (Pre-Arrival je Ziel) + `PRETRIP` (9 Ziele × 7 Etappen) | ✅ umgesetzt |
 | Lehrer-/Coordinator-/Hostel-Handouts | druckbare HTML (DE·EN·ES) unter `docs/anleitungen/` | ✅ umgesetzt |

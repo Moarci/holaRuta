@@ -462,6 +462,7 @@
       <p class="sectioncap">${esc(t("profile.yourData"))}</p>
       ${navrow("export-data", "📤", t("profile.exportData"))}
       ${navrow("import-data", "📥", t("profile.importData"))}
+      ${vm.syncEnabled ? navrow("cloud-sync", "☁️", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
       ${installBlock(vm.install)}
