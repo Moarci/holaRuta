@@ -1472,13 +1472,19 @@
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
 
-    // Brücke zur kontinentweiten Geschichte (nur wenn das Modul geladen ist).
-    const histBanner = vm.hasHistoria ? `
-      <button class="hist-banner" data-action="open-historia">
-        <span class="hist-banner__icon" aria-hidden="true">📜</span>
+    // Brücke zur passenden kontinentalen Geschichte: mittelamerikanische Länder
+    // führen zur Historia de Centroamérica, alle anderen (Südamerika/Karibik) zur
+    // Historia de Sudamérica. Jeweils nur, wenn das Modul geladen ist.
+    const inCentro = vm.country && vm.country.region === "Mittelamerika";
+    const histTarget = inCentro
+      ? (vm.hasHistoriaCentro ? { action: "open-historia-centro", icon: "🌋", title: t("discover.histBannerCentroTitle"), sub: t("discover.histBannerCentroSub") } : null)
+      : (vm.hasHistoria ? { action: "open-historia", icon: "📜", title: t("discover.histBannerTitle"), sub: t("discover.histBannerSub") } : null);
+    const histBanner = histTarget ? `
+      <button class="hist-banner" data-action="${histTarget.action}">
+        <span class="hist-banner__icon" aria-hidden="true">${histTarget.icon}</span>
         <span class="hist-banner__text">
-          <span class="hist-banner__title">${esc(t("discover.histBannerTitle"))}</span>
-          <span class="hist-banner__sub">${esc(t("discover.histBannerSub"))}</span>
+          <span class="hist-banner__title">${esc(histTarget.title)}</span>
+          <span class="hist-banner__sub">${esc(histTarget.sub)}</span>
         </span>
         <span class="hist-banner__chev" aria-hidden="true">›</span>
       </button>` : "";

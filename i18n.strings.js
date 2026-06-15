@@ -413,6 +413,8 @@
     // Historia de Sudamérica
     histBannerTitle: "Historia de Sudamérica",
     histBannerSub: "Die große Geschichte: Inka, Kolonialzeit, Bolívar & heute",
+    histBannerCentroTitle: "Historia de Centroamérica",
+    histBannerCentroSub: "Die große Geschichte: Maya, Kolonialzeit, Morazán & heute",
     histAreas: "Bereiche",
     histNavTimeline: "Zeitstrahl",
     histNavFigures: "Protagonisten",
@@ -697,6 +699,8 @@
     // Historia de Sudamérica
     histBannerTitle: "Historia de Sudamérica",
     histBannerSub: "The big story: Inca, colonial era, Bolívar & today",
+    histBannerCentroTitle: "Historia de Centroamérica",
+    histBannerCentroSub: "The big story: Maya, colonial era, Morazán & today",
     histAreas: "Sections",
     histNavTimeline: "Timeline",
     histNavFigures: "Key figures",

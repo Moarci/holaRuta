@@ -407,7 +407,7 @@
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
     // Sprache lokalisieren; Eigennamen ohne …En-Pendant bleiben unverändert.
-    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia };
+    return { country: country ? loc(country) : null, groups, hasHistoria: !!historia, hasHistoriaCentro: !!historiaCentro };
   }
 
   // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
