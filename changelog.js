@@ -22,6 +22,16 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.51.0",
+      date: "2026-06-15",
+      title: "Ruta-Check wird adaptiv – und Teil des Onboardings",
+      items: [
+        "🪜 Der Ruta-Check passt sich jetzt an: Wer richtig antwortet, bekommt schwerere Fragen, wer danebenliegt oder „weiß nicht“ wählt, leichtere – so landet die Einstufung schneller und genauer beim echten Niveau (A0 bis B1−). Zum Schluss kommen die freien Antworten.",
+        "🧭 Beim allerersten Start führt das Onboarding direkt durch den Test (mit „Später“-Option) – nach dem Reiseziel kommt der Ruta-Check, damit die Einstufung tatsächlich gemacht wird.",
+        "🎚️ Neue ganz leichte (A0) und fordernde (B1) Fragen geben der Anpassung Spielraum; die Grammatik bleibt dosiert (Deckel ~30 %).",
+      ],
+    },
+    {
       version: "1.50.0",
       date: "2026-06-15",
       title: "Ruta-Check: kurzer, reisepraktischer Einstufungstest",

@@ -143,6 +143,46 @@
       correctIndex: 2, expectedTimeSec: 11,
       explanationDe: "„ayer“ (gestern) signalisiert abgeschlossene Vergangenheit (Indefinido): llegué = ich kam an." },
 
+    // --- Zusätzliche Stufen für den adaptiven Test (A0 ganz einfach, B1 fordernd) ---
+    { id: "pt_un_a0a", block: "understanding", skill: "understanding", level: "A0", type: "mc",
+      promptDe: "Was bedeutet dieses Wort?", questionEs: "Hola.",
+      options: ["Hallo", "Danke", "Tschüss", "Bitte"], correctIndex: 0, expectedTimeSec: 6,
+      explanationDe: "„Hola“ = Hallo." },
+    { id: "pt_un_a0b", block: "understanding", skill: "understanding", level: "A0", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Agua, por favor.",
+      options: ["Wasser, bitte.", "Brot, bitte.", "Die Rechnung, bitte.", "Hilfe, bitte."],
+      correctIndex: 0, expectedTimeSec: 7, explanationDe: "„agua“ = Wasser." },
+    { id: "pt_vo_a0a", block: "vocab", skill: "vocab", level: "A0", type: "mc",
+      promptDe: "Was bedeutet „sí“?",
+      options: ["ja", "nein", "vielleicht", "gut"], correctIndex: 0, expectedTimeSec: 6,
+      explanationDe: "„sí“ = ja (mit Akzent), „si“ ohne Akzent = wenn." },
+    { id: "pt_re_a0a", block: "reaction", skill: "reaction", level: "A0", type: "mc",
+      promptDe: "Jemand sagt „Gracias.“ Was antwortest du?",
+      options: ["De nada.", "Buenos días.", "No.", "Adiós."], correctIndex: 0, expectedTimeSec: 8,
+      explanationDe: "„De nada“ = gern geschehen / keine Ursache." },
+
+    { id: "pt_re_a2b", block: "reaction", skill: "reaction", level: "A2", type: "mc",
+      promptDe: "Du fragst nach der Abfahrtszeit des Busses. Was passt?",
+      options: ["¿Cuánto cuesta el bus?", "¿A qué hora sale el bus?", "¿Dónde está el bus?", "¿El bus es directo?"],
+      correctIndex: 1, expectedTimeSec: 12, explanationDe: "„¿A qué hora sale…?“ = Um wie viel Uhr fährt … ab?" },
+
+    { id: "pt_cj_b1a", block: "conjugation", skill: "conjugation", level: "B1", type: "mc",
+      promptDe: "Im Restaurant willst du höflich sagen: Bringen Sie mir bitte die Rechnung. Was passt?",
+      options: ["Tráigame la cuenta, por favor.", "Traigo la cuenta, por favor.", "Traes la cuenta, por favor.", "Trajiste la cuenta, por favor."],
+      correctIndex: 0, expectedTimeSec: 15, explanationDe: "„Tráigame“ ist die höfliche Befehls-/Bitteform (usted) – praktisch, aber eher B1." },
+    { id: "pt_re_b1a", block: "reaction", skill: "reaction", level: "B1", type: "mc",
+      promptDe: "Du willst besonders höflich/vorsichtig fragen (Konditional): Könnten Sie mir helfen? Was passt?",
+      options: ["¿Puede ayudarme?", "¿Podría ayudarme?", "¿Puedo ayudarme?", "¡Ayúdame!"],
+      correctIndex: 1, expectedTimeSec: 15, explanationDe: "„¿Podría…?“ (Konditional) ist die besonders höfliche Bitte." },
+    { id: "pt_ti_b1a", block: "tenses", skill: "tenses", level: "B1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Ya he comido, gracias.",
+      options: ["Ich esse gerade.", "Ich habe schon gegessen, danke.", "Ich werde essen.", "Ich aß gestern."],
+      correctIndex: 1, expectedTimeSec: 14, explanationDe: "„he comido“ (pretérito perfecto) = ich habe gegessen; „ya“ = schon." },
+    { id: "pt_un_b1a", block: "understanding", skill: "understanding", level: "B1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Si tuviera tiempo, iría a la playa.",
+      options: ["Wenn ich Zeit habe, gehe ich an den Strand.", "Wenn ich Zeit hätte, würde ich an den Strand gehen.", "Ich hatte Zeit und ging an den Strand.", "Ich werde Zeit haben für den Strand."],
+      correctIndex: 1, expectedTimeSec: 16, explanationDe: "„si tuviera … iría“ (Subjuntivo + Konditional) = irreale Bedingung: hätte ich …, würde ich …" },
+
     // --- Block 6: Freie Antwort (kurz schreiben; akzent-/satzzeichentolerant) ---
     { id: "pt_fr_001", block: "free", skill: "free", level: "A1", type: "free",
       promptDe: "Schreib auf Spanisch: Danke.",
@@ -157,6 +197,57 @@
   // Kommunikation vs. Grammatik (für das Profil + die Empfehlung).
   var COMM_SKILLS = { understanding: 1, reaction: 1, vocab: 1, free: 1 };
   var GRAMMAR_SKILLS = { conjugation: 1, tenses: 1 };
+
+  // ---------- adaptiver Ablauf (Treppen-Logik) ----------
+  // Schwierigkeit als Index 0..3. Richtig -> eine Stufe höher, falsch/„weiß nicht“
+  // -> eine Stufe tiefer. So konvergiert der Test aufs Niveau (leicht↔schwer),
+  // ohne dass jemand alle 33 Fragen durchmachen muss.
+  var LEVEL_ORDER = ["A0", "A1", "A2", "B1"];
+  var START_DIFFICULTY = 1;   // Start bei A1
+  var MC_TARGET = 12;         // so viele Multiple-Choice-Fragen, dann die freien
+  var GRAMMAR_CAP = 4;        // höchstens so viele Grammatik-Fragen (~30 % von 12)
+
+  function levelIndex(name) { var i = LEVEL_ORDER.indexOf(name); return i < 0 ? 1 : i; }
+  function nextDifficulty(difficulty, result) {
+    var d = (typeof difficulty === "number") ? difficulty : START_DIFFICULTY;
+    if (result === "correct") return Math.min(LEVEL_ORDER.length - 1, d + 1);
+    return Math.max(0, d - 1); // wrong oder unknown -> leichter
+  }
+
+  // Nächste Multiple-Choice-Frage wählen: möglichst auf der Zielstufe, sonst die
+  // nächstgelegene; Grammatik nur bis zum Deckel; bevorzugt den am wenigsten
+  // gefragten Skill (gleichmäßige Abdeckung). DETERMINISTISCH (testbar).
+  function pickNextMc(questions, askedIds, difficulty, grammarAsked, grammarCap) {
+    askedIds = askedIds || [];
+    var asked = {}; askedIds.forEach(function (id) { asked[id] = 1; });
+    var skillCount = {};
+    questions.forEach(function (q) { if (asked[q.id]) skillCount[q.skill] = (skillCount[q.skill] || 0) + 1; });
+    var capped = grammarAsked >= (grammarCap == null ? GRAMMAR_CAP : grammarCap);
+    var pool = questions.filter(function (q) {
+      if (q.type !== "mc" || asked[q.id]) return false;
+      if (capped && GRAMMAR_SKILLS[q.skill]) return false;
+      return true;
+    });
+    if (!pool.length) return null;
+    var target = (typeof difficulty === "number") ? difficulty : START_DIFFICULTY;
+    // Stufen nach Nähe zur Zielstufe durchsuchen.
+    var offsets = [0, 1, -1, 2, -2, 3, -3];
+    for (var oi = 0; oi < offsets.length; oi++) {
+      var name = LEVEL_ORDER[target + offsets[oi]];
+      if (!name) continue;
+      var group = pool.filter(function (q) { return q.level === name; });
+      if (!group.length) continue;
+      group.sort(function (a, b) {
+        var sa = skillCount[a.skill] || 0, sb = skillCount[b.skill] || 0;
+        if (sa !== sb) return sa - sb; // seltener gefragten Skill bevorzugen
+        return questions.indexOf(a) - questions.indexOf(b); // stabile Reihenfolge
+      });
+      return group[0];
+    }
+    return pool[0];
+  }
+
+  function freeQuestions(questions) { return (questions || QUESTIONS).filter(function (q) { return q.type === "free"; }); }
 
   // ---------- reine Hilfsfunktionen ----------
   function normalizeFree(s) {
@@ -287,6 +378,10 @@
     QUESTIONS: QUESTIONS,
     COMM_SKILLS: COMM_SKILLS,
     GRAMMAR_SKILLS: GRAMMAR_SKILLS,
+    LEVEL_ORDER: LEVEL_ORDER,
+    START_DIFFICULTY: START_DIFFICULTY,
+    MC_TARGET: MC_TARGET,
+    GRAMMAR_CAP: GRAMMAR_CAP,
     // reine Funktionen (getestet)
     timeConfidence: timeConfidence,
     scoreAnswer: scoreAnswer,
@@ -294,5 +389,9 @@
     summarize: summarize,
     questionById: questionById,
     normalizeFree: normalizeFree,
+    levelIndex: levelIndex,
+    nextDifficulty: nextDifficulty,
+    pickNextMc: pickNextMc,
+    freeQuestions: freeQuestions,
   };
 })();

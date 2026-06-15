@@ -1126,6 +1126,8 @@
     noteGrammar: "Grammatik sitzt, aber Reise-Reaktionen sind noch zögerlich – übe echte Situationen.",
     schoolNote: "Die Einstufung ist eine Orientierung. In einer Schule kann die Lehrkraft die Gruppe anpassen.",
     retake: "Nochmal",
+    later: "Später",
+    toApp: "Los geht's",
   }, {
     title: "Ruta-Check",
     introLead: (p) => `This short test (${p.n} questions) helps you find your starting level – with real travel phrases, not dry grammar.`,
@@ -1158,6 +1160,8 @@
     noteGrammar: "Grammar is solid, but real-situation reactions are still hesitant – practise real situations.",
     schoolNote: "This placement is a guide. At a school, the teacher can adjust your group.",
     retake: "Retake",
+    later: "Later",
+    toApp: "Let's go",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------

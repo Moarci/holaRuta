@@ -2027,6 +2027,8 @@
     if (state.screen === "home") return false;
     // Onboarding mit „Zurück" überspringen (zählt als erledigt, kein Wiederzeigen).
     if (state.screen === "onboarding") { finishOnboarding(); return true; }
+    // Zurück aus dem Onboarding-Ruta-Check schließt das Onboarding ab (nicht erneut zeigen).
+    if (state.screen === "placement" && state.placement && state.placement.fromOnboarding) { finishOnboarding(); return true; }
     // 3) Eine Ebene höher.
     const target = backTarget();
     if (target === "home") goHome();
@@ -2734,35 +2736,76 @@
   // die Antwortzeit je Frage wird erfasst und fließt LEICHT in die Sicherheit ein.
   function placementQuestions() { return (placement && placement.QUESTIONS) || []; }
 
-  function openPlacement() {
+  function placementTotalPlanned() {
+    return (placement.MC_TARGET || 12) + placement.freeQuestions(placementQuestions()).length;
+  }
+  function currentPlacementQ() {
+    const p = state.placement;
+    if (!p || !p.asked.length) return null;
+    return placement.questionById(p.asked[p.asked.length - 1]);
+  }
+
+  function openPlacement(fromOnboarding) {
     dismissBadgeToast();
-    state.placement = { phase: "intro", idx: 0, answers: [], startedAt: 0, qStartedAt: 0, result: null };
+    state.placement = {
+      phase: "intro", fromOnboarding: !!fromOnboarding,
+      asked: [], answers: [], difficulty: placement.START_DIFFICULTY,
+      mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
+    };
     state.screen = "placement";
     render();
   }
 
+  function pushPlacementQuestion(q) {
+    const p = state.placement;
+    p.asked.push(q.id);
+    p.qStartedAt = Date.now();
+  }
+
   function startPlacementTest() {
-    if (!state.placement) return;
-    const now = Date.now();
-    state.placement.phase = "running";
-    state.placement.idx = 0;
-    state.placement.answers = [];
-    state.placement.startedAt = now;
-    state.placement.qStartedAt = now;
+    const p = state.placement;
+    if (!p) return;
+    p.phase = "running"; p.asked = []; p.answers = [];
+    p.difficulty = placement.START_DIFFICULTY; p.mcAsked = 0; p.grammarAsked = 0; p.freeIdx = 0;
+    p.startedAt = Date.now();
+    const first = placement.pickNextMc(placementQuestions(), [], p.difficulty, 0, placement.GRAMMAR_CAP);
+    if (first) pushPlacementQuestion(first); else placementBeginFree();
     render();
   }
 
-  // Eine Antwort verbuchen und zur nächsten Frage (oder zum Ergebnis) gehen.
+  // Eine Antwort verbuchen, Schwierigkeit anpassen (Treppe), nächste Frage wählen.
   function recordPlacementAnswer(ans) {
     const p = state.placement;
     if (!p || p.phase !== "running") return;
+    const q = currentPlacementQ();
+    if (!q) return;
     const now = Date.now();
     ans.responseTimeMs = Math.max(0, now - (p.qStartedAt || now));
-    p.answers[p.idx] = ans;
-    const total = placementQuestions().length;
-    if (p.idx + 1 < total) {
-      p.idx += 1;
-      p.qStartedAt = Date.now();
+    p.answers.push(ans);
+    const scored = placement.scoreAnswer(q, ans);
+    if (q.type === "mc") {
+      p.mcAsked += 1;
+      if (placement.GRAMMAR_SKILLS[q.skill]) p.grammarAsked += 1;
+      p.difficulty = placement.nextDifficulty(p.difficulty, scored.result); // richtig→schwerer, sonst leichter
+    }
+    placementAdvance();
+  }
+
+  function placementAdvance() {
+    const p = state.placement;
+    if (p.mcAsked < placement.MC_TARGET) {
+      const nextQ = placement.pickNextMc(placementQuestions(), p.asked, p.difficulty, p.grammarAsked, placement.GRAMMAR_CAP);
+      if (nextQ) { pushPlacementQuestion(nextQ); render(); return; }
+    }
+    placementBeginFree();
+  }
+
+  function placementBeginFree() {
+    const p = state.placement;
+    const frees = placement.freeQuestions(placementQuestions());
+    if (p.freeIdx < frees.length) {
+      pushPlacementQuestion(frees[p.freeIdx]);
+      p.freeIdx += 1;
       render();
     } else {
       finishPlacement();
@@ -2770,7 +2813,7 @@
   }
 
   function placementChoose(index) {
-    const q = placementQuestions()[state.placement ? state.placement.idx : -1];
+    const q = currentPlacementQ();
     if (!q || q.type === "free") return;
     recordPlacementAnswer({ isUnknown: false, selectedIndex: index });
   }
@@ -2781,7 +2824,7 @@
   function placementSubmitFree() {
     const p = state.placement;
     if (!p || p.phase !== "running") return;
-    const q = placementQuestions()[p.idx];
+    const q = currentPlacementQ();
     if (!q || q.type !== "free") return;
     const el = document.getElementById("placement-free");
     const text = el ? String(el.value || "").trim() : "";
@@ -2792,7 +2835,8 @@
   function finishPlacement() {
     const p = state.placement;
     if (!p) return;
-    const result = placement.summarize(placementQuestions(), p.answers);
+    const asked = p.asked.map((id) => placement.questionById(id)).filter(Boolean);
+    const result = placement.summarize(asked, p.answers);
     p.result = result;
     p.phase = "done";
     // Letztes Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
@@ -2815,15 +2859,15 @@
   // VM für die drei Phasen (intro/running/done) – eine Render-Route „placement“.
   function placementVM() {
     const p = state.placement;
-    if (!p) return { phase: "intro", total: placementQuestions().length };
+    if (!p) return { phase: "intro", fromOnboarding: false, total: placementTotalPlanned() };
     if (p.phase === "running") {
-      const qs = placementQuestions();
-      const q = qs[p.idx];
+      const q = currentPlacementQ();
+      const index = Math.max(0, p.asked.length - 1);
       return {
-        phase: "running",
-        index: p.idx, total: qs.length,
+        phase: "running", fromOnboarding: !!p.fromOnboarding,
+        index: index, total: placementTotalPlanned(),
         // erste 3 Fragen: sanften „lieber weiß-nicht als raten“-Hinweis zeigen.
-        showHint: p.idx < 3,
+        showHint: index < 3,
         q: q ? {
           id: q.id, type: q.type, level: q.level,
           promptDe: q.promptDe, questionEs: q.questionEs || null,
@@ -2831,8 +2875,8 @@
         } : null,
       };
     }
-    if (p.phase === "done" && p.result) return Object.assign({ phase: "done" }, placementResultView(p.result));
-    return { phase: "intro", total: placementQuestions().length };
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding }, placementResultView(p.result));
+    return { phase: "intro", fromOnboarding: !!p.fromOnboarding, total: placementTotalPlanned() };
   }
 
   // Ergebnis in eine anzeigefertige Form bringen (Prozente, Skill-Zeilen, Notiz).
@@ -4329,11 +4373,13 @@
     else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
     else if (action === "placement-unknown") placementUnknown();
     else if (action === "placement-free-submit") placementSubmitFree();
-    else if (action === "placement-retake") openPlacement();
+    else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
-    else if (action === "skip-onboarding") finishOnboarding();
+    else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten
+    else if (action === "placement-skip") finishOnboarding();    // Ruta-Check im Onboarding überspringen -> fertig
+    else if (action === "placement-finish") finishOnboarding();  // Ruta-Check fertig (aus Onboarding) -> Dashboard
     else if (action === "resume-last") resumeLast();
     else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "open-search") openSearch();
@@ -4475,7 +4521,9 @@
       const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
       const onboarding = state.screen === "onboarding";
       const ok = setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
-      if (ok && onboarding) finishOnboarding();
+      // Im Onboarding nach dem Trip-Ziel direkt den Ruta-Check anbieten (mit „Später“),
+      // damit der Einstufungstest tatsächlich gemacht wird.
+      if (ok && onboarding) openPlacement(true);
       return;
     }
     // Konjugations-Drill: getippte Verbform prüfen.

@@ -3958,6 +3958,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     noteGrammar: "Grammatik sitzt, aber Reise-Reaktionen sind noch zögerlich – übe echte Situationen.",
     schoolNote: "Die Einstufung ist eine Orientierung. In einer Schule kann die Lehrkraft die Gruppe anpassen.",
     retake: "Nochmal",
+    later: "Später",
+    toApp: "Los geht's",
   }, {
     title: "Ruta-Check",
     introLead: (p) => `This short test (${p.n} questions) helps you find your starting level – with real travel phrases, not dry grammar.`,
@@ -3990,6 +3992,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     noteGrammar: "Grammar is solid, but real-situation reactions are still hesitant – practise real situations.",
     schoolNote: "This placement is a guide. At a school, the teacher can adjust your group.",
     retake: "Retake",
+    later: "Later",
+    toApp: "Let's go",
   });
 
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------
@@ -17113,6 +17117,46 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       correctIndex: 2, expectedTimeSec: 11,
       explanationDe: "„ayer“ (gestern) signalisiert abgeschlossene Vergangenheit (Indefinido): llegué = ich kam an." },
 
+    // --- Zusätzliche Stufen für den adaptiven Test (A0 ganz einfach, B1 fordernd) ---
+    { id: "pt_un_a0a", block: "understanding", skill: "understanding", level: "A0", type: "mc",
+      promptDe: "Was bedeutet dieses Wort?", questionEs: "Hola.",
+      options: ["Hallo", "Danke", "Tschüss", "Bitte"], correctIndex: 0, expectedTimeSec: 6,
+      explanationDe: "„Hola“ = Hallo." },
+    { id: "pt_un_a0b", block: "understanding", skill: "understanding", level: "A0", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Agua, por favor.",
+      options: ["Wasser, bitte.", "Brot, bitte.", "Die Rechnung, bitte.", "Hilfe, bitte."],
+      correctIndex: 0, expectedTimeSec: 7, explanationDe: "„agua“ = Wasser." },
+    { id: "pt_vo_a0a", block: "vocab", skill: "vocab", level: "A0", type: "mc",
+      promptDe: "Was bedeutet „sí“?",
+      options: ["ja", "nein", "vielleicht", "gut"], correctIndex: 0, expectedTimeSec: 6,
+      explanationDe: "„sí“ = ja (mit Akzent), „si“ ohne Akzent = wenn." },
+    { id: "pt_re_a0a", block: "reaction", skill: "reaction", level: "A0", type: "mc",
+      promptDe: "Jemand sagt „Gracias.“ Was antwortest du?",
+      options: ["De nada.", "Buenos días.", "No.", "Adiós."], correctIndex: 0, expectedTimeSec: 8,
+      explanationDe: "„De nada“ = gern geschehen / keine Ursache." },
+
+    { id: "pt_re_a2b", block: "reaction", skill: "reaction", level: "A2", type: "mc",
+      promptDe: "Du fragst nach der Abfahrtszeit des Busses. Was passt?",
+      options: ["¿Cuánto cuesta el bus?", "¿A qué hora sale el bus?", "¿Dónde está el bus?", "¿El bus es directo?"],
+      correctIndex: 1, expectedTimeSec: 12, explanationDe: "„¿A qué hora sale…?“ = Um wie viel Uhr fährt … ab?" },
+
+    { id: "pt_cj_b1a", block: "conjugation", skill: "conjugation", level: "B1", type: "mc",
+      promptDe: "Im Restaurant willst du höflich sagen: Bringen Sie mir bitte die Rechnung. Was passt?",
+      options: ["Tráigame la cuenta, por favor.", "Traigo la cuenta, por favor.", "Traes la cuenta, por favor.", "Trajiste la cuenta, por favor."],
+      correctIndex: 0, expectedTimeSec: 15, explanationDe: "„Tráigame“ ist die höfliche Befehls-/Bitteform (usted) – praktisch, aber eher B1." },
+    { id: "pt_re_b1a", block: "reaction", skill: "reaction", level: "B1", type: "mc",
+      promptDe: "Du willst besonders höflich/vorsichtig fragen (Konditional): Könnten Sie mir helfen? Was passt?",
+      options: ["¿Puede ayudarme?", "¿Podría ayudarme?", "¿Puedo ayudarme?", "¡Ayúdame!"],
+      correctIndex: 1, expectedTimeSec: 15, explanationDe: "„¿Podría…?“ (Konditional) ist die besonders höfliche Bitte." },
+    { id: "pt_ti_b1a", block: "tenses", skill: "tenses", level: "B1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Ya he comido, gracias.",
+      options: ["Ich esse gerade.", "Ich habe schon gegessen, danke.", "Ich werde essen.", "Ich aß gestern."],
+      correctIndex: 1, expectedTimeSec: 14, explanationDe: "„he comido“ (pretérito perfecto) = ich habe gegessen; „ya“ = schon." },
+    { id: "pt_un_b1a", block: "understanding", skill: "understanding", level: "B1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Si tuviera tiempo, iría a la playa.",
+      options: ["Wenn ich Zeit habe, gehe ich an den Strand.", "Wenn ich Zeit hätte, würde ich an den Strand gehen.", "Ich hatte Zeit und ging an den Strand.", "Ich werde Zeit haben für den Strand."],
+      correctIndex: 1, expectedTimeSec: 16, explanationDe: "„si tuviera … iría“ (Subjuntivo + Konditional) = irreale Bedingung: hätte ich …, würde ich …" },
+
     // --- Block 6: Freie Antwort (kurz schreiben; akzent-/satzzeichentolerant) ---
     { id: "pt_fr_001", block: "free", skill: "free", level: "A1", type: "free",
       promptDe: "Schreib auf Spanisch: Danke.",
@@ -17127,6 +17171,57 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Kommunikation vs. Grammatik (für das Profil + die Empfehlung).
   var COMM_SKILLS = { understanding: 1, reaction: 1, vocab: 1, free: 1 };
   var GRAMMAR_SKILLS = { conjugation: 1, tenses: 1 };
+
+  // ---------- adaptiver Ablauf (Treppen-Logik) ----------
+  // Schwierigkeit als Index 0..3. Richtig -> eine Stufe höher, falsch/„weiß nicht“
+  // -> eine Stufe tiefer. So konvergiert der Test aufs Niveau (leicht↔schwer),
+  // ohne dass jemand alle 33 Fragen durchmachen muss.
+  var LEVEL_ORDER = ["A0", "A1", "A2", "B1"];
+  var START_DIFFICULTY = 1;   // Start bei A1
+  var MC_TARGET = 12;         // so viele Multiple-Choice-Fragen, dann die freien
+  var GRAMMAR_CAP = 4;        // höchstens so viele Grammatik-Fragen (~30 % von 12)
+
+  function levelIndex(name) { var i = LEVEL_ORDER.indexOf(name); return i < 0 ? 1 : i; }
+  function nextDifficulty(difficulty, result) {
+    var d = (typeof difficulty === "number") ? difficulty : START_DIFFICULTY;
+    if (result === "correct") return Math.min(LEVEL_ORDER.length - 1, d + 1);
+    return Math.max(0, d - 1); // wrong oder unknown -> leichter
+  }
+
+  // Nächste Multiple-Choice-Frage wählen: möglichst auf der Zielstufe, sonst die
+  // nächstgelegene; Grammatik nur bis zum Deckel; bevorzugt den am wenigsten
+  // gefragten Skill (gleichmäßige Abdeckung). DETERMINISTISCH (testbar).
+  function pickNextMc(questions, askedIds, difficulty, grammarAsked, grammarCap) {
+    askedIds = askedIds || [];
+    var asked = {}; askedIds.forEach(function (id) { asked[id] = 1; });
+    var skillCount = {};
+    questions.forEach(function (q) { if (asked[q.id]) skillCount[q.skill] = (skillCount[q.skill] || 0) + 1; });
+    var capped = grammarAsked >= (grammarCap == null ? GRAMMAR_CAP : grammarCap);
+    var pool = questions.filter(function (q) {
+      if (q.type !== "mc" || asked[q.id]) return false;
+      if (capped && GRAMMAR_SKILLS[q.skill]) return false;
+      return true;
+    });
+    if (!pool.length) return null;
+    var target = (typeof difficulty === "number") ? difficulty : START_DIFFICULTY;
+    // Stufen nach Nähe zur Zielstufe durchsuchen.
+    var offsets = [0, 1, -1, 2, -2, 3, -3];
+    for (var oi = 0; oi < offsets.length; oi++) {
+      var name = LEVEL_ORDER[target + offsets[oi]];
+      if (!name) continue;
+      var group = pool.filter(function (q) { return q.level === name; });
+      if (!group.length) continue;
+      group.sort(function (a, b) {
+        var sa = skillCount[a.skill] || 0, sb = skillCount[b.skill] || 0;
+        if (sa !== sb) return sa - sb; // seltener gefragten Skill bevorzugen
+        return questions.indexOf(a) - questions.indexOf(b); // stabile Reihenfolge
+      });
+      return group[0];
+    }
+    return pool[0];
+  }
+
+  function freeQuestions(questions) { return (questions || QUESTIONS).filter(function (q) { return q.type === "free"; }); }
 
   // ---------- reine Hilfsfunktionen ----------
   function normalizeFree(s) {
@@ -17257,6 +17352,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     QUESTIONS: QUESTIONS,
     COMM_SKILLS: COMM_SKILLS,
     GRAMMAR_SKILLS: GRAMMAR_SKILLS,
+    LEVEL_ORDER: LEVEL_ORDER,
+    START_DIFFICULTY: START_DIFFICULTY,
+    MC_TARGET: MC_TARGET,
+    GRAMMAR_CAP: GRAMMAR_CAP,
     // reine Funktionen (getestet)
     timeConfidence: timeConfidence,
     scoreAnswer: scoreAnswer,
@@ -17264,6 +17363,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     summarize: summarize,
     questionById: questionById,
     normalizeFree: normalizeFree,
+    levelIndex: levelIndex,
+    nextDifficulty: nextDifficulty,
+    pickNextMc: pickNextMc,
+    freeQuestions: freeQuestions,
   };
 })();
 
@@ -18940,6 +19043,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.51.0",
+      date: "2026-06-15",
+      title: "Ruta-Check wird adaptiv – und Teil des Onboardings",
+      items: [
+        "🪜 Der Ruta-Check passt sich jetzt an: Wer richtig antwortet, bekommt schwerere Fragen, wer danebenliegt oder „weiß nicht“ wählt, leichtere – so landet die Einstufung schneller und genauer beim echten Niveau (A0 bis B1−). Zum Schluss kommen die freien Antworten.",
+        "🧭 Beim allerersten Start führt das Onboarding direkt durch den Test (mit „Später“-Option) – nach dem Reiseziel kommt der Ruta-Check, damit die Einstufung tatsächlich gemacht wird.",
+        "🎚️ Neue ganz leichte (A0) und fordernde (B1) Fragen geben der Anpassung Spielraum; die Grammatik bleibt dosiert (Deckel ~30 %).",
+      ],
+    },
     {
       version: "1.50.0",
       date: "2026-06-15",
@@ -21927,9 +22040,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function renderPlacementIntro(vm) {
+    // Im Onboarding: Kopf ohne Zurück-Knopf, dafür „Später“ zum Überspringen.
+    const head = vm.fromOnboarding
+      ? `<div class="pagehead"><h2 class="pagehead__title">🎯 ${esc(t("placement.title"))}</h2></div>`
+      : hmTopbar("🎯 " + esc(t("placement.title")), "home");
+    const later = vm.fromOnboarding
+      ? `<button class="ghostbtn" data-action="placement-skip">${esc(t("placement.later"))}</button>` : "";
     return `
       <section class="screen">
-        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        ${head}
         <p class="hm-intro">${esc(t("placement.introLead", { n: vm.total }))}</p>
         <div class="tip">${esc(t("placement.introHonest"))}</div>
         <ul class="pl-introlist">
@@ -21939,6 +22058,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </ul>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="placement-start">▶️ ${esc(t("placement.start"))}</button>
+          ${later}
         </div>
       </section>`;
   }
@@ -22003,7 +22123,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
         <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
         <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="home">${esc(t("common.overview"))}</button>
+          <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>
           <button class="teacher-btn" data-action="placement-retake">🔁 ${esc(t("placement.retake"))}</button>
         </div>
       </section>`;
@@ -25209,6 +25329,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (state.screen === "home") return false;
     // Onboarding mit „Zurück" überspringen (zählt als erledigt, kein Wiederzeigen).
     if (state.screen === "onboarding") { finishOnboarding(); return true; }
+    // Zurück aus dem Onboarding-Ruta-Check schließt das Onboarding ab (nicht erneut zeigen).
+    if (state.screen === "placement" && state.placement && state.placement.fromOnboarding) { finishOnboarding(); return true; }
     // 3) Eine Ebene höher.
     const target = backTarget();
     if (target === "home") goHome();
@@ -25916,35 +26038,76 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // die Antwortzeit je Frage wird erfasst und fließt LEICHT in die Sicherheit ein.
   function placementQuestions() { return (placement && placement.QUESTIONS) || []; }
 
-  function openPlacement() {
+  function placementTotalPlanned() {
+    return (placement.MC_TARGET || 12) + placement.freeQuestions(placementQuestions()).length;
+  }
+  function currentPlacementQ() {
+    const p = state.placement;
+    if (!p || !p.asked.length) return null;
+    return placement.questionById(p.asked[p.asked.length - 1]);
+  }
+
+  function openPlacement(fromOnboarding) {
     dismissBadgeToast();
-    state.placement = { phase: "intro", idx: 0, answers: [], startedAt: 0, qStartedAt: 0, result: null };
+    state.placement = {
+      phase: "intro", fromOnboarding: !!fromOnboarding,
+      asked: [], answers: [], difficulty: placement.START_DIFFICULTY,
+      mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
+    };
     state.screen = "placement";
     render();
   }
 
+  function pushPlacementQuestion(q) {
+    const p = state.placement;
+    p.asked.push(q.id);
+    p.qStartedAt = Date.now();
+  }
+
   function startPlacementTest() {
-    if (!state.placement) return;
-    const now = Date.now();
-    state.placement.phase = "running";
-    state.placement.idx = 0;
-    state.placement.answers = [];
-    state.placement.startedAt = now;
-    state.placement.qStartedAt = now;
+    const p = state.placement;
+    if (!p) return;
+    p.phase = "running"; p.asked = []; p.answers = [];
+    p.difficulty = placement.START_DIFFICULTY; p.mcAsked = 0; p.grammarAsked = 0; p.freeIdx = 0;
+    p.startedAt = Date.now();
+    const first = placement.pickNextMc(placementQuestions(), [], p.difficulty, 0, placement.GRAMMAR_CAP);
+    if (first) pushPlacementQuestion(first); else placementBeginFree();
     render();
   }
 
-  // Eine Antwort verbuchen und zur nächsten Frage (oder zum Ergebnis) gehen.
+  // Eine Antwort verbuchen, Schwierigkeit anpassen (Treppe), nächste Frage wählen.
   function recordPlacementAnswer(ans) {
     const p = state.placement;
     if (!p || p.phase !== "running") return;
+    const q = currentPlacementQ();
+    if (!q) return;
     const now = Date.now();
     ans.responseTimeMs = Math.max(0, now - (p.qStartedAt || now));
-    p.answers[p.idx] = ans;
-    const total = placementQuestions().length;
-    if (p.idx + 1 < total) {
-      p.idx += 1;
-      p.qStartedAt = Date.now();
+    p.answers.push(ans);
+    const scored = placement.scoreAnswer(q, ans);
+    if (q.type === "mc") {
+      p.mcAsked += 1;
+      if (placement.GRAMMAR_SKILLS[q.skill]) p.grammarAsked += 1;
+      p.difficulty = placement.nextDifficulty(p.difficulty, scored.result); // richtig→schwerer, sonst leichter
+    }
+    placementAdvance();
+  }
+
+  function placementAdvance() {
+    const p = state.placement;
+    if (p.mcAsked < placement.MC_TARGET) {
+      const nextQ = placement.pickNextMc(placementQuestions(), p.asked, p.difficulty, p.grammarAsked, placement.GRAMMAR_CAP);
+      if (nextQ) { pushPlacementQuestion(nextQ); render(); return; }
+    }
+    placementBeginFree();
+  }
+
+  function placementBeginFree() {
+    const p = state.placement;
+    const frees = placement.freeQuestions(placementQuestions());
+    if (p.freeIdx < frees.length) {
+      pushPlacementQuestion(frees[p.freeIdx]);
+      p.freeIdx += 1;
       render();
     } else {
       finishPlacement();
@@ -25952,7 +26115,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   function placementChoose(index) {
-    const q = placementQuestions()[state.placement ? state.placement.idx : -1];
+    const q = currentPlacementQ();
     if (!q || q.type === "free") return;
     recordPlacementAnswer({ isUnknown: false, selectedIndex: index });
   }
@@ -25963,7 +26126,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function placementSubmitFree() {
     const p = state.placement;
     if (!p || p.phase !== "running") return;
-    const q = placementQuestions()[p.idx];
+    const q = currentPlacementQ();
     if (!q || q.type !== "free") return;
     const el = document.getElementById("placement-free");
     const text = el ? String(el.value || "").trim() : "";
@@ -25974,7 +26137,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function finishPlacement() {
     const p = state.placement;
     if (!p) return;
-    const result = placement.summarize(placementQuestions(), p.answers);
+    const asked = p.asked.map((id) => placement.questionById(id)).filter(Boolean);
+    const result = placement.summarize(asked, p.answers);
     p.result = result;
     p.phase = "done";
     // Letztes Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
@@ -25997,15 +26161,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // VM für die drei Phasen (intro/running/done) – eine Render-Route „placement“.
   function placementVM() {
     const p = state.placement;
-    if (!p) return { phase: "intro", total: placementQuestions().length };
+    if (!p) return { phase: "intro", fromOnboarding: false, total: placementTotalPlanned() };
     if (p.phase === "running") {
-      const qs = placementQuestions();
-      const q = qs[p.idx];
+      const q = currentPlacementQ();
+      const index = Math.max(0, p.asked.length - 1);
       return {
-        phase: "running",
-        index: p.idx, total: qs.length,
+        phase: "running", fromOnboarding: !!p.fromOnboarding,
+        index: index, total: placementTotalPlanned(),
         // erste 3 Fragen: sanften „lieber weiß-nicht als raten“-Hinweis zeigen.
-        showHint: p.idx < 3,
+        showHint: index < 3,
         q: q ? {
           id: q.id, type: q.type, level: q.level,
           promptDe: q.promptDe, questionEs: q.questionEs || null,
@@ -26013,8 +26177,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         } : null,
       };
     }
-    if (p.phase === "done" && p.result) return Object.assign({ phase: "done" }, placementResultView(p.result));
-    return { phase: "intro", total: placementQuestions().length };
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding }, placementResultView(p.result));
+    return { phase: "intro", fromOnboarding: !!p.fromOnboarding, total: placementTotalPlanned() };
   }
 
   // Ergebnis in eine anzeigefertige Form bringen (Prozente, Skill-Zeilen, Notiz).
@@ -27511,11 +27675,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
     else if (action === "placement-unknown") placementUnknown();
     else if (action === "placement-free-submit") placementSubmitFree();
-    else if (action === "placement-retake") openPlacement();
+    else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
-    else if (action === "skip-onboarding") finishOnboarding();
+    else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten
+    else if (action === "placement-skip") finishOnboarding();    // Ruta-Check im Onboarding überspringen -> fertig
+    else if (action === "placement-finish") finishOnboarding();  // Ruta-Check fertig (aus Onboarding) -> Dashboard
     else if (action === "resume-last") resumeLast();
     else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "open-search") openSearch();
@@ -27657,7 +27823,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
       const onboarding = state.screen === "onboarding";
       const ok = setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
-      if (ok && onboarding) finishOnboarding();
+      // Im Onboarding nach dem Trip-Ziel direkt den Ruta-Check anbieten (mit „Später“),
+      // damit der Einstufungstest tatsächlich gemacht wird.
+      if (ok && onboarding) openPlacement(true);
       return;
     }
     // Konjugations-Drill: getippte Verbform prüfen.

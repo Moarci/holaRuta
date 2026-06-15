@@ -2441,9 +2441,15 @@
   }
 
   function renderPlacementIntro(vm) {
+    // Im Onboarding: Kopf ohne Zurück-Knopf, dafür „Später“ zum Überspringen.
+    const head = vm.fromOnboarding
+      ? `<div class="pagehead"><h2 class="pagehead__title">🎯 ${esc(t("placement.title"))}</h2></div>`
+      : hmTopbar("🎯 " + esc(t("placement.title")), "home");
+    const later = vm.fromOnboarding
+      ? `<button class="ghostbtn" data-action="placement-skip">${esc(t("placement.later"))}</button>` : "";
     return `
       <section class="screen">
-        ${hmTopbar("🎯 " + esc(t("placement.title")), "home")}
+        ${head}
         <p class="hm-intro">${esc(t("placement.introLead", { n: vm.total }))}</p>
         <div class="tip">${esc(t("placement.introHonest"))}</div>
         <ul class="pl-introlist">
@@ -2453,6 +2459,7 @@
         </ul>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="placement-start">▶️ ${esc(t("placement.start"))}</button>
+          ${later}
         </div>
       </section>`;
   }
@@ -2517,7 +2524,7 @@
         ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
         <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
         <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="home">${esc(t("common.overview"))}</button>
+          <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>
           <button class="teacher-btn" data-action="placement-retake">🔁 ${esc(t("placement.retake"))}</button>
         </div>
       </section>`;

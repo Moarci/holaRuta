@@ -14,26 +14,78 @@ globalThis.window = globalThis.window || {};
 require(path.join(__dirname, "..", "placement.js"));
 const { placement } = globalThis.window.SC;
 
-test("Fragenkatalog: 24 Fragen, jede mit Pflichtfeldern + gültigem correctIndex", () => {
+test("Fragenkatalog: gültig, eindeutige IDs, alle Stufen für die Treppe vorhanden", () => {
   const Q = placement.QUESTIONS;
-  assert.equal(Q.length, 24);
-  const blocks = {};
+  assert.ok(Q.length >= 24, "genug Fragen für den adaptiven Test");
+  const ids = {}, levels = {}, grammar = { n: 0 };
   for (const q of Q) {
     assert.ok(q.id && q.block && q.skill && q.level && q.type, "Pflichtfeld fehlt: " + q.id);
+    assert.ok(!ids[q.id], "doppelte id: " + q.id); ids[q.id] = 1;
+    assert.ok(placement.LEVEL_ORDER.includes(q.level), "gültige Stufe: " + q.id);
     assert.ok(typeof q.promptDe === "string" && q.promptDe.length > 0, "promptDe fehlt: " + q.id);
     assert.ok(typeof q.expectedTimeSec === "number" && q.expectedTimeSec > 0, "expectedTimeSec: " + q.id);
     if (q.type === "mc") {
       assert.ok(Array.isArray(q.options) && q.options.length === 4, "4 Optionen: " + q.id);
       assert.ok(q.correctIndex >= 0 && q.correctIndex < 4, "correctIndex im Bereich: " + q.id);
+      if (placement.GRAMMAR_SKILLS[q.skill]) grammar.n++;
     } else {
       assert.ok(Array.isArray(q.accept) && q.accept.length > 0, "accept[] fehlt: " + q.id);
     }
-    blocks[q.block] = (blocks[q.block] || 0) + 1;
+    levels[q.level] = (levels[q.level] || 0) + 1;
   }
-  // Gewichtung: Kommunikation (Verstehen/Reagieren/Wortschatz/frei) ~70 %, Grammatik ~30 %.
-  assert.deepEqual(blocks, { understanding: 6, reaction: 5, vocab: 4, conjugation: 4, tenses: 3, free: 2 });
-  const grammar = blocks.conjugation + blocks.tenses; // 7
-  assert.ok(grammar / Q.length >= 0.25 && grammar / Q.length <= 0.35, "Grammatik 25–35 %");
+  // Jede Treppenstufe (A0..B1) muss bestückt sein, sonst kann der Test nicht adaptieren.
+  for (const lvl of placement.LEVEL_ORDER) assert.ok(levels[lvl] > 0, "Stufe ohne Fragen: " + lvl);
+  // Grammatik bleibt eine Diagnose-Dosis (nicht der Schwerpunkt).
+  const mcCount = Q.filter((q) => q.type === "mc").length;
+  assert.ok(grammar.n / mcCount >= 0.2 && grammar.n / mcCount <= 0.35, "Grammatik 20–35 % der MC");
+  assert.ok(placement.freeQuestions(Q).length >= 1, "mind. eine freie Antwort");
+});
+
+test("nextDifficulty: richtig -> schwerer, falsch/unbekannt -> leichter (geklemmt)", () => {
+  assert.equal(placement.nextDifficulty(1, "correct"), 2);
+  assert.equal(placement.nextDifficulty(1, "wrong"), 0);
+  assert.equal(placement.nextDifficulty(1, "unknown"), 0);
+  assert.equal(placement.nextDifficulty(3, "correct"), 3); // Deckel oben (B1)
+  assert.equal(placement.nextDifficulty(0, "wrong"), 0);   // Boden unten (A0)
+});
+
+test("pickNextMc: bevorzugt Zielstufe, hält den Grammatik-Deckel, nie schon Gefragtes", () => {
+  const Q = placement.QUESTIONS;
+  // Zielstufe A0 (index 0) -> eine A0-Frage zuerst.
+  let q = placement.pickNextMc(Q, [], 0, 0, placement.GRAMMAR_CAP);
+  assert.equal(q.level, "A0");
+  // Zielstufe B1 (index 3) -> B1 (oder nächstgelegene), nie eine bereits gefragte.
+  const askedIds = Q.filter((x) => x.level === "B1").map((x) => x.id);
+  q = placement.pickNextMc(Q, askedIds, 3, 0, placement.GRAMMAR_CAP);
+  assert.ok(q && askedIds.indexOf(q.id) < 0, "keine Wiederholung");
+  // Grammatik-Deckel erreicht -> keine Grammatik-Frage mehr.
+  const q2 = placement.pickNextMc(Q, [], 1, placement.GRAMMAR_CAP, placement.GRAMMAR_CAP);
+  assert.ok(q2 && !placement.GRAMMAR_SKILLS[q2.skill], "Grammatik wird ausgeschlossen");
+});
+
+test("adaptiver Durchlauf: starker Lerner steigt auf, schwacher fällt ab", () => {
+  const Q = placement.QUESTIONS;
+  // Simuliere den Controller-Kern: immer richtig -> Schwierigkeit klettert nach oben.
+  function run(answerCorrect) {
+    let asked = [], difficulty = placement.START_DIFFICULTY, grammarAsked = 0, peak = difficulty, low = difficulty;
+    for (let i = 0; i < placement.MC_TARGET; i++) {
+      const q = placement.pickNextMc(Q, asked, difficulty, grammarAsked, placement.GRAMMAR_CAP);
+      if (!q) break;
+      asked.push(q.id);
+      if (placement.GRAMMAR_SKILLS[q.skill]) grammarAsked++;
+      const result = answerCorrect ? "correct" : "wrong";
+      difficulty = placement.nextDifficulty(difficulty, result);
+      peak = Math.max(peak, difficulty); low = Math.min(low, difficulty);
+    }
+    // Grammatik-Deckel eingehalten?
+    assert.ok(grammarAsked <= placement.GRAMMAR_CAP, "Grammatik-Deckel");
+    return { asked, peak, low };
+  }
+  const strong = run(true);
+  const weak = run(false);
+  assert.equal(strong.peak, placement.LEVEL_ORDER.length - 1, "starker Lerner erreicht B1-Stufe");
+  assert.equal(weak.low, 0, "schwacher Lerner fällt auf A0");
+  assert.ok(strong.asked.length > 0 && weak.asked.length > 0);
 });
 
 test("scoreAnswer: richtig/falsch/unbekannt + Zeit-Sicherheit nur bei richtig", () => {
