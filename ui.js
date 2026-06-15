@@ -1496,6 +1496,7 @@
             <p class="cinfo-head__cap">${t("discover.infoCapital", { capital: esc(c.capital) })}</p>
           </div>
         </div>
+        <button class="hist-share cinfo-share" type="button" data-action="share-country">📤 ${esc(t("discover.tipsShare"))}</button>
 
         ${sect("🌎", t("discover.infoAbout"), para(c.about))}
         ${sect("📜", t("discover.infoHistory"), para(c.history))}
@@ -1642,7 +1643,9 @@
         <a class="hist-nav__chip" href="#hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
       </nav>`;
 
-    // Eine Epoche als aufklappbare Karte am Zeitstrahl.
+    // Eine Epoche als aufklappbare Karte am Zeitstrahl. Aufbau wie bei den
+    // Protagonisten: zuerst der erklärende Text in der UI-Sprache, darunter das
+    // spanische Lesetraining als eigener aufklappbarer Block.
     const era = (e) => {
       const img = e.img
         ? `<figure class="hist-era__fig">
@@ -1652,7 +1655,13 @@
            </figure>`
         : "";
       const lvl = levelMeta(e.level);
-      const reading = readingBlock({ es: e.es, vocab: e.vocab, level: e.level, trans: e.body, shareId: e.id, quiz: true });
+      const bodyText = (e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("");
+      const reading = (e.es && e.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: e.es, vocab: e.vocab, level: e.level, shareId: e.id, quiz: true })}</div>
+           </details>`
+        : "";
       const points = (e.points || []).length
         ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
         : "";
@@ -1672,6 +1681,7 @@
           </summary>
           <div class="hist-era__body">
             ${img}
+            ${bodyText}
             ${reading}
             ${points}
           </div>
@@ -1770,6 +1780,13 @@
       </section>`;
   }
 
+  // Teilen-Knopf für die Entdecken-Tipp-Kategorien (Knigge/Regatear/Logística/
+  // Salud): erzeugt ein Sharepic des Themas mit seinen DOs/Don'ts „zum
+  // Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
+  function tipsShareBtn(cat, i) {
+    return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
+  }
+
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
   // Allgemeine DOs & Don'ts (Hostel, Bus, Gruppen, Kultur) plus landesspezifische
   // Akzente. Land-Dropdown wie in renderInfo (teilt state.countryId). Themenblöcke
@@ -1797,7 +1814,7 @@
         .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
         .join("");
 
-    const block = (t) => {
+    const block = (t, i) => {
       const dos = liList(t.dos, "knigge-do", "✅");
       const donts = liList(t.donts, "knigge-dont", "🚫");
       const accent = t.accent
@@ -1815,6 +1832,7 @@
             ${dos ? `<ul class="knigge-list">${dos}</ul>` : ""}
             ${donts ? `<ul class="knigge-list">${donts}</ul>` : ""}
             ${accent}
+            ${tipsShareBtn("knigge", i)}
           </div>
         </details>`;
     };
@@ -1848,7 +1866,7 @@
       (items || [])
         .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
         .join("");
-    const tipBlock = (t) => `
+    const tipBlock = (t, i) => `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
           <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
@@ -1859,6 +1877,7 @@
           ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
           ${t.dos && t.dos.length ? `<ul class="knigge-list">${liList(t.dos, "knigge-do", "✅")}</ul>` : ""}
           ${t.donts && t.donts.length ? `<ul class="knigge-list">${liList(t.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${tipsShareBtn("regatear", i)}
         </div>
       </details>`;
     const tips = (vm.tips || []).map(tipBlock).join("");
@@ -1987,7 +2006,7 @@
       (items || [])
         .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
         .join("");
-    const topicBlock = (tp) => `
+    const topicBlock = (tp, i) => `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
           <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
@@ -1998,6 +2017,7 @@
           ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
           ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
           ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
         </div>
       </details>`;
     const topics = (vm.topics || []).map(topicBlock).join("");
@@ -2059,7 +2079,7 @@
   // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
   function renderLogistica(vm) {
     return moduleSheet(vm, {
-      icon: "🧳", title: "Logística de viaje",
+      icon: "🧳", title: "Logística de viaje", cat: "logistica",
       headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
       headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
       headChecklistHint: "discover.lgChecklistHint",
@@ -2069,7 +2089,7 @@
   // Salud y energía: ausgewogen essen, günstig trinken, Bauch, Sonne/Höhe, Bewegung.
   function renderSalud(vm) {
     return moduleSheet(vm, {
-      icon: "🥗", title: "Salud y energía",
+      icon: "🥗", title: "Salud y energía", cat: "salud",
       headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
       headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
       headChecklistHint: "discover.sdChecklistHint",

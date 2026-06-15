@@ -3390,6 +3390,62 @@
     }, shareFormat());
   }
 
+  // Sharepic für die übrigen Entdecken-Kategorien (Knigge, Regatear, Logística,
+  // Salud): ein Thema mit seinen DOs/Don'ts als teilbares Bild „zum Versenden".
+  // kicker/icon/accent passen zur jeweiligen Kategorie-Kachel (siehe FEATURES).
+  const TIPS_META = {
+    knigge:    { kicker: "Etiqueta de viaje", icon: "🧭", accent: ["#3F6B8E", "#6B4FA8"] },
+    regatear:  { kicker: "Regatear",          icon: "🤝", accent: ["#B97C24", "#3F7355"] },
+    logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
+    salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
+  };
+
+  function shareTips(cat, idx) {
+    if (!share) return;
+    const src = cat === "knigge" ? (knigge && knigge.TOPICS)
+              : cat === "regatear" ? (regatear && regatear.TIPS)
+              : cat === "logistica" ? (logistica && logistica.TOPICS)
+              : cat === "salud" ? (salud && salud.TOPICS)
+              : null;
+    const meta = TIPS_META[cat];
+    if (!src || !src[idx] || !meta) return;
+    const o = loc(src[idx]); // …En-Felder für die aktive Sprache überlagern
+    const lines = []
+      .concat((o.dos || []).map((text) => ({ mark: "✅", text })))
+      .concat((o.donts || []).map((text) => ({ mark: "🚫", text })));
+    buzz(12);
+    share.shareImage("tips", {
+      kicker: meta.kicker,
+      icon: meta.icon,
+      title: o.title || meta.kicker,
+      intro: o.intro || "",
+      lines,
+      accent: meta.accent,
+    }, shareFormat());
+  }
+
+  // Sharepic für die Länderkunde (Países y culturas): das aktuell gewählte Land
+  // als kompakte Steckbrief-Karte (Hauptstadt, Kurzporträt, etwas lokaler Slang).
+  function shareCountry() {
+    if (!share || !countries) return;
+    const list = countries.LIST || [];
+    const c = loc(list.find((x) => x.id === state.countryId) || list[0]);
+    if (!c) return;
+    const lines = [];
+    if (c.capital) lines.push({ mark: "🏛️", text: c.capital });
+    if (c.about) lines.push({ mark: "🌎", text: c.about });
+    (c.words || []).slice(0, 4).forEach((w) => lines.push({ mark: "🗣️", text: `${w.es} — ${w.de}` }));
+    buzz(12);
+    share.shareImage("tips", {
+      kicker: "Países y culturas",
+      icon: "🌎",
+      title: `${c.flag || ""} ${c.name || ""}`.trim(),
+      intro: c.tagline || "",
+      lines,
+      accent: ["#B97C24", "#C2502E"],
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -3479,6 +3535,8 @@
     else if (action === "share-stats") shareStats();
     else if (action === "share-card") shareCard();
     else if (action === "share-historia") shareHistoria(el.dataset.id);
+    else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
+    else if (action === "share-country") shareCountry();
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
