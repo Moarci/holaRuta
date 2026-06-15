@@ -3392,6 +3392,18 @@
     if (!el) return;
     const action = el.dataset.action;
 
+    // Schwierigkeits-Wort im Lesetext: Übersetzungs-Popover umschalten – per
+    // Klasse direkt im DOM (kein Re-Render, damit Scrollposition & offene
+    // Akkordeons bleiben). Robust auf Mobil, wo :focus auf Buttons unzuverlässig
+    // ist. Tippt man ein anderes Wort, schließt das vorige.
+    if (action === "hist-word") {
+      const open = el.classList.contains("is-open");
+      const root = document.getElementById("app") || document;
+      root.querySelectorAll(".hist-w.is-open").forEach((b) => b.classList.remove("is-open"));
+      if (!open) el.classList.add("is-open");
+      return;
+    }
+
     if (action === "set-mode") setMode(el.dataset.mode);
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
     else if (action === "toggle-theme") toggleTheme();

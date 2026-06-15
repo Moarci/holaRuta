@@ -1177,7 +1177,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border: 0; border-bottom: 2px dotted var(--brand); border-radius: 3px;
   -webkit-tap-highlight-color: transparent;
 }
-.hist-w:hover { background: rgba(185, 124, 36, 0.28); }
+.hist-w:hover, .hist-w.is-open { background: rgba(185, 124, 36, 0.30); }
 .hist-w__pop {
   position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
   display: none; z-index: 5; white-space: normal; width: max-content; max-width: 240px;
@@ -1188,8 +1188,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
   border: 6px solid transparent; border-top-color: var(--ink);
 }
-.hist-w:focus .hist-w__pop, .hist-w:focus-visible .hist-w__pop, .hist-w:hover .hist-w__pop { display: block; }
+.hist-w.is-open .hist-w__pop, .hist-w:focus-visible .hist-w__pop, .hist-w:hover .hist-w__pop { display: block; }
 .hist-w:focus { outline: none; }
+.hist-w:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
 
 /* Wörterliste pro Text (aufklappbar), gruppiert in mitnehmen / überspringen. */
 .hist-voc, .hist-trans {

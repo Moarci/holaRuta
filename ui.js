@@ -1551,7 +1551,7 @@
         const w = m[1];
         const v = vmap[w.toLowerCase().trim()];
         const tr = v ? v.de : "";
-        html += `<button class="hist-w" type="button" aria-label="${esc(w + " – " + tr)}">${esc(w)}<span class="hist-w__pop" aria-hidden="true">${esc(tr)}</span></button>`;
+        html += `<button class="hist-w" type="button" data-action="hist-word" aria-label="${esc(w + " – " + tr)}">${esc(w)}<span class="hist-w__pop" aria-hidden="true">${esc(tr)}</span></button>`;
         last = re.lastIndex;
       }
       html += esc(p.slice(last));
