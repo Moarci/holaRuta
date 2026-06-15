@@ -662,7 +662,9 @@
   // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
   // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
   // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
-  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild.
+  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild. Dient außerdem (kind
+  // "module") als generische Modul-Einladung: Icon · Titel · Kurz-Intro · ein paar
+  // Highlight-Zeilen (Marker frei wählbar, z.B. Vokabel-Beispiele oder Themen).
   function buildTips(payload, aspect) {
     const h = heightFor(aspect);
     const c = newCanvas(h);
@@ -815,6 +817,12 @@
       out += `\n\n${t("share.captionTips")}`;
       return out + link;
     }
+    if (kind === "module") {
+      const title = String(p.title || "").trim();
+      let out = t("share.captionModuleHead", { title: title || BRAND });
+      out += `\n\n${t("share.captionModule")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -836,6 +844,7 @@
              : kind === "histtext" ? buildHistoria(payload, fmt)
              : kind === "histmodule" ? buildHistOverview(payload, fmt)
              : kind === "tips" ? buildTips(payload, fmt)
+             : kind === "module" ? buildTips(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -855,6 +864,7 @@
                : kind === "histtext" ? "holaruta-historia"
                : kind === "histmodule" ? "holaruta-historia-modul"
                : kind === "tips" ? "holaruta-tipps"
+               : kind === "module" ? "holaruta-modul"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
@@ -862,6 +872,7 @@
                 : kind === "histtext" ? "Historia de Sudamérica"
                 : kind === "histmodule" ? "Historia de Sudamérica"
                 : kind === "tips" ? ((payload && payload.title) || "HolaRuta")
+                : kind === "module" ? ((payload && payload.title) || "HolaRuta")
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 

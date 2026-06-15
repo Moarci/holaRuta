@@ -1282,7 +1282,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .knigge-topic__body .hist-share { margin-top: 12px; }
 .cinfo-share { margin: 0 0 14px; }
 .knigge-topic__body .hist-share,
-.cinfo-share { background: linear-gradient(135deg, #475569, #334155); }
+.cinfo-share,
+.mod-share { background: linear-gradient(135deg, #475569, #334155); }
 
 /* Mini-Quiz zum Text (Selbstprüfung). */
 .hist-quiz { margin: 0 0 10px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm); }
@@ -3077,6 +3078,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histTranslation: "Ganze Übersetzung anzeigen",
     histShare: "Text & Vokabeln teilen",
     histModuleShare: "Modul teilen",
+    moduleShare: "Modul teilen",
+    moduleShareKicker: "Entdecken",
     tipsShare: "Als Bild teilen",
     histReadToggle: "Auf Spanisch lesen",
     histQuiz: "Mini-Quiz: Vokabeln testen",
@@ -3363,6 +3366,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     histTranslation: "Show full translation",
     histShare: "Share text & vocab",
     histModuleShare: "Share module",
+    moduleShare: "Share module",
+    moduleShareKicker: "Discover",
     tipsShare: "Share as image",
     histReadToggle: "Read in Spanish",
     histQuiz: "Mini-quiz: test the vocab",
@@ -3852,6 +3857,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionHistModule: "Von den Inka über Bolívar bis heute – verständlich erzählt, mit Spanisch-Lesetraining. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – Reise-Tipps von HolaRuta`,
     captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
+    captionModuleHead: (p) => `🧭 ${p.title} – ein Modul aus HolaRuta`,
+    captionModule: "Reise-Spanisch für Lateinamerika – spielerisch lernen mit HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -3877,6 +3884,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     captionHistModule: "From the Inca via Bolívar to today – clearly told, with Spanish reading practice. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – travel tips from HolaRuta`,
     captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
+    captionModuleHead: (p) => `🧭 ${p.title} – a module from HolaRuta`,
+    captionModule: "Travel Spanish for Latin America – learn it the fun way with HolaRuta. 🌎",
   });
 })();
 
@@ -17069,7 +17078,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
   // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
   // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
-  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild.
+  // „Mach das"/„Vermeide das"-Punkten als teilbares Bild. Dient außerdem (kind
+  // "module") als generische Modul-Einladung: Icon · Titel · Kurz-Intro · ein paar
+  // Highlight-Zeilen (Marker frei wählbar, z.B. Vokabel-Beispiele oder Themen).
   function buildTips(payload, aspect) {
     const h = heightFor(aspect);
     const c = newCanvas(h);
@@ -17222,6 +17233,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       out += `\n\n${t("share.captionTips")}`;
       return out + link;
     }
+    if (kind === "module") {
+      const title = String(p.title || "").trim();
+      let out = t("share.captionModuleHead", { title: title || BRAND });
+      out += `\n\n${t("share.captionModule")}`;
+      return out + link;
+    }
     const es = String(p.es || "").trim();
     const de = String(p.de || "").trim();
     const head = es && de ? `„${es}" = ${de}` : (es || de || t("share.defaultVocab"));
@@ -17243,6 +17260,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
              : kind === "histtext" ? buildHistoria(payload, fmt)
              : kind === "histmodule" ? buildHistOverview(payload, fmt)
              : kind === "tips" ? buildTips(payload, fmt)
+             : kind === "module" ? buildTips(payload, fmt)
              : buildCard(payload, fmt);
     } catch (e) {
       console.warn("Sharepic konnte nicht gezeichnet werden", e);
@@ -17262,6 +17280,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                : kind === "histtext" ? "holaruta-historia"
                : kind === "histmodule" ? "holaruta-historia-modul"
                : kind === "tips" ? "holaruta-tipps"
+               : kind === "module" ? "holaruta-modul"
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
@@ -17269,6 +17288,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                 : kind === "histtext" ? "Historia de Sudamérica"
                 : kind === "histmodule" ? "Historia de Sudamérica"
                 : kind === "tips" ? ((payload && payload.title) || "HolaRuta")
+                : kind === "module" ? ((payload && payload.title) || "HolaRuta")
                 : "Reise-Spanisch lernen";
     const text = shareText(kind, payload); // Begleittext (z.B. unter dem WhatsApp-Bild)
 
@@ -17437,6 +17457,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.31.0",
+      date: "2026-06-15",
+      title: "„Modul teilen“ jetzt in allen Entdecken-Modulen",
+      items: [
+        "📤 Der „Modul teilen“-Knopf sitzt jetzt oben in jedem Entdecken-Modul – nicht mehr nur bei „Historia de Sudamérica“. Damit lässt sich jedes Modul (Supervivencia, Modo hostal, Definiciones, Frases flexibles, Diálogos, Regatear, Precios al oído, El Cuerpo, Lista de compras, Conjugación, Tiempos, Países y culturas, Etiqueta de viaje, Logística de viaje und Salud y energía) als Einladung weiterempfehlen.",
+        "🎨 Jedes Sharepic ist auf sein Modul zugeschnitten: Icon, Titel und ein paar echte Highlights – je nach Modul Beispiel-Vokabeln, Themen- oder Szenenlisten – in 1:1 oder 9:16 (Story).",
+      ],
+    },
     {
       version: "1.30.0",
       date: "2026-06-15",
@@ -19081,6 +19110,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🆘 Supervivencia", "home")}
         <p class="hm-intro">${esc(t("discover.szIntro"))}</p>
+        ${moduleShareBtn("supervivencia")}
         <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
         ${groups}
         ${show}
@@ -19122,6 +19152,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("💵 Precios al oído", "home")}
         <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
+        ${moduleShareBtn("precios")}
         <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
         <div class="prc-curs">${currencies}</div>
         <h3 class="prc-head">${esc(t("discover.prcDifficulty"))}</h3>
@@ -19287,6 +19318,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${infoTopbar()}
         ${selector}
+        ${moduleShareBtn("paises")}
         ${histBanner}
 
         <div class="cinfo-head">
@@ -19596,6 +19628,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
   }
 
+  // „Modul teilen"-Knopf für die Entdecken-Module: empfiehlt das ganze Modul als
+  // Sharepic weiter (Logik in app.shareModule, Motiv „module"). mod = Modul-Id
+  // (siehe MODULE_SHARE in app.js). Sitzt oben direkt unter der Einleitung – wie
+  // bei Historia. Ohne Teilen-Fähigkeit (kein Share-Modul) entfällt der Knopf.
+  function moduleShareBtn(mod) {
+    if (!canShare()) return "";
+    return `<div class="hist-modshare"><button class="hist-share mod-share" type="button" data-action="share-module" data-mod="${esc(mod)}">📤 ${esc(t("discover.moduleShare"))}</button></div>`;
+  }
+
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
   // Allgemeine DOs & Don'ts (Hostel, Bus, Gruppen, Kultur) plus landesspezifische
   // Akzente. Land-Dropdown wie in renderInfo (teilt state.countryId). Themenblöcke
@@ -19653,6 +19694,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${kniggeTopbar()}
         ${selector}
         <p class="pageintro">${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.</p>
+        ${moduleShareBtn("knigge")}
         ${topics}
       </section>`;
   }
@@ -19781,6 +19823,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
+        ${moduleShareBtn("regatear")}
 
         <h2 class="rg-head">${esc(t("discover.rgTactics"))}</h2>
         ${tips}
@@ -19873,6 +19916,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
+        ${cfg.cat ? moduleShareBtn(cfg.cat) : ""}
 
         ${section(topics, cfg.headTips, topics)}
         ${section(phrases, cfg.headPhrases, phrases)}
@@ -19922,6 +19966,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🛏️ Modo hostal", "home")}
         <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
+        ${moduleShareBtn("hostel")}
         <div class="hm-menu">
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
             <span class="hm-card__icon" aria-hidden="true">⚔️</span>
@@ -20174,6 +20219,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🧩 Definiciones", "home")}
         <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
+        ${moduleShareBtn("definiciones")}
         <div class="hm-scenes">${list}</div>
       </section>`;
   }
@@ -20258,6 +20304,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🧱 Frases flexibles", "home")}
         <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
+        ${moduleShareBtn("frases")}
         <div class="hm-scenes">
           ${tile(vm.mixed, true)}
           ${list}
@@ -20447,6 +20494,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("🔁 Conjugación", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
+        ${moduleShareBtn("conjugacion")}
 
         ${sect("🧑‍🤝‍🧑", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
         ${sect("🧱", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
@@ -20571,6 +20619,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("💬 Diálogos", "home")}
         <p class="hm-intro">${esc(t("discover.dlgIntro"))}</p>
+        ${moduleShareBtn("dialogos")}
         ${hint}
         <div class="dlg-picks">${cards}</div>
       </section>`;
@@ -20852,6 +20901,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen">
         ${hmTopbar("⏳ Tiempos", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
+        ${moduleShareBtn("tiempos")}
 
         ${sect("↔️", t.title, timeline)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
@@ -20920,6 +20970,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen bp-screen">
         ${hmTopbar("🧍 El Cuerpo", "home")}
         <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
+        ${moduleShareBtn("cuerpo")}
         ${progress}
         <div class="bp-stage">
           <div class="bp-3d-stage" data-bp-stage>
@@ -21028,6 +21079,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
         ${hmTopbar("🛒 Lista de compras", "home")}
         <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
+        ${moduleShareBtn("compras")}
         <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>
         ${progress}
         <ul class="sl-list">${items}</ul>
@@ -24595,6 +24647,101 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     }, shareFormat());
   }
 
+  // Sharepic auf Modul-Ebene für ALLE Entdecken-Module: das ganze Modul als
+  // Einladung weiterempfehlen (Motiv „module" = generische Modul-Karte: Icon,
+  // Titel, Kurz-Intro, ein paar Highlight-Zeilen). Inhalt ist pro Modul
+  // maßgeschneidert (echte Vokabel-Beispiele, Themen- oder Szenenlisten) – die
+  // Optik teilt es sich mit den Reise-Tipps. Icon/Titel/Akzent spiegeln die
+  // jeweilige Entdecken-Kachel (siehe FEATURES in ui.js); der Intro-Einzeiler
+  // kommt aus dem Kachel-Untertitel (discover.sub…), damit DE/EN gepflegt sind.
+  // Historia hat ein eigenes Motiv (shareHistModule) und ist hier nicht gelistet.
+  const MODULE_SHARE = {
+    supervivencia: { icon: "🆘", title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
+    hostel:        { icon: "🛏️", title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
+    definiciones:  { icon: "🧩", title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
+    frases:        { icon: "🧱", title: "Frases flexibles",     sub: "discover.subFrases",        accent: ["#7048E8", "#5A3FB8"] },
+    dialogos:      { icon: "💬", title: "Diálogos",             sub: "discover.subDialogos",      accent: ["#9B5A8C", "#5A4FA8"] },
+    regatear:      { icon: "🤝", title: "Regatear",             sub: "discover.subRegatear",      accent: ["#B97C24", "#3F7355"] },
+    precios:       { icon: "💵", title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
+    cuerpo:        { icon: "🧍", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
+    compras:       { icon: "🛒", title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
+    conjugacion:   { icon: "🔁", title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
+    tiempos:       { icon: "⏳", title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
+    paises:        { icon: "🌎", title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
+    knigge:        { icon: "🧭", title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
+    logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
+    salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+  };
+
+  // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
+  function cardSampleLines(cat, n, mark) {
+    return data.CARDS
+      .filter((c) => c.cat === cat)
+      .slice(0, n)
+      .map((c) => ({ mark: mark || "🗣️", text: `${c.es} — ${nat(c)}` }));
+  }
+
+  // Pro Modul ein paar repräsentative Highlight-Zeilen aus den echten Modul-Daten
+  // ziehen. Quelle ist jeweils derselbe View-Model-Builder, der auch den Screen
+  // füllt – der Knopf erscheint nur im geöffneten Modul, dessen State steht also.
+  function moduleShareLines(id) {
+    const CAP = 6;
+    const cut = (arr) => (arr || []).filter(Boolean).slice(0, CAP);
+    switch (id) {
+      case "supervivencia": {
+        const out = [];
+        spickzettelVM().groups.forEach((g) => {
+          (g.cards || []).slice(0, 2).forEach((c) => out.push({ mark: g.icon || "🆘", text: `${c.es} — ${c.de}` }));
+        });
+        return cut(out);
+      }
+      case "hostel":
+        return cut(battleSetupVM().scenes.map((s) => ({ mark: s.icon || "⚔️", text: s.label })));
+      case "definiciones":
+        return cut(quizSetupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
+      case "frases":
+        return cut(frasesSetupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
+      case "dialogos":
+        return cut(dialogosSetupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
+      case "regatear":
+        return cut((regatearVM().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
+      case "precios":
+        return cut(preciosSetupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
+      case "cuerpo":
+        return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
+      case "compras":
+        return cut(comprasVM().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
+      case "conjugacion":
+        return cardSampleLines("verbos", CAP, "🔁");
+      case "tiempos":
+        return cardSampleLines("tiempos", CAP, "⏳");
+      case "paises":
+        return cut((countries ? countries.LIST : []).map((c) => loc(c)).map((c) => ({ mark: c.flag || "🌎", text: c.name })));
+      case "knigge":
+        return cut((kniggeVM().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
+      case "logistica":
+        return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
+      case "salud":
+        return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
+      default:
+        return [];
+    }
+  }
+
+  function shareModule(id) {
+    const meta = MODULE_SHARE[id];
+    if (!share || !meta) return;
+    buzz(12);
+    share.shareImage("module", {
+      kicker: t("discover.moduleShareKicker"),
+      icon: meta.icon,
+      title: meta.title,
+      intro: t(meta.sub),
+      lines: moduleShareLines(id),
+      accent: meta.accent,
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -24704,6 +24851,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "share-hist-module") shareHistModule();
     else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
     else if (action === "share-country") shareCountry();
+    else if (action === "share-module") shareModule(el.dataset.mod);
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();

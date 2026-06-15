@@ -3483,6 +3483,101 @@
     }, shareFormat());
   }
 
+  // Sharepic auf Modul-Ebene für ALLE Entdecken-Module: das ganze Modul als
+  // Einladung weiterempfehlen (Motiv „module" = generische Modul-Karte: Icon,
+  // Titel, Kurz-Intro, ein paar Highlight-Zeilen). Inhalt ist pro Modul
+  // maßgeschneidert (echte Vokabel-Beispiele, Themen- oder Szenenlisten) – die
+  // Optik teilt es sich mit den Reise-Tipps. Icon/Titel/Akzent spiegeln die
+  // jeweilige Entdecken-Kachel (siehe FEATURES in ui.js); der Intro-Einzeiler
+  // kommt aus dem Kachel-Untertitel (discover.sub…), damit DE/EN gepflegt sind.
+  // Historia hat ein eigenes Motiv (shareHistModule) und ist hier nicht gelistet.
+  const MODULE_SHARE = {
+    supervivencia: { icon: "🆘", title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
+    hostel:        { icon: "🛏️", title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
+    definiciones:  { icon: "🧩", title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
+    frases:        { icon: "🧱", title: "Frases flexibles",     sub: "discover.subFrases",        accent: ["#7048E8", "#5A3FB8"] },
+    dialogos:      { icon: "💬", title: "Diálogos",             sub: "discover.subDialogos",      accent: ["#9B5A8C", "#5A4FA8"] },
+    regatear:      { icon: "🤝", title: "Regatear",             sub: "discover.subRegatear",      accent: ["#B97C24", "#3F7355"] },
+    precios:       { icon: "💵", title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
+    cuerpo:        { icon: "🧍", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
+    compras:       { icon: "🛒", title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
+    conjugacion:   { icon: "🔁", title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
+    tiempos:       { icon: "⏳", title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
+    paises:        { icon: "🌎", title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
+    knigge:        { icon: "🧭", title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
+    logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
+    salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+  };
+
+  // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
+  function cardSampleLines(cat, n, mark) {
+    return data.CARDS
+      .filter((c) => c.cat === cat)
+      .slice(0, n)
+      .map((c) => ({ mark: mark || "🗣️", text: `${c.es} — ${nat(c)}` }));
+  }
+
+  // Pro Modul ein paar repräsentative Highlight-Zeilen aus den echten Modul-Daten
+  // ziehen. Quelle ist jeweils derselbe View-Model-Builder, der auch den Screen
+  // füllt – der Knopf erscheint nur im geöffneten Modul, dessen State steht also.
+  function moduleShareLines(id) {
+    const CAP = 6;
+    const cut = (arr) => (arr || []).filter(Boolean).slice(0, CAP);
+    switch (id) {
+      case "supervivencia": {
+        const out = [];
+        spickzettelVM().groups.forEach((g) => {
+          (g.cards || []).slice(0, 2).forEach((c) => out.push({ mark: g.icon || "🆘", text: `${c.es} — ${c.de}` }));
+        });
+        return cut(out);
+      }
+      case "hostel":
+        return cut(battleSetupVM().scenes.map((s) => ({ mark: s.icon || "⚔️", text: s.label })));
+      case "definiciones":
+        return cut(quizSetupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
+      case "frases":
+        return cut(frasesSetupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
+      case "dialogos":
+        return cut(dialogosSetupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
+      case "regatear":
+        return cut((regatearVM().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
+      case "precios":
+        return cut(preciosSetupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
+      case "cuerpo":
+        return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
+      case "compras":
+        return cut(comprasVM().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
+      case "conjugacion":
+        return cardSampleLines("verbos", CAP, "🔁");
+      case "tiempos":
+        return cardSampleLines("tiempos", CAP, "⏳");
+      case "paises":
+        return cut((countries ? countries.LIST : []).map((c) => loc(c)).map((c) => ({ mark: c.flag || "🌎", text: c.name })));
+      case "knigge":
+        return cut((kniggeVM().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
+      case "logistica":
+        return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
+      case "salud":
+        return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
+      default:
+        return [];
+    }
+  }
+
+  function shareModule(id) {
+    const meta = MODULE_SHARE[id];
+    if (!share || !meta) return;
+    buzz(12);
+    share.shareImage("module", {
+      kicker: t("discover.moduleShareKicker"),
+      icon: meta.icon,
+      title: meta.title,
+      intro: t(meta.sub),
+      lines: moduleShareLines(id),
+      accent: meta.accent,
+    }, shareFormat());
+  }
+
   // ----- Event-Verdrahtung (zentral, Delegation) -----
   // Eine verbrauchte Wischgeste erzeugt am Smartphone ~300 ms später einen
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
@@ -3592,6 +3687,7 @@
     else if (action === "share-hist-module") shareHistModule();
     else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
     else if (action === "share-country") shareCountry();
+    else if (action === "share-module") shareModule(el.dataset.mod);
     else if (action === "share-badge") shareBadge(el.dataset.id);
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();

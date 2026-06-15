@@ -436,6 +436,8 @@
     histTranslation: "Ganze Übersetzung anzeigen",
     histShare: "Text & Vokabeln teilen",
     histModuleShare: "Modul teilen",
+    moduleShare: "Modul teilen",
+    moduleShareKicker: "Entdecken",
     tipsShare: "Als Bild teilen",
     histReadToggle: "Auf Spanisch lesen",
     histQuiz: "Mini-Quiz: Vokabeln testen",
@@ -722,6 +724,8 @@
     histTranslation: "Show full translation",
     histShare: "Share text & vocab",
     histModuleShare: "Share module",
+    moduleShare: "Share module",
+    moduleShareKicker: "Discover",
     tipsShare: "Share as image",
     histReadToggle: "Read in Spanish",
     histQuiz: "Mini-quiz: test the vocab",
@@ -1211,6 +1215,8 @@
     captionHistModule: "Von den Inka über Bolívar bis heute – verständlich erzählt, mit Spanisch-Lesetraining. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – Reise-Tipps von HolaRuta`,
     captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
+    captionModuleHead: (p) => `🧭 ${p.title} – ein Modul aus HolaRuta`,
+    captionModule: "Reise-Spanisch für Lateinamerika – spielerisch lernen mit HolaRuta. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -1236,5 +1242,7 @@
     captionHistModule: "From the Inca via Bolívar to today – clearly told, with Spanish reading practice. HolaRuta. 🌎",
     captionTipsHead: (p) => `📋 ${p.title} – travel tips from HolaRuta`,
     captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
+    captionModuleHead: (p) => `🧭 ${p.title} – a module from HolaRuta`,
+    captionModule: "Travel Spanish for Latin America – learn it the fun way with HolaRuta. 🌎",
   });
 })();

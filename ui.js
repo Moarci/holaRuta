@@ -1287,6 +1287,7 @@
       <section class="screen">
         ${hmTopbar("🆘 Supervivencia", "home")}
         <p class="hm-intro">${esc(t("discover.szIntro"))}</p>
+        ${moduleShareBtn("supervivencia")}
         <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
         ${groups}
         ${show}
@@ -1328,6 +1329,7 @@
       <section class="screen">
         ${hmTopbar("💵 Precios al oído", "home")}
         <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
+        ${moduleShareBtn("precios")}
         <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
         <div class="prc-curs">${currencies}</div>
         <h3 class="prc-head">${esc(t("discover.prcDifficulty"))}</h3>
@@ -1493,6 +1495,7 @@
       <section class="screen">
         ${infoTopbar()}
         ${selector}
+        ${moduleShareBtn("paises")}
         ${histBanner}
 
         <div class="cinfo-head">
@@ -1802,6 +1805,15 @@
     return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
   }
 
+  // „Modul teilen"-Knopf für die Entdecken-Module: empfiehlt das ganze Modul als
+  // Sharepic weiter (Logik in app.shareModule, Motiv „module"). mod = Modul-Id
+  // (siehe MODULE_SHARE in app.js). Sitzt oben direkt unter der Einleitung – wie
+  // bei Historia. Ohne Teilen-Fähigkeit (kein Share-Modul) entfällt der Knopf.
+  function moduleShareBtn(mod) {
+    if (!canShare()) return "";
+    return `<div class="hist-modshare"><button class="hist-share mod-share" type="button" data-action="share-module" data-mod="${esc(mod)}">📤 ${esc(t("discover.moduleShare"))}</button></div>`;
+  }
+
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
   // Allgemeine DOs & Don'ts (Hostel, Bus, Gruppen, Kultur) plus landesspezifische
   // Akzente. Land-Dropdown wie in renderInfo (teilt state.countryId). Themenblöcke
@@ -1859,6 +1871,7 @@
         ${kniggeTopbar()}
         ${selector}
         <p class="pageintro">${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.</p>
+        ${moduleShareBtn("knigge")}
         ${topics}
       </section>`;
   }
@@ -1987,6 +2000,7 @@
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
+        ${moduleShareBtn("regatear")}
 
         <h2 class="rg-head">${esc(t("discover.rgTactics"))}</h2>
         ${tips}
@@ -2079,6 +2093,7 @@
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
+        ${cfg.cat ? moduleShareBtn(cfg.cat) : ""}
 
         ${section(topics, cfg.headTips, topics)}
         ${section(phrases, cfg.headPhrases, phrases)}
@@ -2128,6 +2143,7 @@
       <section class="screen">
         ${hmTopbar("🛏️ Modo hostal", "home")}
         <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
+        ${moduleShareBtn("hostel")}
         <div class="hm-menu">
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
             <span class="hm-card__icon" aria-hidden="true">⚔️</span>
@@ -2380,6 +2396,7 @@
       <section class="screen">
         ${hmTopbar("🧩 Definiciones", "home")}
         <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
+        ${moduleShareBtn("definiciones")}
         <div class="hm-scenes">${list}</div>
       </section>`;
   }
@@ -2464,6 +2481,7 @@
       <section class="screen">
         ${hmTopbar("🧱 Frases flexibles", "home")}
         <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
+        ${moduleShareBtn("frases")}
         <div class="hm-scenes">
           ${tile(vm.mixed, true)}
           ${list}
@@ -2653,6 +2671,7 @@
       <section class="screen">
         ${hmTopbar("🔁 Conjugación", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
+        ${moduleShareBtn("conjugacion")}
 
         ${sect("🧑‍🤝‍🧑", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
         ${sect("🧱", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
@@ -2777,6 +2796,7 @@
       <section class="screen">
         ${hmTopbar("💬 Diálogos", "home")}
         <p class="hm-intro">${esc(t("discover.dlgIntro"))}</p>
+        ${moduleShareBtn("dialogos")}
         ${hint}
         <div class="dlg-picks">${cards}</div>
       </section>`;
@@ -3058,6 +3078,7 @@
       <section class="screen">
         ${hmTopbar("⏳ Tiempos", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
+        ${moduleShareBtn("tiempos")}
 
         ${sect("↔️", t.title, timeline)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
@@ -3126,6 +3147,7 @@
       <section class="screen bp-screen">
         ${hmTopbar("🧍 El Cuerpo", "home")}
         <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
+        ${moduleShareBtn("cuerpo")}
         ${progress}
         <div class="bp-stage">
           <div class="bp-3d-stage" data-bp-stage>
@@ -3234,6 +3256,7 @@
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
         ${hmTopbar("🛒 Lista de compras", "home")}
         <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
+        ${moduleShareBtn("compras")}
         <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>
         ${progress}
         <ul class="sl-list">${items}</ul>

@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.31.0",
+      date: "2026-06-15",
+      title: "„Modul teilen“ jetzt in allen Entdecken-Modulen",
+      items: [
+        "📤 Der „Modul teilen“-Knopf sitzt jetzt oben in jedem Entdecken-Modul – nicht mehr nur bei „Historia de Sudamérica“. Damit lässt sich jedes Modul (Supervivencia, Modo hostal, Definiciones, Frases flexibles, Diálogos, Regatear, Precios al oído, El Cuerpo, Lista de compras, Conjugación, Tiempos, Países y culturas, Etiqueta de viaje, Logística de viaje und Salud y energía) als Einladung weiterempfehlen.",
+        "🎨 Jedes Sharepic ist auf sein Modul zugeschnitten: Icon, Titel und ein paar echte Highlights – je nach Modul Beispiel-Vokabeln, Themen- oder Szenenlisten – in 1:1 oder 9:16 (Story).",
+      ],
+    },
+    {
       version: "1.30.0",
       date: "2026-06-15",
       title: "Historia de Centroamérica: die zweite große Geschichte",
