@@ -18,7 +18,7 @@
  * neue Dateien in einer laufenden Sitzung (Mixed-Version-Load): das Aktivieren
  * ist immer an ein vollständiges Reload gekoppelt.
  */
-const CACHE_VERSION = "holaruta-91d9bb79b207"; // von build.js gestempelt – nicht von Hand ändern
+const CACHE_VERSION = "holaruta-ebd7eb4a54d1"; // von build.js gestempelt – nicht von Hand ändern
 const ASSETS = [
   "./",
   "./index.html",
@@ -61,6 +61,8 @@ const ASSETS = [
   "./fonts/instrument-sans-400-700-latin.woff2",
   "./fonts/instrument-sans-italic-400-latin.woff2",
   "./manifest.webmanifest",
+  "./widgets/ruta-del-dia.json",
+  "./widgets/ruta-del-dia-data.json",
 ];
 
 // Absolute URLs der bekannten Assets – nur diese werden zur Laufzeit
@@ -95,6 +97,38 @@ self.addEventListener("activate", (event) => {
       Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k)))
     )
   );
+});
+
+// PWA-Widgets (Manifest-"widgets"-Spec): aktuell nur das Windows-11-Widgets-Board.
+// Auf allen anderen Plattformen (Android/iOS/Desktop ohne Widget-Board) fehlt
+// `self.widgets` – die Handler tun dann schlicht nichts. Das "Ruta del día"-Widget
+// rendert eine statische Adaptive Card; ein Tipp öffnet die heutige Lernrunde.
+async function renderWidget(widget) {
+  if (!widget || !self.widgets) return;
+  const def = widget.definition || {};
+  try {
+    const [tmplRes, dataRes] = await Promise.all([
+      fetch(def.msAcTemplate),
+      def.data ? fetch(def.data) : Promise.resolve(null),
+    ]);
+    const template = await tmplRes.text();
+    const data = dataRes ? await dataRes.text() : "{}";
+    await self.widgets.updateByTag(def.tag, { template, data });
+  } catch (e) {
+    /* Widget-Board nicht verfügbar / Datei fehlt – stillschweigend ignorieren. */
+  }
+}
+
+self.addEventListener("widgetinstall", (event) => {
+  if (self.widgets) event.waitUntil(renderWidget(event.widget));
+});
+self.addEventListener("widgetresume", (event) => {
+  if (self.widgets) event.waitUntil(renderWidget(event.widget));
+});
+self.addEventListener("widgetclick", (event) => {
+  if (event.action === "open-ruta") {
+    event.waitUntil(self.clients.openWindow("./?a=ruta"));
+  }
 });
 
 // Abrufen: erst Cache, dann Netz. Erfolgreiche Netz-Antworten bekannter
