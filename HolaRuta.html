@@ -367,7 +367,7 @@ body {
 .tabbar {
   position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
   width: 100%; max-width: var(--maxw); z-index: 30;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px;
   background: var(--card); border-top: 1.5px solid var(--line);
   padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
 }
@@ -2607,6 +2607,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
     //   sync: { enabled: true, apiBase: "https://…", orgLabel: "ECOS" }
     sync: null,
+    // Eigener „Tarea“-Reiter in der unteren Navigation (statt nur als Kachel unter
+    // Entdecken). Für Schul-/Reise-Editionen, wo Aufgaben-Codes der Hauptweg sind.
+    taskTab: false,
   };
 
   SC.config = Object.assign({}, DEFAULT, SC.editionConfig || {});
@@ -2909,6 +2912,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tabsAreas: "Bereiche",
     tabLearn: "Lernen",
     tabDiscover: "Entdecken",
+    tabTask: "Tarea",
     tabProfile: "Profil",
     // Kacheln / Themen
     tileDue: (p) => `${p.n} fällig`,
@@ -2991,6 +2995,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tabsAreas: "Sections",
     tabLearn: "Learn",
     tabDiscover: "Discover",
+    tabTask: "Tarea",
     tabProfile: "Profile",
     tileDue: (p) => `${p.n} due`,
     tileDone: "✓ done",
@@ -3128,6 +3133,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     shareCardLabel: "Diese Karte als Bild teilen",
     doneOk: "¡Muy bien!",
     doneText: "– für jetzt alles wiederholt.<br>\n             Die schweren Karten kommen früher zurück.",
+    backPretrip: "Zum Pre-Trip-Plan",
+    backTask: "Zurück zur Aufgabe",
   }, {
     studyProgress: "Learning progress",
     cardBack: "Card is flipped",
@@ -3156,6 +3163,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     shareCardLabel: "Share this card as an image",
     doneOk: "¡Muy bien!",
     doneText: "– all reviewed for now.<br>\n             The tricky cards come back sooner.",
+    backPretrip: "Back to the pre-trip plan",
+    backTask: "Back to the task",
   });
 
   // ---------- discover: Feature-Untertitel + Modus-Chrome ----------
@@ -18492,6 +18501,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.46.0",
+      date: "2026-06-15",
+      title: "Nach der Etappe zurück zum Plan – und ein eigener „Tarea“-Reiter",
+      items: [
+        "🧭 Schließt du eine Pre-Trip-Etappe oder eine zugewiesene Aufgabe ab, führt der Fertig-Screen jetzt direkt dorthin zurück (zum Pre-Trip-Plan bzw. zur Aufgabe) – die nächste Etappe ist sofort sichtbar, statt ganz zur Übersicht oder in die Statistik zu springen.",
+        "📝 Schul- und Reise-Editionen (ECOS, WeRoad) bekommen einen eigenen „Tarea“-Reiter in der unteren Navigation, damit Aufgaben-Codes mit einem Tap erreichbar sind.",
+      ],
+    },
+    {
       version: "1.45.0",
       date: "2026-06-15",
       title: "Optionale Cloud-Sync – Fundament für Schul-/Partner-Editionen",
@@ -19084,9 +19102,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                data-action="set-tab" data-tab="${id}">
          <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
        </button>`;
+    // Eigener „Tarea“-Reiter nur, wenn eine Edition ihn aktiviert (config.taskTab).
+    const taskTab = !!(window.SC.config && window.SC.config.taskTab);
     return `
       <nav class="tabbar" aria-label="${esc(t("home.tabsAreas"))}">
-        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${tb("profil", "👤", t("home.tabProfile"))}
+        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${taskTab ? tb("tarea", "📝", t("home.tabTask")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
       </nav>`;
   }
 
@@ -19852,14 +19872,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // ---------- DONE ----------
   function renderDone(vm) {
+    // Kam die Runde aus dem Pre-Trip-Plan oder einer Aufgabe (Tarea), führt der
+    // Hauptknopf dorthin ZURÜCK (nächste Etappe direkt sichtbar) statt nur „Übersicht“.
+    const buttons =
+      vm.origin === "pretrip"
+        ? `<button class="cta" data-action="back-pretrip">🧭 ${esc(t("study.backPretrip"))}</button>
+           <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>`
+        : vm.origin === "task"
+          ? `<button class="cta" data-action="back-task">📝 ${esc(t("study.backTask"))}</button>
+             <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>`
+          : `<button class="cta" data-action="home">${esc(t("common.overview"))}</button>
+             <button class="ghostbtn" data-action="open-stats">${esc(t("common.statsView"))}</button>`;
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">🎉</div>
           <h2>${esc(t("study.doneOk"))}</h2>
           <p>${esc(vm.scopeLabel)} ${t("study.doneText")}</p>
-          <button class="cta" data-action="home">${esc(t("common.overview"))}</button>
-          <button class="ghostbtn" data-action="open-stats">${esc(t("common.statsView"))}</button>
+          ${buttons}
         </div>
       </section>`;
   }
@@ -21377,12 +21407,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <div class="teacher-actions">
         <button class="teacher-btn teacher-btn--main" data-action="task-open">${esc(t("task.open"))}</button>
       </div>`;
+    // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
+    // hervorheben; sonst die schlichte Einzelseite mit Zurück-Knopf wie bisher.
+    const withTab = !!(window.SC.config && window.SC.config.taskTab);
     return `
-      <section class="screen">
+      <section class="screen${withTab ? " screen--tabbed" : ""}">
         ${hmTopbar("📝 " + esc(t("task.title")), "home")}
         <p class="hm-intro">${esc(t("task.intro"))}</p>
         ${body}
-      </section>`;
+      </section>
+      ${withTab ? tabbar("tarea") : ""}`;
   }
 
   // Battle: Szene wählen.
@@ -22632,6 +22666,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
     cardId: null,            // Detailseite: welche Karte
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
+    studyOrigin: null,       // Herkunft der laufenden Runde: 'pretrip' | 'task' | null (=Dashboard) – steuert, wohin der Fertig-Screen zurückführt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
@@ -22886,7 +22921,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function doneVM() {
     const isAll = state.scopeId === "all";
     const cat = categoryById(state.scopeId);
-    return { scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : "") };
+    return {
+      scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
+      origin: state.studyOrigin || null, // 'pretrip' | 'task' | null -> bestimmt den Zurück-Knopf
+    };
   }
 
   // Eine Karte für Listen/Detail aufbereiten (Karte + Statistik + Anzeige-Texte).
@@ -24557,6 +24595,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // zurück, wo der Zurück-Knopf ohnehin hinführt (Startseite oder Statistik).
   function backTarget() {
     if (state.screen === "card") return state.backTo === "home" ? "home" : state.backTo === "search" ? "search" : "stats";
+    // Fertig-Screen: zurück zur Herkunft der Runde (Pre-Trip-Plan / Aufgabe), sonst Dashboard.
+    if (state.screen === "done") return state.studyOrigin === "pretrip" ? "pretrip" : state.studyOrigin === "task" ? "task" : "home";
     return SCREEN_PARENT[state.screen] || "home";
   }
 
@@ -24825,8 +24865,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // ----- Aktionen -----
-  function startStudy(scopeId) {
+  function startStudy(scopeId, origin) {
     dismissBadgeToast();
+    state.studyOrigin = origin || null;
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
     // Nichts fällig? -> freies Üben mit GEMISCHTER Auswahl – sonst bestünde
@@ -24869,6 +24910,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // alle Bereiche. Stärkt die Lern-Serie.
   function openRutaDelDia() {
     dismissBadgeToast();
+    state.studyOrigin = null;
     const now = Date.now();
     const all = scopeCards("all");       // respektiert den Stufen-Filter
     const due = dueIn(all);
@@ -24899,8 +24941,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Liste – BEWUSST OHNE Stufen-Filter (matchesLevel), damit ein „Essentials"-Set
   // vollständig bleibt, egal welcher A1/A2/B1-Filter gerade aktiv ist. Läuft sonst
   // über den normalen Study-/SRS-Pfad; scope = Kategorie (für die Done-Beschriftung).
-  function startPreset(presetId) {
+  function startPreset(presetId, origin) {
     dismissBadgeToast();
+    state.studyOrigin = origin || null;
     const p = (data.PRESETS || []).find((x) => x.id === presetId);
     if (!p) return;
     const cards = p.pick.map(cardById).filter(Boolean);
@@ -24989,6 +25032,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!d || !pretripUnlocked(scope, day)) return; // gesperrte Tage nicht startbar
     const cards = d.cardIds.map(cardById).filter(Boolean);
     if (!cards.length) { recordPretripDay(scope, day); openPretrip(); return; }
+    state.studyOrigin = "pretrip";  // nach der Etappe zurück zum Pre-Trip-Plan
     state.pretripDay = day;
     state.pretripScope = scope;
     state.scopeId = scope;                          // korrektes Done-Label
@@ -25171,9 +25215,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   function startOpenedTask() {
     const task = state.openedTask;
     if (!task) return;
-    if (task.kind === "preset") startPreset(task.scope);
+    // Herkunft "task" -> der Fertig-Screen führt zurück zur Aufgabe. Beim Pre-Trip
+    // öffnet sich der Plan-Screen; dessen Etappen tragen ihre eigene Herkunft
+    // ("pretrip"), sodass man dort nach jeder Etappe wieder landet.
+    if (task.kind === "preset") startPreset(task.scope, "task");
     else if (task.kind === "pretrip") { setPretripScope(task.scope); openPretrip(); }
-    else startStudy(task.scope); // ganzes Paket
+    else startStudy(task.scope, "task"); // ganzes Paket
   }
 
   function clearOpenedTask() { state.openedTask = null; render(); }
@@ -25403,8 +25450,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
   function setTab(tab) {
+    // „Tarea“ ist ein eigener Screen (nur in Editionen mit config.taskTab sichtbar).
+    if (tab === "tarea") { openTaskScreen(); return; }
     // Reiter-Wechsel gilt nur für die laufende Sitzung – beim nächsten App-Start
     // hat die Startseite (Lernen) wieder Vorrang, deshalb wird er nicht persistiert.
+    // screen zurück auf "home" setzen, falls man vom Tarea-Screen einen Reiter tippt.
+    state.screen = "home";
     state.homeTab = tab === "entdecken" || tab === "profil" ? tab : "lernen";
     render();
   }
@@ -25416,6 +25467,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     state.contextOpen = false;
     state.typeResult = null;
     state.pretripDay = null;   // eine abgebrochene Pre-Trip-Sitzung beim Verlassen lösen
+    state.studyOrigin = null;  // Herkunft zurücksetzen (Dashboard ist Neustart)
     render();
   }
 
@@ -26639,6 +26691,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
     else if (action === "open-task") openTaskScreen();
+    else if (action === "back-pretrip") openPretrip();
+    else if (action === "back-task") openTaskScreen();
     else if (action === "task-open") openTaskFromInput();
     else if (action === "task-start") startOpenedTask();
     else if (action === "task-clear") clearOpenedTask();

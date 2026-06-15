@@ -329,7 +329,7 @@ body {
 .tabbar {
   position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
   width: 100%; max-width: var(--maxw); z-index: 30;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px;
   background: var(--card); border-top: 1.5px solid var(--line);
   padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
 }

@@ -25,4 +25,6 @@ window.SC.editionConfig = {
   // Demo `node tools/mock-sync-server.js` starten und enabled:true + apiBase
   // auf http://localhost:8788 setzen.
   sync: { enabled: false, apiBase: "https://sync.example-ecos.org", orgLabel: "ECOS Cartagena" },
+  // Aufgaben-Codes (Tarea) sind im Schulkontext der Hauptweg → eigener Reiter unten.
+  taskTab: true,
 };

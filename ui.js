@@ -96,9 +96,11 @@
                data-action="set-tab" data-tab="${id}">
          <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
        </button>`;
+    // Eigener „Tarea“-Reiter nur, wenn eine Edition ihn aktiviert (config.taskTab).
+    const taskTab = !!(window.SC.config && window.SC.config.taskTab);
     return `
       <nav class="tabbar" aria-label="${esc(t("home.tabsAreas"))}">
-        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${tb("profil", "👤", t("home.tabProfile"))}
+        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${taskTab ? tb("tarea", "📝", t("home.tabTask")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
       </nav>`;
   }
 
@@ -864,14 +866,24 @@
 
   // ---------- DONE ----------
   function renderDone(vm) {
+    // Kam die Runde aus dem Pre-Trip-Plan oder einer Aufgabe (Tarea), führt der
+    // Hauptknopf dorthin ZURÜCK (nächste Etappe direkt sichtbar) statt nur „Übersicht“.
+    const buttons =
+      vm.origin === "pretrip"
+        ? `<button class="cta" data-action="back-pretrip">🧭 ${esc(t("study.backPretrip"))}</button>
+           <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>`
+        : vm.origin === "task"
+          ? `<button class="cta" data-action="back-task">📝 ${esc(t("study.backTask"))}</button>
+             <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>`
+          : `<button class="cta" data-action="home">${esc(t("common.overview"))}</button>
+             <button class="ghostbtn" data-action="open-stats">${esc(t("common.statsView"))}</button>`;
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">🎉</div>
           <h2>${esc(t("study.doneOk"))}</h2>
           <p>${esc(vm.scopeLabel)} ${t("study.doneText")}</p>
-          <button class="cta" data-action="home">${esc(t("common.overview"))}</button>
-          <button class="ghostbtn" data-action="open-stats">${esc(t("common.statsView"))}</button>
+          ${buttons}
         </div>
       </section>`;
   }
@@ -2389,12 +2401,16 @@
       <div class="teacher-actions">
         <button class="teacher-btn teacher-btn--main" data-action="task-open">${esc(t("task.open"))}</button>
       </div>`;
+    // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
+    // hervorheben; sonst die schlichte Einzelseite mit Zurück-Knopf wie bisher.
+    const withTab = !!(window.SC.config && window.SC.config.taskTab);
     return `
-      <section class="screen">
+      <section class="screen${withTab ? " screen--tabbed" : ""}">
         ${hmTopbar("📝 " + esc(t("task.title")), "home")}
         <p class="hm-intro">${esc(t("task.intro"))}</p>
         ${body}
-      </section>`;
+      </section>
+      ${withTab ? tabbar("tarea") : ""}`;
   }
 
   // Battle: Szene wählen.

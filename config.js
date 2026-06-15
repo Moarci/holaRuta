@@ -25,6 +25,9 @@
     // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
     //   sync: { enabled: true, apiBase: "https://…", orgLabel: "ECOS" }
     sync: null,
+    // Eigener „Tarea“-Reiter in der unteren Navigation (statt nur als Kachel unter
+    // Entdecken). Für Schul-/Reise-Editionen, wo Aufgaben-Codes der Hauptweg sind.
+    taskTab: false,
   };
 
   SC.config = Object.assign({}, DEFAULT, SC.editionConfig || {});

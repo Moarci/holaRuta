@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.46.0",
+      date: "2026-06-15",
+      title: "Nach der Etappe zurück zum Plan – und ein eigener „Tarea“-Reiter",
+      items: [
+        "🧭 Schließt du eine Pre-Trip-Etappe oder eine zugewiesene Aufgabe ab, führt der Fertig-Screen jetzt direkt dorthin zurück (zum Pre-Trip-Plan bzw. zur Aufgabe) – die nächste Etappe ist sofort sichtbar, statt ganz zur Übersicht oder in die Statistik zu springen.",
+        "📝 Schul- und Reise-Editionen (ECOS, WeRoad) bekommen einen eigenen „Tarea“-Reiter in der unteren Navigation, damit Aufgaben-Codes mit einem Tap erreichbar sind.",
+      ],
+    },
+    {
       version: "1.45.0",
       date: "2026-06-15",
       title: "Optionale Cloud-Sync – Fundament für Schul-/Partner-Editionen",

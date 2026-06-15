@@ -130,6 +130,7 @@
     tabsAreas: "Bereiche",
     tabLearn: "Lernen",
     tabDiscover: "Entdecken",
+    tabTask: "Tarea",
     tabProfile: "Profil",
     // Kacheln / Themen
     tileDue: (p) => `${p.n} fällig`,
@@ -212,6 +213,7 @@
     tabsAreas: "Sections",
     tabLearn: "Learn",
     tabDiscover: "Discover",
+    tabTask: "Tarea",
     tabProfile: "Profile",
     tileDue: (p) => `${p.n} due`,
     tileDone: "✓ done",
@@ -349,6 +351,8 @@
     shareCardLabel: "Diese Karte als Bild teilen",
     doneOk: "¡Muy bien!",
     doneText: "– für jetzt alles wiederholt.<br>\n             Die schweren Karten kommen früher zurück.",
+    backPretrip: "Zum Pre-Trip-Plan",
+    backTask: "Zurück zur Aufgabe",
   }, {
     studyProgress: "Learning progress",
     cardBack: "Card is flipped",
@@ -377,6 +381,8 @@
     shareCardLabel: "Share this card as an image",
     doneOk: "¡Muy bien!",
     doneText: "– all reviewed for now.<br>\n             The tricky cards come back sooner.",
+    backPretrip: "Back to the pre-trip plan",
+    backTask: "Back to the task",
   });
 
   // ---------- discover: Feature-Untertitel + Modus-Chrome ----------

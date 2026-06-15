@@ -74,6 +74,7 @@
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
     cardId: null,            // Detailseite: welche Karte
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
+    studyOrigin: null,       // Herkunft der laufenden Runde: 'pretrip' | 'task' | null (=Dashboard) – steuert, wohin der Fertig-Screen zurückführt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
@@ -328,7 +329,10 @@
   function doneVM() {
     const isAll = state.scopeId === "all";
     const cat = categoryById(state.scopeId);
-    return { scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : "") };
+    return {
+      scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
+      origin: state.studyOrigin || null, // 'pretrip' | 'task' | null -> bestimmt den Zurück-Knopf
+    };
   }
 
   // Eine Karte für Listen/Detail aufbereiten (Karte + Statistik + Anzeige-Texte).
@@ -1999,6 +2003,8 @@
   // zurück, wo der Zurück-Knopf ohnehin hinführt (Startseite oder Statistik).
   function backTarget() {
     if (state.screen === "card") return state.backTo === "home" ? "home" : state.backTo === "search" ? "search" : "stats";
+    // Fertig-Screen: zurück zur Herkunft der Runde (Pre-Trip-Plan / Aufgabe), sonst Dashboard.
+    if (state.screen === "done") return state.studyOrigin === "pretrip" ? "pretrip" : state.studyOrigin === "task" ? "task" : "home";
     return SCREEN_PARENT[state.screen] || "home";
   }
 
@@ -2267,8 +2273,9 @@
   }
 
   // ----- Aktionen -----
-  function startStudy(scopeId) {
+  function startStudy(scopeId, origin) {
     dismissBadgeToast();
+    state.studyOrigin = origin || null;
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
     // Nichts fällig? -> freies Üben mit GEMISCHTER Auswahl – sonst bestünde
@@ -2311,6 +2318,7 @@
   // alle Bereiche. Stärkt die Lern-Serie.
   function openRutaDelDia() {
     dismissBadgeToast();
+    state.studyOrigin = null;
     const now = Date.now();
     const all = scopeCards("all");       // respektiert den Stufen-Filter
     const due = dueIn(all);
@@ -2341,8 +2349,9 @@
   // Liste – BEWUSST OHNE Stufen-Filter (matchesLevel), damit ein „Essentials"-Set
   // vollständig bleibt, egal welcher A1/A2/B1-Filter gerade aktiv ist. Läuft sonst
   // über den normalen Study-/SRS-Pfad; scope = Kategorie (für die Done-Beschriftung).
-  function startPreset(presetId) {
+  function startPreset(presetId, origin) {
     dismissBadgeToast();
+    state.studyOrigin = origin || null;
     const p = (data.PRESETS || []).find((x) => x.id === presetId);
     if (!p) return;
     const cards = p.pick.map(cardById).filter(Boolean);
@@ -2431,6 +2440,7 @@
     if (!d || !pretripUnlocked(scope, day)) return; // gesperrte Tage nicht startbar
     const cards = d.cardIds.map(cardById).filter(Boolean);
     if (!cards.length) { recordPretripDay(scope, day); openPretrip(); return; }
+    state.studyOrigin = "pretrip";  // nach der Etappe zurück zum Pre-Trip-Plan
     state.pretripDay = day;
     state.pretripScope = scope;
     state.scopeId = scope;                          // korrektes Done-Label
@@ -2613,9 +2623,12 @@
   function startOpenedTask() {
     const task = state.openedTask;
     if (!task) return;
-    if (task.kind === "preset") startPreset(task.scope);
+    // Herkunft "task" -> der Fertig-Screen führt zurück zur Aufgabe. Beim Pre-Trip
+    // öffnet sich der Plan-Screen; dessen Etappen tragen ihre eigene Herkunft
+    // ("pretrip"), sodass man dort nach jeder Etappe wieder landet.
+    if (task.kind === "preset") startPreset(task.scope, "task");
     else if (task.kind === "pretrip") { setPretripScope(task.scope); openPretrip(); }
-    else startStudy(task.scope); // ganzes Paket
+    else startStudy(task.scope, "task"); // ganzes Paket
   }
 
   function clearOpenedTask() { state.openedTask = null; render(); }
@@ -2845,8 +2858,12 @@
 
   // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
   function setTab(tab) {
+    // „Tarea“ ist ein eigener Screen (nur in Editionen mit config.taskTab sichtbar).
+    if (tab === "tarea") { openTaskScreen(); return; }
     // Reiter-Wechsel gilt nur für die laufende Sitzung – beim nächsten App-Start
     // hat die Startseite (Lernen) wieder Vorrang, deshalb wird er nicht persistiert.
+    // screen zurück auf "home" setzen, falls man vom Tarea-Screen einen Reiter tippt.
+    state.screen = "home";
     state.homeTab = tab === "entdecken" || tab === "profil" ? tab : "lernen";
     render();
   }
@@ -2858,6 +2875,7 @@
     state.contextOpen = false;
     state.typeResult = null;
     state.pretripDay = null;   // eine abgebrochene Pre-Trip-Sitzung beim Verlassen lösen
+    state.studyOrigin = null;  // Herkunft zurücksetzen (Dashboard ist Neustart)
     render();
   }
 
@@ -4081,6 +4099,8 @@
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
     else if (action === "open-task") openTaskScreen();
+    else if (action === "back-pretrip") openPretrip();
+    else if (action === "back-task") openTaskScreen();
     else if (action === "task-open") openTaskFromInput();
     else if (action === "task-start") startOpenedTask();
     else if (action === "task-clear") clearOpenedTask();
