@@ -96,11 +96,11 @@
                data-action="set-tab" data-tab="${id}">
          <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
        </button>`;
-    // Eigener „Tarea“-Reiter nur, wenn eine Edition ihn aktiviert (config.taskTab).
-    const taskTab = !!(window.SC.config && window.SC.config.taskTab);
+    // Eigene Reiter „Tarea“/„Modo profe“ nur, wenn eine Edition sie aktiviert.
+    const cfg = window.SC.config || {};
     return `
       <nav class="tabbar" aria-label="${esc(t("home.tabsAreas"))}">
-        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${taskTab ? tb("tarea", "📝", t("home.tabTask")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
+        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${cfg.taskTab ? tb("tarea", "📝", t("home.tabTask")) : ""}${cfg.teacherTab ? tb("teacher", "🧑‍🏫", t("home.tabTeacher")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
       </nav>`;
   }
 
@@ -415,7 +415,14 @@
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
     const has = { countries: vm.hasCountries, historia: vm.hasHistoria, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
-    const feats = FEATURES.filter((x) => !x.need || has[x.need]).map((x) => `
+    // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
+    const cfg = window.SC.config || {};
+    const feats = FEATURES.filter((x) => {
+      if (x.need && !has[x.need]) return false;
+      if (x.action === "open-task" && cfg.taskTab) return false;
+      if (x.action === "open-teacher" && cfg.teacherTab) return false;
+      return true;
+    }).map((x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
         <span class="feat__text">
@@ -2371,8 +2378,9 @@
         <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
       </div>` : ""}`;
 
+    const withTab = !!(window.SC.config && window.SC.config.teacherTab);
     return `
-      <section class="screen">
+      <section class="screen${withTab ? " screen--tabbed" : ""}">
         ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), "home")}
         <p class="hm-intro">${esc(t("teacher.intro"))}</p>
         <div class="tip">${esc(t("teacher.privacy"))}</div>
@@ -2380,7 +2388,8 @@
         ${body}
         <hr class="teacher-sep">
         ${taskForm}
-      </section>`;
+      </section>
+      ${withTab ? tabbar("teacher") : ""}`;
   }
 
   // Lernenden-Seite: Aufgaben-Code öffnen und in die zugewiesene Übung starten.

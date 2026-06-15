@@ -2905,8 +2905,9 @@
 
   // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
   function setTab(tab) {
-    // „Tarea“ ist ein eigener Screen (nur in Editionen mit config.taskTab sichtbar).
+    // „Tarea“/„Modo profe“ sind eigene Screens (nur in Editionen mit eigenem Reiter).
     if (tab === "tarea") { openTaskScreen(); return; }
+    if (tab === "teacher") { openTeacher(); return; }
     // Reiter-Wechsel gilt nur für die laufende Sitzung – beim nächsten App-Start
     // hat die Startseite (Lernen) wieder Vorrang, deshalb wird er nicht persistiert.
     // screen zurück auf "home" setzen, falls man vom Tarea-Screen einen Reiter tippt.

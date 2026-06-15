@@ -24,6 +24,8 @@ window.SC.editionConfig = {
   // Demo `node tools/mock-sync-server.js` starten und enabled:true + apiBase
   // auf http://localhost:8788 setzen.
   sync: { enabled: false, apiBase: "https://sync.example-weroad.com", orgLabel: "WeRoad Colombia" },
-  // Aufgaben-Codes (Tarea) sind für Reiseleiter der Hauptweg → eigener Reiter unten.
+  // Aufgaben-Codes (Tarea) & Gruppenübersicht sind für Reiseleiter der Hauptweg →
+  // eigene Reiter unten (verschwinden dadurch aus „Entdecken“).
   taskTab: true,
+  teacherTab: true,
 };

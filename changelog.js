@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.48.0",
+      date: "2026-06-15",
+      title: "Editionen: Modo profe & Tarea als eigene Reiter, raus aus Entdecken",
+      items: [
+        "🧑‍🏫 In Schul-/Reise-Editionen (ECOS, WeRoad) bekommt jetzt auch „Modo profe“ einen eigenen Reiter in der unteren Navigation – neben „Tarea“.",
+        "🧭 Beide sind dort nicht mehr doppelt als Kachel unter „Entdecken“ – das hält die Navigation aufgeräumt. Im Standard-HolaRuta bleibt alles wie gehabt (beide als Kachel, keine Extra-Reiter).",
+      ],
+    },
+    {
       version: "1.47.0",
       date: "2026-06-15",
       title: "Aufgaben erstellen: Auswahl bleibt stehen + klares Kopieren/Einfügen",

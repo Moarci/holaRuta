@@ -131,6 +131,7 @@
     tabLearn: "Lernen",
     tabDiscover: "Entdecken",
     tabTask: "Tarea",
+    tabTeacher: "Profe",
     tabProfile: "Profil",
     // Kacheln / Themen
     tileDue: (p) => `${p.n} fällig`,
@@ -214,6 +215,7 @@
     tabLearn: "Learn",
     tabDiscover: "Discover",
     tabTask: "Tarea",
+    tabTeacher: "Profe",
     tabProfile: "Profile",
     tileDue: (p) => `${p.n} due`,
     tileDone: "✓ done",

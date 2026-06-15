@@ -25,9 +25,11 @@
     // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
     //   sync: { enabled: true, apiBase: "https://…", orgLabel: "ECOS" }
     sync: null,
-    // Eigener „Tarea“-Reiter in der unteren Navigation (statt nur als Kachel unter
-    // Entdecken). Für Schul-/Reise-Editionen, wo Aufgaben-Codes der Hauptweg sind.
+    // Eigene Reiter „Tarea“ / „Modo profe“ in der unteren Navigation (statt nur als
+    // Kachel unter Entdecken). Für Schul-/Reise-Editionen, wo Aufgaben-Codes bzw.
+    // die Klassenübersicht der Hauptweg sind. Aktiv -> Kachel verschwindet aus Entdecken.
     taskTab: false,
+    teacherTab: false,
   };
 
   SC.config = Object.assign({}, DEFAULT, SC.editionConfig || {});
