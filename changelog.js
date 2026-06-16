@@ -22,6 +22,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.84.0",
+      date: "2026-06-16",
+      title: "Drei neue Themenblöcke: Friseur & Beauty, Sport & Fitness, Arbeiten & Freiwilligenarbeit",
+      items: [
+        "💇 Friseur & Beauty: Termin, Schnitt & Spitzen, Färben & Strähnen, Augenbrauen, Wachsen, Maniküre & Pediküre, Massage & Spa – 24 Karten.",
+        "🏃 Sport & Fitness: Fitnessstudio & Tagespass, Kurse, Laufen, Fahrrad mieten, Fußballspiel, mitspielen, Umkleide & Muskelkater – 24 Karten.",
+        "💼 Arbeiten & Freiwilligenarbeit: Voluntariado, Mithilfe gegen Unterkunft, Stunden & Aufgaben, Probetag, Visum, Digitalnomade & Coworking – 24 Karten.",
+        "🗣️ Jede Karte mit Aussprache-Hilfe und Reise-Kontext (Beispielsatz, Situation, Tipp – DE & EN); einsortiert in Unterwegs bzw. Menschen.",
+      ],
+    },
+    {
       version: "1.83.0",
       date: "2026-06-16",
       title: "Vier neue Themenblöcke: Geldautomat & Bank, Post & Versand, Kinder & Familie, Vegetarisch & Allergien",
