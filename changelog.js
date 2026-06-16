@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.81.0",
+      date: "2026-06-16",
+      title: "Vier neue Themenblöcke: Apotheke & Arzt, Touren & Outdoor, SIM & Internet, Wäsche & Services",
+      items: [
+        "🩺 Apotheke & Arzt: Apotheke, rezeptfreie Medikamente, Magen/Durchfall, Höhenkrankheit, Symptome, Rezept & Versicherung – 24 Karten.",
+        "🥾 Touren & Outdoor: Touren buchen, Inklusivleistungen, Abholung, Schwierigkeit, Wandern, Tauchen, Ausrüstung mieten, Treffpunkt – 24 Karten.",
+        "📱 SIM & Internet: SIM/Chip kaufen, Datenpaket, Aufladen (recarga), WLAN-Passwort, Empfang, Hotspot, Akku laden – 24 Karten.",
+        "🧺 Wäsche & Services: Lavandería pro Kilo, wann fertig, Reinigung, Friseur, Schuster, Schlüsseldienst, Gepäckaufbewahrung – 24 Karten.",
+        "🗣️ Jede Karte mit Aussprache-Hilfe und Reise-Kontext (Beispielsatz, Situation, Tipp – DE & EN); einsortiert in die Gruppe „Unterwegs“.",
+      ],
+    },
+    {
       version: "1.80.0",
       date: "2026-06-16",
       title: "Vier neue Stadt-Packs: Torres del Paine, Pucón, Copacabana & Sucre",
