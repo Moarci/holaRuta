@@ -2134,7 +2134,7 @@
 
     // ===================== POST & VERSAND (Themen-Pack) =====================
     { id: "po01", cat: "correo", lvl: 1, de: "Wo ist das Postamt?", en: "Where is the post office?", es: "¿Dónde está el correo?", tip: "DON-de es-TA el ko-RRE-o" },
-    { id: "po02", cat: "correo", lvl: 1, de: "Ich suche das Postamt.", en: "I'm looking for the post office.", es: "Busco la oficina de correos.", tip: "BUS-ko la o-fi-SI-na de ko-RRE-os" },
+    { id: "po02", cat: "correo", lvl: 1, de: "Bis wann hat die Post geöffnet?", en: "Until what time is the post office open?", es: "¿Hasta qué hora está abierto el correo?", tip: "AS-ta ke O-ra es-TA a-bi-ER-to el ko-RRE-o" },
     { id: "po03", cat: "correo", lvl: 1, de: "Ich möchte einen Brief schicken.", en: "I'd like to send a letter.", es: "Quiero enviar una carta.", tip: "KIE-ro en-bi-AR U-na KAR-ta" },
     { id: "po04", cat: "correo", lvl: 1, de: "Ich möchte eine Postkarte schicken.", en: "I'd like to send a postcard.", es: "Quiero enviar una postal.", tip: "KIE-ro en-bi-AR U-na pos-TAL" },
     { id: "po05", cat: "correo", lvl: 2, de: "Wie viel kostet es nach Deutschland?", en: "How much is it to Germany?", es: "¿Cuánto cuesta a Alemania?", tip: "KUAN-to KUES-ta a a-le-MA-nia" },
@@ -2164,7 +2164,7 @@
     { id: "fm03", cat: "familia", lvl: 1, de: "Wie alt ist Ihr Kind?", en: "How old is your child?", es: "¿Cuántos años tiene?", tip: "KUAN-tos A-njos ti-E-ne" },
     { id: "fm04", cat: "familia", lvl: 2, de: "Haben Sie ein Familienzimmer?", en: "Do you have a family room?", es: "¿Tienen una habitación familiar?", tip: "ti-E-nen U-na a-bi-ta-SION fa-mi-li-AR" },
     { id: "fm05", cat: "familia", lvl: 2, de: "Gibt es ein Extrabett?", en: "Is there an extra bed?", es: "¿Hay una cama extra?", tip: "ai U-na KA-ma EKS-tra" },
-    { id: "fm06", cat: "familia", lvl: 1, de: "Brauchen Sie ein Kinderbett?", en: "Do you need a crib?", es: "Necesito una cuna.", tip: "ne-se-SI-to U-na KU-na" },
+    { id: "fm06", cat: "familia", lvl: 1, de: "Ich brauche ein Kinderbett.", en: "I need a crib.", es: "Necesito una cuna.", tip: "ne-se-SI-to U-na KU-na" },
     { id: "fm07", cat: "familia", lvl: 2, de: "Haben Sie einen Hochstuhl?", en: "Do you have a high chair?", es: "¿Tienen una silla para bebé?", tip: "ti-E-nen U-na SI-ja PA-ra be-BE" },
     { id: "fm08", cat: "familia", lvl: 1, de: "Gibt es eine Kinderkarte?", en: "Is there a kids' menu?", es: "¿Hay menú para niños?", tip: "ai me-NU PA-ra NI-njos" },
     { id: "fm09", cat: "familia", lvl: 2, de: "Eine kleine Portion, bitte.", en: "A small portion, please.", es: "Una porción pequeña, por favor.", tip: "U-na por-SION pe-KE-nja por fa-BOR" },
