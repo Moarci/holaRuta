@@ -282,6 +282,11 @@
       showMeridaPreset: tripMentionsMerida(),
       showArenalPreset: tripMentionsArenal(),
       showMonteverdePreset: tripMentionsMonteverde(),
+      showSantiagoPreset: tripMentionsSantiago(),
+      showValparaisoPreset: tripMentionsValparaiso(),
+      showAtacamaPreset: tripMentionsAtacama(),
+      showLapazPreset: tripMentionsLapaz(),
+      showUyuniPreset: tripMentionsUyuni(),
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
@@ -307,6 +312,11 @@
           "prearrival-merida": tripMentionsMerida(),
           "prearrival-arenal": tripMentionsArenal(),
           "prearrival-monteverde": tripMentionsMonteverde(),
+          "prearrival-santiago": tripMentionsSantiago(),
+          "prearrival-valparaiso": tripMentionsValparaiso(),
+          "prearrival-atacama": tripMentionsAtacama(),
+          "prearrival-lapaz": tripMentionsLapaz(),
+          "prearrival-uyuni": tripMentionsUyuni(),
           "prearrival-pe": tripMentionsPeru(),
           "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
           "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
@@ -717,6 +727,18 @@
   function tripMentionsArenal() { const t = gamestats.tripGoal; return ARENAL_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
   const MONTEVERDE_HINTS = ["monteverde", "santa elena", "bosque nuboso", "selvatura"];
   function tripMentionsMonteverde() { const t = gamestats.tripGoal; return MONTEVERDE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+
+  // Weitere Stadt-Packs (Charge 3, Chile & Bolivien): eigene, engere Stichwörter je Stadt.
+  const SANTIAGO_HINTS = ["santiago", "bellavista", "providencia", "san cristobal", "bip", "la moneda", "cerro santa lucia"];
+  function tripMentionsSantiago() { const t = gamestats.tripGoal; return SANTIAGO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const VALPARAISO_HINTS = ["valparaiso", "valparaíso", "cerro alegre", "cerro concepcion", "ascensor", "la sebastiana", "vina del mar"];
+  function tripMentionsValparaiso() { const t = gamestats.tripGoal; return VALPARAISO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const ATACAMA_HINTS = ["atacama", "san pedro de atacama", "valle de la luna", "el tatio", "geiseres", "calama", "lagunas altiplanicas"];
+  function tripMentionsAtacama() { const t = gamestats.tripGoal; return ATACAMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const LAPAZ_HINTS = ["la paz", "el alto", "teleferico", "mi teleferico", "mercado de las brujas", "valle de la luna", "death road"];
+  function tripMentionsLapaz() { const t = gamestats.tripGoal; return LAPAZ_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const UYUNI_HINTS = ["uyuni", "salar de uyuni", "salar", "cementerio de trenes", "colchani", "incahuasi", "isla incahuasi"];
+  function tripMentionsUyuni() { const t = gamestats.tripGoal; return UYUNI_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
   // die „Pre-Arrival Peru"-Kachel auf dem Dashboard.
@@ -2561,7 +2583,12 @@
     if (tripMentionsMendoza()) return "mendoza";
     if (tripMentionsBariloche()) return "bariloche";
     if (tripMentionsArgentina()) return "argentina";
+    if (tripMentionsSantiago()) return "santiago";
+    if (tripMentionsValparaiso()) return "valparaiso";
+    if (tripMentionsAtacama()) return "atacama";
     if (tripMentionsChile()) return "chile";
+    if (tripMentionsLapaz()) return "lapaz";
+    if (tripMentionsUyuni()) return "uyuni";
     if (tripMentionsBolivia()) return "bolivia";
     if (tripMentionsCartagena()) return "cartagena"; // konkrete Städte vor dem breiten Kolumbien
     if (tripMentionsMedellin()) return "medellin";

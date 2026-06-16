@@ -22,6 +22,17 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.79.0",
+      date: "2026-06-16",
+      title: "Fünf neue Stadt-Packs: Santiago, Valparaíso, Atacama, La Paz & Uyuni",
+      items: [
+        "🏙️ Santiago & 🎨 Valparaíso (Chile): Metro/Bip!, cerros & ascensores, Streetart, Mercado Central, Completos – chilenisches Spanisch (cachái, po, bacán), je 32 Karten.",
+        "🏜️ San Pedro de Atacama (Chile): Valle de la Luna, Geysire El Tatio, Sternenhimmel, Altiplano-Lagunen, Höhe & Wüste – 32 Karten.",
+        "🚡 La Paz & 🧂 Uyuni (Bolivien): Teleférico, Höhe ~3.600 m+ & Coca-Tee, Hexenmarkt, Death Road, Salar de Uyuni, Zugfriedhof – 32 Karten je Stadt.",
+        "🗓️ Jede Stadt mit echtem Reise-Kontext, 7-Etappen-Pre-Trip-Plan (thematisch passende Challenges), zuweisbarem „Pre-Arrival“-Paket und Dashboard-Kachel. Chile & Bolivien haben damit erstmals eigene Stadt-Packs.",
+      ],
+    },
+    {
       version: "1.78.0",
       date: "2026-06-16",
       title: "Acht neue Stadt-Packs: Lima, Arequipa, Mendoza, Bariloche, Oaxaca, Mérida, La Fortuna & Monteverde",
