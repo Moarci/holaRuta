@@ -274,6 +274,14 @@
       showAntiguaPreset: tripMentionsAntigua(),   // Stadt-Pack-Kachel nur bei Antigua-Bezug
       showBuenosAiresPreset: tripMentionsBuenosAires(), // Stadt-Pack-Kachel nur bei BA-Bezug
       showQuitoPreset: tripMentionsQuito(),       // Stadt-Pack-Kachel nur bei Quito-Bezug
+      showLimaPreset: tripMentionsLima(),
+      showArequipaPreset: tripMentionsArequipa(),
+      showMendozaPreset: tripMentionsMendoza(),
+      showBarilochePreset: tripMentionsBariloche(),
+      showOaxacaPreset: tripMentionsOaxaca(),
+      showMeridaPreset: tripMentionsMerida(),
+      showArenalPreset: tripMentionsArenal(),
+      showMonteverdePreset: tripMentionsMonteverde(),
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
@@ -291,6 +299,14 @@
           "prearrival-med": tripMentionsMedellin(), "prearrival-cus": tripMentionsCusco(),
           "prearrival-cdmx": tripMentionsCdmx(), "prearrival-ant": tripMentionsAntigua(),
           "prearrival-bue": tripMentionsBuenosAires(), "prearrival-qui": tripMentionsQuito(),
+          "prearrival-lima": tripMentionsLima(),
+          "prearrival-arequipa": tripMentionsArequipa(),
+          "prearrival-mendoza": tripMentionsMendoza(),
+          "prearrival-bariloche": tripMentionsBariloche(),
+          "prearrival-oaxaca": tripMentionsOaxaca(),
+          "prearrival-merida": tripMentionsMerida(),
+          "prearrival-arenal": tripMentionsArenal(),
+          "prearrival-monteverde": tripMentionsMonteverde(),
           "prearrival-pe": tripMentionsPeru(),
           "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
           "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
@@ -683,6 +699,24 @@
   // sonst würde eine reine Ecuador-Reise „Otavalo“/„Cotopaxi“ fälschlich den Quito-Scope stehlen.
   const QUITO_HINTS = ["quito", "mitad del mundo", "teleferiqo", "la ronda"];
   function tripMentionsQuito() { const t = gamestats.tripGoal; return QUITO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+
+  // Weitere Stadt-Packs (Charge 2): eigene, engere Stichwörter je Stadt.
+  const LIMA_HINTS = ["lima", "miraflores", "barranco", "callao", "jorge chavez", "costa verde", "pisco sour"];
+  function tripMentionsLima() { const t = gamestats.tripGoal; return LIMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const AREQUIPA_HINTS = ["arequipa", "colca", "misti", "santa catalina", "yanahuara", "sillar", "chachani"];
+  function tripMentionsArequipa() { const t = gamestats.tripGoal; return AREQUIPA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const MENDOZA_HINTS = ["mendoza", "malbec", "bodega", "maipu", "aconcagua", "valle de uco", "ruta del vino"];
+  function tripMentionsMendoza() { const t = gamestats.tripGoal; return MENDOZA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const BARILOCHE_HINTS = ["bariloche", "nahuel huapi", "cerro catedral", "circuito chico", "llao llao", "campanario", "siete lagos"];
+  function tripMentionsBariloche() { const t = gamestats.tripGoal; return BARILOCHE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const OAXACA_HINTS = ["oaxaca", "mole", "mezcal", "monte alban", "hierve el agua", "tlayuda", "guelaguetza"];
+  function tripMentionsOaxaca() { const t = gamestats.tripGoal; return OAXACA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const MERIDA_HINTS = ["merida", "yucatan", "cenote", "chichen itza", "uxmal", "valladolid", "cochinita"];
+  function tripMentionsMerida() { const t = gamestats.tripGoal; return MERIDA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const ARENAL_HINTS = ["fortuna", "arenal", "tabacon", "aguas termales", "catarata", "tirolesa", "puentes colgantes"];
+  function tripMentionsArenal() { const t = gamestats.tripGoal; return ARENAL_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const MONTEVERDE_HINTS = ["monteverde", "santa elena", "bosque nuboso", "quetzal", "canopy", "selvatura", "puentes colgantes"];
+  function tripMentionsMonteverde() { const t = gamestats.tripGoal; return MONTEVERDE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
   // die „Pre-Arrival Peru"-Kachel auf dem Dashboard.
@@ -2509,15 +2543,23 @@
   // sonst der erste Plan (Kolumbien).
   function defaultPretripScope() {
     if (tripMentionsCusco()) return "cusco"; // konkrete Städte vor dem breiten Land
+    if (tripMentionsLima()) return "lima";
+    if (tripMentionsArequipa()) return "arequipa";
     if (tripMentionsPeru()) return "peru";
     if (tripMentionsCdmx()) return "cdmx";
+    if (tripMentionsOaxaca()) return "oaxaca";
+    if (tripMentionsMerida()) return "merida";
     if (tripMentionsMexico()) return "mexico";
+    if (tripMentionsArenal()) return "arenal";
+    if (tripMentionsMonteverde()) return "monteverde";
     if (tripMentionsCostaRica()) return "costarica";
     if (tripMentionsQuito()) return "quito";
     if (tripMentionsEcuador()) return "ecuador";
     if (tripMentionsAntigua()) return "antigua";
     if (tripMentionsGuatemala()) return "guatemala";
     if (tripMentionsBuenosAires()) return "buenosaires";
+    if (tripMentionsMendoza()) return "mendoza";
+    if (tripMentionsBariloche()) return "bariloche";
     if (tripMentionsArgentina()) return "argentina";
     if (tripMentionsChile()) return "chile";
     if (tripMentionsBolivia()) return "bolivia";

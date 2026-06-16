@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.78.0",
+      date: "2026-06-16",
+      title: "Acht neue Stadt-Packs: Lima, Arequipa, Mendoza, Bariloche, Oaxaca, Mérida, La Fortuna & Monteverde",
+      items: [
+        "🌊 Lima & 🏛️ Arequipa (Peru): Küche & Ceviche, Costa Verde, Colca-Canyon, Santa Catalina, Vulkane – je 32 Karten.",
+        "🍷 Mendoza & 🏞️ Bariloche (Argentinien): Malbec-Bodegas, Asado, Patagonien-Seen, Circuito Chico, Schokolade – Rioplatense mit „vos“, je 32 Karten.",
+        "💀 Oaxaca & 🛕 Mérida/Yucatán (Mexiko): Mole & Mezcal, Monte Albán, Cenoten, Maya-Ruinen, cochinita pibil – je 32 Karten.",
+        "🌋 La Fortuna/Arenal & 🌿 Monteverde (Costa Rica): Vulkan & Thermalquellen, Nebelwald, Canopy, Hängebrücken – tico-Spanisch (pura vida), je 32 Karten.",
+        "🗓️ Jede Stadt mit echtem Reise-Kontext, 7-Etappen-Pre-Trip-Plan, zuweisbarem „Pre-Arrival“-Paket und Dashboard-Kachel.",
+      ],
+    },
+    {
       version: "1.77.0",
       date: "2026-06-16",
       title: "Vier neue Stadt-Packs: CDMX, Antigua, Buenos Aires, Quito",
