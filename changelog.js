@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.82.0",
+      date: "2026-06-16",
+      title: "Vier neue Themenblöcke: Strand & Wassersport, Nachtleben, Wetter, Mietwagen",
+      items: [
+        "🏖️ Strand & Wassersport: schwimmen, Strömung & rote Flagge, Surfen, Schnorcheln, Boot, Sonnenschutz, Ausrüstung leihen – 24 Karten.",
+        "🎉 Nachtleben: Bar & Club, Eintritt, Drinks bestellen, tanzen, die Rechnung, sicher mit dem Taxi heim – 24 Karten.",
+        "🌦️ Wetter: heute Wetter, Regen & Regenzeit, Temperatur, Wind & Sturm, beste Reisezeit, Jacke nötig? – 24 Karten.",
+        "🚗 Mietwagen: Auto mieten, Versicherung, Tankstelle, Kaution, Maut, Parken, Reifenpanne, Polizeikontrolle – 24 Karten.",
+        "🗣️ Jede Karte mit Aussprache-Hilfe und Reise-Kontext (Beispielsatz, Situation, Tipp – DE & EN); einsortiert in Unterwegs, Menschen bzw. Grundlagen.",
+      ],
+    },
+    {
       version: "1.81.0",
       date: "2026-06-16",
       title: "Vier neue Themenblöcke: Apotheke & Arzt, Touren & Outdoor, SIM & Internet, Wäsche & Services",
