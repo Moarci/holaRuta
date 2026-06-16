@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.83.0",
+      date: "2026-06-16",
+      title: "Vier neue Themenblöcke: Geldautomat & Bank, Post & Versand, Kinder & Familie, Vegetarisch & Allergien",
+      items: [
+        "🏧 Geldautomat & Bank: Geld abheben, Gebühren, Karte gesperrt/eingezogen, Geld wechseln, Wechselkurs, kleine Scheine – 24 Karten.",
+        "📮 Post & Versand: Paket & Postkarte schicken, Briefmarken, Porto nach Europa, Laufzeit, Zoll & Inhalt, Sendungsverfolgung – 24 Karten.",
+        "👨‍👩‍👧‍👦 Kinder & Familie: mit Kindern reisen, Familienzimmer & Extrabett, Kinderstuhl, Kindermenü, Windeln, Ermäßigung – 24 Karten.",
+        "🥗 Vegetarisch & Allergien: vegetarisch/vegan, ohne Fleisch, Allergie gegen …, glutenfrei, laktosefrei, Zutaten, nicht scharf – 24 Karten.",
+        "🗣️ Jede Karte mit Aussprache-Hilfe und Reise-Kontext (Beispielsatz, Situation, Tipp – DE & EN); einsortiert in Essen & Geld, Unterwegs bzw. Menschen.",
+      ],
+    },
+    {
       version: "1.82.0",
       date: "2026-06-16",
       title: "Vier neue Themenblöcke: Strand & Wassersport, Nachtleben, Wetter, Mietwagen",
