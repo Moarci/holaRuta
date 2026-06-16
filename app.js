@@ -270,6 +270,10 @@
       showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
       showMedellinPreset: tripMentionsMedellin(), // Stadt-Pack-Kachel nur bei Medellín-Bezug
       showCuscoPreset: tripMentionsCusco(),       // Stadt-Pack-Kachel nur bei Cusco-Bezug
+      showCdmxPreset: tripMentionsCdmx(),         // Stadt-Pack-Kachel nur bei CDMX-Bezug
+      showAntiguaPreset: tripMentionsAntigua(),   // Stadt-Pack-Kachel nur bei Antigua-Bezug
+      showBuenosAiresPreset: tripMentionsBuenosAires(), // Stadt-Pack-Kachel nur bei BA-Bezug
+      showQuitoPreset: tripMentionsQuito(),       // Stadt-Pack-Kachel nur bei Quito-Bezug
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
@@ -285,6 +289,8 @@
         const shown = {
           "prearrival-co": tripMentionsColombia(), "prearrival-ctg": tripMentionsCartagena(),
           "prearrival-med": tripMentionsMedellin(), "prearrival-cus": tripMentionsCusco(),
+          "prearrival-cdmx": tripMentionsCdmx(), "prearrival-ant": tripMentionsAntigua(),
+          "prearrival-bue": tripMentionsBuenosAires(), "prearrival-qui": tripMentionsQuito(),
           "prearrival-pe": tripMentionsPeru(),
           "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
           "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
@@ -661,6 +667,18 @@
     const cfg = window.SC && window.SC.config;
     return isCuscoDest(t && t.destination) || isCuscoDest(cfg && cfg.defaultDestination);
   }
+
+  // Weitere Stadt-Packs innerhalb vorhandener Länder (eigene, engere Stichwörter).
+  const _normDest = (text) => String(text || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const tripCfgDest = () => { const cfg = window.SC && window.SC.config; return cfg && cfg.defaultDestination; };
+  const CDMX_HINTS = ["cdmx", "ciudad de mexico", "mexico city", "zocalo", "coyoacan", "condesa", "teotihuacan", "xochimilco"];
+  function tripMentionsCdmx() { const t = gamestats.tripGoal; return CDMX_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const ANTIGUA_HINTS = ["antigua", "acatenango", "pacaya", "atitlan", "panajachel", "semana santa"];
+  function tripMentionsAntigua() { const t = gamestats.tripGoal; return ANTIGUA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const BUENOSAIRES_HINTS = ["buenos aires", "palermo", "san telmo", "recoleta", "la boca", "subte", "ezeiza"];
+  function tripMentionsBuenosAires() { const t = gamestats.tripGoal; return BUENOSAIRES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const QUITO_HINTS = ["quito", "mitad del mundo", "teleferiqo", "otavalo", "cotopaxi", "la ronda"];
+  function tripMentionsQuito() { const t = gamestats.tripGoal; return QUITO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
   // die „Pre-Arrival Peru"-Kachel auf dem Dashboard.
@@ -2486,12 +2504,16 @@
   // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
   // sonst der erste Plan (Kolumbien).
   function defaultPretripScope() {
-    if (tripMentionsCusco()) return "cusco"; // konkretes Cusco vor dem breiten Peru
+    if (tripMentionsCusco()) return "cusco"; // konkrete Städte vor dem breiten Land
     if (tripMentionsPeru()) return "peru";
+    if (tripMentionsCdmx()) return "cdmx";
     if (tripMentionsMexico()) return "mexico";
     if (tripMentionsCostaRica()) return "costarica";
+    if (tripMentionsQuito()) return "quito";
     if (tripMentionsEcuador()) return "ecuador";
+    if (tripMentionsAntigua()) return "antigua";
     if (tripMentionsGuatemala()) return "guatemala";
+    if (tripMentionsBuenosAires()) return "buenosaires";
     if (tripMentionsArgentina()) return "argentina";
     if (tripMentionsChile()) return "chile";
     if (tripMentionsBolivia()) return "bolivia";

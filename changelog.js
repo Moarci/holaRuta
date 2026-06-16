@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.77.0",
+      date: "2026-06-16",
+      title: "Vier neue Stadt-Packs: CDMX, Antigua, Buenos Aires, Quito",
+      items: [
+        "🏙️ Mexiko-Stadt (CDMX): Metro & Metrobús, Tacos al pastor, Teotihuacán, Xochimilco, Lucha Libre, Casa Azul, chilango-Slang – 34 Karten.",
+        "🌋 Antigua (Guatemala): Vulkanwanderungen (Acatenango/Pacaya), Sprachschule & Gastfamilie, Atitlán-Shuttle, Chicken Bus, Markt & Kaffee – 35 Karten.",
+        "💃 Buenos Aires: Rioplatense-Spanisch mit „vos“, SUBE/Subte/Colectivo, Parrilla & Asado, Mate, Tango, Porteño-Slang – 34 Karten.",
+        "🏔️ Quito (Ecuador): Höhe ~2.850 m, UNESCO-Altstadt, TelefériQo, Mitad del Mundo, Otavalo & Cotopaxi, und der Hinweis: Ecuador zahlt mit US-Dollar – 34 Karten.",
+        "🗓️ Jede Stadt mit echtem Reise-Kontext, einem 7-Etappen-Pre-Trip-Plan, einem zuweisbaren „Pre-Arrival“-Paket und passender Dashboard-Kachel.",
+      ],
+    },
+    {
       version: "1.76.0",
       date: "2026-06-15",
       title: "Neuer Stadt-Pack: Cusco ⛰️",
