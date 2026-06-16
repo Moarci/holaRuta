@@ -4,13 +4,13 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.30.0** — 718 Karten · 23 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Suche** (Karten, Übungen & Informationen) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.30.0** — 720 Karten · 23 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Suche** (Karten, Übungen & Informationen) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Hostel Mode · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
 [![Tests](https://img.shields.io/badge/Tests-154_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
-[![Karten](https://img.shields.io/badge/Karten-718-C2502E?style=flat-square)](#datenmodell)
+[![Karten](https://img.shields.io/badge/Karten-720-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
 
@@ -110,7 +110,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Konjugieren** | Verben + Erklärseite 🔁 | Eigener Bereich mit 42 Karten zu den Präsens-Formen der wichtigsten Reiseverben (ir, estar, ser, tener, poder, querer, seguir, doblar …) — Grundlage z. B. für Wegbeschreibungen. Dazu unter Entdecken die Erklärseite **Conjugación**: Personen, die drei regelmäßigen Muster (-ar/-er/-ir), wichtige unregelmäßige Verben und ein Wegbeschreibungs-Dialog, LatAm-korrekt mit *ustedes* statt *vosotros* — mit „Jetzt üben"-Sprung direkt in die Karten |
 | **Definiciones** | Zuordnen-Quiz 🧩 | Eigenständiges Modul im Stil eines Lehrbuch-Arbeitsblatts: **spanische Definition lesen, passenden Begriff aus mehreren Optionen wählen** — mit sofortiger Rückmeldung, Fortschrittsbalken und Auswertung. Themen-Listen (*En la ciudad*, *En la ruta* mit Backpacker-Orten, *La comida*); lernt Wörter über ihre Bedeutung statt nur per Übersetzung. Zahlt auf den Ruta-Pass ein |
 | **Einkaufszettel** | Interaktive Liste 🛒 | Reisebedarf in drei Rubriken (**Supermercado · Ropa · Farmacia**): Item antippen → spanisches Wort, Aussprache und Reisetipp erscheinen, das Wort wird vorgelesen; dazu zwei **fertige Fragen fürs Geschäft** (ob sie es haben — *¿Tienen …?* — und wo man es findet — *¿Dónde puedo encontrar …?*) mit Übersetzung und 🔊. Über das Kästchen links **abhaken** (und jederzeit wieder zurücknehmen), Fortschritt bleibt gemerkt. Danach ein **kurzes Quiz** über dieselbe Rubrik („Du brauchst …" → richtiges Wort wählen). LatAm-korrekt (*curitas, medias, lentes de sol, repelente*) inkl. Reise-Klassiker wie Klopapier, Sonnencreme & „algo para la diarrea" |
-| **Reise-Kontext** | 🧭 Kontext-Button | Runder Button unten links auf der Antwortkarte (Pendant zum 🔊): klappt einen Block mit echtem Reisesatz, typischer Situation und kurzem Reisetipp auf — für **alle 718 Karten**. Zeigt, *wie* man den Ausdruck unterwegs wirklich benutzt (statt nur zu übersetzen); Zahlen bekommen praktischen Preis-/Mengen-Kontext |
+| **Reise-Kontext** | 🧭 Kontext-Button | Runder Button unten links auf der Antwortkarte (Pendant zum 🔊): klappt einen Block mit echtem Reisesatz, typischer Situation und kurzem Reisetipp auf — für **alle 720 Karten**. Zeigt, *wie* man den Ausdruck unterwegs wirklich benutzt (statt nur zu übersetzen); Zahlen bekommen praktischen Preis-/Mengen-Kontext |
 | **Statistik** | Lern-Auswertung | Trefferquote, gemeistert / schwierig / neu, **Streckenkarte** (Fortschritt als Bus-Route), sortierte Kartenliste, Detailseite je Karte |
 | **Ruta-Pass** | Badges / Reisestempel 🎖️ | Sammelbare Stempel für Lernmenge, Lern-Serie (Streak), Bereichs-Meisterschaft & Spezielles — inkl. Geheim-Stempel und Freischalt-Einblendung |
 | **Eigene Karten** | Editor | Eigene Vokabeln anlegen — erscheinen überall ohne Sonderbehandlung |
@@ -133,7 +133,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 
 ## 🌎 Die Wörterbasis
 
-**718 Karten · 23 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
+**720 Karten · 23 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
 
 Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md) live im Browser gegengeprüft: **0 Duplikate, 0 fehlende Felder, 0 ¿¡-Mismatches, keine falschen Übersetzungen**.
 
@@ -181,7 +181,7 @@ SpanischCard/
 ├── index.html          # App-Shell + Modul-Ladereihenfolge
 ├── styles.css          # Komplettes Design (Erdton-Palette, 3D-Flip, Responsive)
 │
-├── data.js        SC.data       # Modell: 23 Kategorien, 3 Stufen, 718 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
+├── data.js        SC.data       # Modell: 23 Kategorien, 3 Stufen, 720 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
 ├── contextdata.js SC.contextData # Reise-Kontext-Inhalte je Karte ({e,d,s,n}) – REINE DATEN
 ├── numbers.js     SC.numbers    # Zahl→spanisches Wort + Preis-Generator (Precios al oído, 7 Währungen) – REINE FUNKTIONEN
 ├── context.js     SC.context    # hängt Kontext an die Karten (Zahlen generiert) – REINE FUNKTIONEN
@@ -478,7 +478,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 
 | Kennzahl | Wert |
 |---|---|
-| Karten | 718 |
+| Karten | 720 |
 | Bereiche / Kategorien | 23 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |

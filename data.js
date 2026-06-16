@@ -841,6 +841,9 @@
     { id: "tp64", cat: "tiempos", lvl: 3, de: "Was würden Sie empfehlen?", en: "What would you recommend?", es: "¿Qué recomendaría?", tip: "re-ko-men-da-RI-a – recomendar im Konditional", tipEn: "re-ko-men-da-RI-a – recomendar in the conditional" },
     { id: "tp65", cat: "tiempos", lvl: 3, de: "Ich würde lieber zu Fuß gehen", en: "I'd rather walk", es: "Preferiría ir a pie", tip: "pre-fe-ri-RI-a – preferir im Konditional", tipEn: "pre-fe-ri-RI-a – preferir in the conditional" },
     { id: "tp66", cat: "tiempos", lvl: 3, de: "Sie sollten ein Taxi nehmen", en: "You should take a taxi", es: "Debería tomar un taxi", tip: "de-be-RI-a – debería = sollte (höflicher Rat)" },
+    // ---- Vergangenheits-Trick: he + Partizip (regelmäßig, Gegenstück zu „voy a + Infinitiv") ----
+    { id: "tp67", cat: "tiempos", lvl: 2, de: "Ich habe die Rechnung bezahlt", en: "I've paid the bill", es: "He pagado la cuenta", tip: "e pa-GA-do la KUEN-ta – he + Partizip, der einfache Vergangenheits-Trick (pagar → pagado)", tipEn: "e pa-GA-do la KUEN-ta – he + participle, the easy past trick (pagar → pagado)" },
+    { id: "tp68", cat: "tiempos", lvl: 2, de: "Wir haben zwei Nächte gebucht", en: "We've booked two nights", es: "Hemos reservado dos noches", tip: "E-mos re-ser-WA-do – nur haber wird gebeugt (reservar → reservado)", tipEn: "E-mos re-ser-WA-do – only haber changes (reservar → reservado)" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
