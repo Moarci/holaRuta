@@ -749,11 +749,11 @@
   function tripMentionsUyuni() { const t = gamestats.tripGoal; return UYUNI_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
 
   // Weitere Stadt-Packs (Charge 4, Patagonien & Titicaca): eigene, engere Stichwörter je Stadt.
-  const PUERTONATALES_HINTS = ["puerto natales", "torres del paine", "w trek", "paine", "conaf", "milodon", "refugio"];
+  const PUERTONATALES_HINTS = ["puerto natales", "torres del paine", "w trek", "paine", "conaf", "milodon"];
   function tripMentionsPuertonatales() { const t = gamestats.tripGoal; return PUERTONATALES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const PUCON_HINTS = ["pucon", "villarrica", "huerquehue", "trancura", "termas", "caburgua", "araucania"];
+  const PUCON_HINTS = ["pucon", "villarrica", "huerquehue", "trancura", "caburgua", "araucania"];
   function tripMentionsPucon() { const t = gamestats.tripGoal; return PUCON_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const COPACABANA_HINTS = ["copacabana", "titicaca", "isla del sol", "cerro calvario", "tiquina", "yampupata", "lago titicaca"];
+  const COPACABANA_HINTS = ["copacabana", "isla del sol", "cerro calvario", "tiquina", "yampupata"];
   function tripMentionsCopacabana() { const t = gamestats.tripGoal; return COPACABANA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
   const SUCRE_HINTS = ["sucre", "ciudad blanca", "plaza 25 de mayo", "cal orcko", "tarabuco", "casa de la libertad", "parque cretacico"];
   function tripMentionsSucre() { const t = gamestats.tripGoal; return SUCRE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
