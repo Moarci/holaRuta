@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.80.0",
+      date: "2026-06-16",
+      title: "Vier neue Stadt-Packs: Torres del Paine, Pucón, Copacabana & Sucre",
+      items: [
+        "🏕️ Torres del Paine / Puerto Natales (Chile): W-Trek & O-Circuit, Refugios, CONAF, Wind & Wetter, Guanacos – 32 Karten.",
+        "🌋 Pucón (Chile): Vulkan Villarrica, Thermalquellen, Huerquehue, Rafting am Trancura, Mapuche-Kultur – 32 Karten.",
+        "⛵ Copacabana & Titicacasee (Bolivien): Isla del Sol, Boote, Trucha, Cerro Calvario, Auto-Segnung, Höhe – 32 Karten.",
+        "🦕 Sucre (Bolivien): weiße Kolonialstadt & Spanischschulen, Plaza 25 de Mayo, Cal Orck'o (Dino-Spuren), Tarabuco-Markt – 32 Karten.",
+        "🗓️ Jede Stadt mit echtem Reise-Kontext, 7-Etappen-Pre-Trip-Plan (thematische Challenges), zuweisbarem „Pre-Arrival“-Paket und Dashboard-Kachel.",
+      ],
+    },
+    {
       version: "1.79.0",
       date: "2026-06-16",
       title: "Fünf neue Stadt-Packs: Santiago, Valparaíso, Atacama, La Paz & Uyuni",

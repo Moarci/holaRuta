@@ -287,6 +287,10 @@
       showAtacamaPreset: tripMentionsAtacama(),
       showLapazPreset: tripMentionsLapaz(),
       showUyuniPreset: tripMentionsUyuni(),
+      showPuertonatalesPreset: tripMentionsPuertonatales(),
+      showPuconPreset: tripMentionsPucon(),
+      showCopacabanaPreset: tripMentionsCopacabana(),
+      showSucrePreset: tripMentionsSucre(),
       showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
       showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
       showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
@@ -317,6 +321,10 @@
           "prearrival-atacama": tripMentionsAtacama(),
           "prearrival-lapaz": tripMentionsLapaz(),
           "prearrival-uyuni": tripMentionsUyuni(),
+          "prearrival-puertonatales": tripMentionsPuertonatales(),
+          "prearrival-pucon": tripMentionsPucon(),
+          "prearrival-copacabana": tripMentionsCopacabana(),
+          "prearrival-sucre": tripMentionsSucre(),
           "prearrival-pe": tripMentionsPeru(),
           "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
           "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
@@ -739,6 +747,16 @@
   function tripMentionsLapaz() { const t = gamestats.tripGoal; return LAPAZ_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
   const UYUNI_HINTS = ["uyuni", "salar de uyuni", "salar", "cementerio de trenes", "colchani", "incahuasi", "isla incahuasi"];
   function tripMentionsUyuni() { const t = gamestats.tripGoal; return UYUNI_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+
+  // Weitere Stadt-Packs (Charge 4, Patagonien & Titicaca): eigene, engere Stichwörter je Stadt.
+  const PUERTONATALES_HINTS = ["puerto natales", "torres del paine", "w trek", "paine", "conaf", "milodon", "refugio"];
+  function tripMentionsPuertonatales() { const t = gamestats.tripGoal; return PUERTONATALES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const PUCON_HINTS = ["pucon", "villarrica", "huerquehue", "trancura", "termas", "caburgua", "araucania"];
+  function tripMentionsPucon() { const t = gamestats.tripGoal; return PUCON_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const COPACABANA_HINTS = ["copacabana", "titicaca", "isla del sol", "cerro calvario", "tiquina", "yampupata", "lago titicaca"];
+  function tripMentionsCopacabana() { const t = gamestats.tripGoal; return COPACABANA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const SUCRE_HINTS = ["sucre", "ciudad blanca", "plaza 25 de mayo", "cal orcko", "tarabuco", "casa de la libertad", "parque cretacico"];
+  function tripMentionsSucre() { const t = gamestats.tripGoal; return SUCRE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
   // die „Pre-Arrival Peru"-Kachel auf dem Dashboard.
@@ -2586,9 +2604,13 @@
     if (tripMentionsSantiago()) return "santiago";
     if (tripMentionsValparaiso()) return "valparaiso";
     if (tripMentionsAtacama()) return "atacama";
+    if (tripMentionsPuertonatales()) return "puertonatales";
+    if (tripMentionsPucon()) return "pucon";
     if (tripMentionsChile()) return "chile";
     if (tripMentionsLapaz()) return "lapaz";
     if (tripMentionsUyuni()) return "uyuni";
+    if (tripMentionsCopacabana()) return "copacabana";
+    if (tripMentionsSucre()) return "sucre";
     if (tripMentionsBolivia()) return "bolivia";
     if (tripMentionsCartagena()) return "cartagena"; // konkrete Städte vor dem breiten Kolumbien
     if (tripMentionsMedellin()) return "medellin";
