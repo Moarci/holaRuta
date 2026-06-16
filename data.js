@@ -844,6 +844,9 @@
     // ---- Vergangenheits-Trick: he + Partizip (regelmäßig, Gegenstück zu „voy a + Infinitiv") ----
     { id: "tp67", cat: "tiempos", lvl: 2, de: "Ich habe die Rechnung bezahlt", en: "I've paid the bill", es: "He pagado la cuenta", tip: "e pa-GA-do la KUEN-ta – he + Partizip, der einfache Vergangenheits-Trick (pagar → pagado)", tipEn: "e pa-GA-do la KUEN-ta – he + participle, the easy past trick (pagar → pagado)" },
     { id: "tp68", cat: "tiempos", lvl: 2, de: "Wir haben zwei Nächte gebucht", en: "We've booked two nights", es: "Hemos reservado dos noches", tip: "E-mos re-ser-WA-do – nur haber wird gebeugt (reservar → reservado)", tipEn: "E-mos re-ser-WA-do – only haber changes (reservar → reservado)" },
+    // ---- Vergangenheits-Trick mit Gerundium: estaba + Gerundio (was gerade lief) ----
+    { id: "tp69", cat: "tiempos", lvl: 2, de: "Ich wartete gerade auf den Bus", en: "I was waiting for the bus", es: "Estaba esperando el bus", tip: "es-TA-ba es-pe-RAN-do – estaba + Gerundio = was gerade lief (Vergangenheit)", tipEn: "es-TA-ba es-pe-RAN-do – estaba + gerund = what was going on (past)" },
+    { id: "tp70", cat: "tiempos", lvl: 2, de: "Wir suchten gerade den Busbahnhof", en: "We were looking for the bus station", es: "Estábamos buscando la terminal", tip: "es-TA-ba-mos bus-KAN-do – nur estar wandert in die Vergangenheit, das Gerundio bleibt", tipEn: "es-TA-ba-mos bus-KAN-do – only estar moves to the past, the gerund stays" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
@@ -1734,6 +1737,7 @@
   //   tableLabels = kompakte Personen-Spalte ALLER Zeit-Tabellen
   //   tenses    = die wichtigsten Reise-Zeitformen; je Form: forms (5), recipe
   //               (Bildung), signals (Signalwörter), when (Gebrauch), examples (3 Sätze)
+  //   pastContinuous = estaba + Gerundio (was gerade lief) – derselbe Trick rückwärts
   //   continuous = estar + Gerundio (Verlaufsform) inkl. unregelmäßiger Gerundien
   //   strongPast = die 7 häufigsten unregelmäßigen Vergangenheiten (pretéritos fuertes)
   //   participles = unregelmäßige Partizipien fürs Perfekt
@@ -1855,6 +1859,26 @@
         { es: "Estoy esperando el bus y está lloviendo.", de: "Ich warte gerade auf den Bus, und es regnet.", en: "I'm waiting for the bus right now, and it's raining." },
         { es: "Estamos buscando la terminal.", de: "Wir suchen gerade den Busbahnhof.", en: "We're looking for the bus station right now." },
         { es: "¿Qué estás comiendo? Se ve rico.", de: "Was isst du gerade? Sieht lecker aus.", en: "What are you eating? It looks tasty." },
+      ],
+    },
+    // Derselbe Gerundio-Trick, nur rückwärts: estaba + Gerundio = was in einem
+    // Moment der Vergangenheit gerade lief. Das Gerundio bleibt identisch, nur
+    // estar wandert ins Imperfecto. Knüpft an Imperfecto (Hintergrund/„Film") an.
+    pastContinuous: {
+      title: "Was gerade lief: estaba + Gerundio",
+      titleEn: "What was happening: estaba + Gerundio",
+      intro: "Der Gerundio-Trick funktioniert auch rückwärts: Lass das Gerundio einfach stehen und setz nur estar in die Vergangenheit (estaba …). So sagst du, was in einem Moment früher gerade im Gange war – „ich war gerade dabei zu …“. Ideal als Hintergrund einer Geschichte: Etwas lief schon, als plötzlich etwas anderes passierte.",
+      introEn: "The Gerundio trick also works backwards: just keep the Gerundio and put estar into the past (estaba …). That's how you say what was going on at an earlier moment – \"I was in the middle of …\". Perfect as the background of a story: something was already happening when something else suddenly occurred.",
+      mirror: [
+        { es: "estoy esperando", de: "jetzt: ich warte gerade", en: "now: I'm waiting" },
+        { es: "estaba esperando", de: "damals: ich wartete gerade", en: "back then: I was waiting" },
+      ],
+      forms: ["estaba tomando", "estabas tomando", "estaba tomando", "estábamos tomando", "estaban tomando"],
+      note: "estaba ist einfach estar im Imperfecto (estaba/estabas/estaba/estábamos/estaban) – die Gerundien (-ando/-iendo, durmiendo, leyendo …) bleiben exakt dieselben wie oben. Das passende Ereignis dazu steht im Indefinido („… cuando empezó a llover“). Für eine abgeschlossene Dauer mit Zeitspanne gäbe es estuve + Gerundio („Estuve esperando dos horas“ = ich wartete zwei Stunden lang), aber fürs Erzählen brauchst du fast immer estaba.", noteEn: "estaba is simply estar in the imperfect (estaba/estabas/estaba/estábamos/estaban) – the gerunds (-ando/-iendo, durmiendo, leyendo …) stay exactly the same as above. The matching event goes in the Indefinido (\"… cuando empezó a llover\"). For a completed stretch with a set duration there's estuve + gerund (\"Estuve esperando dos horas\" = I waited for two hours), but for telling stories you'll almost always want estaba.",
+      examples: [
+        { es: "Estaba esperando el bus cuando empezó a llover.", de: "Ich wartete gerade auf den Bus, als es zu regnen anfing.", en: "I was waiting for the bus when it started to rain." },
+        { es: "Estábamos buscando la terminal y nos perdimos.", de: "Wir suchten gerade den Busbahnhof und verirrten uns.", en: "We were looking for the bus station and got lost." },
+        { es: "¿Qué estabas haciendo cuando te llamé?", de: "Was hast du gerade gemacht, als ich dich anrief?", en: "What were you doing when I called you?" },
       ],
     },
     // Der einfache Vergangenheits-Trick: he + Partizip – das exakte Gegenstück zum

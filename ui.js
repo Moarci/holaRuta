@@ -3151,6 +3151,16 @@
       ${lines(c.examples)}
       <p class="cinfo-text cj-note">${esc(c.note)}</p>`;
 
+    // estaba + Gerundio: derselbe Gerundio-Trick rückwärts – estar in der
+    // Vergangenheit. Mini-Vergleich (jetzt ↔ damals), Formen-Tabelle, Beispiele.
+    const pc = g.pastContinuous;
+    const pastContinuous = `
+      <p class="cinfo-text">${esc(pc.intro)}</p>
+      ${pairList(pc.mirror, "es", "de")}
+      ${table(pc.forms)}
+      ${lines(pc.examples)}
+      <p class="cinfo-text cj-note">${esc(pc.note)}</p>`;
+
     // Indefinido vs. Imperfecto: zwei Spalten-Blöcke mit Stichpunkten + ein
     // kombinierter Beispielsatz (Ereignis vor Hintergrund).
     const iv = g.indefVsImperf;
@@ -3246,6 +3256,7 @@
         ${sect("🪄", ep.title, easyPast)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
         ${sect("⏯️", c.title, continuous)}
+        ${sect("⏪", pc.title, pastContinuous)}
         ${sect("⚖️", iv.title, indefVsImperf)}
         ${sect("💪", sp.title, strongPast)}
         ${sect("🧩", pp.title, participles)}
