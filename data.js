@@ -1854,6 +1854,30 @@
         { es: "¿Qué estás comiendo? Se ve rico.", de: "Was isst du gerade? Sieht lecker aus.", en: "What are you eating? It looks tasty." },
       ],
     },
+    // Der einfache Vergangenheits-Trick: he + Partizip – das exakte Gegenstück zum
+    // Zukunfts-Trick „voy a + Infinitiv". In beiden Fällen wird nur ein winziges
+    // Hilfswort gebeugt (ir bzw. haber), das Hauptverb bleibt in EINER festen Form.
+    // Bewusst als eigener „Trick"-Block, damit Anfänger sofort losreden können.
+    easyPast: {
+      title: "Der einfache Vergangenheits-Trick: he + Partizip",
+      titleEn: "The easy past trick: he + participle",
+      intro: "Du kennst „voy a + Infinitiv“ für die Zukunft? Für die Vergangenheit gibt es das genaue Gegenstück: „he + Partizip“. In beiden Fällen beugst du nur ein winziges Hilfswort – das Hauptverb bleibt in EINER festen Form, die du nicht pro Person umbauen musst. Lern die fünf haber-Formen plus zwei Endungen, und du sprichst praktisch jedes Verb in der Vergangenheit.",
+      introEn: "Know \"voy a + infinitive\" for the future? For the past there's the exact mirror: \"he + participle\". In both you only conjugate a tiny helper word – the main verb stays in ONE fixed form you never rebuild for each person. Learn the five haber forms plus two endings and you can put almost any verb in the past.",
+      mirror: [
+        { es: "voy a tomar", de: "Zukunft: ir (voy …) + Infinitiv", en: "Future: ir (voy …) + infinitive" },
+        { es: "he tomado", de: "Vergangenheit: haber (he …) + Partizip", en: "Past: haber (he …) + participle" },
+      ],
+      forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
+      recipe: "haber (he/has/ha/hemos/han) + Partizip. Das Partizip ist kinderleicht: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). Nur haber wird gebeugt – das Hauptverb bleibt fest.",
+      recipeEn: "haber (he/has/ha/hemos/han) + participle. The participle is dead easy: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). Only haber changes – the main verb stays fixed.",
+      examples: [
+        { es: "He llegado hoy.", de: "Ich bin heute angekommen.", en: "I arrived today." },
+        { es: "¿Has comido algo?", de: "Hast du etwas gegessen?", en: "Have you eaten anything?" },
+        { es: "He perdido mi pasaporte.", de: "Ich habe meinen Pass verloren.", en: "I've lost my passport." },
+        { es: "Hemos reservado dos noches.", de: "Wir haben zwei Nächte gebucht.", en: "We've booked two nights." },
+      ],
+      note: "Ehrlich dazu: In Lateinamerika nimmt man bei einem klaren Zeitpunkt (ayer, el lunes) lieber das Indefinido – „Ayer llegué“ statt „Ayer he llegado“. Aber verstanden wirst du mit „he + Partizip“ überall. Als Soforthilfe zum Drauflossprechen ist der Trick ideal; den feineren Indefinido (-é/-í) lernst du dann Stück für Stück.", noteEn: "To be honest: in Latin America, with a clear point in time (ayer, el lunes), people prefer the Indefinido – \"Ayer llegué\" rather than \"Ayer he llegado\". But \"he + participle\" is understood everywhere. As a quick fix for speaking straight away the trick is ideal; the finer Indefinido (-é/-í) you'll pick up bit by bit.",
+    },
     // Pretéritos fuertes: die häufigsten unregelmäßigen Vergangenheiten
     strongPast: {
       title: "Unregelmäßige Vergangenheit (Indefinido)",

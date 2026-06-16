@@ -3116,9 +3116,9 @@
           </summary>
           <div class="cinfo-dish__body">
             ${table(te.forms)}
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
             ${lines(te.examples)}
           </div>
         </details>`)
@@ -3130,6 +3130,17 @@
       <ul class="cinfo-words">
         ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
       </ul>`;
+
+    // Der einfache Vergangenheits-Trick: he + Partizip – Spiegel zu „voy a + Infinitiv".
+    // Mini-Vergleich (Zukunft ↔ Vergangenheit), Formen-Tabelle, Bildungs-Rezept, Beispiele.
+    const ep = g.easyPast;
+    const easyPast = `
+      <p class="cinfo-text">${esc(ep.intro)}</p>
+      ${pairList(ep.mirror, "es", "de")}
+      ${table(ep.forms)}
+      <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(ep.recipe)}</p>
+      ${lines(ep.examples)}
+      <p class="cinfo-text cj-note">${esc(ep.note)}</p>`;
 
     // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiele.
     const c = g.continuous;
@@ -3232,6 +3243,7 @@
         ${moduleShareBtn("tiempos")}
 
         ${sect("↔️", t.title, timeline)}
+        ${sect("🪄", ep.title, easyPast)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
         ${sect("⏯️", c.title, continuous)}
         ${sect("⚖️", iv.title, indefVsImperf)}
