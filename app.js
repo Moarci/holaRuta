@@ -673,11 +673,15 @@
   const tripCfgDest = () => { const cfg = window.SC && window.SC.config; return cfg && cfg.defaultDestination; };
   const CDMX_HINTS = ["cdmx", "ciudad de mexico", "mexico city", "zocalo", "coyoacan", "condesa", "teotihuacan", "xochimilco"];
   function tripMentionsCdmx() { const t = gamestats.tripGoal; return CDMX_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const ANTIGUA_HINTS = ["antigua", "acatenango", "pacaya", "atitlan", "panajachel", "semana santa"];
+  // atitlan/panajachel bewusst NICHT hier: das sind Atitlán-Region-Tokens (auch in GUATEMALA_HINTS) –
+  // sonst würde eine reine Guatemala-Reise „Lago de Atitlán“ fälschlich den Antigua-Scope stehlen.
+  const ANTIGUA_HINTS = ["antigua", "acatenango", "pacaya", "semana santa"];
   function tripMentionsAntigua() { const t = gamestats.tripGoal; return ANTIGUA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
   const BUENOSAIRES_HINTS = ["buenos aires", "palermo", "san telmo", "recoleta", "la boca", "subte", "ezeiza"];
   function tripMentionsBuenosAires() { const t = gamestats.tripGoal; return BUENOSAIRES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const QUITO_HINTS = ["quito", "mitad del mundo", "teleferiqo", "otavalo", "cotopaxi", "la ronda"];
+  // otavalo/cotopaxi bewusst NICHT hier: Tagesausflugs-Ziele (auch in ECUADOR_HINTS) –
+  // sonst würde eine reine Ecuador-Reise „Otavalo“/„Cotopaxi“ fälschlich den Quito-Scope stehlen.
+  const QUITO_HINTS = ["quito", "mitad del mundo", "teleferiqo", "la ronda"];
   function tripMentionsQuito() { const t = gamestats.tripGoal; return QUITO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
