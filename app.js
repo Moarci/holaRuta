@@ -705,17 +705,17 @@
   function tripMentionsLima() { const t = gamestats.tripGoal; return LIMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
   const AREQUIPA_HINTS = ["arequipa", "colca", "misti", "santa catalina", "yanahuara", "sillar", "chachani"];
   function tripMentionsArequipa() { const t = gamestats.tripGoal; return AREQUIPA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const MENDOZA_HINTS = ["mendoza", "malbec", "bodega", "maipu", "aconcagua", "valle de uco", "ruta del vino"];
+  const MENDOZA_HINTS = ["mendoza", "malbec", "aconcagua", "valle de uco", "ruta del vino"];
   function tripMentionsMendoza() { const t = gamestats.tripGoal; return MENDOZA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
   const BARILOCHE_HINTS = ["bariloche", "nahuel huapi", "cerro catedral", "circuito chico", "llao llao", "campanario", "siete lagos"];
   function tripMentionsBariloche() { const t = gamestats.tripGoal; return BARILOCHE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const OAXACA_HINTS = ["oaxaca", "mole", "mezcal", "monte alban", "hierve el agua", "tlayuda", "guelaguetza"];
+  const OAXACA_HINTS = ["oaxaca", "monte alban", "hierve el agua", "tlayuda", "guelaguetza"];
   function tripMentionsOaxaca() { const t = gamestats.tripGoal; return OAXACA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
   const MERIDA_HINTS = ["merida", "yucatan", "cenote", "chichen itza", "uxmal", "valladolid", "cochinita"];
   function tripMentionsMerida() { const t = gamestats.tripGoal; return MERIDA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const ARENAL_HINTS = ["fortuna", "arenal", "tabacon", "aguas termales", "catarata", "tirolesa", "puentes colgantes"];
+  const ARENAL_HINTS = ["fortuna", "arenal", "tabacon", "aguas termales", "catarata"];
   function tripMentionsArenal() { const t = gamestats.tripGoal; return ARENAL_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const MONTEVERDE_HINTS = ["monteverde", "santa elena", "bosque nuboso", "quetzal", "canopy", "selvatura", "puentes colgantes"];
+  const MONTEVERDE_HINTS = ["monteverde", "santa elena", "bosque nuboso", "selvatura"];
   function tripMentionsMonteverde() { const t = gamestats.tripGoal; return MONTEVERDE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
 
   // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
