@@ -2041,7 +2041,7 @@
     { id: "nl14", cat: "noche", lvl: 2, de: "Die Rechnung, bitte.", en: "The bill, please.", es: "La cuenta, por favor.", tip: "la KUEN-ta por fa-BOR" },
     { id: "nl15", cat: "noche", lvl: 2, de: "Brauchst du meinen Ausweis?", en: "Do you need my ID?", es: "¿Necesitas mi identificación?", tip: "ne-se-SI-tas mi i-den-ti-fi-ka-SION" },
     { id: "nl16", cat: "noche", lvl: 2, de: "Die Schlange ist sehr lang.", en: "The queue is very long.", es: "La fila está muy larga.", tip: "la FI-la es-TA mui LAR-ga" },
-    { id: "nl17", cat: "noche", lvl: 2, de: "Spielen sie Salsa oder Reggaetón?", en: "Do they play salsa or reggaeton?", es: "¿Ponen salsa o reggaetón?", tip: "PO-nen SAL-sa o re-gge-TON" },
+    { id: "nl17", cat: "noche", lvl: 2, de: "Spielen sie Salsa oder Reggaetón?", en: "Do they play salsa or reggaeton?", es: "¿Ponen salsa o reggaetón?", tip: "PO-nen SAL-sa o re-ge-TON" },
     { id: "nl18", cat: "noche", lvl: 3, de: "Bis wann habt ihr geöffnet?", en: "Until what time are you open?", es: "¿Hasta qué hora abren?", tip: "AS-ta KE O-ra A-bren" },
     { id: "nl19", cat: "noche", lvl: 2, de: "Ich rufe ein Taxi nach Hause.", en: "I'll get a taxi home.", es: "Pido un taxi a casa.", tip: "PI-do un TAK-si a KA-sa" },
     { id: "nl20", cat: "noche", lvl: 1, de: "Prost!", en: "Cheers!", es: "¡Salud!", tip: "sa-LUD" },
@@ -2068,7 +2068,7 @@
     { id: "cm15", cat: "clima", lvl: 2, de: "Gibt es ein Gewitter?", en: "Is there a storm?", es: "¿Hay tormenta?", tip: "ai tor-MEN-ta" },
     { id: "cm16", cat: "clima", lvl: 2, de: "Nachts ist es kalt.", en: "It's cold at night.", es: "Por la noche hace frío.", tip: "por la NO-tche A-se FRI-o" },
     { id: "cm17", cat: "clima", lvl: 2, de: "Es ist neblig.", en: "It's foggy.", es: "Hay neblina.", tip: "ai ne-BLI-na" },
-    { id: "cm18", cat: "clima", lvl: 2, de: "Es ist sehr heiß.", en: "It's very hot.", es: "Hace mucho calor.", tip: "A-se MU-tcho ka-LOR" },
+    { id: "cm18", cat: "clima", lvl: 2, de: "Die Sonne ist heute sehr stark.", en: "The sun is very strong today.", es: "El sol está muy fuerte hoy.", tip: "el sol es-TA mui FUER-te oi" },
     { id: "cm19", cat: "clima", lvl: 2, de: "Wann wird es dunkel?", en: "When does it get dark?", es: "¿A qué hora oscurece?", tip: "a ke O-ra os-ku-RE-se" },
     { id: "cm20", cat: "clima", lvl: 2, de: "In den Bergen liegt Schnee.", en: "There's snow in the mountains.", es: "Hay nieve en las montañas.", tip: "ai ni-E-be en las mon-TA-njas" },
     { id: "cm21", cat: "clima", lvl: 3, de: "Wann ist die Trockenzeit?", en: "When is the dry season?", es: "¿Cuándo es la temporada seca?", tip: "KWAN-do es la tem-po-RA-da SE-ka" },
@@ -2088,7 +2088,7 @@
     { id: "au09", cat: "auto", lvl: 1, de: "Wann muss ich es zurückbringen?", en: "When do I return it?", es: "¿Cuándo devuelvo el auto?", tip: "KU-an-do de-BU-el-bo el OW-to" },
     { id: "au10", cat: "auto", lvl: 2, de: "Ist die Versicherung inbegriffen?", en: "Is insurance included?", es: "¿El seguro está incluido?", tip: "el se-GU-ro es-TA in-klu-I-do" },
     { id: "au11", cat: "auto", lvl: 2, de: "Gibt es eine Kaution?", en: "Is there a deposit?", es: "¿Hay que dejar un depósito?", tip: "ai ke de-CHAR un de-PO-si-to" },
-    { id: "au12", cat: "auto", lvl: 2, de: "Haben Sie ein Schaltgetriebe?", en: "Do you have a manual car?", es: "¿Tiene un auto mecánico?", tip: "ti-E-ne un OW-to me-KA-ni-ko" },
+    { id: "au12", cat: "auto", lvl: 2, de: "Haben Sie ein Schaltgetriebe?", en: "Do you have a manual car?", es: "¿Tiene un auto manual?", tip: "ti-E-ne un OW-to ma-NUAL" },
     { id: "au13", cat: "auto", lvl: 2, de: "Ich brauche einen Kindersitz.", en: "I need a child seat.", es: "Necesito una silla para niño.", tip: "ne-se-SI-to U-na SI-ja PA-ra NI-njo" },
     { id: "au14", cat: "auto", lvl: 2, de: "Wie hoch ist die Kilometergrenze?", en: "What is the mileage limit?", es: "¿Cuál es el límite de kilometraje?", tip: "ku-AL es el LI-mi-te de ki-lo-me-TRA-che" },
     { id: "au15", cat: "auto", lvl: 2, de: "Wo hole ich das Auto ab?", en: "Where do I pick up the car?", es: "¿Dónde recojo el auto?", tip: "DON-de re-KO-cho el OW-to" },
@@ -2100,7 +2100,7 @@
     { id: "au21", cat: "auto", lvl: 3, de: "Ich habe einen Platten.", en: "I have a flat tire.", es: "Tengo una llanta pinchada.", tip: "TEN-go U-na JAN-ta pin-CHA-da" },
     { id: "au22", cat: "auto", lvl: 3, de: "Das Auto ist liegengeblieben.", en: "The car broke down.", es: "El auto se descompuso.", tip: "el OW-to se des-kom-PU-so" },
     { id: "au23", cat: "auto", lvl: 3, de: "Hier sind die Papiere des Autos.", en: "Here are the car's papers.", es: "Aquí están los papeles del auto.", tip: "a-KI es-TAN los pa-PE-les del OW-to" },
-    { id: "au24", cat: "auto", lvl: 3, de: "Wie sind die Straßenverhältnisse?", en: "What are the road conditions?", es: "¿Cómo está el camino de tierra?", tip: "KO-mo es-TA el ka-MI-no de ti-E-rra" },
+    { id: "au24", cat: "auto", lvl: 3, de: "Wie sind die Straßenverhältnisse?", en: "What are the road conditions?", es: "¿Cómo están los caminos?", tip: "KO-mo es-TAN los ka-MI-nos" },
 
     // ===================== PERU (Destination-Pack, WeRoad-Route) =====================
     // Lima · Arequipa/Colca · Titicaca/Puno · Cusco/Heiliges Tal · Machu Picchu · Regenbogenberg
