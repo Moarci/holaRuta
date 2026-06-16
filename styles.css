@@ -632,19 +632,36 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .topbar__right { display: flex; align-items: center; gap: 8px; }
 .iconbtn--sm { width: 44px; height: 44px; font-size: 1.1rem; }
 
-/* AM/PM-Themen-Umschalter: kleines, hängendes Doppelschild im Seitenkopf.
- * Hell = Kaffee (AM, Dampf), Dunkel = Wein (PM, volles Glas). Das aktive Schild
- * leuchtet, das andere liegt gedimmt darunter. Die festen Schild-Farben sind im
- * SVG hartkodiert – nur Aktiv/Inaktiv kommt aus [data-theme]. */
+/* AM/PM-Themen-Umschalter: ein hängendes Doppelschild im Profil unter
+ * „Einstellungen“. Hell = Kaffee (AM, Dampf), Dunkel = Wein (PM, volles Glas).
+ * Das aktive Schild leuchtet, das andere liegt gedimmt darunter. Die festen
+ * Schild-Farben sind im SVG hartkodiert – nur Aktiv/Inaktiv kommt aus
+ * [data-theme]. */
+.themeset {
+  display: flex; align-items: center; gap: 18px;
+  padding: 6px 4px 2px;
+}
+.themeset__copy { min-width: 0; }
+.themeset__title {
+  margin: 0 0 4px; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.1rem; line-height: 1.1; color: var(--ink);
+}
+.themeset__text { margin: 0; font-size: 0.9rem; line-height: 1.45; color: var(--ink-soft); }
+
 .themesign {
-  appearance: none; border: none; background: none; padding: 4px;
-  cursor: pointer; display: block; border-radius: 12px; flex: 0 0 auto;
+  appearance: none; border: none; background: none; padding: 6px;
+  cursor: pointer; display: block; border-radius: 14px; flex: 0 0 auto;
   transition: transform 0.25s cubic-bezier(.22,.61,.36,1);
 }
-.themesign:active { transform: scale(0.96); }
+.themesign:active { transform: scale(0.97); }
 .themesign__plank {
   display: flex; flex-direction: column; align-items: center; width: 34px;
   filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.30));
+}
+/* große Variante (Profil-Einstellungen) – hier darf das Schild atmen */
+.themesign--lg .themesign__plank {
+  width: 68px;
+  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.32));
 }
 .themesign__plaque {
   width: 100%; display: block; transform-origin: center;
@@ -662,6 +679,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* aktives Schild: voll sichtbar, mit warmem Schein */
 [data-theme="light"] .themesign__plaque--am { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 7px rgba(176, 130, 63, 0.35)); }
 [data-theme="dark"]  .themesign__plaque--pm { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(201, 154, 87, 0.30)); }
+/* großes Schild: kräftigerer Schein passend zur Fläche */
+[data-theme="light"] .themesign--lg .themesign__plaque--am { filter: drop-shadow(0 0 16px rgba(176, 130, 63, 0.35)); }
+[data-theme="dark"]  .themesign--lg .themesign__plaque--pm { filter: drop-shadow(0 0 20px rgba(201, 154, 87, 0.30)); }
 
 /* Dampf steigt nur am Morgen (heller Modus) */
 .themesign__steam path { opacity: 0; transform-box: fill-box; transform-origin: bottom center; }

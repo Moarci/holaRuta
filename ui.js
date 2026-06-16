@@ -49,11 +49,12 @@
   // Abend (PM, Glas voll). Das jeweils inaktive Schild liegt gedimmt darunter.
   // role="switch" + aria-checked (dunkel = an); die Logik hängt wie gehabt an
   // data-action="toggle-theme". Das Schild reagiert per CSS auf [data-theme].
-  function themeToggle(theme) {
+  function themeToggle(theme, opts) {
     const dark = theme === "dark";
+    const large = opts && opts.large;
     const label = dark ? t("common.themeLight") : t("common.themeDark");
     const title = dark ? t("common.themeLightTitle") : t("common.themeDarkTitle");
-    return `<button class="themesign" data-action="toggle-theme" role="switch"
+    return `<button class="themesign${large ? " themesign--lg" : ""}" data-action="toggle-theme" role="switch"
                     aria-checked="${dark}" aria-label="${esc(label)}" title="${esc(title)}">
       <span class="themesign__plank">
         <span class="themesign__plaque themesign__plaque--am">
@@ -95,6 +96,26 @@
         </span>
       </span>
     </button>`;
+  }
+
+  // Erscheinungsbild-Block im Profil: das große AM/PM-Schild links, rechts ein
+  // mitlaufender Begleittext (Kaffee am Morgen / Wein am Abend). So bekommt das
+  // Schild den Platz, den es verdient, und der Seitenkopf bleibt schlank.
+  function themeSetting(vm) {
+    const dark = vm.theme === "dark";
+    const title = dark ? t("common.themePmTitle") : t("common.themeAmTitle");
+    const text = dark ? t("common.themePmText") : t("common.themeAmText");
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("common.themeCap"))}</span>
+        <div class="themeset">
+          ${themeToggle(vm.theme, { large: true })}
+          <div class="themeset__copy" aria-live="polite">
+            <p class="themeset__title">${esc(title)}</p>
+            <p class="themeset__text">${esc(text)}</p>
+          </div>
+        </div>
+      </div>`;
   }
 
   // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
@@ -164,13 +185,13 @@
       </nav>`;
   }
 
-  // Schlanke Kopfzeile pro Reiter: nur Titel + Dark-Mode-Knopf (statt des großen
-  // Heros mit Kicker und Icon-Reihe – der Markenname steht schon in der App-Bar).
-  function pagehead(title, vm) {
+  // Schlanke Kopfzeile pro Reiter: nur der Titel (der Markenname steht schon in
+  // der App-Bar). Der Hell/Dunkel-Umschalter lebt als großes AM/PM-Schild im
+  // Profil-Reiter unter „Einstellungen“ – nicht mehr in jeder Kopfzeile.
+  function pagehead(title) {
     return `
       <div class="pagehead">
         <h2 class="pagehead__title">${title}</h2>
-        ${themeToggle(vm.theme)}
       </div>`;
   }
 
@@ -369,7 +390,7 @@
     ].join("");
 
     return `
-      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")), vm)}
+      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")))}
       ${searchBar()}
 
       <div class="today">
@@ -417,7 +438,7 @@
         <div class="featgroup">${items.map(featBtn).join("")}</div>`;
     }).join("");
     return `
-      ${pagehead(esc(t("discover.discoverTitle")), vm)}
+      ${pagehead(esc(t("discover.discoverTitle")))}
       ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
       ${sections}`;
@@ -461,7 +482,7 @@
         </div>
       </div>`;
     return `
-      ${pagehead(esc(t("profile.progressTitle")), vm)}
+      ${pagehead(esc(t("profile.progressTitle")))}
 
       <div class="profcard">
         <p class="profcard__streak">${streakLine}</p>
@@ -476,6 +497,7 @@
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
+        ${themeSetting(vm)}
         ${nameGroup}
         ${langGroup}
         ${learnPrefs(vm)}

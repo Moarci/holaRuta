@@ -670,19 +670,36 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .topbar__right { display: flex; align-items: center; gap: 8px; }
 .iconbtn--sm { width: 44px; height: 44px; font-size: 1.1rem; }
 
-/* AM/PM-Themen-Umschalter: kleines, hängendes Doppelschild im Seitenkopf.
- * Hell = Kaffee (AM, Dampf), Dunkel = Wein (PM, volles Glas). Das aktive Schild
- * leuchtet, das andere liegt gedimmt darunter. Die festen Schild-Farben sind im
- * SVG hartkodiert – nur Aktiv/Inaktiv kommt aus [data-theme]. */
+/* AM/PM-Themen-Umschalter: ein hängendes Doppelschild im Profil unter
+ * „Einstellungen“. Hell = Kaffee (AM, Dampf), Dunkel = Wein (PM, volles Glas).
+ * Das aktive Schild leuchtet, das andere liegt gedimmt darunter. Die festen
+ * Schild-Farben sind im SVG hartkodiert – nur Aktiv/Inaktiv kommt aus
+ * [data-theme]. */
+.themeset {
+  display: flex; align-items: center; gap: 18px;
+  padding: 6px 4px 2px;
+}
+.themeset__copy { min-width: 0; }
+.themeset__title {
+  margin: 0 0 4px; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.1rem; line-height: 1.1; color: var(--ink);
+}
+.themeset__text { margin: 0; font-size: 0.9rem; line-height: 1.45; color: var(--ink-soft); }
+
 .themesign {
-  appearance: none; border: none; background: none; padding: 4px;
-  cursor: pointer; display: block; border-radius: 12px; flex: 0 0 auto;
+  appearance: none; border: none; background: none; padding: 6px;
+  cursor: pointer; display: block; border-radius: 14px; flex: 0 0 auto;
   transition: transform 0.25s cubic-bezier(.22,.61,.36,1);
 }
-.themesign:active { transform: scale(0.96); }
+.themesign:active { transform: scale(0.97); }
 .themesign__plank {
   display: flex; flex-direction: column; align-items: center; width: 34px;
   filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.30));
+}
+/* große Variante (Profil-Einstellungen) – hier darf das Schild atmen */
+.themesign--lg .themesign__plank {
+  width: 68px;
+  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.32));
 }
 .themesign__plaque {
   width: 100%; display: block; transform-origin: center;
@@ -700,6 +717,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* aktives Schild: voll sichtbar, mit warmem Schein */
 [data-theme="light"] .themesign__plaque--am { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 7px rgba(176, 130, 63, 0.35)); }
 [data-theme="dark"]  .themesign__plaque--pm { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(201, 154, 87, 0.30)); }
+/* großes Schild: kräftigerer Schein passend zur Fläche */
+[data-theme="light"] .themesign--lg .themesign__plaque--am { filter: drop-shadow(0 0 16px rgba(176, 130, 63, 0.35)); }
+[data-theme="dark"]  .themesign--lg .themesign__plaque--pm { filter: drop-shadow(0 0 20px rgba(201, 154, 87, 0.30)); }
 
 /* Dampf steigt nur am Morgen (heller Modus) */
 .themesign__steam path { opacity: 0; transform-box: fill-box; transform-origin: bottom center; }
@@ -2807,6 +2827,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     themeDark: "Dunklen Modus einschalten",
     themeLightTitle: "Heller Modus",
     themeDarkTitle: "Dunkler Modus – fürs Hostel-Bett 🌙",
+    themeCap: "Erscheinungsbild",
+    themeAmTitle: "Guten Morgen",
+    themeAmText: "Heller Modus. Frisch aufgebrüht, der Tag liegt offen.",
+    themePmTitle: "Guten Abend",
+    themePmText: "Dunkler Modus. Eingeschenkt, der Tag darf zur Ruhe kommen.",
     correct: "✓ Richtig!",
     wrongInput: (p) => `✗ Nicht ganz – deine Eingabe: „${p.input}“`,
     speakAnswer: "Antwort anhören",
@@ -2837,6 +2862,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     themeDark: "Switch on dark mode",
     themeLightTitle: "Light mode",
     themeDarkTitle: "Dark mode – for the hostel bunk 🌙",
+    themeCap: "Appearance",
+    themeAmTitle: "Good morning",
+    themeAmText: "Light mode. Freshly brewed — the day lies open.",
+    themePmTitle: "Good evening",
+    themePmText: "Dark mode. Poured — the day winds down.",
     correct: "✓ Correct!",
     wrongInput: (p) => `✗ Not quite – you typed: “${p.input}”`,
     speakAnswer: "Listen to the answer",
@@ -18474,11 +18504,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // Abend (PM, Glas voll). Das jeweils inaktive Schild liegt gedimmt darunter.
   // role="switch" + aria-checked (dunkel = an); die Logik hängt wie gehabt an
   // data-action="toggle-theme". Das Schild reagiert per CSS auf [data-theme].
-  function themeToggle(theme) {
+  function themeToggle(theme, opts) {
     const dark = theme === "dark";
+    const large = opts && opts.large;
     const label = dark ? t("common.themeLight") : t("common.themeDark");
     const title = dark ? t("common.themeLightTitle") : t("common.themeDarkTitle");
-    return `<button class="themesign" data-action="toggle-theme" role="switch"
+    return `<button class="themesign${large ? " themesign--lg" : ""}" data-action="toggle-theme" role="switch"
                     aria-checked="${dark}" aria-label="${esc(label)}" title="${esc(title)}">
       <span class="themesign__plank">
         <span class="themesign__plaque themesign__plaque--am">
@@ -18520,6 +18551,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </span>
       </span>
     </button>`;
+  }
+
+  // Erscheinungsbild-Block im Profil: das große AM/PM-Schild links, rechts ein
+  // mitlaufender Begleittext (Kaffee am Morgen / Wein am Abend). So bekommt das
+  // Schild den Platz, den es verdient, und der Seitenkopf bleibt schlank.
+  function themeSetting(vm) {
+    const dark = vm.theme === "dark";
+    const title = dark ? t("common.themePmTitle") : t("common.themeAmTitle");
+    const text = dark ? t("common.themePmText") : t("common.themeAmText");
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("common.themeCap"))}</span>
+        <div class="themeset">
+          ${themeToggle(vm.theme, { large: true })}
+          <div class="themeset__copy" aria-live="polite">
+            <p class="themeset__title">${esc(title)}</p>
+            <p class="themeset__text">${esc(text)}</p>
+          </div>
+        </div>
+      </div>`;
   }
 
   // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
@@ -18589,13 +18640,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </nav>`;
   }
 
-  // Schlanke Kopfzeile pro Reiter: nur Titel + Dark-Mode-Knopf (statt des großen
-  // Heros mit Kicker und Icon-Reihe – der Markenname steht schon in der App-Bar).
-  function pagehead(title, vm) {
+  // Schlanke Kopfzeile pro Reiter: nur der Titel (der Markenname steht schon in
+  // der App-Bar). Der Hell/Dunkel-Umschalter lebt als großes AM/PM-Schild im
+  // Profil-Reiter unter „Einstellungen“ – nicht mehr in jeder Kopfzeile.
+  function pagehead(title) {
     return `
       <div class="pagehead">
         <h2 class="pagehead__title">${title}</h2>
-        ${themeToggle(vm.theme)}
       </div>`;
   }
 
@@ -18794,7 +18845,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ].join("");
 
     return `
-      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")), vm)}
+      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")))}
       ${searchBar()}
 
       <div class="today">
@@ -18842,7 +18893,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="featgroup">${items.map(featBtn).join("")}</div>`;
     }).join("");
     return `
-      ${pagehead(esc(t("discover.discoverTitle")), vm)}
+      ${pagehead(esc(t("discover.discoverTitle")))}
       ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
       ${sections}`;
@@ -18886,7 +18937,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
       </div>`;
     return `
-      ${pagehead(esc(t("profile.progressTitle")), vm)}
+      ${pagehead(esc(t("profile.progressTitle")))}
 
       <div class="profcard">
         <p class="profcard__streak">${streakLine}</p>
@@ -18901,6 +18952,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
+        ${themeSetting(vm)}
         ${nameGroup}
         ${langGroup}
         ${learnPrefs(vm)}
