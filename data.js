@@ -1868,8 +1868,8 @@
         { es: "he tomado", de: "Vergangenheit: haber (he …) + Partizip", en: "Past: haber (he …) + participle" },
       ],
       forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
-      recipe: "haber (he/has/ha/hemos/han) + Partizip. Das Partizip ist kinderleicht: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). Nur haber wird gebeugt – das Hauptverb bleibt fest.",
-      recipeEn: "haber (he/has/ha/hemos/han) + participle. The participle is dead easy: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). Only haber changes – the main verb stays fixed.",
+      recipe: "haber (he/has/ha/hemos/han) + Partizip. Das Partizip ist kinderleicht: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). Ein paar Verben bilden es unregelmäßig (ver → visto, hacer → hecho, decir → dicho) – die wenigen siehst du weiter unten. Nur haber wird gebeugt – das Hauptverb bleibt fest.",
+      recipeEn: "haber (he/has/ha/hemos/han) + participle. The participle is dead easy: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). A few verbs form it irregularly (ver → visto, hacer → hecho, decir → dicho) – you'll find the handful further down. Only haber changes – the main verb stays fixed.",
       examples: [
         { es: "He llegado hoy.", de: "Ich bin heute angekommen.", en: "I arrived today." },
         { es: "¿Has comido algo?", de: "Hast du etwas gegessen?", en: "Have you eaten anything?" },
