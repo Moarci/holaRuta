@@ -4734,6 +4734,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tp64: { e: "¿Qué me recomendaría para comer aquí?", d: "Was würden Sie mir hier zu essen empfehlen?", dEn: "What would you recommend I eat here?", s: "Im Restaurant höflich um einen Tipp bitten.", sEn: "Politely asking for a tip at the restaurant.", n: "Condicional (recomendaría) klingt höflicher als die direkte Frage 'qué recomienda'.", nEn: "The conditional (recomendaría) sounds more polite than the direct 'qué recomienda'." },
     tp65: { e: "Preferiría ir a pie, no está lejos.", d: "Ich würde lieber zu Fuß gehen, es ist nicht weit.", dEn: "I'd rather walk, it's not far.", s: "Höflich eine Vorliebe äußern.", sEn: "Politely expressing a preference.", n: "preferir → preferiría (Condicional). ir a pie = zu Fuß gehen.", nEn: "preferir → preferiría (conditional). ir a pie = to go on foot." },
     tp66: { e: "Debería tomar un taxi, ya es de noche.", d: "Sie sollten ein Taxi nehmen, es ist schon dunkel.", dEn: "You should take a taxi, it's already dark.", s: "Jemandem einen vorsichtigen Rat geben.", sEn: "Giving someone a gentle piece of advice.", n: "debería (von deber) = sollte – die höfliche Art, einen Rat zu geben.", nEn: "debería (from deber) = should – the polite way to give advice." },
+    tp67: { e: "Ya he pagado la cuenta, gracias.", d: "Ich habe die Rechnung schon bezahlt, danke.", dEn: "I've already paid the bill, thanks.", s: "Im Restaurant klarstellen, dass schon bezahlt ist.", sEn: "Making clear at the restaurant that it's already paid.", n: "Der Trick: haber (he) + Partizip, ganz regelmäßig (pagar → pagado, -ar → -ado). Nur haber wird gebeugt – das Gegenstück zu „voy a + Infinitiv“.", nEn: "The trick: haber (he) + participle, perfectly regular (pagar → pagado, -ar → -ado). Only haber changes – the mirror of \"voy a + infinitive\"." },
+    tp68: { e: "Hemos reservado dos noches a tu nombre.", d: "Wir haben zwei Nächte auf deinen Namen gebucht.", dEn: "We've booked two nights in your name.", s: "An der Rezeption die Buchung bestätigen.", sEn: "Confirming the booking at reception.", n: "wir-Form des Tricks: hemos + Partizip (reservar → reservado). Das Hauptverb bleibt fest, nur haber ändert sich.", nEn: "We-form of the trick: hemos + participle (reservar → reservado). The main verb stays fixed, only haber changes." },
 
     // ===================== FARBEN =====================
     col01: { e: "¿Tiene esta camiseta en rojo?", d: "Haben Sie dieses T-Shirt in Rot?", dEn: "Do you have this T-shirt in red?", s: "Beim Klamotten-Kauf am Markt oder im Laden.", sEn: "When buying clothes at the market or shop.", n: "Farbe steht meist nach dem Nomen: una mochila roja, una bici roja.", nEn: "The colour usually comes after the noun: una mochila roja, una bici roja." },
@@ -5639,6 +5641,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "tp64", cat: "tiempos", lvl: 3, de: "Was würden Sie empfehlen?", en: "What would you recommend?", es: "¿Qué recomendaría?", tip: "re-ko-men-da-RI-a – recomendar im Konditional", tipEn: "re-ko-men-da-RI-a – recomendar in the conditional" },
     { id: "tp65", cat: "tiempos", lvl: 3, de: "Ich würde lieber zu Fuß gehen", en: "I'd rather walk", es: "Preferiría ir a pie", tip: "pre-fe-ri-RI-a – preferir im Konditional", tipEn: "pre-fe-ri-RI-a – preferir in the conditional" },
     { id: "tp66", cat: "tiempos", lvl: 3, de: "Sie sollten ein Taxi nehmen", en: "You should take a taxi", es: "Debería tomar un taxi", tip: "de-be-RI-a – debería = sollte (höflicher Rat)" },
+    // ---- Vergangenheits-Trick: he + Partizip (regelmäßig, Gegenstück zu „voy a + Infinitiv") ----
+    { id: "tp67", cat: "tiempos", lvl: 2, de: "Ich habe die Rechnung bezahlt", en: "I've paid the bill", es: "He pagado la cuenta", tip: "e pa-GA-do la KUEN-ta – he + Partizip, der einfache Vergangenheits-Trick (pagar → pagado)", tipEn: "e pa-GA-do la KUEN-ta – he + participle, the easy past trick (pagar → pagado)" },
+    { id: "tp68", cat: "tiempos", lvl: 2, de: "Wir haben zwei Nächte gebucht", en: "We've booked two nights", es: "Hemos reservado dos noches", tip: "E-mos re-ser-WA-do – nur haber wird gebeugt (reservar → reservado)", tipEn: "E-mos re-ser-WA-do – only haber changes (reservar → reservado)" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
@@ -6651,6 +6656,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         { es: "Estamos buscando la terminal.", de: "Wir suchen gerade den Busbahnhof.", en: "We're looking for the bus station right now." },
         { es: "¿Qué estás comiendo? Se ve rico.", de: "Was isst du gerade? Sieht lecker aus.", en: "What are you eating? It looks tasty." },
       ],
+    },
+    // Der einfache Vergangenheits-Trick: he + Partizip – das exakte Gegenstück zum
+    // Zukunfts-Trick „voy a + Infinitiv". In beiden Fällen wird nur ein winziges
+    // Hilfswort gebeugt (ir bzw. haber), das Hauptverb bleibt in EINER festen Form.
+    // Bewusst als eigener „Trick"-Block, damit Anfänger sofort losreden können.
+    easyPast: {
+      title: "Der einfache Vergangenheits-Trick: he + Partizip",
+      titleEn: "The easy past trick: he + participle",
+      intro: "Du kennst „voy a + Infinitiv“ für die Zukunft? Für die Vergangenheit gibt es das genaue Gegenstück: „he + Partizip“. In beiden Fällen beugst du nur ein winziges Hilfswort – das Hauptverb bleibt in EINER festen Form, die du nicht pro Person umbauen musst. Lern die fünf haber-Formen plus zwei Endungen, und du sprichst praktisch jedes Verb in der Vergangenheit.",
+      introEn: "Know \"voy a + infinitive\" for the future? For the past there's the exact mirror: \"he + participle\". In both you only conjugate a tiny helper word – the main verb stays in ONE fixed form you never rebuild for each person. Learn the five haber forms plus two endings and you can put almost any verb in the past.",
+      mirror: [
+        { es: "voy a tomar", de: "Zukunft: ir (voy …) + Infinitiv", en: "Future: ir (voy …) + infinitive" },
+        { es: "he tomado", de: "Vergangenheit: haber (he …) + Partizip", en: "Past: haber (he …) + participle" },
+      ],
+      forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
+      recipe: "haber (he/has/ha/hemos/han) + Partizip. Das Partizip ist kinderleicht: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). Ein paar Verben bilden es unregelmäßig (ver → visto, hacer → hecho, decir → dicho) – die wenigen siehst du weiter unten. Nur haber wird gebeugt – das Hauptverb bleibt fest.",
+      recipeEn: "haber (he/has/ha/hemos/han) + participle. The participle is dead easy: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). A few verbs form it irregularly (ver → visto, hacer → hecho, decir → dicho) – you'll find the handful further down. Only haber changes – the main verb stays fixed.",
+      examples: [
+        { es: "He llegado hoy.", de: "Ich bin heute angekommen.", en: "I arrived today." },
+        { es: "¿Has comido algo?", de: "Hast du etwas gegessen?", en: "Have you eaten anything?" },
+        { es: "He perdido mi pasaporte.", de: "Ich habe meinen Pass verloren.", en: "I've lost my passport." },
+        { es: "Hemos reservado dos noches.", de: "Wir haben zwei Nächte gebucht.", en: "We've booked two nights." },
+      ],
+      note: "Ehrlich dazu: In Lateinamerika nimmt man bei einem klaren Zeitpunkt (ayer, el lunes) lieber das Indefinido – „Ayer llegué“ statt „Ayer he llegado“. Aber verstanden wirst du mit „he + Partizip“ überall. Als Soforthilfe zum Drauflossprechen ist der Trick ideal; den feineren Indefinido (-é/-í) lernst du dann Stück für Stück.", noteEn: "To be honest: in Latin America, with a clear point in time (ayer, el lunes), people prefer the Indefinido – \"Ayer llegué\" rather than \"Ayer he llegado\". But \"he + participle\" is understood everywhere. As a quick fix for speaking straight away the trick is ideal; the finer Indefinido (-é/-í) you'll pick up bit by bit.",
     },
     // Pretéritos fuertes: die häufigsten unregelmäßigen Vergangenheiten
     strongPast: {
@@ -18056,6 +18085,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.35.0",
+      date: "2026-06-16",
+      title: "Tiempos: der einfache Vergangenheits-Trick",
+      items: [
+        "🪄 Die Zeiten-Erklärseite (Tiempos) hat jetzt ganz oben einen eigenen „Vergangenheits-Trick“: he + Partizip – das genaue Gegenstück zum Zukunfts-Trick „voy a + Infinitiv“. Du beugst nur das kleine haber, das Hauptverb bleibt fest – damit redest du fast jedes Verb in der Vergangenheit los, lange bevor du alle Endungen kannst.",
+        "🇩🇪🇬🇧 Mit Mini-Vergleich (Zukunft ↔ Vergangenheit), Formen, Bildungs-Rezept, Reise-Beispielen und einem ehrlichen Hinweis zum LatAm-Indefinido – auf Deutsch und Englisch.",
+        "🛠️ Außerdem behoben: Die Tiempos-Seite öffnete sich seit der Sprachumstellung gar nicht mehr (ein interner Fehler beim Aufbau) – sie funktioniert wieder vollständig.",
+      ],
+    },
+    {
       version: "1.34.0",
       date: "2026-06-15",
       title: "Diálogos: Hintergrund zu „Besser so“",
@@ -21571,9 +21610,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </summary>
           <div class="cinfo-dish__body">
             ${table(te.forms)}
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
             ${lines(te.examples)}
           </div>
         </details>`)
@@ -21585,6 +21624,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <ul class="cinfo-words">
         ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
       </ul>`;
+
+    // Der einfache Vergangenheits-Trick: he + Partizip – Spiegel zu „voy a + Infinitiv".
+    // Mini-Vergleich (Zukunft ↔ Vergangenheit), Formen-Tabelle, Bildungs-Rezept, Beispiele.
+    const ep = g.easyPast;
+    const easyPast = `
+      <p class="cinfo-text">${esc(ep.intro)}</p>
+      ${pairList(ep.mirror, "es", "de")}
+      ${table(ep.forms)}
+      <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(ep.recipe)}</p>
+      ${lines(ep.examples)}
+      <p class="cinfo-text cj-note">${esc(ep.note)}</p>`;
 
     // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiele.
     const c = g.continuous;
@@ -21687,6 +21737,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${moduleShareBtn("tiempos")}
 
         ${sect("↔️", t.title, timeline)}
+        ${sect("🪄", ep.title, easyPast)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
         ${sect("⏯️", c.title, continuous)}
         ${sect("⚖️", iv.title, indefVsImperf)}
