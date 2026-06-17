@@ -286,6 +286,8 @@
     homePrompt: "¿Qué aprendemos hoy?",
     homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "Für meine liebe Lisa.",
+    // Partner-Editionen (ECOS, WeRoad): neutraler Reisegruß statt der privaten Widmung.
+    dedicationEdition: "Hecho con cariño para tu viaje.",
   }, {
     tabsAreas: "Sections",
     tabStart: "Home",
@@ -428,6 +430,8 @@
     homePrompt: "¿Qué aprendemos hoy?",
     homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "For my dear Lisa.",
+    // Partner editions (ECOS, WeRoad): a neutral travel sign-off instead of the private dedication.
+    dedicationEdition: "Hecho con cariño para tu viaje.",
   });
 
   // ---------- search: Suche (gezielt nach Karten/Übungen & Informationen) ----------

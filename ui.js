@@ -470,7 +470,14 @@
       ${reiseGroup}
       ${progressGroup}
 
-      <p class="dedication">${esc(t("home.dedication"))} <span class="dedication__heart">♥</span></p>`;
+      ${dedicationLine(vm)}`;
+  }
+
+  // Signatur-Zeile am Fuß von Home/Lernen. Standard: die persönliche Widmung.
+  // In Partner-Editionen (ECOS, WeRoad) raus – stattdessen ein neutraler Reisegruß.
+  function dedicationLine(vm) {
+    const key = vm && vm.edition ? "home.dedicationEdition" : "home.dedication";
+    return `<p class="dedication">${esc(t(key))} <span class="dedication__heart">♥</span></p>`;
   }
 
   // ----- LERNEN-Reiter: alle Themen mit klebriger Sprungmarken-Leiste je Gruppe -----
@@ -536,7 +543,7 @@
 
       ${topicSections}
 
-      <p class="dedication">${esc(t("home.dedication"))} <span class="dedication__heart">♥</span></p>`;
+      ${dedicationLine(vm)}`;
   }
 
   function entdeckenBody(vm) {
