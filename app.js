@@ -23,6 +23,7 @@
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
+  const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
@@ -84,6 +85,7 @@
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     studyOrigin: null,       // Herkunft der laufenden Runde: 'pretrip' | 'task' | null (=Dashboard) – steuert, wohin der Fertig-Screen zurückführt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
+    bebMode: null,           // Bebidas AM/PM-Tafel: 'am'|'pm' (null = nach Uhrzeit)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
     swUpdate: false,         // wartet eine neue SW-Version? -> "jetzt laden"-Banner
@@ -254,6 +256,7 @@
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
+      hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
@@ -553,6 +556,31 @@
       accent: natk(accents, t.id) || "",
     }));
     return { country, groups, topics };
+  }
+
+  // Bebidas AM/PM: Tag-/Abendgetränk des gewählten Landes. Nutzt dieselbe
+  // Länder-Auswahl wie die Länderkunde (state.countryId), sodass die Tafel immer
+  // das Land der Reise zeigt. Der AM/PM-Schalter liegt in state.bebMode (null =
+  // nach Uhrzeit voreingestellt: 6–17 Uhr Tag, sonst Abend).
+  function bebidasVM() {
+    const list = countries ? countries.LIST : [];
+    const regions = countries ? countries.REGIONS : [];
+    const country = list.find((c) => c.id === state.countryId) || list[0] || null;
+    const groups = regions
+      .map((region) => ({
+        region,
+        countries: list
+          .filter((c) => c.region === region)
+          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+      }))
+      .filter((g) => g.countries.length > 0);
+    const data = (country && bebidas && bebidas.BEBIDAS[country.id]) || null;
+    const regionLabel = country && bebidas ? (bebidas.REGION_LABEL[country.region] || country.region) : "";
+    const mode = state.bebMode || (() => {
+      const h = new Date().getHours();
+      return h >= 6 && h < 17 ? "am" : "pm";
+    })();
+    return { country, groups, data, regionLabel, mode };
   }
 
   // Regatear: Verhandeln/Feilschen – reine Anzeige-Seite (Taktik, Sätze,
@@ -2360,6 +2388,7 @@
     else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
     else if (state.screen === "historia") root.innerHTML = ui.renderHistoria(historiaVM());
     else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
+    else if (state.screen === "bebidas") root.innerHTML = ui.renderBebidas(bebidasVM());
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
     else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
@@ -4269,11 +4298,13 @@
     { action: "open-compras",     icon: "🛒", title: "Lista de compras",  subKey: "discover.subCompras" },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
+    { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
   ];
   const searchHas = {
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
+    bebidas: !!(bebidas && countries),
   };
 
   // Such-Kern (normalisieren/indexieren/ranken) lebt als reines Modul in search.js.
@@ -4449,6 +4480,20 @@
   function openKnigge() {
     dismissBadgeToast();
     state.screen = "knigge";
+    render();
+  }
+
+  function openBebidas() {
+    dismissBadgeToast();
+    state.screen = "bebidas";
+    render();
+  }
+
+  // AM/PM-Tafel umschalten. Beim ersten Tippen die aktuelle (uhrzeitbasierte)
+  // Voreinstellung aus dem VM übernehmen, dann gegenteilig kippen.
+  function toggleBebida() {
+    const cur = state.bebMode || bebidasVM().mode;
+    state.bebMode = cur === "am" ? "pm" : "am";
     render();
   }
 
@@ -5085,6 +5130,8 @@
     else if (action === "open-historia") openHistoria("sur");
     else if (action === "open-historia-centro") openHistoria("centro");
     else if (action === "open-knigge") openKnigge();
+    else if (action === "open-bebidas") openBebidas();
+    else if (action === "toggle-bebida") toggleBebida();
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
     else if (action === "open-salud") openSalud();
