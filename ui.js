@@ -337,6 +337,30 @@
       </button>`;
   }
 
+  // Fortschritts-Karte (Streak + Status-Verteilung). Gemeinsam für „Start" und
+  // „Profil", damit beide denselben, ehrlichen Überblick zeigen: ein gestapelter
+  // Balken (gemeistert / am Lernen / neu) mit Legende statt nur der Meister-Quote,
+  // die ganz am Anfang 0 % bleibt und mit leerem Balken wie ein Fehler wirkt.
+  // Segmente mit Zähler 0 fallen weg (sonst zeigt min-width einen falschen Splitter).
+  function progressCard(vm) {
+    const ov = vm.overall;
+    const streakLine = vm.streak > 0 ? t("profile.streakInRow", { n: vm.streak }) : t("profile.streakFirst");
+    const seg = (n, color) => (ov.total && n > 0) ? `<span style="flex:${n};background:${color}"></span>` : "";
+    return `
+      <div class="profcard">
+        <p class="profcard__streak">${esc(streakLine)}</p>
+        <div class="dist__bar" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct: ov.pct }))}">
+          ${seg(ov.mastered, "var(--ok)")}${seg(ov.learning, "var(--warn)")}${seg(ov.neu, "rgba(45,27,18,0.16)")}
+        </div>
+        <div class="dist__legend">
+          <span><i style="background:var(--ok)"></i>${esc(t("profile.distMastered", { n: ov.mastered }))}</span>
+          <span><i style="background:var(--warn)"></i>${esc(t("profile.distLearning", { n: ov.learning }))}</span>
+          <span><i style="background:rgba(45,27,18,0.16)"></i>${esc(t("profile.distNew", { n: ov.neu }))}</span>
+        </div>
+        <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: ov.mastered, total: ov.total, pct: ov.pct }))}</p>
+      </div>`;
+  }
+
   // ----- START-Reiter (Cockpit): heutige Aktion + Reise + Fortschritt -----
   // Bewusst fokussiert und kurz: hier landet jeder App-Start. Die vielen Themen
   // (mit Sprungmarken) leben im eigenen „Lernen"-Reiter (siehe lernenBody).
@@ -435,19 +459,11 @@
         </section>`
       : "";
 
-    // Glanceable Fortschritt (Streak in Worten + Meisterungs-Balken). Die volle
-    // Verwaltung bleibt im Profil-Reiter – hier nur der motivierende Überblick.
-    const streakLine = vm.streak > 0 ? t("profile.streakInRow", { n: vm.streak }) : t("profile.streakFirst");
+    // Glanceable Fortschritt: dieselbe Karte wie im Profil (Streak + Verteilung).
     const progressGroup = `
       <section class="dashgrp">
         <p class="sectioncap">${esc(t("home.startProgressCap"))}</p>
-        <div class="profcard">
-          <p class="profcard__streak">${esc(streakLine)}</p>
-          <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(t("profile.masteredCardsLabel"))}">
-            <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
-          </div>
-          <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
-        </div>
+        ${progressCard(vm)}
       </section>`;
 
     return `
@@ -584,9 +600,6 @@
   }
 
   function profilBody(vm) {
-    const streakLine = vm.streak > 0
-      ? t("profile.streakInRow", { n: vm.streak })
-      : t("profile.streakFirst");
     const navrow = (action, icon, label, chip) => `
       <button class="navrow" data-action="${action}">
         <span class="navrow__icon" aria-hidden="true">${icon}</span>
@@ -623,13 +636,7 @@
     return `
       ${pagehead(esc(t("profile.progressTitle")))}
 
-      <div class="profcard">
-        <p class="profcard__streak">${streakLine}</p>
-        <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(t("profile.masteredCardsLabel"))}">
-          <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
-        </div>
-        <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
-      </div>
+      ${progressCard(vm)}
 
       <p class="sectioncap">${esc(t("home.tripCap"))}</p>
       ${tripManage(vm)}

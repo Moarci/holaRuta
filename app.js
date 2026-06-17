@@ -259,6 +259,8 @@
       streak: currentStreak(),
       overall: {
         mastered: overall.mastered,
+        learning: overall.learning,
+        neu: overall.neu,
         total: overall.total,
         pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
       },

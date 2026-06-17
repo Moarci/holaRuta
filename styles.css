@@ -114,7 +114,6 @@
 }
 [data-theme="dark"] .progress,
 [data-theme="dark"] .dist__bar,
-[data-theme="dark"] .today__bar,
 [data-theme="dark"] .brk__track { background: rgba(251, 243, 228, 0.08); }
 [data-theme="dark"] .srate--none { background: rgba(251, 243, 228, 0.07); }
 [data-theme="dark"] .cinfo-sect--food { background: #2A1D14; }
@@ -307,12 +306,6 @@ body {
   color: var(--ok);
   background: color-mix(in srgb, var(--ok) 12%, transparent);
   border-color: color-mix(in srgb, var(--ok) 35%, transparent);
-}
-.today__bar { height: 8px; background: rgba(45, 27, 18, 0.1); border-radius: 999px; overflow: hidden; }
-.today__barfill {
-  height: 100%; border-radius: 999px;
-  background: linear-gradient(90deg, var(--ok), var(--easy));
-  transition: width 0.3s ease;
 }
 .today__resume {
   display: flex; align-items: center; justify-content: center; gap: 8px;
