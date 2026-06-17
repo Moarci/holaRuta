@@ -2257,6 +2257,15 @@
         <rect x="89" y="146" width="6" height="42" rx="3" fill="#ECE2CA"/>
         <path d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z" fill="#ECE2CA"/>`;
     }
+    if (art === "beer") {
+      // Bierkrug mit Schaumkrone + Henkel (Pilsener). Schaum/Henkel füllen sich
+      // nicht mit – nur die Bierfüllung trägt .beb__liquid.
+      return `<clipPath id="bebClip"><path d="M64 116 h54 l-4 78 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 z"/></clipPath>
+        <rect class="beb__liquid" clip-path="url(#bebClip)" x="58" y="128" width="66" height="74" fill="${fill}"/>
+        <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M64 116 h54 l-4 78 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 z"/>
+        <path fill="#ECE2CA" d="M60 118 q6 -13 16 -5 q8 -13 18 -3 q10 -11 20 -1 q5 11 -4 13 q-26 -6 -50 0 q-7 -2 0 -7 z"/>
+        <path fill="none" stroke="#ECE2CA" stroke-width="9" d="M118 134 q22 0 22 22 q0 20 -20 22"/>`;
+    }
     // highball (hohes Glas mit Eiswürfeln + Strohhalm)
     return `<clipPath id="bebClip"><path d="M62 100 h60 l-7 92 a6 6 0 0 1 -6 6 h-28 a6 6 0 0 1 -6 -6 z"/></clipPath>
       <rect class="beb__liquid" clip-path="url(#bebClip)" x="56" y="120" width="72" height="82" fill="${fill}"/>

@@ -33,9 +33,9 @@
   // id = countries.js-id. Reihenfolge wie in der Länderkunde.
   const BEBIDAS = {
     mexico:      { accent: "#2E7A4A", am: { name: "Café de olla", art: "olla" },  pm: { name: "Mezcal",        art: "coupe",    liquid: "#C98A3A" }, greet: ["Buenos días", "Buenas noches"] },
-    guatemala:   { accent: "#4A90B8", am: { name: "Café",         art: "cup" },   pm: { name: "Ron Zacapa",    art: "highball", liquid: "#9A4E1E" }, greet: ["Buenos días", "Buenas noches"] },
+    guatemala:   { accent: "#4A90B8", am: { name: "Café",         art: "cup" },   pm: { name: "Ron Zacapa",    art: "highball", liquid: "#8A3E1A" }, greet: ["Buenos días", "Buenas noches"] },
     honduras:    { accent: "#2A6FB0", am: { name: "Café",         art: "cup" },   pm: { name: "Ron",           art: "highball", liquid: "#9A4E1E" }, greet: ["Buenos días", "Buenas noches"] },
-    elsalvador:  { accent: "#2A6FB0", am: { name: "Café",         art: "cup" },   pm: { name: "Pilsener",      art: "highball", liquid: "#E0B23A" }, greet: ["Buenos días", "Buenas noches"] },
+    elsalvador:  { accent: "#2A6FB0", am: { name: "Café",         art: "cup" },   pm: { name: "Pilsener",      art: "beer",     liquid: "#D9A93A" }, greet: ["Buenos días", "Buenas noches"] },
     nicaragua:   { accent: "#2A6FB0", am: { name: "Café",         art: "cup" },   pm: { name: "Flor de Caña",  art: "highball", liquid: "#B5793A" }, greet: ["Buenos días", "Buenas noches"] },
     costarica:   { accent: "#2A4FA0", am: { name: "Café chorreado", art: "cup" }, pm: { name: "Guaro",         art: "coupe",    liquid: "#E2DCC2" }, greet: ["Buenos días", "Buenas noches"] },
     panama:      { accent: "#2A4FB0", am: { name: "Café",         art: "cup" },   pm: { name: "Seco Herrerano", art: "coupe",   liquid: "#E2DCC2" }, greet: ["Buenos días", "Buenas noches"] },
