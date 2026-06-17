@@ -2332,8 +2332,14 @@
     const sections = root.querySelectorAll(".topicgrp[id]");
     if (!sections.length) return;
     if (topicSpy) topicSpy.disconnect();
-    const setActive = (id) => chips.forEach((c) =>
-      c.classList.toggle("is-active", c.getAttribute("data-target") === id));
+    // Aktiven Chip optisch (is-active) UND für Screenreader (aria-current) markieren –
+    // beides stets im Gleichschritt, damit die Sprungleiste auch vorgelesen stimmig ist.
+    const setActive = (id) => chips.forEach((c) => {
+      const on = c.getAttribute("data-target") === id;
+      c.classList.toggle("is-active", on);
+      if (on) c.setAttribute("aria-current", "location");
+      else c.removeAttribute("aria-current");
+    });
     setActive(sections[0].id); // erste Gruppe initial markieren
     topicSpy = new IntersectionObserver(function (entries) {
       const vis = entries.filter((e) => e.isIntersecting)
