@@ -22,6 +22,22 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.92.0",
+      date: "2026-06-17",
+      title: "Trip-Ziel & Erscheinungsbild klarer bedienbar",
+      titleEn: "Trip goal & appearance: clearer to use",
+      items: [
+        "🎯 Reiseland schnell wechseln: Unter dem Trip-Ziel im Profil gibt es jetzt eine Chip-Leiste mit den unterstützten Ländern. Ein Tap setzt das Reiseziel (Datum & Tagesziel bleiben) – und schaltet damit zugleich die passenden Pre-Arrival-Kacheln auf der Startseite um. Kein Öffnen des Formulars und Tippen mehr nötig.",
+        "🗓️ Übersichtlichere Trip-Karte: Der Countdown („Noch 12 Tage bis …“ bzw. „Reisezeit!“) steht jetzt klar oben als Hauptzeile. Das tägliche Karten-Pensum ist als eigene, beschriftete Zeile mit Balken abgesetzt – so wirkt der Tagesbalken nicht mehr wie ein „Fortschritt bis zur Reise“.",
+        "☕🍷 Hell/Dunkel direkt wählbar: Das AM/PM-Schild ist kein blinder Umschalter mehr. AM und PM sind je ein eigener Knopf – man tippt direkt die gewünschte Seite an (AM → hell, PM → dunkel). Tippt man die bereits aktive Seite, passiert nichts mehr.",
+      ],
+      itemsEn: [
+        "🎯 Quick-switch country: Below the trip goal in your profile there's now a chip bar with the supported countries. One tap sets the destination (date & daily goal stay) – and switches the matching pre-arrival tiles on the home screen at the same time. No more opening the form and typing.",
+        "🗓️ Clearer trip card: The countdown (“12 days to go until …” or “Travel time!”) is now the prominent top line. The daily card goal sits below as its own labelled row with a bar – so the daily bar no longer looks like “progress until the trip”.",
+        "☕🍷 Pick light/dark directly: The AM/PM sign is no longer a blind toggle. AM and PM are each their own button – tap the side you want (AM → light, PM → dark). Tapping the already-active side now does nothing.",
+      ],
+    },
+    {
       version: "1.91.0",
       date: "2026-06-17",
       title: "Bebidas AM/PM: Tag- und Abendgetränk pro Land",

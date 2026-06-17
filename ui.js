@@ -44,20 +44,19 @@
       </div>`;
   }
 
-  // Dark-Mode-Umschalter (Startseite, oben rechts): ein kleines, doppelseitiges
-  // Emaille-Schild. Hell = Kaffee am Morgen (AM, Dampf steigt), Dunkel = Wein am
-  // Abend (PM, Glas voll). Das jeweils inaktive Schild liegt gedimmt darunter.
-  // role="switch" + aria-checked (dunkel = an); die Logik hängt wie gehabt an
-  // data-action="toggle-theme". Das Schild reagiert per CSS auf [data-theme].
+  // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
+  // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
+  // Umschalter mehr: AM und PM sind je ein eigener Knopf (role="radio"), man tippt
+  // direkt die gewünschte Seite an (AM → hell, PM → dunkel) – das aktive Schild
+  // leuchtet, das andere liegt gedimmt daneben. Das Schild reagiert per CSS auf
+  // [data-theme]; die Wahl hängt an data-action="set-theme".
   function themeToggle(theme, opts) {
     const dark = theme === "dark";
     const large = opts && opts.large;
-    const label = dark ? t("common.themeLight") : t("common.themeDark");
-    const title = dark ? t("common.themeLightTitle") : t("common.themeDarkTitle");
-    return `<button class="themesign${large ? " themesign--lg" : ""}" data-action="toggle-theme" role="switch"
-                    aria-checked="${dark}" aria-label="${esc(label)}" title="${esc(title)}">
+    return `<div class="themesign${large ? " themesign--lg" : ""}" role="radiogroup" aria-label="${esc(t("common.themeCap"))}">
       <span class="themesign__plank">
-        <span class="themesign__plaque themesign__plaque--am">
+        <button type="button" class="themesign__plaque themesign__plaque--am" data-action="set-theme" data-theme="light"
+                role="radio" aria-checked="${!dark}" aria-label="${esc(t("common.themeLight"))}" title="${esc(t("common.themeLightTitle"))}">
           <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
             <g filter="url(#signGrain)">
               <rect x="6" y="4" width="172" height="216" rx="5" fill="#EDE4CD"/>
@@ -75,8 +74,9 @@
               <path stroke="none" d="M44 190 h80 q6 0 4 5 q-3 7 -44 7 q-41 0 -44 -7 q-2 -5 4 -5 z"/>
             </g>
           </svg>
-        </span>
-        <span class="themesign__plaque themesign__plaque--pm">
+        </button>
+        <button type="button" class="themesign__plaque themesign__plaque--pm" data-action="set-theme" data-theme="dark"
+                role="radio" aria-checked="${dark}" aria-label="${esc(t("common.themeDark"))}" title="${esc(t("common.themeDarkTitle"))}">
           <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
             <g filter="url(#signGrain)">
               <rect x="6" y="4" width="172" height="216" rx="5" fill="#1B1712"/>
@@ -93,9 +93,9 @@
               <path stroke="none" fill="#ECE2CA" d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z"/>
             </g>
           </svg>
-        </span>
+        </button>
       </span>
-    </button>`;
+    </div>`;
   }
 
   // Erscheinungsbild-Block im Profil: das große AM/PM-Schild links, rechts ein
@@ -254,18 +254,53 @@
     const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
     // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
     const who = trip.userName ? esc(trip.userName) + ", " : "";
+    // Oben steht klar die Reise (Countdown bzw. Abreise-Meldung). Das tägliche
+    // Karten-Pensum ist bewusst als eigene, beschriftete Zeile darunter abgesetzt –
+    // sonst wirkt der Tagesbalken wie ein „Fortschritt bis zur Reise".
     const countdown = trip.past ? who + t("home.tripTime")
       : trip.today ? who + t("home.tripToday")
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
-        <span class="trip__top">
-          <span class="trip__dest">🎯 ${dest}</span>
-          <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripTodayCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
-        </span>
+        <span class="trip__dest">🎯 ${dest}</span>
         <span class="trip__countdown">${countdown}</span>
-        <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
+        <span class="trip__daily">
+          <span class="trip__daily-head">
+            <span class="trip__daily-cap">${esc(t("home.tripDailyCap"))}</span>
+            <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripDailyCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
+          </span>
+          <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
+        </span>
       </button>`;
+  }
+
+  // Schnellwechsel Reiseland: ein Tap statt Formular-Tippen. Setzt nur das Reiseziel
+  // (Datum & Tagesziel bleiben) und schaltet damit auch die länderspezifischen
+  // Pre-Arrival-Kacheln auf der Startseite um. Das aktuell erkannte Land leuchtet.
+  // Nur im Profil unter dem Trip-Ziel sichtbar (siehe tripManage).
+  const TRIP_COUNTRIES = [
+    { id: "colombia",  flag: "🇨🇴", dest: "Kolumbien" },
+    { id: "peru",      flag: "🇵🇪", dest: "Peru" },
+    { id: "mexico",    flag: "🇲🇽", dest: "Mexiko" },
+    { id: "costarica", flag: "🇨🇷", dest: "Costa Rica" },
+    { id: "ecuador",   flag: "🇪🇨", dest: "Ecuador" },
+    { id: "guatemala", flag: "🇬🇹", dest: "Guatemala" },
+    { id: "argentina", flag: "🇦🇷", dest: "Argentinien" },
+    { id: "chile",     flag: "🇨🇱", dest: "Chile" },
+    { id: "bolivia",   flag: "🇧🇴", dest: "Bolivien" },
+  ];
+  function tripCountrySwitch(vm) {
+    const cur = vm.tripCountryId;
+    const chips = TRIP_COUNTRIES.map((c) => {
+      const active = c.id === cur;
+      return `<button type="button" class="tripchip ${active ? "is-active" : ""}" data-action="set-trip-country"
+                     data-country="${c.id}" data-dest="${esc(c.dest)}" aria-pressed="${active}">${c.flag} ${esc(c.dest)}</button>`;
+    }).join("");
+    return `
+      <div class="tripswitch" role="group" aria-label="${esc(t("home.tripSwitchCap"))}">
+        <span class="tripswitch__cap">${esc(t("home.tripSwitchCap"))}</span>
+        <div class="tripswitch__chips">${chips}</div>
+      </div>`;
   }
 
   // Trip-Ziel-Formular (anlegen/bearbeiten). Wird im Profil und beim Onboarding
@@ -297,7 +332,7 @@
         `<button class="ghostbtn" type="button" data-action="trip-edit">${esc(t("common.cancel"))}</button>`;
       return tripForm(trip, extra);
     }
-    if (trip) return tripDisplayCard(trip, "trip-edit");
+    if (trip) return tripDisplayCard(trip, "trip-edit") + tripCountrySwitch(vm);
     return `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
   }
 
