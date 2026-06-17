@@ -1178,14 +1178,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hist-banner__sub { display: block; font-size: 0.82rem; opacity: 0.9; line-height: 1.35; margin-top: 1px; }
 .hist-banner__chev { flex-shrink: 0; font-size: 1.3rem; opacity: 0.8; }
 
-/* Sprungmarken-Leiste (wie sz-nav). */
-.hist-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.hist-nav__chip {
+/* Sprungmarken-Leiste (wie sz-nav). Auch von der Tiempos-Seite genutzt (.ti-nav). */
+.hist-nav, .ti-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip, .ti-nav__chip {
   display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
   font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
   background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
 }
-.hist-nav__chip:active { transform: scale(0.96); }
+.hist-nav__chip:active, .ti-nav__chip:active { transform: scale(0.96); }
+/* Angesprungene Abschnitte nicht bündig an den oberen Rand kleben lassen. */
+.cinfo-sect { scroll-margin-top: 12px; }
 
 /* Block-Überschriften. */
 .hist-block { margin-top: 22px; scroll-margin-top: 12px; }

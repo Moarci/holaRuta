@@ -22,6 +22,15 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.37.0",
+      date: "2026-06-17",
+      title: "Tiempos: Schnellsprung-Navigation & Feinschliff",
+      items: [
+        "🧭 Die lange Zeiten-Seite (Tiempos) hat oben jetzt eine Sprungmarken-Leiste: ein Tipp bringt dich direkt zu Zeitformen, Tricks, Verlaufsform, Indef./Imperf., Unregelmäßig, Befehlen, Praxis oder Dialogen – kein endloses Scrollen mehr.",
+        "🇬🇧 Englisch-Korrekturen auf der Tiempos-Seite: Bei den Zeitform-Karten und den unregelmäßigen Verben stand die Beschreibung doppelt (und der spanische Begriff fehlte); beim Vergleich „Indefinido oder Imperfecto“ waren die Stichpunkte noch auf Deutsch. Beides ist jetzt sauber übersetzt.",
+      ],
+    },
+    {
       version: "1.36.0",
       date: "2026-06-16",
       title: "Tiempos: Vergangenheits-Trick mit dem Gerundium",

@@ -1362,9 +1362,9 @@
 
   // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der
   // Infoseiten Länderkunde (renderInfo) und Conjugación (renderConjugacion).
-  function sect(icon, title, body) {
+  function sect(icon, title, body, id) {
     return `
-      <div class="cinfo-sect">
+      <div class="cinfo-sect"${id ? ` id="${esc(id)}"` : ""}>
         <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
         ${body}
       </div>`;
@@ -3110,7 +3110,7 @@
           <summary class="cinfo-dish__head">
             <span class="cinfo-dish__heart">
               <span class="cinfo-dish__name" lang="es">${esc(te.name)}</span>
-              <span class="cinfo-dish__desc">${esc(te.nameDe)}</span>
+              <span class="cinfo-dish__desc">${esc(te.de)}</span>
             </span>
             <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
           </summary>
@@ -3201,7 +3201,7 @@
     const strongPastBlocks = sp.verbs
       .map((v) => `
         <div class="cj-verb">
-          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.verbDe)}</span></h4>
+          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.de)}</span></h4>
           ${table(v.forms)}
         </div>`)
       .join("");
@@ -3246,26 +3246,44 @@
         </div>`)
       .join("");
 
+    // Sprungmarken-Leiste (wie hist-nav/sz-nav): bei dieser langen Erklärseite
+    // springt man direkt zu den Hauptlandmarken, statt endlos zu scrollen.
+    const navChips = [
+      ["🕰️", tt("discover.tiNavTenses"), "ti-tenses"],
+      ["🪄", tt("discover.tiNavTricks"), "ti-tricks"],
+      ["⏯️", tt("discover.tiNavContinuous"), "ti-continuous"],
+      ["⚖️", tt("discover.tiNavCompare"), "ti-compare"],
+      ["💪", tt("discover.tiNavIrregular"), "ti-irregular"],
+      ["🗣️", tt("discover.tiNavCommands"), "ti-commands"],
+      ["🧳", tt("discover.tiNavPractice"), "ti-practice"],
+      ["🧭", tt("discover.tiNavDialogs"), "ti-dialogs"],
+    ];
+    const tiNav = `
+      <nav class="ti-nav" aria-label="${esc(tt("discover.tiNavLabel"))}">
+        ${navChips.map(([icon, label, id]) => `<a class="ti-nav__chip" href="#${id}" data-action="scroll-to" data-target="${id}">${icon} ${esc(label)}</a>`).join("")}
+      </nav>`;
+
     return `
       <section class="screen">
         ${hmTopbar("⏳ Tiempos", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
         ${moduleShareBtn("tiempos")}
+        ${tiNav}
 
         ${sect("↔️", t.title, timeline)}
-        ${sect("🪄", ep.title, easyPast)}
-        ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
-        ${sect("⏯️", c.title, continuous)}
+        ${sect("🪄", ep.title, easyPast, "ti-tricks")}
+        ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, "ti-tenses")}
+        ${sect("⏯️", c.title, continuous, "ti-continuous")}
         ${sect("⏪", pc.title, pastContinuous)}
-        ${sect("⚖️", iv.title, indefVsImperf)}
-        ${sect("💪", sp.title, strongPast)}
+        ${sect("⚖️", iv.title, indefVsImperf, "ti-compare")}
+        ${sect("💪", sp.title, strongPast, "ti-irregular")}
         ${sect("🧩", pp.title, participles)}
-        ${sect("🗣️", im.title, imperative)}
+        ${sect("🗣️", im.title, imperative, "ti-commands")}
         ${sect("📦", hy.title, hayBlock)}
-        ${sect("🧳", sc.title, scenarios)}
+        ${sect("🧳", sc.title, scenarios, "ti-practice")}
         ${sect("⚠️", pf.title, pitfalls)}
         ${sect("🔑", tt("discover.tiSignalWords"), `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
-        ${sect("🧭", tt("discover.tiDialogs"), dialogsHtml)}
+        ${sect("🧭", tt("discover.tiDialogs"), dialogsHtml, "ti-dialogs")}
 
         <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
           ${esc(tt("discover.tiPracticeTenses"))} <span class="cta__count">${esc(tt("home.tileCards", { n: vm.cardCount }))}</span>
