@@ -1702,11 +1702,11 @@
       </section>`;
   }
 
-  // ---------- LÄNDERKUNDE (INFOSEITE) ----------
-  // Dropdown mit Regionen als <optgroup>; darunter das gewählte Land mit
-  // Infotexten und der Unterrubrik "Essen & Trinken".
-  function renderInfo(vm) {
-    const options = vm.groups
+  // Land-Auswahl als <select> mit Regionen-<optgroup>, geteilt von Länderkunde,
+  // Reise-Knigge & Bebidas (alle teilen state.countryId via data-action=
+  // "select-country"). groups = vm.groups (Regionen mit ihren Ländern).
+  function countryPicker(groups) {
+    const options = (groups || [])
       .map((g) => {
         const opts = g.countries
           .map((c) => `<option value="${esc(c.id)}"${c.selected ? " selected" : ""}>${c.flag} ${esc(c.name)}</option>`)
@@ -1714,12 +1714,18 @@
         return `<optgroup label="${esc(g.region)}">${opts}</optgroup>`;
       })
       .join("");
-
-    const selector = `
+    return `
       <label class="cinfo-pick">
         <span class="cinfo-pick__cap">${esc(t("discover.infoPickCountry"))}</span>
         <select class="cinfo-pick__sel" id="country-select" data-action="select-country">${options}</select>
       </label>`;
+  }
+
+  // ---------- LÄNDERKUNDE (INFOSEITE) ----------
+  // Dropdown mit Regionen als <optgroup>; darunter das gewählte Land mit
+  // Infotexten und der Unterrubrik "Essen & Trinken".
+  function renderInfo(vm) {
+    const selector = countryPicker(vm.groups);
 
     if (!vm.country) {
       return `
@@ -2139,20 +2145,7 @@
   // Akzente. Land-Dropdown wie in renderInfo (teilt state.countryId). Themenblöcke
   // sind natives <details> (kein JS-State) – analog zu dish() in renderInfo.
   function renderKnigge(vm) {
-    const options = vm.groups
-      .map((g) => {
-        const opts = g.countries
-          .map((c) => `<option value="${esc(c.id)}"${c.selected ? " selected" : ""}>${c.flag} ${esc(c.name)}</option>`)
-          .join("");
-        return `<optgroup label="${esc(g.region)}">${opts}</optgroup>`;
-      })
-      .join("");
-
-    const selector = `
-      <label class="cinfo-pick">
-        <span class="cinfo-pick__cap">${esc(t("discover.infoPickCountry"))}</span>
-        <select class="cinfo-pick__sel" id="country-select" data-action="select-country">${options}</select>
-      </label>`;
+    const selector = countryPicker(vm.groups);
 
     const countryName = vm.country ? vm.country.name : "";
 
@@ -2286,19 +2279,7 @@
   function renderBebidas(vm) {
     // Länder-Auswahl: identisch zur Länderkunde, damit die Tafel das Land der
     // Reise teilt (data-action="select-country" -> state.countryId).
-    const options = vm.groups
-      .map((g) => {
-        const opts = g.countries
-          .map((c) => `<option value="${esc(c.id)}"${c.selected ? " selected" : ""}>${c.flag} ${esc(c.name)}</option>`)
-          .join("");
-        return `<optgroup label="${esc(g.region)}">${opts}</optgroup>`;
-      })
-      .join("");
-    const selector = `
-      <label class="cinfo-pick">
-        <span class="cinfo-pick__cap">${esc(t("discover.infoPickCountry"))}</span>
-        <select class="cinfo-pick__sel" id="country-select" data-action="select-country">${options}</select>
-      </label>`;
+    const selector = countryPicker(vm.groups);
 
     const d = vm.data;
     const countryName = vm.country ? vm.country.name : "";
