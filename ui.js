@@ -149,6 +149,7 @@
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
+    { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", sub: "Was man morgens und abends trinkt – Land für Land", grad: ["#B97C24", "#6B4FA8"], need: "bebidas", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
@@ -565,7 +566,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, bebidas: vm.hasBebidas, placement: vm.hasPlacement };
     // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
     const cfg = window.SC.config || {};
     const featBtn = (x) => `
@@ -2202,6 +2203,169 @@
         <div class="topbar__title">🧭 Etiqueta de viaje</div>
         <span></span>
       </div>`;
+  }
+
+  // ---------- BEBIDAS AM/PM (Tag-/Abendgetränk pro Land) ----------
+  // Ein doppelseitiges Emaille-Schild wie der Theme-Umschalter, aber pro Land:
+  // oben (AM) das Morgengetränk, unten (PM) das Abendgetränk. Tippen kippt die
+  // Tafel (data-action="toggle-bebida"); das gewählte Land kommt aus der
+  // gemeinsamen Länder-Auswahl (state.countryId), die Formen aus art + liquid.
+  // Wir nutzen dieselben Filter signPaint/signGrain wie der Theme-Schalter.
+
+  // AM-Becher (dunkle Tinte auf cremefarbener Tafel). steam: Dampf-Pfade nur,
+  // wenn warm getrunken (Tereré ist kalt -> kein Dampf).
+  function bebAmArt(art, cold) {
+    const steam3 = `<g class="beb__steam" fill="none" stroke-width="4.5" stroke-linecap="round"><path d="M78 116 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M92 116 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M106 116 q-7 -9 0 -18 q7 -9 0 -18"/></g>`;
+    const steam2 = `<g class="beb__steam" fill="none" stroke-width="4" stroke-linecap="round"><path d="M80 110 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M96 110 q-7 -9 0 -18 q7 -9 0 -18"/></g>`;
+    if (art === "mate") {
+      return `${cold ? "" : steam2}
+        <circle cx="84" cy="158" r="38" stroke="none"/>
+        <ellipse cx="84" cy="197" rx="17" ry="5" stroke="none"/>
+        <ellipse cx="80" cy="124" rx="20" ry="7" fill="#EDE4CD" stroke="none"/>
+        <path d="M60 124 a20 7 0 0 0 40 0" fill="none" stroke-width="4"/>
+        <path d="M96 150 L140 96" fill="none" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="142" cy="92" r="7" stroke="none"/>`;
+    }
+    if (art === "olla") {
+      return `${cold ? "" : steam2}
+        <path stroke="none" d="M62 128 h52 l-5 56 a8 8 0 0 1 -8 7 h-26 a8 8 0 0 1 -8 -7 z"/>
+        <path d="M66 150 l8 -6 8 6 8 -6 8 6 8 -6 6 5" fill="none" stroke="#EDE4CD" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path fill="none" stroke-width="9" d="M116 140 q20 0 20 16 q0 16 -18 16"/>`;
+    }
+    // cup (Standard-Kaffeetasse mit Untertasse)
+    return `${cold ? "" : steam3}
+      <path stroke="none" d="M58 130 h56 a6 6 0 0 1 6 6 q-2 28 -9 38 a15 15 0 0 1 -12 6 h-26 a15 15 0 0 1 -12 -6 q-7 -10 -9 -38 a6 6 0 0 1 6 -6 z"/>
+      <path fill="none" stroke-width="9" d="M120 140 q20 0 20 16 q0 16 -18 17"/>
+      <path stroke="none" d="M48 188 h72 q6 0 4 5 q-3 6 -40 6 q-37 0 -40 -6 q-2 -5 4 -5 z"/>`;
+  }
+
+  // PM-Glas (heller Umriss + farbige Füllung auf dunkler Tafel). Die Füllung
+  // trägt .beb__liquid und füllt sich erst im Abendmodus (siehe CSS).
+  function bebPmArt(art, liquid) {
+    const fill = esc(liquid || "#9A4E1E");
+    if (art === "coupe") {
+      return `<clipPath id="bebClip"><path d="M56 100 q36 22 72 0 q-6 34 -30 40 q-6 2 -12 0 q-24 -6 -30 -40 z"/></clipPath>
+        <rect class="beb__liquid" clip-path="url(#bebClip)" x="50" y="118" width="84" height="30" fill="${fill}"/>
+        <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M56 100 q36 22 72 0 q-6 34 -30 40 q-6 2 -12 0 q-24 -6 -30 -40 z"/>
+        <rect x="89" y="146" width="6" height="36" rx="3" fill="#ECE2CA"/>
+        <path d="M66 190 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z" fill="#ECE2CA"/>`;
+    }
+    if (art === "wine") {
+      return `<clipPath id="bebClip"><path d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/></clipPath>
+        <rect class="beb__liquid" clip-path="url(#bebClip)" x="50" y="116" width="84" height="42" fill="${fill}"/>
+        <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+        <rect x="89" y="146" width="6" height="42" rx="3" fill="#ECE2CA"/>
+        <path d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z" fill="#ECE2CA"/>`;
+    }
+    if (art === "beer") {
+      // Bierkrug mit Schaumkrone + Henkel (Pilsener). Schaum/Henkel füllen sich
+      // nicht mit – nur die Bierfüllung trägt .beb__liquid.
+      return `<clipPath id="bebClip"><path d="M64 116 h54 l-4 78 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 z"/></clipPath>
+        <rect class="beb__liquid" clip-path="url(#bebClip)" x="58" y="128" width="66" height="74" fill="${fill}"/>
+        <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M64 116 h54 l-4 78 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 z"/>
+        <path fill="#ECE2CA" d="M60 118 q6 -13 16 -5 q8 -13 18 -3 q10 -11 20 -1 q5 11 -4 13 q-26 -6 -50 0 q-7 -2 0 -7 z"/>
+        <path fill="none" stroke="#ECE2CA" stroke-width="9" d="M118 134 q22 0 22 22 q0 20 -20 22"/>`;
+    }
+    // highball (hohes Glas mit Eiswürfeln + Strohhalm)
+    return `<clipPath id="bebClip"><path d="M62 100 h60 l-7 92 a6 6 0 0 1 -6 6 h-28 a6 6 0 0 1 -6 -6 z"/></clipPath>
+      <rect class="beb__liquid" clip-path="url(#bebClip)" x="56" y="120" width="72" height="82" fill="${fill}"/>
+      <g clip-path="url(#bebClip)" fill="none" stroke="#ECE2CA" stroke-width="3"><rect x="74" y="150" width="14" height="14" rx="2"/><rect x="96" y="166" width="14" height="14" rx="2"/></g>
+      <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M62 100 h60 l-7 92 a6 6 0 0 1 -6 6 h-28 a6 6 0 0 1 -6 -6 z"/>
+      <path d="M110 84 L98 150" stroke="#ECE2CA" stroke-width="5" stroke-linecap="round"/>`;
+  }
+
+  function bebidasTopbar() {
+    return `
+      <div class="topbar">
+        <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+        <div class="topbar__title">☕ Bebidas AM/PM</div>
+        <span></span>
+      </div>`;
+  }
+
+  function renderBebidas(vm) {
+    // Länder-Auswahl: identisch zur Länderkunde, damit die Tafel das Land der
+    // Reise teilt (data-action="select-country" -> state.countryId).
+    const options = vm.groups
+      .map((g) => {
+        const opts = g.countries
+          .map((c) => `<option value="${esc(c.id)}"${c.selected ? " selected" : ""}>${c.flag} ${esc(c.name)}</option>`)
+          .join("");
+        return `<optgroup label="${esc(g.region)}">${opts}</optgroup>`;
+      })
+      .join("");
+    const selector = `
+      <label class="cinfo-pick">
+        <span class="cinfo-pick__cap">${esc(t("discover.infoPickCountry"))}</span>
+        <select class="cinfo-pick__sel" id="country-select" data-action="select-country">${options}</select>
+      </label>`;
+
+    const d = vm.data;
+    const countryName = vm.country ? vm.country.name : "";
+    if (!d) {
+      return `
+        <section class="screen">
+          ${bebidasTopbar()}
+          ${selector}
+          <p class="pageintro">${esc(t("discover.bebNone"))}</p>
+        </section>`;
+    }
+
+    const isPm = vm.mode === "pm";
+    const amName = d.am.name, pmName = d.pm.name;
+    const greet = isPm ? (d.greet[1] || "") : (d.greet[0] || "");
+    const readoutText = isPm
+      ? t("discover.bebPmText", { drink: pmName })
+      : t("discover.bebAmText", { drink: amName });
+    const eyebrow = `${vm.regionLabel} · ${amName} · ${pmName}`;
+    const aria = `${countryName}: ${amName} (AM) / ${pmName} (PM)`;
+
+    const sign = `
+      <button class="beb__signpost" data-action="toggle-bebida" role="switch"
+              aria-checked="${isPm}" aria-label="${esc(aria)}" title="${esc(t("discover.bebHint"))}">
+        <span class="beb__plank">
+          <span class="beb__plaque beb__plaque--am">
+            <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
+              <g filter="url(#signGrain)">
+                <rect x="6" y="4" width="172" height="216" rx="5" fill="#EDE4CD"/>
+                <rect x="6" y="4" width="172" height="216" rx="5" fill="none" stroke="rgba(27,23,18,.10)" stroke-width="2"/>
+              </g>
+              <g filter="url(#signPaint)" fill="#1B1712" stroke="#1B1712">
+                <text x="92" y="60" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="48" stroke="none">AM</text>
+                ${bebAmArt(d.am.art, d.am.cold)}
+              </g>
+            </svg>
+          </span>
+          <span class="beb__plaque beb__plaque--pm">
+            <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
+              <g filter="url(#signGrain)">
+                <rect x="6" y="4" width="172" height="216" rx="5" fill="#1B1712"/>
+                <rect x="6" y="4" width="172" height="216" rx="5" fill="none" stroke="rgba(236,226,202,.10)" stroke-width="2"/>
+              </g>
+              <g filter="url(#signPaint)">
+                <text x="92" y="56" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="48" fill="#ECE2CA" stroke="none">PM</text>
+                ${bebPmArt(d.pm.art, d.pm.liquid)}
+              </g>
+            </svg>
+          </span>
+        </span>
+      </button>`;
+
+    return `
+      <section class="screen beb" data-beb-mode="${esc(vm.mode)}" style="--beb-accent:${esc(d.accent)}">
+        ${bebidasTopbar()}
+        ${selector}
+        <div class="beb__stage">
+          <p class="beb__eyebrow">${esc(eyebrow)}</p>
+          ${sign}
+          <div class="beb__readout" aria-live="polite">
+            <p class="beb__greet">${esc(greet)}</p>
+            <p class="beb__text">${esc(readoutText)}</p>
+            <p class="beb__country">${esc(countryName)}</p>
+          </div>
+          <span class="beb__hint">${esc(t("discover.bebHint"))}</span>
+        </div>
+      </section>`;
   }
 
   // ---------- REGATEAR (gut verhandeln & feilschen) ----------
@@ -4096,7 +4260,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement, renderPrintSheet,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

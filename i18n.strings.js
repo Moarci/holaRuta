@@ -562,7 +562,14 @@
     subTask: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben",
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
+    subBebidas: "Was man morgens und abends trinkt – Land für Land",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
+
+    // Bebidas AM/PM (Tag-/Abendgetränk pro Land)
+    bebHint: "Tippen zum Umschalten",
+    bebAmText: (p) => `Morgens: ${p.drink} – zum Start in den Tag.`,
+    bebPmText: (p) => `Abends: ${p.drink} – jetzt gehört der Abend dir.`,
+    bebNone: "Für dieses Land gibt es noch keine Getränke.",
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
@@ -889,7 +896,14 @@
     subTask: "Open a task: enter the code from your teacher/tour leader",
     subLogistica: "SIM, money & luggage – arrive smart and safe",
     subSalud: "Stay healthy & fit: food, drink, movement",
+    subBebidas: "What people drink morning and evening – country by country",
     subPlacement: "Short placement test: find your starting level",
+
+    // Bebidas AM/PM (morning/evening drink per country)
+    bebHint: "Tap to switch",
+    bebAmText: (p) => `Morning: ${p.drink} – to start the day.`,
+    bebPmText: (p) => `Evening: ${p.drink} – now the evening is yours.`,
+    bebNone: "No drinks for this country yet.",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
     szAreas: "Sections",

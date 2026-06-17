@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.91.0",
+      date: "2026-06-17",
+      title: "Bebidas AM/PM: Tag- und Abendgetränk pro Land",
+      titleEn: "Bebidas AM/PM: morning and evening drink per country",
+      items: [
+        "☕ Neu im Entdecken-Reiter: „Bebidas AM/PM“. Ein doppelseitiges Emaille-Schild zeigt fürs gewählte Reiseland das typische Morgengetränk (AM) und Abendgetränk (PM) – von Café de olla & Mezcal in México über Mate & Malbec in Argentinien bis Tereré & Caña in Paraguay. Tippen schaltet um: Dampf steigt nur morgens, das Glas füllt sich erst abends. Das Land kommt aus derselben Auswahl wie die Länderkunde – per Dropdown direkt wechselbar. Alle 19 Länder abgedeckt.",
+      ],
+      itemsEn: [
+        "☕ New in the Discover tab: “Bebidas AM/PM”. A double-sided enamel sign shows the typical morning drink (AM) and evening drink (PM) for your chosen country – from Café de olla & Mezcal in Mexico through Mate & Malbec in Argentina to Tereré & Caña in Paraguay. Tap to switch: steam only rises in the morning, the glass fills up only in the evening. The country comes from the same picker as the country guide – switch it right from the dropdown. All 19 countries covered.",
+      ],
+    },
+    {
       version: "1.90.1",
       date: "2026-06-17",
       title: "„Dein Fortschritt“: echte Lern-Verteilung statt leerem Balken",
