@@ -1,26 +1,32 @@
-# Veröffentlicht HolaRuta auf GitHub Pages.
+# Testet & veröffentlicht HolaRuta.
 #
-# Damit bekommt die App eine feste Internet-Adresse (https://<user>.github.io/holaRuta/).
-# Die einmal auf dem Handy öffnen und „Zum Startbildschirm hinzufügen" tippen –
-# fertig ist das App-Icon: kein Datei-Suchen mehr, offline-fähig (Service Worker).
+# Zwei Modi in EINEM Workflow:
+#  - Pull Request gegen main  → nur der `test`-Job läuft (Merge-Gate, kein Deploy).
+#  - Push auf main (oder manuell) → `test` + danach `deploy` auf GitHub Pages.
+#
+# Damit bekommt die App eine feste Internet-Adresse (https://<user>.github.io/holaRuta/),
+# offline-fähig über den Service Worker. Kaputter Code wird so schon im PR gestoppt,
+# bevor er live geht und bei PWA-Nutzern offline gecacht wird.
 #
 # Die App ist statisches HTML/CSS/JS ohne Build-Schritt, deshalb wird der
 # Projektordner unverändert als Pages-Artefakt hochgeladen.
 #
 # Einmalig nötig: unter Settings → Pages als Quelle „GitHub Actions" wählen.
-# (Der configure-pages-Schritt unten versucht das beim ersten Lauf automatisch.)
-name: Deploy to GitHub Pages
+# Empfohlen: unter Settings → Branches eine Schutzregel für `main` mit dem
+# erforderlichen Status-Check „test" – dann ist der Merge-Knopf erst grün, wenn
+# die Tests grün sind.
+name: Test & Deploy
 
 on:
   push:
     branches: [main]
+  pull_request: # Merge-Gate: Tests laufen vor dem Merge nach main
   workflow_dispatch: # erlaubt manuelles Auslösen über den Actions-Tab
 
-# Nur Lese-Zugriff aufs Repo, aber Schreibrechte für die Pages-Bereitstellung.
+# Standardmäßig nur Lesezugriff; die Pages-Schreibrechte braucht nur der
+# deploy-Job (Least Privilege) – siehe unten.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Die gepinnten checkout-/setup-node-Actions laufen noch auf der Node-20-Runtime,
 # die GitHub ab dem 16.06.2026 abkündigt. Bis neue Action-Versionen gepinnt werden,
@@ -32,16 +38,17 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-# Gleichzeitige Deployments serialisieren; laufende nicht abbrechen.
+# Pro Ref serialisieren: gleichzeitige main-Deployments laufen nacheinander,
+# aber PR-Läufe blockieren keine main-Deploys (und umgekehrt).
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # Test-Gate: kaputter Code darf nicht live gehen (und würde von PWA-Nutzern
-  # offline gecacht). Prüft außerdem, dass die generierten Artefakte zum
-  # Quellcode passen (kein Build-Drift): das Single-File-Build HolaRuta.html UND
-  # der gestempelte Service-Worker-Cache-Name (CACHE_VERSION). Letzterer sorgt
+  # Test-Gate: kaputter Code darf nicht gemergt/live gehen (und würde von
+  # PWA-Nutzern offline gecacht). Prüft außerdem, dass die generierten Artefakte
+  # zum Quellcode passen (kein Build-Drift): das Single-File-Build HolaRuta.html
+  # UND der gestempelte Service-Worker-Cache-Name (CACHE_VERSION). Letzterer sorgt
   # dafür, dass ausgelieferte Änderungen nie in einem alten Cache hängenbleiben.
   # Hinweis: Das Projekt hat keine Dependencies/keinen Lockfile — kein npm ci nötig.
   test:
@@ -65,6 +72,12 @@ jobs:
 
   deploy:
     needs: test
+    # Nur bei Push auf main / manuellem Lauf deployen – NICHT bei Pull Requests.
+    if: github.event_name != 'pull_request'
+    # Schreibrechte für die Pages-Bereitstellung nur hier, nicht repo-weit.
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
