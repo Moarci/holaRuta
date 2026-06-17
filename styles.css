@@ -142,6 +142,12 @@ html, body, .appshell, .appbar { transition: background-color 0.3s ease, color 0
 }
 :focus:not(:focus-visible) { outline: none; }
 
+/* Die Reiter-Überschrift bekommt nach jedem Re-Render programmatisch den Fokus
+ * (manageFocus → Screenreader-Orientierung). Sie ist aber nicht interaktiv,
+ * darum keinen sichtbaren Rahmen zeigen – der sah wie ein versehentlicher
+ * Kasten um den Titel aus. */
+.pagehead__title:focus, .pagehead__title:focus-visible { outline: none; }
+
 html, body { height: 100%; }
 html { background: var(--page); }
 body {
