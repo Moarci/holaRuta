@@ -44,7 +44,7 @@ body{
 }
 .scroll{ flex:1; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; }
 @media (prefers-reduced-motion: reduce){ .scroll{ scroll-behavior:auto; } }
-.app{ padding:18px 16px 28px; display:flex; flex-direction:column; gap:14px; }
+.app{ padding:20px 16px 36px; display:flex; flex-direction:column; gap:20px; }
 
 .pagehead__title{ font-family:var(--font-display); font-weight:800; font-size:1.5rem; margin:2px 0 0; }
 .searchbar{
@@ -52,7 +52,10 @@ body{
   background:var(--card); border:1.5px solid var(--line); color:var(--muted);
   padding:13px 15px; border-radius:var(--r-md); font:inherit; font-weight:600; box-shadow:var(--shadow);
 }
-.sectioncap{ margin:6px 0 -2px; padding-left:4px; font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
+.sectioncap{ margin:0; padding-left:4px; font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
+/* Überschrift + Inhalt bilden eine Einheit: enger Abstand innen (12px),
+   großzügiger Abstand (.app gap) zwischen den Gruppen. */
+.group{ display:flex; flex-direction:column; gap:12px; }
 
 /* Cockpit „Heute" */
 .today{ display:flex; flex-direction:column; gap:12px; background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-lg); padding:16px; box-shadow:var(--shadow-lg); }
@@ -80,14 +83,14 @@ body{
 .dashnav.stuck{ border-bottom:1.5px solid var(--line); box-shadow:0 6px 14px -10px rgba(0,0,0,.5); }
 .dashnav__chip{ flex:0 0 auto; font:inherit; font-weight:800; font-size:.88rem; cursor:pointer; white-space:nowrap; border:1.5px solid var(--line-strong); background:var(--card); color:var(--ink-soft); padding:8px 14px; border-radius:999px; transition:background .15s,color .15s,border-color .15s; }
 .dashnav__chip.is-active{ background:color-mix(in srgb,var(--brand) 12%,transparent); border-color:color-mix(in srgb,var(--brand) 45%,transparent); color:var(--brand-ink); }
-.anchor{ scroll-margin-top:60px; }
+.anchor{ scroll-margin-top:58px; display:flex; flex-direction:column; gap:12px; }
 
 /* Stufen + Kacheln */
 .levels{ display:flex; flex-wrap:wrap; gap:8px; }
 .lvl{ font:inherit; font-weight:800; font-size:.84rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px; border:1.5px solid var(--line-strong); background:var(--card); color:var(--ink-soft); padding:8px 13px; border-radius:999px; }
 .lvl.is-active{ background:color-mix(in srgb,var(--brand) 12%,transparent); border-color:color-mix(in srgb,var(--brand) 45%,transparent); color:var(--brand-ink); }
 .lvl__dot{ width:9px; height:9px; border-radius:50%; background:var(--lc,#999); }
-.tiles{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.tiles{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 .tile{ position:relative; overflow:hidden; text-align:left; cursor:pointer; font:inherit; color:var(--cream); display:flex; flex-direction:column; gap:4px; min-height:104px; background:linear-gradient(135deg,var(--from),var(--to)); border:none; padding:14px; border-radius:var(--r-tile); box-shadow:var(--shadow-lg); }
 .tile__icon{ font-size:1.6rem; }
 .tile__label{ font-family:var(--font-display); font-weight:800; font-size:1.02rem; }
@@ -141,7 +144,7 @@ body{
           </button>
         </div>
 
-        <div class="reise-block" style="display:flex;flex-direction:column;gap:12px;">
+        <div class="reise-block group">
           <p class="sectioncap">Für deine Reise</p>
           <button class="trip">
             <span class="trip__top">
@@ -161,8 +164,10 @@ body{
           </button>
         </div>
 
-        <p class="sectioncap" style="margin-top:8px;">Platz zum Ausbauen</p>
-        <button class="ruta"><span class="ruta-main">📊 Dein Fortschritt</span><span class="ruta-sub">142 von 520 Karten gemeistert · 27 %</span></button>
+        <div class="group">
+          <p class="sectioncap">Platz zum Ausbauen</p>
+          <button class="ruta"><span class="ruta-main">📊 Dein Fortschritt</span><span class="ruta-sub">142 von 520 Karten gemeistert · 27 %</span></button>
+        </div>
 
         <p class="dedication">Mit ♥ für alle, die unterwegs Spanisch lernen ♥</p>
       </div>
