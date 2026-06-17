@@ -1362,9 +1362,9 @@
 
   // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der
   // Infoseiten Länderkunde (renderInfo) und Conjugación (renderConjugacion).
-  function sect(icon, title, body) {
+  function sect(icon, title, body, id) {
     return `
-      <div class="cinfo-sect">
+      <div class="cinfo-sect"${id ? ` id="${esc(id)}"` : ""}>
         <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
         ${body}
       </div>`;
@@ -2790,7 +2790,7 @@
           <summary class="cinfo-dish__head">
             <span class="cinfo-dish__heart">
               <span class="cinfo-dish__name" lang="es">${esc(v.verb)}</span>
-              <span class="cinfo-dish__desc">${esc(v.verbDe)}</span>
+              <span class="cinfo-dish__desc">${esc(v.de)}</span>
             </span>
             <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
           </summary>
@@ -3110,7 +3110,7 @@
           <summary class="cinfo-dish__head">
             <span class="cinfo-dish__heart">
               <span class="cinfo-dish__name" lang="es">${esc(te.name)}</span>
-              <span class="cinfo-dish__desc">${esc(te.nameDe)}</span>
+              <span class="cinfo-dish__desc">${esc(te.de)}</span>
             </span>
             <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
           </summary>
@@ -3150,6 +3150,16 @@
       ${pairList(c.gerunds.map((x) => ({ es: x.inf + " → " + x.ger, de: x.de })), "es", "de")}
       ${lines(c.examples)}
       <p class="cinfo-text cj-note">${esc(c.note)}</p>`;
+
+    // estaba + Gerundio: derselbe Gerundio-Trick rückwärts – estar in der
+    // Vergangenheit. Mini-Vergleich (jetzt ↔ damals), Formen-Tabelle, Beispiele.
+    const pc = g.pastContinuous;
+    const pastContinuous = `
+      <p class="cinfo-text">${esc(pc.intro)}</p>
+      ${pairList(pc.mirror, "es", "de")}
+      ${table(pc.forms)}
+      ${lines(pc.examples)}
+      <p class="cinfo-text cj-note">${esc(pc.note)}</p>`;
 
     // Indefinido vs. Imperfecto: zwei Spalten-Blöcke mit Stichpunkten + ein
     // kombinierter Beispielsatz (Ereignis vor Hintergrund).
@@ -3191,7 +3201,7 @@
     const strongPastBlocks = sp.verbs
       .map((v) => `
         <div class="cj-verb">
-          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.verbDe)}</span></h4>
+          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.de)}</span></h4>
           ${table(v.forms)}
         </div>`)
       .join("");
@@ -3236,25 +3246,41 @@
         </div>`)
       .join("");
 
+    // Alle Abschnitte EINMAL definiert (eine Quelle der Wahrheit). Ein Abschnitt
+    // mit id + nav (Kurzlabel) ist per Sprungmarke erreichbar; ohne nav erscheint
+    // er nur im Fließtext. Reihenfolge der Sprungleiste = Reihenfolge der Seite.
+    const sections = [
+      { icon: "↔️", title: t.title, body: timeline },
+      { icon: "🪄", title: ep.title, body: easyPast, id: "ti-tricks", nav: tt("discover.tiNavTricks") },
+      { icon: "🕰️", title: tt("discover.tiTenses"), body: `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, id: "ti-tenses", nav: tt("discover.tiNavTenses") },
+      { icon: "⏯️", title: c.title, body: continuous, id: "ti-continuous", nav: tt("discover.tiNavContinuous") },
+      { icon: "⏪", title: pc.title, body: pastContinuous },
+      { icon: "⚖️", title: iv.title, body: indefVsImperf, id: "ti-compare", nav: tt("discover.tiNavCompare") },
+      { icon: "💪", title: sp.title, body: strongPast, id: "ti-irregular", nav: tt("discover.tiNavIrregular") },
+      { icon: "🧩", title: pp.title, body: participles },
+      { icon: "🗣️", title: im.title, body: imperative, id: "ti-commands", nav: tt("discover.tiNavCommands") },
+      { icon: "📦", title: hy.title, body: hayBlock },
+      { icon: "🧳", title: sc.title, body: scenarios, id: "ti-practice", nav: tt("discover.tiNavPractice") },
+      { icon: "⚠️", title: pf.title, body: pitfalls },
+      { icon: "🔑", title: tt("discover.tiSignalWords"), body: `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>` },
+      { icon: "🧭", title: tt("discover.tiDialogs"), body: dialogsHtml, id: "ti-dialogs", nav: tt("discover.tiNavDialogs") },
+    ];
+
+    // Sprungmarken-Leiste (wie hist-nav/sz-nav): bei dieser langen Erklärseite
+    // springt man direkt zu den Hauptlandmarken, statt endlos zu scrollen.
+    const tiNav = `
+      <nav class="ti-nav" aria-label="${esc(tt("discover.tiNavLabel"))}">
+        ${sections.filter((s) => s.id && s.nav).map((s) => `<a class="ti-nav__chip" href="#${s.id}" data-action="scroll-to" data-target="${s.id}">${s.icon} ${esc(s.nav)}</a>`).join("")}
+      </nav>`;
+
     return `
       <section class="screen">
         ${hmTopbar("⏳ Tiempos", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
         ${moduleShareBtn("tiempos")}
+        ${tiNav}
 
-        ${sect("↔️", t.title, timeline)}
-        ${sect("🪄", ep.title, easyPast)}
-        ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
-        ${sect("⏯️", c.title, continuous)}
-        ${sect("⚖️", iv.title, indefVsImperf)}
-        ${sect("💪", sp.title, strongPast)}
-        ${sect("🧩", pp.title, participles)}
-        ${sect("🗣️", im.title, imperative)}
-        ${sect("📦", hy.title, hayBlock)}
-        ${sect("🧳", sc.title, scenarios)}
-        ${sect("⚠️", pf.title, pitfalls)}
-        ${sect("🔑", tt("discover.tiSignalWords"), `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
-        ${sect("🧭", tt("discover.tiDialogs"), dialogsHtml)}
+        ${sections.map((s) => sect(s.icon, s.title, s.body, s.id)).join("")}
 
         <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
           ${esc(tt("discover.tiPracticeTenses"))} <span class="cta__count">${esc(tt("home.tileCards", { n: vm.cardCount }))}</span>

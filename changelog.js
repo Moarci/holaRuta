@@ -22,6 +22,34 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.38.0",
+      date: "2026-06-17",
+      title: "Conjugación: Erklärseite jetzt auch auf Englisch",
+      items: [
+        "🇬🇧 Die Konjugations-Erklärseite (Conjugación) war im englischen Modus noch komplett deutsch (Einleitung, Muster „-ar/-er/-ir“, unregelmäßige Verben, Merkhilfen und der Wegbeschreibungs-Dialog). Jetzt ist die ganze Seite sauber zweisprachig.",
+        "✨ Bei den unregelmäßigen Verben stand außerdem – wie zuvor auf der Tiempos-Seite – die Übersetzung doppelt; der spanische Begriff bleibt jetzt stehen, die Bedeutung darunter wechselt mit der Sprache.",
+      ],
+    },
+    {
+      version: "1.37.0",
+      date: "2026-06-17",
+      title: "Tiempos: Schnellsprung-Navigation & Feinschliff",
+      items: [
+        "🧭 Die lange Zeiten-Seite (Tiempos) hat oben jetzt eine Sprungmarken-Leiste: ein Tipp bringt dich direkt zu Zeitformen, Tricks, Verlaufsform, Indef./Imperf., Unregelmäßig, Befehlen, Praxis oder Dialogen – kein endloses Scrollen mehr.",
+        "🇬🇧 Englisch-Korrekturen auf der Tiempos-Seite: Bei den Zeitform-Karten und den unregelmäßigen Verben stand die Beschreibung doppelt (und der spanische Begriff fehlte); beim Vergleich „Indefinido oder Imperfecto“ waren die Stichpunkte noch auf Deutsch. Beides ist jetzt sauber übersetzt.",
+      ],
+    },
+    {
+      version: "1.36.0",
+      date: "2026-06-16",
+      title: "Tiempos: Vergangenheits-Trick mit dem Gerundium",
+      items: [
+        "⏪ Neuer Abschnitt auf der Zeiten-Seite (Tiempos) direkt nach „Gerade jetzt: estar + Gerundio“: der Gerundio-Trick rückwärts. „estaba + Gerundio“ (z.B. „Estaba esperando el bus“) sagt, was in einem Moment der Vergangenheit gerade lief – das Gerundio bleibt gleich, nur estar wandert in die Vergangenheit.",
+        "🇩🇪🇬🇧 Mit Mini-Vergleich (jetzt ↔ damals), Formen-Tabelle, Reise-Beispielen (Hintergrund + Ereignis im Indefinido) und einer Notiz zur Abgrenzung „estuve + Gerundio“ – auf Deutsch und Englisch.",
+        "🃏 Dazu zwei neue Übungskarten im Bereich Tiempos zum „estaba + Gerundio“-Trick.",
+      ],
+    },
+    {
       version: "1.35.0",
       date: "2026-06-16",
       title: "Tiempos: der einfache Vergangenheits-Trick",

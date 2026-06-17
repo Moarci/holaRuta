@@ -1216,14 +1216,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hist-banner__sub { display: block; font-size: 0.82rem; opacity: 0.9; line-height: 1.35; margin-top: 1px; }
 .hist-banner__chev { flex-shrink: 0; font-size: 1.3rem; opacity: 0.8; }
 
-/* Sprungmarken-Leiste (wie sz-nav). */
-.hist-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.hist-nav__chip {
+/* Sprungmarken-Leiste: gemeinsame Basis für Historia (.hist-nav),
+   Tiempos (.ti-nav) und Spickzettel (.sz-nav). Die Farbverlauf-Kante der
+   Spickzettel-Chips kommt zusätzlich im SPICKZETTEL-Abschnitt dazu. */
+.hist-nav, .ti-nav, .sz-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip, .ti-nav__chip, .sz-nav__chip {
   display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
   font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
   background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
 }
-.hist-nav__chip:active { transform: scale(0.96); }
+.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active { transform: scale(0.96); }
+/* Angesprungene Abschnitte nicht bündig an den oberen Rand kleben lassen. */
+.cinfo-sect { scroll-margin-top: 12px; }
 
 /* Block-Überschriften. */
 .hist-block { margin-top: 22px; scroll-margin-top: 12px; }
@@ -2518,14 +2522,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .route__bus { transition: none; } }
 
 /* ====================== SPICKZETTEL (Survival-Schnellzugriff) ====================== */
-.sz-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+/* sz-nav teilt Basis & :active mit .hist-nav/.ti-nav (siehe Sprungmarken-Leiste);
+   hier kommt nur die farbige Verlaufs-Kante der Chips dazu. */
 .sz-nav__chip {
-  display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
-  font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
-  background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
   border-left: 4px solid; border-image: linear-gradient(var(--from), var(--to)) 1;
 }
-.sz-nav__chip:active { transform: scale(0.96); }
 .sz-group { margin-top: 18px; scroll-margin-top: 12px; }
 .sz-group__h {
   margin: 0 0 8px; padding-left: 10px; font-family: var(--font-display); font-weight: 800;
@@ -3418,6 +3419,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tiSignalWords: "Signalwörter: woran du die Zeit erkennst",
     tiDialogs: "Reisedialoge: die Zeiten im Gespräch",
     tiPracticeTenses: "Jetzt üben: Zeiten",
+    tiNavLabel: "Schnellsprung zu den Abschnitten",
+    tiNavTenses: "Zeitformen",
+    tiNavTricks: "Tricks",
+    tiNavContinuous: "Verlaufsform",
+    tiNavCompare: "Indef./Imperf.",
+    tiNavIrregular: "Unregelmäßig",
+    tiNavCommands: "Befehle",
+    tiNavPractice: "Praxis",
+    tiNavDialogs: "Dialoge",
 
     // Diálogos
     dlgUnavailable: "Gerade keine Dialoge verfügbar.",
@@ -3704,6 +3714,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tiSignalWords: "Signal words: how to spot the tense",
     tiDialogs: "Travel dialogues: the tenses in conversation",
     tiPracticeTenses: "Practise now: tenses",
+    tiNavLabel: "Quick jump to the sections",
+    tiNavTenses: "Tenses",
+    tiNavTricks: "Tricks",
+    tiNavContinuous: "Continuous",
+    tiNavCompare: "Indef./Imperf.",
+    tiNavIrregular: "Irregular",
+    tiNavCommands: "Commands",
+    tiNavPractice: "Practice",
+    tiNavDialogs: "Dialogues",
 
     dlgUnavailable: "No dialogues available right now.",
     dlgNoSpeak: "Your device can't read aloud – the conversations still work (for reading along).",
@@ -4736,6 +4755,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tp66: { e: "Debería tomar un taxi, ya es de noche.", d: "Sie sollten ein Taxi nehmen, es ist schon dunkel.", dEn: "You should take a taxi, it's already dark.", s: "Jemandem einen vorsichtigen Rat geben.", sEn: "Giving someone a gentle piece of advice.", n: "debería (von deber) = sollte – die höfliche Art, einen Rat zu geben.", nEn: "debería (from deber) = should – the polite way to give advice." },
     tp67: { e: "Ya he pagado la cuenta, gracias.", d: "Ich habe die Rechnung schon bezahlt, danke.", dEn: "I've already paid the bill, thanks.", s: "Im Restaurant klarstellen, dass schon bezahlt ist.", sEn: "Making clear at the restaurant that it's already paid.", n: "Der Trick: haber (he) + Partizip, ganz regelmäßig (pagar → pagado, -ar → -ado). Nur haber wird gebeugt – das Gegenstück zu „voy a + Infinitiv“.", nEn: "The trick: haber (he) + participle, perfectly regular (pagar → pagado, -ar → -ado). Only haber changes – the mirror of \"voy a + infinitive\"." },
     tp68: { e: "Hemos reservado dos noches a tu nombre.", d: "Wir haben zwei Nächte auf deinen Namen gebucht.", dEn: "We've booked two nights in your name.", s: "An der Rezeption die Buchung bestätigen.", sEn: "Confirming the booking at reception.", n: "wir-Form des Tricks: hemos + Partizip (reservar → reservado). Das Hauptverb bleibt fest, nur haber ändert sich.", nEn: "We-form of the trick: hemos + participle (reservar → reservado). The main verb stays fixed, only haber changes." },
+    tp69: { e: "Estaba esperando el bus cuando empezó a llover.", d: "Ich wartete gerade auf den Bus, als es zu regnen anfing.", dEn: "I was waiting for the bus when it started to rain.", s: "Erzählen, was gerade lief, als etwas dazwischenkam.", sEn: "Telling what was going on when something interrupted.", n: "estaba + Gerundio = was gerade im Gange war (Hintergrund). Das Gerundio bleibt wie bei estoy esperando, nur estar steht in der Vergangenheit; das Ereignis dazu kommt ins Indefinido (empezó).", nEn: "estaba + gerund = what was going on (background). The gerund is the same as in estoy esperando, only estar is in the past; the event itself goes in the Indefinido (empezó)." },
+    tp70: { e: "Estábamos buscando la terminal y nos perdimos.", d: "Wir suchten gerade den Busbahnhof und verirrten uns.", dEn: "We were looking for the bus station and got lost.", s: "Eine kleine Reisepanne erzählen.", sEn: "Telling a little travel mishap.", n: "Derselbe Trick wie estamos buscando – nur estar in der Vergangenheit (estábamos). Das Gerundio buscando bleibt gleich.", nEn: "Same trick as estamos buscando – just estar in the past (estábamos). The gerund buscando stays the same." },
 
     // ===================== FARBEN =====================
     col01: { e: "¿Tiene esta camiseta en rojo?", d: "Haben Sie dieses T-Shirt in Rot?", dEn: "Do you have this T-shirt in red?", s: "Beim Klamotten-Kauf am Markt oder im Laden.", sEn: "When buying clothes at the market or shop.", n: "Farbe steht meist nach dem Nomen: una mochila roja, una bici roja.", nEn: "The colour usually comes after the noun: una mochila roja, una bici roja." },
@@ -5644,6 +5665,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // ---- Vergangenheits-Trick: he + Partizip (regelmäßig, Gegenstück zu „voy a + Infinitiv") ----
     { id: "tp67", cat: "tiempos", lvl: 2, de: "Ich habe die Rechnung bezahlt", en: "I've paid the bill", es: "He pagado la cuenta", tip: "e pa-GA-do la KUEN-ta – he + Partizip, der einfache Vergangenheits-Trick (pagar → pagado)", tipEn: "e pa-GA-do la KUEN-ta – he + participle, the easy past trick (pagar → pagado)" },
     { id: "tp68", cat: "tiempos", lvl: 2, de: "Wir haben zwei Nächte gebucht", en: "We've booked two nights", es: "Hemos reservado dos noches", tip: "E-mos re-ser-WA-do – nur haber wird gebeugt (reservar → reservado)", tipEn: "E-mos re-ser-WA-do – only haber changes (reservar → reservado)" },
+    // ---- Vergangenheits-Trick mit Gerundium: estaba + Gerundio (was gerade lief) ----
+    { id: "tp69", cat: "tiempos", lvl: 2, de: "Ich wartete gerade auf den Bus", en: "I was waiting for the bus", es: "Estaba esperando el bus", tip: "es-TA-ba es-pe-RAN-do – estaba + Gerundio = was gerade lief (Vergangenheit)", tipEn: "es-TA-ba es-pe-RAN-do – estaba + gerund = what was going on (past)" },
+    { id: "tp70", cat: "tiempos", lvl: 2, de: "Wir suchten gerade den Busbahnhof", en: "We were looking for the bus station", es: "Estábamos buscando la terminal", tip: "es-TA-ba-mos bus-KAN-do – nur estar wandert in die Vergangenheit, das Gerundio bleibt", tipEn: "es-TA-ba-mos bus-KAN-do – only estar moves to the past, the gerund stays" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
@@ -6479,6 +6503,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   //   example  = Mini-Dialog Wegbeschreibung, der die Endungen in Aktion zeigt
   const CONJUGATION = {
     intro: "Spanische Verben ändern ihre Endung je nach Person – und weil die Endung schon verrät, wer gemeint ist, lässt man yo, tú & Co. meistens weg. „Doblas a la derecha“ heißt also ganz ohne ‚du‘: Du biegst rechts ab. Genau deshalb brauchst du Konjugation z. B. bei der Wegbeschreibung: Wer dir den Weg erklärt, spricht dich in der du- oder Sie-Form an – und du erkennst das nur an der Endung.",
+    introEn: "Spanish verbs change their ending depending on the person – and because the ending already tells you who's meant, you usually drop yo, tú and so on. So \"Doblas a la derecha\" means, with no 'you' at all: You turn right. That's exactly why you need conjugation when asking for directions, for instance: whoever explains the way addresses you in the tú or usted form – and you can only tell from the ending.",
     persons: [
       { es: "yo", de: "ich", en: "I" },
       { es: "tú", de: "du", en: "you" },
@@ -6487,34 +6512,37 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       { es: "ustedes / ellos / ellas", de: "ihr & sie (Mehrzahl)", en: "you all & they (plural)" },
     ],
     personsNote: "In Lateinamerika sagt man für „ihr“ immer ustedes – das Schulbuch-„vosotros“ hörst du dort nicht. Praktisch: usted(es) benutzt dieselbe Verbform wie er/sie.",
+    personsNoteEn: "In Latin America you always say ustedes for \"you all\" – the textbook \"vosotros\" isn't used there. Handy: usted(es) takes the same verb form as he/she.",
     tableLabels: ["yo", "tú", "él/ella/usted", "nosotros", "ustedes/ellos"],
     regular: [
-      { title: "-ar · doblar (abbiegen)", forms: ["doblo", "doblas", "dobla", "doblamos", "doblan"],
-        like: "Genauso gehen: caminar (laufen), cruzar (überqueren), tomar (nehmen), hablar (sprechen)." },
-      { title: "-er · comer (essen)", forms: ["como", "comes", "come", "comemos", "comen"],
-        like: "Genauso gehen: beber (trinken), comprender (verstehen), vender (verkaufen)." },
-      { title: "-ir · vivir (wohnen/leben)", forms: ["vivo", "vives", "vive", "vivimos", "viven"],
-        like: "Fast wie -er, nur „wir“ = -imos. Genauso: subir (hinauf-/einsteigen), abrir (öffnen)." },
+      { title: "-ar · doblar (abbiegen)", titleEn: "-ar · doblar (to turn)", forms: ["doblo", "doblas", "dobla", "doblamos", "doblan"],
+        like: "Genauso gehen: caminar (laufen), cruzar (überqueren), tomar (nehmen), hablar (sprechen).", likeEn: "These work the same: caminar (to walk), cruzar (to cross), tomar (to take), hablar (to speak)." },
+      { title: "-er · comer (essen)", titleEn: "-er · comer (to eat)", forms: ["como", "comes", "come", "comemos", "comen"],
+        like: "Genauso gehen: beber (trinken), comprender (verstehen), vender (verkaufen).", likeEn: "These work the same: beber (to drink), comprender (to understand), vender (to sell)." },
+      { title: "-ir · vivir (wohnen/leben)", titleEn: "-ir · vivir (to live)", forms: ["vivo", "vives", "vive", "vivimos", "viven"],
+        like: "Fast wie -er, nur „wir“ = -imos. Genauso: subir (hinauf-/einsteigen), abrir (öffnen).", likeEn: "Almost like -er, only \"we\" = -imos. Same: subir (to go up / get on), abrir (to open)." },
     ],
     regularNote: "Merkhilfe: Stamm behalten, Endung tauschen. yo → -o, tú → -as/-es, er/sie/usted → -a/-e, wir → -amos/-emos/-imos, ihr & sie → -an/-en.",
+    regularNoteEn: "Memory aid: keep the stem, swap the ending. yo → -o, tú → -as/-es, he/she/usted → -a/-e, we → -amos/-emos/-imos, you all & they → -an/-en.",
     irregular: [
-      { verb: "ir", verbDe: "gehen / fahren", verbEn: "to go", forms: ["voy", "vas", "va", "vamos", "van"],
+      { verb: "ir", de: "gehen / fahren", en: "to go", forms: ["voy", "vas", "va", "vamos", "van"],
         note: "Das wichtigste Reiseverb – komplett unregelmäßig. ¡Vamos! = Los geht's!", noteEn: "The most important travel verb – completely irregular. ¡Vamos! = Let's go!" },
-      { verb: "estar", verbDe: "sein (Ort & Zustand)", verbEn: "to be (location & state)", forms: ["estoy", "estás", "está", "estamos", "están"],
+      { verb: "estar", de: "sein (Ort & Zustand)", en: "to be (location & state)", forms: ["estoy", "estás", "está", "estamos", "están"],
         note: "¿Dónde está …? – DIE Frage der Wegbeschreibung.", noteEn: "¿Dónde está …? – THE question for asking directions." },
-      { verb: "ser", verbDe: "sein (Eigenschaft & Herkunft)", verbEn: "to be (quality & origin)", forms: ["soy", "eres", "es", "somos", "son"],
+      { verb: "ser", de: "sein (Eigenschaft & Herkunft)", en: "to be (quality & origin)", forms: ["soy", "eres", "es", "somos", "son"],
         note: "Soy de Alemania = Ich komme aus Deutschland.", noteEn: "Soy de Alemania = I'm from Germany." },
-      { verb: "tener", verbDe: "haben", verbEn: "to have", forms: ["tengo", "tienes", "tiene", "tenemos", "tienen"],
+      { verb: "tener", de: "haben", en: "to have", forms: ["tengo", "tienes", "tiene", "tenemos", "tienen"],
         note: "Tengo una reserva = Ich habe eine Reservierung.", noteEn: "Tengo una reserva = I have a reservation." },
-      { verb: "poder", verbDe: "können", verbEn: "to be able to", forms: ["puedo", "puedes", "puede", "podemos", "pueden"],
+      { verb: "poder", de: "können", en: "to be able to", forms: ["puedo", "puedes", "puede", "podemos", "pueden"],
         note: "Stammwechsel o→ue (außer wir). ¿Puede ayudarme? = Können Sie mir helfen?", noteEn: "Stem change o→ue (except we). ¿Puede ayudarme? = Can you help me?" },
-      { verb: "querer", verbDe: "wollen / möchten", verbEn: "to want", forms: ["quiero", "quieres", "quiere", "queremos", "quieren"],
+      { verb: "querer", de: "wollen / möchten", en: "to want", forms: ["quiero", "quieres", "quiere", "queremos", "quieren"],
         note: "Stammwechsel e→ie (außer wir). Quiero ir a la playa = Ich will an den Strand.", noteEn: "Stem change e→ie (except we). Quiero ir a la playa = I want to go to the beach." },
-      { verb: "seguir", verbDe: "folgen / weitergehen", verbEn: "to follow / to carry on", forms: ["sigo", "sigues", "sigue", "seguimos", "siguen"],
+      { verb: "seguir", de: "folgen / weitergehen", en: "to follow / to carry on", forms: ["sigo", "sigues", "sigue", "seguimos", "siguen"],
         note: "Stammwechsel e→i. Sigues derecho = Du gehst geradeaus weiter.", noteEn: "Stem change e→i. Sigues derecho = You carry straight on." },
     ],
     example: {
       title: "So klingt das bei der Wegbeschreibung",
+      titleEn: "How it sounds when asking for directions",
       lines: [
         { es: "¿Cómo llego a la terminal?", de: "Wie komme ich zum Busbahnhof? (llegar, ich-Form als Frage)", en: "How do I get to the bus station? (llegar, I-form as a question)" },
         { es: "Caminas dos cuadras, doblas a la derecha y sigues derecho.", de: "Du gehst zwei Blocks, biegst rechts ab und gehst geradeaus weiter.", en: "You go two blocks, turn right and carry straight on." },
@@ -6534,6 +6562,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   //   tableLabels = kompakte Personen-Spalte ALLER Zeit-Tabellen
   //   tenses    = die wichtigsten Reise-Zeitformen; je Form: forms (5), recipe
   //               (Bildung), signals (Signalwörter), when (Gebrauch), examples (3 Sätze)
+  //   pastContinuous = estaba + Gerundio (was gerade lief) – derselbe Trick rückwärts
   //   continuous = estar + Gerundio (Verlaufsform) inkl. unregelmäßiger Gerundien
   //   strongPast = die 7 häufigsten unregelmäßigen Vergangenheiten (pretéritos fuertes)
   //   participles = unregelmäßige Partizipien fürs Perfekt
@@ -6561,7 +6590,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     },
     tableLabels: ["yo", "tú", "él/ella/usted", "nosotros", "ustedes/ellos"],
     tenses: [
-      { name: "Presente", nameDe: "Gegenwart – was jetzt oder allgemein gilt", nameEn: "Present – what's true now or in general",
+      { name: "Presente", de: "Gegenwart – was jetzt oder allgemein gilt", en: "Present – what's true now or in general",
         forms: ["tomo", "tomas", "toma", "tomamos", "toman"],
         recipe: "Stamm + -o/-as/-a/-amos/-an (-ar) bzw. -o/-es/-e/-emos/-en (-er/-ir).",
         recipeEn: "Stem + -o/-as/-a/-amos/-an (-ar) or -o/-es/-e/-emos/-en (-er/-ir).",
@@ -6573,7 +6602,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           { es: "El mercado abre a las siete.", de: "Der Markt öffnet um sieben.", en: "The market opens at seven." },
           { es: "¿Cuánto cuesta la habitación?", de: "Was kostet das Zimmer?", en: "How much is the room?" },
         ] },
-      { name: "Pretérito perfecto", nameDe: "gerade eben passiert / Erfahrung", nameEn: "just happened / experience",
+      { name: "Pretérito perfecto", de: "gerade eben passiert / Erfahrung", en: "just happened / experience",
         forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
         recipe: "haber (he/has/ha/hemos/han) + Partizip (-ado bei -ar, -ido bei -er/-ir).",
         recipeEn: "haber (he/has/ha/hemos/han) + participle (-ado for -ar, -ido for -er/-ir).",
@@ -6585,7 +6614,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           { es: "¿Alguna vez has probado el cuy?", de: "Hast du schon mal Meerschweinchen probiert?", en: "Have you ever tried guinea pig?" },
           { es: "Hoy he caminado mucho.", de: "Heute bin ich viel gelaufen.", en: "I walked a lot today." },
         ] },
-      { name: "Pretérito indefinido", nameDe: "Vergangenheit, abgeschlossen", nameEn: "past, completed",
+      { name: "Pretérito indefinido", de: "Vergangenheit, abgeschlossen", en: "past, completed",
         forms: ["tomé", "tomaste", "tomó", "tomamos", "tomaron"],
         recipe: "Stamm + -é/-aste/-ó/-amos/-aron (-ar) bzw. -í/-iste/-ió/-imos/-ieron (-er/-ir).",
         recipeEn: "Stem + -é/-aste/-ó/-amos/-aron (-ar) or -í/-iste/-ió/-imos/-ieron (-er/-ir).",
@@ -6597,7 +6626,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           { es: "Llegamos a Cusco el lunes.", de: "Wir kamen am Montag in Cusco an.", en: "We arrived in Cusco on Monday." },
           { es: "¿Qué te pareció el tour?", de: "Wie fandest du die Tour?", en: "What did you think of the tour?" },
         ] },
-      { name: "Imperfecto", nameDe: "früher / Hintergrund / Gewohnheit", nameEn: "back then / background / habit",
+      { name: "Imperfecto", de: "früher / Hintergrund / Gewohnheit", en: "back then / background / habit",
         forms: ["tomaba", "tomabas", "tomaba", "tomábamos", "tomaban"],
         recipe: "Stamm + -aba/-abas/-aba/-ábamos/-aban (-ar) bzw. -ía/-ías/-ía/-íamos/-ían (-er/-ir). Nur 3 unregelmäßig: ser → era, ir → iba, ver → veía.",
         recipeEn: "Stem + -aba/-abas/-aba/-ábamos/-aban (-ar) or -ía/-ías/-ía/-íamos/-ían (-er/-ir). Only 3 are irregular: ser → era, ir → iba, ver → veía.",
@@ -6609,7 +6638,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           { es: "El hostal era viejo pero limpio.", de: "Das Hostel war alt, aber sauber.", en: "The hostel was old but clean." },
           { es: "Hacía mucho calor en la costa.", de: "An der Küste war es sehr heiß.", en: "It was very hot on the coast." },
         ] },
-      { name: "Futuro próximo", nameDe: "Zukunft, der einfache Trick: ir a + Infinitiv", nameEn: "Future, the easy trick: ir a + infinitive",
+      { name: "Futuro próximo", de: "Zukunft, der einfache Trick: ir a + Infinitiv", en: "Future, the easy trick: ir a + infinitive",
         forms: ["voy a tomar", "vas a tomar", "va a tomar", "vamos a tomar", "van a tomar"],
         recipe: "ir (voy/vas/va/vamos/van) + a + Infinitiv – du beugst nur ir, das zweite Verb bleibt im Infinitiv.",
         recipeEn: "ir (voy/vas/va/vamos/van) + a + infinitive – you only conjugate ir, the second verb stays in the infinitive.",
@@ -6621,7 +6650,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           { es: "Vamos a quedarnos dos noches.", de: "Wir bleiben zwei Nächte.", en: "We're staying two nights." },
           { es: "¿Vas a venir con nosotros?", de: "Kommst du mit uns mit?", en: "Are you coming with us?" },
         ] },
-      { name: "Futuro simple", nameDe: "Zukunft mit einer Endung für alle", nameEn: "Future with one ending for all",
+      { name: "Futuro simple", de: "Zukunft mit einer Endung für alle", en: "Future with one ending for all",
         forms: ["tomaré", "tomarás", "tomará", "tomaremos", "tomarán"],
         recipe: "Infinitiv + -é/-ás/-á/-emos/-án – für -ar/-er/-ir gleich. Ein paar Stämme sind kurz: tener → tendré, hacer → haré, poder → podré.",
         recipeEn: "Infinitive + -é/-ás/-á/-emos/-án – the same for -ar/-er/-ir. A few stems are short: tener → tendré, hacer → haré, poder → podré.",
@@ -6657,6 +6686,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         { es: "¿Qué estás comiendo? Se ve rico.", de: "Was isst du gerade? Sieht lecker aus.", en: "What are you eating? It looks tasty." },
       ],
     },
+    // Derselbe Gerundio-Trick, nur rückwärts: estaba + Gerundio = was in einem
+    // Moment der Vergangenheit gerade lief. Das Gerundio bleibt identisch, nur
+    // estar wandert ins Imperfecto. Knüpft an Imperfecto (Hintergrund/„Film") an.
+    pastContinuous: {
+      title: "Was gerade lief: estaba + Gerundio",
+      titleEn: "What was happening: estaba + Gerundio",
+      intro: "Der Gerundio-Trick funktioniert auch rückwärts: Lass das Gerundio einfach stehen und setz nur estar in die Vergangenheit (estaba …). So sagst du, was in einem Moment früher gerade im Gange war – „ich war gerade dabei zu …“. Ideal als Hintergrund einer Geschichte: Etwas lief schon, als plötzlich etwas anderes passierte.",
+      introEn: "The Gerundio trick also works backwards: just keep the Gerundio and put estar into the past (estaba …). That's how you say what was going on at an earlier moment – \"I was in the middle of …\". Perfect as the background of a story: something was already happening when something else suddenly occurred.",
+      mirror: [
+        { es: "estoy esperando", de: "jetzt: ich warte gerade", en: "now: I'm waiting" },
+        { es: "estaba esperando", de: "damals: ich wartete gerade", en: "back then: I was waiting" },
+      ],
+      forms: ["estaba tomando", "estabas tomando", "estaba tomando", "estábamos tomando", "estaban tomando"],
+      note: "estaba ist einfach estar im Imperfecto (estaba/estabas/estaba/estábamos/estaban) – die Gerundien (-ando/-iendo, durmiendo, leyendo …) bleiben exakt dieselben wie oben. Das passende Ereignis dazu steht im Indefinido („… cuando empezó a llover“). Für eine abgeschlossene Dauer mit Zeitspanne gäbe es estuve + Gerundio („Estuve esperando dos horas“ = ich wartete zwei Stunden lang), aber fürs Erzählen brauchst du fast immer estaba.", noteEn: "estaba is simply estar in the imperfect (estaba/estabas/estaba/estábamos/estaban) – the gerunds (-ando/-iendo, durmiendo, leyendo …) stay exactly the same as above. The matching event goes in the Indefinido (\"… cuando empezó a llover\"). For a completed stretch with a set duration there's estuve + gerund (\"Estuve esperando dos horas\" = I waited for two hours), but for telling stories you'll almost always want estaba.",
+      examples: [
+        { es: "Estaba esperando el bus cuando empezó a llover.", de: "Ich wartete gerade auf den Bus, als es zu regnen anfing.", en: "I was waiting for the bus when it started to rain." },
+        { es: "Estábamos buscando la terminal y nos perdimos.", de: "Wir suchten gerade den Busbahnhof und verirrten uns.", en: "We were looking for the bus station and got lost." },
+        { es: "¿Qué estabas haciendo cuando te llamé?", de: "Was hast du gerade gemacht, als ich dich anrief?", en: "What were you doing when I called you?" },
+      ],
+    },
     // Der einfache Vergangenheits-Trick: he + Partizip – das exakte Gegenstück zum
     // Zukunfts-Trick „voy a + Infinitiv". In beiden Fällen wird nur ein winziges
     // Hilfswort gebeugt (ir bzw. haber), das Hauptverb bleibt in EINER festen Form.
@@ -6688,13 +6737,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       intro: "Ein paar Schlüssel-Verben haben eine eigene Vergangenheit – mit verändertem Stamm und OHNE Akzent. Die ich- und die er/sie-Form enden hier auf -e/-o (nicht -é/-ó). Diese sieben hörst du ständig:",
       introEn: "A few key verbs have their own past – with a changed stem and NO accent. Here the I-form and the he/she-form end in -e/-o (not -é/-ó). You'll hear these seven all the time:",
       verbs: [
-        { verb: "ir / ser", verbDe: "gehen/fahren / sein", verbEn: "to go / to be", forms: ["fui", "fuiste", "fue", "fuimos", "fueron"] },
-        { verb: "estar", verbDe: "sein (Ort/Zustand)", verbEn: "to be (location/state)", forms: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvieron"] },
-        { verb: "tener", verbDe: "haben", verbEn: "to have", forms: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvieron"] },
-        { verb: "hacer", verbDe: "machen / tun", verbEn: "to do / to make", forms: ["hice", "hiciste", "hizo", "hicimos", "hicieron"] },
-        { verb: "poder", verbDe: "können", verbEn: "to be able to", forms: ["pude", "pudiste", "pudo", "pudimos", "pudieron"] },
-        { verb: "decir", verbDe: "sagen", verbEn: "to say", forms: ["dije", "dijiste", "dijo", "dijimos", "dijeron"] },
-        { verb: "venir", verbDe: "kommen", verbEn: "to come", forms: ["vine", "viniste", "vino", "vinimos", "vinieron"] },
+        { verb: "ir / ser", de: "gehen/fahren / sein", en: "to go / to be", forms: ["fui", "fuiste", "fue", "fuimos", "fueron"] },
+        { verb: "estar", de: "sein (Ort/Zustand)", en: "to be (location/state)", forms: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvieron"] },
+        { verb: "tener", de: "haben", en: "to have", forms: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvieron"] },
+        { verb: "hacer", de: "machen / tun", en: "to do / to make", forms: ["hice", "hiciste", "hizo", "hicimos", "hicieron"] },
+        { verb: "poder", de: "können", en: "to be able to", forms: ["pude", "pudiste", "pudo", "pudimos", "pudieron"] },
+        { verb: "decir", de: "sagen", en: "to say", forms: ["dije", "dijiste", "dijo", "dijimos", "dijeron"] },
+        { verb: "venir", de: "kommen", en: "to come", forms: ["vine", "viniste", "vino", "vinimos", "vinieron"] },
       ],
       note: "Eselsbrücke: ir und ser teilen sich fui/fue – ob „ich ging“ oder „ich war“, verrät der Zusammenhang. Und „hizo“ schreibt man mit z (vor o), gesprochen wie hace.", noteEn: "Memory aid: ir and ser share fui/fue – whether \"I went\" or \"I was\", context tells you. And \"hizo\" is written with z (before o), pronounced like hace.",
     },
@@ -6761,6 +6810,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           "Eine Kette von Aktionen: Bajé, pagué y salí.",
           "Mit klarem Zeitpunkt: ayer, el lunes, a las ocho.",
         ],
+        pointsEn: [
+          "Completed events: Llegué, tomé el bus, perdí el celular.",
+          "A chain of actions: Bajé, pagué y salí.",
+          "With a clear point in time: ayer, el lunes, a las ocho.",
+        ],
       },
       imperf: {
         label: "Imperfecto – wie es war (Film im Hintergrund)",
@@ -6769,6 +6823,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           "Beschreibungen: El cuarto era pequeño, hacía frío.",
           "Gewohnheiten früher: Siempre viajábamos en bus.",
           "Uhrzeit, Alter, Gefühl: Eran las diez, estaba cansado.",
+        ],
+        pointsEn: [
+          "Descriptions: El cuarto era pequeño, hacía frío.",
+          "Past habits: Siempre viajábamos en bus.",
+          "Time, age, feelings: Eran las diez, estaba cansado.",
         ],
       },
       combined: { es: "Cuando llegué al hostal, llovía y no había luz.", de: "Als ich am Hostel ankam, regnete es und es gab kein Licht.", en: "When I arrived at the hostel, it was raining and there was no light." },
@@ -6829,7 +6888,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dialogs: [
       {
         title: "Smalltalk: „¿Cómo te fue?“ (Rückblick)",
-        titleEn: "Small talk: „¿Cómo te fue?“ (looking back)",
+        titleEn: "Small talk: \"¿Cómo te fue?\" (looking back)",
         lines: [
           { es: "¿Cómo te fue en Bolivia?", de: "Wie ist es dir in Bolivien ergangen?", en: "How did you get on in Bolivia?" },
           { es: "¡Genial! Subí al salar de Uyuni. Hacía frío, pero el paisaje era increíble.", de: "Super! Ich war auf dem Salar de Uyuni. Es war kalt, aber die Landschaft war unglaublich.", en: "Great! I went to the Salar de Uyuni. It was cold, but the scenery was incredible." },
@@ -6840,7 +6899,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       },
       {
         title: "Pläne: „¿Qué vas a hacer?“ (Vorausblick)",
-        titleEn: "Plans: „¿Qué vas a hacer?“ (looking ahead)",
+        titleEn: "Plans: \"¿Qué vas a hacer?\" (looking ahead)",
         lines: [
           { es: "¿Qué vas a hacer mañana?", de: "Was wirst du morgen machen?", en: "What are you doing tomorrow?" },
           { es: "Voy a hacer una caminata y luego tomaré el bus a Cusco.", de: "Ich mache eine Wanderung und nehme dann den Bus nach Cusco.", en: "I'm doing a hike and then taking the bus to Cusco." },
@@ -14618,7 +14677,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if ((Number(level) || 1) >= 2) {
       const irr = (conjugation && conjugation.irregular) || [];
       irr.forEach((v) => {
-        pool.push({ verb: v.verb, hint: v.verb + " – " + v.verbDe, hintEn: v.verb + " – " + (v.verbEn || v.verbDe), forms: v.forms });
+        pool.push({ verb: v.verb, hint: v.verb + " – " + v.de, hintEn: v.verb + " – " + (v.en || v.de), forms: v.forms });
       });
     }
     return pool;
@@ -18085,6 +18144,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.38.0",
+      date: "2026-06-17",
+      title: "Conjugación: Erklärseite jetzt auch auf Englisch",
+      items: [
+        "🇬🇧 Die Konjugations-Erklärseite (Conjugación) war im englischen Modus noch komplett deutsch (Einleitung, Muster „-ar/-er/-ir“, unregelmäßige Verben, Merkhilfen und der Wegbeschreibungs-Dialog). Jetzt ist die ganze Seite sauber zweisprachig.",
+        "✨ Bei den unregelmäßigen Verben stand außerdem – wie zuvor auf der Tiempos-Seite – die Übersetzung doppelt; der spanische Begriff bleibt jetzt stehen, die Bedeutung darunter wechselt mit der Sprache.",
+      ],
+    },
+    {
+      version: "1.37.0",
+      date: "2026-06-17",
+      title: "Tiempos: Schnellsprung-Navigation & Feinschliff",
+      items: [
+        "🧭 Die lange Zeiten-Seite (Tiempos) hat oben jetzt eine Sprungmarken-Leiste: ein Tipp bringt dich direkt zu Zeitformen, Tricks, Verlaufsform, Indef./Imperf., Unregelmäßig, Befehlen, Praxis oder Dialogen – kein endloses Scrollen mehr.",
+        "🇬🇧 Englisch-Korrekturen auf der Tiempos-Seite: Bei den Zeitform-Karten und den unregelmäßigen Verben stand die Beschreibung doppelt (und der spanische Begriff fehlte); beim Vergleich „Indefinido oder Imperfecto“ waren die Stichpunkte noch auf Deutsch. Beides ist jetzt sauber übersetzt.",
+      ],
+    },
+    {
+      version: "1.36.0",
+      date: "2026-06-16",
+      title: "Tiempos: Vergangenheits-Trick mit dem Gerundium",
+      items: [
+        "⏪ Neuer Abschnitt auf der Zeiten-Seite (Tiempos) direkt nach „Gerade jetzt: estar + Gerundio“: der Gerundio-Trick rückwärts. „estaba + Gerundio“ (z.B. „Estaba esperando el bus“) sagt, was in einem Moment der Vergangenheit gerade lief – das Gerundio bleibt gleich, nur estar wandert in die Vergangenheit.",
+        "🇩🇪🇬🇧 Mit Mini-Vergleich (jetzt ↔ damals), Formen-Tabelle, Reise-Beispielen (Hintergrund + Ereignis im Indefinido) und einer Notiz zur Abgrenzung „estuve + Gerundio“ – auf Deutsch und Englisch.",
+        "🃏 Dazu zwei neue Übungskarten im Bereich Tiempos zum „estaba + Gerundio“-Trick.",
+      ],
+    },
+    {
       version: "1.35.0",
       date: "2026-06-16",
       title: "Tiempos: der einfache Vergangenheits-Trick",
@@ -19856,9 +19943,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der
   // Infoseiten Länderkunde (renderInfo) und Conjugación (renderConjugacion).
-  function sect(icon, title, body) {
+  function sect(icon, title, body, id) {
     return `
-      <div class="cinfo-sect">
+      <div class="cinfo-sect"${id ? ` id="${esc(id)}"` : ""}>
         <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
         ${body}
       </div>`;
@@ -21284,7 +21371,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <summary class="cinfo-dish__head">
             <span class="cinfo-dish__heart">
               <span class="cinfo-dish__name" lang="es">${esc(v.verb)}</span>
-              <span class="cinfo-dish__desc">${esc(v.verbDe)}</span>
+              <span class="cinfo-dish__desc">${esc(v.de)}</span>
             </span>
             <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
           </summary>
@@ -21604,7 +21691,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           <summary class="cinfo-dish__head">
             <span class="cinfo-dish__heart">
               <span class="cinfo-dish__name" lang="es">${esc(te.name)}</span>
-              <span class="cinfo-dish__desc">${esc(te.nameDe)}</span>
+              <span class="cinfo-dish__desc">${esc(te.de)}</span>
             </span>
             <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
           </summary>
@@ -21644,6 +21731,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       ${pairList(c.gerunds.map((x) => ({ es: x.inf + " → " + x.ger, de: x.de })), "es", "de")}
       ${lines(c.examples)}
       <p class="cinfo-text cj-note">${esc(c.note)}</p>`;
+
+    // estaba + Gerundio: derselbe Gerundio-Trick rückwärts – estar in der
+    // Vergangenheit. Mini-Vergleich (jetzt ↔ damals), Formen-Tabelle, Beispiele.
+    const pc = g.pastContinuous;
+    const pastContinuous = `
+      <p class="cinfo-text">${esc(pc.intro)}</p>
+      ${pairList(pc.mirror, "es", "de")}
+      ${table(pc.forms)}
+      ${lines(pc.examples)}
+      <p class="cinfo-text cj-note">${esc(pc.note)}</p>`;
 
     // Indefinido vs. Imperfecto: zwei Spalten-Blöcke mit Stichpunkten + ein
     // kombinierter Beispielsatz (Ereignis vor Hintergrund).
@@ -21685,7 +21782,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const strongPastBlocks = sp.verbs
       .map((v) => `
         <div class="cj-verb">
-          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.verbDe)}</span></h4>
+          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.de)}</span></h4>
           ${table(v.forms)}
         </div>`)
       .join("");
@@ -21730,25 +21827,41 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>`)
       .join("");
 
+    // Alle Abschnitte EINMAL definiert (eine Quelle der Wahrheit). Ein Abschnitt
+    // mit id + nav (Kurzlabel) ist per Sprungmarke erreichbar; ohne nav erscheint
+    // er nur im Fließtext. Reihenfolge der Sprungleiste = Reihenfolge der Seite.
+    const sections = [
+      { icon: "↔️", title: t.title, body: timeline },
+      { icon: "🪄", title: ep.title, body: easyPast, id: "ti-tricks", nav: tt("discover.tiNavTricks") },
+      { icon: "🕰️", title: tt("discover.tiTenses"), body: `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, id: "ti-tenses", nav: tt("discover.tiNavTenses") },
+      { icon: "⏯️", title: c.title, body: continuous, id: "ti-continuous", nav: tt("discover.tiNavContinuous") },
+      { icon: "⏪", title: pc.title, body: pastContinuous },
+      { icon: "⚖️", title: iv.title, body: indefVsImperf, id: "ti-compare", nav: tt("discover.tiNavCompare") },
+      { icon: "💪", title: sp.title, body: strongPast, id: "ti-irregular", nav: tt("discover.tiNavIrregular") },
+      { icon: "🧩", title: pp.title, body: participles },
+      { icon: "🗣️", title: im.title, body: imperative, id: "ti-commands", nav: tt("discover.tiNavCommands") },
+      { icon: "📦", title: hy.title, body: hayBlock },
+      { icon: "🧳", title: sc.title, body: scenarios, id: "ti-practice", nav: tt("discover.tiNavPractice") },
+      { icon: "⚠️", title: pf.title, body: pitfalls },
+      { icon: "🔑", title: tt("discover.tiSignalWords"), body: `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>` },
+      { icon: "🧭", title: tt("discover.tiDialogs"), body: dialogsHtml, id: "ti-dialogs", nav: tt("discover.tiNavDialogs") },
+    ];
+
+    // Sprungmarken-Leiste (wie hist-nav/sz-nav): bei dieser langen Erklärseite
+    // springt man direkt zu den Hauptlandmarken, statt endlos zu scrollen.
+    const tiNav = `
+      <nav class="ti-nav" aria-label="${esc(tt("discover.tiNavLabel"))}">
+        ${sections.filter((s) => s.id && s.nav).map((s) => `<a class="ti-nav__chip" href="#${s.id}" data-action="scroll-to" data-target="${s.id}">${s.icon} ${esc(s.nav)}</a>`).join("")}
+      </nav>`;
+
     return `
       <section class="screen">
         ${hmTopbar("⏳ Tiempos", "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
         ${moduleShareBtn("tiempos")}
+        ${tiNav}
 
-        ${sect("↔️", t.title, timeline)}
-        ${sect("🪄", ep.title, easyPast)}
-        ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
-        ${sect("⏯️", c.title, continuous)}
-        ${sect("⚖️", iv.title, indefVsImperf)}
-        ${sect("💪", sp.title, strongPast)}
-        ${sect("🧩", pp.title, participles)}
-        ${sect("🗣️", im.title, imperative)}
-        ${sect("📦", hy.title, hayBlock)}
-        ${sect("🧳", sc.title, scenarios)}
-        ${sect("⚠️", pf.title, pitfalls)}
-        ${sect("🔑", tt("discover.tiSignalWords"), `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
-        ${sect("🧭", tt("discover.tiDialogs"), dialogsHtml)}
+        ${sections.map((s) => sect(s.icon, s.title, s.body, s.id)).join("")}
 
         <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
           ${esc(tt("discover.tiPracticeTenses"))} <span class="cta__count">${esc(tt("home.tileCards", { n: vm.cardCount }))}</span>
@@ -23060,7 +23173,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // "verbos") und startet damit den gewohnten Lernfluss.
   function conjugacionVM() {
     return {
-      guide: data.CONJUGATION,
+      guide: loc(data.CONJUGATION),
       cardCount: data.CARDS.filter((c) => c.cat === "verbos").length,
       canDrill: conjugReady(), // Conjugador-Drill verfügbar (Modul geladen)?
     };

@@ -28,8 +28,8 @@ const FIX = {
     { title: "-ir · vivir (wohnen)", forms: ["vivo", "vives", "vive", "vivimos", "viven"] },
   ],
   irregular: [
-    { verb: "ir", verbDe: "gehen", forms: ["voy", "vas", "va", "vamos", "van"] },
-    { verb: "estar", verbDe: "sein", forms: ["estoy", "estás", "está", "estamos", "están"] },
+    { verb: "ir", de: "gehen", en: "to go", forms: ["voy", "vas", "va", "vamos", "van"] },
+    { verb: "estar", de: "sein", en: "to be", forms: ["estoy", "estás", "está", "estamos", "están"] },
   ],
 };
 
