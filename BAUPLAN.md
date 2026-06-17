@@ -104,16 +104,18 @@ Study-/SRS-Pfad schickt (wie `openRutaDelDia()` einen Pool übergibt).
 
 **Akzeptanz:** Preset startbar, nutzt vorhandene Flip/Type/Hören-Modi + SRS; offline.
 
-### 1.3 Lehrer-/Coordinator-/Hostel-PDF  · PAKET (kein Code) · **S je**
+### 1.3 Lehrer-/Coordinator-/Hostel-PDF  · PAKET (kein Code) · **S je** · ✅ UMGESETZT
 
-**Was:** 1–2-seitige PDFs mit fertigen Abläufen:
-- *Lehrer-PDF:* 10 Unterrichtsideen, je „Thema → 10 Karten → Kontext ansehen → Rollenspiel →
-  Real-Life Challenge" (z. B. Restaurant, Taxi, Markt).
-- *Coordinator-PDF:* „5-Minuten-Spanish-Icebreaker", Restaurant-Battle, Markt-Challenge.
-- *Hostel-PDF:* „Spanish Night" — Battle-Regeln + QR-Code-Aushang.
+**Was:** fertige Abläufe als **druckbare HTML-Handouts** (statt Binär-PDF — bleibt zero-dependency,
+offline, diffbar; PDF per Strg/Cmd+P):
+- *Lehrer-Anleitung:* Stundenaufbau + 10 Stunden-Rezepte (Thema → Karten/Kontext → Battle/Rollenspiel
+  → Real-Life Challenge).
+- *Coordinator-Karte:* „5-Minuten-Icebreaker", Restaurant-Battle, Markt-Challenge, Pre-Trip.
+- *Hostel-Aushang:* „Spanish Night" — 3 Schritte + QR-Platzhalter (QR einmalig extern erzeugen).
 
-**Dateien:** neue Markdown-Quellen unter `docs/` (z. B. `docs/lehrer-ideen.md`), PDF-Export extern.
-**Kein** Produktcode. Verweist auf vorhandene Features (Battle/Rollenspiel/Kontext/Spickzettel).
+**Geliefert:** [`docs/anleitungen/`](docs/anleitungen/index.html) — `index/lehrer/coordinator/hostel.html`
++ gemeinsames `handout.css`/`handout.js` (Sprachschalter DE·EN·ES, `@media print`). Dreisprachig,
+mit Hinweis, dass die App-Oberfläche selbst nur DE/EN ist. Verweist auf vorhandene Features.
 
 ---
 
@@ -212,7 +214,7 @@ schon den `localStorage`-Zustand) → Schüler zeigt/teilt seinen Stand.
 |---|---|---|---|---|
 | 1 | Cartagena/Colombia Destination-Pack (1.1) | 1 | S–M | macht App glaubwürdig für ersten Pilot |
 | 2 | Kuratierte Presets „Pre-Arrival/Survival" (1.2) | 1 | S | Schul-/Reise-Onboarding |
-| 3 | Lehrer-/Coordinator-/Hostel-PDF (1.3) | 1 | S | Vertriebsmaterial, kein Code |
+| 3 | Lehrer-/Coordinator-/Hostel-PDF (1.3) ✅ | 1 | S | Vertriebsmaterial, kein Code |
 | 4 | Challenges 10→30 (2.4) | 2 | S | Immersion-Kern, additiv |
 | 5 | Coordinator-Launcher (2.3) | 2 | S–M | Hostel-/Gruppen-Aktivität |
 | 6 | Edition-/Branding-Schalter (2.1) | 2 | M | Co-Branding für ECOS/WeRoad |

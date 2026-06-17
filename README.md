@@ -491,6 +491,24 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 
 ---
 
+## 🏫 Für Schulen, Reisen & Hostels
+
+Druckfertige Anleitungen (DE · EN · ES) für den Einsatz in Sprachschulen, auf Gruppenreisen und in Hostels liegen unter [`docs/anleitungen/`](docs/anleitungen/index.html) — im Browser öffnen, Sprache wählen, per **Strg/Cmd + P → „Als PDF speichern“** ausdrucken:
+
+- **[Für den Unterricht](docs/anleitungen/lehrer.html)** — Stundenaufbau + 10 Stunden-Rezepte für Lehrkräfte.
+- **[Für Reiseleiter](docs/anleitungen/coordinator.html)** — kleine Gruppen-Aktivitäten, in Sekunden startklar.
+- **[Hostel-Aushang „Spanish Night“](docs/anleitungen/hostel.html)** — Poster mit **echtem QR-Code** für den Common Room.
+
+**Go-to-Market** unter [`docs/pitch/`](docs/pitch/index.html):
+- **[Pitch-One-Pager](docs/pitch/index.html)** (DE·EN·ES) — die versendbare „schick mir was"-Seite mit Live-Demo-QR.
+- **[WeRoad-Colombia-Proposal](docs/pitch/weroad-colombia.html)** (DE·EN) — ausgearbeitetes Gruppenreise-Beispiel: Route↔Inhalt, 3-Phasen-Modell, Coordinator-Playbook, Preise, Pilot.
+- **[Outreach-Anschreiben](docs/pitch/anschreiben.md)** — copy-paste, je Zielgruppe (Schule/Hostel/Reiseleiter), DE·EN·ES.
+- **[Zielkunden-Fahrplan](docs/pitch/zielkunden.md)** — priorisierte Kontaktliste + Vorgehen.
+
+> Hintergrund & Vertriebsstrategie: [MARKT.md](MARKT.md) · technische Roadmap: [BAUPLAN.md](BAUPLAN.md).
+
+---
+
 ## 🤝 Beitragen
 
 - **Neue Karte:** ans passende Array in [data.js](data.js) anhängen (`lvl` nicht vergessen).
