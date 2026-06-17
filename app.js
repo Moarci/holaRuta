@@ -92,6 +92,7 @@
     battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
     battleNames: { A: "", B: "" }, // optionale Spielernamen (sonst „Spieler A/B")
+    battleNameEdited: false,  // hat der Nutzer ein Battle-Namensfeld angefasst? (dann Profil-Namen nicht mehr vorbelegen)
     battleSeen: [],          // zuletzt verwendete Battle-Ids – vermeidet sofortige Wiederholungen
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
@@ -262,6 +263,7 @@
         pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
       },
       lastCat,
+      userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
@@ -393,7 +395,7 @@
       total: state.total,
       revealed: state.revealed,
       typeResult: state.typeResult,
-      context: card.context ? loc(card.context) : null,
+      context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
       swatch: card.swatch || null,
     };
@@ -480,7 +482,7 @@
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
-      context: card.context ? loc(card.context) : null,
+      context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
     });
   }
@@ -572,7 +574,12 @@
       phrases: loc(regatear.PHRASES || []),
       units: loc(regatear.UNITS || []),
       regional: loc(regatear.REGIONAL || []),
-      roleplays: loc(roleplays),
+      // {name} auch hier auflösen – symmetrisch zu roleplayVM, falls künftig ein
+      // Regatear-Rollenspiel den Platzhalter nutzt (sonst stünde „{name}" im Text).
+      roleplays: loc(roleplays).map((r) => Object.assign({}, r, {
+        dialogue: (r.dialogue || []).map((d) => Object.assign({}, d, { es: withName(d.es), de: withName(d.de) })),
+        usefulPhrases: (r.usefulPhrases || []).map(withName),
+      })),
     };
   }
 
@@ -949,6 +956,7 @@
       destination: t.destination,
       endDate: t.endDate,
       perDay,
+      userName: profileName(), // persönliche Ansprache auf der Countdown-Karte (leer = neutral)
       daysLeft: daysLeft === null ? 0 : daysLeft, // <0 = Termin vorbei
       past: daysLeft !== null && daysLeft < 0,
       today: t.endDate === today,
@@ -1075,7 +1083,7 @@
     if (!badges || !state.badgeToast || !state.badgeToast.length) return;
     const existing = root.querySelector(".btoast");
     if (existing) existing.remove();
-    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
   }
 
   // Erfüllte, aber noch nicht vermerkte Badges freischalten. announce=true sammelt
@@ -1306,9 +1314,9 @@
       roleB: { name: swapped ? r.roles.a : r.roles.b, goal: natk(r, swapped ? "goalA" : "goalB") },
       dialogue: r.dialogue.map((d) => ({
         speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
-        de: nat(d), es: d.es,
+        de: withName(nat(d)), es: withName(d.es),
       })),
-      usefulPhrases: r.usefulPhrases,
+      usefulPhrases: r.usefulPhrases.map(withName),
     };
   }
 
@@ -1631,6 +1639,35 @@
   const dialogueById = (id) => (dialogos ? dialogos.DIALOGOS.find((d) => d.id === id) : null) || null;
   const scenarioById = (id) => (dialogos ? dialogos.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null;
 
+  // Reise-Name aus dem Profil: erscheint in Diálogos überall dort, wo der Nutzer
+  // sich vorstellt (Hotel, Busticket, Notfall …). Ohne Eintrag bleibt der
+  // Beispielname „Marco", damit die Dialoge auch ungenutzt stimmig sind.
+  // profileName() liefert den rohen (ggf. leeren) Profil-Namen – für Stellen, die
+  // OHNE Eintrag lieber nichts vorbelegen sollen (z. B. Battle-Spielername).
+  function profileName() {
+    return (settings.userName || "").trim().replace(/\s+/g, " ").slice(0, 40);
+  }
+  function travelerName() {
+    const n = profileName();
+    // Ein Name, der bei der Antwortprüfung zu nichts normalisiert (nur Emoji/
+    // Satzzeichen), machte die „Wie heißt du?"-Tippzüge unlösbar → Beispielname.
+    return (n && matcher.normalize(n)) ? n : "Marco";
+  }
+  // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
+  // durch den Reise-Namen ersetzen. Ersatz als Funktion übergeben, damit Sonder-
+  // zeichen im Namen ($&, $1 …) nicht als replace-Muster interpretiert werden.
+  function withName(s) {
+    return typeof s === "string" ? s.replace(/\{name\}/g, () => travelerName()) : s;
+  }
+  // {name} in allen String-Feldern eines (flachen) Objekts ersetzen – z. B. im
+  // lokalisierten Reise-Kontext einer Karte (sentenceEs/sentenceDe/situation/note).
+  function withNameObj(o) {
+    if (!o || typeof o !== "object") return o;
+    const out = {};
+    for (const k in o) out[k] = withName(o[k]);
+    return out;
+  }
+
   function dialogosSetupVM() {
     return {
       available: dialogosReady(),
@@ -1654,19 +1691,20 @@
     for (let i = 0; i < d.turnIdx; i++) {
       const t = turns[i];
       if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: nat(t) });
-      else transcript.push({ who: "user", es: t.solEs, de: "" });
+      if (t.who === "npc") transcript.push({ who: "npc", es: withName(t.es), de: withName(nat(t)) });
+      else transcript.push({ who: "user", es: withName(t.solEs), de: "" });
     }
     const cur = turns[d.turnIdx] || null;
     const current = cur
       ? (cur.who === "npc"
-          ? { who: "npc", es: cur.es, de: nat(cur) }
+          ? { who: "npc", es: withName(cur.es), de: withName(nat(cur)) }
           : {
               who: "user",
               kind: cur.kind,
-              de: nat(cur),
-              solEs: cur.solEs,
-              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: o.es })) : null,
+              de: withName(nat(cur)),
+              solEs: withName(cur.solEs),
+              why: withName(natk(cur, "why") || ""),
+              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: withName(o.es) })) : null,
             })
       : null;
     return {
@@ -1727,7 +1765,7 @@
     const t = currentUserTurn();
     if (!t || t.kind !== "mc" || !t.options[idx]) return;
     const correct = !!t.options[idx].ok;
-    d.result = { correct, given: t.options[idx].es };
+    d.result = { correct, given: withName(t.options[idx].es) };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
     render();
   }
@@ -1738,7 +1776,7 @@
     const t = currentUserTurn();
     if (!t || t.kind !== "type") return;
     const norm = matcher.normalize(input);
-    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(s));
+    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(withName(s)));
     const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
     d.result = { correct, given: input };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
@@ -1787,7 +1825,7 @@
     if (!d || !speech) return;
     const dia = dialogueById(d.dialogueId);
     const t = dia && dia.turns[d.turnIdx];
-    if (t && t.who === "npc") speech.speak(t.es, settings.speechRate);
+    if (t && t.who === "npc") speech.speak(withName(t.es), settings.speechRate);
   }
 
   // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
@@ -2321,7 +2359,7 @@
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
     if (badges && state.badgeToast && state.badgeToast.length) {
-      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
     }
 
     // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
@@ -2351,16 +2389,69 @@
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
-  // requestAnimationFrame, damit das Layout nach dem innerHTML steht; block:"end"
-  // hält den darüberliegenden npc-Satz mit im Bild.
+  // requestAnimationFrame, damit das Layout nach dem innerHTML steht.
+  // Normalfall (npc-Satz, Optionen, Verdikt): block:"end" hält den darüber-
+  // liegenden npc-Satz mit im Bild. Tipp-Zug dagegen: das Eingabefeld mittig
+  // halten – mit block:"end" schöbe es sonst genau hinter die eingeblendete
+  // Tastatur, und der Nutzer sähe nicht, was er tippt.
   function scrollDialogActive() {
     if (typeof requestAnimationFrame !== "function") return;
     requestAnimationFrame(function () {
-      const el = root.querySelector("#dlg-active");
-      if (!el) return;
+      const active = root.querySelector("#dlg-active");
+      if (!active) return;
+      const input = active.querySelector("#dialogos-answer");
+      const target = input || active;
+      const block = input ? "center" : "end";
       const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "end" }); } catch (e) { /* egal */ }
+      try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block }); } catch (e) { /* egal */ }
     });
+  }
+
+  // Hält das fokussierte Eingabefeld über der eingeblendeten Bildschirmtastatur.
+  // scrollDialogActive() & manageFocus() laufen beim Render – also BEVOR die
+  // Tastatur auftaucht – und können deren Höhe nicht kennen. Sobald die Tastatur
+  // erscheint, schrumpft der visuelle Viewport (visualViewport.resize); das Feld
+  // verschwindet dann sonst hinter der Tastatur, und der Nutzer muss von Hand
+  // nachscrollen. Dieser Handler holt es genau dann sanft zurück in den Blick.
+  function setupKeyboardScroll() {
+    const vv = window.visualViewport;
+    if (!vv || typeof vv.addEventListener !== "function") return;
+    // Nur echte Tipp-Felder berücksichtigen (Buttons/Slider lösen keine Tastatur aus).
+    function focusedField() {
+      const el = document.activeElement;
+      if (!el) return null;
+      if (el.tagName === "TEXTAREA") return el;
+      if (el.tagName === "INPUT") {
+        const t = (el.getAttribute("type") || "text").toLowerCase();
+        if (t === "text" || t === "search" || t === "email" || t === "number" ||
+            t === "tel" || t === "url" || t === "password") return el;
+      }
+      return null;
+    }
+    function ensureVisible() {
+      const el = focusedField();
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // Untere Kante des sichtbaren Bereichs = obere Tastaturkante.
+      const visibleBottom = vv.offsetTop + vv.height;
+      const margin = 16;
+      // Feld ragt unter die Tastatur oder über den oberen Rand? Dann zentriert
+      // in den verbleibenden Sichtbereich holen.
+      if (rect.bottom > visibleBottom - margin || rect.top < vv.offsetTop) {
+        const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "center" }); } catch (e) { /* egal */ }
+      }
+    }
+    // Mehrere resize-Events (Tastatur-Einblend-Animation) zu einem rAF bündeln.
+    let scheduled = false;
+    function onViewportChange() {
+      if (scheduled) return;
+      scheduled = true;
+      const run = function () { scheduled = false; ensureVisible(); };
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(run); else run();
+    }
+    vv.addEventListener("resize", onViewportChange);
+    vv.addEventListener("scroll", onViewportChange);
   }
 
   // Hör-Modus & Preis-Trainer spielen die spanische Vorgabe automatisch ab, sobald
@@ -2386,7 +2477,7 @@
       const d = state.dialogos;
       const dia = dialogueById(d.dialogueId);
       const t = dia && dia.turns[d.turnIdx];
-      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: t.es };
+      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: withName(t.es) };
     }
     return null;
   }
@@ -3482,6 +3573,20 @@
     render();
   }
 
+  // Reise-Namen aus dem Profil speichern. Getrimmt, Mehrfach-Leerzeichen zusammen-
+  // gezogen, auf 40 Zeichen begrenzt. rerender:true (Knopf „Speichern") bestätigt
+  // mit Haptik und zeichnet neu; ohne (Blur via change-Handler) wird nur still
+  // gesichert, damit ein direkt danach getippter Knopf nicht durch ein Re-Render
+  // verloren geht.
+  function saveUserName(value, rerender) {
+    const name = String(value || "").trim().replace(/\s+/g, " ").slice(0, 40);
+    if (name !== (settings.userName || "")) {
+      settings = Object.assign({}, settings, { userName: name });
+      store.saveSettings(settings);
+    }
+    if (rerender) { buzz(8); render(); }
+  }
+
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
   // Wird beim Start UND bei jedem Wechsel aufgerufen (Single Source of Truth).
   function applyUiLang(l) {
@@ -3563,6 +3668,13 @@
 
   function openBattleSetup() {
     dismissBadgeToast();
+    // Spieler A mit dem Profil-Namen vorbelegen (Gerätebesitzer spielt meist A) –
+    // aber nur, solange der Nutzer die Battle-Namensfelder noch NIE angefasst hat.
+    // So bleibt ein bewusst geleertes Feld auch nach einem erneuten Öffnen leer.
+    if (!state.battleNameEdited && !state.battleNames.A) {
+      const n = profileName().slice(0, 14);
+      if (n) state.battleNames = Object.assign({}, state.battleNames, { A: n });
+    }
     state.screen = "battleSetup";
     render();
   }
@@ -4556,6 +4668,7 @@
     const ov = stats.overview(allCards(), progress);
     buzz(12);
     share.shareImage("stats", {
+      userName: profileName(),
       rate: ov.rate,
       mastered: ov.mastered,
       seenCards: ov.seenCards,
@@ -4579,6 +4692,7 @@
     const grp = (badges.GROUPS || []).find((g) => g.id === b.group);
     buzz(12);
     share.shareImage("badge", {
+      userName: profileName(),
       icon: b.icon,
       name: b.name,
       text: b.unlockedText || b.description,
@@ -5064,6 +5178,13 @@
       submitDialogosType(input ? input.value : "");
       return;
     }
+    // Profil: Reise-Namen speichern (Enter oder „Speichern"-Knopf).
+    if (e.target.closest('[data-action="save-name"]')) {
+      e.preventDefault();
+      const input = document.getElementById("profile-name");
+      saveUserName(input ? input.value : "", true);
+      return;
+    }
     // Getippte Antwort prüfen (Schreiben-/Hör-Modus).
     const form = e.target.closest('[data-action="submit-typed"]');
     if (!form) return;
@@ -5118,12 +5239,20 @@
       e.target.value = "";
       return;
     }
+    // Profil-Name still sichern, sobald das Feld verlassen wird (auch ohne
+    // „Speichern“). Kein Re-Render hier, damit ein direkt danach getippter Knopf
+    // nicht ins Leere greift; die Persistenz reicht.
+    if (e.target && e.target.id === "profile-name") {
+      saveUserName(e.target.value, false);
+      return;
+    }
     // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie
     // nicht verschluckt. 'change' feuert beim Verlassen des Feldes (auch wenn
     // direkt ein Längen-/Szenen-Button geklickt wird).
     if (e.target && (e.target.id === "pname-a" || e.target.id === "pname-b")) {
       const side = e.target.id === "pname-a" ? "A" : "B";
       state.battleNames = Object.assign({}, state.battleNames, { [side]: e.target.value.trim() });
+      state.battleNameEdited = true; // ab jetzt nicht mehr automatisch mit dem Profil-Namen vorbelegen
       return;
     }
     // Aufgaben-Formular (Modo profe): Auswahl merken, damit ein Re-Render (z. B.
@@ -5379,6 +5508,7 @@
   window.addEventListener("pointermove", onBodyPointerMove);
   window.addEventListener("pointerup", onBodyPointerUp);
   window.addEventListener("pointercancel", onBodyPointerUp);
+  setupKeyboardScroll(); // fokussiertes Eingabefeld über der Tastatur halten (Diálogos, Schreiben, Suche …)
   applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
   // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).
   try {

@@ -222,6 +222,17 @@ body {
   color: var(--ink-soft); padding-left: 4px;
 }
 
+/* Reise-Name (Profil): Eingabefeld + Speichern in einer Zeile, kurzer Hinweis darunter */
+.namefield__row { display: flex; gap: 8px; align-items: stretch; }
+.namefield__input {
+  flex: 1 1 auto; min-width: 0; font: inherit; font-weight: 600; color: var(--ink);
+  padding: 10px 12px; min-height: 44px;
+  border: 1.5px solid var(--line-strong); border-radius: var(--r-sm, 10px);
+  background: var(--bg, var(--surface));
+}
+.namefield__save { flex: 0 0 auto; min-height: 44px; }
+.namefield__hint { margin: 0; padding-left: 4px; font-size: 0.78rem; color: var(--muted); }
+
 /* Segmented control (Modus) */
 .segmented {
   display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
@@ -526,6 +537,13 @@ body {
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
+.installcard__steps {
+  margin: 0; padding-left: 1.25rem;
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted);
+}
+.installcard__steps li { padding-left: 2px; }
+.installcard__note { margin: 0; font-size: 0.82rem; font-weight: 500; line-height: 1.4; color: var(--muted); opacity: 0.85; }
 /* Bereits installiert: ruhige „erledigt"-Optik (durchgezogen statt gestrichelt). */
 .installcard--done {
   background: color-mix(in srgb, var(--ok, #3F7355) 10%, var(--card));
@@ -638,6 +656,79 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .topbar__right { display: flex; align-items: center; gap: 8px; }
 .iconbtn--sm { width: 44px; height: 44px; font-size: 1.1rem; }
+
+/* AM/PM-Themen-Umschalter: ein hängendes Doppelschild im Profil unter
+ * „Einstellungen“. Hell = Kaffee (AM, Dampf), Dunkel = Wein (PM, volles Glas).
+ * Das aktive Schild leuchtet, das andere liegt gedimmt darunter. Die festen
+ * Schild-Farben sind im SVG hartkodiert – nur Aktiv/Inaktiv kommt aus
+ * [data-theme]. */
+.themeset {
+  display: flex; align-items: center; gap: 18px;
+  padding: 6px 4px 2px;
+}
+.themeset__copy { min-width: 0; }
+.themeset__title {
+  margin: 0 0 4px; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.1rem; line-height: 1.1; color: var(--ink);
+}
+.themeset__text { margin: 0; font-size: 0.9rem; line-height: 1.45; color: var(--ink-soft); }
+
+.themesign {
+  appearance: none; border: none; background: none; padding: 6px;
+  cursor: pointer; display: block; border-radius: 14px; flex: 0 0 auto;
+  transition: transform 0.25s cubic-bezier(.22,.61,.36,1);
+}
+.themesign:active { transform: scale(0.97); }
+.themesign__plank {
+  display: flex; flex-direction: column; align-items: center; width: 34px;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.30));
+}
+/* große Variante (Profil-Einstellungen) – hier darf das Schild atmen */
+.themesign--lg .themesign__plank {
+  width: 68px;
+  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.32));
+}
+.themesign__plaque {
+  width: 100%; display: block; transform-origin: center;
+  transition: opacity 0.8s cubic-bezier(.22,.61,.36,1),
+              filter 0.8s cubic-bezier(.22,.61,.36,1),
+              transform 0.55s cubic-bezier(.22,.61,.36,1);
+}
+.themesign__plaque svg { display: block; width: 100%; height: auto; }
+
+/* inaktives Schild: gedimmt, leicht entsättigt, minimal verkleinert */
+[data-theme="dark"] .themesign__plaque--am,
+[data-theme="light"] .themesign__plaque--pm {
+  opacity: 0.34; filter: grayscale(0.55) brightness(0.9); transform: scale(0.965);
+}
+/* aktives Schild: voll sichtbar, mit warmem Schein */
+[data-theme="light"] .themesign__plaque--am { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 7px rgba(176, 130, 63, 0.35)); }
+[data-theme="dark"]  .themesign__plaque--pm { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(201, 154, 87, 0.30)); }
+/* großes Schild: kräftigerer Schein passend zur Fläche */
+[data-theme="light"] .themesign--lg .themesign__plaque--am { filter: drop-shadow(0 0 16px rgba(176, 130, 63, 0.35)); }
+[data-theme="dark"]  .themesign--lg .themesign__plaque--pm { filter: drop-shadow(0 0 20px rgba(201, 154, 87, 0.30)); }
+
+/* Dampf steigt nur am Morgen (heller Modus) */
+.themesign__steam path { opacity: 0; transform-box: fill-box; transform-origin: bottom center; }
+[data-theme="light"] .themesign__steam path { animation: themesign-rise 3.4s cubic-bezier(.22,.61,.36,1) infinite; }
+.themesign__steam path:nth-child(2) { animation-delay: 0.5s; }
+.themesign__steam path:nth-child(3) { animation-delay: 1.1s; }
+@keyframes themesign-rise {
+  0%   { opacity: 0; transform: translateY(6px) scaleY(0.7); }
+  25%  { opacity: 0.85; }
+  70%  { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-10px) scaleY(1.15); }
+}
+
+/* Wein füllt das Glas am Abend (dunkler Modus), morgens nur ein Rest */
+.themesign__wine { transition: transform 1s cubic-bezier(.22,.61,.36,1), opacity 1s cubic-bezier(.22,.61,.36,1); transform-box: fill-box; transform-origin: bottom center; }
+[data-theme="light"] .themesign__wine { transform: scaleY(0.18); opacity: 0.5; }
+[data-theme="dark"]  .themesign__wine { transform: scaleY(1); opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .themesign__steam path { animation: none !important; }
+  .themesign, .themesign__plaque, .themesign__wine { transition-duration: 0.2s !important; }
+}
 
 /* Teilen-Block (Format-Umschalter + Teilen-Button) */
 .sharebar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -2479,6 +2570,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dlg-verdict--ok { background: color-mix(in srgb, #2F6B45 14%, var(--surface)); color: var(--ok, #2F6B45); }
 .dlg-verdict--no { background: color-mix(in srgb, #B5302A 12%, var(--surface)); color: var(--ink); display: flex; flex-direction: column; gap: 3px; }
 .dlg-verdict__given { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+
+/* Aufklappbarer Hintergrund zur Musterantwort (natives <details>). */
+.dlg-why { margin: -2px 0 8px; background: color-mix(in srgb, var(--brand) 8%, var(--surface));
+  border: 1.5px solid var(--line); border-radius: var(--r-sm, 10px); padding: 0 12px; }
+.dlg-why[open] { border-color: var(--line-strong); }
+.dlg-why__sum { cursor: pointer; list-style: none; padding: 9px 0;
+  font-weight: 700; font-size: 0.85rem; color: var(--brand-ink);
+  display: flex; align-items: center; gap: 8px; -webkit-user-select: none; user-select: none; }
+.dlg-why__sum::-webkit-details-marker { display: none; }
+.dlg-why__sum::before { content: "💡"; }
+.dlg-why__sum::after { content: "▸"; margin-left: auto; color: var(--muted); transition: transform 0.15s ease; }
+.dlg-why[open] .dlg-why__sum::after { transform: rotate(90deg); }
+.dlg-why__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.dlg-why__body { margin: 0 0 11px; color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
 
 /* ---- Precios al oído: Setup (Land/Währung + Schwierigkeit) ---- */
 .prc-head { margin: 18px 0 8px; font-family: var(--font-display); font-size: 1.02rem; color: var(--ink); }

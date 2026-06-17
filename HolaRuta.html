@@ -260,6 +260,17 @@ body {
   color: var(--ink-soft); padding-left: 4px;
 }
 
+/* Reise-Name (Profil): Eingabefeld + Speichern in einer Zeile, kurzer Hinweis darunter */
+.namefield__row { display: flex; gap: 8px; align-items: stretch; }
+.namefield__input {
+  flex: 1 1 auto; min-width: 0; font: inherit; font-weight: 600; color: var(--ink);
+  padding: 10px 12px; min-height: 44px;
+  border: 1.5px solid var(--line-strong); border-radius: var(--r-sm, 10px);
+  background: var(--bg, var(--surface));
+}
+.namefield__save { flex: 0 0 auto; min-height: 44px; }
+.namefield__hint { margin: 0; padding-left: 4px; font-size: 0.78rem; color: var(--muted); }
+
 /* Segmented control (Modus) */
 .segmented {
   display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
@@ -564,6 +575,13 @@ body {
 .installcard__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
 .installcard__text { margin: 0; font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
 .installcard__btn { align-self: flex-start; }
+.installcard__steps {
+  margin: 0; padding-left: 1.25rem;
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 0.9rem; font-weight: 500; line-height: 1.45; color: var(--muted);
+}
+.installcard__steps li { padding-left: 2px; }
+.installcard__note { margin: 0; font-size: 0.82rem; font-weight: 500; line-height: 1.4; color: var(--muted); opacity: 0.85; }
 /* Bereits installiert: ruhige „erledigt"-Optik (durchgezogen statt gestrichelt). */
 .installcard--done {
   background: color-mix(in srgb, var(--ok, #3F7355) 10%, var(--card));
@@ -676,6 +694,79 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .topbar__right { display: flex; align-items: center; gap: 8px; }
 .iconbtn--sm { width: 44px; height: 44px; font-size: 1.1rem; }
+
+/* AM/PM-Themen-Umschalter: ein hängendes Doppelschild im Profil unter
+ * „Einstellungen“. Hell = Kaffee (AM, Dampf), Dunkel = Wein (PM, volles Glas).
+ * Das aktive Schild leuchtet, das andere liegt gedimmt darunter. Die festen
+ * Schild-Farben sind im SVG hartkodiert – nur Aktiv/Inaktiv kommt aus
+ * [data-theme]. */
+.themeset {
+  display: flex; align-items: center; gap: 18px;
+  padding: 6px 4px 2px;
+}
+.themeset__copy { min-width: 0; }
+.themeset__title {
+  margin: 0 0 4px; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.1rem; line-height: 1.1; color: var(--ink);
+}
+.themeset__text { margin: 0; font-size: 0.9rem; line-height: 1.45; color: var(--ink-soft); }
+
+.themesign {
+  appearance: none; border: none; background: none; padding: 6px;
+  cursor: pointer; display: block; border-radius: 14px; flex: 0 0 auto;
+  transition: transform 0.25s cubic-bezier(.22,.61,.36,1);
+}
+.themesign:active { transform: scale(0.97); }
+.themesign__plank {
+  display: flex; flex-direction: column; align-items: center; width: 34px;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.30));
+}
+/* große Variante (Profil-Einstellungen) – hier darf das Schild atmen */
+.themesign--lg .themesign__plank {
+  width: 68px;
+  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.32));
+}
+.themesign__plaque {
+  width: 100%; display: block; transform-origin: center;
+  transition: opacity 0.8s cubic-bezier(.22,.61,.36,1),
+              filter 0.8s cubic-bezier(.22,.61,.36,1),
+              transform 0.55s cubic-bezier(.22,.61,.36,1);
+}
+.themesign__plaque svg { display: block; width: 100%; height: auto; }
+
+/* inaktives Schild: gedimmt, leicht entsättigt, minimal verkleinert */
+[data-theme="dark"] .themesign__plaque--am,
+[data-theme="light"] .themesign__plaque--pm {
+  opacity: 0.34; filter: grayscale(0.55) brightness(0.9); transform: scale(0.965);
+}
+/* aktives Schild: voll sichtbar, mit warmem Schein */
+[data-theme="light"] .themesign__plaque--am { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 7px rgba(176, 130, 63, 0.35)); }
+[data-theme="dark"]  .themesign__plaque--pm { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(201, 154, 87, 0.30)); }
+/* großes Schild: kräftigerer Schein passend zur Fläche */
+[data-theme="light"] .themesign--lg .themesign__plaque--am { filter: drop-shadow(0 0 16px rgba(176, 130, 63, 0.35)); }
+[data-theme="dark"]  .themesign--lg .themesign__plaque--pm { filter: drop-shadow(0 0 20px rgba(201, 154, 87, 0.30)); }
+
+/* Dampf steigt nur am Morgen (heller Modus) */
+.themesign__steam path { opacity: 0; transform-box: fill-box; transform-origin: bottom center; }
+[data-theme="light"] .themesign__steam path { animation: themesign-rise 3.4s cubic-bezier(.22,.61,.36,1) infinite; }
+.themesign__steam path:nth-child(2) { animation-delay: 0.5s; }
+.themesign__steam path:nth-child(3) { animation-delay: 1.1s; }
+@keyframes themesign-rise {
+  0%   { opacity: 0; transform: translateY(6px) scaleY(0.7); }
+  25%  { opacity: 0.85; }
+  70%  { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-10px) scaleY(1.15); }
+}
+
+/* Wein füllt das Glas am Abend (dunkler Modus), morgens nur ein Rest */
+.themesign__wine { transition: transform 1s cubic-bezier(.22,.61,.36,1), opacity 1s cubic-bezier(.22,.61,.36,1); transform-box: fill-box; transform-origin: bottom center; }
+[data-theme="light"] .themesign__wine { transform: scaleY(0.18); opacity: 0.5; }
+[data-theme="dark"]  .themesign__wine { transform: scaleY(1); opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .themesign__steam path { animation: none !important; }
+  .themesign, .themesign__plaque, .themesign__wine { transition-duration: 0.2s !important; }
+}
 
 /* Teilen-Block (Format-Umschalter + Teilen-Button) */
 .sharebar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -2518,6 +2609,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dlg-verdict--no { background: color-mix(in srgb, #B5302A 12%, var(--surface)); color: var(--ink); display: flex; flex-direction: column; gap: 3px; }
 .dlg-verdict__given { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
 
+/* Aufklappbarer Hintergrund zur Musterantwort (natives <details>). */
+.dlg-why { margin: -2px 0 8px; background: color-mix(in srgb, var(--brand) 8%, var(--surface));
+  border: 1.5px solid var(--line); border-radius: var(--r-sm, 10px); padding: 0 12px; }
+.dlg-why[open] { border-color: var(--line-strong); }
+.dlg-why__sum { cursor: pointer; list-style: none; padding: 9px 0;
+  font-weight: 700; font-size: 0.85rem; color: var(--brand-ink);
+  display: flex; align-items: center; gap: 8px; -webkit-user-select: none; user-select: none; }
+.dlg-why__sum::-webkit-details-marker { display: none; }
+.dlg-why__sum::before { content: "💡"; }
+.dlg-why__sum::after { content: "▸"; margin-left: auto; color: var(--muted); transition: transform 0.15s ease; }
+.dlg-why[open] .dlg-why__sum::after { transform: rotate(90deg); }
+.dlg-why__sum:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.dlg-why__body { margin: 0 0 11px; color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
+
 /* ---- Precios al oído: Setup (Land/Währung + Schwierigkeit) ---- */
 .prc-head { margin: 18px 0 8px; font-family: var(--font-display); font-size: 1.02rem; color: var(--ink); }
 .prc-curs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
@@ -2708,6 +2813,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 </style>
 </head>
 <body>
+  <!-- Geteilte „Farb"-Filter für den AM/PM-Umschalter (Kaffee hell · Wein dunkel).
+       Einmal im Dokument definiert, von den Schild-SVGs per url(#…) referenziert –
+       fehlen sie, würden die bemalten Formen laut SVG-Spec gar nicht erst gezeichnet. -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute" focusable="false">
+    <filter id="signPaint" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.022" numOctaves="3" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="signGrain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="g"/>
+      <feColorMatrix in="g" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer>
+      <feComposite operator="over" in2="SourceGraphic"/>
+    </filter>
+  </svg>
+
   <!-- Creme App-Spalte auf dunkelbraunem Rahmen (Design-Signatur). -->
   <div class="appshell">
     <div class="topstripe"></div>
@@ -3065,6 +3186,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     themeDark: "Dunklen Modus einschalten",
     themeLightTitle: "Heller Modus",
     themeDarkTitle: "Dunkler Modus – fürs Hostel-Bett 🌙",
+    themeCap: "Erscheinungsbild",
+    themeAmTitle: "Guten Morgen",
+    themeAmText: "Heller Modus. Frisch aufgebrüht, der Tag liegt offen.",
+    themePmTitle: "Guten Abend",
+    themePmText: "Dunkler Modus. Eingeschenkt, der Tag darf zur Ruhe kommen.",
     correct: "✓ Richtig!",
     wrongInput: (p) => `✗ Nicht ganz – deine Eingabe: „${p.input}“`,
     speakAnswer: "Antwort anhören",
@@ -3095,6 +3221,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     themeDark: "Switch on dark mode",
     themeLightTitle: "Light mode",
     themeDarkTitle: "Dark mode – for the hostel bunk 🌙",
+    themeCap: "Appearance",
+    themeAmTitle: "Good morning",
+    themeAmText: "Light mode. Freshly brewed — the day lies open.",
+    themePmTitle: "Good evening",
+    themePmText: "Dark mode. Poured — the day winds down.",
     correct: "✓ Correct!",
     wrongInput: (p) => `✗ Not quite – you typed: “${p.input}”`,
     speakAnswer: "Listen to the answer",
@@ -3267,6 +3398,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeType: "⌨️ Schreiben",
     modeListen: "👂 Hören",
     settingsCap: "⚙️ Einstellungen",
+    nameCap: "🙋 Dein Name",
+    namePlaceholder: "z. B. Marco",
+    nameSave: "Speichern",
+    nameHint: "Wird in den Diálogos automatisch eingesetzt, wenn du dich vorstellst.",
     speechRate: "Sprechtempo",
     speechRateAria: "Sprechtempo der Vorlese-Stimme",
     rateSlow: "🐢 Langsam",
@@ -3279,6 +3414,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     uiLanguage: "Sprache",
     // Karten-Prompt (Spanisch, beide Sprachen gleich)
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "Für meine liebe Lisa.",
   }, {
     tabsAreas: "Sections",
@@ -3401,6 +3537,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     modeType: "⌨️ Writing",
     modeListen: "👂 Listening",
     settingsCap: "⚙️ Settings",
+    nameCap: "🙋 Your name",
+    namePlaceholder: "e.g. Marco",
+    nameSave: "Save",
+    nameHint: "Used automatically in the Diálogos when you introduce yourself.",
     speechRate: "Speech rate",
     speechRateAria: "Speech rate of the read-aloud voice",
     rateSlow: "🐢 Slow",
@@ -3412,6 +3552,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dirAria: "Study direction",
     uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
     dedication: "For my dear Lisa.",
   });
 
@@ -3810,6 +3951,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dlgSay: "Sagen",
     dlgWellSaid: "✓ ¡Bien dicho!",
     dlgBetter: (p) => `Besser so: <b lang="es">${p.es}</b>`,
+    dlgWhy: "Warum so?",
     dlgYou: (p) => `Du: „${p.given}“`,
     dlgStep: (p) => `Schritt ${p.step} von ${p.total}`,
     dlgPerfect: "¡Perfecto! Du hast das ganze Gespräch gemeistert. 🏆",
@@ -4111,6 +4253,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     dlgSay: "Say",
     dlgWellSaid: "✓ ¡Bien dicho!",
     dlgBetter: (p) => `Better like this: <b lang="es">${p.es}</b>`,
+    dlgWhy: "Why this?",
     dlgYou: (p) => `You: “${p.given}”`,
     dlgStep: (p) => `Step ${p.step} of ${p.total}`,
     dlgPerfect: "¡Perfecto! You mastered the whole conversation. 🏆",
@@ -4434,6 +4577,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     installBtn: "📲 App installieren",
     notInstalledTitle: "Noch nicht installiert",
     installHintBrowser: 'Über das Browser-Menü („App installieren“ bzw. „Zum Startbildschirm hinzufügen“) legst du HolaRuta als eigenes App-Icon ab – startet dann offline, ohne Datei-Suchen.',
+    installHintLead: "Dein Browser bietet hier gerade keinen Ein-Tipp-Knopf an. So legst du HolaRuta trotzdem als App ab:",
+    installStep1: "Oben rechts auf das Browser-Menü tippen (⋮ bzw. Teilen-Symbol).",
+    installStep2: 'Dort „App installieren“ bzw. „Zum Startbildschirm hinzufügen“ wählen.',
+    installStep3: "Bestätigen – fertig. HolaRuta startet künftig über ihr eigenes Icon, offline und ohne Datei-Suchen.",
+    installHintNote: "Tipp: Am zuverlässigsten klappt das in Chrome. Manche Browser (z. B. Firefox) bieten die App-Installation nicht an.",
     installedTitle: "Als App installiert · offline bereit",
     installedText: "HolaRuta läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
 
@@ -4450,6 +4598,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     badgeLocked: "Noch nicht freigeschaltet",
     badgeNewMulti: (p) => `${p.n} neue Stempel!`,
     badgeNewOne: "Neuer Stempel!",
+    badgeNewMultiName: (p) => `${p.n} neue Stempel, ${p.name}!`,
+    badgeNewOneName: (p) => `Neuer Stempel, ${p.name}!`,
     badgeToastLabel: (p) => `${p.head} Ruta-Pass öffnen`,
 
     // Update-Hinweis
@@ -4548,6 +4698,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     installBtn: "📲 Install app",
     notInstalledTitle: "Not installed yet",
     installHintBrowser: "Use your browser menu (“Install app” or “Add to Home Screen”) to add HolaRuta as its own app icon – it then starts offline, no file-hunting.",
+    installHintLead: "Your browser isn't offering a one-tap button here right now. Here's how to add HolaRuta as an app anyway:",
+    installStep1: "Tap the browser menu in the top right (⋮ or the share icon).",
+    installStep2: "Choose “Install app” or “Add to Home Screen”.",
+    installStep3: "Confirm – done. HolaRuta will launch from its own icon, offline and without file-hunting.",
+    installHintNote: "Tip: this works most reliably in Chrome. Some browsers (e.g. Firefox) don't offer app installation.",
     installedTitle: "Installed as an app · ready offline",
     installedText: "HolaRuta is running as an installed app with its own icon on your home screen – offline too.",
 
@@ -4563,6 +4718,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     badgeLocked: "Not unlocked yet",
     badgeNewMulti: (p) => `${p.n} new stamps!`,
     badgeNewOne: "New stamp!",
+    badgeNewMultiName: (p) => `${p.n} new stamps, ${p.name}!`,
+    badgeNewOneName: (p) => `New stamp, ${p.name}!`,
     badgeToastLabel: (p) => `${p.head} Open Ruta pass`,
 
     updTitle: "HolaRuta has been updated",
@@ -4702,9 +4859,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   i18n.register("share", {
     sideNative: "DEUTSCH",
     myProgress: "MEIN FORTSCHRITT",
+    myProgressName: (p) => `FORTSCHRITT VON ${String(p.name).toUpperCase()}`,
     accuracy: "Trefferquote",
     statsLine: (p) => `Gemeistert ${p.mastered}  ·  Am Lernen ${p.learning}  ·  Neu ${p.neu}`,
     myPass: "🎖️ MEIN RUTA-PASS",
+    myPassName: (p) => `🎖️ RUTA-PASS VON ${String(p.name).toUpperCase()}`,
     stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} Stempel gesammelt`,
     // Begleittexte beim Teilen (Bildunterschrift in WhatsApp/Telegram …)
     captionJoin: "▶️ Jetzt mitlernen:",
@@ -4730,9 +4889,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
+    myProgressName: (p) => `${String(p.name).toUpperCase()}'S PROGRESS`,
     accuracy: "Accuracy",
     statsLine: (p) => `Mastered ${p.mastered}  ·  Learning ${p.learning}  ·  New ${p.neu}`,
     myPass: "🎖️ MY RUTA-PASS",
+    myPassName: (p) => `🎖️ ${String(p.name).toUpperCase()}'S RUTA-PASS`,
     stampsCollected: (p) => `🎖️ ${p.unlocked} / ${p.total} stamps collected`,
     captionJoin: "▶️ Start learning too:",
     factAccuracy: (p) => `${p.r}% accuracy`,
@@ -4785,7 +4946,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     b17: { e: "Por favor, necesito ayuda.", d: "Bitte, ich brauche Hilfe.", dEn: "Please, I need help.", s: "Wenn du dich unsicher fühlst oder Unterstützung brauchst.", sEn: "When you feel unsure or need support.", n: "Kurz und klar. In ernsten Situationen kannst du ergänzen: Es urgente.", nEn: "Short and clear. In serious situations you can add: Es urgente." },
     e04: { e: "La cuenta, por favor.", d: "Die Rechnung, bitte.", dEn: "The bill, please.", s: "Im Restaurant, Café oder bei Streetfood mit Sitzbereich.", sEn: "At a restaurant, café or street food with seating.", n: "Kurz, höflich und völlig ausreichend. Noch höflicher: ¿Me trae la cuenta, por favor?", nEn: "Short, polite and perfectly enough. Even more polite: ¿Me trae la cuenta, por favor?" },
     e46: { e: "Para mí sin cebolla, por favor.", d: "Für mich ohne Zwiebeln, bitte.", dEn: "Without onions for me, please.", s: "Beim Bestellen, wenn du eine Zutat vermeiden willst.", sEn: "When ordering, if you want to avoid an ingredient.", n: "Die Struktur sin ... ist extrem praktisch: sin carne, sin queso, sin picante.", nEn: "The sin ... structure is super handy: sin carne, sin queso, sin picante." },
-    hostel01: { e: "Hola, tengo una reserva para esta noche.", d: "Hallo, ich habe eine Reservierung für heute Nacht.", dEn: "Hi, I have a reservation for tonight.", s: "Beim Check-in im Hostel, Hotel oder Guesthouse.", sEn: "At check-in at a hostel, hotel or guesthouse.", n: "Wenn nach dem Namen gefragt wird, sag: A nombre de Marcel.", nEn: "If asked for the name, say: A nombre de Marcel." },
+    hostel01: { e: "Hola, tengo una reserva para esta noche.", d: "Hallo, ich habe eine Reservierung für heute Nacht.", dEn: "Hi, I have a reservation for tonight.", s: "Beim Check-in im Hostel, Hotel oder Guesthouse.", sEn: "At check-in at a hostel, hotel or guesthouse.", n: "Wenn nach dem Namen gefragt wird, sag: A nombre de {name}.", nEn: "If asked for the name, say: A nombre de {name}." },
     hostel02: { e: "Hola, ¿tiene una cama libre para esta noche?", d: "Hallo, haben Sie für heute Nacht noch ein Bett frei?", dEn: "Hi, do you have a bed free for tonight?", s: "Wenn du spontan ein Hostel suchst oder verlängern möchtest.", sEn: "When you're looking for a hostel on the spot or want to extend.", n: "Alternativ kannst du fragen: ¿Hay una cama disponible?", nEn: "Alternatively you can ask: ¿Hay una cama disponible?" },
     hostel03: { e: "¿El desayuno está incluido en el precio?", d: "Ist das Frühstück im Preis enthalten?", dEn: "Is breakfast included in the price?", s: "Beim Check-in oder bei der Buchung vor Ort.", sEn: "At check-in or when booking on the spot.", n: "Wenn es nicht inklusive ist, frag einfach: ¿Cuánto cuesta?", nEn: "If it's not included, just ask: ¿Cuánto cuesta?" },
     hostel04: { e: "Perdón, ¿dónde está mi cama?", d: "Entschuldigung, wo ist mein Bett?", dEn: "Excuse me, where's my bed?", s: "Im Dorm, wenn dir nur eine Bett- oder Zimmernummer genannt wurde.", sEn: "In the dorm, when you've only been given a bed or room number.", n: "Oben oder unten? Man unterscheidet cama de arriba und cama de abajo.", nEn: "Top or bottom? There's cama de arriba and cama de abajo." },
@@ -4826,7 +4987,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     b09: { e: "– ¿Todo bien? – Sí, gracias.", d: "– Alles gut? – Ja, danke.", dEn: "– All good? – Yes, thanks.", s: "In jeder kurzen Rückfrage.", sEn: "In any quick check-in.", n: "Ein klares Sí oder No mit einem Lächeln reicht oft völlig.", nEn: "A clear Sí or No with a smile is often plenty." },
     b11: { e: "Disculpe, ¿habla inglés?", d: "Entschuldigung, sprechen Sie Englisch?", dEn: "Excuse me, do you speak English?", s: "Wenn du sprachlich nicht weiterkommst.", sEn: "When you're stuck with the language.", n: "Oft hilft die Frage – außerhalb von Touristenorten ist die Antwort aber meist no.", nEn: "The question often helps – but outside tourist spots the answer is usually no." },
     b12: { e: "Hola, ¿cómo te llamas?", d: "Hallo, wie heißt du?", dEn: "Hi, what's your name?", s: "Beim Kennenlernen im Hostel oder unterwegs.", sEn: "When getting to know someone at the hostel or on the road.", n: "Förmlich (Sie): ¿Cómo se llama?", nEn: "Formal (you): ¿Cómo se llama?" },
-    b13: { e: "Me llamo Marcel, ¿y tú?", d: "Ich heiße Marcel, und du?", dEn: "My name's Marcel, and you?", s: "Wenn du dich vorstellst.", sEn: "When you introduce yourself.", n: "Das ¿y tú? am Ende hält das Gespräch in Gang.", nEn: "The ¿y tú? at the end keeps the conversation going." },
+    b13: { e: "Me llamo {name}, ¿y tú?", d: "Ich heiße {name}, und du?", dEn: "My name's {name}, and you?", s: "Wenn du dich vorstellst.", sEn: "When you introduce yourself.", n: "Das ¿y tú? am Ende hält das Gespräch in Gang.", nEn: "The ¿y tú? at the end keeps the conversation going." },
     b14: { e: "Perdón, ¿me puedes ayudar? Estoy perdido.", d: "Entschuldigung, kannst du mir helfen? Ich habe mich verlaufen.", dEn: "Excuse me, can you help me? I'm lost.", s: "Wenn du Orientierung oder Unterstützung brauchst.", sEn: "When you need directions or support.", n: "Höflicher und förmlich: ¿Me puede ayudar?", nEn: "More polite and formal: ¿Me puede ayudar?" },
     b15: { e: "Más despacio, por favor. No entiendo.", d: "Langsamer, bitte. Ich verstehe nicht.", dEn: "Slower, please. I don't understand.", s: "Wenn jemand zu schnell spricht – oder das Taxi zu schnell fährt.", sEn: "When someone speaks too fast – or the taxi drives too fast.", n: "Kombiniert mit ¿Puede repetir? klappt es fast immer. Gilt fürs Sprechen und fürs Fahren gleichermaßen.", nEn: "Combined with ¿Puede repetir? it almost always works. Applies to speaking and driving alike." },
     b18: { e: "Necesito un médico, por favor.", d: "Ich brauche einen Arzt, bitte.", dEn: "I need a doctor, please.", s: "Bei Krankheit oder Verletzung – im Hostel, in der Apotheke.", sEn: "When ill or injured – at the hostel, at the pharmacy.", n: "Im Notfall ergänzen: Es una emergencia.", nEn: "In an emergency add: Es una emergencia." },
@@ -5316,7 +5477,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     vb25: { e: "Soy de Alemania, ¿y tú?", d: "Ich bin aus Deutschland, und du?", dEn: "I'm from Germany, and you?", s: "Die häufigste Frage im Hostel beantworten.", sEn: "Answering the most common hostel question.", n: "Herkunft & Eigenschaften mit ser; Ort & Zustand mit estar – die wichtigste Unterscheidung.", nEn: "Origin & qualities with ser; location & state with estar – the most important distinction." },
     vb26: { e: "¿Eres de aquí? Busco una buena arepería.", d: "Bist du von hier? Ich suche ein gutes Arepa-Lokal.", dEn: "Are you from here? I'm looking for a good arepa place.", s: "Einheimische nach Geheimtipps fragen.", sEn: "Asking locals for insider tips.", n: "Lokale Tipps schlagen jede App – die Frage öffnet fast immer ein nettes Gespräch.", nEn: "Local tips beat any app – the question almost always opens a nice chat." },
     vb27: { e: "Ella es mi amiga del hostal.", d: "Sie ist meine Freundin aus dem Hostel.", dEn: "She's my friend from the hostel.", s: "Reisebekanntschaften einander vorstellen.", sEn: "Introducing travel acquaintances to each other.", n: "es = er/sie/usted-Form von ser. Nicht verwechseln mit está (Ort/Zustand).", nEn: "es = the he/she/usted form of ser. Don't confuse it with está (location/state)." },
-    vb28: { e: "Tengo una reserva a nombre de Marcel.", d: "Ich habe eine Reservierung auf den Namen Marcel.", dEn: "I have a reservation under the name Marcel.", s: "Beim Check-in im Hostel oder Hotel.", sEn: "At check-in at the hostel or hotel.", n: "tengo brauchst du ständig: Tengo hambre/sed/frío = Ich habe Hunger/Durst/mir ist kalt.", nEn: "tengo comes up constantly: Tengo hambre/sed/frío = I'm hungry/thirsty/cold." },
+    vb28: { e: "Tengo una reserva a nombre de {name}.", d: "Ich habe eine Reservierung auf den Namen {name}.", dEn: "I have a reservation under the name {name}.", s: "Beim Check-in im Hostel oder Hotel.", sEn: "At check-in at the hostel or hotel.", n: "tengo brauchst du ständig: Tengo hambre/sed/frío = Ich habe Hunger/Durst/mir ist kalt.", nEn: "tengo comes up constantly: Tengo hambre/sed/frío = I'm hungry/thirsty/cold." },
     vb29: { e: "¿Tienes cambio para el bus?", d: "Hast du Kleingeld für den Bus?", dEn: "Do you have small change for the bus?", s: "Unter Reisenden, bevor der colectivo kommt.", sEn: "Among travellers, before the colectivo arrives.", n: "cambio = Kleingeld/Wechselgeld – im Bus oft Pflicht, große Scheine sind unbeliebt.", nEn: "cambio = small change – often required on the bus, large notes are unwelcome." },
     vb30: { e: "¿Tiene una cama libre para esta noche?", d: "Haben Sie ein Bett frei für heute Nacht?", dEn: "Do you have a bed free for tonight?", s: "Spontan ohne Buchung im Hostel ankommen.", sEn: "Arriving at the hostel on the spot, without a booking.", n: "tiene = usted-Form – die höfliche Standardform an jeder Rezeption.", nEn: "tiene = the usted form – the polite standard form at any reception." },
     vb31: { e: "¿Puedo dejar mi mochila aquí?", d: "Kann ich meinen Rucksack hier lassen?", dEn: "Can I leave my backpack here?", s: "Vor dem Check-in oder nach dem Check-out.", sEn: "Before check-in or after check-out.", n: "puedo + Infinitiv = ich kann/darf …: ¿Puedo pagar con tarjeta? = Kann ich mit Karte zahlen?", nEn: "puedo + infinitive = I can/may …: ¿Puedo pagar con tarjeta? = Can I pay by card?" },
@@ -5399,6 +5560,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     tp64: { e: "¿Qué me recomendaría para comer aquí?", d: "Was würden Sie mir hier zu essen empfehlen?", dEn: "What would you recommend I eat here?", s: "Im Restaurant höflich um einen Tipp bitten.", sEn: "Politely asking for a tip at the restaurant.", n: "Condicional (recomendaría) klingt höflicher als die direkte Frage 'qué recomienda'.", nEn: "The conditional (recomendaría) sounds more polite than the direct 'qué recomienda'." },
     tp65: { e: "Preferiría ir a pie, no está lejos.", d: "Ich würde lieber zu Fuß gehen, es ist nicht weit.", dEn: "I'd rather walk, it's not far.", s: "Höflich eine Vorliebe äußern.", sEn: "Politely expressing a preference.", n: "preferir → preferiría (Condicional). ir a pie = zu Fuß gehen.", nEn: "preferir → preferiría (conditional). ir a pie = to go on foot." },
     tp66: { e: "Debería tomar un taxi, ya es de noche.", d: "Sie sollten ein Taxi nehmen, es ist schon dunkel.", dEn: "You should take a taxi, it's already dark.", s: "Jemandem einen vorsichtigen Rat geben.", sEn: "Giving someone a gentle piece of advice.", n: "debería (von deber) = sollte – die höfliche Art, einen Rat zu geben.", nEn: "debería (from deber) = should – the polite way to give advice." },
+    tp67: { e: "Ya he pagado la cuenta, gracias.", d: "Ich habe die Rechnung schon bezahlt, danke.", dEn: "I've already paid the bill, thanks.", s: "Im Restaurant klarstellen, dass schon bezahlt ist.", sEn: "Making clear at the restaurant that it's already paid.", n: "Der Trick: haber (he) + Partizip, ganz regelmäßig (pagar → pagado, -ar → -ado). Nur haber wird gebeugt – das Gegenstück zu „voy a + Infinitiv“.", nEn: "The trick: haber (he) + participle, perfectly regular (pagar → pagado, -ar → -ado). Only haber changes – the mirror of \"voy a + infinitive\"." },
+    tp68: { e: "Hemos reservado dos noches a tu nombre.", d: "Wir haben zwei Nächte auf deinen Namen gebucht.", dEn: "We've booked two nights in your name.", s: "An der Rezeption die Buchung bestätigen.", sEn: "Confirming the booking at reception.", n: "wir-Form des Tricks: hemos + Partizip (reservar → reservado). Das Hauptverb bleibt fest, nur haber ändert sich.", nEn: "We-form of the trick: hemos + participle (reservar → reservado). The main verb stays fixed, only haber changes." },
 
     // ===================== FARBEN =====================
     col01: { e: "¿Tiene esta camiseta en rojo?", d: "Haben Sie dieses T-Shirt in Rot?", dEn: "Do you have this T-shirt in red?", s: "Beim Klamotten-Kauf am Markt oder im Laden.", sEn: "When buying clothes at the market or shop.", n: "Farbe steht meist nach dem Nomen: una mochila roja, una bici roja.", nEn: "The colour usually comes after the noun: una mochila roja, una bici roja." },
@@ -7976,6 +8139,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     { id: "tp64", cat: "tiempos", lvl: 3, de: "Was würden Sie empfehlen?", en: "What would you recommend?", es: "¿Qué recomendaría?", tip: "re-ko-men-da-RI-a – recomendar im Konditional", tipEn: "re-ko-men-da-RI-a – recomendar in the conditional" },
     { id: "tp65", cat: "tiempos", lvl: 3, de: "Ich würde lieber zu Fuß gehen", en: "I'd rather walk", es: "Preferiría ir a pie", tip: "pre-fe-ri-RI-a – preferir im Konditional", tipEn: "pre-fe-ri-RI-a – preferir in the conditional" },
     { id: "tp66", cat: "tiempos", lvl: 3, de: "Sie sollten ein Taxi nehmen", en: "You should take a taxi", es: "Debería tomar un taxi", tip: "de-be-RI-a – debería = sollte (höflicher Rat)" },
+    // ---- Vergangenheits-Trick: he + Partizip (regelmäßig, Gegenstück zu „voy a + Infinitiv") ----
+    { id: "tp67", cat: "tiempos", lvl: 2, de: "Ich habe die Rechnung bezahlt", en: "I've paid the bill", es: "He pagado la cuenta", tip: "e pa-GA-do la KUEN-ta – he + Partizip, der einfache Vergangenheits-Trick (pagar → pagado)", tipEn: "e pa-GA-do la KUEN-ta – he + participle, the easy past trick (pagar → pagado)" },
+    { id: "tp68", cat: "tiempos", lvl: 2, de: "Wir haben zwei Nächte gebucht", en: "We've booked two nights", es: "Hemos reservado dos noches", tip: "E-mos re-ser-WA-do – nur haber wird gebeugt (reservar → reservado)", tipEn: "E-mos re-ser-WA-do – only haber changes (reservar → reservado)" },
 
     // ===================== FARBEN (mit echtem Farbfeld) =====================
     // swatch = CSS-Farbe; sie wird auf der Antwortseite als interaktives Feld gezeigt.
@@ -9831,7 +9997,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       dialogue: [
         { speaker: "A", de: "Hallo, guten Abend! Ich habe eine Reservierung.", en: "Hello, good evening! I have a reservation.", es: "¡Hola, buenas noches! Tengo una reserva." },
         { speaker: "B", de: "Willkommen! Auf welchen Namen läuft die Reservierung?", en: "Welcome! What name is the reservation under?", es: "¡Bienvenido! ¿A nombre de quién está la reserva?" },
-        { speaker: "A", de: "Auf den Namen Marcel, für drei Nächte.", en: "Under the name Marcel, for three nights.", es: "A nombre de Marcel, por tres noches." },
+        { speaker: "A", de: "Auf den Namen {name}, für drei Nächte.", en: "Under the name {name}, for three nights.", es: "A nombre de {name}, por tres noches." },
         { speaker: "B", de: "Perfekt, ich sehe sie hier. Kannst du mir deinen Pass zeigen?", en: "Perfect, I can see it here. Can you show me your passport?", es: "Perfecto, aquí la veo. ¿Me puedes mostrar tu pasaporte?" },
         { speaker: "A", de: "Ja, klar, hier bitte.", en: "Yes, of course, here you go.", es: "Sí, claro, aquí tienes." },
         { speaker: "B", de: "Danke. Hast du schon online bezahlt oder zahlst du jetzt?", en: "Thanks. Have you already paid online or are you paying now?", es: "Gracias. ¿Ya pagaste en línea o pagas ahora?" },
@@ -9903,7 +10069,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       dialogue: [
         { speaker: "A", de: "Hallo! Ist hier noch frei?", en: "Hi! Is this seat free?", es: "¡Hola! ¿Está libre aquí?" },
         { speaker: "B", de: "Ja, klar, setz dich.", en: "Yes, of course, sit down.", es: "Sí, claro, siéntate." },
-        { speaker: "A", de: "Danke. Ich bin Marcel. Wie heißt du?", en: "Thanks. I'm Marcel. What's your name?", es: "Gracias. Soy Marcel. ¿Cómo te llamas?" },
+        { speaker: "A", de: "Danke. Ich bin {name}. Wie heißt du?", en: "Thanks. I'm {name}. What's your name?", es: "Gracias. Soy {name}. ¿Cómo te llamas?" },
         { speaker: "B", de: "Ich bin Sofía. Freut mich!", en: "I'm Sofía. Nice to meet you!", es: "Soy Sofía. ¡Mucho gusto!" },
         { speaker: "A", de: "Freut mich auch. Woher kommst du?", en: "Nice to meet you too. Where are you from?", es: "Igualmente. ¿De dónde eres?" },
         { speaker: "B", de: "Ich komme aus Argentinien. Und du?", en: "I'm from Argentina. And you?", es: "Soy de Argentina. ¿Y tú?" },
@@ -10252,7 +10418,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       dialogue: [
         { speaker: "A", de: "Hallo, guten Tag.", en: "Hello, good day.", es: "Hola, buenos días." },
         { speaker: "B", de: "Hallo! Wie heißt du?", en: "Hi! What's your name?", es: "¡Hola! ¿Cómo te llamas?" },
-        { speaker: "A", de: "Ich heiße Marcel.", en: "My name is Marcel.", es: "Me llamo Marcel." },
+        { speaker: "A", de: "Ich heiße {name}.", en: "My name is {name}.", es: "Me llamo {name}." },
         { speaker: "B", de: "Hast du eine Reservierung?", en: "Do you have a reservation?", es: "¿Tienes una reserva?" },
         { speaker: "A", de: "Ja, für zwei Nächte.", en: "Yes, for two nights.", es: "Sí, por dos noches." },
         { speaker: "B", de: "Sehr gut. Dein Bett ist Nummer fünf.", en: "Very good. Your bed is number five.", es: "Muy bien. Tu cama es la número cinco." },
@@ -10290,8 +10456,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       goalA: "Begrüße, stell dich vor und frag nach dem Namen und der Herkunft.",
       goalB: "Antworte freundlich und einfach und stell eine Gegenfrage.",
       dialogue: [
-        { speaker: "A", de: "Hallo! Ich bin Marcel.", en: "Hi! I'm Marcel.", es: "¡Hola! Soy Marcel." },
-        { speaker: "B", de: "Hallo Marcel! Ich bin Ana.", en: "Hi Marcel! I'm Ana.", es: "¡Hola Marcel! Soy Ana." },
+        { speaker: "A", de: "Hallo! Ich bin {name}.", en: "Hi! I'm {name}.", es: "¡Hola! Soy {name}." },
+        { speaker: "B", de: "Hallo {name}! Ich bin Ana.", en: "Hi {name}! I'm Ana.", es: "¡Hola {name}! Soy Ana." },
         { speaker: "A", de: "Freut mich. Woher kommst du?", en: "Nice to meet you. Where are you from?", es: "Mucho gusto. ¿De dónde eres?" },
         { speaker: "B", de: "Aus Chile. Und du?", en: "From Chile. And you?", es: "De Chile. ¿Y tú?" },
         { speaker: "A", de: "Aus Deutschland.", en: "From Germany.", es: "De Alemania." },
@@ -10300,7 +10466,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         { speaker: "B", de: "Cool. Bis später!", en: "Cool. See you later!", es: "Genial. ¡Nos vemos!" },
         { speaker: "A", de: "Bis später!", en: "See you later!", es: "¡Nos vemos!" },
       ],
-      usefulPhrases: ["Soy Marcel.", "Mucho gusto.", "¿De dónde eres?", "¿Y tú?", "¿Cuánto te quedas?", "¡Nos vemos!"],
+      usefulPhrases: ["Soy {name}.", "Mucho gusto.", "¿De dónde eres?", "¿Y tú?", "¿Cuánto te quedas?", "¡Nos vemos!"],
     },
 
     // ===== Fortgeschritten (B1) – Nebensätze, höfliche Konditionale =====
@@ -10739,6 +10905,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         { es: "Estamos buscando la terminal.", de: "Wir suchen gerade den Busbahnhof.", en: "We're looking for the bus station right now." },
         { es: "¿Qué estás comiendo? Se ve rico.", de: "Was isst du gerade? Sieht lecker aus.", en: "What are you eating? It looks tasty." },
       ],
+    },
+    // Der einfache Vergangenheits-Trick: he + Partizip – das exakte Gegenstück zum
+    // Zukunfts-Trick „voy a + Infinitiv". In beiden Fällen wird nur ein winziges
+    // Hilfswort gebeugt (ir bzw. haber), das Hauptverb bleibt in EINER festen Form.
+    // Bewusst als eigener „Trick"-Block, damit Anfänger sofort losreden können.
+    easyPast: {
+      title: "Der einfache Vergangenheits-Trick: he + Partizip",
+      titleEn: "The easy past trick: he + participle",
+      intro: "Du kennst „voy a + Infinitiv“ für die Zukunft? Für die Vergangenheit gibt es das genaue Gegenstück: „he + Partizip“. In beiden Fällen beugst du nur ein winziges Hilfswort – das Hauptverb bleibt in EINER festen Form, die du nicht pro Person umbauen musst. Lern die fünf haber-Formen plus zwei Endungen, und du sprichst praktisch jedes Verb in der Vergangenheit.",
+      introEn: "Know \"voy a + infinitive\" for the future? For the past there's the exact mirror: \"he + participle\". In both you only conjugate a tiny helper word – the main verb stays in ONE fixed form you never rebuild for each person. Learn the five haber forms plus two endings and you can put almost any verb in the past.",
+      mirror: [
+        { es: "voy a tomar", de: "Zukunft: ir (voy …) + Infinitiv", en: "Future: ir (voy …) + infinitive" },
+        { es: "he tomado", de: "Vergangenheit: haber (he …) + Partizip", en: "Past: haber (he …) + participle" },
+      ],
+      forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
+      recipe: "haber (he/has/ha/hemos/han) + Partizip. Das Partizip ist kinderleicht: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). Ein paar Verben bilden es unregelmäßig (ver → visto, hacer → hecho, decir → dicho) – die wenigen siehst du weiter unten. Nur haber wird gebeugt – das Hauptverb bleibt fest.",
+      recipeEn: "haber (he/has/ha/hemos/han) + participle. The participle is dead easy: -ar → -ado (tomar → tomado, pagar → pagado), -er/-ir → -ido (comer → comido, perder → perdido). A few verbs form it irregularly (ver → visto, hacer → hecho, decir → dicho) – you'll find the handful further down. Only haber changes – the main verb stays fixed.",
+      examples: [
+        { es: "He llegado hoy.", de: "Ich bin heute angekommen.", en: "I arrived today." },
+        { es: "¿Has comido algo?", de: "Hast du etwas gegessen?", en: "Have you eaten anything?" },
+        { es: "He perdido mi pasaporte.", de: "Ich habe meinen Pass verloren.", en: "I've lost my passport." },
+        { es: "Hemos reservado dos noches.", de: "Wir haben zwei Nächte gebucht.", en: "We've booked two nights." },
+      ],
+      note: "Ehrlich dazu: In Lateinamerika nimmt man bei einem klaren Zeitpunkt (ayer, el lunes) lieber das Indefinido – „Ayer llegué“ statt „Ayer he llegado“. Aber verstanden wirst du mit „he + Partizip“ überall. Als Soforthilfe zum Drauflossprechen ist der Trick ideal; den feineren Indefinido (-é/-í) lernst du dann Stück für Stück.", noteEn: "To be honest: in Latin America, with a clear point in time (ayer, el lunes), people prefer the Indefinido – \"Ayer llegué\" rather than \"Ayer he llegado\". But \"he + participle\" is understood everywhere. As a quick fix for speaking straight away the trick is ideal; the finer Indefinido (-é/-í) you'll pick up bit by bit.",
     },
     // Pretéritos fuertes: die häufigsten unregelmäßigen Vergangenheiten
     strongPast: {
@@ -18694,11 +18884,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  *   DIALOGOS_SCENARIOS = Menü: { id, title, icon, lvl, intro }
  *   DIALOGOS           = die Dialoge: { id, cat(=scenario.id), title, lvl, turns[] }
  *     turn npc  : { who:"npc",  es, de }
- *     turn mc   : { who:"user", kind:"mc",   de, solEs, options:[{es, ok}] }
- *     turn type : { who:"user", kind:"type", de, solEs, accept:[…] }
+ *     turn mc   : { who:"user", kind:"mc",   de, solEs, why, whyEn, options:[{es, ok}] }
+ *     turn type : { who:"user", kind:"type", de, solEs, why, whyEn, accept:[…] }
  *       de    = Handlungsanweisung („(sag, dass du einchecken willst)")
  *       solEs = die Musterantwort (erscheint in der Verlaufsspur)
  *       accept= zusätzlich akzeptierte (normalisierte) Eingaben neben solEs
+ *       why / whyEn = kurzer Hintergrund, WARUM die Musterantwort so lautet
+ *                     (Grammatik/Wortschatz/Höflichkeit). Erscheint beim
+ *                     „Besser so" aufklappbar. Pflichtfeld jedes user-Zugs.
+ *
+ * Platzhalter {name}: wird beim Anzeigen/Prüfen durch den im Profil hinterlegten
+ * Reise-Namen ersetzt (ohne Eintrag bleibt der Beispielname „Marco"). So nennt
+ * der Nutzer in den Dialogen seinen eigenen Namen statt eines fremden.
  */
 (function () {
   "use strict";
@@ -18722,16 +18919,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "¡Buenas! Bienvenido al Hotel Sol Andino. ¿En qué le puedo ayudar?", de: "Hallo! Willkommen im Hotel Sol Andino. Wie kann ich Ihnen helfen?", en: "Hi there! Welcome to the Hotel Sol Andino. How can I help you?" },
         { who: "user", kind: "mc", de: "(sag, dass du einchecken möchtest)", en: "(say you'd like to check in)", solEs: "Quisiera hacer el check-in, por favor.",
+          why: "„Quisiera“ ist die höfliche Konjunktiv-Form von „querer“ – klingt freundlicher als das direkte „quiero“.",
+          whyEn: "„Quisiera“ (I would like) is the polite subjunctive of „querer“ – softer than a plain „quiero“.",
           options: [
             { es: "Quisiera hacer el check-in, por favor.", ok: true },
             { es: "La cuenta, por favor.", ok: false },
             { es: "¿Dónde está el baño?", ok: false },
           ] },
         { who: "npc", es: "Claro que sí. ¿A nombre de quién está la reserva?", de: "Aber natürlich. Auf welchen Namen läuft die Reservierung?", en: "Of course. What name is the booking under?" },
-        { who: "user", kind: "type", de: "(antworte: auf den Namen Marco)", en: "(answer: under the name Marco)", solEs: "A nombre de Marco.",
-          accept: ["a nombre de marco", "marco", "es marco", "me llamo marco", "esta a nombre de marco"] },
+        { who: "user", kind: "type", de: "(antworte: auf den Namen {name})", en: "(answer: under the name {name})", solEs: "A nombre de {name}.",
+          why: "„A nombre de …“ = „auf den Namen …“ – die feststehende Wendung bei Reservierungen.",
+          whyEn: "„A nombre de …“ = „under the name …“ – the set phrase used for bookings.",
+          accept: ["a nombre de {name}", "{name}", "es {name}", "me llamo {name}", "esta a nombre de {name}"] },
         { who: "npc", es: "Perfecto, aquí la tengo. Una habitación doble por tres noches, ¿verdad?", de: "Perfekt, hier habe ich sie. Ein Doppelzimmer für drei Nächte, richtig?", en: "Perfect, here it is. A double room for three nights, right?" },
         { who: "user", kind: "mc", de: "(bestätige: ja, genau, drei Nächte)", en: "(confirm: yes, exactly, three nights)", solEs: "Sí, exacto, tres noches.",
+          why: "„exacto“ bestätigt kurz „genau so“; „noche“ wird im Plural zu „noches“.",
+          whyEn: "„exacto“ is a quick „that's right“; „noche“ becomes „noches“ in the plural.",
           options: [
             { es: "Sí, exacto, tres noches.", ok: true },
             { es: "No, solo una noche.", ok: false },
@@ -18739,9 +18942,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Muy bien. ¿Me permite su pasaporte, por favor?", de: "Sehr gut. Dürfte ich bitte Ihren Reisepass haben?", en: "Very good. May I have your passport, please?" },
         { who: "user", kind: "type", de: "(sag, hier bitte, und reich ihn rüber)", en: "(say here you go and hand it over)", solEs: "Sí, aquí tiene.",
+          why: "„Aquí tiene“ (wörtlich „hier haben Sie“) ist die höfliche Sie-Form beim Überreichen; zu Freunden „aquí tienes“.",
+          whyEn: "„Aquí tiene“ (lit. „here you have“) is the polite usted form when handing something over; to a friend it's „aquí tienes“.",
           accept: ["aqui tiene", "si aqui tiene", "aqui esta", "tenga", "aqui lo tiene"] },
         { who: "npc", es: "Gracias. ¿Prefiere una habitación con vista a la calle o una más tranquila?", de: "Danke. Möchten Sie lieber ein Zimmer zur Straße oder ein ruhigeres?", en: "Thanks. Would you prefer a room facing the street or a quieter one?" },
         { who: "user", kind: "mc", de: "(sag, du hättest gern ein ruhiges Zimmer)", en: "(say you'd like a quiet room)", solEs: "Una tranquila, por favor.",
+          why: "„una tranquila“ steht für „una habitación tranquila“; das Adjektiv ist weiblich (–a), weil „habitación“ weiblich ist.",
+          whyEn: "„una tranquila“ stands for „una habitación tranquila“; the adjective is feminine (–a) because „habitación“ is feminine.",
           options: [
             { es: "Una tranquila, por favor.", ok: true },
             { es: "Con vista a la calle, mejor.", ok: false },
@@ -18749,9 +18956,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Entendido. Le doy la habitación doscientos cuatro, en el segundo piso.", de: "Verstanden. Ich gebe Ihnen Zimmer zweihundertvier im zweiten Stock.", en: "Understood. I'll give you room two hundred and four, on the second floor." },
         { who: "user", kind: "type", de: "(frag, um wie viel Uhr es Frühstück gibt)", en: "(ask what time breakfast is)", solEs: "¿A qué hora es el desayuno?",
+          why: "„¿A qué hora …?“ = „Um wie viel Uhr …?“; das kleine „a“ gehört fest zur Uhrzeit-Frage.",
+          whyEn: "„¿A qué hora …?“ = „At what time …?“; the little „a“ is part of asking about a time.",
           accept: ["a que hora es el desayuno", "cuando es el desayuno", "a que hora el desayuno", "a que hora hay desayuno"] },
         { who: "npc", es: "De siete a diez de la mañana, en el comedor de la planta baja.", de: "Von sieben bis zehn Uhr morgens, im Speisesaal im Erdgeschoss.", en: "From seven to ten in the morning, in the dining room on the ground floor." },
         { who: "user", kind: "mc", de: "(frag, ob es WLAN im Zimmer gibt)", en: "(ask whether there's WiFi in the room)", solEs: "¿Hay wifi en la habitación?",
+          why: "„hay“ = „es gibt“ und bleibt unverändert – egal ob Singular oder Plural.",
+          whyEn: "„hay“ = „there is/are“ and never changes – singular or plural.",
           options: [
             { es: "¿Hay wifi en la habitación?", ok: true },
             { es: "¿Tienen piscina?", ok: false },
@@ -18759,6 +18970,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Sí, la clave está en el reverso de su tarjeta-llave. Aquí tiene.", de: "Ja, das Passwort steht auf der Rückseite Ihrer Schlüsselkarte. Hier bitte.", en: "Yes, the password is on the back of your key card. Here you go." },
         { who: "user", kind: "type", de: "(bedanke dich freundlich)", en: "(thank them warmly)", solEs: "Muchas gracias, muy amable.",
+          why: "„muchas“ passt sich an „gracias“ an (weiblich, Plural); „muy amable“ = „sehr freundlich“ als kleines Kompliment.",
+          whyEn: "„muchas“ agrees with „gracias“ (feminine plural); „muy amable“ = „very kind“ as a little compliment.",
           accept: ["muchas gracias muy amable", "muchas gracias", "gracias", "mil gracias", "muy amable, gracias"] },
         { who: "npc", es: "A usted. Cualquier cosa, estamos en recepción las veinticuatro horas. ¡Que descanse!", de: "Gern. Bei Fragen: Die Rezeption ist rund um die Uhr besetzt. Gute Erholung!", en: "Thank you. If you need anything, reception is staffed around the clock. Have a good rest!" },
       ],
@@ -18768,6 +18981,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "Buenas tardes, bienvenidos. ¿Mesa para cuántas personas?", de: "Guten Tag, willkommen. Ein Tisch für wie viele Personen?", en: "Good afternoon, welcome. A table for how many people?" },
         { who: "user", kind: "mc", de: "(sag: ein Tisch für zwei)", en: "(say: a table for two)", solEs: "Una mesa para dos, por favor.",
+          why: "„para dos“ = „für zwei (Personen)“; „para“ gibt hier den Zweck/Empfänger an.",
+          whyEn: "„para dos“ = „for two (people)“; „para“ marks the purpose/recipient here.",
           options: [
             { es: "Una mesa para dos, por favor.", ok: true },
             { es: "La cuenta, por favor.", ok: false },
@@ -18775,6 +18990,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Perfecto, síganme. ¿Esta mesa junto a la ventana les parece bien?", de: "Perfekt, folgen Sie mir. Ist dieser Tisch am Fenster in Ordnung?", en: "Perfect, follow me. Is this table by the window all right?" },
         { who: "user", kind: "mc", de: "(sag, der Tisch ist super)", en: "(say the table is great)", solEs: "Sí, está perfecta, gracias.",
+          why: "„está“ (von estar) für einen aktuellen Zustand; „perfecta“ weiblich wegen „mesa“.",
+          whyEn: "„está“ (from estar) for a current state; „perfecta“ is feminine because of „mesa“.",
           options: [
             { es: "Sí, está perfecta, gracias.", ok: true },
             { es: "No, prefiero afuera en la calle.", ok: false },
@@ -18782,12 +18999,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Aquí tienen la carta. ¿Algo para tomar mientras deciden?", de: "Hier ist die Speisekarte. Etwas zu trinken, während Sie sich entscheiden?", en: "Here's the menu. Something to drink while you decide?" },
         { who: "user", kind: "type", de: "(bestelle zwei Wasser)", en: "(order two waters)", solEs: "Dos aguas, por favor.",
+          why: "Beim Bestellen zählt man „agua“: „dos aguas“ (zwei Wasser/Flaschen) ist im Lokal völlig normal.",
+          whyEn: "When ordering you count „agua“: „dos aguas“ (two waters) is perfectly normal in a café.",
           accept: ["dos aguas", "dos aguas por favor", "dos botellas de agua", "queremos dos aguas", "dos aguas porfa"] },
         { who: "npc", es: "Enseguida se las traigo. ¿Ya saben qué van a pedir de comer?", de: "Bringe ich gleich. Wissen Sie schon, was Sie essen möchten?", en: "I'll bring them right over. Do you know yet what you'd like to eat?" },
         { who: "user", kind: "type", de: "(frag, was das Tagesgericht ist)", en: "(ask what the dish of the day is)", solEs: "¿Cuál es el plato del día?",
+          why: "„¿Cuál es …?“ fragt nach einer Auswahl („welches“); „del“ ist die Verschmelzung de + el.",
+          whyEn: "„¿Cuál es …?“ asks about a choice („which one“); „del“ is de + el merged.",
           accept: ["cual es el plato del dia", "que es el plato del dia", "que hay de plato del dia", "cual es el menu del dia"] },
         { who: "npc", es: "Hoy tenemos lomo saltado con arroz y papas. Está muy rico.", de: "Heute gibt es Lomo Saltado mit Reis und Kartoffeln. Es ist sehr lecker.", en: "Today we've got lomo saltado with rice and potatoes. It's really tasty." },
         { who: "user", kind: "mc", de: "(bestelle das Tagesgericht zweimal)", en: "(order the dish of the day twice)", solEs: "Entonces dos platos del día, por favor.",
+          why: "„entonces“ = „dann/also“ knüpft an das Gesagte an; „plato“ wird im Plural zu „platos“.",
+          whyEn: "„entonces“ = „then/so“ picks up on what was said; „plato“ becomes „platos“ in the plural.",
           options: [
             { es: "Entonces dos platos del día, por favor.", ok: true },
             { es: "No, gracias, solo la cuenta.", ok: false },
@@ -18795,6 +19018,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Excelente elección. ¿Desean algo más, un postre quizás?", de: "Ausgezeichnete Wahl. Möchten Sie noch etwas, vielleicht ein Dessert?", en: "Excellent choice. Would you like anything else, a dessert perhaps?" },
         { who: "user", kind: "mc", de: "(lehne höflich ab – erst mal nichts weiter)", en: "(politely decline – nothing more for now)", solEs: "No, así está bien, gracias.",
+          why: "„así está bien“ = „so ist es gut“ – die höfliche Art, „nein danke, das reicht“ zu sagen.",
+          whyEn: "„así está bien“ = „it's fine like this“ – the polite way to say „no thanks, that's enough“.",
           options: [
             { es: "No, así está bien, gracias.", ok: true },
             { es: "Sí, la cuenta, por favor.", ok: false },
@@ -18802,12 +19027,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Muy bien. … (más tarde) ¿Qué tal estuvo todo? ¿Les gustó?", de: "Sehr gut. … (später) Wie war alles? Hat es geschmeckt?", en: "Very good. … (later) How was everything? Did you enjoy it?" },
         { who: "user", kind: "type", de: "(sag, es war sehr lecker)", en: "(say it was really tasty)", solEs: "Estuvo todo muy rico.",
+          why: "„estuvo“ (Indefinido von estar) für etwas Abgeschlossenes; beim Essen heißt „rico“ „lecker“.",
+          whyEn: "„estuvo“ (preterite of estar) for something finished; with food „rico“ means „tasty“.",
           accept: ["estuvo todo muy rico", "muy rico", "estuvo muy rico", "todo muy rico", "estaba muy rico"] },
         { who: "npc", es: "Me alegra mucho. ¿Les traigo algo más o ya la cuenta?", de: "Das freut mich sehr. Bringe ich Ihnen noch etwas, oder schon die Rechnung?", en: "I'm really glad. Shall I bring you anything else, or the bill now?" },
         { who: "user", kind: "type", de: "(bitte um die Rechnung)", en: "(ask for the bill)", solEs: "La cuenta, por favor.",
+          why: "„la cuenta“ = „die Rechnung“; das Wort ist weiblich, daher „la“.",
+          whyEn: "„la cuenta“ = „the bill“; the word is feminine, hence „la“.",
           accept: ["la cuenta por favor", "la cuenta", "me trae la cuenta", "nos trae la cuenta", "la cuenta porfa"] },
         { who: "npc", es: "Claro, ya se la traigo. ¿Van a pagar en efectivo o con tarjeta?", de: "Klar, ich bringe sie. Zahlen Sie bar oder mit Karte?", en: "Of course, I'll bring it. Will you pay by cash or card?" },
         { who: "user", kind: "mc", de: "(sag: mit Karte)", en: "(say: by card)", solEs: "Con tarjeta, por favor.",
+          why: "„con“ = „mit“; „pagar con tarjeta / en efectivo“ sind die festen Wendungen fürs Bezahlen.",
+          whyEn: "„con“ = „with“; „pagar con tarjeta / en efectivo“ are the set phrases for paying.",
           options: [
             { es: "Con tarjeta, por favor.", ok: true },
             { es: "En efectivo.", ok: false },
@@ -18821,9 +19052,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "¡Siguiente, por favor! ¿Para dónde va?", de: "Der Nächste bitte! Wohin möchten Sie?", en: "Next, please! Where are you heading?" },
         { who: "user", kind: "type", de: "(sag, du willst ein Ticket nach Cusco)", en: "(say you want a ticket to Cusco)", solEs: "Quiero un boleto para Cusco.",
+          why: "„boleto“ ist in Lateinamerika das Ticket; „para Cusco“ gibt das Ziel an.",
+          whyEn: "„boleto“ is the word for ticket in Latin America; „para Cusco“ marks the destination.",
           accept: ["quiero un boleto para cusco", "un boleto para cusco", "para cusco", "un pasaje para cusco", "quiero un pasaje para cusco"] },
         { who: "npc", es: "Muy bien. ¿Para hoy o para mañana?", de: "Sehr gut. Für heute oder für morgen?", en: "Very good. For today or for tomorrow?" },
         { who: "user", kind: "mc", de: "(sag: für morgen früh)", en: "(say: for tomorrow morning)", solEs: "Para mañana en la mañana.",
+          why: "„mañana“ heißt „morgen“ UND „Morgen“ – „en la mañana“ stellt klar: am Vormittag.",
+          whyEn: "„mañana“ means both „tomorrow“ and „morning“ – „en la mañana“ makes clear: in the morning.",
           options: [
             { es: "Para mañana en la mañana.", ok: true },
             { es: "Para hoy en la noche.", ok: false },
@@ -18831,6 +19066,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Tenemos uno a las ocho y otro a las diez. ¿Cuál prefiere?", de: "Wir haben einen um acht und einen um zehn. Welchen möchten Sie?", en: "We've got one at eight and another at ten. Which would you prefer?" },
         { who: "user", kind: "mc", de: "(nimm den um acht)", en: "(take the eight o'clock one)", solEs: "El de las ocho, por favor.",
+          why: "„el de las ocho“ = „der von acht (Uhr)“; „el de …“ spart das Wort „bus“ ein.",
+          whyEn: "„el de las ocho“ = „the eight o'clock one“; „el de …“ drops the word „bus“.",
           options: [
             { es: "El de las ocho, por favor.", ok: true },
             { es: "El de medianoche.", ok: false },
@@ -18838,19 +19075,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¿Asiento normal o cama? El cama es más cómodo para el viaje largo.", de: "Normaler Sitz oder Liegesitz? Der Liegesitz ist bequemer für die lange Fahrt.", en: "A normal seat or a reclining one? The reclining seat is more comfortable for the long journey." },
         { who: "user", kind: "type", de: "(sag, du willst einen normalen Sitz)", en: "(say you want a normal seat)", solEs: "Asiento normal, por favor.",
+          why: "Das Adjektiv steht hinter dem Nomen: „asiento normal“, nicht „normal asiento“.",
+          whyEn: "The adjective follows the noun: „asiento normal“, not „normal asiento“.",
           accept: ["asiento normal", "asiento normal por favor", "un asiento normal", "normal por favor", "el normal"] },
         { who: "npc", es: "Perfecto. ¿Prefiere ventana o pasillo?", de: "Perfekt. Möchten Sie lieber Fenster oder Gang?", en: "Perfect. Would you prefer window or aisle?" },
         { who: "user", kind: "mc", de: "(sag: Fenster)", en: "(say: window)", solEs: "Ventana, por favor.",
+          why: "Kurzantwort: das Stichwort allein + „por favor“ reicht im Gespräch völlig aus.",
+          whyEn: "Short answer: just the keyword + „por favor“ is plenty in conversation.",
           options: [
             { es: "Ventana, por favor.", ok: true },
             { es: "Pasillo, mejor.", ok: false },
             { es: "Me da igual el horario.", ok: false },
           ] },
         { who: "npc", es: "Listo. ¿Me da su nombre completo, por favor?", de: "Geht klar. Geben Sie mir bitte Ihren vollständigen Namen?", en: "Right. Could you give me your full name, please?" },
-        { who: "user", kind: "type", de: "(nenne deinen Namen: Marco Pérez)", en: "(give your name: Marco Pérez)", solEs: "Marco Pérez.",
-          accept: ["marco perez", "me llamo marco perez", "soy marco perez", "mi nombre es marco perez"] },
+        { who: "user", kind: "type", de: "(nenne deinen Namen: {name} Pérez)", en: "(give your name: {name} Pérez)", solEs: "{name} Pérez.",
+          why: "Auf die Frage nach dem Namen genügt der Name allein – knapp und natürlich.",
+          whyEn: "To a name question, just the name is enough – brief and natural.",
+          accept: ["{name} perez", "me llamo {name} perez", "soy {name} perez", "mi nombre es {name} perez"] },
         { who: "npc", es: "Gracias. Son cuarenta soles. ¿Cómo va a pagar?", de: "Danke. Das macht vierzig Soles. Wie möchten Sie zahlen?", en: "Thanks. That's forty soles. How would you like to pay?" },
         { who: "user", kind: "mc", de: "(sag: bar)", en: "(say: cash)", solEs: "En efectivo.",
+          why: "„en efectivo“ = „bar“; feste Wendung mit „en“.",
+          whyEn: "„en efectivo“ = „(in) cash“; a set phrase with „en“.",
           options: [
             { es: "En efectivo.", ok: true },
             { es: "¿Puedo pagar en Cusco?", ok: false },
@@ -18858,6 +19103,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Aquí tiene su boleto y su vuelto. El bus sale del andén número cinco.", de: "Hier ist Ihr Ticket und Ihr Wechselgeld. Der Bus fährt von Bahnsteig fünf.", en: "Here's your ticket and your change. The bus leaves from platform five." },
         { who: "user", kind: "type", de: "(frag nach, wie lange die Fahrt dauert)", en: "(ask how long the journey takes)", solEs: "¿Cuánto dura el viaje?",
+          why: "„durar“ = „dauern“; „¿Cuánto dura …?“ = „Wie lange dauert …?“.",
+          whyEn: "„durar“ = „to last“; „¿Cuánto dura …?“ = „How long does … take?“.",
           accept: ["cuanto dura el viaje", "cuanto demora el viaje", "cuanto tiempo dura el viaje", "cuanto se demora", "cuanto dura"] },
         { who: "npc", es: "Unas seis horas, llega a las dos de la tarde. ¡Buen viaje!", de: "Etwa sechs Stunden, Ankunft um zwei Uhr nachmittags. Gute Reise!", en: "About six hours, arriving at two in the afternoon. Have a good trip!" },
       ],
@@ -18867,9 +19114,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "¡Buenas! ¿A dónde lo llevo?", de: "Hallo! Wohin darf ich Sie fahren?", en: "Hi there! Where can I take you?" },
         { who: "user", kind: "type", de: "(sag, du willst zum Stadtzentrum)", en: "(say you want to go to the city centre)", solEs: "Al centro, por favor.",
+          why: "„al“ ist a + el; „al centro“ = „ins Zentrum“ – Richtung mit „a“.",
+          whyEn: "„al“ is a + el; „al centro“ = „to the centre“ – direction with „a“.",
           accept: ["al centro", "al centro por favor", "quiero ir al centro", "voy al centro", "al centro porfa"] },
         { who: "npc", es: "Claro. ¿Conoce la dirección exacta o lo dejo en la plaza?", de: "Klar. Kennen Sie die genaue Adresse oder setze ich Sie an der Plaza ab?", en: "Sure. Do you know the exact address, or shall I drop you at the plaza?" },
         { who: "user", kind: "mc", de: "(sag, an der Plaza ist gut)", en: "(say the plaza is fine)", solEs: "Déjeme en la plaza, está bien.",
+          why: "„déjeme“ = höflicher Befehl (Sie-Form) von „dejar“ + „me“ = „setzen Sie mich ab“.",
+          whyEn: "„déjeme“ = polite command (usted) of „dejar“ + „me“ = „drop me off“.",
           options: [
             { es: "Déjeme en la plaza, está bien.", ok: true },
             { es: "No sé dónde estoy.", ok: false },
@@ -18877,6 +19128,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Perfecto. ¿Tiene apuro o vamos con calma?", de: "Perfekt. Haben Sie es eilig oder fahren wir gemütlich?", en: "Perfect. Are you in a hurry or shall we take it easy?" },
         { who: "user", kind: "mc", de: "(frag vorher, wie viel die Fahrt kostet)", en: "(ask first how much the ride costs)", solEs: "¿Cuánto cuesta hasta allá?",
+          why: "Erst den Preis klären! „¿Cuánto cuesta?“ = „Was kostet es?“; „hasta allá“ = „bis dorthin“.",
+          whyEn: "Settle the price first! „¿Cuánto cuesta?“ = „How much is it?“; „hasta allá“ = „all the way there“.",
           options: [
             { es: "¿Cuánto cuesta hasta allá?", ok: true },
             { es: "¿Tiene cambio de cien?", ok: false },
@@ -18884,6 +19137,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Unos quince soles, más o menos. ¿Le parece bien?", de: "So um die fünfzehn Soles, mehr oder weniger. Geht das in Ordnung?", en: "Around fifteen soles, more or less. Does that sound all right?" },
         { who: "user", kind: "mc", de: "(stimm zu und bitte ihn loszufahren)", en: "(agree and ask them to set off)", solEs: "Está bien, vamos.",
+          why: "„vamos“ = „los/fahren wir“ – die 1. Person Plural als Aufforderung.",
+          whyEn: "„vamos“ = „let's go“ – the 1st-person plural used as a prompt.",
           options: [
             { es: "Está bien, vamos.", ok: true },
             { es: "No, gracias, camino.", ok: false },
@@ -18891,12 +19146,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "(en el camino) ¿Es la primera vez que visita la ciudad?", de: "(unterwegs) Sind Sie zum ersten Mal in der Stadt?", en: "(on the way) Is it your first time in the city?" },
         { who: "user", kind: "type", de: "(sag: ja, du bist Tourist)", en: "(say: yes, you're a tourist)", solEs: "Sí, soy turista.",
+          why: "„ser“ (soy) für eine dauerhafte Eigenschaft/Rolle wie „Tourist“.",
+          whyEn: "„ser“ (soy) for a lasting trait/role such as „tourist“.",
           accept: ["si soy turista", "soy turista", "vengo de turista", "si de vacaciones", "si estoy de vacaciones"] },
         { who: "npc", es: "¡Qué bueno! ¿De qué país viene, si no es indiscreción?", de: "Wie schön! Aus welchem Land kommen Sie, wenn ich fragen darf?", en: "How lovely! Which country are you from, if you don't mind me asking?" },
         { who: "user", kind: "type", de: "(sag, du kommst aus Deutschland)", en: "(say you're from Germany)", solEs: "Vengo de Alemania.",
+          why: "„venir de“ = „kommen aus“; Länder stehen hier ohne Artikel: „de Alemania“.",
+          whyEn: "„venir de“ = „to come from“; countries take no article here: „de Alemania“.",
           accept: ["vengo de alemania", "soy de alemania", "de alemania", "soy aleman", "yo soy de alemania"] },
         { who: "npc", es: "¡Alemania, qué lejos! ¿Le pongo un poco de música o prefiere tranquilo?", de: "Deutschland, so weit weg! Soll ich etwas Musik anmachen oder lieber ruhig?", en: "Germany, so far away! Shall I put on some music, or would you rather have it quiet?" },
         { who: "user", kind: "mc", de: "(sag, etwas Musik wäre schön)", en: "(say some music would be nice)", solEs: "Un poco de música, por favor.",
+          why: "„un poco de“ = „ein bisschen“; immer mit „de“ vor dem Nomen.",
+          whyEn: "„un poco de“ = „a bit of“; always with „de“ before the noun.",
           options: [
             { es: "Un poco de música, por favor.", ok: true },
             { es: "No, en silencio, gracias.", ok: false },
@@ -18904,6 +19165,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¡Listo! Ya casi llegamos. Aquí es la plaza, son quince soles.", de: "Geht klar! Wir sind fast da. Hier ist die Plaza, das macht fünfzehn Soles.", en: "Right! We're almost there. Here's the plaza, that's fifteen soles." },
         { who: "user", kind: "type", de: "(sag, hier bitte – und bedanke dich)", en: "(say here you go – and thank them)", solEs: "Aquí tiene, gracias.",
+          why: "„aquí tiene“ beim Übergeben des Geldes (Sie-Form), danach kurz „gracias“.",
+          whyEn: "„aquí tiene“ when handing over the money (usted), then a quick „gracias“.",
           accept: ["aqui tiene gracias", "aqui tiene", "aqui esta", "tenga gracias", "aqui tiene esta bien"] },
         { who: "npc", es: "Muchas gracias. ¡Que disfrute la ciudad y buen viaje!", de: "Vielen Dank. Genießen Sie die Stadt und gute Reise!", en: "Thank you very much. Enjoy the city and have a good trip!" },
       ],
@@ -18913,6 +19176,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "¡Pásele, casero! Tengo fruta fresquita. ¿Qué va a llevar?", de: "Kommen Sie ran, mein Lieber! Ich hab ganz frisches Obst. Was darf's sein?", en: "Come on over, casero! I've got lovely fresh fruit. What can I get you?" },
         { who: "user", kind: "mc", de: "(frag, wie viel das Kilo Mangos kostet)", en: "(ask how much a kilo of mangoes costs)", solEs: "¿A cuánto está el kilo de mango?",
+          why: "„¿A cuánto está …?“ fragt nach dem (schwankenden) Tagespreis – typisch auf dem Markt.",
+          whyEn: "„¿A cuánto está …?“ asks for the current/daily price (it varies) – typical at a market.",
           options: [
             { es: "¿A cuánto está el kilo de mango?", ok: true },
             { es: "¿Dónde está la salida?", ok: false },
@@ -18920,12 +19185,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "A cinco soles el kilo, bien dulces, recién traídos.", de: "Fünf Soles das Kilo, schön süß, frisch geliefert.", en: "Five soles a kilo, nice and sweet, just delivered." },
         { who: "user", kind: "type", de: "(sag, das sei ein bisschen teuer)", en: "(say that's a bit pricey)", solEs: "Está un poco caro.",
+          why: "„está“ für einen veränderlichen Zustand (Preis heute); „un poco“ mildert die Kritik ab.",
+          whyEn: "„está“ for a changeable state (today's price); „un poco“ softens the complaint.",
           accept: ["esta un poco caro", "esta caro", "un poco caro", "esta medio caro", "me parece caro"] },
         { who: "npc", es: "¿Caro? ¡Pero si es la mejor fruta del mercado, casero!", de: "Teuer? Aber das ist doch das beste Obst auf dem Markt, mein Lieber!", en: "Pricey? But this is the best fruit in the market, casero!" },
         { who: "user", kind: "type", de: "(feilsche freundlich: ob er es etwas billiger macht)", en: "(haggle nicely: whether they'll make it a bit cheaper)", solEs: "¿Me lo deja más barato?",
+          why: "„¿Me lo deja …?“ = „Lassen Sie es mir …?“ – die höfliche Standardfrage beim Feilschen.",
+          whyEn: "„¿Me lo deja …?“ = „Will you let me have it …?“ – the polite go-to phrase for haggling.",
           accept: ["me lo deja mas barato", "mas barato", "un poco mas barato", "me hace un descuento", "me da mas barato"] },
         { who: "npc", es: "A ver… ¿cuánto va a llevar? Si lleva harto, le bajo el precio.", de: "Mal sehen … wie viel nehmen Sie? Wenn Sie viel nehmen, mache ich es billiger.", en: "Let's see… how much will you take? If you take a lot, I'll drop the price." },
         { who: "user", kind: "mc", de: "(sag, du willst zwei Kilo)", en: "(say you want two kilos)", solEs: "Quiero dos kilos.",
+          why: "Nach der Zahl steht „kilo“ im Plural: „dos kilos“.",
+          whyEn: "After the number „kilo“ goes plural: „dos kilos“.",
           options: [
             { es: "Quiero dos kilos.", ok: true },
             { es: "Solo uno, gracias.", ok: false },
@@ -18933,6 +19204,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Bueno… para usted, cuatro soles el kilo. ¿Le parece?", de: "Na gut … für Sie vier Soles das Kilo. Geht das?", en: "All right… for you, four soles a kilo. How's that?" },
         { who: "user", kind: "mc", de: "(akzeptiere zufrieden)", en: "(accept, happy with it)", solEs: "Listo, está bien, deme dos.",
+          why: "„listo“ = „abgemacht/okay“; „deme“ = höflicher Befehl „geben Sie mir“.",
+          whyEn: "„listo“ = „done/okay“; „deme“ = polite command „give me“.",
           options: [
             { es: "Listo, está bien, deme dos.", ok: true },
             { es: "No, sigue muy caro.", ok: false },
@@ -18940,6 +19213,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¡Eso, casero! ¿Le gustaría probar una papaya también? Está en oferta.", de: "So ist's recht, mein Lieber! Möchten Sie auch eine Papaya probieren? Die ist im Angebot.", en: "That's it, casero! Would you like to try a papaya too? It's on offer." },
         { who: "user", kind: "mc", de: "(lehne diesmal höflich ab)", en: "(politely decline this time)", solEs: "No, gracias, así está bien.",
+          why: "„así está bien“ lehnt freundlich ab, ohne unhöflich zu wirken.",
+          whyEn: "„así está bien“ declines politely without sounding rude.",
           options: [
             { es: "No, gracias, así está bien.", ok: true },
             { es: "Sí, deme cinco kilos.", ok: false },
@@ -18947,9 +19222,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Como guste. Son ocho soles los dos kilos de mango.", de: "Wie Sie möchten. Das macht acht Soles für die zwei Kilo Mango.", en: "As you like. That's eight soles for the two kilos of mango." },
         { who: "user", kind: "type", de: "(frag, ob du mit Karte zahlen kannst)", en: "(ask whether you can pay by card)", solEs: "¿Puedo pagar con tarjeta?",
+          why: "„¿Puedo …?“ + Infinitiv = „Darf/Kann ich …?“ – eine höfliche Erlaubnisfrage.",
+          whyEn: "„¿Puedo …?“ + infinitive = „May/Can I …?“ – a polite way to ask permission.",
           accept: ["puedo pagar con tarjeta", "se puede con tarjeta", "aceptan tarjeta", "con tarjeta se puede", "puedo con tarjeta"] },
         { who: "npc", es: "No, casero, aquí solo efectivo. ¿Tiene sencillo?", de: "Nein, mein Lieber, hier nur bar. Haben Sie es passend?", en: "No, casero, it's cash only here. Have you got the right change?" },
         { who: "user", kind: "type", de: "(sag, ja, hier bitte)", en: "(say yes, here you go)", solEs: "Sí, aquí tiene.",
+          why: "Wieder „aquí tiene“ beim Übergeben – diesmal des Geldes.",
+          whyEn: "Again „aquí tiene“ when handing over – this time the money.",
           accept: ["aqui tiene", "si aqui tiene", "aqui esta", "tenga", "aqui tiene esta"] },
         { who: "npc", es: "¡Gracias, casero! Aquí está su fruta. ¡Que le aproveche!", de: "Danke, mein Lieber! Hier ist Ihr Obst. Lassen Sie es sich schmecken!", en: "Thanks, casero! Here's your fruit. Enjoy it!" },
       ],
@@ -18959,9 +19238,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "Buenos días, ¿en qué le puedo ayudar?", de: "Guten Morgen, wie kann ich Ihnen helfen?", en: "Good morning, how can I help you?" },
         { who: "user", kind: "type", de: "(sag, du hast Kopfschmerzen)", en: "(say you have a headache)", solEs: "Me duele la cabeza.",
+          why: "„doler“ funktioniert wie „gustar“: „me duele …“ = „mir schmerzt …“; der Körperteil steht mit Artikel „la“.",
+          whyEn: "„doler“ works like „gustar“: „me duele …“ = „… hurts me“; the body part takes the article „la“.",
           accept: ["me duele la cabeza", "tengo dolor de cabeza", "me duele mucho la cabeza", "me duele la cabeza desde hoy"] },
         { who: "npc", es: "Lo siento. ¿Desde cuándo se siente así?", de: "Das tut mir leid. Seit wann fühlen Sie sich so?", en: "I'm sorry. Since when have you felt like this?" },
         { who: "user", kind: "mc", de: "(sag: seit heute Morgen)", en: "(say: since this morning)", solEs: "Desde esta mañana.",
+          why: "„desde“ = „seit“; „esta mañana“ = „heute Morgen“.",
+          whyEn: "„desde“ = „since“; „esta mañana“ = „this morning“.",
           options: [
             { es: "Desde esta mañana.", ok: true },
             { es: "Desde hace un año.", ok: false },
@@ -18969,6 +19252,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¿Tiene también fiebre o solo el dolor de cabeza?", de: "Haben Sie auch Fieber oder nur die Kopfschmerzen?", en: "Do you also have a fever or just the headache?" },
         { who: "user", kind: "mc", de: "(sag, nur Kopfschmerzen, kein Fieber)", en: "(say just a headache, no fever)", solEs: "Solo dolor de cabeza, no tengo fiebre.",
+          why: "„tener fiebre“ = „Fieber haben“ – mit „tener“, nicht mit „ser/estar“.",
+          whyEn: "„tener fiebre“ = „to have a fever“ – with „tener“, not „ser/estar“.",
           options: [
             { es: "Solo dolor de cabeza, no tengo fiebre.", ok: true },
             { es: "Sí, tengo mucha fiebre.", ok: false },
@@ -18976,9 +19261,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Entiendo. ¿Es alérgico a algún medicamento?", de: "Verstehe. Sind Sie gegen ein Medikament allergisch?", en: "I see. Are you allergic to any medication?" },
         { who: "user", kind: "type", de: "(sag, du bist gegen nichts allergisch)", en: "(say you're not allergic to anything)", solEs: "No soy alérgico a nada.",
+          why: "„alérgico a …“ = „allergisch gegen …“; die doppelte Verneinung „no … nada“ ist im Spanischen korrekt.",
+          whyEn: "„alérgico a …“ = „allergic to …“; the double negative „no … nada“ is correct in Spanish.",
           accept: ["no soy alergico a nada", "no soy alergico", "no tengo alergias", "a nada", "no soy alergica a nada"] },
         { who: "npc", es: "Bien. Le puedo dar paracetamol o ibuprofeno. ¿Cuál prefiere?", de: "Gut. Ich kann Ihnen Paracetamol oder Ibuprofen geben. Was möchten Sie lieber?", en: "Good. I can give you paracetamol or ibuprofen. Which would you prefer?" },
         { who: "user", kind: "mc", de: "(sag: Paracetamol ist gut)", en: "(say: paracetamol is fine)", solEs: "Paracetamol está bien.",
+          why: "„está bien“ = „ist in Ordnung/passt“ als kurze Zustimmung.",
+          whyEn: "„está bien“ = „is fine/okay“ as a short way to agree.",
           options: [
             { es: "Paracetamol está bien.", ok: true },
             { es: "No quiero nada, gracias.", ok: false },
@@ -18986,9 +19275,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Perfecto. Tome una pastilla cada ocho horas, siempre con comida.", de: "Perfekt. Nehmen Sie alle acht Stunden eine Tablette, immer mit dem Essen.", en: "Perfect. Take one tablet every eight hours, always with food." },
         { who: "user", kind: "type", de: "(frag nach, wie viele Tabletten pro Tag)", en: "(ask how many tablets per day)", solEs: "¿Cuántas pastillas tomo al día?",
+          why: "„cuántas“ ist weiblich/Plural wegen „pastillas“; „al día“ = „pro Tag“.",
+          whyEn: "„cuántas“ is feminine plural because of „pastillas“; „al día“ = „per day“.",
           accept: ["cuantas pastillas tomo al dia", "cuantas pastillas al dia", "cuantas tomo al dia", "cuantas pastillas tomo", "cuantas al dia"] },
         { who: "npc", es: "Máximo tres al día. Si en dos días no mejora, vaya al médico.", de: "Höchstens drei pro Tag. Wenn es in zwei Tagen nicht besser wird, gehen Sie zum Arzt.", en: "Three a day at most. If it doesn't improve in two days, see a doctor." },
         { who: "user", kind: "mc", de: "(frag, wie viel es kostet)", en: "(ask how much it costs)", solEs: "¿Cuánto le debo?",
+          why: "„deber“ = „schulden“; „¿Cuánto le debo?“ ist die höfliche Art zu fragen „Was bin ich schuldig?“.",
+          whyEn: "„deber“ = „to owe“; „¿Cuánto le debo?“ is the polite „What do I owe you?“.",
           options: [
             { es: "¿Cuánto le debo?", ok: true },
             { es: "¿Dónde está el hospital?", ok: false },
@@ -18996,6 +19289,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Son ocho soles la caja. ¿Algo más que necesite?", de: "Das macht acht Soles die Packung. Brauchen Sie noch etwas?", en: "That's eight soles for the box. Anything else you need?" },
         { who: "user", kind: "type", de: "(bedanke dich, das ist alles)", en: "(thank them, that's all)", solEs: "No, gracias, eso es todo.",
+          why: "„eso es todo“ = „das ist alles“ – ein höflicher Abschluss.",
+          whyEn: "„eso es todo“ = „that's all“ – a polite way to wrap up.",
           accept: ["no gracias eso es todo", "eso es todo", "no eso es todo", "gracias eso es todo", "nada mas gracias"] },
         { who: "npc", es: "Que se mejore pronto. ¡Que esté bien!", de: "Gute Besserung. Alles Gute!", en: "Get well soon. All the best!" },
       ],
@@ -19005,12 +19300,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "¡Hola! ¿Recién llegas? No te había visto por aquí.", de: "Hi! Gerade angekommen? Ich hab dich hier noch nicht gesehen.", en: "Hi! Just arrived? I hadn't seen you around here." },
         { who: "user", kind: "type", de: "(sag, ja, du bist gerade angekommen)", en: "(say yes, you've just arrived)", solEs: "Sí, acabo de llegar.",
+          why: "„acabar de“ + Infinitiv = „gerade etwas getan haben“: „acabo de llegar“ = „bin gerade angekommen“.",
+          whyEn: "„acabar de“ + infinitive = „to have just done“: „acabo de llegar“ = „I've just arrived“.",
           accept: ["si acabo de llegar", "acabo de llegar", "recien llegue", "si recien llego", "llegue hace poco"] },
         { who: "npc", es: "¡Bienvenido! ¿De dónde eres?", de: "Willkommen! Woher kommst du?", en: "Welcome! Where are you from?" },
         { who: "user", kind: "type", de: "(sag, du kommst aus Deutschland)", en: "(say you're from Germany)", solEs: "Soy de Alemania.",
+          why: "„ser de“ = „kommen/stammen aus“ für die Herkunft.",
+          whyEn: "„ser de“ = „to be from“ for where you're from.",
           accept: ["soy de alemania", "de alemania", "vengo de alemania", "yo soy de alemania", "soy aleman"] },
         { who: "npc", es: "¡Qué bueno! ¿Y es tu primera vez en Perú?", de: "Wie schön! Und bist du zum ersten Mal in Peru?", en: "How nice! And is it your first time in Peru?" },
         { who: "user", kind: "mc", de: "(sag: ja, das erste Mal)", en: "(say: yes, the first time)", solEs: "Sí, es mi primera vez.",
+          why: "„mi primera vez“ = „mein erstes Mal“; „primera“ ist weiblich wegen „vez“.",
+          whyEn: "„mi primera vez“ = „my first time“; „primera“ is feminine because of „vez“.",
           options: [
             { es: "Sí, es mi primera vez.", ok: true },
             { es: "No, vivo aquí.", ok: false },
@@ -19018,6 +19319,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¡Te va a encantar! ¿Cuánto tiempo vas a quedarte?", de: "Es wird dir gefallen! Wie lange bleibst du?", en: "You're going to love it! How long are you staying?" },
         { who: "user", kind: "mc", de: "(sag: drei Nächte)", en: "(say: three nights)", solEs: "Tres noches.",
+          why: "Kurze Antwort auf „wie lange“ – Zahl + Nomen genügt; „noche“ → „noches“.",
+          whyEn: "Short answer to „how long“ – number + noun is enough; „noche“ → „noches“.",
           options: [
             { es: "Tres noches.", ok: true },
             { es: "Cuesta mucho.", ok: false },
@@ -19025,9 +19328,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¿Y ya sabes qué vas a visitar? Hay un montón que ver.", de: "Und weißt du schon, was du besichtigen willst? Es gibt jede Menge zu sehen.", en: "And do you know yet what you're going to visit? There's loads to see." },
         { who: "user", kind: "type", de: "(sag, du willst Machu Picchu sehen)", en: "(say you want to see Machu Picchu)", solEs: "Quiero ver Machu Picchu.",
+          why: "„querer“ + Infinitiv = „etwas tun wollen“: „quiero ver“ = „ich will sehen“.",
+          whyEn: "„querer“ + infinitive = „to want to do“: „quiero ver“ = „I want to see“.",
           accept: ["quiero ver machu picchu", "quiero ir a machu picchu", "ver machu picchu", "quiero conocer machu picchu", "machu picchu"] },
         { who: "npc", es: "¡Obvio! Tienes que ir. Oye, ¿quieres que te recomiende un buen restaurante?", de: "Klar! Da musst du hin. Hey, soll ich dir ein gutes Restaurant empfehlen?", en: "Obviously! You've got to go. Hey, want me to recommend a good restaurant?" },
         { who: "user", kind: "mc", de: "(sag begeistert ja)", en: "(say yes, enthusiastically)", solEs: "¡Sí, por favor, me encantaría!",
+          why: "„me encantaría“ (Konditional von „encantar“) = „das würde mir gefallen“ – eine begeisterte Zusage.",
+          whyEn: "„me encantaría“ (conditional of „encantar“) = „I'd love that“ – an enthusiastic yes.",
           options: [
             { es: "¡Sí, por favor, me encantaría!", ok: true },
             { es: "No, no tengo hambre.", ok: false },
@@ -19035,6 +19342,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Hay uno aquí cerca, comida típica, baratísimo. Varios vamos hoy. ¿Te apuntas?", de: "Es gibt eins ganz in der Nähe, typisches Essen, spottbillig. Ein paar von uns gehen heute hin. Bist du dabei?", en: "There's one nearby, typical food, dirt cheap. A few of us are going today. Are you in?" },
         { who: "user", kind: "mc", de: "(sag begeistert zu)", en: "(say yes, enthusiastically)", solEs: "¡Claro, me apunto!",
+          why: "„apuntarse“ = „mitmachen/dabei sein“: „me apunto“ = „ich bin dabei“.",
+          whyEn: "„apuntarse“ = „to join in“: „me apunto“ = „I'm in“.",
           options: [
             { es: "¡Claro, me apunto!", ok: true },
             { es: "No, estoy lleno.", ok: false },
@@ -19042,6 +19351,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¡Genial! ¿A qué hora te viene bien? ¿Como a las ocho?", de: "Super! Wann passt es dir? So gegen acht?", en: "Great! What time works for you? Around eight?" },
         { who: "user", kind: "type", de: "(sag, acht Uhr ist perfekt)", en: "(say eight o'clock is perfect)", solEs: "A las ocho está perfecto.",
+          why: "Uhrzeiten stehen mit „a las …“: „a las ocho“ = „um acht“.",
+          whyEn: "Times use „a las …“: „a las ocho“ = „at eight“.",
           accept: ["a las ocho esta perfecto", "a las ocho", "perfecto a las ocho", "las ocho esta bien", "a las ocho me viene bien"] },
         { who: "npc", es: "¡Listo! Nos vemos a las ocho aquí en la sala. ¡Qué chévere conocerte!", de: "Abgemacht! Wir sehen uns um acht hier im Aufenthaltsraum. Schön, dich kennenzulernen!", en: "Sorted! See you at eight here in the common room. So nice to meet you!" },
       ],
@@ -19051,9 +19362,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "Buenas. Pasaporte, por favor.", de: "Guten Tag. Reisepass, bitte.", en: "Hello. Passport, please." },
         { who: "user", kind: "type", de: "(sag, hier bitte, und reich den Pass)", en: "(say here you go and hand over the passport)", solEs: "Sí, aquí tiene.",
+          why: "„aquí tiene“ beim Überreichen des Passes – die höfliche Sie-Form.",
+          whyEn: "„aquí tiene“ when handing over your passport – the polite usted form.",
           accept: ["aqui tiene", "si aqui tiene", "aqui esta", "tenga", "aqui tiene mi pasaporte"] },
         { who: "npc", es: "Gracias. ¿Cuál es el motivo de su viaje?", de: "Danke. Was ist der Grund Ihrer Reise?", en: "Thanks. What's the purpose of your trip?" },
         { who: "user", kind: "mc", de: "(sag, du bist als Tourist hier)", en: "(say you're here as a tourist)", solEs: "Soy turista, vengo de vacaciones.",
+          why: "„venir/estar de vacaciones“ = „im Urlaub sein“ – feste Wendung mit „de“.",
+          whyEn: "„venir/estar de vacaciones“ = „to be on holiday“ – set phrase with „de“.",
           options: [
             { es: "Soy turista, vengo de vacaciones.", ok: true },
             { es: "Vengo a trabajar aquí.", ok: false },
@@ -19061,9 +19376,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¿Cuántos días piensa quedarse en el país?", de: "Wie viele Tage möchten Sie im Land bleiben?", en: "How many days are you planning to stay in the country?" },
         { who: "user", kind: "type", de: "(sag: zwei Wochen)", en: "(say: two weeks)", solEs: "Dos semanas.",
+          why: "„semana“ wird im Plural zu „semanas“; eine knappe Zeitangabe genügt.",
+          whyEn: "„semana“ pluralises to „semanas“; a short time answer is enough.",
           accept: ["dos semanas", "unas dos semanas", "catorce dias", "quince dias", "dos semanas mas o menos"] },
         { who: "npc", es: "¿Tiene dónde quedarse durante su estadía?", de: "Haben Sie eine Unterkunft für Ihren Aufenthalt?", en: "Do you have somewhere to stay during your visit?" },
         { who: "user", kind: "mc", de: "(sag, du hast ein Hostel reserviert)", en: "(say you've booked a hostel)", solEs: "Sí, tengo una reserva en un hostal.",
+          why: "„tener una reserva“ = „eine Reservierung haben“; „en un hostal“ = „in einem Hostel“.",
+          whyEn: "„tener una reserva“ = „to have a booking“; „en un hostal“ = „in a hostel“.",
           options: [
             { es: "Sí, tengo una reserva en un hostal.", ok: true },
             { es: "No, no tengo nada.", ok: false },
@@ -19071,9 +19390,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¿Me puede mostrar la reserva o la dirección, por favor?", de: "Können Sie mir die Reservierung oder die Adresse zeigen, bitte?", en: "Could you show me the booking or the address, please?" },
         { who: "user", kind: "type", de: "(sag, ja, du hast sie auf dem Handy)", en: "(say yes, you have it on your phone)", solEs: "Sí, la tengo en el celular.",
+          why: "„la“ ersetzt „la reserva“ (weiblich); „celular“ ist in Lateinamerika das Handy.",
+          whyEn: "„la“ replaces „la reserva“ (feminine); „celular“ is the word for mobile in Latin America.",
           accept: ["si la tengo en el celular", "la tengo en el celular", "esta en mi celular", "en el celular", "si en el celular"] },
         { who: "npc", es: "Muy bien. ¿Trae algo que declarar? ¿Alimentos, plantas?", de: "Sehr gut. Haben Sie etwas zu verzollen? Lebensmittel, Pflanzen?", en: "Very good. Do you have anything to declare? Food, plants?" },
         { who: "user", kind: "mc", de: "(sag, du hast nichts zu verzollen)", en: "(say you have nothing to declare)", solEs: "No, no traigo nada que declarar.",
+          why: "„nada que declarar“ = „nichts zu verzollen“; doppelte Verneinung „no … nada“.",
+          whyEn: "„nada que declarar“ = „nothing to declare“; double negative „no … nada“.",
           options: [
             { es: "No, no traigo nada que declarar.", ok: true },
             { es: "Sí, traigo mucha comida.", ok: false },
@@ -19081,9 +19404,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¿Tiene boleto de salida del país?", de: "Haben Sie ein Ausreiseticket?", en: "Do you have a ticket to leave the country?" },
         { who: "user", kind: "type", de: "(sag, ja, du fliegst in zwei Wochen zurück)", en: "(say yes, you fly back in two weeks)", solEs: "Sí, regreso en dos semanas.",
+          why: "Das Präsens „regreso“ steht hier für eine feste Zukunftsplanung; „en dos semanas“ = „in zwei Wochen“.",
+          whyEn: "The present tense „regreso“ expresses a fixed future plan; „en dos semanas“ = „in two weeks“.",
           accept: ["si regreso en dos semanas", "regreso en dos semanas", "vuelvo en dos semanas", "si vuelvo en dos semanas", "regreso en quince dias"] },
         { who: "npc", es: "Perfecto. Aquí tiene su pasaporte sellado. Bienvenido al país.", de: "Perfekt. Hier ist Ihr abgestempelter Reisepass. Willkommen im Land.", en: "Perfect. Here's your stamped passport. Welcome to the country." },
         { who: "user", kind: "type", de: "(bedanke dich)", en: "(thank them)", solEs: "Muchas gracias.",
+          why: "Ein knappes, höfliches Dankeschön zum Abschluss.",
+          whyEn: "A short, polite thank-you to finish.",
           accept: ["muchas gracias", "gracias", "muchas gracias muy amable", "mil gracias", "gracias muy amable"] },
         { who: "npc", es: "Que disfrute su viaje. ¡Buena estadía!", de: "Genießen Sie Ihre Reise. Schönen Aufenthalt!", en: "Enjoy your trip. Have a good stay!" },
       ],
@@ -19093,9 +19420,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "¿Está bien? ¿Qué pasó? Lo vi caerse.", de: "Geht es Ihnen gut? Was ist passiert? Ich habe Sie stürzen sehen.", en: "Are you all right? What happened? I saw you fall." },
         { who: "user", kind: "type", de: "(bitte dringend um Hilfe)", en: "(urgently ask for help)", solEs: "¡Necesito ayuda, por favor!",
+          why: "„necesitar“ = „brauchen“; „ayuda“ (Hilfe) steht hier ohne Artikel – ein klarer Hilferuf.",
+          whyEn: "„necesitar“ = „to need“; „ayuda“ (help) takes no article here – a clear call for help.",
           accept: ["necesito ayuda", "necesito ayuda por favor", "ayuda por favor", "ayudenme", "ayuda"] },
         { who: "npc", es: "Tranquilo, lo voy a ayudar. ¿Qué le pasó?", de: "Ruhig, ich helfe Ihnen. Was ist Ihnen passiert?", en: "Stay calm, I'm going to help you. What happened to you?" },
         { who: "user", kind: "mc", de: "(sag, du bist hingefallen)", en: "(say you fell over)", solEs: "Me caí y me golpeé.",
+          why: "„caerse“ (hinfallen) und „golpearse“ (sich stoßen) sind reflexiv; Indefinido „me caí“.",
+          whyEn: "„caerse“ (to fall) and „golpearse“ (to hit oneself) are reflexive; preterite „me caí“.",
           options: [
             { es: "Me caí y me golpeé.", ok: true },
             { es: "Quiero la cuenta.", ok: false },
@@ -19103,6 +19434,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¿Le duele algo? ¿Dónde le duele?", de: "Tut Ihnen etwas weh? Wo tut es weh?", en: "Does anything hurt? Where does it hurt?" },
         { who: "user", kind: "mc", de: "(sag, dein Bein tut sehr weh)", en: "(say your leg hurts a lot)", solEs: "Sí, me duele mucho la pierna.",
+          why: "„me duele … la pierna“ wie „me duele la cabeza“; „mucho“ verstärkt den Schmerz.",
+          whyEn: "„me duele … la pierna“ like „me duele la cabeza“; „mucho“ intensifies the pain.",
           options: [
             { es: "Sí, me duele mucho la pierna.", ok: true },
             { es: "No, estoy bien, gracias.", ok: false },
@@ -19110,12 +19443,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "No se mueva. ¿Quiere que llame a una ambulancia?", de: "Bewegen Sie sich nicht. Soll ich einen Krankenwagen rufen?", en: "Don't move. Would you like me to call an ambulance?" },
         { who: "user", kind: "type", de: "(sag: ja, bitte ruf einen Krankenwagen)", en: "(say: yes, please call an ambulance)", solEs: "Sí, llame a una ambulancia, por favor.",
+          why: "„llame“ = höflicher Befehl (Sie); „llamar a“ braucht das persönliche „a“ vor der Person/Sache.",
+          whyEn: "„llame“ = polite command (usted); „llamar a“ needs the personal „a“.",
           accept: ["si llame a una ambulancia", "llame a una ambulancia", "llame una ambulancia por favor", "si una ambulancia", "llame a la ambulancia"] },
         { who: "npc", es: "Ya la estoy llamando. ¿Cómo se llama usted?", de: "Ich rufe ihn schon. Wie heißen Sie?", en: "I'm calling it now. What's your name?" },
-        { who: "user", kind: "type", de: "(nenne deinen Namen: Marco)", en: "(give your name: Marco)", solEs: "Me llamo Marco.",
-          accept: ["me llamo marco", "soy marco", "marco", "mi nombre es marco", "me llaman marco"] },
-        { who: "npc", es: "Marco, ¿puede mover los dedos del pie?", de: "Marco, können Sie die Zehen bewegen?", en: "Marco, can you move your toes?" },
+        { who: "user", kind: "type", de: "(nenne deinen Namen: {name})", en: "(give your name: {name})", solEs: "Me llamo {name}.",
+          why: "„llamarse“ = „heißen“; „me llamo …“ heißt wörtlich „ich nenne mich …“.",
+          whyEn: "„llamarse“ = „to be called“; „me llamo …“ literally means „I call myself …“.",
+          accept: ["me llamo {name}", "soy {name}", "{name}", "mi nombre es {name}", "me llaman {name}"] },
+        { who: "npc", es: "{name}, ¿puede mover los dedos del pie?", de: "{name}, können Sie die Zehen bewegen?", en: "{name}, can you move your toes?" },
         { who: "user", kind: "mc", de: "(sag, ja, ein bisschen)", en: "(say yes, a little)", solEs: "Sí, un poco.",
+          why: "„un poco“ = „ein bisschen“ – eine kurze, klare Antwort.",
+          whyEn: "„un poco“ = „a little“ – a short, clear answer.",
           options: [
             { es: "Sí, un poco.", ok: true },
             { es: "No siento nada.", ok: false },
@@ -19123,6 +19462,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Bien, eso es buena señal. ¿Está tomando algún medicamento?", de: "Gut, das ist ein gutes Zeichen. Nehmen Sie irgendein Medikament?", en: "Good, that's a good sign. Are you taking any medication?" },
         { who: "user", kind: "mc", de: "(sag, nein, keine Medikamente)", en: "(say no, no medication)", solEs: "No, ningún medicamento.",
+          why: "„ningún“ = „kein“ vor einem männlichen Nomen (gekürzt aus „ninguno“).",
+          whyEn: "„ningún“ = „no/not any“ before a masculine noun (shortened from „ninguno“).",
           options: [
             { es: "No, ningún medicamento.", ok: true },
             { es: "Sí, muchos.", ok: false },
@@ -19130,6 +19471,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "La ambulancia ya viene en camino. Quédese quieto, yo me quedo con usted.", de: "Der Krankenwagen ist schon unterwegs. Bleiben Sie ruhig liegen, ich bleibe bei Ihnen.", en: "The ambulance is on its way. Stay still, I'll stay with you." },
         { who: "user", kind: "type", de: "(bedanke dich erleichtert)", en: "(thank them, relieved)", solEs: "Muchas gracias por su ayuda.",
+          why: "„gracias por …“ = „danke für …“; „su ayuda“ = „Ihre Hilfe“.",
+          whyEn: "„gracias por …“ = „thanks for …“; „su ayuda“ = „your help“.",
           accept: ["muchas gracias por su ayuda", "gracias por su ayuda", "muchas gracias", "gracias", "mil gracias"] },
         { who: "npc", es: "No se preocupe. Todo va a estar bien. La ayuda ya casi llega.", de: "Keine Sorge. Alles wird gut. Die Hilfe ist gleich da.", en: "Don't worry. Everything's going to be fine. Help is almost here." },
       ],
@@ -19139,6 +19482,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       turns: [
         { who: "npc", es: "¿Sí? ¿Necesita ayuda? Lo veo un poco perdido.", de: "Ja? Brauchen Sie Hilfe? Sie wirken etwas verloren.", en: "Yes? Do you need help? You look a bit lost." },
         { who: "user", kind: "mc", de: "(frag höflich, wo die Bushaltestelle ist)", en: "(politely ask where the bus stop is)", solEs: "Disculpe, ¿dónde está el paradero?",
+          why: "„Disculpe“ leitet höflich ein; „paradero“ ist in Lateinamerika die Bushaltestelle; „está“ für den Ort.",
+          whyEn: "„Disculpe“ opens politely; „paradero“ is the bus stop in Latin America; „está“ for location.",
           options: [
             { es: "Disculpe, ¿dónde está el paradero?", ok: true },
             { es: "¿Qué hora es?", ok: false },
@@ -19146,12 +19491,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "¿El paradero? ¿Para qué bus, el que va al centro?", de: "Die Haltestelle? Für welchen Bus, den ins Zentrum?", en: "The bus stop? For which bus, the one to the centre?" },
         { who: "user", kind: "type", de: "(sag, ja, ins Zentrum)", en: "(say yes, to the centre)", solEs: "Sí, al centro.",
+          why: "„al centro“ = „ins Zentrum“ (a + el); eine kurze Bestätigung reicht.",
+          whyEn: "„al centro“ = „to the centre“ (a + el); a short confirmation is enough.",
           accept: ["si al centro", "al centro", "si quiero ir al centro", "al centro por favor", "si para el centro"] },
         { who: "npc", es: "Ah, ya. Siga derecho dos cuadras y doble a la derecha.", de: "Ah, gut. Gehen Sie zwei Blocks geradeaus und biegen Sie rechts ab.", en: "Ah, right. Go straight on for two blocks and turn right." },
         { who: "user", kind: "type", de: "(frag nach, ob es weit ist)", en: "(ask whether it's far)", solEs: "¿Está lejos?",
+          why: "„lejos“ = „weit (weg)“; „¿Está lejos?“ fragt nach der Entfernung.",
+          whyEn: "„lejos“ = „far“; „¿Está lejos?“ asks about distance.",
           accept: ["esta lejos", "queda lejos", "es lejos", "esta muy lejos", "esta lejos de aqui"] },
         { who: "npc", es: "No, está cerca. Unos cinco minutos a pie, no más.", de: "Nein, es ist nah. Etwa fünf Minuten zu Fuß, nicht mehr.", en: "No, it's close. About five minutes on foot, no more." },
         { who: "user", kind: "mc", de: "(frag, welcher Bus zum Zentrum fährt)", en: "(ask which bus goes to the centre)", solEs: "¿Qué bus va al centro?",
+          why: "„¿Qué bus …?“ = „Welcher Bus …?“; „va a“ = „fährt nach“.",
+          whyEn: "„¿Qué bus …?“ = „Which bus …?“; „va a“ = „goes to“.",
           options: [
             { es: "¿Qué bus va al centro?", ok: true },
             { es: "¿Tiene un cigarro?", ok: false },
@@ -19159,9 +19510,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Tome el que dice \"Centro\" o el número veinte. Pasan seguido.", de: "Nehmen Sie den mit „Centro“ oder die Nummer zwanzig. Die kommen oft.", en: "Take the one that says \"Centro\" or number twenty. They come often." },
         { who: "user", kind: "type", de: "(frag, wie viel die Fahrt kostet)", en: "(ask how much the fare is)", solEs: "¿Cuánto cuesta el pasaje?",
+          why: "„pasaje“ = der Fahrpreis/das Ticket; „¿Cuánto cuesta?“ = „Was kostet es?“.",
+          whyEn: "„pasaje“ = the fare/ticket; „¿Cuánto cuesta?“ = „How much is it?“.",
           accept: ["cuanto cuesta el pasaje", "cuanto es el pasaje", "cuanto cuesta", "cuanto vale el pasaje", "cuanto cuesta el boleto"] },
         { who: "npc", es: "Un sol cincuenta. Tenga sencillo a la mano, casi no dan vuelto.", de: "Eineinhalb Soles. Halten Sie es passend bereit, Wechselgeld gibt es kaum.", en: "One sol fifty. Keep small change handy, they hardly ever give change." },
         { who: "user", kind: "mc", de: "(frag, ob du dem Fahrer sagen sollst, wo du raus willst)", en: "(ask whether you should tell the driver where to get off)", solEs: "¿Le aviso al chofer dónde bajar?",
+          why: "„avisar a alguien“ = „jemandem Bescheid geben“; „bajar“ = „aussteigen“.",
+          whyEn: "„avisar a alguien“ = „to let someone know“; „bajar“ = „to get off“.",
           options: [
             { es: "¿Le aviso al chofer dónde bajar?", ok: true },
             { es: "¿Puedo ir en taxi gratis?", ok: false },
@@ -19169,6 +19524,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           ] },
         { who: "npc", es: "Sí, dígale \"centro\" al subir y él le avisa dónde bajar.", de: "Ja, sagen Sie ihm beim Einsteigen „centro“, dann sagt er Ihnen, wo Sie aussteigen.", en: "Yes, say \"centro\" as you get on and he'll tell you where to get off." },
         { who: "user", kind: "type", de: "(bedanke dich herzlich)", en: "(thank them warmly)", solEs: "Muchas gracias, muy amable.",
+          why: "„muy amable“ = „sehr freundlich“ – ein höfliches Dankeschön für die Hilfe.",
+          whyEn: "„muy amable“ = „very kind“ – a polite thank-you for the help.",
           accept: ["muchas gracias muy amable", "muchas gracias", "gracias", "muy amable", "mil gracias"] },
         { who: "npc", es: "De nada. ¡Que le vaya bien y buen viaje!", de: "Gern geschehen. Alles Gute und gute Reise!", en: "You're welcome. Take care and have a good trip!" },
       ],
@@ -22519,6 +22876,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     return y - step + px * (lh - 1); // ungefähre Unterkante
   }
 
+  // Eine zentrierte Zeile zeichnen und die Schrift bei Bedarf schrumpfen, bis sie
+  // in maxW passt. Für personalisierte Kicker („FORTSCHRITT VON …"), deren Name
+  // bis zu 40 Zeichen lang sein darf und sonst über den Bildrand liefe.
+  function drawFittedLine(ctx, text, cx, y, maxW, basePx, weight) {
+    let px = basePx;
+    ctx.font = font(weight, px);
+    while (px > 22 && ctx.measureText(text).width > maxW) {
+      px -= 2;
+      ctx.font = font(weight, px);
+    }
+    ctx.fillText(text, cx, y);
+  }
+
   function bgGradient(ctx, from, to, h) {
     const g = ctx.createLinearGradient(0, 0, W, h);
     g.addColorStop(0, from);
@@ -22678,8 +23048,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Titel
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = font("700", 40);
-    ctx.fillText(t("share.myProgress"), cx, L.kicker);
+    drawFittedLine(ctx, payload.userName ? t("share.myProgressName", { name: payload.userName }) : t("share.myProgress"), cx, L.kicker, W - PAD * 2, 40, "700");
     ctx.font = font("800", 66);
     ctx.fillText("¡Estoy aprendiendo!", cx, L.title);
 
@@ -22778,8 +23147,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Kopf: Ruta-Pass + Badge-Gruppe.
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = font("700", 40);
-    ctx.fillText(t("share.myPass"), cx, L.kicker);
+    drawFittedLine(ctx, payload.userName ? t("share.myPassName", { name: payload.userName }) : t("share.myPass"), cx, L.kicker, W - PAD * 2, 40, "700");
     if (payload.groupLabel) {
       ctx.fillStyle = "rgba(255,255,255,0.82)";
       ctx.font = font("600", 30);
@@ -23414,6 +23782,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   installed = standalone();
 
+  // Best effort: Manche Browser (Chrome/Android) verraten über
+  // getInstalledRelatedApps(), dass HolaRuta bereits installiert ist – selbst
+  // wenn man die Seite gerade in einem normalen Browser-Tab offen hat (also
+  // NICHT im standalone-App-Fenster). Ohne diese Prüfung würde dort
+  // irreführend „Noch nicht installiert" stehen, obwohl das App-Icon längst da
+  // ist. Voraussetzung ist der related_applications-Selbstverweis im Manifest;
+  // wird die API nicht unterstützt oder liefert nichts, bleibt alles wie bisher.
+  function probeInstalled() {
+    if (installed || typeof navigator.getInstalledRelatedApps !== "function") return;
+    navigator.getInstalledRelatedApps().then((apps) => {
+      if (apps && apps.some((a) => a && a.platform === "webapp")) {
+        installed = true;
+        deferred = null;
+        if (onChange) onChange();
+      }
+    }).catch(() => { /* unsupported / Berechtigung -> still ignorieren */ });
+  }
+
+  if (hosted() && !installed) probeInstalled();
+
   // Android/Chromium: Mini-Infobar unterdrücken und Event für unseren Knopf merken.
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
@@ -23465,6 +23853,25 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
+    {
+      version: "1.86.0",
+      date: "2026-06-16",
+      title: "Tiempos: der einfache Vergangenheits-Trick",
+      items: [
+        "🪄 Die Zeiten-Erklärseite (Tiempos) hat jetzt ganz oben einen eigenen „Vergangenheits-Trick“: he + Partizip – das genaue Gegenstück zum Zukunfts-Trick „voy a + Infinitiv“. Du beugst nur das kleine haber, das Hauptverb bleibt fest – damit redest du fast jedes Verb in der Vergangenheit los, lange bevor du alle Endungen kannst.",
+        "🇩🇪🇬🇧 Mit Mini-Vergleich (Zukunft ↔ Vergangenheit), Formen, Bildungs-Rezept, Reise-Beispielen und einem ehrlichen Hinweis zum LatAm-Indefinido – auf Deutsch und Englisch.",
+        "🛠️ Außerdem behoben: Die Tiempos-Seite öffnete sich seit der Sprachumstellung gar nicht mehr (ein interner Fehler beim Aufbau) – sie funktioniert wieder vollständig.",
+      ],
+    },
+    {
+      version: "1.85.0",
+      date: "2026-06-16",
+      title: "Diálogos: Hintergrund zu „Besser so“",
+      items: [
+        "💡 Wenn in den Diálogos beim „Besser so“ die Musterantwort gezeigt wird, gibt es jetzt zu jeder Antwort einen kurzen Hintergrund – warum sie so lautet (Grammatik, Wortschatz oder Höflichkeit). Er sitzt direkt darunter und lässt sich zum Lesen aufklappen.",
+        "🇩🇪🇬🇧 Die Erklärungen sind auf Deutsch und Englisch verfügbar und stören nicht beim schnellen Weiterspielen – aufklappen nur, wenn du magst.",
+      ],
+    },
     {
       version: "1.84.0",
       date: "2026-06-16",
@@ -24392,15 +24799,78 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </div>`;
   }
 
-  // Dark-Mode-Umschalter (Startseite, oben rechts). Zeigt das Ziel der nächsten
-  // Aktion: Mond = "in den Dunkelmodus" (fürs Hostel-Bett), Sonne = "zurück ins Helle".
-  function themeToggle(theme) {
+  // Dark-Mode-Umschalter (Startseite, oben rechts): ein kleines, doppelseitiges
+  // Emaille-Schild. Hell = Kaffee am Morgen (AM, Dampf steigt), Dunkel = Wein am
+  // Abend (PM, Glas voll). Das jeweils inaktive Schild liegt gedimmt darunter.
+  // role="switch" + aria-checked (dunkel = an); die Logik hängt wie gehabt an
+  // data-action="toggle-theme". Das Schild reagiert per CSS auf [data-theme].
+  function themeToggle(theme, opts) {
     const dark = theme === "dark";
-    const icon = dark ? "☀️" : "🌙";
+    const large = opts && opts.large;
     const label = dark ? t("common.themeLight") : t("common.themeDark");
     const title = dark ? t("common.themeLightTitle") : t("common.themeDarkTitle");
-    return `<button class="iconbtn" data-action="toggle-theme"
-                    aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
+    return `<button class="themesign${large ? " themesign--lg" : ""}" data-action="toggle-theme" role="switch"
+                    aria-checked="${dark}" aria-label="${esc(label)}" title="${esc(title)}">
+      <span class="themesign__plank">
+        <span class="themesign__plaque themesign__plaque--am">
+          <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
+            <g filter="url(#signGrain)">
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="#EDE4CD"/>
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="none" stroke="rgba(33,28,21,.10)" stroke-width="2"/>
+            </g>
+            <g filter="url(#signPaint)" fill="#1B1712" stroke="#1B1712">
+              <text x="92" y="62" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="2" stroke="none">AM</text>
+              <g class="themesign__steam" fill="none" stroke-width="4.5" stroke-linecap="round">
+                <path d="M80 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+                <path d="M92 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+                <path d="M104 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+              </g>
+              <path stroke="none" d="M52 128 h66 a6 6 0 0 1 6 6 q-2 34 -10 44 a16 16 0 0 1 -13 7 h-32 a16 16 0 0 1 -13 -7 q-8 -10 -10 -44 a6 6 0 0 1 6 -6 z"/>
+              <path fill="none" stroke-width="9" d="M124 138 q22 0 22 18 q0 18 -20 19"/>
+              <path stroke="none" d="M44 190 h80 q6 0 4 5 q-3 7 -44 7 q-41 0 -44 -7 q-2 -5 4 -5 z"/>
+            </g>
+          </svg>
+        </span>
+        <span class="themesign__plaque themesign__plaque--pm">
+          <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
+            <g filter="url(#signGrain)">
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="#1B1712"/>
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="none" stroke="rgba(236,226,202,.10)" stroke-width="2"/>
+            </g>
+            <g filter="url(#signPaint)">
+              <text x="92" y="60" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="2" fill="#ECE2CA">PM</text>
+              <clipPath id="signBowlClip">
+                <path d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+              </clipPath>
+              <rect class="themesign__wine" clip-path="url(#signBowlClip)" x="50" y="118" width="84" height="40" fill="#7C2A33"/>
+              <path fill="none" stroke="#ECE2CA" stroke-width="6.5" stroke-linejoin="round" d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+              <rect x="89" y="146" width="6" height="42" rx="3" fill="#ECE2CA"/>
+              <path stroke="none" fill="#ECE2CA" d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z"/>
+            </g>
+          </svg>
+        </span>
+      </span>
+    </button>`;
+  }
+
+  // Erscheinungsbild-Block im Profil: das große AM/PM-Schild links, rechts ein
+  // mitlaufender Begleittext (Kaffee am Morgen / Wein am Abend). So bekommt das
+  // Schild den Platz, den es verdient, und der Seitenkopf bleibt schlank.
+  function themeSetting(vm) {
+    const dark = vm.theme === "dark";
+    const title = dark ? t("common.themePmTitle") : t("common.themeAmTitle");
+    const text = dark ? t("common.themePmText") : t("common.themeAmText");
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("common.themeCap"))}</span>
+        <div class="themeset">
+          ${themeToggle(vm.theme, { large: true })}
+          <div class="themeset__copy" aria-live="polite">
+            <p class="themeset__title">${esc(title)}</p>
+            <p class="themeset__text">${esc(text)}</p>
+          </div>
+        </div>
+      </div>`;
   }
 
   // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
@@ -24479,13 +24949,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       </nav>`;
   }
 
-  // Schlanke Kopfzeile pro Reiter: nur Titel + Dark-Mode-Knopf (statt des großen
-  // Heros mit Kicker und Icon-Reihe – der Markenname steht schon in der App-Bar).
-  function pagehead(title, vm) {
+  // Schlanke Kopfzeile pro Reiter: nur der Titel (der Markenname steht schon in
+  // der App-Bar). Der Hell/Dunkel-Umschalter lebt als großes AM/PM-Schild im
+  // Profil-Reiter unter „Einstellungen“ – nicht mehr in jeder Kopfzeile.
+  function pagehead(title) {
     return `
       <div class="pagehead">
         <h2 class="pagehead__title">${title}</h2>
-        ${themeToggle(vm.theme)}
       </div>`;
   }
 
@@ -24536,8 +25006,10 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
   function tripDisplayCard(trip, action) {
     const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
-    const countdown = trip.past ? t("home.tripTime")
-      : trip.today ? t("home.tripToday")
+    // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
+    const who = trip.userName ? esc(trip.userName) + ", " : "";
+    const countdown = trip.past ? who + t("home.tripTime")
+      : trip.today ? who + t("home.tripToday")
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
@@ -24746,7 +25218,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     ].join("");
 
     return `
-      ${pagehead(esc(t("home.homePrompt")), vm)}
+      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")))}
       ${searchBar()}
 
       <div class="today">
@@ -24803,7 +25275,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         <div class="featgroup">${items.map(featBtn).join("")}</div>`;
     }).join("");
     return `
-      ${pagehead(esc(t("discover.discoverTitle")), vm)}
+      ${pagehead(esc(t("discover.discoverTitle")))}
       ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
       ${sections}`;
@@ -24823,6 +25295,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     // Lern-Einstellungen: Bediensprache (de/en) plus die Lern-Voreinstellungen
     // (Modus/Richtung/Stufen/Tempo). Alles globale Vorgaben, daher gebündelt hier
     // im Profil – das Dashboard zeigt davon nur noch die Zusammenfassung.
+    // Reise-Name: wird in den Diálogos automatisch eingesetzt (Hotel, Notfall …),
+    // damit der Nutzer dort seinen eigenen Namen nennt statt eines Beispielnamens.
+    // Eigenes <form>, damit Enter speichert; zusätzlich sichert ein Blur den Stand
+    // (change-Handler in app.js), falls ohne „Speichern" weggetippt wird.
+    const nameGroup = `
+      <form class="switchgroup namefield" data-action="save-name">
+        <label class="switchcap" for="profile-name">${esc(t("home.nameCap"))}</label>
+        <div class="namefield__row">
+          <input id="profile-name" class="namefield__input" type="text" maxlength="40"
+                 autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
+                 placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" />
+          <button class="ghostbtn namefield__save" type="submit">${esc(t("home.nameSave"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.nameHint"))}</p>
+      </form>`;
     const langGroup = `
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
@@ -24832,7 +25319,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         </div>
       </div>`;
     return `
-      ${pagehead(esc(t("profile.progressTitle")), vm)}
+      ${pagehead(esc(t("profile.progressTitle")))}
 
       <div class="profcard">
         <p class="profcard__streak">${streakLine}</p>
@@ -24847,6 +25334,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
+        ${themeSetting(vm)}
+        ${nameGroup}
         ${langGroup}
         ${learnPrefs(vm)}
       </div>
@@ -24902,7 +25391,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
       : install.isIOS
         ? `<p class="installcard__text">${esc(install.hint)}</p>`
-        : `<p class="installcard__text">${esc(t("profile.installHintBrowser"))}</p>`;
+        : `<p class="installcard__text">${esc(t("profile.installHintLead"))}</p>
+           <ol class="installcard__steps">
+             <li>${esc(t("profile.installStep1"))}</li>
+             <li>${esc(t("profile.installStep2"))}</li>
+             <li>${esc(t("profile.installStep3"))}</li>
+           </ol>
+           <p class="installcard__note">${esc(t("profile.installHintNote"))}</p>`;
     return `
       <div class="installcard">
         <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.notInstalledTitle"))}</p>
@@ -25357,7 +25852,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   // Kurze Glückwunsch-Einblendung nach frisch freigeschalteten Badges.
   // Liegt als eigene Ebene über dem Screen; tippen führt zum Ruta-Pass.
-  function badgeToast(list) {
+  function badgeToast(list, name) {
     if (!list || !list.length) return "";
     const items = list
       .map((b) => `
@@ -25369,7 +25864,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </span>
         </span>`)
       .join("");
-    const head = list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne");
+    const head = name
+      ? (list.length > 1 ? t("profile.badgeNewMultiName", { n: list.length, name }) : t("profile.badgeNewOneName", { name }))
+      : (list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne"));
     return `
       <button class="btoast" data-action="open-badges" aria-label="${esc(t("profile.badgeToastLabel", { head }))}">
         <span class="btoast__head">🎖️ ${esc(head)}</span>
@@ -27770,9 +28267,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
                ${t("discover.dlgBetter", { es: esc(cur.solEs) })}
                <span class="dlg-verdict__given">${esc(t("discover.dlgYou", { given: vm.result.given || "—" }))}</span>
              </div>`;
+        // Kurzer Hintergrund zur Musterantwort – zum Ausklappen, damit er nur
+        // stört, wenn man ihn wirklich lesen will.
+        const why = cur.why
+          ? `<details class="dlg-why">
+               <summary class="dlg-why__sum">${esc(t("discover.dlgWhy"))}</summary>
+               <p class="dlg-why__body">${esc(cur.why)}</p>
+             </details>`
+          : "";
         active = `
           ${dlgBubble({ who: "user", es: cur.solEs, de: "" })}
           ${verdict}
+          ${why}
           <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>`;
       }
     }
@@ -27871,9 +28377,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
           </summary>
           <div class="cinfo-dish__body">
             ${table(te.forms)}
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
             ${lines(te.examples)}
           </div>
         </details>`)
@@ -27885,6 +28391,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       <ul class="cinfo-words">
         ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
       </ul>`;
+
+    // Der einfache Vergangenheits-Trick: he + Partizip – Spiegel zu „voy a + Infinitiv".
+    // Mini-Vergleich (Zukunft ↔ Vergangenheit), Formen-Tabelle, Bildungs-Rezept, Beispiele.
+    const ep = g.easyPast;
+    const easyPast = `
+      <p class="cinfo-text">${esc(ep.intro)}</p>
+      ${pairList(ep.mirror, "es", "de")}
+      ${table(ep.forms)}
+      <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(ep.recipe)}</p>
+      ${lines(ep.examples)}
+      <p class="cinfo-text cj-note">${esc(ep.note)}</p>`;
 
     // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiele.
     const c = g.continuous;
@@ -27987,6 +28504,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         ${moduleShareBtn("tiempos")}
 
         ${sect("↔️", t.title, timeline)}
+        ${sect("🪄", ep.title, easyPast)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
         ${sect("⏯️", c.title, continuous)}
         ${sect("⚖️", iv.title, indefVsImperf)}
@@ -28339,6 +28857,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
     battleNames: { A: "", B: "" }, // optionale Spielernamen (sonst „Spieler A/B")
+    battleNameEdited: false,  // hat der Nutzer ein Battle-Namensfeld angefasst? (dann Profil-Namen nicht mehr vorbelegen)
     battleSeen: [],          // zuletzt verwendete Battle-Ids – vermeidet sofortige Wiederholungen
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
@@ -28509,6 +29028,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
         pct: overall.total ? Math.round((overall.mastered / overall.total) * 100) : 0,
       },
       lastCat,
+      userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
@@ -28640,7 +29160,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       total: state.total,
       revealed: state.revealed,
       typeResult: state.typeResult,
-      context: card.context ? loc(card.context) : null,
+      context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
       swatch: card.swatch || null,
     };
@@ -28727,7 +29247,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
-      context: card.context ? loc(card.context) : null,
+      context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
     });
   }
@@ -28819,7 +29339,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       phrases: loc(regatear.PHRASES || []),
       units: loc(regatear.UNITS || []),
       regional: loc(regatear.REGIONAL || []),
-      roleplays: loc(roleplays),
+      // {name} auch hier auflösen – symmetrisch zu roleplayVM, falls künftig ein
+      // Regatear-Rollenspiel den Platzhalter nutzt (sonst stünde „{name}" im Text).
+      roleplays: loc(roleplays).map((r) => Object.assign({}, r, {
+        dialogue: (r.dialogue || []).map((d) => Object.assign({}, d, { es: withName(d.es), de: withName(d.de) })),
+        usefulPhrases: (r.usefulPhrases || []).map(withName),
+      })),
     };
   }
 
@@ -29196,6 +29721,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       destination: t.destination,
       endDate: t.endDate,
       perDay,
+      userName: profileName(), // persönliche Ansprache auf der Countdown-Karte (leer = neutral)
       daysLeft: daysLeft === null ? 0 : daysLeft, // <0 = Termin vorbei
       past: daysLeft !== null && daysLeft < 0,
       today: t.endDate === today,
@@ -29322,7 +29848,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!badges || !state.badgeToast || !state.badgeToast.length) return;
     const existing = root.querySelector(".btoast");
     if (existing) existing.remove();
-    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+    root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
   }
 
   // Erfüllte, aber noch nicht vermerkte Badges freischalten. announce=true sammelt
@@ -29553,9 +30079,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       roleB: { name: swapped ? r.roles.a : r.roles.b, goal: natk(r, swapped ? "goalA" : "goalB") },
       dialogue: r.dialogue.map((d) => ({
         speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
-        de: nat(d), es: d.es,
+        de: withName(nat(d)), es: withName(d.es),
       })),
-      usefulPhrases: r.usefulPhrases,
+      usefulPhrases: r.usefulPhrases.map(withName),
     };
   }
 
@@ -29878,6 +30404,35 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   const dialogueById = (id) => (dialogos ? dialogos.DIALOGOS.find((d) => d.id === id) : null) || null;
   const scenarioById = (id) => (dialogos ? dialogos.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null;
 
+  // Reise-Name aus dem Profil: erscheint in Diálogos überall dort, wo der Nutzer
+  // sich vorstellt (Hotel, Busticket, Notfall …). Ohne Eintrag bleibt der
+  // Beispielname „Marco", damit die Dialoge auch ungenutzt stimmig sind.
+  // profileName() liefert den rohen (ggf. leeren) Profil-Namen – für Stellen, die
+  // OHNE Eintrag lieber nichts vorbelegen sollen (z. B. Battle-Spielername).
+  function profileName() {
+    return (settings.userName || "").trim().replace(/\s+/g, " ").slice(0, 40);
+  }
+  function travelerName() {
+    const n = profileName();
+    // Ein Name, der bei der Antwortprüfung zu nichts normalisiert (nur Emoji/
+    // Satzzeichen), machte die „Wie heißt du?"-Tippzüge unlösbar → Beispielname.
+    return (n && matcher.normalize(n)) ? n : "Marco";
+  }
+  // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
+  // durch den Reise-Namen ersetzen. Ersatz als Funktion übergeben, damit Sonder-
+  // zeichen im Namen ($&, $1 …) nicht als replace-Muster interpretiert werden.
+  function withName(s) {
+    return typeof s === "string" ? s.replace(/\{name\}/g, () => travelerName()) : s;
+  }
+  // {name} in allen String-Feldern eines (flachen) Objekts ersetzen – z. B. im
+  // lokalisierten Reise-Kontext einer Karte (sentenceEs/sentenceDe/situation/note).
+  function withNameObj(o) {
+    if (!o || typeof o !== "object") return o;
+    const out = {};
+    for (const k in o) out[k] = withName(o[k]);
+    return out;
+  }
+
   function dialogosSetupVM() {
     return {
       available: dialogosReady(),
@@ -29901,19 +30456,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     for (let i = 0; i < d.turnIdx; i++) {
       const t = turns[i];
       if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: t.es, de: nat(t) });
-      else transcript.push({ who: "user", es: t.solEs, de: "" });
+      if (t.who === "npc") transcript.push({ who: "npc", es: withName(t.es), de: withName(nat(t)) });
+      else transcript.push({ who: "user", es: withName(t.solEs), de: "" });
     }
     const cur = turns[d.turnIdx] || null;
     const current = cur
       ? (cur.who === "npc"
-          ? { who: "npc", es: cur.es, de: nat(cur) }
+          ? { who: "npc", es: withName(cur.es), de: withName(nat(cur)) }
           : {
               who: "user",
               kind: cur.kind,
-              de: nat(cur),
-              solEs: cur.solEs,
-              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: o.es })) : null,
+              de: withName(nat(cur)),
+              solEs: withName(cur.solEs),
+              why: withName(natk(cur, "why") || ""),
+              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: withName(o.es) })) : null,
             })
       : null;
     return {
@@ -29974,7 +30530,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const t = currentUserTurn();
     if (!t || t.kind !== "mc" || !t.options[idx]) return;
     const correct = !!t.options[idx].ok;
-    d.result = { correct, given: t.options[idx].es };
+    d.result = { correct, given: withName(t.options[idx].es) };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
     render();
   }
@@ -29985,7 +30541,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const t = currentUserTurn();
     if (!t || t.kind !== "type") return;
     const norm = matcher.normalize(input);
-    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(s));
+    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(withName(s)));
     const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
     d.result = { correct, given: input };
     if (correct) { d.correct += 1; buzz(12); } else buzz(8);
@@ -30034,7 +30590,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     if (!d || !speech) return;
     const dia = dialogueById(d.dialogueId);
     const t = dia && dia.turns[d.turnIdx];
-    if (t && t.who === "npc") speech.speak(t.es, settings.speechRate);
+    if (t && t.who === "npc") speech.speak(withName(t.es), settings.speechRate);
   }
 
   // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
@@ -30568,7 +31124,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
     // Glückwunsch-Einblendung als eigene Ebene über den aktuellen Screen.
     if (badges && state.badgeToast && state.badgeToast.length) {
-      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast));
+      root.insertAdjacentHTML("afterbegin", ui.badgeToast(state.badgeToast, profileName()));
     }
 
     // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
@@ -30598,16 +31154,69 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
-  // requestAnimationFrame, damit das Layout nach dem innerHTML steht; block:"end"
-  // hält den darüberliegenden npc-Satz mit im Bild.
+  // requestAnimationFrame, damit das Layout nach dem innerHTML steht.
+  // Normalfall (npc-Satz, Optionen, Verdikt): block:"end" hält den darüber-
+  // liegenden npc-Satz mit im Bild. Tipp-Zug dagegen: das Eingabefeld mittig
+  // halten – mit block:"end" schöbe es sonst genau hinter die eingeblendete
+  // Tastatur, und der Nutzer sähe nicht, was er tippt.
   function scrollDialogActive() {
     if (typeof requestAnimationFrame !== "function") return;
     requestAnimationFrame(function () {
-      const el = root.querySelector("#dlg-active");
-      if (!el) return;
+      const active = root.querySelector("#dlg-active");
+      if (!active) return;
+      const input = active.querySelector("#dialogos-answer");
+      const target = input || active;
+      const block = input ? "center" : "end";
       const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "end" }); } catch (e) { /* egal */ }
+      try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block }); } catch (e) { /* egal */ }
     });
+  }
+
+  // Hält das fokussierte Eingabefeld über der eingeblendeten Bildschirmtastatur.
+  // scrollDialogActive() & manageFocus() laufen beim Render – also BEVOR die
+  // Tastatur auftaucht – und können deren Höhe nicht kennen. Sobald die Tastatur
+  // erscheint, schrumpft der visuelle Viewport (visualViewport.resize); das Feld
+  // verschwindet dann sonst hinter der Tastatur, und der Nutzer muss von Hand
+  // nachscrollen. Dieser Handler holt es genau dann sanft zurück in den Blick.
+  function setupKeyboardScroll() {
+    const vv = window.visualViewport;
+    if (!vv || typeof vv.addEventListener !== "function") return;
+    // Nur echte Tipp-Felder berücksichtigen (Buttons/Slider lösen keine Tastatur aus).
+    function focusedField() {
+      const el = document.activeElement;
+      if (!el) return null;
+      if (el.tagName === "TEXTAREA") return el;
+      if (el.tagName === "INPUT") {
+        const t = (el.getAttribute("type") || "text").toLowerCase();
+        if (t === "text" || t === "search" || t === "email" || t === "number" ||
+            t === "tel" || t === "url" || t === "password") return el;
+      }
+      return null;
+    }
+    function ensureVisible() {
+      const el = focusedField();
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // Untere Kante des sichtbaren Bereichs = obere Tastaturkante.
+      const visibleBottom = vv.offsetTop + vv.height;
+      const margin = 16;
+      // Feld ragt unter die Tastatur oder über den oberen Rand? Dann zentriert
+      // in den verbleibenden Sichtbereich holen.
+      if (rect.bottom > visibleBottom - margin || rect.top < vv.offsetTop) {
+        const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        try { el.scrollIntoView({ behavior: motion ? "auto" : "smooth", block: "center" }); } catch (e) { /* egal */ }
+      }
+    }
+    // Mehrere resize-Events (Tastatur-Einblend-Animation) zu einem rAF bündeln.
+    let scheduled = false;
+    function onViewportChange() {
+      if (scheduled) return;
+      scheduled = true;
+      const run = function () { scheduled = false; ensureVisible(); };
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(run); else run();
+    }
+    vv.addEventListener("resize", onViewportChange);
+    vv.addEventListener("scroll", onViewportChange);
   }
 
   // Hör-Modus & Preis-Trainer spielen die spanische Vorgabe automatisch ab, sobald
@@ -30633,7 +31242,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       const d = state.dialogos;
       const dia = dialogueById(d.dialogueId);
       const t = dia && dia.turns[d.turnIdx];
-      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: t.es };
+      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: withName(t.es) };
     }
     return null;
   }
@@ -31729,6 +32338,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     render();
   }
 
+  // Reise-Namen aus dem Profil speichern. Getrimmt, Mehrfach-Leerzeichen zusammen-
+  // gezogen, auf 40 Zeichen begrenzt. rerender:true (Knopf „Speichern") bestätigt
+  // mit Haptik und zeichnet neu; ohne (Blur via change-Handler) wird nur still
+  // gesichert, damit ein direkt danach getippter Knopf nicht durch ein Re-Render
+  // verloren geht.
+  function saveUserName(value, rerender) {
+    const name = String(value || "").trim().replace(/\s+/g, " ").slice(0, 40);
+    if (name !== (settings.userName || "")) {
+      settings = Object.assign({}, settings, { userName: name });
+      store.saveSettings(settings);
+    }
+    if (rerender) { buzz(8); render(); }
+  }
+
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
   // Wird beim Start UND bei jedem Wechsel aufgerufen (Single Source of Truth).
   function applyUiLang(l) {
@@ -31810,6 +32433,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
   function openBattleSetup() {
     dismissBadgeToast();
+    // Spieler A mit dem Profil-Namen vorbelegen (Gerätebesitzer spielt meist A) –
+    // aber nur, solange der Nutzer die Battle-Namensfelder noch NIE angefasst hat.
+    // So bleibt ein bewusst geleertes Feld auch nach einem erneuten Öffnen leer.
+    if (!state.battleNameEdited && !state.battleNames.A) {
+      const n = profileName().slice(0, 14);
+      if (n) state.battleNames = Object.assign({}, state.battleNames, { A: n });
+    }
     state.screen = "battleSetup";
     render();
   }
@@ -32803,6 +33433,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const ov = stats.overview(allCards(), progress);
     buzz(12);
     share.shareImage("stats", {
+      userName: profileName(),
       rate: ov.rate,
       mastered: ov.mastered,
       seenCards: ov.seenCards,
@@ -32826,6 +33457,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     const grp = (badges.GROUPS || []).find((g) => g.id === b.group);
     buzz(12);
     share.shareImage("badge", {
+      userName: profileName(),
       icon: b.icon,
       name: b.name,
       text: b.unlockedText || b.description,
@@ -33311,6 +33943,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       submitDialogosType(input ? input.value : "");
       return;
     }
+    // Profil: Reise-Namen speichern (Enter oder „Speichern"-Knopf).
+    if (e.target.closest('[data-action="save-name"]')) {
+      e.preventDefault();
+      const input = document.getElementById("profile-name");
+      saveUserName(input ? input.value : "", true);
+      return;
+    }
     // Getippte Antwort prüfen (Schreiben-/Hör-Modus).
     const form = e.target.closest('[data-action="submit-typed"]');
     if (!form) return;
@@ -33365,12 +34004,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
       e.target.value = "";
       return;
     }
+    // Profil-Name still sichern, sobald das Feld verlassen wird (auch ohne
+    // „Speichern“). Kein Re-Render hier, damit ein direkt danach getippter Knopf
+    // nicht ins Leere greift; die Persistenz reicht.
+    if (e.target && e.target.id === "profile-name") {
+      saveUserName(e.target.value, false);
+      return;
+    }
     // Battle-Spielernamen merken, damit ein Re-Render (Längen-Umschalten) sie
     // nicht verschluckt. 'change' feuert beim Verlassen des Feldes (auch wenn
     // direkt ein Längen-/Szenen-Button geklickt wird).
     if (e.target && (e.target.id === "pname-a" || e.target.id === "pname-b")) {
       const side = e.target.id === "pname-a" ? "A" : "B";
       state.battleNames = Object.assign({}, state.battleNames, { [side]: e.target.value.trim() });
+      state.battleNameEdited = true; // ab jetzt nicht mehr automatisch mit dem Profil-Namen vorbelegen
       return;
     }
     // Aufgaben-Formular (Modo profe): Auswahl merken, damit ein Re-Render (z. B.
@@ -33626,6 +34273,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   window.addEventListener("pointermove", onBodyPointerMove);
   window.addEventListener("pointerup", onBodyPointerUp);
   window.addEventListener("pointercancel", onBodyPointerUp);
+  setupKeyboardScroll(); // fokussiertes Eingabefeld über der Tastatur halten (Diálogos, Schreiben, Suche …)
   applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
   // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).
   try {

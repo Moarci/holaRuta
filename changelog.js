@@ -22,6 +22,25 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.86.0",
+      date: "2026-06-16",
+      title: "Tiempos: der einfache Vergangenheits-Trick",
+      items: [
+        "🪄 Die Zeiten-Erklärseite (Tiempos) hat jetzt ganz oben einen eigenen „Vergangenheits-Trick“: he + Partizip – das genaue Gegenstück zum Zukunfts-Trick „voy a + Infinitiv“. Du beugst nur das kleine haber, das Hauptverb bleibt fest – damit redest du fast jedes Verb in der Vergangenheit los, lange bevor du alle Endungen kannst.",
+        "🇩🇪🇬🇧 Mit Mini-Vergleich (Zukunft ↔ Vergangenheit), Formen, Bildungs-Rezept, Reise-Beispielen und einem ehrlichen Hinweis zum LatAm-Indefinido – auf Deutsch und Englisch.",
+        "🛠️ Außerdem behoben: Die Tiempos-Seite öffnete sich seit der Sprachumstellung gar nicht mehr (ein interner Fehler beim Aufbau) – sie funktioniert wieder vollständig.",
+      ],
+    },
+    {
+      version: "1.85.0",
+      date: "2026-06-16",
+      title: "Diálogos: Hintergrund zu „Besser so“",
+      items: [
+        "💡 Wenn in den Diálogos beim „Besser so“ die Musterantwort gezeigt wird, gibt es jetzt zu jeder Antwort einen kurzen Hintergrund – warum sie so lautet (Grammatik, Wortschatz oder Höflichkeit). Er sitzt direkt darunter und lässt sich zum Lesen aufklappen.",
+        "🇩🇪🇬🇧 Die Erklärungen sind auf Deutsch und Englisch verfügbar und stören nicht beim schnellen Weiterspielen – aufklappen nur, wenn du magst.",
+      ],
+    },
+    {
       version: "1.84.0",
       date: "2026-06-16",
       title: "Drei neue Themenblöcke: Friseur & Beauty, Sport & Fitness, Arbeiten & Freiwilligenarbeit",

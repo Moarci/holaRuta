@@ -44,15 +44,78 @@
       </div>`;
   }
 
-  // Dark-Mode-Umschalter (Startseite, oben rechts). Zeigt das Ziel der nächsten
-  // Aktion: Mond = "in den Dunkelmodus" (fürs Hostel-Bett), Sonne = "zurück ins Helle".
-  function themeToggle(theme) {
+  // Dark-Mode-Umschalter (Startseite, oben rechts): ein kleines, doppelseitiges
+  // Emaille-Schild. Hell = Kaffee am Morgen (AM, Dampf steigt), Dunkel = Wein am
+  // Abend (PM, Glas voll). Das jeweils inaktive Schild liegt gedimmt darunter.
+  // role="switch" + aria-checked (dunkel = an); die Logik hängt wie gehabt an
+  // data-action="toggle-theme". Das Schild reagiert per CSS auf [data-theme].
+  function themeToggle(theme, opts) {
     const dark = theme === "dark";
-    const icon = dark ? "☀️" : "🌙";
+    const large = opts && opts.large;
     const label = dark ? t("common.themeLight") : t("common.themeDark");
     const title = dark ? t("common.themeLightTitle") : t("common.themeDarkTitle");
-    return `<button class="iconbtn" data-action="toggle-theme"
-                    aria-label="${esc(label)}" title="${esc(title)}" aria-pressed="${dark}">${icon}</button>`;
+    return `<button class="themesign${large ? " themesign--lg" : ""}" data-action="toggle-theme" role="switch"
+                    aria-checked="${dark}" aria-label="${esc(label)}" title="${esc(title)}">
+      <span class="themesign__plank">
+        <span class="themesign__plaque themesign__plaque--am">
+          <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
+            <g filter="url(#signGrain)">
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="#EDE4CD"/>
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="none" stroke="rgba(33,28,21,.10)" stroke-width="2"/>
+            </g>
+            <g filter="url(#signPaint)" fill="#1B1712" stroke="#1B1712">
+              <text x="92" y="62" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="2" stroke="none">AM</text>
+              <g class="themesign__steam" fill="none" stroke-width="4.5" stroke-linecap="round">
+                <path d="M80 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+                <path d="M92 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+                <path d="M104 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+              </g>
+              <path stroke="none" d="M52 128 h66 a6 6 0 0 1 6 6 q-2 34 -10 44 a16 16 0 0 1 -13 7 h-32 a16 16 0 0 1 -13 -7 q-8 -10 -10 -44 a6 6 0 0 1 6 -6 z"/>
+              <path fill="none" stroke-width="9" d="M124 138 q22 0 22 18 q0 18 -20 19"/>
+              <path stroke="none" d="M44 190 h80 q6 0 4 5 q-3 7 -44 7 q-41 0 -44 -7 q-2 -5 4 -5 z"/>
+            </g>
+          </svg>
+        </span>
+        <span class="themesign__plaque themesign__plaque--pm">
+          <svg viewBox="0 0 184 224" aria-hidden="true" focusable="false">
+            <g filter="url(#signGrain)">
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="#1B1712"/>
+              <rect x="6" y="4" width="172" height="216" rx="5" fill="none" stroke="rgba(236,226,202,.10)" stroke-width="2"/>
+            </g>
+            <g filter="url(#signPaint)">
+              <text x="92" y="60" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="2" fill="#ECE2CA">PM</text>
+              <clipPath id="signBowlClip">
+                <path d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+              </clipPath>
+              <rect class="themesign__wine" clip-path="url(#signBowlClip)" x="50" y="118" width="84" height="40" fill="#7C2A33"/>
+              <path fill="none" stroke="#ECE2CA" stroke-width="6.5" stroke-linejoin="round" d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+              <rect x="89" y="146" width="6" height="42" rx="3" fill="#ECE2CA"/>
+              <path stroke="none" fill="#ECE2CA" d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z"/>
+            </g>
+          </svg>
+        </span>
+      </span>
+    </button>`;
+  }
+
+  // Erscheinungsbild-Block im Profil: das große AM/PM-Schild links, rechts ein
+  // mitlaufender Begleittext (Kaffee am Morgen / Wein am Abend). So bekommt das
+  // Schild den Platz, den es verdient, und der Seitenkopf bleibt schlank.
+  function themeSetting(vm) {
+    const dark = vm.theme === "dark";
+    const title = dark ? t("common.themePmTitle") : t("common.themeAmTitle");
+    const text = dark ? t("common.themePmText") : t("common.themeAmText");
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("common.themeCap"))}</span>
+        <div class="themeset">
+          ${themeToggle(vm.theme, { large: true })}
+          <div class="themeset__copy" aria-live="polite">
+            <p class="themeset__title">${esc(title)}</p>
+            <p class="themeset__text">${esc(text)}</p>
+          </div>
+        </div>
+      </div>`;
   }
 
   // ---------- HOME (drei Reiter: Lernen · Entdecken · Profil) ----------
@@ -131,13 +194,13 @@
       </nav>`;
   }
 
-  // Schlanke Kopfzeile pro Reiter: nur Titel + Dark-Mode-Knopf (statt des großen
-  // Heros mit Kicker und Icon-Reihe – der Markenname steht schon in der App-Bar).
-  function pagehead(title, vm) {
+  // Schlanke Kopfzeile pro Reiter: nur der Titel (der Markenname steht schon in
+  // der App-Bar). Der Hell/Dunkel-Umschalter lebt als großes AM/PM-Schild im
+  // Profil-Reiter unter „Einstellungen“ – nicht mehr in jeder Kopfzeile.
+  function pagehead(title) {
     return `
       <div class="pagehead">
         <h2 class="pagehead__title">${title}</h2>
-        ${themeToggle(vm.theme)}
       </div>`;
   }
 
@@ -188,8 +251,10 @@
   // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
   function tripDisplayCard(trip, action) {
     const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
-    const countdown = trip.past ? t("home.tripTime")
-      : trip.today ? t("home.tripToday")
+    // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
+    const who = trip.userName ? esc(trip.userName) + ", " : "";
+    const countdown = trip.past ? who + t("home.tripTime")
+      : trip.today ? who + t("home.tripToday")
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
@@ -398,7 +463,7 @@
     ].join("");
 
     return `
-      ${pagehead(esc(t("home.homePrompt")), vm)}
+      ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")))}
       ${searchBar()}
 
       <div class="today">
@@ -455,7 +520,7 @@
         <div class="featgroup">${items.map(featBtn).join("")}</div>`;
     }).join("");
     return `
-      ${pagehead(esc(t("discover.discoverTitle")), vm)}
+      ${pagehead(esc(t("discover.discoverTitle")))}
       ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
       ${sections}`;
@@ -475,6 +540,21 @@
     // Lern-Einstellungen: Bediensprache (de/en) plus die Lern-Voreinstellungen
     // (Modus/Richtung/Stufen/Tempo). Alles globale Vorgaben, daher gebündelt hier
     // im Profil – das Dashboard zeigt davon nur noch die Zusammenfassung.
+    // Reise-Name: wird in den Diálogos automatisch eingesetzt (Hotel, Notfall …),
+    // damit der Nutzer dort seinen eigenen Namen nennt statt eines Beispielnamens.
+    // Eigenes <form>, damit Enter speichert; zusätzlich sichert ein Blur den Stand
+    // (change-Handler in app.js), falls ohne „Speichern" weggetippt wird.
+    const nameGroup = `
+      <form class="switchgroup namefield" data-action="save-name">
+        <label class="switchcap" for="profile-name">${esc(t("home.nameCap"))}</label>
+        <div class="namefield__row">
+          <input id="profile-name" class="namefield__input" type="text" maxlength="40"
+                 autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
+                 placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" />
+          <button class="ghostbtn namefield__save" type="submit">${esc(t("home.nameSave"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.nameHint"))}</p>
+      </form>`;
     const langGroup = `
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
@@ -484,7 +564,7 @@
         </div>
       </div>`;
     return `
-      ${pagehead(esc(t("profile.progressTitle")), vm)}
+      ${pagehead(esc(t("profile.progressTitle")))}
 
       <div class="profcard">
         <p class="profcard__streak">${streakLine}</p>
@@ -499,6 +579,8 @@
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
+        ${themeSetting(vm)}
+        ${nameGroup}
         ${langGroup}
         ${learnPrefs(vm)}
       </div>
@@ -554,7 +636,13 @@
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
       : install.isIOS
         ? `<p class="installcard__text">${esc(install.hint)}</p>`
-        : `<p class="installcard__text">${esc(t("profile.installHintBrowser"))}</p>`;
+        : `<p class="installcard__text">${esc(t("profile.installHintLead"))}</p>
+           <ol class="installcard__steps">
+             <li>${esc(t("profile.installStep1"))}</li>
+             <li>${esc(t("profile.installStep2"))}</li>
+             <li>${esc(t("profile.installStep3"))}</li>
+           </ol>
+           <p class="installcard__note">${esc(t("profile.installHintNote"))}</p>`;
     return `
       <div class="installcard">
         <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.notInstalledTitle"))}</p>
@@ -1009,7 +1097,7 @@
 
   // Kurze Glückwunsch-Einblendung nach frisch freigeschalteten Badges.
   // Liegt als eigene Ebene über dem Screen; tippen führt zum Ruta-Pass.
-  function badgeToast(list) {
+  function badgeToast(list, name) {
     if (!list || !list.length) return "";
     const items = list
       .map((b) => `
@@ -1021,7 +1109,9 @@
           </span>
         </span>`)
       .join("");
-    const head = list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne");
+    const head = name
+      ? (list.length > 1 ? t("profile.badgeNewMultiName", { n: list.length, name }) : t("profile.badgeNewOneName", { name }))
+      : (list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne"));
     return `
       <button class="btoast" data-action="open-badges" aria-label="${esc(t("profile.badgeToastLabel", { head }))}">
         <span class="btoast__head">🎖️ ${esc(head)}</span>
@@ -3422,9 +3512,18 @@
                ${t("discover.dlgBetter", { es: esc(cur.solEs) })}
                <span class="dlg-verdict__given">${esc(t("discover.dlgYou", { given: vm.result.given || "—" }))}</span>
              </div>`;
+        // Kurzer Hintergrund zur Musterantwort – zum Ausklappen, damit er nur
+        // stört, wenn man ihn wirklich lesen will.
+        const why = cur.why
+          ? `<details class="dlg-why">
+               <summary class="dlg-why__sum">${esc(t("discover.dlgWhy"))}</summary>
+               <p class="dlg-why__body">${esc(cur.why)}</p>
+             </details>`
+          : "";
         active = `
           ${dlgBubble({ who: "user", es: cur.solEs, de: "" })}
           ${verdict}
+          ${why}
           <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>`;
       }
     }
@@ -3523,9 +3622,9 @@
           </summary>
           <div class="cinfo-dish__body">
             ${table(te.forms)}
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
-            <p class="cj-verb__like"><strong>${esc(t("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
+            <p class="cj-verb__like"><strong>${esc(tt("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
             ${lines(te.examples)}
           </div>
         </details>`)
@@ -3537,6 +3636,17 @@
       <ul class="cinfo-words">
         ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
       </ul>`;
+
+    // Der einfache Vergangenheits-Trick: he + Partizip – Spiegel zu „voy a + Infinitiv".
+    // Mini-Vergleich (Zukunft ↔ Vergangenheit), Formen-Tabelle, Bildungs-Rezept, Beispiele.
+    const ep = g.easyPast;
+    const easyPast = `
+      <p class="cinfo-text">${esc(ep.intro)}</p>
+      ${pairList(ep.mirror, "es", "de")}
+      ${table(ep.forms)}
+      <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(ep.recipe)}</p>
+      ${lines(ep.examples)}
+      <p class="cinfo-text cj-note">${esc(ep.note)}</p>`;
 
     // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiele.
     const c = g.continuous;
@@ -3639,6 +3749,7 @@
         ${moduleShareBtn("tiempos")}
 
         ${sect("↔️", t.title, timeline)}
+        ${sect("🪄", ep.title, easyPast)}
         ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`)}
         ${sect("⏯️", c.title, continuous)}
         ${sect("⚖️", iv.title, indefVsImperf)}
