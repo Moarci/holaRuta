@@ -1721,6 +1721,78 @@
       </label>`;
   }
 
+  // ---------- ZIEL-PICKER (Modo profe / Aktivitätsblatt) ----------
+  // Statt eines nativen <select> mit <optgroup> (auf Android nur ein nüchterner
+  // Vollbild-Dialog) ein hübsches Modal mit Erklärung je Gruppe: WAS sie ist und
+  // WANN die Lehrkraft/Reiseleitung sie wählen sollte. Geteilt von beiden Stellen
+  // über ctx ("task" | "sheet"); die Auswahl landet via data-action="pick-target".
+  const TARGET_GROUPS = [
+    { id: "pretrip",  icon: "🗓️", labelKey: "teacher.grpPretrip",  helpKey: "teacher.grpPretripHelp" },
+    { id: "preset",   icon: "🎒", labelKey: "teacher.grpPreset",   helpKey: "teacher.grpPresetHelp" },
+    { id: "category", icon: "📦", labelKey: "teacher.grpCategory", helpKey: "teacher.grpCategoryHelp" },
+  ];
+
+  function targetGroupOf(value) {
+    const g = TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0);
+    return g || TARGET_GROUPS[TARGET_GROUPS.length - 1];
+  }
+
+  // Tappbarer „Select-Ersatz": zeigt die aktuelle Auswahl (Gruppe + Label) und
+  // öffnet auf Klick das Picker-Modal.
+  function targetField(ctx, targets, current) {
+    const cur = (targets || []).find((x) => x.value === current);
+    const g = cur ? targetGroupOf(cur.value) : null;
+    const valLine = cur
+      ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span><span class="tgt-field__val">${esc(cur.label)}</span>`
+      : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
+    return `
+      <button type="button" class="tgt-field" data-action="open-target-picker" data-ctx="${esc(ctx)}"
+              aria-haspopup="dialog" aria-label="${esc(t("teacher.pickFieldLabel"))}">
+        <span class="tgt-field__text">${valLine}</span>
+        <span class="tgt-field__change">${esc(t("teacher.pickChange"))} ▾</span>
+      </button>`;
+  }
+
+  // Das Modal selbst (Scrim + Karte). Titel/Intro kommen je nach ctx aus der
+  // passenden i18n-Gruppe ("teacher.*" für Aufgaben, "sheet.*" fürs Blatt); die
+  // Gruppen-Erklärungen sind geteilt (teacher.grp*Help).
+  function targetPickerModal(ctx, targets, current) {
+    const titleKey = ctx === "sheet" ? "sheet.pickTitle" : "teacher.pickTitle";
+    const introKey = ctx === "sheet" ? "sheet.pickIntro" : "teacher.pickIntro";
+    const sections = TARGET_GROUPS.map((g) => {
+      const opts = (targets || []).filter((x) => x.group === g.id);
+      if (!opts.length) return "";
+      const rows = opts.map((o) => {
+        const active = o.value === current;
+        return `<button type="button" class="tgt-opt${active ? " is-active" : ""}"
+                  data-action="pick-target" data-ctx="${esc(ctx)}" data-value="${esc(o.value)}"${active ? ' aria-current="true"' : ""}>
+                  <span class="tgt-opt__label">${esc(o.label)}</span>
+                  <span class="tgt-opt__check" aria-hidden="true">${active ? "✓" : ""}</span>
+                </button>`;
+      }).join("");
+      return `
+        <section class="tgt-group">
+          <h3 class="tgt-group__title">${g.icon} ${esc(t(g.labelKey))}</h3>
+          <p class="tgt-group__help">${esc(t(g.helpKey))}</p>
+          <div class="tgt-opts">${rows}</div>
+        </section>`;
+    }).join("");
+    return `
+      <div class="tgt-scrim" data-action="close-target-picker">
+        <div class="tgt-modal" role="dialog" aria-modal="true" aria-labelledby="tgt-title" data-action="target-stop">
+          <div class="tgt-modal__head">
+            <h2 class="tgt-modal__title" id="tgt-title">🎯 ${esc(t(titleKey))}</h2>
+            <button type="button" class="tgt-modal__x" data-action="close-target-picker" aria-label="${esc(t("teacher.pickClose"))}">✕</button>
+          </div>
+          <p class="tgt-modal__intro">${esc(t(introKey))}</p>
+          <div class="tgt-modal__body">${sections}</div>
+          <div class="tgt-modal__foot">
+            <button type="button" class="cta tgt-modal__done" data-action="close-target-picker">${esc(t("teacher.pickClose"))}</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
   // ---------- LÄNDERKUNDE (INFOSEITE) ----------
   // Dropdown mit Regionen als <optgroup>; darunter das gewählte Land mit
   // Infotexten und der Unterrubrik "Essen & Trinken".
@@ -2721,17 +2793,11 @@
       </div>`
       : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
 
-    const grp = (g) => (vm.taskTargets || []).filter((x) => x.group === g)
-      .map((x) => `<option value="${esc(x.value)}"${x.value === vm.taskTarget ? " selected" : ""}>${esc(x.label)}</option>`).join("");
     const taskForm = `
       <h3 class="teacher-h3">${esc(t("teacher.taskHeading"))}</h3>
       <p class="teacher-sub2">${esc(t("teacher.taskHint"))}</p>
       <div class="task-form">
-        <select id="task-target" class="task-input" aria-label="${esc(t("teacher.taskTarget"))}">
-          <optgroup label="${esc(t("teacher.grpPretrip"))}">${grp("pretrip")}</optgroup>
-          <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
-          <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
-        </select>
+        ${targetField("task", vm.taskTargets, vm.taskTarget)}
         <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}" value="${esc(vm.taskTitle || "")}">
         <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}" value="${esc(vm.taskDue || "")}">
         <button class="teacher-btn teacher-btn--main" data-action="task-generate">${esc(t("teacher.taskGenerate"))}</button>
@@ -2767,6 +2833,7 @@
           <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
         </div>
       </section>
+      ${vm.targetPicker === "task" ? targetPickerModal("task", vm.taskTargets, vm.taskTarget) : ""}
       ${withTab ? tabbar("tarea") : ""}`;
   }
 
@@ -2774,8 +2841,6 @@
   // Steuerleiste (Ziel-/Etappenwahl + Drucken), darunter das druckoptimierte Blatt.
   // window.print() macht daraus ein PDF; @media print blendet alles außer .sheet aus.
   function renderPrintSheet(vm) {
-    const grp = (g) => (vm.targets || []).filter((x) => x.group === g)
-      .map((x) => `<option value="${esc(x.value)}"${x.value === vm.sheetTarget ? " selected" : ""}>${esc(x.label)}</option>`).join("");
     const stagePick = vm.stageOpts
       ? `<select id="sheet-stage" class="task-input" aria-label="${esc(t("sheet.stageSelect"))}">
            ${vm.stageOpts.map((o) => `<option value="${esc(o.value)}"${o.value === vm.sheetStage ? " selected" : ""}>${esc(o.label)}</option>`).join("")}
@@ -2783,11 +2848,7 @@
       : "";
     const controls = `
       <div class="sheet-controls no-print">
-        <select id="sheet-target" class="task-input" aria-label="${esc(t("sheet.targetSelect"))}">
-          <optgroup label="${esc(t("teacher.grpPretrip"))}">${grp("pretrip")}</optgroup>
-          <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
-          <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
-        </select>
+        ${targetField("sheet", vm.targets, vm.sheetTarget)}
         ${stagePick}
         <button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>
       </div>`;
@@ -2855,7 +2916,8 @@
         ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher")}
         ${controls}
         ${sheet}
-      </section>`;
+      </section>
+      ${vm.targetPicker === "sheet" ? targetPickerModal("sheet", vm.targets, vm.sheetTarget) : ""}`;
   }
 
   // Lernenden-Seite: mehrere abonnierte Aufgaben (parallel), plus Code-Eingabe zum

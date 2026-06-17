@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.92.0",
+      date: "2026-06-17",
+      title: "Modo profe: Ziel-Auswahl als erklärtes Modal statt Dropdown",
+      titleEn: "Teacher mode: target selection as an explained modal, not a dropdown",
+      items: [
+        "🎯 Im Lehrer-/Reiseleiter-Modus (und im Aktivitätsblatt) lief die Ziel-Auswahl bisher über ein nüchternes System-Dropdown – auf dem Handy eine endlose Radiobutton-Liste ohne jede Erklärung. Jetzt öffnet ein Tipp auf das Ziel-Feld ein aufgeräumtes Modal: die drei Gruppen „Pre-Trip-Pläne“, „Pre-Arrival-Pakete“ und „Ganzes Paket (üben)“ stehen klar getrennt, jede mit einer kurzen Erklärung, WAS sie ist und WANN du sie als Lehrkraft/Reiseleitung wählen solltest. Die aktuelle Auswahl wird direkt im Feld angezeigt, ein Häkchen markiert das gewählte Ziel.",
+      ],
+      itemsEn: [
+        "🎯 In teacher / tour-guide mode (and on the activity sheet) the target selection used to be a plain system dropdown – on a phone an endless radio-button list with no explanation at all. Now tapping the target field opens a tidy modal: the three groups “Pre-trip plans”, “Pre-arrival packs” and “Whole pack (practice)” are clearly separated, each with a short note on WHAT it is and WHEN you should pick it as a teacher/guide. The current choice shows right in the field, and a checkmark marks the selected target.",
+      ],
+    },
+    {
       version: "1.91.0",
       date: "2026-06-17",
       title: "Bebidas AM/PM: Tag- und Abendgetränk pro Land",

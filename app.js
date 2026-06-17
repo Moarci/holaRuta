@@ -72,6 +72,7 @@
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
     taskTarget: "",          // gewähltes Aufgaben-Ziel im Formular (überlebt Re-Render)
+    targetPicker: null,      // offenes Ziel-Picker-Modal: 'task' | 'sheet' | null (Modo profe / Blatt)
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
@@ -2878,6 +2879,9 @@
   // badges.buildMetrics berechnet daraus dieselben Kennzahlen wie für den Ruta-Pass.
   function openTeacher() {
     dismissBadgeToast();
+    // Sinnvolle Vorauswahl, damit der Ziel-Picker eine Auswahl zeigt und „Code
+    // erzeugen" sofort funktioniert (sonst bliebe taskTarget leer = no-op).
+    if (!state.taskTarget) state.taskTarget = (taskTargets()[0] || {}).value || "";
     state.screen = "teacher";
     render();
   }
@@ -2958,7 +2962,8 @@
         ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
       totalCards: students.length ? students[0].totalCards : 0,
       taskTargets: taskTargets(),
-      taskTarget: state.taskTarget,   // gewähltes Ziel (für <option selected>)
+      taskTarget: state.taskTarget,   // gewähltes Ziel (für die Picker-Anzeige)
+      targetPicker: state.targetPicker, // offenes Ziel-Picker-Modal? ('task' | null)
       taskTitle: state.taskTitle,     // Titel-Feld vorbelegen
       taskDue: state.taskDue,         // Frist-Feld vorbelegen
       taskCode: state.teacherTaskCode,
@@ -2990,14 +2995,23 @@
     return prefix + ": " + name;
   }
 
+  // Ziel im Picker-Modal gewählt: in den passenden State spiegeln und schließen.
+  // ctx "task" = Aufgaben-Formular (Modo profe), "sheet" = Aktivitätsblatt.
+  function pickTarget(ctx, value) {
+    if (!value) return;
+    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; }
+    else { state.taskTarget = value; }
+    state.targetPicker = null;
+    render();
+  }
+
   // Aufgabe erzeugen (Lehrkraft): aus dem Formular einen Code bauen.
   function generateTask() {
-    // Aktuelle Formularwerte übernehmen (DOM ist die Wahrheit beim Klick), in den
-    // State spiegeln, damit der Re-Render Auswahl/Titel/Frist beibehält.
-    const sel = document.getElementById("task-target");
+    // Aktuelle Titel/Frist übernehmen (DOM ist die Wahrheit beim Klick), in den
+    // State spiegeln, damit der Re-Render sie beibehält. Das Ziel (taskTarget)
+    // pflegt bereits das Picker-Modal.
     const titleEl = document.getElementById("task-title");
     const dueEl = document.getElementById("task-due");
-    if (sel && sel.value) state.taskTarget = sel.value;
     if (titleEl) state.taskTitle = titleEl.value;
     if (dueEl) state.taskDue = dueEl.value;
     if (!state.taskTarget) return;
@@ -3071,6 +3085,7 @@
       : null;
     return {
       targets: taskTargets(), sheetTarget: tt.value,
+      targetPicker: state.targetPicker, // offenes Ziel-Picker-Modal? ('sheet' | null)
       stageOpts: stageOpts, sheetStage: stageSel,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages,
@@ -5094,6 +5109,10 @@
     else if (action === "teacher-print") printTeacher();
     else if (action === "open-printsheet") openPrintSheet();
     else if (action === "printsheet-print") printSheet();
+    else if (action === "open-target-picker") { state.targetPicker = el.dataset.ctx; render(); }
+    else if (action === "close-target-picker") { state.targetPicker = null; render(); }
+    else if (action === "target-stop") { /* Klick auf die Modal-Karte: nicht schließen */ }
+    else if (action === "pick-target") pickTarget(el.dataset.ctx, el.dataset.value);
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
     else if (action === "task-copy-link") copyTaskLink();
@@ -5357,13 +5376,12 @@
       state.battleNameEdited = true; // ab jetzt nicht mehr automatisch mit dem Profil-Namen vorbelegen
       return;
     }
-    // Aufgaben-Formular (Modo profe): Auswahl merken, damit ein Re-Render (z. B.
-    // nach „Code erzeugen“) das gewählte Ziel/Titel/Frist nicht zurücksetzt.
-    if (e.target && e.target.id === "task-target") { state.taskTarget = e.target.value; return; }
+    // Aufgaben-Formular (Modo profe): Titel/Frist merken, damit ein Re-Render
+    // (z. B. nach „Code erzeugen“) sie nicht zurücksetzt. Das Ziel läuft über das
+    // Picker-Modal (data-action="pick-target"), nicht mehr über ein <select>.
     if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
     if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
-    // Aktivitätsblatt: Ziel-/Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
-    if (e.target && e.target.id === "sheet-target") { state.sheetTarget = e.target.value; state.sheetStage = "all"; render(); return; }
+    // Aktivitätsblatt: Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
     if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; render(); return; }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
@@ -5371,6 +5389,12 @@
   }
 
   function onKeydown(e) {
+    // Ziel-Picker-Modal (Modo profe / Aktivitätsblatt): Escape schließt.
+    if (state.targetPicker && e.key === "Escape") {
+      state.targetPicker = null;
+      render();
+      return;
+    }
     // Spickzettel-Großanzeige: Escape schließt.
     if (state.screen === "spickzettel" && state.szShow && e.key === "Escape") {
       szClose();
