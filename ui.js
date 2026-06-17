@@ -3246,21 +3246,31 @@
         </div>`)
       .join("");
 
+    // Alle Abschnitte EINMAL definiert (eine Quelle der Wahrheit). Ein Abschnitt
+    // mit id + nav (Kurzlabel) ist per Sprungmarke erreichbar; ohne nav erscheint
+    // er nur im Fließtext. Reihenfolge der Sprungleiste = Reihenfolge der Seite.
+    const sections = [
+      { icon: "↔️", title: t.title, body: timeline },
+      { icon: "🪄", title: ep.title, body: easyPast, id: "ti-tricks", nav: tt("discover.tiNavTricks") },
+      { icon: "🕰️", title: tt("discover.tiTenses"), body: `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, id: "ti-tenses", nav: tt("discover.tiNavTenses") },
+      { icon: "⏯️", title: c.title, body: continuous, id: "ti-continuous", nav: tt("discover.tiNavContinuous") },
+      { icon: "⏪", title: pc.title, body: pastContinuous },
+      { icon: "⚖️", title: iv.title, body: indefVsImperf, id: "ti-compare", nav: tt("discover.tiNavCompare") },
+      { icon: "💪", title: sp.title, body: strongPast, id: "ti-irregular", nav: tt("discover.tiNavIrregular") },
+      { icon: "🧩", title: pp.title, body: participles },
+      { icon: "🗣️", title: im.title, body: imperative, id: "ti-commands", nav: tt("discover.tiNavCommands") },
+      { icon: "📦", title: hy.title, body: hayBlock },
+      { icon: "🧳", title: sc.title, body: scenarios, id: "ti-practice", nav: tt("discover.tiNavPractice") },
+      { icon: "⚠️", title: pf.title, body: pitfalls },
+      { icon: "🔑", title: tt("discover.tiSignalWords"), body: `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>` },
+      { icon: "🧭", title: tt("discover.tiDialogs"), body: dialogsHtml, id: "ti-dialogs", nav: tt("discover.tiNavDialogs") },
+    ];
+
     // Sprungmarken-Leiste (wie hist-nav/sz-nav): bei dieser langen Erklärseite
     // springt man direkt zu den Hauptlandmarken, statt endlos zu scrollen.
-    const navChips = [
-      ["🕰️", tt("discover.tiNavTenses"), "ti-tenses"],
-      ["🪄", tt("discover.tiNavTricks"), "ti-tricks"],
-      ["⏯️", tt("discover.tiNavContinuous"), "ti-continuous"],
-      ["⚖️", tt("discover.tiNavCompare"), "ti-compare"],
-      ["💪", tt("discover.tiNavIrregular"), "ti-irregular"],
-      ["🗣️", tt("discover.tiNavCommands"), "ti-commands"],
-      ["🧳", tt("discover.tiNavPractice"), "ti-practice"],
-      ["🧭", tt("discover.tiNavDialogs"), "ti-dialogs"],
-    ];
     const tiNav = `
       <nav class="ti-nav" aria-label="${esc(tt("discover.tiNavLabel"))}">
-        ${navChips.map(([icon, label, id]) => `<a class="ti-nav__chip" href="#${id}" data-action="scroll-to" data-target="${id}">${icon} ${esc(label)}</a>`).join("")}
+        ${sections.filter((s) => s.id && s.nav).map((s) => `<a class="ti-nav__chip" href="#${s.id}" data-action="scroll-to" data-target="${s.id}">${s.icon} ${esc(s.nav)}</a>`).join("")}
       </nav>`;
 
     return `
@@ -3270,20 +3280,7 @@
         ${moduleShareBtn("tiempos")}
         ${tiNav}
 
-        ${sect("↔️", t.title, timeline)}
-        ${sect("🪄", ep.title, easyPast, "ti-tricks")}
-        ${sect("🕰️", tt("discover.tiTenses"), `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, "ti-tenses")}
-        ${sect("⏯️", c.title, continuous, "ti-continuous")}
-        ${sect("⏪", pc.title, pastContinuous)}
-        ${sect("⚖️", iv.title, indefVsImperf, "ti-compare")}
-        ${sect("💪", sp.title, strongPast, "ti-irregular")}
-        ${sect("🧩", pp.title, participles)}
-        ${sect("🗣️", im.title, imperative, "ti-commands")}
-        ${sect("📦", hy.title, hayBlock)}
-        ${sect("🧳", sc.title, scenarios, "ti-practice")}
-        ${sect("⚠️", pf.title, pitfalls)}
-        ${sect("🔑", tt("discover.tiSignalWords"), `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>`)}
-        ${sect("🧭", tt("discover.tiDialogs"), dialogsHtml, "ti-dialogs")}
+        ${sections.map((s) => sect(s.icon, s.title, s.body, s.id)).join("")}
 
         <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
           ${esc(tt("discover.tiPracticeTenses"))} <span class="cta__count">${esc(tt("home.tileCards", { n: vm.cardCount }))}</span>
