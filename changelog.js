@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.90.1",
+      date: "2026-06-17",
+      title: "„Dein Fortschritt“ auf Start: echte Lern-Verteilung statt leerem Balken",
+      titleEn: "“Your progress” on Home: real learning split instead of an empty bar",
+      items: [
+        "📊 Der Fortschritts-Überblick auf dem „Start“-Reiter zeigte nur „gemeistert“ – eine Karte gilt erst ab einem Wiederhol-Abstand von 7+ Tagen als gemeistert. Wer gerade erst losgelegt hat, sah deshalb „0 von … · 0 %“ mit leerem Balken, obwohl längst Karten gelernt waren – das wirkte wie ein Fehler. Jetzt zeigt ein gestapelter Balken mit Legende die echte Verteilung: gemeistert / am Lernen / neu.",
+      ],
+      itemsEn: [
+        "📊 The progress overview on the “Home” tab only counted “mastered” – a card counts as mastered once it isn’t due again for 7+ days. So anyone who had just started saw “0 of … · 0 %” with an empty bar even after learning plenty of cards, which looked broken. A stacked bar with a legend now shows the real split: mastered / learning / new.",
+      ],
+    },
+    {
       version: "1.90.0",
       date: "2026-06-17",
       title: "Neuer „Start“-Reiter: Dashboard aufgeräumt, Themen mit Sprungmarken",

@@ -435,18 +435,28 @@
         </section>`
       : "";
 
-    // Glanceable Fortschritt (Streak in Worten + Meisterungs-Balken). Die volle
-    // Verwaltung bleibt im Profil-Reiter – hier nur der motivierende Überblick.
+    // Glanceable Fortschritt: Streak in Worten + Status-Verteilung (gemeistert /
+    // am Lernen / neu) als gestapelter Balken mit Legende. So zeigt der Überblick
+    // auch echten Fortschritt, wenn noch keine Karte „gemeistert" ist (Intervall
+    // >= 7 Tage) – statt eines leeren 0-%-Balkens, der wie ein Fehler wirkt. Die
+    // volle Statistik bleibt im Profil-Reiter.
     const streakLine = vm.streak > 0 ? t("profile.streakInRow", { n: vm.streak }) : t("profile.streakFirst");
+    const ov = vm.overall;
+    const distSeg = (n, color) => ov.total ? `<span style="flex:${n};background:${color}"></span>` : "";
     const progressGroup = `
       <section class="dashgrp">
         <p class="sectioncap">${esc(t("home.startProgressCap"))}</p>
         <div class="profcard">
           <p class="profcard__streak">${esc(streakLine)}</p>
-          <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(t("profile.masteredCardsLabel"))}">
-            <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
+          <div class="dist__bar" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct: ov.pct }))}">
+            ${distSeg(ov.mastered, "var(--ok)")}${distSeg(ov.learning, "var(--warn)")}${distSeg(ov.neu, "rgba(45,27,18,0.16)")}
           </div>
-          <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
+          <div class="dist__legend">
+            <span><i style="background:var(--ok)"></i>${esc(t("profile.distMastered", { n: ov.mastered }))}</span>
+            <span><i style="background:var(--warn)"></i>${esc(t("profile.distLearning", { n: ov.learning }))}</span>
+            <span><i style="background:rgba(45,27,18,0.16)"></i>${esc(t("profile.distNew", { n: ov.neu }))}</span>
+          </div>
+          <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: ov.mastered, total: ov.total, pct: ov.pct }))}</p>
         </div>
       </section>`;
 
