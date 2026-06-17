@@ -2790,7 +2790,7 @@
           <summary class="cinfo-dish__head">
             <span class="cinfo-dish__heart">
               <span class="cinfo-dish__name" lang="es">${esc(v.verb)}</span>
-              <span class="cinfo-dish__desc">${esc(v.verbDe)}</span>
+              <span class="cinfo-dish__desc">${esc(v.de)}</span>
             </span>
             <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
           </summary>

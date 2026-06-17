@@ -1062,7 +1062,7 @@
   // "verbos") und startet damit den gewohnten Lernfluss.
   function conjugacionVM() {
     return {
-      guide: data.CONJUGATION,
+      guide: loc(data.CONJUGATION),
       cardCount: data.CARDS.filter((c) => c.cat === "verbos").length,
       canDrill: conjugReady(), // Conjugador-Drill verfügbar (Modul geladen)?
     };
