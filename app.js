@@ -23,6 +23,7 @@
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
+  const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -34,6 +35,8 @@
   let progress = store.loadProgress();
   let settings = store.loadSettings();
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
+  let subscribedTasks = store.loadTasks(); // abonnierte Aufgaben (mehrere parallel, persistent)
+  const MAX_SUBSCRIBED_TASKS = 50;          // Deckel gegen Speicher-Überlauf
 
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
@@ -51,7 +54,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
     homeTab: "lernen",       // Start hat Vorrang: jeder App-Start landet auf dem Lernen-Reiter; Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -62,6 +65,15 @@
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
+    pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
+    pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
+    pretripLock: null,       // per zugewiesener Aufgabe festgelegtes Reiseziel (nur dieses zeigen, nicht wechselbar) | null
+    teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
+    teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
+    taskTarget: "",          // gewähltes Aufgaben-Ziel im Formular (überlebt Re-Render)
+    taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
+    taskDue: "",             // optionale Frist (überlebt Re-Render)
+    placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -70,6 +82,7 @@
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
     cardId: null,            // Detailseite: welche Karte
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
+    studyOrigin: null,       // Herkunft der laufenden Runde: 'pretrip' | 'task' | null (=Dashboard) – steuert, wohin der Fertig-Screen zurückführt
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
     updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
@@ -228,6 +241,9 @@
       sessionCap: SESSION_CAP,
       totalCards: all.length,
       hasBadges: !!badges,       // Offline-Guard: Nav-Eintrag nur mit geladenem Modul
+      syncEnabled: !!(window.SC.sync && window.SC.sync.enabled()), // optionale Cloud-Sync (nur per Edition)
+      syncLoggedIn: !!(window.SC.sync && window.SC.sync.loggedIn && window.SC.sync.loggedIn()),
+      syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
       hasCountries: !!countries, // dito für die Länderkunde
       hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasHistoriaCentro: !!historiaCentro, // dito für die Geschichte Mittelamerikas
@@ -238,6 +254,7 @@
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
+      hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -251,6 +268,79 @@
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
+      showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
+      showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
+      showMedellinPreset: tripMentionsMedellin(), // Stadt-Pack-Kachel nur bei Medellín-Bezug
+      showCuscoPreset: tripMentionsCusco(),       // Stadt-Pack-Kachel nur bei Cusco-Bezug
+      showCdmxPreset: tripMentionsCdmx(),         // Stadt-Pack-Kachel nur bei CDMX-Bezug
+      showAntiguaPreset: tripMentionsAntigua(),   // Stadt-Pack-Kachel nur bei Antigua-Bezug
+      showBuenosAiresPreset: tripMentionsBuenosAires(), // Stadt-Pack-Kachel nur bei BA-Bezug
+      showQuitoPreset: tripMentionsQuito(),       // Stadt-Pack-Kachel nur bei Quito-Bezug
+      showLimaPreset: tripMentionsLima(),
+      showArequipaPreset: tripMentionsArequipa(),
+      showMendozaPreset: tripMentionsMendoza(),
+      showBarilochePreset: tripMentionsBariloche(),
+      showOaxacaPreset: tripMentionsOaxaca(),
+      showMeridaPreset: tripMentionsMerida(),
+      showArenalPreset: tripMentionsArenal(),
+      showMonteverdePreset: tripMentionsMonteverde(),
+      showSantiagoPreset: tripMentionsSantiago(),
+      showValparaisoPreset: tripMentionsValparaiso(),
+      showAtacamaPreset: tripMentionsAtacama(),
+      showLapazPreset: tripMentionsLapaz(),
+      showUyuniPreset: tripMentionsUyuni(),
+      showPuertonatalesPreset: tripMentionsPuertonatales(),
+      showPuconPreset: tripMentionsPucon(),
+      showCopacabanaPreset: tripMentionsCopacabana(),
+      showSucrePreset: tripMentionsSucre(),
+      showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
+      showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
+      showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
+      showEcuadorPreset: tripMentionsEcuador(),   // Pre-Arrival-Kachel nur bei Ecuador-Bezug
+      showGuatemalaPreset: tripMentionsGuatemala(), // Pre-Arrival-Kachel nur bei Guatemala-Bezug
+      showArgentinaPreset: tripMentionsArgentina(), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
+      showChilePreset: tripMentionsChile(),       // Pre-Arrival-Kachel nur bei Chile-Bezug
+      showBoliviaPreset: tripMentionsBolivia(),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
+      // Status der Pre-Arrival-Pakete (Häkchen + „12/40"-Fortschritt). Nur für die
+      // tatsächlich SICHTBAREN Kacheln rechnen (spart Arbeit pro Render).
+      presetStatus: (function () {
+        const m = {};
+        const shown = {
+          "prearrival-co": tripMentionsColombia(), "prearrival-ctg": tripMentionsCartagena(),
+          "prearrival-med": tripMentionsMedellin(), "prearrival-cus": tripMentionsCusco(),
+          "prearrival-cdmx": tripMentionsCdmx(), "prearrival-ant": tripMentionsAntigua(),
+          "prearrival-bue": tripMentionsBuenosAires(), "prearrival-qui": tripMentionsQuito(),
+          "prearrival-lima": tripMentionsLima(),
+          "prearrival-arequipa": tripMentionsArequipa(),
+          "prearrival-mendoza": tripMentionsMendoza(),
+          "prearrival-bariloche": tripMentionsBariloche(),
+          "prearrival-oaxaca": tripMentionsOaxaca(),
+          "prearrival-merida": tripMentionsMerida(),
+          "prearrival-arenal": tripMentionsArenal(),
+          "prearrival-monteverde": tripMentionsMonteverde(),
+          "prearrival-santiago": tripMentionsSantiago(),
+          "prearrival-valparaiso": tripMentionsValparaiso(),
+          "prearrival-atacama": tripMentionsAtacama(),
+          "prearrival-lapaz": tripMentionsLapaz(),
+          "prearrival-uyuni": tripMentionsUyuni(),
+          "prearrival-puertonatales": tripMentionsPuertonatales(),
+          "prearrival-pucon": tripMentionsPucon(),
+          "prearrival-copacabana": tripMentionsCopacabana(),
+          "prearrival-sucre": tripMentionsSucre(),
+          "prearrival-pe": tripMentionsPeru(),
+          "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
+          "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
+          "prearrival-ar": tripMentionsArgentina(), "prearrival-cl": tripMentionsChile(),
+          "prearrival-bo": tripMentionsBolivia(),
+        };
+        (data.PRESETS || []).forEach((p) => {
+          if (!shown[p.id]) return;
+          const prog = taskProgress({ kind: "preset", scope: p.id });
+          m[p.id] = { done: prog.total > 0 && prog.seen >= prog.total, seen: prog.seen, total: prog.total };
+        });
+        return m;
+      })(),
+      edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
     };
@@ -314,7 +404,10 @@
   function doneVM() {
     const isAll = state.scopeId === "all";
     const cat = categoryById(state.scopeId);
-    return { scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : "") };
+    return {
+      scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
+      origin: state.studyOrigin || null, // 'pretrip' | 'task' | null -> bestimmt den Zurück-Knopf
+    };
   }
 
   // Eine Karte für Listen/Detail aufbereiten (Karte + Statistik + Anzeige-Texte).
@@ -556,6 +649,302 @@
   // Optionales Reiseziel mit Datum und Karten-pro-Tag-Ziel. Schärft die Habit-
   // Schleife: „Noch 12 Tage bis Cusco · 8/15 heute". Liegt in gamestats
   // (tripGoal) und stützt sich auf den Tageszähler dailyCounts aus recordStudyEvent.
+  // Erkennt am freien Trip-Ziel-Text, ob die Reise nach Kolumbien geht – steuert,
+  // ob die „Pre-Arrival Kolumbien"-Kachel auf dem Dashboard erscheint (sonst bliebe
+  // sie auch z. B. bei einer Mexiko-Reise sichtbar). Akzent-/Groß-Schreibung egal.
+  const COLOMBIA_HINTS = ["colombia", "kolumbien", "cartagena", "medellin", "bogota",
+    "cali", "santa marta", "tayrona", "palomino", "minca", "guatape", "barranquilla",
+    "getsemani", "caribe", "rosario"];
+  function isColombiaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return COLOMBIA_HINTS.some((h) => norm.includes(h));
+  }
+  // Pre-Arrival-Kachel zeigen, wenn das Trip-Ziel ODER eine Edition Kolumbien meint.
+  function tripMentionsColombia() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isColombiaDest(t && t.destination) || isColombiaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Cartagena ist ein Stadt-Pack INNERHALB Kolumbiens. Eigene, engere Stichwörter, damit
+  // ein konkreter Cartagena-Trip auch den Cartagena-Plan/-Pack vorschlägt (zusätzlich
+  // zur Kolumbien-Kachel, die über die breiteren COLOMBIA_HINTS ohnehin greift).
+  const CARTAGENA_HINTS = ["cartagena", "getsemani", "bocagrande", "islas del rosario", "san felipe"];
+  function isCartagenaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return CARTAGENA_HINTS.some((h) => norm.includes(h));
+  }
+  function tripMentionsCartagena() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isCartagenaDest(t && t.destination) || isCartagenaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Medellín: ebenfalls ein Stadt-Pack innerhalb Kolumbiens (eigene, engere Stichwörter).
+  const MEDELLIN_HINTS = ["medellin", "poblado", "laureles", "comuna 13", "envigado", "guatape"];
+  function isMedellinDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return MEDELLIN_HINTS.some((h) => norm.includes(h));
+  }
+  function tripMentionsMedellin() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isMedellinDest(t && t.destination) || isMedellinDest(cfg && cfg.defaultDestination);
+  }
+
+  // Cusco: Stadt-Pack innerhalb Perus (Anden/Machu Picchu).
+  const CUSCO_HINTS = ["cusco", "cuzco", "machu picchu", "machupicchu", "ollantaytambo",
+    "valle sagrado", "aguas calientes", "sacsayhuaman", "pisac", "vinicunca"];
+  function isCuscoDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return CUSCO_HINTS.some((h) => norm.includes(h));
+  }
+  function tripMentionsCusco() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isCuscoDest(t && t.destination) || isCuscoDest(cfg && cfg.defaultDestination);
+  }
+
+  // Weitere Stadt-Packs innerhalb vorhandener Länder (eigene, engere Stichwörter).
+  const _normDest = (text) => String(text || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const tripCfgDest = () => { const cfg = window.SC && window.SC.config; return cfg && cfg.defaultDestination; };
+  const CDMX_HINTS = ["cdmx", "ciudad de mexico", "mexico city", "zocalo", "coyoacan", "condesa", "teotihuacan", "xochimilco"];
+  function tripMentionsCdmx() { const t = gamestats.tripGoal; return CDMX_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  // atitlan/panajachel bewusst NICHT hier: das sind Atitlán-Region-Tokens (auch in GUATEMALA_HINTS) –
+  // sonst würde eine reine Guatemala-Reise „Lago de Atitlán“ fälschlich den Antigua-Scope stehlen.
+  const ANTIGUA_HINTS = ["antigua", "acatenango", "pacaya", "semana santa"];
+  function tripMentionsAntigua() { const t = gamestats.tripGoal; return ANTIGUA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const BUENOSAIRES_HINTS = ["buenos aires", "palermo", "san telmo", "recoleta", "la boca", "subte", "ezeiza"];
+  function tripMentionsBuenosAires() { const t = gamestats.tripGoal; return BUENOSAIRES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  // otavalo/cotopaxi bewusst NICHT hier: Tagesausflugs-Ziele (auch in ECUADOR_HINTS) –
+  // sonst würde eine reine Ecuador-Reise „Otavalo“/„Cotopaxi“ fälschlich den Quito-Scope stehlen.
+  const QUITO_HINTS = ["quito", "mitad del mundo", "teleferiqo", "la ronda"];
+  function tripMentionsQuito() { const t = gamestats.tripGoal; return QUITO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+
+  // Weitere Stadt-Packs (Charge 2): eigene, engere Stichwörter je Stadt.
+  const LIMA_HINTS = ["lima", "miraflores", "barranco", "callao", "jorge chavez", "costa verde", "pisco sour"];
+  function tripMentionsLima() { const t = gamestats.tripGoal; return LIMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const AREQUIPA_HINTS = ["arequipa", "colca", "misti", "santa catalina", "yanahuara", "sillar", "chachani"];
+  function tripMentionsArequipa() { const t = gamestats.tripGoal; return AREQUIPA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const MENDOZA_HINTS = ["mendoza", "malbec", "aconcagua", "valle de uco", "ruta del vino"];
+  function tripMentionsMendoza() { const t = gamestats.tripGoal; return MENDOZA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const BARILOCHE_HINTS = ["bariloche", "nahuel huapi", "cerro catedral", "circuito chico", "llao llao", "campanario", "siete lagos"];
+  function tripMentionsBariloche() { const t = gamestats.tripGoal; return BARILOCHE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const OAXACA_HINTS = ["oaxaca", "monte alban", "hierve el agua", "tlayuda", "guelaguetza"];
+  function tripMentionsOaxaca() { const t = gamestats.tripGoal; return OAXACA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const MERIDA_HINTS = ["merida", "yucatan", "cenote", "chichen itza", "uxmal", "valladolid", "cochinita"];
+  function tripMentionsMerida() { const t = gamestats.tripGoal; return MERIDA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const ARENAL_HINTS = ["fortuna", "arenal", "tabacon", "aguas termales", "catarata"];
+  function tripMentionsArenal() { const t = gamestats.tripGoal; return ARENAL_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const MONTEVERDE_HINTS = ["monteverde", "santa elena", "bosque nuboso", "selvatura"];
+  function tripMentionsMonteverde() { const t = gamestats.tripGoal; return MONTEVERDE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+
+  // Weitere Stadt-Packs (Charge 3, Chile & Bolivien): eigene, engere Stichwörter je Stadt.
+  const SANTIAGO_HINTS = ["santiago", "bellavista", "providencia", "san cristobal", "bip", "la moneda", "cerro santa lucia"];
+  function tripMentionsSantiago() { const t = gamestats.tripGoal; return SANTIAGO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const VALPARAISO_HINTS = ["valparaiso", "valparaíso", "cerro alegre", "cerro concepcion", "ascensor", "la sebastiana", "vina del mar"];
+  function tripMentionsValparaiso() { const t = gamestats.tripGoal; return VALPARAISO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const ATACAMA_HINTS = ["atacama", "san pedro de atacama", "valle de la luna", "el tatio", "geiseres", "calama", "lagunas altiplanicas"];
+  function tripMentionsAtacama() { const t = gamestats.tripGoal; return ATACAMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const LAPAZ_HINTS = ["la paz", "el alto", "teleferico", "mi teleferico", "mercado de las brujas", "valle de la luna", "death road"];
+  function tripMentionsLapaz() { const t = gamestats.tripGoal; return LAPAZ_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const UYUNI_HINTS = ["uyuni", "salar de uyuni", "salar", "cementerio de trenes", "colchani", "incahuasi", "isla incahuasi"];
+  function tripMentionsUyuni() { const t = gamestats.tripGoal; return UYUNI_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+
+  // Weitere Stadt-Packs (Charge 4, Patagonien & Titicaca): eigene, engere Stichwörter je Stadt.
+  const PUERTONATALES_HINTS = ["puerto natales", "torres del paine", "w trek", "paine", "conaf", "milodon"];
+  function tripMentionsPuertonatales() { const t = gamestats.tripGoal; return PUERTONATALES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const PUCON_HINTS = ["pucon", "villarrica", "huerquehue", "trancura", "caburgua", "araucania"];
+  function tripMentionsPucon() { const t = gamestats.tripGoal; return PUCON_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const COPACABANA_HINTS = ["copacabana", "isla del sol", "cerro calvario", "tiquina", "yampupata"];
+  function tripMentionsCopacabana() { const t = gamestats.tripGoal; return COPACABANA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+  const SUCRE_HINTS = ["sucre", "ciudad blanca", "plaza 25 de mayo", "cal orcko", "tarabuco", "casa de la libertad", "parque cretacico"];
+  function tripMentionsSucre() { const t = gamestats.tripGoal; return SUCRE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
+
+  // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
+  // die „Pre-Arrival Peru"-Kachel auf dem Dashboard.
+  const PERU_HINTS = ["peru", "perú", "lima", "cusco", "cuzco", "machu picchu", "machupicchu",
+    "arequipa", "titicaca", "puno", "colca", "ollantaytambo", "sacsayhuaman", "valle sagrado",
+    "aguas calientes", "vinicunca", "nazca", "paracas", "huacachina"];
+  function isPeruDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return PERU_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsPeru() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isPeruDest(t && t.destination) || isPeruDest(cfg && cfg.defaultDestination);
+  }
+
+  // Mexiko-Bezug für die „Pre-Arrival Mexiko"-Kachel.
+  const MEXICO_HINTS = ["mexico", "méxico", "mexiko", "cdmx", "ciudad de mexico", "oaxaca",
+    "chiapas", "san cristobal", "palenque", "merida", "yucatan", "yucatán", "tulum", "cancun",
+    "cancún", "valladolid", "bacalar", "playa del carmen", "riviera maya", "teotihuacan"];
+  function isMexicoDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return MEXICO_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsMexico() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isMexicoDest(t && t.destination) || isMexicoDest(cfg && cfg.defaultDestination);
+  }
+
+  // Costa-Rica-Bezug für die „Pre-Arrival Costa Rica"-Kachel.
+  const COSTARICA_HINTS = ["costa rica", "costarica", "san jose", "san josé", "la fortuna",
+    "arenal", "monteverde", "manuel antonio", "tortuguero", "puerto viejo", "cahuita", "tamarindo",
+    "rio celeste", "río celeste", "pacuare", "nicoya", "guanacaste", "uvita", "santa teresa"];
+  function isCostaRicaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return COSTARICA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsCostaRica() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isCostaRicaDest(t && t.destination) || isCostaRicaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Ecuador-Bezug für die „Pre-Arrival Ecuador"-Kachel.
+  const ECUADOR_HINTS = ["ecuador", "quito", "guayaquil", "cuenca", "otavalo", "cotopaxi",
+    "quilotoa", "banos", "baños", "tena", "amazonia", "amazonía", "galapagos", "galápagos",
+    "mitad del mundo", "montañita"];
+  function isEcuadorDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return ECUADOR_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsEcuador() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isEcuadorDest(t && t.destination) || isEcuadorDest(cfg && cfg.defaultDestination);
+  }
+
+  // Guatemala-Bezug für die „Pre-Arrival Guatemala"-Kachel.
+  const GUATEMALA_HINTS = ["guatemala", "antigua", "atitlan", "atitlán", "panajachel", "san pedro la laguna",
+    "chichicastenango", "tikal", "flores", "semuc champey", "lanquin", "lanquín", "acatenango", "xela",
+    "quetzaltenango"];
+  function isGuatemalaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return GUATEMALA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsGuatemala() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isGuatemalaDest(t && t.destination) || isGuatemalaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Argentinien-Bezug für die „Pre-Arrival Argentinien"-Kachel.
+  const ARGENTINA_HINTS = ["argentina", "argentinien", "buenos aires", "patagonia", "patagonien",
+    "el calafate", "el chalten", "el chaltén", "ushuaia", "bariloche", "mendoza", "iguazu", "iguazú",
+    "salta", "fitz roy", "perito moreno"];
+  function isArgentinaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return ARGENTINA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsArgentina() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isArgentinaDest(t && t.destination) || isArgentinaDest(cfg && cfg.defaultDestination);
+  }
+
+  // Chile-Bezug für die „Pre-Arrival Chile"-Kachel.
+  const CHILE_HINTS = ["chile", "santiago", "valparaiso", "valparaíso", "atacama", "san pedro de atacama",
+    "torres del paine", "puerto natales", "punta arenas", "pucon", "pucón", "chiloe", "chiloé",
+    "isla de pascua", "rapa nui", "valle de la luna"];
+  function isChileDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return CHILE_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsChile() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isChileDest(t && t.destination) || isChileDest(cfg && cfg.defaultDestination);
+  }
+
+  // Bolivien-Bezug für die „Pre-Arrival Bolivien"-Kachel.
+  const BOLIVIA_HINTS = ["bolivia", "bolivien", "la paz", "el alto", "uyuni", "salar de uyuni",
+    "potosi", "potosí", "sucre", "copacabana", "isla del sol", "titicaca", "tiwanaku", "coroico",
+    "rurrenabaque"];
+  function isBoliviaDest(text) {
+    if (!text) return false;
+    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return BOLIVIA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  }
+  function tripMentionsBolivia() {
+    const t = gamestats.tripGoal;
+    const cfg = window.SC && window.SC.config;
+    return isBoliviaDest(t && t.destination) || isBoliviaDest(cfg && cfg.defaultDestination);
+  }
+
+  // ----- Link-Parameter lesen/aufräumen (für geteilte Onboarding-Links) -----
+  // Roher Parameterwert (NICHT kleinschreiben – Aufgaben-Codes sind base64, case-sensitiv).
+  function urlParam(name) {
+    try {
+      var search = (location.search && location.search.length > 1) ? location.search : "";
+      if (!search && location.hash && location.hash.indexOf("=") >= 0) search = location.hash.replace(/^#/, "?");
+      return new URLSearchParams(search).get(name) || "";
+    } catch (e) { return ""; }
+  }
+  function stripUrlParam(name) {
+    try {
+      if (!window.history || !history.replaceState || !location.search) return;
+      var p = new URLSearchParams(location.search);
+      if (!p.has(name)) return;
+      p.delete(name);
+      var qs = p.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + (location.hash || ""));
+    } catch (e) { /* egal */ }
+  }
+
+  // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----
+  // Überschreibt nur den Akzent (--brand/--brand-ink, wirkt in Hell & Dunkel) und
+  // die theme-color-Meta; NICHT --page, damit der Hell/Dunkel-Rahmen intakt bleibt.
+  function applyEdition() {
+    const c = window.SC && window.SC.config;
+    if (!c || !c.edition) return; // keine Edition → exakt wie heute
+    try {
+      if (c.brandName) document.title = c.brandName + " – Reise-Spanisch";
+      if (c.accent) {
+        // Nur den Akzent überschreiben (wirkt in Hell & Dunkel). --page und die
+        // theme-color-Meta bleiben der HolaRuta-Rahmen – sonst bräche der Dark Mode,
+        // und applyTheme würde die theme-color beim Umschalten ohnehin zurücksetzen.
+        const r = document.documentElement.style;
+        if (c.accent.brand) r.setProperty("--brand", c.accent.brand);
+        if (c.accent.brandInk) r.setProperty("--brand-ink", c.accent.brandInk);
+      }
+      // Appbar-Wortmarke um den Edition-Zusatz ergänzen (Teil nach „· "), damit die
+      // Edition am sichtbarsten Ort erkennbar ist. Die Wortmarke liegt im statischen
+      // Appshell (außerhalb von #app) und wird hier einmalig gesetzt.
+      const parts = String(c.brandName || "").split("·");
+      if (parts.length > 1) {
+        const name = document.querySelector(".appbar__name");
+        if (name && !name.querySelector(".appbar__edition")) {
+          const tag = document.createElement("span");
+          tag.className = "appbar__edition";
+          tag.textContent = "· " + parts.slice(1).join("·").trim();
+          name.appendChild(tag);
+        }
+      }
+    } catch (e) { /* Edition ist optional – nie crashen */ }
+  }
+
+  // Edition-Infos für den dezenten Profil-Credit (null = keine Edition).
+  function editionInfo() {
+    const c = window.SC && window.SC.config;
+    if (!c || !c.edition) return null;
+    return { name: c.brandName, partner: c.partner || null, logo: c.logo || null };
+  }
+
   function tripGoalVM() {
     const t = gamestats.tripGoal;
     if (!t) return null;
@@ -796,10 +1185,18 @@
   const battleById = (id) => data.BATTLES.find((b) => b.id === id) || null;
   const roleplayById = (id) => data.ROLEPLAYS.find((r) => r.id === id) || null;
 
+  // Coordinator-Schnellstart: Szene + Wunschlänge an EINER Stelle, damit das
+  // Label (Rundenzahl) und der tatsächliche Start nie auseinanderlaufen.
+  const COORDINATOR_SCENE = "meet";  // Kennenlern-Szene = Icebreaker
+  const COORDINATOR_ROUNDS = 6;      // kurze 5-Minuten-Runde
+
   function hostelVM() {
+    const meetCount = data.BATTLES.filter((b) => b.scene === COORDINATOR_SCENE).length;
     return {
       battleCount: data.BATTLES.length,
       roleplayCount: data.ROLEPLAYS.length,
+      // tatsächliche Rundenzahl des Schnellstarts (gerade, durch den Pool gedeckelt)
+      coordinatorRounds: evenRounds(Math.min(COORDINATOR_ROUNDS, meetCount)),
     };
   }
 
@@ -1842,6 +2239,8 @@
   // zurück, wo der Zurück-Knopf ohnehin hinführt (Startseite oder Statistik).
   function backTarget() {
     if (state.screen === "card") return state.backTo === "home" ? "home" : state.backTo === "search" ? "search" : "stats";
+    // Fertig-Screen: zurück zur Herkunft der Runde (Pre-Trip-Plan / Aufgabe), sonst Dashboard.
+    if (state.screen === "done") return state.studyOrigin === "pretrip" ? "pretrip" : state.studyOrigin === "task" ? "task" : "home";
     return SCREEN_PARENT[state.screen] || "home";
   }
 
@@ -1857,6 +2256,8 @@
     if (state.screen === "home") return false;
     // Onboarding mit „Zurück" überspringen (zählt als erledigt, kein Wiederzeigen).
     if (state.screen === "onboarding") { finishOnboarding(); return true; }
+    // Zurück aus dem Onboarding-Ruta-Check schließt das Onboarding ab (nicht erneut zeigen).
+    if (state.screen === "placement" && state.placement && state.placement.fromOnboarding) { finishOnboarding(); return true; }
     // 3) Eine Ebene höher.
     const target = backTarget();
     if (target === "home") goHome();
@@ -1917,6 +2318,11 @@
     else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
+    else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
+    else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
+    else if (state.screen === "printsheet") root.innerHTML = ui.renderPrintSheet(sheetVM());
+    else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
+    else if (state.screen === "placement") root.innerHTML = ui.renderPlacement(placementVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -2162,8 +2568,9 @@
   }
 
   // ----- Aktionen -----
-  function startStudy(scopeId) {
+  function startStudy(scopeId, origin) {
     dismissBadgeToast();
+    state.studyOrigin = origin || null;
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
     // Nichts fällig? -> freies Üben mit GEMISCHTER Auswahl – sonst bestünde
@@ -2176,6 +2583,7 @@
       settings = Object.assign({}, settings, { lastScope: scopeId });
       store.saveSettings(settings);
     }
+    state.pretripDay = null;
     state.scopeId = scopeId;
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
@@ -2205,6 +2613,7 @@
   // alle Bereiche. Stärkt die Lern-Serie.
   function openRutaDelDia() {
     dismissBadgeToast();
+    state.studyOrigin = null;
     const now = Date.now();
     const all = scopeCards("all");       // respektiert den Stufen-Filter
     const due = dueIn(all);
@@ -2217,6 +2626,7 @@
     }
     const chosen = pool.slice(0, RUTA_DIA_CAP);
     recordRutaDia(now);
+    state.pretripDay = null;
     state.scopeId = "all";
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
@@ -2226,6 +2636,771 @@
     state.screen = state.queue.length ? "study" : "done";
     syncBadges(now, true); // 🗺️-Badges freischalten + einblenden
     render();
+  }
+
+  // ----- Kuratierte Presets (benannte Karten-Auswahl, z. B. Pre-Arrival-Pack) -----
+  // Die Preset-Definitionen sind reine Daten (data.PRESETS, ID-Liste im Stil von
+  // SPICKZETTEL_GROUPS). startPreset baut die Queue direkt aus der kuratierten
+  // Liste – BEWUSST OHNE Stufen-Filter (matchesLevel), damit ein „Essentials"-Set
+  // vollständig bleibt, egal welcher A1/A2/B1-Filter gerade aktiv ist. Läuft sonst
+  // über den normalen Study-/SRS-Pfad; scope = Kategorie (für die Done-Beschriftung).
+  function startPreset(presetId, origin) {
+    dismissBadgeToast();
+    state.studyOrigin = origin || null;
+    const p = (data.PRESETS || []).find((x) => x.id === presetId);
+    if (!p) return;
+    const cards = p.pick.map(cardById).filter(Boolean);
+    const chosen = cards.slice(0, SESSION_CAP);
+    state.pretripDay = null;   // normale Preset-Runde, kein Pre-Trip-Tag
+    state.scopeId = p.scope || "all";
+    state.queue = chosen.map((c) => c.id);
+    state.total = state.queue.length;
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = state.queue.length ? "study" : "done";
+    render();
+  }
+
+  // ----- Pre-Trip-Plan (mehrtägiger, sequenziell freischaltender Onboarding-Pfad) -----
+  // Reuse des Study-Pfads wie startPreset; ein Tag gilt als abgeschlossen, sobald
+  // seine Sitzung leer durchläuft (Hook in rate()). Tag N ist freigeschaltet, wenn
+  // Tag N-1 abgeschlossen ist (oder es Tag 1 ist). Fortschritt persistent in gamestats.
+  const PRETRIP = () => data.PRETRIP || [];
+  const pretripPlan = (scope) => PRETRIP().find((p) => p.scope === scope) || PRETRIP()[0] || { scope: null, days: [] };
+  const pretripDone = (scope, day) => !!(gamestats.pretripDays && gamestats.pretripDays[scope] && gamestats.pretripDays[scope][day]);
+  const pretripUnlocked = (scope, day) => day === 1 || pretripDone(scope, day - 1);
+  const planAllDone = (p) => p.days.length > 0 && p.days.every((d) => pretripDone(p.scope, d.day));
+
+  // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
+  // sonst der erste Plan (Kolumbien).
+  function defaultPretripScope() {
+    if (tripMentionsCusco()) return "cusco"; // konkrete Städte vor dem breiten Land
+    if (tripMentionsLima()) return "lima";
+    if (tripMentionsArequipa()) return "arequipa";
+    if (tripMentionsPeru()) return "peru";
+    if (tripMentionsCdmx()) return "cdmx";
+    if (tripMentionsOaxaca()) return "oaxaca";
+    if (tripMentionsMerida()) return "merida";
+    if (tripMentionsMexico()) return "mexico";
+    if (tripMentionsArenal()) return "arenal";
+    if (tripMentionsMonteverde()) return "monteverde";
+    if (tripMentionsCostaRica()) return "costarica";
+    if (tripMentionsQuito()) return "quito";
+    if (tripMentionsEcuador()) return "ecuador";
+    if (tripMentionsAntigua()) return "antigua";
+    if (tripMentionsGuatemala()) return "guatemala";
+    if (tripMentionsBuenosAires()) return "buenosaires";
+    if (tripMentionsMendoza()) return "mendoza";
+    if (tripMentionsBariloche()) return "bariloche";
+    if (tripMentionsArgentina()) return "argentina";
+    if (tripMentionsSantiago()) return "santiago";
+    if (tripMentionsValparaiso()) return "valparaiso";
+    if (tripMentionsAtacama()) return "atacama";
+    if (tripMentionsPuertonatales()) return "puertonatales";
+    if (tripMentionsPucon()) return "pucon";
+    if (tripMentionsChile()) return "chile";
+    if (tripMentionsLapaz()) return "lapaz";
+    if (tripMentionsUyuni()) return "uyuni";
+    if (tripMentionsCopacabana()) return "copacabana";
+    if (tripMentionsSucre()) return "sucre";
+    if (tripMentionsBolivia()) return "bolivia";
+    if (tripMentionsCartagena()) return "cartagena"; // konkrete Städte vor dem breiten Kolumbien
+    if (tripMentionsMedellin()) return "medellin";
+    if (tripMentionsColombia()) return "colombia";
+    return (PRETRIP()[0] || {}).scope || "colombia";
+  }
+
+  function openPretrip() {
+    dismissBadgeToast();
+    if (!state.pretripScope || !PRETRIP().some((p) => p.scope === state.pretripScope)) {
+      state.pretripScope = defaultPretripScope();
+    }
+    state.screen = "pretrip";
+    render();
+  }
+
+  function setPretripScope(scope) {
+    if (state.pretripLock) return; // zugewiesene Aufgabe: Ziel ist fix, kein Wechsel
+    if (!PRETRIP().some((p) => p.scope === scope)) return;
+    state.pretripScope = scope;
+    render();
+  }
+
+  function pretripVM() {
+    // Zugewiesene Aufgabe: Ziel ist auf das vom Lehrer gewählte Land fixiert.
+    const locked = !!(state.pretripLock && PRETRIP().some((p) => p.scope === state.pretripLock));
+    const scope = locked ? state.pretripLock : (state.pretripScope || defaultPretripScope());
+    const plan = pretripPlan(scope);
+    const days = plan.days.map((d) => {
+      const ch = d.challengeId ? (data.CHALLENGES || []).find((c) => c.id === d.challengeId) : null;
+      return {
+        day: d.day,
+        title: natk(d, "titleDe"),
+        count: d.cardIds.length,
+        challenge: ch ? natk(ch, "textDe") : null,
+        done: pretripDone(scope, d.day),
+        unlocked: pretripUnlocked(scope, d.day),
+      };
+    });
+    const total = days.length;
+    const doneCount = days.filter((d) => d.done).length;
+    // Im gesperrten Modus NUR das zugewiesene Land anbieten (kein Wechsel).
+    const plans = (locked ? PRETRIP().filter((p) => p.scope === scope) : PRETRIP()).map((p) => ({
+      scope: p.scope,
+      label: natk(categoryById(p.scope) || {}, "label") || p.scope,
+      active: p.scope === scope,
+      done: planAllDone(p),
+    }));
+    const scopeLabel = natk(categoryById(scope) || {}, "label") || scope;
+    return { scope, scopeLabel, locked, plans, days, total, doneCount, allDone: total > 0 && doneCount === total };
+  }
+
+  function startPretripDay(day) {
+    dismissBadgeToast();
+    const scope = state.pretripScope || defaultPretripScope();
+    const plan = pretripPlan(scope);
+    const d = plan.days.find((x) => x.day === day);
+    if (!d || !pretripUnlocked(scope, day)) return; // gesperrte Tage nicht startbar
+    const cards = d.cardIds.map(cardById).filter(Boolean);
+    if (!cards.length) { recordPretripDay(scope, day); openPretrip(); return; }
+    state.studyOrigin = "pretrip";  // nach der Etappe zurück zum Pre-Trip-Plan
+    state.pretripDay = day;
+    state.pretripScope = scope;
+    state.scopeId = scope;                          // korrektes Done-Label
+    state.queue = cards.map((c) => c.id);
+    state.total = state.queue.length;
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = "study";
+    render();
+  }
+
+  // Einen Pre-Trip-Tag als abgeschlossen vermerken (je Destination, distinkt, idempotent).
+  function recordPretripDay(scope, day) {
+    if (!scope || !day || pretripDone(scope, day)) return;
+    const scopeDays = Object.assign({}, gamestats.pretripDays && gamestats.pretripDays[scope], { [day]: true });
+    const days = Object.assign({}, gamestats.pretripDays, { [scope]: scopeDays });
+    gamestats = Object.assign({}, gamestats, { pretripDays: days });
+    store.saveGameStats(gamestats);
+    syncBadges(Date.now(), true); // „Reisefertig"-Badge freischalten, wenn ein ganzer Plan geschafft
+  }
+
+  // ----- Lehrer-/Coordinator-Modus (backend-frei, offline, ohne Konto) -----
+  // Eine Lehrkraft importiert die Fortschritts-Backups ihrer Schüler (dieselben
+  // holaruta-backup-*.json, die jede:r über „Export" erzeugt) und sieht eine
+  // Klassenübersicht. Alles bleibt NUR im Sitzungsspeicher (state.teacherStudents)
+  // – nichts wird in localStorage geschrieben oder gesendet (DSGVO-freundlich).
+  // store.readBackup liest das Backup OHNE den eigenen Fortschritt zu überschreiben;
+  // badges.buildMetrics berechnet daraus dieselben Kennzahlen wie für den Ruta-Pass.
+  function openTeacher() {
+    dismissBadgeToast();
+    state.screen = "teacher";
+    render();
+  }
+
+  // Aus einem Backup-Payload eine kompakte Schüler-Auswertung bauen (rein).
+  function studentSummaryFromBackup(name, payload) {
+    const b = store.readBackup(payload);
+    if (!b) return null;
+    const m = badges.buildMetrics(allCards(), b.progress, b.gamestats);
+    const planMax = (data.PRETRIP && data.PRETRIP[0] && data.PRETRIP[0].days.length) || 7;
+    // Gemeisterte Destination-Pakete: Kategorien mit ≥80 % Mastery (wie cat-Badges).
+    const masteredCats = Object.keys(m.categoryMastery || {})
+      .filter((cat) => (m.categoryMastery[cat] || 0) >= 0.8)
+      .map((cat) => { const c = categoryById(cat); return c ? natk(c, "label") : cat; });
+    return {
+      name: name || t("teacher.defaultName"),
+      cardsReviewed: m.cardsReviewed,
+      cardsMastered: m.cardsMastered,
+      totalCards: m.totalCards,
+      reviews: m.totalReviews,
+      streak: m.dailyStreak,
+      longestStreak: m.longestStreak,
+      challenges: m.challengesCompleted,
+      pretripDays: Math.min(m.pretripDaysDone, planMax),
+      pretripMax: planMax,
+      masteredCats,
+      // Ruta-Check: letztes Einstufungsergebnis (falls der Schüler den Test gemacht hat).
+      placement: (b.gamestats && typeof b.gamestats.placement === "object" && b.gamestats.placement) || null,
+    };
+  }
+
+  // Mehrere ausgewählte Backup-Dateien einlesen (Dateiname = Schülername).
+  function handleTeacherFiles(files) {
+    const list = Array.prototype.slice.call(files || []);
+    if (!list.length) return;
+    let added = 0, skipped = 0, pending = list.length;
+    const finalize = () => {
+      if (--pending > 0) return;
+      if (!added) showNotice(t("teacher.noneAdded"));
+      else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
+      render();
+    };
+    list.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        let payload = null;
+        try { payload = JSON.parse(String(reader.result)); } catch (e) { payload = null; }
+        const fallback = t("teacher.defaultName");
+        const name = String(file.name || fallback).replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || fallback;
+        const summary = payload ? studentSummaryFromBackup(name, payload) : null;
+        if (summary) { state.teacherStudents = state.teacherStudents.concat([summary]); added++; }
+        else skipped++;
+        finalize();
+      };
+      reader.onerror = () => { skipped++; finalize(); };
+      reader.readAsText(file);
+    });
+  }
+
+  function removeTeacherStudent(idx) {
+    state.teacherStudents = state.teacherStudents.filter((_, i) => i !== idx);
+    render();
+  }
+  function clearTeacher() {
+    if (state.teacherStudents.length && !confirmAsk(t("teacher.confirmClear"))) return;
+    state.teacherStudents = [];
+    render();
+  }
+  function printTeacher() { try { window.print(); } catch (e) { /* egal */ } }
+
+  function teacherVM() {
+    const students = state.teacherStudents.slice();
+    return {
+      students,
+      count: students.length,
+      // Klassen-Aggregat für die Kopfzeile.
+      avgMastered: students.length
+        ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
+      totalCards: students.length ? students[0].totalCards : 0,
+      taskTargets: taskTargets(),
+      taskTarget: state.taskTarget,   // gewähltes Ziel (für <option selected>)
+      taskTitle: state.taskTitle,     // Titel-Feld vorbelegen
+      taskDue: state.taskDue,         // Frist-Feld vorbelegen
+      taskCode: state.teacherTaskCode,
+      // Lesbare Bestätigung, WOFÜR der erzeugte Code ist (statt nur Base64-Blob).
+      taskCodeLabel: state.teacherTaskCode ? taskTargetLabel(store.decodeTask(state.teacherTaskCode)) : "",
+    };
+  }
+
+  // ----- Aufgaben/Zuweisung (backend-frei): teilbarer Aufgaben-Code -----
+  // Verfügbare Aufgaben-Ziele aus den vorhandenen Daten: Pre-Trip-Pläne,
+  // Pre-Arrival-Pakete und ganze Destination-Pakete.
+  function taskTargets() {
+    const labelOf = (sc) => { const c = categoryById(sc); return c ? natk(c, "label") : sc; };
+    const out = [];
+    (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
+    (data.PRESETS || []).forEach((pr) => out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" }));
+    // Ganzes Paket = beliebiger Themenbereich (Destinationen UND Klassiker wie Notfall/Essen).
+    (data.CATEGORIES || []).forEach((c) => out.push({ value: "category:" + c.id, label: natk(c, "label"), group: "category" }));
+    return out;
+  }
+
+  function taskTargetLabel(task) {
+    if (!task) return "";
+    let sc = task.scope;
+    if (task.kind === "preset") { const pr = (data.PRESETS || []).find((p) => p.id === task.scope); sc = pr ? pr.scope : task.scope; }
+    const c = categoryById(sc);
+    const name = c ? natk(c, "label") : sc;
+    const prefix = task.kind === "pretrip" ? t("task.kindPretrip") : task.kind === "preset" ? t("task.kindPreset") : t("task.kindCategory");
+    return prefix + ": " + name;
+  }
+
+  // Aufgabe erzeugen (Lehrkraft): aus dem Formular einen Code bauen.
+  function generateTask() {
+    // Aktuelle Formularwerte übernehmen (DOM ist die Wahrheit beim Klick), in den
+    // State spiegeln, damit der Re-Render Auswahl/Titel/Frist beibehält.
+    const sel = document.getElementById("task-target");
+    const titleEl = document.getElementById("task-title");
+    const dueEl = document.getElementById("task-due");
+    if (sel && sel.value) state.taskTarget = sel.value;
+    if (titleEl) state.taskTitle = titleEl.value;
+    if (dueEl) state.taskDue = dueEl.value;
+    if (!state.taskTarget) return;
+    const parts = state.taskTarget.split(":");
+    state.teacherTaskCode = store.encodeTask({
+      kind: parts[0],
+      scope: parts.slice(1).join(":"),
+      title: (state.taskTitle || "").trim(),
+      due: state.taskDue || "",
+    });
+    render();
+  }
+
+  // ----- Druckbares Aktivitätsblatt (Lehrkraft / Coordinator) -----
+  // Aus einem gewählten Ziel (Pre-Trip-Plan / Pre-Arrival-Paket / Kategorie) ein
+  // druckfertiges Blatt bauen: Wortschatz + Reisetipps, Stundenrezept, Real-Life
+  // Challenge und Selbst-Abo-Code/Link. Bei Pre-Trip-Plänen wahlweise das ganze
+  // Ziel (alle Etappen) ODER eine einzelne Etappe. window.print() macht das PDF.
+  const LVL_NAME = ["", "A1", "A2", "B1"];
+
+  function sheetTargetTask() {
+    const tgt = state.sheetTarget || (taskTargets()[0] || {}).value || "";
+    const parts = String(tgt).split(":");
+    return { value: tgt, kind: parts[0], scope: parts.slice(1).join(":") };
+  }
+
+  function sheetChallenge(id) {
+    const ch = id ? (data.CHALLENGES || []).find((c) => c.id === id) : null;
+    return ch ? { text: natk(ch, "textDe"), phrase: ch.phraseEs || "" } : null;
+  }
+
+  function sheetCardLine(c) {
+    const ctx = c.context || {};
+    return { es: c.es, de: natk(c, "de"), note: natk(ctx, "note") || "" };
+  }
+
+  function sheetVM() {
+    const tt = sheetTargetTask();
+    const task = { kind: tt.kind, scope: tt.scope, title: "" };
+    const isPretrip = tt.kind === "pretrip";
+    const plan = isPretrip ? pretripPlan(tt.scope) : null;
+    const stageSel = state.sheetStage || "all";
+    const stages = [];
+    let allCards = [];
+    if (isPretrip) {
+      (plan.days || []).filter((d) => stageSel === "all" || String(d.day) === String(stageSel)).forEach((d) => {
+        const cards = d.cardIds.map(cardById).filter(Boolean);
+        allCards = allCards.concat(cards);
+        stages.push({
+          heading: t("sheet.stageLabel", { day: d.day }) + ": " + natk(d, "titleDe"),
+          cards: cards.map(sheetCardLine),
+          challenge: sheetChallenge(d.challengeId),
+        });
+      });
+    } else {
+      const cards = taskCardsFor(task);
+      allCards = cards;
+      stages.push({ heading: null, cards: cards.map(sheetCardLine), challenge: null });
+    }
+    const lvls = allCards.map((c) => c.lvl).filter(Boolean);
+    const levelRange = lvls.length
+      ? (Math.min.apply(null, lvls) === Math.max.apply(null, lvls)
+          ? LVL_NAME[lvls[0]]
+          : LVL_NAME[Math.min.apply(null, lvls)] + "–" + LVL_NAME[Math.max.apply(null, lvls)])
+      : "";
+    // Selbst-Abo-Code für das GANZE Ziel (Schüler öffnen damit Plan/Paket in der App).
+    const code = store.encodeTask({ kind: tt.kind, scope: tt.scope, title: "", due: "" }) || "";
+    const stageOpts = isPretrip
+      ? [{ value: "all", label: t("sheet.allStages") }].concat(
+          (plan.days || []).map((d) => ({ value: String(d.day), label: t("sheet.stageLabel", { day: d.day }) + ": " + natk(d, "titleDe") })))
+      : null;
+    return {
+      targets: taskTargets(), sheetTarget: tt.value,
+      stageOpts: stageOpts, sheetStage: stageSel,
+      title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
+      stages: stages,
+      code: code, link: code ? taskShareLink(code) : "",
+      edition: editionInfo(), date: new Date().toISOString().slice(0, 10),
+    };
+  }
+
+  function openPrintSheet() {
+    dismissBadgeToast();
+    if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
+    if (!state.sheetStage) state.sheetStage = "all";
+    state.screen = "printsheet";
+    render();
+  }
+
+  function printSheet() { try { window.print(); } catch (e) { /* egal */ } }
+
+  // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
+  // Beschriftung & Klasse kurz tauschen und danach zurücksetzen.
+  function flashButton(action, label) {
+    const btn = root.querySelector('[data-action="' + action + '"]');
+    if (!btn) return;
+    if (btn.dataset.flashing === "1") return; // nicht stapeln
+    const prev = btn.textContent;
+    btn.dataset.flashing = "1";
+    btn.textContent = "✓ " + label;
+    btn.classList.add("btn-flash");
+    setTimeout(function () {
+      const b = root.querySelector('[data-action="' + action + '"]');
+      if (b) { b.textContent = prev; b.classList.remove("btn-flash"); delete b.dataset.flashing; }
+    }, 1600);
+  }
+
+  // Auswählen + legacy execCommand("copy") – funktioniert auch dort, wo die
+  // moderne Clipboard-API gesperrt ist (file://, Android-WebView, content://).
+  function execCopyFrom(el, len) {
+    if (!el) return false;
+    try {
+      el.focus();
+      el.select();
+      if (el.setSelectionRange) el.setSelectionRange(0, len);
+      const ok = !!(document.execCommand && document.execCommand("copy"));
+      try { if (window.getSelection) window.getSelection().removeAllRanges(); el.blur(); } catch (e2) {}
+      return ok;
+    } catch (e) { return false; }
+  }
+
+  function copyTaskCode() {
+    const code = state.teacherTaskCode;
+    if (!code) return;
+    const el = document.getElementById("task-code");
+    // 1) execCommand zuerst (robust im mobilen/Datei-Kontext).
+    if (execCopyFrom(el, code.length)) { flashButton("task-copy", t("teacher.taskCopied")); return; }
+    // 2) Moderne API als Zweitversuch (sichere Kontexte, in denen execCommand fehlt).
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(
+        function () { flashButton("task-copy", t("teacher.taskCopied")); },
+        function () { if (el) { el.focus(); el.select(); } showNotice(t("task.copyManual")); }
+      );
+      return;
+    }
+    // 3) Letzter Ausweg: markiert lassen, Hinweis zum manuellen Kopieren.
+    if (el) { el.focus(); el.select(); }
+    showNotice(t("task.copyManual"));
+  }
+
+  // Lernenden-Seite: Code aus der Zwischenablage ins Eingabefeld holen (mit Feedback).
+  // In gesperrten Kontexten (file://, content://, WebView) ist das Lesen der
+  // Zwischenablage blockiert – dann das Feld fokussieren/markieren, damit der native
+  // „Einfügen“-Befehl direkt greift, plus ein klarer Hinweis.
+  function pasteTaskCode() {
+    const el = document.getElementById("task-code-input");
+    if (!el) return;
+    function fallback() { try { el.focus(); el.select(); } catch (e) {} showNotice(t("task.pasteHint")); }
+    try {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        navigator.clipboard.readText().then(function (text) {
+          text = (text || "").trim();
+          // Eingefügten Code direkt abonnieren (mehrere parallel möglich).
+          if (text) { if (addSubscribedTask(text)) { el.value = ""; render(); } else { el.value = text; el.focus(); } }
+          else fallback();
+        }, fallback);
+      } else { fallback(); }
+    } catch (e) { fallback(); }
+  }
+
+  // Teilbarer Link für eine erzeugte Aufgabe: <appUrl>?edition=<id>&task=<code>.
+  // appUrl aus der Edition (sonst aktuelle Adresse), damit der Link auch stimmt,
+  // wenn die Lehrkraft die App als Datei öffnet.
+  function taskShareLink(code) {
+    const cfg = (window.SC && window.SC.config) || {};
+    let base = cfg.appUrl || "";
+    // Nur https als Link-Basis akzeptieren (Härtung); sonst die aktuelle Adresse.
+    if (!/^https:\/\//i.test(base)) { try { base = location.origin + location.pathname; } catch (e) { base = ""; } }
+    base = String(base).replace(/[?#].*$/, "");
+    const parts = [];
+    if (cfg.edition) parts.push("edition=" + encodeURIComponent(cfg.edition));
+    parts.push("task=" + encodeURIComponent(code));
+    return base + (parts.length ? "?" + parts.join("&") : "");
+  }
+  function copyTaskLink() {
+    const code = state.teacherTaskCode;
+    if (!code) return;
+    const link = taskShareLink(code);
+    // execCommand-Kopie über ein temporäres Feld (robust im WebView/Datei-Kontext).
+    let ok = false;
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = link; ta.setAttribute("readonly", "readonly");
+      ta.style.position = "fixed"; ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ok = execCopyFrom(ta, link.length);
+      document.body.removeChild(ta);
+    } catch (e) { ok = false; }
+    if (ok) { flashButton("task-copy-link", t("teacher.linkCopied")); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(function () { flashButton("task-copy-link", t("teacher.linkCopied")); }, function () { showNotice(link); });
+      return;
+    }
+    showNotice(link);
+  }
+
+  // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
+  function openTaskScreen() { dismissBadgeToast(); state.screen = "task"; render(); }
+
+  // Verweist eine Aufgabe auf existierende Inhalte?
+  function taskTargetExists(task) {
+    if (!task || !task.scope) return false;
+    if (task.kind === "preset") return (data.PRESETS || []).some((p) => p.id === task.scope);
+    if (task.kind === "pretrip") return (data.PRETRIP || []).some((p) => p.scope === task.scope);
+    return !!categoryById(task.scope);
+  }
+
+  // Eine Aufgabe (per Code) abonnieren: dekodieren, prüfen, doppelte vermeiden,
+  // persistent oben in die Liste legen. Gibt true bei Erfolg zurück (mit Toast).
+  function addSubscribedTask(code, silent) {
+    const task = store.decodeTask(code);
+    if (!task) { if (!silent) showNotice(t("task.invalid")); return false; }
+    if (!taskTargetExists(task)) { if (!silent) showNotice(t("task.unknownTarget")); return false; }
+    const norm = String(code).trim();
+    const idx = subscribedTasks.findIndex((x) => x.code === norm);
+    const entry = { code: norm, kind: task.kind, scope: task.scope, title: task.title || "", due: task.due || "", addedAt: new Date().toISOString().slice(0, 10) };
+    let next = idx >= 0
+      ? [entry].concat(subscribedTasks.filter((_, i) => i !== idx)) // schon da -> nach oben
+      : [entry].concat(subscribedTasks);
+    if (next.length > MAX_SUBSCRIBED_TASKS) next = next.slice(0, MAX_SUBSCRIBED_TASKS); // Speicher schützen
+    // Persistenz prüfen: bei vollem Speicher nicht so tun, als wäre es gespeichert.
+    if (!store.saveTasks(next)) { if (!silent) showNotice(t("task.saveFailed")); return false; }
+    subscribedTasks = next;
+    if (!silent) showNotice(idx >= 0 ? t("task.already") : t("task.added"));
+    return true;
+  }
+
+  function removeSubscribedTask(idx) {
+    if (idx < 0 || idx >= subscribedTasks.length) return;
+    const next = subscribedTasks.filter((_, i) => i !== idx);
+    // Persistenz prüfen (wie beim Hinzufügen): scheitert das Speichern, NICHT so tun,
+    // als wäre die Aufgabe weg – sonst taucht sie beim Neuladen wieder auf.
+    if (!store.saveTasks(next)) { showNotice(t("task.saveFailed")); return; }
+    subscribedTasks = next;
+    render();
+  }
+
+  function startSubscribedTask(idx) {
+    const task = subscribedTasks[idx];
+    if (!task) return;
+    // Herkunft "task" -> der Fertig-Screen führt zurück zur Aufgabenliste. Beim Pre-Trip
+    // öffnet sich der Plan-Screen (gesperrt aufs zugewiesene Land).
+    if (task.kind === "preset") startPreset(task.scope, "task");
+    else if (task.kind === "pretrip") {
+      if (PRETRIP().some((p) => p.scope === task.scope)) { state.pretripLock = task.scope; state.pretripScope = task.scope; }
+      openPretrip();
+    }
+    else startStudy(task.scope, "task");
+  }
+
+  function openTaskFromInput() {
+    const el = document.getElementById("task-code-input");
+    if (addSubscribedTask(el ? el.value : "")) { if (el) el.value = ""; render(); }
+  }
+
+  // Die zu einer Aufgabe gehörenden Karten (Preset = kuratierte Liste, Kategorie =
+  // ganzes Paket). Für Pre-Trip-Pläne zählen wir Etappen statt Karten (siehe taskProgress).
+  function taskCardsFor(task) {
+    if (!task) return [];
+    if (task.kind === "preset") {
+      const p = (data.PRESETS || []).find((x) => x.id === task.scope);
+      return p ? p.pick.map(cardById).filter(Boolean) : [];
+    }
+    if (task.kind === "category") return (data.CARDS || []).filter((c) => c.cat === task.scope);
+    return [];
+  }
+
+  // Fortschritt einer Aufgabe als { seen, total, kind }. Pre-Trip-Plan: geschaffte
+  // Etappen / alle Etappen. Sonst: gelernte (mind. einmal gesehene) Karten / alle.
+  function taskProgress(task) {
+    if (task && task.kind === "pretrip") {
+      const plan = pretripPlan(task.scope);
+      const total = plan.days.length;
+      const seen = plan.days.filter((d) => pretripDone(plan.scope, d.day)).length;
+      return { seen, total, kind: "stages" };
+    }
+    const cards = taskCardsFor(task);
+    const seen = cards.reduce((n, c) => n + ((stats.cardSummary(progress[c.id]).seen || 0) > 0 ? 1 : 0), 0);
+    return { seen, total: cards.length, kind: "cards" };
+  }
+
+  // Ist eine Aufgabe „absolviert"? = alle Etappen bzw. alle Karten einmal durch.
+  function taskDone(task) {
+    if (!task) return false;
+    if (task.kind === "pretrip") return planAllDone(pretripPlan(task.scope));
+    const p = taskProgress(task);
+    return p.total > 0 && p.seen >= p.total;
+  }
+
+  function taskVM() {
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, mit der Frist (Datums-String) vergleichbar
+    return {
+      tasks: subscribedTasks.map((tk, i) => {
+        const prog = taskProgress(tk);
+        const done = prog.total > 0 && prog.seen >= prog.total;
+        return {
+          idx: i, targetLabel: taskTargetLabel(tk), title: tk.title, due: tk.due,
+          overdue: !!(tk.due && tk.due < today), // Frist verstrichen? (nur Anzeige – startbar bleibt sie)
+          done, // absolviert? -> als erledigt markieren
+          started: !done && prog.seen > 0, // angefangen, aber noch nicht fertig -> optisch abheben
+          pct: prog.total > 0 ? Math.round((prog.seen / prog.total) * 100) : 0, // Füllstand der Fortschrittsleiste
+          seen: prog.seen, total: prog.total, progressKind: prog.kind, // „12/40" / „3/7 Etappen"
+        };
+      }),
+    };
+  }
+
+  // ----- Ruta-Check (Einstufungstest, reisepraktisch + ehrlich) -----
+  // Logik/Bewertung leben rein in placement.js; hier nur der Ablauf + Persistenz.
+  // „Ich weiß es nicht“ ist eine echte Option (ehrliches Nichtwissen statt Raten),
+  // die Antwortzeit je Frage wird erfasst und fließt LEICHT in die Sicherheit ein.
+  function placementQuestions() { return (placement && placement.QUESTIONS) || []; }
+
+  function placementTotalPlanned() {
+    return (placement.MC_TARGET || 12) + placement.freeQuestions(placementQuestions()).length;
+  }
+  function currentPlacementQ() {
+    const p = state.placement;
+    if (!p || !p.asked.length) return null;
+    return placement.questionById(p.asked[p.asked.length - 1]);
+  }
+
+  function openPlacement(fromOnboarding) {
+    dismissBadgeToast();
+    // Aus dem Onboarding heraus geöffnet -> das Onboarding gilt ab jetzt als erledigt
+    // (sonst erscheint es erneut, wenn jemand den überspringbaren Test abbricht).
+    if (fromOnboarding && settings.onboarded !== true) {
+      settings = Object.assign({}, settings, { onboarded: true });
+      store.saveSettings(settings);
+    }
+    state.placement = {
+      phase: "intro", fromOnboarding: !!fromOnboarding,
+      asked: [], answers: [], difficulty: placement.START_DIFFICULTY,
+      mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
+    };
+    state.screen = "placement";
+    render();
+  }
+
+  function pushPlacementQuestion(q) {
+    const p = state.placement;
+    p.asked.push(q.id);
+    p.answeredFor = null;      // Doppel-Tap-Schutz: pro Frage nur eine Antwort
+    p.qStartedAt = Date.now();
+  }
+
+  function startPlacementTest() {
+    const p = state.placement;
+    if (!p) return;
+    p.phase = "running"; p.asked = []; p.answers = [];
+    p.difficulty = placement.START_DIFFICULTY; p.mcAsked = 0; p.grammarAsked = 0; p.freeIdx = 0;
+    p.startedAt = Date.now();
+    const first = placement.pickNextMc(placementQuestions(), [], p.difficulty, 0, placement.GRAMMAR_CAP);
+    if (first) pushPlacementQuestion(first); else placementBeginFree();
+    render();
+  }
+
+  // Eine Antwort verbuchen, Schwierigkeit anpassen (Treppe), nächste Frage wählen.
+  function recordPlacementAnswer(ans) {
+    const p = state.placement;
+    if (!p || p.phase !== "running") return;
+    const q = currentPlacementQ();
+    if (!q) return;
+    if (p.answeredFor === q.id) return; // gepufferter Doppel-Tap auf dieselbe Frage ignorieren
+    p.answeredFor = q.id;
+    const now = Date.now();
+    ans.responseTimeMs = Math.max(0, now - (p.qStartedAt || now));
+    p.answers.push(ans);
+    const scored = placement.scoreAnswer(q, ans);
+    if (q.type === "mc") {
+      p.mcAsked += 1;
+      if (placement.GRAMMAR_SKILLS[q.skill]) p.grammarAsked += 1;
+      p.difficulty = placement.nextDifficulty(p.difficulty, scored.result); // richtig→schwerer, sonst leichter
+    }
+    placementAdvance();
+  }
+
+  function placementAdvance() {
+    const p = state.placement;
+    if (p.mcAsked < placement.MC_TARGET) {
+      const nextQ = placement.pickNextMc(placementQuestions(), p.asked, p.difficulty, p.grammarAsked, placement.GRAMMAR_CAP);
+      if (nextQ) { pushPlacementQuestion(nextQ); render(); return; }
+    }
+    placementBeginFree();
+  }
+
+  function placementBeginFree() {
+    const p = state.placement;
+    const frees = placement.freeQuestions(placementQuestions());
+    if (p.freeIdx < frees.length) {
+      pushPlacementQuestion(frees[p.freeIdx]);
+      p.freeIdx += 1;
+      render();
+    } else {
+      finishPlacement();
+    }
+  }
+
+  function placementChoose(index) {
+    const q = currentPlacementQ();
+    if (!q || q.type === "free") return;
+    recordPlacementAnswer({ isUnknown: false, selectedIndex: index });
+  }
+  function placementUnknown() {
+    if (!state.placement || state.placement.phase !== "running") return;
+    recordPlacementAnswer({ isUnknown: true, selectedIndex: null });
+  }
+  function placementSubmitFree() {
+    const p = state.placement;
+    if (!p || p.phase !== "running") return;
+    const q = currentPlacementQ();
+    if (!q || q.type !== "free") return;
+    const el = document.getElementById("placement-free");
+    const text = el ? String(el.value || "").trim() : "";
+    if (!text) { placementUnknown(); return; } // leeres Feld zählt als „weiß nicht“
+    recordPlacementAnswer({ isUnknown: false, text: text });
+  }
+
+  function finishPlacement() {
+    const p = state.placement;
+    if (!p) return;
+    const asked = p.asked.map((id) => placement.questionById(id)).filter(Boolean);
+    const result = placement.summarize(asked, p.answers);
+    p.result = result;
+    p.phase = "done";
+    // Letztes Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
+    try {
+      gamestats = Object.assign({}, gamestats, {
+        placement: {
+          level: result.level,
+          finalScore: Math.round(result.finalScore * 100) / 100,
+          accuracy: Math.round(result.accuracy * 100) / 100,
+          unknownRate: Math.round(result.unknownRate * 100) / 100,
+          tempo: result.tempo,
+          reliability: result.reliability || "",
+          at: new Date().toISOString().slice(0, 10),
+        },
+      });
+      store.saveGameStats(gamestats);
+    } catch (e) { /* Persistenz optional – nie crashen */ }
+    render();
+  }
+
+  // VM für die drei Phasen (intro/running/done) – eine Render-Route „placement“.
+  function placementVM() {
+    const p = state.placement;
+    if (!p) return { phase: "intro", fromOnboarding: false, total: placementTotalPlanned() };
+    if (p.phase === "running") {
+      const q = currentPlacementQ();
+      const index = Math.max(0, p.asked.length - 1);
+      return {
+        phase: "running", fromOnboarding: !!p.fromOnboarding,
+        index: index, total: placementTotalPlanned(),
+        // erste 3 Fragen: sanften „lieber weiß-nicht als raten“-Hinweis zeigen.
+        showHint: index < 3,
+        q: q ? {
+          id: q.id, type: q.type, level: q.level,
+          promptDe: q.promptDe, questionEs: q.questionEs || null,
+          options: q.type === "mc" ? q.options.slice() : null,
+        } : null,
+      };
+    }
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding }, placementResultView(p.result));
+    return { phase: "intro", fromOnboarding: !!p.fromOnboarding, total: placementTotalPlanned() };
+  }
+
+  // Ergebnis in eine anzeigefertige Form bringen (Prozente, Skill-Zeilen, Notiz).
+  function placementResultView(r) {
+    const pct = (x) => Math.round((x || 0) * 100);
+    const skillOrder = ["understanding", "reaction", "vocab", "conjugation", "tenses", "free"];
+    const skills = skillOrder
+      .filter((k) => r.skillBreakdown[k])
+      .map((k) => ({ skill: k, accuracy: pct(r.skillBreakdown[k].accuracy), unknownRate: pct(r.skillBreakdown[k].unknownRate) }));
+    return {
+      level: r.level,
+      scorePct: pct(r.finalScore),
+      accuracyPct: pct(r.accuracy),
+      unknownPct: pct(r.unknownRate),
+      wrongPct: pct(r.wrongRate),
+      correct: r.correct, total: r.total,
+      tempo: r.tempo,
+      note: r.note, // "" | "commStrong" | "grammarStrong"
+      reliability: r.reliability, // "" | "fast" | "guessing" | "manyUnknown"
+      skills,
+    };
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -2315,6 +3490,8 @@
     state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
+    // Pre-Trip-Tag abgeschlossen (Queue leer durchgelaufen)? distinkt vermerken.
+    if (!state.queue.length && state.pretripDay != null) recordPretripDay(state.pretripScope, state.pretripDay);
     render();
     if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
   }
@@ -2332,6 +3509,9 @@
     state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
+    // Bewusst KEIN recordPretripDay hier: Überspringen ist „später nochmal", kein
+    // echter Abschluss. Eine Pre-Trip-Etappe gilt erst als geschafft, wenn alle
+    // Karten bewertet wurden (Hook in rate()).
     render();
   }
 
@@ -2457,8 +3637,13 @@
 
   // Start-Reiter wechseln (Lernen / Entdecken / Profil) und merken.
   function setTab(tab) {
+    // „Tarea“/„Modo profe“ sind eigene Screens (nur in Editionen mit eigenem Reiter).
+    if (tab === "tarea") { openTaskScreen(); return; }
+    if (tab === "teacher") { openTeacher(); return; }
     // Reiter-Wechsel gilt nur für die laufende Sitzung – beim nächsten App-Start
     // hat die Startseite (Lernen) wieder Vorrang, deshalb wird er nicht persistiert.
+    // screen zurück auf "home" setzen, falls man vom Tarea-Screen einen Reiter tippt.
+    state.screen = "home";
     state.homeTab = tab === "entdecken" || tab === "profil" ? tab : "lernen";
     render();
   }
@@ -2469,6 +3654,10 @@
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
+    state.pretripDay = null;   // eine abgebrochene Pre-Trip-Sitzung beim Verlassen lösen
+    state.studyOrigin = null;  // Herkunft zurücksetzen (Dashboard ist Neustart)
+    state.pretripLock = null;  // Aufgaben-Sperre lösen (frei wählbar im Entdecken-Plan)
+    state.placement = null;    // Ruta-Check-Sitzung beim Verlassen lösen (kein hängender „done“-State)
     render();
   }
 
@@ -2490,6 +3679,14 @@
     }
     state.screen = "battleSetup";
     render();
+  }
+
+  // Coordinator-Schnellstart („5-Minuten-Icebreaker"): springt ohne Setup direkt
+  // in eine kurze 6-Runden-Battle der Kennenlern-Szene („meet"). Für Reiseleiter,
+  // Hostel-Personal oder Lehrkräfte, die der Gruppe in Sekunden eine Aktivität
+  // geben wollen. Reuse des kompletten bestehenden Battle-Flows.
+  function startCoordinatorRound() {
+    startBattle(COORDINATOR_SCENE, COORDINATOR_ROUNDS);
   }
 
   // Vor dem Start gewählte Battle-Länge merken (nur Umschalten, kein Start).
@@ -2536,13 +3733,15 @@
   }
 
   // Battle starten: Aufgaben der Szene (oder alle) ziehen, begrenzt auf die gewählte Länge.
-  function startBattle(sceneId) {
+  function startBattle(sceneId, lengthOverride) {
     dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     if (!pool.length) return;
     const poolIds = pool.map((b) => b.id);
     // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
-    const rounds = evenRounds(Math.min(state.battleLength, poolIds.length));
+    // lengthOverride erlaubt einen Direktstart ohne Setup (Coordinator-Runde),
+    // ohne die im Setup gewählte Länge (state.battleLength) zu überschreiben.
+    const rounds = evenRounds(Math.min(lengthOverride || state.battleLength, poolIds.length));
     const queue = balanceByLevel(pickBattleIds(poolIds, rounds, state.battleSeen));
     rememberBattleSeen(queue, poolIds.length);
     state.battle = {
@@ -3271,6 +4470,7 @@
     const card = cardById(id);
     if (!card) return;
     dismissBadgeToast();
+    state.pretripDay = null;   // Einzelkarten-Übung ist kein Pre-Trip-Tag
     state.scopeId = card.cat;
     state.queue = [id];
     state.total = 1;
@@ -3402,6 +4602,29 @@
     };
     reader.onerror = () => showNotice(t("app.importReadError"));
     reader.readAsText(file);
+  }
+
+  // ----- Optionale Cloud-Sync (Stufe 3, nur per Edition aktiv) -----
+  // Pull → merge → lokal anwenden → push (sync.syncNow). Login passwortlos;
+  // der Demo-Mock liefert direkt ein Token, der echte Flow schickt einen
+  // Magic-Link. Ohne aktive Edition existiert dieser Pfad gar nicht (Nav-Eintrag
+  // ist dann ausgeblendet).
+  function cloudSync() {
+    const sync = window.SC.sync;
+    if (!(sync && sync.enabled())) return;
+    const run = () => sync.syncNow().then((r) => {
+      if (r && r.changedLocal) { showNotice(t("profile.cloudSynced")); try { location.reload(); } catch (e) { /* egal */ } }
+      else showNotice(t("profile.cloudUpToDate"));
+    }).catch(() => showNotice(t("profile.cloudFailed")));
+    if (sync.loggedIn()) { run(); return; }
+    let email = "";
+    try { email = window.prompt(t("profile.cloudEmailPrompt")) || ""; } catch (e) { email = ""; }
+    email = email.trim();
+    if (!email) return;
+    sync.login(email).then(() => {
+      if (sync.loggedIn()) run();             // Mock: direkt eingeloggt
+      else showNotice(t("profile.cloudCheckMail")); // echter Flow: Magic-Link/OTP
+    }).catch(() => showNotice(t("profile.cloudFailed")));
   }
 
   // Spricht die spanische Antwort der aktuellen Karte vor.
@@ -3762,10 +4985,39 @@
     else if (action === "study-all") startStudy("all");
     else if (action === "open-category") startStudy(el.dataset.id);
     else if (action === "ruta-del-dia") openRutaDelDia();
+    else if (action === "open-preset") startPreset(el.dataset.preset);
+    else if (action === "open-pretrip") { state.pretripLock = null; openPretrip(); }
+    else if (action === "set-pretrip-scope") setPretripScope(el.dataset.scope);
+    else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
+    else if (action === "open-teacher") openTeacher();
+    else if (action === "teacher-import") { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); }
+    else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
+    else if (action === "teacher-clear") clearTeacher();
+    else if (action === "teacher-print") printTeacher();
+    else if (action === "open-printsheet") openPrintSheet();
+    else if (action === "printsheet-print") printSheet();
+    else if (action === "task-generate") generateTask();
+    else if (action === "task-copy") copyTaskCode();
+    else if (action === "task-copy-link") copyTaskLink();
+    else if (action === "task-paste") pasteTaskCode();
+    else if (action === "open-task") openTaskScreen();
+    else if (action === "back-pretrip") openPretrip();
+    else if (action === "back-task") openTaskScreen();
+    else if (action === "task-open") openTaskFromInput();
+    else if (action === "task-start") startSubscribedTask(Number(el.dataset.idx));
+    else if (action === "task-remove") removeSubscribedTask(Number(el.dataset.idx));
+    else if (action === "open-placement") openPlacement();
+    else if (action === "placement-start") startPlacementTest();
+    else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
+    else if (action === "placement-unknown") placementUnknown();
+    else if (action === "placement-free-submit") placementSubmitFree();
+    else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
-    else if (action === "skip-onboarding") finishOnboarding();
+    else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten
+    else if (action === "placement-skip") finishOnboarding();    // Ruta-Check im Onboarding überspringen -> fertig
+    else if (action === "placement-finish") finishOnboarding();  // Ruta-Check fertig (aus Onboarding) -> Dashboard
     else if (action === "resume-last") resumeLast();
     else if (action === "set-tab") setTab(el.dataset.tab);
     else if (action === "open-search") openSearch();
@@ -3792,6 +5044,7 @@
     else if (action === "card-back") (state.backTo === "home" ? goHome() : state.backTo === "search" ? openSearch() : goStats());
     else if (action === "open-editor") openEditor();
     else if (action === "export-data") exportData();
+    else if (action === "cloud-sync") cloudSync();
     else if (action === "import-data") startImport();
     else if (action === "dismiss-notice") el.remove();
     else if (action === "dismiss-update") dismissUpdateNotice();
@@ -3812,6 +5065,7 @@
     else if (action === "set-share-format") setShareFormat(el.dataset.format);
     else if (action === "open-hostel") openHostel();
     else if (action === "open-battle-setup") openBattleSetup();
+    else if (action === "coordinator-round") startCoordinatorRound();
     else if (action === "set-battle-length") setBattleLength(Number(el.dataset.len));
     else if (action === "start-battle") startBattle(el.dataset.scene);
     else if (action === "battle-reveal") battleReveal();
@@ -3907,7 +5161,9 @@
       const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
       const onboarding = state.screen === "onboarding";
       const ok = setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
-      if (ok && onboarding) finishOnboarding();
+      // Im Onboarding nach dem Trip-Ziel direkt den Ruta-Check anbieten (mit „Später“),
+      // damit der Einstufungstest tatsächlich gemacht wird.
+      if (ok && onboarding) openPlacement(true);
       return;
     }
     // Konjugations-Drill: getippte Verbform prüfen.
@@ -3947,6 +5203,28 @@
     updateSearchResults();
   }
 
+  // Aufgaben-Code direkt beim Einfügen abonnieren. Das paste-Event feuert auch dort,
+  // wo das Lesen der Zwischenablage per API gesperrt ist (file://, content://, WebView)
+  // – so muss niemand extra „Hinzufügen" tippen (das schließt mit offener Tastatur oft
+  // nur die Tastatur). Nach dem Einfügen den Feldinhalt prüfen; gültigen Code sofort
+  // hinzufügen, sonst stehen lassen (zum Korrigieren).
+  function onPaste(e) {
+    const el = e.target;
+    if (!el || el.id !== "task-code-input") return;
+    setTimeout(function () {
+      const v = String(el.value || "").trim();
+      if (!v) return;
+      if (store.decodeTask(v)) {
+        // Gültiger Code -> abonnieren (addSubscribedTask meldet selbst Dopplung/Fehler).
+        if (addSubscribedTask(v)) { el.value = ""; render(); }
+        return;
+      }
+      // Sieht wie ein Aufgaben-Code aus (HRT1.…), lässt sich aber nicht lesen ->
+      // kurzer Hinweis. Bei beliebigem Fremd-Text bleibt das Einfügen still.
+      if (v.indexOf("HRT1.") !== -1) showNotice(t("task.invalid"));
+    }, 0);
+  }
+
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
   function onChange(e) {
     // Backup-Import: verstecktes file-input im Profil-Reiter.
@@ -3956,8 +5234,15 @@
       handleImportFile(file);
       return;
     }
+    // Lehrer-Modus: mehrere Schüler-Backups auf einmal.
+    if (e.target && e.target.id === "teacher-file") {
+      const files = e.target.files;
+      handleTeacherFiles(files);
+      e.target.value = "";
+      return;
+    }
     // Profil-Name still sichern, sobald das Feld verlassen wird (auch ohne
-    // „Speichern"). Kein Re-Render hier, damit ein direkt danach getippter Knopf
+    // „Speichern“). Kein Re-Render hier, damit ein direkt danach getippter Knopf
     // nicht ins Leere greift; die Persistenz reicht.
     if (e.target && e.target.id === "profile-name") {
       saveUserName(e.target.value, false);
@@ -3972,6 +5257,14 @@
       state.battleNameEdited = true; // ab jetzt nicht mehr automatisch mit dem Profil-Namen vorbelegen
       return;
     }
+    // Aufgaben-Formular (Modo profe): Auswahl merken, damit ein Re-Render (z. B.
+    // nach „Code erzeugen“) das gewählte Ziel/Titel/Frist nicht zurücksetzt.
+    if (e.target && e.target.id === "task-target") { state.taskTarget = e.target.value; return; }
+    if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
+    if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
+    // Aktivitätsblatt: Ziel-/Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
+    if (e.target && e.target.id === "sheet-target") { state.sheetTarget = e.target.value; state.sheetStage = "all"; render(); return; }
+    if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; render(); return; }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);
@@ -4206,6 +5499,7 @@
   root.addEventListener("click", onClick);
   root.addEventListener("change", onChange);
   root.addEventListener("input", onInput);
+  root.addEventListener("paste", onPaste);
   root.addEventListener("submit", onSubmit);
   document.addEventListener("keydown", onKeydown);
   root.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -4233,6 +5527,7 @@
   if (window.SC && window.SC.install) {
     window.SC.install.setOnChange(() => { if (state.screen === "home") render(); });
   }
+  applyEdition();            // Co-Branding (Akzentfarbe/Titel/theme-color) VOR dem ersten render
   applyUiLang(state.uiLang); // UI-Sprache setzen (i18n + <html lang>) VOR dem ersten render
   checkForUpdate(); // VOR dem ersten render – sonst fehlt der Update-Hinweis
   // Erstkontakt: beim allerersten Start (noch nichts gespeichert) ins Onboarding
@@ -4247,10 +5542,25 @@
       state.screen = "onboarding";
     }
   }
-  // Deep-Link aus einem geteilten „Modul teilen"-Link hat Vorrang vor Startseite/
-  // Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das abschließende
-  // render() deckt zusätzlich die Fälle ab, in denen ein Opener vorab abbricht
-  // (z.B. Precios ohne Sprachausgabe) – so bleibt der Bildschirm nie leer.
+  // Geteilter Aufgaben-Link (?task=<code>): die Aufgabe still abonnieren (mehrere
+  // parallel möglich) und den Parameter entfernen. Onboarding hat Vorrang vor dem Screen.
+  const taskCode = urlParam("task");
+  if (taskCode) {
+    if (addSubscribedTask(taskCode, true) && settings.onboarded === true && state.screen !== "onboarding") {
+      openTaskScreen(); // direkt zur Aufgabenliste, wenn schon eingerichtet
+    }
+    stripUrlParam("task");
+  }
+  // Geteilter Link einer Schule/Partnerfirma (?start=onboarding): immer ins Onboarding
+  // – auch auf einem Bestandsgerät. Branding kommt aus der Edition (?edition=…, registry.js).
+  if (urlParam("start").toLowerCase() === "onboarding") {
+    state.screen = "onboarding";
+    stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
+  }
+  // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
+  // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
+  // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
+  // abbricht (z.B. Precios ohne Sprachausgabe) – so bleibt der Bildschirm nie leer.
   applyModuleDeepLink();
   render();
   registerServiceWorker();

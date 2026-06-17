@@ -80,6 +80,10 @@
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
+  <!-- Edition-Verzeichnis zuerst: erlaubt Partner-Branding per Link (?edition=ecos). -->
+  <script src="editions/registry.js"></script>
+  <!-- Marken-/Edition-Konfiguration (Standard = HolaRuta pur; Edition aus Registry/URL). -->
+  <script src="config.js"></script>
   <!-- Mehrsprachigkeit zuerst: Engine + UI-Wörterbuch, damit t()/nativeText überall stehen. -->
   <script src="i18n.js"></script>
   <script src="i18n.strings.js"></script>
@@ -99,8 +103,10 @@
   <script src="salud.js"></script>
   <script src="srs.js"></script>
   <script src="store.js"></script>
+  <script src="sync.js"></script>
   <script src="usercards.js"></script>
   <script src="matcher.js"></script>
+  <script src="placement.js"></script>
   <script src="search.js"></script>
   <script src="stats.js"></script>
   <script src="badges.js"></script>

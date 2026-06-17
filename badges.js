@@ -113,6 +113,8 @@
       description: "Lerne 30 Tage in Folge.",  descriptionEn: "Learn 30 days in a row.",  unlockedText: "Aus Lernen ist eine echte Gewohnheit geworden.", unlockedTextEn: "Learning has turned into a real habit." },
     { id: "ruta_dia_first", group: "streak", icon: "🗺️", name: "Ruta del día",   nameEn: "Ruta del día",       type: "counter", metric: "rutaDays", threshold: 1,
       description: "Starte deine erste Ruta del día.", descriptionEn: "Start your first Ruta del día.", unlockedText: "Dein täglicher Mini-Plan ist gesetzt.", unlockedTextEn: "Your daily mini-plan is set." },
+    { id: "pretrip_done",   group: "streak", icon: "🧳", name: "Reisefertig",     nameEn: "Trip-ready",         type: "counter", metric: "pretripDaysDone", threshold: 7,
+      description: "Schließe alle 7 Etappen des Pre-Trip-Plans ab.", descriptionEn: "Complete all 7 stages of the pre-trip plan.", unlockedText: "Vorbereitet wie ein Profi – jetzt kann die Reise kommen.", unlockedTextEn: "Prepared like a pro – bring on the trip." },
     { id: "ruta_dia_7",     group: "streak", icon: "📆", name: "Sieben Etappen",  nameEn: "Seven stages",       type: "counter", metric: "rutaDays", threshold: 7,
       description: "Mache an 7 Tagen eine Ruta del día.", descriptionEn: "Do a Ruta del día on 7 days.", unlockedText: "Sieben tägliche Etappen – die Reise läuft.", unlockedTextEn: "Seven daily stages – the journey's rolling." },
 
@@ -178,6 +180,8 @@
       description: "Hake deine erste Real-Life Challenge ab.", descriptionEn: "Tick off your first Real-Life Challenge.", unlockedText: "Du hast Spanisch nicht nur gelernt, sondern benutzt.", unlockedTextEn: "You didn't just learn Spanish, you used it." },
     { id: "challenge_5",     group: "reallife", icon: "🚪", name: "Comfort Zone Exit",   nameEn: "Comfort Zone Exit",   type: "counter", metric: "challengesCompleted", threshold: 5,
       description: "Hake 5 Real-Life Challenges ab.", descriptionEn: "Tick off 5 Real-Life Challenges.", unlockedText: "Raus aus der App, rein ins echte Sprechen.", unlockedTextEn: "Out of the app and into real speaking." },
+    { id: "challenge_10",    group: "reallife", icon: "🗣️", name: "Straßen-Spanisch",     nameEn: "Street Spanish",      type: "counter", metric: "challengesCompleted", threshold: 10,
+      description: "Hake 10 Real-Life Challenges ab.", descriptionEn: "Tick off 10 Real-Life Challenges.", unlockedText: "Zehn echte Gespräche – das ist gelebtes Spanisch.", unlockedTextEn: "Ten real conversations – that's Spanish in the wild." },
 
     // ---------- El Cuerpo (interaktive Körperkarte) ----------
     { id: "cuerpo_first", group: "cuerpo", icon: "👆", name: "Primer toque",   nameEn: "Primer toque",    type: "counter", metric: "bodyPartsExplored", threshold: 1,
@@ -200,6 +204,18 @@
 
   const BY_ID = BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
   const byId = (id) => BY_ID[id] || null;
+
+  // Pre-Trip: meiste abgeschlossene Etappen innerhalb EINES Plans. Verträgt beide
+  // Formate: neu (verschachtelt { scope: { day: true } }) und alt-flach ({ day: true }).
+  function pretripMaxDays(pt) {
+    if (!pt || typeof pt !== "object") return 0;
+    const vals = Object.values(pt);
+    if (!vals.length) return 0;
+    if (vals.every((v) => v && typeof v === "object")) {
+      return Math.max.apply(null, vals.map((m) => Object.keys(m).length));
+    }
+    return Object.keys(pt).length; // alt-flaches Format = ein Plan
+  }
 
   // ----- Metriken aus Lernfortschritt + Zählern ableiten (rein) -----
   // cards    : vollständige Kartenliste (eingebaut + eigene)
@@ -257,6 +273,7 @@
       preciosMillon: c.preciosMillon || 0,
       // Ruta del día: distinkte Tage mit gestarteter täglicher Mini-Runde.
       rutaDays: c.rutaDays ? Object.keys(c.rutaDays).length : 0,
+      pretripDaysDone: pretripMaxDays(c.pretripDays),
       // Reise-Kontext: distinkt geöffnete Kontext-Karten (für die 🧭-Badges).
       contextCardsViewed: c.contextCardsSeen ? Object.keys(c.contextCardsSeen).length : 0,
       // El Cuerpo: distinkt angetippte Körperteile (für die 🧍-Badges).

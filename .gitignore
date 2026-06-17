@@ -6,6 +6,9 @@ tmp_*.js
 tmp_*.json
 .playwright-mcp/
 
+# Edition-Builds (reproduzierbar via `node build.js --edition=<id>`)
+HolaRuta-*.html
+
 # OS / editor
 .DS_Store
 Thumbs.db

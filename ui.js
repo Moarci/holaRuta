@@ -149,6 +149,10 @@
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
+    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
+    { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
+    { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
+    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Übersicht für Lehrkräfte & Reiseleitung", grad: ["#2F6B70", "#A23E20"], group: "reference" },
   ];
 
   // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),
@@ -168,6 +172,7 @@
     { id: "people",  titleKey: "home.catGroupPeople" },
     { id: "food",    titleKey: "home.catGroupFood" },
     { id: "travel",  titleKey: "home.catGroupTravel" },
+    { id: "destinos", titleKey: "home.catGroupDestinos" },
   ];
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -179,9 +184,13 @@
                data-action="set-tab" data-tab="${id}">
          <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
        </button>`;
+    // Ein einziger „Tarea“-Reiter, wenn eine Edition Aufgaben ODER Modo profe nutzt.
+    // Der Modo-profe-Bereich hängt im Tarea-Screen mit drin (kein eigener Reiter).
+    const cfg = window.SC.config || {};
+    const showTask = !!(cfg.taskTab || cfg.teacherTab);
     return `
       <nav class="tabbar" aria-label="${esc(t("home.tabsAreas"))}">
-        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${tb("profil", "👤", t("home.tabProfile"))}
+        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${showTask ? tb("tarea", "📝", t("home.tabTask")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
       </nav>`;
   }
 
@@ -295,10 +304,22 @@
   // Trip-Ziel ab (überspringbar), damit der Countdown direkt motiviert.
   function renderOnboarding(vm) {
     const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
+    // Partner-Branding zuerst: in einer Edition (auch per Link ?edition=…) das Logo
+    // + den Namen oben zeigen, sonst nur die HolaRuta-Begrüßung.
+    const e = vm.edition;
+    const logoOk = e && e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
+    const brand = e
+      ? `<div class="onboarding__brand">
+           ${logoOk ? `<img class="onboarding__logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />` : ""}
+           ${e.partner && e.partner.name ? `<p class="onboarding__partner">${esc(e.partner.name)}</p>
+           <p class="onboarding__powered">${esc(t("profile.poweredBy"))}</p>` : ""}
+         </div>`
+      : "";
     return `
       <section class="screen onboarding">
         <div class="onboarding__inner">
-          <h1 class="onboarding__title">🧭 ${esc(t("home.onboardTitle"))}</h1>
+          ${brand}
+          <h1 class="onboarding__title">${esc(t("home.onboardTitle"))}</h1>
           <p class="onboarding__intro">${esc(t("home.onboardIntro"))}</p>
           ${tripForm(vm.trip, skip)}
         </div>
@@ -372,6 +393,58 @@
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
       </button>`;
 
+    // Kuratierte Pre-Arrival-Presets: ein Tap startet die wichtigsten Ankunfts-Sätze
+    // fürs jeweilige Reiseziel (benannte Auswahl, nicht der freie Filter). Nutzt die
+    // Ruta-del-día-Optik; erscheint nur bei passendem Trip-/Edition-Bezug. Ist das
+    // Paket absolviert (alle Karten einmal gelernt), zeigt die Kachel das mit
+    // Häkchen + „geschafft" an (bleibt antippbar zum Wiederholen).
+    const PRESET_CARDS = [
+      { id: "prearrival-co", show: vm.showColombiaPreset, titleKey: "home.presetCoTitle", subKey: "home.presetCoSub" },
+      { id: "prearrival-ctg", show: vm.showCartagenaPreset, titleKey: "home.presetCtgTitle", subKey: "home.presetCtgSub" },
+      { id: "prearrival-med", show: vm.showMedellinPreset, titleKey: "home.presetMedTitle", subKey: "home.presetMedSub" },
+      { id: "prearrival-cus", show: vm.showCuscoPreset, titleKey: "home.presetCusTitle", subKey: "home.presetCusSub" },
+      { id: "prearrival-cdmx", show: vm.showCdmxPreset, titleKey: "home.presetCdmxTitle", subKey: "home.presetCdmxSub" },
+      { id: "prearrival-ant", show: vm.showAntiguaPreset, titleKey: "home.presetAntTitle", subKey: "home.presetAntSub" },
+      { id: "prearrival-bue", show: vm.showBuenosAiresPreset, titleKey: "home.presetBueTitle", subKey: "home.presetBueSub" },
+      { id: "prearrival-qui", show: vm.showQuitoPreset, titleKey: "home.presetQuiTitle", subKey: "home.presetQuiSub" },
+      { id: "prearrival-lima", show: vm.showLimaPreset, titleKey: "home.presetLimaTitle", subKey: "home.presetLimaSub" },
+      { id: "prearrival-arequipa", show: vm.showArequipaPreset, titleKey: "home.presetArequipaTitle", subKey: "home.presetArequipaSub" },
+      { id: "prearrival-mendoza", show: vm.showMendozaPreset, titleKey: "home.presetMendozaTitle", subKey: "home.presetMendozaSub" },
+      { id: "prearrival-bariloche", show: vm.showBarilochePreset, titleKey: "home.presetBarilocheTitle", subKey: "home.presetBarilocheSub" },
+      { id: "prearrival-oaxaca", show: vm.showOaxacaPreset, titleKey: "home.presetOaxacaTitle", subKey: "home.presetOaxacaSub" },
+      { id: "prearrival-merida", show: vm.showMeridaPreset, titleKey: "home.presetMeridaTitle", subKey: "home.presetMeridaSub" },
+      { id: "prearrival-arenal", show: vm.showArenalPreset, titleKey: "home.presetArenalTitle", subKey: "home.presetArenalSub" },
+      { id: "prearrival-monteverde", show: vm.showMonteverdePreset, titleKey: "home.presetMonteverdeTitle", subKey: "home.presetMonteverdeSub" },
+      { id: "prearrival-santiago", show: vm.showSantiagoPreset, titleKey: "home.presetSantiagoTitle", subKey: "home.presetSantiagoSub" },
+      { id: "prearrival-valparaiso", show: vm.showValparaisoPreset, titleKey: "home.presetValparaisoTitle", subKey: "home.presetValparaisoSub" },
+      { id: "prearrival-atacama", show: vm.showAtacamaPreset, titleKey: "home.presetAtacamaTitle", subKey: "home.presetAtacamaSub" },
+      { id: "prearrival-lapaz", show: vm.showLapazPreset, titleKey: "home.presetLapazTitle", subKey: "home.presetLapazSub" },
+      { id: "prearrival-uyuni", show: vm.showUyuniPreset, titleKey: "home.presetUyuniTitle", subKey: "home.presetUyuniSub" },
+      { id: "prearrival-puertonatales", show: vm.showPuertonatalesPreset, titleKey: "home.presetPuertonatalesTitle", subKey: "home.presetPuertonatalesSub" },
+      { id: "prearrival-pucon", show: vm.showPuconPreset, titleKey: "home.presetPuconTitle", subKey: "home.presetPuconSub" },
+      { id: "prearrival-copacabana", show: vm.showCopacabanaPreset, titleKey: "home.presetCopacabanaTitle", subKey: "home.presetCopacabanaSub" },
+      { id: "prearrival-sucre", show: vm.showSucrePreset, titleKey: "home.presetSucreTitle", subKey: "home.presetSucreSub" },
+      { id: "prearrival-pe", show: vm.showPeruPreset, titleKey: "home.presetPeTitle", subKey: "home.presetPeSub" },
+      { id: "prearrival-mx", show: vm.showMexicoPreset, titleKey: "home.presetMxTitle", subKey: "home.presetMxSub" },
+      { id: "prearrival-cr", show: vm.showCostaRicaPreset, titleKey: "home.presetCrTitle", subKey: "home.presetCrSub" },
+      { id: "prearrival-ec", show: vm.showEcuadorPreset, titleKey: "home.presetEcTitle", subKey: "home.presetEcSub" },
+      { id: "prearrival-gt", show: vm.showGuatemalaPreset, titleKey: "home.presetGtTitle", subKey: "home.presetGtSub" },
+      { id: "prearrival-ar", show: vm.showArgentinaPreset, titleKey: "home.presetArTitle", subKey: "home.presetArSub" },
+      { id: "prearrival-cl", show: vm.showChilePreset, titleKey: "home.presetClTitle", subKey: "home.presetClSub" },
+      { id: "prearrival-bo", show: vm.showBoliviaPreset, titleKey: "home.presetBoTitle", subKey: "home.presetBoSub" },
+    ];
+    const presetCards = PRESET_CARDS.filter((p) => p.show).map((p) => {
+      const st = (vm.presetStatus && vm.presetStatus[p.id]) || { done: false, seen: 0, total: 0 };
+      const sub = st.done ? t("home.presetDoneSub")
+        : (st.seen > 0 && st.total > 0) ? t("home.presetProgress", { seen: st.seen, total: st.total })
+        : t(p.subKey);
+      return `
+      <button class="today__ruta${st.done ? " today__ruta--done" : ""}" data-action="open-preset" data-preset="${p.id}">
+        <span class="today__ruta-main">${st.done ? "✓ " : ""}${esc(t(p.titleKey))}${st.done ? ` <span class="today__ruta-badge" role="status">${esc(t("home.presetDone"))}</span>` : ""}</span>
+        <span class="today__ruta-sub">${esc(sub)}</span>
+      </button>`;
+    }).join("");
+
     // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
     // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
     // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
@@ -404,6 +477,7 @@
         </button>
         ${resume}
         ${rutaDia}
+        ${presetCards}
         ${tripCard}
       </div>
 
@@ -418,7 +492,9 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
+    // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
+    const cfg = window.SC.config || {};
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -429,7 +505,13 @@
       </button>`;
     // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
     // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
-    const available = FEATURES.filter((x) => !x.need || has[x.need]);
+    // In Editionen mit eigenem Reiter Tarea/Modo profe NICHT doppelt als Kachel zeigen.
+    const available = FEATURES.filter((x) => {
+      if (x.need && !has[x.need]) return false;
+      if (x.action === "open-task" && cfg.taskTab) return false;
+      if (x.action === "open-teacher" && cfg.teacherTab) return false;
+      return true;
+    });
     const sections = FEATURE_GROUPS.map((g) => {
       const items = available.filter((x) => x.group === g.id);
       if (!items.length) return "";
@@ -510,9 +592,29 @@
       <p class="sectioncap">${esc(t("profile.yourData"))}</p>
       ${navrow("export-data", "📤", t("profile.exportData"))}
       ${navrow("import-data", "📥", t("profile.importData"))}
+      ${vm.syncEnabled ? navrow("cloud-sync", "☁️", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
-      ${installBlock(vm.install)}`;
+      ${installBlock(vm.install)}
+      ${editionCredit(vm.edition)}`;
+  }
+
+  // Dezenter Co-Branding-Hinweis im Profil (nur in einer Edition sichtbar).
+  function editionCredit(e) {
+    if (!e) return "";
+    // Co-Branding-Credit: das Partner-Logo (oder, ohne Logo, der Partnername) plus
+    // ein dezentes „mit HolaRuta". Bewusst OHNE den vollen brandName, der den
+    // Partnernamen schon enthält (sonst stünde „WeRoad Colombia" doppelt da).
+    const partnerName = (e.partner && e.partner.name) || e.name || "";
+    // Nur echte http(s)-Links verlinken; alles andere (z.B. javascript:) als Text.
+    const url = e.partner && e.partner.url && /^https?:\/\//i.test(e.partner.url) ? e.partner.url : null;
+    // Partner-Logo NUR rendern, wenn eine Edition es ausdrücklich setzt (mit Freigabe).
+    // Erlaubt sind ausschließlich https:- oder eingebettete data:image-URLs.
+    const logoOk = e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
+    const head = logoOk
+      ? `<img class="edition-logo" src="${esc(e.logo)}" alt="${esc(partnerName)}" />`
+      : `<span class="edition-credit__name">${url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(partnerName)}</a>` : esc(partnerName)}</span>`;
+    return `<div class="edition-credit">${head}<span class="edition-credit__powered">${esc(t("profile.poweredBy"))}</span></div>`;
   }
 
   // „Auf den Startbildschirm“-Hinweis (nur wenn sinnvoll, siehe install.js).
@@ -880,14 +982,24 @@
 
   // ---------- DONE ----------
   function renderDone(vm) {
+    // Kam die Runde aus dem Pre-Trip-Plan oder einer Aufgabe (Tarea), führt der
+    // Hauptknopf dorthin ZURÜCK (nächste Etappe direkt sichtbar) statt nur „Übersicht“.
+    const buttons =
+      vm.origin === "pretrip"
+        ? `<button class="cta" data-action="back-pretrip">🧭 ${esc(t("study.backPretrip"))}</button>
+           <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>`
+        : vm.origin === "task"
+          ? `<button class="cta" data-action="back-task">📝 ${esc(t("study.backTask"))}</button>
+             <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>`
+          : `<button class="cta" data-action="home">${esc(t("common.overview"))}</button>
+             <button class="ghostbtn" data-action="open-stats">${esc(t("common.statsView"))}</button>`;
     return `
       <section class="screen">
         <div class="done">
           <div class="done__emoji">🎉</div>
           <h2>${esc(t("study.doneOk"))}</h2>
           <p>${esc(vm.scopeLabel)} ${t("study.doneText")}</p>
-          <button class="cta" data-action="home">${esc(t("common.overview"))}</button>
-          <button class="ghostbtn" data-action="open-stats">${esc(t("common.statsView"))}</button>
+          ${buttons}
         </div>
       </section>`;
   }
@@ -2287,6 +2399,12 @@
         <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
         ${moduleShareBtn("hostel")}
         <div class="hm-menu">
+          <button class="hm-card hm-card--coordinator" data-action="coordinator-round">
+            <span class="hm-card__icon" aria-hidden="true">⚡</span>
+            <span class="hm-card__title">${esc(t("discover.coordinatorTitle"))}</span>
+            <span class="hm-card__desc">${esc(t("discover.coordinatorDesc"))}</span>
+            <span class="hm-card__meta">${esc(t("discover.coordinatorMeta", { n: vm.coordinatorRounds }))}</span>
+          </button>
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
             <span class="hm-card__icon" aria-hidden="true">⚔️</span>
             <span class="hm-card__title">${esc(t("discover.battleTitle"))}</span>
@@ -2299,6 +2417,394 @@
             <span class="hm-card__desc">${esc(t("discover.roleplaysDesc"))}</span>
             <span class="hm-card__meta">${esc(t("discover.roleplaysScenes", { n: vm.roleplayCount }))}</span>
           </button>
+        </div>
+      </section>`;
+  }
+
+  // Pre-Trip-Plan: mehrtägiger Onboarding-Pfad. Tage sequenziell freischaltbar
+  // (erledigt ✓ / aktuell startbar / gesperrt 🔒); jeder Tag mit Karten + optionaler
+  // Mutprobe. Reuse der Screen-/Topbar-Struktur der übrigen Entdecken-Module.
+  function renderPretrip(vm) {
+    const rows = vm.days.map((d) => {
+      const status = d.done ? "done" : (d.unlocked ? "current" : "locked");
+      const mark = d.done ? "✓" : (d.unlocked ? String(d.day) : "🔒");
+      const challenge = d.challenge
+        ? `<span class="pretrip-day__challenge">🚪 ${esc(d.challenge)}</span>` : "";
+      const right = status === "locked"
+        ? `<span class="pretrip-day__lock"><span aria-hidden="true">🔒</span> ${esc(t("discover.pretripLocked"))}</span>`
+        : `<button class="pretrip-day__btn" data-action="start-pretrip-day" data-day="${d.day}">${esc(d.done ? t("discover.pretripReplay") : t("discover.pretripStart"))}</button>`;
+      return `
+        <li class="pretrip-day pretrip-day--${status}">
+          <span class="pretrip-day__num" aria-hidden="true">${mark}</span>
+          <span class="pretrip-day__body">
+            <span class="pretrip-day__title">${esc(d.title)}</span>
+            <span class="pretrip-day__meta">${esc(t("discover.pretripCards", { n: d.count }))}</span>
+            ${challenge}
+          </span>
+          ${right}
+        </li>`;
+    }).join("");
+    const banner = vm.allDone
+      ? `<p class="pretrip-alldone">🎉 ${esc(t("discover.pretripAllDone"))}</p>`
+      : `<p class="pretrip-progress">${esc(t("discover.pretripProgress", { done: vm.doneCount, total: vm.total }))}</p>`;
+    // Destination-Auswahl: ein Plan je Reiseziel; ✓ markiert vollständig geschaffte Pläne.
+    // Bei zugewiesener Aufgabe ist das Ziel fix -> nur ein nicht-klickbares Abzeichen.
+    const dest = vm.locked
+      ? `<div class="sl-chips sl-chips--locked">
+           <span class="sl-chip sl-chip--locked is-active" role="status" aria-label="${esc(vm.scopeLabel + " – " + t("discover.pretripAssigned"))}" style="--from:var(--brand);--to:var(--brand-ink)"><span aria-hidden="true">📌 ${esc(vm.scopeLabel)}</span></span>
+         </div>
+         <p class="pretrip-assigned" aria-hidden="true">${esc(t("discover.pretripAssigned"))}</p>`
+      : `<div class="sl-chips" role="group" aria-label="${esc(t("discover.pretripDestLabel"))}">${(vm.plans || []).map((p) =>
+          `<button class="sl-chip ${p.active ? "is-active" : ""}" data-action="set-pretrip-scope" data-scope="${p.scope}"${p.active ? ' aria-current="true"' : ""}>${p.done ? "✓ " : ""}${esc(p.label)}</button>`
+        ).join("")}</div>`;
+    return `
+      <section class="screen">
+        ${hmTopbar("🗓️ " + esc(t("discover.pretripTitle")), "home")}
+        <p class="hm-intro">${esc(t("discover.pretripIntro"))}</p>
+        ${dest}
+        ${banner}
+        <ol class="pretrip">${rows}</ol>
+      </section>`;
+  }
+
+  // Lehrer-/Coordinator-Modus: Klassenübersicht aus importierten Schüler-Backups.
+  // Backend-frei und offline – die Daten leben nur in dieser Sitzung. Reuse der
+  // Screen-/Topbar-Struktur; Tabelle bewusst schlicht und druckbar (window.print).
+  function renderTeacher(vm) {
+    const actions = `
+      <div class="teacher-actions">
+        <button class="teacher-btn teacher-btn--main" data-action="teacher-import">📥 ${esc(t("teacher.importBtn"))}</button>
+        ${vm.count ? `<button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-clear">🗑️ ${esc(t("teacher.clearBtn"))}</button>` : ""}
+      </div>
+      <input type="file" id="teacher-file" accept="application/json,.json" multiple hidden>`;
+
+    const body = vm.count
+      ? `
+      <p class="teacher-summary">${esc(t("teacher.classSummary", { n: vm.count, avg: vm.avgMastered, total: vm.totalCards }))}</p>
+      <div class="teacher-tablewrap">
+        <table class="teacher-table">
+          <thead><tr>
+            <th>${esc(t("teacher.colName"))}</th>
+            <th>${esc(t("teacher.colMastered"))}</th>
+            <th>${esc(t("teacher.colStreak"))}</th>
+            <th>${esc(t("teacher.colChallenges"))}</th>
+            <th>${esc(t("teacher.colPretrip"))}</th>
+            <th>${esc(t("teacher.colLevel"))}</th>
+            <th>${esc(t("teacher.colPacks"))}</th>
+            <th aria-label="${esc(t("teacher.remove"))}"></th>
+          </tr></thead>
+          <tbody>
+            ${vm.students.map((s, i) => `
+            <tr>
+              <td class="teacher-name">${esc(s.name)}</td>
+              <td>${s.cardsMastered} / ${s.totalCards}<span class="teacher-sub"> · ${esc(t("teacher.reviewed", { n: s.cardsReviewed }))}</span></td>
+              <td>${s.streak}${s.longestStreak > s.streak ? `<span class="teacher-sub"> (max ${s.longestStreak})</span>` : ""}</td>
+              <td>${s.challenges}</td>
+              <td>${s.pretripDays} / ${s.pretripMax}</td>
+              <td>${s.placement ? `${esc(s.placement.level)}<span class="teacher-sub"> · ${Math.round((s.placement.finalScore || 0) * 100)}%</span>` : "—"}</td>
+              <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
+              <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>`
+      : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
+
+    const grp = (g) => (vm.taskTargets || []).filter((x) => x.group === g)
+      .map((x) => `<option value="${esc(x.value)}"${x.value === vm.taskTarget ? " selected" : ""}>${esc(x.label)}</option>`).join("");
+    const taskForm = `
+      <h3 class="teacher-h3">${esc(t("teacher.taskHeading"))}</h3>
+      <p class="teacher-sub2">${esc(t("teacher.taskHint"))}</p>
+      <div class="task-form">
+        <select id="task-target" class="task-input" aria-label="${esc(t("teacher.taskTarget"))}">
+          <optgroup label="${esc(t("teacher.grpPretrip"))}">${grp("pretrip")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
+        </select>
+        <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}" value="${esc(vm.taskTitle || "")}">
+        <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}" value="${esc(vm.taskDue || "")}">
+        <button class="teacher-btn teacher-btn--main" data-action="task-generate">${esc(t("teacher.taskGenerate"))}</button>
+      </div>
+      ${vm.taskCode ? `
+      <div class="task-result">
+        ${vm.taskCodeLabel ? `<p class="task-codefor">🎯 ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
+        <textarea id="task-code" class="task-code" readonly rows="2" aria-label="${esc(t("teacher.taskTarget"))}">${esc(vm.taskCode)}</textarea>
+        <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
+        <div class="teacher-actions task-result__btns">
+          <button class="teacher-btn teacher-btn--main" data-action="task-copy-link">🔗 ${esc(t("teacher.taskCopyLink"))}</button>
+          <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
+        </div>
+      </div>` : ""}`;
+
+    // In Editionen hängt Modo profe unter dem Tarea-Reiter: Tab-Leiste mit „Tarea“
+    // aktiv, und der Zurück-Pfeil führt zurück in den Tarea-Screen (nicht Home).
+    const cfg = window.SC.config || {};
+    const withTab = !!(cfg.taskTab || cfg.teacherTab);
+    return `
+      <section class="screen${withTab ? " screen--tabbed" : ""}">
+        ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), withTab ? "open-task" : "home")}
+        <p class="hm-intro">${esc(t("teacher.intro"))}</p>
+        <div class="tip">${esc(t("teacher.privacy"))}</div>
+        ${actions}
+        ${body}
+        <hr class="teacher-sep">
+        ${taskForm}
+        <hr class="teacher-sep">
+        <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
+        <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+        </div>
+      </section>
+      ${withTab ? tabbar("tarea") : ""}`;
+  }
+
+  // Druckbares Aktivitätsblatt (Lehrkraft/Coordinator): oben eine NICHT gedruckte
+  // Steuerleiste (Ziel-/Etappenwahl + Drucken), darunter das druckoptimierte Blatt.
+  // window.print() macht daraus ein PDF; @media print blendet alles außer .sheet aus.
+  function renderPrintSheet(vm) {
+    const grp = (g) => (vm.targets || []).filter((x) => x.group === g)
+      .map((x) => `<option value="${esc(x.value)}"${x.value === vm.sheetTarget ? " selected" : ""}>${esc(x.label)}</option>`).join("");
+    const stagePick = vm.stageOpts
+      ? `<select id="sheet-stage" class="task-input" aria-label="${esc(t("sheet.stageSelect"))}">
+           ${vm.stageOpts.map((o) => `<option value="${esc(o.value)}"${o.value === vm.sheetStage ? " selected" : ""}>${esc(o.label)}</option>`).join("")}
+         </select>`
+      : "";
+    const controls = `
+      <div class="sheet-controls no-print">
+        <select id="sheet-target" class="task-input" aria-label="${esc(t("sheet.targetSelect"))}">
+          <optgroup label="${esc(t("teacher.grpPretrip"))}">${grp("pretrip")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpPreset"))}">${grp("preset")}</optgroup>
+          <optgroup label="${esc(t("teacher.grpCategory"))}">${grp("category")}</optgroup>
+        </select>
+        ${stagePick}
+        <button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>
+      </div>`;
+
+    const stagesHtml = (vm.stages || []).map((st) => `
+      ${st.heading ? `<h3 class="sheet-stage">${esc(st.heading)}</h3>` : ""}
+      <ol class="sheet-cards">
+        ${st.cards.map((c) => `<li>
+          <span class="sheet-es" lang="es">${esc(c.es)}</span>
+          <span class="sheet-de">${esc(c.de)}</span>
+          ${c.note ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
+        </li>`).join("")}
+      </ol>
+      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${st.challenge.phrase ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
+    `).join("");
+
+    const credit = vm.edition && vm.edition.name ? esc(vm.edition.name) + " · " + esc(t("profile.poweredBy")) : "HolaRuta";
+
+    const sheet = `
+      <article class="sheet">
+        <header class="sheet-head">
+          <h1 class="sheet-title">${esc(vm.title)}</h1>
+          <p class="sheet-meta">${vm.levelRange ? esc(vm.levelRange) + " · " : ""}${esc(t("sheet.cardCount", { n: vm.cardCount }))} · ${esc(vm.date)}</p>
+          <p class="sheet-credit">${credit}</p>
+        </header>
+
+        <p class="sheet-goal"><strong>${esc(t("sheet.goalLabel"))}:</strong> ${esc(t("sheet.goalText"))}</p>
+
+        <section class="sheet-recipe-box">
+          <h2 class="sheet-h2">${esc(t("sheet.recipeHeading"))}</h2>
+          <ol class="sheet-recipe">
+            <li>${esc(t("sheet.recipe1"))}</li>
+            <li>${esc(t("sheet.recipe2"))}</li>
+            <li>${esc(t("sheet.recipe3"))}</li>
+            <li>${esc(t("sheet.recipe4"))}</li>
+          </ol>
+        </section>
+
+        <section class="sheet-vocab">
+          <h2 class="sheet-h2">${esc(t("sheet.vocabHeading"))}</h2>
+          <p class="sheet-audio">${esc(t("sheet.audioHint"))}</p>
+          ${stagesHtml}
+        </section>
+
+        ${vm.code ? `
+        <section class="sheet-subscribe">
+          <h2 class="sheet-h2">${esc(t("sheet.subscribeHeading"))}</h2>
+          <p class="sheet-sub">${esc(t("sheet.subscribeHint"))}</p>
+          <p class="sheet-code">${esc(vm.code)}</p>
+          ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
+        </section>` : ""}
+
+        <section class="sheet-notes">
+          <h2 class="sheet-h2">${esc(t("sheet.notesHeading"))}</h2>
+          <div class="sheet-notes-lines" aria-hidden="true"></div>
+        </section>
+
+        <footer class="sheet-coord">
+          <strong>${esc(t("sheet.coordHeading"))}:</strong> ${esc(t("sheet.coordNote"))}
+        </footer>
+      </article>`;
+
+    return `
+      <section class="screen">
+        ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher")}
+        ${controls}
+        ${sheet}
+      </section>`;
+  }
+
+  // Lernenden-Seite: mehrere abonnierte Aufgaben (parallel), plus Code-Eingabe zum
+  // Hinzufügen weiterer. Jede Aufgabe ist einzeln startbar und entfernbar.
+  function renderTask(vm) {
+    const tasks = vm.tasks || [];
+    const list = tasks.length
+      ? `<p class="sectioncap">${esc(t("task.yours", { n: tasks.length }))}</p>
+         <ul class="task-list">
+           ${tasks.map((tk) => `
+             <li class="task-item${tk.done ? " task-item--done" : tk.started ? " task-item--active" : ""}"${tk.done ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.done"))}"` : tk.started ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.inProgress"))}"` : ""}>
+               <div class="task-item__body">
+                 <span class="task-item__target"><span aria-hidden="true">${tk.done ? "✅" : tk.started ? "⏳" : "🎯"}</span> ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge" role="status" title="${esc(t("task.doneHint"))}">${esc(t("task.done"))}</span>` : tk.started ? ` <span class="task-item__badge task-item__badge--active" role="status" title="${esc(t("task.inProgressHint"))}">${esc(t("task.inProgress"))}</span>` : ""}</span>
+                 ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
+                 ${!tk.done && tk.total > 0 ? `<span class="task-item__progress">${esc(t(tk.progressKind === "stages" ? "task.progStages" : "task.progCards", { seen: tk.seen, total: tk.total }))}</span>
+                 ${tk.started ? `<span class="task-item__bar" aria-hidden="true"><span class="task-item__bar-fill" style="width:${tk.pct}%"></span></span>` : ""}` : ""}
+                 ${tk.due ? `<span class="task-item__due${tk.overdue && !tk.done ? " is-overdue" : ""}">${esc(t(tk.overdue && !tk.done ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
+               </div>
+               <div class="task-item__actions">
+                 <button class="teacher-btn${tk.done ? "" : " teacher-btn--main"}" data-action="task-start" data-idx="${tk.idx}">${tk.done ? "🔁 " + esc(t("task.replay")) : "▶️ " + esc(t("task.start"))}</button>
+                 <button class="teacher-x" data-action="task-remove" data-idx="${tk.idx}" aria-label="${esc(t("task.remove"))}" title="${esc(t("task.remove"))}">✕</button>
+               </div>
+             </li>`).join("")}
+         </ul>
+         <hr class="teacher-sep">`
+      : `<p class="task-empty">${esc(t("task.empty"))}</p>`;
+    const body = `
+      ${list}
+      <label class="task-label" for="task-code-input">${esc(t("task.pasteLabel"))}</label>
+      <textarea id="task-code-input" class="task-code" rows="3" placeholder="HRT1.…"></textarea>
+      <div class="teacher-actions">
+        <button class="teacher-btn teacher-btn--main" data-action="task-open">➕ ${esc(t("task.add"))}</button>
+        <button class="teacher-btn" data-action="task-paste">📋 ${esc(t("task.paste"))}</button>
+      </div>
+      <p class="task-paste-hint">${esc(t("task.pasteHelp"))}</p>`;
+    // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
+    // hervorheben; sonst die schlichte Einzelseite mit Zurück-Knopf wie bisher.
+    const cfg = window.SC.config || {};
+    const withTab = !!(cfg.taskTab || cfg.teacherTab);
+    // Modo profe ist im Tarea-Reiter mit eingehängt (kein eigener Reiter mehr).
+    const profe = cfg.teacherTab
+      ? `<hr class="teacher-sep">
+         <button class="teacher-btn teacher-btn--profe" data-action="open-teacher">🧑‍🏫 ${esc(t("teacher.title"))}</button>
+         <p class="task-profe-hint">${esc(t("teacher.openHint"))}</p>`
+      : "";
+    return `
+      <section class="screen${withTab ? " screen--tabbed" : ""}">
+        ${hmTopbar("📝 " + esc(t("task.title")), "home")}
+        <p class="hm-intro">${esc(t("task.intro"))}</p>
+        ${body}
+        ${profe}
+      </section>
+      ${withTab ? tabbar("tarea") : ""}`;
+  }
+
+  // ---------- Ruta-Check (Einstufungstest) ----------
+  function renderPlacement(vm) {
+    if (vm.phase === "running") return renderPlacementQuestion(vm);
+    if (vm.phase === "done") return renderPlacementDone(vm);
+    return renderPlacementIntro(vm);
+  }
+
+  function renderPlacementIntro(vm) {
+    // Im Onboarding: Kopf ohne Zurück-Knopf, dafür „Später“ zum Überspringen.
+    const head = vm.fromOnboarding
+      ? `<div class="pagehead"><h2 class="pagehead__title">🎯 ${esc(t("placement.title"))}</h2></div>`
+      : hmTopbar("🎯 " + esc(t("placement.title")), "home");
+    const later = vm.fromOnboarding
+      ? `<button class="ghostbtn" data-action="placement-skip">${esc(t("placement.later"))}</button>` : "";
+    return `
+      <section class="screen">
+        ${head}
+        <p class="hm-intro">${esc(t("placement.introLead", { n: vm.total }))}</p>
+        <div class="tip">${esc(t("placement.introHonest"))}</div>
+        <ul class="pl-introlist">
+          <li>${esc(t("placement.introB1"))}</li>
+          <li>${esc(t("placement.introB2"))}</li>
+          <li>${esc(t("placement.introB3"))}</li>
+        </ul>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="placement-start">▶️ ${esc(t("placement.start"))}</button>
+          ${later}
+        </div>
+      </section>`;
+  }
+
+  function renderPlacementQuestion(vm) {
+    const q = vm.q;
+    if (!q) return renderPlacementIntro(vm);
+    const pct = Math.round(((vm.index + 1) / (vm.total || 1)) * 100);
+    const head = `
+      <div class="pl-progress">
+        <div class="pl-progress__bar" aria-hidden="true"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
+        <span class="pl-progress__label" role="status" aria-live="polite">${esc(t("placement.qOf", { i: vm.index + 1, n: vm.total }))} · ${esc(q.level)}</span>
+      </div>`;
+    const prompt = `
+      <p class="pl-prompt">${esc(q.promptDe)}</p>
+      ${q.questionEs ? `<p class="pl-prompt-es" lang="es">„${esc(q.questionEs)}“</p>` : ""}`;
+    const body = q.type === "free"
+      ? `<input id="placement-free" class="task-input pl-free" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t("placement.freePh"))}" lang="es">
+         <div class="teacher-actions">
+           <button class="teacher-btn teacher-btn--main" data-action="placement-free-submit">${esc(t("placement.answer"))}</button>
+         </div>`
+      : `<div class="pl-options" role="group" aria-label="${esc(t("placement.optionsLabel"))}">
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
+         </div>`;
+    const unknown = `<button class="pl-unknown" data-action="placement-unknown">🤷 ${esc(t("placement.unknown"))}</button>`;
+    const hint = vm.showHint ? `<p class="pl-hint">${esc(t("placement.unknownHint"))}</p>` : "";
+    // Im Onboarding KEIN „Home“-Zurück-Pfeil (würde das Onboarding nicht abschließen);
+    // Abbrechen geht über die Wisch-Geste (markiert onboarded) – sonst regulär zurück.
+    const topbar = vm.fromOnboarding
+      ? `<div class="pagehead"><h2 class="pagehead__title">🎯 ${esc(t("placement.title"))}</h2></div>`
+      : hmTopbar("🎯 " + esc(t("placement.title")), "home");
+    return `
+      <section class="screen">
+        ${topbar}
+        ${head}
+        ${prompt}
+        ${body}
+        ${unknown}
+        ${hint}
+      </section>`;
+  }
+
+  function renderPlacementDone(vm) {
+    const noteText = vm.note === "commStrong" ? t("placement.noteComm")
+      : vm.note === "grammarStrong" ? t("placement.noteGrammar") : "";
+    // Zuverlässigkeits-Hinweis (Qualität des Tests, fließt NICHT in den Score).
+    const relText = vm.reliability ? t("placement.rel_" + vm.reliability) : "";
+    const skillRow = (s) => `
+      <li class="pl-skill">
+        <span class="pl-skill__name">${esc(t("placement.skill_" + s.skill))}</span>
+        <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
+        <span class="pl-skill__val">${s.accuracy}%</span>
+      </li>`;
+    // Im Onboarding führt der Zurück-Pfeil über „placement-finish“ (schließt das
+    // Onboarding ab), sonst regulär nach Home.
+    const topbar = hmTopbar("🎯 " + esc(t("placement.title")), vm.fromOnboarding ? "placement-finish" : "home");
+    return `
+      <section class="screen">
+        ${topbar}
+        <div class="pl-result">
+          <p class="pl-result__cap">${esc(t("placement.yourLevel"))}</p>
+          <p class="pl-result__level">${esc(vm.level)}</p>
+          <p class="pl-result__score">${esc(t("placement.resultLine", { correct: vm.correct, total: vm.total, score: vm.scorePct }))}</p>
+        </div>
+        <ul class="pl-stats">
+          <li><b>${vm.accuracyPct}%</b> ${esc(t("placement.statAccuracy"))}</li>
+          <li><b>${vm.unknownPct}%</b> ${esc(t("placement.statUnknown"))}</li>
+          <li>${esc(t("placement.statTempo"))}: <b>${esc(t("placement.tempo_" + vm.tempo))}</b></li>
+        </ul>
+        <p class="sectioncap">${esc(t("placement.skillsCap"))}</p>
+        <ul class="pl-skills">${vm.skills.map(skillRow).join("")}</ul>
+        ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
+        ${relText ? `<div class="tip pl-reliability pl-reliability--${esc(vm.reliability)}">${esc(relText)}</div>` : ""}
+        <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>
+          <button class="teacher-btn" data-action="placement-retake">🔁 ${esc(t("placement.retake"))}</button>
         </div>
       </section>`;
   }
@@ -3525,9 +4031,9 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement, renderPrintSheet,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
-                   renderHostel, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
+                   renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderConjugSetup, renderConjug, renderConjugDone,

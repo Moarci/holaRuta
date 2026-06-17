@@ -160,3 +160,36 @@ binden; CSP; Onboarding-Overlay für Gesten (H8); Undo nach Rating; minimale Tes
 - Live (Playwright): Home, Flip (Space/Tap), Rating (Taste/Fortschritt), Type-Matcher (Akzent/Slash), Persistenz nach Reload,
   Editor + XSS-Probe, Stats — **0 Konsolen-Errors**.
 - Nach den Fixes: Reduced-Motion, Fokus-Ziel, `aria-live`, Tap-Größen und Manifest erneut im Browser gegengeprüft.
+
+---
+
+## Nachtrag 2026-06-14 · Kontrast/A11y (WCAG)
+
+Nach mehreren spezialisierten Parallel-Reviews wurde der Kontrast systematisch nachgezogen:
+
+- **Interaktive Akzentflächen → WCAG AA in beiden Themes.** Solide `--brand`/`--ok`/`--muted`/`--easy`-Flächen
+  mit hellem Text (`.cta`, Pre-Trip-Buttons, Hostel-Punktestand, Update-Banner, Schreiben-Button, Badge-Häkchen,
+  `.schip.is-active` u. a.) nutzen jetzt das Token `--on-accent` (Light `#fff` ≥ 4.69:1, Dark `#241510` ≥ 5.30:1).
+  Zuvor fiel heller Text im Dunkelmodus auf ~3:1 und cremefarbener Text im Hellmodus auf 4.25:1.
+- **Hostel-Karten-Gradienten (`hm-card--*`)** vertieft, sodass auch der Kleintext (desc/meta) AA erreicht (4.64–4.68:1).
+
+**Bewusst NICHT geändert (akzeptierte Designentscheidung):** Die **festen Kategorie- und Feature-Gradienten**
+(Home-Kacheln, Entdecken-Buttons, Karteikarten-Rückseite, Einkaufszettel-Chips) behalten ihre bunte Erdton-Palette.
+Auf den helleren Gradient-Stopps erreicht der hell **über**lagerte Text dort nicht durchgängig den Kleintext-Wert
+(4.5:1) — gemessen verfehlen 23/24 Kategorie-Gradienten 4.5:1, 8 davon auch 3:1. Die bunte Palette ist Teil der
+Marken-Identität; eine vollflächige Abdunklung würde sie stark verändern.
+
+Betroffen ist konkret **Text, der auf diesen Gradienten liegt** — und das umfasst auch **Kleintext** und teils
+**interaktive** Elemente, nicht nur große, dekorative Labels:
+
+- **`.feat__sub`** (Untertitel der Entdecken-Buttons, 0.82rem) — interaktiv, auf den helleren `--to`-Stopps teils < 3:1.
+- **Flashcard-Rückseite** (`.face__tip`/`.face__hint`/`.face__cat`) — Hinweis-/Kontext-Kleintext auf dem Kategorie-Gradienten.
+- **`.sl-chip.is-active`** (Einkaufszettel-Rubrik) — heller Text auf Rubrik-Gradient.
+
+*Nicht* betroffen: die Home-Kategorie-Kacheln (`.tile`) — deren Text steht auf `--card`, nicht auf dem Gradienten
+(der erscheint nur in Icon-Feld/Leiste); `.tile__meta` erreicht ~6.5:1.
+
+Die **soliden Akzent-Bedienelemente** (`.cta`, Pre-Trip-Buttons, Hostel-Punktestand, Update-Banner, `.schip` u. a.)
+sind hingegen über das `--on-accent`-Token durchgängig AA (s. o.). Falls künftig strikte AA **auch** auf den
+Gradienten gewünscht ist: Optionen sind Palette-Abdunklung der `--to`-Stopps, ein Text-Scrim hinter dem
+Kleintext, oder large-text-only (3:1) für die 8 schwächsten Gradienten. Bis dahin **bewusst akzeptiert**.

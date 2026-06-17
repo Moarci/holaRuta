@@ -323,15 +323,96 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     conjugPlayed: 6, conjugPerfect: 3,
     dialogosPlayed: 5, dialogosPerfect: 2, dialogosScenesDone: { hotel: true, taxi: true },
     rutaDays: { "2026-06-11": true },
+    pretripDays: { colombia: { 1: true, 2: true }, peru: { 1: true } },
     tripGoal: { destination: "Cusco", endDate: "2026-07-01", perDay: 15, startedAt: "2026-06-12" },
     dailyCounts: { "2026-06-11": 12 },
     contextCardsSeen: { hostel01: true },
     bodyPartsSeen: { bp_cabeza: true },
     shoppingSeen: { sl_agua: true },
     unlocked: { first_steps: 1700000000000 },
+    placement: { level: "A2", finalScore: 0.62, accuracy: 0.6, unknownRate: 0.2, tempo: "medium", at: "2026-06-15" },
   };
   storeMem[GKEY] = JSON.stringify(valid);
   assert.deepEqual(store.loadGameStats(), valid);
+});
+
+test("store.loadGameStats: pretripDays – altes flaches Format wird nach { colombia: … } migriert", () => {
+  // Bestandsgerät mit altem, flachem Kolumbien-Fortschritt.
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, pretripDays: { 1: true, 2: true, 3: true } });
+  assert.deepEqual(store.loadGameStats().pretripDays, { colombia: { 1: true, 2: true, 3: true } });
+  // Bereits verschachtelte Daten bleiben unverändert (kein erneutes Wrappen).
+  const nested = { colombia: { 1: true }, peru: { 1: true, 2: true } };
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, pretripDays: nested });
+  assert.deepEqual(store.loadGameStats().pretripDays, nested);
+  // Kaputt/gemischt -> leer (defensiv).
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, pretripDays: { 1: true, peru: { 1: true } } });
+  assert.deepEqual(store.loadGameStats().pretripDays, {});
+});
+
+test("store.readBackup: liest Backup ohne Schreiben, tolerant gegen Müll (Lehrer-Modus)", () => {
+  const payload = { app: "holaruta", format: 1, data: {
+    "spanischcard.progress.v2": { co01: { seen: 3, box: 5 } },
+    "spanischcard.gamestats.v1": { reviews: 5, challengesDone: { challenge01: true } },
+  } };
+  const b = store.readBackup(payload);
+  assert.deepEqual(b.progress, { co01: { seen: 3, box: 5 } });
+  assert.deepEqual(b.gamestats, { reviews: 5, challengesDone: { challenge01: true } });
+  // Fremde App / fehlendes data / null -> null (kein Crash).
+  assert.equal(store.readBackup({ app: "other", data: {} }), null);
+  assert.equal(store.readBackup({ app: "holaruta" }), null);
+  assert.equal(store.readBackup(null), null);
+  // Fehlende Keys -> leere Objekte statt Absturz.
+  assert.deepEqual(store.readBackup({ data: {} }), { progress: {}, gamestats: {} });
+  // Reiner Lesevorgang: schreibt NICHTS in den Speicher (eigener Fortschritt bleibt unangetastet).
+  const before = JSON.stringify(storeMem);
+  store.readBackup(payload);
+  assert.equal(JSON.stringify(storeMem), before, "readBackup darf nicht in localStorage schreiben");
+});
+
+test("store.encodeTask/decodeTask: Round-Trip + Validierung (Aufgaben-Code)", () => {
+  const task = { kind: "pretrip", scope: "peru", title: "Übung für Cusco", due: "2026-07-01" };
+  const code = store.encodeTask(task);
+  assert.ok(typeof code === "string" && code.indexOf("HRT1.") === 0, "Code hat Tag-Präfix");
+  const back = store.decodeTask(code);
+  assert.deepEqual(back, { kind: "pretrip", scope: "peru", title: "Übung für Cusco", due: "2026-07-01" });
+  // Code ohne Präfix wird auch akzeptiert.
+  assert.deepEqual(store.decodeTask(code.slice(5)).scope, "peru");
+  // Optionale Felder weggelassen.
+  assert.deepEqual(store.decodeTask(store.encodeTask({ kind: "preset", scope: "prearrival-co" })),
+    { kind: "preset", scope: "prearrival-co", title: "", due: "" });
+  // Müll / falsche app / kaputtes Datum.
+  assert.equal(store.decodeTask("nonsense"), null);
+  assert.equal(store.decodeTask(""), null);
+  assert.equal(store.decodeTask(null), null);
+  assert.equal(store.decodeTask(store.encodeTask({ kind: "weird", scope: "x" })), null);
+  assert.equal(store.decodeTask(store.encodeTask({ kind: "category" })), null); // scope fehlt
+  assert.equal(store.decodeTask("HRT1." + Buffer.from('{"app":"other","kind":"preset","scope":"x"}').toString("base64")), null);
+  const badDue = store.decodeTask(store.encodeTask({ kind: "category", scope: "colombia", due: "01.07.2026" }));
+  assert.equal(badDue.due, ""); // ungültiges Datum -> leer
+});
+
+test("store.loadTasks/saveTasks: abonnierte Aufgaben (mehrere, defensiv typisiert)", () => {
+  const TKEY = "spanischcard.tasks.v1";
+  // Round-Trip einer gültigen Liste.
+  const list = [
+    { code: "HRT1.aaa", kind: "pretrip", scope: "peru", title: "HA1", due: "2026-07-01", addedAt: "2026-06-15" },
+    { code: "HRT1.bbb", kind: "preset", scope: "prearrival-co", title: "", due: "", addedAt: "2026-06-15" },
+  ];
+  store.saveTasks(list);
+  assert.deepEqual(store.loadTasks(), list);
+  // Müll-Einträge werden verworfen (kein Crash): fehlender code/kind/scope, falscher Typ.
+  storeMem[TKEY] = JSON.stringify([
+    { code: "HRT1.ok", kind: "category", scope: "colombia" }, // gültig (Optional-Felder ergänzt)
+    { kind: "preset", scope: "x" },        // code fehlt
+    { code: "x", kind: "weird", scope: "y" }, // kind ungültig
+    "nonsense", 42, null,                  // keine Objekte
+  ]);
+  const loaded = store.loadTasks();
+  assert.equal(loaded.length, 1);
+  assert.deepEqual(loaded[0], { code: "HRT1.ok", kind: "category", scope: "colombia", title: "", due: "", addedAt: "" });
+  // Kaputter Storage -> leere Liste.
+  storeMem[TKEY] = "{not json";
+  assert.deepEqual(store.loadTasks(), []);
 });
 
 test("store.loadGameStats: Trip-Ziel wird gesäubert (kaputtes Datum/perDay -> null)", () => {
@@ -625,4 +706,102 @@ test("badges: challenge_5 ab 5 distinkten Challenges", () => {
   const m = badges.buildMetrics([{ id: "a", cat: "hostel" }], {}, { challengesDone: done });
   assert.equal(m.challengesCompleted, 5);
   assert.ok(badges.satisfiedIds(m).includes("challenge_5"));
+});
+
+// ---------- Kuratierte Presets ----------
+test("data.PRESETS: jede Preset-ID existiert, scope gültig, keine Dubletten", () => {
+  const cardIds = new Set(data.CARDS.map((c) => c.id));
+  const scopes = new Set(data.CATEGORIES.map((c) => c.id).concat("all"));
+  assert.ok(Array.isArray(data.PRESETS) && data.PRESETS.length, "PRESETS fehlt/leer");
+  data.PRESETS.forEach((p) => {
+    assert.ok(p.id && typeof p.id === "string", "Preset ohne id");
+    assert.ok(scopes.has(p.scope), `Preset ${p.id}: unbekannter scope ${p.scope}`);
+    assert.ok(Array.isArray(p.pick) && p.pick.length, `Preset ${p.id}: pick leer`);
+    const seen = new Set();
+    p.pick.forEach((cid) => {
+      assert.ok(cardIds.has(cid), `Preset ${p.id}: unbekannte Karte ${cid}`);
+      assert.ok(!seen.has(cid), `Preset ${p.id}: Dublette ${cid}`);
+      seen.add(cid);
+    });
+  });
+});
+
+// ---------- Editionen (Co-Branding) ----------
+test("editions: Registry-Configs valide + Anker-Dateien zeigen darauf", () => {
+  const fs = require("fs");
+  const dir = path.join(SRC, "editions");
+  // 1) registry.js = Quelle der Wahrheit für alle Editionen.
+  const w = {};
+  new Function("window", fs.readFileSync(path.join(dir, "registry.js"), "utf8"))(w);
+  const editions = w.SC && w.SC.editions;
+  assert.ok(editions && Object.keys(editions).length > 0, "keine Editionen in der Registry");
+  Object.keys(editions).forEach((id) => {
+    const c = editions[id];
+    assert.equal(c && c.edition, id, `${id}: edition-Feld stimmt nicht mit Schlüssel überein`);
+    assert.ok(c.brandName, `${id}: brandName fehlt`);
+    if (c.accent) {
+      ["brand", "brandInk"].forEach((k) =>
+        assert.match(String(c.accent[k] || ""), /^#[0-9a-fA-F]{6}$/, `${id}: accent.${k} kein Hex`));
+    }
+    if (c.partner) assert.ok(c.partner.name, `${id}: partner.name fehlt`);
+    if (c.logo) assert.match(String(c.logo), /^(https:\/\/|data:image\/)/, `${id}: logo nur https:/data:image erlaubt`);
+  });
+  // 2) Anker-Dateien (ecos.js/weroad.js) setzen editionConfig aus der Registry.
+  fs.readdirSync(dir).filter((f) => f.endsWith(".js") && f !== "registry.js").forEach((f) => {
+    const w2 = { SC: { editions } }; // Registry ist im Build VOR dem Anker geladen
+    new Function("window", fs.readFileSync(path.join(dir, f), "utf8"))(w2);
+    const c = w2.SC.editionConfig;
+    assert.ok(c && c.edition, `${f}: editionConfig nicht aus Registry gesetzt`);
+    assert.ok(editions[c.edition], `${f}: zeigt auf unbekannte Edition ${c.edition}`);
+  });
+});
+
+test("config.js: Default = HolaRuta pur (ohne Edition)", () => {
+  const fs = require("fs");
+  const w = {};
+  new Function("window", fs.readFileSync(path.join(SRC, "config.js"), "utf8"))(w);
+  assert.equal(w.SC.config.edition, null);
+  assert.equal(w.SC.config.brandName, "HolaRuta");
+});
+
+// ---------- Pre-Trip-Plan ----------
+test("data.PRETRIP: Pläne je Destination, Tage sequenziell, Karten/Challenges existieren, Badge passt", () => {
+  const cardIds = new Set(data.CARDS.map((c) => c.id));
+  const challengeIds = new Set(data.CHALLENGES.map((c) => c.id));
+  const scopes = new Set(data.CATEGORIES.map((c) => c.id));
+  assert.ok(Array.isArray(data.PRETRIP) && data.PRETRIP.length, "PRETRIP fehlt/leer");
+  data.PRETRIP.forEach((plan) => {
+    assert.ok(scopes.has(plan.scope), `Plan: unbekannter scope ${plan.scope}`);
+    assert.ok(Array.isArray(plan.days) && plan.days.length, `Plan ${plan.scope}: days leer`);
+    plan.days.forEach((d, i) => {
+      assert.equal(d.day, i + 1, `${plan.scope} Tag ${i + 1}: day-Nummer nicht sequenziell`);
+      assert.ok(d.titleDe && d.titleEn, `${plan.scope} Tag ${d.day}: Titel fehlt`);
+      assert.ok(Array.isArray(d.cardIds) && d.cardIds.length, `${plan.scope} Tag ${d.day}: cardIds leer`);
+      d.cardIds.forEach((id) => assert.ok(cardIds.has(id), `${plan.scope} Tag ${d.day}: unbekannte Karte ${id}`));
+      if (d.challengeId) assert.ok(challengeIds.has(d.challengeId), `${plan.scope} Tag ${d.day}: unbekannte Challenge ${d.challengeId}`);
+    });
+    // Keine Karte doppelt innerhalb eines Plans (sauberer, abwechslungsreicher Pfad).
+    const seen = new Set();
+    plan.days.forEach((d) => d.cardIds.forEach((id) => {
+      assert.ok(!seen.has(id), `${plan.scope}: Karte ${id} in mehreren Etappen`);
+      seen.add(id);
+    }));
+  });
+  // „Reisefertig"-Badge schaltet frei, wenn EIN ganzer Plan geschafft ist; alle Pläne gleich lang.
+  const badge = badges.byId("pretrip_done");
+  assert.ok(badge, "pretrip_done-Badge fehlt");
+  const lengths = new Set(data.PRETRIP.map((p) => p.days.length));
+  assert.equal(lengths.size, 1, "Pläne haben unterschiedliche Etappenzahl");
+  assert.equal(badge.threshold, data.PRETRIP[0].days.length, "Badge-Schwelle != Etappen pro Plan");
+});
+
+test("badges: pretrip_done erst ab einem vollständigen Plan", () => {
+  const cards = [{ id: "a", cat: "hostel" }];
+  const N = data.PRETRIP[0].days.length;
+  // verschachteltes Format, ein Plan teilweise -> kein Badge
+  const partial = { colombia: {} }; for (let i = 1; i <= N - 1; i++) partial.colombia[i] = true;
+  assert.ok(!badges.satisfiedIds(badges.buildMetrics(cards, {}, { pretripDays: partial })).includes("pretrip_done"));
+  // ein Plan vollständig -> Badge
+  const full = { peru: {} }; for (let i = 1; i <= N; i++) full.peru[i] = true;
+  assert.ok(badges.satisfiedIds(badges.buildMetrics(cards, {}, { pretripDays: full })).includes("pretrip_done"));
 });

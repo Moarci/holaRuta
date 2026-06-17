@@ -10,13 +10,14 @@
   const SETTINGS_KEY = "spanischcard.settings.v1";
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  const TASKS_KEY = "spanischcard.tasks.v1"; // abonnierte Aufgaben (mehrere parallel)
   // Zuletzt gesehene App-Version (für den „Was ist neu?"-Hinweis nach Updates).
   // Bewusst NICHT in KNOWN_KEYS: das ist gerätelokaler Anzeige-Status, kein
   // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
   // überschreiben und so einen falschen Update-Hinweis auslösen.
   const SEENVERSION_KEY = "spanischcard.seenVersion.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
-  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY];
+  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY];
 
   function readJson(key, fallback) {
     let raw = null;
@@ -124,6 +125,24 @@
       okStr(c.cat, 100));
   }
 
+  // Abonnierte Aufgaben (mehrere parallel): Liste { code, kind, scope, title, due, addedAt }.
+  // Defensiv typisiert gegen fremdes/manipuliertes Storage; verworfen wird Ungültiges.
+  function sanitizeTask(t) {
+    if (!isPlainObject(t)) return null;
+    const str = (s, max) => (typeof s === "string" && s.length <= max ? s : "");
+    const kind = t.kind === "preset" || t.kind === "pretrip" || t.kind === "category" ? t.kind : "";
+    const code = str(t.code, 4000), scope = str(t.scope, 100);
+    if (!kind || !scope || !code) return null;
+    return { code, kind, scope, title: str(t.title, 200), due: str(t.due, 20), addedAt: str(t.addedAt, 30) };
+  }
+  function loadTasks() {
+    const v = readJson(TASKS_KEY, []);
+    if (!Array.isArray(v)) return [];
+    const out = [];
+    v.forEach((t) => { const c = sanitizeTask(t); if (c) out.push(c); });
+    return out;
+  }
+
   // ----- Backup: Export/Import aller HolaRuta-Daten (R4) -----
   // Export: alle bekannten spanischcard.*-Keys als ein Objekt (für eine
   // JSON-Datei). Korrupte Einzel-Keys werden ausgelassen statt zu crashen.
@@ -153,6 +172,58 @@
       if (writeJson(key, payload.data[key])) imported++;
     });
     return imported;
+  }
+
+  // Lehrer-/Coordinator-Modus: ein Backup-Payload (von exportData) NUR LESEN,
+  // ohne irgendetwas in den eigenen localStorage zu schreiben. Liefert die für
+  // eine Fortschritts-Auswertung nötigen Rohdaten (Karten-Fortschritt + Spiel-
+  // Zähler) oder null, wenn es kein gültiges HolaRuta-Backup ist. Rein, ohne
+  // Seiteneffekt – damit eine Lehrkraft Schüler-Stände einsehen kann, ohne den
+  // eigenen Fortschritt zu überschreiben.
+  function readBackup(payload) {
+    if (!isPlainObject(payload) || !isPlainObject(payload.data)) return null;
+    if (payload.app && payload.app !== "holaruta") return null;
+    const d = payload.data;
+    return {
+      progress: isPlainObject(d[PROGRESS_KEY]) ? d[PROGRESS_KEY] : {},
+      gamestats: isPlainObject(d[GAMESTATS_KEY]) ? d[GAMESTATS_KEY] : {},
+    };
+  }
+
+  // ----- Aufgaben/Zuweisung (backend-frei): teilbarer Aufgaben-Code -----
+  // Eine Lehrkraft/ein Coordinator kodiert eine Aufgabe (kuratierte Runde) als
+  // kurzen, kopierbaren Code; Lernende dekodieren ihn und werden in die Übung
+  // geführt. Kein Server, kein Konto – nur ein String, den man per WhatsApp/Mail
+  // teilt. UTF-8-sicher base64-kodiert mit Tag-Präfix zur Validierung.
+  function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
+  function b64decode(b) { return decodeURIComponent(escape(atob(b))); }
+
+  function encodeTask(task) {
+    if (!isPlainObject(task)) return "";
+    try {
+      const payload = { app: "holaruta-task", v: 1, kind: task.kind, scope: task.scope };
+      if (task.title) payload.title = String(task.title).slice(0, 80);
+      if (task.due) payload.due = String(task.due);
+      return "HRT1." + b64encode(JSON.stringify(payload));
+    } catch (e) { return ""; }
+  }
+
+  function decodeTask(code) {
+    if (typeof code !== "string") return null;
+    let s = code.trim();
+    if (s.indexOf("HRT1.") === 0) s = s.slice(5);
+    if (!s) return null;
+    let obj = null;
+    try { obj = JSON.parse(b64decode(s)); } catch (e) { return null; }
+    if (!isPlainObject(obj) || obj.app !== "holaruta-task") return null;
+    if (["pretrip", "preset", "category"].indexOf(obj.kind) < 0) return null;
+    if (typeof obj.scope !== "string" || !obj.scope) return null;
+    return {
+      kind: obj.kind,
+      scope: obj.scope,
+      title: typeof obj.title === "string" ? obj.title.slice(0, 80) : "",
+      due: /^\d{4}-\d{2}-\d{2}$/.test(obj.due) ? obj.due : "",
+    };
   }
 
   // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
@@ -194,6 +265,8 @@
       dialogosScenesDone: {}, // Map scenarioId -> true (distinkt gespielte Szenarien)
       // ----- Ruta del día (tägliche Mini-Runde) -----
       rutaDays: {},         // Map "YYYY-MM-DD" -> true (Tage mit gestarteter Ruta del día)
+      // ----- Pre-Trip-Plan (mehrtägiger Onboarding-Pfad) -----
+      pretripDays: {},      // Map Tagesnummer (1..N) -> true (abgeschlossene Pre-Trip-Tage)
       // ----- Trip-Ziel (Countdown + Tagesziel) -----
       tripGoal: null,       // { destination, endDate:"YYYY-MM-DD", perDay, startedAt } | null
       dailyCounts: {},      // Map "YYYY-MM-DD" -> Anzahl Bewertungen an dem Tag
@@ -204,10 +277,27 @@
       // ----- Einkaufszettel (interaktive Einkaufsliste) -----
       shoppingSeen: {},     // Map shoppingItemId -> true (distinkt abgehakte Einkaufs-Items)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
+      placement: null,      // letztes Ruta-Check-Ergebnis { level, finalScore, accuracy, unknownRate, tempo, at } | null
     };
   }
   // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
   // null (kein Ziel). endDate muss "YYYY-MM-DD" sein, perDay eine sinnvolle Zahl.
+  // Pre-Trip-Fortschritt: neues Format ist verschachtelt { scope: { day: true } }.
+  // Altes flaches Format ({ day: true }) wird einmalig nach { colombia: … } migriert,
+  // damit bestehende Geräte ihren Kolumbien-Fortschritt behalten.
+  function sanitizePretripDays(v) {
+    if (!isPlainObject(v)) return {};
+    const keys = Object.keys(v);
+    if (!keys.length) return {};
+    if (keys.every((k) => isPlainObject(v[k]))) {
+      const out = {};
+      keys.forEach((k) => { out[k] = v[k]; });
+      return out; // bereits verschachtelt (je Destination)
+    }
+    if (keys.every((k) => /^\d+$/.test(k))) return { colombia: v }; // Migration alt-flach
+    return {};
+  }
+
   function sanitizeTripGoal(t) {
     if (!isPlainObject(t)) return null;
     const str = (s, max) => (typeof s === "string" && s.length > 0 && s.length <= max ? s : "");
@@ -259,12 +349,14 @@
       dialogosPerfect: num(v.dialogosPerfect),
       dialogosScenesDone: isPlainObject(v.dialogosScenesDone) ? v.dialogosScenesDone : {},
       rutaDays: isPlainObject(v.rutaDays) ? v.rutaDays : {},
+      pretripDays: sanitizePretripDays(v.pretripDays),
       tripGoal: sanitizeTripGoal(v.tripGoal),
       dailyCounts: isPlainObject(v.dailyCounts) ? v.dailyCounts : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
+      placement: isPlainObject(v.placement) ? v.placement : null,
     };
   }
 
@@ -283,6 +375,11 @@
     saveUserCards: (c) => writeJson(USERCARDS_KEY, c),
     exportData,
     importData,
+    readBackup,
+    encodeTask,
+    decodeTask,
+    loadTasks,
+    saveTasks: (l) => writeJson(TASKS_KEY, Array.isArray(l) ? l : []),
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),

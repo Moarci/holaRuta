@@ -21,7 +21,19 @@ const { stampServiceWorker } = require("./swversion.js");
 
 const DIR = __dirname;
 const SOURCE = "index.html";
-const OUTPUT = "HolaRuta.html";
+
+// Optionaler Co-Branding-Build:  node build.js --edition=ecos  →  HolaRuta-ecos.html
+// Die Edition-Datei (editions/<id>.js) wird vor config.js eingebettet; sonst
+// identischer Build. Ohne Flag entsteht wie bisher das pure HolaRuta.html.
+const editionArg = process.argv.find((a) => a.startsWith("--edition="));
+const EDITION = editionArg ? editionArg.split("=")[1].trim() : null;
+// Edition-Name validieren: leer oder ungültig (Path-Traversal/Sonderzeichen) bricht
+// klar ab, statt still den Default-Build zu überschreiben.
+if (editionArg && (!EDITION || !/^[a-z0-9_-]+$/.test(EDITION))) {
+  console.error(`✗ Ungültiger Edition-Name: "${EDITION}". Erlaubt sind a–z, 0–9, _ und - (z. B. --edition=ecos).`);
+  process.exit(1);
+}
+const OUTPUT = EDITION ? `HolaRuta-${EDITION}.html` : "HolaRuta.html";
 
 function read(file) {
   return fs.readFileSync(path.join(DIR, file), "utf8");
@@ -48,6 +60,14 @@ function build() {
   html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*><\/script>/gi, (m, src) => {
     inlined.push(src);
     const code = read(src).replace(/<\/script>/gi, "<\\/script>");
+    // Edition-Build: die Edition-Config direkt vor config.js einbetten, damit
+    // config.js sie beim Merge sieht (setzt window.SC.editionConfig).
+    if (EDITION && src === "config.js") {
+      const edFile = path.join("editions", `${EDITION}.js`);
+      const edCode = read(edFile).replace(/<\/script>/gi, "<\\/script>");
+      inlined.push(edFile);
+      return `<script>\n${edCode}\n</script>\n<script>\n${code}\n</script>`;
+    }
     return `<script>\n${code}\n</script>`;
   });
 
@@ -63,13 +83,17 @@ function build() {
 
 try {
   const files = build();
-  console.log(`✓ ${OUTPUT} erzeugt.`);
+  console.log(`✓ ${OUTPUT} erzeugt.${EDITION ? `  (Edition: ${EDITION})` : ""}`);
   console.log(`  Eingebettet: ${files.join(", ")}`);
   // Service-Worker-Cache-Namen aus dem Inhalts-Hash der Assets stempeln, damit
   // ausgelieferte Änderungen immer einen frischen Cache bekommen (kein manuelles
-  // Hochzählen mehr – das wurde sonst vergessen).
-  const sw = stampServiceWorker();
-  console.log(`✓ service-worker.js: CACHE_VERSION = ${sw.version}${sw.changed ? " (aktualisiert)" : " (unverändert)"}`);
+  // Hochzählen mehr – das wurde sonst vergessen). Nur beim Default-Build – eine
+  // Edition ist eine Einzeldatei ohne Service Worker und soll service-worker.js
+  // nicht anfassen.
+  if (!EDITION) {
+    const sw = stampServiceWorker();
+    console.log(`✓ service-worker.js: CACHE_VERSION = ${sw.version}${sw.changed ? " (aktualisiert)" : " (unverändert)"}`);
+  }
 } catch (err) {
   console.error("✗ Build fehlgeschlagen:", err.message);
   process.exit(1);

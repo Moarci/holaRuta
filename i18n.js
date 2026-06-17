@@ -136,9 +136,14 @@
     return lang === "en" ? "en-GB" : "de-DE";
   }
 
+  // Schlüsselmengen der zusammengeführten UI-Wörterbücher – für den Paritäts-Test
+  // (DE⟷EN) und Debugging. Read-only.
+  function dictKeys() { return { de: Object.keys(DICT.de), en: Object.keys(DICT.en) }; }
+
   window.SC.i18n = {
     SUPPORTED,
     register,
+    dictKeys,
     t,
     getLang,
     setLang,

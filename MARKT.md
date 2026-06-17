@@ -2,7 +2,8 @@
 
 > **Datum:** 2026-06-14 · **Folgt auf:** [IDEEN.md](IDEEN.md), [RISIKO.md](RISIKO.md), [AUDIT.md](AUDIT.md)
 > **Fokus:** Vermarktung (B2B + B2C) — *nicht* Code-Hygiene (die ist in AUDIT/RISIKO behandelt).
-> **Stand der Faktenbasis:** `main` v1.24.0 — 718 Karten · 23 Bereiche · 3 Stufen · 3 Lernmodi · 154 Tests grün.
+> **Stand der Faktenbasis (historische Analyse-Basis):** `main` v1.24.0 — 718 Karten · 23 Bereiche · 3 Stufen · 3 Lernmodi · 154 Tests grün.
+> **Seitdem auf dem Branch ausgebaut** → heute **1133 Karten · 32 Bereiche · 47 Challenges · 181 Tests grün** (inkl. 9 Destination-Packs: Colombia 89, Peru 45, Mexiko 41, Costa Rica 40, Ecuador 40, Guatemala 40, Argentinien 40, Chile 40, Bolivien 40 Karten). Siehe Stand-Update in §2/§3.
 
 Dieses Dokument gleicht eine ausführliche Geschäftsanalyse mit dem **echten Code-Stand** ab und
 leitet daraus einen realistischen Vertriebsweg ab: Wer sind die Kanäle, was trägt der heutige
@@ -44,25 +45,28 @@ gegen `main` v1.24.0:
 |---|---|---|
 | Hostel Battle | `data.js`: 45 BATTLES, Scoring 2/1/0, 6/10/20 Runden | ✅ existiert |
 | Rollenspiele | `data.js`: ROLEPLAYS + `dialogos.js` (10 Dialoge) | ✅ existiert |
-| Real-Life Challenges | `data.js`: 10 CHALLENGES als Battle-Bonus | ✅ existiert (nur 10) |
-| Kontextkarten | `contextdata.js`: Reise-Kontext für **alle 718** Karten | ✅ existiert |
+| Real-Life Challenges | `data.js`: CHALLENGES als Battle-Bonus, inzwischen **47** (von 10 ausgebaut) | ✅ umgesetzt |
+| Kontextkarten | `contextdata.js`: Reise-Kontext für **alle** Karten (heute 1133) | ✅ existiert |
 | Badges (Ruta-Pass) | `badges.js`: 50+ Stempel, 11 Gruppen | ✅ existiert |
 | Kategorien | 23 Bereiche (Hostel, Essen, Busreise, Notfall, Geld …) | ✅ existiert |
 | Spickzettel (Survival, offline, vorgelesen) | README / `ui.js` | ✅ existiert |
 | Offline / PWA / zero-dependency / kein Tracking | Service Worker, `localStorage` | ✅ existiert |
 | Niveau A1/A2/B1 | `lvl`-Mehrfach-Filter, 3 Stufen | ✅ existiert (s. u.) |
 | Coordinator-Modus (5-Min-Icebreaker) | `startCoordinatorRound` (Modo hostal) | ✅ umgesetzt |
-| Lehrer-/Kurs-Modus (geführt, Zuweisung/Sync) | — | ❌ fehlt (Stufe 3) |
+| Lehrer-/Coordinator-Übersicht + Zuweisung | „Modo profe" (Import von Schüler-Backups → Klassenübersicht) + Aufgaben-Codes („Tarea") – offline, kein Backend | ✅ teilweise (echter Sync/Accounts bleibt Stufe 3) |
 | White-Label / Co-Branding | `config.js` + `editions/*` + `build.js --edition` | ✅ umgesetzt (ecos/weroad) |
-| Backend / Accounts / Pro-Kauf / Per-Seat | nur `localStorage`, ein Gerät, kein Sync | ❌ fehlt (bewusst, Stufe 3) |
-| Cartagena-/Destination-/„Colombia Pack" | Kategorie `colombia`, **75 Karten** | ✅ umgesetzt |
-| Kuratierte Pakete / Pre-Trip-Plan | `PRESETS` (Pre-Arrival) + `PRETRIP` (7 Etappen) | ✅ umgesetzt |
+| Backend / Accounts / Pro-Kauf / Per-Seat | opt-in Cloud-Sync-Client (`sync.js`, getestetes verlustarmes `merge`) + Edition-Vorverdrahtung (ECOS/WeRoad) + Mock-Server; echtes Hosting/Accounts/Per-Seat per Spec [BACKEND.md](BACKEND.md) | 🟡 Client-Fundament da, Server = Stufe 3 (zahlender Kunde) |
+| Cartagena-/Destination-/„Colombia Pack" | Kategorie `colombia`, **89 Karten** (inkl. Kaffeeregion Salento/Cocora) | ✅ umgesetzt |
+| Kuratierte Pakete / Pre-Trip-Plan | `PRESETS` (Pre-Arrival je Ziel) + `PRETRIP` (9 Ziele × 7 Etappen) | ✅ umgesetzt |
 | Lehrer-/Coordinator-/Hostel-Handouts | druckbare HTML (DE·EN·ES) unter `docs/anleitungen/` | ✅ umgesetzt |
 
 > **Stand-Update (Juni 2026):** Mehrere der ursprünglich als „❌ fehlt" notierten MVP-Lücken wurden
-> inzwischen gebaut (Colombia-Pack, Pre-Arrival-Preset, Pre-Trip-Plan, 30 Challenges, Coordinator-
-> Schnellstart, dreisprachige Handouts, Edition-Schalter) — Details und Status in [BAUPLAN.md](BAUPLAN.md).
-> Offen bleiben bewusst die Stufe-3-Punkte (echtes Lehrer-Dashboard, Accounts/Sync/Backend).
+> inzwischen gebaut (**9 Destination-Packs**: Colombia 89 · Peru 45 · Mexiko 41 · Costa Rica 40 · Ecuador 40 ·
+> Guatemala 40 · Argentinien 40 · Chile 40 · Bolivien 40, Pre-Arrival-Presets je Pack, Pre-Trip-Plan (9 Ziele),
+> 47 Challenges, Coordinator-Schnellstart, dreisprachige Handouts, Edition-Schalter) — Details in [BAUPLAN.md](BAUPLAN.md).
+> Offen bleiben bewusst die Stufe-3-Punkte (Accounts/Sync/Per-Seat-Backend) — als anschlussfähige
+> Technik-Spec vorbereitet in [BACKEND.md](BACKEND.md), Umsetzung erst mit zahlendem Referenzkunden.
+> Backend-frei bereits gebaut: „Modo profe" (Klassenübersicht) + „Tarea" (Aufgaben-Zuweisung).
 
 **Vier Klarstellungen, die man im Pitch nicht übersehen darf:**
 
@@ -96,8 +100,8 @@ Klassenzimmer und Straße.
    10 Karten + 1 Real-Life Challenge. *Trägt heute:* alles davon existiert. *Fehlt:* ein „Kursmodus"
    und ein Lehrer-PDF mit fertigen Stundenabläufen.
 3. **Real-Life Challenge Tool** — der spannendste Teil für Immersion: „Frag heute im Café nach der
-   Rechnung", „Frag im Hostel nach dem WLAN". *Trägt heute:* 10 Challenges. *Fehlt:* mehr davon,
-   schul-/stadtspezifisch.
+   Rechnung", „Frag im Hostel nach dem WLAN". *Trägt heute:* **47 Challenges** (von 10 ausgebaut,
+   inkl. Kolumbien- und Peru-Spezial). *Offen:* noch stärker schul-/stadtspezifisch.
 
 **Was eine Schule verlangen würde:** sichtbares Niveau-System, Lehrersteuerung/Kursmodus,
 Aufgabenpakete, teilbarer Fortschritt, Branding-Option, Datenschutz-Hinweis, **Gegenlesung der
@@ -178,10 +182,10 @@ Ziel-Kanal (**S**chule / **G**ruppenreise / **H**ostel / **B2C**).
 
 | Lücke | Was genau | Aufwand | Reuse | Kanal |
 |---|---|---|---|---|
-| **Destination-/City-Packs** | je ~100 kuratierte Sätze + Lokalvokabular. **Cartagena/Colombia zuerst:** Flughafen→Taxi, Unterkunft/Gastfamilie, Stadtteile (Getsemaní/Manga/Centro), Arepa/menú del día, Salsa-Abend, Islas del Rosario, Bus nach Santa Marta/Tayrona. Dann Peru/Cusco, Mexico, Costa Rica/San José, Guatemala/Antigua | S–M je Pack | additive Kategorie in `data.js` + `contextdata.js`, Muster wie bestehende Bereiche | S/G/H/B2C |
+| **Destination-/City-Packs** | je ~100 kuratierte Sätze + Lokalvokabular. **Colombia ✅ umgesetzt (89 Karten:** Taxi/Ankunft, Unterkunft, Stadtteile, Essen/Markt/Geld, Bogotá, Medellín/Guatapé, Karibikküste/Tayrona, Cartagena/Islas del Rosario, Kaffeeregion Salento/Cocora, Slang/Ausgehen). **Peru/Cusco ✅ umgesetzt (45 Karten:** Lima, Höhe/soroche, Arequipa/Colca, Titicaca/Puno, Cusco/Heiliges Tal, Machu Picchu, Regenbogenberg, Essen, Quechua). **Mexiko ✅ umgesetzt (41 Karten:** CDMX, Teotihuacán, Oaxaca/Mezcal, Chiapas/Sumidero, Yucatán/Cenoten/Tulum, Día de Muertos). **Costa Rica ✅ umgesetzt (40 Karten:** San José, Karibik/Tortuguero/Bribri, Arenal/Río Celeste, Monteverde, Manuel Antonio, pura vida). **Ecuador ✅ umgesetzt (40 Karten:** Quito/Mitad del Mundo, Otavalo, Cotopaxi/Quilotoa, Baños, Amazonas/Tena, USD/Kichwa). **Guatemala ✅ umgesetzt (40 Karten:** Antigua, Atitlán, Chichicastenango, Tikal/Flores, Acatenango/Fuego, Semuc Champey, Maya/chapín). **Argentinien ✅ umgesetzt (40 Karten:** Buenos Aires/Tango, Patagonien, Iguazú, Mendoza, Voseo). **Chile ✅ umgesetzt (40 Karten:** Santiago, Valparaíso, Atacama, Torres del Paine, Chilenismen). **Bolivien ✅ umgesetzt (40 Karten:** La Paz/Teleférico, Salar de Uyuni, Titicaca, Potosí/Sucre, Aymara). **Offen:** weitere LatAm-Ziele (Panama, Nicaragua) bei Bedarf | S–M je Pack | additive Kategorie in `data.js` + `contextdata.js`, Muster wie bestehende Bereiche | S/G/H/B2C |
 | **Kuratierte Starter-Sets** | benannte Auswahl „Pre-Arrival 100" / „Survival 50" statt nur freiem Kategorie+Stufen-Filter | S | Karten-IDs als Preset-Liste | S/G |
 | **Pre-Trip-Challenge-Programm** | sequenziert (Tag 1 Begrüßung … Tag 5 Icebreaker). Heute: `Ruta del día` ist eine **zufällige** Tagesrunde, kein mehrtägiger Onboarding-Pfad | M | geordnete Tagesliste; Mechanik teils aus Ruta del día | G/H |
-| **Gruppen-/Social-Icebreaker-Set** | z. B. „¿De dónde eres?"-Gruppenspiel. Battles (45) existieren, aber nicht gruppen-geframt; Real-Life Missions mit **nur 10** dünn → erweitern | S | bestehende BATTLES/CHALLENGES-Struktur | G/H |
+| **Gruppen-/Social-Icebreaker-Set** | z. B. „¿De dónde eres?"-Gruppenspiel. Battles (45) existieren; Real-Life Missions **von 10 auf 31 erweitert ✅** (inkl. Kolumbien-Spezial); Coordinator-Schnellstart ✅. Offen: noch stärker gruppen-geframte Sets | S | bestehende BATTLES/CHALLENGES-Struktur | G/H |
 | **Lehr-/Stunden-Rezepte (Content)** | „Restaurant: 10 Karten → Kontext → Rollenspiel → Real-Life Challenge" | S (als PDF-Text) | bestehende Inhalte verknüpfen | S/H |
 | **Muttersprachler-/Lehrkraft-Gegenlesung** | menschliches Sign-off der spanischen Inhalte (heute nur Agenten-Audit) | M (extern) | — | S |
 
@@ -227,8 +231,8 @@ Ziel-Kanal (**S**chule / **G**ruppenreise / **H**ostel / **B2C**).
 
 | Stufe | Inhalt | Aufwand | Bricht Prinzipien? |
 |---|---|---|---|
-| **1 — MVP** | ein Destination-Pack (Colombia/Cartagena) als neue Kategorie + kuratiertes „Top-100"-Preset + Coordinator-/Lehrer-PDF | gering | nein — zero-dep, offline, on-brand |
-| **2 — Edition** | leichte Branding-Option → „ECOS Edition" / „WeRoad Colombia Pack" als Build-Variante | mittel | nein (Build-Variante) |
+| **1 — MVP** ✅ | Colombia-Pack (89 Karten) + Pre-Arrival-Preset + Pre-Trip-Plan + Coordinator-Schnellstart + dreisprachige Handouts — **umgesetzt** | gering | nein — zero-dep, offline, on-brand |
+| **2 — Edition** ✅ | Branding-Option → „ECOS Edition" / „WeRoad Colombia" als Build-Variante (`node build.js --edition=…`) — **umgesetzt** | mittel | nein (Build-Variante) |
 | **3 — EdTech** | Lehrer-Dashboard + Accounts/Sync + Per-Seat-Lizenzlogik | groß | **ja** — nur mit zahlendem Referenzkunden |
 
 Der größte Hebel ist **nicht** Stufe 3, sondern Stufe 1: Sie macht aus „nette generische App" ein

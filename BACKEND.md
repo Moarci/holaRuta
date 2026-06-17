@@ -1,0 +1,266 @@
+# HolaRuta — Backend-Spec (optionale Stufe 3: Accounts · Sync · Klassen · Lizenzen)
+
+> **Datum:** 2026-06-15 · **Folgt auf:** [MARKT.md](MARKT.md), [BAUPLAN.md](BAUPLAN.md), [RISIKO.md](RISIKO.md)
+> **Status:** **Spezifikation, kein Code.** Dieses Dokument beschreibt ein **optionales** Server-Backend,
+> das HolaRuta um Accounts, Mehrgeräte-Sync, serverseitige Klassen/Zuweisungen und Per-Seat-Lizenzen
+> erweitert. Es wird **erst mit einem zahlenden Referenzkunden** gebaut (vgl. MARKT.md §6/§7, „Stufe 3").
+>
+> **Leitsatz:** Die heutige App bleibt **unverändert** eine statische, offline-first, zero-dependency-PWA.
+> Das Backend ist eine **Opt-in-Zusatzschicht** — wer es nicht nutzt, merkt nichts davon.
+
+---
+
+## 0. Warum diese Spec existiert
+
+Drei Stufe-3-Themen sind **server-gebunden** und lassen sich nicht offline lösen:
+
+| Thema | Warum Server nötig |
+|---|---|
+| **Accounts** | Identität über Geräte hinweg, geteilter Zustand |
+| **Echtzeit-Mehrgeräte-Sync** | gemeinsamer Speicher als „source of truth" jenseits eines Geräts |
+| **Per-Seat-Lizenzlogik / Abrechnung** | Lizenzen zählen/erzwingen, Zahlungen |
+
+Bereits **backend-frei umgesetzt** (kein Server, vgl. README/Changelog):
+- **Backup-Export/-Import** (`store.exportData`/`importData`) — manueller Geräte-Transfer per Datei.
+- **„Modo profe"** — Lehrkraft importiert Schüler-Backups → Klassenübersicht (`store.readBackup`, rein lesend).
+- **„Tarea"** — teilbare Aufgaben-Codes (`store.encodeTask`/`decodeTask`).
+
+Diese Spec hebt genau diese drei Server-Themen auf einen **anschlussfähigen, datenschutzkonformen** Plan.
+
+---
+
+## 1. Leitprinzipien (nicht verhandelbar)
+
+1. **Offline-first bleibt.** Die PWA funktioniert **vollständig ohne Backend**. Der lokale `localStorage`
+   bleibt die primäre Quelle der Wahrheit auf dem Gerät; das Backend ist nur ein **Spiegel/Merge-Ziel**.
+2. **Opt-in.** Ohne Login keine Netzwerk-Calls, kein Tracking — exakt wie heute. Sync ist eine bewusste
+   Nutzer-Entscheidung (Anmelden).
+3. **Zero-dependency-Prinzip der PWA bleibt.** Der Client bekommt **einen** schlanken Vanilla-JS-Adapter
+   (`sync.js`, < 1 Modul, `fetch`-basiert, keine Frameworks). Die **Server-Komponente** ist ein
+   **separates Projekt/Repo** mit eigenem Stack — sie bricht die Zero-Dep-Regel der PWA nicht.
+4. **Datenminimierung & DSGVO by Design.** So wenig personenbezogene Daten wie möglich; EU-Hosting;
+   Auskunft/Löschung/Export als Erstklasse-Funktion; keine Verhaltens-Analytics.
+5. **Anschlussfähigkeit über die vorhandenen Seams.** Sync-Einheit = das **bestehende Backup-Payload**
+   (`{ app:"holaruta", format, data:{ <key>:… } }`). Kein neues Datenformat erfinden.
+6. **Kein Big-Bang.** Vier kleine, je für sich auslieferbare Phasen (siehe §11). Jede Phase ist ohne die
+   nächste nützlich.
+
+---
+
+## 2. Was das Backend **nicht** ändert
+
+- Die statische `HolaRuta.html` / der Service-Worker / der Edition-Build (`build.js --edition`) bleiben wie sie sind.
+- Die lokalen Keys (`spanischcard.progress.v2`, `…settings.v1`, `…usercards.v1`, `…gamestats.v1`) bleiben das
+  lokale Schema; sie werden **nicht** ersetzt, nur optional gespiegelt.
+- Die Pakete/Pre-Trip-Pläne/Challenges (reine Daten in `data.js`) bleiben **client-seitig** — der Server
+  speichert **Fortschritt**, nicht Lerninhalte.
+
+---
+
+## 3. Architektur-Überblick
+
+```
+   ┌─────────────────────────────┐         HTTPS (nur bei Login)        ┌──────────────────────────┐
+   │   HolaRuta PWA (wie heute)  │  ───────────────────────────────▶   │   Sync-API (separat)     │
+   │  localStorage = Quelle d. W.│  ◀───────────────────────────────   │  Stateless Functions     │
+   │  + optionaler sync.js-Adapter│        Push/Pull Backup-Blob        │  + Auth + DB (EU)        │
+   └─────────────────────────────┘                                     └──────────────────────────┘
+            │  (ohne Login: 0 Netzwerk)                                     │   │        │
+            └── exportData/importData/readBackup (bestehend) ───────────────┘   │        │
+                                                              Accounts ─────────┘        │
+                                                              Org/Class/Assignment ──────┘
+```
+
+- **Client:** unverändert + `sync.js` (Feature-geschaltet über `config.js`, Default aus).
+- **API:** zustandslose Funktionen (Serverless oder kleiner Node-Dienst). Nur JSON.
+- **DB:** relationale DB (Postgres) oder Serverless-DB (siehe §10). EU-Region.
+- **Auth:** passwortlos (E-Mail-Magic-Link/OTP) → **kein** Passwort-Hashing-Risiko.
+
+---
+
+## 4. Anschlusspunkte im bestehenden Code
+
+| Vorhandenes | Rolle im Backend-Plan |
+|---|---|
+| `store.exportData()` → `{app,format,exportedAt,data}` | **Sync-Push-Payload** (Gerät → Server) |
+| `store.importData(payload)` | **Sync-Pull-Anwendung** (Server → Gerät), nach Merge |
+| `store.readBackup(payload)` | rein lesendes Mappen (für Server-seitige Auswertung/Dashboard-Read identisch nachbaubar) |
+| `store.encodeTask/decodeTask` | Aufgaben — Phase 3 macht sie **serverseitig zuweisbar** (statt nur Code-Teilen) |
+| `config.js` (`SC.config`) | trägt künftig `sync: { apiBase, enabled }` (Default `null` = aus) |
+| Edition-Build (`editions/*`) | eine „Schul-/Partner-Edition" kann Sync vorkonfiguriert ausliefern |
+
+**Neuer Client-Code (minimal):** ein Modul `sync.js` mit
+`login(email)`, `confirm(token)`, `push()`, `pull()`, `merge(local, remote)`, `logout()` — alles `fetch`-basiert,
+hinter `if (SC.config.sync && SC.config.sync.enabled)`. Ohne Config bleibt es toter Code (graceful).
+
+---
+
+## 5. Datenmodell (Server)
+
+Minimal, normalisiert, pseudonymisierbar. IDs sind UUIDs.
+
+| Tabelle | Felder (Kern) | Zweck |
+|---|---|---|
+| **user** | id, email (hash/optional klar), created_at, locale | Konto (passwortlos) |
+| **device** | id, user_id, label, last_seen_at | Mehrgeräte-Zuordnung |
+| **sync_state** | user_id, payload (JSONB = Backup-`data`), rev (int), updated_at | gespiegelter Fortschritt (1 Zeile/User) |
+| **org** | id, name, plan, seats_total, created_at | Schule/Anbieter (Lizenznehmer) |
+| **membership** | org_id, user_id, role (`owner`/`teacher`/`student`) | Wer gehört zu welcher Org |
+| **class** | id, org_id, name, code | Klasse/Gruppe |
+| **enrollment** | class_id, user_id | Schüler ↔ Klasse |
+| **assignment** | id, class_id, kind, scope, title, due, created_by, created_at | serverseitige Zuweisung (erweitert `encodeTask`-Schema) |
+| **assignment_state** | assignment_id, user_id, status, progress, updated_at | pro Schüler erledigt/offen |
+| **license_seat** | org_id, user_id, assigned_at | Per-Seat-Belegung |
+| **audit_log** | id, actor, action, target, at | DSGVO-Nachvollziehbarkeit (ohne Inhalte) |
+
+> **Wichtig:** `sync_state.payload` ist exakt das `data`-Objekt aus `store.exportData()` — der Server muss das
+> Lernschema **nicht** kennen, nur als opaken Blob speichern/zurückgeben. Auswertung fürs Dashboard läuft
+> serverseitig über dieselbe Logik wie `store.readBackup` + `badges.buildMetrics` (als kleine Server-Portierung
+> oder per Edge-Function, die den Client-Reducer wiederverwendet).
+
+---
+
+## 6. API (REST, JSON, versioniert unter `/v1`)
+
+**Auth (passwortlos):**
+- `POST /v1/auth/start` `{ email }` → schickt Magic-Link/OTP. (Rate-limited.)
+- `POST /v1/auth/confirm` `{ email, token }` → `{ accessToken, user }`. Token gerätegebunden, kurz lebig + Refresh.
+- `POST /v1/auth/logout`.
+
+**Sync (Kern):**
+- `GET /v1/sync` → `{ rev, payload }` (aktueller Server-Stand).
+- `PUT /v1/sync` `{ baseRev, payload }` → `{ rev }` oder `409 { rev, payload }` bei Konflikt (Client merged, retry).
+
+**Klassen/Zuweisung (Phase 3):**
+- `POST /v1/classes` (teacher) · `POST /v1/classes/:id/join` `{ code }` (student).
+- `GET /v1/classes/:id/roster` → Schüler + aggregierte Kennzahlen (Dashboard-Read).
+- `POST /v1/classes/:id/assignments` `{ kind, scope, title, due }` · `GET /v1/assignments?class=…`.
+- `POST /v1/assignments/:id/state` `{ status, progress }` (Schüler meldet Fortschritt).
+
+**Konto/DSGVO (Pflicht):**
+- `GET /v1/account/export` → vollständiger Daten-Download (JSON).
+- `DELETE /v1/account` → harte Löschung (Konto + sync_state + Memberships), bestätigt.
+
+Alle Endpunkte: HTTPS, Bearer-Token, Org-Scoping, strikte Eingabevalidierung, Größenlimit auf `payload`.
+
+---
+
+## 7. Auth-Design
+
+- **Passwortlos** (E-Mail-Magic-Link oder 6-stelliger OTP). Kein Passwort-Storage → kleinste Angriffsfläche,
+  einfachste DSGVO-Lage. Alternativ optionales OAuth (Google/Apple) später.
+- **Tokens:** kurzlebiger Access-Token (15 min) + Refresh-Token pro Gerät; Logout widerruft das Gerät.
+- **Schüler ohne E-Mail** (Minderjährige/Schulkontext): **Klassen-Code + Anzeigename** statt E-Mail
+  (Pseudonym-Konto, von der Lehrkraft/Org verwaltet) — DSGVO-schonend, keine Schüler-Mailadressen nötig.
+
+---
+
+## 8. Sync- & Merge-Strategie
+
+Der Fortschritt ist **gut mergebar**, weil die Felder fast alle monoton oder mengenartig sind:
+
+- **Zähler** (reviews, battlesPlayed, Streaks …): `max(local, remote)` bzw. additive Felder feld-spezifisch.
+- **Mengen-Maps** (`challengesDone`, `roleplaysSeen`, `pretripDays{scope}`, `rutaDays`, `contextCardsSeen` …):
+  **Vereinigung** (Union) — verlustfrei über Geräte.
+- **Karten-Fortschritt** (`progress[cardId]`): **last-write-wins pro Karte** anhand eines `updatedAt`/`reviewedAt`
+  (SM-2-Box). Konfliktfenster ist klein, Verlustrisiko gering.
+- **Einstellungen** (`settings`): last-write-wins pro Gerät (oder gar nicht syncen — gerätelokal lassen).
+
+> Konkret: `sync.merge(local, remote)` ist eine **reine Funktion** (wie `srs`/`matcher`) und gehört damit zu
+> HolaRutas Stärke — sie ist **unit-testbar** ohne Server. Empfehlung: zuerst `merge` + Tests schreiben,
+> dann erst die HTTP-Schicht. Konfliktstrategie über `rev` (optimistic concurrency, `409` → merge → retry).
+
+---
+
+## 9. Per-Seat-Lizenzlogik
+
+- Eine **Org** hat `seats_total`. Beim ersten Sync eines Schülers in einer Org wird ein `license_seat` belegt;
+  Freigabe gibt einen Seat frei.
+- **Soft-Enforcement:** Überschreiten der Seats blockiert **nicht** das Lernen (offline-first!), sondern meldet
+  der Org „n über Limit" → Upsell. Das schützt das Lernerlebnis und vermeidet Härtefälle.
+- Abrechnung: separater Billing-Provider (z. B. Stripe) — **nicht** Teil des Lern-Backends; nur Webhook
+  aktualisiert `org.plan/seats_total`.
+
+---
+
+## 10. Hosting / Betrieb (Optionen)
+
+| Variante | Stack | Vorteil | Nachteil |
+|---|---|---|---|
+| **A — Serverless EU** *(Empf. Start)* | Cloudflare Workers + D1/KV **oder** Supabase (EU-Region) | minimaler Betrieb, günstig, schnell startklar, EU-Region | Vendor-Bindung |
+| **B — Kleiner Node-Dienst** | Node + Postgres (Hetzner/Scaleway EU) | volle Kontrolle, portabel | mehr Ops |
+| **C — Self-host für Schulen** | Docker-Compose (API+Postgres) | Datenhoheit beim Kunden (starkes Schul-Argument) | Support-Aufwand |
+
+**Empfehlung:** Start mit **A** (schnell, EU, billig), Architektur aber providerneutral halten (DB hinter einem
+Repository-Interface), damit **C** für datensensible Schulkunden später möglich ist.
+
+> Nebeneffekt: Eine **eigene Domain** (statt `moarci.github.io`) löst zugleich die in MARKT.md §2 genannte
+> `github.io`-Shared-Origin-`localStorage`-Randbedingung und wirkt für Schulen/Partner seriöser.
+
+---
+
+## 11. Migrationspfad / Stufenplan (klein, je auslieferbar)
+
+| Phase | Inhalt | Aufwand | Bricht App-Prinzipien? |
+|---|---|---|---|
+| **0 — heute** | Datei-Backup/-Import, Modo profe, Tarea | ✅ fertig | nein |
+| **1 — Cloud-Backup** | Login + 1 Blob/User (`PUT/GET /sync`), „in der Cloud sichern/wiederherstellen" | **M** | nein (opt-in, App bleibt offline) |
+| **2 — Mehrgeräte-Merge** | reine `merge()`-Funktion + Tests, automatischer Pull/Push, Konflikt via `rev` | **M–L** | nein |
+| **3 — Klassen & Zuweisung server-seitig** | Org/Class/Enrollment/Assignment, Live-Dashboard-Read, Schüler-Konten per Klassen-Code | **L** | teilweise (Server nötig; PWA bleibt offline-fähig) |
+| **4 — Per-Seat + Billing** | Seats, Soft-Enforcement, Stripe-Webhooks | **M** | nein für die PWA; kommerzielle Schicht |
+
+**Regel:** Jede Phase nur starten, wenn ein zahlender Kunde sie verlangt. Phase 1+2 liefern bereits den
+größten Endkunden-Nutzen (Mehrgeräte). Phase 3+4 sind die B2B-/Schul-Monetarisierung.
+
+---
+
+## 12. Datenschutz / DSGVO (Pflichtenheft)
+
+- **Rechtsgrundlage & Einwilligung:** Sync ist opt-in; klare Einwilligung beim Login; Datenschutzerklärung + AVV/DPA.
+- **Datenminimierung:** nur E-Mail (oder Pseudonym) + Fortschritts-Blob + Klassen-Zugehörigkeit. **Keine**
+  Verhaltens-Analytics, **kein** Werbe-Tracking, **keine** Drittanbieter-Tracker.
+- **Minderjährige/Schulen:** Schüler-Pseudonym-Konten ohne E-Mail; Org/Schule ist Verantwortliche, HolaRuta
+  Auftragsverarbeiter (AVV). Elternzustimmung über die Schule.
+- **Betroffenenrechte:** Self-Service-Export (`/account/export`) und harte Löschung (`/account`) ab Tag 1.
+- **Speicherort:** EU-Region; Verschlüsselung in Transit (TLS) und at Rest; Backups verschlüsselt, befristet.
+- **Logs:** keine Lerninhalte/PII in Logs; `audit_log` nur Aktionen, keine Payloads.
+
+---
+
+## 13. Sicherheit
+
+- Bearer-Tokens mit kurzer Lebensdauer + Refresh; Geräte-Widerruf.
+- Strenge Eingabevalidierung; `payload`-Größenlimit (z. B. ≤ 256 KB) und Schema-Sanity (gleiche Idee wie
+  `store.importData`, das schon nur bekannte Keys übernimmt).
+- Org-/Rollen-Scoping auf jedem Endpoint (ein Schüler sieht nie fremde Schüler; nur Teacher/Owner sehen Roster).
+- Rate-Limiting (Auth, Sync), CORS strikt auf die App-Origin.
+- Keine Geheimnisse im Client; `config.sync.apiBase` ist öffentlich, alles andere serverseitig.
+
+---
+
+## 14. Akzeptanzkriterien (Definition of Done je Phase)
+
+- **Phase 1:** Nutzer kann sich passwortlos anmelden, „in Cloud sichern" und auf einem zweiten Gerät
+  „wiederherstellen"; ohne Login 0 Netzwerk-Calls (nachweisbar); Export/Löschung funktionieren.
+- **Phase 2:** Zwei Geräte konvergieren ohne Fortschrittsverlust; `merge()` ist rein + voll unit-getestet
+  (Union der Mengen, max der Zähler, LWW pro Karte); Konflikt via `rev` deterministisch.
+- **Phase 3:** Lehrkraft erstellt Klasse + Zuweisung serverseitig; Schüler tritt per Code bei (ohne E-Mail);
+  Live-Roster zeigt dieselben Kennzahlen wie „Modo profe" heute.
+- **Phase 4:** Seats werden korrekt belegt/freigegeben; Überschreiten meldet (blockiert nicht); Stripe-Webhook
+  aktualisiert Plan/Seats.
+
+---
+
+## 15. Bewusst **draußen** (Scope-Grenzen)
+
+- Kein Realtime-Collaboration/WebSockets — Pull/Push reicht (offline-first).
+- Kein Inhalts-CMS auf dem Server — Lerninhalte bleiben in `data.js` und werden client-seitig ausgeliefert.
+- Kein Vendor-Lock im Kern: DB hinter Repository-Interface, damit Self-Host (Variante C) möglich bleibt.
+- Keine eigene Zahlungslogik — ausgelagert an Stripe (nur Webhook-Anbindung).
+
+---
+
+> **Fazit:** Das Backend ist als **opt-in-Spiegelschicht** entworfen, die HolaRutas Offline-/Privacy-/
+> Zero-Dep-DNA der PWA bewahrt und exakt auf den **bestehenden** Export/Import/Tarea-Seams aufsetzt.
+> Reihenfolge: erst die **reine `merge()`-Funktion + Tests** (passt zur Architektur), dann Phase 1 (Cloud-Backup),
+> alles Weitere kundengetrieben. Umsetzung beginnt mit dem ersten zahlenden Referenzkunden — nicht früher.
