@@ -576,11 +576,13 @@
       .filter((g) => g.countries.length > 0);
     const data = (country && bebidas && bebidas.BEBIDAS[country.id]) || null;
     const regionLabel = country && bebidas ? (bebidas.REGION_LABEL[country.region] || country.region) : "";
-    const mode = state.bebMode || (() => {
-      const h = new Date().getHours();
-      return h >= 6 && h < 17 ? "am" : "pm";
-    })();
-    return { country, groups, data, regionLabel, mode };
+    return { country, groups, data, regionLabel, mode: state.bebMode || bebDefaultMode() };
+  }
+
+  // AM/PM-Voreinstellung nach Uhrzeit: 6–17 Uhr Tag (AM), sonst Abend (PM).
+  function bebDefaultMode() {
+    const h = new Date().getHours();
+    return h >= 6 && h < 17 ? "am" : "pm";
   }
 
   // Regatear: Verhandeln/Feilschen – reine Anzeige-Seite (Taktik, Sätze,
@@ -4492,7 +4494,7 @@
   // AM/PM-Tafel umschalten. Beim ersten Tippen die aktuelle (uhrzeitbasierte)
   // Voreinstellung aus dem VM übernehmen, dann gegenteilig kippen.
   function toggleBebida() {
-    const cur = state.bebMode || bebidasVM().mode;
+    const cur = state.bebMode || bebDefaultMode();
     state.bebMode = cur === "am" ? "pm" : "am";
     render();
   }
