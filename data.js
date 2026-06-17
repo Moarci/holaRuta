@@ -1682,7 +1682,7 @@
   //   example  = Mini-Dialog Wegbeschreibung, der die Endungen in Aktion zeigt
   const CONJUGATION = {
     intro: "Spanische Verben ändern ihre Endung je nach Person – und weil die Endung schon verrät, wer gemeint ist, lässt man yo, tú & Co. meistens weg. „Doblas a la derecha“ heißt also ganz ohne ‚du‘: Du biegst rechts ab. Genau deshalb brauchst du Konjugation z. B. bei der Wegbeschreibung: Wer dir den Weg erklärt, spricht dich in der du- oder Sie-Form an – und du erkennst das nur an der Endung.",
-    introEn: "Spanish verbs change their ending depending on the person – and because the ending already tells you who's meant, you usually drop yo, tú and co. So „Doblas a la derecha“ means, with no 'you' at all: You turn right. That's exactly why you need conjugation when asking for directions, for instance: whoever explains the way addresses you in the tú or usted form – and you can only tell from the ending.",
+    introEn: "Spanish verbs change their ending depending on the person – and because the ending already tells you who's meant, you usually drop yo, tú and so on. So \"Doblas a la derecha\" means, with no 'you' at all: You turn right. That's exactly why you need conjugation when asking for directions, for instance: whoever explains the way addresses you in the tú or usted form – and you can only tell from the ending.",
     persons: [
       { es: "yo", de: "ich", en: "I" },
       { es: "tú", de: "du", en: "you" },
@@ -1691,7 +1691,7 @@
       { es: "ustedes / ellos / ellas", de: "ihr & sie (Mehrzahl)", en: "you all & they (plural)" },
     ],
     personsNote: "In Lateinamerika sagt man für „ihr“ immer ustedes – das Schulbuch-„vosotros“ hörst du dort nicht. Praktisch: usted(es) benutzt dieselbe Verbform wie er/sie.",
-    personsNoteEn: "In Latin America you always say ustedes for „you all“ – the textbook „vosotros“ isn't used there. Handy: usted(es) takes the same verb form as he/she.",
+    personsNoteEn: "In Latin America you always say ustedes for \"you all\" – the textbook \"vosotros\" isn't used there. Handy: usted(es) takes the same verb form as he/she.",
     tableLabels: ["yo", "tú", "él/ella/usted", "nosotros", "ustedes/ellos"],
     regular: [
       { title: "-ar · doblar (abbiegen)", titleEn: "-ar · doblar (to turn)", forms: ["doblo", "doblas", "dobla", "doblamos", "doblan"],
@@ -1699,7 +1699,7 @@
       { title: "-er · comer (essen)", titleEn: "-er · comer (to eat)", forms: ["como", "comes", "come", "comemos", "comen"],
         like: "Genauso gehen: beber (trinken), comprender (verstehen), vender (verkaufen).", likeEn: "These work the same: beber (to drink), comprender (to understand), vender (to sell)." },
       { title: "-ir · vivir (wohnen/leben)", titleEn: "-ir · vivir (to live)", forms: ["vivo", "vives", "vive", "vivimos", "viven"],
-        like: "Fast wie -er, nur „wir“ = -imos. Genauso: subir (hinauf-/einsteigen), abrir (öffnen).", likeEn: "Almost like -er, only „we“ = -imos. Same: subir (to go up / get on), abrir (to open)." },
+        like: "Fast wie -er, nur „wir“ = -imos. Genauso: subir (hinauf-/einsteigen), abrir (öffnen).", likeEn: "Almost like -er, only \"we\" = -imos. Same: subir (to go up / get on), abrir (to open)." },
     ],
     regularNote: "Merkhilfe: Stamm behalten, Endung tauschen. yo → -o, tú → -as/-es, er/sie/usted → -a/-e, wir → -amos/-emos/-imos, ihr & sie → -an/-en.",
     regularNoteEn: "Memory aid: keep the stem, swap the ending. yo → -o, tú → -as/-es, he/she/usted → -a/-e, we → -amos/-emos/-imos, you all & they → -an/-en.",
@@ -2067,7 +2067,7 @@
     dialogs: [
       {
         title: "Smalltalk: „¿Cómo te fue?“ (Rückblick)",
-        titleEn: "Small talk: „¿Cómo te fue?“ (looking back)",
+        titleEn: "Small talk: \"¿Cómo te fue?\" (looking back)",
         lines: [
           { es: "¿Cómo te fue en Bolivia?", de: "Wie ist es dir in Bolivien ergangen?", en: "How did you get on in Bolivia?" },
           { es: "¡Genial! Subí al salar de Uyuni. Hacía frío, pero el paisaje era increíble.", de: "Super! Ich war auf dem Salar de Uyuni. Es war kalt, aber die Landschaft war unglaublich.", en: "Great! I went to the Salar de Uyuni. It was cold, but the scenery was incredible." },
@@ -2078,7 +2078,7 @@
       },
       {
         title: "Pläne: „¿Qué vas a hacer?“ (Vorausblick)",
-        titleEn: "Plans: „¿Qué vas a hacer?“ (looking ahead)",
+        titleEn: "Plans: \"¿Qué vas a hacer?\" (looking ahead)",
         lines: [
           { es: "¿Qué vas a hacer mañana?", de: "Was wirst du morgen machen?", en: "What are you doing tomorrow?" },
           { es: "Voy a hacer una caminata y luego tomaré el bus a Cusco.", de: "Ich mache eine Wanderung und nehme dann den Bus nach Cusco.", en: "I'm doing a hike and then taking the bus to Cusco." },
