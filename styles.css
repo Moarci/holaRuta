@@ -334,7 +334,42 @@ body {
   color: var(--ink-soft);
 }
 
-/* ---------- TAB-LEISTE (Lernen · Entdecken · Profil) ---------- */
+/* ---------- DASHBOARD: Start- & Lernen-Reiter ---------- */
+/* Überschrift + Inhalt bilden eine Einheit: enger Innenabstand (12px), während
+   der .screen-Flexgap (18px) für Luft ZWISCHEN den Gruppen sorgt. Die globale
+   .sectioncap behält ihren negativen Rand für die übrigen Screens; im
+   Flex-Kontext einer .dashgrp wird er auf 0 gesetzt, damit der Rhythmus stimmt. */
+.dashgrp { display: flex; flex-direction: column; gap: 12px; }
+.dashgrp > .sectioncap { margin: 0; }
+.topicgrp { scroll-margin-top: 64px; } /* Sprung landet unter der klebrigen Leiste */
+
+/* Klebrige Sprungmarken-Leiste (Lernen-Reiter): springt zu den Themen-Gruppen
+   und hebt die aktuelle hervor (Scrollspy in app.js). Blutet über die Spalten-
+   Polsterung bis an den Rand und klebt oben, sobald die App-Bar weggescrollt ist. */
+.dashnav {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; gap: 8px; overflow-x: auto;
+  margin: 0 -20px; padding: 8px 20px;
+  background: var(--surface);
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.dashnav::-webkit-scrollbar { display: none; }
+.dashnav.is-stuck { border-bottom: 1.5px solid var(--line); box-shadow: 0 6px 14px -10px rgba(0, 0, 0, 0.5); }
+.dashnav__chip {
+  flex: 0 0 auto; white-space: nowrap; text-decoration: none;
+  font-family: inherit; font-weight: 800; font-size: 0.88rem; color: var(--ink-soft);
+  background: var(--card); border: 1.5px solid var(--line-strong);
+  padding: 8px 14px; border-radius: 999px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.dashnav__chip.is-active {
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+  color: var(--brand-ink);
+}
+.dashnav__chip:active { transform: scale(0.96); }
+
+/* ---------- TAB-LEISTE (Start · Lernen · Entdecken · Profil) ---------- */
 /* Fest am unteren Rand, auf die App-Spalte begrenzt. Die Reiter-Inhalte
  * bekommen über .screen--tabbed Platz, damit nichts darunter verschwindet. */
 .tabbar {

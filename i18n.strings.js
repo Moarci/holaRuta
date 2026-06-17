@@ -138,6 +138,7 @@
   i18n.register("home", {
     // Tab-Leiste
     tabsAreas: "Bereiche",
+    tabStart: "Start",
     tabLearn: "Lernen",
     tabDiscover: "Entdecken",
     tabTask: "Tarea",
@@ -147,6 +148,9 @@
     tileDone: "✓ erledigt",
     tileCards: (p) => `${p.n} Karten`,
     sectionTopics: "Themen",
+    topicNavAria: "Zur Themen-Gruppe springen",
+    tripSection: "Für deine Reise",
+    startProgressCap: "Dein Fortschritt",
     // Themen-Abschnitte (Gruppierung der Lern-Kacheln)
     catGroupBasics: "Grundlagen",
     catGroupGrammar: "Grammatik",
@@ -284,6 +288,7 @@
     dedication: "Für meine liebe Lisa.",
   }, {
     tabsAreas: "Sections",
+    tabStart: "Home",
     tabLearn: "Learn",
     tabDiscover: "Discover",
     tabTask: "Tarea",
@@ -292,6 +297,9 @@
     tileDone: "✓ done",
     tileCards: (p) => `${p.n} cards`,
     sectionTopics: "Topics",
+    topicNavAria: "Jump to topic group",
+    tripSection: "For your trip",
+    startProgressCap: "Your progress",
     catGroupBasics: "Basics",
     catGroupGrammar: "Grammar",
     catGroupPeople: "People & everyday",

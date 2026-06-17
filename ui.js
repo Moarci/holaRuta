@@ -190,7 +190,7 @@
     const showTask = !!(cfg.taskTab || cfg.teacherTab);
     return `
       <nav class="tabbar" aria-label="${esc(t("home.tabsAreas"))}">
-        ${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${showTask ? tb("tarea", "📝", t("home.tabTask")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
+        ${tb("start", "🏠", t("home.tabStart"))}${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${showTask ? tb("tarea", "📝", t("home.tabTask")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
       </nav>`;
   }
 
@@ -337,37 +337,11 @@
       </button>`;
   }
 
-  function lernenBody(vm) {
-    const tileBtn = (c) => {
-      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
-      // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
-      // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
-      const breakdown = vm.allLevels ? "" : c.byLevel
-        .map((b) =>
-          `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
-        .join("");
-      return `
-        <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
-                style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
-          <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
-          <span class="tile__label">${esc(c.label)}</span>
-          <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
-          ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
-        </button>`;
-    };
-    // Themen in feste thematische Abschnitte gruppieren (Reihenfolge & Titel aus
-    // CATEGORY_GROUPS); innerhalb behalten sie die Fälligkeits-Sortierung aus
-    // homeVM. Leere Gruppen (z. B. durch künftige Filter) fallen samt Titel weg.
-    const topicSections = CATEGORY_GROUPS.map((g) => {
-      const items = vm.categories.filter((c) => c.group === g.id);
-      if (!items.length) return "";
-      return `
-        <p class="sectioncap">${esc(t(g.titleKey))}</p>
-        <div class="tiles">${items.map(tileBtn).join("")}</div>`;
-    }).join("");
-
-    // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume. (Der Fortschritts-
-    // balken wohnt im Profil-Reiter – hier zählt nur die heutige Aktion.)
+  // ----- START-Reiter (Cockpit): heutige Aktion + Reise + Fortschritt -----
+  // Bewusst fokussiert und kurz: hier landet jeder App-Start. Die vielen Themen
+  // (mit Sprungmarken) leben im eigenen „Lernen"-Reiter (siehe lernenBody).
+  function startBody(vm) {
+    // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume.
     const streakChip = vm.streak > 0
       ? `<span class="today__streak">${esc(t("home.streakDays", { n: vm.streak }))}</span>`
       : `<span class="today__streak today__streak--new">${esc(t("home.streakNew"))}</span>`;
@@ -450,17 +424,31 @@
     // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
     const tripCard = vm.trip ? tripDisplayCard(vm.trip, "manage-trip") : "";
 
-    // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit
-    // Kartenzahl). Bleibt direkt aufs Dashboard – die ändert man laufend beim
-    // Lernen. Modus/Richtung/Tempo/Sprache leben dagegen im Profil-Reiter.
-    const levelChips = [
-      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
-      ...vm.levels.map((l) =>
-        `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
-                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
-           <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
-         </button>`),
-    ].join("");
+    // „Für deine Reise" – eigener, klar betitelter Abschnitt (Trip-Countdown +
+    // Pre-Arrival-Pakete). Fällt komplett weg, wenn weder Ziel noch Preset aktiv
+    // ist, damit der Start-Reiter bei den meisten Nutzern ruhig bleibt.
+    const reiseInner = `${tripCard}${presetCards}`;
+    const reiseGroup = reiseInner.trim()
+      ? `<section class="dashgrp">
+          <p class="sectioncap">${esc(t("home.tripSection"))}</p>
+          ${reiseInner}
+        </section>`
+      : "";
+
+    // Glanceable Fortschritt (Streak in Worten + Meisterungs-Balken). Die volle
+    // Verwaltung bleibt im Profil-Reiter – hier nur der motivierende Überblick.
+    const streakLine = vm.streak > 0 ? t("profile.streakInRow", { n: vm.streak }) : t("profile.streakFirst");
+    const progressGroup = `
+      <section class="dashgrp">
+        <p class="sectioncap">${esc(t("home.startProgressCap"))}</p>
+        <div class="profcard">
+          <p class="profcard__streak">${esc(streakLine)}</p>
+          <div class="today__bar" role="progressbar" aria-valuenow="${vm.overall.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(t("profile.masteredCardsLabel"))}">
+            <div class="today__barfill" style="width:${vm.overall.pct}%"></div>
+          </div>
+          <p class="profcard__meta">${esc(t("profile.progressMeta", { mastered: vm.overall.mastered, total: vm.overall.total, pct: vm.overall.pct }))}</p>
+        </div>
+      </section>`;
 
     return `
       ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")))}
@@ -477,12 +465,74 @@
         </button>
         ${resume}
         ${rutaDia}
-        ${presetCards}
-        ${tripCard}
       </div>
 
-      <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
-      <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
+      ${reiseGroup}
+      ${progressGroup}
+
+      <p class="dedication">${esc(t("home.dedication"))} <span class="dedication__heart">♥</span></p>`;
+  }
+
+  // ----- LERNEN-Reiter: alle Themen mit klebriger Sprungmarken-Leiste je Gruppe -----
+  function lernenBody(vm) {
+    const tileBtn = (c) => {
+      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
+      // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
+      // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
+      const breakdown = vm.allLevels ? "" : c.byLevel
+        .map((b) =>
+          `<span class="tile__lvl ${b.active ? "" : "is-off"}" style="--lc:${esc(b.color)}">${esc(b.short)}·${b.count}</span>`)
+        .join("");
+      return `
+        <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
+                style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
+          <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
+          <span class="tile__label">${esc(c.label)}</span>
+          <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
+          ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
+        </button>`;
+    };
+    // Nur nicht-leere Themen-Gruppen – dieselbe Liste speist Sprungmarken UND
+    // Abschnitte, damit Chip und Ziel garantiert zusammenpassen.
+    const groups = CATEGORY_GROUPS
+      .map((g) => ({ g, items: vm.categories.filter((c) => c.group === g.id) }))
+      .filter((x) => x.items.length);
+    // Klebrige Sprungmarken-Leiste: ein Chip je Gruppe. Reine Anker-Sprünge über
+    // die bestehende „scroll-to"-Aktion (kein History-Eintrag → kollidiert nicht
+    // mit dem Zurück-Puffer). Das aktive Hervorheben verdrahtet app.js (Scrollspy).
+    const jumpNav = groups.length > 1
+      ? `<nav class="dashnav" id="topic-nav" aria-label="${esc(t("home.topicNavAria"))}">
+          ${groups.map(({ g }) =>
+            `<a class="dashnav__chip" href="#grp-${esc(g.id)}" data-action="scroll-to" data-target="grp-${esc(g.id)}">${esc(t(g.titleKey))}</a>`).join("")}
+        </nav>`
+      : "";
+    // Themen in feste thematische Abschnitte gruppieren (Reihenfolge & Titel aus
+    // CATEGORY_GROUPS); innerhalb behalten sie die Fälligkeits-Sortierung aus homeVM.
+    const topicSections = groups.map(({ g, items }) => `
+      <section class="topicgrp dashgrp" id="grp-${esc(g.id)}">
+        <p class="sectioncap">${esc(t(g.titleKey))}</p>
+        <div class="tiles">${items.map(tileBtn).join("")}</div>
+      </section>`).join("");
+    // Stufen-Filter: "Alle" + je Schwierigkeitsstufe (mehrfach wählbar, mit
+    // Kartenzahl). Bleibt im Lernen-Reiter – die ändert man laufend beim Lernen.
+    const levelChips = [
+      `<button class="lvl ${vm.allLevels ? "is-active" : ""}" data-action="set-level" data-level="0">${esc(t("home.levelsAll"))}</button>`,
+      ...vm.levels.map((l) =>
+        `<button class="lvl ${l.active ? "is-active" : ""}" data-action="set-level" data-level="${l.id}"
+                 style="--lc:${esc(l.color)}" aria-pressed="${l.active}" title="${esc(t("home.levelTitle", { label: l.label, n: l.count }))}">
+           <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
+         </button>`),
+    ].join("");
+
+    return `
+      ${pagehead(esc(t("home.sectionTopics")))}
+      ${searchBar()}
+      ${jumpNav}
+
+      <section class="dashgrp">
+        <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
+        <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
+      </section>
 
       ${topicSections}
 
@@ -652,9 +702,10 @@
 
   function renderHome(vm) {
     const body =
+      vm.tab === "lernen" ? lernenBody(vm) :
       vm.tab === "entdecken" ? entdeckenBody(vm) :
       vm.tab === "profil" ? profilBody(vm) :
-      lernenBody(vm);
+      startBody(vm);
     return `
       <section class="screen screen--tabbed">${body}</section>
       ${tabbar(vm.tab)}`;

@@ -22,6 +22,22 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.90.0",
+      date: "2026-06-17",
+      title: "Neuer „Start“-Reiter: Dashboard aufgeräumt, Themen mit Sprungmarken",
+      titleEn: "New “Home” tab: tidier dashboard, topics with quick-jumps",
+      items: [
+        "🏠 Die Startseite ist jetzt ein eigener „Start“-Reiter und zeigt fokussiert das Wichtigste für heute: deine Serie, den Haupt-Knopf zum Loslegen, „Weiter mit …“, die Ruta del día – und einen eigenen Abschnitt „Für deine Reise“ (Countdown + Pre-Arrival-Pakete), der nur bei passendem Ziel erscheint. Dazu ein kurzer Fortschritts-Überblick.",
+        "🎒 Der „Lernen“-Reiter zeigt nur noch die Themen – mit einer klebrigen Sprungmarken-Leiste pro Themen-Gruppe (Grundlagen, Grammatik, Leute & Alltag, Essen & Einkaufen, Unterwegs, Reiseziele): ein Tipp springt direkt hin, die aktuelle Gruppe wird beim Scrollen hervorgehoben. Kein endloses Scrollen mehr.",
+        "↩️ Die Zurück-Geste führt jetzt aus „Lernen“, „Entdecken“ oder „Profil“ erst zurück auf „Start“ und schließt die App erst von dort – stufenweise statt mit einem Wisch hinaus.",
+      ],
+      itemsEn: [
+        "🏠 The home screen is now its own “Home” tab, focused on what matters today: your streak, the main start button, “Carry on with …”, the Ruta del día – plus a dedicated “For your trip” section (countdown + pre-arrival packs) that only appears when a destination fits. Topped off with a short progress overview.",
+        "🎒 The “Learn” tab now shows just the topics – with a sticky quick-jump bar per topic group (Basics, Grammar, People & everyday, Food & shopping, Getting around, Destinations): one tap jumps straight there and the current group is highlighted as you scroll. No more endless scrolling.",
+        "↩️ The back gesture now takes you from “Learn”, “Discover” or “Profile” back to “Home” first, and only leaves the app from there – step by step instead of one swipe out.",
+      ],
+    },
+    {
       version: "1.89.0",
       date: "2026-06-17",
       title: "Conjugación: Erklärseite jetzt auch auf Englisch",
