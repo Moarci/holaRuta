@@ -1203,14 +1203,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hist-banner__sub { display: block; font-size: 0.82rem; opacity: 0.9; line-height: 1.35; margin-top: 1px; }
 .hist-banner__chev { flex-shrink: 0; font-size: 1.3rem; opacity: 0.8; }
 
-/* Sprungmarken-Leiste (wie sz-nav). */
-.hist-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.hist-nav__chip {
+/* Sprungmarken-Leiste: gemeinsame Basis für Historia (.hist-nav),
+   Tiempos (.ti-nav) und Spickzettel (.sz-nav). Die Farbverlauf-Kante der
+   Spickzettel-Chips kommt zusätzlich im SPICKZETTEL-Abschnitt dazu. */
+.hist-nav, .ti-nav, .sz-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip, .ti-nav__chip, .sz-nav__chip {
   display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
   font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
   background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
 }
-.hist-nav__chip:active { transform: scale(0.96); }
+.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active { transform: scale(0.96); }
+/* Angesprungene Abschnitte nicht bündig an den oberen Rand kleben lassen. */
+.cinfo-sect { scroll-margin-top: 12px; }
 
 /* Block-Überschriften. */
 .hist-block { margin-top: 22px; scroll-margin-top: 12px; }
@@ -2720,14 +2724,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .route__bus { transition: none; } }
 
 /* ====================== SPICKZETTEL (Survival-Schnellzugriff) ====================== */
-.sz-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+/* sz-nav teilt Basis & :active mit .hist-nav/.ti-nav (siehe Sprungmarken-Leiste);
+   hier kommt nur die farbige Verlaufs-Kante der Chips dazu. */
 .sz-nav__chip {
-  display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
-  font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
-  background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
   border-left: 4px solid; border-image: linear-gradient(var(--from), var(--to)) 1;
 }
-.sz-nav__chip:active { transform: scale(0.96); }
 .sz-group { margin-top: 18px; scroll-margin-top: 12px; }
 .sz-group__h {
   margin: 0 0 8px; padding-left: 10px; font-family: var(--font-display); font-weight: 800;

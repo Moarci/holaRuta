@@ -37,7 +37,7 @@
     if ((Number(level) || 1) >= 2) {
       const irr = (conjugation && conjugation.irregular) || [];
       irr.forEach((v) => {
-        pool.push({ verb: v.verb, hint: v.verb + " – " + v.verbDe, hintEn: v.verb + " – " + (v.verbEn || v.verbDe), forms: v.forms });
+        pool.push({ verb: v.verb, hint: v.verb + " – " + v.de, hintEn: v.verb + " – " + (v.en || v.de), forms: v.forms });
       });
     }
     return pool;
