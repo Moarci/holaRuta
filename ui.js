@@ -3161,6 +3161,14 @@
       ${lines(pc.examples)}
       <p class="cinfo-text cj-note">${esc(pc.note)}</p>`;
 
+    // acabar de + Infinitiv: „gerade eben getan" – kompakter Block (Intro,
+    // Beispielpaare, Hinweis), wie hay/scenarios. Schließt an die Gerundio-Tricks an.
+    const ad = g.acabarDe;
+    const acabarDe = `
+      <p class="cinfo-text">${esc(ad.intro)}</p>
+      ${pairList(ad.rows, "es", "de")}
+      <p class="cinfo-text cj-note">${esc(ad.note)}</p>`;
+
     // Indefinido vs. Imperfecto: zwei Spalten-Blöcke mit Stichpunkten + ein
     // kombinierter Beispielsatz (Ereignis vor Hintergrund).
     const iv = g.indefVsImperf;
@@ -3255,6 +3263,7 @@
       { icon: "🕰️", title: tt("discover.tiTenses"), body: `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, id: "ti-tenses", nav: tt("discover.tiNavTenses") },
       { icon: "⏯️", title: c.title, body: continuous, id: "ti-continuous", nav: tt("discover.tiNavContinuous") },
       { icon: "⏪", title: pc.title, body: pastContinuous },
+      { icon: "⏱️", title: ad.title, body: acabarDe },
       { icon: "⚖️", title: iv.title, body: indefVsImperf, id: "ti-compare", nav: tt("discover.tiNavCompare") },
       { icon: "💪", title: sp.title, body: strongPast, id: "ti-irregular", nav: tt("discover.tiNavIrregular") },
       { icon: "🧩", title: pp.title, body: participles },

@@ -1781,7 +1781,7 @@
           { es: "El mercado abre a las siete.", de: "Der Markt öffnet um sieben.", en: "The market opens at seven." },
           { es: "¿Cuánto cuesta la habitación?", de: "Was kostet das Zimmer?", en: "How much is the room?" },
         ] },
-      { name: "Pretérito perfecto", de: "gerade eben passiert / Erfahrung", en: "just happened / experience",
+      { name: "Pretérito perfecto", de: "Perfekt – gerade eben passiert / Erfahrung", en: "Present perfect – just happened / experience",
         forms: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "han tomado"],
         recipe: "haber (he/has/ha/hemos/han) + Partizip (-ado bei -ar, -ido bei -er/-ir).",
         recipeEn: "haber (he/has/ha/hemos/han) + participle (-ado for -ar, -ido for -er/-ir).",
@@ -1841,6 +1841,18 @@
           { es: "Algún día volveré aquí.", de: "Eines Tages komme ich hierher zurück.", en: "One day I'll come back here." },
           { es: "Será una gran aventura.", de: "Es wird ein großes Abenteuer.", en: "It's going to be a great adventure." },
         ] },
+      { name: "Condicional", de: "höflich & hypothetisch – würde / hätte gern", en: "polite & hypothetical – would / would like",
+        forms: ["tomaría", "tomarías", "tomaría", "tomaríamos", "tomarían"],
+        recipe: "Infinitiv + -ía/-ías/-ía/-íamos/-ían – dieselben Endungen wie das Imperfekt von -er/-ir, aber an den ganzen Infinitiv. Dieselben kurzen Stämme wie im Futur: tener → tendría, hacer → haría, poder → podría.",
+        recipeEn: "Infinitive + -ía/-ías/-ía/-íamos/-ían – the same endings as the imperfect of -er/-ir verbs, but on the whole infinitive. Same short stems as the future: tener → tendría, hacer → haría, poder → podría.",
+        signals: "por favor, ¿podría …?, me gustaría, ¿sería posible?",
+        when: "Der Höflichkeits-Joker: Wünsche und Bitten weicher machen („Querría…“, „¿Podría…?“) und über Hypothetisches reden („Sería genial“). Unterwegs hörst du ihn vor allem in festen Höflichkeitsfloskeln.",
+        whenEn: "The politeness joker: softening wishes and requests (\"Querría…\", \"¿Podría…?\") and talking about hypotheticals (\"Sería genial\"). On the road you'll mostly hear it in set polite phrases.",
+        examples: [
+          { es: "Querría una habitación doble.", de: "Ich hätte gern ein Doppelzimmer.", en: "I'd like a double room." },
+          { es: "¿Podría ayudarme, por favor?", de: "Könnten Sie mir bitte helfen?", en: "Could you help me, please?" },
+          { es: "Me gustaría ver el menú.", de: "Ich würde gern die Karte sehen.", en: "I'd like to see the menu." },
+        ] },
     ],
     tensesNote: "Reise-Faustregel: Gegenwart für jetzt & bald, indefinido fürs Erzählen von gestern, „voy a + Infinitiv“ für Pläne. Damit kommst du fast überall durch.",
     tensesNoteEn: "Travel rule of thumb: present for now & soon, indefinido for telling stories about yesterday, \"voy a + infinitive\" for plans. That'll get you through almost anything.",
@@ -1884,6 +1896,20 @@
         { es: "Estábamos buscando la terminal y nos perdimos.", de: "Wir suchten gerade den Busbahnhof und verirrten uns.", en: "We were looking for the bus station and got lost." },
         { es: "¿Qué estabas haciendo cuando te llamé?", de: "Was hast du gerade gemacht, als ich dich anrief?", en: "What were you doing when I called you?" },
       ],
+    },
+    // acabar de + Infinitiv: gerade eben getan – Soforthilfe für den Moment davor,
+    // ohne eine echte Vergangenheitsform. Nur acabar wird gebeugt (wie ir bei „voy a“).
+    acabarDe: {
+      title: "Gerade eben getan: acabar de + Infinitiv",
+      titleEn: "Just done: acabar de + infinitive",
+      intro: "Für etwas, das vor ganz kurzer Zeit passiert ist, brauchst du keine Vergangenheit: acabar de + Infinitiv heißt „gerade (eben) …“. Du beugst nur acabar (wie ein normales -ar-Verb), das zweite Verb bleibt im Infinitiv – genau wie bei „voy a + Infinitiv“, nur rückwärts.",
+      introEn: "For something that happened just a moment ago you don't need a past tense: acabar de + infinitive means \"to have just …\". You only conjugate acabar (like a normal -ar verb); the second verb stays in the infinitive – just like \"voy a + infinitive\", only backwards.",
+      rows: [
+        { es: "Acabo de llegar.", de: "Ich bin gerade angekommen.", en: "I've just arrived." },
+        { es: "El bus acaba de salir.", de: "Der Bus ist gerade abgefahren.", en: "The bus has just left." },
+        { es: "Acabamos de comer.", de: "Wir haben gerade gegessen.", en: "We've just eaten." },
+      ],
+      note: "Praktisch als Soforthilfe: „Acabo de …“ ersetzt oft eine ganze Vergangenheitsform. Für „gerade jetzt im Gange“ nimmst du dagegen estar + Gerundio („Estoy comiendo“).", noteEn: "Handy as a quick fix: \"Acabo de …\" often replaces a whole past tense. For \"in progress right now\" use estar + gerund instead (\"Estoy comiendo\").",
     },
     // Der einfache Vergangenheits-Trick: he + Partizip – das exakte Gegenstück zum
     // Zukunfts-Trick „voy a + Infinitiv". In beiden Fällen wird nur ein winziges
