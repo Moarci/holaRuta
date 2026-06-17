@@ -1957,8 +1957,10 @@
     }
 
     // „Was ist neu?"-Hinweis nach einem Update – oberste Ebene (Scrim + Karte).
+    // loc() überlagert title/items per …En für die aktive UI-Sprache (localizeDeep),
+    // sodass der Hinweis bei Englisch englisch erscheint und live umschaltet.
     if (state.updateNotice && state.updateNotice.length) {
-      root.insertAdjacentHTML("afterbegin", ui.updateNotice(state.updateNotice));
+      root.insertAdjacentHTML("afterbegin", ui.updateNotice(loc(state.updateNotice)));
     }
 
     // „Neue Version – jetzt laden"-Banner (schwebt unten über der Reiter-Leiste),
