@@ -55,7 +55,7 @@
 
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
-    homeTab: "lernen",       // Start hat Vorrang: jeder App-Start landet auf dem Lernen-Reiter; Wechsel gilt nur für die laufende Sitzung
+    homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
@@ -2252,8 +2252,12 @@
     if (state.updateNotice && state.updateNotice.length) { dismissUpdateNotice(); return true; }
     if (state.szShow) { szClose(); return true; }
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
-    // 2) Schon auf dem Dashboard: App freigeben.
-    if (state.screen === "home") return false;
+    // 2) Auf einem Home-Reiter: erst zum Start-Reiter zurück (Lernen/Entdecken/
+    //    Profil → Start), dann gibt die nächste Geste die App frei.
+    if (state.screen === "home") {
+      if (state.homeTab !== "start") { setTab("start"); return true; }
+      return false;
+    }
     // Onboarding mit „Zurück" überspringen (zählt als erledigt, kein Wiederzeigen).
     if (state.screen === "onboarding") { finishOnboarding(); return true; }
     // Zurück aus dem Onboarding-Ruta-Check schließt das Onboarding ab (nicht erneut zeigen).
@@ -2279,7 +2283,7 @@
     // Sind wir noch in der App, sofort einen neuen Puffer legen, damit die
     // nächste Zurück-Geste wieder bei uns landet (render() macht das beim
     // Navigieren bereits – das hier deckt overlay-Fälle ohne Re-Render ab).
-    if (handled && state.screen !== "home") armBackGuard();
+    if (handled && !(state.screen === "home" && state.homeTab === "start")) armBackGuard();
   }
 
   // ----- Rendern -----
@@ -2302,6 +2306,41 @@
     } catch (e) {
       try { document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch (e2) { /* egal */ }
     }
+  }
+
+  // Scrollspy für die Sprungmarken-Leiste im Lernen-Reiter: markiert den Chip der
+  // Themen-Gruppe, die gerade oben einläuft, und legt beim Kleben einen dezenten
+  // Schatten an. Rein DOM-seitig (classList) – kein Re-Render, kein App-Zustand;
+  // die Sprünge selbst laufen über die bestehende „scroll-to"-Aktion. Wird nach
+  // jedem Render des Lernen-Reiters neu verdrahtet (das innerHTML wird ersetzt).
+  let topicSpy = null;
+  let stuckWired = false;
+  function wireTopicSpy() {
+    const nav = document.getElementById("topic-nav");
+    // Sticky-Schatten einmalig verdrahten (Element wird per id bei jedem Scroll
+    // frisch gesucht, da das DOM bei Re-Renders ausgetauscht wird).
+    if (nav && !stuckWired && typeof window.addEventListener === "function") {
+      stuckWired = true;
+      window.addEventListener("scroll", function () {
+        const n = document.getElementById("topic-nav");
+        if (n) n.classList.toggle("is-stuck", n.getBoundingClientRect().top <= 0.5);
+      }, { passive: true });
+    }
+    // Ohne IntersectionObserver bleiben die Chips reine Anker-Sprünge (Fallback).
+    if (!nav || typeof IntersectionObserver !== "function") return;
+    const chips = nav.querySelectorAll(".dashnav__chip");
+    const sections = root.querySelectorAll(".topicgrp[id]");
+    if (!sections.length) return;
+    if (topicSpy) topicSpy.disconnect();
+    const setActive = (id) => chips.forEach((c) =>
+      c.classList.toggle("is-active", c.getAttribute("data-target") === id));
+    setActive(sections[0].id); // erste Gruppe initial markieren
+    topicSpy = new IntersectionObserver(function (entries) {
+      const vis = entries.filter((e) => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (vis) setActive(vis.target.id);
+    }, { rootMargin: "-64px 0px -55% 0px", threshold: [0, 0.25, 0.5, 1] });
+    sections.forEach((s) => topicSpy.observe(s));
   }
 
   function render() {
@@ -2385,9 +2424,13 @@
     manageFocus();
     maybeAutoSpeak();
 
-    // Abseits des Dashboards einen Puffer-Eintrag vorhalten, damit die nächste
-    // Zurück-Geste eine Ebene höher führt statt die App zu schließen.
-    if (state.screen !== "home") armBackGuard();
+    // Abseits des Start-Reiters einen Puffer-Eintrag vorhalten, damit die nächste
+    // Zurück-Geste eine Ebene höher führt (bzw. Lernen/Entdecken/Profil → Start)
+    // statt die App zu schließen. Erst auf „Start" gibt Zurück die App frei.
+    if (!(state.screen === "home" && state.homeTab === "start")) armBackGuard();
+
+    // Sprungmarken-Scrollspy im Lernen-Reiter (aktiven Chip beim Scrollen setzen).
+    if (state.screen === "home" && state.homeTab === "lernen") wireTopicSpy();
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
@@ -3641,10 +3684,10 @@
     if (tab === "tarea") { openTaskScreen(); return; }
     if (tab === "teacher") { openTeacher(); return; }
     // Reiter-Wechsel gilt nur für die laufende Sitzung – beim nächsten App-Start
-    // hat die Startseite (Lernen) wieder Vorrang, deshalb wird er nicht persistiert.
+    // hat der Start-Reiter wieder Vorrang, deshalb wird er nicht persistiert.
     // screen zurück auf "home" setzen, falls man vom Tarea-Screen einen Reiter tippt.
     state.screen = "home";
-    state.homeTab = tab === "entdecken" || tab === "profil" ? tab : "lernen";
+    state.homeTab = (tab === "lernen" || tab === "entdecken" || tab === "profil") ? tab : "start";
     render();
   }
 
