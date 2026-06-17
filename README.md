@@ -259,7 +259,9 @@ HolaRuta braucht **keine Installation und keinen Build**. Es ist statisches HTML
 
 ```bash
 # HolaRuta.html ist die fertige, eigenständige Version (alles eingebettet).
-# Doppelklick genügt — läuft offline, ohne Server.
+# Nicht im Repo eingecheckt: einmal `node build.js` ausführen ODER von
+# https://moarci.github.io/holaRuta/HolaRuta.html laden.
+# Dann Doppelklick — läuft offline, ohne Server.
 ```
 
 > **Hinweis:** In der Einzeldatei sind PWA-Features (Service Worker, Installation) deaktiviert, da `file://` keinen Service Worker erlaubt. Für die volle PWA siehe Variante B.
@@ -316,7 +318,7 @@ node build.js
 - Entfernt PWA-Verweise (Manifest/Icon lösen unter `file://` nicht auf)
 - Externe Links (Google Fonts) bleiben unverändert
 
-> **Wichtig:** `HolaRuta.html` ist ein **Ergebnis** des Builds und wird nie von Hand bearbeitet.
+> **Wichtig:** `HolaRuta.html` ist ein **Ergebnis** des Builds, wird nie von Hand bearbeitet und ist **nicht im Repo eingecheckt** (`.gitignore`). CI baut sie beim Deploy frisch und stellt sie unter `https://moarci.github.io/holaRuta/HolaRuta.html` bereit.
 
 ### Co-Branding-Editionen
 

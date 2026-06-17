@@ -65,10 +65,13 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Verify generated artifacts are up to date
+      # HolaRuta.html ist nicht mehr eingecheckt (wird im deploy-Job frisch
+      # gebaut). Geprüft wird nur, dass der Build sauber läuft UND der
+      # committete service-worker.js (CACHE_VERSION) zum Quellcode passt.
+      - name: Verify build runs and service-worker is in sync
         run: |
           node build.js
-          git diff --exit-code HolaRuta.html service-worker.js
+          git diff --exit-code service-worker.js
 
   deploy:
     needs: test
@@ -85,6 +88,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+
+      # HolaRuta.html liegt nicht im Repo, ist aber als Einzeldatei-Download
+      # gewünscht: frisch aus den Modulen bauen, damit sie unter
+      # https://<user>.github.io/holaRuta/HolaRuta.html stets aktuell verfügbar ist.
+      - name: Build single-file (HolaRuta.html)
+        run: node build.js
 
       - name: Configure Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0

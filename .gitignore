@@ -6,6 +6,9 @@ tmp_*.js
 tmp_*.json
 .playwright-mcp/
 
+# Generierter Single-File-Build (Quelle = Module; via `node build.js`)
+HolaRuta.html
+
 # Edition-Builds (reproduzierbar via `node build.js --edition=<id>`)
 HolaRuta-*.html
 
