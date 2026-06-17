@@ -4777,5 +4777,39 @@
     ] },
   ];
 
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP };
+  // Bundles (Modo profe): kuratierte Sammlungen mehrerer Ziele, die als EIN
+  // teilbarer Code/Link mehrere Aufgaben auf einmal abonnieren. Jedes item ist
+  // ein Aufgaben-Ziel { kind: "pretrip"|"preset"|"category", scope }:
+  //   pretrip  -> PRETRIP[].scope   (z. B. "colombia")
+  //   preset   -> PRESETS[].id      (z. B. "prearrival-co")
+  //   category -> CATEGORIES[].id   (z. B. "notfall")
+  // group: "destino" (Reiseziel-Komplett) | "tema" (Themen-/Lehrplan-Block) –
+  // nur zum Ordnen in der Auswahl. Die Lehrkraft kann ein Bundle als Startpunkt
+  // nehmen und im Picker frei anpassen.
+  const BUNDLES = [
+    // — Reiseziel-Komplett: mehrtägiger Plan + Pre-Arrival-Paket + Sicherheits-Essentials —
+    { id: "komplett-colombia", icon: "🌎", group: "destino", label: "Komplett: Kolumbien", labelEn: "Complete: Colombia",
+      items: [{ kind: "pretrip", scope: "colombia" }, { kind: "preset", scope: "prearrival-co" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+    { id: "komplett-cartagena", icon: "🌎", group: "destino", label: "Komplett: Cartagena", labelEn: "Complete: Cartagena",
+      items: [{ kind: "pretrip", scope: "cartagena" }, { kind: "preset", scope: "prearrival-ctg" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+    { id: "komplett-medellin", icon: "🌎", group: "destino", label: "Komplett: Medellín", labelEn: "Complete: Medellín",
+      items: [{ kind: "pretrip", scope: "medellin" }, { kind: "preset", scope: "prearrival-med" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+    { id: "komplett-cusco", icon: "🌎", group: "destino", label: "Komplett: Cusco", labelEn: "Complete: Cusco",
+      items: [{ kind: "pretrip", scope: "cusco" }, { kind: "preset", scope: "prearrival-cus" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+    { id: "komplett-cdmx", icon: "🌎", group: "destino", label: "Komplett: Mexiko-Stadt", labelEn: "Complete: Mexico City",
+      items: [{ kind: "pretrip", scope: "cdmx" }, { kind: "preset", scope: "prearrival-cdmx" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+    { id: "komplett-antigua", icon: "🌎", group: "destino", label: "Komplett: Antigua", labelEn: "Complete: Antigua",
+      items: [{ kind: "pretrip", scope: "antigua" }, { kind: "preset", scope: "prearrival-ant" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+    { id: "komplett-buenosaires", icon: "🌎", group: "destino", label: "Komplett: Buenos Aires", labelEn: "Complete: Buenos Aires",
+      items: [{ kind: "pretrip", scope: "buenosaires" }, { kind: "preset", scope: "prearrival-bue" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+    // — Themen-/Lehrplan-Blöcke (reiseunabhängig) —
+    { id: "survival", icon: "🆘", group: "tema", label: "Survival-Set", labelEn: "Survival kit",
+      items: [{ kind: "category", scope: "basics" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }, { kind: "category", scope: "verkehr" }] },
+    { id: "woche1", icon: "📚", group: "tema", label: "Lehrplan-Woche 1: Grundlagen", labelEn: "Syllabus week 1: Basics",
+      items: [{ kind: "category", scope: "basics" }, { kind: "category", scope: "zahlen" }, { kind: "category", scope: "essen" }] },
+    { id: "woche2", icon: "📚", group: "tema", label: "Lehrplan-Woche 2: Unterwegs", labelEn: "Syllabus week 2: Getting around",
+      items: [{ kind: "category", scope: "hotel" }, { kind: "category", scope: "verkehr" }, { kind: "category", scope: "compras" }] },
+  ];
+
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP, BUNDLES };
 })();

@@ -1294,6 +1294,16 @@
     pickChange: "Ändern",
     pickClose: "Fertig",
     pickNone: "Noch kein Ziel gewählt",
+    multiHint: "Tippe mehrere Ziele an, um daraus ein Bundle zu bauen – ein Link, der bei den Lernenden mehrere Aufgaben auf einmal anlegt.",
+    sumSingle: "Einzelaufgabe",
+    sumBundle: "Bundle",
+    bundleItems: (p) => `${p.n} Ziele`,
+    bundleCustom: "Eigenes Bundle",
+    bundleCodeFor: (p) => `Bundle „${p.label}“ · ${p.n} Aufgaben`,
+    bundleSectionTitle: "📦 Fertige Bundles",
+    bundleSectionHelp: "Kuratierte Sammlungen für typische Situationen – z. B. „Komplett: Kolumbien“ (Plan + Pre-Arrival + Notfall & Geld) oder „Survival-Set“. Tipp drauf, übernimm es als Startpunkt und passe es darunter frei an. So sparst du das Zusammenklicken.",
+    selCount: (p) => `${p.n} ausgewählt`,
+    clearSel: "Auswahl leeren",
   }, {
     title: "Teacher mode",
     openHint: "For teachers & tour leaders: class overview and creating tasks.",
@@ -1342,6 +1352,16 @@
     pickChange: "Change",
     pickClose: "Done",
     pickNone: "No target chosen yet",
+    multiHint: "Tap several targets to build a bundle – one link that creates multiple tasks at once for your learners.",
+    sumSingle: "Single task",
+    sumBundle: "Bundle",
+    bundleItems: (p) => `${p.n} targets`,
+    bundleCustom: "Custom bundle",
+    bundleCodeFor: (p) => `Bundle “${p.label}” · ${p.n} tasks`,
+    bundleSectionTitle: "📦 Ready-made bundles",
+    bundleSectionHelp: "Curated sets for typical situations – e.g. “Complete: Colombia” (plan + pre-arrival + emergency & money) or “Survival kit”. Tap one to use it as a starting point and tweak it freely below. Saves you the clicking.",
+    selCount: (p) => `${p.n} selected`,
+    clearSel: "Clear selection",
   });
 
   // ---------- task: Aufgabe öffnen (Lernenden-Seite) ----------
@@ -1375,6 +1395,8 @@
     empty: "Noch keine Aufgaben. Tippe den Link deiner Lehrkraft oder Reiseleitung an oder füge unten den Code ein.",
     added: "Aufgabe hinzugefügt.",
     already: "Diese Aufgabe ist schon in deiner Liste.",
+    bundleAdded: (p) => `Bundle abonniert: ${p.n} Aufgaben hinzugefügt.`,
+    bundleSome: (p) => `Bundle abonniert: ${p.added} neu, ${p.dup} schon vorhanden.`,
   }, {
     title: "Tarea",
     intro: "Got a task code or link from your teacher or tour leader? Tap the link or paste the code below – your tasks stay saved, even after you close the app.",
@@ -1405,6 +1427,8 @@
     empty: "No tasks yet. Tap your teacher's or tour leader's link, or paste the code below.",
     added: "Task added.",
     already: "This task is already in your list.",
+    bundleAdded: (p) => `Bundle subscribed: ${p.n} tasks added.`,
+    bundleSome: (p) => `Bundle subscribed: ${p.added} new, ${p.dup} already there.`,
   });
 
   // ---------- placement: Ruta-Check (Einstufungstest) ----------

@@ -22,6 +22,22 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.93.0",
+      date: "2026-06-17",
+      title: "Modo profe: Bundles – ein Link, mehrere Aufgaben",
+      titleEn: "Teacher mode: bundles – one link, several tasks",
+      items: [
+        "📦 Neu im Lehrer-/Reiseleiter-Modus: Bundles. Statt für eine Reisevorbereitung mehrere Links einzeln zu bauen, stellst du jetzt mehrere Ziele zu EINEM teilbaren Link zusammen – ein Antippen abonniert bei den Lernenden alle Aufgaben auf einmal (sie laufen wie gewohnt parallel).",
+        "🎯 Fertige Vorlagen als Startpunkt: „Komplett: Kolumbien/Cartagena/Cusco …“ (mehrtägiger Plan + Pre-Arrival-Paket + Notfall & Geld), dazu „Survival-Set“ und „Lehrplan-Woche 1/2“. Eine Vorlage übernehmen und im selben Dialog frei anpassen – oder komplett eigene Bundles per Mehrfachauswahl bauen.",
+        "🔗 Bundle-Codes (HRB1.…) funktionieren über denselben Link/Code-Weg wie Einzelaufgaben – Einfügen, Eingabefeld und geteilte Links erkennen beides automatisch. Eine Auswahl = weiterhin eine einzelne Aufgabe (abwärtskompatibel).",
+      ],
+      itemsEn: [
+        "📦 New in teacher / tour-guide mode: bundles. Instead of building several links one by one for a trip prep, you now combine multiple targets into ONE shareable link – a single tap subscribes learners to all tasks at once (they run in parallel as usual).",
+        "🎯 Ready-made templates as a starting point: “Complete: Colombia/Cartagena/Cusco …” (multi-day plan + pre-arrival pack + emergency & money), plus a “Survival kit” and “Syllabus week 1/2”. Apply a template and tweak it freely in the same dialog – or build entirely custom bundles via multi-select.",
+        "🔗 Bundle codes (HRB1.…) work over the same link/code path as single tasks – pasting, the input field and shared links detect both automatically. A single selection still creates one individual task (backward compatible).",
+      ],
+    },
+    {
       version: "1.92.0",
       date: "2026-06-17",
       title: "Modo profe: Ziel-Auswahl als erklärtes Modal statt Dropdown",

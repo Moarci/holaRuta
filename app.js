@@ -71,8 +71,10 @@
     pretripLock: null,       // per zugewiesener Aufgabe festgelegtes Reiseziel (nur dieses zeigen, nicht wechselbar) | null
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
-    taskTarget: "",          // gewähltes Aufgaben-Ziel im Formular (überlebt Re-Render)
+    taskItems: [],           // gewählte Aufgaben-Ziele im Formular: [{kind,scope}] – 1 = Einzelaufgabe, ≥2 = Bundle (überlebt Re-Render)
+    taskBundleId: "",        // Id der zuletzt angewandten Bundle-Vorlage ("" = frei zusammengestellt)
     targetPicker: null,      // offenes Ziel-Picker-Modal: 'task' | 'sheet' | null (Modo profe / Blatt)
+    teacherTaskCodeLabel: "", // lesbare Beschriftung des erzeugten Codes (Einzelziel oder „Bundle … · N Aufgaben")
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
@@ -2880,8 +2882,11 @@
   function openTeacher() {
     dismissBadgeToast();
     // Sinnvolle Vorauswahl, damit der Ziel-Picker eine Auswahl zeigt und „Code
-    // erzeugen" sofort funktioniert (sonst bliebe taskTarget leer = no-op).
-    if (!state.taskTarget) state.taskTarget = (taskTargets()[0] || {}).value || "";
+    // erzeugen" sofort funktioniert (sonst bliebe die Auswahl leer = no-op).
+    if (!state.taskItems.length) {
+      const first = taskTargets()[0];
+      if (first) state.taskItems = [targetValueToItem(first.value)];
+    }
     state.screen = "teacher";
     render();
   }
@@ -2954,6 +2959,7 @@
 
   function teacherVM() {
     const students = state.teacherStudents.slice();
+    const items = state.taskItems.slice();
     return {
       students,
       count: students.length,
@@ -2962,13 +2968,15 @@
         ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
       totalCards: students.length ? students[0].totalCards : 0,
       taskTargets: taskTargets(),
-      taskTarget: state.taskTarget,   // gewähltes Ziel (für die Picker-Anzeige)
-      targetPicker: state.targetPicker, // offenes Ziel-Picker-Modal? ('task' | null)
-      taskTitle: state.taskTitle,     // Titel-Feld vorbelegen
-      taskDue: state.taskDue,         // Frist-Feld vorbelegen
+      bundles: bundlesVM(),                       // kuratierte Vorlagen
+      taskItemKeys: items.map(itemKey),           // aktuell gewählte Ziele (als "kind:scope")
+      taskSummary: taskSelectionSummary(),        // Feld-Anzeige (none/single/bundle)
+      activeBundleId: state.taskBundleId,         // markiert die angewandte Vorlage
+      targetPicker: state.targetPicker,           // offenes Ziel-Picker-Modal? ('task' | null)
+      taskTitle: state.taskTitle,                 // Titel-Feld vorbelegen
+      taskDue: state.taskDue,                     // Frist-Feld vorbelegen
       taskCode: state.teacherTaskCode,
-      // Lesbare Bestätigung, WOFÜR der erzeugte Code ist (statt nur Base64-Blob).
-      taskCodeLabel: state.teacherTaskCode ? taskTargetLabel(store.decodeTask(state.teacherTaskCode)) : "",
+      taskCodeLabel: state.teacherTaskCodeLabel,  // lesbare Bestätigung, WOFÜR der Code ist
     };
   }
 
@@ -2985,6 +2993,19 @@
     return out;
   }
 
+  // Bundle-Vorlagen mit lokalisierten Labels + Item-Schlüsseln (für die Auswahl).
+  function bundlesVM() {
+    return (data.BUNDLES || []).map((b) => ({
+      id: b.id, icon: b.icon || "📦", group: b.group || "tema",
+      label: natk(b, "label"), count: (b.items || []).length,
+      itemKeys: (b.items || []).map(itemKey),
+    }));
+  }
+
+  // "kind:scope" <-> {kind, scope}: ein Item-Schlüssel deckt sich mit taskTargets().value.
+  function itemKey(it) { return it.kind + ":" + it.scope; }
+  function targetValueToItem(value) { const p = String(value).split(":"); return { kind: p[0], scope: p.slice(1).join(":") }; }
+
   function taskTargetLabel(task) {
     if (!task) return "";
     let sc = task.scope;
@@ -2995,33 +3016,68 @@
     return prefix + ": " + name;
   }
 
-  // Ziel im Picker-Modal gewählt: in den passenden State spiegeln und schließen.
-  // ctx "task" = Aufgaben-Formular (Modo profe), "sheet" = Aktivitätsblatt.
+  // Wie das Ziel-Feld die aktuelle Auswahl zusammenfasst:
+  //   0 Ziele  -> { kind:"none" }
+  //   1 Ziel   -> { kind:"single", label } (Einzelaufgabe)
+  //   ≥2 Ziele -> { kind:"bundle", label, count } (Bundle: Vorlage-Name oder „Eigenes Bundle")
+  function taskSelectionSummary() {
+    const items = state.taskItems;
+    if (!items.length) return { kind: "none" };
+    if (items.length === 1) return { kind: "single", label: taskTargetLabel(items[0]) };
+    const tpl = state.taskBundleId ? (data.BUNDLES || []).find((b) => b.id === state.taskBundleId) : null;
+    return { kind: "bundle", label: tpl ? natk(tpl, "label") : t("teacher.bundleCustom"), count: items.length };
+  }
+
+  // Ziel im Picker gewählt. ctx "sheet" = Aktivitätsblatt: genau EIN Ziel, danach
+  // schließen. ctx "task" = Modo profe: Mehrfachauswahl (umschalten, offen lassen),
+  // damit man ein Bundle zusammenstellen kann.
   function pickTarget(ctx, value) {
     if (!value) return;
-    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; }
-    else { state.taskTarget = value; }
-    state.targetPicker = null;
+    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.targetPicker = null; render(); return; }
+    const item = targetValueToItem(value), key = value;
+    const idx = state.taskItems.findIndex((x) => itemKey(x) === key);
+    state.taskItems = idx >= 0 ? state.taskItems.filter((_, i) => i !== idx) : state.taskItems.concat([item]);
+    state.taskBundleId = ""; // manuelle Änderung -> ab jetzt „Eigenes Bundle"
     render();
   }
 
-  // Aufgabe erzeugen (Lehrkraft): aus dem Formular einen Code bauen.
+  // Bundle-Vorlage anwenden: Auswahl auf die Items der Vorlage setzen (als Start-
+  // punkt – die Lehrkraft kann danach im selben Picker frei nachjustieren).
+  function applyBundle(id) {
+    const b = (data.BUNDLES || []).find((x) => x.id === id);
+    if (!b) return;
+    state.taskItems = (b.items || []).map((it) => ({ kind: it.kind, scope: it.scope }));
+    state.taskBundleId = id;
+    render();
+  }
+
+  function clearTaskSelection() {
+    state.taskItems = [];
+    state.taskBundleId = "";
+    render();
+  }
+
+  // Aufgabe/Bundle erzeugen (Lehrkraft): aus der Auswahl einen Code bauen.
+  // 1 Ziel  -> Einzel-Aufgabencode (HRT1, abwärtskompatibel).
+  // ≥2 Ziele -> Bundle-Code (HRB1): ein Link, der mehrere Aufgaben abonniert.
   function generateTask() {
     // Aktuelle Titel/Frist übernehmen (DOM ist die Wahrheit beim Klick), in den
-    // State spiegeln, damit der Re-Render sie beibehält. Das Ziel (taskTarget)
-    // pflegt bereits das Picker-Modal.
+    // State spiegeln, damit der Re-Render sie beibehält. Die Ziele pflegt der Picker.
     const titleEl = document.getElementById("task-title");
     const dueEl = document.getElementById("task-due");
     if (titleEl) state.taskTitle = titleEl.value;
     if (dueEl) state.taskDue = dueEl.value;
-    if (!state.taskTarget) return;
-    const parts = state.taskTarget.split(":");
-    state.teacherTaskCode = store.encodeTask({
-      kind: parts[0],
-      scope: parts.slice(1).join(":"),
-      title: (state.taskTitle || "").trim(),
-      due: state.taskDue || "",
-    });
+    const items = state.taskItems;
+    if (!items.length) return;
+    const title = (state.taskTitle || "").trim(), due = state.taskDue || "";
+    if (items.length === 1) {
+      state.teacherTaskCode = store.encodeTask({ kind: items[0].kind, scope: items[0].scope, title: title, due: due });
+      state.teacherTaskCodeLabel = taskTargetLabel(items[0]);
+    } else {
+      state.teacherTaskCode = store.encodeBundle({ items: items, title: title, due: due });
+      const s = taskSelectionSummary();
+      state.teacherTaskCodeLabel = t("teacher.bundleCodeFor", { label: s.label, n: items.length });
+    }
     render();
   }
 
@@ -3165,8 +3221,8 @@
       if (navigator.clipboard && navigator.clipboard.readText) {
         navigator.clipboard.readText().then(function (text) {
           text = (text || "").trim();
-          // Eingefügten Code direkt abonnieren (mehrere parallel möglich).
-          if (text) { if (addSubscribedTask(text)) { el.value = ""; render(); } else { el.value = text; el.focus(); } }
+          // Eingefügten Code direkt abonnieren (Einzelaufgabe oder Bundle).
+          if (text) { if (addByCode(text)) { el.value = ""; render(); } else { el.value = text; el.focus(); } }
           else fallback();
         }, fallback);
       } else { fallback(); }
@@ -3240,6 +3296,32 @@
     return true;
   }
 
+  // Code (Einzelaufgabe ODER Bundle) abonnieren – einheitlicher Einstieg für
+  // Einfügen, Eingabefeld und geteilte Links. HRB1.… = Bundle (mehrere Ziele).
+  function addByCode(code, silent) {
+    const s = String(code || "").trim();
+    if (s.indexOf("HRB") === 0) return addSubscribedBundle(s, silent);
+    return addSubscribedTask(s, silent);
+  }
+
+  // Bundle abonnieren: dekodieren und JEDES enthaltene Ziel als eigene Aufgabe
+  // (Einzel-Code) hinzufügen – so laufen sie wie gewohnt parallel. Titel/Frist des
+  // Bundles werden auf alle Ziele übernommen. Toast fasst neu/bereits-vorhanden zusammen.
+  function addSubscribedBundle(code, silent) {
+    const b = store.decodeBundle(code);
+    if (!b || !b.items.length) { if (!silent) showNotice(t("task.invalid")); return false; }
+    let added = 0, dup = 0;
+    b.items.forEach((it) => {
+      if (!taskTargetExists(it)) return; // unbekanntes Ziel still überspringen
+      const single = store.encodeTask({ kind: it.kind, scope: it.scope, title: b.title || "", due: b.due || "" });
+      const existed = subscribedTasks.some((x) => x.code === single);
+      if (addSubscribedTask(single, true)) { if (existed) dup++; else added++; }
+    });
+    if (!added && !dup) { if (!silent) showNotice(t("task.unknownTarget")); return false; }
+    if (!silent) showNotice(dup ? t("task.bundleSome", { added: added, dup: dup }) : t("task.bundleAdded", { n: added }));
+    return true;
+  }
+
   function removeSubscribedTask(idx) {
     if (idx < 0 || idx >= subscribedTasks.length) return;
     const next = subscribedTasks.filter((_, i) => i !== idx);
@@ -3265,7 +3347,7 @@
 
   function openTaskFromInput() {
     const el = document.getElementById("task-code-input");
-    if (addSubscribedTask(el ? el.value : "")) { if (el) el.value = ""; render(); }
+    if (addByCode(el ? el.value : "")) { if (el) el.value = ""; render(); }
   }
 
   // Die zu einer Aufgabe gehörenden Karten (Preset = kuratierte Liste, Kategorie =
@@ -5113,6 +5195,8 @@
     else if (action === "close-target-picker") { state.targetPicker = null; render(); }
     else if (action === "target-stop") { /* Klick auf die Modal-Karte: nicht schließen */ }
     else if (action === "pick-target") pickTarget(el.dataset.ctx, el.dataset.value);
+    else if (action === "apply-bundle") applyBundle(el.dataset.bundle);
+    else if (action === "clear-task-sel") clearTaskSelection();
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
     else if (action === "task-copy-link") copyTaskLink();
@@ -5333,14 +5417,14 @@
     setTimeout(function () {
       const v = String(el.value || "").trim();
       if (!v) return;
-      if (store.decodeTask(v)) {
-        // Gültiger Code -> abonnieren (addSubscribedTask meldet selbst Dopplung/Fehler).
-        if (addSubscribedTask(v)) { el.value = ""; render(); }
+      if (store.decodeTask(v) || store.decodeBundle(v)) {
+        // Gültiger Code/Bundle -> abonnieren (addByCode meldet selbst Dopplung/Fehler).
+        if (addByCode(v)) { el.value = ""; render(); }
         return;
       }
-      // Sieht wie ein Aufgaben-Code aus (HRT1.…), lässt sich aber nicht lesen ->
-      // kurzer Hinweis. Bei beliebigem Fremd-Text bleibt das Einfügen still.
-      if (v.indexOf("HRT1.") !== -1) showNotice(t("task.invalid"));
+      // Sieht wie ein Aufgaben-/Bundle-Code aus (HRT1.…/HRB1.…), lässt sich aber nicht
+      // lesen -> kurzer Hinweis. Bei beliebigem Fremd-Text bleibt das Einfügen still.
+      if (v.indexOf("HRT1.") !== -1 || v.indexOf("HRB1.") !== -1) showNotice(t("task.invalid"));
     }, 0);
   }
 
@@ -5670,7 +5754,7 @@
   // parallel möglich) und den Parameter entfernen. Onboarding hat Vorrang vor dem Screen.
   const taskCode = urlParam("task");
   if (taskCode) {
-    if (addSubscribedTask(taskCode, true) && settings.onboarded === true && state.screen !== "onboarding") {
+    if (addByCode(taskCode, true) && settings.onboarded === true && state.screen !== "onboarding") {
       openTaskScreen(); // direkt zur Aufgabenliste, wenn schon eingerichtet
     }
     stripUrlParam("task");

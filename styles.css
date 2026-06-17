@@ -1942,6 +1942,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .tgt-opt__check { flex: none; color: var(--brand-ink); font-weight: 800; }
 .tgt-modal__foot { padding: 14px 18px 18px; }
 .tgt-modal__done { width: 100%; }
+/* Bundle-Vorlagen (nur Modo profe): wie eine Option, aber mit Icon + Meta. */
+.tgt-bundle { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left; cursor: pointer;
+  font: inherit; padding: 10px 13px; border: 1px solid var(--line); border-radius: var(--r-md, 10px);
+  background: var(--card); color: var(--ink); transition: border-color .15s ease, background .15s ease; }
+.tgt-bundle:hover { border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); }
+.tgt-bundle.is-active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 12%, var(--card)); }
+.tgt-bundle__icon { flex: none; font-size: 1.2rem; }
+.tgt-bundle__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.tgt-bundle__label { font-weight: 700; }
+.tgt-bundle__meta { font-size: .76rem; color: var(--muted); font-weight: 700; }
+/* Footer der Mehrfachauswahl: Zähler links, Aktionen rechts. */
+.tgt-modal__foot--task { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+.tgt-foot__count { font-size: .82rem; font-weight: 800; color: var(--brand-ink); }
+.tgt-foot__btns { display: flex; align-items: center; gap: 8px; }
+.tgt-clear { font: inherit; font-weight: 700; cursor: pointer; border: 1px solid var(--line);
+  background: transparent; color: var(--ink-soft); border-radius: var(--r-md, 10px); padding: 9px 13px; }
+.tgt-clear:hover { color: var(--brand-ink); border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
+.tgt-modal__foot--task .tgt-modal__done { width: auto; }
 
 /* ====================================================================
  * HOSTEL MODE – Battle & Rollenspiele (Anwenden zu zweit)

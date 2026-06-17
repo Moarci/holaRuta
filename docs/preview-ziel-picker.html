@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>HolaRuta · Vorschau: Ziel-Picker (Modo profe)</title>
+<title>HolaRuta · Vorschau: Ziel-Picker & Bundles (Modo profe)</title>
 <style>
   /* --- Design-Tokens aus styles.css (Light + Dark) --- */
   :root{
@@ -33,9 +33,8 @@
   .task-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
   .task-input{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-md);
        background:var(--card);color:var(--ink);min-width:0;flex:1 1 12em;}
-  .teacher-btn{font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--line);
-       background:var(--card);color:var(--ink);border-radius:var(--r-md);padding:9px 14px;}
-  .teacher-btn--main{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .teacher-btn--main{font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--brand);
+       background:var(--brand);color:#fff;border-radius:var(--r-md);padding:9px 14px;}
 
   /* ===== ZIEL-PICKER (1:1 aus styles.css) ===== */
   .tgt-field{flex:1 1 14em;display:flex;align-items:center;gap:10px;text-align:left;font:inherit;
@@ -46,6 +45,7 @@
   .tgt-field__kicker{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
     color:var(--brand-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .tgt-field__val{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tgt-field__val--none{color:var(--muted);font-weight:600;}
   .tgt-field__change{flex:none;font-size:.8rem;font-weight:800;color:var(--brand-ink);white-space:nowrap;}
 
   .tgt-scrim{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:18px;
@@ -78,106 +78,155 @@
   .tgt-opt.is-active{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--card));}
   .tgt-opt__label{flex:1 1 auto;font-weight:700;}
   .tgt-opt__check{flex:none;color:var(--brand-ink);font-weight:800;}
+  /* Bundle-Vorlagen */
+  .tgt-bundle{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;font:inherit;
+    padding:10px 13px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);color:var(--ink);
+    transition:border-color .15s ease,background .15s ease;}
+  .tgt-bundle:hover{border-color:color-mix(in srgb,var(--brand) 45%,var(--line));}
+  .tgt-bundle.is-active{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--card));}
+  .tgt-bundle__icon{flex:none;font-size:1.2rem;}
+  .tgt-bundle__text{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px;}
+  .tgt-bundle__label{font-weight:700;}
+  .tgt-bundle__meta{font-size:.76rem;color:var(--muted);font-weight:700;}
   .tgt-modal__foot{padding:14px 18px 18px;}
+  .tgt-modal__foot--task{display:flex;align-items:center;gap:10px;justify-content:space-between;}
+  .tgt-foot__count{font-size:.82rem;font-weight:800;color:var(--brand-ink);}
+  .tgt-foot__btns{display:flex;align-items:center;gap:8px;}
+  .tgt-clear{font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--line);background:transparent;
+    color:var(--ink-soft);border-radius:var(--r-md);padding:9px 13px;}
   .cta{font:inherit;font-weight:800;cursor:pointer;border:1px solid var(--brand);background:var(--brand);
     color:#fff;border-radius:var(--r-md);padding:11px 16px;}
-  .tgt-modal__done{width:100%;}
   [hidden]{display:none!important;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="demo-bar">
-    <h1>🧑‍🏫 Vorschau · Ziel-Picker</h1>
+    <h1>🧑‍🏫 Vorschau · Ziel-Picker & Bundles</h1>
     <button class="demo-toggle" id="theme">🌙 Dark</button>
   </div>
-  <p class="demo-hint">Interaktive Vorschau der neuen Ziel-Auswahl im Lehrer-/Reiseleiter-Modus.
-     Tippe auf das Ziel-Feld → das Modal mit den drei erklärten Gruppen öffnet sich. Wähle ein
-     Ziel, das Feld aktualisiert sich. (Vorher: nüchterne System-Dropdown-Liste.)</p>
+  <p class="demo-hint">Interaktive Vorschau des Modo profe. Tippe aufs Ziel-Feld → das Modal öffnet sich.
+     Oben fertige <b>Bundles</b> (Vorlage übernehmen = Auswahl als Startpunkt setzen), darunter die drei
+     erklärten Gruppen als <b>Mehrfachauswahl</b>. 1 Ziel = Einzelaufgabe, ≥2 Ziele = Bundle (ein Link,
+     mehrere Aufgaben). Schließen via ✕ / Fertig / Scrim / Escape.</p>
 
-  <h3 class="teacher-h3">Aufgabe erstellen &amp; teilen</h3>
-  <p class="teacher-sub2">Wähle ein Ziel, erzeuge einen Code und teile ihn als Link. Ein Antippen
-     abonniert die Aufgabe bei den Lernenden.</p>
+  <h3 class="teacher-h3">Aufgabe / Bundle erstellen &amp; teilen</h3>
+  <p class="teacher-sub2">Wähle ein Ziel oder stell ein Bundle zusammen, erzeuge einen Code und teile ihn als Link.</p>
   <div class="task-form">
     <button type="button" class="tgt-field" id="field" aria-haspopup="dialog" aria-label="Ziel auswählen">
       <span class="tgt-field__text" id="fieldText"></span>
       <span class="tgt-field__change">Ändern ▾</span>
     </button>
     <input class="task-input" type="text" maxlength="80" placeholder="Titel (optional), z. B. „Hausaufgabe 1“">
-    <button class="teacher-btn teacher-btn--main">Code erzeugen</button>
+    <button class="teacher-btn--main">Code erzeugen</button>
   </div>
 </div>
 
-<!-- Modal -->
 <div class="tgt-scrim" id="scrim" hidden>
   <div class="tgt-modal" role="dialog" aria-modal="true" aria-labelledby="tgt-title" id="modal">
     <div class="tgt-modal__head">
       <h2 class="tgt-modal__title" id="tgt-title">🎯 Aufgaben-Ziel wählen</h2>
       <button type="button" class="tgt-modal__x" id="x" aria-label="Fertig">✕</button>
     </div>
-    <p class="tgt-modal__intro">Worauf soll sich die Aufgabe beziehen? Wähle ein Ziel – die Lernenden
-       bekommen genau diese Karten. Jede Gruppe unten erklärt, wann sie passt.</p>
+    <p class="tgt-modal__intro">Worauf soll sich die Aufgabe beziehen? Wähle ein Ziel – die Lernenden bekommen
+       genau diese Karten. Tippe mehrere Ziele an, um daraus ein Bundle zu bauen – ein Link, der mehrere
+       Aufgaben auf einmal anlegt.</p>
     <div class="tgt-modal__body" id="body"></div>
-    <div class="tgt-modal__foot">
-      <button type="button" class="cta tgt-modal__done" id="done">Fertig</button>
+    <div class="tgt-modal__foot tgt-modal__foot--task">
+      <span class="tgt-foot__count" id="count"></span>
+      <span class="tgt-foot__btns" id="footBtns"></span>
     </div>
   </div>
 </div>
 
 <script>
-  // Echte Gruppen + Erklärungen (wie in i18n.strings.js / ui.js).
+  var BUNDLES = [
+    { id:"komplett-colombia", icon:"🌎", label:"Komplett: Kolumbien", items:["pretrip:Kolumbien","preset:Kolumbien","cat:Notfall","cat:Geld"] },
+    { id:"komplett-cusco", icon:"🌎", label:"Komplett: Cusco", items:["pretrip:Cusco","preset:Cusco","cat:Notfall","cat:Geld"] },
+    { id:"survival", icon:"🆘", label:"Survival-Set", items:["cat:Grundlagen","cat:Notfall","cat:Geld","cat:Verkehr"] },
+    { id:"woche1", icon:"📚", label:"Lehrplan-Woche 1: Grundlagen", items:["cat:Grundlagen","cat:Zahlen","cat:Essen"] },
+  ];
   var GROUPS = [
-    { icon:"🗓️", label:"Pre-Trip-Pläne",
-      help:"Mehrtägiger Reise-Fahrplan in Etappen. Nimm das, wenn deine Gruppe sich Schritt für Schritt auf eine konkrete Reise vorbereiten soll – ein roter Faden von der Ankunft bis zum letzten Tag.",
-      opts:["Kolumbien","Cartagena","Medellín","Cusco","Mexiko-Stadt","Antigua","Buenos Aires","Quito","Peru","Mexiko","Costa Rica","Ecuador"] },
-    { icon:"🎒", label:"Pre-Arrival-Pakete",
-      help:"Kompaktes Starter-Set fürs Reiseziel. Nimm das für eine schnelle, fokussierte Vorbereitung kurz vor der Ankunft – das Wichtigste gebündelt in einem Paket.",
-      opts:["Kolumbien","Cartagena","Medellín","Cusco","Mexiko-Stadt","Antigua","Buenos Aires","Quito","Peru","Mexiko","Costa Rica","Ecuador"] },
-    { icon:"📦", label:"Ganzes Paket (üben)",
-      help:"Ein kompletter Themenbereich (z. B. Essen, Zahlen, Notfall). Nimm das, wenn ihr ein Thema gezielt und in der Tiefe üben wollt – unabhängig von einem bestimmten Reiseziel.",
-      opts:["Grundlagen","Zahlen","Essen","Trinken","Hotel","Hostel","Social","Verkehr","Einkaufen","Geld","Notfall","Friseur & Beauty"] },
+    { key:"pretrip", icon:"🗓️", label:"Pre-Trip-Pläne",
+      help:"Mehrtägiger Reise-Fahrplan in Etappen. Nimm das, wenn deine Gruppe sich Schritt für Schritt auf eine konkrete Reise vorbereiten soll.",
+      opts:["Kolumbien","Cartagena","Cusco","Mexiko-Stadt","Antigua","Buenos Aires"] },
+    { key:"preset", icon:"🎒", label:"Pre-Arrival-Pakete",
+      help:"Kompaktes Starter-Set fürs Reiseziel. Nimm das für eine schnelle, fokussierte Vorbereitung kurz vor der Ankunft.",
+      opts:["Kolumbien","Cartagena","Cusco","Mexiko-Stadt","Antigua","Buenos Aires"] },
+    { key:"cat", icon:"📦", label:"Ganzes Paket (üben)",
+      help:"Ein kompletter Themenbereich. Nimm das, wenn ihr ein Thema gezielt in der Tiefe üben wollt – unabhängig vom Reiseziel.",
+      opts:["Grundlagen","Zahlen","Essen","Trinken","Hotel","Verkehr","Geld","Notfall"] },
   ];
 
-  // gewähltes Ziel: {g: Gruppenindex, o: Optionsindex}
-  var sel = { g:0, o:1 }; // Default: Pre-Trip · Cartagena
+  // Auswahl als Menge von Schlüsseln "key:Label"
+  var sel = new Set(["pretrip:Kolumbien"]);
+  var activeBundle = "";
 
+  function summary(){
+    var n = sel.size;
+    if(!n) return {kind:"none"};
+    if(n===1){ var only=[...sel][0].split(":"); var pfx={pretrip:"Pre-Trip",preset:"Pre-Arrival",cat:"Paket"}[only[0]];
+               return {kind:"single", label:pfx+": "+only[1]}; }
+    var tpl = activeBundle ? BUNDLES.find(b=>b.id===activeBundle) : null;
+    return {kind:"bundle", label: tpl?tpl.label:"Eigenes Bundle", count:n};
+  }
   function renderField(){
-    var g = GROUPS[sel.g];
-    document.getElementById("fieldText").innerHTML =
-      '<span class="tgt-field__kicker">'+g.icon+' '+g.label+'</span>'+
-      '<span class="tgt-field__val">'+g.opts[sel.o]+'</span>';
+    var s=summary(), el=document.getElementById("fieldText");
+    if(s.kind==="single") el.innerHTML='<span class="tgt-field__kicker">Einzelaufgabe</span><span class="tgt-field__val">'+s.label+'</span>';
+    else if(s.kind==="bundle") el.innerHTML='<span class="tgt-field__kicker">📦 Bundle</span><span class="tgt-field__val">'+s.label+' · '+s.count+' Ziele</span>';
+    else el.innerHTML='<span class="tgt-field__val tgt-field__val--none">Noch kein Ziel gewählt</span>';
   }
   function renderBody(){
-    document.getElementById("body").innerHTML = GROUPS.map(function(g,gi){
-      var rows = g.opts.map(function(o,oi){
-        var active = (gi===sel.g && oi===sel.o);
-        return '<button type="button" class="tgt-opt'+(active?' is-active':'')+'" data-g="'+gi+'" data-o="'+oi+'">'+
-               '<span class="tgt-opt__label">'+o+'</span>'+
-               '<span class="tgt-opt__check">'+(active?'✓':'')+'</span></button>';
+    var bundleRows = BUNDLES.map(function(b){
+      var active=b.id===activeBundle;
+      return '<button class="tgt-bundle'+(active?' is-active':'')+'" data-bundle="'+b.id+'">'+
+        '<span class="tgt-bundle__icon">'+b.icon+'</span>'+
+        '<span class="tgt-bundle__text"><span class="tgt-bundle__label">'+b.label+'</span>'+
+        '<span class="tgt-bundle__meta">'+b.items.length+' Ziele</span></span>'+
+        '<span class="tgt-opt__check">'+(active?'✓':'')+'</span></button>';
+    }).join("");
+    var groups = GROUPS.map(function(g){
+      var rows=g.opts.map(function(o){
+        var k=g.key+":"+o, active=sel.has(k);
+        return '<button class="tgt-opt'+(active?' is-active':'')+'" data-key="'+k+'">'+
+          '<span class="tgt-opt__label">'+o+'</span><span class="tgt-opt__check">'+(active?'✓':'')+'</span></button>';
       }).join("");
       return '<section class="tgt-group"><h3 class="tgt-group__title">'+g.icon+' '+g.label+'</h3>'+
-             '<p class="tgt-group__help">'+g.help+'</p><div class="tgt-opts">'+rows+'</div></section>';
+        '<p class="tgt-group__help">'+g.help+'</p><div class="tgt-opts">'+rows+'</div></section>';
     }).join("");
+    document.getElementById("body").innerHTML =
+      '<section class="tgt-group"><h3 class="tgt-group__title">📦 Fertige Bundles</h3>'+
+      '<p class="tgt-group__help">Kuratierte Sammlungen für typische Situationen. Tipp drauf, übernimm es als '+
+      'Startpunkt und passe es darunter frei an.</p><div class="tgt-opts">'+bundleRows+'</div></section>'+groups;
+    document.getElementById("count").textContent = sel.size ? sel.size+" ausgewählt" : "Noch kein Ziel gewählt";
+    document.getElementById("footBtns").innerHTML =
+      (sel.size?'<button class="tgt-clear" id="clear">Auswahl leeren</button>':'')+
+      '<button class="cta" id="done">Fertig</button>';
   }
   function open(){ renderBody(); document.getElementById("scrim").hidden=false; }
   function close(){ document.getElementById("scrim").hidden=true; }
 
   document.getElementById("field").onclick = open;
   document.getElementById("x").onclick = close;
-  document.getElementById("done").onclick = close;
   document.getElementById("scrim").onclick = function(e){ if(e.target.id==="scrim") close(); };
   document.addEventListener("keydown", function(e){ if(e.key==="Escape") close(); });
   document.getElementById("body").addEventListener("click", function(e){
-    var b = e.target.closest(".tgt-opt"); if(!b) return;
-    sel = { g:+b.dataset.g, o:+b.dataset.o };
-    renderField(); close();
+    var bundle=e.target.closest(".tgt-bundle");
+    if(bundle){ activeBundle=bundle.dataset.bundle; var b=BUNDLES.find(x=>x.id===activeBundle);
+                sel=new Set(b.items); renderBody(); renderField(); return; }
+    var opt=e.target.closest(".tgt-opt"); if(!opt) return;
+    var k=opt.dataset.key; if(sel.has(k)) sel.delete(k); else sel.add(k);
+    activeBundle=""; renderBody(); renderField();
+  });
+  document.getElementById("scrim").addEventListener("click", function(e){
+    if(e.target.id==="done") close();
+    if(e.target.id==="clear"){ sel=new Set(); activeBundle=""; renderBody(); renderField(); }
   });
   document.getElementById("theme").onclick = function(){
-    var d = document.documentElement.classList.toggle("dark");
+    var d=document.documentElement.classList.toggle("dark");
     this.textContent = d ? "☀️ Light" : "🌙 Dark";
   };
 
-  // Start im Dark-Mode (passend zu den Screenshots).
   document.documentElement.classList.add("dark");
   document.getElementById("theme").textContent = "☀️ Light";
   renderField();
