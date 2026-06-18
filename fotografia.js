@@ -132,9 +132,9 @@
         "Don't shoot in the wrong aspect ratio if you already know what the photo is for.",
       ],
       es: [
-        "No necesitas una cámara cara: con el *celular* ya puedes hacer fotos muy buenas. Activa la cuadrícula, toca la pantalla para *enfocar* y deja pulsado para *bloquear* el foco y la luz.",
+        "No necesitas una cámara cara: con el *celular* ya puedes hacer fotos muy buenas. Activa la cuadrícula, toca la pantalla para *enfocar* y mantén presionado para *bloquear* el foco y la luz.",
         "Si el cielo está muy claro y la sombra muy oscura, activa el HDR. Cuando hay poca luz, usa el *modo nocturno* y mantén el teléfono quieto. Limpia la *lente* antes de disparar.",
-        "Un consejo de oro: no uses el *zoom* digital, mejor acércate caminando. Y para algo en movimiento, deja el dedo en el *disparador* para hacer muchas fotos seguidas.",
+        "Un consejo de oro: no uses el *zoom* digital, mejor acércate caminando. Y para algo en movimiento, mantén el dedo en el *disparador* para hacer muchas fotos seguidas.",
       ],
       vocab: [
         { es: "celular", de: "das Handy", en: "the mobile phone", take: true },
@@ -315,7 +315,7 @@
         { es: "Solo tienes que apretar aquí.", de: "Du musst nur hier drücken.", en: "You just have to press here." },
         { es: "¿Puedes tomar otra, por favor?", de: "Kannst du noch eine machen, bitte?", en: "Can you take another one, please?" },
         { es: "Una vertical y una horizontal, por favor.", de: "Eine hochkant und eine quer, bitte.", en: "One vertical and one landscape, please." },
-        { es: "¿La puedes tomar un poco más lejos?", de: "Kannst du sie etwas weiter weg machen? (mehr drauf)", en: "Can you take it from a bit further away?" },
+        { es: "¿La puedes tomar desde más lejos?", de: "Kannst du von etwas weiter weg fotografieren? (mehr drauf)", en: "Can you take it from a bit further away?" },
         { es: "Salió movida, ¿la repetimos?", de: "Sie ist verwackelt, machen wir sie nochmal?", en: "It came out blurry, shall we redo it?" },
         { es: "¡Quedó genial, muchas gracias!", de: "Ist super geworden, vielen Dank!", en: "It turned out great, thank you so much!" },
       ],
@@ -329,7 +329,7 @@
         { es: "Disculpa, ¿te puedes correr un momentito?", de: "Entschuldige, kannst du dich kurz zur Seite stellen?", en: "Excuse me, could you move over for a moment?" },
         { es: "¿Te importaría apartarte un segundo para la foto?", de: "Würde es dir etwas ausmachen, kurz aus dem Bild zu gehen?", en: "Would you mind stepping aside a second for the photo?" },
         { es: "Perdón, ¿puedo pasar para tomar la foto?", de: "Entschuldigung, darf ich kurz durch fürs Foto?", en: "Sorry, may I get through to take the photo?" },
-        { es: "¿Nos dejas un momentito para la foto?", de: "Lässt du uns kurz für das Foto?", en: "Could you give us a moment for the photo?" },
+        { es: "¿Nos dejas un momentito para la foto?", de: "Gibst du uns kurz einen Moment fürs Foto?", en: "Could you give us a moment for the photo?" },
         { es: "Es solo un segundo, gracias.", de: "Es ist nur eine Sekunde, danke.", en: "It's just a second, thanks." },
         { es: "Gracias, muy amable.", de: "Danke, sehr nett.", en: "Thank you, very kind." },
       ],
@@ -387,7 +387,7 @@
     ],
   };
 
-  // ---------- Foto-Sharing-Apps (Link + Erklärung + Bild) ----------
+  // ---------- Foto-Sharing-Apps (Name, Link, Erklärung; Bild = SVG in ui.renderFotos) ----------
   const APPS = [
     {
       id: "mymories",

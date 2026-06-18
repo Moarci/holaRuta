@@ -5303,15 +5303,19 @@
     }
     const pageMod = (mod, icon, title, subKey, action) => {
       if (!mod) return;
-      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
+      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn, tp.es, (tp.vocab || []).map((v) => [v.es, v.de, v.en])]);
       const phrases = (mod.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
       const gloss = (mod.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
       const checklist = (mod.CHECKLIST || []).map((c) => [c.item, c.itemEn, c.why, c.whyEn]);
+      // Optionale Blöcke (z. B. Fotos: Teilen-Block + Foto-Apps) – andere Module
+      // haben diese Felder nicht, dann bleiben sie leer.
+      const sharing = mod.SHARING ? [mod.SHARING.intro, mod.SHARING.introEn, mod.SHARING.dos, mod.SHARING.dosEn, mod.SHARING.donts, mod.SHARING.dontsEn] : [];
+      const apps = (mod.APPS || []).map((a) => [a.name, a.platform, a.desc, a.descEn, a.bullets, a.bulletsEn, a.url]);
       idx.push({
         group: "info", kind: "page", kindLabel: t("search.kindInfo"),
         icon: icon, title: title, sub: t(subKey),
         action: action,
-        hay: searchHay([title, mod.INTRO, mod.INTRO_EN, topics, phrases, gloss, checklist]),
+        hay: searchHay([title, mod.INTRO, mod.INTRO_EN, topics, phrases, gloss, checklist, sharing, apps]),
       });
     };
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
