@@ -529,7 +529,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Bereiche / Kategorien | 32 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
-| JS-Module | 33 (`SC.*`) |
+| JS-Module | 34 (`SC.*`) |
 | Tests | 296 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |

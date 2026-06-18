@@ -26,9 +26,9 @@
   "use strict";
   var SC = window.SC || (window.SC = {});
 
-  // Auth-Token: BEWUSST derselbe Key wie in sync.js -> ein passwortloser Login
-  // gilt für Cloud-Sync UND Freunde/Rangliste (eine Identität, ein Server).
-  var TOKEN_KEY = "spanischcard.synctoken.v1";
+  // Auth-Token + Login liegen in SC.net und werden mit sync.js geteilt -> ein
+  // passwortloser Login gilt für Cloud-Sync UND Freunde/Rangliste (eine
+  // Identität, ein Server).
   var FRIEND_TAG = "HRF1."; // Präfix des teilbaren Freundes-Codes (analog HRT1. bei Aufgaben).
 
   function isObj(v) { return v && typeof v === "object" && !Array.isArray(v); }
@@ -135,6 +135,8 @@
   }
 
   // ---------- dünner Client-Adapter (opt-in, fetch-basiert) ----------
+  // Auth-Token, Login und der fetch-Wrapper liegen in SC.net (geteilt mit
+  // sync.js – eine Identität, ein Server). Hier bleibt nur das Social-Spezifische.
 
   function cfg() { return (SC.config && SC.config.social) || null; }
   function syncCfg() { return (SC.config && SC.config.sync) || null; }
@@ -146,54 +148,32 @@
   }
   function enabled() { return !!(cfg() && cfg().enabled && apiBase() && typeof fetch === "function"); }
 
-  function getToken() { try { return localStorage.getItem(TOKEN_KEY) || null; } catch (e) { return null; } }
-  function setToken(t) { try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) { /* egal */ } }
-  function loggedIn() { return !!getToken(); }
+  function loggedIn() { return SC.net.loggedIn(); }
+  function req(method, path, body) { return SC.net.request(apiBase(), method, path, body); }
 
-  function request(method, path, body) {
-    var headers = { "Content-Type": "application/json" };
-    var tok = getToken();
-    if (tok) headers.Authorization = "Bearer " + tok;
-    return fetch(apiBase() + path, {
-      method: method,
-      headers: headers,
-      body: body ? JSON.stringify(body) : undefined,
-    }).then(function (res) {
-      return res.text().then(function (txt) {
-        var json = null; try { json = txt ? JSON.parse(txt) : null; } catch (e) { json = null; }
-        return { ok: res.ok, status: res.status, body: json };
-      });
-    });
-  }
-
-  // Passwortloser Login (identisch zu sync.js §7) – geteilter Token, sodass ein
-  // Login Cloud-Sync UND Freunde abdeckt. So ist die Sozial-Schicht eigenständig
-  // anmeldefähig, auch wenn eine Edition nur `social` (ohne `sync`) aktiviert.
+  // Passwortloser Login (BACKEND.md §7), geteilt über SC.net. So ist die
+  // Sozial-Schicht eigenständig anmeldefähig, auch wenn eine Edition nur
+  // `social` (ohne `sync`) aktiviert.
   function login(email) {
     if (!enabled()) return Promise.reject(new Error("social disabled"));
-    return request("POST", "/v1/auth/start", { email: String(email || "").trim() })
-      .then(function (r) {
-        if (r.ok && r.body && r.body.devToken) { setToken(r.body.devToken); return { account: r.body.account || { email: email } }; }
-        return { pending: true }; // echter Flow: auf Magic-Link/OTP warten
-      });
+    return SC.net.login(apiBase(), email);
   }
   function confirm(email, token) {
     if (!enabled()) return Promise.reject(new Error("social disabled"));
-    return request("POST", "/v1/auth/confirm", { email: email, token: token })
-      .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("confirm failed"); });
+    return SC.net.confirm(apiBase(), email, token);
   }
-  function logout() { setToken(null); }
+  function logout() { SC.net.logout(); }
 
   // Eigener teilbarer Freundes-Code (vom Server). Fällt offline-tolerant auf null.
-  function myCode() { return request("GET", "/v1/me/code"); }
+  function myCode() { return req("GET", "/v1/me/code"); }
   // Freund per Code hinzufügen / entfernen / auflisten.
-  function addFriend(code) { return request("POST", "/v1/friends", { code: String(code || "").trim() }); }
-  function removeFriend(id) { return request("DELETE", "/v1/friends/" + encodeURIComponent(id)); }
-  function friends() { return request("GET", "/v1/friends"); }
+  function addFriend(code) { return req("POST", "/v1/friends", { code: String(code || "").trim() }); }
+  function removeFriend(id) { return req("DELETE", "/v1/friends/" + encodeURIComponent(id)); }
+  function friends() { return req("GET", "/v1/friends"); }
   // Eigenen Tages-Snapshot veröffentlichen.
-  function publish(snapshot) { return request("PUT", "/v1/social/snapshot", { snapshot: snapshot }); }
+  function publish(snapshot) { return req("PUT", "/v1/social/snapshot", { snapshot: snapshot }); }
   // Rangliste der Freunde (optional für einen bestimmten Tag).
-  function leaderboard(day) { return request("GET", "/v1/leaderboard" + (day ? "?day=" + encodeURIComponent(day) : "")); }
+  function leaderboard(day) { return req("GET", "/v1/leaderboard" + (day ? "?day=" + encodeURIComponent(day) : "")); }
 
   // Ein vollständiger Durchlauf für die UI: eigenen Snapshot veröffentlichen,
   // dann die Rangliste holen und mit dem reinen Kern sortieren/markieren.

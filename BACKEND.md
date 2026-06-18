@@ -276,8 +276,10 @@ sauber abgrenzbar — ohne `SC.config.social` existiert der ganze Pfad nicht.
   (`{ day, name, cards, streak, reviews }`) — **kein** Lernfortschritt, **keine** Inhalte, **kein**
   Klarname nötig (selbst gewählter Anzeigename). „Andere sehen meine Zahlen" ist eine bewusste
   Einwilligung, getrennt vom reinen Sichern (Sichtbarkeit ≠ Backup).
-- **Geteilte Identität.** Login = derselbe passwortlose Flow + **derselbe Token** wie §7 (`sync.js`).
-  Ein Login deckt Cloud-Sync **und** Freunde ab. `social.apiBase` fällt auf `sync.apiBase` zurück.
+- **Geteilte Identität.** Login = derselbe passwortlose Flow + **derselbe Token** wie §7. Die
+  gemeinsame Auth-/fetch-Schicht liegt in **`net.js` (`SC.net`)**, die `sync.js` und `social.js`
+  beide nutzen — ein Login deckt Cloud-Sync **und** Freunde ab. `social.apiBase` fällt auf
+  `sync.apiBase` zurück.
 - **Server = source of truth** für die Rangliste; der Client hält nur einen transienten Stand
   (kein neuer localStorage-Key). Offline zeigt der Schirm zuletzt Geladenes bzw. einen Hinweis.
 - **Reiner Kern zuerst.** `buildSnapshot` / `buildLeaderboard` (deterministische Sortierung +
