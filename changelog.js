@@ -22,6 +22,20 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.97.0",
+      date: "2026-06-18",
+      title: "Aus „Ruta-Check“ wird „HolaRuta-Check“ + Dashboard-Erinnerung",
+      titleEn: "“Ruta-Check” becomes “HolaRuta-Check” + dashboard reminder",
+      items: [
+        "🎯 Der Einstufungstest heißt jetzt überall einheitlich „HolaRuta-Check“ – in Entdecken, im Profil, im Onboarding und auf den Teilen-Bildern.",
+        "📌 Solange du den HolaRuta-Check noch nicht gemacht hast, erscheint er als offene Aufgabe auf dem Dashboard – ein Tap startet ihn. Sobald er erledigt ist, verschwindet die Erinnerung von selbst.",
+      ],
+      itemsEn: [
+        "🎯 The placement test is now consistently called the “HolaRuta-Check” everywhere – in Discover, your profile, onboarding and on the share images.",
+        "📌 As long as you haven't taken the HolaRuta-Check, it shows up as an open task on your dashboard – one tap starts it. Once it's done, the reminder disappears on its own.",
+      ],
+    },
+    {
       version: "1.96.0",
       date: "2026-06-18",
       title: "Onboarding: Name & Geschlecht zuerst, Ruta-Check nachholbar",
