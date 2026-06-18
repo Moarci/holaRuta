@@ -118,7 +118,7 @@
       id: "al01", cat: "alojamiento", frameEs: "¿Tiene ___?", targetDe: "Haben Sie WLAN?", targetEn: "Do you have WiFi?",
       slot: { es: "wifi", de: "WLAN", en: "WiFi" },
       distractors: [
-        { es: "cambio", de: "Wechselgeld", en: "change" },
+        { es: "cambio", de: "Kleingeld", en: "small change" },
         { es: "una habitación", de: "ein Zimmer", en: "a room" },
         { es: "un mapa", de: "eine Karte", en: "a map" },
       ],
@@ -294,7 +294,7 @@
       slot: { es: "una bolsa", de: "eine Tüte", en: "a bag" },
       distractors: [
         { es: "el recibo", de: "den Kassenbon", en: "the receipt" },
-        { es: "cambio", de: "Wechselgeld", en: "change" },
+        { es: "cambio", de: "Kleingeld", en: "small change" },
         { es: "otra", de: "eine andere", en: "another one" },
       ],
     },
