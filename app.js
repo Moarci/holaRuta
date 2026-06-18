@@ -2816,6 +2816,11 @@
       const ok = root.querySelector(".upd .upd__ok");
       if (ok) { try { ok.focus({ preventScroll: true }); } catch (e) { ok.focus(); } return; }
     }
+    // Fertig-Screen: SC.celebrate (celebrate.js) setzt den Fokus selbst auf den
+    // Haupt-CTA und kündigt das Ergebnis per aria-live an. manageFocus darf ihn
+    // NICHT auf die Überschrift (h2.cb-title) zurückziehen – sonst geht die
+    // A11y-Absicht (sofort handlungsfähig auf dem Primär-Button) verloren.
+    if (state.screen === "done") return;
     if (state.screen === "study") {
       // Schreiben & Hören: vor dem Prüfen gehört der Fokus ins Eingabefeld.
       if ((state.mode === "type" || state.mode === "listen") && !state.typeResult) {
