@@ -698,7 +698,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  * [data-theme]. */
 .themeset {
   display: flex; align-items: center; gap: 18px;
-  padding: 6px 4px 2px;
+  padding: 10px 12px; border-radius: 14px;
+  /* Sanfte Tönung in der Reiseland-Akzentfarbe (--sign-accent, im Profil pro Land
+     gesetzt). Ohne Land bleibt --sign-accent leer → transparent, kein Effekt. */
+  background: color-mix(in srgb, var(--sign-accent, transparent) 7%, transparent);
+  transition: background-color 0.6s cubic-bezier(.22,.61,.36,1);
 }
 .themeset__copy { min-width: 0; }
 .themeset__title {
@@ -708,26 +712,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .themeset__text { margin: 0; font-size: 0.9rem; line-height: 1.45; color: var(--ink-soft); }
 
 .themesign {
-  appearance: none; border: none; background: none; padding: 6px;
-  cursor: pointer; display: block; border-radius: 14px; flex: 0 0 auto;
-  transition: transform 0.25s cubic-bezier(.22,.61,.36,1);
+  padding: 6px; display: block; border-radius: 14px; flex: 0 0 auto;
 }
-.themesign:active { transform: scale(0.97); }
 .themesign__plank {
-  display: flex; flex-direction: column; align-items: center; width: 34px;
+  display: flex; flex-direction: column; align-items: center; width: 34px; gap: 5px;
   filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.30));
 }
 /* große Variante (Profil-Einstellungen) – hier darf das Schild atmen */
 .themesign--lg .themesign__plank {
-  width: 68px;
+  width: 68px; gap: 9px;
   filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.32));
 }
+/* Jedes Schild ist ein eigener Knopf (AM = hell, PM = dunkel) – Button-Reset. */
 .themesign__plaque {
-  width: 100%; display: block; transform-origin: center;
+  appearance: none; border: none; background: none; padding: 0; margin: 0;
+  cursor: pointer; width: 100%; display: block; transform-origin: center; border-radius: 6px;
   transition: opacity 0.8s cubic-bezier(.22,.61,.36,1),
               filter 0.8s cubic-bezier(.22,.61,.36,1),
               transform 0.55s cubic-bezier(.22,.61,.36,1);
 }
+.themesign__plaque:active { transform: scale(0.95); }
+.themesign__plaque:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 .themesign__plaque svg { display: block; width: 100%; height: auto; }
 
 /* inaktives Schild: gedimmt, leicht entsättigt, minimal verkleinert */
@@ -735,12 +740,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 [data-theme="light"] .themesign__plaque--pm {
   opacity: 0.34; filter: grayscale(0.55) brightness(0.9); transform: scale(0.965);
 }
-/* aktives Schild: voll sichtbar, mit warmem Schein */
-[data-theme="light"] .themesign__plaque--am { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 7px rgba(176, 130, 63, 0.35)); }
-[data-theme="dark"]  .themesign__plaque--pm { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(201, 154, 87, 0.30)); }
+/* aktives Schild: voll sichtbar, mit warmem Schein. Der Schein folgt der
+   Akzentfarbe des Reiselands (--sign-accent, im Profil pro Land gesetzt); ohne
+   gesetztes Land bleibt der neutrale warme Standard-Ton. */
+[data-theme="light"] .themesign__plaque--am { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 7px color-mix(in srgb, var(--sign-accent, #B0823F) 40%, transparent)); }
+[data-theme="dark"]  .themesign__plaque--pm { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--sign-accent, #C99A57) 36%, transparent)); }
 /* großes Schild: kräftigerer Schein passend zur Fläche */
-[data-theme="light"] .themesign--lg .themesign__plaque--am { filter: drop-shadow(0 0 16px rgba(176, 130, 63, 0.35)); }
-[data-theme="dark"]  .themesign--lg .themesign__plaque--pm { filter: drop-shadow(0 0 20px rgba(201, 154, 87, 0.30)); }
+[data-theme="light"] .themesign--lg .themesign__plaque--am { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--sign-accent, #B0823F) 40%, transparent)); }
+[data-theme="dark"]  .themesign--lg .themesign__plaque--pm { filter: drop-shadow(0 0 20px color-mix(in srgb, var(--sign-accent, #C99A57) 36%, transparent)); }
 
 /* Dampf steigt nur am Morgen (heller Modus) */
 .themesign__steam path { opacity: 0; transform-box: fill-box; transform-origin: bottom center; }
@@ -2874,14 +2881,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   align-items: center; text-align: center; font-weight: 700; color: var(--muted);
   border-style: dashed; box-shadow: none;
 }
-.trip__top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.trip__dest { font-family: var(--font-display); font-weight: 800; font-size: 1rem; }
+.trip__dest { font-family: var(--font-display); font-weight: 800; font-size: 0.92rem; color: var(--muted); }
+/* Reise-Status (Countdown bzw. Abreise-Meldung) – die Hauptzeile der Karte. */
+.trip__countdown { font-size: 1.06rem; font-weight: 800; color: var(--ink); line-height: 1.2; }
+.trip__countdown b { font-weight: 800; }
+/* Tägliches Karten-Pensum – klar abgesetzt, damit der Balken nicht wie ein
+   „Fortschritt bis zur Reise" missverstanden wird. */
+.trip__daily { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; padding-top: 9px; border-top: 1px solid var(--line); }
+.trip__daily-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.trip__daily-cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .trip__count { font-size: 0.82rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
 .trip__count.is-done { color: var(--ok, #2F6B45); }
-.trip__countdown { font-size: 0.86rem; font-weight: 600; color: var(--muted); }
 .trip__bar { height: 7px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .trip__bar-fill { display: block; height: 100%; background: var(--brand); border-radius: 999px; transition: width .25s ease; }
 .trip__bar-fill.is-done { background: var(--ok, #2F6B45); }
+
+/* Schnellwechsel Reiseland (Profil): horizontal scrollbare Länder-Chips. */
+.tripswitch { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.tripswitch__cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.tripswitch__chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.tripchip {
+  appearance: none; cursor: pointer; font: inherit; font-size: 0.84rem; font-weight: 700;
+  padding: 6px 11px; border-radius: 999px; white-space: nowrap;
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  transition: transform .12s ease, border-color .15s ease, background .15s ease;
+}
+.tripchip:active { transform: translateY(1px); }
+.tripchip.is-active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 14%, var(--surface)); color: var(--brand-ink, var(--ink)); }
+.tripchip:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .trip--edit { gap: 9px; cursor: default; }
 .trip--edit:active { transform: none; }
 .trip__cap { font-family: var(--font-display); font-weight: 800; margin: 0; }

@@ -276,6 +276,8 @@
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
+      tripCountryId: tripCountryId(), // erkanntes Land fürs Schnellwechsel-Chip (oder null)
+      tripCountryBev: tripCountryBev(), // Tag-/Abendgetränk + Akzent + Gruß fürs Erscheinungsbild-Schild (oder null)
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
       showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
       showMedellinPreset: tripMentionsMedellin(), // Stadt-Pack-Kachel nur bei Medellín-Bezug
@@ -999,6 +1001,49 @@
       todayDone: todayCount >= perDay,
       todayPct: Math.max(0, Math.min(100, Math.round((todayCount / perDay) * 100))),
     };
+  }
+
+  // Erkennt zum aktuellen Trip-Ziel das (unterstützte) Land – für den Schnellwechsel-
+  // Chip im Profil (leuchtet das passende Land). Städte zählen zu ihrem Land
+  // (z. B. Cartagena → Kolumbien), weil die tripMentions*-Hints sie mit abdecken.
+  function tripCountryId() {
+    if (tripMentionsColombia()) return "colombia";
+    if (tripMentionsPeru()) return "peru";
+    if (tripMentionsMexico()) return "mexico";
+    if (tripMentionsCostaRica()) return "costarica";
+    if (tripMentionsEcuador()) return "ecuador";
+    if (tripMentionsGuatemala()) return "guatemala";
+    if (tripMentionsArgentina()) return "argentina";
+    if (tripMentionsChile()) return "chile";
+    if (tripMentionsBolivia()) return "bolivia";
+    return null;
+  }
+
+  // Tag-/Abendgetränk des erkannten Reiselands fürs Erscheinungsbild-Schild im
+  // Profil: dasselbe AM/PM-Emaille-Schild trägt damit das Landesgetränk (wie
+  // „Bebidas AM/PM"), leuchtet in der Landes-Akzentfarbe und der Begleittext wird
+  // zum Landesgruß. Quelle ist dieselbe Tabelle wie bei Bebidas (bebidas.BEBIDAS
+  // [id]: { accent, am, pm, greet }). Ohne erkanntes Land null → neutraler
+  // Standard (Kaffee/Wein, warmer Schein).
+  function tripCountryBev() {
+    const id = tripCountryId();
+    return (id && bebidas && bebidas.BEBIDAS[id]) || null;
+  }
+
+  // Schnellwechsel: nur das Reiseziel setzen (Datum & Tagesziel bleiben). Wenn das
+  // Ziel ohnehin schon zu diesem Land zählt (z. B. eine getippte Stadt), bleibt die
+  // genauere Eingabe erhalten – kein Überschreiben mit dem groben Ländernamen.
+  function setTripCountry(id, dest) {
+    const cur = gamestats.tripGoal;
+    if (!cur || !dest) return;
+    if (tripCountryId() === id) return; // schon dieses Land – Stadt-Eingabe nicht plätten
+    const destination = String(dest).trim().slice(0, 80);
+    gamestats = Object.assign({}, gamestats, {
+      tripGoal: Object.assign({}, cur, { destination }),
+    });
+    store.saveGameStats(gamestats);
+    buzz(8);
+    render();
   }
 
   function setTripGoal(fields) {
@@ -3776,8 +3821,11 @@
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", THEME_COLOR[theme] || THEME_COLOR.light);
   }
-  function toggleTheme() {
-    const next = effectiveTheme() === "dark" ? "light" : "dark";
+  // Hell/Dunkel direkt wählen (AM-Schild → hell, PM-Schild → dunkel). Tippt man die
+  // bereits gewählte Seite, passiert nichts (kein blindes Umschalten mehr).
+  function setTheme(theme) {
+    const next = theme === "dark" ? "dark" : "light";
+    if (settings.theme === next) return; // schon explizit gewählt
     settings = Object.assign({}, settings, { theme: next });
     store.saveSettings(settings);
     applyTheme(next);
@@ -5204,7 +5252,7 @@
 
     if (action === "set-mode") setMode(el.dataset.mode);
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
-    else if (action === "toggle-theme") toggleTheme();
+    else if (action === "set-theme") setTheme(el.dataset.theme);
     else if (action === "set-dir") setDir(el.dataset.dir);
     else if (action === "set-ui-lang") setUiLang(el.dataset.lang);
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
@@ -5245,6 +5293,7 @@
     else if (action === "placement-free-submit") placementSubmitFree();
     else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
     else if (action === "trip-edit") toggleTripEdit();
+    else if (action === "set-trip-country") setTripCountry(el.dataset.country, el.dataset.dest);
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
     else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten

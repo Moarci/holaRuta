@@ -22,8 +22,8 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
-      version: "1.93.0",
-      date: "2026-06-17",
+      version: "1.95.0",
+      date: "2026-06-18",
       title: "Modo profe: Bundles – ein Link, mehrere Aufgaben",
       titleEn: "Teacher mode: bundles – one link, several tasks",
       items: [
@@ -38,8 +38,8 @@
       ],
     },
     {
-      version: "1.92.0",
-      date: "2026-06-17",
+      version: "1.94.0",
+      date: "2026-06-18",
       title: "Modo profe: Ziel-Auswahl als erklärtes Modal statt Dropdown",
       titleEn: "Teacher mode: target selection as an explained modal, not a dropdown",
       items: [
@@ -47,6 +47,34 @@
       ],
       itemsEn: [
         "🎯 In teacher / tour-guide mode (and on the activity sheet) the target selection used to be a plain system dropdown – on a phone an endless radio-button list with no explanation at all. Now tapping the target field opens a tidy modal: the three groups “Pre-trip plans”, “Pre-arrival packs” and “Whole pack (practice)” are clearly separated, each with a short note on WHAT it is and WHEN you should pick it as a teacher/guide. The current choice shows right in the field, and a checkmark marks the selected target.",
+      ],
+    },
+    {
+      version: "1.93.0",
+      date: "2026-06-18",
+      title: "Erscheinungsbild im Stil deines Reiselands",
+      titleEn: "Appearance in the style of your travel country",
+      items: [
+        "🎨 Das AM/PM-Schild im Profil zeigt jetzt das Tag- und Abendgetränk deines Reiselands statt allgemein Kaffee/Wein – dieselben Motive wie „Bebidas AM/PM“ (z. B. Pisco Sour für Peru, Mate & Malbec für Argentinien). Das aktive Hell/Dunkel-Schild leuchtet in der Landes-Akzentfarbe, der Block bekommt eine sanfte Tönung und der Begleittext wird zum Landesgruß („Buenos días“/„Buenas noches“). Wechselst du oben das Reiseland (Schnellwechsel), zieht das Erscheinungsbild sofort mit. Ohne gesetztes Reiseland bleibt der vertraute Kaffee/Wein-Standard.",
+      ],
+      itemsEn: [
+        "🎨 The AM/PM sign in your profile now shows your travel country's morning and evening drink instead of generic coffee/wine – the same artwork as “Bebidas AM/PM” (e.g. Pisco Sour for Peru, Mate & Malbec for Argentina). The active light/dark sign glows in the country's accent colour, the block gets a soft tint, and the caption becomes the local greeting (“Buenos días”/“Buenas noches”). Switch the country up top (quick-switch) and the appearance follows along instantly. With no country set, the familiar coffee/wine default stays.",
+      ],
+    },
+    {
+      version: "1.92.0",
+      date: "2026-06-17",
+      title: "Trip-Ziel & Erscheinungsbild klarer bedienbar",
+      titleEn: "Trip goal & appearance: clearer to use",
+      items: [
+        "🎯 Reiseland schnell wechseln: Unter dem Trip-Ziel im Profil gibt es jetzt eine Chip-Leiste mit den unterstützten Ländern. Ein Tap setzt das Reiseziel (Datum & Tagesziel bleiben) – und schaltet damit zugleich die passenden Pre-Arrival-Kacheln auf der Startseite um. Kein Öffnen des Formulars und Tippen mehr nötig.",
+        "🗓️ Übersichtlichere Trip-Karte: Der Countdown („Noch 12 Tage bis …“ bzw. „Reisezeit!“) steht jetzt klar oben als Hauptzeile. Das tägliche Karten-Pensum ist als eigene, beschriftete Zeile mit Balken abgesetzt – so wirkt der Tagesbalken nicht mehr wie ein „Fortschritt bis zur Reise“.",
+        "☕🍷 Hell/Dunkel direkt wählbar: Das AM/PM-Schild ist kein blinder Umschalter mehr. AM und PM sind je ein eigener Knopf – man tippt direkt die gewünschte Seite an (AM → hell, PM → dunkel). Tippt man die bereits aktive Seite, passiert nichts mehr.",
+      ],
+      itemsEn: [
+        "🎯 Quick-switch country: Below the trip goal in your profile there's now a chip bar with the supported countries. One tap sets the destination (date & daily goal stay) – and switches the matching pre-arrival tiles on the home screen at the same time. No more opening the form and typing.",
+        "🗓️ Clearer trip card: The countdown (“12 days to go until …” or “Travel time!”) is now the prominent top line. The daily card goal sits below as its own labelled row with a bar – so the daily bar no longer looks like “progress until the trip”.",
+        "☕🍷 Pick light/dark directly: The AM/PM sign is no longer a blind toggle. AM and PM are each their own button – tap the side you want (AM → light, PM → dark). Tapping the already-active side now does nothing.",
       ],
     },
     {
