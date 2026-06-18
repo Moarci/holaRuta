@@ -102,3 +102,35 @@ test("Jedes Shortcut-Icon existiert und ist im SW-Precache", () => {
     }
   }
 });
+
+// Top-Level-Schlüssel eines Objekt-Literals aus app.js ziehen. <label> ist der
+// Anfang der Deklaration (z.B. "const MODULE_SHARE = {"). Die Werte der hier
+// geprüften Maps enthalten keine verschachtelten {}-Blöcke, daher reicht es, bis
+// zur ersten "};"-Zeile zu lesen und je Zeile den führenden Schlüssel zu nehmen.
+function objectKeys(label) {
+  const start = appjs.indexOf(label);
+  assert.ok(start >= 0, `app.js: "${label}" nicht gefunden`);
+  const rest = appjs.slice(start + label.length);
+  const endMatch = rest.match(/\n\s*};/);
+  assert.ok(endMatch, `app.js: Ende von "${label}" nicht gefunden`);
+  const body = rest.slice(0, endMatch.index);
+  const keys = [];
+  for (const m of body.matchAll(/^\s*(?:"([\w-]+)"|([\w-]+))\s*:/gm)) {
+    keys.push(m[1] || m[2]);
+  }
+  return keys;
+}
+
+// Drift-Wächter: Jedes per "Modul teilen" verschickte Modul (MODULE_SHARE) muss
+// über den Deep-Link (?m=<slug>) auch wirklich geöffnet werden können – sonst
+// landet ein geteilter Link auf Home statt im Modul (Foto-/Video-Bug 2026-06).
+test("Jedes teilbare Modul (MODULE_SHARE) ist per ?m= deeplinkbar (openers)", () => {
+  const shareSlugs = objectKeys("const MODULE_SHARE = {");
+  const openerSlugs = new Set(objectKeys("const openers = {"));
+  assert.ok(shareSlugs.length > 0, "MODULE_SHARE: keine Slugs gefunden");
+  assert.ok(openerSlugs.size > 0, "openers: keine Slugs gefunden");
+  for (const slug of shareSlugs) {
+    assert.ok(openerSlugs.has(slug),
+      `Modul "${slug}" ist teilbar (MODULE_SHARE), aber der Deep-Link ?m=${slug} hat keinen Opener – führt auf Home`);
+  }
+});
