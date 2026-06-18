@@ -2769,6 +2769,7 @@
       right: right,
       wrong: total - right,
       accuracy: total ? Math.round((right / total) * 100) : 0,
+      isGame: true, // fehlerfreie Drill-Runde -> Pokal-Hero statt Alltags-Ring
     };
   }
   function miniDoneConfig(screen) {

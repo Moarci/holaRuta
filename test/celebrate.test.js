@@ -110,6 +110,21 @@ test("Perfekt nur ab genügend Karten", () => {
   assert.notEqual(tooFew.id, "perfect"); // 3 Karten -> kein „Perfecto“-Tamtam
 });
 
+test("Mini-Spiel perfekt -> Pokal-Hero (trophy); Hauptlernen-Perfekt bleibt Ring", () => {
+  // Spiel (isGame) + 100% + genug Karten -> eigener Pokal-Hero.
+  const game = C.decide(base({ isGame: true, accuracy: 100, right: 8, wrong: 0, total: 8, streakIsNew: false }));
+  assert.equal(game.id, "gameperfect");
+  assert.equal(game.staging, "trophy");
+  assert.equal(game.tone, "gold");
+  // Ohne isGame bleibt es die ruhige Ring-Perfekt-Szene (Showcase-Treue).
+  const study = C.decide(base({ accuracy: 100, right: 8, wrong: 0, total: 8, streakIsNew: false }));
+  assert.equal(study.id, "perfect");
+  assert.equal(study.staging, "ring");
+  // Zu wenige Karten -> kein Pokal, auch nicht im Spiel.
+  const few = C.decide(base({ isGame: true, accuracy: 100, right: 3, wrong: 0, total: 3, streakIsNew: false }));
+  assert.notEqual(few.staging, "trophy");
+});
+
 test("Erste Runde gewinnt vor Comeback/Standard", () => {
   const s = C.decide(base({ isFirstEver: true, accuracy: 70, total: 8, streakIsNew: true, streakBefore: 0, streak: 1 }));
   assert.equal(s.id, "first");
