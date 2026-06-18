@@ -174,7 +174,7 @@
     { es: "el precio fijo", de: "der Festpreis (kein Handeln)", en: "the fixed price (no haggling)" },
     { es: "caro / barato", de: "teuer / billig", en: "expensive / cheap" },
     { es: "en efectivo", de: "in bar", en: "in cash" },
-    { es: "el cambio / el vuelto", de: "das Wechselgeld", en: "the change" },
+    { es: "el vuelto / el cambio", de: "das Wechselgeld", en: "the change" },
     { es: "la yapa / la ñapa", de: "kleine Gratis-Dreingabe (Anden / Karibik)", en: "small free extra thrown in (Andes / Caribbean)" },
     { es: "el/la casero/a", de: "Stammkunde / -verkäufer (Anrede der Vertrautheit)", en: "regular customer / trader (friendly form of address)" },
   ];
