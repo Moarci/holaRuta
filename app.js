@@ -1748,11 +1748,27 @@
     // Satzzeichen), machte die „Wie heißt du?"-Tippzüge unlösbar → Beispielname.
     return (n && matcher.normalize(n)) ? n : "Marco";
   }
+  // Geschlecht des Reisenden für die spanische Selbst-Anrede (sola/solo …). Ohne
+  // Eintrag männlich als konventioneller Default (so „funktioniert" jeder Text).
+  function travelerGender() {
+    return settings.userGender === "female" ? "female" : "male";
+  }
+  // Geschlechts-Token {männlich/weiblich} auflösen, z. B. „perdid{o/a}" → perdido/perdida,
+  // „{Lo/La} veo cansad{o/a}" → je nach Profil. Braucht einen Slash innerhalb der
+  // Klammern; {name} (ohne Slash) bleibt unberührt, normale Texte ebenfalls (kein „{").
+  function withGender(s) {
+    if (typeof s !== "string") return s;
+    const fem = travelerGender() === "female";
+    return s.replace(/\{([^{}/]*)\/([^{}/]*)\}/g, (_, m, f) => (fem ? f : m));
+  }
   // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
-  // durch den Reise-Namen ersetzen. Ersatz als Funktion übergeben, damit Sonder-
-  // zeichen im Namen ($&, $1 …) nicht als replace-Muster interpretiert werden.
+  // durch den Reise-Namen ersetzen, danach Geschlechts-Tokens auflösen. Ersatz als
+  // Funktion übergeben, damit Sonderzeichen im Namen ($&, $1 …) nicht als replace-
+  // Muster interpretiert werden. Beides läuft durch DENSELBEN Pfad – jede Stelle,
+  // die withName nutzt (Diálogos, Rollenspiel, Karten-Kontext), kann beide Tokens.
   function withName(s) {
-    return typeof s === "string" ? s.replace(/\{name\}/g, () => travelerName()) : s;
+    if (typeof s !== "string") return s;
+    return withGender(s.replace(/\{name\}/g, () => travelerName()));
   }
   // {name} in allen String-Feldern eines (flachen) Objekts ersetzen – z. B. im
   // lokalisierten Reise-Kontext einer Karte (sentenceEs/sentenceDe/situation/note).
