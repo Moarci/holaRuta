@@ -53,6 +53,30 @@
   function themeToggle(theme, opts) {
     const dark = theme === "dark";
     const large = opts && opts.large;
+    // opts.bev = Tag-/Abendgetränk des Reiselands (bebidas.BEBIDAS[id]). Liegt es
+    // vor, trägt das Schild dessen Getränke (gleiche Formen wie „Bebidas AM/PM")
+    // statt des Standard-Kaffee/Wein-Paars – so passt Hell/Dunkel sichtbar zum
+    // Reiseland. Die Animations-Klassen bleiben themesign__* (an [data-theme]).
+    const bev = opts && opts.bev;
+    const amArt = bev
+      ? bebAmArt(bev.am.art, bev.am.cold, "themesign__steam")
+      : `<g class="themesign__steam" fill="none" stroke-width="4.5" stroke-linecap="round">
+                <path d="M80 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+                <path d="M92 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+                <path d="M104 118 q-7 -9 0 -18 q7 -9 0 -18"/>
+              </g>
+              <path stroke="none" d="M52 128 h66 a6 6 0 0 1 6 6 q-2 34 -10 44 a16 16 0 0 1 -13 7 h-32 a16 16 0 0 1 -13 -7 q-8 -10 -10 -44 a6 6 0 0 1 6 -6 z"/>
+              <path fill="none" stroke-width="9" d="M124 138 q22 0 22 18 q0 18 -20 19"/>
+              <path stroke="none" d="M44 190 h80 q6 0 4 5 q-3 7 -44 7 q-41 0 -44 -7 q-2 -5 4 -5 z"/>`;
+    const pmArt = bev
+      ? bebPmArt(bev.pm.art, bev.pm.liquid, "themesign__wine", "signBowlClip")
+      : `<clipPath id="signBowlClip">
+                <path d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+              </clipPath>
+              <rect class="themesign__wine" clip-path="url(#signBowlClip)" x="50" y="118" width="84" height="40" fill="#7C2A33"/>
+              <path fill="none" stroke="#ECE2CA" stroke-width="6.5" stroke-linejoin="round" d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
+              <rect x="89" y="146" width="6" height="42" rx="3" fill="#ECE2CA"/>
+              <path stroke="none" fill="#ECE2CA" d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z"/>`;
     return `<div class="themesign${large ? " themesign--lg" : ""}" role="radiogroup" aria-label="${esc(t("common.themeCap"))}">
       <span class="themesign__plank">
         <button type="button" class="themesign__plaque themesign__plaque--am" data-action="set-theme" data-theme="light"
@@ -64,14 +88,7 @@
             </g>
             <g filter="url(#signPaint)" fill="#1B1712" stroke="#1B1712">
               <text x="92" y="62" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="2" stroke="none">AM</text>
-              <g class="themesign__steam" fill="none" stroke-width="4.5" stroke-linecap="round">
-                <path d="M80 118 q-7 -9 0 -18 q7 -9 0 -18"/>
-                <path d="M92 118 q-7 -9 0 -18 q7 -9 0 -18"/>
-                <path d="M104 118 q-7 -9 0 -18 q7 -9 0 -18"/>
-              </g>
-              <path stroke="none" d="M52 128 h66 a6 6 0 0 1 6 6 q-2 34 -10 44 a16 16 0 0 1 -13 7 h-32 a16 16 0 0 1 -13 -7 q-8 -10 -10 -44 a6 6 0 0 1 6 -6 z"/>
-              <path fill="none" stroke-width="9" d="M124 138 q22 0 22 18 q0 18 -20 19"/>
-              <path stroke="none" d="M44 190 h80 q6 0 4 5 q-3 7 -44 7 q-41 0 -44 -7 q-2 -5 4 -5 z"/>
+              ${amArt}
             </g>
           </svg>
         </button>
@@ -84,13 +101,7 @@
             </g>
             <g filter="url(#signPaint)">
               <text x="92" y="60" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="2" fill="#ECE2CA">PM</text>
-              <clipPath id="signBowlClip">
-                <path d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
-              </clipPath>
-              <rect class="themesign__wine" clip-path="url(#signBowlClip)" x="50" y="118" width="84" height="40" fill="#7C2A33"/>
-              <path fill="none" stroke="#ECE2CA" stroke-width="6.5" stroke-linejoin="round" d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
-              <rect x="89" y="146" width="6" height="42" rx="3" fill="#ECE2CA"/>
-              <path stroke="none" fill="#ECE2CA" d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z"/>
+              ${pmArt}
             </g>
           </svg>
         </button>
@@ -99,17 +110,31 @@
   }
 
   // Erscheinungsbild-Block im Profil: das große AM/PM-Schild links, rechts ein
-  // mitlaufender Begleittext (Kaffee am Morgen / Wein am Abend). So bekommt das
-  // Schild den Platz, den es verdient, und der Seitenkopf bleibt schlank.
+  // mitlaufender Begleittext. Ohne Reiseland zeigt es Kaffee/Wein mit neutralem
+  // Begleittext; mit erkanntem Reiseland trägt das Schild dessen Tag-/Abend-
+  // getränk (wie „Bebidas AM/PM"), leuchtet in der Landesfarbe und der Text wird
+  // zum Landesgruß samt Getränk – Hell/Dunkel passt so sichtbar zum Reiseland.
   function themeSetting(vm) {
     const dark = vm.theme === "dark";
-    const title = dark ? t("common.themePmTitle") : t("common.themeAmTitle");
-    const text = dark ? t("common.themePmText") : t("common.themeAmText");
+    const bev = vm.tripCountryBev || null;
+    let title, text;
+    if (bev) {
+      title = dark ? (bev.greet[1] || "") : (bev.greet[0] || "");
+      text = dark
+        ? t("common.themePmDrink", { drink: bev.pm.name })
+        : t("common.themeAmDrink", { drink: bev.am.name });
+    } else {
+      title = dark ? t("common.themePmTitle") : t("common.themeAmTitle");
+      text = dark ? t("common.themePmText") : t("common.themeAmText");
+    }
+    // Akzent des Reiselands ans Schild geben: dann leuchtet das aktive AM/PM-
+    // Schild in der Landesfarbe und der Block bekommt eine sanfte Tönung.
+    const accent = bev ? ` style="--sign-accent:${esc(bev.accent)}"` : "";
     return `
       <div class="switchgroup">
         <span class="switchcap">${esc(t("common.themeCap"))}</span>
-        <div class="themeset">
-          ${themeToggle(vm.theme, { large: true })}
+        <div class="themeset"${accent}>
+          ${themeToggle(vm.theme, { large: true, bev: bev })}
           <div class="themeset__copy" aria-live="polite">
             <p class="themeset__title">${esc(title)}</p>
             <p class="themeset__text">${esc(text)}</p>
@@ -2241,10 +2266,13 @@
   // Wir nutzen dieselben Filter signPaint/signGrain wie der Theme-Schalter.
 
   // AM-Becher (dunkle Tinte auf cremefarbener Tafel). steam: Dampf-Pfade nur,
-  // wenn warm getrunken (Tereré ist kalt -> kein Dampf).
-  function bebAmArt(art, cold) {
-    const steam3 = `<g class="beb__steam" fill="none" stroke-width="4.5" stroke-linecap="round"><path d="M78 116 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M92 116 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M106 116 q-7 -9 0 -18 q7 -9 0 -18"/></g>`;
-    const steam2 = `<g class="beb__steam" fill="none" stroke-width="4" stroke-linecap="round"><path d="M80 110 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M96 110 q-7 -9 0 -18 q7 -9 0 -18"/></g>`;
+  // wenn warm getrunken (Tereré ist kalt -> kein Dampf). steamClass benennt die
+  // CSS-Klasse, die den Dampf animiert – „beb__steam" (Bebidas, [data-beb-mode])
+  // oder „themesign__steam" (Theme-Schalter im Profil, [data-theme]).
+  function bebAmArt(art, cold, steamClass) {
+    const sc = steamClass || "beb__steam";
+    const steam3 = `<g class="${sc}" fill="none" stroke-width="4.5" stroke-linecap="round"><path d="M78 116 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M92 116 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M106 116 q-7 -9 0 -18 q7 -9 0 -18"/></g>`;
+    const steam2 = `<g class="${sc}" fill="none" stroke-width="4" stroke-linecap="round"><path d="M80 110 q-7 -9 0 -18 q7 -9 0 -18"/><path d="M96 110 q-7 -9 0 -18 q7 -9 0 -18"/></g>`;
     if (art === "mate") {
       return `${cold ? "" : steam2}
         <circle cx="84" cy="158" r="38" stroke="none"/>
@@ -2268,36 +2296,40 @@
   }
 
   // PM-Glas (heller Umriss + farbige Füllung auf dunkler Tafel). Die Füllung
-  // trägt .beb__liquid und füllt sich erst im Abendmodus (siehe CSS).
-  function bebPmArt(art, liquid) {
+  // trägt die Animations-Klasse (liquidClass) und füllt sich erst im Abendmodus:
+  // „beb__liquid" (Bebidas, [data-beb-mode]) oder „themesign__wine" (Theme-
+  // Schalter, [data-theme]). clipId hält die clipPath-Id pro Schild eindeutig.
+  function bebPmArt(art, liquid, liquidClass, clipId) {
     const fill = esc(liquid || "#9A4E1E");
+    const lc = liquidClass || "beb__liquid";
+    const cid = clipId || "bebClip";
     if (art === "coupe") {
-      return `<clipPath id="bebClip"><path d="M56 100 q36 22 72 0 q-6 34 -30 40 q-6 2 -12 0 q-24 -6 -30 -40 z"/></clipPath>
-        <rect class="beb__liquid" clip-path="url(#bebClip)" x="50" y="118" width="84" height="30" fill="${fill}"/>
+      return `<clipPath id="${cid}"><path d="M56 100 q36 22 72 0 q-6 34 -30 40 q-6 2 -12 0 q-24 -6 -30 -40 z"/></clipPath>
+        <rect class="${lc}" clip-path="url(#${cid})" x="50" y="118" width="84" height="30" fill="${fill}"/>
         <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M56 100 q36 22 72 0 q-6 34 -30 40 q-6 2 -12 0 q-24 -6 -30 -40 z"/>
         <rect x="89" y="146" width="6" height="36" rx="3" fill="#ECE2CA"/>
         <path d="M66 190 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z" fill="#ECE2CA"/>`;
     }
     if (art === "wine") {
-      return `<clipPath id="bebClip"><path d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/></clipPath>
-        <rect class="beb__liquid" clip-path="url(#bebClip)" x="50" y="116" width="84" height="42" fill="${fill}"/>
+      return `<clipPath id="${cid}"><path d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/></clipPath>
+        <rect class="${lc}" clip-path="url(#${cid})" x="50" y="116" width="84" height="42" fill="${fill}"/>
         <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M58 92 q34 -10 68 0 q2 30 -14 46 q-8 8 -20 8 q-12 0 -20 -8 q-16 -16 -14 -46 z"/>
         <rect x="89" y="146" width="6" height="42" rx="3" fill="#ECE2CA"/>
         <path d="M64 196 h56 q6 0 4 4 q-3 5 -32 5 q-29 0 -32 -5 q-2 -4 4 -4 z" fill="#ECE2CA"/>`;
     }
     if (art === "beer") {
       // Bierkrug mit Schaumkrone + Henkel (Pilsener). Schaum/Henkel füllen sich
-      // nicht mit – nur die Bierfüllung trägt .beb__liquid.
-      return `<clipPath id="bebClip"><path d="M64 116 h54 l-4 78 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 z"/></clipPath>
-        <rect class="beb__liquid" clip-path="url(#bebClip)" x="58" y="128" width="66" height="74" fill="${fill}"/>
+      // nicht mit – nur die Bierfüllung trägt die Animations-Klasse.
+      return `<clipPath id="${cid}"><path d="M64 116 h54 l-4 78 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 z"/></clipPath>
+        <rect class="${lc}" clip-path="url(#${cid})" x="58" y="128" width="66" height="74" fill="${fill}"/>
         <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M64 116 h54 l-4 78 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 z"/>
         <path fill="#ECE2CA" d="M60 118 q6 -13 16 -5 q8 -13 18 -3 q10 -11 20 -1 q5 11 -4 13 q-26 -6 -50 0 q-7 -2 0 -7 z"/>
         <path fill="none" stroke="#ECE2CA" stroke-width="9" d="M118 134 q22 0 22 22 q0 20 -20 22"/>`;
     }
     // highball (hohes Glas mit Eiswürfeln + Strohhalm)
-    return `<clipPath id="bebClip"><path d="M62 100 h60 l-7 92 a6 6 0 0 1 -6 6 h-28 a6 6 0 0 1 -6 -6 z"/></clipPath>
-      <rect class="beb__liquid" clip-path="url(#bebClip)" x="56" y="120" width="72" height="82" fill="${fill}"/>
-      <g clip-path="url(#bebClip)" fill="none" stroke="#ECE2CA" stroke-width="3"><rect x="74" y="150" width="14" height="14" rx="2"/><rect x="96" y="166" width="14" height="14" rx="2"/></g>
+    return `<clipPath id="${cid}"><path d="M62 100 h60 l-7 92 a6 6 0 0 1 -6 6 h-28 a6 6 0 0 1 -6 -6 z"/></clipPath>
+      <rect class="${lc}" clip-path="url(#${cid})" x="56" y="120" width="72" height="82" fill="${fill}"/>
+      <g clip-path="url(#${cid})" fill="none" stroke="#ECE2CA" stroke-width="3"><rect x="74" y="150" width="14" height="14" rx="2"/><rect x="96" y="166" width="14" height="14" rx="2"/></g>
       <path fill="none" stroke="#ECE2CA" stroke-width="6" stroke-linejoin="round" d="M62 100 h60 l-7 92 a6 6 0 0 1 -6 6 h-28 a6 6 0 0 1 -6 -6 z"/>
       <path d="M110 84 L98 150" stroke="#ECE2CA" stroke-width="5" stroke-linecap="round"/>`;
   }

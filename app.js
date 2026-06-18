@@ -274,6 +274,7 @@
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       tripCountryId: tripCountryId(), // erkanntes Land fürs Schnellwechsel-Chip (oder null)
+      tripCountryBev: tripCountryBev(), // Tag-/Abendgetränk + Akzent + Gruß fürs Erscheinungsbild-Schild (oder null)
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
       showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
       showMedellinPreset: tripMentionsMedellin(), // Stadt-Pack-Kachel nur bei Medellín-Bezug
@@ -1013,6 +1014,17 @@
     if (tripMentionsChile()) return "chile";
     if (tripMentionsBolivia()) return "bolivia";
     return null;
+  }
+
+  // Tag-/Abendgetränk des erkannten Reiselands fürs Erscheinungsbild-Schild im
+  // Profil: dasselbe AM/PM-Emaille-Schild trägt damit das Landesgetränk (wie
+  // „Bebidas AM/PM"), leuchtet in der Landes-Akzentfarbe und der Begleittext wird
+  // zum Landesgruß. Quelle ist dieselbe Tabelle wie bei Bebidas (bebidas.BEBIDAS
+  // [id]: { accent, am, pm, greet }). Ohne erkanntes Land null → neutraler
+  // Standard (Kaffee/Wein, warmer Schein).
+  function tripCountryBev() {
+    const id = tripCountryId();
+    return (id && bebidas && bebidas.BEBIDAS[id]) || null;
   }
 
   // Schnellwechsel: nur das Reiseziel setzen (Datum & Tagesziel bleiben). Wenn das

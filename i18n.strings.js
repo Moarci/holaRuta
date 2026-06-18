@@ -57,6 +57,9 @@
     themeAmText: "Heller Modus. Frisch aufgebrüht, der Tag liegt offen.",
     themePmTitle: "Guten Abend",
     themePmText: "Dunkler Modus. Eingeschenkt, der Tag darf zur Ruhe kommen.",
+    // Reiseland-Variante: Hell/Dunkel-Cue + Landesgetränk (wie die AM/PM-Entwürfe).
+    themeAmDrink: (p) => `Heller Modus. ${p.drink} zum Start in den Tag.`,
+    themePmDrink: (p) => `Dunkler Modus. ${p.drink}, der Abend gehört dir.`,
     correct: "✓ Richtig!",
     wrongInput: (p) => `✗ Nicht ganz – deine Eingabe: „${p.input}“`,
     speakAnswer: "Antwort anhören",
@@ -92,6 +95,9 @@
     themeAmText: "Light mode. Freshly brewed — the day lies open.",
     themePmTitle: "Good evening",
     themePmText: "Dark mode. Poured — the day winds down.",
+    // Travel-country variant: light/dark cue + the country's drink (like the AM/PM drafts).
+    themeAmDrink: (p) => `Light mode. ${p.drink} to start the day.`,
+    themePmDrink: (p) => `Dark mode. ${p.drink} — the evening is yours.`,
     correct: "✓ Correct!",
     wrongInput: (p) => `✗ Not quite – you typed: “${p.input}”`,
     speakAnswer: "Listen to the answer",

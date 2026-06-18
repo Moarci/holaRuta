@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.93.0",
+      date: "2026-06-18",
+      title: "Erscheinungsbild im Stil deines Reiselands",
+      titleEn: "Appearance in the style of your travel country",
+      items: [
+        "🎨 Das AM/PM-Schild im Profil zeigt jetzt das Tag- und Abendgetränk deines Reiselands statt allgemein Kaffee/Wein – dieselben Motive wie „Bebidas AM/PM“ (z. B. Pisco Sour für Peru, Mate & Malbec für Argentinien). Das aktive Hell/Dunkel-Schild leuchtet in der Landes-Akzentfarbe, der Block bekommt eine sanfte Tönung und der Begleittext wird zum Landesgruß („Buenos días“/„Buenas noches“). Wechselst du oben das Reiseland (Schnellwechsel), zieht das Erscheinungsbild sofort mit. Ohne gesetztes Reiseland bleibt der vertraute Kaffee/Wein-Standard.",
+      ],
+      itemsEn: [
+        "🎨 The AM/PM sign in your profile now shows your travel country's morning and evening drink instead of generic coffee/wine – the same artwork as “Bebidas AM/PM” (e.g. Pisco Sour for Peru, Mate & Malbec for Argentina). The active light/dark sign glows in the country's accent colour, the block gets a soft tint, and the caption becomes the local greeting (“Buenos días”/“Buenas noches”). Switch the country up top (quick-switch) and the appearance follows along instantly. With no country set, the familiar coffee/wine default stays.",
+      ],
+    },
+    {
       version: "1.92.0",
       date: "2026-06-17",
       title: "Trip-Ziel & Erscheinungsbild klarer bedienbar",
