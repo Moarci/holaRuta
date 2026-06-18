@@ -105,10 +105,13 @@
     const dark = vm.theme === "dark";
     const title = dark ? t("common.themePmTitle") : t("common.themeAmTitle");
     const text = dark ? t("common.themePmText") : t("common.themeAmText");
+    // Akzent des erkannten Reiselands ans Schild geben: dann leuchtet das aktive
+    // AM/PM-Schild in der Landesfarbe – Hell/Dunkel passt sichtbar zum Reiseland.
+    const accent = vm.tripCountryAccent ? ` style="--sign-accent:${esc(vm.tripCountryAccent)}"` : "";
     return `
       <div class="switchgroup">
         <span class="switchcap">${esc(t("common.themeCap"))}</span>
-        <div class="themeset">
+        <div class="themeset"${accent}>
           ${themeToggle(vm.theme, { large: true })}
           <div class="themeset__copy" aria-live="polite">
             <p class="themeset__title">${esc(title)}</p>

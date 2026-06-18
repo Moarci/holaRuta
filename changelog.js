@@ -22,6 +22,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.93.0",
+      date: "2026-06-18",
+      title: "Erscheinungsbild leuchtet in der Reiseland-Farbe",
+      titleEn: "Appearance glows in your travel country's colour",
+      items: [
+        "🎨 Das AM/PM-Schild im Profil nimmt jetzt die Akzentfarbe deines Reiselands an: Wechselst du oben das Reiseland (Schnellwechsel), leuchtet das aktive Hell/Dunkel-Schild in der Landesfarbe und der Block bekommt eine sanfte Tönung – dieselbe Farbpalette wie bei „Bebidas AM/PM“. So passt das Erscheinungsbild sichtbar zum gewählten Land. Ohne gesetztes Reiseland bleibt der vertraute warme Standard-Ton.",
+      ],
+      itemsEn: [
+        "🎨 The AM/PM sign in your profile now picks up your travel country's accent colour: switch the country up top (quick-switch) and the active light/dark sign glows in that country's colour, with a soft tint behind it – the same palette as “Bebidas AM/PM”. The appearance visibly matches your chosen country. With no country set, the familiar warm default stays.",
+      ],
+    },
+    {
       version: "1.92.0",
       date: "2026-06-17",
       title: "Trip-Ziel & Erscheinungsbild klarer bedienbar",

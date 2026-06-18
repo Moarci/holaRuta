@@ -698,7 +698,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  * [data-theme]. */
 .themeset {
   display: flex; align-items: center; gap: 18px;
-  padding: 6px 4px 2px;
+  padding: 10px 12px; border-radius: 14px;
+  /* Sanfte Tönung in der Reiseland-Akzentfarbe (--sign-accent, im Profil pro Land
+     gesetzt). Ohne Land bleibt --sign-accent leer → transparent, kein Effekt. */
+  background: color-mix(in srgb, var(--sign-accent, transparent) 7%, transparent);
+  transition: background-color 0.6s cubic-bezier(.22,.61,.36,1);
 }
 .themeset__copy { min-width: 0; }
 .themeset__title {
@@ -736,12 +740,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 [data-theme="light"] .themesign__plaque--pm {
   opacity: 0.34; filter: grayscale(0.55) brightness(0.9); transform: scale(0.965);
 }
-/* aktives Schild: voll sichtbar, mit warmem Schein */
-[data-theme="light"] .themesign__plaque--am { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 7px rgba(176, 130, 63, 0.35)); }
-[data-theme="dark"]  .themesign__plaque--pm { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(201, 154, 87, 0.30)); }
+/* aktives Schild: voll sichtbar, mit warmem Schein. Der Schein folgt der
+   Akzentfarbe des Reiselands (--sign-accent, im Profil pro Land gesetzt); ohne
+   gesetztes Land bleibt der neutrale warme Standard-Ton. */
+[data-theme="light"] .themesign__plaque--am { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 7px color-mix(in srgb, var(--sign-accent, #B0823F) 40%, transparent)); }
+[data-theme="dark"]  .themesign__plaque--pm { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--sign-accent, #C99A57) 36%, transparent)); }
 /* großes Schild: kräftigerer Schein passend zur Fläche */
-[data-theme="light"] .themesign--lg .themesign__plaque--am { filter: drop-shadow(0 0 16px rgba(176, 130, 63, 0.35)); }
-[data-theme="dark"]  .themesign--lg .themesign__plaque--pm { filter: drop-shadow(0 0 20px rgba(201, 154, 87, 0.30)); }
+[data-theme="light"] .themesign--lg .themesign__plaque--am { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--sign-accent, #B0823F) 40%, transparent)); }
+[data-theme="dark"]  .themesign--lg .themesign__plaque--pm { filter: drop-shadow(0 0 20px color-mix(in srgb, var(--sign-accent, #C99A57) 36%, transparent)); }
 
 /* Dampf steigt nur am Morgen (heller Modus) */
 .themesign__steam path { opacity: 0; transform-box: fill-box; transform-origin: bottom center; }
