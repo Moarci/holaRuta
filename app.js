@@ -591,6 +591,7 @@
         { id: "all", label: t("app.all"), count: ov.total },
       ],
       list,
+      masteredDays: stats.MASTERED_DAYS,
       shareFormat: shareFormat(),
     };
   }

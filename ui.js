@@ -1520,8 +1520,16 @@
   const STATUS_META = {
     new:      { label: () => t("profile.statNew"),       color: "var(--muted)" },
     learning: { label: () => t("profile.statLearning"),  color: "var(--warn)" },
+    firming:  { label: () => t("profile.statFirming"),   color: "var(--easy)" },
     mastered: { label: () => t("profile.statMastered"),  color: "var(--ok)" },
   };
+
+  // Anzeige-Status: "fast geschafft" ist eine Teilmenge von "am Lernen" (statusOf
+  // kennt es nicht – das hält Badges/Verteilung/Strecke bei drei Stufen). Nur für
+  // Punkt/Label in Liste & Detail blenden wir die Zwischenstufe ein.
+  function displayStatus(s) {
+    return s.status === "learning" && s.firming ? "firming" : s.status;
+  }
 
   // Verlaufs-Punkte: je Bewertung ein farbiger Punkt (rot/grün/blau).
   function historyDots(hist) {
@@ -1618,6 +1626,14 @@
         <div class="splitstat__item">${t("profile.splitNeedPractice", { n: ov.needPractice })}</div>
       </div>`;
 
+    // Erklärt, was "gemeistert" bedeutet, und zeigt die Zwischenstufe "fast
+    // geschafft" – so wirkt "0 gemeistert" am Anfang nicht entmutigend.
+    const masteryNote = ov.seenCards > 0 ? `
+      <div class="mnote">
+        ${ov.firming > 0 ? `<span class="mnote__firm"><i style="background:var(--easy)"></i>${esc(t("profile.masteryFirming", { n: ov.firming }))}</span>` : ""}
+        <span class="mnote__hint">${esc(t("profile.masteryHint", { days: vm.masteredDays }))}</span>
+      </div>` : "";
+
     const chips = vm.filters
       .map((f) => `<button class="schip ${vm.filter === f.id ? "is-active" : ""}" data-action="set-stats-filter" data-filter="${f.id}">${esc(f.label)} <span class="schip__n">${f.count}</span></button>`)
       .join("");
@@ -1636,6 +1652,7 @@
         ${kpis}
         ${routeMap(ov)}
         ${distribution}
+        ${masteryNote}
         ${firstTry}
         ${ov.seenCards > 0 ? shareBlock(vm.shareFormat, "share-stats", t("common.shareProgress")) : ""}
         <div class="schips" role="group" aria-label="${esc(t("profile.statsFilter"))}">${chips}</div>
@@ -1648,7 +1665,7 @@
 
   // Eine Zeile in der Statistik-Liste (klickbar -> Detailseite).
   function statRow(r) {
-    const meta = STATUS_META[r.s.status] || STATUS_META.new;
+    const meta = STATUS_META[displayStatus(r.s)] || STATUS_META.new;
     const seen = r.s.seen > 0 ? t("profile.seenTimes", { n: r.s.seen }) : t("profile.statNewWord");
     return `
       <button class="statrow" data-action="open-card" data-id="${esc(r.id)}" data-back="stats">
@@ -1675,7 +1692,7 @@
         </section>`;
     }
     const s = vm.s;
-    const meta = STATUS_META[s.status] || STATUS_META.new;
+    const meta = STATUS_META[displayStatus(s)] || STATUS_META.new;
     const accent = vm.accent;
     const tip = vm.tip ? `<div class="cardx__tip">🗣️ ${esc(vm.tip)}</div>` : "";
 
