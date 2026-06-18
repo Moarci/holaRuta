@@ -320,10 +320,23 @@
       var cand = cands[i];
       var budget = cand.length < 8 ? 0 : (cand.length < 14 ? 1 : 2); // wie SC.matcher.typoBudget
       if (!budget) continue;
-      if (levDist(got, cand) <= budget || (noPron !== got && levDist(noPron, cand) <= budget))
+      if (isTypo(got, cand, budget) || (noPron !== got && isTypo(noPron, cand, budget)))
         return { correct: true, typo: true };
     }
     return { correct: false, typo: false };
+  }
+  // Klarer Vertipper innerhalb des Budgets, aber KEINE Wortend-Flexion (Genus,
+  // Person, Plural-s). Spiegelt SC.matcher.classifyNorm/isWordFinalEdit.
+  function isTypo(a, cand, budget) {
+    var d = levDist(a, cand);
+    return d > 0 && d <= budget && !(d === 1 && wordFinalEdit(a, cand));
+  }
+  function wordFinalEdit(a, b) {
+    var i = a.length - 1, j = b.length - 1, n = 0;
+    while (i >= 0 && j >= 0 && a.charCodeAt(i) === b.charCodeAt(j)) { i--; j--; n++; }
+    var longer = a.length >= b.length ? a : b;
+    var after = longer.length - n;
+    return after >= longer.length || longer.charCodeAt(after) === 32;
   }
   // Kleines Levenshtein für den Fallback (der Matcher hat ein identisches).
   function levDist(a, b) {

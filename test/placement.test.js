@@ -140,6 +140,14 @@ test("matchFree: kurze Antworten bleiben streng (kein gato↔pato)", () => {
   assert.equal(placement.matchFree("gato", ["gato"]).correct, true);
 });
 
+test("matchFree: Wortend-Flexion ist falsch, Wortinneres-Vertipper bleibt richtig", () => {
+  // Grammatisch falsche Form (Endung) zählt NICHT als Tippfehler -> sauberer Score.
+  assert.equal(placement.matchFree("necesita", ["necesito"]).correct, false);
+  assert.equal(placement.matchFree("soy vegetariano", ["soy vegetariana"]).correct, false);
+  // Echter Vertipper im Wortinneren bleibt ein akzeptierter Tippfehler.
+  assert.deepEqual(placement.matchFree("quiro un cafe", ["quiero un cafe"]), { correct: true, typo: true });
+});
+
 test("timeConfidence: Schwellen relativ zur erwarteten Zeit", () => {
   assert.equal(placement.timeConfidence(7000, 10), 1.0);   // <= 0.75x
   assert.equal(placement.timeConfidence(14000, 10), 0.7);  // <= 1.5x

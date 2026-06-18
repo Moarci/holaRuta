@@ -158,6 +158,23 @@
     return s.length ? s : norm;
   }
 
+  // Länge des gemeinsamen Wort-Endes (von hinten gezählt).
+  function commonSuffixLen(a, b) {
+    let i = a.length - 1, j = b.length - 1, n = 0;
+    while (i >= 0 && j >= 0 && a.charCodeAt(i) === b.charCodeAt(j)) { i--; j--; n++; }
+    return n;
+  }
+  // Liegt der EINE Unterschied (nur bei Distanz 1 sinnvoll) am Wortende? Dann ist
+  // es im Spanischen meist eine echte Flexion (Genus -o/-a, Person, Plural -s) –
+  // ein BEDEUTUNGSunterschied, kein Vertipper: direkt nach der Abweichung steht
+  // ein Leerzeichen oder das String-Ende. So zählt "necesita"≠"necesito", aber
+  // "quiro"="quiero" (Abweichung im Wortinneren) bleibt ein Tippfehler.
+  function isWordFinalEdit(a, b) {
+    const longer = a.length >= b.length ? a : b;
+    const after = longer.length - commonSuffixLen(a, b); // erstes Zeichen des gemeinsamen Suffixes
+    return after >= longer.length || longer.charCodeAt(after) === 32; // 32 = Leerzeichen
+  }
+
   // Vergleicht eine NORMALISIERTE Eingabe gegen normalisierte Kandidaten.
   // -> "exact" (Treffer, evtl. nur ein optionales Pronomen zu viel – kein Hinweis),
   //    "typo"  (klarer Vertipper innerhalb des Budgets – zählt, aber mit Hinweis),
@@ -171,13 +188,14 @@
     for (let c = 0; c < normCands.length; c++)
       for (let v = 0; v < inVariants.length; v++)
         if (inVariants[v] === normCands[c]) return "exact";
-    // 2) klarer Vertipper innerhalb des Budgets.
+    // 2) klarer Vertipper innerhalb des Budgets – aber NICHT, wenn die einzige
+    //    Abweichung am Wortende sitzt (das ist eine Flexion, keine Verschreibung).
     for (let c = 0; c < normCands.length; c++) {
       const budget = typoBudget(normCands[c].length);
       if (!budget) continue;
       for (let v = 0; v < inVariants.length; v++) {
         const d = levenshtein(inVariants[v], normCands[c]);
-        if (d > 0 && d <= budget) return "typo";
+        if (d > 0 && d <= budget && !(d === 1 && isWordFinalEdit(inVariants[v], normCands[c]))) return "typo";
       }
     }
     return "";

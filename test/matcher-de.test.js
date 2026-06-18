@@ -156,6 +156,18 @@ test("Tippfehler: kurze Wörter bleiben streng (gato ≠ pato), echte Fehler ble
   no("geradeaus", { de: "links / rechts", es: "izquierda / derecha" }, "de"); // weit weg bleibt weit weg
 });
 
+test("Tippfehler: Wortend-Flexion (Genus/Person/Plural) ist KEIN Tippfehler", () => {
+  // Eine einzelne Abweichung am Wortende ist eine echte Form, kein Vertipper.
+  assert.equal(matcher.check("necesita", { es: "necesito" }).correct, false);        // Person yo↔ella
+  assert.equal(matcher.check("soy vegetariano", { es: "soy vegetariana" }).correct, false); // Genus
+  assert.equal(matcher.check("estoy cansado", { es: "estoy cansada" }).correct, false);     // Genus
+  assert.equal(matcher.check("necesito ayuda", { es: "necesita ayuda" }).correct, false);   // Flexion mitten im Satz
+  assert.equal(matcher.check("reservas", { es: "reserva" }).correct, false);          // Plural-s am Ende
+  // Gegenprobe: ein Vertipper im Wortinneren bleibt ein (akzeptierter) Tippfehler.
+  let r = matcher.check("quiro un cafe", { es: "quiero un cafe" });
+  assert.equal(r.correct, true); assert.equal(r.typo, true);
+});
+
 test("matchFree: bequemer Freitext-Check liefert correct + typo", () => {
   const acc = ["quiero un cafe", "un cafe por favor"];
   assert.deepEqual(matcher.matchFree("quiero un café", acc), { correct: true, typo: false });
