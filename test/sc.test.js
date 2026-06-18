@@ -42,6 +42,18 @@ test("matcher.check: exakt, akzent- und schreibungs-tolerant", () => {
   assert.equal(matcher.check("medica", card).correct, false);
 });
 
+test("matcher.check: fehlende Striche auf -ás/-ís/-ós zählen NICHT als Fehler", () => {
+  // Reise-Tastaturen haben oft keine Akzenttaste. Wer die Striche auf den
+  // Endungen weglässt, soll trotzdem als richtig gewertet werden.
+  assert.equal(matcher.check("estas", { es: "estás" }).correct, true);
+  assert.equal(matcher.check("comeras", { es: "comerás" }).correct, true);
+  assert.equal(matcher.check("paris", { es: "París" }).correct, true);
+  assert.equal(matcher.check("adios", { es: "adiós" }).correct, true);
+  assert.equal(matcher.check("autobus", { es: "autobús" }).correct, true);
+  // Umgekehrt: getippte Akzente bleiben natürlich ebenfalls richtig.
+  assert.equal(matcher.check("estás", { es: "estás" }).correct, true);
+});
+
 test("matcher.check: Slash-Alternativen werden alle akzeptiert", () => {
   const card = { es: "el bus / el colectivo" };
   assert.equal(matcher.check("el bus", card).correct, true);
