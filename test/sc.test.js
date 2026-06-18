@@ -34,12 +34,43 @@ test("matcher.normalize: Akzente, Satzzeichen, Groß/Klein, Mehrfach-Spaces", ()
   assert.equal(matcher.normalize("¡Hólá!"), "hola");
 });
 
+test("matcher.normalize: beliebige Sonderzeichen/Tippmüll werden ignoriert", () => {
+  // Nicht nur die altbekannten Satzzeichen, sondern ALLES außer Buchstaben/Ziffern.
+  assert.equal(matcher.normalize("hola*"), "hola");
+  assert.equal(matcher.normalize("hola…"), "hola");
+  assert.equal(matcher.normalize("hola 👋"), "hola");
+  assert.equal(matcher.normalize("¡hola! 50%"), "hola 50");
+  assert.equal(matcher.normalize("@#hola&"), "hola");
+  // Ziffern bleiben erhalten (Preis-/Zahlkarten).
+  assert.equal(matcher.normalize("$45.000"), "45000");
+});
+
+test("matcher.check: versehentliche Sonderzeichen kosten nicht die Antwort", () => {
+  const card = { es: "hola" };
+  assert.equal(matcher.check("hola!", card).correct, true);
+  assert.equal(matcher.check("hola.", card).correct, true);
+  assert.equal(matcher.check("¡hola!", card).correct, true);
+  assert.equal(matcher.check("hola;", card).correct, true);
+});
+
 test("matcher.check: exakt, akzent- und schreibungs-tolerant", () => {
   const card = { es: "médico" };
   assert.equal(matcher.check("médico", card).correct, true);
   assert.equal(matcher.check("medico", card).correct, true);   // ohne Akzent
   assert.equal(matcher.check("  MEDICO ", card).correct, true); // Case + Spaces
   assert.equal(matcher.check("medica", card).correct, false);
+});
+
+test("matcher.check: fehlende Striche auf -ás/-ís/-ós zählen NICHT als Fehler", () => {
+  // Reise-Tastaturen haben oft keine Akzenttaste. Wer die Striche auf den
+  // Endungen weglässt, soll trotzdem als richtig gewertet werden.
+  assert.equal(matcher.check("estas", { es: "estás" }).correct, true);
+  assert.equal(matcher.check("comeras", { es: "comerás" }).correct, true);
+  assert.equal(matcher.check("paris", { es: "París" }).correct, true);
+  assert.equal(matcher.check("adios", { es: "adiós" }).correct, true);
+  assert.equal(matcher.check("autobus", { es: "autobús" }).correct, true);
+  // Umgekehrt: getippte Akzente bleiben natürlich ebenfalls richtig.
+  assert.equal(matcher.check("estás", { es: "estás" }).correct, true);
 });
 
 test("matcher.check: Slash-Alternativen werden alle akzeptiert", () => {
