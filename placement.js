@@ -305,6 +305,43 @@
     return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
       .replace(/[¿?¡!.,;:()]/g, "").replace(/\s+/g, " ").trim();
   }
+  // Freitext-Treffer inkl. Tippfehler-Toleranz. -> { correct, typo }.
+  // Bevorzugt den App-Matcher (zentrale Schwellen); lokaler Fallback, damit der
+  // Test ohne matcher.js läuft – mit DENSELBEN konservativen Schwellen.
+  function matchFree(text, accept) {
+    if (SC.matcher && typeof SC.matcher.matchFree === "function") return SC.matcher.matchFree(text, accept);
+    var got = normalizeFree(text);
+    if (!got) return { correct: false, typo: false };
+    var cands = (accept || []).map(normalizeFree).filter(Boolean);
+    if (cands.indexOf(got) !== -1) return { correct: true, typo: false };
+    var noPron = got.replace(/^(?:yo|vos|usted|ustedes|ella|ellos|ellas|nosotros|nosotras)\s+/, "");
+    if (noPron !== got && cands.indexOf(noPron) !== -1) return { correct: true, typo: false };
+    for (var i = 0; i < cands.length; i++) {
+      var cand = cands[i];
+      var budget = cand.length < 8 ? 0 : (cand.length < 14 ? 1 : 2); // wie SC.matcher.typoBudget
+      if (!budget) continue;
+      if (levDist(got, cand) <= budget || (noPron !== got && levDist(noPron, cand) <= budget))
+        return { correct: true, typo: true };
+    }
+    return { correct: false, typo: false };
+  }
+  // Kleines Levenshtein für den Fallback (der Matcher hat ein identisches).
+  function levDist(a, b) {
+    if (a === b) return 0;
+    var al = a.length, bl = b.length;
+    if (!al) return bl; if (!bl) return al;
+    var prev = []; for (var j = 0; j <= bl; j++) prev[j] = j;
+    for (var i = 1; i <= al; i++) {
+      var cur = [i], ca = a.charCodeAt(i - 1);
+      for (var k = 1; k <= bl; k++) {
+        var cost = ca === b.charCodeAt(k - 1) ? 0 : 1;
+        cur[k] = Math.min(prev[k] + 1, cur[k - 1] + 1, prev[k - 1] + cost);
+      }
+      prev = cur;
+    }
+    return prev[bl];
+  }
+
   function median(nums) {
     var a = nums.filter(function (n) { return typeof n === "number" && isFinite(n); }).slice().sort(function (x, y) { return x - y; });
     if (!a.length) return 0;
@@ -330,17 +367,18 @@
   // Eine einzelne Antwort bewerten. answer: { isUnknown, selectedIndex, text, responseTimeMs }
   function scoreAnswer(q, answer) {
     answer = answer || {};
-    if (answer.isUnknown) return { result: "unknown", isCorrect: false, timeConfidence: 0 };
-    var isCorrect;
+    if (answer.isUnknown) return { result: "unknown", isCorrect: false, timeConfidence: 0, typo: false };
+    var isCorrect, typo = false;
     if (q.type === "free") {
-      var got = normalizeFree(answer.text || "");
-      isCorrect = !!got && (q.accept || []).some(function (a) { return normalizeFree(a) === got; });
+      var fr = matchFree(answer.text || "", q.accept || []);
+      isCorrect = fr.correct; typo = fr.typo; // typo zählt als richtig, mit UI-Hinweis
     } else {
       isCorrect = answer.selectedIndex === q.correctIndex;
     }
     return {
       result: isCorrect ? "correct" : "wrong",
       isCorrect: isCorrect,
+      typo: typo,
       timeConfidence: isCorrect ? timeConfidence(answer.responseTimeMs, q.expectedTimeSec) : 0,
     };
   }
@@ -441,6 +479,7 @@
     // reine Funktionen (getestet)
     timeConfidence: timeConfidence,
     scoreAnswer: scoreAnswer,
+    matchFree: matchFree,
     levelFor: levelFor,
     summarize: summarize,
     questionById: questionById,

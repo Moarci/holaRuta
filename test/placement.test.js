@@ -112,6 +112,34 @@ test("scoreAnswer (free): akzent-/satzzeichentolerant über akzeptierte Variante
   assert.equal(placement.scoreAnswer(q, { text: "", responseTimeMs: 5000 }).isCorrect, false);
 });
 
+test("scoreAnswer (free): klarer Tippfehler zählt als richtig, mit typo-Flag", () => {
+  const q = { type: "free", accept: ["quiero un cafe", "un cafe por favor"], expectedTimeSec: 14 };
+  // exakt (akzenttolerant) -> richtig, KEIN Tippfehler-Hinweis
+  let r = placement.scoreAnswer(q, { text: "Quiero un café.", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, true); assert.equal(r.typo, false);
+  // ein Vertipper ("quiro" statt "quiero") -> richtig, aber als Tippfehler markiert
+  r = placement.scoreAnswer(q, { text: "quiro un cafe", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, true); assert.equal(r.typo, true);
+  // optionales Pronomen davor ("yo quiero") -> richtig, KEIN Tippfehler-Hinweis
+  r = placement.scoreAnswer(q, { text: "yo quiero un café", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, true); assert.equal(r.typo, false);
+  // Screenshot-Fall: Pronomen + Vertipper -> richtig, mit Tippfehler-Hinweis
+  r = placement.scoreAnswer(q, { text: "yo quiro un café", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, true); assert.equal(r.typo, true);
+  // echt andere Antwort bleibt falsch (kein Durchrutschen über die Distanz)
+  r = placement.scoreAnswer(q, { text: "no se", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, false); assert.equal(r.typo, false);
+  // leere Eingabe bleibt falsch
+  r = placement.scoreAnswer(q, { text: "", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, false); assert.equal(r.typo, false);
+});
+
+test("matchFree: kurze Antworten bleiben streng (kein gato↔pato)", () => {
+  // 4 Buchstaben: Budget 0 -> nur exakt, eine echte Wortverwechslung zählt NICHT.
+  assert.equal(placement.matchFree("pato", ["gato"]).correct, false);
+  assert.equal(placement.matchFree("gato", ["gato"]).correct, true);
+});
+
 test("timeConfidence: Schwellen relativ zur erwarteten Zeit", () => {
   assert.equal(placement.timeConfidence(7000, 10), 1.0);   // <= 0.75x
   assert.equal(placement.timeConfidence(14000, 10), 0.7);  // <= 1.5x
