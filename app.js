@@ -338,6 +338,7 @@
       placementDone: !!gamestats.placement,     // Ruta-Check schon absolviert?
       placementPending: settings.placementPending === true, // beim Onboarding übersprungen → als offen anzeigen
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
+      celebrateSound: !!settings.celebrateSound, // Belohnungs-Sound an/aus (Default aus)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
@@ -4557,6 +4558,15 @@
     try { document.documentElement.lang = next; } catch (e) { /* egal */ }
   }
 
+  // Belohnungs-Sound an/aus (SC.celebrate am Rundenende). Merken & neu rendern,
+  // damit der aktive Segment-Button sofort umspringt.
+  function setCelebrateSound(on) {
+    settings = Object.assign({}, settings, { celebrateSound: !!on });
+    store.saveSettings(settings);
+    buzz(8);
+    render();
+  }
+
   // UI-/Muttersprache umschalten (de/en), merken und neu rendern.
   function setUiLang(l) {
     applyUiLang(l);
@@ -5991,6 +6001,7 @@
     else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
     else if (action === "set-theme") setTheme(el.dataset.theme);
     else if (action === "set-dir") setDir(el.dataset.dir);
+    else if (action === "set-celebrate-sound") setCelebrateSound(el.dataset.on === "1");
     else if (action === "set-ui-lang") setUiLang(el.dataset.lang);
     else if (action === "set-level") toggleLevel(Number(el.dataset.level));
     else if (action === "study-all") startStudy("all");

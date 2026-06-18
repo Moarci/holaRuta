@@ -395,6 +395,21 @@
       </div>`;
   }
 
+  // Belohnungs-Sound an/aus (SC.celebrate spielt am Rundenende einen kurzen
+  // WebAudio-Klang). Default aus – Sound überrascht; die Haptik läuft unabhängig.
+  function celebrateSoundGroup(vm) {
+    const on = !!vm.celebrateSound;
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.celebrateSoundCap"))}</span>
+        <div class="segmented" role="group" aria-label="${esc(t("home.celebrateSoundAria"))}">
+          <button class="seg ${on ? "is-active" : ""}" type="button" data-action="set-celebrate-sound" data-on="1" aria-pressed="${on}">${esc(t("home.celebrateSoundOn"))}</button>
+          <button class="seg ${!on ? "is-active" : ""}" type="button" data-action="set-celebrate-sound" data-on="0" aria-pressed="${!on}">${esc(t("home.celebrateSoundOff"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.celebrateSoundHint"))}</p>
+      </div>`;
+  }
+
   // Erklär-Slides ganz am Anfang des Onboardings: ein kurzer Überblick, WIE die App
   // funktioniert und welchen UMFANG sie hat – bevor wir Name/Geschlecht und Reiseziel
   // erfragen. Rein datengetrieben: Icon + zwei i18n-Schlüssel je Slide. Die Reihenfolge
@@ -923,6 +938,7 @@
         ${genderGroup(vm)}
         ${langGroup}
         ${learnPrefs(vm)}
+        ${celebrateSoundGroup(vm)}
       </div>
 
       ${navrow("open-stats", "📊", t("profile.statistics"))}
