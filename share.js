@@ -21,8 +21,26 @@
   const W = 1080;             // Breite (beide Formate sind 1080 breit)
   const PAD = 88;             // Außenrand
   const BRAND = "HolaRuta";
-  const APP_URL = "https://moarci.github.io/holaRuta/"; // klickbarer Link im Begleittext
-  const APP_URL_LABEL = "moarci.github.io/holaRuta";    // kurze, lesbare Anzeige im Bild
+  // Kanonische Web-Adresse für geteilte Links – ohne Hardcoding:
+  //   1. Edition-Config (SC.config.appUrl) gewinnt, 2. sonst die aktuelle Adresse
+  //   (origin + Ordnerpfad), 3. nur als letzter Fallback die HolaRuta-Pages-URL
+  //   (greift v.a. beim Öffnen der Einzeldatei via file://). So stimmt der Link
+  //   auch für Forks und Co-Branding-Editionen.
+  const APP_URL_FALLBACK = "https://moarci.github.io/holaRuta/";
+  function appUrl() {
+    const cfg = window.SC && SC.config && SC.config.appUrl;
+    if (cfg) return cfg;
+    try {
+      const loc = window.location;
+      if (loc && /^https?:$/.test(loc.protocol)) {
+        return loc.origin + loc.pathname.replace(/[^/]*$/, ""); // Ordner ohne Datei/Query/Hash
+      }
+    } catch (e) { /* kein location verfügbar */ }
+    return APP_URL_FALLBACK;
+  }
+  function appUrlLabel() {
+    return appUrl().replace(/^https?:\/\//, "").replace(/\/+$/, ""); // kurze, lesbare Anzeige
+  }
   const FONT = '"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif';
   const INK = "#0f172a";      // dunkler Text
   const MUTE = "#64748b";     // gedämpfter Text
@@ -141,7 +159,7 @@
     ctx.fillText("🇪🇸 " + BRAND, cx, h - 96);
 
     // App-Adresse als Link gestaltet: 👉 + unterstrichener Text.
-    const url = "👉  " + APP_URL_LABEL;
+    const url = "👉  " + appUrlLabel();
     ctx.font = font("700", 32);
     ctx.fillStyle = "rgba(255,255,255,0.92)";
     const urlY = h - 48;
@@ -935,9 +953,10 @@
     // nackte URL im Begleittext automatisch. Trägt das Sharepic eine Modul-Kennung
     // (moduleSlug), zeigt der Link per ?m=<modul> direkt in dieses Modul: Wer den
     // Link antippt, landet nicht auf der Startseite, sondern im empfohlenen Modul.
+    const base = appUrl();
     const url = p.moduleSlug
-      ? APP_URL + (APP_URL.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(p.moduleSlug)
-      : APP_URL;
+      ? base + (base.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(p.moduleSlug)
+      : base;
     const link = `\n\n${t("share.captionJoin")} ${url}`;
     if (kind === "stats") {
       const r = (p.rate === null || p.rate === undefined) ? null : p.rate;
