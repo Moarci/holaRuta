@@ -508,6 +508,83 @@
     return c;
   }
 
+  // ---------- Motiv 2c: Reise-Rang (XP / Viajero) ----------
+  // Eigenes Sharepic für den XP-Rang: Ring (Füllung = Fortschritt zum nächsten
+  // Rang), in der Mitte der XP-Stand, darüber der Rang-Name. Zwei Kacheln zeigen
+  // den nächsten Rang und die noch fehlenden XP. „Camino"-Farben (Grün→Türkis),
+  // klar von Ruta-Check/Nivel-Test/Stempel unterscheidbar.
+  // payload: { userName, rankName, xp, nextName, xpToNext, pct, rankN }
+  function buildRank(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    bgGradient(ctx, "#3F7355", "#2E6E86", h);
+    const cx = W / 2;
+    const isStory = aspect === "story";
+
+    const L = isStory
+      ? { kicker: 360, cap: 470, ringY: 900, R: 250, ringW: 40, xpPx: 168, capPx: 44, ringCapPx: 40, tilesY: 1330, tileH: 210, tileNum: 76, tileLbl: 32 }
+      : { kicker: 150, cap: 232, ringY: 470, R: 168, ringW: 32, xpPx: 116, capPx: 34, ringCapPx: 30, tilesY: 760, tileH: 176, tileNum: 62, tileLbl: 28 };
+
+    // Kopf
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    drawFittedLine(ctx, payload.userName ? t("share.myRankName", { name: payload.userName }) : t("share.myRank"), cx, L.kicker, W - PAD * 2, 40, "700");
+    // Rang-Name als prominente Beschriftung über dem Ring (🧭 …), passt sich an.
+    ctx.fillStyle = "#ffffff";
+    drawFittedLine(ctx, "🧭 " + String(payload.rankName || "–"), cx, L.cap, W - PAD * 2, L.capPx + 16, "800");
+
+    // Ring (Füllung = Fortschritt zum nächsten Rang), XP groß in der Mitte.
+    const pct = Math.max(0, Math.min(100, payload.pct == null ? 0 : payload.pct));
+    ctx.lineWidth = L.ringW;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(255,255,255,0.25)";
+    ctx.beginPath();
+    ctx.arc(cx, L.ringY, L.R, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, L.ringY, L.R, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * pct) / 100);
+    ctx.stroke();
+    ctx.fillStyle = "#ffffff";
+    ctx.textBaseline = "middle";
+    ctx.font = font("800", L.xpPx);
+    ctx.fillText(String(payload.xp == null ? 0 : payload.xp), cx, L.ringY - 10);
+    ctx.font = font("700", L.ringCapPx);
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.fillText(t("share.rankXpCap"), cx, L.ringY + L.R - 8);
+    ctx.textBaseline = "alphabetic";
+
+    // Zwei Kennzahl-Kacheln: nächster Rang & noch fehlende XP (bzw. „erreicht").
+    const tiles = payload.nextName
+      ? [
+          { num: payload.nextName, lbl: t("share.rankNextCap") },
+          { num: "+" + (payload.xpToNext == null ? 0 : payload.xpToNext), lbl: t("share.rankToGo") },
+        ]
+      : [
+          { num: "🏆", lbl: t("share.rankReached") },
+          { num: pct + "%", lbl: t("share.rankProgress") },
+        ];
+    const gap = 28;
+    const tw = (W - PAD * 2 - gap) / 2;
+    tiles.forEach((tile, i) => {
+      const x = PAD + i * (tw + gap);
+      ctx.fillStyle = "rgba(255,255,255,0.16)";
+      roundRect(ctx, x, L.tilesY, tw, L.tileH, 32);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.font = font("800", L.tileNum);
+      drawFittedLine(ctx, String(tile.num), x + tw / 2, L.tilesY + L.tileH * 0.55, tw - 36, L.tileNum, "800");
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = font("600", L.tileLbl);
+      drawFittedLine(ctx, tile.lbl, x + tw / 2, L.tilesY + L.tileH - 30, tw - 28, L.tileLbl, "600");
+    });
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Motiv 3: Ruta-Pass-Stempel (Badge) ----------
   // Ein freigeschalteter Stempel als „Reisestempel im Pass": warmes Medaillon
   // mit dem Badge-Emoji, Name, Freischalt-Text und Sammelstand.
@@ -984,6 +1061,11 @@
       out += `\n\n${t("share.captionAssessment")}`;
       return out + link;
     }
+    if (kind === "rank") {
+      let out = t("share.captionRankHead", { rank: String(p.rankName || "–"), xp: (p.xp == null ? 0 : p.xp) });
+      out += `\n\n${t("share.captionRank")}`;
+      return out + link;
+    }
     if (kind === "histtext") {
       const title = String(p.title || "").trim();
       let out = t("share.captionHistoriaHead", { title: title || "Historia de Sudamérica" });
@@ -1029,6 +1111,7 @@
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "placement" ? buildPlacement(payload, fmt)
              : kind === "assessment" ? buildAssessment(payload, fmt)
+             : kind === "rank" ? buildRank(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
              : kind === "histtext" ? buildHistoria(payload, fmt)
              : kind === "histmodule" ? buildHistOverview(payload, fmt)
@@ -1051,6 +1134,7 @@
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "placement" ? "holaruta-ruta-check"
                : kind === "assessment" ? "holaruta-nivel-test"
+               : kind === "rank" ? "holaruta-rang"
                : kind === "badge" ? "holaruta-stempel"
                : kind === "histtext" ? "holaruta-historia"
                : kind === "histmodule" ? "holaruta-historia-modul"
@@ -1061,6 +1145,7 @@
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "placement" ? "Mein HolaRuta-Check-Ergebnis"
                 : kind === "assessment" ? "Mein HolaRuta-Nivel-Test-Ergebnis"
+                : kind === "rank" ? "Mein HolaRuta-Reise-Rang"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
                 : kind === "histtext" ? "Historia de Sudamérica"
                 : kind === "histmodule" ? "Historia de Sudamérica"
@@ -1093,5 +1178,5 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildPlacement, buildAssessment, buildBadge, buildHistoria, buildHistOverview, buildTips };
+  window.SC.share = { shareImage, buildCard, buildStats, buildPlacement, buildAssessment, buildRank, buildBadge, buildHistoria, buildHistOverview, buildTips };
 })();

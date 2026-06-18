@@ -5707,6 +5707,24 @@
     }, shareFormat());
   }
 
+  // Teilt den eigenen Reise-Rang (XP/Viajero) als Sharepic. Quelle ist xpVM(),
+  // also derselbe Stand wie im Rang-Banner – funktioniert aus der Statistik
+  // heraus jederzeit, unabhängig von einer laufenden Runde.
+  function shareRank() {
+    if (!share) return;
+    const xp = xpVM();
+    buzz(12);
+    share.shareImage("rank", {
+      userName: profileName(),
+      rankName: xp.rankName,
+      xp: xp.xp,
+      nextName: xp.nextName,
+      xpToNext: xp.xpToNext,
+      pct: xp.pct,
+      rankN: xp.rankN,
+    }, shareFormat());
+  }
+
   // Teilt einen freigeschalteten Ruta-Pass-Stempel als Sharepic. Wertet die
   // Badges frisch aus, damit Name/Gruppe/Sammelstand stimmen, und teilt nur,
   // wenn der Stempel auch wirklich freigeschaltet ist.
@@ -6136,6 +6154,7 @@
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
+    else if (action === "share-rank") shareRank();
     else if (action === "share-placement") sharePlacement();
     else if (action === "share-assessment") shareAssessment();
     else if (action === "share-card") shareCard();

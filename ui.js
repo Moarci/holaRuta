@@ -1657,6 +1657,7 @@
           <div class="topbar__counter">${ov.seenCards}/${ov.total}</div>
         </div>
         ${xpBanner(vm.xp)}
+        ${vm.xp && vm.xp.xp ? shareBlock(vm.shareFormat, "share-rank", t("profile.shareRank")) : ""}
         ${kpis}
         ${routeMap(ov)}
         ${distribution}
