@@ -1375,15 +1375,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hist-banner__chev { flex-shrink: 0; font-size: 1.3rem; opacity: 0.8; }
 
 /* Sprungmarken-Leiste: gemeinsame Basis für Historia (.hist-nav),
-   Tiempos (.ti-nav) und Spickzettel (.sz-nav). Die Farbverlauf-Kante der
-   Spickzettel-Chips kommt zusätzlich im SPICKZETTEL-Abschnitt dazu. */
-.hist-nav, .ti-nav, .sz-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.hist-nav__chip, .ti-nav__chip, .sz-nav__chip {
+   Tiempos (.ti-nav), Spickzettel (.sz-nav) und Fotos y videos (.ft-nav). Die
+   Farbverlauf-Kante der Spickzettel-Chips kommt zusätzlich im SPICKZETTEL-Abschnitt dazu. */
+.hist-nav, .ti-nav, .sz-nav, .ft-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip, .ti-nav__chip, .sz-nav__chip, .ft-nav__chip {
   display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
   font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
   background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
 }
-.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active { transform: scale(0.96); }
+.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active, .ft-nav__chip:active { transform: scale(0.96); }
 /* Angesprungene Abschnitte nicht bündig an den oberen Rand kleben lassen. */
 .cinfo-sect { scroll-margin-top: 12px; }
 
@@ -1631,6 +1631,33 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-size: 0.9rem; line-height: 1.45;
 }
 
+/* Foto-Apps: Karte mit eingebetteter SVG-Illustration, Erklärung und Link. */
+.foto-app {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  padding: 14px; box-shadow: var(--shadow);
+}
+.foto-app__media { flex-shrink: 0; width: 96px; }
+.foto-app__art { display: block; width: 96px; height: auto; border-radius: var(--r-sm); }
+.foto-app__body { min-width: 0; flex: 1; }
+.foto-app__name {
+  margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--ink); line-height: 1.2;
+}
+.foto-app__plat { display: inline-block; font-family: var(--font); font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+.foto-app__desc { margin: 6px 0 0; color: var(--ink-soft); line-height: 1.55; font-size: 0.92rem; }
+.foto-app__bullets { margin: 8px 0 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.foto-app__bullets li { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.4; }
+.foto-app__link {
+  display: inline-block; margin-top: 10px; padding: 7px 12px; border-radius: var(--r-sm);
+  background: var(--surface); border: 1.5px solid var(--line);
+  color: var(--brand-ink); font-weight: 600; font-size: 0.88rem; text-decoration: none;
+}
+.foto-app__link:hover { border-color: var(--brand); }
+@media (max-width: 380px) {
+  .foto-app { flex-direction: column; align-items: center; text-align: center; }
+  .foto-app__bullets li { text-align: left; }
+}
+
 /* „Heute": Spannungen mit Status-Plakette. */
 .hist-tens { display: flex; flex-direction: column; gap: 12px; }
 .hist-ten {
@@ -1709,6 +1736,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .rg-head {
   font-family: var(--font-display); font-size: 1.05rem; color: var(--ink);
   margin: 22px 0 12px; padding-bottom: 6px; border-bottom: 1.5px solid var(--line);
+  scroll-margin-top: 12px; /* Sprungmarken (z. B. Fotos y videos) nicht oben ankleben */
 }
 .rg-head:first-of-type { margin-top: 18px; }
 .rg-group { margin-bottom: 14px; }
