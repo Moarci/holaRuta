@@ -300,6 +300,12 @@
     rateFast: "⚡ Schnell",
     modeLabel: "Modus",
     modeAria: "Lernmodus",
+    // Kurz-Erklärung der drei Lernmodi (im Profil unter der Modus-Auswahl):
+    // Was passiert im Modus und welche Aufgabe hat man dabei.
+    modeInfoCap: "Was die Modi können",
+    modeFlipDesc: "Du siehst die Karte, rufst die Bedeutung im Kopf ab und drehst sie zur Kontrolle um. Aufgabe: erkennen & erinnern – am schnellsten für neue Wörter.",
+    modeTypeDesc: "Du tippst die Übersetzung selbst ein und bekommst sofort Feedback. Aufgabe: aktiv abrufen – festigt Schreibweise und sitzendes Vokabular.",
+    modeListenDesc: "Du hörst das Spanische vorgelesen und schreibst, was du verstehst. Aufgabe: Hörverstehen & Aussprache – fürs echte Gespräch unterwegs.",
     dirLabel: "Richtung",
     dirAria: "Lernrichtung",
     uiLanguage: "Sprache",
@@ -459,6 +465,10 @@
     rateFast: "⚡ Fast",
     modeLabel: "Mode",
     modeAria: "Study mode",
+    modeInfoCap: "What the modes do",
+    modeFlipDesc: "You see the card, recall the meaning in your head, then flip it to check. Task: recognise & remember – the fastest way into new words.",
+    modeTypeDesc: "You type the translation yourself and get instant feedback. Task: active recall – locks in spelling and solid vocabulary.",
+    modeListenDesc: "You hear the Spanish read aloud and write down what you understand. Task: listening & pronunciation – for real conversations on the road.",
     dirLabel: "Direction",
     dirAria: "Study direction",
     uiLanguage: "Language",
