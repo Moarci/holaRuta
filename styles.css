@@ -1108,6 +1108,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dist__legend span { display: inline-flex; align-items: center; gap: 6px; }
 .dist__legend i { width: 10px; height: 10px; border-radius: 3px; }
 
+/* Meisterungs-Hinweis + Zwischenstufe "fast geschafft" */
+.mnote {
+  display: flex; flex-direction: column; gap: 6px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+  padding: 11px 13px; box-shadow: var(--shadow);
+}
+.mnote__firm { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.86rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mnote__firm i { width: 10px; height: 10px; border-radius: 3px; }
+.mnote__hint { font-size: 0.76rem; line-height: 1.4; color: var(--muted); }
+
 /* Auf Anhieb vs. nach Übung */
 .splitstat { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .splitstat__item {

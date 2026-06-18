@@ -193,10 +193,19 @@ test("stats.cardSummary: Trefferquote = (good+easy)/seen", () => {
   assert.equal(s.status, "learning");
 });
 
-test("stats.statusOf: interval>=7 'mastered', sonst 'learning', ohne seen 'new'", () => {
-  assert.equal(stats.statusOf({ seen: 3, interval: 7 }), "mastered");
+test("stats.statusOf: interval>=5 'mastered', sonst 'learning', ohne seen 'new'", () => {
+  assert.equal(stats.statusOf({ seen: 3, interval: 5 }), "mastered");
   assert.equal(stats.statusOf({ seen: 3, interval: 3 }), "learning");
   assert.equal(stats.statusOf({ seen: 0 }), "new");
+});
+
+test("stats.cardSummary: 'firming' = noch am Lernen, aber Intervall >= FIRMING_DAYS", () => {
+  // interval 3: am Lernen, aber fast geschafft
+  assert.equal(stats.cardSummary({ seen: 2, good: 2, interval: 3 }).firming, true);
+  // interval 1: am Lernen, noch nicht fast geschafft
+  assert.equal(stats.cardSummary({ seen: 1, good: 1, interval: 1 }).firming, false);
+  // gemeistert ist kein "firming" mehr
+  assert.equal(stats.cardSummary({ seen: 3, good: 3, interval: 8 }).firming, false);
 });
 
 test("stats.cardSummary: firstTry nur ohne jedes 'Nochmal'", () => {
@@ -213,7 +222,7 @@ test("stats.overview: aggregiert Status, Quote und Zähler", () => {
   const cards = [{ id: "a" }, { id: "b" }, { id: "c" }];
   const progress = {
     a: { seen: 2, good: 2, again: 0, firstRating: "good", interval: 10 }, // mastered, firstTry
-    b: { seen: 2, good: 0, again: 2, firstRating: "again", interval: 1 },  // learning, hard
+    b: { seen: 2, good: 0, again: 2, firstRating: "again", interval: 3 },  // learning, hard, firming
     // c: ungesehen -> new
   };
   const ov = stats.overview(cards, progress);
@@ -221,6 +230,7 @@ test("stats.overview: aggregiert Status, Quote und Zähler", () => {
   assert.equal(ov.neu, 1);
   assert.equal(ov.mastered, 1);
   assert.equal(ov.learning, 1);
+  assert.equal(ov.firming, 1); // b: am Lernen, aber Intervall >= FIRMING_DAYS
   assert.equal(ov.seenCards, 2);
   assert.equal(ov.firstTry, 1);
   assert.equal(ov.hard, 1);
