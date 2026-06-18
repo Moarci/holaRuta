@@ -78,7 +78,8 @@
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
-    onboardStep: "profile",  // Onboarding-Teilschritt: 'profile' (Name+Geschlecht) → 'trip' (Reiseziel)
+    onboardStep: "intro",    // Onboarding-Teilschritt: 'intro' (Erklär-Slides) → 'profile' (Name+Geschlecht) → 'trip' (Reiseziel)
+    onboardSlide: 0,         // aktuelle Erklär-Slide im Intro-Schritt (0-basiert)
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -301,7 +302,8 @@
       lastCat,
       userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
       userGender: settings.userGender === "female" || settings.userGender === "male" ? settings.userGender : "", // ♀/♂ (für Anrede)
-      onboardStep: state.onboardStep || "profile", // Onboarding-Teilschritt (Name+Geschlecht → Reiseziel)
+      onboardStep: state.onboardStep || "intro", // Onboarding-Teilschritt (Erklär-Slides → Name+Geschlecht → Reiseziel)
+      onboardSlide: state.onboardSlide || 0,     // aktuelle Erklär-Slide im Intro-Schritt
       placementDone: !!gamestats.placement,     // Ruta-Check schon absolviert?
       placementPending: settings.placementPending === true, // beim Onboarding übersprungen → als offen anzeigen
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
@@ -1099,12 +1101,14 @@
     return true;
   }
 
-  // Onboarding starten: beim ersten Schritt (Name + Geschlecht) beginnen und den
+  // Onboarding starten: mit den Erklär-Slides (Überblick „Wie funktioniert die App,
+  // welchen Umfang hat sie") beginnen, danach Name + Geschlecht, dann Reiseziel. Den
   // Ruta-Check vorab als „noch offen" vormerken – so erscheint er im Dashboard,
   // falls er später übersprungen wird, und verschwindet erst nach dem Absolvieren.
   function beginOnboarding() {
     state.screen = "onboarding";
-    state.onboardStep = "profile";
+    state.onboardStep = "intro";
+    state.onboardSlide = 0;
     settings = Object.assign({}, settings, { placementPending: true });
     store.saveSettings(settings);
   }
@@ -2397,12 +2401,14 @@
       if (state.homeTab !== "start") { setTab("start"); return true; }
       return false;
     }
-    // Onboarding: aus dem Reiseziel-Schritt zurück zum Namen-/Geschlecht-Schritt;
-    // aus dem ersten Schritt heraus „Zurück" überspringt das Onboarding ganz
-    // (zählt als erledigt, kein Wiederzeigen). Der Ruta-Check bleibt dann als
-    // offene Aufgabe (placementPending) im Dashboard sichtbar.
+    // Onboarding: schrittweise zurück durch die Kette (Reiseziel → Name/Geschlecht →
+    // Erklär-Slides → einzelne Slides). Erst vom allerersten Slide überspringt „Zurück"
+    // das Onboarding ganz (zählt als erledigt, kein Wiederzeigen). Der Ruta-Check bleibt
+    // dann als offene Aufgabe (placementPending) im Dashboard sichtbar.
     if (state.screen === "onboarding") {
       if (state.onboardStep === "trip") { state.onboardStep = "profile"; render(); return true; }
+      if (state.onboardStep === "profile") { state.onboardStep = "intro"; state.onboardSlide = onboardSlideCount() - 1; render(); return true; }
+      if (state.onboardStep === "intro" && (state.onboardSlide || 0) > 0) { state.onboardSlide = (state.onboardSlide || 0) - 1; render(); return true; }
       finishOnboarding();
       return true;
     }
@@ -3997,6 +4003,39 @@
     render();
   }
 
+  // Anzahl der Erklär-Slides (aus ui.js, robuster Default falls nicht exportiert).
+  function onboardSlideCount() {
+    return (ui && ui.ONBOARD_SLIDE_COUNT) || 4;
+  }
+
+  // Intro-Slides verlassen und zum Profil-Schritt (Name + Geschlecht) wechseln.
+  function onboardSlidesToProfile() {
+    state.onboardStep = "profile";
+    state.onboardSlide = 0;
+    buzz(8);
+    render();
+  }
+
+  // „Weiter" auf einem Erklär-Slide: zum nächsten Slide – oder vom letzten Slide
+  // direkt in den Profil-Schritt.
+  function advanceOnboardSlide() {
+    const i = state.onboardSlide || 0;
+    if (i >= onboardSlideCount() - 1) { onboardSlidesToProfile(); return; }
+    state.onboardSlide = i + 1;
+    buzz(8);
+    render();
+  }
+
+  // Punkt-Navigation: direkt zu einem bestimmten Erklär-Slide springen.
+  function goToOnboardSlide(idx) {
+    const n = onboardSlideCount();
+    const i = Math.max(0, Math.min(parseInt(idx, 10) || 0, n - 1));
+    if (i === (state.onboardSlide || 0)) return;
+    state.onboardSlide = i;
+    buzz(8);
+    render();
+  }
+
   // Onboarding-Schritt 1 (Name + Geschlecht) abschließen. Beides ist Pflicht zum
   // Fortfahren: fehlt etwas, kurz hinweisen und auf dem Schritt bleiben.
   function advanceOnboardingProfile() {
@@ -5479,6 +5518,9 @@
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
     else if (action === "set-gender") saveUserGender(el.dataset.gender); // ♀/♂ (Onboarding + Profil)
+    else if (action === "onboard-slide-next") advanceOnboardSlide();   // Erklär-Slide weiter (letzter -> Profil)
+    else if (action === "onboard-slide-skip") onboardSlidesToProfile(); // Erklär-Slides überspringen -> Profil
+    else if (action === "onboard-slide-go") goToOnboardSlide(el.dataset.idx); // Punkt-Navigation zu Slide N
     else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten
     else if (action === "placement-skip") finishOnboarding();    // Ruta-Check im Onboarding überspringen -> fertig
     else if (action === "placement-finish") finishOnboarding();  // Ruta-Check fertig (aus Onboarding) -> Dashboard

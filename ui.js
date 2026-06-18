@@ -395,9 +395,53 @@
       </div>`;
   }
 
-  // Onboarding: einmaliger Willkommens-Bildschirm beim allerersten Start. Zwei
-  // Schritte – zuerst Name + Geschlecht (Pflicht zum Fortfahren), dann das Trip-Ziel
-  // (überspringbar), damit der Countdown direkt motiviert.
+  // Erklär-Slides ganz am Anfang des Onboardings: ein kurzer Überblick, WIE die App
+  // funktioniert und welchen UMFANG sie hat – bevor wir Name/Geschlecht und Reiseziel
+  // erfragen. Rein datengetrieben: Icon + zwei i18n-Schlüssel je Slide. Die Reihenfolge
+  // führt vom „Was ist HolaRuta" über „Wie wird gelernt" und „Auf die Reise zugeschnitten"
+  // bis „Wie viel steckt drin". Die Anzahl wird exportiert, damit app.js den letzten
+  // Slide kennt (dann „Los geht's" → Profil-Schritt).
+  const ONBOARD_SLIDES = [
+    { icon: "🌶️", title: "home.onboardSlide1Title", body: "home.onboardSlide1Body" },
+    { icon: "🃏", title: "home.onboardSlide2Title", body: "home.onboardSlide2Body" },
+    { icon: "🧭", title: "home.onboardSlide3Title", body: "home.onboardSlide3Body" },
+    { icon: "🗺️", title: "home.onboardSlide4Title", body: "home.onboardSlide4Body" },
+  ];
+
+  // Intro-Slides rendern (Schritt 'intro'). Ein Slide zur Zeit, mit Punkt-Navigation
+  // (antippbar), „Weiter" bzw. auf dem letzten Slide „Los geht's", und „Überspringen"
+  // (springt direkt zum Profil-Schritt). brand = optionales Partner-Branding oben.
+  function renderOnboardSlides(vm, brand) {
+    const n = ONBOARD_SLIDES.length;
+    const i = Math.max(0, Math.min(vm.onboardSlide || 0, n - 1));
+    const s = ONBOARD_SLIDES[i];
+    const last = i === n - 1;
+    const dots = ONBOARD_SLIDES.map((_, k) =>
+      `<button class="onboarding__dot${k === i ? " onboarding__dot--on" : ""}" type="button"
+               data-action="onboard-slide-go" data-idx="${k}"
+               aria-label="${esc(t("home.onboardSlideAria", { n: k + 1, total: n }))}"${k === i ? ' aria-current="true"' : ""}></button>`
+    ).join("");
+    return `
+      <section class="screen onboarding onboarding--intro">
+        <div class="onboarding__inner">
+          ${brand}
+          <div class="onboarding__slide">
+            <div class="onboarding__icon" aria-hidden="true">${s.icon}</div>
+            <h1 class="onboarding__title">${esc(t(s.title))}</h1>
+            <p class="onboarding__intro">${esc(t(s.body))}</p>
+          </div>
+          <div class="onboarding__dots" role="group" aria-label="${esc(t("home.onboardSlideAria", { n: i + 1, total: n }))}">${dots}</div>
+          <div class="trip__actions">
+            <button class="cta" type="button" data-action="onboard-slide-next">${esc(last ? t("home.onboardSlideStart") : t("home.onboardNext"))}</button>
+            ${last ? "" : `<button class="ghostbtn" type="button" data-action="onboard-slide-skip">${esc(t("home.onboardSlideSkip"))}</button>`}
+          </div>
+        </div>
+      </section>`;
+  }
+
+  // Onboarding: einmaliger Willkommens-Bildschirm beim allerersten Start. Schritte –
+  // zuerst Erklär-Slides (Überblick), dann Name + Geschlecht (Pflicht zum Fortfahren),
+  // dann das Trip-Ziel (überspringbar), damit der Countdown direkt motiviert.
   function renderOnboarding(vm) {
     // Partner-Branding zuerst: in einer Edition (auch per Link ?edition=…) das Logo
     // + den Namen oben zeigen, sonst nur die HolaRuta-Begrüßung.
@@ -410,6 +454,10 @@
            <p class="onboarding__powered">${esc(t("profile.poweredBy"))}</p>` : ""}
          </div>`
       : "";
+    // Schritt 0: Erklär-Slides (Überblick: wie funktioniert die App, welcher Umfang).
+    if ((vm.onboardStep || "intro") === "intro") {
+      return renderOnboardSlides(vm, brand);
+    }
     // Schritt 1: Name + Geschlecht. Eigenes <form>, damit Enter „Weiter" auslöst.
     if ((vm.onboardStep || "profile") === "profile") {
       // In Partner-Editionen den Markennamen NICHT beanspruchen – das Logo oben
@@ -4631,5 +4679,6 @@
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderConjugSetup, renderConjug, renderConjugDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
-                   renderCompras, renderComprasQuiz, renderComprasQuizDone };
+                   renderCompras, renderComprasQuiz, renderComprasQuizDone,
+                   ONBOARD_SLIDE_COUNT: ONBOARD_SLIDES.length };
 })();
