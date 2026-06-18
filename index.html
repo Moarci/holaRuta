@@ -178,15 +178,16 @@
   <script src="ui.js"></script>
   <script src="app.js"></script>
 
-  <!-- Start-Splash wegblenden, sobald die App steht – aber mind. ~0,8 s zeigen,
-       damit die Animation nicht nur aufblitzt (__bootStart wird ganz oben gesetzt).
+  <!-- Start-Splash wegblenden, sobald die App steht – aber mind. ~1,4 s zeigen,
+       damit Pop/Aufstieg/Regenbogen-Wisch fertig landen und kurz stehen, statt
+       abgeschnitten wegzublitzen (__bootStart wird ganz oben gesetzt).
        Läuft als eigenes <script> NACH app.js: selbst wenn app.js wirft, blendet
        der Splash beim load-Event verlässlich weg und blockiert nie die App. -->
   <script>
     (function () {
       var boot = document.getElementById("boot");
       if (!boot) return;
-      var MIN = 800;
+      var MIN = 1400; // mind. so lange, dass Pop/Aufstieg/Regenbogen-Wisch landen + kurz stehen
       var start = window.__bootStart || Date.now();
       function done() { boot.classList.add("is-done"); }
       function hide() {
