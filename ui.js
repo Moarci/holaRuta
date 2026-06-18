@@ -1799,9 +1799,11 @@
     { id: "orga",      labelKey: "teacher.bgOrga" },
   ];
 
+  // Gruppe (pretrip/preset/category) zum Ziel-Wert „kind:scope". Passt nichts,
+  // gibt es bewusst KEINE Gruppe zurück (null) – statt still als „category" zu
+  // labeln; die Aufrufer rendern dann ohne Gruppen-Kicker.
   function targetGroupOf(value) {
-    const g = TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0);
-    return g || TARGET_GROUPS[TARGET_GROUPS.length - 1];
+    return TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0) || null;
   }
 
   // Tappbarer „Select-Ersatz": zeigt die aktuelle Auswahl und öffnet das Modal.
@@ -1814,7 +1816,7 @@
       const cur = (opts.targets || []).find((x) => x.value === opts.current);
       const g = cur ? targetGroupOf(cur.value) : null;
       valLine = cur
-        ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span><span class="tgt-field__val">${esc(cur.label)}</span>`
+        ? `${g ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
         : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
     } else {
       const s = opts.summary || { kind: "none" };
@@ -3048,6 +3050,7 @@
         <section class="sheet-subscribe">
           <h2 class="sheet-h2">${esc(t("sheet.subscribeHeading"))}</h2>
           <p class="sheet-sub">${esc(t("sheet.subscribeHint"))}</p>
+          ${vm.stageScoped ? `<p class="sheet-sub sheet-sub--note">${esc(t("sheet.subscribeWholeHint"))}</p>` : ""}
           <p class="sheet-code">${esc(vm.code)}</p>
           ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
         </section>` : ""}

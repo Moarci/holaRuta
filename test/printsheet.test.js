@@ -91,6 +91,13 @@ test("renderPrintSheet: genau 1 Karte zeigt einzelnes Niveau", () => {
   assert.ok(html.includes(">A2 ·") || html.includes("A2 · "), "einzelnes Niveau A2 muss erscheinen");
 });
 
+test("renderPrintSheet: stageScoped zeigt den „ganzer Plan“-Hinweis am Abo-Code", () => {
+  const withHint = ui.renderPrintSheet(baseVM({ sheetStage: "1", stageScoped: true }));
+  assert.ok(withHint.includes(i18n.t("sheet.subscribeWholeHint")), "Hinweis fehlt bei einzelner Etappe");
+  const whole = ui.renderPrintSheet(baseVM());
+  assert.ok(!whole.includes(i18n.t("sheet.subscribeWholeHint")), "Hinweis darf beim ganzen Ziel nicht erscheinen");
+});
+
 test("renderPrintSheet: Editions-Credit erscheint, wenn gesetzt", () => {
   const html = ui.renderPrintSheet(baseVM({ edition: { name: "ECOS Cartagena" } }));
   assert.ok(html.includes("ECOS Cartagena"), "Editions-Name fehlt im Credit");

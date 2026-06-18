@@ -3185,7 +3185,10 @@
     const task = { kind: tt.kind, scope: tt.scope, title: "" };
     const isPretrip = tt.kind === "pretrip";
     const plan = isPretrip ? pretripPlan(tt.scope) : null;
-    const stageSel = state.sheetStage || "all";
+    let stageSel = state.sheetStage || "all";
+    // Defensiv: zeigt der State eine Etappe, die es im aktuellen Plan nicht (mehr)
+    // gibt, auf „Ganzes Ziel" zurückfallen – nie ein leeres Blatt rendern.
+    if (isPretrip && stageSel !== "all" && !(plan.days || []).some((d) => String(d.day) === String(stageSel))) stageSel = "all";
     const stages = [];
     let allCards = [];
     if (isPretrip) {
@@ -3219,6 +3222,9 @@
       targets: taskTargets(), sheetTarget: tt.value,
       targetPicker: state.targetPicker, // offenes Ziel-Picker-Modal? ('sheet' | null)
       stageOpts: stageOpts, sheetStage: stageSel,
+      // Wird nur EINE Etappe gedruckt? Dann startet der Abo-Code unten trotzdem
+      // den GANZEN Plan – Hinweis darauf im Blatt (siehe sheet.subscribeWholeHint).
+      stageScoped: isPretrip && stageSel !== "all",
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages,
       code: code, link: code ? taskShareLink(code) : "",

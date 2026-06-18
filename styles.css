@@ -2104,6 +2104,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-stage { font-size: 1rem; margin: 14px 0 4px; color: #a23e20; break-after: avoid; }
 .sheet-challenge { background: #f6efe3; border-left: 3px solid #c2502e; padding: 6px 10px; margin: 6px 0 12px; border-radius: 4px; break-inside: avoid; }
 .sheet-sub { font-size: 0.9rem; color: #3a2c22; margin: 4px 0; }
+.sheet-sub--note { font-style: italic; color: #6b5a4c; }
 .sheet-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.8rem; word-break: break-all; background: #f3ece0; padding: 8px 10px; border-radius: 6px; margin: 6px 0; }
 .sheet-link { font-size: 0.8rem; word-break: break-all; color: #2f6b70; margin: 2px 0; }
 .sheet-subscribe, .sheet-recipe-box { break-inside: avoid; }
