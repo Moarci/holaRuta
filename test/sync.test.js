@@ -69,6 +69,30 @@ test("mergeGamestats: tripGoal – späteres startedAt gewinnt", () => {
   assert.equal(sync.mergeGamestats({ tripGoal: null }, b).tripGoal.destination, "Cusco");
 });
 
+test("mergeGamestats: placementHistory wird vereint (dedupe, chronologisch), letztes Ergebnis = späteres", () => {
+  const a = {
+    placement: { level: "A2", finalScore: 0.62, tempo: "medium", at: "2026-06-15", ts: "2026-06-15T20:00:00.000Z" },
+    placementHistory: [
+      { level: "A1", finalScore: 0.41, at: "2026-06-10", ts: "2026-06-10T18:00:00.000Z" },
+      { level: "A2", finalScore: 0.62, at: "2026-06-15", ts: "2026-06-15T20:00:00.000Z" },
+    ],
+  };
+  const b = {
+    placement: { level: "B1-", finalScore: 0.78, tempo: "fast", at: "2026-06-17", ts: "2026-06-17T09:00:00.000Z" },
+    placementHistory: [
+      { level: "A2", finalScore: 0.62, at: "2026-06-15", ts: "2026-06-15T20:00:00.000Z" }, // Duplikat zu a
+      { level: "B1-", finalScore: 0.78, at: "2026-06-17", ts: "2026-06-17T09:00:00.000Z" },
+    ],
+  };
+  const m = sync.mergeGamestats(a, b);
+  // Union ohne Duplikat (2 + 2 - 1 gemeinsam = 3), chronologisch sortiert.
+  assert.equal(m.placementHistory.length, 3);
+  assert.deepEqual(m.placementHistory.map((e) => e.level), ["A1", "A2", "B1-"]);
+  // Letztes Ergebnis: das spätere (per ts) gewinnt – reihenfolgeunabhängig.
+  assert.equal(m.placement.level, "B1-");
+  assert.equal(sync.mergeGamestats(b, a).placement.level, "B1-");
+});
+
 test("mergeData: Einstellungen bleiben gerätelokal, Karten werden vereint", () => {
   const local = {
     data: {

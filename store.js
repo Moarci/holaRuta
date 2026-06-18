@@ -391,6 +391,13 @@
     // (z.B. "5" statt 5) darf sonst Streak-/Badge-Logik verfälschen (String-Verkettungen
     // wie "5"+1 = "51"). unlocked muss ein Objekt sein (sonst Crash beim Diffen).
     const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    // Ruta-Check-Verlauf. Bestandsgeräte haben evtl. nur ein letztes Ergebnis
+    // (placement) ohne History – dieses einmalig als ersten Verlaufseintrag
+    // übernehmen, damit „letztes Ergebnis" und Verlauf überall konsistent sind
+    // (Profil-Anzeige, Export, Cloud-Merge).
+    const placement = isPlainObject(v.placement) ? v.placement : null;
+    let placementHistory = sanitizePlacementHistory(v.placementHistory);
+    if (!placementHistory.length && placement) placementHistory = sanitizePlacementHistory([placement]);
     return {
       reviews: num(v.reviews),
       againPresses: num(v.againPresses),
@@ -427,8 +434,8 @@
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
-      placement: isPlainObject(v.placement) ? v.placement : null,
-      placementHistory: sanitizePlacementHistory(v.placementHistory),
+      placement: placement,
+      placementHistory: placementHistory,
     };
   }
 

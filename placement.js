@@ -186,11 +186,11 @@
     // --- Block 6: Freie Antwort (kurz schreiben; akzent-/satzzeichentolerant) ---
     { id: "pt_fr_001", block: "free", skill: "free", level: "A1", type: "free",
       promptDe: "Schreib auf Spanisch: Die Rechnung, bitte.",
-      accept: ["la cuenta por favor", "la cuenta"], expectedTimeSec: 14,
+      accept: ["la cuenta por favor", "la cuenta porfavor", "la cuenta"], solutionEs: "La cuenta, por favor.", expectedTimeSec: 14,
       explanationDe: "„La cuenta, por favor.“ = Die Rechnung, bitte. (Akzente/Satzzeichen egal)" },
     { id: "pt_fr_002", block: "free", skill: "free", level: "A2", type: "free",
       promptDe: "Schreib auf Spanisch die Frage: Wie viel kostet das?",
-      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto cuesta eso", "cuanto vale", "cuanto vale esto", "cuanto vale eso"], expectedTimeSec: 16,
+      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto cuesta eso", "cuanto vale", "cuanto vale esto", "cuanto vale eso"], solutionEs: "¿Cuánto cuesta?", expectedTimeSec: 16,
       explanationDe: "„¿Cuánto cuesta?“ ist die Standardfrage nach dem Preis (Akzente/Satzzeichen egal)." },
   ];
 

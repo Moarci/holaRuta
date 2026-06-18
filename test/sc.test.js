@@ -340,6 +340,25 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
   assert.deepEqual(store.loadGameStats(), valid);
 });
 
+test("store.loadGameStats: Bestands-placement ohne History wird als erster Verlaufseintrag übernommen", () => {
+  // Altgerät: nur ein letztes Ruta-Check-Ergebnis, noch keine placementHistory.
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 3,
+    placement: { level: "A2", finalScore: 0.62, accuracy: 0.6, unknownRate: 0.2, tempo: "medium", at: "2026-06-15" },
+  });
+  const g = store.loadGameStats();
+  assert.equal(g.placementHistory.length, 1, "letztes Ergebnis wird einmalig in den Verlauf übernommen");
+  assert.equal(g.placementHistory[0].level, "A2");
+  assert.equal(g.placementHistory[0].finalScore, 0.62);
+  assert.equal(g.placementHistory[0].at, "2026-06-15");
+  // Bereits vorhandene History wird NICHT überschrieben/dupliziert.
+  storeMem[GKEY] = JSON.stringify({
+    placement: { level: "B1-", finalScore: 0.8, at: "2026-06-18", ts: "2026-06-18T10:00:00.000Z" },
+    placementHistory: [{ level: "A2", finalScore: 0.62, at: "2026-06-15", ts: "2026-06-15T20:00:00.000Z" }],
+  });
+  assert.equal(store.loadGameStats().placementHistory.length, 1, "vorhandene History bleibt unangetastet");
+});
+
 test("store.loadGameStats: pretripDays – altes flaches Format wird nach { colombia: … } migriert", () => {
   // Bestandsgerät mit altem, flachem Kolumbien-Fortschritt.
   storeMem[GKEY] = JSON.stringify({ reviews: 1, pretripDays: { 1: true, 2: true, 3: true } });

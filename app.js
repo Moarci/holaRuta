@@ -204,12 +204,14 @@
       tempoLabel: e.tempo ? t("placement.tempo_" + e.tempo) : "",
       at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
     });
-    const past = history.slice().reverse().map(fmt); // neueste zuerst
+    // Verlauf neueste zuerst. Altgeräte ohne History, aber mit letztem Ergebnis:
+    // das eine Ergebnis als einzigen Eintrag zählen (sonst „0 Durchläufe").
+    const past = history.length ? history.slice().reverse().map(fmt) : (last ? [fmt(last)] : []);
     return {
       taken: true,
       last: last ? fmt(last) : (past[0] || null),
       history: past,
-      attempts: history.length,
+      attempts: past.length,
       canShare: !!share,
     };
   }
@@ -3704,7 +3706,7 @@
         else if (typeof a.selectedIndex === "number" && q.options) yourText = q.options[a.selectedIndex] || null;
       }
       const correctText = q.type === "free"
-        ? (q.accept && q.accept[0]) || ""
+        ? q.solutionEs || (q.accept && q.accept[0]) || ""
         : (q.options ? q.options[q.correctIndex] : "");
       out.push({
         status: a.isUnknown ? "unknown" : (scored.isCorrect ? "correct" : "wrong"),

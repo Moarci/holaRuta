@@ -2197,9 +2197,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .pl-option:hover { border-color: var(--brand); }
 }
 .pl-option:active { transform: translateY(1px); }
-/* Nicht den flex-grow von .task-input erben (würde das Feld in der flex-Spalte
- * .screen riesig aufziehen) – das Eingabefeld bleibt zeilenhoch. */
-.pl-free { flex: 0 0 auto; width: 100%; margin: 2px 0 12px; font-size: 1.05rem; }
+/* Nicht den flex-grow von .task-input[type=text] erben (würde das Feld in der
+ * flex-Spalte .screen riesig aufziehen) – das Eingabefeld bleibt zeilenhoch.
+ * Selektor mit gleicher Spezifität wie .task-input[type="text"] (zwei Klassen),
+ * aber später in der Datei → gewinnt die Kaskade. */
+.task-input.pl-free { flex: 0 0 auto; width: 100%; margin: 2px 0 12px; font-size: 1.05rem; }
 .pl-unknown {
   display: block; margin: 16px 0 0; padding: 11px 14px; width: 100%;
   border: 1px dashed var(--line); border-radius: var(--r-md, 12px);

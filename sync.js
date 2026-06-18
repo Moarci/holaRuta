@@ -63,6 +63,27 @@
     return a !== undefined ? a : b;
   }
 
+  // Ruta-Check-Verlauf über Geräte vereinen: alle Durchläufe beider Seiten,
+  // dedupliziert (nach Zeitstempel/Inhalt), chronologisch, gedeckelt – kein
+  // Ergebnis geht beim Sync verloren.
+  function mergePlacementHistory(a, b) {
+    var la = Array.isArray(a) ? a : [], lb = Array.isArray(b) ? b : [];
+    var seen = {}, all = [], i;
+    function add(e) {
+      if (!isObj(e)) return;
+      var key = (e.ts || "") + "|" + (e.at || "") + "|" + (e.level || "") + "|" + (e.finalScore || "");
+      if (seen[key]) return;
+      seen[key] = 1; all.push(e);
+    }
+    for (i = 0; i < la.length; i++) add(la[i]);
+    for (i = 0; i < lb.length; i++) add(lb[i]);
+    all.sort(function (x, y) {
+      var tx = (x.ts || x.at) || "", ty = (y.ts || y.at) || "";
+      return tx < ty ? -1 : (tx > ty ? 1 : 0);
+    });
+    return all.slice(-50);
+  }
+
   function mergeGamestats(a, b) {
     a = isObj(a) ? a : {}; b = isObj(b) ? b : {};
     var out = {}, k;
@@ -73,6 +94,15 @@
       var va = a[k], vb = b[k];
       if (vb === undefined) { out[k] = va; continue; }
       if (va === undefined) { out[k] = vb; continue; }
+      if (k === "placementHistory") {
+        out[k] = mergePlacementHistory(va, vb); continue;
+      }
+      if (k === "placement") {
+        // Letztes Ergebnis: das spätere gewinnt (ts, sonst at) – nicht zwei Läufe
+        // vermischen (sonst entstünde ein Frankenstein-Ergebnis über deepUnion).
+        var pa = (isObj(va) && (va.ts || va.at)) || "", pb = (isObj(vb) && (vb.ts || vb.at)) || "";
+        out[k] = (pb > pa) ? vb : va; continue;
+      }
       if (k === "tripGoal") {
         // Späteres Ziel gewinnt (startedAt), sonst das nicht-leere, sonst a.
         var sa = (isObj(va) && va.startedAt) || "", sb = (isObj(vb) && vb.startedAt) || "";
