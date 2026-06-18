@@ -395,6 +395,21 @@
       </div>`;
   }
 
+  // Belohnungs-Sound an/aus (SC.celebrate spielt am Rundenende einen kurzen
+  // WebAudio-Klang). Default aus – Sound überrascht; die Haptik läuft unabhängig.
+  function celebrateSoundGroup(vm) {
+    const on = !!vm.celebrateSound;
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.celebrateSoundCap"))}</span>
+        <div class="segmented" role="group" aria-label="${esc(t("home.celebrateSoundAria"))}">
+          <button class="seg ${on ? "is-active" : ""}" type="button" data-action="set-celebrate-sound" data-on="1" aria-pressed="${on}">${esc(t("home.celebrateSoundOn"))}</button>
+          <button class="seg ${!on ? "is-active" : ""}" type="button" data-action="set-celebrate-sound" data-on="0" aria-pressed="${!on}">${esc(t("home.celebrateSoundOff"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.celebrateSoundHint"))}</p>
+      </div>`;
+  }
+
   // Erklär-Slides ganz am Anfang des Onboardings: ein kurzer Überblick, WIE die App
   // funktioniert und welchen UMFANG sie hat – bevor wir Name/Geschlecht und Reiseziel
   // erfragen. Rein datengetrieben: Icon + zwei i18n-Schlüssel je Slide. Die Reihenfolge
@@ -923,6 +938,7 @@
         ${genderGroup(vm)}
         ${langGroup}
         ${learnPrefs(vm)}
+        ${celebrateSoundGroup(vm)}
       </div>
 
       ${navrow("open-stats", "📊", t("profile.statistics"))}
@@ -1941,25 +1957,8 @@
       </section>`;
   }
 
-  function renderPreciosDone(vm) {
-    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect
-      ? (vm.hard ? t("discover.prcPerfectHard") : t("discover.prcPerfect"))
-      : rate >= 60 ? t("discover.prcGood")
-      : t("discover.prcKeep");
-    return `
-      <section class="screen">
-        <div class="done">
-          <div class="done__emoji">${vm.perfect ? "🏆" : "💵"}</div>
-          <h2>Precios al oído</h2>
-          <p class="prc-done-tag">${esc(vm.flag)} ${esc(vm.currencyName)} · ${esc(vm.levelLabel)}</p>
-          <p class="quiz-result">${t("discover.prcResult", { correct: vm.correct, total: vm.total })}</p>
-          <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="precios-again">${esc(t("discover.prcAgain"))}</button>
-          <button class="ghostbtn" data-action="precios-setup">${esc(t("discover.prcOtherCountry"))}</button>
-          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
-        </div>
-      </section>`;
+  function renderPreciosDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
   // Land-Auswahl als <select> mit Regionen-<optgroup>, geteilt von Länderkunde,
@@ -3937,22 +3936,12 @@
   }
 
   // Auswertung.
-  function renderQuizDone(vm) {
-    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect ? t("discover.quizPerfect")
-      : rate >= 60 ? t("discover.quizGood")
-      : t("discover.quizKeep");
-    return `
-      <section class="screen">
-        <div class="done">
-          <div class="done__emoji">${vm.perfect ? "🏆" : "🧩"}</div>
-          <h2>${t("discover.quizDoneTitle", { label: esc(vm.setLabel) })}</h2>
-          <p class="quiz-result">${t("discover.quizResult", { correct: vm.correct, total: vm.total })}</p>
-          <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="quiz-again">${esc(t("discover.quizAgain"))}</button>
-          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
-        </div>
-      </section>`;
+  // Fertig-Screen jetzt als leere Bühne für SC.celebrate (wie renderDone): die
+  // anlassbezogene Inszenierung + Buttons baut das Modul im Render-Dispatch (app.js,
+  // mountMiniDone). Die alten done/done__emoji-Styles bleiben für nicht-migrierte
+  // Screens (z. B. Battle) erhalten.
+  function renderQuizDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
   // ---------- FRASES FLEXIBLES (Satzbaukasten) ----------
@@ -4027,23 +4016,8 @@
       </section>`;
   }
 
-  function renderFrasesDone(vm) {
-    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect ? t("discover.frasesPerfect")
-      : rate >= 60 ? t("discover.frasesGood")
-      : t("discover.frasesKeep");
-    return `
-      <section class="screen">
-        <div class="done">
-          <div class="done__emoji">${vm.perfect ? "🏆" : "🧱"}</div>
-          <h2>${t("discover.quizDoneTitle", { label: esc(vm.setLabel) })}</h2>
-          <p class="quiz-result">${t("discover.quizResult", { correct: vm.correct, total: vm.total })}</p>
-          <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="frases-again">${esc(t("discover.quizAgain"))}</button>
-          <button class="ghostbtn" data-action="open-frases">${esc(t("discover.frasesOther"))}</button>
-          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
-        </div>
-      </section>`;
+  function renderFrasesDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
   // ---------- EL CUERPO (interaktive Körperkarte) ----------
@@ -4238,25 +4212,8 @@
       </section>`;
   }
 
-  function renderConjugDone(vm) {
-    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect
-      ? t("discover.cjPerfect")
-      : rate >= 60 ? t("discover.cjGood")
-      : t("discover.cjKeep");
-    return `
-      <section class="screen">
-        <div class="done">
-          <div class="done__emoji">${vm.perfect ? "🏆" : "🔁"}</div>
-          <h2>Conjugador</h2>
-          <p class="prc-done-tag">${esc(vm.levelLabel)}</p>
-          <p class="quiz-result">${t("discover.quizResult", { correct: vm.correct, total: vm.total })}</p>
-          <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="conjug-again">${esc(t("discover.cjAgain"))}</button>
-          <button class="ghostbtn" data-action="open-conjug-drill">${esc(t("discover.cjOtherLevel"))}</button>
-          <button class="ghostbtn" data-action="open-conjugacion">${esc(t("discover.cjToGuide"))}</button>
-        </div>
-      </section>`;
+  function renderConjugDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
   // ---------- DIÁLOGOS (Gesprächs-Simulationen) ----------
@@ -4384,24 +4341,8 @@
       </section>`;
   }
 
-  function renderDialogosDone(vm) {
-    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect
-      ? t("discover.dlgPerfect")
-      : rate >= 60 ? t("discover.dlgGood")
-      : t("discover.dlgKeep");
-    return `
-      <section class="screen">
-        <div class="done">
-          <div class="done__emoji">${vm.perfect ? "🏆" : "💬"}</div>
-          <h2>${vm.icon} ${esc(vm.title)}</h2>
-          <p class="quiz-result">${t("discover.dlgResult", { correct: vm.correct, total: vm.total })}</p>
-          <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="dialogos-again">${esc(t("discover.dlgAgain"))}</button>
-          <button class="ghostbtn" data-action="open-dialogos">${esc(t("discover.dlgOther"))}</button>
-          <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>
-        </div>
-      </section>`;
+  function renderDialogosDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
   // ---------- TIEMPOS (Erklärseite Zeiten) ----------
@@ -4853,22 +4794,8 @@
       </section>`;
   }
 
-  function renderComprasQuizDone(vm) {
-    const rate = vm.total > 0 ? Math.round((vm.correct / vm.total) * 100) : 0;
-    const verdict = vm.perfect ? t("discover.quizPerfect")
-      : rate >= 60 ? t("discover.quizGood")
-      : t("discover.quizKeep");
-    return `
-      <section class="screen">
-        <div class="done">
-          <div class="done__emoji">${vm.perfect ? "🏆" : "🛒"}</div>
-          <h2>${t("discover.quizDoneTitle", { label: esc(vm.sectionLabel) })}</h2>
-          <p class="quiz-result">${t("discover.quizResult", { correct: vm.correct, total: vm.total })}</p>
-          <p class="hm-winner">${verdict}</p>
-          <button class="cta" data-action="compras-quiz-again">${esc(t("discover.quizAgain"))}</button>
-          <button class="ghostbtn" data-action="compras-back-list">${esc(t("discover.comprasBackList"))}</button>
-        </div>
-      </section>`;
+  function renderComprasQuizDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
   window.SC = window.SC || {};

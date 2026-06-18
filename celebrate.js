@@ -89,6 +89,7 @@
     badge:     ["¡Nuevo sello!", "Stempel gesichert"],
     destino:   ["¡Destino completo!", "Reiseziel gemeistert"],
     levelup:   ["¡Subiste de nivel!", "Neuer Rang"],
+    trophy:    ["¡Pleno!", "¡Ronda perfecta!", "¡Lo clavaste!"],
   };
 
   // ---------- 1) ENTSCHEIDUNG ----------
@@ -170,6 +171,19 @@
         sub: "Racha de " + streak + " días · ¡no la pierdas mañana!",
         milestone: streak, streakLabel: streakLabel,
         confetti: 24, sparks: 18, sound: "fanfare", haptic: [14, 28, 14, 28],
+      });
+    }
+
+    // (5a) Perfekte MINI-SPIEL-Runde -> eigener Pokal-Hero. Nur für Spiele
+    // (r.isGame): ein fehlerfreier Drill-Sieg verdient mehr Tamtam als der
+    // Alltags-Ring. Der Karteikarten-Pfad behält bewusst die ruhigere Ring-
+    // Perfekt-Szene (§ Showcase-Treue) – darum steht dieser Zweig DAVOR.
+    if (r.isGame && band === "perfect" && total >= 4) {
+      return scene({
+        id: "gameperfect", staging: "trophy", tone: "gold",
+        headline: pick(COPY.trophy, seed),
+        sub: r.scope ? (r.scope + " · sin fallos.") : "Sin fallos.",
+        confetti: 60, sparks: 16, sound: "fanfare", haptic: [16, 30, 16, 30, 24],
       });
     }
 
@@ -439,6 +453,28 @@
         holder.querySelector(".cb-shine").classList.add("go");
       } };
     }
+    if (scene.staging === "trophy") {
+      var tw = elx("div", "cb-trophy");
+      tw.innerHTML = '<div class="cb-rays"></div>' +
+        '<div class="cb-glow" style="background:radial-gradient(closest-side,' +
+        (TONE[scene.tone] || TONE.gold).glow + ',transparent)"></div>' +
+        '<div class="cb-trophy__cup">🏆<span class="cb-shine"></span></div>';
+      return { node: tw, run: function (fx, rm) {
+        var cup = tw.querySelector(".cb-trophy__cup"), rays = tw.querySelector(".cb-rays"), glow = tw.querySelector(".cb-glow");
+        if (rm || !cup.animate) { cup.style.opacity = 1; return; }
+        cup.animate([
+          { transform: "scale(.3) translateY(40px) rotate(-12deg)", opacity: 0, offset: 0 },
+          { transform: "scale(1.18) translateY(0) rotate(4deg)", opacity: 1, offset: 0.5 },
+          { transform: "scale(.94) rotate(-2deg)", offset: 0.72 },
+          { transform: "scale(1) rotate(0deg)", opacity: 1, offset: 1 },
+        ], { duration: 660, easing: "cubic-bezier(.4,1.4,.5,1)", fill: "both" });
+        if (rays.animate) rays.animate([{ transform: "rotate(0deg)", opacity: 0 }, { transform: "rotate(90deg)", opacity: .9, offset: .4 }, { transform: "rotate(180deg)", opacity: .9 }],
+          { duration: 1400, delay: 120, iterations: Infinity, easing: "linear" });
+        if (glow.animate) glow.animate([{ opacity: .45 }, { opacity: .85 }, { opacity: .45 }],
+          { duration: 1500, delay: 300, iterations: Infinity, easing: "ease-in-out" });
+        var sh = tw.querySelector(".cb-shine"); if (sh) sh.classList.add("go");
+      } };
+    }
     // levelup
     var lv = scene.level || { to: 1, name: "Mochilero" };
     var stage = elx("div", "cb-levelup");
@@ -498,6 +534,14 @@
       sec.textContent = opts.secondaryLabel;
       sec.addEventListener("click", function () { if (opts.onSecondary) opts.onSecondary(); });
       wrap.appendChild(sec);
+    }
+    // Optionaler dritter (Tertiär-)Button – manche Aufrufer (z. B. die Mini-Spiel-
+    // Fertig-Screens) brauchen drei Aktionen (Nochmal / Andere / Übersicht).
+    if (opts.tertiaryLabel) {
+      var ter = elx("button", "cb-ghost");
+      ter.textContent = opts.tertiaryLabel;
+      ter.addEventListener("click", function () { if (opts.onTertiary) opts.onTertiary(); });
+      wrap.appendChild(ter);
     }
     mountEl.appendChild(wrap);
 

@@ -279,6 +279,7 @@
       againPresses: 0,      // wie oft "Otra vez" gedrückt
       dailyStreak: 0,       // aktuelle Tage-in-Folge-Serie
       longestStreak: 0,     // längste je erreichte Serie
+      xp: 0,                // Reise-XP (Viajero-Ränge) – wächst pro Lernrunde
       lastStudyDate: null,  // letztes Lern-Datum als "YYYY-MM-DD" (lokal)
       nightOwl: false,      // schon mal nach 22 Uhr gelernt
       earlyBird: false,     // schon mal vor 9 Uhr gelernt
@@ -410,6 +411,7 @@
       againPresses: num(v.againPresses),
       dailyStreak: num(v.dailyStreak),
       longestStreak: num(v.longestStreak),
+      xp: num(v.xp),
       lastStudyDate: typeof v.lastStudyDate === "string" ? v.lastStudyDate : null,
       nightOwl: !!v.nightOwl,
       earlyBird: !!v.earlyBird,

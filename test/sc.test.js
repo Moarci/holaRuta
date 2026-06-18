@@ -344,7 +344,7 @@ test("store.loadGameStats: Nicht-Objekt liefert frische Defaults", () => {
 
 test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
   const valid = {
-    reviews: 12, againPresses: 4, dailyStreak: 2, longestStreak: 9,
+    reviews: 12, againPresses: 4, dailyStreak: 2, longestStreak: 9, xp: 235,
     lastStudyDate: "2026-06-11", nightOwl: true, earlyBird: true,
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
