@@ -1731,6 +1731,13 @@
     { id: "preset",   icon: "🎒", labelKey: "teacher.grpPreset",   helpKey: "teacher.grpPresetHelp" },
     { id: "category", icon: "📦", labelKey: "teacher.grpCategory", helpKey: "teacher.grpCategoryHelp" },
   ];
+  // Abschnitte der Bundle-Vorlagen im Picker (Reihenfolge = Anzeigereihenfolge).
+  const BUNDLE_GROUPS = [
+    { id: "destino",   labelKey: "teacher.bgDestino" },
+    { id: "kurs",      labelKey: "teacher.bgKurs" },
+    { id: "situation", labelKey: "teacher.bgSituation" },
+    { id: "orga",      labelKey: "teacher.bgOrga" },
+  ];
 
   function targetGroupOf(value) {
     const g = TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0);
@@ -1813,10 +1820,11 @@
           </div>
         </div>`;
     }
-    // --- task: Bundle-Vorlagen + Mehrfachauswahl ---
+    // --- task: Bundle-Vorlagen (nach Gruppe) + Mehrfachauswahl ---
     const selKeys = opts.selectedKeys || [];
     const activeBundles = opts.activeBundleIds || [];
-    const bundleRows = (opts.bundles || []).map((b) => {
+    const bundles = opts.bundles || [];
+    const bundleRow = (b) => {
       const active = activeBundles.indexOf(b.id) >= 0;
       return `<button type="button" class="tgt-bundle${active ? " is-active" : ""}"
                 data-action="apply-bundle" data-bundle="${esc(b.id)}"${active ? ' aria-current="true"' : ""}>
@@ -1825,12 +1833,21 @@
                   <span class="tgt-bundle__meta">${esc(t("teacher.bundleItems", { n: b.count }))}</span></span>
                 <span class="tgt-opt__check" aria-hidden="true">${active ? "✓" : ""}</span>
               </button>`;
+    };
+    // Bundles in ihre Abschnitte einsortieren (bekannte Gruppen zuerst, Rest danach).
+    let bundleSubs = BUNDLE_GROUPS.map((bg) => {
+      const list = bundles.filter((b) => b.group === bg.id);
+      if (!list.length) return "";
+      return `<h4 class="tgt-subhead">${esc(t(bg.labelKey))}</h4><div class="tgt-opts">${list.map(bundleRow).join("")}</div>`;
     }).join("");
-    const bundleSection = bundleRows
+    const known = BUNDLE_GROUPS.map((g) => g.id);
+    const rest = bundles.filter((b) => known.indexOf(b.group) < 0);
+    if (rest.length) bundleSubs += `<div class="tgt-opts">${rest.map(bundleRow).join("")}</div>`;
+    const bundleSection = bundles.length
       ? `<section class="tgt-group">
            <h3 class="tgt-group__title">${esc(t("teacher.bundleSectionTitle"))}</h3>
            <p class="tgt-group__help">${esc(t("teacher.bundleSectionHelp"))}</p>
-           <div class="tgt-opts">${bundleRows}</div>
+           ${bundleSubs}
          </section>`
       : "";
     const count = selKeys.length;

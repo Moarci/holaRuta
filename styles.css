@@ -1952,6 +1952,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .tgt-bundle__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .tgt-bundle__label { font-weight: 700; }
 .tgt-bundle__meta { font-size: .76rem; color: var(--muted); font-weight: 700; }
+/* Unterüberschrift je Bundle-Gruppe (Reiseziel / Kurs / Situation / Orga). */
+.tgt-subhead { margin: 12px 0 6px; font-size: .8rem; font-weight: 800; letter-spacing: .02em; color: var(--brand-ink); }
+.tgt-subhead:first-of-type { margin-top: 2px; }
 /* Footer der Mehrfachauswahl: Zähler links, Aktionen rechts. */
 .tgt-modal__foot--task { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
 .tgt-foot__count { font-size: .82rem; font-weight: 800; color: var(--brand-ink); }

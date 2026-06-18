@@ -88,6 +88,8 @@
   .tgt-bundle__text{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px;}
   .tgt-bundle__label{font-weight:700;}
   .tgt-bundle__meta{font-size:.76rem;color:var(--muted);font-weight:700;}
+  .tgt-subhead{margin:12px 0 6px;font-size:.8rem;font-weight:800;letter-spacing:.02em;color:var(--brand-ink);}
+  .tgt-subhead:first-of-type{margin-top:2px;}
   .tgt-modal__foot{padding:14px 18px 18px;}
   .tgt-modal__foot--task{display:flex;align-items:center;gap:10px;justify-content:space-between;}
   .tgt-foot__count{font-size:.82rem;font-weight:800;color:var(--brand-ink);}
@@ -140,11 +142,21 @@
 </div>
 
 <script>
+  var BUNDLE_GROUPS = [
+    { id:"destino", label:"🌎 Reiseziel-Komplett" },
+    { id:"kurs", label:"📚 Kurs & Lehrplan" },
+    { id:"situation", label:"🎒 Alltags-Situationen" },
+    { id:"orga", label:"🆘 Sicherheit & Orga" },
+  ];
   var BUNDLES = [
-    { id:"komplett-colombia", icon:"🌎", label:"Komplett: Kolumbien", items:["pretrip:Kolumbien","preset:Kolumbien","cat:Notfall","cat:Geld"] },
-    { id:"komplett-cusco", icon:"🌎", label:"Komplett: Cusco", items:["pretrip:Cusco","preset:Cusco","cat:Notfall","cat:Geld"] },
-    { id:"survival", icon:"🆘", label:"Survival-Set", items:["cat:Grundlagen","cat:Notfall","cat:Geld","cat:Verkehr"] },
-    { id:"woche1", icon:"📚", label:"Lehrplan-Woche 1: Grundlagen", items:["cat:Grundlagen","cat:Zahlen","cat:Essen"] },
+    { id:"komplett-colombia", icon:"🌎", group:"destino", label:"Komplett: Kolumbien", items:["pretrip:Kolumbien","preset:Kolumbien","cat:Notfall","cat:Geld"] },
+    { id:"komplett-cusco", icon:"🌎", group:"destino", label:"Komplett: Cusco", items:["pretrip:Cusco","preset:Cusco","cat:Notfall","cat:Geld"] },
+    { id:"woche1", icon:"📚", group:"kurs", label:"Lehrplan-Woche 1: Grundlagen", items:["cat:Grundlagen","cat:Zahlen","cat:Essen"] },
+    { id:"grammatik", icon:"✍️", group:"kurs", label:"Grammatik-Block: Verben & Zeiten", items:["cat:Konjugieren","cat:Zeiten"] },
+    { id:"restaurant", icon:"🍽️", group:"situation", label:"Restaurant & Essen gehen", items:["cat:Essen","cat:Trinken","cat:Diät"] },
+    { id:"unterwegs", icon:"🚌", group:"situation", label:"Unterwegs & Transport", items:["cat:Verkehr","cat:Wegbeschreibung","cat:Busreise"] },
+    { id:"survival", icon:"🆘", group:"orga", label:"Survival-Set", items:["cat:Grundlagen","cat:Notfall","cat:Geld","cat:Verkehr"] },
+    { id:"gesundheit", icon:"💊", group:"orga", label:"Gesundheit & Apotheke", items:["cat:Apotheke","cat:Notfall","cat:Geld"] },
   ];
   var GROUPS = [
     { key:"pretrip", icon:"🗓️", label:"Pre-Trip-Pläne",
@@ -180,13 +192,18 @@
   }
   function renderBody(){
     var active2 = activeBundleIds();
-    var bundleRows = BUNDLES.map(function(b){
+    var bundleRow = function(b){
       var active=active2.indexOf(b.id)>=0;
       return '<button class="tgt-bundle'+(active?' is-active':'')+'" data-bundle="'+b.id+'">'+
         '<span class="tgt-bundle__icon">'+b.icon+'</span>'+
         '<span class="tgt-bundle__text"><span class="tgt-bundle__label">'+b.label+'</span>'+
         '<span class="tgt-bundle__meta">'+b.items.length+' Ziele</span></span>'+
         '<span class="tgt-opt__check">'+(active?'✓':'')+'</span></button>';
+    };
+    var bundleRows = BUNDLE_GROUPS.map(function(bg){
+      var list=BUNDLES.filter(function(b){return b.group===bg.id;});
+      if(!list.length) return "";
+      return '<h4 class="tgt-subhead">'+bg.label+'</h4><div class="tgt-opts">'+list.map(bundleRow).join("")+'</div>';
     }).join("");
     var groups = GROUPS.map(function(g){
       var rows=g.opts.map(function(o){
@@ -199,8 +216,8 @@
     }).join("");
     document.getElementById("body").innerHTML =
       '<section class="tgt-group"><h3 class="tgt-group__title">📦 Fertige Bundles</h3>'+
-      '<p class="tgt-group__help">Kuratierte Sammlungen für typische Situationen. Tipp drauf, übernimm es als '+
-      'Startpunkt und passe es darunter frei an.</p><div class="tgt-opts">'+bundleRows+'</div></section>'+groups;
+      '<p class="tgt-group__help">Kuratierte Sammlungen für typische Situationen. Tipp drauf, um die Ziele '+
+      'dazuzunehmen – mehrere Bundles und Einzelziele kombinierbar; nochmal tippen entfernt es.</p>'+bundleRows+'</section>'+groups;
     document.getElementById("count").textContent = sel.size ? sel.size+" ausgewählt" : "Noch kein Ziel gewählt";
     document.getElementById("footBtns").innerHTML =
       (sel.size?'<button class="tgt-clear" id="clear">Auswahl leeren</button>':'')+

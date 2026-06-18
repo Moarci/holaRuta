@@ -76,11 +76,14 @@ test("decodeBundle: Müll/Fremdtext -> null", () => {
 
 test("data.BUNDLES: jedes Bundle ist gültig und zeigt auf existierende Inhalte", () => {
   assert.ok(Array.isArray(data.BUNDLES) && data.BUNDLES.length > 0, "BUNDLES fehlen");
+  // Muss mit den Gruppen im Picker übereinstimmen (ui.js BUNDLE_GROUPS).
+  const KNOWN_GROUPS = ["destino", "kurs", "situation", "orga"];
   const seen = new Set();
   for (const b of data.BUNDLES) {
     assert.ok(b.id && !seen.has(b.id), `Bundle-Id fehlt oder doppelt: ${b.id}`);
     seen.add(b.id);
     assert.ok(b.label && b.labelEn, `Bundle ${b.id}: label/labelEn fehlt`);
+    assert.ok(KNOWN_GROUPS.indexOf(b.group) >= 0, `Bundle ${b.id}: unbekannte Gruppe „${b.group}"`);
     assert.ok(Array.isArray(b.items) && b.items.length >= 2, `Bundle ${b.id}: braucht ≥2 Ziele`);
     for (const it of b.items) {
       assert.ok(targetExists(it), `Bundle ${b.id}: Ziel ${it.kind}:${it.scope} existiert nicht`);
@@ -88,5 +91,9 @@ test("data.BUNDLES: jedes Bundle ist gültig und zeigt auf existierende Inhalte"
     // Muss als Code kodierbar UND wieder dekodierbar sein.
     const dec = store.decodeBundle(store.encodeBundle({ items: b.items }));
     assert.equal(dec.items.length, b.items.length, `Bundle ${b.id}: Round-Trip verliert Items`);
+  }
+  // Jede Picker-Gruppe sollte auch tatsächlich Bundles enthalten (kein leerer Abschnitt).
+  for (const g of KNOWN_GROUPS) {
+    assert.ok(data.BUNDLES.some((b) => b.group === g), `Bundle-Gruppe „${g}" ist leer`);
   }
 });
