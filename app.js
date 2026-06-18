@@ -231,6 +231,7 @@
     if (!last && !history.length) return { taken: false };
     const fmt = (e) => ({
       level: e.level || "–",
+      variantLabel: t("assessment.variant_" + (e.variant === "extremo" ? "extremo" : "standard")),
       scorePct: Math.round((e.finalScore || 0) * 100),
       accuracyPct: Math.round((e.accuracy || 0) * 100),
       tempoLabel: e.tempo ? t("assessment.tempo_" + e.tempo) : "",
@@ -4100,7 +4101,6 @@
         index: index, total: assessmentTotalPlanned(p.variant),
         section: section,
         showHint: index < 3,
-        canReplay: !!(q && q.type === "listen"), // Hör-Item: Replay-Knopf zeigen
         q: q ? {
           id: q.id, type: q.type, level: q.level,
           promptDe: q.promptDe,

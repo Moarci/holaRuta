@@ -214,7 +214,7 @@ SpanischCard/
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
 ├── matcher.js     SC.matcher    # Antwortprüfung, akzent-/satzzeichen-tolerant — REINE FUNKTIONEN
 ├── placement.js   SC.placement  # Ruta-Check: Fragenkatalog + Bewertung/Level-Logik — REINE DATEN + FUNKTIONEN
-├── assessment.js  SC.assessment # HolaRuta Nivel-Test: ausführlicher Einstufungstest (A0–C1) — REINE DATEN + FUNKTIONEN
+├── assessment.js  SC.assessment # HolaRuta Nivel-Test: ausführlicher Einstufungstest (A0–C1), Variante „Extremo" mit Hörverstehen — REINE DATEN + FUNKTIONEN
 ├── search.js      SC.search     # Suche über Karten, Übungen & Informationen — REINE FUNKTIONEN
 ├── stats.js       SC.stats      # Auswertung pro Karte & gesamt — REINE FUNKTIONEN
 ├── badges.js      SC.badges     # Ruta-Pass: Badge-Definitionen + Auswertung — REINE FUNKTIONEN

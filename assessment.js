@@ -467,7 +467,7 @@
     { id: "as_fr_b1c", block: "free", skill: "free", level: "B1", type: "free", variant: "extremo",
       promptDe: "Schreib höflich auf Spanisch: Ich hätte gern die Rechnung, bitte.",
       accept: ["la cuenta por favor", "me gustaria la cuenta por favor", "quisiera la cuenta por favor", "me trae la cuenta por favor", "me podria traer la cuenta por favor"],
-      solutionEs: "La cuenta, por favor. / Quisiera la cuenta, por favor.", expectedTimeSec: 18,
+      solutionEs: "Quisiera la cuenta, por favor.", expectedTimeSec: 18,
       explanationDe: "„Quisiera/Me gustaría la cuenta, por favor“ – höflich um die Rechnung bitten." },
     { id: "as_fr_b2b", block: "free", skill: "free", level: "B2", type: "free", variant: "extremo",
       promptDe: "Schreib auf Spanisch: Wenn ich Geld hätte, würde ich ein Haus kaufen.",

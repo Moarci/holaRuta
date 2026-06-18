@@ -2272,6 +2272,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .pl-result { text-align: center; margin: 10px 0 18px; }
 .pl-result__cap { margin: 0; font-size: 0.85rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
 .pl-result__level { margin: 4px 0; font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; color: var(--brand-ink); }
+.pl-result__variant { margin: 0 0 4px; font-size: 0.82rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .pl-result__score { margin: 0; font-weight: 700; color: var(--ink-soft); }
 .pl-stats { list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; font-size: 0.92rem; }
 .pl-stats b { color: var(--brand-ink); }
@@ -2315,6 +2316,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .plprof__meta { flex: 1 1 auto; min-width: 0; }
 .plprof__score { margin: 0 0 3px; font-weight: 700; }
 .plprof__tempo { margin: 0 0 3px; font-size: 0.9rem; color: var(--ink-soft); }
+.plprof__variant { margin: 0 0 3px; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .plprof__date { margin: 0; font-size: 0.82rem; color: var(--muted); }
 .plprof__histcap { margin: 14px 0 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
 .plprof__hist { list-style: none; padding: 0; margin: 0; }

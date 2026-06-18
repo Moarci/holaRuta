@@ -863,6 +863,7 @@
           </div>
           <div class="plprof__meta">
             <p class="plprof__score">${esc(t("assessment.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
+            ${l.variantLabel ? `<p class="plprof__variant">${esc(l.variantLabel)}</p>` : ""}
             ${l.tempoLabel ? `<p class="plprof__tempo">${esc(t("assessment.statTempo"))}: <b>${esc(l.tempoLabel)}</b></p>` : ""}
             ${l.at ? `<p class="plprof__date">${esc(t("assessment.profileLastAt", { date: l.at }))} · ${esc(t("assessment.profileAttempts", { n: p.attempts }))}</p>` : ""}
           </div>
@@ -3606,6 +3607,7 @@
         <div class="pl-result">
           <p class="pl-result__cap">${esc(t("assessment.yourLevel"))}</p>
           <p class="pl-result__level">${esc(vm.level)}</p>
+          ${vm.variant ? `<p class="pl-result__variant">${esc(t("assessment.variant_" + vm.variant))}${vm.variant === "extremo" ? " · 🎧" : ""}</p>` : ""}
           <p class="pl-result__score">${esc(t("assessment.resultLine", { correct: vm.correct, total: vm.total, score: vm.scorePct }))}</p>
         </div>
         <ul class="pl-stats">
