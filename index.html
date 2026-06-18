@@ -92,6 +92,24 @@
     <div class="boot__name">Hola<span>Ruta</span></div>
     <div class="boot__bar"></div>
   </div>
+  <!-- Splash-Animation erst loslassen, wenn der Hauptthread frei ist. Die App-
+       Skripte unten laufen synchron und blockieren beim echten Kaltstart das
+       Rendern – startete die Animation schon beim Parsen, würde das Logo die
+       Schrumpf-Frames „verschlucken" und einfach klein erscheinen. Per doppeltem
+       requestAnimationFrame feuert dieser Callback garantiert NACH den Skripten
+       (sobald der Browser wieder zeichnen kann) – dann schrumpft es sichtbar.
+       __bootStart wird hier neu gesetzt, damit die Mindest-Anzeigedauer ab dem
+       echten Animationsstart zählt (nicht ab dem frühen Parse-Zeitpunkt). -->
+  <script>
+    (function () {
+      var boot = document.getElementById("boot");
+      if (!boot) return;
+      function go() { window.__bootStart = Date.now(); boot.classList.add("is-ready"); }
+      if (window.requestAnimationFrame) {
+        requestAnimationFrame(function () { requestAnimationFrame(go); });
+      } else { go(); }
+    })();
+  </script>
 
   <!-- Geteilte „Farb"-Filter für den AM/PM-Umschalter (Kaffee hell · Wein dunkel).
        Einmal im Dokument definiert, von den Schild-SVGs per url(#…) referenziert –

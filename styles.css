@@ -228,6 +228,18 @@ body {
 .boot.is-hiding { opacity: 0; pointer-events: none; }
 .boot.is-done { display: none; }
 
+/* Die Animationen starten pausiert (zeigen ihr 0%-Bild) und laufen erst los,
+ * wenn index.html die Klasse .is-ready setzt – nämlich sobald der Hauptthread
+ * nach dem Ausführen der App-Skripte frei ist. Sonst blockieren beim Kaltstart
+ * genau diese Skripte das Rendern, und das Logo „springt" auf die Endgröße,
+ * statt sichtbar zu schrumpfen. */
+.boot__logo,
+.boot__name,
+.boot__bar { animation-play-state: paused; }
+.boot.is-ready .boot__logo,
+.boot.is-ready .boot__name,
+.boot.is-ready .boot__bar { animation-play-state: running; }
+
 .boot__logo {
   width: 96px;
   height: 96px;
