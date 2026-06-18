@@ -548,8 +548,9 @@
     ctx.stroke();
     ctx.fillStyle = "#ffffff";
     ctx.textBaseline = "middle";
-    ctx.font = font("800", L.xpPx);
-    ctx.fillText(String(payload.xp == null ? 0 : payload.xp), cx, L.ringY - 10);
+    // drawFittedLine statt fillText: sehr hohe XP-Stände (5–6-stellig, XP wächst
+    // unbegrenzt) schrumpfen in den Ring statt herauszulaufen.
+    drawFittedLine(ctx, String(payload.xp == null ? 0 : payload.xp), cx, L.ringY - 10, L.R * 2 - 64, L.xpPx, "800");
     ctx.font = font("700", L.ringCapPx);
     ctx.fillStyle = "rgba(255,255,255,0.9)";
     ctx.fillText(t("share.rankXpCap"), cx, L.ringY + L.R - 8);
