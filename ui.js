@@ -239,6 +239,25 @@
     const listenSeg = speechReady()
       ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">${esc(t("home.modeListen"))}</button>`
       : "";
+    // Kurz-Info zu den Modi: erklärt direkt unter der Auswahl, was jeder Modus macht
+    // und welche Lern-Aufgabe er hat. Der aktive Modus wird hervorgehoben. Hören nur,
+    // wenn der Browser vorlesen kann (sonst gibt es den Modus gar nicht).
+    const modeRows = [
+      { id: "flip", label: t("home.modeFlip"), desc: t("home.modeFlipDesc") },
+      { id: "type", label: t("home.modeType"), desc: t("home.modeTypeDesc") },
+    ];
+    if (speechReady()) modeRows.push({ id: "listen", label: t("home.modeListen"), desc: t("home.modeListenDesc") });
+    const modeInfo = `
+      <div class="modeinfo">
+        <span class="switchcap">${esc(t("home.modeInfoCap"))}</span>
+        <ul class="modeinfo__list">
+          ${modeRows.map((r) => `
+            <li class="modeinfo__item${mode === r.id ? " is-active" : ""}">
+              <span class="modeinfo__label">${esc(r.label)}</span>
+              <span class="modeinfo__desc">${esc(r.desc)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
     // Sprechtempo: nur sinnvoll, wenn der Browser überhaupt vorlesen kann.
     // 0.75 langsam (zum Nachsprechen) · 0.95 normal · 1.2 schnell (Reise-Realität).
     const rate = vm.speechRate || 0.95;
@@ -260,6 +279,7 @@
           <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">${esc(t("home.modeType"))}</button>
           ${listenSeg}
         </div>
+        ${modeInfo}
       </div>
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.dirLabel"))}</span>
