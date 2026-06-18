@@ -3154,8 +3154,10 @@
       pretripDays: Math.min(m.pretripDaysDone, planMax),
       pretripMax: planMax,
       masteredCats,
-      // Ruta-Check: letztes Einstufungsergebnis (falls der Schüler den Test gemacht hat).
+      // Einstufung: letztes Ergebnis je Test (falls der Schüler ihn gemacht hat).
+      // Der ausführliche Nivel-Test ist genauer und hat in der Anzeige Vorrang.
       placement: (b.gamestats && typeof b.gamestats.placement === "object" && b.gamestats.placement) || null,
+      assessment: (b.gamestats && typeof b.gamestats.assessment === "object" && b.gamestats.assessment) || null,
     };
   }
 
