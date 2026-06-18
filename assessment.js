@@ -375,6 +375,60 @@
       correctIndex: 1, expectedTimeSec: 18,
       explanationDe: "„No es que … no me gustara; esperaba algo distinto“ = es lag nicht an Abneigung, sondern an anderen Erwartungen." },
 
+    // ===================== Hörverstehen (nur „Extremo“; TTS spricht audioEs) =====================
+    // type "listen": der spanische Satz (audioEs) wird vorgelesen, NICHT angezeigt.
+    // Im Rückblick wird audioEs sichtbar gemacht. Bewertung = wie MC (selectedIndex).
+    { id: "as_li_a2a", block: "listening", skill: "listening", level: "A2", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Wo ist die Toilette?", audioEs: "El baño está al fondo, a la derecha.",
+      options: ["Vorne links.", "Im zweiten Stock.", "Hinten rechts.", "Neben der Rezeption."],
+      correctIndex: 2, expectedTimeSec: 14,
+      explanationDe: "„al fondo, a la derecha“ = hinten, rechts." },
+    { id: "as_li_a2b", block: "listening", skill: "listening", level: "A2", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Was sagt die Person?", audioEs: "Lo siento, la cocina ya está cerrada.",
+      options: ["Das Essen ist gleich fertig.", "Die Küche ist schon geschlossen.", "Die Küche ist geöffnet.", "Es gibt heute kein Essen."],
+      correctIndex: 1, expectedTimeSec: 14,
+      explanationDe: "„la cocina ya está cerrada“ = die Küche ist schon geschlossen." },
+    { id: "as_li_a2c", block: "listening", skill: "listening", level: "A2", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Wann und wo fährt der Bus?", audioEs: "El bus sale en diez minutos del andén tres.",
+      options: ["Um 10 Uhr von Gleis 3.", "In 3 Minuten von Bahnsteig 10.", "In einer Stunde.", "In 10 Minuten von Bahnsteig 3."],
+      correctIndex: 3, expectedTimeSec: 15,
+      explanationDe: "„en diez minutos del andén tres“ = in 10 Minuten von Bahnsteig 3." },
+    { id: "as_li_b1a", block: "listening", skill: "listening", level: "B1", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Was bietet die Person an?", audioEs: "Si quieres, te puedo recomendar un restaurante típico cerca de aquí.",
+      options: ["Dich zum Essen einzuladen.", "Ein typisches Restaurant in der Nähe zu empfehlen.", "Dir den Weg zum Markt zu zeigen.", "Ein Hotel für dich zu buchen."],
+      correctIndex: 1, expectedTimeSec: 16,
+      explanationDe: "„te puedo recomendar un restaurante típico cerca“ = ich kann dir ein typisches Restaurant in der Nähe empfehlen." },
+    { id: "as_li_b1b", block: "listening", skill: "listening", level: "B1", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Was teilt die Person mit?", audioEs: "Disculpe, este asiento está ocupado, mi amigo ya viene.",
+      options: ["Der Platz ist besetzt.", "Der Platz ist frei.", "Sie sucht ihren Freund.", "Sie steigt gleich aus."],
+      correctIndex: 0, expectedTimeSec: 16,
+      explanationDe: "„este asiento está ocupado“ = dieser Platz ist besetzt." },
+    { id: "as_li_b1c", block: "listening", skill: "listening", level: "B1", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Was ist im Tourpreis enthalten?", audioEs: "El tour dura unas cuatro horas e incluye el almuerzo.",
+      options: ["Das Frühstück.", "Der Eintritt ins Museum.", "Das Mittagessen.", "Der Transport zum Hotel."],
+      correctIndex: 2, expectedTimeSec: 16,
+      explanationDe: "„incluye el almuerzo“ = das Mittagessen ist inbegriffen (dura cuatro horas = dauert vier Stunden)." },
+    { id: "as_li_b2a", block: "listening", skill: "listening", level: "B2", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Was drückt die Person aus?", audioEs: "Te lo habría dicho antes, pero no quería preocuparte.",
+      options: ["Sie wird es später sagen.", "Sie ist besorgt über die Nachricht.", "Sie hat es einfach vergessen.", "Sie hätte es früher gesagt, wollte dich aber nicht beunruhigen."],
+      correctIndex: 3, expectedTimeSec: 17,
+      explanationDe: "Konditional Perfekt „te lo habría dicho … pero no quería preocuparte“ = ich hätte es dir früher gesagt, wollte dich aber nicht beunruhigen." },
+    { id: "as_li_b2b", block: "listening", skill: "listening", level: "B2", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Was ist passiert?", audioEs: "Por más que lo intenté, no logré cambiar el vuelo.",
+      options: ["Trotz aller Versuche konnte sie den Flug nicht umbuchen.", "Sie hat den Flug problemlos umgebucht.", "Sie will den Flug nicht ändern.", "Der Flug wurde gestrichen."],
+      correctIndex: 0, expectedTimeSec: 17,
+      explanationDe: "„Por más que lo intenté, no logré …“ = so sehr ich es auch versuchte, ich schaffte es nicht …" },
+    { id: "as_li_c1a", block: "listening", skill: "listening", level: "C1", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Was sagt die Person?", audioEs: "De haber sabido que el camino estaba cerrado, habríamos salido más temprano.",
+      options: ["Sie wussten, dass der Weg gesperrt war.", "Sie sind absichtlich zu früh losgefahren.", "Hätten sie gewusst, dass der Weg gesperrt ist, wären sie früher losgefahren.", "Der Weg ist jetzt wieder offen."],
+      correctIndex: 2, expectedTimeSec: 18,
+      explanationDe: "„De haber sabido …, habríamos salido“ = irreale Vergangenheit: hätten wir gewusst …, wären wir gefahren." },
+    { id: "as_li_c1b", block: "listening", skill: "listening", level: "C1", type: "listen", variant: "extremo",
+      promptDe: "Hör zu: Welche Haltung hat die Person?", audioEs: "No es que no me guste la idea, sino que me parece poco realista.",
+      options: ["Die Idee gefällt ihr überhaupt nicht.", "Die Idee gefällt ihr schon, sie hält sie aber für wenig realistisch.", "Sie findet die Idee völlig realistisch.", "Sie hat dazu keine Meinung."],
+      correctIndex: 1, expectedTimeSec: 18,
+      explanationDe: "„No es que no me guste …, sino que …“ = es ist nicht so, dass es ihr nicht gefällt, sondern dass sie es für unrealistisch hält." },
+
     // ===================== Freie Antworten (kurz schreiben) =====================
     { id: "as_fr_a1", block: "free", skill: "free", level: "A1", type: "free",
       promptDe: "Schreib auf Spanisch: Ich möchte einen Kaffee.",
@@ -406,11 +460,47 @@
       accept: ["si tuviera tiempo viajaria mas", "si tuviera mas tiempo viajaria mas", "si yo tuviera tiempo viajaria mas", "si tuviera tiempo viajaria mas seguido"],
       solutionEs: "Si tuviera tiempo, viajaría más.", expectedTimeSec: 22,
       explanationDe: "Irreale Bedingung: „si“ + Subjuntivo imperfecto (tuviera) + Konditional (viajaría)." },
+
+    // Nur „Extremo“: zwei zusätzliche, anspruchsvollere Produktionsaufgaben.
+    { id: "as_fr_b1c", block: "free", skill: "free", level: "B1", type: "free", variant: "extremo",
+      promptDe: "Schreib höflich auf Spanisch: Ich hätte gern die Rechnung, bitte.",
+      accept: ["la cuenta por favor", "me gustaria la cuenta por favor", "quisiera la cuenta por favor", "me trae la cuenta por favor", "me podria traer la cuenta por favor"],
+      solutionEs: "La cuenta, por favor. / Quisiera la cuenta, por favor.", expectedTimeSec: 18,
+      explanationDe: "„Quisiera/Me gustaría la cuenta, por favor“ – höflich um die Rechnung bitten." },
+    { id: "as_fr_b2b", block: "free", skill: "free", level: "B2", type: "free", variant: "extremo",
+      promptDe: "Schreib auf Spanisch: Wenn ich Geld hätte, würde ich ein Haus kaufen.",
+      accept: ["si tuviera dinero compraria una casa", "si yo tuviera dinero compraria una casa", "si tuviera dinero me compraria una casa", "si tuviera mas dinero compraria una casa"],
+      solutionEs: "Si tuviera dinero, compraría una casa.", expectedTimeSec: 22,
+      explanationDe: "Irreale Bedingung: „si“ + Subjuntivo imperfecto (tuviera) + Konditional (compraría)." },
   ];
 
   // Kommunikation vs. Grammatik (für das Profil + die Empfehlung).
-  var COMM_SKILLS = { understanding: 1, reaction: 1, vocab: 1, reading: 1, free: 1 };
+  var COMM_SKILLS = { understanding: 1, reaction: 1, vocab: 1, reading: 1, listening: 1, free: 1 };
   var GRAMMAR_SKILLS = { conjugation: 1, tenses: 1, grammar: 1 };
+
+  // „Auswahl-Fragen“ laufen durch die adaptive Treppe (Multiple Choice + Hören);
+  // freie Antworten kommen separat am Ende. (Hören wird wie MC bewertet.)
+  var CHOICE_TYPES = { mc: 1, listen: 1 };
+  function isChoice(q) { return !!(q && CHOICE_TYPES[q.type]); }
+
+  // ---------- Test-Varianten ----------
+  // standard = der ausführliche Nivel-Test (kein Hören).
+  // extremo  = deutlich länger + Hörverstehen (braucht Sprachausgabe).
+  // Eine Variante filtert den Katalog: standard lässt Hören & extremo-Items weg.
+  var VARIANTS = {
+    standard: { id: "standard", choiceTarget: 28, grammarCap: 11, startDifficulty: 2, listen: false },
+    extremo: { id: "extremo", choiceTarget: 46, grammarCap: 16, startDifficulty: 2, listen: true },
+  };
+  function variantConfig(variant) { return VARIANTS[variant] || VARIANTS.standard; }
+  // Katalog-Teilmenge für eine Variante (Reihenfolge bleibt erhalten – deterministisch).
+  function forVariant(variant) {
+    var ex = variant === "extremo";
+    return QUESTIONS.filter(function (q) {
+      if (!ex && q.type === "listen") return false;     // Hören nur im Extremo
+      if (!ex && q.variant === "extremo") return false; // extremo-only Items weglassen
+      return true;
+    });
+  }
 
   // ---------- adaptiver Ablauf (Treppen-Logik über SECHS Stufen) ----------
   // Schwierigkeit als Index 0..5. Richtig -> eine Stufe höher, falsch/„weiß nicht“
@@ -440,7 +530,7 @@
     questions.forEach(function (q) { if (asked[q.id]) skillCount[q.skill] = (skillCount[q.skill] || 0) + 1; });
     var capped = grammarAsked >= (grammarCap == null ? GRAMMAR_CAP : grammarCap);
     var pool = questions.filter(function (q) {
-      if (q.type !== "mc" || asked[q.id]) return false;
+      if (!isChoice(q) || asked[q.id]) return false; // Auswahl-Fragen (MC + Hören)
       if (capped && GRAMMAR_SKILLS[q.skill]) return false;
       return true;
     });
@@ -476,7 +566,7 @@
     var correctAt = new Array(n).fill(0), wrongAt = new Array(n).fill(0);
     for (var i = 0; i < questions.length; i++) {
       var q = questions[i];
-      if (!q || q.type !== "mc") continue;
+      if (!isChoice(q)) continue; // MC + Hören zählen fürs demonstrierte Niveau
       var r = scoreAnswer(q, answers[i] || { isUnknown: true });
       var idx = levelIndex(q.level);
       if (r.result === "correct") correctAt[idx]++;
@@ -647,11 +737,16 @@
     QUESTIONS: QUESTIONS,
     COMM_SKILLS: COMM_SKILLS,
     GRAMMAR_SKILLS: GRAMMAR_SKILLS,
+    CHOICE_TYPES: CHOICE_TYPES,
     LEVEL_ORDER: LEVEL_ORDER,
     DISPLAY_LEVELS: DISPLAY_LEVELS,
     START_DIFFICULTY: START_DIFFICULTY,
     MC_TARGET: MC_TARGET,
     GRAMMAR_CAP: GRAMMAR_CAP,
+    VARIANTS: VARIANTS,
+    variantConfig: variantConfig,
+    forVariant: forVariant,
+    isChoice: isChoice,
     // reine Funktionen (getestet)
     timeConfidence: timeConfidence,
     scoreAnswer: scoreAnswer,

@@ -3494,10 +3494,17 @@
   }
 
   function renderAssessmentIntro(vm) {
+    // Zwei Tiefen zur Wahl: Standard und – mit Sprachausgabe – Extremo (mit Hören).
+    const extremoBtn = vm.hasAudio
+      ? `<button class="teacher-btn teacher-btn--main pl-variant pl-variant--extremo" data-action="assessment-start" data-variant="extremo">
+           🎧 ${esc(t("assessment.startExtremo", { n: vm.extremoTotal }))}
+           <span class="pl-variant__desc">${esc(t("assessment.variantExtremoDesc"))}</span>
+         </button>`
+      : `<div class="tip pl-noaudio">${esc(t("assessment.extremoNoAudio"))}</div>`;
     return `
       <section class="screen">
         ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
-        <p class="hm-intro">${esc(t("assessment.introLead", { n: vm.total }))}</p>
+        <p class="hm-intro">${esc(t("assessment.introLead", { n: vm.standardTotal }))}</p>
         <div class="tip">${esc(t("assessment.introHonest"))}</div>
         <ul class="pl-introlist">
           <li>${esc(t("assessment.introB1"))}</li>
@@ -3505,8 +3512,13 @@
           <li>${esc(t("assessment.introB3"))}</li>
           <li>${esc(t("assessment.introB4"))}</li>
         </ul>
-        <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="assessment-start">▶️ ${esc(t("assessment.start"))}</button>
+        <p class="sectioncap">${esc(t("assessment.chooseVariant"))}</p>
+        <div class="pl-variants">
+          <button class="teacher-btn teacher-btn--main pl-variant" data-action="assessment-start" data-variant="standard">
+            ▶️ ${esc(t("assessment.startStandard", { n: vm.standardTotal }))}
+            <span class="pl-variant__desc">${esc(t("assessment.variantStandardDesc"))}</span>
+          </button>
+          ${extremoBtn}
         </div>
       </section>`;
   }
@@ -3515,13 +3527,22 @@
     const q = vm.q;
     if (!q) return renderAssessmentIntro(vm);
     const pct = Math.round(((vm.index + 1) / (vm.total || 1)) * 100);
-    // Abschnitts-Hinweis: ab der ersten freien Frage ein dezenter Phasenwechsel.
-    const sectionLabel = vm.section === "free" ? t("assessment.sectionFree") : t("assessment.sectionMc");
+    // Abschnitts-Hinweis: Hörverstehen / freie Antworten / Verständnis & Grammatik.
+    const sectionLabel = vm.section === "free" ? t("assessment.sectionFree")
+      : vm.section === "listen" ? t("assessment.sectionListen") : t("assessment.sectionMc");
     const head = `
       <div class="pl-progress">
         <div class="pl-progress__bar" aria-hidden="true"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
         <span class="pl-progress__label" role="status" aria-live="polite">${esc(sectionLabel)} · ${esc(t("assessment.qOf", { i: vm.index + 1, n: vm.total }))} · ${esc(q.level)}</span>
       </div>`;
+    // Hör-Item: großer Abspiel-Knopf statt sichtbarem Spanisch-Satz.
+    const listenBlock = q.type === "listen"
+      ? `<button class="pl-listen" data-action="assessment-listen-play" aria-label="${esc(t("assessment.listenPlay"))}">
+           <span class="pl-listen__icon" aria-hidden="true">🔊</span>
+           <span class="pl-listen__label">${esc(t("assessment.listenPlay"))}</span>
+         </button>
+         <p class="pl-hint pl-hint--listen">${esc(t("assessment.listenHint"))}</p>`
+      : "";
     const prompt = `
       <p class="pl-prompt">${esc(q.promptDe)}</p>
       ${q.questionEs ? `<p class="pl-prompt-es" lang="es">„${esc(q.questionEs)}“</p>` : ""}`;
@@ -3531,7 +3552,7 @@
            <button class="teacher-btn teacher-btn--main" data-action="assessment-free-submit">${esc(t("assessment.answer"))}</button>
          </div>`
       : `<div class="pl-options" role="group" aria-label="${esc(t("assessment.optionsLabel"))}">
-           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}"${q.type === "listen" ? "" : ' lang="es"'}>${esc(o)}</button>`).join("")}
          </div>`;
     const unknown = `<button class="pl-unknown" data-action="assessment-unknown">🤷 ${esc(t("assessment.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("assessment.unknownHint"))}</p>` : "";
@@ -3540,6 +3561,7 @@
         ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
         ${head}
         ${prompt}
+        ${listenBlock}
         ${body}
         ${unknown}
         ${hint}
@@ -3561,7 +3583,7 @@
       <li class="pl-review__item pl-review__item--${esc(r.status)}">
         <p class="pl-review__q">
           <span class="pl-review__icon" aria-hidden="true">${reviewIcon[r.status] || ""}</span>
-          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
+          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? "🎧 " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
         </p>
         ${r.status !== "correct" ? `
           <p class="pl-review__line">

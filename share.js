@@ -418,6 +418,78 @@
     return c;
   }
 
+  // ---------- Motiv 2b: HolaRuta Nivel-Test (eigenes Sharepic) ----------
+  // Wie der Ruta-Check-Ring, aber eigene Farben (Blau→Türkis), Niveau bis C1
+  // und eine Varianten-Zeile (Standard/Extremo). payload: { userName, level,
+  // variantLabel, scorePct, accuracyPct, tempoLabel }.
+  function buildAssessment(payload, aspect) {
+    const h = heightFor(aspect);
+    const c = newCanvas(h);
+    const ctx = c.getContext("2d");
+    bgGradient(ctx, "#3F5BA8", "#2E6E86", h);
+    const cx = W / 2;
+    const isStory = aspect === "story";
+
+    const L = isStory
+      ? { kicker: 360, cap: 470, ringY: 900, R: 250, ringW: 40, levelPx: 168, capPx: 44, tilesY: 1330, tileH: 210, tileNum: 76, tileLbl: 32 }
+      : { kicker: 150, cap: 232, ringY: 470, R: 168, ringW: 32, levelPx: 116, capPx: 34, tilesY: 760, tileH: 176, tileNum: 62, tileLbl: 28 };
+
+    // Kopf
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    drawFittedLine(ctx, payload.userName ? t("share.myAssessmentName", { name: payload.userName }) : t("share.myAssessment"), cx, L.kicker, W - PAD * 2, 40, "700");
+    ctx.fillStyle = "rgba(255,255,255,0.82)";
+    ctx.font = font("600", L.capPx);
+    // Niveau-Beschriftung + Variante (z. B. „Mein Niveau · Extremo“).
+    const capText = payload.variantLabel ? `${t("share.asLevelCap")} · ${payload.variantLabel}` : t("share.asLevelCap");
+    ctx.fillText(capText, cx, L.cap);
+
+    // Niveau-Ring (Füllung = Score), Niveau groß in der Mitte.
+    const score = Math.max(0, Math.min(100, payload.scorePct || 0));
+    ctx.lineWidth = L.ringW;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(255,255,255,0.25)";
+    ctx.beginPath();
+    ctx.arc(cx, L.ringY, L.R, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, L.ringY, L.R, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * score) / 100);
+    ctx.stroke();
+    ctx.fillStyle = "#ffffff";
+    ctx.textBaseline = "middle";
+    ctx.font = font("800", L.levelPx);
+    ctx.fillText(String(payload.level || "–"), cx, L.ringY - 10);
+    ctx.font = font("700", L.capPx);
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.fillText(t("share.plScore", { score: Math.round(score) }), cx, L.ringY + L.R - 8);
+    ctx.textBaseline = "alphabetic";
+
+    // Zwei Kennzahl-Kacheln: Trefferquote & Tempo.
+    const tiles = [
+      { num: (payload.accuracyPct == null ? "–" : payload.accuracyPct + "%"), lbl: t("share.accuracy") },
+      { num: payload.tempoLabel || "–", lbl: t("share.plTempo") },
+    ];
+    const gap = 28;
+    const tw = (W - PAD * 2 - gap) / 2;
+    tiles.forEach((tile, i) => {
+      const x = PAD + i * (tw + gap);
+      ctx.fillStyle = "rgba(255,255,255,0.16)";
+      roundRect(ctx, x, L.tilesY, tw, L.tileH, 32);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.font = font("800", L.tileNum);
+      drawFittedLine(ctx, String(tile.num), x + tw / 2, L.tilesY + L.tileH * 0.55, tw - 36, L.tileNum, "800");
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = font("600", L.tileLbl);
+      ctx.fillText(tile.lbl, x + tw / 2, L.tilesY + L.tileH - 30);
+    });
+
+    brandFooter(ctx, h);
+    return c;
+  }
+
   // ---------- Motiv 3: Ruta-Pass-Stempel (Badge) ----------
   // Ein freigeschalteter Stempel als „Reisestempel im Pass": warmes Medaillon
   // mit dem Badge-Emoji, Name, Freischalt-Text und Sammelstand.
@@ -888,6 +960,11 @@
       out += `\n\n${t("share.captionPlacement")}`;
       return out + link;
     }
+    if (kind === "assessment") {
+      let out = t("share.captionAssessmentHead", { level: String(p.level || "–") });
+      out += `\n\n${t("share.captionAssessment")}`;
+      return out + link;
+    }
     if (kind === "histtext") {
       const title = String(p.title || "").trim();
       let out = t("share.captionHistoriaHead", { title: title || "Historia de Sudamérica" });
@@ -932,6 +1009,7 @@
     try {
       canvas = kind === "stats" ? buildStats(payload, fmt)
              : kind === "placement" ? buildPlacement(payload, fmt)
+             : kind === "assessment" ? buildAssessment(payload, fmt)
              : kind === "badge" ? buildBadge(payload, fmt)
              : kind === "histtext" ? buildHistoria(payload, fmt)
              : kind === "histmodule" ? buildHistOverview(payload, fmt)
@@ -953,6 +1031,7 @@
 
     const base = kind === "stats" ? "holaruta-fortschritt"
                : kind === "placement" ? "holaruta-ruta-check"
+               : kind === "assessment" ? "holaruta-nivel-test"
                : kind === "badge" ? "holaruta-stempel"
                : kind === "histtext" ? "holaruta-historia"
                : kind === "histmodule" ? "holaruta-historia-modul"
@@ -962,6 +1041,7 @@
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
                 : kind === "placement" ? "Mein HolaRuta-Check-Ergebnis"
+                : kind === "assessment" ? "Mein HolaRuta-Nivel-Test-Ergebnis"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
                 : kind === "histtext" ? "Historia de Sudamérica"
                 : kind === "histmodule" ? "Historia de Sudamérica"
@@ -994,5 +1074,5 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.share = { shareImage, buildCard, buildStats, buildPlacement, buildBadge, buildHistoria, buildHistOverview, buildTips };
+  window.SC.share = { shareImage, buildCard, buildStats, buildPlacement, buildAssessment, buildBadge, buildHistoria, buildHistOverview, buildTips };
 })();

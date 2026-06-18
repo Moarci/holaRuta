@@ -3925,24 +3925,41 @@
 
   // ----- HolaRuta Nivel-Test (ausführlicher, adaptiver Einstufungstest) -----
   // Gleicher Ablauf wie der kurze Ruta-Check, nur über sechs Stufen (A0–C1) und
-  // mit mehr Fragen. Logik/Bewertung leben rein in assessment.js; hier nur der
-  // Ablauf + Persistenz (eigener Speicher: gamestats.assessment[History]).
-  function assessmentQuestions() { return (assessment && assessment.QUESTIONS) || []; }
+  // mit mehr Fragen. Zwei Varianten: „standard“ und „extremo“ (länger + Hören).
+  // Logik/Bewertung leben rein in assessment.js; hier nur Ablauf + Persistenz
+  // (eigener Speicher: gamestats.assessment[History]).
+  function assessmentVariant() { return (state.assessment && state.assessment.variant) || "standard"; }
+  function assessmentConfig() { return assessment.variantConfig(assessmentVariant()); }
+  // Katalog-Teilmenge der aktiven Variante (standard ohne Hören/extremo-Items).
+  function assessmentQuestions() { return assessment ? assessment.forVariant(assessmentVariant()) : []; }
 
-  function assessmentTotalPlanned() {
-    return (assessment.MC_TARGET || 28) + assessment.freeQuestions(assessmentQuestions()).length;
+  function assessmentTotalPlanned(variant) {
+    const cfg = assessment.variantConfig(variant || assessmentVariant());
+    const pool = assessment.forVariant(variant || assessmentVariant());
+    return cfg.choiceTarget + assessment.freeQuestions(pool).length;
   }
+  // Audio-Variante nur anbieten, wenn der Browser Sprachausgabe kann.
+  function assessmentAudioReady() { return !!(speech && speech.isSupported()); }
+
   function currentAssessmentQ() {
     const p = state.assessment;
     if (!p || !p.asked.length) return null;
     return assessment.questionById(p.asked[p.asked.length - 1]);
   }
 
+  // Hör-Item beim Erscheinen automatisch vorlesen (passiert im Klick-Kontext der
+  // vorigen Antwort -> von der Autoplay-Policy gedeckt). Auch der Replay-Knopf.
+  function speakCurrentAssessment() {
+    if (!speech || !speech.isSupported()) return;
+    const q = currentAssessmentQ();
+    if (q && q.type === "listen" && q.audioEs) speech.speak(q.audioEs, settings.speechRate);
+  }
+
   function openAssessment() {
     dismissBadgeToast();
     if (!assessment) return; // Modul nicht geladen (Edition/Offline) -> nicht crashen
     state.assessment = {
-      phase: "intro",
+      phase: "intro", variant: "standard",
       asked: [], answers: [], difficulty: assessment.START_DIFFICULTY,
       mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
     };
@@ -3957,15 +3974,21 @@
     p.qStartedAt = Date.now();
   }
 
-  function startAssessmentTest() {
+  function startAssessmentTest(variant) {
     const p = state.assessment;
     if (!p) return;
+    // Extremo nur mit Sprachausgabe; sonst sauber auf standard zurückfallen.
+    let v = variant === "extremo" ? "extremo" : "standard";
+    if (v === "extremo" && !assessmentAudioReady()) v = "standard";
+    p.variant = v;
+    const cfg = assessmentConfig();
     p.phase = "running"; p.asked = []; p.answers = [];
-    p.difficulty = assessment.START_DIFFICULTY; p.mcAsked = 0; p.grammarAsked = 0; p.freeIdx = 0;
+    p.difficulty = cfg.startDifficulty; p.mcAsked = 0; p.grammarAsked = 0; p.freeIdx = 0;
     p.startedAt = Date.now();
-    const first = assessment.pickNextMc(assessmentQuestions(), [], p.difficulty, 0, assessment.GRAMMAR_CAP);
+    const first = assessment.pickNextMc(assessmentQuestions(), [], p.difficulty, 0, cfg.grammarCap);
     if (first) pushAssessmentQuestion(first); else assessmentBeginFree();
     render();
+    speakCurrentAssessment(); // falls die erste Frage ein Hör-Item ist
   }
 
   function recordAssessmentAnswer(ans) {
@@ -3979,7 +4002,7 @@
     ans.responseTimeMs = Math.max(0, now - (p.qStartedAt || now));
     p.answers.push(ans);
     const scored = assessment.scoreAnswer(q, ans);
-    if (q.type === "mc") {
+    if (q.type !== "free") { // Auswahl-Fragen (MC + Hören) steuern die Treppe
       p.mcAsked += 1;
       if (assessment.GRAMMAR_SKILLS[q.skill]) p.grammarAsked += 1;
       p.difficulty = assessment.nextDifficulty(p.difficulty, scored.result); // richtig→schwerer, sonst leichter
@@ -3989,9 +4012,10 @@
 
   function assessmentAdvance() {
     const p = state.assessment;
-    if (p.mcAsked < assessment.MC_TARGET) {
-      const nextQ = assessment.pickNextMc(assessmentQuestions(), p.asked, p.difficulty, p.grammarAsked, assessment.GRAMMAR_CAP);
-      if (nextQ) { pushAssessmentQuestion(nextQ); render(); return; }
+    const cfg = assessmentConfig();
+    if (p.mcAsked < cfg.choiceTarget) {
+      const nextQ = assessment.pickNextMc(assessmentQuestions(), p.asked, p.difficulty, p.grammarAsked, cfg.grammarCap);
+      if (nextQ) { pushAssessmentQuestion(nextQ); render(); speakCurrentAssessment(); return; }
     }
     assessmentBeginFree();
   }
@@ -4039,6 +4063,7 @@
       const now = new Date();
       const entry = {
         level: result.level,
+        variant: p.variant || "standard",
         finalScore: Math.round(result.finalScore * 100) / 100,
         accuracy: Math.round(result.accuracy * 100) / 100,
         unknownRate: Math.round(result.unknownRate * 100) / 100,
@@ -4055,31 +4080,43 @@
   }
 
   // VM für die drei Phasen (intro/running/done) – eine Render-Route „assessment“.
+  function assessmentIntroVM() {
+    return {
+      phase: "intro",
+      hasAudio: assessmentAudioReady(), // Extremo nur mit Sprachausgabe anbieten
+      standardTotal: assessmentTotalPlanned("standard"),
+      extremoTotal: assessmentTotalPlanned("extremo"),
+    };
+  }
   function assessmentVM() {
     const p = state.assessment;
-    if (!p) return { phase: "intro", total: assessmentTotalPlanned() };
+    if (!p) return assessmentIntroVM();
     if (p.phase === "running") {
       const q = currentAssessmentQ();
       const index = Math.max(0, p.asked.length - 1);
+      const section = q ? (q.type === "free" ? "free" : q.type === "listen" ? "listen" : "mc") : "mc";
       return {
-        phase: "running",
-        index: index, total: assessmentTotalPlanned(),
-        section: q && q.type === "free" ? "free" : "mc",
+        phase: "running", variant: p.variant,
+        index: index, total: assessmentTotalPlanned(p.variant),
+        section: section,
         showHint: index < 3,
+        canReplay: !!(q && q.type === "listen"), // Hör-Item: Replay-Knopf zeigen
         q: q ? {
           id: q.id, type: q.type, level: q.level,
-          promptDe: q.promptDe, questionEs: q.questionEs || null,
-          options: q.type === "mc" ? q.options.slice() : null,
+          promptDe: q.promptDe,
+          // Bei Hör-Items den spanischen Satz NICHT anzeigen (sonst kein Hörtest).
+          questionEs: q.type === "listen" ? null : (q.questionEs || null),
+          options: assessment.isChoice(q) ? q.options.slice() : null,
         } : null,
       };
     }
-    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", review: assessmentReviewView(p), shareFormat: shareFormat() }, assessmentResultView(p.result));
-    return { phase: "intro", total: assessmentTotalPlanned() };
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", variant: p.variant, review: assessmentReviewView(p), shareFormat: shareFormat() }, assessmentResultView(p.result));
+    return assessmentIntroVM();
   }
 
   function assessmentResultView(r) {
     const pct = (x) => Math.round((x || 0) * 100);
-    const skillOrder = ["understanding", "reaction", "vocab", "reading", "conjugation", "tenses", "grammar", "free"];
+    const skillOrder = ["understanding", "reaction", "vocab", "reading", "listening", "conjugation", "tenses", "grammar", "free"];
     const skills = skillOrder
       .filter((k) => r.skillBreakdown[k])
       .map((k) => ({ skill: k, accuracy: pct(r.skillBreakdown[k].accuracy), unknownRate: pct(r.skillBreakdown[k].unknownRate) }));
@@ -4115,7 +4152,9 @@
       out.push({
         status: a.isUnknown ? "unknown" : (scored.isCorrect ? "correct" : "wrong"),
         promptDe: q.promptDe,
-        questionEs: q.questionEs || null,
+        // Im Rückblick den gehörten Satz (audioEs) sichtbar machen, sonst questionEs.
+        questionEs: q.type === "listen" ? (q.audioEs || null) : (q.questionEs || null),
+        listen: q.type === "listen",
         level: q.level,
         yourText: yourText,
         correctText: correctText,
@@ -5536,16 +5575,17 @@
     }, shareFormat());
   }
 
-  // Teilt das Nivel-Test-Ergebnis. Nutzt dasselbe „placement"-Sharepic (Niveau +
-  // Score) – der Bildaufbau passt für beide Tests.
+  // Teilt das Nivel-Test-Ergebnis mit eigenem Sharepic (Motiv „assessment").
   function shareAssessment() {
     if (!share) return;
     const r = gamestats.assessment;
     if (!r) return;
     buzz(12);
-    share.shareImage("placement", {
+    const variant = r.variant === "extremo" ? "extremo" : "standard";
+    share.shareImage("assessment", {
       userName: profileName(),
       level: r.level,
+      variantLabel: t("assessment.variant_" + variant),
       scorePct: Math.round((r.finalScore || 0) * 100),
       accuracyPct: Math.round((r.accuracy || 0) * 100),
       tempoLabel: r.tempo ? t("assessment.tempo_" + r.tempo) : "",
@@ -5867,10 +5907,11 @@
     else if (action === "placement-free-submit") placementSubmitFree();
     else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
     else if (action === "open-assessment") openAssessment();
-    else if (action === "assessment-start") startAssessmentTest();
+    else if (action === "assessment-start") startAssessmentTest(el.dataset.variant);
     else if (action === "assessment-choose") assessmentChoose(Number(el.dataset.index));
     else if (action === "assessment-unknown") assessmentUnknown();
     else if (action === "assessment-free-submit") assessmentSubmitFree();
+    else if (action === "assessment-listen-play") speakCurrentAssessment();
     else if (action === "assessment-retake") openAssessment();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "set-trip-country") setTripCountry(el.dataset.country, el.dataset.dest);

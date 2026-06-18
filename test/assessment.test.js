@@ -24,9 +24,10 @@ test("Fragenkatalog: gültig, eindeutige IDs, alle sechs Stufen bestückt", () =
     assert.ok(assessment.LEVEL_ORDER.includes(q.level), "gültige Stufe: " + q.id);
     assert.ok(typeof q.promptDe === "string" && q.promptDe.length > 0, "promptDe fehlt: " + q.id);
     assert.ok(typeof q.expectedTimeSec === "number" && q.expectedTimeSec > 0, "expectedTimeSec: " + q.id);
-    if (q.type === "mc") {
+    if (q.type === "mc" || q.type === "listen") {
       assert.ok(Array.isArray(q.options) && q.options.length === 4, "4 Optionen: " + q.id);
       assert.ok(q.correctIndex >= 0 && q.correctIndex < 4, "correctIndex im Bereich: " + q.id);
+      if (q.type === "listen") assert.ok(typeof q.audioEs === "string" && q.audioEs.length > 0, "audioEs fehlt: " + q.id);
       if (assessment.GRAMMAR_SKILLS[q.skill]) grammar.n++;
     } else {
       assert.ok(Array.isArray(q.accept) && q.accept.length > 0, "accept[] fehlt: " + q.id);
@@ -155,6 +156,46 @@ test("summarize: Score 90/10, getrennte Zähler, Skill-Aufschlüsselung, reliabi
   assert.ok("reliability" in s, "reliability vorhanden");
   assert.ok(s.skillBreakdown.understanding && s.skillBreakdown.grammar, "Skill-Aufschlüsselung");
   assert.ok(["fast", "medium", "slow"].includes(s.tempo));
+});
+
+test("Varianten: standard ohne Hören, extremo länger + mit Hörverstehen", () => {
+  const std = assessment.forVariant("standard");
+  const ex = assessment.forVariant("extremo");
+  assert.ok(!std.some((q) => q.type === "listen"), "standard enthält kein Hören");
+  assert.ok(!std.some((q) => q.variant === "extremo"), "standard ohne extremo-only Items");
+  const listen = ex.filter((q) => q.type === "listen");
+  assert.ok(listen.length >= 6, "extremo bringt mehrere Hör-Items");
+  // Jedes Hör-Item: 4 Optionen + audioEs, wird wie MC bewertet.
+  for (const q of listen) {
+    assert.equal(q.skill, "listening");
+    assert.ok(assessment.COMM_SKILLS.listening, "Hören zählt zur Kommunikation");
+    assert.equal(assessment.scoreAnswer(q, { selectedIndex: q.correctIndex, responseTimeMs: 5000 }).isCorrect, true);
+  }
+  // Extremo ist deutlich länger als standard.
+  assert.ok(assessment.VARIANTS.extremo.choiceTarget > assessment.VARIANTS.standard.choiceTarget + 10, "extremo deutlich länger");
+  assert.ok(assessment.freeQuestions(ex).length > assessment.freeQuestions(std).length, "extremo mehr freie Antworten");
+});
+
+test("adaptiver Extremo-Durchlauf: voll bestückt, erreicht C1, fällt auf A0", () => {
+  const cfg = assessment.variantConfig("extremo");
+  const Q = assessment.forVariant("extremo");
+  function run(correct) {
+    let asked = [], d = cfg.startDifficulty, g = 0, peak = d, low = d;
+    for (let i = 0; i < cfg.choiceTarget; i++) {
+      const q = assessment.pickNextMc(Q, asked, d, g, cfg.grammarCap);
+      assert.ok(q, "keine leere Auswahl bei Schritt " + i);
+      asked.push(q.id);
+      if (assessment.GRAMMAR_SKILLS[q.skill]) g++;
+      d = assessment.nextDifficulty(d, correct ? "correct" : "wrong");
+      peak = Math.max(peak, d); low = Math.min(low, d);
+    }
+    assert.ok(g <= cfg.grammarCap, "Grammatik-Deckel (extremo)");
+    return { n: asked.length, peak, low };
+  }
+  const strong = run(true), weak = run(false);
+  assert.equal(strong.n, cfg.choiceTarget, "voller Extremo-Durchlauf");
+  assert.equal(strong.peak, assessment.LEVEL_ORDER.length - 1, "erreicht C1");
+  assert.equal(weak.low, 0, "fällt auf A0");
 });
 
 test("summarize: alles unbekannt -> A0, kein Crash bei fehlenden Antworten", () => {
