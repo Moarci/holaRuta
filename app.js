@@ -89,6 +89,8 @@
     cardId: null,            // Detailseite: welche Karte
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
     studyOrigin: null,       // Herkunft der laufenden Runde: 'pretrip' | 'task' | null (=Dashboard) – steuert, wohin der Fertig-Screen zurückführt
+    session: null,           // { seen:Set<id>, right, wrong } – Richtig/Falsch-Zähler PRO Lern-Runde (null außerhalb); füttert die Belohnungs-Inszenierung
+    roundSnapshot: null,     // { unlocked, streak, everStudied } – Stand bei Rundenbeginn, für Diffs (neue Badges / Streak / erste Runde) am Rundenende
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
     bebMode: null,           // Bebidas AM/PM-Tafel: 'am'|'pm' (null = nach Uhrzeit)
     badgeToast: null,        // frisch freigeschaltete Badges (kurze Einblendung)
@@ -446,13 +448,51 @@
     };
   }
 
+  // Das Runden-Ergebnis für die Belohnungs-Inszenierung (SC.celebrate) bauen.
+  // Alle Felder sind optional – die reine decide()-Engine in celebrate.js leitet
+  // Fehlendes ab und klemmt Müll. Quelle: Session-Zähler (state.session) + die Diffs
+  // gegen den Rundenbeginn-Schnappschuss (state.roundSnapshot).
   function doneVM() {
     const isAll = state.scopeId === "all";
     const cat = categoryById(state.scopeId);
+    const s = state.session || { right: 0, wrong: 0, seen: new Set() };
+    const answered = s.right + s.wrong;
+    const snap = state.roundSnapshot || {};
+    const newBadges = Object.keys(gamestats.unlocked || {})
+      .filter((id) => !snap.unlocked || !snap.unlocked[id])
+      .map((id) => {
+        const m = badges && badges.badgeMeta ? badges.badgeMeta(id) : null;
+        return m ? { id: m.id, icon: m.icon, name: natk(m, "name") } : null;
+      })
+      .filter(Boolean);
+    const streakNow = currentStreak();
     return {
-      scopeLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
+      scope: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
+      mode: state.mode,
+      total: state.total || answered,
+      right: s.right,
+      wrong: s.wrong,
+      accuracy: answered ? Math.round((s.right / answered) * 100) : 0,
+      streakBefore: snap.streak || 0,
+      streak: streakNow,
+      streakIsNew: streakNow > (snap.streak || 0),
+      newBadges,
+      destinationComplete: pretripJustCompleted(), // {name,country}|null
+      isFirstEver: !snap.everStudied,
       origin: state.studyOrigin || null, // 'pretrip' | 'task' | null -> bestimmt den Zurück-Knopf
     };
+  }
+
+  // Wurde mit DIESER Runde ein ganzes Reiseziel-Pack (Pre-Trip-Plan) fertig?
+  // recordPretripDay() in rate() hat den Tag schon vermerkt, bevor das Done rendert –
+  // also spiegelt planAllDone() den frisch erreichten Stand. Gibt {name,country}
+  // (Ziel-Label aus der Kategorie) zurück, sonst null. Keine neue Datenstruktur.
+  function pretripJustCompleted() {
+    if (state.studyOrigin !== "pretrip" || !state.pretripScope) return null;
+    const plan = pretripPlan(state.pretripScope);
+    if (!planAllDone(plan)) return null;
+    const cat = categoryById(state.pretripScope);
+    return { name: cat ? natk(cat, "label") : state.pretripScope, country: "" };
   }
 
   // Eine Karte für Listen/Detail aufbereiten (Karte + Statistik + Anzeige-Texte).
@@ -715,6 +755,20 @@
     // gap < 0: Zeitzonenwechsel nach Westen – die lokale Uhr liegt VOR dem
     // letzten Lerntag. Zählt wie "heute", die Serie ist nicht gerissen (R7).
     return gap !== null && gap <= 1 ? (gamestats.dailyStreak || 0) : 0;
+  }
+
+  // Eine neue Study-Runde anstoßen: Richtig/Falsch-Zähler zurücksetzen und einen
+  // Schnappschuss des Spielstands ziehen (für die Diffs am Rundenende: frisch
+  // freigeschaltete Badges, Streak-Sprung, allererste Runde). Wird an jeder Stelle
+  // aufgerufen, die state.total für eine NEUE Runde setzt (Kategorie/Preset/Ruta/
+  // Pre-Trip) – NICHT in rate()/skip(). Speist die Belohnungs-Inszenierung (celebrate.js).
+  function beginRound() {
+    state.session = { seen: new Set(), right: 0, wrong: 0 };
+    state.roundSnapshot = {
+      unlocked: Object.assign({}, gamestats.unlocked),
+      streak: currentStreak(),
+      everStudied: gamestats.lastStudyDate != null,
+    };
   }
 
   // ----- Trip-Ziel (Countdown + Tagesziel) -----
@@ -2503,7 +2557,7 @@
 
   function render() {
     if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
-    else if (state.screen === "done") root.innerHTML = ui.renderDone(doneVM());
+    else if (state.screen === "done") root.innerHTML = ui.renderDone();
     else if (state.screen === "stats") root.innerHTML = ui.renderStats(statsVM());
     else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
     else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
@@ -2573,6 +2627,10 @@
       root.insertAdjacentHTML("beforeend", ui.updateBanner());
     }
 
+    // Fertig-Screen: die anlassbezogene Belohnungs-Inszenierung in die leere Bühne
+    // fahren (SC.celebrate entscheidet Szene, baut Inhalt/Buttons, setzt aria-live +
+    // Fokus). Erst NACH dem innerHTML-Austausch, da der Mount-Punkt nun existiert.
+    if (state.screen === "done") mountCelebrate();
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
     if (state.screen === "cuerpo") cuerpoInit3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
@@ -2590,6 +2648,34 @@
 
     // Sprungmarken-Scrollspy im Lernen-Reiter (aktiven Chip beim Scrollen setzen).
     if (state.screen === "home" && state.homeTab === "lernen") wireTopicSpy();
+  }
+
+  // Belohnungs-Inszenierung in den Fertig-Screen fahren. Entscheidet (rein) anhand
+  // des Runden-Ergebnisses die Szene und baut sie in #cb-mount. Die Buttons routen
+  // wie bisher: Pre-Trip → zurück zum Plan, Tarea → zurück zur Aufgabe, sonst
+  // Übersicht/Statistik. Fehlt das Modul (z. B. Asset noch nicht da), bleibt die
+  // Bühne leer statt zu crashen.
+  function mountCelebrate() {
+    const mount = document.getElementById("cb-mount");
+    if (!mount || !(window.SC && SC.celebrate)) return;
+    const result = doneVM();
+    SC.celebrate.celebrate(result, mount, {
+      sound: false,    // Sound ist überraschend -> Default aus (Haptik bleibt an)
+      haptics: true,
+      primaryLabel: result.origin === "pretrip" ? t("study.backPretrip")
+        : result.origin === "task" ? t("study.backTask")
+        : t("common.overview"),
+      secondaryLabel: result.origin ? t("common.overview") : t("common.statsView"),
+      onPrimary: function () {
+        if (result.origin === "pretrip") openPretrip();
+        else if (result.origin === "task") openTaskScreen();
+        else goHome();
+      },
+      onSecondary: function () {
+        if (result.origin) goHome();
+        else goStats();
+      },
+    });
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
@@ -2789,6 +2875,7 @@
     state.scopeId = scopeId;
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
+    beginRound();
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
@@ -2832,6 +2919,7 @@
     state.scopeId = "all";
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
+    beginRound();
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
@@ -2857,6 +2945,7 @@
     state.scopeId = p.scope || "all";
     state.queue = chosen.map((c) => c.id);
     state.total = state.queue.length;
+    beginRound();
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
@@ -2972,6 +3061,7 @@
     state.scopeId = scope;                          // korrektes Done-Label
     state.queue = cards.map((c) => c.id);
     state.total = state.queue.length;
+    beginRound();
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
@@ -3861,6 +3951,13 @@
     const card = cardById(state.queue[0]);
     if (!card) return;
     buzz(rating === srs.RATING.AGAIN ? 30 : 12);
+
+    // Pro Karte EINMAL für die Runden-Quote werten. AGAIN hängt die Karte hinten
+    // wieder an; nur die ERSTE Wertung zählt, sonst inflationiert die Quote.
+    if (state.session && !state.session.seen.has(card.id)) {
+      state.session.seen.add(card.id);
+      if (rating === srs.RATING.AGAIN) state.session.wrong++; else state.session.right++;
+    }
 
     // SRS-Zustand neu berechnen und Statistik-Felder mitführen (immutabel).
     const now = Date.now();

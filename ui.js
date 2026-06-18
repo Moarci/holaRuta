@@ -1277,27 +1277,12 @@
   }
 
   // ---------- DONE ----------
-  function renderDone(vm) {
-    // Kam die Runde aus dem Pre-Trip-Plan oder einer Aufgabe (Tarea), führt der
-    // Hauptknopf dorthin ZURÜCK (nächste Etappe direkt sichtbar) statt nur „Übersicht“.
-    const buttons =
-      vm.origin === "pretrip"
-        ? `<button class="cta" data-action="back-pretrip">🧭 ${esc(t("study.backPretrip"))}</button>
-           <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>`
-        : vm.origin === "task"
-          ? `<button class="cta" data-action="back-task">📝 ${esc(t("study.backTask"))}</button>
-             <button class="ghostbtn" data-action="home">${esc(t("common.overview"))}</button>`
-          : `<button class="cta" data-action="home">${esc(t("common.overview"))}</button>
-             <button class="ghostbtn" data-action="open-stats">${esc(t("common.statsView"))}</button>`;
-    return `
-      <section class="screen">
-        <div class="done">
-          <div class="done__emoji">🎉</div>
-          <h2>${esc(t("study.doneOk"))}</h2>
-          <p>${esc(vm.scopeLabel)} ${t("study.doneText")}</p>
-          ${buttons}
-        </div>
-      </section>`;
+  // Der Fertig-Screen ist jetzt nur noch die leere Bühne: SC.celebrate (celebrate.js)
+  // entscheidet anlassbezogen über die Inszenierung und baut Inhalt + Buttons selbst
+  // in den Mount-Punkt. Die A11y-Ansage (aria-live) und der Fokus aufs Haupt-CTA
+  // kommen ebenfalls aus dem Modul – die Verdrahtung steckt im Render-Dispatch (app.js).
+  function renderDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
   // ---------- RUTA-PASS (BADGES) ----------
