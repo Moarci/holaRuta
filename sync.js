@@ -71,7 +71,12 @@
     var seen = {}, all = [], i;
     function add(e) {
       if (!isObj(e)) return;
-      var key = (e.ts || "") + "|" + (e.at || "") + "|" + (e.level || "") + "|" + (e.finalScore || "");
+      // Fingerabdruck über mehrere Felder: echte Duplikate (dasselbe Ergebnis von
+      // zwei Geräten) fallen zusammen, zwei verschiedene Läufe am selben Tag (Alt-
+      // daten ohne ts) bleiben aber erhalten – sie unterscheiden sich praktisch
+      // immer in Trefferquote/Unknown-Rate/Tempo.
+      var key = [e.ts || "", e.at || "", e.level || "", e.finalScore || "",
+                 e.accuracy || "", e.unknownRate || "", e.tempo || ""].join("|");
       if (seen[key]) return;
       seen[key] = 1; all.push(e);
     }
