@@ -3914,6 +3914,8 @@
         : (q.options ? q.options[q.correctIndex] : "");
       out.push({
         status: a.isUnknown ? "unknown" : (scored.isCorrect ? "correct" : "wrong"),
+        // typo: richtig gewertet, aber nur leicht verschrieben → freundlicher Hinweis.
+        typo: !!scored.typo,
         promptDe: q.promptDe,
         questionEs: q.questionEs || null,
         yourText: yourText,

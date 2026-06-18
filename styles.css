@@ -2304,6 +2304,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .pl-review__yours--none { color: var(--muted); font-weight: 600; font-style: italic; }
 .pl-review__item--wrong .pl-review__yours { color: #C2502E; }
 .pl-review__correct { color: #2E8B57; font-weight: 700; }
+/* Tippfehler-Hinweis: richtig gewertet, nur leicht verschrieben (dezent, nicht rot). */
+.pl-review__typo { font-size: 0.86rem; color: var(--muted); }
 .pl-review__exp { margin: 6px 0 0; font-size: 0.86rem; color: var(--muted); line-height: 1.45; }
 /* Ruta-Check-Karte im Profil */
 .plprof { border: 1px solid var(--line); border-radius: var(--r-md, 14px); background: var(--card); padding: 14px 16px; }
