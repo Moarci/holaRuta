@@ -175,7 +175,7 @@
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
-    { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
+    { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
   ];
 
@@ -580,10 +580,10 @@
         </section>`
       : "";
 
-    // Ruta-Check als offene Aufgabe: erscheint, wenn der Einstufungstest beim
-    // Onboarding übersprungen und noch nicht nachgeholt wurde. Verschwindet, sobald
-    // er einmal absolviert ist (gamestats.placement gesetzt → placementDone).
-    const placementCue = (vm.hasPlacement && vm.placementPending && !vm.placementDone)
+    // HolaRuta-Check als offene Aufgabe: erscheint, solange der Einstufungstest
+    // noch nicht gemacht wurde (für alle, nicht nur bei übersprungenem Onboarding).
+    // Verschwindet, sobald er einmal absolviert ist (gamestats.placement gesetzt → placementDone).
+    const placementCue = (vm.hasPlacement && !vm.placementDone)
       ? `
       <button class="today__ruta" data-action="open-placement">
         <span class="today__ruta-main">${esc(t("home.placementOpenTitle"))}</span>

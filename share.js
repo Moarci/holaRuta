@@ -961,7 +961,7 @@
                : "holaruta-vokabel";
     const filename = `${base}-${fmt}.png`;
     const title = kind === "stats" ? "Mein Reise-Spanisch-Fortschritt"
-                : kind === "placement" ? "Mein Ruta-Check-Ergebnis"
+                : kind === "placement" ? "Mein HolaRuta-Check-Ergebnis"
                 : kind === "badge" ? "Mein Ruta-Pass-Stempel"
                 : kind === "histtext" ? "Historia de Sudamérica"
                 : kind === "histmodule" ? "Historia de Sudamérica"
