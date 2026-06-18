@@ -568,8 +568,10 @@
     const next = levels.find((l) => l.min > level.min) || null;
     const span = next ? next.min - level.min : 0;
     const into = xp - level.min;
+    // floor statt round: der Balken erreicht 100 % erst beim tatsächlichen
+    // Rang-Aufstieg, nicht schon ~1 XP davor (sonst „voll", aber „Noch 1 XP …").
     const pct = next && span > 0
-      ? Math.max(0, Math.min(100, Math.round((into / span) * 100)))
+      ? Math.max(0, Math.min(100, Math.floor((into / span) * 100)))
       : 100;
     return {
       xp,
