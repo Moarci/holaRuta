@@ -115,7 +115,7 @@
       description: "Starte deine erste Ruta del día.", descriptionEn: "Start your first Ruta del día.", unlockedText: "Dein täglicher Mini-Plan ist gesetzt.", unlockedTextEn: "Your daily mini-plan is set." },
     { id: "pretrip_done",   group: "streak", icon: "🧳", name: "Reisefertig",     nameEn: "Trip-ready",         type: "counter", metric: "pretripDaysDone", threshold: 7,
       description: "Schließe alle 7 Etappen des Pre-Trip-Plans ab.", descriptionEn: "Complete all 7 stages of the pre-trip plan.", unlockedText: "Vorbereitet wie ein Profi – jetzt kann die Reise kommen.", unlockedTextEn: "Prepared like a pro – bring on the trip." },
-    { id: "ruta_dia_7",     group: "streak", icon: "📆", name: "Sieben Etappen",  nameEn: "Seven stages",       type: "counter", metric: "rutaDays", threshold: 7,
+    { id: "ruta_dia_7",     group: "streak", icon: "🥾", name: "Sieben Etappen",  nameEn: "Seven stages",       type: "counter", metric: "rutaDays", threshold: 7,
       description: "Mache an 7 Tagen eine Ruta del día.", descriptionEn: "Do a Ruta del día on 7 days.", unlockedText: "Sieben tägliche Etappen – die Reise läuft.", unlockedTextEn: "Seven daily stages – the journey's rolling." },
 
     // ---------- Bereiche (Kategorie-Meisterschaft) ----------
