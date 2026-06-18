@@ -23,6 +23,7 @@
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
+  const fotografia = window.SC.fotografia || null; // Fotos & Videos: tolle Reisebilder (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const assessment = window.SC.assessment || null; // HolaRuta Nivel-Test (ausführlich, optional)
@@ -57,7 +58,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'fotos' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
     homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -316,6 +317,7 @@
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
+      hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
@@ -794,6 +796,24 @@
       phrases: loc(salud.PHRASES || []),
       glossary: loc(salud.GLOSSARY || []),
       checklist: loc(salud.CHECKLIST || []),
+    };
+  }
+
+  // Fotos & Videos: praktische Tipps (Topics mit DOs/Don'ts + spanisches
+  // Lesetraining wie in der Historia), Sätze zum Bitten/Platz-Machen, der
+  // Teilen-Block (AirDrop/Quick Share) plus Foto-Apps (Mymories), Glossar, Kit.
+  function fotosVM() {
+    if (!fotografia) return { intro: "", topics: [], phrases: [], sharing: null, apps: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && fotografia.INTRO_EN) ? fotografia.INTRO_EN : fotografia.INTRO,
+      topics: loc(fotografia.TOPICS || []),
+      phrases: loc(fotografia.PHRASES || []),
+      sharing: fotografia.SHARING ? loc(fotografia.SHARING) : null,
+      apps: loc(fotografia.APPS || []),
+      glossary: loc(fotografia.GLOSSARY || []),
+      checklist: loc(fotografia.CHECKLIST || []),
     };
   }
 
@@ -2673,6 +2693,7 @@
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
     else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
+    else if (state.screen === "fotos") root.innerHTML = ui.renderFotos(fotosVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
@@ -5237,6 +5258,7 @@
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
+    fotos: !!fotografia,
     bebidas: !!(bebidas && countries),
   };
 
@@ -5318,19 +5340,24 @@
     }
     const pageMod = (mod, icon, title, subKey, action) => {
       if (!mod) return;
-      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
+      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn, tp.es, (tp.vocab || []).map((v) => [v.es, v.de, v.en])]);
       const phrases = (mod.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
       const gloss = (mod.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
       const checklist = (mod.CHECKLIST || []).map((c) => [c.item, c.itemEn, c.why, c.whyEn]);
+      // Optionale Blöcke (z. B. Fotos: Teilen-Block + Foto-Apps) – andere Module
+      // haben diese Felder nicht, dann bleiben sie leer.
+      const sharing = mod.SHARING ? [mod.SHARING.intro, mod.SHARING.introEn, mod.SHARING.dos, mod.SHARING.dosEn, mod.SHARING.donts, mod.SHARING.dontsEn] : [];
+      const apps = (mod.APPS || []).map((a) => [a.name, a.platform, a.desc, a.descEn, a.bullets, a.bulletsEn, a.url]);
       idx.push({
         group: "info", kind: "page", kindLabel: t("search.kindInfo"),
         icon: icon, title: title, sub: t(subKey),
         action: action,
-        hay: searchHay([title, mod.INTRO, mod.INTRO_EN, topics, phrases, gloss, checklist]),
+        hay: searchHay([title, mod.INTRO, mod.INTRO_EN, topics, phrases, gloss, checklist, sharing, apps]),
       });
     };
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
+    pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
 
     // Historia (Süd- & Mittelamerika): je ein Treffer für die ganze Erklärseite
     // (Epochen, Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
@@ -5445,6 +5472,12 @@
   function openSalud() {
     dismissBadgeToast();
     state.screen = "salud";
+    render();
+  }
+
+  function openFotos() {
+    dismissBadgeToast();
+    state.screen = "fotos";
     render();
   }
 
@@ -5860,6 +5893,7 @@
     regatear:  { kicker: "Regatear",          icon: "🤝", accent: ["#B97C24", "#3F7355"] },
     logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
     salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
+    fotos:     { kicker: "Fotos y videos",    icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
   };
 
   function shareTips(cat, idx) {
@@ -5868,6 +5902,7 @@
               : cat === "regatear" ? (regatear && regatear.TIPS)
               : cat === "logistica" ? (logistica && logistica.TOPICS)
               : cat === "salud" ? (salud && salud.TOPICS)
+              : cat === "fotos" ? (fotografia && fotografia.TOPICS)
               : null;
     const meta = TIPS_META[cat];
     if (!src || !src[idx] || !meta) return;
@@ -5932,6 +5967,7 @@
     knigge:        { icon: "🧭", title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
     logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
     salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+    fotos:         { icon: "📸", title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -5984,6 +6020,8 @@
         return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
       case "salud":
         return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
+      case "fotos":
+        return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
       default:
         return [];
     }
@@ -6142,6 +6180,7 @@
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
     else if (action === "open-salud") openSalud();
+    else if (action === "open-fotos") openFotos();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
