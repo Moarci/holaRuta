@@ -100,7 +100,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Hörtrainer** | Precios al oído 💵 | Die App sagt einen Betrag auf Spanisch, du tippst die Zahl. Beträge werden pro Runde frisch erzeugt (eigener Zahl→Wort-Wandler, `numbers.js`) – wähle Land/Währung (🇨🇴 Kolumbien, 🇨🇱 Chile, 🇦🇷 Argentinien, 🇨🇷 Costa Rica, 🇲🇽 Mexiko, 🇵🇪 Peru, 🇬🇹 Guatemala) und eine von drei Schwierigkeitsstufen – von Kleingeld bis zu kolumbianischen Millionenpreisen. Grammatisch sauber (un millón quinientos mil, veintiún mil, „de pesos" nur bei vollen Millionen), mit Score |
 | **Satzbaukasten** | Frases flexibles 🧱 | Satzrahmen mit Lücke („Necesito ___"), passenden Baustein wählen – produktives Satzbauen statt bloßem Übersetzen (Multiple Choice). 49 Sätze in 7 Reise-Themen, wählbar vorab oder „🎲 Gemischt" |
 | **Tagesrunde** | Ruta del día 🗺️ | Ein Tap für eine kurze, kategorienübergreifende Tagesrunde (bevorzugt fällige, sonst neue Karten) – stärkt die Lern-Serie |
-| **Onboarding-Pfad** | Pre-Trip-Plan 🗓️ | Mehrtägiger, geordneter Vorbereitungs-Pfad **je Reiseziel** (Kolumbien · Peru · Mexiko · Costa Rica · Ecuador · Guatemala), wählbar über Reiseziel-Chips; je 7 Etappen (Begrüßung, Taxi/Ankunft, Unterkunft/Höhe, Essen, Geld/Markt, Unterwegs, Ausgehen). Jede Etappe = kuratierte Karten + Real-Life-Mutprobe; die nächste öffnet sich nach Abschluss der aktuellen, Fortschritt je Ziel getrennt. Stempel „Reisefertig" für einen kompletten Plan |
+| **Onboarding-Pfad** | Pre-Trip-Plan 🗓️ | Mehrtägiger, geordneter Vorbereitungs-Pfad **je Reiseziel** (33 Ziele — Länder & Städte, von Kolumbien, Peru & Mexiko bis Cartagena, Cusco & Buenos Aires), wählbar über Reiseziel-Chips; je 7 Etappen (Begrüßung, Taxi/Ankunft, Unterkunft/Höhe, Essen, Geld/Markt, Unterwegs, Ausgehen). Jede Etappe = kuratierte Karten + Real-Life-Mutprobe; die nächste öffnet sich nach Abschluss der aktuellen, Fortschritt je Ziel getrennt. Stempel „Reisefertig" für einen kompletten Plan |
 | **Richtung** | DE→ES / ES→DE | Lernrichtung jederzeit umschaltbar, wird gemerkt |
 | **Spaced Repetition** | Eigene SM-2-Engine | 3-Tasten-Bewertung (Nochmal / Gut / Einfach), Intervall- & Ease-Berechnung |
 | **Stufen-Filter** | A1 / A2 / B1 | Mehrfachauswahl der Schwierigkeitsstufen, kombinierbar mit Bereich |
@@ -232,6 +232,7 @@ SpanischCard/
 ├── i18n.js        SC.i18n       # Mehrsprachigkeit (DE/EN): t()-Lookup + nativeText() — REINE ENGINE
 ├── i18n.strings.js SC.i18n      # UI-Wörterbücher (de/en), per register() in die Engine
 ├── config.js      SC.config     # Edition-/Default-Konfiguration (merged editions/registry.js)
+├── editions/registry.js SC.editions # Co-Branding-Editionen (Name, Akzent, Partner, Default-Ziel)
 ├── store.js       SC.store      # Persistenz — kapselt localStorage komplett weg
 ├── net.js         SC.net        # Geteilte Auth-/Netz-Schicht für die opt-in Cloud-Module (BACKEND.md)
 ├── sync.js        SC.sync       # Optionale, opt-in Cloud-Sync: reine Merge-Funktionen + dünner Adapter (BACKEND.md)
@@ -548,7 +549,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Bereiche / Kategorien | 71 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
-| JS-Module | 36 (`SC.*`) |
+| JS-Module | 37 (`SC.*`) |
 | Tests | 298 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
