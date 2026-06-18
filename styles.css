@@ -2769,6 +2769,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .card-listen { gap: 14px; }
 .listen-ear { font-size: 3.4rem; line-height: 1; }
 .listen-replay { margin: 0; }
+/* Der Hinweistext fließt hier im normalen Layout unter dem Replay-Button mit –
+   nicht absolut am Kartenrand, sonst überlappt er bei mehrzeiligem Text den Button. */
+.card-listen .face__hint { position: static; bottom: auto; max-width: 32ch; line-height: 1.35; }
 /* Deutsche Bedeutung als Verständnis-Hilfe auf der aufgedeckten Hör-Ergebnis-Karte. */
 .listen-de { margin-top: 6px; font-size: 0.95rem; color: var(--muted); }
 /* Aussprache-Tipp ist cremefarben (für die bunte Flip-Rückseite gedacht) – auf der
