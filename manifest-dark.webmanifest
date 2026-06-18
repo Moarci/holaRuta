@@ -9,7 +9,7 @@
   "scope": ".",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0E0907",
+  "background_color": "#241510",
   "theme_color": "#0E0907",
   "categories": ["education", "travel"],
   "launch_handler": { "client_mode": "navigate-existing" },

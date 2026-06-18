@@ -45,10 +45,12 @@
 
   <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
        Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe.
-       Im Dark Mode zeigen wir zusätzlich auf das dunkle Manifest – sonst malt das
-       OS den PWA-Splash (background_color) cremeweiß und blendet beim Öffnen im
-       Dunkeln. Das Manifest kennt keine Media-Query, darum hier per JS umgehängt:
-       Chrome liest den Verweis erneut und färbt den Splash beim nächsten Start. -->
+       Der OS-PWA-Splash wird aus dem Manifest-background_color gemalt – und Android
+       friert genau eine Farbe beim Installieren ein (keine Media-Query, kein Wechsel
+       zur Laufzeit). Darum ist background_color in BEIDEN Manifesten das dunkle
+       Marken-Braun (#241510): blendet nie, im Hellmodus bewusster Marken-Splash.
+       Im Dark Mode hängen wir trotzdem auf das dunkle Manifest um – das verfeinert
+       nur noch die theme_color (Toolbar/Statusleiste) der installierten App. -->
   <script>
     (function () {
       try {
