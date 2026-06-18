@@ -526,12 +526,35 @@
   // Balken (gemeistert / am Lernen / neu) mit Legende statt nur der Meister-Quote,
   // die ganz am Anfang 0 % bleibt und mit leerem Balken wie ein Fehler wirkt.
   // Segmente mit Zähler 0 fallen weg (sonst zeigt min-width einen falschen Splitter).
+  // Reise-Rang/XP als kleines Banner. Macht den in der Belohnungs-Inszenierung
+  // (Done-Screen) vergebenen XP-Stand dauerhaft sichtbar – im Cockpit, im Profil
+  // und in der Statistik. Ohne XP-Stand (frischer Start) bleibt es still, statt
+  // einen leeren Balken zu zeigen.
+  function xpBanner(xp) {
+    if (!xp || (!xp.xp && xp.rankN === 0)) return "";
+    const hint = xp.nextName
+      ? t("profile.xpToNext", { n: xp.xpToNext, rank: xp.nextName })
+      : t("profile.xpMaxRank");
+    return `
+      <div class="xpbanner">
+        <div class="xpbanner__head">
+          <span class="xpbanner__rank">🧭 ${esc(xp.rankName)}</span>
+          <span class="xpbanner__xp">${esc(t("profile.xpPoints", { n: xp.xp }))}</span>
+        </div>
+        <div class="xpbanner__track" role="img" aria-label="${esc(hint)}">
+          <div class="xpbanner__fill" style="width:${xp.pct}%"></div>
+        </div>
+        <p class="xpbanner__hint">${esc(hint)}</p>
+      </div>`;
+  }
+
   function progressCard(vm) {
     const ov = vm.overall;
     const streakLine = vm.streak > 0 ? t("profile.streakInRow", { n: vm.streak }) : t("profile.streakFirst");
     const seg = (n, color) => (ov.total && n > 0) ? `<span style="flex:${n};background:${color}"></span>` : "";
     return `
       <div class="profcard">
+        ${xpBanner(vm.xp)}
         <p class="profcard__streak">${esc(streakLine)}</p>
         <div class="dist__bar" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct: ov.pct }))}">
           ${seg(ov.mastered, "var(--ok)")}${seg(ov.learning, "var(--warn)")}${seg(ov.neu, "rgba(45,27,18,0.16)")}
@@ -1649,6 +1672,8 @@
           <div class="topbar__title">${esc(t("profile.statsTitle"))}</div>
           <div class="topbar__counter">${ov.seenCards}/${ov.total}</div>
         </div>
+        ${xpBanner(vm.xp)}
+        ${vm.xp && vm.xp.xp ? shareBlock(vm.shareFormat, "share-rank", t("profile.shareRank")) : ""}
         ${kpis}
         ${routeMap(ov)}
         ${distribution}

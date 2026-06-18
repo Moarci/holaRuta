@@ -539,6 +539,22 @@ body {
 }
 .profcard__streak { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--ink); }
 .profcard__meta { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+
+/* Reise-Rang/XP-Banner (Cockpit, Profil, Statistik). Macht den XP-Stand der
+   Belohnungs-Inszenierung dauerhaft sichtbar. */
+.xpbanner {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 12px 14px; border-radius: var(--r-md);
+  background: linear-gradient(135deg, rgba(194, 80, 46, 0.12), rgba(233, 162, 59, 0.12));
+  border: 1.5px solid var(--line);
+}
+.xpbanner__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.xpbanner__rank { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
+.xpbanner__xp { font-weight: 800; font-size: 0.95rem; color: var(--brand); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.xpbanner__track { height: 8px; border-radius: 999px; overflow: hidden; background: rgba(45, 27, 18, 0.10); }
+.xpbanner__fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brand), var(--warn)); transition: width 0.4s ease; }
+.xpbanner__hint { margin: 0; font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+[data-theme="dark"] .xpbanner__track { background: rgba(251, 243, 228, 0.10); }
 .navrow {
   display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer;
   text-align: left; min-height: 56px; padding: 14px 16px;

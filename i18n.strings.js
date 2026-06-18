@@ -1883,6 +1883,10 @@
     seenTimes: (p) => `${p.n}× gesehen`,
     statNewWord: "neu",
     forgotTimes: (p) => `${p.n}× vergessen`,
+    xpPoints: (p) => `${p.n} XP`,
+    xpToNext: (p) => `Noch ${p.n} XP bis ${p.rank}`,
+    xpMaxRank: "Höchster Rang erreicht 🏆",
+    shareRank: "Rang teilen",
 
     // Karten-Detail
     cardFirstTry: "🎯 Auf Anhieb gewusst",
@@ -2004,6 +2008,10 @@
     seenTimes: (p) => `seen ${p.n}×`,
     statNewWord: "new",
     forgotTimes: (p) => `forgotten ${p.n}×`,
+    xpPoints: (p) => `${p.n} XP`,
+    xpToNext: (p) => `${p.n} XP to ${p.rank}`,
+    xpMaxRank: "Highest rank reached 🏆",
+    shareRank: "Share rank",
 
     cardFirstTry: "🎯 Knew first time",
     cardNeededPractice: "🔁 Needed practice",
@@ -2144,6 +2152,15 @@
     asLevelCap: "Mein Niveau",
     captionAssessmentHead: (p) => `📋 Mein Spanisch-Niveau: ${p.level}`,
     captionAssessment: "Genau eingestuft mit dem HolaRuta Nivel-Test (A0–C1). 🌎",
+    myRank: "🧭 MEIN REISE-RANG",
+    myRankName: (p) => `🧭 REISE-RANG VON ${String(p.name).toUpperCase()}`,
+    rankXpCap: "XP",
+    rankNextCap: "Nächster Rang",
+    rankToGo: "XP fehlen",
+    rankReached: "Höchster Rang",
+    rankProgress: "Fortschritt",
+    captionRankHead: (p) => `🧭 Mein Reise-Rang: ${p.rank} · ${p.xp} XP`,
+    captionRank: "XP gesammelt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -2186,5 +2203,14 @@
     asLevelCap: "My level",
     captionAssessmentHead: (p) => `📋 My Spanish level: ${p.level}`,
     captionAssessment: "Precisely placed with the HolaRuta Level Test (A0–C1). 🌎",
+    myRank: "🧭 MY TRAVEL RANK",
+    myRankName: (p) => `🧭 ${String(p.name).toUpperCase()}'S TRAVEL RANK`,
+    rankXpCap: "XP",
+    rankNextCap: "Next rank",
+    rankToGo: "XP to go",
+    rankReached: "Top rank",
+    rankProgress: "Progress",
+    captionRankHead: (p) => `🧭 My travel rank: ${p.rank} · ${p.xp} XP`,
+    captionRank: "XP earned with HolaRuta – your travel Spanish for real situations. 🌎",
   });
 })();
