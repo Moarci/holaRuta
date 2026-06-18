@@ -177,7 +177,6 @@
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-assessment",  icon: "📋", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
-    { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
   ];
 
   // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),
@@ -748,8 +747,6 @@
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
     const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement, assessment: vm.hasAssessment };
-    // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea).
-    const cfg = window.SC.config || {};
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -760,10 +757,8 @@
       </button>`;
     // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
     // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
-    // In Editionen mit eigenem Reiter Tarea NICHT doppelt als Kachel zeigen.
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
-      if (x.action === "open-task" && cfg.taskTab) return false;
       return true;
     });
     const sections = FEATURE_GROUPS.map((g) => {
