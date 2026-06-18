@@ -3218,6 +3218,18 @@
       ? [{ value: "all", label: t("sheet.allStages") }].concat(
           (plan.days || []).map((d) => ({ value: String(d.day), label: t("sheet.stageLabel", { day: d.day }) + ": " + natk(d, "titleDe") })))
       : null;
+    // Akzentfarbe + Icon der Ziel-Kategorie (Pre-Trip/Preset zeigen auf eine
+    // Reiseziel-Kategorie; „Ganzes Paket" ist selbst eine). Tönt nur den Kopf –
+    // der Fließtext bleibt schwarz und druckt auch in S/W sauber.
+    let accentScope = tt.scope;
+    if (tt.kind === "preset") { const pr = (data.PRESETS || []).find((p) => p.id === tt.scope); accentScope = pr ? pr.scope : tt.scope; }
+    const accentCat = categoryById(accentScope);
+    const accent = (accentCat && accentCat.grad && accentCat.grad[0]) || "#a23e20";
+    const icon = (accentCat && accentCat.icon) || "📄";
+    // Übungs- vs. Lösungsblatt: im Übungsmodus wird die spanische Zeile (Antwort)
+    // verdeckt; Deutsch bleibt als Prompt stehen. Standard = vollständiges Blatt.
+    const exercise = state.sheetMode === "exercise";
+    const link = code ? taskShareLink(code) : "";
     return {
       targets: taskTargets(), sheetTarget: tt.value,
       targetPicker: state.targetPicker, // offenes Ziel-Picker-Modal? ('sheet' | null)
@@ -3225,9 +3237,13 @@
       // Wird nur EINE Etappe gedruckt? Dann startet der Abo-Code unten trotzdem
       // den GANZEN Plan – Hinweis darauf im Blatt (siehe sheet.subscribeWholeHint).
       stageScoped: isPretrip && stageSel !== "all",
+      accent: accent, icon: icon, exercise: exercise,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages,
-      code: code, link: code ? taskShareLink(code) : "",
+      code: code, link: link,
+      // QR auf den Abo-Link – Lernende scannen statt abzutippen. Browser-only
+      // (window.SC.qr); fehlt der Generator/Link, bleibt das Feld leer.
+      qrSvg: (link && window.SC.qr) ? window.SC.qr.svg(link, { ecc: "M", margin: 0 }) : "",
       edition: editionInfo(), date: new Date().toISOString().slice(0, 10),
     };
   }
@@ -3236,6 +3252,7 @@
     dismissBadgeToast();
     if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
     if (!state.sheetStage) state.sheetStage = "all";
+    if (!state.sheetMode) state.sheetMode = "full";
     state.screen = "printsheet";
     render();
   }
@@ -5276,6 +5293,7 @@
     else if (action === "teacher-print") printTeacher();
     else if (action === "open-printsheet") openPrintSheet();
     else if (action === "printsheet-print") printSheet();
+    else if (action === "sheet-mode") { state.sheetMode = el.dataset.mode; render(); }
     else if (action === "open-target-picker") { state.targetPicker = el.dataset.ctx; render(); }
     else if (action === "close-target-picker") { state.targetPicker = null; render(); }
     else if (action === "target-stop") { /* Klick auf die Modal-Karte: nicht schließen */ }

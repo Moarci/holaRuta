@@ -98,6 +98,40 @@ test("renderPrintSheet: stageScoped zeigt den „ganzer Plan“-Hinweis am Abo-C
   assert.ok(!whole.includes(i18n.t("sheet.subscribeWholeHint")), "Hinweis darf beim ganzen Ziel nicht erscheinen");
 });
 
+test("renderPrintSheet: Übungsmodus verdeckt ES + Notiz + Challenge-Phrase, setzt Tag", () => {
+  const html = ui.renderPrintSheet(baseVM({ exercise: true }));
+  assert.ok(html.includes("sheet--exercise"), "Übungs-Klasse fehlt");
+  assert.ok(html.includes("sheet-es--blank"), "ES muss zur Schreiblinie werden");
+  assert.ok(!html.includes("¿Dónde está el taxi?"), "spanische Antwort darf im Übungsblatt nicht erscheinen");
+  assert.ok(!html.includes("carrera = Fahrt"), "Notiz (verrät Lösung) darf nicht erscheinen");
+  assert.ok(!html.includes("¿Por dónde se va?"), "Challenge-Phrase (Lösung) darf nicht erscheinen");
+  assert.ok(html.includes(i18n.t("sheet.exerciseHint")), "Übungs-Hinweis fehlt");
+  // Lösungsblatt (Default) zeigt ES + Phrase weiterhin.
+  const full = ui.renderPrintSheet(baseVM());
+  assert.ok(full.includes("¿Dónde está el taxi?") && full.includes("¿Por dónde se va?"), "Lösungsblatt muss Antworten zeigen");
+});
+
+test("renderPrintSheet: Akzentfarbe + Ziel-Icon landen im Kopf", () => {
+  const html = ui.renderPrintSheet(baseVM({ accent: "#E0743C", icon: "🏖️" }));
+  assert.ok(html.includes("--sheet-accent:#E0743C"), "Akzent-Variable fehlt");
+  assert.ok(html.includes("🏖️"), "Ziel-Icon fehlt");
+  assert.ok(html.includes("sheet-accent-bar"), "Akzentstreifen fehlt");
+});
+
+test("renderPrintSheet: unsichere Akzentfarbe wird verworfen (Fallback statt Injection)", () => {
+  const html = ui.renderPrintSheet(baseVM({ accent: 'red" onload="x' }));
+  assert.ok(!html.includes("onload"), "ungültiger Akzent darf nicht ins Markup sickern");
+  assert.ok(html.includes("--sheet-accent:#a23e20"), "Fallback-Akzent erwartet");
+});
+
+test("renderPrintSheet: QR-SVG wird eingebettet, wenn vorhanden", () => {
+  const fakeSvg = '<svg id="qr-test"></svg>';
+  const html = ui.renderPrintSheet(baseVM({ qrSvg: fakeSvg }));
+  assert.ok(html.includes(fakeSvg), "QR-SVG fehlt");
+  assert.ok(html.includes(i18n.t("sheet.scanHint")), "Scan-Hinweis fehlt");
+  assert.ok(!ui.renderPrintSheet(baseVM()).includes("sheet-qr-img"), "ohne qrSvg keine QR-Figur");
+});
+
 test("renderPrintSheet: Editions-Credit erscheint, wenn gesetzt", () => {
   const html = ui.renderPrintSheet(baseVM({ edition: { name: "ECOS Cartagena" } }));
   assert.ok(html.includes("ECOS Cartagena"), "Editions-Name fehlt im Credit");
