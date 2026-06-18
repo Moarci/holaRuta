@@ -555,6 +555,7 @@
     return `
       <div class="profcard">
         ${xpBanner(vm.xp)}
+        ${vm.xp && vm.xp.xp ? shareBlock(vm.shareFormat, "share-rank", t("profile.shareRank")) : ""}
         <p class="profcard__streak">${esc(streakLine)}</p>
         <div class="dist__bar" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct: ov.pct }))}">
           ${seg(ov.mastered, "var(--ok)")}${seg(ov.learning, "var(--warn)")}${seg(ov.neu, "rgba(45,27,18,0.16)")}
