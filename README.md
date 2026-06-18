@@ -386,8 +386,9 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 | Status | Bedingung |
 |---|---|
 | **new** | Noch nie bewertet |
-| **learning** | Bewertet, Intervall < 7 Tage |
-| **mastered** | Intervall ≥ 7 Tage |
+| **learning** | Bewertet, Intervall < 5 Tage |
+| **firming** | „Fast geschafft" — am Lernen, aber Intervall ≥ 3 Tage (Teilmenge von *learning*; nur Anzeige) |
+| **mastered** | Intervall ≥ 5 Tage |
 | **hard** | ≥ 2× gesehen und Trefferquote < 60 % |
 | **firstTry** | Auf Anhieb gewusst — erste Bewertung Gut/Einfach und nie „Nochmal" |
 

@@ -3,6 +3,24 @@
 Vollständiger Verlauf. Die App selbst zeigt im „Was ist neu?"-Fenster nur
 die jüngsten Einträge (`changelog.js`); dieses Dokument ist das komplette Archiv.
 
+## v1.98.0 — 2026-06-18
+
+**Zwischenstufe „fast geschafft“ + klarerer Meisterungs-Fortschritt**
+
+- 🔥 Neue Zwischenstufe „fast geschafft“: Karten, die fast gemeistert sind, bekommen in der Statistik einen eigenen Punkt – so siehst du den Fortschritt, bevor die erste Karte als „gemeistert“ zählt.
+- 🏁 Eine Karte gilt jetzt etwas früher als „gemeistert“ (ab 5 statt 7 Tagen Wiederholungs-Abstand) und ein kurzer Hinweis in der Statistik erklärt, was „gemeistert“ bedeutet.
+- ✨ Kleinerer Schliff: In den Statistik-Filtern sitzt die Zahl jetzt mit sauberem Abstand neben dem Text (z. B. „Beantwortet 189“ statt „Beantwortet189“).
+
+<details><summary>English</summary>
+
+**“Almost there” stage + clearer mastery progress**
+
+- 🔥 New “almost there” stage: cards that are close to mastered now get their own dot in the stats – so you can see progress before the first card counts as “mastered”.
+- 🏁 A card now counts as “mastered” a little sooner (a 5- instead of 7-day review gap), and a short note in the stats explains what “mastered” means.
+- ✨ Small polish: in the stats filters the number now sits with clean spacing next to the label (e.g. “Answered 189” instead of “Answered189”).
+
+</details>
+
 ## v1.97.0 — 2026-06-18
 
 **Aus „Ruta-Check“ wird „HolaRuta-Check“ + Dashboard-Erinnerung**
