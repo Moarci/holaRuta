@@ -784,6 +784,13 @@
     ftWords: "🗣️ Wörter rund ums Fotografieren",
     ftChecklist: "🎒 Foto-Kit",
     ftChecklistHint: "Ein paar Kleinigkeiten, mit denen Fotos und Videos unterwegs zuverlässig gelingen.",
+    ftAreas: "Bereiche",
+    ftNavTips: "Bilder machen",
+    ftNavPhrases: "Sätze",
+    ftNavShare: "Teilen",
+    ftNavApps: "Apps",
+    ftNavWords: "Wörter",
+    ftNavKit: "Foto-Kit",
 
     // Hostel
     hostelIntro: "Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.",
@@ -1128,6 +1135,13 @@
     ftWords: "🗣️ Words for photography",
     ftChecklist: "🎒 Photo kit",
     ftChecklistHint: "A few small things that make photos and videos reliably work on the road.",
+    ftAreas: "Sections",
+    ftNavTips: "Take shots",
+    ftNavPhrases: "Phrases",
+    ftNavShare: "Sharing",
+    ftNavApps: "Apps",
+    ftNavWords: "Words",
+    ftNavKit: "Photo kit",
 
     hostelIntro: "Use travel Spanish in pairs – not just learning, but speaking aloud.",
     coordinatorTitle: "5-minute icebreaker",

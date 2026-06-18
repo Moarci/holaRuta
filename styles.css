@@ -1375,15 +1375,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .hist-banner__chev { flex-shrink: 0; font-size: 1.3rem; opacity: 0.8; }
 
 /* Sprungmarken-Leiste: gemeinsame Basis für Historia (.hist-nav),
-   Tiempos (.ti-nav) und Spickzettel (.sz-nav). Die Farbverlauf-Kante der
-   Spickzettel-Chips kommt zusätzlich im SPICKZETTEL-Abschnitt dazu. */
-.hist-nav, .ti-nav, .sz-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.hist-nav__chip, .ti-nav__chip, .sz-nav__chip {
+   Tiempos (.ti-nav), Spickzettel (.sz-nav) und Fotos y videos (.ft-nav). Die
+   Farbverlauf-Kante der Spickzettel-Chips kommt zusätzlich im SPICKZETTEL-Abschnitt dazu. */
+.hist-nav, .ti-nav, .sz-nav, .ft-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip, .ti-nav__chip, .sz-nav__chip, .ft-nav__chip {
   display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
   font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
   background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
 }
-.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active { transform: scale(0.96); }
+.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active, .ft-nav__chip:active { transform: scale(0.96); }
 /* Angesprungene Abschnitte nicht bündig an den oberen Rand kleben lassen. */
 .cinfo-sect { scroll-margin-top: 12px; }
 
@@ -1736,6 +1736,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .rg-head {
   font-family: var(--font-display); font-size: 1.05rem; color: var(--ink);
   margin: 22px 0 12px; padding-bottom: 6px; border-bottom: 1.5px solid var(--line);
+  scroll-margin-top: 12px; /* Sprungmarken (z. B. Fotos y videos) nicht oben ankleben */
 }
 .rg-head:first-of-type { margin-top: 18px; }
 .rg-group { margin-bottom: 14px; }
