@@ -78,6 +78,7 @@
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
+    onboardStep: "profile",  // Onboarding-Teilschritt: 'profile' (Name+Geschlecht) → 'trip' (Reiseziel)
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -272,6 +273,10 @@
       },
       lastCat,
       userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
+      userGender: settings.userGender === "female" || settings.userGender === "male" ? settings.userGender : "", // ♀/♂ (für Anrede)
+      onboardStep: state.onboardStep || "profile", // Onboarding-Teilschritt (Name+Geschlecht → Reiseziel)
+      placementDone: !!gamestats.placement,     // Ruta-Check schon absolviert?
+      placementPending: settings.placementPending === true, // beim Onboarding übersprungen → als offen anzeigen
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
@@ -1064,6 +1069,16 @@
     buzz(8);
     render();
     return true;
+  }
+
+  // Onboarding starten: beim ersten Schritt (Name + Geschlecht) beginnen und den
+  // Ruta-Check vorab als „noch offen" vormerken – so erscheint er im Dashboard,
+  // falls er später übersprungen wird, und verschwindet erst nach dem Absolvieren.
+  function beginOnboarding() {
+    state.screen = "onboarding";
+    state.onboardStep = "profile";
+    settings = Object.assign({}, settings, { placementPending: true });
+    store.saveSettings(settings);
   }
 
   // Onboarding einmalig als erledigt vermerken und aufs Dashboard wechseln. Der
@@ -2338,8 +2353,15 @@
       if (state.homeTab !== "start") { setTab("start"); return true; }
       return false;
     }
-    // Onboarding mit „Zurück" überspringen (zählt als erledigt, kein Wiederzeigen).
-    if (state.screen === "onboarding") { finishOnboarding(); return true; }
+    // Onboarding: aus dem Reiseziel-Schritt zurück zum Namen-/Geschlecht-Schritt;
+    // aus dem ersten Schritt heraus „Zurück" überspringt das Onboarding ganz
+    // (zählt als erledigt, kein Wiederzeigen). Der Ruta-Check bleibt dann als
+    // offene Aufgabe (placementPending) im Dashboard sichtbar.
+    if (state.screen === "onboarding") {
+      if (state.onboardStep === "trip") { state.onboardStep = "profile"; render(); return true; }
+      finishOnboarding();
+      return true;
+    }
     // Zurück aus dem Onboarding-Ruta-Check schließt das Onboarding ab (nicht erneut zeigen).
     if (state.screen === "placement" && state.placement && state.placement.fromOnboarding) { finishOnboarding(); return true; }
     // 3) Eine Ebene höher.
@@ -3633,6 +3655,11 @@
         },
       });
       store.saveGameStats(gamestats);
+      // Ruta-Check ist erledigt → die „noch offen"-Markierung fürs Dashboard löschen.
+      if (settings.placementPending) {
+        settings = Object.assign({}, settings, { placementPending: false });
+        store.saveSettings(settings);
+      }
     } catch (e) { /* Persistenz optional – nie crashen */ }
     render();
   }
@@ -3868,6 +3895,37 @@
       store.saveSettings(settings);
     }
     if (rerender) { buzz(8); render(); }
+  }
+
+  // Geschlecht für die Anrede speichern (nur „female"/„male"; sonst ignorieren).
+  // Wird in Onboarding UND Profil über dieselbe Aktion gesetzt.
+  function saveUserGender(value) {
+    const g = value === "female" || value === "male" ? value : "";
+    if (!g) return;
+    // Im Onboarding den bereits getippten Namen mitsichern, BEVOR das Re-Render das
+    // Eingabefeld zurücksetzt (dort hat es – anders als im Profil – keinen Blur-Handler).
+    const nameEl = document.getElementById("onboard-name");
+    if (nameEl) saveUserName(nameEl.value, false);
+    if (g !== settings.userGender) {
+      settings = Object.assign({}, settings, { userGender: g });
+      store.saveSettings(settings);
+    }
+    buzz(8);
+    render();
+  }
+
+  // Onboarding-Schritt 1 (Name + Geschlecht) abschließen. Beides ist Pflicht zum
+  // Fortfahren: fehlt etwas, kurz hinweisen und auf dem Schritt bleiben.
+  function advanceOnboardingProfile() {
+    const el = document.getElementById("onboard-name");
+    saveUserName(el ? el.value : "", false);
+    if (!settings.userName || !settings.userGender) {
+      showNotice(t("home.onboardProfileInvalid"));
+      return;
+    }
+    state.onboardStep = "trip";
+    buzz(8);
+    render();
   }
 
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
@@ -5320,6 +5378,7 @@
     else if (action === "set-trip-country") setTripCountry(el.dataset.country, el.dataset.dest);
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
+    else if (action === "set-gender") saveUserGender(el.dataset.gender); // ♀/♂ (Onboarding + Profil)
     else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten
     else if (action === "placement-skip") finishOnboarding();    // Ruta-Check im Onboarding überspringen -> fertig
     else if (action === "placement-finish") finishOnboarding();  // Ruta-Check fertig (aus Onboarding) -> Dashboard
@@ -5459,6 +5518,13 @@
       e.preventDefault();
       const input = document.getElementById("precios-answer");
       submitPrecios(input ? input.value : "");
+      return;
+    }
+    // Onboarding-Schritt 1: Name + Geschlecht bestätigen (Pflicht) und zum
+    // Reiseziel-Schritt weitergehen.
+    if (e.target.closest('[data-action="onboard-profile-next"]')) {
+      e.preventDefault();
+      advanceOnboardingProfile();
       return;
     }
     // Trip-Ziel speichern (Datum + Tagesziel + optionales Reiseziel). Beim
@@ -5851,7 +5917,7 @@
       settings = Object.assign({}, settings, { onboarded: true });
       store.saveSettings(settings);
     } else {
-      state.screen = "onboarding";
+      beginOnboarding();
     }
   }
   // Geteilter Aufgaben-Link (?task=<code>): die Aufgabe still abonnieren (mehrere
@@ -5866,7 +5932,7 @@
   // Geteilter Link einer Schule/Partnerfirma (?start=onboarding): immer ins Onboarding
   // – auch auf einem Bestandsgerät. Branding kommt aus der Edition (?edition=…, registry.js).
   if (urlParam("start").toLowerCase() === "onboarding") {
-    state.screen = "onboarding";
+    beginOnboarding();
     stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor

@@ -361,10 +361,26 @@
     return `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
   }
 
-  // Onboarding: einmaliger Willkommens-Bildschirm beim allerersten Start. Fragt das
-  // Trip-Ziel ab (überspringbar), damit der Countdown direkt motiviert.
+  // Geschlechts-Auswahl (♀/♂) als segmentierte Buttons. Gemeinsam für Onboarding
+  // und Profil. type="button", damit die Knöpfe innerhalb des Onboarding-<form>
+  // dieses NICHT absenden (sonst springt „Weiter" beim Antippen vorzeitig).
+  function genderGroup(vm) {
+    const g = vm.userGender;
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.genderCap"))}</span>
+        <div class="segmented" role="group" aria-label="${esc(t("home.genderAria"))}">
+          <button class="seg ${g === "female" ? "is-active" : ""}" type="button" data-action="set-gender" data-gender="female" aria-pressed="${g === "female"}">${esc(t("home.genderFemale"))}</button>
+          <button class="seg ${g === "male" ? "is-active" : ""}" type="button" data-action="set-gender" data-gender="male" aria-pressed="${g === "male"}">${esc(t("home.genderMale"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.genderHint"))}</p>
+      </div>`;
+  }
+
+  // Onboarding: einmaliger Willkommens-Bildschirm beim allerersten Start. Zwei
+  // Schritte – zuerst Name + Geschlecht (Pflicht zum Fortfahren), dann das Trip-Ziel
+  // (überspringbar), damit der Countdown direkt motiviert.
   function renderOnboarding(vm) {
-    const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
     // Partner-Branding zuerst: in einer Edition (auch per Link ?edition=…) das Logo
     // + den Namen oben zeigen, sonst nur die HolaRuta-Begrüßung.
     const e = vm.edition;
@@ -376,6 +392,29 @@
            <p class="onboarding__powered">${esc(t("profile.poweredBy"))}</p>` : ""}
          </div>`
       : "";
+    // Schritt 1: Name + Geschlecht. Eigenes <form>, damit Enter „Weiter" auslöst.
+    if ((vm.onboardStep || "profile") === "profile") {
+      return `
+        <section class="screen onboarding">
+          <div class="onboarding__inner">
+            ${brand}
+            <h1 class="onboarding__title">${esc(t("home.onboardWelcomeTitle"))}</h1>
+            <p class="onboarding__intro">${esc(t("home.onboardWelcomeIntro"))}</p>
+            <form class="trip trip--edit" data-action="onboard-profile-next">
+              <label class="trip__field"><span>${esc(t("home.nameCap"))}</span>
+                <input id="onboard-name" type="text" maxlength="40"
+                       autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
+                       placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" /></label>
+              ${genderGroup(vm)}
+              <div class="trip__actions">
+                <button class="cta" type="submit">${esc(t("home.onboardNext"))}</button>
+              </div>
+            </form>
+          </div>
+        </section>`;
+    }
+    // Schritt 2: Reiseziel (überspringbar → führt trotzdem zum Ruta-Check).
+    const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
     return `
       <section class="screen onboarding">
         <div class="onboarding__inner">
@@ -520,6 +559,17 @@
         </section>`
       : "";
 
+    // Ruta-Check als offene Aufgabe: erscheint, wenn der Einstufungstest beim
+    // Onboarding übersprungen und noch nicht nachgeholt wurde. Verschwindet, sobald
+    // er einmal absolviert ist (gamestats.placement gesetzt → placementDone).
+    const placementCue = (vm.hasPlacement && vm.placementPending && !vm.placementDone)
+      ? `
+      <button class="today__ruta" data-action="open-placement">
+        <span class="today__ruta-main">${esc(t("home.placementOpenTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.placementOpenSub"))}</span>
+      </button>`
+      : "";
+
     // Glanceable Fortschritt: dieselbe Karte wie im Profil (Streak + Verteilung).
     const progressGroup = `
       <section class="dashgrp">
@@ -542,6 +592,7 @@
         </button>
         ${resume}
         ${rutaDia}
+        ${placementCue}
       </div>
 
       ${reiseGroup}
@@ -706,6 +757,7 @@
       <div class="prefs">
         ${themeSetting(vm)}
         ${nameGroup}
+        ${genderGroup(vm)}
         ${langGroup}
         ${learnPrefs(vm)}
       </div>
