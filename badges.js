@@ -205,6 +205,15 @@
   const BY_ID = BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
   const byId = (id) => BY_ID[id] || null;
 
+  // Schlanker Reader für die Belohnungs-Inszenierung (celebrate.js): zu einer
+  // Badge-Id nur das, was der Fertig-Screen braucht – Icon + Namen (de/en, die
+  // Lokalisierung übernimmt der Aufrufer via i18n.natKey). Unbekannte Id -> null.
+  function badgeMeta(id) {
+    const b = BY_ID[id];
+    if (!b) return null;
+    return { id: b.id, icon: b.icon, name: b.name, nameEn: b.nameEn || b.name };
+  }
+
   // Pre-Trip: meiste abgeschlossene Etappen innerhalb EINES Plans. Verträgt beide
   // Formate: neu (verschachtelt { scope: { day: true } }) und alt-flach ({ day: true }).
   function pretripMaxDays(pt) {
@@ -355,6 +364,7 @@
   window.SC.badges = {
     GROUPS,
     byId,
+    badgeMeta,
     buildMetrics,
     evaluate,
     satisfiedIds,
