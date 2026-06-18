@@ -6629,6 +6629,7 @@
       knigge: openKnigge,
       logistica: openLogistica,
       salud: openSalud,
+      fotos: openFotos,
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
     };
