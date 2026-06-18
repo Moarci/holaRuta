@@ -711,6 +711,54 @@
       ${sections}`;
   }
 
+  // Ruta-Check im Profil: letztes Ergebnis (Startlevel, Score, Tempo), kurzer
+  // Verlauf und Knöpfe zum Wiederholen + Teilen. Wer ihn noch nie gemacht hat,
+  // sieht einen Einstiegs-Aufruf. p = vm.placement (null = Modul nicht geladen).
+  function placementCard(p, shareFmt) {
+    if (!p) return "";
+    const cap = `<p class="sectioncap">🎯 ${esc(t("placement.profileCap"))}</p>`;
+    if (!p.taken || !p.last) {
+      return `
+        ${cap}
+        <div class="plprof plprof--empty">
+          <p class="plprof__never">${esc(t("placement.profileNever"))}</p>
+          <button class="teacher-btn teacher-btn--main" data-action="open-placement">▶️ ${esc(t("placement.takeNow"))}</button>
+        </div>`;
+    }
+    const l = p.last;
+    const histRows = p.history.length > 1
+      ? `<div class="plprof__histcap">${esc(t("placement.profileHistoryCap"))}</div>
+         <ul class="plprof__hist">
+           ${p.history.map((h) => `
+             <li class="plprof__histrow">
+               <span class="plprof__histdate">${esc(h.at || "")}</span>
+               <span class="plprof__histlvl">${esc(h.level)}</span>
+               <span class="plprof__histscore">${h.scorePct}%</span>
+             </li>`).join("")}
+         </ul>`
+      : "";
+    return `
+      ${cap}
+      <div class="plprof">
+        <div class="plprof__head">
+          <div class="plprof__levelbox">
+            <span class="plprof__levelcap">${esc(t("placement.profileLevelCap"))}</span>
+            <span class="plprof__level">${esc(l.level)}</span>
+          </div>
+          <div class="plprof__meta">
+            <p class="plprof__score">${esc(t("placement.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
+            ${l.tempoLabel ? `<p class="plprof__tempo">${esc(t("placement.statTempo"))}: <b>${esc(l.tempoLabel)}</b></p>` : ""}
+            ${l.at ? `<p class="plprof__date">${esc(t("placement.profileLastAt", { date: l.at }))} · ${esc(t("placement.profileAttempts", { n: p.attempts }))}</p>` : ""}
+          </div>
+        </div>
+        ${histRows}
+        ${shareBlock(shareFmt, "share-placement", t("placement.share"))}
+        <div class="plprof__actions">
+          <button class="ghostbtn" data-action="open-placement">🔁 ${esc(t("placement.retake"))}</button>
+        </div>
+      </div>`;
+  }
+
   function profilBody(vm) {
     const navrow = (action, icon, label, chip) => `
       <button class="navrow" data-action="${action}">
@@ -752,6 +800,8 @@
 
       <p class="sectioncap">${esc(t("home.tripCap"))}</p>
       ${tripManage(vm)}
+
+      ${vm.hasPlacement ? placementCard(vm.placement, vm.shareFormat) : ""}
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
@@ -3279,6 +3329,29 @@
         <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
         <span class="pl-skill__val">${s.accuracy}%</span>
       </li>`;
+    // Frage-für-Frage-Rückblick: was war richtig/falsch, was wäre korrekt + Erklärung.
+    const reviewIcon = { correct: "✅", wrong: "❌", unknown: "🤷" };
+    const reviewRow = (r, i) => `
+      <li class="pl-review__item pl-review__item--${esc(r.status)}">
+        <p class="pl-review__q">
+          <span class="pl-review__icon" aria-hidden="true">${reviewIcon[r.status] || ""}</span>
+          <span><span class="pl-review__num">${i + 1}.</span> ${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
+        </p>
+        ${r.status !== "correct" ? `
+          <p class="pl-review__line">
+            ${r.yourText
+              ? `${esc(t("placement.reviewYours"))} <span class="pl-review__yours" lang="es">${esc(r.yourText)}</span>`
+              : `<span class="pl-review__yours pl-review__yours--none">${esc(t("placement.reviewNoAnswer"))}</span>`}
+          </p>
+          <p class="pl-review__line">${esc(t("placement.reviewCorrect"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
+        ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
+      </li>`;
+    const review = (vm.review && vm.review.length)
+      ? `<details class="pl-reviewbox">
+           <summary class="pl-reviewbox__sum">${esc(t("placement.reviewCap"))}</summary>
+           <ul class="pl-review">${vm.review.map(reviewRow).join("")}</ul>
+         </details>`
+      : "";
     // Im Onboarding führt der Zurück-Pfeil über „placement-finish“ (schließt das
     // Onboarding ab), sonst regulär nach Home.
     const topbar = hmTopbar("🎯 " + esc(t("placement.title")), vm.fromOnboarding ? "placement-finish" : "home");
@@ -3299,6 +3372,8 @@
         <ul class="pl-skills">${vm.skills.map(skillRow).join("")}</ul>
         ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
         ${relText ? `<div class="tip pl-reliability pl-reliability--${esc(vm.reliability)}">${esc(relText)}</div>` : ""}
+        ${review}
+        ${shareBlock(vm.shareFormat, "share-placement", t("placement.share"))}
         <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>

@@ -191,6 +191,32 @@
   }
 
   // ----- View-Modelle (Zustand -> einfache Objekte für die UI) -----
+  // Ruta-Check fürs Profil: letztes Ergebnis + Verlauf (neueste zuerst), damit man
+  // den Test wiederholen und seinen Fortschritt sehen kann. null = Modul nicht geladen.
+  function placementProfileVM() {
+    if (!placement) return null;
+    const history = Array.isArray(gamestats.placementHistory) ? gamestats.placementHistory : [];
+    const last = gamestats.placement || null;
+    if (!last && !history.length) return { taken: false };
+    const fmt = (e) => ({
+      level: e.level || "–",
+      scorePct: Math.round((e.finalScore || 0) * 100),
+      accuracyPct: Math.round((e.accuracy || 0) * 100),
+      tempoLabel: e.tempo ? t("placement.tempo_" + e.tempo) : "",
+      at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
+    });
+    // Verlauf neueste zuerst. Altgeräte ohne History, aber mit letztem Ergebnis:
+    // das eine Ergebnis als einzigen Eintrag zählen (sonst „0 Durchläufe").
+    const past = history.length ? history.slice().reverse().map(fmt) : (last ? [fmt(last)] : []);
+    return {
+      taken: true,
+      last: last ? fmt(last) : (past[0] || null),
+      history: past,
+      attempts: past.length,
+      canShare: !!share,
+    };
+  }
+
   function homeVM() {
     const everyCard = allCards();
     const categories = data.CATEGORIES.map((c) => {
@@ -262,6 +288,7 @@
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
+      placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -358,6 +385,7 @@
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
+      shareFormat: shareFormat(), // gewähltes Sharepic-Format (für den Ruta-Check-Teilen-Block)
     };
   }
 
@@ -3556,6 +3584,11 @@
 
   function openPlacement(fromOnboarding) {
     dismissBadgeToast();
+    // Schutz, falls das placement-Modul nicht geladen ist (z. B. Edition-Build /
+    // Offline-Erstaufruf): nicht crashen. Aus dem Onboarding heraus stattdessen
+    // sauber abschließen, sonst einfach nichts tun. (Sonst würde unten
+    // placement.START_DIFFICULTY / placementTotalPlanned() auf null zugreifen.)
+    if (!placement) { if (fromOnboarding) finishOnboarding(); return; }
     // Aus dem Onboarding heraus geöffnet -> das Onboarding gilt ab jetzt als erledigt
     // (sonst erscheint es erneut, wenn jemand den überspringbaren Test abbricht).
     if (fromOnboarding && settings.onboarded !== true) {
@@ -3657,19 +3690,23 @@
     const result = placement.summarize(asked, p.answers);
     p.result = result;
     p.phase = "done";
-    // Letztes Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
+    // Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
+    // „placement" = letztes Ergebnis (Schnellzugriff), „placementHistory" = alle
+    // Durchläufe für den Verlauf/Fortschritt im Profil (neueste zuletzt, gedeckelt).
     try {
-      gamestats = Object.assign({}, gamestats, {
-        placement: {
-          level: result.level,
-          finalScore: Math.round(result.finalScore * 100) / 100,
-          accuracy: Math.round(result.accuracy * 100) / 100,
-          unknownRate: Math.round(result.unknownRate * 100) / 100,
-          tempo: result.tempo,
-          reliability: result.reliability || "",
-          at: new Date().toISOString().slice(0, 10),
-        },
-      });
+      const now = new Date();
+      const entry = {
+        level: result.level,
+        finalScore: Math.round(result.finalScore * 100) / 100,
+        accuracy: Math.round(result.accuracy * 100) / 100,
+        unknownRate: Math.round(result.unknownRate * 100) / 100,
+        tempo: result.tempo,
+        reliability: result.reliability || "",
+        at: now.toISOString().slice(0, 10),
+        ts: now.toISOString(),
+      };
+      const history = (Array.isArray(gamestats.placementHistory) ? gamestats.placementHistory : []).concat([entry]).slice(-50);
+      gamestats = Object.assign({}, gamestats, { placement: entry, placementHistory: history });
       store.saveGameStats(gamestats);
       // Ruta-Check ist erledigt → die „noch offen"-Markierung fürs Dashboard löschen.
       if (settings.placementPending) {
@@ -3699,7 +3736,7 @@
         } : null,
       };
     }
-    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding }, placementResultView(p.result));
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding, review: placementReviewView(p), shareFormat: shareFormat() }, placementResultView(p.result));
     return { phase: "intro", fromOnboarding: !!p.fromOnboarding, total: placementTotalPlanned() };
   }
 
@@ -3722,6 +3759,36 @@
       reliability: r.reliability, // "" | "fast" | "guessing" | "manyUnknown"
       skills,
     };
+  }
+
+  // Frage-für-Frage-Rückblick fürs Ergebnis: was wurde gewählt, was wäre richtig,
+  // plus Erklärung. Die Korrektheit kommt aus scoreAnswer (akzent-/satzzeichen-
+  // tolerant) – Akzent-Unterschiede gelten also NICHT als Fehler.
+  function placementReviewView(p) {
+    const out = [];
+    for (let i = 0; i < p.asked.length; i++) {
+      const q = placement.questionById(p.asked[i]);
+      if (!q) continue;
+      const a = p.answers[i] || { isUnknown: true };
+      const scored = placement.scoreAnswer(q, a);
+      let yourText = null;
+      if (!a.isUnknown) {
+        if (q.type === "free") yourText = String(a.text || "").trim() || null;
+        else if (typeof a.selectedIndex === "number" && q.options) yourText = q.options[a.selectedIndex] || null;
+      }
+      const correctText = q.type === "free"
+        ? q.solutionEs || (q.accept && q.accept[0]) || ""
+        : (q.options ? q.options[q.correctIndex] : "");
+      out.push({
+        status: a.isUnknown ? "unknown" : (scored.isCorrect ? "correct" : "wrong"),
+        promptDe: q.promptDe,
+        questionEs: q.questionEs || null,
+        yourText: yourText,
+        correctText: correctText,
+        explanationDe: q.explanationDe || "",
+      });
+    }
+    return out;
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die
@@ -5076,6 +5143,23 @@
     }, shareFormat());
   }
 
+  // Teilt das letzte Ruta-Check-Ergebnis als Sharepic (Startlevel + Score + Tempo).
+  // Quelle ist das gespeicherte letzte Ergebnis – funktioniert daher sowohl direkt
+  // nach dem Test als auch später aus dem Profil.
+  function sharePlacement() {
+    if (!share) return;
+    const r = gamestats.placement;
+    if (!r) return;
+    buzz(12);
+    share.shareImage("placement", {
+      userName: profileName(),
+      level: r.level,
+      scorePct: Math.round((r.finalScore || 0) * 100),
+      accuracyPct: Math.round((r.accuracy || 0) * 100),
+      tempoLabel: r.tempo ? t("placement.tempo_" + r.tempo) : "",
+    }, shareFormat());
+  }
+
   // Teilt die gerade sichtbare Karte – egal ob Detailseite oder Lern-Sitzung.
   function shareCard() {
     if (!share) return;
@@ -5437,6 +5521,7 @@
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
+    else if (action === "share-placement") sharePlacement();
     else if (action === "share-card") shareCard();
     else if (action === "share-historia") shareHistoria(el.dataset.id);
     else if (action === "share-hist-module") shareHistModule();

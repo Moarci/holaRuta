@@ -98,7 +98,7 @@
       options: ["una almohada", "una pastilla", "una toalla", "una manta"],
       correctIndex: 1, expectedTimeSec: 10,
       explanationDe: "„una pastilla“ = eine Tablette. (almohada = Kissen, toalla = Handtuch, manta = Decke)" },
-    { id: "pt_vo_004", block: "vocab", skill: "vocab", level: "A2", type: "mc",
+    { id: "pt_vo_004", block: "understanding", skill: "understanding", level: "A2", type: "mc",
       promptDe: "Was bedeutet „¿Tiene una habitación libre?“",
       options: ["Haben Sie ein freies Zimmer?", "Haben Sie einen freien Tisch?", "Ist das Zimmer sauber?", "Wie viel kostet das Zimmer?"],
       correctIndex: 0, expectedTimeSec: 11,
@@ -185,12 +185,12 @@
 
     // --- Block 6: Freie Antwort (kurz schreiben; akzent-/satzzeichentolerant) ---
     { id: "pt_fr_001", block: "free", skill: "free", level: "A1", type: "free",
-      promptDe: "Schreib auf Spanisch: Danke.",
-      accept: ["gracias", "muchas gracias", "mil gracias"], expectedTimeSec: 12,
-      explanationDe: "„gracias“ = danke." },
+      promptDe: "Schreib auf Spanisch: Ich möchte einen Kaffee.",
+      accept: ["quiero un cafe", "un cafe por favor", "quiero un cafe por favor"], solutionEs: "Quiero un café.", expectedTimeSec: 14,
+      explanationDe: "„Quiero un café.“ = Ich möchte einen Kaffee. (Akzente/Satzzeichen egal)" },
     { id: "pt_fr_002", block: "free", skill: "free", level: "A2", type: "free",
       promptDe: "Schreib auf Spanisch die Frage: Wie viel kostet das?",
-      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto cuesta eso", "cuanto vale", "cuanto vale esto", "cuanto vale eso"], expectedTimeSec: 16,
+      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto cuesta eso", "cuanto vale", "cuanto vale esto", "cuanto vale eso", "cuanto sale", "cuanto sale esto", "cuanto sale eso", "que precio tiene", "que precio tiene esto", "que precio tiene eso"], solutionEs: "¿Cuánto cuesta?", expectedTimeSec: 16,
       explanationDe: "„¿Cuánto cuesta?“ ist die Standardfrage nach dem Preis (Akzente/Satzzeichen egal)." },
   ];
 

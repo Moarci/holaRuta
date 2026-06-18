@@ -323,6 +323,7 @@
       shoppingSeen: {},     // Map shoppingItemId -> true (distinkt abgehakte Einkaufs-Items)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
       placement: null,      // letztes Ruta-Check-Ergebnis { level, finalScore, accuracy, unknownRate, tempo, at } | null
+      placementHistory: [], // alle Ruta-Check-Ergebnisse (für Verlauf/Fortschritt), neueste zuletzt
     };
   }
   // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
@@ -341,6 +342,38 @@
     }
     if (keys.every((k) => /^\d+$/.test(k))) return { colombia: v }; // Migration alt-flach
     return {};
+  }
+
+  // Ein einzelnes Ruta-Check-Ergebnis typisieren (jedes Feld), damit korruptes/
+  // manipuliertes localStorage weder crasht noch z. B. „level: 42" anzeigt.
+  // null, wenn kein Objekt.
+  function sanitizePlacementEntry(e) {
+    if (!isPlainObject(e)) return null;
+    const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    return {
+      level: typeof e.level === "string" ? e.level.slice(0, 8) : "",
+      finalScore: num(e.finalScore),
+      accuracy: num(e.accuracy),
+      unknownRate: num(e.unknownRate),
+      tempo: typeof e.tempo === "string" ? e.tempo : "",
+      reliability: typeof e.reliability === "string" ? e.reliability : "",
+      at: typeof e.at === "string" ? e.at : "",
+      ts: typeof e.ts === "string" ? e.ts : "",
+    };
+  }
+
+  // Ruta-Check-Verlauf: Liste typisierter Ergebnis-Einträge (neueste zuletzt),
+  // gedeckelt – manipuliertes/korruptes localStorage darf weder crashen noch
+  // unbegrenzt wachsen.
+  function sanitizePlacementHistory(v) {
+    if (!Array.isArray(v)) return [];
+    const out = [];
+    for (let i = 0; i < v.length; i++) {
+      const e = sanitizePlacementEntry(v[i]);
+      if (e) out.push(e);
+    }
+    // Nur die letzten 50 behalten (chronologisch, neueste zuletzt).
+    return out.slice(-50);
   }
 
   function sanitizeTripGoal(t) {
@@ -365,6 +398,13 @@
     // (z.B. "5" statt 5) darf sonst Streak-/Badge-Logik verfälschen (String-Verkettungen
     // wie "5"+1 = "51"). unlocked muss ein Objekt sein (sonst Crash beim Diffen).
     const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    // Ruta-Check-Verlauf. Bestandsgeräte haben evtl. nur ein letztes Ergebnis
+    // (placement) ohne History – dieses einmalig als ersten Verlaufseintrag
+    // übernehmen, damit „letztes Ergebnis" und Verlauf überall konsistent sind
+    // (Profil-Anzeige, Export, Cloud-Merge).
+    const placement = sanitizePlacementEntry(v.placement);
+    let placementHistory = sanitizePlacementHistory(v.placementHistory);
+    if (!placementHistory.length && placement) placementHistory = [placement];
     return {
       reviews: num(v.reviews),
       againPresses: num(v.againPresses),
@@ -401,7 +441,8 @@
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
-      placement: isPlainObject(v.placement) ? v.placement : null,
+      placement: placement,
+      placementHistory: placementHistory,
     };
   }
 
