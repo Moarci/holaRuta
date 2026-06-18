@@ -5049,10 +5049,12 @@
     const card = cardById(id);
     if (!card) return;
     dismissBadgeToast();
+    state.studyOrigin = null;  // Einzelkarten-Übung kommt aus dem Detail, nicht aus Pre-Trip/Tarea
     state.pretripDay = null;   // Einzelkarten-Übung ist kein Pre-Trip-Tag
     state.scopeId = card.cat;
     state.queue = [id];
     state.total = 1;
+    beginRound();              // Session-Zähler/Snapshot für den Fertig-Screen frisch aufsetzen
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
