@@ -2970,8 +2970,9 @@
     // Fertig-Screen: SC.celebrate (celebrate.js) setzt den Fokus selbst auf den
     // Haupt-CTA und kündigt das Ergebnis per aria-live an. manageFocus darf ihn
     // NICHT auf die Überschrift (h2.cb-title) zurückziehen – sonst geht die
-    // A11y-Absicht (sofort handlungsfähig auf dem Primär-Button) verloren.
-    if (state.screen === "done") return;
+    // A11y-Absicht (sofort handlungsfähig auf dem Primär-Button) verloren. Gilt
+    // ebenso für die Mini-Spiel-Fertig-Screens (gleiche celebrate-Bühne).
+    if (state.screen === "done" || MINI_DONE_SCREENS[state.screen]) return;
     if (state.screen === "study") {
       // Schreiben & Hören: vor dem Prüfen gehört der Fokus ins Eingabefeld.
       if ((state.mode === "type" || state.mode === "listen") && !state.typeResult) {
@@ -4406,6 +4407,11 @@
     // Bewusst KEIN recordPretripDay hier: Überspringen ist „später nochmal", kein
     // echter Abschluss. Eine Pre-Trip-Etappe gilt erst als geschafft, wenn alle
     // Karten bewertet wurden (Hook in rate()).
+    // Endet die Runde aber hier (letzte Karte übersprungen), das Belohnungs-
+    // Ergebnis dennoch festhalten: der Fertig-Screen zeigt die Quote der zuvor
+    // beantworteten Karten, also auch die dafür verdienten XP. rate()/skip() für
+    // die letzte Karte schließen sich aus -> kein Doppel-Buchen.
+    if (!state.queue.length && state.session) finishRound();
     render();
   }
 
