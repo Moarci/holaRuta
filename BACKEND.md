@@ -260,6 +260,74 @@ größten Endkunden-Nutzen (Mehrgeräte). Phase 3+4 sind die B2B-/Schul-Monetari
 
 ---
 
+## 16. Soziale Schicht — Freunde & Tages-Rangliste (Phase 5, opt-in)
+
+Der **soziale/kompetitive** Aufsatz: sich mit Freund:innen verbinden und sehen, **wer heute am meisten
+Karten gemacht hat**. Baut auf derselben opt-in-Cloud auf (gleiche passwortlose Anmeldung), bleibt aber
+sauber abgrenzbar — ohne `SC.config.social` existiert der ganze Pfad nicht.
+
+> **Status:** Der **Client ist vorbereitet** (`social.js` reiner Kern + fetch-Adapter, UI im Profil,
+> Tests, Mock-Endpunkte in `tools/mock-sync-server.js`). Es fehlt **nur noch der echte Server**, der die
+> unten spezifizierten Endpunkte implementiert. Phase 5 startet — wie alle Stufe-3-Phasen — kundengetrieben.
+
+### 16.1 Leitplanken (zusätzlich zu §1)
+
+- **Datenminimierung als Kern-Feature.** Veröffentlicht wird **nur** ein winziger Tages-Snapshot
+  (`{ day, name, cards, streak, reviews }`) — **kein** Lernfortschritt, **keine** Inhalte, **kein**
+  Klarname nötig (selbst gewählter Anzeigename). „Andere sehen meine Zahlen" ist eine bewusste
+  Einwilligung, getrennt vom reinen Sichern (Sichtbarkeit ≠ Backup).
+- **Geteilte Identität.** Login = derselbe passwortlose Flow + **derselbe Token** wie §7. Die
+  gemeinsame Auth-/fetch-Schicht liegt in **`net.js` (`SC.net`)**, die `sync.js` und `social.js`
+  beide nutzen — ein Login deckt Cloud-Sync **und** Freunde ab. `social.apiBase` fällt auf
+  `sync.apiBase` zurück.
+- **Server = source of truth** für die Rangliste; der Client hält nur einen transienten Stand
+  (kein neuer localStorage-Key). Offline zeigt der Schirm zuletzt Geladenes bzw. einen Hinweis.
+- **Reiner Kern zuerst.** `buildSnapshot` / `buildLeaderboard` (deterministische Sortierung +
+  geteilter Wettbewerbsrang) / `makeFriendCode` sind seiteneffektfrei und in `test/social.test.js`
+  geprüft — der Server kann dieselbe Sortierlogik wiederverwenden.
+
+### 16.2 Datenmodell (Ergänzung zu §5)
+
+| Tabelle | Felder (Kern) | Zweck |
+|---|---|---|
+| **friendship** | user_id, friend_id, created_at | beidseitige Freundschaft (zwei Zeilen oder symmetrisch lesen) |
+| **daily_snapshot** | user_id, day (`YYYY-MM-DD`), name, cards, streak, reviews, updated_at | veröffentlichter Tages-Stand (1 Zeile je user×day; Upsert) |
+
+> Der Snapshot ist bewusst **redundant** zum `sync_state`-Blob (er hält genau die Ranglisten-Felder
+> flach), damit die Rangliste **ohne** Auspacken des opaken Sync-Blobs beantwortbar ist und ein Nutzer
+> die Rangliste teilen kann, **ohne** seinen vollen Fortschritt zu spiegeln.
+
+### 16.3 API (Ergänzung zu §6, unter `/v1`, Bearer-Token)
+
+- `GET /v1/me/code` → `{ code }` — eigener teilbarer Freundes-Code (`HRF1.…`, kapselt die user_id).
+- `GET /v1/friends` → `{ friends: [{ id, name }] }`.
+- `POST /v1/friends` `{ code }` → `{ added }` (Code serverseitig via `parseFriendCode` auflösen;
+  `400` bei Müll/Selbst-Code).
+- `DELETE /v1/friends/:id` → `{ removed }`.
+- `PUT /v1/social/snapshot` `{ snapshot:{ day, name, cards, streak, reviews } }` → `{ ok }`
+  (Upsert auf user×day; Felder validieren/cappen — Name ≤ 40, Zahlen ≥ 0).
+- `GET /v1/leaderboard?day=YYYY-MM-DD` → `{ meId, entries:[{ id, name, cards, streak, reviews, day }] }`
+  (eigener + Freundes-Snapshots des Tages; Sortierung macht der Client deterministisch nach).
+
+Scoping: ein Nutzer sieht **nur** eigene Freunde; `meId` markiert den eigenen Eintrag. Rate-Limiting auf
+`snapshot`/`leaderboard`. Löschung (§6 `DELETE /v1/account`) entfernt auch `friendship` + `daily_snapshot`.
+
+### 16.4 Akzeptanzkriterien (DoD)
+
+- Zwei eingeloggte Geräte werden über `code` → `POST /v1/friends` Freunde; beide veröffentlichen einen
+  Snapshot; `GET /v1/leaderboard` liefert beide; der Client zeigt sie nach Karten sortiert mit
+  geteiltem Rang und markiertem „Du". Ohne `SC.config.social.enabled`: **0 Netzwerk-Calls**, Nav-Eintrag
+  unsichtbar. `tools/mock-sync-server.js` deckt alle Endpunkte für die lokale Demo ab.
+
+### 16.5 Bewusst draußen (zusätzlich zu §15)
+
+- **Keine** öffentlichen/globalen Bestenlisten (nur unter eingewilligten Freunden) — schützt Minderjährige
+  und vermeidet Leistungsdruck/PII-Streuung.
+- **Kein** Push/Realtime — die Rangliste wird beim Öffnen/„Aktualisieren" geholt (offline-first).
+- **Keine** Verlaufs-Historie fremder Nutzer auf dem Client — immer nur der angefragte Tag.
+
+---
+
 > **Fazit:** Das Backend ist als **opt-in-Spiegelschicht** entworfen, die HolaRutas Offline-/Privacy-/
 > Zero-Dep-DNA der PWA bewahrt und exakt auf den **bestehenden** Export/Import/Tarea-Seams aufsetzt.
 > Reihenfolge: erst die **reine `merge()`-Funktion + Tests** (passt zur Architektur), dann Phase 1 (Cloud-Backup),

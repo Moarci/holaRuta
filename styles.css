@@ -3273,3 +3273,35 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .cb-trophy{position:relative;display:grid;place-items:center;width:200px;height:200px;}
 .cb-trophy__cup{position:relative;overflow:hidden;border-radius:22px;display:grid;place-items:center;width:138px;height:138px;font-size:5.4rem;line-height:1;filter:drop-shadow(0 8px 16px rgba(185,124,36,.42));}
 .cb-trophy__cup .cb-shine{border-radius:22px;}
+
+/* ===== Freunde & Tages-Rangliste (opt-in, BACKEND.md §16) =================== */
+.social-intro { color: var(--ink-soft); font-size: 0.95rem; margin: 6px 2px 14px; }
+.social-cta { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; padding: 24px 8px; }
+.social-cta p { color: var(--ink-soft); margin: 0; max-width: 30ch; }
+.social-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 4px 0 10px; }
+.social-bar .sectioncap { margin: 0; }
+
+/* Rangliste: kompakte, gut lesbare Zeilen; eigener Eintrag hervorgehoben. */
+.lboard { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lboard__row {
+  display: grid; grid-template-columns: 2.2rem 1fr auto auto auto; align-items: center; gap: 10px;
+  padding: 11px 14px; background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-md); box-shadow: var(--shadow);
+}
+.lboard__row.is-me { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 7%, var(--card)); }
+.lboard__rank { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink-soft); text-align: center; }
+.lboard__row.is-me .lboard__rank { color: var(--brand-ink); }
+.lboard__name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lboard__you { font-style: normal; font-size: 0.72rem; font-weight: 800; color: var(--brand-ink); margin-left: 6px; }
+.lboard__streak { color: var(--warn); font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+.lboard__cards { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.05; min-width: 3ch; }
+.lboard__cards b { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--ink); }
+.lboard__cards small { font-size: 0.62rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+.lboard__rm { border: none; background: none; color: var(--ink-soft); cursor: pointer; font-size: 0.95rem; padding: 4px 6px; opacity: 0.6; }
+.lboard__rm:active { transform: translateY(1px); }
+
+/* Eigener Freundes-Code zum Teilen. */
+.social-code { margin-top: 18px; padding: 14px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
+.social-code__val { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; word-break: break-all; color: var(--ink-soft); background: color-mix(in srgb, var(--ink) 4%, transparent); padding: 8px 10px; border-radius: var(--r-sm, 10px); }
+.social-code__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.social-code__actions .ghostbtn { flex: 1 1 auto; }

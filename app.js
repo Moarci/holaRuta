@@ -108,6 +108,8 @@
     battleSeen: [],          // zuletzt verwendete Battle-Ids – vermeidet sofortige Wiederholungen
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
+    // ----- Freunde & Tages-Rangliste (opt-in, transient; Server = source of truth) -----
+    social: { loading: false, error: false, board: null, code: "" },
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
     quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
     // ----- Precios al oído (Preis-Hörtrainer, transient) -----
@@ -307,6 +309,8 @@
       syncEnabled: !!(window.SC.sync && window.SC.sync.enabled()), // optionale Cloud-Sync (nur per Edition)
       syncLoggedIn: !!(window.SC.sync && window.SC.sync.loggedIn && window.SC.sync.loggedIn()),
       syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
+      socialEnabled: !!(window.SC.social && window.SC.social.enabled()), // opt-in Freunde/Rangliste (nur per Edition)
+      socialLoggedIn: !!(window.SC.social && window.SC.social.loggedIn && window.SC.social.loggedIn()),
       hasCountries: !!countries, // dito für die Länderkunde
       hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasHistoriaCentro: !!historiaCentro, // dito für die Geschichte Mittelamerikas
@@ -2695,6 +2699,7 @@
     else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
     else if (state.screen === "fotos") root.innerHTML = ui.renderFotos(fotosVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
+    else if (state.screen === "social") root.innerHTML = ui.renderSocial(socialVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
     else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
     else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
@@ -5691,6 +5696,109 @@
     }).catch(() => showNotice(t("profile.cloudFailed")));
   }
 
+  // ----- Freunde & Tages-Rangliste (Stufe 3, opt-in, BACKEND.md §16) -----
+  // Ohne aktive Edition (SC.config.social) existiert dieser Pfad gar nicht – der
+  // Nav-Eintrag im Profil ist dann ausgeblendet. Der Server ist die source of
+  // truth; der Client veröffentlicht nur seinen Tages-Snapshot und holt die Liste.
+  function socialVM() {
+    const social = window.SC.social;
+    return {
+      loggedIn: !!(social && social.loggedIn && social.loggedIn()),
+      loading: !!state.social.loading,
+      error: !!state.social.error,
+      board: state.social.board,
+      myCode: state.social.code || "",
+    };
+  }
+
+  function openSocial() {
+    const social = window.SC.social;
+    if (!(social && social.enabled())) return;
+    state.screen = "social";
+    if (social.loggedIn()) refreshSocial();        // direkt frische Liste holen
+    render();
+  }
+
+  // Eigenen Freundes-Code sicherstellen (einmal laden, dann gecacht). Wird VOR
+  // dem Aktualisieren gebraucht, damit die eigene Zeile auch bei einem Server
+  // OHNE `meId` zuverlässig markiert ist (sonst zeigte sie fälschlich „Entfernen").
+  function ensureFriendCode() {
+    if (state.social.code) return Promise.resolve(state.social.code);
+    return window.SC.social.myCode().then((r) => {
+      const code = (r && r.ok && r.body && r.body.code) || "";
+      if (code) { state.social = Object.assign({}, state.social, { code: code }); if (state.screen === "social") render(); }
+      return code;
+    }).catch(() => "");
+  }
+
+  // Eigenen Tages-Snapshot veröffentlichen + Rangliste holen (social.refresh).
+  function refreshSocial() {
+    const social = window.SC.social;
+    if (!(social && social.enabled() && social.loggedIn())) return;
+    state.social = Object.assign({}, state.social, { loading: true, error: false });
+    if (state.screen === "social") render();
+    // Erst den eigenen Code (→ eigene Id) sichern, dann mit `meId` aktualisieren.
+    ensureFriendCode().then((code) => {
+      const self = social.parseFriendCode(code || "");
+      return social.refresh(gamestats, { name: profileName(), meId: self ? self.id : undefined });
+    }).then((r) => {
+      state.social = Object.assign({}, state.social, { loading: false, error: false, board: (r && r.board) || null });
+      if (state.screen === "social") render();
+    }).catch(() => {
+      state.social = Object.assign({}, state.social, { loading: false, error: true });
+      if (state.screen === "social") render();
+    });
+  }
+
+  // Passwortloser Login (geteilt mit Cloud-Sync): Mock loggt direkt ein, der
+  // echte Flow schickt einen Magic-Link.
+  function socialLogin() {
+    const social = window.SC.social;
+    if (!(social && social.enabled())) return;
+    if (social.loggedIn()) { refreshSocial(); return; }
+    let email = "";
+    try { email = window.prompt(t("social.loginPrompt")) || ""; } catch (e) { email = ""; }
+    email = email.trim();
+    if (!email) return;
+    social.login(email).then(() => {
+      if (social.loggedIn()) { refreshSocial(); render(); }  // Mock: direkt eingeloggt
+      else showNotice(t("social.loginCheckMail"));           // echter Flow: Magic-Link/OTP
+    }).catch(() => showNotice(t("social.loginFailed")));
+  }
+
+  // Freund:in per Code hinzufügen. Vorab clientseitig validieren (klare Meldung
+  // statt Server-Roundtrip bei offensichtlichem Müll).
+  function socialAddFriend() {
+    const social = window.SC.social;
+    if (!(social && social.enabled() && social.loggedIn())) return;
+    let code = "";
+    try { code = window.prompt(t("social.addPrompt")) || ""; } catch (e) { code = ""; }
+    code = code.trim();
+    if (!code) return;
+    if (!social.parseFriendCode(code)) { showNotice(t("social.addBadCode")); return; }
+    social.addFriend(code).then((r) => {
+      if (r && r.ok) { showNotice(t("social.addOk")); refreshSocial(); }
+      else showNotice(t("social.addBadCode"));
+    }).catch(() => showNotice(t("social.failed")));
+  }
+
+  function socialRemoveFriend(id) {
+    const social = window.SC.social;
+    if (!(social && social.enabled() && social.loggedIn()) || !id) return;
+    if (!confirmAsk(t("social.removeConfirm"))) return;
+    social.removeFriend(id).then(() => refreshSocial()).catch(() => showNotice(t("social.failed")));
+  }
+
+  function socialCopyCode() {
+    const code = state.social.code || "";
+    if (!code) return;
+    const done = () => showNotice(t("social.codeCopied"));
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done).catch(() => {});
+      else done();
+    } catch (e) { /* egal */ }
+  }
+
   // Spricht die spanische Antwort der aktuellen Karte vor.
   // Erste akzeptierte Variante (ohne "/"-Alternativen), damit es sauber klingt.
   function speakCurrent() {
@@ -6189,6 +6297,12 @@
     else if (action === "open-editor") openEditor();
     else if (action === "export-data") exportData();
     else if (action === "cloud-sync") cloudSync();
+    else if (action === "open-social") openSocial();
+    else if (action === "social-login") socialLogin();
+    else if (action === "social-refresh") refreshSocial();
+    else if (action === "social-add-friend") socialAddFriend();
+    else if (action === "social-remove") socialRemoveFriend(el.dataset.id);
+    else if (action === "social-copy-code") socialCopyCode();
     else if (action === "import-data") startImport();
     else if (action === "dismiss-notice") el.remove();
     else if (action === "dismiss-update") dismissUpdateNotice();

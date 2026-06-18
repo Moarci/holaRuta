@@ -974,6 +974,7 @@
       ${navrow("export-data", "📤", t("profile.exportData"))}
       ${navrow("import-data", "📥", t("profile.importData"))}
       ${vm.syncEnabled ? navrow("cloud-sync", "☁️", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
+      ${vm.socialEnabled ? navrow("open-social", "🏆", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
       ${installBlock(vm.install)}
@@ -4997,8 +4998,74 @@
   }
 
   window.SC = window.SC || {};
+  // Freunde & Tages-Rangliste (opt-in, BACKEND.md §16). Rein darstellend – die
+  // Daten kommen aus socialVM() (app.js), das den Server über SC.social anspricht.
+  function renderSocial(vm) {
+    const head = `
+      <div class="topbar">
+        <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+        <div class="topbar__title">${esc(t("social.title"))}</div>
+        <span></span>
+      </div>
+      <p class="social-intro">${esc(t("social.intro"))}</p>`;
+
+    // Nicht angemeldet: ein Knopf, der den (geteilten) passwortlosen Login startet.
+    if (!vm.loggedIn) {
+      return `
+        <section class="screen">
+          ${head}
+          <div class="social-cta">
+            <p>${esc(t("social.loginNeeded"))}</p>
+            <button class="cta" data-action="social-login">${esc(t("social.loginBtn"))}</button>
+          </div>
+        </section>`;
+    }
+
+    const codeBlock = vm.myCode ? `
+      <div class="social-code">
+        <span class="switchcap">${esc(t("social.myCodeCap"))}</span>
+        <code class="social-code__val">${esc(vm.myCode)}</code>
+        <div class="social-code__actions">
+          <button class="ghostbtn" data-action="social-copy-code">${esc(t("social.copyCode"))}</button>
+          <button class="ghostbtn" data-action="social-add-friend">${esc(t("social.addFriend"))}</button>
+        </div>
+      </div>` : `
+      <div class="social-code">
+        <button class="ghostbtn" data-action="social-add-friend">${esc(t("social.addFriend"))}</button>
+      </div>`;
+
+    let listHtml;
+    if (vm.loading) {
+      listHtml = `<p class="stat-empty">${esc(t("social.loading"))}</p>`;
+    } else if (vm.error) {
+      listHtml = `<p class="stat-empty">${esc(t("social.failed"))}</p>`;
+    } else if (!vm.board || !vm.board.entries.length) {
+      listHtml = `<p class="stat-empty">${esc(t("social.empty"))}</p>`;
+    } else {
+      listHtml = `<ol class="lboard">${vm.board.entries.map((e) => `
+        <li class="lboard__row ${e.me ? "is-me" : ""}">
+          <span class="lboard__rank">${e.rank}</span>
+          <span class="lboard__name">${esc(e.name || "—")}${e.me ? ` <em class="lboard__you">${esc(t("social.you"))}</em>` : ""}</span>
+          <span class="lboard__streak">${e.streak ? esc(t("social.streakCap", { n: e.streak })) : ""}</span>
+          <span class="lboard__cards"><b>${e.cards}</b><small>${esc(t("social.columnCards"))}</small></span>
+          ${e.me ? "" : `<button class="lboard__rm" data-action="social-remove" data-id="${esc(e.id)}" aria-label="${esc(t("social.removeFriend"))}">✕</button>`}
+        </li>`).join("")}</ol>`;
+    }
+
+    return `
+      <section class="screen">
+        ${head}
+        <div class="social-bar">
+          <span class="sectioncap">${esc(t("social.todayCap"))}</span>
+          <button class="ghostbtn" data-action="social-refresh">↻ ${esc(t("social.refresh"))}</button>
+        </div>
+        ${listHtml}
+        ${codeBlock}
+      </section>`;
+  }
+
   window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
-                   renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
+                   renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,

@@ -25,6 +25,11 @@
     // Netzwerk). Eine Schul-/Partner-Edition kann sie vorkonfigurieren:
     //   sync: { enabled: true, apiBase: "https://…", orgLabel: "ECOS" }
     sync: null,
+    // Optionale Sozial-/Wettbewerbs-Schicht (Freunde + Tages-Rangliste, BACKEND.md
+    // §16). null = aus (Standard, kein Netzwerk). Nutzt denselben passwortlosen
+    // Login wie sync; apiBase fällt auf sync.apiBase zurück, wenn nicht gesetzt:
+    //   social: { enabled: true, apiBase: "https://…" }
+    social: null,
     // Kanonische Web-Adresse der App (für teilbare Aufgaben-/Onboarding-Links).
     // null = aktuelle Adresse (location) verwenden. Editionen setzen ihre Pages-URL,
     // damit ein Link auch dann stimmt, wenn die Lehrkraft die App als Datei öffnet.

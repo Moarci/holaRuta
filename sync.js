@@ -25,8 +25,7 @@
   var SETTINGS_KEY = "spanischcard.settings.v1";
   var USERCARDS_KEY = "spanischcard.usercards.v1";
   var GAMESTATS_KEY = "spanischcard.gamestats.v1";
-  // Auth-Token: bewusst NICHT in store.KNOWN_KEYS -> reist nicht im Backup mit.
-  var TOKEN_KEY = "spanischcard.synctoken.v1";
+  // Auth-Token (Login/Bearer) liegt in SC.net – geteilt mit social.js.
 
   function isObj(v) { return v && typeof v === "object" && !Array.isArray(v); }
   function num(v) { return typeof v === "number" && isFinite(v) ? v : 0; }
@@ -174,51 +173,30 @@
   }
 
   // ---------- dünner Client-Adapter (opt-in, fetch-basiert) ----------
+  // Auth-Token, Login und der fetch-Wrapper liegen in SC.net (geteilt mit
+  // social.js – eine Identität, ein Server). Hier bleibt nur das Sync-Spezifische.
 
   function cfg() { return (SC.config && SC.config.sync) || null; }
   function enabled() { return !!(cfg() && cfg().enabled && cfg().apiBase && typeof fetch === "function"); }
   function apiBase() { return (cfg() && cfg().apiBase || "").replace(/\/+$/, ""); }
 
-  function getToken() { try { return localStorage.getItem(TOKEN_KEY) || null; } catch (e) { return null; } }
-  function setToken(t) { try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) { /* egal */ } }
-  function loggedIn() { return !!getToken(); }
+  function loggedIn() { return SC.net.loggedIn(); }
+  function req(method, path, body) { return SC.net.request(apiBase(), method, path, body); }
 
-  function request(method, path, body) {
-    var headers = { "Content-Type": "application/json" };
-    var tok = getToken();
-    if (tok) headers.Authorization = "Bearer " + tok;
-    return fetch(apiBase() + path, {
-      method: method,
-      headers: headers,
-      body: body ? JSON.stringify(body) : undefined,
-    }).then(function (res) {
-      return res.text().then(function (txt) {
-        var json = null; try { json = txt ? JSON.parse(txt) : null; } catch (e) { json = null; }
-        return { ok: res.ok, status: res.status, body: json };
-      });
-    });
-  }
-
-  // Passwortloser Login (BACKEND.md §7): start -> (E-Mail/OTP) -> confirm.
-  // Der Mock-Server (tools/mock-sync-server.js) liefert für die Demo direkt
-  // einen devToken zurück, sodass `login` allein schon anmeldet.
+  // Passwortloser Login (BACKEND.md §7), geteilt über SC.net. Ohne aktive
+  // Sync-Config bleibt der Pfad gesperrt (graceful).
   function login(email) {
     if (!enabled()) return Promise.reject(new Error("sync disabled"));
-    return request("POST", "/v1/auth/start", { email: String(email || "").trim() })
-      .then(function (r) {
-        if (r.ok && r.body && r.body.devToken) { setToken(r.body.devToken); return { account: r.body.account || { email: email } }; }
-        return { pending: true }; // echter Flow: auf Magic-Link/OTP warten
-      });
+    return SC.net.login(apiBase(), email);
   }
   function confirm(email, token) {
     if (!enabled()) return Promise.reject(new Error("sync disabled"));
-    return request("POST", "/v1/auth/confirm", { email: email, token: token })
-      .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("confirm failed"); });
+    return SC.net.confirm(apiBase(), email, token);
   }
-  function logout() { setToken(null); }
+  function logout() { SC.net.logout(); }
 
-  function pull() { return request("GET", "/v1/sync"); }
-  function push(payload, baseRev) { return request("PUT", "/v1/sync", { baseRev: baseRev || 0, payload: payload }); }
+  function pull() { return req("GET", "/v1/sync"); }
+  function push(payload, baseRev) { return req("PUT", "/v1/sync", { baseRev: baseRev || 0, payload: payload }); }
 
   // Ein vollständiger Sync: pull -> merge(local, remote) -> lokal anwenden -> push.
   // Gibt { ok, changedLocal, rev } zurück. store wird für Export/Import genutzt.
