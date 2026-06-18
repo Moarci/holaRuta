@@ -3523,6 +3523,11 @@
 
   function openPlacement(fromOnboarding) {
     dismissBadgeToast();
+    // Schutz, falls das placement-Modul nicht geladen ist (z. B. Edition-Build /
+    // Offline-Erstaufruf): nicht crashen. Aus dem Onboarding heraus stattdessen
+    // sauber abschließen, sonst einfach nichts tun. (Sonst würde unten
+    // placement.START_DIFFICULTY / placementTotalPlanned() auf null zugreifen.)
+    if (!placement) { if (fromOnboarding) finishOnboarding(); return; }
     // Aus dem Onboarding heraus geöffnet -> das Onboarding gilt ab jetzt als erledigt
     // (sonst erscheint es erneut, wenn jemand den überspringbaren Test abbricht).
     if (fromOnboarding && settings.onboarded !== true) {
