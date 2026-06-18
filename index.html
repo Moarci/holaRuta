@@ -44,7 +44,11 @@
        unter fonts/ (per @font-face in styles.css, DSGVO-sauber und offline verfügbar). -->
 
   <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
-       Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe. -->
+       Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe.
+       Im Dark Mode zeigen wir zusätzlich auf das dunkle Manifest – sonst malt das
+       OS den PWA-Splash (background_color) cremeweiß und blendet beim Öffnen im
+       Dunkeln. Das Manifest kennt keine Media-Query, darum hier per JS umgehängt:
+       Chrome liest den Verweis erneut und färbt den Splash beim nächsten Start. -->
   <script>
     (function () {
       try {
@@ -54,6 +58,8 @@
         document.documentElement.dataset.theme = t;
         var m = document.querySelector('meta[name="theme-color"]');
         if (m) m.setAttribute("content", t === "dark" ? "#0E0907" : "#241510");
+        var man = document.querySelector('link[rel="manifest"]');
+        if (man) man.setAttribute("href", t === "dark" ? "manifest-dark.webmanifest" : "manifest.webmanifest");
       } catch (e) { /* localStorage gesperrt o.ä. – App startet hell */ }
     })();
   </script>

@@ -1,0 +1,136 @@
+{
+  "name": "HolaRuta – Reise-Spanisch",
+  "short_name": "HolaRuta",
+  "description": "Dein Reise-Spanisch für echte Situationen – Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk. Funktioniert offline.",
+  "lang": "de",
+  "dir": "ltr",
+  "id": ".",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0E0907",
+  "theme_color": "#0E0907",
+  "categories": ["education", "travel"],
+  "launch_handler": { "client_mode": "navigate-existing" },
+  "handle_links": "preferred",
+  "related_applications": [
+    { "platform": "webapp", "url": "manifest.webmanifest" }
+  ],
+  "screenshots": [
+    {
+      "src": "docs/screenshots/study-flip.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Karteikarte – Frage auf Deutsch, Antwort auf Spanisch"
+    },
+    {
+      "src": "docs/screenshots/study-flip-revealed.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Aufgedeckte Karte mit Aussprache-Tipp"
+    },
+    {
+      "src": "docs/screenshots/stats.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Fortschritt und Statistik"
+    },
+    {
+      "src": "docs/screenshots/info.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Länderkunde mit Reise-Infos"
+    }
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ruta del día",
+      "short_name": "Ruta",
+      "description": "Empieza la ronda de hoy con tus tarjetas pendientes",
+      "description_localized": {
+        "de": "Heutige Lernrunde mit fälligen Karten starten",
+        "en": "Start today's round with your due cards"
+      },
+      "url": "./?a=ruta",
+      "icons": [
+        { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Supervivencia",
+      "short_name": "Chuleta",
+      "description": "Frases de supervivencia para consultar al instante",
+      "name_localized": { "de": "Spickzettel", "en": "Cheat sheet" },
+      "short_name_localized": { "de": "Spickzettel", "en": "Cheat sheet" },
+      "description_localized": {
+        "de": "Überlebens-Sätze zum schnellen Nachschlagen",
+        "en": "Survival phrases for quick reference"
+      },
+      "url": "./?m=supervivencia",
+      "icons": [
+        { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Buscar",
+      "short_name": "Buscar",
+      "description": "Encuentra una palabra o frase al instante",
+      "name_localized": { "de": "Suchen", "en": "Search" },
+      "short_name_localized": { "de": "Suchen", "en": "Search" },
+      "description_localized": {
+        "de": "Wort oder Satz blitzschnell finden",
+        "en": "Find a word or phrase fast"
+      },
+      "url": "./?a=buscar",
+      "icons": [
+        { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Salud y emergencias",
+      "short_name": "Salud",
+      "description": "Frases para farmacia, médico y emergencias",
+      "name_localized": { "de": "Notfall & Gesundheit", "en": "Health & emergency" },
+      "short_name_localized": { "de": "Notfall", "en": "Health" },
+      "description_localized": {
+        "de": "Sätze für Apotheke, Arzt und Notfall",
+        "en": "Phrases for pharmacy, doctor and emergencies"
+      },
+      "url": "./?m=salud",
+      "icons": [
+        { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    }
+  ]
+}
