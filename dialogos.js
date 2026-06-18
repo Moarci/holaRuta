@@ -389,8 +389,8 @@
             { es: "Sí, tengo mucha fiebre.", ok: false },
             { es: "No sé, gracias.", ok: false },
           ] },
-        { who: "npc", es: "Entiendo. ¿Es alérgico a algún medicamento?", de: "Verstehe. Sind Sie gegen ein Medikament allergisch?", en: "I see. Are you allergic to any medication?" },
-        { who: "user", kind: "type", de: "(sag, du bist gegen nichts allergisch)", en: "(say you're not allergic to anything)", solEs: "No soy alérgico a nada.",
+        { who: "npc", es: "Entiendo. ¿Es alérgic{o/a} a algún medicamento?", de: "Verstehe. Sind Sie gegen ein Medikament allergisch?", en: "I see. Are you allergic to any medication?" },
+        { who: "user", kind: "type", de: "(sag, du bist gegen nichts allergisch)", en: "(say you're not allergic to anything)", solEs: "No soy alérgic{o/a} a nada.",
           why: "„alérgico a …“ = „allergisch gegen …“; die doppelte Verneinung „no … nada“ ist im Spanischen korrekt.",
           whyEn: "„alérgico a …“ = „allergic to …“; the double negative „no … nada“ is correct in Spanish.",
           accept: ["no soy alergico a nada", "no soy alergico", "no tengo alergias", "a nada", "no soy alergica a nada"] },
@@ -454,7 +454,7 @@
           options: [
             { es: "Tres noches.", ok: true },
             { es: "Cuesta mucho.", ok: false },
-            { es: "Estoy perdido.", ok: false },
+            { es: "Estoy perdid{o/a}.", ok: false },
           ] },
         { who: "npc", es: "¿Y ya sabes qué vas a visitar? Hay un montón que ver.", de: "Und weißt du schon, was du besichtigen willst? Es gibt jede Menge zu sehen.", en: "And do you know yet what you're going to visit? There's loads to see." },
         { who: "user", kind: "type", de: "(sag, du willst Machu Picchu sehen)", en: "(say you want to see Machu Picchu)", solEs: "Quiero ver Machu Picchu.",
@@ -610,7 +610,7 @@
     {
       id: "calle01", cat: "calle", title: "Wo ist die Bushaltestelle?", titleEn: "Where is the bus stop?", lvl: 1,
       turns: [
-        { who: "npc", es: "¿Sí? ¿Necesita ayuda? Lo veo un poco perdido.", de: "Ja? Brauchen Sie Hilfe? Sie wirken etwas verloren.", en: "Yes? Do you need help? You look a bit lost." },
+        { who: "npc", es: "¿Sí? ¿Necesita ayuda? {Lo/La} veo un poco perdid{o/a}.", de: "Ja? Brauchen Sie Hilfe? Sie wirken etwas verloren.", en: "Yes? Do you need help? You look a bit lost." },
         { who: "user", kind: "mc", de: "(frag höflich, wo die Bushaltestelle ist)", en: "(politely ask where the bus stop is)", solEs: "Disculpe, ¿dónde está el paradero?",
           why: "„Disculpe“ leitet höflich ein; „paradero“ ist in Lateinamerika die Bushaltestelle; „está“ für den Ort.",
           whyEn: "„Disculpe“ opens politely; „paradero“ is the bus stop in Latin America; „está“ for location.",

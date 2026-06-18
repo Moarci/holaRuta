@@ -2085,25 +2085,57 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    Dokumentfarben – ein Blatt ist immer hell, egal welches App-Theme aktiv ist. */
 .sheet-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 14px; }
 .sheet {
-  background: #fff; color: #1c140e; border: 1px solid var(--line);
+  --sheet-accent: #a23e20;
+  position: relative; background: #fff; color: #1c140e; border: 1px solid var(--line);
   border-radius: var(--r-md, 12px); padding: 22px 24px; max-width: 760px;
   margin: 0 auto; line-height: 1.5;
+  /* Akzentflächen (Leiste, Badge, Tag, QR) auch im Druck farbecht ausgeben. */
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
 }
+/* Schmaler Akzentstreifen am Kopf in der Reiseziel-Farbe. */
+.sheet-accent-bar { display: block; height: 6px; border-radius: 6px; margin: 0 0 14px; background: var(--sheet-accent); }
+.sheet-brand { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; }
+.sheet-badge {
+  width: 30px; height: 30px; border-radius: 8px; flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 1.05rem;
+  background: #f3ece0; background: color-mix(in srgb, var(--sheet-accent) 18%, #fff);
+}
+.sheet-brand-name { font-size: 0.85rem; color: #6b5a4c; font-weight: 700; letter-spacing: 0.02em; }
+.sheet-tag {
+  font-size: 0.7rem; vertical-align: middle; margin-left: 6px; padding: 2px 8px;
+  border-radius: 999px; background: var(--sheet-accent); color: #fff; font-weight: 700;
+}
+/* Steuerleiste: Lösungs-/Übungs-Umschalter (segmentiert). */
+.sheet-modes { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.sheet-mode { font: inherit; cursor: pointer; border: none; background: transparent; color: var(--muted); padding: 6px 12px; }
+.sheet-mode.is-active { background: var(--brand); color: #fff; }
+/* Abo-Block + QR nebeneinander. */
+.sheet-sub-row { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+.sheet-sub-col { flex: 1 1 220px; min-width: 0; }
+.sheet-qr { margin: 0; flex: 0 0 auto; text-align: center; }
+.sheet-qr-img { width: 118px; height: 118px; }
+.sheet-qr-img svg { width: 100%; height: 100%; display: block; }
+.sheet-qr-cap { font-size: 0.75rem; color: #6b5a4c; margin: 4px 0 0; }
 .sheet-head { border-bottom: 2px solid #1c140e; padding-bottom: 8px; margin-bottom: 14px; }
 .sheet-title { font-size: 1.5rem; margin: 0 0 2px; color: #1c140e; }
 .sheet-meta, .sheet-credit { color: #6b5a4c; font-size: 0.85rem; margin: 0; }
 .sheet-credit { margin-top: 2px; }
 .sheet-h2 { font-size: 1.05rem; margin: 16px 0 6px; color: #1c140e; border-bottom: 1px solid #ddd; padding-bottom: 2px; }
 .sheet-goal { margin: 8px 0; }
-.sheet-recipe, .sheet-cards { margin: 6px 0; padding-left: 1.4em; }
+.sheet-recipe { margin: 6px 0; padding-left: 1.4em; }
 .sheet-recipe li { margin: 3px 0; }
-.sheet-cards li { margin: 7px 0; break-inside: avoid; }
+/* Wortschatz zweispaltig für mehr Dichte; Karten brechen nie über Spalten/Seiten. */
+.sheet-cards { margin: 6px 0; padding-left: 1.2em; columns: 2; column-gap: 28px; }
+.sheet-cards li { margin: 7px 0; break-inside: avoid; -webkit-column-break-inside: avoid; }
+@media (max-width: 560px) { .sheet-cards { columns: 1; } }
 .sheet-es { display: block; font-weight: 700; color: #1c140e; }
+.sheet-es--blank { border-bottom: 1px solid #999; height: 1.15em; }
 .sheet-de { display: block; color: #3a2c22; }
 .sheet-note { display: block; font-size: 0.85rem; color: #6b5a4c; }
-.sheet-stage { font-size: 1rem; margin: 14px 0 4px; color: #a23e20; break-after: avoid; }
+.sheet-stage { font-size: 1rem; margin: 14px 0 4px; color: var(--sheet-accent); break-after: avoid; }
 .sheet-challenge { background: #f6efe3; border-left: 3px solid #c2502e; padding: 6px 10px; margin: 6px 0 12px; border-radius: 4px; break-inside: avoid; }
 .sheet-sub { font-size: 0.9rem; color: #3a2c22; margin: 4px 0; }
+.sheet-sub--note { font-style: italic; color: #6b5a4c; }
 .sheet-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.8rem; word-break: break-all; background: #f3ece0; padding: 8px 10px; border-radius: 6px; margin: 6px 0; }
 .sheet-link { font-size: 0.8rem; word-break: break-all; color: #2f6b70; margin: 2px 0; }
 .sheet-subscribe, .sheet-recipe-box { break-inside: avoid; }
@@ -2785,6 +2817,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .card-listen { gap: 14px; }
 .listen-ear { font-size: 3.4rem; line-height: 1; }
 .listen-replay { margin: 0; }
+/* Der Hinweistext fließt hier im normalen Layout unter dem Replay-Button mit –
+   nicht absolut am Kartenrand, sonst überlappt er bei mehrzeiligem Text den Button. */
+.card-listen .face__hint { position: static; bottom: auto; max-width: 32ch; line-height: 1.35; }
 /* Deutsche Bedeutung als Verständnis-Hilfe auf der aufgedeckten Hör-Ergebnis-Karte. */
 .listen-de { margin-top: 6px; font-size: 0.95rem; color: var(--muted); }
 /* Aussprache-Tipp ist cremefarben (für die bunte Flip-Rückseite gedacht) – auf der

@@ -174,11 +174,9 @@
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
-    { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", sub: "Was man morgens und abends trinkt – Land für Land", grad: ["#B97C24", "#6B4FA8"], need: "bebidas", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
-    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Übersicht für Lehrkräfte & Reiseleitung", grad: ["#2F6B70", "#A23E20"], group: "reference" },
   ];
 
   // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),
@@ -361,10 +359,26 @@
     return `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
   }
 
-  // Onboarding: einmaliger Willkommens-Bildschirm beim allerersten Start. Fragt das
-  // Trip-Ziel ab (überspringbar), damit der Countdown direkt motiviert.
+  // Geschlechts-Auswahl (♀/♂) als segmentierte Buttons. Gemeinsam für Onboarding
+  // und Profil. type="button", damit die Knöpfe innerhalb des Onboarding-<form>
+  // dieses NICHT absenden (sonst springt „Weiter" beim Antippen vorzeitig).
+  function genderGroup(vm) {
+    const g = vm.userGender;
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.genderCap"))}</span>
+        <div class="segmented" role="group" aria-label="${esc(t("home.genderAria"))}">
+          <button class="seg ${g === "female" ? "is-active" : ""}" type="button" data-action="set-gender" data-gender="female" aria-pressed="${g === "female"}">${esc(t("home.genderFemale"))}</button>
+          <button class="seg ${g === "male" ? "is-active" : ""}" type="button" data-action="set-gender" data-gender="male" aria-pressed="${g === "male"}">${esc(t("home.genderMale"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.genderHint"))}</p>
+      </div>`;
+  }
+
+  // Onboarding: einmaliger Willkommens-Bildschirm beim allerersten Start. Zwei
+  // Schritte – zuerst Name + Geschlecht (Pflicht zum Fortfahren), dann das Trip-Ziel
+  // (überspringbar), damit der Countdown direkt motiviert.
   function renderOnboarding(vm) {
-    const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
     // Partner-Branding zuerst: in einer Edition (auch per Link ?edition=…) das Logo
     // + den Namen oben zeigen, sonst nur die HolaRuta-Begrüßung.
     const e = vm.edition;
@@ -376,6 +390,32 @@
            <p class="onboarding__powered">${esc(t("profile.poweredBy"))}</p>` : ""}
          </div>`
       : "";
+    // Schritt 1: Name + Geschlecht. Eigenes <form>, damit Enter „Weiter" auslöst.
+    if ((vm.onboardStep || "profile") === "profile") {
+      // In Partner-Editionen den Markennamen NICHT beanspruchen – das Logo oben
+      // zeigt die Marke bereits; ein neutrales „Willkommen!" passt White-Label.
+      const welcomeTitle = e ? t("home.onboardWelcomeTitleEdition") : t("home.onboardWelcomeTitle");
+      return `
+        <section class="screen onboarding">
+          <div class="onboarding__inner">
+            ${brand}
+            <h1 class="onboarding__title">${esc(welcomeTitle)}</h1>
+            <p class="onboarding__intro">${esc(t("home.onboardWelcomeIntro"))}</p>
+            <form class="trip trip--edit" data-action="onboard-profile-next">
+              <label class="trip__field"><span>${esc(t("home.nameCap"))}</span>
+                <input id="onboard-name" type="text" maxlength="40"
+                       autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
+                       placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" /></label>
+              ${genderGroup(vm)}
+              <div class="trip__actions">
+                <button class="cta" type="submit">${esc(t("home.onboardNext"))}</button>
+              </div>
+            </form>
+          </div>
+        </section>`;
+    }
+    // Schritt 2: Reiseziel (überspringbar → führt trotzdem zum Ruta-Check).
+    const skip = `<button class="ghostbtn" type="button" data-action="skip-onboarding">${esc(t("home.onboardSkip"))}</button>`;
     return `
       <section class="screen onboarding">
         <div class="onboarding__inner">
@@ -520,6 +560,17 @@
         </section>`
       : "";
 
+    // Ruta-Check als offene Aufgabe: erscheint, wenn der Einstufungstest beim
+    // Onboarding übersprungen und noch nicht nachgeholt wurde. Verschwindet, sobald
+    // er einmal absolviert ist (gamestats.placement gesetzt → placementDone).
+    const placementCue = (vm.hasPlacement && vm.placementPending && !vm.placementDone)
+      ? `
+      <button class="today__ruta" data-action="open-placement">
+        <span class="today__ruta-main">${esc(t("home.placementOpenTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.placementOpenSub"))}</span>
+      </button>`
+      : "";
+
     // Glanceable Fortschritt: dieselbe Karte wie im Profil (Streak + Verteilung).
     const progressGroup = `
       <section class="dashgrp">
@@ -542,6 +593,7 @@
         </button>
         ${resume}
         ${rutaDia}
+        ${placementCue}
       </div>
 
       ${reiseGroup}
@@ -626,8 +678,8 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, bebidas: vm.hasBebidas, placement: vm.hasPlacement };
-    // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
+    // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea).
     const cfg = window.SC.config || {};
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
@@ -639,11 +691,10 @@
       </button>`;
     // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
     // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
-    // In Editionen mit eigenem Reiter Tarea/Modo profe NICHT doppelt als Kachel zeigen.
+    // In Editionen mit eigenem Reiter Tarea NICHT doppelt als Kachel zeigen.
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
       if (x.action === "open-task" && cfg.taskTab) return false;
-      if (x.action === "open-teacher" && cfg.teacherTab) return false;
       return true;
     });
     const sections = FEATURE_GROUPS.map((g) => {
@@ -756,6 +807,7 @@
       <div class="prefs">
         ${themeSetting(vm)}
         ${nameGroup}
+        ${genderGroup(vm)}
         ${langGroup}
         ${learnPrefs(vm)}
       </div>
@@ -1849,9 +1901,11 @@
     { id: "orga",      labelKey: "teacher.bgOrga" },
   ];
 
+  // Gruppe (pretrip/preset/category) zum Ziel-Wert „kind:scope". Passt nichts,
+  // gibt es bewusst KEINE Gruppe zurück (null) – statt still als „category" zu
+  // labeln; die Aufrufer rendern dann ohne Gruppen-Kicker.
   function targetGroupOf(value) {
-    const g = TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0);
-    return g || TARGET_GROUPS[TARGET_GROUPS.length - 1];
+    return TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0) || null;
   }
 
   // Tappbarer „Select-Ersatz": zeigt die aktuelle Auswahl und öffnet das Modal.
@@ -1864,7 +1918,7 @@
       const cur = (opts.targets || []).find((x) => x.value === opts.current);
       const g = cur ? targetGroupOf(cur.value) : null;
       valLine = cur
-        ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span><span class="tgt-field__val">${esc(cur.label)}</span>`
+        ? `${g ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
         : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
     } else {
       const s = opts.summary || { kind: "none" };
@@ -3047,33 +3101,48 @@
            ${vm.stageOpts.map((o) => `<option value="${esc(o.value)}"${o.value === vm.sheetStage ? " selected" : ""}>${esc(o.label)}</option>`).join("")}
          </select>`
       : "";
+    // Lösungs- vs. Übungsblatt umschalten (nur Steuerleiste, nicht gedruckt).
+    const modeToggle = `
+      <div class="sheet-modes" role="group" aria-label="${esc(t("sheet.modeLabel"))}">
+        <button type="button" class="sheet-mode${!vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="full" aria-pressed="${!vm.exercise}">${esc(t("sheet.modeFull"))}</button>
+        <button type="button" class="sheet-mode${vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="exercise" aria-pressed="${!!vm.exercise}">${esc(t("sheet.modeExercise"))}</button>
+      </div>`;
     const controls = `
       <div class="sheet-controls no-print">
         ${targetField("sheet", { targets: vm.targets, current: vm.sheetTarget })}
         ${stagePick}
+        ${modeToggle}
         <button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>
       </div>`;
 
+    // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie und
+    // Notizen/Challenge-Phrase (die die Lösung verraten) bleiben verborgen.
+    const cardLine = (c) => `<li>
+          ${vm.exercise
+            ? `<span class="sheet-es sheet-es--blank" aria-hidden="true"></span>`
+            : `<span class="sheet-es" lang="es">${esc(c.es)}</span>`}
+          <span class="sheet-de">${esc(c.de)}</span>
+          ${(!vm.exercise && c.note) ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
+        </li>`;
     const stagesHtml = (vm.stages || []).map((st) => `
       ${st.heading ? `<h3 class="sheet-stage">${esc(st.heading)}</h3>` : ""}
       <ol class="sheet-cards">
-        ${st.cards.map((c) => `<li>
-          <span class="sheet-es" lang="es">${esc(c.es)}</span>
-          <span class="sheet-de">${esc(c.de)}</span>
-          ${c.note ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
-        </li>`).join("")}
+        ${st.cards.map(cardLine).join("")}
       </ol>
-      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${st.challenge.phrase ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
+      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${(!vm.exercise && st.challenge.phrase) ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
     `).join("");
 
     const credit = vm.edition && vm.edition.name ? esc(vm.edition.name) + " · " + esc(t("profile.poweredBy")) : "HolaRuta";
+    // Akzent nur als Farbwert zulassen (Daten sind vertrauenswürdig – defensiv trotzdem).
+    const accent = /^#[0-9a-fA-F]{3,8}$/.test(vm.accent || "") ? vm.accent : "#a23e20";
 
     const sheet = `
-      <article class="sheet">
+      <article class="sheet${vm.exercise ? " sheet--exercise" : ""}" style="--sheet-accent:${accent}">
+        <span class="sheet-accent-bar" aria-hidden="true"></span>
         <header class="sheet-head">
-          <h1 class="sheet-title">${esc(vm.title)}</h1>
+          <p class="sheet-brand"><span class="sheet-badge" aria-hidden="true">${esc(vm.icon || "📄")}</span><span class="sheet-brand-name">${credit}</span></p>
+          <h1 class="sheet-title">${esc(vm.title)}${vm.exercise ? ` <span class="sheet-tag">${esc(t("sheet.exerciseTag"))}</span>` : ""}</h1>
           <p class="sheet-meta">${vm.levelRange ? esc(vm.levelRange) + " · " : ""}${esc(t("sheet.cardCount", { n: vm.cardCount }))} · ${esc(vm.date)}</p>
-          <p class="sheet-credit">${credit}</p>
         </header>
 
         <p class="sheet-goal"><strong>${esc(t("sheet.goalLabel"))}:</strong> ${esc(t("sheet.goalText"))}</p>
@@ -3090,16 +3159,22 @@
 
         <section class="sheet-vocab">
           <h2 class="sheet-h2">${esc(t("sheet.vocabHeading"))}</h2>
-          <p class="sheet-audio">${esc(t("sheet.audioHint"))}</p>
+          <p class="sheet-audio">${esc(vm.exercise ? t("sheet.exerciseHint") : t("sheet.audioHint"))}</p>
           ${stagesHtml}
         </section>
 
         ${vm.code ? `
         <section class="sheet-subscribe">
           <h2 class="sheet-h2">${esc(t("sheet.subscribeHeading"))}</h2>
-          <p class="sheet-sub">${esc(t("sheet.subscribeHint"))}</p>
-          <p class="sheet-code">${esc(vm.code)}</p>
-          ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
+          <div class="sheet-sub-row">
+            <div class="sheet-sub-col">
+              <p class="sheet-sub">${esc(t("sheet.subscribeHint"))}</p>
+              ${vm.stageScoped ? `<p class="sheet-sub sheet-sub--note">${esc(t("sheet.subscribeWholeHint"))}</p>` : ""}
+              <p class="sheet-code">${esc(vm.code)}</p>
+              ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
+            </div>
+            ${vm.qrSvg ? `<figure class="sheet-qr"><div class="sheet-qr-img">${vm.qrSvg}</div><figcaption class="sheet-qr-cap">${esc(t("sheet.scanHint"))}</figcaption></figure>` : ""}
+          </div>
         </section>` : ""}
 
         <section class="sheet-notes">

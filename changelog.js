@@ -22,6 +22,20 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.96.0",
+      date: "2026-06-18",
+      title: "Onboarding: Name & Geschlecht zuerst, Ruta-Check nachholbar",
+      titleEn: "Onboarding: name & gender first, Ruta-Check can be done later",
+      items: [
+        "🙋 Das Onboarding beginnt jetzt mit Name und Geschlecht – damit dich die App von Anfang an richtig anspricht. Das Geschlecht fließt in die Diálogos ein: Du sagst „No soy alérgica a nada“ oder „…alérgico“, und der Gesprächspartner spricht dich passend an („La veo perdida“). Beides ist jederzeit im Profil änderbar.",
+        "🎯 Den Einstufungstest (Ruta-Check) kannst du beim Start überspringen. Er bleibt dann als „noch offen“ auf dem Dashboard sichtbar, bis du ihn nachgeholt hast – ein Tap startet ihn jederzeit.",
+      ],
+      itemsEn: [
+        "🙋 Onboarding now starts with your name and gender – so the app addresses you correctly from the start. Gender flows into the Diálogos: you say „No soy alérgica a nada“ or „…alérgico“, and your conversation partner addresses you accordingly („La veo perdida“). You can change both anytime in your profile.",
+        "🎯 You can skip the placement test (Ruta-Check) at the start. It then stays visible on the dashboard as “still open” until you complete it – one tap starts it anytime.",
+      ],
+    },
+    {
       version: "1.95.0",
       date: "2026-06-18",
       title: "Modo profe: Bundles – ein Link, mehrere Aufgaben",

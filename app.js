@@ -78,6 +78,7 @@
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
+    onboardStep: "profile",  // Onboarding-Teilschritt: 'profile' (Name+Geschlecht) → 'trip' (Reiseziel)
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -299,6 +300,10 @@
       },
       lastCat,
       userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
+      userGender: settings.userGender === "female" || settings.userGender === "male" ? settings.userGender : "", // ♀/♂ (für Anrede)
+      onboardStep: state.onboardStep || "profile", // Onboarding-Teilschritt (Name+Geschlecht → Reiseziel)
+      placementDone: !!gamestats.placement,     // Ruta-Check schon absolviert?
+      placementPending: settings.placementPending === true, // beim Onboarding übersprungen → als offen anzeigen
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
@@ -1094,6 +1099,16 @@
     return true;
   }
 
+  // Onboarding starten: beim ersten Schritt (Name + Geschlecht) beginnen und den
+  // Ruta-Check vorab als „noch offen" vormerken – so erscheint er im Dashboard,
+  // falls er später übersprungen wird, und verschwindet erst nach dem Absolvieren.
+  function beginOnboarding() {
+    state.screen = "onboarding";
+    state.onboardStep = "profile";
+    settings = Object.assign({}, settings, { placementPending: true });
+    store.saveSettings(settings);
+  }
+
   // Onboarding einmalig als erledigt vermerken und aufs Dashboard wechseln. Der
   // Reiter bleibt „Lernen" (Standard); ein gesetztes Trip-Ziel taucht dort direkt auf.
   function finishOnboarding() {
@@ -1761,11 +1776,27 @@
     // Satzzeichen), machte die „Wie heißt du?"-Tippzüge unlösbar → Beispielname.
     return (n && matcher.normalize(n)) ? n : "Marco";
   }
+  // Geschlecht des Reisenden für die spanische Selbst-Anrede (sola/solo …). Ohne
+  // Eintrag männlich als konventioneller Default (so „funktioniert" jeder Text).
+  function travelerGender() {
+    return settings.userGender === "female" ? "female" : "male";
+  }
+  // Geschlechts-Token {männlich/weiblich} auflösen, z. B. „perdid{o/a}" → perdido/perdida,
+  // „{Lo/La} veo cansad{o/a}" → je nach Profil. Braucht einen Slash innerhalb der
+  // Klammern; {name} (ohne Slash) bleibt unberührt, normale Texte ebenfalls (kein „{").
+  function withGender(s) {
+    if (typeof s !== "string") return s;
+    const fem = travelerGender() === "female";
+    return s.replace(/\{([^{}/]*)\/([^{}/]*)\}/g, (_, m, f) => (fem ? f : m));
+  }
   // Platzhalter {name} in Dialog-Texten (Anzeige, Vorlesen, akzeptierte Eingaben)
-  // durch den Reise-Namen ersetzen. Ersatz als Funktion übergeben, damit Sonder-
-  // zeichen im Namen ($&, $1 …) nicht als replace-Muster interpretiert werden.
+  // durch den Reise-Namen ersetzen, danach Geschlechts-Tokens auflösen. Ersatz als
+  // Funktion übergeben, damit Sonderzeichen im Namen ($&, $1 …) nicht als replace-
+  // Muster interpretiert werden. Beides läuft durch DENSELBEN Pfad – jede Stelle,
+  // die withName nutzt (Diálogos, Rollenspiel, Karten-Kontext), kann beide Tokens.
   function withName(s) {
-    return typeof s === "string" ? s.replace(/\{name\}/g, () => travelerName()) : s;
+    if (typeof s !== "string") return s;
+    return withGender(s.replace(/\{name\}/g, () => travelerName()));
   }
   // {name} in allen String-Feldern eines (flachen) Objekts ersetzen – z. B. im
   // lokalisierten Reise-Kontext einer Karte (sentenceEs/sentenceDe/situation/note).
@@ -2366,8 +2397,15 @@
       if (state.homeTab !== "start") { setTab("start"); return true; }
       return false;
     }
-    // Onboarding mit „Zurück" überspringen (zählt als erledigt, kein Wiederzeigen).
-    if (state.screen === "onboarding") { finishOnboarding(); return true; }
+    // Onboarding: aus dem Reiseziel-Schritt zurück zum Namen-/Geschlecht-Schritt;
+    // aus dem ersten Schritt heraus „Zurück" überspringt das Onboarding ganz
+    // (zählt als erledigt, kein Wiederzeigen). Der Ruta-Check bleibt dann als
+    // offene Aufgabe (placementPending) im Dashboard sichtbar.
+    if (state.screen === "onboarding") {
+      if (state.onboardStep === "trip") { state.onboardStep = "profile"; render(); return true; }
+      finishOnboarding();
+      return true;
+    }
     // Zurück aus dem Onboarding-Ruta-Check schließt das Onboarding ab (nicht erneut zeigen).
     if (state.screen === "placement" && state.placement && state.placement.fromOnboarding) { finishOnboarding(); return true; }
     // 3) Eine Ebene höher.
@@ -3213,7 +3251,10 @@
     const task = { kind: tt.kind, scope: tt.scope, title: "" };
     const isPretrip = tt.kind === "pretrip";
     const plan = isPretrip ? pretripPlan(tt.scope) : null;
-    const stageSel = state.sheetStage || "all";
+    let stageSel = state.sheetStage || "all";
+    // Defensiv: zeigt der State eine Etappe, die es im aktuellen Plan nicht (mehr)
+    // gibt, auf „Ganzes Ziel" zurückfallen – nie ein leeres Blatt rendern.
+    if (isPretrip && stageSel !== "all" && !(plan.days || []).some((d) => String(d.day) === String(stageSel))) stageSel = "all";
     const stages = [];
     let allCards = [];
     if (isPretrip) {
@@ -3243,13 +3284,32 @@
       ? [{ value: "all", label: t("sheet.allStages") }].concat(
           (plan.days || []).map((d) => ({ value: String(d.day), label: t("sheet.stageLabel", { day: d.day }) + ": " + natk(d, "titleDe") })))
       : null;
+    // Akzentfarbe + Icon der Ziel-Kategorie (Pre-Trip/Preset zeigen auf eine
+    // Reiseziel-Kategorie; „Ganzes Paket" ist selbst eine). Tönt nur den Kopf –
+    // der Fließtext bleibt schwarz und druckt auch in S/W sauber.
+    let accentScope = tt.scope;
+    if (tt.kind === "preset") { const pr = (data.PRESETS || []).find((p) => p.id === tt.scope); accentScope = pr ? pr.scope : tt.scope; }
+    const accentCat = categoryById(accentScope);
+    const accent = (accentCat && accentCat.grad && accentCat.grad[0]) || "#a23e20";
+    const icon = (accentCat && accentCat.icon) || "📄";
+    // Übungs- vs. Lösungsblatt: im Übungsmodus wird die spanische Zeile (Antwort)
+    // verdeckt; Deutsch bleibt als Prompt stehen. Standard = vollständiges Blatt.
+    const exercise = state.sheetMode === "exercise";
+    const link = code ? taskShareLink(code) : "";
     return {
       targets: taskTargets(), sheetTarget: tt.value,
       targetPicker: state.targetPicker, // offenes Ziel-Picker-Modal? ('sheet' | null)
       stageOpts: stageOpts, sheetStage: stageSel,
+      // Wird nur EINE Etappe gedruckt? Dann startet der Abo-Code unten trotzdem
+      // den GANZEN Plan – Hinweis darauf im Blatt (siehe sheet.subscribeWholeHint).
+      stageScoped: isPretrip && stageSel !== "all",
+      accent: accent, icon: icon, exercise: exercise,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages,
-      code: code, link: code ? taskShareLink(code) : "",
+      code: code, link: link,
+      // QR auf den Abo-Link – Lernende scannen statt abzutippen. Browser-only
+      // (window.SC.qr); fehlt der Generator/Link, bleibt das Feld leer.
+      qrSvg: (link && window.SC.qr) ? window.SC.qr.svg(link, { ecc: "M", margin: 0 }) : "",
       edition: editionInfo(), date: new Date().toISOString().slice(0, 10),
     };
   }
@@ -3258,6 +3318,7 @@
     dismissBadgeToast();
     if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
     if (!state.sheetStage) state.sheetStage = "all";
+    if (!state.sheetMode) state.sheetMode = "full";
     state.screen = "printsheet";
     render();
   }
@@ -3647,6 +3708,11 @@
       const history = (Array.isArray(gamestats.placementHistory) ? gamestats.placementHistory : []).concat([entry]).slice(-50);
       gamestats = Object.assign({}, gamestats, { placement: entry, placementHistory: history });
       store.saveGameStats(gamestats);
+      // Ruta-Check ist erledigt → die „noch offen"-Markierung fürs Dashboard löschen.
+      if (settings.placementPending) {
+        settings = Object.assign({}, settings, { placementPending: false });
+        store.saveSettings(settings);
+      }
     } catch (e) { /* Persistenz optional – nie crashen */ }
     render();
   }
@@ -3912,6 +3978,37 @@
       store.saveSettings(settings);
     }
     if (rerender) { buzz(8); render(); }
+  }
+
+  // Geschlecht für die Anrede speichern (nur „female"/„male"; sonst ignorieren).
+  // Wird in Onboarding UND Profil über dieselbe Aktion gesetzt.
+  function saveUserGender(value) {
+    const g = value === "female" || value === "male" ? value : "";
+    if (!g) return;
+    // Im Onboarding den bereits getippten Namen mitsichern, BEVOR das Re-Render das
+    // Eingabefeld zurücksetzt (dort hat es – anders als im Profil – keinen Blur-Handler).
+    const nameEl = document.getElementById("onboard-name");
+    if (nameEl) saveUserName(nameEl.value, false);
+    if (g !== settings.userGender) {
+      settings = Object.assign({}, settings, { userGender: g });
+      store.saveSettings(settings);
+    }
+    buzz(8);
+    render();
+  }
+
+  // Onboarding-Schritt 1 (Name + Geschlecht) abschließen. Beides ist Pflicht zum
+  // Fortfahren: fehlt etwas, kurz hinweisen und auf dem Schritt bleiben.
+  function advanceOnboardingProfile() {
+    const el = document.getElementById("onboard-name");
+    saveUserName(el ? el.value : "", false);
+    if (!settings.userName || !settings.userGender) {
+      showNotice(t("home.onboardProfileInvalid"));
+      return;
+    }
+    state.onboardStep = "trip";
+    buzz(8);
+    render();
   }
 
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
@@ -5354,6 +5451,7 @@
     else if (action === "teacher-print") printTeacher();
     else if (action === "open-printsheet") openPrintSheet();
     else if (action === "printsheet-print") printSheet();
+    else if (action === "sheet-mode") { state.sheetMode = el.dataset.mode; render(); }
     else if (action === "open-target-picker") { state.targetPicker = el.dataset.ctx; render(); }
     else if (action === "close-target-picker") { state.targetPicker = null; render(); }
     else if (action === "target-stop") { /* Klick auf die Modal-Karte: nicht schließen */ }
@@ -5380,6 +5478,7 @@
     else if (action === "set-trip-country") setTripCountry(el.dataset.country, el.dataset.dest);
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
+    else if (action === "set-gender") saveUserGender(el.dataset.gender); // ♀/♂ (Onboarding + Profil)
     else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten
     else if (action === "placement-skip") finishOnboarding();    // Ruta-Check im Onboarding überspringen -> fertig
     else if (action === "placement-finish") finishOnboarding();  // Ruta-Check fertig (aus Onboarding) -> Dashboard
@@ -5520,6 +5619,13 @@
       e.preventDefault();
       const input = document.getElementById("precios-answer");
       submitPrecios(input ? input.value : "");
+      return;
+    }
+    // Onboarding-Schritt 1: Name + Geschlecht bestätigen (Pflicht) und zum
+    // Reiseziel-Schritt weitergehen.
+    if (e.target.closest('[data-action="onboard-profile-next"]')) {
+      e.preventDefault();
+      advanceOnboardingProfile();
       return;
     }
     // Trip-Ziel speichern (Datum + Tagesziel + optionales Reiseziel). Beim
@@ -5912,7 +6018,7 @@
       settings = Object.assign({}, settings, { onboarded: true });
       store.saveSettings(settings);
     } else {
-      state.screen = "onboarding";
+      beginOnboarding();
     }
   }
   // Geteilter Aufgaben-Link (?task=<code>): die Aufgabe still abonnieren (mehrere
@@ -5927,7 +6033,7 @@
   // Geteilter Link einer Schule/Partnerfirma (?start=onboarding): immer ins Onboarding
   // – auch auf einem Bestandsgerät. Branding kommt aus der Edition (?edition=…, registry.js).
   if (urlParam("start").toLowerCase() === "onboarding") {
-    state.screen = "onboarding";
+    beginOnboarding();
     stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor

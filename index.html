@@ -6,6 +6,28 @@
   <meta name="theme-color" content="#241510" />
   <title>HolaRuta – Reise-Spanisch für echte Situationen</title>
   <meta name="description" content="HolaRuta – dein Reise-Spanisch für echte Situationen: Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk. Funktioniert offline." />
+  <link rel="canonical" href="https://moarci.github.io/holaRuta/" />
+
+  <!-- Social-Vorschau (Open Graph + Twitter): wie der Link in WhatsApp, Instagram-DMs,
+       Facebook, Signal, X & LinkedIn erscheint. Bilder liegen im Repo-Root und werden
+       aus der Marke erzeugt (tools/og-image.js). Absolute URLs, weil Crawler relative
+       Pfade nicht auflösen. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="HolaRuta" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:url" content="https://moarci.github.io/holaRuta/" />
+  <meta property="og:title" content="HolaRuta – Reise-Spanisch für echte Situationen" />
+  <meta property="og:description" content="Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall & Smalltalk. Offline, ohne Konto, kostenlos." />
+  <meta property="og:image" content="https://moarci.github.io/holaRuta/og-image.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="HolaRuta – Reise-Spanisch für echte Situationen. Beispielkarte: „Was kostet das?“ → „¿Cuánto cuesta?“" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="HolaRuta – Reise-Spanisch für echte Situationen" />
+  <meta name="twitter:description" content="Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall & Smalltalk. Offline, ohne Konto, kostenlos." />
+  <meta name="twitter:image" content="https://moarci.github.io/holaRuta/og-image.png" />
+  <meta name="twitter:image:alt" content="HolaRuta – Reise-Spanisch für echte Situationen." />
 
   <!-- Als App installierbar + offline (PWA) -->
   <link rel="manifest" href="manifest.webmanifest" />
@@ -22,7 +44,11 @@
        unter fonts/ (per @font-face in styles.css, DSGVO-sauber und offline verfügbar). -->
 
   <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
-       Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe. -->
+       Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe.
+       Im Dark Mode zeigen wir zusätzlich auf das dunkle Manifest – sonst malt das
+       OS den PWA-Splash (background_color) cremeweiß und blendet beim Öffnen im
+       Dunkeln. Das Manifest kennt keine Media-Query, darum hier per JS umgehängt:
+       Chrome liest den Verweis erneut und färbt den Splash beim nächsten Start. -->
   <script>
     (function () {
       try {
@@ -32,6 +58,8 @@
         document.documentElement.dataset.theme = t;
         var m = document.querySelector('meta[name="theme-color"]');
         if (m) m.setAttribute("content", t === "dark" ? "#0E0907" : "#241510");
+        var man = document.querySelector('link[rel="manifest"]');
+        if (man) man.setAttribute("href", t === "dark" ? "manifest-dark.webmanifest" : "manifest.webmanifest");
       } catch (e) { /* localStorage gesperrt o.ä. – App startet hell */ }
     })();
   </script>
@@ -113,6 +141,7 @@
   <script src="badges.js"></script>
   <script src="speech.js"></script>
   <script src="share.js"></script>
+  <script src="qr.js"></script>
   <script src="install.js"></script>
   <script src="changelog.js"></script>
   <script src="ui.js"></script>
