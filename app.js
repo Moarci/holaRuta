@@ -495,6 +495,7 @@
       })
       .filter(Boolean);
     const streakNow = currentStreak();
+    const xp = state.roundResult || {}; // von finishRound(): xpBefore/xpGained/xpAfter/level*
     return {
       scope: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
       mode: state.mode,
@@ -508,6 +509,13 @@
       newBadges,
       destinationComplete: pretripJustCompleted(), // {name,country}|null
       isFirstEver: !snap.everStudied,
+      // XP-/Rang-Layer (BAUPLAN §6): fehlt finishRound, bleiben die Felder undefined
+      // und decide() zeigt weder Level-Up noch XP-Pille.
+      xpBefore: xp.xpBefore,
+      xpGained: xp.xpGained,
+      xpAfter: xp.xpAfter,
+      levelBefore: xp.levelBefore,
+      levelAfter: xp.levelAfter,
       origin: state.studyOrigin || null, // 'pretrip' | 'task' | null -> bestimmt den Zurück-Knopf
     };
   }
@@ -797,6 +805,36 @@
       unlocked: Object.assign({}, gamestats.unlocked),
       streak: currentStreak(),
       everStudied: gamestats.lastStudyDate != null,
+      xp: gamestats.xp || 0,           // XP-Stand vor der Runde (für die Level-Up-Szene)
+    };
+    state.roundResult = null;          // wird von finishRound() am Rundenende gefüllt
+  }
+
+  // Eine Runde abschließen: Reise-XP gutschreiben und das XP-/Rang-Ergebnis EINMAL
+  // festhalten (state.roundResult). Wird genau einmal pro Runde aus rate() gerufen,
+  // wenn die Queue leerläuft – NICHT aus doneVM()/render(), das sonst bei jedem
+  // Re-Render erneut XP buchen würde. Fehlt das Modul (levelForXp), bleiben level*
+  // einfach gleich und decide() zeigt nie „levelup" – nichts bricht.
+  function finishRound() {
+    const snap = state.roundSnapshot || {};
+    const s = state.session || { right: 0, wrong: 0 };
+    const answered = s.right + s.wrong;
+    const accuracy = answered ? Math.round((s.right / answered) * 100) : 0;
+    const streakIsNew = currentStreak() > (snap.streak || 0);
+    // XP-Formel (BAUPLAN §6): pro Treffer 5, Perfektrunde +20, neuer Streak-Tag +10.
+    const xpGained = s.right * 5 + (accuracy === 100 && answered > 0 ? 20 : 0) + (streakIsNew ? 10 : 0);
+    const xpBefore = snap.xp != null ? snap.xp : (gamestats.xp || 0);
+    const xpAfter = xpBefore + xpGained;
+    const levelFor = (window.SC && SC.celebrate && SC.celebrate.levelForXp)
+      ? (xp) => SC.celebrate.levelForXp(xp).n : () => 0;
+    gamestats = Object.assign({}, gamestats, { xp: xpAfter });
+    store.saveGameStats(gamestats);
+    state.roundResult = {
+      xpBefore: xpBefore,
+      xpGained: xpGained,
+      xpAfter: xpAfter,
+      levelBefore: levelFor(xpBefore),
+      levelAfter: levelFor(xpAfter),
     };
   }
 
@@ -2612,26 +2650,26 @@
     else if (state.screen === "roleplay") root.innerHTML = ui.renderRoleplay(roleplayVM());
     else if (state.screen === "quizSetup") root.innerHTML = ui.renderQuizSetup(quizSetupVM());
     else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
-    else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone(quizDoneVM());
+    else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone();
     else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
     else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
     else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
     else if (state.screen === "preciosSetup") root.innerHTML = ui.renderPreciosSetup(preciosSetupVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
-    else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone(preciosDoneVM());
+    else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone();
     else if (state.screen === "frasesSetup") root.innerHTML = ui.renderFrasesSetup(frasesSetupVM());
     else if (state.screen === "frases") root.innerHTML = ui.renderFrases(frasesVM());
-    else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone(frasesDoneVM());
+    else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone();
     else if (state.screen === "conjugSetup") root.innerHTML = ui.renderConjugSetup(conjugSetupVM());
     else if (state.screen === "conjug") root.innerHTML = ui.renderConjug(conjugVM());
-    else if (state.screen === "conjugDone") root.innerHTML = ui.renderConjugDone(conjugDoneVM());
+    else if (state.screen === "conjugDone") root.innerHTML = ui.renderConjugDone();
     else if (state.screen === "dialogosSetup") root.innerHTML = ui.renderDialogosSetup(dialogosSetupVM());
     else if (state.screen === "dialogos") root.innerHTML = ui.renderDialogos(dialogosVM());
-    else if (state.screen === "dialogosDone") root.innerHTML = ui.renderDialogosDone(dialogosDoneVM());
+    else if (state.screen === "dialogosDone") root.innerHTML = ui.renderDialogosDone();
     else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
     else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
-    else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone(comprasQuizDoneVM());
+    else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone();
     else if (state.screen === "search") root.innerHTML = ui.renderSearch(searchVM());
     else if (state.screen === "onboarding") root.innerHTML = ui.renderOnboarding(homeVM());
     else root.innerHTML = ui.renderHome(homeVM());
@@ -2661,6 +2699,8 @@
     // fahren (SC.celebrate entscheidet Szene, baut Inhalt/Buttons, setzt aria-live +
     // Fokus). Erst NACH dem innerHTML-Austausch, da der Mount-Punkt nun existiert.
     if (state.screen === "done") mountCelebrate();
+    // Mini-Spiel-Fertig-Screens: dieselbe Inszenierung wie der Haupt-Lernpfad.
+    if (MINI_DONE_SCREENS[state.screen]) mountMiniDone(state.screen);
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
     if (state.screen === "cuerpo") cuerpoInit3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
@@ -2690,7 +2730,7 @@
     if (!mount || !(window.SC && SC.celebrate)) return;
     const result = doneVM();
     SC.celebrate.celebrate(result, mount, {
-      sound: false,    // Sound ist überraschend -> Default aus (Haptik bleibt an)
+      sound: !!settings.celebrateSound, // Default aus (Sound überrascht); Haptik bleibt an
       haptics: true,
       primaryLabel: result.origin === "pretrip" ? t("study.backPretrip")
         : result.origin === "task" ? t("study.backTask")
@@ -2706,6 +2746,85 @@
         else goStats();
       },
     });
+  }
+
+  // Mini-Spiel-Fertig-Screens auf dieselbe SC.celebrate-Inszenierung wie der
+  // Haupt-Lernpfad heben. Jeder Eintrag baut aus seinem *DoneVM ein result
+  // (rein genauigkeitsbasiert -> Ring-/Perfekt-Szene; kein Streak/Badge/XP, das
+  // bleibt dem Karteikarten-Pfad vorbehalten) und mappt die ursprünglichen bis zu
+  // drei Aktionen auf primary/secondary/tertiary. Battle ist bewusst NICHT dabei:
+  // dort zählt ein 1-gegen-1-Scoreboard, kein Rundenergebnis.
+  const MINI_DONE_SCREENS = {
+    quizDone: true, preciosDone: true, frasesDone: true,
+    conjugDone: true, dialogosDone: true, comprasQuizDone: true,
+  };
+  function miniResult(vm, scope, mode) {
+    const total = Math.max(0, vm.total || 0);
+    const right = Math.max(0, Math.min(total, vm.correct || 0));
+    return {
+      scope: scope || "",
+      mode: mode,
+      total: total,
+      right: right,
+      wrong: total - right,
+      accuracy: total ? Math.round((right / total) * 100) : 0,
+    };
+  }
+  function miniDoneConfig(screen) {
+    if (screen === "quizDone") {
+      const vm = quizDoneVM();
+      return { result: miniResult(vm, vm.setLabel, "quiz"), opts: {
+        primaryLabel: t("discover.quizAgain"), onPrimary: quizAgain,
+        secondaryLabel: t("common.overview"), onSecondary: goHome,
+      } };
+    }
+    if (screen === "preciosDone") {
+      const vm = preciosDoneVM();
+      const scope = `${vm.flag} ${vm.currencyName} · ${vm.levelLabel}`;
+      return { result: miniResult(vm, scope, "precios"), opts: {
+        primaryLabel: t("discover.prcAgain"), onPrimary: preciosAgain,
+        secondaryLabel: t("discover.prcOtherCountry"), onSecondary: openPrecios,
+        tertiaryLabel: t("common.overview"), onTertiary: goHome,
+      } };
+    }
+    if (screen === "frasesDone") {
+      const vm = frasesDoneVM();
+      return { result: miniResult(vm, vm.setLabel, "frases"), opts: {
+        primaryLabel: t("discover.quizAgain"), onPrimary: frasesAgain,
+        secondaryLabel: t("discover.frasesOther"), onSecondary: openFrasesSetup,
+        tertiaryLabel: t("common.overview"), onTertiary: goHome,
+      } };
+    }
+    if (screen === "conjugDone") {
+      const vm = conjugDoneVM();
+      return { result: miniResult(vm, vm.levelLabel, "type"), opts: {
+        primaryLabel: t("discover.cjAgain"), onPrimary: conjugAgain,
+        secondaryLabel: t("discover.cjOtherLevel"), onSecondary: openConjugDrill,
+        tertiaryLabel: t("discover.cjToGuide"), onTertiary: openConjugacion,
+      } };
+    }
+    if (screen === "dialogosDone") {
+      const vm = dialogosDoneVM();
+      return { result: miniResult(vm, vm.title, "quiz"), opts: {
+        primaryLabel: t("discover.dlgAgain"), onPrimary: dialogosAgain,
+        secondaryLabel: t("discover.dlgOther"), onSecondary: openDialogosSetup,
+        tertiaryLabel: t("common.overview"), onTertiary: goHome,
+      } };
+    }
+    // comprasQuizDone
+    const vm = comprasQuizDoneVM();
+    return { result: miniResult(vm, vm.sectionLabel, "quiz"), opts: {
+      primaryLabel: t("discover.quizAgain"), onPrimary: comprasQuizAgain,
+      secondaryLabel: t("discover.comprasBackList"), onSecondary: comprasBackToList,
+    } };
+  }
+  function mountMiniDone(screen) {
+    const mount = document.getElementById("cb-mount");
+    if (!mount || !(window.SC && SC.celebrate)) return;
+    const cfg = miniDoneConfig(screen);
+    SC.celebrate.celebrate(cfg.result, mount, Object.assign({
+      sound: !!settings.celebrateSound, haptics: true,
+    }, cfg.opts));
   }
 
   // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
@@ -4262,6 +4381,9 @@
     state.screen = state.queue.length ? "study" : "done";
     // Pre-Trip-Tag abgeschlossen (Queue leer durchgelaufen)? distinkt vermerken.
     if (!state.queue.length && state.pretripDay != null) recordPretripDay(state.pretripScope, state.pretripDay);
+    // Runde fertig: XP gutschreiben & das Belohnungs-Ergebnis EINMAL festhalten,
+    // bevor render() den Fertig-Screen (doneVM/mountCelebrate) baut.
+    if (!state.queue.length && state.session) finishRound();
     render();
     if (!saved) notifySaveFailed(); // nach render(), sonst wischt der Re-Render den Toast weg
   }

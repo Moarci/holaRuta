@@ -499,6 +499,14 @@
       sec.addEventListener("click", function () { if (opts.onSecondary) opts.onSecondary(); });
       wrap.appendChild(sec);
     }
+    // Optionaler dritter (Tertiär-)Button – manche Aufrufer (z. B. die Mini-Spiel-
+    // Fertig-Screens) brauchen drei Aktionen (Nochmal / Andere / Übersicht).
+    if (opts.tertiaryLabel) {
+      var ter = elx("button", "cb-ghost");
+      ter.textContent = opts.tertiaryLabel;
+      ter.addEventListener("click", function () { if (opts.onTertiary) opts.onTertiary(); });
+      wrap.appendChild(ter);
+    }
     mountEl.appendChild(wrap);
 
     // Animationsablauf.
