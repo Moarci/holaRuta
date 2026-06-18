@@ -99,10 +99,11 @@
       var va = a[k], vb = b[k];
       if (vb === undefined) { out[k] = va; continue; }
       if (va === undefined) { out[k] = vb; continue; }
-      if (k === "placementHistory") {
+      if (k === "placementHistory" || k === "assessmentHistory") {
+        // Beide Einstufungstests teilen dasselbe Verlaufs-Format -> gleiche Logik.
         out[k] = mergePlacementHistory(va, vb); continue;
       }
-      if (k === "placement") {
+      if (k === "placement" || k === "assessment") {
         // Letztes Ergebnis: das spätere gewinnt (ts, sonst at) – nicht zwei Läufe
         // vermischen (sonst entstünde ein Frankenstein-Ergebnis über deepUnion).
         var pa = (isObj(va) && (va.ts || va.at)) || "", pb = (isObj(vb) && (vb.ts || vb.at)) || "";

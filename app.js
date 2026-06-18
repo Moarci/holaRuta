@@ -25,6 +25,7 @@
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
+  const assessment = window.SC.assessment || null; // HolaRuta Nivel-Test (ausführlich, optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
   const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
@@ -78,6 +79,7 @@
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
     taskDue: "",             // optionale Frist (überlebt Re-Render)
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
+    assessment: null,        // HolaRuta Nivel-Test (ausführlich): { phase, asked, answers, difficulty, … } | null
     onboardStep: "intro",    // Onboarding-Teilschritt: 'intro' (Erklär-Slides) → 'profile' (Name+Geschlecht) → 'trip' (Reiseziel)
     onboardSlide: 0,         // aktuelle Erklär-Slide im Intro-Schritt (0-basiert)
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
@@ -220,6 +222,30 @@
     };
   }
 
+  // Nivel-Test fürs Profil: letztes Ergebnis + Verlauf (neueste zuerst). Analog
+  // zu placementProfileVM, aber aus gamestats.assessment(History). null = Modul fehlt.
+  function assessmentProfileVM() {
+    if (!assessment) return null;
+    const history = Array.isArray(gamestats.assessmentHistory) ? gamestats.assessmentHistory : [];
+    const last = gamestats.assessment || null;
+    if (!last && !history.length) return { taken: false };
+    const fmt = (e) => ({
+      level: e.level || "–",
+      scorePct: Math.round((e.finalScore || 0) * 100),
+      accuracyPct: Math.round((e.accuracy || 0) * 100),
+      tempoLabel: e.tempo ? t("assessment.tempo_" + e.tempo) : "",
+      at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
+    });
+    const past = history.length ? history.slice().reverse().map(fmt) : (last ? [fmt(last)] : []);
+    return {
+      taken: true,
+      last: last ? fmt(last) : (past[0] || null),
+      history: past,
+      attempts: past.length,
+      canShare: !!share,
+    };
+  }
+
   function homeVM() {
     const everyCard = allCards();
     const categories = data.CATEGORIES.map((c) => {
@@ -292,6 +318,8 @@
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
+      hasAssessment: !!assessment, // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
+      assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -2575,6 +2603,7 @@
     else if (state.screen === "printsheet") root.innerHTML = ui.renderPrintSheet(sheetVM());
     else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
     else if (state.screen === "placement") root.innerHTML = ui.renderPlacement(placementVM());
+    else if (state.screen === "assessment") root.innerHTML = ui.renderAssessment(assessmentVM());
     else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
     else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
     else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
@@ -3884,6 +3913,208 @@
         status: a.isUnknown ? "unknown" : (scored.isCorrect ? "correct" : "wrong"),
         promptDe: q.promptDe,
         questionEs: q.questionEs || null,
+        yourText: yourText,
+        correctText: correctText,
+        explanationDe: q.explanationDe || "",
+      });
+    }
+    return out;
+  }
+
+  // ----- HolaRuta Nivel-Test (ausführlicher, adaptiver Einstufungstest) -----
+  // Gleicher Ablauf wie der kurze Ruta-Check, nur über sechs Stufen (A0–C1) und
+  // mit mehr Fragen. Logik/Bewertung leben rein in assessment.js; hier nur der
+  // Ablauf + Persistenz (eigener Speicher: gamestats.assessment[History]).
+  function assessmentQuestions() { return (assessment && assessment.QUESTIONS) || []; }
+
+  function assessmentTotalPlanned() {
+    return (assessment.MC_TARGET || 28) + assessment.freeQuestions(assessmentQuestions()).length;
+  }
+  function currentAssessmentQ() {
+    const p = state.assessment;
+    if (!p || !p.asked.length) return null;
+    return assessment.questionById(p.asked[p.asked.length - 1]);
+  }
+
+  function openAssessment() {
+    dismissBadgeToast();
+    if (!assessment) return; // Modul nicht geladen (Edition/Offline) -> nicht crashen
+    state.assessment = {
+      phase: "intro",
+      asked: [], answers: [], difficulty: assessment.START_DIFFICULTY,
+      mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
+    };
+    state.screen = "assessment";
+    render();
+  }
+
+  function pushAssessmentQuestion(q) {
+    const p = state.assessment;
+    p.asked.push(q.id);
+    p.answeredFor = null;      // Doppel-Tap-Schutz: pro Frage nur eine Antwort
+    p.qStartedAt = Date.now();
+  }
+
+  function startAssessmentTest() {
+    const p = state.assessment;
+    if (!p) return;
+    p.phase = "running"; p.asked = []; p.answers = [];
+    p.difficulty = assessment.START_DIFFICULTY; p.mcAsked = 0; p.grammarAsked = 0; p.freeIdx = 0;
+    p.startedAt = Date.now();
+    const first = assessment.pickNextMc(assessmentQuestions(), [], p.difficulty, 0, assessment.GRAMMAR_CAP);
+    if (first) pushAssessmentQuestion(first); else assessmentBeginFree();
+    render();
+  }
+
+  function recordAssessmentAnswer(ans) {
+    const p = state.assessment;
+    if (!p || p.phase !== "running") return;
+    const q = currentAssessmentQ();
+    if (!q) return;
+    if (p.answeredFor === q.id) return; // gepufferter Doppel-Tap auf dieselbe Frage ignorieren
+    p.answeredFor = q.id;
+    const now = Date.now();
+    ans.responseTimeMs = Math.max(0, now - (p.qStartedAt || now));
+    p.answers.push(ans);
+    const scored = assessment.scoreAnswer(q, ans);
+    if (q.type === "mc") {
+      p.mcAsked += 1;
+      if (assessment.GRAMMAR_SKILLS[q.skill]) p.grammarAsked += 1;
+      p.difficulty = assessment.nextDifficulty(p.difficulty, scored.result); // richtig→schwerer, sonst leichter
+    }
+    assessmentAdvance();
+  }
+
+  function assessmentAdvance() {
+    const p = state.assessment;
+    if (p.mcAsked < assessment.MC_TARGET) {
+      const nextQ = assessment.pickNextMc(assessmentQuestions(), p.asked, p.difficulty, p.grammarAsked, assessment.GRAMMAR_CAP);
+      if (nextQ) { pushAssessmentQuestion(nextQ); render(); return; }
+    }
+    assessmentBeginFree();
+  }
+
+  function assessmentBeginFree() {
+    const p = state.assessment;
+    const frees = assessment.freeQuestions(assessmentQuestions());
+    if (p.freeIdx < frees.length) {
+      pushAssessmentQuestion(frees[p.freeIdx]);
+      p.freeIdx += 1;
+      render();
+    } else {
+      finishAssessment();
+    }
+  }
+
+  function assessmentChoose(index) {
+    const q = currentAssessmentQ();
+    if (!q || q.type === "free") return;
+    recordAssessmentAnswer({ isUnknown: false, selectedIndex: index });
+  }
+  function assessmentUnknown() {
+    if (!state.assessment || state.assessment.phase !== "running") return;
+    recordAssessmentAnswer({ isUnknown: true, selectedIndex: null });
+  }
+  function assessmentSubmitFree() {
+    const p = state.assessment;
+    if (!p || p.phase !== "running") return;
+    const q = currentAssessmentQ();
+    if (!q || q.type !== "free") return;
+    const el = document.getElementById("assessment-free");
+    const text = el ? String(el.value || "").trim() : "";
+    if (!text) { assessmentUnknown(); return; } // leeres Feld zählt als „weiß nicht“
+    recordAssessmentAnswer({ isUnknown: false, text: text });
+  }
+
+  function finishAssessment() {
+    const p = state.assessment;
+    if (!p) return;
+    const asked = p.asked.map((id) => assessment.questionById(id)).filter(Boolean);
+    const result = assessment.summarize(asked, p.answers);
+    p.result = result;
+    p.phase = "done";
+    try {
+      const now = new Date();
+      const entry = {
+        level: result.level,
+        finalScore: Math.round(result.finalScore * 100) / 100,
+        accuracy: Math.round(result.accuracy * 100) / 100,
+        unknownRate: Math.round(result.unknownRate * 100) / 100,
+        tempo: result.tempo,
+        reliability: result.reliability || "",
+        at: now.toISOString().slice(0, 10),
+        ts: now.toISOString(),
+      };
+      const history = (Array.isArray(gamestats.assessmentHistory) ? gamestats.assessmentHistory : []).concat([entry]).slice(-50);
+      gamestats = Object.assign({}, gamestats, { assessment: entry, assessmentHistory: history });
+      store.saveGameStats(gamestats);
+    } catch (e) { /* Persistenz optional – nie crashen */ }
+    render();
+  }
+
+  // VM für die drei Phasen (intro/running/done) – eine Render-Route „assessment“.
+  function assessmentVM() {
+    const p = state.assessment;
+    if (!p) return { phase: "intro", total: assessmentTotalPlanned() };
+    if (p.phase === "running") {
+      const q = currentAssessmentQ();
+      const index = Math.max(0, p.asked.length - 1);
+      return {
+        phase: "running",
+        index: index, total: assessmentTotalPlanned(),
+        section: q && q.type === "free" ? "free" : "mc",
+        showHint: index < 3,
+        q: q ? {
+          id: q.id, type: q.type, level: q.level,
+          promptDe: q.promptDe, questionEs: q.questionEs || null,
+          options: q.type === "mc" ? q.options.slice() : null,
+        } : null,
+      };
+    }
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", review: assessmentReviewView(p), shareFormat: shareFormat() }, assessmentResultView(p.result));
+    return { phase: "intro", total: assessmentTotalPlanned() };
+  }
+
+  function assessmentResultView(r) {
+    const pct = (x) => Math.round((x || 0) * 100);
+    const skillOrder = ["understanding", "reaction", "vocab", "reading", "conjugation", "tenses", "grammar", "free"];
+    const skills = skillOrder
+      .filter((k) => r.skillBreakdown[k])
+      .map((k) => ({ skill: k, accuracy: pct(r.skillBreakdown[k].accuracy), unknownRate: pct(r.skillBreakdown[k].unknownRate) }));
+    return {
+      level: r.level,
+      scorePct: pct(r.finalScore),
+      accuracyPct: pct(r.accuracy),
+      unknownPct: pct(r.unknownRate),
+      wrongPct: pct(r.wrongRate),
+      correct: r.correct, total: r.total,
+      tempo: r.tempo,
+      note: r.note,
+      reliability: r.reliability,
+      skills,
+    };
+  }
+
+  function assessmentReviewView(p) {
+    const out = [];
+    for (let i = 0; i < p.asked.length; i++) {
+      const q = assessment.questionById(p.asked[i]);
+      if (!q) continue;
+      const a = p.answers[i] || { isUnknown: true };
+      const scored = assessment.scoreAnswer(q, a);
+      let yourText = null;
+      if (!a.isUnknown) {
+        if (q.type === "free") yourText = String(a.text || "").trim() || null;
+        else if (typeof a.selectedIndex === "number" && q.options) yourText = q.options[a.selectedIndex] || null;
+      }
+      const correctText = q.type === "free"
+        ? q.solutionEs || (q.accept && q.accept[0]) || ""
+        : (q.options ? q.options[q.correctIndex] : "");
+      out.push({
+        status: a.isUnknown ? "unknown" : (scored.isCorrect ? "correct" : "wrong"),
+        promptDe: q.promptDe,
+        questionEs: q.questionEs || null,
+        level: q.level,
         yourText: yourText,
         correctText: correctText,
         explanationDe: q.explanationDe || "",
@@ -5303,6 +5534,22 @@
     }, shareFormat());
   }
 
+  // Teilt das Nivel-Test-Ergebnis. Nutzt dasselbe „placement"-Sharepic (Niveau +
+  // Score) – der Bildaufbau passt für beide Tests.
+  function shareAssessment() {
+    if (!share) return;
+    const r = gamestats.assessment;
+    if (!r) return;
+    buzz(12);
+    share.shareImage("placement", {
+      userName: profileName(),
+      level: r.level,
+      scorePct: Math.round((r.finalScore || 0) * 100),
+      accuracyPct: Math.round((r.accuracy || 0) * 100),
+      tempoLabel: r.tempo ? t("assessment.tempo_" + r.tempo) : "",
+    }, shareFormat());
+  }
+
   // Teilt die gerade sichtbare Karte – egal ob Detailseite oder Lern-Sitzung.
   function shareCard() {
     if (!share) return;
@@ -5617,6 +5864,12 @@
     else if (action === "placement-unknown") placementUnknown();
     else if (action === "placement-free-submit") placementSubmitFree();
     else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
+    else if (action === "open-assessment") openAssessment();
+    else if (action === "assessment-start") startAssessmentTest();
+    else if (action === "assessment-choose") assessmentChoose(Number(el.dataset.index));
+    else if (action === "assessment-unknown") assessmentUnknown();
+    else if (action === "assessment-free-submit") assessmentSubmitFree();
+    else if (action === "assessment-retake") openAssessment();
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "set-trip-country") setTripCountry(el.dataset.country, el.dataset.dest);
     else if (action === "trip-clear") clearTripGoal();
@@ -5668,6 +5921,7 @@
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
     else if (action === "share-placement") sharePlacement();
+    else if (action === "share-assessment") shareAssessment();
     else if (action === "share-card") shareCard();
     else if (action === "share-historia") shareHistoria(el.dataset.id);
     else if (action === "share-hist-module") shareHistModule();
