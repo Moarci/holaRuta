@@ -3197,6 +3197,21 @@
         </span>
       </li>`).join("");
 
+    // Sprungmarken-Leiste (wie hist-nav/sz-nav): die Seite ist lang, ein Tipp
+    // springt direkt zum Abschnitt. Nur Chips für tatsächlich vorhandene Blöcke.
+    const navItems = [
+      topics && { id: "ft-tips", icon: "🎯", label: t("discover.ftNavTips") },
+      phrases && { id: "ft-phrases", icon: "💬", label: t("discover.ftNavPhrases") },
+      sharing && { id: "ft-share", icon: "📤", label: t("discover.ftNavShare") },
+      apps && { id: "ft-apps", icon: "📲", label: t("discover.ftNavApps") },
+      glossary && { id: "ft-words", icon: "🗣️", label: t("discover.ftNavWords") },
+      (vm.checklist && vm.checklist.length) && { id: "ft-kit", icon: "🎒", label: t("discover.ftNavKit") },
+    ].filter(Boolean);
+    const nav = navItems.length > 1
+      ? `<nav class="ft-nav" aria-label="${esc(t("discover.ftAreas"))}">${navItems.map((n) =>
+          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+      : "";
+
     return `
       <section class="screen">
         <div class="topbar">
@@ -3206,14 +3221,15 @@
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
         ${moduleShareBtn("fotos")}
+        ${nav}
 
-        ${topics ? `<h2 class="rg-head">${esc(t("discover.ftTips"))}</h2>${topics}` : ""}
-        ${phrases ? `<h2 class="rg-head">${esc(t("discover.ftPhrases"))}</h2>${phrases}` : ""}
-        ${sharing ? `<h2 class="rg-head">${esc(t("discover.ftShare"))}</h2>${sharing}` : ""}
-        ${apps ? `<h2 class="rg-head">${esc(t("discover.ftApps"))}</h2><p class="hm-intro">${esc(t("discover.ftAppsHint"))}</p>${apps}` : ""}
-        ${glossary ? `<h2 class="rg-head">${esc(t("discover.ftWords"))}</h2><ul class="rg-glosslist">${glossary}</ul>` : ""}
+        ${topics ? `<h2 class="rg-head" id="ft-tips">${esc(t("discover.ftTips"))}</h2>${topics}` : ""}
+        ${phrases ? `<h2 class="rg-head" id="ft-phrases">${esc(t("discover.ftPhrases"))}</h2>${phrases}` : ""}
+        ${sharing ? `<h2 class="rg-head" id="ft-share">${esc(t("discover.ftShare"))}</h2>${sharing}` : ""}
+        ${apps ? `<h2 class="rg-head" id="ft-apps">${esc(t("discover.ftApps"))}</h2><p class="hm-intro">${esc(t("discover.ftAppsHint"))}</p>${apps}` : ""}
+        ${glossary ? `<h2 class="rg-head" id="ft-words">${esc(t("discover.ftWords"))}</h2><ul class="rg-glosslist">${glossary}</ul>` : ""}
         ${(vm.checklist && vm.checklist.length)
-          ? `<h2 class="rg-head">${esc(t("discover.ftChecklist"))}</h2>
+          ? `<h2 class="rg-head" id="ft-kit">${esc(t("discover.ftChecklist"))}</h2>
              <p class="hm-intro">${esc(t("discover.ftChecklistHint"))}</p>
              <ul class="rg-regions">${checklist}</ul>`
           : ""}
