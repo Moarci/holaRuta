@@ -129,12 +129,14 @@ const server = http.createServer(async (req, res) => {
       friendSet(other).add(user); // im Mock beidseitig (Demo)
       return send(res, 200, { added: other });
     }
+    return send(res, 405, { error: "method not allowed" });
   }
   if (url.indexOf("/v1/friends/") === 0 && req.method === "DELETE") {
     if (!user) return send(res, 401, { error: "unauthorized" });
     const other = decodeURIComponent(url.slice("/v1/friends/".length));
+    if (!other) return send(res, 400, { error: "missing id" });
     friendSet(user).delete(other);
-    friendSet(other).delete(user);
+    if (friendships.has(other)) friendships.get(other).delete(user); // keinen Leer-Eintrag anlegen
     return send(res, 200, { removed: other });
   }
   if (url === "/v1/social/snapshot" && req.method === "PUT") {
@@ -147,7 +149,8 @@ const server = http.createServer(async (req, res) => {
   }
   if (url === "/v1/leaderboard" && req.method === "GET") {
     if (!user) return send(res, 401, { error: "unauthorized" });
-    const day = (req.url.split("?")[1] || "").replace(/^day=/, "");
+    const q = req.url.indexOf("?") >= 0 ? req.url.slice(req.url.indexOf("?") + 1) : "";
+    const day = new URLSearchParams(q).get("day") || ""; // robust: Reihenfolge/Encoding egal
     const ids = new Set([user, ...friendSet(user)]);
     const entries = [];
     for (const id of ids) {

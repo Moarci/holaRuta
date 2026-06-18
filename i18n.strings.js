@@ -2239,7 +2239,9 @@
     removeConfirm: "Diese Person aus deiner Rangliste entfernen?",
     loading: "Lädt…",
     failed: "Konnte nicht laden. Später erneut versuchen.",
-    cardsToday: (p) => `${p.n} ${p.n === 1 ? "Karte" : "Karten"} heute`,
+    loginPrompt: "E-Mail eingeben, um dich mit Freund:innen zu verbinden:",
+    loginCheckMail: "Bitte den Anmelde-Link in deiner E-Mail bestätigen.",
+    loginFailed: "Anmeldung fehlgeschlagen. Später erneut versuchen.",
   }, {
     navTitle: "Friends & ranking",
     title: "Friends & ranking",
@@ -2263,6 +2265,8 @@
     removeConfirm: "Remove this person from your ranking?",
     loading: "Loading…",
     failed: "Couldn't load. Try again later.",
-    cardsToday: (p) => `${p.n} ${p.n === 1 ? "card" : "cards"} today`,
+    loginPrompt: "Enter your email to connect with friends:",
+    loginCheckMail: "Please confirm the sign-in link in your email.",
+    loginFailed: "Sign-in failed. Try again later.",
   });
 })();

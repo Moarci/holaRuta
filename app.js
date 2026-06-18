@@ -5699,7 +5699,11 @@
         if (r && r.ok && r.body && r.body.code) { state.social = Object.assign({}, state.social, { code: r.body.code }); if (state.screen === "social") render(); }
       }).catch(() => { /* egal – Code ist optional */ });
     }
-    social.refresh(gamestats, { name: profileName() }).then((r) => {
+    // Eigene Id aus dem (gecachten) Freundes-Code ableiten – markiert die eigene
+    // Zeile auch dann zuverlässig, wenn ein Server kein `meId` mitliefert (sonst
+    // bekäme die eigene Zeile fälschlich einen „Entfernen"-Knopf).
+    const self = social.parseFriendCode(state.social.code || "");
+    social.refresh(gamestats, { name: profileName(), meId: self ? self.id : undefined }).then((r) => {
       state.social = Object.assign({}, state.social, { loading: false, error: false, board: (r && r.board) || null });
       if (state.screen === "social") render();
     }).catch(() => {
@@ -5715,13 +5719,13 @@
     if (!(social && social.enabled())) return;
     if (social.loggedIn()) { refreshSocial(); return; }
     let email = "";
-    try { email = window.prompt(t("profile.cloudEmailPrompt")) || ""; } catch (e) { email = ""; }
+    try { email = window.prompt(t("social.loginPrompt")) || ""; } catch (e) { email = ""; }
     email = email.trim();
     if (!email) return;
     social.login(email).then(() => {
       if (social.loggedIn()) { refreshSocial(); render(); }  // Mock: direkt eingeloggt
-      else showNotice(t("profile.cloudCheckMail"));          // echter Flow: Magic-Link/OTP
-    }).catch(() => showNotice(t("profile.cloudFailed")));
+      else showNotice(t("social.loginCheckMail"));           // echter Flow: Magic-Link/OTP
+    }).catch(() => showNotice(t("social.loginFailed")));
   }
 
   // Freund:in per Code hinzufügen. Vorab clientseitig validieren (klare Meldung

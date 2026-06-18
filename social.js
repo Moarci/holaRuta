@@ -197,7 +197,8 @@
 
   // Ein vollständiger Durchlauf für die UI: eigenen Snapshot veröffentlichen,
   // dann die Rangliste holen und mit dem reinen Kern sortieren/markieren.
-  // Gibt { ok, board, error } zurück. Macht NICHTS ohne enabled() + Login.
+  // Erfüllt mit { ok:true, board }; Fehler werden als rejectete Promise gemeldet
+  // (vom Aufrufer .catch-t). Macht NICHTS ohne enabled() + Login.
   function refresh(gamestats, opts) {
     if (!enabled() || !loggedIn()) return Promise.reject(new Error("not ready"));
     var o = isObj(opts) ? opts : {};
