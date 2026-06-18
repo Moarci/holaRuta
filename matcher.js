@@ -1,9 +1,11 @@
 /*
  * matcher.js  (SC.matcher) – prüft getippte Antworten. REINE FUNKTIONEN.
- * Großzügig: ignoriert Groß-/Kleinschreibung, Akzente (á=a), Satzzeichen
- * (¿¡?!.,;:), Klammern, Währungszeichen ($/€), Apostrophe, Mehrfach-Leerzeichen
- * und behandelt ß/ss als gleichwertig (Reise-Handys haben oft keine ß-Taste).
- * Slash und Gedankenstrich gelten als Wortgrenze.
+ * Großzügig: ignoriert Groß-/Kleinschreibung, Akzente (á=a), Apostrophe und
+ * Mehrfach-Leerzeichen und behandelt ß/ss als gleichwertig (Reise-Handys haben
+ * oft keine ß-Taste). Slash und Gedankenstrich gelten als Wortgrenze.
+ * Alles, was kein Buchstabe und keine Ziffer ist – Satzzeichen (¿¡?!.,;:),
+ * Klammern, Währung ($/€), sonstige Symbole, Emojis, versehentlicher Tippmüll –
+ * wird vor dem Vergleich entfernt. Antworten zählen also auch mit Fehleingaben.
  *
  * Bewusste Toleranz: die Akzent-Normalisierung (NFD) kollabiert auch ñ→n –
  * "ano" wird für "año" akzeptiert. Das ist gewollt: auf Tastaturen ohne ñ
@@ -23,8 +25,9 @@
       .normalize("NFD")
       .replace(/[̀-ͯ]/g, "")       // Akzente entfernen (á→a, ñ→n – bewusst, s.o.)
       .replace(/['’`´]/g, "")                // Apostrophe entfernen (geht's → gehts)
-      .replace(/[¿?¡!.,;:()$€"„“”«»]/g, "")  // Satzzeichen, Klammern, Währung entfernen
       .replace(/[\/\-–—]/g, " ")             // Slash, Binde-/Gedankenstrich als Wortgrenze
+      .replace(/[^\p{L}\p{N} ]/gu, "")       // ALLES übrige (Satzzeichen, Währung, Symbole,
+                                             // Emojis, Tippmüll) raus – siehe Kopfkommentar
       .replace(/\s+/g, " ")
       .trim();
   }
