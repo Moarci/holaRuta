@@ -61,6 +61,13 @@ test("encodeBundle: ungültige Items werden verworfen, leeres Bundle -> ''", () 
   assert.equal(ok.items.length, 1, "gültige Items bleiben, ungültige fallen raus");
 });
 
+test("encodeBundle/decodeBundle: deckelt bei 20 Items (Speicher-/Größenschutz)", () => {
+  const many = [];
+  for (let i = 0; i < 25; i++) many.push({ kind: "category", scope: "notfall" });
+  const dec = store.decodeBundle(store.encodeBundle({ items: many }));
+  assert.equal(dec.items.length, 20, "höchstens 20 Items im Bundle");
+});
+
 test("Bundle und Einzel-Aufgabe sind nicht verwechselbar", () => {
   const taskCode = store.encodeTask({ kind: "category", scope: "notfall" });
   const bundleCode = store.encodeBundle({ items: [{ kind: "category", scope: "notfall" }] });

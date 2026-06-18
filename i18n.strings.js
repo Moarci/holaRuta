@@ -1308,6 +1308,7 @@
     bgOrga: "🆘 Sicherheit & Orga",
     selCount: (p) => `${p.n} ausgewählt`,
     clearSel: "Auswahl leeren",
+    tooMany: (p) => `Maximal ${p.n} Ziele pro Bundle.`,
   }, {
     title: "Teacher mode",
     openHint: "For teachers & tour leaders: class overview and creating tasks.",
@@ -1370,6 +1371,7 @@
     bgOrga: "🆘 Safety & admin",
     selCount: (p) => `${p.n} selected`,
     clearSel: "Clear selection",
+    tooMany: (p) => `At most ${p.n} targets per bundle.`,
   });
 
   // ---------- task: Aufgabe öffnen (Lernenden-Seite) ----------

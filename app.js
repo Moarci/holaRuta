@@ -38,6 +38,7 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
   let subscribedTasks = store.loadTasks(); // abonnierte Aufgaben (mehrere parallel, persistent)
   const MAX_SUBSCRIBED_TASKS = 50;          // Deckel gegen Speicher-Überlauf
+  const MAX_TASK_ITEMS = 20;                // max. Ziele je Bundle (muss store.MAX_BUNDLE_ITEMS spiegeln)
 
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
@@ -3052,7 +3053,9 @@
     if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.targetPicker = null; render(); return; }
     const item = targetValueToItem(value), key = value;
     const idx = state.taskItems.findIndex((x) => itemKey(x) === key);
-    state.taskItems = idx >= 0 ? state.taskItems.filter((_, i) => i !== idx) : state.taskItems.concat([item]);
+    if (idx >= 0) { state.taskItems = state.taskItems.filter((_, i) => i !== idx); }
+    else if (state.taskItems.length >= MAX_TASK_ITEMS) { showNotice(t("teacher.tooMany", { n: MAX_TASK_ITEMS })); return; }
+    else { state.taskItems = state.taskItems.concat([item]); }
     render();
   }
 
@@ -3068,10 +3071,14 @@
       state.taskItems = state.taskItems.filter((it) => rm.indexOf(itemKey(it)) < 0);
     } else {
       const have = keys.slice();
+      let capped = false;
       (b.items || []).forEach((it) => {
         const k = itemKey(it);
-        if (have.indexOf(k) < 0) { have.push(k); state.taskItems = state.taskItems.concat([{ kind: it.kind, scope: it.scope }]); }
+        if (have.indexOf(k) >= 0) return;
+        if (state.taskItems.length >= MAX_TASK_ITEMS) { capped = true; return; }
+        have.push(k); state.taskItems = state.taskItems.concat([{ kind: it.kind, scope: it.scope }]);
       });
+      if (capped) showNotice(t("teacher.tooMany", { n: MAX_TASK_ITEMS }));
     }
     render();
   }
