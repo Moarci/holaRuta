@@ -1124,6 +1124,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dist__legend span { display: inline-flex; align-items: center; gap: 6px; }
 .dist__legend i { width: 10px; height: 10px; border-radius: 3px; }
 
+/* Meisterungs-Hinweis + Zwischenstufe "fast geschafft" */
+.mnote {
+  display: flex; flex-direction: column; gap: 6px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+  padding: 11px 13px; box-shadow: var(--shadow);
+}
+.mnote__firm { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.86rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mnote__firm i { width: 10px; height: 10px; border-radius: 3px; }
+.mnote__hint { font-size: 0.76rem; line-height: 1.4; color: var(--muted); }
+
 /* Auf Anhieb vs. nach Übung */
 .splitstat { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .splitstat__item {
@@ -1135,7 +1145,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Filter-Chips */
 .schips { display: flex; flex-wrap: wrap; gap: 8px; }
 .schip {
-  display: inline-flex; align-items: center; min-height: 44px;
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
   border: 1.5px solid var(--line); background: var(--card); color: var(--ink-soft);
   cursor: pointer; padding: 7px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 700;
   box-shadow: var(--shadow);
@@ -3043,9 +3053,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .trip__daily-cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .trip__count { font-size: 0.82rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
 .trip__count.is-done { color: var(--ok, #2F6B45); }
+.trip__count.is-over { color: var(--brand); font-weight: 800; }
 .trip__bar { height: 7px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .trip__bar-fill { display: block; height: 100%; background: var(--brand); border-radius: 999px; transition: width .25s ease; }
 .trip__bar-fill.is-done { background: var(--ok, #2F6B45); }
+/* Über dem Tagesziel: voller Balken im Marken-Terrakotta (statt grünem „erledigt“),
+   passend zur „Ziel übertroffen“-Zeile. */
+.trip__bar-fill.is-over { background: var(--brand); }
 
 /* Schnellwechsel Reiseland (Profil): horizontal scrollbare Länder-Chips. */
 .tripswitch { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
