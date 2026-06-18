@@ -28,7 +28,7 @@
       titleEn: "Teacher mode: bundles – one link, several tasks",
       items: [
         "📦 Neu im Lehrer-/Reiseleiter-Modus: Bundles. Statt für eine Reisevorbereitung mehrere Links einzeln zu bauen, stellst du jetzt mehrere Ziele zu EINEM teilbaren Link zusammen – ein Antippen abonniert bei den Lernenden alle Aufgaben auf einmal (sie laufen wie gewohnt parallel).",
-        "🎯 Fertige Vorlagen als Startpunkt: „Komplett: Kolumbien/Cartagena/Cusco …“ (mehrtägiger Plan + Pre-Arrival-Paket + Notfall & Geld), dazu „Survival-Set“ und „Lehrplan-Woche 1/2“. Eine Vorlage übernehmen und im selben Dialog frei anpassen – oder komplett eigene Bundles per Mehrfachauswahl bauen.",
+        "🎯 Fertige Vorlagen: „Komplett: Kolumbien/Cartagena/Medellín/Cusco/Mexiko-Stadt/Antigua/Buenos Aires“ (mehrtägiger Plan + Pre-Arrival-Paket + Notfall & Geld), dazu „Survival-Set“ und „Lehrplan-Woche 1/2“. Mehrere Bundles UND einzelne Ziele lassen sich frei kombinieren (nochmal tippen entfernt ein Bundle wieder) – oder komplett eigene Bundles per Mehrfachauswahl bauen.",
         "🔗 Bundle-Codes (HRB1.…) funktionieren über denselben Link/Code-Weg wie Einzelaufgaben – Einfügen, Eingabefeld und geteilte Links erkennen beides automatisch. Eine Auswahl = weiterhin eine einzelne Aufgabe (abwärtskompatibel).",
       ],
       itemsEn: [

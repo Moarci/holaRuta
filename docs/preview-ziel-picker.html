@@ -160,15 +160,17 @@
 
   // Auswahl als Menge von Schlüsseln "key:Label"
   var sel = new Set(["pretrip:Kolumbien"]);
-  var activeBundle = "";
 
+  function bundleFullyIn(b){ return b.items.every(function(k){ return sel.has(k); }); }
+  function activeBundleIds(){ return BUNDLES.filter(bundleFullyIn).map(function(b){ return b.id; }); }
   function summary(){
     var n = sel.size;
     if(!n) return {kind:"none"};
     if(n===1){ var only=[...sel][0].split(":"); var pfx={pretrip:"Pre-Trip",preset:"Pre-Arrival",cat:"Paket"}[only[0]];
                return {kind:"single", label:pfx+": "+only[1]}; }
-    var tpl = activeBundle ? BUNDLES.find(b=>b.id===activeBundle) : null;
-    return {kind:"bundle", label: tpl?tpl.label:"Eigenes Bundle", count:n};
+    var set=[...sel].sort().join("|");
+    var m = BUNDLES.find(function(b){ return b.items.slice().sort().join("|")===set; });
+    return {kind:"bundle", label: m?m.label:"Eigenes Bundle", count:n};
   }
   function renderField(){
     var s=summary(), el=document.getElementById("fieldText");
@@ -177,8 +179,9 @@
     else el.innerHTML='<span class="tgt-field__val tgt-field__val--none">Noch kein Ziel gewählt</span>';
   }
   function renderBody(){
+    var active2 = activeBundleIds();
     var bundleRows = BUNDLES.map(function(b){
-      var active=b.id===activeBundle;
+      var active=active2.indexOf(b.id)>=0;
       return '<button class="tgt-bundle'+(active?' is-active':'')+'" data-bundle="'+b.id+'">'+
         '<span class="tgt-bundle__icon">'+b.icon+'</span>'+
         '<span class="tgt-bundle__text"><span class="tgt-bundle__label">'+b.label+'</span>'+
@@ -212,15 +215,17 @@
   document.addEventListener("keydown", function(e){ if(e.key==="Escape") close(); });
   document.getElementById("body").addEventListener("click", function(e){
     var bundle=e.target.closest(".tgt-bundle");
-    if(bundle){ activeBundle=bundle.dataset.bundle; var b=BUNDLES.find(x=>x.id===activeBundle);
-                sel=new Set(b.items); renderBody(); renderField(); return; }
+    if(bundle){ var b=BUNDLES.find(x=>x.id===bundle.dataset.bundle);
+                if(bundleFullyIn(b)) b.items.forEach(function(k){ sel.delete(k); });
+                else b.items.forEach(function(k){ sel.add(k); });
+                renderBody(); renderField(); return; }
     var opt=e.target.closest(".tgt-opt"); if(!opt) return;
     var k=opt.dataset.key; if(sel.has(k)) sel.delete(k); else sel.add(k);
-    activeBundle=""; renderBody(); renderField();
+    renderBody(); renderField();
   });
   document.getElementById("scrim").addEventListener("click", function(e){
     if(e.target.id==="done") close();
-    if(e.target.id==="clear"){ sel=new Set(); activeBundle=""; renderBody(); renderField(); }
+    if(e.target.id==="clear"){ sel=new Set(); renderBody(); renderField(); }
   });
   document.getElementById("theme").onclick = function(){
     var d=document.documentElement.classList.toggle("dark");

@@ -1815,8 +1815,9 @@
     }
     // --- task: Bundle-Vorlagen + Mehrfachauswahl ---
     const selKeys = opts.selectedKeys || [];
+    const activeBundles = opts.activeBundleIds || [];
     const bundleRows = (opts.bundles || []).map((b) => {
-      const active = b.id === opts.activeBundleId;
+      const active = activeBundles.indexOf(b.id) >= 0;
       return `<button type="button" class="tgt-bundle${active ? " is-active" : ""}"
                 data-action="apply-bundle" data-bundle="${esc(b.id)}"${active ? ' aria-current="true"' : ""}>
                 <span class="tgt-bundle__icon" aria-hidden="true">${b.icon}</span>
@@ -2899,7 +2900,7 @@
           <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
         </div>
       </section>
-      ${vm.targetPicker === "task" ? targetPickerModal("task", { targets: vm.taskTargets, bundles: vm.bundles, selectedKeys: vm.taskItemKeys, activeBundleId: vm.activeBundleId }) : ""}
+      ${vm.targetPicker === "task" ? targetPickerModal("task", { targets: vm.taskTargets, bundles: vm.bundles, selectedKeys: vm.taskItemKeys, activeBundleIds: vm.activeBundleIds }) : ""}
       ${withTab ? tabbar("tarea") : ""}`;
   }
 

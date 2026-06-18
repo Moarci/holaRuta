@@ -1301,7 +1301,7 @@
     bundleCustom: "Eigenes Bundle",
     bundleCodeFor: (p) => `Bundle „${p.label}“ · ${p.n} Aufgaben`,
     bundleSectionTitle: "📦 Fertige Bundles",
-    bundleSectionHelp: "Kuratierte Sammlungen für typische Situationen – z. B. „Komplett: Kolumbien“ (Plan + Pre-Arrival + Notfall & Geld) oder „Survival-Set“. Tipp drauf, übernimm es als Startpunkt und passe es darunter frei an. So sparst du das Zusammenklicken.",
+    bundleSectionHelp: "Kuratierte Sammlungen für typische Situationen – z. B. „Komplett: Kolumbien“ (Plan + Pre-Arrival + Notfall & Geld) oder „Survival-Set“. Tipp drauf, um die Ziele dazuzunehmen – mehrere Bundles und einzelne Ziele lassen sich frei kombinieren. Nochmal tippen entfernt das Bundle wieder.",
     selCount: (p) => `${p.n} ausgewählt`,
     clearSel: "Auswahl leeren",
   }, {
@@ -1359,7 +1359,7 @@
     bundleCustom: "Custom bundle",
     bundleCodeFor: (p) => `Bundle “${p.label}” · ${p.n} tasks`,
     bundleSectionTitle: "📦 Ready-made bundles",
-    bundleSectionHelp: "Curated sets for typical situations – e.g. “Complete: Colombia” (plan + pre-arrival + emergency & money) or “Survival kit”. Tap one to use it as a starting point and tweak it freely below. Saves you the clicking.",
+    bundleSectionHelp: "Curated sets for typical situations – e.g. “Complete: Colombia” (plan + pre-arrival + emergency & money) or “Survival kit”. Tap one to add its targets – multiple bundles and individual targets combine freely. Tap again to remove the bundle.",
     selCount: (p) => `${p.n} selected`,
     clearSel: "Clear selection",
   });

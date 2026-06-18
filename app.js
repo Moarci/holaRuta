@@ -72,7 +72,6 @@
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
     taskItems: [],           // gewählte Aufgaben-Ziele im Formular: [{kind,scope}] – 1 = Einzelaufgabe, ≥2 = Bundle (überlebt Re-Render)
-    taskBundleId: "",        // Id der zuletzt angewandten Bundle-Vorlage ("" = frei zusammengestellt)
     targetPicker: null,      // offenes Ziel-Picker-Modal: 'task' | 'sheet' | null (Modo profe / Blatt)
     teacherTaskCodeLabel: "", // lesbare Beschriftung des erzeugten Codes (Einzelziel oder „Bundle … · N Aufgaben")
     taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
@@ -2971,7 +2970,7 @@
       bundles: bundlesVM(),                       // kuratierte Vorlagen
       taskItemKeys: items.map(itemKey),           // aktuell gewählte Ziele (als "kind:scope")
       taskSummary: taskSelectionSummary(),        // Feld-Anzeige (none/single/bundle)
-      activeBundleId: state.taskBundleId,         // markiert die angewandte Vorlage
+      activeBundleIds: activeBundleIds(),         // alle komplett enthaltenen Bundles (✓-Markierung)
       targetPicker: state.targetPicker,           // offenes Ziel-Picker-Modal? ('task' | null)
       taskTitle: state.taskTitle,                 // Titel-Feld vorbelegen
       taskDue: state.taskDue,                     // Frist-Feld vorbelegen
@@ -3016,16 +3015,33 @@
     return prefix + ": " + name;
   }
 
+  // Schlüssel ("kind:scope") der aktuellen Auswahl.
+  function taskItemKeys() { return state.taskItems.map(itemKey); }
+  // Ist JEDES Item eines Bundles in der Auswahl? (= Bundle gilt als „aktiv")
+  function bundleFullyIn(b, keys) {
+    return (b.items || []).length > 0 && (b.items || []).every((it) => keys.indexOf(itemKey(it)) >= 0);
+  }
+  // Bundles, deren Items komplett enthalten sind (für die ✓-Markierung im Picker).
+  function activeBundleIds() {
+    const keys = taskItemKeys();
+    return (data.BUNDLES || []).filter((b) => bundleFullyIn(b, keys)).map((b) => b.id);
+  }
+  // Deckt sich die Auswahl EXAKT mit einem Bundle? Dann zeigt das Feld dessen Namen.
+  function matchedBundle() {
+    const set = taskItemKeys().slice().sort().join("|");
+    return (data.BUNDLES || []).find((b) => (b.items || []).map(itemKey).slice().sort().join("|") === set) || null;
+  }
+
   // Wie das Ziel-Feld die aktuelle Auswahl zusammenfasst:
   //   0 Ziele  -> { kind:"none" }
   //   1 Ziel   -> { kind:"single", label } (Einzelaufgabe)
-  //   ≥2 Ziele -> { kind:"bundle", label, count } (Bundle: Vorlage-Name oder „Eigenes Bundle")
+  //   ≥2 Ziele -> { kind:"bundle", label, count } (exakter Bundle-Name oder „Eigenes Bundle")
   function taskSelectionSummary() {
     const items = state.taskItems;
     if (!items.length) return { kind: "none" };
     if (items.length === 1) return { kind: "single", label: taskTargetLabel(items[0]) };
-    const tpl = state.taskBundleId ? (data.BUNDLES || []).find((b) => b.id === state.taskBundleId) : null;
-    return { kind: "bundle", label: tpl ? natk(tpl, "label") : t("teacher.bundleCustom"), count: items.length };
+    const m = matchedBundle();
+    return { kind: "bundle", label: m ? natk(m, "label") : t("teacher.bundleCustom"), count: items.length };
   }
 
   // Ziel im Picker gewählt. ctx "sheet" = Aktivitätsblatt: genau EIN Ziel, danach
@@ -3037,23 +3053,31 @@
     const item = targetValueToItem(value), key = value;
     const idx = state.taskItems.findIndex((x) => itemKey(x) === key);
     state.taskItems = idx >= 0 ? state.taskItems.filter((_, i) => i !== idx) : state.taskItems.concat([item]);
-    state.taskBundleId = ""; // manuelle Änderung -> ab jetzt „Eigenes Bundle"
     render();
   }
 
-  // Bundle-Vorlage anwenden: Auswahl auf die Items der Vorlage setzen (als Start-
-  // punkt – die Lehrkraft kann danach im selben Picker frei nachjustieren).
-  function applyBundle(id) {
+  // Bundle umschalten: ist es schon komplett in der Auswahl, dessen Items wieder
+  // entfernen; sonst die Items dazunehmen (Vereinigung). So lassen sich mehrere
+  // Bundles UND Einzelziele frei kombinieren – ein Bundle ersetzt nichts mehr.
+  function toggleBundle(id) {
     const b = (data.BUNDLES || []).find((x) => x.id === id);
     if (!b) return;
-    state.taskItems = (b.items || []).map((it) => ({ kind: it.kind, scope: it.scope }));
-    state.taskBundleId = id;
+    const keys = taskItemKeys();
+    if (bundleFullyIn(b, keys)) {
+      const rm = (b.items || []).map(itemKey);
+      state.taskItems = state.taskItems.filter((it) => rm.indexOf(itemKey(it)) < 0);
+    } else {
+      const have = keys.slice();
+      (b.items || []).forEach((it) => {
+        const k = itemKey(it);
+        if (have.indexOf(k) < 0) { have.push(k); state.taskItems = state.taskItems.concat([{ kind: it.kind, scope: it.scope }]); }
+      });
+    }
     render();
   }
 
   function clearTaskSelection() {
     state.taskItems = [];
-    state.taskBundleId = "";
     render();
   }
 
@@ -5195,7 +5219,7 @@
     else if (action === "close-target-picker") { state.targetPicker = null; render(); }
     else if (action === "target-stop") { /* Klick auf die Modal-Karte: nicht schließen */ }
     else if (action === "pick-target") pickTarget(el.dataset.ctx, el.dataset.value);
-    else if (action === "apply-bundle") applyBundle(el.dataset.bundle);
+    else if (action === "apply-bundle") toggleBundle(el.dataset.bundle);
     else if (action === "clear-task-sel") clearTaskSelection();
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
