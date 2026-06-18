@@ -16,8 +16,12 @@
   "use strict";
 
   const HISTORY_MAX = 50;
-  // Ab diesem Intervall (Tage) gilt eine Karte als "gemeistert" (kommt erst in 1 Woche+ wieder).
-  const MASTERED_DAYS = 7;
+  // Ab diesem Intervall (Tage) gilt eine Karte als "gemeistert" (kommt erst in ~1 Woche wieder).
+  const MASTERED_DAYS = 5;
+  // Ab diesem Intervall (Tage), aber noch unter MASTERED_DAYS, gilt eine Karte als
+  // "fast geschafft" (in Festigung) – eine Zwischenstufe von "am Lernen", damit der
+  // Fortschritt zur Meisterung sichtbar wird und "0 gemeistert" am Anfang nicht entmutigt.
+  const FIRMING_DAYS = 3;
   // Unter dieser Trefferquote (%) bei >=2 Wiederholungen gilt eine Karte als "schwierig".
   const HARD_BELOW = 60;
 
@@ -77,12 +81,15 @@
       firstTry: seen > 0 && r.firstRating && r.firstRating !== "again" && again === 0,
       // Schwierig: mehrfach gesehen, aber niedrige Trefferquote.
       hard: seen >= 2 && rate !== null && rate < HARD_BELOW,
+      // Fast geschafft: noch "am Lernen", aber Intervall schon nahe an der Meisterung.
+      // Teilmenge von status === "learning" (verändert die Drei-Stufen-Verteilung nicht).
+      firming: status === "learning" && (r.interval || 0) >= FIRMING_DAYS,
     };
   }
 
   // Gesamtauswertung über eine Kartenliste + progress-Map.
   function overview(cards, progress) {
-    let neu = 0, learning = 0, mastered = 0;
+    let neu = 0, learning = 0, mastered = 0, firming = 0;
     let totalSeen = 0, totalCorrect = 0;
     let firstTry = 0, needPractice = 0, hard = 0;
 
@@ -91,6 +98,7 @@
       if (s.status === "new") neu++;
       else if (s.status === "mastered") mastered++;
       else learning++;
+      if (s.firming) firming++; // Teilmenge von "learning"
 
       totalSeen += s.seen;
       totalCorrect += s.correct;
@@ -100,7 +108,7 @@
 
     return {
       total: cards.length,
-      neu, learning, mastered,
+      neu, learning, mastered, firming,
       seenCards: learning + mastered,
       rate: totalSeen ? Math.round((totalCorrect / totalSeen) * 100) : null,
       firstTry, needPractice, hard,
@@ -109,5 +117,5 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.stats = { record, statusOf, cardSummary, overview, HARD_BELOW, MASTERED_DAYS };
+  window.SC.stats = { record, statusOf, cardSummary, overview, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS };
 })();

@@ -325,6 +325,7 @@
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
+      xp: xpVM(),
       overall: {
         mastered: overall.mastered,
         learning: overall.learning,
@@ -555,6 +556,35 @@
   }
 
   // Statistik-Übersicht: Kennzahlen + gefilterte/sortierte Kartenliste.
+  // Reise-Rang/XP fürs Profil & Cockpit. Spiegelt dieselbe XP-Leiter wie die
+  // Belohnungs-Inszenierung (SC.celebrate), damit der im Done-Screen vergebene
+  // XP-Stand auch dauerhaft sichtbar ist (nicht nur kurz nach der Runde).
+  // Liefert immer ein Objekt – fehlt celebrate.js, fällt es still auf Turista/0 XP.
+  function xpVM() {
+    const cel = window.SC && SC.celebrate;
+    const levels = (cel && cel.VIAJERO_LEVELS) || [];
+    const xp = Math.max(0, gamestats.xp || 0);
+    const level = (cel && cel.levelForXp)
+      ? cel.levelForXp(xp)
+      : { n: 0, name: "Turista", min: 0 };
+    const next = levels.find((l) => l.min > level.min) || null;
+    const span = next ? next.min - level.min : 0;
+    const into = xp - level.min;
+    // floor statt round: der Balken erreicht 100 % erst beim tatsächlichen
+    // Rang-Aufstieg, nicht schon ~1 XP davor (sonst „voll", aber „Noch 1 XP …").
+    const pct = next && span > 0
+      ? Math.max(0, Math.min(100, Math.floor((into / span) * 100)))
+      : 100;
+    return {
+      xp,
+      rankName: level.name,
+      rankN: level.n,
+      nextName: next ? next.name : null,
+      xpToNext: next ? Math.max(0, next.min - xp) : 0,
+      pct,
+    };
+  }
+
   function statsVM() {
     const all = allCards();
     const ov = stats.overview(all, progress);
@@ -584,6 +614,7 @@
 
     return {
       overview: ov,
+      xp: xpVM(),
       filter,
       filters: [
         { id: "answered", label: t("app.statAnswered"), count: ov.seenCards },
@@ -593,6 +624,7 @@
         { id: "all", label: t("app.all"), count: ov.total },
       ],
       list,
+      masteredDays: stats.MASTERED_DAYS,
       shareFormat: shareFormat(),
     };
   }
@@ -1166,6 +1198,9 @@
     const daysLeft = daysBetween(today, t.endDate); // null wenn Datum kaputt
     const todayCount = (gamestats.dailyCounts && gamestats.dailyCounts[today]) || 0;
     const perDay = t.perDay || 1;
+    // Karten über dem Tagesziel: für die "Ziel übertroffen"-Darstellung. Der Balken
+    // ist bei >= Ziel ohnehin voll, deshalb genügt hier der reine Überschuss-Wert.
+    const todayExtra = Math.max(0, todayCount - perDay);
     return {
       destination: t.destination,
       endDate: t.endDate,
@@ -1176,6 +1211,8 @@
       today: t.endDate === today,
       todayCount,
       todayDone: todayCount >= perDay,
+      todayOver: todayExtra > 0, // über dem Tagesziel -> eigene Darstellung
+      todayExtra,
       todayPct: Math.max(0, Math.min(100, Math.round((todayCount / perDay) * 100))),
     };
   }
@@ -5709,6 +5746,24 @@
     }, shareFormat());
   }
 
+  // Teilt den eigenen Reise-Rang (XP/Viajero) als Sharepic. Quelle ist xpVM(),
+  // also derselbe Stand wie im Rang-Banner – funktioniert aus der Statistik
+  // heraus jederzeit, unabhängig von einer laufenden Runde.
+  function shareRank() {
+    if (!share) return;
+    const xp = xpVM();
+    buzz(12);
+    share.shareImage("rank", {
+      userName: profileName(),
+      rankName: xp.rankName,
+      xp: xp.xp,
+      nextName: xp.nextName,
+      xpToNext: xp.xpToNext,
+      pct: xp.pct,
+      rankN: xp.rankN,
+    }, shareFormat());
+  }
+
   // Teilt einen freigeschalteten Ruta-Pass-Stempel als Sharepic. Wertet die
   // Badges frisch aus, damit Name/Gruppe/Sammelstand stimmen, und teilt nur,
   // wenn der Stempel auch wirklich freigeschaltet ist.
@@ -6144,6 +6199,7 @@
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
+    else if (action === "share-rank") shareRank();
     else if (action === "share-placement") sharePlacement();
     else if (action === "share-assessment") shareAssessment();
     else if (action === "share-card") shareCard();

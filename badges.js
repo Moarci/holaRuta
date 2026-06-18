@@ -25,14 +25,16 @@
   "use strict";
 
   // "Gemeistert" ist die Wahrheit aus stats.js (SC.stats.statusOf). Wir greifen
-  // darauf zu, statt die Regel (interval >= 7) zu duplizieren – so können
-  // Statistik und Ruta-Pass nie auseinanderlaufen. Der Fallback greift nur, falls
-  // stats (noch) nicht geladen ist (Graceful Degradation, eigenständig testbar).
-  const MASTERED_DAYS_FALLBACK = 7;
+  // darauf zu, statt die Regel zu duplizieren – so können Statistik und Ruta-Pass
+  // nie auseinanderlaufen. Der Fallback greift nur, falls stats (noch) nicht
+  // geladen ist (Graceful Degradation, eigenständig testbar); er nimmt die
+  // Schwelle aus stats, wenn vorhanden, sonst den synchron gehaltenen Default.
+  const MASTERED_DAYS_FALLBACK = 5;
   function isMastered(r) {
     const st = window.SC && window.SC.stats;
     if (st && st.statusOf) return st.statusOf(r) === "mastered";
-    return (r.seen || 0) > 0 && (r.interval || 0) >= MASTERED_DAYS_FALLBACK;
+    const days = (st && st.MASTERED_DAYS) || MASTERED_DAYS_FALLBACK;
+    return (r.seen || 0) > 0 && (r.interval || 0) >= days;
   }
 
   // Gruppen für die Anzeige im Ruta-Pass.

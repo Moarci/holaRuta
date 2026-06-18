@@ -264,7 +264,11 @@
     tripToday: "Heute geht's los! 🎒",
     tripCountdown: (p) => `Noch <b>${p.n}</b> ${p.n === 1 ? "Tag" : "Tage"} bis ${p.dest}`,
     tripDailyCap: "Heutiges Pensum",
-    tripDailyCount: (p) => `${p.done}/${p.perDay} Karten${p.complete ? " ✓" : ""}`,
+    // Über dem Tagesziel schaltet die Anzeige um: statt "67/15" (wirkt wie ein
+    // kaputter Bruch) zeigt sie das geschaffte Ziel plus den Überschuss.
+    tripDailyCount: (p) => p.over > 0
+      ? `🔥 ${p.done} Karten · +${p.over} über dem Ziel`
+      : `${p.done}/${p.perDay} Karten${p.complete ? " ✓" : ""}`,
     tripSwitchCap: "Reiseland schnell wechseln",
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Onboarding (einmaliger Willkommens-Schritt)
@@ -449,7 +453,9 @@
     tripToday: "Off you go today! 🎒",
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripDailyCap: "Today's goal",
-    tripDailyCount: (p) => `${p.done}/${p.perDay} cards${p.complete ? " ✓" : ""}`,
+    tripDailyCount: (p) => p.over > 0
+      ? `🔥 ${p.done} cards · +${p.over} over goal`
+      : `${p.done}/${p.perDay} cards${p.complete ? " ✓" : ""}`,
     tripSwitchCap: "Quick-switch country",
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
     onboardSlideSkip: "Skip",
@@ -1873,7 +1879,10 @@
     statEasy: "Einfach",
     statNew: "Neu",
     statLearning: "Am Lernen",
+    statFirming: "Fast geschafft",
     statMastered: "Gemeistert",
+    masteryFirming: (p) => `${p.n} fast geschafft`,
+    masteryHint: (p) => `Gemeistert = sobald der Wiederholungs-Abstand ${p.days} Tage erreicht – meist nach mehrmals richtig über mehrere Tage. Vorher zählt es als „fast geschafft“.`,
     routeNew: "Neu",
     routeLearning: "Am Lernen",
     routeMastered: "Gemeistert",
@@ -1896,6 +1905,10 @@
     seenTimes: (p) => `${p.n}× gesehen`,
     statNewWord: "neu",
     forgotTimes: (p) => `${p.n}× vergessen`,
+    xpPoints: (p) => `${p.n} XP`,
+    xpToNext: (p) => `Noch ${p.n} XP bis ${p.rank}`,
+    xpMaxRank: "Höchster Rang erreicht 🏆",
+    shareRank: "Rang teilen",
 
     // Karten-Detail
     cardFirstTry: "🎯 Auf Anhieb gewusst",
@@ -1991,7 +2004,10 @@
     statEasy: "Easy",
     statNew: "New",
     statLearning: "Learning",
+    statFirming: "Almost there",
     statMastered: "Mastered",
+    masteryFirming: (p) => `${p.n} almost there`,
+    masteryHint: (p) => `Mastered = once the review gap reaches ${p.days} days – usually after several correct reviews across multiple days. Before that it counts as "almost there".`,
     routeNew: "New",
     routeLearning: "Learning",
     routeMastered: "Mastered",
@@ -2014,6 +2030,10 @@
     seenTimes: (p) => `seen ${p.n}×`,
     statNewWord: "new",
     forgotTimes: (p) => `forgotten ${p.n}×`,
+    xpPoints: (p) => `${p.n} XP`,
+    xpToNext: (p) => `${p.n} XP to ${p.rank}`,
+    xpMaxRank: "Highest rank reached 🏆",
+    shareRank: "Share rank",
 
     cardFirstTry: "🎯 Knew first time",
     cardNeededPractice: "🔁 Needed practice",
@@ -2154,6 +2174,15 @@
     asLevelCap: "Mein Niveau",
     captionAssessmentHead: (p) => `📋 Mein Spanisch-Niveau: ${p.level}`,
     captionAssessment: "Genau eingestuft mit dem HolaRuta Nivel-Test (A0–C1). 🌎",
+    myRank: "🧭 MEIN REISE-RANG",
+    myRankName: (p) => `🧭 REISE-RANG VON ${String(p.name).toUpperCase()}`,
+    rankXpCap: "XP",
+    rankNextCap: "Nächster Rang",
+    rankToGo: "XP fehlen",
+    rankReached: "Höchster Rang",
+    rankProgress: "Fortschritt",
+    captionRankHead: (p) => `🧭 Mein Reise-Rang: ${p.rank} · ${p.xp} XP`,
+    captionRank: "XP gesammelt mit HolaRuta – dein Reise-Spanisch für echte Situationen. 🌎",
   }, {
     sideNative: "ENGLISH",
     myProgress: "MY PROGRESS",
@@ -2196,5 +2225,14 @@
     asLevelCap: "My level",
     captionAssessmentHead: (p) => `📋 My Spanish level: ${p.level}`,
     captionAssessment: "Precisely placed with the HolaRuta Level Test (A0–C1). 🌎",
+    myRank: "🧭 MY TRAVEL RANK",
+    myRankName: (p) => `🧭 ${String(p.name).toUpperCase()}'S TRAVEL RANK`,
+    rankXpCap: "XP",
+    rankNextCap: "Next rank",
+    rankToGo: "XP to go",
+    rankReached: "Top rank",
+    rankProgress: "Progress",
+    captionRankHead: (p) => `🧭 My travel rank: ${p.rank} · ${p.xp} XP`,
+    captionRank: "XP earned with HolaRuta – your travel Spanish for real situations. 🌎",
   });
 })();

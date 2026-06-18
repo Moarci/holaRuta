@@ -311,9 +311,9 @@
         <span class="trip__daily">
           <span class="trip__daily-head">
             <span class="trip__daily-cap">${esc(t("home.tripDailyCap"))}</span>
-            <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripDailyCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
+            <span class="trip__count ${trip.todayOver ? "is-over" : trip.todayDone ? "is-done" : ""}">${esc(t("home.tripDailyCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone, over: trip.todayExtra }))}</span>
           </span>
-          <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
+          <span class="trip__bar"><span class="trip__bar-fill ${trip.todayOver ? "is-over" : trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
         </span>
       </button>`;
   }
@@ -527,12 +527,35 @@
   // Balken (gemeistert / am Lernen / neu) mit Legende statt nur der Meister-Quote,
   // die ganz am Anfang 0 % bleibt und mit leerem Balken wie ein Fehler wirkt.
   // Segmente mit Zähler 0 fallen weg (sonst zeigt min-width einen falschen Splitter).
+  // Reise-Rang/XP als kleines Banner. Macht den in der Belohnungs-Inszenierung
+  // (Done-Screen) vergebenen XP-Stand dauerhaft sichtbar – im Cockpit, im Profil
+  // und in der Statistik. Ohne XP-Stand (frischer Start) bleibt es still, statt
+  // einen leeren Balken zu zeigen.
+  function xpBanner(xp) {
+    if (!xp || (!xp.xp && xp.rankN === 0)) return "";
+    const hint = xp.nextName
+      ? t("profile.xpToNext", { n: xp.xpToNext, rank: xp.nextName })
+      : t("profile.xpMaxRank");
+    return `
+      <div class="xpbanner">
+        <div class="xpbanner__head">
+          <span class="xpbanner__rank">🧭 ${esc(xp.rankName)}</span>
+          <span class="xpbanner__xp">${esc(t("profile.xpPoints", { n: xp.xp }))}</span>
+        </div>
+        <div class="xpbanner__track" role="img" aria-label="${esc(hint)}">
+          <div class="xpbanner__fill" style="width:${xp.pct}%"></div>
+        </div>
+        <p class="xpbanner__hint">${esc(hint)}</p>
+      </div>`;
+  }
+
   function progressCard(vm) {
     const ov = vm.overall;
     const streakLine = vm.streak > 0 ? t("profile.streakInRow", { n: vm.streak }) : t("profile.streakFirst");
     const seg = (n, color) => (ov.total && n > 0) ? `<span style="flex:${n};background:${color}"></span>` : "";
     return `
       <div class="profcard">
+        ${xpBanner(vm.xp)}
         <p class="profcard__streak">${esc(streakLine)}</p>
         <div class="dist__bar" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct: ov.pct }))}">
           ${seg(ov.mastered, "var(--ok)")}${seg(ov.learning, "var(--warn)")}${seg(ov.neu, "rgba(45,27,18,0.16)")}
@@ -1521,8 +1544,16 @@
   const STATUS_META = {
     new:      { label: () => t("profile.statNew"),       color: "var(--muted)" },
     learning: { label: () => t("profile.statLearning"),  color: "var(--warn)" },
+    firming:  { label: () => t("profile.statFirming"),   color: "var(--easy)" },
     mastered: { label: () => t("profile.statMastered"),  color: "var(--ok)" },
   };
+
+  // Anzeige-Status: "fast geschafft" ist eine Teilmenge von "am Lernen" (statusOf
+  // kennt es nicht – das hält Badges/Verteilung/Strecke bei drei Stufen). Nur für
+  // Punkt/Label in Liste & Detail blenden wir die Zwischenstufe ein.
+  function displayStatus(s) {
+    return s.status === "learning" && s.firming ? "firming" : s.status;
+  }
 
   // Verlaufs-Punkte: je Bewertung ein farbiger Punkt (rot/grün/blau).
   function historyDots(hist) {
@@ -1619,6 +1650,14 @@
         <div class="splitstat__item">${t("profile.splitNeedPractice", { n: ov.needPractice })}</div>
       </div>`;
 
+    // Erklärt, was "gemeistert" bedeutet, und zeigt die Zwischenstufe "fast
+    // geschafft" – so wirkt "0 gemeistert" am Anfang nicht entmutigend.
+    const masteryNote = ov.seenCards > 0 ? `
+      <div class="mnote">
+        ${ov.firming > 0 ? `<span class="mnote__firm"><i style="background:var(--easy)"></i>${esc(t("profile.masteryFirming", { n: ov.firming }))}</span>` : ""}
+        <span class="mnote__hint">${esc(t("profile.masteryHint", { days: vm.masteredDays }))}</span>
+      </div>` : "";
+
     const chips = vm.filters
       .map((f) => `<button class="schip ${vm.filter === f.id ? "is-active" : ""}" data-action="set-stats-filter" data-filter="${f.id}">${esc(f.label)} <span class="schip__n">${f.count}</span></button>`)
       .join("");
@@ -1634,9 +1673,12 @@
           <div class="topbar__title">${esc(t("profile.statsTitle"))}</div>
           <div class="topbar__counter">${ov.seenCards}/${ov.total}</div>
         </div>
+        ${xpBanner(vm.xp)}
+        ${vm.xp && vm.xp.xp ? shareBlock(vm.shareFormat, "share-rank", t("profile.shareRank")) : ""}
         ${kpis}
         ${routeMap(ov)}
         ${distribution}
+        ${masteryNote}
         ${firstTry}
         ${ov.seenCards > 0 ? shareBlock(vm.shareFormat, "share-stats", t("common.shareProgress")) : ""}
         <div class="schips" role="group" aria-label="${esc(t("profile.statsFilter"))}">${chips}</div>
@@ -1649,7 +1691,7 @@
 
   // Eine Zeile in der Statistik-Liste (klickbar -> Detailseite).
   function statRow(r) {
-    const meta = STATUS_META[r.s.status] || STATUS_META.new;
+    const meta = STATUS_META[displayStatus(r.s)] || STATUS_META.new;
     const seen = r.s.seen > 0 ? t("profile.seenTimes", { n: r.s.seen }) : t("profile.statNewWord");
     return `
       <button class="statrow" data-action="open-card" data-id="${esc(r.id)}" data-back="stats">
@@ -1676,7 +1718,7 @@
         </section>`;
     }
     const s = vm.s;
-    const meta = STATUS_META[s.status] || STATUS_META.new;
+    const meta = STATUS_META[displayStatus(s)] || STATUS_META.new;
     const accent = vm.accent;
     const tip = vm.tip ? `<div class="cardx__tip">🗣️ ${esc(vm.tip)}</div>` : "";
 
