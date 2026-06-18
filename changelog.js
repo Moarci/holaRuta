@@ -22,6 +22,34 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.95.0",
+      date: "2026-06-18",
+      title: "Modo profe: Bundles – ein Link, mehrere Aufgaben",
+      titleEn: "Teacher mode: bundles – one link, several tasks",
+      items: [
+        "📦 Neu im Lehrer-/Reiseleiter-Modus: Bundles. Statt für eine Reisevorbereitung mehrere Links einzeln zu bauen, stellst du jetzt mehrere Ziele zu EINEM teilbaren Link zusammen – ein Antippen abonniert bei den Lernenden alle Aufgaben auf einmal (sie laufen wie gewohnt parallel).",
+        "🎯 Fertige Vorlagen in vier Gruppen: „Reiseziel-Komplett“ (Plan + Pre-Arrival + Notfall & Geld – automatisch für ALLE Reiseziele, aktuell 33), „Kurs & Lehrplan“ (Wochen 1–3 + Grammatik-Block), „Alltags-Situationen“ (Restaurant, Markt, Unterwegs, Unterkunft, Ausgehen, Strand) und „Sicherheit & Orga“ (Survival-Set, Gesundheit, Ankommen). Mehrere Bundles UND einzelne Ziele lassen sich frei kombinieren (nochmal tippen entfernt ein Bundle wieder) – oder komplett eigene Bundles per Mehrfachauswahl bauen.",
+        "🔗 Bundle-Codes (HRB1.…) funktionieren über denselben Link/Code-Weg wie Einzelaufgaben – Einfügen, Eingabefeld und geteilte Links erkennen beides automatisch. Eine Auswahl = weiterhin eine einzelne Aufgabe (abwärtskompatibel).",
+      ],
+      itemsEn: [
+        "📦 New in teacher / tour-guide mode: bundles. Instead of building several links one by one for a trip prep, you now combine multiple targets into ONE shareable link – a single tap subscribes learners to all tasks at once (they run in parallel as usual).",
+        "🎯 Ready-made templates in four groups: “Destination complete” (plan + pre-arrival + emergency & money – generated for EVERY destination, currently 33), “Course & syllabus” (weeks 1–3 + a grammar block), “Everyday situations” (restaurant, market, transport, accommodation, going out, beach) and “Safety & admin” (survival kit, health, arrival). Multiple bundles AND individual targets combine freely (tap again to remove a bundle) – or build entirely custom bundles via multi-select.",
+        "🔗 Bundle codes (HRB1.…) work over the same link/code path as single tasks – pasting, the input field and shared links detect both automatically. A single selection still creates one individual task (backward compatible).",
+      ],
+    },
+    {
+      version: "1.94.0",
+      date: "2026-06-18",
+      title: "Modo profe: Ziel-Auswahl als erklärtes Modal statt Dropdown",
+      titleEn: "Teacher mode: target selection as an explained modal, not a dropdown",
+      items: [
+        "🎯 Im Lehrer-/Reiseleiter-Modus (und im Aktivitätsblatt) lief die Ziel-Auswahl bisher über ein nüchternes System-Dropdown – auf dem Handy eine endlose Radiobutton-Liste ohne jede Erklärung. Jetzt öffnet ein Tipp auf das Ziel-Feld ein aufgeräumtes Modal: die drei Gruppen „Pre-Trip-Pläne“, „Pre-Arrival-Pakete“ und „Ganzes Paket (üben)“ stehen klar getrennt, jede mit einer kurzen Erklärung, WAS sie ist und WANN du sie als Lehrkraft/Reiseleitung wählen solltest. Die aktuelle Auswahl wird direkt im Feld angezeigt, ein Häkchen markiert das gewählte Ziel.",
+      ],
+      itemsEn: [
+        "🎯 In teacher / tour-guide mode (and on the activity sheet) the target selection used to be a plain system dropdown – on a phone an endless radio-button list with no explanation at all. Now tapping the target field opens a tidy modal: the three groups “Pre-trip plans”, “Pre-arrival packs” and “Whole pack (practice)” are clearly separated, each with a short note on WHAT it is and WHEN you should pick it as a teacher/guide. The current choice shows right in the field, and a checkmark marks the selected target.",
+      ],
+    },
+    {
       version: "1.93.0",
       date: "2026-06-18",
       title: "Erscheinungsbild im Stil deines Reiselands",

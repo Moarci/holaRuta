@@ -226,6 +226,51 @@
     };
   }
 
+  // Bundle = mehrere Ziele in EINEM Code (HRB1.…). Die Lehrkraft teilt einen
+  // Link, der beim Lernenden mehrere Aufgaben parallel abonniert. Eigenes Tag
+  // ("holaruta-bundle") zur Validierung; max. 20 Ziele als Speicher-/Größen-Deckel.
+  const MAX_BUNDLE_ITEMS = 20;
+  function encodeBundle(bundle) {
+    if (!isPlainObject(bundle) || !Array.isArray(bundle.items)) return "";
+    const items = [];
+    bundle.items.forEach((it) => {
+      if (!isPlainObject(it)) return;
+      if (["pretrip", "preset", "category"].indexOf(it.kind) < 0) return;
+      if (typeof it.scope !== "string" || !it.scope) return;
+      if (items.length < MAX_BUNDLE_ITEMS) items.push({ kind: it.kind, scope: it.scope });
+    });
+    if (!items.length) return "";
+    try {
+      const payload = { app: "holaruta-bundle", v: 1, items: items };
+      if (bundle.title) payload.title = String(bundle.title).slice(0, 80);
+      if (bundle.due) payload.due = String(bundle.due);
+      return "HRB1." + b64encode(JSON.stringify(payload));
+    } catch (e) { return ""; }
+  }
+
+  function decodeBundle(code) {
+    if (typeof code !== "string") return null;
+    let s = code.trim();
+    if (s.indexOf("HRB1.") === 0) s = s.slice(5);
+    if (!s) return null;
+    let obj = null;
+    try { obj = JSON.parse(b64decode(s)); } catch (e) { return null; }
+    if (!isPlainObject(obj) || obj.app !== "holaruta-bundle" || !Array.isArray(obj.items)) return null;
+    const items = [];
+    obj.items.forEach((it) => {
+      if (!isPlainObject(it)) return;
+      if (["pretrip", "preset", "category"].indexOf(it.kind) < 0) return;
+      if (typeof it.scope !== "string" || !it.scope) return;
+      if (items.length < MAX_BUNDLE_ITEMS) items.push({ kind: it.kind, scope: it.scope });
+    });
+    if (!items.length) return null;
+    return {
+      items: items,
+      title: typeof obj.title === "string" ? obj.title.slice(0, 80) : "",
+      due: /^\d{4}-\d{2}-\d{2}$/.test(obj.due) ? obj.due : "",
+    };
+  }
+
   // Spiel-Zähler fürs Badge-System ("Ruta-Pass"): Streak, Tageszeit, "Nochmal"-
   // Drücke und die Map freigeschalteter Badges. Defaults für alte/leere Stände.
   function freshGameStats() {
@@ -378,6 +423,8 @@
     readBackup,
     encodeTask,
     decodeTask,
+    encodeBundle,
+    decodeBundle,
     loadTasks,
     saveTasks: (l) => writeJson(TASKS_KEY, Array.isArray(l) ? l : []),
     freshGameStats,

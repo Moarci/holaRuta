@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HolaRuta · Vorschau: Ziel-Picker & Bundles (Modo profe)</title>
+<style>
+  /* --- Design-Tokens aus styles.css (Light + Dark) --- */
+  :root{
+    --surface:#F7EFE3; --card:#FFFDF6; --ink:#2D1B12; --ink-soft:#6E5A4C; --muted:#6E5848;
+    --line:rgba(45,27,18,.14); --brand:#C2502E; --brand-ink:#A23E20; --ok:#3F7355;
+    --r-lg:26px; --r-md:16px; --maxw:460px;
+    --font-display:"Bricolage Grotesque","Segoe UI",-apple-system,BlinkMacSystemFont,sans-serif;
+    --font:"Instrument Sans","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,sans-serif;
+  }
+  html.dark{
+    --surface:#17100C; --card:#221811; --ink:#F0E6D8; --ink-soft:#C3B2A1; --muted:#A8917D;
+    --line:rgba(251,243,228,.12); --brand:#E06A40; --brand-ink:#F0996B; --ok:#5FA77C;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);background:var(--surface);color:var(--ink);
+       min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px;}
+  .wrap{width:min(100%,var(--maxw));}
+  .demo-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;}
+  .demo-bar h1{font-family:var(--font-display);font-size:1.05rem;margin:0;color:var(--brand-ink);}
+  .demo-toggle{font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--line);
+       background:var(--card);color:var(--ink);border-radius:999px;padding:7px 14px;}
+  .demo-hint{font-size:.82rem;color:var(--muted);margin:0 0 18px;line-height:1.5;}
+
+  /* --- Mini-Nachbau des Modo-profe-Formulars --- */
+  .teacher-h3{font-family:var(--font-display);margin:0 0 4px;font-size:1.1rem;color:var(--ink);}
+  .teacher-sub2{margin:0 0 10px;font-size:.88rem;color:var(--ink-soft);line-height:1.5;}
+  .task-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .task-input{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-md);
+       background:var(--card);color:var(--ink);min-width:0;flex:1 1 12em;}
+  .teacher-btn--main{font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--brand);
+       background:var(--brand);color:#fff;border-radius:var(--r-md);padding:9px 14px;}
+
+  /* ===== ZIEL-PICKER (1:1 aus styles.css) ===== */
+  .tgt-field{flex:1 1 14em;display:flex;align-items:center;gap:10px;text-align:left;font:inherit;
+    padding:8px 12px;min-width:0;cursor:pointer;border:1px solid var(--line);border-radius:var(--r-md);
+    background:var(--card);color:var(--ink);transition:border-color .15s ease;}
+  .tgt-field:hover{border-color:color-mix(in srgb,var(--brand) 50%,var(--line));}
+  .tgt-field__text{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px;}
+  .tgt-field__kicker{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--brand-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tgt-field__val{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tgt-field__val--none{color:var(--muted);font-weight:600;}
+  .tgt-field__change{flex:none;font-size:.8rem;font-weight:800;color:var(--brand-ink);white-space:nowrap;}
+
+  .tgt-scrim{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:18px;
+    background:rgba(36,21,16,.55);animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .tgt-modal{width:min(94%,calc(var(--maxw) - 24px));max-height:min(86vh,760px);display:flex;
+    flex-direction:column;text-align:left;background:var(--card);
+    border:1.5px solid color-mix(in srgb,var(--brand) 45%,var(--line));border-radius:var(--r-lg);
+    overflow:hidden;box-shadow:0 18px 44px -12px rgba(45,27,18,.5);animation:in .25s ease;}
+  @keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .tgt-modal__head{display:flex;align-items:center;gap:10px;padding:18px 18px 10px;}
+  .tgt-modal__title{flex:1 1 auto;margin:0;font-family:var(--font-display);font-weight:800;
+    font-size:1.2rem;color:var(--brand-ink);line-height:1.2;}
+  .tgt-modal__x{flex:none;width:34px;height:34px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--line);background:transparent;color:var(--ink-soft);font-size:1rem;
+    line-height:1;display:grid;place-items:center;}
+  .tgt-modal__intro{margin:0;padding:0 18px 12px;font-size:.9rem;line-height:1.5;color:var(--ink-soft);}
+  .tgt-modal__body{overflow-y:auto;padding:0 18px;display:flex;flex-direction:column;gap:16px;}
+  .tgt-group{display:flex;flex-direction:column;gap:6px;}
+  .tgt-group__title{margin:0;font-size:.98rem;font-weight:800;color:var(--ink);}
+  .tgt-group__help{margin:0 0 4px;font-size:.84rem;line-height:1.45;color:var(--ink-soft);
+    background:color-mix(in srgb,var(--brand) 7%,transparent);
+    border-left:3px solid color-mix(in srgb,var(--brand) 55%,var(--line));
+    border-radius:0 var(--r-md) var(--r-md) 0;padding:8px 11px;}
+  .tgt-opts{display:flex;flex-direction:column;gap:6px;}
+  .tgt-opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;
+    font:inherit;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-md);
+    background:var(--card);color:var(--ink);transition:border-color .15s ease,background .15s ease;}
+  .tgt-opt:hover{border-color:color-mix(in srgb,var(--brand) 45%,var(--line));}
+  .tgt-opt.is-active{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--card));}
+  .tgt-opt__label{flex:1 1 auto;font-weight:700;}
+  .tgt-opt__check{flex:none;color:var(--brand-ink);font-weight:800;}
+  /* Bundle-Vorlagen */
+  .tgt-bundle{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;font:inherit;
+    padding:10px 13px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);color:var(--ink);
+    transition:border-color .15s ease,background .15s ease;}
+  .tgt-bundle:hover{border-color:color-mix(in srgb,var(--brand) 45%,var(--line));}
+  .tgt-bundle.is-active{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--card));}
+  .tgt-bundle__icon{flex:none;font-size:1.2rem;}
+  .tgt-bundle__text{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px;}
+  .tgt-bundle__label{font-weight:700;}
+  .tgt-bundle__meta{font-size:.76rem;color:var(--muted);font-weight:700;}
+  .tgt-subhead{margin:12px 0 6px;font-size:.8rem;font-weight:800;letter-spacing:.02em;color:var(--brand-ink);}
+  .tgt-subhead:first-of-type{margin-top:2px;}
+  .tgt-modal__foot{padding:14px 18px 18px;}
+  .tgt-modal__foot--task{display:flex;align-items:center;gap:10px;justify-content:space-between;}
+  .tgt-foot__count{font-size:.82rem;font-weight:800;color:var(--brand-ink);}
+  .tgt-foot__btns{display:flex;align-items:center;gap:8px;}
+  .tgt-clear{font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--line);background:transparent;
+    color:var(--ink-soft);border-radius:var(--r-md);padding:9px 13px;}
+  .cta{font:inherit;font-weight:800;cursor:pointer;border:1px solid var(--brand);background:var(--brand);
+    color:#fff;border-radius:var(--r-md);padding:11px 16px;}
+  [hidden]{display:none!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="demo-bar">
+    <h1>🧑‍🏫 Vorschau · Ziel-Picker & Bundles</h1>
+    <button class="demo-toggle" id="theme">🌙 Dark</button>
+  </div>
+  <p class="demo-hint">Interaktive Vorschau des Modo profe. Tippe aufs Ziel-Feld → das Modal öffnet sich.
+     Oben fertige <b>Bundles</b> (Vorlage übernehmen = Auswahl als Startpunkt setzen), darunter die drei
+     erklärten Gruppen als <b>Mehrfachauswahl</b>. 1 Ziel = Einzelaufgabe, ≥2 Ziele = Bundle (ein Link,
+     mehrere Aufgaben). Schließen via ✕ / Fertig / Scrim / Escape.</p>
+
+  <h3 class="teacher-h3">Aufgabe / Bundle erstellen &amp; teilen</h3>
+  <p class="teacher-sub2">Wähle ein Ziel oder stell ein Bundle zusammen, erzeuge einen Code und teile ihn als Link.</p>
+  <div class="task-form">
+    <button type="button" class="tgt-field" id="field" aria-haspopup="dialog" aria-label="Ziel auswählen">
+      <span class="tgt-field__text" id="fieldText"></span>
+      <span class="tgt-field__change">Ändern ▾</span>
+    </button>
+    <input class="task-input" type="text" maxlength="80" placeholder="Titel (optional), z. B. „Hausaufgabe 1“">
+    <button class="teacher-btn--main">Code erzeugen</button>
+  </div>
+</div>
+
+<div class="tgt-scrim" id="scrim" hidden>
+  <div class="tgt-modal" role="dialog" aria-modal="true" aria-labelledby="tgt-title" id="modal">
+    <div class="tgt-modal__head">
+      <h2 class="tgt-modal__title" id="tgt-title">🎯 Aufgaben-Ziel wählen</h2>
+      <button type="button" class="tgt-modal__x" id="x" aria-label="Fertig">✕</button>
+    </div>
+    <p class="tgt-modal__intro">Worauf soll sich die Aufgabe beziehen? Wähle ein Ziel – die Lernenden bekommen
+       genau diese Karten. Tippe mehrere Ziele an, um daraus ein Bundle zu bauen – ein Link, der mehrere
+       Aufgaben auf einmal anlegt.</p>
+    <div class="tgt-modal__body" id="body"></div>
+    <div class="tgt-modal__foot tgt-modal__foot--task">
+      <span class="tgt-foot__count" id="count"></span>
+      <span class="tgt-foot__btns" id="footBtns"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  var BUNDLE_GROUPS = [
+    { id:"destino", label:"🌎 Reiseziel-Komplett (Auszug – App: alle 33 Ziele)" },
+    { id:"kurs", label:"📚 Kurs & Lehrplan" },
+    { id:"situation", label:"🎒 Alltags-Situationen" },
+    { id:"orga", label:"🆘 Sicherheit & Orga" },
+  ];
+  var BUNDLES = [
+    { id:"komplett-colombia", icon:"🌎", group:"destino", label:"Komplett: Kolumbien", items:["pretrip:Kolumbien","preset:Kolumbien","cat:Notfall","cat:Geld"] },
+    { id:"komplett-cartagena", icon:"🌎", group:"destino", label:"Komplett: Cartagena", items:["pretrip:Cartagena","preset:Cartagena","cat:Notfall","cat:Geld"] },
+    { id:"komplett-cusco", icon:"🌎", group:"destino", label:"Komplett: Cusco", items:["pretrip:Cusco","preset:Cusco","cat:Notfall","cat:Geld"] },
+    { id:"komplett-cdmx", icon:"🌎", group:"destino", label:"Komplett: Mexiko-Stadt", items:["pretrip:Mexiko-Stadt","preset:Mexiko-Stadt","cat:Notfall","cat:Geld"] },
+    { id:"komplett-buenosaires", icon:"🌎", group:"destino", label:"Komplett: Buenos Aires", items:["pretrip:Buenos Aires","preset:Buenos Aires","cat:Notfall","cat:Geld"] },
+    { id:"woche1", icon:"📚", group:"kurs", label:"Lehrplan-Woche 1: Grundlagen", items:["cat:Grundlagen","cat:Zahlen","cat:Essen"] },
+    { id:"grammatik", icon:"✍️", group:"kurs", label:"Grammatik-Block: Verben & Zeiten", items:["cat:Konjugieren","cat:Zeiten"] },
+    { id:"restaurant", icon:"🍽️", group:"situation", label:"Restaurant & Essen gehen", items:["cat:Essen","cat:Trinken","cat:Diät"] },
+    { id:"unterwegs", icon:"🚌", group:"situation", label:"Unterwegs & Transport", items:["cat:Verkehr","cat:Wegbeschreibung","cat:Busreise"] },
+    { id:"survival", icon:"🆘", group:"orga", label:"Survival-Set", items:["cat:Grundlagen","cat:Notfall","cat:Geld","cat:Verkehr"] },
+    { id:"gesundheit", icon:"💊", group:"orga", label:"Gesundheit & Apotheke", items:["cat:Apotheke","cat:Notfall","cat:Geld"] },
+  ];
+  var GROUPS = [
+    { key:"pretrip", icon:"🗓️", label:"Pre-Trip-Pläne",
+      help:"Mehrtägiger Reise-Fahrplan in Etappen. Nimm das, wenn deine Gruppe sich Schritt für Schritt auf eine konkrete Reise vorbereiten soll.",
+      opts:["Kolumbien","Cartagena","Cusco","Mexiko-Stadt","Antigua","Buenos Aires"] },
+    { key:"preset", icon:"🎒", label:"Pre-Arrival-Pakete",
+      help:"Kompaktes Starter-Set fürs Reiseziel. Nimm das für eine schnelle, fokussierte Vorbereitung kurz vor der Ankunft.",
+      opts:["Kolumbien","Cartagena","Cusco","Mexiko-Stadt","Antigua","Buenos Aires"] },
+    { key:"cat", icon:"📦", label:"Ganzes Paket (üben)",
+      help:"Ein kompletter Themenbereich. Nimm das, wenn ihr ein Thema gezielt in der Tiefe üben wollt – unabhängig vom Reiseziel.",
+      opts:["Grundlagen","Zahlen","Essen","Trinken","Hotel","Verkehr","Geld","Notfall"] },
+  ];
+
+  // Auswahl als Menge von Schlüsseln "key:Label"
+  var sel = new Set(["pretrip:Kolumbien"]);
+
+  function bundleFullyIn(b){ return b.items.every(function(k){ return sel.has(k); }); }
+  function activeBundleIds(){ return BUNDLES.filter(bundleFullyIn).map(function(b){ return b.id; }); }
+  function summary(){
+    var n = sel.size;
+    if(!n) return {kind:"none"};
+    if(n===1){ var only=[...sel][0].split(":"); var pfx={pretrip:"Pre-Trip",preset:"Pre-Arrival",cat:"Paket"}[only[0]];
+               return {kind:"single", label:pfx+": "+only[1]}; }
+    var set=[...sel].sort().join("|");
+    var m = BUNDLES.find(function(b){ return b.items.slice().sort().join("|")===set; });
+    return {kind:"bundle", label: m?m.label:"Eigenes Bundle", count:n};
+  }
+  function renderField(){
+    var s=summary(), el=document.getElementById("fieldText");
+    if(s.kind==="single") el.innerHTML='<span class="tgt-field__kicker">Einzelaufgabe</span><span class="tgt-field__val">'+s.label+'</span>';
+    else if(s.kind==="bundle") el.innerHTML='<span class="tgt-field__kicker">📦 Bundle</span><span class="tgt-field__val">'+s.label+' · '+s.count+' Ziele</span>';
+    else el.innerHTML='<span class="tgt-field__val tgt-field__val--none">Noch kein Ziel gewählt</span>';
+  }
+  function renderBody(){
+    var active2 = activeBundleIds();
+    var bundleRow = function(b){
+      var active=active2.indexOf(b.id)>=0;
+      return '<button class="tgt-bundle'+(active?' is-active':'')+'" data-bundle="'+b.id+'">'+
+        '<span class="tgt-bundle__icon">'+b.icon+'</span>'+
+        '<span class="tgt-bundle__text"><span class="tgt-bundle__label">'+b.label+'</span>'+
+        '<span class="tgt-bundle__meta">'+b.items.length+' Ziele</span></span>'+
+        '<span class="tgt-opt__check">'+(active?'✓':'')+'</span></button>';
+    };
+    var bundleRows = BUNDLE_GROUPS.map(function(bg){
+      var list=BUNDLES.filter(function(b){return b.group===bg.id;});
+      if(!list.length) return "";
+      return '<h4 class="tgt-subhead">'+bg.label+'</h4><div class="tgt-opts">'+list.map(bundleRow).join("")+'</div>';
+    }).join("");
+    var groups = GROUPS.map(function(g){
+      var rows=g.opts.map(function(o){
+        var k=g.key+":"+o, active=sel.has(k);
+        return '<button class="tgt-opt'+(active?' is-active':'')+'" data-key="'+k+'">'+
+          '<span class="tgt-opt__label">'+o+'</span><span class="tgt-opt__check">'+(active?'✓':'')+'</span></button>';
+      }).join("");
+      return '<section class="tgt-group"><h3 class="tgt-group__title">'+g.icon+' '+g.label+'</h3>'+
+        '<p class="tgt-group__help">'+g.help+'</p><div class="tgt-opts">'+rows+'</div></section>';
+    }).join("");
+    document.getElementById("body").innerHTML =
+      '<section class="tgt-group"><h3 class="tgt-group__title">📦 Fertige Bundles</h3>'+
+      '<p class="tgt-group__help">Kuratierte Sammlungen für typische Situationen. Tipp drauf, um die Ziele '+
+      'dazuzunehmen – mehrere Bundles und Einzelziele kombinierbar; nochmal tippen entfernt es.</p>'+bundleRows+'</section>'+groups;
+    document.getElementById("count").textContent = sel.size ? sel.size+" ausgewählt" : "Noch kein Ziel gewählt";
+    document.getElementById("footBtns").innerHTML =
+      (sel.size?'<button class="tgt-clear" id="clear">Auswahl leeren</button>':'')+
+      '<button class="cta" id="done">Fertig</button>';
+  }
+  function open(){ renderBody(); document.getElementById("scrim").hidden=false; }
+  function close(){ document.getElementById("scrim").hidden=true; }
+
+  document.getElementById("field").onclick = open;
+  document.getElementById("x").onclick = close;
+  document.getElementById("scrim").onclick = function(e){ if(e.target.id==="scrim") close(); };
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape") close(); });
+  document.getElementById("body").addEventListener("click", function(e){
+    var bundle=e.target.closest(".tgt-bundle");
+    if(bundle){ var b=BUNDLES.find(x=>x.id===bundle.dataset.bundle);
+                if(bundleFullyIn(b)) b.items.forEach(function(k){ sel.delete(k); });
+                else b.items.forEach(function(k){ sel.add(k); });
+                renderBody(); renderField(); return; }
+    var opt=e.target.closest(".tgt-opt"); if(!opt) return;
+    var k=opt.dataset.key; if(sel.has(k)) sel.delete(k); else sel.add(k);
+    renderBody(); renderField();
+  });
+  document.getElementById("scrim").addEventListener("click", function(e){
+    if(e.target.id==="done") close();
+    if(e.target.id==="clear"){ sel=new Set(); renderBody(); renderField(); }
+  });
+  document.getElementById("theme").onclick = function(){
+    var d=document.documentElement.classList.toggle("dark");
+    this.textContent = d ? "☀️ Light" : "🌙 Dark";
+  };
+
+  document.documentElement.classList.add("dark");
+  document.getElementById("theme").textContent = "☀️ Light";
+  renderField();
+</script>
+</body>
+</html>

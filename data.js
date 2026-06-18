@@ -4777,5 +4777,78 @@
     ] },
   ];
 
-  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP };
+  // Bundles (Modo profe): kuratierte Sammlungen mehrerer Ziele, die als EIN
+  // teilbarer Code/Link mehrere Aufgaben auf einmal abonnieren. Jedes item ist
+  // ein Aufgaben-Ziel { kind: "pretrip"|"preset"|"category", scope }:
+  //   pretrip  -> PRETRIP[].scope   (z. B. "colombia")
+  //   preset   -> PRESETS[].id      (z. B. "prearrival-co")
+  //   category -> CATEGORIES[].id   (z. B. "notfall")
+  // group ordnet die Bundles im Picker in Abschnitte (siehe i18n teacher.bg*):
+  //   "destino"   Reiseziel-Komplett (Plan + Pre-Arrival + Essentials)
+  //   "kurs"      Kurs-/Lehrplan-Blöcke (Progression über Wochen)
+  //   "situation" Alltags-Situationen (szenarienbasiert)
+  //   "orga"      Sicherheit & Organisation
+  // Bundles sind kombinierbar; eine Vorlage ist nur ein Startpunkt.
+  //
+  // „Reiseziel-Komplett" wird AUTOMATISCH für JEDES Ziel erzeugt, das einen
+  // mehrtägigen Plan UND ein Pre-Arrival-Paket hat (Plan + Paket + Notfall +
+  // Geld). So bleibt die Abdeckung vollständig und wächst mit neuen Zielen mit –
+  // statt einer handgepflegten Teilmenge.
+  const _presetByScope = {};
+  PRESETS.forEach((p) => { if (!_presetByScope[p.scope]) _presetByScope[p.scope] = p.id; });
+  const _catById = {};
+  CATEGORIES.forEach((c) => { _catById[c.id] = c; });
+  const _destinoBundles = PRETRIP
+    .filter((pt) => _presetByScope[pt.scope])
+    .map((pt) => {
+      const c = _catById[pt.scope] || {};
+      const name = c.label || pt.scope;
+      const nameEn = c.labelEn || c.label || pt.scope;
+      return {
+        id: "komplett-" + pt.scope, icon: "🌎", group: "destino",
+        label: "Komplett: " + name, labelEn: "Complete: " + nameEn,
+        items: [
+          { kind: "pretrip", scope: pt.scope },
+          { kind: "preset", scope: _presetByScope[pt.scope] },
+          { kind: "category", scope: "notfall" },
+          { kind: "category", scope: "dinero" },
+        ],
+      };
+    });
+
+  const BUNDLES = _destinoBundles.concat([
+    // — Kurs- & Lehrplan-Blöcke (reiseunabhängig, als Progression aufgebaut) —
+    { id: "woche1", icon: "📚", group: "kurs", label: "Lehrplan-Woche 1: Grundlagen", labelEn: "Syllabus week 1: Basics",
+      items: [{ kind: "category", scope: "basics" }, { kind: "category", scope: "zahlen" }, { kind: "category", scope: "essen" }] },
+    { id: "woche2", icon: "📚", group: "kurs", label: "Lehrplan-Woche 2: Unterwegs", labelEn: "Syllabus week 2: Getting around",
+      items: [{ kind: "category", scope: "hotel" }, { kind: "category", scope: "verkehr" }, { kind: "category", scope: "compras" }] },
+    { id: "woche3", icon: "📚", group: "kurs", label: "Lehrplan-Woche 3: Leute & Alltag", labelEn: "Syllabus week 3: People & everyday",
+      items: [{ kind: "category", scope: "social" }, { kind: "category", scope: "talk" }, { kind: "category", scope: "alltag" }] },
+    { id: "grammatik", icon: "✍️", group: "kurs", label: "Grammatik-Block: Verben & Zeiten", labelEn: "Grammar block: verbs & tenses",
+      items: [{ kind: "category", scope: "verbos" }, { kind: "category", scope: "tiempos" }] },
+
+    // — Alltags-Situationen (szenarienbasiert) —
+    { id: "restaurant", icon: "🍽️", group: "situation", label: "Restaurant & Essen gehen", labelEn: "Restaurant & eating out",
+      items: [{ kind: "category", scope: "essen" }, { kind: "category", scope: "trinken" }, { kind: "category", scope: "dieta" }] },
+    { id: "markt", icon: "🛍️", group: "situation", label: "Einkaufen & Markt", labelEn: "Shopping & market",
+      items: [{ kind: "category", scope: "compras" }, { kind: "category", scope: "dinero" }, { kind: "category", scope: "ropa" }] },
+    { id: "unterwegs", icon: "🚌", group: "situation", label: "Unterwegs & Transport", labelEn: "On the move & transport",
+      items: [{ kind: "category", scope: "verkehr" }, { kind: "category", scope: "rumbo" }, { kind: "category", scope: "reise" }] },
+    { id: "unterkunft", icon: "🏨", group: "situation", label: "Unterkunft & Check-in", labelEn: "Accommodation & check-in",
+      items: [{ kind: "category", scope: "hotel" }, { kind: "category", scope: "hostel" }, { kind: "category", scope: "lavanderia" }] },
+    { id: "ausgehen", icon: "🌃", group: "situation", label: "Ausgehen & Leute kennenlernen", labelEn: "Going out & meeting people",
+      items: [{ kind: "category", scope: "social" }, { kind: "category", scope: "noche" }, { kind: "category", scope: "talk" }] },
+    { id: "strand", icon: "🏖️", group: "situation", label: "Strand & Outdoor", labelEn: "Beach & outdoors",
+      items: [{ kind: "category", scope: "playa" }, { kind: "category", scope: "tour" }, { kind: "category", scope: "clima" }] },
+
+    // — Sicherheit & Organisation —
+    { id: "survival", icon: "🆘", group: "orga", label: "Survival-Set", labelEn: "Survival kit",
+      items: [{ kind: "category", scope: "basics" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }, { kind: "category", scope: "verkehr" }] },
+    { id: "gesundheit", icon: "💊", group: "orga", label: "Gesundheit & Apotheke", labelEn: "Health & pharmacy",
+      items: [{ kind: "category", scope: "farmacia" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+    { id: "ankommen", icon: "🛂", group: "orga", label: "Ankommen & Orga", labelEn: "Arrival & admin",
+      items: [{ kind: "category", scope: "banco" }, { kind: "category", scope: "internet" }, { kind: "category", scope: "grenze" }, { kind: "category", scope: "rumbo" }] },
+  ]);
+
+  window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP, BUNDLES };
 })();
