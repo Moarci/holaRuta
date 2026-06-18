@@ -1874,6 +1874,9 @@
     seenTimes: (p) => `${p.n}× gesehen`,
     statNewWord: "neu",
     forgotTimes: (p) => `${p.n}× vergessen`,
+    xpPoints: (p) => `${p.n} XP`,
+    xpToNext: (p) => `Noch ${p.n} XP bis ${p.rank}`,
+    xpMaxRank: "Höchster Rang erreicht 🏆",
 
     // Karten-Detail
     cardFirstTry: "🎯 Auf Anhieb gewusst",
@@ -1992,6 +1995,9 @@
     seenTimes: (p) => `seen ${p.n}×`,
     statNewWord: "new",
     forgotTimes: (p) => `forgotten ${p.n}×`,
+    xpPoints: (p) => `${p.n} XP`,
+    xpToNext: (p) => `${p.n} XP to ${p.rank}`,
+    xpMaxRank: "Highest rank reached 🏆",
 
     cardFirstTry: "🎯 Knew first time",
     cardNeededPractice: "🔁 Needed practice",
