@@ -4789,23 +4789,34 @@
   //   "situation" Alltags-Situationen (szenarienbasiert)
   //   "orga"      Sicherheit & Organisation
   // Bundles sind kombinierbar; eine Vorlage ist nur ein Startpunkt.
-  const BUNDLES = [
-    // — Reiseziel-Komplett: mehrtägiger Plan + Pre-Arrival-Paket + Sicherheits-Essentials —
-    { id: "komplett-colombia", icon: "🌎", group: "destino", label: "Komplett: Kolumbien", labelEn: "Complete: Colombia",
-      items: [{ kind: "pretrip", scope: "colombia" }, { kind: "preset", scope: "prearrival-co" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
-    { id: "komplett-cartagena", icon: "🌎", group: "destino", label: "Komplett: Cartagena", labelEn: "Complete: Cartagena",
-      items: [{ kind: "pretrip", scope: "cartagena" }, { kind: "preset", scope: "prearrival-ctg" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
-    { id: "komplett-medellin", icon: "🌎", group: "destino", label: "Komplett: Medellín", labelEn: "Complete: Medellín",
-      items: [{ kind: "pretrip", scope: "medellin" }, { kind: "preset", scope: "prearrival-med" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
-    { id: "komplett-cusco", icon: "🌎", group: "destino", label: "Komplett: Cusco", labelEn: "Complete: Cusco",
-      items: [{ kind: "pretrip", scope: "cusco" }, { kind: "preset", scope: "prearrival-cus" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
-    { id: "komplett-cdmx", icon: "🌎", group: "destino", label: "Komplett: Mexiko-Stadt", labelEn: "Complete: Mexico City",
-      items: [{ kind: "pretrip", scope: "cdmx" }, { kind: "preset", scope: "prearrival-cdmx" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
-    { id: "komplett-antigua", icon: "🌎", group: "destino", label: "Komplett: Antigua", labelEn: "Complete: Antigua",
-      items: [{ kind: "pretrip", scope: "antigua" }, { kind: "preset", scope: "prearrival-ant" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
-    { id: "komplett-buenosaires", icon: "🌎", group: "destino", label: "Komplett: Buenos Aires", labelEn: "Complete: Buenos Aires",
-      items: [{ kind: "pretrip", scope: "buenosaires" }, { kind: "preset", scope: "prearrival-bue" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
+  //
+  // „Reiseziel-Komplett" wird AUTOMATISCH für JEDES Ziel erzeugt, das einen
+  // mehrtägigen Plan UND ein Pre-Arrival-Paket hat (Plan + Paket + Notfall +
+  // Geld). So bleibt die Abdeckung vollständig und wächst mit neuen Zielen mit –
+  // statt einer handgepflegten Teilmenge.
+  const _presetByScope = {};
+  PRESETS.forEach((p) => { if (!_presetByScope[p.scope]) _presetByScope[p.scope] = p.id; });
+  const _catById = {};
+  CATEGORIES.forEach((c) => { _catById[c.id] = c; });
+  const _destinoBundles = PRETRIP
+    .filter((pt) => _presetByScope[pt.scope])
+    .map((pt) => {
+      const c = _catById[pt.scope] || {};
+      const name = c.label || pt.scope;
+      const nameEn = c.labelEn || c.label || pt.scope;
+      return {
+        id: "komplett-" + pt.scope, icon: "🌎", group: "destino",
+        label: "Komplett: " + name, labelEn: "Complete: " + nameEn,
+        items: [
+          { kind: "pretrip", scope: pt.scope },
+          { kind: "preset", scope: _presetByScope[pt.scope] },
+          { kind: "category", scope: "notfall" },
+          { kind: "category", scope: "dinero" },
+        ],
+      };
+    });
 
+  const BUNDLES = _destinoBundles.concat([
     // — Kurs- & Lehrplan-Blöcke (reiseunabhängig, als Progression aufgebaut) —
     { id: "woche1", icon: "📚", group: "kurs", label: "Lehrplan-Woche 1: Grundlagen", labelEn: "Syllabus week 1: Basics",
       items: [{ kind: "category", scope: "basics" }, { kind: "category", scope: "zahlen" }, { kind: "category", scope: "essen" }] },
@@ -4837,7 +4848,7 @@
       items: [{ kind: "category", scope: "farmacia" }, { kind: "category", scope: "notfall" }, { kind: "category", scope: "dinero" }] },
     { id: "ankommen", icon: "🛂", group: "orga", label: "Ankommen & Orga", labelEn: "Arrival & admin",
       items: [{ kind: "category", scope: "banco" }, { kind: "category", scope: "internet" }, { kind: "category", scope: "grenze" }, { kind: "category", scope: "rumbo" }] },
-  ];
+  ]);
 
   window.SC.data = { CATEGORIES, LEVELS, CARDS, BATTLE_SCENES, BATTLES, ROLEPLAYS, CHALLENGES, QUIZ_SETS, QUIZ_DEFS, CONJUGATION, TENSES, BODY_PARTS, SHOPPING, PRESETS, PRETRIP, BUNDLES };
 })();
