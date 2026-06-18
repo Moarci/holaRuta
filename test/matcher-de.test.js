@@ -168,6 +168,17 @@ test("Tippfehler: Wortend-Flexion (Genus/Person/Plural) ist KEIN Tippfehler", ()
   assert.equal(r.correct, true); assert.equal(r.typo, true);
 });
 
+test("Tippfehler: benachbarte Vertauschung zählt als EIN Fehler (Damerau)", () => {
+  // Vertauschte Nachbarzeichen sind der häufigste Handy-Tipper. In langen genug
+  // Wörtern/Sätzen (Budget >= 1) zählen sie als akzeptierter Tippfehler.
+  let r = matcher.check("necestio ayuda", { es: "necesito ayuda" }); // io↔oi im Wortinneren
+  assert.equal(r.correct, true); assert.equal(r.typo, true);
+  r = matcher.check("quiero un acfé", { es: "quiero un café" });     // ca↔ac
+  assert.equal(r.correct, true); assert.equal(r.typo, true);
+  // Kurze Wörter bleiben streng: Vertauschung sprengt das Budget 0 nicht auf.
+  assert.equal(matcher.check("gtao", { es: "gato" }).correct, false); // 4 Buchstaben
+});
+
 test("matchFree: bequemer Freitext-Check liefert correct + typo", () => {
   const acc = ["quiero un cafe", "un cafe por favor"];
   assert.deepEqual(matcher.matchFree("quiero un café", acc), { correct: true, typo: false });

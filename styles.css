@@ -1256,6 +1256,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .cinfo-word__es { font-weight: 700; color: var(--brand-ink); }
 .cinfo-word__de { color: var(--muted); font-size: 0.9rem; }
 
+/* Sport: beliebteste Sportarten und prägende Sportler. */
+.cinfo-sports { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.cinfo-sport {
+  padding: 8px 12px; background: var(--surface); border-radius: var(--r-sm);
+}
+.cinfo-sport__name { font-weight: 700; color: var(--brand-ink); }
+.cinfo-sport__note { display: block; color: var(--muted); font-size: 0.88rem; line-height: 1.4; margin-top: 1px; }
+.cinfo-athletes { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.cinfo-athlete {
+  padding: 9px 12px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+}
+.cinfo-athlete__top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.cinfo-athlete__name { font-weight: 700; color: var(--ink); }
+.cinfo-athlete__sport {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--brand-ink); background: rgba(185, 124, 36, 0.14);
+  padding: 2px 8px; border-radius: 999px;
+}
+.cinfo-athlete__note { display: block; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.45; margin-top: 3px; }
+
 /* Essen-/Getränke-Unterrubrik. */
 .cinfo-sub {
   font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;

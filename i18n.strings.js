@@ -697,6 +697,9 @@
     infoIngredients: "Zutaten",
     infoOrigin: "Herkunft",
     infoWhen: "Wann",
+    infoSports: "Sport",
+    infoPopularSports: "Beliebteste Sportarten",
+    infoAthletes: "Sportler, die das Land bewegen",
 
     // Historia de Sudamérica
     histBannerTitle: "Historia de Sudamérica",
@@ -1029,6 +1032,9 @@
     infoIngredients: "Ingredients",
     infoOrigin: "Origin",
     infoWhen: "When",
+    infoSports: "Sport",
+    infoPopularSports: "Most popular sports",
+    infoAthletes: "Athletes who move the country",
 
     // Historia de Sudamérica
     histBannerTitle: "Historia de Sudamérica",
