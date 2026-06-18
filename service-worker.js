@@ -18,7 +18,7 @@
  * neue Dateien in einer laufenden Sitzung (Mixed-Version-Load): das Aktivieren
  * ist immer an ein vollständiges Reload gekoppelt.
  */
-const CACHE_VERSION = "holaruta-6d320aa43956"; // von build.js gestempelt – nicht von Hand ändern
+const CACHE_VERSION = "holaruta-38536bcd0c1e"; // von build.js gestempelt – nicht von Hand ändern
 const ASSETS = [
   "./",
   "./index.html",
@@ -48,6 +48,7 @@ const ASSETS = [
   "./usercards.js",
   "./matcher.js",
   "./placement.js",
+  "./assessment.js",
   "./search.js",
   "./stats.js",
   "./badges.js",

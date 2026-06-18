@@ -176,6 +176,7 @@
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
+    { action: "open-assessment",  icon: "📋", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
     { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
   ];
 
@@ -746,7 +747,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea).
     const cfg = window.SC.config || {};
     const featBtn = (x) => `
@@ -827,6 +828,54 @@
       </div>`;
   }
 
+  // Nivel-Test im Profil – baugleich zur Ruta-Check-Karte, nur aus dem
+  // assessment-Namespace und mit eigenem Öffnen/Teilen-Hook.
+  function assessmentCard(p, shareFmt) {
+    if (!p) return "";
+    const cap = `<p class="sectioncap">📋 ${esc(t("assessment.profileCap"))}</p>`;
+    if (!p.taken || !p.last) {
+      return `
+        ${cap}
+        <div class="plprof plprof--empty">
+          <p class="plprof__never">${esc(t("assessment.profileNever"))}</p>
+          <button class="teacher-btn teacher-btn--main" data-action="open-assessment">▶️ ${esc(t("assessment.takeNow"))}</button>
+        </div>`;
+    }
+    const l = p.last;
+    const histRows = p.history.length > 1
+      ? `<div class="plprof__histcap">${esc(t("assessment.profileHistoryCap"))}</div>
+         <ul class="plprof__hist">
+           ${p.history.map((h) => `
+             <li class="plprof__histrow">
+               <span class="plprof__histdate">${esc(h.at || "")}</span>
+               <span class="plprof__histlvl">${esc(h.level)}</span>
+               <span class="plprof__histscore">${h.scorePct}%</span>
+             </li>`).join("")}
+         </ul>`
+      : "";
+    return `
+      ${cap}
+      <div class="plprof">
+        <div class="plprof__head">
+          <div class="plprof__levelbox">
+            <span class="plprof__levelcap">${esc(t("assessment.profileLevelCap"))}</span>
+            <span class="plprof__level">${esc(l.level)}</span>
+          </div>
+          <div class="plprof__meta">
+            <p class="plprof__score">${esc(t("assessment.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
+            ${l.variantLabel ? `<p class="plprof__variant">${esc(l.variantLabel)}</p>` : ""}
+            ${l.tempoLabel ? `<p class="plprof__tempo">${esc(t("assessment.statTempo"))}: <b>${esc(l.tempoLabel)}</b></p>` : ""}
+            ${l.at ? `<p class="plprof__date">${esc(t("assessment.profileLastAt", { date: l.at }))} · ${esc(t("assessment.profileAttempts", { n: p.attempts }))}</p>` : ""}
+          </div>
+        </div>
+        ${histRows}
+        ${shareBlock(shareFmt, "share-assessment", t("assessment.share"))}
+        <div class="plprof__actions">
+          <button class="ghostbtn" data-action="open-assessment">🔁 ${esc(t("assessment.retake"))}</button>
+        </div>
+      </div>`;
+  }
+
   function profilBody(vm) {
     const navrow = (action, icon, label, chip) => `
       <button class="navrow" data-action="${action}">
@@ -870,6 +919,7 @@
       ${tripManage(vm)}
 
       ${vm.hasPlacement ? placementCard(vm.placement, vm.shareFormat) : ""}
+      ${vm.hasAssessment ? assessmentCard(vm.assessment, vm.shareFormat) : ""}
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
@@ -3092,7 +3142,7 @@
               <td>${s.streak}${s.longestStreak > s.streak ? `<span class="teacher-sub"> (max ${s.longestStreak})</span>` : ""}</td>
               <td>${s.challenges}</td>
               <td>${s.pretripDays} / ${s.pretripMax}</td>
-              <td>${s.placement ? `${esc(s.placement.level)}<span class="teacher-sub"> · ${Math.round((s.placement.finalScore || 0) * 100)}%</span>` : "—"}</td>
+              <td>${(s.assessment || s.placement) ? `${esc((s.assessment || s.placement).level)}<span class="teacher-sub"> · ${Math.round(((s.assessment || s.placement).finalScore || 0) * 100)}%${s.assessment ? " 📋" : ""}</span>` : "—"}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
               <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
@@ -3433,6 +3483,150 @@
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>
           <button class="teacher-btn" data-action="placement-retake">🔁 ${esc(t("placement.retake"))}</button>
+        </div>
+      </section>`;
+  }
+
+  // ----- HolaRuta Nivel-Test (ausführlicher Einstufungstest) -----
+  // Drei Phasen wie beim Ruta-Check, aber eigener Screen/Namespace. Nutzt dieselben
+  // pl-*-Stile für ein vertrautes, ruhiges Erscheinungsbild.
+  function renderAssessment(vm) {
+    if (vm.phase === "running") return renderAssessmentQuestion(vm);
+    if (vm.phase === "done") return renderAssessmentDone(vm);
+    return renderAssessmentIntro(vm);
+  }
+
+  function renderAssessmentIntro(vm) {
+    // Zwei Tiefen zur Wahl: Standard und – mit Sprachausgabe – Extremo (mit Hören).
+    const extremoBtn = vm.hasAudio
+      ? `<button class="teacher-btn teacher-btn--main pl-variant pl-variant--extremo" data-action="assessment-start" data-variant="extremo">
+           🎧 ${esc(t("assessment.startExtremo", { n: vm.extremoTotal }))}
+           <span class="pl-variant__desc">${esc(t("assessment.variantExtremoDesc"))}</span>
+         </button>`
+      : `<div class="tip pl-noaudio">${esc(t("assessment.extremoNoAudio"))}</div>`;
+    return `
+      <section class="screen">
+        ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
+        <p class="hm-intro">${esc(t("assessment.introLead", { n: vm.standardTotal }))}</p>
+        <div class="tip">${esc(t("assessment.introHonest"))}</div>
+        <ul class="pl-introlist">
+          <li>${esc(t("assessment.introB1"))}</li>
+          <li>${esc(t("assessment.introB2"))}</li>
+          <li>${esc(t("assessment.introB3"))}</li>
+          <li>${esc(t("assessment.introB4"))}</li>
+        </ul>
+        <p class="sectioncap">${esc(t("assessment.chooseVariant"))}</p>
+        <div class="pl-variants">
+          <button class="teacher-btn teacher-btn--main pl-variant" data-action="assessment-start" data-variant="standard">
+            ▶️ ${esc(t("assessment.startStandard", { n: vm.standardTotal }))}
+            <span class="pl-variant__desc">${esc(t("assessment.variantStandardDesc"))}</span>
+          </button>
+          ${extremoBtn}
+        </div>
+      </section>`;
+  }
+
+  function renderAssessmentQuestion(vm) {
+    const q = vm.q;
+    if (!q) return renderAssessmentIntro(vm);
+    const pct = Math.round(((vm.index + 1) / (vm.total || 1)) * 100);
+    // Abschnitts-Hinweis: Hörverstehen / freie Antworten / Verständnis & Grammatik.
+    const sectionLabel = vm.section === "free" ? t("assessment.sectionFree")
+      : vm.section === "listen" ? t("assessment.sectionListen") : t("assessment.sectionMc");
+    const head = `
+      <div class="pl-progress">
+        <div class="pl-progress__bar" aria-hidden="true"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
+        <span class="pl-progress__label" role="status" aria-live="polite">${esc(sectionLabel)} · ${esc(t("assessment.qOf", { i: vm.index + 1, n: vm.total }))} · ${esc(q.level)}</span>
+      </div>`;
+    // Hör-Item: großer Abspiel-Knopf statt sichtbarem Spanisch-Satz.
+    const listenBlock = q.type === "listen"
+      ? `<button class="pl-listen" data-action="assessment-listen-play" aria-label="${esc(t("assessment.listenPlay"))}">
+           <span class="pl-listen__icon" aria-hidden="true">🔊</span>
+           <span class="pl-listen__label">${esc(t("assessment.listenPlay"))}</span>
+         </button>
+         <p class="pl-hint pl-hint--listen">${esc(t("assessment.listenHint"))}</p>`
+      : "";
+    const prompt = `
+      <p class="pl-prompt">${esc(q.promptDe)}</p>
+      ${q.questionEs ? `<p class="pl-prompt-es" lang="es">„${esc(q.questionEs)}“</p>` : ""}`;
+    const body = q.type === "free"
+      ? `<input id="assessment-free" class="task-input pl-free" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t("assessment.freePh"))}" lang="es">
+         <div class="teacher-actions">
+           <button class="teacher-btn teacher-btn--main" data-action="assessment-free-submit">${esc(t("assessment.answer"))}</button>
+         </div>`
+      : `<div class="pl-options" role="group" aria-label="${esc(t("assessment.optionsLabel"))}">
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
+         </div>`;
+    const unknown = `<button class="pl-unknown" data-action="assessment-unknown">🤷 ${esc(t("assessment.unknown"))}</button>`;
+    const hint = vm.showHint ? `<p class="pl-hint">${esc(t("assessment.unknownHint"))}</p>` : "";
+    return `
+      <section class="screen">
+        ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
+        ${head}
+        ${prompt}
+        ${listenBlock}
+        ${body}
+        ${unknown}
+        ${hint}
+      </section>`;
+  }
+
+  function renderAssessmentDone(vm) {
+    const noteText = vm.note === "commStrong" ? t("assessment.noteComm")
+      : vm.note === "grammarStrong" ? t("assessment.noteGrammar") : "";
+    const relText = vm.reliability ? t("assessment.rel_" + vm.reliability) : "";
+    const skillRow = (s) => `
+      <li class="pl-skill">
+        <span class="pl-skill__name">${esc(t("assessment.skill_" + s.skill))}</span>
+        <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
+        <span class="pl-skill__val">${s.accuracy}%</span>
+      </li>`;
+    const reviewIcon = { correct: "✅", wrong: "❌", unknown: "🤷" };
+    const reviewRow = (r, i) => `
+      <li class="pl-review__item pl-review__item--${esc(r.status)}">
+        <p class="pl-review__q">
+          <span class="pl-review__icon" aria-hidden="true">${reviewIcon[r.status] || ""}</span>
+          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? "🎧 " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
+        </p>
+        ${r.status !== "correct" ? `
+          <p class="pl-review__line">
+            ${r.yourText
+              ? `${esc(t("assessment.reviewYours"))} <span class="pl-review__yours" lang="es">${esc(r.yourText)}</span>`
+              : `<span class="pl-review__yours pl-review__yours--none">${esc(t("assessment.reviewNoAnswer"))}</span>`}
+          </p>
+          <p class="pl-review__line">${esc(t("assessment.reviewCorrect"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
+        ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
+      </li>`;
+    const review = (vm.review && vm.review.length)
+      ? `<details class="pl-reviewbox">
+           <summary class="pl-reviewbox__sum">${esc(t("assessment.reviewCap"))}</summary>
+           <ul class="pl-review">${vm.review.map(reviewRow).join("")}</ul>
+         </details>`
+      : "";
+    return `
+      <section class="screen">
+        ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
+        <div class="pl-result">
+          <p class="pl-result__cap">${esc(t("assessment.yourLevel"))}</p>
+          <p class="pl-result__level">${esc(vm.level)}</p>
+          ${vm.variant ? `<p class="pl-result__variant">${esc(t("assessment.variant_" + vm.variant))}${vm.variant === "extremo" ? " · 🎧" : ""}</p>` : ""}
+          <p class="pl-result__score">${esc(t("assessment.resultLine", { correct: vm.correct, total: vm.total, score: vm.scorePct }))}</p>
+        </div>
+        <ul class="pl-stats">
+          <li><b>${vm.accuracyPct}%</b> ${esc(t("assessment.statAccuracy"))}</li>
+          <li><b>${vm.unknownPct}%</b> ${esc(t("assessment.statUnknown"))}</li>
+          <li>${esc(t("assessment.statTempo"))}: <b>${esc(t("assessment.tempo_" + vm.tempo))}</b></li>
+        </ul>
+        <p class="sectioncap">${esc(t("assessment.skillsCap"))}</p>
+        <ul class="pl-skills">${vm.skills.map(skillRow).join("")}</ul>
+        ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
+        ${relText ? `<div class="tip pl-reliability pl-reliability--${esc(vm.reliability)}">${esc(relText)}</div>` : ""}
+        ${review}
+        ${shareBlock(vm.shareFormat, "share-assessment", t("assessment.share"))}
+        <p class="pl-disclaimer">${esc(t("assessment.schoolNote"))}</p>
+        <div class="teacher-actions">
+          <button class="teacher-btn teacher-btn--main" data-action="home">${esc(t("common.overview"))}</button>
+          <button class="teacher-btn" data-action="assessment-retake">🔁 ${esc(t("assessment.retake"))}</button>
         </div>
       </section>`;
   }
@@ -4659,7 +4853,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
