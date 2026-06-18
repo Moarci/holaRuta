@@ -2202,6 +2202,29 @@
 
     const para = (text) => `<p class="cinfo-text">${esc(text)}</p>`;
 
+    // Sport: kurze Einleitung, beliebteste Sportarten als Liste und die
+    // Sportler, die das Land bewegen (Name + Disziplin + ein Satz). Eigennamen
+    // bleiben sprachunabhängig; Notizen werden über localizeDeep lokalisiert.
+    const sp = c.sports;
+    let sportsSect = "";
+    if (sp) {
+      const sportsIntro = sp.intro ? para(sp.intro) : "";
+      const popular = (sp.popular || [])
+        .map((s) => `<li class="cinfo-sport"><span class="cinfo-sport__name">${esc(s.name)}</span>${s.note ? `<span class="cinfo-sport__note">${esc(s.note)}</span>` : ""}</li>`)
+        .join("");
+      const popularBlock = popular
+        ? `<h4 class="cinfo-sub">${esc(t("discover.infoPopularSports"))}</h4><ul class="cinfo-sports">${popular}</ul>`
+        : "";
+      const athletes = (sp.athletes || [])
+        .map((a) => `<li class="cinfo-athlete"><span class="cinfo-athlete__top"><span class="cinfo-athlete__name">${esc(a.name)}</span>${a.sport ? `<span class="cinfo-athlete__sport">${esc(a.sport)}</span>` : ""}</span>${a.note ? `<span class="cinfo-athlete__note">${esc(a.note)}</span>` : ""}</li>`)
+        .join("");
+      const athletesBlock = athletes
+        ? `<h4 class="cinfo-sub">${esc(t("discover.infoAthletes"))}</h4><ul class="cinfo-athletes">${athletes}</ul>`
+        : "";
+      const sportsBody = sportsIntro + popularBlock + athletesBlock;
+      if (sportsBody) sportsSect = sect("⚽", t("discover.infoSports"), sportsBody);
+    }
+
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
 
     // Bevölkerung & Wirtschaft: Faktenzeilen (gleiche Optik wie die Speise-Fakten).
@@ -2264,6 +2287,7 @@
           <div class="cinfo-dishes">${drinks || `<p class="cinfo-text">—</p>`}</div>
         </div>
 
+        ${sportsSect}
         ${tip}
       </section>`;
   }
