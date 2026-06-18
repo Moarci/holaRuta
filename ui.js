@@ -3552,7 +3552,7 @@
            <button class="teacher-btn teacher-btn--main" data-action="assessment-free-submit">${esc(t("assessment.answer"))}</button>
          </div>`
       : `<div class="pl-options" role="group" aria-label="${esc(t("assessment.optionsLabel"))}">
-           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}"${q.type === "listen" ? "" : ' lang="es"'}>${esc(o)}</button>`).join("")}
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
          </div>`;
     const unknown = `<button class="pl-unknown" data-action="assessment-unknown">🤷 ${esc(t("assessment.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("assessment.unknownHint"))}</p>` : "";
