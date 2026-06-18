@@ -306,53 +306,17 @@
       .replace(/[¿?¡!.,;:()]/g, "").replace(/\s+/g, " ").trim();
   }
   // Freitext-Treffer inkl. Tippfehler-Toleranz. -> { correct, typo }.
-  // Bevorzugt den App-Matcher (zentrale Schwellen); lokaler Fallback, damit der
-  // Test ohne matcher.js läuft – mit DENSELBEN konservativen Schwellen.
+  // EINE Quelle der Wahrheit: die Fuzzy-Logik (Levenshtein, Budget-Schwellen,
+  // Wortend-Flexions-Guard) lebt komplett in SC.matcher.matchFree. Im App-Bundle
+  // ist matcher.js immer vor placement.js geladen. Fehlt er ausnahmsweise, greift
+  // ein schlanker Exact-Only-Fallback (akzent-/satzzeichentolerant, aber ohne
+  // Tippfehler-Toleranz – bewusste, harmlose Degradierung statt Logik-Duplikat).
   function matchFree(text, accept) {
     if (SC.matcher && typeof SC.matcher.matchFree === "function") return SC.matcher.matchFree(text, accept);
     var got = normalizeFree(text);
     if (!got) return { correct: false, typo: false };
-    var cands = (accept || []).map(normalizeFree).filter(Boolean);
-    if (cands.indexOf(got) !== -1) return { correct: true, typo: false };
-    var noPron = got.replace(/^(?:yo|vos|usted|ustedes|ella|ellos|ellas|nosotros|nosotras)\s+/, "");
-    if (noPron !== got && cands.indexOf(noPron) !== -1) return { correct: true, typo: false };
-    for (var i = 0; i < cands.length; i++) {
-      var cand = cands[i];
-      var budget = cand.length < 8 ? 0 : (cand.length < 14 ? 1 : 2); // wie SC.matcher.typoBudget
-      if (!budget) continue;
-      if (isTypo(got, cand, budget) || (noPron !== got && isTypo(noPron, cand, budget)))
-        return { correct: true, typo: true };
-    }
-    return { correct: false, typo: false };
-  }
-  // Klarer Vertipper innerhalb des Budgets, aber KEINE Wortend-Flexion (Genus,
-  // Person, Plural-s). Spiegelt SC.matcher.classifyNorm/isWordFinalEdit.
-  function isTypo(a, cand, budget) {
-    var d = levDist(a, cand);
-    return d > 0 && d <= budget && !(d === 1 && wordFinalEdit(a, cand));
-  }
-  function wordFinalEdit(a, b) {
-    var i = a.length - 1, j = b.length - 1, n = 0;
-    while (i >= 0 && j >= 0 && a.charCodeAt(i) === b.charCodeAt(j)) { i--; j--; n++; }
-    var longer = a.length >= b.length ? a : b;
-    var after = longer.length - n;
-    return after >= longer.length || longer.charCodeAt(after) === 32;
-  }
-  // Kleines Levenshtein für den Fallback (der Matcher hat ein identisches).
-  function levDist(a, b) {
-    if (a === b) return 0;
-    var al = a.length, bl = b.length;
-    if (!al) return bl; if (!bl) return al;
-    var prev = []; for (var j = 0; j <= bl; j++) prev[j] = j;
-    for (var i = 1; i <= al; i++) {
-      var cur = [i], ca = a.charCodeAt(i - 1);
-      for (var k = 1; k <= bl; k++) {
-        var cost = ca === b.charCodeAt(k - 1) ? 0 : 1;
-        cur[k] = Math.min(prev[k] + 1, cur[k - 1] + 1, prev[k - 1] + cost);
-      }
-      prev = cur;
-    }
-    return prev[bl];
+    var hit = (accept || []).some(function (a) { return normalizeFree(a) === got; });
+    return { correct: hit, typo: false };
   }
 
   function median(nums) {

@@ -11,6 +11,9 @@ const assert = require("node:assert/strict");
 const path = require("path");
 
 globalThis.window = globalThis.window || {};
+// matcher.js zuerst laden – wie im App-Bundle. So testet der Freitext-Pfad die
+// echte, geteilte Fuzzy-Logik (SC.matcher.matchFree) statt eines Duplikats.
+require(path.join(__dirname, "..", "matcher.js"));
 require(path.join(__dirname, "..", "placement.js"));
 const { placement } = globalThis.window.SC;
 
@@ -138,6 +141,19 @@ test("matchFree: kurze Antworten bleiben streng (kein gato↔pato)", () => {
   // 4 Buchstaben: Budget 0 -> nur exakt, eine echte Wortverwechslung zählt NICHT.
   assert.equal(placement.matchFree("pato", ["gato"]).correct, false);
   assert.equal(placement.matchFree("gato", ["gato"]).correct, true);
+});
+
+test("matchFree: Exact-Only-Fallback ohne matcher.js (graceful degradation)", () => {
+  const saved = globalThis.window.SC.matcher;
+  delete globalThis.window.SC.matcher;
+  try {
+    // ohne Matcher: exakt (akzent-/satzzeichentolerant) zählt weiterhin …
+    assert.deepEqual(placement.matchFree("Quiero un café.", ["quiero un cafe"]), { correct: true, typo: false });
+    // … aber ein Tippfehler wird NICHT mehr toleriert (bewusste Degradierung).
+    assert.equal(placement.matchFree("quiro un cafe", ["quiero un cafe"]).correct, false);
+  } finally {
+    globalThis.window.SC.matcher = saved;
+  }
 });
 
 test("matchFree: Wortend-Flexion ist falsch, Wortinneres-Vertipper bleibt richtig", () => {
