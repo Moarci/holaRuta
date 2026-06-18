@@ -394,11 +394,14 @@
       : "";
     // Schritt 1: Name + Geschlecht. Eigenes <form>, damit Enter „Weiter" auslöst.
     if ((vm.onboardStep || "profile") === "profile") {
+      // In Partner-Editionen den Markennamen NICHT beanspruchen – das Logo oben
+      // zeigt die Marke bereits; ein neutrales „Willkommen!" passt White-Label.
+      const welcomeTitle = e ? t("home.onboardWelcomeTitleEdition") : t("home.onboardWelcomeTitle");
       return `
         <section class="screen onboarding">
           <div class="onboarding__inner">
             ${brand}
-            <h1 class="onboarding__title">${esc(t("home.onboardWelcomeTitle"))}</h1>
+            <h1 class="onboarding__title">${esc(welcomeTitle)}</h1>
             <p class="onboarding__intro">${esc(t("home.onboardWelcomeIntro"))}</p>
             <form class="trip trip--edit" data-action="onboard-profile-next">
               <label class="trip__field"><span>${esc(t("home.nameCap"))}</span>

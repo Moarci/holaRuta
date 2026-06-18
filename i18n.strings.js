@@ -269,6 +269,7 @@
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Onboarding (einmaliger Willkommens-Schritt)
     onboardWelcomeTitle: "Willkommen bei HolaRuta",
+    onboardWelcomeTitleEdition: "Willkommen!", // in Partner-Editionen (Logo zeigt schon die Marke)
     onboardWelcomeIntro: "Sag uns kurz, wie wir dich ansprechen dürfen – Name und Geschlecht. Beides ist jederzeit im Profil änderbar.",
     onboardNext: "Weiter",
     onboardProfileInvalid: "Bitte gib deinen Namen ein und wähle ein Geschlecht.",
@@ -429,6 +430,7 @@
     tripSwitchCap: "Quick-switch country",
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
     onboardWelcomeTitle: "Welcome to HolaRuta",
+    onboardWelcomeTitleEdition: "Welcome!",
     onboardWelcomeIntro: "Tell us briefly how we should address you – name and gender. You can change both anytime in your profile.",
     onboardNext: "Continue",
     onboardProfileInvalid: "Please enter your name and pick a gender.",
