@@ -264,7 +264,11 @@
     tripToday: "Heute geht's los! 🎒",
     tripCountdown: (p) => `Noch <b>${p.n}</b> ${p.n === 1 ? "Tag" : "Tage"} bis ${p.dest}`,
     tripDailyCap: "Heutiges Pensum",
-    tripDailyCount: (p) => `${p.done}/${p.perDay} Karten${p.complete ? " ✓" : ""}`,
+    // Über dem Tagesziel schaltet die Anzeige um: statt "67/15" (wirkt wie ein
+    // kaputter Bruch) zeigt sie das geschaffte Ziel plus den Überschuss.
+    tripDailyCount: (p) => p.over > 0
+      ? `🔥 ${p.done} Karten · +${p.over} über dem Ziel`
+      : `${p.done}/${p.perDay} Karten${p.complete ? " ✓" : ""}`,
     tripSwitchCap: "Reiseland schnell wechseln",
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Onboarding (einmaliger Willkommens-Schritt)
@@ -449,7 +453,9 @@
     tripToday: "Off you go today! 🎒",
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripDailyCap: "Today's goal",
-    tripDailyCount: (p) => `${p.done}/${p.perDay} cards${p.complete ? " ✓" : ""}`,
+    tripDailyCount: (p) => p.over > 0
+      ? `🔥 ${p.done} cards · +${p.over} over goal`
+      : `${p.done}/${p.perDay} cards${p.complete ? " ✓" : ""}`,
     tripSwitchCap: "Quick-switch country",
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
     onboardSlideSkip: "Skip",

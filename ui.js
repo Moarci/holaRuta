@@ -310,9 +310,9 @@
         <span class="trip__daily">
           <span class="trip__daily-head">
             <span class="trip__daily-cap">${esc(t("home.tripDailyCap"))}</span>
-            <span class="trip__count ${trip.todayDone ? "is-done" : ""}">${esc(t("home.tripDailyCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone }))}</span>
+            <span class="trip__count ${trip.todayOver ? "is-over" : trip.todayDone ? "is-done" : ""}">${esc(t("home.tripDailyCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone, over: trip.todayExtra }))}</span>
           </span>
-          <span class="trip__bar"><span class="trip__bar-fill ${trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
+          <span class="trip__bar"><span class="trip__bar-fill ${trip.todayOver ? "is-over" : trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
         </span>
       </button>`;
   }
