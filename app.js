@@ -1147,6 +1147,9 @@
     const daysLeft = daysBetween(today, t.endDate); // null wenn Datum kaputt
     const todayCount = (gamestats.dailyCounts && gamestats.dailyCounts[today]) || 0;
     const perDay = t.perDay || 1;
+    // Karten über dem Tagesziel: für die "Ziel übertroffen"-Darstellung. Der Balken
+    // ist bei >= Ziel ohnehin voll, deshalb genügt hier der reine Überschuss-Wert.
+    const todayExtra = Math.max(0, todayCount - perDay);
     return {
       destination: t.destination,
       endDate: t.endDate,
@@ -1157,6 +1160,8 @@
       today: t.endDate === today,
       todayCount,
       todayDone: todayCount >= perDay,
+      todayOver: todayExtra > 0, // über dem Tagesziel -> eigene Darstellung
+      todayExtra,
       todayPct: Math.max(0, Math.min(100, Math.round((todayCount / perDay) * 100))),
     };
   }
