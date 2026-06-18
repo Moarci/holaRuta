@@ -1799,9 +1799,11 @@
     { id: "orga",      labelKey: "teacher.bgOrga" },
   ];
 
+  // Gruppe (pretrip/preset/category) zum Ziel-Wert „kind:scope". Passt nichts,
+  // gibt es bewusst KEINE Gruppe zurück (null) – statt still als „category" zu
+  // labeln; die Aufrufer rendern dann ohne Gruppen-Kicker.
   function targetGroupOf(value) {
-    const g = TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0);
-    return g || TARGET_GROUPS[TARGET_GROUPS.length - 1];
+    return TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0) || null;
   }
 
   // Tappbarer „Select-Ersatz": zeigt die aktuelle Auswahl und öffnet das Modal.
@@ -1814,7 +1816,7 @@
       const cur = (opts.targets || []).find((x) => x.value === opts.current);
       const g = cur ? targetGroupOf(cur.value) : null;
       valLine = cur
-        ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span><span class="tgt-field__val">${esc(cur.label)}</span>`
+        ? `${g ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
         : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
     } else {
       const s = opts.summary || { kind: "none" };
@@ -2997,33 +2999,48 @@
            ${vm.stageOpts.map((o) => `<option value="${esc(o.value)}"${o.value === vm.sheetStage ? " selected" : ""}>${esc(o.label)}</option>`).join("")}
          </select>`
       : "";
+    // Lösungs- vs. Übungsblatt umschalten (nur Steuerleiste, nicht gedruckt).
+    const modeToggle = `
+      <div class="sheet-modes" role="group" aria-label="${esc(t("sheet.modeLabel"))}">
+        <button type="button" class="sheet-mode${!vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="full" aria-pressed="${!vm.exercise}">${esc(t("sheet.modeFull"))}</button>
+        <button type="button" class="sheet-mode${vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="exercise" aria-pressed="${!!vm.exercise}">${esc(t("sheet.modeExercise"))}</button>
+      </div>`;
     const controls = `
       <div class="sheet-controls no-print">
         ${targetField("sheet", { targets: vm.targets, current: vm.sheetTarget })}
         ${stagePick}
+        ${modeToggle}
         <button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>
       </div>`;
 
+    // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie und
+    // Notizen/Challenge-Phrase (die die Lösung verraten) bleiben verborgen.
+    const cardLine = (c) => `<li>
+          ${vm.exercise
+            ? `<span class="sheet-es sheet-es--blank" aria-hidden="true"></span>`
+            : `<span class="sheet-es" lang="es">${esc(c.es)}</span>`}
+          <span class="sheet-de">${esc(c.de)}</span>
+          ${(!vm.exercise && c.note) ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
+        </li>`;
     const stagesHtml = (vm.stages || []).map((st) => `
       ${st.heading ? `<h3 class="sheet-stage">${esc(st.heading)}</h3>` : ""}
       <ol class="sheet-cards">
-        ${st.cards.map((c) => `<li>
-          <span class="sheet-es" lang="es">${esc(c.es)}</span>
-          <span class="sheet-de">${esc(c.de)}</span>
-          ${c.note ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
-        </li>`).join("")}
+        ${st.cards.map(cardLine).join("")}
       </ol>
-      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${st.challenge.phrase ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
+      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${(!vm.exercise && st.challenge.phrase) ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
     `).join("");
 
     const credit = vm.edition && vm.edition.name ? esc(vm.edition.name) + " · " + esc(t("profile.poweredBy")) : "HolaRuta";
+    // Akzent nur als Farbwert zulassen (Daten sind vertrauenswürdig – defensiv trotzdem).
+    const accent = /^#[0-9a-fA-F]{3,8}$/.test(vm.accent || "") ? vm.accent : "#a23e20";
 
     const sheet = `
-      <article class="sheet">
+      <article class="sheet${vm.exercise ? " sheet--exercise" : ""}" style="--sheet-accent:${accent}">
+        <span class="sheet-accent-bar" aria-hidden="true"></span>
         <header class="sheet-head">
-          <h1 class="sheet-title">${esc(vm.title)}</h1>
+          <p class="sheet-brand"><span class="sheet-badge" aria-hidden="true">${esc(vm.icon || "📄")}</span><span class="sheet-brand-name">${credit}</span></p>
+          <h1 class="sheet-title">${esc(vm.title)}${vm.exercise ? ` <span class="sheet-tag">${esc(t("sheet.exerciseTag"))}</span>` : ""}</h1>
           <p class="sheet-meta">${vm.levelRange ? esc(vm.levelRange) + " · " : ""}${esc(t("sheet.cardCount", { n: vm.cardCount }))} · ${esc(vm.date)}</p>
-          <p class="sheet-credit">${credit}</p>
         </header>
 
         <p class="sheet-goal"><strong>${esc(t("sheet.goalLabel"))}:</strong> ${esc(t("sheet.goalText"))}</p>
@@ -3040,16 +3057,22 @@
 
         <section class="sheet-vocab">
           <h2 class="sheet-h2">${esc(t("sheet.vocabHeading"))}</h2>
-          <p class="sheet-audio">${esc(t("sheet.audioHint"))}</p>
+          <p class="sheet-audio">${esc(vm.exercise ? t("sheet.exerciseHint") : t("sheet.audioHint"))}</p>
           ${stagesHtml}
         </section>
 
         ${vm.code ? `
         <section class="sheet-subscribe">
           <h2 class="sheet-h2">${esc(t("sheet.subscribeHeading"))}</h2>
-          <p class="sheet-sub">${esc(t("sheet.subscribeHint"))}</p>
-          <p class="sheet-code">${esc(vm.code)}</p>
-          ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
+          <div class="sheet-sub-row">
+            <div class="sheet-sub-col">
+              <p class="sheet-sub">${esc(t("sheet.subscribeHint"))}</p>
+              ${vm.stageScoped ? `<p class="sheet-sub sheet-sub--note">${esc(t("sheet.subscribeWholeHint"))}</p>` : ""}
+              <p class="sheet-code">${esc(vm.code)}</p>
+              ${vm.link ? `<p class="sheet-link">${esc(vm.link)}</p>` : ""}
+            </div>
+            ${vm.qrSvg ? `<figure class="sheet-qr"><div class="sheet-qr-img">${vm.qrSvg}</div><figcaption class="sheet-qr-cap">${esc(t("sheet.scanHint"))}</figcaption></figure>` : ""}
+          </div>
         </section>` : ""}
 
         <section class="sheet-notes">
