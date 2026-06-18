@@ -96,7 +96,8 @@
 
     rows.sort(function (a, b) {
       return (b.cards - a.cards) || (b.streak - a.streak) ||
-        (b.reviews - a.reviews) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+        (b.reviews - a.reviews) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0) ||
+        (a.id < b.id ? -1 : a.id > b.id ? 1 : 0); // letzte Bremse: stabile Reihenfolge bei Namensgleichheit
     });
 
     var me = null;

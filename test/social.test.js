@@ -92,6 +92,19 @@ test("buildLeaderboard: deterministisch (gleiche Reihenfolge egal wie der Server
   );
 });
 
+test("buildLeaderboard: id entscheidet bei identischem Namen+Stats (geräteübergreifend stabil)", () => {
+  // Zwei verschiedene Nutzer mit GLEICHEM Anzeigenamen und gleichen Werten:
+  // ohne id-Tiebreaker hinge die Reihenfolge an der Server-/Set-Reihenfolge.
+  const x = [
+    { id: "u2", name: "Ana", cards: 10, streak: 1, reviews: 1, day: "d" },
+    { id: "u1", name: "Ana", cards: 10, streak: 1, reviews: 1, day: "d" },
+  ];
+  const y = [x[1], x[0]];
+  const ids = (arr) => social.buildLeaderboard(arr, { day: "d" }).entries.map((e) => e.id);
+  assert.deepEqual(ids(x), ["u1", "u2"], "id bricht den Gleichstand deterministisch");
+  assert.deepEqual(ids(x), ids(y), "Reihenfolge unabhängig von der Eingabe-Reihenfolge");
+});
+
 test("buildLeaderboard: leere/kaputte Eingabe -> leere Liste, kein Crash", () => {
   assert.deepEqual(social.buildLeaderboard(null, null).entries, []);
   assert.deepEqual(social.buildLeaderboard("x", {}).entries, []);

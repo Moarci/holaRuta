@@ -5686,24 +5686,29 @@
     render();
   }
 
+  // Eigenen Freundes-Code sicherstellen (einmal laden, dann gecacht). Wird VOR
+  // dem Aktualisieren gebraucht, damit die eigene Zeile auch bei einem Server
+  // OHNE `meId` zuverlässig markiert ist (sonst zeigte sie fälschlich „Entfernen").
+  function ensureFriendCode() {
+    if (state.social.code) return Promise.resolve(state.social.code);
+    return window.SC.social.myCode().then((r) => {
+      const code = (r && r.ok && r.body && r.body.code) || "";
+      if (code) { state.social = Object.assign({}, state.social, { code: code }); if (state.screen === "social") render(); }
+      return code;
+    }).catch(() => "");
+  }
+
   // Eigenen Tages-Snapshot veröffentlichen + Rangliste holen (social.refresh).
-  // Lädt parallel den eigenen Freundes-Code für die „teilen"-Anzeige.
   function refreshSocial() {
     const social = window.SC.social;
     if (!(social && social.enabled() && social.loggedIn())) return;
     state.social = Object.assign({}, state.social, { loading: true, error: false });
     if (state.screen === "social") render();
-    // Freundes-Code nachladen (einmalig, wenn noch nicht da) – fehlertolerant.
-    if (!state.social.code) {
-      social.myCode().then((r) => {
-        if (r && r.ok && r.body && r.body.code) { state.social = Object.assign({}, state.social, { code: r.body.code }); if (state.screen === "social") render(); }
-      }).catch(() => { /* egal – Code ist optional */ });
-    }
-    // Eigene Id aus dem (gecachten) Freundes-Code ableiten – markiert die eigene
-    // Zeile auch dann zuverlässig, wenn ein Server kein `meId` mitliefert (sonst
-    // bekäme die eigene Zeile fälschlich einen „Entfernen"-Knopf).
-    const self = social.parseFriendCode(state.social.code || "");
-    social.refresh(gamestats, { name: profileName(), meId: self ? self.id : undefined }).then((r) => {
+    // Erst den eigenen Code (→ eigene Id) sichern, dann mit `meId` aktualisieren.
+    ensureFriendCode().then((code) => {
+      const self = social.parseFriendCode(code || "");
+      return social.refresh(gamestats, { name: profileName(), meId: self ? self.id : undefined });
+    }).then((r) => {
       state.social = Object.assign({}, state.social, { loading: false, error: false, board: (r && r.board) || null });
       if (state.screen === "social") render();
     }).catch(() => {

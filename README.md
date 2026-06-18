@@ -9,7 +9,7 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-296_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-297_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2278-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -505,8 +505,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 296
-#  ℹ pass 296
+#  ℹ tests 297
+#  ℹ pass 297
 #  ℹ fail 0
 ```
 
@@ -529,8 +529,8 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Bereiche / Kategorien | 32 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
-| JS-Module | 34 (`SC.*`) |
-| Tests | 296 (alle grün) |
+| JS-Module | 36 (`SC.*`) |
+| Tests | 297 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 
