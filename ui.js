@@ -3397,6 +3397,8 @@
               : `<span class="pl-review__yours pl-review__yours--none">${esc(t("placement.reviewNoAnswer"))}</span>`}
           </p>
           <p class="pl-review__line">${esc(t("placement.reviewCorrect"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
+        ${r.status === "correct" && r.typo ? `
+          <p class="pl-review__line pl-review__typo">${esc(t("placement.reviewTypo"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
         ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
       </li>`;
     const review = (vm.review && vm.review.length)

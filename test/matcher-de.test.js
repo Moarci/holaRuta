@@ -133,6 +133,48 @@ test("es-Richtung: bewusste n/ñ-Toleranz (año/ano, Tastatur ohne ñ)", () => {
   ok("el ano", card); // dokumentierte Toleranz, siehe matcher.js-Kommentar
 });
 
+// ---------- Tippfehler-Toleranz ----------
+test("Tippfehler: klarer Vertipper zählt, wird aber als typo markiert", () => {
+  const card = { es: "quiero un café" };
+  // exakt -> correct, kein typo
+  let r = matcher.check("quiero un cafe", card);
+  assert.equal(r.correct, true); assert.equal(r.typo, false);
+  // ein fehlender Buchstabe -> correct mit typo-Flag
+  r = matcher.check("quiro un cafe", card);
+  assert.equal(r.correct, true); assert.equal(r.typo, true);
+  // optionales Pronomen davor -> correct, kein typo
+  r = matcher.check("yo quiero un café", card);
+  assert.equal(r.correct, true); assert.equal(r.typo, false);
+  // Pronomen + Vertipper -> correct mit typo
+  r = matcher.check("yo quiro un café", card);
+  assert.equal(r.correct, true); assert.equal(r.typo, true);
+});
+
+test("Tippfehler: kurze Wörter bleiben streng (gato ≠ pato), echte Fehler bleiben falsch", () => {
+  assert.equal(matcher.check("pato", { es: "gato" }).correct, false);   // 4 Buchstaben: nur exakt
+  assert.equal(matcher.check("gato", { es: "gato" }).correct, true);
+  no("geradeaus", { de: "links / rechts", es: "izquierda / derecha" }, "de"); // weit weg bleibt weit weg
+});
+
+test("Tippfehler: Wortend-Flexion (Genus/Person/Plural) ist KEIN Tippfehler", () => {
+  // Eine einzelne Abweichung am Wortende ist eine echte Form, kein Vertipper.
+  assert.equal(matcher.check("necesita", { es: "necesito" }).correct, false);        // Person yo↔ella
+  assert.equal(matcher.check("soy vegetariano", { es: "soy vegetariana" }).correct, false); // Genus
+  assert.equal(matcher.check("estoy cansado", { es: "estoy cansada" }).correct, false);     // Genus
+  assert.equal(matcher.check("necesito ayuda", { es: "necesita ayuda" }).correct, false);   // Flexion mitten im Satz
+  assert.equal(matcher.check("reservas", { es: "reserva" }).correct, false);          // Plural-s am Ende
+  // Gegenprobe: ein Vertipper im Wortinneren bleibt ein (akzeptierter) Tippfehler.
+  let r = matcher.check("quiro un cafe", { es: "quiero un cafe" });
+  assert.equal(r.correct, true); assert.equal(r.typo, true);
+});
+
+test("matchFree: bequemer Freitext-Check liefert correct + typo", () => {
+  const acc = ["quiero un cafe", "un cafe por favor"];
+  assert.deepEqual(matcher.matchFree("quiero un café", acc), { correct: true, typo: false });
+  assert.deepEqual(matcher.matchFree("quiro un cafe", acc), { correct: true, typo: true });
+  assert.deepEqual(matcher.matchFree("no se", acc), { correct: false, typo: false });
+});
+
 test("check: answers bleibt die unnormalisierte Anzeige-Liste", () => {
   const card = { es: "el bus / el colectivo" };
   assert.deepEqual(matcher.check("x", card).answers, ["el bus", "el colectivo"]);

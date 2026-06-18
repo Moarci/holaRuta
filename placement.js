@@ -72,10 +72,10 @@
       correctIndex: 1, expectedTimeSec: 9,
       explanationDe: "„Buenas tardes“ = Guten Tag/Nachmittag (ab Mittag)." },
     { id: "pt_re_004", block: "reaction", skill: "reaction", level: "A2", type: "mc",
-      promptDe: "An der Rezeption willst du EINE Person höflich fragen, ob sie dir helfen kann. Was passt?",
-      options: ["¿Puedes ayudarme?", "¿Puedo ayudarme?", "¿Puede ayudarme?", "¿Ayudo a usted?"],
-      correctIndex: 2, expectedTimeSec: 12,
-      explanationDe: "„¿Puede…?“ ist die höfliche usted-Form (eine Person) – für Rezeption, Polizei, Buspersonal." },
+      promptDe: "Du kommst im Hostel an und willst an der Rezeption sagen, dass du eine Reservierung hast. Was passt?",
+      options: ["Tengo una reserva.", "Quiero una reserva.", "Busco una reserva.", "Hago una reserva."],
+      correctIndex: 0, expectedTimeSec: 12,
+      explanationDe: "„Tengo una reserva“ = Ich habe eine Reservierung – der Standardsatz beim Check-in." },
     { id: "pt_re_005", block: "reaction", skill: "reaction", level: "A2", type: "mc",
       promptDe: "Du suchst den Weg zum Busbahnhof. Was fragst du?",
       options: ["¿Cuánto cuesta el bus?", "¿Cómo llego a la terminal de buses?", "¿A qué hora sale el bus?", "¿Dónde compro el boleto?"],
@@ -305,6 +305,20 @@
     return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
       .replace(/[¿?¡!.,;:()]/g, "").replace(/\s+/g, " ").trim();
   }
+  // Freitext-Treffer inkl. Tippfehler-Toleranz. -> { correct, typo }.
+  // EINE Quelle der Wahrheit: die Fuzzy-Logik (Levenshtein, Budget-Schwellen,
+  // Wortend-Flexions-Guard) lebt komplett in SC.matcher.matchFree. Im App-Bundle
+  // ist matcher.js immer vor placement.js geladen. Fehlt er ausnahmsweise, greift
+  // ein schlanker Exact-Only-Fallback (akzent-/satzzeichentolerant, aber ohne
+  // Tippfehler-Toleranz – bewusste, harmlose Degradierung statt Logik-Duplikat).
+  function matchFree(text, accept) {
+    if (SC.matcher && typeof SC.matcher.matchFree === "function") return SC.matcher.matchFree(text, accept);
+    var got = normalizeFree(text);
+    if (!got) return { correct: false, typo: false };
+    var hit = (accept || []).some(function (a) { return normalizeFree(a) === got; });
+    return { correct: hit, typo: false };
+  }
+
   function median(nums) {
     var a = nums.filter(function (n) { return typeof n === "number" && isFinite(n); }).slice().sort(function (x, y) { return x - y; });
     if (!a.length) return 0;
@@ -330,17 +344,18 @@
   // Eine einzelne Antwort bewerten. answer: { isUnknown, selectedIndex, text, responseTimeMs }
   function scoreAnswer(q, answer) {
     answer = answer || {};
-    if (answer.isUnknown) return { result: "unknown", isCorrect: false, timeConfidence: 0 };
-    var isCorrect;
+    if (answer.isUnknown) return { result: "unknown", isCorrect: false, timeConfidence: 0, typo: false };
+    var isCorrect, typo = false;
     if (q.type === "free") {
-      var got = normalizeFree(answer.text || "");
-      isCorrect = !!got && (q.accept || []).some(function (a) { return normalizeFree(a) === got; });
+      var fr = matchFree(answer.text || "", q.accept || []);
+      isCorrect = fr.correct; typo = fr.typo; // typo zählt als richtig, mit UI-Hinweis
     } else {
       isCorrect = answer.selectedIndex === q.correctIndex;
     }
     return {
       result: isCorrect ? "correct" : "wrong",
       isCorrect: isCorrect,
+      typo: typo,
       timeConfidence: isCorrect ? timeConfidence(answer.responseTimeMs, q.expectedTimeSec) : 0,
     };
   }
@@ -441,6 +456,7 @@
     // reine Funktionen (getestet)
     timeConfidence: timeConfidence,
     scoreAnswer: scoreAnswer,
+    matchFree: matchFree,
     levelFor: levelFor,
     summarize: summarize,
     questionById: questionById,

@@ -11,6 +11,9 @@ const assert = require("node:assert/strict");
 const path = require("path");
 
 globalThis.window = globalThis.window || {};
+// matcher.js zuerst laden – wie im App-Bundle. So testet der Freitext-Pfad die
+// echte, geteilte Fuzzy-Logik (SC.matcher.matchFree) statt eines Duplikats.
+require(path.join(__dirname, "..", "matcher.js"));
 require(path.join(__dirname, "..", "placement.js"));
 const { placement } = globalThis.window.SC;
 
@@ -110,6 +113,55 @@ test("scoreAnswer (free): akzent-/satzzeichentolerant über akzeptierte Variante
   assert.equal(placement.scoreAnswer(q, { text: "cuanto   vale", responseTimeMs: 5000 }).isCorrect, true);
   assert.equal(placement.scoreAnswer(q, { text: "no se", responseTimeMs: 5000 }).isCorrect, false);
   assert.equal(placement.scoreAnswer(q, { text: "", responseTimeMs: 5000 }).isCorrect, false);
+});
+
+test("scoreAnswer (free): klarer Tippfehler zählt als richtig, mit typo-Flag", () => {
+  const q = { type: "free", accept: ["quiero un cafe", "un cafe por favor"], expectedTimeSec: 14 };
+  // exakt (akzenttolerant) -> richtig, KEIN Tippfehler-Hinweis
+  let r = placement.scoreAnswer(q, { text: "Quiero un café.", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, true); assert.equal(r.typo, false);
+  // ein Vertipper ("quiro" statt "quiero") -> richtig, aber als Tippfehler markiert
+  r = placement.scoreAnswer(q, { text: "quiro un cafe", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, true); assert.equal(r.typo, true);
+  // optionales Pronomen davor ("yo quiero") -> richtig, KEIN Tippfehler-Hinweis
+  r = placement.scoreAnswer(q, { text: "yo quiero un café", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, true); assert.equal(r.typo, false);
+  // Screenshot-Fall: Pronomen + Vertipper -> richtig, mit Tippfehler-Hinweis
+  r = placement.scoreAnswer(q, { text: "yo quiro un café", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, true); assert.equal(r.typo, true);
+  // echt andere Antwort bleibt falsch (kein Durchrutschen über die Distanz)
+  r = placement.scoreAnswer(q, { text: "no se", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, false); assert.equal(r.typo, false);
+  // leere Eingabe bleibt falsch
+  r = placement.scoreAnswer(q, { text: "", responseTimeMs: 5000 });
+  assert.equal(r.isCorrect, false); assert.equal(r.typo, false);
+});
+
+test("matchFree: kurze Antworten bleiben streng (kein gato↔pato)", () => {
+  // 4 Buchstaben: Budget 0 -> nur exakt, eine echte Wortverwechslung zählt NICHT.
+  assert.equal(placement.matchFree("pato", ["gato"]).correct, false);
+  assert.equal(placement.matchFree("gato", ["gato"]).correct, true);
+});
+
+test("matchFree: Exact-Only-Fallback ohne matcher.js (graceful degradation)", () => {
+  const saved = globalThis.window.SC.matcher;
+  delete globalThis.window.SC.matcher;
+  try {
+    // ohne Matcher: exakt (akzent-/satzzeichentolerant) zählt weiterhin …
+    assert.deepEqual(placement.matchFree("Quiero un café.", ["quiero un cafe"]), { correct: true, typo: false });
+    // … aber ein Tippfehler wird NICHT mehr toleriert (bewusste Degradierung).
+    assert.equal(placement.matchFree("quiro un cafe", ["quiero un cafe"]).correct, false);
+  } finally {
+    globalThis.window.SC.matcher = saved;
+  }
+});
+
+test("matchFree: Wortend-Flexion ist falsch, Wortinneres-Vertipper bleibt richtig", () => {
+  // Grammatisch falsche Form (Endung) zählt NICHT als Tippfehler -> sauberer Score.
+  assert.equal(placement.matchFree("necesita", ["necesito"]).correct, false);
+  assert.equal(placement.matchFree("soy vegetariano", ["soy vegetariana"]).correct, false);
+  // Echter Vertipper im Wortinneren bleibt ein akzeptierter Tippfehler.
+  assert.deepEqual(placement.matchFree("quiro un cafe", ["quiero un cafe"]), { correct: true, typo: true });
 });
 
 test("timeConfidence: Schwellen relativ zur erwarteten Zeit", () => {
