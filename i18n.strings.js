@@ -640,6 +640,7 @@
     subTask: "Aufgabe öffnen: Code von deiner Lehrkraft/Reiseleitung eingeben",
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
+    subFotos: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
@@ -767,6 +768,16 @@
     sdWords: "🗣️ Wörter rund um Essen, Trinken & Apotheke",
     sdChecklist: "🎒 Gesund-unterwegs-Kit",
     sdChecklistHint: "Ein paar günstige Sachen, mit denen Essen, Trinken und der Bauch unterwegs funktionieren.",
+
+    // Fotos y videos
+    ftTips: "🎯 Tolle Bilder machen",
+    ftPhrases: "💬 Um Fotos & Platz bitten",
+    ftShare: "📤 Bilder teilen: AirDrop & Quick Share",
+    ftApps: "📲 Foto-Apps für die Gruppe",
+    ftAppsHint: "Für eine ganze Reisegruppe sammelst du alle Fotos am besten in einer App – in voller Qualität, ohne Chat-Chaos.",
+    ftWords: "🗣️ Wörter rund ums Fotografieren",
+    ftChecklist: "🎒 Foto-Kit",
+    ftChecklistHint: "Ein paar Kleinigkeiten, mit denen Fotos und Videos unterwegs zuverlässig gelingen.",
 
     // Hostel
     hostelIntro: "Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.",
@@ -978,6 +989,7 @@
     subTask: "Open a task: enter the code from your teacher/tour leader",
     subLogistica: "SIM, money & luggage – arrive smart and safe",
     subSalud: "Stay healthy & fit: food, drink, movement",
+    subFotos: "Great travel shots: subject, light, poses & sharing",
     subBebidas: "What people drink morning and evening – country by country",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
@@ -1100,6 +1112,16 @@
     sdWords: "🗣️ Words for food, drink & the pharmacy",
     sdChecklist: "🎒 Stay-healthy kit",
     sdChecklistHint: "A few cheap things that keep eating, drinking and your stomach working on the road.",
+
+    // Fotos y videos
+    ftTips: "🎯 Take great shots",
+    ftPhrases: "💬 Asking for photos & space",
+    ftShare: "📤 Sharing photos: AirDrop & Quick Share",
+    ftApps: "📲 Photo apps for the group",
+    ftAppsHint: "For a whole travel group, the best way to collect every photo is in one app – in full quality, with no chat chaos.",
+    ftWords: "🗣️ Words for photography",
+    ftChecklist: "🎒 Photo kit",
+    ftChecklistHint: "A few small things that make photos and videos reliably work on the road.",
 
     hostelIntro: "Use travel Spanish in pairs – not just learning, but speaking aloud.",
     coordinatorTitle: "5-minute icebreaker",

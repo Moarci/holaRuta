@@ -174,6 +174,7 @@
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
+    { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-assessment",  icon: "📋", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
@@ -761,7 +762,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -3038,6 +3039,144 @@
     });
   }
 
+  // ---------- FOTOS Y VIDEOS (ERKLÄRSEITE) ----------
+  // Wie die Info-Module (Tipps mit DOs/Don'ts, Sätze, Glossar, Kit), aber jedes
+  // Thema bekommt zusätzlich ein spanisches Lesetraining mit antippbaren Vokabeln
+  // (readingBlock, wie in der Historia). Dazu der „Teilen"-Block (AirDrop/Quick
+  // Share) und eine Karte für Foto-Apps wie Mymories (Link + Bild + Erklärung).
+  // Eine kleine, eingebettete SVG-Illustration als „Bild" – funktioniert offline.
+  const MYMORIES_SVG =
+    '<svg class="foto-app__art" viewBox="0 0 120 96" role="img" aria-label="Mymories" focusable="false">' +
+      '<defs><linearGradient id="ffg" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="#C25A45"/><stop offset="1" stop-color="#5A4FA8"/></linearGradient></defs>' +
+      '<rect x="2" y="2" width="116" height="92" rx="12" fill="url(#ffg)"/>' +
+      '<rect x="18" y="14" width="50" height="68" rx="8" fill="#fff"/>' +
+      '<rect x="24" y="22" width="17" height="17" rx="2.5" fill="#C25A45"/>' +
+      '<rect x="45" y="22" width="17" height="17" rx="2.5" fill="#E7A33E"/>' +
+      '<rect x="24" y="43" width="17" height="17" rx="2.5" fill="#5A4FA8"/>' +
+      '<rect x="45" y="43" width="17" height="17" rx="2.5" fill="#2F8E5B"/>' +
+      '<rect x="24" y="64" width="38" height="10" rx="3" fill="#E7E2F2"/>' +
+      '<rect x="74" y="40" width="34" height="34" rx="6" fill="#fff"/>' +
+      '<g fill="#27224A">' +
+      '<rect x="79" y="45" width="7" height="7"/><rect x="96" y="45" width="7" height="7"/>' +
+      '<rect x="79" y="62" width="7" height="7"/><rect x="89" y="55" width="5" height="5"/>' +
+      '<rect x="96" y="62" width="7" height="7"/><rect x="89" y="45" width="3" height="3"/></g>' +
+      '<circle cx="92" cy="24" r="13" fill="#fff"/>' +
+      '<text x="92" y="29" font-size="14" text-anchor="middle" fill="#C25A45">📷</text>' +
+    '</svg>';
+
+  function renderFotos(vm) {
+    const liList = (items, cls, marker) =>
+      (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+        .join("");
+
+    // Ein Thema: aufklappbar wie bei Knigge/Salud, plus spanisches Lesetraining.
+    const topicBlock = (tp, i) => {
+      const lvl = levelMeta(tp.level);
+      const reading = (tp.es && tp.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
+           </details>`
+        : "";
+      return `
+        <details class="knigge-topic">
+          <summary class="knigge-topic__head">
+            <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
+            <span class="knigge-topic__title">${esc(tp.title)}</span>
+            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="knigge-topic__body">
+            ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
+            ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
+            ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+            ${reading}
+            ${tipsShareBtn("fotos", i)}
+          </div>
+        </details>`;
+    };
+    const topics = (vm.topics || []).map(topicBlock).join("");
+
+    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Salud.
+    const phraseGroup = (g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${g.items.map((p) => `
+            <li class="rg-phrase">
+              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+              <span class="rg-phrase__de">${esc(p.de)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    // Teilen-Block: AirDrop / Quick Share (Erklärung + DOs/Don'ts).
+    const sh = vm.sharing;
+    const sharing = sh
+      ? `<p class="hm-intro">${esc(sh.intro)}</p>
+         ${sh.dos && sh.dos.length ? `<ul class="knigge-list">${liList(sh.dos, "knigge-do", "✅")}</ul>` : ""}
+         ${sh.donts && sh.donts.length ? `<ul class="knigge-list">${liList(sh.donts, "knigge-dont", "🚫")}</ul>` : ""}`
+      : "";
+
+    // Foto-Apps: Karte mit Bild (SVG), Erklärung und Link (z. B. Mymories).
+    const appCard = (a) => {
+      const bullets = (a.bullets || []).length
+        ? `<ul class="foto-app__bullets">${a.bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>`
+        : "";
+      const linkLabel = (a.url || "").replace(/^https?:\/\//, "").replace(/\/$/, "");
+      return `
+        <article class="foto-app">
+          <div class="foto-app__media" aria-hidden="false">${MYMORIES_SVG}</div>
+          <div class="foto-app__body">
+            <h3 class="foto-app__name">${esc(a.name)}${a.platform ? ` <span class="foto-app__plat">${esc(a.platform)}</span>` : ""}</h3>
+            <p class="foto-app__desc">${esc(a.desc)}</p>
+            ${bullets}
+            ${a.url ? `<a class="foto-app__link" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">🔗 ${esc(linkLabel)}</a>` : ""}
+          </div>
+        </article>`;
+    };
+    const apps = (vm.apps || []).map(appCard).join("");
+
+    const glossary = (vm.glossary || []).map((g) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
+        <span class="rg-gloss__de">${esc(g.de)}</span>
+      </li>`).join("");
+
+    const checklist = (vm.checklist || []).map((c) => `
+      <li class="rg-region">
+        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__body">
+          <span class="rg-region__country">${esc(c.item)}</span>
+          <span class="rg-region__note">${esc(c.why)}</span>
+        </span>
+      </li>`).join("");
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">📸 Fotos y videos</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+        ${moduleShareBtn("fotos")}
+
+        ${topics ? `<h2 class="rg-head">${esc(t("discover.ftTips"))}</h2>${topics}` : ""}
+        ${phrases ? `<h2 class="rg-head">${esc(t("discover.ftPhrases"))}</h2>${phrases}` : ""}
+        ${sharing ? `<h2 class="rg-head">${esc(t("discover.ftShare"))}</h2>${sharing}` : ""}
+        ${apps ? `<h2 class="rg-head">${esc(t("discover.ftApps"))}</h2><p class="hm-intro">${esc(t("discover.ftAppsHint"))}</p>${apps}` : ""}
+        ${glossary ? `<h2 class="rg-head">${esc(t("discover.ftWords"))}</h2><ul class="rg-glosslist">${glossary}</ul>` : ""}
+        ${(vm.checklist && vm.checklist.length)
+          ? `<h2 class="rg-head">${esc(t("discover.ftChecklist"))}</h2>
+             <p class="hm-intro">${esc(t("discover.ftChecklistHint"))}</p>
+             <ul class="rg-regions">${checklist}</ul>`
+          : ""}
+      </section>`;
+  }
+
   // ---------- HOSTEL MODE ----------
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
   function hmTopbar(title, back) {
@@ -4799,7 +4938,7 @@
   }
 
   window.SC = window.SC || {};
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
