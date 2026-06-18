@@ -1119,7 +1119,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Filter-Chips */
 .schips { display: flex; flex-wrap: wrap; gap: 8px; }
 .schip {
-  display: inline-flex; align-items: center; min-height: 44px;
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
   border: 1.5px solid var(--line); background: var(--card); color: var(--ink-soft);
   cursor: pointer; padding: 7px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 700;
   box-shadow: var(--shadow);
