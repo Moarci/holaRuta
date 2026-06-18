@@ -190,7 +190,7 @@
       explanationDe: "„La cuenta, por favor.“ = Die Rechnung, bitte. (Akzente/Satzzeichen egal)" },
     { id: "pt_fr_002", block: "free", skill: "free", level: "A2", type: "free",
       promptDe: "Schreib auf Spanisch die Frage: Wie viel kostet das?",
-      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto cuesta eso", "cuanto vale", "cuanto vale esto", "cuanto vale eso"], solutionEs: "¿Cuánto cuesta?", expectedTimeSec: 16,
+      accept: ["cuanto cuesta", "cuanto cuesta esto", "cuanto cuesta eso", "cuanto vale", "cuanto vale esto", "cuanto vale eso", "cuanto sale", "cuanto sale esto", "cuanto sale eso", "que precio tiene", "que precio tiene esto", "que precio tiene eso"], solutionEs: "¿Cuánto cuesta?", expectedTimeSec: 16,
       explanationDe: "„¿Cuánto cuesta?“ ist die Standardfrage nach dem Preis (Akzente/Satzzeichen egal)." },
   ];
 
