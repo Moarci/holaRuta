@@ -660,6 +660,54 @@
       ${sections}`;
   }
 
+  // Ruta-Check im Profil: letztes Ergebnis (Startlevel, Score, Tempo), kurzer
+  // Verlauf und Knöpfe zum Wiederholen + Teilen. Wer ihn noch nie gemacht hat,
+  // sieht einen Einstiegs-Aufruf. p = vm.placement (null = Modul nicht geladen).
+  function placementCard(p, shareFmt) {
+    if (!p) return "";
+    const cap = `<p class="sectioncap">🎯 ${esc(t("placement.profileCap"))}</p>`;
+    if (!p.taken || !p.last) {
+      return `
+        ${cap}
+        <div class="plprof plprof--empty">
+          <p class="plprof__never">${esc(t("placement.profileNever"))}</p>
+          <button class="teacher-btn teacher-btn--main" data-action="open-placement">▶️ ${esc(t("placement.takeNow"))}</button>
+        </div>`;
+    }
+    const l = p.last;
+    const histRows = p.history.length > 1
+      ? `<div class="plprof__histcap">${esc(t("placement.profileHistoryCap"))}</div>
+         <ul class="plprof__hist">
+           ${p.history.map((h) => `
+             <li class="plprof__histrow">
+               <span class="plprof__histdate">${esc(h.at || "")}</span>
+               <span class="plprof__histlvl">${esc(h.level)}</span>
+               <span class="plprof__histscore">${h.scorePct}%</span>
+             </li>`).join("")}
+         </ul>`
+      : "";
+    return `
+      ${cap}
+      <div class="plprof">
+        <div class="plprof__head">
+          <div class="plprof__levelbox">
+            <span class="plprof__levelcap">${esc(t("placement.profileLevelCap"))}</span>
+            <span class="plprof__level">${esc(l.level)}</span>
+          </div>
+          <div class="plprof__meta">
+            <p class="plprof__score">${esc(t("placement.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
+            ${l.tempoLabel ? `<p class="plprof__tempo">${esc(t("placement.statTempo"))}: <b>${esc(l.tempoLabel)}</b></p>` : ""}
+            ${l.at ? `<p class="plprof__date">${esc(t("placement.profileLastAt", { date: l.at }))} · ${esc(t("placement.profileAttempts", { n: p.attempts }))}</p>` : ""}
+          </div>
+        </div>
+        ${histRows}
+        ${shareBlock(shareFmt, "share-placement", t("placement.share"))}
+        <div class="plprof__actions">
+          <button class="ghostbtn" data-action="open-placement">🔁 ${esc(t("placement.retake"))}</button>
+        </div>
+      </div>`;
+  }
+
   function profilBody(vm) {
     const navrow = (action, icon, label, chip) => `
       <button class="navrow" data-action="${action}">
@@ -701,6 +749,8 @@
 
       <p class="sectioncap">${esc(t("home.tripCap"))}</p>
       ${tripManage(vm)}
+
+      ${vm.hasPlacement ? placementCard(vm.placement, vm.shareFormat) : ""}
 
       <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
@@ -3248,6 +3298,7 @@
         ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
         ${relText ? `<div class="tip pl-reliability pl-reliability--${esc(vm.reliability)}">${esc(relText)}</div>` : ""}
         ${review}
+        ${shareBlock(vm.shareFormat, "share-placement", t("placement.share"))}
         <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>

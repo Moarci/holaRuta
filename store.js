@@ -323,6 +323,7 @@
       shoppingSeen: {},     // Map shoppingItemId -> true (distinkt abgehakte Einkaufs-Items)
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
       placement: null,      // letztes Ruta-Check-Ergebnis { level, finalScore, accuracy, unknownRate, tempo, at } | null
+      placementHistory: [], // alle Ruta-Check-Ergebnisse (für Verlauf/Fortschritt), neueste zuletzt
     };
   }
   // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
@@ -341,6 +342,31 @@
     }
     if (keys.every((k) => /^\d+$/.test(k))) return { colombia: v }; // Migration alt-flach
     return {};
+  }
+
+  // Ruta-Check-Verlauf: Liste typisierter Ergebnis-Einträge (neueste zuletzt),
+  // gedeckelt – manipuliertes/korruptes localStorage darf weder crashen noch
+  // unbegrenzt wachsen.
+  function sanitizePlacementHistory(v) {
+    if (!Array.isArray(v)) return [];
+    const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    const out = [];
+    for (let i = 0; i < v.length; i++) {
+      const e = v[i];
+      if (!isPlainObject(e)) continue;
+      out.push({
+        level: typeof e.level === "string" ? e.level.slice(0, 8) : "",
+        finalScore: num(e.finalScore),
+        accuracy: num(e.accuracy),
+        unknownRate: num(e.unknownRate),
+        tempo: typeof e.tempo === "string" ? e.tempo : "",
+        reliability: typeof e.reliability === "string" ? e.reliability : "",
+        at: typeof e.at === "string" ? e.at : "",
+        ts: typeof e.ts === "string" ? e.ts : "",
+      });
+    }
+    // Nur die letzten 50 behalten (chronologisch, neueste zuletzt).
+    return out.slice(-50);
   }
 
   function sanitizeTripGoal(t) {
@@ -402,6 +428,7 @@
       shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
       placement: isPlainObject(v.placement) ? v.placement : null,
+      placementHistory: sanitizePlacementHistory(v.placementHistory),
     };
   }
 

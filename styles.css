@@ -2242,6 +2242,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .pl-review__item--wrong .pl-review__yours { color: #C2502E; }
 .pl-review__correct { color: #2E8B57; font-weight: 700; }
 .pl-review__exp { margin: 6px 0 0; font-size: 0.86rem; color: var(--muted); line-height: 1.45; }
+/* Ruta-Check-Karte im Profil */
+.plprof { border: 1px solid var(--line); border-radius: var(--r-md, 14px); background: var(--card); padding: 14px 16px; }
+.plprof--empty { text-align: center; }
+.plprof__never { margin: 0 0 12px; color: var(--ink-soft); }
+.plprof__head { display: flex; align-items: center; gap: 16px; }
+.plprof__levelbox { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; min-width: 5.5em; padding: 8px 10px; border-radius: var(--r-md, 12px); background: color-mix(in srgb, var(--brand) 12%, transparent); }
+.plprof__levelcap { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+.plprof__level { font-family: var(--font-display); font-weight: 800; font-size: 2rem; color: var(--brand-ink); line-height: 1.1; }
+.plprof__meta { flex: 1 1 auto; min-width: 0; }
+.plprof__score { margin: 0 0 3px; font-weight: 700; }
+.plprof__tempo { margin: 0 0 3px; font-size: 0.9rem; color: var(--ink-soft); }
+.plprof__date { margin: 0; font-size: 0.82rem; color: var(--muted); }
+.plprof__histcap { margin: 14px 0 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+.plprof__hist { list-style: none; padding: 0; margin: 0; }
+.plprof__histrow { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); font-size: 0.9rem; }
+.plprof__histdate { color: var(--muted); }
+.plprof__histlvl { font-weight: 700; color: var(--brand-ink); }
+.plprof__histscore { font-weight: 700; color: var(--ink-soft); min-width: 3em; text-align: right; }
+.plprof__actions { margin-top: 10px; }
+.plprof .sharebar { margin-top: 12px; }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);

@@ -190,6 +190,30 @@
   }
 
   // ----- View-Modelle (Zustand -> einfache Objekte für die UI) -----
+  // Ruta-Check fürs Profil: letztes Ergebnis + Verlauf (neueste zuerst), damit man
+  // den Test wiederholen und seinen Fortschritt sehen kann. null = Modul nicht geladen.
+  function placementProfileVM() {
+    if (!placement) return null;
+    const history = Array.isArray(gamestats.placementHistory) ? gamestats.placementHistory : [];
+    const last = gamestats.placement || null;
+    if (!last && !history.length) return { taken: false };
+    const fmt = (e) => ({
+      level: e.level || "–",
+      scorePct: Math.round((e.finalScore || 0) * 100),
+      accuracyPct: Math.round((e.accuracy || 0) * 100),
+      tempoLabel: e.tempo ? t("placement.tempo_" + e.tempo) : "",
+      at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
+    });
+    const past = history.slice().reverse().map(fmt); // neueste zuerst
+    return {
+      taken: true,
+      last: last ? fmt(last) : (past[0] || null),
+      history: past,
+      attempts: history.length,
+      canShare: !!share,
+    };
+  }
+
   function homeVM() {
     const everyCard = allCards();
     const categories = data.CATEGORIES.map((c) => {
@@ -261,6 +285,7 @@
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
+      placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       overall: {
@@ -353,6 +378,7 @@
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
       tab: state.homeTab,
       install: installVM(),
+      shareFormat: shareFormat(), // gewähltes Sharepic-Format (für den Ruta-Check-Teilen-Block)
     };
   }
 
@@ -3596,19 +3622,23 @@
     const result = placement.summarize(asked, p.answers);
     p.result = result;
     p.phase = "done";
-    // Letztes Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
+    // Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
+    // „placement" = letztes Ergebnis (Schnellzugriff), „placementHistory" = alle
+    // Durchläufe für den Verlauf/Fortschritt im Profil (neueste zuletzt, gedeckelt).
     try {
-      gamestats = Object.assign({}, gamestats, {
-        placement: {
-          level: result.level,
-          finalScore: Math.round(result.finalScore * 100) / 100,
-          accuracy: Math.round(result.accuracy * 100) / 100,
-          unknownRate: Math.round(result.unknownRate * 100) / 100,
-          tempo: result.tempo,
-          reliability: result.reliability || "",
-          at: new Date().toISOString().slice(0, 10),
-        },
-      });
+      const now = new Date();
+      const entry = {
+        level: result.level,
+        finalScore: Math.round(result.finalScore * 100) / 100,
+        accuracy: Math.round(result.accuracy * 100) / 100,
+        unknownRate: Math.round(result.unknownRate * 100) / 100,
+        tempo: result.tempo,
+        reliability: result.reliability || "",
+        at: now.toISOString().slice(0, 10),
+        ts: now.toISOString(),
+      };
+      const history = (Array.isArray(gamestats.placementHistory) ? gamestats.placementHistory : []).concat([entry]).slice(-50);
+      gamestats = Object.assign({}, gamestats, { placement: entry, placementHistory: history });
       store.saveGameStats(gamestats);
     } catch (e) { /* Persistenz optional – nie crashen */ }
     render();
@@ -3633,7 +3663,7 @@
         } : null,
       };
     }
-    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding, review: placementReviewView(p) }, placementResultView(p.result));
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding, review: placementReviewView(p), shareFormat: shareFormat() }, placementResultView(p.result));
     return { phase: "intro", fromOnboarding: !!p.fromOnboarding, total: placementTotalPlanned() };
   }
 
@@ -5009,6 +5039,23 @@
     }, shareFormat());
   }
 
+  // Teilt das letzte Ruta-Check-Ergebnis als Sharepic (Startlevel + Score + Tempo).
+  // Quelle ist das gespeicherte letzte Ergebnis – funktioniert daher sowohl direkt
+  // nach dem Test als auch später aus dem Profil.
+  function sharePlacement() {
+    if (!share) return;
+    const r = gamestats.placement;
+    if (!r) return;
+    buzz(12);
+    share.shareImage("placement", {
+      userName: profileName(),
+      level: r.level,
+      scorePct: Math.round((r.finalScore || 0) * 100),
+      accuracyPct: Math.round((r.accuracy || 0) * 100),
+      tempoLabel: r.tempo ? t("placement.tempo_" + r.tempo) : "",
+    }, shareFormat());
+  }
+
   // Teilt die gerade sichtbare Karte – egal ob Detailseite oder Lern-Sitzung.
   function shareCard() {
     if (!share) return;
@@ -5368,6 +5415,7 @@
     else if (action === "install-app") installApp();
     else if (action === "delete-card") deleteCard(el.dataset.id);
     else if (action === "share-stats") shareStats();
+    else if (action === "share-placement") sharePlacement();
     else if (action === "share-card") shareCard();
     else if (action === "share-historia") shareHistoria(el.dataset.id);
     else if (action === "share-hist-module") shareHistModule();
