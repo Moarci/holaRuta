@@ -4,13 +4,13 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.98.0** — 2278 Karten · 71 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Ruta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul teilen** (Deep-Link öffnet das Modul direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.98.0** — 2281 Karten · 71 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Deutsch/Englisch umschaltbar** · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Fotos & Videos** (bessere Reisebilder) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul teilen** (Deep-Link öffnet das Modul direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
 [![Tests](https://img.shields.io/badge/Tests-298_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
-[![Karten](https://img.shields.io/badge/Karten-2278-C2502E?style=flat-square)](#datenmodell)
+[![Karten](https://img.shields.io/badge/Karten-2281-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
 
@@ -112,7 +112,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Konjugieren** | Verben + Erklärseite 🔁 | Eigener Bereich mit 42 Karten zu den Präsens-Formen der wichtigsten Reiseverben (ir, estar, ser, tener, poder, querer, seguir, doblar …) — Grundlage z. B. für Wegbeschreibungen. Dazu unter Entdecken die Erklärseite **Conjugación**: Personen, die drei regelmäßigen Muster (-ar/-er/-ir), wichtige unregelmäßige Verben und ein Wegbeschreibungs-Dialog, LatAm-korrekt mit *ustedes* statt *vosotros* — mit „Jetzt üben"-Sprung direkt in die Karten |
 | **Definiciones** | Zuordnen-Quiz 🧩 | Eigenständiges Modul im Stil eines Lehrbuch-Arbeitsblatts: **spanische Definition lesen, passenden Begriff aus mehreren Optionen wählen** — mit sofortiger Rückmeldung, Fortschrittsbalken und Auswertung. Themen-Listen (*En la ciudad*, *En la ruta* mit Backpacker-Orten, *La comida*); lernt Wörter über ihre Bedeutung statt nur per Übersetzung. Zahlt auf den Ruta-Pass ein |
 | **Einkaufszettel** | Interaktive Liste 🛒 | Reisebedarf in drei Rubriken (**Supermercado · Ropa · Farmacia**): Item antippen → spanisches Wort, Aussprache und Reisetipp erscheinen, das Wort wird vorgelesen; dazu zwei **fertige Fragen fürs Geschäft** (ob sie es haben — *¿Tienen …?* — und wo man es findet — *¿Dónde puedo encontrar …?*) mit Übersetzung und 🔊. Über das Kästchen links **abhaken** (und jederzeit wieder zurücknehmen), Fortschritt bleibt gemerkt. Danach ein **kurzes Quiz** über dieselbe Rubrik („Du brauchst …" → richtiges Wort wählen). LatAm-korrekt (*curitas, medias, lentes de sol, repelente*) inkl. Reise-Klassiker wie Klopapier, Sonnencreme & „algo para la diarrea" |
-| **Reise-Kontext** | 🧭 Kontext-Button | Runder Button unten links auf der Antwortkarte (Pendant zum 🔊): klappt einen Block mit echtem Reisesatz, typischer Situation und kurzem Reisetipp auf — für **alle 2278 Karten**. Zeigt, *wie* man den Ausdruck unterwegs wirklich benutzt (statt nur zu übersetzen); Zahlen bekommen praktischen Preis-/Mengen-Kontext |
+| **Reise-Kontext** | 🧭 Kontext-Button | Runder Button unten links auf der Antwortkarte (Pendant zum 🔊): klappt einen Block mit echtem Reisesatz, typischer Situation und kurzem Reisetipp auf — für **alle 2281 Karten**. Zeigt, *wie* man den Ausdruck unterwegs wirklich benutzt (statt nur zu übersetzen); Zahlen bekommen praktischen Preis-/Mengen-Kontext |
 | **Statistik** | Lern-Auswertung | Trefferquote, gemeistert / schwierig / neu, **Streckenkarte** (Fortschritt als Bus-Route), sortierte Kartenliste, Detailseite je Karte |
 | **Ruta-Pass** | Badges / Reisestempel 🎖️ | Sammelbare Stempel für Lernmenge, Lern-Serie (Streak), Bereichs-Meisterschaft & Spezielles — inkl. Geheim-Stempel und Freischalt-Einblendung |
 | **Eigene Karten** | Editor | Eigene Vokabeln anlegen — erscheinen überall ohne Sonderbehandlung |
@@ -124,6 +124,10 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 | **Lesetraining (Historia)** | Spanisch lesen 📖 | Jeder Text (alle 7 Epochen, 6 Protagonisten & 8 „Heute“-Karten) zusätzlich als spanischer Lesetext mit antippbaren Schwierigkeitswörtern (Übersetzung im Popover), Wörterliste pro Text (getrennt in „mitnehmen“ / „nicht so wichtig“), CEFR-Schwierigkeitsscore (A1–C1) zur Selbst-Einstufung, „Ganze Übersetzung“ und Sharepic von Text & Wörterliste |
 | **Quiz zum Text** | Vokabel-Mini-Quiz 🧩 | Pro Epoche ein kurzes Selbsttest-Quiz (spanisches Wort → richtige Übersetzung antippen) mit sofortiger Richtig/Falsch-Rückmeldung, direkt am Lesetext |
 | **Reise-Knigge** | Verhalten unterwegs 🧭 | DOs & Don'ts für Hostel, Bus, Gruppen und Kultur — mit landesspezifischen Akzenten für alle 19 Länder (mit der Länderkunde verknüpft) |
+| **Diálogos** | Gesprächs-Simulationen 💬 | Echte Reisesituationen Zug für Zug durchspielen: die Gegenseite wird angezeigt und (bei TTS) vorgelesen, du antwortest je nach Zug per Multiple-Choice oder tippst eine Schlüssel-Replik frei (großzügig geprüft). Das im Profil gesetzte Geschlecht fließt ein (*alérgico/alérgica*) und der Gesprächspartner spricht dich passend an |
+| **Fotos & Videos** | Bessere Reisebilder 📸 | Kompakte Foto-/Video-Schule fürs Reisen: Motiv & Bildaufbau, Kameraeinstellungen, Licht, Posen und Video — verständlich erklärt, damit gute Reiseerinnerungen nicht dem Zufall überlassen bleiben. Per Deep-Link (`?m=fotos`) direkt aufrufbar |
+| **Bebidas AM/PM** | Tag- & Abendgetränk je Land ☕🍷 | Ein doppelseitiges Emaille-Schild zeigt fürs gewählte Reiseland das typische Morgengetränk (AM) und Abendgetränk (PM) — von Café de olla & Mezcal in México über Mate & Malbec in Argentinien bis Tereré & Caña in Paraguay. Tippen schaltet um (Dampf nur morgens, Glas füllt sich abends); alle 19 Länder abgedeckt |
+| **Mehrsprachige UI** | Deutsch / Englisch 🌐 | Die komplette Oberfläche ist auf **Deutsch oder Englisch** umschaltbar (eigene i18n-Engine, `t()`-Lookups, Inhalte mit `de:`/`en:`-Feldern). Deutsch ist die Referenz, Englisch die erste Übersetzung; nicht übersetzte Inhalte und eigene Karten fallen sicher auf Deutsch zurück |
 | **Logística de viaje** | Clever & sicher ankommen 🧳 | Die praktischen Handgriffe, die kein Sprachkurs lehrt: **SIM-Karte (chip) kaufen & online sein**, **Geld wechseln und am cajero abheben** (ohne teure Umrechnung), **Geld & Wertsachen auf mehrere Gepäckstücke aufteilen**, das Gepäck per **Tracker (AirTag & Co.)** im Blick behalten, beim Fliegen das **Handgepäck-Notfallset** packen (Medikamente, Wechselwäsche, Hygiene, Powerbank, Dokumente) und in der Hochsaison **beliebte Hostels vorausplanen**. Pro Thema aufklappbare DOs & Don'ts, die passenden **Sätze als Karten** (es/de) und eine Packliste |
 | **Salud y energía** | Gesund & fit unterwegs 🥗 | Lange auf der Straße bleibt nur, wer auf den Körper achtet: **ausgewogen essen statt nur Streetfood** (Protein, Ballaststoffe, Vitamine), **Frühstück selbst machen** – Porridge mit Proteinpulver & Früchten ganz ohne Küche, **günstig & mit Geschmack trinken** (Zero-Sirup, Elektrolytpulver/suero), **Bauch & Verdauung**, **Sonne, Höhe & Mücken** und **in Bewegung bleiben**. Mit aufklappbaren DOs & Don'ts, den **Sätzen als Karten** fürs Einkaufen, Bestellen (*a la plancha, no frito*) und die Apotheke, sowie einem **Gesund-unterwegs-Kit** |
 | **Regatear** | Gut verhandeln 🤝 | Wie man auf Märkten freundlich feilscht: **Erklärung** der Taktik in 4 Blöcken (Grundhaltung, Verhandlung führen, Abschluss & Weggehen, Taxi/Touren), **Glossar** der Feilsch-Wörter (*regatear, la rebaja, precio fijo, la yapa*), die **wichtigsten Sätze** nach Phasen (*¿A cuánto la unidad?*, *¿Cuánto es lo menos?*, *Trato hecho*, *¿Tiene cambio?*), **Mengen & Einheiten** (unidad, docena, par, libra, kilo, litro, manojo …), **regionale Unterschiede** (México, Guatemala, Perú/Bolivia, Colombia, Argentina, Costa Rica, Cuba) und vier **Rollenspiele** zum lauten Üben (Obst & Gemüse, Souvenir feilschen, erst suchen dann handeln, Taxipreis aushandeln) |
@@ -135,7 +139,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-D
 
 ## 🌎 Die Wörterbasis
 
-**2278 Karten · 71 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
+**2281 Karten · 71 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
 
 Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md) live im Browser gegengeprüft: **0 Duplikate, 0 fehlende Felder, 0 ¿¡-Mismatches, keine falschen Übersetzungen**.
 
@@ -150,7 +154,7 @@ Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md
 
 | Bereich | Karten | Bereich | Karten | Bereich | Karten |
 |---|---:|---|---:|---|---:|
-| Zahlen | 110 | **Kolumbien** | **89** | Zeiten | 68 |
+| Zahlen | 110 | **Kolumbien** | **89** | Zeiten | 70 |
 | Wegbeschreibung | 65 | Essen | 59 | **Peru** | **45** |
 | Konjugieren | 42 | **Mexiko** | **41** | **Argentinien** | **40** |
 | **Bolivien** | **40** | **Chile** | **40** | **Costa Rica** | **40** |
@@ -171,7 +175,7 @@ Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md
 | Touren & Outdoor | 24 | Vegetarisch & Allergien | 24 | Verkehr | 24 |
 | Wäsche & Services | 24 | Wetter | 24 | Hotel | 23 |
 | Smalltalk | 22 | Grundlagen | 21 | Behörden | 20 |
-| Busreise | 20 | Zeit | 16 | Alltag | 15 |
+| Busreise | 20 | Zeit | 17 | Alltag | 15 |
 | Notfall | 15 | Social | 14 | Trinken | 14 |
 | Geld | 13 | Hostel | 10 |  |   |
 
@@ -199,7 +203,7 @@ SpanischCard/
 ├── index.html          # App-Shell + Modul-Ladereihenfolge
 ├── styles.css          # Komplettes Design (Erdton-Palette, 3D-Flip, Responsive)
 │
-├── data.js        SC.data       # Modell: 71 Kategorien, 3 Stufen, 2278 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
+├── data.js        SC.data       # Modell: 71 Kategorien, 3 Stufen, 2281 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
 ├── contextdata.js SC.contextData # Reise-Kontext-Inhalte je Karte ({e,d,s,n}) – REINE DATEN
 ├── numbers.js     SC.numbers    # Zahl→spanisches Wort + Preis-Generator (Precios al oído, 7 Währungen) – REINE FUNKTIONEN
 ├── context.js     SC.context    # hängt Kontext an die Karten (Zahlen generiert) – REINE FUNKTIONEN
@@ -210,25 +214,39 @@ SpanischCard/
 ├── regatear.js    SC.regatear   # Regatear: Verhandeln-Taktik, Sätze, Einheiten, Rollenspiele (REINE DATEN)
 ├── logistica.js   SC.logistica  # Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung (REINE DATEN)
 ├── salud.js       SC.salud      # Salud y energía: Essen, Trinken, Bauch, Sonne/Höhe, Bewegung (REINE DATEN)
+├── knigge.js      SC.knigge     # Reise-Knigge: DOs & Don'ts, landesspezifische Akzente (REINE DATEN)
+├── bebidas.js     SC.bebidas    # Bebidas AM/PM: Tag-/Abendgetränk je Land (REINE DATEN)
+├── dialogos.js    SC.dialogos   # Diálogos: Daten für die Gesprächs-Simulationen (REINE DATEN)
+├── fotografia.js  SC.fotografia # Fotos & Videos: Foto-/Video-Schule fürs Reisen (REINE DATEN)
 │
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
 ├── matcher.js     SC.matcher    # Antwortprüfung, akzent-/satzzeichen-tolerant — REINE FUNKTIONEN
-├── placement.js   SC.placement  # Ruta-Check: Fragenkatalog + Bewertung/Level-Logik — REINE DATEN + FUNKTIONEN
+├── placement.js   SC.placement  # HolaRuta-Check: Fragenkatalog + Bewertung/Level-Logik — REINE DATEN + FUNKTIONEN
 ├── assessment.js  SC.assessment # HolaRuta Nivel-Test: ausführlicher Einstufungstest (A0–C1), Variante „Extremo" mit Hörverstehen — REINE DATEN + FUNKTIONEN
 ├── search.js      SC.search     # Suche über Karten, Übungen & Informationen — REINE FUNKTIONEN
 ├── stats.js       SC.stats      # Auswertung pro Karte & gesamt — REINE FUNKTIONEN
 ├── badges.js      SC.badges     # Ruta-Pass: Badge-Definitionen + Auswertung — REINE FUNKTIONEN
+├── conjug.js      SC.conjug     # Conjugador: Drill-Generator aus data.CONJUGATION — REINE FUNKTIONEN
+├── celebrate.js   SC.celebrate  # Belohnungs-/Fertig-Inszenierung (decide = rein, play = DOM)
 │
+├── i18n.js        SC.i18n       # Mehrsprachigkeit (DE/EN): t()-Lookup + nativeText() — REINE ENGINE
+├── i18n.strings.js SC.i18n      # UI-Wörterbücher (de/en), per register() in die Engine
+├── config.js      SC.config     # Edition-/Default-Konfiguration (merged editions/registry.js)
 ├── store.js       SC.store      # Persistenz — kapselt localStorage komplett weg
+├── net.js         SC.net        # Geteilte Auth-/Netz-Schicht für die opt-in Cloud-Module (BACKEND.md)
 ├── sync.js        SC.sync       # Optionale, opt-in Cloud-Sync: reine Merge-Funktionen + dünner Adapter (BACKEND.md)
+├── social.js      SC.social     # Optionale, opt-in Freunde & Tages-Rangliste (nur Server fehlt, BACKEND.md)
 ├── usercards.js   SC.userCards  # Eigene Karten (anlegen/löschen/validieren)
 ├── speech.js      SC.speech     # Sprachausgabe via Web Speech API (LatAm-Stimme)
 ├── share.js       SC.share      # Sharepic-Generator (Canvas → PNG, Web Share API)
+├── qr.js          SC.qr         # QR-Code (gekapselte qrcode-generator-Lib) fürs Aktivitätsblatt
+├── install.js     SC.install    # PWA-Installation („Zum Startbildschirm hinzufügen")
 │
 ├── ui.js          SC.ui         # Views: Zustand → HTML-String (renderHome/Study/Stats/…)
 ├── app.js         SC.app        # Controller: State, View-Modelle, Event-Delegation
 │
 ├── build.js                     # Erzeugt die Einzeldatei HolaRuta.html
+├── swversion.js                 # Build-/Test-Werkzeug: Inhalts-Hash für den SW-Cache-Namen (kein SC-Modul)
 ├── service-worker.js            # Offline-Cache (Cache-first + App-Shell-Fallback)
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
@@ -332,7 +350,7 @@ node build.js --edition=weroad   #  ✓ HolaRuta-weroad.html (Coral · „· WeR
 
 Alle Editionen liegen zentral in [`editions/registry.js`](editions/registry.js) (Quelle der Wahrheit: Name, Akzent, Partner, Logo, Default-Ziel, Reiter); [config.js](config.js) merged sie über die Standardwerte. Ohne Edition entsteht das pure HolaRuta — **der Default bleibt unangetastet** (graceful). Sichtbar werden Akzentfarbe (`--brand`/`--brand-ink`, wirkt in Hell & Dunkel), Tab-Titel, ein dezenter Appbar-Zusatz (`· ECOS`), Partner-Logo (Profil + Onboarding) und der Profil-Credit; der Hell/Dunkel-Rahmen (`--page`/`theme-color`) bleibt unangetastet. Die `HolaRuta-*.html`-Editionen sind reproduzierbare Build-Ausgaben und nicht eingecheckt.
 
-**Teilbarer Link (ohne eigenen Build):** Auf der gehosteten App wählt der Parameter `?edition=<id>` die Edition zur Laufzeit, `?start=onboarding` startet direkt das Onboarding (inkl. Ruta-Check). So verschickt eine Schule/Partnerfirma EINEN gebrandeten Einstiegslink:
+**Teilbarer Link (ohne eigenen Build):** Auf der gehosteten App wählt der Parameter `?edition=<id>` die Edition zur Laufzeit, `?start=onboarding` startet direkt das Onboarding (inkl. HolaRuta-Check). So verschickt eine Schule/Partnerfirma EINEN gebrandeten Einstiegslink:
 
 ```
 https://moarci.github.io/holaRuta/?edition=ecos&start=onboarding
@@ -365,7 +383,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 
 | Feld | Bedeutung |
 |---|---|
-| `cat` | Kategorie-Id (eine von 19) |
+| `cat` | Kategorie-Id (eine von 71) |
 | `lvl` | Stufe: `1` Einsteiger (A1) · `2` Mittel (A2) · `3` Fortgeschritten (B1) |
 | `de` | Frage (Deutsch) |
 | `es` | Antwort (Spanisch); mehrere gültige Antworten mit `/` getrennt |
@@ -479,6 +497,7 @@ Normalisiert wird über:
 | **Sprachausgabe** | Web Speech API (`SpeechSynthesis`) | Eingebaut, keine Dependency, LatAm-Stimmenwahl |
 | **Sharepics** | Canvas 2D | Generiert PNGs für Web Share API ohne Server |
 | **Offline** | Service Worker + Web App Manifest | Installierbare PWA |
+| **Mehrsprachigkeit** | Eigene i18n-Engine (`t()` + `nativeText()`) | DE/EN ohne Lib; Inhalte tragen `de:`/`en:`-Felder, sicherer DE-Fallback |
 | **Tests** | `node:test` (eingebaut) | Null Test-Dependencies |
 | **Schriften** | Bricolage Grotesque + Instrument Sans | Mit System-Font-Fallback offline |
 
@@ -525,11 +544,11 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 
 | Kennzahl | Wert |
 |---|---|
-| Karten | 2278 |
-| Bereiche / Kategorien | 32 |
+| Karten | 2281 |
+| Bereiche / Kategorien | 71 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
-| JS-Module | 37 (`SC.*`) |
+| JS-Module | 36 (`SC.*`) |
 | Tests | 298 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
