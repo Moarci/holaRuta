@@ -34,20 +34,6 @@
   const LIST = [
     {
       "id": "mexico",
-      "sports": {
-        "intro": "Fußball ist die unangefochtene Nummer eins – die Liga MX füllt riesige Stadien, und die ‚El Tri'-Nationalelf eint das Land. Daneben haben Boxen und die spektakuläre Lucha Libre Kultstatus, im Norden wird Baseball gespielt.",
-        "introEn": "Football is the undisputed number one – Liga MX fills huge stadiums and the ‘El Tri' national team unites the country. Boxing and the spectacular Lucha Libre have cult status too, and the north plays baseball.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1 mit fanatischer Liga-MX-Kultur.", "noteEn": "The number-one sport, with a fanatical Liga MX culture." },
-          { "name": "Boxen", "nameEn": "Boxing", "note": "Große Tradition mit zahlreichen Weltmeistern.", "noteEn": "A great tradition with many world champions." },
-          { "name": "Lucha Libre", "nameEn": "Lucha Libre", "note": "Maskenkampf-Spektakel, halb Sport, halb Show.", "noteEn": "A masked-wrestling spectacle, half sport, half show." }
-        ],
-        "athletes": [
-          { "name": "Saúl „Canelo“ Álvarez", "sport": "Boxen", "sportEn": "Boxing", "note": "Mehrfacher Weltmeister und einer der besten Boxer der Gegenwart.", "noteEn": "Multiple world champion and one of the best boxers of today." },
-          { "name": "Hugo Sánchez", "sport": "Fußball", "sportEn": "Football", "note": "Tor-Legende von Real Madrid, Mexikos berühmtester Fußballer.", "noteEn": "Goal-scoring legend at Real Madrid, Mexico's most famous footballer." },
-          { "name": "Javier „Chicharito“ Hernández", "sport": "Fußball", "sportEn": "Football", "note": "Rekordtorschütze der Nationalmannschaft, spielte u. a. für Manchester United.", "noteEn": "Record scorer for the national team, who played for Manchester United among others." }
-        ]
-      },
       "name": "Mexiko",
       "flag": "🇲🇽",
       "region": "Mittelamerika",
@@ -256,23 +242,25 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/A_glass_of_hibiscus_tea_01.jpg/960px-A_glass_of_hibiscus_tea_01.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist die unangefochtene Nummer eins – die Liga MX füllt riesige Stadien, und die ‚El Tri'-Nationalelf eint das Land. Daneben haben Boxen und die spektakuläre Lucha Libre Kultstatus, im Norden wird Baseball gespielt.",
+        "introEn": "Football is the undisputed number one – Liga MX fills huge stadiums and the ‘El Tri' national team unites the country. Boxing and the spectacular Lucha Libre have cult status too, and the north plays baseball.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1 mit fanatischer Liga-MX-Kultur.", "noteEn": "The number-one sport, with a fanatical Liga MX culture." },
+          { "name": "Boxen", "nameEn": "Boxing", "note": "Große Tradition mit zahlreichen Weltmeistern.", "noteEn": "A great tradition with many world champions." },
+          { "name": "Lucha Libre", "nameEn": "Lucha Libre", "note": "Maskenkampf-Spektakel, halb Sport, halb Show.", "noteEn": "A masked-wrestling spectacle, half sport, half show." }
+        ],
+        "athletes": [
+          { "name": "Saúl „Canelo“ Álvarez", "sport": "Boxen", "sportEn": "Boxing", "note": "Mehrfacher Weltmeister und einer der besten Boxer der Gegenwart.", "noteEn": "Multiple world champion and one of the best boxers of today." },
+          { "name": "Hugo Sánchez", "sport": "Fußball", "sportEn": "Football", "note": "Tor-Legende von Real Madrid, Mexikos berühmtester Fußballer.", "noteEn": "Goal-scoring legend at Real Madrid, Mexico's most famous footballer." },
+          { "name": "Javier „Chicharito“ Hernández", "sport": "Fußball", "sportEn": "Football", "note": "Rekordtorschütze der Nationalmannschaft, spielte u. a. für Manchester United.", "noteEn": "Record scorer for the national team, who played for Manchester United among others." }
+        ]
+      },
       "tip": "Trinke nur abgefülltes oder gefiltertes Wasser – auch beim Zähneputzen.",
       "tipEn": "Only drink bottled or filtered water, even when brushing your teeth."
     },
     {
       "id": "guatemala",
-      "sports": {
-        "intro": "Fußball ist mit Abstand der beliebteste Sport, doch international machte Guatemala vor allem im Gehen auf sich aufmerksam – mit der ersten olympischen Medaille des Landes.",
-        "introEn": "Football is by far the most popular sport, but internationally Guatemala made its mark above all in race walking – with the country's first Olympic medal.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Der populärste Sport, mit Clubs wie Municipal und Comunicaciones.", "noteEn": "The most popular sport, with clubs like Municipal and Comunicaciones." },
-          { "name": "Gehen (Leichtathletik)", "nameEn": "Race walking", "note": "Guatemalas internationale Vorzeigedisziplin.", "noteEn": "Guatemala's flagship international discipline." }
-        ],
-        "athletes": [
-          { "name": "Érick Barrondo", "sport": "Gehen", "sportEn": "Race walking", "note": "Gewann 2012 mit Olympiasilber die erste olympische Medaille Guatemalas.", "noteEn": "Won Guatemala's first-ever Olympic medal, silver in 2012." },
-          { "name": "Carlos Ruiz „El Pescadito“", "sport": "Fußball", "sportEn": "Football", "note": "Rekordtorschütze der Nationalmannschaft und nationale Ikone.", "noteEn": "Record scorer for the national team and a national icon." }
-        ]
-      },
       "name": "Guatemala",
       "flag": "🇬🇹",
       "region": "Mittelamerika",
@@ -481,22 +469,23 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/A_glass_of_hibiscus_tea_01.jpg/960px-A_glass_of_hibiscus_tea_01.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist mit Abstand der beliebteste Sport, doch international machte Guatemala vor allem im Gehen auf sich aufmerksam – mit der ersten olympischen Medaille des Landes.",
+        "introEn": "Football is by far the most popular sport, but internationally Guatemala made its mark above all in race walking – with the country's first Olympic medal.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Der populärste Sport, mit Clubs wie Municipal und Comunicaciones.", "noteEn": "The most popular sport, with clubs like Municipal and Comunicaciones." },
+          { "name": "Gehen (Leichtathletik)", "nameEn": "Race walking", "note": "Guatemalas internationale Vorzeigedisziplin.", "noteEn": "Guatemala's flagship international discipline." }
+        ],
+        "athletes": [
+          { "name": "Érick Barrondo", "sport": "Gehen", "sportEn": "Race walking", "note": "Gewann 2012 mit Olympiasilber die erste olympische Medaille Guatemalas.", "noteEn": "Won Guatemala's first-ever Olympic medal, silver in 2012." },
+          { "name": "Carlos Ruiz „El Pescadito“", "sport": "Fußball", "sportEn": "Football", "note": "Rekordtorschütze der Nationalmannschaft und nationale Ikone.", "noteEn": "Record scorer for the national team and a national icon." }
+        ]
+      },
       "tip": "Den Vulkan Acatenango nur mit Guide und warmer Kleidung besteigen – nachts wird es eiskalt.",
       "tipEn": "Only climb the Acatenango volcano with a guide and warm clothing, as it gets freezing cold at night."
     },
     {
       "id": "honduras",
-      "sports": {
-        "intro": "Fußball ist nahezu Religion; die Qualifikation für eine WM löst landesweite Feiern aus. Mehrere Honduraner haben sich in europäischen Topligen einen Namen gemacht.",
-        "introEn": "Football is almost a religion; qualifying for a World Cup sparks nationwide celebrations. Several Hondurans have made a name for themselves in Europe's top leagues.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Mit Abstand Volkssport Nr. 1 mit den Rivalen Olimpia und Motagua.", "noteEn": "By far the number-one sport, with rivals Olimpia and Motagua." }
-        ],
-        "athletes": [
-          { "name": "David Suazo", "sport": "Fußball", "sportEn": "Football", "note": "Stürmerstar bei Inter Mailand, einer der besten Spieler des Landes.", "noteEn": "A striker star at Inter Milan, one of the country's best players." },
-          { "name": "Wilson Palacios", "sport": "Fußball", "sportEn": "Football", "note": "Mittelfeldspieler in der englischen Premier League (u. a. Tottenham).", "noteEn": "A midfielder in the English Premier League (Tottenham among others)." }
-        ]
-      },
       "name": "Honduras",
       "flag": "🇭🇳",
       "region": "Mittelamerika",
@@ -705,22 +694,22 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/3/37/2011.09_smoothie2.JPG"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist nahezu Religion; die Qualifikation für eine WM löst landesweite Feiern aus. Mehrere Honduraner haben sich in europäischen Topligen einen Namen gemacht.",
+        "introEn": "Football is almost a religion; qualifying for a World Cup sparks nationwide celebrations. Several Hondurans have made a name for themselves in Europe's top leagues.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Mit Abstand Volkssport Nr. 1 mit den Rivalen Olimpia und Motagua.", "noteEn": "By far the number-one sport, with rivals Olimpia and Motagua." }
+        ],
+        "athletes": [
+          { "name": "David Suazo", "sport": "Fußball", "sportEn": "Football", "note": "Stürmerstar bei Inter Mailand, einer der besten Spieler des Landes.", "noteEn": "A striker star at Inter Milan, one of the country's best players." },
+          { "name": "Wilson Palacios", "sport": "Fußball", "sportEn": "Football", "note": "Mittelfeldspieler in der englischen Premier League (u. a. Tottenham).", "noteEn": "A midfielder in the English Premier League (Tottenham among others)." }
+        ]
+      },
       "tip": "Roatán und Utila sind sicher und entspannt – in Großstädten wie San Pedro Sula dagegen Vorsicht walten lassen.",
       "tipEn": "Roatán and Utila are safe and laid-back, but be careful in big cities like San Pedro Sula."
     },
     {
       "id": "elsalvador",
-      "sports": {
-        "intro": "Fußball ist der Lieblingssport, doch das Land hat sich auch als Surf-Destination einen Namen gemacht und richtet internationale Wellenreit-Wettbewerbe aus.",
-        "introEn": "Football is the favourite sport, but the country has also made a name for itself as a surfing destination and hosts international surf competitions.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Der populärste Sport im Land.", "noteEn": "The most popular sport in the country." },
-          { "name": "Surfen", "nameEn": "Surfing", "note": "Erstklassige Pazifikwellen; ‚Surf City' zieht die Weltspitze an.", "noteEn": "First-class Pacific waves; ‘Surf City' draws the world's best." }
-        ],
-        "athletes": [
-          { "name": "Jorge „Mágico“ González", "sport": "Fußball", "sportEn": "Football", "note": "Legendärer Spielmacher, Idol des spanischen Klubs Cádiz.", "noteEn": "A legendary playmaker and idol of the Spanish club Cádiz." }
-        ]
-      },
       "name": "El Salvador",
       "flag": "🇸🇻",
       "region": "Mittelamerika",
@@ -929,23 +918,22 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/1/11/Logo_Pilsener.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist der Lieblingssport, doch das Land hat sich auch als Surf-Destination einen Namen gemacht und richtet internationale Wellenreit-Wettbewerbe aus.",
+        "introEn": "Football is the favourite sport, but the country has also made a name for itself as a surfing destination and hosts international surf competitions.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Der populärste Sport im Land.", "noteEn": "The most popular sport in the country." },
+          { "name": "Surfen", "nameEn": "Surfing", "note": "Erstklassige Pazifikwellen; ‚Surf City' zieht die Weltspitze an.", "noteEn": "First-class Pacific waves; ‘Surf City' draws the world's best." }
+        ],
+        "athletes": [
+          { "name": "Jorge „Mágico“ González", "sport": "Fußball", "sportEn": "Football", "note": "Legendärer Spielmacher, Idol des spanischen Klubs Cádiz.", "noteEn": "A legendary playmaker and idol of the Spanish club Cádiz." }
+        ]
+      },
       "tip": "El Zonte ('Bitcoin Beach') akzeptiert vielerorts Bitcoin – aber Bargeld ist überall sicherer.",
       "tipEn": "El Zonte ('Bitcoin Beach') accepts Bitcoin in many places, but cash is safer everywhere."
     },
     {
       "id": "nicaragua",
-      "sports": {
-        "intro": "Anders als die meisten Nachbarn ist Nicaragua ein Baseball-Land – der Sport ist Nationalleidenschaft. Auch Boxen hat dank großer Champions einen hohen Stellenwert.",
-        "introEn": "Unlike most of its neighbours, Nicaragua is a baseball country – the sport is a national passion. Boxing also enjoys high status thanks to great champions.",
-        "popular": [
-          { "name": "Baseball", "nameEn": "Baseball", "note": "Der inoffizielle Nationalsport, in jedem Dorf gespielt.", "noteEn": "The unofficial national sport, played in every village." },
-          { "name": "Boxen", "nameEn": "Boxing", "note": "Tief verwurzelt, mit weltbekannten Champions.", "noteEn": "Deeply rooted, with world-famous champions." }
-        ],
-        "athletes": [
-          { "name": "Alexis Argüello", "sport": "Boxen", "sportEn": "Boxing", "note": "Weltmeister in drei Gewichtsklassen, Box-Legende und Nationalheld.", "noteEn": "Three-weight world champion, a boxing legend and national hero." },
-          { "name": "Dennis Martínez", "sport": "Baseball", "sportEn": "Baseball", "note": "Erster Nicaraguaner in der MLB, warf ein Perfect Game.", "noteEn": "The first Nicaraguan in MLB, who pitched a perfect game." }
-        ]
-      },
       "name": "Nicaragua",
       "flag": "🇳🇮",
       "region": "Mittelamerika",
@@ -1154,22 +1142,23 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Theobroma_cacao_Blanco_clean.jpg/960px-Theobroma_cacao_Blanco_clean.jpg"
         }
       ],
+      "sports": {
+        "intro": "Anders als die meisten Nachbarn ist Nicaragua ein Baseball-Land – der Sport ist Nationalleidenschaft. Auch Boxen hat dank großer Champions einen hohen Stellenwert.",
+        "introEn": "Unlike most of its neighbours, Nicaragua is a baseball country – the sport is a national passion. Boxing also enjoys high status thanks to great champions.",
+        "popular": [
+          { "name": "Baseball", "nameEn": "Baseball", "note": "Der inoffizielle Nationalsport, in jedem Dorf gespielt.", "noteEn": "The unofficial national sport, played in every village." },
+          { "name": "Boxen", "nameEn": "Boxing", "note": "Tief verwurzelt, mit weltbekannten Champions.", "noteEn": "Deeply rooted, with world-famous champions." }
+        ],
+        "athletes": [
+          { "name": "Alexis Argüello", "sport": "Boxen", "sportEn": "Boxing", "note": "Weltmeister in drei Gewichtsklassen, Box-Legende und Nationalheld.", "noteEn": "Three-weight world champion, a boxing legend and national hero." },
+          { "name": "Dennis Martínez", "sport": "Baseball", "sportEn": "Baseball", "note": "Erster Nicaraguaner in der MLB, warf ein Perfect Game.", "noteEn": "The first Nicaraguan in MLB, who pitched a perfect game." }
+        ]
+      },
       "tip": "Vulkan-Boarding am Cerro Negro bei León ist ein einzigartiges Abenteuer – Schutzanzug nicht vergessen.",
       "tipEn": "Volcano boarding on Cerro Negro near León is a one-of-a-kind adventure, so don't forget the protective suit."
     },
     {
       "id": "costarica",
-      "sports": {
-        "intro": "Fußball begeistert das ganze Land, vor allem seit dem Viertelfinale bei der WM 2014. Die ‚Sele' und ihre Stars sind Quelle großen Nationalstolzes.",
-        "introEn": "Football thrills the whole country, especially since reaching the 2014 World Cup quarter-finals. The ‘Sele' and its stars are a source of great national pride.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Der mit Abstand beliebteste Sport; Erzrivalen sind Saprissa und Alajuelense.", "noteEn": "By far the most popular sport; the arch-rivals are Saprissa and Alajuelense." }
-        ],
-        "athletes": [
-          { "name": "Keylor Navas", "sport": "Fußball", "sportEn": "Football", "note": "Weltklasse-Torwart, gewann mit Real Madrid mehrfach die Champions League.", "noteEn": "A world-class goalkeeper who won the Champions League several times with Real Madrid." },
-          { "name": "Claudia Poll", "sport": "Schwimmen", "sportEn": "Swimming", "note": "Gewann 1996 Olympiagold – die erste Goldmedaille des Landes.", "noteEn": "Won Olympic gold in 1996 – the country's first gold medal." }
-        ]
-      },
       "name": "Costa Rica",
       "flag": "🇨🇷",
       "region": "Mittelamerika",
@@ -1378,25 +1367,22 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Guaro_%28M%C3%A1laga%29.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball begeistert das ganze Land, vor allem seit dem Viertelfinale bei der WM 2014. Die ‚Sele' und ihre Stars sind Quelle großen Nationalstolzes.",
+        "introEn": "Football thrills the whole country, especially since reaching the 2014 World Cup quarter-finals. The ‘Sele' and its stars are a source of great national pride.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Der mit Abstand beliebteste Sport; Erzrivalen sind Saprissa und Alajuelense.", "noteEn": "By far the most popular sport; the arch-rivals are Saprissa and Alajuelense." }
+        ],
+        "athletes": [
+          { "name": "Keylor Navas", "sport": "Fußball", "sportEn": "Football", "note": "Weltklasse-Torwart, gewann mit Real Madrid mehrfach die Champions League.", "noteEn": "A world-class goalkeeper who won the Champions League several times with Real Madrid." },
+          { "name": "Claudia Poll", "sport": "Schwimmen", "sportEn": "Swimming", "note": "Gewann 1996 Olympiagold – die erste Goldmedaille des Landes.", "noteEn": "Won Olympic gold in 1996 – the country's first gold medal." }
+        ]
+      },
       "tip": "Die Trockenzeit (Dezember bis April) ist ideal – in der Regenzeit sind viele Pisten matschig.",
       "tipEn": "The dry season (December to April) is ideal, as many tracks turn to mud in the rainy season."
     },
     {
       "id": "panama",
-      "sports": {
-        "intro": "Baseball und Boxen haben eine lange Tradition und brachten Weltstars hervor; zugleich gewinnt Fußball immer mehr Anhänger.",
-        "introEn": "Baseball and boxing have a long tradition and produced global stars; at the same time football keeps gaining followers.",
-        "popular": [
-          { "name": "Baseball", "nameEn": "Baseball", "note": "Traditionssport mit großen MLB-Exporten.", "noteEn": "A traditional sport with major MLB exports." },
-          { "name": "Boxen", "nameEn": "Boxing", "note": "Reiche Geschichte mit zahlreichen Weltmeistern.", "noteEn": "A rich history with numerous world champions." },
-          { "name": "Fußball", "nameEn": "Football", "note": "Wachsende Begeisterung seit der WM-Teilnahme 2018.", "noteEn": "Growing enthusiasm since the 2018 World Cup appearance." }
-        ],
-        "athletes": [
-          { "name": "Mariano Rivera", "sport": "Baseball", "sportEn": "Baseball", "note": "Bester Closer der MLB-Geschichte, einstimmig in die Hall of Fame gewählt.", "noteEn": "The greatest closer in MLB history, elected unanimously to the Hall of Fame." },
-          { "name": "Roberto Durán", "sport": "Boxen", "sportEn": "Boxing", "note": "„Manos de Piedra“, einer der größten Boxer aller Zeiten.", "noteEn": "‘Manos de Piedra', one of the greatest boxers of all time." },
-          { "name": "Irving Saladino", "sport": "Weitsprung", "sportEn": "Long jump", "note": "Gewann 2008 Olympiagold – Panamas erste Goldmedaille.", "noteEn": "Won Olympic gold in 2008 – Panama's first gold medal." }
-        ]
-      },
       "name": "Panama",
       "flag": "🇵🇦",
       "region": "Mittelamerika",
@@ -1605,23 +1591,25 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Sno_cone.jpg/960px-Sno_cone.jpg"
         }
       ],
+      "sports": {
+        "intro": "Baseball und Boxen haben eine lange Tradition und brachten Weltstars hervor; zugleich gewinnt Fußball immer mehr Anhänger.",
+        "introEn": "Baseball and boxing have a long tradition and produced global stars; at the same time football keeps gaining followers.",
+        "popular": [
+          { "name": "Baseball", "nameEn": "Baseball", "note": "Traditionssport mit großen MLB-Exporten.", "noteEn": "A traditional sport with major MLB exports." },
+          { "name": "Boxen", "nameEn": "Boxing", "note": "Reiche Geschichte mit zahlreichen Weltmeistern.", "noteEn": "A rich history with numerous world champions." },
+          { "name": "Fußball", "nameEn": "Football", "note": "Wachsende Begeisterung seit der WM-Teilnahme 2018.", "noteEn": "Growing enthusiasm since the 2018 World Cup appearance." }
+        ],
+        "athletes": [
+          { "name": "Mariano Rivera", "sport": "Baseball", "sportEn": "Baseball", "note": "Bester Closer der MLB-Geschichte, einstimmig in die Hall of Fame gewählt.", "noteEn": "The greatest closer in MLB history, elected unanimously to the Hall of Fame." },
+          { "name": "Roberto Durán", "sport": "Boxen", "sportEn": "Boxing", "note": "„Manos de Piedra“, einer der größten Boxer aller Zeiten.", "noteEn": "‘Manos de Piedra', one of the greatest boxers of all time." },
+          { "name": "Irving Saladino", "sport": "Weitsprung", "sportEn": "Long jump", "note": "Gewann 2008 Olympiagold – Panamas erste Goldmedaille.", "noteEn": "Won Olympic gold in 2008 – Panama's first gold medal." }
+        ]
+      },
       "tip": "Für die San-Blas-Inseln Bargeld in kleinen Scheinen mitnehmen – die Guna nehmen keine Karten.",
       "tipEn": "Take cash in small notes for the San Blas Islands, as the Guna don't accept cards."
     },
     {
       "id": "cuba",
-      "sports": {
-        "intro": "Baseball ist Nationalsport und Herzensangelegenheit, während Kuba im Amateurboxen zur absoluten Weltspitze zählt und reihenweise Olympiasieger hervorbringt.",
-        "introEn": "Baseball is the national sport and a matter of the heart, while Cuba is among the very best in amateur boxing, producing a string of Olympic champions.",
-        "popular": [
-          { "name": "Baseball", "nameEn": "Baseball", "note": "Nationalsport mit fanatischer Anhängerschaft.", "noteEn": "The national sport with a fanatical following." },
-          { "name": "Boxen", "nameEn": "Boxing", "note": "Eine der erfolgreichsten Boxnationen der Olympia-Geschichte.", "noteEn": "One of the most successful boxing nations in Olympic history." }
-        ],
-        "athletes": [
-          { "name": "Teófilo Stevenson", "sport": "Boxen", "sportEn": "Boxing", "note": "Dreifacher Olympiasieger im Schwergewicht, Box-Legende.", "noteEn": "Three-time Olympic heavyweight champion, a boxing legend." },
-          { "name": "Javier Sotomayor", "sport": "Hochsprung", "sportEn": "High jump", "note": "Hält bis heute den Hochsprung-Weltrekord (2,45 m).", "noteEn": "Still holds the high-jump world record (2.45 m)." }
-        ]
-      },
       "name": "Kuba",
       "flag": "🇨🇺",
       "region": "Karibik",
@@ -1830,23 +1818,23 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cuban_coffee-_2013-04-05_14-30.jpg/960px-Cuban_coffee-_2013-04-05_14-30.jpg"
         }
       ],
+      "sports": {
+        "intro": "Baseball ist Nationalsport und Herzensangelegenheit, während Kuba im Amateurboxen zur absoluten Weltspitze zählt und reihenweise Olympiasieger hervorbringt.",
+        "introEn": "Baseball is the national sport and a matter of the heart, while Cuba is among the very best in amateur boxing, producing a string of Olympic champions.",
+        "popular": [
+          { "name": "Baseball", "nameEn": "Baseball", "note": "Nationalsport mit fanatischer Anhängerschaft.", "noteEn": "The national sport with a fanatical following." },
+          { "name": "Boxen", "nameEn": "Boxing", "note": "Eine der erfolgreichsten Boxnationen der Olympia-Geschichte.", "noteEn": "One of the most successful boxing nations in Olympic history." }
+        ],
+        "athletes": [
+          { "name": "Teófilo Stevenson", "sport": "Boxen", "sportEn": "Boxing", "note": "Dreifacher Olympiasieger im Schwergewicht, Box-Legende.", "noteEn": "Three-time Olympic heavyweight champion, a boxing legend." },
+          { "name": "Javier Sotomayor", "sport": "Hochsprung", "sportEn": "High jump", "note": "Hält bis heute den Hochsprung-Weltrekord (2,45 m).", "noteEn": "Still holds the high-jump world record (2.45 m)." }
+        ]
+      },
       "tip": "Tausche Geld nur an offiziellen Stellen und bringe genug Bargeld mit, da ausländische Kreditkarten oft nicht funktionieren.",
       "tipEn": "Only change money at official places and bring enough cash, as foreign credit cards often don't work."
     },
     {
       "id": "republica-dominicana",
-      "sports": {
-        "intro": "Baseball ist eine landesweite Obsession – kein Land stellt pro Kopf mehr MLB-Profis. Die größten Stars werden wie Nationalhelden gefeiert.",
-        "introEn": "Baseball is a nationwide obsession – no country sends more players per capita to MLB. The biggest stars are celebrated like national heroes.",
-        "popular": [
-          { "name": "Baseball", "nameEn": "Baseball", "note": "Der Nationalsport schlechthin, von Kindesbeinen an gespielt.", "noteEn": "The national sport above all, played from early childhood." }
-        ],
-        "athletes": [
-          { "name": "David „Big Papi“ Ortiz", "sport": "Baseball", "sportEn": "Baseball", "note": "Red-Sox-Idol und Hall-of-Famer, einer der besten Schlagmänner der MLB.", "noteEn": "Red Sox idol and Hall of Famer, one of MLB's greatest hitters." },
-          { "name": "Pedro Martínez", "sport": "Baseball", "sportEn": "Baseball", "note": "Einer der dominantesten Pitcher der MLB-Geschichte, Hall of Fame.", "noteEn": "One of the most dominant pitchers in MLB history, Hall of Fame." },
-          { "name": "Félix Sánchez", "sport": "Leichtathletik", "sportEn": "Athletics", "note": "Zweifacher Olympiasieger über 400 m Hürden.", "noteEn": "Two-time Olympic champion in the 400 m hurdles." }
-        ]
-      },
       "name": "Dominikanische Republik",
       "flag": "🇩🇴",
       "region": "Karibik",
@@ -2055,25 +2043,23 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Barcel%C3%B2_Boat.jpeg/960px-Barcel%C3%B2_Boat.jpeg"
         }
       ],
+      "sports": {
+        "intro": "Baseball ist eine landesweite Obsession – kein Land stellt pro Kopf mehr MLB-Profis. Die größten Stars werden wie Nationalhelden gefeiert.",
+        "introEn": "Baseball is a nationwide obsession – no country sends more players per capita to MLB. The biggest stars are celebrated like national heroes.",
+        "popular": [
+          { "name": "Baseball", "nameEn": "Baseball", "note": "Der Nationalsport schlechthin, von Kindesbeinen an gespielt.", "noteEn": "The national sport above all, played from early childhood." }
+        ],
+        "athletes": [
+          { "name": "David „Big Papi“ Ortiz", "sport": "Baseball", "sportEn": "Baseball", "note": "Red-Sox-Idol und Hall-of-Famer, einer der besten Schlagmänner der MLB.", "noteEn": "Red Sox idol and Hall of Famer, one of MLB's greatest hitters." },
+          { "name": "Pedro Martínez", "sport": "Baseball", "sportEn": "Baseball", "note": "Einer der dominantesten Pitcher der MLB-Geschichte, Hall of Fame.", "noteEn": "One of the most dominant pitchers in MLB history, Hall of Fame." },
+          { "name": "Félix Sánchez", "sport": "Leichtathletik", "sportEn": "Athletics", "note": "Zweifacher Olympiasieger über 400 m Hürden.", "noteEn": "Two-time Olympic champion in the 400 m hurdles." }
+        ]
+      },
       "tip": "Nutze für Kurzstrecken die günstigen Conchos und Guaguas, aber vereinbare den Preis am besten vorher.",
       "tipEn": "For short trips, use the cheap conchos and guaguas, but it's best to agree the price beforehand."
     },
     {
       "id": "puerto-rico",
-      "sports": {
-        "intro": "Baseball, Boxen und Basketball prägen den Sport der Insel. Puerto Rico tritt bei Olympia und Weltmeisterschaften als eigenständiges Team an und feiert seine Stars ausgiebig.",
-        "introEn": "Baseball, boxing and basketball define the island's sport. Puerto Rico competes as its own team at the Olympics and world championships and celebrates its stars enthusiastically.",
-        "popular": [
-          { "name": "Baseball", "nameEn": "Baseball", "note": "Tief verwurzelt, mit vielen MLB-Spielern.", "noteEn": "Deeply rooted, with many MLB players." },
-          { "name": "Boxen", "nameEn": "Boxing", "note": "Große Tradition mit zahlreichen Weltmeistern.", "noteEn": "A great tradition with numerous world champions." },
-          { "name": "Basketball", "nameEn": "Basketball", "note": "Sehr populär; eigene starke Nationalmannschaft.", "noteEn": "Very popular; a strong national team of its own." }
-        ],
-        "athletes": [
-          { "name": "Roberto Clemente", "sport": "Baseball", "sportEn": "Baseball", "note": "Baseball-Legende und Humanist, erster Latino in der Hall of Fame.", "noteEn": "Baseball legend and humanitarian, the first Latino in the Hall of Fame." },
-          { "name": "Mónica Puig", "sport": "Tennis", "sportEn": "Tennis", "note": "Gewann 2016 Olympiagold – das erste Gold für Puerto Rico überhaupt.", "noteEn": "Won Olympic gold in 2016 – the first-ever gold for Puerto Rico." },
-          { "name": "Félix „Tito“ Trinidad", "sport": "Boxen", "sportEn": "Boxing", "note": "Gefeierter Weltmeister und einer der populärsten Sportler der Insel.", "noteEn": "A celebrated world champion and one of the island's most popular athletes." }
-        ]
-      },
       "name": "Puerto Rico",
       "flag": "🇵🇷",
       "region": "Karibik",
@@ -2282,24 +2268,25 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Old_Rum_bottles%2C_2014.jpg/960px-Old_Rum_bottles%2C_2014.jpg"
         }
       ],
+      "sports": {
+        "intro": "Baseball, Boxen und Basketball prägen den Sport der Insel. Puerto Rico tritt bei Olympia und Weltmeisterschaften als eigenständiges Team an und feiert seine Stars ausgiebig.",
+        "introEn": "Baseball, boxing and basketball define the island's sport. Puerto Rico competes as its own team at the Olympics and world championships and celebrates its stars enthusiastically.",
+        "popular": [
+          { "name": "Baseball", "nameEn": "Baseball", "note": "Tief verwurzelt, mit vielen MLB-Spielern.", "noteEn": "Deeply rooted, with many MLB players." },
+          { "name": "Boxen", "nameEn": "Boxing", "note": "Große Tradition mit zahlreichen Weltmeistern.", "noteEn": "A great tradition with numerous world champions." },
+          { "name": "Basketball", "nameEn": "Basketball", "note": "Sehr populär; eigene starke Nationalmannschaft.", "noteEn": "Very popular; a strong national team of its own." }
+        ],
+        "athletes": [
+          { "name": "Roberto Clemente", "sport": "Baseball", "sportEn": "Baseball", "note": "Baseball-Legende und Humanist, erster Latino in der Hall of Fame.", "noteEn": "Baseball legend and humanitarian, the first Latino in the Hall of Fame." },
+          { "name": "Mónica Puig", "sport": "Tennis", "sportEn": "Tennis", "note": "Gewann 2016 Olympiagold – das erste Gold für Puerto Rico überhaupt.", "noteEn": "Won Olympic gold in 2016 – the first-ever gold for Puerto Rico." },
+          { "name": "Félix „Tito“ Trinidad", "sport": "Boxen", "sportEn": "Boxing", "note": "Gefeierter Weltmeister und einer der populärsten Sportler der Insel.", "noteEn": "A celebrated world champion and one of the island's most popular athletes." }
+        ]
+      },
       "tip": "Miete für Ausflüge ein Auto, da der öffentliche Nahverkehr außerhalb San Juans kaum ausgebaut ist.",
       "tipEn": "Hire a car for day trips, as public transport is barely developed outside San Juan."
     },
     {
       "id": "colombia",
-      "sports": {
-        "intro": "Fußball ist die große Leidenschaft und bewegt das ganze Land, doch auch der Radsport hat Weltklasse-Niveau – kolumbianische ‚escarabajos' gewinnen die größten Rundfahrten.",
-        "introEn": "Football is the great passion and moves the whole country, but cycling is world-class too – Colombian ‘escarabajos' (beetles) win the biggest grand tours.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; Spiele der ‚Tricolor' legen das Land lahm.", "noteEn": "The number-one sport; games of the ‘Tricolor' bring the country to a standstill." },
-          { "name": "Radsport", "nameEn": "Cycling", "note": "Bergstarke Profis dominieren Tour, Giro und Vuelta.", "noteEn": "Climbing specialists dominate the Tour, Giro and Vuelta." }
-        ],
-        "athletes": [
-          { "name": "Luis „Lucho“ Díaz", "sport": "Fußball", "sportEn": "Football", "note": "Wirbelwind auf dem Flügel beim FC Liverpool und Publikumsliebling.", "noteEn": "A whirlwind on the wing for Liverpool and a fan favourite." },
-          { "name": "James Rodríguez", "sport": "Fußball", "sportEn": "Football", "note": "Torschützenkönig der WM 2014, spielte u. a. für Real Madrid.", "noteEn": "Top scorer at the 2014 World Cup, who played for Real Madrid among others." },
-          { "name": "Egan Bernal", "sport": "Radsport", "sportEn": "Cycling", "note": "Gewann 2019 als erster Kolumbianer die Tour de France.", "noteEn": "In 2019 became the first Colombian to win the Tour de France." }
-        ]
-      },
       "name": "Kolumbien",
       "flag": "🇨🇴",
       "region": "Südamerika",
@@ -2508,23 +2495,24 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Shandy_beer.jpg/960px-Shandy_beer.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist die große Leidenschaft und bewegt das ganze Land, doch auch der Radsport hat Weltklasse-Niveau – kolumbianische ‚escarabajos' gewinnen die größten Rundfahrten.",
+        "introEn": "Football is the great passion and moves the whole country, but cycling is world-class too – Colombian ‘escarabajos' (beetles) win the biggest grand tours.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; Spiele der ‚Tricolor' legen das Land lahm.", "noteEn": "The number-one sport; games of the ‘Tricolor' bring the country to a standstill." },
+          { "name": "Radsport", "nameEn": "Cycling", "note": "Bergstarke Profis dominieren Tour, Giro und Vuelta.", "noteEn": "Climbing specialists dominate the Tour, Giro and Vuelta." }
+        ],
+        "athletes": [
+          { "name": "Luis „Lucho“ Díaz", "sport": "Fußball", "sportEn": "Football", "note": "Flügelflitzer und Publikumsliebling, der bei Liverpool zum Star wurde und seit 2025 für den FC Bayern München spielt.", "noteEn": "A winger and fan favourite who became a star at Liverpool and has played for Bayern Munich since 2025." },
+          { "name": "James Rodríguez", "sport": "Fußball", "sportEn": "Football", "note": "Torschützenkönig der WM 2014, spielte u. a. für Real Madrid.", "noteEn": "Top scorer at the 2014 World Cup, who played for Real Madrid among others." },
+          { "name": "Egan Bernal", "sport": "Radsport", "sportEn": "Cycling", "note": "Gewann 2019 als erster Kolumbianer die Tour de France.", "noteEn": "In 2019 became the first Colombian to win the Tour de France." }
+        ]
+      },
       "tip": "Sag '¿me regalas...?' statt 'quiero' beim Bestellen oder Bezahlen, das ist in Kolumbien die übliche höfliche Formel.",
       "tipEn": "Say '¿me regalas...?' instead of 'quiero' when ordering or paying – that's the usual polite phrasing in Colombia."
     },
     {
       "id": "venezuela",
-      "sports": {
-        "intro": "Anders als der Großteil Südamerikas ist Venezuela vor allem ein Baseball-Land; der Sport ist Nationalleidenschaft. Fußball holt aber rasant auf, und in der Leichtathletik sorgt das Land für Weltrekorde.",
-        "introEn": "Unlike most of South America, Venezuela is above all a baseball country; the sport is a national passion. Football is catching up fast, and in athletics the country has set world records.",
-        "popular": [
-          { "name": "Baseball", "nameEn": "Baseball", "note": "Der populärste Sport, mit leidenschaftlicher Liga und vielen MLB-Stars.", "noteEn": "The most popular sport, with a passionate league and many MLB stars." },
-          { "name": "Fußball", "nameEn": "Football", "note": "Wächst stark; die ‚Vinotinto' begeistert immer mehr Fans.", "noteEn": "Growing fast; the ‘Vinotinto' is winning over more and more fans." }
-        ],
-        "athletes": [
-          { "name": "Miguel Cabrera", "sport": "Baseball", "sportEn": "Baseball", "note": "Triple-Crown-Gewinner und einer der besten Schlagmänner seiner Generation.", "noteEn": "A Triple Crown winner and one of the best hitters of his generation." },
-          { "name": "Yulimar Rojas", "sport": "Dreisprung", "sportEn": "Triple jump", "note": "Olympiasiegerin und Weltrekordhalterin im Dreisprung.", "noteEn": "Olympic champion and world-record holder in the triple jump." }
-        ]
-      },
       "name": "Venezuela",
       "flag": "🇻🇪",
       "region": "Südamerika",
@@ -2733,24 +2721,23 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/6/65/Maltin_polar_-_green_spot.jpg"
         }
       ],
+      "sports": {
+        "intro": "Anders als der Großteil Südamerikas ist Venezuela vor allem ein Baseball-Land; der Sport ist Nationalleidenschaft. Fußball holt aber rasant auf, und in der Leichtathletik sorgt das Land für Weltrekorde.",
+        "introEn": "Unlike most of South America, Venezuela is above all a baseball country; the sport is a national passion. Football is catching up fast, and in athletics the country has set world records.",
+        "popular": [
+          { "name": "Baseball", "nameEn": "Baseball", "note": "Der populärste Sport, mit leidenschaftlicher Liga und vielen MLB-Stars.", "noteEn": "The most popular sport, with a passionate league and many MLB stars." },
+          { "name": "Fußball", "nameEn": "Football", "note": "Wächst stark; die ‚Vinotinto' begeistert immer mehr Fans.", "noteEn": "Growing fast; the ‘Vinotinto' is winning over more and more fans." }
+        ],
+        "athletes": [
+          { "name": "Miguel Cabrera", "sport": "Baseball", "sportEn": "Baseball", "note": "Triple-Crown-Gewinner und einer der besten Schlagmänner seiner Generation.", "noteEn": "A Triple Crown winner and one of the best hitters of his generation." },
+          { "name": "Yulimar Rojas", "sport": "Dreisprung", "sportEn": "Triple jump", "note": "Olympiasiegerin und Weltrekordhalterin im Dreisprung.", "noteEn": "Olympic champion and world-record holder in the triple jump." }
+        ]
+      },
       "tip": "Informiere dich vor der Reise gründlich über die aktuelle Sicherheits- und Versorgungslage und nimm ausreichend Bargeld (US-Dollar) mit, da Karten oft nicht funktionieren.",
       "tipEn": "Read up thoroughly on the current security and supply situation before you travel, and bring plenty of cash (US dollars), as cards often don't work."
     },
     {
       "id": "ecuador",
-      "sports": {
-        "intro": "Fußball ist der mit Abstand beliebteste Sport, doch Ecuador glänzt auch im Gehen und im Radsport – mit Olympiasiegern in beiden Disziplinen.",
-        "introEn": "Football is by far the most popular sport, but Ecuador also shines in race walking and cycling – with Olympic champions in both disciplines.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; ‚La Tri' qualifiziert sich regelmäßig für die WM.", "noteEn": "The number-one sport; ‘La Tri' regularly qualifies for the World Cup." },
-          { "name": "Radsport", "nameEn": "Cycling", "note": "Im Aufwind dank Erfolgen bei den großen Rundfahrten.", "noteEn": "On the rise thanks to success in the grand tours." }
-        ],
-        "athletes": [
-          { "name": "Antonio Valencia", "sport": "Fußball", "sportEn": "Football", "note": "Langjähriger Kapitän bei Manchester United, Ecuadors bekanntester Spieler.", "noteEn": "Long-time captain at Manchester United, Ecuador's best-known player." },
-          { "name": "Richard Carapaz", "sport": "Radsport", "sportEn": "Cycling", "note": "Giro-d'Italia-Sieger 2019 und Olympiasieger 2021.", "noteEn": "Giro d'Italia winner in 2019 and Olympic champion in 2021." },
-          { "name": "Jefferson Pérez", "sport": "Gehen", "sportEn": "Race walking", "note": "Gewann 1996 Olympiagold – Ecuadors erste olympische Medaille.", "noteEn": "Won Olympic gold in 1996 – Ecuador's first Olympic medal." }
-        ]
-      },
       "name": "Ecuador",
       "flag": "🇪🇨",
       "region": "Südamerika",
@@ -2959,24 +2946,24 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Oranges_-_whole-halved-segment.jpg/960px-Oranges_-_whole-halved-segment.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist der mit Abstand beliebteste Sport, doch Ecuador glänzt auch im Gehen und im Radsport – mit Olympiasiegern in beiden Disziplinen.",
+        "introEn": "Football is by far the most popular sport, but Ecuador also shines in race walking and cycling – with Olympic champions in both disciplines.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; ‚La Tri' qualifiziert sich regelmäßig für die WM.", "noteEn": "The number-one sport; ‘La Tri' regularly qualifies for the World Cup." },
+          { "name": "Radsport", "nameEn": "Cycling", "note": "Im Aufwind dank Erfolgen bei den großen Rundfahrten.", "noteEn": "On the rise thanks to success in the grand tours." }
+        ],
+        "athletes": [
+          { "name": "Antonio Valencia", "sport": "Fußball", "sportEn": "Football", "note": "Langjähriger Kapitän bei Manchester United, Ecuadors bekanntester Spieler.", "noteEn": "Long-time captain at Manchester United, Ecuador's best-known player." },
+          { "name": "Richard Carapaz", "sport": "Radsport", "sportEn": "Cycling", "note": "Giro-d'Italia-Sieger 2019 und Olympiasieger 2021.", "noteEn": "Giro d'Italia winner in 2019 and Olympic champion in 2021." },
+          { "name": "Jefferson Pérez", "sport": "Gehen", "sportEn": "Race walking", "note": "Gewann 1996 Olympiagold – Ecuadors erste olympische Medaille.", "noteEn": "Won Olympic gold in 1996 – Ecuador's first Olympic medal." }
+        ]
+      },
       "tip": "Nutze die kompakte Größe des Landes: Mit dem Bus erreichst du von Quito aus Küste, Anden und Dschungel jeweils in wenigen Stunden.",
       "tipEn": "Make the most of the country's compact size: by bus you can reach the coast, the Andes and the jungle from Quito in just a few hours each."
     },
     {
       "id": "peru",
-      "sports": {
-        "intro": "Fußball begeistert das ganze Land, vor allem die ‚Blanquirroja'. Daneben hat der Frauen-Volleyball eine ruhmreiche Tradition, und an der Küste boomt das Surfen.",
-        "introEn": "Football thrills the whole country, especially the ‘Blanquirroja'. Women's volleyball has a glorious tradition too, and surfing is booming along the coast.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Der populärste Sport, mit den Rivalen Alianza Lima und Universitario.", "noteEn": "The most popular sport, with rivals Alianza Lima and Universitario." },
-          { "name": "Volleyball", "nameEn": "Volleyball", "note": "Die Frauen-Nationalmannschaft gewann 1988 Olympiasilber.", "noteEn": "The women's national team won Olympic silver in 1988." },
-          { "name": "Surfen", "nameEn": "Surfing", "note": "Weltklasse-Wellen; Peru stellte schon Weltmeister.", "noteEn": "World-class waves; Peru has produced world champions." }
-        ],
-        "athletes": [
-          { "name": "Teófilo Cubillas", "sport": "Fußball", "sportEn": "Football", "note": "Größte Fußball-Legende des Landes, glänzte bei zwei WM-Turnieren.", "noteEn": "The country's greatest football legend, who shone at two World Cups." },
-          { "name": "Sofía Mulánovich", "sport": "Surfen", "sportEn": "Surfing", "note": "Wurde 2004 als erste Lateinamerikanerin Surf-Weltmeisterin.", "noteEn": "In 2004 became the first Latin American woman to be surfing world champion." }
-        ]
-      },
       "name": "Peru",
       "flag": "🇵🇪",
       "region": "Südamerika",
@@ -3185,23 +3172,24 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Chicha_de_jora_en_vaso.JPG/960px-Chicha_de_jora_en_vaso.JPG"
         }
       ],
+      "sports": {
+        "intro": "Fußball begeistert das ganze Land, vor allem die ‚Blanquirroja'. Daneben hat der Frauen-Volleyball eine ruhmreiche Tradition, und an der Küste boomt das Surfen.",
+        "introEn": "Football thrills the whole country, especially the ‘Blanquirroja'. Women's volleyball has a glorious tradition too, and surfing is booming along the coast.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Der populärste Sport, mit den Rivalen Alianza Lima und Universitario.", "noteEn": "The most popular sport, with rivals Alianza Lima and Universitario." },
+          { "name": "Volleyball", "nameEn": "Volleyball", "note": "Die Frauen-Nationalmannschaft gewann 1988 Olympiasilber.", "noteEn": "The women's national team won Olympic silver in 1988." },
+          { "name": "Surfen", "nameEn": "Surfing", "note": "Weltklasse-Wellen; Peru stellte schon Weltmeister.", "noteEn": "World-class waves; Peru has produced world champions." }
+        ],
+        "athletes": [
+          { "name": "Teófilo Cubillas", "sport": "Fußball", "sportEn": "Football", "note": "Größte Fußball-Legende des Landes, glänzte bei zwei WM-Turnieren.", "noteEn": "The country's greatest football legend, who shone at two World Cups." },
+          { "name": "Sofía Mulánovich", "sport": "Surfen", "sportEn": "Surfing", "note": "Wurde 2004 als erste Lateinamerikanerin Surf-Weltmeisterin.", "noteEn": "In 2004 became the first Latin American woman to be surfing world champion." }
+        ]
+      },
       "tip": "Plane in Cusco (3.400 m) ein bis zwei Tage zur Höhenanpassung ein und trinke Mate de Coca gegen die Höhenkrankheit.",
       "tipEn": "In Cusco (3,400 m), allow a day or two to acclimatise to the altitude and drink mate de coca to fend off altitude sickness."
     },
     {
       "id": "bolivia",
-      "sports": {
-        "intro": "Fußball ist der beliebteste Sport, und in La Paz spielt die Nationalelf auf über 3.600 m Höhe – ein gefürchteter Heimvorteil. Überraschend stark ist Bolivien im Racquetball, wo es zur Weltspitze zählt.",
-        "introEn": "Football is the most popular sport, and in La Paz the national team plays at over 3,600 m altitude – a feared home advantage. Surprisingly, Bolivia is a world power in racquetball.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; das Höhenstadion von La Paz ist berüchtigt.", "noteEn": "The number-one sport; the high-altitude stadium in La Paz is notorious." },
-          { "name": "Racquetball", "nameEn": "Racquetball", "note": "Boliviens international erfolgreichste Sportart.", "noteEn": "Bolivia's most internationally successful sport." }
-        ],
-        "athletes": [
-          { "name": "Marco Etcheverry", "sport": "Fußball", "sportEn": "Football", "note": "Größter Fußballstar des Landes, Idol in der US-Liga MLS.", "noteEn": "The country's greatest football star and an idol in the US league MLS." },
-          { "name": "Conrrado Moscoso", "sport": "Racquetball", "sportEn": "Racquetball", "note": "Wurde Racquetball-Weltmeister und ist bolivianischer Sportheld.", "noteEn": "Became racquetball world champion and is a Bolivian sporting hero." }
-        ]
-      },
       "name": "Bolivien",
       "flag": "🇧🇴",
       "region": "Südamerika",
@@ -3410,24 +3398,23 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Logo_Pacena_blanco-01.jpg/960px-Logo_Pacena_blanco-01.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist der beliebteste Sport, und in La Paz spielt die Nationalelf auf über 3.600 m Höhe – ein gefürchteter Heimvorteil. Überraschend stark ist Bolivien im Racquetball, wo es zur Weltspitze zählt.",
+        "introEn": "Football is the most popular sport, and in La Paz the national team plays at over 3,600 m altitude – a feared home advantage. Surprisingly, Bolivia is a world power in racquetball.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; das Höhenstadion von La Paz ist berüchtigt.", "noteEn": "The number-one sport; the high-altitude stadium in La Paz is notorious." },
+          { "name": "Racquetball", "nameEn": "Racquetball", "note": "Boliviens international erfolgreichste Sportart.", "noteEn": "Bolivia's most internationally successful sport." }
+        ],
+        "athletes": [
+          { "name": "Marco Etcheverry", "sport": "Fußball", "sportEn": "Football", "note": "Größter Fußballstar des Landes, Idol in der US-Liga MLS.", "noteEn": "The country's greatest football star and an idol in the US league MLS." },
+          { "name": "Conrrado Moscoso", "sport": "Racquetball", "sportEn": "Racquetball", "note": "Wurde Racquetball-Weltmeister und ist bolivianischer Sportheld.", "noteEn": "Became racquetball world champion and is a Bolivian sporting hero." }
+        ]
+      },
       "tip": "Plane bei Ankunft in La Paz oder Uyuni ein bis zwei ruhige Tage zur Höhenanpassung ein und trinke Coca-Tee gegen die Höhenkrankheit.",
       "tipEn": "When you arrive in La Paz or Uyuni, allow a quiet day or two to acclimatise to the altitude and drink coca tea to fend off altitude sickness."
     },
     {
       "id": "chile",
-      "sports": {
-        "intro": "Fußball ist die große Leidenschaft – die ‚Roja' gewann 2015 und 2016 die Copa América. Auch Tennis hat Chile große Erfolge und sogar Olympiagold beschert.",
-        "introEn": "Football is the great passion – the ‘Roja' won the Copa América in 2015 and 2016. Tennis has also brought Chile great success and even Olympic gold.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; Erzrivalen sind Colo-Colo und Universidad de Chile.", "noteEn": "The number-one sport; the arch-rivals are Colo-Colo and Universidad de Chile." },
-          { "name": "Tennis", "nameEn": "Tennis", "note": "Beliebt und international erfolgreich.", "noteEn": "Popular and internationally successful." }
-        ],
-        "athletes": [
-          { "name": "Alexis Sánchez", "sport": "Fußball", "sportEn": "Football", "note": "Rekordtorschütze der Nationalmannschaft, spielte für Arsenal und Inter.", "noteEn": "Record scorer for the national team, who played for Arsenal and Inter." },
-          { "name": "Marcelo Ríos", "sport": "Tennis", "sportEn": "Tennis", "note": "Erster Lateinamerikaner auf Platz 1 der Tennis-Weltrangliste.", "noteEn": "The first Latin American to reach number one in the tennis rankings." },
-          { "name": "Nicolás Massú", "sport": "Tennis", "sportEn": "Tennis", "note": "Gewann 2004 zweimal Olympiagold an einem einzigen Tag.", "noteEn": "Won two Olympic golds on a single day in 2004." }
-        ]
-      },
       "name": "Chile",
       "flag": "🇨🇱",
       "region": "Südamerika",
@@ -3636,24 +3623,24 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Mote_con_huesillo.jpg/960px-Mote_con_huesillo.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist die große Leidenschaft – die ‚Roja' gewann 2015 und 2016 die Copa América. Auch Tennis hat Chile große Erfolge und sogar Olympiagold beschert.",
+        "introEn": "Football is the great passion – the ‘Roja' won the Copa América in 2015 and 2016. Tennis has also brought Chile great success and even Olympic gold.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; Erzrivalen sind Colo-Colo und Universidad de Chile.", "noteEn": "The number-one sport; the arch-rivals are Colo-Colo and Universidad de Chile." },
+          { "name": "Tennis", "nameEn": "Tennis", "note": "Beliebt und international erfolgreich.", "noteEn": "Popular and internationally successful." }
+        ],
+        "athletes": [
+          { "name": "Alexis Sánchez", "sport": "Fußball", "sportEn": "Football", "note": "Rekordtorschütze der Nationalmannschaft, spielte für Arsenal und Inter.", "noteEn": "Record scorer for the national team, who played for Arsenal and Inter." },
+          { "name": "Marcelo Ríos", "sport": "Tennis", "sportEn": "Tennis", "note": "Erster Lateinamerikaner auf Platz 1 der Tennis-Weltrangliste.", "noteEn": "The first Latin American to reach number one in the tennis rankings." },
+          { "name": "Nicolás Massú", "sport": "Tennis", "sportEn": "Tennis", "note": "Gewann 2004 zweimal Olympiagold an einem einzigen Tag.", "noteEn": "Won two Olympic golds on a single day in 2004." }
+        ]
+      },
       "tip": "Chile ist deutlich teurer als seine Nachbarländer; bargeldlose Zahlung ist weit verbreitet, plane das Budget entsprechend höher ein.",
       "tipEn": "Chile is considerably more expensive than its neighbours; cashless payment is widespread, so budget accordingly higher."
     },
     {
       "id": "argentina",
-      "sports": {
-        "intro": "Fußball ist nahezu Religion und gipfelte im WM-Titel 2022. Daneben hat Argentinien Weltstars im Basketball, Rugby, Tennis und im Polo hervorgebracht.",
-        "introEn": "Football is almost a religion and culminated in the 2022 World Cup title. Argentina has also produced world stars in basketball, rugby, tennis and polo.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Allesüberragende Leidenschaft; Weltmeister 2022.", "noteEn": "An all-consuming passion; world champions in 2022." },
-          { "name": "Basketball", "nameEn": "Basketball", "note": "Sehr beliebt; die ‚Generación Dorada' gewann Olympiagold.", "noteEn": "Very popular; the ‘Golden Generation' won Olympic gold." }
-        ],
-        "athletes": [
-          { "name": "Lionel Messi", "sport": "Fußball", "sportEn": "Football", "note": "Achtfacher Weltfußballer und Weltmeister 2022, oft als bester Spieler aller Zeiten bezeichnet.", "noteEn": "Eight-time world player of the year and 2022 world champion, often called the greatest of all time." },
-          { "name": "Diego Maradona", "sport": "Fußball", "sportEn": "Football", "note": "Unsterbliche Legende, führte Argentinien 1986 zum WM-Titel.", "noteEn": "An immortal legend who led Argentina to the 1986 World Cup." },
-          { "name": "Manu Ginóbili", "sport": "Basketball", "sportEn": "Basketball", "note": "NBA-Champion mit den San Antonio Spurs und Olympiasieger 2004.", "noteEn": "NBA champion with the San Antonio Spurs and Olympic gold medallist in 2004." }
-        ]
-      },
       "name": "Argentinien",
       "flag": "🇦🇷",
       "region": "Südamerika",
@@ -3862,23 +3849,24 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/0/01/Quilmes_cerveza_aviso_1967.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist nahezu Religion und gipfelte im WM-Titel 2022. Daneben hat Argentinien Weltstars im Basketball, Rugby, Tennis und im Polo hervorgebracht.",
+        "introEn": "Football is almost a religion and culminated in the 2022 World Cup title. Argentina has also produced world stars in basketball, rugby, tennis and polo.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Allesüberragende Leidenschaft; Weltmeister 2022.", "noteEn": "An all-consuming passion; world champions in 2022." },
+          { "name": "Basketball", "nameEn": "Basketball", "note": "Sehr beliebt; die ‚Generación Dorada' gewann Olympiagold.", "noteEn": "Very popular; the ‘Golden Generation' won Olympic gold." }
+        ],
+        "athletes": [
+          { "name": "Lionel Messi", "sport": "Fußball", "sportEn": "Football", "note": "Achtfacher Weltfußballer und Weltmeister 2022, oft als bester Spieler aller Zeiten bezeichnet.", "noteEn": "Eight-time world player of the year and 2022 world champion, often called the greatest of all time." },
+          { "name": "Diego Maradona", "sport": "Fußball", "sportEn": "Football", "note": "Unsterbliche Legende, führte Argentinien 1986 zum WM-Titel.", "noteEn": "An immortal legend who led Argentina to the 1986 World Cup." },
+          { "name": "Manu Ginóbili", "sport": "Basketball", "sportEn": "Basketball", "note": "NBA-Champion mit den San Antonio Spurs und Olympiasieger 2004.", "noteEn": "NBA champion with the San Antonio Spurs and Olympic gold medallist in 2004." }
+        ]
+      },
       "tip": "Wegen der Inflation lohnt sich oft der inoffizielle 'dólar blue'-Wechselkurs; bring US-Dollar in bar mit und informiere dich vor Ort über aktuelle Kurse.",
       "tipEn": "Because of inflation, the unofficial 'dólar blue' exchange rate is often worth it; bring US dollars in cash and check the current rates once you're there."
     },
     {
       "id": "uruguay",
-      "sports": {
-        "intro": "Für ein so kleines Land ist Uruguay eine Fußball-Großmacht: zwei WM-Titel und der allererste 1930. Fußball ist tief in der nationalen Identität verankert.",
-        "introEn": "For such a small country, Uruguay is a football powerhouse: two World Cup titles, including the very first in 1930. Football is deeply woven into the national identity.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Nationalsport und Stolz; Erzrivalen sind Peñarol und Nacional.", "noteEn": "The national sport and a point of pride; the arch-rivals are Peñarol and Nacional." }
-        ],
-        "athletes": [
-          { "name": "Luis Suárez", "sport": "Fußball", "sportEn": "Football", "note": "Rekordtorschütze der ‚Celeste' und einer der besten Stürmer seiner Zeit.", "noteEn": "Record scorer for the ‘Celeste' and one of the best strikers of his era." },
-          { "name": "Diego Forlán", "sport": "Fußball", "sportEn": "Football", "note": "Bester Spieler der WM 2010, führte Uruguay ins Halbfinale.", "noteEn": "Best player of the 2010 World Cup, who led Uruguay to the semi-finals." },
-          { "name": "Enzo Francescoli", "sport": "Fußball", "sportEn": "Football", "note": "Eleganter Spielmacher und Idol mehrerer Generationen.", "noteEn": "An elegant playmaker and idol of several generations." }
-        ]
-      },
       "name": "Uruguay",
       "flag": "🇺🇾",
       "region": "Südamerika",
@@ -4082,22 +4070,23 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/VIVC12257_TANNAT_Cluster_in_the_field_8302.jpg/960px-VIVC12257_TANNAT_Cluster_in_the_field_8302.jpg"
         }
       ],
+      "sports": {
+        "intro": "Für ein so kleines Land ist Uruguay eine Fußball-Großmacht: zwei WM-Titel und der allererste 1930. Fußball ist tief in der nationalen Identität verankert.",
+        "introEn": "For such a small country, Uruguay is a football powerhouse: two World Cup titles, including the very first in 1930. Football is deeply woven into the national identity.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Nationalsport und Stolz; Erzrivalen sind Peñarol und Nacional.", "noteEn": "The national sport and a point of pride; the arch-rivals are Peñarol and Nacional." }
+        ],
+        "athletes": [
+          { "name": "Luis Suárez", "sport": "Fußball", "sportEn": "Football", "note": "Rekordtorschütze der ‚Celeste' und einer der besten Stürmer seiner Zeit.", "noteEn": "Record scorer for the ‘Celeste' and one of the best strikers of his era." },
+          { "name": "Diego Forlán", "sport": "Fußball", "sportEn": "Football", "note": "Bester Spieler der WM 2010, führte Uruguay ins Halbfinale.", "noteEn": "Best player of the 2010 World Cup, who led Uruguay to the semi-finals." },
+          { "name": "Enzo Francescoli", "sport": "Fußball", "sportEn": "Football", "note": "Eleganter Spielmacher und Idol mehrerer Generationen.", "noteEn": "An elegant playmaker and idol of several generations." }
+        ]
+      },
       "tip": "Uruguayer trinken Mate ständig und überall; nimm eine Einladung dazu an, aber rühre die Bombilla (Trinkhalm) nicht um, das gilt als unhöflich.",
       "tipEn": "Uruguayans drink mate all the time and everywhere; do accept an invitation to share it, but don't stir the bombilla (the metal straw), as that's considered rude."
     },
     {
       "id": "paraguay",
-      "sports": {
-        "intro": "Fußball ist mit Abstand der beliebteste Sport; die ‚Albirroja' ist für ihre kämpferische Spielweise bekannt. In Luque bei Asunción sitzt der südamerikanische Fußballverband CONMEBOL.",
-        "introEn": "Football is by far the most popular sport; the ‘Albirroja' is known for its fighting spirit. The South American football confederation CONMEBOL is based in Luque near Asunción.",
-        "popular": [
-          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; Erzrivalen sind Olimpia und Cerro Porteño.", "noteEn": "The number-one sport; the arch-rivals are Olimpia and Cerro Porteño." }
-        ],
-        "athletes": [
-          { "name": "José Luis Chilavert", "sport": "Fußball", "sportEn": "Football", "note": "Legendärer Torwart, der selbst Tore aus Freistößen und Elfmetern erzielte.", "noteEn": "A legendary goalkeeper who scored goals himself from free kicks and penalties." },
-          { "name": "Roque Santa Cruz", "sport": "Fußball", "sportEn": "Football", "note": "Rekordnationalspieler, glänzte beim FC Bayern und in der Premier League.", "noteEn": "Record cap holder who shone at Bayern Munich and in the Premier League." }
-        ]
-      },
       "name": "Paraguay",
       "flag": "🇵🇾",
       "region": "Südamerika",
@@ -4306,6 +4295,17 @@
           "img": "https://upload.wikimedia.org/wikipedia/commons/1/16/Cerveza_Pilsen_Publicidad.jpg"
         }
       ],
+      "sports": {
+        "intro": "Fußball ist mit Abstand der beliebteste Sport; die ‚Albirroja' ist für ihre kämpferische Spielweise bekannt. In Luque bei Asunción sitzt der südamerikanische Fußballverband CONMEBOL.",
+        "introEn": "Football is by far the most popular sport; the ‘Albirroja' is known for its fighting spirit. The South American football confederation CONMEBOL is based in Luque near Asunción.",
+        "popular": [
+          { "name": "Fußball", "nameEn": "Football", "note": "Volkssport Nr. 1; Erzrivalen sind Olimpia und Cerro Porteño.", "noteEn": "The number-one sport; the arch-rivals are Olimpia and Cerro Porteño." }
+        ],
+        "athletes": [
+          { "name": "José Luis Chilavert", "sport": "Fußball", "sportEn": "Football", "note": "Legendärer Torwart, der selbst Tore aus Freistößen und Elfmetern erzielte.", "noteEn": "A legendary goalkeeper who scored goals himself from free kicks and penalties." },
+          { "name": "Roque Santa Cruz", "sport": "Fußball", "sportEn": "Football", "note": "Rekordnationalspieler, glänzte beim FC Bayern und in der Premier League.", "noteEn": "Record cap holder who shone at Bayern Munich and in the Premier League." }
+        ]
+      },
       "tip": "Trink wie die Einheimischen eiskalten Tereré gegen die Hitze und lerne ein paar Guaraní-Wörter; das öffnet in Paraguay viele Türen und Herzen.",
       "tipEn": "Drink ice-cold tereré like the locals to beat the heat and learn a few words of Guaraní; in Paraguay that opens plenty of doors and hearts."
     }
