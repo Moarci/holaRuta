@@ -174,11 +174,9 @@
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
-    { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", sub: "Was man morgens und abends trinkt – Land für Land", grad: ["#B97C24", "#6B4FA8"], need: "bebidas", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "Ruta-Check",        subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-task",        icon: "📝", title: "Tarea",            subKey: "discover.subTask", sub: "Aufgaben deiner Lehrkraft/Reiseleitung öffnen", grad: ["#3F7355", "#2E6E86"], group: "practice" },
-    { action: "open-teacher",     icon: "🧑‍🏫", title: "Modo profe",      subKey: "discover.subTeacher", sub: "Übersicht für Lehrkräfte & Reiseleitung", grad: ["#2F6B70", "#A23E20"], group: "reference" },
   ];
 
   // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),
@@ -680,8 +678,8 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, bebidas: vm.hasBebidas, placement: vm.hasPlacement };
-    // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea/Modo profe).
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, placement: vm.hasPlacement };
+    // In Editionen mit eigenem Reiter NICHT doppelt als Kachel zeigen (Tarea).
     const cfg = window.SC.config || {};
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
@@ -693,11 +691,10 @@
       </button>`;
     // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
     // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
-    // In Editionen mit eigenem Reiter Tarea/Modo profe NICHT doppelt als Kachel zeigen.
+    // In Editionen mit eigenem Reiter Tarea NICHT doppelt als Kachel zeigen.
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
       if (x.action === "open-task" && cfg.taskTab) return false;
-      if (x.action === "open-teacher" && cfg.teacherTab) return false;
       return true;
     });
     const sections = FEATURE_GROUPS.map((g) => {
