@@ -45,12 +45,15 @@
 
   <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
        Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe.
-       Im Dark Mode zeigen wir zusätzlich auf das dunkle Manifest – sonst malt das
-       OS den PWA-Splash (background_color) cremeweiß und blendet beim Öffnen im
-       Dunkeln. Das Manifest kennt keine Media-Query, darum hier per JS umgehängt:
-       Chrome liest den Verweis erneut und färbt den Splash beim nächsten Start. -->
+       Der OS-PWA-Splash wird aus dem Manifest-background_color gemalt – und Android
+       friert genau eine Farbe beim Installieren ein (keine Media-Query, kein Wechsel
+       zur Laufzeit). Darum ist background_color in BEIDEN Manifesten das dunkle
+       Marken-Braun (#241510): blendet nie, im Hellmodus bewusster Marken-Splash.
+       Im Dark Mode hängen wir trotzdem auf das dunkle Manifest um – das verfeinert
+       nur noch die theme_color (Toolbar/Statusleiste) der installierten App. -->
   <script>
     (function () {
+      window.__bootStart = Date.now(); // Startzeit für den In-App-Splash (Mindestdauer)
       try {
         var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
         var t = (s && (s.theme === "dark" || s.theme === "light")) ? s.theme
@@ -67,6 +70,29 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Animierter In-App-Start: liegt auf var(--page) – nahtlos am OS-PWA-Splash,
+       der jetzt dasselbe Marken-Braun zeigt – und blendet weg, sobald die App
+       steht. Nur beim echten Kaltstart sichtbar; In-Session-Navigation lädt nicht
+       neu. Eigene Gradient-ID (bootLogoG), damit sie nicht mit dem App-Bar-Logo
+       kollidiert. aria-hidden: rein dekorativ, Screenreader überspringen ihn. -->
+  <div id="boot" class="boot" aria-hidden="true">
+    <div class="boot__logo">
+      <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+        <defs>
+          <linearGradient id="bootLogoG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#C2502E"/>
+            <stop offset="1" stop-color="#E9A23B"/>
+          </linearGradient>
+        </defs>
+        <rect width="512" height="512" fill="url(#bootLogoG)"/>
+        <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+        <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+      </svg>
+    </div>
+    <div class="boot__name">Hola<span>Ruta</span></div>
+    <div class="boot__bar"></div>
+  </div>
+
   <!-- Geteilte „Farb"-Filter für den AM/PM-Umschalter (Kaffee hell · Wein dunkel).
        Einmal im Dokument definiert, von den Schild-SVGs per url(#…) referenziert –
        fehlen sie, würden die bemalten Formen laut SVG-Spec gar nicht erst gezeichnet. -->
@@ -151,5 +177,30 @@
   <script src="celebrate.js"></script>
   <script src="ui.js"></script>
   <script src="app.js"></script>
+
+  <!-- Start-Splash wegblenden, sobald die App steht – aber mind. ~1,4 s zeigen,
+       damit Pop/Aufstieg/Regenbogen-Wisch fertig landen und kurz stehen, statt
+       abgeschnitten wegzublitzen (__bootStart wird ganz oben gesetzt).
+       Läuft als eigenes <script> NACH app.js: selbst wenn app.js wirft, blendet
+       der Splash beim load-Event verlässlich weg und blockiert nie die App. -->
+  <script>
+    (function () {
+      var boot = document.getElementById("boot");
+      if (!boot) return;
+      var MIN = 1400; // mind. so lange, dass Pop/Aufstieg/Regenbogen-Wisch landen + kurz stehen
+      var start = window.__bootStart || Date.now();
+      function done() { boot.classList.add("is-done"); }
+      function hide() {
+        var wait = Math.max(0, MIN - (Date.now() - start));
+        setTimeout(function () {
+          boot.classList.add("is-hiding");
+          boot.addEventListener("transitionend", done, { once: true });
+          setTimeout(done, 700); // Fallback, falls transitionend ausbleibt
+        }, wait);
+      }
+      if (document.readyState === "complete") hide();
+      else window.addEventListener("load", hide, { once: true });
+    })();
+  </script>
 </body>
 </html>
