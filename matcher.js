@@ -116,22 +116,35 @@
   // (typo-Flag), damit die UI freundlich auf die korrekte Schreibweise hinweist.
   // Bewusst KONSERVATIV: kurze Wörter bleiben streng (sonst kippt gato↔pato).
 
-  // Levenshtein-Distanz, iterativ mit einer Zeile Speicher.
+  // Damerau-Levenshtein (Optimal String Alignment): wie Levenshtein, aber eine
+  // Vertauschung zweier BENACHBARTER Zeichen kostet EINEN statt zwei Fehler – der
+  // häufigste Handy-Tippfehler ("gtao"→"gato", "necestio"→"necesito"). OSA-Variante
+  // mit zwei Vorgängerzeilen (kein zusätzlicher Alphabet-Speicher nötig).
   function levenshtein(a, b) {
     a = String(a); b = String(b);
     if (a === b) return 0;
     const al = a.length, bl = b.length;
     if (!al) return bl;
     if (!bl) return al;
+    let prevPrev = null;
     let prev = new Array(bl + 1);
     for (let j = 0; j <= bl; j++) prev[j] = j;
     for (let i = 1; i <= al; i++) {
-      let cur = [i];
+      const cur = new Array(bl + 1);
+      cur[0] = i;
       const ca = a.charCodeAt(i - 1);
+      const caPrev = i > 1 ? a.charCodeAt(i - 2) : -1;
       for (let j = 1; j <= bl; j++) {
-        const cost = ca === b.charCodeAt(j - 1) ? 0 : 1;
-        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+        const cb = b.charCodeAt(j - 1);
+        const cost = ca === cb ? 0 : 1;
+        let v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+        // benachbarte Vertauschung: a[i-1]a[i-2] entspricht b[j-2]b[j-1]
+        if (i > 1 && j > 1 && ca === b.charCodeAt(j - 2) && caPrev === cb) {
+          v = Math.min(v, prevPrev[j - 2] + 1);
+        }
+        cur[j] = v;
       }
+      prevPrev = prev;
       prev = cur;
     }
     return prev[bl];
