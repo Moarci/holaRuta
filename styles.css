@@ -2190,9 +2190,16 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; min-height: 52px;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
-.pl-option:hover { border-color: var(--brand); }
+/* Hover-Rahmen nur auf Geräten mit echtem Zeiger – sonst „klebt“ der :hover-Status
+ * nach einem Tap an der Option unter dem letzten Tap-Punkt (sah aus wie eine
+ * versehentlich markierte Antwort). */
+@media (hover: hover) {
+  .pl-option:hover { border-color: var(--brand); }
+}
 .pl-option:active { transform: translateY(1px); }
-.pl-free { width: 100%; margin: 2px 0 12px; font-size: 1.05rem; }
+/* Nicht den flex-grow von .task-input erben (würde das Feld in der flex-Spalte
+ * .screen riesig aufziehen) – das Eingabefeld bleibt zeilenhoch. */
+.pl-free { flex: 0 0 auto; width: 100%; margin: 2px 0 12px; font-size: 1.05rem; }
 .pl-unknown {
   display: block; margin: 16px 0 0; padding: 11px 14px; width: 100%;
   border: 1px dashed var(--line); border-radius: var(--r-md, 12px);
@@ -2216,6 +2223,25 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .pl-disclaimer { font-size: 0.8rem; color: var(--muted); margin: 6px 0 14px; }
 .pl-reliability--guessing { border-color: color-mix(in srgb, #C2502E 45%, var(--line)); }
 .pl-reliability--fast { border-color: color-mix(in srgb, #B97C24 45%, var(--line)); }
+/* Frage-für-Frage-Rückblick (aufklappbar) */
+.pl-reviewbox { margin: 4px 0 14px; border: 1px solid var(--line); border-radius: var(--r-md, 12px); background: var(--card); }
+.pl-reviewbox__sum { padding: 12px 14px; font-weight: 700; cursor: pointer; list-style: none; }
+.pl-reviewbox__sum::-webkit-details-marker { display: none; }
+.pl-reviewbox__sum::after { content: " ▾"; color: var(--muted); }
+.pl-reviewbox[open] .pl-reviewbox__sum::after { content: " ▴"; }
+.pl-reviewbox__sum:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.pl-review { list-style: none; padding: 0 14px 8px; margin: 0; }
+.pl-review__item { padding: 12px 0; border-top: 1px solid var(--line); }
+.pl-review__q { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 6px; font-weight: 600; line-height: 1.4; }
+.pl-review__icon { flex: 0 0 auto; }
+.pl-review__num { color: var(--muted); font-weight: 700; }
+.pl-review__es { color: var(--brand-ink); font-weight: 700; }
+.pl-review__line { margin: 2px 0; font-size: 0.92rem; }
+.pl-review__yours { color: var(--ink); font-weight: 700; }
+.pl-review__yours--none { color: var(--muted); font-weight: 600; font-style: italic; }
+.pl-review__item--wrong .pl-review__yours { color: #C2502E; }
+.pl-review__correct { color: #2E8B57; font-weight: 700; }
+.pl-review__exp { margin: 6px 0 0; font-size: 0.86rem; color: var(--muted); line-height: 1.45; }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);

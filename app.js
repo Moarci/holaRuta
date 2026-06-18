@@ -3633,7 +3633,7 @@
         } : null,
       };
     }
-    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding }, placementResultView(p.result));
+    if (p.phase === "done" && p.result) return Object.assign({ phase: "done", fromOnboarding: !!p.fromOnboarding, review: placementReviewView(p) }, placementResultView(p.result));
     return { phase: "intro", fromOnboarding: !!p.fromOnboarding, total: placementTotalPlanned() };
   }
 
@@ -3656,6 +3656,36 @@
       reliability: r.reliability, // "" | "fast" | "guessing" | "manyUnknown"
       skills,
     };
+  }
+
+  // Frage-für-Frage-Rückblick fürs Ergebnis: was wurde gewählt, was wäre richtig,
+  // plus Erklärung. Die Korrektheit kommt aus scoreAnswer (akzent-/satzzeichen-
+  // tolerant) – Akzent-Unterschiede gelten also NICHT als Fehler.
+  function placementReviewView(p) {
+    const out = [];
+    for (let i = 0; i < p.asked.length; i++) {
+      const q = placement.questionById(p.asked[i]);
+      if (!q) continue;
+      const a = p.answers[i] || { isUnknown: true };
+      const scored = placement.scoreAnswer(q, a);
+      let yourText = null;
+      if (!a.isUnknown) {
+        if (q.type === "free") yourText = String(a.text || "").trim() || null;
+        else if (typeof a.selectedIndex === "number" && q.options) yourText = q.options[a.selectedIndex] || null;
+      }
+      const correctText = q.type === "free"
+        ? (q.accept && q.accept[0]) || ""
+        : (q.options ? q.options[q.correctIndex] : "");
+      out.push({
+        status: a.isUnknown ? "unknown" : (scored.isCorrect ? "correct" : "wrong"),
+        promptDe: q.promptDe,
+        questionEs: q.questionEs || null,
+        yourText: yourText,
+        correctText: correctText,
+        explanationDe: q.explanationDe || "",
+      });
+    }
+    return out;
   }
 
   // Umdrehen ist beidseitig: nach dem Lösen kann die Karte wieder zurück auf die

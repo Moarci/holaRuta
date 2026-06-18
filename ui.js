@@ -3204,6 +3204,29 @@
         <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
         <span class="pl-skill__val">${s.accuracy}%</span>
       </li>`;
+    // Frage-für-Frage-Rückblick: was war richtig/falsch, was wäre korrekt + Erklärung.
+    const reviewIcon = { correct: "✅", wrong: "❌", unknown: "🤷" };
+    const reviewRow = (r, i) => `
+      <li class="pl-review__item pl-review__item--${esc(r.status)}">
+        <p class="pl-review__q">
+          <span class="pl-review__icon" aria-hidden="true">${reviewIcon[r.status] || ""}</span>
+          <span><span class="pl-review__num">${i + 1}.</span> ${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
+        </p>
+        ${r.status !== "correct" ? `
+          <p class="pl-review__line">
+            ${r.yourText
+              ? `${esc(t("placement.reviewYours"))} <span class="pl-review__yours" lang="es">${esc(r.yourText)}</span>`
+              : `<span class="pl-review__yours pl-review__yours--none">${esc(t("placement.reviewNoAnswer"))}</span>`}
+          </p>
+          <p class="pl-review__line">${esc(t("placement.reviewCorrect"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
+        ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
+      </li>`;
+    const review = (vm.review && vm.review.length)
+      ? `<details class="pl-reviewbox">
+           <summary class="pl-reviewbox__sum">${esc(t("placement.reviewCap"))}</summary>
+           <ul class="pl-review">${vm.review.map(reviewRow).join("")}</ul>
+         </details>`
+      : "";
     // Im Onboarding führt der Zurück-Pfeil über „placement-finish“ (schließt das
     // Onboarding ab), sonst regulär nach Home.
     const topbar = hmTopbar("🎯 " + esc(t("placement.title")), vm.fromOnboarding ? "placement-finish" : "home");
@@ -3224,6 +3247,7 @@
         <ul class="pl-skills">${vm.skills.map(skillRow).join("")}</ul>
         ${noteText ? `<div class="tip">${esc(noteText)}</div>` : ""}
         ${relText ? `<div class="tip pl-reliability pl-reliability--${esc(vm.reliability)}">${esc(relText)}</div>` : ""}
+        ${review}
         <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>
