@@ -3733,6 +3733,7 @@
           <li>${esc(t("assessment.introB3"))}</li>
           <li>${esc(t("assessment.introB4"))}</li>
         </ul>
+        ${moduleShareBtn("nivel-test")}
         <p class="sectioncap">${esc(t("assessment.chooseVariant"))}</p>
         <div class="pl-variants">
           <button class="teacher-btn teacher-btn--main pl-variant" data-action="assessment-start" data-variant="standard">

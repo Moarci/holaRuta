@@ -27,6 +27,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.100.0",
+      date: "2026-06-19",
+      title: "„Modul teilen“ jetzt auch beim HolaRuta Nivel-Test",
+      titleEn: "“Share module” now also on the HolaRuta Nivel-Test",
+      items: [
+        "📤 Der ausführliche Nivel-Test lässt sich jetzt – wie die übrigen Module – direkt von seiner Startseite aus als „Modul teilen“ weiterempfehlen; der geteilte Link öffnet den Test beim Empfänger direkt.",
+      ],
+      itemsEn: [
+        "📤 The in-depth Nivel-Test can now be recommended via “Share module” straight from its start page – just like the other modules; the shared link opens the test directly for the recipient.",
+      ],
+    },
+    {
       version: "1.99.0",
       date: "2026-06-19",
       title: "Geteilte Ergebnis-Bilder öffnen jetzt direkt den passenden Test/das Modul",
