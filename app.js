@@ -6066,6 +6066,7 @@
   // Historia hat ein eigenes Motiv (shareHistModule) und ist hier nicht gelistet.
   const MODULE_SHARE = {
     "ruta-check":  { icon: "🎯", title: "HolaRuta-Check",      sub: "discover.subPlacement",     accent: ["#2E6E86", "#C2502E"] },
+    "nivel-test":  { icon: "📋", title: "HolaRuta Nivel-Test", sub: "discover.subAssessment",    accent: ["#3F5BA8", "#2E6E86"] },
     supervivencia: { icon: "🆘", title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
     hostel:        { icon: "🛏️", title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
     definiciones:  { icon: "🧩", title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
@@ -6106,6 +6107,15 @@
           { mark: "🎯", text: t("placement.introB1") },
           { mark: "🔁", text: t("placement.introB2") },
           { mark: "⏱️", text: t("placement.introB3") },
+        ];
+      case "nivel-test":
+        // Wie der Ruta-Check ohne Lernkarten – als Highlights dienen die vier
+        // Einleitungspunkte des Nivel-Tests (Stufen, Inhalte, Adaptivität, Dauer).
+        return [
+          { mark: "📋", text: t("assessment.introB1") },
+          { mark: "🗣️", text: t("assessment.introB2") },
+          { mark: "🪜", text: t("assessment.introB3") },
+          { mark: "⏱️", text: t("assessment.introB4") },
         ];
       case "supervivencia": {
         const out = [];
