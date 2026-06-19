@@ -27,6 +27,20 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.99.0",
+      date: "2026-06-19",
+      title: "Geteilte Ergebnis-Bilder öffnen jetzt direkt den passenden Test/das Modul",
+      titleEn: "Shared result images now open the matching test/module directly",
+      items: [
+        "🔗 Teilst du dein Ergebnis vom Nivel-Test oder vom HolaRuta-Check, öffnet der Link unter dem Bild jetzt direkt den jeweiligen Test – statt nur die Startseite.",
+        "🔗 Dasselbe gilt jetzt für die Historia-Lesetexte, die Reise-Tipps (Etiqueta, Regatear, Logística, Salud, Fotos) und die Länderkunde: ein Tap auf den geteilten Link landet direkt im passenden Modul.",
+      ],
+      itemsEn: [
+        "🔗 When you share your result from the Nivel-Test or the HolaRuta-Check, the link below the image now opens that test directly – instead of just the home page.",
+        "🔗 The same now applies to the Historia reading texts, the travel tips (etiquette, haggling, logistics, health, photos) and the country guide: tapping the shared link lands you right in the matching module.",
+      ],
+    },
+    {
       version: "1.98.0",
       date: "2026-06-18",
       title: "Zwischenstufe „fast geschafft“ + klarerer Meisterungs-Fortschritt",
