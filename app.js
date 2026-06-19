@@ -5909,6 +5909,7 @@
       scorePct: Math.round((r.finalScore || 0) * 100),
       accuracyPct: Math.round((r.accuracy || 0) * 100),
       tempoLabel: r.tempo ? t("placement.tempo_" + r.tempo) : "",
+      moduleSlug: "ruta-check", // Begleittext-Link öffnet direkt den HolaRuta-Check
     }, shareFormat());
   }
 
@@ -5926,6 +5927,7 @@
       scorePct: Math.round((r.finalScore || 0) * 100),
       accuracyPct: Math.round((r.accuracy || 0) * 100),
       tempoLabel: r.tempo ? t("assessment.tempo_" + r.tempo) : "",
+      moduleSlug: "nivel-test", // Begleittext-Link öffnet direkt den Nivel-Test
     }, shareFormat());
   }
 
@@ -5967,6 +5969,7 @@
       levelWord: e.level ? t("discover.histLvl" + e.level) : "",
       esText,
       words,
+      moduleSlug: state.histRegion === "centro" ? "historia-centro" : "historia", // Link öffnet den Zeitstrahl direkt
     }, shareFormat());
   }
 
@@ -6026,6 +6029,7 @@
       intro: o.intro || "",
       lines,
       accent: meta.accent,
+      moduleSlug: cat, // Begleittext-Link öffnet direkt das passende Modul (?m=<cat>)
     }, shareFormat());
   }
 
@@ -6048,6 +6052,7 @@
       intro: c.tagline || "",
       lines,
       accent: ["#B97C24", "#C2502E"],
+      moduleSlug: "paises", // Begleittext-Link öffnet direkt die Länderkunde
     }, shareFormat());
   }
 
@@ -6694,7 +6699,8 @@
   }
 
   // Deep-Link beim Start:
-  //   ?m=<modul>  – öffnet ein empfohlenes Modul (aus einem „Modul teilen"-Link)
+  //   ?m=<modul>  – öffnet ein empfohlenes Modul oder einen Test direkt (aus einem
+  //                 „Modul teilen"- bzw. Ergebnis-/Inhalts-Sharepic-Link)
   //   ?a=<aktion> – öffnet eine App-Aktion ohne eigenes Modul (Homescreen-Shortcuts
   //                 aus dem Manifest, z.B. „Ruta del día" oder „Suchen")
   // Beides hat Vorrang vor dem Onboarding – wer per Link/Shortcut kommt, soll sofort
@@ -6746,6 +6752,11 @@
       fotos: openFotos,
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
+      // Einstufungs-Tests: ein geteiltes Ergebnis-Sharepic (Motiv „assessment“/
+      // „placement“) verlinkt per ?m=… direkt in den jeweiligen Test, nicht nur
+      // auf die Startseite. Beide Opener starten in der Intro-Phase (Auswahl/Start).
+      "nivel-test": openAssessment,
+      "ruta-check": () => openPlacement(false),
     };
     const open = openers[slug];
     if (!open) return false;
