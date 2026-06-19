@@ -92,22 +92,37 @@
     <div class="boot__name">Hola<span>Ruta</span></div>
     <div class="boot__bar"></div>
   </div>
-  <!-- Splash-Animation erst loslassen, wenn der Hauptthread frei ist. Die App-
-       Skripte unten laufen synchron und blockieren beim echten Kaltstart das
-       Rendern – startete die Animation schon beim Parsen, würde das Logo die
-       Schrumpf-Frames „verschlucken" und einfach klein erscheinen. Per doppeltem
-       requestAnimationFrame feuert dieser Callback garantiert NACH den Skripten
-       (sobald der Browser wieder zeichnen kann) – dann schrumpft es sichtbar.
-       __bootStart wird hier neu gesetzt, damit die Mindest-Anzeigedauer ab dem
-       echten Animationsstart zählt (nicht ab dem frühen Parse-Zeitpunkt). -->
+  <!-- Schrumpf-Animation erst beim load-Event loslassen – NICHT schon beim Parsen.
+       Hintergrund: als installierte PWA zeigt das System zuerst seinen eigenen
+       Start-Bildschirm und übergibt erst beim ersten Paint an die echte Seite.
+       Würde die Animation (wie früher) schon ein paar Frames nach den Skripten
+       starten, liefe sie noch WÄHREND dieser Übergabe – und weil CSS-Animationen
+       nach Wanduhr-Zeit laufen, wäre das Logo beim ersten sichtbaren Frame längst
+       fast klein. Genau das „Springen". load feuert erst NACH dem ersten Paint,
+       also wenn der Nutzer den großen Start-Frame (scale 2.8) wirklich sieht;
+       die zwei requestAnimationFrame stellen sicher, dass dieser große Frame
+       präsentiert ist, bevor das Schrumpfen losgeht. __bootStart wird hier
+       gesetzt, damit die Mindest-Anzeigedauer ab diesem sichtbaren Start zählt. -->
   <script>
     (function () {
       var boot = document.getElementById("boot");
       if (!boot) return;
-      function go() { window.__bootStart = Date.now(); boot.classList.add("is-ready"); }
-      if (window.requestAnimationFrame) {
-        requestAnimationFrame(function () { requestAnimationFrame(go); });
-      } else { go(); }
+      var started = false;
+      function go() {
+        if (started) return; // load + Fallback-Timeout dürfen sich nicht doppeln
+        started = true;
+        window.__bootStart = Date.now();
+        if (window.requestAnimationFrame) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { boot.classList.add("is-ready"); });
+          });
+        } else { boot.classList.add("is-ready"); }
+      }
+      if (document.readyState === "complete") go();
+      else window.addEventListener("load", go, { once: true });
+      // Notnagel: hängt eine Ressource, soll das Logo trotzdem schrumpfen statt
+      // groß einzufrieren. 3 s liegt klar nach dem normalen load, stört also nie.
+      setTimeout(go, 3000);
     })();
   </script>
 
