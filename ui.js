@@ -3593,6 +3593,7 @@
           <li>${esc(t("placement.introB2"))}</li>
           <li>${esc(t("placement.introB3"))}</li>
         </ul>
+        ${vm.fromOnboarding ? "" : moduleShareBtn("ruta-check")}
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="placement-start">▶️ ${esc(t("placement.start"))}</button>
           ${later}

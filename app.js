@@ -6065,6 +6065,7 @@
   // kommt aus dem Kachel-Untertitel (discover.sub…), damit DE/EN gepflegt sind.
   // Historia hat ein eigenes Motiv (shareHistModule) und ist hier nicht gelistet.
   const MODULE_SHARE = {
+    "ruta-check":  { icon: "🎯", title: "HolaRuta-Check",      sub: "discover.subPlacement",     accent: ["#2E6E86", "#C2502E"] },
     supervivencia: { icon: "🆘", title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
     hostel:        { icon: "🛏️", title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
     definiciones:  { icon: "🧩", title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
@@ -6098,6 +6099,14 @@
     const CAP = 6;
     const cut = (arr) => (arr || []).filter(Boolean).slice(0, CAP);
     switch (id) {
+      case "ruta-check":
+        // Der Check selbst hat keine Lernkarten – als Highlights dienen die drei
+        // Einleitungspunkte, die auch im Intro stehen (was der Test misst).
+        return [
+          { mark: "🎯", text: t("placement.introB1") },
+          { mark: "🔁", text: t("placement.introB2") },
+          { mark: "⏱️", text: t("placement.introB3") },
+        ];
       case "supervivencia": {
         const out = [];
         spickzettelVM().groups.forEach((g) => {
