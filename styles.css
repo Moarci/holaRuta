@@ -247,7 +247,10 @@ body {
   overflow: hidden;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
   /* Startet groß und schrumpft langsam auf seine kleine Endgröße – sanft
-     abgebremst (easeOutExpo-artig), damit es weich auf 1.0 „landet". */
+     abgebremst (easeOutExpo-artig), damit es weich auf 1.0 „landet".
+     will-change befördert den Layer schon im pausierten Zustand auf die GPU,
+     damit der erste Frame nicht beim Promoten ruckelt. */
+  will-change: transform, opacity;
   animation: boot-shrink 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .boot__logo svg { display: block; width: 100%; height: 100%; }
@@ -258,17 +261,23 @@ body {
   font-size: 1.7rem;
   letter-spacing: -0.02em;
   color: var(--cream);
+  will-change: transform, opacity;
   animation: boot-rise 0.55s ease 0.78s both;
 }
 .boot__name span { color: var(--brand); }
 
+/* Strich wischt per transform: scaleX herein (Compositor) statt per width –
+   width würde in jedem Frame ein Layout-Reflow auslösen und die ganze
+   Splash-Animation ausbremsen. Volle Breite steht fest, scaleX enthüllt sie. */
 .boot__bar {
-  width: 0;
+  width: 140px;
   height: 4px;
   border-radius: 999px;
+  transform-origin: left center;
   background: linear-gradient(90deg,
     #C2502E 0% 16%, #E9A23B 16% 33%, #3F7355 33% 50%,
     #2F6B70 50% 66%, #7D4A8E 66% 83%, #B5302A 83% 100%);
+  will-change: transform, opacity;
   animation: boot-wipe 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.92s both;
 }
 
@@ -282,8 +291,8 @@ body {
   to   { opacity: 1; transform: none; }
 }
 @keyframes boot-wipe {
-  from { width: 0; opacity: 0.25; }
-  to   { width: 140px; opacity: 1; }
+  from { transform: scaleX(0); opacity: 0.25; }
+  to   { transform: scaleX(1); opacity: 1; }
 }
 
 /* Bewegung aus (Systemwunsch): alles sofort sichtbar, nur sanft wegblenden. */
