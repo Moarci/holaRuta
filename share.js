@@ -553,7 +553,9 @@
     drawFittedLine(ctx, String(payload.xp == null ? 0 : payload.xp), cx, L.ringY - 10, L.R * 2 - 64, L.xpPx, "800");
     ctx.font = font("700", L.ringCapPx);
     ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.fillText(t("share.rankXpCap"), cx, L.ringY + L.R - 8);
+    // Caption innerhalb des Rings unter der XP-Zahl – mit Abstand zum unteren
+    // Ring-Bogen (Strich liegt bei R±ringW/2), damit „XP" nicht auf der Linie klebt.
+    ctx.fillText(t("share.rankXpCap"), cx, L.ringY + L.R - L.ringW - 24);
     ctx.textBaseline = "alphabetic";
 
     // Zwei Kennzahl-Kacheln: nächster Rang & noch fehlende XP (bzw. „erreicht").
