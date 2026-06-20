@@ -2281,13 +2281,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .teacher-x:hover { color: var(--brand-ink); }
 @media print {
-  .teacher-actions, .teacher-x, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
+  .appbar, .teacher-actions, .teacher-x, .topbar, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
   .no-print, .sheet-controls,
   /* schwebende Overlays nie mitdrucken (Toasts, Update-Banner/-Scrim) */
   .btoast, .updbar, .upd-scrim, .tgt-scrim { display: none !important; }
   /* Aktivitätsblatt randlos, schwarz auf weiß drucken (unabhängig vom Theme). */
   .screen { padding: 0 !important; }
   .sheet { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; }
+  /* Klassentabelle für den Druck umbrechen lassen, damit ALLE Spalten (v. a.
+     das Niveau) auf A4 passen – overflow-x scrollt auf Papier nicht, es klippt sonst. */
+  .teacher-tablewrap { overflow: visible !important; }
+  .teacher-table { font-size: 0.72rem; }
+  /* white-space:normal lässt lange Köpfe an Leerzeichen umbrechen; KEIN
+     overflow-wrap:anywhere (das stapelt sonst einzelne Buchstaben senkrecht). */
+  .teacher-table th, .teacher-table td { white-space: normal; padding: 5px 6px; }
+  .teacher-packs { max-width: none; }
 }
 
 /* Druckbares Aktivitätsblatt (Lehrkraft/Coordinator). Bewusst feste, helle

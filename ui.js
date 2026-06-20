@@ -3547,17 +3547,19 @@
     return `
       <section class="screen${withTab ? " screen--tabbed" : ""}">
         ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), withTab ? "open-task" : "home")}
-        <p class="hm-intro">${esc(t("teacher.intro"))}</p>
-        <div class="tip">${esc(t("teacher.privacy"))}</div>
+        <p class="hm-intro no-print">${esc(t("teacher.intro"))}</p>
+        <div class="tip no-print">${esc(t("teacher.privacy"))}</div>
         ${actions}
         ${body}
-        <hr class="teacher-sep">
-        ${taskForm}
-        <hr class="teacher-sep">
-        <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
-        <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
-        <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+        <div class="no-print">
+          <hr class="teacher-sep">
+          ${taskForm}
+          <hr class="teacher-sep">
+          <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
+          <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
+          <div class="teacher-actions">
+            <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+          </div>
         </div>
       </section>
       ${vm.targetPicker === "task" ? targetPickerModal("task", { targets: vm.taskTargets, bundles: vm.bundles, selectedKeys: vm.taskItemKeys, activeBundleIds: vm.activeBundleIds }) : ""}
