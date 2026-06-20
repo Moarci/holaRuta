@@ -6,6 +6,11 @@
 (function () {
   "use strict";
 
+  // Übersetzungs-Helfer lokal binden statt als impliziten Global (window.t) zu
+  // nutzen. i18n.js läuft vor ui.js und setzt SC.i18n.t === window.t, daher ist
+  // die Referenz hier bereits vorhanden. esc() ist bereits lokal (siehe unten).
+  const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
+
   function esc(str) {
     return String(str)
       .replace(/&/g, "&amp;")
