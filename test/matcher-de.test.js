@@ -192,3 +192,95 @@ test("check: answers bleibt die unnormalisierte Anzeige-Liste", () => {
   const withAlt = { es: "Soy vegetariano/a", alt: ["soy vegetariano", "soy vegetariana"] };
   assert.deepEqual(matcher.check("x", withAlt).answers, withAlt.alt);
 });
+
+// ---------- levenshtein (Damerau-OSA): exakte Distanzen ----------
+test("levenshtein: benachbarte Vertauschung kostet GENAU 1 (Damerau)", () => {
+  assert.equal(matcher.levenshtein("ab", "ba"), 1);          // reine Transposition
+  assert.equal(matcher.levenshtein("abc", "acb"), 1);        // Transposition am Ende
+  assert.equal(matcher.levenshtein("ca", "ac"), 1);
+  assert.equal(matcher.levenshtein("necesito", "necesiot"), 1); // to↔ot am Ende
+  assert.equal(matcher.levenshtein("converse", "covnerse"), 1); // nv↔vn im Inneren
+});
+
+test("levenshtein: Standard-Distanzen ohne falsches Transponieren", () => {
+  assert.equal(matcher.levenshtein("gato", "gato"), 0);
+  assert.equal(matcher.levenshtein("gato", "pato"), 1);      // eine Substitution
+  assert.equal(matcher.levenshtein("", "abc"), 3);           // leer -> Länge
+  assert.equal(matcher.levenshtein("abc", ""), 3);
+  assert.equal(matcher.levenshtein("abc", "xyz"), 3);        // drei Substitutionen
+  assert.equal(matcher.levenshtein("kitten", "sitting"), 3); // klassisches Beispiel
+  assert.equal(matcher.levenshtein("ab", "abc"), 1);         // eine Einfügung
+});
+
+// ---------- native EN: führender Artikel (the/a/an) ist optional ----------
+test("native EN: artikellose UND volle Eingabe zählen, ohne Dublette", () => {
+  const i18n = { getLang: () => "en", nativeText: (c) => c.en };
+  globalThis.window.SC.i18n = i18n;
+  try {
+    const card = { es: "la parada del bus", en: "the bus stop" };
+    ok("the bus stop", card, "native"); // volle Eingabe
+    ok("bus stop", card, "native");      // Artikel weggelassen
+    const cands = matcher.candidates(card, "native");
+    assert.ok(cands.includes("the bus stop"));
+    assert.ok(cands.includes("bus stop"));
+    // keine Dublette: artikellose Form genau einmal
+    assert.equal(cands.filter((c) => c === "bus stop").length, 1);
+  } finally { delete globalThis.window.SC.i18n; }
+});
+
+test("native EN strippt NUR bei native: spanisches Feld bleibt artikel-streng", () => {
+  const i18n = { getLang: () => "en", nativeText: (c) => c.en };
+  globalThis.window.SC.i18n = i18n;
+  try {
+    // Für das es-Feld darf KEIN Artikel entfernt werden, auch wenn UI=Englisch.
+    no("casa", { es: "a casa" }, "es");
+    ok("a casa", { es: "a casa" }, "es");
+  } finally { delete globalThis.window.SC.i18n; }
+});
+
+test("native nicht-EN: deutscher Artikel wird NICHT entfernt", () => {
+  const i18n = { getLang: () => "de", nativeText: (c) => c.de };
+  globalThis.window.SC.i18n = i18n;
+  try {
+    no("bus", { es: "x", de: "der Bus" }, "native"); // "der" ist kein engl. Artikel
+    ok("der bus", { es: "x", de: "der Bus" }, "native");
+  } finally { delete globalThis.window.SC.i18n; }
+});
+
+// ---------- card.alt-Vorrang ist an field==="es" gebunden ----------
+test("candidates: card.alt gilt NUR für es und ersetzt dort die Generierung", () => {
+  const card = { es: "Soy vegetariano/a", alt: ["soy vegetariano", "soy vegetariana"] };
+  // es: exakt die normalisierten alt-Einträge, nichts aus dem es-Text generiert
+  assert.deepEqual(matcher.candidates(card, "es"), ["soy vegetariano", "soy vegetariana"]);
+  // de ignoriert alt[] komplett (alt ist nur Spanisch)
+  const deCard = { de: "links / rechts", es: "x", alt: ["IGNORIERT"] };
+  const deCands = matcher.candidates(deCard, "de");
+  assert.ok(deCands.includes("links") && deCands.includes("rechts"));
+  assert.ok(!deCands.includes("ignoriert"));
+});
+
+// Eine Abweichung am WORTANFANG ist KEINE Wortend-Flexion -> zählt als Tippfehler.
+// (Sichert die volle Suffix-Zählung in commonSuffixLen bis zum ersten Zeichen ab.)
+test("Tippfehler: fehlender Anfangsbuchstabe ist ein Tippfehler, keine Flexion", () => {
+  // Beide Richtungen: die Abweichung sitzt am Wortanfang (Distanz 1), das gemeinsame
+  // Suffix reicht bis zum ersten Zeichen des kürzeren Worts – darf NICHT als
+  // Wortend-Flexion abgelehnt werden. (Sichert die Suffix-Zählung an beiden Rändern.)
+  let r = matcher.check("o cuesta", { es: "no cuesta" }); // Eingabe kürzer
+  assert.equal(r.correct, true);
+  assert.equal(r.typo, true);
+  r = matcher.check("no cuesta", { es: "o cuesta" });     // Kandidat kürzer
+  assert.equal(r.correct, true);
+  assert.equal(r.typo, true);
+});
+
+// ---------- Tippfehler-Schwelle (typoBudget) an der Längen-Grenze ----------
+test("Tippfehler-Budget: 8 Zeichen lassen 1 Fehler zu, 7 Zeichen keinen", () => {
+  // 7 Zeichen (< 8) -> Budget 0: ein Vertipper im Inneren zählt NICHT.
+  no("xanjero", { es: "cajero" }, "es");          // 6 Zeichen Ziel: streng
+  // 8 Zeichen -> Budget 1: ein Vertipper im Inneren zählt.
+  let r = matcher.check("entiendl", { es: "entiende" }); // Wortende-Flexion? l vs e am Ende
+  // (Wortende -> kein Typo); stattdessen Inneres prüfen:
+  r = matcher.check("entirnde", { es: "entiende" });     // r statt e im Inneren, 8 Zeichen
+  assert.equal(r.correct, true);
+  assert.equal(r.typo, true);
+});

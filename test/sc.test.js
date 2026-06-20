@@ -152,6 +152,50 @@ test("srs.isDue: neu/0 → fällig, Vergangenheit → fällig, Zukunft → nicht
   assert.equal(srs.isDue({ due: Date.now() + 60 * 60 * 1000 }), false);
 });
 
+test("srs.review: expliziter now-Zeitpunkt steuert die Fälligkeit exakt", () => {
+  const T = 1700000000000; // fester Zeitpunkt
+  const r = srs.review(srs.freshState(), srs.RATING.GOOD, T);
+  // interval 1 -> Fälligkeit = lokale Mitternacht von (T + 1 Tag)
+  const d = new Date(T); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + 1);
+  assert.equal(r.due, d.getTime());
+});
+
+test("srs.review: ungültiger now-Wert (NaN) fällt auf Date.now() zurück", () => {
+  const r = srs.review(srs.freshState(), srs.RATING.GOOD, NaN);
+  assert.ok(isFinite(r.due) && r.due > 0); // niemals NaN persistieren
+});
+
+test("srs.review AGAIN: Wiedervorlage exakt ~1 Minute später (60*1000 ms)", () => {
+  const T = 1700000000000;
+  const r = srs.review({ ease: 2.5, interval: 10, due: 0, reps: 3 }, srs.RATING.AGAIN, T);
+  assert.equal(r.due, T + 60 * 1000);
+});
+
+test("srs.review: korrupte Felder (Strings/Infinity) fallen auf Defaults zurück", () => {
+  // reps als String -> 0 -> 'neu'-Pfad: GOOD ergibt interval 1 (NICHT 3)
+  assert.equal(srs.review({ ease: 2.5, interval: 5, due: 0, reps: "x" }, srs.RATING.GOOD).interval, 1);
+  // ease als String wird NICHT als Zahl interpretiert -> Default 2.5 (nicht "9"->3.0)
+  const r = srs.review({ ease: "9", interval: 3, due: 0, reps: 2 }, srs.RATING.GOOD);
+  assert.equal(r.interval, 8); // round(3 * 2.5) = 8, nicht round(3 * 3.0) = 9
+});
+
+test("srs.review: Early-Review dämpft das Intervall auf die verstrichene Zeit", () => {
+  const T = 1700000000000;
+  const DAY = 24 * 60 * 60 * 1000;
+  // interval 20, aber erst in 10 Tagen fällig -> nur 10 Tage tatsächlich verstrichen
+  const r = srs.review({ ease: 2.5, interval: 20, due: T + 10 * DAY, reps: 5 }, srs.RATING.GOOD, T);
+  // base = min(20, elapsed=10) = 10 -> round(10 * 2.5) = 25 (statt round(20*2.5)=50)
+  assert.equal(r.interval, 25);
+});
+
+test("srs.review: Early-Review behält die Untergrenze von 1 Tag", () => {
+  const T = 1700000000000;
+  const DAY = 24 * 60 * 60 * 1000;
+  // fällig erst in 19,7 Tagen -> nur 0,3 Tage verstrichen -> base auf 1 geklemmt
+  const r = srs.review({ ease: 2.5, interval: 20, due: T + Math.round(19.7 * DAY), reps: 5 }, srs.RATING.GOOD, T);
+  assert.equal(r.interval, 3); // round(1 * 2.5) = 3, nicht round(0.3 * 2.5) = 1
+});
+
 // ---------- stats ----------
 test("stats.record: erste Bewertung setzt seen/firstRating/history/Zeiten", () => {
   const now = 1000;
@@ -1081,4 +1125,83 @@ test("badges: pretrip_done erst ab einem vollständigen Plan", () => {
   // ein Plan vollständig -> Badge
   const full = { peru: {} }; for (let i = 1; i <= N; i++) full.peru[i] = true;
   assert.ok(badges.satisfiedIds(badges.buildMetrics(cards, {}, { pretripDays: full })).includes("pretrip_done"));
+});
+
+// ---------- store: weitere Härtung (Defaults, Backup-Hülle, Deckel) ----------
+test("store: kapert den globalen SC-Namespace NICHT (window.SC || {} bleibt erhalten)", () => {
+  // store.js wird NACH srs/matcher/stats/badges geladen. Würde es window.SC mit
+  // `&&` statt `||` initialisieren, gingen die zuvor registrierten Module verloren.
+  assert.ok(globalThis.window.SC.srs, "srs darf beim Laden von store nicht verloren gehen");
+  assert.ok(globalThis.window.SC.matcher);
+  assert.ok(globalThis.window.SC.store);
+});
+
+test("store.freshGameStats: exakte Default-Struktur (alle Zähler 0, Maps leer, Flags false)", () => {
+  assert.deepEqual(store.freshGameStats(), {
+    reviews: 0, againPresses: 0, dailyStreak: 0, longestStreak: 0, xp: 0,
+    lastStudyDate: null, nightOwl: false, earlyBird: false,
+    battlesPlayed: 0, battlesWon: 0, perfectBattles: 0, comebacks: 0,
+    roleplaysSeen: {}, challengesDone: {},
+    quizzesPlayed: 0, quizzesPerfect: 0,
+    yestoPlayed: 0, yestoPerfect: 0,
+    frasesPlayed: 0, frasesPerfect: 0, frasesThemesDone: {},
+    listenReviews: 0, preciosPlayed: 0, preciosPerfect: 0, preciosMillon: 0,
+    conjugPlayed: 0, conjugPerfect: 0,
+    dialogosPlayed: 0, dialogosPerfect: 0, dialogosScenesDone: {},
+    rutaDays: {}, pretripDays: {}, tripGoal: null, dailyCounts: {},
+    contextCardsSeen: {}, bodyPartsSeen: {}, shoppingSeen: {},
+    unlocked: {}, placement: null, placementHistory: [],
+    assessment: null, assessmentHistory: [], assessmentProgress: null,
+  });
+});
+
+test("store.exportData: Backup-Hülle trägt app='holaruta' und format=1", () => {
+  const out = store.exportData();
+  assert.equal(out.app, "holaruta");
+  assert.equal(out.format, 1);
+  assert.equal(typeof out.exportedAt, "string");
+  assert.equal(typeof out.data, "object");
+});
+
+test("store.loadProgress: korruptes interval/due/reps/seen fällt auf 0 (kein NaN/String)", () => {
+  storeMem["spanischcard.progress.v2"] = JSON.stringify({
+    c1: { ease: 2.5, interval: "weg", due: "x", reps: null, seen: undefined, history: "nope" },
+  });
+  const p = store.loadProgress();
+  assert.equal(p.c1.interval, 0);
+  assert.equal(p.c1.due, 0);
+  assert.equal(p.c1.reps, 0);
+  assert.equal(p.c1.seen, 0);
+  assert.deepEqual(p.c1.history, []); // nur "a"/"g"/"e" überleben, sonst leer
+  delete storeMem["spanischcard.progress.v2"];
+});
+
+test("store.encodeBundle: deckelt bereits beim Kodieren auf 20 Ziele", () => {
+  const items = [];
+  for (let i = 0; i < 25; i++) items.push({ kind: "category", scope: "cat" + i });
+  const code = store.encodeBundle({ items });
+  // Roh-Payload direkt prüfen: das Kodieren selbst muss schon bei 20 abschneiden
+  // (das Dekodieren deckelt zwar erneut, würde die Kodier-Grenze sonst aber maskieren).
+  const raw = JSON.parse(Buffer.from(code.slice("HRB1.".length), "base64").toString("utf8"));
+  assert.equal(raw.items.length, 20);
+});
+
+test("store.decodeBundle: kürzt einen überlangen Titel beim Dekodieren auf 80", () => {
+  // Code mit >80-Zeichen-Titel manuell bauen (am Kodier-Deckel vorbei), damit der
+  // Dekodier-seitige slice(0,80) wirklich greift.
+  const payload = { app: "holaruta-bundle", v: 1, items: [{ kind: "category", scope: "x" }], title: "T".repeat(200) };
+  const code = "HRB1." + Buffer.from(JSON.stringify(payload), "utf8").toString("base64");
+  assert.equal(store.decodeBundle(code).title.length, 80);
+});
+
+test("store.loadGameStats: Aufenthaltsdauer nur als plausible Zahl >= 1", () => {
+  const load = (extra) => {
+    storeMem[GKEY] = JSON.stringify({ reviews: 1, tripGoal: Object.assign(
+      { destination: "Bogotá", endDate: "2099-01-01", perDay: 10 }, extra) });
+    return store.loadGameStats().tripGoal;
+  };
+  assert.equal(load({ stayDays: 30 }).stayDays, 30);            // gültig
+  assert.equal("stayDays" in load({ stayDays: 0 }), false);     // 0 < 1 -> weg (Grenze)
+  assert.equal("stayDays" in load({ stayDays: "5" }), false);   // String ist keine Zahl
+  assert.equal("stayDays" in load({ stayDays: Infinity }), false); // nicht endlich
 });

@@ -38,12 +38,13 @@ export const SEED = 1;        // Sampling-Seed (reproduzierbar)
  * Vorteil ggü. globalem Schwellwert: ein PR an einem schwach getesteten Modul
  * (z. B. schwach getestetes Modul) wird NICHT rot, solange er den Score nicht
  * VERSCHLECHTERT — und Verbesserungen heben den Baseline (Ratsche). Werte =
- * Messung vom 2026-06-20 (BUDGET=30, SEED=1); sync & badges danach durch gezielte
- * Tests auf 100 % gehoben. Bei Änderung von BUDGET/SEED neu kalibrieren.
+ * Messung vom 2026-06-20 (BUDGET=30, SEED=1); sync, badges sowie numbers, matcher,
+ * store & srs danach durch gezielte Tests auf 100 % gehoben (verbleibende Survivor
+ * als äquivalent in IGNORE dokumentiert). Bei Änderung von BUDGET/SEED neu kalibrieren.
  */
 export const TOLERANCE = 5;   // erlaubter Score-Rückgang in %-Punkten (absorbiert Mutantenmengen-Drift bei Quelländerungen)
 export const BASELINE = {
-  srs: 66, store: 60, stats: 70, badges: 100, matcher: 56, net: 81, sync: 100, numbers: 53,
+  srs: 100, store: 100, stats: 70, badges: 100, matcher: 100, net: 81, sync: 100, numbers: 100,
 };
 export const floorFor = (m) => Math.max(0, (BASELINE[m] ?? 0) - TOLERANCE);
 
@@ -53,7 +54,35 @@ export const floorFor = (m) => Math.max(0, (BASELINE[m] ?? 0) - TOLERANCE);
  * Schema: { file, line, op, grund }. grund ist Pflicht.
  */
 export const IGNORE = [
-  // { file: "srs.js", line: 0, op: "number", grund: "…" },
+  // numbers.js
+  { file: "numbers.js", line: 42, op: "relational", grund:
+    "below1000: `if (n < 100)` vs `<= 100`. n===100 ist eine Zeile zuvor abgefangen " +
+    "(return \"cien\") und n===0 ebenfalls; die Grenze 100 erreicht diese Bedingung also nie. " +
+    "Beide Operatoren liefern für jede erreichbare Eingabe dasselbe → äquivalent." },
+  { file: "numbers.js", line: 228, op: "relational", grund:
+    "randomPrice: `Math.random() < 0.5` vs `<= 0.5` (50/50-Aufteilung fein/grob). Differenz nur " +
+    "beim Maß-Null-Ereignis random()===0.5; die beiden Zweige erzeugen statistisch identische " +
+    "Verteilungen und für 0.5 denselben Betrag (Spanne skaliert proportional zu step/fine) → äquivalent." },
+  // srs.js
+  { file: "srs.js", line: 51, op: "number", grund:
+    "review: `Math.max(0, num(s.interval, 0))`. interval fließt nur über `base = interval || 1` ein; " +
+    "0 und 1 kollabieren dort beide zu base=1, und im Early-Review-Pfad klemmt min(base,…)/max(1,…) " +
+    "ohnehin auf 1. Die Mutation 0→1 ändert kein beobachtbares Ergebnis → äquivalent." },
+  // matcher.js
+  { file: "matcher.js", line: 130, op: "number", grund:
+    "levenshtein: `new Array(bl + 1)` ist nur ein Kapazitäts-Hinweis. Die Schleife befüllt prev[0..bl] " +
+    "vollständig (JS erweitert das Array beim Setzen von Index bl). `new Array(bl)` liefert identische " +
+    "Inhalte → äquivalent." },
+  { file: "matcher.js", line: 133, op: "number", grund:
+    "levenshtein: dieselbe Kapazitäts-Mutation für `cur = new Array(bl + 1)`. cur[0..bl] wird je Zeile " +
+    "komplett gesetzt → äquivalent." },
+  { file: "matcher.js", line: 211, op: "relational", grund:
+    "classifyNorm: `d > 0` vs `d >= 0` im Tippfehler-Pfad. Ein exakter Treffer (d===0) wird bereits in " +
+    "Schritt 1 mit return \"exact\" abgefangen; Schritt 2 sieht daher ausschließlich d>=1 → die 0-Grenze " +
+    "ist unerreichbar → äquivalent." },
+  { file: "matcher.js", line: 227, op: "relational", grund:
+    "check: `i < tries.length` vs `i <= tries.length`. Die Extra-Iteration greift auf tries[length]=undefined " +
+    "zu; classifyNorm(undefined,…) gibt sofort \"\" zurück und lässt cls unverändert → kein Effekt → äquivalent." },
 ];
 
 export const isIgnored = (file, line, op) =>

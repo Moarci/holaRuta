@@ -138,6 +138,53 @@ test("numbers.currencyList: Kolumbien steht als Aushängeschild vorn", () => {
   });
 });
 
+// ---------- tierFor: exakte Stufen-Spannen (Schutz der Datenliterale) ----------
+// Hartkodierte Erwartung je Währung/Stufe – fängt JEDE versehentliche Änderung
+// eines min/max/step/fine-Literals in CURRENCIES (sonst „still" mutierbar).
+test("numbers.tierFor: liefert exakt die gepflegten Spannen je Währung", () => {
+  const EXPECT = {
+    CO: [{ min: 500, max: 20000, step: 500 }, { min: 10000, max: 200000, step: 1000, fine: 500 }, { min: 100000, max: 5000000, step: 10000, fine: 1000 }],
+    CL: [{ min: 300, max: 15000, step: 100 }, { min: 5000, max: 150000, step: 1000, fine: 500 }, { min: 100000, max: 8000000, step: 10000, fine: 1000 }],
+    AR: [{ min: 500, max: 20000, step: 100 }, { min: 10000, max: 300000, step: 1000, fine: 500 }, { min: 100000, max: 9000000, step: 10000, fine: 1000 }],
+    CR: [{ min: 100, max: 5000, step: 100 }, { min: 1000, max: 50000, step: 500, fine: 100 }, { min: 25000, max: 2000000, step: 1000, fine: 500 }],
+    MX: [{ min: 5, max: 200, step: 5 }, { min: 50, max: 2000, step: 10, fine: 5 }, { min: 500, max: 50000, step: 100, fine: 50 }],
+    PE: [{ min: 2, max: 100, step: 1 }, { min: 20, max: 500, step: 5 }, { min: 100, max: 9000, step: 10, fine: 5 }],
+    GT: [{ min: 5, max: 150, step: 5 }, { min: 50, max: 1500, step: 10 }, { min: 300, max: 40000, step: 100, fine: 50 }],
+  };
+  for (const key of numbers.CURRENCY_ORDER) {
+    for (let lvl = 1; lvl <= 3; lvl++) {
+      assert.deepEqual(numbers.tierFor(key, lvl), EXPECT[key][lvl - 1], `${key} L${lvl}`);
+    }
+  }
+});
+
+// tierFor klemmt die Stufe 1-basiert: <1 -> erste, >max -> letzte, ungültig -> 1.
+test("numbers.tierFor: Stufe wird 1-basiert auf [0 .. letzte] geklemmt", () => {
+  const co = numbers.currency("CO");
+  assert.deepEqual(numbers.tierFor("CO", 1), co.levels[0]); // genau 1 -> Index 0
+  assert.deepEqual(numbers.tierFor("CO", 2), co.levels[1]);
+  assert.deepEqual(numbers.tierFor("CO", 3), co.levels[2]); // genau 3 -> Index 2 (letzte)
+  assert.deepEqual(numbers.tierFor("CO", 0), co.levels[0]); // unter 1 -> erste
+  assert.deepEqual(numbers.tierFor("CO", -5), co.levels[0]);
+  assert.deepEqual(numbers.tierFor("CO", 99), co.levels[2]); // über max -> letzte
+  assert.deepEqual(numbers.tierFor("CO", undefined), co.levels[0]); // Default 1 -> erste
+  // String-Währung wird zur Definition aufgelöst (gleiches Objekt wie currency())
+  assert.equal(numbers.tierFor("CO", 2), co.levels[1]);
+});
+
+// randInt schließt die Obergrenze ein (a + floor(rnd*(b-a+1))): bei rnd≈1 muss
+// der Höchstwert der Spanne fallen – sonst wäre das Spannen-Maximum unerreichbar.
+test("numbers.randomPrice: erreicht bei rnd≈1 das Spannen-Maximum", () => {
+  const orig = Math.random;
+  Math.random = () => 0.9999999;
+  try {
+    // CO L1 = {min:500,max:20000,step:500}: lo=1, hi=40 -> 40*500 = 20000 (=max)
+    assert.equal(numbers.randomPrice("CO", 1).value, 20000);
+    // PE L1 = {min:2,max:100,step:1}: lo=2, hi=100 -> 100
+    assert.equal(numbers.randomPrice("PE", 1).value, 100);
+  } finally { Math.random = orig; }
+});
+
 // ---------- Gegenprobe: deckt sich mit den festen Karten in data.js ----------
 test("numbers.toWords: stimmt mit den gepflegten Zahlen-Karten überein", () => {
   // window-Shim mit data.js erneut laden würde Module mischen; wir prüfen daher
