@@ -27,6 +27,26 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.101.0",
+      date: "2026-06-20",
+      title: "Modo profe stark verbessert: Niveau-Verteilung, Sortierung & CSV",
+      titleEn: "Teacher mode boosted: level distribution, sorting & CSV",
+      items: [
+        "📊 Die Klassenübersicht zeigt jetzt eine Niveau-Verteilung – wie viele Schüler:innen auf welcher CEFR-Stufe stehen: die Basis für die schnelle Gruppeneinteilung.",
+        "↕️ Die Klassentabelle lässt sich per Klick auf die Spaltenköpfe sortieren (Name, Gemeistert, Serie, Challenges, Pre-Trip, Niveau) – Standard ist jetzt nach Niveau.",
+        "📄 Neuer CSV-Export der Klassenliste (offline, Excel-tauglich) fürs Schul-Archiv – mit optionalem Klassennamen im Dateinamen.",
+        "🖨️ Optionaler Klassenname und ein Druck-Kopf (Name + Datum) machen den Ausdruck selbsterklärend; ein erneut importiertes Backup ersetzt jetzt den gleichnamigen Schüler statt eine Dublette anzulegen.",
+        "🔗 Im Profil verlinkt der Partner-Hinweis der ECOS-/WeRoad-Edition jetzt direkt auf die Partner-Homepage.",
+      ],
+      itemsEn: [
+        "📊 The class overview now shows a level distribution – how many students sit at each CEFR level: the basis for quickly forming groups.",
+        "↕️ The class table can be sorted by clicking the column headers (name, mastered, streak, challenges, pre-trip, level) – the default is now by level.",
+        "📄 New CSV export of the class list (offline, Excel-friendly) for the school archive – with an optional class name in the filename.",
+        "🖨️ An optional class name and a print header (name + date) make the printout self-explanatory; re-importing a backup now replaces the student with the same name instead of creating a duplicate.",
+        "🔗 In the profile, the partner credit of the ECOS/WeRoad edition now links directly to the partner's homepage.",
+      ],
+    },
+    {
       version: "1.100.0",
       date: "2026-06-19",
       title: "„Modul teilen“ jetzt auch beim HolaRuta Nivel-Test",

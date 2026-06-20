@@ -73,7 +73,7 @@
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     pretripLock: null,       // per zugewiesener Aufgabe festgelegtes Reiseziel (nur dieses zeigen, nicht wechselbar) | null
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
-    teacherSort: { key: "name", dir: 1 }, // Sortierung der Klassentabelle (klickbare Spaltenköpfe)
+    teacherSort: { key: "level", dir: -1 }, // Sortierung der Klassentabelle: Standard nach Niveau (höchstes zuerst, ungetestete zuletzt)
     teacherClassName: "",    // optionaler Klassenname (Druck-Kopf + CSV-Dateiname; transient)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
     taskItems: [],           // gewählte Aufgaben-Ziele im Formular: [{kind,scope}] – 1 = Einzelaufgabe, ≥2 = Bundle (überlebt Re-Render)
