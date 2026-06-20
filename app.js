@@ -27,6 +27,7 @@
   const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
   const musica = window.SC.musica || null;       // Música: Genres LatAm + Spotify/Apple-Deep-Links (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
+  const yesto = window.SC.yesto || null;         // „¿Y esto?“: Bild-Vokabel-Modus mit Countdown (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const assessment = window.SC.assessment || null; // HolaRuta Nivel-Test (ausführlich, optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
@@ -75,6 +76,8 @@
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     pretripLock: null,       // per zugewiesener Aufgabe festgelegtes Reiseziel (nur dieses zeigen, nicht wechselbar) | null
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
+    teacherSort: { key: "level", dir: -1 }, // Sortierung der Klassentabelle: Standard nach Niveau (höchstes zuerst, ungetestete zuletzt)
+    teacherClassName: "",    // optionaler Klassenname (Druck-Kopf + CSV-Dateiname; transient)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
     taskItems: [],           // gewählte Aufgaben-Ziele im Formular: [{kind,scope}] – 1 = Einzelaufgabe, ≥2 = Bundle (überlebt Re-Render)
     targetPicker: null,      // offenes Ziel-Picker-Modal: 'task' | 'sheet' | null (Modo profe / Blatt)
@@ -129,6 +132,8 @@
     // Items werden pro Runde frisch erzeugt (SC.conjug) aus data.CONJUGATION.
     conjug: null,            // { level, queue:[{verb,verbHint,personEs,personDe,answer}…], idx, total, result:{correct,input,answer}|null, correct }
     conjugLevel: [1, 2].includes(settings.conjugLevel) ? settings.conjugLevel : 2, // zuletzt gewählte Stufe
+    // „¿Y esto?“ Bild-Vokabel-Runde (transient, pro Runde frisch gemischt aus SC.yesto):
+    yesto: null,             // { themeId, queue:[{emoji,es,de,en}…], idx, total, phase:"count"|"reveal", count, correct }
     // ----- Spickzettel (Survival-Schnellzugriff, transient) -----
     szShow: null,            // Großanzeige: Karten-Id des bildschirmfüllend gezeigten Satzes | null
     // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
@@ -378,6 +383,8 @@
       hasBailar: !!bailar,       // Bailar (Tanzen in LatAm, Schritt-Diagramme)
       hasMusica: !!musica,       // Música (Genres LatAm + Spotify/Apple-Links)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
+      hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
+
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       hasAssessment: !!assessment, // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
@@ -2821,6 +2828,7 @@
     precios: "preciosSetup", preciosDone: "preciosSetup",
     frases: "frasesSetup", frasesDone: "frasesSetup",
     conjug: "conjugSetup", conjugDone: "conjugSetup",
+    yesto: "yestoSetup", yestoDone: "yestoSetup",
     dialogos: "dialogosSetup", dialogosDone: "dialogosSetup",
     comprasQuiz: "compras", comprasQuizDone: "compras",
     editor: "home",
@@ -3008,6 +3016,9 @@
     else if (state.screen === "conjugSetup") root.innerHTML = ui.renderConjugSetup(conjugSetupVM());
     else if (state.screen === "conjug") root.innerHTML = ui.renderConjug(conjugVM());
     else if (state.screen === "conjugDone") root.innerHTML = ui.renderConjugDone();
+    else if (state.screen === "yestoSetup") root.innerHTML = ui.renderYestoSetup(yestoSetupVM());
+    else if (state.screen === "yesto") root.innerHTML = ui.renderYesto(yestoVM());
+    else if (state.screen === "yestoDone") root.innerHTML = ui.renderYestoDone();
     else if (state.screen === "dialogosSetup") root.innerHTML = ui.renderDialogosSetup(dialogosSetupVM());
     else if (state.screen === "dialogos") root.innerHTML = ui.renderDialogos(dialogosVM());
     else if (state.screen === "dialogosDone") root.innerHTML = ui.renderDialogosDone();
@@ -3045,6 +3056,9 @@
     if (state.screen === "done") mountCelebrate();
     // Mini-Spiel-Fertig-Screens: dieselbe Inszenierung wie der Haupt-Lernpfad.
     if (MINI_DONE_SCREENS[state.screen]) mountMiniDone(state.screen);
+    // „¿Y esto?“: läuft der 3-2-1-Countdown noch, den nächsten Tick scharf schalten;
+    // auf jedem anderen Screen einen evtl. laufenden Timer wieder abräumen (kein Leck).
+    if (state.screen === "yesto") yestoArm(); else yestoDisarm();
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
     if (state.screen === "cuerpo") cuerpoInit3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
@@ -3101,6 +3115,7 @@
   const MINI_DONE_SCREENS = {
     quizDone: true, preciosDone: true, frasesDone: true,
     conjugDone: true, dialogosDone: true, comprasQuizDone: true,
+    yestoDone: true,
   };
   function miniResult(vm, scope, mode) {
     const total = Math.max(0, vm.total || 0);
@@ -3146,6 +3161,14 @@
         primaryLabel: t("discover.cjAgain"), onPrimary: conjugAgain,
         secondaryLabel: t("discover.cjOtherLevel"), onSecondary: openConjugDrill,
         tertiaryLabel: t("discover.cjToGuide"), onTertiary: openConjugacion,
+      } };
+    }
+    if (screen === "yestoDone") {
+      const vm = yestoDoneVM();
+      return { result: miniResult(vm, vm.themeLabel, "quiz"), opts: {
+        primaryLabel: t("discover.yeAgain"), onPrimary: yestoAgain,
+        secondaryLabel: t("discover.yeOtherTheme"), onSecondary: openYesto,
+        tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
     if (screen === "dialogosDone") {
@@ -3631,10 +3654,11 @@
   function handleTeacherFiles(files) {
     const list = Array.prototype.slice.call(files || []);
     if (!list.length) return;
-    let added = 0, skipped = 0, pending = list.length;
+    let added = 0, updated = 0, skipped = 0, pending = list.length;
     const finalize = () => {
       if (--pending > 0) return;
-      if (!added) showNotice(t("teacher.noneAdded"));
+      if (!added && !updated) showNotice(t("teacher.noneAdded"));
+      else if (updated) showNotice(t("teacher.someUpdated", { n: updated }));
       else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
       render();
     };
@@ -3646,8 +3670,13 @@
         const fallback = t("teacher.defaultName");
         const name = String(file.name || fallback).replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || fallback;
         const summary = payload ? studentSummaryFromBackup(name, payload) : null;
-        if (summary) { state.teacherStudents = state.teacherStudents.concat([summary]); added++; }
-        else skipped++;
+        if (summary) {
+          // Gleichnamiges Backup ersetzt das alte (Re-Import nach erneutem Export) –
+          // keine Dubletten in der Klassenliste.
+          const res = stats.upsertStudent(state.teacherStudents, summary);
+          state.teacherStudents = res.roster;
+          if (res.replaced) updated++; else added++;
+        } else skipped++;
         finalize();
       };
       reader.onerror = () => { skipped++; finalize(); };
@@ -3666,10 +3695,66 @@
   }
   function printTeacher() { try { window.print(); } catch (e) { /* egal */ } }
 
+  // Klassentabelle nach Spalte sortieren: gleiche Spalte erneut -> Richtung umdrehen,
+  // neue Spalte -> sinnvolle Startrichtung (Name aufsteigend, Kennzahlen absteigend).
+  function setTeacherSort(key) {
+    const cur = state.teacherSort || { key: "name", dir: 1 };
+    if (cur.key === key) state.teacherSort = { key, dir: cur.dir * -1 };
+    else state.teacherSort = { key, dir: key === "name" ? 1 : -1 };
+    render();
+  }
+
+  function setClassName(value) { state.teacherClassName = String(value || ""); }
+
+  // CSV-Spaltenüberschriften in derselben Reihenfolge wie stats.rosterRow (9 Spalten).
+  function rosterCsvHeader() {
+    return [
+      t("teacher.colName"), t("teacher.colNivel"), t("teacher.colScore"),
+      t("teacher.colMastered"), t("teacher.colTotal"), t("teacher.colStreak"),
+      t("teacher.colChallenges"), t("teacher.colPretrip"), t("teacher.colPacks"),
+    ];
+  }
+
+  // Klassenliste als CSV herunterladen (offline, kein Server) – fürs Schul-Archiv
+  // oder Tabellenkalkulation. Reihenfolge wie aktuell sortiert angezeigt.
+  function exportRosterCSV() {
+    const vm = teacherVM();
+    if (!vm.count) return;
+    const csv = stats.rosterCSV(vm.students, rosterCsvHeader());
+    // BOM voranstellen, damit Excel UTF-8 (Akzente/ñ) korrekt liest.
+    const slug = String(state.teacherClassName || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const fname = "holaruta-klasse" + (slug ? "-" + slug : "") + "-" + dayKey(Date.now()) + ".csv";
+    let url = null;
+    try {
+      const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+      url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click(); a.remove();
+      flashButton("teacher-csv", t("teacher.csvDownloaded"));
+      buzz(8);
+    } catch (e) {
+      console.warn("CSV-Export fehlgeschlagen", e);
+      showNotice(t("teacher.noneAdded"));
+    } finally {
+      if (url) setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+  }
+
   function teacherVM() {
-    const students = state.teacherStudents.slice();
+    // Zeilen mit ihrem Ursprungs-Index versehen, DAMIT die Sortierung nur die Anzeige
+    // betrifft und „Entfernen" weiterhin den richtigen Eintrag in state.teacherStudents trifft.
+    const raw = state.teacherStudents;
+    const withIdx = raw.map((s, i) => Object.assign({ _idx: i }, s));
+    const sort = state.teacherSort || { key: "name", dir: 1 };
+    const students = stats.sortRoster(withIdx, sort.key, sort.dir);
     const items = state.taskItems.slice();
     return {
+      sortKey: sort.key,
+      sortDir: sort.dir,
+      className: state.teacherClassName || "",
+      printDate: (() => { try { return new Date().toLocaleDateString(state.uiLang === "en" ? "en-GB" : "de-DE"); } catch (e) { return ""; } })(),
+      levelDist: stats.levelDistribution(raw),
       students,
       count: students.length,
       // Klassen-Aggregat für die Kopfzeile.
@@ -5582,6 +5667,143 @@
     store.saveGameStats(gamestats);
   }
 
+  // ----- „¿Y esto?“ (Bild-Vokabel-Modus mit 3-2-1-Countdown) -----
+  // Ein Motiv (Emoji) erscheint groß, ein kurzer Countdown läuft – „Wie heißt
+  // das auf Spanisch?“ – dann wird das spanische Wort + Übersetzung aufgelöst und
+  // man bewertet sich selbst („Wusste ich“/„Noch nicht“). Motive kommen pro Runde
+  // frisch gemischt aus SC.yesto (kein Foto -> bleibt offline & zero-dependency).
+  const YESTO_ROUND = 8;      // Motive pro Runde (jedes Thema hat ≥ 8)
+  const YESTO_COUNT_FROM = 3; // Start des Countdowns (3 → 2 → 1 → Auflösung)
+  let yestoTimer = null;      // genau ein pendelnder Countdown-Tick zur Zeit
+  const yestoReady = () => !!(yesto && yesto.THEMES && yesto.THEMES.length);
+
+  // Themen-Label in der aktiven UI-Sprache (label/labelEn via nativeText).
+  function natTheme(th) { return i18n.nativeText({ de: th.label, en: th.labelEn }); }
+
+  function yestoSetupVM() {
+    return {
+      available: yestoReady(),
+      themes: yestoReady() ? yesto.themeList().map((th) => ({
+        id: th.id, icon: th.icon, label: natTheme(th), count: th.count,
+      })) : [],
+    };
+  }
+
+  function yestoVM() {
+    const y = state.yesto;
+    const item = (y && y.queue[y.idx]) || {};
+    return {
+      position: y ? y.idx : 0,
+      total: y ? y.total : 0,
+      phase: y ? y.phase : "count",
+      count: y ? y.count : 0,
+      emoji: item.emoji || "",
+      es: item.es || "",
+      native: i18n.nativeText({ de: item.de, en: item.en }) || "",
+      isLast: y ? y.idx >= y.total - 1 : true,
+    };
+  }
+
+  function yestoDoneVM() {
+    const y = state.yesto || {};
+    const th = yestoReady() ? yesto.themeById(y.themeId) : null;
+    return {
+      correct: y.correct || 0,
+      total: y.total || 0,
+      themeLabel: th ? natTheme(th) : "",
+    };
+  }
+
+  function openYesto() {
+    dismissBadgeToast();
+    yestoDisarm();
+    if (!yestoReady()) return;
+    state.screen = "yestoSetup";
+    render();
+  }
+
+  function startYesto(themeId) {
+    if (!yestoReady()) return;
+    const queue = yesto.buildRound(themeId, YESTO_ROUND);
+    if (!queue.length) return;
+    state.yesto = { themeId, queue, idx: 0, total: queue.length, phase: "count", count: YESTO_COUNT_FROM, correct: 0 };
+    state.screen = "yesto";
+    render(); // render() schaltet anschließend den ersten Countdown-Tick scharf
+  }
+
+  // Den nächsten Countdown-Tick scharf schalten (von render() bei screen==="yesto").
+  function yestoArm() {
+    yestoDisarm();
+    const y = state.yesto;
+    if (!y || y.phase !== "count" || y.count <= 0) return;
+    yestoTimer = setTimeout(yestoTick, 1000);
+  }
+  function yestoDisarm() {
+    if (yestoTimer) { clearTimeout(yestoTimer); yestoTimer = null; }
+  }
+  function yestoTick() {
+    yestoTimer = null;
+    const y = state.yesto;
+    if (!y || state.screen !== "yesto" || y.phase !== "count") return;
+    y.count -= 1;
+    if (y.count <= 0) {
+      // Auflösung: hier ändert sich die ganze Bühne (Wort + Bewerten) -> volles
+      // render(); dessen Nach-Mount schaltet den Timer ab (Phase ist nicht mehr "count").
+      y.phase = "reveal";
+      buzz(10);
+      render();
+      return;
+    }
+    // Reiner Zähl-Tick: nur die Ziffer im DOM tauschen statt der ganze App-Neuaufbau.
+    // So läuft kein render() pro Sekunde, das sonst Fokus (manageFocus) und Scroll
+    // anfasst. Fehlt der Knoten ausnahmsweise, fällt es sicher auf render() zurück.
+    const num = document.querySelector(".ye-count__num");
+    if (num) num.textContent = String(y.count); else render();
+    yestoArm(); // nächsten Tick scharf schalten (ohne render())
+  }
+
+  // Sofort auflösen (Countdown überspringen) – für Ungeduldige & Screenreader.
+  function yestoReveal() {
+    const y = state.yesto;
+    if (!y || y.phase !== "count") return;
+    yestoDisarm();
+    y.phase = "reveal";
+    buzz(10);
+    render();
+  }
+
+  // Selbsteinschätzung nach der Auflösung -> nächstes Motiv / Runde beenden.
+  function yestoRate(known) {
+    const y = state.yesto;
+    if (!y || y.phase !== "reveal") return;
+    if (known) { y.correct += 1; buzz(12); } else buzz(8);
+    if (y.idx >= y.total - 1) {
+      recordYestoResult(y); // Zähler buchen, BEVOR die Badges ausgewertet werden
+      syncBadges(Date.now(), true);
+      yestoDisarm();
+      state.screen = "yestoDone";
+      render();
+      return;
+    }
+    y.idx += 1;
+    y.phase = "count";
+    y.count = YESTO_COUNT_FROM;
+    render();
+  }
+
+  function yestoAgain() { startYesto(state.yesto ? state.yesto.themeId : null); }
+
+  // Ergebnis einer beendeten ¿Y-esto?-Runde in die Spiel-Zähler buchen (Ruta-Pass).
+  // „Perfekt" = bei jedem Bild „Wusste ich" getippt (correct === total).
+  function recordYestoResult(y) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.yestoPlayed = (g.yestoPlayed || 0) + 1;
+    if (y.total > 0 && y.correct === y.total) g.yestoPerfect = (g.yestoPerfect || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
+
   // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
   function recordPreciosResult(p) {
     if (!badges) return;
@@ -5614,6 +5836,7 @@
     { action: "open-precios",     icon: "💵", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",         subKey: "discover.subCuerpo" },
     { action: "open-compras",     icon: "🛒", title: "Lista de compras",  subKey: "discover.subCompras" },
+    { action: "open-yesto",       icon: "👀", title: "¿Y esto?",          subKey: "discover.subYesto", need: "yesto" },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
     { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
@@ -5624,6 +5847,7 @@
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
     fotos: !!fotografia, bailar: !!bailar, musica: !!musica,
     bebidas: !!(bebidas && countries),
+    yesto: !!(yesto && yesto.THEMES && yesto.THEMES.length),
   };
 
   // Such-Kern (normalisieren/indexieren/ranken) lebt als reines Modul in search.js.
@@ -6482,6 +6706,7 @@
     precios:       { icon: "💵", title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
     cuerpo:        { icon: "🧍", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
     compras:       { icon: "🛒", title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
+    yesto:         { icon: "👀", title: "¿Y esto?",              sub: "discover.subYesto",         accent: ["#C2502E", "#E9A23B"] },
     conjugacion:   { icon: "🔁", title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
     tiempos:       { icon: "⏳", title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
     paises:        { icon: "🌎", title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
@@ -6548,6 +6773,12 @@
         return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
       case "compras":
         return cut(comprasVM().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
+      case "yesto":
+        // Repräsentative Motive je Thema (Emoji + „es — Übersetzung“).
+        return cut((yesto ? yesto.THEMES : []).map((th) => {
+          const it = th.items[0];
+          return { mark: it ? it.emoji : th.icon, text: `${it ? it.es : th.label} — ${i18n.nativeText(it || {})}` };
+        }));
       case "conjugacion":
         return cardSampleLines("verbos", CAP, "🔁");
       case "tiempos":
@@ -6659,6 +6890,8 @@
     else if (action === "teacher-import") { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); }
     else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
     else if (action === "teacher-clear") clearTeacher();
+    else if (action === "teacher-sort") setTeacherSort(el.dataset.key);
+    else if (action === "teacher-csv") exportRosterCSV();
     else if (action === "teacher-print") printTeacher();
     else if (action === "open-printsheet") openPrintSheet();
     else if (action === "printsheet-print") printSheet();
@@ -6813,6 +7046,11 @@
     else if (action === "start-conjug") startConjug();
     else if (action === "conjug-next") nextConjug();
     else if (action === "conjug-again") conjugAgain();
+    else if (action === "open-yesto") openYesto();
+    else if (action === "start-yesto") startYesto(el.dataset.id);
+    else if (action === "yesto-reveal") yestoReveal();
+    else if (action === "yesto-rate") yestoRate(el.dataset.known === "1");
+    else if (action === "yesto-again") yestoAgain();
     else if (action === "open-dialogos") openDialogosSetup();
     else if (action === "start-dialogos") startDialogos(el.dataset.id);
     else if (action === "dialogos-answer") answerDialogosMc(Number(el.dataset.idx));
@@ -6973,6 +7211,9 @@
     // Picker-Modal (data-action="pick-target"), nicht mehr über ein <select>.
     if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
     if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
+    // Klassenname (Modo profe): nur merken (für Druck-Kopf/CSV) – KEIN Re-Render,
+    // damit der Cursor beim Tippen nicht springt.
+    if (e.target && e.target.id === "teacher-classname") { setClassName(e.target.value); return; }
     // Aktivitätsblatt: Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
     if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; render(); return; }
     const el = e.target.closest('[data-action="select-country"]');
@@ -7181,6 +7422,7 @@
       precios: openPrecios,
       cuerpo: openCuerpo,
       compras: openCompras,
+      yesto: openYesto,
       conjugacion: openConjugacion,
       tiempos: openTiempos,
       paises: openInfo,

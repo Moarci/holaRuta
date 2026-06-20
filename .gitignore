@@ -6,6 +6,9 @@ tmp_*.js
 tmp_*.json
 .playwright-mcp/
 
+# E2E-Ausgabe (Screenshots/CSV aus scripts/e2e-modo-profe.mjs)
+scripts/.e2e-out/
+
 # Generierter Single-File-Build (Quelle = Module; via `node build.js`)
 HolaRuta.html
 

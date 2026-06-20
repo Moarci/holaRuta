@@ -2392,6 +2392,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .teacher-btn:active { transform: translateY(1px); }
 .teacher-summary { font-weight: 700; color: var(--brand-ink); margin: 10px 0; }
 .teacher-empty { color: var(--muted); margin: 12px 0; }
+
+/* Niveau-Verteilung: schlankes Balken-Dashboard über der Klassentabelle. */
+.leveldist { margin: 4px 0 14px; }
+.leveldist-h3 { font-family: var(--font-display); margin: 0 0 2px; font-size: 1.05rem; color: var(--ink); }
+.leveldist-rows { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.leveldist-row { display: grid; grid-template-columns: 3.2rem 1fr 2.4rem; align-items: center; gap: 8px; }
+.leveldist-label { font-weight: 800; color: var(--brand-ink); font-size: 0.92rem; }
+.leveldist-bar { height: 14px; background: var(--line); border-radius: 7px; overflow: hidden; }
+.leveldist-fill { display: block; height: 100%; min-width: 3px; background: var(--brand); border-radius: 7px;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.leveldist-count { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.leveldist-foot { margin: 8px 0 0; color: var(--muted); font-size: 0.9rem; }
+.leveldist-foot strong { color: var(--ink); }
+
+/* Modo profe – Klassenname-Feld, sortierbare Spaltenköpfe, Druck-Kopf. */
+.teacher-classname { display: flex; align-items: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+.teacher-classname__label { font-weight: 700; color: var(--brand-ink); }
+.teacher-classname .task-input { max-width: 22em; flex: 1 1 12em; }
+.teacher-sortbtn { font: inherit; font-weight: 800; color: var(--brand-ink); background: transparent; border: 0; padding: 0; cursor: pointer; white-space: nowrap; }
+.teacher-sortbtn:hover { text-decoration: underline; }
+.teacher-sortbtn.is-active { color: var(--brand); }
+.teacher-printhead { display: none; }
+@media print {
+  .teacher-printhead { display: block; margin: 0 0 12px; }
+  .teacher-printhead__title { display: block; font-size: 1.35rem; font-weight: 800; color: #1c140e; }
+  .teacher-printhead__meta { display: block; font-size: 0.85rem; color: #555; margin-top: 2px; }
+  .teacher-sortbtn { color: #1c140e !important; }
+}
 .teacher-tablewrap { overflow-x: auto; }
 .teacher-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 .teacher-table th, .teacher-table td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
@@ -2405,13 +2433,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .teacher-x:hover { color: var(--brand-ink); }
 @media print {
-  .teacher-actions, .teacher-x, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
+  .appbar, .teacher-actions, .teacher-x, .topbar, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
   .no-print, .sheet-controls,
   /* schwebende Overlays nie mitdrucken (Toasts, Update-Banner/-Scrim) */
   .btoast, .updbar, .upd-scrim, .tgt-scrim { display: none !important; }
   /* Aktivitätsblatt randlos, schwarz auf weiß drucken (unabhängig vom Theme). */
   .screen { padding: 0 !important; }
   .sheet { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; }
+  /* Klassentabelle für den Druck umbrechen lassen, damit ALLE Spalten (v. a.
+     das Niveau) auf A4 passen – overflow-x scrollt auf Papier nicht, es klippt sonst. */
+  .teacher-tablewrap { overflow: visible !important; }
+  .teacher-table { font-size: 0.72rem; }
+  /* white-space:normal lässt lange Köpfe an Leerzeichen umbrechen; KEIN
+     overflow-wrap:anywhere (das stapelt sonst einzelne Buchstaben senkrecht). */
+  .teacher-table th, .teacher-table td { white-space: normal; padding: 5px 6px; }
+  .teacher-packs { max-width: none; }
 }
 
 /* Druckbares Aktivitätsblatt (Lehrkraft/Coordinator). Bewusst feste, helle
@@ -3199,6 +3235,46 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .cj-prompt__verb { font-size: 2.4rem; font-weight: 800; line-height: 1.1; }
 .cj-prompt__person { font-size: 1.1rem; color: var(--muted); }
 .cj-cta--drill { margin-top: 8px; }
+
+/* ---- ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown) ---- */
+/* Themen-Auswahl: zweispaltige Kacheln (Emoji + Label + Anzahl). */
+.ye-themes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ye-theme {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  cursor: pointer; padding: 16px 10px; border-radius: var(--r-md); box-shadow: var(--shadow);
+}
+.ye-theme:active { transform: translateY(1px); }
+.ye-theme__icon { font-size: 2rem; line-height: 1; }
+.ye-theme__label { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
+.ye-theme__count { font-size: 0.8rem; color: var(--muted); }
+
+/* Bühne: großes Motiv-Emoji, ¿Y esto?, Countdown-Ring → Auflösung. */
+.ye-stage {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 24px 16px; min-height: 320px; justify-content: center;
+  border: 1.5px solid var(--line-strong); background: var(--surface);
+  border-radius: var(--r-lg); box-shadow: var(--shadow);
+}
+.ye-emoji { font-size: 7rem; line-height: 1; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.18)); }
+.ye-q { font-family: var(--font-display); font-weight: 800; font-size: 1.8rem; color: var(--brand); }
+.ye-think { font-size: 0.95rem; color: var(--muted); }
+.ye-count {
+  width: 76px; height: 76px; margin-top: 6px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 4px solid var(--brand); color: var(--brand);
+}
+.ye-count__num { font-family: var(--font-display); font-weight: 800; font-size: 2.4rem; line-height: 1; }
+.ye-stage.is-reveal .ye-emoji { font-size: 5.4rem; }
+.ye-word { font-family: var(--font-display); font-weight: 800; font-size: 2.4rem; line-height: 1.1; }
+.ye-native {
+  font-size: 1rem; color: var(--ink); background: var(--chip, var(--surface-2, rgba(0,0,0,0.06)));
+  padding: 4px 12px; border-radius: var(--r-pill, 999px);
+}
+.ye-rate { display: flex; gap: 10px; margin-top: 12px; }
+.ye-rate .cta { flex: 1 1 0; margin-top: 0; }
+.cta--ghost { background: transparent; color: var(--brand); border: 1.5px solid var(--brand); margin-top: 10px; }
+.cta--soft { background: var(--surface); color: var(--ink); border: 1.5px solid var(--line-strong); }
 
 /* ---- Diálogos (Gesprächs-Simulationen) ---- */
 .dlg-nospeak { font-size: 0.85rem; color: var(--muted); margin: 0 0 10px; }

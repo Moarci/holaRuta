@@ -27,7 +27,7 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
-      version: "1.103.0",
+      version: "1.106.0",
       date: "2026-06-20",
       title: "Neues Modul „Bailar“: Tanzen in Lateinamerika mit Schritt-Diagrammen",
       titleEn: "New module “Bailar”: dancing in Latin America with step diagrams",
@@ -36,6 +36,50 @@
       ],
       itemsEn: [
         "💃 “Discover” now has “Bailar”: the most important dances (salsa, bachata, merengue, cumbia, cha-cha-chá, tango, reggaetón) – each with a stylised step diagram on the floor whose footprints light up in dance order (with play/pause), the counting rhythm, tips & common mistakes, a short Spanish reading exercise and links to tutorial videos. Plus the phrases to ask someone to dance, dance etiquette and a glossary.",
+      ],
+    },
+    {
+      version: "1.105.0",
+      date: "2026-06-20",
+      title: "Modo profe stark verbessert: Niveau-Verteilung, Sortierung & CSV",
+      titleEn: "Teacher mode boosted: level distribution, sorting & CSV",
+      items: [
+        "📊 Die Klassenübersicht zeigt jetzt eine Niveau-Verteilung – wie viele Schüler:innen auf welcher CEFR-Stufe stehen: die Basis für die schnelle Gruppeneinteilung.",
+        "↕️ Die Klassentabelle lässt sich per Klick auf die Spaltenköpfe sortieren (Name, Gemeistert, Serie, Challenges, Pre-Trip, Niveau) – Standard ist jetzt nach Niveau.",
+        "📄 Neuer CSV-Export der Klassenliste (offline, Excel-tauglich) fürs Schul-Archiv – mit optionalem Klassennamen im Dateinamen.",
+        "🖨️ Optionaler Klassenname und ein Druck-Kopf (Name + Datum) machen den Ausdruck selbsterklärend; ein erneut importiertes Backup ersetzt jetzt den gleichnamigen Schüler statt eine Dublette anzulegen.",
+        "🔗 Im Profil verlinkt der Partner-Hinweis der ECOS-/WeRoad-Edition jetzt direkt auf die Partner-Homepage.",
+      ],
+      itemsEn: [
+        "📊 The class overview now shows a level distribution – how many students sit at each CEFR level: the basis for quickly forming groups.",
+        "↕️ The class table can be sorted by clicking the column headers (name, mastered, streak, challenges, pre-trip, level) – the default is now by level.",
+        "📄 New CSV export of the class list (offline, Excel-friendly) for the school archive – with an optional class name in the filename.",
+        "🖨️ An optional class name and a print header (name + date) make the printout self-explanatory; re-importing a backup now replaces the student with the same name instead of creating a duplicate.",
+        "🔗 In the profile, the partner credit of the ECOS/WeRoad edition now links directly to the partner's homepage.",
+      ],
+    },
+    {
+      version: "1.104.0",
+      date: "2026-06-20",
+      title: "Ruta-Pass-Stempel für „¿Y esto?“",
+      titleEn: "Ruta-Pass badges for “¿Y esto?”",
+      items: [
+        "👀 Der neue Modus „¿Y esto?“ zahlt jetzt auf den Ruta-Pass ein: eigene Stempel-Gruppe mit „¿Y esto?“ (erste Runde), „Ojo entrenado“ (10 Runden) und „Todo a la vista“ (eine Runde, in der du jedes Bild wusstest).",
+      ],
+      itemsEn: [
+        "👀 The new “¿Y esto?” mode now counts towards your Ruta-Pass: its own badge group with “¿Y esto?” (first round), “Trained eye” (10 rounds) and “Todo a la vista” (a round where you knew every picture).",
+      ],
+    },
+    {
+      version: "1.103.0",
+      date: "2026-06-20",
+      title: "Neuer Modus „¿Y esto?“ – Bild raten mit 3-2-1-Countdown",
+      titleEn: "New mode “¿Y esto?” – guess the picture with a 3-2-1 countdown",
+      items: [
+        "👀 Neu unter Entdecken → Spielen: „¿Y esto?“. Ein Motiv erscheint groß, ein kurzer Countdown läuft (3 · 2 · 1) – überlege, wie es auf Spanisch heißt. Bei 0 wird das Wort samt Übersetzung aufgelöst, und du bewertest dich selbst („Wusste ich“ / „Noch nicht“). Sechs Themen (Comida, Bebidas, Animales, De viaje, Naturaleza, En casa) mit je 8+ Motiven – ganz ohne Fotos, also weiter komplett offline.",
+      ],
+      itemsEn: [
+        "👀 New under Discover → Play: “¿Y esto?”. A picture appears, a short countdown runs (3 · 2 · 1) – think how it's called in Spanish. At 0 the word and its translation are revealed and you rate yourself (“I knew it” / “Not yet”). Six themes (food, drinks, animals, travel gear, nature, at home) with 8+ pictures each – no photos, so it stays fully offline.",
       ],
     },
     {

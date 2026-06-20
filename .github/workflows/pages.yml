@@ -1,8 +1,10 @@
 # Testet & veröffentlicht HolaRuta.
 #
 # Zwei Modi in EINEM Workflow:
-#  - Pull Request gegen main  → nur der `test`-Job läuft (Merge-Gate, kein Deploy).
-#  - Push auf main (oder manuell) → `test` + danach `deploy` auf GitHub Pages.
+#  - Pull Request gegen main  → `test` (Merge-Gate) + `e2e` (Browser-Check) laufen,
+#    kein Deploy.
+#  - Push auf main (oder manuell) → `test` + `e2e`, danach `deploy` auf GitHub Pages
+#    (der Deploy hängt nur am `test`-Job, nicht am Browser-`e2e`-Job).
 #
 # Damit bekommt die App eine feste Internet-Adresse (https://<user>.github.io/holaRuta/),
 # offline-fähig über den Service Worker. Kaputter Code wird so schon im PR gestoppt,
@@ -72,6 +74,49 @@ jobs:
         run: |
           node build.js
           git diff --exit-code service-worker.js
+
+  # Browser-E2E (Playwright): prüft den „Modo profe" (Lehrer-Modus) gegen die
+  # LAUFENDE App in echtem Chromium – Schüler-Import, Niveau-Verteilung,
+  # Sortierung, CSV-Export (inkl. Akzent-Namen), Re-Import-Dedupe und das
+  # A4-Druck-Layout (keine geklippten Spalten). Skript: scripts/e2e-modo-profe.mjs.
+  #
+  # Bewusst KEIN Deploy-Blocker: `deploy` hängt nur am schnellen, browserlosen
+  # `test`-Job; dieser e2e-Job ist ein zusätzliches PR-/Push-Signal (browser-
+  # basiert, daher etwas langsamer und potenziell seltener mal flaky).
+  #
+  # Playwright ist KEINE Repo-Dependency (das Projekt bleibt laufzeit-dependency-
+  # frei): hier flüchtig (--no-save) und versionsgepinnt installiert.
+  #
+  # Bewusst schlank gehalten. Erweiterungen NUR bei konkretem Bedarf nachrüsten
+  # (sonst zahlt man dauerhaft Komplexität für wenig Nutzen):
+  #   • Erforderlicher Merge-Check: erst schalten, wenn der Job über ~10–20 Läufe
+  #     stabil grün war (flaky Browser-Jobs als Hard-Gate blockieren sonst legitime
+  #     PRs). Setzen unter Settings → Branches → Required status checks: „e2e".
+  #   • Failure-Screenshots als Artefakt hochladen: erst, wenn ein rein VISUELLER
+  #     Layout-Bug aus dem Log-Report allein nicht klar wird (das Skript gibt Ist/
+  #     Soll bereits als Text aus). Bräuchte actions/upload-artifact – dann SHA
+  #     sauber nachschlagen (Repo pinnt Actions strikt per SHA, nicht per Tag).
+  #   • Browser-Caching (actions/cache auf ~/.cache/ms-playwright, Key = Playwright-
+  #     Version): erst, wenn CI-Dauer/-Minuten wirklich stören.
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+
+      - name: Install Playwright (gepinnt, nicht in package.json)
+        run: npm install --no-save playwright@1.56.1
+
+      - name: Install Chromium + system deps
+        run: npx playwright install --with-deps chromium
+
+      - name: Modo-profe E2E
+        run: npm run e2e
 
   deploy:
     needs: test

@@ -160,6 +160,7 @@
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
+    { action: "open-yesto",       icon: "👀", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
     { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
     { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
@@ -857,7 +858,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, bailar: vm.hasBailar, musica: vm.hasMusica, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, bailar: vm.hasBailar, musica: vm.hasMusica, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -3758,6 +3759,33 @@
       </section>`;
   }
 
+  // Kompaktes Balken-Dashboard der Niveau-Verteilung (CEFR-Stufen + „noch nicht
+  // getestet"). Gibt der Lehrkraft auf einen Blick die Gruppengrößen je Stufe.
+  // Reiner String-Renderer, druckbar (nur Inline-Breiten + .leveldist-* Klassen).
+  function renderLevelDist(d) {
+    if (!d || !d.total) return "";
+    const base = Math.max(d.max, 1); // größte Stufen-Gruppe füllt den Balken voll aus
+    const bars = d.buckets.map((b) => {
+      const pct = Math.round((b.count / base) * 100);
+      return `
+        <div class="leveldist-row">
+          <span class="leveldist-label">${esc(b.level)}</span>
+          <span class="leveldist-bar"><span class="leveldist-fill" style="width:${pct}%"></span></span>
+          <span class="leveldist-count" title="${esc(t("teacher.distCount", { n: b.count }))}">${b.count}</span>
+        </div>`;
+    }).join("");
+    const untested = d.untested
+      ? `<p class="leveldist-foot">${esc(t("teacher.distUntested"))}: <strong>${d.untested}</strong></p>`
+      : "";
+    return `
+      <div class="leveldist">
+        <h3 class="leveldist-h3">📊 ${esc(t("teacher.distHeading"))}</h3>
+        <p class="teacher-sub2">${esc(t("teacher.distHint"))}</p>
+        <div class="leveldist-rows">${bars}</div>
+        ${untested}
+      </div>`;
+  }
+
   // Lehrer-/Coordinator-Modus: Klassenübersicht aus importierten Schüler-Backups.
   // Backend-frei und offline – die Daten leben nur in dieser Sitzung. Reuse der
   // Screen-/Topbar-Struktur; Tabelle bewusst schlicht und druckbar (window.print).
@@ -3765,28 +3793,54 @@
     const actions = `
       <div class="teacher-actions">
         <button class="teacher-btn teacher-btn--main" data-action="teacher-import">📥 ${esc(t("teacher.importBtn"))}</button>
-        ${vm.count ? `<button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
+        ${vm.count ? `<button class="teacher-btn" data-action="teacher-csv">📄 ${esc(t("teacher.csvBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
         <button class="teacher-btn" data-action="teacher-clear">🗑️ ${esc(t("teacher.clearBtn"))}</button>` : ""}
       </div>
       <input type="file" id="teacher-file" accept="application/json,.json" multiple hidden>`;
 
+    // Klickbarer Spaltenkopf zum Sortieren; aktive Spalte trägt ▲/▼ je Richtung.
+    const arrow = (key) => vm.sortKey === key ? (vm.sortDir < 0 ? " ▼" : " ▲") : "";
+    const sortTh = (key, label, extra) => `
+      <th${extra || ""}><button type="button" class="teacher-sortbtn${vm.sortKey === key ? " is-active" : ""}"
+        data-action="teacher-sort" data-key="${key}" aria-label="${esc(t("teacher.sortBy", { col: label }))}">${esc(label)}${arrow(key)}</button></th>`;
+
+    // Druck-Kopf (nur im Ausdruck sichtbar): Klassenname + Datum machen das Blatt
+    // selbsterklärend, ohne den Bildschirm zu verstellen.
+    const printHead = vm.count ? `
+      <div class="teacher-printhead">
+        <span class="teacher-printhead__title">${esc(vm.className || t("teacher.printTitleDefault"))}</span>
+        <span class="teacher-printhead__meta">${esc(t("teacher.printDateLabel"))}: ${esc(vm.printDate)}</span>
+      </div>` : "";
+
+    // Optionaler Klassenname (steuert Druck-Kopf + CSV-Dateiname). Nicht mitgedruckt.
+    const classNameField = vm.count ? `
+      <label class="teacher-classname no-print">
+        <span class="teacher-classname__label">${esc(t("teacher.classNameLabel"))}</span>
+        <input id="teacher-classname" class="task-input" type="text" maxlength="60"
+          placeholder="${esc(t("teacher.classNamePh"))}" value="${esc(vm.className)}">
+      </label>` : "";
+
     const body = vm.count
       ? `
+      ${printHead}
       <p class="teacher-summary">${esc(t("teacher.classSummary", { n: vm.count, avg: vm.avgMastered, total: vm.totalCards }))}</p>
+      ${classNameField}
+      ${renderLevelDist(vm.levelDist)}
       <div class="teacher-tablewrap">
         <table class="teacher-table">
           <thead><tr>
-            <th>${esc(t("teacher.colName"))}</th>
-            <th>${esc(t("teacher.colMastered"))}</th>
-            <th>${esc(t("teacher.colStreak"))}</th>
-            <th>${esc(t("teacher.colChallenges"))}</th>
-            <th>${esc(t("teacher.colPretrip"))}</th>
-            <th>${esc(t("teacher.colLevel"))}</th>
+            ${sortTh("name", t("teacher.colName"))}
+            ${sortTh("mastered", t("teacher.colMastered"))}
+            ${sortTh("streak", t("teacher.colStreak"))}
+            ${sortTh("challenges", t("teacher.colChallenges"))}
+            ${sortTh("pretrip", t("teacher.colPretrip"))}
+            ${sortTh("level", t("teacher.colLevel"))}
             <th>${esc(t("teacher.colPacks"))}</th>
-            <th aria-label="${esc(t("teacher.remove"))}"></th>
+            <th class="no-print" aria-label="${esc(t("teacher.remove"))}"></th>
           </tr></thead>
           <tbody>
-            ${vm.students.map((s, i) => `
+            ${vm.students.map((s) => `
             <tr>
               <td class="teacher-name">${esc(s.name)}</td>
               <td>${s.cardsMastered} / ${s.totalCards}<span class="teacher-sub"> · ${esc(t("teacher.reviewed", { n: s.cardsReviewed }))}</span></td>
@@ -3795,7 +3849,7 @@
               <td>${s.pretripDays} / ${s.pretripMax}</td>
               <td>${(s.assessment || s.placement) ? `${esc((s.assessment || s.placement).level)}<span class="teacher-sub"> · ${Math.round(((s.assessment || s.placement).finalScore || 0) * 100)}%${s.assessment ? " 📋" : ""}</span>` : "—"}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
-              <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
+              <td class="no-print"><button class="teacher-x" data-action="teacher-remove" data-idx="${s._idx}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
           </tbody>
         </table>
@@ -3829,17 +3883,19 @@
     return `
       <section class="screen${withTab ? " screen--tabbed" : ""}">
         ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), withTab ? "open-task" : "home")}
-        <p class="hm-intro">${esc(t("teacher.intro"))}</p>
-        <div class="tip">${esc(t("teacher.privacy"))}</div>
+        <p class="hm-intro no-print">${esc(t("teacher.intro"))}</p>
+        <div class="tip no-print">${esc(t("teacher.privacy"))}</div>
         ${actions}
         ${body}
-        <hr class="teacher-sep">
-        ${taskForm}
-        <hr class="teacher-sep">
-        <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
-        <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
-        <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+        <div class="no-print">
+          <hr class="teacher-sep">
+          ${taskForm}
+          <hr class="teacher-sep">
+          <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
+          <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
+          <div class="teacher-actions">
+            <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+          </div>
         </div>
       </section>
       ${vm.targetPicker === "task" ? targetPickerModal("task", { targets: vm.taskTargets, bundles: vm.bundles, selectedKeys: vm.taskItemKeys, activeBundleIds: vm.activeBundleIds }) : ""}
@@ -4807,6 +4863,68 @@
     return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
+  // ---------- ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown) ----------
+  // Ein Motiv (großes Emoji) erscheint, ein kurzer Countdown läuft, dann wird das
+  // spanische Wort + Übersetzung aufgelöst und man bewertet sich selbst.
+  function renderYestoSetup(vm) {
+    if (!vm.available) {
+      return `
+        <section class="screen">
+          ${hmTopbar("👀 ¿Y esto?", "home")}
+          <p class="stat-empty">${esc(t("discover.yeUnavailable"))}</p>
+        </section>`;
+    }
+    const themes = vm.themes.map((th) => `
+      <button class="ye-theme" type="button" data-action="start-yesto" data-id="${esc(th.id)}">
+        <span class="ye-theme__icon" aria-hidden="true">${esc(th.icon)}</span>
+        <span class="ye-theme__label">${esc(th.label)}</span>
+        <span class="ye-theme__count">${esc(t("discover.yeCount", { n: th.count }))}</span>
+      </button>`).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("👀 ¿Y esto?", "home")}
+        <p class="hm-intro">${esc(t("discover.yeIntro"))}</p>
+        ${moduleShareBtn("yesto")}
+        <h3 class="prc-head">${esc(t("discover.yeChooseTheme"))}</h3>
+        <div class="ye-themes">${themes}</div>
+      </section>`;
+  }
+
+  function renderYesto(vm) {
+    const shown = vm.position + (vm.phase === "reveal" ? 1 : 0);
+    const pct = vm.total > 0 ? Math.round((shown / vm.total) * 100) : 0;
+    const stage = vm.phase !== "reveal"
+      ? `
+        <div class="ye-stage" role="group" aria-label="${esc(t("discover.yePromptHint"))}">
+          <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
+          <div class="ye-q">¿Y esto?</div>
+          <div class="ye-think">${esc(t("discover.yePromptHint"))}</div>
+          <div class="ye-count" aria-hidden="true"><span class="ye-count__num">${esc(String(vm.count))}</span></div>
+        </div>
+        <button class="cta cta--ghost" data-action="yesto-reveal">${esc(t("discover.yeReveal"))}</button>`
+      : `
+        <div class="ye-stage is-reveal" role="status" aria-live="assertive">
+          <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
+          <div class="ye-word" lang="es">${esc(vm.es)}</div>
+          <div class="ye-native">${esc(vm.native)}</div>
+        </div>
+        <div class="ye-rate">
+          <button class="cta cta--soft" data-action="yesto-rate" data-known="0">${esc(t("discover.yeUnknown"))}</button>
+          <button class="cta" data-action="yesto-rate" data-known="1">${vm.isLast ? esc(t("discover.yeKnownLast")) : esc(t("discover.yeKnown"))}</button>
+        </div>`;
+    return `
+      <section class="screen study">
+        ${hmTopbar("👀 ¿Y esto?", "open-yesto")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+        ${stage}
+      </section>`;
+  }
+
+  function renderYestoDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
+  }
+
   // ---------- DIÁLOGOS (Gesprächs-Simulationen) ----------
   // Reisesituation Zug für Zug: die Gegenseite (npc) spricht (links), der Nutzer
   // antwortet (rechts) per Multiple-Choice oder freiem Tippen. Die Verlaufsspur
@@ -5462,6 +5580,7 @@
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderConjugSetup, renderConjug, renderConjugDone,
+                   renderYestoSetup, renderYesto, renderYestoDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone,
                    placementCard, assessmentCard,

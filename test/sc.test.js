@@ -237,6 +237,84 @@ test("stats.overview: aggregiert Status, Quote und Zähler", () => {
   assert.equal(ov.rate, 50); // 2 correct / 4 seen
 });
 
+test("stats.levelDistribution: zählt CEFR-Stufen, Nivel-Test schlägt Quick-Check", () => {
+  const students = [
+    { assessment: { level: "B1" }, placement: { level: "A2" } }, // Nivel-Test hat Vorrang -> B1
+    { placement: { level: "A2" } },                              // nur Quick-Check -> A2
+    { placement: { level: "A2" } },                              // A2
+    { assessment: { level: "A0" } },                             // A0
+    { },                                                          // ungetestet
+  ];
+  const d = stats.levelDistribution(students);
+  assert.equal(d.total, 5);
+  assert.equal(d.tested, 4);
+  assert.equal(d.untested, 1);
+  assert.equal(d.max, 2); // A2 ist die größte Gruppe
+  // Belegte Stufen kommen in kanonischer CEFR-Reihenfolge (A0 < A2 < B1):
+  assert.deepEqual(d.buckets, [
+    { level: "A0", count: 1 },
+    { level: "A2", count: 2 },
+    { level: "B1", count: 1 },
+  ]);
+});
+
+test("stats.levelDistribution: leere/kaputte Eingaben sind robust", () => {
+  const empty = stats.levelDistribution([]);
+  assert.deepEqual(empty.buckets, []);
+  assert.equal(empty.total, 0);
+  assert.equal(empty.untested, 0);
+  assert.equal(empty.max, 0);
+  // Nicht-Array -> wie leer; ungültige level-Werte zählen als ungetestet.
+  assert.equal(stats.levelDistribution(null).total, 0);
+  const junk = stats.levelDistribution([{ placement: { level: 42 } }, { assessment: {} }]);
+  assert.equal(junk.tested, 0);
+  assert.equal(junk.untested, 2);
+});
+
+test("stats.sortRoster: Name/Mastered/Level mit Richtung, stabiler Tie-Break, ohne Mutation", () => {
+  const r = [
+    { name: "Bea", cardsMastered: 5, assessment: { level: "A2" } },
+    { name: "Ana", cardsMastered: 5, placement: { level: "B1" } },
+    { name: "Cid", cardsMastered: 9 }, // ungetestet
+  ];
+  const names = (key, dir) => stats.sortRoster(r, key, dir).map((s) => s.name);
+  assert.deepEqual(names("name", 1), ["Ana", "Bea", "Cid"]);
+  assert.deepEqual(names("name", -1), ["Cid", "Bea", "Ana"]);
+  // mastered absteigend: Cid(9) zuerst; Gleichstand 5 -> Tie-Break Name (Ana<Bea)
+  assert.deepEqual(names("mastered", -1), ["Cid", "Ana", "Bea"]);
+  // level aufsteigend: ungetestet(-1) < A2 < B1
+  assert.deepEqual(names("level", 1), ["Cid", "Bea", "Ana"]);
+  // unbekannter Schlüssel -> wie Name
+  assert.deepEqual(names("xxx", 1), ["Ana", "Bea", "Cid"]);
+  assert.equal(r[0].name, "Bea"); // Originalliste unverändert
+});
+
+test("stats.upsertStudent: ersetzt gleichnamigen Eintrag (case/whitespace-tolerant), sonst anhängen", () => {
+  const r1 = stats.upsertStudent([], { name: "Ana", cardsMastered: 1 });
+  assert.equal(r1.replaced, false);
+  assert.equal(r1.roster.length, 1);
+  const r2 = stats.upsertStudent(r1.roster, { name: " ana ", cardsMastered: 7 });
+  assert.equal(r2.replaced, true);
+  assert.equal(r2.roster.length, 1);
+  assert.equal(r2.roster[0].cardsMastered, 7);
+  const r3 = stats.upsertStudent(r2.roster, { name: "Bea" });
+  assert.equal(r3.replaced, false);
+  assert.equal(r3.roster.length, 2);
+});
+
+test("stats.rosterCSV: Header + Zeilen in fester Spaltenfolge, RFC-Quoting", () => {
+  const students = [
+    { name: "Ana, M.", assessment: { level: "B1", finalScore: 0.82 }, cardsMastered: 10, totalCards: 50, streak: 3, challenges: 2, pretripDays: 1, pretripMax: 7, masteredCats: ["Essen", "Taxi"] },
+    { name: 'Bo "X"', placement: { level: "A2", finalScore: 0.4 }, cardsMastered: 2, totalCards: 50, streak: 0, challenges: 0, pretripDays: 0, pretripMax: 7, masteredCats: [] },
+  ];
+  const lines = stats.rosterCSV(students, ["Name", "Niveau", "Score", "Gem", "Ges", "Serie", "Ch", "Pre", "Pakete"]).split("\r\n");
+  assert.equal(lines.length, 3);
+  assert.equal(lines[0], "Name,Niveau,Score,Gem,Ges,Serie,Ch,Pre,Pakete");
+  assert.equal(lines[1], '"Ana, M.",B1,82%,10,50,3,2,1/7,Essen; Taxi');
+  assert.equal(lines[2], '"Bo ""X""",A2,40%,2,50,0,0,0/7,');
+  assert.equal(stats.rosterCSV([], []), ""); // leer ohne Header
+});
+
 // ---------- badges ----------
 test("badges.buildMetrics: zählt gelernte/gemeisterte Karten und Kategorie-Anteile", () => {
   const cards = [
@@ -359,6 +437,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
     quizzesPlayed: 7, quizzesPerfect: 2,
+    yestoPlayed: 4, yestoPerfect: 1,
     frasesPlayed: 3, frasesPerfect: 1, frasesThemesDone: { transporte: true, comida: true },
     listenReviews: 30, preciosPlayed: 4, preciosPerfect: 2, preciosMillon: 1,
     conjugPlayed: 6, conjugPerfect: 3,
@@ -728,6 +807,43 @@ test("badges: ohne Quiz-Runden bleiben Quiz-Badges gesperrt", () => {
   const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {}));
   assert.ok(!ids.includes("quiz_first"));
   assert.ok(!ids.includes("quiz_perfect"));
+});
+
+// ---------- badges: ¿Y esto? (Bild-Vokabel-Modus) ----------
+test("badges.buildMetrics: ¿Y-esto?-Zähler übernommen", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    yestoPlayed: 4, yestoPerfect: 1,
+  });
+  assert.equal(m.yestoPlayed, 4);
+  assert.equal(m.yestoPerfect, 1);
+});
+
+test("badges: ¿Y-esto?-Badges schalten über die Zähler frei", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    yestoPlayed: 10, yestoPerfect: 1,
+  });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("yesto_first"));
+  assert.ok(ids.includes("yesto_10"));
+  assert.ok(ids.includes("yesto_perfect"));
+});
+
+test("badges: ohne ¿Y-esto?-Runden bleiben die Badges gesperrt", () => {
+  const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {}));
+  assert.ok(!ids.includes("yesto_first"));
+  assert.ok(!ids.includes("yesto_10"));
+  assert.ok(!ids.includes("yesto_perfect"));
+});
+
+test("badges: yesto_10 erst ab 10 Runden, yesto.group in GROUPS", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, { yestoPlayed: 9, yestoPerfect: 0 });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("yesto_first"));
+  assert.ok(!ids.includes("yesto_10"));
+  assert.ok(!ids.includes("yesto_perfect"));
+  // Die neue Badge-Gruppe muss in GROUPS existieren (sonst rendert der Ruta-Pass sie nicht).
+  assert.ok(badges.GROUPS.some((g) => g.id === "yesto"), "GROUPS enthält 'yesto'");
+  assert.equal(badges.byId("yesto_first").group, "yesto");
 });
 
 // ---------- Reise-Kontext (🧭) ----------

@@ -293,6 +293,9 @@
       // ----- Definiciones (Zuordnen-Quiz) -----
       quizzesPlayed: 0,     // abgeschlossene Quiz-Runden
       quizzesPerfect: 0,    // Quiz-Runden ohne Fehler
+      // ----- ¿Y esto? (Bild-Vokabel-Modus mit Countdown) -----
+      yestoPlayed: 0,       // abgeschlossene ¿Y-esto?-Runden
+      yestoPerfect: 0,      // Runden, in denen jedes Bild gewusst wurde
       // ----- Frases flexibles (Satzbaukasten) -----
       frasesPlayed: 0,      // abgeschlossene Satzbaukasten-Runden
       frasesPerfect: 0,     // Runden ohne Fehler
@@ -576,6 +579,8 @@
       challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
       quizzesPlayed: num(v.quizzesPlayed),
       quizzesPerfect: num(v.quizzesPerfect),
+      yestoPlayed: num(v.yestoPlayed),
+      yestoPerfect: num(v.yestoPerfect),
       frasesPlayed: num(v.frasesPlayed),
       frasesPerfect: num(v.frasesPerfect),
       frasesThemesDone: isPlainObject(v.frasesThemesDone) ? v.frasesThemesDone : {},

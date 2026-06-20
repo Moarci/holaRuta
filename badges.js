@@ -45,6 +45,7 @@
     { id: "context",  label: "Reise-Kontext", labelEn: "Travel context", icon: "🧭" },
     { id: "hostel",   label: "Modo hostal", labelEn: "Modo hostal", icon: "🛏️" },
     { id: "quiz",     label: "Definiciones", labelEn: "Definiciones", icon: "🧩" },
+    { id: "yesto",    label: "¿Y esto?",    labelEn: "¿Y esto?", icon: "👀" },
     { id: "construir",label: "Satzbaukasten", labelEn: "Sentence builder", icon: "🧱" },
     { id: "listening",label: "Hören",       labelEn: "Listening", icon: "👂" },
     { id: "cuerpo",   label: "El Cuerpo",   labelEn: "El Cuerpo", icon: "🧍" },
@@ -154,6 +155,14 @@
       description: "Schließe 10 Definiciones-Quizze ab.",       descriptionEn: "Complete 10 Definiciones quizzes.",      unlockedText: "Du erkennst Begriffe an ihrer Beschreibung – stark.", unlockedTextEn: "You can spot terms from their description – nice work." },
     { id: "quiz_perfect", group: "quiz", icon: "💯", name: "Sin errores",       nameEn: "Sin errores",     type: "counter", metric: "quizzesPerfect", threshold: 1,
       description: "Beende ein Quiz ohne Fehler.",              descriptionEn: "Finish a quiz without mistakes.",        unlockedText: "Fehlerfrei durchgespielt – alles richtig zugeordnet.", unlockedTextEn: "Played through flawlessly – everything matched correctly." },
+
+    // ---------- ¿Y esto? (Bild-Vokabel-Modus mit Countdown) ----------
+    { id: "yesto_first",   group: "yesto", icon: "👀", name: "¿Y esto?",          nameEn: "¿Y esto?",          type: "counter", metric: "yestoPlayed", threshold: 1,
+      description: "Schließe deine erste ¿Y-esto?-Runde ab.", descriptionEn: "Complete your first ¿Y esto? round.", unlockedText: "Du erkennst Wörter jetzt auch übers Bild – richtig gut.", unlockedTextEn: "You're recognising words from the picture now – nicely done." },
+    { id: "yesto_10",      group: "yesto", icon: "🖼️", name: "Ojo entrenado",      nameEn: "Trained eye",       type: "counter", metric: "yestoPlayed", threshold: 10,
+      description: "Schließe 10 ¿Y-esto?-Runden ab.",        descriptionEn: "Complete 10 ¿Y esto? rounds.",        unlockedText: "Bild gesehen, Wort parat – dein Auge ist trainiert.", unlockedTextEn: "Picture seen, word ready – your eye is trained." },
+    { id: "yesto_perfect", group: "yesto", icon: "💯", name: "Todo a la vista",    nameEn: "Todo a la vista",   type: "counter", metric: "yestoPerfect", threshold: 1,
+      description: "Beende eine ¿Y-esto?-Runde, in der du jedes Bild wusstest.", descriptionEn: "Finish a ¿Y esto? round where you knew every picture.", unlockedText: "Jedes Motiv auf Anhieb gewusst – glasklar.", unlockedTextEn: "Knew every picture straight away – crystal clear." },
 
     // ---------- Satzbaukasten (Frases flexibles) ----------
     { id: "frases_first",   group: "construir", icon: "🧱", name: "Erster Baustein",   nameEn: "First building block", type: "counter", metric: "frasesPlayed", threshold: 1,
@@ -272,6 +281,9 @@
       // Definiciones: abgeschlossene und fehlerfreie Quiz-Runden.
       quizzesPlayed: c.quizzesPlayed || 0,
       quizzesPerfect: c.quizzesPerfect || 0,
+      // ¿Y esto?: abgeschlossene und „alles gewusst"-Runden (Bild-Vokabel-Modus).
+      yestoPlayed: c.yestoPlayed || 0,
+      yestoPerfect: c.yestoPerfect || 0,
       // Frases flexibles (Satzbaukasten): abgeschlossene und fehlerfreie Runden
       // sowie distinkt abgeschlossene Themen (für den "Alle Themen"-Badge).
       frasesPlayed: c.frasesPlayed || 0,
