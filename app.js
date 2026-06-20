@@ -24,6 +24,7 @@
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
   const fotografia = window.SC.fotografia || null; // Fotos & Videos: tolle Reisebilder (optional)
+  const flirt = window.SC.flirt || null;         // Coqueteo y romance: flirten & daten unterwegs (optional)
   const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
   const musica = window.SC.musica || null;       // Música: Genres LatAm + Spotify/Apple-Deep-Links (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
@@ -61,7 +62,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'fotos' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
     homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -380,6 +381,7 @@
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
+      hasFlirt: !!flirt,         // Coqueteo y romance (flirten & daten unterwegs)
       hasBailar: !!bailar,       // Bailar (Tanzen in LatAm, Schritt-Diagramme)
       hasMusica: !!musica,       // Música (Genres LatAm + Spotify/Apple-Links)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
@@ -883,6 +885,22 @@
       apps: loc(fotografia.APPS || []),
       glossary: loc(fotografia.GLOSSARY || []),
       checklist: loc(fotografia.CHECKLIST || []),
+    };
+  }
+
+  // Coqueteo y romance: flirten & daten unterwegs (Ansprechen, Komplimente,
+  // Konsens, Date vorschlagen, Dating-Kultur, Sicherheit). Gleiches Schema und
+  // Pass-Through wie saludVM/logisticaVM.
+  function flirtVM() {
+    if (!flirt) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && flirt.INTRO_EN) ? flirt.INTRO_EN : flirt.INTRO,
+      topics: loc(flirt.TOPICS || []),
+      phrases: loc(flirt.PHRASES || []),
+      glossary: loc(flirt.GLOSSARY || []),
+      checklist: loc(flirt.CHECKLIST || []),
     };
   }
 
@@ -2983,6 +3001,7 @@
     else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
     else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
+    else if (state.screen === "flirt") root.innerHTML = ui.renderFlirt(flirtVM());
     else if (state.screen === "fotos") root.innerHTML = ui.renderFotos(fotosVM());
     else if (state.screen === "bailar") root.innerHTML = ui.renderBailar(bailarVM());
     else if (state.screen === "musica") root.innerHTML = ui.renderMusica(musicaVM());
@@ -5845,7 +5864,7 @@
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
-    fotos: !!fotografia, bailar: !!bailar, musica: !!musica,
+    fotos: !!fotografia, flirt: !!flirt, bailar: !!bailar, musica: !!musica,
     bebidas: !!(bebidas && countries),
     yesto: !!(yesto && yesto.THEMES && yesto.THEMES.length),
   };
@@ -5946,6 +5965,7 @@
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
     pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
+    pageMod(flirt, "💘", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
 
     // Bailar (Tanzen): eigener Indexer, weil die Tänze als DANCES (Feld „name")
     // statt als TOPICS strukturiert sind. Ein Treffer je Tanz bringt die ganze
@@ -6105,6 +6125,12 @@
   function openFotos() {
     dismissBadgeToast();
     state.screen = "fotos";
+    render();
+  }
+
+  function openFlirt() {
+    dismissBadgeToast();
+    state.screen = "flirt";
     render();
   }
 
@@ -6633,6 +6659,7 @@
     logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
     salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
     fotos:     { kicker: "Fotos y videos",    icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
+    flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
   };
 
@@ -6643,6 +6670,7 @@
               : cat === "logistica" ? (logistica && logistica.TOPICS)
               : cat === "salud" ? (salud && salud.TOPICS)
               : cat === "fotos" ? (fotografia && fotografia.TOPICS)
+              : cat === "flirt" ? (flirt && flirt.TOPICS)
               : cat === "bailar" ? (bailar && bailar.DANCES)
               : null;
     const meta = TIPS_META[cat];
@@ -6714,6 +6742,7 @@
     logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
     salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
     fotos:         { icon: "📸", title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
+    flirt:         { icon: "💘", title: "Coqueteo y romance",   sub: "discover.subFlirt",         accent: ["#D24A77", "#B05AA8"] },
     bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
     musica:        { icon: "🎵", title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
   };
@@ -6793,6 +6822,8 @@
         return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
       case "fotos":
         return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
+      case "flirt":
+        return cut((flirtVM().topics || []).map((tp) => ({ mark: tp.icon || "💘", text: tp.title })));
       case "bailar":
         return cut((bailarVM().dances || []).map((d) => ({ mark: d.icon || "💃", text: d.name })));
       case "musica":
@@ -6962,6 +6993,7 @@
     else if (action === "open-regatear") openRegatear();
     else if (action === "open-logistica") openLogistica();
     else if (action === "open-salud") openSalud();
+    else if (action === "open-flirt") openFlirt();
     else if (action === "open-fotos") openFotos();
     else if (action === "open-bailar") openBailar();
     else if (action === "open-musica") openMusica();
@@ -7430,6 +7462,7 @@
       logistica: openLogistica,
       salud: openSalud,
       fotos: openFotos,
+      flirt: openFlirt,
       bailar: openBailar,
       musica: openMusica,
       historia: () => openHistoria("sur"),

@@ -176,6 +176,7 @@
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
     { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
+    { action: "open-flirt",       icon: "💘", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
     { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
     { action: "open-musica",      icon: "🎵", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
@@ -858,7 +859,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, bailar: vm.hasBailar, musica: vm.hasMusica, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, flirt: vm.hasFlirt, bailar: vm.hasBailar, musica: vm.hasMusica, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -3142,7 +3143,19 @@
       (items || [])
         .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
         .join("");
-    const topicBlock = (tp, i) => `
+    const topicBlock = (tp, i) => {
+      // Optionales spanisches Lesetraining pro Thema (wie renderFotos): nur wenn
+      // das Modul es einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text
+      // trägt. Die Tap-/Quiz-Logik ist global (hist-word/hist-quiz-answer), also
+      // genügt es, dieselbe DOM via readingBlock zu erzeugen.
+      const lvl = (cfg.readingPerTopic && tp.es && tp.es.length) ? levelMeta(tp.level) : null;
+      const reading = (cfg.readingPerTopic && tp.es && tp.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
+           </details>`
+        : "";
+      return `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
           <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
@@ -3153,9 +3166,11 @@
           ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
           ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
           ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${reading}
           ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
         </div>
       </details>`;
+    };
     const topics = (vm.topics || []).map(topicBlock).join("");
 
     // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Regatear.
@@ -3230,6 +3245,18 @@
       headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
       headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
       headChecklistHint: "discover.sdChecklistHint",
+    });
+  }
+
+  // Coqueteo y romance: ins Gespräch kommen, Komplimente, Konsens, Date
+  // vorschlagen, Dating-Kultur, sicher daten. Gleiches Sheet wie Salud/Logística.
+  function renderFlirt(vm) {
+    return moduleSheet(vm, {
+      icon: "💘", title: "Coqueteo y romance", cat: "flirt",
+      headTips: "discover.flTips", headPhrases: "discover.flPhrases",
+      headWords: "discover.flWords", headChecklist: "discover.flChecklist",
+      headChecklistHint: "discover.flChecklistHint",
+      readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
     });
   }
 
@@ -5574,7 +5601,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

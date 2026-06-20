@@ -47,6 +47,7 @@
     { id: "dieta", label: "Vegetarisch & Allergien", labelEn: "Veggie & Allergies", icon: "🥗", grad: ["#3F7355", "#6BA368"], group: "food" },
     { id: "playa", label: "Strand & Wassersport", labelEn: "Beach & Water Sports", icon: "🏖️", grad: ["#1C8AA6", "#3FB6C9"], group: "travel" },
     { id: "noche", label: "Nachtleben", labelEn: "Nightlife", icon: "🎉", grad: ["#7048E8", "#B5179E"], group: "people" },
+    { id: "coqueteo", label: "Flirten & Romantik", labelEn: "Flirting & Romance", icon: "💘", grad: ["#D24A77", "#B05AA8"], group: "people" },
     { id: "clima", label: "Wetter", labelEn: "Weather", icon: "🌦️", grad: ["#3E7CA8", "#5A9BC4"], group: "basics" },
     { id: "auto", label: "Mietwagen", labelEn: "Car Rental", icon: "🚗", grad: ["#3F6BA8", "#5A8BC4"], group: "travel" },
     { id: "farmacia", label: "Apotheke & Arzt", labelEn: "Pharmacy & Doctor", icon: "🩺", grad: ["#2E7D8C", "#4AA6B5"], group: "travel" },
@@ -2656,6 +2657,20 @@
     { id: "bo38", cat: "bolivia", lvl: 1, de: "Wie heißt sie in ihrer Cholita-Tracht?", en: "What's her name, in her cholita dress?", es: "¿Cómo se llama ella, con su traje de cholita?", tip: "„cholita“ = Aymara-Frau im traditionellen Rock und Hut", tipEn: "'cholita' = Aymara woman in the traditional skirt and hat" },
     { id: "bo39", cat: "bolivia", lvl: 1, de: "Ist diese Gegend nachts sicher?", en: "Is this area safe at night?", es: "¿Esta zona es segura de noche?", tip: "nachts lieber ein Funktaxi (radio taxi) nehmen", tipEn: "at night prefer a radio taxi" },
     { id: "bo40", cat: "bolivia", lvl: 2, de: "Es war wunderschön. Es lebe Bolivien!", en: "It was beautiful. Long live Bolivia!", es: "Fue hermoso. ¡Jallalla Bolivia!", tip: "„¡Jallalla!“ = Aymara/Quechua-Hochruf der Freude", tipEn: "'¡Jallalla!' = Aymara/Quechua cheer of joy" },
+
+    // ---------- Coqueteo y romance: flirten & daten mit Respekt (Konsens zuerst) ----------
+    { id: "cq01", cat: "coqueteo", lvl: 1, de: "Magst du tanzen?", en: "Do you want to dance?", es: "¿Quieres bailar?", tip: "KYE-res bai-LAR", tipEn: "KYE-res bai-LAR" },
+    { id: "cq02", cat: "coqueteo", lvl: 1, de: "Darf ich dich auf einen Kaffee einladen?", en: "Can I buy you a coffee?", es: "¿Te puedo invitar a un café?", tip: "te PUE-do in-bi-TAR a un ka-FE", tipEn: "te PUE-do in-bi-TAR a un ka-FE" },
+    { id: "cq03", cat: "coqueteo", lvl: 1, de: "Ich mag dich. (romantisch)", en: "I like you. (romantically)", es: "Me gustas.", tip: "me GUS-tas", tipEn: "me GUS-tas" },
+    { id: "cq04", cat: "coqueteo", lvl: 1, de: "Du hast ein sehr schönes Lächeln.", en: "You have a really lovely smile.", es: "Tienes una sonrisa muy linda.", tip: "TYE-nes una son-RI-sa muy LIN-da", tipEn: "TYE-nes una son-RI-sa muy LIN-da" },
+    { id: "cq05", cat: "coqueteo", lvl: 2, de: "Hättest du Lust, etwas trinken zu gehen?", en: "Would you like to go out for a drink?", es: "¿Te gustaría salir a tomar algo?", tip: "te gus-ta-RI-a sa-LIR a to-MAR AL-go", tipEn: "te gus-ta-RI-a sa-LIR a to-MAR AL-go" },
+    { id: "cq06", cat: "coqueteo", lvl: 2, de: "Ist es okay, wenn ich dich küsse?", en: "Is it okay if I kiss you?", es: "¿Está bien si te doy un beso?", tip: "es-TA byen si te doy un BE-so", tipEn: "es-TA byen si te doy un BE-so" },
+    { id: "cq07", cat: "coqueteo", lvl: 1, de: "Gibst du mir dein WhatsApp?", en: "Can I have your WhatsApp?", es: "¿Me das tu WhatsApp?", tip: "me das tu uats-AP", tipEn: "me das tu uats-AP" },
+    { id: "cq08", cat: "coqueteo", lvl: 2, de: "Ganz unverbindlich.", en: "No pressure / no strings.", es: "Sin compromiso.", tip: "sin kom-pro-MI-so", tipEn: "sin kom-pro-MI-so" },
+    { id: "cq09", cat: "coqueteo", lvl: 1, de: "Ich bin vergeben.", en: "I'm with someone.", es: "Estoy con alguien.", tip: "es-TOY kon AL-gyen", tipEn: "es-TOY kon AL-gyen" },
+    { id: "cq10", cat: "coqueteo", lvl: 1, de: "Nein danke, ich habe kein Interesse.", en: "No thanks, I'm not interested.", es: "No, gracias, no me interesa.", tip: "no GRA-syas, no me in-te-RE-sa", tipEn: "no GRA-syas, no me in-te-RE-sa" },
+    { id: "cq11", cat: "coqueteo", lvl: 1, de: "Lass mich bitte in Ruhe.", en: "Please leave me alone.", es: "Déjame en paz, por favor.", tip: "DE-ha-me en pas, por fa-BOR", tipEn: "DE-ha-me en pas, por fa-BOR" },
+    { id: "cq12", cat: "coqueteo", lvl: 2, de: "Ich hatte eine sehr schöne Zeit mit dir.", en: "I had a really nice time with you.", es: "La pasé muy bien contigo.", tip: "la pa-SE muy byen kon-TI-go", tipEn: "la pa-SE muy byen kon-TI-go" },
   ];
 
   /*

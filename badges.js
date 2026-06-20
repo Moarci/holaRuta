@@ -63,6 +63,7 @@
     { category: "hotel",   icon: "🔑", name: "Check-in Champion",    nameEn: "Check-in Champion",    description: "Meistere 80 % der Hotel-Karten.", descriptionEn: "Master 80% of the hotel cards." },
     { category: "hostel",  icon: "🛏️", name: "Dorm Diplomat",        nameEn: "Dorm Diplomat",        description: "Meistere 80 % der Hostel-Karten.", descriptionEn: "Master 80% of the hostel cards." },
     { category: "social",  icon: "👋", name: "Neue Bekanntschaften", nameEn: "New acquaintances",    description: "Meistere 80 % der Social-Karten.", descriptionEn: "Master 80% of the social cards." },
+    { category: "coqueteo", icon: "💘", name: "Corazón viajero",     nameEn: "Travelling heart",     description: "Meistere 80 % der Flirt-&-Romantik-Karten.", descriptionEn: "Master 80% of the flirting & romance cards." },
     { category: "verkehr", icon: "🚌", name: "Busbahnhof-Boss",     nameEn: "Bus station boss",     description: "Meistere 80 % der Verkehr-Karten.", descriptionEn: "Master 80% of the transport cards." },
     { category: "compras", icon: "🛍️", name: "Markt-Meister",       nameEn: "Market master",        description: "Meistere 80 % der Einkaufen-Karten.", descriptionEn: "Master 80% of the shopping cards." },
     { category: "dinero",  icon: "💵", name: "Peso-Profi",          nameEn: "Peso pro",             description: "Meistere 80 % der Geld-Karten.", descriptionEn: "Master 80% of the money cards." },

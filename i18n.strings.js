@@ -677,6 +677,7 @@
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
     subFotos: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen",
+    subFlirt: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit",
     subBailar: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos",
     subMusica: "Der Soundtrack LatAms – mit Spotify & Apple Music",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
@@ -807,6 +808,13 @@
     sdWords: "🗣️ Wörter rund um Essen, Trinken & Apotheke",
     sdChecklist: "🎒 Gesund-unterwegs-Kit",
     sdChecklistHint: "Ein paar günstige Sachen, mit denen Essen, Trinken und der Bauch unterwegs funktionieren.",
+
+    // Coqueteo y romance
+    flTips: "💝 Flirten & daten mit Respekt",
+    flPhrases: "💬 Wichtige Sätze",
+    flWords: "🗣️ Wörter rund ums Flirten & Daten",
+    flChecklist: "🛡️ Date- & Sicherheits-Kit",
+    flChecklistHint: "Ein paar einfache Gewohnheiten, mit denen ein Date entspannt und sicher bleibt.",
 
     // Fotos y videos
     ftTips: "🎯 Tolle Bilder machen",
@@ -1087,6 +1095,7 @@
     subLogistica: "SIM, money & luggage – arrive smart and safe",
     subSalud: "Stay healthy & fit: food, drink, movement",
     subFotos: "Great travel shots: subject, light, poses & sharing",
+    subFlirt: "Flirting & dating with respect: opening lines, compliments, a date, safety",
     subBailar: "Dancing in LatAm: step diagrams, rhythm & videos",
     subMusica: "The soundtrack of Latin America – with Spotify & Apple Music",
     subBebidas: "What people drink morning and evening – country by country",
@@ -1212,6 +1221,13 @@
     sdWords: "🗣️ Words for food, drink & the pharmacy",
     sdChecklist: "🎒 Stay-healthy kit",
     sdChecklistHint: "A few cheap things that keep eating, drinking and your stomach working on the road.",
+
+    // Coqueteo y romance
+    flTips: "💝 Flirting & dating with respect",
+    flPhrases: "💬 Important phrases",
+    flWords: "🗣️ Words for flirting & dating",
+    flChecklist: "🛡️ Dating & safety kit",
+    flChecklistHint: "A few simple habits that keep a date relaxed and safe.",
 
     // Fotos y videos
     ftTips: "🎯 Take great shots",
