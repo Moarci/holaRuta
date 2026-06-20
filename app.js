@@ -6690,6 +6690,213 @@
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
   let lastSwipeAt = 0;
 
+  // Aktions-Dispatch-Tabelle: action-Name -> Handler(el). Ersetzt die fruehere
+  // lange if/else-Kette in onClick(). Reihenfolge ohne Bedeutung (Lookup statt
+  // Kette). Die DOM-naheen Sonderfaelle (hist-word, hist-quiz-answer, scroll-to)
+  // bleiben bewusst direkt in onClick(), da sie e/preventDefault brauchen.
+  const ACTIONS = {
+    "set-mode": (el) => { setMode(el.dataset.mode); },
+    "set-speech-rate": (el) => { setSpeechRate(Number(el.dataset.rate)); },
+    "set-theme": (el) => { setTheme(el.dataset.theme); },
+    "set-dir": (el) => { setDir(el.dataset.dir); },
+    "set-celebrate-sound": (el) => { setCelebrateSound(el.dataset.on === "1"); },
+    "set-ui-lang": (el) => { setUiLang(el.dataset.lang); },
+    "set-level": (el) => { toggleLevel(Number(el.dataset.level)); },
+    "study-all": (el) => { startStudy("all"); },
+    "open-category": (el) => { startStudy(el.dataset.id); },
+    "ruta-del-dia": (el) => { openRutaDelDia(); },
+    "open-preset": (el) => { startPreset(el.dataset.preset); },
+    "open-pretrip": (el) => { { state.pretripLock = null; openPretrip(); } },
+    "set-pretrip-scope": (el) => { setPretripScope(el.dataset.scope); },
+    "start-pretrip-day": (el) => { startPretripDay(Number(el.dataset.day)); },
+    "open-teacher": (el) => { openTeacher(); },
+    "teacher-import": (el) => { { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); } },
+    "teacher-remove": (el) => { removeTeacherStudent(Number(el.dataset.idx)); },
+    "teacher-clear": (el) => { clearTeacher(); },
+    "teacher-sort": (el) => { setTeacherSort(el.dataset.key); },
+    "teacher-csv": (el) => { exportRosterCSV(); },
+    "teacher-print": (el) => { printTeacher(); },
+    "open-printsheet": (el) => { openPrintSheet(); },
+    "printsheet-print": (el) => { printSheet(); },
+    "sheet-mode": (el) => { { state.sheetMode = el.dataset.mode; render(); } },
+    "open-target-picker": (el) => { { state.targetPicker = el.dataset.ctx; render(); } },
+    "close-target-picker": (el) => { { state.targetPicker = null; render(); } },
+    "target-stop": (el) => { { /* Klick auf die Modal-Karte: nicht schließen */ } },
+    "pick-target": (el) => { pickTarget(el.dataset.ctx, el.dataset.value); },
+    "apply-bundle": (el) => { toggleBundle(el.dataset.bundle); },
+    "clear-task-sel": (el) => { clearTaskSelection(); },
+    "task-generate": (el) => { generateTask(); },
+    "task-copy": (el) => { copyTaskCode(); },
+    "copy-phrase": (el) => { copyPhrase(el); },
+    "task-copy-link": (el) => { copyTaskLink(); },
+    "task-paste": (el) => { pasteTaskCode(); },
+    "open-task": (el) => { openTaskScreen(); },
+    "back-pretrip": (el) => { openPretrip(); },
+    "back-task": (el) => { openTaskScreen(); },
+    "task-open": (el) => { openTaskFromInput(); },
+    "task-start": (el) => { startSubscribedTask(Number(el.dataset.idx)); },
+    "task-remove": (el) => { removeSubscribedTask(Number(el.dataset.idx)); },
+    "open-placement": (el) => { openPlacement(); },
+    "placement-start": (el) => { startPlacementTest(); },
+    "placement-choose": (el) => { placementChoose(Number(el.dataset.index)); },
+    "placement-unknown": (el) => { placementUnknown(); },
+    "placement-free-submit": (el) => { placementSubmitFree(); },
+    "placement-retake": (el) => { openPlacement(state.placement && state.placement.fromOnboarding); },
+    "open-assessment": (el) => { openAssessment(); },
+    "assessment-resume": (el) => { resumeAssessment(); },
+    "assessment-start": (el) => { startAssessmentTest(el.dataset.variant); },
+    "assessment-choose": (el) => { assessmentChoose(Number(el.dataset.index)); },
+    "assessment-unknown": (el) => { assessmentUnknown(); },
+    "assessment-free-submit": (el) => { assessmentSubmitFree(); },
+    "assessment-listen-play": (el) => { speakCurrentAssessment(); },
+    "assessment-retake": (el) => { openAssessment(); },
+    "trip-edit": (el) => { toggleTripEdit(); },
+    "add-trip-stop": (el) => { addTripStop(el.dataset.country, el.dataset.dest, el.dataset.flag); },
+    "remove-trip-stop": (el) => { removeTripStop(Number(el.dataset.index)); },
+    "toggle-trip-route": (el) => { { state.tripRouteOpen = state.tripRouteOpen === false; render(); } },
+    "toggle-trip-switch": (el) => { { state.tripSwitchOpen = !state.tripSwitchOpen; render(); } },
+    "drag-trip-stop": (el) => { { /* Ziehen wird über die Pointer-Handler erledigt; ein reiner Tap macht nichts */ } },
+    "trip-clear": (el) => { clearTripGoal(); },
+    "manage-trip": (el) => { openTripManage(); },
+    "set-gender": (el) => { saveUserGender(el.dataset.gender); }, // ♀/♂ (Onboarding + Profil)
+    "onboard-slide-next": (el) => { advanceOnboardSlide(); }, // Erklär-Slide weiter (letzter -> Profil)
+    "onboard-slide-skip": (el) => { onboardSlidesToProfile(); }, // Erklär-Slides überspringen -> Profil
+    "onboard-slide-go": (el) => { goToOnboardSlide(el.dataset.idx); }, // Punkt-Navigation zu Slide N
+    "skip-onboarding": (el) => { openPlacement(true); }, // Trip übersprungen -> trotzdem Ruta-Check anbieten
+    "placement-skip": (el) => { finishOnboarding(); }, // Ruta-Check im Onboarding überspringen -> fertig
+    "placement-finish": (el) => { finishOnboarding(); }, // Ruta-Check fertig (aus Onboarding) -> Dashboard
+    "resume-last": (el) => { resumeLast(); },
+    "set-tab": (el) => { setTab(el.dataset.tab); },
+    "open-search": (el) => { openSearch(); },
+    "search-clear": (el) => { clearSearch(); },
+    "search-country": (el) => { openSearchCountry(el.dataset.id); },
+    "flip": (el) => { flip(); },
+    "toggle-context": (el) => { toggleContext(); },
+    "rate": (el) => { rate(el.dataset.rating); },
+    "skip": (el) => { skip(); },
+    "speak": (el) => { speakCurrent(); },
+    "open-stats": (el) => { goStats(); },
+    "open-badges": (el) => { openBadges(); },
+    "open-info": (el) => { openInfo(); },
+    "open-historia": (el) => { openHistoria("sur"); },
+    "open-historia-centro": (el) => { openHistoria("centro"); },
+    "open-knigge": (el) => { openKnigge(); },
+    "open-bebidas": (el) => { openBebidas(); },
+    "toggle-bebida": (el) => { toggleBebida(); },
+    "open-regatear": (el) => { openRegatear(); },
+    "open-logistica": (el) => { openLogistica(); },
+    "open-salud": (el) => { openSalud(); },
+    "open-flirt": (el) => { openFlirt(); },
+    "open-fotos": (el) => { openFotos(); },
+    "open-bailar": (el) => { openBailar(); },
+    "open-musica": (el) => { openMusica(); },
+    "set-stats-filter": (el) => { setStatsFilter(el.dataset.filter); },
+    "reset-progress": (el) => { resetProgress(); },
+    "open-card": (el) => { openCard(el.dataset.id, el.dataset.back || "stats"); },
+    "study-one": (el) => { studyOne(el.dataset.id); },
+    "card-back": (el) => { (state.backTo === "home" ? goHome() : state.backTo === "search" ? openSearch() : goStats()); },
+    "open-editor": (el) => { openEditor(); },
+    "export-data": (el) => { exportData(); },
+    "cloud-sync": (el) => { cloudSync(); },
+    "open-social": (el) => { openSocial(); },
+    "social-login": (el) => { socialLogin(); },
+    "social-refresh": (el) => { refreshSocial(); },
+    "social-add-friend": (el) => { socialAddFriend(); },
+    "social-remove": (el) => { socialRemoveFriend(el.dataset.id); },
+    "social-copy-code": (el) => { socialCopyCode(); },
+    "import-data": (el) => { startImport(); },
+    "dismiss-notice": (el) => { el.remove(); },
+    "dismiss-update": (el) => { dismissUpdateNotice(); },
+    "reload-app": (el) => { location.reload(); },
+    "apply-update": (el) => { applyUpdate(); },
+    "dismiss-sw-update": (el) => { dismissSwUpdate(); },
+    "upd-stop": (el) => { { /* Klick auf die Hinweis-Karte: nicht schließen */ } },
+    "install-app": (el) => { installApp(); },
+    "delete-card": (el) => { deleteCard(el.dataset.id); },
+    "share-stats": (el) => { shareStats(); },
+    "share-rank": (el) => { shareRank(); },
+    "share-placement": (el) => { sharePlacement(); },
+    "share-assessment": (el) => { shareAssessment(); },
+    "share-card": (el) => { shareCard(); },
+    "share-historia": (el) => { shareHistoria(el.dataset.id); },
+    "share-hist-module": (el) => { shareHistModule(); },
+    "share-tips": (el) => { shareTips(el.dataset.cat, Number(el.dataset.idx)); },
+    "share-country": (el) => { shareCountry(); },
+    "share-module": (el) => { shareModule(el.dataset.mod); },
+    "share-badge": (el) => { shareBadge(el.dataset.id); },
+    "set-share-format": (el) => { setShareFormat(el.dataset.format); },
+    "open-hostel": (el) => { openHostel(); },
+    "open-battle-setup": (el) => { openBattleSetup(); },
+    "coordinator-round": (el) => { startCoordinatorRound(); },
+    "set-battle-length": (el) => { setBattleLength(Number(el.dataset.len)); },
+    "start-battle": (el) => { startBattle(el.dataset.scene); },
+    "battle-reveal": (el) => { battleReveal(); },
+    "battle-score": (el) => { battleScore(Number(el.dataset.points)); },
+    "battle-sudden-death": (el) => { battleSuddenDeath(); },
+    "battle-again": (el) => { battleAgain(); },
+    "challenge-done": (el) => { markChallengeDone(el.dataset.id); },
+    "open-roleplay-setup": (el) => { openRoleplaySetup(); },
+    "start-roleplay": (el) => { startRoleplay(el.dataset.id); },
+    "roleplay-swap": (el) => { roleplaySwap(); },
+    "open-quiz-setup": (el) => { openQuizSetup(); },
+    "start-quiz": (el) => { startQuiz(el.dataset.set); },
+    "quiz-answer": (el) => { answerQuiz(el.dataset.id); },
+    "quiz-next": (el) => { nextQuiz(); },
+    "quiz-again": (el) => { quizAgain(); },
+    "open-cuerpo": (el) => { openCuerpo(); },
+    "open-conjugacion": (el) => { openConjugacion(); },
+    "open-tiempos": (el) => { openTiempos(); },
+    "cuerpo-select": (el) => { { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); } },
+    "cuerpo-rotate": (el) => { rotateBody(Number(el.dataset.dir)); },
+    "cuerpo-speak": (el) => { speakBodyPart(); },
+    "open-spickzettel": (el) => { openSpickzettel(); },
+    "sz-show": (el) => { szShow(el.dataset.id); },
+    "sz-close": (el) => { szClose(); },
+    "speak-card": (el) => { speakCardId(el.dataset.id); },
+    "open-precios": (el) => { openPrecios(); },
+    "precios-currency": (el) => { setPreciosCurrency(el.dataset.id); },
+    "precios-level": (el) => { setPreciosLevel(el.dataset.level); },
+    "start-precios": (el) => { startPrecios(); },
+    "precios-next": (el) => { nextPrecios(); },
+    "precios-again": (el) => { preciosAgain(); },
+    "precios-setup": (el) => { openPrecios(); },
+    "precios-speak": (el) => { speakPrecios(); },
+    "open-frases": (el) => { openFrasesSetup(); },
+    "start-frases": (el) => { startFrases(el.dataset.set); },
+    "frases-answer": (el) => { answerFrases(Number(el.dataset.idx)); },
+    "frases-next": (el) => { nextFrases(); },
+    "frases-again": (el) => { frasesAgain(); },
+    "open-conjug-drill": (el) => { openConjugDrill(); },
+    "conjug-level": (el) => { setConjugLevel(el.dataset.level); },
+    "start-conjug": (el) => { startConjug(); },
+    "conjug-next": (el) => { nextConjug(); },
+    "conjug-again": (el) => { conjugAgain(); },
+    "open-yesto": (el) => { openYesto(); },
+    "start-yesto": (el) => { startYesto(el.dataset.id); },
+    "yesto-reveal": (el) => { yestoReveal(); },
+    "yesto-rate": (el) => { yestoRate(el.dataset.known === "1"); },
+    "yesto-again": (el) => { yestoAgain(); },
+    "open-dialogos": (el) => { openDialogosSetup(); },
+    "start-dialogos": (el) => { startDialogos(el.dataset.id); },
+    "dialogos-answer": (el) => { answerDialogosMc(Number(el.dataset.idx)); },
+    "dialogos-next": (el) => { advanceDialogos(); },
+    "dialogos-hint": (el) => { dialogosHint(); },
+    "dialogos-again": (el) => { dialogosAgain(); },
+    "dialogos-speak": (el) => { speakDialogosNpc(); },
+    "open-compras": (el) => { openCompras(); },
+    "compras-section": (el) => { comprasSection(el.dataset.id); },
+    "compras-pick": (el) => { comprasPick(el.dataset.id); },
+    "compras-toggle": (el) => { comprasToggle(el.dataset.id); },
+    "compras-speak": (el) => { speakCompras(el.dataset.id); },
+    "compras-speak-phrase": (el) => { speakComprasPhrase(el.dataset.say); },
+    "open-compras-quiz": (el) => { openComprasQuiz(); },
+    "compras-quiz-answer": (el) => { answerComprasQuiz(Number(el.dataset.idx)); },
+    "compras-quiz-next": (el) => { nextComprasQuiz(); },
+    "compras-quiz-again": (el) => { comprasQuizAgain(); },
+    "compras-back-list": (el) => { comprasBackToList(); },
+    "home": (el) => { goHome(); },
+  };
+
   function onClick(e) {
     if (Date.now() - lastSwipeAt < 600) return; // synthetischen Klick nach Wisch ignorieren
     const el = e.target.closest("[data-action]");
@@ -6740,206 +6947,8 @@
       return;
     }
 
-    if (action === "set-mode") setMode(el.dataset.mode);
-    else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
-    else if (action === "set-theme") setTheme(el.dataset.theme);
-    else if (action === "set-dir") setDir(el.dataset.dir);
-    else if (action === "set-celebrate-sound") setCelebrateSound(el.dataset.on === "1");
-    else if (action === "set-ui-lang") setUiLang(el.dataset.lang);
-    else if (action === "set-level") toggleLevel(Number(el.dataset.level));
-    else if (action === "study-all") startStudy("all");
-    else if (action === "open-category") startStudy(el.dataset.id);
-    else if (action === "ruta-del-dia") openRutaDelDia();
-    else if (action === "open-preset") startPreset(el.dataset.preset);
-    else if (action === "open-pretrip") { state.pretripLock = null; openPretrip(); }
-    else if (action === "set-pretrip-scope") setPretripScope(el.dataset.scope);
-    else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
-    else if (action === "open-teacher") openTeacher();
-    else if (action === "teacher-import") { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); }
-    else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
-    else if (action === "teacher-clear") clearTeacher();
-    else if (action === "teacher-sort") setTeacherSort(el.dataset.key);
-    else if (action === "teacher-csv") exportRosterCSV();
-    else if (action === "teacher-print") printTeacher();
-    else if (action === "open-printsheet") openPrintSheet();
-    else if (action === "printsheet-print") printSheet();
-    else if (action === "sheet-mode") { state.sheetMode = el.dataset.mode; render(); }
-    else if (action === "open-target-picker") { state.targetPicker = el.dataset.ctx; render(); }
-    else if (action === "close-target-picker") { state.targetPicker = null; render(); }
-    else if (action === "target-stop") { /* Klick auf die Modal-Karte: nicht schließen */ }
-    else if (action === "pick-target") pickTarget(el.dataset.ctx, el.dataset.value);
-    else if (action === "apply-bundle") toggleBundle(el.dataset.bundle);
-    else if (action === "clear-task-sel") clearTaskSelection();
-    else if (action === "task-generate") generateTask();
-    else if (action === "task-copy") copyTaskCode();
-    else if (action === "copy-phrase") copyPhrase(el);
-    else if (action === "task-copy-link") copyTaskLink();
-    else if (action === "task-paste") pasteTaskCode();
-    else if (action === "open-task") openTaskScreen();
-    else if (action === "back-pretrip") openPretrip();
-    else if (action === "back-task") openTaskScreen();
-    else if (action === "task-open") openTaskFromInput();
-    else if (action === "task-start") startSubscribedTask(Number(el.dataset.idx));
-    else if (action === "task-remove") removeSubscribedTask(Number(el.dataset.idx));
-    else if (action === "open-placement") openPlacement();
-    else if (action === "placement-start") startPlacementTest();
-    else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
-    else if (action === "placement-unknown") placementUnknown();
-    else if (action === "placement-free-submit") placementSubmitFree();
-    else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
-    else if (action === "open-assessment") openAssessment();
-    else if (action === "assessment-resume") resumeAssessment();
-    else if (action === "assessment-start") startAssessmentTest(el.dataset.variant);
-    else if (action === "assessment-choose") assessmentChoose(Number(el.dataset.index));
-    else if (action === "assessment-unknown") assessmentUnknown();
-    else if (action === "assessment-free-submit") assessmentSubmitFree();
-    else if (action === "assessment-listen-play") speakCurrentAssessment();
-    else if (action === "assessment-retake") openAssessment();
-    else if (action === "trip-edit") toggleTripEdit();
-    else if (action === "add-trip-stop") addTripStop(el.dataset.country, el.dataset.dest, el.dataset.flag);
-    else if (action === "remove-trip-stop") removeTripStop(Number(el.dataset.index));
-    else if (action === "toggle-trip-route") { state.tripRouteOpen = state.tripRouteOpen === false; render(); }
-    else if (action === "toggle-trip-switch") { state.tripSwitchOpen = !state.tripSwitchOpen; render(); }
-    else if (action === "drag-trip-stop") { /* Ziehen wird über die Pointer-Handler erledigt; ein reiner Tap macht nichts */ }
-    else if (action === "trip-clear") clearTripGoal();
-    else if (action === "manage-trip") openTripManage();
-    else if (action === "set-gender") saveUserGender(el.dataset.gender); // ♀/♂ (Onboarding + Profil)
-    else if (action === "onboard-slide-next") advanceOnboardSlide();   // Erklär-Slide weiter (letzter -> Profil)
-    else if (action === "onboard-slide-skip") onboardSlidesToProfile(); // Erklär-Slides überspringen -> Profil
-    else if (action === "onboard-slide-go") goToOnboardSlide(el.dataset.idx); // Punkt-Navigation zu Slide N
-    else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten
-    else if (action === "placement-skip") finishOnboarding();    // Ruta-Check im Onboarding überspringen -> fertig
-    else if (action === "placement-finish") finishOnboarding();  // Ruta-Check fertig (aus Onboarding) -> Dashboard
-    else if (action === "resume-last") resumeLast();
-    else if (action === "set-tab") setTab(el.dataset.tab);
-    else if (action === "open-search") openSearch();
-    else if (action === "search-clear") clearSearch();
-    else if (action === "search-country") openSearchCountry(el.dataset.id);
-    else if (action === "flip") flip();
-    else if (action === "toggle-context") toggleContext();
-    else if (action === "rate") rate(el.dataset.rating);
-    else if (action === "skip") skip();
-    else if (action === "speak") speakCurrent();
-    else if (action === "open-stats") goStats();
-    else if (action === "open-badges") openBadges();
-    else if (action === "open-info") openInfo();
-    else if (action === "open-historia") openHistoria("sur");
-    else if (action === "open-historia-centro") openHistoria("centro");
-    else if (action === "open-knigge") openKnigge();
-    else if (action === "open-bebidas") openBebidas();
-    else if (action === "toggle-bebida") toggleBebida();
-    else if (action === "open-regatear") openRegatear();
-    else if (action === "open-logistica") openLogistica();
-    else if (action === "open-salud") openSalud();
-    else if (action === "open-flirt") openFlirt();
-    else if (action === "open-fotos") openFotos();
-    else if (action === "open-bailar") openBailar();
-    else if (action === "open-musica") openMusica();
-    else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
-    else if (action === "reset-progress") resetProgress();
-    else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
-    else if (action === "study-one") studyOne(el.dataset.id);
-    else if (action === "card-back") (state.backTo === "home" ? goHome() : state.backTo === "search" ? openSearch() : goStats());
-    else if (action === "open-editor") openEditor();
-    else if (action === "export-data") exportData();
-    else if (action === "cloud-sync") cloudSync();
-    else if (action === "open-social") openSocial();
-    else if (action === "social-login") socialLogin();
-    else if (action === "social-refresh") refreshSocial();
-    else if (action === "social-add-friend") socialAddFriend();
-    else if (action === "social-remove") socialRemoveFriend(el.dataset.id);
-    else if (action === "social-copy-code") socialCopyCode();
-    else if (action === "import-data") startImport();
-    else if (action === "dismiss-notice") el.remove();
-    else if (action === "dismiss-update") dismissUpdateNotice();
-    else if (action === "reload-app") location.reload();
-    else if (action === "apply-update") applyUpdate();
-    else if (action === "dismiss-sw-update") dismissSwUpdate();
-    else if (action === "upd-stop") { /* Klick auf die Hinweis-Karte: nicht schließen */ }
-    else if (action === "install-app") installApp();
-    else if (action === "delete-card") deleteCard(el.dataset.id);
-    else if (action === "share-stats") shareStats();
-    else if (action === "share-rank") shareRank();
-    else if (action === "share-placement") sharePlacement();
-    else if (action === "share-assessment") shareAssessment();
-    else if (action === "share-card") shareCard();
-    else if (action === "share-historia") shareHistoria(el.dataset.id);
-    else if (action === "share-hist-module") shareHistModule();
-    else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
-    else if (action === "share-country") shareCountry();
-    else if (action === "share-module") shareModule(el.dataset.mod);
-    else if (action === "share-badge") shareBadge(el.dataset.id);
-    else if (action === "set-share-format") setShareFormat(el.dataset.format);
-    else if (action === "open-hostel") openHostel();
-    else if (action === "open-battle-setup") openBattleSetup();
-    else if (action === "coordinator-round") startCoordinatorRound();
-    else if (action === "set-battle-length") setBattleLength(Number(el.dataset.len));
-    else if (action === "start-battle") startBattle(el.dataset.scene);
-    else if (action === "battle-reveal") battleReveal();
-    else if (action === "battle-score") battleScore(Number(el.dataset.points));
-    else if (action === "battle-sudden-death") battleSuddenDeath();
-    else if (action === "battle-again") battleAgain();
-    else if (action === "challenge-done") markChallengeDone(el.dataset.id);
-    else if (action === "open-roleplay-setup") openRoleplaySetup();
-    else if (action === "start-roleplay") startRoleplay(el.dataset.id);
-    else if (action === "roleplay-swap") roleplaySwap();
-    else if (action === "open-quiz-setup") openQuizSetup();
-    else if (action === "start-quiz") startQuiz(el.dataset.set);
-    else if (action === "quiz-answer") answerQuiz(el.dataset.id);
-    else if (action === "quiz-next") nextQuiz();
-    else if (action === "quiz-again") quizAgain();
-    else if (action === "open-cuerpo") openCuerpo();
-    else if (action === "open-conjugacion") openConjugacion();
-    else if (action === "open-tiempos") openTiempos();
-    else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
-    else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
-    else if (action === "cuerpo-speak") speakBodyPart();
-    else if (action === "open-spickzettel") openSpickzettel();
-    else if (action === "sz-show") szShow(el.dataset.id);
-    else if (action === "sz-close") szClose();
-    else if (action === "speak-card") speakCardId(el.dataset.id);
-    else if (action === "open-precios") openPrecios();
-    else if (action === "precios-currency") setPreciosCurrency(el.dataset.id);
-    else if (action === "precios-level") setPreciosLevel(el.dataset.level);
-    else if (action === "start-precios") startPrecios();
-    else if (action === "precios-next") nextPrecios();
-    else if (action === "precios-again") preciosAgain();
-    else if (action === "precios-setup") openPrecios();
-    else if (action === "precios-speak") speakPrecios();
-    else if (action === "open-frases") openFrasesSetup();
-    else if (action === "start-frases") startFrases(el.dataset.set);
-    else if (action === "frases-answer") answerFrases(Number(el.dataset.idx));
-    else if (action === "frases-next") nextFrases();
-    else if (action === "frases-again") frasesAgain();
-    else if (action === "open-conjug-drill") openConjugDrill();
-    else if (action === "conjug-level") setConjugLevel(el.dataset.level);
-    else if (action === "start-conjug") startConjug();
-    else if (action === "conjug-next") nextConjug();
-    else if (action === "conjug-again") conjugAgain();
-    else if (action === "open-yesto") openYesto();
-    else if (action === "start-yesto") startYesto(el.dataset.id);
-    else if (action === "yesto-reveal") yestoReveal();
-    else if (action === "yesto-rate") yestoRate(el.dataset.known === "1");
-    else if (action === "yesto-again") yestoAgain();
-    else if (action === "open-dialogos") openDialogosSetup();
-    else if (action === "start-dialogos") startDialogos(el.dataset.id);
-    else if (action === "dialogos-answer") answerDialogosMc(Number(el.dataset.idx));
-    else if (action === "dialogos-next") advanceDialogos();
-    else if (action === "dialogos-hint") dialogosHint();
-    else if (action === "dialogos-again") dialogosAgain();
-    else if (action === "dialogos-speak") speakDialogosNpc();
-    else if (action === "open-compras") openCompras();
-    else if (action === "compras-section") comprasSection(el.dataset.id);
-    else if (action === "compras-pick") comprasPick(el.dataset.id);
-    else if (action === "compras-toggle") comprasToggle(el.dataset.id);
-    else if (action === "compras-speak") speakCompras(el.dataset.id);
-    else if (action === "compras-speak-phrase") speakComprasPhrase(el.dataset.say);
-    else if (action === "open-compras-quiz") openComprasQuiz();
-    else if (action === "compras-quiz-answer") answerComprasQuiz(Number(el.dataset.idx));
-    else if (action === "compras-quiz-next") nextComprasQuiz();
-    else if (action === "compras-quiz-again") comprasQuizAgain();
-    else if (action === "compras-back-list") comprasBackToList();
-    else if (action === "home") goHome();
+    const handler = ACTIONS[action];
+    if (handler) handler(el);
   }
 
   function onSubmit(e) {
