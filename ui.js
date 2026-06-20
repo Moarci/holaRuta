@@ -1156,11 +1156,17 @@
   function installBlock(install) {
     if (!install || !install.show) return "";
     // Bereits installiert: klare Bestätigung statt Installations-Aufforderung.
+    // Auf iOS zusätzlich der Konsequenz-Hinweis: NICHT erneut zum Startbildschirm
+    // hinzufügen (iOS trennt den Speicher pro Icon -> leere zweite Kopie).
     if (install.installed) {
+      const iosNote = install.isIOS
+        ? `<p class="installcard__note installcard__note--warn">${esc(t("profile.installedIosNote"))}</p>`
+        : "";
       return `
         <div class="installcard installcard--done">
           <p class="installcard__title"><span aria-hidden="true">✅</span> ${esc(t("profile.installedTitle"))}</p>
           <p class="installcard__text">${esc(t("profile.installedText"))}</p>
+          ${iosNote}
         </div>`;
     }
     // Noch nicht installiert: Status klar zeigen, nächster Schritt je nach Browser.
@@ -1168,7 +1174,8 @@
       ? `<p class="installcard__text">${esc(t("profile.installText"))}</p>
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
       : install.isIOS
-        ? `<p class="installcard__text">${esc(install.hint)}</p>`
+        ? `<p class="installcard__text">${esc(install.hint)}</p>
+           <p class="installcard__note installcard__note--warn">${esc(t("profile.installIosReaddWarn"))}</p>`
         : `<p class="installcard__text">${esc(t("profile.installHintLead"))}</p>
            <ol class="installcard__steps">
              <li>${esc(t("profile.installStep1"))}</li>

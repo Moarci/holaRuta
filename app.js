@@ -503,8 +503,10 @@
     const inst = window.SC && window.SC.install;
     if (!inst) return { show: false };
     // Läuft die App bereits installiert (standalone), zeigen wir eine klare
-    // „offline installiert"-Bestätigung.
-    if (inst.isInstalled()) return { show: true, installed: true };
+    // „offline installiert"-Bestätigung. isIOS mitgeben, damit die UI dort den
+    // iOS-Konsequenz-Hinweis zeigt (NICHT erneut zum Startbildschirm hinzufügen –
+    // iOS legt sonst eine leere zweite Kopie mit eigenem Speicher an).
+    if (inst.isInstalled()) return { show: true, installed: true, isIOS: inst.isIOS() };
     // Als file://-Einzeldatei ist keine PWA-Installation möglich -> nichts zeigen.
     if (inst.isHosted && !inst.isHosted()) return { show: false };
     // Sonst: Status „noch nicht installiert" immer anzeigen. Der nächste Schritt
@@ -7596,6 +7598,28 @@
             if (nw.state === "installed" && navigator.serviceWorker.controller) markUpdateReady(nw);
           });
         });
+
+        // iOS-PWA-Knackpunkt: eine installierte App wird beim Schließen eingefroren
+        // und beim Öffnen NUR fortgesetzt – ohne frisches Page-Load und ohne dass
+        // der Browser von selbst auf einen neuen Service Worker prüft. Dadurch
+        // feuerte "updatefound" praktisch nie, das "Neue Version"-Banner erschien
+        // nicht, und Nutzer installierten die PWA neu, um das Update zu bekommen –
+        // was auf iOS einen eigenen, LEEREN Storage-Sandbox erzeugt und so den
+        // gesamten Fortschritt löscht. Darum aktiv nach Updates fragen, sobald die
+        // App sichtbar/fokussiert wird (gedrosselt) und kurz nach dem Start.
+        // reg.update() ist ein No-op, wenn nichts Neues vorliegt.
+        let lastUpdateCheck = 0;
+        const checkForUpdate = () => {
+          const now = Date.now();
+          if (now - lastUpdateCheck < 30000) return; // höchstens alle 30 s
+          lastUpdateCheck = now;
+          try { Promise.resolve(reg.update()).catch(() => {}); } catch (e) { /* egal */ }
+        };
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") checkForUpdate();
+        });
+        window.addEventListener("focus", checkForUpdate);
+        setTimeout(checkForUpdate, 3000);
       })
       .catch((err) => console.warn("Service Worker nicht registriert", err));
   }
