@@ -43,6 +43,13 @@
   <!-- Schriften: Bricolage Grotesque (Display) + Instrument Sans (Text) – self-hosted
        unter fonts/ (per @font-face in styles.css, DSGVO-sauber und offline verfügbar). -->
 
+  <!-- Die zwei beim ersten Paint sichtbaren Schriften vorladen (Logo/Überschriften =
+       Bricolage Grotesque, Fließtext = Instrument Sans), damit sie nicht erst nach dem
+       CSS-Parsen angefragt werden. crossorigin ist bei Font-Preload Pflicht (Fonts
+       laden anonym), sonst lädt der Browser die Datei doppelt. -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/bricolage-grotesque-600-800-latin.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/instrument-sans-400-700-latin.woff2" />
+
   <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
        Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe.
        Der OS-PWA-Splash wird aus dem Manifest-background_color gemalt – und Android
@@ -70,6 +77,10 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Sprunglink: erstes fokussierbares Element. Für Tastatur-/Screenreader-Nutzer,
+       um die App-Bar zu überspringen und direkt zum Inhalt (main#app) zu springen.
+       Standardmäßig per CSS (.skip-link) ausgeblendet, erst bei :focus sichtbar. -->
+  <a href="#app" class="skip-link">Zum Inhalt springen</a>
   <!-- Animierter In-App-Start: liegt auf var(--page) – nahtlos am OS-PWA-Splash,
        der jetzt dasselbe Marken-Braun zeigt – und blendet weg, sobald die App
        steht. Nur beim echten Kaltstart sichtbar; In-Session-Navigation lädt nicht
@@ -163,7 +174,7 @@
     </div>
 
     <!-- Hier rendert der Controller die jeweilige Ansicht hinein. -->
-    <main id="app"></main>
+    <main id="app" tabindex="-1"></main>
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
@@ -224,7 +235,11 @@
     (function () {
       var boot = document.getElementById("boot");
       if (!boot) return;
-      var MIN = 2000; // mind. so lange, dass Schrumpfen/Aufstieg/Regenbogen-Wisch landen + kurz stehen
+      // Mindest-Anzeigedauer: 800 ms reicht, dass Schrumpfen/Aufstieg/Regenbogen-Wisch
+      // landen und kurz stehen, ohne den Kaltstart unnötig zu verzögern. Bei
+      // prefers-reduced-motion sofort weg (0 ms) – keine erzwungene Wartezeit.
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var MIN = reduce ? 0 : 800;
       var start = window.__bootStart || Date.now();
       function done() { boot.classList.add("is-done"); }
       function hide() {
