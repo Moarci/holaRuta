@@ -177,6 +177,7 @@
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
     { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
     { action: "open-flirt",       icon: "💘", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
+    { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
     { action: "open-musica",      icon: "🎵", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
@@ -858,7 +859,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, flirt: vm.hasFlirt, yesto: vm.hasYesto, musica: vm.hasMusica, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, flirt: vm.hasFlirt, bailar: vm.hasBailar, musica: vm.hasMusica, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -3413,6 +3414,170 @@
       </section>`;
   }
 
+  // ---------- BAILAR (Tanzen in Lateinamerika) ----------
+  // Pro Tanz eine aufklappbare Karte mit stilisiertem Schritt-Diagramm am Boden:
+  // Fußabdrücke an den Koordinaten aus den Daten, die in Tanzreihenfolge als Welle
+  // aufleuchten (reine CSS-Animation, pausierbar per CSS-Checkbox, respektiert
+  // prefers-reduced-motion). Dazu Zählrhythmus, Tipps, spanisches Lesetraining und
+  // Video-Links. Struktur (Topbar, Nav-Chips, Sätze, Glossar, Knigge) wie renderFotos.
+  function renderBailar(vm) {
+    const liList = (items, cls, marker) =>
+      (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+        .join("");
+
+    // Ein Fußabdruck: äußere <g> trägt Position/Drehung (SVG-transform) und den
+    // Wellen-Index (--bi); die innere __pop-Gruppe wird per CSS skaliert (eigenes
+    // transform, daher getrennt). Die Zählzahl steht auf dem Ballen.
+    const footEl = (s, i) => {
+      const side = s.foot === "L" ? "l" : "r";
+      const tap = s.tap ? " bf-foot--tap" : "";
+      return `
+        <g class="bf-foot bf-foot--${side}${tap}" style="--bi:${i}" transform="translate(${s.x},${s.y}) rotate(${s.rot || 0})">
+          <g class="bf-foot__pop">
+            <ellipse class="bf-foot__ball" cx="0" cy="-7" rx="11" ry="14"/>
+            <ellipse class="bf-foot__heel" cx="0" cy="13" rx="7.5" ry="9"/>
+          </g>
+          <text class="bf-foot__beat" x="0" y="-3">${esc(s.beat)}</text>
+        </g>`;
+    };
+
+    // Das Tanz-„Parkett": gepunktete Spur durch die Schritte + die Fußabdrücke.
+    const floor = (d) => {
+      const w = (d.view && d.view.w) || 200;
+      const h = (d.view && d.view.h) || 260;
+      const n = (d.steps || []).length || 1;
+      const cycle = Math.max(3.6, n * 0.7).toFixed(1); // ~0,7 s pro Schritt, mind. 3,6 s
+      const trail = (d.steps || []).map((s) => `${s.x},${s.y}`).join(" ");
+      const feet = (d.steps || []).map(footEl).join("");
+      const pauseId = "bf-pause-" + d.id;
+      return `
+        <div class="bf-stage">
+          <input type="checkbox" id="${pauseId}" class="bf-pause-cb" />
+          <div class="bf-stage__bar">
+            <label class="bf-pause" for="${pauseId}">
+              <span class="bf-pause__play" aria-hidden="true">▶</span>
+              <span class="bf-pause__pause" aria-hidden="true">⏸</span>
+              <span class="bf-pause__t bf-pause__t--play">${esc(t("discover.blPlay"))}</span>
+              <span class="bf-pause__t bf-pause__t--pause">${esc(t("discover.blPause"))}</span>
+            </label>
+            <span class="bf-front" aria-hidden="true">↑ ${esc(t("discover.blFront"))}</span>
+          </div>
+          <div class="bf-floor" style="--baccent:${esc(d.accent || "#C2502E")};--bcount:${n};--bcycle:${cycle}s">
+            <svg class="bf-floor__svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(t("discover.blFloorAlt", { name: d.name }))}">
+              <polyline class="bf-trail" points="${trail}" />
+              ${feet}
+            </svg>
+          </div>
+          <ul class="bf-legend">
+            <li><span class="bf-legend__dot bf-legend__dot--l" style="--baccent:${esc(d.accent || "#C2502E")}"></span>${esc(t("discover.blLegLeft"))}</li>
+            <li><span class="bf-legend__dot bf-legend__dot--r"></span>${esc(t("discover.blLegRight"))}</li>
+            <li><span class="bf-legend__dot bf-legend__dot--tap"></span>${esc(t("discover.blLegTap"))}</li>
+          </ul>
+        </div>`;
+    };
+
+    // Eine Tanz-Karte (aufklappbar wie knigge-topic): Diagramm, Rhythmus, Videos,
+    // Tipps, Lesetraining.
+    const danceBlock = (d, i) => {
+      const lvl = levelMeta(d.level);
+      const reading = (d.es && d.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: d.es, vocab: d.vocab, level: d.level, quiz: true })}</div>
+           </details>`
+        : "";
+      const videos = (d.videos && d.videos.length)
+        ? `<div class="bf-videos">
+             <p class="bf-videos__cap">🎬 ${esc(t("discover.blVideos"))}</p>
+             ${d.videos.map((v) => `<a class="bf-video" href="${esc(v.url)}" target="_blank" rel="noopener noreferrer"><span class="bf-video__play" aria-hidden="true">▶</span><span class="bf-video__t">${esc(v.title)}</span><span class="bf-video__src">${esc(v.source || "")}</span></a>`).join("")}
+           </div>`
+        : "";
+      return `
+        <details class="knigge-topic bf-dance">
+          <summary class="knigge-topic__head">
+            <span class="knigge-topic__icon" aria-hidden="true">${d.icon}</span>
+            <span class="knigge-topic__title">${esc(d.name)}${d.origin ? `<span class="bf-dance__origin">${esc(d.origin)}</span>` : ""}</span>
+            ${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}
+            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="knigge-topic__body bf-dance__body">
+            ${d.intro ? `<p class="knigge-intro">${esc(d.intro)}</p>` : ""}
+            ${floor(d)}
+            <p class="bf-count" lang="es">${esc(d.count || "")}</p>
+            ${d.compas ? `<p class="bf-compas">🎵 ${esc(d.compas)}</p>` : ""}
+            ${videos}
+            ${d.dos && d.dos.length ? `<ul class="knigge-list">${liList(d.dos, "knigge-do", "✅")}</ul>` : ""}
+            ${d.donts && d.donts.length ? `<ul class="knigge-list">${liList(d.donts, "knigge-dont", "🚫")}</ul>` : ""}
+            ${reading}
+            ${tipsShareBtn("bailar", i)}
+          </div>
+        </details>`;
+    };
+    const dances = (vm.dances || []).map(danceBlock).join("");
+
+    // Sätze: pro Situation eine zweispaltige Liste (es / de) – wie Fotos/Salud.
+    const phraseGroup = (g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${g.items.map((p) => `
+            <li class="rg-phrase">
+              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+              <span class="rg-phrase__de">${esc(p.de)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    const glossary = (vm.glossary || []).map((g) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
+        <span class="rg-gloss__de">${esc(g.de)}</span>
+      </li>`).join("");
+
+    const checklist = (vm.checklist || []).map((c) => `
+      <li class="rg-region">
+        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__body">
+          <span class="rg-region__country">${esc(c.item)}</span>
+          <span class="rg-region__note">${esc(c.why)}</span>
+        </span>
+      </li>`).join("");
+
+    const navItems = [
+      dances && { id: "bl-dances", icon: "💃", label: t("discover.blNavDances") },
+      phrases && { id: "bl-phrases", icon: "💬", label: t("discover.blNavPhrases") },
+      glossary && { id: "bl-words", icon: "🗣️", label: t("discover.blNavWords") },
+      (vm.checklist && vm.checklist.length) && { id: "bl-etiquette", icon: "🤝", label: t("discover.blNavEtiquette") },
+    ].filter(Boolean);
+    const nav = navItems.length > 1
+      ? `<nav class="ft-nav" aria-label="${esc(t("discover.blAreas"))}">${navItems.map((n) =>
+          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+      : "";
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">💃 Bailar</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+        ${moduleShareBtn("bailar")}
+        ${nav}
+
+        ${dances ? `<h2 class="rg-head" id="bl-dances">${esc(t("discover.blDances"))}</h2><p class="hm-intro">${esc(t("discover.blDancesHint"))}</p>${dances}` : ""}
+        ${phrases ? `<h2 class="rg-head" id="bl-phrases">${esc(t("discover.blPhrases"))}</h2>${phrases}` : ""}
+        ${glossary ? `<h2 class="rg-head" id="bl-words">${esc(t("discover.blWords"))}</h2><ul class="rg-glosslist">${glossary}</ul>` : ""}
+        ${(vm.checklist && vm.checklist.length)
+          ? `<h2 class="rg-head" id="bl-etiquette">${esc(t("discover.blEtiquette"))}</h2>
+             <p class="hm-intro">${esc(t("discover.blEtiquetteHint"))}</p>
+             <ul class="rg-regions">${checklist}</ul>`
+          : ""}
+      </section>`;
+  }
+
   // ---------- MÚSICA (LatAm-Genres + Spotify/Apple-Deep-Links) ----------
   // Aufbau wie renderFotos/renderSalud: lange Nachschlage-Seite mit Sprungmarken.
   // Besonderheit: pro Genre und fürs gewählte Reiseland zwei Deep-Link-Knöpfe, die
@@ -5436,7 +5601,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,

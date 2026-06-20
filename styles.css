@@ -1752,6 +1752,124 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .foto-app__bullets li { text-align: left; }
 }
 
+/* ===================== BAILAR (TANZEN IN LATAM) ===================== */
+/* Pro Tanz ein stilisiertes Schritt-Diagramm am Boden: die Fußabdrücke leuchten
+ * in Tanzreihenfolge als Welle auf (reine CSS-Animation, pausierbar per
+ * versteckter Checkbox, respektiert prefers-reduced-motion). Die Tanzfarbe kommt
+ * als --baccent per Inline-Style aus den Daten (ui.renderBailar). */
+.bf-dance__origin { display: block; font-family: var(--font); font-size: 0.74rem; font-weight: 600; color: var(--muted); margin-top: 2px; }
+.bf-dance__body { --baccent: var(--brand); } /* Fallback, falls kein Inline-Akzent erbt */
+
+.bf-stage { margin: 4px 0 12px; }
+.bf-stage__bar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+
+/* Pausieren rein per CSS: visuell versteckte, aber fokussierbare Checkbox + Label. */
+.bf-pause-cb { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.bf-pause {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  padding: 5px 11px; border-radius: 999px; border: 1.5px solid var(--line);
+  background: var(--surface); color: var(--brand-ink); font-weight: 700; font-size: 0.82rem;
+}
+.bf-pause:hover { border-color: var(--brand); }
+.bf-pause-cb:focus-visible + .bf-stage__bar .bf-pause { outline: 3px solid var(--brand); outline-offset: 2px; }
+.bf-pause__pause, .bf-pause__t--pause { display: none; }
+.bf-pause-cb:checked + .bf-stage__bar .bf-pause .bf-pause__play,
+.bf-pause-cb:checked + .bf-stage__bar .bf-pause .bf-pause__t--play { display: none; }
+.bf-pause-cb:checked + .bf-stage__bar .bf-pause .bf-pause__pause { display: inline; }
+.bf-pause-cb:checked + .bf-stage__bar .bf-pause .bf-pause__t--pause { display: inline; }
+.bf-front { margin-left: auto; font-size: 0.74rem; font-weight: 700; color: var(--muted); letter-spacing: 0.02em; }
+
+/* Das „Parkett": dezenter Bodenverlauf in der Tanzfarbe, mittig das SVG. */
+.bf-floor {
+  position: relative; border-radius: var(--r-md); padding: 10px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--baccent) 14%, transparent), transparent 70%),
+    var(--card);
+  border: 1.5px solid var(--line);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--baccent) 10%, transparent);
+}
+.bf-floor__svg { display: block; width: 100%; max-width: 320px; height: auto; margin: 0 auto; }
+
+/* Gepunktete Spur, die die Schritte der Reihe nach verbindet. */
+.bf-trail {
+  fill: none; stroke: color-mix(in srgb, var(--baccent) 55%, var(--muted));
+  stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; opacity: 0.5;
+}
+
+/* Ein Fußabdruck. Außen Position/Drehung (SVG-transform), innen die Pop-Skalierung.
+ * --bi = Index in der Tanzreihenfolge, --bcount/--bcycle stehen auf .bf-floor. */
+.bf-foot {
+  opacity: 0.4;
+  animation: bfFootWave var(--bcycle, 5.4s) linear infinite;
+  animation-delay: calc(var(--bi) * var(--bcycle, 5.4s) / var(--bcount, 8));
+}
+.bf-foot__pop {
+  transform-box: fill-box; transform-origin: center;
+  animation: bfFootPop var(--bcycle, 5.4s) linear infinite;
+  animation-delay: calc(var(--bi) * var(--bcycle, 5.4s) / var(--bcount, 8));
+}
+.bf-foot__ball, .bf-foot__heel { stroke: rgba(0, 0, 0, 0.16); stroke-width: 1; }
+.bf-foot--l .bf-foot__ball, .bf-foot--l .bf-foot__heel { fill: var(--baccent); }
+.bf-foot--r .bf-foot__ball, .bf-foot--r .bf-foot__heel { fill: var(--ink-soft); }
+.bf-foot--tap .bf-foot__ball, .bf-foot--tap .bf-foot__heel {
+  fill: transparent; stroke: var(--baccent); stroke-width: 2; stroke-dasharray: 3 3;
+}
+.bf-foot__beat { fill: #fff; font-family: var(--font-display); font-weight: 800; font-size: 12px; text-anchor: middle; dominant-baseline: middle; }
+.bf-foot--r .bf-foot__beat { fill: var(--card); }
+.bf-foot--tap .bf-foot__beat { fill: var(--baccent); }
+
+@keyframes bfFootWave {
+  0% { opacity: 0.4; filter: none; }
+  5% { opacity: 1; filter: drop-shadow(0 0 5px var(--baccent)); }
+  14% { opacity: 1; filter: drop-shadow(0 0 7px var(--baccent)); }
+  24% { opacity: 0.4; filter: none; }
+  100% { opacity: 0.4; filter: none; }
+}
+@keyframes bfFootPop {
+  0% { transform: scale(1); }
+  6% { transform: scale(1.18); }
+  16% { transform: scale(1.05); }
+  26% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+/* Pausiert (Checkbox aktiv): Welle hält an, alle Abdrücke bleiben sichtbar. */
+.bf-pause-cb:checked ~ .bf-floor .bf-foot,
+.bf-pause-cb:checked ~ .bf-floor .bf-foot__pop { animation-play-state: paused; }
+
+/* Legende: linker Fuß · rechter Fuß · Tap (ohne Gewicht). */
+.bf-legend { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 9px 0 0; padding: 0; list-style: none; }
+.bf-legend li { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--ink-soft); font-weight: 600; }
+.bf-legend__dot { width: 13px; height: 16px; border-radius: 50% / 45%; display: inline-block; }
+.bf-legend__dot--l { background: var(--baccent); }
+.bf-legend__dot--r { background: var(--ink-soft); }
+.bf-legend__dot--tap { background: transparent; border: 2px dashed var(--baccent); }
+
+/* Zählrhythmus & Takt unter dem Diagramm. */
+.bf-count { margin: 4px 0 2px; text-align: center; font-family: var(--font-display); font-weight: 800; letter-spacing: 0.04em; color: var(--ink); font-size: 1.02rem; }
+.bf-compas { margin: 0 0 12px; text-align: center; color: var(--muted); font-size: 0.86rem; line-height: 1.5; }
+
+/* Video-Links (öffnen YouTube in neuem Tab). */
+.bf-videos { margin: 4px 0 12px; }
+.bf-videos__cap { margin: 0 0 7px; font-weight: 700; color: var(--ink); font-size: 0.9rem; }
+.bf-video {
+  display: flex; align-items: center; gap: 9px; margin-bottom: 7px; padding: 9px 12px;
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-sm);
+  color: var(--ink); text-decoration: none; font-size: 0.9rem;
+}
+.bf-video:hover { border-color: var(--brand); }
+.bf-video__play {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--baccent);
+  color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 0.6rem;
+}
+.bf-video__t { flex: 1; min-width: 0; font-weight: 600; }
+.bf-video__src { flex-shrink: 0; font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bf-foot { opacity: 1; animation: none; filter: none; }
+  .bf-foot__pop { animation: none; }
+}
+
 /* Música: Genre-Herkunft als zweite Zeile im Titel, Künstler-Chips, die
    Spotify-/Apple-Music-Deep-Links und die „Sound deines Reiselands"-Karte. */
 .mus-genre__origin { display: block; margin-top: 2px; font-family: var(--font); font-size: 0.78rem; font-weight: 600; color: var(--muted); }
