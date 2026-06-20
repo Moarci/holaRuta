@@ -277,6 +277,10 @@
       ? `🔥 ${p.done} Karten · +${p.over} über dem Ziel`
       : `${p.done}/${p.perDay} Karten${p.complete ? " ✓" : ""}`,
     tripSwitchCap: "Reiseland schnell wechseln",
+    // Zeitleiste mehrerer Reiseländer (Route): jeder Schnellwechsel hängt ein Land an.
+    tripRouteCap: "Deine Route",
+    tripSwitchHint: "Tippen hängt das Land an deine Zeitleiste an – z. B. zuerst El Salvador, dann Kolumbien, dann Peru.",
+    tripStopRemove: "Stopp entfernen",
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Onboarding (einmaliger Willkommens-Schritt)
     // Erklär-Slides ganz am Anfang: Überblick „wie funktioniert die App, welcher Umfang".
@@ -474,6 +478,9 @@
       ? `🔥 ${p.done} cards · +${p.over} over goal`
       : `${p.done}/${p.perDay} cards${p.complete ? " ✓" : ""}`,
     tripSwitchCap: "Quick-switch country",
+    tripRouteCap: "Your route",
+    tripSwitchHint: "Tap to add a country to your timeline — e.g. first El Salvador, then Colombia, then Peru.",
+    tripStopRemove: "Remove stop",
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
     onboardSlideSkip: "Skip",
     onboardSlideStart: "Let's go",

@@ -296,6 +296,14 @@
   // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
   function tripDisplayCard(trip, action) {
     const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
+    const route = Array.isArray(trip.route) ? trip.route : [];
+    // Kopfzeile: bei mehreren Reiseländern eine kompakte, nicht interaktive Zeitleiste
+    // (Flagge + Name, mit Pfeilen verbunden) statt der einzelnen Ziel-Zeile.
+    const head = route.length
+      ? `<span class="trip__route" aria-label="${esc(t("home.tripRouteCap"))}">${route.map((s, i) =>
+          `${i ? `<span class="trip__arrow" aria-hidden="true">→</span>` : ""}<span class="trip__stop">${s.flag ? `<span class="trip__stop-flag">${esc(s.flag)}</span>` : ""}<span class="trip__stop-name">${esc(s.dest)}</span></span>`
+        ).join("")}</span>`
+      : `<span class="trip__dest">🎯 ${dest}</span>`;
     // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
     const who = trip.userName ? esc(trip.userName) + ", " : "";
     // Oben steht klar die Reise (Countdown bzw. Abreise-Meldung). Das tägliche
@@ -306,7 +314,7 @@
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
-        <span class="trip__dest">🎯 ${dest}</span>
+        ${head}
         <span class="trip__countdown">${countdown}</span>
         ${trip.stayDays ? `<span class="trip__stay">${esc(t("home.tripStay", { n: trip.stayDays, approx: trip.stayApprox }))}</span>` : ""}
         <span class="trip__daily">
@@ -319,10 +327,10 @@
       </button>`;
   }
 
-  // Schnellwechsel Reiseland: ein Tap statt Formular-Tippen. Setzt nur das Reiseziel
+  // Schnellwechsel Reiseland: ein Tap hängt das Land an die Reise-Zeitleiste an
   // (Datum & Tagesziel bleiben) und schaltet damit auch die länderspezifischen
-  // Pre-Arrival-Kacheln auf der Startseite um. Das aktuell erkannte Land leuchtet.
-  // Nur im Profil unter dem Trip-Ziel sichtbar (siehe tripManage).
+  // Pre-Arrival-Kacheln auf der Startseite um. Länder, die schon in der Route sind,
+  // leuchten. Nur im Profil unter dem Trip-Ziel sichtbar (siehe tripManage).
   const TRIP_COUNTRIES = [
     { id: "colombia",  flag: "🇨🇴", dest: "Kolumbien" },
     { id: "peru",      flag: "🇵🇪", dest: "Peru" },
@@ -330,21 +338,42 @@
     { id: "costarica", flag: "🇨🇷", dest: "Costa Rica" },
     { id: "ecuador",   flag: "🇪🇨", dest: "Ecuador" },
     { id: "guatemala", flag: "🇬🇹", dest: "Guatemala" },
+    { id: "elsalvador", flag: "🇸🇻", dest: "El Salvador" },
     { id: "argentina", flag: "🇦🇷", dest: "Argentinien" },
     { id: "chile",     flag: "🇨🇱", dest: "Chile" },
     { id: "bolivia",   flag: "🇧🇴", dest: "Bolivien" },
   ];
   function tripCountrySwitch(vm) {
-    const cur = vm.tripCountryId;
+    const inRoute = Array.isArray(vm.tripRouteIds) ? vm.tripRouteIds : [];
     const chips = TRIP_COUNTRIES.map((c) => {
-      const active = c.id === cur;
-      return `<button type="button" class="tripchip ${active ? "is-active" : ""}" data-action="set-trip-country"
-                     data-country="${c.id}" data-dest="${esc(c.dest)}" aria-pressed="${active}">${c.flag} ${esc(c.dest)}</button>`;
+      const active = inRoute.indexOf(c.id) !== -1;
+      return `<button type="button" class="tripchip ${active ? "is-active" : ""}" data-action="add-trip-stop"
+                     data-country="${c.id}" data-dest="${esc(c.dest)}" data-flag="${esc(c.flag)}" aria-pressed="${active}">${c.flag} ${esc(c.dest)}</button>`;
     }).join("");
     return `
       <div class="tripswitch" role="group" aria-label="${esc(t("home.tripSwitchCap"))}">
         <span class="tripswitch__cap">${esc(t("home.tripSwitchCap"))}</span>
         <div class="tripswitch__chips">${chips}</div>
+        <p class="tripswitch__hint">${esc(t("home.tripSwitchHint"))}</p>
+      </div>`;
+  }
+
+  // Editierbare Reise-Zeitleiste (nur im Profil): die Stopps in Reihenfolge, jeder mit
+  // einem ×-Knopf zum Entfernen. So entsteht z. B. El Salvador → Kolumbien → Peru.
+  function tripTimeline(vm) {
+    const route = vm.trip && Array.isArray(vm.trip.route) ? vm.trip.route : [];
+    if (!route.length) return "";
+    const items = route.map((s, i) => `
+      <li class="triptl__item">
+        <span class="triptl__num">${i + 1}</span>
+        ${s.flag ? `<span class="triptl__flag">${esc(s.flag)}</span>` : ""}
+        <span class="triptl__name">${esc(s.dest)}</span>
+        <button type="button" class="triptl__rm" data-action="remove-trip-stop" data-index="${i}" aria-label="${esc(t("home.tripStopRemove"))}">✕</button>
+      </li>`).join("");
+    return `
+      <div class="triptl" role="group" aria-label="${esc(t("home.tripRouteCap"))}">
+        <span class="triptl__cap">${esc(t("home.tripRouteCap"))}</span>
+        <ol class="triptl__list">${items}</ol>
       </div>`;
   }
 
@@ -356,10 +385,13 @@
     // sonst stünde dieselbe Dauer doppelt im Formular.
     const stayDaysVal = trip && trip.stayApprox && trip.stayDays ? trip.stayDays : "";
     const returnVal = trip && trip.returnDate ? esc(trip.returnDate) : "";
+    // Bei gesetzter Route definieren die Stopps das Ziel – das freie Textfeld entfällt
+    // dann (die Route wird über die Zeitleiste & Schnellwechsel-Chips verwaltet).
+    const hasRoute = trip && Array.isArray(trip.route) && trip.route.length > 0;
     return `
       <form class="trip trip--edit" data-action="save-trip">
-        <label class="trip__field"><span>${esc(t("home.tripDest"))}</span>
-          <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="${esc(t("home.tripDestPlaceholder"))}" value="${trip ? esc(trip.destination) : ""}" /></label>
+        ${hasRoute ? "" : `<label class="trip__field"><span>${esc(t("home.tripDest"))}</span>
+          <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="${esc(t("home.tripDestPlaceholder"))}" value="${trip ? esc(trip.destination) : ""}" /></label>`}
         <label class="trip__field"><span>${esc(t("home.tripDate"))}</span>
           <input id="trip-date" type="date" value="${trip ? esc(trip.endDate) : ""}" required /></label>
         <label class="trip__field"><span>${esc(t("home.tripReturn"))}</span>
@@ -386,7 +418,7 @@
         `<button class="ghostbtn" type="button" data-action="trip-edit">${esc(t("common.cancel"))}</button>`;
       return tripForm(trip, extra);
     }
-    if (trip) return tripDisplayCard(trip, "trip-edit") + tripCountrySwitch(vm);
+    if (trip) return tripDisplayCard(trip, "trip-edit") + tripTimeline(vm) + tripCountrySwitch(vm);
     return `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
   }
 

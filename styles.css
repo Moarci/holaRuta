@@ -3214,6 +3214,39 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .tripchip:active { transform: translateY(1px); }
 .tripchip.is-active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 14%, var(--surface)); color: var(--brand-ink, var(--ink)); }
 .tripchip:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.tripswitch__hint { margin: 1px 0 0; font-size: 0.78rem; font-weight: 600; color: var(--muted); line-height: 1.35; }
+
+/* Reise-Route als kompakte Zeitleiste in der Countdown-Karte (Flagge + Land, mit
+   Pfeilen verbunden; bricht bei langen Routen um). */
+.trip__route { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 6px; }
+.trip__stop { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-display); font-weight: 800; font-size: 0.92rem; color: var(--ink); }
+.trip__stop-flag { font-size: 1em; line-height: 1; }
+.trip__arrow { color: var(--muted); font-weight: 800; }
+
+/* Editierbare Reise-Zeitleiste im Profil: nummerierte Stopps mit ×-Entfernen. */
+.triptl { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.triptl__cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.triptl__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.triptl__item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: var(--r-sm, 10px);
+  border: 1.5px solid var(--line-strong); background: var(--surface);
+}
+.triptl__num {
+  flex: none; width: 22px; height: 22px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.76rem; font-weight: 800; color: var(--brand-ink, var(--ink));
+  background: color-mix(in srgb, var(--brand) 16%, var(--surface)); border: 1.5px solid var(--brand);
+}
+.triptl__flag { font-size: 1.1rem; line-height: 1; }
+.triptl__name { flex: 1 1 auto; font-weight: 800; color: var(--ink); }
+.triptl__rm {
+  flex: none; appearance: none; cursor: pointer; font: inherit; font-size: 0.9rem; line-height: 1;
+  width: 28px; height: 28px; border-radius: 999px; color: var(--muted);
+  border: 1.5px solid var(--line-strong); background: var(--bg, var(--surface));
+}
+.triptl__rm:active { transform: translateY(1px); }
+.triptl__rm:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .trip--edit { gap: 9px; cursor: default; }
 .trip--edit:active { transform: none; }
 .trip__cap { font-family: var(--font-display); font-weight: 800; margin: 0; }
