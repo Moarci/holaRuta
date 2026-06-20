@@ -152,6 +152,18 @@
     searchQuery: "",         // aktueller Suchbegriff (lebt nur in der Sitzung)
   };
 
+  // Zentrale Zustands-Mutation: schreibt das Patch in `state` und rendert EINMAL neu.
+  // Vereinheitlicht das verbreitete Muster „state.x = …; render();" zu einem Aufruf,
+  // damit es genau eine Stelle gibt, an der UI-State geändert wird und neu gezeichnet
+  // wird. Persistenz (gamestats/settings/progress/tasks) bleibt bewusst getrennt –
+  // sie folgt eigenen Speicher-Pfaden und wird hier nicht angefasst. Mit
+  // `{ render: false }` als zweitem Argument kann das Neuzeichnen unterdrückt werden
+  // (z. B. wenn der Aufrufer ohnehin gleich selbst rendert oder navigiert).
+  function setState(patch, opts) {
+    if (patch) Object.assign(state, patch);
+    if (!opts || opts.render !== false) render();
+  }
+
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
 
   // Fisher–Yates – liefert eine neue, gemischte Kopie (mutiert das Original nicht).
@@ -1402,15 +1414,13 @@
     settings = Object.assign({}, settings, { onboarded: true });
     store.saveSettings(settings);
     state.tripEdit = false;
-    state.screen = "home";
-    render();
+    setState({ screen: "home" });
   }
 
   function clearTripGoal() {
     gamestats = Object.assign({}, gamestats, { tripGoal: null });
     store.saveGameStats(gamestats);
-    state.tripEdit = false;
-    render();
+    setState({ tripEdit: false });
   }
 
   function toggleTripEdit() {
@@ -1552,8 +1562,7 @@
 
   function openBadges() {
     dismissBadgeToast();
-    state.screen = "badges";
-    render();
+    setState({ screen: "badges" });
   }
 
   // Hostel Mode: Ergebnis eines beendeten Battles in die Spiel-Zähler buchen.
@@ -1798,8 +1807,7 @@
   // ----- Definiciones: Steuerung -----
   function openQuizSetup() {
     dismissBadgeToast();
-    state.screen = "quizSetup";
-    render();
+    setState({ screen: "quizSetup" });
   }
 
   function startQuiz(setId) {
@@ -1816,8 +1824,7 @@
       selected: null,
       correct: 0,
     };
-    state.screen = "quiz";
-    render();
+    setState({ screen: "quiz" });
   }
 
   // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
@@ -1836,8 +1843,7 @@
     if (q.idx >= q.total - 1) {
       recordQuizResult(q);
       syncBadges(Date.now(), true); // Quiz-Badges freischalten + einblenden
-      state.screen = "quizDone";
-      render();
+      setState({ screen: "quizDone" });
       return;
     }
     q.idx += 1;
@@ -1849,8 +1855,7 @@
   function quizAgain() {
     dismissBadgeToast();
     state.quiz = null;
-    state.screen = "quizSetup";
-    render();
+    setState({ screen: "quizSetup" });
   }
 
   // Ergebnis eines beendeten Quiz in die Spiel-Zähler buchen (Ruta-Pass).
@@ -1877,8 +1882,7 @@
 
   function openConjugacion() {
     dismissBadgeToast();
-    state.screen = "conjugacion";
-    render();
+    setState({ screen: "conjugacion" });
   }
 
   // ----- Tiempos: Erklärseite Zeiten -----
@@ -1894,8 +1898,7 @@
 
   function openTiempos() {
     dismissBadgeToast();
-    state.screen = "tiempos";
-    render();
+    setState({ screen: "tiempos" });
   }
 
   // ----- Frases flexibles (Satzbaukasten): Steuerung -----
@@ -1932,8 +1935,7 @@
 
   function openFrasesSetup() {
     dismissBadgeToast();
-    state.screen = "frasesSetup";
-    render();
+    setState({ screen: "frasesSetup" });
   }
 
   // Backwards-kompatibler Einsprung (Home-Kachel): führt jetzt zur Themen-Auswahl.
@@ -1949,8 +1951,7 @@
       options: buildFrasesOptions(frasesById(queue[0])),
       selected: null, correct: 0,
     };
-    state.screen = "frases";
-    render();
+    setState({ screen: "frases" });
   }
 
   // Kopf-Infos zum laufenden Set (Label/Icon) – "Gemischt" hat keinen Datensatz.
@@ -2008,8 +2009,7 @@
     if (f.idx >= f.total - 1) {
       recordFrasesResult(f);
       syncBadges(Date.now(), true);
-      state.screen = "frasesDone";
-      render();
+      setState({ screen: "frasesDone" });
       return;
     }
     f.idx += 1;
@@ -2162,8 +2162,7 @@
   function openDialogosSetup() {
     dismissBadgeToast();
     if (!dialogosReady()) return;
-    state.screen = "dialogosSetup";
-    render();
+    setState({ screen: "dialogosSetup" });
   }
 
   function startDialogos(scenarioId) {
@@ -2221,8 +2220,7 @@
     if (d.turnIdx >= dia.turns.length - 1) {
       recordDialogosResult(d);
       syncBadges(Date.now(), true);
-      state.screen = "dialogosDone";
-      render();
+      setState({ screen: "dialogosDone" });
       return;
     }
     d.turnIdx += 1;
@@ -2293,8 +2291,7 @@
     state.bodyPartId = null;
     state.bodyYaw = -22; // beim Öffnen in die Drei-Viertel-Ansicht zurücksetzen
     state.bodyPitch = -6;
-    state.screen = "cuerpo";
-    render();
+    setState({ screen: "cuerpo" });
   }
 
   // Ein Körperteil antippen: Wort anzeigen, vorlesen und (einmalig) für den
@@ -2386,14 +2383,12 @@
     } else {
       state.compras = { section: state.compras.section, open: null };
     }
-    state.screen = "compras";
-    render();
+    setState({ screen: "compras" });
   }
 
   function comprasSection(id) {
     if (!shoppingSectionById(id)) return;
-    state.compras = { section: id, open: null };
-    render();
+    setState({ compras: { section: id, open: null } });
   }
 
   // Ein Item antippen: nur auf-/zuklappen und beim Aufklappen das Wort
@@ -2454,8 +2449,7 @@
       selected: null,
       correct: 0,
     };
-    state.screen = "comprasQuiz";
-    render();
+    setState({ screen: "comprasQuiz" });
   }
 
   function comprasQuizVM() {
@@ -2498,8 +2492,7 @@
     const q = state.comprasQuiz;
     if (!q || q.selected === null) return;
     if (q.idx >= q.total - 1) {
-      state.screen = "comprasQuizDone";
-      render();
+      setState({ screen: "comprasQuizDone" });
       return;
     }
     q.idx += 1;
@@ -2530,8 +2523,7 @@
   function comprasBackToList() {
     state.comprasQuiz = null;
     state.compras = { section: state.compras.section, open: null };
-    state.screen = "compras";
-    render();
+    setState({ screen: "compras" });
   }
 
   // ----- El Cuerpo: drehbares 3D-Modell (in-place, ohne Voll-Re-Render) -----
@@ -2766,8 +2758,7 @@
       state.revealed = false;
       state.contextOpen = false;
       state.typeResult = null;
-      state.screen = target;
-      render();
+      setState({ screen: target });
     }
     return true;
   }
@@ -3405,15 +3396,13 @@
     if (!state.pretripScope || !PRETRIP().some((p) => p.scope === state.pretripScope)) {
       state.pretripScope = defaultPretripScope();
     }
-    state.screen = "pretrip";
-    render();
+    setState({ screen: "pretrip" });
   }
 
   function setPretripScope(scope) {
     if (state.pretripLock) return; // zugewiesene Aufgabe: Ziel ist fix, kein Wechsel
     if (!PRETRIP().some((p) => p.scope === scope)) return;
-    state.pretripScope = scope;
-    render();
+    setState({ pretripScope: scope });
   }
 
   function pretripVM() {
@@ -3463,8 +3452,7 @@
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
-    state.screen = "study";
-    render();
+    setState({ screen: "study" });
   }
 
   // Einen Pre-Trip-Tag als abgeschlossen vermerken (je Destination, distinkt, idempotent).
@@ -3492,8 +3480,7 @@
       const first = taskTargets()[0];
       if (first) state.taskItems = [targetValueToItem(first.value)];
     }
-    state.screen = "teacher";
-    render();
+    setState({ screen: "teacher" });
   }
 
   // Aus einem Backup-Payload eine kompakte Schüler-Auswertung bauen (rein).
@@ -3565,8 +3552,7 @@
   }
   function clearTeacher() {
     if (state.teacherStudents.length && !confirmAsk(t("teacher.confirmClear"))) return;
-    state.teacherStudents = [];
-    render();
+    setState({ teacherStudents: [] });
   }
   function printTeacher() { try { window.print(); } catch (e) { /* egal */ } }
 
@@ -3753,8 +3739,7 @@
   }
 
   function clearTaskSelection() {
-    state.taskItems = [];
-    render();
+    setState({ taskItems: [] });
   }
 
   // Aufgabe/Bundle erzeugen (Lehrkraft): aus der Auswahl einen Code bauen.
@@ -3877,8 +3862,7 @@
     if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
     if (!state.sheetStage) state.sheetStage = "all";
     if (!state.sheetMode) state.sheetMode = "full";
-    state.screen = "printsheet";
-    render();
+    setState({ screen: "printsheet" });
   }
 
   function printSheet() { try { window.print(); } catch (e) { /* egal */ } }
@@ -4197,8 +4181,7 @@
       asked: [], answers: [], difficulty: placement.START_DIFFICULTY,
       mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
     };
-    state.screen = "placement";
-    render();
+    setState({ screen: "placement" });
   }
 
   function pushPlacementQuestion(q) {
@@ -4441,8 +4424,7 @@
       asked: [], answers: [], difficulty: assessment.START_DIFFICULTY,
       mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
     };
-    state.screen = "assessment";
-    render();
+    setState({ screen: "assessment" });
   }
 
   // Laufenden Test (gamestats.assessmentProgress) wiederaufnehmen. true, wenn
@@ -4466,8 +4448,7 @@
       answeredFor: null,
       result: null,
     };
-    state.screen = "assessment";
-    render();
+    setState({ screen: "assessment" });
     speakCurrentAssessment(); // war die offene Frage ein Hör-Item, erneut vorlesen
     return true;
   }
@@ -4760,8 +4741,7 @@
     // Richtung: ES→native erwartet die muttersprachliche Antwort, native→ES die spanische.
     const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "native" : "es");
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
-    state.contextOpen = false;
-    render();
+    setState({ contextOpen: false });
   }
 
   // Kurzes Haptik-Feedback (nur wo unterstützt, z.B. Android-Chrome). Ignoriert sonst.
@@ -5041,8 +5021,7 @@
     // hat der Start-Reiter wieder Vorrang, deshalb wird er nicht persistiert.
     // screen zurück auf "home" setzen, falls man vom Tarea-Screen einen Reiter tippt.
     state.screen = "home";
-    state.homeTab = (tab === "lernen" || tab === "entdecken" || tab === "profil") ? tab : "start";
-    render();
+    setState({ homeTab: (tab === "lernen" || tab === "entdecken" || tab === "profil") ? tab : "start" });
   }
 
   function goHome() {
@@ -5061,8 +5040,7 @@
   // ----- Hostel Mode (Anwenden zu zweit) -----
   function openHostel() {
     dismissBadgeToast();
-    state.screen = "hostel";
-    render();
+    setState({ screen: "hostel" });
   }
 
   function openBattleSetup() {
@@ -5074,8 +5052,7 @@
       const n = profileName().slice(0, 14);
       if (n) state.battleNames = Object.assign({}, state.battleNames, { A: n });
     }
-    state.screen = "battleSetup";
-    render();
+    setState({ screen: "battleSetup" });
   }
 
   // Coordinator-Schnellstart („5-Minuten-Icebreaker"): springt ohne Setup direkt
@@ -5088,8 +5065,7 @@
 
   // Vor dem Start gewählte Battle-Länge merken (nur Umschalten, kein Start).
   function setBattleLength(value) {
-    state.battleLength = value;
-    render();
+    setState({ battleLength: value });
   }
 
   // Spielernamen aus den Setup-Feldern lesen (vor dem Start) und merken.
@@ -5157,8 +5133,7 @@
       suddenDeath: false,     // läuft/lief eine Stichrunde?
       challenge: null,
     };
-    state.screen = "battle";
-    render();
+    setState({ screen: "battle" });
   }
 
   // Verwendete Ids merken (für den Wiederholungsschutz), Liste begrenzen.
@@ -5219,15 +5194,13 @@
     b.current = "A";
     b.revealed = false;
     b.suddenDeath = true;
-    state.screen = "battle";
-    render();
+    setState({ screen: "battle" });
   }
 
   function battleAgain() {
     dismissBadgeToast();
     state.battle = null;
-    state.screen = "battleSetup";
-    render();
+    setState({ screen: "battleSetup" });
   }
 
   // Real-Life-Challenge auf dem Battle-Ende-Screen abhaken (Mutproben-Badges).
@@ -5239,8 +5212,7 @@
 
   function openRoleplaySetup() {
     dismissBadgeToast();
-    state.screen = "roleplaySetup";
-    render();
+    setState({ screen: "roleplaySetup" });
   }
 
   function startRoleplay(id) {
@@ -5250,8 +5222,7 @@
     state.roleplaySwapped = false;
     recordRoleplaySeen(id);
     syncBadges(Date.now(), true); // Rollenspiel-Badges freischalten + einblenden
-    state.screen = "roleplay";
-    render();
+    setState({ screen: "roleplay" });
   }
 
   function roleplaySwap() {
@@ -5301,20 +5272,17 @@
   function openSpickzettel() {
     dismissBadgeToast();
     state.screen = "spickzettel";
-    state.szShow = null;
-    render();
+    setState({ szShow: null });
   }
 
   // Großanzeige öffnen/schließen (Satz bildschirmfüllend zum Herzeigen).
   function szShow(id) {
     if (!cardById(id)) return;
-    state.szShow = id;
-    render();
+    setState({ szShow: id });
   }
 
   function szClose() {
-    state.szShow = null;
-    render();
+    setState({ szShow: null });
   }
 
   // Eine beliebige Karte per Id vorlesen (Spickzettel / Listen außerhalb der
@@ -5393,8 +5361,7 @@
   function openPrecios() {
     dismissBadgeToast();
     if (!preciosReady()) return;
-    state.screen = "preciosSetup";
-    render();
+    setState({ screen: "preciosSetup" });
   }
 
   function setPreciosCurrency(key) {
@@ -5445,8 +5412,7 @@
     if (p.idx >= p.total - 1) {
       recordPreciosResult(p);
       syncBadges(Date.now(), true);
-      state.screen = "preciosDone";
-      render();
+      setState({ screen: "preciosDone" });
       return;
     }
     p.idx += 1;
@@ -5515,8 +5481,7 @@
   function openConjugDrill() {
     dismissBadgeToast();
     if (!conjugReady()) return;
-    state.screen = "conjugSetup";
-    render();
+    setState({ screen: "conjugSetup" });
   }
 
   function setConjugLevel(level) {
@@ -5534,8 +5499,7 @@
     const queue = conjug.buildRound(data.CONJUGATION, level, CONJUG_ROUND);
     if (!queue.length) return;
     state.conjug = { level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
-    state.screen = "conjug";
-    render();
+    setState({ screen: "conjug" });
   }
 
   // Getippte Form akzentnachsichtig prüfen (matcher.normalize: á=a, ñ=n, ohne
@@ -5558,8 +5522,7 @@
     if (c.idx >= c.total - 1) {
       recordConjugResult(c);
       syncBadges(Date.now(), true);
-      state.screen = "conjugDone";
-      render();
+      setState({ screen: "conjugDone" });
       return;
     }
     c.idx += 1;
@@ -5632,8 +5595,7 @@
     dismissBadgeToast();
     yestoDisarm();
     if (!yestoReady()) return;
-    state.screen = "yestoSetup";
-    render();
+    setState({ screen: "yestoSetup" });
   }
 
   function startYesto(themeId) {
@@ -5695,8 +5657,7 @@
       recordYestoResult(y); // Zähler buchen, BEVOR die Badges ausgewertet werden
       syncBadges(Date.now(), true);
       yestoDisarm();
-      state.screen = "yestoDone";
-      render();
+      setState({ screen: "yestoDone" });
       return;
     }
     y.idx += 1;
@@ -5938,8 +5899,7 @@
 
   function openSearch() {
     dismissBadgeToast();
-    state.screen = "search";
-    render();
+    setState({ screen: "search" });
   }
 
   // Live-Eingabe: nur die Trefferliste neu zeichnen, NICHT die ganze Seite – so
@@ -5962,94 +5922,79 @@
 
   function openInfo() {
     dismissBadgeToast();
-    state.screen = "info";
-    render();
+    setState({ screen: "info" });
   }
 
   function openHistoria(region) {
     dismissBadgeToast();
     state.histRegion = region === "centro" ? "centro" : "sur";
-    state.screen = "historia";
-    render();
+    setState({ screen: "historia" });
   }
 
   function openKnigge() {
     dismissBadgeToast();
-    state.screen = "knigge";
-    render();
+    setState({ screen: "knigge" });
   }
 
   function openBebidas() {
     dismissBadgeToast();
-    state.screen = "bebidas";
-    render();
+    setState({ screen: "bebidas" });
   }
 
   // AM/PM-Tafel umschalten. Beim ersten Tippen die aktuelle (uhrzeitbasierte)
   // Voreinstellung aus dem VM übernehmen, dann gegenteilig kippen.
   function toggleBebida() {
     const cur = state.bebMode || bebDefaultMode();
-    state.bebMode = cur === "am" ? "pm" : "am";
-    render();
+    setState({ bebMode: cur === "am" ? "pm" : "am" });
   }
 
   function openRegatear() {
     dismissBadgeToast();
-    state.screen = "regatear";
-    render();
+    setState({ screen: "regatear" });
   }
 
   function openLogistica() {
     dismissBadgeToast();
-    state.screen = "logistica";
-    render();
+    setState({ screen: "logistica" });
   }
 
   function openSalud() {
     dismissBadgeToast();
-    state.screen = "salud";
-    render();
+    setState({ screen: "salud" });
   }
 
   function openMusica() {
     dismissBadgeToast();
-    state.screen = "musica";
-    render();
+    setState({ screen: "musica" });
   }
 
   function openFotos() {
     dismissBadgeToast();
-    state.screen = "fotos";
-    render();
+    setState({ screen: "fotos" });
   }
 
   function openFlirt() {
     dismissBadgeToast();
-    state.screen = "flirt";
-    render();
+    setState({ screen: "flirt" });
   }
 
   function openBailar() {
     dismissBadgeToast();
-    state.screen = "bailar";
-    render();
+    setState({ screen: "bailar" });
   }
 
   function selectCountry(id) {
-    state.countryId = id;
-    render();
+    setState({ countryId: id });
   }
 
   // ----- Statistik-Navigation -----
   function goStats() {
     dismissBadgeToast();
-    state.screen = "stats";
-    render();
+    setState({ screen: "stats" });
   }
 
   function setStatsFilter(filter) {
-    state.statsFilter = filter;
-    render();
+    setState({ statsFilter: filter });
   }
 
   // confirm()-Wrapper: fehlt confirm (manche WebViews), ist die Antwort NEIN –
@@ -6077,8 +6022,7 @@
     state.cardId = id;
     state.backTo = backTo || "stats";
     state.contextOpen = false;
-    state.screen = "card";
-    render();
+    setState({ screen: "card" });
   }
 
   // Genau diese eine Karte üben (von der Detailseite aus).
@@ -6095,8 +6039,7 @@
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
-    state.screen = "study";
-    render();
+    setState({ screen: "study" });
   }
 
   // ----- Eigene Karten (Editor) -----
@@ -6125,8 +6068,7 @@
   function openEditor() {
     dismissBadgeToast();
     editorMsg = null;
-    state.screen = "editor";
-    render();
+    setState({ screen: "editor" });
   }
 
   // „App installieren" (Android/Chromium): nativen Installations-Dialog zeigen.
@@ -7152,8 +7094,7 @@
   function onKeydown(e) {
     // Ziel-Picker-Modal (Modo profe / Aktivitätsblatt): Escape schließt.
     if (state.targetPicker && e.key === "Escape") {
-      state.targetPicker = null;
-      render();
+      setState({ targetPicker: null });
       return;
     }
     // Spickzettel-Großanzeige: Escape schließt.
@@ -7286,8 +7227,7 @@
   function markUpdateReady(worker) {
     state.swWaiting = worker || state.swWaiting;
     if (state.swUpdate) return; // Banner schon sichtbar
-    state.swUpdate = true;
-    render();
+    setState({ swUpdate: true });
   }
 
   // "Jetzt laden": den wartenden Worker aktivieren -> controllerchange -> Reload.
