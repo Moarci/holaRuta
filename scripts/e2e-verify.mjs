@@ -124,7 +124,7 @@ async function runSuite(browser, root, label) {
   try {
     // ===== 1) Boot & defer, CSP, Theme, Splash, Inline-Styles =====
     {
-      const { ctx, p, errs, csp } = await newPage("flip");
+      const { ctx, p, csp } = await newPage("flip");
       await p.goto(base, { waitUntil: "networkidle" });
       const scOk = await p.evaluate(() => !!(window.SC && window.SC.app && window.SC.ui && window.SC.data));
       check("Boot & defer: window.SC vollständig", scOk);

@@ -277,10 +277,9 @@ test("Tippfehler: fehlender Anfangsbuchstabe ist ein Tippfehler, keine Flexion",
 test("Tippfehler-Budget: 8 Zeichen lassen 1 Fehler zu, 7 Zeichen keinen", () => {
   // 7 Zeichen (< 8) -> Budget 0: ein Vertipper im Inneren zählt NICHT.
   no("xanjero", { es: "cajero" }, "es");          // 6 Zeichen Ziel: streng
-  // 8 Zeichen -> Budget 1: ein Vertipper im Inneren zählt.
-  let r = matcher.check("entiendl", { es: "entiende" }); // Wortende-Flexion? l vs e am Ende
-  // (Wortende -> kein Typo); stattdessen Inneres prüfen:
-  r = matcher.check("entirnde", { es: "entiende" });     // r statt e im Inneren, 8 Zeichen
+  // 8 Zeichen -> Budget 1: ein Vertipper im INNEREN zählt (ein Dreher am Wortende
+  // wäre Flexion; daher bewusst innen: r statt e).
+  const r = matcher.check("entirnde", { es: "entiende" }); // r statt e im Inneren, 8 Zeichen
   assert.equal(r.correct, true);
   assert.equal(r.typo, true);
 });

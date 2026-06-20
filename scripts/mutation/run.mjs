@@ -71,7 +71,7 @@ function runCatalog() {
 function changedModules() {
   let base = "HEAD~1";
   if (process.env.GITHUB_BASE_REF) base = `origin/${process.env.GITHUB_BASE_REF}`;
-  let files = [];
+  let files; // wird in jedem Pfad gesetzt (try/catch) – kein toter Initialwert
   try {
     files = execSync(`git diff --name-only ${base}...HEAD`, { cwd: ROOT, encoding: "utf8" }).split("\n").filter(Boolean);
   } catch {

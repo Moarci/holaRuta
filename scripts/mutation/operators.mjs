@@ -92,7 +92,7 @@ export function generateMutants(src) {
 
   // Logisch &&/||
   for (const [tok, rep] of [["&&", "||"], ["||", "&&"]]) {
-    const re = new RegExp(tok.replace(/[|&]/g, "\\$&"), "g");
+    const re = new RegExp(tok.replace(/[\\|&]/g, "\\$&"), "g");
     for (const { index } of scan(mask, re)) add(index, 2, rep, "logical", tok);
   }
 

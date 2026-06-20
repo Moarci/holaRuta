@@ -55,7 +55,7 @@ function read(file) {
 function lazyModules() {
   const html = read(SOURCE);
   const tagged = new Set(
-    [...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*><\/script>/gi)]
+    [...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*>\s*<\/script\s*>/gi)]
       .map((m) => m[1].replace(/^\.\//, ""))
   );
   return readAssets()
@@ -79,16 +79,18 @@ function build() {
 
   // 3) Alle externen Skripte einbetten (in Reihenfolge des Vorkommens).
   //    Ein im Code vorkommendes "</script>" würde sonst den eingebetteten Block
-  //    vorzeitig schließen -> escapen, damit der HTML-Parser nicht stolpert.
-  const inlineCode = (src) => read(src).replace(/<\/script>/gi, "<\\/script>");
-  html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*><\/script>/gi, (m, src) => {
+  //    vorzeitig schließen -> escapen. Bewusst OHNE festes ">", damit auch
+  //    "</script >"/"</script\n>" erfasst werden (HTML beendet den Block auch bei
+  //    Whitespace vor ">"; CodeQL js/bad-tag-filter).
+  const inlineCode = (src) => read(src).replace(/<\/script/gi, "<\\/script");
+  html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*>\s*<\/script\s*>/gi, (m, src) => {
     inlined.push(src);
     const code = inlineCode(src);
     // Edition-Build: die Edition-Config direkt vor config.js einbetten, damit
     // config.js sie beim Merge sieht (setzt window.SC.editionConfig).
     if (EDITION && src === "config.js") {
       const edFile = path.join("editions", `${EDITION}.js`);
-      const edCode = read(edFile).replace(/<\/script>/gi, "<\\/script>");
+      const edCode = read(edFile).replace(/<\/script/gi, "<\\/script");
       inlined.push(edFile);
       return `<script>\n${edCode}\n</script>\n<script>\n${code}\n</script>`;
     }
