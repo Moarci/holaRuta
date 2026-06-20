@@ -82,13 +82,22 @@ jobs:
   #
   # Bewusst KEIN Deploy-Blocker: `deploy` hängt nur am schnellen, browserlosen
   # `test`-Job; dieser e2e-Job ist ein zusätzliches PR-/Push-Signal (browser-
-  # basiert, daher etwas langsamer und potenziell seltener mal flaky). Soll er den
-  # Merge hart blockieren, unter Settings → Branches den Check „e2e" erforderlich
-  # machen.
+  # basiert, daher etwas langsamer und potenziell seltener mal flaky).
   #
   # Playwright ist KEINE Repo-Dependency (das Projekt bleibt laufzeit-dependency-
-  # frei): hier flüchtig (--no-save) und versionsgepinnt installiert. Den Browser-
-  # Download könnte man später per actions/cache (~/.cache/ms-playwright) sparen.
+  # frei): hier flüchtig (--no-save) und versionsgepinnt installiert.
+  #
+  # Bewusst schlank gehalten. Erweiterungen NUR bei konkretem Bedarf nachrüsten
+  # (sonst zahlt man dauerhaft Komplexität für wenig Nutzen):
+  #   • Erforderlicher Merge-Check: erst schalten, wenn der Job über ~10–20 Läufe
+  #     stabil grün war (flaky Browser-Jobs als Hard-Gate blockieren sonst legitime
+  #     PRs). Setzen unter Settings → Branches → Required status checks: „e2e".
+  #   • Failure-Screenshots als Artefakt hochladen: erst, wenn ein rein VISUELLER
+  #     Layout-Bug aus dem Log-Report allein nicht klar wird (das Skript gibt Ist/
+  #     Soll bereits als Text aus). Bräuchte actions/upload-artifact – dann SHA
+  #     sauber nachschlagen (Repo pinnt Actions strikt per SHA, nicht per Tag).
+  #   • Browser-Caching (actions/cache auf ~/.cache/ms-playwright, Key = Playwright-
+  #     Version): erst, wenn CI-Dauer/-Minuten wirklich stören.
   e2e:
     runs-on: ubuntu-latest
     steps:
