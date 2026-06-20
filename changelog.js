@@ -27,6 +27,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.106.0",
+      date: "2026-06-20",
+      title: "Neues Modul „Bailar“: Tanzen in Lateinamerika mit Schritt-Diagrammen",
+      titleEn: "New module “Bailar”: dancing in Latin America with step diagrams",
+      items: [
+        "💃 Unter „Entdecken“ gibt es jetzt „Bailar“: die wichtigsten Tänze (Salsa, Bachata, Merengue, Cumbia, Cha-cha-chá, Tango, Reggaetón) – jeweils mit einem stilisierten Schritt-Diagramm am Boden, dessen Fußabdrücke in Tanzreihenfolge aufleuchten (mit Play/Pause), dem Zählrhythmus, Tipps & typischen Fehlern, einem kurzen spanischen Lesetraining und Links zu Tutorial-Videos. Dazu die Sätze, um jemanden zum Tanzen aufzufordern, ein Tanz-Knigge und ein Glossar.",
+      ],
+      itemsEn: [
+        "💃 “Discover” now has “Bailar”: the most important dances (salsa, bachata, merengue, cumbia, cha-cha-chá, tango, reggaetón) – each with a stylised step diagram on the floor whose footprints light up in dance order (with play/pause), the counting rhythm, tips & common mistakes, a short Spanish reading exercise and links to tutorial videos. Plus the phrases to ask someone to dance, dance etiquette and a glossary.",
+      ],
+    },
+    {
       version: "1.105.0",
       date: "2026-06-20",
       title: "Modo profe stark verbessert: Niveau-Verteilung, Sortierung & CSV",
