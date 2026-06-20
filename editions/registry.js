@@ -25,7 +25,7 @@
       brandName: "HolaRuta · ECOS",
       // Karibik-Teal als thematischer Akzent (Cartagena). NÄHERUNG – bei Freigabe ersetzen.
       accent: { brand: "#1F7A8C", brandInk: "#155C69" },
-      partner: { name: "ECOS · Cartagena", url: "https://ecos-spanishschool.com/" }, // Backlink zur Partner-Homepage (Profil-Credit)
+      partner: { name: "ECOS · Cartagena", url: "https://www.ecosescuela.com/" }, // Backlink zur Partner-Homepage (Profil-Credit)
       // logo: null -> sauberer Text-Credit (Markenfarbe). Echtes, freigegebenes
       // Asset hier als https:- oder data:image-URL setzen, dann erscheint es als Bild.
       logo: null,
