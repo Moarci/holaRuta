@@ -5553,8 +5553,20 @@
     const y = state.yesto;
     if (!y || state.screen !== "yesto" || y.phase !== "count") return;
     y.count -= 1;
-    if (y.count <= 0) { y.phase = "reveal"; buzz(10); }
-    render();
+    if (y.count <= 0) {
+      // Auflösung: hier ändert sich die ganze Bühne (Wort + Bewerten) -> volles
+      // render(); dessen Nach-Mount schaltet den Timer ab (Phase ist nicht mehr "count").
+      y.phase = "reveal";
+      buzz(10);
+      render();
+      return;
+    }
+    // Reiner Zähl-Tick: nur die Ziffer im DOM tauschen statt der ganze App-Neuaufbau.
+    // So läuft kein render() pro Sekunde, das sonst Fokus (manageFocus) und Scroll
+    // anfasst. Fehlt der Knoten ausnahmsweise, fällt es sicher auf render() zurück.
+    const num = document.querySelector(".ye-count__num");
+    if (num) num.textContent = String(y.count); else render();
+    yestoArm(); // nächsten Tick scharf schalten (ohne render())
   }
 
   // Sofort auflösen (Countdown überspringen) – für Ungeduldige & Screenreader.
