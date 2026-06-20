@@ -24,6 +24,7 @@
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
   const fotografia = window.SC.fotografia || null; // Fotos & Videos: tolle Reisebilder (optional)
+  const musica = window.SC.musica || null;       // Música: Genres LatAm + Spotify/Apple-Deep-Links (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const assessment = window.SC.assessment || null; // HolaRuta Nivel-Test (ausführlich, optional)
@@ -373,6 +374,7 @@
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
+      hasMusica: !!musica,       // Música (Genres LatAm + Spotify/Apple-Links)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
@@ -872,6 +874,38 @@
       apps: loc(fotografia.APPS || []),
       glossary: loc(fotografia.GLOSSARY || []),
       checklist: loc(fotografia.CHECKLIST || []),
+    };
+  }
+
+  // Música: die großen Genres LatAms (mit ES-Lesetraining + Spotify/Apple-Deep-
+  // Links), der Sound des gewählten Reiselands (state.countryId wie Bebidas/
+  // Länderkunde), die Sätze zum Reden/Tanzen und ein Glossar. Pass-Through wie
+  // saludVM; zusätzlich die Länder-Auswahl wie bebidasVM, damit der „Sound deines
+  // Reiselands" immer das Land der Reise trifft.
+  function musicaVM() {
+    if (!musica) return { intro: "", genres: [], phrases: [], glossary: [], country: null, countryData: null, groups: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    const list = countries ? countries.LIST : [];
+    const regions = countries ? countries.REGIONS : [];
+    const country = list.find((c) => c.id === state.countryId) || list[0] || null;
+    const groups = regions
+      .map((region) => ({
+        region,
+        countries: list
+          .filter((c) => c.region === region)
+          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+      }))
+      .filter((g) => g.countries.length > 0);
+    const cd = (country && musica.COUNTRY[country.id]) ? loc(musica.COUNTRY[country.id]) : null;
+    return {
+      intro: (en && musica.INTRO_EN) ? musica.INTRO_EN : musica.INTRO,
+      genres: loc(musica.GENRES || []),
+      phrases: loc(musica.PHRASES || []),
+      glossary: loc(musica.GLOSSARY || []),
+      country: country ? { id: country.id, name: country.name, flag: country.flag } : null,
+      countryData: cd,
+      groups,
     };
   }
 
@@ -2924,6 +2958,7 @@
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
     else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
     else if (state.screen === "fotos") root.innerHTML = ui.renderFotos(fotosVM());
+    else if (state.screen === "musica") root.innerHTML = ui.renderMusica(musicaVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "social") root.innerHTML = ui.renderSocial(socialVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
@@ -5569,6 +5604,7 @@
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
     fotos: !!fotografia,
+    musica: !!musica,
     bebidas: !!(bebidas && countries),
   };
 
@@ -5668,6 +5704,22 @@
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
     pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
+
+    // Música: eigene Form (GENRES + COUNTRY) statt TOPICS – darum ein eigener
+    // Heuhaufen aus Genres (Name/Region/Beschreibung/Künstler/ES-Text), Sätzen,
+    // Glossar und den Landes-Sounds. Ein Treffer bringt die ganze Seite nach vorn.
+    if (musica) {
+      const genres = (musica.GENRES || []).map((g) => [g.name, g.origin, g.originEn, g.desc, g.descEn, g.artists, g.es, (g.vocab || []).map((v) => [v.es, v.de, v.en])]);
+      const phrases = (musica.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
+      const gloss = (musica.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
+      const sounds = Object.keys(musica.COUNTRY || {}).map((k) => { const c = musica.COUNTRY[k]; return [c.genre, c.genreEn, c.artist, c.song]; });
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "🎵", title: "Música", sub: t("discover.subMusica"),
+        action: "open-musica",
+        hay: searchHay(["musica music musik canciones genero spotify apple cumbia salsa reggaeton tango mariachi", musica.INTRO, musica.INTRO_EN, genres, phrases, gloss, sounds]),
+      });
+    }
 
     // Historia (Süd- & Mittelamerika): je ein Treffer für die ganze Erklärseite
     // (Epochen, Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
@@ -5782,6 +5834,12 @@
   function openSalud() {
     dismissBadgeToast();
     state.screen = "salud";
+    render();
+  }
+
+  function openMusica() {
+    dismissBadgeToast();
+    state.screen = "musica";
     render();
   }
 
@@ -6388,6 +6446,7 @@
     logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
     salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
     fotos:         { icon: "📸", title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
+    musica:        { icon: "🎵", title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -6459,6 +6518,8 @@
         return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
       case "fotos":
         return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
+      case "musica":
+        return cut((musicaVM().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
       default:
         return [];
     }
@@ -6623,6 +6684,7 @@
     else if (action === "open-logistica") openLogistica();
     else if (action === "open-salud") openSalud();
     else if (action === "open-fotos") openFotos();
+    else if (action === "open-musica") openMusica();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
@@ -7079,6 +7141,7 @@
       logistica: openLogistica,
       salud: openSalud,
       fotos: openFotos,
+      musica: openMusica,
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
       // Einstufungs-Tests: ein geteiltes Ergebnis-Sharepic (Motiv „assessment“/

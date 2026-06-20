@@ -1471,13 +1471,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Sprungmarken-Leiste: gemeinsame Basis für Historia (.hist-nav),
    Tiempos (.ti-nav), Spickzettel (.sz-nav) und Fotos y videos (.ft-nav). Die
    Farbverlauf-Kante der Spickzettel-Chips kommt zusätzlich im SPICKZETTEL-Abschnitt dazu. */
-.hist-nav, .ti-nav, .sz-nav, .ft-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.hist-nav__chip, .ti-nav__chip, .sz-nav__chip, .ft-nav__chip {
+.hist-nav, .ti-nav, .sz-nav, .ft-nav, .mus-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip, .ti-nav__chip, .sz-nav__chip, .ft-nav__chip, .mus-nav__chip {
   display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
   font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
   background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
 }
-.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active, .ft-nav__chip:active { transform: scale(0.96); }
+.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active, .ft-nav__chip:active, .mus-nav__chip:active { transform: scale(0.96); }
 /* Angesprungene Abschnitte nicht bündig an den oberen Rand kleben lassen. */
 .cinfo-sect { scroll-margin-top: 12px; }
 
@@ -1751,6 +1751,40 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .foto-app { flex-direction: column; align-items: center; text-align: center; }
   .foto-app__bullets li { text-align: left; }
 }
+
+/* Música: Genre-Herkunft als zweite Zeile im Titel, Künstler-Chips, die
+   Spotify-/Apple-Music-Deep-Links und die „Sound deines Reiselands"-Karte. */
+.mus-genre__origin { display: block; margin-top: 2px; font-family: var(--font); font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+.mus-artists { margin: 4px 0 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.mus-artists__cap { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); }
+.mus-artists__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mus-artist {
+  display: inline-block; padding: 4px 10px; border-radius: 999px;
+  background: var(--surface); border: 1.5px solid var(--line);
+  font-size: 0.82rem; font-weight: 600; color: var(--ink);
+}
+/* Zwei Deep-Link-Knöpfe nebeneinander; brechen auf schmalen Schirmen um. */
+.mus-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.mus-link {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px;
+  border-radius: 999px; font-weight: 700; font-size: 0.9rem; text-decoration: none;
+  border: 1.5px solid transparent; line-height: 1;
+}
+.mus-link:active { transform: scale(0.97); }
+.mus-link--spotify { background: #1DB954; color: #06210F; }
+.mus-link--apple { background: #1B1B1F; color: #FFFFFF; }
+[data-theme="dark"] .mus-link--apple { background: #2A2A30; }
+
+/* „Sound deines Reiselands": kompakte Karte unter dem Land-Auswähler. */
+.mus-country {
+  margin-top: 10px; padding: 14px; border-radius: var(--r-md);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+}
+.mus-country__head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.mus-country__flag { font-size: 2rem; line-height: 1; }
+.mus-country__meta { min-width: 0; }
+.mus-country__genre { font-family: var(--font-display); font-size: 1.1rem; color: var(--ink); line-height: 1.2; }
+.mus-country__song { margin-top: 2px; font-size: 0.9rem; color: var(--ink-soft); }
 
 /* „Heute": Spannungen mit Status-Plakette. */
 .hist-tens { display: flex; flex-direction: column; gap: 12px; }
