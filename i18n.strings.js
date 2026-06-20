@@ -281,6 +281,8 @@
     tripRouteCap: "Deine Route",
     tripSwitchHint: "Tippen hängt das Land an deine Zeitleiste an – z. B. zuerst El Salvador, dann Kolumbien, dann Peru.",
     tripStopRemove: "Stopp entfernen",
+    tripStopDrag: "Stopp ziehen, um die Reihenfolge zu ändern",
+    tripRouteReorderHint: "Mit dem Griff ⠿ ziehen, um die Reihenfolge zu ändern.",
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Onboarding (einmaliger Willkommens-Schritt)
     // Erklär-Slides ganz am Anfang: Überblick „wie funktioniert die App, welcher Umfang".
@@ -481,6 +483,8 @@
     tripRouteCap: "Your route",
     tripSwitchHint: "Tap to add a country to your timeline — e.g. first El Salvador, then Colombia, then Peru.",
     tripStopRemove: "Remove stop",
+    tripStopDrag: "Drag to reorder stop",
+    tripRouteReorderHint: "Drag the ⠿ handle to change the order.",
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
     onboardSlideSkip: "Skip",
     onboardSlideStart: "Let's go",

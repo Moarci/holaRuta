@@ -343,37 +343,52 @@
     { id: "chile",     flag: "🇨🇱", dest: "Chile" },
     { id: "bolivia",   flag: "🇧🇴", dest: "Bolivien" },
   ];
+  // Einklappbar (kompakter im Profil): die Länder-Chips stecken in einem aufklappbaren
+  // Abschnitt und sind standardmäßig zugeklappt, damit das Profil nicht ausufert.
   function tripCountrySwitch(vm) {
     const inRoute = Array.isArray(vm.tripRouteIds) ? vm.tripRouteIds : [];
+    const open = !!vm.tripSwitchOpen; // Standard: eingeklappt
     const chips = TRIP_COUNTRIES.map((c) => {
       const active = inRoute.indexOf(c.id) !== -1;
       return `<button type="button" class="tripchip ${active ? "is-active" : ""}" data-action="add-trip-stop"
                      data-country="${c.id}" data-dest="${esc(c.dest)}" data-flag="${esc(c.flag)}" aria-pressed="${active}">${c.flag} ${esc(c.dest)}</button>`;
     }).join("");
     return `
-      <div class="tripswitch" role="group" aria-label="${esc(t("home.tripSwitchCap"))}">
-        <span class="tripswitch__cap">${esc(t("home.tripSwitchCap"))}</span>
-        <div class="tripswitch__chips">${chips}</div>
-        <p class="tripswitch__hint">${esc(t("home.tripSwitchHint"))}</p>
+      <div class="tripswitch ${open ? "is-open" : "is-collapsed"}" role="group" aria-label="${esc(t("home.tripSwitchCap"))}">
+        <button type="button" class="tripswitch__toggle" data-action="toggle-trip-switch" aria-expanded="${open}">
+          <span class="tripswitch__cap">${esc(t("home.tripSwitchCap"))}</span>
+          <span class="tripswitch__chev" aria-hidden="true">${open ? "▾" : "▸"}</span>
+        </button>
+        ${open ? `<div class="tripswitch__chips">${chips}</div>
+        <p class="tripswitch__hint">${esc(t("home.tripSwitchHint"))}</p>` : ""}
       </div>`;
   }
 
   // Editierbare Reise-Zeitleiste (nur im Profil): die Stopps in Reihenfolge, jeder mit
-  // einem ×-Knopf zum Entfernen. So entsteht z. B. El Salvador → Kolumbien → Peru.
+  // einem Greif-Griff (⠿) zum Umsortieren per Drag & Drop und einem ×-Knopf zum
+  // Entfernen. So entsteht z. B. El Salvador → Kolumbien → Peru. Der Abschnitt lässt
+  // sich einklappen, damit das Profil kompakt bleibt (Route steht auch in der Karte oben).
   function tripTimeline(vm) {
     const route = vm.trip && Array.isArray(vm.trip.route) ? vm.trip.route : [];
     if (!route.length) return "";
+    const open = vm.tripRouteOpen !== false; // Standard: aufgeklappt (Drag sichtbar)
     const items = route.map((s, i) => `
-      <li class="triptl__item">
+      <li class="triptl__item" data-index="${i}">
+        <span class="triptl__drag" data-action="drag-trip-stop" role="button" tabindex="-1" aria-label="${esc(t("home.tripStopDrag"))}" title="${esc(t("home.tripStopDrag"))}">⠿</span>
         <span class="triptl__num">${i + 1}</span>
         ${s.flag ? `<span class="triptl__flag">${esc(s.flag)}</span>` : ""}
         <span class="triptl__name">${esc(s.dest)}</span>
         <button type="button" class="triptl__rm" data-action="remove-trip-stop" data-index="${i}" aria-label="${esc(t("home.tripStopRemove"))}">✕</button>
       </li>`).join("");
     return `
-      <div class="triptl" role="group" aria-label="${esc(t("home.tripRouteCap"))}">
-        <span class="triptl__cap">${esc(t("home.tripRouteCap"))}</span>
-        <ol class="triptl__list">${items}</ol>
+      <div class="triptl ${open ? "is-open" : "is-collapsed"}" role="group" aria-label="${esc(t("home.tripRouteCap"))}">
+        <button type="button" class="triptl__toggle" data-action="toggle-trip-route" aria-expanded="${open}">
+          <span class="triptl__cap">${esc(t("home.tripRouteCap"))}</span>
+          <span class="triptl__badge">${route.length}</span>
+          <span class="triptl__chev" aria-hidden="true">${open ? "▾" : "▸"}</span>
+        </button>
+        ${open ? `<ol class="triptl__list">${items}</ol>
+        <p class="triptl__hint">${esc(t("home.tripRouteReorderHint"))}</p>` : ""}
       </div>`;
   }
 

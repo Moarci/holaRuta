@@ -138,6 +138,8 @@
     comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
     // ----- Trip-Ziel (Countdown + Tagesziel) -----
     tripEdit: false,         // Trip-Ziel-Formular auf der Startseite aufgeklappt?
+    tripRouteOpen: true,     // Route-Zeitleiste im Profil aufgeklappt? (Standard offen – Drag sichtbar)
+    tripSwitchOpen: false,   // Schnellwechsel-Länderchips im Profil aufgeklappt? (Standard eingeklappt – kompakter)
     // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
     searchQuery: "",         // aktueller Suchbegriff (lebt nur in der Sitzung)
   };
@@ -399,6 +401,8 @@
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
+      tripRouteOpen: state.tripRouteOpen !== false, // Route-Zeitleiste auf-/eingeklappt
+      tripSwitchOpen: !!state.tripSwitchOpen,        // Schnellwechsel-Chips auf-/eingeklappt
       tripRouteIds: (gamestats.tripGoal && Array.isArray(gamestats.tripGoal.route) ? gamestats.tripGoal.route : []).map((s) => s.id), // Länder schon in der Route (Chip-Markierung)
       tripCountryBev: tripCountryBev(), // Tag-/Abendgetränk + Akzent + Gruß fürs Erscheinungsbild-Schild (oder null)
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
@@ -1390,6 +1394,18 @@
     const route = cur && Array.isArray(cur.route) ? cur.route.slice() : [];
     if (index < 0 || index >= route.length) return;
     route.splice(index, 1);
+    saveTripRoute(cur, route);
+  }
+
+  // Einen Stopp in der Zeitleiste verschieben (Drag & Drop im Profil): aus Position
+  // `from` herausnehmen und an Position `to` wieder einsetzen. Die neue Reihenfolge
+  // wird gespeichert; saveTripRoute rendert neu (Nummerierung & Karten-Header ziehen mit).
+  function moveTripStop(from, to) {
+    const cur = gamestats.tripGoal;
+    const route = cur && Array.isArray(cur.route) ? cur.route.slice() : [];
+    if (from < 0 || from >= route.length || to < 0 || to >= route.length || from === to) return;
+    const moved = route.splice(from, 1)[0];
+    route.splice(to, 0, moved);
     saveTripRoute(cur, route);
   }
 
@@ -2674,6 +2690,63 @@
     bpDrag = null;
     const stage = root.querySelector("[data-bp-stage].is-grab");
     if (stage) stage.classList.remove("is-grab");
+  }
+
+  // ----- Reise-Route per Drag & Drop umsortieren (Profil-Zeitleiste) -----
+  // Greift man den ⠿-Griff eines Routen-Eintrags, ziehen wir den Listeneintrag live
+  // im DOM zwischen die Geschwister (Einfügemarke = Mitte des überfahrenen Eintrags)
+  // und nummerieren neu. Erst beim Loslassen wird die neue Reihenfolge in die Route
+  // übernommen (moveTripStop -> saveTripRoute -> render). Bis dahin kein Re-Render,
+  // damit der gezogene Eintrag nicht unter dem Finger verschwindet.
+  let tripDrag = null;
+  function tripRenumber(list) {
+    const items = list.querySelectorAll(".triptl__item");
+    for (let i = 0; i < items.length; i++) {
+      const num = items[i].querySelector(".triptl__num");
+      if (num) num.textContent = String(i + 1);
+    }
+  }
+  function onTripPointerDown(e) {
+    if (e.button != null && e.button > 0) return; // nur primäre Maustaste / Touch / Stift
+    const handle = e.target.closest("[data-action='drag-trip-stop']");
+    if (!handle) return;
+    const item = handle.closest(".triptl__item");
+    const list = item && item.closest(".triptl__list");
+    if (!item || !list) return;
+    e.preventDefault();
+    const items = Array.from(list.querySelectorAll(".triptl__item"));
+    tripDrag = { list, item, startIndex: items.indexOf(item), pointerId: e.pointerId };
+    item.classList.add("is-dragging");
+    list.classList.add("is-reordering");
+    try { handle.setPointerCapture(e.pointerId); } catch (_) { /* ältere Browser ohne Pointer-Capture */ }
+  }
+  function onTripPointerMove(e) {
+    if (!tripDrag || (tripDrag.pointerId != null && e.pointerId !== tripDrag.pointerId)) return;
+    e.preventDefault();
+    const list = tripDrag.list, item = tripDrag.item;
+    const y = e.clientY;
+    const others = list.querySelectorAll(".triptl__item:not(.is-dragging)");
+    let before = null;
+    for (let i = 0; i < others.length; i++) {
+      const r = others[i].getBoundingClientRect();
+      if (y < r.top + r.height / 2) { before = others[i]; break; }
+    }
+    if (before) {
+      if (item.nextElementSibling !== before) list.insertBefore(item, before);
+    } else if (list.lastElementChild !== item) {
+      list.appendChild(item);
+    }
+    tripRenumber(list);
+  }
+  function onTripPointerUp() {
+    if (!tripDrag) return;
+    const list = tripDrag.list, item = tripDrag.item, startIndex = tripDrag.startIndex;
+    tripDrag = null;
+    item.classList.remove("is-dragging");
+    list.classList.remove("is-reordering");
+    const items = Array.from(list.querySelectorAll(".triptl__item"));
+    const endIndex = items.indexOf(item);
+    if (endIndex >= 0 && endIndex !== startIndex) moveTripStop(startIndex, endIndex);
   }
 
   // ----- Zurück-Geste (Android-Gestensteuerung / Browser-Zurück) -----
@@ -6514,6 +6587,9 @@
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "add-trip-stop") addTripStop(el.dataset.country, el.dataset.dest, el.dataset.flag);
     else if (action === "remove-trip-stop") removeTripStop(Number(el.dataset.index));
+    else if (action === "toggle-trip-route") { state.tripRouteOpen = state.tripRouteOpen === false; render(); }
+    else if (action === "toggle-trip-switch") { state.tripSwitchOpen = !state.tripSwitchOpen; render(); }
+    else if (action === "drag-trip-stop") { /* Ziehen wird über die Pointer-Handler erledigt; ein reiner Tap macht nichts */ }
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
     else if (action === "set-gender") saveUserGender(el.dataset.gender); // ♀/♂ (Onboarding + Profil)
@@ -7046,6 +7122,11 @@
   window.addEventListener("pointermove", onBodyPointerMove);
   window.addEventListener("pointerup", onBodyPointerUp);
   window.addEventListener("pointercancel", onBodyPointerUp);
+  // Reise-Route per Drag & Drop umsortieren (Profil-Zeitleiste).
+  root.addEventListener("pointerdown", onTripPointerDown);
+  window.addEventListener("pointermove", onTripPointerMove);
+  window.addEventListener("pointerup", onTripPointerUp);
+  window.addEventListener("pointercancel", onTripPointerUp);
   setupKeyboardScroll(); // fokussiertes Eingabefeld über der Tastatur halten (Diálogos, Schreiben, Suche …)
   applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
   // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).
