@@ -873,6 +873,19 @@ test("data.numberContext: reine Zahlen-Karten bekommen praktischen Preis-Kontext
   assert.match(z.context.sentenceDe, /Pesos/);
 });
 
+test("data.numberContext: generierter Zahl-Kontext hat vollständige englische Pendants", () => {
+  const nums = data.CARDS.filter((c) => /^z\d+$/.test(c.id));
+  assert.ok(nums.length > 0, "keine Zahlen-Karten gefunden");
+  const bad = nums.filter((c) => {
+    const x = c.context;
+    return !x || !x.sentenceEn || !x.situationEn || !x.noteEn;
+  });
+  assert.equal(bad.length, 0, `Zahl-Kontext ohne EN: ${bad.map((c) => c.id).join(", ")}`);
+  // Stichprobe: englischer Satz spiegelt den deutschen Betrag (Pesos -> pesos).
+  const z = data.CARDS.find((c) => c.id === "z58");
+  assert.match(z.context.sentenceEn, /pesos/);
+});
+
 test("data.numberContext: spanische Grammatik korrekt (un peso / un / de pesos)", () => {
   const es = (id) => data.CARDS.find((c) => c.id === id).context.sentenceEs;
   // genau 1: Singular "un peso", kein "uno pesos"
