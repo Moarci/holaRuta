@@ -24,6 +24,7 @@
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
   const fotografia = window.SC.fotografia || null; // Fotos & Videos: tolle Reisebilder (optional)
+  const musica = window.SC.musica || null;       // Música: Genres LatAm + Spotify/Apple-Deep-Links (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
   const yesto = window.SC.yesto || null;         // „¿Y esto?“: Bild-Vokabel-Modus mit Countdown (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
@@ -141,6 +142,8 @@
     comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
     // ----- Trip-Ziel (Countdown + Tagesziel) -----
     tripEdit: false,         // Trip-Ziel-Formular auf der Startseite aufgeklappt?
+    tripRouteOpen: true,     // Route-Zeitleiste im Profil aufgeklappt? (Standard offen – Drag sichtbar)
+    tripSwitchOpen: false,   // Schnellwechsel-Länderchips im Profil aufgeklappt? (Standard eingeklappt – kompakter)
     // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
     searchQuery: "",         // aktueller Suchbegriff (lebt nur in der Sitzung)
   };
@@ -374,6 +377,7 @@
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
+      hasMusica: !!musica,       // Música (Genres LatAm + Spotify/Apple-Links)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
 
@@ -404,6 +408,8 @@
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
+      tripRouteOpen: state.tripRouteOpen !== false, // Route-Zeitleiste auf-/eingeklappt
+      tripSwitchOpen: !!state.tripSwitchOpen,        // Schnellwechsel-Chips auf-/eingeklappt
       tripRouteIds: (gamestats.tripGoal && Array.isArray(gamestats.tripGoal.route) ? gamestats.tripGoal.route : []).map((s) => s.id), // Länder schon in der Route (Chip-Markierung)
       tripCountryBev: tripCountryBev(), // Tag-/Abendgetränk + Akzent + Gruß fürs Erscheinungsbild-Schild (oder null)
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
@@ -873,6 +879,38 @@
       apps: loc(fotografia.APPS || []),
       glossary: loc(fotografia.GLOSSARY || []),
       checklist: loc(fotografia.CHECKLIST || []),
+    };
+  }
+
+  // Música: die großen Genres LatAms (mit ES-Lesetraining + Spotify/Apple-Deep-
+  // Links), der Sound des gewählten Reiselands (state.countryId wie Bebidas/
+  // Länderkunde), die Sätze zum Reden/Tanzen und ein Glossar. Pass-Through wie
+  // saludVM; zusätzlich die Länder-Auswahl wie bebidasVM, damit der „Sound deines
+  // Reiselands" immer das Land der Reise trifft.
+  function musicaVM() {
+    if (!musica) return { intro: "", genres: [], phrases: [], glossary: [], country: null, countryData: null, groups: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    const list = countries ? countries.LIST : [];
+    const regions = countries ? countries.REGIONS : [];
+    const country = list.find((c) => c.id === state.countryId) || list[0] || null;
+    const groups = regions
+      .map((region) => ({
+        region,
+        countries: list
+          .filter((c) => c.region === region)
+          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+      }))
+      .filter((g) => g.countries.length > 0);
+    const cd = (country && musica.COUNTRY[country.id]) ? loc(musica.COUNTRY[country.id]) : null;
+    return {
+      intro: (en && musica.INTRO_EN) ? musica.INTRO_EN : musica.INTRO,
+      genres: loc(musica.GENRES || []),
+      phrases: loc(musica.PHRASES || []),
+      glossary: loc(musica.GLOSSARY || []),
+      country: country ? { id: country.id, name: country.name, flag: country.flag } : null,
+      countryData: cd,
+      groups,
     };
   }
 
@@ -1395,6 +1433,18 @@
     const route = cur && Array.isArray(cur.route) ? cur.route.slice() : [];
     if (index < 0 || index >= route.length) return;
     route.splice(index, 1);
+    saveTripRoute(cur, route);
+  }
+
+  // Einen Stopp in der Zeitleiste verschieben (Drag & Drop im Profil): aus Position
+  // `from` herausnehmen und an Position `to` wieder einsetzen. Die neue Reihenfolge
+  // wird gespeichert; saveTripRoute rendert neu (Nummerierung & Karten-Header ziehen mit).
+  function moveTripStop(from, to) {
+    const cur = gamestats.tripGoal;
+    const route = cur && Array.isArray(cur.route) ? cur.route.slice() : [];
+    if (from < 0 || from >= route.length || to < 0 || to >= route.length || from === to) return;
+    const moved = route.splice(from, 1)[0];
+    route.splice(to, 0, moved);
     saveTripRoute(cur, route);
   }
 
@@ -2681,6 +2731,65 @@
     if (stage) stage.classList.remove("is-grab");
   }
 
+  // ----- Reise-Route per Drag & Drop umsortieren (Profil-Zeitleiste) -----
+  // Greift man den ⠿-Griff eines Routen-Eintrags, ziehen wir den Listeneintrag live
+  // im DOM zwischen die Geschwister (Einfügemarke = Mitte des überfahrenen Eintrags)
+  // und nummerieren neu. Erst beim Loslassen wird die neue Reihenfolge in die Route
+  // übernommen (moveTripStop -> saveTripRoute -> render). Bis dahin kein Re-Render,
+  // damit der gezogene Eintrag nicht unter dem Finger verschwindet.
+  let tripDrag = null;
+  function tripRenumber(list) {
+    const items = list.querySelectorAll(".triptl__item");
+    for (let i = 0; i < items.length; i++) {
+      const num = items[i].querySelector(".triptl__num");
+      if (num) num.textContent = String(i + 1);
+    }
+  }
+  function onTripPointerDown(e) {
+    if (e.button != null && e.button > 0) return; // nur primäre Maustaste / Touch / Stift
+    const handle = e.target.closest("[data-action='drag-trip-stop']");
+    if (!handle) return;
+    const item = handle.closest(".triptl__item");
+    const list = item && item.closest(".triptl__list");
+    if (!item || !list) return;
+    e.preventDefault();
+    const items = Array.from(list.querySelectorAll(".triptl__item"));
+    tripDrag = { list, item, startIndex: items.indexOf(item), pointerId: e.pointerId };
+    item.classList.add("is-dragging");
+    list.classList.add("is-reordering");
+    try { handle.setPointerCapture(e.pointerId); } catch (_) { /* ältere Browser ohne Pointer-Capture */ }
+  }
+  function onTripPointerMove(e) {
+    if (!tripDrag || (tripDrag.pointerId != null && e.pointerId !== tripDrag.pointerId)) return;
+    e.preventDefault();
+    const list = tripDrag.list, item = tripDrag.item;
+    const y = e.clientY;
+    const others = list.querySelectorAll(".triptl__item:not(.is-dragging)");
+    let before = null;
+    for (let i = 0; i < others.length; i++) {
+      const r = others[i].getBoundingClientRect();
+      if (y < r.top + r.height / 2) { before = others[i]; break; }
+    }
+    if (before) {
+      if (item.nextElementSibling !== before) list.insertBefore(item, before);
+    } else if (list.lastElementChild !== item) {
+      list.appendChild(item);
+    }
+    tripRenumber(list);
+  }
+  function onTripPointerUp(e) {
+    if (!tripDrag) return;
+    // Nur der Finger/Zeiger, der den Drag gestartet hat, beendet ihn (Multi-Touch).
+    if (e && tripDrag.pointerId != null && e.pointerId !== tripDrag.pointerId) return;
+    const list = tripDrag.list, item = tripDrag.item, startIndex = tripDrag.startIndex;
+    tripDrag = null;
+    item.classList.remove("is-dragging");
+    list.classList.remove("is-reordering");
+    const items = Array.from(list.querySelectorAll(".triptl__item"));
+    const endIndex = items.indexOf(item);
+    if (endIndex >= 0 && endIndex !== startIndex) moveTripStop(startIndex, endIndex);
+  }
+
   // ----- Zurück-Geste (Android-Gestensteuerung / Browser-Zurück) -----
   // Standardmäßig schließt eine Zurück-Geste die installierte PWA sofort. Das
   // fühlt sich falsch an, wenn man gerade tief in einer Übung steckt. Wir
@@ -2855,6 +2964,7 @@
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
     else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
     else if (state.screen === "fotos") root.innerHTML = ui.renderFotos(fotosVM());
+    else if (state.screen === "musica") root.innerHTML = ui.renderMusica(musicaVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "social") root.innerHTML = ui.renderSocial(socialVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
@@ -5653,6 +5763,7 @@
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
     fotos: !!fotografia,
+    musica: !!musica,
     bebidas: !!(bebidas && countries),
     yesto: !!(yesto && yesto.THEMES && yesto.THEMES.length),
   };
@@ -5753,6 +5864,22 @@
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
     pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
+
+    // Música: eigene Form (GENRES + COUNTRY) statt TOPICS – darum ein eigener
+    // Heuhaufen aus Genres (Name/Region/Beschreibung/Künstler/ES-Text), Sätzen,
+    // Glossar und den Landes-Sounds. Ein Treffer bringt die ganze Seite nach vorn.
+    if (musica) {
+      const genres = (musica.GENRES || []).map((g) => [g.name, g.origin, g.originEn, g.desc, g.descEn, g.artists, g.es, (g.vocab || []).map((v) => [v.es, v.de, v.en])]);
+      const phrases = (musica.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
+      const gloss = (musica.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
+      const sounds = Object.keys(musica.COUNTRY || {}).map((k) => { const c = musica.COUNTRY[k]; return [c.genre, c.genreEn, c.artist, c.song]; });
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "🎵", title: "Música", sub: t("discover.subMusica"),
+        action: "open-musica",
+        hay: searchHay(["musica music musik canciones genero spotify apple cumbia salsa reggaeton tango mariachi", musica.INTRO, musica.INTRO_EN, genres, phrases, gloss, sounds]),
+      });
+    }
 
     // Historia (Süd- & Mittelamerika): je ein Treffer für die ganze Erklärseite
     // (Epochen, Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
@@ -5867,6 +5994,12 @@
   function openSalud() {
     dismissBadgeToast();
     state.screen = "salud";
+    render();
+  }
+
+  function openMusica() {
+    dismissBadgeToast();
+    state.screen = "musica";
     render();
   }
 
@@ -6474,6 +6607,7 @@
     logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
     salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
     fotos:         { icon: "📸", title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
+    musica:        { icon: "🎵", title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -6551,6 +6685,8 @@
         return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
       case "fotos":
         return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
+      case "musica":
+        return cut((musicaVM().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
       default:
         return [];
     }
@@ -6681,6 +6817,9 @@
     else if (action === "trip-edit") toggleTripEdit();
     else if (action === "add-trip-stop") addTripStop(el.dataset.country, el.dataset.dest, el.dataset.flag);
     else if (action === "remove-trip-stop") removeTripStop(Number(el.dataset.index));
+    else if (action === "toggle-trip-route") { state.tripRouteOpen = state.tripRouteOpen === false; render(); }
+    else if (action === "toggle-trip-switch") { state.tripSwitchOpen = !state.tripSwitchOpen; render(); }
+    else if (action === "drag-trip-stop") { /* Ziehen wird über die Pointer-Handler erledigt; ein reiner Tap macht nichts */ }
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
     else if (action === "set-gender") saveUserGender(el.dataset.gender); // ♀/♂ (Onboarding + Profil)
@@ -6712,6 +6851,7 @@
     else if (action === "open-logistica") openLogistica();
     else if (action === "open-salud") openSalud();
     else if (action === "open-fotos") openFotos();
+    else if (action === "open-musica") openMusica();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
@@ -7174,6 +7314,7 @@
       logistica: openLogistica,
       salud: openSalud,
       fotos: openFotos,
+      musica: openMusica,
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
       // Einstufungs-Tests: ein geteiltes Ergebnis-Sharepic (Motiv „assessment“/
@@ -7219,6 +7360,11 @@
   window.addEventListener("pointermove", onBodyPointerMove);
   window.addEventListener("pointerup", onBodyPointerUp);
   window.addEventListener("pointercancel", onBodyPointerUp);
+  // Reise-Route per Drag & Drop umsortieren (Profil-Zeitleiste).
+  root.addEventListener("pointerdown", onTripPointerDown);
+  window.addEventListener("pointermove", onTripPointerMove);
+  window.addEventListener("pointerup", onTripPointerUp);
+  window.addEventListener("pointercancel", onTripPointerUp);
   setupKeyboardScroll(); // fokussiertes Eingabefeld über der Tastatur halten (Diálogos, Schreiben, Suche …)
   applyTheme(effectiveTheme()); // mit gemerkter Wahl / System-Vorliebe gleichziehen
   // Ohne eigene Wahl der System-Vorliebe live folgen (z.B. Nacht-Automatik des Handys).

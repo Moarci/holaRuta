@@ -27,7 +27,7 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
-      version: "1.103.0",
+      version: "1.104.0",
       date: "2026-06-20",
       title: "Ruta-Pass-Stempel für „¿Y esto?“",
       titleEn: "Ruta-Pass badges for “¿Y esto?”",
@@ -39,7 +39,7 @@
       ],
     },
     {
-      version: "1.102.0",
+      version: "1.103.0",
       date: "2026-06-20",
       title: "Neuer Modus „¿Y esto?“ – Bild raten mit 3-2-1-Countdown",
       titleEn: "New mode “¿Y esto?” – guess the picture with a 3-2-1 countdown",
@@ -48,6 +48,22 @@
       ],
       itemsEn: [
         "👀 New under Discover → Play: “¿Y esto?”. A picture appears, a short countdown runs (3 · 2 · 1) – think how it's called in Spanish. At 0 the word and its translation are revealed and you rate yourself (“I knew it” / “Not yet”). Six themes (food, drinks, animals, travel gear, nature, at home) with 8+ pictures each – no photos, so it stays fully offline.",
+      ],
+    },
+    {
+      version: "1.102.0",
+      date: "2026-06-20",
+      title: "Neues Modul „Música“: der Soundtrack Lateinamerikas",
+      titleEn: "New “Música” module: the soundtrack of Latin America",
+      items: [
+        "🎵 Neues Modul „Música“: die großen Genres Lateinamerikas verständlich erklärt – von Cumbia, Salsa und Reggaetón über Tango und Mariachi bis Bachata und Anden-Folklore, jeweils mit ein paar Künstlern zum Reinhören und spanischem Lesetraining.",
+        "▶️ Ein Tipp öffnet jedes Genre direkt in Spotify ODER Apple Music (Deep-Link – am Handy springt die jeweilige App auf). Dazu der typische Sound deines Reiselands: wähle dein Land und höre Künstler & Song mit einem Tap.",
+        "💬 Plus die Sätze, um über Musik zu reden und tanzen zu gehen, und ein Glossar rund um Musik – wie gewohnt auf Deutsch/Englisch umschaltbar und über die Suche erreichbar.",
+      ],
+      itemsEn: [
+        "🎵 New “Música” module: Latin America's big genres explained simply – from cumbia, salsa and reggaetón through tango and mariachi to bachata and Andean folklore, each with a few artists to sample and Spanish reading practice.",
+        "▶️ One tap opens each genre straight in Spotify OR Apple Music (deep link – on your phone the matching app pops open). Plus the signature sound of your destination: pick your country and hear an artist & song with one tap.",
+        "💬 And the phrases to talk about music and go dancing, plus a music glossary – switchable between German/English as usual and reachable from search.",
       ],
     },
     {
