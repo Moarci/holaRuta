@@ -75,6 +75,20 @@
   </script>
 
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Sicherheits-Header. Bewusst KEIN restriktives script-src: der Single-File-Build
+       (HolaRuta.html) inlined ~50 Skripte und ui.js baut Dutzende Inline-style-Attribute,
+       die nicht hash-bar sind. Der reale Schutz liegt hier auf Bild-/Verbindungszielen &
+       Referrer: img-src erlaubt nur self + data: + Wikimedia (Kulturbilder); connect-src
+       'self' (opt-in-Sync ist im Default aus -> kein fremder Host; eine Edition mit
+       cross-origin-apiBase muesste ihren Sync-Host hier ergaenzen); frame-ancestors 'none'
+       schuetzt vor Clickjacking; referrer no-referrer verhindert Leakage.
+       script-src ist explizit 'self' 'unsafe-inline' (NICHT restriktiv): ohne diese
+       Direktive wuerde default-src 'self' Inline-Skripte verbieten und damit Theme-Boot,
+       Boot-Animation, Splash sowie den kompletten Single-File-Build (~50 inline Skripte)
+       brechen. Inline-Skripte sind hier kein Angriffsvektor (keine User-HTML-Injektion). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://upload.wikimedia.org https://commons.wikimedia.org; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'" />
+  <meta name="referrer" content="no-referrer" />
 </head>
 <body>
   <!-- Sprunglink: erstes fokussierbares Element. Für Tastatur-/Screenreader-Nutzer,
