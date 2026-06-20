@@ -233,7 +233,10 @@
   <script defer src="badges.js"></script>
   <script defer src="speech.js"></script>
   <script defer src="share.js"></script>
-  <script defer src="qr.js"></script>
+  <!-- qr.js NICHT initial laden: nur der Lehrer-Screen braucht den QR-Generator.
+       loadModule("qr", …) lädt ihn on-demand vor dem Teacher-Render (app.js); im
+       SW-ASSETS-Precache bleibt qr.js (offline), und der Single-File-Build (build.js)
+       bettet ihn weiterhin ein (lazyModules() vor app.js). -->
   <script defer src="install.js"></script>
   <script defer src="changelog.js"></script>
   <script defer src="celebrate.js"></script>

@@ -47,6 +47,21 @@ function read(file) {
   return fs.readFileSync(path.join(DIR, file), "utf8");
 }
 
+// Lazy-geladene Module: stehen im SW-ASSETS-Precache (Offline), sind aber NICHT
+// (mehr) als <script>-Tag in index.html verdrahtet – sie werden zur Laufzeit per
+// loadModule() nachgeladen. Für den Single-File-Build müssen sie trotzdem
+// eingebettet werden. Ableitung aus der Differenz „SW-ASSETS .js" minus „in
+// index.html getaggte .js" – keine zweite Pflegeliste, die driften könnte.
+function lazyModules() {
+  const html = read(SOURCE);
+  const tagged = new Set(
+    [...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*><\/script>/gi)]
+      .map((m) => m[1].replace(/^\.\//, ""))
+  );
+  return readAssets()
+    .filter((rel) => /\.js$/.test(rel) && !tagged.has(rel));
+}
+
 function build() {
   let html = read(SOURCE);
   const inlined = [];
@@ -65,9 +80,10 @@ function build() {
   // 3) Alle externen Skripte einbetten (in Reihenfolge des Vorkommens).
   //    Ein im Code vorkommendes "</script>" würde sonst den eingebetteten Block
   //    vorzeitig schließen -> escapen, damit der HTML-Parser nicht stolpert.
+  const inlineCode = (src) => read(src).replace(/<\/script>/gi, "<\\/script>");
   html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*><\/script>/gi, (m, src) => {
     inlined.push(src);
-    const code = read(src).replace(/<\/script>/gi, "<\\/script>");
+    const code = inlineCode(src);
     // Edition-Build: die Edition-Config direkt vor config.js einbetten, damit
     // config.js sie beim Merge sieht (setzt window.SC.editionConfig).
     if (EDITION && src === "config.js") {
@@ -75,6 +91,18 @@ function build() {
       const edCode = read(edFile).replace(/<\/script>/gi, "<\\/script>");
       inlined.push(edFile);
       return `<script>\n${edCode}\n</script>\n<script>\n${code}\n</script>`;
+    }
+    // Lazy-Module (im SW-ASSETS-Precache, aber NICHT mehr als <script>-Tag in
+    // index.html, weil sie zur Laufzeit per loadModule() nachgeladen werden) müssen
+    // im Single-File trotzdem eingebettet sein – sonst kann loadModule() sie dort
+    // nicht finden (kein qr.js o.ä. neben der einen HTML-Datei). Sie werden direkt
+    // VOR app.js eingebettet (app.js ist der letzte Tag und nutzt sie nur on-demand).
+    if (/(?:^|\/)app\.js$/i.test(src)) {
+      const tagged = new Set(inlined.map((p) => p.replace(/^\.\//, "")));
+      const lazyBlocks = lazyModules()
+        .filter((rel) => !tagged.has(rel) && fs.existsSync(path.join(DIR, rel)))
+        .map((rel) => { inlined.push(rel); return `<script>\n${inlineCode(rel)}\n</script>`; });
+      return `${lazyBlocks.join("\n")}${lazyBlocks.length ? "\n" : ""}<script>\n${code}\n</script>`;
     }
     return `<script>\n${code}\n</script>`;
   });
