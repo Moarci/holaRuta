@@ -1251,9 +1251,22 @@
     // Karten über dem Tagesziel: für die "Ziel übertroffen"-Darstellung. Der Balken
     // ist bei >= Ziel ohnehin voll, deshalb genügt hier der reine Überschuss-Wert.
     const todayExtra = Math.max(0, todayCount - perDay);
+    // Aufenthaltsdauer: aus einem konkreten Rückreisedatum berechnet (inkl. An- und
+    // Abreisetag) – sonst die grob eingegebene Tageszahl. stayApprox unterscheidet
+    // beide Fälle für die „ca."-Darstellung.
+    let stayDays = 0;
+    if (t.returnDate) {
+      const span = daysBetween(t.endDate, t.returnDate);
+      stayDays = span === null ? 0 : span + 1;
+    } else if (t.stayDays) {
+      stayDays = t.stayDays;
+    }
     return {
       destination: t.destination,
       endDate: t.endDate,
+      returnDate: t.returnDate || "",
+      stayDays,
+      stayApprox: !t.returnDate && !!t.stayDays,
       perDay,
       userName: profileName(), // persönliche Ansprache auf der Countdown-Karte (leer = neutral)
       daysLeft: daysLeft === null ? 0 : daysLeft, // <0 = Termin vorbei
@@ -1322,6 +1335,20 @@
     }
     const perDay = Math.min(500, perDayRaw);
     const goal = { destination, endDate, perDay, startedAt: dayKey(Date.now()) };
+    // Aufenthaltsdauer optional: ein konkretes Rückreisedatum hat Vorrang; alternativ
+    // eine grobe Tageszahl (lange Reisen ohne festes Datum). Eine Rückreise vor der
+    // Abreise wird klar abgelehnt statt still verworfen.
+    const returnDate = /^\d{4}-\d{2}-\d{2}$/.test(fields.returnDate) ? fields.returnDate : "";
+    if (returnDate && returnDate < endDate) {
+      showNotice(t("app.tripReturnInvalid"));
+      return false;
+    }
+    const stayRaw = Math.round(Number(fields.stayDays));
+    if (returnDate) {
+      goal.returnDate = returnDate;
+    } else if (stayRaw >= 1) {
+      goal.stayDays = Math.min(400, stayRaw);
+    }
     gamestats = Object.assign({}, gamestats, { tripGoal: goal });
     store.saveGameStats(gamestats);
     state.tripEdit = false;
@@ -6573,7 +6600,7 @@
       e.preventDefault();
       const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
       const onboarding = state.screen === "onboarding";
-      const ok = setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday") });
+      const ok = setTripGoal({ destination: val("trip-dest"), endDate: val("trip-date"), perDay: val("trip-perday"), returnDate: val("trip-return"), stayDays: val("trip-staydays") });
       // Im Onboarding nach dem Trip-Ziel direkt den Ruta-Check anbieten (mit „Später“),
       // damit der Einstufungstest tatsächlich gemacht wird.
       if (ok && onboarding) openPlacement(true);
