@@ -5512,7 +5512,7 @@
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
-    fotos: !!fotografia,
+    fotos: !!fotografia, flirt: !!flirt,
     bebidas: !!(bebidas && countries),
   };
 

@@ -270,7 +270,7 @@
         { es: "Me encanta tu energía.", de: "Ich mag deine Energie.", en: "I love your energy." },
         { es: "Tienes una sonrisa muy linda.", de: "Du hast ein sehr schönes Lächeln.", en: "You have a really lovely smile." },
         { es: "Me gusta cómo piensas.", de: "Mir gefällt, wie du denkst.", en: "I like the way you think." },
-        { es: "Me cae muy bien hablar contigo.", de: "Ich rede sehr gern mit dir.", en: "I really enjoy talking with you." },
+        { es: "Me gusta mucho hablar contigo.", de: "Ich rede sehr gern mit dir.", en: "I really enjoy talking with you." },
         { es: "Eres muy divertido/divertida.", de: "Du bist sehr lustig.", en: "You're really fun." },
         { es: "Qué buen gusto tienes para la música.", de: "Du hast einen guten Musikgeschmack.", en: "You've got great taste in music." },
         { es: "Me haces reír mucho.", de: "Du bringst mich oft zum Lachen.", en: "You make me laugh a lot." },
@@ -285,8 +285,8 @@
         { es: "¿Te gustaría salir a tomar algo?", de: "Hast du Lust, etwas trinken zu gehen?", en: "Would you like to go out for a drink?" },
         { es: "¿Tomamos un café mañana?", de: "Trinken wir morgen einen Kaffee?", en: "Shall we get a coffee tomorrow?" },
         { es: "¿Quieres que demos una vuelta?", de: "Wollen wir eine Runde spazieren?", en: "Do you want to go for a stroll?" },
-        { es: "¿Te apuntas a bailar esta noche?", de: "Hast du Lust, heute Abend tanzen zu gehen?", en: "Are you up for dancing tonight?" },
-        { es: "Sin compromiso, solo si te apetece.", de: "Ganz unverbindlich, nur wenn du Lust hast.", en: "No pressure, only if you feel like it." },
+        { es: "¿Te animas a bailar esta noche?", de: "Hast du Lust, heute Abend tanzen zu gehen?", en: "Are you up for dancing tonight?" },
+        { es: "Sin compromiso, solo si tú quieres.", de: "Ganz unverbindlich, nur wenn du Lust hast.", en: "No pressure, only if you want to." },
         { es: "¿Me das tu WhatsApp / Instagram?", de: "Gibst du mir dein WhatsApp / Instagram?", en: "Can I have your WhatsApp / Instagram?" },
         { es: "¿Cuándo te viene bien?", de: "Wann passt es dir?", en: "When works for you?" },
         { es: "Te escribo y vemos, ¿va?", de: "Ich schreib dir und wir schauen, okay?", en: "I'll text you and we'll see, okay?" },
@@ -328,7 +328,7 @@
 
   // ---------- Glossar: Schlüsselwörter rund ums Flirten & Daten ----------
   const GLOSSARY = [
-    { es: "coquetear / ligar", de: "flirten / anbaggern", en: "to flirt / to chat someone up" },
+    { es: "coquetear / conquistar a alguien", de: "flirten / jemanden erobern", en: "to flirt / to win someone over" },
     { es: "una cita", de: "ein Date / eine Verabredung", en: "a date" },
     { es: "salir con alguien", de: "mit jemandem ausgehen / daten", en: "to go out with / to date someone" },
     { es: "el piropo", de: "das (Flirt-)Kompliment", en: "a flirty compliment" },
@@ -348,7 +348,7 @@
     { es: "no estoy interesado/a", de: "ich habe kein Interesse", en: "I'm not interested" },
     { es: "déjame en paz", de: "lass mich in Ruhe", en: "leave me alone" },
     { es: "el condón / el preservativo", de: "das Kondom", en: "condom" },
-    { es: "un rollo / una aventura", de: "eine lockere Affäre / ein Abenteuer", en: "a fling / a casual thing" },
+    { es: "un amorío / una aventura", de: "eine lockere Affäre / ein Abenteuer", en: "a fling / a casual thing" },
     { es: "el flechazo", de: "die Liebe auf den ersten Blick", en: "love at first sight" },
   ];
 
