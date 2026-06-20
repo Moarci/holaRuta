@@ -2105,6 +2105,8 @@
     installHintNote: "Tipp: Am zuverlässigsten klappt das in Chrome. Manche Browser (z. B. Firefox) bieten die App-Installation nicht an.",
     installedTitle: "Als App installiert · offline bereit",
     installedText: "HolaRuta läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
+    installedIosNote: "Wichtig auf dem iPhone: HolaRuta aktualisiert sich von selbst – beim Öffnen erscheint ein „Neue Version“-Hinweis. Lege die App NICHT erneut zum Startbildschirm hinzu: iOS legt dann eine leere zweite Kopie an und dein Fortschritt bleibt in dieser hier.",
+    installIosReaddWarn: "Schon installiert? Dann öffne HolaRuta über das vorhandene Icon und füge es NICHT noch einmal hinzu – iOS trennt den Speicher pro Icon, eine zweite Installation startet mit leerem Fortschritt.",
 
     // Ruta-Pass
     passUnavailable: "Der Ruta-Pass ist gerade nicht verfügbar – vermutlich wurde die App offline geöffnet, bevor alles geladen war. Mit Netz neu laden, dann klappt's wieder.",
@@ -2233,6 +2235,8 @@
     installHintNote: "Tip: this works most reliably in Chrome. Some browsers (e.g. Firefox) don't offer app installation.",
     installedTitle: "Installed as an app · ready offline",
     installedText: "HolaRuta is running as an installed app with its own icon on your home screen – offline too.",
+    installedIosNote: "Important on iPhone: HolaRuta updates itself – a “new version” prompt appears when you open it. Do NOT add the app to your home screen again: iOS would create an empty second copy and your progress would stay in this one.",
+    installIosReaddWarn: "Already installed? Open HolaRuta from the existing icon and do NOT add it again – iOS keeps storage separate per icon, so a second install starts with empty progress.",
 
     passUnavailable: "The Ruta pass isn't available right now – the app was probably opened offline before everything loaded. Reload with a connection and it'll work again.",
     passHero: "Collect stamps for your travel skills.",

@@ -503,8 +503,10 @@
     const inst = window.SC && window.SC.install;
     if (!inst) return { show: false };
     // Läuft die App bereits installiert (standalone), zeigen wir eine klare
-    // „offline installiert"-Bestätigung.
-    if (inst.isInstalled()) return { show: true, installed: true };
+    // „offline installiert"-Bestätigung. isIOS mitgeben, damit die UI dort den
+    // iOS-Konsequenz-Hinweis zeigt (NICHT erneut zum Startbildschirm hinzufügen –
+    // iOS legt sonst eine leere zweite Kopie mit eigenem Speicher an).
+    if (inst.isInstalled()) return { show: true, installed: true, isIOS: inst.isIOS() };
     // Als file://-Einzeldatei ist keine PWA-Installation möglich -> nichts zeigen.
     if (inst.isHosted && !inst.isHosted()) return { show: false };
     // Sonst: Status „noch nicht installiert" immer anzeigen. Der nächste Schritt

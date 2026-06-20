@@ -701,6 +701,13 @@ body {
 }
 .installcard__steps li { padding-left: 2px; }
 .installcard__note { margin: 0; font-size: 0.82rem; font-weight: 500; line-height: 1.4; color: var(--muted); opacity: 0.85; }
+/* Konsequenz-Hinweis (iOS: nicht erneut hinzufügen) – warnend hervorgehoben. */
+.installcard__note--warn {
+  opacity: 1; font-weight: 700; color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--warn) 36%, transparent);
+  border-radius: 12px; padding: 10px 12px;
+}
 /* Bereits installiert: ruhige „erledigt"-Optik (durchgezogen statt gestrichelt). */
 .installcard--done {
   background: color-mix(in srgb, var(--ok, #3F7355) 10%, var(--card));
