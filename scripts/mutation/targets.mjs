@@ -59,10 +59,6 @@ export const IGNORE = [
     "below1000: `if (n < 100)` vs `<= 100`. n===100 ist eine Zeile zuvor abgefangen " +
     "(return \"cien\") und n===0 ebenfalls; die Grenze 100 erreicht diese Bedingung also nie. " +
     "Beide Operatoren liefern für jede erreichbare Eingabe dasselbe → äquivalent." },
-  { file: "numbers.js", line: 228, op: "relational", grund:
-    "randomPrice: `Math.random() < 0.5` vs `<= 0.5` (50/50-Aufteilung fein/grob). Differenz nur " +
-    "beim Maß-Null-Ereignis random()===0.5; die beiden Zweige erzeugen statistisch identische " +
-    "Verteilungen und für 0.5 denselben Betrag (Spanne skaliert proportional zu step/fine) → äquivalent." },
   // stats.js
   { file: "stats.js", line: 52, op: "number", grund:
     "statusOf: `(r.interval || 0) >= MASTERED_DAYS` mit MASTERED_DAYS=5. Der Fallback greift nur, wenn " +

@@ -185,6 +185,19 @@ test("numbers.randomPrice: erreicht bei rnd≈1 das Spannen-Maximum", () => {
   } finally { Math.random = orig; }
 });
 
+// An der 0,5-Grenze nimmt der Generator den GROBEN Schritt (`random() < 0.5`
+// ist ausschließend). Deterministisch über einen Math.random-Stub geprüft – der
+// feine vs. grobe Schritt liefert hier nachweislich verschiedene Beträge.
+test("numbers.randomPrice: bei random()===0.5 gilt der grobe Schritt (< ist exklusiv)", () => {
+  const orig = Math.random;
+  Math.random = () => 0.5;
+  try {
+    // CR L3 = {min:25000,max:2000000,step:1000,fine:500}: grob -> 1.013.000,
+    // fein würde 1.012.500 ergeben (anderer Schritt, dadurch unterscheidbar).
+    assert.equal(numbers.randomPrice("CR", 3).value, 1013000);
+  } finally { Math.random = orig; }
+});
+
 // ---------- Gegenprobe: deckt sich mit den festen Karten in data.js ----------
 test("numbers.toWords: stimmt mit den gepflegten Zahlen-Karten überein", () => {
   // window-Shim mit data.js erneut laden würde Module mischen; wir prüfen daher
