@@ -674,6 +674,7 @@
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
     subFotos: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
+    subYesto: "Bild raten: 3-2-1 – wie heißt das auf Spanisch?",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
@@ -949,6 +950,19 @@
     cjOtherLevel: "Andere Stufe",
     cjToGuide: "Zur Erklärseite",
 
+    // ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown)
+    yeIntro: "Ein Bild erscheint, der Countdown läuft – überlege, wie es auf Spanisch heißt. Bei 0 wird das Wort samt Übersetzung aufgelöst.",
+    yeChooseTheme: "Wähle ein Thema",
+    yeCount: (p) => `${p.n} Motive`,
+    yePromptHint: "Wie heißt das auf Spanisch?",
+    yeReveal: "Auflösen",
+    yeKnown: "Wusste ich ✓",
+    yeKnownLast: "Wusste ich ✓ – Ergebnis",
+    yeUnknown: "Noch nicht",
+    yeAgain: "Nochmal",
+    yeOtherTheme: "Anderes Thema",
+    yeUnavailable: "Dieser Modus ist gerade nicht verfügbar.",
+
     // Tiempos
     tiTenses: "Die wichtigsten Zeitformen",
     tiBuild: "So baust du es:",
@@ -1030,6 +1044,7 @@
     subSalud: "Stay healthy & fit: food, drink, movement",
     subFotos: "Great travel shots: subject, light, poses & sharing",
     subBebidas: "What people drink morning and evening – country by country",
+    subYesto: "Guess the picture: 3-2-1 – what's it called in Spanish?",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
 
@@ -1290,6 +1305,19 @@
     cjAgain: "Practise again",
     cjOtherLevel: "Another level",
     cjToGuide: "To the explainer",
+
+    // ¿Y esto? (picture-vocabulary mode with a 3-2-1 countdown)
+    yeIntro: "A picture appears and the countdown runs – think how it's called in Spanish. At 0 the word and its translation are revealed.",
+    yeChooseTheme: "Pick a theme",
+    yeCount: (p) => `${p.n} pictures`,
+    yePromptHint: "What's it called in Spanish?",
+    yeReveal: "Reveal",
+    yeKnown: "I knew it ✓",
+    yeKnownLast: "I knew it ✓ – result",
+    yeUnknown: "Not yet",
+    yeAgain: "Again",
+    yeOtherTheme: "Another theme",
+    yeUnavailable: "This mode is currently unavailable.",
 
     tiTenses: "The most important tenses",
     tiBuild: "How to build it:",

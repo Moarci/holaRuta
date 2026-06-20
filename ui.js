@@ -160,6 +160,7 @@
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
+    { action: "open-yesto",       icon: "👀", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
     { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
     { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
@@ -839,7 +840,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -4504,6 +4505,68 @@
     return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
+  // ---------- ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown) ----------
+  // Ein Motiv (großes Emoji) erscheint, ein kurzer Countdown läuft, dann wird das
+  // spanische Wort + Übersetzung aufgelöst und man bewertet sich selbst.
+  function renderYestoSetup(vm) {
+    if (!vm.available) {
+      return `
+        <section class="screen">
+          ${hmTopbar("👀 ¿Y esto?", "home")}
+          <p class="stat-empty">${esc(t("discover.yeUnavailable"))}</p>
+        </section>`;
+    }
+    const themes = vm.themes.map((th) => `
+      <button class="ye-theme" type="button" data-action="start-yesto" data-id="${esc(th.id)}">
+        <span class="ye-theme__icon" aria-hidden="true">${esc(th.icon)}</span>
+        <span class="ye-theme__label">${esc(th.label)}</span>
+        <span class="ye-theme__count">${esc(t("discover.yeCount", { n: th.count }))}</span>
+      </button>`).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("👀 ¿Y esto?", "home")}
+        <p class="hm-intro">${esc(t("discover.yeIntro"))}</p>
+        ${moduleShareBtn("yesto")}
+        <h3 class="prc-head">${esc(t("discover.yeChooseTheme"))}</h3>
+        <div class="ye-themes">${themes}</div>
+      </section>`;
+  }
+
+  function renderYesto(vm) {
+    const shown = vm.position + (vm.phase === "reveal" ? 1 : 0);
+    const pct = vm.total > 0 ? Math.round((shown / vm.total) * 100) : 0;
+    const stage = vm.phase !== "reveal"
+      ? `
+        <div class="ye-stage" role="group" aria-label="${esc(t("discover.yePromptHint"))}">
+          <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
+          <div class="ye-q">¿Y esto?</div>
+          <div class="ye-think">${esc(t("discover.yePromptHint"))}</div>
+          <div class="ye-count" aria-hidden="true"><span class="ye-count__num">${esc(String(vm.count))}</span></div>
+        </div>
+        <button class="cta cta--ghost" data-action="yesto-reveal">${esc(t("discover.yeReveal"))}</button>`
+      : `
+        <div class="ye-stage is-reveal" role="status" aria-live="assertive">
+          <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
+          <div class="ye-word" lang="es">${esc(vm.es)}</div>
+          <div class="ye-native">${esc(vm.native)}</div>
+        </div>
+        <div class="ye-rate">
+          <button class="cta cta--soft" data-action="yesto-rate" data-known="0">${esc(t("discover.yeUnknown"))}</button>
+          <button class="cta" data-action="yesto-rate" data-known="1">${vm.isLast ? esc(t("discover.yeKnownLast")) : esc(t("discover.yeKnown"))}</button>
+        </div>`;
+    return `
+      <section class="screen study">
+        ${hmTopbar("👀 ¿Y esto?", "open-yesto")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+        ${stage}
+      </section>`;
+  }
+
+  function renderYestoDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
+  }
+
   // ---------- DIÁLOGOS (Gesprächs-Simulationen) ----------
   // Reisesituation Zug für Zug: die Gegenseite (npc) spricht (links), der Nutzer
   // antwortet (rechts) per Multiple-Choice oder freiem Tippen. Die Verlaufsspur
@@ -5159,6 +5222,7 @@
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderConjugSetup, renderConjug, renderConjugDone,
+                   renderYestoSetup, renderYesto, renderYestoDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone,
                    placementCard, assessmentCard,

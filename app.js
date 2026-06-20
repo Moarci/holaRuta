@@ -25,6 +25,7 @@
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
   const fotografia = window.SC.fotografia || null; // Fotos & Videos: tolle Reisebilder (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
+  const yesto = window.SC.yesto || null;         // „¿Y esto?“: Bild-Vokabel-Modus mit Countdown (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const assessment = window.SC.assessment || null; // HolaRuta Nivel-Test (ausführlich, optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
@@ -127,6 +128,8 @@
     // Items werden pro Runde frisch erzeugt (SC.conjug) aus data.CONJUGATION.
     conjug: null,            // { level, queue:[{verb,verbHint,personEs,personDe,answer}…], idx, total, result:{correct,input,answer}|null, correct }
     conjugLevel: [1, 2].includes(settings.conjugLevel) ? settings.conjugLevel : 2, // zuletzt gewählte Stufe
+    // „¿Y esto?“ Bild-Vokabel-Runde (transient, pro Runde frisch gemischt aus SC.yesto):
+    yesto: null,             // { themeId, queue:[{emoji,es,de,en}…], idx, total, phase:"count"|"reveal", count, correct }
     // ----- Spickzettel (Survival-Schnellzugriff, transient) -----
     szShow: null,            // Großanzeige: Karten-Id des bildschirmfüllend gezeigten Satzes | null
     // ----- El Cuerpo (drehbares 3D-Körpermodell) -----
@@ -372,6 +375,8 @@
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
+      hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
+
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       hasAssessment: !!assessment, // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
@@ -2694,6 +2699,7 @@
     precios: "preciosSetup", preciosDone: "preciosSetup",
     frases: "frasesSetup", frasesDone: "frasesSetup",
     conjug: "conjugSetup", conjugDone: "conjugSetup",
+    yesto: "yestoSetup", yestoDone: "yestoSetup",
     dialogos: "dialogosSetup", dialogosDone: "dialogosSetup",
     comprasQuiz: "compras", comprasQuizDone: "compras",
     editor: "home",
@@ -2879,6 +2885,9 @@
     else if (state.screen === "conjugSetup") root.innerHTML = ui.renderConjugSetup(conjugSetupVM());
     else if (state.screen === "conjug") root.innerHTML = ui.renderConjug(conjugVM());
     else if (state.screen === "conjugDone") root.innerHTML = ui.renderConjugDone();
+    else if (state.screen === "yestoSetup") root.innerHTML = ui.renderYestoSetup(yestoSetupVM());
+    else if (state.screen === "yesto") root.innerHTML = ui.renderYesto(yestoVM());
+    else if (state.screen === "yestoDone") root.innerHTML = ui.renderYestoDone();
     else if (state.screen === "dialogosSetup") root.innerHTML = ui.renderDialogosSetup(dialogosSetupVM());
     else if (state.screen === "dialogos") root.innerHTML = ui.renderDialogos(dialogosVM());
     else if (state.screen === "dialogosDone") root.innerHTML = ui.renderDialogosDone();
@@ -2916,6 +2925,9 @@
     if (state.screen === "done") mountCelebrate();
     // Mini-Spiel-Fertig-Screens: dieselbe Inszenierung wie der Haupt-Lernpfad.
     if (MINI_DONE_SCREENS[state.screen]) mountMiniDone(state.screen);
+    // „¿Y esto?“: läuft der 3-2-1-Countdown noch, den nächsten Tick scharf schalten;
+    // auf jedem anderen Screen einen evtl. laufenden Timer wieder abräumen (kein Leck).
+    if (state.screen === "yesto") yestoArm(); else yestoDisarm();
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
     if (state.screen === "cuerpo") cuerpoInit3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
@@ -2972,6 +2984,7 @@
   const MINI_DONE_SCREENS = {
     quizDone: true, preciosDone: true, frasesDone: true,
     conjugDone: true, dialogosDone: true, comprasQuizDone: true,
+    yestoDone: true,
   };
   function miniResult(vm, scope, mode) {
     const total = Math.max(0, vm.total || 0);
@@ -3017,6 +3030,14 @@
         primaryLabel: t("discover.cjAgain"), onPrimary: conjugAgain,
         secondaryLabel: t("discover.cjOtherLevel"), onSecondary: openConjugDrill,
         tertiaryLabel: t("discover.cjToGuide"), onTertiary: openConjugacion,
+      } };
+    }
+    if (screen === "yestoDone") {
+      const vm = yestoDoneVM();
+      return { result: miniResult(vm, vm.themeLabel, "quiz"), opts: {
+        primaryLabel: t("discover.yeAgain"), onPrimary: yestoAgain,
+        secondaryLabel: t("discover.yeOtherTheme"), onSecondary: openYesto,
+        tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
     if (screen === "dialogosDone") {
@@ -5453,6 +5474,119 @@
     store.saveGameStats(gamestats);
   }
 
+  // ----- „¿Y esto?“ (Bild-Vokabel-Modus mit 3-2-1-Countdown) -----
+  // Ein Motiv (Emoji) erscheint groß, ein kurzer Countdown läuft – „Wie heißt
+  // das auf Spanisch?“ – dann wird das spanische Wort + Übersetzung aufgelöst und
+  // man bewertet sich selbst („Wusste ich“/„Noch nicht“). Motive kommen pro Runde
+  // frisch gemischt aus SC.yesto (kein Foto -> bleibt offline & zero-dependency).
+  const YESTO_ROUND = 8;      // Motive pro Runde (jedes Thema hat ≥ 8)
+  const YESTO_COUNT_FROM = 3; // Start des Countdowns (3 → 2 → 1 → Auflösung)
+  let yestoTimer = null;      // genau ein pendelnder Countdown-Tick zur Zeit
+  const yestoReady = () => !!(yesto && yesto.THEMES && yesto.THEMES.length);
+
+  // Themen-Label in der aktiven UI-Sprache (label/labelEn via nativeText).
+  function natTheme(th) { return i18n.nativeText({ de: th.label, en: th.labelEn }); }
+
+  function yestoSetupVM() {
+    return {
+      available: yestoReady(),
+      themes: yestoReady() ? yesto.themeList().map((th) => ({
+        id: th.id, icon: th.icon, label: natTheme(th), count: th.count,
+      })) : [],
+    };
+  }
+
+  function yestoVM() {
+    const y = state.yesto;
+    const item = (y && y.queue[y.idx]) || {};
+    return {
+      position: y ? y.idx : 0,
+      total: y ? y.total : 0,
+      phase: y ? y.phase : "count",
+      count: y ? y.count : 0,
+      emoji: item.emoji || "",
+      es: item.es || "",
+      native: i18n.nativeText({ de: item.de, en: item.en }) || "",
+      isLast: y ? y.idx >= y.total - 1 : true,
+    };
+  }
+
+  function yestoDoneVM() {
+    const y = state.yesto || {};
+    const th = yestoReady() ? yesto.themeById(y.themeId) : null;
+    return {
+      correct: y.correct || 0,
+      total: y.total || 0,
+      themeLabel: th ? natTheme(th) : "",
+    };
+  }
+
+  function openYesto() {
+    dismissBadgeToast();
+    yestoDisarm();
+    if (!yestoReady()) return;
+    state.screen = "yestoSetup";
+    render();
+  }
+
+  function startYesto(themeId) {
+    if (!yestoReady()) return;
+    const queue = yesto.buildRound(themeId, YESTO_ROUND);
+    if (!queue.length) return;
+    state.yesto = { themeId, queue, idx: 0, total: queue.length, phase: "count", count: YESTO_COUNT_FROM, correct: 0 };
+    state.screen = "yesto";
+    render(); // render() schaltet anschließend den ersten Countdown-Tick scharf
+  }
+
+  // Den nächsten Countdown-Tick scharf schalten (von render() bei screen==="yesto").
+  function yestoArm() {
+    yestoDisarm();
+    const y = state.yesto;
+    if (!y || y.phase !== "count" || y.count <= 0) return;
+    yestoTimer = setTimeout(yestoTick, 1000);
+  }
+  function yestoDisarm() {
+    if (yestoTimer) { clearTimeout(yestoTimer); yestoTimer = null; }
+  }
+  function yestoTick() {
+    yestoTimer = null;
+    const y = state.yesto;
+    if (!y || state.screen !== "yesto" || y.phase !== "count") return;
+    y.count -= 1;
+    if (y.count <= 0) { y.phase = "reveal"; buzz(10); }
+    render();
+  }
+
+  // Sofort auflösen (Countdown überspringen) – für Ungeduldige & Screenreader.
+  function yestoReveal() {
+    const y = state.yesto;
+    if (!y || y.phase !== "count") return;
+    yestoDisarm();
+    y.phase = "reveal";
+    buzz(10);
+    render();
+  }
+
+  // Selbsteinschätzung nach der Auflösung -> nächstes Motiv / Runde beenden.
+  function yestoRate(known) {
+    const y = state.yesto;
+    if (!y || y.phase !== "reveal") return;
+    if (known) { y.correct += 1; buzz(12); } else buzz(8);
+    if (y.idx >= y.total - 1) {
+      syncBadges(Date.now(), true);
+      yestoDisarm();
+      state.screen = "yestoDone";
+      render();
+      return;
+    }
+    y.idx += 1;
+    y.phase = "count";
+    y.count = YESTO_COUNT_FROM;
+    render();
+  }
+
+  function yestoAgain() { startYesto(state.yesto ? state.yesto.themeId : null); }
+
   // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
   function recordPreciosResult(p) {
     if (!badges) return;
@@ -5485,6 +5619,7 @@
     { action: "open-precios",     icon: "💵", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech" },
     { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",         subKey: "discover.subCuerpo" },
     { action: "open-compras",     icon: "🛒", title: "Lista de compras",  subKey: "discover.subCompras" },
+    { action: "open-yesto",       icon: "👀", title: "¿Y esto?",          subKey: "discover.subYesto", need: "yesto" },
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
     { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
@@ -5495,6 +5630,7 @@
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
     fotos: !!fotografia,
     bebidas: !!(bebidas && countries),
+    yesto: !!(yesto && yesto.THEMES && yesto.THEMES.length),
   };
 
   // Such-Kern (normalisieren/indexieren/ranken) lebt als reines Modul in search.js.
@@ -6306,6 +6442,7 @@
     precios:       { icon: "💵", title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
     cuerpo:        { icon: "🧍", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
     compras:       { icon: "🛒", title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
+    yesto:         { icon: "👀", title: "¿Y esto?",              sub: "discover.subYesto",         accent: ["#C2502E", "#E9A23B"] },
     conjugacion:   { icon: "🔁", title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
     tiempos:       { icon: "⏳", title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
     paises:        { icon: "🌎", title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
@@ -6370,6 +6507,12 @@
         return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
       case "compras":
         return cut(comprasVM().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
+      case "yesto":
+        // Repräsentative Motive je Thema (Emoji + „es — Übersetzung“).
+        return cut((yesto ? yesto.THEMES : []).map((th) => {
+          const it = th.items[0];
+          return { mark: it ? it.emoji : th.icon, text: `${it ? it.es : th.label} — ${i18n.nativeText(it || {})}` };
+        }));
       case "conjugacion":
         return cardSampleLines("verbos", CAP, "🔁");
       case "tiempos":
@@ -6626,6 +6769,11 @@
     else if (action === "start-conjug") startConjug();
     else if (action === "conjug-next") nextConjug();
     else if (action === "conjug-again") conjugAgain();
+    else if (action === "open-yesto") openYesto();
+    else if (action === "start-yesto") startYesto(el.dataset.id);
+    else if (action === "yesto-reveal") yestoReveal();
+    else if (action === "yesto-rate") yestoRate(el.dataset.known === "1");
+    else if (action === "yesto-again") yestoAgain();
     else if (action === "open-dialogos") openDialogosSetup();
     else if (action === "start-dialogos") startDialogos(el.dataset.id);
     else if (action === "dialogos-answer") answerDialogosMc(Number(el.dataset.idx));
@@ -6994,6 +7142,7 @@
       precios: openPrecios,
       cuerpo: openCuerpo,
       compras: openCompras,
+      yesto: openYesto,
       conjugacion: openConjugacion,
       tiempos: openTiempos,
       paises: openInfo,
