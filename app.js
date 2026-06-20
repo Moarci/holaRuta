@@ -4057,6 +4057,45 @@
     } catch (e) { return false; }
   }
 
+  // Einen wichtigen Satz (z. B. im Flirt-Modul) in die Zwischenablage legen.
+  // Feedback direkt am geklickten Knopf (✓), ohne Re-Render – es gibt viele
+  // gleiche Knöpfe, daher über das Element statt über den data-action-Selektor.
+  function copyPhrase(btn) {
+    if (!btn) return;
+    const text = btn.dataset.text || "";
+    if (!text) return;
+    const flash = function () {
+      if (btn.dataset.flashing === "1") return;
+      btn.dataset.flashing = "1";
+      btn.classList.add("is-copied");
+      const lbl = t("discover.phraseCopied");
+      const prevAria = btn.getAttribute("aria-label") || "";
+      btn.setAttribute("aria-label", lbl);
+      setTimeout(function () {
+        btn.classList.remove("is-copied");
+        btn.setAttribute("aria-label", prevAria);
+        delete btn.dataset.flashing;
+      }, 1400);
+    };
+    // 1) execCommand über ein temporäres Feld (robust im WebView/Datei-Kontext).
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "readonly");
+      ta.style.position = "fixed"; ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      const ok = execCopyFrom(ta, text.length);
+      document.body.removeChild(ta);
+      if (ok) { flash(); return; }
+    } catch (e) { /* weiter zur modernen API */ }
+    // 2) Moderne Clipboard-API als Zweitversuch (sichere Kontexte).
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(flash, function () { showNotice(text); });
+      return;
+    }
+    // 3) Letzter Ausweg: Satz als Hinweis zeigen.
+    showNotice(text);
+  }
+
   function copyTaskCode() {
     const code = state.teacherTaskCode;
     if (!code) return;
@@ -6935,6 +6974,7 @@
     else if (action === "clear-task-sel") clearTaskSelection();
     else if (action === "task-generate") generateTask();
     else if (action === "task-copy") copyTaskCode();
+    else if (action === "copy-phrase") copyPhrase(el);
     else if (action === "task-copy-link") copyTaskLink();
     else if (action === "task-paste") pasteTaskCode();
     else if (action === "open-task") openTaskScreen();

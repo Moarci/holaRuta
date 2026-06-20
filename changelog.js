@@ -27,6 +27,20 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.109.0",
+      date: "2026-06-20",
+      title: "Coqueteo y romance: Sätze mit einem Tipp kopieren – und heißer flirten",
+      titleEn: "Coqueteo y romance: copy phrases with one tap – and flirt hotter",
+      items: [
+        "📋 Im Modul „Coqueteo y romance“ hat jetzt jeder wichtige Satz einen Kopier-Knopf – ein Tipp legt den spanischen Satz in die Zwischenablage, ideal zum Weiterschicken per WhatsApp & Co.",
+        "🔥 Mehr Feuer: neue Satzgruppe „Heißer werden – mit Konsens“ (von „No puedo dejar de mirarte“ über „¿Te apetece venir a mi habitación?“ bis „¿Está bien si te toco aquí?“), dazu kühnere Komplimente und passende Wörter im Glossar. Konsens bleibt der rote Faden.",
+      ],
+      itemsEn: [
+        "📋 In the „Coqueteo y romance“ module every important phrase now has a copy button – one tap puts the Spanish line on your clipboard, perfect for sending it on via WhatsApp & co.",
+        "🔥 More heat: a new phrase group „Turning up the heat – with consent“ (from „No puedo dejar de mirarte“ via „¿Te apetece venir a mi habitación?“ to „¿Está bien si te toco aquí?“), plus bolder compliments and matching glossary words. Consent stays the common thread.",
+      ],
+    },
+    {
       version: "1.108.0",
       date: "2026-06-20",
       title: "Coqueteo y romance: Lernkarten, Lesetraining & ein Flirt-Dialog",
