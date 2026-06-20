@@ -3473,6 +3473,9 @@
       avgMastered: students.length
         ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
       totalCards: students.length ? students[0].totalCards : 0,
+      // Niveau-Verteilung der Klasse (CEFR-Stufen + „noch nicht getestet") für die
+      // Gruppenbildung – aggregiert aus denselben Einstufungs-Ergebnissen wie die Tabelle.
+      levelDist: stats.levelDistribution(students),
       taskTargets: taskTargets(),
       bundles: bundlesVM(),                       // kuratierte Vorlagen
       taskItemKeys: items.map(itemKey),           // aktuell gewählte Ziele (als "kind:scope")

@@ -2240,6 +2240,18 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .teacher-btn:active { transform: translateY(1px); }
 .teacher-summary { font-weight: 700; color: var(--brand-ink); margin: 10px 0; }
 .teacher-empty { color: var(--muted); margin: 12px 0; }
+
+/* Niveau-Verteilung: schlankes Balken-Dashboard über der Klassentabelle. */
+.leveldist { margin: 4px 0 14px; }
+.leveldist-h3 { font-family: var(--font-display); margin: 0 0 2px; font-size: 1.05rem; color: var(--ink); }
+.leveldist-rows { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.leveldist-row { display: grid; grid-template-columns: 3.2rem 1fr 2.4rem; align-items: center; gap: 8px; }
+.leveldist-label { font-weight: 800; color: var(--brand-ink); font-size: 0.92rem; }
+.leveldist-bar { height: 14px; background: var(--line); border-radius: 7px; overflow: hidden; }
+.leveldist-fill { display: block; height: 100%; min-width: 3px; background: var(--brand); border-radius: 7px; }
+.leveldist-count { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.leveldist-foot { margin: 8px 0 0; color: var(--muted); font-size: 0.9rem; }
+.leveldist-foot strong { color: var(--ink); }
 .teacher-tablewrap { overflow-x: auto; }
 .teacher-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 .teacher-table th, .teacher-table td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }

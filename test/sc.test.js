@@ -237,6 +237,40 @@ test("stats.overview: aggregiert Status, Quote und Zähler", () => {
   assert.equal(ov.rate, 50); // 2 correct / 4 seen
 });
 
+test("stats.levelDistribution: zählt CEFR-Stufen, Nivel-Test schlägt Quick-Check", () => {
+  const students = [
+    { assessment: { level: "B1" }, placement: { level: "A2" } }, // Nivel-Test hat Vorrang -> B1
+    { placement: { level: "A2" } },                              // nur Quick-Check -> A2
+    { placement: { level: "A2" } },                              // A2
+    { assessment: { level: "A0" } },                             // A0
+    { },                                                          // ungetestet
+  ];
+  const d = stats.levelDistribution(students);
+  assert.equal(d.total, 5);
+  assert.equal(d.tested, 4);
+  assert.equal(d.untested, 1);
+  assert.equal(d.max, 2); // A2 ist die größte Gruppe
+  // Belegte Stufen kommen in kanonischer CEFR-Reihenfolge (A0 < A2 < B1):
+  assert.deepEqual(d.buckets, [
+    { level: "A0", count: 1 },
+    { level: "A2", count: 2 },
+    { level: "B1", count: 1 },
+  ]);
+});
+
+test("stats.levelDistribution: leere/kaputte Eingaben sind robust", () => {
+  const empty = stats.levelDistribution([]);
+  assert.deepEqual(empty.buckets, []);
+  assert.equal(empty.total, 0);
+  assert.equal(empty.untested, 0);
+  assert.equal(empty.max, 0);
+  // Nicht-Array -> wie leer; ungültige level-Werte zählen als ungetestet.
+  assert.equal(stats.levelDistribution(null).total, 0);
+  const junk = stats.levelDistribution([{ placement: { level: 42 } }, { assessment: {} }]);
+  assert.equal(junk.tested, 0);
+  assert.equal(junk.untested, 2);
+});
+
 // ---------- badges ----------
 test("badges.buildMetrics: zählt gelernte/gemeisterte Karten und Kategorie-Anteile", () => {
   const cards = [

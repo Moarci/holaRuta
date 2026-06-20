@@ -3423,6 +3423,33 @@
       </section>`;
   }
 
+  // Kompaktes Balken-Dashboard der Niveau-Verteilung (CEFR-Stufen + „noch nicht
+  // getestet"). Gibt der Lehrkraft auf einen Blick die Gruppengrößen je Stufe.
+  // Reiner String-Renderer, druckbar (nur Inline-Breiten + .leveldist-* Klassen).
+  function renderLevelDist(d) {
+    if (!d || !d.total) return "";
+    const base = Math.max(d.max, 1); // größte Stufen-Gruppe füllt den Balken voll aus
+    const bars = d.buckets.map((b) => {
+      const pct = Math.round((b.count / base) * 100);
+      return `
+        <div class="leveldist-row">
+          <span class="leveldist-label">${esc(b.level)}</span>
+          <span class="leveldist-bar"><span class="leveldist-fill" style="width:${pct}%"></span></span>
+          <span class="leveldist-count" title="${esc(t("teacher.distCount", { n: b.count }))}">${b.count}</span>
+        </div>`;
+    }).join("");
+    const untested = d.untested
+      ? `<p class="leveldist-foot">${esc(t("teacher.distUntested"))}: <strong>${d.untested}</strong></p>`
+      : "";
+    return `
+      <div class="leveldist">
+        <h3 class="leveldist-h3">📊 ${esc(t("teacher.distHeading"))}</h3>
+        <p class="teacher-sub2">${esc(t("teacher.distHint"))}</p>
+        <div class="leveldist-rows">${bars}</div>
+        ${untested}
+      </div>`;
+  }
+
   // Lehrer-/Coordinator-Modus: Klassenübersicht aus importierten Schüler-Backups.
   // Backend-frei und offline – die Daten leben nur in dieser Sitzung. Reuse der
   // Screen-/Topbar-Struktur; Tabelle bewusst schlicht und druckbar (window.print).
@@ -3438,6 +3465,7 @@
     const body = vm.count
       ? `
       <p class="teacher-summary">${esc(t("teacher.classSummary", { n: vm.count, avg: vm.avgMastered, total: vm.totalCards }))}</p>
+      ${renderLevelDist(vm.levelDist)}
       <div class="teacher-tablewrap">
         <table class="teacher-table">
           <thead><tr>

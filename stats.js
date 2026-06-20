@@ -116,6 +116,36 @@
     };
   }
 
+  // Kanonische CEFR-Reihenfolge der angezeigten Niveaus (Quick-Check kennt "B1-"
+  // als „nahe B1", der ausführliche Nivel-Test die echten B1/B2/C1). Unbekannte
+  // Strings landen – alphabetisch – hinter den bekannten.
+  const CEFR_ORDER = ["A0", "A1", "A2", "B1-", "B1", "B2", "C1"];
+
+  // Das anzuzeigende Niveau eines Schülers: der ausführliche Nivel-Test hat Vorrang
+  // vor dem Quick-Check (genauer). Ohne beides -> null (= noch nicht getestet).
+  function studentLevel(student) {
+    const r = (student && (student.assessment || student.placement)) || null;
+    return r && typeof r.level === "string" && r.level ? r.level : null;
+  }
+
+  // Niveau-Verteilung einer Klasse: zählt die importierten Schüler je CEFR-Stufe,
+  // gibt die belegten Stufen in kanonischer Reihenfolge zurück (für Gruppenbildung)
+  // plus die Zahl der noch nicht getesteten. REIN – kein Speicher/UI.
+  function levelDistribution(students) {
+    const list = Array.isArray(students) ? students : [];
+    const counts = Object.create(null);
+    let tested = 0;
+    list.forEach((s) => {
+      const lv = studentLevel(s);
+      if (lv) { counts[lv] = (counts[lv] || 0) + 1; tested++; }
+    });
+    const known = CEFR_ORDER.filter((lv) => counts[lv]);
+    const extra = Object.keys(counts).filter((lv) => CEFR_ORDER.indexOf(lv) < 0).sort();
+    const buckets = known.concat(extra).map((lv) => ({ level: lv, count: counts[lv] }));
+    const max = buckets.reduce((m, b) => Math.max(m, b.count), 0);
+    return { buckets, max, tested, untested: list.length - tested, total: list.length };
+  }
+
   window.SC = window.SC || {};
-  window.SC.stats = { record, statusOf, cardSummary, overview, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS };
+  window.SC.stats = { record, statusOf, cardSummary, overview, levelDistribution, studentLevel, CEFR_ORDER, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS };
 })();
