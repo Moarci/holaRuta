@@ -38,6 +38,38 @@
   // Pflicht-Session – der Rest bleibt fällig und kommt in der nächsten Runde.
   const SESSION_CAP = 20;
 
+  // ----- Lazy-Loader (Single-File-fest) ------------------------------------
+  // Lädt ein optionales Feature-Modul bei Bedarf nach. WICHTIG: existiert
+  // window.SC[name] bereits (Single-File-Build, wo alles inlined ist, oder das
+  // Modul wurde schon per <script> geladen), wird `cb` SOFORT und SYNCHRON
+  // aufgerufen – das Verhalten ist dann identisch zum bisherigen direkten Öffnen.
+  // Andernfalls (Modul noch nicht da, z. B. nachdem L5 die <script>-Tags
+  // entfernt) wird ein <script src="name.js"> injiziert und `cb` erst nach
+  // onload ausgeführt. Mehrfach-Anfragen während des Ladens teilen sich dasselbe
+  // Script-Element (kein Doppel-Laden). Schlägt das Laden fehl, läuft `cb`
+  // trotzdem (die *VM/*Ready-Guards fangen ein fehlendes Modul ohnehin ab).
+  const _moduleLoading = {}; // name -> Array<cb>, solange das Script lädt
+  function loadModule(name, cb) {
+    if (window.SC && window.SC[name]) { if (cb) cb(window.SC[name]); return; }
+    if (_moduleLoading[name]) { if (cb) _moduleLoading[name].push(cb); return; }
+    const waiters = _moduleLoading[name] = [];
+    if (cb) waiters.push(cb);
+    const done = () => {
+      delete _moduleLoading[name];
+      const mod = window.SC && window.SC[name];
+      waiters.forEach((fn) => { try { fn(mod); } catch (e) { /* einzelner cb-Fehler */ } });
+    };
+    try {
+      if (typeof document === "undefined" || !document.createElement) { done(); return; }
+      const s = document.createElement("script");
+      s.src = name + ".js";
+      s.async = false; // Reihenfolge/Abhängigkeiten wie bei statischen <script>
+      s.onload = done;
+      s.onerror = done; // Guards greifen; nicht hängen bleiben
+      (document.head || document.body || document.documentElement).appendChild(s);
+    } catch (e) { done(); }
+  }
+
   // ----- Zustand (eine einzige Quelle der Wahrheit) -----
   let progress = store.loadProgress();
   let settings = store.loadSettings();
@@ -2161,8 +2193,10 @@
 
   function openDialogosSetup() {
     dismissBadgeToast();
-    if (!dialogosReady()) return;
-    setState({ screen: "dialogosSetup" });
+    loadModule("dialogos", () => {
+      if (!dialogosReady()) return;
+      setState({ screen: "dialogosSetup" });
+    });
   }
 
   function startDialogos(scenarioId) {
@@ -3486,7 +3520,10 @@
       const first = taskTargets()[0];
       if (first) state.taskItems = [targetValueToItem(first.value)];
     }
-    setState({ screen: "teacher" });
+    // QR-Generator (window.SC.qr) wird beim Lehrer-Screen inline für den
+    // Aufgaben-Code-QR gebraucht. Bei Bedarf nachladen, dann (neu) rendern –
+    // der inline qrSvg-Guard zeigt sonst nur ein leeres Feld bis zum Reload.
+    loadModule("qr", () => setState({ screen: "teacher" }));
   }
 
   // Aus einem Backup-Payload eine kompakte Schüler-Auswertung bauen (rein).
@@ -5934,7 +5971,7 @@
   function openHistoria(region) {
     dismissBadgeToast();
     state.histRegion = region === "centro" ? "centro" : "sur";
-    setState({ screen: "historia" });
+    loadModule(region === "centro" ? "historiaCentro" : "historia", () => setState({ screen: "historia" }));
   }
 
   function openKnigge() {
@@ -5971,22 +6008,22 @@
 
   function openMusica() {
     dismissBadgeToast();
-    setState({ screen: "musica" });
+    loadModule("musica", () => setState({ screen: "musica" }));
   }
 
   function openFotos() {
     dismissBadgeToast();
-    setState({ screen: "fotos" });
+    loadModule("fotografia", () => setState({ screen: "fotos" }));
   }
 
   function openFlirt() {
     dismissBadgeToast();
-    setState({ screen: "flirt" });
+    loadModule("flirt", () => setState({ screen: "flirt" }));
   }
 
   function openBailar() {
     dismissBadgeToast();
-    setState({ screen: "bailar" });
+    loadModule("bailar", () => setState({ screen: "bailar" }));
   }
 
   function selectCountry(id) {
