@@ -12,22 +12,39 @@
  */
 "use strict";
 
+// pattern (optional): --test-name-pattern, um in der großen sc.test.js NUR die
+// modul-relevanten Tests zu fahren (Geschwindigkeit + sauberer Pro-Modul-Score).
 export const MODULES = {
-  srs:     { file: "srs.js",     tests: ["sc.test.js"] },
-  matcher: { file: "matcher.js", tests: ["matcher-de.test.js", "typo-corpus.test.js", "sc.test.js"] },
-  store:   { file: "store.js",   tests: ["sc.test.js"] },
-  stats:   { file: "stats.js",   tests: ["sc.test.js"] },
+  srs:     { file: "srs.js",     tests: ["sc.test.js"], pattern: "^srs" },
+  store:   { file: "store.js",   tests: ["sc.test.js"], pattern: "^store" },
+  stats:   { file: "stats.js",   tests: ["sc.test.js"], pattern: "^stats" },
+  badges:  { file: "badges.js",  tests: ["sc.test.js"], pattern: "^badges" },
+  matcher: { file: "matcher.js", tests: ["matcher-de.test.js", "typo-corpus.test.js"] },
   net:     { file: "net.js",     tests: ["net.test.js"] },
   sync:    { file: "sync.js",    tests: ["sync.test.js"] },
   numbers: { file: "numbers.js", tests: ["numbers.test.js"] },
-  context: { file: "context.js", tests: ["frases.test.js", "sc.test.js"] },
-  badges:  { file: "badges.js",  tests: ["celebrate.test.js", "sc.test.js"] },
+  // context.js: Abdeckung über sc.test.js/frases.test.js unklar → vorerst nur
+  // Katalog-fähig, nicht in der Engine (vermeidet rauschenden Pro-Modul-Score).
 };
 
-// Engine-Konfiguration.
+// Engine-Konfiguration. Sampling ist deterministisch (SEED+BUDGET fix → exakt
+// reproduzierbare Scores bei unverändertem Quellcode).
 export const BUDGET = 30;     // max. Mutanten je Modul (deterministisch gesampelt)
 export const SEED = 1;        // Sampling-Seed (reproduzierbar)
-export const THRESHOLD = 70;  // Mutation-Score-Schwelle in % (Ratsche; nach Baseline kalibriert)
+
+/*
+ * Pro-Modul-No-Regression-Ratchet (statt globalem Schwellwert): Jedes Modul darf
+ * seinen gemessenen Baseline-Score nicht um mehr als TOLERANCE unterschreiten.
+ * Vorteil ggü. globalem Schwellwert: ein PR an einem schwach getesteten Modul
+ * (z. B. sync 30 %) wird NICHT rot, solange er den Score nicht VERSCHLECHTERT —
+ * und Verbesserungen heben den Baseline (Ratsche). Werte = Messung vom 2026-06-20
+ * (BUDGET=30, SEED=1); bei Änderung von BUDGET/SEED neu kalibrieren.
+ */
+export const TOLERANCE = 5;   // erlaubter Score-Rückgang in %-Punkten (absorbiert Mutantenmengen-Drift bei Quelländerungen)
+export const BASELINE = {
+  srs: 66, store: 60, stats: 70, badges: 43, matcher: 56, net: 81, sync: 30, numbers: 53,
+};
+export const floorFor = (m) => Math.max(0, (BASELINE[m] ?? 0) - TOLERANCE);
 
 /*
  * Äquivalente Mutanten: Mutationen, die das Verhalten nachweislich NICHT ändern

@@ -84,6 +84,7 @@ export function generateMutants(src) {
       let overlap = false;
       for (let k = index; k < index + tok.length; k++) if (relTaken.has(k)) overlap = true;
       if (overlap) continue;
+      if (tok === ">" && mask[index - 1] === "=") continue; // Arrow => nicht als Vergleich mutieren
       for (let k = index; k < index + tok.length; k++) relTaken.add(k);
       add(index, tok.length, REL[tok], "relational", tok);
     }

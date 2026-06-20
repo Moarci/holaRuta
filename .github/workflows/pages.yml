@@ -24,6 +24,8 @@ on:
     branches: [main]
   pull_request: # Merge-Gate: Tests laufen vor dem Merge nach main
   workflow_dispatch: # erlaubt manuelles Auslösen über den Actions-Tab
+  schedule:
+    - cron: "0 4 * * *" # nächtlicher voller Mutations-Score (Job mutation-full)
 
 # Standardmäßig nur Lesezugriff; die Pages-Schreibrechte braucht nur der
 # deploy-Job (Least Privilege) – siehe unten.
@@ -58,6 +60,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0 # volle Historie: mutation:diff vergleicht gegen den Basis-Ref (Fallback: alle Module)
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -90,12 +94,14 @@ jobs:
           git diff --exit-code service-worker.js
 
       # Mutationstesting-Gate (BLOCKIEREND): baut echte Bugs in den Quellcode und
-      # verlangt, dass die Tests sie fangen. Der kuratierte Katalog (scripts/mutation/
-      # catalog.mjs) muss zu 100 % gefangen werden — sonst ist ein Test bloße Zierde.
+      # verlangt, dass die Tests sie fangen. Zwei Teile:
+      #   1. Katalog (catalog.mjs): kuratierte Invarianten — 100 % müssen gefangen werden.
+      #   2. Engine: automatische Operatoren NUR auf den per git geänderten Modulen
+      #      (--diff), gegen den Pro-Modul-No-Regression-Boden (targets.BASELINE).
       # Zero-Dep (nur node:*). NACH dem service-worker-Check platziert, damit ein
       # evtl. dirty-tree-Fehler nicht maskiert wird; der Runner stellt den Tree wieder her.
-      - name: Mutationstesting – Katalog-Gate
-        run: npm run mutation:catalog
+      - name: Mutationstesting – Gate (Katalog + Engine auf geänderten Modulen)
+        run: npm run mutation:diff
 
   # Browser-E2E (Playwright): prüft den „Modo profe" (Lehrer-Modus) gegen die
   # LAUFENDE App in echtem Chromium – Schüler-Import, Niveau-Verteilung,
@@ -201,3 +207,21 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
+  # Nächtlicher VOLLER Mutations-Score über ALLE Engine-Module (entkoppelt vom
+  # schnellen PR-Gate, das nur geänderte Module fährt). Gated je Modul gegen den
+  # No-Regression-Boden (targets.BASELINE). Läuft nur per Zeitplan / manuell.
+  mutation-full:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+
+      - name: Voller Mutations-Score (alle Module)
+        run: npm run mutation:score

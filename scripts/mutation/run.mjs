@@ -23,9 +23,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
-import { ROOT, runMutant, recoverBackups } from "./runner.mjs";
+import { ROOT, runMutant, recoverBackups, probeTests } from "./runner.mjs";
 import { CATALOG } from "./catalog.mjs";
-import { MODULES, BUDGET, SEED, THRESHOLD, isIgnored } from "./targets.mjs";
+import { MODULES, BUDGET, SEED, BASELINE, floorFor, isIgnored } from "./targets.mjs";
 import { generateMutants, sample } from "./operators.mjs";
 import { formatReport } from "./report.mjs";
 
@@ -37,7 +37,6 @@ const wantCatalog = has("--catalog") || (!has("--engine"));
 const wantEngine = has("--engine");
 const budget = Number(val("--budget", BUDGET));
 const seed = Number(val("--seed", SEED));
-const threshold = Number(val("--threshold", THRESHOLD));
 const onlyModule = val("--module", null);
 
 const lineAt = (src, idx) => src.slice(0, idx).split("\n").length;
@@ -94,20 +93,41 @@ function runEngine() {
 
   const out = [];
   for (const m of names) {
-    const { file, tests } = MODULES[m];
+    const { file, tests, pattern } = MODULES[m];
+    // Vollständigkeits-Guard: jedes Engine-Modul braucht einen Baseline-Eintrag.
+    if (BASELINE[m] === undefined) {
+      out.push({ module: m, error: "kein Baseline-Eintrag in targets.BASELINE — bitte kalibrieren" });
+      continue;
+    }
+    // Vorcheck A: unmutierte Tests müssen grün sein, sonst lässt sich nichts messen.
+    const probe = probeTests(tests, pattern ? { namePattern: pattern } : {});
+    if (!probe.pass) {
+      out.push({ module: m, error: `Vorcheck rot: ${tests.join(",")}${pattern ? ` /${pattern}/` : ""} schlägt schon unmutiert fehl` });
+      process.stderr.write(`  [engine] ${m}: Vorcheck FEHLER → übersprungen\n`);
+      continue;
+    }
     const src = fs.readFileSync(path.join(ROOT, file), "utf8");
     const mutants = sample(generateMutants(src), budget, seed);
     const r = { module: m, killed: 0, survived: 0, equivalent: 0, discarded: 0, survivors: [] };
     for (const mut of mutants) {
       if (isIgnored(file, mut.line, mut.op)) { r.equivalent++; continue; }
-      const res = runMutant(file, (orig) => orig.slice(0, mut.index) + mut.replacement + orig.slice(mut.index + mut.length), tests);
+      const res = runMutant(file, (orig) => orig.slice(0, mut.index) + mut.replacement + orig.slice(mut.index + mut.length), tests, pattern ? { namePattern: pattern } : {});
       if (res.error) { r.discarded++; continue; }
       if (res.discarded) { r.discarded++; continue; }
       if (res.killed) { r.killed++; }
       else { r.survived++; r.survivors.push({ file, line: mut.line, op: mut.op, from: mut.from, to: mut.to }); }
     }
+    // Vorcheck B: fängt das Targeting 0 von vielen Mutanten, sind Tests/Pattern kaputt
+    // (z. B. Pattern passt auf nichts → node --test läuft ins Leere) → hart melden.
+    if (r.killed === 0 && r.survived >= 5) {
+      out.push({ module: m, error: `Targeting fängt 0/${r.survived} Mutanten — Tests/Pattern${pattern ? ` /${pattern}/` : ""} prüfen` });
+      process.stderr.write(`  [engine] ${m}: 0 gefangen → FEHLER\n`);
+      continue;
+    }
+    r.baseline = BASELINE[m];
+    r.floor = floorFor(m);
     out.push(r);
-    process.stderr.write(`  [engine] ${m}: ${mutants.length} Mutanten geprüft\n`);
+    process.stderr.write(`  [engine] ${m}: ${mutants.length} Mutanten geprüft (${r.killed} gefangen)\n`);
   }
   return out;
 }
@@ -115,6 +135,6 @@ function runEngine() {
 // ------------------------------ Lauf --------------------------------
 const catalog = wantCatalog ? runCatalog() : null;
 const engine = wantEngine ? runEngine() : null;
-const { text, exitCode } = formatReport({ catalog, engine, threshold });
+const { text, exitCode } = formatReport({ catalog, engine });
 console.log(text);
 process.exit(exitCode);

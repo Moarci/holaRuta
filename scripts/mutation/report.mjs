@@ -4,10 +4,12 @@
  *
  * Liefert formatReport({ catalog, engine, threshold }) → { text, exitCode }.
  *   catalog: [{ label, file, line, status }]   status ∈ "killed" | "survived" | "error"
- *   engine:  [{ module, killed, survived, equivalent, discarded, survivors:[{file,line,op,from,to}] }]
+ *   engine:  [{ module, killed, survived, equivalent, discarded, baseline, floor,
+ *              survivors:[{file,line,op,from,to}] }]  oder  { module, error }
  *
- * exitCode 1, wenn eine Katalog-Mutation überlebt/fehlerhaft ist ODER ein
- * Engine-Modul-Score unter der Schwelle liegt. Sonst 0.
+ * exitCode 1, wenn eine Katalog-Mutation überlebt/fehlerhaft ist, ein Engine-Modul
+ * unter seinen No-Regression-Boden (floor) fällt, oder ein Engine-Modul-Fehler
+ * vorliegt. Sonst 0.
  */
 "use strict";
 
@@ -15,7 +17,7 @@ const HR = "=".repeat(60);
 const pad = (s, n) => (String(s) + " ".repeat(n)).slice(0, n);
 const pct = (k, s) => (k + s === 0 ? 100 : Math.round((k / (k + s)) * 1000) / 10);
 
-export function formatReport({ catalog = null, engine = null, threshold = 0 }) {
+export function formatReport({ catalog = null, engine = null }) {
   const out = [];
   const p = (s = "") => out.push(s);
   let exitCode = 0;
@@ -39,26 +41,31 @@ export function formatReport({ catalog = null, engine = null, threshold = 0 }) {
   }
 
   // ---------------------------- Engine -----------------------------
-  if (engine) {
-    p("\n  [Engine · automatische Operatoren · Mutation-Score]");
+  if (engine && engine.length === 0) {
+    p("\n  [Engine] übersprungen (keine geänderten reinen Module).");
+  } else if (engine) {
+    p("\n  [Engine · automatische Operatoren · Mutation-Score · No-Regression je Modul]");
     let tKill = 0, tSurv = 0;
     for (const m of engine) {
+      if (m.error) { // fehlkonfiguriertes Targeting/Baseline → hart, sonst stille Falsch-Scores
+        exitCode = 1;
+        p(`  ‼ FEHLER  ${pad(m.module, 14)} ${m.error}`);
+        continue;
+      }
       tKill += m.killed; tSurv += m.survived;
       const score = pct(m.killed, m.survived);
-      const under = score < threshold;
+      const under = score < m.floor; // Regression: Score unter Baseline−Toleranz
       if (under) exitCode = 1;
       p(`  ${under ? "✗" : "✓"}  ${pad(m.module, 14)} Score ${pad(score + "%", 7)} ` +
-        `(getötet ${m.killed}, überlebt ${m.survived}, äquiv ${m.equivalent}, verworfen ${m.discarded})`);
+        `(Basis ${m.baseline}%, Boden ${m.floor}%; getötet ${m.killed}, überlebt ${m.survived}, äquiv ${m.equivalent}, verworfen ${m.discarded})` +
+        (under ? "  ← REGRESSION (Gate ROT)" : ""));
       for (const s of m.survivors.slice(0, 12)) {
         p(`        ↳ überlebt  ${s.file}:${s.line}  ${s.op}  ${s.from} → ${s.to}`);
       }
       if (m.survivors.length > 12) p(`        … und ${m.survivors.length - 12} weitere`);
     }
-    const overall = pct(tKill, tSurv);
     p(`  ${HR}`);
-    p(`  Gesamt-Mutation-Score: ${overall}%  (Schwelle ${threshold}%)` +
-      (overall < threshold ? "  ·  UNTER SCHWELLE (Gate ROT)" : "  ·  ok"));
-    if (overall < threshold) exitCode = 1;
+    p(`  Gesamt-Mutation-Score: ${pct(tKill, tSurv)}%  (informativ; gated wird je Modul gegen den Boden)`);
   }
 
   p("\n  " + HR);

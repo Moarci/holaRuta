@@ -76,6 +76,26 @@ function installGuards() {
 const node = process.execPath;
 const run = (args) => spawnSync(node, args, { cwd: ROOT, encoding: "utf8" }).status;
 
+const testArgs = (tests, opts = {}) => {
+  const a = ["--test"];
+  if (opts.namePattern) a.push("--test-name-pattern", opts.namePattern);
+  a.push(...tests.map((t) => path.join("test", t)));
+  return a;
+};
+
+/*
+ * Vorcheck gegen UNMUTIERTEN Code: Sind die gemappten Tests grün und wählt das
+ * (optionale) namePattern überhaupt Tests aus? Verhindert stille Falsch-Scores
+ * (z. B. wenn ein Pattern auf 0 Tests passt → node --test endet mit Exit 0).
+ * Rückgabe: { pass:boolean, count:number }.
+ */
+export function probeTests(tests, opts = {}) {
+  const r = spawnSync(node, testArgs(tests, opts), { cwd: ROOT, encoding: "utf8" });
+  const out = (r.stdout || "") + (r.stderr || "");
+  const m = out.match(/# tests (\d+)/);
+  return { pass: r.status === 0, count: m ? Number(m[1]) : 0 };
+}
+
 /*
  * Wendet eine Mutation an und meldet das Ergebnis.
  *   mutate: (original:string) => mutated:string   (wirft bei Validierungsfehler)
@@ -96,10 +116,7 @@ export function runMutant(file, mutate, tests, opts = {}) {
     // Syntax-Gegenprobe: kaputte Mutanten zählen als verworfen, nicht als gefangen.
     if (run(["--check", abs]) !== 0) return { discarded: true };
 
-    const args = ["--test"];
-    if (opts.namePattern) args.push("--test-name-pattern", opts.namePattern);
-    args.push(...tests.map((t) => path.join("test", t)));
-    return { killed: run(args) !== 0 };
+    return { killed: run(testArgs(tests, opts)) !== 0 };
   } finally {
     restore(file);
   }
