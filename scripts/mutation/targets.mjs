@@ -38,13 +38,13 @@ export const SEED = 1;        // Sampling-Seed (reproduzierbar)
  * Vorteil ggü. globalem Schwellwert: ein PR an einem schwach getesteten Modul
  * (z. B. schwach getestetes Modul) wird NICHT rot, solange er den Score nicht
  * VERSCHLECHTERT — und Verbesserungen heben den Baseline (Ratsche). Werte =
- * Messung vom 2026-06-20 (BUDGET=30, SEED=1); sync, badges sowie numbers, matcher,
- * store & srs danach durch gezielte Tests auf 100 % gehoben (verbleibende Survivor
- * als äquivalent in IGNORE dokumentiert). Bei Änderung von BUDGET/SEED neu kalibrieren.
+ * Messung vom 2026-06-20 (BUDGET=30, SEED=1); danach ALLE Engine-Module durch
+ * gezielte Tests auf 100 % gehoben (verbleibende Survivor als äquivalent in IGNORE
+ * dokumentiert). Bei Änderung von BUDGET/SEED neu kalibrieren.
  */
 export const TOLERANCE = 5;   // erlaubter Score-Rückgang in %-Punkten (absorbiert Mutantenmengen-Drift bei Quelländerungen)
 export const BASELINE = {
-  srs: 100, store: 100, stats: 70, badges: 100, matcher: 100, net: 81, sync: 100, numbers: 100,
+  srs: 100, store: 100, stats: 100, badges: 100, matcher: 100, net: 100, sync: 100, numbers: 100,
 };
 export const floorFor = (m) => Math.max(0, (BASELINE[m] ?? 0) - TOLERANCE);
 
@@ -63,6 +63,11 @@ export const IGNORE = [
     "randomPrice: `Math.random() < 0.5` vs `<= 0.5` (50/50-Aufteilung fein/grob). Differenz nur " +
     "beim Maß-Null-Ereignis random()===0.5; die beiden Zweige erzeugen statistisch identische " +
     "Verteilungen und für 0.5 denselben Betrag (Spanne skaliert proportional zu step/fine) → äquivalent." },
+  // stats.js
+  { file: "stats.js", line: 52, op: "number", grund:
+    "statusOf: `(r.interval || 0) >= MASTERED_DAYS` mit MASTERED_DAYS=5. Der Fallback greift nur, wenn " +
+    "interval fehlt/0 ist; 0 und 1 liegen beide unter 5 → der Status bleibt in jedem Fall \"learning\". " +
+    "Die Mutation 0→1 ändert kein Ergebnis → äquivalent." },
   // srs.js
   { file: "srs.js", line: 51, op: "number", grund:
     "review: `Math.max(0, num(s.interval, 0))`. interval fließt nur über `base = interval || 1` ein; " +

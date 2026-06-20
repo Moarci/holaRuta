@@ -182,3 +182,18 @@ test("confirm: ohne accessToken -> wirft (kein stilles Anmelden)", async () => {
   await assert.rejects(() => net.confirm("http://api", "a@b", "wrong"), /confirm failed/);
   assert.equal(net.getToken(), null, "fehlgeschlagenes confirm setzt kein Token");
 });
+
+test("confirm: accessToken im Body, aber HTTP-Fehler -> wirft, kein Token (r.ok zählt)", async () => {
+  reset();
+  // Body trägt zwar ein accessToken, der Status ist aber 4xx -> NICHT anmelden.
+  stubFetch(() => res(400, JSON.stringify({ accessToken: "sneaky" })));
+  await assert.rejects(() => net.confirm("http://api", "a@b", "x"), /confirm failed/);
+  assert.equal(net.getToken(), null, "ok=false darf trotz Token-Feld nicht anmelden");
+});
+
+test("confirm: ok, aber Body ohne accessToken-Feld -> wirft, kein Token", async () => {
+  reset();
+  stubFetch(() => res(200, JSON.stringify({ account: { email: "a@b" } })));
+  await assert.rejects(() => net.confirm("http://api", "a@b", "x"), /confirm failed/);
+  assert.equal(net.getToken(), null, "ohne accessToken-Feld kein stilles Anmelden");
+});

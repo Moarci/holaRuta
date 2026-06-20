@@ -359,6 +359,63 @@ test("stats.rosterCSV: Header + Zeilen in fester Spaltenfolge, RFC-Quoting", () 
   assert.equal(stats.rosterCSV([], []), ""); // leer ohne Header
 });
 
+// ---------- stats: zusätzliche Härtung (Mutationstesting) ----------
+test("stats.record: Nicht-Treffer erhöht good/easy NICHT (Zähler bleiben 0)", () => {
+  const rec = stats.record(undefined, srs.freshState(), "again", 5);
+  assert.equal(rec.good, 0); // 'again' darf good nicht hochzählen
+  assert.equal(rec.easy, 0);
+  assert.equal(rec.again, 1);
+});
+
+test("stats.cardSummary: due wird durchgereicht (|| 0 ist nur Fallback)", () => {
+  assert.equal(stats.cardSummary({ seen: 1, due: 12345, interval: 1 }).due, 12345);
+  assert.equal(stats.cardSummary({ seen: 1, interval: 1 }).due, 0); // fehlend -> 0
+});
+
+test("stats.cardSummary: 'hard' an der 60%-Grenze ist exklusiv (strikt <)", () => {
+  // rate genau 60 -> NICHT hard (Schwelle ausschließend)
+  const atEdge = stats.cardSummary({ seen: 5, good: 3, again: 2, firstRating: "again", interval: 1 });
+  assert.equal(atEdge.rate, 60);
+  assert.equal(atEdge.hard, false);
+  // rate 59 (knapp drunter) -> hard
+  const below = stats.cardSummary({ seen: 100, good: 59, again: 41, firstRating: "again", interval: 1 });
+  assert.equal(below.rate, 59);
+  assert.equal(below.hard, true);
+});
+
+test("stats.overview: zählt auch einmalig gesehene Karten (seen > 0, nicht > 1)", () => {
+  const ov = stats.overview([{ id: "a" }],
+    { a: { seen: 1, good: 1, again: 0, firstRating: "good", interval: 1 } });
+  assert.equal(ov.firstTry, 1);    // seen === 1 muss mitzählen
+  assert.equal(ov.needPractice, 0);
+  assert.equal(ov.totalSeen, 1);
+});
+
+test("stats.sortRoster: fehlende Zähler zählen als 0, nicht als 1", () => {
+  // mastered: Zoe ohne cardsMastered -> 0 (kleiner als Ann mit 1)
+  const ms = [{ name: "Ann", cardsMastered: 1 }, { name: "Zoe" }];
+  assert.deepEqual(stats.sortRoster(ms, "mastered", 1).map((s) => s.name), ["Zoe", "Ann"]);
+});
+
+test("stats.sortRoster: pretrip sortiert numerisch nach pretripDays (nicht nach Objekt/Name)", () => {
+  const pt = [{ name: "Ann", pretripDays: 5 }, { name: "Zoe", pretripDays: 1 }];
+  // aufsteigend nach pretripDays: Zoe(1) < Ann(5) – die Namensreihenfolge wäre umgekehrt
+  assert.deepEqual(stats.sortRoster(pt, "pretrip", 1).map((s) => s.name), ["Zoe", "Ann"]);
+});
+
+test("stats.sortRoster: dir 0 verhält sich wie aufsteigend (dir < 0 ? -1 : 1)", () => {
+  const dd = [{ name: "A", cardsMastered: 1 }, { name: "B", cardsMastered: 9 }];
+  assert.deepEqual(stats.sortRoster(dd, "mastered", 0).map((s) => s.name), ["A", "B"]);
+});
+
+test("stats.sortRoster: Gleichstand -> stabiler Namens-Tie-Break (>, nicht >=)", () => {
+  // Gleicher Schlüsselwert: der Tie-Break über den Namen (immer aufsteigend) MUSS
+  // greifen – in beide Sortierrichtungen identisch.
+  const tie = [{ name: "Bob", streak: 5 }, { name: "Ana", streak: 5 }];
+  assert.deepEqual(stats.sortRoster(tie, "streak", 1).map((s) => s.name), ["Ana", "Bob"]);
+  assert.deepEqual(stats.sortRoster(tie, "streak", -1).map((s) => s.name), ["Ana", "Bob"]);
+});
+
 // ---------- badges ----------
 test("badges.buildMetrics: zählt gelernte/gemeisterte Karten und Kategorie-Anteile", () => {
   const cards = [
