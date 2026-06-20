@@ -325,6 +325,9 @@
       unlocked: {},         // Map badgeId -> Zeitstempel der Freischaltung
       placement: null,      // letztes Ruta-Check-Ergebnis { level, finalScore, accuracy, unknownRate, tempo, at } | null
       placementHistory: [], // alle Ruta-Check-Ergebnisse (für Verlauf/Fortschritt), neueste zuletzt
+      assessment: null,     // letztes Nivel-Test-Ergebnis (ausführlich) | null
+      assessmentHistory: [],// alle Nivel-Test-Ergebnisse (für Verlauf/Fortschritt), neueste zuletzt
+      assessmentProgress: null, // laufender, unabgeschlossener Nivel-Test (zum Fortsetzen) | null
     };
   }
   // Trip-Ziel aus (evtl. fremdem/manipuliertem) Storage säubern. Ungültiges ->
@@ -345,6 +348,21 @@
     return {};
   }
 
+  // Skill-Aufschlüsselung eines Einstufungs-Ergebnisses typisieren (für die
+  // ausführliche Profil-Ansicht „wie nach dem Abschluss"). Prozente 0..100,
+  // Anzahl gedeckelt – manipuliertes localStorage darf weder crashen noch wuchern.
+  function sanitizeSkillBreakdown(v) {
+    if (!Array.isArray(v)) return [];
+    const pct = (x) => (typeof x === "number" && isFinite(x) ? Math.max(0, Math.min(100, Math.round(x))) : 0);
+    const out = [];
+    for (let i = 0; i < v.length && out.length < 12; i++) {
+      const s = v[i];
+      if (!isPlainObject(s) || typeof s.skill !== "string") continue;
+      out.push({ skill: s.skill.slice(0, 24), accuracy: pct(s.accuracy), unknownRate: pct(s.unknownRate) });
+    }
+    return out;
+  }
+
   // Ein einzelnes Ruta-Check-Ergebnis typisieren (jedes Feld), damit korruptes/
   // manipuliertes localStorage weder crasht noch z. B. „level: 42" anzeigt.
   // null, wenn kein Objekt.
@@ -358,6 +376,10 @@
       unknownRate: num(e.unknownRate),
       tempo: typeof e.tempo === "string" ? e.tempo : "",
       reliability: typeof e.reliability === "string" ? e.reliability : "",
+      note: typeof e.note === "string" ? e.note.slice(0, 32) : "",
+      correct: num(e.correct),
+      total: num(e.total),
+      skills: sanitizeSkillBreakdown(e.skills),
       at: typeof e.at === "string" ? e.at : "",
       ts: typeof e.ts === "string" ? e.ts : "",
     };
@@ -375,6 +397,70 @@
     }
     // Nur die letzten 50 behalten (chronologisch, neueste zuletzt).
     return out.slice(-50);
+  }
+
+  // Ein einzelnes Nivel-Test-Ergebnis typisieren (wie Ruta-Check, plus „variant").
+  function sanitizeAssessmentEntry(e) {
+    if (!isPlainObject(e)) return null;
+    const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    return {
+      level: typeof e.level === "string" ? e.level.slice(0, 8) : "",
+      variant: e.variant === "extremo" ? "extremo" : "standard",
+      finalScore: num(e.finalScore),
+      accuracy: num(e.accuracy),
+      unknownRate: num(e.unknownRate),
+      tempo: typeof e.tempo === "string" ? e.tempo : "",
+      reliability: typeof e.reliability === "string" ? e.reliability : "",
+      note: typeof e.note === "string" ? e.note.slice(0, 32) : "",
+      correct: num(e.correct),
+      total: num(e.total),
+      skills: sanitizeSkillBreakdown(e.skills),
+      at: typeof e.at === "string" ? e.at : "",
+      ts: typeof e.ts === "string" ? e.ts : "",
+    };
+  }
+  function sanitizeAssessmentHistory(v) {
+    if (!Array.isArray(v)) return [];
+    const out = [];
+    for (let i = 0; i < v.length; i++) {
+      const e = sanitizeAssessmentEntry(v[i]);
+      if (e) out.push(e);
+    }
+    return out.slice(-50);
+  }
+
+  // Laufender (unabgeschlossener) Nivel-Test: damit ein versehentliches Zurück
+  // oder ein Reload den Fortschritt nicht verliert (Wiederaufnahme vom Dashboard).
+  // Korruptes/manipuliertes localStorage darf weder crashen noch riesig werden.
+  function sanitizeAssessmentProgress(v) {
+    if (!isPlainObject(v)) return null;
+    const num = (x) => (typeof x === "number" && isFinite(x) ? x : 0);
+    const asked = Array.isArray(v.asked)
+      ? v.asked.filter((id) => typeof id === "string").slice(0, 200)
+      : [];
+    if (!asked.length) return null; // nichts begonnen → nichts zu speichern
+    const answers = Array.isArray(v.answers)
+      ? v.answers.slice(0, 200).map((a) => {
+          if (!isPlainObject(a)) return { isUnknown: true };
+          return {
+            isUnknown: !!a.isUnknown,
+            selectedIndex: typeof a.selectedIndex === "number" && isFinite(a.selectedIndex) ? a.selectedIndex : null,
+            text: typeof a.text === "string" ? a.text.slice(0, 200) : "",
+            responseTimeMs: num(a.responseTimeMs),
+          };
+        })
+      : [];
+    return {
+      variant: v.variant === "extremo" ? "extremo" : "standard",
+      asked: asked,
+      answers: answers,
+      difficulty: num(v.difficulty),
+      mcAsked: num(v.mcAsked),
+      grammarAsked: num(v.grammarAsked),
+      freeIdx: num(v.freeIdx),
+      startedAt: num(v.startedAt),
+      savedAt: num(v.savedAt),
+    };
   }
 
   function sanitizeTripGoal(t) {
@@ -406,6 +492,10 @@
     const placement = sanitizePlacementEntry(v.placement);
     let placementHistory = sanitizePlacementHistory(v.placementHistory);
     if (!placementHistory.length && placement) placementHistory = [placement];
+    // Nivel-Test analog: letztes Ergebnis + Verlauf konsistent halten.
+    const assessment = sanitizeAssessmentEntry(v.assessment);
+    let assessmentHistory = sanitizeAssessmentHistory(v.assessmentHistory);
+    if (!assessmentHistory.length && assessment) assessmentHistory = [assessment];
     return {
       reviews: num(v.reviews),
       againPresses: num(v.againPresses),
@@ -445,6 +535,9 @@
       unlocked: isPlainObject(v.unlocked) ? v.unlocked : {},
       placement: placement,
       placementHistory: placementHistory,
+      assessment: assessment,
+      assessmentHistory: assessmentHistory,
+      assessmentProgress: sanitizeAssessmentProgress(v.assessmentProgress),
     };
   }
 

@@ -2496,6 +2496,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .plprof__histscore { font-weight: 700; color: var(--ink-soft); min-width: 3em; text-align: right; }
 .plprof__actions { margin-top: 10px; }
 .plprof .sharebar { margin-top: 12px; }
+/* Ausführliche Ergebnis-Blöcke im Profil („wie nach dem Abschluss"): vom Kopf
+   abgesetzt, damit Statistik + Bereichs-Aufschlüsselung klar dazugehören. */
+.plprof__stats { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.plprof__skillscap { margin: 4px 0 6px; }
+.plprof .pl-skills { margin-bottom: 6px; }
 .pretrip-day {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);

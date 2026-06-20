@@ -210,7 +210,13 @@
       level: e.level || "–",
       scorePct: Math.round((e.finalScore || 0) * 100),
       accuracyPct: Math.round((e.accuracy || 0) * 100),
+      unknownPct: Math.round((e.unknownRate || 0) * 100),
       tempoLabel: e.tempo ? t("placement.tempo_" + e.tempo) : "",
+      // Ausführliche Details fürs Profil (Ergebnis „wie nach dem Abschluss").
+      correct: e.correct || 0, total: e.total || 0,
+      note: e.note || "",
+      reliability: e.reliability || "",
+      skills: Array.isArray(e.skills) ? e.skills : [],
       at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
     });
     // Verlauf neueste zuerst. Altgeräte ohne History, aber mit letztem Ergebnis:
@@ -237,7 +243,13 @@
       variantLabel: t("assessment.variant_" + (e.variant === "extremo" ? "extremo" : "standard")),
       scorePct: Math.round((e.finalScore || 0) * 100),
       accuracyPct: Math.round((e.accuracy || 0) * 100),
+      unknownPct: Math.round((e.unknownRate || 0) * 100),
       tempoLabel: e.tempo ? t("assessment.tempo_" + e.tempo) : "",
+      // Ausführliche Details fürs Profil (Ergebnis „wie nach dem Abschluss").
+      correct: e.correct || 0, total: e.total || 0,
+      note: e.note || "",
+      reliability: e.reliability || "",
+      skills: Array.isArray(e.skills) ? e.skills : [],
       at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
     });
     const past = history.length ? history.slice().reverse().map(fmt) : (last ? [fmt(last)] : []);
@@ -247,6 +259,39 @@
       history: past,
       attempts: past.length,
       canShare: !!share,
+    };
+  }
+
+  // Laufender, noch nicht abgeschlossener Nivel-Test fürs Dashboard – damit ein
+  // versehentliches Zurück/Reload nicht verloren geht (Wiederaufnahme-Kachel).
+  // null, wenn kein Test offen ist (oder die offene Frage nicht mehr im Katalog).
+  // Der gültige, fortsetzbare Test-Fortschritt – oder null. Ungültig ist er, wenn
+  // nichts begonnen wurde, die offene Frage nicht mehr im Katalog existiert (App-
+  // Version gewechselt) ODER der Test inzwischen abgeschlossen wurde – auch auf
+  // einem anderen Gerät (Cloud-Sync: ein neueres Ergebnis entwertet einen alten
+  // Zwischenstand). REIN lesend (kein Speichern) – fürs Rendern unbedenklich.
+  function liveAssessmentProgress() {
+    if (!assessment) return null;
+    const prog = gamestats.assessmentProgress;
+    if (!prog || !Array.isArray(prog.asked) || !prog.asked.length) return null;
+    if (!assessment.questionById(prog.asked[prog.asked.length - 1])) return null;
+    const done = gamestats.assessment;
+    if (done && typeof done.ts === "string") {
+      const doneMs = Date.parse(done.ts);
+      if (isFinite(doneMs) && prog.savedAt && doneMs >= prog.savedAt) return null;
+    }
+    return prog;
+  }
+
+  function assessmentResumeVM() {
+    const prog = liveAssessmentProgress();
+    if (!prog) return null;
+    const variant = prog.variant === "extremo" ? "extremo" : "standard";
+    return {
+      variant: variant,
+      variantLabel: t("assessment.variant_" + variant),
+      index: prog.asked.length,                    // aktuelle Fragennummer (1-basiert)
+      total: assessmentTotalPlanned(variant),
     };
   }
 
@@ -327,6 +372,7 @@
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       hasAssessment: !!assessment, // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
+      assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       xp: xpVM(),
@@ -4020,6 +4066,11 @@
         unknownRate: Math.round(result.unknownRate * 100) / 100,
         tempo: result.tempo,
         reliability: result.reliability || "",
+        // Ausführliche Ergebnis-Details mitsichern, damit das Profil das volle
+        // Ergebnis „wie nach dem Abschluss" dauerhaft zeigen kann.
+        note: result.note || "",
+        correct: result.correct, total: result.total,
+        skills: placementResultView(result).skills,
         at: now.toISOString().slice(0, 10),
         ts: now.toISOString(),
       };
@@ -4146,6 +4197,9 @@
   function openAssessment() {
     dismissBadgeToast();
     if (!assessment) return; // Modul nicht geladen (Edition/Offline) -> nicht crashen
+    // Läuft noch ein unabgeschlossener Test (z. B. nach versehentlichem Zurück
+    // oder Reload)? Dann nahtlos fortsetzen statt von vorn zu beginnen.
+    if (resumeAssessment()) return;
     state.assessment = {
       phase: "intro", variant: "standard",
       asked: [], answers: [], difficulty: assessment.START_DIFFICULTY,
@@ -4155,11 +4209,68 @@
     render();
   }
 
+  // Laufenden Test (gamestats.assessmentProgress) wiederaufnehmen. true, wenn
+  // erfolgreich fortgesetzt; sonst false (nichts Gespeichertes / Katalog leer).
+  function resumeAssessment() {
+    const prog = liveAssessmentProgress();
+    // Nichts (gültiges) zum Fortsetzen? Einen evtl. veralteten/ungültigen
+    // Zwischenstand (anderswo abgeschlossen, Katalog geändert) gleich aufräumen.
+    if (!prog) { clearAssessmentProgress(); return false; }
+    state.assessment = {
+      phase: "running",
+      variant: prog.variant === "extremo" ? "extremo" : "standard",
+      asked: prog.asked.slice(),
+      answers: Array.isArray(prog.answers) ? prog.answers.slice() : [],
+      difficulty: typeof prog.difficulty === "number" ? prog.difficulty : assessment.START_DIFFICULTY,
+      mcAsked: prog.mcAsked || 0,
+      grammarAsked: prog.grammarAsked || 0,
+      freeIdx: prog.freeIdx || 0,
+      startedAt: prog.startedAt || Date.now(),
+      qStartedAt: Date.now(), // Timer der aktuellen Frage neu starten (Pause nicht mitzählen)
+      answeredFor: null,
+      result: null,
+    };
+    state.screen = "assessment";
+    render();
+    speakCurrentAssessment(); // war die offene Frage ein Hör-Item, erneut vorlesen
+    return true;
+  }
+
+  // Den laufenden Test persistent sichern (überlebt Zurück/Reload). Nur während
+  // der „running“-Phase; Persistenz ist optional und darf nie crashen.
+  function saveAssessmentProgress() {
+    const p = state.assessment;
+    if (!p || p.phase !== "running" || !p.asked.length) return;
+    try {
+      const snapshot = {
+        variant: p.variant || "standard",
+        asked: p.asked.slice(),
+        answers: p.answers.slice(),
+        difficulty: p.difficulty,
+        mcAsked: p.mcAsked,
+        grammarAsked: p.grammarAsked,
+        freeIdx: p.freeIdx,
+        startedAt: p.startedAt,
+        savedAt: Date.now(),
+      };
+      gamestats = Object.assign({}, gamestats, { assessmentProgress: snapshot });
+      store.saveGameStats(gamestats);
+    } catch (e) { /* Persistenz optional – nie crashen */ }
+  }
+  function clearAssessmentProgress() {
+    if (!gamestats.assessmentProgress) return;
+    try {
+      gamestats = Object.assign({}, gamestats, { assessmentProgress: null });
+      store.saveGameStats(gamestats);
+    } catch (e) { /* egal */ }
+  }
+
   function pushAssessmentQuestion(q) {
     const p = state.assessment;
     p.asked.push(q.id);
     p.answeredFor = null;      // Doppel-Tap-Schutz: pro Frage nur eine Antwort
     p.qStartedAt = Date.now();
+    saveAssessmentProgress();  // Fortschritt nach jeder neuen Frage sichern
   }
 
   function startAssessmentTest(variant) {
@@ -4212,8 +4323,12 @@
     const p = state.assessment;
     const frees = assessment.freeQuestions(assessmentQuestions());
     if (p.freeIdx < frees.length) {
-      pushAssessmentQuestion(frees[p.freeIdx]);
+      // freeIdx VOR dem Sichern hochzählen: pushAssessmentQuestion speichert den
+      // Fortschritt, und der gesicherte freeIdx muss auf die NÄCHSTE freie Frage
+      // zeigen (sonst würde ein Resume die aktuelle Frage erneut stellen).
+      const fq = frees[p.freeIdx];
       p.freeIdx += 1;
+      pushAssessmentQuestion(fq);
       render();
     } else {
       finishAssessment();
@@ -4257,11 +4372,16 @@
         unknownRate: Math.round(result.unknownRate * 100) / 100,
         tempo: result.tempo,
         reliability: result.reliability || "",
+        // Ausführliche Ergebnis-Details mitsichern (Profil zeigt das volle Ergebnis).
+        note: result.note || "",
+        correct: result.correct, total: result.total,
+        skills: assessmentResultView(result).skills,
         at: now.toISOString().slice(0, 10),
         ts: now.toISOString(),
       };
       const history = (Array.isArray(gamestats.assessmentHistory) ? gamestats.assessmentHistory : []).concat([entry]).slice(-50);
-      gamestats = Object.assign({}, gamestats, { assessment: entry, assessmentHistory: history });
+      // Ergebnis sichern und den laufenden Fortschritt aufräumen (Test ist fertig).
+      gamestats = Object.assign({}, gamestats, { assessment: entry, assessmentHistory: history, assessmentProgress: null });
       store.saveGameStats(gamestats);
     } catch (e) { /* Persistenz optional – nie crashen */ }
     render();
@@ -6274,6 +6394,7 @@
     else if (action === "placement-free-submit") placementSubmitFree();
     else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
     else if (action === "open-assessment") openAssessment();
+    else if (action === "assessment-resume") resumeAssessment();
     else if (action === "assessment-start") startAssessmentTest(el.dataset.variant);
     else if (action === "assessment-choose") assessmentChoose(Number(el.dataset.index));
     else if (action === "assessment-unknown") assessmentUnknown();

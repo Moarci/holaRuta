@@ -679,6 +679,16 @@
       </button>`
       : "";
 
+    // Nivel-Test fortsetzen: erscheint, solange ein begonnener Test offen ist
+    // (nach versehentlichem Zurück/Reload). Verschwindet beim Abschluss.
+    const assessmentResumeCue = vm.assessmentResume
+      ? `
+      <button class="today__ruta" data-action="assessment-resume">
+        <span class="today__ruta-main">${esc(t("home.assessmentResumeTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.assessmentResumeSub", { i: vm.assessmentResume.index, n: vm.assessmentResume.total }))}</span>
+      </button>`
+      : "";
+
     // Glanceable Fortschritt: dieselbe Karte wie im Profil (Streak + Verteilung).
     const progressGroup = `
       <section class="dashgrp">
@@ -701,6 +711,7 @@
         </button>
         ${resume}
         ${rutaDia}
+        ${assessmentResumeCue}
         ${placementCue}
       </div>
 
@@ -815,6 +826,37 @@
       ${sections}`;
   }
 
+  // Ausführliche Ergebnis-Blöcke fürs Profil – dasselbe wie auf dem Ergebnis-
+  // Schirm „nach dem Abschluss": Statistik (Trefferquote, „weiß nicht", Tempo),
+  // Aufschlüsselung nach Bereich, plus optionale Notiz/Zuverlässigkeits-Hinweise.
+  // ns = i18n-Namespace ("placement" | "assessment"), l = letztes Ergebnis (fmt).
+  function resultDetailBlocks(ns, l) {
+    if (!l) return "";
+    const tn = (k) => t(ns + "." + k);
+    const stats = `
+      <ul class="pl-stats plprof__stats">
+        <li><b>${l.accuracyPct}%</b> ${esc(tn("statAccuracy"))}</li>
+        <li><b>${l.unknownPct}%</b> ${esc(tn("statUnknown"))}</li>
+        <li>${esc(tn("statTempo"))}: <b>${esc(l.tempoLabel)}</b></li>
+      </ul>`;
+    const skillRow = (s) => `
+      <li class="pl-skill">
+        <span class="pl-skill__name">${esc(tn("skill_" + s.skill))}</span>
+        <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
+        <span class="pl-skill__val">${s.accuracy}%</span>
+      </li>`;
+    const skills = (l.skills && l.skills.length)
+      ? `<p class="sectioncap plprof__skillscap">${esc(tn("skillsCap"))}</p>
+         <ul class="pl-skills">${l.skills.map(skillRow).join("")}</ul>`
+      : "";
+    const noteText = l.note === "commStrong" ? tn("noteComm")
+      : l.note === "grammarStrong" ? tn("noteGrammar") : "";
+    const note = noteText ? `<div class="tip">${esc(noteText)}</div>` : "";
+    const relText = l.reliability ? tn("rel_" + l.reliability) : "";
+    const rel = relText ? `<div class="tip pl-reliability pl-reliability--${esc(l.reliability)}">${esc(relText)}</div>` : "";
+    return `${stats}${skills}${note}${rel}`;
+  }
+
   // Ruta-Check im Profil: letztes Ergebnis (Startlevel, Score, Tempo), kurzer
   // Verlauf und Knöpfe zum Wiederholen + Teilen. Wer ihn noch nie gemacht hat,
   // sieht einen Einstiegs-Aufruf. p = vm.placement (null = Modul nicht geladen).
@@ -850,11 +892,11 @@
             <span class="plprof__level">${esc(l.level)}</span>
           </div>
           <div class="plprof__meta">
-            <p class="plprof__score">${esc(t("placement.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
-            ${l.tempoLabel ? `<p class="plprof__tempo">${esc(t("placement.statTempo"))}: <b>${esc(l.tempoLabel)}</b></p>` : ""}
+            <p class="plprof__score">${l.total ? esc(t("placement.resultLine", { correct: l.correct, total: l.total, score: l.scorePct })) : esc(t("placement.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
             ${l.at ? `<p class="plprof__date">${esc(t("placement.profileLastAt", { date: l.at }))} · ${esc(t("placement.profileAttempts", { n: p.attempts }))}</p>` : ""}
           </div>
         </div>
+        ${resultDetailBlocks("placement", l)}
         ${histRows}
         ${shareBlock(shareFmt, "share-placement", t("placement.share"))}
         <div class="plprof__actions">
@@ -897,12 +939,12 @@
             <span class="plprof__level">${esc(l.level)}</span>
           </div>
           <div class="plprof__meta">
-            <p class="plprof__score">${esc(t("assessment.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
+            <p class="plprof__score">${l.total ? esc(t("assessment.resultLine", { correct: l.correct, total: l.total, score: l.scorePct })) : esc(t("assessment.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
             ${l.variantLabel ? `<p class="plprof__variant">${esc(l.variantLabel)}</p>` : ""}
-            ${l.tempoLabel ? `<p class="plprof__tempo">${esc(t("assessment.statTempo"))}: <b>${esc(l.tempoLabel)}</b></p>` : ""}
             ${l.at ? `<p class="plprof__date">${esc(t("assessment.profileLastAt", { date: l.at }))} · ${esc(t("assessment.profileAttempts", { n: p.attempts }))}</p>` : ""}
           </div>
         </div>
+        ${resultDetailBlocks("assessment", l)}
         ${histRows}
         ${shareBlock(shareFmt, "share-assessment", t("assessment.share"))}
         <div class="plprof__actions">
