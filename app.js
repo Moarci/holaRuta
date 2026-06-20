@@ -75,6 +75,8 @@
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
     pretripLock: null,       // per zugewiesener Aufgabe festgelegtes Reiseziel (nur dieses zeigen, nicht wechselbar) | null
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
+    teacherSort: { key: "level", dir: -1 }, // Sortierung der Klassentabelle: Standard nach Niveau (höchstes zuerst, ungetestete zuletzt)
+    teacherClassName: "",    // optionaler Klassenname (Druck-Kopf + CSV-Dateiname; transient)
     teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
     taskItems: [],           // gewählte Aufgaben-Ziele im Formular: [{kind,scope}] – 1 = Einzelaufgabe, ≥2 = Bundle (überlebt Re-Render)
     targetPicker: null,      // offenes Ziel-Picker-Modal: 'task' | 'sheet' | null (Modo profe / Blatt)
@@ -3633,10 +3635,11 @@
   function handleTeacherFiles(files) {
     const list = Array.prototype.slice.call(files || []);
     if (!list.length) return;
-    let added = 0, skipped = 0, pending = list.length;
+    let added = 0, updated = 0, skipped = 0, pending = list.length;
     const finalize = () => {
       if (--pending > 0) return;
-      if (!added) showNotice(t("teacher.noneAdded"));
+      if (!added && !updated) showNotice(t("teacher.noneAdded"));
+      else if (updated) showNotice(t("teacher.someUpdated", { n: updated }));
       else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
       render();
     };
@@ -3648,8 +3651,13 @@
         const fallback = t("teacher.defaultName");
         const name = String(file.name || fallback).replace(/\.json$/i, "").replace(/^holaruta-backup-?/i, "").trim() || fallback;
         const summary = payload ? studentSummaryFromBackup(name, payload) : null;
-        if (summary) { state.teacherStudents = state.teacherStudents.concat([summary]); added++; }
-        else skipped++;
+        if (summary) {
+          // Gleichnamiges Backup ersetzt das alte (Re-Import nach erneutem Export) –
+          // keine Dubletten in der Klassenliste.
+          const res = stats.upsertStudent(state.teacherStudents, summary);
+          state.teacherStudents = res.roster;
+          if (res.replaced) updated++; else added++;
+        } else skipped++;
         finalize();
       };
       reader.onerror = () => { skipped++; finalize(); };
@@ -3668,10 +3676,66 @@
   }
   function printTeacher() { try { window.print(); } catch (e) { /* egal */ } }
 
+  // Klassentabelle nach Spalte sortieren: gleiche Spalte erneut -> Richtung umdrehen,
+  // neue Spalte -> sinnvolle Startrichtung (Name aufsteigend, Kennzahlen absteigend).
+  function setTeacherSort(key) {
+    const cur = state.teacherSort || { key: "name", dir: 1 };
+    if (cur.key === key) state.teacherSort = { key, dir: cur.dir * -1 };
+    else state.teacherSort = { key, dir: key === "name" ? 1 : -1 };
+    render();
+  }
+
+  function setClassName(value) { state.teacherClassName = String(value || ""); }
+
+  // CSV-Spaltenüberschriften in derselben Reihenfolge wie stats.rosterRow (9 Spalten).
+  function rosterCsvHeader() {
+    return [
+      t("teacher.colName"), t("teacher.colNivel"), t("teacher.colScore"),
+      t("teacher.colMastered"), t("teacher.colTotal"), t("teacher.colStreak"),
+      t("teacher.colChallenges"), t("teacher.colPretrip"), t("teacher.colPacks"),
+    ];
+  }
+
+  // Klassenliste als CSV herunterladen (offline, kein Server) – fürs Schul-Archiv
+  // oder Tabellenkalkulation. Reihenfolge wie aktuell sortiert angezeigt.
+  function exportRosterCSV() {
+    const vm = teacherVM();
+    if (!vm.count) return;
+    const csv = stats.rosterCSV(vm.students, rosterCsvHeader());
+    // BOM voranstellen, damit Excel UTF-8 (Akzente/ñ) korrekt liest.
+    const slug = String(state.teacherClassName || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const fname = "holaruta-klasse" + (slug ? "-" + slug : "") + "-" + dayKey(Date.now()) + ".csv";
+    let url = null;
+    try {
+      const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+      url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click(); a.remove();
+      flashButton("teacher-csv", t("teacher.csvDownloaded"));
+      buzz(8);
+    } catch (e) {
+      console.warn("CSV-Export fehlgeschlagen", e);
+      showNotice(t("teacher.noneAdded"));
+    } finally {
+      if (url) setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+  }
+
   function teacherVM() {
-    const students = state.teacherStudents.slice();
+    // Zeilen mit ihrem Ursprungs-Index versehen, DAMIT die Sortierung nur die Anzeige
+    // betrifft und „Entfernen" weiterhin den richtigen Eintrag in state.teacherStudents trifft.
+    const raw = state.teacherStudents;
+    const withIdx = raw.map((s, i) => Object.assign({ _idx: i }, s));
+    const sort = state.teacherSort || { key: "name", dir: 1 };
+    const students = stats.sortRoster(withIdx, sort.key, sort.dir);
     const items = state.taskItems.slice();
     return {
+      sortKey: sort.key,
+      sortDir: sort.dir,
+      className: state.teacherClassName || "",
+      printDate: (() => { try { return new Date().toLocaleDateString(state.uiLang === "en" ? "en-GB" : "de-DE"); } catch (e) { return ""; } })(),
+      levelDist: stats.levelDistribution(raw),
       students,
       count: students.length,
       // Klassen-Aggregat für die Kopfzeile.
@@ -6780,6 +6844,8 @@
     else if (action === "teacher-import") { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); }
     else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
     else if (action === "teacher-clear") clearTeacher();
+    else if (action === "teacher-sort") setTeacherSort(el.dataset.key);
+    else if (action === "teacher-csv") exportRosterCSV();
     else if (action === "teacher-print") printTeacher();
     else if (action === "open-printsheet") openPrintSheet();
     else if (action === "printsheet-print") printSheet();
@@ -7098,6 +7164,9 @@
     // Picker-Modal (data-action="pick-target"), nicht mehr über ein <select>.
     if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
     if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
+    // Klassenname (Modo profe): nur merken (für Druck-Kopf/CSV) – KEIN Re-Render,
+    // damit der Cursor beim Tippen nicht springt.
+    if (e.target && e.target.id === "teacher-classname") { setClassName(e.target.value); return; }
     // Aktivitätsblatt: Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
     if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; render(); return; }
     const el = e.target.closest('[data-action="select-country"]');

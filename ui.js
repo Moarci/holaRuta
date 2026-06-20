@@ -3594,6 +3594,33 @@
       </section>`;
   }
 
+  // Kompaktes Balken-Dashboard der Niveau-Verteilung (CEFR-Stufen + „noch nicht
+  // getestet"). Gibt der Lehrkraft auf einen Blick die Gruppengrößen je Stufe.
+  // Reiner String-Renderer, druckbar (nur Inline-Breiten + .leveldist-* Klassen).
+  function renderLevelDist(d) {
+    if (!d || !d.total) return "";
+    const base = Math.max(d.max, 1); // größte Stufen-Gruppe füllt den Balken voll aus
+    const bars = d.buckets.map((b) => {
+      const pct = Math.round((b.count / base) * 100);
+      return `
+        <div class="leveldist-row">
+          <span class="leveldist-label">${esc(b.level)}</span>
+          <span class="leveldist-bar"><span class="leveldist-fill" style="width:${pct}%"></span></span>
+          <span class="leveldist-count" title="${esc(t("teacher.distCount", { n: b.count }))}">${b.count}</span>
+        </div>`;
+    }).join("");
+    const untested = d.untested
+      ? `<p class="leveldist-foot">${esc(t("teacher.distUntested"))}: <strong>${d.untested}</strong></p>`
+      : "";
+    return `
+      <div class="leveldist">
+        <h3 class="leveldist-h3">📊 ${esc(t("teacher.distHeading"))}</h3>
+        <p class="teacher-sub2">${esc(t("teacher.distHint"))}</p>
+        <div class="leveldist-rows">${bars}</div>
+        ${untested}
+      </div>`;
+  }
+
   // Lehrer-/Coordinator-Modus: Klassenübersicht aus importierten Schüler-Backups.
   // Backend-frei und offline – die Daten leben nur in dieser Sitzung. Reuse der
   // Screen-/Topbar-Struktur; Tabelle bewusst schlicht und druckbar (window.print).
@@ -3601,28 +3628,54 @@
     const actions = `
       <div class="teacher-actions">
         <button class="teacher-btn teacher-btn--main" data-action="teacher-import">📥 ${esc(t("teacher.importBtn"))}</button>
-        ${vm.count ? `<button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
+        ${vm.count ? `<button class="teacher-btn" data-action="teacher-csv">📄 ${esc(t("teacher.csvBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
         <button class="teacher-btn" data-action="teacher-clear">🗑️ ${esc(t("teacher.clearBtn"))}</button>` : ""}
       </div>
       <input type="file" id="teacher-file" accept="application/json,.json" multiple hidden>`;
 
+    // Klickbarer Spaltenkopf zum Sortieren; aktive Spalte trägt ▲/▼ je Richtung.
+    const arrow = (key) => vm.sortKey === key ? (vm.sortDir < 0 ? " ▼" : " ▲") : "";
+    const sortTh = (key, label, extra) => `
+      <th${extra || ""}><button type="button" class="teacher-sortbtn${vm.sortKey === key ? " is-active" : ""}"
+        data-action="teacher-sort" data-key="${key}" aria-label="${esc(t("teacher.sortBy", { col: label }))}">${esc(label)}${arrow(key)}</button></th>`;
+
+    // Druck-Kopf (nur im Ausdruck sichtbar): Klassenname + Datum machen das Blatt
+    // selbsterklärend, ohne den Bildschirm zu verstellen.
+    const printHead = vm.count ? `
+      <div class="teacher-printhead">
+        <span class="teacher-printhead__title">${esc(vm.className || t("teacher.printTitleDefault"))}</span>
+        <span class="teacher-printhead__meta">${esc(t("teacher.printDateLabel"))}: ${esc(vm.printDate)}</span>
+      </div>` : "";
+
+    // Optionaler Klassenname (steuert Druck-Kopf + CSV-Dateiname). Nicht mitgedruckt.
+    const classNameField = vm.count ? `
+      <label class="teacher-classname no-print">
+        <span class="teacher-classname__label">${esc(t("teacher.classNameLabel"))}</span>
+        <input id="teacher-classname" class="task-input" type="text" maxlength="60"
+          placeholder="${esc(t("teacher.classNamePh"))}" value="${esc(vm.className)}">
+      </label>` : "";
+
     const body = vm.count
       ? `
+      ${printHead}
       <p class="teacher-summary">${esc(t("teacher.classSummary", { n: vm.count, avg: vm.avgMastered, total: vm.totalCards }))}</p>
+      ${classNameField}
+      ${renderLevelDist(vm.levelDist)}
       <div class="teacher-tablewrap">
         <table class="teacher-table">
           <thead><tr>
-            <th>${esc(t("teacher.colName"))}</th>
-            <th>${esc(t("teacher.colMastered"))}</th>
-            <th>${esc(t("teacher.colStreak"))}</th>
-            <th>${esc(t("teacher.colChallenges"))}</th>
-            <th>${esc(t("teacher.colPretrip"))}</th>
-            <th>${esc(t("teacher.colLevel"))}</th>
+            ${sortTh("name", t("teacher.colName"))}
+            ${sortTh("mastered", t("teacher.colMastered"))}
+            ${sortTh("streak", t("teacher.colStreak"))}
+            ${sortTh("challenges", t("teacher.colChallenges"))}
+            ${sortTh("pretrip", t("teacher.colPretrip"))}
+            ${sortTh("level", t("teacher.colLevel"))}
             <th>${esc(t("teacher.colPacks"))}</th>
-            <th aria-label="${esc(t("teacher.remove"))}"></th>
+            <th class="no-print" aria-label="${esc(t("teacher.remove"))}"></th>
           </tr></thead>
           <tbody>
-            ${vm.students.map((s, i) => `
+            ${vm.students.map((s) => `
             <tr>
               <td class="teacher-name">${esc(s.name)}</td>
               <td>${s.cardsMastered} / ${s.totalCards}<span class="teacher-sub"> · ${esc(t("teacher.reviewed", { n: s.cardsReviewed }))}</span></td>
@@ -3631,7 +3684,7 @@
               <td>${s.pretripDays} / ${s.pretripMax}</td>
               <td>${(s.assessment || s.placement) ? `${esc((s.assessment || s.placement).level)}<span class="teacher-sub"> · ${Math.round(((s.assessment || s.placement).finalScore || 0) * 100)}%${s.assessment ? " 📋" : ""}</span>` : "—"}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
-              <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
+              <td class="no-print"><button class="teacher-x" data-action="teacher-remove" data-idx="${s._idx}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
           </tbody>
         </table>
@@ -3665,17 +3718,19 @@
     return `
       <section class="screen${withTab ? " screen--tabbed" : ""}">
         ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), withTab ? "open-task" : "home")}
-        <p class="hm-intro">${esc(t("teacher.intro"))}</p>
-        <div class="tip">${esc(t("teacher.privacy"))}</div>
+        <p class="hm-intro no-print">${esc(t("teacher.intro"))}</p>
+        <div class="tip no-print">${esc(t("teacher.privacy"))}</div>
         ${actions}
         ${body}
-        <hr class="teacher-sep">
-        ${taskForm}
-        <hr class="teacher-sep">
-        <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
-        <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
-        <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+        <div class="no-print">
+          <hr class="teacher-sep">
+          ${taskForm}
+          <hr class="teacher-sep">
+          <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
+          <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
+          <div class="teacher-actions">
+            <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+          </div>
         </div>
       </section>
       ${vm.targetPicker === "task" ? targetPickerModal("task", { targets: vm.taskTargets, bundles: vm.bundles, selectedKeys: vm.taskItemKeys, activeBundleIds: vm.activeBundleIds }) : ""}

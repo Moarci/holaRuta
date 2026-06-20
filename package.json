@@ -1,10 +1,11 @@
 {
   "name": "holaruta",
-  "version": "1.104.0",
+  "version": "1.105.0",
   "private": true,
   "description": "HolaRuta – Dein Reise-Spanisch für echte Situationen. Vanilla-JS-Lernkarten-PWA (keine Runtime-Dependencies).",
   "scripts": {
     "test": "node --test",
-    "build": "node build.js"
+    "build": "node build.js",
+    "e2e": "node scripts/e2e-modo-profe.mjs"
   }
 }
