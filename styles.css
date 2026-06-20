@@ -3716,7 +3716,75 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-size: clamp(1.7rem, 8vw, 2.6rem); line-height: 1.2; overflow-wrap: anywhere;
 }
 .sz-show__de { margin: 10px 0 0; font-size: 1rem; color: var(--muted); }
+.sz-show__tip { margin: 10px 0 0; font-size: 0.95rem; font-style: italic; color: var(--ink-soft); }
 .sz-show__actions { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+
+/* ---------- Favoriten („Mi léxico" – persönliches Lexikon) ---------- */
+/* Stern-Umschalter: rund, dezent inaktiv, golden gefüllt wenn gemerkt. Gemeinsam
+   genutzt von Karten-Detail, Spickzettel & Lexikon-Liste (favStar in ui.js). */
+.favstar {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid var(--line-strong); background: var(--surface);
+  font-size: 1.25rem; line-height: 1; color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.08s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.favstar:active { transform: scale(0.9); }
+.favstar.is-on { color: #E9A23B; border-color: color-mix(in srgb, #E9A23B 55%, var(--line-strong)); }
+.favstar--top { background: var(--card); }
+.sz-fav { font-size: 1.25rem; }
+
+/* Eigenen Eintrag hinzufügen (Formular oben im Lexikon). */
+.fav-add { display: flex; flex-direction: column; gap: 10px; margin: 4px 0 18px; }
+.fav-add .sectioncap { margin-bottom: 0; }
+.fav-add__field { display: flex; flex-direction: column; gap: 5px; font-size: 0.82rem; color: var(--muted); }
+.fav-add__field input {
+  width: 100%; box-sizing: border-box; padding: 11px 12px; font: inherit;
+  color: var(--ink); background: var(--card);
+  border: 1.5px solid var(--line); border-radius: var(--r-md);
+}
+.fav-add__field input:focus-visible { outline: none; border-color: var(--brand); }
+.fav-add__msg { margin: 0; font-size: 0.88rem; }
+.fav-add__msg--ok { color: var(--ok); }
+.fav-add__msg--error { color: var(--brand-ink); }
+
+/* Lexikon-Liste: gleiche Karten-Optik wie der Spickzettel. */
+.fav-list { display: flex; flex-direction: column; gap: 8px; }
+.fav-row {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  box-shadow: var(--shadow);
+}
+.fav-row__main {
+  flex: 1 1 auto; min-width: 0; padding: 0; margin: 0; text-align: left;
+  display: flex; align-items: flex-start; gap: 10px;
+  background: none; border: 0; cursor: pointer; font: inherit; color: inherit;
+}
+.fav-row__icon { flex: none; font-size: 1.3rem; line-height: 1.3; }
+.fav-row__text { min-width: 0; }
+.fav-row__es { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.18rem; color: var(--ink); line-height: 1.25; overflow-wrap: anywhere; }
+.fav-row__de { display: block; font-size: 0.84rem; color: var(--muted); margin-top: 2px; }
+.fav-row__tip { display: block; margin-top: 2px; font-size: 0.8rem; font-style: italic; color: var(--ink-soft); }
+.fav-row__tag {
+  display: inline-block; margin-top: 5px; padding: 1px 8px; font-size: 0.7rem;
+  color: var(--ink-soft); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 999px;
+}
+.fav-row__speak {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 1.15rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.fav-row__speak:active { transform: scale(0.92); }
+/* Entfernen-Knopf: gefüllter Stern (Eintrag IST Favorit), Tippen nimmt ihn raus. */
+.fav-row__rm {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid color-mix(in srgb, #E9A23B 55%, var(--line-strong));
+  background: var(--surface); color: #E9A23B; font-size: 1.25rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.fav-row__rm:active { transform: scale(0.92); }
+.fav-emptyhint { margin: 0; text-align: center; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
 
 /* celebrate.css — Styles für SC.celebrate (celebrate.js).
  * AN DAS ENDE von styles.css anhängen (HolaRuta hat EINE Stylesheet-Datei, die

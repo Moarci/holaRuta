@@ -18,6 +18,7 @@ const PROGRESS = "spanischcard.progress.v2";
 const GAMESTATS = "spanischcard.gamestats.v1";
 const SETTINGS = "spanischcard.settings.v1";
 const USERCARDS = "spanischcard.usercards.v1";
+const FAVORITES = "spanischcard.favorites.v1";
 
 test("mergeProgress: mehr reps gewinnt, Gleichstand -> spätere due", () => {
   const a = { co01: { reps: 3, due: 100 }, co02: { reps: 1, due: 50 } };
@@ -136,6 +137,17 @@ test("mergeUsercards: id-Kollision deterministisch (inhaltsreichere gewinnt, rei
   assert.equal(ab.length, 1);
   assert.deepEqual(ab[0], b[0], "reicheres Objekt gewinnt");
   assert.deepEqual(ba[0], b[0], "auch in umgekehrter Reihenfolge -> gleiches Ergebnis");
+});
+
+test("mergeData: Favoriten (Mi lexico) werden ueber die Id vereint (kein Geraete-Verlust)", () => {
+  // Regression: ohne Sonder-Routing fielen Array-Favoriten in deepUnion -> „lokal
+  // gewinnt", und auf zwei Geräten gemerkte Favoriten löschten sich gegenseitig.
+  const local = { data: { [FAVORITES]: [{ id: "alltag-hola", de: "Hallo", es: "Hola" }] } };
+  const remote = { data: { [FAVORITES]: [{ id: "fav-abc", de: "Danke", es: "Gracias" }] } };
+  const ab = sync.merge(local, remote).data[FAVORITES];
+  const ba = sync.merge(remote, local).data[FAVORITES];
+  assert.deepEqual(ab.map((f) => f.id).sort(), ["alltag-hola", "fav-abc"], "beide Geräte-Favoriten bleiben erhalten");
+  assert.deepEqual(ba.map((f) => f.id).sort(), ["alltag-hola", "fav-abc"], "reihenfolgeunabhängig");
 });
 
 test("mergeData: unbekannte/künftige Keys werden konservativ vereint (kein Verlust)", () => {

@@ -157,6 +157,7 @@
   // Aktivität (Spielen · Üben · Nachschlagen) – deckt sich mit dem Intro-Text
   // und gibt der inzwischen langen Liste eine klare, einheitliche Achse.
   const FEATURES = [
+    { action: "open-favorites",   icon: "⭐", title: "Mi léxico",     subKey: "discover.subFavorites", sub: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit", grad: ["#B97C24", "#E9A23B"], group: "reference" },
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
@@ -1119,6 +1120,7 @@
 
       ${navrow("open-stats", "📊", t("profile.statistics"))}
       ${vm.hasBadges ? navrow("open-badges", "🎖️", t("profile.rutaPass"), vm.badgeCount || "") : ""}
+      ${navrow("open-favorites", "⭐", t("profile.favorites"), vm.favCount || "")}
       ${navrow("open-editor", "✍️", t("profile.ownCards"))}
 
       <p class="sectioncap">${esc(t("profile.yourData"))}</p>
@@ -1252,6 +1254,18 @@
       </button>`;
   }
 
+  // Favoriten-Stern: schaltet eine Karte/einen Eintrag im persönlichen Lexikon
+  // („Mi léxico") an oder aus. on = bereits Favorit (gefüllter Stern). Gemeinsam
+  // genutzt von Karten-Detail, Spickzettel & Suche, damit Markup/ARIA einheitlich
+  // bleiben. id wird mitgegeben; der Controller (app.js) hört auf data-action.
+  function favStar(id, on, opts) {
+    const o = opts || {};
+    const cls = "favstar" + (on ? " is-on" : "") + (o.cls ? " " + o.cls : "");
+    const label = on ? t("favorites.remove") : t("favorites.add");
+    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"
+              aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
+  }
+
   // ---------- STUDY ----------
   function renderStudy(vm) {
     const pct = vm.total > 0 ? Math.round((vm.position / vm.total) * 100) : 0;
@@ -1268,6 +1282,7 @@
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
+            ${favStar(vm.cardId, vm.isFav, { cls: "favstar--top" })}
             <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
           </div>
         </div>
@@ -1923,7 +1938,7 @@
         <div class="topbar">
           <button class="iconbtn" data-action="card-back" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
-          <span></span>
+          ${favStar(vm.id, vm.isFav, { cls: "favstar--top" })}
         </div>
 
         <div class="cardx">
@@ -2044,6 +2059,7 @@
             <span class="sz-row__es" lang="es">${esc(c.es)}</span>
             ${c.tip ? `<span class="sz-row__tip">🗣️ ${esc(c.tip)}</span>` : ""}
           </button>
+          ${favStar(c.id, c.fav, { cls: "sz-fav" })}
           ${vm.speakable
             ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="${esc(t("discover.szListen"))}" title="${esc(t("discover.szListen"))}">🔊</button>`
             : ""}
@@ -2075,6 +2091,77 @@
         ${moduleShareBtn("supervivencia")}
         <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
         ${groups}
+        ${show}
+      </section>`;
+  }
+
+  // ---------- MI LÉXICO (Favoriten – persönliches Lexikon) ----------
+  // Vom Nutzer gemerkte Wörter/Sätze: eine Liste (neueste zuerst) mit Vorlesen,
+  // Großanzeige und Entfernen, plus ein Formular für eigene Einträge. Über den
+  // Homescreen-Shortcut (?a=favoritos) direkt erreichbar.
+  function renderFavorites(vm) {
+    const addForm = `
+      <form class="fav-add" data-action="fav-add">
+        <p class="sectioncap">${esc(t("favorites.addCap"))}</p>
+        <label class="fav-add__field"><span>${esc(t("favorites.addDe"))}</span>
+          <input id="fav-de" type="text" maxlength="500" autocomplete="off"
+                 placeholder="${esc(t("favorites.dePlaceholder"))}" /></label>
+        <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
+          <input id="fav-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none"
+                 placeholder="${esc(t("favorites.esPlaceholder"))}" /></label>
+        <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
+          <input id="fav-tip" type="text" maxlength="500" autocomplete="off"
+                 placeholder="${esc(t("favorites.tipPlaceholder"))}" /></label>
+        ${vm.msg ? `<p class="fav-add__msg fav-add__msg--${esc(vm.msg.type)}" role="status">${esc(vm.msg.text)}</p>` : ""}
+        <button class="cta" type="submit">${esc(t("favorites.addBtn"))}</button>
+      </form>`;
+
+    const row = (it) => `
+      <div class="fav-row">
+        <button class="fav-row__main" type="button" data-action="fav-show" data-id="${esc(it.id)}"
+                title="${esc(t("favorites.show"))}">
+          <span class="fav-row__icon" aria-hidden="true">${esc(it.catIcon)}</span>
+          <span class="fav-row__text">
+            <span class="fav-row__es" lang="es">${esc(it.es)}</span>
+            <span class="fav-row__de">${esc(it.de)}</span>
+            ${it.tip ? `<span class="fav-row__tip">🗣️ ${esc(it.tip)}</span>` : ""}
+            ${it.custom ? `<span class="fav-row__tag">${esc(t("favorites.customTag"))}</span>` : ""}
+          </span>
+        </button>
+        ${vm.speakable
+          ? `<button class="fav-row__speak" type="button" data-action="fav-speak" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">🔊</button>`
+          : ""}
+        <button class="fav-row__rm" type="button" data-action="fav-remove" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.remove"))}" title="${esc(t("favorites.remove"))}">★</button>
+      </div>`;
+
+    const list = vm.items.length
+      ? `<p class="sectioncap">${esc(t("favorites.listCap", { n: vm.count }))}</p>
+         <div class="fav-list">${vm.items.map(row).join("")}</div>`
+      : `<p class="stat-empty">${esc(t("favorites.empty"))}</p>
+         <p class="fav-emptyhint">${esc(t("favorites.emptyHint"))}</p>`;
+
+    // Großanzeige: angetippter Eintrag bildschirmfüllend – zum Herzeigen.
+    const show = vm.show ? `
+      <div class="sz-show" data-action="fav-close" role="dialog" aria-modal="true" aria-label="${esc(t("favorites.showLabel"))}">
+        <div class="sz-show__inner">
+          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
+          <p class="sz-show__de">${esc(vm.show.de)}</p>
+          ${vm.show.tip ? `<p class="sz-show__tip">🗣️ ${esc(vm.show.tip)}</p>` : ""}
+          <div class="sz-show__actions">
+            ${vm.speakable
+              ? `<button class="cta" type="button" data-action="fav-speak" data-id="${esc(vm.show.id)}">${esc(t("favorites.listenBig"))}</button>`
+              : ""}
+            <button class="ghostbtn" type="button" data-action="fav-close">${esc(t("common.close"))}</button>
+          </div>
+        </div>
+      </div>` : "";
+
+    return `
+      <section class="screen">
+        ${hmTopbar("⭐ " + t("favorites.title"), "home")}
+        <p class="hm-intro">${esc(t("favorites.intro"))}</p>
+        ${addForm}
+        ${list}
         ${show}
       </section>`;
   }
@@ -5745,6 +5832,7 @@
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
+                   renderFavorites,
                    renderConjugSetup, renderConjug, renderConjugDone,
                    renderYestoSetup, renderYesto, renderYestoDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
