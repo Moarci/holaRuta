@@ -17,10 +17,18 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const { stampServiceWorker } = require("./swversion.js");
+const { stampServiceWorker, readAssets } = require("./swversion.js");
 
 const DIR = __dirname;
 const SOURCE = "index.html";
+
+// dist/-Modus:  node build.js --dist
+// Minifiziert alle Modul-.js + styles.css EINZELN (esbuild) nach dist/, kopiert
+// index.html / service-worker.js / Manifeste / Icons / Fonts nach dist/ und
+// stempelt den SW-Hash über die MINIFIZIERTEN dist-Assets. So entspricht der
+// Live-Deploy (Multi-File) der gewünschten kleineren, gecachten Auslieferung –
+// ohne das Verhalten zu ändern (gleiche Dateinamen, gleiche Reihenfolge).
+const DIST_MODE = process.argv.includes("--dist");
 
 // Optionaler Co-Branding-Build:  node build.js --edition=ecos  →  HolaRuta-ecos.html
 // Die Edition-Datei (editions/<id>.js) wird vor config.js eingebettet; sonst
@@ -79,6 +87,90 @@ function build() {
 
   fs.writeFileSync(path.join(DIR, OUTPUT), html, "utf8");
   return inlined;
+}
+
+// ---------------------------------------------------------------------------
+// dist/-Build (Multi-File, minifiziert) – Live-Auslieferungs-Pfad.
+// ---------------------------------------------------------------------------
+
+// esbuild graceful laden: fehlt es (kein Install möglich), kein harter Fehler –
+// dann wird roh kopiert (wie E2E ohne Playwright). Gibt das Modul oder null.
+function tryLoadEsbuild() {
+  try { return require("esbuild"); } catch (e) { return null; }
+}
+
+// Eine Datei nach dist/ schreiben (Verzeichnis bei Bedarf anlegen).
+function writeDist(distDir, rel, data) {
+  const out = path.join(distDir, rel);
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  fs.writeFileSync(out, data);
+}
+
+function buildDist() {
+  const DIST = path.join(DIR, "dist");
+  // Sauberer Stand: dist/ leeren, damit gelöschte Quell-Dateien nicht zurückbleiben.
+  fs.rmSync(DIST, { recursive: true, force: true });
+  fs.mkdirSync(DIST, { recursive: true });
+
+  const esbuild = tryLoadEsbuild();
+  if (!esbuild) {
+    console.warn("⚠ esbuild nicht verfügbar – dist/ wird ROH (unminifiziert) gebaut.");
+  }
+
+  // Asset-Liste aus dem Service Worker (eine Quelle der Wahrheit). Trennt JS/CSS
+  // (minifizierbar) von Binär-/Sonstigem (roh kopieren). "./" ist kein File.
+  const assets = [...new Set(readAssets())]; // relative Pfade ohne "./"
+  const minified = [];
+  const copied = [];
+
+  for (const rel of assets) {
+    if (!rel || rel === "" ) continue;
+    const srcPath = path.join(DIR, rel);
+    if (!fs.existsSync(srcPath)) continue; // sw-assets-Test wacht über Existenz
+    if (esbuild && /\.js$/.test(rel)) {
+      const code = fs.readFileSync(srcPath, "utf8");
+      const res = esbuild.transformSync(code, { loader: "js", minify: true, legalComments: "none" });
+      writeDist(DIST, rel, res.code);
+      minified.push(rel);
+    } else if (esbuild && /\.css$/.test(rel)) {
+      const code = fs.readFileSync(srcPath, "utf8");
+      const res = esbuild.transformSync(code, { loader: "css", minify: true, legalComments: "none" });
+      writeDist(DIST, rel, res.code);
+      minified.push(rel);
+    } else {
+      writeDist(DIST, rel, fs.readFileSync(srcPath)); // Binär/HTML/Manifest roh
+      copied.push(rel);
+    }
+  }
+
+  // index.html roh kopieren (referenziert dieselben Dateinamen wie im Root).
+  writeDist(DIST, "index.html", fs.readFileSync(path.join(DIR, SOURCE)));
+  // service-worker.js nach dist/ kopieren – wird gleich über die dist-Assets gestempelt.
+  writeDist(DIST, "service-worker.js", fs.readFileSync(path.join(DIR, "service-worker.js")));
+  // Zusätzliche Root-Assets, die nicht im Precache stehen, aber von index.html/Manifest
+  // referenziert werden (Social-Vorschau-Bilder), best effort mitkopieren.
+  for (const extra of ["og-image.png", "og-image-square.png"]) {
+    const p = path.join(DIR, extra);
+    if (fs.existsSync(p)) { writeDist(DIST, extra, fs.readFileSync(p)); copied.push(extra); }
+  }
+
+  // SW-Hash über die MINIFIZIERTEN dist-Assets stempeln (dist/service-worker.js).
+  const sw = stampServiceWorker(DIST);
+
+  return { dir: DIST, minified, copied, minify: !!esbuild, swVersion: sw.version };
+}
+
+if (DIST_MODE) {
+  try {
+    const r = buildDist();
+    console.log(`✓ dist/ erzeugt${r.minify ? " (minifiziert)" : " (ROH – esbuild fehlte)"}.`);
+    console.log(`  Minifiziert: ${r.minified.length} Dateien; kopiert: ${r.copied.length} Dateien.`);
+    console.log(`✓ dist/service-worker.js: CACHE_VERSION = ${r.swVersion}`);
+  } catch (err) {
+    console.error("✗ dist-Build fehlgeschlagen:", err.message);
+    process.exit(1);
+  }
+  return;
 }
 
 try {

@@ -24,8 +24,10 @@ const SW_FILE = path.join(ROOT, "service-worker.js");
 const PREFIX = "holaruta-";
 
 // ASSETS-Liste aus dem Service Worker selbst lesen (eine Quelle der Wahrheit).
-function readAssets() {
-  const sw = fs.readFileSync(SW_FILE, "utf8");
+// `swFile` erlaubt es, statt der Quell-Datei einen kopierten SW (z. B. in dist/)
+// als Quelle der Asset-Liste zu nehmen.
+function readAssets(swFile) {
+  const sw = fs.readFileSync(swFile || SW_FILE, "utf8");
   const m = sw.match(/const ASSETS\s*=\s*\[([\s\S]*?)\]/);
   if (!m) throw new Error("service-worker.js: ASSETS-Liste nicht gefunden");
   return [...m[1].matchAll(/["']([^"']+)["']/g)]
@@ -35,11 +37,14 @@ function readAssets() {
 
 // Inhalts-Hash über alle Asset-Dateien (Pfad + Bytes, stabil sortiert, damit der
 // Hash reproduzierbar ist). service-worker.js steht nicht in ASSETS -> kein
-// Rückkopplungs-Effekt durch das Stempeln.
-function computeCacheVersion() {
+// Rückkopplungs-Effekt durch das Stempeln. `baseDir`/`swFile` erlauben es, den
+// Hash über die kopierten/minifizierten Assets eines anderen Verzeichnisses
+// (z. B. dist/) zu rechnen statt über die Quell-Dateien im Repo-Root.
+function computeCacheVersion(baseDir, swFile) {
+  const root = baseDir || ROOT;
   const h = crypto.createHash("sha256");
-  for (const rel of [...new Set(readAssets())].sort()) {
-    const file = path.join(ROOT, rel);
+  for (const rel of [...new Set(readAssets(swFile))].sort()) {
+    const file = path.join(root, rel);
     if (!fs.existsSync(file)) continue; // Existenz prüft der sw-assets-Test separat
     h.update(rel + "\0");
     h.update(fs.readFileSync(file)); // Buffer (auch Fonts/PNGs) -> binärsicher
@@ -49,15 +54,18 @@ function computeCacheVersion() {
 }
 
 // CACHE_VERSION in service-worker.js auf den aktuellen Hash setzen.
-// Gibt { changed, version } zurück.
-function stampServiceWorker() {
-  const before = fs.readFileSync(SW_FILE, "utf8");
-  const version = computeCacheVersion();
+// Ohne Argumente: Quell-SW im Repo-Root über die Quell-Assets stempeln.
+// Mit `baseDir` (z. B. "dist"): den dort liegenden service-worker.js über die
+// dort liegenden (minifizierten) Assets stempeln. Gibt { changed, version } zurück.
+function stampServiceWorker(baseDir) {
+  const swFile = baseDir ? path.join(baseDir, "service-worker.js") : SW_FILE;
+  const before = fs.readFileSync(swFile, "utf8");
+  const version = computeCacheVersion(baseDir, swFile);
   const after = before.replace(/(const CACHE_VERSION\s*=\s*")[^"]*(";)/, `$1${version}$2`);
   if (!/const CACHE_VERSION\s*=\s*"/.test(before)) {
     throw new Error("service-worker.js: CACHE_VERSION-Zeile nicht gefunden");
   }
-  if (after !== before) fs.writeFileSync(SW_FILE, after, "utf8");
+  if (after !== before) fs.writeFileSync(swFile, after, "utf8");
   return { changed: after !== before, version };
 }
 

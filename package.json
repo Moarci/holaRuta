@@ -6,6 +6,10 @@
   "scripts": {
     "test": "node --test",
     "build": "node build.js",
+    "dist": "node build.js --dist",
     "e2e": "node scripts/e2e-modo-profe.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1"
   }
 }

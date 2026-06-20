@@ -15,6 +15,9 @@ HolaRuta.html
 # Edition-Builds (reproduzierbar via `node build.js --edition=<id>`)
 HolaRuta-*.html
 
+# Minifizierter Multi-File-Deploy-Build (reproduzierbar via `node build.js --dist`)
+dist/
+
 # OS / editor
 .DS_Store
 Thumbs.db
