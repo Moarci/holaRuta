@@ -265,11 +265,27 @@
   // Laufender, noch nicht abgeschlossener Nivel-Test fürs Dashboard – damit ein
   // versehentliches Zurück/Reload nicht verloren geht (Wiederaufnahme-Kachel).
   // null, wenn kein Test offen ist (oder die offene Frage nicht mehr im Katalog).
-  function assessmentResumeVM() {
+  // Der gültige, fortsetzbare Test-Fortschritt – oder null. Ungültig ist er, wenn
+  // nichts begonnen wurde, die offene Frage nicht mehr im Katalog existiert (App-
+  // Version gewechselt) ODER der Test inzwischen abgeschlossen wurde – auch auf
+  // einem anderen Gerät (Cloud-Sync: ein neueres Ergebnis entwertet einen alten
+  // Zwischenstand). REIN lesend (kein Speichern) – fürs Rendern unbedenklich.
+  function liveAssessmentProgress() {
     if (!assessment) return null;
     const prog = gamestats.assessmentProgress;
     if (!prog || !Array.isArray(prog.asked) || !prog.asked.length) return null;
     if (!assessment.questionById(prog.asked[prog.asked.length - 1])) return null;
+    const done = gamestats.assessment;
+    if (done && typeof done.ts === "string") {
+      const doneMs = Date.parse(done.ts);
+      if (isFinite(doneMs) && prog.savedAt && doneMs >= prog.savedAt) return null;
+    }
+    return prog;
+  }
+
+  function assessmentResumeVM() {
+    const prog = liveAssessmentProgress();
+    if (!prog) return null;
     const variant = prog.variant === "extremo" ? "extremo" : "standard";
     return {
       variant: variant,
@@ -4196,13 +4212,10 @@
   // Laufenden Test (gamestats.assessmentProgress) wiederaufnehmen. true, wenn
   // erfolgreich fortgesetzt; sonst false (nichts Gespeichertes / Katalog leer).
   function resumeAssessment() {
-    if (!assessment) return false;
-    const prog = gamestats.assessmentProgress;
-    if (!prog || !Array.isArray(prog.asked) || !prog.asked.length) return false;
-    // Nur fortsetzen, wenn die zuletzt gestellte Frage noch im Katalog existiert
-    // (Katalog kann sich zwischen App-Versionen geändert haben).
-    const lastQ = assessment.questionById(prog.asked[prog.asked.length - 1]);
-    if (!lastQ) { clearAssessmentProgress(); return false; }
+    const prog = liveAssessmentProgress();
+    // Nichts (gültiges) zum Fortsetzen? Einen evtl. veralteten/ungültigen
+    // Zwischenstand (anderswo abgeschlossen, Katalog geändert) gleich aufräumen.
+    if (!prog) { clearAssessmentProgress(); return false; }
     state.assessment = {
       phase: "running",
       variant: prog.variant === "extremo" ? "extremo" : "standard",
@@ -4310,8 +4323,12 @@
     const p = state.assessment;
     const frees = assessment.freeQuestions(assessmentQuestions());
     if (p.freeIdx < frees.length) {
-      pushAssessmentQuestion(frees[p.freeIdx]);
+      // freeIdx VOR dem Sichern hochzählen: pushAssessmentQuestion speichert den
+      // Fortschritt, und der gesicherte freeIdx muss auf die NÄCHSTE freie Frage
+      // zeigen (sonst würde ein Resume die aktuelle Frage erneut stellen).
+      const fq = frees[p.freeIdx];
       p.freeIdx += 1;
+      pushAssessmentQuestion(fq);
       render();
     } else {
       finishAssessment();
