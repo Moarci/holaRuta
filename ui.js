@@ -4076,7 +4076,8 @@
         let heading = "";
         let items = [];
         switch (s.type) {
-          case "matching": heading = t("sheet.secMatching"); items = (s.left || []).map((x) => `${x.n} → ${x.l}`); break;
+          // Die <ol> nummeriert bereits die Paar-Nummer (1..n) – nur den Buchstaben ausgeben.
+          case "matching": heading = t("sheet.secMatching"); items = (s.left || []).map((x) => x.l); break;
           case "gapfill": heading = t("sheet.secGapfill"); items = (s.items || []).map((it) => it.answer); break;
           case "translate": heading = t("sheet.secTranslate"); items = (s.lines || []).map((l) => l.es); break;
           case "conjug": heading = t("sheet.secConjug"); items = (s.rows || []).map((r) => `${r.verb} (${r.person}) → ${r.answer}`); break;

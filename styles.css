@@ -2465,8 +2465,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   /* Aktivitätsblatt randlos, schwarz auf weiß drucken (unabhängig vom Theme). */
   .screen { padding: 0 !important; }
   /* Im Druck den @page-Rand nutzen: Blatt auf A4-Inhaltsbreite, ohne eigenes
-     Padding/Border. Diese Regel steht NACH der allgemeinen .sheet-Regel und
-     gewinnt so die Kaskade. */
+     Padding/Border. Setzt sich gegen die allgemeine .sheet-Regel durch über
+     !important (der @media-print-Block steht in der Quelle vor der Basisregel). */
   .sheet { box-shadow: none !important; border: none !important; margin: 0 auto !important; padding: 0 !important; max-width: 182mm !important; }
   /* Bewusste Seitenumbrüche: Lösungsschlüssel auf eigene Seite; lange Tabellen
      dürfen fließen, einzelne Zeilen aber nicht zerreißen. */

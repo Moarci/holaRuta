@@ -193,6 +193,14 @@ test("renderPrintSheet: Übungsmodus verdeckt Antworten und hängt Lösungsschl�
   assert.ok(body.includes("sheet-write-line") || body.includes("sheet-blank-inline"), "Schreiblinien/Lücken fehlen");
 });
 
+test("renderPrintSheet: Lösungsschlüssel nummeriert Zuordnung nicht doppelt", () => {
+  const html = ui.renderPrintSheet(withSections({ exercise: true }));
+  const key = html.slice(html.indexOf("sheet-answerkey"));
+  // Die <ol> liefert die Paar-Nummer; das Item enthält nur den Buchstaben (keine „1 → b“-Dopplung).
+  assert.ok(/<li>b<\/li>/.test(key) && /<li>a<\/li>/.test(key), "Matching-Lösung als reiner Buchstabe fehlt");
+  assert.ok(!key.includes("1 → b"), "doppelte Nummerierung im Lösungsschlüssel");
+});
+
 test("renderPrintSheet: Bausteinauswahl-Chips spiegeln den An/Aus-Status", () => {
   const html = ui.renderPrintSheet(withSections());
   assert.ok(html.includes('data-action="toggle-section"'), "Toggle-Action fehlt");

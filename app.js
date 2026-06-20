@@ -3945,7 +3945,7 @@
 
   function sheetCardLine(c) {
     const ctx = c.context || {};
-    return { es: c.es, de: natk(c, "de"), note: natk(ctx, "note") || "" };
+    return { es: c.es, de: nat(c), note: natk(ctx, "note") || "" };
   }
 
   // ---------- Arbeitsheft: Übungsabschnitte aus dem Gesamtbestand ----------
@@ -4027,12 +4027,12 @@
   // abgesichert (kein leerer Abschnitt). Reihenfolge = Heft-Reihenfolge.
   function buildSheetSections(theme, allCards, rng) {
     const out = [];
-    const cards = (allCards || []).filter((c) => c && c.es && natk(c, "de"));
+    const cards = (allCards || []).filter((c) => c && c.es && nat(c));
 
     // 1. Zuordnung ES<->DE (bis 8 Paare).
     const mPairs = sheetShuffle(cards, rng).slice(0, 8);
     if (mPairs.length >= 3) {
-      const left = mPairs.map((c, i) => ({ n: i + 1, es: c.es, de: natk(c, "de") }));
+      const left = mPairs.map((c, i) => ({ n: i + 1, es: c.es, de: nat(c) }));
       const order = sheetShuffle(left.map((_, i) => i), rng);
       const right = order.map((origIdx, j) => ({ l: String.fromCharCode(97 + j), de: left[origIdx].de, orig: origIdx }));
       left.forEach((x, i) => { const r = right.find((rr) => rr.orig === i); x.l = r ? r.l : ""; });
@@ -4052,17 +4052,17 @@
     // 3. Übersetzung (Kontextsätze DE->ES, sonst einfache Karten).
     const ctxCards = sheetShuffle(cards.filter((c) => c.context && c.context.sentenceEs), rng).slice(0, 8);
     if (ctxCards.length >= 3) {
-      out.push({ type: "translate", lines: ctxCards.map((c) => ({ de: natk(c.context, "sentenceDe") || natk(c.context, "situation") || natk(c, "de"), es: c.context.sentenceEs })) });
+      out.push({ type: "translate", lines: ctxCards.map((c) => ({ de: natk(c.context, "sentenceDe") || natk(c.context, "situation") || nat(c), es: c.context.sentenceEs })) });
     } else {
       const simple = sheetShuffle(cards, rng).slice(0, 8);
-      if (simple.length >= 3) out.push({ type: "translate", lines: simple.map((c) => ({ de: natk(c, "de"), es: c.es })) });
+      if (simple.length >= 3) out.push({ type: "translate", lines: simple.map((c) => ({ de: nat(c), es: c.es })) });
     }
 
     // 4. Konjugation.
     if (conjug && data.CONJUGATION) {
       const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 8, rng).map((it) => ({
-        verb: it.verbHint || it.verb,
-        person: it.personDe ? it.personDe + " (" + it.personEs + ")" : it.personEs,
+        verb: natk(it, "verbHint") || it.verb,
+        person: natk(it, "personDe") ? natk(it, "personDe") + " (" + it.personEs + ")" : it.personEs,
         answer: it.answer,
       }));
       if (rows.length) out.push({ type: "conjug", rows: rows });
@@ -4084,8 +4084,8 @@
         out.push({
           type: "dialogue", title: natk(dlg, "title"),
           turns: dlg.turns.map((tn) => tn.who === "npc"
-            ? { who: "npc", es: sub(tn.es), de: natk(tn, "de") }
-            : { who: "user", de: natk(tn, "de"), answer: sub(tn.solEs) }),
+            ? { who: "npc", es: sub(tn.es), de: nat(tn) }
+            : { who: "user", de: nat(tn), answer: sub(tn.solEs) }),
         });
       }
     }
