@@ -376,6 +376,18 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
       { level: "A1", finalScore: 0.41, accuracy: 0.4, unknownRate: 0.3, tempo: "slow", reliability: "", at: "2026-06-10", ts: "2026-06-10T18:00:00.000Z" },
       { level: "A2", finalScore: 0.62, accuracy: 0.6, unknownRate: 0.2, tempo: "medium", reliability: "", at: "2026-06-15", ts: "2026-06-15T20:00:00.000Z" },
     ],
+    assessment: { level: "B1", variant: "standard", finalScore: 0.7, accuracy: 0.68, unknownRate: 0.1, tempo: "medium", reliability: "", at: "2026-06-16", ts: "" },
+    assessmentHistory: [
+      { level: "B1", variant: "standard", finalScore: 0.7, accuracy: 0.68, unknownRate: 0.1, tempo: "medium", reliability: "", at: "2026-06-16", ts: "2026-06-16T20:00:00.000Z" },
+    ],
+    assessmentProgress: {
+      variant: "extremo", asked: ["as_un_a0a", "as_vo_a0a"],
+      answers: [
+        { isUnknown: false, selectedIndex: 0, text: "", responseTimeMs: 4200 },
+        { isUnknown: true, selectedIndex: null, text: "", responseTimeMs: 3000 },
+      ],
+      difficulty: 2, mcAsked: 2, grammarAsked: 0, freeIdx: 0, startedAt: 1700000000000, savedAt: 1700000005000,
+    },
   };
   storeMem[GKEY] = JSON.stringify(valid);
   assert.deepEqual(store.loadGameStats(), valid);

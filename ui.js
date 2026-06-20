@@ -679,6 +679,16 @@
       </button>`
       : "";
 
+    // Nivel-Test fortsetzen: erscheint, solange ein begonnener Test offen ist
+    // (nach versehentlichem Zurück/Reload). Verschwindet beim Abschluss.
+    const assessmentResumeCue = vm.assessmentResume
+      ? `
+      <button class="today__ruta" data-action="assessment-resume">
+        <span class="today__ruta-main">${esc(t("home.assessmentResumeTitle"))}</span>
+        <span class="today__ruta-sub">${esc(t("home.assessmentResumeSub", { i: vm.assessmentResume.index, n: vm.assessmentResume.total }))}</span>
+      </button>`
+      : "";
+
     // Glanceable Fortschritt: dieselbe Karte wie im Profil (Streak + Verteilung).
     const progressGroup = `
       <section class="dashgrp">
@@ -701,6 +711,7 @@
         </button>
         ${resume}
         ${rutaDia}
+        ${assessmentResumeCue}
         ${placementCue}
       </div>
 

@@ -108,6 +108,12 @@
         var pa = (isObj(va) && (va.ts || va.at)) || "", pb = (isObj(vb) && (vb.ts || vb.at)) || "";
         out[k] = (pb > pa) ? vb : va; continue;
       }
+      if (k === "assessmentProgress") {
+        // Laufender Test: der zuletzt gesicherte gewinnt (savedAt) – niemals zwei
+        // unfertige Läufe über deepUnion vermischen (sonst inkonsistenter Stand).
+        var qa = (isObj(va) && va.savedAt) || 0, qb = (isObj(vb) && vb.savedAt) || 0;
+        out[k] = (qb > qa) ? vb : va; continue;
+      }
       if (k === "tripGoal") {
         // Späteres Ziel gewinnt (startedAt), sonst das nicht-leere, sonst a.
         var sa = (isObj(va) && va.startedAt) || "", sb = (isObj(vb) && vb.startedAt) || "";

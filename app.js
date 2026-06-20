@@ -250,6 +250,23 @@
     };
   }
 
+  // Laufender, noch nicht abgeschlossener Nivel-Test fürs Dashboard – damit ein
+  // versehentliches Zurück/Reload nicht verloren geht (Wiederaufnahme-Kachel).
+  // null, wenn kein Test offen ist (oder die offene Frage nicht mehr im Katalog).
+  function assessmentResumeVM() {
+    if (!assessment) return null;
+    const prog = gamestats.assessmentProgress;
+    if (!prog || !Array.isArray(prog.asked) || !prog.asked.length) return null;
+    if (!assessment.questionById(prog.asked[prog.asked.length - 1])) return null;
+    const variant = prog.variant === "extremo" ? "extremo" : "standard";
+    return {
+      variant: variant,
+      variantLabel: t("assessment.variant_" + variant),
+      index: prog.asked.length,                    // aktuelle Fragennummer (1-basiert)
+      total: assessmentTotalPlanned(variant),
+    };
+  }
+
   function homeVM() {
     const everyCard = allCards();
     const categories = data.CATEGORIES.map((c) => {
@@ -327,6 +344,7 @@
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       hasAssessment: !!assessment, // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
+      assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       streak: currentStreak(),
       xp: xpVM(),
@@ -4146,6 +4164,9 @@
   function openAssessment() {
     dismissBadgeToast();
     if (!assessment) return; // Modul nicht geladen (Edition/Offline) -> nicht crashen
+    // Läuft noch ein unabgeschlossener Test (z. B. nach versehentlichem Zurück
+    // oder Reload)? Dann nahtlos fortsetzen statt von vorn zu beginnen.
+    if (resumeAssessment()) return;
     state.assessment = {
       phase: "intro", variant: "standard",
       asked: [], answers: [], difficulty: assessment.START_DIFFICULTY,
@@ -4155,11 +4176,71 @@
     render();
   }
 
+  // Laufenden Test (gamestats.assessmentProgress) wiederaufnehmen. true, wenn
+  // erfolgreich fortgesetzt; sonst false (nichts Gespeichertes / Katalog leer).
+  function resumeAssessment() {
+    if (!assessment) return false;
+    const prog = gamestats.assessmentProgress;
+    if (!prog || !Array.isArray(prog.asked) || !prog.asked.length) return false;
+    // Nur fortsetzen, wenn die zuletzt gestellte Frage noch im Katalog existiert
+    // (Katalog kann sich zwischen App-Versionen geändert haben).
+    const lastQ = assessment.questionById(prog.asked[prog.asked.length - 1]);
+    if (!lastQ) { clearAssessmentProgress(); return false; }
+    state.assessment = {
+      phase: "running",
+      variant: prog.variant === "extremo" ? "extremo" : "standard",
+      asked: prog.asked.slice(),
+      answers: Array.isArray(prog.answers) ? prog.answers.slice() : [],
+      difficulty: typeof prog.difficulty === "number" ? prog.difficulty : assessment.START_DIFFICULTY,
+      mcAsked: prog.mcAsked || 0,
+      grammarAsked: prog.grammarAsked || 0,
+      freeIdx: prog.freeIdx || 0,
+      startedAt: prog.startedAt || Date.now(),
+      qStartedAt: Date.now(), // Timer der aktuellen Frage neu starten (Pause nicht mitzählen)
+      answeredFor: null,
+      result: null,
+    };
+    state.screen = "assessment";
+    render();
+    speakCurrentAssessment(); // war die offene Frage ein Hör-Item, erneut vorlesen
+    return true;
+  }
+
+  // Den laufenden Test persistent sichern (überlebt Zurück/Reload). Nur während
+  // der „running“-Phase; Persistenz ist optional und darf nie crashen.
+  function saveAssessmentProgress() {
+    const p = state.assessment;
+    if (!p || p.phase !== "running" || !p.asked.length) return;
+    try {
+      const snapshot = {
+        variant: p.variant || "standard",
+        asked: p.asked.slice(),
+        answers: p.answers.slice(),
+        difficulty: p.difficulty,
+        mcAsked: p.mcAsked,
+        grammarAsked: p.grammarAsked,
+        freeIdx: p.freeIdx,
+        startedAt: p.startedAt,
+        savedAt: Date.now(),
+      };
+      gamestats = Object.assign({}, gamestats, { assessmentProgress: snapshot });
+      store.saveGameStats(gamestats);
+    } catch (e) { /* Persistenz optional – nie crashen */ }
+  }
+  function clearAssessmentProgress() {
+    if (!gamestats.assessmentProgress) return;
+    try {
+      gamestats = Object.assign({}, gamestats, { assessmentProgress: null });
+      store.saveGameStats(gamestats);
+    } catch (e) { /* egal */ }
+  }
+
   function pushAssessmentQuestion(q) {
     const p = state.assessment;
     p.asked.push(q.id);
     p.answeredFor = null;      // Doppel-Tap-Schutz: pro Frage nur eine Antwort
     p.qStartedAt = Date.now();
+    saveAssessmentProgress();  // Fortschritt nach jeder neuen Frage sichern
   }
 
   function startAssessmentTest(variant) {
@@ -4261,7 +4342,8 @@
         ts: now.toISOString(),
       };
       const history = (Array.isArray(gamestats.assessmentHistory) ? gamestats.assessmentHistory : []).concat([entry]).slice(-50);
-      gamestats = Object.assign({}, gamestats, { assessment: entry, assessmentHistory: history });
+      // Ergebnis sichern und den laufenden Fortschritt aufräumen (Test ist fertig).
+      gamestats = Object.assign({}, gamestats, { assessment: entry, assessmentHistory: history, assessmentProgress: null });
       store.saveGameStats(gamestats);
     } catch (e) { /* Persistenz optional – nie crashen */ }
     render();
@@ -6274,6 +6356,7 @@
     else if (action === "placement-free-submit") placementSubmitFree();
     else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
     else if (action === "open-assessment") openAssessment();
+    else if (action === "assessment-resume") resumeAssessment();
     else if (action === "assessment-start") startAssessmentTest(el.dataset.variant);
     else if (action === "assessment-choose") assessmentChoose(Number(el.dataset.index));
     else if (action === "assessment-unknown") assessmentUnknown();

@@ -295,6 +295,9 @@
     // Ruta-Check als offene Aufgabe auf dem Dashboard (übersprungen, noch nicht gemacht)
     placementOpenTitle: "🎯 HolaRuta-Check noch offen",
     placementOpenSub: "Kurzer Einstufungstest – finde dein Startniveau heraus.",
+    // Nivel-Test fortsetzen (begonnen, aber nicht abgeschlossen)
+    assessmentResumeTitle: "📋 Nivel-Test fortsetzen",
+    assessmentResumeSub: (p) => `Angefangen bei Frage ${p.i} von ${p.n} – dein Fortschritt ist gesichert.`,
     // Einstellungen
     modeFlip: "🃏 Karteikarte",
     modeType: "⌨️ Schreiben",
@@ -479,6 +482,8 @@
     onboardSkip: "Skip",
     placementOpenTitle: "🎯 HolaRuta-Check still open",
     placementOpenSub: "Short placement test – find out your starting level.",
+    assessmentResumeTitle: "📋 Resume level test",
+    assessmentResumeSub: (p) => `Stopped at question ${p.i} of ${p.n} – your progress is saved.`,
     modeFlip: "🃏 Flashcard",
     modeType: "⌨️ Writing",
     modeListen: "👂 Listening",
