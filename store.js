@@ -363,6 +363,35 @@
     return out;
   }
 
+  // Frage-für-Frage-Rückblick eines Ergebnisses typisieren, damit das Profil die
+  // einzelnen Antworten/Fehler dauerhaft (auch nach Sync/Backup) zeigen kann.
+  // Korruptes/manipuliertes localStorage darf weder crashen noch riesig werden:
+  // Anzahl gedeckelt und jedes Textfeld längenbegrenzt.
+  function sanitizeReview(v) {
+    if (!Array.isArray(v)) return [];
+    const str = (x, n) => (typeof x === "string" ? x.slice(0, n) : "");
+    const known = { correct: 1, wrong: 1, unknown: 1 };
+    const out = [];
+    for (let i = 0; i < v.length && out.length < 60; i++) {
+      const r = v[i];
+      if (!isPlainObject(r)) continue;
+      const item = {
+        status: known[r.status] ? r.status : "unknown",
+        promptDe: str(r.promptDe, 240),
+        questionEs: str(r.questionEs, 240),
+        yourText: str(r.yourText, 240),
+        correctText: str(r.correctText, 240),
+        explanationDe: str(r.explanationDe, 400),
+      };
+      // Optionale Flags/Felder nur setzen, wenn vorhanden (kleiner halten).
+      if (r.typo) item.typo = true;
+      if (r.listen) item.listen = true;
+      if (typeof r.level === "string" && r.level) item.level = r.level.slice(0, 8);
+      out.push(item);
+    }
+    return out;
+  }
+
   // Ein einzelnes Ruta-Check-Ergebnis typisieren (jedes Feld), damit korruptes/
   // manipuliertes localStorage weder crasht noch z. B. „level: 42" anzeigt.
   // null, wenn kein Objekt.
@@ -380,6 +409,7 @@
       correct: num(e.correct),
       total: num(e.total),
       skills: sanitizeSkillBreakdown(e.skills),
+      review: sanitizeReview(e.review),
       at: typeof e.at === "string" ? e.at : "",
       ts: typeof e.ts === "string" ? e.ts : "",
     };
@@ -415,6 +445,7 @@
       correct: num(e.correct),
       total: num(e.total),
       skills: sanitizeSkillBreakdown(e.skills),
+      review: sanitizeReview(e.review),
       at: typeof e.at === "string" ? e.at : "",
       ts: typeof e.ts === "string" ? e.ts : "",
     };

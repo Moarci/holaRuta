@@ -217,6 +217,8 @@
       note: e.note || "",
       reliability: e.reliability || "",
       skills: Array.isArray(e.skills) ? e.skills : [],
+      // Frage-für-Frage-Rückblick (einzelne Antworten/Fehler) – leer bei Altergebnissen.
+      review: Array.isArray(e.review) ? e.review : [],
       at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
     });
     // Verlauf neueste zuerst. Altgeräte ohne History, aber mit letztem Ergebnis:
@@ -250,6 +252,8 @@
       note: e.note || "",
       reliability: e.reliability || "",
       skills: Array.isArray(e.skills) ? e.skills : [],
+      // Frage-für-Frage-Rückblick (einzelne Antworten/Fehler) – leer bei Altergebnissen.
+      review: Array.isArray(e.review) ? e.review : [],
       at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
     });
     const past = history.length ? history.slice().reverse().map(fmt) : (last ? [fmt(last)] : []);
@@ -4098,6 +4102,9 @@
         note: result.note || "",
         correct: result.correct, total: result.total,
         skills: placementResultView(result).skills,
+        // Frage-für-Frage-Rückblick mitsichern, damit man die einzelnen Antworten
+        // und Fehler auch später im Profil (nicht nur direkt nach dem Test) abrufen kann.
+        review: placementReviewView(p),
         at: now.toISOString().slice(0, 10),
         ts: now.toISOString(),
       };
@@ -4403,6 +4410,8 @@
         note: result.note || "",
         correct: result.correct, total: result.total,
         skills: assessmentResultView(result).skills,
+        // Frage-für-Frage-Rückblick mitsichern (einzelne Antworten/Fehler im Profil).
+        review: assessmentReviewView(p),
         at: now.toISOString().slice(0, 10),
         ts: now.toISOString(),
       };

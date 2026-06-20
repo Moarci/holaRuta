@@ -2490,10 +2490,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .plprof__date { margin: 0; font-size: 0.82rem; color: var(--muted); }
 .plprof__histcap { margin: 14px 0 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
 .plprof__hist { list-style: none; padding: 0; margin: 0; }
-.plprof__histrow { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); font-size: 0.9rem; }
+.plprof__histrow { display: grid; grid-template-columns: 1fr auto auto 1.1em; gap: 12px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); font-size: 0.9rem; }
 .plprof__histdate { color: var(--muted); }
 .plprof__histlvl { font-weight: 700; color: var(--brand-ink); }
 .plprof__histscore { font-weight: 700; color: var(--ink-soft); min-width: 3em; text-align: right; }
+/* Aufklappbare Verlaufszeile: das <li> wird zum reinen Träger, das Grid (gleiche
+   Spalten wie die flache Zeile, inkl. reservierter Chevron-Spalte → bündig)
+   wandert auf die <summary>. So zeigt jeder ältere Durchlauf seinen Rückblick. */
+.plprof__histrow--open { display: block; padding: 0; }
+.plprof__histsum { display: grid; grid-template-columns: 1fr auto auto 1.1em; gap: 12px; align-items: center; padding: 6px 0; font-size: 0.9rem; cursor: pointer; list-style: none; }
+.plprof__histsum::-webkit-details-marker { display: none; }
+.plprof__histsum::after { content: "▾"; color: var(--muted); font-size: 0.8em; justify-self: end; }
+.plprof__histbox[open] .plprof__histsum::after { content: "▴"; }
+.plprof__histsum:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; border-radius: 4px; }
+.plprof__histbox .pl-review { padding: 0 2px 8px; }
+.plprof__histbox .pl-review__item:first-child { border-top: none; }
 .plprof__actions { margin-top: 10px; }
 .plprof .sharebar { margin-top: 12px; }
 /* Ausführliche Ergebnis-Blöcke im Profil („wie nach dem Abschluss"): vom Kopf
