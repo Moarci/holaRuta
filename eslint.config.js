@@ -117,6 +117,7 @@ module.exports = [
       "node_modules/**",
       "HolaRuta.html", // generiertes Single-File-Bundle (build.js)
       "scripts/.e2e-out/**",
+      "scripts/mutation/.bak/**", // transiente Mutanten-Backups
       "**/*.min.js",
     ],
   },

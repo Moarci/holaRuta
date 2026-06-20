@@ -89,6 +89,14 @@ jobs:
           node build.js
           git diff --exit-code service-worker.js
 
+      # Mutationstesting-Gate (BLOCKIEREND): baut echte Bugs in den Quellcode und
+      # verlangt, dass die Tests sie fangen. Der kuratierte Katalog (scripts/mutation/
+      # catalog.mjs) muss zu 100 % gefangen werden — sonst ist ein Test bloße Zierde.
+      # Zero-Dep (nur node:*). NACH dem service-worker-Check platziert, damit ein
+      # evtl. dirty-tree-Fehler nicht maskiert wird; der Runner stellt den Tree wieder her.
+      - name: Mutationstesting – Katalog-Gate
+        run: npm run mutation:catalog
+
   # Browser-E2E (Playwright): prüft den „Modo profe" (Lehrer-Modus) gegen die
   # LAUFENDE App in echtem Chromium – Schüler-Import, Niveau-Verteilung,
   # Sortierung, CSV-Export (inkl. Akzent-Namen), Re-Import-Dedupe und das
