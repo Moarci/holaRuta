@@ -44,6 +44,9 @@
   function writeJson(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      // Bekannte (Nutzer-)Keys zusätzlich langlebig in IndexedDB spiegeln, damit
+      // eine localStorage-Eviction (iOS-ITP) den Fortschritt nicht killt.
+      if (KNOWN_KEYS.indexOf(key) !== -1) scheduleMirror();
       return true;
     } catch (err) {
       console.warn("store: schreiben fehlgeschlagen", key, err);
@@ -609,7 +612,97 @@
     };
   }
 
+  // ----- Langlebiges Backup-Spiegelbild (IndexedDB) + Auto-Restore -----
+  // localStorage ist auf iOS am anfälligsten: Safari/WebKit räumt
+  // „script-writable storage" nach ~7 Tagen ohne Nutzung weg (ITP). Damit der
+  // Fortschritt das übersteht, spiegeln wir nach jedem Schreibzugriff alle
+  // bekannten Keys zusätzlich als ein Snapshot-Objekt in IndexedDB (das mit
+  // navigator.storage.persist() deutlich langlebiger ist) und stellen sie beim
+  // Start automatisch wieder her, falls localStorage leer zurückkommt.
+  //
+  // WICHTIG / Grenze: Das schützt NICHT vor einer iOS-Neuinstallation des
+  // Homescreen-Icons – die bekommt einen komplett eigenen, leeren Sandbox (auch
+  // für IndexedDB). Dagegen hilft nur, das Icon NICHT neu zu installieren (die PWA
+  // aktualisiert sich über den Service Worker von selbst) bzw. der manuelle
+  // Export/Import (exportData/importData).
+  const IDB_NAME = "holaruta-backup";
+  const IDB_STORE = "kv";
+  const IDB_SNAPSHOT_KEY = "snapshot";
+  const RESTORE_GUARD = "spanischcard.restoredFromIdb"; // sessionStorage: gegen Reload-Schleife
+  const hasIdb = typeof indexedDB !== "undefined" && !!indexedDB;
+  let restoreSettled = false; // true, sobald ein Restore-Versuch abgeschlossen ist
+  let mirrorTimer = null;
+
+  function openIdb() {
+    return new Promise((resolve, reject) => {
+      let req;
+      try { req = indexedDB.open(IDB_NAME, 1); } catch (e) { reject(e); return; }
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  // Aktuellen localStorage-Stand als einen Snapshot in IndexedDB ablegen.
+  function mirrorToIdb() {
+    if (!hasIdb) return;
+    // Vor abgeschlossenem Restore NICHT spiegeln – sonst überschriebe ein leerer
+    // localStorage (frisch nach Eviction) den noch ungelesenen guten Snapshot.
+    if (!restoreSettled) return;
+    let snapshot;
+    try { snapshot = exportData(); } catch (e) { return; }
+    openIdb().then((db) => {
+      try {
+        const tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).put(snapshot, IDB_SNAPSHOT_KEY);
+      } catch (e) { /* egal */ }
+    }).catch(() => { /* egal */ });
+  }
+
+  // Spiegelung nach Schreibzugriffen entprellen (mehrere saves pro Lernrunde).
+  function scheduleMirror() {
+    if (!hasIdb) return;
+    if (typeof setTimeout !== "function") { mirrorToIdb(); return; }
+    if (mirrorTimer) clearTimeout(mirrorTimer);
+    mirrorTimer = setTimeout(mirrorToIdb, 1500);
+  }
+
+  // Hat localStorage aktuell überhaupt HolaRuta-Daten?
+  function hasLocalData() {
+    return KNOWN_KEYS.some((key) => {
+      try { return !!localStorage.getItem(key); } catch (e) { return false; }
+    });
+  }
+
+  // Beim Start aus IndexedDB wiederherstellen, FALLS localStorage leer ist.
+  // Schreibt die Keys zurück und lädt EINMAL neu, damit die App den
+  // wiederhergestellten Stand frisch einliest.
+  function tryRestoreFromIdb() {
+    if (!hasIdb) { restoreSettled = true; return; }
+    if (hasLocalData()) { restoreSettled = true; return; } // nichts zu tun
+    openIdb().then((db) => {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const req = tx.objectStore(IDB_STORE).get(IDB_SNAPSHOT_KEY);
+      req.onsuccess = () => {
+        const snapshot = req.result;
+        const restored = snapshot ? importData(snapshot) : 0;
+        restoreSettled = true;
+        let already = false;
+        try { already = !!sessionStorage.getItem(RESTORE_GUARD); } catch (e) { /* egal */ }
+        if (restored > 0 && !already && typeof location !== "undefined" && location.reload) {
+          try { sessionStorage.setItem(RESTORE_GUARD, "1"); } catch (e) { /* egal */ }
+          try { location.reload(); } catch (e) { /* egal */ }
+        }
+      };
+      req.onerror = () => { restoreSettled = true; };
+    }).catch(() => { restoreSettled = true; });
+  }
+
   migrate();
+  tryRestoreFromIdb();
 
   window.SC = window.SC || {};
   window.SC.store = {
@@ -617,6 +710,7 @@
     saveProgress: (p) => writeJson(PROGRESS_KEY, p),
     resetProgress: () => {
       try { localStorage.removeItem(PROGRESS_KEY); } catch (e) { /* egal */ }
+      scheduleMirror(); // gespiegelten Snapshot nachziehen (sonst „aufersteht" der Reset)
     },
     loadSettings,
     saveSettings: (s) => writeJson(SETTINGS_KEY, s),
@@ -636,6 +730,7 @@
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),
     resetGameStats: () => {
       try { localStorage.removeItem(GAMESTATS_KEY); } catch (e) { /* egal */ }
+      scheduleMirror();
     },
     // Zuletzt gesehene App-Version. null = noch nie vermerkt (frische Installation
     // oder Bestandsnutzer vor diesem Feature) -> dann KEIN Update-Hinweis, nur
