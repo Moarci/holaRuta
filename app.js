@@ -210,7 +210,13 @@
       level: e.level || "–",
       scorePct: Math.round((e.finalScore || 0) * 100),
       accuracyPct: Math.round((e.accuracy || 0) * 100),
+      unknownPct: Math.round((e.unknownRate || 0) * 100),
       tempoLabel: e.tempo ? t("placement.tempo_" + e.tempo) : "",
+      // Ausführliche Details fürs Profil (Ergebnis „wie nach dem Abschluss").
+      correct: e.correct || 0, total: e.total || 0,
+      note: e.note || "",
+      reliability: e.reliability || "",
+      skills: Array.isArray(e.skills) ? e.skills : [],
       at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
     });
     // Verlauf neueste zuerst. Altgeräte ohne History, aber mit letztem Ergebnis:
@@ -237,7 +243,13 @@
       variantLabel: t("assessment.variant_" + (e.variant === "extremo" ? "extremo" : "standard")),
       scorePct: Math.round((e.finalScore || 0) * 100),
       accuracyPct: Math.round((e.accuracy || 0) * 100),
+      unknownPct: Math.round((e.unknownRate || 0) * 100),
       tempoLabel: e.tempo ? t("assessment.tempo_" + e.tempo) : "",
+      // Ausführliche Details fürs Profil (Ergebnis „wie nach dem Abschluss").
+      correct: e.correct || 0, total: e.total || 0,
+      note: e.note || "",
+      reliability: e.reliability || "",
+      skills: Array.isArray(e.skills) ? e.skills : [],
       at: e.at || (typeof e.ts === "string" ? e.ts.slice(0, 10) : ""),
     });
     const past = history.length ? history.slice().reverse().map(fmt) : (last ? [fmt(last)] : []);
@@ -4038,6 +4050,11 @@
         unknownRate: Math.round(result.unknownRate * 100) / 100,
         tempo: result.tempo,
         reliability: result.reliability || "",
+        // Ausführliche Ergebnis-Details mitsichern, damit das Profil das volle
+        // Ergebnis „wie nach dem Abschluss" dauerhaft zeigen kann.
+        note: result.note || "",
+        correct: result.correct, total: result.total,
+        skills: placementResultView(result).skills,
         at: now.toISOString().slice(0, 10),
         ts: now.toISOString(),
       };
@@ -4338,6 +4355,10 @@
         unknownRate: Math.round(result.unknownRate * 100) / 100,
         tempo: result.tempo,
         reliability: result.reliability || "",
+        // Ausführliche Ergebnis-Details mitsichern (Profil zeigt das volle Ergebnis).
+        note: result.note || "",
+        correct: result.correct, total: result.total,
+        skills: assessmentResultView(result).skills,
         at: now.toISOString().slice(0, 10),
         ts: now.toISOString(),
       };

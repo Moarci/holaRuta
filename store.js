@@ -348,6 +348,21 @@
     return {};
   }
 
+  // Skill-Aufschlüsselung eines Einstufungs-Ergebnisses typisieren (für die
+  // ausführliche Profil-Ansicht „wie nach dem Abschluss"). Prozente 0..100,
+  // Anzahl gedeckelt – manipuliertes localStorage darf weder crashen noch wuchern.
+  function sanitizeSkillBreakdown(v) {
+    if (!Array.isArray(v)) return [];
+    const pct = (x) => (typeof x === "number" && isFinite(x) ? Math.max(0, Math.min(100, Math.round(x))) : 0);
+    const out = [];
+    for (let i = 0; i < v.length && out.length < 12; i++) {
+      const s = v[i];
+      if (!isPlainObject(s) || typeof s.skill !== "string") continue;
+      out.push({ skill: s.skill.slice(0, 24), accuracy: pct(s.accuracy), unknownRate: pct(s.unknownRate) });
+    }
+    return out;
+  }
+
   // Ein einzelnes Ruta-Check-Ergebnis typisieren (jedes Feld), damit korruptes/
   // manipuliertes localStorage weder crasht noch z. B. „level: 42" anzeigt.
   // null, wenn kein Objekt.
@@ -361,6 +376,10 @@
       unknownRate: num(e.unknownRate),
       tempo: typeof e.tempo === "string" ? e.tempo : "",
       reliability: typeof e.reliability === "string" ? e.reliability : "",
+      note: typeof e.note === "string" ? e.note.slice(0, 32) : "",
+      correct: num(e.correct),
+      total: num(e.total),
+      skills: sanitizeSkillBreakdown(e.skills),
       at: typeof e.at === "string" ? e.at : "",
       ts: typeof e.ts === "string" ? e.ts : "",
     };
@@ -392,6 +411,10 @@
       unknownRate: num(e.unknownRate),
       tempo: typeof e.tempo === "string" ? e.tempo : "",
       reliability: typeof e.reliability === "string" ? e.reliability : "",
+      note: typeof e.note === "string" ? e.note.slice(0, 32) : "",
+      correct: num(e.correct),
+      total: num(e.total),
+      skills: sanitizeSkillBreakdown(e.skills),
       at: typeof e.at === "string" ? e.at : "",
       ts: typeof e.ts === "string" ? e.ts : "",
     };
