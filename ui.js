@@ -372,9 +372,10 @@
     const route = vm.trip && Array.isArray(vm.trip.route) ? vm.trip.route : [];
     if (!route.length) return "";
     const open = vm.tripRouteOpen !== false; // Standard: aufgeklappt (Drag sichtbar)
+    const canReorder = route.length > 1;     // Umsortieren erst ab zwei Stopps sinnvoll
     const items = route.map((s, i) => `
       <li class="triptl__item" data-index="${i}">
-        <span class="triptl__drag" data-action="drag-trip-stop" role="button" tabindex="-1" aria-label="${esc(t("home.tripStopDrag"))}" title="${esc(t("home.tripStopDrag"))}">⠿</span>
+        ${canReorder ? `<span class="triptl__drag" data-action="drag-trip-stop" role="button" tabindex="-1" aria-label="${esc(t("home.tripStopDrag"))}" title="${esc(t("home.tripStopDrag"))}">⠿</span>` : ""}
         <span class="triptl__num">${i + 1}</span>
         ${s.flag ? `<span class="triptl__flag">${esc(s.flag)}</span>` : ""}
         <span class="triptl__name">${esc(s.dest)}</span>
@@ -387,8 +388,8 @@
           <span class="triptl__badge">${route.length}</span>
           <span class="triptl__chev" aria-hidden="true">${open ? "▾" : "▸"}</span>
         </button>
-        ${open ? `<ol class="triptl__list">${items}</ol>
-        <p class="triptl__hint">${esc(t("home.tripRouteReorderHint"))}</p>` : ""}
+        ${open ? `<ol class="triptl__list">${items}</ol>${canReorder ? `
+        <p class="triptl__hint">${esc(t("home.tripRouteReorderHint"))}</p>` : ""}` : ""}
       </div>`;
   }
 

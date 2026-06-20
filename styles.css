@@ -3273,7 +3273,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .triptl__rm:active { transform: translateY(1px); }
 .triptl__rm:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 /* Gerade gezogener Eintrag: angehoben, damit klar ist, was sich bewegt. */
-.triptl__list.is-reordering { cursor: grabbing; }
+.triptl__list.is-reordering { cursor: grabbing; user-select: none; -webkit-user-select: none; }
 .triptl__item.is-dragging {
   border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, var(--surface));
   box-shadow: 0 6px 16px rgba(0,0,0,0.18); opacity: 0.97;

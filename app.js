@@ -2738,8 +2738,10 @@
     }
     tripRenumber(list);
   }
-  function onTripPointerUp() {
+  function onTripPointerUp(e) {
     if (!tripDrag) return;
+    // Nur der Finger/Zeiger, der den Drag gestartet hat, beendet ihn (Multi-Touch).
+    if (e && tripDrag.pointerId != null && e.pointerId !== tripDrag.pointerId) return;
     const list = tripDrag.list, item = tripDrag.item, startIndex = tripDrag.startIndex;
     tripDrag = null;
     item.classList.remove("is-dragging");
