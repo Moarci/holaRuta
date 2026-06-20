@@ -3201,9 +3201,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    passend zur „Ziel übertroffen“-Zeile. */
 .trip__bar-fill.is-over { background: var(--brand); }
 
-/* Schnellwechsel Reiseland (Profil): horizontal scrollbare Länder-Chips. */
+/* Schnellwechsel Reiseland (Profil): einklappbarer Abschnitt mit Länder-Chips. */
 .tripswitch { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .tripswitch__cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+/* Aufklapp-Kopfzeile (Titel + Chevron). Voll-Breite, damit der ganze Streifen tippbar ist. */
+.tripswitch__toggle, .triptl__toggle {
+  appearance: none; cursor: pointer; font: inherit; width: 100%;
+  display: flex; align-items: center; gap: 8px; padding: 2px 0;
+  border: 0; background: none; color: inherit; text-align: left;
+}
+.tripswitch__toggle:focus-visible, .triptl__toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+.tripswitch__chev, .triptl__chev { margin-left: auto; font-size: 0.8rem; color: var(--muted); line-height: 1; }
 .tripswitch__chips { display: flex; flex-wrap: wrap; gap: 7px; }
 .tripchip {
   appearance: none; cursor: pointer; font: inherit; font-size: 0.84rem; font-weight: 700;
@@ -3223,15 +3231,32 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .trip__stop-flag { font-size: 1em; line-height: 1; }
 .trip__arrow { color: var(--muted); font-weight: 800; }
 
-/* Editierbare Reise-Zeitleiste im Profil: nummerierte Stopps mit ×-Entfernen. */
+/* Editierbare Reise-Zeitleiste im Profil: nummerierte Stopps, per ⠿-Griff umsortierbar,
+   mit ×-Entfernen. Der Abschnitt ist einklappbar (Kopfzeile mit Anzahl-Badge). */
 .triptl { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .triptl__cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+/* Kleine Pille mit der Stopp-Anzahl in der Kopfzeile (sichtbar auch im eingeklappten Zustand). */
+.triptl__badge {
+  flex: none; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.74rem; font-weight: 800; color: var(--brand-ink, var(--ink));
+  background: color-mix(in srgb, var(--brand) 16%, var(--surface)); border: 1.5px solid var(--brand);
+}
 .triptl__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .triptl__item {
   display: flex; align-items: center; gap: 9px;
   padding: 8px 10px; border-radius: var(--r-sm, 10px);
   border: 1.5px solid var(--line-strong); background: var(--surface);
+  touch-action: pan-y; /* vertikales Scrollen bleibt erlaubt; Drag startet nur am Griff */
 }
+/* Greif-Griff zum Umsortieren: einzige Fläche mit touch-action:none, damit das
+   Ziehen nicht mit dem Seiten-Scrollen kollidiert. */
+.triptl__drag {
+  flex: none; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  width: 24px; height: 28px; margin: -4px 0; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.05rem; line-height: 1; color: var(--muted); border-radius: 8px;
+}
+.triptl__drag:active { cursor: grabbing; }
 .triptl__num {
   flex: none; width: 22px; height: 22px; border-radius: 999px;
   display: inline-flex; align-items: center; justify-content: center;
@@ -3247,6 +3272,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .triptl__rm:active { transform: translateY(1px); }
 .triptl__rm:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* Gerade gezogener Eintrag: angehoben, damit klar ist, was sich bewegt. */
+.triptl__list.is-reordering { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.triptl__item.is-dragging {
+  border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, var(--surface));
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18); opacity: 0.97;
+}
+.triptl__hint { margin: 2px 0 0; font-size: 0.78rem; font-weight: 600; color: var(--muted); line-height: 1.35; }
 .trip--edit { gap: 9px; cursor: default; }
 .trip--edit:active { transform: none; }
 .trip__cap { font-family: var(--font-display); font-weight: 800; margin: 0; }
