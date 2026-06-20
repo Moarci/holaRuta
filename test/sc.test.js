@@ -563,6 +563,22 @@ test("store.loadGameStats: Trip-Ziel – optionale Aufenthaltsdauer (Rückreise/
   assert.equal(g.stayDays, undefined);
 });
 
+test("store.loadGameStats: Trip-Ziel – Route (Zeitleiste mehrerer Länder)", () => {
+  const base = (trip) => JSON.stringify(Object.assign({ reviews: 1 }, { tripGoal: trip }));
+  // Gültige Route bleibt erhalten (id/dest/flag), Reihenfolge unverändert.
+  storeMem[GKEY] = base({ destination: "El Salvador, Kolumbien", endDate: "2026-08-01", perDay: 10,
+    route: [{ id: "elsalvador", dest: "El Salvador", flag: "🇸🇻" }, { id: "colombia", dest: "Kolumbien", flag: "🇨🇴" }] });
+  assert.deepEqual(store.loadGameStats().tripGoal.route,
+    [{ id: "elsalvador", dest: "El Salvador", flag: "🇸🇻" }, { id: "colombia", dest: "Kolumbien", flag: "🇨🇴" }]);
+  // Stopps ohne dest fallen raus; flag/id optional.
+  storeMem[GKEY] = base({ destination: "Peru", endDate: "2026-08-01", perDay: 10,
+    route: [{ id: "peru" }, { dest: "Peru" }] });
+  assert.deepEqual(store.loadGameStats().tripGoal.route, [{ id: "", dest: "Peru" }]);
+  // Leere/kaputte Route -> Feld bleibt weg (Bestands-Ziele unverändert).
+  storeMem[GKEY] = base({ destination: "Lima", endDate: "2026-08-01", perDay: 10, route: [] });
+  assert.equal(store.loadGameStats().tripGoal.route, undefined);
+});
+
 // ---------- data-Integrität ----------
 test("data.CARDS: alle IDs eindeutig (inkl. Hostel/Social)", () => {
   const ids = data.CARDS.map((c) => c.id);

@@ -400,6 +400,7 @@
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       tripCountryId: tripCountryId(), // erkanntes Land fürs Schnellwechsel-Chip (oder null)
+      tripRouteIds: (gamestats.tripGoal && Array.isArray(gamestats.tripGoal.route) ? gamestats.tripGoal.route : []).map((s) => s.id), // Länder schon in der Route (Chip-Markierung)
       tripCountryBev: tripCountryBev(), // Tag-/Abendgetränk + Akzent + Gruß fürs Erscheinungsbild-Schild (oder null)
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
       showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
@@ -1265,8 +1266,16 @@
     } else if (t.stayDays) {
       stayDays = t.stayDays;
     }
+    // Route (Zeitleiste): mehrere Reiseländer in Reihenfolge. Der Countdown nennt das
+    // erste Ziel (dort kommt man zuerst an); das freie Textziel zählt als „eine Station",
+    // wenn keine Route gesetzt ist.
+    const route = Array.isArray(t.route)
+      ? t.route.map((s) => ({ id: s.id || "", dest: s.dest, flag: s.flag || "" }))
+      : [];
+    const headDest = route.length ? route[0].dest : t.destination;
     return {
-      destination: t.destination,
+      destination: headDest,
+      route,
       endDate: t.endDate,
       returnDate: t.returnDate || "",
       stayDays,
@@ -1288,6 +1297,10 @@
   // Chip im Profil (leuchtet das passende Land). Städte zählen zu ihrem Land
   // (z. B. Cartagena → Kolumbien), weil die tripMentions*-Hints sie mit abdecken.
   function tripCountryId() {
+    // Bei gesetzter Route zählt das erste Land (dort beginnt die Reise) – so trägt das
+    // Erscheinungsbild-Schild im Profil das Getränk der ersten Station.
+    const r = gamestats.tripGoal && gamestats.tripGoal.route;
+    if (Array.isArray(r) && r.length && r[0].id) return r[0].id;
     if (tripMentionsColombia()) return "colombia";
     if (tripMentionsPeru()) return "peru";
     if (tripMentionsMexico()) return "mexico";
@@ -1311,20 +1324,52 @@
     return (id && bebidas && bebidas.BEBIDAS[id]) || null;
   }
 
-  // Schnellwechsel: nur das Reiseziel setzen (Datum & Tagesziel bleiben). Wenn das
-  // Ziel ohnehin schon zu diesem Land zählt (z. B. eine getippte Stadt), bleibt die
-  // genauere Eingabe erhalten – kein Überschreiben mit dem groben Ländernamen.
-  function setTripCountry(id, dest) {
-    const cur = gamestats.tripGoal;
-    if (!cur || !dest) return;
-    if (tripCountryId() === id) return; // schon dieses Land – Stadt-Eingabe nicht plätten
-    const destination = String(dest).trim().slice(0, 80);
-    gamestats = Object.assign({}, gamestats, {
-      tripGoal: Object.assign({}, cur, { destination }),
-    });
+  // Reiseziel aus den Route-Stopps als Text (für Erkennung der Pre-Arrival-Kacheln &
+  // den Countdown). Enthält alle Ländernamen, damit jede Station ihre Kachel auslöst.
+  function routeDestText(route) {
+    return route.map((s) => s.dest).join(", ");
+  }
+
+  // Route speichern: destination spiegelt die Route (Komma-Liste aller Länder), damit
+  // die bestehende Land-Erkennung jede Station erfasst. Leere Route → freies Ziel leeren.
+  function saveTripRoute(cur, route) {
+    const goal = Object.assign({}, cur);
+    if (route.length) {
+      goal.route = route;
+      goal.destination = routeDestText(route);
+    } else {
+      delete goal.route;
+      goal.destination = "";
+    }
+    gamestats = Object.assign({}, gamestats, { tripGoal: goal });
     store.saveGameStats(gamestats);
     buzz(8);
     render();
+  }
+
+  // Schnellwechsel = Reiseland an die Zeitleiste ANHÄNGEN. So baut man Schritt für
+  // Schritt die Reiseroute (z. B. zuerst El Salvador, dann Kolumbien, dann Peru).
+  // Dasselbe Land direkt zweimal hintereinander wird übersprungen.
+  function addTripStop(id, dest, flag) {
+    const cur = gamestats.tripGoal;
+    if (!cur || !dest) return;
+    const route = Array.isArray(cur.route) ? cur.route.slice() : [];
+    const last = route[route.length - 1];
+    if (last && last.id && last.id === id) return; // schon zuletzt angehängt
+    const stop = { id: String(id || ""), dest: String(dest).trim().slice(0, 80) };
+    if (flag) stop.flag = String(flag);
+    route.push(stop);
+    if (route.length > 24) return; // großzügige Obergrenze gegen Endlos-Anhängen
+    saveTripRoute(cur, route);
+  }
+
+  // Einen Stopp aus der Zeitleiste entfernen (× am Routen-Eintrag im Profil).
+  function removeTripStop(index) {
+    const cur = gamestats.tripGoal;
+    const route = cur && Array.isArray(cur.route) ? cur.route.slice() : [];
+    if (index < 0 || index >= route.length) return;
+    route.splice(index, 1);
+    saveTripRoute(cur, route);
   }
 
   function setTripGoal(fields) {
@@ -1338,7 +1383,15 @@
       return false;
     }
     const perDay = Math.min(500, perDayRaw);
-    const goal = { destination, endDate, perDay, startedAt: dayKey(Date.now()) };
+    // Eine bestehende Route (Zeitleiste) bleibt beim Bearbeiten von Datum/Tagesziel
+    // erhalten; das Textziel spiegelt dann die Route statt des (ausgeblendeten) Felds.
+    const cur = gamestats.tripGoal;
+    const route = cur && Array.isArray(cur.route) && cur.route.length ? cur.route : null;
+    const goal = {
+      destination: route ? routeDestText(route) : destination,
+      endDate, perDay, startedAt: dayKey(Date.now()),
+    };
+    if (route) goal.route = route;
     // Aufenthaltsdauer optional: ein konkretes Rückreisedatum hat Vorrang; alternativ
     // eine grobe Tageszahl (lange Reisen ohne festes Datum). Eine Rückreise vor der
     // Abreise wird klar abgelehnt statt still verworfen.
@@ -6438,7 +6491,8 @@
     else if (action === "assessment-listen-play") speakCurrentAssessment();
     else if (action === "assessment-retake") openAssessment();
     else if (action === "trip-edit") toggleTripEdit();
-    else if (action === "set-trip-country") setTripCountry(el.dataset.country, el.dataset.dest);
+    else if (action === "add-trip-stop") addTripStop(el.dataset.country, el.dataset.dest, el.dataset.flag);
+    else if (action === "remove-trip-stop") removeTripStop(Number(el.dataset.index));
     else if (action === "trip-clear") clearTripGoal();
     else if (action === "manage-trip") openTripManage();
     else if (action === "set-gender") saveUserGender(el.dataset.gender); // ♀/♂ (Onboarding + Profil)
