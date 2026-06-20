@@ -132,6 +132,15 @@ jobs:
       - name: Modo-profe E2E
         run: npm run e2e
 
+      - name: Install esbuild (gepinnt, dev-only — für dist/-Verifikation)
+        run: npm install --no-save esbuild@0.28.1
+
+      - name: Build dist (minifiziert) für Verify-Suite
+        run: node build.js --dist
+
+      - name: Ausführliche Browser-Verifikation (Root + dist)
+        run: npm run e2e:verify
+
   deploy:
     needs: test
     # Nur bei Push auf main / manuellem Lauf deployen – NICHT bei Pull Requests.
