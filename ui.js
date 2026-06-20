@@ -308,6 +308,7 @@
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
         <span class="trip__dest">🎯 ${dest}</span>
         <span class="trip__countdown">${countdown}</span>
+        ${trip.stayDays ? `<span class="trip__stay">${esc(t("home.tripStay", { n: trip.stayDays, approx: trip.stayApprox }))}</span>` : ""}
         <span class="trip__daily">
           <span class="trip__daily-head">
             <span class="trip__daily-cap">${esc(t("home.tripDailyCap"))}</span>
@@ -350,13 +351,22 @@
   // Trip-Ziel-Formular (anlegen/bearbeiten). Wird im Profil und beim Onboarding
   // genutzt. extraButtons = zusätzliche Knöpfe rechts neben „Ziel speichern".
   function tripForm(trip, extraButtons) {
+    // Aufenthalt vorbelegen: ein konkretes Rückreisedatum (returnDate) füllt das
+    // Datumsfeld; die grobe Tageszahl nur, wenn KEIN Datum gesetzt ist (stayApprox) –
+    // sonst stünde dieselbe Dauer doppelt im Formular.
+    const stayDaysVal = trip && trip.stayApprox && trip.stayDays ? trip.stayDays : "";
+    const returnVal = trip && trip.returnDate ? esc(trip.returnDate) : "";
     return `
       <form class="trip trip--edit" data-action="save-trip">
-        <p class="trip__cap">${esc(t("home.tripCap"))}</p>
         <label class="trip__field"><span>${esc(t("home.tripDest"))}</span>
           <input id="trip-dest" type="text" maxlength="80" autocomplete="off" placeholder="${esc(t("home.tripDestPlaceholder"))}" value="${trip ? esc(trip.destination) : ""}" /></label>
         <label class="trip__field"><span>${esc(t("home.tripDate"))}</span>
           <input id="trip-date" type="date" value="${trip ? esc(trip.endDate) : ""}" required /></label>
+        <label class="trip__field"><span>${esc(t("home.tripReturn"))}</span>
+          <input id="trip-return" type="date" value="${returnVal}" /></label>
+        <label class="trip__field"><span>${esc(t("home.tripStayDays"))}</span>
+          <input id="trip-staydays" type="number" inputmode="numeric" min="1" max="400" placeholder="${esc(t("home.tripStayDaysPlaceholder"))}" value="${stayDaysVal}" /></label>
+        <p class="trip__hint">${esc(t("home.tripStayHint"))}</p>
         <label class="trip__field"><span>${esc(t("home.tripPerDay"))}</span>
           <input id="trip-perday" type="number" inputmode="numeric" min="1" max="500" value="${trip ? trip.perDay : 15}" required /></label>
         <div class="trip__actions">
