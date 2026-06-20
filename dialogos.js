@@ -692,7 +692,7 @@
           why: "Beim eigenen Getränk behältst du die Kontrolle; „un agua“ ist völlig normal und bleibt klar im Kopf.",
           whyEn: "Ordering your own drink keeps you in control; „un agua“ is perfectly normal and keeps your head clear.",
           accept: ["si gracias un agua por favor", "un agua por favor", "un agua", "una agua por favor", "agua por favor"] },
-        { who: "npc", es: "Me cae muy bien hablar contigo. ¿Te gustaría salir mañana?", de: "Ich rede echt gern mit dir. Hättest du Lust, morgen was zu machen?", en: "I really enjoy talking with you. Would you like to go out tomorrow?" },
+        { who: "npc", es: "Me gusta mucho hablar contigo. ¿Te gustaría salir mañana?", de: "Ich rede echt gern mit dir. Hättest du Lust, morgen was zu machen?", en: "I really enjoy talking with you. Would you like to go out tomorrow?" },
         { who: "user", kind: "mc", de: "(schlag etwas Lockeres vor: einen Kaffee)", en: "(suggest something low-key: a coffee)", solEs: "Me encantaría. ¿Tomamos un café?",
           why: "Ein Kaffee tagsüber ist unverbindlich und öffentlich – perfekt für ein erstes Date ohne Druck.",
           whyEn: "A daytime coffee is low-key and public – perfect for a relaxed first date with no pressure.",
