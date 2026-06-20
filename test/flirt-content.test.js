@@ -68,6 +68,31 @@ test("flirt.GLOSSARY & CHECKLIST: vollständige DE/EN-Felder", () => {
   });
 });
 
+test("flirt.TOPICS: Lesetraining ist vollständig & kohärent (es/vocab/level)", () => {
+  const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
+  let withReading = 0;
+  flirt.TOPICS.forEach((tp, i) => {
+    if (!(tp.es && tp.es.length)) return; // Lesetraining ist optional pro Thema
+    withReading++;
+    assert.ok(LEVELS.includes(tp.level), `TOPIC ${i} (${tp.title}): ungültiges level „${tp.level}"`);
+    assert.ok(Array.isArray(tp.vocab) && tp.vocab.length, `TOPIC ${i}: es vorhanden, aber vocab leer`);
+    tp.vocab.forEach((v, j) => {
+      assert.ok(v.es && v.de && v.en, `TOPIC ${i} vocab[${j}]: es/de/en unvollständig`);
+      assert.equal(typeof v.take, "boolean", `TOPIC ${i} vocab[${j}] (${v.es}): take ist nicht boolean`);
+    });
+    // Jedes im Text mit *…* markierte Wort braucht einen passenden Vokabel-Eintrag
+    // (sonst bliebe es im Lesetext untippbar / ohne Übersetzung).
+    const vset = new Set(tp.vocab.map((v) => v.es.toLowerCase().trim()));
+    tp.es.forEach((para) => {
+      (para.match(/\*([^*]+)\*/g) || []).forEach((m) => {
+        const w = m.slice(1, -1).toLowerCase().trim();
+        assert.ok(vset.has(w), `TOPIC ${i}: markiertes Wort „${w}" fehlt im vocab`);
+      });
+    });
+  });
+  assert.ok(withReading >= 1, "kein einziges Thema mit Lesetraining gefunden");
+});
+
 test("flirt: i18n-Schlüssel (Kachel + Überschriften) existieren in DE & EN", () => {
   const prev = i18n.getLang();
   const keys = [

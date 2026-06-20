@@ -27,6 +27,22 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.103.0",
+      date: "2026-06-20",
+      title: "Coqueteo y romance: Lernkarten, Lesetraining & ein Flirt-Dialog",
+      titleEn: "Coqueteo y romance: flashcards, reading training & a flirting dialogue",
+      items: [
+        "💘 Neuer Lernbereich „Flirten & Romantik“ mit Karteikarten (Spaced Repetition) – von „¿Quieres bailar?“ über „¿Está bien si te doy un beso?“ bis zu klaren Grenzen wie „No, gracias, no me interesa.“ Jede Karte mit Beispielsatz, Reise-Kontext und eigenem Abzeichen „Corazón viajero“.",
+        "📖 Das Entdecken-Modul „Coqueteo y romance“ hat jetzt in jedem Thema ein spanisches Lesetraining mit antippbaren Vokabeln und Mini-Quiz (wie bei Fotos und der Historia).",
+        "💬 Neue Gesprächs-Simulation „Coquetear con respeto“ (Diálogos): jemanden auf einer Salsa-Nacht kennenlernen – ansprechen, Kompliment, Date vorschlagen, Kontakt tauschen und um einen Kuss bitten. Konsens als roter Faden.",
+      ],
+      itemsEn: [
+        "💘 New study area „Flirting & Romance“ with flashcards (spaced repetition) – from „¿Quieres bailar?“ via „¿Está bien si te doy un beso?“ to clear boundaries like „No, gracias, no me interesa.“ Every card with an example sentence, travel context and its own „Corazón viajero“ badge.",
+        "📖 The „Coqueteo y romance“ Discover module now has Spanish reading training in every topic, with tappable vocab and a mini-quiz (like Photos and the Historia).",
+        "💬 New conversation simulation „Coquetear con respeto“ (Diálogos): meeting someone at a salsa night – an opening line, a compliment, suggesting a date, swapping contacts and asking for a kiss. Consent as the common thread.",
+      ],
+    },
+    {
       version: "1.102.0",
       date: "2026-06-20",
       title: "Neues Modul „Coqueteo y romance“: flirten & daten mit Respekt",

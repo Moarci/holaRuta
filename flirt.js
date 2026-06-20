@@ -77,6 +77,17 @@
         "Don't keep pushing if someone is short with you or walks away – signal received, topic closed.",
         "Don't pretend to be someone you're not – honesty lands better than an act.",
       ],
+      es: [
+        "En un hostal o en una fiesta es fácil *empezar* una conversación: una pregunta sencilla sobre el lugar funciona mejor que una frase *ensayada*. Sonríe, mira a los ojos y habla con calma.",
+        "Muestra interés de verdad: *escucha* y haz preguntas en vez de hablar solo de ti. Si la otra persona contesta corto o se *aleja*, capta la señal y cambia de tema.",
+      ],
+      vocab: [
+        { es: "empezar", de: "anfangen, beginnen", en: "to start", take: true },
+        { es: "ensayada", de: "einstudiert (ensayar)", en: "rehearsed (ensayar)", take: false },
+        { es: "escucha", de: "hör zu (escuchar)", en: "listen (escuchar)", take: true },
+        { es: "aleja", de: "entfernt sich (alejarse)", en: "moves away (alejarse)", take: true },
+      ],
+      level: "A2",
     },
     {
       icon: "😊",
@@ -106,6 +117,17 @@
         "Don't stack compliment after compliment; one that's genuine is enough.",
         "Don't react with disappointment if a compliment only gets a polite reply.",
       ],
+      es: [
+        "Un buen *piropo* es concreto y sincero: mejor hablar de la energía o la sonrisa de alguien que solo del *aspecto*. Di el cumplido y sigue la conversación con naturalidad.",
+        "No *exageres* con diez cumplidos seguidos; uno honesto *vale* más. Y si la persona solo responde con cortesía, no pasa nada.",
+      ],
+      vocab: [
+        { es: "piropo", de: "das (Flirt-)Kompliment", en: "flirty compliment", take: true },
+        { es: "aspecto", de: "das Aussehen", en: "looks, appearance", take: true },
+        { es: "exageres", de: "übertreib (exagerar)", en: "overdo it (exagerar)", take: false },
+        { es: "vale", de: "ist wert (valer)", en: "is worth (valer)", take: true },
+      ],
+      level: "A2",
     },
     {
       icon: "🤝",
@@ -139,6 +161,17 @@
         "Never corner, hold onto or follow anyone – not even „for fun“.",
         "Alcohol is not a free pass: someone very drunk can't consent.",
       ],
+      es: [
+        "La regla más importante al coquetear es el *consentimiento*: el interés tiene que ser de los dos. Pregunta con confianza si algo está bien: „¿Te *molesta* si me siento aquí?“.",
+        "Si escuchas un „no“, un „ahora no“ o „estoy con alguien“, *acéptalo* enseguida, sin insistir. Un „no“ no es un juego, y nadie puede dar permiso si está muy *borracho*.",
+      ],
+      vocab: [
+        { es: "consentimiento", de: "die Zustimmung, der Konsens", en: "consent", take: true },
+        { es: "molesta", de: "stört (molestar)", en: "bothers (molestar)", take: true },
+        { es: "acéptalo", de: "akzeptier es (aceptar)", en: "accept it (aceptar)", take: true },
+        { es: "borracho", de: "betrunken", en: "drunk", take: true },
+      ],
+      level: "B1",
     },
     {
       icon: "☕",
@@ -170,6 +203,17 @@
         "Don't follow up with ten messages if there's no reply – „not interested“ is an answer too.",
         "Don't overload the plan; a short, easy meet beats a marathon itinerary.",
       ],
+      es: [
+        "Si todo va bien, *propón* algo concreto y tranquilo: un café, un paseo o salir a *bailar*. Una primera cita de día o en un sitio con gente quita presión a los dos.",
+        "Deja siempre una *salida* fácil: „si quieres“, „sin compromiso“. Intercambia el contacto solo si ambos *quieren*, sin presionar.",
+      ],
+      vocab: [
+        { es: "propón", de: "schlag vor (proponer)", en: "suggest (proponer)", take: true },
+        { es: "bailar", de: "tanzen", en: "to dance", take: true },
+        { es: "salida", de: "der Ausweg, Ausgang", en: "the way out", take: true },
+        { es: "quieren", de: "(sie) wollen (querer)", en: "they want (querer)", take: true },
+      ],
+      level: "A2",
     },
     {
       icon: "🌎",
@@ -203,6 +247,17 @@
         "Don't assume a holiday fling is a given.",
         "Don't assume that openness or warmth automatically means romantic interest.",
       ],
+      es: [
+        "En Latinoamérica el trato suele ser *cálido*: un beso en la mejilla al saludar es normal en muchos sitios y no significa nada *romántico*. Los cumplidos y el coqueteo son parte del trato.",
+        "La familia y los amigos muchas veces *importan* mucho. Sigue el *ritmo* de la otra persona: en algunos lugares la gente se conoce con calma antes de algo serio.",
+      ],
+      vocab: [
+        { es: "cálido", de: "warm, herzlich", en: "warm", take: true },
+        { es: "romántico", de: "romantisch", en: "romantic", take: true },
+        { es: "importan", de: "sind wichtig (importar)", en: "matter (importar)", take: true },
+        { es: "ritmo", de: "das Tempo, der Rhythmus", en: "the pace, rhythm", take: true },
+      ],
+      level: "B1",
     },
     {
       icon: "🛡️",
@@ -240,6 +295,17 @@
         "Don't let yourself be pushed into alcohol/drugs or anything else – your no counts just as much.",
         "Don't leave valuables and documents lying out in the open.",
       ],
+      es: [
+        "Para una primera cita, elige un lugar *público* y con gente. Dile a alguien del hostal con quién estás y a qué hora *vuelves*; comparte tu ubicación.",
+        "Cuida tu *bebida* y pídela tú mismo. Si algo no te da buena *espina*, vete con calma: una excusa siempre vale, y tu „no“ cuenta igual.",
+      ],
+      vocab: [
+        { es: "público", de: "öffentlich", en: "public", take: true },
+        { es: "vuelves", de: "du kehrst zurück (volver)", en: "you come back (volver)", take: true },
+        { es: "bebida", de: "das Getränk", en: "the drink", take: true },
+        { es: "espina", de: "ungutes Gefühl (mala espina)", en: "a bad feeling (mala espina)", take: false },
+      ],
+      level: "A2",
     },
   ];
 

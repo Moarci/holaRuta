@@ -3124,7 +3124,19 @@
       (items || [])
         .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
         .join("");
-    const topicBlock = (tp, i) => `
+    const topicBlock = (tp, i) => {
+      // Optionales spanisches Lesetraining pro Thema (wie renderFotos): nur wenn
+      // das Modul es einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text
+      // trägt. Die Tap-/Quiz-Logik ist global (hist-word/hist-quiz-answer), also
+      // genügt es, dieselbe DOM via readingBlock zu erzeugen.
+      const lvl = (cfg.readingPerTopic && tp.es && tp.es.length) ? levelMeta(tp.level) : null;
+      const reading = (cfg.readingPerTopic && tp.es && tp.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
+           </details>`
+        : "";
+      return `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
           <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
@@ -3135,9 +3147,11 @@
           ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
           ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
           ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${reading}
           ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
         </div>
       </details>`;
+    };
     const topics = (vm.topics || []).map(topicBlock).join("");
 
     // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Regatear.
@@ -3223,6 +3237,7 @@
       headTips: "discover.flTips", headPhrases: "discover.flPhrases",
       headWords: "discover.flWords", headChecklist: "discover.flChecklist",
       headChecklistHint: "discover.flChecklistHint",
+      readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
     });
   }
 
