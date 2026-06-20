@@ -3177,7 +3177,7 @@
     // Optional (cfg.copyPhrases) bekommt jeder Satz einen Kopier-Knopf, der den
     // spanischen Text in die Zwischenablage legt (z. B. um ihn weiterzuschicken).
     const copyBtn = (p) => cfg.copyPhrases
-      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhrase"))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
+      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
       : "";
     const phraseGroup = (g) => `
       <div class="rg-group">
