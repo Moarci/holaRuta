@@ -2836,64 +2836,70 @@
   }
 
   function render() {
-    if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
-    else if (state.screen === "done") root.innerHTML = ui.renderDone();
-    else if (state.screen === "stats") root.innerHTML = ui.renderStats(statsVM());
-    else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
-    else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
-    else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
-    else if (state.screen === "historia") root.innerHTML = ui.renderHistoria(historiaVM());
-    else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
-    else if (state.screen === "bebidas") root.innerHTML = ui.renderBebidas(bebidasVM());
-    else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
-    else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
-    else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
-    else if (state.screen === "flirt") root.innerHTML = ui.renderFlirt(flirtVM());
-    else if (state.screen === "fotos") root.innerHTML = ui.renderFotos(fotosVM());
-    else if (state.screen === "bailar") root.innerHTML = ui.renderBailar(bailarVM());
-    else if (state.screen === "musica") root.innerHTML = ui.renderMusica(musicaVM());
-    else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
-    else if (state.screen === "social") root.innerHTML = ui.renderSocial(socialVM());
-    else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
-    else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
-    else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
-    else if (state.screen === "printsheet") root.innerHTML = ui.renderPrintSheet(sheetVM());
-    else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
-    else if (state.screen === "placement") root.innerHTML = ui.renderPlacement(placementVM());
-    else if (state.screen === "assessment") root.innerHTML = ui.renderAssessment(assessmentVM());
-    else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
-    else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
-    else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
-    else if (state.screen === "roleplaySetup") root.innerHTML = ui.renderRoleplaySetup(roleplaySetupVM());
-    else if (state.screen === "roleplay") root.innerHTML = ui.renderRoleplay(roleplayVM());
-    else if (state.screen === "quizSetup") root.innerHTML = ui.renderQuizSetup(quizSetupVM());
-    else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
-    else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone();
-    else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
-    else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
-    else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
-    else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
-    else if (state.screen === "preciosSetup") root.innerHTML = ui.renderPreciosSetup(preciosSetupVM());
-    else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
-    else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone();
-    else if (state.screen === "frasesSetup") root.innerHTML = ui.renderFrasesSetup(frasesSetupVM());
-    else if (state.screen === "frases") root.innerHTML = ui.renderFrases(frasesVM());
-    else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone();
-    else if (state.screen === "conjugSetup") root.innerHTML = ui.renderConjugSetup(conjugSetupVM());
-    else if (state.screen === "conjug") root.innerHTML = ui.renderConjug(conjugVM());
-    else if (state.screen === "conjugDone") root.innerHTML = ui.renderConjugDone();
-    else if (state.screen === "yestoSetup") root.innerHTML = ui.renderYestoSetup(yestoSetupVM());
-    else if (state.screen === "yesto") root.innerHTML = ui.renderYesto(yestoVM());
-    else if (state.screen === "yestoDone") root.innerHTML = ui.renderYestoDone();
-    else if (state.screen === "dialogosSetup") root.innerHTML = ui.renderDialogosSetup(dialogosSetupVM());
-    else if (state.screen === "dialogos") root.innerHTML = ui.renderDialogos(dialogosVM());
-    else if (state.screen === "dialogosDone") root.innerHTML = ui.renderDialogosDone();
-    else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
-    else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
-    else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone();
-    else if (state.screen === "search") root.innerHTML = ui.renderSearch(searchVM());
-    else if (state.screen === "onboarding") root.innerHTML = ui.renderOnboarding(homeVM());
-    else root.innerHTML = ui.renderHome(homeVM());
+    // Screen-Dispatch-Tabelle: state.screen -> Funktion, die das HTML liefert.
+    // Ersetzt die fruehere if/else-Kette. Unbekannte Screens fallen auf Home
+    // zurueck (wie zuvor der else-Zweig). Reine Lookup-Tabelle, Verhalten gleich.
+    const SCREENS = {
+      "study": () => ui.renderStudy(studyVM()),
+      "done": () => ui.renderDone(),
+      "stats": () => ui.renderStats(statsVM()),
+      "card": () => ui.renderCard(cardVM()),
+      "editor": () => ui.renderEditor(editorVM()),
+      "info": () => ui.renderInfo(infoVM()),
+      "historia": () => ui.renderHistoria(historiaVM()),
+      "knigge": () => ui.renderKnigge(kniggeVM()),
+      "bebidas": () => ui.renderBebidas(bebidasVM()),
+      "regatear": () => ui.renderRegatear(regatearVM()),
+      "logistica": () => ui.renderLogistica(logisticaVM()),
+      "salud": () => ui.renderSalud(saludVM()),
+      "flirt": () => ui.renderFlirt(flirtVM()),
+      "fotos": () => ui.renderFotos(fotosVM()),
+      "bailar": () => ui.renderBailar(bailarVM()),
+      "musica": () => ui.renderMusica(musicaVM()),
+      "badges": () => ui.renderBadges(badgesVM()),
+      "social": () => ui.renderSocial(socialVM()),
+      "hostel": () => ui.renderHostel(hostelVM()),
+      "pretrip": () => ui.renderPretrip(pretripVM()),
+      "teacher": () => ui.renderTeacher(teacherVM()),
+      "printsheet": () => ui.renderPrintSheet(sheetVM()),
+      "task": () => ui.renderTask(taskVM()),
+      "placement": () => ui.renderPlacement(placementVM()),
+      "assessment": () => ui.renderAssessment(assessmentVM()),
+      "battleSetup": () => ui.renderBattleSetup(battleSetupVM()),
+      "battle": () => ui.renderBattle(battleVM()),
+      "battleDone": () => ui.renderBattleDone(battleDoneVM()),
+      "roleplaySetup": () => ui.renderRoleplaySetup(roleplaySetupVM()),
+      "roleplay": () => ui.renderRoleplay(roleplayVM()),
+      "quizSetup": () => ui.renderQuizSetup(quizSetupVM()),
+      "quiz": () => ui.renderQuiz(quizVM()),
+      "quizDone": () => ui.renderQuizDone(),
+      "cuerpo": () => ui.renderCuerpo(cuerpoVM()),
+      "conjugacion": () => ui.renderConjugacion(conjugacionVM()),
+      "tiempos": () => ui.renderTiempos(tiemposVM()),
+      "spickzettel": () => ui.renderSpickzettel(spickzettelVM()),
+      "preciosSetup": () => ui.renderPreciosSetup(preciosSetupVM()),
+      "precios": () => ui.renderPrecios(preciosVM()),
+      "preciosDone": () => ui.renderPreciosDone(),
+      "frasesSetup": () => ui.renderFrasesSetup(frasesSetupVM()),
+      "frases": () => ui.renderFrases(frasesVM()),
+      "frasesDone": () => ui.renderFrasesDone(),
+      "conjugSetup": () => ui.renderConjugSetup(conjugSetupVM()),
+      "conjug": () => ui.renderConjug(conjugVM()),
+      "conjugDone": () => ui.renderConjugDone(),
+      "yestoSetup": () => ui.renderYestoSetup(yestoSetupVM()),
+      "yesto": () => ui.renderYesto(yestoVM()),
+      "yestoDone": () => ui.renderYestoDone(),
+      "dialogosSetup": () => ui.renderDialogosSetup(dialogosSetupVM()),
+      "dialogos": () => ui.renderDialogos(dialogosVM()),
+      "dialogosDone": () => ui.renderDialogosDone(),
+      "compras": () => ui.renderCompras(comprasVM()),
+      "comprasQuiz": () => ui.renderComprasQuiz(comprasQuizVM()),
+      "comprasQuizDone": () => ui.renderComprasQuizDone(),
+      "search": () => ui.renderSearch(searchVM()),
+      "onboarding": () => ui.renderOnboarding(homeVM()),
+    };
+    const screenFn = SCREENS[state.screen];
+    root.innerHTML = screenFn ? screenFn() : ui.renderHome(homeVM());
 
     // Nach dem Austausch des Inhalts: bei echtem Ansichtswechsel oben anfangen.
     resetScrollOnViewChange();
