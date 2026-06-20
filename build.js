@@ -55,7 +55,7 @@ function read(file) {
 function lazyModules() {
   const html = read(SOURCE);
   const tagged = new Set(
-    [...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*>\s*<\/script\s*>/gi)]
+    [...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*><\/script[^>]*>/gi)]
       .map((m) => m[1].replace(/^\.\//, ""))
   );
   return readAssets()
@@ -83,7 +83,9 @@ function build() {
   //    "</script >"/"</script\n>" erfasst werden (HTML beendet den Block auch bei
   //    Whitespace vor ">"; CodeQL js/bad-tag-filter).
   const inlineCode = (src) => read(src).replace(/<\/script/gi, "<\\/script");
-  html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*>\s*<\/script\s*>/gi, (m, src) => {
+  // End-Tag-Match maximal tolerant ([^>]* deckt "</script >", "</script/>",
+  // "</script\n>" etc. ab) – sonst feuert js/bad-tag-filter.
+  html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*><\/script[^>]*>/gi, (m, src) => {
     inlined.push(src);
     const code = inlineCode(src);
     // Edition-Build: die Edition-Config direkt vor config.js einbetten, damit
