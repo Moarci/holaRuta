@@ -27,6 +27,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.103.0",
+      date: "2026-06-20",
+      title: "Ruta-Pass-Stempel für „¿Y esto?“",
+      titleEn: "Ruta-Pass badges for “¿Y esto?”",
+      items: [
+        "👀 Der neue Modus „¿Y esto?“ zahlt jetzt auf den Ruta-Pass ein: eigene Stempel-Gruppe mit „¿Y esto?“ (erste Runde), „Ojo entrenado“ (10 Runden) und „Todo a la vista“ (eine Runde, in der du jedes Bild wusstest).",
+      ],
+      itemsEn: [
+        "👀 The new “¿Y esto?” mode now counts towards your Ruta-Pass: its own badge group with “¿Y esto?” (first round), “Trained eye” (10 rounds) and “Todo a la vista” (a round where you knew every picture).",
+      ],
+    },
+    {
       version: "1.102.0",
       date: "2026-06-20",
       title: "Neuer Modus „¿Y esto?“ – Bild raten mit 3-2-1-Countdown",

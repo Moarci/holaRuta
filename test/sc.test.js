@@ -359,6 +359,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
     quizzesPlayed: 7, quizzesPerfect: 2,
+    yestoPlayed: 4, yestoPerfect: 1,
     frasesPlayed: 3, frasesPerfect: 1, frasesThemesDone: { transporte: true, comida: true },
     listenReviews: 30, preciosPlayed: 4, preciosPerfect: 2, preciosMillon: 1,
     conjugPlayed: 6, conjugPerfect: 3,
@@ -728,6 +729,43 @@ test("badges: ohne Quiz-Runden bleiben Quiz-Badges gesperrt", () => {
   const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {}));
   assert.ok(!ids.includes("quiz_first"));
   assert.ok(!ids.includes("quiz_perfect"));
+});
+
+// ---------- badges: ¿Y esto? (Bild-Vokabel-Modus) ----------
+test("badges.buildMetrics: ¿Y-esto?-Zähler übernommen", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    yestoPlayed: 4, yestoPerfect: 1,
+  });
+  assert.equal(m.yestoPlayed, 4);
+  assert.equal(m.yestoPerfect, 1);
+});
+
+test("badges: ¿Y-esto?-Badges schalten über die Zähler frei", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    yestoPlayed: 10, yestoPerfect: 1,
+  });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("yesto_first"));
+  assert.ok(ids.includes("yesto_10"));
+  assert.ok(ids.includes("yesto_perfect"));
+});
+
+test("badges: ohne ¿Y-esto?-Runden bleiben die Badges gesperrt", () => {
+  const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {}));
+  assert.ok(!ids.includes("yesto_first"));
+  assert.ok(!ids.includes("yesto_10"));
+  assert.ok(!ids.includes("yesto_perfect"));
+});
+
+test("badges: yesto_10 erst ab 10 Runden, yesto.group in GROUPS", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, { yestoPlayed: 9, yestoPerfect: 0 });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("yesto_first"));
+  assert.ok(!ids.includes("yesto_10"));
+  assert.ok(!ids.includes("yesto_perfect"));
+  // Die neue Badge-Gruppe muss in GROUPS existieren (sonst rendert der Ruta-Pass sie nicht).
+  assert.ok(badges.GROUPS.some((g) => g.id === "yesto"), "GROUPS enthält 'yesto'");
+  assert.equal(badges.byId("yesto_first").group, "yesto");
 });
 
 // ---------- Reise-Kontext (🧭) ----------

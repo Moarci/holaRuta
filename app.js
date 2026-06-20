@@ -5585,6 +5585,7 @@
     if (!y || y.phase !== "reveal") return;
     if (known) { y.correct += 1; buzz(12); } else buzz(8);
     if (y.idx >= y.total - 1) {
+      recordYestoResult(y); // Zähler buchen, BEVOR die Badges ausgewertet werden
       syncBadges(Date.now(), true);
       yestoDisarm();
       state.screen = "yestoDone";
@@ -5598,6 +5599,17 @@
   }
 
   function yestoAgain() { startYesto(state.yesto ? state.yesto.themeId : null); }
+
+  // Ergebnis einer beendeten ¿Y-esto?-Runde in die Spiel-Zähler buchen (Ruta-Pass).
+  // „Perfekt" = bei jedem Bild „Wusste ich" getippt (correct === total).
+  function recordYestoResult(y) {
+    if (!badges) return;
+    const g = Object.assign({}, gamestats);
+    g.yestoPlayed = (g.yestoPlayed || 0) + 1;
+    if (y.total > 0 && y.correct === y.total) g.yestoPerfect = (g.yestoPerfect || 0) + 1;
+    gamestats = g;
+    store.saveGameStats(gamestats);
+  }
 
   // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
   function recordPreciosResult(p) {
