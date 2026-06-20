@@ -2883,6 +2883,7 @@
     // 1) Offene Overlays/Panels zuerst schließen (wie ein „Schließen").
     if (state.updateNotice && state.updateNotice.length) { dismissUpdateNotice(); return true; }
     if (state.szShow) { szClose(); return true; }
+    if (state.favShow) { favClose(); return true; }
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
     // 2) Auf einem Home-Reiter: erst zum Start-Reiter zurück (Lernen/Entdecken/
     //    Profil → Start), dann gibt die nächste Geste die App frei.
@@ -5688,10 +5689,12 @@
     render();
   }
 
-  // Favorit entfernen (aus der Lexikon-Liste). Schließt ggf. die offene Großanzeige.
+  // Favorit entfernen (aus der Lexikon-Liste). Schließt ggf. die offene Großanzeige
+  // und räumt eine evtl. noch sichtbare „hinzugefügt"-Bestätigung weg.
   function removeFavorite(id) {
     favorites = favorites.filter((f) => f.id !== id);
     persistFavorites();
+    favMsg = null;
     if (state.favShow === id) state.favShow = null;
     render();
   }
@@ -6188,6 +6191,7 @@
   // Übungs-Features (spiegelt die FEATURES-Liste in ui.js, ohne die reinen
   // Infoseiten – die kommen unten als „Informationen" mit reichem Suchindex).
   const SEARCH_FEATURES = [
+    { action: "open-favorites",   icon: "⭐", title: "Mi léxico",        subKey: "discover.subFavorites" },
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",       subKey: "discover.subHostel" },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",      subKey: "discover.subDefiniciones" },

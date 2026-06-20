@@ -657,7 +657,7 @@
     groupPractice: "Üben",
     groupReference: "Nachschlagen",
     // FEATURES-Untertitel
-    subFavorites: "Dein persönliches Lexikon – Lieblingswörter & -sätze griffbereit",
+    subFavorites: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit",
     subSupervivencia: "Die wichtigsten Sätze sofort griffbereit",
     subHostel: "Zu zweit & laut: Battle und Rollenspiele",
     subDefiniciones: "Definition lesen, Begriff wählen",
