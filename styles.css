@@ -3184,6 +3184,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Reise-Status (Countdown bzw. Abreise-Meldung) – die Hauptzeile der Karte. */
 .trip__countdown { font-size: 1.06rem; font-weight: 800; color: var(--ink); line-height: 1.2; }
 .trip__countdown b { font-weight: 800; }
+/* Aufenthaltsdauer (Tage vor Ort) – ruhige Nebenzeile unter dem Countdown. */
+.trip__stay { font-size: 0.84rem; font-weight: 700; color: var(--muted); }
 /* Tägliches Karten-Pensum – klar abgesetzt, damit der Balken nicht wie ein
    „Fortschritt bis zur Reise" missverstanden wird. */
 .trip__daily { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; padding-top: 9px; border-top: 1px solid var(--line); }
@@ -3215,6 +3217,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .trip--edit { gap: 9px; cursor: default; }
 .trip--edit:active { transform: none; }
 .trip__cap { font-family: var(--font-display); font-weight: 800; margin: 0; }
+/* Hinweis unter den Aufenthalts-Feldern: erklärt das „Rückreise ODER grobe Tage". */
+.trip__hint { margin: -3px 0 1px; padding-left: 4px; font-size: 0.78rem; font-weight: 600; color: var(--muted); }
 .trip__field { display: flex; flex-direction: column; gap: 3px; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
 .trip__field input {
   font: inherit; font-weight: 600; color: var(--ink); padding: 8px 10px;

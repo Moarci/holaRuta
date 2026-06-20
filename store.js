@@ -501,12 +501,22 @@
     const endDate = /^\d{4}-\d{2}-\d{2}$/.test(t.endDate) ? t.endDate : "";
     const perDay = typeof t.perDay === "number" && isFinite(t.perDay) ? Math.max(1, Math.min(500, Math.round(t.perDay))) : 0;
     if (!endDate || !perDay) return null;
-    return {
+    const goal = {
       destination,
       endDate,
       perDay,
       startedAt: /^\d{4}-\d{2}-\d{2}$/.test(t.startedAt) ? t.startedAt : "",
     };
+    // Optionale Aufenthaltsdauer – nur setzen, wenn plausibel (sonst bleibt das Feld
+    // weg, damit Bestands-Ziele unverändert bleiben). Entweder ein konkretes
+    // Rückreisedatum (nicht vor der Abreise) ODER eine grobe Tageszahl für lange
+    // Reisen ohne festes Datum; das Datum hat Vorrang.
+    if (/^\d{4}-\d{2}-\d{2}$/.test(t.returnDate) && t.returnDate >= endDate) {
+      goal.returnDate = t.returnDate;
+    } else if (typeof t.stayDays === "number" && isFinite(t.stayDays) && t.stayDays >= 1) {
+      goal.stayDays = Math.min(400, Math.round(t.stayDays));
+    }
+    return goal;
   }
 
   function loadGameStats() {

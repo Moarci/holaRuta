@@ -545,6 +545,24 @@ test("store.loadGameStats: Trip-Ziel wird gesäubert (kaputtes Datum/perDay -> n
   assert.equal(store.loadGameStats().tripGoal.perDay, 500);
 });
 
+test("store.loadGameStats: Trip-Ziel – optionale Aufenthaltsdauer (Rückreise/Tage)", () => {
+  const base = (trip) => JSON.stringify(Object.assign({ reviews: 1 }, { tripGoal: trip }));
+  // Gültiges Rückreisedatum (>= Abreise) bleibt erhalten.
+  storeMem[GKEY] = base({ destination: "Lima", endDate: "2026-08-01", perDay: 10, returnDate: "2026-08-15" });
+  assert.equal(store.loadGameStats().tripGoal.returnDate, "2026-08-15");
+  // Rückreise VOR der Abreise wird verworfen (kein negativer Aufenthalt).
+  storeMem[GKEY] = base({ destination: "Lima", endDate: "2026-08-01", perDay: 10, returnDate: "2026-07-20" });
+  assert.equal(store.loadGameStats().tripGoal.returnDate, undefined);
+  // Grobe Tageszahl ohne Datum: gerundet & auf 400 gedeckelt.
+  storeMem[GKEY] = base({ destination: "Lima", endDate: "2026-08-01", perDay: 10, stayDays: 999 });
+  assert.equal(store.loadGameStats().tripGoal.stayDays, 400);
+  // Rückreisedatum hat Vorrang: stayDays wird dann nicht zusätzlich gesetzt.
+  storeMem[GKEY] = base({ destination: "Lima", endDate: "2026-08-01", perDay: 10, returnDate: "2026-08-10", stayDays: 30 });
+  const g = store.loadGameStats().tripGoal;
+  assert.equal(g.returnDate, "2026-08-10");
+  assert.equal(g.stayDays, undefined);
+});
+
 // ---------- data-Integrität ----------
 test("data.CARDS: alle IDs eindeutig (inkl. Hostel/Social)", () => {
   const ids = data.CARDS.map((c) => c.id);
