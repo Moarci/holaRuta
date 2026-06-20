@@ -991,6 +991,19 @@ test("data.numberContext: reine Zahlen-Karten bekommen praktischen Preis-Kontext
   assert.match(z.context.sentenceDe, /Pesos/);
 });
 
+test("data.numberContext: generierter Zahl-Kontext hat vollständige englische Pendants", () => {
+  const nums = data.CARDS.filter((c) => /^z\d+$/.test(c.id));
+  assert.ok(nums.length > 0, "keine Zahlen-Karten gefunden");
+  const bad = nums.filter((c) => {
+    const x = c.context;
+    return !x || !x.sentenceEn || !x.situationEn || !x.noteEn;
+  });
+  assert.equal(bad.length, 0, `Zahl-Kontext ohne EN: ${bad.map((c) => c.id).join(", ")}`);
+  // Stichprobe: englischer Satz spiegelt den deutschen Betrag (Pesos -> pesos).
+  const z = data.CARDS.find((c) => c.id === "z58");
+  assert.match(z.context.sentenceEn, /pesos/);
+});
+
 test("data.numberContext: spanische Grammatik korrekt (un peso / un / de pesos)", () => {
   const es = (id) => data.CARDS.find((c) => c.id === id).context.sentenceEs;
   // genau 1: Singular "un peso", kein "uno pesos"
@@ -1261,4 +1274,89 @@ test("store.loadGameStats: Aufenthaltsdauer nur als plausible Zahl >= 1", () => 
   assert.equal("stayDays" in load({ stayDays: 0 }), false);     // 0 < 1 -> weg (Grenze)
   assert.equal("stayDays" in load({ stayDays: "5" }), false);   // String ist keine Zahl
   assert.equal("stayDays" in load({ stayDays: Infinity }), false); // nicht endlich
+});
+
+// ---------- store: Nachzug nach main-Merge (resampelte Mutanten) ----------
+test("store.loadProgress: history behält ALLE gültigen Zeichen a/g/e, filtert Rest", () => {
+  storeMem["spanischcard.progress.v2"] = JSON.stringify({
+    c: { ease: 2.5, interval: 1, due: 0, reps: 3, seen: 3, history: ["a", "g", "e", "x", "z"] },
+  });
+  assert.deepEqual(store.loadProgress().c.history, ["a", "g", "e"]); // a UND g UND e bleiben
+  delete storeMem["spanischcard.progress.v2"];
+});
+
+test("store.loadUserCards: filtert Karten ohne vollständige Pflichtfelder (id/de/es/cat)", () => {
+  storeMem["spanischcard.usercards.v1"] = JSON.stringify([
+    { id: "u1", de: "Haus", es: "casa", cat: "wohnen" },   // vollständig -> bleibt
+    { id: "u2", de: "Auto", cat: "verkehr" },               // es fehlt -> raus
+    { id: "u3", es: "perro", cat: "tiere" },                // de fehlt -> raus
+    "kein objekt",                                          // kein Objekt -> raus
+  ]);
+  const cards = store.loadUserCards();
+  assert.deepEqual(cards.map((c) => c.id), ["u1"]);
+  delete storeMem["spanischcard.usercards.v1"];
+});
+
+test("store.decodeBundle: 'pretrip'-Ziel (indexOf 0) bleibt erhalten (Schwelle < 0, nicht <= 0)", () => {
+  const code = store.encodeBundle({ items: [{ kind: "pretrip", scope: "colombia" }] });
+  const decoded = store.decodeBundle(code);
+  assert.ok(decoded && Array.isArray(decoded.items));
+  assert.equal(decoded.items.length, 1);
+  assert.deepEqual(decoded.items[0], { kind: "pretrip", scope: "colombia" });
+});
+
+test("store.decodeBundle: verwirft falsches app-Tag UND nicht-Array items (|| bleibt ||)", () => {
+  const b64 = (o) => "HRB1." + Buffer.from(JSON.stringify(o), "utf8").toString("base64");
+  // falsches app-Tag
+  assert.equal(store.decodeBundle(b64({ app: "holaruta-task", v: 1, items: [{ kind: "preset", scope: "x" }] })), null);
+  // items ist kein Array
+  assert.equal(store.decodeBundle(b64({ app: "holaruta-bundle", v: 1, items: "nope" })), null);
+  // kein Objekt
+  assert.equal(store.decodeBundle(b64(42)), null);
+});
+
+test("store.loadGameStats: placement.reliability (String) bleibt erhalten", () => {
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, placement: { level: "A2", reliability: "hoch" } });
+  assert.equal(store.loadGameStats().placement.reliability, "hoch");
+  // analog für den Nivel-Test (assessment)
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, assessment: { level: "B1", reliability: "mittel" } });
+  assert.equal(store.loadGameStats().assessment.reliability, "mittel");
+});
+
+test("store.loadGameStats: placement.review – level wird ab Position 0 gekürzt (slice(0,8))", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    placement: { level: "A2", review: [{ status: "correct", level: "ABCDEFGH" }] },
+  });
+  assert.equal(store.loadGameStats().placement.review[0].level, "ABCDEFGH"); // 8 Zeichen ab 0, nicht "BCDEFGH"
+});
+
+test("store.loadGameStats: assessmentProgress-Zahlen werden typisiert (String/Infinity -> 0)", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    assessmentProgress: { asked: ["q1"], difficulty: "7", mcAsked: 3 },
+  });
+  const ap = store.loadGameStats().assessmentProgress;
+  assert.equal(ap.difficulty, 0, "String ist keine Zahl -> 0");
+  assert.equal(ap.mcAsked, 3, "echte Zahl bleibt");
+});
+
+test("store.loadGameStats: Trip-Ziel – überlanges Ziel wird verworfen (str-Guard, nicht durchgelassen)", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    tripGoal: { destination: "X".repeat(200), endDate: "2099-01-01", perDay: 10 },
+  });
+  // destination > 80 Zeichen -> "" (nicht der 200-Zeichen-String)
+  assert.equal(store.loadGameStats().tripGoal.destination, "");
+});
+
+test("store.loadGameStats: assessment-Zahlen werden typisiert (String/Infinity -> 0)", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    assessment: { level: "B1", finalScore: "9", accuracy: Infinity, correct: 7 },
+  });
+  const a = store.loadGameStats().assessment;
+  assert.equal(a.finalScore, 0); // String ist keine Zahl -> 0
+  assert.equal(a.accuracy, 0);   // Infinity ist nicht endlich -> 0
+  assert.equal(a.correct, 7);    // echte Zahl bleibt
 });

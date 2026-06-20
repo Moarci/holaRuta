@@ -25,6 +25,7 @@
   var SETTINGS_KEY = "spanischcard.settings.v1";
   var USERCARDS_KEY = "spanischcard.usercards.v1";
   var GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  var FAVORITES_KEY = "spanischcard.favorites.v1"; // „Mi léxico" – wie Usercards eine persönliche Liste
   // Auth-Token (Login/Bearer) liegt in SC.net – geteilt mit social.js.
 
   function isObj(v) { return v && typeof v === "object" && !Array.isArray(v); }
@@ -161,6 +162,10 @@
       if (k === PROGRESS_KEY) out[k] = mergeProgress(l[k], r[k]);
       else if (k === GAMESTATS_KEY) out[k] = mergeGamestats(l[k], r[k]);
       else if (k === USERCARDS_KEY) out[k] = mergeUsercards(l[k], r[k]);
+      // Favoriten („Mi léxico") wie Usercards über die Id vereinen – sonst würde
+      // deepUnion zwei Listen NICHT zusammenführen (Array → lokal gewinnt), und auf
+      // zwei Geräten gemerkte Favoriten löschten sich beim Sync gegenseitig.
+      else if (k === FAVORITES_KEY) out[k] = mergeUsercards(l[k], r[k]);
       else if (k === SETTINGS_KEY) out[k] = (k in l) ? l[k] : r[k]; // Einstellungen bleiben gerätelokal
       else out[k] = deepUnion(l[k], r[k]); // unbekannte/künftige Keys konservativ vereinen
     }

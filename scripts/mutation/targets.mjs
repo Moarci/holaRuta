@@ -16,7 +16,7 @@
 // modul-relevanten Tests zu fahren (Geschwindigkeit + sauberer Pro-Modul-Score).
 export const MODULES = {
   srs:     { file: "srs.js",     tests: ["sc.test.js"], pattern: "^srs" },
-  store:   { file: "store.js",   tests: ["sc.test.js"], pattern: "^store" },
+  store:   { file: "store.js",   tests: ["sc.test.js", "favorites.test.js", "store-backup.test.js"] },
   stats:   { file: "stats.js",   tests: ["sc.test.js"], pattern: "^stats" },
   badges:  { file: "badges.js",  tests: ["badges.test.js"] },
   matcher: { file: "matcher.js", tests: ["matcher-de.test.js", "typo-corpus.test.js"] },
@@ -84,6 +84,20 @@ export const IGNORE = [
   { file: "matcher.js", line: 227, op: "relational", grund:
     "check: `i < tries.length` vs `i <= tries.length`. Die Extra-Iteration greift auf tries[length]=undefined " +
     "zu; classifyNorm(undefined,…) gibt sofort \"\" zurück und lässt cls unverändert → kein Effekt → äquivalent." },
+  // sync.js (nach dem main-Merge resampelt – nachweislich äquivalent)
+  { file: "sync.js", line: 84, op: "relational", grund:
+    "mergePlacementHistory: `for (… i < lb.length …)` vs `<=`. Die Extra-Iteration übergibt lb[lb.length]=undefined " +
+    "an add(), das mit `if (!isObj(e)) return;` sofort aussteigt → kein Eintrag, identisches Ergebnis → äquivalent." },
+  { file: "sync.js", line: 97, op: "number", grund:
+    "mergeGamestats: `for (k in b) keys[k] = 1` vs `= 0`. keys dient NUR als Schlüsselmenge (`for (k in keys)`); " +
+    "der Wert (0/1) wird nie gelesen, der Schlüssel bleibt enumerierbar → identische Iteration → äquivalent." },
+  { file: "sync.js", line: 128, op: "logical", grund:
+    "mergeGamestats: `else if (isObj(va) && isObj(vb))` vs `||`. Die per || zusätzlich erreichten Fälle (genau einer " +
+    "ist ein Objekt) liefern über deepUnion(va,vb) denselben Wert wie der else-Zweig (a!==undefined ? a : b = va) → äquivalent." },
+  // store.js
+  { file: "store.js", line: 493, op: "relational", grund:
+    "sanitizeAssessmentHistory: `for (… i < v.length …)` vs `<=`. Die Extra-Iteration ruft sanitizeAssessmentEntry(v[v.length]=undefined) " +
+    "auf, das mit `if (!isPlainObject(e)) return null;` null liefert; `if (e) out.push(e)` überspringt es → identisches Ergebnis → äquivalent." },
 ];
 
 export const isIgnored = (file, line, op) =>

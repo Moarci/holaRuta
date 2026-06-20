@@ -198,6 +198,46 @@ test("numbers.randomPrice: bei random()===0.5 gilt der grobe Schritt (< ist exkl
   } finally { Math.random = orig; }
 });
 
+test("numbers.amount: ungültiger/0-Betrag fällt auf 0 zurück (nicht auf 1)", () => {
+  const peso = { one: "peso", many: "pesos" };
+  assert.equal(numbers.amount(0, peso), "cero pesos");   // 0 bleibt 0, NICHT "un peso"
+  assert.equal(numbers.amount("abc", peso), "cero pesos"); // Müll -> 0
+});
+
+test("numbers.LEVELS: drei Stufen mit den Ids 1,2,3", () => {
+  assert.deepEqual(numbers.LEVELS.map((l) => l.id), [1, 2, 3]);
+});
+
+test("numbers.makeItem: String-Währungsschlüssel wird zur Definition aufgelöst", () => {
+  const item = numbers.makeItem(1000, "CO"); // String statt Objekt
+  assert.equal(item.code, "COP");
+  assert.equal(item.currencyKey, "CO");
+  assert.equal(item.symbol, "$");
+});
+
+// buildRound versucht „hartnäckig" (bis zu n*40 Versuche), distinkte Werte zu
+// sammeln. Deterministisch über den rng-Parameter: erscheint der 5. distinkte
+// Wert erst spät, muss das großzügige Budget ihn dennoch einsammeln (n+40 wäre
+// zu knapp). Sichert den Guard-Faktor n*40 ab.
+test("numbers.buildRound: sammelt distinkte Werte bis zum n*40-Budget ein", () => {
+  // GT L1 = {min:5,max:150,step:5}: idx 1..30 -> Wert idx*5. r so wählen, dass
+  // floor(r*30)=idx-1. Die ersten 4 distinkten Werte früh, der 5. erst bei Versuch 100.
+  const R = (idx) => (idx - 0.5) / 30;
+  let k = 0;
+  const rng = () => {
+    k += 1;
+    if (k === 1) return R(1);
+    if (k === 2) return R(2);
+    if (k === 3) return R(3);
+    if (k === 4) return R(4);
+    if (k === 100) return R(5); // 5. distinkter Wert erst spät (n+40=45 würde ihn verpassen)
+    return R(1);                 // sonst Wiederholung des ersten Werts
+  };
+  const round = numbers.buildRound("GT", 1, 5, rng);
+  assert.equal(round.length, 5);
+  assert.equal(new Set(round.map((r) => r.value)).size, 5); // alle 5 distinkt
+});
+
 // ---------- Gegenprobe: deckt sich mit den festen Karten in data.js ----------
 test("numbers.toWords: stimmt mit den gepflegten Zahlen-Karten überein", () => {
   // window-Shim mit data.js erneut laden würde Module mischen; wir prüfen daher
@@ -215,4 +255,13 @@ test("numbers.toWords: stimmt mit den gepflegten Zahlen-Karten überein", () => 
   Object.entries(expect).forEach(([n, words]) => {
     assert.equal(numbers.toWords(Number(n)), words, `toWords(${n})`);
   });
+});
+
+// Determinismus-Seam: mit injiziertem rng (fester Seed) ist die Runde reproduzierbar.
+test("numbers.buildRound: deterministisch mit injiziertem rng", () => {
+  const seeded = () => { let a = 987654 >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  const a = numbers.buildRound("CO", 2, 6, seeded());
+  const b = numbers.buildRound("CO", 2, 6, seeded());
+  assert.deepEqual(a, b, "gleicher Seed muss identische Beträge liefern");
+  assert.equal(a.length, 6);
 });

@@ -162,6 +162,7 @@
   // Aktivität (Spielen · Üben · Nachschlagen) – deckt sich mit dem Intro-Text
   // und gibt der inzwischen langen Liste eine klare, einheitliche Achse.
   const FEATURES = [
+    { action: "open-favorites",   icon: "⭐", title: "Mi léxico",     subKey: "discover.subFavorites", sub: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit", grad: ["#B97C24", "#E9A23B"], group: "reference" },
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
@@ -756,6 +757,22 @@
       </button>`
       : "";
 
+    // Mi-léxico-Schnellzugriff: eine Kachel zum persönlichen Lexikon. Erscheint nur,
+    // wenn schon etwas gemerkt wurde (sonst bleibt der Start-Reiter ruhig). Zeigt den
+    // Zähler und – als Teaser – den jüngsten Favoriten; ein Tap öffnet „Mi léxico".
+    const favSub = vm.favLast && vm.favLast.es
+      ? t("home.lexLast", { es: vm.favLast.es })
+      : t("home.lexHint");
+    const favGroup = vm.favCount > 0
+      ? `<section class="dashgrp">
+          <p class="sectioncap">${esc(t("home.lexSection"))}</p>
+          <button class="today__ruta" data-action="open-favorites">
+            <span class="today__ruta-main">${esc(t("home.lexTitle"))} <span class="today__ruta-badge today__ruta-badge--lex" role="status">${vm.favCount}</span></span>
+            <span class="today__ruta-sub">${esc(favSub)}</span>
+          </button>
+        </section>`
+      : "";
+
     // Glanceable Fortschritt: dieselbe Karte wie im Profil (Streak + Verteilung).
     const progressGroup = `
       <section class="dashgrp">
@@ -783,6 +800,7 @@
       </div>
 
       ${reiseGroup}
+      ${favGroup}
       ${progressGroup}
 
       ${dedicationLine(vm)}`;
@@ -1124,6 +1142,7 @@
 
       ${navrow("open-stats", "📊", t("profile.statistics"))}
       ${vm.hasBadges ? navrow("open-badges", "🎖️", t("profile.rutaPass"), vm.badgeCount || "") : ""}
+      ${navrow("open-favorites", "⭐", t("profile.favorites"), vm.favCount || "")}
       ${navrow("open-editor", "✍️", t("profile.ownCards"))}
 
       <p class="sectioncap">${esc(t("profile.yourData"))}</p>
@@ -1161,11 +1180,17 @@
   function installBlock(install) {
     if (!install || !install.show) return "";
     // Bereits installiert: klare Bestätigung statt Installations-Aufforderung.
+    // Auf iOS zusätzlich der Konsequenz-Hinweis: NICHT erneut zum Startbildschirm
+    // hinzufügen (iOS trennt den Speicher pro Icon -> leere zweite Kopie).
     if (install.installed) {
+      const iosNote = install.isIOS
+        ? `<p class="installcard__note installcard__note--warn">${esc(t("profile.installedIosNote"))}</p>`
+        : "";
       return `
         <div class="installcard installcard--done">
           <p class="installcard__title"><span aria-hidden="true">✅</span> ${esc(t("profile.installedTitle"))}</p>
           <p class="installcard__text">${esc(t("profile.installedText"))}</p>
+          ${iosNote}
         </div>`;
     }
     // Noch nicht installiert: Status klar zeigen, nächster Schritt je nach Browser.
@@ -1173,7 +1198,8 @@
       ? `<p class="installcard__text">${esc(t("profile.installText"))}</p>
          <button class="ghostbtn installcard__btn" data-action="install-app">${esc(t("profile.installBtn"))}</button>`
       : install.isIOS
-        ? `<p class="installcard__text">${esc(install.hint)}</p>`
+        ? `<p class="installcard__text">${esc(install.hint)}</p>
+           <p class="installcard__note installcard__note--warn">${esc(t("profile.installIosReaddWarn"))}</p>`
         : `<p class="installcard__text">${esc(t("profile.installHintLead"))}</p>
            <ol class="installcard__steps">
              <li>${esc(t("profile.installStep1"))}</li>
@@ -1250,6 +1276,33 @@
       </button>`;
   }
 
+  // Favoriten-Stern: schaltet eine Karte/einen Eintrag im persönlichen Lexikon
+  // („Mi léxico") an oder aus. on = bereits Favorit (gefüllter Stern). Gemeinsam
+  // genutzt von Karten-Detail, Spickzettel & Suche, damit Markup/ARIA einheitlich
+  // bleiben. id wird mitgegeben; der Controller (app.js) hört auf data-action.
+  function favStar(id, on, opts) {
+    const o = opts || {};
+    const cls = "favstar" + (on ? " is-on" : "") + (o.cls ? " " + o.cls : "");
+    const label = on ? t("favorites.remove") : t("favorites.add");
+    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"
+              aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
+  }
+
+  // Beschrifteter Favoriten-Button direkt unter der Lernkarte. Früher saß der Stern
+  // nackt oben in der Kopfzeile (neben dem Zähler) – dort war ohne Beschriftung nicht
+  // erkennbar, was er tut. Hier steht er mit Text („Merken"/„Gemerkt") griffbereit am
+  // Inhalt. Den Stern (★/☆) und den Text hält der Controller in-place aktuell
+  // (updateFavStars), darum sind beide in eigene Spans gekapselt – ein Voll-Re-Render
+  // würde im Schreiben-Modus den getippten Text verwerfen.
+  function favLine(vm) {
+    if (!vm.cardId) return "";
+    const on = vm.isFav;
+    const cls = "favline" + (on ? " is-on" : "");
+    const label = on ? t("favorites.remove") : t("favorites.add");
+    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(vm.cardId)}"
+              aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}"><span class="favline__star" aria-hidden="true">${on ? "★" : "☆"}</span><span class="favline__txt">${esc(on ? t("study.favSaved") : t("study.favSave"))}</span></button>`;
+  }
+
   // ---------- STUDY ----------
   function renderStudy(vm) {
     const pct = vm.total > 0 ? Math.round((vm.position / vm.total) * 100) : 0;
@@ -1271,6 +1324,7 @@
         </div>
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("study.studyProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         ${body}
+        ${favLine(vm)}
         ${skipBtn()}
         ${shareCardBtn()}
       </section>`;
@@ -1921,7 +1975,7 @@
         <div class="topbar">
           <button class="iconbtn" data-action="card-back" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
-          <span></span>
+          ${favStar(vm.id, vm.isFav, { cls: "favstar--top" })}
         </div>
 
         <div class="cardx">
@@ -2042,6 +2096,7 @@
             <span class="sz-row__es" lang="es">${esc(c.es)}</span>
             ${c.tip ? `<span class="sz-row__tip">🗣️ ${esc(c.tip)}</span>` : ""}
           </button>
+          ${favStar(c.id, c.fav, { cls: "sz-fav" })}
           ${vm.speakable
             ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="${esc(t("discover.szListen"))}" title="${esc(t("discover.szListen"))}">🔊</button>`
             : ""}
@@ -2073,6 +2128,77 @@
         ${moduleShareBtn("supervivencia")}
         <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
         ${groups}
+        ${show}
+      </section>`;
+  }
+
+  // ---------- MI LÉXICO (Favoriten – persönliches Lexikon) ----------
+  // Vom Nutzer gemerkte Wörter/Sätze: eine Liste (neueste zuerst) mit Vorlesen,
+  // Großanzeige und Entfernen, plus ein Formular für eigene Einträge. Über den
+  // Homescreen-Shortcut (?a=favoritos) direkt erreichbar.
+  function renderFavorites(vm) {
+    const addForm = `
+      <form class="fav-add" data-action="fav-add">
+        <p class="sectioncap">${esc(t("favorites.addCap"))}</p>
+        <label class="fav-add__field"><span>${esc(t("favorites.addDe"))}</span>
+          <input id="fav-de" type="text" maxlength="500" autocomplete="off"
+                 placeholder="${esc(t("favorites.dePlaceholder"))}" /></label>
+        <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
+          <input id="fav-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none"
+                 placeholder="${esc(t("favorites.esPlaceholder"))}" /></label>
+        <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
+          <input id="fav-tip" type="text" maxlength="500" autocomplete="off"
+                 placeholder="${esc(t("favorites.tipPlaceholder"))}" /></label>
+        ${vm.msg ? `<p class="fav-add__msg fav-add__msg--${esc(vm.msg.type)}" role="status">${esc(vm.msg.text)}</p>` : ""}
+        <button class="cta" type="submit">${esc(t("favorites.addBtn"))}</button>
+      </form>`;
+
+    const row = (it) => `
+      <div class="fav-row">
+        <button class="fav-row__main" type="button" data-action="fav-show" data-id="${esc(it.id)}"
+                title="${esc(t("favorites.show"))}">
+          <span class="fav-row__icon" aria-hidden="true">${esc(it.catIcon)}</span>
+          <span class="fav-row__text">
+            <span class="fav-row__es" lang="es">${esc(it.es)}</span>
+            <span class="fav-row__de">${esc(it.de)}</span>
+            ${it.tip ? `<span class="fav-row__tip">🗣️ ${esc(it.tip)}</span>` : ""}
+            ${it.custom ? `<span class="fav-row__tag">${esc(t("favorites.customTag"))}</span>` : ""}
+          </span>
+        </button>
+        ${vm.speakable
+          ? `<button class="fav-row__speak" type="button" data-action="fav-speak" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">🔊</button>`
+          : ""}
+        <button class="fav-row__rm" type="button" data-action="fav-remove" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.remove"))}" title="${esc(t("favorites.remove"))}">★</button>
+      </div>`;
+
+    const list = vm.items.length
+      ? `<p class="sectioncap">${esc(t("favorites.listCap", { n: vm.count }))}</p>
+         <div class="fav-list">${vm.items.map(row).join("")}</div>`
+      : `<p class="stat-empty">${esc(t("favorites.empty"))}</p>
+         <p class="fav-emptyhint">${esc(t("favorites.emptyHint"))}</p>`;
+
+    // Großanzeige: angetippter Eintrag bildschirmfüllend – zum Herzeigen.
+    const show = vm.show ? `
+      <div class="sz-show" data-action="fav-close" role="dialog" aria-modal="true" aria-label="${esc(t("favorites.showLabel"))}">
+        <div class="sz-show__inner">
+          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
+          <p class="sz-show__de">${esc(vm.show.de)}</p>
+          ${vm.show.tip ? `<p class="sz-show__tip">🗣️ ${esc(vm.show.tip)}</p>` : ""}
+          <div class="sz-show__actions">
+            ${vm.speakable
+              ? `<button class="cta" type="button" data-action="fav-speak" data-id="${esc(vm.show.id)}">${esc(t("favorites.listenBig"))}</button>`
+              : ""}
+            <button class="ghostbtn" type="button" data-action="fav-close">${esc(t("common.close"))}</button>
+          </div>
+        </div>
+      </div>` : "";
+
+    return `
+      <section class="screen">
+        ${hmTopbar("⭐ " + t("favorites.title"), "home")}
+        <p class="hm-intro">${esc(t("favorites.intro"))}</p>
+        ${addForm}
+        ${list}
         ${show}
       </section>`;
   }
@@ -3958,12 +4084,20 @@
         <button type="button" class="sheet-mode${!vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="full" aria-pressed="${!vm.exercise}">${esc(t("sheet.modeFull"))}</button>
         <button type="button" class="sheet-mode${vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="exercise" aria-pressed="${!!vm.exercise}">${esc(t("sheet.modeExercise"))}</button>
       </div>`;
+    // Bausteinauswahl: alle baubaren Übungsabschnitte als an-/abwählbare Chips
+    // (nur Steuerleiste, nicht gedruckt). on = Abschnitt ist im Heft.
+    const pickRow = (vm.sectionToggles && vm.sectionToggles.length) ? `
+        <div class="sheet-pick">
+          <span class="sheet-pick__label">${esc(t("sheet.pickLabel"))}:</span>
+          ${vm.sectionToggles.map((s) => `<button type="button" class="sheet-pick__chip" data-action="toggle-section" data-type="${esc(s.type)}" aria-pressed="${!!s.on}">${esc(s.label)}</button>`).join("")}
+        </div>` : "";
     const controls = `
       <div class="sheet-controls no-print">
         ${targetField("sheet", { targets: vm.targets, current: vm.sheetTarget })}
         ${stagePick}
         ${modeToggle}
         <button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>
+        ${pickRow}
       </div>`;
 
     // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie und
@@ -3982,6 +4116,117 @@
       </ol>
       ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${(!vm.exercise && st.challenge.phrase) ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
     `).join("");
+
+    // ---------- Arbeitsheft: zusätzliche Übungsabschnitte ----------
+    // Jeder Abschnitt trägt Aufgaben- UND Lösungsdaten; im Übungsmodus werden die
+    // Antworten zu Schreiblinien/Lücken, im Lösungsblatt stehen sie direkt da.
+    const writeLine = '<span class="sheet-write-line"></span>';
+    const sectionHead = (titleKey, instrKey) => `<h2 class="sheet-h2">${esc(t(titleKey))}</h2><p class="sheet-instr">${esc(t(instrKey))}</p>`;
+    function renderSection(s) {
+      switch (s.type) {
+        case "matching": {
+          const left = (s.left || []).map((x) => `<li>${esc(x.es)}</li>`).join("");
+          const right = (s.right || []).map((x) => `<li>${esc(x.de)}</li>`).join("");
+          const grid = (s.left || []).map((x) => `<span>${esc(String(x.n))} → ${vm.exercise ? "____" : esc(x.l)}</span>`).join("");
+          return `<section class="sheet-section sheet-section--matching">
+            ${sectionHead("sheet.secMatching", "sheet.instrMatching")}
+            <div class="sheet-match">
+              <ol class="sheet-match__col" type="1" lang="es">${left}</ol>
+              <ol class="sheet-match__col" type="a">${right}</ol>
+            </div>
+            <p class="sheet-match__grid"><strong>${esc(t("sheet.matchHint"))}:</strong> ${grid}</p>
+          </section>`;
+        }
+        case "gapfill": {
+          const bank = (s.wordbank || []).map((w) => `<span class="sheet-chip" lang="es">${esc(w)}</span>`).join("");
+          const items = (s.items || []).map((it) => {
+            const filler = vm.exercise ? '<span class="sheet-blank-inline"></span>' : `<strong>${esc(it.answer)}</strong>`;
+            const frame = esc(it.frameEs).replace("___", filler);
+            return `<li><span class="sheet-es" lang="es">${frame}</span><span class="sheet-de">${esc(it.targetDe)}</span></li>`;
+          }).join("");
+          return `<section class="sheet-section sheet-section--gapfill">
+            ${sectionHead("sheet.secGapfill", "sheet.instrGapfill")}
+            <div class="sheet-wordbank"><span class="sheet-wb-label">${esc(t("sheet.wordbankLabel"))}</span>${bank}</div>
+            <ol class="sheet-exlist">${items}</ol>
+          </section>`;
+        }
+        case "translate": {
+          const lines = (s.lines || []).map((l) => `<li><span class="sheet-de">${esc(l.de)}</span>${vm.exercise ? writeLine : `<span class="sheet-es" lang="es">${esc(l.es)}</span>`}</li>`).join("");
+          return `<section class="sheet-section sheet-section--translate">
+            ${sectionHead("sheet.secTranslate", "sheet.instrTranslate")}
+            <ol class="sheet-exlist">${lines}</ol>
+          </section>`;
+        }
+        case "conjug": {
+          const rows = (s.rows || []).map((r) => `<tr><td lang="es">${esc(r.verb)}</td><td>${esc(r.person)}</td><td class="sheet-ans-cell">${vm.exercise ? writeLine : `<strong lang="es">${esc(r.answer)}</strong>`}</td></tr>`).join("");
+          return `<section class="sheet-section sheet-section--conjug">
+            ${sectionHead("sheet.secConjug", "sheet.instrConjug")}
+            <table class="sheet-table"><thead><tr><th>${esc(t("sheet.colVerb"))}</th><th>${esc(t("sheet.colPerson"))}</th><th>${esc(t("sheet.colAnswer"))}</th></tr></thead><tbody>${rows}</tbody></table>
+          </section>`;
+        }
+        case "numbers": {
+          const rows = (s.items || []).map((it) => `<tr><td>${esc(it.digits)}${it.symbol ? " " + esc(it.symbol) : ""}</td><td class="sheet-ans-cell">${vm.exercise ? writeLine : `<strong lang="es">${esc(it.words)}</strong>`}</td></tr>`).join("");
+          return `<section class="sheet-section sheet-section--numbers">
+            ${sectionHead("sheet.secNumbers", "sheet.instrNumbers")}
+            <table class="sheet-table"><thead><tr><th>${esc(t("sheet.colNumber"))}</th><th>${esc(t("sheet.colSpanish"))}</th></tr></thead><tbody>${rows}</tbody></table>
+          </section>`;
+        }
+        case "dialogue": {
+          const turns = (s.turns || []).map((tn) => tn.who === "npc"
+            ? `<p class="sheet-turn sheet-turn--npc"><span class="who">${esc(t("sheet.npcLabel"))}:</span><span class="es" lang="es">${esc(tn.es)}</span><span class="de">${esc(tn.de)}</span></p>`
+            : `<p class="sheet-turn sheet-turn--user"><span class="who">${esc(t("sheet.youLabel"))}:</span><span class="de">${esc(tn.de)}</span>${vm.exercise ? writeLine : `<span class="es" lang="es">${esc(tn.answer)}</span>`}</p>`).join("");
+          return `<section class="sheet-section sheet-section--dialogue">
+            ${sectionHead("sheet.secDialogue", "sheet.instrDialogue")}
+            ${s.title ? `<h3 class="sheet-stage" lang="es">${esc(s.title)}</h3>` : ""}
+            <div class="sheet-dialogue">${turns}</div>
+          </section>`;
+        }
+        case "culture": {
+          const facts = (s.facts || []).map((f) => `<li>${esc(f)}</li>`).join("");
+          return `<section class="sheet-section sheet-section--culture">
+            <h2 class="sheet-h2">${esc(t("sheet.secCulture"))}</h2>
+            <div class="sheet-culture">${s.title ? `<strong>${esc(s.title)}</strong>` : ""}<ul>${facts}</ul></div>
+          </section>`;
+        }
+        case "writing": {
+          return `<section class="sheet-section sheet-section--writing">
+            ${sectionHead("sheet.secWriting", "sheet.instrWriting")}
+            ${s.prompt ? `<p class="sheet-goal">${esc(s.prompt)}</p>` : ""}
+            <div class="sheet-write-box" aria-hidden="true"></div>
+          </section>`;
+        }
+        default: return "";
+      }
+    }
+    const sectionsHtml = (vm.sections || []).map(renderSection).join("");
+
+    // Lösungsschlüssel (nur Übungsmodus – im Lösungsblatt stehen die Antworten
+    // bereits inline). Kompakt, eigene Seite (Seitenumbruch via CSS).
+    function renderAnswerKey(sections) {
+      const blocks = (sections || []).map((s) => {
+        let heading = "";
+        let items = [];
+        switch (s.type) {
+          // Die <ol> nummeriert bereits die Paar-Nummer (1..n) – nur den Buchstaben ausgeben.
+          case "matching": heading = t("sheet.secMatching"); items = (s.left || []).map((x) => x.l); break;
+          case "gapfill": heading = t("sheet.secGapfill"); items = (s.items || []).map((it) => it.answer); break;
+          case "translate": heading = t("sheet.secTranslate"); items = (s.lines || []).map((l) => l.es); break;
+          case "conjug": heading = t("sheet.secConjug"); items = (s.rows || []).map((r) => `${r.verb} (${r.person}) → ${r.answer}`); break;
+          case "numbers": heading = t("sheet.secNumbers"); items = (s.items || []).map((it) => `${it.digits} → ${it.words}`); break;
+          case "dialogue": heading = t("sheet.secDialogue"); items = (s.turns || []).filter((tn) => tn.who === "user").map((tn) => tn.answer); break;
+          default: return ""; // culture/writing haben keine Lösung
+        }
+        if (!items.length) return "";
+        return `<h3>${esc(heading)}</h3><ol class="sheet-exlist">${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ol>`;
+      }).filter(Boolean).join("");
+      if (!blocks) return "";
+      return `<section class="sheet-section sheet-answerkey">
+        <h2 class="sheet-h2">${esc(t("sheet.answerKeyHeading"))}</h2>
+        <p class="sheet-ak-note">${esc(t("sheet.answerKeyNote"))}</p>
+        ${blocks}
+      </section>`;
+    }
+    const answerKeyHtml = vm.exercise ? renderAnswerKey(vm.sections) : "";
 
     const credit = vm.edition && vm.edition.name ? esc(vm.edition.name) + " · " + esc(t("profile.poweredBy")) : "HolaRuta";
     // Akzent nur als Farbwert zulassen (Daten sind vertrauenswürdig – defensiv trotzdem).
@@ -4014,6 +4259,8 @@
           ${stagesHtml}
         </section>
 
+        ${sectionsHtml}
+
         ${vm.code ? `
         <section class="sheet-subscribe">
           <h2 class="sheet-h2">${esc(t("sheet.subscribeHeading"))}</h2>
@@ -4036,6 +4283,8 @@
         <footer class="sheet-coord">
           <strong>${esc(t("sheet.coordHeading"))}:</strong> ${esc(t("sheet.coordNote"))}
         </footer>
+
+        ${answerKeyHtml}
       </article>`;
 
     return `
@@ -5620,6 +5869,7 @@
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
+                   renderFavorites,
                    renderConjugSetup, renderConjug, renderConjugDone,
                    renderYestoSetup, renderYesto, renderYestoDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,

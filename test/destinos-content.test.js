@@ -34,7 +34,7 @@ test("data.CARDS: jede Karte hat eine englische Übersetzung (en)", () => {
 });
 
 // Nur HANDGESCHRIEBENER Kontext (Schlüssel in contextdata.js) – reine Zahlen-Karten
-// bekommen ihren Kontext praktisch generiert (sprachneutrale Beträge), kein EN nötig.
+// bekommen ihren Kontext generiert (inkl. EN, separat in sc.test.js geprüft).
 test("data.CARDS: handgeschriebener Reise-Kontext hat vollständige englische Pendants", () => {
   const authored = new Set(Object.keys(contextData || {}));
   const bad = data.CARDS.filter((c) => authored.has(c.id)).filter((c) => {

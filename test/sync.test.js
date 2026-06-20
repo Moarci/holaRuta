@@ -18,6 +18,7 @@ const PROGRESS = "spanischcard.progress.v2";
 const GAMESTATS = "spanischcard.gamestats.v1";
 const SETTINGS = "spanischcard.settings.v1";
 const USERCARDS = "spanischcard.usercards.v1";
+const FAVORITES = "spanischcard.favorites.v1";
 
 test("mergeProgress: mehr reps gewinnt, Gleichstand -> spätere due", () => {
   const a = { co01: { reps: 3, due: 100 }, co02: { reps: 1, due: 50 } };
@@ -136,6 +137,17 @@ test("mergeUsercards: id-Kollision deterministisch (inhaltsreichere gewinnt, rei
   assert.equal(ab.length, 1);
   assert.deepEqual(ab[0], b[0], "reicheres Objekt gewinnt");
   assert.deepEqual(ba[0], b[0], "auch in umgekehrter Reihenfolge -> gleiches Ergebnis");
+});
+
+test("mergeData: Favoriten (Mi lexico) werden ueber die Id vereint (kein Geraete-Verlust)", () => {
+  // Regression: ohne Sonder-Routing fielen Array-Favoriten in deepUnion -> „lokal
+  // gewinnt", und auf zwei Geräten gemerkte Favoriten löschten sich gegenseitig.
+  const local = { data: { [FAVORITES]: [{ id: "alltag-hola", de: "Hallo", es: "Hola" }] } };
+  const remote = { data: { [FAVORITES]: [{ id: "fav-abc", de: "Danke", es: "Gracias" }] } };
+  const ab = sync.merge(local, remote).data[FAVORITES];
+  const ba = sync.merge(remote, local).data[FAVORITES];
+  assert.deepEqual(ab.map((f) => f.id).sort(), ["alltag-hola", "fav-abc"], "beide Geräte-Favoriten bleiben erhalten");
+  assert.deepEqual(ba.map((f) => f.id).sort(), ["alltag-hola", "fav-abc"], "reihenfolgeunabhängig");
 });
 
 test("mergeData: unbekannte/künftige Keys werden konservativ vereint (kein Verlust)", () => {
@@ -334,4 +346,66 @@ test("syncNow: 409-Konflikt -> mit fremdem Stand neu mergen und GENAU einmal ern
   assert.equal(res.status, 200);
   assert.equal(res.changedLocal, true, "Retry hat lokal etwas geändert (changedLocal || changed2)");
   assert.equal(lastImport.data[GS].reviews, 99, "remerge mit dem fremden Stand (max=99) lokal angewendet");
+});
+
+// ---- Nachzug (Merge nach main-Merge): placement-ts ohne 'at', Adapter-Basis/rev ----
+test("mergeGamestats: placement – späteres ts gewinnt auch OHNE 'at'-Feld", () => {
+  // ts vorhanden, at fehlt: das spätere Ergebnis muss dennoch gewinnen (ts || at).
+  const a = { placement: { ts: "2026-01-01T00:00:00Z", level: "A" } };
+  const b = { placement: { ts: "2026-01-09T00:00:00Z", level: "B" } };
+  assert.equal(sync.mergeGamestats(a, b).placement.level, "B");
+  assert.equal(sync.mergeGamestats(b, a).placement.level, "B");
+});
+
+test("apiBase: req nutzt die slash-bereinigte Basis aus der Config (nicht leer)", async () => {
+  let base = null;
+  await withStubs(
+    { loggedIn: () => true, request: (b) => { base = b; return Promise.resolve({ ok: true, body: {} }); } },
+    {}, { apiBase: "http://test/" },
+    () => sync.pull(),
+  );
+  assert.equal(base, "http://test", "Basis ohne Trailing-Slash, NICHT ''");
+});
+
+test("syncNow: push trägt den baseRev aus dem pull-rev (nicht 0)", async () => {
+  const GS = GAMESTATS; const pushes = [];
+  await withStubs(
+    { loggedIn: () => true, request: (_b, method, _p, body) => {
+        if (method === "GET") return Promise.resolve({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 7 } });
+        pushes.push(body); return Promise.resolve({ ok: true, status: 200, body: { rev: 8 } });
+      } },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {}, () => sync.syncNow(),
+  );
+  assert.equal(pushes[0].baseRev, 7, "baseRev = rev aus dem pull, nicht 0");
+});
+
+test("syncNow: 409-Retry pusht mit dem Konflikt-rev (Default greift nur als Fallback)", async () => {
+  const GS = GAMESTATS; const pushes = [];
+  await withStubs(
+    { loggedIn: () => true, request: (_b, method, _p, body) => {
+        if (method === "GET") return Promise.resolve({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 7 } });
+        pushes.push(body);
+        if (pushes.length === 1) return Promise.resolve({ ok: false, status: 409, body: { payload: { [GS]: { reviews: 9 } }, rev: 8 } });
+        return Promise.resolve({ ok: true, status: 200, body: { rev: 10 } });
+      } },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {}, () => sync.syncNow(),
+  );
+  assert.equal(pushes[1].baseRev, 8, "Retry nutzt den rev aus der 409-Antwort");
+});
+
+test("syncNow: 409 mit rev 0 -> Retry-baseRev bleibt 0 (nicht 1)", async () => {
+  const GS = GAMESTATS; const pushes = [];
+  await withStubs(
+    { loggedIn: () => true, request: (_b, method, _p, body) => {
+        if (method === "GET") return Promise.resolve({ ok: true, body: { payload: {}, rev: 0 } });
+        pushes.push(body);
+        if (pushes.length === 1) return Promise.resolve({ ok: false, status: 409, body: { payload: { [GS]: { reviews: 2 } }, rev: 0 } });
+        return Promise.resolve({ ok: true, status: 200, body: { rev: 1 } });
+      } },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {}, () => sync.syncNow(),
+  );
+  assert.equal(pushes[1].baseRev, 0, "rev 0 bleibt 0, nicht 1");
 });

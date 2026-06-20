@@ -437,6 +437,8 @@
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
+      favCount: favorites.length, // ⭐ „Mi léxico"-Zähler für den Profil-Nav-Eintrag
+      favLast: favorites.length ? { es: favorites[0].es, de: favorites[0].de } : null, // jüngster Favorit für die Dashboard-Vorschau
       streak: currentStreak(),
       xp: xpVM(),
       overall: {
@@ -547,8 +549,10 @@
     const inst = window.SC && window.SC.install;
     if (!inst) return { show: false };
     // Läuft die App bereits installiert (standalone), zeigen wir eine klare
-    // „offline installiert"-Bestätigung.
-    if (inst.isInstalled()) return { show: true, installed: true };
+    // „offline installiert"-Bestätigung. isIOS mitgeben, damit die UI dort den
+    // iOS-Konsequenz-Hinweis zeigt (NICHT erneut zum Startbildschirm hinzufügen –
+    // iOS legt sonst eine leere zweite Kopie mit eigenem Speicher an).
+    if (inst.isInstalled()) return { show: true, installed: true, isIOS: inst.isIOS() };
     // Als file://-Einzeldatei ist keine PWA-Installation möglich -> nichts zeigen.
     if (inst.isHosted && !inst.isHosted()) return { show: false };
     // Sonst: Status „noch nicht installiert" immer anzeigen. Der nächste Schritt
@@ -576,6 +580,8 @@
       mode: state.mode,
       dir: state.dir,
       card,
+      cardId: card.id,
+      isFav: isFavorite(card.id),
       question: spanishIsQuestion ? card.es : native,
       answer: spanishIsQuestion ? native : card.es,
       es: card.es, // Hör-Modus deckt immer das Spanische auf (richtungsunabhängig)
@@ -756,6 +762,7 @@
       shareFormat: shareFormat(),
       context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
+      isFav: isFavorite(card.id),
     });
   }
 
@@ -2763,6 +2770,7 @@
     // 1) Offene Overlays/Panels zuerst schließen (wie ein „Schließen").
     if (state.updateNotice && state.updateNotice.length) { dismissUpdateNotice(); return true; }
     if (state.szShow) { szClose(); return true; }
+    if (state.favShow) { favClose(); return true; }
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
     // 2) Auf einem Home-Reiter: erst zum Start-Reiter zurück (Lernen/Entdecken/
     //    Profil → Start), dann gibt die nächste Geste die App frei.
@@ -2911,6 +2919,7 @@
       "conjugacion": () => ui.renderConjugacion(conjugacionVM()),
       "tiempos": () => ui.renderTiempos(tiemposVM()),
       "spickzettel": () => ui.renderSpickzettel(spickzettelVM()),
+      "favorites": () => ui.renderFavorites(favoritesVM()),
       "preciosSetup": () => ui.renderPreciosSetup(preciosSetupVM()),
       "precios": () => ui.renderPrecios(preciosVM()),
       "preciosDone": () => ui.renderPreciosDone(),
@@ -3915,8 +3924,169 @@
 
   function sheetCardLine(c) {
     const ctx = c.context || {};
-    return { es: c.es, de: natk(c, "de"), note: natk(ctx, "note") || "" };
+    return { es: c.es, de: nat(c), note: natk(ctx, "note") || "" };
   }
+
+  // ---------- Arbeitsheft: Übungsabschnitte aus dem Gesamtbestand ----------
+  // Reiseziel-Scope -> Land (Währung + Landeskunde). Alle PRETRIP/PRESET-Scopes
+  // sind Reiseziele; mehrere Städte teilen ein Land.
+  const SHEET_SCOPE_COUNTRY = {
+    colombia: "colombia", cartagena: "colombia", medellin: "colombia",
+    peru: "peru", cusco: "peru", lima: "peru", arequipa: "peru",
+    mexico: "mexico", cdmx: "mexico", oaxaca: "mexico", merida: "mexico",
+    guatemala: "guatemala", antigua: "guatemala",
+    argentina: "argentina", buenosaires: "argentina", mendoza: "argentina", bariloche: "argentina",
+    chile: "chile", santiago: "chile", valparaiso: "chile", atacama: "chile", puertonatales: "chile", pucon: "chile",
+    costarica: "costarica", arenal: "costarica", monteverde: "costarica",
+    ecuador: "ecuador", quito: "ecuador",
+    bolivia: "bolivia", lapaz: "bolivia", uyuni: "bolivia", copacabana: "bolivia", sucre: "bolivia",
+  };
+  // Land -> Währungs-Key (numbers.CURRENCIES). Ecuador (USD) & Bolivia (BOB)
+  // haben keinen Eintrag -> Fallback CO (Zahlen-Block bleibt generisch).
+  const SHEET_COUNTRY_CURRENCY = {
+    colombia: "CO", peru: "PE", mexico: "MX", guatemala: "GT",
+    argentina: "AR", chile: "CL", costarica: "CR",
+  };
+  // Nur für category:-Ziele mit echtem Themen-Overlap: Kategorie -> frases-cat
+  // bzw. Dialog-Szenario. Reiseziele -> null = „gemischt" (über alle Frames/Dialoge).
+  const SHEET_CAT_FRASES = {
+    verkehr: "transporte", auto: "transporte", reise: "transporte", tour: "transporte", rumbo: "orientacion",
+    hotel: "alojamiento", hostel: "alojamiento",
+    essen: "comida", trinken: "comida", dieta: "comida",
+    compras: "compras", dinero: "compras", banco: "compras", ropa: "compras",
+    notfall: "emergencia", farmacia: "emergencia", belleza: "emergencia",
+    social: "social", coqueteo: "social", familia: "social", talk: "social", noche: "social", alltag: "social",
+  };
+  const SHEET_CAT_DIALOG = {
+    hotel: "hotel", hostel: "hostel", essen: "restaurante", trinken: "restaurante",
+    verkehr: "bus", auto: "taxi", compras: "mercado", dinero: "mercado",
+    notfall: "emergencia", farmacia: "farmacia", grenze: "frontera",
+    coqueteo: "coqueteo", rumbo: "calle", social: "calle",
+  };
+
+  // String->uint32 (FNV-1a) + mulberry32 -> deterministischer rng pro Ziel:
+  // gleiches Ziel ⇒ identisches Heft beim Nachdrucken.
+  function sheetHash(str) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return h >>> 0;
+  }
+  function sheetRng(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function sheetShuffle(arr, rng) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); const tmp = a[i]; a[i] = a[j]; a[j] = tmp; }
+    return a;
+  }
+
+  function sheetTheme(tt, lvls) {
+    const isCategory = tt.kind === "category";
+    let scope = tt.scope;
+    if (tt.kind === "preset") { const pr = (data.PRESETS || []).find((p) => p.id === tt.scope); scope = pr ? pr.scope : tt.scope; }
+    const country = SHEET_SCOPE_COUNTRY[scope] || null;
+    const hasLvl2 = (lvls || []).some((l) => Number(l) >= 2);
+    return {
+      frasesCat: isCategory ? (SHEET_CAT_FRASES[scope] || null) : null,
+      dialogCat: isCategory ? (SHEET_CAT_DIALOG[scope] || null) : null,
+      conjugLevel: hasLvl2 ? 2 : 1,
+      numbersLevel: (scope === "compras" || scope === "dinero") ? 3 : 2,
+      currencyKey: (country && SHEET_COUNTRY_CURRENCY[country]) || "CO",
+      countryId: country,
+    };
+  }
+
+  // Baut die typisierten Übungsabschnitte. Jeder Builder ist gegen leere Quellen
+  // abgesichert (kein leerer Abschnitt). Reihenfolge = Heft-Reihenfolge.
+  function buildSheetSections(theme, allCards, rng) {
+    const out = [];
+    const cards = (allCards || []).filter((c) => c && c.es && nat(c));
+
+    // 1. Zuordnung ES<->DE (bis 8 Paare).
+    const mPairs = sheetShuffle(cards, rng).slice(0, 8);
+    if (mPairs.length >= 3) {
+      const left = mPairs.map((c, i) => ({ n: i + 1, es: c.es, de: nat(c) }));
+      const order = sheetShuffle(left.map((_, i) => i), rng);
+      const right = order.map((origIdx, j) => ({ l: String.fromCharCode(97 + j), de: left[origIdx].de, orig: origIdx }));
+      left.forEach((x, i) => { const r = right.find((rr) => rr.orig === i); x.l = r ? r.l : ""; });
+      out.push({ type: "matching", left: left.map((x) => ({ n: x.n, es: x.es, l: x.l })), right: right.map((r) => ({ l: r.l, de: r.de })) });
+    }
+
+    // 2. Lückentext (frases): themenpassend oder gemischt.
+    if (frases && frases.FRASES) {
+      const pool = frases.FRASES.filter((f) => f.slot && f.slot.es && (!theme.frasesCat || f.cat === theme.frasesCat));
+      const chosen = sheetShuffle(pool.length ? pool : frases.FRASES.filter((f) => f.slot && f.slot.es), rng).slice(0, 7);
+      if (chosen.length >= 3) {
+        const items = chosen.map((f) => ({ frameEs: f.frameEs, targetDe: natk(f, "targetDe"), answer: f.slot.es }));
+        out.push({ type: "gapfill", wordbank: sheetShuffle(items.map((it) => it.answer), rng), items: items });
+      }
+    }
+
+    // 3. Übersetzung (Kontextsätze DE->ES, sonst einfache Karten).
+    const ctxCards = sheetShuffle(cards.filter((c) => c.context && c.context.sentenceEs), rng).slice(0, 8);
+    if (ctxCards.length >= 3) {
+      out.push({ type: "translate", lines: ctxCards.map((c) => ({ de: natk(c.context, "sentenceDe") || natk(c.context, "situation") || nat(c), es: c.context.sentenceEs })) });
+    } else {
+      const simple = sheetShuffle(cards, rng).slice(0, 8);
+      if (simple.length >= 3) out.push({ type: "translate", lines: simple.map((c) => ({ de: nat(c), es: c.es })) });
+    }
+
+    // 4. Konjugation.
+    if (conjug && data.CONJUGATION) {
+      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 8, rng).map((it) => ({
+        verb: natk(it, "verbHint") || it.verb,
+        person: natk(it, "personDe") ? natk(it, "personDe") + " (" + it.personEs + ")" : it.personEs,
+        answer: it.answer,
+      }));
+      if (rows.length) out.push({ type: "conjug", rows: rows });
+    }
+
+    // 5. Zahlen & Preise.
+    if (numbers && numbers.buildRound) {
+      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, 6, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
+      if (items.length) out.push({ type: "numbers", items: items });
+    }
+
+    // 6. Dialog-Lückentext (ein Szenario; user-Repliken verdeckt).
+    if (dialogos && dialogos.DIALOGOS && dialogos.DIALOGOS.length) {
+      const list = dialogos.DIALOGOS;
+      const dlg = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
+      if (dlg && dlg.turns) {
+        const name = "Marco";
+        const sub = (s) => String(s || "").replace(/\{name\}/g, name);
+        out.push({
+          type: "dialogue", title: natk(dlg, "title"),
+          turns: dlg.turns.map((tn) => tn.who === "npc"
+            ? { who: "npc", es: sub(tn.es), de: nat(tn) }
+            : { who: "user", de: nat(tn), answer: sub(tn.solEs) }),
+        });
+      }
+    }
+
+    // 7. Landeskunde (optional, per Land).
+    if (knigge && knigge.ACCENTS && theme.countryId && knigge.ACCENTS[theme.countryId]) {
+      const acc = knigge.ACCENTS[theme.countryId];
+      const facts = ["hostel", "bus", "grupo", "cultura"].map((k) => natk(acc, k)).filter(Boolean);
+      if (facts.length) out.push({ type: "culture", title: "", facts: facts });
+    }
+
+    // 8. Freies Schreiben (immer; Box + Anleitung genügen).
+    out.push({ type: "writing", prompt: "" });
+
+    return out;
+  }
+  // Reihenfolge-Map fürs Toggle-Label (i18n-Key je Abschnittstyp).
+  const SHEET_SEC_KEY = {
+    matching: "secMatching", gapfill: "secGapfill", translate: "secTranslate",
+    conjug: "secConjug", numbers: "secNumbers", dialogue: "secDialogue",
+    culture: "secCulture", writing: "secWriting",
+  };
 
   function sheetVM() {
     const tt = sheetTargetTask();
@@ -3968,6 +4138,13 @@
     // verdeckt; Deutsch bleibt als Prompt stehen. Standard = vollständiges Blatt.
     const exercise = state.sheetMode === "exercise";
     const link = code ? taskShareLink(code) : "";
+    // Arbeitsheft: zusätzliche Übungsabschnitte aus dem Gesamtbestand. Deterministisch
+    // pro Ziel+Etappe geseedet (Nachdruck = identisch); abwählbare via state.sheetSkip.
+    const rng = sheetRng(sheetHash(tt.value + "|" + stageSel));
+    const builtSections = buildSheetSections(sheetTheme(tt, lvls), allCards, rng);
+    const skip = state.sheetSkip || [];
+    const sectionToggles = builtSections.map((s) => ({ type: s.type, label: t("sheet." + (SHEET_SEC_KEY[s.type] || "secWriting")), on: skip.indexOf(s.type) === -1 }));
+    const sections = builtSections.filter((s) => skip.indexOf(s.type) === -1);
     return {
       targets: taskTargets(), sheetTarget: tt.value,
       targetPicker: state.targetPicker, // offenes Ziel-Picker-Modal? ('sheet' | null)
@@ -3977,7 +4154,7 @@
       stageScoped: isPretrip && stageSel !== "all",
       accent: accent, icon: icon, exercise: exercise,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
-      stages: stages,
+      stages: stages, sections: sections, sectionToggles: sectionToggles,
       code: code, link: link,
       // QR auf den Abo-Link – Lernende scannen statt abzutippen. Browser-only
       // (window.SC.qr); fehlt der Generator/Link, bleibt das Feld leer.
@@ -3991,6 +4168,7 @@
     if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
     if (!state.sheetStage) state.sheetStage = "all";
     if (!state.sheetMode) state.sheetMode = "full";
+    if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
     setState({ screen: "printsheet" });
   }
 
@@ -5382,7 +5560,7 @@
         if (cards.length >= g.limit) break;
         if (used.has(c.id)) continue;
         used.add(c.id);
-        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null });
+        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null, fav: isFavorite(c.id) });
       }
       return {
         id: g.cat,
@@ -5421,6 +5599,171 @@
     const card = cardById(id);
     if (!card) return;
     speech.speak(matcher.acceptedAnswers(card)[0] || card.es, settings.speechRate);
+  }
+
+  // ----- Favoriten ("Mi léxico" – persönliches Lexikon) -----
+  // Vom Nutzer gemerkte Wörter/Sätze, die individuell wichtig sind oder in
+  // Stresssituationen schnell griffbereit sein sollen. Karten-Favoriten verweisen
+  // per Id auf die Karte (und werden live + in der UI-Sprache aufgelöst); zusätzlich
+  // liegt ein Schnappschuss (de/es/tip) im Speicher, damit der Eintrag eine später
+  // gelöschte Karte überlebt. Eigene Einträge (vom Nutzer getippt) haben eine
+  // "fav-…"-Id und leben nur aus dem Schnappschuss.
+  let favorites = store.loadFavorites();        // [{ id, de, es, tip, cat, addedAt }]
+  let favIds = new Set(favorites.map((f) => f.id));
+  let favMsg = null;                            // { type:"ok"|"error", text } | null
+
+  function isFavorite(id) { return favIds.has(id); }
+
+  function persistFavorites() {
+    store.saveFavorites(favorites);
+    favIds = new Set(favorites.map((f) => f.id));
+  }
+
+  // Schnappschuss aus einer Karte (muttersprachlich aufgelöst) – als Rückfall, falls
+  // die Karte später verschwindet.
+  function favEntryFromCard(card) {
+    return {
+      id: card.id,
+      de: nat(card) || card.de || "",
+      es: card.es || "",
+      tip: card.tip || "",
+      cat: card.cat || "",
+      addedAt: new Date().toISOString(),
+    };
+  }
+
+  // Sichtbare Favoriten-Sterne einer Id IN-PLACE umschalten – ohne Voll-Re-Render.
+  // Wichtig beim Lernen: ein render() würde im Schreiben-Modus den schon getippten
+  // (noch nicht abgeschickten) Text wegwerfen und die 3D-Karte neu aufbauen. Wie der
+  // 🔊-Knopf (speakCurrent) fasst der Stern darum nur sein eigenes Markup an.
+  function updateFavStars(id, on) {
+    const label = on ? t("favorites.remove") : t("favorites.add");
+    const safe = (window.CSS && CSS.escape) ? CSS.escape(id) : String(id).replace(/["\\]/g, "\\$&");
+    let nodes;
+    try { nodes = document.querySelectorAll('[data-action="fav-toggle"][data-id="' + safe + '"]'); }
+    catch (e) { nodes = []; }
+    nodes.forEach((b) => {
+      b.classList.toggle("is-on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.setAttribute("aria-label", label);
+      b.setAttribute("title", label);
+      // Beschrifteter Button (favLine unter der Karte): nur Stern + Text in den
+      // gekapselten Spans tauschen, sonst würde der sichtbare Text verschwinden.
+      const starEl = b.querySelector(".favline__star");
+      if (starEl) {
+        starEl.textContent = on ? "★" : "☆";
+        const txtEl = b.querySelector(".favline__txt");
+        if (txtEl) txtEl.textContent = on ? t("study.favSaved") : t("study.favSave");
+      } else {
+        b.textContent = on ? "★" : "☆";
+      }
+    });
+  }
+
+  // Karte (eingebaut/eigen) als Favorit an- oder abwählen. Neu hinzugefügte stehen
+  // oben (neueste zuerst). Unbekannte Ids werden ignoriert. Aktualisiert die Sterne
+  // in-place (kein Re-Render) – siehe updateFavStars.
+  function toggleFavorite(id) {
+    if (!id) return;
+    let on;
+    if (favIds.has(id)) {
+      favorites = favorites.filter((f) => f.id !== id);
+      on = false;
+    } else {
+      const card = cardById(id);
+      if (!card) return;
+      favorites = [favEntryFromCard(card)].concat(favorites);
+      on = true;
+    }
+    persistFavorites();
+    updateFavStars(id, on);
+  }
+
+  // Favorit entfernen (aus der Lexikon-Liste). Schließt ggf. die offene Großanzeige
+  // und räumt eine evtl. noch sichtbare „hinzugefügt"-Bestätigung weg.
+  function removeFavorite(id) {
+    favorites = favorites.filter((f) => f.id !== id);
+    persistFavorites();
+    favMsg = null;
+    if (state.favShow === id) state.favShow = null;
+    render();
+  }
+
+  // Eigenen Eintrag (vom Nutzer getippt) ins Lexikon legen. de + es sind Pflicht.
+  function addCustomFavorite(input) {
+    const de = String(input.de || "").trim();
+    const es = String(input.es || "").trim();
+    const tip = String(input.tip || "").trim();
+    if (!de || !es) {
+      favMsg = { type: "error", text: t("favorites.errNeed") };
+      render();
+      return;
+    }
+    const id = "fav-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+    favorites = [{
+      id,
+      de: de.slice(0, 500),
+      es: es.slice(0, 500),
+      tip: tip.slice(0, 500),
+      cat: "",
+      addedAt: new Date().toISOString(),
+    }].concat(favorites);
+    persistFavorites();
+    favMsg = { type: "ok", text: t("favorites.added") };
+    render();
+  }
+
+  function favoritesVM() {
+    const items = favorites.map((f) => {
+      // Karten-Favorit: live + in der UI-Sprache auflösen, solange die Karte existiert;
+      // sonst den gespeicherten Schnappschuss zeigen (eigene Einträge immer Schnappschuss).
+      const card = cardById(f.id);
+      const cat = categoryById(card ? card.cat : f.cat);
+      return {
+        id: f.id,
+        de: card ? (nat(card) || f.de) : f.de,
+        es: card ? card.es : f.es,
+        tip: card ? (card.tip || "") : (f.tip || ""),
+        catIcon: cat ? cat.icon : "⭐",
+        custom: !card,
+      };
+    });
+    const shown = state.favShow ? items.find((it) => it.id === state.favShow) : null;
+    return {
+      items,
+      count: items.length,
+      show: shown || null,
+      msg: favMsg,
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function openFavorites() {
+    dismissBadgeToast();
+    favMsg = null;
+    state.favShow = null;
+    state.screen = "favorites";
+    render();
+  }
+
+  // Großanzeige eines Favoriten öffnen/schließen (Eintrag bildschirmfüllend zum Herzeigen).
+  function favShow(id) {
+    if (!favIds.has(id)) return;
+    state.favShow = id;
+    render();
+  }
+  function favClose() {
+    state.favShow = null;
+    render();
+  }
+
+  // Favorit vorlesen: Karten-Favoriten wie gewohnt (akzeptierte Variante), eigene
+  // Einträge direkt aus dem gespeicherten Spanisch-Text.
+  function speakFavorite(id) {
+    if (!speech) return;
+    if (cardById(id)) { speakCardId(id); return; }
+    const f = favorites.find((x) => x.id === id);
+    if (f && f.es) speech.speak(f.es, settings.speechRate);
   }
 
   // ----- Precios al oído (Preis-Hörtrainer) -----
@@ -5831,6 +6174,7 @@
   // Übungs-Features (spiegelt die FEATURES-Liste in ui.js, ohne die reinen
   // Infoseiten – die kommen unten als „Informationen" mit reichem Suchindex).
   const SEARCH_FEATURES = [
+    { action: "open-favorites",   icon: "⭐", title: "Mi léxico",        subKey: "discover.subFavorites" },
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",       subKey: "discover.subHostel" },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",      subKey: "discover.subDefiniciones" },
@@ -6848,10 +7192,17 @@
     "open-printsheet": (el) => { openPrintSheet(); },
     "printsheet-print": (el) => { printSheet(); },
     "sheet-mode": (el) => { { state.sheetMode = el.dataset.mode; render(); } },
+    "toggle-section": (el) => { { const ty = el.dataset.type; const skip = state.sheetSkip || (state.sheetSkip = []); const i = skip.indexOf(ty); if (i === -1) skip.push(ty); else skip.splice(i, 1); render(); } },
     "open-target-picker": (el) => { { state.targetPicker = el.dataset.ctx; render(); } },
     "close-target-picker": (el) => { { state.targetPicker = null; render(); } },
     "target-stop": (el) => { { /* Klick auf die Modal-Karte: nicht schließen */ } },
     "pick-target": (el) => { pickTarget(el.dataset.ctx, el.dataset.value); },
+    "open-favorites": (el) => { openFavorites(); },
+    "fav-toggle": (el) => { toggleFavorite(el.dataset.id); },
+    "fav-remove": (el) => { removeFavorite(el.dataset.id); },
+    "fav-show": (el) => { favShow(el.dataset.id); },
+    "fav-close": (el) => { favClose(); },
+    "fav-speak": (el) => { speakFavorite(el.dataset.id); },
     "apply-bundle": (el) => { toggleBundle(el.dataset.bundle); },
     "clear-task-sel": (el) => { clearTaskSelection(); },
     "task-generate": (el) => { generateTask(); },
@@ -7095,6 +7446,13 @@
         cat: val("card-cat"),
         lvl: Number(val("card-lvl")),
       });
+      return;
+    }
+    // Eigenen Favoriten-Eintrag ins Lexikon legen („Mi léxico"-Formular).
+    if (e.target.closest('[data-action="fav-add"]')) {
+      e.preventDefault();
+      const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+      addCustomFavorite({ de: val("fav-de"), es: val("fav-es"), tip: val("fav-tip") });
       return;
     }
     // Preis-Hörtrainer: getippte Ziffern prüfen.
@@ -7359,6 +7717,28 @@
             if (nw.state === "installed" && navigator.serviceWorker.controller) markUpdateReady(nw);
           });
         });
+
+        // iOS-PWA-Knackpunkt: eine installierte App wird beim Schließen eingefroren
+        // und beim Öffnen NUR fortgesetzt – ohne frisches Page-Load und ohne dass
+        // der Browser von selbst auf einen neuen Service Worker prüft. Dadurch
+        // feuerte "updatefound" praktisch nie, das "Neue Version"-Banner erschien
+        // nicht, und Nutzer installierten die PWA neu, um das Update zu bekommen –
+        // was auf iOS einen eigenen, LEEREN Storage-Sandbox erzeugt und so den
+        // gesamten Fortschritt löscht. Darum aktiv nach Updates fragen, sobald die
+        // App sichtbar/fokussiert wird (gedrosselt) und kurz nach dem Start.
+        // reg.update() ist ein No-op, wenn nichts Neues vorliegt.
+        let lastUpdateCheck = 0;
+        const checkForUpdate = () => {
+          const now = Date.now();
+          if (now - lastUpdateCheck < 30000) return; // höchstens alle 30 s
+          lastUpdateCheck = now;
+          try { Promise.resolve(reg.update()).catch(() => {}); } catch (e) { /* egal */ }
+        };
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") checkForUpdate();
+        });
+        window.addEventListener("focus", checkForUpdate);
+        setTimeout(checkForUpdate, 3000);
       })
       .catch((err) => console.warn("Service Worker nicht registriert", err));
   }
@@ -7408,8 +7788,9 @@
     }
     // App-Aktionen (Homescreen-Shortcuts): direkte Einstiege ohne eigenes Modul.
     const actions = {
-      ruta: openRutaDelDia,   // ?a=ruta   → heutige Lernrunde
-      buscar: openSearch,     // ?a=buscar → Suche
+      ruta: openRutaDelDia,   // ?a=ruta      → heutige Lernrunde
+      buscar: openSearch,     // ?a=buscar    → Suche
+      favoritos: openFavorites, // ?a=favoritos → „Mi léxico" (Favoriten)
     };
     const aSlug = param("a");
     if (aSlug && actions[aSlug]) {

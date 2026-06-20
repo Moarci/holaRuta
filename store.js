@@ -11,13 +11,14 @@
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
   const TASKS_KEY = "spanischcard.tasks.v1"; // abonnierte Aufgaben (mehrere parallel)
+  const FAVORITES_KEY = "spanischcard.favorites.v1"; // „Mi léxico": gemerkte Wörter/Sätze
   // Zuletzt gesehene App-Version (für den „Was ist neu?"-Hinweis nach Updates).
   // Bewusst NICHT in KNOWN_KEYS: das ist gerätelokaler Anzeige-Status, kein
   // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
   // überschreiben und so einen falschen Update-Hinweis auslösen.
   const SEENVERSION_KEY = "spanischcard.seenVersion.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
-  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY];
+  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY, FAVORITES_KEY];
 
   function readJson(key, fallback) {
     let raw = null;
@@ -44,6 +45,9 @@
   function writeJson(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      // Bekannte (Nutzer-)Keys zusätzlich langlebig in IndexedDB spiegeln, damit
+      // eine localStorage-Eviction (iOS-ITP) den Fortschritt nicht killt.
+      if (KNOWN_KEYS.indexOf(key) !== -1) scheduleMirror();
       return true;
     } catch (err) {
       console.warn("store: schreiben fehlgeschlagen", key, err);
@@ -140,6 +144,36 @@
     if (!Array.isArray(v)) return [];
     const out = [];
     v.forEach((t) => { const c = sanitizeTask(t); if (c) out.push(c); });
+    return out;
+  }
+
+  // Favoriten („Mi léxico"): vom Nutzer gemerkte Wörter/Sätze. Jeder Eintrag trägt
+  // einen Schnappschuss von de/es (+ optional tip/cat) mit, damit ein Favorit auch
+  // dann lesbar bleibt, wenn die zugrunde liegende Karte später verschwindet (z. B.
+  // eine gelöschte eigene Karte). Defensiv typisiert gegen fremdes/manipuliertes
+  // Storage; Ungültiges und Doppel-Ids fallen weg, die Liste ist gedeckelt.
+  function loadFavorites() {
+    const v = readJson(FAVORITES_KEY, []);
+    if (!Array.isArray(v)) return [];
+    const okStr = (s, max) => typeof s === "string" && s.length > 0 && s.length <= max;
+    const str = (s, max) => (typeof s === "string" && s.length <= max ? s : "");
+    const out = [];
+    const seen = Object.create(null);
+    for (const f of v) {
+      if (!isPlainObject(f)) continue;
+      if (!okStr(f.id, 120) || seen[f.id]) continue;       // gültige, eindeutige Id
+      if (!okStr(f.es, 500) || !okStr(f.de, 500)) continue; // Vorder- & Rückseite nötig
+      seen[f.id] = true;
+      out.push({
+        id: f.id,
+        de: f.de,
+        es: f.es,
+        tip: str(f.tip, 500),
+        cat: str(f.cat, 100),
+        addedAt: str(f.addedAt, 40),
+      });
+      if (out.length >= 500) break; // großzügiger Deckel gegen Wucherung
+    }
     return out;
   }
 
@@ -609,7 +643,104 @@
     };
   }
 
+  // ----- Langlebiges Backup-Spiegelbild (IndexedDB) + Auto-Restore -----
+  // localStorage ist auf iOS am anfälligsten: Safari/WebKit räumt
+  // „script-writable storage" nach ~7 Tagen ohne Nutzung weg (ITP). Damit der
+  // Fortschritt das übersteht, spiegeln wir nach jedem Schreibzugriff alle
+  // bekannten Keys zusätzlich als ein Snapshot-Objekt in IndexedDB (das mit
+  // navigator.storage.persist() deutlich langlebiger ist) und stellen sie beim
+  // Start automatisch wieder her, falls localStorage leer zurückkommt.
+  //
+  // WICHTIG / Grenze: Das schützt NICHT vor einer iOS-Neuinstallation des
+  // Homescreen-Icons – die bekommt einen komplett eigenen, leeren Sandbox (auch
+  // für IndexedDB). Dagegen hilft nur, das Icon NICHT neu zu installieren (die PWA
+  // aktualisiert sich über den Service Worker von selbst) bzw. der manuelle
+  // Export/Import (exportData/importData).
+  const IDB_NAME = "holaruta-backup";
+  const IDB_STORE = "kv";
+  const IDB_SNAPSHOT_KEY = "snapshot";
+  const RESTORE_GUARD = "spanischcard.restoredFromIdb"; // sessionStorage: gegen Reload-Schleife
+  const hasIdb = typeof indexedDB !== "undefined" && !!indexedDB;
+  let restoreSettled = false; // true, sobald ein Restore-Versuch abgeschlossen ist
+  let mirrorTimer = null;
+
+  // Eine einzige Verbindung über die Seiten-Lebensdauer memoisieren (statt bei
+  // jeder Spiegelung neu zu öffnen). Bei Fehler die Memoisierung lösen, damit ein
+  // späterer Versuch erneut öffnen kann.
+  let idbPromise = null;
+  function openIdb() {
+    if (idbPromise) return idbPromise;
+    idbPromise = new Promise((resolve, reject) => {
+      let req;
+      try { req = indexedDB.open(IDB_NAME, 1); } catch (e) { reject(e); return; }
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    idbPromise.catch(() => { idbPromise = null; });
+    return idbPromise;
+  }
+
+  // Aktuellen localStorage-Stand als einen Snapshot in IndexedDB ablegen.
+  function mirrorToIdb() {
+    if (!hasIdb) return;
+    // Vor abgeschlossenem Restore NICHT spiegeln – sonst überschriebe ein leerer
+    // localStorage (frisch nach Eviction) den noch ungelesenen guten Snapshot.
+    if (!restoreSettled) return;
+    let snapshot;
+    try { snapshot = exportData(); } catch (e) { return; }
+    openIdb().then((db) => {
+      try {
+        const tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).put(snapshot, IDB_SNAPSHOT_KEY);
+      } catch (e) { /* egal */ }
+    }).catch(() => { /* egal */ });
+  }
+
+  // Spiegelung nach Schreibzugriffen entprellen (mehrere saves pro Lernrunde).
+  function scheduleMirror() {
+    if (!hasIdb) return;
+    if (typeof setTimeout !== "function") { mirrorToIdb(); return; }
+    if (mirrorTimer) clearTimeout(mirrorTimer);
+    mirrorTimer = setTimeout(mirrorToIdb, 1500);
+  }
+
+  // Hat localStorage aktuell überhaupt HolaRuta-Daten?
+  function hasLocalData() {
+    return KNOWN_KEYS.some((key) => {
+      try { return !!localStorage.getItem(key); } catch (e) { return false; }
+    });
+  }
+
+  // Beim Start aus IndexedDB wiederherstellen, FALLS localStorage leer ist.
+  // Schreibt die Keys zurück und lädt EINMAL neu, damit die App den
+  // wiederhergestellten Stand frisch einliest.
+  function tryRestoreFromIdb() {
+    if (!hasIdb) { restoreSettled = true; return; }
+    if (hasLocalData()) { restoreSettled = true; return; } // nichts zu tun
+    openIdb().then((db) => {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const req = tx.objectStore(IDB_STORE).get(IDB_SNAPSHOT_KEY);
+      req.onsuccess = () => {
+        const snapshot = req.result;
+        const restored = snapshot ? importData(snapshot) : 0;
+        restoreSettled = true;
+        let already = false;
+        try { already = !!sessionStorage.getItem(RESTORE_GUARD); } catch (e) { /* egal */ }
+        if (restored > 0 && !already && typeof location !== "undefined" && location.reload) {
+          try { sessionStorage.setItem(RESTORE_GUARD, "1"); } catch (e) { /* egal */ }
+          try { location.reload(); } catch (e) { /* egal */ }
+        }
+      };
+      req.onerror = () => { restoreSettled = true; };
+    }).catch(() => { restoreSettled = true; });
+  }
+
   migrate();
+  tryRestoreFromIdb();
 
   window.SC = window.SC || {};
   window.SC.store = {
@@ -617,6 +748,7 @@
     saveProgress: (p) => writeJson(PROGRESS_KEY, p),
     resetProgress: () => {
       try { localStorage.removeItem(PROGRESS_KEY); } catch (e) { /* egal */ }
+      scheduleMirror(); // gespiegelten Snapshot nachziehen (sonst „aufersteht" der Reset)
     },
     loadSettings,
     saveSettings: (s) => writeJson(SETTINGS_KEY, s),
@@ -631,11 +763,14 @@
     decodeBundle,
     loadTasks,
     saveTasks: (l) => writeJson(TASKS_KEY, Array.isArray(l) ? l : []),
+    loadFavorites,
+    saveFavorites: (l) => writeJson(FAVORITES_KEY, Array.isArray(l) ? l : []),
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),
     resetGameStats: () => {
       try { localStorage.removeItem(GAMESTATS_KEY); } catch (e) { /* egal */ }
+      scheduleMirror();
     },
     // Zuletzt gesehene App-Version. null = noch nie vermerkt (frische Installation
     // oder Bestandsnutzer vor diesem Feature) -> dann KEIN Update-Hinweis, nur
