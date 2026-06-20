@@ -67,6 +67,20 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Lint-Gate: fängt undefined-Variablen & offensichtliche Bugs (no-undef
+      # = error, no-unused-vars = warn). ESLint ist KEINE Repo-Dependency
+      # (Projekt bleibt laufzeit-dependency-frei) → flüchtig & versionsgepinnt
+      # via npx. --max-warnings 9999 lässt die (bewusst tolerierten) Warnungen
+      # durch; ein no-undef-ERROR bricht den Job (Exit 1).
+      - name: Lint (ESLint, gepinnt, nicht in package.json)
+        run: npx --yes eslint@9.39.0 . --max-warnings 9999
+
+      # Coverage-Report (REPORTING, non-blocking): zeigt die Test-Abdeckung im
+      # Log, ohne den Job zu blockieren (|| true). Nutzt nur Node-Bordmittel
+      # (--experimental-test-coverage), keine Dependency, kein package.json-Eintrag.
+      - name: Coverage (Reporting, non-blocking)
+        run: node --test --experimental-test-coverage || true
+
       # HolaRuta.html ist nicht mehr eingecheckt (wird im deploy-Job frisch
       # gebaut). Geprüft wird nur, dass der Build sauber läuft UND der
       # committete service-worker.js (CACHE_VERSION) zum Quellcode passt.
