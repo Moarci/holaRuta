@@ -25,7 +25,7 @@
       brandName: "HolaRuta · ECOS",
       // Karibik-Teal als thematischer Akzent (Cartagena). NÄHERUNG – bei Freigabe ersetzen.
       accent: { brand: "#1F7A8C", brandInk: "#155C69" },
-      partner: { name: "ECOS · Cartagena" }, // url erst mit Partner-Freigabe
+      partner: { name: "ECOS · Cartagena", url: "https://ecos-spanishschool.com/" }, // Backlink zur Partner-Homepage (Profil-Credit)
       // logo: null -> sauberer Text-Credit (Markenfarbe). Echtes, freigegebenes
       // Asset hier als https:- oder data:image-URL setzen, dann erscheint es als Bild.
       logo: null,
@@ -40,7 +40,7 @@
       brandName: "HolaRuta · WeRoad Colombia",
       // Lebhaftes Koralle nahe WeRoads Markenauftritt. NÄHERUNG – bei Freigabe ersetzen.
       accent: { brand: "#FB5A47", brandInk: "#D33A2C" },
-      partner: { name: "WeRoad Colombia" }, // url erst mit Partner-Freigabe
+      partner: { name: "WeRoad Colombia", url: "https://www.weroad.com/" }, // Backlink zur Partner-Homepage (Profil-Credit)
       // logo: null -> sauberer Text-Credit (Markenfarbe). Echtes, freigegebenes
       // Asset hier als https:- oder data:image-URL setzen, dann erscheint es als Bild.
       logo: null,
