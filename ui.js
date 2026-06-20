@@ -327,10 +327,10 @@
       </button>`;
   }
 
-  // Schnellwechsel Reiseland: ein Tap statt Formular-Tippen. Setzt nur das Reiseziel
+  // Schnellwechsel Reiseland: ein Tap hängt das Land an die Reise-Zeitleiste an
   // (Datum & Tagesziel bleiben) und schaltet damit auch die länderspezifischen
-  // Pre-Arrival-Kacheln auf der Startseite um. Das aktuell erkannte Land leuchtet.
-  // Nur im Profil unter dem Trip-Ziel sichtbar (siehe tripManage).
+  // Pre-Arrival-Kacheln auf der Startseite um. Länder, die schon in der Route sind,
+  // leuchten. Nur im Profil unter dem Trip-Ziel sichtbar (siehe tripManage).
   const TRIP_COUNTRIES = [
     { id: "colombia",  flag: "🇨🇴", dest: "Kolumbien" },
     { id: "peru",      flag: "🇵🇪", dest: "Peru" },

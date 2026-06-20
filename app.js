@@ -399,7 +399,6 @@
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
       trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
       tripEdit: state.tripEdit, // Formular aufgeklappt?
-      tripCountryId: tripCountryId(), // erkanntes Land fürs Schnellwechsel-Chip (oder null)
       tripRouteIds: (gamestats.tripGoal && Array.isArray(gamestats.tripGoal.route) ? gamestats.tripGoal.route : []).map((s) => s.id), // Länder schon in der Route (Chip-Markierung)
       tripCountryBev: tripCountryBev(), // Tag-/Abendgetränk + Akzent + Gruß fürs Erscheinungsbild-Schild (oder null)
       showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
@@ -1356,10 +1355,10 @@
     const route = Array.isArray(cur.route) ? cur.route.slice() : [];
     const last = route[route.length - 1];
     if (last && last.id && last.id === id) return; // schon zuletzt angehängt
+    if (route.length >= 24) return; // großzügige Obergrenze gegen Endlos-Anhängen
     const stop = { id: String(id || ""), dest: String(dest).trim().slice(0, 80) };
     if (flag) stop.flag = String(flag);
     route.push(stop);
-    if (route.length > 24) return; // großzügige Obergrenze gegen Endlos-Anhängen
     saveTripRoute(cur, route);
   }
 
