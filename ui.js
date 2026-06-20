@@ -175,6 +175,7 @@
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
     { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
+    { action: "open-musica",      icon: "🎵", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-assessment",  icon: "📋", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
@@ -839,7 +840,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, musica: vm.hasMusica, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -3368,6 +3369,127 @@
       </section>`;
   }
 
+  // ---------- MÚSICA (LatAm-Genres + Spotify/Apple-Deep-Links) ----------
+  // Aufbau wie renderFotos/renderSalud: lange Nachschlage-Seite mit Sprungmarken.
+  // Besonderheit: pro Genre und fürs gewählte Reiseland zwei Deep-Link-Knöpfe, die
+  // direkt in Spotify bzw. Apple Music suchen (Universal-Links – öffnen am Handy
+  // die App). Beide Ziele werden aus EINER Suchanfrage `q` gebaut, damit kein Link
+  // veraltet (keine toten Track-/Playlist-IDs).
+  function renderMusica(vm) {
+    const spotifyUrl = (q) => `https://open.spotify.com/search/${encodeURIComponent(q || "")}`;
+    const appleUrl = (q) => `https://music.apple.com/search?term=${encodeURIComponent(q || "")}`;
+    const playLinks = (q) => `
+      <div class="mus-links">
+        <a class="mus-link mus-link--spotify" href="${esc(spotifyUrl(q))}" target="_blank" rel="noopener noreferrer">
+          <span aria-hidden="true">▶</span> ${esc(t("discover.musOnSpotify"))}
+        </a>
+        <a class="mus-link mus-link--apple" href="${esc(appleUrl(q))}" target="_blank" rel="noopener noreferrer">
+          <span aria-hidden="true">&#63743;</span> ${esc(t("discover.musOnApple"))}
+        </a>
+      </div>`;
+
+    // Ein Genre: aufklappbar wie bei Salud/Fotos, plus Künstler-Chips,
+    // Deep-Links und spanisches Lesetraining.
+    const genreBlock = (g) => {
+      const lvl = levelMeta(g.level);
+      const reading = (g.es && g.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: g.es, vocab: g.vocab, level: g.level, quiz: true })}</div>
+           </details>`
+        : "";
+      const artists = (g.artists || []).length
+        ? `<div class="mus-artists"><span class="mus-artists__cap">${esc(t("discover.musArtists"))}</span><span class="mus-artists__chips">${
+            g.artists.map((a) => `<span class="mus-artist">${esc(a)}</span>`).join("")
+          }</span></div>`
+        : "";
+      return `
+        <details class="knigge-topic mus-genre">
+          <summary class="knigge-topic__head">
+            <span class="knigge-topic__icon" aria-hidden="true">${g.icon}</span>
+            <span class="knigge-topic__title">${esc(g.name)}${g.origin ? `<span class="mus-genre__origin">${esc(g.origin)}</span>` : ""}</span>
+            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="knigge-topic__body">
+            ${g.desc ? `<p class="knigge-intro">${esc(g.desc)}</p>` : ""}
+            ${artists}
+            ${playLinks(g.q)}
+            ${reading}
+          </div>
+        </details>`;
+    };
+    const genres = (vm.genres || []).map(genreBlock).join("");
+
+    // „Sound deines Reiselands": Land wählen (wie Länderkunde/Bebidas) + eine Karte
+    // mit typischem Stil, einem bekannten Künstler/Song und den zwei Deep-Links.
+    const picker = (vm.groups && vm.groups.length) ? countryPicker(vm.groups) : "";
+    const cd = vm.countryData;
+    const soundCard = cd
+      ? `<article class="mus-country">
+           <div class="mus-country__head">
+             <span class="mus-country__flag" aria-hidden="true">${vm.country ? vm.country.flag : "🎶"}</span>
+             <div class="mus-country__meta">
+               <div class="mus-country__genre">${esc(cd.genre)}</div>
+               <div class="mus-country__song">${esc(cd.artist)} · „${esc(cd.song)}“</div>
+             </div>
+           </div>
+           ${playLinks(cd.q)}
+         </article>`
+      : `<p class="hm-intro">${esc(t("discover.musNoCountry"))}</p>`;
+    const sound = (picker || cd)
+      ? `${picker}<p class="hm-intro">${esc(t("discover.musSoundHint"))}</p>${soundCard}`
+      : "";
+
+    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Fotos/Salud.
+    const phraseGroup = (gr) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${gr.icon}</span> ${esc(gr.title)}</h3>
+        <ul class="rg-phrases">
+          ${gr.items.map((p) => `
+            <li class="rg-phrase">
+              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+              <span class="rg-phrase__de">${esc(p.de)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    const glossary = (vm.glossary || []).map((gl) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(gl.es)}</span>
+        <span class="rg-gloss__de">${esc(gl.de)}</span>
+      </li>`).join("");
+
+    // Sprungmarken-Leiste (wie ft-nav): nur Chips für vorhandene Blöcke.
+    const navItems = [
+      sound && { id: "mus-sound", icon: "📍", label: t("discover.musNavSound") },
+      genres && { id: "mus-genres", icon: "🎶", label: t("discover.musNavGenres") },
+      phrases && { id: "mus-phrases", icon: "💬", label: t("discover.musNavPhrases") },
+      glossary && { id: "mus-words", icon: "🗣️", label: t("discover.musNavWords") },
+    ].filter(Boolean);
+    const nav = navItems.length > 1
+      ? `<nav class="mus-nav" aria-label="${esc(t("discover.musAreas"))}">${navItems.map((n) =>
+          `<a class="mus-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+      : "";
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">🎵 Música</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+        ${moduleShareBtn("musica")}
+        ${nav}
+
+        ${sound ? `<h2 class="rg-head" id="mus-sound">${esc(t("discover.musSound"))}</h2>${sound}` : ""}
+        ${genres ? `<h2 class="rg-head" id="mus-genres">${esc(t("discover.musGenres"))}</h2><p class="hm-intro">${esc(t("discover.musGenresHint"))}</p>${genres}` : ""}
+        ${phrases ? `<h2 class="rg-head" id="mus-phrases">${esc(t("discover.musPhrases"))}</h2>${phrases}` : ""}
+        ${glossary ? `<h2 class="rg-head" id="mus-words">${esc(t("discover.musWords"))}</h2><ul class="rg-glosslist">${glossary}</ul>` : ""}
+      </section>`;
+  }
+
   // ---------- HOSTEL MODE ----------
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
   function hmTopbar(title, back) {
@@ -5153,7 +5275,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
