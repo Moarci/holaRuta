@@ -418,70 +418,70 @@
       tripSwitchOpen: !!state.tripSwitchOpen,        // Schnellwechsel-Chips auf-/eingeklappt
       tripRouteIds: (gamestats.tripGoal && Array.isArray(gamestats.tripGoal.route) ? gamestats.tripGoal.route : []).map((s) => s.id), // Länder schon in der Route (Chip-Markierung)
       tripCountryBev: tripCountryBev(), // Tag-/Abendgetränk + Akzent + Gruß fürs Erscheinungsbild-Schild (oder null)
-      showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
-      showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
-      showMedellinPreset: tripMentionsMedellin(), // Stadt-Pack-Kachel nur bei Medellín-Bezug
-      showCuscoPreset: tripMentionsCusco(),       // Stadt-Pack-Kachel nur bei Cusco-Bezug
-      showCdmxPreset: tripMentionsCdmx(),         // Stadt-Pack-Kachel nur bei CDMX-Bezug
-      showAntiguaPreset: tripMentionsAntigua(),   // Stadt-Pack-Kachel nur bei Antigua-Bezug
-      showBuenosAiresPreset: tripMentionsBuenosAires(), // Stadt-Pack-Kachel nur bei BA-Bezug
-      showQuitoPreset: tripMentionsQuito(),       // Stadt-Pack-Kachel nur bei Quito-Bezug
-      showLimaPreset: tripMentionsLima(),
-      showArequipaPreset: tripMentionsArequipa(),
-      showMendozaPreset: tripMentionsMendoza(),
-      showBarilochePreset: tripMentionsBariloche(),
-      showOaxacaPreset: tripMentionsOaxaca(),
-      showMeridaPreset: tripMentionsMerida(),
-      showArenalPreset: tripMentionsArenal(),
-      showMonteverdePreset: tripMentionsMonteverde(),
-      showSantiagoPreset: tripMentionsSantiago(),
-      showValparaisoPreset: tripMentionsValparaiso(),
-      showAtacamaPreset: tripMentionsAtacama(),
-      showLapazPreset: tripMentionsLapaz(),
-      showUyuniPreset: tripMentionsUyuni(),
-      showPuertonatalesPreset: tripMentionsPuertonatales(),
-      showPuconPreset: tripMentionsPucon(),
-      showCopacabanaPreset: tripMentionsCopacabana(),
-      showSucrePreset: tripMentionsSucre(),
-      showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
-      showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
-      showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
-      showEcuadorPreset: tripMentionsEcuador(),   // Pre-Arrival-Kachel nur bei Ecuador-Bezug
-      showGuatemalaPreset: tripMentionsGuatemala(), // Pre-Arrival-Kachel nur bei Guatemala-Bezug
-      showArgentinaPreset: tripMentionsArgentina(), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
-      showChilePreset: tripMentionsChile(),       // Pre-Arrival-Kachel nur bei Chile-Bezug
-      showBoliviaPreset: tripMentionsBolivia(),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
+      showColombiaPreset: tripMentions("colombia"), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
+      showCartagenaPreset: tripMentions("cartagena"), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
+      showMedellinPreset: tripMentions("medellin"), // Stadt-Pack-Kachel nur bei Medellín-Bezug
+      showCuscoPreset: tripMentions("cusco"),       // Stadt-Pack-Kachel nur bei Cusco-Bezug
+      showCdmxPreset: tripMentions("cdmx"),         // Stadt-Pack-Kachel nur bei CDMX-Bezug
+      showAntiguaPreset: tripMentions("antigua"),   // Stadt-Pack-Kachel nur bei Antigua-Bezug
+      showBuenosAiresPreset: tripMentions("buenosaires"), // Stadt-Pack-Kachel nur bei BA-Bezug
+      showQuitoPreset: tripMentions("quito"),       // Stadt-Pack-Kachel nur bei Quito-Bezug
+      showLimaPreset: tripMentions("lima"),
+      showArequipaPreset: tripMentions("arequipa"),
+      showMendozaPreset: tripMentions("mendoza"),
+      showBarilochePreset: tripMentions("bariloche"),
+      showOaxacaPreset: tripMentions("oaxaca"),
+      showMeridaPreset: tripMentions("merida"),
+      showArenalPreset: tripMentions("arenal"),
+      showMonteverdePreset: tripMentions("monteverde"),
+      showSantiagoPreset: tripMentions("santiago"),
+      showValparaisoPreset: tripMentions("valparaiso"),
+      showAtacamaPreset: tripMentions("atacama"),
+      showLapazPreset: tripMentions("lapaz"),
+      showUyuniPreset: tripMentions("uyuni"),
+      showPuertonatalesPreset: tripMentions("puertonatales"),
+      showPuconPreset: tripMentions("pucon"),
+      showCopacabanaPreset: tripMentions("copacabana"),
+      showSucrePreset: tripMentions("sucre"),
+      showPeruPreset: tripMentions("peru"),         // Pre-Arrival-Kachel nur bei Peru-Bezug
+      showMexicoPreset: tripMentions("mexico"),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
+      showCostaRicaPreset: tripMentions("costarica"), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
+      showEcuadorPreset: tripMentions("ecuador"),   // Pre-Arrival-Kachel nur bei Ecuador-Bezug
+      showGuatemalaPreset: tripMentions("guatemala"), // Pre-Arrival-Kachel nur bei Guatemala-Bezug
+      showArgentinaPreset: tripMentions("argentina"), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
+      showChilePreset: tripMentions("chile"),       // Pre-Arrival-Kachel nur bei Chile-Bezug
+      showBoliviaPreset: tripMentions("bolivia"),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
       // Status der Pre-Arrival-Pakete (Häkchen + „12/40"-Fortschritt). Nur für die
       // tatsächlich SICHTBAREN Kacheln rechnen (spart Arbeit pro Render).
       presetStatus: (function () {
         const m = {};
         const shown = {
-          "prearrival-co": tripMentionsColombia(), "prearrival-ctg": tripMentionsCartagena(),
-          "prearrival-med": tripMentionsMedellin(), "prearrival-cus": tripMentionsCusco(),
-          "prearrival-cdmx": tripMentionsCdmx(), "prearrival-ant": tripMentionsAntigua(),
-          "prearrival-bue": tripMentionsBuenosAires(), "prearrival-qui": tripMentionsQuito(),
-          "prearrival-lima": tripMentionsLima(),
-          "prearrival-arequipa": tripMentionsArequipa(),
-          "prearrival-mendoza": tripMentionsMendoza(),
-          "prearrival-bariloche": tripMentionsBariloche(),
-          "prearrival-oaxaca": tripMentionsOaxaca(),
-          "prearrival-merida": tripMentionsMerida(),
-          "prearrival-arenal": tripMentionsArenal(),
-          "prearrival-monteverde": tripMentionsMonteverde(),
-          "prearrival-santiago": tripMentionsSantiago(),
-          "prearrival-valparaiso": tripMentionsValparaiso(),
-          "prearrival-atacama": tripMentionsAtacama(),
-          "prearrival-lapaz": tripMentionsLapaz(),
-          "prearrival-uyuni": tripMentionsUyuni(),
-          "prearrival-puertonatales": tripMentionsPuertonatales(),
-          "prearrival-pucon": tripMentionsPucon(),
-          "prearrival-copacabana": tripMentionsCopacabana(),
-          "prearrival-sucre": tripMentionsSucre(),
-          "prearrival-pe": tripMentionsPeru(),
-          "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
-          "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
-          "prearrival-ar": tripMentionsArgentina(), "prearrival-cl": tripMentionsChile(),
-          "prearrival-bo": tripMentionsBolivia(),
+          "prearrival-co": tripMentions("colombia"), "prearrival-ctg": tripMentions("cartagena"),
+          "prearrival-med": tripMentions("medellin"), "prearrival-cus": tripMentions("cusco"),
+          "prearrival-cdmx": tripMentions("cdmx"), "prearrival-ant": tripMentions("antigua"),
+          "prearrival-bue": tripMentions("buenosaires"), "prearrival-qui": tripMentions("quito"),
+          "prearrival-lima": tripMentions("lima"),
+          "prearrival-arequipa": tripMentions("arequipa"),
+          "prearrival-mendoza": tripMentions("mendoza"),
+          "prearrival-bariloche": tripMentions("bariloche"),
+          "prearrival-oaxaca": tripMentions("oaxaca"),
+          "prearrival-merida": tripMentions("merida"),
+          "prearrival-arenal": tripMentions("arenal"),
+          "prearrival-monteverde": tripMentions("monteverde"),
+          "prearrival-santiago": tripMentions("santiago"),
+          "prearrival-valparaiso": tripMentions("valparaiso"),
+          "prearrival-atacama": tripMentions("atacama"),
+          "prearrival-lapaz": tripMentions("lapaz"),
+          "prearrival-uyuni": tripMentions("uyuni"),
+          "prearrival-puertonatales": tripMentions("puertonatales"),
+          "prearrival-pucon": tripMentions("pucon"),
+          "prearrival-copacabana": tripMentions("copacabana"),
+          "prearrival-sucre": tripMentions("sucre"),
+          "prearrival-pe": tripMentions("peru"),
+          "prearrival-mx": tripMentions("mexico"), "prearrival-cr": tripMentions("costarica"),
+          "prearrival-ec": tripMentions("ecuador"), "prearrival-gt": tripMentions("guatemala"),
+          "prearrival-ar": tripMentions("argentina"), "prearrival-cl": tripMentions("chile"),
+          "prearrival-bo": tripMentions("bolivia"),
         };
         (data.PRESETS || []).forEach((p) => {
           if (!shown[p.id]) return;
@@ -1033,238 +1033,94 @@
   // Erkennt am freien Trip-Ziel-Text, ob die Reise nach Kolumbien geht – steuert,
   // ob die „Pre-Arrival Kolumbien"-Kachel auf dem Dashboard erscheint (sonst bliebe
   // sie auch z. B. bei einer Mexiko-Reise sichtbar). Akzent-/Groß-Schreibung egal.
-  const COLOMBIA_HINTS = ["colombia", "kolumbien", "cartagena", "medellin", "bogota",
-    "cali", "santa marta", "tayrona", "palomino", "minca", "guatape", "barranquilla",
-    "getsemani", "caribe", "rosario"];
-  function isColombiaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return COLOMBIA_HINTS.some((h) => norm.includes(h));
-  }
-  // Pre-Arrival-Kachel zeigen, wenn das Trip-Ziel ODER eine Edition Kolumbien meint.
-  function tripMentionsColombia() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isColombiaDest(t && t.destination) || isColombiaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Cartagena ist ein Stadt-Pack INNERHALB Kolumbiens. Eigene, engere Stichwörter, damit
-  // ein konkreter Cartagena-Trip auch den Cartagena-Plan/-Pack vorschlägt (zusätzlich
-  // zur Kolumbien-Kachel, die über die breiteren COLOMBIA_HINTS ohnehin greift).
-  const CARTAGENA_HINTS = ["cartagena", "getsemani", "bocagrande", "islas del rosario", "san felipe"];
-  function isCartagenaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return CARTAGENA_HINTS.some((h) => norm.includes(h));
-  }
-  function tripMentionsCartagena() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isCartagenaDest(t && t.destination) || isCartagenaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Medellín: ebenfalls ein Stadt-Pack innerhalb Kolumbiens (eigene, engere Stichwörter).
-  const MEDELLIN_HINTS = ["medellin", "poblado", "laureles", "comuna 13", "envigado", "guatape"];
-  function isMedellinDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return MEDELLIN_HINTS.some((h) => norm.includes(h));
-  }
-  function tripMentionsMedellin() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isMedellinDest(t && t.destination) || isMedellinDest(cfg && cfg.defaultDestination);
-  }
-
-  // Cusco: Stadt-Pack innerhalb Perus (Anden/Machu Picchu).
-  const CUSCO_HINTS = ["cusco", "cuzco", "machu picchu", "machupicchu", "ollantaytambo",
-    "valle sagrado", "aguas calientes", "sacsayhuaman", "pisac", "vinicunca"];
-  function isCuscoDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return CUSCO_HINTS.some((h) => norm.includes(h));
-  }
-  function tripMentionsCusco() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isCuscoDest(t && t.destination) || isCuscoDest(cfg && cfg.defaultDestination);
-  }
-
-  // Weitere Stadt-Packs innerhalb vorhandener Länder (eigene, engere Stichwörter).
-  const _normDest = (text) => String(text || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  // --- Reiseziel-Erkennung (datengetrieben) ----------------------------------
+  // Früher: je Land/Stadt ein eigenes XXX_HINTS-Array + tripMentionsXxx()/isXxxDest().
+  // Jetzt: eine Daten-Map DEST_HINTS und generische destMatches(id,text)/tripMentions(id).
+  // Verhalten identisch: Akzent-/Groß-Schreibung egal (NFD-Normalisierung von Text UND
+  // Hinweis). Erkennt am freien Trip-Ziel-Text bzw. an der Edition (config.defaultDestination),
+  // ob die Reise ein bestimmtes Land/eine bestimmte Stadt meint – steuert Pre-Arrival-Kacheln
+  // und den Default-Scope.
+  const DEST_HINTS = {
+    // Länder (Pre-Arrival-Kacheln)
+    colombia: ["colombia", "kolumbien", "cartagena", "medellin", "bogota", "cali",
+      "santa marta", "tayrona", "palomino", "minca", "guatape", "barranquilla",
+      "getsemani", "caribe", "rosario"],
+    peru: ["peru", "perú", "lima", "cusco", "cuzco", "machu picchu", "machupicchu",
+      "arequipa", "titicaca", "puno", "colca", "ollantaytambo", "sacsayhuaman",
+      "valle sagrado", "aguas calientes", "vinicunca", "nazca", "paracas", "huacachina"],
+    mexico: ["mexico", "méxico", "mexiko", "cdmx", "ciudad de mexico", "oaxaca", "chiapas",
+      "san cristobal", "palenque", "merida", "yucatan", "yucatán", "tulum", "cancun",
+      "cancún", "valladolid", "bacalar", "playa del carmen", "riviera maya", "teotihuacan"],
+    costarica: ["costa rica", "costarica", "san jose", "san josé", "la fortuna", "arenal",
+      "monteverde", "manuel antonio", "tortuguero", "puerto viejo", "cahuita", "tamarindo",
+      "rio celeste", "río celeste", "pacuare", "nicoya", "guanacaste", "uvita", "santa teresa"],
+    ecuador: ["ecuador", "quito", "guayaquil", "cuenca", "otavalo", "cotopaxi", "quilotoa",
+      "banos", "baños", "tena", "amazonia", "amazonía", "galapagos", "galápagos",
+      "mitad del mundo", "montañita"],
+    guatemala: ["guatemala", "antigua", "atitlan", "atitlán", "panajachel",
+      "san pedro la laguna", "chichicastenango", "tikal", "flores", "semuc champey",
+      "lanquin", "lanquín", "acatenango", "xela", "quetzaltenango"],
+    argentina: ["argentina", "argentinien", "buenos aires", "patagonia", "patagonien",
+      "el calafate", "el chalten", "el chaltén", "ushuaia", "bariloche", "mendoza",
+      "iguazu", "iguazú", "salta", "fitz roy", "perito moreno"],
+    chile: ["chile", "santiago", "valparaiso", "valparaíso", "atacama", "san pedro de atacama",
+      "torres del paine", "puerto natales", "punta arenas", "pucon", "pucón", "chiloe",
+      "chiloé", "isla de pascua", "rapa nui", "valle de la luna"],
+    bolivia: ["bolivia", "bolivien", "la paz", "el alto", "uyuni", "salar de uyuni", "potosi",
+      "potosí", "sucre", "copacabana", "isla del sol", "titicaca", "tiwanaku", "coroico",
+      "rurrenabaque"],
+    // Stadt-Packs (eigene, engere Stichwörter)
+    cartagena: ["cartagena", "getsemani", "bocagrande", "islas del rosario", "san felipe"],
+    medellin: ["medellin", "poblado", "laureles", "comuna 13", "envigado", "guatape"],
+    cusco: ["cusco", "cuzco", "machu picchu", "machupicchu", "ollantaytambo", "valle sagrado",
+      "aguas calientes", "sacsayhuaman", "pisac", "vinicunca"],
+    cdmx: ["cdmx", "ciudad de mexico", "mexico city", "zocalo", "coyoacan", "condesa",
+      "teotihuacan", "xochimilco"],
+    // atitlan/panajachel bewusst NICHT hier (Atitlán-Region-Tokens, auch in guatemala) –
+    // sonst stähle eine reine Guatemala-Reise „Lago de Atitlán“ den Antigua-Scope.
+    antigua: ["antigua", "acatenango", "pacaya", "semana santa"],
+    buenosaires: ["buenos aires", "palermo", "san telmo", "recoleta", "la boca", "subte", "ezeiza"],
+    // otavalo/cotopaxi bewusst NICHT hier (Tagesausflugs-Ziele, auch in ecuador) –
+    // sonst stähle eine reine Ecuador-Reise „Otavalo“/„Cotopaxi“ den Quito-Scope.
+    quito: ["quito", "mitad del mundo", "teleferiqo", "la ronda"],
+    lima: ["lima", "miraflores", "barranco", "callao", "jorge chavez", "costa verde", "pisco sour"],
+    arequipa: ["arequipa", "colca", "misti", "santa catalina", "yanahuara", "sillar", "chachani"],
+    mendoza: ["mendoza", "malbec", "aconcagua", "valle de uco", "ruta del vino"],
+    bariloche: ["bariloche", "nahuel huapi", "cerro catedral", "circuito chico", "llao llao",
+      "campanario", "siete lagos"],
+    oaxaca: ["oaxaca", "monte alban", "hierve el agua", "tlayuda", "guelaguetza"],
+    merida: ["merida", "yucatan", "cenote", "chichen itza", "uxmal", "valladolid", "cochinita"],
+    arenal: ["fortuna", "arenal", "tabacon", "aguas termales", "catarata"],
+    monteverde: ["monteverde", "santa elena", "bosque nuboso", "selvatura"],
+    santiago: ["santiago", "bellavista", "providencia", "san cristobal", "bip", "la moneda",
+      "cerro santa lucia"],
+    valparaiso: ["valparaiso", "valparaíso", "cerro alegre", "cerro concepcion", "ascensor",
+      "la sebastiana", "vina del mar"],
+    atacama: ["atacama", "san pedro de atacama", "valle de la luna", "el tatio", "geiseres",
+      "calama", "lagunas altiplanicas"],
+    lapaz: ["la paz", "el alto", "teleferico", "mi teleferico", "mercado de las brujas",
+      "valle de la luna", "death road"],
+    uyuni: ["uyuni", "salar de uyuni", "salar", "cementerio de trenes", "colchani", "incahuasi",
+      "isla incahuasi"],
+    puertonatales: ["puerto natales", "torres del paine", "w trek", "paine", "conaf", "milodon"],
+    pucon: ["pucon", "villarrica", "huerquehue", "trancura", "caburgua", "araucania"],
+    copacabana: ["copacabana", "isla del sol", "cerro calvario", "tiquina", "yampupata"],
+    sucre: ["sucre", "ciudad blanca", "plaza 25 de mayo", "cal orcko", "tarabuco",
+      "casa de la libertad", "parque cretacico"],
+  };
+  const _normDest = (text) => String(text || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const tripCfgDest = () => { const cfg = window.SC && window.SC.config; return cfg && cfg.defaultDestination; };
-  const CDMX_HINTS = ["cdmx", "ciudad de mexico", "mexico city", "zocalo", "coyoacan", "condesa", "teotihuacan", "xochimilco"];
-  function tripMentionsCdmx() { const t = gamestats.tripGoal; return CDMX_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  // atitlan/panajachel bewusst NICHT hier: das sind Atitlán-Region-Tokens (auch in GUATEMALA_HINTS) –
-  // sonst würde eine reine Guatemala-Reise „Lago de Atitlán“ fälschlich den Antigua-Scope stehlen.
-  const ANTIGUA_HINTS = ["antigua", "acatenango", "pacaya", "semana santa"];
-  function tripMentionsAntigua() { const t = gamestats.tripGoal; return ANTIGUA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const BUENOSAIRES_HINTS = ["buenos aires", "palermo", "san telmo", "recoleta", "la boca", "subte", "ezeiza"];
-  function tripMentionsBuenosAires() { const t = gamestats.tripGoal; return BUENOSAIRES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  // otavalo/cotopaxi bewusst NICHT hier: Tagesausflugs-Ziele (auch in ECUADOR_HINTS) –
-  // sonst würde eine reine Ecuador-Reise „Otavalo“/„Cotopaxi“ fälschlich den Quito-Scope stehlen.
-  const QUITO_HINTS = ["quito", "mitad del mundo", "teleferiqo", "la ronda"];
-  function tripMentionsQuito() { const t = gamestats.tripGoal; return QUITO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-
-  // Weitere Stadt-Packs (Charge 2): eigene, engere Stichwörter je Stadt.
-  const LIMA_HINTS = ["lima", "miraflores", "barranco", "callao", "jorge chavez", "costa verde", "pisco sour"];
-  function tripMentionsLima() { const t = gamestats.tripGoal; return LIMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const AREQUIPA_HINTS = ["arequipa", "colca", "misti", "santa catalina", "yanahuara", "sillar", "chachani"];
-  function tripMentionsArequipa() { const t = gamestats.tripGoal; return AREQUIPA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const MENDOZA_HINTS = ["mendoza", "malbec", "aconcagua", "valle de uco", "ruta del vino"];
-  function tripMentionsMendoza() { const t = gamestats.tripGoal; return MENDOZA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const BARILOCHE_HINTS = ["bariloche", "nahuel huapi", "cerro catedral", "circuito chico", "llao llao", "campanario", "siete lagos"];
-  function tripMentionsBariloche() { const t = gamestats.tripGoal; return BARILOCHE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const OAXACA_HINTS = ["oaxaca", "monte alban", "hierve el agua", "tlayuda", "guelaguetza"];
-  function tripMentionsOaxaca() { const t = gamestats.tripGoal; return OAXACA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const MERIDA_HINTS = ["merida", "yucatan", "cenote", "chichen itza", "uxmal", "valladolid", "cochinita"];
-  function tripMentionsMerida() { const t = gamestats.tripGoal; return MERIDA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const ARENAL_HINTS = ["fortuna", "arenal", "tabacon", "aguas termales", "catarata"];
-  function tripMentionsArenal() { const t = gamestats.tripGoal; return ARENAL_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const MONTEVERDE_HINTS = ["monteverde", "santa elena", "bosque nuboso", "selvatura"];
-  function tripMentionsMonteverde() { const t = gamestats.tripGoal; return MONTEVERDE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-
-  // Weitere Stadt-Packs (Charge 3, Chile & Bolivien): eigene, engere Stichwörter je Stadt.
-  const SANTIAGO_HINTS = ["santiago", "bellavista", "providencia", "san cristobal", "bip", "la moneda", "cerro santa lucia"];
-  function tripMentionsSantiago() { const t = gamestats.tripGoal; return SANTIAGO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const VALPARAISO_HINTS = ["valparaiso", "valparaíso", "cerro alegre", "cerro concepcion", "ascensor", "la sebastiana", "vina del mar"];
-  function tripMentionsValparaiso() { const t = gamestats.tripGoal; return VALPARAISO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const ATACAMA_HINTS = ["atacama", "san pedro de atacama", "valle de la luna", "el tatio", "geiseres", "calama", "lagunas altiplanicas"];
-  function tripMentionsAtacama() { const t = gamestats.tripGoal; return ATACAMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const LAPAZ_HINTS = ["la paz", "el alto", "teleferico", "mi teleferico", "mercado de las brujas", "valle de la luna", "death road"];
-  function tripMentionsLapaz() { const t = gamestats.tripGoal; return LAPAZ_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const UYUNI_HINTS = ["uyuni", "salar de uyuni", "salar", "cementerio de trenes", "colchani", "incahuasi", "isla incahuasi"];
-  function tripMentionsUyuni() { const t = gamestats.tripGoal; return UYUNI_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-
-  // Weitere Stadt-Packs (Charge 4, Patagonien & Titicaca): eigene, engere Stichwörter je Stadt.
-  const PUERTONATALES_HINTS = ["puerto natales", "torres del paine", "w trek", "paine", "conaf", "milodon"];
-  function tripMentionsPuertonatales() { const t = gamestats.tripGoal; return PUERTONATALES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const PUCON_HINTS = ["pucon", "villarrica", "huerquehue", "trancura", "caburgua", "araucania"];
-  function tripMentionsPucon() { const t = gamestats.tripGoal; return PUCON_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const COPACABANA_HINTS = ["copacabana", "isla del sol", "cerro calvario", "tiquina", "yampupata"];
-  function tripMentionsCopacabana() { const t = gamestats.tripGoal; return COPACABANA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const SUCRE_HINTS = ["sucre", "ciudad blanca", "plaza 25 de mayo", "cal orcko", "tarabuco", "casa de la libertad", "parque cretacico"];
-  function tripMentionsSucre() { const t = gamestats.tripGoal; return SUCRE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-
-  // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
-  // die „Pre-Arrival Peru"-Kachel auf dem Dashboard.
-  const PERU_HINTS = ["peru", "perú", "lima", "cusco", "cuzco", "machu picchu", "machupicchu",
-    "arequipa", "titicaca", "puno", "colca", "ollantaytambo", "sacsayhuaman", "valle sagrado",
-    "aguas calientes", "vinicunca", "nazca", "paracas", "huacachina"];
-  function isPeruDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return PERU_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  // Trifft der Hinweis-Satz für `id` den gegebenen Text? (Akzent-/Case-unabhängig.)
+  function destMatches(id, text) {
+    const hints = DEST_HINTS[id];
+    if (!hints || !text) return false;
+    const norm = _normDest(text);
+    return hints.some((h) => norm.includes(_normDest(h)));
   }
-  function tripMentionsPeru() {
+  // Meint das aktuelle Trip-Ziel ODER die Edition (config.defaultDestination) das Ziel `id`?
+  function tripMentions(id) {
     const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isPeruDest(t && t.destination) || isPeruDest(cfg && cfg.defaultDestination);
-  }
-
-  // Mexiko-Bezug für die „Pre-Arrival Mexiko"-Kachel.
-  const MEXICO_HINTS = ["mexico", "méxico", "mexiko", "cdmx", "ciudad de mexico", "oaxaca",
-    "chiapas", "san cristobal", "palenque", "merida", "yucatan", "yucatán", "tulum", "cancun",
-    "cancún", "valladolid", "bacalar", "playa del carmen", "riviera maya", "teotihuacan"];
-  function isMexicoDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return MEXICO_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsMexico() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isMexicoDest(t && t.destination) || isMexicoDest(cfg && cfg.defaultDestination);
-  }
-
-  // Costa-Rica-Bezug für die „Pre-Arrival Costa Rica"-Kachel.
-  const COSTARICA_HINTS = ["costa rica", "costarica", "san jose", "san josé", "la fortuna",
-    "arenal", "monteverde", "manuel antonio", "tortuguero", "puerto viejo", "cahuita", "tamarindo",
-    "rio celeste", "río celeste", "pacuare", "nicoya", "guanacaste", "uvita", "santa teresa"];
-  function isCostaRicaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return COSTARICA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsCostaRica() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isCostaRicaDest(t && t.destination) || isCostaRicaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Ecuador-Bezug für die „Pre-Arrival Ecuador"-Kachel.
-  const ECUADOR_HINTS = ["ecuador", "quito", "guayaquil", "cuenca", "otavalo", "cotopaxi",
-    "quilotoa", "banos", "baños", "tena", "amazonia", "amazonía", "galapagos", "galápagos",
-    "mitad del mundo", "montañita"];
-  function isEcuadorDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return ECUADOR_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsEcuador() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isEcuadorDest(t && t.destination) || isEcuadorDest(cfg && cfg.defaultDestination);
-  }
-
-  // Guatemala-Bezug für die „Pre-Arrival Guatemala"-Kachel.
-  const GUATEMALA_HINTS = ["guatemala", "antigua", "atitlan", "atitlán", "panajachel", "san pedro la laguna",
-    "chichicastenango", "tikal", "flores", "semuc champey", "lanquin", "lanquín", "acatenango", "xela",
-    "quetzaltenango"];
-  function isGuatemalaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return GUATEMALA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsGuatemala() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isGuatemalaDest(t && t.destination) || isGuatemalaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Argentinien-Bezug für die „Pre-Arrival Argentinien"-Kachel.
-  const ARGENTINA_HINTS = ["argentina", "argentinien", "buenos aires", "patagonia", "patagonien",
-    "el calafate", "el chalten", "el chaltén", "ushuaia", "bariloche", "mendoza", "iguazu", "iguazú",
-    "salta", "fitz roy", "perito moreno"];
-  function isArgentinaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return ARGENTINA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsArgentina() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isArgentinaDest(t && t.destination) || isArgentinaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Chile-Bezug für die „Pre-Arrival Chile"-Kachel.
-  const CHILE_HINTS = ["chile", "santiago", "valparaiso", "valparaíso", "atacama", "san pedro de atacama",
-    "torres del paine", "puerto natales", "punta arenas", "pucon", "pucón", "chiloe", "chiloé",
-    "isla de pascua", "rapa nui", "valle de la luna"];
-  function isChileDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return CHILE_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsChile() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isChileDest(t && t.destination) || isChileDest(cfg && cfg.defaultDestination);
-  }
-
-  // Bolivien-Bezug für die „Pre-Arrival Bolivien"-Kachel.
-  const BOLIVIA_HINTS = ["bolivia", "bolivien", "la paz", "el alto", "uyuni", "salar de uyuni",
-    "potosi", "potosí", "sucre", "copacabana", "isla del sol", "titicaca", "tiwanaku", "coroico",
-    "rurrenabaque"];
-  function isBoliviaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return BOLIVIA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsBolivia() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isBoliviaDest(t && t.destination) || isBoliviaDest(cfg && cfg.defaultDestination);
+    return destMatches(id, t && t.destination) || destMatches(id, tripCfgDest());
   }
 
   // ----- Link-Parameter lesen/aufräumen (für geteilte Onboarding-Links) -----
@@ -1381,15 +1237,15 @@
     // Erscheinungsbild-Schild im Profil das Getränk der ersten Station.
     const r = gamestats.tripGoal && gamestats.tripGoal.route;
     if (Array.isArray(r) && r.length && r[0].id) return r[0].id;
-    if (tripMentionsColombia()) return "colombia";
-    if (tripMentionsPeru()) return "peru";
-    if (tripMentionsMexico()) return "mexico";
-    if (tripMentionsCostaRica()) return "costarica";
-    if (tripMentionsEcuador()) return "ecuador";
-    if (tripMentionsGuatemala()) return "guatemala";
-    if (tripMentionsArgentina()) return "argentina";
-    if (tripMentionsChile()) return "chile";
-    if (tripMentionsBolivia()) return "bolivia";
+    if (tripMentions("colombia")) return "colombia";
+    if (tripMentions("peru")) return "peru";
+    if (tripMentions("mexico")) return "mexico";
+    if (tripMentions("costarica")) return "costarica";
+    if (tripMentions("ecuador")) return "ecuador";
+    if (tripMentions("guatemala")) return "guatemala";
+    if (tripMentions("argentina")) return "argentina";
+    if (tripMentions("chile")) return "chile";
+    if (tripMentions("bolivia")) return "bolivia";
     return null;
   }
 
@@ -3508,39 +3364,39 @@
   // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
   // sonst der erste Plan (Kolumbien).
   function defaultPretripScope() {
-    if (tripMentionsCusco()) return "cusco"; // konkrete Städte vor dem breiten Land
-    if (tripMentionsLima()) return "lima";
-    if (tripMentionsArequipa()) return "arequipa";
-    if (tripMentionsPeru()) return "peru";
-    if (tripMentionsCdmx()) return "cdmx";
-    if (tripMentionsOaxaca()) return "oaxaca";
-    if (tripMentionsMerida()) return "merida";
-    if (tripMentionsMexico()) return "mexico";
-    if (tripMentionsArenal()) return "arenal";
-    if (tripMentionsMonteverde()) return "monteverde";
-    if (tripMentionsCostaRica()) return "costarica";
-    if (tripMentionsQuito()) return "quito";
-    if (tripMentionsEcuador()) return "ecuador";
-    if (tripMentionsAntigua()) return "antigua";
-    if (tripMentionsGuatemala()) return "guatemala";
-    if (tripMentionsBuenosAires()) return "buenosaires";
-    if (tripMentionsMendoza()) return "mendoza";
-    if (tripMentionsBariloche()) return "bariloche";
-    if (tripMentionsArgentina()) return "argentina";
-    if (tripMentionsSantiago()) return "santiago";
-    if (tripMentionsValparaiso()) return "valparaiso";
-    if (tripMentionsAtacama()) return "atacama";
-    if (tripMentionsPuertonatales()) return "puertonatales";
-    if (tripMentionsPucon()) return "pucon";
-    if (tripMentionsChile()) return "chile";
-    if (tripMentionsLapaz()) return "lapaz";
-    if (tripMentionsUyuni()) return "uyuni";
-    if (tripMentionsCopacabana()) return "copacabana";
-    if (tripMentionsSucre()) return "sucre";
-    if (tripMentionsBolivia()) return "bolivia";
-    if (tripMentionsCartagena()) return "cartagena"; // konkrete Städte vor dem breiten Kolumbien
-    if (tripMentionsMedellin()) return "medellin";
-    if (tripMentionsColombia()) return "colombia";
+    if (tripMentions("cusco")) return "cusco"; // konkrete Städte vor dem breiten Land
+    if (tripMentions("lima")) return "lima";
+    if (tripMentions("arequipa")) return "arequipa";
+    if (tripMentions("peru")) return "peru";
+    if (tripMentions("cdmx")) return "cdmx";
+    if (tripMentions("oaxaca")) return "oaxaca";
+    if (tripMentions("merida")) return "merida";
+    if (tripMentions("mexico")) return "mexico";
+    if (tripMentions("arenal")) return "arenal";
+    if (tripMentions("monteverde")) return "monteverde";
+    if (tripMentions("costarica")) return "costarica";
+    if (tripMentions("quito")) return "quito";
+    if (tripMentions("ecuador")) return "ecuador";
+    if (tripMentions("antigua")) return "antigua";
+    if (tripMentions("guatemala")) return "guatemala";
+    if (tripMentions("buenosaires")) return "buenosaires";
+    if (tripMentions("mendoza")) return "mendoza";
+    if (tripMentions("bariloche")) return "bariloche";
+    if (tripMentions("argentina")) return "argentina";
+    if (tripMentions("santiago")) return "santiago";
+    if (tripMentions("valparaiso")) return "valparaiso";
+    if (tripMentions("atacama")) return "atacama";
+    if (tripMentions("puertonatales")) return "puertonatales";
+    if (tripMentions("pucon")) return "pucon";
+    if (tripMentions("chile")) return "chile";
+    if (tripMentions("lapaz")) return "lapaz";
+    if (tripMentions("uyuni")) return "uyuni";
+    if (tripMentions("copacabana")) return "copacabana";
+    if (tripMentions("sucre")) return "sucre";
+    if (tripMentions("bolivia")) return "bolivia";
+    if (tripMentions("cartagena")) return "cartagena"; // konkrete Städte vor dem breiten Kolumbien
+    if (tripMentions("medellin")) return "medellin";
+    if (tripMentions("colombia")) return "colombia";
     return (PRETRIP()[0] || {}).scope || "colombia";
   }
 
