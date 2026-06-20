@@ -2454,6 +2454,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   color: var(--muted); padding: 2px 6px; border-radius: 6px;
 }
 .teacher-x:hover { color: var(--brand-ink); }
+/* Echtes A4-Seitenformat mit gleichmäßigen Rändern – das Arbeitsheft druckt so
+   randscharf und seitengleich (vorher: nur Browser-Default-Ränder griffen). */
+@page { size: A4; margin: 16mm 14mm; }
 @media print {
   .appbar, .teacher-actions, .teacher-x, .topbar, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
   .no-print, .sheet-controls,
@@ -2461,7 +2464,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .btoast, .updbar, .upd-scrim, .tgt-scrim { display: none !important; }
   /* Aktivitätsblatt randlos, schwarz auf weiß drucken (unabhängig vom Theme). */
   .screen { padding: 0 !important; }
-  .sheet { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; }
+  /* Im Druck den @page-Rand nutzen: Blatt auf A4-Inhaltsbreite, ohne eigenes
+     Padding/Border. Diese Regel steht NACH der allgemeinen .sheet-Regel und
+     gewinnt so die Kaskade. */
+  .sheet { box-shadow: none !important; border: none !important; margin: 0 auto !important; padding: 0 !important; max-width: 182mm !important; }
+  /* Bewusste Seitenumbrüche: Lösungsschlüssel auf eigene Seite; lange Tabellen
+     dürfen fließen, einzelne Zeilen aber nicht zerreißen. */
+  .sheet-answerkey { break-before: page; page-break-before: always; }
+  .sheet-table { break-inside: auto; }
+  .sheet-table tr, .sheet-section--gapfill li, .sheet-cards li { break-inside: avoid; }
   /* Klassentabelle für den Druck umbrechen lassen, damit ALLE Spalten (v. a.
      das Niveau) auf A4 passen – overflow-x scrollt auf Papier nicht, es klippt sonst. */
   .teacher-tablewrap { overflow: visible !important; }
@@ -2534,6 +2545,61 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-audio { font-size: 0.85rem; color: #6b5a4c; margin: 4px 0 0; }
 .sheet-notes { margin-top: 14px; break-inside: avoid; }
 .sheet-notes-lines { border: 1px solid #ccc; border-radius: 6px; height: 70px; margin-top: 4px; background: repeating-linear-gradient(#fff, #fff 22px, #e6ddcf 23px); }
+
+/* ---------- Arbeitsheft: Übungsbausteine ---------- */
+/* Bausteinauswahl in der Steuerleiste (nur Bildschirm – steckt in .sheet-controls,
+   die im Druck ohnehin display:none ist). */
+.sheet-pick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; width: 100%; margin-top: 2px; }
+.sheet-pick__label { font-size: 0.85rem; color: var(--muted); font-weight: 700; margin-right: 2px; }
+.sheet-pick__chip { font: inherit; font-size: 0.82rem; cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; background: var(--card, #fff); color: var(--muted); }
+.sheet-pick__chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+/* Jeder Übungsabschnitt bleibt als Ganzes zusammen (kleine Blöcke); große
+   Tabellen/Listen dürfen über die print-Regel oben fließen. */
+.sheet-section { break-inside: avoid; margin: 16px 0; }
+.sheet-section--conjug, .sheet-section--translate, .sheet-section--numbers, .sheet-section--dialogue { break-inside: auto; }
+.sheet-instr { font-size: 0.85rem; color: #6b5a4c; margin: 2px 0 8px; }
+/* Inline-Schreiblücke (Lückentext) + Schreiblinien (Übersetzen/Dialog). */
+.sheet-blank-inline { display: inline-block; min-width: 110px; border-bottom: 1px solid #444; vertical-align: baseline; }
+.sheet-write-line { display: block; border-bottom: 1px solid #bbb; height: 1.8em; }
+.sheet-write-box { height: 36mm; margin-top: 4px; border: 1px solid #ccc; border-radius: 6px; background: repeating-linear-gradient(#fff, #fff 7mm, #e6ddcf calc(7mm + 1px)); }
+/* Wortbank-Chips (Lückentext). */
+.sheet-wordbank { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.sheet-wb-label { font-size: 0.85rem; color: #6b5a4c; font-weight: 700; width: 100%; }
+.sheet-chip { display: inline-block; border: 1px solid var(--sheet-accent); border-radius: 999px; padding: 2px 10px; font-size: 0.9rem; color: #1c140e; }
+/* Lückentext-Items + nummerierte Aufgabenlisten. */
+.sheet-exlist { margin: 6px 0; padding-left: 1.4em; }
+.sheet-exlist li { margin: 8px 0; }
+.sheet-exlist .sheet-de { color: #6b5a4c; font-size: 0.88rem; }
+.sheet-exlist .sheet-es { font-weight: 700; }
+/* Tabellen (Konjugation, Zahlen). */
+.sheet-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+.sheet-table th, .sheet-table td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 0.92rem; vertical-align: top; }
+.sheet-table th { background: color-mix(in srgb, var(--sheet-accent) 12%, #fff); font-size: 0.82rem; }
+.sheet-table .sheet-ans-cell { min-width: 38%; }
+/* Zuordnung (Matching) – zwei Spalten + Lösungsraster. */
+.sheet-match { display: flex; gap: 28px; flex-wrap: wrap; }
+.sheet-match ol { margin: 4px 0; padding-left: 1.6em; }
+.sheet-match li { margin: 6px 0; }
+.sheet-match__col { flex: 1 1 220px; min-width: 0; }
+.sheet-match__grid { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 8px 0 0; font-size: 0.92rem; }
+.sheet-match__grid span { white-space: nowrap; }
+/* Dialog. */
+.sheet-dialogue { margin: 6px 0; }
+.sheet-turn { margin: 7px 0; }
+.sheet-turn .who { font-weight: 700; color: var(--sheet-accent); margin-right: 4px; }
+.sheet-turn--npc .es { display: block; }
+.sheet-turn--npc .de { display: block; color: #6b5a4c; font-size: 0.88rem; }
+.sheet-turn--user .de { display: block; color: #6b5a4c; font-size: 0.88rem; margin-bottom: 2px; }
+/* Landeskunde-Box (Referenz, nie verdeckt) – spiegelt die Challenge-Box. */
+.sheet-culture { background: #f6efe3; border-left: 3px solid var(--sheet-accent); padding: 8px 12px; margin: 6px 0; border-radius: 4px; break-inside: avoid; }
+.sheet-culture ul { margin: 4px 0 0; padding-left: 1.2em; }
+.sheet-culture li { margin: 4px 0; }
+/* Lösungsschlüssel – kompakt, eigene Seite (Umbruch via print-Regel oben). */
+.sheet-answerkey { font-size: 0.85rem; border-top: 2px solid #1c140e; margin-top: 18px; padding-top: 10px; }
+.sheet-answerkey h3 { font-size: 0.95rem; margin: 10px 0 2px; color: var(--sheet-accent); }
+.sheet-answerkey ol { margin: 2px 0; padding-left: 1.5em; }
+.sheet-answerkey li { margin: 1px 0; }
+.sheet-ak-note { font-style: italic; color: #6b5a4c; margin: 2px 0 6px; }
 
 /* Aufgaben/Zuweisung (backend-frei) */
 .teacher-sep { border: none; border-top: 1px solid var(--line); margin: 22px 0 8px; }

@@ -15,8 +15,10 @@
 (function () {
   "use strict";
 
-  function randInt(lo, hi) {
-    return lo + Math.floor(Math.random() * (hi - lo + 1));
+  // Optionaler rng (Default Math.random) erlaubt reproduzierbare Runden – das
+  // Arbeitsheft seedet ihn pro Ziel, damit Nachdrucke identisch sind.
+  function randInt(lo, hi, rng) {
+    return lo + Math.floor((rng || Math.random)() * (hi - lo + 1));
   }
 
   // Aus dem title eines regelmäßigen Musters den Infinitiv ziehen.
@@ -63,7 +65,7 @@
 
   // Eine Runde aus count Items bauen. Vermeidet exakte Verb×Person-Dubletten,
   // solange die Stufe genug Kombinationen hergibt (sonst mit Wiederholung füllen).
-  function buildRound(conjugation, level, count) {
+  function buildRound(conjugation, level, count, rng) {
     const n = Math.max(1, Number(count) || 10);
     const persons = (conjugation && conjugation.persons) || [];
     const pool = verbPool(conjugation, level);
@@ -74,8 +76,8 @@
     let guard = 0;
     while (out.length < n && guard < n * 40) {
       guard += 1;
-      const v = pool[randInt(0, pool.length - 1)];
-      const pi = randInt(0, persons.length - 1);
+      const v = pool[randInt(0, pool.length - 1, rng)];
+      const pi = randInt(0, persons.length - 1, rng);
       const key = v.verb + "#" + pi;
       if (seen.has(key)) continue;
       seen.add(key);
@@ -83,8 +85,8 @@
     }
     // Spanne zu klein für lauter distinkte Items? Mit Wiederholungen auffüllen.
     while (out.length < n) {
-      const v = pool[randInt(0, pool.length - 1)];
-      const pi = randInt(0, persons.length - 1);
+      const v = pool[randInt(0, pool.length - 1, rng)];
+      const pi = randInt(0, persons.length - 1, rng);
       out.push(makeItem(v, persons, pi));
     }
     return out;

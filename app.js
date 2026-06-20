@@ -3948,6 +3948,167 @@
     return { es: c.es, de: natk(c, "de"), note: natk(ctx, "note") || "" };
   }
 
+  // ---------- Arbeitsheft: Übungsabschnitte aus dem Gesamtbestand ----------
+  // Reiseziel-Scope -> Land (Währung + Landeskunde). Alle PRETRIP/PRESET-Scopes
+  // sind Reiseziele; mehrere Städte teilen ein Land.
+  const SHEET_SCOPE_COUNTRY = {
+    colombia: "colombia", cartagena: "colombia", medellin: "colombia",
+    peru: "peru", cusco: "peru", lima: "peru", arequipa: "peru",
+    mexico: "mexico", cdmx: "mexico", oaxaca: "mexico", merida: "mexico",
+    guatemala: "guatemala", antigua: "guatemala",
+    argentina: "argentina", buenosaires: "argentina", mendoza: "argentina", bariloche: "argentina",
+    chile: "chile", santiago: "chile", valparaiso: "chile", atacama: "chile", puertonatales: "chile", pucon: "chile",
+    costarica: "costarica", arenal: "costarica", monteverde: "costarica",
+    ecuador: "ecuador", quito: "ecuador",
+    bolivia: "bolivia", lapaz: "bolivia", uyuni: "bolivia", copacabana: "bolivia", sucre: "bolivia",
+  };
+  // Land -> Währungs-Key (numbers.CURRENCIES). Ecuador (USD) & Bolivia (BOB)
+  // haben keinen Eintrag -> Fallback CO (Zahlen-Block bleibt generisch).
+  const SHEET_COUNTRY_CURRENCY = {
+    colombia: "CO", peru: "PE", mexico: "MX", guatemala: "GT",
+    argentina: "AR", chile: "CL", costarica: "CR",
+  };
+  // Nur für category:-Ziele mit echtem Themen-Overlap: Kategorie -> frases-cat
+  // bzw. Dialog-Szenario. Reiseziele -> null = „gemischt" (über alle Frames/Dialoge).
+  const SHEET_CAT_FRASES = {
+    verkehr: "transporte", auto: "transporte", reise: "transporte", tour: "transporte", rumbo: "orientacion",
+    hotel: "alojamiento", hostel: "alojamiento",
+    essen: "comida", trinken: "comida", dieta: "comida",
+    compras: "compras", dinero: "compras", banco: "compras", ropa: "compras",
+    notfall: "emergencia", farmacia: "emergencia", belleza: "emergencia",
+    social: "social", coqueteo: "social", familia: "social", talk: "social", noche: "social", alltag: "social",
+  };
+  const SHEET_CAT_DIALOG = {
+    hotel: "hotel", hostel: "hostel", essen: "restaurante", trinken: "restaurante",
+    verkehr: "bus", auto: "taxi", compras: "mercado", dinero: "mercado",
+    notfall: "emergencia", farmacia: "farmacia", grenze: "frontera",
+    coqueteo: "coqueteo", rumbo: "calle", social: "calle",
+  };
+
+  // String->uint32 (FNV-1a) + mulberry32 -> deterministischer rng pro Ziel:
+  // gleiches Ziel ⇒ identisches Heft beim Nachdrucken.
+  function sheetHash(str) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return h >>> 0;
+  }
+  function sheetRng(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function sheetShuffle(arr, rng) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); const tmp = a[i]; a[i] = a[j]; a[j] = tmp; }
+    return a;
+  }
+
+  function sheetTheme(tt, lvls) {
+    const isCategory = tt.kind === "category";
+    let scope = tt.scope;
+    if (tt.kind === "preset") { const pr = (data.PRESETS || []).find((p) => p.id === tt.scope); scope = pr ? pr.scope : tt.scope; }
+    const country = SHEET_SCOPE_COUNTRY[scope] || null;
+    const hasLvl2 = (lvls || []).some((l) => Number(l) >= 2);
+    return {
+      frasesCat: isCategory ? (SHEET_CAT_FRASES[scope] || null) : null,
+      dialogCat: isCategory ? (SHEET_CAT_DIALOG[scope] || null) : null,
+      conjugLevel: hasLvl2 ? 2 : 1,
+      numbersLevel: (scope === "compras" || scope === "dinero") ? 3 : 2,
+      currencyKey: (country && SHEET_COUNTRY_CURRENCY[country]) || "CO",
+      countryId: country,
+    };
+  }
+
+  // Baut die typisierten Übungsabschnitte. Jeder Builder ist gegen leere Quellen
+  // abgesichert (kein leerer Abschnitt). Reihenfolge = Heft-Reihenfolge.
+  function buildSheetSections(theme, allCards, rng) {
+    const out = [];
+    const cards = (allCards || []).filter((c) => c && c.es && natk(c, "de"));
+
+    // 1. Zuordnung ES<->DE (bis 8 Paare).
+    const mPairs = sheetShuffle(cards, rng).slice(0, 8);
+    if (mPairs.length >= 3) {
+      const left = mPairs.map((c, i) => ({ n: i + 1, es: c.es, de: natk(c, "de") }));
+      const order = sheetShuffle(left.map((_, i) => i), rng);
+      const right = order.map((origIdx, j) => ({ l: String.fromCharCode(97 + j), de: left[origIdx].de, orig: origIdx }));
+      left.forEach((x, i) => { const r = right.find((rr) => rr.orig === i); x.l = r ? r.l : ""; });
+      out.push({ type: "matching", left: left.map((x) => ({ n: x.n, es: x.es, l: x.l })), right: right.map((r) => ({ l: r.l, de: r.de })) });
+    }
+
+    // 2. Lückentext (frases): themenpassend oder gemischt.
+    if (frases && frases.FRASES) {
+      const pool = frases.FRASES.filter((f) => f.slot && f.slot.es && (!theme.frasesCat || f.cat === theme.frasesCat));
+      const chosen = sheetShuffle(pool.length ? pool : frases.FRASES.filter((f) => f.slot && f.slot.es), rng).slice(0, 7);
+      if (chosen.length >= 3) {
+        const items = chosen.map((f) => ({ frameEs: f.frameEs, targetDe: natk(f, "targetDe"), answer: f.slot.es }));
+        out.push({ type: "gapfill", wordbank: sheetShuffle(items.map((it) => it.answer), rng), items: items });
+      }
+    }
+
+    // 3. Übersetzung (Kontextsätze DE->ES, sonst einfache Karten).
+    const ctxCards = sheetShuffle(cards.filter((c) => c.context && c.context.sentenceEs), rng).slice(0, 8);
+    if (ctxCards.length >= 3) {
+      out.push({ type: "translate", lines: ctxCards.map((c) => ({ de: natk(c.context, "sentenceDe") || natk(c.context, "situation") || natk(c, "de"), es: c.context.sentenceEs })) });
+    } else {
+      const simple = sheetShuffle(cards, rng).slice(0, 8);
+      if (simple.length >= 3) out.push({ type: "translate", lines: simple.map((c) => ({ de: natk(c, "de"), es: c.es })) });
+    }
+
+    // 4. Konjugation.
+    if (conjug && data.CONJUGATION) {
+      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 8, rng).map((it) => ({
+        verb: it.verbHint || it.verb,
+        person: it.personDe ? it.personDe + " (" + it.personEs + ")" : it.personEs,
+        answer: it.answer,
+      }));
+      if (rows.length) out.push({ type: "conjug", rows: rows });
+    }
+
+    // 5. Zahlen & Preise.
+    if (numbers && numbers.buildRound) {
+      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, 6, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
+      if (items.length) out.push({ type: "numbers", items: items });
+    }
+
+    // 6. Dialog-Lückentext (ein Szenario; user-Repliken verdeckt).
+    if (dialogos && dialogos.DIALOGOS && dialogos.DIALOGOS.length) {
+      const list = dialogos.DIALOGOS;
+      const dlg = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
+      if (dlg && dlg.turns) {
+        const name = "Marco";
+        const sub = (s) => String(s || "").replace(/\{name\}/g, name);
+        out.push({
+          type: "dialogue", title: natk(dlg, "title"),
+          turns: dlg.turns.map((tn) => tn.who === "npc"
+            ? { who: "npc", es: sub(tn.es), de: natk(tn, "de") }
+            : { who: "user", de: natk(tn, "de"), answer: sub(tn.solEs) }),
+        });
+      }
+    }
+
+    // 7. Landeskunde (optional, per Land).
+    if (knigge && knigge.ACCENTS && theme.countryId && knigge.ACCENTS[theme.countryId]) {
+      const acc = knigge.ACCENTS[theme.countryId];
+      const facts = ["hostel", "bus", "grupo", "cultura"].map((k) => natk(acc, k)).filter(Boolean);
+      if (facts.length) out.push({ type: "culture", title: "", facts: facts });
+    }
+
+    // 8. Freies Schreiben (immer; Box + Anleitung genügen).
+    out.push({ type: "writing", prompt: "" });
+
+    return out;
+  }
+  // Reihenfolge-Map fürs Toggle-Label (i18n-Key je Abschnittstyp).
+  const SHEET_SEC_KEY = {
+    matching: "secMatching", gapfill: "secGapfill", translate: "secTranslate",
+    conjug: "secConjug", numbers: "secNumbers", dialogue: "secDialogue",
+    culture: "secCulture", writing: "secWriting",
+  };
+
   function sheetVM() {
     const tt = sheetTargetTask();
     const task = { kind: tt.kind, scope: tt.scope, title: "" };
@@ -3998,6 +4159,13 @@
     // verdeckt; Deutsch bleibt als Prompt stehen. Standard = vollständiges Blatt.
     const exercise = state.sheetMode === "exercise";
     const link = code ? taskShareLink(code) : "";
+    // Arbeitsheft: zusätzliche Übungsabschnitte aus dem Gesamtbestand. Deterministisch
+    // pro Ziel+Etappe geseedet (Nachdruck = identisch); abwählbare via state.sheetSkip.
+    const rng = sheetRng(sheetHash(tt.value + "|" + stageSel));
+    const builtSections = buildSheetSections(sheetTheme(tt, lvls), allCards, rng);
+    const skip = state.sheetSkip || [];
+    const sectionToggles = builtSections.map((s) => ({ type: s.type, label: t("sheet." + (SHEET_SEC_KEY[s.type] || "secWriting")), on: skip.indexOf(s.type) === -1 }));
+    const sections = builtSections.filter((s) => skip.indexOf(s.type) === -1);
     return {
       targets: taskTargets(), sheetTarget: tt.value,
       targetPicker: state.targetPicker, // offenes Ziel-Picker-Modal? ('sheet' | null)
@@ -4007,7 +4175,7 @@
       stageScoped: isPretrip && stageSel !== "all",
       accent: accent, icon: icon, exercise: exercise,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
-      stages: stages,
+      stages: stages, sections: sections, sectionToggles: sectionToggles,
       code: code, link: link,
       // QR auf den Abo-Link – Lernende scannen statt abzutippen. Browser-only
       // (window.SC.qr); fehlt der Generator/Link, bleibt das Feld leer.
@@ -4021,6 +4189,7 @@
     if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
     if (!state.sheetStage) state.sheetStage = "all";
     if (!state.sheetMode) state.sheetMode = "full";
+    if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
     state.screen = "printsheet";
     render();
   }
@@ -6966,6 +7135,11 @@
     else if (action === "open-printsheet") openPrintSheet();
     else if (action === "printsheet-print") printSheet();
     else if (action === "sheet-mode") { state.sheetMode = el.dataset.mode; render(); }
+    else if (action === "toggle-section") {
+      const ty = el.dataset.type; const skip = state.sheetSkip || (state.sheetSkip = []);
+      const i = skip.indexOf(ty); if (i === -1) skip.push(ty); else skip.splice(i, 1);
+      render();
+    }
     else if (action === "open-target-picker") { state.targetPicker = el.dataset.ctx; render(); }
     else if (action === "close-target-picker") { state.targetPicker = null; render(); }
     else if (action === "target-stop") { /* Klick auf die Modal-Karte: nicht schließen */ }
