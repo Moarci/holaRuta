@@ -3082,6 +3082,46 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .cj-prompt__person { font-size: 1.1rem; color: var(--muted); }
 .cj-cta--drill { margin-top: 8px; }
 
+/* ---- ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown) ---- */
+/* Themen-Auswahl: zweispaltige Kacheln (Emoji + Label + Anzahl). */
+.ye-themes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ye-theme {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  cursor: pointer; padding: 16px 10px; border-radius: var(--r-md); box-shadow: var(--shadow);
+}
+.ye-theme:active { transform: translateY(1px); }
+.ye-theme__icon { font-size: 2rem; line-height: 1; }
+.ye-theme__label { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
+.ye-theme__count { font-size: 0.8rem; color: var(--muted); }
+
+/* Bühne: großes Motiv-Emoji, ¿Y esto?, Countdown-Ring → Auflösung. */
+.ye-stage {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 24px 16px; min-height: 320px; justify-content: center;
+  border: 1.5px solid var(--line-strong); background: var(--surface);
+  border-radius: var(--r-lg); box-shadow: var(--shadow);
+}
+.ye-emoji { font-size: 7rem; line-height: 1; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.18)); }
+.ye-q { font-family: var(--font-display); font-weight: 800; font-size: 1.8rem; color: var(--brand); }
+.ye-think { font-size: 0.95rem; color: var(--muted); }
+.ye-count {
+  width: 76px; height: 76px; margin-top: 6px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 4px solid var(--brand); color: var(--brand);
+}
+.ye-count__num { font-family: var(--font-display); font-weight: 800; font-size: 2.4rem; line-height: 1; }
+.ye-stage.is-reveal .ye-emoji { font-size: 5.4rem; }
+.ye-word { font-family: var(--font-display); font-weight: 800; font-size: 2.4rem; line-height: 1.1; }
+.ye-native {
+  font-size: 1rem; color: var(--ink); background: var(--chip, var(--surface-2, rgba(0,0,0,0.06)));
+  padding: 4px 12px; border-radius: var(--r-pill, 999px);
+}
+.ye-rate { display: flex; gap: 10px; margin-top: 12px; }
+.ye-rate .cta { flex: 1 1 0; margin-top: 0; }
+.cta--ghost { background: transparent; color: var(--brand); border: 1.5px solid var(--brand); margin-top: 10px; }
+.cta--soft { background: var(--surface); color: var(--ink); border: 1.5px solid var(--line-strong); }
+
 /* ---- Diálogos (Gesprächs-Simulationen) ---- */
 .dlg-nospeak { font-size: 0.85rem; color: var(--muted); margin: 0 0 10px; }
 .dlg-picks { display: flex; flex-direction: column; gap: 10px; }

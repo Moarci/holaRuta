@@ -27,6 +27,30 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.104.0",
+      date: "2026-06-20",
+      title: "Ruta-Pass-Stempel für „¿Y esto?“",
+      titleEn: "Ruta-Pass badges for “¿Y esto?”",
+      items: [
+        "👀 Der neue Modus „¿Y esto?“ zahlt jetzt auf den Ruta-Pass ein: eigene Stempel-Gruppe mit „¿Y esto?“ (erste Runde), „Ojo entrenado“ (10 Runden) und „Todo a la vista“ (eine Runde, in der du jedes Bild wusstest).",
+      ],
+      itemsEn: [
+        "👀 The new “¿Y esto?” mode now counts towards your Ruta-Pass: its own badge group with “¿Y esto?” (first round), “Trained eye” (10 rounds) and “Todo a la vista” (a round where you knew every picture).",
+      ],
+    },
+    {
+      version: "1.103.0",
+      date: "2026-06-20",
+      title: "Neuer Modus „¿Y esto?“ – Bild raten mit 3-2-1-Countdown",
+      titleEn: "New mode “¿Y esto?” – guess the picture with a 3-2-1 countdown",
+      items: [
+        "👀 Neu unter Entdecken → Spielen: „¿Y esto?“. Ein Motiv erscheint groß, ein kurzer Countdown läuft (3 · 2 · 1) – überlege, wie es auf Spanisch heißt. Bei 0 wird das Wort samt Übersetzung aufgelöst, und du bewertest dich selbst („Wusste ich“ / „Noch nicht“). Sechs Themen (Comida, Bebidas, Animales, De viaje, Naturaleza, En casa) mit je 8+ Motiven – ganz ohne Fotos, also weiter komplett offline.",
+      ],
+      itemsEn: [
+        "👀 New under Discover → Play: “¿Y esto?”. A picture appears, a short countdown runs (3 · 2 · 1) – think how it's called in Spanish. At 0 the word and its translation are revealed and you rate yourself (“I knew it” / “Not yet”). Six themes (food, drinks, animals, travel gear, nature, at home) with 8+ pictures each – no photos, so it stays fully offline.",
+      ],
+    },
+    {
       version: "1.102.0",
       date: "2026-06-20",
       title: "Neues Modul „Música“: der Soundtrack Lateinamerikas",
