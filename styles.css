@@ -2248,10 +2248,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .leveldist-row { display: grid; grid-template-columns: 3.2rem 1fr 2.4rem; align-items: center; gap: 8px; }
 .leveldist-label { font-weight: 800; color: var(--brand-ink); font-size: 0.92rem; }
 .leveldist-bar { height: 14px; background: var(--line); border-radius: 7px; overflow: hidden; }
-.leveldist-fill { display: block; height: 100%; min-width: 3px; background: var(--brand); border-radius: 7px; }
+.leveldist-fill { display: block; height: 100%; min-width: 3px; background: var(--brand); border-radius: 7px;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .leveldist-count { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
 .leveldist-foot { margin: 8px 0 0; color: var(--muted); font-size: 0.9rem; }
 .leveldist-foot strong { color: var(--ink); }
+
+/* Modo profe – Klassenname-Feld, sortierbare Spaltenköpfe, Druck-Kopf. */
+.teacher-classname { display: flex; align-items: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+.teacher-classname__label { font-weight: 700; color: var(--brand-ink); }
+.teacher-classname .task-input { max-width: 22em; flex: 1 1 12em; }
+.teacher-sortbtn { font: inherit; font-weight: 800; color: var(--brand-ink); background: transparent; border: 0; padding: 0; cursor: pointer; white-space: nowrap; }
+.teacher-sortbtn:hover { text-decoration: underline; }
+.teacher-sortbtn.is-active { color: var(--brand); }
+.teacher-printhead { display: none; }
+@media print {
+  .teacher-printhead { display: block; margin: 0 0 12px; }
+  .teacher-printhead__title { display: block; font-size: 1.35rem; font-weight: 800; color: #1c140e; }
+  .teacher-printhead__meta { display: block; font-size: 0.85rem; color: #555; margin-top: 2px; }
+  .teacher-sortbtn { color: #1c140e !important; }
+}
 .teacher-tablewrap { overflow-x: auto; }
 .teacher-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 .teacher-table th, .teacher-table td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }

@@ -146,6 +146,87 @@
     return { buckets, max, tested, untested: list.length - tested, total: list.length };
   }
 
+  // Rang eines Niveaus für die Sortierung; „noch nicht getestet" (null/unbekannt)
+  // sortiert unter A0 (-1), damit ungetestete Schüler beim Aufsteigend-Sortieren oben
+  // als „kümmern" sichtbar werden.
+  function levelRank(level) {
+    const i = CEFR_ORDER.indexOf(level);
+    return i < 0 ? -1 : i;
+  }
+
+  // Sortier-Schlüssel der Klassentabelle -> Wert-Extraktor. Reine Lese-Funktionen.
+  const SORT_KEYS = {
+    name:       (s) => String((s && s.name) || "").toLowerCase(),
+    level:      (s) => levelRank(studentLevel(s)),
+    mastered:   (s) => (s && s.cardsMastered) || 0,
+    streak:     (s) => (s && s.streak) || 0,
+    challenges: (s) => (s && s.challenges) || 0,
+    pretrip:    (s) => (s && s.pretripDays) || 0,
+  };
+
+  // Klassenliste sortieren (neue Liste). dir: 1 aufsteigend, -1 absteigend.
+  // Stabiler Tie-Break über den Namen, damit gleiche Werte deterministisch stehen.
+  function sortRoster(students, key, dir) {
+    const list = Array.isArray(students) ? students.slice() : [];
+    const get = SORT_KEYS[key] || SORT_KEYS.name;
+    const d = dir < 0 ? -1 : 1;
+    return list.sort((a, b) => {
+      const va = get(a), vb = get(b);
+      if (va < vb) return -1 * d;
+      if (va > vb) return 1 * d;
+      const na = SORT_KEYS.name(a), nb = SORT_KEYS.name(b);
+      return na < nb ? -1 : na > nb ? 1 : 0;
+    });
+  }
+
+  // Einen Schüler in die Liste einfügen ODER einen gleichnamigen ersetzen (Re-Import
+  // eines aktualisierten Backups soll keine Dublette erzeugen). Vergleich case-/
+  // whitespace-tolerant. Gibt die neue Liste + ob ersetzt wurde zurück. REIN.
+  function upsertStudent(roster, summary) {
+    const list = Array.isArray(roster) ? roster.slice() : [];
+    if (!summary) return { roster: list, replaced: false };
+    const norm = (n) => String(n || "").trim().toLowerCase();
+    const key = norm(summary.name);
+    const at = key ? list.findIndex((s) => norm(s.name) === key) : -1;
+    if (at >= 0) { list[at] = summary; return { roster: list, replaced: true }; }
+    list.push(summary);
+    return { roster: list, replaced: false };
+  }
+
+  // Eine CSV-Zelle quoten (RFC-4180-nah): Felder mit Komma/Quote/Zeilenumbruch
+  // werden in Anführungszeichen gesetzt, interne Quotes verdoppelt.
+  function csvCell(v) {
+    const s = String(v == null ? "" : v);
+    return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
+  // Eine Schüler-Zeile in fester Spaltenreihenfolge (passend zu rosterCSV-Header).
+  function rosterRow(s) {
+    const res = (s && (s.assessment || s.placement)) || null;
+    const score = res && typeof res.finalScore === "number" ? Math.round(res.finalScore * 100) + "%" : "";
+    const packs = Array.isArray(s && s.masteredCats) ? s.masteredCats.join("; ") : "";
+    return [
+      (s && s.name) || "", studentLevel(s) || "", score,
+      (s && s.cardsMastered) || 0, (s && s.totalCards) || 0,
+      (s && s.streak) || 0, (s && s.challenges) || 0,
+      ((s && s.pretripDays) || 0) + "/" + ((s && s.pretripMax) || 0), packs,
+    ];
+  }
+
+  // Klassenliste als CSV (CRLF, Excel-freundlich). headerRow = lokalisierte
+  // Spaltenüberschriften in derselben Reihenfolge wie rosterRow (9 Spalten). REIN.
+  function rosterCSV(students, headerRow) {
+    const list = Array.isArray(students) ? students : [];
+    const rows = [];
+    if (Array.isArray(headerRow) && headerRow.length) rows.push(headerRow);
+    list.forEach((s) => rows.push(rosterRow(s)));
+    return rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
+  }
+
   window.SC = window.SC || {};
-  window.SC.stats = { record, statusOf, cardSummary, overview, levelDistribution, studentLevel, CEFR_ORDER, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS };
+  window.SC.stats = {
+    record, statusOf, cardSummary, overview,
+    levelDistribution, studentLevel, levelRank, sortRoster, upsertStudent, rosterCSV,
+    CEFR_ORDER, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS,
+  };
 })();

@@ -271,6 +271,50 @@ test("stats.levelDistribution: leere/kaputte Eingaben sind robust", () => {
   assert.equal(junk.untested, 2);
 });
 
+test("stats.sortRoster: Name/Mastered/Level mit Richtung, stabiler Tie-Break, ohne Mutation", () => {
+  const r = [
+    { name: "Bea", cardsMastered: 5, assessment: { level: "A2" } },
+    { name: "Ana", cardsMastered: 5, placement: { level: "B1" } },
+    { name: "Cid", cardsMastered: 9 }, // ungetestet
+  ];
+  const names = (key, dir) => stats.sortRoster(r, key, dir).map((s) => s.name);
+  assert.deepEqual(names("name", 1), ["Ana", "Bea", "Cid"]);
+  assert.deepEqual(names("name", -1), ["Cid", "Bea", "Ana"]);
+  // mastered absteigend: Cid(9) zuerst; Gleichstand 5 -> Tie-Break Name (Ana<Bea)
+  assert.deepEqual(names("mastered", -1), ["Cid", "Ana", "Bea"]);
+  // level aufsteigend: ungetestet(-1) < A2 < B1
+  assert.deepEqual(names("level", 1), ["Cid", "Bea", "Ana"]);
+  // unbekannter Schlüssel -> wie Name
+  assert.deepEqual(names("xxx", 1), ["Ana", "Bea", "Cid"]);
+  assert.equal(r[0].name, "Bea"); // Originalliste unverändert
+});
+
+test("stats.upsertStudent: ersetzt gleichnamigen Eintrag (case/whitespace-tolerant), sonst anhängen", () => {
+  const r1 = stats.upsertStudent([], { name: "Ana", cardsMastered: 1 });
+  assert.equal(r1.replaced, false);
+  assert.equal(r1.roster.length, 1);
+  const r2 = stats.upsertStudent(r1.roster, { name: " ana ", cardsMastered: 7 });
+  assert.equal(r2.replaced, true);
+  assert.equal(r2.roster.length, 1);
+  assert.equal(r2.roster[0].cardsMastered, 7);
+  const r3 = stats.upsertStudent(r2.roster, { name: "Bea" });
+  assert.equal(r3.replaced, false);
+  assert.equal(r3.roster.length, 2);
+});
+
+test("stats.rosterCSV: Header + Zeilen in fester Spaltenfolge, RFC-Quoting", () => {
+  const students = [
+    { name: "Ana, M.", assessment: { level: "B1", finalScore: 0.82 }, cardsMastered: 10, totalCards: 50, streak: 3, challenges: 2, pretripDays: 1, pretripMax: 7, masteredCats: ["Essen", "Taxi"] },
+    { name: 'Bo "X"', placement: { level: "A2", finalScore: 0.4 }, cardsMastered: 2, totalCards: 50, streak: 0, challenges: 0, pretripDays: 0, pretripMax: 7, masteredCats: [] },
+  ];
+  const lines = stats.rosterCSV(students, ["Name", "Niveau", "Score", "Gem", "Ges", "Serie", "Ch", "Pre", "Pakete"]).split("\r\n");
+  assert.equal(lines.length, 3);
+  assert.equal(lines[0], "Name,Niveau,Score,Gem,Ges,Serie,Ch,Pre,Pakete");
+  assert.equal(lines[1], '"Ana, M.",B1,82%,10,50,3,2,1/7,Essen; Taxi');
+  assert.equal(lines[2], '"Bo ""X""",A2,40%,2,50,0,0,0/7,');
+  assert.equal(stats.rosterCSV([], []), ""); // leer ohne Header
+});
+
 // ---------- badges ----------
 test("badges.buildMetrics: zählt gelernte/gemeisterte Karten und Kategorie-Anteile", () => {
   const cards = [

@@ -3457,29 +3457,54 @@
     const actions = `
       <div class="teacher-actions">
         <button class="teacher-btn teacher-btn--main" data-action="teacher-import">📥 ${esc(t("teacher.importBtn"))}</button>
-        ${vm.count ? `<button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
+        ${vm.count ? `<button class="teacher-btn" data-action="teacher-csv">📄 ${esc(t("teacher.csvBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
         <button class="teacher-btn" data-action="teacher-clear">🗑️ ${esc(t("teacher.clearBtn"))}</button>` : ""}
       </div>
       <input type="file" id="teacher-file" accept="application/json,.json" multiple hidden>`;
 
+    // Klickbarer Spaltenkopf zum Sortieren; aktive Spalte trägt ▲/▼ je Richtung.
+    const arrow = (key) => vm.sortKey === key ? (vm.sortDir < 0 ? " ▼" : " ▲") : "";
+    const sortTh = (key, label, extra) => `
+      <th${extra || ""}><button type="button" class="teacher-sortbtn${vm.sortKey === key ? " is-active" : ""}"
+        data-action="teacher-sort" data-key="${key}" aria-label="${esc(t("teacher.sortBy", { col: label }))}">${esc(label)}${arrow(key)}</button></th>`;
+
+    // Druck-Kopf (nur im Ausdruck sichtbar): Klassenname + Datum machen das Blatt
+    // selbsterklärend, ohne den Bildschirm zu verstellen.
+    const printHead = vm.count ? `
+      <div class="teacher-printhead">
+        <span class="teacher-printhead__title">${esc(vm.className || t("teacher.printTitleDefault"))}</span>
+        <span class="teacher-printhead__meta">${esc(t("teacher.printDateLabel"))}: ${esc(vm.printDate)}</span>
+      </div>` : "";
+
+    // Optionaler Klassenname (steuert Druck-Kopf + CSV-Dateiname). Nicht mitgedruckt.
+    const classNameField = vm.count ? `
+      <label class="teacher-classname no-print">
+        <span class="teacher-classname__label">${esc(t("teacher.classNameLabel"))}</span>
+        <input id="teacher-classname" class="task-input" type="text" maxlength="60"
+          placeholder="${esc(t("teacher.classNamePh"))}" value="${esc(vm.className)}">
+      </label>` : "";
+
     const body = vm.count
       ? `
+      ${printHead}
       <p class="teacher-summary">${esc(t("teacher.classSummary", { n: vm.count, avg: vm.avgMastered, total: vm.totalCards }))}</p>
+      ${classNameField}
       ${renderLevelDist(vm.levelDist)}
       <div class="teacher-tablewrap">
         <table class="teacher-table">
           <thead><tr>
-            <th>${esc(t("teacher.colName"))}</th>
-            <th>${esc(t("teacher.colMastered"))}</th>
-            <th>${esc(t("teacher.colStreak"))}</th>
-            <th>${esc(t("teacher.colChallenges"))}</th>
-            <th>${esc(t("teacher.colPretrip"))}</th>
-            <th>${esc(t("teacher.colLevel"))}</th>
+            ${sortTh("name", t("teacher.colName"))}
+            ${sortTh("mastered", t("teacher.colMastered"))}
+            ${sortTh("streak", t("teacher.colStreak"))}
+            ${sortTh("challenges", t("teacher.colChallenges"))}
+            ${sortTh("pretrip", t("teacher.colPretrip"))}
+            ${sortTh("level", t("teacher.colLevel"))}
             <th>${esc(t("teacher.colPacks"))}</th>
-            <th aria-label="${esc(t("teacher.remove"))}"></th>
+            <th class="no-print" aria-label="${esc(t("teacher.remove"))}"></th>
           </tr></thead>
           <tbody>
-            ${vm.students.map((s, i) => `
+            ${vm.students.map((s) => `
             <tr>
               <td class="teacher-name">${esc(s.name)}</td>
               <td>${s.cardsMastered} / ${s.totalCards}<span class="teacher-sub"> · ${esc(t("teacher.reviewed", { n: s.cardsReviewed }))}</span></td>
@@ -3488,7 +3513,7 @@
               <td>${s.pretripDays} / ${s.pretripMax}</td>
               <td>${(s.assessment || s.placement) ? `${esc((s.assessment || s.placement).level)}<span class="teacher-sub"> · ${Math.round(((s.assessment || s.placement).finalScore || 0) * 100)}%${s.assessment ? " 📋" : ""}</span>` : "—"}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
-              <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
+              <td class="no-print"><button class="teacher-x" data-action="teacher-remove" data-idx="${s._idx}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
           </tbody>
         </table>
