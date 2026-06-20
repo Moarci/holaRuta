@@ -32,12 +32,12 @@
       title: "Mi léxico: Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon",
       titleEn: "Mi léxico: save words & phrases as favourites – your own lexicon",
       items: [
-        "⭐ Neu: „Mi léxico“ – tippe auf den Stern (auf jeder Karte, im Spickzettel oder direkt im Lexikon), um Wörter und Sätze zu deinen Favoriten zu machen. So baust du dir dein eigenes kleines Lexikon mit dem, was für DICH wichtig ist – zum blitzschnellen Nachsehen, auch in Stresssituationen.",
+        "⭐ Neu: „Mi léxico“ – tippe auf den Stern (direkt beim Lernen, auf der Karten-Detailseite, im Spickzettel oder im Lexikon), um Wörter und Sätze zu deinen Favoriten zu machen. So baust du dir dein eigenes kleines Lexikon mit dem, was für DICH wichtig ist – zum blitzschnellen Nachsehen, auch in Stresssituationen.",
         "✍️ Eigene Einträge: Du kannst auch ganz eigene Wörter und Sätze (mit Aussprache-Tipp) ins Lexikon tippen, die es als Karte gar nicht gibt.",
         "📲 Direkt griffbereit: „Mi léxico“ hat einen eigenen Homescreen-Shortcut (App-Icon gedrückt halten) und steht in Entdecken sowie im Profil. Favoriten wandern auch ins Backup (Export/Import).",
       ],
       itemsEn: [
-        "⭐ New: „Mi léxico“ – tap the star (on any card, in the cheat sheet or right inside the lexicon) to save words and phrases as favourites. Build your own little lexicon with what matters to YOU – for instant reference, even in stressful moments.",
+        "⭐ New: „Mi léxico“ – tap the star (right while learning, on the card detail page, in the cheat sheet or inside the lexicon) to save words and phrases as favourites. Build your own little lexicon with what matters to YOU – for instant reference, even in stressful moments.",
         "✍️ Your own entries: you can also type in completely custom words and phrases (with a pronunciation tip) that don't exist as a card.",
         "📲 Always to hand: „Mi léxico“ has its own home-screen shortcut (long-press the app icon) and lives in Discover and your Profile. Favourites are included in the backup (export/import) too.",
       ],

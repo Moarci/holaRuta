@@ -1275,6 +1275,7 @@
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
+            ${favStar(vm.cardId, vm.isFav, { cls: "favstar--top" })}
             <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
           </div>
         </div>

@@ -533,6 +533,8 @@
       mode: state.mode,
       dir: state.dir,
       card,
+      cardId: card.id,
+      isFav: isFavorite(card.id),
       question: spanishIsQuestion ? card.es : native,
       answer: spanishIsQuestion ? native : card.es,
       es: card.es, // Hör-Modus deckt immer das Spanische auf (richtungsunabhängig)
@@ -5674,19 +5676,42 @@
     };
   }
 
+  // Sichtbare Favoriten-Sterne einer Id IN-PLACE umschalten – ohne Voll-Re-Render.
+  // Wichtig beim Lernen: ein render() würde im Schreiben-Modus den schon getippten
+  // (noch nicht abgeschickten) Text wegwerfen und die 3D-Karte neu aufbauen. Wie der
+  // 🔊-Knopf (speakCurrent) fasst der Stern darum nur sein eigenes Markup an.
+  function updateFavStars(id, on) {
+    const label = on ? t("favorites.remove") : t("favorites.add");
+    const safe = (window.CSS && CSS.escape) ? CSS.escape(id) : String(id).replace(/["\\]/g, "\\$&");
+    let nodes;
+    try { nodes = document.querySelectorAll('[data-action="fav-toggle"][data-id="' + safe + '"]'); }
+    catch (e) { nodes = []; }
+    nodes.forEach((b) => {
+      b.classList.toggle("is-on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.setAttribute("aria-label", label);
+      b.setAttribute("title", label);
+      b.textContent = on ? "★" : "☆";
+    });
+  }
+
   // Karte (eingebaut/eigen) als Favorit an- oder abwählen. Neu hinzugefügte stehen
-  // oben (neueste zuerst). Unbekannte Ids werden ignoriert.
+  // oben (neueste zuerst). Unbekannte Ids werden ignoriert. Aktualisiert die Sterne
+  // in-place (kein Re-Render) – siehe updateFavStars.
   function toggleFavorite(id) {
     if (!id) return;
+    let on;
     if (favIds.has(id)) {
       favorites = favorites.filter((f) => f.id !== id);
+      on = false;
     } else {
       const card = cardById(id);
       if (!card) return;
       favorites = [favEntryFromCard(card)].concat(favorites);
+      on = true;
     }
     persistFavorites();
-    render();
+    updateFavStars(id, on);
   }
 
   // Favorit entfernen (aus der Lexikon-Liste). Schließt ggf. die offene Großanzeige
