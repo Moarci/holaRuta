@@ -1141,6 +1141,27 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sharepic-btn:hover { color: var(--brand-ink); }
 .sharepic-btn:active { opacity: 0.7; }
 
+/* Favoriten-Button direkt unter der Karte (löst den nackten Stern aus der Kopfzeile
+ * ab – dort war ohne Beschriftung unklar, was er tut). Beschrifteter Pill: Stern +
+ * „Merken"/„Gemerkt". Aktiv (is-on) bekommt er den warmen Favoriten-Goldton. */
+.favline {
+  align-self: center; margin: 14px auto 2px; padding: 9px 18px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font); font-size: 0.9rem; font-weight: 700; color: var(--ink-soft);
+  background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
+  box-shadow: var(--shadow);
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease, transform 0.1s ease;
+}
+.favline:hover { border-color: var(--line-strong); }
+.favline:active { transform: translateY(1px); opacity: 0.9; }
+.favline__star { font-size: 1.15rem; line-height: 1; color: var(--faint); transition: color 0.12s ease; }
+.favline.is-on {
+  color: var(--brand-ink);
+  border-color: color-mix(in srgb, #E9A23B 55%, var(--line-strong));
+  background: color-mix(in srgb, #E9A23B 12%, var(--card));
+}
+.favline.is-on .favline__star { color: #E9A23B; }
+
 /* „Überspringen": dezenter, zentrierter Button. Nimmt die aktuelle Karte ohne
  * Bewertung aus der Sitzung – damit niemand jede Karte durchziehen muss. */
 .skipbtn {
@@ -3491,6 +3512,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border-radius: 999px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.04em;
   text-transform: uppercase; background: color-mix(in srgb, var(--ok) 88%, #000); color: #fff;
 }
+/* Mi-léxico-Zähler: Favoriten-Goldton statt des grünen „geschafft"-Badges. */
+.today__ruta-badge--lex { background: #E9A23B; color: #2A1A0C; }
 
 /* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
 .trip {

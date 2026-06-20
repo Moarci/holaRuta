@@ -394,6 +394,7 @@
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       favCount: favorites.length, // ⭐ „Mi léxico"-Zähler für den Profil-Nav-Eintrag
+      favLast: favorites.length ? { es: favorites[0].es, de: favorites[0].de } : null, // jüngster Favorit für die Dashboard-Vorschau
       streak: currentStreak(),
       xp: xpVM(),
       overall: {
@@ -5693,7 +5694,16 @@
       b.setAttribute("aria-pressed", on ? "true" : "false");
       b.setAttribute("aria-label", label);
       b.setAttribute("title", label);
-      b.textContent = on ? "★" : "☆";
+      // Beschrifteter Button (favLine unter der Karte): nur Stern + Text in den
+      // gekapselten Spans tauschen, sonst würde der sichtbare Text verschwinden.
+      const starEl = b.querySelector(".favline__star");
+      if (starEl) {
+        starEl.textContent = on ? "★" : "☆";
+        const txtEl = b.querySelector(".favline__txt");
+        if (txtEl) txtEl.textContent = on ? t("study.favSaved") : t("study.favSave");
+      } else {
+        b.textContent = on ? "★" : "☆";
+      }
     });
   }
 
