@@ -1471,13 +1471,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Sprungmarken-Leiste: gemeinsame Basis für Historia (.hist-nav),
    Tiempos (.ti-nav), Spickzettel (.sz-nav) und Fotos y videos (.ft-nav). Die
    Farbverlauf-Kante der Spickzettel-Chips kommt zusätzlich im SPICKZETTEL-Abschnitt dazu. */
-.hist-nav, .ti-nav, .sz-nav, .ft-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.hist-nav__chip, .ti-nav__chip, .sz-nav__chip, .ft-nav__chip {
+.hist-nav, .ti-nav, .sz-nav, .ft-nav, .mus-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hist-nav__chip, .ti-nav__chip, .sz-nav__chip, .ft-nav__chip, .mus-nav__chip {
   display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px;
   font-size: 0.85rem; font-weight: 700; color: var(--ink); text-decoration: none;
   background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
 }
-.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active, .ft-nav__chip:active { transform: scale(0.96); }
+.hist-nav__chip:active, .ti-nav__chip:active, .sz-nav__chip:active, .ft-nav__chip:active, .mus-nav__chip:active { transform: scale(0.96); }
 /* Angesprungene Abschnitte nicht bündig an den oberen Rand kleben lassen. */
 .cinfo-sect { scroll-margin-top: 12px; }
 
@@ -1751,6 +1751,40 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .foto-app { flex-direction: column; align-items: center; text-align: center; }
   .foto-app__bullets li { text-align: left; }
 }
+
+/* Música: Genre-Herkunft als zweite Zeile im Titel, Künstler-Chips, die
+   Spotify-/Apple-Music-Deep-Links und die „Sound deines Reiselands"-Karte. */
+.mus-genre__origin { display: block; margin-top: 2px; font-family: var(--font); font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+.mus-artists { margin: 4px 0 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.mus-artists__cap { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); }
+.mus-artists__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mus-artist {
+  display: inline-block; padding: 4px 10px; border-radius: 999px;
+  background: var(--surface); border: 1.5px solid var(--line);
+  font-size: 0.82rem; font-weight: 600; color: var(--ink);
+}
+/* Zwei Deep-Link-Knöpfe nebeneinander; brechen auf schmalen Schirmen um. */
+.mus-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.mus-link {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px;
+  border-radius: 999px; font-weight: 700; font-size: 0.9rem; text-decoration: none;
+  border: 1.5px solid transparent; line-height: 1;
+}
+.mus-link:active { transform: scale(0.97); }
+.mus-link--spotify { background: #1DB954; color: #06210F; }
+.mus-link--apple { background: #1B1B1F; color: #FFFFFF; }
+[data-theme="dark"] .mus-link--apple { background: #2A2A30; }
+
+/* „Sound deines Reiselands": kompakte Karte unter dem Land-Auswähler. */
+.mus-country {
+  margin-top: 10px; padding: 14px; border-radius: var(--r-md);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+}
+.mus-country__head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.mus-country__flag { font-size: 2rem; line-height: 1; }
+.mus-country__meta { min-width: 0; }
+.mus-country__genre { font-family: var(--font-display); font-size: 1.1rem; color: var(--ink); line-height: 1.2; }
+.mus-country__song { margin-top: 2px; font-size: 0.9rem; color: var(--ink-soft); }
 
 /* „Heute": Spannungen mit Status-Plakette. */
 .hist-tens { display: flex; flex-direction: column; gap: 12px; }
@@ -3084,6 +3118,46 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .cj-prompt__person { font-size: 1.1rem; color: var(--muted); }
 .cj-cta--drill { margin-top: 8px; }
 
+/* ---- ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown) ---- */
+/* Themen-Auswahl: zweispaltige Kacheln (Emoji + Label + Anzahl). */
+.ye-themes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ye-theme {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  cursor: pointer; padding: 16px 10px; border-radius: var(--r-md); box-shadow: var(--shadow);
+}
+.ye-theme:active { transform: translateY(1px); }
+.ye-theme__icon { font-size: 2rem; line-height: 1; }
+.ye-theme__label { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
+.ye-theme__count { font-size: 0.8rem; color: var(--muted); }
+
+/* Bühne: großes Motiv-Emoji, ¿Y esto?, Countdown-Ring → Auflösung. */
+.ye-stage {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 24px 16px; min-height: 320px; justify-content: center;
+  border: 1.5px solid var(--line-strong); background: var(--surface);
+  border-radius: var(--r-lg); box-shadow: var(--shadow);
+}
+.ye-emoji { font-size: 7rem; line-height: 1; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.18)); }
+.ye-q { font-family: var(--font-display); font-weight: 800; font-size: 1.8rem; color: var(--brand); }
+.ye-think { font-size: 0.95rem; color: var(--muted); }
+.ye-count {
+  width: 76px; height: 76px; margin-top: 6px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 4px solid var(--brand); color: var(--brand);
+}
+.ye-count__num { font-family: var(--font-display); font-weight: 800; font-size: 2.4rem; line-height: 1; }
+.ye-stage.is-reveal .ye-emoji { font-size: 5.4rem; }
+.ye-word { font-family: var(--font-display); font-weight: 800; font-size: 2.4rem; line-height: 1.1; }
+.ye-native {
+  font-size: 1rem; color: var(--ink); background: var(--chip, var(--surface-2, rgba(0,0,0,0.06)));
+  padding: 4px 12px; border-radius: var(--r-pill, 999px);
+}
+.ye-rate { display: flex; gap: 10px; margin-top: 12px; }
+.ye-rate .cta { flex: 1 1 0; margin-top: 0; }
+.cta--ghost { background: transparent; color: var(--brand); border: 1.5px solid var(--brand); margin-top: 10px; }
+.cta--soft { background: var(--surface); color: var(--ink); border: 1.5px solid var(--line-strong); }
+
 /* ---- Diálogos (Gesprächs-Simulationen) ---- */
 .dlg-nospeak { font-size: 0.85rem; color: var(--muted); margin: 0 0 10px; }
 .dlg-picks { display: flex; flex-direction: column; gap: 10px; }
@@ -3237,9 +3311,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    passend zur „Ziel übertroffen“-Zeile. */
 .trip__bar-fill.is-over { background: var(--brand); }
 
-/* Schnellwechsel Reiseland (Profil): horizontal scrollbare Länder-Chips. */
+/* Schnellwechsel Reiseland (Profil): einklappbarer Abschnitt mit Länder-Chips. */
 .tripswitch { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .tripswitch__cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+/* Aufklapp-Kopfzeile (Titel + Chevron). Voll-Breite, damit der ganze Streifen tippbar ist. */
+.tripswitch__toggle, .triptl__toggle {
+  appearance: none; cursor: pointer; font: inherit; width: 100%;
+  display: flex; align-items: center; gap: 8px; padding: 2px 0;
+  border: 0; background: none; color: inherit; text-align: left;
+}
+.tripswitch__toggle:focus-visible, .triptl__toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+.tripswitch__chev, .triptl__chev { margin-left: auto; font-size: 0.8rem; color: var(--muted); line-height: 1; }
 .tripswitch__chips { display: flex; flex-wrap: wrap; gap: 7px; }
 .tripchip {
   appearance: none; cursor: pointer; font: inherit; font-size: 0.84rem; font-weight: 700;
@@ -3250,6 +3332,63 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .tripchip:active { transform: translateY(1px); }
 .tripchip.is-active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 14%, var(--surface)); color: var(--brand-ink, var(--ink)); }
 .tripchip:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.tripswitch__hint { margin: 1px 0 0; font-size: 0.78rem; font-weight: 600; color: var(--muted); line-height: 1.35; }
+
+/* Reise-Route als kompakte Zeitleiste in der Countdown-Karte (Flagge + Land, mit
+   Pfeilen verbunden; bricht bei langen Routen um). */
+.trip__route { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 6px; }
+.trip__stop { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-display); font-weight: 800; font-size: 0.92rem; color: var(--ink); }
+.trip__stop-flag { font-size: 1em; line-height: 1; }
+.trip__arrow { color: var(--muted); font-weight: 800; }
+
+/* Editierbare Reise-Zeitleiste im Profil: nummerierte Stopps, per ⠿-Griff umsortierbar,
+   mit ×-Entfernen. Der Abschnitt ist einklappbar (Kopfzeile mit Anzahl-Badge). */
+.triptl { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.triptl__cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+/* Kleine Pille mit der Stopp-Anzahl in der Kopfzeile (sichtbar auch im eingeklappten Zustand). */
+.triptl__badge {
+  flex: none; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.74rem; font-weight: 800; color: var(--brand-ink, var(--ink));
+  background: color-mix(in srgb, var(--brand) 16%, var(--surface)); border: 1.5px solid var(--brand);
+}
+.triptl__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.triptl__item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: var(--r-sm, 10px);
+  border: 1.5px solid var(--line-strong); background: var(--surface);
+  touch-action: pan-y; /* vertikales Scrollen bleibt erlaubt; Drag startet nur am Griff */
+}
+/* Greif-Griff zum Umsortieren: einzige Fläche mit touch-action:none, damit das
+   Ziehen nicht mit dem Seiten-Scrollen kollidiert. */
+.triptl__drag {
+  flex: none; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  width: 24px; height: 28px; margin: -4px 0; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.05rem; line-height: 1; color: var(--muted); border-radius: 8px;
+}
+.triptl__drag:active { cursor: grabbing; }
+.triptl__num {
+  flex: none; width: 22px; height: 22px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.76rem; font-weight: 800; color: var(--brand-ink, var(--ink));
+  background: color-mix(in srgb, var(--brand) 16%, var(--surface)); border: 1.5px solid var(--brand);
+}
+.triptl__flag { font-size: 1.1rem; line-height: 1; }
+.triptl__name { flex: 1 1 auto; font-weight: 800; color: var(--ink); }
+.triptl__rm {
+  flex: none; appearance: none; cursor: pointer; font: inherit; font-size: 0.9rem; line-height: 1;
+  width: 28px; height: 28px; border-radius: 999px; color: var(--muted);
+  border: 1.5px solid var(--line-strong); background: var(--bg, var(--surface));
+}
+.triptl__rm:active { transform: translateY(1px); }
+.triptl__rm:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* Gerade gezogener Eintrag: angehoben, damit klar ist, was sich bewegt. */
+.triptl__list.is-reordering { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.triptl__item.is-dragging {
+  border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, var(--surface));
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18); opacity: 0.97;
+}
+.triptl__hint { margin: 2px 0 0; font-size: 0.78rem; font-weight: 600; color: var(--muted); line-height: 1.35; }
 .trip--edit { gap: 9px; cursor: default; }
 .trip--edit:active { transform: none; }
 .trip__cap { font-family: var(--font-display); font-weight: 800; margin: 0; }

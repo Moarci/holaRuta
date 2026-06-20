@@ -293,6 +293,9 @@
       // ----- Definiciones (Zuordnen-Quiz) -----
       quizzesPlayed: 0,     // abgeschlossene Quiz-Runden
       quizzesPerfect: 0,    // Quiz-Runden ohne Fehler
+      // ----- ¿Y esto? (Bild-Vokabel-Modus mit Countdown) -----
+      yestoPlayed: 0,       // abgeschlossene ¿Y-esto?-Runden
+      yestoPerfect: 0,      // Runden, in denen jedes Bild gewusst wurde
       // ----- Frases flexibles (Satzbaukasten) -----
       frasesPlayed: 0,      // abgeschlossene Satzbaukasten-Runden
       frasesPerfect: 0,     // Runden ohne Fehler
@@ -314,7 +317,7 @@
       // ----- Pre-Trip-Plan (mehrtägiger Onboarding-Pfad) -----
       pretripDays: {},      // Map Tagesnummer (1..N) -> true (abgeschlossene Pre-Trip-Tage)
       // ----- Trip-Ziel (Countdown + Tagesziel) -----
-      tripGoal: null,       // { destination, endDate:"YYYY-MM-DD", perDay, startedAt } | null
+      tripGoal: null,       // { destination, endDate:"YYYY-MM-DD", perDay, startedAt, route? } | null
       dailyCounts: {},      // Map "YYYY-MM-DD" -> Anzahl Bewertungen an dem Tag
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
@@ -516,7 +519,29 @@
     } else if (typeof t.stayDays === "number" && isFinite(t.stayDays) && t.stayDays >= 1) {
       goal.stayDays = Math.min(400, Math.round(t.stayDays));
     }
+    // Optionale Route (Zeitleiste mehrerer Reiseländer). Nur setzen, wenn mindestens
+    // ein gültiger Stopp übrig bleibt – sonst bleibt das Feld weg, damit Bestands-Ziele
+    // ohne Route unverändert bleiben.
+    const route = sanitizeTripRoute(t.route);
+    if (route.length) goal.route = route;
     return goal;
+  }
+
+  // Route-Stopps: { id, dest, flag }. dest ist Pflicht; id/flag optional. Auf 24
+  // Stopps begrenzt (großzügig für lange Rundreisen, aber gegen Müll geschützt).
+  function sanitizeTripRoute(v) {
+    if (!Array.isArray(v)) return [];
+    const out = [];
+    for (let i = 0; i < v.length && out.length < 24; i++) {
+      const s = v[i];
+      if (!isPlainObject(s)) continue;
+      const dest = typeof s.dest === "string" && s.dest.length > 0 && s.dest.length <= 80 ? s.dest : "";
+      if (!dest) continue;
+      const stop = { id: typeof s.id === "string" ? s.id.slice(0, 24) : "", dest };
+      if (typeof s.flag === "string" && s.flag.length > 0 && s.flag.length <= 8) stop.flag = s.flag;
+      out.push(stop);
+    }
+    return out;
   }
 
   function loadGameStats() {
@@ -554,6 +579,8 @@
       challengesDone: isPlainObject(v.challengesDone) ? v.challengesDone : {},
       quizzesPlayed: num(v.quizzesPlayed),
       quizzesPerfect: num(v.quizzesPerfect),
+      yestoPlayed: num(v.yestoPlayed),
+      yestoPerfect: num(v.yestoPerfect),
       frasesPlayed: num(v.frasesPlayed),
       frasesPerfect: num(v.frasesPerfect),
       frasesThemesDone: isPlainObject(v.frasesThemesDone) ? v.frasesThemesDone : {},

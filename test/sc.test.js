@@ -437,6 +437,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     battlesPlayed: 5, battlesWon: 3, perfectBattles: 1, comebacks: 1,
     roleplaysSeen: { hr01: true }, challengesDone: { challenge01: true },
     quizzesPlayed: 7, quizzesPerfect: 2,
+    yestoPlayed: 4, yestoPerfect: 1,
     frasesPlayed: 3, frasesPerfect: 1, frasesThemesDone: { transporte: true, comida: true },
     listenReviews: 30, preciosPlayed: 4, preciosPerfect: 2, preciosMillon: 1,
     conjugPlayed: 6, conjugPerfect: 3,
@@ -641,6 +642,22 @@ test("store.loadGameStats: Trip-Ziel – optionale Aufenthaltsdauer (Rückreise/
   assert.equal(g.stayDays, undefined);
 });
 
+test("store.loadGameStats: Trip-Ziel – Route (Zeitleiste mehrerer Länder)", () => {
+  const base = (trip) => JSON.stringify(Object.assign({ reviews: 1 }, { tripGoal: trip }));
+  // Gültige Route bleibt erhalten (id/dest/flag), Reihenfolge unverändert.
+  storeMem[GKEY] = base({ destination: "El Salvador, Kolumbien", endDate: "2026-08-01", perDay: 10,
+    route: [{ id: "elsalvador", dest: "El Salvador", flag: "🇸🇻" }, { id: "colombia", dest: "Kolumbien", flag: "🇨🇴" }] });
+  assert.deepEqual(store.loadGameStats().tripGoal.route,
+    [{ id: "elsalvador", dest: "El Salvador", flag: "🇸🇻" }, { id: "colombia", dest: "Kolumbien", flag: "🇨🇴" }]);
+  // Stopps ohne dest fallen raus; flag/id optional.
+  storeMem[GKEY] = base({ destination: "Peru", endDate: "2026-08-01", perDay: 10,
+    route: [{ id: "peru" }, { dest: "Peru" }] });
+  assert.deepEqual(store.loadGameStats().tripGoal.route, [{ id: "", dest: "Peru" }]);
+  // Leere/kaputte Route -> Feld bleibt weg (Bestands-Ziele unverändert).
+  storeMem[GKEY] = base({ destination: "Lima", endDate: "2026-08-01", perDay: 10, route: [] });
+  assert.equal(store.loadGameStats().tripGoal.route, undefined);
+});
+
 // ---------- data-Integrität ----------
 test("data.CARDS: alle IDs eindeutig (inkl. Hostel/Social)", () => {
   const ids = data.CARDS.map((c) => c.id);
@@ -790,6 +807,43 @@ test("badges: ohne Quiz-Runden bleiben Quiz-Badges gesperrt", () => {
   const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {}));
   assert.ok(!ids.includes("quiz_first"));
   assert.ok(!ids.includes("quiz_perfect"));
+});
+
+// ---------- badges: ¿Y esto? (Bild-Vokabel-Modus) ----------
+test("badges.buildMetrics: ¿Y-esto?-Zähler übernommen", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    yestoPlayed: 4, yestoPerfect: 1,
+  });
+  assert.equal(m.yestoPlayed, 4);
+  assert.equal(m.yestoPerfect, 1);
+});
+
+test("badges: ¿Y-esto?-Badges schalten über die Zähler frei", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {
+    yestoPlayed: 10, yestoPerfect: 1,
+  });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("yesto_first"));
+  assert.ok(ids.includes("yesto_10"));
+  assert.ok(ids.includes("yesto_perfect"));
+});
+
+test("badges: ohne ¿Y-esto?-Runden bleiben die Badges gesperrt", () => {
+  const ids = badges.satisfiedIds(badges.buildMetrics([{ id: "a", cat: "basics" }], {}, {}));
+  assert.ok(!ids.includes("yesto_first"));
+  assert.ok(!ids.includes("yesto_10"));
+  assert.ok(!ids.includes("yesto_perfect"));
+});
+
+test("badges: yesto_10 erst ab 10 Runden, yesto.group in GROUPS", () => {
+  const m = badges.buildMetrics([{ id: "a", cat: "basics" }], {}, { yestoPlayed: 9, yestoPerfect: 0 });
+  const ids = badges.satisfiedIds(m);
+  assert.ok(ids.includes("yesto_first"));
+  assert.ok(!ids.includes("yesto_10"));
+  assert.ok(!ids.includes("yesto_perfect"));
+  // Die neue Badge-Gruppe muss in GROUPS existieren (sonst rendert der Ruta-Pass sie nicht).
+  assert.ok(badges.GROUPS.some((g) => g.id === "yesto"), "GROUPS enthält 'yesto'");
+  assert.equal(badges.byId("yesto_first").group, "yesto");
 });
 
 // ---------- Reise-Kontext (🧭) ----------

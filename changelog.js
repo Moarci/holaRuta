@@ -27,7 +27,7 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
-      version: "1.101.0",
+      version: "1.105.0",
       date: "2026-06-20",
       title: "Modo profe stark verbessert: Niveau-Verteilung, Sortierung & CSV",
       titleEn: "Teacher mode boosted: level distribution, sorting & CSV",
@@ -44,6 +44,58 @@
         "📄 New CSV export of the class list (offline, Excel-friendly) for the school archive – with an optional class name in the filename.",
         "🖨️ An optional class name and a print header (name + date) make the printout self-explanatory; re-importing a backup now replaces the student with the same name instead of creating a duplicate.",
         "🔗 In the profile, the partner credit of the ECOS/WeRoad edition now links directly to the partner's homepage.",
+      ],
+    },
+    {
+      version: "1.104.0",
+      date: "2026-06-20",
+      title: "Ruta-Pass-Stempel für „¿Y esto?“",
+      titleEn: "Ruta-Pass badges for “¿Y esto?”",
+      items: [
+        "👀 Der neue Modus „¿Y esto?“ zahlt jetzt auf den Ruta-Pass ein: eigene Stempel-Gruppe mit „¿Y esto?“ (erste Runde), „Ojo entrenado“ (10 Runden) und „Todo a la vista“ (eine Runde, in der du jedes Bild wusstest).",
+      ],
+      itemsEn: [
+        "👀 The new “¿Y esto?” mode now counts towards your Ruta-Pass: its own badge group with “¿Y esto?” (first round), “Trained eye” (10 rounds) and “Todo a la vista” (a round where you knew every picture).",
+      ],
+    },
+    {
+      version: "1.103.0",
+      date: "2026-06-20",
+      title: "Neuer Modus „¿Y esto?“ – Bild raten mit 3-2-1-Countdown",
+      titleEn: "New mode “¿Y esto?” – guess the picture with a 3-2-1 countdown",
+      items: [
+        "👀 Neu unter Entdecken → Spielen: „¿Y esto?“. Ein Motiv erscheint groß, ein kurzer Countdown läuft (3 · 2 · 1) – überlege, wie es auf Spanisch heißt. Bei 0 wird das Wort samt Übersetzung aufgelöst, und du bewertest dich selbst („Wusste ich“ / „Noch nicht“). Sechs Themen (Comida, Bebidas, Animales, De viaje, Naturaleza, En casa) mit je 8+ Motiven – ganz ohne Fotos, also weiter komplett offline.",
+      ],
+      itemsEn: [
+        "👀 New under Discover → Play: “¿Y esto?”. A picture appears, a short countdown runs (3 · 2 · 1) – think how it's called in Spanish. At 0 the word and its translation are revealed and you rate yourself (“I knew it” / “Not yet”). Six themes (food, drinks, animals, travel gear, nature, at home) with 8+ pictures each – no photos, so it stays fully offline.",
+      ],
+    },
+    {
+      version: "1.102.0",
+      date: "2026-06-20",
+      title: "Neues Modul „Música“: der Soundtrack Lateinamerikas",
+      titleEn: "New “Música” module: the soundtrack of Latin America",
+      items: [
+        "🎵 Neues Modul „Música“: die großen Genres Lateinamerikas verständlich erklärt – von Cumbia, Salsa und Reggaetón über Tango und Mariachi bis Bachata und Anden-Folklore, jeweils mit ein paar Künstlern zum Reinhören und spanischem Lesetraining.",
+        "▶️ Ein Tipp öffnet jedes Genre direkt in Spotify ODER Apple Music (Deep-Link – am Handy springt die jeweilige App auf). Dazu der typische Sound deines Reiselands: wähle dein Land und höre Künstler & Song mit einem Tap.",
+        "💬 Plus die Sätze, um über Musik zu reden und tanzen zu gehen, und ein Glossar rund um Musik – wie gewohnt auf Deutsch/Englisch umschaltbar und über die Suche erreichbar.",
+      ],
+      itemsEn: [
+        "🎵 New “Música” module: Latin America's big genres explained simply – from cumbia, salsa and reggaetón through tango and mariachi to bachata and Andean folklore, each with a few artists to sample and Spanish reading practice.",
+        "▶️ One tap opens each genre straight in Spotify OR Apple Music (deep link – on your phone the matching app pops open). Plus the signature sound of your destination: pick your country and hear an artist & song with one tap.",
+        "💬 And the phrases to talk about music and go dancing, plus a music glossary – switchable between German/English as usual and reachable from search.",
+      ],
+    },
+    {
+      version: "1.101.0",
+      date: "2026-06-20",
+      title: "Trip-Ziel als Reise-Zeitleiste (mehrere Länder nacheinander)",
+      titleEn: "Trip goal as a travel timeline (several countries in a row)",
+      items: [
+        "🗺️ Das Trip-Ziel ist jetzt eine Zeitleiste: Mit dem Schnellwechsler hängst du Land für Land an deine Route an – z. B. zuerst El Salvador, dann Kolumbien, dann Peru. Ein schon getipptes Ziel wird dabei zum ersten Stopp (nichts geht verloren). Jeder Stopp lässt sich im Profil wieder entfernen, und die Pre-Arrival-Pakete erscheinen für alle Länder deiner Route.",
+      ],
+      itemsEn: [
+        "🗺️ Your trip goal is now a timeline: the quick-switcher appends one country after another to your route – e.g. first El Salvador, then Colombia, then Peru. A destination you already typed becomes the first stop (nothing is lost). Each stop can be removed again in your profile, and the pre-arrival packs show up for every country on your route.",
       ],
     },
     {

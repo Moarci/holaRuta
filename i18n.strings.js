@@ -277,6 +277,12 @@
       ? `🔥 ${p.done} Karten · +${p.over} über dem Ziel`
       : `${p.done}/${p.perDay} Karten${p.complete ? " ✓" : ""}`,
     tripSwitchCap: "Reiseland schnell wechseln",
+    // Zeitleiste mehrerer Reiseländer (Route): jeder Schnellwechsel hängt ein Land an.
+    tripRouteCap: "Deine Route",
+    tripSwitchHint: "Tippen hängt das Land an deine Zeitleiste an – z. B. zuerst El Salvador, dann Kolumbien, dann Peru.",
+    tripStopRemove: "Stopp entfernen",
+    tripStopDrag: "Stopp ziehen, um die Reihenfolge zu ändern",
+    tripRouteReorderHint: "Mit dem Griff ⠿ ziehen, um die Reihenfolge zu ändern.",
     tripEmpty: "🎯 Trip-Ziel setzen – Countdown &amp; Tagesziel",
     // Onboarding (einmaliger Willkommens-Schritt)
     // Erklär-Slides ganz am Anfang: Überblick „wie funktioniert die App, welcher Umfang".
@@ -474,6 +480,11 @@
       ? `🔥 ${p.done} cards · +${p.over} over goal`
       : `${p.done}/${p.perDay} cards${p.complete ? " ✓" : ""}`,
     tripSwitchCap: "Quick-switch country",
+    tripRouteCap: "Your route",
+    tripSwitchHint: "Tap to add a country to your timeline — e.g. first El Salvador, then Colombia, then Peru.",
+    tripStopRemove: "Remove stop",
+    tripStopDrag: "Drag to reorder stop",
+    tripRouteReorderHint: "Drag the ⠿ handle to change the order.",
     tripEmpty: "🎯 Set a trip goal – countdown &amp; daily target",
     onboardSlideSkip: "Skip",
     onboardSlideStart: "Let's go",
@@ -666,7 +677,9 @@
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
     subFotos: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen",
+    subMusica: "Der Soundtrack LatAms – mit Spotify & Apple Music",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
+    subYesto: "Bild raten: 3-2-1 – wie heißt das auf Spanisch?",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
@@ -811,6 +824,23 @@
     ftNavWords: "Wörter",
     ftNavKit: "Foto-Kit",
 
+    // Música (LatAm-Genres + Spotify/Apple-Deep-Links)
+    musSound: "📍 Der Sound deines Reiselands",
+    musSoundHint: "Wähle dein Reiseland – der Vorschlag und die Links passen sich an.",
+    musNoCountry: "Für dieses Land gibt es noch keinen Sound-Tipp.",
+    musGenres: "🎶 Die großen Genres",
+    musGenresHint: "Aufklappen für die Erklärung, Künstler zum Reinhören und spanisches Lesetraining. Tipp auf Spotify oder Apple Music öffnet direkt die Suche.",
+    musPhrases: "💬 Über Musik reden & tanzen gehen",
+    musWords: "🗣️ Wörter rund um Musik",
+    musArtists: "Reinhören:",
+    musOnSpotify: "Spotify",
+    musOnApple: "Apple Music",
+    musAreas: "Bereiche",
+    musNavSound: "Dein Land",
+    musNavGenres: "Genres",
+    musNavPhrases: "Sätze",
+    musNavWords: "Wörter",
+
     // Hostel
     hostelIntro: "Reise-Spanisch zu zweit anwenden – nicht nur lernen, sondern laut sprechen.",
     coordinatorTitle: "5-Minuten-Icebreaker",
@@ -942,6 +972,19 @@
     cjOtherLevel: "Andere Stufe",
     cjToGuide: "Zur Erklärseite",
 
+    // ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown)
+    yeIntro: "Ein Bild erscheint, der Countdown läuft – überlege, wie es auf Spanisch heißt. Bei 0 wird das Wort samt Übersetzung aufgelöst.",
+    yeChooseTheme: "Wähle ein Thema",
+    yeCount: (p) => `${p.n} Motive`,
+    yePromptHint: "Wie heißt das auf Spanisch?",
+    yeReveal: "Auflösen",
+    yeKnown: "Wusste ich ✓",
+    yeKnownLast: "Wusste ich ✓ – Ergebnis",
+    yeUnknown: "Noch nicht",
+    yeAgain: "Nochmal",
+    yeOtherTheme: "Anderes Thema",
+    yeUnavailable: "Dieser Modus ist gerade nicht verfügbar.",
+
     // Tiempos
     tiTenses: "Die wichtigsten Zeitformen",
     tiBuild: "So baust du es:",
@@ -1022,7 +1065,9 @@
     subLogistica: "SIM, money & luggage – arrive smart and safe",
     subSalud: "Stay healthy & fit: food, drink, movement",
     subFotos: "Great travel shots: subject, light, poses & sharing",
+    subMusica: "The soundtrack of Latin America – with Spotify & Apple Music",
     subBebidas: "What people drink morning and evening – country by country",
+    subYesto: "Guess the picture: 3-2-1 – what's it called in Spanish?",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
 
@@ -1162,6 +1207,23 @@
     ftNavWords: "Words",
     ftNavKit: "Photo kit",
 
+    // Música (LatAm genres + Spotify/Apple deep links)
+    musSound: "📍 The sound of your destination",
+    musSoundHint: "Pick your destination – the suggestion and links adapt.",
+    musNoCountry: "No sound tip for this country yet.",
+    musGenres: "🎶 The big genres",
+    musGenresHint: "Expand for the explanation, artists to sample and Spanish reading practice. Tapping Spotify or Apple Music opens the search directly.",
+    musPhrases: "💬 Talking about music & going dancing",
+    musWords: "🗣️ Words for music",
+    musArtists: "Listen:",
+    musOnSpotify: "Spotify",
+    musOnApple: "Apple Music",
+    musAreas: "Sections",
+    musNavSound: "Your country",
+    musNavGenres: "Genres",
+    musNavPhrases: "Phrases",
+    musNavWords: "Words",
+
     hostelIntro: "Use travel Spanish in pairs – not just learning, but speaking aloud.",
     coordinatorTitle: "5-minute icebreaker",
     coordinatorDesc: "For groups & classes: one tap starts a quick getting-to-know round – no setup.",
@@ -1283,6 +1345,19 @@
     cjAgain: "Practise again",
     cjOtherLevel: "Another level",
     cjToGuide: "To the explainer",
+
+    // ¿Y esto? (picture-vocabulary mode with a 3-2-1 countdown)
+    yeIntro: "A picture appears and the countdown runs – think how it's called in Spanish. At 0 the word and its translation are revealed.",
+    yeChooseTheme: "Pick a theme",
+    yeCount: (p) => `${p.n} pictures`,
+    yePromptHint: "What's it called in Spanish?",
+    yeReveal: "Reveal",
+    yeKnown: "I knew it ✓",
+    yeKnownLast: "I knew it ✓ – result",
+    yeUnknown: "Not yet",
+    yeAgain: "Again",
+    yeOtherTheme: "Another theme",
+    yeUnavailable: "This mode is currently unavailable.",
 
     tiTenses: "The most important tenses",
     tiBuild: "How to build it:",
