@@ -118,6 +118,21 @@
       ]
     },
     {
+      "name": "Mi léxico",
+      "short_name": "Léxico",
+      "description": "Tus palabras y frases favoritas, siempre a mano",
+      "name_localized": { "de": "Meine Favoriten", "en": "My lexicon" },
+      "short_name_localized": { "de": "Favoriten", "en": "Lexicon" },
+      "description_localized": {
+        "de": "Deine Lieblingswörter und -sätze – immer griffbereit",
+        "en": "Your favourite words and phrases, always to hand"
+      },
+      "url": "./?a=favoritos",
+      "icons": [
+        { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
       "name": "Salud y emergencias",
       "short_name": "Salud",
       "description": "Frases para farmacia, médico y emergencias",

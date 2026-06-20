@@ -11,13 +11,14 @@
   const USERCARDS_KEY = "spanischcard.usercards.v1";
   const GAMESTATS_KEY = "spanischcard.gamestats.v1";
   const TASKS_KEY = "spanischcard.tasks.v1"; // abonnierte Aufgaben (mehrere parallel)
+  const FAVORITES_KEY = "spanischcard.favorites.v1"; // „Mi léxico": gemerkte Wörter/Sätze
   // Zuletzt gesehene App-Version (für den „Was ist neu?"-Hinweis nach Updates).
   // Bewusst NICHT in KNOWN_KEYS: das ist gerätelokaler Anzeige-Status, kein
   // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
   // überschreiben und so einen falschen Update-Hinweis auslösen.
   const SEENVERSION_KEY = "spanischcard.seenVersion.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
-  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY];
+  const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY, FAVORITES_KEY];
 
   function readJson(key, fallback) {
     let raw = null;
@@ -140,6 +141,36 @@
     if (!Array.isArray(v)) return [];
     const out = [];
     v.forEach((t) => { const c = sanitizeTask(t); if (c) out.push(c); });
+    return out;
+  }
+
+  // Favoriten („Mi léxico"): vom Nutzer gemerkte Wörter/Sätze. Jeder Eintrag trägt
+  // einen Schnappschuss von de/es (+ optional tip/cat) mit, damit ein Favorit auch
+  // dann lesbar bleibt, wenn die zugrunde liegende Karte später verschwindet (z. B.
+  // eine gelöschte eigene Karte). Defensiv typisiert gegen fremdes/manipuliertes
+  // Storage; Ungültiges und Doppel-Ids fallen weg, die Liste ist gedeckelt.
+  function loadFavorites() {
+    const v = readJson(FAVORITES_KEY, []);
+    if (!Array.isArray(v)) return [];
+    const okStr = (s, max) => typeof s === "string" && s.length > 0 && s.length <= max;
+    const str = (s, max) => (typeof s === "string" && s.length <= max ? s : "");
+    const out = [];
+    const seen = Object.create(null);
+    for (const f of v) {
+      if (!isPlainObject(f)) continue;
+      if (!okStr(f.id, 120) || seen[f.id]) continue;       // gültige, eindeutige Id
+      if (!okStr(f.es, 500) || !okStr(f.de, 500)) continue; // Vorder- & Rückseite nötig
+      seen[f.id] = true;
+      out.push({
+        id: f.id,
+        de: f.de,
+        es: f.es,
+        tip: str(f.tip, 500),
+        cat: str(f.cat, 100),
+        addedAt: str(f.addedAt, 40),
+      });
+      if (out.length >= 500) break; // großzügiger Deckel gegen Wucherung
+    }
     return out;
   }
 
@@ -631,6 +662,8 @@
     decodeBundle,
     loadTasks,
     saveTasks: (l) => writeJson(TASKS_KEY, Array.isArray(l) ? l : []),
+    loadFavorites,
+    saveFavorites: (l) => writeJson(FAVORITES_KEY, Array.isArray(l) ? l : []),
     freshGameStats,
     loadGameStats,
     saveGameStats: (g) => writeJson(GAMESTATS_KEY, g),

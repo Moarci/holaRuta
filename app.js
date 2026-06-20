@@ -393,6 +393,7 @@
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
+      favCount: favorites.length, // ⭐ „Mi léxico"-Zähler für den Profil-Nav-Eintrag
       streak: currentStreak(),
       xp: xpVM(),
       overall: {
@@ -712,6 +713,7 @@
       shareFormat: shareFormat(),
       context: card.context ? withNameObj(loc(card.context)) : null,
       contextOpen: state.contextOpen,
+      isFav: isFavorite(card.id),
     });
   }
 
@@ -3026,6 +3028,7 @@
     else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
     else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
     else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
+    else if (state.screen === "favorites") root.innerHTML = ui.renderFavorites(favoritesVM());
     else if (state.screen === "preciosSetup") root.innerHTML = ui.renderPreciosSetup(preciosSetupVM());
     else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
     else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone();
@@ -5595,7 +5598,7 @@
         if (cards.length >= g.limit) break;
         if (used.has(c.id)) continue;
         used.add(c.id);
-        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null });
+        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null, fav: isFavorite(c.id) });
       }
       return {
         id: g.cat,
@@ -5637,6 +5640,137 @@
     const card = cardById(id);
     if (!card) return;
     speech.speak(matcher.acceptedAnswers(card)[0] || card.es, settings.speechRate);
+  }
+
+  // ----- Favoriten ("Mi léxico" – persönliches Lexikon) -----
+  // Vom Nutzer gemerkte Wörter/Sätze, die individuell wichtig sind oder in
+  // Stresssituationen schnell griffbereit sein sollen. Karten-Favoriten verweisen
+  // per Id auf die Karte (und werden live + in der UI-Sprache aufgelöst); zusätzlich
+  // liegt ein Schnappschuss (de/es/tip) im Speicher, damit der Eintrag eine später
+  // gelöschte Karte überlebt. Eigene Einträge (vom Nutzer getippt) haben eine
+  // "fav-…"-Id und leben nur aus dem Schnappschuss.
+  let favorites = store.loadFavorites();        // [{ id, de, es, tip, cat, addedAt }]
+  let favIds = new Set(favorites.map((f) => f.id));
+  let favMsg = null;                            // { type:"ok"|"error", text } | null
+
+  function isFavorite(id) { return favIds.has(id); }
+
+  function persistFavorites() {
+    store.saveFavorites(favorites);
+    favIds = new Set(favorites.map((f) => f.id));
+  }
+
+  // Schnappschuss aus einer Karte (muttersprachlich aufgelöst) – als Rückfall, falls
+  // die Karte später verschwindet.
+  function favEntryFromCard(card) {
+    return {
+      id: card.id,
+      de: nat(card) || card.de || "",
+      es: card.es || "",
+      tip: card.tip || "",
+      cat: card.cat || "",
+      addedAt: new Date().toISOString(),
+    };
+  }
+
+  // Karte (eingebaut/eigen) als Favorit an- oder abwählen. Neu hinzugefügte stehen
+  // oben (neueste zuerst). Unbekannte Ids werden ignoriert.
+  function toggleFavorite(id) {
+    if (!id) return;
+    if (favIds.has(id)) {
+      favorites = favorites.filter((f) => f.id !== id);
+    } else {
+      const card = cardById(id);
+      if (!card) return;
+      favorites = [favEntryFromCard(card)].concat(favorites);
+    }
+    persistFavorites();
+    render();
+  }
+
+  // Favorit entfernen (aus der Lexikon-Liste). Schließt ggf. die offene Großanzeige.
+  function removeFavorite(id) {
+    favorites = favorites.filter((f) => f.id !== id);
+    persistFavorites();
+    if (state.favShow === id) state.favShow = null;
+    render();
+  }
+
+  // Eigenen Eintrag (vom Nutzer getippt) ins Lexikon legen. de + es sind Pflicht.
+  function addCustomFavorite(input) {
+    const de = String(input.de || "").trim();
+    const es = String(input.es || "").trim();
+    const tip = String(input.tip || "").trim();
+    if (!de || !es) {
+      favMsg = { type: "error", text: t("favorites.errNeed") };
+      render();
+      return;
+    }
+    const id = "fav-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+    favorites = [{
+      id,
+      de: de.slice(0, 500),
+      es: es.slice(0, 500),
+      tip: tip.slice(0, 500),
+      cat: "",
+      addedAt: new Date().toISOString(),
+    }].concat(favorites);
+    persistFavorites();
+    favMsg = { type: "ok", text: t("favorites.added") };
+    render();
+  }
+
+  function favoritesVM() {
+    const items = favorites.map((f) => {
+      // Karten-Favorit: live + in der UI-Sprache auflösen, solange die Karte existiert;
+      // sonst den gespeicherten Schnappschuss zeigen (eigene Einträge immer Schnappschuss).
+      const card = cardById(f.id);
+      const cat = categoryById(card ? card.cat : f.cat);
+      return {
+        id: f.id,
+        de: card ? (nat(card) || f.de) : f.de,
+        es: card ? card.es : f.es,
+        tip: card ? (card.tip || "") : (f.tip || ""),
+        catIcon: cat ? cat.icon : "⭐",
+        custom: !card,
+      };
+    });
+    const shown = state.favShow ? items.find((it) => it.id === state.favShow) : null;
+    return {
+      items,
+      count: items.length,
+      show: shown || null,
+      msg: favMsg,
+      speakable: !!(speech && speech.isSupported()),
+    };
+  }
+
+  function openFavorites() {
+    dismissBadgeToast();
+    favMsg = null;
+    state.favShow = null;
+    state.screen = "favorites";
+    render();
+  }
+
+  // Großanzeige eines Favoriten öffnen/schließen (Eintrag bildschirmfüllend zum Herzeigen).
+  function favShow(id) {
+    if (!favIds.has(id)) return;
+    state.favShow = id;
+    render();
+  }
+  function favClose() {
+    state.favShow = null;
+    render();
+  }
+
+  // Favorit vorlesen: Karten-Favoriten wie gewohnt (akzeptierte Variante), eigene
+  // Einträge direkt aus dem gespeicherten Spanisch-Text.
+  function speakFavorite(id) {
+    if (!speech) return;
+    if (cardById(id)) { speakCardId(id); return; }
+    const f = favorites.find((x) => x.id === id);
+    if (f && f.es) speech.speak(f.es, settings.speechRate);
   }
 
   // ----- Precios al oído (Preis-Hörtrainer) -----
@@ -7274,6 +7408,12 @@
     else if (action === "sz-show") szShow(el.dataset.id);
     else if (action === "sz-close") szClose();
     else if (action === "speak-card") speakCardId(el.dataset.id);
+    else if (action === "open-favorites") openFavorites();
+    else if (action === "fav-toggle") toggleFavorite(el.dataset.id);
+    else if (action === "fav-remove") removeFavorite(el.dataset.id);
+    else if (action === "fav-show") favShow(el.dataset.id);
+    else if (action === "fav-close") favClose();
+    else if (action === "fav-speak") speakFavorite(el.dataset.id);
     else if (action === "open-precios") openPrecios();
     else if (action === "precios-currency") setPreciosCurrency(el.dataset.id);
     else if (action === "precios-level") setPreciosLevel(el.dataset.level);
@@ -7333,6 +7473,13 @@
         cat: val("card-cat"),
         lvl: Number(val("card-lvl")),
       });
+      return;
+    }
+    // Eigenen Favoriten-Eintrag ins Lexikon legen („Mi léxico"-Formular).
+    if (e.target.closest('[data-action="fav-add"]')) {
+      e.preventDefault();
+      const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+      addCustomFavorite({ de: val("fav-de"), es: val("fav-es"), tip: val("fav-tip") });
       return;
     }
     // Preis-Hörtrainer: getippte Ziffern prüfen.
@@ -7646,8 +7793,9 @@
     }
     // App-Aktionen (Homescreen-Shortcuts): direkte Einstiege ohne eigenes Modul.
     const actions = {
-      ruta: openRutaDelDia,   // ?a=ruta   → heutige Lernrunde
-      buscar: openSearch,     // ?a=buscar → Suche
+      ruta: openRutaDelDia,   // ?a=ruta      → heutige Lernrunde
+      buscar: openSearch,     // ?a=buscar    → Suche
+      favoritos: openFavorites, // ?a=favoritos → „Mi léxico" (Favoriten)
     };
     const aSlug = param("a");
     if (aSlug && actions[aSlug]) {
