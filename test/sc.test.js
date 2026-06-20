@@ -371,14 +371,14 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     bodyPartsSeen: { bp_cabeza: true },
     shoppingSeen: { sl_agua: true },
     unlocked: { first_steps: 1700000000000 },
-    placement: { level: "A2", finalScore: 0.62, accuracy: 0.6, unknownRate: 0.2, tempo: "medium", reliability: "", note: "commStrong", correct: 8, total: 14, skills: [{ skill: "understanding", accuracy: 75, unknownRate: 10 }, { skill: "grammar", accuracy: 40, unknownRate: 20 }], at: "2026-06-15", ts: "" },
+    placement: { level: "A2", finalScore: 0.62, accuracy: 0.6, unknownRate: 0.2, tempo: "medium", reliability: "", note: "commStrong", correct: 8, total: 14, skills: [{ skill: "understanding", accuracy: 75, unknownRate: 10 }, { skill: "grammar", accuracy: 40, unknownRate: 20 }], review: [{ status: "wrong", promptDe: "Wie heißt das Wort Wasser?", questionEs: "", yourText: "leche", correctText: "agua", explanationDe: "agua = Wasser." }], at: "2026-06-15", ts: "" },
     placementHistory: [
-      { level: "A1", finalScore: 0.41, accuracy: 0.4, unknownRate: 0.3, tempo: "slow", reliability: "", note: "", correct: 5, total: 14, skills: [], at: "2026-06-10", ts: "2026-06-10T18:00:00.000Z" },
-      { level: "A2", finalScore: 0.62, accuracy: 0.6, unknownRate: 0.2, tempo: "medium", reliability: "", note: "commStrong", correct: 8, total: 14, skills: [{ skill: "understanding", accuracy: 75, unknownRate: 10 }, { skill: "grammar", accuracy: 40, unknownRate: 20 }], at: "2026-06-15", ts: "2026-06-15T20:00:00.000Z" },
+      { level: "A1", finalScore: 0.41, accuracy: 0.4, unknownRate: 0.3, tempo: "slow", reliability: "", note: "", correct: 5, total: 14, skills: [], review: [], at: "2026-06-10", ts: "2026-06-10T18:00:00.000Z" },
+      { level: "A2", finalScore: 0.62, accuracy: 0.6, unknownRate: 0.2, tempo: "medium", reliability: "", note: "commStrong", correct: 8, total: 14, skills: [{ skill: "understanding", accuracy: 75, unknownRate: 10 }, { skill: "grammar", accuracy: 40, unknownRate: 20 }], review: [{ status: "wrong", promptDe: "Wie heißt das Wort Wasser?", questionEs: "", yourText: "leche", correctText: "agua", explanationDe: "agua = Wasser." }], at: "2026-06-15", ts: "2026-06-15T20:00:00.000Z" },
     ],
-    assessment: { level: "B1", variant: "standard", finalScore: 0.7, accuracy: 0.68, unknownRate: 0.1, tempo: "medium", reliability: "", note: "", correct: 19, total: 28, skills: [{ skill: "reading", accuracy: 80, unknownRate: 0 }], at: "2026-06-16", ts: "" },
+    assessment: { level: "B1", variant: "standard", finalScore: 0.7, accuracy: 0.68, unknownRate: 0.1, tempo: "medium", reliability: "", note: "", correct: 19, total: 28, skills: [{ skill: "reading", accuracy: 80, unknownRate: 0 }], review: [], at: "2026-06-16", ts: "" },
     assessmentHistory: [
-      { level: "B1", variant: "standard", finalScore: 0.7, accuracy: 0.68, unknownRate: 0.1, tempo: "medium", reliability: "", note: "", correct: 19, total: 28, skills: [{ skill: "reading", accuracy: 80, unknownRate: 0 }], at: "2026-06-16", ts: "2026-06-16T20:00:00.000Z" },
+      { level: "B1", variant: "standard", finalScore: 0.7, accuracy: 0.68, unknownRate: 0.1, tempo: "medium", reliability: "", note: "", correct: 19, total: 28, skills: [{ skill: "reading", accuracy: 80, unknownRate: 0 }], review: [], at: "2026-06-16", ts: "2026-06-16T20:00:00.000Z" },
     ],
     assessmentProgress: {
       variant: "extremo", asked: ["as_un_a0a", "as_vo_a0a"],
@@ -410,6 +410,40 @@ test("store.loadGameStats: Bestands-placement ohne History wird als erster Verla
     placementHistory: [{ level: "A2", finalScore: 0.62, at: "2026-06-15", ts: "2026-06-15T20:00:00.000Z" }],
   });
   assert.equal(store.loadGameStats().placementHistory.length, 1, "vorhandene History bleibt unangetastet");
+});
+
+test("store.loadGameStats: Ruta-Check-Review bleibt erhalten, wird typisiert & gedeckelt", () => {
+  // Frage-für-Frage-Rückblick wird mitgespeichert, damit man die einzelnen
+  // Antworten/Fehler später im Profil abrufen kann. Korruptes/zu großes wird
+  // sicher beschnitten (Anzahl ≤ 60), Nicht-Objekte fallen raus.
+  const bigReview = [];
+  for (let i = 0; i < 70; i++) bigReview.push({ status: "wrong", promptDe: "F" + i, correctText: "x" });
+  bigReview.push("junk", 42, null);
+  storeMem[GKEY] = JSON.stringify({
+    placement: {
+      level: "B1-", finalScore: 0.67, at: "2026-06-19", ts: "2026-06-19T10:00:00.000Z",
+      review: [
+        { status: "correct", promptDe: "Wie heißt das Wort danke?", questionEs: "", yourText: "gracias", correctText: "gracias", explanationDe: "", typo: false },
+        { status: "wrong", promptDe: "Wie heißt das Wort Wasser?", yourText: "leche", correctText: "agua", explanationDe: "agua = Wasser." },
+        { status: "unknown", promptDe: "Konjugiere ser (yo)", correctText: "soy" },
+      ],
+    },
+    assessment: {
+      level: "B1", variant: "standard", at: "2026-06-16",
+      review: bigReview,
+    },
+  });
+  const g = store.loadGameStats();
+  // Letztes Ergebnis behält seinen vollen Rückblick (alle drei Einträge).
+  assert.equal(g.placement.review.length, 3, "Ruta-Check-Review wird gesichert");
+  assert.equal(g.placement.review[1].status, "wrong");
+  assert.equal(g.placement.review[1].yourText, "leche");
+  assert.equal(g.placement.review[1].correctText, "agua");
+  // Auch der Verlaufseintrag (aus dem letzten Ergebnis übernommen) trägt den Rückblick.
+  assert.equal(g.placementHistory[0].review.length, 3);
+  // Übergroßer/korrupter Review wird auf 60 echte Objekte beschnitten.
+  assert.equal(g.assessment.review.length, 60, "Review-Anzahl gedeckelt, Nicht-Objekte raus");
+  assert.equal(g.assessment.review[0].promptDe, "F0");
 });
 
 test("store.loadGameStats: pretripDays – altes flaches Format wird nach { colombia: … } migriert", () => {

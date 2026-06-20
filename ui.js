@@ -857,6 +857,39 @@
     return `${stats}${skills}${note}${rel}`;
   }
 
+  // Frage-für-Frage-Rückblick als aufklappbarer Block – einzelne Antworten und
+  // Fehler (was war richtig/falsch, was wäre korrekt, plus Erklärung). Genutzt vom
+  // Ergebnis-Schirm UND vom Profil, damit man die Antworten jederzeit abrufen kann.
+  // ns = i18n-Namespace ("placement" | "assessment"), review = Array (kann leer sein).
+  // Optionale Item-Felder (level/listen/typo) werden nur gezeigt, wenn vorhanden –
+  // so deckt eine Funktion Ruta-Check und Nivel-Test ab. "" wenn nichts vorliegt.
+  function reviewBox(ns, review) {
+    if (!review || !review.length) return "";
+    const tn = (k) => t(ns + "." + k);
+    const reviewIcon = { correct: "✅", wrong: "❌", unknown: "🤷" };
+    const reviewRow = (r, i) => `
+      <li class="pl-review__item pl-review__item--${esc(r.status)}">
+        <p class="pl-review__q">
+          <span class="pl-review__icon" aria-hidden="true">${reviewIcon[r.status] || ""}</span>
+          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? "🎧 " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
+        </p>
+        ${r.status !== "correct" ? `
+          <p class="pl-review__line">
+            ${r.yourText
+              ? `${esc(tn("reviewYours"))} <span class="pl-review__yours" lang="es">${esc(r.yourText)}</span>`
+              : `<span class="pl-review__yours pl-review__yours--none">${esc(tn("reviewNoAnswer"))}</span>`}
+          </p>
+          <p class="pl-review__line">${esc(tn("reviewCorrect"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
+        ${r.status === "correct" && r.typo ? `
+          <p class="pl-review__line pl-review__typo">${esc(tn("reviewTypo"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
+        ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
+      </li>`;
+    return `<details class="pl-reviewbox">
+           <summary class="pl-reviewbox__sum">${esc(tn("reviewCap"))}</summary>
+           <ul class="pl-review">${review.map(reviewRow).join("")}</ul>
+         </details>`;
+  }
+
   // Ruta-Check im Profil: letztes Ergebnis (Startlevel, Score, Tempo), kurzer
   // Verlauf und Knöpfe zum Wiederholen + Teilen. Wer ihn noch nie gemacht hat,
   // sieht einen Einstiegs-Aufruf. p = vm.placement (null = Modul nicht geladen).
@@ -897,6 +930,7 @@
           </div>
         </div>
         ${resultDetailBlocks("placement", l)}
+        ${reviewBox("placement", l.review)}
         ${histRows}
         ${shareBlock(shareFmt, "share-placement", t("placement.share"))}
         <div class="plprof__actions">
@@ -945,6 +979,7 @@
           </div>
         </div>
         ${resultDetailBlocks("assessment", l)}
+        ${reviewBox("assessment", l.review)}
         ${histRows}
         ${shareBlock(shareFmt, "share-assessment", t("assessment.share"))}
         <div class="plprof__actions">
@@ -3693,30 +3728,7 @@
         <span class="pl-skill__val">${s.accuracy}%</span>
       </li>`;
     // Frage-für-Frage-Rückblick: was war richtig/falsch, was wäre korrekt + Erklärung.
-    const reviewIcon = { correct: "✅", wrong: "❌", unknown: "🤷" };
-    const reviewRow = (r, i) => `
-      <li class="pl-review__item pl-review__item--${esc(r.status)}">
-        <p class="pl-review__q">
-          <span class="pl-review__icon" aria-hidden="true">${reviewIcon[r.status] || ""}</span>
-          <span><span class="pl-review__num">${i + 1}.</span> ${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
-        </p>
-        ${r.status !== "correct" ? `
-          <p class="pl-review__line">
-            ${r.yourText
-              ? `${esc(t("placement.reviewYours"))} <span class="pl-review__yours" lang="es">${esc(r.yourText)}</span>`
-              : `<span class="pl-review__yours pl-review__yours--none">${esc(t("placement.reviewNoAnswer"))}</span>`}
-          </p>
-          <p class="pl-review__line">${esc(t("placement.reviewCorrect"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
-        ${r.status === "correct" && r.typo ? `
-          <p class="pl-review__line pl-review__typo">${esc(t("placement.reviewTypo"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
-        ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
-      </li>`;
-    const review = (vm.review && vm.review.length)
-      ? `<details class="pl-reviewbox">
-           <summary class="pl-reviewbox__sum">${esc(t("placement.reviewCap"))}</summary>
-           <ul class="pl-review">${vm.review.map(reviewRow).join("")}</ul>
-         </details>`
-      : "";
+    const review = reviewBox("placement", vm.review);
     // Im Onboarding führt der Zurück-Pfeil über „placement-finish“ (schließt das
     // Onboarding ab), sonst regulär nach Home.
     const topbar = hmTopbar("🎯 " + esc(t("placement.title")), vm.fromOnboarding ? "placement-finish" : "home");
@@ -3842,28 +3854,7 @@
         <span class="pl-skill__bar"><span class="pl-skill__fill" style="width:${s.accuracy}%"></span></span>
         <span class="pl-skill__val">${s.accuracy}%</span>
       </li>`;
-    const reviewIcon = { correct: "✅", wrong: "❌", unknown: "🤷" };
-    const reviewRow = (r, i) => `
-      <li class="pl-review__item pl-review__item--${esc(r.status)}">
-        <p class="pl-review__q">
-          <span class="pl-review__icon" aria-hidden="true">${reviewIcon[r.status] || ""}</span>
-          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? "🎧 " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
-        </p>
-        ${r.status !== "correct" ? `
-          <p class="pl-review__line">
-            ${r.yourText
-              ? `${esc(t("assessment.reviewYours"))} <span class="pl-review__yours" lang="es">${esc(r.yourText)}</span>`
-              : `<span class="pl-review__yours pl-review__yours--none">${esc(t("assessment.reviewNoAnswer"))}</span>`}
-          </p>
-          <p class="pl-review__line">${esc(t("assessment.reviewCorrect"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
-        ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
-      </li>`;
-    const review = (vm.review && vm.review.length)
-      ? `<details class="pl-reviewbox">
-           <summary class="pl-reviewbox__sum">${esc(t("assessment.reviewCap"))}</summary>
-           <ul class="pl-review">${vm.review.map(reviewRow).join("")}</ul>
-         </details>`
-      : "";
+    const review = reviewBox("assessment", vm.review);
     return `
       <section class="screen">
         ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
