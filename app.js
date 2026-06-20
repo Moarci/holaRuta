@@ -3232,7 +3232,93 @@
   // Nach jedem Voll-Re-Render (innerHTML wird ersetzt) den Fokus auf ein sinnvolles
   // Ziel setzen – sonst fällt er auf <body> und Tastatur-/Screenreader-Nutzer verlieren
   // ihre Position. preventScroll vermeidet Sprünge.
+  // ----- Focus-Trap für modale Dialoge -------------------------------------
+  // Modals tragen role="dialog" aria-modal="true" (ui.js). Beim Öffnen merken wir
+  // uns das auslösende Element, lenken den Fokus in den Dialog und halten Tab/
+  // Shift+Tab innerhalb des Dialogs (Containment). Beim Schließen kehrt der Fokus
+  // dorthin zurück, wo er ausgelöst wurde. So bleibt Tastatur-/Screenreader-
+  // Navigation im Modal gefangen (WCAG 2.4.3 / 2.1.2).
+  let modalReturnFocus = null; // Element, das vor dem Öffnen den Fokus hatte
+
+  // Der oberste offene Modal-Container im aktuellen DOM (oder null).
+  function currentModal() {
+    const list = root.querySelectorAll('[role="dialog"][aria-modal="true"]');
+    return list.length ? list[list.length - 1] : null;
+  }
+  // Sichtbare, fokussierbare Elemente innerhalb eines Containers.
+  function focusableIn(container) {
+    if (!container) return [];
+    const sel = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    return Array.prototype.filter.call(container.querySelectorAll(sel), (el) => {
+      if (el.hasAttribute("disabled") || el.getAttribute("aria-hidden") === "true") return false;
+      // offsetParent === null heißt i. d. R. unsichtbar (display:none / detached)
+      return el.offsetParent !== null || el === document.activeElement;
+    });
+  }
+  // Tab/Shift+Tab innerhalb des offenen Modals halten. true, wenn behandelt.
+  function trapModalTab(e) {
+    if (e.key !== "Tab") return false;
+    const modal = currentModal();
+    if (!modal) return false;
+    const items = focusableIn(modal);
+    if (!items.length) { e.preventDefault(); return true; }
+    const first = items[0];
+    const last = items[items.length - 1];
+    const active = document.activeElement;
+    // Fokus außerhalb des Modals (z. B. noch auf dem Auslöser) -> hinein holen.
+    if (!modal.contains(active)) {
+      e.preventDefault();
+      try { first.focus(); } catch (err) { /* egal */ }
+      return true;
+    }
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      try { last.focus(); } catch (err) { /* egal */ }
+      return true;
+    }
+    if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      try { first.focus(); } catch (err) { /* egal */ }
+      return true;
+    }
+    return false;
+  }
+
   function manageFocus() {
+    // Focus-Trap-Buchhaltung: ist gerade ein Modal offen, merken wir uns (einmal)
+    // den vorigen Fokus für die Rückgabe. Ist keins (mehr) offen, geben wir den
+    // Fokus an das auslösende Element zurück. Läuft VOR der screen-spezifischen
+    // Fokus-Logik unten – Modals haben Vorrang.
+    const modal = currentModal();
+    if (modal) {
+      if (!modalReturnFocus && document.activeElement && document.activeElement !== document.body) {
+        modalReturnFocus = document.activeElement;
+      }
+      if (!modal.contains(document.activeElement)) {
+        // Update-Hinweis: wie bisher den Primär-Button („Verstanden") fokussieren,
+        // nicht den ersten Button (Reload). Sonst generisch: erstes fokussierbares.
+        const preferred = modal.querySelector(".upd__ok");
+        const items = focusableIn(modal);
+        const target = preferred || items[0] || modal;
+        if (!target.hasAttribute("tabindex") && target === modal) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (e) { try { target.focus(); } catch (e2) { /* egal */ } }
+      }
+      return; // Fokus bleibt im Modal
+    }
+    if (modalReturnFocus) {
+      const back = modalReturnFocus;
+      modalReturnFocus = null;
+      // Nur zurückgeben, wenn das Element noch im DOM hängt (Re-Render kann es
+      // ersetzt haben – dann übernimmt die normale screen-Fokuslogik unten).
+      if (back && (root.contains(back) || (document.body && document.body.contains(back)))) {
+        try { back.focus({ preventScroll: true }); } catch (e) { try { back.focus(); } catch (e2) { /* egal */ } }
+        return;
+      }
+    }
+    manageScreenFocus();
+  }
+
+  function manageScreenFocus() {
     // Update-Hinweis liegt als Modal über allem -> Fokus hinein, nicht auf den
     // verdeckten Screen dahinter (Tastatur/Screenreader).
     if (state.updateNotice && state.updateNotice.length) {
@@ -7144,6 +7230,8 @@
   }
 
   function onKeydown(e) {
+    // Focus-Trap: ist ein modaler Dialog offen, Tab/Shift+Tab darin halten.
+    if (trapModalTab(e)) return;
     // Ziel-Picker-Modal (Modo profe / Aktivitätsblatt): Escape schließt.
     if (state.targetPicker && e.key === "Escape") {
       setState({ targetPicker: null });
