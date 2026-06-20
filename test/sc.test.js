@@ -430,6 +430,23 @@ test("store.loadGameStats: Nicht-Objekt liefert frische Defaults", () => {
   assert.deepEqual(store.loadGameStats(), store.freshGameStats());
 });
 
+test("store.loadProgress: ease wird auf [1.3, 3.0] geklemmt, kaputte Felder typisiert", () => {
+  // Schützt den Sanitizer (sanitizeRecord): ein manipuliertes/korruptes ease
+  // darf die SRS-Planung nicht aushebeln (ease außerhalb [1.3,3.0] = absurde
+  // Intervalle). Deckt beide Clamp-Grenzen + NaN/String-Koerzierung ab.
+  storeMem["spanischcard.progress.v2"] = JSON.stringify({
+    hi:  { ease: 99,  interval: 5,   due: 0,   reps: 2 },      // über Decke  -> 3.0
+    lo:  { ease: 0.1, interval: 1,   due: 0,   reps: 1 },      // unter Boden -> 1.3
+    bad: { ease: "x", interval: "7", due: "0", reps: null },   // NaN/String  -> Defaults/Koerzierung
+  });
+  const p = store.loadProgress();
+  assert.equal(p.hi.ease, 3.0, "ease 99 muss auf die Decke 3.0 geklemmt werden");
+  assert.equal(p.lo.ease, 1.3, "ease 0.1 muss auf den Boden 1.3 geklemmt werden");
+  assert.equal(p.bad.ease, 2.5, "ease 'x' (NaN) -> Default 2.5");
+  assert.equal(p.bad.interval, 7, "interval '7' (String) -> 7 typisiert");
+  assert.equal(p.bad.reps, 0, "reps null -> 0 typisiert");
+});
+
 test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
   const valid = {
     reviews: 12, againPresses: 4, dailyStreak: 2, longestStreak: 9, xp: 235,

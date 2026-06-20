@@ -111,21 +111,46 @@ test("set-tab schaltet zwischen den Home-Reitern und markiert den aktiven", () =
 // ---------------------------------------------------------------------------
 // 3) Kern-Lernpfad: study (flip / type / listen), flip, rate, skip
 // ---------------------------------------------------------------------------
-test('study-all startet die Lernrunde; set-mode wechselt flip/type/listen', () => {
+test("study-all startet die Lernrunde (Study-Screen erscheint)", () => {
   const root = freshApp();
   const d = makeDriver(root);
   d.setTab("start");
   assert.ok(d.click("study-all"), "study-all anklickbar");
   assert.match(d.html(), /data-action="flip"|data-action="rate"|id="answer"/,
     "Study-Screen zeigt Karteikarte/Eingabe");
+});
 
-  // Modus wechseln (set-mode); jeder Wechsel re-rendert ohne Throw.
-  for (const mode of ["type", "listen", "flip"]) {
-    // listen kann je nach TTS-Verfügbarkeit fehlen -> nur prüfen, wenn vorhanden.
-    if (d.find("set-mode", { mode })) {
-      assert.ok(d.click("set-mode", { mode }), `set-mode ${mode} klickbar`);
-      assert.ok(d.nonEmpty(), `Study-Screen nach set-mode ${mode} nicht leer`);
-    }
+test("set-mode WIRKT: der im Profil gewählte Modus bestimmt die Study-UI", () => {
+  // Der Modus-Wähler liegt im PROFIL-Tab (Einstellungen → learnPrefs). Wir wählen
+  // dort den Modus, gehen auf Start und starten die Runde. Der Study-Screen muss
+  // dem gewählten Modus FOLGEN: type → Eingabefeld (#answer/#typer) und KEIN
+  // Flip-Knopf; flip → Aufdeck-Knopf. Ein toter set-mode-Handler fällt damit auf
+  // (Mutationstest), weil der gewählte Modus sich nicht in der Study-UI zeigt.
+  {
+    const d = makeDriver(freshApp());
+    d.setTab("profil");
+    assert.ok(d.find("set-mode", { mode: "type" }), "Modus-Wähler (set-mode) liegt im Profil");
+    assert.ok(d.click("set-mode", { mode: "type" }), "set-mode type klickbar");
+    d.setTab("start");
+    assert.ok(d.click("study-all"), "Runde startbar");
+    assert.match(d.html(), /id="answer"|id="typer"/, "type-Modus → Eingabefeld im Study-Screen");
+    assert.doesNotMatch(d.html(), /id="flip"/, "type-Modus zeigt KEINEN Flip-Aufdeck-Knopf");
+  }
+  {
+    const d = makeDriver(freshApp());
+    d.setTab("profil");
+    assert.ok(d.click("set-mode", { mode: "flip" }), "set-mode flip klickbar");
+    d.setTab("start");
+    assert.ok(d.click("study-all"), "Runde startbar");
+    assert.match(d.html(), /id="flip"|data-action="flip"/, "flip-Modus → Aufdeck-Knopf im Study-Screen");
+  }
+  // listen ist TTS-abhängig (im Stub ggf. nicht angeboten): nur Robustheit prüfen.
+  const dl = makeDriver(freshApp());
+  dl.setTab("profil");
+  if (dl.find("set-mode", { mode: "listen" })) {
+    assert.ok(dl.click("set-mode", { mode: "listen" }), "set-mode listen klickbar");
+    dl.setTab("start");
+    assert.ok(dl.click("study-all") && dl.nonEmpty(), "listen-Modus rendert Study-Screen");
   }
 });
 
