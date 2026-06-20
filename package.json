@@ -5,6 +5,7 @@
   "description": "HolaRuta – Dein Reise-Spanisch für echte Situationen. Vanilla-JS-Lernkarten-PWA (keine Runtime-Dependencies).",
   "scripts": {
     "test": "node --test",
-    "build": "node build.js"
+    "build": "node build.js",
+    "e2e": "node scripts/e2e-modo-profe.mjs"
   }
 }
