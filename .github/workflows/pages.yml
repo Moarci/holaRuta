@@ -153,11 +153,23 @@ jobs:
         with:
           node-version: "22"
 
-      # HolaRuta.html liegt nicht im Repo, ist aber als Einzeldatei-Download
-      # gewünscht: frisch aus den Modulen bauen, damit sie unter
-      # https://<user>.github.io/holaRuta/HolaRuta.html stets aktuell verfügbar ist.
-      - name: Build single-file (HolaRuta.html)
-        run: node build.js
+      # Minifizierter Multi-File-Build nach dist/: alle Modul-.js + styles.css
+      # einzeln per esbuild minifiziert, index.html/SW/Manifeste/Icons/Fonts kopiert,
+      # SW-Hash über die minifizierten dist-Assets gestempelt. esbuild ist KEINE
+      # Repo-Runtime-Dependency – hier flüchtig (--no-save) und versionsgepinnt.
+      # Fällt esbuild aus, baut build.js dist/ graceful roh (unminifiziert).
+      - name: Install esbuild (gepinnt, dev-only)
+        run: npm install --no-save esbuild@0.28.1
+
+      - name: Build dist (minifiziert)
+        run: node build.js --dist
+
+      # HolaRuta.html (Einzeldatei-Download) frisch bauen und in dist/ legen, damit
+      # sie unter https://<user>.github.io/holaRuta/HolaRuta.html verfügbar bleibt.
+      - name: Build single-file (HolaRuta.html) into dist/
+        run: |
+          node build.js
+          cp HolaRuta.html dist/HolaRuta.html
 
       - name: Configure Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
@@ -167,7 +179,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
-          path: . # gesamtes Projekt (index.html ist die App-Startseite)
+          path: ./dist # minifizierter Multi-File-Build (index.html ist die App-Startseite)
 
       - name: Deploy to GitHub Pages
         id: deployment
