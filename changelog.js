@@ -27,7 +27,7 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
-      version: "1.103.0",
+      version: "1.107.0",
       date: "2026-06-20",
       title: "Coqueteo y romance: Lernkarten, Lesetraining & ein Flirt-Dialog",
       titleEn: "Coqueteo y romance: flashcards, reading training & a flirting dialogue",
@@ -43,7 +43,7 @@
       ],
     },
     {
-      version: "1.102.0",
+      version: "1.106.0",
       date: "2026-06-20",
       title: "Neues Modul „Coqueteo y romance“: flirten & daten mit Respekt",
       titleEn: "New module “Coqueteo y romance”: flirting & dating with respect",
@@ -52,6 +52,66 @@
       ],
       itemsEn: [
         "💘 A new Discover module for meeting people on the road: ease into a conversation, give genuine compliments, suggest a date – and just as much, take a no. With the Spanish phrases, a glossary, notes on dating culture in Latin America and a dating & safety kit. The ground rule throughout: respect and consent. In German and English, offline and shareable.",
+      ],
+    },
+    {
+      version: "1.105.0",
+      date: "2026-06-20",
+      title: "Modo profe stark verbessert: Niveau-Verteilung, Sortierung & CSV",
+      titleEn: "Teacher mode boosted: level distribution, sorting & CSV",
+      items: [
+        "📊 Die Klassenübersicht zeigt jetzt eine Niveau-Verteilung – wie viele Schüler:innen auf welcher CEFR-Stufe stehen: die Basis für die schnelle Gruppeneinteilung.",
+        "↕️ Die Klassentabelle lässt sich per Klick auf die Spaltenköpfe sortieren (Name, Gemeistert, Serie, Challenges, Pre-Trip, Niveau) – Standard ist jetzt nach Niveau.",
+        "📄 Neuer CSV-Export der Klassenliste (offline, Excel-tauglich) fürs Schul-Archiv – mit optionalem Klassennamen im Dateinamen.",
+        "🖨️ Optionaler Klassenname und ein Druck-Kopf (Name + Datum) machen den Ausdruck selbsterklärend; ein erneut importiertes Backup ersetzt jetzt den gleichnamigen Schüler statt eine Dublette anzulegen.",
+        "🔗 Im Profil verlinkt der Partner-Hinweis der ECOS-/WeRoad-Edition jetzt direkt auf die Partner-Homepage.",
+      ],
+      itemsEn: [
+        "📊 The class overview now shows a level distribution – how many students sit at each CEFR level: the basis for quickly forming groups.",
+        "↕️ The class table can be sorted by clicking the column headers (name, mastered, streak, challenges, pre-trip, level) – the default is now by level.",
+        "📄 New CSV export of the class list (offline, Excel-friendly) for the school archive – with an optional class name in the filename.",
+        "🖨️ An optional class name and a print header (name + date) make the printout self-explanatory; re-importing a backup now replaces the student with the same name instead of creating a duplicate.",
+        "🔗 In the profile, the partner credit of the ECOS/WeRoad edition now links directly to the partner's homepage.",
+      ],
+    },
+    {
+      version: "1.104.0",
+      date: "2026-06-20",
+      title: "Ruta-Pass-Stempel für „¿Y esto?“",
+      titleEn: "Ruta-Pass badges for “¿Y esto?”",
+      items: [
+        "👀 Der neue Modus „¿Y esto?“ zahlt jetzt auf den Ruta-Pass ein: eigene Stempel-Gruppe mit „¿Y esto?“ (erste Runde), „Ojo entrenado“ (10 Runden) und „Todo a la vista“ (eine Runde, in der du jedes Bild wusstest).",
+      ],
+      itemsEn: [
+        "👀 The new “¿Y esto?” mode now counts towards your Ruta-Pass: its own badge group with “¿Y esto?” (first round), “Trained eye” (10 rounds) and “Todo a la vista” (a round where you knew every picture).",
+      ],
+    },
+    {
+      version: "1.103.0",
+      date: "2026-06-20",
+      title: "Neuer Modus „¿Y esto?“ – Bild raten mit 3-2-1-Countdown",
+      titleEn: "New mode “¿Y esto?” – guess the picture with a 3-2-1 countdown",
+      items: [
+        "👀 Neu unter Entdecken → Spielen: „¿Y esto?“. Ein Motiv erscheint groß, ein kurzer Countdown läuft (3 · 2 · 1) – überlege, wie es auf Spanisch heißt. Bei 0 wird das Wort samt Übersetzung aufgelöst, und du bewertest dich selbst („Wusste ich“ / „Noch nicht“). Sechs Themen (Comida, Bebidas, Animales, De viaje, Naturaleza, En casa) mit je 8+ Motiven – ganz ohne Fotos, also weiter komplett offline.",
+      ],
+      itemsEn: [
+        "👀 New under Discover → Play: “¿Y esto?”. A picture appears, a short countdown runs (3 · 2 · 1) – think how it's called in Spanish. At 0 the word and its translation are revealed and you rate yourself (“I knew it” / “Not yet”). Six themes (food, drinks, animals, travel gear, nature, at home) with 8+ pictures each – no photos, so it stays fully offline.",
+      ],
+    },
+    {
+      version: "1.102.0",
+      date: "2026-06-20",
+      title: "Neues Modul „Música“: der Soundtrack Lateinamerikas",
+      titleEn: "New “Música” module: the soundtrack of Latin America",
+      items: [
+        "🎵 Neues Modul „Música“: die großen Genres Lateinamerikas verständlich erklärt – von Cumbia, Salsa und Reggaetón über Tango und Mariachi bis Bachata und Anden-Folklore, jeweils mit ein paar Künstlern zum Reinhören und spanischem Lesetraining.",
+        "▶️ Ein Tipp öffnet jedes Genre direkt in Spotify ODER Apple Music (Deep-Link – am Handy springt die jeweilige App auf). Dazu der typische Sound deines Reiselands: wähle dein Land und höre Künstler & Song mit einem Tap.",
+        "💬 Plus die Sätze, um über Musik zu reden und tanzen zu gehen, und ein Glossar rund um Musik – wie gewohnt auf Deutsch/Englisch umschaltbar und über die Suche erreichbar.",
+      ],
+      itemsEn: [
+        "🎵 New “Música” module: Latin America's big genres explained simply – from cumbia, salsa and reggaetón through tango and mariachi to bachata and Andean folklore, each with a few artists to sample and Spanish reading practice.",
+        "▶️ One tap opens each genre straight in Spotify OR Apple Music (deep link – on your phone the matching app pops open). Plus the signature sound of your destination: pick your country and hear an artist & song with one tap.",
+        "💬 And the phrases to talk about music and go dancing, plus a music glossary – switchable between German/English as usual and reachable from search.",
       ],
     },
     {

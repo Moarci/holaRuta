@@ -160,6 +160,7 @@
     { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
     { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
     { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
+    { action: "open-yesto",       icon: "👀", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
     { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
     { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
     { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
@@ -176,6 +177,7 @@
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
     { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
     { action: "open-flirt",       icon: "💘", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
+    { action: "open-musica",      icon: "🎵", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-assessment",  icon: "📋", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
@@ -344,37 +346,53 @@
     { id: "chile",     flag: "🇨🇱", dest: "Chile" },
     { id: "bolivia",   flag: "🇧🇴", dest: "Bolivien" },
   ];
+  // Einklappbar (kompakter im Profil): die Länder-Chips stecken in einem aufklappbaren
+  // Abschnitt und sind standardmäßig zugeklappt, damit das Profil nicht ausufert.
   function tripCountrySwitch(vm) {
     const inRoute = Array.isArray(vm.tripRouteIds) ? vm.tripRouteIds : [];
+    const open = !!vm.tripSwitchOpen; // Standard: eingeklappt
     const chips = TRIP_COUNTRIES.map((c) => {
       const active = inRoute.indexOf(c.id) !== -1;
       return `<button type="button" class="tripchip ${active ? "is-active" : ""}" data-action="add-trip-stop"
                      data-country="${c.id}" data-dest="${esc(c.dest)}" data-flag="${esc(c.flag)}" aria-pressed="${active}">${c.flag} ${esc(c.dest)}</button>`;
     }).join("");
     return `
-      <div class="tripswitch" role="group" aria-label="${esc(t("home.tripSwitchCap"))}">
-        <span class="tripswitch__cap">${esc(t("home.tripSwitchCap"))}</span>
-        <div class="tripswitch__chips">${chips}</div>
-        <p class="tripswitch__hint">${esc(t("home.tripSwitchHint"))}</p>
+      <div class="tripswitch ${open ? "is-open" : "is-collapsed"}" role="group" aria-label="${esc(t("home.tripSwitchCap"))}">
+        <button type="button" class="tripswitch__toggle" data-action="toggle-trip-switch" aria-expanded="${open}">
+          <span class="tripswitch__cap">${esc(t("home.tripSwitchCap"))}</span>
+          <span class="tripswitch__chev" aria-hidden="true">${open ? "▾" : "▸"}</span>
+        </button>
+        ${open ? `<div class="tripswitch__chips">${chips}</div>
+        <p class="tripswitch__hint">${esc(t("home.tripSwitchHint"))}</p>` : ""}
       </div>`;
   }
 
   // Editierbare Reise-Zeitleiste (nur im Profil): die Stopps in Reihenfolge, jeder mit
-  // einem ×-Knopf zum Entfernen. So entsteht z. B. El Salvador → Kolumbien → Peru.
+  // einem Greif-Griff (⠿) zum Umsortieren per Drag & Drop und einem ×-Knopf zum
+  // Entfernen. So entsteht z. B. El Salvador → Kolumbien → Peru. Der Abschnitt lässt
+  // sich einklappen, damit das Profil kompakt bleibt (Route steht auch in der Karte oben).
   function tripTimeline(vm) {
     const route = vm.trip && Array.isArray(vm.trip.route) ? vm.trip.route : [];
     if (!route.length) return "";
+    const open = vm.tripRouteOpen !== false; // Standard: aufgeklappt (Drag sichtbar)
+    const canReorder = route.length > 1;     // Umsortieren erst ab zwei Stopps sinnvoll
     const items = route.map((s, i) => `
-      <li class="triptl__item">
+      <li class="triptl__item" data-index="${i}">
+        ${canReorder ? `<span class="triptl__drag" data-action="drag-trip-stop" role="button" tabindex="-1" aria-label="${esc(t("home.tripStopDrag"))}" title="${esc(t("home.tripStopDrag"))}">⠿</span>` : ""}
         <span class="triptl__num">${i + 1}</span>
         ${s.flag ? `<span class="triptl__flag">${esc(s.flag)}</span>` : ""}
         <span class="triptl__name">${esc(s.dest)}</span>
         <button type="button" class="triptl__rm" data-action="remove-trip-stop" data-index="${i}" aria-label="${esc(t("home.tripStopRemove"))}">✕</button>
       </li>`).join("");
     return `
-      <div class="triptl" role="group" aria-label="${esc(t("home.tripRouteCap"))}">
-        <span class="triptl__cap">${esc(t("home.tripRouteCap"))}</span>
-        <ol class="triptl__list">${items}</ol>
+      <div class="triptl ${open ? "is-open" : "is-collapsed"}" role="group" aria-label="${esc(t("home.tripRouteCap"))}">
+        <button type="button" class="triptl__toggle" data-action="toggle-trip-route" aria-expanded="${open}">
+          <span class="triptl__cap">${esc(t("home.tripRouteCap"))}</span>
+          <span class="triptl__badge">${route.length}</span>
+          <span class="triptl__chev" aria-hidden="true">${open ? "▾" : "▸"}</span>
+        </button>
+        ${open ? `<ol class="triptl__list">${items}</ol>${canReorder ? `
+        <p class="triptl__hint">${esc(t("home.tripRouteReorderHint"))}</p>` : ""}` : ""}
       </div>`;
   }
 
@@ -840,7 +858,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, flirt: vm.hasFlirt, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, flirt: vm.hasFlirt, yesto: vm.hasYesto, musica: vm.hasMusica, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -3395,6 +3413,127 @@
       </section>`;
   }
 
+  // ---------- MÚSICA (LatAm-Genres + Spotify/Apple-Deep-Links) ----------
+  // Aufbau wie renderFotos/renderSalud: lange Nachschlage-Seite mit Sprungmarken.
+  // Besonderheit: pro Genre und fürs gewählte Reiseland zwei Deep-Link-Knöpfe, die
+  // direkt in Spotify bzw. Apple Music suchen (Universal-Links – öffnen am Handy
+  // die App). Beide Ziele werden aus EINER Suchanfrage `q` gebaut, damit kein Link
+  // veraltet (keine toten Track-/Playlist-IDs).
+  function renderMusica(vm) {
+    const spotifyUrl = (q) => `https://open.spotify.com/search/${encodeURIComponent(q || "")}`;
+    const appleUrl = (q) => `https://music.apple.com/search?term=${encodeURIComponent(q || "")}`;
+    const playLinks = (q) => `
+      <div class="mus-links">
+        <a class="mus-link mus-link--spotify" href="${esc(spotifyUrl(q))}" target="_blank" rel="noopener noreferrer">
+          <span aria-hidden="true">▶</span> ${esc(t("discover.musOnSpotify"))}
+        </a>
+        <a class="mus-link mus-link--apple" href="${esc(appleUrl(q))}" target="_blank" rel="noopener noreferrer">
+          <span aria-hidden="true">▶</span> ${esc(t("discover.musOnApple"))}
+        </a>
+      </div>`;
+
+    // Ein Genre: aufklappbar wie bei Salud/Fotos, plus Künstler-Chips,
+    // Deep-Links und spanisches Lesetraining.
+    const genreBlock = (g) => {
+      const lvl = levelMeta(g.level);
+      const reading = (g.es && g.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: g.es, vocab: g.vocab, level: g.level, quiz: true })}</div>
+           </details>`
+        : "";
+      const artists = (g.artists || []).length
+        ? `<div class="mus-artists"><span class="mus-artists__cap">${esc(t("discover.musArtists"))}</span><span class="mus-artists__chips">${
+            g.artists.map((a) => `<span class="mus-artist">${esc(a)}</span>`).join("")
+          }</span></div>`
+        : "";
+      return `
+        <details class="knigge-topic mus-genre">
+          <summary class="knigge-topic__head">
+            <span class="knigge-topic__icon" aria-hidden="true">${g.icon}</span>
+            <span class="knigge-topic__title">${esc(g.name)}${g.origin ? `<span class="mus-genre__origin">${esc(g.origin)}</span>` : ""}</span>
+            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="knigge-topic__body">
+            ${g.desc ? `<p class="knigge-intro">${esc(g.desc)}</p>` : ""}
+            ${artists}
+            ${playLinks(g.q)}
+            ${reading}
+          </div>
+        </details>`;
+    };
+    const genres = (vm.genres || []).map(genreBlock).join("");
+
+    // „Sound deines Reiselands": Land wählen (wie Länderkunde/Bebidas) + eine Karte
+    // mit typischem Stil, einem bekannten Künstler/Song und den zwei Deep-Links.
+    const picker = (vm.groups && vm.groups.length) ? countryPicker(vm.groups) : "";
+    const cd = vm.countryData;
+    const soundCard = cd
+      ? `<article class="mus-country">
+           <div class="mus-country__head">
+             <span class="mus-country__flag" aria-hidden="true">${vm.country ? vm.country.flag : "🎶"}</span>
+             <div class="mus-country__meta">
+               <div class="mus-country__genre">${esc(cd.genre)}</div>
+               <div class="mus-country__song">${esc(cd.artist)} · „${esc(cd.song)}“</div>
+             </div>
+           </div>
+           ${playLinks(cd.q)}
+         </article>`
+      : `<p class="hm-intro">${esc(t("discover.musNoCountry"))}</p>`;
+    const sound = (picker || cd)
+      ? `${picker}<p class="hm-intro">${esc(t("discover.musSoundHint"))}</p>${soundCard}`
+      : "";
+
+    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Fotos/Salud.
+    const phraseGroup = (gr) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${gr.icon}</span> ${esc(gr.title)}</h3>
+        <ul class="rg-phrases">
+          ${gr.items.map((p) => `
+            <li class="rg-phrase">
+              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+              <span class="rg-phrase__de">${esc(p.de)}</span>
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    const glossary = (vm.glossary || []).map((gl) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(gl.es)}</span>
+        <span class="rg-gloss__de">${esc(gl.de)}</span>
+      </li>`).join("");
+
+    // Sprungmarken-Leiste (wie ft-nav): nur Chips für vorhandene Blöcke.
+    const navItems = [
+      sound && { id: "mus-sound", icon: "📍", label: t("discover.musNavSound") },
+      genres && { id: "mus-genres", icon: "🎶", label: t("discover.musNavGenres") },
+      phrases && { id: "mus-phrases", icon: "💬", label: t("discover.musNavPhrases") },
+      glossary && { id: "mus-words", icon: "🗣️", label: t("discover.musNavWords") },
+    ].filter(Boolean);
+    const nav = navItems.length > 1
+      ? `<nav class="mus-nav" aria-label="${esc(t("discover.musAreas"))}">${navItems.map((n) =>
+          `<a class="mus-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+      : "";
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">🎵 Música</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+        ${moduleShareBtn("musica")}
+        ${nav}
+
+        ${sound ? `<h2 class="rg-head" id="mus-sound">${esc(t("discover.musSound"))}</h2>${sound}` : ""}
+        ${genres ? `<h2 class="rg-head" id="mus-genres">${esc(t("discover.musGenres"))}</h2><p class="hm-intro">${esc(t("discover.musGenresHint"))}</p>${genres}` : ""}
+        ${phrases ? `<h2 class="rg-head" id="mus-phrases">${esc(t("discover.musPhrases"))}</h2>${phrases}` : ""}
+        ${glossary ? `<h2 class="rg-head" id="mus-words">${esc(t("discover.musWords"))}</h2><ul class="rg-glosslist">${glossary}</ul>` : ""}
+      </section>`;
+  }
+
   // ---------- HOSTEL MODE ----------
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
   function hmTopbar(title, back) {
@@ -3482,6 +3621,33 @@
       </section>`;
   }
 
+  // Kompaktes Balken-Dashboard der Niveau-Verteilung (CEFR-Stufen + „noch nicht
+  // getestet"). Gibt der Lehrkraft auf einen Blick die Gruppengrößen je Stufe.
+  // Reiner String-Renderer, druckbar (nur Inline-Breiten + .leveldist-* Klassen).
+  function renderLevelDist(d) {
+    if (!d || !d.total) return "";
+    const base = Math.max(d.max, 1); // größte Stufen-Gruppe füllt den Balken voll aus
+    const bars = d.buckets.map((b) => {
+      const pct = Math.round((b.count / base) * 100);
+      return `
+        <div class="leveldist-row">
+          <span class="leveldist-label">${esc(b.level)}</span>
+          <span class="leveldist-bar"><span class="leveldist-fill" style="width:${pct}%"></span></span>
+          <span class="leveldist-count" title="${esc(t("teacher.distCount", { n: b.count }))}">${b.count}</span>
+        </div>`;
+    }).join("");
+    const untested = d.untested
+      ? `<p class="leveldist-foot">${esc(t("teacher.distUntested"))}: <strong>${d.untested}</strong></p>`
+      : "";
+    return `
+      <div class="leveldist">
+        <h3 class="leveldist-h3">📊 ${esc(t("teacher.distHeading"))}</h3>
+        <p class="teacher-sub2">${esc(t("teacher.distHint"))}</p>
+        <div class="leveldist-rows">${bars}</div>
+        ${untested}
+      </div>`;
+  }
+
   // Lehrer-/Coordinator-Modus: Klassenübersicht aus importierten Schüler-Backups.
   // Backend-frei und offline – die Daten leben nur in dieser Sitzung. Reuse der
   // Screen-/Topbar-Struktur; Tabelle bewusst schlicht und druckbar (window.print).
@@ -3489,28 +3655,54 @@
     const actions = `
       <div class="teacher-actions">
         <button class="teacher-btn teacher-btn--main" data-action="teacher-import">📥 ${esc(t("teacher.importBtn"))}</button>
-        ${vm.count ? `<button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
+        ${vm.count ? `<button class="teacher-btn" data-action="teacher-csv">📄 ${esc(t("teacher.csvBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
         <button class="teacher-btn" data-action="teacher-clear">🗑️ ${esc(t("teacher.clearBtn"))}</button>` : ""}
       </div>
       <input type="file" id="teacher-file" accept="application/json,.json" multiple hidden>`;
 
+    // Klickbarer Spaltenkopf zum Sortieren; aktive Spalte trägt ▲/▼ je Richtung.
+    const arrow = (key) => vm.sortKey === key ? (vm.sortDir < 0 ? " ▼" : " ▲") : "";
+    const sortTh = (key, label, extra) => `
+      <th${extra || ""}><button type="button" class="teacher-sortbtn${vm.sortKey === key ? " is-active" : ""}"
+        data-action="teacher-sort" data-key="${key}" aria-label="${esc(t("teacher.sortBy", { col: label }))}">${esc(label)}${arrow(key)}</button></th>`;
+
+    // Druck-Kopf (nur im Ausdruck sichtbar): Klassenname + Datum machen das Blatt
+    // selbsterklärend, ohne den Bildschirm zu verstellen.
+    const printHead = vm.count ? `
+      <div class="teacher-printhead">
+        <span class="teacher-printhead__title">${esc(vm.className || t("teacher.printTitleDefault"))}</span>
+        <span class="teacher-printhead__meta">${esc(t("teacher.printDateLabel"))}: ${esc(vm.printDate)}</span>
+      </div>` : "";
+
+    // Optionaler Klassenname (steuert Druck-Kopf + CSV-Dateiname). Nicht mitgedruckt.
+    const classNameField = vm.count ? `
+      <label class="teacher-classname no-print">
+        <span class="teacher-classname__label">${esc(t("teacher.classNameLabel"))}</span>
+        <input id="teacher-classname" class="task-input" type="text" maxlength="60"
+          placeholder="${esc(t("teacher.classNamePh"))}" value="${esc(vm.className)}">
+      </label>` : "";
+
     const body = vm.count
       ? `
+      ${printHead}
       <p class="teacher-summary">${esc(t("teacher.classSummary", { n: vm.count, avg: vm.avgMastered, total: vm.totalCards }))}</p>
+      ${classNameField}
+      ${renderLevelDist(vm.levelDist)}
       <div class="teacher-tablewrap">
         <table class="teacher-table">
           <thead><tr>
-            <th>${esc(t("teacher.colName"))}</th>
-            <th>${esc(t("teacher.colMastered"))}</th>
-            <th>${esc(t("teacher.colStreak"))}</th>
-            <th>${esc(t("teacher.colChallenges"))}</th>
-            <th>${esc(t("teacher.colPretrip"))}</th>
-            <th>${esc(t("teacher.colLevel"))}</th>
+            ${sortTh("name", t("teacher.colName"))}
+            ${sortTh("mastered", t("teacher.colMastered"))}
+            ${sortTh("streak", t("teacher.colStreak"))}
+            ${sortTh("challenges", t("teacher.colChallenges"))}
+            ${sortTh("pretrip", t("teacher.colPretrip"))}
+            ${sortTh("level", t("teacher.colLevel"))}
             <th>${esc(t("teacher.colPacks"))}</th>
-            <th aria-label="${esc(t("teacher.remove"))}"></th>
+            <th class="no-print" aria-label="${esc(t("teacher.remove"))}"></th>
           </tr></thead>
           <tbody>
-            ${vm.students.map((s, i) => `
+            ${vm.students.map((s) => `
             <tr>
               <td class="teacher-name">${esc(s.name)}</td>
               <td>${s.cardsMastered} / ${s.totalCards}<span class="teacher-sub"> · ${esc(t("teacher.reviewed", { n: s.cardsReviewed }))}</span></td>
@@ -3519,7 +3711,7 @@
               <td>${s.pretripDays} / ${s.pretripMax}</td>
               <td>${(s.assessment || s.placement) ? `${esc((s.assessment || s.placement).level)}<span class="teacher-sub"> · ${Math.round(((s.assessment || s.placement).finalScore || 0) * 100)}%${s.assessment ? " 📋" : ""}</span>` : "—"}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
-              <td><button class="teacher-x" data-action="teacher-remove" data-idx="${i}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
+              <td class="no-print"><button class="teacher-x" data-action="teacher-remove" data-idx="${s._idx}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
           </tbody>
         </table>
@@ -3553,17 +3745,19 @@
     return `
       <section class="screen${withTab ? " screen--tabbed" : ""}">
         ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), withTab ? "open-task" : "home")}
-        <p class="hm-intro">${esc(t("teacher.intro"))}</p>
-        <div class="tip">${esc(t("teacher.privacy"))}</div>
+        <p class="hm-intro no-print">${esc(t("teacher.intro"))}</p>
+        <div class="tip no-print">${esc(t("teacher.privacy"))}</div>
         ${actions}
         ${body}
-        <hr class="teacher-sep">
-        ${taskForm}
-        <hr class="teacher-sep">
-        <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
-        <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
-        <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+        <div class="no-print">
+          <hr class="teacher-sep">
+          ${taskForm}
+          <hr class="teacher-sep">
+          <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
+          <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
+          <div class="teacher-actions">
+            <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+          </div>
         </div>
       </section>
       ${vm.targetPicker === "task" ? targetPickerModal("task", { targets: vm.taskTargets, bundles: vm.bundles, selectedKeys: vm.taskItemKeys, activeBundleIds: vm.activeBundleIds }) : ""}
@@ -4531,6 +4725,68 @@
     return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
   }
 
+  // ---------- ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown) ----------
+  // Ein Motiv (großes Emoji) erscheint, ein kurzer Countdown läuft, dann wird das
+  // spanische Wort + Übersetzung aufgelöst und man bewertet sich selbst.
+  function renderYestoSetup(vm) {
+    if (!vm.available) {
+      return `
+        <section class="screen">
+          ${hmTopbar("👀 ¿Y esto?", "home")}
+          <p class="stat-empty">${esc(t("discover.yeUnavailable"))}</p>
+        </section>`;
+    }
+    const themes = vm.themes.map((th) => `
+      <button class="ye-theme" type="button" data-action="start-yesto" data-id="${esc(th.id)}">
+        <span class="ye-theme__icon" aria-hidden="true">${esc(th.icon)}</span>
+        <span class="ye-theme__label">${esc(th.label)}</span>
+        <span class="ye-theme__count">${esc(t("discover.yeCount", { n: th.count }))}</span>
+      </button>`).join("");
+    return `
+      <section class="screen">
+        ${hmTopbar("👀 ¿Y esto?", "home")}
+        <p class="hm-intro">${esc(t("discover.yeIntro"))}</p>
+        ${moduleShareBtn("yesto")}
+        <h3 class="prc-head">${esc(t("discover.yeChooseTheme"))}</h3>
+        <div class="ye-themes">${themes}</div>
+      </section>`;
+  }
+
+  function renderYesto(vm) {
+    const shown = vm.position + (vm.phase === "reveal" ? 1 : 0);
+    const pct = vm.total > 0 ? Math.round((shown / vm.total) * 100) : 0;
+    const stage = vm.phase !== "reveal"
+      ? `
+        <div class="ye-stage" role="group" aria-label="${esc(t("discover.yePromptHint"))}">
+          <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
+          <div class="ye-q">¿Y esto?</div>
+          <div class="ye-think">${esc(t("discover.yePromptHint"))}</div>
+          <div class="ye-count" aria-hidden="true"><span class="ye-count__num">${esc(String(vm.count))}</span></div>
+        </div>
+        <button class="cta cta--ghost" data-action="yesto-reveal">${esc(t("discover.yeReveal"))}</button>`
+      : `
+        <div class="ye-stage is-reveal" role="status" aria-live="assertive">
+          <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
+          <div class="ye-word" lang="es">${esc(vm.es)}</div>
+          <div class="ye-native">${esc(vm.native)}</div>
+        </div>
+        <div class="ye-rate">
+          <button class="cta cta--soft" data-action="yesto-rate" data-known="0">${esc(t("discover.yeUnknown"))}</button>
+          <button class="cta" data-action="yesto-rate" data-known="1">${vm.isLast ? esc(t("discover.yeKnownLast")) : esc(t("discover.yeKnown"))}</button>
+        </div>`;
+    return `
+      <section class="screen study">
+        ${hmTopbar("👀 ¿Y esto?", "open-yesto")}
+        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
+        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+        ${stage}
+      </section>`;
+  }
+
+  function renderYestoDone() {
+    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
+  }
+
   // ---------- DIÁLOGOS (Gesprächs-Simulationen) ----------
   // Reisesituation Zug für Zug: die Gegenseite (npc) spricht (links), der Nutzer
   // antwortet (rechts) per Multiple-Choice oder freiem Tippen. Die Verlaufsspur
@@ -5180,12 +5436,13 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderConjugSetup, renderConjug, renderConjugDone,
+                   renderYestoSetup, renderYesto, renderYestoDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone,
                    placementCard, assessmentCard,

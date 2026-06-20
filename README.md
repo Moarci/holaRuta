@@ -4,12 +4,12 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.103.0** — 2293 Karten · 72 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Deutsch/Englisch umschaltbar** · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Fotos & Videos** (bessere Reisebilder) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul & Ergebnis teilen** (Deep-Link öffnet Modul/Test direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · **Coqueteo y romance** (flirten & daten mit Respekt) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · Spaced Repetition · Offline · Null Dependencies
+**v1.107.0** — 2293 Karten · 72 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Deutsch/Englisch umschaltbar** · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Música** (Genres LatAms mit Spotify- & Apple-Music-Deep-Links) · **Fotos & Videos** (bessere Reisebilder) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul & Ergebnis teilen** (Deep-Link öffnet Modul/Test direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · **Coqueteo y romance** (flirten & daten mit Respekt) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · **¿Y esto?** (Bild raten mit 3-2-1-Countdown) · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-315_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-333_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -219,6 +219,7 @@ SpanischCard/
 ├── dialogos.js    SC.dialogos   # Diálogos: Daten für die Gesprächs-Simulationen (REINE DATEN)
 ├── fotografia.js  SC.fotografia # Fotos & Videos: Foto-/Video-Schule fürs Reisen (REINE DATEN)
 ├── flirt.js       SC.flirt      # Coqueteo y romance: flirten & daten mit Respekt, Konsens, Sicherheit (REINE DATEN)
+├── musica.js      SC.musica     # Música: LatAm-Genres + Spotify/Apple-Deep-Links, Landes-Sound (REINE DATEN)
 │
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
 ├── matcher.js     SC.matcher    # Antwortprüfung, akzent-/satzzeichen-tolerant — REINE FUNKTIONEN
@@ -253,7 +254,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 315 Tests in 29 Dateien (node:test, keine Dependencies)
+├── test/                        # 333 Tests in 30 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -526,8 +527,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 315
-#  ℹ pass 315
+#  ℹ tests 333
+#  ℹ pass 333
 #  ℹ fail 0
 ```
 
@@ -536,6 +537,13 @@ Statische Prüfung:
 ```bash
 node --check *.js   # Syntax-Check aller Module
 node build.js       # Build muss fehlerfrei durchlaufen
+```
+
+**Optionaler E2E-Check (Browser).** Der „Modo profe“ (Lehrer-Modus) wird mit Playwright in echtem Chromium gegen die laufende App geprüft — Edition laden, Schüler-Backups importieren, Niveau-Verteilung, Sortierung, CSV-Export (inkl. Akzent-Namen), Re-Import-Dedupe und das A4-Druck-Layout. Playwright ist **keine** Repo-Dependency; fehlt es, überspringt der Check sauber (Exit 0), sodass `npm test` dependency-frei bleibt. Der Webserver darin nutzt nur Node-Bordmittel.
+
+```bash
+npm i -D playwright && npx playwright install chromium   # einmalig
+npm run e2e                                               # node scripts/e2e-modo-profe.mjs
 ```
 
 Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-end gegengeprüft: Home, Flip, Rating, Type-Matcher, Persistenz nach Reload, Editor, XSS-Probe, Statistik — **0 Konsolen-Errors**. Details in [AUDIT.md](AUDIT.md).
@@ -551,7 +559,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 37 (`SC.*`) |
-| Tests | 315 (alle grün) |
+| Tests | 333 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 
