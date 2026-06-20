@@ -3174,14 +3174,22 @@
     const topics = (vm.topics || []).map(topicBlock).join("");
 
     // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Regatear.
+    // Optional (cfg.copyPhrases) bekommt jeder Satz einen Kopier-Knopf, der den
+    // spanischen Text in die Zwischenablage legt (z. B. um ihn weiterzuschicken).
+    const copyBtn = (p) => cfg.copyPhrases
+      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
+      : "";
     const phraseGroup = (g) => `
       <div class="rg-group">
         <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
         <ul class="rg-phrases">
           ${g.items.map((p) => `
-            <li class="rg-phrase">
-              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-              <span class="rg-phrase__de">${esc(p.de)}</span>
+            <li class="rg-phrase${cfg.copyPhrases ? " rg-phrase--copy" : ""}">
+              <span class="rg-phrase__text">
+                <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+                <span class="rg-phrase__de">${esc(p.de)}</span>
+              </span>
+              ${copyBtn(p)}
             </li>`).join("")}
         </ul>
       </div>`;
@@ -3257,6 +3265,7 @@
       headWords: "discover.flWords", headChecklist: "discover.flChecklist",
       headChecklistHint: "discover.flChecklistHint",
       readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
+      copyPhrases: true,     // jeder wichtige Satz mit Kopier-Knopf (zum Weiterschicken)
     });
   }
 

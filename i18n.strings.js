@@ -815,6 +815,9 @@
     flWords: "🗣️ Wörter rund ums Flirten & Daten",
     flChecklist: "🛡️ Date- & Sicherheits-Kit",
     flChecklistHint: "Ein paar einfache Gewohnheiten, mit denen ein Date entspannt und sicher bleibt.",
+    copyPhrase: "Satz kopieren",
+    copyPhraseAria: "Satz kopieren: {phrase}",
+    phraseCopied: "Kopiert!",
 
     // Fotos y videos
     ftTips: "🎯 Tolle Bilder machen",
@@ -1228,6 +1231,9 @@
     flWords: "🗣️ Words for flirting & dating",
     flChecklist: "🛡️ Dating & safety kit",
     flChecklistHint: "A few simple habits that keep a date relaxed and safe.",
+    copyPhrase: "Copy phrase",
+    copyPhraseAria: "Copy phrase: {phrase}",
+    phraseCopied: "Copied!",
 
     // Fotos y videos
     ftTips: "🎯 Take great shots",

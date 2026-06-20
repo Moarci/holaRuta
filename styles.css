@@ -1995,8 +1995,30 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   display: flex; flex-direction: column; gap: 2px;
   padding: 9px 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--card);
 }
+.rg-phrase__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .rg-phrase__es { font-weight: 700; color: var(--ink); line-height: 1.4; }
 .rg-phrase__de { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.4; }
+
+/* Variante mit Kopier-Knopf (z. B. Coqueteo y romance): Satz links, Knopf rechts. */
+.rg-phrase--copy { flex-direction: row; align-items: center; gap: 10px; }
+.rg-phrase--copy .rg-phrase__text { flex: 1; }
+.rg-copy {
+  flex: none; appearance: none; -webkit-appearance: none; cursor: pointer;
+  width: 38px; height: 38px; border-radius: var(--r-sm);
+  border: 1px solid var(--line); background: var(--surface);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1rem; line-height: 1; color: var(--ink);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.rg-copy:hover { background: var(--card); border-color: var(--brand); }
+.rg-copy:active { transform: scale(0.92); }
+.rg-copy__icon { pointer-events: none; }
+/* Kurzes Erfolgs-Feedback nach dem Kopieren: Knopf wird zum grünen Häkchen. */
+.rg-copy.is-copied {
+  background: var(--ok, #2F8E5B); border-color: var(--ok, #2F8E5B); color: #fff;
+}
+.rg-copy.is-copied .rg-copy__icon { font-size: 0; }
+.rg-copy.is-copied::after { content: "✓"; font-size: 1.05rem; font-weight: 700; }
 .rg-units { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .rg-unit {
   display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px;

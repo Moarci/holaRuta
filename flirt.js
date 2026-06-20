@@ -340,6 +340,9 @@
         { es: "Eres muy divertido/divertida.", de: "Du bist sehr lustig.", en: "You're really fun." },
         { es: "Qué buen gusto tienes para la música.", de: "Du hast einen guten Musikgeschmack.", en: "You've got great taste in music." },
         { es: "Me haces reír mucho.", de: "Du bringst mich oft zum Lachen.", en: "You make me laugh a lot." },
+        { es: "Estás guapísimo/guapísima esta noche.", de: "Du siehst heute Abend umwerfend aus.", en: "You look absolutely gorgeous tonight." },
+        { es: "Tienes unos ojos increíbles.", de: "Du hast unglaubliche Augen.", en: "You have such incredible eyes." },
+        { es: "Me encanta tu sonrisa, me distrae.", de: "Ich liebe dein Lächeln, es lenkt mich total ab.", en: "I love your smile, it's so distracting." },
       ],
     },
     {
@@ -373,6 +376,25 @@
         { es: "Estoy con alguien.", de: "Ich bin vergeben.", en: "I'm with someone." },
         { es: "Prefiero que no, gracias.", de: "Mir wäre lieber nicht, danke.", en: "I'd rather not, thanks." },
         { es: "Déjame en paz, por favor.", de: "Lass mich bitte in Ruhe.", en: "Please leave me alone." },
+      ],
+    },
+    {
+      id: "subir",
+      icon: "🔥",
+      title: "Heißer werden – mit Konsens",
+      titleEn: "Turning up the heat – with consent",
+      items: [
+        { es: "Me encantas.", de: "Ich steh total auf dich.", en: "I'm really into you." },
+        { es: "No puedo dejar de mirarte.", de: "Ich kann nicht aufhören, dich anzusehen.", en: "I can't stop looking at you." },
+        { es: "Me muero por besarte.", de: "Ich brenne darauf, dich zu küssen.", en: "I'm dying to kiss you." },
+        { es: "Me pones nervioso/nerviosa, en el buen sentido.", de: "Du machst mich nervös – im guten Sinn.", en: "You make me nervous, in the best way." },
+        { es: "¿Quieres que sigamos esto en un lugar más tranquilo?", de: "Wollen wir das woanders ungestörter weitermachen?", en: "Want to take this somewhere quieter?" },
+        { es: "¿Te animas a venir a mi habitación?", de: "Hast du Lust, mit auf mein Zimmer zu kommen?", en: "Do you feel like coming back to my room?" },
+        { es: "Me gustas muchísimo… ¿sientes lo mismo?", de: "Ich steh wahnsinnig auf dich … geht's dir genauso?", en: "I'm so into you… do you feel the same?" },
+        { es: "¿Está bien si te toco aquí?", de: "Ist es okay, wenn ich dich hier berühre?", en: "Is it okay if I touch you here?" },
+        { es: "Dime qué te gusta.", de: "Sag mir, was dir gefällt.", en: "Tell me what you like." },
+        { es: "Solo si tú quieres; sin prisa.", de: "Nur wenn du auch willst; ganz ohne Eile.", en: "Only if you want to; no rush at all." },
+        { es: "Tengo muchas ganas de ti.", de: "Ich begehre dich sehr.", en: "I want you so much." },
       ],
     },
     {
@@ -416,6 +438,10 @@
     { es: "el condón / el preservativo", de: "das Kondom", en: "condom" },
     { es: "un amorío / una aventura", de: "eine lockere Affäre / ein Abenteuer", en: "a fling / a casual thing" },
     { es: "el flechazo", de: "die Liebe auf den ersten Blick", en: "love at first sight" },
+    { es: "tener ganas (de alguien)", de: "Lust haben / jemanden begehren", en: "to be into / to want someone" },
+    { es: "el deseo / desear", de: "das Verlangen / begehren", en: "desire / to desire" },
+    { es: "una noche juntos", de: "eine gemeinsame Nacht", en: "a night together" },
+    { es: "calentón/calentona · caliente", de: "angeturnt / heiß (umgangssprachlich)", en: "turned on / hot (colloquial)" },
   ];
 
   // ---------- „Date- & Sicherheits-Kit": kleine Liste (Icon + Sache + Warum) ----------
