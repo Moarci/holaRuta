@@ -5693,7 +5693,16 @@
       b.setAttribute("aria-pressed", on ? "true" : "false");
       b.setAttribute("aria-label", label);
       b.setAttribute("title", label);
-      b.textContent = on ? "★" : "☆";
+      // Beschrifteter Button (favLine unter der Karte): nur Stern + Text in den
+      // gekapselten Spans tauschen, sonst würde der sichtbare Text verschwinden.
+      const starEl = b.querySelector(".favline__star");
+      if (starEl) {
+        starEl.textContent = on ? "★" : "☆";
+        const txtEl = b.querySelector(".favline__txt");
+        if (txtEl) txtEl.textContent = on ? t("study.favSaved") : t("study.favSave");
+      } else {
+        b.textContent = on ? "★" : "☆";
+      }
     });
   }
 

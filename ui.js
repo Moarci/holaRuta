@@ -1266,6 +1266,21 @@
               aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
   }
 
+  // Beschrifteter Favoriten-Button direkt unter der Lernkarte. Früher saß der Stern
+  // nackt oben in der Kopfzeile (neben dem Zähler) – dort war ohne Beschriftung nicht
+  // erkennbar, was er tut. Hier steht er mit Text („Merken"/„Gemerkt") griffbereit am
+  // Inhalt. Den Stern (★/☆) und den Text hält der Controller in-place aktuell
+  // (updateFavStars), darum sind beide in eigene Spans gekapselt – ein Voll-Re-Render
+  // würde im Schreiben-Modus den getippten Text verwerfen.
+  function favLine(vm) {
+    if (!vm.cardId) return "";
+    const on = vm.isFav;
+    const cls = "favline" + (on ? " is-on" : "");
+    const label = on ? t("favorites.remove") : t("favorites.add");
+    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(vm.cardId)}"
+              aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}"><span class="favline__star" aria-hidden="true">${on ? "★" : "☆"}</span><span class="favline__txt">${esc(on ? t("study.favSaved") : t("study.favSave"))}</span></button>`;
+  }
+
   // ---------- STUDY ----------
   function renderStudy(vm) {
     const pct = vm.total > 0 ? Math.round((vm.position / vm.total) * 100) : 0;
@@ -1282,12 +1297,12 @@
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
-            ${favStar(vm.cardId, vm.isFav, { cls: "favstar--top" })}
             <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
           </div>
         </div>
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("study.studyProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         ${body}
+        ${favLine(vm)}
         ${skipBtn()}
         ${shareCardBtn()}
       </section>`;
