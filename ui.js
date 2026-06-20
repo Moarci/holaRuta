@@ -3384,7 +3384,7 @@
           <span aria-hidden="true">▶</span> ${esc(t("discover.musOnSpotify"))}
         </a>
         <a class="mus-link mus-link--apple" href="${esc(appleUrl(q))}" target="_blank" rel="noopener noreferrer">
-          <span aria-hidden="true">&#63743;</span> ${esc(t("discover.musOnApple"))}
+          <span aria-hidden="true">▶</span> ${esc(t("discover.musOnApple"))}
         </a>
       </div>`;
 
