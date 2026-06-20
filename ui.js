@@ -857,13 +857,12 @@
     return `${stats}${skills}${note}${rel}`;
   }
 
-  // Frage-für-Frage-Rückblick als aufklappbarer Block – einzelne Antworten und
-  // Fehler (was war richtig/falsch, was wäre korrekt, plus Erklärung). Genutzt vom
-  // Ergebnis-Schirm UND vom Profil, damit man die Antworten jederzeit abrufen kann.
-  // ns = i18n-Namespace ("placement" | "assessment"), review = Array (kann leer sein).
-  // Optionale Item-Felder (level/listen/typo) werden nur gezeigt, wenn vorhanden –
-  // so deckt eine Funktion Ruta-Check und Nivel-Test ab. "" wenn nichts vorliegt.
-  function reviewBox(ns, review) {
+  // Reine Frage-für-Frage-Liste (ohne Aufklapp-Rahmen) – was war richtig/falsch,
+  // was wäre korrekt, plus Erklärung. ns = i18n-Namespace ("placement" |
+  // "assessment"). Optionale Item-Felder (level/listen/typo) werden nur gezeigt,
+  // wenn vorhanden – so deckt eine Funktion Ruta-Check und Nivel-Test ab. "" wenn
+  // leer. Eigenständig nutzbar (z. B. als Body einer Verlaufszeile).
+  function reviewList(ns, review) {
     if (!review || !review.length) return "";
     const tn = (k) => t(ns + "." + k);
     const reviewIcon = { correct: "✅", wrong: "❌", unknown: "🤷" };
@@ -884,10 +883,45 @@
           <p class="pl-review__line pl-review__typo">${esc(tn("reviewTypo"))} <span class="pl-review__correct" lang="es">${esc(r.correctText)}</span></p>` : ""}
         ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
       </li>`;
+    return `<ul class="pl-review">${review.map(reviewRow).join("")}</ul>`;
+  }
+
+  // Aufklappbarer Rückblick-Block fürs aktuelle Ergebnis (Ergebnis-Schirm + Profil):
+  // Liste in <details> mit „Antworten ansehen". "" wenn nichts vorliegt.
+  function reviewBox(ns, review) {
+    const list = reviewList(ns, review);
+    if (!list) return "";
     return `<details class="pl-reviewbox">
-           <summary class="pl-reviewbox__sum">${esc(tn("reviewCap"))}</summary>
-           <ul class="pl-review">${review.map(reviewRow).join("")}</ul>
+           <summary class="pl-reviewbox__sum">${esc(t(ns + ".reviewCap"))}</summary>
+           ${list}
          </details>`;
+  }
+
+  // Verlauf (Verlauf/Fortschritt) fürs Profil – baugleich für Ruta-Check und Nivel-
+  // Test. Jede ältere Zeile ist aufklappbar und zeigt den eigenen Frage-für-Frage-
+  // Rückblick (sofern gespeichert); die NEUESTE Zeile bleibt flach, weil ihr voller
+  // Rückblick schon oben im Hauptblock steht (keine Dopplung). Altergebnisse ohne
+  // Rückblick-Daten bleiben ebenfalls flache Zeilen. "" bei ≤ 1 Durchlauf.
+  function historyList(ns, history) {
+    if (!history || history.length <= 1) return "";
+    const tn = (k) => t(ns + "." + k);
+    const head = (h) => `
+      <span class="plprof__histdate">${esc(h.at || "")}</span>
+      <span class="plprof__histlvl">${esc(h.level)}</span>
+      <span class="plprof__histscore">${h.scorePct}%</span>`;
+    const row = (h, i) => {
+      const list = i === 0 ? "" : reviewList(ns, h.review); // neueste: oben schon voll
+      return list
+        ? `<li class="plprof__histrow plprof__histrow--open">
+             <details class="plprof__histbox">
+               <summary class="plprof__histsum">${head(h)}</summary>
+               ${list}
+             </details>
+           </li>`
+        : `<li class="plprof__histrow">${head(h)}</li>`;
+    };
+    return `<div class="plprof__histcap">${esc(tn("profileHistoryCap"))}</div>
+       <ul class="plprof__hist">${history.map(row).join("")}</ul>`;
   }
 
   // Ruta-Check im Profil: letztes Ergebnis (Startlevel, Score, Tempo), kurzer
@@ -905,17 +939,6 @@
         </div>`;
     }
     const l = p.last;
-    const histRows = p.history.length > 1
-      ? `<div class="plprof__histcap">${esc(t("placement.profileHistoryCap"))}</div>
-         <ul class="plprof__hist">
-           ${p.history.map((h) => `
-             <li class="plprof__histrow">
-               <span class="plprof__histdate">${esc(h.at || "")}</span>
-               <span class="plprof__histlvl">${esc(h.level)}</span>
-               <span class="plprof__histscore">${h.scorePct}%</span>
-             </li>`).join("")}
-         </ul>`
-      : "";
     return `
       ${cap}
       <div class="plprof">
@@ -931,7 +954,7 @@
         </div>
         ${resultDetailBlocks("placement", l)}
         ${reviewBox("placement", l.review)}
-        ${histRows}
+        ${historyList("placement", p.history)}
         ${shareBlock(shareFmt, "share-placement", t("placement.share"))}
         <div class="plprof__actions">
           <button class="ghostbtn" data-action="open-placement">🔁 ${esc(t("placement.retake"))}</button>
@@ -953,17 +976,6 @@
         </div>`;
     }
     const l = p.last;
-    const histRows = p.history.length > 1
-      ? `<div class="plprof__histcap">${esc(t("assessment.profileHistoryCap"))}</div>
-         <ul class="plprof__hist">
-           ${p.history.map((h) => `
-             <li class="plprof__histrow">
-               <span class="plprof__histdate">${esc(h.at || "")}</span>
-               <span class="plprof__histlvl">${esc(h.level)}</span>
-               <span class="plprof__histscore">${h.scorePct}%</span>
-             </li>`).join("")}
-         </ul>`
-      : "";
     return `
       ${cap}
       <div class="plprof">
@@ -980,7 +992,7 @@
         </div>
         ${resultDetailBlocks("assessment", l)}
         ${reviewBox("assessment", l.review)}
-        ${histRows}
+        ${historyList("assessment", p.history)}
         ${shareBlock(shareFmt, "share-assessment", t("assessment.share"))}
         <div class="plprof__actions">
           <button class="ghostbtn" data-action="open-assessment">🔁 ${esc(t("assessment.retake"))}</button>
@@ -5107,5 +5119,6 @@
                    renderConjugSetup, renderConjug, renderConjugDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone,
+                   placementCard, assessmentCard,
                    ONBOARD_SLIDE_COUNT: ONBOARD_SLIDES.length };
 })();
