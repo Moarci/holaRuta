@@ -18,7 +18,7 @@ export const MODULES = {
   srs:     { file: "srs.js",     tests: ["sc.test.js"], pattern: "^srs" },
   store:   { file: "store.js",   tests: ["sc.test.js"], pattern: "^store" },
   stats:   { file: "stats.js",   tests: ["sc.test.js"], pattern: "^stats" },
-  badges:  { file: "badges.js",  tests: ["sc.test.js"], pattern: "^badges" },
+  badges:  { file: "badges.js",  tests: ["badges.test.js"] },
   matcher: { file: "matcher.js", tests: ["matcher-de.test.js", "typo-corpus.test.js"] },
   net:     { file: "net.js",     tests: ["net.test.js"] },
   sync:    { file: "sync.js",    tests: ["sync.test.js"] },
@@ -36,13 +36,14 @@ export const SEED = 1;        // Sampling-Seed (reproduzierbar)
  * Pro-Modul-No-Regression-Ratchet (statt globalem Schwellwert): Jedes Modul darf
  * seinen gemessenen Baseline-Score nicht um mehr als TOLERANCE unterschreiten.
  * Vorteil ggü. globalem Schwellwert: ein PR an einem schwach getesteten Modul
- * (z. B. sync 30 %) wird NICHT rot, solange er den Score nicht VERSCHLECHTERT —
- * und Verbesserungen heben den Baseline (Ratsche). Werte = Messung vom 2026-06-20
- * (BUDGET=30, SEED=1); bei Änderung von BUDGET/SEED neu kalibrieren.
+ * (z. B. schwach getestetes Modul) wird NICHT rot, solange er den Score nicht
+ * VERSCHLECHTERT — und Verbesserungen heben den Baseline (Ratsche). Werte =
+ * Messung vom 2026-06-20 (BUDGET=30, SEED=1); sync & badges danach durch gezielte
+ * Tests auf 100 % gehoben. Bei Änderung von BUDGET/SEED neu kalibrieren.
  */
 export const TOLERANCE = 5;   // erlaubter Score-Rückgang in %-Punkten (absorbiert Mutantenmengen-Drift bei Quelländerungen)
 export const BASELINE = {
-  srs: 66, store: 60, stats: 70, badges: 43, matcher: 56, net: 81, sync: 30, numbers: 53,
+  srs: 66, store: 60, stats: 70, badges: 100, matcher: 56, net: 81, sync: 100, numbers: 53,
 };
 export const floorFor = (m) => Math.max(0, (BASELINE[m] ?? 0) - TOLERANCE);
 
