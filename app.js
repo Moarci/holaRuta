@@ -5507,7 +5507,6 @@
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
     { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
-    { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", need: "bailar" },
   ];
   const searchHas = {
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
