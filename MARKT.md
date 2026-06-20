@@ -2,8 +2,8 @@
 
 > **Datum:** 2026-06-14 · **Folgt auf:** [IDEEN.md](IDEEN.md), [RISIKO.md](RISIKO.md), [AUDIT.md](AUDIT.md)
 > **Fokus:** Vermarktung (B2B + B2C) — *nicht* Code-Hygiene (die ist in AUDIT/RISIKO behandelt).
-> **Stand der Faktenbasis (historische Analyse-Basis):** `main` v1.24.0 — 718 Karten · 23 Bereiche · 3 Stufen · 3 Lernmodi · 154 Tests grün.
-> **Seitdem auf dem Branch ausgebaut** → heute **1133 Karten · 32 Bereiche · 47 Challenges · 181 Tests grün** (inkl. 9 Destination-Packs: Colombia 89, Peru 45, Mexiko 41, Costa Rica 40, Ecuador 40, Guatemala 40, Argentinien 40, Chile 40, Bolivien 40 Karten). Siehe Stand-Update in §2/§3.
+> **Historischer Analyse-Snapshot (datiert, nicht maßgeblich):** Diese Marktanalyse entstand auf `main` v1.24.0 — 718 Karten · 23 Bereiche · 3 Stufen · 3 Lernmodi · 154 Tests grün — und einem späteren Zwischenstand mit ~1133 Karten · 32 Bereiche · 47 Challenges · 181 Tests. Diese Zahlen sind **veraltet** und dienen nur der Nachvollziehbarkeit der damaligen Argumentation.
+> **Aktueller Stand (2026-06-20): 2293 Karten · 72 Bereiche/Kategorien · 333 Tests grün.** Maßgeblich ist immer die **[README.md](README.md) als Single-Source-of-Truth** (Tabelle „Projektstatus") — sie wird per `test/doc-consistency.test.js` gegen den Code abgesichert. Diese MARKT.md wird nicht laufend nachgezogen.
 
 Dieses Dokument gleicht eine ausführliche Geschäftsanalyse mit dem **echten Code-Stand** ab und
 leitet daraus einen realistischen Vertriebsweg ab: Wer sind die Kanäle, was trägt der heutige
@@ -36,6 +36,36 @@ Daraus ergeben sich drei tragende B2B-Kanäle plus ein optionaler B2C-Pfad:
 
 ---
 
+## 1b. Wettbewerbsanalyse & Differenzierung
+
+HolaRuta tritt nicht gegen die großen Sprach-Apps als „bessere Allzweck-Sprachschule" an — es besetzt
+eine **Nische, die die Marktführer bewusst nicht bedienen**: situatives, regional korrektes
+Reise-Spanisch für Lateinamerika, offline und ohne Tracking.
+
+| Wettbewerber | Stärke | Lücke, die HolaRuta füllt |
+|---|---|---|
+| **Duolingo** | Gamification, riesige Reichweite, kostenlos | Generisches „Schul-Spanisch" (oft kastilisches/neutrales ES), gamifiziert statt situativ; viel Tracking & Werbung; braucht Login/Streak-Druck; Reise-Notfall-Situationen kommen kaum vor |
+| **Babbel** | Strukturierte Kurse, gute Dialoge, seriös | Abo-Pflicht, kursförmig statt „schnell die richtige Karte am Busbahnhof"; LatAm-Varianten nur teilweise; nicht auf konkrete Reise-Situationen zugeschnitten |
+| **Pimsleur** | Audio-Immersion, Aussprache | Teuer, rein linear/auditiv, kein visuelles Nachschlagen, kein situativer Spickzettel, nicht offline-PWA-leicht |
+| **Google Translate** | Sofort, überall, kostenlos | Übersetzt punktuell statt zu *lehren*; keine Aussprache-Merkhilfe, kein Lernfortschritt/SRS, kein kulturell/regional kuratierter Kontext; verlässt das Gerät (Cloud) |
+
+**Das Differenzierungsargument (warum HolaRuta gewinnt, wo es antritt):**
+
+1. **LatAm-korrekt** — durchgängig die regional richtigen Wörter (colectivo, vuelto, plata, chévere,
+   celular), nicht kastilisches Lehrbuch-Spanisch. Genau das, was Reisende vor Ort hören.
+2. **Situativ statt kursförmig** — kuratiert nach echten Reise-Momenten (Taxi, Hostel, Grenze, Notfall,
+   Smalltalk), inkl. Survival-Spickzettel — nicht nach Grammatik-Lektionen.
+3. **Offline & PWA-leicht** — Texte, Karten und UI funktionieren ohne Netz; installierbar als App,
+   ohne Store, ohne Abo-Zwang. (Ehrliche Grenze: Wikimedia-Kultur-/Geschichtsbilder werden extern
+   geladen.)
+4. **Kein Tracking, volle Datenhoheit** — Fortschritt bleibt lokal (`localStorage`), kein Konto-Zwang,
+   keine Werbung, kein Verkauf von Nutzerdaten. Die Cloud-Sync-Schicht ist **opt-in**.
+
+> Kurz: Die Großen sind breiter, billiger beworben und gamifizierter. HolaRuta ist **das schärfere
+> Werkzeug für genau eine Reise nach Lateinamerika** — korrekt, situativ, offline, privat.
+
+---
+
 ## 2. Realitäts-Check: Analyse vs. Code
 
 Die Analyse ist überwiegend präzise — fast alle behaupteten Features existieren wirklich. Belegt
@@ -46,7 +76,7 @@ gegen `main` v1.24.0:
 | Hostel Battle | `data.js`: 45 BATTLES, Scoring 2/1/0, 6/10/20 Runden | ✅ existiert |
 | Rollenspiele | `data.js`: ROLEPLAYS + `dialogos.js` (10 Dialoge) | ✅ existiert |
 | Real-Life Challenges | `data.js`: CHALLENGES als Battle-Bonus, inzwischen **47** (von 10 ausgebaut) | ✅ umgesetzt |
-| Kontextkarten | `contextdata.js`: Reise-Kontext für **alle** Karten (heute 1133) | ✅ existiert |
+| Kontextkarten | `contextdata.js`: Reise-Kontext für **alle** Karten (Stand 2026-06-20: 2293; Snapshot-Zahl war 1133) | ✅ existiert |
 | Badges (Ruta-Pass) | `badges.js`: 50+ Stempel, 11 Gruppen | ✅ existiert |
 | Kategorien | 23 Bereiche (Hostel, Essen, Busreise, Notfall, Geld …) | ✅ existiert |
 | Spickzettel (Survival, offline, vorgelesen) | README / `ui.js` | ✅ existiert |

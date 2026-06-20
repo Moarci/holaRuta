@@ -25,6 +25,10 @@ const SRC = path.join(__dirname, "..");
 require(path.join(SRC, "changelog.js"));
 const { VERSION } = globalThis.window.SC.changelog;
 
+// data.js als Browser-IIFE laden (Quelle der Wahrheit für Karten-/Kategorienzahl).
+require(path.join(SRC, "data.js"));
+const DATA = globalThis.window.SC.data;
+
 const readme = fs.readFileSync(path.join(SRC, "README.md"), "utf8");
 const pkg = JSON.parse(fs.readFileSync(path.join(SRC, "package.json"), "utf8"));
 
@@ -64,6 +68,27 @@ test("Test-Zahlen: README-Badge/Beispiel/Tabelle == echte Anzahl test()", () => 
     assert.ok(m, `README: Test-Zahl (${label}) nicht gefunden`);
     assert.equal(Number(m[1]), n, `README ${label} (${m[1]}) ≠ echte Test-Anzahl (${n})`);
   }
+});
+
+test("Karten-Anzahl: README-Projektstatus == data.CARDS.length", () => {
+  assert.ok(Array.isArray(DATA && DATA.CARDS), "data.js: SC.data.CARDS nicht als Array gefunden");
+  const real = DATA.CARDS.length;
+  const m = readme.match(/\|\s*Karten\s*\|\s*(\d+)\s*\|/);
+  assert.ok(m, "README: Projektstatus-Zeile (| Karten | N |) nicht gefunden");
+  assert.equal(Number(m[1]), real, `README Karten (${m[1]}) ≠ echte data.CARDS.length (${real})`);
+});
+
+test("Kategorien-Anzahl: README == data.CATEGORIES.length", () => {
+  assert.ok(Array.isArray(DATA && DATA.CATEGORIES), "data.js: SC.data.CATEGORIES nicht als Array gefunden");
+  const real = DATA.CATEGORIES.length;
+  // (a) Projektstatus-Tabelle: | Bereiche / Kategorien | N |
+  const mTab = readme.match(/\|\s*Bereiche\s*\/\s*Kategorien\s*\|\s*(\d+)\s*\|/);
+  assert.ok(mTab, "README: Projektstatus-Zeile (| Bereiche / Kategorien | N |) nicht gefunden");
+  assert.equal(Number(mTab[1]), real, `README Bereiche/Kategorien (${mTab[1]}) ≠ echte data.CATEGORIES.length (${real})`);
+  // (b) Datenmodell-Tabelle: Kategorie-Id (eine von N)  → verhindert den 71/72-Drift
+  const mInline = readme.match(/Kategorie-Id \(eine von (\d+)\)/);
+  assert.ok(mInline, "README: „Kategorie-Id (eine von N)\" nicht gefunden");
+  assert.equal(Number(mInline[1]), real, `README „eine von ${mInline[1]}\" ≠ echte data.CATEGORIES.length (${real})`);
 });
 
 test("Test-Datei-Anzahl: README == echte *.test.js", () => {

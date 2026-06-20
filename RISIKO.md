@@ -30,8 +30,13 @@ Die echten Risiken liegen woanders — und sie treffen genau die Kernversprechen
 |---|---|
 | CRITICAL | 0 |
 | HIGH | 3 |
-| MEDIUM | 9 |
-| LOW | 8 |
+| MEDIUM | 13 |
+| LOW | 9 |
+
+> Hinweis: Die MEDIUM-/LOW-Zahlen schließen die neuen, nicht-technischen Risiken **R13–R17**
+> (Native-Speaker-Sign-off, Impressum/DSGVO, Wikimedia-CC-BY-Lizenzen, Solo-/Plattform-Abhängigkeit,
+> nicht versionierter Generator) ein. Die Prosa oben bezieht sich auf den ursprünglichen technischen
+> Audit; aktuelle Kennzahlen (2293 Karten · 72 Kategorien · 333 Tests) stehen in der [README.md](README.md).
 
 ---
 
@@ -106,6 +111,50 @@ Der gesamte Fortschritt lebt ausschließlich in localStorage, **ohne Export/Impo
 - **Geteilte github.io-Origin:** jedes andere Pages-Projekt des Accounts kann HolaRutas localStorage lesen/schreiben (kein XSS möglich, aber Daten-Manipulation). Architektur-Randbedingung.
 - **iOS speechSynthesis:** `synth.cancel()` direkt vor `speak()` (`speech.js:29`) verschluckt auf iOS gelegentlich die erste Utterance.
 - **Sprach-Nuancen:** „Son un millón" (`context.js:38`, eher „Es"), `social10` „Mucho gusto" als Abschied (eher „Fue un gusto"), n/ñ-Kollaps im Matcher (año/ano — bewusste Toleranz, dokumentieren).
+
+---
+
+## Inhaltliche, geschäftliche & rechtliche Risiken (bislang nicht erfasst)
+
+Die obige Analyse ist überwiegend technisch. Für einen öffentlich erreichbaren Betrieb (DE-App,
+`moarci.github.io`) fehlten bislang folgende nicht-technische Risiken:
+
+### R13 · Muttersprachler-Sign-off der 2293 Karten noch offen *(Qualität/Inhalt)*
+Die heute **2293 Karten** sind generativ/auditiv auf IDs, Schema, Zahlen und „kein
+Spanien-Spanisch" geprüft (s. „Datenbasis" unten), aber **nicht** Karte für Karte von
+LatAm-Muttersprachlern gegengelesen. Sprach-Nuancen (vgl. R8/LOW: „Son un millón", „Mucho gusto"
+als Abschied, regionale Register) können vereinzelt falsch oder unnatürlich sein. Das
+Kernversprechen „LatAm-korrekt" ist Marketing-tragend → ein systematischer
+Native-Speaker-Review (mind. stichprobenhaft je Bereich, vollständig bei neuen Packs) sollte
+fest eingeplant werden. **Schwere: MEDIUM** (Glaubwürdigkeit des Hauptversprechens).
+
+### R14 · Impressum / DSGVO für öffentlich erreichbare DE-App *(rechtlich)*
+Eine in Deutschland öffentlich erreichbare App unterliegt i. d. R. **Impressumspflicht (§ 5 DDG/TMG)**
+und **DSGVO-Informationspflichten** (Datenschutzerklärung). Auch wenn HolaRuta lokal speichert und
+nicht trackt: Es werden **Wikimedia-Bilder extern geladen** (IP-Übertragung an Dritte) und die
+**opt-in Cloud-Sync-Schicht** verarbeitet ggf. personenbezogene Daten. Fehlen Impressum und
+Datenschutzerklärung → Abmahnrisiko. **Schwere: MEDIUM** (kommerzieller/öffentlicher Betrieb).
+
+### R15 · Wikimedia-CC-BY-Bildlizenzen & Attribution *(rechtlich/Lizenz)*
+Die Kultur-/Geschichtsbilder (Länderkunde, `countries.js`/`historia*.js`) stammen von
+**Wikimedia/Wikipedia**. Viele stehen unter **CC-BY / CC-BY-SA** und erfordern korrekte
+**Attribution (Urheber, Lizenz, ggf. Quelle/Änderungen)**; CC-BY-SA kann zudem Share-Alike-Pflichten
+auslösen. Ist die Attribution unvollständig oder fehlt, drohen Lizenzverstöße. → Lizenz-/Credit-Liste
+je Bild führen und sichtbar machen (z. B. Bild-Credits-Sektion). **Schwere: MEDIUM.**
+
+### R16 · Solo-Person- & Plattform-Abhängigkeit (`moarci.github.io`) *(Geschäft/Bus-Faktor)*
+Das Projekt hängt an **einer Person** (Bus-Faktor 1) und am **kostenlosen GitHub-Pages-Hosting unter
+`moarci.github.io`**. Risiken: Account-/Repo-Verlust, Pages-Policy-/Quota-Änderungen, geteilte
+github.io-Origin (vgl. LOW: Daten-Manipulation durch andere Pages-Projekte), keine eigene Domain →
+kein einfacher Umzug, schwacher Marken-/Vertrauensanker für B2B. → Eigene Domain + Backup-Hosting +
+dokumentierte Bus-Faktor-Übergabe einplanen. **Schwere: MEDIUM** (Kontinuität/Geschäft).
+
+### R17 · Nicht versionierter Generator `tmp_build_countries.js` *(Reproduzierbarkeit)*
+`countries.js` (≈ Zeile 27) verweist darauf, dass der Datensatz von einem Skript
+**`tmp_build_countries.js`** erzeugt wurde. Dieses Skript ist **nicht im Repo versioniert** →
+die Länder-/Bilddaten lassen sich nicht reproduzierbar neu erzeugen, und Wissen über Bild-Quellen/
+Lizenzen (vgl. R15) lebt nur im verlorenen Generator. → Generator einchecken oder
+`countries.js` als manuell gepflegte Quelle-der-Wahrheit deklarieren. **Schwere: LOW.**
 
 ---
 
