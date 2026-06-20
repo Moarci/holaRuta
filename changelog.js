@@ -27,6 +27,18 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.102.0",
+      date: "2026-06-20",
+      title: "Neues Modul „Coqueteo y romance“: flirten & daten mit Respekt",
+      titleEn: "New module “Coqueteo y romance”: flirting & dating with respect",
+      items: [
+        "💘 Neues Entdecken-Modul fürs Kennenlernen unterwegs: entspannt ins Gespräch kommen, echte Komplimente machen, ein Date vorschlagen – und genauso ein Nein hören. Mit den spanischen Sätzen, einem Glossar, Tipps zur Dating-Kultur in Lateinamerika und einem Date- & Sicherheits-Kit. Grundregel überall: Respekt und Konsens. Auf Deutsch und Englisch, offline und teilbar.",
+      ],
+      itemsEn: [
+        "💘 A new Discover module for meeting people on the road: ease into a conversation, give genuine compliments, suggest a date – and just as much, take a no. With the Spanish phrases, a glossary, notes on dating culture in Latin America and a dating & safety kit. The ground rule throughout: respect and consent. In German and English, offline and shareable.",
+      ],
+    },
+    {
       version: "1.101.0",
       date: "2026-06-20",
       title: "Trip-Ziel als Reise-Zeitleiste (mehrere Länder nacheinander)",

@@ -175,6 +175,7 @@
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
     { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
+    { action: "open-flirt",       icon: "💘", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-assessment",  icon: "📋", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
@@ -839,7 +840,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, flirt: vm.hasFlirt, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -3214,6 +3215,17 @@
     });
   }
 
+  // Coqueteo y romance: ins Gespräch kommen, Komplimente, Konsens, Date
+  // vorschlagen, Dating-Kultur, sicher daten. Gleiches Sheet wie Salud/Logística.
+  function renderFlirt(vm) {
+    return moduleSheet(vm, {
+      icon: "💘", title: "Coqueteo y romance", cat: "flirt",
+      headTips: "discover.flTips", headPhrases: "discover.flPhrases",
+      headWords: "discover.flWords", headChecklist: "discover.flChecklist",
+      headChecklistHint: "discover.flChecklistHint",
+    });
+  }
+
   // ---------- FOTOS Y VIDEOS (ERKLÄRSEITE) ----------
   // Wie die Info-Module (Tipps mit DOs/Don'ts, Sätze, Glossar, Kit), aber jedes
   // Thema bekommt zusätzlich ein spanisches Lesetraining mit antippbaren Vokabeln
@@ -5153,7 +5165,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
