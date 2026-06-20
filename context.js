@@ -39,16 +39,16 @@
     // Betrag als Preisangabe: zentrale Logik (NUM.amount) erzeugt identische
     // Strings (un peso / veintiún pesos / un millón de pesos …), nur die deutsche
     // Seite und das Hilfsverb (Es/Son) bleiben hier lokal.
-    let amountEs, verbEs, pesoDe;
+    let amountEs, verbEs, pesoDe, pesoEn;
     if (value === 1) {
-      amountEs = NUM ? NUM.amount(1, card.cur) : "un peso"; verbEs = "Es"; pesoDe = "Peso";
+      amountEs = NUM ? NUM.amount(1, card.cur) : "un peso"; verbEs = "Es"; pesoDe = "Peso"; pesoEn = "peso";
     } else if (endsInMillion) {
       // Singular/Plural sauber trennen: genau "un millón" ist ein Singular-Subjekt
       // ("Es un millón de pesos"), ab "dos millones" Plural ("Son dos millones de pesos").
       const singularMillion = /^un\s+mill(?:ó|o)n$/i.test(es.trim());
-      amountEs = NUM ? NUM.amount(value) : `${es} de pesos`; verbEs = singularMillion ? "Es" : "Son"; pesoDe = "Pesos";
+      amountEs = NUM ? NUM.amount(value) : `${es} de pesos`; verbEs = singularMillion ? "Es" : "Son"; pesoDe = "Pesos"; pesoEn = "pesos";
     } else {
-      amountEs = NUM ? NUM.amount(value) : `${apocope(es)} pesos`; verbEs = "Son"; pesoDe = "Pesos";
+      amountEs = NUM ? NUM.amount(value) : `${apocope(es)} pesos`; verbEs = "Son"; pesoDe = "Pesos"; pesoEn = "pesos";
     }
 
     // 0 ergibt keinen sinnvollen Preis -> echter Reise-Gebrauch von "cero".
@@ -56,27 +56,39 @@
       return {
         sentenceEs: "Me quedan cero pesos, necesito un cajero.",
         sentenceDe: "Mir bleiben null Pesos, ich brauche einen Geldautomaten.",
+        sentenceEn: "I have zero pesos left, I need an ATM.",
         situation: "Wenn dein Bargeld alle ist.",
+        situationEn: "When you've run out of cash.",
         note: "cero = null; praktisch, um zu sagen, dass etwas leer oder aus ist.",
+        noteEn: "cero = zero; handy for saying something is empty or out.",
       };
     }
 
-    let situation, note;
+    let situation, note, situationEn, noteEn;
     if (value < 100) {
       situation = "Beim Bezahlen, bei Mengen, Personen oder einer Zimmernummer.";
+      situationEn = "When paying, for quantities, people or a room number.";
       note = "Kleine Zahlen brauchst du ständig – für Anzahl, Personen oder die Hausnummer.";
+      noteEn = "You need small numbers all the time – for counts, people or the house number.";
     } else if (value < 10000) {
       situation = "Beim Bezahlen an der Kasse, im Markt oder im Taxi.";
+      situationEn = "When paying at the till, in the market or in a taxi.";
       note = "In vielen Ländern (z. B. Kolumbien, Chile) sind selbst kleine Preise schnell vierstellig.";
+      noteEn = "In many countries (e.g. Colombia, Chile) even small prices quickly run to four digits.";
     } else {
       situation = "Beim Bezahlen größerer Beträge: Hostel-Nacht, Tour oder am Geldautomaten.";
+      situationEn = "When paying larger amounts: a hostel night, a tour or at the ATM.";
       note = "Große Beträge schnell zu erkennen, schützt dich beim Wechselgeld vor Fehlern.";
+      noteEn = "Recognising large amounts quickly protects you from change mistakes.";
     }
     return {
       sentenceEs: `${verbEs} ${amountEs}.`,
       sentenceDe: `Das macht ${deNum} ${pesoDe}.`,
+      sentenceEn: `That's ${deNum} ${pesoEn}.`,
       situation,
+      situationEn,
       note,
+      noteEn,
     };
   }
 

@@ -200,8 +200,10 @@
     return c.levels[idx];
   }
 
-  function randInt(a, b) {
-    return a + Math.floor(Math.random() * (b - a + 1));
+  // Optionaler rng (Default Math.random) → reproduzierbare Runden (Arbeitsheft
+  // seedet pro Ziel, damit Nachdrucke identisch sind).
+  function randInt(a, b, rng) {
+    return a + Math.floor((rng || Math.random)() * (b - a + 1));
   }
 
   // Ein Preis-Objekt für einen konkreten Betrag: { value, digits, es, … }.
@@ -221,32 +223,32 @@
 
   // Zufälliger, realistischer Betrag für (Währung, Stufe). Auf höheren Stufen mit
   // 50 % Wahrscheinlichkeit ein feinerer Schritt -> krummere, schwerere Zahlen.
-  function randomPrice(curKey, level) {
+  function randomPrice(curKey, level, rng) {
     const c = currency(curKey);
     const tier = tierFor(c, level);
     let step = tier.step;
-    if ((Number(level) || 1) >= 3 && tier.fine && Math.random() < 0.5) step = tier.fine;
+    if ((Number(level) || 1) >= 3 && tier.fine && (rng || Math.random)() < 0.5) step = tier.fine;
     const lo = Math.ceil(tier.min / step), hi = Math.floor(tier.max / step);
-    const value = randInt(lo, Math.max(lo, hi)) * step;
+    const value = randInt(lo, Math.max(lo, hi), rng) * step;
     return makeItem(value, c);
   }
 
   // Eine ganze Runde distinkter Beträge (keine direkte Wiederholung, möglichst
   // keine Dubletten). count = Anzahl Aufgaben.
-  function buildRound(curKey, level, count) {
+  function buildRound(curKey, level, count, rng) {
     const n = Math.max(1, Number(count) || 10);
     const out = [];
     const seen = new Set();
     let guard = 0;
     while (out.length < n && guard < n * 40) {
       guard += 1;
-      const item = randomPrice(curKey, level);
+      const item = randomPrice(curKey, level, rng);
       if (seen.has(item.value)) continue;
       seen.add(item.value);
       out.push(item);
     }
     // Falls die Spanne zu klein für lauter distinkte Werte ist: mit Wiederholungen auffüllen.
-    while (out.length < n) out.push(randomPrice(curKey, level));
+    while (out.length < n) out.push(randomPrice(curKey, level, rng));
     return out;
   }
 

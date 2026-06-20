@@ -3953,12 +3953,20 @@
         <button type="button" class="sheet-mode${!vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="full" aria-pressed="${!vm.exercise}">${esc(t("sheet.modeFull"))}</button>
         <button type="button" class="sheet-mode${vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="exercise" aria-pressed="${!!vm.exercise}">${esc(t("sheet.modeExercise"))}</button>
       </div>`;
+    // Bausteinauswahl: alle baubaren Übungsabschnitte als an-/abwählbare Chips
+    // (nur Steuerleiste, nicht gedruckt). on = Abschnitt ist im Heft.
+    const pickRow = (vm.sectionToggles && vm.sectionToggles.length) ? `
+        <div class="sheet-pick">
+          <span class="sheet-pick__label">${esc(t("sheet.pickLabel"))}:</span>
+          ${vm.sectionToggles.map((s) => `<button type="button" class="sheet-pick__chip" data-action="toggle-section" data-type="${esc(s.type)}" aria-pressed="${!!s.on}">${esc(s.label)}</button>`).join("")}
+        </div>` : "";
     const controls = `
       <div class="sheet-controls no-print">
         ${targetField("sheet", { targets: vm.targets, current: vm.sheetTarget })}
         ${stagePick}
         ${modeToggle}
         <button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>
+        ${pickRow}
       </div>`;
 
     // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie und
@@ -3977,6 +3985,117 @@
       </ol>
       ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${(!vm.exercise && st.challenge.phrase) ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
     `).join("");
+
+    // ---------- Arbeitsheft: zusätzliche Übungsabschnitte ----------
+    // Jeder Abschnitt trägt Aufgaben- UND Lösungsdaten; im Übungsmodus werden die
+    // Antworten zu Schreiblinien/Lücken, im Lösungsblatt stehen sie direkt da.
+    const writeLine = '<span class="sheet-write-line"></span>';
+    const sectionHead = (titleKey, instrKey) => `<h2 class="sheet-h2">${esc(t(titleKey))}</h2><p class="sheet-instr">${esc(t(instrKey))}</p>`;
+    function renderSection(s) {
+      switch (s.type) {
+        case "matching": {
+          const left = (s.left || []).map((x) => `<li>${esc(x.es)}</li>`).join("");
+          const right = (s.right || []).map((x) => `<li>${esc(x.de)}</li>`).join("");
+          const grid = (s.left || []).map((x) => `<span>${esc(String(x.n))} → ${vm.exercise ? "____" : esc(x.l)}</span>`).join("");
+          return `<section class="sheet-section sheet-section--matching">
+            ${sectionHead("sheet.secMatching", "sheet.instrMatching")}
+            <div class="sheet-match">
+              <ol class="sheet-match__col" type="1" lang="es">${left}</ol>
+              <ol class="sheet-match__col" type="a">${right}</ol>
+            </div>
+            <p class="sheet-match__grid"><strong>${esc(t("sheet.matchHint"))}:</strong> ${grid}</p>
+          </section>`;
+        }
+        case "gapfill": {
+          const bank = (s.wordbank || []).map((w) => `<span class="sheet-chip" lang="es">${esc(w)}</span>`).join("");
+          const items = (s.items || []).map((it) => {
+            const filler = vm.exercise ? '<span class="sheet-blank-inline"></span>' : `<strong>${esc(it.answer)}</strong>`;
+            const frame = esc(it.frameEs).replace("___", filler);
+            return `<li><span class="sheet-es" lang="es">${frame}</span><span class="sheet-de">${esc(it.targetDe)}</span></li>`;
+          }).join("");
+          return `<section class="sheet-section sheet-section--gapfill">
+            ${sectionHead("sheet.secGapfill", "sheet.instrGapfill")}
+            <div class="sheet-wordbank"><span class="sheet-wb-label">${esc(t("sheet.wordbankLabel"))}</span>${bank}</div>
+            <ol class="sheet-exlist">${items}</ol>
+          </section>`;
+        }
+        case "translate": {
+          const lines = (s.lines || []).map((l) => `<li><span class="sheet-de">${esc(l.de)}</span>${vm.exercise ? writeLine : `<span class="sheet-es" lang="es">${esc(l.es)}</span>`}</li>`).join("");
+          return `<section class="sheet-section sheet-section--translate">
+            ${sectionHead("sheet.secTranslate", "sheet.instrTranslate")}
+            <ol class="sheet-exlist">${lines}</ol>
+          </section>`;
+        }
+        case "conjug": {
+          const rows = (s.rows || []).map((r) => `<tr><td lang="es">${esc(r.verb)}</td><td>${esc(r.person)}</td><td class="sheet-ans-cell">${vm.exercise ? writeLine : `<strong lang="es">${esc(r.answer)}</strong>`}</td></tr>`).join("");
+          return `<section class="sheet-section sheet-section--conjug">
+            ${sectionHead("sheet.secConjug", "sheet.instrConjug")}
+            <table class="sheet-table"><thead><tr><th>${esc(t("sheet.colVerb"))}</th><th>${esc(t("sheet.colPerson"))}</th><th>${esc(t("sheet.colAnswer"))}</th></tr></thead><tbody>${rows}</tbody></table>
+          </section>`;
+        }
+        case "numbers": {
+          const rows = (s.items || []).map((it) => `<tr><td>${esc(it.digits)}${it.symbol ? " " + esc(it.symbol) : ""}</td><td class="sheet-ans-cell">${vm.exercise ? writeLine : `<strong lang="es">${esc(it.words)}</strong>`}</td></tr>`).join("");
+          return `<section class="sheet-section sheet-section--numbers">
+            ${sectionHead("sheet.secNumbers", "sheet.instrNumbers")}
+            <table class="sheet-table"><thead><tr><th>${esc(t("sheet.colNumber"))}</th><th>${esc(t("sheet.colSpanish"))}</th></tr></thead><tbody>${rows}</tbody></table>
+          </section>`;
+        }
+        case "dialogue": {
+          const turns = (s.turns || []).map((tn) => tn.who === "npc"
+            ? `<p class="sheet-turn sheet-turn--npc"><span class="who">${esc(t("sheet.npcLabel"))}:</span><span class="es" lang="es">${esc(tn.es)}</span><span class="de">${esc(tn.de)}</span></p>`
+            : `<p class="sheet-turn sheet-turn--user"><span class="who">${esc(t("sheet.youLabel"))}:</span><span class="de">${esc(tn.de)}</span>${vm.exercise ? writeLine : `<span class="es" lang="es">${esc(tn.answer)}</span>`}</p>`).join("");
+          return `<section class="sheet-section sheet-section--dialogue">
+            ${sectionHead("sheet.secDialogue", "sheet.instrDialogue")}
+            ${s.title ? `<h3 class="sheet-stage" lang="es">${esc(s.title)}</h3>` : ""}
+            <div class="sheet-dialogue">${turns}</div>
+          </section>`;
+        }
+        case "culture": {
+          const facts = (s.facts || []).map((f) => `<li>${esc(f)}</li>`).join("");
+          return `<section class="sheet-section sheet-section--culture">
+            <h2 class="sheet-h2">${esc(t("sheet.secCulture"))}</h2>
+            <div class="sheet-culture">${s.title ? `<strong>${esc(s.title)}</strong>` : ""}<ul>${facts}</ul></div>
+          </section>`;
+        }
+        case "writing": {
+          return `<section class="sheet-section sheet-section--writing">
+            ${sectionHead("sheet.secWriting", "sheet.instrWriting")}
+            ${s.prompt ? `<p class="sheet-goal">${esc(s.prompt)}</p>` : ""}
+            <div class="sheet-write-box" aria-hidden="true"></div>
+          </section>`;
+        }
+        default: return "";
+      }
+    }
+    const sectionsHtml = (vm.sections || []).map(renderSection).join("");
+
+    // Lösungsschlüssel (nur Übungsmodus – im Lösungsblatt stehen die Antworten
+    // bereits inline). Kompakt, eigene Seite (Seitenumbruch via CSS).
+    function renderAnswerKey(sections) {
+      const blocks = (sections || []).map((s) => {
+        let heading = "";
+        let items = [];
+        switch (s.type) {
+          // Die <ol> nummeriert bereits die Paar-Nummer (1..n) – nur den Buchstaben ausgeben.
+          case "matching": heading = t("sheet.secMatching"); items = (s.left || []).map((x) => x.l); break;
+          case "gapfill": heading = t("sheet.secGapfill"); items = (s.items || []).map((it) => it.answer); break;
+          case "translate": heading = t("sheet.secTranslate"); items = (s.lines || []).map((l) => l.es); break;
+          case "conjug": heading = t("sheet.secConjug"); items = (s.rows || []).map((r) => `${r.verb} (${r.person}) → ${r.answer}`); break;
+          case "numbers": heading = t("sheet.secNumbers"); items = (s.items || []).map((it) => `${it.digits} → ${it.words}`); break;
+          case "dialogue": heading = t("sheet.secDialogue"); items = (s.turns || []).filter((tn) => tn.who === "user").map((tn) => tn.answer); break;
+          default: return ""; // culture/writing haben keine Lösung
+        }
+        if (!items.length) return "";
+        return `<h3>${esc(heading)}</h3><ol class="sheet-exlist">${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ol>`;
+      }).filter(Boolean).join("");
+      if (!blocks) return "";
+      return `<section class="sheet-section sheet-answerkey">
+        <h2 class="sheet-h2">${esc(t("sheet.answerKeyHeading"))}</h2>
+        <p class="sheet-ak-note">${esc(t("sheet.answerKeyNote"))}</p>
+        ${blocks}
+      </section>`;
+    }
+    const answerKeyHtml = vm.exercise ? renderAnswerKey(vm.sections) : "";
 
     const credit = vm.edition && vm.edition.name ? esc(vm.edition.name) + " · " + esc(t("profile.poweredBy")) : "HolaRuta";
     // Akzent nur als Farbwert zulassen (Daten sind vertrauenswürdig – defensiv trotzdem).
@@ -4009,6 +4128,8 @@
           ${stagesHtml}
         </section>
 
+        ${sectionsHtml}
+
         ${vm.code ? `
         <section class="sheet-subscribe">
           <h2 class="sheet-h2">${esc(t("sheet.subscribeHeading"))}</h2>
@@ -4031,6 +4152,8 @@
         <footer class="sheet-coord">
           <strong>${esc(t("sheet.coordHeading"))}:</strong> ${esc(t("sheet.coordNote"))}
         </footer>
+
+        ${answerKeyHtml}
       </article>`;
 
     return `

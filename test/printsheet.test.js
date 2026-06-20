@@ -137,3 +137,80 @@ test("renderPrintSheet: Editions-Credit erscheint, wenn gesetzt", () => {
   assert.ok(html.includes("ECOS Cartagena"), "Editions-Name fehlt im Credit");
   assert.ok(html.includes(i18n.t("profile.poweredBy")), "„mit HolaRuta“-Credit fehlt");
 });
+
+// ---------- Arbeitsheft: zusätzliche Übungsabschnitte ----------
+// Hand-gebautes sections-Array (keine Zufälligkeit – analog zu stages).
+function withSections(over) {
+  return baseVM(Object.assign({
+    sections: [
+      { type: "matching", left: [{ n: 1, es: "la playa", l: "b" }, { n: 2, es: "el agua", l: "a" }],
+        right: [{ l: "a", de: "das Wasser" }, { l: "b", de: "der Strand" }] },
+      { type: "gapfill", wordbank: ["el boleto", "la cuenta"],
+        items: [{ frameEs: "¿Cuánto cuesta ___?", targetDe: "Wie viel kostet das Ticket?", answer: "el boleto" }] },
+      { type: "translate", lines: [{ de: "Wo ist das Taxi?", es: "¿Dónde está el taxi?" }] },
+      { type: "conjug", rows: [{ verb: "hablar", person: "ich (yo)", answer: "hablo" }] },
+      { type: "numbers", items: [{ digits: "1.250", symbol: "$", words: "mil doscientos cincuenta" }] },
+      { type: "dialogue", title: "En el hotel",
+        turns: [{ who: "npc", es: "¡Buenas!", de: "Hallo!" }, { who: "user", de: "(check-in)", answer: "Quisiera el check-in." }] },
+      { type: "culture", title: "", facts: ["Anrede oft mit usted."] },
+      { type: "writing", prompt: "" },
+    ],
+    sectionToggles: [
+      { type: "matching", label: "Zuordnen", on: true },
+      { type: "conjug", label: "Konjugation", on: false },
+    ],
+  }, over || {}));
+}
+
+test("renderPrintSheet: Lösungsblatt rendert alle Übungsabschnitte mit Antworten", () => {
+  const html = ui.renderPrintSheet(withSections());
+  // Abschnitts-Wrapper je Typ (Überschriften via i18n können „&" enthalten → esc).
+  ["matching", "gapfill", "translate", "conjug", "numbers", "dialogue", "culture", "writing"]
+    .forEach((ty) => assert.ok(html.includes("sheet-section--" + ty), "Abschnitt fehlt: " + ty));
+  assert.ok(html.includes(i18n.t("sheet.instrMatching")) && html.includes(i18n.t("sheet.instrConjug")), "Anweisungen fehlen");
+  // Inline-Antworten im Lösungsblatt sichtbar:
+  assert.ok(html.includes("hablo"), "Konjug-Form fehlt");
+  assert.ok(html.includes("mil doscientos cincuenta"), "Zahlwort fehlt");
+  assert.ok(html.includes("Quisiera el check-in."), "Dialog-Musterantwort fehlt");
+  assert.ok(html.includes("¿Dónde está el taxi?"), "Übersetzungslösung fehlt");
+  assert.ok(html.includes("1 → b") && html.includes("2 → a"), "Zuordnungsraster mit Lösungen fehlt");
+  assert.ok(html.includes("Anrede oft mit usted."), "Landeskunde-Fakt fehlt");
+  // Kein separater Lösungsschlüssel im Lösungsblatt (Antworten stehen inline):
+  assert.ok(!html.includes("sheet-answerkey"), "Lösungsblatt braucht keinen separaten Schlüssel");
+});
+
+test("renderPrintSheet: Übungsmodus verdeckt Antworten und hängt Lösungsschlüssel an", () => {
+  const html = ui.renderPrintSheet(withSections({ exercise: true }));
+  const ak = html.indexOf("sheet-answerkey");
+  assert.ok(ak !== -1, "Lösungsschlüssel fehlt im Übungsmodus");
+  const body = html.slice(0, ak), key = html.slice(ak);
+  // Im Übungsteil keine Lösungen:
+  ["hablo", "mil doscientos cincuenta", "Quisiera el check-in.", "¿Dónde está el taxi?"]
+    .forEach((a) => assert.ok(!body.includes(a), "Lösung sickert in den Übungsteil: " + a));
+  // …aber im Schlüssel vorhanden:
+  ["hablo", "mil doscientos cincuenta", "Quisiera el check-in.", "¿Dónde está el taxi?"]
+    .forEach((a) => assert.ok(key.includes(a), "Lösung fehlt im Schlüssel: " + a));
+  assert.ok(body.includes("sheet-write-line") || body.includes("sheet-blank-inline"), "Schreiblinien/Lücken fehlen");
+});
+
+test("renderPrintSheet: Lösungsschlüssel nummeriert Zuordnung nicht doppelt", () => {
+  const html = ui.renderPrintSheet(withSections({ exercise: true }));
+  const key = html.slice(html.indexOf("sheet-answerkey"));
+  // Die <ol> liefert die Paar-Nummer; das Item enthält nur den Buchstaben (keine „1 → b“-Dopplung).
+  assert.ok(/<li>b<\/li>/.test(key) && /<li>a<\/li>/.test(key), "Matching-Lösung als reiner Buchstabe fehlt");
+  assert.ok(!key.includes("1 → b"), "doppelte Nummerierung im Lösungsschlüssel");
+});
+
+test("renderPrintSheet: Bausteinauswahl-Chips spiegeln den An/Aus-Status", () => {
+  const html = ui.renderPrintSheet(withSections());
+  assert.ok(html.includes('data-action="toggle-section"'), "Toggle-Action fehlt");
+  assert.ok(html.includes('data-type="matching"') && html.includes('aria-pressed="true"'), "aktiver Baustein fehlt");
+  assert.ok(html.includes('data-type="conjug"') && html.includes('aria-pressed="false"'), "abgewählter Baustein fehlt");
+});
+
+test("renderPrintSheet: leere sections rendern ohne Abschnitte/Schlüssel", () => {
+  const html = ui.renderPrintSheet(baseVM({ sections: [], exercise: true }));
+  assert.ok(!html.includes('class="sheet-section'), "keine Übungsabschnitte erwartet");
+  assert.ok(!html.includes("sheet-answerkey"), "ohne Abschnitte kein Lösungsschlüssel");
+  assert.ok(html.includes("Wortschatz"), "Wortschatz bleibt erhalten");
+});

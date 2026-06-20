@@ -156,3 +156,12 @@ test("numbers.toWords: stimmt mit den gepflegten Zahlen-Karten überein", () => 
     assert.equal(numbers.toWords(Number(n)), words, `toWords(${n})`);
   });
 });
+
+// Determinismus-Seam: mit injiziertem rng (fester Seed) ist die Runde reproduzierbar.
+test("numbers.buildRound: deterministisch mit injiziertem rng", () => {
+  const seeded = () => { let a = 987654 >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  const a = numbers.buildRound("CO", 2, 6, seeded());
+  const b = numbers.buildRound("CO", 2, 6, seeded());
+  assert.deepEqual(a, b, "gleicher Seed muss identische Beträge liefern");
+  assert.equal(a.length, 6);
+});
