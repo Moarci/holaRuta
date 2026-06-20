@@ -892,7 +892,7 @@
             <span class="plprof__level">${esc(l.level)}</span>
           </div>
           <div class="plprof__meta">
-            <p class="plprof__score">${esc(t("placement.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
+            <p class="plprof__score">${l.total ? esc(t("placement.resultLine", { correct: l.correct, total: l.total, score: l.scorePct })) : esc(t("placement.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
             ${l.at ? `<p class="plprof__date">${esc(t("placement.profileLastAt", { date: l.at }))} · ${esc(t("placement.profileAttempts", { n: p.attempts }))}</p>` : ""}
           </div>
         </div>
@@ -939,7 +939,7 @@
             <span class="plprof__level">${esc(l.level)}</span>
           </div>
           <div class="plprof__meta">
-            <p class="plprof__score">${esc(t("assessment.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
+            <p class="plprof__score">${l.total ? esc(t("assessment.resultLine", { correct: l.correct, total: l.total, score: l.scorePct })) : esc(t("assessment.profileScoreLine", { score: l.scorePct, acc: l.accuracyPct }))}</p>
             ${l.variantLabel ? `<p class="plprof__variant">${esc(l.variantLabel)}</p>` : ""}
             ${l.at ? `<p class="plprof__date">${esc(t("assessment.profileLastAt", { date: l.at }))} · ${esc(t("assessment.profileAttempts", { n: p.attempts }))}</p>` : ""}
           </div>

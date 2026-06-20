@@ -311,7 +311,9 @@
     ctx.textBaseline = "middle";
     ctx.fillText(payload.rate === null || payload.rate === undefined ? "–" : rate + "%", cx, L.ringY - 6);
     ctx.font = font("600", L.ringLbl);
-    ctx.fillText(t("share.accuracy"), cx, L.ringY + L.R - 6);
+    // Label nach innen versetzt (um ringW+24), damit es nicht auf dem unteren
+    // Ring-Bogen liegt (Strich spannt R±ringW/2) und lesbar bleibt.
+    ctx.fillText(t("share.accuracy"), cx, L.ringY + L.R - L.ringW - 24);
     ctx.textBaseline = "alphabetic";
 
     // drei Kennzahl-Kacheln
@@ -408,7 +410,9 @@
     ctx.fillText(String(payload.level || "–"), cx, L.ringY - 10);
     ctx.font = font("700", L.capPx);
     ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.fillText(t("share.plScore", { score: Math.round(score) }), cx, L.ringY + L.R - 8);
+    // Score-Caption nach innen versetzt (um ringW+24), damit sie nicht auf dem
+    // unteren Ring-Bogen liegt (Strich spannt R±ringW/2) und lesbar bleibt.
+    ctx.fillText(t("share.plScore", { score: Math.round(score) }), cx, L.ringY + L.R - L.ringW - 24);
     ctx.textBaseline = "alphabetic";
 
     // Zwei Kennzahl-Kacheln: Trefferquote & Tempo.
@@ -480,7 +484,9 @@
     ctx.fillText(String(payload.level || "–"), cx, L.ringY - 10);
     ctx.font = font("700", L.capPx);
     ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.fillText(t("share.plScore", { score: Math.round(score) }), cx, L.ringY + L.R - 8);
+    // Score-Caption nach innen versetzt (um ringW+24), damit sie nicht auf dem
+    // unteren Ring-Bogen liegt (Strich spannt R±ringW/2) und lesbar bleibt.
+    ctx.fillText(t("share.plScore", { score: Math.round(score) }), cx, L.ringY + L.R - L.ringW - 24);
     ctx.textBaseline = "alphabetic";
 
     // Zwei Kennzahl-Kacheln: Trefferquote & Tempo.
