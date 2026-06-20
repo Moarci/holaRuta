@@ -633,8 +633,13 @@
   let restoreSettled = false; // true, sobald ein Restore-Versuch abgeschlossen ist
   let mirrorTimer = null;
 
+  // Eine einzige Verbindung über die Seiten-Lebensdauer memoisieren (statt bei
+  // jeder Spiegelung neu zu öffnen). Bei Fehler die Memoisierung lösen, damit ein
+  // späterer Versuch erneut öffnen kann.
+  let idbPromise = null;
   function openIdb() {
-    return new Promise((resolve, reject) => {
+    if (idbPromise) return idbPromise;
+    idbPromise = new Promise((resolve, reject) => {
       let req;
       try { req = indexedDB.open(IDB_NAME, 1); } catch (e) { reject(e); return; }
       req.onupgradeneeded = () => {
@@ -644,6 +649,8 @@
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
     });
+    idbPromise.catch(() => { idbPromise = null; });
+    return idbPromise;
   }
 
   // Aktuellen localStorage-Stand als einen Snapshot in IndexedDB ablegen.
