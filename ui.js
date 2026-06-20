@@ -752,6 +752,22 @@
       </button>`
       : "";
 
+    // Mi-léxico-Schnellzugriff: eine Kachel zum persönlichen Lexikon. Erscheint nur,
+    // wenn schon etwas gemerkt wurde (sonst bleibt der Start-Reiter ruhig). Zeigt den
+    // Zähler und – als Teaser – den jüngsten Favoriten; ein Tap öffnet „Mi léxico".
+    const favSub = vm.favLast && vm.favLast.es
+      ? t("home.lexLast", { es: vm.favLast.es })
+      : t("home.lexHint");
+    const favGroup = vm.favCount > 0
+      ? `<section class="dashgrp">
+          <p class="sectioncap">${esc(t("home.lexSection"))}</p>
+          <button class="today__ruta" data-action="open-favorites">
+            <span class="today__ruta-main">${esc(t("home.lexTitle"))} <span class="today__ruta-badge today__ruta-badge--lex" role="status">${vm.favCount}</span></span>
+            <span class="today__ruta-sub">${esc(favSub)}</span>
+          </button>
+        </section>`
+      : "";
+
     // Glanceable Fortschritt: dieselbe Karte wie im Profil (Streak + Verteilung).
     const progressGroup = `
       <section class="dashgrp">
@@ -779,6 +795,7 @@
       </div>
 
       ${reiseGroup}
+      ${favGroup}
       ${progressGroup}
 
       ${dedicationLine(vm)}`;

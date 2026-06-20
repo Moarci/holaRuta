@@ -3512,6 +3512,8 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border-radius: 999px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.04em;
   text-transform: uppercase; background: color-mix(in srgb, var(--ok) 88%, #000); color: #fff;
 }
+/* Mi-léxico-Zähler: Favoriten-Goldton statt des grünen „geschafft"-Badges. */
+.today__ruta-badge--lex { background: #E9A23B; color: #2A1A0C; }
 
 /* Trip-Ziel: Countdown bis zum Reisedatum + Tages-Fortschrittsbalken. */
 .trip {

@@ -157,6 +157,11 @@
     topicNavAria: "Zur Themen-Gruppe springen",
     tripSection: "Für deine Reise",
     startProgressCap: "Dein Fortschritt",
+    // Mi-léxico-Kachel auf dem Dashboard (Schnellzugriff auf die Favoriten)
+    lexSection: "Dein Lexikon",
+    lexTitle: "⭐ Mi léxico",
+    lexLast: (p) => `Zuletzt gemerkt: „${p.es}“`,
+    lexHint: "Deine gemerkten Wörter & Sätze – griffbereit",
     // Themen-Abschnitte (Gruppierung der Lern-Kacheln)
     catGroupBasics: "Grundlagen",
     catGroupGrammar: "Grammatik",
@@ -366,6 +371,11 @@
     topicNavAria: "Jump to topic group",
     tripSection: "For your trip",
     startProgressCap: "Your progress",
+    // Mi-léxico tile on the dashboard (quick access to favourites)
+    lexSection: "Your lexicon",
+    lexTitle: "⭐ Mi léxico",
+    lexLast: (p) => `Last saved: “${p.es}”`,
+    lexHint: "Your saved words & phrases – within reach",
     catGroupBasics: "Basics",
     catGroupGrammar: "Grammar",
     catGroupPeople: "People & everyday",

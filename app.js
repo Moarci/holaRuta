@@ -394,6 +394,7 @@
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
       favCount: favorites.length, // ⭐ „Mi léxico"-Zähler für den Profil-Nav-Eintrag
+      favLast: favorites.length ? { es: favorites[0].es, de: favorites[0].de } : null, // jüngster Favorit für die Dashboard-Vorschau
       streak: currentStreak(),
       xp: xpVM(),
       overall: {
