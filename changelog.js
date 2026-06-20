@@ -32,10 +32,10 @@
       title: "Trip-Ziel als Reise-Zeitleiste (mehrere Länder nacheinander)",
       titleEn: "Trip goal as a travel timeline (several countries in a row)",
       items: [
-        "🗺️ Das Trip-Ziel ist jetzt eine Zeitleiste: Mit dem Schnellwechsler hängst du Land für Land an deine Route an – z. B. zuerst El Salvador, dann Kolumbien, dann Peru. Jeder Stopp lässt sich im Profil wieder entfernen, und die Pre-Arrival-Pakete erscheinen für alle Länder deiner Route.",
+        "🗺️ Das Trip-Ziel ist jetzt eine Zeitleiste: Mit dem Schnellwechsler hängst du Land für Land an deine Route an – z. B. zuerst El Salvador, dann Kolumbien, dann Peru. Ein schon getipptes Ziel wird dabei zum ersten Stopp (nichts geht verloren). Jeder Stopp lässt sich im Profil wieder entfernen, und die Pre-Arrival-Pakete erscheinen für alle Länder deiner Route.",
       ],
       itemsEn: [
-        "🗺️ Your trip goal is now a timeline: the quick-switcher appends one country after another to your route – e.g. first El Salvador, then Colombia, then Peru. Each stop can be removed again in your profile, and the pre-arrival packs show up for every country on your route.",
+        "🗺️ Your trip goal is now a timeline: the quick-switcher appends one country after another to your route – e.g. first El Salvador, then Colombia, then Peru. A destination you already typed becomes the first stop (nothing is lost). Each stop can be removed again in your profile, and the pre-arrival packs show up for every country on your route.",
       ],
     },
     {

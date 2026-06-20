@@ -1349,12 +1349,34 @@
   // Schnellwechsel = Reiseland an die Zeitleiste ANHÄNGEN. So baut man Schritt für
   // Schritt die Reiseroute (z. B. zuerst El Salvador, dann Kolumbien, dann Peru).
   // Dasselbe Land direkt zweimal hintereinander wird übersprungen.
+  // id -> Flagge für den ersten Stopp, wenn ein schon getipptes Freitext-Ziel in die
+  // Zeitleiste übernommen wird. Spiegelt die Chip-Liste in ui.TRIP_COUNTRIES; fehlt ein
+  // Eintrag, bleibt der Stopp einfach ohne Flagge (rein kosmetisch).
+  const TRIP_FLAGS = {
+    colombia: "🇨🇴", peru: "🇵🇪", mexico: "🇲🇽", costarica: "🇨🇷", ecuador: "🇪🇨",
+    guatemala: "🇬🇹", elsalvador: "🇸🇻", argentina: "🇦🇷", chile: "🇨🇱", bolivia: "🇧🇴",
+  };
   function addTripStop(id, dest, flag) {
     const cur = gamestats.tripGoal;
     if (!cur || !dest) return;
     const route = Array.isArray(cur.route) ? cur.route.slice() : [];
+    let seeded = false;
+    // Erster Stopp aus einem schon getippten Freitext-Ziel: nicht verwerfen, sondern als
+    // Auftakt der Zeitleiste übernehmen (mit erkanntem Land + Flagge) – „zuerst Cartagena …".
+    if (!route.length && cur.destination) {
+      const seedId = tripCountryId() || "";
+      const seedStop = { id: seedId, dest: cur.destination };
+      if (TRIP_FLAGS[seedId]) seedStop.flag = TRIP_FLAGS[seedId];
+      route.push(seedStop);
+      seeded = true;
+    }
     const last = route[route.length - 1];
-    if (last && last.id && last.id === id) return; // schon zuletzt angehängt
+    if (last && last.id && last.id === id) {
+      // Getappte Flagge entspricht dem letzten Land. Einen frisch übernommenen Freitext
+      // trotzdem als Ein-Stopp-Route sichern (so erscheint die Zeitleiste); sonst nichts tun.
+      if (seeded) saveTripRoute(cur, route);
+      return;
+    }
     if (route.length >= 24) return; // großzügige Obergrenze gegen Endlos-Anhängen
     const stop = { id: String(id || ""), dest: String(dest).trim().slice(0, 80) };
     if (flag) stop.flag = String(flag);
