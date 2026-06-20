@@ -24,6 +24,7 @@
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
   const fotografia = window.SC.fotografia || null; // Fotos & Videos: tolle Reisebilder (optional)
+  const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const assessment = window.SC.assessment || null; // HolaRuta Nivel-Test (ausführlich, optional)
@@ -58,7 +59,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'fotos' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'fotos' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
     homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -371,6 +372,7 @@
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
       hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
+      hasBailar: !!bailar,       // Bailar (Tanzen in LatAm, Schritt-Diagramme)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
@@ -868,6 +870,22 @@
       apps: loc(fotografia.APPS || []),
       glossary: loc(fotografia.GLOSSARY || []),
       checklist: loc(fotografia.CHECKLIST || []),
+    };
+  }
+
+  // Bailar: Tanzen in LatAm. Die Tänze (mit Schritt-Diagramm-Koordinaten,
+  // Zählrhythmus, Tipps, Lesetraining und Video-Links), Sätze zum Auffordern,
+  // ein Glossar und ein Tanz-Knigge. localizeDeep überlagert die …En-Felder.
+  function bailarVM() {
+    if (!bailar) return { intro: "", dances: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && bailar.INTRO_EN) ? bailar.INTRO_EN : bailar.INTRO,
+      dances: loc(bailar.DANCES || []),
+      phrases: loc(bailar.PHRASES || []),
+      glossary: loc(bailar.GLOSSARY || []),
+      checklist: loc(bailar.CHECKLIST || []),
     };
   }
 
@@ -2849,6 +2867,7 @@
     else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
     else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
     else if (state.screen === "fotos") root.innerHTML = ui.renderFotos(fotosVM());
+    else if (state.screen === "bailar") root.innerHTML = ui.renderBailar(bailarVM());
     else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
     else if (state.screen === "social") root.innerHTML = ui.renderSocial(socialVM());
     else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
@@ -5488,12 +5507,13 @@
     { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
     { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
     { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
+    { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", need: "bailar" },
   ];
   const searchHas = {
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
-    fotos: !!fotografia,
+    fotos: !!fotografia, bailar: !!bailar,
     bebidas: !!(bebidas && countries),
   };
 
@@ -5593,6 +5613,23 @@
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
     pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
+
+    // Bailar (Tanzen): eigener Indexer, weil die Tänze als DANCES (Feld „name")
+    // statt als TOPICS strukturiert sind. Ein Treffer je Tanz bringt die ganze
+    // Seite nach vorn (Schritte, Tipps und Lesetext fließen in den Heuhaufen).
+    if (bailar && Array.isArray(bailar.DANCES)) {
+      const dances = bailar.DANCES.map((d) => [d.name, d.origin, d.originEn, d.intro, d.introEn,
+        d.dos, d.dosEn, d.donts, d.dontsEn, d.es, (d.vocab || []).map((v) => [v.es, v.de, v.en])]);
+      const phrases = (bailar.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
+      const gloss = (bailar.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "💃", title: "Bailar", sub: t("discover.subBailar"),
+        action: "open-bailar",
+        hay: searchHay(["bailar baile tanzen tanz dance salsa bachata merengue cumbia tango reggaeton",
+          bailar.INTRO, bailar.INTRO_EN, dances, phrases, gloss]),
+      });
+    }
 
     // Historia (Süd- & Mittelamerika): je ein Treffer für die ganze Erklärseite
     // (Epochen, Protagonisten und aktuelle Spannungen fließen in den Heuhaufen).
@@ -5713,6 +5750,12 @@
   function openFotos() {
     dismissBadgeToast();
     state.screen = "fotos";
+    render();
+  }
+
+  function openBailar() {
+    dismissBadgeToast();
+    state.screen = "bailar";
     render();
   }
 
@@ -6235,6 +6278,7 @@
     logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
     salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
     fotos:     { kicker: "Fotos y videos",    icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
+    bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
   };
 
   function shareTips(cat, idx) {
@@ -6244,6 +6288,7 @@
               : cat === "logistica" ? (logistica && logistica.TOPICS)
               : cat === "salud" ? (salud && salud.TOPICS)
               : cat === "fotos" ? (fotografia && fotografia.TOPICS)
+              : cat === "bailar" ? (bailar && bailar.DANCES)
               : null;
     const meta = TIPS_META[cat];
     if (!src || !src[idx] || !meta) return;
@@ -6255,7 +6300,7 @@
     share.shareImage("tips", {
       kicker: meta.kicker,
       icon: meta.icon,
-      title: o.title || meta.kicker,
+      title: o.title || o.name || meta.kicker,
       intro: o.intro || "",
       lines,
       accent: meta.accent,
@@ -6313,6 +6358,7 @@
     logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
     salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
     fotos:         { icon: "📸", title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
+    bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -6384,6 +6430,8 @@
         return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
       case "fotos":
         return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
+      case "bailar":
+        return cut((bailarVM().dances || []).map((d) => ({ mark: d.icon || "💃", text: d.name })));
       default:
         return [];
     }
@@ -6545,6 +6593,7 @@
     else if (action === "open-logistica") openLogistica();
     else if (action === "open-salud") openSalud();
     else if (action === "open-fotos") openFotos();
+    else if (action === "open-bailar") openBailar();
     else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
     else if (action === "reset-progress") resetProgress();
     else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
@@ -7001,6 +7050,7 @@
       logistica: openLogistica,
       salud: openSalud,
       fotos: openFotos,
+      bailar: openBailar,
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
       // Einstufungs-Tests: ein geteiltes Ergebnis-Sharepic (Motiv „assessment“/
