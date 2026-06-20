@@ -27,7 +27,7 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
-      version: "1.102.0",
+      version: "1.103.0",
       date: "2026-06-20",
       title: "Neues Modul „Bailar“: Tanzen in Lateinamerika mit Schritt-Diagrammen",
       titleEn: "New module “Bailar”: dancing in Latin America with step diagrams",
@@ -36,6 +36,22 @@
       ],
       itemsEn: [
         "💃 “Discover” now has “Bailar”: the most important dances (salsa, bachata, merengue, cumbia, cha-cha-chá, tango, reggaetón) – each with a stylised step diagram on the floor whose footprints light up in dance order (with play/pause), the counting rhythm, tips & common mistakes, a short Spanish reading exercise and links to tutorial videos. Plus the phrases to ask someone to dance, dance etiquette and a glossary.",
+      ],
+    },
+    {
+      version: "1.102.0",
+      date: "2026-06-20",
+      title: "Neues Modul „Música“: der Soundtrack Lateinamerikas",
+      titleEn: "New “Música” module: the soundtrack of Latin America",
+      items: [
+        "🎵 Neues Modul „Música“: die großen Genres Lateinamerikas verständlich erklärt – von Cumbia, Salsa und Reggaetón über Tango und Mariachi bis Bachata und Anden-Folklore, jeweils mit ein paar Künstlern zum Reinhören und spanischem Lesetraining.",
+        "▶️ Ein Tipp öffnet jedes Genre direkt in Spotify ODER Apple Music (Deep-Link – am Handy springt die jeweilige App auf). Dazu der typische Sound deines Reiselands: wähle dein Land und höre Künstler & Song mit einem Tap.",
+        "💬 Plus die Sätze, um über Musik zu reden und tanzen zu gehen, und ein Glossar rund um Musik – wie gewohnt auf Deutsch/Englisch umschaltbar und über die Suche erreichbar.",
+      ],
+      itemsEn: [
+        "🎵 New “Música” module: Latin America's big genres explained simply – from cumbia, salsa and reggaetón through tango and mariachi to bachata and Andean folklore, each with a few artists to sample and Spanish reading practice.",
+        "▶️ One tap opens each genre straight in Spotify OR Apple Music (deep link – on your phone the matching app pops open). Plus the signature sound of your destination: pick your country and hear an artist & song with one tap.",
+        "💬 And the phrases to talk about music and go dancing, plus a music glossary – switchable between German/English as usual and reachable from search.",
       ],
     },
     {
