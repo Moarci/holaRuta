@@ -4675,80 +4675,8 @@
       </section>`;
   }
 
-  // ---------- DEFINICIONES (Zuordnen-Quiz) ----------
-  // Liste wählen.
-  function renderQuizSetup(vm) {
-    const list = vm.sets
-      .map((s) =>
-        `<button class="hm-scene" data-action="start-quiz" data-set="${esc(s.id)}">
-           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
-           <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
-           <span class="hm-scene__count">${s.count}</span>
-         </button>`)
-      .join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("🧩 Definiciones", "home")}
-        <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
-        ${moduleShareBtn("definiciones")}
-        <div class="hm-scenes">${list}</div>
-      </section>`;
-  }
-
-  // Eine Frage: Definition + Antwort-Optionen.
-  function renderQuiz(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
-    const options = vm.options
-      .map((o) => {
-        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
-        // Nach dem Aufdecken sind alle Optionen deaktiviert (kein Umentscheiden).
-        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
-        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
-          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
-        return `
-          <button class="${cls}" type="button" data-action="quiz-answer" data-id="${esc(o.id)}"${dis}>
-            <span class="quiz-opt__icon" aria-hidden="true">${esc(o.icon)}</span>
-            <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
-              <span class="quiz-opt__de">${esc(o.de)}</span>
-            </span>
-            ${mark}
-          </button>`;
-      })
-      .join("");
-
-    const feedback = vm.answered
-      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
-           ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
-             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
-                <span class="quiz-feedback__sol">${t("discover.quizSolution", { es: esc(vm.solutionEs), de: esc(vm.solutionDe) })}</span>`}
-         </div>
-         <button class="cta" data-action="quiz-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
-      : "";
-
-    return `
-      <section class="screen study">
-        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "quiz-again")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.quizProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.quizQuestion", { pos: vm.position + 1, total: vm.total }))}</div>
-        <div class="quiz-def">
-          <span class="quiz-def__cap">${esc(t("discover.quizDefinicion"))}</span>
-          <p class="quiz-def__text" lang="es">${esc(vm.definition)}</p>
-        </div>
-        <div class="quiz-opts">${options}</div>
-        ${feedback}
-      </section>`;
-  }
-
-  // Auswertung.
-  // Fertig-Screen jetzt als leere Bühne für SC.celebrate (wie renderDone): die
-  // anlassbezogene Inszenierung + Buttons baut das Modul im Render-Dispatch (app.js,
-  // mountMiniDone). Die alten done/done__emoji-Styles bleiben für nicht-migrierte
-  // Screens (z. B. Battle) erhalten.
-  function renderQuizDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
+  // DEFINICIONES (Zuordnen-Quiz) ist nach features/definiciones.js
+  // (SC.definiciones) gewandert – VMs, Handler und Render leben dort zusammen.
 
   // ---------- FRASES FLEXIBLES (Satzbaukasten) ----------
   // Themen-Auswahl vor der Runde – Reuse der Hostel-Szenenkacheln (.hm-scene)
@@ -5736,7 +5664,7 @@
   window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos,
+                   renderCuerpo, renderConjugacion, renderTiempos,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderFavorites,
                    renderConjugSetup, renderConjug, renderConjugDone,

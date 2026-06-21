@@ -8,6 +8,7 @@
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
   const spickzettel = window.SC.spickzettel; // Feature-Modul (Survival-Schnellzugriff), eager geladen
+  const definiciones = window.SC.definiciones; // Feature-Modul (Zuordnen-Quiz), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -1779,134 +1780,10 @@
     };
   }
 
-  // ----- Definiciones (Zuordnen-Quiz): View-Modelle -----
-  const quizSetById = (id) => data.QUIZ_SETS.find((s) => s.id === id) || null;
-  const quizDefById = (id) => data.QUIZ_DEFS.find((d) => d.id === id) || null;
-  const quizDefsForSet = (setId) => data.QUIZ_DEFS.filter((d) => d.set === setId);
-
-  // Antwort-Optionen einer Frage bauen: die richtige Lösung + bis zu 3 Ablenker aus
-  // derselben Liste, anschließend gemischt. Wird beim Stellen der Frage EINMAL
-  // berechnet und im State gehalten – ein Re-Render darf nicht neu mischen.
-  function buildQuizOptions(correct, pool) {
-    const distractors = shuffle(pool.filter((d) => d.id !== correct.id)).slice(0, 3);
-    return shuffle([correct, ...distractors])
-      .map((d) => ({ id: d.id, es: d.es, de: d.de, en: d.en, icon: d.icon }));
-  }
-
-  function quizSetupVM() {
-    return {
-      sets: data.QUIZ_SETS.map((s) => {
-        const lvl = levelById(s.lvl);
-        return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
-          count: quizDefsForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
-      }),
-    };
-  }
-
-  function quizVM() {
-    const q = state.quiz;
-    const set = quizSetById(q.setId);
-    const def = quizDefById(q.queue[q.idx]);
-    const answered = q.selected !== null;
-    const options = q.options.map((o) => ({
-      id: o.id, es: o.es, de: nat(o), icon: o.icon,
-      // Zustand fürs Einfärben: vor der Antwort neutral, danach Lösung grün,
-      // falsche Wahl rot, der Rest gedämpft.
-      state: !answered ? "idle"
-        : o.id === def.id ? "correct"
-        : o.id === q.selected ? "wrong"
-        : "dim",
-    }));
-    return {
-      setLabel: set ? set.label : "",
-      setIcon: set ? set.icon : "🧩",
-      position: q.idx,
-      total: q.total,
-      definition: def.def,
-      options,
-      answered,
-      isCorrect: q.selected === def.id,
-      solutionEs: def.es,
-      solutionDe: nat(def),
-      isLast: q.idx >= q.total - 1,
-    };
-  }
-
-  function quizDoneVM() {
-    const q = state.quiz;
-    const set = quizSetById(q.setId);
-    return {
-      setLabel: set ? set.label : "",
-      setIcon: set ? set.icon : "🧩",
-      correct: q.correct,
-      total: q.total,
-      perfect: q.total > 0 && q.correct === q.total,
-    };
-  }
-
-  // ----- Definiciones: Steuerung -----
-  function openQuizSetup() {
-    dismissBadgeToast();
-    setState({ screen: "quizSetup" });
-  }
-
-  function startQuiz(setId) {
-    dismissBadgeToast();
-    const pool = quizDefsForSet(setId);
-    if (!pool.length) return;
-    const queue = shuffle(pool).map((d) => d.id);
-    state.quiz = {
-      setId,
-      queue,
-      idx: 0,
-      total: queue.length,
-      options: buildQuizOptions(quizDefById(queue[0]), pool),
-      selected: null,
-      correct: 0,
-    };
-    setState({ screen: "quiz" });
-  }
-
-  // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
-  function answerQuiz(defId) {
-    const q = state.quiz;
-    if (!q || q.selected !== null) return;
-    const current = q.queue[q.idx];
-    q.selected = defId;
-    if (defId === current) { q.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextQuiz() {
-    const q = state.quiz;
-    if (!q || q.selected === null) return; // erst antworten, dann weiter
-    if (q.idx >= q.total - 1) {
-      recordQuizResult(q);
-      syncBadges(Date.now(), true); // Quiz-Badges freischalten + einblenden
-      setState({ screen: "quizDone" });
-      return;
-    }
-    q.idx += 1;
-    q.selected = null;
-    q.options = buildQuizOptions(quizDefById(q.queue[q.idx]), quizDefsForSet(q.setId));
-    render();
-  }
-
-  function quizAgain() {
-    dismissBadgeToast();
-    state.quiz = null;
-    setState({ screen: "quizSetup" });
-  }
-
-  // Ergebnis eines beendeten Quiz in die Spiel-Zähler buchen (Ruta-Pass).
-  function recordQuizResult(q) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.quizzesPlayed = (g.quizzesPlayed || 0) + 1;
-    if (q.total > 0 && q.correct === q.total) g.quizzesPerfect = (g.quizzesPerfect || 0) + 1;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
+  // Definiciones (Zuordnen-Quiz) wohnt jetzt in features/definiciones.js
+  // (SC.definiciones): Daten-Helfer, VMs, Handler und Render gebündelt. app.js
+  // delegiert unten in SCREENS/ACTIONS, im Sharepic-Aggregator und in
+  // miniDoneConfig an die Modul-Methoden.
 
   // ----- Conjugación: Erklärseite Konjugieren -----
   // Statische Grammatik-Erklärung (Inhalte: data.CONJUGATION). Der "Jetzt üben"-
@@ -2910,9 +2787,9 @@
       "battleDone": () => ui.renderBattleDone(battleDoneVM()),
       "roleplaySetup": () => ui.renderRoleplaySetup(roleplaySetupVM()),
       "roleplay": () => ui.renderRoleplay(roleplayVM()),
-      "quizSetup": () => ui.renderQuizSetup(quizSetupVM()),
-      "quiz": () => ui.renderQuiz(quizVM()),
-      "quizDone": () => ui.renderQuizDone(),
+      "quizSetup": () => definiciones.setupScreen(),
+      "quiz": () => definiciones.playScreen(),
+      "quizDone": () => definiciones.doneScreen(),
       "cuerpo": () => ui.renderCuerpo(cuerpoVM()),
       "conjugacion": () => ui.renderConjugacion(conjugacionVM()),
       "tiempos": () => ui.renderTiempos(tiemposVM()),
@@ -3045,9 +2922,9 @@
   }
   function miniDoneConfig(screen) {
     if (screen === "quizDone") {
-      const vm = quizDoneVM();
+      const vm = definiciones.doneVM();
       return { result: miniResult(vm, vm.setLabel, "quiz"), opts: {
-        primaryLabel: t("discover.quizAgain"), onPrimary: quizAgain,
+        primaryLabel: t("discover.quizAgain"), onPrimary: definiciones.again,
         secondaryLabel: t("common.overview"), onSecondary: goHome,
       } };
     }
@@ -7038,7 +6915,7 @@
       case "hostel":
         return cut(battleSetupVM().scenes.map((s) => ({ mark: s.icon || "⚔️", text: s.label })));
       case "definiciones":
-        return cut(quizSetupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
+        return cut(definiciones.setupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
       case "frases":
         return cut(frasesSetupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
       case "dialogos":
@@ -7257,11 +7134,11 @@
     "open-roleplay-setup": (el) => { openRoleplaySetup(); },
     "start-roleplay": (el) => { startRoleplay(el.dataset.id); },
     "roleplay-swap": (el) => { roleplaySwap(); },
-    "open-quiz-setup": (el) => { openQuizSetup(); },
-    "start-quiz": (el) => { startQuiz(el.dataset.set); },
-    "quiz-answer": (el) => { answerQuiz(el.dataset.id); },
-    "quiz-next": (el) => { nextQuiz(); },
-    "quiz-again": (el) => { quizAgain(); },
+    "open-quiz-setup": (el) => { definiciones.open(); },
+    "start-quiz": (el) => { definiciones.start(el.dataset.set); },
+    "quiz-answer": (el) => { definiciones.answer(el.dataset.id); },
+    "quiz-next": (el) => { definiciones.next(); },
+    "quiz-again": (el) => { definiciones.again(); },
     "open-cuerpo": (el) => { openCuerpo(); },
     "open-conjugacion": (el) => { openConjugacion(); },
     "open-tiempos": (el) => { openTiempos(); },
@@ -7743,7 +7620,7 @@
     const openers = {
       supervivencia: () => spickzettel.open(),
       hostel: openHostel,
-      definiciones: openQuizSetup,
+      definiciones: () => definiciones.open(),
       frases: openFrasesSetup,
       dialogos: openDialogosSetup,
       regatear: openRegatear,
@@ -7862,11 +7739,18 @@
   // State, Daten-Helfer und optionale Module. VOR dem ersten render() / Deep-Link, da
   // ein Modul-Screen sofort gezeigt werden kann. Wächst mit jeder Zerlegungs-Welle.
   const featureCtx = {
-    state, setState, dismissBadgeToast,
-    data, speech,
-    categoryById, cardById, nat, natk, isFavorite, DEFAULT_ACCENT,
+    state, setState, render, dismissBadgeToast,
+    data, speech, numbers, yesto, i18n, badges,
+    categoryById, cardById, nat, natk, isFavorite, levelById, shuffle, buzz, syncBadges,
+    DEFAULT_ACCENT,
+    // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
+    // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
+    gameStats: () => gamestats,
+    setGameStats: (g) => { gamestats = g; store.saveGameStats(gamestats); },
+    setSettings: (patch) => { settings = Object.assign({}, settings, patch); store.saveSettings(settings); },
   };
   if (spickzettel) spickzettel.init(featureCtx);
+  if (definiciones) definiciones.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

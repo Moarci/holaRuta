@@ -653,7 +653,7 @@ function installModules() {
     "store.js", "net.js", "sync.js", "social.js", "usercards.js", "matcher.js",
     "placement.js", "assessment.js", "search.js", "stats.js", "badges.js",
     "speech.js", "share.js", "qr.js", "install.js", "changelog.js",
-    "celebrate.js", "view-helpers.js", "ui.js", "features/spickzettel.js", "app.js",
+    "celebrate.js", "view-helpers.js", "ui.js", "features/spickzettel.js", "features/definiciones.js", "app.js",
   ];
   for (const rel of order) {
     require(path.join(SRC, rel));
