@@ -243,7 +243,7 @@
   <script defer src="ui.js"></script>
   <script defer src="app.js"></script>
 
-  <!-- Start-Splash wegblenden, sobald die App steht – aber mind. ~1,4 s zeigen,
+  <!-- Start-Splash wegblenden, sobald die App steht – aber mind. ~1,9 s zeigen,
        damit Schrumpfen/Aufstieg/Regenbogen-Wisch fertig landen und kurz stehen, statt
        abgeschnitten wegzublitzen (__bootStart wird ganz oben gesetzt).
        Läuft als eigenes <script> NACH app.js: selbst wenn app.js wirft, blendet
@@ -252,11 +252,15 @@
     (function () {
       var boot = document.getElementById("boot");
       if (!boot) return;
-      // Mindest-Anzeigedauer: 800 ms reicht, dass Schrumpfen/Aufstieg/Regenbogen-Wisch
-      // landen und kurz stehen, ohne den Kaltstart unnötig zu verzögern. Bei
+      // Mindest-Anzeigedauer: muss die GESAMTE Boot-Animation abdecken, sonst
+      // blendet der Splash weg, bevor man etwas sieht. Die Spuren enden (relativ
+      // zum is-ready-Start) bei: Schrumpfen 1,15 s · Name-Aufstieg 0,78 + 0,55 =
+      // 1,33 s · Regenbogen-Wisch 0,92 + 0,8 = 1,72 s. Bei 800 ms (alter Wert)
+      // startete der Wisch nie und der Name blitzte nur kurz auf – die Animation
+      // wirkte „kaputt". 1900 ms lässt alle drei landen + kurz stehen. Bei
       // prefers-reduced-motion sofort weg (0 ms) – keine erzwungene Wartezeit.
       var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      var MIN = reduce ? 0 : 800;
+      var MIN = reduce ? 0 : 1900;
       var start = window.__bootStart || Date.now();
       function done() { boot.classList.add("is-done"); }
       function hide() {
