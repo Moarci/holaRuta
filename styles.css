@@ -2484,7 +2484,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .teacher-x:hover { color: var(--brand-ink); }
 /* Echtes A4-Seitenformat mit gleichmäßigen Rändern – das Arbeitsheft druckt so
    randscharf und seitengleich (vorher: nur Browser-Default-Ränder griffen). */
-@page { size: A4; margin: 16mm 14mm; }
+@page { size: A4; margin: 14mm 13mm; }
 @media print {
   .appbar, .teacher-actions, .teacher-x, .topbar, .hm-topbar, .tabbar, .teacher-sep, .task-form, .task-result,
   .no-print, .sheet-controls,
@@ -2494,13 +2494,40 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .screen { padding: 0 !important; }
   /* Im Druck den @page-Rand nutzen: Blatt auf A4-Inhaltsbreite, ohne eigenes
      Padding/Border. Setzt sich gegen die allgemeine .sheet-Regel durch über
-     !important (der @media-print-Block steht in der Quelle vor der Basisregel). */
-  .sheet { box-shadow: none !important; border: none !important; margin: 0 auto !important; padding: 0 !important; max-width: 182mm !important; }
-  /* Bewusste Seitenumbrüche: Lösungsschlüssel auf eigene Seite; lange Tabellen
-     dürfen fließen, einzelne Zeilen aber nicht zerreißen. */
-  .sheet-answerkey { break-before: page; page-break-before: always; }
+     !important (der @media-print-Block steht in der Quelle vor der Basisregel).
+     Punkt-Maße + verdichtete Abstände: mehr Übungen passen sauber auf eine A4-Seite. */
+  .sheet { box-shadow: none !important; border: none !important; margin: 0 auto !important; padding: 0 !important; max-width: 184mm !important; font-size: 10.5pt; line-height: 1.4; }
+  .sheet-accent-bar { margin-bottom: 10px; }
+  .sheet-head { margin-bottom: 10px; padding-bottom: 6px; }
+  .sheet-title { font-size: 17pt; }
+  .sheet-h2 { font-size: 11.5pt; margin: 11px 0 4px; }
+  .sheet-stage { font-size: 11pt; margin: 10px 0 3px; }
+  .sheet-goal { margin: 6px 0; }
+  .sheet-instr { margin: 1px 0 6px; }
+  .sheet-recipe { margin: 4px 0; }
+  .sheet-recipe li, .sheet-exlist li { margin: 4px 0; }
+  .sheet-cards li { margin: 5px 0; }
+  .sheet-section { margin: 11px 0; }
+  .sheet-table th, .sheet-table td { padding: 4px 7px; font-size: 9.8pt; }
+  .sheet-write-line { height: 1.7em; }
+  .sheet-write-box { height: 30mm; }
+  .sheet-notes-lines { height: 26mm; }
+  /* Fill-Modus-Bedienelemente sind reine Bildschirm-Helfer – nie aufs Papier. */
+  .sheet-fillbar, .sheet-score { display: none !important; }
+  /* Falls jemand das Fill-Blatt doch druckt: Felder als saubere Schreiblinien/Boxen. */
+  .sheet-fill { border: none !important; border-bottom: 1px solid #444 !important; border-radius: 0 !important; background: none !important; padding: 0 2px !important; }
+  .sheet-fill-area { background: none !important; }
+  /* Lösungsschlüssel ist ein eigenes Blatt (eigene <article>). Beim Drucken BEIDER
+     Dokumente startet er auf einer neuen Seite; druckt man ihn allein, entfällt der
+     Umbruch (sonst eine führende Leerseite). */
+  .sheet-doc--key { break-before: page; page-break-before: always; }
+  .sheet-print--key .sheet-doc--key { break-before: auto; page-break-before: auto; }
+  /* Druck-Bereichswahl: nur Übungsblatt bzw. nur Lösungsschlüssel ausgeben. */
+  .sheet-print--exercise .sheet-doc--key { display: none !important; }
+  .sheet-print--key .sheet-doc--exercise { display: none !important; }
   .sheet-table { break-inside: auto; }
-  .sheet-table tr, .sheet-section--gapfill li, .sheet-cards li { break-inside: avoid; }
+  .sheet-table tr, .sheet-section--gapfill li, .sheet-cards li, .sheet-exlist li, .sheet-turn { break-inside: avoid; }
+  .sheet-recipe-box, .sheet-section--matching, .sheet-section--culture { break-inside: avoid; }
   /* Klassentabelle für den Druck umbrechen lassen, damit ALLE Spalten (v. a.
      das Niveau) auf A4 passen – overflow-x scrollt auf Papier nicht, es klippt sonst. */
   .teacher-tablewrap { overflow: visible !important; }
@@ -2535,6 +2562,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-size: 0.7rem; vertical-align: middle; margin-left: 6px; padding: 2px 8px;
   border-radius: 999px; background: var(--sheet-accent); color: #fff; font-weight: 700;
 }
+.sheet-tag--key { background: #1c140e; }
+/* Lösungsschlüssel als eigenes Blatt: deutlich vom Übungsblatt abgesetzt. Auf dem
+   Bildschirm eine gestrichelte „Hier abtrennen"-Trennung; im Druck eigene Seite. */
+.sheet-doc--key { margin-top: 26px; padding-top: 22px; border-top: 2px dashed var(--line); }
+.sheet--key .sheet-ak-note { margin-top: 0; }
 /* Steuerleiste: Lösungs-/Übungs-Umschalter (segmentiert). */
 .sheet-modes { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
 .sheet-mode { font: inherit; cursor: pointer; border: none; background: transparent; color: var(--muted); padding: 6px 12px; }
@@ -2599,6 +2631,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-exlist li { margin: 8px 0; }
 .sheet-exlist .sheet-de { color: #6b5a4c; font-size: 0.88rem; }
 .sheet-exlist .sheet-es { font-weight: 700; }
+/* Gegenteile (Contrarios) + Satz ordnen. */
+.sheet-exlist--opp li { margin: 7px 0; }
+.sheet-arrow { color: var(--sheet-accent); font-weight: 700; margin: 0 2px; }
+.sheet-scramble { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.sheet-scramble .sheet-chip { font-weight: 700; }
 /* Tabellen (Konjugation, Zahlen). */
 .sheet-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
 .sheet-table th, .sheet-table td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 0.92rem; vertical-align: top; }
@@ -2628,6 +2665,32 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-answerkey ol { margin: 2px 0; padding-left: 1.5em; }
 .sheet-answerkey li { margin: 1px 0; }
 .sheet-ak-note { font-style: italic; color: #6b5a4c; margin: 2px 0 6px; }
+/* Am Handy ausfüllen: interaktive Eingabefelder + Selbstkontrolle (nur Bildschirm).
+   Felder sind groß genug zum Tippen (44px Touch-Ziel), die Lösung steckt in
+   data-answer und wird per „Prüfen" abgeglichen. */
+.sheet-fillbar {
+  margin: 0 0 14px; padding: 10px 12px; border-radius: 8px; font-size: 0.9rem;
+  color: #1c140e; background: color-mix(in srgb, var(--sheet-accent) 12%, #fff);
+  border-left: 3px solid var(--sheet-accent);
+}
+.sheet-fill {
+  font: inherit; color: #1c140e; background: #fff;
+  border: 1px solid #b9a98f; border-radius: 8px; padding: 9px 11px; min-height: 22px;
+  box-sizing: border-box;
+}
+.sheet-fill:focus { outline: 2px solid var(--sheet-accent); outline-offset: 1px; border-color: var(--sheet-accent); }
+.sheet-fill--line { display: block; width: 100%; margin-top: 4px; }
+.sheet-fill--inline { display: inline-block; width: clamp(120px, 40%, 260px); vertical-align: baseline; padding: 5px 9px; }
+.sheet-fill--mini { display: inline-block; width: 3.2em; text-align: center; padding: 5px 4px; }
+.sheet-table .sheet-fill--line { margin-top: 0; }
+.sheet-fill.is-correct { border-color: #2e7d32; background: #eaf6ea; }
+.sheet-fill.is-wrong { border-color: #c0392b; background: #fdecea; }
+.sheet-fill-area {
+  font: inherit; color: #1c140e; background: #fff; width: 100%; box-sizing: border-box;
+  border: 1px solid #b9a98f; border-radius: 8px; padding: 10px 11px; margin-top: 4px; resize: vertical; line-height: 1.6;
+}
+.sheet-fill-area:focus { outline: 2px solid var(--sheet-accent); outline-offset: 1px; border-color: var(--sheet-accent); }
+.sheet-score { font-weight: 800; color: var(--brand-ink); align-self: center; }
 
 /* Aufgaben/Zuweisung (backend-frei) */
 .teacher-sep { border: none; border-top: 1px solid var(--line); margin: 22px 0 8px; }

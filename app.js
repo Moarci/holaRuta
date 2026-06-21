@@ -4002,14 +4002,47 @@
     };
   }
 
+  // Heftlänge: Obergrenzen je Baustein. „gross" ist der Standard-Umfang; „xxl"
+  // schöpft die Quellen weitgehend aus (Gegenteile max. 26, frases max. 49,
+  // Dialoge max. 11). matching/translate/ordenar füllen bei Bedarf aus dem
+  // breiten Reise-Wortschatz auf, sind also praktisch unbegrenzt.
+  const SHEET_LENGTHS = {
+    standard: { matching: 8, opposites: 10, gapfill: 8, translate: 10, ordenar: 6, conjug: 10, numbers: 8, dialogues: 1, writing: 1 },
+    gross: { matching: 14, opposites: 18, gapfill: 14, translate: 18, ordenar: 12, conjug: 18, numbers: 15, dialogues: 2, writing: 3 },
+    xxl: { matching: 20, opposites: 26, gapfill: 24, translate: 28, ordenar: 18, conjug: 28, numbers: 22, dialogues: 3, writing: 3 },
+  };
+
   // Baut die typisierten Übungsabschnitte. Jeder Builder ist gegen leere Quellen
   // abgesichert (kein leerer Abschnitt). Reihenfolge = Heft-Reihenfolge.
-  function buildSheetSections(theme, allCards, rng) {
+  function buildSheetSections(theme, allCards, rng, len) {
     const out = [];
+    const L = len || SHEET_LENGTHS.gross;
     const cards = (allCards || []).filter((c) => c && c.es && nat(c));
 
-    // 1. Zuordnung ES<->DE (bis 8 Paare).
-    const mPairs = sheetShuffle(cards, rng).slice(0, 8);
+    // Breiter Reise-Wortschatz als Auffüll-Reserve: hat ein Ziel wenige Karten,
+    // werden die karten-basierten Abschnitte (Zuordnen/Übersetzen/Satz ordnen)
+    // hieraus aufgefüllt – so bleibt das Heft auch bei kleinen Zielen voll.
+    // Zahlen/Gegenteile raus (eigene Abschnitte, kein echter Satz/Begriff).
+    const broadPool = (data.CARDS || []).filter((c) => c && c.es && nat(c) && c.cat !== "contrarios" && c.cat !== "zahlen");
+    // Wählt n Karten: erst aus der Zielmenge, dann (falls zu wenig) aus der Reserve.
+    function fillFrom(primary, extra, n) {
+      const seen = {};
+      const pick = sheetShuffle(primary, rng).slice(0, n);
+      pick.forEach((c) => { if (c.id) seen[c.id] = true; });
+      if (pick.length < n) {
+        const more = sheetShuffle((extra || []).filter((c) => !c.id || !seen[c.id]), rng);
+        for (let i = 0; i < more.length && pick.length < n; i++) { pick.push(more[i]); if (more[i].id) seen[more[i].id] = true; }
+      }
+      return pick;
+    }
+    const isPhrase = (c) => {
+      if (!c.es || c.cat === "zahlen" || c.cat === "contrarios" || c.es.indexOf("–") !== -1) return false;
+      const w = c.es.trim().split(/\s+/);
+      return w.length >= 4 && w.length <= 9;
+    };
+
+    // 1. Zuordnung ES<->DE (bei kleinem Ziel aus der Reserve aufgefüllt).
+    const mPairs = fillFrom(cards, broadPool, L.matching);
     if (mPairs.length >= 3) {
       const left = mPairs.map((c, i) => ({ n: i + 1, es: c.es, de: nat(c) }));
       const order = sheetShuffle(left.map((_, i) => i), rng);
@@ -4018,28 +4051,56 @@
       out.push({ type: "matching", left: left.map((x) => ({ n: x.n, es: x.es, l: x.l })), right: right.map((r) => ({ l: r.l, de: r.de })) });
     }
 
-    // 2. Lückentext (frases): themenpassend oder gemischt.
+    // 1b. Gegenteile (Contrarios) – grundlegender Reise-Wortschatz, global (nicht
+    // zielgebunden), darum ein verlässlicher Umfangs-Booster. „grande – pequeño":
+    // gefragt ist das spanische Gegenteil, das deutsche Erstwort dient als Hilfe.
+    const oppPick = sheetShuffle((data.CARDS || []).filter((c) => c.cat === "contrarios" && c.es && c.es.indexOf("–") !== -1), rng).slice(0, L.opposites);
+    if (oppPick.length >= 3) {
+      const oppItems = oppPick.map((c) => {
+        const es = c.es.split("–").map((s) => s.trim());
+        const de = String(nat(c)).split("–").map((s) => s.trim());
+        return { word: es[0], gloss: de[0] || "", answer: es[1] || "" };
+      }).filter((it) => it.word && it.answer);
+      if (oppItems.length >= 3) out.push({ type: "opposites", items: oppItems });
+    }
+
+    // 2. Lückentext (frases): themenpassend zuerst, dann gemischt aufgefüllt (bis 14).
     if (frases && frases.FRASES) {
-      const pool = frases.FRASES.filter((f) => f.slot && f.slot.es && (!theme.frasesCat || f.cat === theme.frasesCat));
-      const chosen = sheetShuffle(pool.length ? pool : frases.FRASES.filter((f) => f.slot && f.slot.es), rng).slice(0, 7);
+      const all = frases.FRASES.filter((f) => f.slot && f.slot.es);
+      const themed = theme.frasesCat ? all.filter((f) => f.cat === theme.frasesCat) : [];
+      const chosen = [].concat(sheetShuffle(themed, rng), sheetShuffle(all.filter((f) => themed.indexOf(f) === -1), rng)).slice(0, L.gapfill);
       if (chosen.length >= 3) {
         const items = chosen.map((f) => ({ frameEs: f.frameEs, targetDe: natk(f, "targetDe"), answer: f.slot.es }));
         out.push({ type: "gapfill", wordbank: sheetShuffle(items.map((it) => it.answer), rng), items: items });
       }
     }
 
-    // 3. Übersetzung (Kontextsätze DE->ES, sonst einfache Karten).
-    const ctxCards = sheetShuffle(cards.filter((c) => c.context && c.context.sentenceEs), rng).slice(0, 8);
-    if (ctxCards.length >= 3) {
-      out.push({ type: "translate", lines: ctxCards.map((c) => ({ de: natk(c.context, "sentenceDe") || natk(c.context, "situation") || nat(c), es: c.context.sentenceEs })) });
-    } else {
-      const simple = sheetShuffle(cards, rng).slice(0, 8);
-      if (simple.length >= 3) out.push({ type: "translate", lines: simple.map((c) => ({ de: nat(c), es: c.es })) });
+    // 3. Übersetzung DE->ES (bis 18): Kontextsatz wenn vorhanden, sonst die Karte;
+    // bei kleinem Ziel aus der Reserve aufgefüllt.
+    const trCards = fillFrom(cards, broadPool, L.translate);
+    if (trCards.length >= 3) {
+      out.push({ type: "translate", lines: trCards.map((c) => {
+        const ctx = c.context;
+        return (ctx && ctx.sentenceEs)
+          ? { de: natk(ctx, "sentenceDe") || natk(ctx, "situation") || nat(c), es: ctx.sentenceEs }
+          : { de: nat(c), es: c.es };
+      }) });
     }
 
-    // 4. Konjugation.
+    // 3b. Satz ordnen (Wortstellung): mehrwortige Phrasen (4–9 Wörter), Ziel zuerst,
+    // dann aus der Reserve (bis 12). Wörter durcheinander, Lösung = der ganze Satz.
+    const orderPick = fillFrom(cards.filter(isPhrase), broadPool.filter(isPhrase), L.ordenar);
+    if (orderPick.length >= 3) {
+      out.push({ type: "ordenar", items: orderPick.map((c) => {
+        const answer = c.es.trim();
+        const words = answer.replace(/[.?!¿¡,;]/g, "").split(/\s+/).filter(Boolean);
+        return { answer: answer, scrambled: sheetShuffle(words, rng), de: nat(c) };
+      }) });
+    }
+
+    // 4. Konjugation (bis 18).
     if (conjug && data.CONJUGATION) {
-      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 8, rng).map((it) => ({
+      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, L.conjug, rng).map((it) => ({
         verb: natk(it, "verbHint") || it.verb,
         person: natk(it, "personDe") ? natk(it, "personDe") + " (" + it.personEs + ")" : it.personEs,
         answer: it.answer,
@@ -4047,26 +4108,30 @@
       if (rows.length) out.push({ type: "conjug", rows: rows });
     }
 
-    // 5. Zahlen & Preise.
+    // 5. Zahlen & Preise (bis 15).
     if (numbers && numbers.buildRound) {
-      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, 6, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
+      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, L.numbers, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
       if (items.length) out.push({ type: "numbers", items: items });
     }
 
-    // 6. Dialog-Lückentext (ein Szenario; user-Repliken verdeckt).
+    // 6. Dialog-Lückentext: ZWEI Szenarien (themenpassendes zuerst), user-Repliken
+    // verdeckt – ein großer Umfangs-Block aus echten Gesprächen.
     if (dialogos && dialogos.DIALOGOS && dialogos.DIALOGOS.length) {
       const list = dialogos.DIALOGOS;
-      const dlg = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
-      if (dlg && dlg.turns) {
-        const name = "Marco";
-        const sub = (s) => String(s || "").replace(/\{name\}/g, name);
-        out.push({
+      const name = "Marco";
+      const sub = (s) => String(s || "").replace(/\{name\}/g, name);
+      const first = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
+      const picks = [];
+      if (first) picks.push(first);
+      sheetShuffle(list.filter((d) => d !== first), rng).forEach((d) => { if (picks.length < L.dialogues) picks.push(d); });
+      picks.forEach((dlg) => {
+        if (dlg && dlg.turns) out.push({
           type: "dialogue", title: natk(dlg, "title"),
           turns: dlg.turns.map((tn) => tn.who === "npc"
             ? { who: "npc", es: sub(tn.es), de: nat(tn) }
             : { who: "user", de: nat(tn), answer: sub(tn.solEs) }),
         });
-      }
+      });
     }
 
     // 7. Landeskunde (optional, per Land).
@@ -4076,8 +4141,8 @@
       if (facts.length) out.push({ type: "culture", title: "", facts: facts });
     }
 
-    // 8. Freies Schreiben (immer; Box + Anleitung genügen).
-    out.push({ type: "writing", prompt: "" });
+    // 8. Freies Schreiben (immer; Anzahl Schreibanlässe je nach Länge).
+    out.push({ type: "writing", prompts: [t("sheet.writePrompt1"), t("sheet.writePrompt2"), t("sheet.writePrompt3")].slice(0, L.writing) });
 
     return out;
   }
@@ -4085,6 +4150,7 @@
   const SHEET_SEC_KEY = {
     matching: "secMatching", gapfill: "secGapfill", translate: "secTranslate",
     conjug: "secConjug", numbers: "secNumbers", dialogue: "secDialogue",
+    opposites: "secOpposites", ordenar: "secOrdenar",
     culture: "secCulture", writing: "secWriting",
   };
 
@@ -4134,16 +4200,24 @@
     const accentCat = categoryById(accentScope);
     const accent = (accentCat && accentCat.grad && accentCat.grad[0]) || "#a23e20";
     const icon = (accentCat && accentCat.icon) || "📄";
-    // Übungs- vs. Lösungsblatt: im Übungsmodus wird die spanische Zeile (Antwort)
-    // verdeckt; Deutsch bleibt als Prompt stehen. Standard = vollständiges Blatt.
+    // Drei Varianten: „full" (Lösungsblatt, alle Antworten sichtbar), „exercise"
+    // (Druck-Übung, Antworten zu Schreiblinien) und „fill" (am Handy ausfüllbar:
+    // echte Eingabefelder + Selbstkontrolle). Im Übungs- UND Fill-Modus bleibt das
+    // Deutsch als Prompt stehen, die spanische Antwort wird verdeckt/abgefragt.
     const exercise = state.sheetMode === "exercise";
+    const fill = state.sheetMode === "fill";
     const link = code ? taskShareLink(code) : "";
     // Arbeitsheft: zusätzliche Übungsabschnitte aus dem Gesamtbestand. Deterministisch
     // pro Ziel+Etappe geseedet (Nachdruck = identisch); abwählbare via state.sheetSkip.
-    const rng = sheetRng(sheetHash(tt.value + "|" + stageSel));
-    const builtSections = buildSheetSections(sheetTheme(tt, lvls), allCards, rng);
+    const sheetLength = SHEET_LENGTHS[state.sheetLength] ? state.sheetLength : "gross";
+    const rng = sheetRng(sheetHash(tt.value + "|" + stageSel + "|" + sheetLength));
+    const builtSections = buildSheetSections(sheetTheme(tt, lvls), allCards, rng, SHEET_LENGTHS[sheetLength]);
     const skip = state.sheetSkip || [];
-    const sectionToggles = builtSections.map((s) => ({ type: s.type, label: t("sheet." + (SHEET_SEC_KEY[s.type] || "secWriting")), on: skip.indexOf(s.type) === -1 }));
+    // Ein Chip je Abschnittstyp (mehrere gleiche Typen – z. B. zwei Dialoge – werden
+    // über EINEN Chip an-/abgewählt, kein Doppel-Chip).
+    const seenToggle = {};
+    const sectionToggles = builtSections.filter((s) => { if (seenToggle[s.type]) return false; seenToggle[s.type] = true; return true; })
+      .map((s) => ({ type: s.type, label: t("sheet." + (SHEET_SEC_KEY[s.type] || "secWriting")), on: skip.indexOf(s.type) === -1 }));
     const sections = builtSections.filter((s) => skip.indexOf(s.type) === -1);
     return {
       targets: taskTargets(), sheetTarget: tt.value,
@@ -4152,7 +4226,7 @@
       // Wird nur EINE Etappe gedruckt? Dann startet der Abo-Code unten trotzdem
       // den GANZEN Plan – Hinweis darauf im Blatt (siehe sheet.subscribeWholeHint).
       stageScoped: isPretrip && stageSel !== "all",
-      accent: accent, icon: icon, exercise: exercise,
+      accent: accent, icon: icon, exercise: exercise, fill: fill, sheetLength: sheetLength,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages, sections: sections, sectionToggles: sectionToggles,
       code: code, link: link,
@@ -4168,11 +4242,75 @@
     if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
     if (!state.sheetStage) state.sheetStage = "all";
     if (!state.sheetMode) state.sheetMode = "full";
+    if (!state.sheetLength) state.sheetLength = "gross"; // Heftlänge: standard | gross | xxl
     if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
     setState({ screen: "printsheet" });
   }
 
-  function printSheet() { try { window.print(); } catch (e) { /* egal */ } }
+  // scope: "exercise" druckt nur das Übungsblatt, "key" nur den Lösungsschlüssel,
+  // sonst (Lösungsblatt/Fill) das ganze Dokument. Die Bereichswahl läuft über eine
+  // Body-Klasse, die der Druck-CSS-Block auswertet; nach dem Druck wird sie entfernt.
+  function printSheet(scope) {
+    const cls = scope === "key" ? "sheet-print--key" : scope === "exercise" ? "sheet-print--exercise" : "";
+    const body = document.body;
+    if (cls && body) {
+      body.classList.add(cls);
+      const clean = () => { body.classList.remove(cls); window.removeEventListener("afterprint", clean); };
+      window.addEventListener("afterprint", clean);
+      setTimeout(clean, 1500); // Fallback, falls afterprint ausbleibt
+    }
+    try { window.print(); } catch (e) { /* egal */ }
+  }
+
+  // ---------- Arbeitsheft am Handy ausfüllen (Selbstkontrolle) ----------
+  // Eine Eingabe gilt als richtig, wenn sie – wie im Studienmodus großzügig
+  // geprüft (akzent-/satzzeichentolerant UND tippfehlertolerant, via matcher) –
+  // einer der „/"-Alternativen oder der Volllösung entspricht.
+  function fillAnswerOk(input, answer) {
+    if (!input || !String(input).trim()) return false;
+    const parts = String(answer || "").split("/").map((s) => s.trim()).filter(Boolean);
+    if (String(answer || "").trim()) parts.push(String(answer).trim());
+    const m = window.SC && window.SC.matcher;
+    if (m && m.matchFree) return m.matchFree(input, parts).correct;
+    const norm = (s) => String(s).trim().toLowerCase();
+    const got = norm(input);
+    return parts.some((p) => norm(p) === got);
+  }
+  // Alle Eingabefelder mit hinterlegter Lösung im aktuellen Blatt.
+  function fillFields() {
+    return Array.prototype.slice.call(root.querySelectorAll(".sheet-fill[data-answer]"));
+  }
+  function setFillScore(text) {
+    const out = root.querySelector(".sheet-score");
+    if (out) out.textContent = text || "";
+  }
+  function checkFillSheet() {
+    const fields = fillFields();
+    if (!fields.length) return;
+    let ok = 0, filled = 0;
+    fields.forEach((el) => {
+      el.classList.remove("is-correct", "is-wrong");
+      const val = String(el.value || "").trim();
+      if (!val) return;
+      filled += 1;
+      if (fillAnswerOk(val, el.dataset.answer)) { el.classList.add("is-correct"); ok += 1; }
+      else el.classList.add("is-wrong");
+    });
+    setFillScore(t("sheet.fillResult", { ok: ok, total: fields.length }));
+  }
+  function revealFillSheet() {
+    fillFields().forEach((el) => {
+      el.value = el.dataset.answer || "";
+      el.classList.remove("is-wrong");
+      el.classList.add("is-correct");
+    });
+    const fields = fillFields();
+    setFillScore(t("sheet.fillResult", { ok: fields.length, total: fields.length }));
+  }
+  function resetFillSheet() {
+    fillFields().forEach((el) => { el.value = ""; el.classList.remove("is-correct", "is-wrong"); });
+    setFillScore("");
+  }
 
   // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
   // Beschriftung & Klasse kurz tauschen und danach zurücksetzen.
@@ -7190,8 +7328,12 @@
     "teacher-csv": (el) => { exportRosterCSV(); },
     "teacher-print": (el) => { printTeacher(); },
     "open-printsheet": (el) => { openPrintSheet(); },
-    "printsheet-print": (el) => { printSheet(); },
+    "printsheet-print": (el) => { printSheet(el.dataset.scope); },
     "sheet-mode": (el) => { { state.sheetMode = el.dataset.mode; render(); } },
+    "sheet-length": (el) => { { state.sheetLength = el.dataset.len; render(); } },
+    "sheet-check": () => { checkFillSheet(); },
+    "sheet-reveal": () => { revealFillSheet(); },
+    "sheet-reset": () => { resetFillSheet(); },
     "toggle-section": (el) => { { const ty = el.dataset.type; const skip = state.sheetSkip || (state.sheetSkip = []); const i = skip.indexOf(ty); if (i === -1) skip.push(ty); else skip.splice(i, 1); render(); } },
     "open-target-picker": (el) => { { state.targetPicker = el.dataset.ctx; render(); } },
     "close-target-picker": (el) => { { state.targetPicker = null; render(); } },

@@ -193,6 +193,23 @@ test("renderPrintSheet: Übungsmodus verdeckt Antworten und hängt Lösungsschl�
   assert.ok(body.includes("sheet-write-line") || body.includes("sheet-blank-inline"), "Schreiblinien/Lücken fehlen");
 });
 
+test("renderPrintSheet: Lösungsschlüssel ist ein eigenes, getrennt druckbares Blatt", () => {
+  const html = ui.renderPrintSheet(withSections({ exercise: true }));
+  // Eigenes <article> (sheet--key), in eigenem Druck-Dokument-Container.
+  assert.ok(html.includes("sheet--key"), "Lösungsschlüssel als eigenes Blatt fehlt");
+  assert.ok(html.includes("sheet-doc--key") && html.includes("sheet-doc--exercise"), "getrennte Druck-Dokumente fehlen");
+  // Eigene Kopfzeile mit Schlüssel-Tag.
+  assert.ok(html.includes("sheet-tag--key"), "Schlüssel-Tag in der Kopfzeile fehlt");
+  // Getrennte Druck-Knöpfe: Übungsblatt vs. Lösungsschlüssel.
+  assert.ok(html.includes('data-scope="exercise"') && html.includes('data-scope="key"'), "getrennte Druck-Knöpfe fehlen");
+  assert.ok(html.includes(i18n.t("sheet.printExercise")) && html.includes(i18n.t("sheet.printKey")), "Druck-Knopf-Labels fehlen");
+  // Der Schlüssel steht NACH dem Übungsblatt (Antworten erst im zweiten Dokument).
+  assert.ok(html.indexOf("sheet-doc--key") > html.indexOf("sheet-doc--exercise"), "Schlüssel-Dokument muss nach dem Übungsblatt kommen");
+  // Lösungsblatt (Default) hat keinen Schlüssel und keine Scope-Knöpfe.
+  const full = ui.renderPrintSheet(withSections());
+  assert.ok(!full.includes("sheet--key") && !full.includes('data-scope="key"'), "Lösungsblatt braucht kein getrenntes Schlüssel-Blatt");
+});
+
 test("renderPrintSheet: Lösungsschlüssel nummeriert Zuordnung nicht doppelt", () => {
   const html = ui.renderPrintSheet(withSections({ exercise: true }));
   const key = html.slice(html.indexOf("sheet-answerkey"));
@@ -213,4 +230,86 @@ test("renderPrintSheet: leere sections rendern ohne Abschnitte/Schlüssel", () =
   assert.ok(!html.includes('class="sheet-section'), "keine Übungsabschnitte erwartet");
   assert.ok(!html.includes("sheet-answerkey"), "ohne Abschnitte kein Lösungsschlüssel");
   assert.ok(html.includes("Wortschatz"), "Wortschatz bleibt erhalten");
+});
+
+test("renderPrintSheet: Längen-Wähler rendert Standard/Groß/XXL und markiert die aktive", () => {
+  const html = ui.renderPrintSheet(baseVM({ sheetLength: "xxl" }));
+  assert.ok(html.includes('data-action="sheet-length"'), "Längen-Wähler-Action fehlt");
+  ["standard", "gross", "xxl"].forEach((v) => assert.ok(html.includes(`data-len="${v}"`), "Längenstufe fehlt: " + v));
+  assert.ok(html.includes(i18n.t("sheet.len_xxl")), "XXL-Label fehlt");
+  // Aktive Stufe (xxl) ist gedrückt, eine andere nicht.
+  assert.ok(/data-len="xxl"[^>]*aria-pressed="true"/.test(html), "XXL muss aktiv sein");
+  assert.ok(/data-len="standard"[^>]*aria-pressed="false"/.test(html), "Standard darf nicht aktiv sein");
+});
+
+// ---------- Fill-Modus: am Handy ausfüllbar ----------
+test("renderPrintSheet: Modus-Umschalter bietet die Handy-Variante an", () => {
+  const html = ui.renderPrintSheet(baseVM());
+  assert.ok(html.includes('data-mode="fill"'), "Fill-Modus-Knopf fehlt");
+  assert.ok(html.includes(i18n.t("sheet.modeFill")), "Fill-Modus-Label fehlt");
+});
+
+test("renderPrintSheet: Fill-Modus rendert Eingabefelder mit hinterlegter Lösung", () => {
+  const html = ui.renderPrintSheet(withSections({ fill: true }));
+  assert.ok(html.includes("sheet-fill"), "Eingabefelder fehlen");
+  // Lösungen stecken zur Selbstkontrolle in data-answer:
+  assert.ok(html.includes('data-answer="hablo"'), "Konjug-Lösung nicht im Feld hinterlegt");
+  assert.ok(html.includes('data-answer="mil doscientos cincuenta"'), "Zahlwort nicht im Feld hinterlegt");
+  // Übersetzung wird zum Feld (nicht zur Schreiblinie):
+  assert.ok(html.includes('data-answer="¿Dónde está el taxi?"'), "Übersetzungslösung nicht im Feld hinterlegt");
+  // Freies Schreiben + Notizen als Textfeld statt Linien-Box:
+  assert.ok(html.includes("sheet-fill-area"), "Schreib-Textfeld fehlt");
+  assert.ok(!html.includes("sheet-write-line"), "keine Druck-Schreiblinien im Fill-Modus");
+  assert.ok(!html.includes("sheet-notes-lines"), "Notizen werden zum Textfeld");
+});
+
+test("renderPrintSheet: Fill-Modus zeigt Prüf-Steuerung statt Drucken, keinen Lösungsschlüssel", () => {
+  const html = ui.renderPrintSheet(withSections({ fill: true }));
+  assert.ok(html.includes('data-action="sheet-check"'), "Prüfen-Knopf fehlt");
+  assert.ok(html.includes('data-action="sheet-reveal"'), "Lösungen-zeigen-Knopf fehlt");
+  assert.ok(html.includes('data-action="sheet-reset"'), "Zurücksetzen-Knopf fehlt");
+  assert.ok(html.includes("sheet-score"), "Ergebnis-Anzeige fehlt");
+  assert.ok(html.includes("sheet-fillbar"), "Fill-Hinweis fehlt");
+  assert.ok(!html.includes('data-action="printsheet-print"'), "kein Drucken-Knopf im Fill-Modus");
+  assert.ok(!html.includes("sheet-answerkey"), "Fill-Modus braucht keinen separaten Schlüssel");
+});
+
+test("renderPrintSheet: Fill-Modus hält die Vokabel-Sektion als Referenz sichtbar", () => {
+  const html = ui.renderPrintSheet(baseVM({ fill: true }));
+  assert.ok(html.includes("¿Dónde está el taxi?"), "Vokabeln bleiben im Fill-Modus sichtbar");
+  assert.ok(!html.includes("sheet-es--blank"), "keine verdeckten Vokabel-Linien im Fill-Modus");
+});
+
+// ---------- Neue Übungstypen: Gegenteile + Satz ordnen ----------
+test("renderPrintSheet: Gegenteile (opposites) – Lösung/Übung/Lösungsschlüssel/Fill", () => {
+  const oppVM = (over) => baseVM(Object.assign({
+    sections: [{ type: "opposites", items: [{ word: "grande", gloss: "groß", answer: "pequeño" }] }],
+  }, over || {}));
+  const full = ui.renderPrintSheet(oppVM());
+  assert.ok(full.includes("sheet-section--opposites"), "Gegenteil-Abschnitt fehlt");
+  assert.ok(full.includes(i18n.t("sheet.instrOpposites")), "Gegenteil-Anweisung fehlt");
+  assert.ok(full.includes("grande") && full.includes("pequeño"), "Wort + Lösung im Lösungsblatt");
+  // Übung: Lösung verdeckt, aber im Schlüssel vorhanden.
+  const ex = ui.renderPrintSheet(oppVM({ exercise: true }));
+  const key = ex.slice(ex.indexOf("sheet-answerkey"));
+  assert.ok(!ex.slice(0, ex.indexOf("sheet-answerkey")).includes("pequeño"), "Gegenteil-Lösung darf im Übungsteil fehlen");
+  assert.ok(key.includes("grande → pequeño"), "Gegenteil-Lösung im Schlüssel");
+  // Fill: Eingabefeld mit hinterlegter Lösung.
+  assert.ok(ui.renderPrintSheet(oppVM({ fill: true })).includes('data-answer="pequeño"'), "Gegenteil-Feld trägt Lösung");
+});
+
+test("renderPrintSheet: Satz ordnen (ordenar) – Chips + Lösung/Übung/Fill", () => {
+  const ordVM = (over) => baseVM(Object.assign({
+    sections: [{ type: "ordenar", items: [{ answer: "Está enfrente de la iglesia", scrambled: ["la", "Está", "iglesia", "enfrente", "de"], de: "Es ist gegenüber der Kirche" }] }],
+  }, over || {}));
+  const full = ui.renderPrintSheet(ordVM());
+  assert.ok(full.includes("sheet-section--ordenar"), "Satz-ordnen-Abschnitt fehlt");
+  assert.ok(full.includes("sheet-scramble"), "Wort-Chips fehlen");
+  assert.ok(full.includes("Está enfrente de la iglesia"), "Lösungssatz im Lösungsblatt");
+  // Übung: Schreiblinie statt Lösung; Schlüssel trägt den Satz.
+  const ex = ui.renderPrintSheet(ordVM({ exercise: true }));
+  assert.ok(ex.includes("sheet-write-line"), "Schreiblinie im Übungsmodus");
+  assert.ok(ex.slice(ex.indexOf("sheet-answerkey")).includes("Está enfrente de la iglesia"), "Satz im Schlüssel");
+  // Fill: Eingabefeld mit hinterlegtem Satz.
+  assert.ok(ui.renderPrintSheet(ordVM({ fill: true })).includes('data-answer="Está enfrente de la iglesia"'), "Satz-Feld trägt Lösung");
 });
