@@ -14,6 +14,7 @@
   const frasesGame = window.SC.frasesGame; // Feature-Modul (Frases flexibles, Satzbaukasten), eager geladen
   const conjugDrill = window.SC.conjugDrill; // Feature-Modul (Conjugador-Drill), eager geladen
   const tiempos = window.SC.tiempos; // Feature-Modul (Tiempos-Erklärseite), eager geladen
+  const regateo = window.SC.regateo; // Feature-Modul (Regatear-Erklärseite), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -792,8 +793,8 @@
   }
 
   // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
-  // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
-  // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
+  // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zum
+  // Regatear-Feature (SC.regateo) und logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
   // Aktives Geschichts-Modul nach Region (state.histRegion: "sur" | "centro").
   // So teilen sich Süd- und Mittelamerika dieselbe Render-/Share-Mechanik.
   function histMod() { return state.histRegion === "centro" ? historiaCentro : historia; }
@@ -866,40 +867,14 @@
     return h >= 6 && h < 17 ? "am" : "pm";
   }
 
-  // Regatear: Verhandeln/Feilschen – reine Anzeige-Seite (Taktik, Sätze,
-  // Einheiten, Rollenspiele). Reicht die Daten 1:1 durch, hängt nur an den
-  // Rollenspielen das Kurz-Label der Schwierigkeitsstufe an.
-  function regatearVM() {
-    if (!regatear) return { intro: "", tips: [], glossary: [], phrases: [], units: [], regional: [], roleplays: [] };
-    const roleplays = (regatear.ROLEPLAYS || []).map((r) => {
-      const lvl = levelById(r.level);
-      return Object.assign({}, r, { lvlShort: lvl ? lvl.short : "" });
-    });
-    // Pass-Through-Ansicht: alle …En-Felder (Tipps, Glossar, Sätze, Regionales,
-    // Rollenspiele) per localizeDeep für die aktive Sprache überlagern. INTRO ist
-    // eine eigenständige Konstante (INTRO_EN) und wird separat aufgelöst.
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && regatear.INTRO_EN) ? regatear.INTRO_EN : regatear.INTRO,
-      tips: loc(regatear.TIPS || []),
-      glossary: loc(regatear.GLOSSARY || []),
-      phrases: loc(regatear.PHRASES || []),
-      units: loc(regatear.UNITS || []),
-      regional: loc(regatear.REGIONAL || []),
-      // {name} auch hier auflösen – symmetrisch zu roleplayVM, falls künftig ein
-      // Regatear-Rollenspiel den Platzhalter nutzt (sonst stünde „{name}" im Text).
-      roleplays: loc(roleplays).map((r) => Object.assign({}, r, {
-        dialogue: (r.dialogue || []).map((d) => Object.assign({}, d, { es: withName(d.es), de: withName(d.de) })),
-        usefulPhrases: (r.usefulPhrases || []).map(withName),
-      })),
-    };
-  }
+  // Regatear: VM und Render der Verhandeln/Feilschen-Erklärseite wohnen jetzt im
+  // Feature-Modul SC.regateo (features/regateo.js). Der Opener bleibt hier
+  // (Entdecken-Kachel + Shortcut-Map); die Spotlight-Vorschau liest regateo.vm().
 
   // Logística de viaje: praktische Reise-Logistik (SIM, Geld, Gepäck, Tracker,
   // Handgepäck-Notfallset) – reine Anzeige-Seite. Reicht die Daten 1:1 durch und
-  // überlagert per localizeDeep alle …En-Felder für die aktive Sprache (wie
-  // regatearVM). INTRO ist eine eigene Konstante und wird separat aufgelöst.
+  // überlagert per localizeDeep alle …En-Felder für die aktive Sprache (wie das
+  // Regatear-Feature SC.regateo). INTRO ist eine eigene Konstante und wird separat aufgelöst.
   function logisticaVM() {
     if (!logistica) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
     const en = i18n && i18n.getLang() === "en";
@@ -2633,7 +2608,7 @@
       "historia": () => ui.renderHistoria(historiaVM()),
       "knigge": () => ui.renderKnigge(kniggeVM()),
       "bebidas": () => ui.renderBebidas(bebidasVM()),
-      "regatear": () => ui.renderRegatear(regatearVM()),
+      "regatear": () => regateo.screen(),
       "logistica": () => ui.renderLogistica(logisticaVM()),
       "salud": () => ui.renderSalud(saludVM()),
       "flirt": () => ui.renderFlirt(flirtVM()),
@@ -6410,7 +6385,7 @@
       case "dialogos":
         return cut(dialogosSetupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
       case "regatear":
-        return cut((regatearVM().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
+        return cut((regateo.vm().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
       case "precios":
         return cut(precios.setupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
       case "cuerpo":
@@ -7230,7 +7205,7 @@
   const featureCtx = {
     state, setState, render, dismissBadgeToast,
     data, speech, numbers, yesto, frases, conjug, matcher, i18n, badges,
-    categoryById, cardById, nat, natk, isFavorite, levelById, shuffle, buzz, syncBadges,
+    categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
     // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
@@ -7246,6 +7221,7 @@
   if (frasesGame) frasesGame.init(featureCtx);
   if (conjugDrill) conjugDrill.init(featureCtx);
   if (tiempos) tiempos.init(featureCtx);
+  if (regateo) regateo.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

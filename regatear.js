@@ -1,7 +1,7 @@
 /*
  * regatear.js  (SC.regatear) – Modul "Regatear: gut verhandeln & feilschen".
  * REINE DATEN, keine Logik (wie knigge.js / frases.js). Lädt vor app.js und
- * hängt sich an window.SC. Wird von ui.renderRegatear gerendert.
+ * hängt sich an window.SC. Wird vom Feature-Modul SC.regateo (features/regateo.js) gerendert.
  *
  * Idee: auf Märkten in Lateinamerika ist Feilschen (regatear) normal und
  * erwünscht – aber es folgt Spielregeln. Das Modul erklärt erst die Taktik

@@ -107,7 +107,14 @@
       </div>`;
   }
 
+  // Teilen-Knopf für die Entdecken-Tipp-Kategorien (Knigge/Regatear/Logística/
+  // Salud/Fotos/Bailar): erzeugt ein Sharepic des Themas mit seinen DOs/Don'ts
+  // „zum Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
+  function tipsShareBtn(cat, i) {
+    return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
+  }
+
   window.SC.view = {
-    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect,
+    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn,
   };
 })();

@@ -14,7 +14,7 @@
   // Geteilte, zustandsfreie Render-Primitive aus view-helpers.js (SC.view) –
   // dieselbe Quelle nutzen auch die Feature-Module (kein Duplikat). view-helpers.js
   // läuft vor ui.js (index.html / Build / _dom-stub-Reihenfolge).
-  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect } = window.SC.view;
+  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn } = window.SC.view;
 
   // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
   // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
@@ -2692,12 +2692,9 @@
       </section>`;
   }
 
-  // Teilen-Knopf für die Entdecken-Tipp-Kategorien (Knigge/Regatear/Logística/
-  // Salud): erzeugt ein Sharepic des Themas mit seinen DOs/Don'ts „zum
-  // Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
-  function tipsShareBtn(cat, i) {
-    return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
-  }
+  // Der Tipp-Teilen-Knopf tipsShareBtn(cat, i) wohnt jetzt in view-helpers.js
+  // (SC.view) – geteilt von Knigge/Logística/Salud/Fotos/Bailar (hier) und dem
+  // Regatear-Feature-Modul. Oben aus SC.view destrukturiert.
 
   // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
   // Allgemeine DOs & Don'ts (Hostel, Bus, Gruppen, Kultur) plus landesspezifische
@@ -2915,143 +2912,10 @@
       </section>`;
   }
 
-  // ---------- REGATEAR (gut verhandeln & feilschen) ----------
-  // Eine Seite, drei Teile: Erklärung/Taktik (aufklappbar), wichtige Sätze nach
-  // Phase, plus Einheiten-Wortschatz, und zum Schluss Rollenspiele zum Üben.
-  function renderRegatear(vm) {
-    // Erklärung: Taktik-Blöcke (DOs/Don'ts) wie im Knigge, aufklappbar.
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
-        .join("");
-    const tipBlock = (t, i) => `
-      <details class="knigge-topic">
-        <summary class="knigge-topic__head">
-          <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
-          <span class="knigge-topic__title">${esc(t.title)}</span>
-          <span class="knigge-topic__chev" aria-hidden="true">▾</span>
-        </summary>
-        <div class="knigge-topic__body">
-          ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
-          ${t.dos && t.dos.length ? `<ul class="knigge-list">${liList(t.dos, "knigge-do", "✅")}</ul>` : ""}
-          ${t.donts && t.donts.length ? `<ul class="knigge-list">${liList(t.donts, "knigge-dont", "🚫")}</ul>` : ""}
-          ${tipsShareBtn("regatear", i)}
-        </div>
-      </details>`;
-    const tips = (vm.tips || []).map(tipBlock).join("");
+  // REGATEAR (gut verhandeln & feilschen) ist nach features/regateo.js (SC.regateo)
+  // gewandert – VM und Render leben dort zusammen; der Opener (openRegatear) bleibt
+  // im Controller. Der Tipp-Teilen-Knopf tipsShareBtn() kommt aus SC.view.
 
-    // Glossar: kompakte zweispaltige Wortliste (es · de).
-    const glossary = (vm.glossary || []).map((g) => `
-      <li class="rg-gloss">
-        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
-        <span class="rg-gloss__de">${esc(g.de)}</span>
-      </li>`).join("");
-
-    // Wichtige Sätze: pro Phase eine kleine zweispaltige Liste (es / de).
-    const phraseGroup = (g) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
-        <ul class="rg-phrases">
-          ${g.items.map((p) => `
-            <li class="rg-phrase">
-              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-              <span class="rg-phrase__de">${esc(p.de)}</span>
-            </li>`).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
-
-    // Einheiten: kompakte Tabelle Spanisch · Deutsch · Beispiel.
-    const units = (vm.units || []).map((u) => `
-      <li class="rg-unit">
-        <span class="rg-unit__es" lang="es">${esc(u.es)}</span>
-        <span class="rg-unit__de">${esc(u.de)}</span>
-        <span class="rg-unit__ej" lang="es">${esc(u.ejemplo)}</span>
-      </li>`).join("");
-
-    // Regionale Unterschiede: Flagge + Land + kurze Notiz.
-    const regional = (vm.regional || []).map((r) => `
-      <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${esc(r.flag)}</span>
-        <span class="rg-region__body">
-          <span class="rg-region__country">${esc(r.country)}</span>
-          <span class="rg-region__note">${esc(r.note)}</span>
-        </span>
-      </li>`).join("");
-
-    // Rollenspiele: pro Szene ein aufklappbarer Dialog (A/B) + nützliche Sätze.
-    const rpBlock = (r) => {
-      const lines = r.dialogue.map((d) => `
-        <div class="hm-line hm-line--${d.speaker === "A" ? "a" : "b"}">
-          <span class="hm-line__who">${esc(d.speaker)}</span>
-          <span class="hm-line__bubble">
-            <span class="hm-line__es" lang="es">${esc(d.es)}</span>
-            <span class="hm-line__de">${esc(d.de)}</span>
-          </span>
-        </div>`).join("");
-      const useful = r.usefulPhrases && r.usefulPhrases.length
-        ? `<div class="hm-phrases">
-             <span class="hm-phrases__cap">${esc(t("discover.rgUseful"))}</span>
-             <ul class="hm-phrases__list">${r.usefulPhrases.map((p) => `<li lang="es">${esc(p)}</li>`).join("")}</ul>
-           </div>`
-        : "";
-      return `
-        <details class="knigge-topic rg-rp">
-          <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">🎭</span>
-            <span class="knigge-topic__title">${esc(r.title)}</span>
-            ${r.lvlShort ? `<span class="hm-rp__lvl">${esc(r.lvlShort)}</span>` : ""}
-            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
-          </summary>
-          <div class="knigge-topic__body">
-            <p class="hm-rphead__sit">${esc(r.situationDe)}</p>
-            <div class="hm-roles">
-              <div class="hm-role hm-role--a">
-                <span class="hm-role__tag">A · ${esc(r.roleA)}</span>
-                <span class="hm-role__goal">${esc(r.goalA)}</span>
-              </div>
-              <div class="hm-role hm-role--b">
-                <span class="hm-role__tag">B · ${esc(r.roleB)}</span>
-                <span class="hm-role__goal">${esc(r.goalB)}</span>
-              </div>
-            </div>
-            <div class="hm-dialogue">${lines}</div>
-            ${useful}
-          </div>
-        </details>`;
-    };
-    const roleplays = (vm.roleplays || []).map(rpBlock).join("");
-
-    return `
-      <section class="screen">
-        <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">🤝 Regatear</div>
-          <span></span>
-        </div>
-        <p class="pageintro">${esc(vm.intro)}</p>
-        ${moduleShareBtn("regatear")}
-
-        <h2 class="rg-head">${esc(t("discover.rgTactics"))}</h2>
-        ${tips}
-
-        <h2 class="rg-head">${esc(t("discover.rgWords"))}</h2>
-        <ul class="rg-glosslist">${glossary}</ul>
-
-        <h2 class="rg-head">${esc(t("discover.rgPhrases"))}</h2>
-        ${phrases}
-
-        <h2 class="rg-head">${esc(t("discover.rgUnits"))}</h2>
-        <ul class="rg-units">${units}</ul>
-
-        <h2 class="rg-head">${esc(t("discover.rgRegions"))}</h2>
-        <ul class="rg-regions">${regional}</ul>
-
-        <h2 class="rg-head">${esc(t("discover.rgRoleplays"))}</h2>
-        <p class="hm-intro">${esc(t("discover.rgRoleplayHint"))}</p>
-        ${roleplays}
-      </section>`;
-  }
 
   // ---------- INFO-MODUL-SHEET (Logística, Salud …) ----------
   // Gemeinsame Nachschlage-Seite im Regatear-Stil für Module mit dem Schema
@@ -5149,7 +5013,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderCuerpo, renderConjugacion,
