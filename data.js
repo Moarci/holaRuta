@@ -3548,7 +3548,8 @@
 
   // ===================== TIEMPOS (Erklärseite Zeiten) =====================
   // Inhalte der Grammatik-Erklärseite (Entdecken → Tiempos). REINE DATEN –
-  // gerendert von ui.renderTiempos. Die passenden Übungskarten liegen in der
+  // gerendert vom Feature-Modul SC.tiempos (features/tiempos.js). Die passenden
+  // Übungskarten liegen in der
   // Kategorie "tiempos" (Zeiten); die Seite verlinkt per "Jetzt üben" dorthin.
   // Roter Faden: EIN Verb (tomar) wandert durch alle Zeiten, damit man die
   // Endungen vergleichen kann. Alle Beispiele sind reisebezogen.

@@ -13,6 +13,7 @@
   const yestoGame = window.SC.yestoGame; // Feature-Modul (¿Y esto?, Bild-Vokabel-Spiel), eager geladen
   const frasesGame = window.SC.frasesGame; // Feature-Modul (Frases flexibles, Satzbaukasten), eager geladen
   const conjugDrill = window.SC.conjugDrill; // Feature-Modul (Conjugador-Drill), eager geladen
+  const tiempos = window.SC.tiempos; // Feature-Modul (Tiempos-Erklärseite), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -1807,16 +1808,10 @@
   }
 
   // ----- Tiempos: Erklärseite Zeiten -----
-  // Statische Zeitformen-Erklärung (Inhalte: data.TENSES). Wie bei Conjugación
-  // springt der "Jetzt üben"-Button per normaler open-category-Aktion in die
+  // VM und Render der Zeitformen-Erklärseite wohnen jetzt in features/tiempos.js
+  // (SC.tiempos). Der Opener bleibt hier (Entdecken-Kachel + Shortcut-Map);
+  // der "Jetzt üben"-Button springt per normaler open-category-Aktion in die
   // Übungskarten der Kategorie "tiempos".
-  function tiemposVM() {
-    return {
-      guide: loc(data.TENSES),
-      cardCount: data.CARDS.filter((c) => c.cat === "tiempos").length,
-    };
-  }
-
   function openTiempos() {
     dismissBadgeToast();
     setState({ screen: "tiempos" });
@@ -2664,7 +2659,7 @@
       "quizDone": () => definiciones.doneScreen(),
       "cuerpo": () => ui.renderCuerpo(cuerpoVM()),
       "conjugacion": () => ui.renderConjugacion(conjugacionVM()),
-      "tiempos": () => ui.renderTiempos(tiemposVM()),
+      "tiempos": () => tiempos.screen(),
       "spickzettel": () => spickzettel.screen(),
       "favorites": () => ui.renderFavorites(favoritesVM()),
       "preciosSetup": () => precios.setupScreen(),
@@ -7250,6 +7245,7 @@
   if (yestoGame) yestoGame.init(featureCtx);
   if (frasesGame) frasesGame.init(featureCtx);
   if (conjugDrill) conjugDrill.init(featureCtx);
+  if (tiempos) tiempos.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

@@ -97,7 +97,17 @@
               aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
   }
 
+  // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der Infoseiten
+  // Länderkunde (renderInfo) und Conjugación (ui.js) sowie Tiempos (Feature-Modul).
+  function sect(icon, title, body, id) {
+    return `
+      <div class="cinfo-sect"${id ? ` id="${esc(id)}"` : ""}>
+        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
+        ${body}
+      </div>`;
+  }
+
   window.SC.view = {
-    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar,
+    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect,
   };
 })();
