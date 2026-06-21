@@ -4684,151 +4684,11 @@
   // zusammen; der Opener (openCuerpo) bleibt im Controller. cornerBtn() aus SC.view.
 
 
-  // ---------- EINKAUFSZETTEL (Lista de compras) ----------
-  // Interaktive Einkaufsliste: Rubrik wählen (Supermercado/Ropa/Farmacia),
-  // Items antippen -> spanisches Wort, Aussprache, Reisetipp + Vorlesen, und
-  // das Item wird abgehakt. Dazu ein kurzes Quiz über dieselbe Rubrik.
-  function renderCompras(vm) {
-    const chips = vm.sections
-      .map((s) => `
-        <button class="sl-chip ${s.active ? "is-active" : ""}" type="button"
-                data-action="compras-section" data-id="${esc(s.id)}"
-                aria-pressed="${s.active ? "true" : "false"}"
-                title="${esc(t("discover.comprasCheckedTitle", { de: s.de, done: s.done, total: s.total }))}">
-          <span class="sl-chip__icon" aria-hidden="true">${esc(s.icon)}</span>
-          <span class="sl-chip__label">${esc(s.label)}</span>
-          ${s.done >= s.total ? `<span class="sl-chip__done" aria-hidden="true">✓</span>` : ""}
-        </button>`)
-      .join("");
+  // EINKAUFSZETTEL (Lista de compras) ist nach features/compras.js (SC.compras)
+  // gewandert – VMs, Render (Liste/Quiz/Done) und alle Handler leben dort zusammen;
+  // app.js delegiert SCREENS, Aktionen, Spotlight-Vorschau und miniDone. cornerBtn()
+  // kommt aus SC.view.
 
-    const items = vm.items
-      .map((it) => {
-        const speak = it.open && vm.speakable
-          ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: t("discover.comprasSpeakWord"),
-              action: "compras-speak", extra: `data-id="${esc(it.id)}"` })
-          : "";
-        // Eine Supermarkt-Frage mit deutschem Label und 🔊 zum Vorlesen.
-        const askLine = (ask) => `
-          <div class="sl-ask__line">
-            <div class="sl-ask__texts">
-              <span class="sl-ask__de">${esc(ask.de)}</span>
-              <span class="sl-ask__es" lang="es">${esc(ask.es)}</span>
-            </div>
-            ${vm.speakable
-              ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: t("discover.comprasSpeakPhrase"),
-                  action: "compras-speak-phrase", extra: `data-say="${esc(ask.es)}"` })
-              : ""}
-          </div>`;
-        const ask = it.ask
-          ? `
-            <div class="sl-ask">
-              <span class="sl-ask__cap">${esc(t("discover.comprasAsk"))}</span>
-              ${askLine(it.ask.have)}
-              ${askLine(it.ask.find)}
-            </div>`
-          : "";
-        const detail = it.open
-          ? `
-            <div class="sl-item__detail" role="region">
-              <div class="sl-item__estop">
-                <p class="sl-item__es" lang="es">${esc(it.es)}</p>
-                ${speak}
-              </div>
-              ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">🗣️</span> ${esc(it.tip)}</p>` : ""}
-              ${it.note ? `<p class="sl-item__note">${esc(it.note)}</p>` : ""}
-              ${ask}
-            </div>`
-          : "";
-        return `
-          <li class="sl-item ${it.open ? "is-open" : ""} ${it.seen ? "is-checked" : ""}">
-            <div class="sl-item__head">
-              <button class="sl-item__check" type="button" data-action="compras-toggle" data-id="${esc(it.id)}"
-                      aria-pressed="${it.seen ? "true" : "false"}"
-                      aria-label="${it.seen ? esc(t("discover.comprasUncheck")) : esc(t("discover.comprasCheckOff"))}: ${esc(it.de)}">
-                <span class="sl-item__box" aria-hidden="true">✓</span>
-              </button>
-              <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
-                      aria-expanded="${it.open ? "true" : "false"}">
-                <span class="sl-item__de">${esc(it.de)}</span>
-                <span class="sl-item__chev" aria-hidden="true">›</span>
-              </button>
-            </div>
-            ${detail}
-          </li>`;
-      })
-      .join("");
-
-    const pct = vm.total > 0 ? Math.round((vm.doneCount / vm.total) * 100) : 0;
-    const done = vm.total > 0 && vm.doneCount >= vm.total;
-    const progress = `
-      <div class="bp-progress">
-        <div class="bp-progress__bar"><div class="bp-progress__fill sl-fill" style="width:${pct}%"></div></div>
-        <span class="bp-progress__label">${done ? t("discover.comprasComplete", { total: vm.total }) : t("discover.comprasCheckedCount", { n: vm.doneCount, total: vm.total })}</span>
-      </div>`;
-
-    const quizBtn = vm.total >= 2
-      ? `<button class="cta sl-quizbtn" data-action="open-compras-quiz">${t("discover.comprasQuiz", { section: esc(vm.section.label) })}</button>`
-      : "";
-
-    return `
-      <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
-        ${hmTopbar("🛒 Lista de compras", "home")}
-        <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
-        ${moduleShareBtn("compras")}
-        <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>
-        ${progress}
-        <ul class="sl-list">${items}</ul>
-        ${quizBtn}
-      </section>`;
-  }
-
-  // Quiz: „Du brauchst X“ (Deutsch) -> richtiges spanisches Wort wählen.
-  // Reuse der Definiciones-Optik (.quiz-def / .quiz-opt / .quiz-feedback).
-  function renderComprasQuiz(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
-    const options = vm.options
-      .map((o, i) => {
-        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
-        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
-        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
-          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
-        return `
-          <button class="${cls}" type="button" data-action="compras-quiz-answer" data-idx="${i}"${dis}>
-            <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
-            </span>
-            ${mark}
-          </button>`;
-      })
-      .join("");
-
-    const feedback = vm.answered
-      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
-           ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
-             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
-                <span class="quiz-feedback__sol">${t("discover.comprasSolution", { es: esc(vm.solutionEs) })}</span>`}
-         </div>
-         <button class="cta" data-action="compras-quiz-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
-      : "";
-
-    return `
-      <section class="screen study">
-        ${hmTopbar(`${esc(vm.sectionIcon)} ${esc(vm.sectionLabel)}`, "compras-back-list")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.quizProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.quizQuestion", { pos: vm.position + 1, total: vm.total }))}</div>
-        <div class="quiz-def">
-          <span class="quiz-def__cap">${esc(t("discover.comprasNeed"))}</span>
-          <p class="quiz-def__text">${esc(vm.prompt)}</p>
-        </div>
-        <div class="quiz-opts">${options}</div>
-        ${feedback}
-      </section>`;
-  }
-
-  function renderComprasQuizDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
 
   window.SC = window.SC || {};
   // Freunde & Tages-Rangliste (opt-in, BACKEND.md §16). Rein darstellend – die
@@ -4903,7 +4763,6 @@
                    renderConjugacion,
                    renderFavorites,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
-                   renderCompras, renderComprasQuiz, renderComprasQuizDone,
                    placementCard, assessmentCard,
                    ONBOARD_SLIDE_COUNT: ONBOARD_SLIDES.length };
 })();

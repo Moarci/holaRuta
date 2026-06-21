@@ -16,6 +16,7 @@
   const tiempos = window.SC.tiempos; // Feature-Modul (Tiempos-Erklärseite), eager geladen
   const regateo = window.SC.regateo; // Feature-Modul (Regatear-Erklärseite), eager geladen
   const cuerpo = window.SC.cuerpo; // Feature-Modul (El Cuerpo, interaktive 3D-Körperkarte), eager geladen
+  const compras = window.SC.compras; // Feature-Modul (Lista de compras, Einkaufsliste + Quiz), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -2039,209 +2040,12 @@
   }
 
   // ----- Einkaufszettel (interaktive Einkaufsliste) -----
-  const shoppingSections = () => data.SHOPPING || [];
-  const shoppingSectionById = (id) => shoppingSections().find((s) => s.id === id) || null;
-  function shoppingItemById(id) {
-    for (const s of shoppingSections()) {
-      const it = s.items.find((i) => i.id === id);
-      if (it) return it;
-    }
-    return null;
-  }
-  // Wie viele Items einer Rubrik sind schon abgehakt?
-  function shoppingSectionDone(sec) {
-    const seen = gamestats.shoppingSeen || {};
-    return sec.items.reduce((n, it) => n + (seen[it.id] ? 1 : 0), 0);
-  }
+  // Die ganze Lista de compras (Datenhelfer, VMs, Render und alle Handler für
+  // Liste, Quiz und Done) wohnt jetzt im Feature-Modul SC.compras
+  // (features/compras.js). State (state.compras/state.comprasQuiz) bleibt
+  // controller-eigen; app.js delegiert SCREENS, Aktionen, Spotlight-Vorschau,
+  // miniDone-Inhalt und Deep-Link ans Modul.
 
-  // Führenden Artikel (el/la/los/las) abtrennen – für natürlichere Fragen
-  // wie «¿Tienen agua?» statt «¿Tienen el agua?».
-  function shoppingBareNoun(es) {
-    return String(es || "").replace(/^(el|la|los|las)\s+/i, "");
-  }
-
-  // Zwei gebrauchsfertige Supermarkt-Fragen pro Item:
-  // 1) ob sie es haben, 2) wo man es findet. «¿Dónde puedo encontrar …?»
-  // funktioniert für Ein- und Mehrzahl gleich (keine está/están-Falle).
-  function shoppingAskPhrases(item) {
-    return {
-      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: t("common.askHave") },
-      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: t("common.askFind") },
-    };
-  }
-
-  function comprasVM() {
-    const curId = state.compras.section;
-    const sec = shoppingSectionById(curId) || shoppingSections()[0];
-    const seen = gamestats.shoppingSeen || {};
-    const sections = shoppingSections().map((s) => ({
-      id: s.id, icon: s.icon, label: s.label, de: nat(s),
-      active: s.id === sec.id, total: s.items.length, done: shoppingSectionDone(s),
-    }));
-    const items = sec.items.map((it) => ({
-      id: it.id, de: nat(it), es: it.es, tip: it.tip, note: it.note,
-      ask: shoppingAskPhrases(it),
-      open: state.compras.open === it.id, seen: !!seen[it.id],
-    }));
-    return {
-      sections,
-      section: { id: sec.id, icon: sec.icon, label: sec.label, de: nat(sec), grad: sec.grad },
-      items,
-      doneCount: shoppingSectionDone(sec),
-      total: sec.items.length,
-      speakable: !!(speech && speech.isSupported()),
-    };
-  }
-
-  function openCompras() {
-    dismissBadgeToast();
-    if (!shoppingSectionById(state.compras.section)) {
-      state.compras = { section: (shoppingSections()[0] || {}).id || null, open: null };
-    } else {
-      state.compras = { section: state.compras.section, open: null };
-    }
-    setState({ screen: "compras" });
-  }
-
-  function comprasSection(id) {
-    if (!shoppingSectionById(id)) return;
-    setState({ compras: { section: id, open: null } });
-  }
-
-  // Ein Item antippen: nur auf-/zuklappen und beim Aufklappen das Wort
-  // vorlesen. Das Abhaken ist davon getrennt (eigene Checkbox), damit man
-  // ein Wort nachschlagen kann, ohne es gleich abzuhaken.
-  function comprasPick(id) {
-    const item = shoppingItemById(id);
-    if (!item) return;
-    const opening = state.compras.open !== id;
-    state.compras = { section: state.compras.section, open: opening ? id : null };
-    if (opening) buzz(8);
-    render();
-    if (opening && speech && speech.isSupported()) speech.speak(item.es, settings.speechRate);
-  }
-
-  // Checkbox antippen: Item ab-/aufhaken (echte Einkaufsliste). Der Stand
-  // wird persistent gemerkt und lässt sich jederzeit wieder zurücknehmen.
-  function comprasToggle(id) {
-    if (!id || !shoppingItemById(id)) return;
-    const cur = gamestats.shoppingSeen || {};
-    const seen = Object.assign({}, cur);
-    if (seen[id]) delete seen[id]; else seen[id] = true;
-    gamestats = Object.assign({}, gamestats, { shoppingSeen: seen });
-    store.saveGameStats(gamestats);
-    buzz(seen[id] ? 12 : 8);
-    render();
-  }
-
-  // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
-  function speakCompras(id) {
-    const item = shoppingItemById(id);
-    if (item && speech && speech.isSupported()) speech.speak(item.es, settings.speechRate);
-  }
-
-  // 🔊-Knopf an einer Supermarkt-Frage: den übergebenen Satz vorlesen.
-  function speakComprasPhrase(text) {
-    if (text && speech && speech.isSupported()) speech.speak(text, settings.speechRate);
-  }
-
-  // ----- Einkaufszettel-Quiz (Multiple Choice über die Items einer Rubrik) -----
-  // Optionen bauen: richtiges Wort + bis zu 3 Ablenker aus derselben Rubrik,
-  // dann gemischt. Einmal je Frage berechnet (Re-Render mischt nicht neu).
-  function buildComprasOptions(item, pool) {
-    const distractors = shuffle(pool.filter((d) => d.id !== item.id)).slice(0, 3);
-    return shuffle([item, ...distractors]).map((d) => ({ es: d.es, correct: d.id === item.id }));
-  }
-
-  function openComprasQuiz() {
-    const sec = shoppingSectionById(state.compras.section);
-    if (!sec || sec.items.length < 2) return;
-    const queue = shuffle(sec.items).map((it) => it.id);
-    state.comprasQuiz = {
-      section: sec.id,
-      queue,
-      idx: 0,
-      total: queue.length,
-      options: buildComprasOptions(shoppingItemById(queue[0]), sec.items),
-      selected: null,
-      correct: 0,
-    };
-    setState({ screen: "comprasQuiz" });
-  }
-
-  function comprasQuizVM() {
-    const q = state.comprasQuiz;
-    const sec = shoppingSectionById(q.section);
-    const item = shoppingItemById(q.queue[q.idx]);
-    const answered = q.selected !== null;
-    const correctEs = item.es;
-    const options = q.options.map((o, i) => ({
-      es: o.es,
-      state: !answered ? "idle"
-        : o.correct ? "correct"
-        : i === q.selected ? "wrong"
-        : "dim",
-    }));
-    return {
-      sectionIcon: sec ? sec.icon : "🛒",
-      sectionLabel: sec ? sec.label : "",
-      position: q.idx,
-      total: q.total,
-      prompt: item.de,
-      options,
-      answered,
-      isCorrect: answered && q.options[q.selected].correct,
-      solutionEs: correctEs,
-      isLast: q.idx >= q.total - 1,
-    };
-  }
-
-  // Eine Option wählen. Erste Wahl zählt; spätere Klicks ignorieren.
-  function answerComprasQuiz(i) {
-    const q = state.comprasQuiz;
-    if (!q || q.selected !== null) return;
-    q.selected = i;
-    if (q.options[i] && q.options[i].correct) { q.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextComprasQuiz() {
-    const q = state.comprasQuiz;
-    if (!q || q.selected === null) return;
-    if (q.idx >= q.total - 1) {
-      setState({ screen: "comprasQuizDone" });
-      return;
-    }
-    q.idx += 1;
-    q.selected = null;
-    const sec = shoppingSectionById(q.section);
-    q.options = buildComprasOptions(shoppingItemById(q.queue[q.idx]), sec.items);
-    render();
-  }
-
-  function comprasQuizDoneVM() {
-    const q = state.comprasQuiz;
-    const sec = shoppingSectionById(q.section);
-    return {
-      sectionIcon: sec ? sec.icon : "🛒",
-      sectionLabel: sec ? sec.label : "",
-      correct: q.correct,
-      total: q.total,
-      perfect: q.total > 0 && q.correct === q.total,
-    };
-  }
-
-  // „Nochmal" baut die Runde über dieselbe Rubrik neu.
-  function comprasQuizAgain() {
-    openComprasQuiz();
-  }
-
-  // Zurück vom Quiz zum Zettel (gleiche Rubrik bleibt aktiv).
-  function comprasBackToList() {
-    state.comprasQuiz = null;
-    state.compras = { section: state.compras.section, open: null };
-    setState({ screen: "compras" });
-  }
 
   // Das drehbare 3D-Körpermodell (Bühne, Billboard-Rotation, Ziehgesten, Dreh-
   // Knöpfe) lebt jetzt im Feature-Modul SC.cuerpo (features/cuerpo.js). Es
@@ -2526,9 +2330,9 @@
       "dialogosSetup": () => ui.renderDialogosSetup(dialogosSetupVM()),
       "dialogos": () => ui.renderDialogos(dialogosVM()),
       "dialogosDone": () => ui.renderDialogosDone(),
-      "compras": () => ui.renderCompras(comprasVM()),
-      "comprasQuiz": () => ui.renderComprasQuiz(comprasQuizVM()),
-      "comprasQuizDone": () => ui.renderComprasQuizDone(),
+      "compras": () => compras.listScreen(),
+      "comprasQuiz": () => compras.quizScreen(),
+      "comprasQuizDone": () => compras.doneScreen(),
       "search": () => ui.renderSearch(searchVM()),
       "onboarding": () => ui.renderOnboarding(homeVM()),
     };
@@ -2686,10 +2490,10 @@
       } };
     }
     // comprasQuizDone
-    const vm = comprasQuizDoneVM();
+    const vm = compras.quizDoneVM();
     return { result: miniResult(vm, vm.sectionLabel, "quiz"), opts: {
-      primaryLabel: t("discover.quizAgain"), onPrimary: comprasQuizAgain,
-      secondaryLabel: t("discover.comprasBackList"), onSecondary: comprasBackToList,
+      primaryLabel: t("discover.quizAgain"), onPrimary: compras.quizAgain,
+      secondaryLabel: t("discover.comprasBackList"), onSecondary: compras.backToList,
     } };
   }
   function mountMiniDone(screen) {
@@ -6265,7 +6069,7 @@
       case "cuerpo":
         return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
       case "compras":
-        return cut(comprasVM().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
+        return cut(compras.vm().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
       case "yesto":
         // Repräsentative Motive je Thema (Emoji + „es — Übersetzung“).
         return cut((yesto ? yesto.THEMES : []).map((th) => {
@@ -6517,17 +6321,17 @@
     "dialogos-hint": (el) => { dialogosHint(); },
     "dialogos-again": (el) => { dialogosAgain(); },
     "dialogos-speak": (el) => { speakDialogosNpc(); },
-    "open-compras": (el) => { openCompras(); },
-    "compras-section": (el) => { comprasSection(el.dataset.id); },
-    "compras-pick": (el) => { comprasPick(el.dataset.id); },
-    "compras-toggle": (el) => { comprasToggle(el.dataset.id); },
-    "compras-speak": (el) => { speakCompras(el.dataset.id); },
-    "compras-speak-phrase": (el) => { speakComprasPhrase(el.dataset.say); },
-    "open-compras-quiz": (el) => { openComprasQuiz(); },
-    "compras-quiz-answer": (el) => { answerComprasQuiz(Number(el.dataset.idx)); },
-    "compras-quiz-next": (el) => { nextComprasQuiz(); },
-    "compras-quiz-again": (el) => { comprasQuizAgain(); },
-    "compras-back-list": (el) => { comprasBackToList(); },
+    "open-compras": (el) => { compras.open(); },
+    "compras-section": (el) => { compras.section(el.dataset.id); },
+    "compras-pick": (el) => { compras.pick(el.dataset.id); },
+    "compras-toggle": (el) => { compras.toggle(el.dataset.id); },
+    "compras-speak": (el) => { compras.speak(el.dataset.id); },
+    "compras-speak-phrase": (el) => { compras.speakPhrase(el.dataset.say); },
+    "open-compras-quiz": (el) => { compras.openQuiz(); },
+    "compras-quiz-answer": (el) => { compras.quizAnswer(Number(el.dataset.idx)); },
+    "compras-quiz-next": (el) => { compras.quizNext(); },
+    "compras-quiz-again": (el) => { compras.quizAgain(); },
+    "compras-back-list": (el) => { compras.backToList(); },
     "home": (el) => { goHome(); },
   };
 
@@ -6964,7 +6768,7 @@
       regatear: openRegatear,
       precios: () => precios.open(),
       cuerpo: openCuerpo,
-      compras: openCompras,
+      compras: () => compras.open(),
       yesto: () => yestoGame.open(),
       conjugacion: openConjugacion,
       tiempos: openTiempos,
@@ -7094,6 +6898,7 @@
   if (tiempos) tiempos.init(featureCtx);
   if (regateo) regateo.init(featureCtx);
   if (cuerpo) cuerpo.init(featureCtx);
+  if (compras) compras.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
