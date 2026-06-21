@@ -4002,10 +4002,21 @@
     };
   }
 
+  // Heftlänge: Obergrenzen je Baustein. „gross" ist der Standard-Umfang; „xxl"
+  // schöpft die Quellen weitgehend aus (Gegenteile max. 26, frases max. 49,
+  // Dialoge max. 11). matching/translate/ordenar füllen bei Bedarf aus dem
+  // breiten Reise-Wortschatz auf, sind also praktisch unbegrenzt.
+  const SHEET_LENGTHS = {
+    standard: { matching: 8, opposites: 10, gapfill: 8, translate: 10, ordenar: 6, conjug: 10, numbers: 8, dialogues: 1, writing: 1 },
+    gross: { matching: 14, opposites: 18, gapfill: 14, translate: 18, ordenar: 12, conjug: 18, numbers: 15, dialogues: 2, writing: 3 },
+    xxl: { matching: 20, opposites: 26, gapfill: 24, translate: 28, ordenar: 18, conjug: 28, numbers: 22, dialogues: 3, writing: 3 },
+  };
+
   // Baut die typisierten Übungsabschnitte. Jeder Builder ist gegen leere Quellen
   // abgesichert (kein leerer Abschnitt). Reihenfolge = Heft-Reihenfolge.
-  function buildSheetSections(theme, allCards, rng) {
+  function buildSheetSections(theme, allCards, rng, len) {
     const out = [];
+    const L = len || SHEET_LENGTHS.gross;
     const cards = (allCards || []).filter((c) => c && c.es && nat(c));
 
     // Breiter Reise-Wortschatz als Auffüll-Reserve: hat ein Ziel wenige Karten,
@@ -4030,8 +4041,8 @@
       return w.length >= 4 && w.length <= 9;
     };
 
-    // 1. Zuordnung ES<->DE (bis 14 Paare; bei kleinem Ziel aus der Reserve aufgefüllt).
-    const mPairs = fillFrom(cards, broadPool, 14);
+    // 1. Zuordnung ES<->DE (bei kleinem Ziel aus der Reserve aufgefüllt).
+    const mPairs = fillFrom(cards, broadPool, L.matching);
     if (mPairs.length >= 3) {
       const left = mPairs.map((c, i) => ({ n: i + 1, es: c.es, de: nat(c) }));
       const order = sheetShuffle(left.map((_, i) => i), rng);
@@ -4043,7 +4054,7 @@
     // 1b. Gegenteile (Contrarios) – grundlegender Reise-Wortschatz, global (nicht
     // zielgebunden), darum ein verlässlicher Umfangs-Booster. „grande – pequeño":
     // gefragt ist das spanische Gegenteil, das deutsche Erstwort dient als Hilfe.
-    const oppPick = sheetShuffle((data.CARDS || []).filter((c) => c.cat === "contrarios" && c.es && c.es.indexOf("–") !== -1), rng).slice(0, 18);
+    const oppPick = sheetShuffle((data.CARDS || []).filter((c) => c.cat === "contrarios" && c.es && c.es.indexOf("–") !== -1), rng).slice(0, L.opposites);
     if (oppPick.length >= 3) {
       const oppItems = oppPick.map((c) => {
         const es = c.es.split("–").map((s) => s.trim());
@@ -4057,7 +4068,7 @@
     if (frases && frases.FRASES) {
       const all = frases.FRASES.filter((f) => f.slot && f.slot.es);
       const themed = theme.frasesCat ? all.filter((f) => f.cat === theme.frasesCat) : [];
-      const chosen = [].concat(sheetShuffle(themed, rng), sheetShuffle(all.filter((f) => themed.indexOf(f) === -1), rng)).slice(0, 14);
+      const chosen = [].concat(sheetShuffle(themed, rng), sheetShuffle(all.filter((f) => themed.indexOf(f) === -1), rng)).slice(0, L.gapfill);
       if (chosen.length >= 3) {
         const items = chosen.map((f) => ({ frameEs: f.frameEs, targetDe: natk(f, "targetDe"), answer: f.slot.es }));
         out.push({ type: "gapfill", wordbank: sheetShuffle(items.map((it) => it.answer), rng), items: items });
@@ -4066,7 +4077,7 @@
 
     // 3. Übersetzung DE->ES (bis 18): Kontextsatz wenn vorhanden, sonst die Karte;
     // bei kleinem Ziel aus der Reserve aufgefüllt.
-    const trCards = fillFrom(cards, broadPool, 18);
+    const trCards = fillFrom(cards, broadPool, L.translate);
     if (trCards.length >= 3) {
       out.push({ type: "translate", lines: trCards.map((c) => {
         const ctx = c.context;
@@ -4078,7 +4089,7 @@
 
     // 3b. Satz ordnen (Wortstellung): mehrwortige Phrasen (4–9 Wörter), Ziel zuerst,
     // dann aus der Reserve (bis 12). Wörter durcheinander, Lösung = der ganze Satz.
-    const orderPick = fillFrom(cards.filter(isPhrase), broadPool.filter(isPhrase), 12);
+    const orderPick = fillFrom(cards.filter(isPhrase), broadPool.filter(isPhrase), L.ordenar);
     if (orderPick.length >= 3) {
       out.push({ type: "ordenar", items: orderPick.map((c) => {
         const answer = c.es.trim();
@@ -4089,7 +4100,7 @@
 
     // 4. Konjugation (bis 18).
     if (conjug && data.CONJUGATION) {
-      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 18, rng).map((it) => ({
+      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, L.conjug, rng).map((it) => ({
         verb: natk(it, "verbHint") || it.verb,
         person: natk(it, "personDe") ? natk(it, "personDe") + " (" + it.personEs + ")" : it.personEs,
         answer: it.answer,
@@ -4099,7 +4110,7 @@
 
     // 5. Zahlen & Preise (bis 15).
     if (numbers && numbers.buildRound) {
-      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, 15, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
+      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, L.numbers, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
       if (items.length) out.push({ type: "numbers", items: items });
     }
 
@@ -4112,8 +4123,7 @@
       const first = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
       const picks = [];
       if (first) picks.push(first);
-      const rest = sheetShuffle(list.filter((d) => d !== first), rng);
-      if (rest.length) picks.push(rest[0]);
+      sheetShuffle(list.filter((d) => d !== first), rng).forEach((d) => { if (picks.length < L.dialogues) picks.push(d); });
       picks.forEach((dlg) => {
         if (dlg && dlg.turns) out.push({
           type: "dialogue", title: natk(dlg, "title"),
@@ -4131,8 +4141,8 @@
       if (facts.length) out.push({ type: "culture", title: "", facts: facts });
     }
 
-    // 8. Freies Schreiben (immer; mehrere Schreibanlässe).
-    out.push({ type: "writing", prompts: [t("sheet.writePrompt1"), t("sheet.writePrompt2"), t("sheet.writePrompt3")] });
+    // 8. Freies Schreiben (immer; Anzahl Schreibanlässe je nach Länge).
+    out.push({ type: "writing", prompts: [t("sheet.writePrompt1"), t("sheet.writePrompt2"), t("sheet.writePrompt3")].slice(0, L.writing) });
 
     return out;
   }
@@ -4199,8 +4209,9 @@
     const link = code ? taskShareLink(code) : "";
     // Arbeitsheft: zusätzliche Übungsabschnitte aus dem Gesamtbestand. Deterministisch
     // pro Ziel+Etappe geseedet (Nachdruck = identisch); abwählbare via state.sheetSkip.
-    const rng = sheetRng(sheetHash(tt.value + "|" + stageSel));
-    const builtSections = buildSheetSections(sheetTheme(tt, lvls), allCards, rng);
+    const sheetLength = SHEET_LENGTHS[state.sheetLength] ? state.sheetLength : "gross";
+    const rng = sheetRng(sheetHash(tt.value + "|" + stageSel + "|" + sheetLength));
+    const builtSections = buildSheetSections(sheetTheme(tt, lvls), allCards, rng, SHEET_LENGTHS[sheetLength]);
     const skip = state.sheetSkip || [];
     // Ein Chip je Abschnittstyp (mehrere gleiche Typen – z. B. zwei Dialoge – werden
     // über EINEN Chip an-/abgewählt, kein Doppel-Chip).
@@ -4215,7 +4226,7 @@
       // Wird nur EINE Etappe gedruckt? Dann startet der Abo-Code unten trotzdem
       // den GANZEN Plan – Hinweis darauf im Blatt (siehe sheet.subscribeWholeHint).
       stageScoped: isPretrip && stageSel !== "all",
-      accent: accent, icon: icon, exercise: exercise, fill: fill,
+      accent: accent, icon: icon, exercise: exercise, fill: fill, sheetLength: sheetLength,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages, sections: sections, sectionToggles: sectionToggles,
       code: code, link: link,
@@ -4231,6 +4242,7 @@
     if (!state.sheetTarget) state.sheetTarget = (taskTargets()[0] || {}).value || "";
     if (!state.sheetStage) state.sheetStage = "all";
     if (!state.sheetMode) state.sheetMode = "full";
+    if (!state.sheetLength) state.sheetLength = "gross"; // Heftlänge: standard | gross | xxl
     if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
     setState({ screen: "printsheet" });
   }
@@ -7316,6 +7328,7 @@
     "open-printsheet": (el) => { openPrintSheet(); },
     "printsheet-print": (el) => { printSheet(el.dataset.scope); },
     "sheet-mode": (el) => { { state.sheetMode = el.dataset.mode; render(); } },
+    "sheet-length": (el) => { { state.sheetLength = el.dataset.len; render(); } },
     "sheet-check": () => { checkFillSheet(); },
     "sheet-reveal": () => { revealFillSheet(); },
     "sheet-reset": () => { resetFillSheet(); },

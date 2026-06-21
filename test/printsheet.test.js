@@ -232,6 +232,16 @@ test("renderPrintSheet: leere sections rendern ohne Abschnitte/Schlüssel", () =
   assert.ok(html.includes("Wortschatz"), "Wortschatz bleibt erhalten");
 });
 
+test("renderPrintSheet: Längen-Wähler rendert Standard/Groß/XXL und markiert die aktive", () => {
+  const html = ui.renderPrintSheet(baseVM({ sheetLength: "xxl" }));
+  assert.ok(html.includes('data-action="sheet-length"'), "Längen-Wähler-Action fehlt");
+  ["standard", "gross", "xxl"].forEach((v) => assert.ok(html.includes(`data-len="${v}"`), "Längenstufe fehlt: " + v));
+  assert.ok(html.includes(i18n.t("sheet.len_xxl")), "XXL-Label fehlt");
+  // Aktive Stufe (xxl) ist gedrückt, eine andere nicht.
+  assert.ok(/data-len="xxl"[^>]*aria-pressed="true"/.test(html), "XXL muss aktiv sein");
+  assert.ok(/data-len="standard"[^>]*aria-pressed="false"/.test(html), "Standard darf nicht aktiv sein");
+});
+
 // ---------- Fill-Modus: am Handy ausfüllbar ----------
 test("renderPrintSheet: Modus-Umschalter bietet die Handy-Variante an", () => {
   const html = ui.renderPrintSheet(baseVM());

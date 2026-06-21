@@ -4087,6 +4087,11 @@
         <button type="button" class="sheet-mode${vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="exercise" aria-pressed="${!!vm.exercise}">${esc(t("sheet.modeExercise"))}</button>
         <button type="button" class="sheet-mode${vm.fill ? " is-active" : ""}" data-action="sheet-mode" data-mode="fill" aria-pressed="${!!vm.fill}">${esc(t("sheet.modeFill"))}</button>
       </div>`;
+    // Heftlänge: Standard / Groß / XXL – steuert, wie viele Aufgaben pro Baustein.
+    const lengthPick = `
+      <div class="sheet-modes sheet-lengths" role="group" aria-label="${esc(t("sheet.lengthLabel"))}">
+        ${["standard", "gross", "xxl"].map((v) => `<button type="button" class="sheet-mode${vm.sheetLength === v ? " is-active" : ""}" data-action="sheet-length" data-len="${v}" aria-pressed="${vm.sheetLength === v}">${esc(t("sheet.len_" + v))}</button>`).join("")}
+      </div>`;
     // Bausteinauswahl: alle baubaren Übungsabschnitte als an-/abwählbare Chips
     // (nur Steuerleiste, nicht gedruckt). on = Abschnitt ist im Heft.
     const pickRow = (vm.sectionToggles && vm.sectionToggles.length) ? `
@@ -4111,6 +4116,7 @@
         ${targetField("sheet", { targets: vm.targets, current: vm.sheetTarget })}
         ${stagePick}
         ${modeToggle}
+        ${lengthPick}
         ${actionBtn}
         ${pickRow}
       </div>`;

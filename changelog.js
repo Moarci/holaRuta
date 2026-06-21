@@ -36,12 +36,14 @@
         "📈 Viel mehr Umfang & neue Übungstypen: ein vollwertiges mehrseitiges Heft mit ~125 Aufgaben (14 Zuordnungs-Paare, 18 Gegenteile, 14 Lückentexte, 18 Übersetzungen, 12 Satz-ordnen, 18 Konjugationen, 15 Zahlen/Preise, ZWEI komplette Dialoge, Landeskunde, 3 Schreibanlässe). Karten-Abschnitte füllen sich bei kleinen Zielen aus dem gesamten Reise-Wortschatz auf. Neu: „Gegenteile“ (Contrarios) und „Satz ordnen“ (Wortstellung).",
         "🖨️ Sauber auf A4: Layout und Abstände fürs Ausdrucken optimiert – kompaktere Typografie und bewusste Seitenumbrüche, damit mehr Übungen pro Seite passen und nichts unschön zerreißt.",
         "🗝️ Lösungsschlüssel getrennt: ist jetzt ein eigenes Blatt mit eigener Kopfzeile und lässt sich separat drucken („Übungsblatt drucken“ bzw. „Lösungsschlüssel drucken“) – ideal zum Austeilen ohne Lösungen.",
+        "📏 Heftlänge wählbar: Standard, Groß oder XXL – du bestimmst selbst, wie viele Aufgaben pro Baustein im Heft landen (XXL schöpft die Quellen weitgehend aus).",
       ],
       itemsEn: [
         "📱 New: a „Fill in on phone“ variant – the worksheet becomes interactive. Type your answers straight into real input fields, check them with one tap (right/wrong gets highlighted) or reveal the solutions. Everything stays offline on your device.",
         "📈 Much more scope & new exercise types: a full multi-page workbook with ~125 tasks (14 matching pairs, 18 opposites, 14 gap-fills, 18 translations, 12 sentence-ordering, 18 conjugations, 15 numbers/prices, TWO complete dialogues, culture notes, 3 writing prompts). Card-based sections top up from the whole travel vocabulary when a target is small. New: “Opposites” (Contrarios) and “Put the sentence in order” (word order).",
         "🖨️ Clean on A4: layout and spacing optimised for printing – tighter typography and deliberate page breaks, so more exercises fit per page and nothing breaks awkwardly.",
         "🗝️ Separate answer key: it's now its own sheet with its own header and prints separately (“Print exercise sheet” vs. “Print answer key”) – perfect for handing out without the solutions.",
+        "📏 Choose the workbook length: Standard, Large or XXL – you decide how many tasks per building block end up in the sheet (XXL taps the sources almost fully).",
       ],
     },
     {
