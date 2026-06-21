@@ -1,0 +1,61 @@
+# CodeQL – GitHub-natives statisches Security-Scanning für JavaScript.
+#
+# Ergänzt die funktionalen Checks (Tests/ESLint im Test-&-Deploy-Workflow) um
+# eine Sicherheits-/Schwachstellen-Analyse (z. B. unsichere DOM-Sinks, injizier-
+# bare Pfade). Läuft als EIGENER Workflow, getrennt vom Deploy: Findings landen
+# unter Security → Code scanning, blockieren den Pages-Deploy aber nicht.
+#
+# Stil bewusst analog zu pages.yml: Least-Privilege-Permissions und Actions
+# strikt per Commit-SHA gepinnt (Tag im Kommentar als Lesehilfe).
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Wöchentlicher Lauf (Mo 06:13 UTC): fängt neu bekannt gewordene
+    # Schwachstellen-Muster auch ohne neuen Commit.
+    - cron: "13 6 * * 1"
+  workflow_dispatch: # manuell über den Actions-Tab auslösbar
+
+# Standard nur Lesezugriff; CodeQL braucht zusätzlich security-events: write,
+# um die Befunde hochzuladen. Least Privilege wie im Deploy-Workflow.
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (JavaScript)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # Befunde nach „Code scanning" schreiben
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      # CodeQL-Datenbank für JavaScript/TypeScript anlegen. Das Projekt ist
+      # Vanilla-JS ohne Build-Schritt, daher reicht der reine „init" – kein
+      # autobuild/manueller Build nötig.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v3.30.3
+        with:
+          languages: javascript-typescript
+          queries: security-and-quality
+          # Analyse-Scope: schließt das Build-Tool build.js aus (False Positives
+          # von js/bad-tag-filter auf eigenem, vertrauenswürdigem Input – Details
+          # in der Config). Der ausgelieferte App-Code bleibt voll im Scan.
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v3.30.3
+        with:
+          category: "/language:javascript-typescript"

@@ -17,10 +17,18 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const { stampServiceWorker } = require("./swversion.js");
+const { stampServiceWorker, readAssets } = require("./swversion.js");
 
 const DIR = __dirname;
 const SOURCE = "index.html";
+
+// dist/-Modus:  node build.js --dist
+// Minifiziert alle Modul-.js + styles.css EINZELN (esbuild) nach dist/, kopiert
+// index.html / service-worker.js / Manifeste / Icons / Fonts nach dist/ und
+// stempelt den SW-Hash über die MINIFIZIERTEN dist-Assets. So entspricht der
+// Live-Deploy (Multi-File) der gewünschten kleineren, gecachten Auslieferung –
+// ohne das Verhalten zu ändern (gleiche Dateinamen, gleiche Reihenfolge).
+const DIST_MODE = process.argv.includes("--dist");
 
 // Optionaler Co-Branding-Build:  node build.js --edition=ecos  →  HolaRuta-ecos.html
 // Die Edition-Datei (editions/<id>.js) wird vor config.js eingebettet; sonst
@@ -37,6 +45,21 @@ const OUTPUT = EDITION ? `HolaRuta-${EDITION}.html` : "HolaRuta.html";
 
 function read(file) {
   return fs.readFileSync(path.join(DIR, file), "utf8");
+}
+
+// Lazy-geladene Module: stehen im SW-ASSETS-Precache (Offline), sind aber NICHT
+// (mehr) als <script>-Tag in index.html verdrahtet – sie werden zur Laufzeit per
+// loadModule() nachgeladen. Für den Single-File-Build müssen sie trotzdem
+// eingebettet werden. Ableitung aus der Differenz „SW-ASSETS .js" minus „in
+// index.html getaggte .js" – keine zweite Pflegeliste, die driften könnte.
+function lazyModules() {
+  const html = read(SOURCE);
+  const tagged = new Set(
+    [...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*><\/script[^>]*>/gi)]
+      .map((m) => m[1].replace(/^\.\//, ""))
+  );
+  return readAssets()
+    .filter((rel) => /\.js$/.test(rel) && !tagged.has(rel));
 }
 
 function build() {
@@ -56,17 +79,34 @@ function build() {
 
   // 3) Alle externen Skripte einbetten (in Reihenfolge des Vorkommens).
   //    Ein im Code vorkommendes "</script>" würde sonst den eingebetteten Block
-  //    vorzeitig schließen -> escapen, damit der HTML-Parser nicht stolpert.
-  html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*><\/script>/gi, (m, src) => {
+  //    vorzeitig schließen -> escapen. Bewusst OHNE festes ">", damit auch
+  //    "</script >"/"</script\n>" erfasst werden (HTML beendet den Block auch bei
+  //    Whitespace vor ">"; CodeQL js/bad-tag-filter).
+  const inlineCode = (src) => read(src).replace(/<\/script/gi, "<\\/script");
+  // End-Tag-Match maximal tolerant ([^>]* deckt "</script >", "</script/>",
+  // "</script\n>" etc. ab) – sonst feuert js/bad-tag-filter.
+  html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*><\/script[^>]*>/gi, (m, src) => {
     inlined.push(src);
-    const code = read(src).replace(/<\/script>/gi, "<\\/script>");
+    const code = inlineCode(src);
     // Edition-Build: die Edition-Config direkt vor config.js einbetten, damit
     // config.js sie beim Merge sieht (setzt window.SC.editionConfig).
     if (EDITION && src === "config.js") {
       const edFile = path.join("editions", `${EDITION}.js`);
-      const edCode = read(edFile).replace(/<\/script>/gi, "<\\/script>");
+      const edCode = read(edFile).replace(/<\/script/gi, "<\\/script");
       inlined.push(edFile);
       return `<script>\n${edCode}\n</script>\n<script>\n${code}\n</script>`;
+    }
+    // Lazy-Module (im SW-ASSETS-Precache, aber NICHT mehr als <script>-Tag in
+    // index.html, weil sie zur Laufzeit per loadModule() nachgeladen werden) müssen
+    // im Single-File trotzdem eingebettet sein – sonst kann loadModule() sie dort
+    // nicht finden (kein qr.js o.ä. neben der einen HTML-Datei). Sie werden direkt
+    // VOR app.js eingebettet (app.js ist der letzte Tag und nutzt sie nur on-demand).
+    if (/(?:^|\/)app\.js$/i.test(src)) {
+      const tagged = new Set(inlined.map((p) => p.replace(/^\.\//, "")));
+      const lazyBlocks = lazyModules()
+        .filter((rel) => !tagged.has(rel) && fs.existsSync(path.join(DIR, rel)))
+        .map((rel) => { inlined.push(rel); return `<script>\n${inlineCode(rel)}\n</script>`; });
+      return `${lazyBlocks.join("\n")}${lazyBlocks.length ? "\n" : ""}<script>\n${code}\n</script>`;
     }
     return `<script>\n${code}\n</script>`;
   });
@@ -79,6 +119,90 @@ function build() {
 
   fs.writeFileSync(path.join(DIR, OUTPUT), html, "utf8");
   return inlined;
+}
+
+// ---------------------------------------------------------------------------
+// dist/-Build (Multi-File, minifiziert) – Live-Auslieferungs-Pfad.
+// ---------------------------------------------------------------------------
+
+// esbuild graceful laden: fehlt es (kein Install möglich), kein harter Fehler –
+// dann wird roh kopiert (wie E2E ohne Playwright). Gibt das Modul oder null.
+function tryLoadEsbuild() {
+  try { return require("esbuild"); } catch (e) { return null; }
+}
+
+// Eine Datei nach dist/ schreiben (Verzeichnis bei Bedarf anlegen).
+function writeDist(distDir, rel, data) {
+  const out = path.join(distDir, rel);
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  fs.writeFileSync(out, data);
+}
+
+function buildDist() {
+  const DIST = path.join(DIR, "dist");
+  // Sauberer Stand: dist/ leeren, damit gelöschte Quell-Dateien nicht zurückbleiben.
+  fs.rmSync(DIST, { recursive: true, force: true });
+  fs.mkdirSync(DIST, { recursive: true });
+
+  const esbuild = tryLoadEsbuild();
+  if (!esbuild) {
+    console.warn("⚠ esbuild nicht verfügbar – dist/ wird ROH (unminifiziert) gebaut.");
+  }
+
+  // Asset-Liste aus dem Service Worker (eine Quelle der Wahrheit). Trennt JS/CSS
+  // (minifizierbar) von Binär-/Sonstigem (roh kopieren). "./" ist kein File.
+  const assets = [...new Set(readAssets())]; // relative Pfade ohne "./"
+  const minified = [];
+  const copied = [];
+
+  for (const rel of assets) {
+    if (!rel || rel === "" ) continue;
+    const srcPath = path.join(DIR, rel);
+    if (!fs.existsSync(srcPath)) continue; // sw-assets-Test wacht über Existenz
+    if (esbuild && /\.js$/.test(rel)) {
+      const code = fs.readFileSync(srcPath, "utf8");
+      const res = esbuild.transformSync(code, { loader: "js", minify: true, legalComments: "none" });
+      writeDist(DIST, rel, res.code);
+      minified.push(rel);
+    } else if (esbuild && /\.css$/.test(rel)) {
+      const code = fs.readFileSync(srcPath, "utf8");
+      const res = esbuild.transformSync(code, { loader: "css", minify: true, legalComments: "none" });
+      writeDist(DIST, rel, res.code);
+      minified.push(rel);
+    } else {
+      writeDist(DIST, rel, fs.readFileSync(srcPath)); // Binär/HTML/Manifest roh
+      copied.push(rel);
+    }
+  }
+
+  // index.html roh kopieren (referenziert dieselben Dateinamen wie im Root).
+  writeDist(DIST, "index.html", fs.readFileSync(path.join(DIR, SOURCE)));
+  // service-worker.js nach dist/ kopieren – wird gleich über die dist-Assets gestempelt.
+  writeDist(DIST, "service-worker.js", fs.readFileSync(path.join(DIR, "service-worker.js")));
+  // Zusätzliche Root-Assets, die nicht im Precache stehen, aber von index.html/Manifest
+  // referenziert werden (Social-Vorschau-Bilder), best effort mitkopieren.
+  for (const extra of ["og-image.png", "og-image-square.png"]) {
+    const p = path.join(DIR, extra);
+    if (fs.existsSync(p)) { writeDist(DIST, extra, fs.readFileSync(p)); copied.push(extra); }
+  }
+
+  // SW-Hash über die MINIFIZIERTEN dist-Assets stempeln (dist/service-worker.js).
+  const sw = stampServiceWorker(DIST);
+
+  return { dir: DIST, minified, copied, minify: !!esbuild, swVersion: sw.version };
+}
+
+if (DIST_MODE) {
+  try {
+    const r = buildDist();
+    console.log(`✓ dist/ erzeugt${r.minify ? " (minifiziert)" : " (ROH – esbuild fehlte)"}.`);
+    console.log(`  Minifiziert: ${r.minified.length} Dateien; kopiert: ${r.copied.length} Dateien.`);
+    console.log(`✓ dist/service-worker.js: CACHE_VERSION = ${r.swVersion}`);
+  } catch (err) {
+    console.error("✗ dist-Build fehlgeschlagen:", err.message);
+    process.exit(1);
+  }
+  return;
 }
 
 try {

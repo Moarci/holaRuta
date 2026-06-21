@@ -56,11 +56,12 @@ function makeFakeIndexedDB(initialData) {
 }
 
 // Frische Umgebung aufsetzen und store.js neu laden (Restore läuft beim Init).
-function freshStore({ local, idbData }) {
+function freshStore({ local, idbData, throwOnGet }) {
   const mem = Object.assign({}, local || {});
   globalThis.window = {};
   globalThis.localStorage = {
-    getItem: (k) => (k in mem ? mem[k] : null),
+    // throwOnGet simuliert den iOS-/Privatmodus, in dem getItem wirft.
+    getItem: (k) => { if (throwOnGet) throw new Error("localStorage blocked"); return (k in mem ? mem[k] : null); },
     setItem: (k, v) => { mem[k] = String(v); },
     removeItem: (k) => { delete mem[k]; },
   };
@@ -133,5 +134,20 @@ test("Restore: kein Reload, wenn IndexedDB leer ist (frischer Nutzer)", async ()
     await flush();
     assert.equal(env.reloads(), 0);
     assert.deepEqual(env.store.loadProgress(), {});
+  } finally { env.restore(); }
+});
+
+test("Restore: getItem wirft (Privatmodus) -> gilt als leer, Restore läuft trotzdem", async () => {
+  // Wirft localStorage.getItem (iOS-Privatmodus), MUSS hasLocalData() als „leer"
+  // gelten (catch -> false), damit der IndexedDB-Restore greift – nicht als „voll".
+  const snapshot = {
+    app: "holaruta", format: 1, exportedAt: "x",
+    data: { [PROGRESS_KEY]: { x: { ease: 2.5, interval: 0, due: 0, reps: 4, seen: 1, history: ["g"] } } },
+  };
+  const env = freshStore({ local: {}, idbData: { kv: { snapshot } }, throwOnGet: true });
+  try {
+    await flush();
+    assert.equal(env.reloads(), 1, "Restore (mit Reload) muss laufen, wenn getItem wirft");
+    assert.ok(env.mem[PROGRESS_KEY], "Snapshot wurde trotz werfendem getItem zurückgeschrieben");
   } finally { env.restore(); }
 });

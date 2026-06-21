@@ -43,6 +43,13 @@
   <!-- Schriften: Bricolage Grotesque (Display) + Instrument Sans (Text) – self-hosted
        unter fonts/ (per @font-face in styles.css, DSGVO-sauber und offline verfügbar). -->
 
+  <!-- Die zwei beim ersten Paint sichtbaren Schriften vorladen (Logo/Überschriften =
+       Bricolage Grotesque, Fließtext = Instrument Sans), damit sie nicht erst nach dem
+       CSS-Parsen angefragt werden. crossorigin ist bei Font-Preload Pflicht (Fonts
+       laden anonym), sonst lädt der Browser die Datei doppelt. -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/bricolage-grotesque-600-800-latin.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/instrument-sans-400-700-latin.woff2" />
+
   <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
        Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe.
        Der OS-PWA-Splash wird aus dem Manifest-background_color gemalt – und Android
@@ -68,8 +75,26 @@
   </script>
 
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Sicherheits-Header. Bewusst KEIN restriktives script-src: der Single-File-Build
+       (HolaRuta.html) inlined ~50 Skripte und ui.js baut Dutzende Inline-style-Attribute,
+       die nicht hash-bar sind. Der reale Schutz liegt hier auf Bild-/Verbindungszielen &
+       Referrer: img-src erlaubt nur self + data: + Wikimedia (Kulturbilder); connect-src
+       'self' (opt-in-Sync ist im Default aus -> kein fremder Host; eine Edition mit
+       cross-origin-apiBase muesste ihren Sync-Host hier ergaenzen); frame-ancestors 'none'
+       schuetzt vor Clickjacking; referrer no-referrer verhindert Leakage.
+       script-src ist explizit 'self' 'unsafe-inline' (NICHT restriktiv): ohne diese
+       Direktive wuerde default-src 'self' Inline-Skripte verbieten und damit Theme-Boot,
+       Boot-Animation, Splash sowie den kompletten Single-File-Build (~50 inline Skripte)
+       brechen. Inline-Skripte sind hier kein Angriffsvektor (keine User-HTML-Injektion). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://upload.wikimedia.org https://commons.wikimedia.org; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; base-uri 'self'" />
+  <meta name="referrer" content="no-referrer" />
 </head>
 <body>
+  <!-- Sprunglink: erstes fokussierbares Element. Für Tastatur-/Screenreader-Nutzer,
+       um die App-Bar zu überspringen und direkt zum Inhalt (main#app) zu springen.
+       Standardmäßig per CSS (.skip-link) ausgeblendet, erst bei :focus sichtbar. -->
+  <a href="#app" class="skip-link">Zum Inhalt springen</a>
   <!-- Animierter In-App-Start: liegt auf var(--page) – nahtlos am OS-PWA-Splash,
        der jetzt dasselbe Marken-Braun zeigt – und blendet weg, sobald die App
        steht. Nur beim echten Kaltstart sichtbar; In-Session-Navigation lädt nicht
@@ -163,57 +188,60 @@
     </div>
 
     <!-- Hier rendert der Controller die jeweilige Ansicht hinein. -->
-    <main id="app"></main>
+    <main id="app" tabindex="-1"></main>
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
   <!-- Edition-Verzeichnis zuerst: erlaubt Partner-Branding per Link (?edition=ecos). -->
-  <script src="editions/registry.js"></script>
+  <script defer src="editions/registry.js"></script>
   <!-- Marken-/Edition-Konfiguration (Standard = HolaRuta pur; Edition aus Registry/URL). -->
-  <script src="config.js"></script>
+  <script defer src="config.js"></script>
   <!-- Mehrsprachigkeit zuerst: Engine + UI-Wörterbuch, damit t()/nativeText überall stehen. -->
-  <script src="i18n.js"></script>
-  <script src="i18n.strings.js"></script>
-  <script src="contextdata.js"></script>
-  <script src="data.js"></script>
-  <script src="numbers.js"></script>
-  <script src="context.js"></script>
-  <script src="countries.js"></script>
-  <script src="historia.js"></script>
-  <script src="historiaCentro.js"></script>
-  <script src="knigge.js"></script>
-  <script src="frases.js"></script>
-  <script src="dialogos.js"></script>
-  <script src="conjug.js"></script>
-  <script src="regatear.js"></script>
-  <script src="logistica.js"></script>
-  <script src="salud.js"></script>
-  <script src="fotografia.js"></script>
-  <script src="flirt.js"></script>
-  <script src="bailar.js"></script>
-  <script src="musica.js"></script>
-  <script src="bebidas.js"></script>
-  <script src="yesto.js"></script>
-  <script src="srs.js"></script>
-  <script src="store.js"></script>
-  <script src="net.js"></script>
-  <script src="sync.js"></script>
-  <script src="social.js"></script>
-  <script src="usercards.js"></script>
-  <script src="matcher.js"></script>
-  <script src="placement.js"></script>
-  <script src="assessment.js"></script>
-  <script src="search.js"></script>
-  <script src="stats.js"></script>
-  <script src="badges.js"></script>
-  <script src="speech.js"></script>
-  <script src="share.js"></script>
-  <script src="qr.js"></script>
-  <script src="install.js"></script>
-  <script src="changelog.js"></script>
-  <script src="celebrate.js"></script>
-  <script src="ui.js"></script>
-  <script src="app.js"></script>
+  <script defer src="i18n.js"></script>
+  <script defer src="i18n.strings.js"></script>
+  <script defer src="contextdata.js"></script>
+  <script defer src="data.js"></script>
+  <script defer src="numbers.js"></script>
+  <script defer src="context.js"></script>
+  <script defer src="countries.js"></script>
+  <script defer src="historia.js"></script>
+  <script defer src="historiaCentro.js"></script>
+  <script defer src="knigge.js"></script>
+  <script defer src="frases.js"></script>
+  <script defer src="dialogos.js"></script>
+  <script defer src="conjug.js"></script>
+  <script defer src="regatear.js"></script>
+  <script defer src="logistica.js"></script>
+  <script defer src="salud.js"></script>
+  <script defer src="fotografia.js"></script>
+  <script defer src="flirt.js"></script>
+  <script defer src="bailar.js"></script>
+  <script defer src="musica.js"></script>
+  <script defer src="bebidas.js"></script>
+  <script defer src="yesto.js"></script>
+  <script defer src="srs.js"></script>
+  <script defer src="store.js"></script>
+  <script defer src="net.js"></script>
+  <script defer src="sync.js"></script>
+  <script defer src="social.js"></script>
+  <script defer src="usercards.js"></script>
+  <script defer src="matcher.js"></script>
+  <script defer src="placement.js"></script>
+  <script defer src="assessment.js"></script>
+  <script defer src="search.js"></script>
+  <script defer src="stats.js"></script>
+  <script defer src="badges.js"></script>
+  <script defer src="speech.js"></script>
+  <script defer src="share.js"></script>
+  <!-- qr.js NICHT initial laden: nur der Lehrer-Screen braucht den QR-Generator.
+       loadModule("qr", …) lädt ihn on-demand vor dem Teacher-Render (app.js); im
+       SW-ASSETS-Precache bleibt qr.js (offline), und der Single-File-Build (build.js)
+       bettet ihn weiterhin ein (lazyModules() vor app.js). -->
+  <script defer src="install.js"></script>
+  <script defer src="changelog.js"></script>
+  <script defer src="celebrate.js"></script>
+  <script defer src="ui.js"></script>
+  <script defer src="app.js"></script>
 
   <!-- Start-Splash wegblenden, sobald die App steht – aber mind. ~1,4 s zeigen,
        damit Schrumpfen/Aufstieg/Regenbogen-Wisch fertig landen und kurz stehen, statt
@@ -224,7 +252,11 @@
     (function () {
       var boot = document.getElementById("boot");
       if (!boot) return;
-      var MIN = 2000; // mind. so lange, dass Schrumpfen/Aufstieg/Regenbogen-Wisch landen + kurz stehen
+      // Mindest-Anzeigedauer: 800 ms reicht, dass Schrumpfen/Aufstieg/Regenbogen-Wisch
+      // landen und kurz stehen, ohne den Kaltstart unnötig zu verzögern. Bei
+      // prefers-reduced-motion sofort weg (0 ms) – keine erzwungene Wartezeit.
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var MIN = reduce ? 0 : 800;
       var start = window.__bootStart || Date.now();
       function done() { boot.classList.add("is-done"); }
       function hide() {

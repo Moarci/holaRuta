@@ -167,3 +167,245 @@ test("merge toleriert leere/kaputte Eingaben (kein Crash)", () => {
   assert.equal(m.app, "holaruta");
   assert.deepEqual(m.data, {});
 });
+
+// ---- deepUnion direkt mit ÜBERLAPPENDEN Keys (der bisher ungeprüfte Vergleichspfad) ----
+test("deepUnion: Zahlen -> max (auch wenn a < b)", () => {
+  assert.equal(sync.deepUnion(3, 5), 5);
+  assert.equal(sync.deepUnion(5, 3), 5);
+  assert.equal(sync.deepUnion(0, 7), 7);
+});
+
+test("deepUnion: Booleans -> ODER (true gewinnt)", () => {
+  assert.equal(sync.deepUnion(true, false), true);
+  assert.equal(sync.deepUnion(false, true), true);
+  assert.equal(sync.deepUnion(false, false), false);
+});
+
+test("deepUnion: Objekte rekursiv, überlappende numerische Keys -> max", () => {
+  assert.deepEqual(sync.deepUnion({ x: 1, y: 2 }, { x: 9, z: 3 }), { x: 9, y: 2, z: 3 });
+  // tiefer verschachtelt
+  assert.deepEqual(sync.deepUnion({ a: { n: 2 } }, { a: { n: 5, m: 1 } }), { a: { n: 5, m: 1 } });
+});
+
+test("deepUnion: gemischt Primitiv/Objekt -> lokales (a) gewinnt, nicht in Objekt-Zweig fallen", () => {
+  assert.equal(sync.deepUnion(5, { x: 1 }), 5, "Zahl a bleibt, wird nicht zum Objekt b");
+  assert.deepEqual(sync.deepUnion({ x: 1 }, 5), { x: 1 });
+  // ungleiche Primitive: a (definiert) gewinnt vor b
+  assert.equal(sync.deepUnion("ja", undefined), "ja");
+  assert.equal(sync.deepUnion(undefined, "remote"), "remote");
+});
+
+test("mergeGamestats: überlappende numerische Map (unlocked) -> Tiefen-Max, nicht überschreiben", () => {
+  const a = { unlocked: { first_steps: 111, ten_cards: 5 } };
+  const b = { unlocked: { first_steps: 50, ten_cards: 9 } };
+  const m = sync.mergeGamestats(a, b);
+  assert.equal(m.unlocked.first_steps, 111, "höherer Zeitstempel/Wert gewinnt per max");
+  assert.equal(m.unlocked.ten_cards, 9);
+  // überlappende boolesche Map -> ODER
+  const f = sync.mergeGamestats({ flags: { x: false, y: true } }, { flags: { x: true, y: false } });
+  assert.deepEqual(f.flags, { x: true, y: true });
+});
+
+test("mergePlacementHistory: Einträge, die sich NUR in ts/Feldern unterscheiden, bleiben distinkt", () => {
+  // gleich in allen Fingerabdruck-Feldern AUSSER ts -> zwei verschiedene Läufe.
+  const a = { placementHistory: [{ ts: "2026-01-01T10:00:00.000Z", at: "2026-01-01", level: "A1", finalScore: 0.5 }] };
+  const b = { placementHistory: [{ ts: "2026-01-01T18:00:00.000Z", at: "2026-01-01", level: "A1", finalScore: 0.5 }] };
+  assert.equal(sync.mergeGamestats(a, b).placementHistory.length, 2, "unterschiedliches ts -> beide bleiben");
+  // Unterschied nur in accuracy -> ebenfalls distinkt.
+  const c = { placementHistory: [{ at: "2026-02-01", level: "A2", accuracy: 0.7 }] };
+  const d = { placementHistory: [{ at: "2026-02-01", level: "A2", accuracy: 0.9 }] };
+  assert.equal(sync.mergeGamestats(c, d).placementHistory.length, 2);
+  // echtes Duplikat (alle Felder gleich) -> fällt zusammen.
+  const e = { placementHistory: [{ ts: "t", at: "x", level: "A1", finalScore: 0.5 }] };
+  assert.equal(sync.mergeGamestats(e, e).placementHistory.length, 1);
+});
+
+test("mergePlacementHistory: chronologisch sortiert und auf 50 gedeckelt", () => {
+  const big = Array.from({ length: 60 }, (_, i) => ({ ts: "2026-01-" + String(i + 1).padStart(2, "0"), level: "L" + i }));
+  const m = sync.mergeGamestats({ placementHistory: big.slice(0, 30) }, { placementHistory: big.slice(30) });
+  assert.equal(m.placementHistory.length, 50, "auf die jüngsten 50 gedeckelt");
+  // chronologisch: erstes älter als letztes
+  const hist = m.placementHistory;
+  assert.ok(hist[0].ts < hist[hist.length - 1].ts, "aufsteigend nach ts sortiert");
+  assert.equal(hist[hist.length - 1].ts, "2026-01-60", "jüngster Eintrag bleibt");
+});
+
+test("mergeProgress: nicht-endliches reps (Infinity) darf nicht gewinnen (num-Schutz)", () => {
+  const m = sync.mergeProgress({ x: { reps: Infinity, due: 0 } }, { x: { reps: 5, due: 0 } });
+  assert.equal(m.x.reps, 5, "Infinity wird zu 0 normalisiert, der echte Datensatz gewinnt");
+});
+
+test("mergePlacementHistory: JEDES Fingerabdruck-Feld hält Einträge distinkt", () => {
+  const base = { ts: "t", at: "a", level: "L", finalScore: 0.1, accuracy: 0.2, unknownRate: 0.3, tempo: "slow" };
+  for (const f of ["ts", "at", "level", "finalScore", "accuracy", "unknownRate", "tempo"]) {
+    const e2 = Object.assign({}, base);
+    e2[f] = typeof base[f] === "number" ? base[f] + 1 : base[f] + "X";
+    const m = sync.mergeGamestats({ placementHistory: [base] }, { placementHistory: [e2] });
+    assert.equal(m.placementHistory.length, 2, `Unterschied nur in ${f} -> beide Läufe bleiben`);
+  }
+});
+
+test("mergePlacementHistory: sortiert per (ts || at)-Fallback, wenn ts fehlt", () => {
+  // Eingabe absichtlich verkehrt herum; nur `at` vorhanden (keine ts).
+  const m = sync.mergeGamestats(
+    { placementHistory: [{ at: "2026-03-02", level: "spät" }] },
+    { placementHistory: [{ at: "2026-03-01", level: "früh" }] },
+  );
+  assert.deepEqual(m.placementHistory.map((e) => e.level), ["früh", "spät"], "nach at aufsteigend sortiert");
+});
+
+test("mergeGamestats: assessmentProgress – späteres savedAt gewinnt, Gleichstand -> lokal (a)", () => {
+  const a = { assessmentProgress: { savedAt: 5, id: "a" } };
+  const b = { assessmentProgress: { savedAt: 9, id: "b" } };
+  assert.equal(sync.mergeGamestats(a, b).assessmentProgress.id, "b", "höheres savedAt gewinnt");
+  assert.equal(sync.mergeGamestats(b, a).assessmentProgress.id, "b");
+  // Gleichstand savedAt: a (lokal) bleibt, kein Frankenstein-Merge.
+  const eqA = { assessmentProgress: { savedAt: 7, id: "lokal" } };
+  const eqB = { assessmentProgress: { savedAt: 7, id: "remote" } };
+  assert.equal(sync.mergeGamestats(eqA, eqB).assessmentProgress.id, "lokal", "Gleichstand -> a");
+});
+
+test("mergeGamestats: überlappendes boolesches Top-Level-Flag -> ODER", () => {
+  assert.equal(sync.mergeGamestats({ nightOwl: true }, { nightOwl: false }).nightOwl, true);
+  assert.equal(sync.mergeGamestats({ nightOwl: false }, { nightOwl: true }).nightOwl, true);
+  assert.equal(sync.mergeGamestats({ earlyBird: false }, { earlyBird: false }).earlyBird, false);
+});
+
+// ---- dünner fetch-Adapter (push / syncNow): SC.net & SC.store gestubbt ----
+function withStubs(net, store, cfg, fn) {
+  const orig = { net: window.SC.net, store: window.SC.store, config: window.SC.config };
+  window.SC.net = net; window.SC.store = store;
+  window.SC.config = { sync: Object.assign({ enabled: true, apiBase: "http://test" }, cfg || {}) };
+  return Promise.resolve().then(fn).finally(() => {
+    window.SC.net = orig.net; window.SC.store = orig.store; window.SC.config = orig.config;
+  });
+}
+
+test("push: baseRev wird durchgereicht (Default 0, nicht verschluckt)", async () => {
+  const bodies = [];
+  await withStubs(
+    { request: (_b, _m, _p, body) => { bodies.push(body); return Promise.resolve({ ok: true, body: { rev: 1 } }); } },
+    {}, {},
+    async () => {
+      await sync.push({ foo: 1 }, 5);
+      await sync.push({ foo: 1 }, 0);
+    },
+  );
+  assert.equal(bodies[0].baseRev, 5, "expliziter baseRev bleibt erhalten");
+  assert.equal(bodies[1].baseRev, 0, "fehlender/0 baseRev -> 0");
+  assert.equal(bodies[0].payload.foo, 1);
+});
+
+test("syncNow: ohne Konflikt -> genau ein Push, rev/status aus der Antwort", async () => {
+  const GS = GAMESTATS;
+  const pushes = [];
+  let imported = null;
+  const res = await withStubs(
+    {
+      loggedIn: () => true,
+      request: (_b, method, _p, body) => {
+        if (method === "GET") return Promise.resolve({ ok: true, body: { payload: { [GS]: { reviews: 7 } }, rev: 4 } });
+        pushes.push(body);
+        // Erfolgsantwort trägt absichtlich ein payload: ein 200 darf TROTZDEM
+        // keinen 409-Retry auslösen (Schutz gegen status===409-&&-Aufweichung).
+        return Promise.resolve({ ok: true, status: 200, body: { rev: 8, payload: { [GS]: { reviews: 7 } } } });
+      },
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: (m) => { imported = m; } },
+    {},
+    () => sync.syncNow(),
+  );
+  assert.equal(pushes.length, 1, "kein überflüssiger zweiter Push ohne 409");
+  assert.equal(res.ok, true);
+  assert.equal(res.rev, 8, "rev kommt aus pr.body.rev (kein Objekt/Fallback)");
+  assert.equal(res.status, 200);
+  assert.equal(imported.data[GS].reviews, 7, "gemergter Stand (max) lokal angewendet");
+});
+
+test("syncNow: 409-Konflikt -> mit fremdem Stand neu mergen und GENAU einmal erneut pushen", async () => {
+  const GS = GAMESTATS;
+  const pushes = [];
+  let lastImport = null;
+  const res = await withStubs(
+    {
+      loggedIn: () => true,
+      request: (_b, method, _p, body) => {
+        if (method === "GET") return Promise.resolve({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 7 } });
+        pushes.push(body);
+        if (pushes.length === 1) return Promise.resolve({ ok: false, status: 409, body: { payload: { [GS]: { reviews: 99 } }, rev: 8 } });
+        return Promise.resolve({ ok: true, status: 200, body: { rev: 9 } });
+      },
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: (m) => { lastImport = m; } },
+    {},
+    () => sync.syncNow(),
+  );
+  assert.equal(pushes.length, 2, "genau ein Retry nach 409");
+  assert.equal(res.ok, true);
+  assert.equal(res.rev, 9);
+  assert.equal(res.status, 200);
+  assert.equal(res.changedLocal, true, "Retry hat lokal etwas geändert (changedLocal || changed2)");
+  assert.equal(lastImport.data[GS].reviews, 99, "remerge mit dem fremden Stand (max=99) lokal angewendet");
+});
+
+// ---- Nachzug (Merge nach main-Merge): placement-ts ohne 'at', Adapter-Basis/rev ----
+test("mergeGamestats: placement – späteres ts gewinnt auch OHNE 'at'-Feld", () => {
+  // ts vorhanden, at fehlt: das spätere Ergebnis muss dennoch gewinnen (ts || at).
+  const a = { placement: { ts: "2026-01-01T00:00:00Z", level: "A" } };
+  const b = { placement: { ts: "2026-01-09T00:00:00Z", level: "B" } };
+  assert.equal(sync.mergeGamestats(a, b).placement.level, "B");
+  assert.equal(sync.mergeGamestats(b, a).placement.level, "B");
+});
+
+test("apiBase: req nutzt die slash-bereinigte Basis aus der Config (nicht leer)", async () => {
+  let base = null;
+  await withStubs(
+    { loggedIn: () => true, request: (b) => { base = b; return Promise.resolve({ ok: true, body: {} }); } },
+    {}, { apiBase: "http://test/" },
+    () => sync.pull(),
+  );
+  assert.equal(base, "http://test", "Basis ohne Trailing-Slash, NICHT ''");
+});
+
+test("syncNow: push trägt den baseRev aus dem pull-rev (nicht 0)", async () => {
+  const GS = GAMESTATS; const pushes = [];
+  await withStubs(
+    { loggedIn: () => true, request: (_b, method, _p, body) => {
+        if (method === "GET") return Promise.resolve({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 7 } });
+        pushes.push(body); return Promise.resolve({ ok: true, status: 200, body: { rev: 8 } });
+      } },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {}, () => sync.syncNow(),
+  );
+  assert.equal(pushes[0].baseRev, 7, "baseRev = rev aus dem pull, nicht 0");
+});
+
+test("syncNow: 409-Retry pusht mit dem Konflikt-rev (Default greift nur als Fallback)", async () => {
+  const GS = GAMESTATS; const pushes = [];
+  await withStubs(
+    { loggedIn: () => true, request: (_b, method, _p, body) => {
+        if (method === "GET") return Promise.resolve({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 7 } });
+        pushes.push(body);
+        if (pushes.length === 1) return Promise.resolve({ ok: false, status: 409, body: { payload: { [GS]: { reviews: 9 } }, rev: 8 } });
+        return Promise.resolve({ ok: true, status: 200, body: { rev: 10 } });
+      } },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {}, () => sync.syncNow(),
+  );
+  assert.equal(pushes[1].baseRev, 8, "Retry nutzt den rev aus der 409-Antwort");
+});
+
+test("syncNow: 409 mit rev 0 -> Retry-baseRev bleibt 0 (nicht 1)", async () => {
+  const GS = GAMESTATS; const pushes = [];
+  await withStubs(
+    { loggedIn: () => true, request: (_b, method, _p, body) => {
+        if (method === "GET") return Promise.resolve({ ok: true, body: { payload: {}, rev: 0 } });
+        pushes.push(body);
+        if (pushes.length === 1) return Promise.resolve({ ok: false, status: 409, body: { payload: { [GS]: { reviews: 2 } }, rev: 0 } });
+        return Promise.resolve({ ok: true, status: 200, body: { rev: 1 } });
+      } },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {}, () => sync.syncNow(),
+  );
+  assert.equal(pushes[1].baseRev, 0, "rev 0 bleibt 0, nicht 1");
+});

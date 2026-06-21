@@ -38,6 +38,38 @@
   // Pflicht-Session – der Rest bleibt fällig und kommt in der nächsten Runde.
   const SESSION_CAP = 20;
 
+  // ----- Lazy-Loader (Single-File-fest) ------------------------------------
+  // Lädt ein optionales Feature-Modul bei Bedarf nach. WICHTIG: existiert
+  // window.SC[name] bereits (Single-File-Build, wo alles inlined ist, oder das
+  // Modul wurde schon per <script> geladen), wird `cb` SOFORT und SYNCHRON
+  // aufgerufen – das Verhalten ist dann identisch zum bisherigen direkten Öffnen.
+  // Andernfalls (Modul noch nicht da, z. B. nachdem L5 die <script>-Tags
+  // entfernt) wird ein <script src="name.js"> injiziert und `cb` erst nach
+  // onload ausgeführt. Mehrfach-Anfragen während des Ladens teilen sich dasselbe
+  // Script-Element (kein Doppel-Laden). Schlägt das Laden fehl, läuft `cb`
+  // trotzdem (die *VM/*Ready-Guards fangen ein fehlendes Modul ohnehin ab).
+  const _moduleLoading = {}; // name -> Array<cb>, solange das Script lädt
+  function loadModule(name, cb) {
+    if (window.SC && window.SC[name]) { if (cb) cb(window.SC[name]); return; }
+    if (_moduleLoading[name]) { if (cb) _moduleLoading[name].push(cb); return; }
+    const waiters = _moduleLoading[name] = [];
+    if (cb) waiters.push(cb);
+    const done = () => {
+      delete _moduleLoading[name];
+      const mod = window.SC && window.SC[name];
+      waiters.forEach((fn) => { try { fn(mod); } catch (e) { /* einzelner cb-Fehler */ } });
+    };
+    try {
+      if (typeof document === "undefined" || !document.createElement) { done(); return; }
+      const s = document.createElement("script");
+      s.src = name + ".js";
+      s.async = false; // Reihenfolge/Abhängigkeiten wie bei statischen <script>
+      s.onload = done;
+      s.onerror = done; // Guards greifen; nicht hängen bleiben
+      (document.head || document.body || document.documentElement).appendChild(s);
+    } catch (e) { done(); }
+  }
+
   // ----- Zustand (eine einzige Quelle der Wahrheit) -----
   let progress = store.loadProgress();
   let settings = store.loadSettings();
@@ -151,6 +183,18 @@
     // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
     searchQuery: "",         // aktueller Suchbegriff (lebt nur in der Sitzung)
   };
+
+  // Zentrale Zustands-Mutation: schreibt das Patch in `state` und rendert EINMAL neu.
+  // Vereinheitlicht das verbreitete Muster „state.x = …; render();" zu einem Aufruf,
+  // damit es genau eine Stelle gibt, an der UI-State geändert wird und neu gezeichnet
+  // wird. Persistenz (gamestats/settings/progress/tasks) bleibt bewusst getrennt –
+  // sie folgt eigenen Speicher-Pfaden und wird hier nicht angefasst. Mit
+  // `{ render: false }` als zweitem Argument kann das Neuzeichnen unterdrückt werden
+  // (z. B. wenn der Aufrufer ohnehin gleich selbst rendert oder navigiert).
+  function setState(patch, opts) {
+    if (patch) Object.assign(state, patch);
+    if (!opts || opts.render !== false) render();
+  }
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
 
@@ -420,70 +464,70 @@
       tripSwitchOpen: !!state.tripSwitchOpen,        // Schnellwechsel-Chips auf-/eingeklappt
       tripRouteIds: (gamestats.tripGoal && Array.isArray(gamestats.tripGoal.route) ? gamestats.tripGoal.route : []).map((s) => s.id), // Länder schon in der Route (Chip-Markierung)
       tripCountryBev: tripCountryBev(), // Tag-/Abendgetränk + Akzent + Gruß fürs Erscheinungsbild-Schild (oder null)
-      showColombiaPreset: tripMentionsColombia(), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
-      showCartagenaPreset: tripMentionsCartagena(), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
-      showMedellinPreset: tripMentionsMedellin(), // Stadt-Pack-Kachel nur bei Medellín-Bezug
-      showCuscoPreset: tripMentionsCusco(),       // Stadt-Pack-Kachel nur bei Cusco-Bezug
-      showCdmxPreset: tripMentionsCdmx(),         // Stadt-Pack-Kachel nur bei CDMX-Bezug
-      showAntiguaPreset: tripMentionsAntigua(),   // Stadt-Pack-Kachel nur bei Antigua-Bezug
-      showBuenosAiresPreset: tripMentionsBuenosAires(), // Stadt-Pack-Kachel nur bei BA-Bezug
-      showQuitoPreset: tripMentionsQuito(),       // Stadt-Pack-Kachel nur bei Quito-Bezug
-      showLimaPreset: tripMentionsLima(),
-      showArequipaPreset: tripMentionsArequipa(),
-      showMendozaPreset: tripMentionsMendoza(),
-      showBarilochePreset: tripMentionsBariloche(),
-      showOaxacaPreset: tripMentionsOaxaca(),
-      showMeridaPreset: tripMentionsMerida(),
-      showArenalPreset: tripMentionsArenal(),
-      showMonteverdePreset: tripMentionsMonteverde(),
-      showSantiagoPreset: tripMentionsSantiago(),
-      showValparaisoPreset: tripMentionsValparaiso(),
-      showAtacamaPreset: tripMentionsAtacama(),
-      showLapazPreset: tripMentionsLapaz(),
-      showUyuniPreset: tripMentionsUyuni(),
-      showPuertonatalesPreset: tripMentionsPuertonatales(),
-      showPuconPreset: tripMentionsPucon(),
-      showCopacabanaPreset: tripMentionsCopacabana(),
-      showSucrePreset: tripMentionsSucre(),
-      showPeruPreset: tripMentionsPeru(),         // Pre-Arrival-Kachel nur bei Peru-Bezug
-      showMexicoPreset: tripMentionsMexico(),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
-      showCostaRicaPreset: tripMentionsCostaRica(), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
-      showEcuadorPreset: tripMentionsEcuador(),   // Pre-Arrival-Kachel nur bei Ecuador-Bezug
-      showGuatemalaPreset: tripMentionsGuatemala(), // Pre-Arrival-Kachel nur bei Guatemala-Bezug
-      showArgentinaPreset: tripMentionsArgentina(), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
-      showChilePreset: tripMentionsChile(),       // Pre-Arrival-Kachel nur bei Chile-Bezug
-      showBoliviaPreset: tripMentionsBolivia(),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
+      showColombiaPreset: tripMentions("colombia"), // Pre-Arrival-Kachel nur bei Kolumbien-Bezug
+      showCartagenaPreset: tripMentions("cartagena"), // Stadt-Pack-Kachel nur bei Cartagena-Bezug
+      showMedellinPreset: tripMentions("medellin"), // Stadt-Pack-Kachel nur bei Medellín-Bezug
+      showCuscoPreset: tripMentions("cusco"),       // Stadt-Pack-Kachel nur bei Cusco-Bezug
+      showCdmxPreset: tripMentions("cdmx"),         // Stadt-Pack-Kachel nur bei CDMX-Bezug
+      showAntiguaPreset: tripMentions("antigua"),   // Stadt-Pack-Kachel nur bei Antigua-Bezug
+      showBuenosAiresPreset: tripMentions("buenosaires"), // Stadt-Pack-Kachel nur bei BA-Bezug
+      showQuitoPreset: tripMentions("quito"),       // Stadt-Pack-Kachel nur bei Quito-Bezug
+      showLimaPreset: tripMentions("lima"),
+      showArequipaPreset: tripMentions("arequipa"),
+      showMendozaPreset: tripMentions("mendoza"),
+      showBarilochePreset: tripMentions("bariloche"),
+      showOaxacaPreset: tripMentions("oaxaca"),
+      showMeridaPreset: tripMentions("merida"),
+      showArenalPreset: tripMentions("arenal"),
+      showMonteverdePreset: tripMentions("monteverde"),
+      showSantiagoPreset: tripMentions("santiago"),
+      showValparaisoPreset: tripMentions("valparaiso"),
+      showAtacamaPreset: tripMentions("atacama"),
+      showLapazPreset: tripMentions("lapaz"),
+      showUyuniPreset: tripMentions("uyuni"),
+      showPuertonatalesPreset: tripMentions("puertonatales"),
+      showPuconPreset: tripMentions("pucon"),
+      showCopacabanaPreset: tripMentions("copacabana"),
+      showSucrePreset: tripMentions("sucre"),
+      showPeruPreset: tripMentions("peru"),         // Pre-Arrival-Kachel nur bei Peru-Bezug
+      showMexicoPreset: tripMentions("mexico"),     // Pre-Arrival-Kachel nur bei Mexiko-Bezug
+      showCostaRicaPreset: tripMentions("costarica"), // Pre-Arrival-Kachel nur bei Costa-Rica-Bezug
+      showEcuadorPreset: tripMentions("ecuador"),   // Pre-Arrival-Kachel nur bei Ecuador-Bezug
+      showGuatemalaPreset: tripMentions("guatemala"), // Pre-Arrival-Kachel nur bei Guatemala-Bezug
+      showArgentinaPreset: tripMentions("argentina"), // Pre-Arrival-Kachel nur bei Argentinien-Bezug
+      showChilePreset: tripMentions("chile"),       // Pre-Arrival-Kachel nur bei Chile-Bezug
+      showBoliviaPreset: tripMentions("bolivia"),   // Pre-Arrival-Kachel nur bei Bolivien-Bezug
       // Status der Pre-Arrival-Pakete (Häkchen + „12/40"-Fortschritt). Nur für die
       // tatsächlich SICHTBAREN Kacheln rechnen (spart Arbeit pro Render).
       presetStatus: (function () {
         const m = {};
         const shown = {
-          "prearrival-co": tripMentionsColombia(), "prearrival-ctg": tripMentionsCartagena(),
-          "prearrival-med": tripMentionsMedellin(), "prearrival-cus": tripMentionsCusco(),
-          "prearrival-cdmx": tripMentionsCdmx(), "prearrival-ant": tripMentionsAntigua(),
-          "prearrival-bue": tripMentionsBuenosAires(), "prearrival-qui": tripMentionsQuito(),
-          "prearrival-lima": tripMentionsLima(),
-          "prearrival-arequipa": tripMentionsArequipa(),
-          "prearrival-mendoza": tripMentionsMendoza(),
-          "prearrival-bariloche": tripMentionsBariloche(),
-          "prearrival-oaxaca": tripMentionsOaxaca(),
-          "prearrival-merida": tripMentionsMerida(),
-          "prearrival-arenal": tripMentionsArenal(),
-          "prearrival-monteverde": tripMentionsMonteverde(),
-          "prearrival-santiago": tripMentionsSantiago(),
-          "prearrival-valparaiso": tripMentionsValparaiso(),
-          "prearrival-atacama": tripMentionsAtacama(),
-          "prearrival-lapaz": tripMentionsLapaz(),
-          "prearrival-uyuni": tripMentionsUyuni(),
-          "prearrival-puertonatales": tripMentionsPuertonatales(),
-          "prearrival-pucon": tripMentionsPucon(),
-          "prearrival-copacabana": tripMentionsCopacabana(),
-          "prearrival-sucre": tripMentionsSucre(),
-          "prearrival-pe": tripMentionsPeru(),
-          "prearrival-mx": tripMentionsMexico(), "prearrival-cr": tripMentionsCostaRica(),
-          "prearrival-ec": tripMentionsEcuador(), "prearrival-gt": tripMentionsGuatemala(),
-          "prearrival-ar": tripMentionsArgentina(), "prearrival-cl": tripMentionsChile(),
-          "prearrival-bo": tripMentionsBolivia(),
+          "prearrival-co": tripMentions("colombia"), "prearrival-ctg": tripMentions("cartagena"),
+          "prearrival-med": tripMentions("medellin"), "prearrival-cus": tripMentions("cusco"),
+          "prearrival-cdmx": tripMentions("cdmx"), "prearrival-ant": tripMentions("antigua"),
+          "prearrival-bue": tripMentions("buenosaires"), "prearrival-qui": tripMentions("quito"),
+          "prearrival-lima": tripMentions("lima"),
+          "prearrival-arequipa": tripMentions("arequipa"),
+          "prearrival-mendoza": tripMentions("mendoza"),
+          "prearrival-bariloche": tripMentions("bariloche"),
+          "prearrival-oaxaca": tripMentions("oaxaca"),
+          "prearrival-merida": tripMentions("merida"),
+          "prearrival-arenal": tripMentions("arenal"),
+          "prearrival-monteverde": tripMentions("monteverde"),
+          "prearrival-santiago": tripMentions("santiago"),
+          "prearrival-valparaiso": tripMentions("valparaiso"),
+          "prearrival-atacama": tripMentions("atacama"),
+          "prearrival-lapaz": tripMentions("lapaz"),
+          "prearrival-uyuni": tripMentions("uyuni"),
+          "prearrival-puertonatales": tripMentions("puertonatales"),
+          "prearrival-pucon": tripMentions("pucon"),
+          "prearrival-copacabana": tripMentions("copacabana"),
+          "prearrival-sucre": tripMentions("sucre"),
+          "prearrival-pe": tripMentions("peru"),
+          "prearrival-mx": tripMentions("mexico"), "prearrival-cr": tripMentions("costarica"),
+          "prearrival-ec": tripMentions("ecuador"), "prearrival-gt": tripMentions("guatemala"),
+          "prearrival-ar": tripMentions("argentina"), "prearrival-cl": tripMentions("chile"),
+          "prearrival-bo": tripMentions("bolivia"),
         };
         (data.PRESETS || []).forEach((p) => {
           if (!shown[p.id]) return;
@@ -1040,238 +1084,94 @@
   // Erkennt am freien Trip-Ziel-Text, ob die Reise nach Kolumbien geht – steuert,
   // ob die „Pre-Arrival Kolumbien"-Kachel auf dem Dashboard erscheint (sonst bliebe
   // sie auch z. B. bei einer Mexiko-Reise sichtbar). Akzent-/Groß-Schreibung egal.
-  const COLOMBIA_HINTS = ["colombia", "kolumbien", "cartagena", "medellin", "bogota",
-    "cali", "santa marta", "tayrona", "palomino", "minca", "guatape", "barranquilla",
-    "getsemani", "caribe", "rosario"];
-  function isColombiaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return COLOMBIA_HINTS.some((h) => norm.includes(h));
-  }
-  // Pre-Arrival-Kachel zeigen, wenn das Trip-Ziel ODER eine Edition Kolumbien meint.
-  function tripMentionsColombia() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isColombiaDest(t && t.destination) || isColombiaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Cartagena ist ein Stadt-Pack INNERHALB Kolumbiens. Eigene, engere Stichwörter, damit
-  // ein konkreter Cartagena-Trip auch den Cartagena-Plan/-Pack vorschlägt (zusätzlich
-  // zur Kolumbien-Kachel, die über die breiteren COLOMBIA_HINTS ohnehin greift).
-  const CARTAGENA_HINTS = ["cartagena", "getsemani", "bocagrande", "islas del rosario", "san felipe"];
-  function isCartagenaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return CARTAGENA_HINTS.some((h) => norm.includes(h));
-  }
-  function tripMentionsCartagena() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isCartagenaDest(t && t.destination) || isCartagenaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Medellín: ebenfalls ein Stadt-Pack innerhalb Kolumbiens (eigene, engere Stichwörter).
-  const MEDELLIN_HINTS = ["medellin", "poblado", "laureles", "comuna 13", "envigado", "guatape"];
-  function isMedellinDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return MEDELLIN_HINTS.some((h) => norm.includes(h));
-  }
-  function tripMentionsMedellin() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isMedellinDest(t && t.destination) || isMedellinDest(cfg && cfg.defaultDestination);
-  }
-
-  // Cusco: Stadt-Pack innerhalb Perus (Anden/Machu Picchu).
-  const CUSCO_HINTS = ["cusco", "cuzco", "machu picchu", "machupicchu", "ollantaytambo",
-    "valle sagrado", "aguas calientes", "sacsayhuaman", "pisac", "vinicunca"];
-  function isCuscoDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return CUSCO_HINTS.some((h) => norm.includes(h));
-  }
-  function tripMentionsCusco() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isCuscoDest(t && t.destination) || isCuscoDest(cfg && cfg.defaultDestination);
-  }
-
-  // Weitere Stadt-Packs innerhalb vorhandener Länder (eigene, engere Stichwörter).
-  const _normDest = (text) => String(text || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  // --- Reiseziel-Erkennung (datengetrieben) ----------------------------------
+  // Früher: je Land/Stadt ein eigenes XXX_HINTS-Array + tripMentionsXxx()/isXxxDest().
+  // Jetzt: eine Daten-Map DEST_HINTS und generische destMatches(id,text)/tripMentions(id).
+  // Verhalten identisch: Akzent-/Groß-Schreibung egal (NFD-Normalisierung von Text UND
+  // Hinweis). Erkennt am freien Trip-Ziel-Text bzw. an der Edition (config.defaultDestination),
+  // ob die Reise ein bestimmtes Land/eine bestimmte Stadt meint – steuert Pre-Arrival-Kacheln
+  // und den Default-Scope.
+  const DEST_HINTS = {
+    // Länder (Pre-Arrival-Kacheln)
+    colombia: ["colombia", "kolumbien", "cartagena", "medellin", "bogota", "cali",
+      "santa marta", "tayrona", "palomino", "minca", "guatape", "barranquilla",
+      "getsemani", "caribe", "rosario"],
+    peru: ["peru", "perú", "lima", "cusco", "cuzco", "machu picchu", "machupicchu",
+      "arequipa", "titicaca", "puno", "colca", "ollantaytambo", "sacsayhuaman",
+      "valle sagrado", "aguas calientes", "vinicunca", "nazca", "paracas", "huacachina"],
+    mexico: ["mexico", "méxico", "mexiko", "cdmx", "ciudad de mexico", "oaxaca", "chiapas",
+      "san cristobal", "palenque", "merida", "yucatan", "yucatán", "tulum", "cancun",
+      "cancún", "valladolid", "bacalar", "playa del carmen", "riviera maya", "teotihuacan"],
+    costarica: ["costa rica", "costarica", "san jose", "san josé", "la fortuna", "arenal",
+      "monteverde", "manuel antonio", "tortuguero", "puerto viejo", "cahuita", "tamarindo",
+      "rio celeste", "río celeste", "pacuare", "nicoya", "guanacaste", "uvita", "santa teresa"],
+    ecuador: ["ecuador", "quito", "guayaquil", "cuenca", "otavalo", "cotopaxi", "quilotoa",
+      "banos", "baños", "tena", "amazonia", "amazonía", "galapagos", "galápagos",
+      "mitad del mundo", "montañita"],
+    guatemala: ["guatemala", "antigua", "atitlan", "atitlán", "panajachel",
+      "san pedro la laguna", "chichicastenango", "tikal", "flores", "semuc champey",
+      "lanquin", "lanquín", "acatenango", "xela", "quetzaltenango"],
+    argentina: ["argentina", "argentinien", "buenos aires", "patagonia", "patagonien",
+      "el calafate", "el chalten", "el chaltén", "ushuaia", "bariloche", "mendoza",
+      "iguazu", "iguazú", "salta", "fitz roy", "perito moreno"],
+    chile: ["chile", "santiago", "valparaiso", "valparaíso", "atacama", "san pedro de atacama",
+      "torres del paine", "puerto natales", "punta arenas", "pucon", "pucón", "chiloe",
+      "chiloé", "isla de pascua", "rapa nui", "valle de la luna"],
+    bolivia: ["bolivia", "bolivien", "la paz", "el alto", "uyuni", "salar de uyuni", "potosi",
+      "potosí", "sucre", "copacabana", "isla del sol", "titicaca", "tiwanaku", "coroico",
+      "rurrenabaque"],
+    // Stadt-Packs (eigene, engere Stichwörter)
+    cartagena: ["cartagena", "getsemani", "bocagrande", "islas del rosario", "san felipe"],
+    medellin: ["medellin", "poblado", "laureles", "comuna 13", "envigado", "guatape"],
+    cusco: ["cusco", "cuzco", "machu picchu", "machupicchu", "ollantaytambo", "valle sagrado",
+      "aguas calientes", "sacsayhuaman", "pisac", "vinicunca"],
+    cdmx: ["cdmx", "ciudad de mexico", "mexico city", "zocalo", "coyoacan", "condesa",
+      "teotihuacan", "xochimilco"],
+    // atitlan/panajachel bewusst NICHT hier (Atitlán-Region-Tokens, auch in guatemala) –
+    // sonst stähle eine reine Guatemala-Reise „Lago de Atitlán“ den Antigua-Scope.
+    antigua: ["antigua", "acatenango", "pacaya", "semana santa"],
+    buenosaires: ["buenos aires", "palermo", "san telmo", "recoleta", "la boca", "subte", "ezeiza"],
+    // otavalo/cotopaxi bewusst NICHT hier (Tagesausflugs-Ziele, auch in ecuador) –
+    // sonst stähle eine reine Ecuador-Reise „Otavalo“/„Cotopaxi“ den Quito-Scope.
+    quito: ["quito", "mitad del mundo", "teleferiqo", "la ronda"],
+    lima: ["lima", "miraflores", "barranco", "callao", "jorge chavez", "costa verde", "pisco sour"],
+    arequipa: ["arequipa", "colca", "misti", "santa catalina", "yanahuara", "sillar", "chachani"],
+    mendoza: ["mendoza", "malbec", "aconcagua", "valle de uco", "ruta del vino"],
+    bariloche: ["bariloche", "nahuel huapi", "cerro catedral", "circuito chico", "llao llao",
+      "campanario", "siete lagos"],
+    oaxaca: ["oaxaca", "monte alban", "hierve el agua", "tlayuda", "guelaguetza"],
+    merida: ["merida", "yucatan", "cenote", "chichen itza", "uxmal", "valladolid", "cochinita"],
+    arenal: ["fortuna", "arenal", "tabacon", "aguas termales", "catarata"],
+    monteverde: ["monteverde", "santa elena", "bosque nuboso", "selvatura"],
+    santiago: ["santiago", "bellavista", "providencia", "san cristobal", "bip", "la moneda",
+      "cerro santa lucia"],
+    valparaiso: ["valparaiso", "valparaíso", "cerro alegre", "cerro concepcion", "ascensor",
+      "la sebastiana", "vina del mar"],
+    atacama: ["atacama", "san pedro de atacama", "valle de la luna", "el tatio", "geiseres",
+      "calama", "lagunas altiplanicas"],
+    lapaz: ["la paz", "el alto", "teleferico", "mi teleferico", "mercado de las brujas",
+      "valle de la luna", "death road"],
+    uyuni: ["uyuni", "salar de uyuni", "salar", "cementerio de trenes", "colchani", "incahuasi",
+      "isla incahuasi"],
+    puertonatales: ["puerto natales", "torres del paine", "w trek", "paine", "conaf", "milodon"],
+    pucon: ["pucon", "villarrica", "huerquehue", "trancura", "caburgua", "araucania"],
+    copacabana: ["copacabana", "isla del sol", "cerro calvario", "tiquina", "yampupata"],
+    sucre: ["sucre", "ciudad blanca", "plaza 25 de mayo", "cal orcko", "tarabuco",
+      "casa de la libertad", "parque cretacico"],
+  };
+  const _normDest = (text) => String(text || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const tripCfgDest = () => { const cfg = window.SC && window.SC.config; return cfg && cfg.defaultDestination; };
-  const CDMX_HINTS = ["cdmx", "ciudad de mexico", "mexico city", "zocalo", "coyoacan", "condesa", "teotihuacan", "xochimilco"];
-  function tripMentionsCdmx() { const t = gamestats.tripGoal; return CDMX_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  // atitlan/panajachel bewusst NICHT hier: das sind Atitlán-Region-Tokens (auch in GUATEMALA_HINTS) –
-  // sonst würde eine reine Guatemala-Reise „Lago de Atitlán“ fälschlich den Antigua-Scope stehlen.
-  const ANTIGUA_HINTS = ["antigua", "acatenango", "pacaya", "semana santa"];
-  function tripMentionsAntigua() { const t = gamestats.tripGoal; return ANTIGUA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const BUENOSAIRES_HINTS = ["buenos aires", "palermo", "san telmo", "recoleta", "la boca", "subte", "ezeiza"];
-  function tripMentionsBuenosAires() { const t = gamestats.tripGoal; return BUENOSAIRES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  // otavalo/cotopaxi bewusst NICHT hier: Tagesausflugs-Ziele (auch in ECUADOR_HINTS) –
-  // sonst würde eine reine Ecuador-Reise „Otavalo“/„Cotopaxi“ fälschlich den Quito-Scope stehlen.
-  const QUITO_HINTS = ["quito", "mitad del mundo", "teleferiqo", "la ronda"];
-  function tripMentionsQuito() { const t = gamestats.tripGoal; return QUITO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-
-  // Weitere Stadt-Packs (Charge 2): eigene, engere Stichwörter je Stadt.
-  const LIMA_HINTS = ["lima", "miraflores", "barranco", "callao", "jorge chavez", "costa verde", "pisco sour"];
-  function tripMentionsLima() { const t = gamestats.tripGoal; return LIMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const AREQUIPA_HINTS = ["arequipa", "colca", "misti", "santa catalina", "yanahuara", "sillar", "chachani"];
-  function tripMentionsArequipa() { const t = gamestats.tripGoal; return AREQUIPA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const MENDOZA_HINTS = ["mendoza", "malbec", "aconcagua", "valle de uco", "ruta del vino"];
-  function tripMentionsMendoza() { const t = gamestats.tripGoal; return MENDOZA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const BARILOCHE_HINTS = ["bariloche", "nahuel huapi", "cerro catedral", "circuito chico", "llao llao", "campanario", "siete lagos"];
-  function tripMentionsBariloche() { const t = gamestats.tripGoal; return BARILOCHE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const OAXACA_HINTS = ["oaxaca", "monte alban", "hierve el agua", "tlayuda", "guelaguetza"];
-  function tripMentionsOaxaca() { const t = gamestats.tripGoal; return OAXACA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const MERIDA_HINTS = ["merida", "yucatan", "cenote", "chichen itza", "uxmal", "valladolid", "cochinita"];
-  function tripMentionsMerida() { const t = gamestats.tripGoal; return MERIDA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const ARENAL_HINTS = ["fortuna", "arenal", "tabacon", "aguas termales", "catarata"];
-  function tripMentionsArenal() { const t = gamestats.tripGoal; return ARENAL_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const MONTEVERDE_HINTS = ["monteverde", "santa elena", "bosque nuboso", "selvatura"];
-  function tripMentionsMonteverde() { const t = gamestats.tripGoal; return MONTEVERDE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-
-  // Weitere Stadt-Packs (Charge 3, Chile & Bolivien): eigene, engere Stichwörter je Stadt.
-  const SANTIAGO_HINTS = ["santiago", "bellavista", "providencia", "san cristobal", "bip", "la moneda", "cerro santa lucia"];
-  function tripMentionsSantiago() { const t = gamestats.tripGoal; return SANTIAGO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const VALPARAISO_HINTS = ["valparaiso", "valparaíso", "cerro alegre", "cerro concepcion", "ascensor", "la sebastiana", "vina del mar"];
-  function tripMentionsValparaiso() { const t = gamestats.tripGoal; return VALPARAISO_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const ATACAMA_HINTS = ["atacama", "san pedro de atacama", "valle de la luna", "el tatio", "geiseres", "calama", "lagunas altiplanicas"];
-  function tripMentionsAtacama() { const t = gamestats.tripGoal; return ATACAMA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const LAPAZ_HINTS = ["la paz", "el alto", "teleferico", "mi teleferico", "mercado de las brujas", "valle de la luna", "death road"];
-  function tripMentionsLapaz() { const t = gamestats.tripGoal; return LAPAZ_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const UYUNI_HINTS = ["uyuni", "salar de uyuni", "salar", "cementerio de trenes", "colchani", "incahuasi", "isla incahuasi"];
-  function tripMentionsUyuni() { const t = gamestats.tripGoal; return UYUNI_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-
-  // Weitere Stadt-Packs (Charge 4, Patagonien & Titicaca): eigene, engere Stichwörter je Stadt.
-  const PUERTONATALES_HINTS = ["puerto natales", "torres del paine", "w trek", "paine", "conaf", "milodon"];
-  function tripMentionsPuertonatales() { const t = gamestats.tripGoal; return PUERTONATALES_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const PUCON_HINTS = ["pucon", "villarrica", "huerquehue", "trancura", "caburgua", "araucania"];
-  function tripMentionsPucon() { const t = gamestats.tripGoal; return PUCON_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const COPACABANA_HINTS = ["copacabana", "isla del sol", "cerro calvario", "tiquina", "yampupata"];
-  function tripMentionsCopacabana() { const t = gamestats.tripGoal; return COPACABANA_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-  const SUCRE_HINTS = ["sucre", "ciudad blanca", "plaza 25 de mayo", "cal orcko", "tarabuco", "casa de la libertad", "parque cretacico"];
-  function tripMentionsSucre() { const t = gamestats.tripGoal; return SUCRE_HINTS.some((h) => _normDest(t && t.destination).includes(h) || _normDest(tripCfgDest()).includes(h)); }
-
-  // Analog zu Kolumbien: erkennt am freien Trip-Ziel-Text eine Peru-Reise und steuert
-  // die „Pre-Arrival Peru"-Kachel auf dem Dashboard.
-  const PERU_HINTS = ["peru", "perú", "lima", "cusco", "cuzco", "machu picchu", "machupicchu",
-    "arequipa", "titicaca", "puno", "colca", "ollantaytambo", "sacsayhuaman", "valle sagrado",
-    "aguas calientes", "vinicunca", "nazca", "paracas", "huacachina"];
-  function isPeruDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return PERU_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
+  // Trifft der Hinweis-Satz für `id` den gegebenen Text? (Akzent-/Case-unabhängig.)
+  function destMatches(id, text) {
+    const hints = DEST_HINTS[id];
+    if (!hints || !text) return false;
+    const norm = _normDest(text);
+    return hints.some((h) => norm.includes(_normDest(h)));
   }
-  function tripMentionsPeru() {
+  // Meint das aktuelle Trip-Ziel ODER die Edition (config.defaultDestination) das Ziel `id`?
+  function tripMentions(id) {
     const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isPeruDest(t && t.destination) || isPeruDest(cfg && cfg.defaultDestination);
-  }
-
-  // Mexiko-Bezug für die „Pre-Arrival Mexiko"-Kachel.
-  const MEXICO_HINTS = ["mexico", "méxico", "mexiko", "cdmx", "ciudad de mexico", "oaxaca",
-    "chiapas", "san cristobal", "palenque", "merida", "yucatan", "yucatán", "tulum", "cancun",
-    "cancún", "valladolid", "bacalar", "playa del carmen", "riviera maya", "teotihuacan"];
-  function isMexicoDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return MEXICO_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsMexico() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isMexicoDest(t && t.destination) || isMexicoDest(cfg && cfg.defaultDestination);
-  }
-
-  // Costa-Rica-Bezug für die „Pre-Arrival Costa Rica"-Kachel.
-  const COSTARICA_HINTS = ["costa rica", "costarica", "san jose", "san josé", "la fortuna",
-    "arenal", "monteverde", "manuel antonio", "tortuguero", "puerto viejo", "cahuita", "tamarindo",
-    "rio celeste", "río celeste", "pacuare", "nicoya", "guanacaste", "uvita", "santa teresa"];
-  function isCostaRicaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return COSTARICA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsCostaRica() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isCostaRicaDest(t && t.destination) || isCostaRicaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Ecuador-Bezug für die „Pre-Arrival Ecuador"-Kachel.
-  const ECUADOR_HINTS = ["ecuador", "quito", "guayaquil", "cuenca", "otavalo", "cotopaxi",
-    "quilotoa", "banos", "baños", "tena", "amazonia", "amazonía", "galapagos", "galápagos",
-    "mitad del mundo", "montañita"];
-  function isEcuadorDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return ECUADOR_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsEcuador() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isEcuadorDest(t && t.destination) || isEcuadorDest(cfg && cfg.defaultDestination);
-  }
-
-  // Guatemala-Bezug für die „Pre-Arrival Guatemala"-Kachel.
-  const GUATEMALA_HINTS = ["guatemala", "antigua", "atitlan", "atitlán", "panajachel", "san pedro la laguna",
-    "chichicastenango", "tikal", "flores", "semuc champey", "lanquin", "lanquín", "acatenango", "xela",
-    "quetzaltenango"];
-  function isGuatemalaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return GUATEMALA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsGuatemala() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isGuatemalaDest(t && t.destination) || isGuatemalaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Argentinien-Bezug für die „Pre-Arrival Argentinien"-Kachel.
-  const ARGENTINA_HINTS = ["argentina", "argentinien", "buenos aires", "patagonia", "patagonien",
-    "el calafate", "el chalten", "el chaltén", "ushuaia", "bariloche", "mendoza", "iguazu", "iguazú",
-    "salta", "fitz roy", "perito moreno"];
-  function isArgentinaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return ARGENTINA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsArgentina() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isArgentinaDest(t && t.destination) || isArgentinaDest(cfg && cfg.defaultDestination);
-  }
-
-  // Chile-Bezug für die „Pre-Arrival Chile"-Kachel.
-  const CHILE_HINTS = ["chile", "santiago", "valparaiso", "valparaíso", "atacama", "san pedro de atacama",
-    "torres del paine", "puerto natales", "punta arenas", "pucon", "pucón", "chiloe", "chiloé",
-    "isla de pascua", "rapa nui", "valle de la luna"];
-  function isChileDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return CHILE_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsChile() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isChileDest(t && t.destination) || isChileDest(cfg && cfg.defaultDestination);
-  }
-
-  // Bolivien-Bezug für die „Pre-Arrival Bolivien"-Kachel.
-  const BOLIVIA_HINTS = ["bolivia", "bolivien", "la paz", "el alto", "uyuni", "salar de uyuni",
-    "potosi", "potosí", "sucre", "copacabana", "isla del sol", "titicaca", "tiwanaku", "coroico",
-    "rurrenabaque"];
-  function isBoliviaDest(text) {
-    if (!text) return false;
-    const norm = String(text).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    return BOLIVIA_HINTS.some((h) => norm.includes(h.normalize("NFD").replace(/[̀-ͯ]/g, "")));
-  }
-  function tripMentionsBolivia() {
-    const t = gamestats.tripGoal;
-    const cfg = window.SC && window.SC.config;
-    return isBoliviaDest(t && t.destination) || isBoliviaDest(cfg && cfg.defaultDestination);
+    return destMatches(id, t && t.destination) || destMatches(id, tripCfgDest());
   }
 
   // ----- Link-Parameter lesen/aufräumen (für geteilte Onboarding-Links) -----
@@ -1388,15 +1288,15 @@
     // Erscheinungsbild-Schild im Profil das Getränk der ersten Station.
     const r = gamestats.tripGoal && gamestats.tripGoal.route;
     if (Array.isArray(r) && r.length && r[0].id) return r[0].id;
-    if (tripMentionsColombia()) return "colombia";
-    if (tripMentionsPeru()) return "peru";
-    if (tripMentionsMexico()) return "mexico";
-    if (tripMentionsCostaRica()) return "costarica";
-    if (tripMentionsEcuador()) return "ecuador";
-    if (tripMentionsGuatemala()) return "guatemala";
-    if (tripMentionsArgentina()) return "argentina";
-    if (tripMentionsChile()) return "chile";
-    if (tripMentionsBolivia()) return "bolivia";
+    if (tripMentions("colombia")) return "colombia";
+    if (tripMentions("peru")) return "peru";
+    if (tripMentions("mexico")) return "mexico";
+    if (tripMentions("costarica")) return "costarica";
+    if (tripMentions("ecuador")) return "ecuador";
+    if (tripMentions("guatemala")) return "guatemala";
+    if (tripMentions("argentina")) return "argentina";
+    if (tripMentions("chile")) return "chile";
+    if (tripMentions("bolivia")) return "bolivia";
     return null;
   }
 
@@ -1553,15 +1453,13 @@
     settings = Object.assign({}, settings, { onboarded: true });
     store.saveSettings(settings);
     state.tripEdit = false;
-    state.screen = "home";
-    render();
+    setState({ screen: "home" });
   }
 
   function clearTripGoal() {
     gamestats = Object.assign({}, gamestats, { tripGoal: null });
     store.saveGameStats(gamestats);
-    state.tripEdit = false;
-    render();
+    setState({ tripEdit: false });
   }
 
   function toggleTripEdit() {
@@ -1703,8 +1601,7 @@
 
   function openBadges() {
     dismissBadgeToast();
-    state.screen = "badges";
-    render();
+    setState({ screen: "badges" });
   }
 
   // Hostel Mode: Ergebnis eines beendeten Battles in die Spiel-Zähler buchen.
@@ -1949,8 +1846,7 @@
   // ----- Definiciones: Steuerung -----
   function openQuizSetup() {
     dismissBadgeToast();
-    state.screen = "quizSetup";
-    render();
+    setState({ screen: "quizSetup" });
   }
 
   function startQuiz(setId) {
@@ -1967,8 +1863,7 @@
       selected: null,
       correct: 0,
     };
-    state.screen = "quiz";
-    render();
+    setState({ screen: "quiz" });
   }
 
   // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
@@ -1987,8 +1882,7 @@
     if (q.idx >= q.total - 1) {
       recordQuizResult(q);
       syncBadges(Date.now(), true); // Quiz-Badges freischalten + einblenden
-      state.screen = "quizDone";
-      render();
+      setState({ screen: "quizDone" });
       return;
     }
     q.idx += 1;
@@ -2000,8 +1894,7 @@
   function quizAgain() {
     dismissBadgeToast();
     state.quiz = null;
-    state.screen = "quizSetup";
-    render();
+    setState({ screen: "quizSetup" });
   }
 
   // Ergebnis eines beendeten Quiz in die Spiel-Zähler buchen (Ruta-Pass).
@@ -2028,8 +1921,7 @@
 
   function openConjugacion() {
     dismissBadgeToast();
-    state.screen = "conjugacion";
-    render();
+    setState({ screen: "conjugacion" });
   }
 
   // ----- Tiempos: Erklärseite Zeiten -----
@@ -2045,8 +1937,7 @@
 
   function openTiempos() {
     dismissBadgeToast();
-    state.screen = "tiempos";
-    render();
+    setState({ screen: "tiempos" });
   }
 
   // ----- Frases flexibles (Satzbaukasten): Steuerung -----
@@ -2083,8 +1974,7 @@
 
   function openFrasesSetup() {
     dismissBadgeToast();
-    state.screen = "frasesSetup";
-    render();
+    setState({ screen: "frasesSetup" });
   }
 
   // Backwards-kompatibler Einsprung (Home-Kachel): führt jetzt zur Themen-Auswahl.
@@ -2100,8 +1990,7 @@
       options: buildFrasesOptions(frasesById(queue[0])),
       selected: null, correct: 0,
     };
-    state.screen = "frases";
-    render();
+    setState({ screen: "frases" });
   }
 
   // Kopf-Infos zum laufenden Set (Label/Icon) – "Gemischt" hat keinen Datensatz.
@@ -2159,8 +2048,7 @@
     if (f.idx >= f.total - 1) {
       recordFrasesResult(f);
       syncBadges(Date.now(), true);
-      state.screen = "frasesDone";
-      render();
+      setState({ screen: "frasesDone" });
       return;
     }
     f.idx += 1;
@@ -2312,9 +2200,10 @@
 
   function openDialogosSetup() {
     dismissBadgeToast();
-    if (!dialogosReady()) return;
-    state.screen = "dialogosSetup";
-    render();
+    loadModule("dialogos", () => {
+      if (!dialogosReady()) return;
+      setState({ screen: "dialogosSetup" });
+    });
   }
 
   function startDialogos(scenarioId) {
@@ -2372,8 +2261,7 @@
     if (d.turnIdx >= dia.turns.length - 1) {
       recordDialogosResult(d);
       syncBadges(Date.now(), true);
-      state.screen = "dialogosDone";
-      render();
+      setState({ screen: "dialogosDone" });
       return;
     }
     d.turnIdx += 1;
@@ -2444,8 +2332,7 @@
     state.bodyPartId = null;
     state.bodyYaw = -22; // beim Öffnen in die Drei-Viertel-Ansicht zurücksetzen
     state.bodyPitch = -6;
-    state.screen = "cuerpo";
-    render();
+    setState({ screen: "cuerpo" });
   }
 
   // Ein Körperteil antippen: Wort anzeigen, vorlesen und (einmalig) für den
@@ -2537,14 +2424,12 @@
     } else {
       state.compras = { section: state.compras.section, open: null };
     }
-    state.screen = "compras";
-    render();
+    setState({ screen: "compras" });
   }
 
   function comprasSection(id) {
     if (!shoppingSectionById(id)) return;
-    state.compras = { section: id, open: null };
-    render();
+    setState({ compras: { section: id, open: null } });
   }
 
   // Ein Item antippen: nur auf-/zuklappen und beim Aufklappen das Wort
@@ -2605,8 +2490,7 @@
       selected: null,
       correct: 0,
     };
-    state.screen = "comprasQuiz";
-    render();
+    setState({ screen: "comprasQuiz" });
   }
 
   function comprasQuizVM() {
@@ -2649,8 +2533,7 @@
     const q = state.comprasQuiz;
     if (!q || q.selected === null) return;
     if (q.idx >= q.total - 1) {
-      state.screen = "comprasQuizDone";
-      render();
+      setState({ screen: "comprasQuizDone" });
       return;
     }
     q.idx += 1;
@@ -2681,8 +2564,7 @@
   function comprasBackToList() {
     state.comprasQuiz = null;
     state.compras = { section: state.compras.section, open: null };
-    state.screen = "compras";
-    render();
+    setState({ screen: "compras" });
   }
 
   // ----- El Cuerpo: drehbares 3D-Modell (in-place, ohne Voll-Re-Render) -----
@@ -2918,8 +2800,7 @@
       state.revealed = false;
       state.contextOpen = false;
       state.typeResult = null;
-      state.screen = target;
-      render();
+      setState({ screen: target });
     }
     return true;
   }
@@ -2997,65 +2878,71 @@
   }
 
   function render() {
-    if (state.screen === "study") root.innerHTML = ui.renderStudy(studyVM());
-    else if (state.screen === "done") root.innerHTML = ui.renderDone();
-    else if (state.screen === "stats") root.innerHTML = ui.renderStats(statsVM());
-    else if (state.screen === "card") root.innerHTML = ui.renderCard(cardVM());
-    else if (state.screen === "editor") root.innerHTML = ui.renderEditor(editorVM());
-    else if (state.screen === "info") root.innerHTML = ui.renderInfo(infoVM());
-    else if (state.screen === "historia") root.innerHTML = ui.renderHistoria(historiaVM());
-    else if (state.screen === "knigge") root.innerHTML = ui.renderKnigge(kniggeVM());
-    else if (state.screen === "bebidas") root.innerHTML = ui.renderBebidas(bebidasVM());
-    else if (state.screen === "regatear") root.innerHTML = ui.renderRegatear(regatearVM());
-    else if (state.screen === "logistica") root.innerHTML = ui.renderLogistica(logisticaVM());
-    else if (state.screen === "salud") root.innerHTML = ui.renderSalud(saludVM());
-    else if (state.screen === "flirt") root.innerHTML = ui.renderFlirt(flirtVM());
-    else if (state.screen === "fotos") root.innerHTML = ui.renderFotos(fotosVM());
-    else if (state.screen === "bailar") root.innerHTML = ui.renderBailar(bailarVM());
-    else if (state.screen === "musica") root.innerHTML = ui.renderMusica(musicaVM());
-    else if (state.screen === "badges") root.innerHTML = ui.renderBadges(badgesVM());
-    else if (state.screen === "social") root.innerHTML = ui.renderSocial(socialVM());
-    else if (state.screen === "hostel") root.innerHTML = ui.renderHostel(hostelVM());
-    else if (state.screen === "pretrip") root.innerHTML = ui.renderPretrip(pretripVM());
-    else if (state.screen === "teacher") root.innerHTML = ui.renderTeacher(teacherVM());
-    else if (state.screen === "printsheet") root.innerHTML = ui.renderPrintSheet(sheetVM());
-    else if (state.screen === "task") root.innerHTML = ui.renderTask(taskVM());
-    else if (state.screen === "placement") root.innerHTML = ui.renderPlacement(placementVM());
-    else if (state.screen === "assessment") root.innerHTML = ui.renderAssessment(assessmentVM());
-    else if (state.screen === "battleSetup") root.innerHTML = ui.renderBattleSetup(battleSetupVM());
-    else if (state.screen === "battle") root.innerHTML = ui.renderBattle(battleVM());
-    else if (state.screen === "battleDone") root.innerHTML = ui.renderBattleDone(battleDoneVM());
-    else if (state.screen === "roleplaySetup") root.innerHTML = ui.renderRoleplaySetup(roleplaySetupVM());
-    else if (state.screen === "roleplay") root.innerHTML = ui.renderRoleplay(roleplayVM());
-    else if (state.screen === "quizSetup") root.innerHTML = ui.renderQuizSetup(quizSetupVM());
-    else if (state.screen === "quiz") root.innerHTML = ui.renderQuiz(quizVM());
-    else if (state.screen === "quizDone") root.innerHTML = ui.renderQuizDone();
-    else if (state.screen === "cuerpo") root.innerHTML = ui.renderCuerpo(cuerpoVM());
-    else if (state.screen === "conjugacion") root.innerHTML = ui.renderConjugacion(conjugacionVM());
-    else if (state.screen === "tiempos") root.innerHTML = ui.renderTiempos(tiemposVM());
-    else if (state.screen === "spickzettel") root.innerHTML = ui.renderSpickzettel(spickzettelVM());
-    else if (state.screen === "favorites") root.innerHTML = ui.renderFavorites(favoritesVM());
-    else if (state.screen === "preciosSetup") root.innerHTML = ui.renderPreciosSetup(preciosSetupVM());
-    else if (state.screen === "precios") root.innerHTML = ui.renderPrecios(preciosVM());
-    else if (state.screen === "preciosDone") root.innerHTML = ui.renderPreciosDone();
-    else if (state.screen === "frasesSetup") root.innerHTML = ui.renderFrasesSetup(frasesSetupVM());
-    else if (state.screen === "frases") root.innerHTML = ui.renderFrases(frasesVM());
-    else if (state.screen === "frasesDone") root.innerHTML = ui.renderFrasesDone();
-    else if (state.screen === "conjugSetup") root.innerHTML = ui.renderConjugSetup(conjugSetupVM());
-    else if (state.screen === "conjug") root.innerHTML = ui.renderConjug(conjugVM());
-    else if (state.screen === "conjugDone") root.innerHTML = ui.renderConjugDone();
-    else if (state.screen === "yestoSetup") root.innerHTML = ui.renderYestoSetup(yestoSetupVM());
-    else if (state.screen === "yesto") root.innerHTML = ui.renderYesto(yestoVM());
-    else if (state.screen === "yestoDone") root.innerHTML = ui.renderYestoDone();
-    else if (state.screen === "dialogosSetup") root.innerHTML = ui.renderDialogosSetup(dialogosSetupVM());
-    else if (state.screen === "dialogos") root.innerHTML = ui.renderDialogos(dialogosVM());
-    else if (state.screen === "dialogosDone") root.innerHTML = ui.renderDialogosDone();
-    else if (state.screen === "compras") root.innerHTML = ui.renderCompras(comprasVM());
-    else if (state.screen === "comprasQuiz") root.innerHTML = ui.renderComprasQuiz(comprasQuizVM());
-    else if (state.screen === "comprasQuizDone") root.innerHTML = ui.renderComprasQuizDone();
-    else if (state.screen === "search") root.innerHTML = ui.renderSearch(searchVM());
-    else if (state.screen === "onboarding") root.innerHTML = ui.renderOnboarding(homeVM());
-    else root.innerHTML = ui.renderHome(homeVM());
+    // Screen-Dispatch-Tabelle: state.screen -> Funktion, die das HTML liefert.
+    // Ersetzt die fruehere if/else-Kette. Unbekannte Screens fallen auf Home
+    // zurueck (wie zuvor der else-Zweig). Reine Lookup-Tabelle, Verhalten gleich.
+    const SCREENS = {
+      "study": () => ui.renderStudy(studyVM()),
+      "done": () => ui.renderDone(),
+      "stats": () => ui.renderStats(statsVM()),
+      "card": () => ui.renderCard(cardVM()),
+      "editor": () => ui.renderEditor(editorVM()),
+      "info": () => ui.renderInfo(infoVM()),
+      "historia": () => ui.renderHistoria(historiaVM()),
+      "knigge": () => ui.renderKnigge(kniggeVM()),
+      "bebidas": () => ui.renderBebidas(bebidasVM()),
+      "regatear": () => ui.renderRegatear(regatearVM()),
+      "logistica": () => ui.renderLogistica(logisticaVM()),
+      "salud": () => ui.renderSalud(saludVM()),
+      "flirt": () => ui.renderFlirt(flirtVM()),
+      "fotos": () => ui.renderFotos(fotosVM()),
+      "bailar": () => ui.renderBailar(bailarVM()),
+      "musica": () => ui.renderMusica(musicaVM()),
+      "badges": () => ui.renderBadges(badgesVM()),
+      "social": () => ui.renderSocial(socialVM()),
+      "hostel": () => ui.renderHostel(hostelVM()),
+      "pretrip": () => ui.renderPretrip(pretripVM()),
+      "teacher": () => ui.renderTeacher(teacherVM()),
+      "printsheet": () => ui.renderPrintSheet(sheetVM()),
+      "task": () => ui.renderTask(taskVM()),
+      "placement": () => ui.renderPlacement(placementVM()),
+      "assessment": () => ui.renderAssessment(assessmentVM()),
+      "battleSetup": () => ui.renderBattleSetup(battleSetupVM()),
+      "battle": () => ui.renderBattle(battleVM()),
+      "battleDone": () => ui.renderBattleDone(battleDoneVM()),
+      "roleplaySetup": () => ui.renderRoleplaySetup(roleplaySetupVM()),
+      "roleplay": () => ui.renderRoleplay(roleplayVM()),
+      "quizSetup": () => ui.renderQuizSetup(quizSetupVM()),
+      "quiz": () => ui.renderQuiz(quizVM()),
+      "quizDone": () => ui.renderQuizDone(),
+      "cuerpo": () => ui.renderCuerpo(cuerpoVM()),
+      "conjugacion": () => ui.renderConjugacion(conjugacionVM()),
+      "tiempos": () => ui.renderTiempos(tiemposVM()),
+      "spickzettel": () => ui.renderSpickzettel(spickzettelVM()),
+      "favorites": () => ui.renderFavorites(favoritesVM()),
+      "preciosSetup": () => ui.renderPreciosSetup(preciosSetupVM()),
+      "precios": () => ui.renderPrecios(preciosVM()),
+      "preciosDone": () => ui.renderPreciosDone(),
+      "frasesSetup": () => ui.renderFrasesSetup(frasesSetupVM()),
+      "frases": () => ui.renderFrases(frasesVM()),
+      "frasesDone": () => ui.renderFrasesDone(),
+      "conjugSetup": () => ui.renderConjugSetup(conjugSetupVM()),
+      "conjug": () => ui.renderConjug(conjugVM()),
+      "conjugDone": () => ui.renderConjugDone(),
+      "yestoSetup": () => ui.renderYestoSetup(yestoSetupVM()),
+      "yesto": () => ui.renderYesto(yestoVM()),
+      "yestoDone": () => ui.renderYestoDone(),
+      "dialogosSetup": () => ui.renderDialogosSetup(dialogosSetupVM()),
+      "dialogos": () => ui.renderDialogos(dialogosVM()),
+      "dialogosDone": () => ui.renderDialogosDone(),
+      "compras": () => ui.renderCompras(comprasVM()),
+      "comprasQuiz": () => ui.renderComprasQuiz(comprasQuizVM()),
+      "comprasQuizDone": () => ui.renderComprasQuizDone(),
+      "search": () => ui.renderSearch(searchVM()),
+      "onboarding": () => ui.renderOnboarding(homeVM()),
+    };
+    const screenFn = SCREENS[state.screen];
+    root.innerHTML = screenFn ? screenFn() : ui.renderHome(homeVM());
 
     // Nach dem Austausch des Inhalts: bei echtem Ansichtswechsel oben anfangen.
     resetScrollOnViewChange();
@@ -3354,7 +3241,93 @@
   // Nach jedem Voll-Re-Render (innerHTML wird ersetzt) den Fokus auf ein sinnvolles
   // Ziel setzen – sonst fällt er auf <body> und Tastatur-/Screenreader-Nutzer verlieren
   // ihre Position. preventScroll vermeidet Sprünge.
+  // ----- Focus-Trap für modale Dialoge -------------------------------------
+  // Modals tragen role="dialog" aria-modal="true" (ui.js). Beim Öffnen merken wir
+  // uns das auslösende Element, lenken den Fokus in den Dialog und halten Tab/
+  // Shift+Tab innerhalb des Dialogs (Containment). Beim Schließen kehrt der Fokus
+  // dorthin zurück, wo er ausgelöst wurde. So bleibt Tastatur-/Screenreader-
+  // Navigation im Modal gefangen (WCAG 2.4.3 / 2.1.2).
+  let modalReturnFocus = null; // Element, das vor dem Öffnen den Fokus hatte
+
+  // Der oberste offene Modal-Container im aktuellen DOM (oder null).
+  function currentModal() {
+    const list = root.querySelectorAll('[role="dialog"][aria-modal="true"]');
+    return list.length ? list[list.length - 1] : null;
+  }
+  // Sichtbare, fokussierbare Elemente innerhalb eines Containers.
+  function focusableIn(container) {
+    if (!container) return [];
+    const sel = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    return Array.prototype.filter.call(container.querySelectorAll(sel), (el) => {
+      if (el.hasAttribute("disabled") || el.getAttribute("aria-hidden") === "true") return false;
+      // offsetParent === null heißt i. d. R. unsichtbar (display:none / detached)
+      return el.offsetParent !== null || el === document.activeElement;
+    });
+  }
+  // Tab/Shift+Tab innerhalb des offenen Modals halten. true, wenn behandelt.
+  function trapModalTab(e) {
+    if (e.key !== "Tab") return false;
+    const modal = currentModal();
+    if (!modal) return false;
+    const items = focusableIn(modal);
+    if (!items.length) { e.preventDefault(); return true; }
+    const first = items[0];
+    const last = items[items.length - 1];
+    const active = document.activeElement;
+    // Fokus außerhalb des Modals (z. B. noch auf dem Auslöser) -> hinein holen.
+    if (!modal.contains(active)) {
+      e.preventDefault();
+      try { first.focus(); } catch (err) { /* egal */ }
+      return true;
+    }
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      try { last.focus(); } catch (err) { /* egal */ }
+      return true;
+    }
+    if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      try { first.focus(); } catch (err) { /* egal */ }
+      return true;
+    }
+    return false;
+  }
+
   function manageFocus() {
+    // Focus-Trap-Buchhaltung: ist gerade ein Modal offen, merken wir uns (einmal)
+    // den vorigen Fokus für die Rückgabe. Ist keins (mehr) offen, geben wir den
+    // Fokus an das auslösende Element zurück. Läuft VOR der screen-spezifischen
+    // Fokus-Logik unten – Modals haben Vorrang.
+    const modal = currentModal();
+    if (modal) {
+      if (!modalReturnFocus && document.activeElement && document.activeElement !== document.body) {
+        modalReturnFocus = document.activeElement;
+      }
+      if (!modal.contains(document.activeElement)) {
+        // Update-Hinweis: wie bisher den Primär-Button („Verstanden") fokussieren,
+        // nicht den ersten Button (Reload). Sonst generisch: erstes fokussierbares.
+        const preferred = modal.querySelector(".upd__ok");
+        const items = focusableIn(modal);
+        const target = preferred || items[0] || modal;
+        if (!target.hasAttribute("tabindex") && target === modal) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (e) { try { target.focus(); } catch (e2) { /* egal */ } }
+      }
+      return; // Fokus bleibt im Modal
+    }
+    if (modalReturnFocus) {
+      const back = modalReturnFocus;
+      modalReturnFocus = null;
+      // Nur zurückgeben, wenn das Element noch im DOM hängt (Re-Render kann es
+      // ersetzt haben – dann übernimmt die normale screen-Fokuslogik unten).
+      if (back && (root.contains(back) || (document.body && document.body.contains(back)))) {
+        try { back.focus({ preventScroll: true }); } catch (e) { try { back.focus(); } catch (e2) { /* egal */ } }
+        return;
+      }
+    }
+    manageScreenFocus();
+  }
+
+  function manageScreenFocus() {
     // Update-Hinweis liegt als Modal über allem -> Fokus hinein, nicht auf den
     // verdeckten Screen dahinter (Tastatur/Screenreader).
     if (state.updateNotice && state.updateNotice.length) {
@@ -3517,39 +3490,39 @@
   // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
   // sonst der erste Plan (Kolumbien).
   function defaultPretripScope() {
-    if (tripMentionsCusco()) return "cusco"; // konkrete Städte vor dem breiten Land
-    if (tripMentionsLima()) return "lima";
-    if (tripMentionsArequipa()) return "arequipa";
-    if (tripMentionsPeru()) return "peru";
-    if (tripMentionsCdmx()) return "cdmx";
-    if (tripMentionsOaxaca()) return "oaxaca";
-    if (tripMentionsMerida()) return "merida";
-    if (tripMentionsMexico()) return "mexico";
-    if (tripMentionsArenal()) return "arenal";
-    if (tripMentionsMonteverde()) return "monteverde";
-    if (tripMentionsCostaRica()) return "costarica";
-    if (tripMentionsQuito()) return "quito";
-    if (tripMentionsEcuador()) return "ecuador";
-    if (tripMentionsAntigua()) return "antigua";
-    if (tripMentionsGuatemala()) return "guatemala";
-    if (tripMentionsBuenosAires()) return "buenosaires";
-    if (tripMentionsMendoza()) return "mendoza";
-    if (tripMentionsBariloche()) return "bariloche";
-    if (tripMentionsArgentina()) return "argentina";
-    if (tripMentionsSantiago()) return "santiago";
-    if (tripMentionsValparaiso()) return "valparaiso";
-    if (tripMentionsAtacama()) return "atacama";
-    if (tripMentionsPuertonatales()) return "puertonatales";
-    if (tripMentionsPucon()) return "pucon";
-    if (tripMentionsChile()) return "chile";
-    if (tripMentionsLapaz()) return "lapaz";
-    if (tripMentionsUyuni()) return "uyuni";
-    if (tripMentionsCopacabana()) return "copacabana";
-    if (tripMentionsSucre()) return "sucre";
-    if (tripMentionsBolivia()) return "bolivia";
-    if (tripMentionsCartagena()) return "cartagena"; // konkrete Städte vor dem breiten Kolumbien
-    if (tripMentionsMedellin()) return "medellin";
-    if (tripMentionsColombia()) return "colombia";
+    if (tripMentions("cusco")) return "cusco"; // konkrete Städte vor dem breiten Land
+    if (tripMentions("lima")) return "lima";
+    if (tripMentions("arequipa")) return "arequipa";
+    if (tripMentions("peru")) return "peru";
+    if (tripMentions("cdmx")) return "cdmx";
+    if (tripMentions("oaxaca")) return "oaxaca";
+    if (tripMentions("merida")) return "merida";
+    if (tripMentions("mexico")) return "mexico";
+    if (tripMentions("arenal")) return "arenal";
+    if (tripMentions("monteverde")) return "monteverde";
+    if (tripMentions("costarica")) return "costarica";
+    if (tripMentions("quito")) return "quito";
+    if (tripMentions("ecuador")) return "ecuador";
+    if (tripMentions("antigua")) return "antigua";
+    if (tripMentions("guatemala")) return "guatemala";
+    if (tripMentions("buenosaires")) return "buenosaires";
+    if (tripMentions("mendoza")) return "mendoza";
+    if (tripMentions("bariloche")) return "bariloche";
+    if (tripMentions("argentina")) return "argentina";
+    if (tripMentions("santiago")) return "santiago";
+    if (tripMentions("valparaiso")) return "valparaiso";
+    if (tripMentions("atacama")) return "atacama";
+    if (tripMentions("puertonatales")) return "puertonatales";
+    if (tripMentions("pucon")) return "pucon";
+    if (tripMentions("chile")) return "chile";
+    if (tripMentions("lapaz")) return "lapaz";
+    if (tripMentions("uyuni")) return "uyuni";
+    if (tripMentions("copacabana")) return "copacabana";
+    if (tripMentions("sucre")) return "sucre";
+    if (tripMentions("bolivia")) return "bolivia";
+    if (tripMentions("cartagena")) return "cartagena"; // konkrete Städte vor dem breiten Kolumbien
+    if (tripMentions("medellin")) return "medellin";
+    if (tripMentions("colombia")) return "colombia";
     return (PRETRIP()[0] || {}).scope || "colombia";
   }
 
@@ -3558,15 +3531,13 @@
     if (!state.pretripScope || !PRETRIP().some((p) => p.scope === state.pretripScope)) {
       state.pretripScope = defaultPretripScope();
     }
-    state.screen = "pretrip";
-    render();
+    setState({ screen: "pretrip" });
   }
 
   function setPretripScope(scope) {
     if (state.pretripLock) return; // zugewiesene Aufgabe: Ziel ist fix, kein Wechsel
     if (!PRETRIP().some((p) => p.scope === scope)) return;
-    state.pretripScope = scope;
-    render();
+    setState({ pretripScope: scope });
   }
 
   function pretripVM() {
@@ -3616,8 +3587,7 @@
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
-    state.screen = "study";
-    render();
+    setState({ screen: "study" });
   }
 
   // Einen Pre-Trip-Tag als abgeschlossen vermerken (je Destination, distinkt, idempotent).
@@ -3645,8 +3615,10 @@
       const first = taskTargets()[0];
       if (first) state.taskItems = [targetValueToItem(first.value)];
     }
-    state.screen = "teacher";
-    render();
+    // QR-Generator (window.SC.qr) wird beim Lehrer-Screen inline für den
+    // Aufgaben-Code-QR gebraucht. Bei Bedarf nachladen, dann (neu) rendern –
+    // der inline qrSvg-Guard zeigt sonst nur ein leeres Feld bis zum Reload.
+    loadModule("qr", () => setState({ screen: "teacher" }));
   }
 
   // Aus einem Backup-Payload eine kompakte Schüler-Auswertung bauen (rein).
@@ -3718,8 +3690,7 @@
   }
   function clearTeacher() {
     if (state.teacherStudents.length && !confirmAsk(t("teacher.confirmClear"))) return;
-    state.teacherStudents = [];
-    render();
+    setState({ teacherStudents: [] });
   }
   function printTeacher() { try { window.print(); } catch (e) { /* egal */ } }
 
@@ -3906,8 +3877,7 @@
   }
 
   function clearTaskSelection() {
-    state.taskItems = [];
-    render();
+    setState({ taskItems: [] });
   }
 
   // Aufgabe/Bundle erzeugen (Lehrkraft): aus der Auswahl einen Code bauen.
@@ -4199,8 +4169,7 @@
     if (!state.sheetStage) state.sheetStage = "all";
     if (!state.sheetMode) state.sheetMode = "full";
     if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
-    state.screen = "printsheet";
-    render();
+    setState({ screen: "printsheet" });
   }
 
   function printSheet() { try { window.print(); } catch (e) { /* egal */ } }
@@ -4519,8 +4488,7 @@
       asked: [], answers: [], difficulty: placement.START_DIFFICULTY,
       mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
     };
-    state.screen = "placement";
-    render();
+    setState({ screen: "placement" });
   }
 
   function pushPlacementQuestion(q) {
@@ -4763,8 +4731,7 @@
       asked: [], answers: [], difficulty: assessment.START_DIFFICULTY,
       mcAsked: 0, grammarAsked: 0, freeIdx: 0, startedAt: 0, qStartedAt: 0, result: null,
     };
-    state.screen = "assessment";
-    render();
+    setState({ screen: "assessment" });
   }
 
   // Laufenden Test (gamestats.assessmentProgress) wiederaufnehmen. true, wenn
@@ -4788,8 +4755,7 @@
       answeredFor: null,
       result: null,
     };
-    state.screen = "assessment";
-    render();
+    setState({ screen: "assessment" });
     speakCurrentAssessment(); // war die offene Frage ein Hör-Item, erneut vorlesen
     return true;
   }
@@ -5082,8 +5048,7 @@
     // Richtung: ES→native erwartet die muttersprachliche Antwort, native→ES die spanische.
     const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "native" : "es");
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
-    state.contextOpen = false;
-    render();
+    setState({ contextOpen: false });
   }
 
   // Kurzes Haptik-Feedback (nur wo unterstützt, z.B. Android-Chrome). Ignoriert sonst.
@@ -5363,8 +5328,7 @@
     // hat der Start-Reiter wieder Vorrang, deshalb wird er nicht persistiert.
     // screen zurück auf "home" setzen, falls man vom Tarea-Screen einen Reiter tippt.
     state.screen = "home";
-    state.homeTab = (tab === "lernen" || tab === "entdecken" || tab === "profil") ? tab : "start";
-    render();
+    setState({ homeTab: (tab === "lernen" || tab === "entdecken" || tab === "profil") ? tab : "start" });
   }
 
   function goHome() {
@@ -5383,8 +5347,7 @@
   // ----- Hostel Mode (Anwenden zu zweit) -----
   function openHostel() {
     dismissBadgeToast();
-    state.screen = "hostel";
-    render();
+    setState({ screen: "hostel" });
   }
 
   function openBattleSetup() {
@@ -5396,8 +5359,7 @@
       const n = profileName().slice(0, 14);
       if (n) state.battleNames = Object.assign({}, state.battleNames, { A: n });
     }
-    state.screen = "battleSetup";
-    render();
+    setState({ screen: "battleSetup" });
   }
 
   // Coordinator-Schnellstart („5-Minuten-Icebreaker"): springt ohne Setup direkt
@@ -5410,8 +5372,7 @@
 
   // Vor dem Start gewählte Battle-Länge merken (nur Umschalten, kein Start).
   function setBattleLength(value) {
-    state.battleLength = value;
-    render();
+    setState({ battleLength: value });
   }
 
   // Spielernamen aus den Setup-Feldern lesen (vor dem Start) und merken.
@@ -5479,8 +5440,7 @@
       suddenDeath: false,     // läuft/lief eine Stichrunde?
       challenge: null,
     };
-    state.screen = "battle";
-    render();
+    setState({ screen: "battle" });
   }
 
   // Verwendete Ids merken (für den Wiederholungsschutz), Liste begrenzen.
@@ -5541,15 +5501,13 @@
     b.current = "A";
     b.revealed = false;
     b.suddenDeath = true;
-    state.screen = "battle";
-    render();
+    setState({ screen: "battle" });
   }
 
   function battleAgain() {
     dismissBadgeToast();
     state.battle = null;
-    state.screen = "battleSetup";
-    render();
+    setState({ screen: "battleSetup" });
   }
 
   // Real-Life-Challenge auf dem Battle-Ende-Screen abhaken (Mutproben-Badges).
@@ -5561,8 +5519,7 @@
 
   function openRoleplaySetup() {
     dismissBadgeToast();
-    state.screen = "roleplaySetup";
-    render();
+    setState({ screen: "roleplaySetup" });
   }
 
   function startRoleplay(id) {
@@ -5572,8 +5529,7 @@
     state.roleplaySwapped = false;
     recordRoleplaySeen(id);
     syncBadges(Date.now(), true); // Rollenspiel-Badges freischalten + einblenden
-    state.screen = "roleplay";
-    render();
+    setState({ screen: "roleplay" });
   }
 
   function roleplaySwap() {
@@ -5623,20 +5579,17 @@
   function openSpickzettel() {
     dismissBadgeToast();
     state.screen = "spickzettel";
-    state.szShow = null;
-    render();
+    setState({ szShow: null });
   }
 
   // Großanzeige öffnen/schließen (Satz bildschirmfüllend zum Herzeigen).
   function szShow(id) {
     if (!cardById(id)) return;
-    state.szShow = id;
-    render();
+    setState({ szShow: id });
   }
 
   function szClose() {
-    state.szShow = null;
-    render();
+    setState({ szShow: null });
   }
 
   // Eine beliebige Karte per Id vorlesen (Spickzettel / Listen außerhalb der
@@ -5880,8 +5833,7 @@
   function openPrecios() {
     dismissBadgeToast();
     if (!preciosReady()) return;
-    state.screen = "preciosSetup";
-    render();
+    setState({ screen: "preciosSetup" });
   }
 
   function setPreciosCurrency(key) {
@@ -5932,8 +5884,7 @@
     if (p.idx >= p.total - 1) {
       recordPreciosResult(p);
       syncBadges(Date.now(), true);
-      state.screen = "preciosDone";
-      render();
+      setState({ screen: "preciosDone" });
       return;
     }
     p.idx += 1;
@@ -6002,8 +5953,7 @@
   function openConjugDrill() {
     dismissBadgeToast();
     if (!conjugReady()) return;
-    state.screen = "conjugSetup";
-    render();
+    setState({ screen: "conjugSetup" });
   }
 
   function setConjugLevel(level) {
@@ -6021,8 +5971,7 @@
     const queue = conjug.buildRound(data.CONJUGATION, level, CONJUG_ROUND);
     if (!queue.length) return;
     state.conjug = { level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
-    state.screen = "conjug";
-    render();
+    setState({ screen: "conjug" });
   }
 
   // Getippte Form akzentnachsichtig prüfen (matcher.normalize: á=a, ñ=n, ohne
@@ -6045,8 +5994,7 @@
     if (c.idx >= c.total - 1) {
       recordConjugResult(c);
       syncBadges(Date.now(), true);
-      state.screen = "conjugDone";
-      render();
+      setState({ screen: "conjugDone" });
       return;
     }
     c.idx += 1;
@@ -6119,8 +6067,7 @@
     dismissBadgeToast();
     yestoDisarm();
     if (!yestoReady()) return;
-    state.screen = "yestoSetup";
-    render();
+    setState({ screen: "yestoSetup" });
   }
 
   function startYesto(themeId) {
@@ -6182,8 +6129,7 @@
       recordYestoResult(y); // Zähler buchen, BEVOR die Badges ausgewertet werden
       syncBadges(Date.now(), true);
       yestoDisarm();
-      state.screen = "yestoDone";
-      render();
+      setState({ screen: "yestoDone" });
       return;
     }
     y.idx += 1;
@@ -6426,8 +6372,7 @@
 
   function openSearch() {
     dismissBadgeToast();
-    state.screen = "search";
-    render();
+    setState({ screen: "search" });
   }
 
   // Live-Eingabe: nur die Trefferliste neu zeichnen, NICHT die ganze Seite – so
@@ -6450,94 +6395,79 @@
 
   function openInfo() {
     dismissBadgeToast();
-    state.screen = "info";
-    render();
+    setState({ screen: "info" });
   }
 
   function openHistoria(region) {
     dismissBadgeToast();
     state.histRegion = region === "centro" ? "centro" : "sur";
-    state.screen = "historia";
-    render();
+    loadModule(region === "centro" ? "historiaCentro" : "historia", () => setState({ screen: "historia" }));
   }
 
   function openKnigge() {
     dismissBadgeToast();
-    state.screen = "knigge";
-    render();
+    setState({ screen: "knigge" });
   }
 
   function openBebidas() {
     dismissBadgeToast();
-    state.screen = "bebidas";
-    render();
+    setState({ screen: "bebidas" });
   }
 
   // AM/PM-Tafel umschalten. Beim ersten Tippen die aktuelle (uhrzeitbasierte)
   // Voreinstellung aus dem VM übernehmen, dann gegenteilig kippen.
   function toggleBebida() {
     const cur = state.bebMode || bebDefaultMode();
-    state.bebMode = cur === "am" ? "pm" : "am";
-    render();
+    setState({ bebMode: cur === "am" ? "pm" : "am" });
   }
 
   function openRegatear() {
     dismissBadgeToast();
-    state.screen = "regatear";
-    render();
+    setState({ screen: "regatear" });
   }
 
   function openLogistica() {
     dismissBadgeToast();
-    state.screen = "logistica";
-    render();
+    setState({ screen: "logistica" });
   }
 
   function openSalud() {
     dismissBadgeToast();
-    state.screen = "salud";
-    render();
+    setState({ screen: "salud" });
   }
 
   function openMusica() {
     dismissBadgeToast();
-    state.screen = "musica";
-    render();
+    loadModule("musica", () => setState({ screen: "musica" }));
   }
 
   function openFotos() {
     dismissBadgeToast();
-    state.screen = "fotos";
-    render();
+    loadModule("fotografia", () => setState({ screen: "fotos" }));
   }
 
   function openFlirt() {
     dismissBadgeToast();
-    state.screen = "flirt";
-    render();
+    loadModule("flirt", () => setState({ screen: "flirt" }));
   }
 
   function openBailar() {
     dismissBadgeToast();
-    state.screen = "bailar";
-    render();
+    loadModule("bailar", () => setState({ screen: "bailar" }));
   }
 
   function selectCountry(id) {
-    state.countryId = id;
-    render();
+    setState({ countryId: id });
   }
 
   // ----- Statistik-Navigation -----
   function goStats() {
     dismissBadgeToast();
-    state.screen = "stats";
-    render();
+    setState({ screen: "stats" });
   }
 
   function setStatsFilter(filter) {
-    state.statsFilter = filter;
-    render();
+    setState({ statsFilter: filter });
   }
 
   // confirm()-Wrapper: fehlt confirm (manche WebViews), ist die Antwort NEIN –
@@ -6565,8 +6495,7 @@
     state.cardId = id;
     state.backTo = backTo || "stats";
     state.contextOpen = false;
-    state.screen = "card";
-    render();
+    setState({ screen: "card" });
   }
 
   // Genau diese eine Karte üben (von der Detailseite aus).
@@ -6583,8 +6512,7 @@
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
-    state.screen = "study";
-    render();
+    setState({ screen: "study" });
   }
 
   // ----- Eigene Karten (Editor) -----
@@ -6613,8 +6541,7 @@
   function openEditor() {
     dismissBadgeToast();
     editorMsg = null;
-    state.screen = "editor";
-    render();
+    setState({ screen: "editor" });
   }
 
   // „App installieren" (Android/Chromium): nativen Installations-Dialog zeigen.
@@ -7236,6 +7163,220 @@
   // synthetischen Klick. Ohne Schutz würde dieser ggf. ein zweites rate() auslösen.
   let lastSwipeAt = 0;
 
+  // Aktions-Dispatch-Tabelle: action-Name -> Handler(el). Ersetzt die fruehere
+  // lange if/else-Kette in onClick(). Reihenfolge ohne Bedeutung (Lookup statt
+  // Kette). Die DOM-naheen Sonderfaelle (hist-word, hist-quiz-answer, scroll-to)
+  // bleiben bewusst direkt in onClick(), da sie e/preventDefault brauchen.
+  const ACTIONS = {
+    "set-mode": (el) => { setMode(el.dataset.mode); },
+    "set-speech-rate": (el) => { setSpeechRate(Number(el.dataset.rate)); },
+    "set-theme": (el) => { setTheme(el.dataset.theme); },
+    "set-dir": (el) => { setDir(el.dataset.dir); },
+    "set-celebrate-sound": (el) => { setCelebrateSound(el.dataset.on === "1"); },
+    "set-ui-lang": (el) => { setUiLang(el.dataset.lang); },
+    "set-level": (el) => { toggleLevel(Number(el.dataset.level)); },
+    "study-all": (el) => { startStudy("all"); },
+    "open-category": (el) => { startStudy(el.dataset.id); },
+    "ruta-del-dia": (el) => { openRutaDelDia(); },
+    "open-preset": (el) => { startPreset(el.dataset.preset); },
+    "open-pretrip": (el) => { { state.pretripLock = null; openPretrip(); } },
+    "set-pretrip-scope": (el) => { setPretripScope(el.dataset.scope); },
+    "start-pretrip-day": (el) => { startPretripDay(Number(el.dataset.day)); },
+    "open-teacher": (el) => { openTeacher(); },
+    "teacher-import": (el) => { { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); } },
+    "teacher-remove": (el) => { removeTeacherStudent(Number(el.dataset.idx)); },
+    "teacher-clear": (el) => { clearTeacher(); },
+    "teacher-sort": (el) => { setTeacherSort(el.dataset.key); },
+    "teacher-csv": (el) => { exportRosterCSV(); },
+    "teacher-print": (el) => { printTeacher(); },
+    "open-printsheet": (el) => { openPrintSheet(); },
+    "printsheet-print": (el) => { printSheet(); },
+    "sheet-mode": (el) => { { state.sheetMode = el.dataset.mode; render(); } },
+    "toggle-section": (el) => { { const ty = el.dataset.type; const skip = state.sheetSkip || (state.sheetSkip = []); const i = skip.indexOf(ty); if (i === -1) skip.push(ty); else skip.splice(i, 1); render(); } },
+    "open-target-picker": (el) => { { state.targetPicker = el.dataset.ctx; render(); } },
+    "close-target-picker": (el) => { { state.targetPicker = null; render(); } },
+    "target-stop": (el) => { { /* Klick auf die Modal-Karte: nicht schließen */ } },
+    "pick-target": (el) => { pickTarget(el.dataset.ctx, el.dataset.value); },
+    "open-favorites": (el) => { openFavorites(); },
+    "fav-toggle": (el) => { toggleFavorite(el.dataset.id); },
+    "fav-remove": (el) => { removeFavorite(el.dataset.id); },
+    "fav-show": (el) => { favShow(el.dataset.id); },
+    "fav-close": (el) => { favClose(); },
+    "fav-speak": (el) => { speakFavorite(el.dataset.id); },
+    "apply-bundle": (el) => { toggleBundle(el.dataset.bundle); },
+    "clear-task-sel": (el) => { clearTaskSelection(); },
+    "task-generate": (el) => { generateTask(); },
+    "task-copy": (el) => { copyTaskCode(); },
+    "copy-phrase": (el) => { copyPhrase(el); },
+    "task-copy-link": (el) => { copyTaskLink(); },
+    "task-paste": (el) => { pasteTaskCode(); },
+    "open-task": (el) => { openTaskScreen(); },
+    "back-pretrip": (el) => { openPretrip(); },
+    "back-task": (el) => { openTaskScreen(); },
+    "task-open": (el) => { openTaskFromInput(); },
+    "task-start": (el) => { startSubscribedTask(Number(el.dataset.idx)); },
+    "task-remove": (el) => { removeSubscribedTask(Number(el.dataset.idx)); },
+    "open-placement": (el) => { openPlacement(); },
+    "placement-start": (el) => { startPlacementTest(); },
+    "placement-choose": (el) => { placementChoose(Number(el.dataset.index)); },
+    "placement-unknown": (el) => { placementUnknown(); },
+    "placement-free-submit": (el) => { placementSubmitFree(); },
+    "placement-retake": (el) => { openPlacement(state.placement && state.placement.fromOnboarding); },
+    "open-assessment": (el) => { openAssessment(); },
+    "assessment-resume": (el) => { resumeAssessment(); },
+    "assessment-start": (el) => { startAssessmentTest(el.dataset.variant); },
+    "assessment-choose": (el) => { assessmentChoose(Number(el.dataset.index)); },
+    "assessment-unknown": (el) => { assessmentUnknown(); },
+    "assessment-free-submit": (el) => { assessmentSubmitFree(); },
+    "assessment-listen-play": (el) => { speakCurrentAssessment(); },
+    "assessment-retake": (el) => { openAssessment(); },
+    "trip-edit": (el) => { toggleTripEdit(); },
+    "add-trip-stop": (el) => { addTripStop(el.dataset.country, el.dataset.dest, el.dataset.flag); },
+    "remove-trip-stop": (el) => { removeTripStop(Number(el.dataset.index)); },
+    "toggle-trip-route": (el) => { { state.tripRouteOpen = state.tripRouteOpen === false; render(); } },
+    "toggle-trip-switch": (el) => { { state.tripSwitchOpen = !state.tripSwitchOpen; render(); } },
+    "drag-trip-stop": (el) => { { /* Ziehen wird über die Pointer-Handler erledigt; ein reiner Tap macht nichts */ } },
+    "trip-clear": (el) => { clearTripGoal(); },
+    "manage-trip": (el) => { openTripManage(); },
+    "set-gender": (el) => { saveUserGender(el.dataset.gender); }, // ♀/♂ (Onboarding + Profil)
+    "onboard-slide-next": (el) => { advanceOnboardSlide(); }, // Erklär-Slide weiter (letzter -> Profil)
+    "onboard-slide-skip": (el) => { onboardSlidesToProfile(); }, // Erklär-Slides überspringen -> Profil
+    "onboard-slide-go": (el) => { goToOnboardSlide(el.dataset.idx); }, // Punkt-Navigation zu Slide N
+    "skip-onboarding": (el) => { openPlacement(true); }, // Trip übersprungen -> trotzdem Ruta-Check anbieten
+    "placement-skip": (el) => { finishOnboarding(); }, // Ruta-Check im Onboarding überspringen -> fertig
+    "placement-finish": (el) => { finishOnboarding(); }, // Ruta-Check fertig (aus Onboarding) -> Dashboard
+    "resume-last": (el) => { resumeLast(); },
+    "set-tab": (el) => { setTab(el.dataset.tab); },
+    "open-search": (el) => { openSearch(); },
+    "search-clear": (el) => { clearSearch(); },
+    "search-country": (el) => { openSearchCountry(el.dataset.id); },
+    "flip": (el) => { flip(); },
+    "toggle-context": (el) => { toggleContext(); },
+    "rate": (el) => { rate(el.dataset.rating); },
+    "skip": (el) => { skip(); },
+    "speak": (el) => { speakCurrent(); },
+    "open-stats": (el) => { goStats(); },
+    "open-badges": (el) => { openBadges(); },
+    "open-info": (el) => { openInfo(); },
+    "open-historia": (el) => { openHistoria("sur"); },
+    "open-historia-centro": (el) => { openHistoria("centro"); },
+    "open-knigge": (el) => { openKnigge(); },
+    "open-bebidas": (el) => { openBebidas(); },
+    "toggle-bebida": (el) => { toggleBebida(); },
+    "open-regatear": (el) => { openRegatear(); },
+    "open-logistica": (el) => { openLogistica(); },
+    "open-salud": (el) => { openSalud(); },
+    "open-flirt": (el) => { openFlirt(); },
+    "open-fotos": (el) => { openFotos(); },
+    "open-bailar": (el) => { openBailar(); },
+    "open-musica": (el) => { openMusica(); },
+    "set-stats-filter": (el) => { setStatsFilter(el.dataset.filter); },
+    "reset-progress": (el) => { resetProgress(); },
+    "open-card": (el) => { openCard(el.dataset.id, el.dataset.back || "stats"); },
+    "study-one": (el) => { studyOne(el.dataset.id); },
+    "card-back": (el) => { (state.backTo === "home" ? goHome() : state.backTo === "search" ? openSearch() : goStats()); },
+    "open-editor": (el) => { openEditor(); },
+    "export-data": (el) => { exportData(); },
+    "cloud-sync": (el) => { cloudSync(); },
+    "open-social": (el) => { openSocial(); },
+    "social-login": (el) => { socialLogin(); },
+    "social-refresh": (el) => { refreshSocial(); },
+    "social-add-friend": (el) => { socialAddFriend(); },
+    "social-remove": (el) => { socialRemoveFriend(el.dataset.id); },
+    "social-copy-code": (el) => { socialCopyCode(); },
+    "import-data": (el) => { startImport(); },
+    "dismiss-notice": (el) => { el.remove(); },
+    "dismiss-update": (el) => { dismissUpdateNotice(); },
+    "reload-app": (el) => { location.reload(); },
+    "apply-update": (el) => { applyUpdate(); },
+    "dismiss-sw-update": (el) => { dismissSwUpdate(); },
+    "upd-stop": (el) => { { /* Klick auf die Hinweis-Karte: nicht schließen */ } },
+    "install-app": (el) => { installApp(); },
+    "delete-card": (el) => { deleteCard(el.dataset.id); },
+    "share-stats": (el) => { shareStats(); },
+    "share-rank": (el) => { shareRank(); },
+    "share-placement": (el) => { sharePlacement(); },
+    "share-assessment": (el) => { shareAssessment(); },
+    "share-card": (el) => { shareCard(); },
+    "share-historia": (el) => { shareHistoria(el.dataset.id); },
+    "share-hist-module": (el) => { shareHistModule(); },
+    "share-tips": (el) => { shareTips(el.dataset.cat, Number(el.dataset.idx)); },
+    "share-country": (el) => { shareCountry(); },
+    "share-module": (el) => { shareModule(el.dataset.mod); },
+    "share-badge": (el) => { shareBadge(el.dataset.id); },
+    "set-share-format": (el) => { setShareFormat(el.dataset.format); },
+    "open-hostel": (el) => { openHostel(); },
+    "open-battle-setup": (el) => { openBattleSetup(); },
+    "coordinator-round": (el) => { startCoordinatorRound(); },
+    "set-battle-length": (el) => { setBattleLength(Number(el.dataset.len)); },
+    "start-battle": (el) => { startBattle(el.dataset.scene); },
+    "battle-reveal": (el) => { battleReveal(); },
+    "battle-score": (el) => { battleScore(Number(el.dataset.points)); },
+    "battle-sudden-death": (el) => { battleSuddenDeath(); },
+    "battle-again": (el) => { battleAgain(); },
+    "challenge-done": (el) => { markChallengeDone(el.dataset.id); },
+    "open-roleplay-setup": (el) => { openRoleplaySetup(); },
+    "start-roleplay": (el) => { startRoleplay(el.dataset.id); },
+    "roleplay-swap": (el) => { roleplaySwap(); },
+    "open-quiz-setup": (el) => { openQuizSetup(); },
+    "start-quiz": (el) => { startQuiz(el.dataset.set); },
+    "quiz-answer": (el) => { answerQuiz(el.dataset.id); },
+    "quiz-next": (el) => { nextQuiz(); },
+    "quiz-again": (el) => { quizAgain(); },
+    "open-cuerpo": (el) => { openCuerpo(); },
+    "open-conjugacion": (el) => { openConjugacion(); },
+    "open-tiempos": (el) => { openTiempos(); },
+    "cuerpo-select": (el) => { { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); } },
+    "cuerpo-rotate": (el) => { rotateBody(Number(el.dataset.dir)); },
+    "cuerpo-speak": (el) => { speakBodyPart(); },
+    "open-spickzettel": (el) => { openSpickzettel(); },
+    "sz-show": (el) => { szShow(el.dataset.id); },
+    "sz-close": (el) => { szClose(); },
+    "speak-card": (el) => { speakCardId(el.dataset.id); },
+    "open-precios": (el) => { openPrecios(); },
+    "precios-currency": (el) => { setPreciosCurrency(el.dataset.id); },
+    "precios-level": (el) => { setPreciosLevel(el.dataset.level); },
+    "start-precios": (el) => { startPrecios(); },
+    "precios-next": (el) => { nextPrecios(); },
+    "precios-again": (el) => { preciosAgain(); },
+    "precios-setup": (el) => { openPrecios(); },
+    "precios-speak": (el) => { speakPrecios(); },
+    "open-frases": (el) => { openFrasesSetup(); },
+    "start-frases": (el) => { startFrases(el.dataset.set); },
+    "frases-answer": (el) => { answerFrases(Number(el.dataset.idx)); },
+    "frases-next": (el) => { nextFrases(); },
+    "frases-again": (el) => { frasesAgain(); },
+    "open-conjug-drill": (el) => { openConjugDrill(); },
+    "conjug-level": (el) => { setConjugLevel(el.dataset.level); },
+    "start-conjug": (el) => { startConjug(); },
+    "conjug-next": (el) => { nextConjug(); },
+    "conjug-again": (el) => { conjugAgain(); },
+    "open-yesto": (el) => { openYesto(); },
+    "start-yesto": (el) => { startYesto(el.dataset.id); },
+    "yesto-reveal": (el) => { yestoReveal(); },
+    "yesto-rate": (el) => { yestoRate(el.dataset.known === "1"); },
+    "yesto-again": (el) => { yestoAgain(); },
+    "open-dialogos": (el) => { openDialogosSetup(); },
+    "start-dialogos": (el) => { startDialogos(el.dataset.id); },
+    "dialogos-answer": (el) => { answerDialogosMc(Number(el.dataset.idx)); },
+    "dialogos-next": (el) => { advanceDialogos(); },
+    "dialogos-hint": (el) => { dialogosHint(); },
+    "dialogos-again": (el) => { dialogosAgain(); },
+    "dialogos-speak": (el) => { speakDialogosNpc(); },
+    "open-compras": (el) => { openCompras(); },
+    "compras-section": (el) => { comprasSection(el.dataset.id); },
+    "compras-pick": (el) => { comprasPick(el.dataset.id); },
+    "compras-toggle": (el) => { comprasToggle(el.dataset.id); },
+    "compras-speak": (el) => { speakCompras(el.dataset.id); },
+    "compras-speak-phrase": (el) => { speakComprasPhrase(el.dataset.say); },
+    "open-compras-quiz": (el) => { openComprasQuiz(); },
+    "compras-quiz-answer": (el) => { answerComprasQuiz(Number(el.dataset.idx)); },
+    "compras-quiz-next": (el) => { nextComprasQuiz(); },
+    "compras-quiz-again": (el) => { comprasQuizAgain(); },
+    "compras-back-list": (el) => { comprasBackToList(); },
+    "home": (el) => { goHome(); },
+  };
+
   function onClick(e) {
     if (Date.now() - lastSwipeAt < 600) return; // synthetischen Klick nach Wisch ignorieren
     const el = e.target.closest("[data-action]");
@@ -7286,217 +7427,8 @@
       return;
     }
 
-    if (action === "set-mode") setMode(el.dataset.mode);
-    else if (action === "set-speech-rate") setSpeechRate(Number(el.dataset.rate));
-    else if (action === "set-theme") setTheme(el.dataset.theme);
-    else if (action === "set-dir") setDir(el.dataset.dir);
-    else if (action === "set-celebrate-sound") setCelebrateSound(el.dataset.on === "1");
-    else if (action === "set-ui-lang") setUiLang(el.dataset.lang);
-    else if (action === "set-level") toggleLevel(Number(el.dataset.level));
-    else if (action === "study-all") startStudy("all");
-    else if (action === "open-category") startStudy(el.dataset.id);
-    else if (action === "ruta-del-dia") openRutaDelDia();
-    else if (action === "open-preset") startPreset(el.dataset.preset);
-    else if (action === "open-pretrip") { state.pretripLock = null; openPretrip(); }
-    else if (action === "set-pretrip-scope") setPretripScope(el.dataset.scope);
-    else if (action === "start-pretrip-day") startPretripDay(Number(el.dataset.day));
-    else if (action === "open-teacher") openTeacher();
-    else if (action === "teacher-import") { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); }
-    else if (action === "teacher-remove") removeTeacherStudent(Number(el.dataset.idx));
-    else if (action === "teacher-clear") clearTeacher();
-    else if (action === "teacher-sort") setTeacherSort(el.dataset.key);
-    else if (action === "teacher-csv") exportRosterCSV();
-    else if (action === "teacher-print") printTeacher();
-    else if (action === "open-printsheet") openPrintSheet();
-    else if (action === "printsheet-print") printSheet();
-    else if (action === "sheet-mode") { state.sheetMode = el.dataset.mode; render(); }
-    else if (action === "toggle-section") {
-      const ty = el.dataset.type; const skip = state.sheetSkip || (state.sheetSkip = []);
-      const i = skip.indexOf(ty); if (i === -1) skip.push(ty); else skip.splice(i, 1);
-      render();
-    }
-    else if (action === "open-target-picker") { state.targetPicker = el.dataset.ctx; render(); }
-    else if (action === "close-target-picker") { state.targetPicker = null; render(); }
-    else if (action === "target-stop") { /* Klick auf die Modal-Karte: nicht schließen */ }
-    else if (action === "pick-target") pickTarget(el.dataset.ctx, el.dataset.value);
-    else if (action === "apply-bundle") toggleBundle(el.dataset.bundle);
-    else if (action === "clear-task-sel") clearTaskSelection();
-    else if (action === "task-generate") generateTask();
-    else if (action === "task-copy") copyTaskCode();
-    else if (action === "copy-phrase") copyPhrase(el);
-    else if (action === "task-copy-link") copyTaskLink();
-    else if (action === "task-paste") pasteTaskCode();
-    else if (action === "open-task") openTaskScreen();
-    else if (action === "back-pretrip") openPretrip();
-    else if (action === "back-task") openTaskScreen();
-    else if (action === "task-open") openTaskFromInput();
-    else if (action === "task-start") startSubscribedTask(Number(el.dataset.idx));
-    else if (action === "task-remove") removeSubscribedTask(Number(el.dataset.idx));
-    else if (action === "open-placement") openPlacement();
-    else if (action === "placement-start") startPlacementTest();
-    else if (action === "placement-choose") placementChoose(Number(el.dataset.index));
-    else if (action === "placement-unknown") placementUnknown();
-    else if (action === "placement-free-submit") placementSubmitFree();
-    else if (action === "placement-retake") openPlacement(state.placement && state.placement.fromOnboarding);
-    else if (action === "open-assessment") openAssessment();
-    else if (action === "assessment-resume") resumeAssessment();
-    else if (action === "assessment-start") startAssessmentTest(el.dataset.variant);
-    else if (action === "assessment-choose") assessmentChoose(Number(el.dataset.index));
-    else if (action === "assessment-unknown") assessmentUnknown();
-    else if (action === "assessment-free-submit") assessmentSubmitFree();
-    else if (action === "assessment-listen-play") speakCurrentAssessment();
-    else if (action === "assessment-retake") openAssessment();
-    else if (action === "trip-edit") toggleTripEdit();
-    else if (action === "add-trip-stop") addTripStop(el.dataset.country, el.dataset.dest, el.dataset.flag);
-    else if (action === "remove-trip-stop") removeTripStop(Number(el.dataset.index));
-    else if (action === "toggle-trip-route") { state.tripRouteOpen = state.tripRouteOpen === false; render(); }
-    else if (action === "toggle-trip-switch") { state.tripSwitchOpen = !state.tripSwitchOpen; render(); }
-    else if (action === "drag-trip-stop") { /* Ziehen wird über die Pointer-Handler erledigt; ein reiner Tap macht nichts */ }
-    else if (action === "trip-clear") clearTripGoal();
-    else if (action === "manage-trip") openTripManage();
-    else if (action === "set-gender") saveUserGender(el.dataset.gender); // ♀/♂ (Onboarding + Profil)
-    else if (action === "onboard-slide-next") advanceOnboardSlide();   // Erklär-Slide weiter (letzter -> Profil)
-    else if (action === "onboard-slide-skip") onboardSlidesToProfile(); // Erklär-Slides überspringen -> Profil
-    else if (action === "onboard-slide-go") goToOnboardSlide(el.dataset.idx); // Punkt-Navigation zu Slide N
-    else if (action === "skip-onboarding") openPlacement(true); // Trip übersprungen -> trotzdem Ruta-Check anbieten
-    else if (action === "placement-skip") finishOnboarding();    // Ruta-Check im Onboarding überspringen -> fertig
-    else if (action === "placement-finish") finishOnboarding();  // Ruta-Check fertig (aus Onboarding) -> Dashboard
-    else if (action === "resume-last") resumeLast();
-    else if (action === "set-tab") setTab(el.dataset.tab);
-    else if (action === "open-search") openSearch();
-    else if (action === "search-clear") clearSearch();
-    else if (action === "search-country") openSearchCountry(el.dataset.id);
-    else if (action === "flip") flip();
-    else if (action === "toggle-context") toggleContext();
-    else if (action === "rate") rate(el.dataset.rating);
-    else if (action === "skip") skip();
-    else if (action === "speak") speakCurrent();
-    else if (action === "open-stats") goStats();
-    else if (action === "open-badges") openBadges();
-    else if (action === "open-info") openInfo();
-    else if (action === "open-historia") openHistoria("sur");
-    else if (action === "open-historia-centro") openHistoria("centro");
-    else if (action === "open-knigge") openKnigge();
-    else if (action === "open-bebidas") openBebidas();
-    else if (action === "toggle-bebida") toggleBebida();
-    else if (action === "open-regatear") openRegatear();
-    else if (action === "open-logistica") openLogistica();
-    else if (action === "open-salud") openSalud();
-    else if (action === "open-flirt") openFlirt();
-    else if (action === "open-fotos") openFotos();
-    else if (action === "open-bailar") openBailar();
-    else if (action === "open-musica") openMusica();
-    else if (action === "set-stats-filter") setStatsFilter(el.dataset.filter);
-    else if (action === "reset-progress") resetProgress();
-    else if (action === "open-card") openCard(el.dataset.id, el.dataset.back || "stats");
-    else if (action === "study-one") studyOne(el.dataset.id);
-    else if (action === "card-back") (state.backTo === "home" ? goHome() : state.backTo === "search" ? openSearch() : goStats());
-    else if (action === "open-editor") openEditor();
-    else if (action === "export-data") exportData();
-    else if (action === "cloud-sync") cloudSync();
-    else if (action === "open-social") openSocial();
-    else if (action === "social-login") socialLogin();
-    else if (action === "social-refresh") refreshSocial();
-    else if (action === "social-add-friend") socialAddFriend();
-    else if (action === "social-remove") socialRemoveFriend(el.dataset.id);
-    else if (action === "social-copy-code") socialCopyCode();
-    else if (action === "import-data") startImport();
-    else if (action === "dismiss-notice") el.remove();
-    else if (action === "dismiss-update") dismissUpdateNotice();
-    else if (action === "reload-app") location.reload();
-    else if (action === "apply-update") applyUpdate();
-    else if (action === "dismiss-sw-update") dismissSwUpdate();
-    else if (action === "upd-stop") { /* Klick auf die Hinweis-Karte: nicht schließen */ }
-    else if (action === "install-app") installApp();
-    else if (action === "delete-card") deleteCard(el.dataset.id);
-    else if (action === "share-stats") shareStats();
-    else if (action === "share-rank") shareRank();
-    else if (action === "share-placement") sharePlacement();
-    else if (action === "share-assessment") shareAssessment();
-    else if (action === "share-card") shareCard();
-    else if (action === "share-historia") shareHistoria(el.dataset.id);
-    else if (action === "share-hist-module") shareHistModule();
-    else if (action === "share-tips") shareTips(el.dataset.cat, Number(el.dataset.idx));
-    else if (action === "share-country") shareCountry();
-    else if (action === "share-module") shareModule(el.dataset.mod);
-    else if (action === "share-badge") shareBadge(el.dataset.id);
-    else if (action === "set-share-format") setShareFormat(el.dataset.format);
-    else if (action === "open-hostel") openHostel();
-    else if (action === "open-battle-setup") openBattleSetup();
-    else if (action === "coordinator-round") startCoordinatorRound();
-    else if (action === "set-battle-length") setBattleLength(Number(el.dataset.len));
-    else if (action === "start-battle") startBattle(el.dataset.scene);
-    else if (action === "battle-reveal") battleReveal();
-    else if (action === "battle-score") battleScore(Number(el.dataset.points));
-    else if (action === "battle-sudden-death") battleSuddenDeath();
-    else if (action === "battle-again") battleAgain();
-    else if (action === "challenge-done") markChallengeDone(el.dataset.id);
-    else if (action === "open-roleplay-setup") openRoleplaySetup();
-    else if (action === "start-roleplay") startRoleplay(el.dataset.id);
-    else if (action === "roleplay-swap") roleplaySwap();
-    else if (action === "open-quiz-setup") openQuizSetup();
-    else if (action === "start-quiz") startQuiz(el.dataset.set);
-    else if (action === "quiz-answer") answerQuiz(el.dataset.id);
-    else if (action === "quiz-next") nextQuiz();
-    else if (action === "quiz-again") quizAgain();
-    else if (action === "open-cuerpo") openCuerpo();
-    else if (action === "open-conjugacion") openConjugacion();
-    else if (action === "open-tiempos") openTiempos();
-    else if (action === "cuerpo-select") { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); }
-    else if (action === "cuerpo-rotate") rotateBody(Number(el.dataset.dir));
-    else if (action === "cuerpo-speak") speakBodyPart();
-    else if (action === "open-spickzettel") openSpickzettel();
-    else if (action === "sz-show") szShow(el.dataset.id);
-    else if (action === "sz-close") szClose();
-    else if (action === "speak-card") speakCardId(el.dataset.id);
-    else if (action === "open-favorites") openFavorites();
-    else if (action === "fav-toggle") toggleFavorite(el.dataset.id);
-    else if (action === "fav-remove") removeFavorite(el.dataset.id);
-    else if (action === "fav-show") favShow(el.dataset.id);
-    else if (action === "fav-close") favClose();
-    else if (action === "fav-speak") speakFavorite(el.dataset.id);
-    else if (action === "open-precios") openPrecios();
-    else if (action === "precios-currency") setPreciosCurrency(el.dataset.id);
-    else if (action === "precios-level") setPreciosLevel(el.dataset.level);
-    else if (action === "start-precios") startPrecios();
-    else if (action === "precios-next") nextPrecios();
-    else if (action === "precios-again") preciosAgain();
-    else if (action === "precios-setup") openPrecios();
-    else if (action === "precios-speak") speakPrecios();
-    else if (action === "open-frases") openFrasesSetup();
-    else if (action === "start-frases") startFrases(el.dataset.set);
-    else if (action === "frases-answer") answerFrases(Number(el.dataset.idx));
-    else if (action === "frases-next") nextFrases();
-    else if (action === "frases-again") frasesAgain();
-    else if (action === "open-conjug-drill") openConjugDrill();
-    else if (action === "conjug-level") setConjugLevel(el.dataset.level);
-    else if (action === "start-conjug") startConjug();
-    else if (action === "conjug-next") nextConjug();
-    else if (action === "conjug-again") conjugAgain();
-    else if (action === "open-yesto") openYesto();
-    else if (action === "start-yesto") startYesto(el.dataset.id);
-    else if (action === "yesto-reveal") yestoReveal();
-    else if (action === "yesto-rate") yestoRate(el.dataset.known === "1");
-    else if (action === "yesto-again") yestoAgain();
-    else if (action === "open-dialogos") openDialogosSetup();
-    else if (action === "start-dialogos") startDialogos(el.dataset.id);
-    else if (action === "dialogos-answer") answerDialogosMc(Number(el.dataset.idx));
-    else if (action === "dialogos-next") advanceDialogos();
-    else if (action === "dialogos-hint") dialogosHint();
-    else if (action === "dialogos-again") dialogosAgain();
-    else if (action === "dialogos-speak") speakDialogosNpc();
-    else if (action === "open-compras") openCompras();
-    else if (action === "compras-section") comprasSection(el.dataset.id);
-    else if (action === "compras-pick") comprasPick(el.dataset.id);
-    else if (action === "compras-toggle") comprasToggle(el.dataset.id);
-    else if (action === "compras-speak") speakCompras(el.dataset.id);
-    else if (action === "compras-speak-phrase") speakComprasPhrase(el.dataset.say);
-    else if (action === "open-compras-quiz") openComprasQuiz();
-    else if (action === "compras-quiz-answer") answerComprasQuiz(Number(el.dataset.idx));
-    else if (action === "compras-quiz-next") nextComprasQuiz();
-    else if (action === "compras-quiz-again") comprasQuizAgain();
-    else if (action === "compras-back-list") comprasBackToList();
-    else if (action === "home") goHome();
+    const handler = ACTIONS[action];
+    if (handler) handler(el);
   }
 
   function onSubmit(e) {
@@ -7656,10 +7588,11 @@
   }
 
   function onKeydown(e) {
+    // Focus-Trap: ist ein modaler Dialog offen, Tab/Shift+Tab darin halten.
+    if (trapModalTab(e)) return;
     // Ziel-Picker-Modal (Modo profe / Aktivitätsblatt): Escape schließt.
     if (state.targetPicker && e.key === "Escape") {
-      state.targetPicker = null;
-      render();
+      setState({ targetPicker: null });
       return;
     }
     // Spickzettel-Großanzeige: Escape schließt.
@@ -7814,8 +7747,7 @@
   function markUpdateReady(worker) {
     state.swWaiting = worker || state.swWaiting;
     if (state.swUpdate) return; // Banner schon sichtbar
-    state.swUpdate = true;
-    render();
+    setState({ swUpdate: true });
   }
 
   // "Jetzt laden": den wartenden Worker aktivieren -> controllerchange -> Reload.

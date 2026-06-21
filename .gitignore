@@ -9,11 +9,17 @@ tmp_*.json
 # E2E-Ausgabe (Screenshots/CSV aus scripts/e2e-modo-profe.mjs)
 scripts/.e2e-out/
 
+# Transiente Mutanten-Backups (scripts/mutation/runner.mjs)
+scripts/mutation/.bak/
+
 # Generierter Single-File-Build (Quelle = Module; via `node build.js`)
 HolaRuta.html
 
 # Edition-Builds (reproduzierbar via `node build.js --edition=<id>`)
 HolaRuta-*.html
+
+# Minifizierter Multi-File-Deploy-Build (reproduzierbar via `node build.js --dist`)
+dist/
 
 # OS / editor
 .DS_Store

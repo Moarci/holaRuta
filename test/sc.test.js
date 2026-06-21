@@ -152,6 +152,50 @@ test("srs.isDue: neu/0 → fällig, Vergangenheit → fällig, Zukunft → nicht
   assert.equal(srs.isDue({ due: Date.now() + 60 * 60 * 1000 }), false);
 });
 
+test("srs.review: expliziter now-Zeitpunkt steuert die Fälligkeit exakt", () => {
+  const T = 1700000000000; // fester Zeitpunkt
+  const r = srs.review(srs.freshState(), srs.RATING.GOOD, T);
+  // interval 1 -> Fälligkeit = lokale Mitternacht von (T + 1 Tag)
+  const d = new Date(T); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + 1);
+  assert.equal(r.due, d.getTime());
+});
+
+test("srs.review: ungültiger now-Wert (NaN) fällt auf Date.now() zurück", () => {
+  const r = srs.review(srs.freshState(), srs.RATING.GOOD, NaN);
+  assert.ok(isFinite(r.due) && r.due > 0); // niemals NaN persistieren
+});
+
+test("srs.review AGAIN: Wiedervorlage exakt ~1 Minute später (60*1000 ms)", () => {
+  const T = 1700000000000;
+  const r = srs.review({ ease: 2.5, interval: 10, due: 0, reps: 3 }, srs.RATING.AGAIN, T);
+  assert.equal(r.due, T + 60 * 1000);
+});
+
+test("srs.review: korrupte Felder (Strings/Infinity) fallen auf Defaults zurück", () => {
+  // reps als String -> 0 -> 'neu'-Pfad: GOOD ergibt interval 1 (NICHT 3)
+  assert.equal(srs.review({ ease: 2.5, interval: 5, due: 0, reps: "x" }, srs.RATING.GOOD).interval, 1);
+  // ease als String wird NICHT als Zahl interpretiert -> Default 2.5 (nicht "9"->3.0)
+  const r = srs.review({ ease: "9", interval: 3, due: 0, reps: 2 }, srs.RATING.GOOD);
+  assert.equal(r.interval, 8); // round(3 * 2.5) = 8, nicht round(3 * 3.0) = 9
+});
+
+test("srs.review: Early-Review dämpft das Intervall auf die verstrichene Zeit", () => {
+  const T = 1700000000000;
+  const DAY = 24 * 60 * 60 * 1000;
+  // interval 20, aber erst in 10 Tagen fällig -> nur 10 Tage tatsächlich verstrichen
+  const r = srs.review({ ease: 2.5, interval: 20, due: T + 10 * DAY, reps: 5 }, srs.RATING.GOOD, T);
+  // base = min(20, elapsed=10) = 10 -> round(10 * 2.5) = 25 (statt round(20*2.5)=50)
+  assert.equal(r.interval, 25);
+});
+
+test("srs.review: Early-Review behält die Untergrenze von 1 Tag", () => {
+  const T = 1700000000000;
+  const DAY = 24 * 60 * 60 * 1000;
+  // fällig erst in 19,7 Tagen -> nur 0,3 Tage verstrichen -> base auf 1 geklemmt
+  const r = srs.review({ ease: 2.5, interval: 20, due: T + Math.round(19.7 * DAY), reps: 5 }, srs.RATING.GOOD, T);
+  assert.equal(r.interval, 3); // round(1 * 2.5) = 3, nicht round(0.3 * 2.5) = 1
+});
+
 // ---------- stats ----------
 test("stats.record: erste Bewertung setzt seen/firstRating/history/Zeiten", () => {
   const now = 1000;
@@ -315,6 +359,63 @@ test("stats.rosterCSV: Header + Zeilen in fester Spaltenfolge, RFC-Quoting", () 
   assert.equal(stats.rosterCSV([], []), ""); // leer ohne Header
 });
 
+// ---------- stats: zusätzliche Härtung (Mutationstesting) ----------
+test("stats.record: Nicht-Treffer erhöht good/easy NICHT (Zähler bleiben 0)", () => {
+  const rec = stats.record(undefined, srs.freshState(), "again", 5);
+  assert.equal(rec.good, 0); // 'again' darf good nicht hochzählen
+  assert.equal(rec.easy, 0);
+  assert.equal(rec.again, 1);
+});
+
+test("stats.cardSummary: due wird durchgereicht (|| 0 ist nur Fallback)", () => {
+  assert.equal(stats.cardSummary({ seen: 1, due: 12345, interval: 1 }).due, 12345);
+  assert.equal(stats.cardSummary({ seen: 1, interval: 1 }).due, 0); // fehlend -> 0
+});
+
+test("stats.cardSummary: 'hard' an der 60%-Grenze ist exklusiv (strikt <)", () => {
+  // rate genau 60 -> NICHT hard (Schwelle ausschließend)
+  const atEdge = stats.cardSummary({ seen: 5, good: 3, again: 2, firstRating: "again", interval: 1 });
+  assert.equal(atEdge.rate, 60);
+  assert.equal(atEdge.hard, false);
+  // rate 59 (knapp drunter) -> hard
+  const below = stats.cardSummary({ seen: 100, good: 59, again: 41, firstRating: "again", interval: 1 });
+  assert.equal(below.rate, 59);
+  assert.equal(below.hard, true);
+});
+
+test("stats.overview: zählt auch einmalig gesehene Karten (seen > 0, nicht > 1)", () => {
+  const ov = stats.overview([{ id: "a" }],
+    { a: { seen: 1, good: 1, again: 0, firstRating: "good", interval: 1 } });
+  assert.equal(ov.firstTry, 1);    // seen === 1 muss mitzählen
+  assert.equal(ov.needPractice, 0);
+  assert.equal(ov.totalSeen, 1);
+});
+
+test("stats.sortRoster: fehlende Zähler zählen als 0, nicht als 1", () => {
+  // mastered: Zoe ohne cardsMastered -> 0 (kleiner als Ann mit 1)
+  const ms = [{ name: "Ann", cardsMastered: 1 }, { name: "Zoe" }];
+  assert.deepEqual(stats.sortRoster(ms, "mastered", 1).map((s) => s.name), ["Zoe", "Ann"]);
+});
+
+test("stats.sortRoster: pretrip sortiert numerisch nach pretripDays (nicht nach Objekt/Name)", () => {
+  const pt = [{ name: "Ann", pretripDays: 5 }, { name: "Zoe", pretripDays: 1 }];
+  // aufsteigend nach pretripDays: Zoe(1) < Ann(5) – die Namensreihenfolge wäre umgekehrt
+  assert.deepEqual(stats.sortRoster(pt, "pretrip", 1).map((s) => s.name), ["Zoe", "Ann"]);
+});
+
+test("stats.sortRoster: dir 0 verhält sich wie aufsteigend (dir < 0 ? -1 : 1)", () => {
+  const dd = [{ name: "A", cardsMastered: 1 }, { name: "B", cardsMastered: 9 }];
+  assert.deepEqual(stats.sortRoster(dd, "mastered", 0).map((s) => s.name), ["A", "B"]);
+});
+
+test("stats.sortRoster: Gleichstand -> stabiler Namens-Tie-Break (>, nicht >=)", () => {
+  // Gleicher Schlüsselwert: der Tie-Break über den Namen (immer aufsteigend) MUSS
+  // greifen – in beide Sortierrichtungen identisch.
+  const tie = [{ name: "Bob", streak: 5 }, { name: "Ana", streak: 5 }];
+  assert.deepEqual(stats.sortRoster(tie, "streak", 1).map((s) => s.name), ["Ana", "Bob"]);
+  assert.deepEqual(stats.sortRoster(tie, "streak", -1).map((s) => s.name), ["Ana", "Bob"]);
+});
+
 // ---------- badges ----------
 test("badges.buildMetrics: zählt gelernte/gemeisterte Karten und Kategorie-Anteile", () => {
   const cards = [
@@ -428,6 +529,23 @@ test("store.loadGameStats: korrupte Zähler werden typisiert (kein String-Concat
 test("store.loadGameStats: Nicht-Objekt liefert frische Defaults", () => {
   storeMem[GKEY] = JSON.stringify([1, 2, 3]);
   assert.deepEqual(store.loadGameStats(), store.freshGameStats());
+});
+
+test("store.loadProgress: ease wird auf [1.3, 3.0] geklemmt, kaputte Felder typisiert", () => {
+  // Schützt den Sanitizer (sanitizeRecord): ein manipuliertes/korruptes ease
+  // darf die SRS-Planung nicht aushebeln (ease außerhalb [1.3,3.0] = absurde
+  // Intervalle). Deckt beide Clamp-Grenzen + NaN/String-Koerzierung ab.
+  storeMem["spanischcard.progress.v2"] = JSON.stringify({
+    hi:  { ease: 99,  interval: 5,   due: 0,   reps: 2 },      // über Decke  -> 3.0
+    lo:  { ease: 0.1, interval: 1,   due: 0,   reps: 1 },      // unter Boden -> 1.3
+    bad: { ease: "x", interval: "7", due: "0", reps: null },   // NaN/String  -> Defaults/Koerzierung
+  });
+  const p = store.loadProgress();
+  assert.equal(p.hi.ease, 3.0, "ease 99 muss auf die Decke 3.0 geklemmt werden");
+  assert.equal(p.lo.ease, 1.3, "ease 0.1 muss auf den Boden 1.3 geklemmt werden");
+  assert.equal(p.bad.ease, 2.5, "ease 'x' (NaN) -> Default 2.5");
+  assert.equal(p.bad.interval, 7, "interval '7' (String) -> 7 typisiert");
+  assert.equal(p.bad.reps, 0, "reps null -> 0 typisiert");
 });
 
 test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
@@ -1077,4 +1195,168 @@ test("badges: pretrip_done erst ab einem vollständigen Plan", () => {
   // ein Plan vollständig -> Badge
   const full = { peru: {} }; for (let i = 1; i <= N; i++) full.peru[i] = true;
   assert.ok(badges.satisfiedIds(badges.buildMetrics(cards, {}, { pretripDays: full })).includes("pretrip_done"));
+});
+
+// ---------- store: weitere Härtung (Defaults, Backup-Hülle, Deckel) ----------
+test("store: kapert den globalen SC-Namespace NICHT (window.SC || {} bleibt erhalten)", () => {
+  // store.js wird NACH srs/matcher/stats/badges geladen. Würde es window.SC mit
+  // `&&` statt `||` initialisieren, gingen die zuvor registrierten Module verloren.
+  assert.ok(globalThis.window.SC.srs, "srs darf beim Laden von store nicht verloren gehen");
+  assert.ok(globalThis.window.SC.matcher);
+  assert.ok(globalThis.window.SC.store);
+});
+
+test("store.freshGameStats: exakte Default-Struktur (alle Zähler 0, Maps leer, Flags false)", () => {
+  assert.deepEqual(store.freshGameStats(), {
+    reviews: 0, againPresses: 0, dailyStreak: 0, longestStreak: 0, xp: 0,
+    lastStudyDate: null, nightOwl: false, earlyBird: false,
+    battlesPlayed: 0, battlesWon: 0, perfectBattles: 0, comebacks: 0,
+    roleplaysSeen: {}, challengesDone: {},
+    quizzesPlayed: 0, quizzesPerfect: 0,
+    yestoPlayed: 0, yestoPerfect: 0,
+    frasesPlayed: 0, frasesPerfect: 0, frasesThemesDone: {},
+    listenReviews: 0, preciosPlayed: 0, preciosPerfect: 0, preciosMillon: 0,
+    conjugPlayed: 0, conjugPerfect: 0,
+    dialogosPlayed: 0, dialogosPerfect: 0, dialogosScenesDone: {},
+    rutaDays: {}, pretripDays: {}, tripGoal: null, dailyCounts: {},
+    contextCardsSeen: {}, bodyPartsSeen: {}, shoppingSeen: {},
+    unlocked: {}, placement: null, placementHistory: [],
+    assessment: null, assessmentHistory: [], assessmentProgress: null,
+  });
+});
+
+test("store.exportData: Backup-Hülle trägt app='holaruta' und format=1", () => {
+  const out = store.exportData();
+  assert.equal(out.app, "holaruta");
+  assert.equal(out.format, 1);
+  assert.equal(typeof out.exportedAt, "string");
+  assert.equal(typeof out.data, "object");
+});
+
+test("store.loadProgress: korruptes interval/due/reps/seen fällt auf 0 (kein NaN/String)", () => {
+  storeMem["spanischcard.progress.v2"] = JSON.stringify({
+    c1: { ease: 2.5, interval: "weg", due: "x", reps: null, seen: undefined, history: "nope" },
+  });
+  const p = store.loadProgress();
+  assert.equal(p.c1.interval, 0);
+  assert.equal(p.c1.due, 0);
+  assert.equal(p.c1.reps, 0);
+  assert.equal(p.c1.seen, 0);
+  assert.deepEqual(p.c1.history, []); // nur "a"/"g"/"e" überleben, sonst leer
+  delete storeMem["spanischcard.progress.v2"];
+});
+
+test("store.encodeBundle: deckelt bereits beim Kodieren auf 20 Ziele", () => {
+  const items = [];
+  for (let i = 0; i < 25; i++) items.push({ kind: "category", scope: "cat" + i });
+  const code = store.encodeBundle({ items });
+  // Roh-Payload direkt prüfen: das Kodieren selbst muss schon bei 20 abschneiden
+  // (das Dekodieren deckelt zwar erneut, würde die Kodier-Grenze sonst aber maskieren).
+  const raw = JSON.parse(Buffer.from(code.slice("HRB1.".length), "base64").toString("utf8"));
+  assert.equal(raw.items.length, 20);
+});
+
+test("store.decodeBundle: kürzt einen überlangen Titel beim Dekodieren auf 80", () => {
+  // Code mit >80-Zeichen-Titel manuell bauen (am Kodier-Deckel vorbei), damit der
+  // Dekodier-seitige slice(0,80) wirklich greift.
+  const payload = { app: "holaruta-bundle", v: 1, items: [{ kind: "category", scope: "x" }], title: "T".repeat(200) };
+  const code = "HRB1." + Buffer.from(JSON.stringify(payload), "utf8").toString("base64");
+  assert.equal(store.decodeBundle(code).title.length, 80);
+});
+
+test("store.loadGameStats: Aufenthaltsdauer nur als plausible Zahl >= 1", () => {
+  const load = (extra) => {
+    storeMem[GKEY] = JSON.stringify({ reviews: 1, tripGoal: Object.assign(
+      { destination: "Bogotá", endDate: "2099-01-01", perDay: 10 }, extra) });
+    return store.loadGameStats().tripGoal;
+  };
+  assert.equal(load({ stayDays: 30 }).stayDays, 30);            // gültig
+  assert.equal("stayDays" in load({ stayDays: 0 }), false);     // 0 < 1 -> weg (Grenze)
+  assert.equal("stayDays" in load({ stayDays: "5" }), false);   // String ist keine Zahl
+  assert.equal("stayDays" in load({ stayDays: Infinity }), false); // nicht endlich
+});
+
+// ---------- store: Nachzug nach main-Merge (resampelte Mutanten) ----------
+test("store.loadProgress: history behält ALLE gültigen Zeichen a/g/e, filtert Rest", () => {
+  storeMem["spanischcard.progress.v2"] = JSON.stringify({
+    c: { ease: 2.5, interval: 1, due: 0, reps: 3, seen: 3, history: ["a", "g", "e", "x", "z"] },
+  });
+  assert.deepEqual(store.loadProgress().c.history, ["a", "g", "e"]); // a UND g UND e bleiben
+  delete storeMem["spanischcard.progress.v2"];
+});
+
+test("store.loadUserCards: filtert Karten ohne vollständige Pflichtfelder (id/de/es/cat)", () => {
+  storeMem["spanischcard.usercards.v1"] = JSON.stringify([
+    { id: "u1", de: "Haus", es: "casa", cat: "wohnen" },   // vollständig -> bleibt
+    { id: "u2", de: "Auto", cat: "verkehr" },               // es fehlt -> raus
+    { id: "u3", es: "perro", cat: "tiere" },                // de fehlt -> raus
+    "kein objekt",                                          // kein Objekt -> raus
+  ]);
+  const cards = store.loadUserCards();
+  assert.deepEqual(cards.map((c) => c.id), ["u1"]);
+  delete storeMem["spanischcard.usercards.v1"];
+});
+
+test("store.decodeBundle: 'pretrip'-Ziel (indexOf 0) bleibt erhalten (Schwelle < 0, nicht <= 0)", () => {
+  const code = store.encodeBundle({ items: [{ kind: "pretrip", scope: "colombia" }] });
+  const decoded = store.decodeBundle(code);
+  assert.ok(decoded && Array.isArray(decoded.items));
+  assert.equal(decoded.items.length, 1);
+  assert.deepEqual(decoded.items[0], { kind: "pretrip", scope: "colombia" });
+});
+
+test("store.decodeBundle: verwirft falsches app-Tag UND nicht-Array items (|| bleibt ||)", () => {
+  const b64 = (o) => "HRB1." + Buffer.from(JSON.stringify(o), "utf8").toString("base64");
+  // falsches app-Tag
+  assert.equal(store.decodeBundle(b64({ app: "holaruta-task", v: 1, items: [{ kind: "preset", scope: "x" }] })), null);
+  // items ist kein Array
+  assert.equal(store.decodeBundle(b64({ app: "holaruta-bundle", v: 1, items: "nope" })), null);
+  // kein Objekt
+  assert.equal(store.decodeBundle(b64(42)), null);
+});
+
+test("store.loadGameStats: placement.reliability (String) bleibt erhalten", () => {
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, placement: { level: "A2", reliability: "hoch" } });
+  assert.equal(store.loadGameStats().placement.reliability, "hoch");
+  // analog für den Nivel-Test (assessment)
+  storeMem[GKEY] = JSON.stringify({ reviews: 1, assessment: { level: "B1", reliability: "mittel" } });
+  assert.equal(store.loadGameStats().assessment.reliability, "mittel");
+});
+
+test("store.loadGameStats: placement.review – level wird ab Position 0 gekürzt (slice(0,8))", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    placement: { level: "A2", review: [{ status: "correct", level: "ABCDEFGH" }] },
+  });
+  assert.equal(store.loadGameStats().placement.review[0].level, "ABCDEFGH"); // 8 Zeichen ab 0, nicht "BCDEFGH"
+});
+
+test("store.loadGameStats: assessmentProgress-Zahlen werden typisiert (String/Infinity -> 0)", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    assessmentProgress: { asked: ["q1"], difficulty: "7", mcAsked: 3 },
+  });
+  const ap = store.loadGameStats().assessmentProgress;
+  assert.equal(ap.difficulty, 0, "String ist keine Zahl -> 0");
+  assert.equal(ap.mcAsked, 3, "echte Zahl bleibt");
+});
+
+test("store.loadGameStats: Trip-Ziel – überlanges Ziel wird verworfen (str-Guard, nicht durchgelassen)", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    tripGoal: { destination: "X".repeat(200), endDate: "2099-01-01", perDay: 10 },
+  });
+  // destination > 80 Zeichen -> "" (nicht der 200-Zeichen-String)
+  assert.equal(store.loadGameStats().tripGoal.destination, "");
+});
+
+test("store.loadGameStats: assessment-Zahlen werden typisiert (String/Infinity -> 0)", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    assessment: { level: "B1", finalScore: "9", accuracy: Infinity, correct: 7 },
+  });
+  const a = store.loadGameStats().assessment;
+  assert.equal(a.finalScore, 0); // String ist keine Zahl -> 0
+  assert.equal(a.accuracy, 0);   // Infinity ist nicht endlich -> 0
+  assert.equal(a.correct, 7);    // echte Zahl bleibt
 });

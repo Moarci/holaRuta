@@ -23,7 +23,7 @@ Jeder Bau hält sich daran, sonst bricht er das Produkt:
   (Enum in `app.js:50`), eine `render*`-Funktion in `ui.js`, ein `data-action`-Zweig in `app.js`.
 - **Immutability, Graceful Degradation, A11y by Default.**
 - **Definition of Done für jeden Bau:**
-  - `npm test` (`node --test`) bleibt grün (aktuell **154**),
+  - `npm test` (`node --test`) bleibt grün (aktuell **350**),
   - `node --check *.js` ohne Syntaxfehler,
   - `node build.js` läuft fehlerfrei (erzeugt `HolaRuta.html`; **nie** von Hand editieren),
   - neue Inhalte erscheinen live (Home → Bereich → Lernen) und sind offline verfügbar.
@@ -129,7 +129,7 @@ Pack". Co-Branding ohne Code-Fork.
 **Geliefert:** `config.js` (SC.config, Default = HolaRuta pur) + `editions/<id>.js` (reine Daten) +
 Apply-Schicht in `app.js` (`applyEdition`: nur `--brand`/`--brand-ink` + Tab-Titel + Appbar-Zusatz
 „· ECOS"; `--page`/theme-color bleiben → Dark Mode heil) + Profil-Credit + `build.js --edition=<id>`
-→ `HolaRuta-<id>.html` + Guard-Test. Beispiel-Editionen: `ecos`, `weroad`. Default unverändert, 157 Tests grün.
+→ `HolaRuta-<id>.html` + Guard-Test. Beispiel-Editionen: `ecos`, `weroad`. Default unverändert, 350 Tests grün.
 
 **Dateien & Reuse:**
 - Neues Mini-Modul `config.js` (`SC.config`) mit `{ edition, brandName, accent, logo, startTab,

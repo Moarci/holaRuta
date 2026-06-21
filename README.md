@@ -9,7 +9,7 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-354_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-465_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -53,16 +53,16 @@ Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Span
 
 **HolaRuta** ist eine Lernkarten-PWA für Survival-Spanisch beim Backpacking durch Lateinamerika. Kein Schulbuch-Spanisch, sondern genau die Sätze, die man am Busbahnhof, an der Grenze, im Hostel und beim Essen wirklich braucht — durchgängig **LatAm-korrekt** (colectivo, vuelto, plata, chévere, celular).
 
-Die App ist eine **einzige statische Web-App ohne Build-Zwang und ohne Runtime-Dependencies**. Sie läuft im Browser, lässt sich als App installieren und funktioniert komplett **offline**. Der gesamte Lernfortschritt bleibt lokal auf dem Gerät — kein Konto, kein Server, kein Tracking.
+Die App ist eine **einzige statische Web-App ohne Build-Zwang und mit 0 Runtime-npm-Dependencies**. Sie läuft im Browser, lässt sich als App installieren und funktioniert weitgehend **offline**. Der gesamte Lernfortschritt bleibt lokal auf dem Gerät — kein Konto, kein Tracking; ein Server kommt nur ins Spiel, wenn die **opt-in** Cloud-Sync-Schicht aktiviert wird. Optionales Build-Tooling (z. B. ein Minifier/Bundler wie esbuild) wäre rein **dev-only** und für Betrieb wie Auslieferung nicht erforderlich.
 
 **Kernversprechen:** In Sekunden eine Karte lernen, großzügig getippte Antworten prüfen, mit dem Daumen durch die Sitzung wischen — und nur das wiederholen, was wirklich fällig ist.
 
 **Kernprinzipien:**
 
-- **Null Dependencies** — Reines Vanilla JS. Kein Framework, kein Bundler, kein `node_modules` zur Laufzeit. Nur Module, die sich an `window.SC` hängen.
+- **0 Runtime-npm-Dependencies** — Reines Vanilla JS. Kein Framework, kein Bundler, kein `node_modules` zur Laufzeit. Nur Module, die sich an `window.SC` hängen. Optionales Build-Tooling (z. B. esbuild) ist dev-only; die Cloud-/Sync-Schicht ist opt-in.
 - **Reine Funktionen im Kern** — `srs`, `matcher` und `stats` kennen weder UI noch Speicher. Sie nehmen Zustand + Eingabe und geben **neuen** Zustand zurück (Immutability durchgängig).
-- **Offline first** — Service Worker cacht die komplette App. Einmal geladen, läuft sie ohne Netz weiter.
-- **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`. Es verlässt nichts das Gerät.
+- **Offline first** — Service Worker cacht die komplette App. Einmal geladen, laufen **Texte, Lernkarten und UI ohne Netz** weiter. Ausnahme: Kultur-/Geschichtsbilder der Länderkunde werden von **Wikimedia** geladen — ohne Tracking, aber als externer Request (also nicht offline verfügbar).
+- **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`; diese Daten verlassen das Gerät nicht. Es gibt **kein Tracking**. Der einzige externe Request im Normalbetrieb sind die Wikimedia-Bilder (s. o.); ein Server kommt nur bei aktivierter **opt-in** Cloud-Sync-Schicht hinzu.
 - **Graceful Degradation** — Kein `localStorage`? Kein TTS? Kein Service Worker? Die App läuft trotzdem, nur ohne das jeweilige Extra.
 
 ---
@@ -254,7 +254,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 354 Tests in 32 Dateien (node:test, keine Dependencies)
+├── test/                        # 465 Tests in 36 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -318,7 +318,7 @@ Danach liegt HolaRuta als eigenes App-Icon auf dem Startbildschirm – ein Tipp 
 | App nutzen | Moderner Browser (Chrome, Safari, Firefox, Edge) |
 | Tests / Build | Node.js ≥ 18 (nur für `node --test` und `node build.js`) |
 
-> Es gibt **keine** Laufzeit-Abhängigkeiten. `package.json` enthält nur zwei Scripts (`test`, `build`) und keinerlei `dependencies`.
+> Es gibt **0 Runtime-npm-Dependencies**. `package.json` enthält nur Scripts (`test`, `build`, `e2e`) und keinerlei `dependencies`/`devDependencies`. Optionales Build-Tooling (z. B. esbuild) wäre dev-only; die Cloud-/Sync-Schicht ist opt-in.
 
 ---
 
@@ -386,7 +386,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 
 | Feld | Bedeutung |
 |---|---|
-| `cat` | Kategorie-Id (eine von 71) |
+| `cat` | Kategorie-Id (eine von 72) |
 | `lvl` | Stufe: `1` Einsteiger (A1) · `2` Mittel (A2) · `3` Fortgeschritten (B1) |
 | `de` | Frage (Deutsch) |
 | `es` | Antwort (Spanisch); mehrere gültige Antworten mit `/` getrennt |
@@ -485,6 +485,7 @@ Normalisiert wird über:
 - **Versionierung:** `CACHE_VERSION` = Inhalts-Hash der Assets, automatisch von `node build.js` gestempelt (nie von Hand) → ändert sich eine ausgelieferte Datei, wird der alte Cache beim Aktivieren entfernt und frische Inhalte geladen. Ein Test (`test/sw-version.test.js`) + der CI-Drift-Check blockieren einen veralteten Cache.
 - **Navigations-Fallback:** Bei Seitenaufrufen ohne Treffer liefert der SW `index.html` statt eines Netzwerkfehlers
 - **Manifest:** Standalone-Display, Portrait, Markenfarbe `#241510`, Kategorien `education` + `travel`
+- **Ehrliche Offline-Grenze:** Texte, Lernkarten und UI sind vollständig offline. Die Kultur-/Geschichtsbilder der Länderkunde liegen bei **Wikimedia** und werden bei Bedarf extern geladen — kein Tracking, aber ein externer Request; ohne Netz fehlen dann nur diese Bilder, nicht die App.
 
 ---
 
@@ -504,7 +505,7 @@ Normalisiert wird über:
 | **Tests** | `node:test` (eingebaut) | Null Test-Dependencies |
 | **Schriften** | Bricolage Grotesque + Instrument Sans | Mit System-Font-Fallback offline |
 
-**Laufzeit-Dependencies: 0.** &nbsp;|&nbsp; **Build-Dependencies: 0.** &nbsp;|&nbsp; **Test-Dependencies: 0.**
+**Runtime-npm-Dependencies: 0.** &nbsp;|&nbsp; **Build-Dependencies: 0** (optionales Tooling wie esbuild wäre dev-only). &nbsp;|&nbsp; **Test-Dependencies: 0.** &nbsp;|&nbsp; Cloud-/Sync-Schicht **opt-in**.
 
 ---
 
@@ -527,8 +528,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 354
-#  ℹ pass 354
+#  ℹ tests 465
+#  ℹ pass 465
 #  ℹ fail 0
 ```
 
@@ -555,11 +556,11 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Kennzahl | Wert |
 |---|---|
 | Karten | 2293 |
-| Bereiche / Kategorien | 71 |
+| Bereiche / Kategorien | 72 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 37 (`SC.*`) |
-| Tests | 354 (alle grün) |
+| Tests | 465 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

@@ -25,7 +25,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import http from "node:http";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { execSync } from "node:child_process";
 

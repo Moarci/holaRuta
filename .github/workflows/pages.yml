@@ -24,6 +24,8 @@ on:
     branches: [main]
   pull_request: # Merge-Gate: Tests laufen vor dem Merge nach main
   workflow_dispatch: # erlaubt manuelles Auslösen über den Actions-Tab
+  schedule:
+    - cron: "0 4 * * *" # nächtlicher voller Mutations-Score (Job mutation-full)
 
 # Standardmäßig nur Lesezugriff; die Pages-Schreibrechte braucht nur der
 # deploy-Job (Least Privilege) – siehe unten.
@@ -58,6 +60,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0 # volle Historie: mutation:diff vergleicht gegen den Basis-Ref (Fallback: alle Module)
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -67,6 +71,20 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Lint-Gate: fängt undefined-Variablen & offensichtliche Bugs (no-undef
+      # = error, no-unused-vars = warn). ESLint ist KEINE Repo-Dependency
+      # (Projekt bleibt laufzeit-dependency-frei) → flüchtig & versionsgepinnt
+      # via npx. --max-warnings 9999 lässt die (bewusst tolerierten) Warnungen
+      # durch; ein no-undef-ERROR bricht den Job (Exit 1).
+      - name: Lint (ESLint, gepinnt, nicht in package.json)
+        run: npx --yes eslint@9.39.0 . --max-warnings 9999
+
+      # Coverage-Report (REPORTING, non-blocking): zeigt die Test-Abdeckung im
+      # Log, ohne den Job zu blockieren (|| true). Nutzt nur Node-Bordmittel
+      # (--experimental-test-coverage), keine Dependency, kein package.json-Eintrag.
+      - name: Coverage (Reporting, non-blocking)
+        run: node --test --experimental-test-coverage || true
+
       # HolaRuta.html ist nicht mehr eingecheckt (wird im deploy-Job frisch
       # gebaut). Geprüft wird nur, dass der Build sauber läuft UND der
       # committete service-worker.js (CACHE_VERSION) zum Quellcode passt.
@@ -74,6 +92,16 @@ jobs:
         run: |
           node build.js
           git diff --exit-code service-worker.js
+
+      # Mutationstesting-Gate (BLOCKIEREND): baut echte Bugs in den Quellcode und
+      # verlangt, dass die Tests sie fangen. Zwei Teile:
+      #   1. Katalog (catalog.mjs): kuratierte Invarianten — 100 % müssen gefangen werden.
+      #   2. Engine: automatische Operatoren NUR auf den per git geänderten Modulen
+      #      (--diff), gegen den Pro-Modul-No-Regression-Boden (targets.BASELINE).
+      # Zero-Dep (nur node:*). NACH dem service-worker-Check platziert, damit ein
+      # evtl. dirty-tree-Fehler nicht maskiert wird; der Runner stellt den Tree wieder her.
+      - name: Mutationstesting – Gate (Katalog + Engine auf geänderten Modulen)
+        run: npm run mutation:diff
 
   # Browser-E2E (Playwright): prüft den „Modo profe" (Lehrer-Modus) gegen die
   # LAUFENDE App in echtem Chromium – Schüler-Import, Niveau-Verteilung,
@@ -118,6 +146,15 @@ jobs:
       - name: Modo-profe E2E
         run: npm run e2e
 
+      - name: Install esbuild (gepinnt, dev-only — für dist/-Verifikation)
+        run: npm install --no-save esbuild@0.28.1
+
+      - name: Build dist (minifiziert) für Verify-Suite
+        run: node build.js --dist
+
+      - name: Ausführliche Browser-Verifikation (Root + dist)
+        run: npm run e2e:verify
+
   deploy:
     needs: test
     # Nur bei Push auf main / manuellem Lauf deployen – NICHT bei Pull Requests.
@@ -139,11 +176,23 @@ jobs:
         with:
           node-version: "22"
 
-      # HolaRuta.html liegt nicht im Repo, ist aber als Einzeldatei-Download
-      # gewünscht: frisch aus den Modulen bauen, damit sie unter
-      # https://<user>.github.io/holaRuta/HolaRuta.html stets aktuell verfügbar ist.
-      - name: Build single-file (HolaRuta.html)
-        run: node build.js
+      # Minifizierter Multi-File-Build nach dist/: alle Modul-.js + styles.css
+      # einzeln per esbuild minifiziert, index.html/SW/Manifeste/Icons/Fonts kopiert,
+      # SW-Hash über die minifizierten dist-Assets gestempelt. esbuild ist KEINE
+      # Repo-Runtime-Dependency – hier flüchtig (--no-save) und versionsgepinnt.
+      # Fällt esbuild aus, baut build.js dist/ graceful roh (unminifiziert).
+      - name: Install esbuild (gepinnt, dev-only)
+        run: npm install --no-save esbuild@0.28.1
+
+      - name: Build dist (minifiziert)
+        run: node build.js --dist
+
+      # HolaRuta.html (Einzeldatei-Download) frisch bauen und in dist/ legen, damit
+      # sie unter https://<user>.github.io/holaRuta/HolaRuta.html verfügbar bleibt.
+      - name: Build single-file (HolaRuta.html) into dist/
+        run: |
+          node build.js
+          cp HolaRuta.html dist/HolaRuta.html
 
       - name: Configure Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
@@ -153,8 +202,26 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
-          path: . # gesamtes Projekt (index.html ist die App-Startseite)
+          path: ./dist # minifizierter Multi-File-Build (index.html ist die App-Startseite)
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
+  # Nächtlicher VOLLER Mutations-Score über ALLE Engine-Module (entkoppelt vom
+  # schnellen PR-Gate, das nur geänderte Module fährt). Gated je Modul gegen den
+  # No-Regression-Boden (targets.BASELINE). Läuft nur per Zeitplan / manuell.
+  mutation-full:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+
+      - name: Voller Mutations-Score (alle Module)
+        run: npm run mutation:score

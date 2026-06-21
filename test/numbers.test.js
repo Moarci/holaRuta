@@ -138,6 +138,106 @@ test("numbers.currencyList: Kolumbien steht als Aushängeschild vorn", () => {
   });
 });
 
+// ---------- tierFor: exakte Stufen-Spannen (Schutz der Datenliterale) ----------
+// Hartkodierte Erwartung je Währung/Stufe – fängt JEDE versehentliche Änderung
+// eines min/max/step/fine-Literals in CURRENCIES (sonst „still" mutierbar).
+test("numbers.tierFor: liefert exakt die gepflegten Spannen je Währung", () => {
+  const EXPECT = {
+    CO: [{ min: 500, max: 20000, step: 500 }, { min: 10000, max: 200000, step: 1000, fine: 500 }, { min: 100000, max: 5000000, step: 10000, fine: 1000 }],
+    CL: [{ min: 300, max: 15000, step: 100 }, { min: 5000, max: 150000, step: 1000, fine: 500 }, { min: 100000, max: 8000000, step: 10000, fine: 1000 }],
+    AR: [{ min: 500, max: 20000, step: 100 }, { min: 10000, max: 300000, step: 1000, fine: 500 }, { min: 100000, max: 9000000, step: 10000, fine: 1000 }],
+    CR: [{ min: 100, max: 5000, step: 100 }, { min: 1000, max: 50000, step: 500, fine: 100 }, { min: 25000, max: 2000000, step: 1000, fine: 500 }],
+    MX: [{ min: 5, max: 200, step: 5 }, { min: 50, max: 2000, step: 10, fine: 5 }, { min: 500, max: 50000, step: 100, fine: 50 }],
+    PE: [{ min: 2, max: 100, step: 1 }, { min: 20, max: 500, step: 5 }, { min: 100, max: 9000, step: 10, fine: 5 }],
+    GT: [{ min: 5, max: 150, step: 5 }, { min: 50, max: 1500, step: 10 }, { min: 300, max: 40000, step: 100, fine: 50 }],
+  };
+  for (const key of numbers.CURRENCY_ORDER) {
+    for (let lvl = 1; lvl <= 3; lvl++) {
+      assert.deepEqual(numbers.tierFor(key, lvl), EXPECT[key][lvl - 1], `${key} L${lvl}`);
+    }
+  }
+});
+
+// tierFor klemmt die Stufe 1-basiert: <1 -> erste, >max -> letzte, ungültig -> 1.
+test("numbers.tierFor: Stufe wird 1-basiert auf [0 .. letzte] geklemmt", () => {
+  const co = numbers.currency("CO");
+  assert.deepEqual(numbers.tierFor("CO", 1), co.levels[0]); // genau 1 -> Index 0
+  assert.deepEqual(numbers.tierFor("CO", 2), co.levels[1]);
+  assert.deepEqual(numbers.tierFor("CO", 3), co.levels[2]); // genau 3 -> Index 2 (letzte)
+  assert.deepEqual(numbers.tierFor("CO", 0), co.levels[0]); // unter 1 -> erste
+  assert.deepEqual(numbers.tierFor("CO", -5), co.levels[0]);
+  assert.deepEqual(numbers.tierFor("CO", 99), co.levels[2]); // über max -> letzte
+  assert.deepEqual(numbers.tierFor("CO", undefined), co.levels[0]); // Default 1 -> erste
+  // String-Währung wird zur Definition aufgelöst (gleiches Objekt wie currency())
+  assert.equal(numbers.tierFor("CO", 2), co.levels[1]);
+});
+
+// randInt schließt die Obergrenze ein (a + floor(rnd*(b-a+1))): bei rnd≈1 muss
+// der Höchstwert der Spanne fallen – sonst wäre das Spannen-Maximum unerreichbar.
+test("numbers.randomPrice: erreicht bei rnd≈1 das Spannen-Maximum", () => {
+  const orig = Math.random;
+  Math.random = () => 0.9999999;
+  try {
+    // CO L1 = {min:500,max:20000,step:500}: lo=1, hi=40 -> 40*500 = 20000 (=max)
+    assert.equal(numbers.randomPrice("CO", 1).value, 20000);
+    // PE L1 = {min:2,max:100,step:1}: lo=2, hi=100 -> 100
+    assert.equal(numbers.randomPrice("PE", 1).value, 100);
+  } finally { Math.random = orig; }
+});
+
+// An der 0,5-Grenze nimmt der Generator den GROBEN Schritt (`random() < 0.5`
+// ist ausschließend). Deterministisch über einen Math.random-Stub geprüft – der
+// feine vs. grobe Schritt liefert hier nachweislich verschiedene Beträge.
+test("numbers.randomPrice: bei random()===0.5 gilt der grobe Schritt (< ist exklusiv)", () => {
+  const orig = Math.random;
+  Math.random = () => 0.5;
+  try {
+    // CR L3 = {min:25000,max:2000000,step:1000,fine:500}: grob -> 1.013.000,
+    // fein würde 1.012.500 ergeben (anderer Schritt, dadurch unterscheidbar).
+    assert.equal(numbers.randomPrice("CR", 3).value, 1013000);
+  } finally { Math.random = orig; }
+});
+
+test("numbers.amount: ungültiger/0-Betrag fällt auf 0 zurück (nicht auf 1)", () => {
+  const peso = { one: "peso", many: "pesos" };
+  assert.equal(numbers.amount(0, peso), "cero pesos");   // 0 bleibt 0, NICHT "un peso"
+  assert.equal(numbers.amount("abc", peso), "cero pesos"); // Müll -> 0
+});
+
+test("numbers.LEVELS: drei Stufen mit den Ids 1,2,3", () => {
+  assert.deepEqual(numbers.LEVELS.map((l) => l.id), [1, 2, 3]);
+});
+
+test("numbers.makeItem: String-Währungsschlüssel wird zur Definition aufgelöst", () => {
+  const item = numbers.makeItem(1000, "CO"); // String statt Objekt
+  assert.equal(item.code, "COP");
+  assert.equal(item.currencyKey, "CO");
+  assert.equal(item.symbol, "$");
+});
+
+// buildRound versucht „hartnäckig" (bis zu n*40 Versuche), distinkte Werte zu
+// sammeln. Deterministisch über den rng-Parameter: erscheint der 5. distinkte
+// Wert erst spät, muss das großzügige Budget ihn dennoch einsammeln (n+40 wäre
+// zu knapp). Sichert den Guard-Faktor n*40 ab.
+test("numbers.buildRound: sammelt distinkte Werte bis zum n*40-Budget ein", () => {
+  // GT L1 = {min:5,max:150,step:5}: idx 1..30 -> Wert idx*5. r so wählen, dass
+  // floor(r*30)=idx-1. Die ersten 4 distinkten Werte früh, der 5. erst bei Versuch 100.
+  const R = (idx) => (idx - 0.5) / 30;
+  let k = 0;
+  const rng = () => {
+    k += 1;
+    if (k === 1) return R(1);
+    if (k === 2) return R(2);
+    if (k === 3) return R(3);
+    if (k === 4) return R(4);
+    if (k === 100) return R(5); // 5. distinkter Wert erst spät (n+40=45 würde ihn verpassen)
+    return R(1);                 // sonst Wiederholung des ersten Werts
+  };
+  const round = numbers.buildRound("GT", 1, 5, rng);
+  assert.equal(round.length, 5);
+  assert.equal(new Set(round.map((r) => r.value)).size, 5); // alle 5 distinkt
+});
+
 // ---------- Gegenprobe: deckt sich mit den festen Karten in data.js ----------
 test("numbers.toWords: stimmt mit den gepflegten Zahlen-Karten überein", () => {
   // window-Shim mit data.js erneut laden würde Module mischen; wir prüfen daher

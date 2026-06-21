@@ -122,7 +122,9 @@ test("Manifest (hell & dunkel): Mi-lexico-Shortcut zeigt auf ?a=favoritos", () =
 
 test("app.js: open-favorites-Aktion und ?a=favoritos-Opener sind verdrahtet", () => {
   const appjs = read("app.js");
-  assert.ok(/action === "open-favorites"/.test(appjs), "open-favorites-Aktion fehlt in app.js");
+  // Aktions-Dispatch läuft über die ACTIONS-Lookup-Tabelle (Refactor der früheren
+  // if/else-Kette): die Verdrahtung steht als Tabellen-Eintrag "open-favorites" -> openFavorites.
+  assert.ok(/"open-favorites":[^\n]*openFavorites\(/.test(appjs), "open-favorites-Aktion fehlt in app.js");
   assert.ok(/favoritos:\s*openFavorites/.test(appjs), "?a=favoritos-Opener fehlt in app.js");
   assert.ok(/function openFavorites\(/.test(appjs), "openFavorites() fehlt in app.js");
 });
