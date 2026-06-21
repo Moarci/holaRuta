@@ -3847,7 +3847,7 @@
   // damit man ein Bundle zusammenstellen kann.
   function pickTarget(ctx, value) {
     if (!value) return;
-    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.sheetFillVals = {}; state.targetPicker = null; render(); return; }
+    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.targetPicker = null; loadFillStore(); render(); return; }
     const item = targetValueToItem(value), key = value;
     const idx = state.taskItems.findIndex((x) => itemKey(x) === key);
     if (idx >= 0) { state.taskItems = state.taskItems.filter((_, i) => i !== idx); }
@@ -4248,7 +4248,7 @@
     if (!state.sheetMode) state.sheetMode = "full";
     if (!state.sheetLength) state.sheetLength = "gross"; // Heftlänge: standard | gross | xxl
     if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
-    if (!state.sheetFillVals) state.sheetFillVals = {}; // getippte Antworten (Handy-Modus, nur im Speicher)
+    loadFillStore(); // getippte Antworten dieses Blatts gerätelokal wiederherstellen
     setState({ screen: "printsheet" });
   }
 
@@ -4303,7 +4303,21 @@
     seen[a] = (seen[a] || 0) + 1;
     return "a:" + a + "#" + seen[a];
   }
-  // Aktuelle Eingaben in den State spiegeln (nur dieses Gerät, nichts gesendet).
+  // Blatt-Identität für die Persistenz: Ziel + Etappe (NICHT Länge – die Felder
+  // tragen ihre Lösung als Schlüssel, sodass Antworten über Längen hinweg passen).
+  function sheetFillId() {
+    return (state.sheetTarget || "") + "|" + (state.sheetStage || "all");
+  }
+  // Den vollen Persistenz-Speicher lazy laden (alle Blätter) und das Bucket des
+  // aktuellen Blatts in state.sheetFillVals spiegeln.
+  function loadFillStore() {
+    if (!state.sheetFillStore) state.sheetFillStore = (store.loadSheetFill && store.loadSheetFill()) || {};
+    state.sheetFillVals = state.sheetFillStore[sheetFillId()] || {};
+    return state.sheetFillVals;
+  }
+  // Aktuelle Eingaben merken: nur die GERADE sichtbaren Felder aktualisieren –
+  // Antworten abgewählter Bausteine bleiben im Bucket erhalten. Danach gerätelokal
+  // sichern (nichts wird gesendet); leere Blätter werden wieder entfernt.
   function snapshotFillVals() {
     const map = (state.sheetFillVals = state.sheetFillVals || {});
     const seen = {};
@@ -4312,6 +4326,14 @@
       const v = String(el.value || "");
       if (v.trim()) map[k] = v; else delete map[k];
     });
+    persistFillVals();
+  }
+  function persistFillVals() {
+    const all = (state.sheetFillStore = state.sheetFillStore || {});
+    const id = sheetFillId();
+    if (state.sheetFillVals && Object.keys(state.sheetFillVals).length) all[id] = state.sheetFillVals;
+    else delete all[id];
+    if (store.saveSheetFill) store.saveSheetFill(all);
   }
   // Nach einem Re-Render die gemerkten Antworten zurückschreiben.
   function restoreFillSheet() {
@@ -4360,6 +4382,7 @@
   function resetFillSheet() {
     fillEls().forEach((el) => { el.value = ""; el.classList.remove("is-correct", "is-wrong"); });
     state.sheetFillVals = {};
+    persistFillVals(); // gespeicherten Stand dieses Blatts mitlöschen
     setFillScore("");
   }
 
@@ -7784,7 +7807,7 @@
     // damit der Cursor beim Tippen nicht springt.
     if (e.target && e.target.id === "teacher-classname") { setClassName(e.target.value); return; }
     // Aktivitätsblatt: Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
-    if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; render(); return; }
+    if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; loadFillStore(); render(); return; }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);

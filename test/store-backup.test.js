@@ -151,3 +151,53 @@ test("Restore: getItem wirft (Privatmodus) -> gilt als leer, Restore läuft trot
     assert.ok(env.mem[PROGRESS_KEY], "Snapshot wurde trotz werfendem getItem zurückgeschrieben");
   } finally { env.restore(); }
 });
+
+// ---------- Arbeitsheft-Eingaben (Handy-Modus): gerätelokale Persistenz ----------
+const SHEETFILL_KEY = "spanischcard.sheetfill.v1";
+
+test("SheetFill: Speichern/Laden ist verlustfrei (Round-Trip)", () => {
+  const env = freshStore({ local: {} });
+  try {
+    const data = { "pretrip:cartagena|all": { "a:Gracias.#1": "Gracias.", "area#1": "mi texto" } };
+    env.store.saveSheetFill(data);
+    assert.deepEqual(env.store.loadSheetFill(), data, "gespeicherte Eingaben kommen identisch zurück");
+  } finally { env.restore(); }
+});
+
+test("SheetFill: leer/fehlend -> {}", () => {
+  const env = freshStore({ local: {} });
+  try {
+    assert.deepEqual(env.store.loadSheetFill(), {}, "ohne Eintrag ein leeres Objekt");
+  } finally { env.restore(); }
+});
+
+test("SheetFill: Strukturwächter wirft Müll raus und deckelt die Größe", () => {
+  const env = freshStore({ local: {} });
+  try {
+    const bucket = {};
+    for (let i = 0; i < 500; i++) bucket["k" + i] = "v" + i; // > 400 Felder
+    bucket.leer = "";            // leere Werte fliegen raus
+    bucket.zahl = 42;            // Nicht-String fliegt raus
+    const dirty = {
+      "ziel|all": bucket,
+      "kaputt": "kein-objekt",   // Bucket muss ein Objekt sein
+      "leeresBlatt": {},         // ohne Felder -> kein Eintrag
+    };
+    env.store.saveSheetFill(dirty);
+    const got = env.store.loadSheetFill();
+    assert.ok(got["ziel|all"], "gültiges Blatt bleibt");
+    assert.ok(!("kaputt" in got), "Nicht-Objekt-Bucket verworfen");
+    assert.ok(!("leeresBlatt" in got), "leeres Blatt verworfen");
+    assert.ok(!("leer" in got["ziel|all"]) && !("zahl" in got["ziel|all"]), "leere/Nicht-String-Werte verworfen");
+    assert.ok(Object.keys(got["ziel|all"]).length <= 400, "Felder pro Blatt gedeckelt");
+  } finally { env.restore(); }
+});
+
+test("SheetFill: gehört NICHT ins Backup (gerätelokal, kein Export)", () => {
+  const env = freshStore({ local: {} });
+  try {
+    env.store.saveSheetFill({ "ziel|all": { "a:x#1": "y" } });
+    const dump = env.store.exportData();
+    assert.ok(!(SHEETFILL_KEY in dump), "Arbeitsheft-Eingaben dürfen nicht im Backup landen");
+  } finally { env.restore(); }
+});

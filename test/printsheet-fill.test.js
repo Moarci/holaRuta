@@ -21,21 +21,30 @@ const assert = require("node:assert/strict");
 const path = require("path");
 const stub = require("./_dom-stub.js");
 
-function freshApp() {
-  stub.install();
-  stub.seedOnboarded();
-  const SRC = path.join(__dirname, "..");
+const SRC = path.join(__dirname, "..");
+function clearAppCache() {
   for (const key of Object.keys(require.cache)) {
     if (key.startsWith(SRC) && !key.includes(`${path.sep}test${path.sep}`)) delete require.cache[key];
   }
+}
+// Frischer Boot: neues DOM + leeres localStorage.
+function freshApp() {
+  stub.install();
+  stub.seedOnboarded();
+  clearAppCache();
+  stub.installModules();
+  return document.getElementById("app");
+}
+// „Reload": App-Module neu starten, ABER DOM + localStorage behalten – simuliert
+// das erneute Öffnen der Seite. So lässt sich die gerätelokale Persistenz prüfen.
+function reboot() {
+  clearAppCache();
   stub.installModules();
   return document.getElementById("app");
 }
 
-// Treibt den Fill-Modus: navigiert bis ins Arbeitsblatt und stellt Helfer bereit.
-function openFillSheet() {
-  const root = freshApp();
-  const doc = global.document;
+// Helfer-Fabrik auf einem gerenderten #app (Klicks, Eingaben, Tasten).
+function driver(root) {
   const clickEl = (el) => el.dispatchEvent({ type: "click", target: el, bubbles: true });
   const clickAction = (action, data) => {
     let sel = `[data-action="${action}"]`;
@@ -48,19 +57,28 @@ function openFillSheet() {
   // Modo profe ist im Default-Dashboard nicht als Knopf sichtbar; den Reiter-
   // Wechsel (set-tab teacher) über einen eingehängten Auslöser anstoßen – genau
   // den Pfad, den die Reiter-Navigation in Editionen nimmt.
-  const trigger = doc.createElement("button");
-  trigger.setAttribute("data-action", "set-tab");
-  trigger.setAttribute("data-tab", "teacher");
-  root.appendChild(trigger);
-  clickEl(trigger);
-  assert.ok(clickAction("open-printsheet"), "Arbeitsblatt öffnen");
-  assert.ok(clickAction("sheet-mode", { mode: "fill" }), "Variante „Am Handy ausfüllen“");
+  const gotoFill = () => {
+    const trigger = global.document.createElement("button");
+    trigger.setAttribute("data-action", "set-tab");
+    trigger.setAttribute("data-tab", "teacher");
+    root.appendChild(trigger);
+    clickEl(trigger);
+    assert.ok(clickAction("open-printsheet"), "Arbeitsblatt öffnen");
+    assert.ok(clickAction("sheet-mode", { mode: "fill" }), "Variante „Am Handy ausfüllen“");
+  };
   const fields = () => root.querySelectorAll('.sheet-fill[data-answer]');
   const score = () => (root.querySelector(".sheet-score") || { textContent: "" }).textContent;
   const type = (el, val) => { el.value = val; el.dispatchEvent({ type: "input", target: el, bubbles: true }); };
   // keydown hängt an document (siehe Kopf) – mit target + preventDefault zustellen.
   const press = (el, key) => global.document.dispatchEvent({ type: "keydown", key: key, target: el, preventDefault() {}, stopPropagation() {} });
-  return { root, clickAction, fields, score, type, press };
+  return { root, clickAction, gotoFill, fields, score, type, press };
+}
+
+// Treibt den Fill-Modus: frischer Boot + Navigation bis ins Arbeitsblatt.
+function openFillSheet() {
+  const d = driver(freshApp());
+  d.gotoFill();
+  return d;
 }
 
 test("Fill: Prüfen markiert richtig/falsch und meldet das Ergebnis", () => {
@@ -127,4 +145,27 @@ test("Fill: Zurücksetzen leert Felder, Markierung und Ergebnis", () => {
   assert.ok(after.every((f) => !f.value), "alle Felder leer");
   assert.ok(after.every((f) => !f.classList.contains("is-correct") && !f.classList.contains("is-wrong")), "keine Markierung mehr");
   assert.equal(d.score(), "", "Ergebnis geleert");
+});
+
+test("Fill: getippte Antworten überleben einen Reload (gerätelokal gespeichert)", () => {
+  // 1) Frisch booten, ins Blatt, eine Antwort tippen -> wird gerätelokal gesichert.
+  const d1 = openFillSheet();
+  const typed = "bleibt-nach-reload";
+  d1.type(d1.fields()[0], typed);
+  assert.ok(global.window.localStorage.getItem("spanischcard.sheetfill.v1"), "Eingabe wurde in localStorage gesichert");
+  // 2) „Reload": Module neu starten, DOM + localStorage behalten – erneut ins Blatt.
+  const d2 = driver(reboot());
+  d2.gotoFill();
+  const restored = Array.prototype.slice.call(d2.fields());
+  assert.ok(restored.some((f) => f.value === typed), "die getippte Antwort ist nach dem Reload wieder da");
+});
+
+test("Fill: Zurücksetzen entfernt den Stand auch dauerhaft (kein Wiederauferstehen nach Reload)", () => {
+  const d1 = openFillSheet();
+  d1.type(d1.fields()[0], "wird-geloescht");
+  d1.clickAction("sheet-reset");
+  const d2 = driver(reboot());
+  d2.gotoFill();
+  const after = Array.prototype.slice.call(d2.fields());
+  assert.ok(after.every((f) => !f.value), "nach Reset bleibt auch über den Reload alles leer");
 });
