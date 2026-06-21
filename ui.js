@@ -4235,12 +4235,16 @@
           </section>`;
         }
         case "writing": {
+          // Mehrere Schreibanlässe (prompts[]) oder ein einzelner (prompt) – je
+          // Anlass eine eigene Schreibfläche bzw. ein Textfeld im Fill-Modus.
+          const prompts = (s.prompts && s.prompts.length) ? s.prompts : (s.prompt ? [s.prompt] : [""]);
+          const box = vm.fill
+            ? `<textarea class="sheet-fill-area" rows="4" lang="es" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.secWriting"))}"></textarea>`
+            : `<div class="sheet-write-box" aria-hidden="true"></div>`;
+          const blocks = prompts.map((p) => `${p ? `<p class="sheet-goal">${esc(p)}</p>` : ""}${box}`).join("");
           return `<section class="sheet-section sheet-section--writing">
             ${sectionHead("sheet.secWriting", "sheet.instrWriting")}
-            ${s.prompt ? `<p class="sheet-goal">${esc(s.prompt)}</p>` : ""}
-            ${vm.fill
-              ? `<textarea class="sheet-fill-area" rows="5" lang="es" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.secWriting"))}"></textarea>`
-              : `<div class="sheet-write-box" aria-hidden="true"></div>`}
+            ${blocks}
           </section>`;
         }
         default: return "";

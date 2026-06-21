@@ -4008,8 +4008,30 @@
     const out = [];
     const cards = (allCards || []).filter((c) => c && c.es && nat(c));
 
-    // 1. Zuordnung ES<->DE (bis 10 Paare).
-    const mPairs = sheetShuffle(cards, rng).slice(0, 10);
+    // Breiter Reise-Wortschatz als Auffüll-Reserve: hat ein Ziel wenige Karten,
+    // werden die karten-basierten Abschnitte (Zuordnen/Übersetzen/Satz ordnen)
+    // hieraus aufgefüllt – so bleibt das Heft auch bei kleinen Zielen voll.
+    // Zahlen/Gegenteile raus (eigene Abschnitte, kein echter Satz/Begriff).
+    const broadPool = (data.CARDS || []).filter((c) => c && c.es && nat(c) && c.cat !== "contrarios" && c.cat !== "zahlen");
+    // Wählt n Karten: erst aus der Zielmenge, dann (falls zu wenig) aus der Reserve.
+    function fillFrom(primary, extra, n) {
+      const seen = {};
+      const pick = sheetShuffle(primary, rng).slice(0, n);
+      pick.forEach((c) => { if (c.id) seen[c.id] = true; });
+      if (pick.length < n) {
+        const more = sheetShuffle((extra || []).filter((c) => !c.id || !seen[c.id]), rng);
+        for (let i = 0; i < more.length && pick.length < n; i++) { pick.push(more[i]); if (more[i].id) seen[more[i].id] = true; }
+      }
+      return pick;
+    }
+    const isPhrase = (c) => {
+      if (!c.es || c.cat === "zahlen" || c.cat === "contrarios" || c.es.indexOf("–") !== -1) return false;
+      const w = c.es.trim().split(/\s+/);
+      return w.length >= 4 && w.length <= 9;
+    };
+
+    // 1. Zuordnung ES<->DE (bis 14 Paare; bei kleinem Ziel aus der Reserve aufgefüllt).
+    const mPairs = fillFrom(cards, broadPool, 14);
     if (mPairs.length >= 3) {
       const left = mPairs.map((c, i) => ({ n: i + 1, es: c.es, de: nat(c) }));
       const order = sheetShuffle(left.map((_, i) => i), rng);
@@ -4021,7 +4043,7 @@
     // 1b. Gegenteile (Contrarios) – grundlegender Reise-Wortschatz, global (nicht
     // zielgebunden), darum ein verlässlicher Umfangs-Booster. „grande – pequeño":
     // gefragt ist das spanische Gegenteil, das deutsche Erstwort dient als Hilfe.
-    const oppPick = sheetShuffle((data.CARDS || []).filter((c) => c.cat === "contrarios" && c.es && c.es.indexOf("–") !== -1), rng).slice(0, 10);
+    const oppPick = sheetShuffle((data.CARDS || []).filter((c) => c.cat === "contrarios" && c.es && c.es.indexOf("–") !== -1), rng).slice(0, 18);
     if (oppPick.length >= 3) {
       const oppItems = oppPick.map((c) => {
         const es = c.es.split("–").map((s) => s.trim());
@@ -4031,45 +4053,43 @@
       if (oppItems.length >= 3) out.push({ type: "opposites", items: oppItems });
     }
 
-    // 2. Lückentext (frases): themenpassend oder gemischt.
+    // 2. Lückentext (frases): themenpassend zuerst, dann gemischt aufgefüllt (bis 14).
     if (frases && frases.FRASES) {
-      const pool = frases.FRASES.filter((f) => f.slot && f.slot.es && (!theme.frasesCat || f.cat === theme.frasesCat));
-      const chosen = sheetShuffle(pool.length ? pool : frases.FRASES.filter((f) => f.slot && f.slot.es), rng).slice(0, 10);
+      const all = frases.FRASES.filter((f) => f.slot && f.slot.es);
+      const themed = theme.frasesCat ? all.filter((f) => f.cat === theme.frasesCat) : [];
+      const chosen = [].concat(sheetShuffle(themed, rng), sheetShuffle(all.filter((f) => themed.indexOf(f) === -1), rng)).slice(0, 14);
       if (chosen.length >= 3) {
         const items = chosen.map((f) => ({ frameEs: f.frameEs, targetDe: natk(f, "targetDe"), answer: f.slot.es }));
         out.push({ type: "gapfill", wordbank: sheetShuffle(items.map((it) => it.answer), rng), items: items });
       }
     }
 
-    // 3. Übersetzung (Kontextsätze DE->ES, sonst einfache Karten).
-    const ctxCards = sheetShuffle(cards.filter((c) => c.context && c.context.sentenceEs), rng).slice(0, 12);
-    if (ctxCards.length >= 3) {
-      out.push({ type: "translate", lines: ctxCards.map((c) => ({ de: natk(c.context, "sentenceDe") || natk(c.context, "situation") || nat(c), es: c.context.sentenceEs })) });
-    } else {
-      const simple = sheetShuffle(cards, rng).slice(0, 12);
-      if (simple.length >= 3) out.push({ type: "translate", lines: simple.map((c) => ({ de: nat(c), es: c.es })) });
+    // 3. Übersetzung DE->ES (bis 18): Kontextsatz wenn vorhanden, sonst die Karte;
+    // bei kleinem Ziel aus der Reserve aufgefüllt.
+    const trCards = fillFrom(cards, broadPool, 18);
+    if (trCards.length >= 3) {
+      out.push({ type: "translate", lines: trCards.map((c) => {
+        const ctx = c.context;
+        return (ctx && ctx.sentenceEs)
+          ? { de: natk(ctx, "sentenceDe") || natk(ctx, "situation") || nat(c), es: ctx.sentenceEs }
+          : { de: nat(c), es: c.es };
+      }) });
     }
 
-    // 3b. Satz ordnen (Wortstellung): mehrwortige Phrasen der Ziel-Karten (4–9
-    // Wörter) – themenrelevant statt generisch. Wörter durcheinander, Lösung =
-    // der ganze Satz. Zahlen/Gegenteile raus (eigene Abschnitte; keine echten Sätze).
-    const orderPool = sheetShuffle(cards.filter((c) => {
-      if (!c.es || c.cat === "zahlen" || c.cat === "contrarios" || c.es.indexOf("–") !== -1) return false;
-      const w = c.es.trim().split(/\s+/);
-      return w.length >= 4 && w.length <= 9;
-    }), rng).slice(0, 6);
-    if (orderPool.length >= 3) {
-      out.push({ type: "ordenar", items: orderPool.map((c) => {
+    // 3b. Satz ordnen (Wortstellung): mehrwortige Phrasen (4–9 Wörter), Ziel zuerst,
+    // dann aus der Reserve (bis 12). Wörter durcheinander, Lösung = der ganze Satz.
+    const orderPick = fillFrom(cards.filter(isPhrase), broadPool.filter(isPhrase), 12);
+    if (orderPick.length >= 3) {
+      out.push({ type: "ordenar", items: orderPick.map((c) => {
         const answer = c.es.trim();
         const words = answer.replace(/[.?!¿¡,;]/g, "").split(/\s+/).filter(Boolean);
         return { answer: answer, scrambled: sheetShuffle(words, rng), de: nat(c) };
       }) });
     }
 
-
-    // 4. Konjugation.
+    // 4. Konjugation (bis 18).
     if (conjug && data.CONJUGATION) {
-      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 12, rng).map((it) => ({
+      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 18, rng).map((it) => ({
         verb: natk(it, "verbHint") || it.verb,
         person: natk(it, "personDe") ? natk(it, "personDe") + " (" + it.personEs + ")" : it.personEs,
         answer: it.answer,
@@ -4077,37 +4097,42 @@
       if (rows.length) out.push({ type: "conjug", rows: rows });
     }
 
-    // 5. Zahlen & Preise.
+    // 5. Zahlen & Preise (bis 15).
     if (numbers && numbers.buildRound) {
-      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, 10, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
+      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, 15, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
       if (items.length) out.push({ type: "numbers", items: items });
     }
 
-    // 6. Dialog-Lückentext (ein Szenario; user-Repliken verdeckt).
+    // 6. Dialog-Lückentext: ZWEI Szenarien (themenpassendes zuerst), user-Repliken
+    // verdeckt – ein großer Umfangs-Block aus echten Gesprächen.
     if (dialogos && dialogos.DIALOGOS && dialogos.DIALOGOS.length) {
       const list = dialogos.DIALOGOS;
-      const dlg = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
-      if (dlg && dlg.turns) {
-        const name = "Marco";
-        const sub = (s) => String(s || "").replace(/\{name\}/g, name);
-        out.push({
+      const name = "Marco";
+      const sub = (s) => String(s || "").replace(/\{name\}/g, name);
+      const first = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
+      const picks = [];
+      if (first) picks.push(first);
+      const rest = sheetShuffle(list.filter((d) => d !== first), rng);
+      if (rest.length) picks.push(rest[0]);
+      picks.forEach((dlg) => {
+        if (dlg && dlg.turns) out.push({
           type: "dialogue", title: natk(dlg, "title"),
           turns: dlg.turns.map((tn) => tn.who === "npc"
             ? { who: "npc", es: sub(tn.es), de: nat(tn) }
             : { who: "user", de: nat(tn), answer: sub(tn.solEs) }),
         });
-      }
+      });
     }
 
     // 7. Landeskunde (optional, per Land).
     if (knigge && knigge.ACCENTS && theme.countryId && knigge.ACCENTS[theme.countryId]) {
       const acc = knigge.ACCENTS[theme.countryId];
-      const facts = ["hostel", "bus", "grupo", "cultura"].map((k) => natk(acc, k)).filter(Boolean);
+      const facts = ["hostel", "bus", "grupo", "cultura", "saludo", "comida", "propina", "dinero"].map((k) => natk(acc, k)).filter(Boolean);
       if (facts.length) out.push({ type: "culture", title: "", facts: facts });
     }
 
-    // 8. Freies Schreiben (immer; Box + Anleitung genügen).
-    out.push({ type: "writing", prompt: "" });
+    // 8. Freies Schreiben (immer; mehrere Schreibanlässe).
+    out.push({ type: "writing", prompts: [t("sheet.writePrompt1"), t("sheet.writePrompt2"), t("sheet.writePrompt3")] });
 
     return out;
   }
@@ -4177,7 +4202,11 @@
     const rng = sheetRng(sheetHash(tt.value + "|" + stageSel));
     const builtSections = buildSheetSections(sheetTheme(tt, lvls), allCards, rng);
     const skip = state.sheetSkip || [];
-    const sectionToggles = builtSections.map((s) => ({ type: s.type, label: t("sheet." + (SHEET_SEC_KEY[s.type] || "secWriting")), on: skip.indexOf(s.type) === -1 }));
+    // Ein Chip je Abschnittstyp (mehrere gleiche Typen – z. B. zwei Dialoge – werden
+    // über EINEN Chip an-/abgewählt, kein Doppel-Chip).
+    const seenToggle = {};
+    const sectionToggles = builtSections.filter((s) => { if (seenToggle[s.type]) return false; seenToggle[s.type] = true; return true; })
+      .map((s) => ({ type: s.type, label: t("sheet." + (SHEET_SEC_KEY[s.type] || "secWriting")), on: skip.indexOf(s.type) === -1 }));
     const sections = builtSections.filter((s) => skip.indexOf(s.type) === -1);
     return {
       targets: taskTargets(), sheetTarget: tt.value,
