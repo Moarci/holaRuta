@@ -11,6 +11,7 @@
   const definiciones = window.SC.definiciones; // Feature-Modul (Zuordnen-Quiz), eager geladen
   const precios = window.SC.precios; // Feature-Modul (Preis-Hörtrainer), eager geladen
   const yestoGame = window.SC.yestoGame; // Feature-Modul (¿Y esto?, Bild-Vokabel-Spiel), eager geladen
+  const frasesGame = window.SC.frasesGame; // Feature-Modul (Frases flexibles, Satzbaukasten), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -1820,142 +1821,10 @@
     setState({ screen: "tiempos" });
   }
 
-  // ----- Frases flexibles (Satzbaukasten): Steuerung -----
-  // Virtuelle "Gemischt"-Id: spielt alle Rahmen quer durch alle Themen.
-  const FRASES_ALL = "all";
-  const frasesById = (id) => (frases ? frases.FRASES.find((f) => f.id === id) : null) || null;
-  const frasesSetById = (id) => (frases && frases.FRASES_SETS ? frases.FRASES_SETS.find((s) => s.id === id) : null) || null;
-  // Rahmen eines Themas (oder alle bei "all"). Reihenfolge der Daten bleibt erhalten.
-  const frasesForSet = (setId) =>
-    frases ? frases.FRASES.filter((f) => setId === FRASES_ALL || f.cat === setId) : [];
-
-  // Optionen eines Rahmens bauen: korrekter Baustein + Ablenker, gemischt. Einmal
-  // beim Stellen berechnet und im State gehalten (Re-Render darf nicht neu mischen).
-  function buildFrasesOptions(frame) {
-    const opts = [Object.assign({ correct: true }, frame.slot)]
-      .concat((frame.distractors || []).map((d) => Object.assign({ correct: false }, d)));
-    return shuffle(opts);
-  }
-
-  // Themen-Auswahl: jede Liste mit Zahl + Stufe, plus eine "Gemischt"-Kachel über alles.
-  function frasesSetupVM() {
-    const sets = (frases && frases.FRASES_SETS ? frases.FRASES_SETS : []).map((s) => {
-      const lvl = levelById(s.lvl);
-      return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
-        count: frasesForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
-    });
-    return {
-      sets,
-      mixed: { id: FRASES_ALL, label: t("app.mixed"), icon: "🎲",
-        intro: t("app.frasesMixedIntro"),
-        count: frases ? frases.FRASES.length : 0 },
-    };
-  }
-
-  function openFrasesSetup() {
-    dismissBadgeToast();
-    setState({ screen: "frasesSetup" });
-  }
-
-  function startFrases(setId) {
-    dismissBadgeToast();
-    const pool = frasesForSet(setId);
-    if (!pool.length) return;
-    const queue = shuffle(pool).map((f) => f.id);
-    state.frases = {
-      setId, queue, idx: 0, total: queue.length,
-      options: buildFrasesOptions(frasesById(queue[0])),
-      selected: null, correct: 0,
-    };
-    setState({ screen: "frases" });
-  }
-
-  // Kopf-Infos zum laufenden Set (Label/Icon) – "Gemischt" hat keinen Datensatz.
-  function frasesSetInfo(setId) {
-    if (setId === FRASES_ALL) return { label: t("app.mixed"), icon: "🎲" };
-    const s = frasesSetById(setId);
-    return { label: s ? s.label : "", icon: s ? s.icon : "🧱" };
-  }
-
-  function frasesVM() {
-    const f = state.frases;
-    const frame = frasesById(f.queue[f.idx]);
-    const answered = f.selected !== null;
-    const info = frasesSetInfo(f.setId);
-    const options = f.options.map((o, i) => ({
-      es: o.es, de: nat(o),
-      // vor der Antwort neutral; danach Lösung grün, falsche Wahl rot, Rest gedämpft.
-      state: !answered ? "idle"
-        : o.correct ? "correct"
-        : i === f.selected ? "wrong"
-        : "dim",
-    }));
-    const sol = f.options.find((o) => o.correct) || {};
-    return {
-      setLabel: info.label, setIcon: info.icon,
-      position: f.idx, total: f.total,
-      frameEs: frame ? frame.frameEs : "",
-      targetDe: frame ? natk(frame, "targetDe") : "",
-      options, answered,
-      isCorrect: answered && !!(f.options[f.selected] && f.options[f.selected].correct),
-      solutionEs: sol.es, solutionDe: nat(sol),
-      isLast: f.idx >= f.total - 1,
-    };
-  }
-
-  function frasesDoneVM() {
-    const f = state.frases;
-    const info = frasesSetInfo(f.setId);
-    return { setLabel: info.label, setIcon: info.icon,
-      correct: f.correct, total: f.total, perfect: f.total > 0 && f.correct === f.total };
-  }
-
-  // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
-  function answerFrases(i) {
-    const f = state.frases;
-    if (!f || f.selected !== null) return;
-    f.selected = i;
-    if (f.options[i] && f.options[i].correct) { f.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextFrases() {
-    const f = state.frases;
-    if (!f || f.selected === null) return; // erst antworten, dann weiter
-    if (f.idx >= f.total - 1) {
-      recordFrasesResult(f);
-      syncBadges(Date.now(), true);
-      setState({ screen: "frasesDone" });
-      return;
-    }
-    f.idx += 1;
-    f.selected = null;
-    f.options = buildFrasesOptions(frasesById(f.queue[f.idx]));
-    render();
-  }
-
-  function frasesAgain() {
-    // Dieselbe Themen-Runde noch einmal (startFrases baut state.frases neu auf);
-    // fällt auf "Gemischt" zurück, falls (theoretisch) kein Set hinterlegt ist.
-    startFrases(state.frases ? state.frases.setId : FRASES_ALL);
-  }
-
-  // Ergebnis einer beendeten Satzbaukasten-Runde buchen (Ruta-Pass). Zusätzlich
-  // das gespielte Thema vermerken – speist den "Alle Themen"-Badge (Gemischt zählt
-  // nicht als einzelnes Thema).
-  function recordFrasesResult(f) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.frasesPlayed = (g.frasesPlayed || 0) + 1;
-    if (f.total > 0 && f.correct === f.total) g.frasesPerfect = (g.frasesPerfect || 0) + 1;
-    if (f.setId && f.setId !== FRASES_ALL) {
-      const done = Object.assign({}, g.frasesThemesDone);
-      done[f.setId] = true;
-      g.frasesThemesDone = done;
-    }
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
+  // Frases flexibles (Satzbaukasten) wohnt jetzt in features/frases-game.js
+  // (SC.frasesGame; eigener Namespace, da SC.frases das Datenmodul ist). VMs,
+  // Handler, recordFrasesResult und Render gebündelt. app.js delegiert unten in
+  // SCREENS/ACTIONS, im Sharepic-Aggregator und in miniDoneConfig.
 
   // ----- Diálogos: Gesprächs-Simulationen -----
   // Eine Reisesituation Zug für Zug durchspielen. npc-Züge werden angezeigt und
@@ -2800,9 +2669,9 @@
       "preciosSetup": () => precios.setupScreen(),
       "precios": () => precios.playScreen(),
       "preciosDone": () => precios.doneScreen(),
-      "frasesSetup": () => ui.renderFrasesSetup(frasesSetupVM()),
-      "frases": () => ui.renderFrases(frasesVM()),
-      "frasesDone": () => ui.renderFrasesDone(),
+      "frasesSetup": () => frasesGame.setupScreen(),
+      "frases": () => frasesGame.playScreen(),
+      "frasesDone": () => frasesGame.doneScreen(),
       "conjugSetup": () => ui.renderConjugSetup(conjugSetupVM()),
       "conjug": () => ui.renderConjug(conjugVM()),
       "conjugDone": () => ui.renderConjugDone(),
@@ -2940,10 +2809,10 @@
       } };
     }
     if (screen === "frasesDone") {
-      const vm = frasesDoneVM();
+      const vm = frasesGame.doneVM();
       return { result: miniResult(vm, vm.setLabel, "frases"), opts: {
-        primaryLabel: t("discover.quizAgain"), onPrimary: frasesAgain,
-        secondaryLabel: t("discover.frasesOther"), onSecondary: openFrasesSetup,
+        primaryLabel: t("discover.quizAgain"), onPrimary: frasesGame.again,
+        secondaryLabel: t("discover.frasesOther"), onSecondary: frasesGame.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
@@ -6646,7 +6515,7 @@
       case "definiciones":
         return cut(definiciones.setupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
       case "frases":
-        return cut(frasesSetupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
+        return cut(frasesGame.setupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
       case "dialogos":
         return cut(dialogosSetupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
       case "regatear":
@@ -6886,11 +6755,11 @@
     "precios-again": (el) => { precios.again(); },
     "precios-setup": (el) => { precios.open(); },
     "precios-speak": (el) => { precios.speak(); },
-    "open-frases": (el) => { openFrasesSetup(); },
-    "start-frases": (el) => { startFrases(el.dataset.set); },
-    "frases-answer": (el) => { answerFrases(Number(el.dataset.idx)); },
-    "frases-next": (el) => { nextFrases(); },
-    "frases-again": (el) => { frasesAgain(); },
+    "open-frases": (el) => { frasesGame.open(); },
+    "start-frases": (el) => { frasesGame.start(el.dataset.set); },
+    "frases-answer": (el) => { frasesGame.answer(Number(el.dataset.idx)); },
+    "frases-next": (el) => { frasesGame.next(); },
+    "frases-again": (el) => { frasesGame.again(); },
     "open-conjug-drill": (el) => { openConjugDrill(); },
     "conjug-level": (el) => { setConjugLevel(el.dataset.level); },
     "start-conjug": (el) => { startConjug(); },
@@ -7350,7 +7219,7 @@
       supervivencia: () => spickzettel.open(),
       hostel: openHostel,
       definiciones: () => definiciones.open(),
-      frases: openFrasesSetup,
+      frases: () => frasesGame.open(),
       dialogos: openDialogosSetup,
       regatear: openRegatear,
       precios: () => precios.open(),
@@ -7469,7 +7338,7 @@
   // ein Modul-Screen sofort gezeigt werden kann. Wächst mit jeder Zerlegungs-Welle.
   const featureCtx = {
     state, setState, render, dismissBadgeToast,
-    data, speech, numbers, yesto, i18n, badges,
+    data, speech, numbers, yesto, frases, conjug, i18n, badges,
     categoryById, cardById, nat, natk, isFavorite, levelById, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
@@ -7483,6 +7352,7 @@
   if (definiciones) definiciones.init(featureCtx);
   if (precios) precios.init(featureCtx);
   if (yestoGame) yestoGame.init(featureCtx);
+  if (frasesGame) frasesGame.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

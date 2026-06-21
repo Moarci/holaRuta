@@ -4596,81 +4596,8 @@
   // DEFINICIONES (Zuordnen-Quiz) ist nach features/definiciones.js
   // (SC.definiciones) gewandert – VMs, Handler und Render leben dort zusammen.
 
-  // ---------- FRASES FLEXIBLES (Satzbaukasten) ----------
-  // Themen-Auswahl vor der Runde – Reuse der Hostel-Szenenkacheln (.hm-scene)
-  // wie bei Definiciones. Die "Gemischt"-Kachel steht zuoberst und abgesetzt.
-  function renderFrasesSetup(vm) {
-    const tile = (s, mixed) =>
-      `<button class="hm-scene${mixed ? " hm-scene--mixed" : ""}" data-action="start-frases" data-set="${esc(s.id)}">
-         <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
-         <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
-         <span class="hm-scene__count">${s.count}</span>
-       </button>`;
-    const list = vm.sets.map((s) => tile(s, false)).join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("🧱 Frases flexibles", "home")}
-        <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
-        ${moduleShareBtn("frases")}
-        <div class="hm-scenes">
-          ${tile(vm.mixed, true)}
-          ${list}
-        </div>
-      </section>`;
-  }
-
-  // Satzrahmen mit Lücke + Multiple Choice. Reuse der Definiciones-Optik
-  // (.quiz-def / .quiz-opt / .quiz-feedback).
-  function renderFrases(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
-    // "___" im Rahmen durch eine sichtbare Lücke ersetzen (frameEs ist intern,
-    // kein User-Input – esc() lässt "___" unverändert).
-    const frameHtml = esc(vm.frameEs).replace("___", '<span class="frases-gap"></span>');
-    const options = vm.options
-      .map((o, i) => {
-        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
-        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
-        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
-          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
-        return `
-          <button class="${cls}" type="button" data-action="frases-answer" data-idx="${i}"${dis}>
-            <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
-              <span class="quiz-opt__de">${esc(o.de)}</span>
-            </span>
-            ${mark}
-          </button>`;
-      })
-      .join("");
-
-    const feedback = vm.answered
-      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
-           ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
-             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
-                <span class="quiz-feedback__sol">${t("discover.quizSolution", { es: esc(vm.solutionEs), de: esc(vm.solutionDe) })}</span>`}
-         </div>
-         <button class="cta" data-action="frases-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
-      : "";
-
-    return `
-      <section class="screen study">
-        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "open-frases")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.frasesSentence", { pos: vm.position + 1, total: vm.total }))}</div>
-        <div class="quiz-def">
-          <span class="quiz-def__cap">${esc(t("discover.frasesBuild"))}</span>
-          <p class="frases-target">${esc(vm.targetDe)}</p>
-          <p class="quiz-def__text frases-frame" lang="es">${frameHtml}</p>
-        </div>
-        <div class="quiz-opts">${options}</div>
-        ${feedback}
-      </section>`;
-  }
-
-  function renderFrasesDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
+  // FRASES FLEXIBLES (Satzbaukasten) ist nach features/frases-game.js
+  // (SC.frasesGame) gewandert – VMs, Handler und Render leben dort zusammen.
 
   // ---------- EL CUERPO (interaktive Körperkarte) ----------
   // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
@@ -5525,7 +5452,6 @@
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderCuerpo, renderConjugacion, renderTiempos,
-                   renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderFavorites,
                    renderConjugSetup, renderConjug, renderConjugDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
