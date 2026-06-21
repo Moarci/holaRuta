@@ -7,6 +7,7 @@
   "use strict";
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
+  const spickzettel = window.SC.spickzettel; // Feature-Modul (Survival-Schnellzugriff), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -2766,7 +2767,7 @@
   function handleBack() {
     // 1) Offene Overlays/Panels zuerst schließen (wie ein „Schließen").
     if (state.updateNotice && state.updateNotice.length) { dismissUpdateNotice(); return true; }
-    if (state.szShow) { szClose(); return true; }
+    if (state.szShow) { spickzettel.szClose(); return true; }
     if (state.favShow) { favClose(); return true; }
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
     // 2) Auf einem Home-Reiter: erst zum Start-Reiter zurück (Lernen/Entdecken/
@@ -2915,7 +2916,7 @@
       "cuerpo": () => ui.renderCuerpo(cuerpoVM()),
       "conjugacion": () => ui.renderConjugacion(conjugacionVM()),
       "tiempos": () => ui.renderTiempos(tiemposVM()),
-      "spickzettel": () => ui.renderSpickzettel(spickzettelVM()),
+      "spickzettel": () => spickzettel.screen(),
       "favorites": () => ui.renderFavorites(favoritesVM()),
       "preciosSetup": () => ui.renderPreciosSetup(preciosSetupVM()),
       "precios": () => ui.renderPrecios(preciosVM()),
@@ -5526,60 +5527,9 @@
     render();
   }
 
-  // ----- Spickzettel (Survival-Schnellzugriff, kein Lernen) -----
-  // Kuratierte Überlebens-Bereiche: `pick` hebt die kritischsten Sätze an den
-  // Anfang – auch quer zur Kategorie (z. B. "Hilfe!" steht in den Grundlagen,
-  // gehört im Ernstfall aber nach ganz oben zu Notfall). Der Rest füllt sich
-  // aus der Kategorie bis zum Cap auf, damit es mit der Datenbasis mitwächst.
-  const SPICKZETTEL_GROUPS = [
-    { cat: "notfall", limit: 10, pick: ["b17", "n01", "b18", "b19", "n08", "n10", "n11", "n14", "n06", "n15"] },
-    { cat: "basics",  limit: 10, pick: ["b10", "b11", "b15", "b14", "b08", "b16", "b05", "b06"] },
-    { cat: "rumbo",   limit: 6,  pick: ["b20", "dir20", "dir21", "dir23", "dir26"] },
-    { cat: "dinero",  limit: 6,  pick: ["d01", "d04", "d05", "d06", "d07"] },
-  ];
-
-  function spickzettelVM() {
-    const used = new Set(); // jede Karte höchstens einmal auf dem Zettel
-    const groups = SPICKZETTEL_GROUPS.map((g) => {
-      const cat = categoryById(g.cat);
-      const picked = (g.pick || []).map(cardById).filter(Boolean);
-      const rest = data.CARDS.filter((c) => c.cat === g.cat);
-      const cards = [];
-      for (const c of picked.concat(rest)) {
-        if (cards.length >= g.limit) break;
-        if (used.has(c.id)) continue;
-        used.add(c.id);
-        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null, fav: isFavorite(c.id) });
-      }
-      return {
-        id: g.cat,
-        label: cat ? natk(cat, "label") : g.cat,
-        icon: cat ? cat.icon : "📌",
-        grad: cat ? cat.grad : DEFAULT_ACCENT,
-        cards,
-      };
-    }).filter((g) => g.cards.length);
-    // Großanzeige: angetippter Satz bildschirmfüllend – zum Herzeigen.
-    const shown = state.szShow ? cardById(state.szShow) : null;
-    const show = shown ? { id: shown.id, de: shown.de, es: shown.es } : null;
-    return { groups, show, speakable: !!(speech && speech.isSupported()) };
-  }
-
-  function openSpickzettel() {
-    dismissBadgeToast();
-    state.screen = "spickzettel";
-    setState({ szShow: null });
-  }
-
-  // Großanzeige öffnen/schließen (Satz bildschirmfüllend zum Herzeigen).
-  function szShow(id) {
-    if (!cardById(id)) return;
-    setState({ szShow: id });
-  }
-
-  function szClose() {
-    setState({ szShow: null });
-  }
+  // Spickzettel (Survival-Schnellzugriff) wohnt jetzt in features/spickzettel.js
+  // (SC.spickzettel): Daten, VM, Handler und Render gebündelt. app.js delegiert
+  // unten in SCREENS/ACTIONS und über die Zurück-Geste an die Modul-Methoden.
 
   // Eine beliebige Karte per Id vorlesen (Spickzettel / Listen außerhalb der
   // Lern-Sitzung). Erste akzeptierte Variante, damit "/"-Alternativen sauber klingen.
@@ -7080,7 +7030,7 @@
         ];
       case "supervivencia": {
         const out = [];
-        spickzettelVM().groups.forEach((g) => {
+        spickzettel.vm().groups.forEach((g) => {
           (g.cards || []).slice(0, 2).forEach((c) => out.push({ mark: g.icon || "🆘", text: `${c.es} — ${c.de}` }));
         });
         return cut(out);
@@ -7318,9 +7268,9 @@
     "cuerpo-select": (el) => { { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); } },
     "cuerpo-rotate": (el) => { rotateBody(Number(el.dataset.dir)); },
     "cuerpo-speak": (el) => { speakBodyPart(); },
-    "open-spickzettel": (el) => { openSpickzettel(); },
-    "sz-show": (el) => { szShow(el.dataset.id); },
-    "sz-close": (el) => { szClose(); },
+    "open-spickzettel": (el) => { spickzettel.open(); },
+    "sz-show": (el) => { spickzettel.szShow(el.dataset.id); },
+    "sz-close": (el) => { spickzettel.szClose(); },
     "speak-card": (el) => { speakCardId(el.dataset.id); },
     "open-precios": (el) => { openPrecios(); },
     "precios-currency": (el) => { setPreciosCurrency(el.dataset.id); },
@@ -7586,7 +7536,7 @@
     }
     // Spickzettel-Großanzeige: Escape schließt.
     if (state.screen === "spickzettel" && state.szShow && e.key === "Escape") {
-      szClose();
+      spickzettel.szClose();
       return;
     }
     if (state.screen !== "study") return;
@@ -7791,7 +7741,7 @@
     const slug = param("m");
     if (!slug) return false;
     const openers = {
-      supervivencia: openSpickzettel,
+      supervivencia: () => spickzettel.open(),
       hostel: openHostel,
       definiciones: openQuizSetup,
       frases: openFrasesSetup,
@@ -7908,6 +7858,15 @@
     beginOnboarding();
     stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
+  // Feature-Module mit Controller-Diensten versorgen (Dependency-Injection): zentraler
+  // State, Daten-Helfer und optionale Module. VOR dem ersten render() / Deep-Link, da
+  // ein Modul-Screen sofort gezeigt werden kann. Wächst mit jeder Zerlegungs-Welle.
+  const featureCtx = {
+    state, setState, dismissBadgeToast,
+    data, speech,
+    categoryById, cardById, nat, natk, isFavorite, DEFAULT_ACCENT,
+  };
+  if (spickzettel) spickzettel.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

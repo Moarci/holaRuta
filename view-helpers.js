@@ -86,7 +86,18 @@
       </div>`;
   }
 
+  // Favoriten-Stern als Umschalt-Knopf (data-action="fav-toggle"). Geteilt von der
+  // Kartendetail-Ansicht und Modulen wie Spickzettel/Mi léxico. id = Karten-Id,
+  // on = ist Favorit?, opts.cls = zusätzliche CSS-Klasse.
+  function favStar(id, on, opts) {
+    const o = opts || {};
+    const cls = "favstar" + (on ? " is-on" : "") + (o.cls ? " " + o.cls : "");
+    const label = on ? t("favorites.remove") : t("favorites.add");
+    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"
+              aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
+  }
+
   window.SC.view = {
-    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar,
+    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar,
   };
 })();

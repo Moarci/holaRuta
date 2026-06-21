@@ -14,7 +14,7 @@
   // Geteilte, zustandsfreie Render-Primitive aus view-helpers.js (SC.view) –
   // dieselbe Quelle nutzen auch die Feature-Module (kein Duplikat). view-helpers.js
   // läuft vor ui.js (index.html / Build / _dom-stub-Reihenfolge).
-  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar } = window.SC.view;
+  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar } = window.SC.view;
 
   // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
   // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
@@ -1243,17 +1243,8 @@
       </button>`;
   }
 
-  // Favoriten-Stern: schaltet eine Karte/einen Eintrag im persönlichen Lexikon
-  // („Mi léxico") an oder aus. on = bereits Favorit (gefüllter Stern). Gemeinsam
-  // genutzt von Karten-Detail, Spickzettel & Suche, damit Markup/ARIA einheitlich
-  // bleiben. id wird mitgegeben; der Controller (app.js) hört auf data-action.
-  function favStar(id, on, opts) {
-    const o = opts || {};
-    const cls = "favstar" + (on ? " is-on" : "") + (o.cls ? " " + o.cls : "");
-    const label = on ? t("favorites.remove") : t("favorites.add");
-    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"
-              aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
-  }
+  // favStar() ist nach view-helpers.js (SC.view) gewandert – oben via Destructuring
+  // gebunden, da auch Feature-Module (Spickzettel, Mi léxico) es nutzen.
 
   // Beschrifteter Favoriten-Button direkt unter der Lernkarte. Früher saß der Stern
   // nackt oben in der Kopfzeile (neben dem Zähler) – dort war ohne Beschriftung nicht
@@ -2045,58 +2036,8 @@
       </div>`;
   }
 
-  // ---------- SPICKZETTEL (Survival-Schnellzugriff) ----------
-  // Reine Nachschlage-Ansicht (kein SRS): die kritischsten Sätze groß, je mit 🔊.
-  // Tipp auf den Satz öffnet die Großanzeige – bildschirmfüllend zum Herzeigen.
-  function renderSpickzettel(vm) {
-    const nav = vm.groups.map((g) => `
-      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" data-action="scroll-to" data-target="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
-        <span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}
-      </a>`).join("");
-    const groups = vm.groups.map((g) => {
-      const rows = g.cards.map((c) => `
-        <div class="sz-row">
-          <button class="sz-row__main" type="button" data-action="sz-show" data-id="${esc(c.id)}"
-                  title="${esc(t("discover.szShowTitle"))}">
-            <span class="sz-row__de">${esc(c.de)}</span>
-            <span class="sz-row__es" lang="es">${esc(c.es)}</span>
-            ${c.tip ? `<span class="sz-row__tip">🗣️ ${esc(c.tip)}</span>` : ""}
-          </button>
-          ${favStar(c.id, c.fav, { cls: "sz-fav" })}
-          ${vm.speakable
-            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="${esc(t("discover.szListen"))}" title="${esc(t("discover.szListen"))}">🔊</button>`
-            : ""}
-        </div>`).join("");
-      return `
-        <div class="sz-group" id="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
-          <h3 class="sz-group__h"><span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}</h3>
-          <div class="sz-list">${rows}</div>
-        </div>`;
-    }).join("");
-    // Großanzeige: Satz bildschirmfüllend – zum Herzeigen, wenn Reden nicht reicht.
-    const show = vm.show ? `
-      <div class="sz-show" data-action="sz-close" role="dialog" aria-modal="true" aria-label="${esc(t("discover.szShowLabel"))}">
-        <div class="sz-show__inner">
-          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
-          <p class="sz-show__de">${esc(vm.show.de)}</p>
-          <div class="sz-show__actions">
-            ${vm.speakable
-              ? `<button class="cta" type="button" data-action="speak-card" data-id="${esc(vm.show.id)}">${esc(t("discover.szListenBig"))}</button>`
-              : ""}
-            <button class="ghostbtn" type="button" data-action="sz-close">${esc(t("common.close"))}</button>
-          </div>
-        </div>
-      </div>` : "";
-    return `
-      <section class="screen">
-        ${hmTopbar("🆘 Supervivencia", "home")}
-        <p class="hm-intro">${esc(t("discover.szIntro"))}</p>
-        ${moduleShareBtn("supervivencia")}
-        <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
-        ${groups}
-        ${show}
-      </section>`;
-  }
+  // SPICKZETTEL (Survival-Schnellzugriff) ist nach features/spickzettel.js
+  // (SC.spickzettel) gewandert – VM, Handler und Render leben dort zusammen.
 
   // ---------- MI LÉXICO (Favoriten – persönliches Lexikon) ----------
   // Vom Nutzer gemerkte Wörter/Sätze: eine Liste (neueste zuerst) mit Vorlesen,
@@ -5795,7 +5736,7 @@
   window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
+                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos,
                    renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderFavorites,
                    renderConjugSetup, renderConjug, renderConjugDone,
