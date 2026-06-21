@@ -1306,7 +1306,6 @@
   // ---------- STUDY ----------
   function renderStudy(vm) {
     const pct = vm.total > 0 ? Math.round((vm.position / vm.total) * 100) : 0;
-    const card = vm.card;
     const accent = vm.accent; // [from,to]
 
     const body =

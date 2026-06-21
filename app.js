@@ -1977,9 +1977,6 @@
     setState({ screen: "frasesSetup" });
   }
 
-  // Backwards-kompatibler Einsprung (Home-Kachel): führt jetzt zur Themen-Auswahl.
-  function openFrases() { openFrasesSetup(); }
-
   function startFrases(setId) {
     dismissBadgeToast();
     const pool = frasesForSet(setId);
@@ -4427,14 +4424,6 @@
     const cards = taskCardsFor(task);
     const seen = cards.reduce((n, c) => n + ((stats.cardSummary(progress[c.id]).seen || 0) > 0 ? 1 : 0), 0);
     return { seen, total: cards.length, kind: "cards" };
-  }
-
-  // Ist eine Aufgabe „absolviert"? = alle Etappen bzw. alle Karten einmal durch.
-  function taskDone(task) {
-    if (!task) return false;
-    if (task.kind === "pretrip") return planAllDone(pretripPlan(task.scope));
-    const p = taskProgress(task);
-    return p.total > 0 && p.seen >= p.total;
   }
 
   function taskVM() {
