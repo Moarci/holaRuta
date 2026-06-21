@@ -4137,7 +4137,7 @@
     // 7. Landeskunde (optional, per Land).
     if (knigge && knigge.ACCENTS && theme.countryId && knigge.ACCENTS[theme.countryId]) {
       const acc = knigge.ACCENTS[theme.countryId];
-      const facts = ["hostel", "bus", "grupo", "cultura", "saludo", "comida", "propina", "dinero"].map((k) => natk(acc, k)).filter(Boolean);
+      const facts = ["hostel", "bus", "grupo", "cultura"].map((k) => natk(acc, k)).filter(Boolean);
       if (facts.length) out.push({ type: "culture", title: "", facts: facts });
     }
 
@@ -4263,16 +4263,18 @@
   }
 
   // ---------- Arbeitsheft am Handy ausfüllen (Selbstkontrolle) ----------
-  // Eine Eingabe gilt als richtig, wenn sie – normalisiert (akzent-/satzzeichen-
-  // tolerant, via matcher) – einer der „/"-Alternativen oder der Volllösung gleicht.
+  // Eine Eingabe gilt als richtig, wenn sie – wie im Studienmodus großzügig
+  // geprüft (akzent-/satzzeichentolerant UND tippfehlertolerant, via matcher) –
+  // einer der „/"-Alternativen oder der Volllösung entspricht.
   function fillAnswerOk(input, answer) {
-    const m = window.SC && window.SC.matcher;
-    const norm = m ? m.normalize : (s) => String(s).trim().toLowerCase();
-    const got = norm(input);
-    if (!got) return false;
+    if (!input || !String(input).trim()) return false;
     const parts = String(answer || "").split("/").map((s) => s.trim()).filter(Boolean);
-    parts.push(String(answer || ""));
-    return parts.some((p) => norm(p) && norm(p) === got);
+    if (String(answer || "").trim()) parts.push(String(answer).trim());
+    const m = window.SC && window.SC.matcher;
+    if (m && m.matchFree) return m.matchFree(input, parts).correct;
+    const norm = (s) => String(s).trim().toLowerCase();
+    const got = norm(input);
+    return parts.some((p) => norm(p) === got);
   }
   // Alle Eingabefelder mit hinterlegter Lösung im aktuellen Blatt.
   function fillFields() {
