@@ -12,6 +12,7 @@
   const precios = window.SC.precios; // Feature-Modul (Preis-Hörtrainer), eager geladen
   const yestoGame = window.SC.yestoGame; // Feature-Modul (¿Y esto?, Bild-Vokabel-Spiel), eager geladen
   const frasesGame = window.SC.frasesGame; // Feature-Modul (Frases flexibles, Satzbaukasten), eager geladen
+  const conjugDrill = window.SC.conjugDrill; // Feature-Modul (Conjugador-Drill), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -2672,9 +2673,9 @@
       "frasesSetup": () => frasesGame.setupScreen(),
       "frases": () => frasesGame.playScreen(),
       "frasesDone": () => frasesGame.doneScreen(),
-      "conjugSetup": () => ui.renderConjugSetup(conjugSetupVM()),
-      "conjug": () => ui.renderConjug(conjugVM()),
-      "conjugDone": () => ui.renderConjugDone(),
+      "conjugSetup": () => conjugDrill.setupScreen(),
+      "conjug": () => conjugDrill.playScreen(),
+      "conjugDone": () => conjugDrill.doneScreen(),
       "yestoSetup": () => yestoGame.setupScreen(),
       "yesto": () => yestoGame.playScreen(),
       "yestoDone": () => yestoGame.doneScreen(),
@@ -2817,10 +2818,10 @@
       } };
     }
     if (screen === "conjugDone") {
-      const vm = conjugDoneVM();
+      const vm = conjugDrill.doneVM();
       return { result: miniResult(vm, vm.levelLabel, "type"), opts: {
-        primaryLabel: t("discover.cjAgain"), onPrimary: conjugAgain,
-        secondaryLabel: t("discover.cjOtherLevel"), onSecondary: openConjugDrill,
+        primaryLabel: t("discover.cjAgain"), onPrimary: conjugDrill.again,
+        secondaryLabel: t("discover.cjOtherLevel"), onSecondary: conjugDrill.open,
         tertiaryLabel: t("discover.cjToGuide"), onTertiary: openConjugacion,
       } };
     }
@@ -5459,117 +5460,12 @@
   // Aggregator und in miniDoneConfig. Das automatische Vorlesen des ersten Betrags
   // bleibt im Render-Loop (autoSpeakTarget liest state.precios).
 
-  // ----- Conjugador (generativer Konjugations-Drill) -----
-  // Übt aktiv das Konjugieren statt nur die Erklärseite zu lesen: „ir – wir" →
-  // tippe „vamos". Items werden pro Runde frisch aus data.CONJUGATION erzeugt
-  // (SC.conjug). Stufe 1 = regelmäßige Muster, Stufe 2 = + unregelmäßige Verben.
-  const CONJUG_ROUND = 10;
+  // Conjugador (generativer Konjugations-Drill) wohnt jetzt in features/conjugador.js
+  // (SC.conjugDrill; eigener Namespace, da SC.conjug das Generator-Datenmodul ist).
+  // VMs, Handler, recordConjugResult und Render gebündelt. app.js delegiert in
+  // SCREENS/ACTIONS, im submit-conjug-Handler und in miniDoneConfig. conjugReady
+  // bleibt hier, weil die Erklärseite „Conjugación" (conjugacionVM) es ebenfalls nutzt.
   const conjugReady = () => !!(conjug && data.CONJUGATION);
-  const CONJUG_LEVELS = [
-    { id: 1, short: "Regelmäßig", label: "Nur regelmäßige Muster", hint: "-ar · -er · -ir" },
-    { id: 2, short: "Alle", label: "Mit unregelmäßigen Verben", hint: "+ ir, estar, tener …" },
-  ];
-
-  function conjugSetupVM() {
-    return {
-      available: conjugReady(),
-      levels: CONJUG_LEVELS.map((l) => ({ ...l,
-        short: t(`app.conjL${l.id}Short`), label: t(`app.conjL${l.id}Label`),
-        active: l.id === state.conjugLevel })),
-    };
-  }
-
-  function conjugVM() {
-    const c = state.conjug;
-    const item = c.queue[c.idx] || {};
-    return {
-      position: c.idx,
-      total: c.total,
-      result: c.result, // null | { correct, input, answer }
-      verb: item.verb || "",
-      verbHint: natk(item, "verbHint") || "",
-      personEs: item.personEs || "",
-      personDe: natk(item, "personDe") || "",
-      isLast: c.idx >= c.total - 1,
-    };
-  }
-
-  function conjugDoneVM() {
-    const c = state.conjug;
-    const lvl = CONJUG_LEVELS.find((l) => l.id === c.level) || null;
-    return {
-      correct: c.correct,
-      total: c.total,
-      perfect: c.total > 0 && c.correct === c.total,
-      levelLabel: lvl ? t(`app.conjL${lvl.id}Label`) : "",
-    };
-  }
-
-  function openConjugDrill() {
-    dismissBadgeToast();
-    if (!conjugReady()) return;
-    setState({ screen: "conjugSetup" });
-  }
-
-  function setConjugLevel(level) {
-    const lvl = Number(level);
-    if (![1, 2].includes(lvl)) return;
-    state.conjugLevel = lvl;
-    settings = Object.assign({}, settings, { conjugLevel: lvl });
-    store.saveSettings(settings);
-    render();
-  }
-
-  function startConjug() {
-    if (!conjugReady()) return;
-    const level = state.conjugLevel;
-    const queue = conjug.buildRound(data.CONJUGATION, level, CONJUG_ROUND);
-    if (!queue.length) return;
-    state.conjug = { level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
-    setState({ screen: "conjug" });
-  }
-
-  // Getippte Form akzentnachsichtig prüfen (matcher.normalize: á=a, ñ=n, ohne
-  // Satzzeichen). So zählt „esta" für „está" – Reise-Tastaturen haben oft keine Akzente.
-  function submitConjug(input) {
-    const c = state.conjug;
-    if (!c || c.result) return;
-    const item = c.queue[c.idx];
-    if (!item) return;
-    const norm = matcher.normalize(input);
-    const correct = norm.length > 0 && norm === matcher.normalize(item.answer);
-    c.result = { input, correct, answer: item.answer };
-    if (correct) { c.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextConjug() {
-    const c = state.conjug;
-    if (!c || !c.result) return;
-    if (c.idx >= c.total - 1) {
-      recordConjugResult(c);
-      syncBadges(Date.now(), true);
-      setState({ screen: "conjugDone" });
-      return;
-    }
-    c.idx += 1;
-    c.result = null;
-    render();
-  }
-
-  function conjugAgain() {
-    startConjug();
-  }
-
-  // Ergebnis einer beendeten Konjugations-Runde in die Spiel-Zähler buchen.
-  function recordConjugResult(c) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.conjugPlayed = (g.conjugPlayed || 0) + 1;
-    if (c.total > 0 && c.correct === c.total) g.conjugPerfect = (g.conjugPerfect || 0) + 1;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
 
   // „¿Y esto?“ (Bild-Vokabel-Spiel mit 3-2-1-Countdown) wohnt jetzt in
   // features/yesto-game.js (SC.yestoGame; eigener Namespace, da SC.yesto bereits
@@ -6760,11 +6656,11 @@
     "frases-answer": (el) => { frasesGame.answer(Number(el.dataset.idx)); },
     "frases-next": (el) => { frasesGame.next(); },
     "frases-again": (el) => { frasesGame.again(); },
-    "open-conjug-drill": (el) => { openConjugDrill(); },
-    "conjug-level": (el) => { setConjugLevel(el.dataset.level); },
-    "start-conjug": (el) => { startConjug(); },
-    "conjug-next": (el) => { nextConjug(); },
-    "conjug-again": (el) => { conjugAgain(); },
+    "open-conjug-drill": (el) => { conjugDrill.open(); },
+    "conjug-level": (el) => { conjugDrill.setLevel(el.dataset.level); },
+    "start-conjug": (el) => { conjugDrill.start(); },
+    "conjug-next": (el) => { conjugDrill.next(); },
+    "conjug-again": (el) => { conjugDrill.again(); },
     "open-yesto": (el) => { yestoGame.open(); },
     "start-yesto": (el) => { yestoGame.start(el.dataset.id); },
     "yesto-reveal": (el) => { yestoGame.reveal(); },
@@ -6899,7 +6795,7 @@
     if (e.target.closest('[data-action="submit-conjug"]')) {
       e.preventDefault();
       const input = document.getElementById("conjug-answer");
-      submitConjug(input ? input.value : "");
+      conjugDrill.submit(input ? input.value : "");
       return;
     }
     // Diálogos: getippte Schlüssel-Replik prüfen.
@@ -7338,7 +7234,7 @@
   // ein Modul-Screen sofort gezeigt werden kann. Wächst mit jeder Zerlegungs-Welle.
   const featureCtx = {
     state, setState, render, dismissBadgeToast,
-    data, speech, numbers, yesto, frases, conjug, i18n, badges,
+    data, speech, numbers, yesto, frases, conjug, matcher, i18n, badges,
     categoryById, cardById, nat, natk, isFavorite, levelById, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
@@ -7353,6 +7249,7 @@
   if (precios) precios.init(featureCtx);
   if (yestoGame) yestoGame.init(featureCtx);
   if (frasesGame) frasesGame.init(featureCtx);
+  if (conjugDrill) conjugDrill.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

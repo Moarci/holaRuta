@@ -4734,66 +4734,9 @@
   // Übt aktiv: „Verb + Person“ erscheint, man tippt die konjugierte Form. Items
   // werden pro Runde frisch aus data.CONJUGATION erzeugt (SC.conjug). Folgt dem
   // Precios-Drill-Muster (Setup → Lauf → Done).
-  function renderConjugSetup(vm) {
-    if (!vm.available) {
-      return `
-        <section class="screen">
-          ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
-          <p class="stat-empty">${esc(t("discover.cjDrillUnavailable"))}</p>
-        </section>`;
-    }
-    const levels = vm.levels.map((l) => `
-      <button class="prc-lvl ${l.active ? "is-active" : ""}" type="button"
-              data-action="conjug-level" data-level="${l.id}" aria-pressed="${l.active}">
-        <span class="prc-lvl__short">${esc(l.short)}</span>
-        <span class="prc-lvl__label">${esc(l.label)}</span>
-        <span class="prc-lvl__hint">${esc(l.hint)}</span>
-      </button>`).join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
-        <p class="hm-intro">${esc(t("discover.cjDrillIntro"))}</p>
-        <h3 class="prc-head">${esc(t("discover.cjDifficulty"))}</h3>
-        <div class="prc-lvls">${levels}</div>
-        <button class="cta" data-action="start-conjug">${esc(t("discover.cjStart"))}</button>
-      </section>`;
-  }
-
-  function renderConjug(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
-    const body = !vm.result
-      ? `
-        <div class="card-static cj-prompt">
-          <span class="cj-prompt__verb" lang="es">${esc(vm.verb)}</span>
-          <span class="cj-prompt__person">${esc(vm.personDe)} · <span lang="es">${esc(vm.personEs)}</span></span>
-          <span class="face__hint">${esc(t("discover.cjPromptHint"))}</span>
-        </div>
-        <form class="typer" data-action="submit-conjug" id="conjug-form">
-          <input class="typer__input" id="conjug-answer" type="text" inputmode="text"
-                 autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="${esc(t("discover.cjPlaceholder"))}" />
-          <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
-        </form>`
-      : `
-        <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
-          <div class="face__word" lang="es">${esc(vm.result.answer)}</div>
-          <div class="listen-de">${esc(vm.personDe)} · <span lang="es">${esc(vm.personEs)}</span> · ${esc(vm.verb)}</div>
-          ${vm.result.correct
-            ? `<div class="verdict verdict--ok">${esc(t("common.correctShort"))}</div>`
-            : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: vm.result.input || "—" }))}</div>`}
-        </div>
-        <button class="cta" data-action="conjug-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
-    return `
-      <section class="screen study">
-        ${hmTopbar("🔁 Conjugador", "open-conjug-drill")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
-        ${body}
-      </section>`;
-  }
-
-  function renderConjugDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
+  // CONJUGADOR (generativer Konjugations-Drill) ist nach features/conjugador.js
+  // (SC.conjugDrill) gewandert – VMs, Handler und Render leben dort zusammen.
+  // Die Erklärseite „Conjugación" (renderConjugacion) bleibt hier.
 
   // ---------- ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown) ----------
   // ¿Y ESTO? (Bild-Vokabel-Spiel) ist nach features/yesto-game.js
@@ -5453,7 +5396,6 @@
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderCuerpo, renderConjugacion, renderTiempos,
                    renderFavorites,
-                   renderConjugSetup, renderConjug, renderConjugDone,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone,
                    placementCard, assessmentCard,
