@@ -10,6 +10,7 @@
   const spickzettel = window.SC.spickzettel; // Feature-Modul (Survival-Schnellzugriff), eager geladen
   const definiciones = window.SC.definiciones; // Feature-Modul (Zuordnen-Quiz), eager geladen
   const precios = window.SC.precios; // Feature-Modul (Preis-Hörtrainer), eager geladen
+  const yestoGame = window.SC.yestoGame; // Feature-Modul (¿Y esto?, Bild-Vokabel-Spiel), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -2805,9 +2806,9 @@
       "conjugSetup": () => ui.renderConjugSetup(conjugSetupVM()),
       "conjug": () => ui.renderConjug(conjugVM()),
       "conjugDone": () => ui.renderConjugDone(),
-      "yestoSetup": () => ui.renderYestoSetup(yestoSetupVM()),
-      "yesto": () => ui.renderYesto(yestoVM()),
-      "yestoDone": () => ui.renderYestoDone(),
+      "yestoSetup": () => yestoGame.setupScreen(),
+      "yesto": () => yestoGame.playScreen(),
+      "yestoDone": () => yestoGame.doneScreen(),
       "dialogosSetup": () => ui.renderDialogosSetup(dialogosSetupVM()),
       "dialogos": () => ui.renderDialogos(dialogosVM()),
       "dialogosDone": () => ui.renderDialogosDone(),
@@ -2849,7 +2850,7 @@
     if (MINI_DONE_SCREENS[state.screen]) mountMiniDone(state.screen);
     // „¿Y esto?“: läuft der 3-2-1-Countdown noch, den nächsten Tick scharf schalten;
     // auf jedem anderen Screen einen evtl. laufenden Timer wieder abräumen (kein Leck).
-    if (state.screen === "yesto") yestoArm(); else yestoDisarm();
+    if (state.screen === "yesto") yestoGame.arm(); else yestoGame.disarm();
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
     if (state.screen === "cuerpo") cuerpoInit3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
@@ -2955,10 +2956,10 @@
       } };
     }
     if (screen === "yestoDone") {
-      const vm = yestoDoneVM();
+      const vm = yestoGame.doneVM();
       return { result: miniResult(vm, vm.themeLabel, "quiz"), opts: {
-        primaryLabel: t("discover.yeAgain"), onPrimary: yestoAgain,
-        secondaryLabel: t("discover.yeOtherTheme"), onSecondary: openYesto,
+        primaryLabel: t("discover.yeAgain"), onPrimary: yestoGame.again,
+        secondaryLabel: t("discover.yeOtherTheme"), onSecondary: yestoGame.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
@@ -5701,140 +5702,10 @@
     store.saveGameStats(gamestats);
   }
 
-  // ----- „¿Y esto?“ (Bild-Vokabel-Modus mit 3-2-1-Countdown) -----
-  // Ein Motiv (Emoji) erscheint groß, ein kurzer Countdown läuft – „Wie heißt
-  // das auf Spanisch?“ – dann wird das spanische Wort + Übersetzung aufgelöst und
-  // man bewertet sich selbst („Wusste ich“/„Noch nicht“). Motive kommen pro Runde
-  // frisch gemischt aus SC.yesto (kein Foto -> bleibt offline & zero-dependency).
-  const YESTO_ROUND = 8;      // Motive pro Runde (jedes Thema hat ≥ 8)
-  const YESTO_COUNT_FROM = 3; // Start des Countdowns (3 → 2 → 1 → Auflösung)
-  let yestoTimer = null;      // genau ein pendelnder Countdown-Tick zur Zeit
-  const yestoReady = () => !!(yesto && yesto.THEMES && yesto.THEMES.length);
-
-  // Themen-Label in der aktiven UI-Sprache (label/labelEn via nativeText).
-  function natTheme(th) { return i18n.nativeText({ de: th.label, en: th.labelEn }); }
-
-  function yestoSetupVM() {
-    return {
-      available: yestoReady(),
-      themes: yestoReady() ? yesto.themeList().map((th) => ({
-        id: th.id, icon: th.icon, label: natTheme(th), count: th.count,
-      })) : [],
-    };
-  }
-
-  function yestoVM() {
-    const y = state.yesto;
-    const item = (y && y.queue[y.idx]) || {};
-    return {
-      position: y ? y.idx : 0,
-      total: y ? y.total : 0,
-      phase: y ? y.phase : "count",
-      count: y ? y.count : 0,
-      emoji: item.emoji || "",
-      es: item.es || "",
-      native: i18n.nativeText({ de: item.de, en: item.en }) || "",
-      isLast: y ? y.idx >= y.total - 1 : true,
-    };
-  }
-
-  function yestoDoneVM() {
-    const y = state.yesto || {};
-    const th = yestoReady() ? yesto.themeById(y.themeId) : null;
-    return {
-      correct: y.correct || 0,
-      total: y.total || 0,
-      themeLabel: th ? natTheme(th) : "",
-    };
-  }
-
-  function openYesto() {
-    dismissBadgeToast();
-    yestoDisarm();
-    if (!yestoReady()) return;
-    setState({ screen: "yestoSetup" });
-  }
-
-  function startYesto(themeId) {
-    if (!yestoReady()) return;
-    const queue = yesto.buildRound(themeId, YESTO_ROUND);
-    if (!queue.length) return;
-    state.yesto = { themeId, queue, idx: 0, total: queue.length, phase: "count", count: YESTO_COUNT_FROM, correct: 0 };
-    state.screen = "yesto";
-    render(); // render() schaltet anschließend den ersten Countdown-Tick scharf
-  }
-
-  // Den nächsten Countdown-Tick scharf schalten (von render() bei screen==="yesto").
-  function yestoArm() {
-    yestoDisarm();
-    const y = state.yesto;
-    if (!y || y.phase !== "count" || y.count <= 0) return;
-    yestoTimer = setTimeout(yestoTick, 1000);
-  }
-  function yestoDisarm() {
-    if (yestoTimer) { clearTimeout(yestoTimer); yestoTimer = null; }
-  }
-  function yestoTick() {
-    yestoTimer = null;
-    const y = state.yesto;
-    if (!y || state.screen !== "yesto" || y.phase !== "count") return;
-    y.count -= 1;
-    if (y.count <= 0) {
-      // Auflösung: hier ändert sich die ganze Bühne (Wort + Bewerten) -> volles
-      // render(); dessen Nach-Mount schaltet den Timer ab (Phase ist nicht mehr "count").
-      y.phase = "reveal";
-      buzz(10);
-      render();
-      return;
-    }
-    // Reiner Zähl-Tick: nur die Ziffer im DOM tauschen statt der ganze App-Neuaufbau.
-    // So läuft kein render() pro Sekunde, das sonst Fokus (manageFocus) und Scroll
-    // anfasst. Fehlt der Knoten ausnahmsweise, fällt es sicher auf render() zurück.
-    const num = document.querySelector(".ye-count__num");
-    if (num) num.textContent = String(y.count); else render();
-    yestoArm(); // nächsten Tick scharf schalten (ohne render())
-  }
-
-  // Sofort auflösen (Countdown überspringen) – für Ungeduldige & Screenreader.
-  function yestoReveal() {
-    const y = state.yesto;
-    if (!y || y.phase !== "count") return;
-    yestoDisarm();
-    y.phase = "reveal";
-    buzz(10);
-    render();
-  }
-
-  // Selbsteinschätzung nach der Auflösung -> nächstes Motiv / Runde beenden.
-  function yestoRate(known) {
-    const y = state.yesto;
-    if (!y || y.phase !== "reveal") return;
-    if (known) { y.correct += 1; buzz(12); } else buzz(8);
-    if (y.idx >= y.total - 1) {
-      recordYestoResult(y); // Zähler buchen, BEVOR die Badges ausgewertet werden
-      syncBadges(Date.now(), true);
-      yestoDisarm();
-      setState({ screen: "yestoDone" });
-      return;
-    }
-    y.idx += 1;
-    y.phase = "count";
-    y.count = YESTO_COUNT_FROM;
-    render();
-  }
-
-  function yestoAgain() { startYesto(state.yesto ? state.yesto.themeId : null); }
-
-  // Ergebnis einer beendeten ¿Y-esto?-Runde in die Spiel-Zähler buchen (Ruta-Pass).
-  // „Perfekt" = bei jedem Bild „Wusste ich" getippt (correct === total).
-  function recordYestoResult(y) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.yestoPlayed = (g.yestoPlayed || 0) + 1;
-    if (y.total > 0 && y.correct === y.total) g.yestoPerfect = (g.yestoPerfect || 0) + 1;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
+  // „¿Y esto?“ (Bild-Vokabel-Spiel mit 3-2-1-Countdown) wohnt jetzt in
+  // features/yesto-game.js (SC.yestoGame; eigener Namespace, da SC.yesto bereits
+  // das Datenmodul ist). VMs, Handler, Countdown-Timer und Render gebündelt. app.js
+  // delegiert in SCREENS/ACTIONS, in render() (arm/disarm) und in miniDoneConfig.
 
   // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
   // ----- Länderkunde (Infoseite) -----
@@ -7025,11 +6896,11 @@
     "start-conjug": (el) => { startConjug(); },
     "conjug-next": (el) => { nextConjug(); },
     "conjug-again": (el) => { conjugAgain(); },
-    "open-yesto": (el) => { openYesto(); },
-    "start-yesto": (el) => { startYesto(el.dataset.id); },
-    "yesto-reveal": (el) => { yestoReveal(); },
-    "yesto-rate": (el) => { yestoRate(el.dataset.known === "1"); },
-    "yesto-again": (el) => { yestoAgain(); },
+    "open-yesto": (el) => { yestoGame.open(); },
+    "start-yesto": (el) => { yestoGame.start(el.dataset.id); },
+    "yesto-reveal": (el) => { yestoGame.reveal(); },
+    "yesto-rate": (el) => { yestoGame.rate(el.dataset.known === "1"); },
+    "yesto-again": (el) => { yestoGame.again(); },
     "open-dialogos": (el) => { openDialogosSetup(); },
     "start-dialogos": (el) => { startDialogos(el.dataset.id); },
     "dialogos-answer": (el) => { answerDialogosMc(Number(el.dataset.idx)); },
@@ -7485,7 +7356,7 @@
       precios: () => precios.open(),
       cuerpo: openCuerpo,
       compras: openCompras,
-      yesto: openYesto,
+      yesto: () => yestoGame.open(),
       conjugacion: openConjugacion,
       tiempos: openTiempos,
       paises: openInfo,
@@ -7611,6 +7482,7 @@
   if (spickzettel) spickzettel.init(featureCtx);
   if (definiciones) definiciones.init(featureCtx);
   if (precios) precios.init(featureCtx);
+  if (yestoGame) yestoGame.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
