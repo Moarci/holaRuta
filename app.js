@@ -4290,11 +4290,13 @@
   function fillEls() {
     return Array.prototype.slice.call(root.querySelectorAll(".sheet-fill[data-answer], .sheet-fill-area"));
   }
-  // Render-stabiler Schlüssel je Feld: Lösungsfelder über die hinterlegte Lösung
-  // + Vorkommen (überlebt das Ab-/Anwählen einzelner Bausteine), freie Flächen
-  // über ihre laufende Nummer. So bleiben getippte Antworten beim Umschalten von
-  // Länge/Bausteinen/Modus erhalten, statt verloren zu gehen.
+  // Render-stabiler Schlüssel je Feld. Primär das von der View vergebene data-fk
+  // (Abschnittstyp#Vorkommen:Item bzw. voc:Etappe:Karte / "notes") – stabil gegen
+  // das Ab-/Anwählen von Bausteinen UND gegen Heftlängen-Wechsel. Fallback (sollte
+  // ein Feld einmal kein data-fk tragen): Lösung+Vorkommen bzw. laufende Nummer.
   function fillKey(el, seen) {
+    const fk = el.dataset && el.dataset.fk;
+    if (fk) return "fk:" + fk;
     if (el.classList && el.classList.contains("sheet-fill-area")) {
       seen.area = (seen.area || 0) + 1;
       return "area#" + seen.area;

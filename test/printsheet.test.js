@@ -263,6 +263,10 @@ test("renderPrintSheet: Fill-Modus rendert Eingabefelder mit hinterlegter Lösun
   assert.ok(!html.includes("sheet-notes-lines"), "Notizen werden zum Textfeld");
   // Felder kündigen „weiter" an (Enter springt ins nächste Feld – siehe printsheet-fill.test.js).
   assert.ok(html.includes('enterkeyhint="next"'), "Felder signalisieren „weiter“ für die Tastatur");
+  // Jedes Feld trägt einen render-stabilen Schlüssel (data-fk) für die Persistenz
+  // – inkl. fester Notiz-Fläche. Stabil gegen Baustein-/Längen-Wechsel.
+  assert.ok(/data-fk="[^"]+"/.test(html), "Eingabefelder tragen einen Persistenz-Schlüssel (data-fk)");
+  assert.ok(html.includes('data-fk="notes"'), "Notizfläche hat einen festen Schlüssel");
 });
 
 test("renderPrintSheet: Fill-Modus zeigt Prüf-Steuerung statt Drucken, keinen Lösungsschlüssel", () => {

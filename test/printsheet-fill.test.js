@@ -147,6 +147,22 @@ test("Fill: Zurücksetzen leert Felder, Markierung und Ergebnis", () => {
   assert.equal(d.score(), "", "Ergebnis geleert");
 });
 
+test("Fill: freie Schreibfläche (Notizen) bleibt beim Längen-Wechsel erhalten", () => {
+  // Regression: Textfelder ohne Lösung dürfen NICHT positionsbasiert verschlüsselt
+  // sein – sonst verschiebt ein Längen-Wechsel (mehr/weniger Schreibanlässe) die
+  // Zuordnung und die Notiz landet im falschen Feld bzw. geht verloren. Sie tragen
+  // ein stabiles data-fk ("notes" bzw. writing#0:i).
+  const d = openFillSheet();
+  const areas = () => Array.prototype.slice.call(d.root.querySelectorAll(".sheet-fill-area"));
+  const notesText = "meine-notiz-bleibt";
+  const before = areas();
+  assert.ok(before.length >= 2, "Schreibflächen vorhanden (Schreibanlässe + Notizen)");
+  d.type(before[before.length - 1], notesText); // letzte Fläche = Notizen
+  assert.ok(d.clickAction("sheet-length", { len: "standard" }), "auf Standard (weniger Anlässe) umschalten");
+  const after = areas();
+  assert.equal(after[after.length - 1].value, notesText, "Notiz bleibt im Notizfeld, nicht verschoben/verloren");
+});
+
 test("Fill: getippte Antworten überleben einen Reload (gerätelokal gespeichert)", () => {
   // 1) Frisch booten, ins Blatt, eine Antwort tippen -> wird gerätelokal gesichert.
   const d1 = openFillSheet();
