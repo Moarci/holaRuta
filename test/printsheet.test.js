@@ -280,6 +280,16 @@ test("renderPrintSheet: Fill-Modus zeigt Prüf-Steuerung statt Drucken, keinen L
   assert.ok(!html.includes("sheet-answerkey"), "Fill-Modus braucht keinen separaten Schlüssel");
 });
 
+test("renderPrintSheet: Fill-Modus blendet Lösungen nur im revealed-Zustand ein", () => {
+  const plain = ui.renderPrintSheet(withSections({ fill: true }));
+  assert.ok(!plain.includes("sheet-solution"), "ohne revealed keine eingeblendeten Lösungen");
+  const revealed = ui.renderPrintSheet(withSections({ fill: true, revealed: true }));
+  assert.ok(revealed.includes("sheet-solution"), "revealed blendet die Lösung unter dem Feld ein");
+  assert.ok(revealed.includes(i18n.t("sheet.solutionLabel")), "Lösungs-Label fehlt");
+  // Die Felder bleiben echte Eingabefelder (Eigeneingabe wird NICHT durch die Lösung ersetzt).
+  assert.ok(revealed.includes('class="sheet-fill sheet-fill--line"'), "Eingabefeld bleibt erhalten");
+});
+
 test("renderPrintSheet: Fill-Modus macht die Vokabel-Sektion zum tippbaren Feld", () => {
   const html = ui.renderPrintSheet(baseVM({ fill: true }));
   // Die spanische Zeile wird zum Eingabefeld mit hinterlegter Lösung – nicht offen

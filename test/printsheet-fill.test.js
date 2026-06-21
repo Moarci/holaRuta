@@ -147,6 +147,36 @@ test("Fill: Zurücksetzen leert Felder, Markierung und Ergebnis", () => {
   assert.equal(d.score(), "", "Ergebnis geleert");
 });
 
+test("Fill: „Lösungen zeigen“ behält die Eingaben und blendet die Lösung darunter ein", () => {
+  const d = openFillSheet();
+  let fs = d.fields();
+  const own0 = fs[0].getAttribute("data-answer"); // richtig
+  const own1 = "klar-falsche-eingabe";            // falsch
+  d.type(fs[0], own0);
+  d.type(fs[1], own1);
+  assert.ok(d.clickAction("sheet-reveal"), "Lösungen zeigen klickbar");
+  fs = d.fields();
+  // Eigene Eingaben bleiben UNVERÄNDERT stehen (werden nicht durch die Lösung ersetzt).
+  assert.equal(fs[0].value, own0, "richtige Eigeneingabe bleibt");
+  assert.equal(fs[1].value, own1, "falsche Eigeneingabe wird NICHT überschrieben");
+  // Unter jedem Feld steht die korrekte Lösung.
+  assert.equal(d.root.querySelectorAll(".sheet-solution").length, fs.length, "je Feld eine eingeblendete Lösung");
+  // Markierung spiegelt die eigene Trefferquote (nicht „alles richtig").
+  assert.ok(fs[0].classList.contains("is-correct"), "richtiges Feld grün");
+  assert.ok(fs[1].classList.contains("is-wrong"), "falsches Feld rot");
+  assert.match(d.score(), /1 von \d+ richtig/, "Ergebnis zählt die eigene Trefferquote");
+});
+
+test("Fill: Zurücksetzen blendet eingeblendete Lösungen wieder aus", () => {
+  const d = openFillSheet();
+  d.type(d.fields()[0], "irgendwas");
+  d.clickAction("sheet-reveal");
+  assert.ok(d.root.querySelectorAll(".sheet-solution").length > 0, "Lösungen sind eingeblendet");
+  d.clickAction("sheet-reset");
+  assert.equal(d.root.querySelectorAll(".sheet-solution").length, 0, "nach Reset keine Lösungen mehr");
+  assert.ok(Array.prototype.slice.call(d.fields()).every((f) => !f.value), "Felder geleert");
+});
+
 test("Fill: freie Schreibfläche (Notizen) bleibt beim Längen-Wechsel erhalten", () => {
   // Regression: Textfelder ohne Lösung dürfen NICHT positionsbasiert verschlüsselt
   // sein – sonst verschiebt ein Längen-Wechsel (mehr/weniger Schreibanlässe) die

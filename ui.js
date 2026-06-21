@@ -4123,7 +4123,7 @@
 
     // Fill-Modus: echtes Eingabefeld mit hinterlegter Lösung (data-answer) für die
     // Selbstkontrolle am Handy. „kind" steuert die Breite (inline/line/mini).
-    const fillInput = (answer, kind, key) => `<input class="sheet-fill sheet-fill--${kind || "line"}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" data-answer="${esc(answer)}" data-fk="${esc(key || "")}" aria-label="${esc(t("sheet.fillAria"))}">`;
+    const fillInput = (answer, kind, key) => `<input class="sheet-fill sheet-fill--${kind || "line"}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" data-answer="${esc(answer)}" data-fk="${esc(key || "")}" aria-label="${esc(t("sheet.fillAria"))}">${vm.revealed ? `<span class="sheet-solution"><span class="sheet-solution__lbl">${esc(t("sheet.solutionLabel"))}:</span> <span lang="es">${esc(answer)}</span></span>` : ""}`;
 
     // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie, im
     // Fill-Modus zum tippbaren Feld mit hinterlegter Lösung. Notizen/Challenge-

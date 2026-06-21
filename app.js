@@ -2983,7 +2983,11 @@
     // Aktivitätsblatt (Handy-Modus): getippte Antworten nach dem Neu-Aufbau des
     // DOM zurückschreiben, damit ein Re-Render (Länge/Bausteine/Modus) sie nicht
     // verwirft. In Lösungs-/Übungsblatt gibt es keine Felder – dann ein No-Op.
-    if (state.screen === "printsheet") restoreFillSheet();
+    if (state.screen === "printsheet") {
+      restoreFillSheet();
+      // „Lösungen zeigen": die eigene Trefferquote nach dem (Wieder-)Aufbau markieren.
+      if (state.sheetRevealed && state.sheetMode === "fill") gradeRevealedSheet();
+    }
 
     manageFocus();
     maybeAutoSpeak();
@@ -3847,7 +3851,7 @@
   // damit man ein Bundle zusammenstellen kann.
   function pickTarget(ctx, value) {
     if (!value) return;
-    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.targetPicker = null; loadFillStore(); render(); return; }
+    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.sheetRevealed = false; state.targetPicker = null; loadFillStore(); render(); return; }
     const item = targetValueToItem(value), key = value;
     const idx = state.taskItems.findIndex((x) => itemKey(x) === key);
     if (idx >= 0) { state.taskItems = state.taskItems.filter((_, i) => i !== idx); }
@@ -4230,7 +4234,7 @@
       // Wird nur EINE Etappe gedruckt? Dann startet der Abo-Code unten trotzdem
       // den GANZEN Plan – Hinweis darauf im Blatt (siehe sheet.subscribeWholeHint).
       stageScoped: isPretrip && stageSel !== "all",
-      accent: accent, icon: icon, exercise: exercise, fill: fill, sheetLength: sheetLength,
+      accent: accent, icon: icon, exercise: exercise, fill: fill, revealed: fill && !!state.sheetRevealed, sheetLength: sheetLength,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages, sections: sections, sectionToggles: sectionToggles,
       code: code, link: link,
@@ -4248,6 +4252,7 @@
     if (!state.sheetMode) state.sheetMode = "full";
     if (!state.sheetLength) state.sheetLength = "gross"; // Heftlänge: standard | gross | xxl
     if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
+    state.sheetRevealed = false; // Lösungen starten ausgeblendet
     loadFillStore(); // getippte Antworten dieses Blatts gerätelokal wiederherstellen
     setState({ screen: "printsheet" });
   }
@@ -4351,9 +4356,11 @@
     const out = root.querySelector(".sheet-score");
     if (out) out.textContent = text || "";
   }
-  function checkFillSheet() {
+  // Färbt die ausgefüllten Felder grün/rot anhand der eigenen Eingabe und liefert
+  // die Trefferbilanz. Leere Felder bleiben neutral. Gemeinsame Basis für „Prüfen"
+  // und „Lösungen zeigen".
+  function gradeFillFields() {
     const fields = fillFields();
-    if (!fields.length) return;
     let ok = 0, filled = 0, firstWrong = null;
     fields.forEach((el) => {
       el.classList.remove("is-correct", "is-wrong");
@@ -4363,29 +4370,38 @@
       if (fillAnswerOk(val, el.dataset.answer)) { el.classList.add("is-correct"); ok += 1; }
       else { el.classList.add("is-wrong"); if (!firstWrong) firstWrong = el; }
     });
+    return { total: fields.length, ok: ok, filled: filled, firstWrong: firstWrong };
+  }
+  function checkFillSheet() {
+    const r = gradeFillFields();
+    if (!r.total) return;
     // Noch nichts getippt? Sanfter Hinweis statt „0 von n richtig".
-    if (!filled) { setFillScore(t("sheet.fillEmpty")); return; }
-    setFillScore(t("sheet.fillResult", { ok: ok, total: fields.length }));
+    if (!r.filled) { setFillScore(t("sheet.fillEmpty")); return; }
+    setFillScore(t("sheet.fillResult", { ok: r.ok, total: r.total }));
     // Zum ersten falschen Feld scrollen – bei langen Heften sonst schwer zu finden.
-    if (firstWrong && firstWrong.scrollIntoView) {
-      try { firstWrong.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) { firstWrong.scrollIntoView(); }
+    if (r.firstWrong && r.firstWrong.scrollIntoView) {
+      try { r.firstWrong.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) { r.firstWrong.scrollIntoView(); }
     }
   }
+  // „Lösungen zeigen": die EIGENEN Eingaben bleiben stehen, unter jedem Feld wird
+  // die richtige Lösung eingeblendet (über das revealed-Flag im Re-Render) und die
+  // eigene Trefferquote markiert. Nichts wird überschrieben.
   function revealFillSheet() {
-    fillFields().forEach((el) => {
-      el.value = el.dataset.answer || "";
-      el.classList.remove("is-wrong");
-      el.classList.add("is-correct");
-    });
-    snapshotFillVals();
-    const fields = fillFields();
-    setFillScore(t("sheet.fillResult", { ok: fields.length, total: fields.length }));
+    if (!fillFields().length) return;
+    snapshotFillVals();          // eigene Eingaben sichern (nicht überschreiben)
+    state.sheetRevealed = true;
+    render();                    // Lösungen einblenden; restoreFillSheet stellt die Eingaben wieder her
+  }
+  // Nach dem Render im Reveal-Zustand die eigene Trefferquote markieren/melden.
+  function gradeRevealedSheet() {
+    const r = gradeFillFields();
+    setFillScore(r.filled ? t("sheet.fillResult", { ok: r.ok, total: r.total }) : "");
   }
   function resetFillSheet() {
-    fillEls().forEach((el) => { el.value = ""; el.classList.remove("is-correct", "is-wrong"); });
     state.sheetFillVals = {};
-    persistFillVals(); // gespeicherten Stand dieses Blatts mitlöschen
-    setFillScore("");
+    state.sheetRevealed = false;
+    persistFillVals();           // gespeicherten Stand dieses Blatts mitlöschen
+    render();                    // Felder leer neu aufbauen, eingeblendete Lösungen entfernen
   }
 
   // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
@@ -7809,7 +7825,7 @@
     // damit der Cursor beim Tippen nicht springt.
     if (e.target && e.target.id === "teacher-classname") { setClassName(e.target.value); return; }
     // Aktivitätsblatt: Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
-    if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; loadFillStore(); render(); return; }
+    if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; state.sheetRevealed = false; loadFillStore(); render(); return; }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);
