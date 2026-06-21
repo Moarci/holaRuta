@@ -4547,133 +4547,10 @@
   // (SC.yestoGame) gewandert – VMs, Handler, Timer und Render leben dort zusammen.
 
   // ---------- DIÁLOGOS (Gesprächs-Simulationen) ----------
-  // Reisesituation Zug für Zug: die Gegenseite (npc) spricht (links), der Nutzer
-  // antwortet (rechts) per Multiple-Choice oder freiem Tippen. Die Verlaufsspur
-  // zeigt die schon gesagten Zeilen als Chat-Blasen.
-  function renderDialogosSetup(vm) {
-    if (!vm.available) {
-      return `
-        <section class="screen">
-          ${hmTopbar("💬 Diálogos", "home")}
-          <p class="stat-empty">${esc(t("discover.dlgUnavailable"))}</p>
-        </section>`;
-    }
-    const hint = vm.hasSpeech ? "" : `<p class="dlg-nospeak">${esc(t("discover.dlgNoSpeak"))}</p>`;
-    const cards = vm.scenarios.map((s) => `
-      <button class="dlg-pick" type="button" data-action="start-dialogos" data-id="${esc(s.id)}">
-        <span class="dlg-pick__icon" aria-hidden="true">${esc(s.icon)}</span>
-        <span class="dlg-pick__text">
-          <span class="dlg-pick__title">${esc(s.title)}</span>
-          <span class="dlg-pick__sub">${esc(s.intro)}</span>
-        </span>
-        <span class="dlg-pick__chev" aria-hidden="true">›</span>
-      </button>`).join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("💬 Diálogos", "home")}
-        <p class="hm-intro">${esc(t("discover.dlgIntro"))}</p>
-        ${moduleShareBtn("dialogos")}
-        ${hint}
-        <div class="dlg-picks">${cards}</div>
-      </section>`;
-  }
+  // VMs, Render (Setup/Play/Done), die State-Maschine und alle Handler wohnen jetzt
+  // im Feature-Modul SC.dialogosGame (features/dialogos-game.js); app.js delegiert
+  // SCREENS, Aktionen, Spotlight-Vorschau, miniDone, Scroll-Hook und Auto-Vorlesen.
 
-  // Eine Chat-Blase (npc links, user rechts). de optional als Unterzeile.
-  function dlgBubble(turn) {
-    const side = turn.who === "npc" ? "npc" : "user";
-    const de = turn.de ? `<span class="dlg-bubble__de">${esc(turn.de)}</span>` : "";
-    return `
-      <div class="dlg-row dlg-row--${side}">
-        <div class="dlg-bubble dlg-bubble--${side}">
-          <span class="dlg-bubble__es" lang="es">${esc(turn.es)}</span>
-          ${de}
-        </div>
-      </div>`;
-  }
-
-  function renderDialogos(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.turnIdx + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
-    const history = vm.transcript.map(dlgBubble).join("");
-
-    let active = "";
-    const cur = vm.current;
-    if (cur && cur.who === "npc") {
-      // npc-Zug: Blase zeigen (+ Vorlesen), dann „Weiter“.
-      const replay = vm.speakable
-        ? `<button class="listen-replay ghostbtn" type="button" data-action="dialogos-speak">${esc(t("discover.dlgReplay"))}</button>`
-        : "";
-      active = `
-        ${dlgBubble({ who: "npc", es: cur.es, de: cur.de })}
-        <div class="dlg-actions">
-          ${replay}
-          <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>
-        </div>`;
-    } else if (cur && cur.who === "user") {
-      const instr = `<p class="dlg-instr">${esc(cur.de)}</p>`;
-      if (!vm.result) {
-        if (cur.kind === "mc") {
-          const opts = cur.options.map((o, i) => `
-            <button class="quiz-opt" type="button" data-action="dialogos-answer" data-idx="${i}">
-              <span class="quiz-opt__text"><span class="quiz-opt__es" lang="es">${esc(o.es)}</span></span>
-            </button>`).join("");
-          active = `${instr}<div class="quiz-opts">${opts}</div>`;
-        } else {
-          // Frei tippen. Optionaler „Tipp" deckt die Musterantwort auf – als
-          // Hilfe, ohne den Zug vorwegzunehmen (getippt werden muss trotzdem).
-          const help = vm.hint
-            ? `<p class="dlg-tip" role="note">💡 <b lang="es">${esc(cur.solEs)}</b></p>`
-            : `<button class="dlg-tipbtn ghostbtn" type="button" data-action="dialogos-hint">${esc(t("discover.dlgTipShow"))}</button>`;
-          active = `
-            ${instr}
-            <form class="typer" data-action="submit-dialogos" id="dialogos-form">
-              <input class="typer__input" id="dialogos-answer" type="text" inputmode="text"
-                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="${esc(t("discover.dlgPlaceholder"))}" />
-              <button class="typer__btn" type="submit">${esc(t("discover.dlgSay"))}</button>
-            </form>
-            ${help}`;
-        }
-      } else {
-        // Beantwortet: die eigene (Muster-)Replik als Blase + Verdict + Weiter.
-        const verdict = vm.result.correct
-          ? `<div class="dlg-verdict dlg-verdict--ok" role="status" aria-live="polite">${esc(t("discover.dlgWellSaid"))}</div>`
-          : `<div class="dlg-verdict dlg-verdict--no" role="status" aria-live="polite">
-               ${t("discover.dlgBetter", { es: esc(cur.solEs) })}
-               <span class="dlg-verdict__given">${esc(t("discover.dlgYou", { given: vm.result.given || "—" }))}</span>
-             </div>`;
-        // Kurzer Hintergrund zur Musterantwort – zum Ausklappen, damit er nur
-        // stört, wenn man ihn wirklich lesen will.
-        const why = cur.why
-          ? `<details class="dlg-why">
-               <summary class="dlg-why__sum">${esc(t("discover.dlgWhy"))}</summary>
-               <p class="dlg-why__body">${esc(cur.why)}</p>
-             </details>`
-          : "";
-        active = `
-          ${dlgBubble({ who: "user", es: cur.solEs, de: "" })}
-          ${verdict}
-          ${why}
-          <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>`;
-      }
-    }
-
-    const step = Math.min(vm.turnIdx + 1, vm.total);
-    return `
-      <section class="screen study">
-        ${hmTopbar(vm.icon + " " + esc(vm.title), "open-dialogos")}
-        <div class="dlg-progress">
-          <div class="progress" role="progressbar" aria-valuenow="${step}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-          <span class="dlg-step">${esc(t("discover.dlgStep", { step, total: vm.total }))}</span>
-        </div>
-        <div class="dlg-thread">
-          ${history}
-          <div id="dlg-active">${active}</div>
-        </div>
-      </section>`;
-  }
-
-  function renderDialogosDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
 
   // TIEMPOS (Zeitformen-Erklärseite) ist nach features/tiempos.js (SC.tiempos)
   // gewandert – VM und Render leben dort zusammen; der Opener (openTiempos) bleibt
@@ -4762,7 +4639,6 @@
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderConjugacion,
                    renderFavorites,
-                   renderDialogosSetup, renderDialogos, renderDialogosDone,
                    placementCard, assessmentCard,
                    ONBOARD_SLIDE_COUNT: ONBOARD_SLIDES.length };
 })();

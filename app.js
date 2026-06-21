@@ -17,6 +17,7 @@
   const regateo = window.SC.regateo; // Feature-Modul (Regatear-Erklärseite), eager geladen
   const cuerpo = window.SC.cuerpo; // Feature-Modul (El Cuerpo, interaktive 3D-Körperkarte), eager geladen
   const compras = window.SC.compras; // Feature-Modul (Lista de compras, Einkaufsliste + Quiz), eager geladen
+  const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -1800,12 +1801,10 @@
   // SCREENS/ACTIONS, im Sharepic-Aggregator und in miniDoneConfig.
 
   // ----- Diálogos: Gesprächs-Simulationen -----
-  // Eine Reisesituation Zug für Zug durchspielen. npc-Züge werden angezeigt und
-  // (falls TTS da ist) vorgelesen; user-Züge sind Multiple-Choice oder freies
-  // Tippen (matcher.normalize). Pro Szenario ein zufälliger Dialog aus dem cat-Pool.
-  const dialogosReady = () => !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length);
-  const dialogueById = (id) => (dialogos ? dialogos.DIALOGOS.find((d) => d.id === id) : null) || null;
-  const scenarioById = (id) => (dialogos ? dialogos.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null;
+  // Die Diálogos-Datenhelfer (dialogosReady/dialogueById/scenarioById) leben jetzt
+  // im Feature-Modul SC.dialogosGame (features/dialogos-game.js). withName/
+  // withNameObj (unten) bleiben controller-eigen – auch Karten/Rollenspiel nutzen sie.
+
 
   // Reise-Name aus dem Profil: erscheint in Diálogos überall dort, wo der Nutzer
   // sich vorstellt (Hotel, Busticket, Notfall …). Ohne Eintrag bleibt der
@@ -1852,179 +1851,12 @@
     return out;
   }
 
-  function dialogosSetupVM() {
-    return {
-      available: dialogosReady(),
-      scenarios: dialogosReady()
-        ? dialogos.DIALOGOS_SCENARIOS
-            .filter((s) => dialogos.DIALOGOS.some((d) => d.cat === s.id))
-            .map((s) => ({ id: s.id, title: natk(s, "title"), icon: s.icon, lvl: s.lvl, intro: natk(s, "intro") }))
-        : [],
-      hasSpeech: !!(speech && speech.isSupported()),
-    };
-  }
+  // Diálogos: VMs, alle Handler (Setup/Start/Antwort/Tippen/Weiter/Tipp/Nochmal/
+  // Vorlesen), die Ergebnis-Buchung, das Auto-Vorlesen und der Scroll-Hook wohnen
+  // jetzt im Feature-Modul SC.dialogosGame (features/dialogos-game.js). Der State
+  // (state.dialogos) bleibt controller-eigen; app.js delegiert SCREENS, Aktionen,
+  // Spotlight-Vorschau, miniDone, Scroll-Hook und das Auto-Vorlesen ans Modul.
 
-  function dialogosVM() {
-    const d = state.dialogos;
-    const dia = dialogueById(d.dialogueId);
-    const turns = (dia && dia.turns) || [];
-    const scn = scenarioById(d.scenarioId);
-    // Verlaufsspur: alle bereits abgehandelten Züge (npc komplett, beantwortete
-    // user-Züge mit der Musterantwort als „gesagter" Zeile).
-    const transcript = [];
-    for (let i = 0; i < d.turnIdx; i++) {
-      const t = turns[i];
-      if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: withName(t.es), de: withName(nat(t)) });
-      else transcript.push({ who: "user", es: withName(t.solEs), de: "" });
-    }
-    const cur = turns[d.turnIdx] || null;
-    const current = cur
-      ? (cur.who === "npc"
-          ? { who: "npc", es: withName(cur.es), de: withName(nat(cur)) }
-          : {
-              who: "user",
-              kind: cur.kind,
-              de: withName(nat(cur)),
-              solEs: withName(cur.solEs),
-              why: withName(natk(cur, "why") || ""),
-              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: withName(o.es) })) : null,
-            })
-      : null;
-    return {
-      title: dia ? natk(dia, "title") : "",
-      icon: scn ? scn.icon : "💬",
-      turnIdx: d.turnIdx,
-      total: turns.length,
-      transcript,
-      current,
-      result: d.result, // null | { correct, given }
-      hint: !!d.hint,   // Musterantwort beim Frei-Tippen aufgedeckt?
-      speakable: !!(speech && speech.isSupported()),
-    };
-  }
-
-  function dialogosDoneVM() {
-    const d = state.dialogos;
-    const dia = dialogueById(d.dialogueId);
-    const scn = scenarioById(d.scenarioId);
-    return {
-      title: dia ? natk(dia, "title") : "",
-      icon: scn ? scn.icon : "💬",
-      correct: d.correct,
-      total: d.totalUser,
-      perfect: d.totalUser > 0 && d.correct === d.totalUser,
-    };
-  }
-
-  function openDialogosSetup() {
-    dismissBadgeToast();
-    loadModule("dialogos", () => {
-      if (!dialogosReady()) return;
-      setState({ screen: "dialogosSetup" });
-    });
-  }
-
-  function startDialogos(scenarioId) {
-    if (!dialogosReady()) return;
-    const pool = dialogos.DIALOGOS.filter((d) => d.cat === scenarioId);
-    if (!pool.length) return;
-    const dia = pool[Math.floor(Math.random() * pool.length)];
-    const totalUser = dia.turns.filter((t) => t.who === "user").length;
-    state.dialogos = { scenarioId, dialogueId: dia.id, turnIdx: 0, result: null, hint: false, correct: 0, totalUser };
-    state.screen = "dialogos";
-    render(); // maybeAutoSpeak liest den ersten npc-Zug vor
-  }
-
-  // Aktuellen user-Zug holen (oder null, wenn der aktuelle Zug ein npc-Zug ist).
-  function currentUserTurn() {
-    const d = state.dialogos;
-    const dia = dialogueById(d.dialogueId);
-    const t = dia && dia.turns[d.turnIdx];
-    return t && t.who === "user" ? t : null;
-  }
-
-  function answerDialogosMc(idx) {
-    const d = state.dialogos;
-    if (!d || d.result) return;
-    const t = currentUserTurn();
-    if (!t || t.kind !== "mc" || !t.options[idx]) return;
-    const correct = !!t.options[idx].ok;
-    d.result = { correct, given: withName(t.options[idx].es) };
-    if (correct) { d.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function submitDialogosType(input) {
-    const d = state.dialogos;
-    if (!d || d.result) return;
-    const t = currentUserTurn();
-    if (!t || t.kind !== "type") return;
-    const norm = matcher.normalize(input);
-    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(withName(s)));
-    const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
-    d.result = { correct, given: input };
-    if (correct) { d.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  // Weiter: vom aktuellen Zug zum nächsten. npc-Züge brauchen kein Ergebnis,
-  // user-Züge erst nach einer Antwort. Am Ende -> Done-Screen.
-  function advanceDialogos() {
-    const d = state.dialogos;
-    if (!d) return;
-    const dia = dialogueById(d.dialogueId);
-    if (!dia) return;
-    const cur = dia.turns[d.turnIdx];
-    if (cur && cur.who === "user" && !d.result) return; // user-Zug erst beantworten
-    if (d.turnIdx >= dia.turns.length - 1) {
-      recordDialogosResult(d);
-      syncBadges(Date.now(), true);
-      setState({ screen: "dialogosDone" });
-      return;
-    }
-    d.turnIdx += 1;
-    d.result = null;
-    d.hint = false;
-    render();
-  }
-
-  // Tipp aufdecken: zeigt beim Frei-Tippen die Musterantwort als Hilfe. Reine
-  // Anzeige – die Antwort muss weiterhin getippt werden, der Zug zählt normal.
-  function dialogosHint() {
-    const d = state.dialogos;
-    if (!d || d.result) return;
-    const t = currentUserTurn();
-    if (!t || t.kind !== "type") return;
-    d.hint = true;
-    render();
-  }
-
-  function dialogosAgain() {
-    startDialogos(state.dialogos ? state.dialogos.scenarioId : null);
-  }
-
-  function speakDialogosNpc() {
-    const d = state.dialogos;
-    if (!d || !speech) return;
-    const dia = dialogueById(d.dialogueId);
-    const t = dia && dia.turns[d.turnIdx];
-    if (t && t.who === "npc") speech.speak(withName(t.es), settings.speechRate);
-  }
-
-  // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
-  // Runden und das distinkt gespielte Szenario.
-  function recordDialogosResult(d) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.dialogosPlayed = (g.dialogosPlayed || 0) + 1;
-    if (d.totalUser > 0 && d.correct === d.totalUser) g.dialogosPerfect = (g.dialogosPerfect || 0) + 1;
-    const done = Object.assign({}, g.dialogosScenesDone);
-    done[d.scenarioId] = true;
-    g.dialogosScenesDone = done;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
 
   // ----- El Cuerpo: interaktive Körperkarte -----
   // VM, Render, die 3D-Geometrie und die Dreh-/Auswahl-Logik (inkl. globaler
@@ -2327,9 +2159,9 @@
       "yestoSetup": () => yestoGame.setupScreen(),
       "yesto": () => yestoGame.playScreen(),
       "yestoDone": () => yestoGame.doneScreen(),
-      "dialogosSetup": () => ui.renderDialogosSetup(dialogosSetupVM()),
-      "dialogos": () => ui.renderDialogos(dialogosVM()),
-      "dialogosDone": () => ui.renderDialogosDone(),
+      "dialogosSetup": () => dialogosGame.setupScreen(),
+      "dialogos": () => dialogosGame.playScreen(),
+      "dialogosDone": () => dialogosGame.doneScreen(),
       "compras": () => compras.listScreen(),
       "comprasQuiz": () => compras.quizScreen(),
       "comprasQuizDone": () => compras.doneScreen(),
@@ -2374,7 +2206,7 @@
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
     // den sichtbaren Bereich holen – bei langen Gesprächen wächst der Verlauf
     // sonst unter den Bildschirmrand.
-    if (state.screen === "dialogos") scrollDialogActive();
+    if (state.screen === "dialogos" && dialogosGame) dialogosGame.scrollActive();
 
     manageFocus();
     maybeAutoSpeak();
@@ -2482,10 +2314,10 @@
       } };
     }
     if (screen === "dialogosDone") {
-      const vm = dialogosDoneVM();
+      const vm = dialogosGame.doneVM();
       return { result: miniResult(vm, vm.title, "quiz"), opts: {
-        primaryLabel: t("discover.dlgAgain"), onPrimary: dialogosAgain,
-        secondaryLabel: t("discover.dlgOther"), onSecondary: openDialogosSetup,
+        primaryLabel: t("discover.dlgAgain"), onPrimary: dialogosGame.again,
+        secondaryLabel: t("discover.dlgOther"), onSecondary: dialogosGame.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
@@ -2505,24 +2337,8 @@
     }, cfg.opts));
   }
 
-  // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
-  // requestAnimationFrame, damit das Layout nach dem innerHTML steht.
-  // Normalfall (npc-Satz, Optionen, Verdikt): block:"end" hält den darüber-
-  // liegenden npc-Satz mit im Bild. Tipp-Zug dagegen: das Eingabefeld mittig
-  // halten – mit block:"end" schöbe es sonst genau hinter die eingeblendete
-  // Tastatur, und der Nutzer sähe nicht, was er tippt.
-  function scrollDialogActive() {
-    if (typeof requestAnimationFrame !== "function") return;
-    requestAnimationFrame(function () {
-      const active = root.querySelector("#dlg-active");
-      if (!active) return;
-      const input = active.querySelector("#dialogos-answer");
-      const target = input || active;
-      const block = input ? "center" : "end";
-      const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block }); } catch (e) { /* egal */ }
-    });
-  }
+  // scrollDialogActive() (der Diálogos-Scroll-Post-Render-Hook) wohnt jetzt im
+  // Feature-Modul SC.dialogosGame; render() ruft dialogosGame.scrollActive().
 
   // Hält das fokussierte Eingabefeld über der eingeblendeten Bildschirmtastatur.
   // scrollDialogActive() & manageFocus() laufen beim Render – also BEVOR die
@@ -2590,11 +2406,10 @@
       return it ? { key: "precios:" + state.precios.idx + ":" + it.value, text: it.es } : null;
     }
     // Diálogos: den aktuellen npc-Zug automatisch vorlesen (die Gegenseite spricht).
-    if (state.screen === "dialogos" && state.dialogos) {
-      const d = state.dialogos;
-      const dia = dialogueById(d.dialogueId);
-      const t = dia && dia.turns[d.turnIdx];
-      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: withName(t.es) };
+    // Das Feature-Modul kapselt die Zug-Auflösung (autoSpeakItem liefert {key,text}).
+    if (state.screen === "dialogos" && state.dialogos && dialogosGame) {
+      const item = dialogosGame.autoSpeakItem();
+      if (item) return item;
     }
     return null;
   }
@@ -6061,7 +5876,7 @@
       case "frases":
         return cut(frasesGame.setupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
       case "dialogos":
-        return cut(dialogosSetupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
+        return cut(dialogosGame.setupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
       case "regatear":
         return cut((regateo.vm().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
       case "precios":
@@ -6314,13 +6129,13 @@
     "yesto-reveal": (el) => { yestoGame.reveal(); },
     "yesto-rate": (el) => { yestoGame.rate(el.dataset.known === "1"); },
     "yesto-again": (el) => { yestoGame.again(); },
-    "open-dialogos": (el) => { openDialogosSetup(); },
-    "start-dialogos": (el) => { startDialogos(el.dataset.id); },
-    "dialogos-answer": (el) => { answerDialogosMc(Number(el.dataset.idx)); },
-    "dialogos-next": (el) => { advanceDialogos(); },
-    "dialogos-hint": (el) => { dialogosHint(); },
-    "dialogos-again": (el) => { dialogosAgain(); },
-    "dialogos-speak": (el) => { speakDialogosNpc(); },
+    "open-dialogos": (el) => { dialogosGame.open(); },
+    "start-dialogos": (el) => { dialogosGame.start(el.dataset.id); },
+    "dialogos-answer": (el) => { dialogosGame.answerMc(Number(el.dataset.idx)); },
+    "dialogos-next": (el) => { dialogosGame.advance(); },
+    "dialogos-hint": (el) => { dialogosGame.hint(); },
+    "dialogos-again": (el) => { dialogosGame.again(); },
+    "dialogos-speak": (el) => { dialogosGame.speakNpc(); },
     "open-compras": (el) => { compras.open(); },
     "compras-section": (el) => { compras.section(el.dataset.id); },
     "compras-pick": (el) => { compras.pick(el.dataset.id); },
@@ -6450,7 +6265,7 @@
     if (e.target.closest('[data-action="submit-dialogos"]')) {
       e.preventDefault();
       const input = document.getElementById("dialogos-answer");
-      submitDialogosType(input ? input.value : "");
+      dialogosGame.submitType(input ? input.value : "");
       return;
     }
     // Profil: Reise-Namen speichern (Enter oder „Speichern"-Knopf).
@@ -6764,7 +6579,7 @@
       hostel: openHostel,
       definiciones: () => definiciones.open(),
       frases: () => frasesGame.open(),
-      dialogos: openDialogosSetup,
+      dialogos: () => dialogosGame.open(),
       regatear: openRegatear,
       precios: () => precios.open(),
       cuerpo: openCuerpo,
@@ -6881,7 +6696,7 @@
     state, setState, render, dismissBadgeToast,
     data, speech, numbers, yesto, frases, conjug, matcher, i18n, badges,
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
-    DEFAULT_ACCENT, root,
+    DEFAULT_ACCENT, root, loadModule,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
     // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
     gameStats: () => gamestats,
@@ -6899,6 +6714,7 @@
   if (regateo) regateo.init(featureCtx);
   if (cuerpo) cuerpo.init(featureCtx);
   if (compras) compras.init(featureCtx);
+  if (dialogosGame) dialogosGame.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
