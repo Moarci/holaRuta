@@ -214,3 +214,41 @@ test("renderPrintSheet: leere sections rendern ohne Abschnitte/Schlüssel", () =
   assert.ok(!html.includes("sheet-answerkey"), "ohne Abschnitte kein Lösungsschlüssel");
   assert.ok(html.includes("Wortschatz"), "Wortschatz bleibt erhalten");
 });
+
+// ---------- Fill-Modus: am Handy ausfüllbar ----------
+test("renderPrintSheet: Modus-Umschalter bietet die Handy-Variante an", () => {
+  const html = ui.renderPrintSheet(baseVM());
+  assert.ok(html.includes('data-mode="fill"'), "Fill-Modus-Knopf fehlt");
+  assert.ok(html.includes(i18n.t("sheet.modeFill")), "Fill-Modus-Label fehlt");
+});
+
+test("renderPrintSheet: Fill-Modus rendert Eingabefelder mit hinterlegter Lösung", () => {
+  const html = ui.renderPrintSheet(withSections({ fill: true }));
+  assert.ok(html.includes("sheet-fill"), "Eingabefelder fehlen");
+  // Lösungen stecken zur Selbstkontrolle in data-answer:
+  assert.ok(html.includes('data-answer="hablo"'), "Konjug-Lösung nicht im Feld hinterlegt");
+  assert.ok(html.includes('data-answer="mil doscientos cincuenta"'), "Zahlwort nicht im Feld hinterlegt");
+  // Übersetzung wird zum Feld (nicht zur Schreiblinie):
+  assert.ok(html.includes('data-answer="¿Dónde está el taxi?"'), "Übersetzungslösung nicht im Feld hinterlegt");
+  // Freies Schreiben + Notizen als Textfeld statt Linien-Box:
+  assert.ok(html.includes("sheet-fill-area"), "Schreib-Textfeld fehlt");
+  assert.ok(!html.includes("sheet-write-line"), "keine Druck-Schreiblinien im Fill-Modus");
+  assert.ok(!html.includes("sheet-notes-lines"), "Notizen werden zum Textfeld");
+});
+
+test("renderPrintSheet: Fill-Modus zeigt Prüf-Steuerung statt Drucken, keinen Lösungsschlüssel", () => {
+  const html = ui.renderPrintSheet(withSections({ fill: true }));
+  assert.ok(html.includes('data-action="sheet-check"'), "Prüfen-Knopf fehlt");
+  assert.ok(html.includes('data-action="sheet-reveal"'), "Lösungen-zeigen-Knopf fehlt");
+  assert.ok(html.includes('data-action="sheet-reset"'), "Zurücksetzen-Knopf fehlt");
+  assert.ok(html.includes("sheet-score"), "Ergebnis-Anzeige fehlt");
+  assert.ok(html.includes("sheet-fillbar"), "Fill-Hinweis fehlt");
+  assert.ok(!html.includes('data-action="printsheet-print"'), "kein Drucken-Knopf im Fill-Modus");
+  assert.ok(!html.includes("sheet-answerkey"), "Fill-Modus braucht keinen separaten Schlüssel");
+});
+
+test("renderPrintSheet: Fill-Modus hält die Vokabel-Sektion als Referenz sichtbar", () => {
+  const html = ui.renderPrintSheet(baseVM({ fill: true }));
+  assert.ok(html.includes("¿Dónde está el taxi?"), "Vokabeln bleiben im Fill-Modus sichtbar");
+  assert.ok(!html.includes("sheet-es--blank"), "keine verdeckten Vokabel-Linien im Fill-Modus");
+});

@@ -4008,8 +4008,8 @@
     const out = [];
     const cards = (allCards || []).filter((c) => c && c.es && nat(c));
 
-    // 1. Zuordnung ES<->DE (bis 8 Paare).
-    const mPairs = sheetShuffle(cards, rng).slice(0, 8);
+    // 1. Zuordnung ES<->DE (bis 10 Paare).
+    const mPairs = sheetShuffle(cards, rng).slice(0, 10);
     if (mPairs.length >= 3) {
       const left = mPairs.map((c, i) => ({ n: i + 1, es: c.es, de: nat(c) }));
       const order = sheetShuffle(left.map((_, i) => i), rng);
@@ -4021,7 +4021,7 @@
     // 2. Lückentext (frases): themenpassend oder gemischt.
     if (frases && frases.FRASES) {
       const pool = frases.FRASES.filter((f) => f.slot && f.slot.es && (!theme.frasesCat || f.cat === theme.frasesCat));
-      const chosen = sheetShuffle(pool.length ? pool : frases.FRASES.filter((f) => f.slot && f.slot.es), rng).slice(0, 7);
+      const chosen = sheetShuffle(pool.length ? pool : frases.FRASES.filter((f) => f.slot && f.slot.es), rng).slice(0, 10);
       if (chosen.length >= 3) {
         const items = chosen.map((f) => ({ frameEs: f.frameEs, targetDe: natk(f, "targetDe"), answer: f.slot.es }));
         out.push({ type: "gapfill", wordbank: sheetShuffle(items.map((it) => it.answer), rng), items: items });
@@ -4029,17 +4029,17 @@
     }
 
     // 3. Übersetzung (Kontextsätze DE->ES, sonst einfache Karten).
-    const ctxCards = sheetShuffle(cards.filter((c) => c.context && c.context.sentenceEs), rng).slice(0, 8);
+    const ctxCards = sheetShuffle(cards.filter((c) => c.context && c.context.sentenceEs), rng).slice(0, 12);
     if (ctxCards.length >= 3) {
       out.push({ type: "translate", lines: ctxCards.map((c) => ({ de: natk(c.context, "sentenceDe") || natk(c.context, "situation") || nat(c), es: c.context.sentenceEs })) });
     } else {
-      const simple = sheetShuffle(cards, rng).slice(0, 8);
+      const simple = sheetShuffle(cards, rng).slice(0, 12);
       if (simple.length >= 3) out.push({ type: "translate", lines: simple.map((c) => ({ de: nat(c), es: c.es })) });
     }
 
     // 4. Konjugation.
     if (conjug && data.CONJUGATION) {
-      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 8, rng).map((it) => ({
+      const rows = conjug.buildRound(data.CONJUGATION, theme.conjugLevel, 12, rng).map((it) => ({
         verb: natk(it, "verbHint") || it.verb,
         person: natk(it, "personDe") ? natk(it, "personDe") + " (" + it.personEs + ")" : it.personEs,
         answer: it.answer,
@@ -4049,7 +4049,7 @@
 
     // 5. Zahlen & Preise.
     if (numbers && numbers.buildRound) {
-      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, 6, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
+      const items = numbers.buildRound(theme.currencyKey, theme.numbersLevel, 10, rng).map((it) => ({ digits: it.digits, symbol: it.symbol, words: it.words }));
       if (items.length) out.push({ type: "numbers", items: items });
     }
 
@@ -4134,9 +4134,12 @@
     const accentCat = categoryById(accentScope);
     const accent = (accentCat && accentCat.grad && accentCat.grad[0]) || "#a23e20";
     const icon = (accentCat && accentCat.icon) || "📄";
-    // Übungs- vs. Lösungsblatt: im Übungsmodus wird die spanische Zeile (Antwort)
-    // verdeckt; Deutsch bleibt als Prompt stehen. Standard = vollständiges Blatt.
+    // Drei Varianten: „full" (Lösungsblatt, alle Antworten sichtbar), „exercise"
+    // (Druck-Übung, Antworten zu Schreiblinien) und „fill" (am Handy ausfüllbar:
+    // echte Eingabefelder + Selbstkontrolle). Im Übungs- UND Fill-Modus bleibt das
+    // Deutsch als Prompt stehen, die spanische Antwort wird verdeckt/abgefragt.
     const exercise = state.sheetMode === "exercise";
+    const fill = state.sheetMode === "fill";
     const link = code ? taskShareLink(code) : "";
     // Arbeitsheft: zusätzliche Übungsabschnitte aus dem Gesamtbestand. Deterministisch
     // pro Ziel+Etappe geseedet (Nachdruck = identisch); abwählbare via state.sheetSkip.
@@ -4152,7 +4155,7 @@
       // Wird nur EINE Etappe gedruckt? Dann startet der Abo-Code unten trotzdem
       // den GANZEN Plan – Hinweis darauf im Blatt (siehe sheet.subscribeWholeHint).
       stageScoped: isPretrip && stageSel !== "all",
-      accent: accent, icon: icon, exercise: exercise,
+      accent: accent, icon: icon, exercise: exercise, fill: fill,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages, sections: sections, sectionToggles: sectionToggles,
       code: code, link: link,
@@ -4173,6 +4176,54 @@
   }
 
   function printSheet() { try { window.print(); } catch (e) { /* egal */ } }
+
+  // ---------- Arbeitsheft am Handy ausfüllen (Selbstkontrolle) ----------
+  // Eine Eingabe gilt als richtig, wenn sie – normalisiert (akzent-/satzzeichen-
+  // tolerant, via matcher) – einer der „/"-Alternativen oder der Volllösung gleicht.
+  function fillAnswerOk(input, answer) {
+    const m = window.SC && window.SC.matcher;
+    const norm = m ? m.normalize : (s) => String(s).trim().toLowerCase();
+    const got = norm(input);
+    if (!got) return false;
+    const parts = String(answer || "").split("/").map((s) => s.trim()).filter(Boolean);
+    parts.push(String(answer || ""));
+    return parts.some((p) => norm(p) && norm(p) === got);
+  }
+  // Alle Eingabefelder mit hinterlegter Lösung im aktuellen Blatt.
+  function fillFields() {
+    return Array.prototype.slice.call(root.querySelectorAll(".sheet-fill[data-answer]"));
+  }
+  function setFillScore(text) {
+    const out = root.querySelector(".sheet-score");
+    if (out) out.textContent = text || "";
+  }
+  function checkFillSheet() {
+    const fields = fillFields();
+    if (!fields.length) return;
+    let ok = 0, filled = 0;
+    fields.forEach((el) => {
+      el.classList.remove("is-correct", "is-wrong");
+      const val = String(el.value || "").trim();
+      if (!val) return;
+      filled += 1;
+      if (fillAnswerOk(val, el.dataset.answer)) { el.classList.add("is-correct"); ok += 1; }
+      else el.classList.add("is-wrong");
+    });
+    setFillScore(t("sheet.fillResult", { ok: ok, total: fields.length }));
+  }
+  function revealFillSheet() {
+    fillFields().forEach((el) => {
+      el.value = el.dataset.answer || "";
+      el.classList.remove("is-wrong");
+      el.classList.add("is-correct");
+    });
+    const fields = fillFields();
+    setFillScore(t("sheet.fillResult", { ok: fields.length, total: fields.length }));
+  }
+  function resetFillSheet() {
+    fillFields().forEach((el) => { el.value = ""; el.classList.remove("is-correct", "is-wrong"); });
+    setFillScore("");
+  }
 
   // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
   // Beschriftung & Klasse kurz tauschen und danach zurücksetzen.
@@ -7192,6 +7243,9 @@
     "open-printsheet": (el) => { openPrintSheet(); },
     "printsheet-print": (el) => { printSheet(); },
     "sheet-mode": (el) => { { state.sheetMode = el.dataset.mode; render(); } },
+    "sheet-check": () => { checkFillSheet(); },
+    "sheet-reveal": () => { revealFillSheet(); },
+    "sheet-reset": () => { resetFillSheet(); },
     "toggle-section": (el) => { { const ty = el.dataset.type; const skip = state.sheetSkip || (state.sheetSkip = []); const i = skip.indexOf(ty); if (i === -1) skip.push(ty); else skip.splice(i, 1); render(); } },
     "open-target-picker": (el) => { { state.targetPicker = el.dataset.ctx; render(); } },
     "close-target-picker": (el) => { { state.targetPicker = null; render(); } },

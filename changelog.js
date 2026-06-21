@@ -27,6 +27,22 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.111.0",
+      date: "2026-06-21",
+      title: "Arbeitsblätter: mehr Übungen, A4-fertiges Layout & am Handy ausfüllbar",
+      titleEn: "Worksheets: more exercises, print-ready A4 layout & fill in on your phone",
+      items: [
+        "📱 Neu: Variante „Am Handy ausfüllen“ – das Arbeitsblatt wird interaktiv. Tippe deine Antworten direkt in echte Eingabefelder, prüfe sie mit einem Knopf (richtig/falsch wird markiert) oder lass dir die Lösungen zeigen. Alles bleibt offline auf deinem Gerät.",
+        "📈 Mehr Umfang: deutlich mehr Aufgaben pro Heft – bis zu 10 Zuordnungs-Paare, 10 Lückentexte, 12 Übersetzungen, 12 Konjugationen und 10 Zahlen/Preise.",
+        "🖨️ Sauber auf A4: Layout und Abstände fürs Ausdrucken optimiert – kompaktere Typografie und bewusste Seitenumbrüche, damit mehr Übungen pro Seite passen und nichts unschön zerreißt.",
+      ],
+      itemsEn: [
+        "📱 New: a „Fill in on phone“ variant – the worksheet becomes interactive. Type your answers straight into real input fields, check them with one tap (right/wrong gets highlighted) or reveal the solutions. Everything stays offline on your device.",
+        "📈 More scope: noticeably more exercises per workbook – up to 10 matching pairs, 10 gap-fills, 12 translations, 12 conjugations and 10 numbers/prices.",
+        "🖨️ Clean on A4: layout and spacing optimised for printing – tighter typography and deliberate page breaks, so more exercises fit per page and nothing breaks awkwardly.",
+      ],
+    },
+    {
       version: "1.110.0",
       date: "2026-06-20",
       title: "Mi léxico: Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon",

@@ -4078,11 +4078,14 @@
            ${vm.stageOpts.map((o) => `<option value="${esc(o.value)}"${o.value === vm.sheetStage ? " selected" : ""}>${esc(o.label)}</option>`).join("")}
          </select>`
       : "";
-    // Lösungs- vs. Übungsblatt umschalten (nur Steuerleiste, nicht gedruckt).
+    // Drei Blatt-Varianten umschalten (nur Steuerleiste, nicht gedruckt):
+    // Lösungsblatt · Druck-Übung · am Handy ausfüllen.
+    const isFull = !vm.exercise && !vm.fill;
     const modeToggle = `
       <div class="sheet-modes" role="group" aria-label="${esc(t("sheet.modeLabel"))}">
-        <button type="button" class="sheet-mode${!vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="full" aria-pressed="${!vm.exercise}">${esc(t("sheet.modeFull"))}</button>
+        <button type="button" class="sheet-mode${isFull ? " is-active" : ""}" data-action="sheet-mode" data-mode="full" aria-pressed="${isFull}">${esc(t("sheet.modeFull"))}</button>
         <button type="button" class="sheet-mode${vm.exercise ? " is-active" : ""}" data-action="sheet-mode" data-mode="exercise" aria-pressed="${!!vm.exercise}">${esc(t("sheet.modeExercise"))}</button>
+        <button type="button" class="sheet-mode${vm.fill ? " is-active" : ""}" data-action="sheet-mode" data-mode="fill" aria-pressed="${!!vm.fill}">${esc(t("sheet.modeFill"))}</button>
       </div>`;
     // Bausteinauswahl: alle baubaren Übungsabschnitte als an-/abwählbare Chips
     // (nur Steuerleiste, nicht gedruckt). on = Abschnitt ist im Heft.
@@ -4091,14 +4094,26 @@
           <span class="sheet-pick__label">${esc(t("sheet.pickLabel"))}:</span>
           ${vm.sectionToggles.map((s) => `<button type="button" class="sheet-pick__chip" data-action="toggle-section" data-type="${esc(s.type)}" aria-pressed="${!!s.on}">${esc(s.label)}</button>`).join("")}
         </div>` : "";
+    // Im Fill-Modus (am Handy) statt „Drucken" die interaktiven Knöpfe:
+    // Prüfen / Lösungen zeigen / zurücksetzen + Live-Ergebnis.
+    const actionBtn = vm.fill
+      ? `<button class="teacher-btn teacher-btn--main" data-action="sheet-check">✅ ${esc(t("sheet.checkBtn"))}</button>
+         <button class="teacher-btn" data-action="sheet-reveal">👁️ ${esc(t("sheet.revealBtn"))}</button>
+         <button class="teacher-btn" data-action="sheet-reset">♻️ ${esc(t("sheet.resetBtn"))}</button>
+         <span class="sheet-score" role="status" aria-live="polite"></span>`
+      : `<button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>`;
     const controls = `
       <div class="sheet-controls no-print">
         ${targetField("sheet", { targets: vm.targets, current: vm.sheetTarget })}
         ${stagePick}
         ${modeToggle}
-        <button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>
+        ${actionBtn}
         ${pickRow}
       </div>`;
+
+    // Fill-Modus: echtes Eingabefeld mit hinterlegter Lösung (data-answer) für die
+    // Selbstkontrolle am Handy. „kind" steuert die Breite (inline/line/mini).
+    const fillInput = (answer, kind) => `<input class="sheet-fill sheet-fill--${kind || "line"}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" data-answer="${esc(answer)}" aria-label="${esc(t("sheet.fillAria"))}">`;
 
     // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie und
     // Notizen/Challenge-Phrase (die die Lösung verraten) bleiben verborgen.
@@ -4127,7 +4142,7 @@
         case "matching": {
           const left = (s.left || []).map((x) => `<li>${esc(x.es)}</li>`).join("");
           const right = (s.right || []).map((x) => `<li>${esc(x.de)}</li>`).join("");
-          const grid = (s.left || []).map((x) => `<span>${esc(String(x.n))} → ${vm.exercise ? "____" : esc(x.l)}</span>`).join("");
+          const grid = (s.left || []).map((x) => `<span>${esc(String(x.n))} → ${vm.fill ? fillInput(x.l, "mini") : vm.exercise ? "____" : esc(x.l)}</span>`).join("");
           return `<section class="sheet-section sheet-section--matching">
             ${sectionHead("sheet.secMatching", "sheet.instrMatching")}
             <div class="sheet-match">
@@ -4140,7 +4155,9 @@
         case "gapfill": {
           const bank = (s.wordbank || []).map((w) => `<span class="sheet-chip" lang="es">${esc(w)}</span>`).join("");
           const items = (s.items || []).map((it) => {
-            const filler = vm.exercise ? '<span class="sheet-blank-inline"></span>' : `<strong>${esc(it.answer)}</strong>`;
+            const filler = vm.fill ? fillInput(it.answer, "inline")
+              : vm.exercise ? '<span class="sheet-blank-inline"></span>'
+              : `<strong>${esc(it.answer)}</strong>`;
             const frame = esc(it.frameEs).replace("___", filler);
             return `<li><span class="sheet-es" lang="es">${frame}</span><span class="sheet-de">${esc(it.targetDe)}</span></li>`;
           }).join("");
@@ -4151,21 +4168,21 @@
           </section>`;
         }
         case "translate": {
-          const lines = (s.lines || []).map((l) => `<li><span class="sheet-de">${esc(l.de)}</span>${vm.exercise ? writeLine : `<span class="sheet-es" lang="es">${esc(l.es)}</span>`}</li>`).join("");
+          const lines = (s.lines || []).map((l) => `<li><span class="sheet-de">${esc(l.de)}</span>${vm.fill ? fillInput(l.es, "line") : vm.exercise ? writeLine : `<span class="sheet-es" lang="es">${esc(l.es)}</span>`}</li>`).join("");
           return `<section class="sheet-section sheet-section--translate">
             ${sectionHead("sheet.secTranslate", "sheet.instrTranslate")}
             <ol class="sheet-exlist">${lines}</ol>
           </section>`;
         }
         case "conjug": {
-          const rows = (s.rows || []).map((r) => `<tr><td lang="es">${esc(r.verb)}</td><td>${esc(r.person)}</td><td class="sheet-ans-cell">${vm.exercise ? writeLine : `<strong lang="es">${esc(r.answer)}</strong>`}</td></tr>`).join("");
+          const rows = (s.rows || []).map((r) => `<tr><td lang="es">${esc(r.verb)}</td><td>${esc(r.person)}</td><td class="sheet-ans-cell">${vm.fill ? fillInput(r.answer, "line") : vm.exercise ? writeLine : `<strong lang="es">${esc(r.answer)}</strong>`}</td></tr>`).join("");
           return `<section class="sheet-section sheet-section--conjug">
             ${sectionHead("sheet.secConjug", "sheet.instrConjug")}
             <table class="sheet-table"><thead><tr><th>${esc(t("sheet.colVerb"))}</th><th>${esc(t("sheet.colPerson"))}</th><th>${esc(t("sheet.colAnswer"))}</th></tr></thead><tbody>${rows}</tbody></table>
           </section>`;
         }
         case "numbers": {
-          const rows = (s.items || []).map((it) => `<tr><td>${esc(it.digits)}${it.symbol ? " " + esc(it.symbol) : ""}</td><td class="sheet-ans-cell">${vm.exercise ? writeLine : `<strong lang="es">${esc(it.words)}</strong>`}</td></tr>`).join("");
+          const rows = (s.items || []).map((it) => `<tr><td>${esc(it.digits)}${it.symbol ? " " + esc(it.symbol) : ""}</td><td class="sheet-ans-cell">${vm.fill ? fillInput(it.words, "line") : vm.exercise ? writeLine : `<strong lang="es">${esc(it.words)}</strong>`}</td></tr>`).join("");
           return `<section class="sheet-section sheet-section--numbers">
             ${sectionHead("sheet.secNumbers", "sheet.instrNumbers")}
             <table class="sheet-table"><thead><tr><th>${esc(t("sheet.colNumber"))}</th><th>${esc(t("sheet.colSpanish"))}</th></tr></thead><tbody>${rows}</tbody></table>
@@ -4174,7 +4191,7 @@
         case "dialogue": {
           const turns = (s.turns || []).map((tn) => tn.who === "npc"
             ? `<p class="sheet-turn sheet-turn--npc"><span class="who">${esc(t("sheet.npcLabel"))}:</span><span class="es" lang="es">${esc(tn.es)}</span><span class="de">${esc(tn.de)}</span></p>`
-            : `<p class="sheet-turn sheet-turn--user"><span class="who">${esc(t("sheet.youLabel"))}:</span><span class="de">${esc(tn.de)}</span>${vm.exercise ? writeLine : `<span class="es" lang="es">${esc(tn.answer)}</span>`}</p>`).join("");
+            : `<p class="sheet-turn sheet-turn--user"><span class="who">${esc(t("sheet.youLabel"))}:</span><span class="de">${esc(tn.de)}</span>${vm.fill ? fillInput(tn.answer, "line") : vm.exercise ? writeLine : `<span class="es" lang="es">${esc(tn.answer)}</span>`}</p>`).join("");
           return `<section class="sheet-section sheet-section--dialogue">
             ${sectionHead("sheet.secDialogue", "sheet.instrDialogue")}
             ${s.title ? `<h3 class="sheet-stage" lang="es">${esc(s.title)}</h3>` : ""}
@@ -4192,7 +4209,9 @@
           return `<section class="sheet-section sheet-section--writing">
             ${sectionHead("sheet.secWriting", "sheet.instrWriting")}
             ${s.prompt ? `<p class="sheet-goal">${esc(s.prompt)}</p>` : ""}
-            <div class="sheet-write-box" aria-hidden="true"></div>
+            ${vm.fill
+              ? `<textarea class="sheet-fill-area" rows="5" lang="es" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.secWriting"))}"></textarea>`
+              : `<div class="sheet-write-box" aria-hidden="true"></div>`}
           </section>`;
         }
         default: return "";
@@ -4241,6 +4260,8 @@
           <p class="sheet-meta">${vm.levelRange ? esc(vm.levelRange) + " · " : ""}${esc(t("sheet.cardCount", { n: vm.cardCount }))} · ${esc(vm.date)}</p>
         </header>
 
+        ${vm.fill ? `<p class="sheet-fillbar">✍️ ${esc(t("sheet.fillHint"))}</p>` : ""}
+
         <p class="sheet-goal"><strong>${esc(t("sheet.goalLabel"))}:</strong> ${esc(t("sheet.goalText"))}</p>
 
         <section class="sheet-recipe-box">
@@ -4277,7 +4298,9 @@
 
         <section class="sheet-notes">
           <h2 class="sheet-h2">${esc(t("sheet.notesHeading"))}</h2>
-          <div class="sheet-notes-lines" aria-hidden="true"></div>
+          ${vm.fill
+            ? `<textarea class="sheet-fill-area" rows="3" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.notesHeading"))}"></textarea>`
+            : `<div class="sheet-notes-lines" aria-hidden="true"></div>`}
         </section>
 
         <footer class="sheet-coord">
