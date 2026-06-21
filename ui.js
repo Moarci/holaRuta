@@ -2110,90 +2110,8 @@
       </section>`;
   }
 
-  // ---------- PRECIOS AL OÍDO (Preis-Hörtrainer) ----------
-  // Die App sagt einen frisch generierten Betrag auf Spanisch (Auto-Speak), man
-  // tippt die Ziffern. Vorab wählt man Land/Währung und Schwierigkeit – so reicht
-  // die Spanne vom Kleingeld bis zu kolumbianischen Millionenbeträgen.
-
-  // Setup: Land/Währung (mit Flaggen) + Schwierigkeitsstufe wählen, dann starten.
-  function renderPreciosSetup(vm) {
-    if (!vm.speakable) {
-      return `
-        <section class="screen">
-          ${hmTopbar("💵 Precios al oído", "home")}
-          <p class="stat-empty">${esc(t("discover.prcNoSpeech"))}</p>
-        </section>`;
-    }
-    const currencies = vm.currencies.map((c) => `
-      <button class="prc-cur ${c.selected ? "is-active" : ""}" type="button"
-              data-action="precios-currency" data-id="${esc(c.key)}" aria-pressed="${c.selected}">
-        <span class="prc-cur__flag" aria-hidden="true">${esc(c.flag)}</span>
-        <span class="prc-cur__name">${esc(c.name)}</span>
-        <span class="prc-cur__code">${esc(c.code)}</span>
-      </button>`).join("");
-    const levels = vm.levels.map((l) => `
-      <button class="prc-lvl ${l.active ? "is-active" : ""}" type="button"
-              data-action="precios-level" data-level="${l.id}" aria-pressed="${l.active}">
-        <span class="prc-lvl__short">${esc(l.short)}</span>
-        <span class="prc-lvl__label">${esc(l.label)}</span>
-        <span class="prc-lvl__hint">${esc(l.hint)}</span>
-      </button>`).join("");
-    const sample = vm.sample
-      ? `<p class="prc-sample">${t("discover.prcSample", { flag: esc(vm.sample.flag), name: esc(vm.sample.name), max: esc(vm.sample.max), many: esc(vm.sample.many) })}</p>`
-      : "";
-    return `
-      <section class="screen">
-        ${hmTopbar("💵 Precios al oído", "home")}
-        <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
-        ${moduleShareBtn("precios")}
-        <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
-        <div class="prc-curs">${currencies}</div>
-        <h3 class="prc-head">${esc(t("discover.prcDifficulty"))}</h3>
-        <div class="prc-lvls">${levels}</div>
-        ${sample}
-        <button class="cta" data-action="start-precios">${esc(t("discover.prcStart"))}</button>
-      </section>`;
-  }
-
-  function renderPrecios(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
-    const replay = vm.speakable
-      ? `<button class="listen-replay ghostbtn" type="button" data-action="precios-speak">${esc(t("discover.prcReplay"))}</button>`
-      : "";
-    const curTag = `<span class="prc-tag">${esc(vm.flag)} ${esc(vm.currencyCode)}</span>`;
-    const body = !vm.result
-      ? `
-        <div class="card-static card-listen">
-          <span class="listen-ear" aria-hidden="true">💵</span>
-          ${replay}
-          <span class="face__hint">${esc(t("discover.prcWhich"))}</span>
-        </div>
-        <form class="typer" data-action="submit-precios" id="precios-form">
-          <input class="typer__input" id="precios-answer" type="text" inputmode="numeric"
-                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(t("discover.prcPlaceholder"))}" />
-          <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
-        </form>`
-      : `
-        <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
-          <div class="face__word" lang="es">${esc(vm.answerEs)}</div>
-          <div class="listen-de">= ${esc(vm.answerDigits)} ${esc(vm.currencyCode)}</div>
-          ${vm.result.correct
-            ? `<div class="verdict verdict--ok">${esc(t("common.correctHeard"))}</div>`
-            : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: vm.result.input || "—" }))}</div>`}
-        </div>
-        <button class="cta" data-action="precios-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
-    return `
-      <section class="screen study">
-        ${hmTopbar("💵 Precios al oído", "precios-setup")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.prcProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="prc-status"><div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>${curTag}</div>
-        ${body}
-      </section>`;
-  }
-
-  function renderPreciosDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
+  // PRECIOS AL OÍDO (Preis-Hörtrainer) ist nach features/precios.js
+  // (SC.precios) gewandert – VMs, Handler und Render leben dort zusammen.
 
   // ---------- ZIEL-PICKER (Modo profe / Aktivitätsblatt) ----------
   // Statt eines nativen <select> mit <optgroup> (auf Android nur ein nüchterner
@@ -5665,7 +5583,7 @@
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderCuerpo, renderConjugacion, renderTiempos,
-                   renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
+                   renderFrasesSetup, renderFrases, renderFrasesDone,
                    renderFavorites,
                    renderConjugSetup, renderConjug, renderConjugDone,
                    renderYestoSetup, renderYesto, renderYestoDone,

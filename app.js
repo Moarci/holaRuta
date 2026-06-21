@@ -9,6 +9,7 @@
   const { data, srs, matcher, store, ui, stats } = window.SC;
   const spickzettel = window.SC.spickzettel; // Feature-Modul (Survival-Schnellzugriff), eager geladen
   const definiciones = window.SC.definiciones; // Feature-Modul (Zuordnen-Quiz), eager geladen
+  const precios = window.SC.precios; // Feature-Modul (Preis-Hörtrainer), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -2795,9 +2796,9 @@
       "tiempos": () => ui.renderTiempos(tiemposVM()),
       "spickzettel": () => spickzettel.screen(),
       "favorites": () => ui.renderFavorites(favoritesVM()),
-      "preciosSetup": () => ui.renderPreciosSetup(preciosSetupVM()),
-      "precios": () => ui.renderPrecios(preciosVM()),
-      "preciosDone": () => ui.renderPreciosDone(),
+      "preciosSetup": () => precios.setupScreen(),
+      "precios": () => precios.playScreen(),
+      "preciosDone": () => precios.doneScreen(),
       "frasesSetup": () => ui.renderFrasesSetup(frasesSetupVM()),
       "frases": () => ui.renderFrases(frasesVM()),
       "frasesDone": () => ui.renderFrasesDone(),
@@ -2929,11 +2930,11 @@
       } };
     }
     if (screen === "preciosDone") {
-      const vm = preciosDoneVM();
+      const vm = precios.doneVM();
       const scope = `${vm.flag} ${vm.currencyName} · ${vm.levelLabel}`;
       return { result: miniResult(vm, scope, "precios"), opts: {
-        primaryLabel: t("discover.prcAgain"), onPrimary: preciosAgain,
-        secondaryLabel: t("discover.prcOtherCountry"), onSecondary: openPrecios,
+        primaryLabel: t("discover.prcAgain"), onPrimary: precios.again,
+        secondaryLabel: t("discover.prcOtherCountry"), onSecondary: precios.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
@@ -5582,143 +5583,11 @@
     if (f && f.es) speech.speak(f.es, settings.speechRate);
   }
 
-  // ----- Precios al oído (Preis-Hörtrainer) -----
-  // Beträge werden pro Runde frisch generiert (SC.numbers) statt aus den festen
-  // Zahlen-Karten gezogen – so sind beliebig große und krumme Preise möglich
-  // (kolumbianische Pesos in Millionenhöhe, chilenische/argentinische Beträge …).
-  const PRECIOS_ROUND = 10;
-  const preciosReady = () => !!(speech && speech.isSupported() && numbers);
-
-  // Setup-Ansicht (Land/Währung + Schwierigkeit wählen).
-  function preciosSetupVM() {
-    const curKey = state.preciosCurrency;
-    const lvl = state.preciosLevel;
-    return {
-      speakable: preciosReady(),
-      currencies: numbers ? numbers.currencyList().map((c) => ({
-        key: c.key, flag: c.flag, name: natk(c, "name"), code: c.code, note: natk(c, "note"),
-        selected: c.key === curKey,
-      })) : [],
-      levels: numbers ? numbers.LEVELS.map((l) => ({
-        id: l.id, short: l.short, label: natk(l, "label"), hint: natk(l, "hint"), active: l.id === lvl,
-      })) : [],
-      // Beispiel-Spanne der aktuellen Wahl (gibt eine Vorstellung der Größenordnung).
-      sample: numbers ? (() => {
-        const c = numbers.currency(curKey);
-        const tier = numbers.tierFor(c, lvl);
-        return { flag: c.flag, name: natk(c, "name"), max: numbers.format(tier.max), one: c.one, many: c.many };
-      })() : null,
-    };
-  }
-
-  function preciosVM() {
-    const p = state.precios;
-    const item = p.queue[p.idx] || {};
-    const cur = numbers ? numbers.currency(p.currencyKey) : { flag: "💵", name: "", code: "" };
-    return {
-      position: p.idx,
-      total: p.total,
-      result: p.result, // null | { correct, input }
-      answerEs: item.es || "",
-      answerDigits: item.digits || "",
-      flag: cur.flag,
-      currencyName: natk(cur, "name"),
-      currencyCode: cur.code,
-      isLast: p.idx >= p.total - 1,
-      speakable: preciosReady(),
-    };
-  }
-
-  function preciosDoneVM() {
-    const p = state.precios;
-    const cur = numbers ? numbers.currency(p.currencyKey) : { flag: "💵", name: "" };
-    const lvl = numbers ? (numbers.LEVELS.find((l) => l.id === p.level) || null) : null;
-    return {
-      correct: p.correct,
-      total: p.total,
-      perfect: p.total > 0 && p.correct === p.total,
-      flag: cur.flag,
-      currencyName: natk(cur, "name"),
-      levelLabel: lvl ? natk(lvl, "label") : "",
-      hard: p.level >= 3,
-    };
-  }
-
-  // Einstieg: Setup-Ansicht zeigen (Land/Währung + Stufe). Ohne (unterstützte)
-  // Sprachausgabe gibt es nichts zu hören – gleiches Gate wie im UI.
-  function openPrecios() {
-    dismissBadgeToast();
-    if (!preciosReady()) return;
-    setState({ screen: "preciosSetup" });
-  }
-
-  function setPreciosCurrency(key) {
-    if (!numbers || !numbers.CURRENCIES[key]) return;
-    state.preciosCurrency = key;
-    settings = Object.assign({}, settings, { preciosCurrency: key });
-    store.saveSettings(settings);
-    render();
-  }
-
-  function setPreciosLevel(level) {
-    const lvl = Number(level);
-    if (![1, 2, 3].includes(lvl)) return;
-    state.preciosLevel = lvl;
-    settings = Object.assign({}, settings, { preciosLevel: lvl });
-    store.saveSettings(settings);
-    render();
-  }
-
-  // Runde mit den gewählten Einstellungen starten.
-  function startPrecios() {
-    if (!preciosReady()) return;
-    const curKey = state.preciosCurrency;
-    const level = state.preciosLevel;
-    const queue = numbers.buildRound(curKey, level, PRECIOS_ROUND);
-    state.precios = { currencyKey: curKey, level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
-    state.screen = "precios";
-    render(); // maybeAutoSpeak spielt den ersten Betrag automatisch ab
-  }
-
-  // Getippte Ziffern rein numerisch gegen den Wert prüfen: alle Nicht-Ziffern
-  // (Punkte, Leerzeichen, Währungszeichen) ignorieren – "1.250.000" == "1250000".
-  function submitPrecios(input) {
-    const p = state.precios;
-    if (!p || p.result) return;
-    const item = p.queue[p.idx];
-    if (!item) return;
-    const typed = String(input || "").replace(/\D/g, "");
-    const correct = typed.length > 0 && parseInt(typed, 10) === item.value;
-    p.result = { input, correct };
-    if (correct) { p.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextPrecios() {
-    const p = state.precios;
-    if (!p || !p.result) return;
-    if (p.idx >= p.total - 1) {
-      recordPreciosResult(p);
-      syncBadges(Date.now(), true);
-      setState({ screen: "preciosDone" });
-      return;
-    }
-    p.idx += 1;
-    p.result = null;
-    render();
-  }
-
-  // „Nochmal" auf der Ergebnis-Seite: gleiche Einstellungen, neue Beträge.
-  function preciosAgain() {
-    startPrecios();
-  }
-
-  function speakPrecios() {
-    const p = state.precios;
-    if (!p || !speech) return;
-    const item = p.queue[p.idx];
-    if (item) speech.speak(item.es, settings.speechRate);
-  }
+  // Precios al oído (Preis-Hörtrainer) wohnt jetzt in features/precios.js
+  // (SC.precios): VMs, Handler, recordPreciosResult und Render gebündelt. app.js
+  // delegiert unten in SCREENS/ACTIONS, im submit-precios-Handler, im Sharepic-
+  // Aggregator und in miniDoneConfig. Das automatische Vorlesen des ersten Betrags
+  // bleibt im Render-Loop (autoSpeakTarget liest state.precios).
 
   // ----- Conjugador (generativer Konjugations-Drill) -----
   // Übt aktiv das Konjugieren statt nur die Erklärseite zu lesen: „ir – wir" →
@@ -5968,17 +5837,6 @@
   }
 
   // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
-  function recordPreciosResult(p) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.preciosPlayed = (g.preciosPlayed || 0) + 1;
-    if (p.total > 0 && p.correct === p.total) g.preciosPerfect = (g.preciosPerfect || 0) + 1;
-    // Große-Beträge-Runde (Stufe 3) gemeistert: separat zählen (Badge „Millonario").
-    if (p.level >= 3 && p.total > 0 && p.correct === p.total) g.preciosMillon = (g.preciosMillon || 0) + 1;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
-
   // ----- Länderkunde (Infoseite) -----
   // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
   // Eine flache Volltext-Suche über alle Inhalte: Vokabelkarten, Lern-Kategorien
@@ -6923,7 +6781,7 @@
       case "regatear":
         return cut((regatearVM().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
       case "precios":
-        return cut(preciosSetupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
+        return cut(precios.setupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
       case "cuerpo":
         return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
       case "compras":
@@ -7149,14 +7007,14 @@
     "sz-show": (el) => { spickzettel.szShow(el.dataset.id); },
     "sz-close": (el) => { spickzettel.szClose(); },
     "speak-card": (el) => { speakCardId(el.dataset.id); },
-    "open-precios": (el) => { openPrecios(); },
-    "precios-currency": (el) => { setPreciosCurrency(el.dataset.id); },
-    "precios-level": (el) => { setPreciosLevel(el.dataset.level); },
-    "start-precios": (el) => { startPrecios(); },
-    "precios-next": (el) => { nextPrecios(); },
-    "precios-again": (el) => { preciosAgain(); },
-    "precios-setup": (el) => { openPrecios(); },
-    "precios-speak": (el) => { speakPrecios(); },
+    "open-precios": (el) => { precios.open(); },
+    "precios-currency": (el) => { precios.setCurrency(el.dataset.id); },
+    "precios-level": (el) => { precios.setLevel(el.dataset.level); },
+    "start-precios": (el) => { precios.start(); },
+    "precios-next": (el) => { precios.next(); },
+    "precios-again": (el) => { precios.again(); },
+    "precios-setup": (el) => { precios.open(); },
+    "precios-speak": (el) => { precios.speak(); },
     "open-frases": (el) => { openFrasesSetup(); },
     "start-frases": (el) => { startFrases(el.dataset.set); },
     "frases-answer": (el) => { answerFrases(Number(el.dataset.idx)); },
@@ -7275,7 +7133,7 @@
     if (e.target.closest('[data-action="submit-precios"]')) {
       e.preventDefault();
       const input = document.getElementById("precios-answer");
-      submitPrecios(input ? input.value : "");
+      precios.submit(input ? input.value : "");
       return;
     }
     // Onboarding-Schritt 1: Name + Geschlecht bestätigen (Pflicht) und zum
@@ -7624,7 +7482,7 @@
       frases: openFrasesSetup,
       dialogos: openDialogosSetup,
       regatear: openRegatear,
-      precios: openPrecios,
+      precios: () => precios.open(),
       cuerpo: openCuerpo,
       compras: openCompras,
       yesto: openYesto,
@@ -7747,10 +7605,12 @@
     // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
     gameStats: () => gamestats,
     setGameStats: (g) => { gamestats = g; store.saveGameStats(gamestats); },
+    settings: () => settings,
     setSettings: (patch) => { settings = Object.assign({}, settings, patch); store.saveSettings(settings); },
   };
   if (spickzettel) spickzettel.init(featureCtx);
   if (definiciones) definiciones.init(featureCtx);
+  if (precios) precios.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
