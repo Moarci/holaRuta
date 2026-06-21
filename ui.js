@@ -14,7 +14,7 @@
   // Geteilte, zustandsfreie Render-Primitive aus view-helpers.js (SC.view) –
   // dieselbe Quelle nutzen auch die Feature-Module (kein Duplikat). view-helpers.js
   // läuft vor ui.js (index.html / Build / _dom-stub-Reihenfolge).
-  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn } = window.SC.view;
+  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn } = window.SC.view;
 
   // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
   // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
@@ -1301,15 +1301,9 @@
     return `<span class="${cls}"${style} title="${esc(vm.level.label)}">${esc(vm.level.short)} · ${esc(vm.level.label)}</span>`;
   }
 
-  // Runder Eck-Button auf der Karte (44px). Gemeinsame Basis für 🔊 (rechts) und
-  // 🧭 (links), damit Markup/Stil nicht doppelt gepflegt werden. base = Modifier-
-  // Klasse (cardbtn--speak | cardbtn--ctx), on = farbige Variante für die Rückseite,
-  // extra = zusätzliche Attribute (z.B. aria-expanded/-controls), icon/label/action.
-  function cornerBtn({ base, on, icon, label, action, extra = "" }) {
-    const cls = `cardbtn ${base}${on ? " is-on" : ""}`;
-    return `<button class="${cls}" type="button" data-action="${action}"
-              aria-label="${esc(label)}" title="${esc(label)}"${extra ? " " + extra : ""}>${icon}</button>`;
-  }
+  // Der runde Eck-Button cornerBtn({base,on,icon,label,action,extra}) wohnt jetzt in
+  // view-helpers.js (SC.view) – geteilt von Lernkarte (🔊/🧭), El Cuerpo und
+  // Einkaufszettel. Oben aus SC.view destrukturiert.
 
   // 🔊-Button für die Sprachausgabe (nur wenn der Browser es kann).
   // on = farbige Variante (für die bunte Rückseite).
@@ -4458,57 +4452,9 @@
   // (SC.frasesGame) gewandert – VMs, Handler und Render leben dort zusammen.
 
   // ---------- EL CUERPO (interaktive Körperkarte) ----------
-  // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
-  // viewBox 0 0 200 440 – exakt der, auf den sich die Prozent-Koordinaten der Hotspots
-  // beziehen. Gliedmaßen sind runde Striche (currentColor), Rumpf/Kopf gefüllte Flächen.
-  // ----- 3D-Körperfigur (drehbar) -----
-  // Echte 3D-Geometrie statt der flachen Sticker-Figur: Der Körper ist aus
-  // schattierten Kugel-Impostoren (Orbs) aufgebaut, die per CSS-3D im Raum
-  // sitzen (translate3d). Jeder Orb wird zur Kamera ausgerichtet (Billboard,
-  // siehe app.js → bpApplyRot), darum bleibt er aus jedem Blickwinkel rund –
-  // beim Drehen verschieben sich nur seine Position und seine Verdeckung.
-  // Selbst gerendert -> kein externes Modell, läuft offline (PWA-Prinzip).
-  //
-  // Orb-Daten: [x, y, z, durchmesser] in px, Ursprung in Figurmitte (y nach oben).
-  const BP_ORBS = [
-    [0, -150, 0, 72], [0, -112, 4, 26],                                   // Kopf, Hals
-    [0, -86, 8, 66], [0, -52, 10, 62], [0, -18, 8, 58], [0, 16, 4, 60],   // Rumpf
-    [-40, -92, 2, 34], [40, -92, 2, 34],                                  // Schultern
-    [-50, -64, 2, 30], [-56, -34, 4, 26], [-60, -4, 6, 24], [-62, 22, 8, 28], // li. Arm
-    [50, -64, 2, 30], [56, -34, 4, 26], [60, -4, 6, 24], [62, 22, 8, 28], // re. Arm
-    [-20, 48, 6, 40], [-21, 80, 6, 34], [-22, 106, 8, 30], [-23, 136, 6, 28], [-24, 162, 6, 24], [-22, 176, 20, 30], // li. Bein
-    [20, 48, 6, 40], [21, 80, 6, 34], [22, 106, 8, 30], [23, 136, 6, 28], [24, 162, 6, 24], [22, 176, 20, 30],       // re. Bein
-  ];
-  const BP_FIGURE_3D = BP_ORBS.map(
-    ([x, y, z, d]) => `<i class="bp-orb" data-x="${x}" data-y="${y}" data-z="${z}" style="width:${d}px;height:${d}px"></i>`
-  ).join("");
+  // VM, Render, die 3D-Geometrie-Konstanten (BP_ORBS/BP_FIGURE_3D/BP_LAYOUT3D) und
+  // die komplette Dreh-/Auswahl-Logik wohnen jetzt in features/cuerpo.js (SC.cuerpo).
 
-  // Interaktive Hotspots je Körperteil-Id: Position (x,y,z), Azimut az (Grad um
-  // die Hochachse: 0 = vorne, ±90 = Seite, 180 = Rücken – steuert das Ausblenden
-  // beim Wegdrehen) und Punktgröße d. Bewusst hier (View) statt in den
-  // Vokabeldaten gehalten: data.js bleibt reine Vokabel-Wahrheit.
-  const BP_LAYOUT3D = {
-    bp_pelo:     { x: 0,   y: -182, z: 10,  az: 0,   d: 20 },
-    bp_cabeza:   { x: -20, y: -170, z: 20,  az: -20, d: 20 },
-    bp_ojo:      { x: -12, y: -156, z: 34,  az: -8,  d: 16 },
-    bp_nariz:    { x: 0,   y: -148, z: 39,  az: 0,   d: 15 },
-    bp_boca:     { x: 0,   y: -136, z: 36,  az: 0,   d: 16 },
-    bp_cara:     { x: 18,  y: -146, z: 30,  az: 18,  d: 16 },
-    bp_oreja:    { x: 31,  y: -150, z: 4,   az: 72,  d: 16 },
-    bp_cuello:   { x: 0,   y: -112, z: 18,  az: 0,   d: 22 },
-    bp_hombro:   { x: -40, y: -92,  z: 16,  az: -35, d: 24 },
-    bp_pecho:    { x: 0,   y: -82,  z: 42,  az: 0,   d: 26 },
-    bp_espalda:  { x: 0,   y: -70,  z: -36, az: 180, d: 24 },
-    bp_estomago: { x: 0,   y: -22,  z: 40,  az: 0,   d: 26 },
-    bp_brazo:    { x: -52, y: -60,  z: 18,  az: -50, d: 24 },
-    bp_codo:     { x: -57, y: -32,  z: 20,  az: -55, d: 22 },
-    bp_mano:     { x: -63, y: 22,   z: 22,  az: -55, d: 26 },
-    bp_dedo:     { x: -64, y: 40,   z: 22,  az: -55, d: 18 },
-    bp_pierna:   { x: -22, y: 60,   z: 30,  az: -10, d: 26 },
-    bp_rodilla:  { x: -22, y: 106,  z: 28,  az: -10, d: 24 },
-    bp_tobillo:  { x: -24, y: 160,  z: 24,  az: -10, d: 20 },
-    bp_pie:      { x: -22, y: 178,  z: 38,  az: 0,   d: 24 },
-  };
 
   // ---------- CONJUGACIÓN (Erklärseite Konjugieren) ----------
   // Kompakte Grammatik-Erklärung (Inhalte aus data.CONJUGATION): Personen,
@@ -4733,72 +4679,10 @@
   // gewandert – VM und Render leben dort zusammen; der Opener (openTiempos) bleibt
   // im Controller. Der Themenblock-Baustein sect() kommt aus SC.view.
 
-  function renderCuerpo(vm) {
-    const nodes = vm.parts
-      .map((p) => {
-        const L = BP_LAYOUT3D[p.id] || { x: 0, y: 0, z: 0, az: 0, d: 22 };
-        const cls = `bp-node${p.selected ? " is-active" : ""}${p.seen ? " is-seen" : ""}`;
-        return `
-          <button class="${cls}" type="button" data-action="cuerpo-select" data-id="${esc(p.id)}"
-                  data-x="${L.x}" data-y="${L.y}" data-z="${L.z}" data-az="${L.az}"
-                  style="width:${L.d}px;height:${L.d}px" aria-label="${esc(p.de)}" title="${esc(p.de)}"
-                  aria-pressed="${p.selected ? "true" : "false"}">
-            <span class="bp-node__hit" aria-hidden="true"></span>
-            <span class="bp-node__ring" aria-hidden="true"></span>
-          </button>`;
-      })
-      .join("");
+  // EL CUERPO (interaktive Körperkarte) ist nach features/cuerpo.js (SC.cuerpo)
+  // gewandert – VM, Render, 3D-Geometrie und die Dreh-/Auswahl-Logik leben dort
+  // zusammen; der Opener (openCuerpo) bleibt im Controller. cornerBtn() aus SC.view.
 
-    const sel = vm.selected;
-    const speak = sel && vm.speakable
-      ? cornerBtn({ base: "cardbtn--speak bp-speak", on: false, icon: "🔊", label: t("discover.cuerpoSpeak"), action: "cuerpo-speak" })
-      : "";
-    const panel = sel
-      ? `
-        <div class="bp-panel bp-panel--filled" role="status" aria-live="polite">
-          <div class="bp-panel__top">
-            <span class="bp-panel__de">${esc(sel.de)}</span>
-            ${speak}
-          </div>
-          <p class="bp-panel__es" lang="es">${esc(sel.es)}</p>
-          ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">🗣️</span> ${esc(sel.tip)}</p>` : ""}
-          ${sel.note ? `<p class="bp-panel__note">${esc(sel.note)}</p>` : ""}
-        </div>`
-      : `
-        <div class="bp-panel" role="status" aria-live="polite">
-          <p class="bp-panel__hint">${esc(t("discover.cuerpoHint"))}</p>
-        </div>`;
-
-    const pct = vm.total > 0 ? Math.round((vm.exploredCount / vm.total) * 100) : 0;
-    const done = vm.total > 0 && vm.exploredCount >= vm.total;
-    const progress = `
-      <div class="bp-progress">
-        <div class="bp-progress__bar"><div class="bp-progress__fill" style="width:${pct}%"></div></div>
-        <span class="bp-progress__label">${done ? t("discover.cuerpoComplete", { total: vm.total }) : t("discover.cuerpoExplored", { n: vm.exploredCount, total: vm.total })}</span>
-      </div>`;
-
-    return `
-      <section class="screen bp-screen">
-        ${hmTopbar("🧍 El Cuerpo", "home")}
-        <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
-        ${moduleShareBtn("cuerpo")}
-        ${progress}
-        <div class="bp-stage">
-          <div class="bp-3d-stage" data-bp-stage>
-            <div class="bp-3d" data-bp-fig>
-              ${BP_FIGURE_3D}
-              ${nodes}
-            </div>
-            <div class="bp-rotor">
-              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="-1" aria-label="${esc(t("discover.cuerpoRotateLeft"))}">↺</button>
-              <span class="bp-rotor__hint" aria-hidden="true">${esc(t("discover.cuerpoDragHint"))}</span>
-              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="1" aria-label="${esc(t("discover.cuerpoRotateRight"))}">↻</button>
-            </div>
-          </div>
-          ${panel}
-        </div>
-      </section>`;
-  }
 
   // ---------- EINKAUFSZETTEL (Lista de compras) ----------
   // Interaktive Einkaufsliste: Rubrik wählen (Supermercado/Ropa/Farmacia),
@@ -5016,7 +4900,7 @@
   window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderCuerpo, renderConjugacion,
+                   renderConjugacion,
                    renderFavorites,
                    renderDialogosSetup, renderDialogos, renderDialogosDone,
                    renderCompras, renderComprasQuiz, renderComprasQuizDone,

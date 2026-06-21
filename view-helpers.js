@@ -114,7 +114,17 @@
     return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
   }
 
+  // Runder Eck-Icon-Button (Karten-Ecken/Panels): geteilt von Lernkarte (🔊/🧭),
+  // El Cuerpo (Vorlesen) und Einkaufszettel. base = Modifier-Klasse, on = farbige
+  // Variante (bunte Rückseite), extra = zusätzliche Attribute (z.B. aria-expanded),
+  // icon/label/action wie üblich.
+  function cornerBtn({ base, on, icon, label, action, extra = "" }) {
+    const cls = `cardbtn ${base}${on ? " is-on" : ""}`;
+    return `<button class="${cls}" type="button" data-action="${action}"
+              aria-label="${esc(label)}" title="${esc(label)}"${extra ? " " + extra : ""}>${icon}</button>`;
+  }
+
   window.SC.view = {
-    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn,
+    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn,
   };
 })();

@@ -15,6 +15,7 @@
   const conjugDrill = window.SC.conjugDrill; // Feature-Modul (Conjugador-Drill), eager geladen
   const tiempos = window.SC.tiempos; // Feature-Modul (Tiempos-Erklärseite), eager geladen
   const regateo = window.SC.regateo; // Feature-Modul (Regatear-Erklärseite), eager geladen
+  const cuerpo = window.SC.cuerpo; // Feature-Modul (El Cuerpo, interaktive 3D-Körperkarte), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -2025,58 +2026,16 @@
   }
 
   // ----- El Cuerpo: interaktive Körperkarte -----
-  const bodyPartById = (id) => data.BODY_PARTS.find((p) => p.id === id) || null;
-
-  function cuerpoVM() {
-    const selId = state.bodyPartId;
-    const parts = data.BODY_PARTS.map((p) => ({
-      id: p.id, de: nat(p), x: p.x, y: p.y,
-      selected: p.id === selId,
-      seen: !!(gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[p.id]),
-    }));
-    const sel = bodyPartById(selId);
-    return {
-      parts,
-      selected: sel ? { id: sel.id, es: sel.es, de: nat(sel), tip: sel.tip, note: sel.note } : null,
-      exploredCount: gamestats.bodyPartsSeen ? Object.keys(gamestats.bodyPartsSeen).length : 0,
-      total: data.BODY_PARTS.length,
-      speakable: !!(speech && speech.isSupported()),
-    };
-  }
-
+  // VM, Render, die 3D-Geometrie und die Dreh-/Auswahl-Logik (inkl. globaler
+  // Pointer-Listener) wohnen jetzt im Feature-Modul SC.cuerpo (features/cuerpo.js).
+  // Der Opener bleibt hier (Entdecken-Kachel + Shortcut-Map) und setzt die
+  // Start-Drehung der Figur zurück.
   function openCuerpo() {
     dismissBadgeToast();
     state.bodyPartId = null;
     state.bodyYaw = -22; // beim Öffnen in die Drei-Viertel-Ansicht zurücksetzen
     state.bodyPitch = -6;
     setState({ screen: "cuerpo" });
-  }
-
-  // Ein Körperteil antippen: Wort anzeigen, vorlesen und (einmalig) für den
-  // Ruta-Pass einbuchen. Erneutes Antippen desselben Teils ist ein No-Op-Write.
-  function selectBodyPart(id) {
-    const part = bodyPartById(id);
-    if (!part) return;
-    state.bodyPartId = id;
-    buzz(8);
-    recordBodyPartView(id, Date.now());
-    render();
-    if (speech && speech.isSupported()) speech.speak(part.es, settings.speechRate);
-  }
-
-  // Distinkt erkundetes Körperteil vermerken und erfüllte 🧍-Badges freischalten.
-  function recordBodyPartView(id, now) {
-    if (!badges || !id || (gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[id])) return;
-    const seen = Object.assign({}, gamestats.bodyPartsSeen, { [id]: true });
-    gamestats = Object.assign({}, gamestats, { bodyPartsSeen: seen });
-    store.saveGameStats(gamestats);
-    syncBadges(now, true); // render() malt den Toast anschließend über den Screen
-  }
-
-  // 🔊-Knopf im Körperteil-Panel: das gewählte Wort (er-)neut vorlesen.
-  function speakBodyPart() {
-    const part = bodyPartById(state.bodyPartId);
-    if (part && speech && speech.isSupported()) speech.speak(part.es, settings.speechRate);
   }
 
   // ----- Einkaufszettel (interaktive Einkaufsliste) -----
@@ -2284,96 +2243,11 @@
     setState({ screen: "compras" });
   }
 
-  // ----- El Cuerpo: drehbares 3D-Modell (in-place, ohne Voll-Re-Render) -----
-  // Die Figur ist eine CSS-3D-Szene aus Kugeln (Orbs) und Hotspot-Punkten.
-  // Beim Drehen ändert sich nur der eine Eltern-Transform plus pro Element ein
-  // Billboard-Konter (rotateY/X invers), damit jede Kugel rund zur Kamera bleibt.
-  const bp3d = { fig: null, orbs: [], nodes: [], raf: 0 };
-  let bpDrag = null;        // { x, y, yaw, pitch } während einer Ziehgeste, sonst null
-  let bpDragMoved = false;  // wurde wirklich gedreht? (unterscheidet Zieh- von Tipp-Geste)
-  let bpDragEndAt = 0;      // Zeitpunkt der letzten echten Drehung – schluckt nur den
-                            // unmittelbar folgenden Maus-Klick, nicht spätere Tastatur-Auswahl
+  // Das drehbare 3D-Körpermodell (Bühne, Billboard-Rotation, Ziehgesten, Dreh-
+  // Knöpfe) lebt jetzt im Feature-Modul SC.cuerpo (features/cuerpo.js). Es
+  // verdrahtet seine globalen Pointer-Listener selbst in init(ctx) und exponiert
+  // init3D() (Post-Render-Hook) sowie select/rotate/speak für den Action-Dispatch.
 
-  // Nach jedem Render der Cuerpo-Ansicht: Elemente neu einsammeln, Koordinaten
-  // aus den data-Attributen cachen und die aktuelle Drehung anwenden.
-  function cuerpoInit3D() {
-    bp3d.fig = root.querySelector("[data-bp-fig]");
-    if (!bp3d.fig) { bp3d.orbs = []; bp3d.nodes = []; return; }
-    const num = (el, k) => Number(el.dataset[k]);
-    bp3d.orbs = Array.prototype.map.call(bp3d.fig.querySelectorAll(".bp-orb"), (el) => {
-      el._x = num(el, "x"); el._y = num(el, "y"); el._z = num(el, "z"); return el;
-    });
-    bp3d.nodes = Array.prototype.map.call(bp3d.fig.querySelectorAll(".bp-node"), (el) => {
-      el._x = num(el, "x"); el._y = num(el, "y"); el._z = num(el, "z"); el._az = num(el, "az"); return el;
-    });
-    bpApplyRot();
-  }
-
-  // Drehung auf Figur (Eltern) und alle Kinder schreiben. Kinder bekommen den
-  // inversen Dreh-Anteil (Billboard) -> bleiben runde, zur Kamera gerichtete
-  // Scheiben. Hotspots auf der abgewandten Seite werden gedämpft/gesperrt.
-  function bpApplyRot() {
-    if (!bp3d.fig) return;
-    const yaw = state.bodyYaw, pitch = state.bodyPitch;
-    bp3d.fig.style.transform = `translateZ(-30px) rotateX(${pitch}deg) rotateY(${yaw}deg)`;
-    const inv = `rotateY(${-yaw}deg) rotateX(${-pitch}deg)`;
-    for (let i = 0; i < bp3d.orbs.length; i++) {
-      const el = bp3d.orbs[i];
-      el.style.transform = `translate3d(${el._x}px,${el._y}px,${el._z}px) ${inv} translate(-50%,-50%)`;
-    }
-    for (let i = 0; i < bp3d.nodes.length; i++) {
-      const n = bp3d.nodes[i];
-      n.style.transform = `translate3d(${n._x}px,${n._y}px,${n._z}px) ${inv} translate(-50%,-50%)`;
-      const back = Math.cos((n._az + yaw) * Math.PI / 180) < -0.15;
-      n.classList.toggle("is-back", back);
-    }
-  }
-
-  function bpScheduleApply() {
-    if (!bp3d.raf) bp3d.raf = requestAnimationFrame(() => { bp3d.raf = 0; bpApplyRot(); });
-  }
-
-  // Dreh-Knöpfe ↺/↻ (Tastatur-/Klick-Alternative zum Ziehen). Kurz mit
-  // Transition (is-anim), damit der Sprung weich statt hart wirkt.
-  let bpAnimTimer = null;
-  function rotateBody(dir) {
-    state.bodyYaw = (state.bodyYaw || 0) + dir * 32;
-    const stage = root.querySelector("[data-bp-stage]");
-    if (stage) {
-      stage.classList.add("is-anim");
-      clearTimeout(bpAnimTimer);
-      bpAnimTimer = setTimeout(() => stage.classList.remove("is-anim"), 320);
-    }
-    bpApplyRot();
-  }
-
-  // Zeigegesten: Ziehen über der Bühne dreht die Figur. Unter dem 6px-Schwellwert
-  // bleibt es ein Tipp (Hotspot wählen); darüber wird es eine Drehung.
-  function onBodyPointerDown(e) {
-    if (state.screen !== "cuerpo") return;
-    if (e.button != null && e.button > 0) return; // nur primäre Maustaste / Touch / Stift
-    const stage = e.target.closest("[data-bp-stage]");
-    if (!stage || e.target.closest(".bp-rotor")) return; // Dreh-Knöpfe nicht als Ziehstart werten
-    bpDrag = { x: e.clientX, y: e.clientY, yaw: state.bodyYaw || 0, pitch: state.bodyPitch || 0 };
-    bpDragMoved = false;
-    stage.classList.add("is-grab");
-  }
-  function onBodyPointerMove(e) {
-    if (!bpDrag) return;
-    const dx = e.clientX - bpDrag.x, dy = e.clientY - bpDrag.y;
-    if (!bpDragMoved && Math.hypot(dx, dy) > 6) bpDragMoved = true;
-    if (!bpDragMoved) return;
-    state.bodyYaw = bpDrag.yaw + dx * 0.6;
-    state.bodyPitch = Math.max(-32, Math.min(32, bpDrag.pitch - dy * 0.4));
-    bpScheduleApply();
-  }
-  function onBodyPointerUp() {
-    if (!bpDrag) return;
-    if (bpDragMoved) bpDragEndAt = Date.now(); // den gleich folgenden Klick auf den Hotspot schlucken
-    bpDrag = null;
-    const stage = root.querySelector("[data-bp-stage].is-grab");
-    if (stage) stage.classList.remove("is-grab");
-  }
 
   // ----- Reise-Route per Drag & Drop umsortieren (Profil-Zeitleiste) -----
   // Greift man den ⠿-Griff eines Routen-Eintrags, ziehen wir den Listeneintrag live
@@ -2632,7 +2506,7 @@
       "quizSetup": () => definiciones.setupScreen(),
       "quiz": () => definiciones.playScreen(),
       "quizDone": () => definiciones.doneScreen(),
-      "cuerpo": () => ui.renderCuerpo(cuerpoVM()),
+      "cuerpo": () => cuerpo.screen(),
       "conjugacion": () => ui.renderConjugacion(conjugacionVM()),
       "tiempos": () => tiempos.screen(),
       "spickzettel": () => spickzettel.screen(),
@@ -2692,7 +2566,7 @@
     // auf jedem anderen Screen einen evtl. laufenden Timer wieder abräumen (kein Leck).
     if (state.screen === "yesto") yestoGame.arm(); else yestoGame.disarm();
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
-    if (state.screen === "cuerpo") cuerpoInit3D();
+    if (state.screen === "cuerpo" && cuerpo) cuerpo.init3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
     // den sichtbaren Bereich holen – bei langen Gesprächen wächst der Verlauf
     // sonst unter den Bildschirmrand.
@@ -6606,9 +6480,9 @@
     "open-cuerpo": (el) => { openCuerpo(); },
     "open-conjugacion": (el) => { openConjugacion(); },
     "open-tiempos": (el) => { openTiempos(); },
-    "cuerpo-select": (el) => { { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); } },
-    "cuerpo-rotate": (el) => { rotateBody(Number(el.dataset.dir)); },
-    "cuerpo-speak": (el) => { speakBodyPart(); },
+    "cuerpo-select": (el) => { cuerpo.select(el.dataset.id); },
+    "cuerpo-rotate": (el) => { cuerpo.rotate(Number(el.dataset.dir)); },
+    "cuerpo-speak": (el) => { cuerpo.speak(); },
     "open-spickzettel": (el) => { spickzettel.open(); },
     "sz-show": (el) => { spickzettel.szShow(el.dataset.id); },
     "sz-close": (el) => { spickzettel.szClose(); },
@@ -7142,11 +7016,8 @@
   root.addEventListener("touchstart", onTouchStart, { passive: true });
   root.addEventListener("touchend", onTouchEnd, { passive: true });
   window.addEventListener("popstate", onPopState); // Zurück-Geste: eine Ebene höher statt App schließen
-  // Drehen des 3D-Körpermodells (greift nur auf der Cuerpo-Bühne).
-  root.addEventListener("pointerdown", onBodyPointerDown);
-  window.addEventListener("pointermove", onBodyPointerMove);
-  window.addEventListener("pointerup", onBodyPointerUp);
-  window.addEventListener("pointercancel", onBodyPointerUp);
+  // Die Pointer-Listener fürs Drehen des 3D-Körpermodells verdrahtet das
+  // Feature-Modul SC.cuerpo selbst in init(featureCtx) (auf root/window).
   // Reise-Route per Drag & Drop umsortieren (Profil-Zeitleiste).
   root.addEventListener("pointerdown", onTripPointerDown);
   window.addEventListener("pointermove", onTripPointerMove);
@@ -7206,7 +7077,7 @@
     state, setState, render, dismissBadgeToast,
     data, speech, numbers, yesto, frases, conjug, matcher, i18n, badges,
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
-    DEFAULT_ACCENT,
+    DEFAULT_ACCENT, root,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
     // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
     gameStats: () => gamestats,
@@ -7222,6 +7093,7 @@
   if (conjugDrill) conjugDrill.init(featureCtx);
   if (tiempos) tiempos.init(featureCtx);
   if (regateo) regateo.init(featureCtx);
+  if (cuerpo) cuerpo.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
