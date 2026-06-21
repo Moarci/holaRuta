@@ -4198,6 +4198,31 @@
             <div class="sheet-dialogue">${turns}</div>
           </section>`;
         }
+        case "opposites": {
+          const items = (s.items || []).map((it) => {
+            const sol = vm.fill ? fillInput(it.answer, "inline")
+              : vm.exercise ? '<span class="sheet-blank-inline"></span>'
+              : `<strong lang="es">${esc(it.answer)}</strong>`;
+            return `<li><span class="sheet-es" lang="es">${esc(it.word)}</span>${it.gloss ? ` <span class="sheet-de">(${esc(it.gloss)})</span>` : ""} <span class="sheet-arrow" aria-hidden="true">↔</span> ${sol}</li>`;
+          }).join("");
+          return `<section class="sheet-section sheet-section--opposites">
+            ${sectionHead("sheet.secOpposites", "sheet.instrOpposites")}
+            <ol class="sheet-exlist sheet-exlist--opp">${items}</ol>
+          </section>`;
+        }
+        case "ordenar": {
+          const items = (s.items || []).map((it) => {
+            const chips = (it.scrambled || []).map((w) => `<span class="sheet-chip" lang="es">${esc(w)}</span>`).join("");
+            const sol = vm.fill ? fillInput(it.answer, "line")
+              : vm.exercise ? writeLine
+              : `<span class="sheet-es" lang="es">${esc(it.answer)}</span>`;
+            return `<li><span class="sheet-de">${esc(it.de)}</span><span class="sheet-scramble">${chips}</span>${sol}</li>`;
+          }).join("");
+          return `<section class="sheet-section sheet-section--ordenar">
+            ${sectionHead("sheet.secOrdenar", "sheet.instrOrdenar")}
+            <ol class="sheet-exlist">${items}</ol>
+          </section>`;
+        }
         case "culture": {
           const facts = (s.facts || []).map((f) => `<li>${esc(f)}</li>`).join("");
           return `<section class="sheet-section sheet-section--culture">
@@ -4232,6 +4257,8 @@
           case "translate": heading = t("sheet.secTranslate"); items = (s.lines || []).map((l) => l.es); break;
           case "conjug": heading = t("sheet.secConjug"); items = (s.rows || []).map((r) => `${r.verb} (${r.person}) → ${r.answer}`); break;
           case "numbers": heading = t("sheet.secNumbers"); items = (s.items || []).map((it) => `${it.digits} → ${it.words}`); break;
+          case "opposites": heading = t("sheet.secOpposites"); items = (s.items || []).map((it) => `${it.word} → ${it.answer}`); break;
+          case "ordenar": heading = t("sheet.secOrdenar"); items = (s.items || []).map((it) => it.answer); break;
           case "dialogue": heading = t("sheet.secDialogue"); items = (s.turns || []).filter((tn) => tn.who === "user").map((tn) => tn.answer); break;
           default: return ""; // culture/writing haben keine Lösung
         }

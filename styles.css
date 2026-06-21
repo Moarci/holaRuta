@@ -2621,6 +2621,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-exlist li { margin: 8px 0; }
 .sheet-exlist .sheet-de { color: #6b5a4c; font-size: 0.88rem; }
 .sheet-exlist .sheet-es { font-weight: 700; }
+/* Gegenteile (Contrarios) + Satz ordnen. */
+.sheet-exlist--opp li { margin: 7px 0; }
+.sheet-arrow { color: var(--sheet-accent); font-weight: 700; margin: 0 2px; }
+.sheet-scramble { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.sheet-scramble .sheet-chip { font-weight: 700; }
 /* Tabellen (Konjugation, Zahlen). */
 .sheet-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
 .sheet-table th, .sheet-table td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 0.92rem; vertical-align: top; }

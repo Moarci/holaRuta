@@ -252,3 +252,37 @@ test("renderPrintSheet: Fill-Modus hält die Vokabel-Sektion als Referenz sichtb
   assert.ok(html.includes("¿Dónde está el taxi?"), "Vokabeln bleiben im Fill-Modus sichtbar");
   assert.ok(!html.includes("sheet-es--blank"), "keine verdeckten Vokabel-Linien im Fill-Modus");
 });
+
+// ---------- Neue Übungstypen: Gegenteile + Satz ordnen ----------
+test("renderPrintSheet: Gegenteile (opposites) – Lösung/Übung/Lösungsschlüssel/Fill", () => {
+  const oppVM = (over) => baseVM(Object.assign({
+    sections: [{ type: "opposites", items: [{ word: "grande", gloss: "groß", answer: "pequeño" }] }],
+  }, over || {}));
+  const full = ui.renderPrintSheet(oppVM());
+  assert.ok(full.includes("sheet-section--opposites"), "Gegenteil-Abschnitt fehlt");
+  assert.ok(full.includes(i18n.t("sheet.instrOpposites")), "Gegenteil-Anweisung fehlt");
+  assert.ok(full.includes("grande") && full.includes("pequeño"), "Wort + Lösung im Lösungsblatt");
+  // Übung: Lösung verdeckt, aber im Schlüssel vorhanden.
+  const ex = ui.renderPrintSheet(oppVM({ exercise: true }));
+  const key = ex.slice(ex.indexOf("sheet-answerkey"));
+  assert.ok(!ex.slice(0, ex.indexOf("sheet-answerkey")).includes("pequeño"), "Gegenteil-Lösung darf im Übungsteil fehlen");
+  assert.ok(key.includes("grande → pequeño"), "Gegenteil-Lösung im Schlüssel");
+  // Fill: Eingabefeld mit hinterlegter Lösung.
+  assert.ok(ui.renderPrintSheet(oppVM({ fill: true })).includes('data-answer="pequeño"'), "Gegenteil-Feld trägt Lösung");
+});
+
+test("renderPrintSheet: Satz ordnen (ordenar) – Chips + Lösung/Übung/Fill", () => {
+  const ordVM = (over) => baseVM(Object.assign({
+    sections: [{ type: "ordenar", items: [{ answer: "Está enfrente de la iglesia", scrambled: ["la", "Está", "iglesia", "enfrente", "de"], de: "Es ist gegenüber der Kirche" }] }],
+  }, over || {}));
+  const full = ui.renderPrintSheet(ordVM());
+  assert.ok(full.includes("sheet-section--ordenar"), "Satz-ordnen-Abschnitt fehlt");
+  assert.ok(full.includes("sheet-scramble"), "Wort-Chips fehlen");
+  assert.ok(full.includes("Está enfrente de la iglesia"), "Lösungssatz im Lösungsblatt");
+  // Übung: Schreiblinie statt Lösung; Schlüssel trägt den Satz.
+  const ex = ui.renderPrintSheet(ordVM({ exercise: true }));
+  assert.ok(ex.includes("sheet-write-line"), "Schreiblinie im Übungsmodus");
+  assert.ok(ex.slice(ex.indexOf("sheet-answerkey")).includes("Está enfrente de la iglesia"), "Satz im Schlüssel");
+  // Fill: Eingabefeld mit hinterlegtem Satz.
+  assert.ok(ui.renderPrintSheet(ordVM({ fill: true })).includes('data-answer="Está enfrente de la iglesia"'), "Satz-Feld trägt Lösung");
+});

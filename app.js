@@ -4018,6 +4018,19 @@
       out.push({ type: "matching", left: left.map((x) => ({ n: x.n, es: x.es, l: x.l })), right: right.map((r) => ({ l: r.l, de: r.de })) });
     }
 
+    // 1b. Gegenteile (Contrarios) – grundlegender Reise-Wortschatz, global (nicht
+    // zielgebunden), darum ein verlässlicher Umfangs-Booster. „grande – pequeño":
+    // gefragt ist das spanische Gegenteil, das deutsche Erstwort dient als Hilfe.
+    const oppPick = sheetShuffle((data.CARDS || []).filter((c) => c.cat === "contrarios" && c.es && c.es.indexOf("–") !== -1), rng).slice(0, 10);
+    if (oppPick.length >= 3) {
+      const oppItems = oppPick.map((c) => {
+        const es = c.es.split("–").map((s) => s.trim());
+        const de = String(nat(c)).split("–").map((s) => s.trim());
+        return { word: es[0], gloss: de[0] || "", answer: es[1] || "" };
+      }).filter((it) => it.word && it.answer);
+      if (oppItems.length >= 3) out.push({ type: "opposites", items: oppItems });
+    }
+
     // 2. Lückentext (frases): themenpassend oder gemischt.
     if (frases && frases.FRASES) {
       const pool = frases.FRASES.filter((f) => f.slot && f.slot.es && (!theme.frasesCat || f.cat === theme.frasesCat));
@@ -4036,6 +4049,23 @@
       const simple = sheetShuffle(cards, rng).slice(0, 12);
       if (simple.length >= 3) out.push({ type: "translate", lines: simple.map((c) => ({ de: nat(c), es: c.es })) });
     }
+
+    // 3b. Satz ordnen (Wortstellung): mehrwortige Phrasen der Ziel-Karten (4–9
+    // Wörter) – themenrelevant statt generisch. Wörter durcheinander, Lösung =
+    // der ganze Satz. Zahlen/Gegenteile raus (eigene Abschnitte; keine echten Sätze).
+    const orderPool = sheetShuffle(cards.filter((c) => {
+      if (!c.es || c.cat === "zahlen" || c.cat === "contrarios" || c.es.indexOf("–") !== -1) return false;
+      const w = c.es.trim().split(/\s+/);
+      return w.length >= 4 && w.length <= 9;
+    }), rng).slice(0, 6);
+    if (orderPool.length >= 3) {
+      out.push({ type: "ordenar", items: orderPool.map((c) => {
+        const answer = c.es.trim();
+        const words = answer.replace(/[.?!¿¡,;]/g, "").split(/\s+/).filter(Boolean);
+        return { answer: answer, scrambled: sheetShuffle(words, rng), de: nat(c) };
+      }) });
+    }
+
 
     // 4. Konjugation.
     if (conjug && data.CONJUGATION) {
@@ -4085,6 +4115,7 @@
   const SHEET_SEC_KEY = {
     matching: "secMatching", gapfill: "secGapfill", translate: "secTranslate",
     conjug: "secConjug", numbers: "secNumbers", dialogue: "secDialogue",
+    opposites: "secOpposites", ordenar: "secOrdenar",
     culture: "secCulture", writing: "secWriting",
   };
 
