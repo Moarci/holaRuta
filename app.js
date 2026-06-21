@@ -19,6 +19,7 @@
   const compras = window.SC.compras; // Feature-Modul (Lista de compras, Einkaufsliste + Quiz), eager geladen
   const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
   const etiqueta = window.SC.etiqueta; // Feature-Modul (Etiqueta de viaje / Reise-Knigge), eager geladen
+  const cronologia = window.SC.cronologia; // Feature-Modul (Historia, Geschichts-Zeitstrahl), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -796,26 +797,9 @@
     return { country: country ? loc(country) : null, groups, hasHistoria: !!historia, hasHistoriaCentro: !!historiaCentro };
   }
 
-  // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
-  // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zum
-  // Regatear-Feature (SC.regateo) und logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
-  // Aktives Geschichts-Modul nach Region (state.histRegion: "sur" | "centro").
-  // So teilen sich Süd- und Mittelamerika dieselbe Render-/Share-Mechanik.
-  function histMod() { return state.histRegion === "centro" ? historiaCentro : historia; }
-  function histTitle() { return state.histRegion === "centro" ? "🌋 Historia de Centroamérica" : "📜 Historia de Sudamérica"; }
-
-  function historiaVM() {
-    const mod = histMod();
-    if (!mod) return { intro: "", eras: [], figures: [], tensions: [], facts: [], topTitle: histTitle() };
-    return {
-      topTitle: histTitle(),
-      intro: nat(mod.INTRO),
-      eras: loc(mod.ERAS || []),
-      figures: loc(mod.FIGURES || []),
-      tensions: loc(mod.TENSIONS || []),
-      facts: (mod.FACTS || []).map(nat),
-    };
-  }
+  // Historia (Geschichts-Zeitstrahl Süd-/Mittelamerika): VM und Render wohnen jetzt
+  // im Feature-Modul SC.cronologia (features/cronologia.js). Das aktive Content-Modul
+  // nach Region liefert cronologia.histMod() – die Sharepics unten nutzen es.
 
   // Reise-Knigge: VM und Render („Etiqueta de viaje") wohnen jetzt im Feature-Modul
   // SC.etiqueta (features/etiqueta.js). Die geteilte Länder-Auswahl (selectCountry/
@@ -2093,7 +2077,7 @@
       "card": () => ui.renderCard(cardVM()),
       "editor": () => ui.renderEditor(editorVM()),
       "info": () => ui.renderInfo(infoVM()),
-      "historia": () => ui.renderHistoria(historiaVM()),
+      "historia": () => cronologia.screen(),
       "knigge": () => etiqueta.screen(),
       "bebidas": () => ui.renderBebidas(bebidasVM()),
       "regatear": () => regateo.screen(),
@@ -5661,7 +5645,7 @@
   // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
   // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
   function findHistItem(id) {
-    const mod = histMod();
+    const mod = cronologia.histMod();
     if (!mod) return null;
     const lists = [mod.ERAS, mod.FIGURES, mod.TENSIONS];
     for (let i = 0; i < lists.length; i++) {
@@ -5692,7 +5676,7 @@
   // Einladung (Modulname, Einleitung, Zeitstrahl-Teaser mit den Epochen) – zum
   // Weiterempfehlen des gesamten Moduls, nicht nur eines einzelnen Textes.
   function shareHistModule() {
-    const mod = histMod();
+    const mod = cronologia.histMod();
     if (!share || !mod) return;
     const name = state.histRegion === "centro" ? "Historia de Centroamérica" : "Historia de Sudamérica";
     const eras = loc(mod.ERAS || []).map((e) => ({
@@ -6694,6 +6678,7 @@
   if (compras) compras.init(featureCtx);
   if (dialogosGame) dialogosGame.init(featureCtx);
   if (etiqueta) etiqueta.init(featureCtx);
+  if (cronologia) cronologia.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

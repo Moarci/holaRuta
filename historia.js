@@ -1,7 +1,8 @@
 /*
  * historia.js  (SC.historia) – Modell für die Erklärseite "Historia de
  * Sudamérica". REINE DATEN, keine Logik (wie countries.js / data.js). Wird von
- * ui.renderHistoria gerendert; der Controller (app.js) reicht die Daten per
+ * dem Feature-Modul SC.cronologia (features/cronologia.js) gerendert; der
+ * Controller (app.js) reicht die Daten per
  * localizeDeep für die aktive Sprache durch (deutsche Felder + …En-Pendants).
  *
  * Aufbau:

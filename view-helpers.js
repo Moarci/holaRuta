@@ -124,7 +124,115 @@
               aria-label="${esc(label)}" title="${esc(label)}"${extra ? " " + extra : ""}>${icon}</button>`;
   }
 
+  // ----- Lesetraining-Bausteine (geteilt: Historia-Feature, Logística/Salud-
+  // Modulblätter, Bebidas, Bailar). Ein spanischer Lesetext mit antippbaren Vokabel-
+  // Chips, Wörterliste, optionalem Mini-Quiz, optionaler Komplett-Übersetzung und
+  // Teilen-Knopf – plus die CEFR-Niveau-Plakette levelMeta(). Reine HTML-Bausteine. -----
+
+  // CEFR-Schwierigkeit → Punkte-Meter + lokalisiertes Wort (Selbst-Einstufung).
+  const HIST_LEVEL_DOTS = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
+  function levelMeta(level) {
+    if (!level) return null;
+    const dots = HIST_LEVEL_DOTS[level] || 3;
+    return { code: level, word: t("discover.histLvl" + level), meter: "●".repeat(dots) + "○".repeat(5 - dots) };
+  }
+  // Spanischer Lesetext: *markierte* Wörter werden zu antippbaren Chips, die die
+  // Übersetzung (aus der Wörterliste der Epoche, in der aktiven Sprache) zeigen.
+  function esRich(paras, vocab) {
+    const vmap = {};
+    (vocab || []).forEach((v) => { vmap[String(v.es).toLowerCase().trim()] = v; });
+    return (paras || []).map((p) => {
+      let html = "", last = 0; const re = /\*([^*]+)\*/g; let m;
+      while ((m = re.exec(p))) {
+        html += esc(p.slice(last, m.index));
+        const w = m[1];
+        const v = vmap[w.toLowerCase().trim()];
+        const tr = v ? v.de : "";
+        html += `<button class="hist-w" type="button" data-action="hist-word" aria-label="${esc(w + " – " + tr)}">${esc(w)}<span class="hist-w__pop" aria-hidden="true">${esc(tr)}</span></button>`;
+        last = re.lastIndex;
+      }
+      html += esc(p.slice(last));
+      return `<p class="hist-es__p" lang="es">${html}</p>`;
+    }).join("");
+  }
+  // Wörterliste pro Text: zum schnellen Nachschlagen, gruppiert in „mitnehmen"
+  // (lohnt sich) und „nicht so wichtig" (kannst du überspringen).
+  function vocabBlock(vocab) {
+    if (!vocab || !vocab.length) return "";
+    const row = (v) => `<li class="hist-voc__row"><span class="hist-voc__es" lang="es">${esc(v.es)}</span><span class="hist-voc__de">${esc(v.de)}</span></li>`;
+    const take = vocab.filter((v) => v.take), skip = vocab.filter((v) => !v.take);
+    const takeList = take.length
+      ? `<p class="hist-voc__cap hist-voc__cap--take">✅ ${esc(t("discover.histTake"))}</p><ul class="hist-voc__list">${take.map(row).join("")}</ul>`
+      : "";
+    const skipList = skip.length
+      ? `<p class="hist-voc__cap hist-voc__cap--skip">○ ${esc(t("discover.histSkip"))}</p><ul class="hist-voc__list hist-voc__list--skip">${skip.map(row).join("")}</ul>`
+      : "";
+    return `
+      <details class="hist-voc">
+        <summary class="hist-voc__sum">📒 ${esc(t("discover.histVocab"))} <span class="hist-voc__n">${vocab.length}</span><span class="hist-voc__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-voc__body">${takeList}${skipList}</div>
+      </details>`;
+  }
+  // Mini-Quiz zum Text: Spanisches Wort → richtige Übersetzung wählen. Distraktoren
+  // aus denselben Vokabeln. Selbstprüfung per DOM-Klasse (kein Re-Render, s. app.js).
+  function quizBlock(vocab) {
+    const items = vocab || [];
+    const pool = items.filter((v) => v.take);
+    if (pool.length < 3 || items.length < 4) return ""; // zu wenige für sinnvolle Optionen
+    const qs = pool.slice(0, 4);
+    const questions = qs.map((v, i) => {
+      const others = items.filter((x) => x.es !== v.es).map((x) => x.de);
+      const opts = [v.de];
+      for (let k = 0; k < others.length && opts.length < 4; k++) {
+        if (opts.indexOf(others[k]) === -1) opts.push(others[k]);
+      }
+      const rot = (i + 1) % opts.length; // richtige Antwort nicht immer oben
+      const rotated = opts.slice(rot).concat(opts.slice(0, rot));
+      const optsHtml = rotated
+        .map((o) => `<button class="hist-quiz__opt" type="button" data-action="hist-quiz-answer" data-correct="${o === v.de ? "1" : "0"}">${esc(o)}</button>`)
+        .join("");
+      return `
+        <div class="hist-quiz__q">
+          <p class="hist-quiz__prompt" lang="es">${esc(v.es)}</p>
+          <div class="hist-quiz__opts">${optsHtml}</div>
+        </div>`;
+    }).join("");
+    return `
+      <details class="hist-quiz">
+        <summary class="hist-quiz__sum">🧩 ${esc(t("discover.histQuiz"))}<span class="hist-quiz__chev" aria-hidden="true">▾</span></summary>
+        <div class="hist-quiz__body">
+          <p class="hist-quiz__intro">${esc(t("discover.histQuizIntro"))}</p>
+          ${questions}
+        </div>
+      </details>`;
+  }
+  // Gemeinsamer Lesetraining-Block (Epoche, Protagonist, Spannung teilen ihn).
+  // opts: { es:[Absatz], vocab, level, trans?:[Absatz], shareId, quiz?:bool }
+  // trans = optionale „Ganze Übersetzung", nur wo der Text nicht ohnehin schon
+  // in der UI-Sprache danebensteht (Epochen ja, Karten nein).
+  function readingBlock(opts) {
+    const o = opts || {};
+    if (!o.es || !o.es.length) return "";
+    const lvl = levelMeta(o.level);
+    const bar = `
+      <div class="hist-es__bar">
+        <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
+        ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
+      </div>`;
+    const text = `<div class="hist-es">${bar}${esRich(o.es, o.vocab)}<p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p></div>`;
+    const vocab = vocabBlock(o.vocab);
+    const quiz = o.quiz ? quizBlock(o.vocab) : "";
+    const trans = (o.trans && o.trans.length)
+      ? `<details class="hist-trans"><summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary><div class="hist-trans__body">${o.trans.map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div></details>`
+      : "";
+    const share = o.shareId
+      ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(o.shareId)}">📤 ${esc(t("discover.histShare"))}</button>`
+      : "";
+    return `${text}${vocab}${quiz}${trans}${share}`;
+  }
+
   window.SC.view = {
     esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn,
+    levelMeta, readingBlock,
   };
 })();
