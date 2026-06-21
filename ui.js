@@ -4125,21 +4125,25 @@
     // Selbstkontrolle am Handy. „kind" steuert die Breite (inline/line/mini).
     const fillInput = (answer, kind) => `<input class="sheet-fill sheet-fill--${kind || "line"}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" data-answer="${esc(answer)}" aria-label="${esc(t("sheet.fillAria"))}">`;
 
-    // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie und
-    // Notizen/Challenge-Phrase (die die Lösung verraten) bleiben verborgen.
+    // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie, im
+    // Fill-Modus zum tippbaren Feld mit hinterlegter Lösung. Notizen/Challenge-
+    // Phrase (die die Lösung verraten) bleiben in beiden Fällen verborgen –
+    // sonst stünden die Antworten der Übungen darunter offen daneben.
     const cardLine = (c) => `<li>
-          ${vm.exercise
-            ? `<span class="sheet-es sheet-es--blank" aria-hidden="true"></span>`
-            : `<span class="sheet-es" lang="es">${esc(c.es)}</span>`}
+          ${vm.fill
+            ? fillInput(c.es, "line")
+            : vm.exercise
+              ? `<span class="sheet-es sheet-es--blank" aria-hidden="true"></span>`
+              : `<span class="sheet-es" lang="es">${esc(c.es)}</span>`}
           <span class="sheet-de">${esc(c.de)}</span>
-          ${(!vm.exercise && c.note) ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
+          ${(!vm.exercise && !vm.fill && c.note) ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
         </li>`;
     const stagesHtml = (vm.stages || []).map((st) => `
       ${st.heading ? `<h3 class="sheet-stage">${esc(st.heading)}</h3>` : ""}
       <ol class="sheet-cards">
         ${st.cards.map(cardLine).join("")}
       </ol>
-      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${(!vm.exercise && st.challenge.phrase) ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
+      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${(!vm.exercise && !vm.fill && st.challenge.phrase) ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
     `).join("");
 
     // ---------- Arbeitsheft: zusätzliche Übungsabschnitte ----------
