@@ -261,6 +261,8 @@ test("renderPrintSheet: Fill-Modus rendert Eingabefelder mit hinterlegter Lösun
   assert.ok(html.includes("sheet-fill-area"), "Schreib-Textfeld fehlt");
   assert.ok(!html.includes("sheet-write-line"), "keine Druck-Schreiblinien im Fill-Modus");
   assert.ok(!html.includes("sheet-notes-lines"), "Notizen werden zum Textfeld");
+  // Felder kündigen „weiter" an (Enter springt ins nächste Feld – siehe printsheet-fill.test.js).
+  assert.ok(html.includes('enterkeyhint="next"'), "Felder signalisieren „weiter“ für die Tastatur");
 });
 
 test("renderPrintSheet: Fill-Modus zeigt Prüf-Steuerung statt Drucken, keinen Lösungsschlüssel", () => {

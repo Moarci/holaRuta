@@ -2980,6 +2980,10 @@
     // den sichtbaren Bereich holen – bei langen Gesprächen wächst der Verlauf
     // sonst unter den Bildschirmrand.
     if (state.screen === "dialogos") scrollDialogActive();
+    // Aktivitätsblatt (Handy-Modus): getippte Antworten nach dem Neu-Aufbau des
+    // DOM zurückschreiben, damit ein Re-Render (Länge/Bausteine/Modus) sie nicht
+    // verwirft. In Lösungs-/Übungsblatt gibt es keine Felder – dann ein No-Op.
+    if (state.screen === "printsheet") restoreFillSheet();
 
     manageFocus();
     maybeAutoSpeak();
@@ -3843,7 +3847,7 @@
   // damit man ein Bundle zusammenstellen kann.
   function pickTarget(ctx, value) {
     if (!value) return;
-    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.targetPicker = null; render(); return; }
+    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.sheetFillVals = {}; state.targetPicker = null; render(); return; }
     const item = targetValueToItem(value), key = value;
     const idx = state.taskItems.findIndex((x) => itemKey(x) === key);
     if (idx >= 0) { state.taskItems = state.taskItems.filter((_, i) => i !== idx); }
@@ -4244,6 +4248,7 @@
     if (!state.sheetMode) state.sheetMode = "full";
     if (!state.sheetLength) state.sheetLength = "gross"; // Heftlänge: standard | gross | xxl
     if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
+    if (!state.sheetFillVals) state.sheetFillVals = {}; // getippte Antworten (Handy-Modus, nur im Speicher)
     setState({ screen: "printsheet" });
   }
 
@@ -4280,6 +4285,44 @@
   function fillFields() {
     return Array.prototype.slice.call(root.querySelectorAll(".sheet-fill[data-answer]"));
   }
+  // Alle befüllbaren Elemente (Lösungsfelder + freie Schreibflächen) – Basis für
+  // das Merken der getippten Antworten über ein Re-Render hinweg.
+  function fillEls() {
+    return Array.prototype.slice.call(root.querySelectorAll(".sheet-fill[data-answer], .sheet-fill-area"));
+  }
+  // Render-stabiler Schlüssel je Feld: Lösungsfelder über die hinterlegte Lösung
+  // + Vorkommen (überlebt das Ab-/Anwählen einzelner Bausteine), freie Flächen
+  // über ihre laufende Nummer. So bleiben getippte Antworten beim Umschalten von
+  // Länge/Bausteinen/Modus erhalten, statt verloren zu gehen.
+  function fillKey(el, seen) {
+    if (el.classList && el.classList.contains("sheet-fill-area")) {
+      seen.area = (seen.area || 0) + 1;
+      return "area#" + seen.area;
+    }
+    const a = (el.dataset && el.dataset.answer) || "";
+    seen[a] = (seen[a] || 0) + 1;
+    return "a:" + a + "#" + seen[a];
+  }
+  // Aktuelle Eingaben in den State spiegeln (nur dieses Gerät, nichts gesendet).
+  function snapshotFillVals() {
+    const map = (state.sheetFillVals = state.sheetFillVals || {});
+    const seen = {};
+    fillEls().forEach((el) => {
+      const k = fillKey(el, seen);
+      const v = String(el.value || "");
+      if (v.trim()) map[k] = v; else delete map[k];
+    });
+  }
+  // Nach einem Re-Render die gemerkten Antworten zurückschreiben.
+  function restoreFillSheet() {
+    const map = state.sheetFillVals;
+    if (!map) return;
+    const seen = {};
+    fillEls().forEach((el) => {
+      const k = fillKey(el, seen);
+      if (Object.prototype.hasOwnProperty.call(map, k)) el.value = map[k];
+    });
+  }
   function setFillScore(text) {
     const out = root.querySelector(".sheet-score");
     if (out) out.textContent = text || "";
@@ -4287,16 +4330,22 @@
   function checkFillSheet() {
     const fields = fillFields();
     if (!fields.length) return;
-    let ok = 0, filled = 0;
+    let ok = 0, filled = 0, firstWrong = null;
     fields.forEach((el) => {
       el.classList.remove("is-correct", "is-wrong");
       const val = String(el.value || "").trim();
       if (!val) return;
       filled += 1;
       if (fillAnswerOk(val, el.dataset.answer)) { el.classList.add("is-correct"); ok += 1; }
-      else el.classList.add("is-wrong");
+      else { el.classList.add("is-wrong"); if (!firstWrong) firstWrong = el; }
     });
+    // Noch nichts getippt? Sanfter Hinweis statt „0 von n richtig".
+    if (!filled) { setFillScore(t("sheet.fillEmpty")); return; }
     setFillScore(t("sheet.fillResult", { ok: ok, total: fields.length }));
+    // Zum ersten falschen Feld scrollen – bei langen Heften sonst schwer zu finden.
+    if (firstWrong && firstWrong.scrollIntoView) {
+      try { firstWrong.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) { firstWrong.scrollIntoView(); }
+    }
   }
   function revealFillSheet() {
     fillFields().forEach((el) => {
@@ -4304,11 +4353,13 @@
       el.classList.remove("is-wrong");
       el.classList.add("is-correct");
     });
+    snapshotFillVals();
     const fields = fillFields();
     setFillScore(t("sheet.fillResult", { ok: fields.length, total: fields.length }));
   }
   function resetFillSheet() {
-    fillFields().forEach((el) => { el.value = ""; el.classList.remove("is-correct", "is-wrong"); });
+    fillEls().forEach((el) => { el.value = ""; el.classList.remove("is-correct", "is-wrong"); });
+    state.sheetFillVals = {};
     setFillScore("");
   }
 
@@ -7654,6 +7705,16 @@
 
   // Live-Suche: Tippen im Suchfeld zeichnet nur die Trefferliste neu (Fokus bleibt).
   function onInput(e) {
+    // Aktivitätsblatt (Handy-Modus): beim Tippen die frühere Prüf-Markierung des
+    // Feldes (✓/✗) lösen, die Live-Ergebnisanzeige leeren und die Eingabe merken
+    // (überlebt ein Re-Render). Kein Render hier – der Cursor soll nicht springen.
+    if (state.screen === "printsheet" && e.target && e.target.classList &&
+        (e.target.classList.contains("sheet-fill") || e.target.classList.contains("sheet-fill-area"))) {
+      e.target.classList.remove("is-correct", "is-wrong");
+      setFillScore("");
+      snapshotFillVals();
+      return;
+    }
     if (state.screen !== "search") return;
     if (!e.target || e.target.id !== "search-input") return;
     state.searchQuery = e.target.value;
@@ -7740,6 +7801,23 @@
     // Spickzettel-Großanzeige: Escape schließt.
     if (state.screen === "spickzettel" && state.szShow && e.key === "Escape") {
       szClose();
+      return;
+    }
+    // Aktivitätsblatt (Handy-Modus): Enter in einem Lösungsfeld springt ins nächste
+    // Feld (erfüllt enterkeyhint="next") – im letzten Feld stattdessen „Prüfen".
+    // Mehrzeilige Schreibflächen (textarea) bleiben unberührt (dort ist Enter Umbruch).
+    if (state.screen === "printsheet" && e.key === "Enter" && e.target &&
+        e.target.classList && e.target.classList.contains("sheet-fill")) {
+      e.preventDefault();
+      const fields = fillFields();
+      const i = fields.indexOf(e.target);
+      if (i !== -1 && i + 1 < fields.length) {
+        const nx = fields[i + 1];
+        nx.focus(); if (nx.select) nx.select();
+      } else {
+        if (e.target.blur) e.target.blur();
+        checkFillSheet();
+      }
       return;
     }
     if (state.screen !== "study") return;
