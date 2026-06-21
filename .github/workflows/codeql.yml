@@ -50,6 +50,10 @@ jobs:
         with:
           languages: javascript-typescript
           queries: security-and-quality
+          # Analyse-Scope: schließt das Build-Tool build.js aus (False Positives
+          # von js/bad-tag-filter auf eigenem, vertrauenswürdigem Input – Details
+          # in der Config). Der ausgelieferte App-Code bleibt voll im Scan.
+          config-file: ./.github/codeql/codeql-config.yml
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v3.30.3

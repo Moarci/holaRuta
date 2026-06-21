@@ -1,0 +1,17 @@
+# CodeQL-Konfiguration – Analyse-Scope.
+#
+# Gescannt wird der AUSGELIEFERTE App-Code (Wurzel-*.js, Lazy-Module, index.html)
+# samt Skripten und Tests. Ausgenommen ist NUR build.js:
+#
+# build.js ist ein reines Build-Werkzeug (Node). Es liest die projekteigene
+# index.html und bettet lokale Skripte zu einem Single-File-Bundle ein – es
+# verarbeitet also ausschließlich vertrauenswürdige, EIGENE Dateien, niemals
+# Laufzeit- oder Angreifer-Input. Die Security-Query js/bad-tag-filter schützt vor
+# XSS beim Filtern UNVERTRAUTEN HTMLs; auf ein Build-Tool, das `<script src>`-Tags
+# der eigenen index.html einbettet, trifft das nicht zu und meldet nur False
+# Positives (eine vollständige HTML-Tag-Erkennung per Regex ist per Definition
+# unmöglich – genau das ist die Aussage der Query). Daher außerhalb des Scopes.
+name: "HolaRuta CodeQL"
+
+paths-ignore:
+  - build.js
