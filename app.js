@@ -18,6 +18,7 @@
   const cuerpo = window.SC.cuerpo; // Feature-Modul (El Cuerpo, interaktive 3D-Körperkarte), eager geladen
   const compras = window.SC.compras; // Feature-Modul (Lista de compras, Einkaufsliste + Quiz), eager geladen
   const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
+  const etiqueta = window.SC.etiqueta; // Feature-Modul (Etiqueta de viaje / Reise-Knigge), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -816,32 +817,9 @@
     };
   }
 
-  // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
-  // Region-Gruppen fürs Dropdown wie infoVM, plus die allgemeinen Themenblöcke
-  // mit eingehängtem landesspezifischem Akzent.
-  function kniggeVM() {
-    const list = countries ? countries.LIST : [];
-    const regions = countries ? countries.REGIONS : [];
-    const country = list.find((c) => c.id === state.countryId) || list[0] || null;
-    const groups = regions
-      .map((region) => ({
-        region,
-        countries: list
-          .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
-      }))
-      .filter((g) => g.countries.length > 0);
-    const accents = (country && knigge && knigge.ACCENTS[country.id]) || {};
-    const topics = (knigge ? knigge.TOPICS : []).map((t) => ({
-      icon: t.icon,
-      title: natk(t, "title"),
-      intro: natk(t, "intro"),
-      dos: natk(t, "dos"),
-      donts: natk(t, "donts"),
-      accent: natk(accents, t.id) || "",
-    }));
-    return { country, groups, topics };
-  }
+  // Reise-Knigge: VM und Render („Etiqueta de viaje") wohnen jetzt im Feature-Modul
+  // SC.etiqueta (features/etiqueta.js). Die geteilte Länder-Auswahl (selectCountry/
+  // select-country/state.countryId) und der Opener bleiben hier.
 
   // Bebidas AM/PM: Tag-/Abendgetränk des gewählten Landes. Nutzt dieselbe
   // Länder-Auswahl wie die Länderkunde (state.countryId), sodass die Tafel immer
@@ -2116,7 +2094,7 @@
       "editor": () => ui.renderEditor(editorVM()),
       "info": () => ui.renderInfo(infoVM()),
       "historia": () => ui.renderHistoria(historiaVM()),
-      "knigge": () => ui.renderKnigge(kniggeVM()),
+      "knigge": () => etiqueta.screen(),
       "bebidas": () => ui.renderBebidas(bebidasVM()),
       "regatear": () => regateo.screen(),
       "logistica": () => ui.renderLogistica(logisticaVM()),
@@ -5898,7 +5876,7 @@
       case "paises":
         return cut((countries ? countries.LIST : []).map((c) => loc(c)).map((c) => ({ mark: c.flag || "🌎", text: c.name })));
       case "knigge":
-        return cut((kniggeVM().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
+        return cut((etiqueta.vm().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
       case "logistica":
         return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
       case "salud":
@@ -6715,6 +6693,7 @@
   if (cuerpo) cuerpo.init(featureCtx);
   if (compras) compras.init(featureCtx);
   if (dialogosGame) dialogosGame.init(featureCtx);
+  if (etiqueta) etiqueta.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

@@ -2690,63 +2690,12 @@
   // (SC.view) – geteilt von Knigge/Logística/Salud/Fotos/Bailar (hier) und dem
   // Regatear-Feature-Modul. Oben aus SC.view destrukturiert.
 
-  // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
-  // Allgemeine DOs & Don'ts (Hostel, Bus, Gruppen, Kultur) plus landesspezifische
-  // Akzente. Land-Dropdown wie in renderInfo (teilt state.countryId). Themenblöcke
-  // sind natives <details> (kein JS-State) – analog zu dish() in renderInfo.
-  function renderKnigge(vm) {
-    const selector = countryPicker(vm.groups);
+  // ---------- REISE-KNIGGE (Etiqueta de viaje) ----------
+  // VM und Render (inkl. lokaler kniggeTopbar) wohnen jetzt im Feature-Modul
+  // SC.etiqueta (features/etiqueta.js); app.js delegiert SCREENS und Spotlight-
+  // Vorschau. Die geteilte Länder-Auswahl (countryPicker/select-country/
+  // state.countryId) bleibt controller-seitig (auch Länderkunde/Bebidas nutzen sie).
 
-    const countryName = vm.country ? vm.country.name : "";
-
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
-        .join("");
-
-    const block = (t, i) => {
-      const dos = liList(t.dos, "knigge-do", "✅");
-      const donts = liList(t.donts, "knigge-dont", "🚫");
-      const accent = t.accent
-        ? `<div class="knigge-accent">💡 <strong>${esc(window.t("discover.kniggeAccentIn", { country: countryName }))}</strong> ${esc(t.accent)}</div>`
-        : "";
-      return `
-        <details class="knigge-topic">
-          <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
-            <span class="knigge-topic__title">${esc(t.title)}</span>
-            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
-          </summary>
-          <div class="knigge-topic__body">
-            ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
-            ${dos ? `<ul class="knigge-list">${dos}</ul>` : ""}
-            ${donts ? `<ul class="knigge-list">${donts}</ul>` : ""}
-            ${accent}
-            ${tipsShareBtn("knigge", i)}
-          </div>
-        </details>`;
-    };
-
-    const topics = (vm.topics || []).map(block).join("");
-
-    return `
-      <section class="screen">
-        ${kniggeTopbar()}
-        ${selector}
-        <p class="pageintro">${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.</p>
-        ${moduleShareBtn("knigge")}
-        ${topics}
-      </section>`;
-  }
-
-  function kniggeTopbar() {
-    return `
-      <div class="topbar">
-        <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">🧭 Etiqueta de viaje</div>
-        <span></span>
-      </div>`;
-  }
 
   // ---------- BEBIDAS AM/PM (Tag-/Abendgetränk pro Land) ----------
   // Ein doppelseitiges Emaille-Schild wie der Theme-Umschalter, aber pro Land:
@@ -4634,7 +4583,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderBebidas, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderConjugacion,

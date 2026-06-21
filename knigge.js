@@ -1,7 +1,8 @@
 /*
  * knigge.js  (SC.knigge) – Modell für "Reise-Knigge: Verhalten unterwegs".
  * REINE DATEN, keine Logik (wie countries.js / frases.js). Wird von
- * ui.renderKnigge gerendert; der Controller (app.js) wählt per Dropdown ein
+ * dem Feature-Modul SC.etiqueta (features/etiqueta.js) gerendert; der Controller
+ * (app.js) wählt per Dropdown ein
  * Land aus (geteilt mit der Länderkunde über state.countryId).
  *
  * TOPICS:  allgemeine DOs & Don'ts, die überall gelten (vier Themenblöcke).
