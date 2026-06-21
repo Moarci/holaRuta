@@ -4101,7 +4101,11 @@
          <button class="teacher-btn" data-action="sheet-reveal">👁️ ${esc(t("sheet.revealBtn"))}</button>
          <button class="teacher-btn" data-action="sheet-reset">♻️ ${esc(t("sheet.resetBtn"))}</button>
          <span class="sheet-score" role="status" aria-live="polite"></span>`
-      : `<button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>`;
+      // Übungsmodus: Übungsblatt und Lösungsschlüssel getrennt druckbar.
+      : vm.exercise
+        ? `<button class="teacher-btn teacher-btn--main" data-action="printsheet-print" data-scope="exercise">🖨️ ${esc(t("sheet.printExercise"))}</button>
+           <button class="teacher-btn" data-action="printsheet-print" data-scope="key">🗝️ ${esc(t("sheet.printKey"))}</button>`
+        : `<button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>`;
     const controls = `
       <div class="sheet-controls no-print">
         ${targetField("sheet", { targets: vm.targets, current: vm.sheetTarget })}
@@ -4265,18 +4269,27 @@
         if (!items.length) return "";
         return `<h3>${esc(heading)}</h3><ol class="sheet-exlist">${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ol>`;
       }).filter(Boolean).join("");
-      if (!blocks) return "";
-      return `<section class="sheet-section sheet-answerkey">
-        <h2 class="sheet-h2">${esc(t("sheet.answerKeyHeading"))}</h2>
-        <p class="sheet-ak-note">${esc(t("sheet.answerKeyNote"))}</p>
-        ${blocks}
-      </section>`;
+      return blocks; // nur die Blöcke; das eigene Lösungsschlüssel-Blatt wird unten gebaut
     }
-    const answerKeyHtml = vm.exercise ? renderAnswerKey(vm.sections) : "";
 
     const credit = vm.edition && vm.edition.name ? esc(vm.edition.name) + " · " + esc(t("profile.poweredBy")) : "HolaRuta";
     // Akzent nur als Farbwert zulassen (Daten sind vertrauenswürdig – defensiv trotzdem).
     const accent = /^#[0-9a-fA-F]{3,8}$/.test(vm.accent || "") ? vm.accent : "#a23e20";
+
+    // Lösungsschlüssel als EIGENES Blatt (separate <article>) – physisch vom
+    // Übungsblatt trennbar und einzeln druckbar (siehe Druck-Knöpfe oben).
+    const keyBlocks = vm.exercise ? renderAnswerKey(vm.sections) : "";
+    const answerKeySheet = keyBlocks ? `
+      <article class="sheet sheet--key sheet-answerkey" style="--sheet-accent:${accent}">
+        <span class="sheet-accent-bar" aria-hidden="true"></span>
+        <header class="sheet-head">
+          <p class="sheet-brand"><span class="sheet-badge" aria-hidden="true">🗝️</span><span class="sheet-brand-name">${credit}</span></p>
+          <h1 class="sheet-title">${esc(vm.title)} <span class="sheet-tag sheet-tag--key">${esc(t("sheet.answerKeyHeading"))}</span></h1>
+          <p class="sheet-meta">${vm.levelRange ? esc(vm.levelRange) + " · " : ""}${esc(t("sheet.cardCount", { n: vm.cardCount }))} · ${esc(vm.date)}</p>
+        </header>
+        <p class="sheet-ak-note">${esc(t("sheet.answerKeyNote"))}</p>
+        ${keyBlocks}
+      </article>` : "";
 
     const sheet = `
       <article class="sheet${vm.exercise ? " sheet--exercise" : ""}" style="--sheet-accent:${accent}">
@@ -4333,15 +4346,14 @@
         <footer class="sheet-coord">
           <strong>${esc(t("sheet.coordHeading"))}:</strong> ${esc(t("sheet.coordNote"))}
         </footer>
-
-        ${answerKeyHtml}
       </article>`;
 
     return `
       <section class="screen">
         ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher")}
         ${controls}
-        ${sheet}
+        <div class="sheet-doc sheet-doc--exercise">${sheet}</div>
+        ${answerKeySheet ? `<div class="sheet-doc sheet-doc--key">${answerKeySheet}</div>` : ""}
       </section>
       ${vm.targetPicker === "sheet" ? targetPickerModal("sheet", { targets: vm.targets, current: vm.sheetTarget }) : ""}`;
   }

@@ -2517,9 +2517,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   /* Falls jemand das Fill-Blatt doch druckt: Felder als saubere Schreiblinien/Boxen. */
   .sheet-fill { border: none !important; border-bottom: 1px solid #444 !important; border-radius: 0 !important; background: none !important; padding: 0 2px !important; }
   .sheet-fill-area { background: none !important; }
-  /* Bewusste Seitenumbrüche: Lösungsschlüssel auf eigene Seite; lange Tabellen
-     dürfen fließen, einzelne Zeilen aber nicht zerreißen. */
-  .sheet-answerkey { break-before: page; page-break-before: always; }
+  /* Lösungsschlüssel ist ein eigenes Blatt (eigene <article>). Beim Drucken BEIDER
+     Dokumente startet er auf einer neuen Seite; druckt man ihn allein, entfällt der
+     Umbruch (sonst eine führende Leerseite). */
+  .sheet-doc--key { break-before: page; page-break-before: always; }
+  .sheet-print--key .sheet-doc--key { break-before: auto; page-break-before: auto; }
+  /* Druck-Bereichswahl: nur Übungsblatt bzw. nur Lösungsschlüssel ausgeben. */
+  .sheet-print--exercise .sheet-doc--key { display: none !important; }
+  .sheet-print--key .sheet-doc--exercise { display: none !important; }
   .sheet-table { break-inside: auto; }
   .sheet-table tr, .sheet-section--gapfill li, .sheet-cards li, .sheet-exlist li, .sheet-turn { break-inside: avoid; }
   .sheet-recipe-box, .sheet-section--matching, .sheet-section--culture { break-inside: avoid; }
@@ -2557,6 +2562,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-size: 0.7rem; vertical-align: middle; margin-left: 6px; padding: 2px 8px;
   border-radius: 999px; background: var(--sheet-accent); color: #fff; font-weight: 700;
 }
+.sheet-tag--key { background: #1c140e; }
+/* Lösungsschlüssel als eigenes Blatt: deutlich vom Übungsblatt abgesetzt. Auf dem
+   Bildschirm eine gestrichelte „Hier abtrennen"-Trennung; im Druck eigene Seite. */
+.sheet-doc--key { margin-top: 26px; padding-top: 22px; border-top: 2px dashed var(--line); }
+.sheet--key .sheet-ak-note { margin-top: 0; }
 /* Steuerleiste: Lösungs-/Übungs-Umschalter (segmentiert). */
 .sheet-modes { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
 .sheet-mode { font: inherit; cursor: pointer; border: none; background: transparent; color: var(--muted); padding: 6px 12px; }

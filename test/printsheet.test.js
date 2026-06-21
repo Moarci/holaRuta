@@ -193,6 +193,23 @@ test("renderPrintSheet: Übungsmodus verdeckt Antworten und hängt Lösungsschl�
   assert.ok(body.includes("sheet-write-line") || body.includes("sheet-blank-inline"), "Schreiblinien/Lücken fehlen");
 });
 
+test("renderPrintSheet: Lösungsschlüssel ist ein eigenes, getrennt druckbares Blatt", () => {
+  const html = ui.renderPrintSheet(withSections({ exercise: true }));
+  // Eigenes <article> (sheet--key), in eigenem Druck-Dokument-Container.
+  assert.ok(html.includes("sheet--key"), "Lösungsschlüssel als eigenes Blatt fehlt");
+  assert.ok(html.includes("sheet-doc--key") && html.includes("sheet-doc--exercise"), "getrennte Druck-Dokumente fehlen");
+  // Eigene Kopfzeile mit Schlüssel-Tag.
+  assert.ok(html.includes("sheet-tag--key"), "Schlüssel-Tag in der Kopfzeile fehlt");
+  // Getrennte Druck-Knöpfe: Übungsblatt vs. Lösungsschlüssel.
+  assert.ok(html.includes('data-scope="exercise"') && html.includes('data-scope="key"'), "getrennte Druck-Knöpfe fehlen");
+  assert.ok(html.includes(i18n.t("sheet.printExercise")) && html.includes(i18n.t("sheet.printKey")), "Druck-Knopf-Labels fehlen");
+  // Der Schlüssel steht NACH dem Übungsblatt (Antworten erst im zweiten Dokument).
+  assert.ok(html.indexOf("sheet-doc--key") > html.indexOf("sheet-doc--exercise"), "Schlüssel-Dokument muss nach dem Übungsblatt kommen");
+  // Lösungsblatt (Default) hat keinen Schlüssel und keine Scope-Knöpfe.
+  const full = ui.renderPrintSheet(withSections());
+  assert.ok(!full.includes("sheet--key") && !full.includes('data-scope="key"'), "Lösungsblatt braucht kein getrenntes Schlüssel-Blatt");
+});
+
 test("renderPrintSheet: Lösungsschlüssel nummeriert Zuordnung nicht doppelt", () => {
   const html = ui.renderPrintSheet(withSections({ exercise: true }));
   const key = html.slice(html.indexOf("sheet-answerkey"));

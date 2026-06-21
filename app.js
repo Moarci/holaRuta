@@ -4206,7 +4206,20 @@
     setState({ screen: "printsheet" });
   }
 
-  function printSheet() { try { window.print(); } catch (e) { /* egal */ } }
+  // scope: "exercise" druckt nur das Übungsblatt, "key" nur den Lösungsschlüssel,
+  // sonst (Lösungsblatt/Fill) das ganze Dokument. Die Bereichswahl läuft über eine
+  // Body-Klasse, die der Druck-CSS-Block auswertet; nach dem Druck wird sie entfernt.
+  function printSheet(scope) {
+    const cls = scope === "key" ? "sheet-print--key" : scope === "exercise" ? "sheet-print--exercise" : "";
+    const body = document.body;
+    if (cls && body) {
+      body.classList.add(cls);
+      const clean = () => { body.classList.remove(cls); window.removeEventListener("afterprint", clean); };
+      window.addEventListener("afterprint", clean);
+      setTimeout(clean, 1500); // Fallback, falls afterprint ausbleibt
+    }
+    try { window.print(); } catch (e) { /* egal */ }
+  }
 
   // ---------- Arbeitsheft am Handy ausfüllen (Selbstkontrolle) ----------
   // Eine Eingabe gilt als richtig, wenn sie – normalisiert (akzent-/satzzeichen-
@@ -7272,7 +7285,7 @@
     "teacher-csv": (el) => { exportRosterCSV(); },
     "teacher-print": (el) => { printTeacher(); },
     "open-printsheet": (el) => { openPrintSheet(); },
-    "printsheet-print": (el) => { printSheet(); },
+    "printsheet-print": (el) => { printSheet(el.dataset.scope); },
     "sheet-mode": (el) => { { state.sheetMode = el.dataset.mode; render(); } },
     "sheet-check": () => { checkFillSheet(); },
     "sheet-reveal": () => { revealFillSheet(); },

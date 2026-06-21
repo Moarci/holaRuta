@@ -35,11 +35,13 @@
         "📱 Neu: Variante „Am Handy ausfüllen“ – das Arbeitsblatt wird interaktiv. Tippe deine Antworten direkt in echte Eingabefelder, prüfe sie mit einem Knopf (richtig/falsch wird markiert) oder lass dir die Lösungen zeigen. Alles bleibt offline auf deinem Gerät.",
         "📈 Mehr Umfang & neue Übungstypen: deutlich mehr Aufgaben pro Heft (bis zu 10 Zuordnungs-Paare, 10 Lückentexte, 12 Übersetzungen, 12 Konjugationen, 10 Zahlen/Preise) plus zwei neue Bausteine: „Gegenteile“ (Contrarios) und „Satz ordnen“ (Wortstellung).",
         "🖨️ Sauber auf A4: Layout und Abstände fürs Ausdrucken optimiert – kompaktere Typografie und bewusste Seitenumbrüche, damit mehr Übungen pro Seite passen und nichts unschön zerreißt.",
+        "🗝️ Lösungsschlüssel getrennt: ist jetzt ein eigenes Blatt mit eigener Kopfzeile und lässt sich separat drucken („Übungsblatt drucken“ bzw. „Lösungsschlüssel drucken“) – ideal zum Austeilen ohne Lösungen.",
       ],
       itemsEn: [
         "📱 New: a „Fill in on phone“ variant – the worksheet becomes interactive. Type your answers straight into real input fields, check them with one tap (right/wrong gets highlighted) or reveal the solutions. Everything stays offline on your device.",
         "📈 More scope & new exercise types: noticeably more exercises per workbook (up to 10 matching pairs, 10 gap-fills, 12 translations, 12 conjugations, 10 numbers/prices) plus two new building blocks: “Opposites” (Contrarios) and “Put the sentence in order” (word order).",
         "🖨️ Clean on A4: layout and spacing optimised for printing – tighter typography and deliberate page breaks, so more exercises fit per page and nothing breaks awkwardly.",
+        "🗝️ Separate answer key: it's now its own sheet with its own header and prints separately (“Print exercise sheet” vs. “Print answer key”) – perfect for handing out without the solutions.",
       ],
     },
     {
