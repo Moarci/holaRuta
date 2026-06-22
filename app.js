@@ -807,7 +807,7 @@
         region,
         countries: list
           .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+          .map((c) => ({ id: c.id, name: natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
@@ -836,12 +836,12 @@
         region,
         countries: list
           .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+          .map((c) => ({ id: c.id, name: natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
     const data = (country && bebidas && bebidas.BEBIDAS[country.id]) || null;
     const regionLabel = country && bebidas ? (bebidas.REGION_LABEL[country.region] || country.region) : "";
-    return { country, groups, data, regionLabel, mode: state.bebMode || bebDefaultMode() };
+    return { country: country ? loc(country) : null, groups, data, regionLabel, mode: state.bebMode || bebDefaultMode() };
   }
 
   // AM/PM-Voreinstellung nach Uhrzeit: 6–17 Uhr Tag (AM), sonst Abend (PM).
@@ -953,7 +953,7 @@
         region,
         countries: list
           .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+          .map((c) => ({ id: c.id, name: natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
     const cd = (country && musica.COUNTRY[country.id]) ? loc(musica.COUNTRY[country.id]) : null;
@@ -962,7 +962,7 @@
       genres: loc(musica.GENRES || []),
       phrases: loc(musica.PHRASES || []),
       glossary: loc(musica.GLOSSARY || []),
-      country: country ? { id: country.id, name: country.name, flag: country.flag } : null,
+      country: country ? { id: country.id, name: natk(country, "name"), flag: country.flag } : null,
       countryData: cd,
       groups,
     };

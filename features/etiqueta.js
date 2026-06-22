@@ -41,7 +41,7 @@
         region,
         countries: list
           .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+          .map((c) => ({ id: c.id, name: ctx.natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
     const accents = (country && knigge && knigge.ACCENTS[country.id]) || {};
