@@ -20,6 +20,9 @@
   const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
   const etiqueta = window.SC.etiqueta; // Feature-Modul (Etiqueta de viaje / Reise-Knigge), eager geladen
   const cronologia = window.SC.cronologia; // Feature-Modul (Historia, Geschichts-Zeitstrahl), eager geladen
+  const jergaSheet = window.SC.jergaSheet; // Feature-Modul (Jerga colombiana / Slang), eager geladen
+  const derechosSheet = window.SC.derechosSheet; // Feature-Modul (Conoce tus derechos), eager geladen
+  const responsableSheet = window.SC.responsableSheet; // Feature-Modul (Viaja responsable), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -36,6 +39,9 @@
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
+  const jerga = window.SC.jerga || null;         // Jerga colombiana: Slang verstehen & mitreden (optional)
+  const derechos = window.SC.derechos || null;   // Conoce tus derechos: ruhig & sicher bei Kontrolle/Festnahme (optional)
+  const responsable = window.SC.responsable || null; // Viaja responsable: leichter Fußabdruck, lokal & ohne Plastik (optional)
   const fotografia = window.SC.fotografia || null; // Fotos & Videos: tolle Reisebilder (optional)
   const flirt = window.SC.flirt || null;         // Coqueteo y romance: flirten & daten unterwegs (optional)
   const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
@@ -108,7 +114,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'jerga' | 'derechos' | 'responsable' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
     homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -479,6 +485,9 @@
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
+      hasJerga: !!jerga,         // Jerga colombiana (Slang verstehen & mitreden)
+      hasDerechos: !!derechos,   // Conoce tus derechos (ruhig & sicher bei Kontrolle/Festnahme)
+      hasResponsable: !!responsable, // Viaja responsable (leichter Fußabdruck)
       hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
       hasFlirt: !!flirt,         // Coqueteo y romance (flirten & daten unterwegs)
       hasBailar: !!bailar,       // Bailar (Tanzen in LatAm, Schritt-Diagramme)
@@ -917,6 +926,12 @@
       checklist: loc(salud.CHECKLIST || []),
     };
   }
+
+  // Jerga / Derechos / Viaja responsable: VM + Render leben jetzt in den Feature-
+  // Modulen features/jerga.js (SC.jergaSheet), features/derechos.js und
+  // features/responsable.js. Der Controller delegiert via SCREENS an .screen();
+  // Suche & „Modul teilen" lesen weiterhin die Content-Module SC.jerga/derechos/
+  // responsable direkt (wie bei Knigge/Etiqueta).
 
   // Juegos de viaje: Hostel-Spiele (UNO, Truco, Dudo …) + Sätze für den Tisch.
   // Gleiches Schema und Pass-Through wie saludVM/flirtVM.
@@ -2167,6 +2182,9 @@
       "regatear": () => regateo.screen(),
       "logistica": () => ui.renderLogistica(logisticaVM()),
       "salud": () => ui.renderSalud(saludVM()),
+      "jerga": () => jergaSheet.screen(),
+      "derechos": () => derechosSheet.screen(),
+      "responsable": () => responsableSheet.screen(),
       "flirt": () => ui.renderFlirt(flirtVM()),
       "fotos": () => ui.renderFotos(fotosVM()),
       "bailar": () => ui.renderBailar(bailarVM()),
@@ -5344,6 +5362,7 @@
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
+    jerga: !!jerga, derechos: !!derechos, responsable: !!responsable,
     fotos: !!fotografia, flirt: !!flirt, bailar: !!bailar, musica: !!musica,
     juegos: !!juegos,
     bebidas: !!(bebidas && countries),
@@ -5445,6 +5464,9 @@
     };
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
+    pageMod(jerga, "🗣️", "Jerga colombiana", "discover.subJerga", "open-jerga");
+    pageMod(derechos, "⚖️", "Conoce tus derechos", "discover.subDerechos", "open-derechos");
+    pageMod(responsable, "🌱", "Viaja responsable", "discover.subResponsable", "open-responsable");
     pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
     pageMod(flirt, "💘", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
     pageMod(juegos, "🎲", "Juegos de viaje", "discover.subJuegos", "open-juegos");
@@ -5587,6 +5609,21 @@
   function openSalud() {
     dismissBadgeToast();
     setState({ screen: "salud" });
+  }
+
+  function openJerga() {
+    dismissBadgeToast();
+    setState({ screen: "jerga" });
+  }
+
+  function openDerechos() {
+    dismissBadgeToast();
+    setState({ screen: "derechos" });
+  }
+
+  function openResponsable() {
+    dismissBadgeToast();
+    setState({ screen: "responsable" });
   }
 
   function openJuegos() {
@@ -6128,6 +6165,9 @@
     regatear:  { kicker: "Regatear",          icon: "🤝", accent: ["#B97C24", "#3F7355"] },
     logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
     salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
+    jerga:     { kicker: "Jerga colombiana",  icon: "🗣️", accent: ["#C25A45", "#B97C24"] },
+    derechos:  { kicker: "Conoce tus derechos", icon: "⚖️", accent: ["#3F5BA8", "#5A4FA8"] },
+    responsable: { kicker: "Viaja responsable", icon: "🌱", accent: ["#3F7355", "#5E7D3A"] },
     fotos:     { kicker: "Fotos y videos",    icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
     flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
@@ -6140,6 +6180,9 @@
               : cat === "regatear" ? (regatear && regatear.TIPS)
               : cat === "logistica" ? (logistica && logistica.TOPICS)
               : cat === "salud" ? (salud && salud.TOPICS)
+              : cat === "jerga" ? (jerga && jerga.TOPICS)
+              : cat === "derechos" ? (derechos && derechos.TOPICS)
+              : cat === "responsable" ? (responsable && responsable.TOPICS)
               : cat === "fotos" ? (fotografia && fotografia.TOPICS)
               : cat === "flirt" ? (flirt && flirt.TOPICS)
               : cat === "bailar" ? (bailar && bailar.DANCES)
@@ -6213,6 +6256,9 @@
     knigge:        { icon: "🧭", title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
     logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
     salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+    jerga:         { icon: "🗣️", title: "Jerga colombiana",     sub: "discover.subJerga",         accent: ["#C25A45", "#B97C24"] },
+    derechos:      { icon: "⚖️", title: "Conoce tus derechos",  sub: "discover.subDerechos",      accent: ["#3F5BA8", "#5A4FA8"] },
+    responsable:   { icon: "🌱", title: "Viaja responsable",    sub: "discover.subResponsable",   accent: ["#3F7355", "#5E7D3A"] },
     fotos:         { icon: "📸", title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
     flirt:         { icon: "💘", title: "Coqueteo y romance",   sub: "discover.subFlirt",         accent: ["#D24A77", "#B05AA8"] },
     bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
@@ -6293,6 +6339,12 @@
         return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
       case "salud":
         return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
+      case "jerga":
+        return cut((jergaSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🗣️", text: tp.title })));
+      case "derechos":
+        return cut((derechosSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "⚖️", text: tp.title })));
+      case "responsable":
+        return cut((responsableSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🌱", text: tp.title })));
       case "fotos":
         return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
       case "flirt":
@@ -6435,6 +6487,9 @@
     "open-regatear": (el) => { openRegatear(); },
     "open-logistica": (el) => { openLogistica(); },
     "open-salud": (el) => { openSalud(); },
+    "open-jerga": (el) => { openJerga(); },
+    "open-derechos": (el) => { openDerechos(); },
+    "open-responsable": (el) => { openResponsable(); },
     "open-flirt": (el) => { openFlirt(); },
     "open-fotos": (el) => { openFotos(); },
     "open-bailar": (el) => { openBailar(); },
@@ -7023,6 +7078,9 @@
       knigge: openKnigge,
       logistica: openLogistica,
       salud: openSalud,
+      jerga: openJerga,
+      derechos: openDerechos,
+      responsable: openResponsable,
       fotos: openFotos,
       flirt: openFlirt,
       bailar: openBailar,
@@ -7135,7 +7193,7 @@
     // (loadModule: dialogos, historia, historiaCentro) liest das jeweilige Feature
     // selbst live über window.SC.* hinter einem …ready()-Guard, da sie zur init-
     // Zeit noch fehlen können.
-    countries, knigge, regatear,
+    countries, knigge, regatear, jerga, derechos, responsable,
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT, root, loadModule, navEpoch: () => navEpoch,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
@@ -7158,6 +7216,9 @@
   if (dialogosGame) dialogosGame.init(featureCtx);
   if (etiqueta) etiqueta.init(featureCtx);
   if (cronologia) cronologia.init(featureCtx);
+  if (jergaSheet) jergaSheet.init(featureCtx);
+  if (derechosSheet) derechosSheet.init(featureCtx);
+  if (responsableSheet) responsableSheet.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

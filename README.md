@@ -4,12 +4,12 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.113.0** — 2293 Karten · 73 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Deutsch/Englisch umschaltbar** · **Arbeitsblätter** (druckfertig auf A4 oder **am Handy ausfüllbar** mit Selbstkontrolle) · **Mi léxico** (Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon, mit Stern direkt beim Lernen, auf Karten & im Spickzettel, plus eigenem Homescreen-Shortcut) · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Música** (Genres LatAms mit Spotify- & Apple-Music-Deep-Links) · **Juegos de viaje** (Hostel-Spiele: UNO, Truco, Dudo, Dominó & Co. — mit den Sätzen für den Tisch) · **Fotos & Videos** (bessere Reisebilder) · **Bailar** (Tanzen in LatAm: animierte Schritt-Diagramme, Rhythmus & Tutorial-Videos) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul & Ergebnis teilen** (Deep-Link öffnet Modul/Test direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · **Coqueteo y romance** (flirten & daten mit Respekt) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · **¿Y esto?** (Bild raten mit 3-2-1-Countdown) · Spaced Repetition · Offline · Null Dependencies
+**v1.113.0** — 2293 Karten · 73 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Deutsch/Englisch umschaltbar** · **Arbeitsblätter** (druckfertig auf A4 oder **am Handy ausfüllbar** mit Selbstkontrolle) · **Mi léxico** (Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon, mit Stern direkt beim Lernen, auf Karten & im Spickzettel, plus eigenem Homescreen-Shortcut) · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Música** (Genres LatAms mit Spotify- & Apple-Music-Deep-Links) · **Juegos de viaje** (Hostel-Spiele: UNO, Truco, Dudo, Dominó & Co. — mit den Sätzen für den Tisch) · **Fotos & Videos** (bessere Reisebilder) · **Bailar** (Tanzen in LatAm: animierte Schritt-Diagramme, Rhythmus & Tutorial-Videos) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul & Ergebnis teilen** (Deep-Link öffnet Modul/Test direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · **Jerga colombiana** (Slang verstehen & mitreden: parce, chévere, una luca) · **Conoce tus derechos** (ruhig & sicher bei Kontrolle/Festnahme: Anwalt, Botschaft, nichts unterschreiben) · **Viaja responsable** (leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik) · **Coqueteo y romance** (flirten & daten mit Respekt) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · **¿Y esto?** (Bild raten mit 3-2-1-Countdown) · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-585_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-592_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -272,7 +272,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 585 Tests in 52 Dateien (node:test, keine Dependencies)
+├── test/                        # 592 Tests in 53 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -546,8 +546,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 585
-#  ℹ pass 585
+#  ℹ tests 592
+#  ℹ pass 592
 #  ℹ fail 0
 ```
 
@@ -577,8 +577,8 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Bereiche / Kategorien | 72 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
-| JS-Module | 45 (`SC.*`) |
-| Tests | 585 (alle grün) |
+| JS-Module | 51 (`SC.*`) |
+| Tests | 592 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

@@ -671,6 +671,9 @@
     subKnigge: "Verhalten unterwegs: Hostel, Bus, Gruppen",
     subLogistica: "SIM, Geld & Gepäck – clever & sicher ankommen",
     subSalud: "Gesund & fit bleiben: Essen, Trinken, Bewegung",
+    subJerga: "Slang verstehen & mitreden: parce, chévere, una luca",
+    subDerechos: "Ruhig & sicher bleiben: Kontrolle, Anwalt, Botschaft",
+    subResponsable: "Leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik",
     subFotos: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen",
     subFlirt: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit",
     subBailar: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos",
@@ -801,6 +804,25 @@
     sdWords: "🗣️ Wörter rund um Essen, Trinken & Apotheke",
     sdChecklist: "🎒 Gesund-unterwegs-Kit",
     sdChecklistHint: "Ein paar günstige Sachen, mit denen Essen, Trinken und der Bauch unterwegs funktionieren.",
+
+    // Jerga colombiana
+    jrTips: "🤙 Slang richtig einsetzen",
+    jrPhrases: "💬 Wichtige Slang-Wörter",
+    jrWords: "🗣️ Schnell-Glossar",
+
+    // Conoce tus derechos
+    drTips: "🧭 Ruhig & sicher bleiben",
+    drPhrases: "💬 Wichtige Sätze",
+    drWords: "🗣️ Wörter rund um Polizei, Recht & Konsulat",
+    drChecklist: "🛡️ Im-Notfall-vorbereitet-Kit",
+    drChecklistHint: "Ein paar Dinge, die im Ernstfall sofort Halt geben – am besten schon vor der Reise klären.",
+
+    // Viaja responsable
+    rpTips: "🌱 Leichter Fußabdruck",
+    rpPhrases: "💬 Wichtige Sätze",
+    rpWords: "🗣️ Wörter rund um Umwelt & lokal kaufen",
+    rpChecklist: "🎒 Wenig-Müll-Kit",
+    rpChecklistHint: "Ein paar leichte Sachen, mit denen du unterwegs viel Plastik und Müll sparst.",
 
     // Coqueteo y romance
     flTips: "💝 Flirten & daten mit Respekt",
@@ -1080,6 +1102,9 @@
     subKnigge: "How to behave on the road: hostel, bus, groups",
     subLogistica: "SIM, money & luggage – arrive smart and safe",
     subSalud: "Stay healthy & fit: food, drink, movement",
+    subJerga: "Understand & join the slang: parce, chévere, una luca",
+    subDerechos: "Stay calm & safe: checks, lawyer, embassy",
+    subResponsable: "A lighter footprint: no litter, buy local, less plastic",
     subFotos: "Great travel shots: subject, light, poses & sharing",
     subFlirt: "Flirting & dating with respect: opening lines, compliments, a date, safety",
     subBailar: "Dancing in LatAm: step diagrams, rhythm & videos",
@@ -1205,6 +1230,25 @@
     sdWords: "🗣️ Words for food, drink & the pharmacy",
     sdChecklist: "🎒 Stay-healthy kit",
     sdChecklistHint: "A few cheap things that keep eating, drinking and your stomach working on the road.",
+
+    // Jerga colombiana
+    jrTips: "🤙 Using slang the right way",
+    jrPhrases: "💬 Key slang words",
+    jrWords: "🗣️ Quick glossary",
+
+    // Conoce tus derechos
+    drTips: "🧭 Stay calm & safe",
+    drPhrases: "💬 Important phrases",
+    drWords: "🗣️ Words for police, law & the consulate",
+    drChecklist: "🛡️ Prepared-for-emergencies kit",
+    drChecklistHint: "A few things to lean on in an emergency – best sorted out before the trip.",
+
+    // Viaja responsable
+    rpTips: "🌱 A lighter footprint",
+    rpPhrases: "💬 Important phrases",
+    rpWords: "🗣️ Words for the environment & buying local",
+    rpChecklist: "🎒 Low-waste kit",
+    rpChecklistHint: "A few light items that save a lot of plastic and waste on the road.",
 
     // Coqueteo y romance
     flTips: "💝 Flirting & dating with respect",

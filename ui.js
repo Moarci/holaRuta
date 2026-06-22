@@ -14,7 +14,7 @@
   // Geteilte, zustandsfreie Render-Primitive aus view-helpers.js (SC.view) –
   // dieselbe Quelle nutzen auch die Feature-Module (kein Duplikat). view-helpers.js
   // läuft vor ui.js (index.html / Build / _dom-stub-Reihenfolge).
-  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock } = window.SC.view;
+  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock, moduleSheet } = window.SC.view;
 
   // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
   // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
@@ -148,6 +148,9 @@
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
+    { action: "open-jerga",       icon: "🗣️", title: "Jerga colombiana",  subKey: "discover.subJerga", sub: "Slang verstehen & mitreden: parce, chévere, una luca", grad: ["#C25A45", "#B97C24"], need: "jerga", group: "reference" },
+    { action: "open-derechos",    icon: "⚖️", title: "Conoce tus derechos", subKey: "discover.subDerechos", sub: "Ruhig & sicher bleiben: Kontrolle, Anwalt, Botschaft", grad: ["#3F5BA8", "#5A4FA8"], need: "derechos", group: "reference" },
+    { action: "open-responsable", icon: "🌱", title: "Viaja responsable",  subKey: "discover.subResponsable", sub: "Leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik", grad: ["#3F7355", "#5E7D3A"], need: "responsable", group: "reference" },
     { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
     { action: "open-flirt",       icon: "💘", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
     { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
@@ -2603,115 +2606,6 @@
   // gewandert – VM und Render leben dort zusammen; der Opener (openRegatear) bleibt
   // im Controller. Der Tipp-Teilen-Knopf tipsShareBtn() kommt aus SC.view.
 
-
-  // ---------- INFO-MODUL-SHEET (Logística, Salud …) ----------
-  // Gemeinsame Nachschlage-Seite im Regatear-Stil für Module mit dem Schema
-  // { intro, topics[], phrases[], glossary[], checklist[] }: erst die praktischen
-  // Tipps (aufklappbar, DOs/Don'ts), dann die wichtigsten Sätze nach Thema, ein
-  // kleines Glossar und zum Schluss eine Packliste. cfg trägt nur das Spezifische
-  // (Icon, Titel, i18n-Schlüssel der Überschriften). Leere Abschnitte fallen weg.
-  // Reine Anzeige – nutzt durchgehend die vorhandenen Regatear/Knigge-CSS-Klassen.
-  function moduleSheet(vm, cfg) {
-    const liList = (items, cls, marker) => {
-      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
-      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
-      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
-      return (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
-        .join("");
-    };
-    const topicBlock = (tp, i) => {
-      // Optionales spanisches Lesetraining pro Thema (wie renderFotos): nur wenn
-      // das Modul es einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text
-      // trägt. Die Tap-/Quiz-Logik ist global (hist-word/hist-quiz-answer), also
-      // genügt es, dieselbe DOM via readingBlock zu erzeugen.
-      const lvl = (cfg.readingPerTopic && tp.es && tp.es.length) ? levelMeta(tp.level) : null;
-      const reading = (cfg.readingPerTopic && tp.es && tp.es.length)
-        ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
-           </details>`
-        : "";
-      return `
-      <details class="knigge-topic">
-        <summary class="knigge-topic__head">
-          <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
-          <span class="knigge-topic__title">${esc(tp.title)}</span>
-          <span class="knigge-topic__chev" aria-hidden="true">▾</span>
-        </summary>
-        <div class="knigge-topic__body">
-          ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
-          ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
-          ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
-          ${reading}
-          ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
-        </div>
-      </details>`;
-    };
-    const topics = (vm.topics || []).map(topicBlock).join("");
-
-    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Regatear.
-    // Optional (cfg.copyPhrases) bekommt jeder Satz einen Kopier-Knopf, der den
-    // spanischen Text in die Zwischenablage legt (z. B. um ihn weiterzuschicken).
-    const copyBtn = (p) => cfg.copyPhrases
-      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
-      : "";
-    const phraseGroup = (g) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
-        <ul class="rg-phrases">
-          ${g.items.map((p) => `
-            <li class="rg-phrase${cfg.copyPhrases ? " rg-phrase--copy" : ""}">
-              <span class="rg-phrase__text">
-                <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-                <span class="rg-phrase__de">${esc(p.de)}</span>
-              </span>
-              ${copyBtn(p)}
-            </li>`).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
-
-    // Glossar: kompakte zweispaltige Wortliste (es · de).
-    const glossary = (vm.glossary || []).map((g) => `
-      <li class="rg-gloss">
-        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
-        <span class="rg-gloss__de">${esc(g.de)}</span>
-      </li>`).join("");
-
-    // Packliste/Checkliste: Icon + Sache + kurze Begründung (Region-Listen-Stil).
-    const checklist = (vm.checklist || []).map((c) => `
-      <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
-        <span class="rg-region__body">
-          <span class="rg-region__country">${esc(c.item)}</span>
-          <span class="rg-region__note">${esc(c.why)}</span>
-        </span>
-      </li>`).join("");
-
-    const section = (cond, head, body) =>
-      cond ? `<h2 class="rg-head">${esc(t(head))}</h2>${body}` : "";
-
-    return `
-      <section class="screen">
-        <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${cfg.icon} ${esc(cfg.title)}</div>
-          <span></span>
-        </div>
-        <p class="pageintro">${esc(vm.intro)}</p>
-        ${cfg.cat ? moduleShareBtn(cfg.cat) : ""}
-
-        ${section(topics, cfg.headTips, topics)}
-        ${section(phrases, cfg.headPhrases, phrases)}
-        ${section(glossary, cfg.headWords, `<ul class="rg-glosslist">${glossary}</ul>`)}
-        ${(vm.checklist && vm.checklist.length)
-          ? `<h2 class="rg-head">${esc(t(cfg.headChecklist))}</h2>
-             <p class="hm-intro">${esc(t(cfg.headChecklistHint))}</p>
-             <ul class="rg-regions">${checklist}</ul>`
-          : ""}
-      </section>`;
-  }
 
   // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
   function renderLogistica(vm) {
