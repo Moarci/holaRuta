@@ -47,6 +47,11 @@ test("setupScreen() rendert die Stufen-Auswahl (Modul verfügbar)", () => {
   assert.doesNotMatch(html, /stat-empty/, "Drill ist verfügbar (conjug + CONJUGATION geladen)");
   assert.match(html, /data-action="conjug-level"/, "Stufen-Buttons");
   assert.match(html, /data-action="start-conjug"/, "Start-Knopf");
+  // Stufen-Labels werden dynamisch via t(`app.conjL${id}Short/Label`) geholt – die
+  // Keys müssen existieren (Regressionsschutz: dürfen nicht als toter Key entfernt werden).
+  assert.doesNotMatch(html, /app\.conjL/, "keine rohen i18n-Keys auf den Stufen-Buttons");
+  assert.match(html, /Regelmäßig/, "aufgelöstes Stufen-Label (Short) statt Roh-Key");
+  assert.match(html, /Nur regelmäßige Muster/, "aufgelöstes Stufen-Label (Label) statt Roh-Key");
 });
 
 test("setLevel merkt die Stufe (ctx.setSettings) und markiert sie aktiv", () => {
