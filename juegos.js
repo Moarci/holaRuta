@@ -1,0 +1,539 @@
+/*
+ * juegos.js  (SC.juegos) – Modul "Juegos de viaje: Hostel-Spiele & die Sätze dazu".
+ * REINE DATEN, keine Logik (wie salud.js / logistica.js / flirt.js). Lädt vor
+ * app.js und hängt sich an window.SC. Wird von ui.renderJuegos gerendert, das
+ * dieselbe Info-Modul-Sheet-Darstellung (moduleSheet) wie Salud/Logística/Flirt
+ * nutzt – gleiches Schema, kein neuer Renderer.
+ *
+ * Idee: Spiele sind DER Eisbrecher im Hostel und am Strand. Überall liegt ein
+ * UNO-Deck, jemand bringt Monopoly Deal mit, und in den Anden kreist der
+ * Würfelbecher (Dudo). Wer mitspielt, lernt Leute kennen – und wer ein paar
+ * spanische Sätze für den Tisch kann, spielt mit Locals statt nur mit anderen
+ * Backpackern. Recherchiert wurde, was Reisende wirklich spielen: die globalen
+ * Klassiker (UNO, Monopoly Deal, Presidente) plus die in Lateinamerika
+ * allgegenwärtigen Spiele (Truco in Argentinien/Uruguay, Dudo/Perudo in den
+ * Anden, Cuarenta in Ecuador, Generala, Dominó in der Karibik) und die Spiele
+ * ganz ohne Material (Yo nunca, Hombre lobo/Mafia).
+ *
+ * Schemas (identisch zu salud.js/flirt.js, damit ui sie 1:1 rendern kann):
+ *   INTRO    : string (+ INTRO_EN) – kurze deutsche Einleitung über der Seite.
+ *   TOPICS   : [{ icon, title, intro, dos:[…], donts:[…] }] – aufklappbar (+ …En);
+ *              dos = „así se juega“ (Spielablauf), donts = typische Stolperfallen.
+ *              Einige Spiele tragen zusätzlich ein spanisches Lesetraining
+ *              (es/vocab/level) – die LatAm-Kultur hinter dem Spiel.
+ *   PHRASES  : [{ id, icon, title, items:[{ es, de, en }] }] – Sätze für den Tisch.
+ *   GLOSSARY : [{ es, de, en }]  – Schlüsselwörter rund um Karten, Würfel & Tisch.
+ *   CHECKLIST: [{ icon, item, why }] – „Spiele-Kit für den Rucksack“ (+ …En).
+ *
+ * Hinweis: Manche dieser Spiele werden als Trinkspiele gespielt. Das Modul rahmt
+ * sie bewusst als soziale Spiele, weist auf Konsens und eine alkoholfreie Option
+ * hin und macht keinen Alkohol zur Bedingung.
+ */
+(function () {
+  "use strict";
+  window.SC = window.SC || {};
+
+  const INTRO =
+    "Spiele sind der schnellste Weg, im Hostel Leute kennenzulernen: Karten, " +
+    "Würfel oder ein Gruppenspiel – und schon sitzt man in einer Runde. Hier die " +
+    "Spiele, die Reisende wirklich spielen (von UNO bis Truco), kurz erklärt, " +
+    "plus die spanischen Sätze für den Tisch, damit du mit Locals mitspielst und " +
+    "nicht nur mit anderen Backpackern.";
+
+  const INTRO_EN =
+    "Games are the fastest way to meet people in a hostel: cards, dice or a group " +
+    "game – and you're in a circle. Here are the games travellers actually play " +
+    "(from UNO to Truco), explained briefly, plus the Spanish phrases for the table " +
+    "so you play with locals, not just with other backpackers.";
+
+  // ---------- Die Spiele (aufklappbar, Knigge-/Salud-Stil) ----------
+  const TOPICS = [
+    {
+      icon: "🎴",
+      title: "UNO – der globale Eisbrecher",
+      titleEn: "UNO – the global icebreaker",
+      intro: "2–10 Spieler, eine Runde dauert ~10 Minuten, und gefühlt liegt in jedem Hostel ein (zerfleddertes) Deck. Jeder kennt es – perfekt, um schnell eine Runde zusammenzubekommen.",
+      introEn: "2–10 players, a round takes ~10 minutes, and just about every hostel has a (battered) deck lying around. Everyone knows it – perfect for getting a round going fast.",
+      dos: [
+        "Ziel: als Erster alle Karten loswerden.",
+        "Reihum eine Karte ablegen, die in Farbe ODER Zahl zur obersten Karte passt.",
+        "Aktionskarten: +2 (Ziehen), Retroceso (Richtung dreht), Salta (nächster setzt aus), Comodín (Farbe wählen), Comodín +4.",
+        "Hast du nur noch eine Karte, laut „¡UNO!“ rufen – sonst 2 Strafkarten.",
+        "Keine passende Karte? Eine vom Stapel ziehen.",
+      ],
+      dosEn: [
+        "Goal: be the first to get rid of all your cards.",
+        "Take turns playing a card that matches the top card by colour OR number.",
+        "Action cards: +2 (draw), Reverse (turns direction), Skip (next player misses a turn), Wild (pick a colour), Wild +4.",
+        "Down to one card? Shout „¡UNO!“ out loud – or take 2 penalty cards.",
+        "No matching card? Draw one from the pile.",
+      ],
+      donts: [
+        "Hausregeln nicht als „echte“ Regeln annehmen: Stapeln von +2/+4, „Jump-in“ oder 7/0-Tausch sind inoffiziell – vorher klären.",
+        "Offiziell darfst du +4 nur spielen, wenn du KEINE farblich passende Karte hast.",
+        "Das „¡UNO!“-Rufen nicht vergessen – sonst wird's teuer.",
+      ],
+      dontsEn: [
+        "Don't treat house rules as the „real“ rules: stacking +2/+4, „jump-in“ or 7/0 swaps are unofficial – agree them up front.",
+        "Officially you may only play +4 when you have NO card matching the colour.",
+        "Don't forget to call „¡UNO!“ – or it gets expensive.",
+      ],
+    },
+    {
+      icon: "🏠",
+      title: "Monopoly Deal – Monopoly in 15 Minuten",
+      titleEn: "Monopoly Deal – Monopoly in 15 minutes",
+      intro: "Die ganze Monopoly-Laune als schnelles Kartenspiel, ohne winzige Häuschen, die im Rucksack verloren gehen. 2–5 Spieler, eine Partie ist in 15–20 Minuten durch.",
+      introEn: "All the Monopoly fun as a fast card game, without tiny houses getting lost in your backpack. 2–5 players, a game is over in 15–20 minutes.",
+      dos: [
+        "Ziel: 3 vollständige Farb-Sets (Eigentums-Sätze) vor dir auslegen.",
+        "Pro Zug spielst du bis zu 3 Karten – als Geld, als Eigentum oder als Aktion.",
+        "Aktionskarten: Miete kassieren, „Deal Breaker“ (komplettes Set klauen), „¡No, gracias!“ (eine Aktion blocken), Geburtstag (jeder zahlt), Schuldeneintreiber.",
+        "Keine Karten mehr auf der Hand? Du ziehst 5 statt 2.",
+      ],
+      dosEn: [
+        "Goal: lay out 3 complete colour sets (property sets) in front of you.",
+        "Each turn you play up to 3 cards – as money, as property or as an action.",
+        "Action cards: collect rent, „Deal Breaker“ (steal a whole set), „Just Say No“ (block an action), birthday (everyone pays), debt collector.",
+        "No cards left in hand? You draw 5 instead of 2.",
+      ],
+      donts: [
+        "Geld auf der Bank zählt NICHT als Eigentums-Set – du brauchst echte Farb-Sätze.",
+        "Heb dir ein „¡No, gracias!“ für den großen Klau („Deal Breaker“) auf.",
+        "Verheize nicht alle starken Aktionskarten als Geld.",
+      ],
+      dontsEn: [
+        "Money in the bank does NOT count as a property set – you need real colour sets.",
+        "Save a „Just Say No“ for the big steal („Deal Breaker“).",
+        "Don't burn all your strong action cards as money.",
+      ],
+    },
+    {
+      icon: "👑",
+      title: "El Presidente (Culo / Asshole)",
+      titleEn: "President (Asshole / Culo)",
+      intro: "Der Backpacker-Klassiker weltweit: ein Rangspiel mit normalem Deck, 4–8 Spieler, schnell und lustig. Wird oft als Trinkspiel gespielt – funktioniert genauso gut ohne.",
+      introEn: "The worldwide backpacker classic: a ranking game with a normal deck, 4–8 players, fast and funny. Often played as a drinking game – works just as well without.",
+      dos: [
+        "Ziel: zuerst alle Karten ablegen.",
+        "Reihum legst du eine höhere Karte (oder gleich viele gleiche) auf den Stapel; wer nicht kann/will, passt.",
+        "Wer zuerst leer ist, wird „Presidente“, der Letzte „Culo“/„Asshole“.",
+        "Nächste Runde: der Culo gibt dem Presidente seine 2 besten Karten, der Presidente zwei beliebige zurück. Sitzordnung nach Rang.",
+      ],
+      dosEn: [
+        "Goal: be the first to play out all your cards.",
+        "Take turns placing a higher card (or the same number of equal cards) on the pile; if you can't or won't, you pass.",
+        "First one empty becomes „President“, the last is the „Asshole“/„Culo“.",
+        "Next round: the Asshole gives the President their 2 best cards, the President gives any 2 back. Seating by rank.",
+      ],
+      donts: [
+        "Kartenwert-Reihenfolge vorher klären (oft ist die 2 die höchste) – sie variiert je Runde/Region.",
+        "Sonderregeln ansagen, bevor es losgeht (z. B. 8 löscht den Stapel, Doppel).",
+        "Als Trinkspiel: Tempo und Grenzen respektieren, immer eine alkoholfreie Option.",
+      ],
+      dontsEn: [
+        "Agree the card ranking first (the 2 is often highest) – it varies by group/region.",
+        "Announce special rules before you start (e.g. an 8 clears the pile, doubles).",
+        "As a drinking game: respect pace and limits, always a non-alcoholic option.",
+      ],
+    },
+    {
+      icon: "🃏",
+      title: "Truco (Argentinien · Uruguay)",
+      titleEn: "Truco (Argentina · Uruguay)",
+      intro: "Das Kartenspiel des Südens, mit der baraja española (40 Karten). 2, 4 oder 6 Spieler in Teams. Es lebt vom Bluffen, vom Wetten („¡Truco!“ – „¡Quiero!“) und von heimlichen Zeichen (señas) zum Partner.",
+      introEn: "The card game of the south, with the baraja española (40 cards). 2, 4 or 6 players in teams. It thrives on bluffing, betting („¡Truco!“ – „¡Quiero!“) and secret signs (señas) to your partner.",
+      dos: [
+        "Spanisches Blatt ohne 8, 9 und 10. Die Kartenrangfolge ist eigen (1 de espada ist die höchste).",
+        "Jeder bekommt 3 Karten; es gewinnt, wer 2 der 3 Stiche („manos“) holt.",
+        "Punkte erhöhen: „Truco“ sagen → Gegner antwortet „Quiero“ (angenommen) oder „No quiero“ (aufgegeben).",
+        "„Envido“ zählt die Punkte auf der Hand am Rundenanfang. Gespielt wird bis 30 (oder 15) Punkte.",
+      ],
+      dosEn: [
+        "Spanish deck without 8, 9 and 10. The card ranking is its own thing (the 1 of swords is the highest).",
+        "Each player gets 3 cards; you win by taking 2 of the 3 tricks („manos“).",
+        "Raising the stakes: say „Truco“ → opponent answers „Quiero“ (accepted) or „No quiero“ (folded).",
+        "„Envido“ counts the points in your hand at the start of the round. You play to 30 (or 15) points.",
+      ],
+      donts: [
+        "Señas (Zeichen zum Partner) gehören dazu – aber nur fair, wenn der Gegner die Spielart kennt; vorher ansagen.",
+        "Nicht ohne die (unintuitive) Kartenrangordnung starten – ein Spickzettel hilft enorm.",
+        "Regionale Varianten klären (con flor / sin flor), sonst zählt jeder anders.",
+      ],
+      dontsEn: [
+        "Señas (signs to your partner) are part of it – but only fair if the opponent knows the style; agree it first.",
+        "Don't start without the (unintuitive) card ranking – a cheat sheet helps a lot.",
+        "Clarify regional variants (con flor / sin flor), or everyone scores differently.",
+      ],
+      level: "B1",
+      es: [
+        "El *truco* es mucho más que un juego de *cartas* en Argentina y Uruguay: es una excusa para sentarse en *ronda*, *mentir* con cara seria y cantar los puntos en voz alta.",
+        "Lo que lo hace único son las *señas*: con un gesto de cejas o de boca le avisás a tu *compañero* qué cartas tenés, sin que el rival se dé cuenta.",
+      ],
+      vocab: [
+        { es: "truco", de: "Truco (Kartenspiel)", en: "Truco (card game)", take: false },
+        { es: "cartas", de: "Karten", en: "cards", take: true },
+        { es: "ronda", de: "Runde/Kreis", en: "round/circle", take: true },
+        { es: "mentir", de: "lügen", en: "to lie", take: true },
+        { es: "señas", de: "Zeichen, Signale", en: "signs, signals", take: true },
+        { es: "compañero", de: "Partner, Mitspieler", en: "partner, teammate", take: true },
+      ],
+    },
+    {
+      icon: "🎲",
+      title: "Dudo / Perudo / Cacho (die Anden)",
+      titleEn: "Dudo / Perudo / Cacho (the Andes)",
+      intro: "Das Lügen-Würfelspiel der Anden – in Peru, Bolivien und Chile fast überall. Jeder hat 5 Würfel und einen Becher (cubilete); es geht ums Bluffen und ums „¡Dudo!“ (ich zweifle).",
+      introEn: "The lying dice game of the Andes – nearly everywhere in Peru, Bolivia and Chile. Everyone has 5 dice and a cup (cubilete); it's about bluffing and calling „¡Dudo!“ (I doubt it).",
+      dos: [
+        "Alle würfeln verdeckt unter dem Becher und schauen heimlich.",
+        "Reihum erhöht man das Gebot: „cuatro cincos“ = mindestens 4 der Würfel (aller Spieler) zeigen die 5.",
+        "Die 1 (as) ist Joker und zählt für jede Zahl.",
+        "Zweifelst du das Gebot an, rufst du „¡Dudo!“ – dann wird aufgedeckt: lag der Bieter zu hoch, verliert er einen Würfel, sonst du.",
+        "Wer alle Würfel verliert, scheidet aus; der Letzte mit Würfeln gewinnt.",
+      ],
+      dosEn: [
+        "Everyone rolls hidden under the cup and peeks secretly.",
+        "Take turns raising the bid: „cuatro cincos“ = at least 4 of the dice (across all players) show a 5.",
+        "The 1 (as) is wild and counts as any number.",
+        "Doubt the bid? Shout „¡Dudo!“ – then reveal: if the bidder was too high, they lose a die, otherwise you do.",
+        "Lose all your dice and you're out; the last player with dice wins.",
+      ],
+      donts: [
+        "Becher nicht zu früh heben – der Bluff ist der ganze Spaß.",
+        "Die Joker-Regel und den „as“-Übergang vorher klären (was passiert, wenn Einsen geboten werden).",
+        "„Calzo“ (Gebot ist exakt richtig) nur nutzen, wenn ihr diese Zusatzregel spielt.",
+      ],
+      dontsEn: [
+        "Don't lift the cup too early – the bluff is the whole point.",
+        "Agree the wild rule and the „as“ switch up front (what happens once ones are bid).",
+        "Use „Calzo“ (the bid is exactly right) only if you play that extra rule.",
+      ],
+      level: "A2",
+      es: [
+        "En los Andes —Perú, Bolivia y Chile— el *dudo* se juega con cinco *dados* y un *cubilete* en casi cualquier *bar*.",
+        "Cada jugador *miente* sobre cuántos dados muestran un número, hasta que alguien grita «¡dudo!» y se levantan los cubiletes.",
+      ],
+      vocab: [
+        { es: "dudo", de: "„ich zweifle“ (Würfelspiel)", en: "„I doubt“ (dice game)", take: false },
+        { es: "dados", de: "Würfel", en: "dice", take: true },
+        { es: "cubilete", de: "Würfelbecher", en: "dice cup", take: true },
+        { es: "bar", de: "Bar, Kneipe", en: "bar", take: false },
+        { es: "miente", de: "(er/sie) lügt", en: "lies", take: true },
+      ],
+    },
+    {
+      icon: "🇪🇨",
+      title: "Cuarenta (Ecuador)",
+      titleEn: "Cuarenta (Ecuador)",
+      intro: "Ecuadors Nationalkartenspiel – „die Vierzig“. 2 oder 4 Spieler (in Teams), mit spanischem Blatt ohne 8, 9 und 10. Ziel: als Erster 40 Punkte zu erreichen.",
+      introEn: "Ecuador's national card game – „the forty“. 2 or 4 players (in teams), Spanish deck without 8, 9 and 10. Goal: be the first to 40 points.",
+      dos: [
+        "Karten vom Tisch „fangen“: eine gleiche Zahl auf der Hand fängt die offene Karte (caer).",
+        "Aufeinanderfolgende Reihen einsammeln und Karten so abräumen.",
+        "Den ganzen Tisch leerfegen heißt „limpia“ und bringt Bonuspunkte; das Fangen der zuletzt gelegten Karte ist „caída“.",
+        "Am Ende jeder Runde Punkte zählen, bis ein Team 40 hat.",
+      ],
+      dosEn: [
+        "„Catch“ cards from the table: a matching number in your hand catches the face-up card (caer).",
+        "Pick up consecutive runs and clear cards that way.",
+        "Sweeping the whole table is a „limpia“ and scores bonus points; catching the last card played is a „caída“.",
+        "Count points at the end of each round, until a team reaches 40.",
+      ],
+      donts: [
+        "Nicht mit 8, 9 und 10 spielen – die sind im Cuarenta-Blatt raus.",
+        "Fang- und Reihen-Regel mit der Runde abstimmen, sie überrascht Neulinge.",
+        "Punkte laufend mitschreiben, sonst gibt es Streit beim Zählen.",
+      ],
+      dontsEn: [
+        "Don't play with 8, 9 and 10 – they're out of the Cuarenta deck.",
+        "Agree the catching and run rules with the group; they surprise newcomers.",
+        "Keep score as you go, or counting ends in arguments.",
+      ],
+    },
+    {
+      icon: "🎲",
+      title: "Generala – Südamerikas Yahtzee",
+      titleEn: "Generala – South America's Yahtzee",
+      intro: "Das Würfelspiel für Strand, Pool und nach dem Abendessen. 2+ Spieler, 5 Würfel, bis zu 3 Würfe pro Zug – nur Zettel und Stift dazu.",
+      introEn: "The dice game for the beach, the pool and after dinner. 2+ players, 5 dice, up to 3 rolls per turn – just pen and paper to go with it.",
+      dos: [
+        "Kombinationen sammeln: 1er bis 6er, Escalera (Straße), Full, Póker (4 gleiche), Generala (5 gleiche).",
+        "Bis zu 3 Würfe pro Zug; zwischendurch beliebige Würfel liegen lassen.",
+        "Jede Kategorie nur einmal eintragen – clever wählen, wenn nichts passt.",
+        "Eine „Generala servida“ (5 gleiche im ersten Wurf) gewinnt oft sofort die Partie.",
+      ],
+      dosEn: [
+        "Collect combinations: 1s to 6s, Escalera (straight), Full house, Póker (4 of a kind), Generala (5 of a kind).",
+        "Up to 3 rolls per turn; keep any dice you like in between.",
+        "Each category is filled in only once – choose cleverly when nothing fits.",
+        "A „Generala servida“ (5 of a kind on the first roll) often wins the game outright.",
+      ],
+      donts: [
+        "„Servida“ (in einem Wurf) vs. „gebaut“ (über mehrere Würfe) klären – meist gibt es dafür Bonuspunkte.",
+        "Keine Kategorie doppelt nutzen.",
+        "Ohne Zettel verliert man den Überblick – immer mitschreiben.",
+      ],
+      dontsEn: [
+        "Clarify „servida“ (in one roll) vs. „built“ (over several rolls) – there are usually bonus points for it.",
+        "Don't use a category twice.",
+        "Without a scoresheet you lose track – always write it down.",
+      ],
+    },
+    {
+      icon: "🁢",
+      title: "Dominó (die Karibik)",
+      titleEn: "Dominoes (the Caribbean)",
+      intro: "Das Spiel der Karibik – in Kuba, der Dominikanischen Republik und Puerto Rico auf jeder Straßenecke. Meist 4 Spieler in 2 Teams, laut, schnell und mit viel Leidenschaft.",
+      introEn: "The game of the Caribbean – on every street corner in Cuba, the Dominican Republic and Puerto Rico. Usually 4 players in 2 teams, loud, fast and full of passion.",
+      dos: [
+        "Jeder zieht Steine (fichas); wer den höchsten Doppelstein hat, beginnt.",
+        "Reihum eine passende Zahl anlegen; wer nicht anlegen kann, passt („paso“).",
+        "Wer zuerst alle Steine los ist, gewinnt – oder bei blockiertem Spiel, wer die wenigsten Augen hält.",
+        "Die Augen der Gegner werden zusammengezählt; meist spielt man bis 100 oder 200 Punkte.",
+      ],
+      dosEn: [
+        "Everyone draws tiles (fichas); whoever has the highest double starts.",
+        "Take turns matching a number; if you can't play, you pass („paso“).",
+        "First to get rid of all tiles wins – or, if the game is blocked, whoever holds the fewest pips.",
+        "The opponents' pips are added up; you usually play to 100 or 200 points.",
+      ],
+      donts: [
+        "Steine niemandem zeigen – im Team zählt verdeckte Information.",
+        "Doble-Seis vs. Doble-Nueve (Set-Größe) vorher klären.",
+        "Lautstärke gehört dazu – aber nicht im stillen Schlafsaal mitten in der Nacht.",
+      ],
+      dontsEn: [
+        "Don't show your tiles to anyone – in a team, hidden information matters.",
+        "Agree double-six vs. double-nine (set size) up front.",
+        "The noise is part of it – but not in a quiet dorm in the middle of the night.",
+      ],
+      level: "A2",
+      es: [
+        "En el *Caribe* —Cuba, Puerto Rico y República Dominicana— el *dominó* se juega en la calle, sobre una *mesa* y con mucho *ruido*.",
+        "Cuatro jugadores en dos *equipos* colocan las *fichas* por turnos; el primero que se queda sin fichas gana la *partida*.",
+      ],
+      vocab: [
+        { es: "Caribe", de: "Karibik", en: "Caribbean", take: false },
+        { es: "dominó", de: "Domino", en: "dominoes", take: false },
+        { es: "mesa", de: "Tisch", en: "table", take: true },
+        { es: "ruido", de: "Lärm", en: "noise", take: true },
+        { es: "equipos", de: "Mannschaften, Teams", en: "teams", take: true },
+        { es: "fichas", de: "Spielsteine", en: "tiles, pieces", take: true },
+        { es: "partida", de: "Partie", en: "game, match", take: true },
+      ],
+    },
+    {
+      icon: "🙊",
+      title: "Yo nunca · Verdad o reto",
+      titleEn: "Never have I ever · Truth or dare",
+      intro: "Die Eisbrecher ganz ohne Material. „Yo nunca“ (Never have I ever) und „Verdad o reto“ (Wahrheit oder Pflicht) bringen eine frische Hostel-Runde in Minuten zum Reden und Lachen.",
+      introEn: "The icebreakers with no equipment at all. „Yo nunca“ (Never have I ever) and „Verdad o reto“ (Truth or dare) get a fresh hostel circle talking and laughing in minutes.",
+      dos: [
+        "Yo nunca: reihum sagt jemand „Yo nunca he…“ + etwas; wer es getan hat, zeigt einen Finger (oder trinkt einen Schluck).",
+        "Verdad o reto: Wahrheit beantworten oder eine harmlose Aufgabe erfüllen.",
+        "Auf Spanisch spielen – so übst du echte Sätze und lernst gleichzeitig Leute kennen.",
+        "Leichte, lustige Fragen wählen, damit alle mitmachen können.",
+      ],
+      dosEn: [
+        "Never have I ever: take turns saying „Yo nunca he…“ + something; whoever has done it puts a finger down (or takes a sip).",
+        "Truth or dare: answer a truth or do a harmless dare.",
+        "Play in Spanish – you practise real sentences and meet people at the same time.",
+        "Pick light, funny prompts so everyone can join in.",
+      ],
+      donts: [
+        "Grenzen respektieren – niemanden bloßstellen oder unter Druck setzen.",
+        "Konsens vor jeder „reto“ (Aufgabe); ein „Nein“ wird akzeptiert.",
+        "Beim Trinken: immer eine alkoholfreie Option, kein Zwang.",
+      ],
+      dontsEn: [
+        "Respect boundaries – don't expose or pressure anyone.",
+        "Consent before every „dare“; a „no“ is accepted.",
+        "If drinking: always a non-alcoholic option, never forced.",
+      ],
+    },
+    {
+      icon: "🐺",
+      title: "Hombre lobo / Mafia",
+      titleEn: "Werewolf / Mafia",
+      intro: "Das große Gruppenspiel für laue Hostel-Abende: 8–18 Spieler, Werwölfe gegen das Dorf, und ein Spielleiter (moderador), der durch Nacht und Tag führt. Braucht nur ein paar Kärtchen oder eine App.",
+      introEn: "The big group game for warm hostel evenings: 8–18 players, werewolves against the village, and a moderator who guides through night and day. Needs only a few cards or an app.",
+      dos: [
+        "Rollen verdeckt verteilen: Werwölfe, Dorfbewohner und Sonderrollen (Seherin, Arzt).",
+        "„Nachts“ wählen die Wölfe heimlich ein Opfer; „tags“ diskutiert das Dorf und lyncht einen Verdächtigen.",
+        "Ziel: die jeweils andere Seite vollständig ausschalten.",
+        "Der moderador erzählt die Geschichte und hält den Ablauf zusammen.",
+      ],
+      dosEn: [
+        "Hand out roles face down: werewolves, villagers and special roles (seer, doctor).",
+        "At „night“ the wolves secretly pick a victim; by „day“ the village debates and lynches a suspect.",
+        "Goal: completely eliminate the other side.",
+        "The moderator narrates the story and keeps the flow together.",
+      ],
+      donts: [
+        "Der Spielleiter spielt nicht mit – er bleibt neutral.",
+        "Tote reden nicht mehr und verraten ihre Rolle nicht.",
+        "Die Diskussion ist der Kern – nicht zu schnell abstimmen, sonst ist es vorbei, bevor es spannend wird.",
+      ],
+      dontsEn: [
+        "The moderator doesn't play – they stay neutral.",
+        "The dead don't talk and don't reveal their role.",
+        "The debate is the heart of it – don't vote too quickly, or it's over before it gets exciting.",
+      ],
+    },
+  ];
+
+  // ---------- Wichtige Sätze für den Tisch (nach Thema gruppiert) ----------
+  const PHRASES = [
+    {
+      id: "proponer",
+      icon: "🤝",
+      title: "Mitspielen & vorschlagen",
+      titleEn: "Joining in & suggesting a game",
+      items: [
+        { es: "¿Jugamos a las cartas?", de: "Spielen wir Karten?", en: "Shall we play cards?" },
+        { es: "¿Puedo jugar con ustedes?", de: "Kann ich mitspielen?", en: "Can I join you?" },
+        { es: "¿Cuántos jugamos?", de: "Zu wievielt spielen wir?", en: "How many are we playing?" },
+        { es: "¿Me explicas las reglas?", de: "Erklärst du mir die Regeln?", en: "Can you explain the rules?" },
+        { es: "¿De qué va el juego?", de: "Worum geht es im Spiel?", en: "What's the game about?" },
+        { es: "Soy nuevo en esto, ten paciencia.", de: "Ich bin neu darin, hab Geduld.", en: "I'm new to this, bear with me." },
+      ],
+    },
+    {
+      id: "mesa",
+      icon: "🔄",
+      title: "Am Tisch & Spielablauf",
+      titleEn: "At the table & taking turns",
+      items: [
+        { es: "Te toca.", de: "Du bist dran.", en: "It's your turn." },
+        { es: "Me toca a mí.", de: "Ich bin dran.", en: "It's my turn." },
+        { es: "Reparte tú.", de: "Du gibst (die Karten).", en: "You deal." },
+        { es: "Baraja las cartas.", de: "Misch die Karten.", en: "Shuffle the cards." },
+        { es: "Roba una carta.", de: "Zieh eine Karte.", en: "Draw a card." },
+        { es: "Paso / Me paso.", de: "Ich passe.", en: "I pass." },
+        { es: "¿Cuántas cartas repartimos?", de: "Wie viele Karten geben wir?", en: "How many cards do we deal?" },
+      ],
+    },
+    {
+      id: "ganar",
+      icon: "🏆",
+      title: "Gewinnen, verlieren, fair play",
+      titleEn: "Winning, losing, fair play",
+      items: [
+        { es: "¡Gané!", de: "Ich habe gewonnen!", en: "I won!" },
+        { es: "Ganaste, bien jugado.", de: "Du hast gewonnen, gut gespielt.", en: "You won, well played." },
+        { es: "Quedamos empate.", de: "Es steht unentschieden.", en: "It's a tie." },
+        { es: "¿Quién va ganando?", de: "Wer führt gerade?", en: "Who's winning?" },
+        { es: "¿Otra ronda?", de: "Noch eine Runde?", en: "Another round?" },
+        { es: "¡Buena partida!", de: "Gutes Spiel!", en: "Good game!" },
+      ],
+    },
+    {
+      id: "dados",
+      icon: "🎲",
+      title: "Würfeln & wetten (Dudo, Generala)",
+      titleEn: "Dice & bidding (Dudo, Generala)",
+      items: [
+        { es: "Te toca tirar.", de: "Du bist mit Würfeln dran.", en: "It's your roll." },
+        { es: "¡Dudo!", de: "Ich zweifle! (Dudo)", en: "I doubt it!" },
+        { es: "Subo la apuesta.", de: "Ich erhöhe das Gebot.", en: "I raise the bid." },
+        { es: "Cuatro cincos.", de: "Vier Fünfen.", en: "Four fives." },
+        { es: "¿Lo anoto o lo guardo?", de: "Eintragen oder behalten?", en: "Do I score it or keep it?" },
+        { es: "Me quedo con estos dados.", de: "Ich behalte diese Würfel.", en: "I'm keeping these dice." },
+      ],
+    },
+    {
+      id: "ambiente",
+      icon: "🍻",
+      title: "Stimmung & Eisbrecher (mit Respekt)",
+      titleEn: "Vibe & icebreakers (with respect)",
+      items: [
+        { es: "¿Jugamos algo para romper el hielo?", de: "Spielen wir was zum Auflockern?", en: "Shall we play an icebreaker?" },
+        { es: "Yo no bebo, ¿jugamos sin alcohol?", de: "Ich trinke nicht – ohne Alkohol?", en: "I don't drink – can we play without alcohol?" },
+        { es: "El que pierde, reparte.", de: "Wer verliert, gibt die Karten.", en: "Whoever loses deals." },
+        { es: "Sin presión, solo por diversión.", de: "Ohne Druck, nur zum Spaß.", en: "No pressure, just for fun." },
+        { es: "Yo nunca he viajado solo.", de: "Ich bin noch nie allein gereist.", en: "Never have I ever travelled alone." },
+        { es: "¿Verdad o reto?", de: "Wahrheit oder Pflicht?", en: "Truth or dare?" },
+      ],
+    },
+  ];
+
+  // ---------- Glossar: Wörter rund um Karten, Würfel & Tisch ----------
+  const GLOSSARY = [
+    { es: "la baraja", de: "das Kartenspiel (Deck)", en: "the deck of cards" },
+    { es: "la carta", de: "die (Spiel-)Karte", en: "the (playing) card" },
+    { es: "el mazo", de: "der Stapel, der Talon", en: "the pile, the stock" },
+    { es: "repartir", de: "austeilen, geben", en: "to deal" },
+    { es: "barajar", de: "mischen", en: "to shuffle" },
+    { es: "el turno", de: "der Zug, die Reihe", en: "the turn" },
+    { es: "la ronda", de: "die Runde", en: "the round" },
+    { es: "la partida", de: "die Partie", en: "the game, the match" },
+    { es: "el comodín", de: "der Joker, die Wildcard", en: "the wildcard, the joker" },
+    { es: "robar", de: "ziehen (eine Karte)", en: "to draw (a card)" },
+    { es: "descartar", de: "abwerfen", en: "to discard" },
+    { es: "la mano", de: "das Blatt (Handkarten)", en: "the hand" },
+    { es: "el triunfo", de: "der Trumpf", en: "the trump" },
+    { es: "los dados", de: "die Würfel", en: "the dice" },
+    { es: "el cubilete", de: "der Würfelbecher", en: "the dice cup" },
+    { es: "la ficha", de: "der Spielstein, der Chip", en: "the tile, the chip" },
+    { es: "el tablero", de: "das Spielbrett", en: "the board" },
+    { es: "apostar", de: "wetten, setzen", en: "to bet" },
+    { es: "hacer trampa", de: "mogeln, schummeln", en: "to cheat" },
+    { es: "el empate", de: "das Unentschieden", en: "the tie, the draw" },
+  ];
+
+  // ---------- „Spiele-Kit für den Rucksack“ ----------
+  const CHECKLIST = [
+    {
+      icon: "🎴",
+      item: "UNO-Deck",
+      itemEn: "UNO deck",
+      why: "Der universelle Eisbrecher – jeder kennt es, winzig und leicht.",
+      whyEn: "The universal icebreaker – everyone knows it, tiny and light.",
+    },
+    {
+      icon: "🃏",
+      item: "Normales/spanisches Kartendeck (baraja)",
+      itemEn: "A normal/Spanish deck of cards (baraja)",
+      why: "Für Presidente, Truco, Cuarenta & Dutzende Spiele – das vielseitigste Teil im Rucksack.",
+      whyEn: "For Presidente, Truco, Cuarenta & dozens of games – the most versatile thing in your pack.",
+    },
+    {
+      icon: "🏠",
+      item: "Monopoly Deal",
+      itemEn: "Monopoly Deal",
+      why: "Volle Monopoly-Laune in 15 Minuten, ganz ohne lose Teile.",
+      whyEn: "Full Monopoly fun in 15 minutes, with no loose pieces.",
+    },
+    {
+      icon: "🎲",
+      item: "5 Würfel + kleiner Becher",
+      itemEn: "5 dice + a small cup",
+      why: "Für Dudo/Perudo und Generala – winzig im Gepäck, riesiger Spaßfaktor.",
+      whyEn: "For Dudo/Perudo and Generala – tiny in your bag, huge fun.",
+    },
+    {
+      icon: "🁢",
+      item: "Mini-Dominó-Set",
+      itemEn: "Travel domino set",
+      why: "Türöffner in der Karibik, wo Dominó Kult ist.",
+      whyEn: "A door-opener in the Caribbean, where dominoes are a cult.",
+    },
+    {
+      icon: "📝",
+      item: "Stift & kleiner Block",
+      itemEn: "Pen & a small notepad",
+      why: "Punkte für Generala/Truco zählen – und neue Spielregeln notieren.",
+      whyEn: "To keep score for Generala/Truco – and jot down new rules.",
+    },
+    {
+      icon: "📱",
+      item: "Offline-Spiele-App",
+      itemEn: "An offline games app",
+      why: "Werwolf-Moderator, Kartenregeln & Solo-Spiele, auch ohne Netz.",
+      whyEn: "Werewolf moderator, card rules & solo games, even with no signal.",
+    },
+  ];
+
+  window.SC.juegos = { INTRO, INTRO_EN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
+})();

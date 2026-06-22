@@ -695,6 +695,7 @@
     subFlirt: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit",
     subBailar: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos",
     subMusica: "Der Soundtrack LatAms – mit Spotify & Apple Music",
+    subJuegos: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
     subYesto: "Bild raten: 3-2-1 – wie heißt das auf Spanisch?",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
@@ -833,6 +834,13 @@
     copyPhrase: "Satz kopieren",
     copyPhraseAria: "Satz kopieren: {phrase}",
     phraseCopied: "Kopiert!",
+
+    // Juegos de viaje
+    jgTips: "🎮 Die Spiele, kurz erklärt",
+    jgPhrases: "💬 Sätze für den Tisch",
+    jgWords: "🗣️ Wörter rund um Karten, Würfel & Tisch",
+    jgChecklist: "🎒 Spiele-Kit für den Rucksack",
+    jgChecklistHint: "Ein paar winzige Dinge, mit denen du überall eine Runde aufmachst.",
 
     // Fotos y videos
     ftTips: "🎯 Tolle Bilder machen",
@@ -1117,6 +1125,7 @@
     subFlirt: "Flirting & dating with respect: opening lines, compliments, a date, safety",
     subBailar: "Dancing in LatAm: step diagrams, rhythm & videos",
     subMusica: "The soundtrack of Latin America – with Spotify & Apple Music",
+    subJuegos: "Hostel classics: cards, dice & group games – plus the phrases to play",
     subBebidas: "What people drink morning and evening – country by country",
     subYesto: "Guess the picture: 3-2-1 – what's it called in Spanish?",
     subPlacement: "Short placement test: find your starting level",
@@ -1250,6 +1259,13 @@
     copyPhrase: "Copy phrase",
     copyPhraseAria: "Copy phrase: {phrase}",
     phraseCopied: "Copied!",
+
+    // Juegos de viaje
+    jgTips: "🎮 The games, explained briefly",
+    jgPhrases: "💬 Phrases for the table",
+    jgWords: "🗣️ Words for cards, dice & the table",
+    jgChecklist: "🎒 Games kit for your backpack",
+    jgChecklistHint: "A few tiny things that let you start a round anywhere.",
 
     // Fotos y videos
     ftTips: "🎯 Take great shots",
