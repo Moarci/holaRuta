@@ -27,6 +27,24 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.113.0",
+      date: "2026-06-22",
+      title: "Neu: Juegos de viaje – die Hostel-Spiele & die Sätze dazu",
+      titleEn: "New: Juegos de viaje – hostel games & the phrases to play them",
+      items: [
+        "🎲 Neues Modul „Juegos de viaje“: Spiele sind der schnellste Weg, im Hostel Leute kennenzulernen. Recherchiert wurde, was Reisende wirklich spielen – die globalen Klassiker (UNO, Monopoly Deal, Presidente/Culo) und die in Lateinamerika allgegenwärtigen Spiele (Truco in Argentinien/Uruguay, Dudo/Perudo in den Anden, Cuarenta in Ecuador, Generala, Dominó in der Karibik) plus die Spiele ganz ohne Material (Yo nunca, Hombre lobo/Mafia).",
+        "📖 Jedes Spiel kurz erklärt: aufklappbare „así se juega“-Schritte und typische Stolperfallen – bei Truco, Dudo und Dominó zusätzlich ein spanisches Lesetraining zur Spielkultur (antippbare Vokabeln & Quiz).",
+        "💬 Die Sätze für den Tisch als Karten (es/de/en, mit Kopier-Knopf): mitspielen & vorschlagen (¿Me explicas las reglas?), am Tisch (Te toca, Roba una carta), gewinnen/verlieren (¿Otra ronda?), würfeln & wetten (¡Dudo!) und Eisbrecher mit Respekt – plus Glossar (baraja, comodín, cubilete, ficha …) und ein „Spiele-Kit für den Rucksack“.",
+        "🔗 Per Deep-Link (?m=juegos) direkt aufrufbar, in Suche & Entdecken verdrahtet und offline verfügbar.",
+      ],
+      itemsEn: [
+        "🎲 New module „Juegos de viaje“: games are the fastest way to meet people in a hostel. We researched what travellers actually play – the global classics (UNO, Monopoly Deal, President/Asshole) and the games that are everywhere in Latin America (Truco in Argentina/Uruguay, Dudo/Perudo in the Andes, Cuarenta in Ecuador, Generala, dominoes in the Caribbean) plus the games with no equipment at all (Never have I ever, Werewolf/Mafia).",
+        "📖 Every game explained briefly: expandable „this is how you play“ steps and common pitfalls – Truco, Dudo and dominoes also get Spanish reading practice on the game's culture (tappable vocab & quiz).",
+        "💬 The phrases for the table as cards (es/de/en, with a copy button): joining in & suggesting (¿Me explicas las reglas?), at the table (Te toca, Roba una carta), winning/losing (¿Otra ronda?), dice & bidding (¡Dudo!) and icebreakers with respect – plus a glossary (baraja, comodín, cubilete, ficha …) and a „games kit for your backpack“.",
+        "🔗 Reachable via deep link (?m=juegos), wired into Search & Discover and available offline.",
+      ],
+    },
+    {
       version: "1.112.0",
       date: "2026-06-22",
       title: "Arbeitsblätter: mehr Abwechslung & deutlich mehr Inhalt",

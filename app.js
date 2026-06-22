@@ -46,6 +46,7 @@
   const flirt = window.SC.flirt || null;         // Coqueteo y romance: flirten & daten unterwegs (optional)
   const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
   const musica = window.SC.musica || null;       // Música: Genres LatAm + Spotify/Apple-Deep-Links (optional)
+  const juegos = window.SC.juegos || null;       // Juegos de viaje: Hostel-Spiele + Sätze für den Tisch (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
   const yesto = window.SC.yesto || null;         // „¿Y esto?“: Bild-Vokabel-Modus mit Countdown (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
@@ -491,6 +492,7 @@
       hasFlirt: !!flirt,         // Coqueteo y romance (flirten & daten unterwegs)
       hasBailar: !!bailar,       // Bailar (Tanzen in LatAm, Schritt-Diagramme)
       hasMusica: !!musica,       // Música (Genres LatAm + Spotify/Apple-Links)
+      hasJuegos: !!juegos,       // Juegos de viaje (Hostel-Spiele + Sätze)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
 
@@ -930,6 +932,21 @@
   // features/responsable.js. Der Controller delegiert via SCREENS an .screen();
   // Suche & „Modul teilen" lesen weiterhin die Content-Module SC.jerga/derechos/
   // responsable direkt (wie bei Knigge/Etiqueta).
+
+  // Juegos de viaje: Hostel-Spiele (UNO, Truco, Dudo …) + Sätze für den Tisch.
+  // Gleiches Schema und Pass-Through wie saludVM/flirtVM.
+  function juegosVM() {
+    if (!juegos) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && juegos.INTRO_EN) ? juegos.INTRO_EN : juegos.INTRO,
+      topics: loc(juegos.TOPICS || []),
+      phrases: loc(juegos.PHRASES || []),
+      glossary: loc(juegos.GLOSSARY || []),
+      checklist: loc(juegos.CHECKLIST || []),
+    };
+  }
 
   // Fotos & Videos: praktische Tipps (Topics mit DOs/Don'ts + spanisches
   // Lesetraining wie in der Historia), Sätze zum Bitten/Platz-Machen, der
@@ -2172,6 +2189,7 @@
       "fotos": () => ui.renderFotos(fotosVM()),
       "bailar": () => ui.renderBailar(bailarVM()),
       "musica": () => ui.renderMusica(musicaVM()),
+      "juegos": () => ui.renderJuegos(juegosVM()),
       "badges": () => ui.renderBadges(badgesVM()),
       "social": () => ui.renderSocial(socialVM()),
       "hostel": () => ui.renderHostel(hostelVM()),
@@ -5346,6 +5364,7 @@
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
     jerga: !!jerga, derechos: !!derechos, responsable: !!responsable,
     fotos: !!fotografia, flirt: !!flirt, bailar: !!bailar, musica: !!musica,
+    juegos: !!juegos,
     bebidas: !!(bebidas && countries),
     yesto: !!(yesto && yesto.THEMES && yesto.THEMES.length),
   };
@@ -5450,6 +5469,7 @@
     pageMod(responsable, "🌱", "Viaja responsable", "discover.subResponsable", "open-responsable");
     pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
     pageMod(flirt, "💘", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
+    pageMod(juegos, "🎲", "Juegos de viaje", "discover.subJuegos", "open-juegos");
 
     // Bailar (Tanzen): eigener Indexer, weil die Tänze als DANCES (Feld „name")
     // statt als TOPICS strukturiert sind. Ein Treffer je Tanz bringt die ganze
@@ -5604,6 +5624,11 @@
   function openResponsable() {
     dismissBadgeToast();
     setState({ screen: "responsable" });
+  }
+
+  function openJuegos() {
+    dismissBadgeToast();
+    setState({ screen: "juegos" });
   }
 
   function openMusica() {
@@ -6146,6 +6171,7 @@
     fotos:     { kicker: "Fotos y videos",    icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
     flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
+    juegos:    { kicker: "Juegos de viaje",   icon: "🎲", accent: ["#C44536", "#2E7D9A"] },
   };
 
   function shareTips(cat, idx) {
@@ -6160,6 +6186,7 @@
               : cat === "fotos" ? (fotografia && fotografia.TOPICS)
               : cat === "flirt" ? (flirt && flirt.TOPICS)
               : cat === "bailar" ? (bailar && bailar.DANCES)
+              : cat === "juegos" ? (juegos && juegos.TOPICS)
               : null;
     const meta = TIPS_META[cat];
     if (!src || !src[idx] || !meta) return;
@@ -6236,6 +6263,7 @@
     flirt:         { icon: "💘", title: "Coqueteo y romance",   sub: "discover.subFlirt",         accent: ["#D24A77", "#B05AA8"] },
     bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
     musica:        { icon: "🎵", title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
+    juegos:        { icon: "🎲", title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -6325,6 +6353,8 @@
         return cut((bailarVM().dances || []).map((d) => ({ mark: d.icon || "💃", text: d.name })));
       case "musica":
         return cut((musicaVM().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
+      case "juegos":
+        return cut((juegosVM().topics || []).map((tp) => ({ mark: tp.icon || "🎲", text: tp.title })));
       default:
         return [];
     }
@@ -6464,6 +6494,7 @@
     "open-fotos": (el) => { openFotos(); },
     "open-bailar": (el) => { openBailar(); },
     "open-musica": (el) => { openMusica(); },
+    "open-juegos": (el) => { openJuegos(); },
     "set-stats-filter": (el) => { setStatsFilter(el.dataset.filter); },
     "reset-progress": (el) => { resetProgress(); },
     "open-card": (el) => { openCard(el.dataset.id, el.dataset.back || "stats"); },
@@ -7054,6 +7085,7 @@
       flirt: openFlirt,
       bailar: openBailar,
       musica: openMusica,
+      juegos: openJuegos,
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
       // Einstufungs-Tests: ein geteiltes Ergebnis-Sharepic (Motiv „assessment“/

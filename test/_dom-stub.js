@@ -650,7 +650,7 @@ function installModules() {
     "historia.js", "historiaCentro.js", "knigge.js", "frases.js", "dialogos.js",
     "conjug.js", "regatear.js", "logistica.js", "salud.js", "jerga.js",
     "derechos.js", "responsable.js", "fotografia.js",
-    "flirt.js", "bailar.js", "musica.js", "bebidas.js", "yesto.js", "srs.js",
+    "flirt.js", "bailar.js", "musica.js", "juegos.js", "bebidas.js", "yesto.js", "srs.js",
     "store.js", "net.js", "sync.js", "social.js", "usercards.js", "matcher.js",
     "placement.js", "assessment.js", "search.js", "stats.js", "badges.js",
     "speech.js", "share.js", "qr.js", "install.js", "changelog.js",
