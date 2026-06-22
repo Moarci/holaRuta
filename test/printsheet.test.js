@@ -335,3 +335,56 @@ test("renderPrintSheet: Satz ordnen (ordenar) – Chips + Lösung/Übung/Fill", 
   // Fill: Eingabefeld mit hinterlegtem Satz.
   assert.ok(ui.renderPrintSheet(ordVM({ fill: true })).includes('data-answer="Está enfrente de la iglesia"'), "Satz-Feld trägt Lösung");
 });
+
+// ---------- Neue Übungstypen: Multiple Choice + Artikel + Buchstabensalat ----------
+test("renderPrintSheet: Multiple Choice (choice) – Optionen + Lösung/Übung/Schlüssel/Fill", () => {
+  const mcVM = (over) => baseVM(Object.assign({
+    sections: [{ type: "choice", items: [{ de: "die Rechnung", answer: "b", answerEs: "la cuenta",
+      options: [{ l: "a", es: "el boleto" }, { l: "b", es: "la cuenta" }, { l: "c", es: "la llave" }, { l: "d", es: "el baño" }] }] }],
+  }, over || {}));
+  const full = ui.renderPrintSheet(mcVM());
+  assert.ok(full.includes("sheet-section--choice"), "Multiple-Choice-Abschnitt fehlt");
+  assert.ok(full.includes(i18n.t("sheet.instrChoice")), "Multiple-Choice-Anweisung fehlt");
+  assert.ok(full.includes("el boleto") && full.includes("la cuenta"), "Optionen fehlen");
+  assert.ok(full.includes("b) la cuenta"), "Lösung (Buchstabe + Wort) im Lösungsblatt");
+  // Übung: Lösung verdeckt, aber im Schlüssel vorhanden.
+  const ex = ui.renderPrintSheet(mcVM({ exercise: true }));
+  const key = ex.slice(ex.indexOf("sheet-answerkey"));
+  assert.ok(!ex.slice(0, ex.indexOf("sheet-answerkey")).includes("b) la cuenta"), "Lösung darf im Übungsteil fehlen");
+  assert.ok(key.includes("b) la cuenta"), "Lösung im Schlüssel");
+  // Fill: Eingabefeld mit hinterlegtem Buchstaben.
+  assert.ok(ui.renderPrintSheet(mcVM({ fill: true })).includes('data-answer="b"'), "Choice-Feld trägt Lösungsbuchstaben");
+});
+
+test("renderPrintSheet: Artikel (articles) – el/la + Lösung/Übung/Schlüssel/Fill", () => {
+  const artVM = (over) => baseVM(Object.assign({
+    sections: [{ type: "articles", items: [{ article: "la", noun: "farmacia", de: "die Apotheke" }] }],
+  }, over || {}));
+  const full = ui.renderPrintSheet(artVM());
+  assert.ok(full.includes("sheet-section--articles"), "Artikel-Abschnitt fehlt");
+  assert.ok(full.includes(i18n.t("sheet.instrArticles")), "Artikel-Anweisung fehlt");
+  assert.ok(full.includes("farmacia"), "Substantiv fehlt");
+  assert.ok(/<strong lang="es">la<\/strong>/.test(full), "Artikel-Lösung im Lösungsblatt");
+  // Übung: Lücke statt Artikel; Schlüssel trägt „la farmacia".
+  const ex = ui.renderPrintSheet(artVM({ exercise: true }));
+  assert.ok(ex.includes("sheet-blank-mini"), "Artikel-Lücke im Übungsmodus");
+  assert.ok(ex.slice(ex.indexOf("sheet-answerkey")).includes("la farmacia"), "Artikel + Nomen im Schlüssel");
+  // Fill: Eingabefeld mit hinterlegtem Artikel.
+  assert.ok(ui.renderPrintSheet(artVM({ fill: true })).includes('data-answer="la"'), "Artikel-Feld trägt Lösung");
+});
+
+test("renderPrintSheet: Buchstabensalat (anagram) – Buchstaben-Chips + Lösung/Übung/Fill", () => {
+  const anaVM = (over) => baseVM(Object.assign({
+    sections: [{ type: "anagram", items: [{ answer: "playa", scrambled: ["a", "p", "y", "l", "a"], de: "der Strand" }] }],
+  }, over || {}));
+  const full = ui.renderPrintSheet(anaVM());
+  assert.ok(full.includes("sheet-section--anagram"), "Buchstabensalat-Abschnitt fehlt");
+  assert.ok(full.includes("sheet-scramble--letters") && full.includes("sheet-chip--letter"), "Buchstaben-Chips fehlen");
+  assert.ok(full.includes("playa"), "Lösungswort im Lösungsblatt");
+  // Übung: Schreiblinie statt Lösung; Schlüssel trägt das Wort.
+  const ex = ui.renderPrintSheet(anaVM({ exercise: true }));
+  assert.ok(ex.includes("sheet-write-line"), "Schreiblinie im Übungsmodus");
+  assert.ok(ex.slice(ex.indexOf("sheet-answerkey")).includes("playa"), "Wort im Schlüssel");
+  // Fill: Eingabefeld mit hinterlegtem Wort.
+  assert.ok(ui.renderPrintSheet(anaVM({ fill: true })).includes('data-answer="playa"'), "Anagramm-Feld trägt Lösung");
+});

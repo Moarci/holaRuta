@@ -2510,8 +2510,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .sheet-section { margin: 11px 0; }
   .sheet-table th, .sheet-table td { padding: 4px 7px; font-size: 9.8pt; }
   .sheet-write-line { height: 1.7em; }
-  .sheet-write-box { height: 30mm; }
+  .sheet-write-box { height: 30mm; break-inside: avoid; }
+  .sheet-writeblock { break-inside: avoid; }
   .sheet-notes-lines { height: 26mm; }
+  /* Innerhalb der nun fließenden Abschnitte zusammenhängende Teilblöcke schützen:
+     Wortbank, Matching-Raster und die Optionenzeile eines Multiple-Choice-Items
+     nie mitten im Block umbrechen (das einzelne li bleibt ohnehin zusammen). */
+  .sheet-wordbank, .sheet-match__grid, .sheet-choices { break-inside: avoid; }
+  /* Keine Witwen/Waisen: Überschriften (Abschnitt, Anweisung, Lösungsschlüssel,
+     Etappe, Lernziel) nie allein am Seitenende stehen lassen – sie wandern mit
+     ihrem Inhalt auf die nächste Seite. orphans/widows (vererbt von .sheet)
+     verhindern zusätzlich eine einzelne abgetrennte Zeile mehrzeiliger Absätze
+     (Landeskunde, Hinweise). */
+  .sheet-h2, .sheet-instr, .sheet-stage, .sheet-goal, .sheet--key h3 { break-after: avoid; page-break-after: avoid; }
+  .sheet { orphans: 2; widows: 2; }
   /* Fill-Modus-Bedienelemente sind reine Bildschirm-Helfer – nie aufs Papier. */
   .sheet-fillbar, .sheet-score, .sheet-solution { display: none !important; }
   /* Falls jemand das Fill-Blatt doch druckt: Felder als saubere Schreiblinien/Boxen. */
@@ -2613,10 +2625,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-pick__label { font-size: 0.85rem; color: var(--muted); font-weight: 700; margin-right: 2px; }
 .sheet-pick__chip { font: inherit; font-size: 0.82rem; cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; background: var(--card, #fff); color: var(--muted); }
 .sheet-pick__chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
-/* Jeder Übungsabschnitt bleibt als Ganzes zusammen (kleine Blöcke); große
-   Tabellen/Listen dürfen über die print-Regel oben fließen. */
+/* Kleine, kohärente Blöcke (Matching-Raster, Landeskunde) bleiben als Ganzes
+   zusammen; alle langen, listenbasierten Übungsabschnitte dürfen über die A4-Seite
+   fließen – sonst schiebt break-inside:avoid einen großen Abschnitt (v. a. im
+   XXL-Heft) komplett auf die nächste Seite und der Überlauf wird abgeschnitten.
+   Einzelne Einträge (li/tr/turn) bleiben über die Druckregeln oben zusammen. */
 .sheet-section { break-inside: avoid; margin: 16px 0; }
-.sheet-section--conjug, .sheet-section--translate, .sheet-section--numbers, .sheet-section--dialogue { break-inside: auto; }
+.sheet-section--conjug, .sheet-section--translate, .sheet-section--numbers, .sheet-section--dialogue,
+.sheet-section--gapfill, .sheet-section--opposites, .sheet-section--ordenar, .sheet-section--choice,
+.sheet-section--articles, .sheet-section--anagram, .sheet-section--writing { break-inside: auto; }
 .sheet-instr { font-size: 0.85rem; color: #6b5a4c; margin: 2px 0 8px; }
 /* Inline-Schreiblücke (Lückentext) + Schreiblinien (Übersetzen/Dialog). */
 .sheet-blank-inline { display: inline-block; min-width: 110px; border-bottom: 1px solid #444; vertical-align: baseline; }
@@ -2636,6 +2653,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-arrow { color: var(--sheet-accent); font-weight: 700; margin: 0 2px; }
 .sheet-scramble { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
 .sheet-scramble .sheet-chip { font-weight: 700; }
+/* Buchstabensalat (Anagramm) – einzelne Buchstaben als quadratische Kacheln. */
+.sheet-scramble--letters .sheet-chip--letter { min-width: 1.6em; text-align: center; padding: 2px 7px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+/* Multiple Choice – Optionen a)–d) nebeneinander, Antwortlinie darunter. */
+.sheet-exlist--choice li { margin: 10px 0; }
+.sheet-choices { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 3px 0; }
+.sheet-choice__opt { white-space: nowrap; font-size: 0.95rem; }
+.sheet-choice__opt strong { color: var(--sheet-accent); }
+.sheet-choice__ans { display: block; font-size: 0.9rem; color: #6b5a4c; margin-top: 2px; }
+/* Mini-Schreiblücke (Multiple-Choice-Buchstabe / Artikel). */
+.sheet-blank-mini { display: inline-block; min-width: 48px; border-bottom: 1px solid #444; vertical-align: baseline; }
+/* Artikel-Übung – Artikel-Lücke, Substantiv, deutsche Bedeutung. */
+.sheet-exlist--articles li { margin: 7px 0; }
+.sheet-exlist--articles .sheet-es { margin: 0 4px; }
 /* Tabellen (Konjugation, Zahlen). */
 .sheet-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
 .sheet-table th, .sheet-table td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 0.92rem; vertical-align: top; }
