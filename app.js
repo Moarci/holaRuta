@@ -6962,7 +6962,10 @@
       favoritos: openFavorites, // ?a=favoritos → „Mi léxico" (Favoriten)
     };
     const aSlug = param("a");
-    if (aSlug && actions[aSlug]) {
+    // Nur EIGENE Keys dispatchen: ein per URL gesteuerter Slug wie "toString"
+    // träfe sonst eine geerbte Object.prototype-Methode (unvalidierter dynamischer
+    // Methodenaufruf) statt einer echten App-Aktion.
+    if (aSlug && Object.prototype.hasOwnProperty.call(actions, aSlug)) {
       markSeen();
       actions[aSlug]();
       cleanUrl();
@@ -6999,8 +7002,10 @@
       "nivel-test": openAssessment,
       "ruta-check": () => openPlacement(false),
     };
+    // Wie oben: nur eigene Keys zulassen, damit ein URL-Slug nicht auf eine
+    // geerbte Prototyp-Methode dispatcht (unvalidierter dynamischer Methodenaufruf).
+    if (!Object.prototype.hasOwnProperty.call(openers, slug)) return false;
     const open = openers[slug];
-    if (!open) return false;
     markSeen();
     open(); // setzt state.screen + rendert
     cleanUrl();

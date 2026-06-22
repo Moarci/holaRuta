@@ -79,3 +79,17 @@ test("Jede Reise-Tipps-Kategorie (TIPS_META) ist per ?m= deeplinkbar", () => {
       `Reise-Tipp "${cat}" ist teilbar (TIPS_META), aber ?m=${cat} hat keinen Opener`);
   }
 });
+
+// Sicherheits-Regressionsschutz (CodeQL js/unvalidated-dynamic-method-call):
+// Der Deep-Link-Router darf einen URL-gesteuerten Slug NUR auf EIGENE Map-Keys
+// dispatchen. Ohne hasOwnProperty-Guard träfe z. B. ?m=toString / ?a=constructor
+// eine geerbte Object.prototype-Methode und riefe sie als „Opener" auf.
+test("Deep-Link-Dispatch nur über eigene Keys (hasOwnProperty-Guard)", () => {
+  assert.match(appjs, /hasOwnProperty\.call\(actions,\s*aSlug\)/,
+    "actions-Dispatch (?a=) ohne hasOwnProperty-Guard");
+  assert.match(appjs, /hasOwnProperty\.call\(openers,\s*slug\)/,
+    "openers-Dispatch (?m=) ohne hasOwnProperty-Guard");
+  // Die alten ungeschützten Direktzugriffe dürfen NICHT zurückkehren.
+  assert.doesNotMatch(appjs, /if\s*\(aSlug\s*&&\s*actions\[aSlug\]\)/,
+    "alter ungeschützter actions[aSlug]-Truthy-Check wieder da");
+});
