@@ -1285,6 +1285,30 @@ test("store.loadProgress: history behält ALLE gültigen Zeichen a/g/e, filtert 
   delete storeMem["spanischcard.progress.v2"];
 });
 
+test("store.loadGameStats: Ruta-Check-Verlauf wird auf die letzten 50 Einträge gedeckelt", () => {
+  // Schützt den Deckel in sanitizePlacementHistory (slice(-50)): manipuliertes/
+  // gewachsenes localStorage darf den Verlauf nicht unbegrenzt aufblähen.
+  const many = [];
+  for (let i = 0; i < 60; i++) many.push({ level: "A1", at: "2026-01-" + i, finalScore: i });
+  storeMem[GKEY] = JSON.stringify({ placementHistory: many });
+  const hist = store.loadGameStats().placementHistory;
+  assert.equal(hist.length, 50, "nur die letzten 50 behalten");
+  assert.equal(hist[hist.length - 1].finalScore, 59, "die NEUESTEN 50 bleiben (Ende der Liste)");
+  delete storeMem[GKEY];
+});
+
+test("store.loadGameStats: Reiseziel mit 1-Zeichen-Ziel bleibt erhalten (Untergrenze length > 0)", () => {
+  // Schützt die Längen-Untergrenze in sanitizeTripGoal (s.length > 0): ein gültiges
+  // 1-Zeichen-Ziel darf nicht verworfen werden.
+  storeMem[GKEY] = JSON.stringify({
+    tripGoal: { destination: "X", endDate: "2026-12-31", perDay: 5 },
+  });
+  const g = store.loadGameStats().tripGoal;
+  assert.ok(g, "Reiseziel bleibt gültig");
+  assert.equal(g.destination, "X", "1-Zeichen-Ziel wird nicht verworfen");
+  delete storeMem[GKEY];
+});
+
 test("store.loadUserCards: filtert Karten ohne vollständige Pflichtfelder (id/de/es/cat)", () => {
   storeMem["spanischcard.usercards.v1"] = JSON.stringify([
     { id: "u1", de: "Haus", es: "casa", cat: "wohnen" },   // vollständig -> bleibt
