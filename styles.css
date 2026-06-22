@@ -2510,8 +2510,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .sheet-section { margin: 11px 0; }
   .sheet-table th, .sheet-table td { padding: 4px 7px; font-size: 9.8pt; }
   .sheet-write-line { height: 1.7em; }
-  .sheet-write-box { height: 30mm; }
+  .sheet-write-box { height: 30mm; break-inside: avoid; }
   .sheet-notes-lines { height: 26mm; }
+  /* Innerhalb der nun fließenden Abschnitte zusammenhängende Teilblöcke schützen:
+     Wortbank, Matching-Raster und die Optionenzeile eines Multiple-Choice-Items
+     nie mitten im Block umbrechen (das einzelne li bleibt ohnehin zusammen). */
+  .sheet-wordbank, .sheet-match__grid, .sheet-choices { break-inside: avoid; }
   /* Fill-Modus-Bedienelemente sind reine Bildschirm-Helfer – nie aufs Papier. */
   .sheet-fillbar, .sheet-score, .sheet-solution { display: none !important; }
   /* Falls jemand das Fill-Blatt doch druckt: Felder als saubere Schreiblinien/Boxen. */
@@ -2613,10 +2617,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-pick__label { font-size: 0.85rem; color: var(--muted); font-weight: 700; margin-right: 2px; }
 .sheet-pick__chip { font: inherit; font-size: 0.82rem; cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; background: var(--card, #fff); color: var(--muted); }
 .sheet-pick__chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
-/* Jeder Übungsabschnitt bleibt als Ganzes zusammen (kleine Blöcke); große
-   Tabellen/Listen dürfen über die print-Regel oben fließen. */
+/* Kleine, kohärente Blöcke (Matching-Raster, Landeskunde) bleiben als Ganzes
+   zusammen; alle langen, listenbasierten Übungsabschnitte dürfen über die A4-Seite
+   fließen – sonst schiebt break-inside:avoid einen großen Abschnitt (v. a. im
+   XXL-Heft) komplett auf die nächste Seite und der Überlauf wird abgeschnitten.
+   Einzelne Einträge (li/tr/turn) bleiben über die Druckregeln oben zusammen. */
 .sheet-section { break-inside: avoid; margin: 16px 0; }
-.sheet-section--conjug, .sheet-section--translate, .sheet-section--numbers, .sheet-section--dialogue { break-inside: auto; }
+.sheet-section--conjug, .sheet-section--translate, .sheet-section--numbers, .sheet-section--dialogue,
+.sheet-section--gapfill, .sheet-section--opposites, .sheet-section--ordenar, .sheet-section--choice,
+.sheet-section--articles, .sheet-section--anagram, .sheet-section--writing { break-inside: auto; }
 .sheet-instr { font-size: 0.85rem; color: #6b5a4c; margin: 2px 0 8px; }
 /* Inline-Schreiblücke (Lückentext) + Schreiblinien (Übersetzen/Dialog). */
 .sheet-blank-inline { display: inline-block; min-width: 110px; border-bottom: 1px solid #444; vertical-align: baseline; }

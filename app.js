@@ -4073,32 +4073,49 @@
       if (oppItems.length >= 3) out.push({ type: "opposites", items: oppItems });
     }
 
-    // 1c. Multiple Choice: deutsche Bedeutung gegeben, die richtige spanische
-    // Antwort aus vier Optionen wählen. Distraktoren aus dem breiten Reise-
-    // Wortschatz (nie die Lösung, keine Dubletten) – ein abwechslungsreicher,
-    // schnell lösbarer Erkennungs-Block.
-    const mcCards = fillFrom(cards, broadPool, L.choice);
+    // 1c. Multiple Choice: deutsche Bedeutung gegeben, die richtige spanische Antwort
+    // aus vier Optionen wählen. Bewusst auf kurze Begriffe (≤ 3 Wörter) beschränkt,
+    // und die Distraktoren haben eine ÄHNLICHE Wortzahl (±1) wie die Lösung – sonst
+    // verriete schon die Länge, welche Option stimmt.
+    const mcWords = (s) => String(s).trim().split(/\s+/).length;
+    const mcShort = (c) => c.es && c.es.indexOf("–") === -1 && mcWords(c.es) <= 3;
+    const mcCards = fillFrom(cards.filter(mcShort), broadPool.filter(mcShort), L.choice);
     if (mcCards.length >= 3) {
-      const mcDistract = broadPool.filter((c) => c.es && c.es.indexOf("–") === -1);
+      const mcDistract = broadPool.filter(mcShort);
       const mcItems = mcCards.map((c) => {
         const correct = c.es;
-        const used = {}; used[correct.toLowerCase()] = true;
+        const correctDe = String(nat(c) || "").toLowerCase();
+        const w = mcWords(correct);
+        // Bedeutungs- UND Wortgleiche ausschließen: kein Distraktor mit demselben
+        // spanischen Wort und keiner mit derselben deutschen Bedeutung (sonst wäre
+        // z. B. „el bus"/„el autobús" – beide „Bus" – eine zweite gültige Antwort).
+        const usedEs = {}; usedEs[correct.toLowerCase()] = true;
+        const usedDe = {}; if (correctDe) usedDe[correctDe] = true;
         const distract = [];
-        const pool = sheetShuffle(mcDistract, rng);
-        for (let i = 0; i < pool.length && distract.length < 3; i++) {
-          const e = pool[i].es;
-          if (e && !used[e.toLowerCase()]) { used[e.toLowerCase()] = true; distract.push(e); }
-        }
+        // Erst längenähnliche Distraktoren (±1 Wort), dann notfalls alle kurzen.
+        const near = mcDistract.filter((d) => Math.abs(mcWords(d.es) - w) <= 1);
+        [sheetShuffle(near, rng), sheetShuffle(mcDistract, rng)].forEach((pool) => {
+          for (let i = 0; i < pool.length && distract.length < 3; i++) {
+            const e = pool[i].es;
+            const dde = String(nat(pool[i]) || "").toLowerCase();
+            if (e && !usedEs[e.toLowerCase()] && !(dde && usedDe[dde])) {
+              usedEs[e.toLowerCase()] = true; if (dde) usedDe[dde] = true; distract.push(e);
+            }
+          }
+        });
         const options = sheetShuffle([correct].concat(distract), rng).map((es, j) => ({ l: String.fromCharCode(97 + j), es: es }));
         const ans = options.find((o) => o.es === correct) || options[0];
         return { de: nat(c), options: options, answer: ans.l, answerEs: correct };
-      }).filter((it) => it.options.length >= 2);
+      }).filter((it) => it.options.length >= 3);
       if (mcItems.length >= 3) out.push({ type: "choice", items: mcItems });
     }
 
     // 1d. Artikel (el/la/los/las): grundlegende Genus-Übung aus den Artikel-Nomen-
     // Karten (global, nicht zielgebunden – darum ein verlässlicher Umfangs-Booster).
-    const artRe = /^(el|la|los|las)\s+(.+)$/i;
+    // Bewusst NUR „Artikel + ein einzelnes Nomen" (reine Buchstaben, kein Komma/
+    // Satzzeichen) – sonst zerlegt die Regex ganze Sätze wie „La cuenta, por favor."
+    // fälschlich in Artikel + Rest.
+    const artRe = /^(el|la|los|las)\s+([a-zñáéíóúü]+)$/i;
     const artCards = sheetShuffle((data.CARDS || []).filter((c) => c && c.es && nat(c) && artRe.test(String(c.es).trim())), rng).slice(0, L.articles);
     if (artCards.length >= 3) {
       const artItems = artCards.map((c) => {
@@ -4145,17 +4162,29 @@
     // 3c. Buchstabensalat (Anagramm): einzelne spanische Wörter mit gewürfelten
     // Buchstaben, deutsche Bedeutung als Hilfe. Ziel zuerst, dann aus der Reserve.
     const isSingleWord = (c) => c.es && /^[a-zñáéíóúü]{4,12}$/i.test(String(c.es).trim());
+    // Würfelt die Buchstaben SO, dass die Reihenfolge sich garantiert vom Wort
+    // unterscheidet (sonst stünde die Lösung ungewürfelt da). Mehrere Versuche;
+    // klappt das nicht (z. B. weil der Anfangs-/Endbuchstabe gleich ist), zwei
+    // UNTERSCHIEDLICHE Buchstaben tauschen. Nur unmöglich bei lauter gleichen
+    // Buchstaben – die kommen bei echten Wörtern nicht vor.
+    function scrambleLetters(word) {
+      const letters = word.split("");
+      if (letters.length < 2) return letters;
+      for (let tries = 0; tries < 8; tries++) {
+        const s = sheetShuffle(letters, rng);
+        if (s.join("") !== word) return s;
+      }
+      const s = letters.slice();
+      for (let i = 1; i < s.length; i++) {
+        if (s[i] !== s[0]) { const tmp = s[0]; s[0] = s[i]; s[i] = tmp; break; }
+      }
+      return s;
+    }
     const anaPick = fillFrom(cards.filter(isSingleWord), broadPool.filter(isSingleWord), L.anagram);
     if (anaPick.length >= 3) {
       out.push({ type: "anagram", items: anaPick.map((c) => {
         const word = String(c.es).trim();
-        let scrambled = sheetShuffle(word.split(""), rng);
-        // Würfelt der Zufall die Originalreihenfolge, Anfang/Ende tauschen – sonst
-        // stünde die Lösung schon ungewürfelt da.
-        if (scrambled.join("") === word && word.length > 1) {
-          const last = scrambled.length - 1; const tmp = scrambled[0]; scrambled[0] = scrambled[last]; scrambled[last] = tmp;
-        }
-        return { answer: word, scrambled: scrambled, de: nat(c) };
+        return { answer: word, scrambled: scrambleLetters(word), de: nat(c) };
       }) });
     }
 
