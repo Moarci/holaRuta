@@ -151,6 +151,64 @@
         "Don't enter or touch sacred sites where it isn't allowed.",
       ],
     },
+    {
+      icon: "🤝",
+      title: "Freiwilligenarbeit & faires Reisen",
+      titleEn: "Volunteering & fair travel",
+      intro: "Helfen will gut überlegt sein. Manche „Volunteer“-Angebote schaden mehr, als sie nutzen – such dir Projekte, die wirklich von der Gemeinschaft getragen werden.",
+      introEn: "Helping needs thought. Some „volunteer“ offers do more harm than good – look for projects genuinely led by the community.",
+      dos: [
+        "Projekte mit lokalen Trägern und transparenter Mittelverwendung wählen.",
+        "Auf deine echten Fähigkeiten setzen (Sprache, Handwerk) statt „nur dabei sein“.",
+        "Faire Touren buchen, bei denen Guides und Gemeinden anständig bezahlt werden.",
+        "Trinkgeld und Lob direkt an die Menschen vor Ort geben.",
+      ],
+      dosEn: [
+        "Choose projects with local leadership and transparent use of funds.",
+        "Lean on your real skills (language, a trade) rather than „just being there“.",
+        "Book fair tours where guides and communities are paid properly.",
+        "Give tips and praise directly to the people on the ground.",
+      ],
+      donts: [
+        "Keinen „Waisenhaus-Tourismus“ – Besuche bei Kindern fördern oft Missbrauch.",
+        "Keine Arbeit übernehmen, für die sonst Einheimische bezahlt würden.",
+        "Nicht für teure „Volunteer“-Pakete zahlen, die kaum vor Ort ankommen.",
+      ],
+      dontsEn: [
+        "No „orphanage tourism“ – visits to children often fuel abuse.",
+        "Don't do work that locals would otherwise be paid for.",
+        "Don't pay for pricey „volunteer“ packages that barely reach the ground.",
+      ],
+    },
+    {
+      icon: "🚌",
+      title: "Unterwegs mit weniger CO₂",
+      titleEn: "Getting around with less CO₂",
+      intro: "Der größte Fußabdruck einer Reise sind oft die Flüge. Über Land reisen, Strecken bündeln und vor Ort zu Fuß, mit Bus oder Rad fahren spart enorm – und du siehst mehr.",
+      introEn: "A trip's biggest footprint is often the flights. Travelling overland, bundling routes and walking, busing or cycling locally saves a lot – and you see more.",
+      dos: [
+        "Wo möglich Nachtbus oder Sammeltaxi statt Inlandsflug nehmen.",
+        "In der Stadt zu Fuß gehen, das Rad oder öffentliche Verkehrsmittel nutzen.",
+        "Strecken sinnvoll planen, statt mehrmals hin- und herzufliegen.",
+        "Fahrgemeinschaften und geteilte Touren bevorzugen.",
+      ],
+      dosEn: [
+        "Where possible, take a night bus or shared taxi instead of a domestic flight.",
+        "In the city, walk, cycle or use public transport.",
+        "Plan routes sensibly instead of flying back and forth several times.",
+        "Prefer carpools and shared tours.",
+      ],
+      donts: [
+        "Nicht für jede kurze Strecke fliegen, wenn der Bus es auch tut.",
+        "Keinen Motor laufen lassen und keine Quads durch sensible Natur jagen.",
+        "Nicht ständig die Unterkunft wechseln – das heißt mehr Transport.",
+      ],
+      dontsEn: [
+        "Don't fly every short leg when the bus works too.",
+        "Don't leave engines running or race quad bikes through fragile nature.",
+        "Don't change accommodation constantly – it means more transport.",
+      ],
+    },
   ];
 
   // ---------- Wichtige Sätze, nach Situation gruppiert ----------
@@ -192,6 +250,19 @@
         { es: "¿Se puede reciclar aquí?", de: "Kann man hier recyceln?", en: "Can you recycle here?" },
       ],
     },
+    {
+      id: "transporte",
+      icon: "🚌",
+      title: "Transport & Touren",
+      titleEn: "Transport & tours",
+      items: [
+        { es: "¿Hay un bus en vez de avión?", de: "Gibt es einen Bus statt eines Flugs?", en: "Is there a bus instead of a flight?" },
+        { es: "¿Puedo llegar a pie o en bici?", de: "Komme ich zu Fuß oder mit dem Rad hin?", en: "Can I get there on foot or by bike?" },
+        { es: "¿El tour es de una empresa local?", de: "Ist die Tour von einem lokalen Anbieter?", en: "Is the tour run by a local company?" },
+        { es: "¿Puedo compartir el taxi?", de: "Kann ich mir das Taxi teilen?", en: "Can I share the taxi?" },
+        { es: "¿Hay transporte público hasta allá?", de: "Gibt es öffentliche Verkehrsmittel dorthin?", en: "Is there public transport out there?" },
+      ],
+    },
   ];
 
   // ---------- Schlüsselwörter (Umwelt & lokal) ----------
@@ -208,6 +279,12 @@
     { es: "el medio ambiente", de: "die Umwelt", en: "the environment" },
     { es: "la naturaleza", de: "die Natur", en: "nature" },
     { es: "el sendero", de: "der Wanderweg", en: "the trail" },
+    { es: "el voluntariado", de: "die Freiwilligenarbeit", en: "volunteering" },
+    { es: "la huella de carbono", de: "der CO₂-Fußabdruck", en: "the carbon footprint" },
+    { es: "el transporte público", de: "der öffentliche Nahverkehr", en: "public transport" },
+    { es: "compartir", de: "teilen", en: "to share" },
+    { es: "el guía local", de: "der lokale Guide", en: "the local guide" },
+    { es: "sostenible", de: "nachhaltig", en: "sustainable" },
   ];
 
   // ---------- Wenig-Müll-Kit ----------
@@ -246,6 +323,13 @@
       itemEn: "Your own cutlery / cup (lightweight)",
       why: "Macht Einweg-Plastikbesteck und To-go-Becher überflüssig.",
       whyEn: "Makes single-use plastic cutlery and to-go cups unnecessary.",
+    },
+    {
+      icon: "📵",
+      item: "Digitale Tickets & Offline-Karten statt Ausdrucke",
+      itemEn: "Digital tickets & offline maps instead of printouts",
+      why: "Spart Papier; Offline-Karten funktionieren auch ohne Netz.",
+      whyEn: "Saves paper; offline maps work without signal too.",
     },
   ];
 

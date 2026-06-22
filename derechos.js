@@ -137,6 +137,64 @@
         "Don't rely on „it's no problem here“ – legally that's not true.",
       ],
     },
+    {
+      icon: "🛂",
+      title: "Grenze & Migration",
+      titleEn: "Border & immigration",
+      intro: "An der Grenze und am Flughafen entscheidet sich, wie lange und wie sauber du im Land bist. Stempel prüfen, Aufenthalt nicht überziehen, Nachweise parat haben.",
+      introEn: "At the border and airport, your legal stay is decided. Check your stamp, don't overstay, and have your proof ready.",
+      dos: [
+        "Einreisestempel sofort prüfen: richtiges Datum und erlaubte Tage?",
+        "Weiter-/Rückflug oder Reiseplan zeigen können, wenn gefragt.",
+        "Adresse der ersten Unterkunft parat haben (ein Hostel reicht).",
+        "Vor der Reise klären, ob du ein Visum brauchst und wie lange du bleiben darfst.",
+      ],
+      dosEn: [
+        "Check your entry stamp right away: correct date and number of days allowed?",
+        "Be able to show an onward/return ticket or travel plan if asked.",
+        "Have the address of your first accommodation ready (a hostel is fine).",
+        "Before the trip, check whether you need a visa and how long you may stay.",
+      ],
+      donts: [
+        "Den erlaubten Aufenthalt nicht überziehen – das gibt Strafen bei der Ausreise.",
+        "Keine falschen Angaben zum Reisegrund machen.",
+        "Den Einreisestempel nicht ungeprüft lassen – fehlt er, gibt es später Ärger.",
+      ],
+      dontsEn: [
+        "Don't overstay your permitted time – it leads to fines on departure.",
+        "Don't give false information about the purpose of your trip.",
+        "Don't leave without checking your entry stamp – if it's missing, trouble follows.",
+      ],
+    },
+    {
+      icon: "🕵️",
+      title: "Häufige Maschen erkennen",
+      titleEn: "Spotting common scams",
+      intro: "Die meisten Probleme sind keine Festnahmen, sondern Tricks: falsche „Polizisten“, manipulierte Taxameter, der Geldautomat mit versteckter Kamera. Ruhig bleiben und auf Nummer sicher gehen.",
+      introEn: "Most problems aren't arrests but tricks: fake „police“, rigged taxi meters, the ATM with a hidden camera. Stay calm and play it safe.",
+      dos: [
+        "Bei angeblichen Zivil-Polizisten nach Dienstausweis fragen und zur Wache vorschlagen.",
+        "Taxis per App rufen oder den Festpreis vorab vereinbaren.",
+        "Geld nur an Automaten in Banken oder Malls abheben, die PIN verdecken.",
+        "Bei „Hilfe“-Angeboten am Automaten höflich ablehnen und weitergehen.",
+      ],
+      dosEn: [
+        "If plainclothes „police“ stop you, ask for ID and suggest going to the station.",
+        "Order taxis via an app or agree the fixed price in advance.",
+        "Withdraw cash only at ATMs inside banks or malls, and cover your PIN.",
+        "Politely decline „help“ offers at the ATM and walk on.",
+      ],
+      donts: [
+        "Fremden nie deine Karte, PIN oder das Handy zum „Helfen“ geben.",
+        "Nicht ins Privatauto eines angeblichen Beamten steigen.",
+        "Getränke und Essen von Fremden nicht annehmen (Betäubungsrisiko).",
+      ],
+      dontsEn: [
+        "Never give strangers your card, PIN or phone to „help“.",
+        "Don't get into the private car of a supposed official.",
+        "Don't accept drinks or food from strangers (risk of being drugged).",
+      ],
+    },
   ];
 
   // ---------- Wichtige Sätze, nach Situation gruppiert ----------
@@ -181,6 +239,33 @@
         { es: "Por favor, avise a mi embajada.", de: "Bitte benachrichtigen Sie meine Botschaft.", en: "Please notify my embassy." },
       ],
     },
+    {
+      id: "migracion",
+      icon: "🛂",
+      title: "An der Grenze",
+      titleEn: "At the border",
+      items: [
+        { es: "Vengo de turismo.", de: "Ich bin als Tourist hier.", en: "I'm here as a tourist." },
+        { es: "¿Cuántos días me puedo quedar?", de: "Wie viele Tage darf ich bleiben?", en: "How many days may I stay?" },
+        { es: "¿Necesito visa?", de: "Brauche ich ein Visum?", en: "Do I need a visa?" },
+        { es: "Me quedo dos semanas.", de: "Ich bleibe zwei Wochen.", en: "I'm staying two weeks." },
+        { es: "¿Me sella el pasaporte, por favor?", de: "Stempeln Sie bitte meinen Pass?", en: "Could you stamp my passport, please?" },
+        { es: "Me hospedo en un hostal.", de: "Ich wohne in einem Hostel.", en: "I'm staying at a hostel." },
+      ],
+    },
+    {
+      id: "estafas",
+      icon: "🚕",
+      title: "Bei Tricks & Taxi",
+      titleEn: "With scams & taxis",
+      items: [
+        { es: "Prefiero pagar con el taxímetro.", de: "Ich zahle lieber nach Taxameter.", en: "I'd rather pay by the meter." },
+        { es: "¿Me muestra su identificación, por favor?", de: "Zeigen Sie mir bitte Ihren Ausweis?", en: "Could you show me your ID, please?" },
+        { es: "No, gracias, estoy bien.", de: "Nein danke, alles gut.", en: "No thanks, I'm fine." },
+        { es: "Mejor vamos a la estación de policía.", de: "Gehen wir lieber zur Polizeiwache.", en: "Let's go to the police station instead." },
+        { es: "Pedí un taxi por aplicación.", de: "Ich habe ein Taxi per App bestellt.", en: "I ordered a taxi via an app." },
+      ],
+    },
   ];
 
   // ---------- Schlüsselwörter (Polizei, Recht, Konsulat) ----------
@@ -197,6 +282,14 @@
     { es: "el soborno", de: "die Bestechung", en: "the bribe" },
     { es: "los derechos", de: "die Rechte", en: "the rights" },
     { es: "la multa", de: "das Bußgeld / die Strafe", en: "the fine" },
+    { es: "la frontera", de: "die Grenze", en: "the border" },
+    { es: "migración", de: "die Einwanderungsbehörde", en: "immigration" },
+    { es: "la visa", de: "das Visum", en: "the visa" },
+    { es: "el sello", de: "der Stempel", en: "the stamp" },
+    { es: "el taxímetro", de: "das Taxameter", en: "the taxi meter" },
+    { es: "la estafa", de: "der Betrug / die Masche", en: "the scam" },
+    { es: "el retén", de: "die Kontrollstelle (Straße)", en: "the road checkpoint" },
+    { es: "el comprobante", de: "der Beleg / die Quittung", en: "the receipt / proof" },
   ];
 
   // ---------- Im-Notfall-vorbereitet-Kit ----------
@@ -235,6 +328,13 @@
       itemEn: "Travel & health insurance",
       why: "Deckt Notfälle ab und nennt oft eine 24/7-Hotline für Hilfe.",
       whyEn: "Covers emergencies and often gives a 24/7 hotline for help.",
+    },
+    {
+      icon: "💳",
+      item: "Notfall-Bargeld & Zweitkarte getrennt verwahren",
+      itemEn: "Emergency cash & a backup card stored separately",
+      why: "Wird eine Karte gesperrt oder gestohlen, bleibst du zahlungsfähig.",
+      whyEn: "If a card is blocked or stolen, you can still pay.",
     },
   ];
 

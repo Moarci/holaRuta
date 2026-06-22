@@ -101,6 +101,37 @@
         "Don't expect Colombian slang to work automatically in Mexico or Argentina.",
       ],
     },
+    {
+      icon: "💬",
+      title: "Muletillas & typische Wendungen",
+      titleEn: "Filler words & typical phrases",
+      intro: "Kleine Wörtchen, die Kolumbianer ständig einstreuen. Wer sie kennt, versteht den Rhythmus der Sprache – und klingt selbst gleich viel natürlicher.",
+      introEn: "Little words Colombians sprinkle in constantly. Knowing them helps you catch the rhythm of the language – and makes you sound much more natural.",
+      dos: [
+        "„¿Sí o no?“ / „¿o qué?“ am Satzende sucht Zustimmung – einfach mitnicken.",
+        "„Pues“ ist ein Füllwort wie „also/halt“: „Pues sí“, „pues no sé“.",
+        "„¡Listo!“ heißt „okay, alles klar, abgemacht“ – super vielseitig.",
+        "„De una“ heißt „sofort, klar, auf jeden Fall“ – enthusiastische Zusage.",
+        "„¡Hágale!“ / „¡Dale!“ ist ein freundliches „mach mal, los geht's“.",
+      ],
+      dosEn: [
+        "„¿Sí o no?“ / „¿o qué?“ at the end of a sentence seeks agreement – just nod along.",
+        "„Pues“ is a filler like „well/like“: „Pues sí“, „pues no sé“.",
+        "„¡Listo!“ means „okay, all set, deal“ – super versatile.",
+        "„De una“ means „right away, sure, definitely“ – an enthusiastic yes.",
+        "„¡Hágale!“ / „¡Dale!“ is a friendly „go on, let's do it“.",
+      ],
+      donts: [
+        "„Pues“ nicht in jeden Satz quetschen – ein, zwei pro Gespräch reichen.",
+        "„Ahorita“ wörtlich nehmen: es heißt oft „später/gleich mal“, nicht „sofort“.",
+        "Füllwörter nicht in formellen E-Mails oder bei Behörden benutzen.",
+      ],
+      dontsEn: [
+        "Don't cram „pues“ into every sentence – one or two per chat is plenty.",
+        "Don't take „ahorita“ literally: it often means „later/in a bit“, not „right now“.",
+        "Don't use filler words in formal emails or with officials.",
+      ],
+    },
   ];
 
   // ---------- Wichtige Slang-Wörter, nach Situation gruppiert ----------
@@ -175,6 +206,34 @@
         { es: "berraco/a", de: "krass / hart im Nehmen (kontextabhängig)", en: "tough / impressive (context-dependent)" },
       ],
     },
+    {
+      id: "reacciones",
+      icon: "😲",
+      title: "Schnelle Reaktionen",
+      titleEn: "Quick reactions",
+      items: [
+        { es: "¡Listo!", de: "Alles klar! / Abgemacht!", en: "All set! / Deal!" },
+        { es: "¡De una!", de: "Auf jeden Fall! / Sofort!", en: "Absolutely! / Right away!" },
+        { es: "¡Dale! / ¡Hágale!", de: "Los geht's! / Mach!", en: "Go for it! / Let's do it!" },
+        { es: "¡Uy, qué pena!", de: "Oh, wie peinlich/schade!", en: "Oh, how embarrassing/what a shame!" },
+        { es: "¡Ave María!", de: "Meine Güte! (Überraschung, sehr CO)", en: "Oh my! (surprise, very CO)" },
+        { es: "¡Qué nota!", de: "Wie geil! / Klasse!", en: "How great! / Awesome!" },
+      ],
+    },
+    {
+      id: "trato",
+      icon: "🫶",
+      title: "Anrede & Höflichkeit",
+      titleEn: "Address & politeness",
+      items: [
+        { es: "sumercé", de: "höfliches „Sie/du“ (Bogotá & Boyacá, sehr herzlich)", en: "polite „you“ (Bogotá & Boyacá, very warm)" },
+        { es: "llave / llavería", de: "enger Kumpel, wörtlich „mein Schlüssel“", en: "close buddy, literally „my key“" },
+        { es: "mijo / mija", de: "Kurzform von „mi hijo/a“: Schätzchen, Kleiner", en: "short for „mi hijo/a“: dear, kiddo" },
+        { es: "el cucho / la cucha", de: "der/die Alte (auch liebevoll für die Eltern)", en: "old man / old lady (also affectionate for parents)" },
+        { es: "¿Me regala …?", de: "Könnten Sie mir … geben/reichen? (höflich, sehr CO)", en: "Could you give me …? (polite, very CO)" },
+        { es: "a la orden", de: "Gern geschehen / Womit kann ich dienen?", en: "you're welcome / at your service" },
+      ],
+    },
   ];
 
   // ---------- Schnell-Glossar (kompakt zum Nachschlagen) ----------
@@ -193,6 +252,14 @@
     { es: "el man", de: "der Typ", en: "the guy" },
     { es: "estoy pelado", de: "ich bin pleite", en: "I'm broke" },
     { es: "¿Qué más?", de: "Na, wie geht's?", en: "what's up?" },
+    { es: "¡Listo!", de: "Alles klar!", en: "All set!" },
+    { es: "de una", de: "auf jeden Fall", en: "absolutely" },
+    { es: "ahorita", de: "gleich / später (nicht „sofort“!)", en: "in a bit / later (not „right now“!)" },
+    { es: "sumercé", de: "höfliches Sie/du (CO)", en: "polite you (CO)" },
+    { es: "llave", de: "enger Kumpel", en: "close buddy" },
+    { es: "¿Me regala…?", de: "Könnten Sie mir … geben?", en: "could you give me …?" },
+    { es: "el guayabo", de: "der Kater", en: "the hangover" },
+    { es: "¡Ave María!", de: "Meine Güte!", en: "oh my!" },
   ];
 
   window.SC = window.SC || {};
