@@ -146,6 +146,18 @@
         "Don't accept plastic bags automatically – usually you don't need them.",
         "Don't waste water, especially in dry regions.",
       ],
+      es: [
+        "Lleva una *botella* reutilizable y *rellénala* en hostales y cafés en vez de comprar *plástico*.",
+        "Di „sin *bolsa*, gracias“ y „sin *pitillo*, por favor“ para usar menos plástico.",
+      ],
+      vocab: [
+        { es: "botella", de: "die Flasche", en: "bottle", take: true },
+        { es: "rellénala", de: "füll sie auf (rellenar)", en: "refill it (rellenar)", take: false },
+        { es: "plástico", de: "das Plastik", en: "plastic", take: true },
+        { es: "bolsa", de: "die Tüte", en: "bag", take: true },
+        { es: "pitillo", de: "der Strohhalm (CO)", en: "straw (CO)", take: true },
+      ],
+      level: "A2",
     },
     {
       icon: "🦜",
@@ -175,6 +187,19 @@
         "Don't photograph people without asking.",
         "Don't enter or touch sacred sites where it isn't allowed.",
       ],
+      es: [
+        "Observa a los *animales* de lejos: no los *toques* ni los *alimentes*. Quédate en el *sendero*.",
+        "Antes de una *foto* a una persona, pide *permiso* con „¿Puedo tomar una foto?“.",
+      ],
+      vocab: [
+        { es: "animales", de: "die Tiere (animal)", en: "animals (animal)", take: true },
+        { es: "toques", de: "berühre (tocar)", en: "touch (tocar)", take: false },
+        { es: "alimentes", de: "füttere (alimentar)", en: "feed (alimentar)", take: false },
+        { es: "sendero", de: "der Wanderweg", en: "trail", take: true },
+        { es: "foto", de: "das Foto", en: "photo", take: true },
+        { es: "permiso", de: "die Erlaubnis", en: "permission", take: true },
+      ],
+      level: "B1",
     },
     {
       icon: "🤝",
@@ -204,6 +229,18 @@
         "Don't do work that locals would otherwise be paid for.",
         "Don't pay for pricey „volunteer“ packages that barely reach the ground.",
       ],
+      es: [
+        "Antes de hacer *voluntariado*, busca un *proyecto* con *gente* local que dirija el trabajo.",
+        "Elige *tours* justos donde los *guías* y la comunidad reciban un pago digno.",
+      ],
+      vocab: [
+        { es: "voluntariado", de: "die Freiwilligenarbeit", en: "volunteering", take: true },
+        { es: "proyecto", de: "das Projekt", en: "project", take: true },
+        { es: "gente", de: "die Leute", en: "people", take: true },
+        { es: "tours", de: "die Touren (tour)", en: "tours (tour)", take: true },
+        { es: "guías", de: "die Guides (guía)", en: "guides (guía)", take: true },
+      ],
+      level: "B1",
     },
     {
       icon: "🚌",
@@ -233,6 +270,19 @@
         "Don't leave engines running or race quad bikes through fragile nature.",
         "Don't change accommodation constantly – it means more transport.",
       ],
+      es: [
+        "Los *vuelos* dejan la mayor *huella*. Cuando puedas, toma un *bus* nocturno en vez de avión.",
+        "En la ciudad, *camina*, usa la *bici* o el *transporte* público.",
+      ],
+      vocab: [
+        { es: "vuelos", de: "die Flüge (vuelo)", en: "flights (vuelo)", take: true },
+        { es: "huella", de: "der Fußabdruck", en: "footprint", take: true },
+        { es: "bus", de: "der Bus", en: "bus", take: true },
+        { es: "camina", de: "geh zu Fuß (caminar)", en: "walk (caminar)", take: false },
+        { es: "bici", de: "das Fahrrad", en: "bike", take: true },
+        { es: "transporte", de: "der Verkehr / Transport", en: "transport", take: true },
+      ],
+      level: "B1",
     },
   ];
 

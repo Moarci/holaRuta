@@ -112,6 +112,18 @@
         "Don't use „weón“ (CL) or „boludo“ (AR) with strangers – fine among friends, otherwise quickly offensive.",
         "Don't expect Colombian slang to work automatically in Mexico or Argentina.",
       ],
+      es: [
+        "El *slang* cambia de *país* a país. En Colombia algo *bueno* es „chévere“; en Chile es „bacán“ y en México „padre“.",
+        "Un *amigo* es „parce“ aquí, pero „pana“, „güey“ o „weón“ en otros lados. Pregunta qué palabra se usa en cada *lugar*.",
+      ],
+      vocab: [
+        { es: "slang", de: "der Slang", en: "slang", take: true },
+        { es: "país", de: "das Land", en: "country", take: true },
+        { es: "bueno", de: "gut", en: "good", take: true },
+        { es: "amigo", de: "der Freund", en: "friend", take: true },
+        { es: "lugar", de: "der Ort", en: "place", take: true },
+      ],
+      level: "B1",
     },
     {
       icon: "💬",
@@ -281,7 +293,7 @@
     { es: "ahorita", de: "gleich / später (nicht „sofort“!)", en: "in a bit / later (not „right now“!)" },
     { es: "sumercé", de: "höfliches Sie/du (CO)", en: "polite you (CO)" },
     { es: "llave", de: "enger Kumpel", en: "close buddy" },
-    { es: "¿Me regala…?", de: "Könnten Sie mir … geben?", en: "could you give me …?" },
+    { es: "¿Me regala …?", de: "Könnten Sie mir … geben?", en: "could you give me …?" },
     { es: "el guayabo", de: "der Kater", en: "the hangover" },
     { es: "¡Ave María!", de: "Meine Güte!", en: "oh my!" },
   ];

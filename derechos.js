@@ -120,6 +120,19 @@
         "Don't hand over your passport permanently without a receipt/reason.",
         "Don't lie or hide evidence – it makes things worse.",
       ],
+      es: [
+        "Si te *detienen*, tienes derecho a un *abogado* y a llamar a tu *embajada*. Dilo con calma: „Quiero hablar con un abogado.“",
+        "No *firmes* ningún *documento* que no entiendas y no des una *declaración* sin abogado.",
+      ],
+      vocab: [
+        { es: "detienen", de: "nehmen fest (detener)", en: "detain (detener)", take: false },
+        { es: "abogado", de: "der Anwalt", en: "lawyer", take: true },
+        { es: "embajada", de: "die Botschaft", en: "embassy", take: true },
+        { es: "firmes", de: "unterschreibe (firmar)", en: "sign (firmar)", take: false },
+        { es: "documento", de: "das Dokument", en: "document", take: true },
+        { es: "declaración", de: "die Aussage", en: "statement", take: true },
+      ],
+      level: "B1",
     },
     {
       icon: "🚫",
@@ -149,6 +162,19 @@
         "Don't carry luggage for others, not even „gifts“.",
         "Don't rely on „it's no problem here“ – legally that's not true.",
       ],
+      es: [
+        "Las *drogas* son *ilegales* en toda Latinoamérica, aunque a veces parezca *tolerado*. Las *penas* pueden ser muy duras.",
+        "Nunca lleves *equipaje* de un *desconocido*: si lleva algo ilegal, el problema es tuyo.",
+      ],
+      vocab: [
+        { es: "drogas", de: "die Drogen (droga)", en: "drugs (droga)", take: true },
+        { es: "ilegales", de: "illegal (ilegal)", en: "illegal (ilegal)", take: true },
+        { es: "tolerado", de: "geduldet (tolerar)", en: "tolerated (tolerar)", take: false },
+        { es: "penas", de: "die Strafen (pena)", en: "penalties (pena)", take: true },
+        { es: "equipaje", de: "das Gepäck", en: "luggage", take: true },
+        { es: "desconocido", de: "Fremder / Unbekannter", en: "stranger", take: true },
+      ],
+      level: "B1",
     },
     {
       icon: "🛂",
@@ -178,6 +204,18 @@
         "Don't give false information about the purpose of your trip.",
         "Don't leave without checking your entry stamp – if it's missing, trouble follows.",
       ],
+      es: [
+        "En la *frontera*, revisa que el *sello* tenga la *fecha* correcta y los días permitidos.",
+        "Lleva la *dirección* de tu primer alojamiento y, si te preguntan, muestra tu *vuelo* de salida.",
+      ],
+      vocab: [
+        { es: "frontera", de: "die Grenze", en: "border", take: true },
+        { es: "sello", de: "der Stempel", en: "stamp", take: true },
+        { es: "fecha", de: "das Datum", en: "date", take: true },
+        { es: "dirección", de: "die Adresse", en: "address", take: true },
+        { es: "vuelo", de: "der Flug", en: "flight", take: true },
+      ],
+      level: "A2",
     },
     {
       icon: "🕵️",
