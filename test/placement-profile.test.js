@@ -22,6 +22,7 @@ require(path.join(SRC, "i18n.strings.js"));
 // Die Karten nutzen das globale t() (vom Controller gesetzt) – hier nachstellen.
 globalThis.t = (k, p) => globalThis.window.SC.i18n.t(k, p);
 globalThis.window.t = globalThis.t;
+require(path.join(SRC, "view-helpers.js")); // geteilte Render-Primitive (SC.view), vor ui.js
 require(path.join(SRC, "ui.js"));
 const { ui, i18n } = globalThis.window.SC;
 

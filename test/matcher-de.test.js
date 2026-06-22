@@ -163,9 +163,14 @@ test("Tippfehler: Wortend-Flexion (Genus/Person/Plural) ist KEIN Tippfehler", ()
   assert.equal(matcher.check("estoy cansado", { es: "estoy cansada" }).correct, false);     // Genus
   assert.equal(matcher.check("necesito ayuda", { es: "necesita ayuda" }).correct, false);   // Flexion mitten im Satz
   assert.equal(matcher.check("reservas", { es: "reserva" }).correct, false);          // Plural-s am Ende
+  assert.equal(matcher.check("buenas dias", { es: "buenos dias" }).correct, false);   // Genus-Plural -as/-os (vor Wort-finalem s, mitten im Satz)
+  assert.equal(matcher.check("amigas", { es: "amigos" }).correct, false);             // Genus-Plural -as/-os
   // Gegenprobe: ein Vertipper im Wortinneren bleibt ein (akzeptierter) Tippfehler.
   let r = matcher.check("quiro un cafe", { es: "quiero un cafe" });
   assert.equal(r.correct, true); assert.equal(r.typo, true);
+  // … auch ein langer Wort-INNEN-Tippfehler mit a/o bleibt akzeptiert (keine Über-Strenge).
+  let r2 = matcher.check("neccesito", { es: "necesito" });
+  assert.equal(r2.correct, true); assert.equal(r2.typo, true);
 });
 
 test("Tippfehler: benachbarte Vertauschung zählt als EIN Fehler (Damerau)", () => {
@@ -282,4 +287,28 @@ test("Tippfehler-Budget: 8 Zeichen lassen 1 Fehler zu, 7 Zeichen keinen", () => 
   const r = matcher.check("entirnde", { es: "entiende" }); // r statt e im Inneren, 8 Zeichen
   assert.equal(r.correct, true);
   assert.equal(r.typo, true);
+});
+
+// ---------- Tippfehler-Budget & Genus-vor-s (Mutations-Regressionsschutz) ----------
+// Verriegelt zwei Verzweigungen, die der Mutationstest sonst überleben lässt:
+test("typoBudget: 8–13-Zeichen-Wörter tolerieren NUR 1 Edit (nicht 2)", () => {
+  // 8 Zeichen -> Budget 1: zwei innere Edits dürfen NICHT als Tippfehler zählen
+  // (sonst würde aus "necesito" über zwei Buchstaben hinweg fälschlich ein Treffer).
+  no("nacasito", { es: "necesito" }, "es");        // 2 Edits (e->a, e->a), len 8
+  // Kontrast: genau 1 innerer Edit auf demselben Wort IST ein Tippfehler.
+  const one = matcher.check("neccesito", { es: "necesito" }, "es");
+  assert.equal(one.correct, true);
+  assert.equal(one.typo, true);
+});
+
+test("Wortende: a/o-vor-s ist Flexion, ANDERE Vokale-vor-s bleiben Tippfehler", () => {
+  // Echte Genus-Plural-Flexion (beide a/o vor finalem s) -> KEIN Tippfehler.
+  no("buenos", { es: "buenas" }, "es");
+  no("amigas", { es: "amigos" }, "es");
+  // Aber: differiert vor dem finalen s ein NICHT-Genus-Vokal (e<->a), bleibt es ein
+  // gewöhnlicher 1-Zeichen-Tippfehler und zählt (len>=8). Das tötet die &&->||-Mutation
+  // der Genus-Bedingung: || würde dies fälschlich als Flexion abweisen.
+  const t = matcher.check("presentes", { es: "presentas" }, "es"); // e statt a vor s, len 9
+  assert.equal(t.correct, true);
+  assert.equal(t.typo, true);
 });

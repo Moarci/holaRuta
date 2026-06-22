@@ -8,46 +8,13 @@
 
   // Übersetzungs-Helfer lokal binden statt als impliziten Global (window.t) zu
   // nutzen. i18n.js läuft vor ui.js und setzt SC.i18n.t === window.t, daher ist
-  // die Referenz hier bereits vorhanden. esc() ist bereits lokal (siehe unten).
+  // die Referenz hier bereits vorhanden.
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
 
-  function esc(str) {
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
-  // Sharepic verfügbar? (Modul geladen + Canvas vorhanden)
-  function canShare() {
-    return !!(window.SC && window.SC.share);
-  }
-
-  // Sprachausgabe verfügbar? (TTS-Modul geladen + vom Browser unterstützt).
-  // Steuert, ob der Hör-Modus und 🔊-Buttons überhaupt angeboten werden.
-  function speechReady() {
-    const sp = window.SC && window.SC.speech;
-    return !!(sp && sp.isSupported());
-  }
-
-  // Format-Umschalter (1:1 / 9:16) + Teilen-Button als ein Block.
-  // fmt = aktuell gewähltes Format ('square'|'story'), action = Teilen-Aktion.
-  function shareBlock(fmt, action, label) {
-    if (!canShare()) return "";
-    const chip = (id, txt) =>
-      `<button class="fmtchip ${fmt === id ? "is-active" : ""}" type="button"
-               data-action="set-share-format" data-format="${id}"
-               aria-pressed="${fmt === id}">${txt}</button>`;
-    return `
-      <div class="sharebar">
-        <div class="fmtrow" role="group" aria-label="${esc(t("common.imageFormat"))}">
-          ${chip("square", "▢ 1:1")}${chip("story", "▯ 9:16")}
-        </div>
-        <button class="ghostbtn" data-action="${action}">📤 ${esc(label)}</button>
-      </div>`;
-  }
+  // Geteilte, zustandsfreie Render-Primitive aus view-helpers.js (SC.view) –
+  // dieselbe Quelle nutzen auch die Feature-Module (kein Duplikat). view-helpers.js
+  // läuft vor ui.js (index.html / Build / _dom-stub-Reihenfolge).
+  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock } = window.SC.view;
 
   // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
   // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
@@ -1277,17 +1244,8 @@
       </button>`;
   }
 
-  // Favoriten-Stern: schaltet eine Karte/einen Eintrag im persönlichen Lexikon
-  // („Mi léxico") an oder aus. on = bereits Favorit (gefüllter Stern). Gemeinsam
-  // genutzt von Karten-Detail, Spickzettel & Suche, damit Markup/ARIA einheitlich
-  // bleiben. id wird mitgegeben; der Controller (app.js) hört auf data-action.
-  function favStar(id, on, opts) {
-    const o = opts || {};
-    const cls = "favstar" + (on ? " is-on" : "") + (o.cls ? " " + o.cls : "");
-    const label = on ? t("favorites.remove") : t("favorites.add");
-    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"
-              aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
-  }
+  // favStar() ist nach view-helpers.js (SC.view) gewandert – oben via Destructuring
+  // gebunden, da auch Feature-Module (Spickzettel, Mi léxico) es nutzen.
 
   // Beschrifteter Favoriten-Button direkt unter der Lernkarte. Früher saß der Stern
   // nackt oben in der Kopfzeile (neben dem Zähler) – dort war ohne Beschriftung nicht
@@ -1307,7 +1265,6 @@
   // ---------- STUDY ----------
   function renderStudy(vm) {
     const pct = vm.total > 0 ? Math.round((vm.position / vm.total) * 100) : 0;
-    const card = vm.card;
     const accent = vm.accent; // [from,to]
 
     const body =
@@ -1345,15 +1302,9 @@
     return `<span class="${cls}"${style} title="${esc(vm.level.label)}">${esc(vm.level.short)} · ${esc(vm.level.label)}</span>`;
   }
 
-  // Runder Eck-Button auf der Karte (44px). Gemeinsame Basis für 🔊 (rechts) und
-  // 🧭 (links), damit Markup/Stil nicht doppelt gepflegt werden. base = Modifier-
-  // Klasse (cardbtn--speak | cardbtn--ctx), on = farbige Variante für die Rückseite,
-  // extra = zusätzliche Attribute (z.B. aria-expanded/-controls), icon/label/action.
-  function cornerBtn({ base, on, icon, label, action, extra = "" }) {
-    const cls = `cardbtn ${base}${on ? " is-on" : ""}`;
-    return `<button class="${cls}" type="button" data-action="${action}"
-              aria-label="${esc(label)}" title="${esc(label)}"${extra ? " " + extra : ""}>${icon}</button>`;
-  }
+  // Der runde Eck-Button cornerBtn({base,on,icon,label,action,extra}) wohnt jetzt in
+  // view-helpers.js (SC.view) – geteilt von Lernkarte (🔊/🧭), El Cuerpo und
+  // Einkaufszettel. Oben aus SC.view destrukturiert.
 
   // 🔊-Button für die Sprachausgabe (nur wenn der Browser es kann).
   // on = farbige Variante (für die bunte Rückseite).
@@ -1469,9 +1420,9 @@
           <span class="face__hint">${inputHint}</span>
         </div>
         <form class="typer" data-action="submit-typed" id="typer">
-          <input class="typer__input" id="answer" type="text" autocomplete="off"
+          <input class="typer__input" id="answer" type="text"${!sq ? ' lang="es"' : ""} autocomplete="off"
                  autocapitalize="off" autocorrect="off" spellcheck="false"
-                 placeholder="${esc(placeholder)}" />
+                 aria-label="${esc(placeholder)}" placeholder="${esc(placeholder)}" />
           <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`;
     }
@@ -1518,9 +1469,9 @@
           <span class="face__hint">${esc(t("study.listenHint"))}</span>
         </div>
         <form class="typer" data-action="submit-typed" id="typer">
-          <input class="typer__input" id="answer" type="text" autocomplete="off"
+          <input class="typer__input" id="answer" type="text" lang="es" autocomplete="off"
                  autocapitalize="off" autocorrect="off" spellcheck="false"
-                 placeholder="${esc(t("study.listenPlaceholder"))}" />
+                 aria-label="${esc(t("study.listenPlaceholder"))}" placeholder="${esc(t("study.listenPlaceholder"))}" />
           <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`;
     }
@@ -1876,7 +1827,7 @@
       .join("");
 
     const rows = vm.list.length
-      ? vm.list.map(statRow).join("")
+      ? vm.list.map(statRow).join("") + (vm.listMore ? `<p class="stat-more">${esc(t("profile.statsMore", { n: vm.listMore }))}</p>` : "")
       : `<p class="stat-empty">${esc(t("profile.statsEmpty"))}</p>`;
 
     return `
@@ -2070,68 +2021,12 @@
       </div>`;
   }
 
-  // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der
-  // Infoseiten Länderkunde (renderInfo) und Conjugación (renderConjugacion).
-  function sect(icon, title, body, id) {
-    return `
-      <div class="cinfo-sect"${id ? ` id="${esc(id)}"` : ""}>
-        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
-        ${body}
-      </div>`;
-  }
+  // Der Themenblock-Baustein sect(icon,title,body,id) ist nach view-helpers.js
+  // (SC.view) gewandert – geteilt von renderInfo, renderConjugacion und dem
+  // Tiempos-Feature-Modul. Hier nur noch oben aus SC.view destrukturiert.
 
-  // ---------- SPICKZETTEL (Survival-Schnellzugriff) ----------
-  // Reine Nachschlage-Ansicht (kein SRS): die kritischsten Sätze groß, je mit 🔊.
-  // Tipp auf den Satz öffnet die Großanzeige – bildschirmfüllend zum Herzeigen.
-  function renderSpickzettel(vm) {
-    const nav = vm.groups.map((g) => `
-      <a class="sz-nav__chip" href="#sz-${esc(g.id)}" data-action="scroll-to" data-target="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
-        <span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}
-      </a>`).join("");
-    const groups = vm.groups.map((g) => {
-      const rows = g.cards.map((c) => `
-        <div class="sz-row">
-          <button class="sz-row__main" type="button" data-action="sz-show" data-id="${esc(c.id)}"
-                  title="${esc(t("discover.szShowTitle"))}">
-            <span class="sz-row__de">${esc(c.de)}</span>
-            <span class="sz-row__es" lang="es">${esc(c.es)}</span>
-            ${c.tip ? `<span class="sz-row__tip">🗣️ ${esc(c.tip)}</span>` : ""}
-          </button>
-          ${favStar(c.id, c.fav, { cls: "sz-fav" })}
-          ${vm.speakable
-            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="${esc(t("discover.szListen"))}" title="${esc(t("discover.szListen"))}">🔊</button>`
-            : ""}
-        </div>`).join("");
-      return `
-        <div class="sz-group" id="sz-${esc(g.id)}" style="--from:${esc(g.grad[0])};--to:${esc(g.grad[1])}">
-          <h3 class="sz-group__h"><span aria-hidden="true">${esc(g.icon)}</span> ${esc(g.label)}</h3>
-          <div class="sz-list">${rows}</div>
-        </div>`;
-    }).join("");
-    // Großanzeige: Satz bildschirmfüllend – zum Herzeigen, wenn Reden nicht reicht.
-    const show = vm.show ? `
-      <div class="sz-show" data-action="sz-close" role="dialog" aria-modal="true" aria-label="${esc(t("discover.szShowLabel"))}">
-        <div class="sz-show__inner">
-          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
-          <p class="sz-show__de">${esc(vm.show.de)}</p>
-          <div class="sz-show__actions">
-            ${vm.speakable
-              ? `<button class="cta" type="button" data-action="speak-card" data-id="${esc(vm.show.id)}">${esc(t("discover.szListenBig"))}</button>`
-              : ""}
-            <button class="ghostbtn" type="button" data-action="sz-close">${esc(t("common.close"))}</button>
-          </div>
-        </div>
-      </div>` : "";
-    return `
-      <section class="screen">
-        ${hmTopbar("🆘 Supervivencia", "home")}
-        <p class="hm-intro">${esc(t("discover.szIntro"))}</p>
-        ${moduleShareBtn("supervivencia")}
-        <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
-        ${groups}
-        ${show}
-      </section>`;
-  }
+  // SPICKZETTEL (Survival-Schnellzugriff) ist nach features/spickzettel.js
+  // (SC.spickzettel) gewandert – VM, Handler und Render leben dort zusammen.
 
   // ---------- MI LÉXICO (Favoriten – persönliches Lexikon) ----------
   // Vom Nutzer gemerkte Wörter/Sätze: eine Liste (neueste zuerst) mit Vorlesen,
@@ -2204,109 +2099,8 @@
       </section>`;
   }
 
-  // ---------- PRECIOS AL OÍDO (Preis-Hörtrainer) ----------
-  // Die App sagt einen frisch generierten Betrag auf Spanisch (Auto-Speak), man
-  // tippt die Ziffern. Vorab wählt man Land/Währung und Schwierigkeit – so reicht
-  // die Spanne vom Kleingeld bis zu kolumbianischen Millionenbeträgen.
-
-  // Setup: Land/Währung (mit Flaggen) + Schwierigkeitsstufe wählen, dann starten.
-  function renderPreciosSetup(vm) {
-    if (!vm.speakable) {
-      return `
-        <section class="screen">
-          ${hmTopbar("💵 Precios al oído", "home")}
-          <p class="stat-empty">${esc(t("discover.prcNoSpeech"))}</p>
-        </section>`;
-    }
-    const currencies = vm.currencies.map((c) => `
-      <button class="prc-cur ${c.selected ? "is-active" : ""}" type="button"
-              data-action="precios-currency" data-id="${esc(c.key)}" aria-pressed="${c.selected}">
-        <span class="prc-cur__flag" aria-hidden="true">${esc(c.flag)}</span>
-        <span class="prc-cur__name">${esc(c.name)}</span>
-        <span class="prc-cur__code">${esc(c.code)}</span>
-      </button>`).join("");
-    const levels = vm.levels.map((l) => `
-      <button class="prc-lvl ${l.active ? "is-active" : ""}" type="button"
-              data-action="precios-level" data-level="${l.id}" aria-pressed="${l.active}">
-        <span class="prc-lvl__short">${esc(l.short)}</span>
-        <span class="prc-lvl__label">${esc(l.label)}</span>
-        <span class="prc-lvl__hint">${esc(l.hint)}</span>
-      </button>`).join("");
-    const sample = vm.sample
-      ? `<p class="prc-sample">${t("discover.prcSample", { flag: esc(vm.sample.flag), name: esc(vm.sample.name), max: esc(vm.sample.max), many: esc(vm.sample.many) })}</p>`
-      : "";
-    return `
-      <section class="screen">
-        ${hmTopbar("💵 Precios al oído", "home")}
-        <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
-        ${moduleShareBtn("precios")}
-        <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
-        <div class="prc-curs">${currencies}</div>
-        <h3 class="prc-head">${esc(t("discover.prcDifficulty"))}</h3>
-        <div class="prc-lvls">${levels}</div>
-        ${sample}
-        <button class="cta" data-action="start-precios">${esc(t("discover.prcStart"))}</button>
-      </section>`;
-  }
-
-  function renderPrecios(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
-    const replay = vm.speakable
-      ? `<button class="listen-replay ghostbtn" type="button" data-action="precios-speak">${esc(t("discover.prcReplay"))}</button>`
-      : "";
-    const curTag = `<span class="prc-tag">${esc(vm.flag)} ${esc(vm.currencyCode)}</span>`;
-    const body = !vm.result
-      ? `
-        <div class="card-static card-listen">
-          <span class="listen-ear" aria-hidden="true">💵</span>
-          ${replay}
-          <span class="face__hint">${esc(t("discover.prcWhich"))}</span>
-        </div>
-        <form class="typer" data-action="submit-precios" id="precios-form">
-          <input class="typer__input" id="precios-answer" type="text" inputmode="numeric"
-                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(t("discover.prcPlaceholder"))}" />
-          <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
-        </form>`
-      : `
-        <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
-          <div class="face__word" lang="es">${esc(vm.answerEs)}</div>
-          <div class="listen-de">= ${esc(vm.answerDigits)} ${esc(vm.currencyCode)}</div>
-          ${vm.result.correct
-            ? `<div class="verdict verdict--ok">${esc(t("common.correctHeard"))}</div>`
-            : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: vm.result.input || "—" }))}</div>`}
-        </div>
-        <button class="cta" data-action="precios-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
-    return `
-      <section class="screen study">
-        ${hmTopbar("💵 Precios al oído", "precios-setup")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.prcProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="prc-status"><div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>${curTag}</div>
-        ${body}
-      </section>`;
-  }
-
-  function renderPreciosDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
-
-  // Land-Auswahl als <select> mit Regionen-<optgroup>, geteilt von Länderkunde,
-  // Reise-Knigge & Bebidas (alle teilen state.countryId via data-action=
-  // "select-country"). groups = vm.groups (Regionen mit ihren Ländern).
-  function countryPicker(groups) {
-    const options = (groups || [])
-      .map((g) => {
-        const opts = g.countries
-          .map((c) => `<option value="${esc(c.id)}"${c.selected ? " selected" : ""}>${c.flag} ${esc(c.name)}</option>`)
-          .join("");
-        return `<optgroup label="${esc(g.region)}">${opts}</optgroup>`;
-      })
-      .join("");
-    return `
-      <label class="cinfo-pick">
-        <span class="cinfo-pick__cap">${esc(t("discover.infoPickCountry"))}</span>
-        <select class="cinfo-pick__sel" id="country-select" data-action="select-country">${options}</select>
-      </label>`;
-  }
+  // PRECIOS AL OÍDO (Preis-Hörtrainer) ist nach features/precios.js
+  // (SC.precios) gewandert – VMs, Handler und Render leben dort zusammen.
 
   // ---------- ZIEL-PICKER (Modo profe / Aktivitätsblatt) ----------
   // Statt eines nativen <select> mit <optgroup> (auf Android nur ein nüchterner
@@ -2628,344 +2422,24 @@
       </div>`;
   }
 
-  // ---------- HISTORIA DE SUDAMÉRICA (ERKLÄRSEITE) ----------
-  // Interaktiver Zeitstrahl (aufklappbare Epochen, natives <details>), eine
-  // Galerie der Protagonisten, der „Heute"-Block mit Spannungen und ein paar
-  // „¿Sabías que…?"-Häppchen. Bilder kommen über Wikimedia Special:FilePath –
-  // so muss kein Hash geraten werden; offline/bei Fehler blendet onerror sie aus.
-  function commonsImg(file, w) {
-    if (!file) return "";
-    return "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(file) + "?width=" + (w || 960);
-  }
+  // ---------- HISTORIA (Erklärseite Süd-/Mittelamerika) ----------
+  // VM und Render (Zeitstrahl, Protagonisten, Spannungen, Fakten) wohnen jetzt im
+  // Feature-Modul SC.cronologia (features/cronologia.js); app.js delegiert SCREENS.
+  // Die geteilten Lesetraining-Bausteine (readingBlock/levelMeta inkl. esRich/
+  // vocabBlock/quizBlock) sind nach view-helpers.js (SC.view) gewandert – auch die
+  // Modulblätter (Logística/Salud), Bebidas und Bailar nutzen sie. Oben destrukturiert.
 
-  // CEFR-Schwierigkeit → Punkte-Meter + lokalisiertes Wort (Selbst-Einstufung).
-  const HIST_LEVEL_DOTS = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
-  function levelMeta(level) {
-    if (!level) return null;
-    const dots = HIST_LEVEL_DOTS[level] || 3;
-    return { code: level, word: t("discover.histLvl" + level), meter: "●".repeat(dots) + "○".repeat(5 - dots) };
-  }
-  // Spanischer Lesetext: *markierte* Wörter werden zu antippbaren Chips, die die
-  // Übersetzung (aus der Wörterliste der Epoche, in der aktiven Sprache) zeigen.
-  function esRich(paras, vocab) {
-    const vmap = {};
-    (vocab || []).forEach((v) => { vmap[String(v.es).toLowerCase().trim()] = v; });
-    return (paras || []).map((p) => {
-      let html = "", last = 0; const re = /\*([^*]+)\*/g; let m;
-      while ((m = re.exec(p))) {
-        html += esc(p.slice(last, m.index));
-        const w = m[1];
-        const v = vmap[w.toLowerCase().trim()];
-        const tr = v ? v.de : "";
-        html += `<button class="hist-w" type="button" data-action="hist-word" aria-label="${esc(w + " – " + tr)}">${esc(w)}<span class="hist-w__pop" aria-hidden="true">${esc(tr)}</span></button>`;
-        last = re.lastIndex;
-      }
-      html += esc(p.slice(last));
-      return `<p class="hist-es__p" lang="es">${html}</p>`;
-    }).join("");
-  }
-  // Wörterliste pro Text: zum schnellen Nachschlagen, gruppiert in „mitnehmen"
-  // (lohnt sich) und „nicht so wichtig" (kannst du überspringen).
-  function vocabBlock(vocab) {
-    if (!vocab || !vocab.length) return "";
-    const row = (v) => `<li class="hist-voc__row"><span class="hist-voc__es" lang="es">${esc(v.es)}</span><span class="hist-voc__de">${esc(v.de)}</span></li>`;
-    const take = vocab.filter((v) => v.take), skip = vocab.filter((v) => !v.take);
-    const takeList = take.length
-      ? `<p class="hist-voc__cap hist-voc__cap--take">✅ ${esc(t("discover.histTake"))}</p><ul class="hist-voc__list">${take.map(row).join("")}</ul>`
-      : "";
-    const skipList = skip.length
-      ? `<p class="hist-voc__cap hist-voc__cap--skip">○ ${esc(t("discover.histSkip"))}</p><ul class="hist-voc__list hist-voc__list--skip">${skip.map(row).join("")}</ul>`
-      : "";
-    return `
-      <details class="hist-voc">
-        <summary class="hist-voc__sum">📒 ${esc(t("discover.histVocab"))} <span class="hist-voc__n">${vocab.length}</span><span class="hist-voc__chev" aria-hidden="true">▾</span></summary>
-        <div class="hist-voc__body">${takeList}${skipList}</div>
-      </details>`;
-  }
-  // Mini-Quiz zum Text: Spanisches Wort → richtige Übersetzung wählen. Distraktoren
-  // aus denselben Vokabeln. Selbstprüfung per DOM-Klasse (kein Re-Render, s. app.js).
-  function quizBlock(vocab) {
-    const items = vocab || [];
-    const pool = items.filter((v) => v.take);
-    if (pool.length < 3 || items.length < 4) return ""; // zu wenige für sinnvolle Optionen
-    const qs = pool.slice(0, 4);
-    const questions = qs.map((v, i) => {
-      const others = items.filter((x) => x.es !== v.es).map((x) => x.de);
-      const opts = [v.de];
-      for (let k = 0; k < others.length && opts.length < 4; k++) {
-        if (opts.indexOf(others[k]) === -1) opts.push(others[k]);
-      }
-      const rot = (i + 1) % opts.length; // richtige Antwort nicht immer oben
-      const rotated = opts.slice(rot).concat(opts.slice(0, rot));
-      const optsHtml = rotated
-        .map((o) => `<button class="hist-quiz__opt" type="button" data-action="hist-quiz-answer" data-correct="${o === v.de ? "1" : "0"}">${esc(o)}</button>`)
-        .join("");
-      return `
-        <div class="hist-quiz__q">
-          <p class="hist-quiz__prompt" lang="es">${esc(v.es)}</p>
-          <div class="hist-quiz__opts">${optsHtml}</div>
-        </div>`;
-    }).join("");
-    return `
-      <details class="hist-quiz">
-        <summary class="hist-quiz__sum">🧩 ${esc(t("discover.histQuiz"))}<span class="hist-quiz__chev" aria-hidden="true">▾</span></summary>
-        <div class="hist-quiz__body">
-          <p class="hist-quiz__intro">${esc(t("discover.histQuizIntro"))}</p>
-          ${questions}
-        </div>
-      </details>`;
-  }
-  // Gemeinsamer Lesetraining-Block (Epoche, Protagonist, Spannung teilen ihn).
-  // opts: { es:[Absatz], vocab, level, trans?:[Absatz], shareId, quiz?:bool }
-  // trans = optionale „Ganze Übersetzung", nur wo der Text nicht ohnehin schon
-  // in der UI-Sprache danebensteht (Epochen ja, Karten nein).
-  function readingBlock(opts) {
-    const o = opts || {};
-    if (!o.es || !o.es.length) return "";
-    const lvl = levelMeta(o.level);
-    const bar = `
-      <div class="hist-es__bar">
-        <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
-        ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
-      </div>`;
-    const text = `<div class="hist-es">${bar}${esRich(o.es, o.vocab)}<p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p></div>`;
-    const vocab = vocabBlock(o.vocab);
-    const quiz = o.quiz ? quizBlock(o.vocab) : "";
-    const trans = (o.trans && o.trans.length)
-      ? `<details class="hist-trans"><summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary><div class="hist-trans__body">${o.trans.map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div></details>`
-      : "";
-    const share = o.shareId
-      ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(o.shareId)}">📤 ${esc(t("discover.histShare"))}</button>`
-      : "";
-    return `${text}${vocab}${quiz}${trans}${share}`;
-  }
-  function renderHistoria(vm) {
-    // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
-    const nav = `
-      <nav class="hist-nav" aria-label="${esc(t("discover.histAreas"))}">
-        <a class="hist-nav__chip" href="#hist-zeitstrahl" data-action="scroll-to" data-target="hist-zeitstrahl">🕰️ ${esc(t("discover.histNavTimeline"))}</a>
-        <a class="hist-nav__chip" href="#hist-protagonisten" data-action="scroll-to" data-target="hist-protagonisten">👤 ${esc(t("discover.histNavFigures"))}</a>
-        <a class="hist-nav__chip" href="#hist-heute" data-action="scroll-to" data-target="hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
-      </nav>`;
 
-    // Auf Modul-Ebene teilbar: ein Sharepic des ganzen Moduls (Titel, Einleitung
-    // und Zeitstrahl-Teaser) – damit man „Historia de Sudamérica" weiterempfehlen
-    // kann, nicht nur einen einzelnen Text. Logik in app.shareHistModule.
-    const moduleShare = canShare()
-      ? `<div class="hist-modshare"><button class="hist-share" type="button" data-action="share-hist-module">📤 ${esc(t("discover.histModuleShare"))}</button></div>`
-      : "";
+  // Der Tipp-Teilen-Knopf tipsShareBtn(cat, i) wohnt jetzt in view-helpers.js
+  // (SC.view) – geteilt von Knigge/Logística/Salud/Fotos/Bailar (hier) und dem
+  // Regatear-Feature-Modul. Oben aus SC.view destrukturiert.
 
-    // Eine Epoche als aufklappbare Karte am Zeitstrahl. Aufbau wie bei den
-    // Protagonisten: zuerst der erklärende Text in der UI-Sprache, darunter das
-    // spanische Lesetraining als eigener aufklappbarer Block.
-    const era = (e) => {
-      const img = e.img
-        ? `<figure class="hist-era__fig">
-             <img class="hist-era__img" src="${esc(commonsImg(e.img))}" alt="${esc(e.imgCaption || e.title)}"
-                  loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').style.display='none'" />
-             ${e.imgCaption ? `<figcaption class="hist-era__cap">${esc(e.imgCaption)}</figcaption>` : ""}
-           </figure>`
-        : "";
-      const lvl = levelMeta(e.level);
-      const bodyText = (e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("");
-      const reading = (e.es && e.es.length)
-        ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-read__body">${readingBlock({ es: e.es, vocab: e.vocab, level: e.level, shareId: e.id, quiz: true })}</div>
-           </details>`
-        : "";
-      const points = (e.points || []).length
-        ? `<ul class="hist-era__points">${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
-        : "";
-      return `
-        <details class="hist-era">
-          <summary class="hist-era__head">
-            <span class="hist-era__dot" aria-hidden="true">${esc(e.icon || "•")}</span>
-            <span class="hist-era__heart">
-              <span class="hist-era__metarow">
-                <span class="hist-era__period">${esc(e.period)}</span>
-                ${lvl ? `<span class="hist-era__lvlchip hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}
-              </span>
-              <span class="hist-era__title">${esc(e.title)}</span>
-              <span class="hist-era__lead">${esc(e.lead)}</span>
-            </span>
-            <span class="hist-era__chev" aria-hidden="true">▾</span>
-          </summary>
-          <div class="hist-era__body">
-            ${img}
-            ${bodyText}
-            ${reading}
-            ${points}
-          </div>
-        </details>`;
-    };
-    const eras = (vm.eras || []).map(era).join("");
+  // ---------- REISE-KNIGGE (Etiqueta de viaje) ----------
+  // VM und Render (inkl. lokaler kniggeTopbar) wohnen jetzt im Feature-Modul
+  // SC.etiqueta (features/etiqueta.js); app.js delegiert SCREENS und Spotlight-
+  // Vorschau. Die geteilte Länder-Auswahl (countryPicker/select-country/
+  // state.countryId) bleibt controller-seitig (auch Länderkunde/Bebidas nutzen sie).
 
-    // Ein Protagonist als Karte mit Porträt.
-    const figure = (f) => {
-      const img = f.img
-        ? `<img class="hist-fig__img" src="${esc(commonsImg(f.img, 320))}" alt="${esc(f.name)}"
-                loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
-        : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">👤</span>`;
-      const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
-      const lvl = levelMeta(f.level);
-      const reading = (f.es && f.es.length)
-        ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-read__body">${readingBlock({ es: f.es, vocab: f.vocab, level: f.level, shareId: f.id, quiz: false })}</div>
-           </details>`
-        : "";
-      return `
-        <article class="hist-fig">
-          <div class="hist-fig__top">
-            ${img}
-            <div class="hist-fig__id">
-              <h4 class="hist-fig__name">${f.flag ? `<span aria-hidden="true">${f.flag}</span> ` : ""}${esc(f.name)}</h4>
-              <p class="hist-fig__role">${esc(f.role)}</p>
-              <p class="hist-fig__years">${esc(f.years)}</p>
-            </div>
-          </div>
-          <p class="hist-fig__text">${esc(f.text)}</p>
-          ${quote}
-          ${reading}
-        </article>`;
-    };
-    const figures = (vm.figures || []).map(figure).join("");
-
-    // Eine aktuelle Spannung/Lage als Karte mit Status-Plakette.
-    const tension = (s) => {
-      const lvl = levelMeta(s.level);
-      const reading = (s.es && s.es.length)
-        ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-read__body">${readingBlock({ es: s.es, vocab: s.vocab, level: s.level, shareId: s.id, quiz: false })}</div>
-           </details>`
-        : "";
-      return `
-      <article class="hist-ten hist-ten--${esc(s.tone || "shift")}">
-        <div class="hist-ten__head">
-          <span class="hist-ten__icon" aria-hidden="true">${esc(s.icon || "•")}</span>
-          <h4 class="hist-ten__title">${esc(s.title)}</h4>
-          <span class="hist-ten__badge">${esc(s.status)}</span>
-        </div>
-        <p class="hist-ten__where">${esc(s.where)}</p>
-        <p class="hist-ten__text">${esc(s.text)}</p>
-        ${reading}
-      </article>`;
-    };
-    const tensions = (vm.tensions || []).map(tension).join("");
-
-    const facts = (vm.facts || []).length
-      ? `<div class="hist-facts">
-           <h3 class="hist-block__h">💡 ${esc(t("discover.histFactsTitle"))}</h3>
-           <div class="hist-facts__grid">
-             ${vm.facts.map((f) => `<div class="hist-fact">${esc(f)}</div>`).join("")}
-           </div>
-         </div>`
-      : "";
-
-    return `
-      <section class="screen">
-        ${hmTopbar(esc(vm.topTitle || "📜 Historia de Sudamérica"), "home")}
-        <p class="hm-intro">${esc(vm.intro)}</p>
-        ${nav}
-        ${moduleShare}
-
-        <div class="hist-block" id="hist-zeitstrahl">
-          <h3 class="hist-block__h">🕰️ ${esc(t("discover.histTimelineTitle"))}</h3>
-          <p class="hist-block__sub">${esc(t("discover.histTimelineSub"))}</p>
-          <div class="hist-timeline">${eras}</div>
-        </div>
-
-        <div class="hist-block" id="hist-protagonisten">
-          <h3 class="hist-block__h">👤 ${esc(t("discover.histFiguresTitle"))}</h3>
-          <p class="hist-block__sub">${esc(t("discover.histFiguresSub"))}</p>
-          <div class="hist-figs">${figures}</div>
-        </div>
-
-        <div class="hist-block" id="hist-heute">
-          <h3 class="hist-block__h">📰 ${esc(t("discover.histTodayTitle"))}</h3>
-          <p class="hist-block__sub">${esc(t("discover.histTodaySub"))}</p>
-          <div class="hist-tens">${tensions}</div>
-        </div>
-
-        ${facts}
-      </section>`;
-  }
-
-  // Teilen-Knopf für die Entdecken-Tipp-Kategorien (Knigge/Regatear/Logística/
-  // Salud): erzeugt ein Sharepic des Themas mit seinen DOs/Don'ts „zum
-  // Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
-  function tipsShareBtn(cat, i) {
-    return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
-  }
-
-  // „Modul teilen"-Knopf für die Entdecken-Module: empfiehlt das ganze Modul als
-  // Sharepic weiter (Logik in app.shareModule, Motiv „module"). mod = Modul-Id
-  // (siehe MODULE_SHARE in app.js). Sitzt oben direkt unter der Einleitung – wie
-  // bei Historia. Ohne Teilen-Fähigkeit (kein Share-Modul) entfällt der Knopf.
-  function moduleShareBtn(mod) {
-    if (!canShare()) return "";
-    return `<div class="hist-modshare"><button class="hist-share mod-share" type="button" data-action="share-module" data-mod="${esc(mod)}">📤 ${esc(t("discover.moduleShare"))}</button></div>`;
-  }
-
-  // ---------- REISE-KNIGGE (Verhalten unterwegs) ----------
-  // Allgemeine DOs & Don'ts (Hostel, Bus, Gruppen, Kultur) plus landesspezifische
-  // Akzente. Land-Dropdown wie in renderInfo (teilt state.countryId). Themenblöcke
-  // sind natives <details> (kein JS-State) – analog zu dish() in renderInfo.
-  function renderKnigge(vm) {
-    const selector = countryPicker(vm.groups);
-
-    const countryName = vm.country ? vm.country.name : "";
-
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
-        .join("");
-
-    const block = (t, i) => {
-      const dos = liList(t.dos, "knigge-do", "✅");
-      const donts = liList(t.donts, "knigge-dont", "🚫");
-      const accent = t.accent
-        ? `<div class="knigge-accent">💡 <strong>${esc(window.t("discover.kniggeAccentIn", { country: countryName }))}</strong> ${esc(t.accent)}</div>`
-        : "";
-      return `
-        <details class="knigge-topic">
-          <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
-            <span class="knigge-topic__title">${esc(t.title)}</span>
-            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
-          </summary>
-          <div class="knigge-topic__body">
-            ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
-            ${dos ? `<ul class="knigge-list">${dos}</ul>` : ""}
-            ${donts ? `<ul class="knigge-list">${donts}</ul>` : ""}
-            ${accent}
-            ${tipsShareBtn("knigge", i)}
-          </div>
-        </details>`;
-    };
-
-    const topics = (vm.topics || []).map(block).join("");
-
-    return `
-      <section class="screen">
-        ${kniggeTopbar()}
-        ${selector}
-        <p class="pageintro">${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.</p>
-        ${moduleShareBtn("knigge")}
-        ${topics}
-      </section>`;
-  }
-
-  function kniggeTopbar() {
-    return `
-      <div class="topbar">
-        <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">🧭 Etiqueta de viaje</div>
-        <span></span>
-      </div>`;
-  }
 
   // ---------- BEBIDAS AM/PM (Tag-/Abendgetränk pro Land) ----------
   // Ein doppelseitiges Emaille-Schild wie der Theme-Umschalter, aber pro Land:
@@ -3125,143 +2599,10 @@
       </section>`;
   }
 
-  // ---------- REGATEAR (gut verhandeln & feilschen) ----------
-  // Eine Seite, drei Teile: Erklärung/Taktik (aufklappbar), wichtige Sätze nach
-  // Phase, plus Einheiten-Wortschatz, und zum Schluss Rollenspiele zum Üben.
-  function renderRegatear(vm) {
-    // Erklärung: Taktik-Blöcke (DOs/Don'ts) wie im Knigge, aufklappbar.
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
-        .join("");
-    const tipBlock = (t, i) => `
-      <details class="knigge-topic">
-        <summary class="knigge-topic__head">
-          <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
-          <span class="knigge-topic__title">${esc(t.title)}</span>
-          <span class="knigge-topic__chev" aria-hidden="true">▾</span>
-        </summary>
-        <div class="knigge-topic__body">
-          ${t.intro ? `<p class="knigge-intro">${esc(t.intro)}</p>` : ""}
-          ${t.dos && t.dos.length ? `<ul class="knigge-list">${liList(t.dos, "knigge-do", "✅")}</ul>` : ""}
-          ${t.donts && t.donts.length ? `<ul class="knigge-list">${liList(t.donts, "knigge-dont", "🚫")}</ul>` : ""}
-          ${tipsShareBtn("regatear", i)}
-        </div>
-      </details>`;
-    const tips = (vm.tips || []).map(tipBlock).join("");
+  // REGATEAR (gut verhandeln & feilschen) ist nach features/regateo.js (SC.regateo)
+  // gewandert – VM und Render leben dort zusammen; der Opener (openRegatear) bleibt
+  // im Controller. Der Tipp-Teilen-Knopf tipsShareBtn() kommt aus SC.view.
 
-    // Glossar: kompakte zweispaltige Wortliste (es · de).
-    const glossary = (vm.glossary || []).map((g) => `
-      <li class="rg-gloss">
-        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
-        <span class="rg-gloss__de">${esc(g.de)}</span>
-      </li>`).join("");
-
-    // Wichtige Sätze: pro Phase eine kleine zweispaltige Liste (es / de).
-    const phraseGroup = (g) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
-        <ul class="rg-phrases">
-          ${g.items.map((p) => `
-            <li class="rg-phrase">
-              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-              <span class="rg-phrase__de">${esc(p.de)}</span>
-            </li>`).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
-
-    // Einheiten: kompakte Tabelle Spanisch · Deutsch · Beispiel.
-    const units = (vm.units || []).map((u) => `
-      <li class="rg-unit">
-        <span class="rg-unit__es" lang="es">${esc(u.es)}</span>
-        <span class="rg-unit__de">${esc(u.de)}</span>
-        <span class="rg-unit__ej" lang="es">${esc(u.ejemplo)}</span>
-      </li>`).join("");
-
-    // Regionale Unterschiede: Flagge + Land + kurze Notiz.
-    const regional = (vm.regional || []).map((r) => `
-      <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${esc(r.flag)}</span>
-        <span class="rg-region__body">
-          <span class="rg-region__country">${esc(r.country)}</span>
-          <span class="rg-region__note">${esc(r.note)}</span>
-        </span>
-      </li>`).join("");
-
-    // Rollenspiele: pro Szene ein aufklappbarer Dialog (A/B) + nützliche Sätze.
-    const rpBlock = (r) => {
-      const lines = r.dialogue.map((d) => `
-        <div class="hm-line hm-line--${d.speaker === "A" ? "a" : "b"}">
-          <span class="hm-line__who">${esc(d.speaker)}</span>
-          <span class="hm-line__bubble">
-            <span class="hm-line__es" lang="es">${esc(d.es)}</span>
-            <span class="hm-line__de">${esc(d.de)}</span>
-          </span>
-        </div>`).join("");
-      const useful = r.usefulPhrases && r.usefulPhrases.length
-        ? `<div class="hm-phrases">
-             <span class="hm-phrases__cap">${esc(t("discover.rgUseful"))}</span>
-             <ul class="hm-phrases__list">${r.usefulPhrases.map((p) => `<li lang="es">${esc(p)}</li>`).join("")}</ul>
-           </div>`
-        : "";
-      return `
-        <details class="knigge-topic rg-rp">
-          <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">🎭</span>
-            <span class="knigge-topic__title">${esc(r.title)}</span>
-            ${r.lvlShort ? `<span class="hm-rp__lvl">${esc(r.lvlShort)}</span>` : ""}
-            <span class="knigge-topic__chev" aria-hidden="true">▾</span>
-          </summary>
-          <div class="knigge-topic__body">
-            <p class="hm-rphead__sit">${esc(r.situationDe)}</p>
-            <div class="hm-roles">
-              <div class="hm-role hm-role--a">
-                <span class="hm-role__tag">A · ${esc(r.roleA)}</span>
-                <span class="hm-role__goal">${esc(r.goalA)}</span>
-              </div>
-              <div class="hm-role hm-role--b">
-                <span class="hm-role__tag">B · ${esc(r.roleB)}</span>
-                <span class="hm-role__goal">${esc(r.goalB)}</span>
-              </div>
-            </div>
-            <div class="hm-dialogue">${lines}</div>
-            ${useful}
-          </div>
-        </details>`;
-    };
-    const roleplays = (vm.roleplays || []).map(rpBlock).join("");
-
-    return `
-      <section class="screen">
-        <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">🤝 Regatear</div>
-          <span></span>
-        </div>
-        <p class="pageintro">${esc(vm.intro)}</p>
-        ${moduleShareBtn("regatear")}
-
-        <h2 class="rg-head">${esc(t("discover.rgTactics"))}</h2>
-        ${tips}
-
-        <h2 class="rg-head">${esc(t("discover.rgWords"))}</h2>
-        <ul class="rg-glosslist">${glossary}</ul>
-
-        <h2 class="rg-head">${esc(t("discover.rgPhrases"))}</h2>
-        ${phrases}
-
-        <h2 class="rg-head">${esc(t("discover.rgUnits"))}</h2>
-        <ul class="rg-units">${units}</ul>
-
-        <h2 class="rg-head">${esc(t("discover.rgRegions"))}</h2>
-        <ul class="rg-regions">${regional}</ul>
-
-        <h2 class="rg-head">${esc(t("discover.rgRoleplays"))}</h2>
-        <p class="hm-intro">${esc(t("discover.rgRoleplayHint"))}</p>
-        ${roleplays}
-      </section>`;
-  }
 
   // ---------- INFO-MODUL-SHEET (Logística, Salud …) ----------
   // Gemeinsame Nachschlage-Seite im Regatear-Stil für Module mit dem Schema
@@ -3271,10 +2612,14 @@
   // (Icon, Titel, i18n-Schlüssel der Überschriften). Leere Abschnitte fallen weg.
   // Reine Anzeige – nutzt durchgehend die vorhandenen Regatear/Knigge-CSS-Klassen.
   function moduleSheet(vm, cfg) {
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+    const liList = (items, cls, marker) => {
+      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
+      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
         .join("");
+    };
     const topicBlock = (tp, i) => {
       // Optionales spanisches Lesetraining pro Thema (wie renderFotos): nur wenn
       // das Modul es einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text
@@ -3442,10 +2787,14 @@
     '</svg>';
 
   function renderFotos(vm) {
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+    const liList = (items, cls, marker) => {
+      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
+      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
         .join("");
+    };
 
     // Ein Thema: aufklappbar wie bei Knigge/Salud, plus spanisches Lesetraining.
     const topicBlock = (tp, i) => {
@@ -3576,10 +2925,14 @@
   // prefers-reduced-motion). Dazu Zählrhythmus, Tipps, spanisches Lesetraining und
   // Video-Links. Struktur (Topbar, Nav-Chips, Sätze, Glossar, Knigge) wie renderFotos.
   function renderBailar(vm) {
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+    const liList = (items, cls, marker) => {
+      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
+      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
         .join("");
+    };
 
     // Ein Fußabdruck: äußere <g> trägt Position/Drehung (SVG-transform) und den
     // Wellen-Index (--bi); die innere __pop-Gruppe wird per CSS skaliert (eigenes
@@ -3855,16 +3208,6 @@
   }
 
   // ---------- HOSTEL MODE ----------
-  // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
-  function hmTopbar(title, back) {
-    return `
-      <div class="topbar">
-        <button class="iconbtn" data-action="${back}" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">${title}</div>
-        <span></span>
-      </div>`;
-  }
-
   // Menü: Battle vs. Rollenspiele.
   function renderHostel(vm) {
     return `
@@ -4432,7 +3775,7 @@
 
     return `
       <section class="screen">
-        ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher")}
+        ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher", { plainTitle: true })}
         ${controls}
         <div class="sheet-doc sheet-doc--exercise">${sheet}</div>
         ${answerKeySheet ? `<div class="sheet-doc sheet-doc--key">${answerKeySheet}</div>` : ""}
@@ -4950,209 +4293,16 @@
       </section>`;
   }
 
-  // ---------- DEFINICIONES (Zuordnen-Quiz) ----------
-  // Liste wählen.
-  function renderQuizSetup(vm) {
-    const list = vm.sets
-      .map((s) =>
-        `<button class="hm-scene" data-action="start-quiz" data-set="${esc(s.id)}">
-           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
-           <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
-           <span class="hm-scene__count">${s.count}</span>
-         </button>`)
-      .join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("🧩 Definiciones", "home")}
-        <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
-        ${moduleShareBtn("definiciones")}
-        <div class="hm-scenes">${list}</div>
-      </section>`;
-  }
+  // DEFINICIONES (Zuordnen-Quiz) ist nach features/definiciones.js
+  // (SC.definiciones) gewandert – VMs, Handler und Render leben dort zusammen.
 
-  // Eine Frage: Definition + Antwort-Optionen.
-  function renderQuiz(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
-    const options = vm.options
-      .map((o) => {
-        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
-        // Nach dem Aufdecken sind alle Optionen deaktiviert (kein Umentscheiden).
-        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
-        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
-          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
-        return `
-          <button class="${cls}" type="button" data-action="quiz-answer" data-id="${esc(o.id)}"${dis}>
-            <span class="quiz-opt__icon" aria-hidden="true">${esc(o.icon)}</span>
-            <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
-              <span class="quiz-opt__de">${esc(o.de)}</span>
-            </span>
-            ${mark}
-          </button>`;
-      })
-      .join("");
-
-    const feedback = vm.answered
-      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
-           ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
-             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
-                <span class="quiz-feedback__sol">${t("discover.quizSolution", { es: esc(vm.solutionEs), de: esc(vm.solutionDe) })}</span>`}
-         </div>
-         <button class="cta" data-action="quiz-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
-      : "";
-
-    return `
-      <section class="screen study">
-        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "quiz-again")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.quizProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.quizQuestion", { pos: vm.position + 1, total: vm.total }))}</div>
-        <div class="quiz-def">
-          <span class="quiz-def__cap">${esc(t("discover.quizDefinicion"))}</span>
-          <p class="quiz-def__text" lang="es">${esc(vm.definition)}</p>
-        </div>
-        <div class="quiz-opts">${options}</div>
-        ${feedback}
-      </section>`;
-  }
-
-  // Auswertung.
-  // Fertig-Screen jetzt als leere Bühne für SC.celebrate (wie renderDone): die
-  // anlassbezogene Inszenierung + Buttons baut das Modul im Render-Dispatch (app.js,
-  // mountMiniDone). Die alten done/done__emoji-Styles bleiben für nicht-migrierte
-  // Screens (z. B. Battle) erhalten.
-  function renderQuizDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
-
-  // ---------- FRASES FLEXIBLES (Satzbaukasten) ----------
-  // Themen-Auswahl vor der Runde – Reuse der Hostel-Szenenkacheln (.hm-scene)
-  // wie bei Definiciones. Die "Gemischt"-Kachel steht zuoberst und abgesetzt.
-  function renderFrasesSetup(vm) {
-    const tile = (s, mixed) =>
-      `<button class="hm-scene${mixed ? " hm-scene--mixed" : ""}" data-action="start-frases" data-set="${esc(s.id)}">
-         <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
-         <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
-         <span class="hm-scene__count">${s.count}</span>
-       </button>`;
-    const list = vm.sets.map((s) => tile(s, false)).join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("🧱 Frases flexibles", "home")}
-        <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
-        ${moduleShareBtn("frases")}
-        <div class="hm-scenes">
-          ${tile(vm.mixed, true)}
-          ${list}
-        </div>
-      </section>`;
-  }
-
-  // Satzrahmen mit Lücke + Multiple Choice. Reuse der Definiciones-Optik
-  // (.quiz-def / .quiz-opt / .quiz-feedback).
-  function renderFrases(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
-    // "___" im Rahmen durch eine sichtbare Lücke ersetzen (frameEs ist intern,
-    // kein User-Input – esc() lässt "___" unverändert).
-    const frameHtml = esc(vm.frameEs).replace("___", '<span class="frases-gap"></span>');
-    const options = vm.options
-      .map((o, i) => {
-        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
-        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
-        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
-          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
-        return `
-          <button class="${cls}" type="button" data-action="frases-answer" data-idx="${i}"${dis}>
-            <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
-              <span class="quiz-opt__de">${esc(o.de)}</span>
-            </span>
-            ${mark}
-          </button>`;
-      })
-      .join("");
-
-    const feedback = vm.answered
-      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
-           ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
-             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
-                <span class="quiz-feedback__sol">${t("discover.quizSolution", { es: esc(vm.solutionEs), de: esc(vm.solutionDe) })}</span>`}
-         </div>
-         <button class="cta" data-action="frases-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
-      : "";
-
-    return `
-      <section class="screen study">
-        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "open-frases")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.frasesSentence", { pos: vm.position + 1, total: vm.total }))}</div>
-        <div class="quiz-def">
-          <span class="quiz-def__cap">${esc(t("discover.frasesBuild"))}</span>
-          <p class="frases-target">${esc(vm.targetDe)}</p>
-          <p class="quiz-def__text frases-frame" lang="es">${frameHtml}</p>
-        </div>
-        <div class="quiz-opts">${options}</div>
-        ${feedback}
-      </section>`;
-  }
-
-  function renderFrasesDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
+  // FRASES FLEXIBLES (Satzbaukasten) ist nach features/frases-game.js
+  // (SC.frasesGame) gewandert – VMs, Handler und Render leben dort zusammen.
 
   // ---------- EL CUERPO (interaktive Körperkarte) ----------
-  // Stilisierte, frontale Figur als reines SVG (dekorativ, aria-hidden). Bezugsrahmen
-  // viewBox 0 0 200 440 – exakt der, auf den sich die Prozent-Koordinaten der Hotspots
-  // beziehen. Gliedmaßen sind runde Striche (currentColor), Rumpf/Kopf gefüllte Flächen.
-  // ----- 3D-Körperfigur (drehbar) -----
-  // Echte 3D-Geometrie statt der flachen Sticker-Figur: Der Körper ist aus
-  // schattierten Kugel-Impostoren (Orbs) aufgebaut, die per CSS-3D im Raum
-  // sitzen (translate3d). Jeder Orb wird zur Kamera ausgerichtet (Billboard,
-  // siehe app.js → bpApplyRot), darum bleibt er aus jedem Blickwinkel rund –
-  // beim Drehen verschieben sich nur seine Position und seine Verdeckung.
-  // Selbst gerendert -> kein externes Modell, läuft offline (PWA-Prinzip).
-  //
-  // Orb-Daten: [x, y, z, durchmesser] in px, Ursprung in Figurmitte (y nach oben).
-  const BP_ORBS = [
-    [0, -150, 0, 72], [0, -112, 4, 26],                                   // Kopf, Hals
-    [0, -86, 8, 66], [0, -52, 10, 62], [0, -18, 8, 58], [0, 16, 4, 60],   // Rumpf
-    [-40, -92, 2, 34], [40, -92, 2, 34],                                  // Schultern
-    [-50, -64, 2, 30], [-56, -34, 4, 26], [-60, -4, 6, 24], [-62, 22, 8, 28], // li. Arm
-    [50, -64, 2, 30], [56, -34, 4, 26], [60, -4, 6, 24], [62, 22, 8, 28], // re. Arm
-    [-20, 48, 6, 40], [-21, 80, 6, 34], [-22, 106, 8, 30], [-23, 136, 6, 28], [-24, 162, 6, 24], [-22, 176, 20, 30], // li. Bein
-    [20, 48, 6, 40], [21, 80, 6, 34], [22, 106, 8, 30], [23, 136, 6, 28], [24, 162, 6, 24], [22, 176, 20, 30],       // re. Bein
-  ];
-  const BP_FIGURE_3D = BP_ORBS.map(
-    ([x, y, z, d]) => `<i class="bp-orb" data-x="${x}" data-y="${y}" data-z="${z}" style="width:${d}px;height:${d}px"></i>`
-  ).join("");
+  // VM, Render, die 3D-Geometrie-Konstanten (BP_ORBS/BP_FIGURE_3D/BP_LAYOUT3D) und
+  // die komplette Dreh-/Auswahl-Logik wohnen jetzt in features/cuerpo.js (SC.cuerpo).
 
-  // Interaktive Hotspots je Körperteil-Id: Position (x,y,z), Azimut az (Grad um
-  // die Hochachse: 0 = vorne, ±90 = Seite, 180 = Rücken – steuert das Ausblenden
-  // beim Wegdrehen) und Punktgröße d. Bewusst hier (View) statt in den
-  // Vokabeldaten gehalten: data.js bleibt reine Vokabel-Wahrheit.
-  const BP_LAYOUT3D = {
-    bp_pelo:     { x: 0,   y: -182, z: 10,  az: 0,   d: 20 },
-    bp_cabeza:   { x: -20, y: -170, z: 20,  az: -20, d: 20 },
-    bp_ojo:      { x: -12, y: -156, z: 34,  az: -8,  d: 16 },
-    bp_nariz:    { x: 0,   y: -148, z: 39,  az: 0,   d: 15 },
-    bp_boca:     { x: 0,   y: -136, z: 36,  az: 0,   d: 16 },
-    bp_cara:     { x: 18,  y: -146, z: 30,  az: 18,  d: 16 },
-    bp_oreja:    { x: 31,  y: -150, z: 4,   az: 72,  d: 16 },
-    bp_cuello:   { x: 0,   y: -112, z: 18,  az: 0,   d: 22 },
-    bp_hombro:   { x: -40, y: -92,  z: 16,  az: -35, d: 24 },
-    bp_pecho:    { x: 0,   y: -82,  z: 42,  az: 0,   d: 26 },
-    bp_espalda:  { x: 0,   y: -70,  z: -36, az: 180, d: 24 },
-    bp_estomago: { x: 0,   y: -22,  z: 40,  az: 0,   d: 26 },
-    bp_brazo:    { x: -52, y: -60,  z: 18,  az: -50, d: 24 },
-    bp_codo:     { x: -57, y: -32,  z: 20,  az: -55, d: 22 },
-    bp_mano:     { x: -63, y: 22,   z: 22,  az: -55, d: 26 },
-    bp_dedo:     { x: -64, y: 40,   z: 22,  az: -55, d: 18 },
-    bp_pierna:   { x: -22, y: 60,   z: 30,  az: -10, d: 26 },
-    bp_rodilla:  { x: -22, y: 106,  z: 28,  az: -10, d: 24 },
-    bp_tobillo:  { x: -24, y: 160,  z: 24,  az: -10, d: 20 },
-    bp_pie:      { x: -22, y: 178,  z: 38,  az: 0,   d: 24 },
-  };
 
   // ---------- CONJUGACIÓN (Erklärseite Konjugieren) ----------
   // Kompakte Grammatik-Erklärung (Inhalte aus data.CONJUGATION): Personen,
@@ -5236,710 +4386,34 @@
   // Übt aktiv: „Verb + Person“ erscheint, man tippt die konjugierte Form. Items
   // werden pro Runde frisch aus data.CONJUGATION erzeugt (SC.conjug). Folgt dem
   // Precios-Drill-Muster (Setup → Lauf → Done).
-  function renderConjugSetup(vm) {
-    if (!vm.available) {
-      return `
-        <section class="screen">
-          ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
-          <p class="stat-empty">${esc(t("discover.cjDrillUnavailable"))}</p>
-        </section>`;
-    }
-    const levels = vm.levels.map((l) => `
-      <button class="prc-lvl ${l.active ? "is-active" : ""}" type="button"
-              data-action="conjug-level" data-level="${l.id}" aria-pressed="${l.active}">
-        <span class="prc-lvl__short">${esc(l.short)}</span>
-        <span class="prc-lvl__label">${esc(l.label)}</span>
-        <span class="prc-lvl__hint">${esc(l.hint)}</span>
-      </button>`).join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
-        <p class="hm-intro">${esc(t("discover.cjDrillIntro"))}</p>
-        <h3 class="prc-head">${esc(t("discover.cjDifficulty"))}</h3>
-        <div class="prc-lvls">${levels}</div>
-        <button class="cta" data-action="start-conjug">${esc(t("discover.cjStart"))}</button>
-      </section>`;
-  }
-
-  function renderConjug(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
-    const body = !vm.result
-      ? `
-        <div class="card-static cj-prompt">
-          <span class="cj-prompt__verb" lang="es">${esc(vm.verb)}</span>
-          <span class="cj-prompt__person">${esc(vm.personDe)} · <span lang="es">${esc(vm.personEs)}</span></span>
-          <span class="face__hint">${esc(t("discover.cjPromptHint"))}</span>
-        </div>
-        <form class="typer" data-action="submit-conjug" id="conjug-form">
-          <input class="typer__input" id="conjug-answer" type="text" inputmode="text"
-                 autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="${esc(t("discover.cjPlaceholder"))}" />
-          <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
-        </form>`
-      : `
-        <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
-          <div class="face__word" lang="es">${esc(vm.result.answer)}</div>
-          <div class="listen-de">${esc(vm.personDe)} · <span lang="es">${esc(vm.personEs)}</span> · ${esc(vm.verb)}</div>
-          ${vm.result.correct
-            ? `<div class="verdict verdict--ok">${esc(t("common.correctShort"))}</div>`
-            : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: vm.result.input || "—" }))}</div>`}
-        </div>
-        <button class="cta" data-action="conjug-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
-    return `
-      <section class="screen study">
-        ${hmTopbar("🔁 Conjugador", "open-conjug-drill")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
-        ${body}
-      </section>`;
-  }
-
-  function renderConjugDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
+  // CONJUGADOR (generativer Konjugations-Drill) ist nach features/conjugador.js
+  // (SC.conjugDrill) gewandert – VMs, Handler und Render leben dort zusammen.
+  // Die Erklärseite „Conjugación" (renderConjugacion) bleibt hier.
 
   // ---------- ¿Y esto? (Bild-Vokabel-Modus mit 3-2-1-Countdown) ----------
-  // Ein Motiv (großes Emoji) erscheint, ein kurzer Countdown läuft, dann wird das
-  // spanische Wort + Übersetzung aufgelöst und man bewertet sich selbst.
-  function renderYestoSetup(vm) {
-    if (!vm.available) {
-      return `
-        <section class="screen">
-          ${hmTopbar("👀 ¿Y esto?", "home")}
-          <p class="stat-empty">${esc(t("discover.yeUnavailable"))}</p>
-        </section>`;
-    }
-    const themes = vm.themes.map((th) => `
-      <button class="ye-theme" type="button" data-action="start-yesto" data-id="${esc(th.id)}">
-        <span class="ye-theme__icon" aria-hidden="true">${esc(th.icon)}</span>
-        <span class="ye-theme__label">${esc(th.label)}</span>
-        <span class="ye-theme__count">${esc(t("discover.yeCount", { n: th.count }))}</span>
-      </button>`).join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("👀 ¿Y esto?", "home")}
-        <p class="hm-intro">${esc(t("discover.yeIntro"))}</p>
-        ${moduleShareBtn("yesto")}
-        <h3 class="prc-head">${esc(t("discover.yeChooseTheme"))}</h3>
-        <div class="ye-themes">${themes}</div>
-      </section>`;
-  }
-
-  function renderYesto(vm) {
-    const shown = vm.position + (vm.phase === "reveal" ? 1 : 0);
-    const pct = vm.total > 0 ? Math.round((shown / vm.total) * 100) : 0;
-    const stage = vm.phase !== "reveal"
-      ? `
-        <div class="ye-stage" role="group" aria-label="${esc(t("discover.yePromptHint"))}">
-          <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
-          <div class="ye-q">¿Y esto?</div>
-          <div class="ye-think">${esc(t("discover.yePromptHint"))}</div>
-          <div class="ye-count" aria-hidden="true"><span class="ye-count__num">${esc(String(vm.count))}</span></div>
-        </div>
-        <button class="cta cta--ghost" data-action="yesto-reveal">${esc(t("discover.yeReveal"))}</button>`
-      : `
-        <div class="ye-stage is-reveal" role="status" aria-live="assertive">
-          <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
-          <div class="ye-word" lang="es">${esc(vm.es)}</div>
-          <div class="ye-native">${esc(vm.native)}</div>
-        </div>
-        <div class="ye-rate">
-          <button class="cta cta--soft" data-action="yesto-rate" data-known="0">${esc(t("discover.yeUnknown"))}</button>
-          <button class="cta" data-action="yesto-rate" data-known="1">${vm.isLast ? esc(t("discover.yeKnownLast")) : esc(t("discover.yeKnown"))}</button>
-        </div>`;
-    return `
-      <section class="screen study">
-        ${hmTopbar("👀 ¿Y esto?", "open-yesto")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
-        ${stage}
-      </section>`;
-  }
-
-  function renderYestoDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
+  // ¿Y ESTO? (Bild-Vokabel-Spiel) ist nach features/yesto-game.js
+  // (SC.yestoGame) gewandert – VMs, Handler, Timer und Render leben dort zusammen.
 
   // ---------- DIÁLOGOS (Gesprächs-Simulationen) ----------
-  // Reisesituation Zug für Zug: die Gegenseite (npc) spricht (links), der Nutzer
-  // antwortet (rechts) per Multiple-Choice oder freiem Tippen. Die Verlaufsspur
-  // zeigt die schon gesagten Zeilen als Chat-Blasen.
-  function renderDialogosSetup(vm) {
-    if (!vm.available) {
-      return `
-        <section class="screen">
-          ${hmTopbar("💬 Diálogos", "home")}
-          <p class="stat-empty">${esc(t("discover.dlgUnavailable"))}</p>
-        </section>`;
-    }
-    const hint = vm.hasSpeech ? "" : `<p class="dlg-nospeak">${esc(t("discover.dlgNoSpeak"))}</p>`;
-    const cards = vm.scenarios.map((s) => `
-      <button class="dlg-pick" type="button" data-action="start-dialogos" data-id="${esc(s.id)}">
-        <span class="dlg-pick__icon" aria-hidden="true">${esc(s.icon)}</span>
-        <span class="dlg-pick__text">
-          <span class="dlg-pick__title">${esc(s.title)}</span>
-          <span class="dlg-pick__sub">${esc(s.intro)}</span>
-        </span>
-        <span class="dlg-pick__chev" aria-hidden="true">›</span>
-      </button>`).join("");
-    return `
-      <section class="screen">
-        ${hmTopbar("💬 Diálogos", "home")}
-        <p class="hm-intro">${esc(t("discover.dlgIntro"))}</p>
-        ${moduleShareBtn("dialogos")}
-        ${hint}
-        <div class="dlg-picks">${cards}</div>
-      </section>`;
-  }
+  // VMs, Render (Setup/Play/Done), die State-Maschine und alle Handler wohnen jetzt
+  // im Feature-Modul SC.dialogosGame (features/dialogos-game.js); app.js delegiert
+  // SCREENS, Aktionen, Spotlight-Vorschau, miniDone, Scroll-Hook und Auto-Vorlesen.
 
-  // Eine Chat-Blase (npc links, user rechts). de optional als Unterzeile.
-  function dlgBubble(turn) {
-    const side = turn.who === "npc" ? "npc" : "user";
-    const de = turn.de ? `<span class="dlg-bubble__de">${esc(turn.de)}</span>` : "";
-    return `
-      <div class="dlg-row dlg-row--${side}">
-        <div class="dlg-bubble dlg-bubble--${side}">
-          <span class="dlg-bubble__es" lang="es">${esc(turn.es)}</span>
-          ${de}
-        </div>
-      </div>`;
-  }
 
-  function renderDialogos(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.turnIdx + (vm.result ? 1 : 0)) / vm.total) * 100) : 0;
-    const history = vm.transcript.map(dlgBubble).join("");
+  // TIEMPOS (Zeitformen-Erklärseite) ist nach features/tiempos.js (SC.tiempos)
+  // gewandert – VM und Render leben dort zusammen; der Opener (openTiempos) bleibt
+  // im Controller. Der Themenblock-Baustein sect() kommt aus SC.view.
 
-    let active = "";
-    const cur = vm.current;
-    if (cur && cur.who === "npc") {
-      // npc-Zug: Blase zeigen (+ Vorlesen), dann „Weiter“.
-      const replay = vm.speakable
-        ? `<button class="listen-replay ghostbtn" type="button" data-action="dialogos-speak">${esc(t("discover.dlgReplay"))}</button>`
-        : "";
-      active = `
-        ${dlgBubble({ who: "npc", es: cur.es, de: cur.de })}
-        <div class="dlg-actions">
-          ${replay}
-          <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>
-        </div>`;
-    } else if (cur && cur.who === "user") {
-      const instr = `<p class="dlg-instr">${esc(cur.de)}</p>`;
-      if (!vm.result) {
-        if (cur.kind === "mc") {
-          const opts = cur.options.map((o, i) => `
-            <button class="quiz-opt" type="button" data-action="dialogos-answer" data-idx="${i}">
-              <span class="quiz-opt__text"><span class="quiz-opt__es" lang="es">${esc(o.es)}</span></span>
-            </button>`).join("");
-          active = `${instr}<div class="quiz-opts">${opts}</div>`;
-        } else {
-          // Frei tippen. Optionaler „Tipp" deckt die Musterantwort auf – als
-          // Hilfe, ohne den Zug vorwegzunehmen (getippt werden muss trotzdem).
-          const help = vm.hint
-            ? `<p class="dlg-tip" role="note">💡 <b lang="es">${esc(cur.solEs)}</b></p>`
-            : `<button class="dlg-tipbtn ghostbtn" type="button" data-action="dialogos-hint">${esc(t("discover.dlgTipShow"))}</button>`;
-          active = `
-            ${instr}
-            <form class="typer" data-action="submit-dialogos" id="dialogos-form">
-              <input class="typer__input" id="dialogos-answer" type="text" inputmode="text"
-                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="${esc(t("discover.dlgPlaceholder"))}" />
-              <button class="typer__btn" type="submit">${esc(t("discover.dlgSay"))}</button>
-            </form>
-            ${help}`;
-        }
-      } else {
-        // Beantwortet: die eigene (Muster-)Replik als Blase + Verdict + Weiter.
-        const verdict = vm.result.correct
-          ? `<div class="dlg-verdict dlg-verdict--ok" role="status" aria-live="polite">${esc(t("discover.dlgWellSaid"))}</div>`
-          : `<div class="dlg-verdict dlg-verdict--no" role="status" aria-live="polite">
-               ${t("discover.dlgBetter", { es: esc(cur.solEs) })}
-               <span class="dlg-verdict__given">${esc(t("discover.dlgYou", { given: vm.result.given || "—" }))}</span>
-             </div>`;
-        // Kurzer Hintergrund zur Musterantwort – zum Ausklappen, damit er nur
-        // stört, wenn man ihn wirklich lesen will.
-        const why = cur.why
-          ? `<details class="dlg-why">
-               <summary class="dlg-why__sum">${esc(t("discover.dlgWhy"))}</summary>
-               <p class="dlg-why__body">${esc(cur.why)}</p>
-             </details>`
-          : "";
-        active = `
-          ${dlgBubble({ who: "user", es: cur.solEs, de: "" })}
-          ${verdict}
-          ${why}
-          <button class="cta" data-action="dialogos-next">${esc(t("common.next"))}</button>`;
-      }
-    }
+  // EL CUERPO (interaktive Körperkarte) ist nach features/cuerpo.js (SC.cuerpo)
+  // gewandert – VM, Render, 3D-Geometrie und die Dreh-/Auswahl-Logik leben dort
+  // zusammen; der Opener (openCuerpo) bleibt im Controller. cornerBtn() aus SC.view.
 
-    const step = Math.min(vm.turnIdx + 1, vm.total);
-    return `
-      <section class="screen study">
-        ${hmTopbar(vm.icon + " " + esc(vm.title), "open-dialogos")}
-        <div class="dlg-progress">
-          <div class="progress" role="progressbar" aria-valuenow="${step}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-          <span class="dlg-step">${esc(t("discover.dlgStep", { step, total: vm.total }))}</span>
-        </div>
-        <div class="dlg-thread">
-          ${history}
-          <div id="dlg-active">${active}</div>
-        </div>
-      </section>`;
-  }
 
-  function renderDialogosDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
+  // EINKAUFSZETTEL (Lista de compras) ist nach features/compras.js (SC.compras)
+  // gewandert – VMs, Render (Liste/Quiz/Done) und alle Handler leben dort zusammen;
+  // app.js delegiert SCREENS, Aktionen, Spotlight-Vorschau und miniDone. cornerBtn()
+  // kommt aus SC.view.
 
-  // ---------- TIEMPOS (Erklärseite Zeiten) ----------
-  // Ausführliche, reisebezogene Zeitformen-Erklärung (Inhalte aus data.TENSES):
-  // Zeitstrahl, die wichtigsten Zeitformen als aufklappbare Karten (mit Bildungs-
-  // Rezept, Signalwörtern und mehreren Beispielen), Verlaufsform, Indefinido-vs-
-  // Imperfecto, unregelmäßige Vergangenheit & Partizipien, Imperativ, „hay“,
-  // Situations-Zuordnung, Stolperfallen, Signalwörter und drei Reisedialoge.
-  // Unten ein CTA in die Übungskarten – über die normale open-category-Aktion.
-  function renderTiempos(vm) {
-    const g = vm.guide;
-    // `t` wird unten als g.timeline gebunden – darum den globalen Übersetzer hier als tt sichern.
-    const tt = window.t;
-
-    // Eine Zeit-Tabelle: Person links (gemeinsame tableLabels), Form rechts –
-    // dieselbe Datenform wie bei der Konjugation.
-    const table = (forms) => `
-      <ul class="cj-table">
-        ${forms.map((f, i) => `<li class="cj-row"><span class="cj-row__p" lang="es">${esc(g.tableLabels[i])}</span><span class="cj-row__f" lang="es">${esc(f)}</span></li>`).join("")}
-      </ul>`;
-
-    // Zeitstrahl: ein Verb (ich-Form) in drei Zeiten – als kompakte Wortliste.
-    const t = g.timeline;
-    const timelineRows = t.rows
-      .map((r) => `
-        <li class="cinfo-word">
-          <span class="cinfo-word__de">${esc(r.when)}</span>
-          <span class="cinfo-word__es" lang="es">${esc(r.es)}</span>
-          <span class="cinfo-word__de">${esc(r.de)}</span>
-        </li>`)
-      .join("");
-    const timeline = `
-      <p class="cinfo-text cj-note">${esc(t.verb)}</p>
-      <ul class="cinfo-words">${timelineRows}</ul>
-      <p class="cinfo-text cj-note">${esc(t.note)}</p>`;
-
-    // Kleiner Helfer: Beispiel-/Dialogzeilen (spanisch + deutsch) als Blöcke.
-    const lines = (arr) => arr
-      .map((l) => `
-        <div class="context-panel__line">
-          <p class="context-panel__es" lang="es">${esc(l.es)}</p>
-          <p class="context-panel__de">${esc(l.de)}</p>
-        </div>`)
-      .join("");
-
-    // Die einzelnen Zeitformen als aufklappbare Karten (wie die unregelmäßigen
-    // Verben): Kopf = Zeitname + Kurzbeschreibung, aufgeklappt die Formen-
-    // Tabelle, das Bildungs-Rezept, Signalwörter, ein „Wann?“-Hinweis und
-    // mehrere Reise-Beispielsätze.
-    const tenseBlocks = g.tenses
-      .map((te) => `
-        <details class="cinfo-dish">
-          <summary class="cinfo-dish__head">
-            <span class="cinfo-dish__heart">
-              <span class="cinfo-dish__name" lang="es">${esc(te.name)}</span>
-              <span class="cinfo-dish__desc">${esc(te.de)}</span>
-            </span>
-            <span class="cinfo-dish__chev" aria-hidden="true">▾</span>
-          </summary>
-          <div class="cinfo-dish__body">
-            ${table(te.forms)}
-            <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(te.recipe)}</p>
-            <p class="cj-verb__like"><strong>${esc(tt("discover.tiSignals"))}</strong> <span lang="es">${esc(te.signals)}</span></p>
-            <p class="cj-verb__like"><strong>${esc(tt("discover.tiWhen"))}</strong> ${esc(te.when)}</p>
-            ${lines(te.examples)}
-          </div>
-        </details>`)
-      .join("");
-
-    // Kleiner Helfer: Wortpaar-Liste (spanisch fett links, deutsch rechts) –
-    // für Gerundien, Partizipien, Imperativ-, hay- und Signalwort-Listen.
-    const pairList = (rows, esKey, deKey) => `
-      <ul class="cinfo-words">
-        ${rows.map((r) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(r[esKey])}</span><span class="cinfo-word__de">${esc(r[deKey])}</span></li>`).join("")}
-      </ul>`;
-
-    // Der einfache Vergangenheits-Trick: he + Partizip – Spiegel zu „voy a + Infinitiv".
-    // Mini-Vergleich (Zukunft ↔ Vergangenheit), Formen-Tabelle, Bildungs-Rezept, Beispiele.
-    const ep = g.easyPast;
-    const easyPast = `
-      <p class="cinfo-text">${esc(ep.intro)}</p>
-      ${pairList(ep.mirror, "es", "de")}
-      ${table(ep.forms)}
-      <p class="cj-verb__like"><strong>${esc(tt("discover.tiBuild"))}</strong> ${esc(ep.recipe)}</p>
-      ${lines(ep.examples)}
-      <p class="cinfo-text cj-note">${esc(ep.note)}</p>`;
-
-    // estar + Gerundio: Formen-Tabelle + unregelmäßige Gerundien + Beispiele.
-    const c = g.continuous;
-    const continuous = `
-      <p class="cinfo-text">${esc(c.intro)}</p>
-      ${table(c.forms)}
-      ${pairList(c.gerunds.map((x) => ({ es: x.inf + " → " + x.ger, de: x.de })), "es", "de")}
-      ${lines(c.examples)}
-      <p class="cinfo-text cj-note">${esc(c.note)}</p>`;
-
-    // estaba + Gerundio: derselbe Gerundio-Trick rückwärts – estar in der
-    // Vergangenheit. Mini-Vergleich (jetzt ↔ damals), Formen-Tabelle, Beispiele.
-    const pc = g.pastContinuous;
-    const pastContinuous = `
-      <p class="cinfo-text">${esc(pc.intro)}</p>
-      ${pairList(pc.mirror, "es", "de")}
-      ${table(pc.forms)}
-      ${lines(pc.examples)}
-      <p class="cinfo-text cj-note">${esc(pc.note)}</p>`;
-
-    // acabar de + Infinitiv: „gerade eben getan" – kompakter Block (Intro,
-    // Beispielpaare, Hinweis), wie hay/scenarios. Schließt an die Gerundio-Tricks an.
-    const ad = g.acabarDe;
-    const acabarDe = `
-      <p class="cinfo-text">${esc(ad.intro)}</p>
-      ${pairList(ad.rows, "es", "de")}
-      <p class="cinfo-text cj-note">${esc(ad.note)}</p>`;
-
-    // Indefinido vs. Imperfecto: zwei Spalten-Blöcke mit Stichpunkten + ein
-    // kombinierter Beispielsatz (Ereignis vor Hintergrund).
-    const iv = g.indefVsImperf;
-    const ivCol = (col) => `
-      <div class="cj-verb">
-        <h4 class="cj-verb__h">${esc(col.label)}</h4>
-        <ul class="cinfo-words">${col.points.map((p) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(p)}</span></li>`).join("")}</ul>
-      </div>`;
-    const indefVsImperf = `
-      <p class="cinfo-text">${esc(iv.intro)}</p>
-      <div class="cj-verbs">${ivCol(iv.indef)}${ivCol(iv.imperf)}</div>
-      ${lines([iv.combined])}
-      <p class="cinfo-text cj-note">${esc(iv.note)}</p>`;
-
-    // Reise-Situationen: Beispiel-Satz links, Zuordnung zur Zeitform rechts.
-    const sc = g.scenarios;
-    const scenarios = `
-      <p class="cinfo-text">${esc(sc.intro)}</p>
-      ${pairList(sc.rows, "es", "de")}
-      <p class="cinfo-text cj-note">${esc(sc.note)}</p>`;
-
-    // Stolperfallen: falsch (durchgestrichen) → richtig, plus Erklärung.
-    const pf = g.pitfalls;
-    const pitfallRows = pf.rows
-      .map((r) => `
-        <li class="cinfo-word cj-pitfall">
-          <span class="cj-pitfall__pair"><span class="cj-pitfall__wrong" lang="es">${esc(r.wrong)}</span> <span class="cj-pitfall__arrow" aria-hidden="true">→</span> <span class="cj-pitfall__right" lang="es">${esc(r.right)}</span></span>
-          <span class="cinfo-word__de">${esc(r.de)}</span>
-        </li>`)
-      .join("");
-    const pitfalls = `
-      <p class="cinfo-text">${esc(pf.intro)}</p>
-      <ul class="cinfo-words">${pitfallRows}</ul>
-      <p class="cinfo-text cj-note">${esc(pf.note)}</p>`;
-
-    // Pretéritos fuertes: je Verb ein kleiner Block mit Überschrift + Tabelle.
-    const sp = g.strongPast;
-    const strongPastBlocks = sp.verbs
-      .map((v) => `
-        <div class="cj-verb">
-          <h4 class="cj-verb__h" lang="es">${esc(v.verb)} <span class="cinfo-dish__desc">· ${esc(v.de)}</span></h4>
-          ${table(v.forms)}
-        </div>`)
-      .join("");
-    const strongPast = `
-      <p class="cinfo-text">${esc(sp.intro)}</p>
-      <div class="cj-verbs">${strongPastBlocks}</div>
-      <p class="cinfo-text cj-note">${esc(sp.note)}</p>`;
-
-    // Unregelmäßige Partizipien: Infinitiv → Partizip, deutsche Bedeutung.
-    const pp = g.participles;
-    const participles = `
-      <p class="cinfo-text">${esc(pp.intro)}</p>
-      ${pairList(pp.rows.map((x) => ({ es: x.inf + " → " + x.part, de: x.de })), "es", "de")}
-      <p class="cinfo-text cj-note">${esc(pp.note)}</p>`;
-
-    // Imperativo & hay: schlichte Wortpaar-Listen mit Hinweis.
-    const im = g.imperative;
-    const imperative = `
-      <p class="cinfo-text">${esc(im.intro)}</p>
-      ${pairList(im.rows, "es", "de")}
-      <p class="cinfo-text cj-note">${esc(im.note)}</p>`;
-
-    const hy = g.hay;
-    const hayBlock = `
-      <p class="cinfo-text">${esc(hy.intro)}</p>
-      ${pairList(hy.rows, "es", "de")}
-      <p class="cinfo-text cj-note">${esc(hy.note)}</p>`;
-
-    const signalRows = g.signals
-      .map((s) => `<li class="cinfo-word"><span class="cinfo-word__es" lang="es">${esc(s.es)}</span><span class="cinfo-word__de">${esc(s.de)}</span></li>`)
-      .join("");
-
-    // Reisedialoge: der Drei-Zeiten-Dialog plus die beiden themed Dialoge
-    // (Rückblick & Pläne) – jeder mit Titel, Zeilen und Mini-Hinweis.
-    const allDialogs = [g.example].concat(g.dialogs || []);
-    const dialogsHtml = allDialogs
-      .map((d) => `
-        <div class="cj-dialog">
-          <h4 class="cj-verb__h" lang="es">${esc(d.title)}</h4>
-          ${lines(d.lines)}
-          <p class="cinfo-text cj-note">${esc(d.note)}</p>
-        </div>`)
-      .join("");
-
-    // Alle Abschnitte EINMAL definiert (eine Quelle der Wahrheit). Ein Abschnitt
-    // mit id + nav (Kurzlabel) ist per Sprungmarke erreichbar; ohne nav erscheint
-    // er nur im Fließtext. Reihenfolge der Sprungleiste = Reihenfolge der Seite.
-    const sections = [
-      { icon: "↔️", title: t.title, body: timeline },
-      { icon: "🪄", title: ep.title, body: easyPast, id: "ti-tricks", nav: tt("discover.tiNavTricks") },
-      { icon: "🕰️", title: tt("discover.tiTenses"), body: `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, id: "ti-tenses", nav: tt("discover.tiNavTenses") },
-      { icon: "⏯️", title: c.title, body: continuous, id: "ti-continuous", nav: tt("discover.tiNavContinuous") },
-      { icon: "⏪", title: pc.title, body: pastContinuous },
-      { icon: "⏱️", title: ad.title, body: acabarDe },
-      { icon: "⚖️", title: iv.title, body: indefVsImperf, id: "ti-compare", nav: tt("discover.tiNavCompare") },
-      { icon: "💪", title: sp.title, body: strongPast, id: "ti-irregular", nav: tt("discover.tiNavIrregular") },
-      { icon: "🧩", title: pp.title, body: participles },
-      { icon: "🗣️", title: im.title, body: imperative, id: "ti-commands", nav: tt("discover.tiNavCommands") },
-      { icon: "📦", title: hy.title, body: hayBlock },
-      { icon: "🧳", title: sc.title, body: scenarios, id: "ti-practice", nav: tt("discover.tiNavPractice") },
-      { icon: "⚠️", title: pf.title, body: pitfalls },
-      { icon: "🔑", title: tt("discover.tiSignalWords"), body: `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>` },
-      { icon: "🧭", title: tt("discover.tiDialogs"), body: dialogsHtml, id: "ti-dialogs", nav: tt("discover.tiNavDialogs") },
-    ];
-
-    // Sprungmarken-Leiste (wie hist-nav/sz-nav): bei dieser langen Erklärseite
-    // springt man direkt zu den Hauptlandmarken, statt endlos zu scrollen.
-    const tiNav = `
-      <nav class="ti-nav" aria-label="${esc(tt("discover.tiNavLabel"))}">
-        ${sections.filter((s) => s.id && s.nav).map((s) => `<a class="ti-nav__chip" href="#${s.id}" data-action="scroll-to" data-target="${s.id}">${s.icon} ${esc(s.nav)}</a>`).join("")}
-      </nav>`;
-
-    return `
-      <section class="screen">
-        ${hmTopbar("⏳ Tiempos", "home")}
-        <p class="hm-intro">${esc(g.intro)}</p>
-        ${moduleShareBtn("tiempos")}
-        ${tiNav}
-
-        ${sections.map((s) => sect(s.icon, s.title, s.body, s.id)).join("")}
-
-        <button class="cta cj-cta" data-action="open-category" data-id="tiempos">
-          ${esc(tt("discover.tiPracticeTenses"))} <span class="cta__count">${esc(tt("home.tileCards", { n: vm.cardCount }))}</span>
-        </button>
-      </section>`;
-  }
-
-  function renderCuerpo(vm) {
-    const nodes = vm.parts
-      .map((p) => {
-        const L = BP_LAYOUT3D[p.id] || { x: 0, y: 0, z: 0, az: 0, d: 22 };
-        const cls = `bp-node${p.selected ? " is-active" : ""}${p.seen ? " is-seen" : ""}`;
-        return `
-          <button class="${cls}" type="button" data-action="cuerpo-select" data-id="${esc(p.id)}"
-                  data-x="${L.x}" data-y="${L.y}" data-z="${L.z}" data-az="${L.az}"
-                  style="width:${L.d}px;height:${L.d}px" aria-label="${esc(p.de)}" title="${esc(p.de)}"
-                  aria-pressed="${p.selected ? "true" : "false"}">
-            <span class="bp-node__hit" aria-hidden="true"></span>
-            <span class="bp-node__ring" aria-hidden="true"></span>
-          </button>`;
-      })
-      .join("");
-
-    const sel = vm.selected;
-    const speak = sel && vm.speakable
-      ? cornerBtn({ base: "cardbtn--speak bp-speak", on: false, icon: "🔊", label: t("discover.cuerpoSpeak"), action: "cuerpo-speak" })
-      : "";
-    const panel = sel
-      ? `
-        <div class="bp-panel bp-panel--filled" role="status" aria-live="polite">
-          <div class="bp-panel__top">
-            <span class="bp-panel__de">${esc(sel.de)}</span>
-            ${speak}
-          </div>
-          <p class="bp-panel__es" lang="es">${esc(sel.es)}</p>
-          ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">🗣️</span> ${esc(sel.tip)}</p>` : ""}
-          ${sel.note ? `<p class="bp-panel__note">${esc(sel.note)}</p>` : ""}
-        </div>`
-      : `
-        <div class="bp-panel" role="status" aria-live="polite">
-          <p class="bp-panel__hint">${esc(t("discover.cuerpoHint"))}</p>
-        </div>`;
-
-    const pct = vm.total > 0 ? Math.round((vm.exploredCount / vm.total) * 100) : 0;
-    const done = vm.total > 0 && vm.exploredCount >= vm.total;
-    const progress = `
-      <div class="bp-progress">
-        <div class="bp-progress__bar"><div class="bp-progress__fill" style="width:${pct}%"></div></div>
-        <span class="bp-progress__label">${done ? t("discover.cuerpoComplete", { total: vm.total }) : t("discover.cuerpoExplored", { n: vm.exploredCount, total: vm.total })}</span>
-      </div>`;
-
-    return `
-      <section class="screen bp-screen">
-        ${hmTopbar("🧍 El Cuerpo", "home")}
-        <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
-        ${moduleShareBtn("cuerpo")}
-        ${progress}
-        <div class="bp-stage">
-          <div class="bp-3d-stage" data-bp-stage>
-            <div class="bp-3d" data-bp-fig>
-              ${BP_FIGURE_3D}
-              ${nodes}
-            </div>
-            <div class="bp-rotor">
-              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="-1" aria-label="${esc(t("discover.cuerpoRotateLeft"))}">↺</button>
-              <span class="bp-rotor__hint" aria-hidden="true">${esc(t("discover.cuerpoDragHint"))}</span>
-              <button class="bp-rotor__btn" type="button" data-action="cuerpo-rotate" data-dir="1" aria-label="${esc(t("discover.cuerpoRotateRight"))}">↻</button>
-            </div>
-          </div>
-          ${panel}
-        </div>
-      </section>`;
-  }
-
-  // ---------- EINKAUFSZETTEL (Lista de compras) ----------
-  // Interaktive Einkaufsliste: Rubrik wählen (Supermercado/Ropa/Farmacia),
-  // Items antippen -> spanisches Wort, Aussprache, Reisetipp + Vorlesen, und
-  // das Item wird abgehakt. Dazu ein kurzes Quiz über dieselbe Rubrik.
-  function renderCompras(vm) {
-    const chips = vm.sections
-      .map((s) => `
-        <button class="sl-chip ${s.active ? "is-active" : ""}" type="button"
-                data-action="compras-section" data-id="${esc(s.id)}"
-                aria-pressed="${s.active ? "true" : "false"}"
-                title="${esc(t("discover.comprasCheckedTitle", { de: s.de, done: s.done, total: s.total }))}">
-          <span class="sl-chip__icon" aria-hidden="true">${esc(s.icon)}</span>
-          <span class="sl-chip__label">${esc(s.label)}</span>
-          ${s.done >= s.total ? `<span class="sl-chip__done" aria-hidden="true">✓</span>` : ""}
-        </button>`)
-      .join("");
-
-    const items = vm.items
-      .map((it) => {
-        const speak = it.open && vm.speakable
-          ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: t("discover.comprasSpeakWord"),
-              action: "compras-speak", extra: `data-id="${esc(it.id)}"` })
-          : "";
-        // Eine Supermarkt-Frage mit deutschem Label und 🔊 zum Vorlesen.
-        const askLine = (ask) => `
-          <div class="sl-ask__line">
-            <div class="sl-ask__texts">
-              <span class="sl-ask__de">${esc(ask.de)}</span>
-              <span class="sl-ask__es" lang="es">${esc(ask.es)}</span>
-            </div>
-            ${vm.speakable
-              ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: t("discover.comprasSpeakPhrase"),
-                  action: "compras-speak-phrase", extra: `data-say="${esc(ask.es)}"` })
-              : ""}
-          </div>`;
-        const ask = it.ask
-          ? `
-            <div class="sl-ask">
-              <span class="sl-ask__cap">${esc(t("discover.comprasAsk"))}</span>
-              ${askLine(it.ask.have)}
-              ${askLine(it.ask.find)}
-            </div>`
-          : "";
-        const detail = it.open
-          ? `
-            <div class="sl-item__detail" role="region">
-              <div class="sl-item__estop">
-                <p class="sl-item__es" lang="es">${esc(it.es)}</p>
-                ${speak}
-              </div>
-              ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">🗣️</span> ${esc(it.tip)}</p>` : ""}
-              ${it.note ? `<p class="sl-item__note">${esc(it.note)}</p>` : ""}
-              ${ask}
-            </div>`
-          : "";
-        return `
-          <li class="sl-item ${it.open ? "is-open" : ""} ${it.seen ? "is-checked" : ""}">
-            <div class="sl-item__head">
-              <button class="sl-item__check" type="button" data-action="compras-toggle" data-id="${esc(it.id)}"
-                      aria-pressed="${it.seen ? "true" : "false"}"
-                      aria-label="${it.seen ? esc(t("discover.comprasUncheck")) : esc(t("discover.comprasCheckOff"))}: ${esc(it.de)}">
-                <span class="sl-item__box" aria-hidden="true">✓</span>
-              </button>
-              <button class="sl-item__row" type="button" data-action="compras-pick" data-id="${esc(it.id)}"
-                      aria-expanded="${it.open ? "true" : "false"}">
-                <span class="sl-item__de">${esc(it.de)}</span>
-                <span class="sl-item__chev" aria-hidden="true">›</span>
-              </button>
-            </div>
-            ${detail}
-          </li>`;
-      })
-      .join("");
-
-    const pct = vm.total > 0 ? Math.round((vm.doneCount / vm.total) * 100) : 0;
-    const done = vm.total > 0 && vm.doneCount >= vm.total;
-    const progress = `
-      <div class="bp-progress">
-        <div class="bp-progress__bar"><div class="bp-progress__fill sl-fill" style="width:${pct}%"></div></div>
-        <span class="bp-progress__label">${done ? t("discover.comprasComplete", { total: vm.total }) : t("discover.comprasCheckedCount", { n: vm.doneCount, total: vm.total })}</span>
-      </div>`;
-
-    const quizBtn = vm.total >= 2
-      ? `<button class="cta sl-quizbtn" data-action="open-compras-quiz">${t("discover.comprasQuiz", { section: esc(vm.section.label) })}</button>`
-      : "";
-
-    return `
-      <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
-        ${hmTopbar("🛒 Lista de compras", "home")}
-        <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
-        ${moduleShareBtn("compras")}
-        <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>
-        ${progress}
-        <ul class="sl-list">${items}</ul>
-        ${quizBtn}
-      </section>`;
-  }
-
-  // Quiz: „Du brauchst X“ (Deutsch) -> richtiges spanisches Wort wählen.
-  // Reuse der Definiciones-Optik (.quiz-def / .quiz-opt / .quiz-feedback).
-  function renderComprasQuiz(vm) {
-    const pct = vm.total > 0 ? Math.round(((vm.position + (vm.answered ? 1 : 0)) / vm.total) * 100) : 0;
-    const options = vm.options
-      .map((o, i) => {
-        const cls = `quiz-opt${o.state !== "idle" ? " quiz-opt--" + o.state : ""}`;
-        const dis = vm.answered ? " disabled aria-disabled=\"true\"" : "";
-        const mark = o.state === "correct" ? `<span class="quiz-opt__mark" aria-hidden="true">✓</span>`
-          : o.state === "wrong" ? `<span class="quiz-opt__mark" aria-hidden="true">✕</span>` : "";
-        return `
-          <button class="${cls}" type="button" data-action="compras-quiz-answer" data-idx="${i}"${dis}>
-            <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
-            </span>
-            ${mark}
-          </button>`;
-      })
-      .join("");
-
-    const feedback = vm.answered
-      ? `<div class="quiz-feedback ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
-           ${vm.isCorrect
-             ? `<span class="quiz-feedback__head">${esc(t("discover.quizCorrect"))}</span>`
-             : `<span class="quiz-feedback__head">${esc(t("discover.quizNotExactly"))}</span>
-                <span class="quiz-feedback__sol">${t("discover.comprasSolution", { es: esc(vm.solutionEs) })}</span>`}
-         </div>
-         <button class="cta" data-action="compras-quiz-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
-      : "";
-
-    return `
-      <section class="screen study">
-        ${hmTopbar(`${esc(vm.sectionIcon)} ${esc(vm.sectionLabel)}`, "compras-back-list")}
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.quizProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
-        <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.quizQuestion", { pos: vm.position + 1, total: vm.total }))}</div>
-        <div class="quiz-def">
-          <span class="quiz-def__cap">${esc(t("discover.comprasNeed"))}</span>
-          <p class="quiz-def__text">${esc(vm.prompt)}</p>
-        </div>
-        <div class="quiz-opts">${options}</div>
-        ${feedback}
-      </section>`;
-  }
-
-  function renderComprasQuizDone() {
-    return `<section class="screen"><div id="cb-mount" class="cb-mount"></div></section>`;
-  }
 
   window.SC = window.SC || {};
   // Freunde & Tages-Rangliste (opt-in, BACKEND.md §16). Rein darstellend – die
@@ -6008,16 +4482,11 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderJuegos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderJuegos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
-                   renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
-                   renderPreciosSetup, renderPrecios, renderPreciosDone, renderFrasesSetup, renderFrases, renderFrasesDone,
+                   renderConjugacion,
                    renderFavorites,
-                   renderConjugSetup, renderConjug, renderConjugDone,
-                   renderYestoSetup, renderYesto, renderYestoDone,
-                   renderDialogosSetup, renderDialogos, renderDialogosDone,
-                   renderCompras, renderComprasQuiz, renderComprasQuizDone,
                    placementCard, assessmentCard,
                    ONBOARD_SLIDE_COUNT: ONBOARD_SLIDES.length };
 })();

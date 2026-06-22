@@ -63,6 +63,17 @@ test("numbers.toWords: große Beträge (Kolumbien-Größenordnung)", () => {
   assert.equal(numbers.toWords(5000000), "cinco millones");
 });
 
+test("numbers.toWords: außerhalb der Domäne (≥ 1e9) wird geklemmt, nie 'undefined'", () => {
+  // Definiert ist 0 … 999.999.999; größere Werte klemmen auf das Maximum.
+  const max = numbers.toWords(999999999);
+  assert.ok(max && !/undefined/.test(max), "Maximalwert ist ein definiertes Zahlwort");
+  for (const v of [1e9, 5e9, 1234567890, Number.MAX_SAFE_INTEGER]) {
+    const w = numbers.toWords(v);
+    assert.ok(typeof w === "string" && w.length > 0 && !/undefined/.test(w), `toWords(${v}) ist definiert: ${w}`);
+    assert.equal(w, max, `toWords(${v}) ist auf das Domänen-Maximum geklemmt`);
+  }
+});
+
 // ---------- amount: Preisangabe mit Währung ----------
 test("numbers.amount: Singular/Plural & Apokope vor dem Nomen", () => {
   const peso = { one: "peso", many: "pesos" };
@@ -264,4 +275,15 @@ test("numbers.buildRound: deterministisch mit injiziertem rng", () => {
   const b = numbers.buildRound("CO", 2, 6, seeded());
   assert.deepEqual(a, b, "gleicher Seed muss identische Beträge liefern");
   assert.equal(a.length, 6);
+});
+
+test("tierFor: Stufe wählt die richtige (1-basierte) Spanne und klemmt am Rand", () => {
+  // Verriegelt die idx = (level-1)-Berechnung (Mutations-Regressionsschutz: ein
+  // Off-by-one würde Stufe 1 auf die zweite Spanne zeigen lassen).
+  assert.equal(numbers.tierFor("CO", 1).min, 500);     // erste Spanne
+  assert.equal(numbers.tierFor("CO", 2).min, 10000);   // zweite Spanne
+  assert.equal(numbers.tierFor("CO", 3).min, 100000);  // dritte Spanne
+  // Klemmung: unter 1 -> erste, über Anzahl -> letzte Spanne.
+  assert.equal(numbers.tierFor("CO", 0).min, 500);
+  assert.equal(numbers.tierFor("CO", 99).min, 100000);
 });

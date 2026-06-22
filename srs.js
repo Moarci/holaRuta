@@ -60,6 +60,9 @@
       };
     }
 
+    // Ab hier gilt GOOD (Standard-Intervallwachstum). Die UI sendet ausschließlich
+    // AGAIN/GOOD/EASY; ein unbekanntes Rating wird bewusst wie GOOD behandelt
+    // (die Karte rückt vor, statt zu blockieren).
     if (rating === RATING.EASY) ease = clampEase(ease + 0.15);
 
     let nextInterval;

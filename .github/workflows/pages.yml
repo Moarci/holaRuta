@@ -223,5 +223,31 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Voller Mutations-Score (alle Module)
-        run: npm run mutation:score
+      # Rotierender Seed (Datum) sampelt jede Nacht eine ANDERE 30-Mutanten-
+      # Teilmenge → schließt die Sampling-Lücke des fix geseedeten PR-Gates über
+      # die Zeit. continue-on-error, weil die BASELINE auf SEED=1 kalibriert ist:
+      # ein unglücklicher Seed kann einen 100%-Modul unter den 95%-Boden drücken
+      # OHNE echte Regression. Das Ergebnis wird unten ins Job-Summary gespiegelt,
+      # damit ein echter Survivor nicht im grünen CI untergeht.
+      - name: Voller Mutations-Score (alle Module, rotierender Seed)
+        id: mutscore
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run mutation:score -- --seed="$(date -u +%Y%m%d)" 2>&1 | tee mutation-score.log
+
+      - name: Ergebnis ins Job-Summary spiegeln
+        if: always()
+        run: |
+          {
+            echo "## Voller Mutations-Score (Seed $(date -u +%Y%m%d))"
+            if [ "${{ steps.mutscore.outcome }}" = "failure" ]; then
+              echo "⚠️ **Mindestens ein Modul unter dem No-Regression-Boden.** Echte Survivor gezielt durch Tests töten (oder seed-bedingtes Sampling-Rauschen bestätigen)."
+            else
+              echo "✅ Alle Module über dem Boden."
+            fi
+            echo ""
+            echo '```'
+            tail -n 40 mutation-score.log 2>/dev/null || echo "(kein Log)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

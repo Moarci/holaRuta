@@ -25,7 +25,8 @@ require(path.join(SRC, "contextdata.js"));
 require(path.join(SRC, "data.js"));
 require(path.join(SRC, "numbers.js"));
 require(path.join(SRC, "context.js"));
-const { data, i18n, contextData } = globalThis.window.SC;
+require(path.join(SRC, "countries.js"));
+const { data, i18n, contextData, countries } = globalThis.window.SC;
 
 // ---- K1: jede Karte hat eine englische Übersetzung + vollständigen EN-Kontext ----
 test("data.CARDS: jede Karte hat eine englische Übersetzung (en)", () => {
@@ -65,6 +66,30 @@ test("Pre-Arrival-Presets: i18n-Titel/Untertitel existieren (DE & EN)", () => {
         });
       });
     });
+  } finally {
+    i18n.setLang(prev);
+  }
+});
+
+// ---- Paket C: englische Ländernamen/Hauptstädte (…En-Overlay via natKey) ----
+// Regressionsschutz für die zugefügten nameEn/capitalEn: in EN müssen sie greifen,
+// in DE die deutsche Fassung, und Länder OHNE nameEn fallen sauber auf die Basis
+// zurück (kein leerer/roher Wert).
+test("countries: natKey liefert englische Namen/Hauptstädte (Paket C)", () => {
+  const prev = i18n.lang ? i18n.lang() : "de";
+  const mx = countries.LIST.find((c) => c.id === "mexico");
+  const hn = countries.LIST.find((c) => c.id === "honduras");
+  assert.ok(mx && hn, "Mexiko & Honduras im Datensatz");
+  try {
+    i18n.setLang("de");
+    assert.equal(i18n.natKey(mx, "name"), "Mexiko", "DE: Mexiko");
+    assert.equal(i18n.natKey(mx, "capital"), "Mexiko-Stadt", "DE: Mexiko-Stadt");
+
+    i18n.setLang("en");
+    assert.equal(i18n.natKey(mx, "name"), "Mexico", "EN: Mexico (nameEn)");
+    assert.equal(i18n.natKey(mx, "capital"), "Mexico City", "EN: Mexico City (capitalEn)");
+    // Honduras hat kein nameEn -> Rückfall auf die Basis (nicht leer/roh).
+    assert.equal(i18n.natKey(hn, "name"), "Honduras", "EN ohne nameEn: Rückfall auf Basisname");
   } finally {
     i18n.setLang(prev);
   }

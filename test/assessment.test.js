@@ -205,3 +205,9 @@ test("summarize: alles unbekannt -> A0, kein Crash bei fehlenden Antworten", () 
   assert.equal(s.correct, 0);
   assert.equal(s.level, "A0");
 });
+
+test("scoreIndex/levelFor mit nicht-endlichem Score fällt sicher auf A0 (nie versehentlich C1)", () => {
+  assert.equal(assessment.scoreIndex(NaN, 0), 0);
+  assert.equal(assessment.levelFor(NaN, 0), "A0");
+  assert.equal(assessment.levelFor(undefined, 0), "A0");
+});

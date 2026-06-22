@@ -1,8 +1,8 @@
 /*
  * historiaCentro.js  (SC.historiaCentro) – Modell für die Erklärseite "Historia
  * de Centroamérica". REINE DATEN, keine Logik – exakt dieselbe Struktur wie
- * historia.js (Sudamérica), damit ui.renderHistoria / app.historiaVM beide
- * Sektionen über dieselbe Render- und Lesetraining-Mechanik bedienen können.
+ * historia.js (Sudamérica), damit das Feature-Modul SC.cronologia beide
+ * Sektionen über dieselbe Render- und Lesetraining-Mechanik bedienen kann.
  *
  * Aufbau (wie historia.js):
  *   INTRO     { de, en }                       – Einleitungstext (Hero)
