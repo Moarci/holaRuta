@@ -236,8 +236,110 @@
     return `${text}${vocab}${quiz}${trans}${share}`;
   }
 
+  // ----- Info-Modul-Blatt (Logística, Salud, Jerga, Derechos, Viaja responsable …) -----
+  // Gemeinsame Nachschlage-Seite im Regatear-Stil für Module mit dem Schema
+  // { intro, topics[], phrases[], glossary[], checklist[] }: erst die praktischen
+  // Tipps (aufklappbar, DOs/Don'ts, optional Lesetraining je Thema), dann die
+  // wichtigsten Sätze nach Thema, ein kleines Glossar und zum Schluss eine Packliste.
+  // cfg trägt nur das Spezifische (Icon, Titel, i18n-Schlüssel der Überschriften,
+  // cat fürs Teilen, readingPerTopic/copyPhrases-Schalter). Leere Abschnitte fallen
+  // weg. Reine Anzeige – nutzt die vorhandenen Regatear/Knigge-CSS-Klassen.
+  function moduleSheet(vm, cfg) {
+    const liList = (items, cls, marker) => {
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
+        .join("");
+    };
+    const topicBlock = (tp, i) => {
+      // Optionales spanisches Lesetraining pro Thema: nur wenn das Modul es
+      // einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text trägt. Die
+      // Tap-/Quiz-Logik ist global (hist-word/hist-quiz-answer).
+      const lvl = (cfg.readingPerTopic && tp.es && tp.es.length) ? levelMeta(tp.level) : null;
+      const reading = (cfg.readingPerTopic && tp.es && tp.es.length)
+        ? `<details class="hist-read">
+             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
+           </details>`
+        : "";
+      return `
+      <details class="knigge-topic">
+        <summary class="knigge-topic__head">
+          <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
+          <span class="knigge-topic__title">${esc(tp.title)}</span>
+          <span class="knigge-topic__chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="knigge-topic__body">
+          ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
+          ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
+          ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${reading}
+          ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
+        </div>
+      </details>`;
+    };
+    const topics = (vm.topics || []).map(topicBlock).join("");
+
+    const copyBtn = (p) => cfg.copyPhrases
+      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
+      : "";
+    const phraseGroup = (g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${g.items.map((p) => `
+            <li class="rg-phrase${cfg.copyPhrases ? " rg-phrase--copy" : ""}">
+              <span class="rg-phrase__text">
+                <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+                <span class="rg-phrase__de">${esc(p.de)}</span>
+              </span>
+              ${copyBtn(p)}
+            </li>`).join("")}
+        </ul>
+      </div>`;
+    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+
+    const glossary = (vm.glossary || []).map((g) => `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
+        <span class="rg-gloss__de">${esc(g.de)}</span>
+      </li>`).join("");
+
+    const checklist = (vm.checklist || []).map((c) => `
+      <li class="rg-region">
+        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__body">
+          <span class="rg-region__country">${esc(c.item)}</span>
+          <span class="rg-region__note">${esc(c.why)}</span>
+        </span>
+      </li>`).join("");
+
+    const section = (cond, head, body) =>
+      cond ? `<h2 class="rg-head">${esc(t(head))}</h2>${body}` : "";
+
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">${cfg.icon} ${esc(cfg.title)}</div>
+          <span></span>
+        </div>
+        <p class="pageintro">${esc(vm.intro)}</p>
+        ${cfg.cat ? moduleShareBtn(cfg.cat) : ""}
+
+        ${section(topics, cfg.headTips, topics)}
+        ${section(phrases, cfg.headPhrases, phrases)}
+        ${section(glossary, cfg.headWords, `<ul class="rg-glosslist">${glossary}</ul>`)}
+        ${(vm.checklist && vm.checklist.length)
+          ? `<h2 class="rg-head">${esc(t(cfg.headChecklist))}</h2>
+             <p class="hm-intro">${esc(t(cfg.headChecklistHint))}</p>
+             <ul class="rg-regions">${checklist}</ul>`
+          : ""}
+      </section>`;
+  }
+
   window.SC.view = {
     esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn,
-    levelMeta, readingBlock,
+    levelMeta, readingBlock, moduleSheet,
   };
 })();

@@ -20,6 +20,9 @@
   const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
   const etiqueta = window.SC.etiqueta; // Feature-Modul (Etiqueta de viaje / Reise-Knigge), eager geladen
   const cronologia = window.SC.cronologia; // Feature-Modul (Historia, Geschichts-Zeitstrahl), eager geladen
+  const jergaSheet = window.SC.jergaSheet; // Feature-Modul (Jerga colombiana / Slang), eager geladen
+  const derechosSheet = window.SC.derechosSheet; // Feature-Modul (Conoce tus derechos), eager geladen
+  const responsableSheet = window.SC.responsableSheet; // Feature-Modul (Viaja responsable), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -922,50 +925,11 @@
     };
   }
 
-  // Jerga colombiana: Slang verstehen & mitreden. Gleiches Schema/Pass-Through wie
-  // saludVM (ohne Checkliste – Slang braucht keine Packliste).
-  function jergaVM() {
-    if (!jerga) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && jerga.INTRO_EN) ? jerga.INTRO_EN : jerga.INTRO,
-      topics: loc(jerga.TOPICS || []),
-      phrases: loc(jerga.PHRASES || []),
-      glossary: loc(jerga.GLOSSARY || []),
-      checklist: [],
-    };
-  }
-
-  // Conoce tus derechos: ruhig & sicher bei Kontrolle/Festnahme. Gleiches Schema/
-  // Pass-Through wie saludVM.
-  function derechosVM() {
-    if (!derechos) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && derechos.INTRO_EN) ? derechos.INTRO_EN : derechos.INTRO,
-      topics: loc(derechos.TOPICS || []),
-      phrases: loc(derechos.PHRASES || []),
-      glossary: loc(derechos.GLOSSARY || []),
-      checklist: loc(derechos.CHECKLIST || []),
-    };
-  }
-
-  // Viaja responsable: leichter Fußabdruck (Leave No Trace, lokal, Plastik, Respekt).
-  // Gleiches Schema/Pass-Through wie saludVM.
-  function responsableVM() {
-    if (!responsable) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && responsable.INTRO_EN) ? responsable.INTRO_EN : responsable.INTRO,
-      topics: loc(responsable.TOPICS || []),
-      phrases: loc(responsable.PHRASES || []),
-      glossary: loc(responsable.GLOSSARY || []),
-      checklist: loc(responsable.CHECKLIST || []),
-    };
-  }
+  // Jerga / Derechos / Viaja responsable: VM + Render leben jetzt in den Feature-
+  // Modulen features/jerga.js (SC.jergaSheet), features/derechos.js und
+  // features/responsable.js. Der Controller delegiert via SCREENS an .screen();
+  // Suche & „Modul teilen" lesen weiterhin die Content-Module SC.jerga/derechos/
+  // responsable direkt (wie bei Knigge/Etiqueta).
 
   // Fotos & Videos: praktische Tipps (Topics mit DOs/Don'ts + spanisches
   // Lesetraining wie in der Historia), Sätze zum Bitten/Platz-Machen, der
@@ -2201,9 +2165,9 @@
       "regatear": () => regateo.screen(),
       "logistica": () => ui.renderLogistica(logisticaVM()),
       "salud": () => ui.renderSalud(saludVM()),
-      "jerga": () => ui.renderJerga(jergaVM()),
-      "derechos": () => ui.renderDerechos(derechosVM()),
-      "responsable": () => ui.renderResponsable(responsableVM()),
+      "jerga": () => jergaSheet.screen(),
+      "derechos": () => derechosSheet.screen(),
+      "responsable": () => responsableSheet.screen(),
       "flirt": () => ui.renderFlirt(flirtVM()),
       "fotos": () => ui.renderFotos(fotosVM()),
       "bailar": () => ui.renderBailar(bailarVM()),
@@ -6348,11 +6312,11 @@
       case "salud":
         return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
       case "jerga":
-        return cut((jergaVM().topics || []).map((tp) => ({ mark: tp.icon || "🗣️", text: tp.title })));
+        return cut((jergaSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🗣️", text: tp.title })));
       case "derechos":
-        return cut((derechosVM().topics || []).map((tp) => ({ mark: tp.icon || "⚖️", text: tp.title })));
+        return cut((derechosSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "⚖️", text: tp.title })));
       case "responsable":
-        return cut((responsableVM().topics || []).map((tp) => ({ mark: tp.icon || "🌱", text: tp.title })));
+        return cut((responsableSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🌱", text: tp.title })));
       case "fotos":
         return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
       case "flirt":
@@ -7197,7 +7161,7 @@
     // (loadModule: dialogos, historia, historiaCentro) liest das jeweilige Feature
     // selbst live über window.SC.* hinter einem …ready()-Guard, da sie zur init-
     // Zeit noch fehlen können.
-    countries, knigge, regatear,
+    countries, knigge, regatear, jerga, derechos, responsable,
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT, root, loadModule, navEpoch: () => navEpoch,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
@@ -7220,6 +7184,9 @@
   if (dialogosGame) dialogosGame.init(featureCtx);
   if (etiqueta) etiqueta.init(featureCtx);
   if (cronologia) cronologia.init(featureCtx);
+  if (jergaSheet) jergaSheet.init(featureCtx);
+  if (derechosSheet) derechosSheet.init(featureCtx);
+  if (responsableSheet) responsableSheet.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

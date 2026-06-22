@@ -654,7 +654,7 @@ function installModules() {
     "store.js", "net.js", "sync.js", "social.js", "usercards.js", "matcher.js",
     "placement.js", "assessment.js", "search.js", "stats.js", "badges.js",
     "speech.js", "share.js", "qr.js", "install.js", "changelog.js",
-    "celebrate.js", "view-helpers.js", "ui.js", "features/spickzettel.js", "features/definiciones.js", "features/precios.js", "features/yesto-game.js", "features/frases-game.js", "features/conjugador.js", "features/tiempos.js", "features/regateo.js", "features/cuerpo.js", "features/compras.js", "features/dialogos-game.js", "features/etiqueta.js", "features/cronologia.js", "app.js",
+    "celebrate.js", "view-helpers.js", "ui.js", "features/spickzettel.js", "features/definiciones.js", "features/precios.js", "features/yesto-game.js", "features/frases-game.js", "features/conjugador.js", "features/tiempos.js", "features/regateo.js", "features/cuerpo.js", "features/compras.js", "features/dialogos-game.js", "features/etiqueta.js", "features/cronologia.js", "features/jerga.js", "features/derechos.js", "features/responsable.js", "app.js",
   ];
   for (const rel of order) {
     require(path.join(SRC, rel));
