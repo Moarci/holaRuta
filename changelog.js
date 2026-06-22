@@ -35,13 +35,13 @@
         "🆕 Drei neue Übungstypen für mehr Abwechslung: „Multiple Choice“ (richtige spanische Antwort aus vier Optionen ankreuzen), „Artikel“ (el/la/los/las vor das Substantiv setzen) und „Buchstabensalat“ (gewürfelte Buchstaben zum richtigen Wort sortieren). Alle drei funktionieren im Lösungsblatt, im Übungsblatt mit Lösungsschlüssel UND am Handy zum Ausfüllen mit Selbstkontrolle.",
         "📈 Spürbar mehr Umfang: Jeder Baustein wurde aufgestockt. „Groß“ liefert jetzt über 180 Aufgaben, „XXL“ über 270 – ein echtes, mehrseitiges Übungsheft. Auch mehr Konjugationen (bis 34), Übersetzungen (bis 34), Zahlen/Preise (bis 28) und bis zu VIER komplette Dialoge.",
         "✍️ Zwei neue Schreibanlässe (Restaurant-Bestellung & Nachricht an eine neue Bekanntschaft) – im XXL-Heft jetzt bis zu fünf freie Schreibaufgaben.",
-        "🖨️ Sauberer A4-Druck bei viel Inhalt: Lange Übungsabschnitte fließen jetzt über die Seiten, statt am Rand abgeschnitten zu werden – einzelne Aufgaben, Wortbänke und Schreibflächen bleiben dabei zusammen.",
+        "🖨️ Sauberer A4-Druck bei viel Inhalt: Lange Übungsabschnitte fließen jetzt über die Seiten, statt am Rand abgeschnitten zu werden – einzelne Aufgaben, Wortbänke und Schreibflächen bleiben dabei zusammen. Keine gestrandeten Überschriften oder Einzelzeilen mehr (Witwen/Waisen): Titel wandern immer mit ihrem Inhalt auf die nächste Seite.",
       ],
       itemsEn: [
         "🆕 Three new exercise types for more variety: “Multiple choice” (pick the correct Spanish answer from four options), “Articles” (put el/la/los/las in front of the noun) and “Word scramble” (unscramble the letters into the right word). All three work in the answer-key sheet, in the exercise sheet with answer key AND on your phone to fill in with self-check.",
         "📈 Noticeably more scope: every building block was boosted. “Large” now delivers over 180 tasks, “XXL” over 270 – a real multi-page workbook. Also more conjugations (up to 34), translations (up to 34), numbers/prices (up to 28) and up to FOUR complete dialogues.",
         "✍️ Two new writing prompts (ordering at a restaurant & a message to someone you just met) – up to five free-writing tasks in the XXL workbook.",
-        "🖨️ Clean A4 printing with lots of content: long exercise sections now flow across pages instead of being cut off at the margin – individual tasks, word banks and writing areas stay together.",
+        "🖨️ Clean A4 printing with lots of content: long exercise sections now flow across pages instead of being cut off at the margin – individual tasks, word banks and writing areas stay together. No more stranded headings or single lines (widows/orphans): a title always moves to the next page together with its content.",
       ],
     },
     {

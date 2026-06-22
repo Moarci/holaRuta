@@ -2517,6 +2517,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
      Wortbank, Matching-Raster und die Optionenzeile eines Multiple-Choice-Items
      nie mitten im Block umbrechen (das einzelne li bleibt ohnehin zusammen). */
   .sheet-wordbank, .sheet-match__grid, .sheet-choices { break-inside: avoid; }
+  /* Keine Witwen/Waisen: Überschriften (Abschnitt, Anweisung, Lösungsschlüssel,
+     Etappe, Lernziel) nie allein am Seitenende stehen lassen – sie wandern mit
+     ihrem Inhalt auf die nächste Seite. orphans/widows (vererbt von .sheet)
+     verhindern zusätzlich eine einzelne abgetrennte Zeile mehrzeiliger Absätze
+     (Landeskunde, Hinweise). */
+  .sheet-h2, .sheet-instr, .sheet-stage, .sheet-goal, .sheet--key h3 { break-after: avoid; page-break-after: avoid; }
+  .sheet { orphans: 2; widows: 2; }
   /* Fill-Modus-Bedienelemente sind reine Bildschirm-Helfer – nie aufs Papier. */
   .sheet-fillbar, .sheet-score, .sheet-solution { display: none !important; }
   /* Falls jemand das Fill-Blatt doch druckt: Felder als saubere Schreiblinien/Boxen. */
