@@ -4012,12 +4012,13 @@
 
   // Heftlänge: Obergrenzen je Baustein. „gross" ist der Standard-Umfang; „xxl"
   // schöpft die Quellen weitgehend aus (Gegenteile max. 26, frases max. 49,
-  // Dialoge max. 11). matching/translate/ordenar füllen bei Bedarf aus dem
-  // breiten Reise-Wortschatz auf, sind also praktisch unbegrenzt.
+  // Dialoge max. 11). matching/translate/ordenar/choice/anagram füllen bei Bedarf
+  // aus dem breiten Reise-Wortschatz auf, sind also praktisch unbegrenzt; articles
+  // zieht aus den ~70 Artikel-Nomen-Karten.
   const SHEET_LENGTHS = {
-    standard: { matching: 8, opposites: 10, gapfill: 8, translate: 10, ordenar: 6, conjug: 10, numbers: 8, dialogues: 1, writing: 1 },
-    gross: { matching: 14, opposites: 18, gapfill: 14, translate: 18, ordenar: 12, conjug: 18, numbers: 15, dialogues: 2, writing: 3 },
-    xxl: { matching: 20, opposites: 26, gapfill: 24, translate: 28, ordenar: 18, conjug: 28, numbers: 22, dialogues: 3, writing: 3 },
+    standard: { matching: 10, opposites: 12, choice: 8, articles: 8, gapfill: 10, translate: 12, ordenar: 8, anagram: 8, conjug: 12, numbers: 10, dialogues: 1, writing: 2 },
+    gross: { matching: 16, opposites: 20, choice: 14, articles: 14, gapfill: 16, translate: 22, ordenar: 14, anagram: 14, conjug: 22, numbers: 18, dialogues: 2, writing: 4 },
+    xxl: { matching: 24, opposites: 26, choice: 22, articles: 22, gapfill: 28, translate: 34, ordenar: 22, anagram: 20, conjug: 34, numbers: 28, dialogues: 4, writing: 5 },
   };
 
   // Baut die typisierten Übungsabschnitte. Jeder Builder ist gegen leere Quellen
@@ -4072,6 +4073,41 @@
       if (oppItems.length >= 3) out.push({ type: "opposites", items: oppItems });
     }
 
+    // 1c. Multiple Choice: deutsche Bedeutung gegeben, die richtige spanische
+    // Antwort aus vier Optionen wählen. Distraktoren aus dem breiten Reise-
+    // Wortschatz (nie die Lösung, keine Dubletten) – ein abwechslungsreicher,
+    // schnell lösbarer Erkennungs-Block.
+    const mcCards = fillFrom(cards, broadPool, L.choice);
+    if (mcCards.length >= 3) {
+      const mcDistract = broadPool.filter((c) => c.es && c.es.indexOf("–") === -1);
+      const mcItems = mcCards.map((c) => {
+        const correct = c.es;
+        const used = {}; used[correct.toLowerCase()] = true;
+        const distract = [];
+        const pool = sheetShuffle(mcDistract, rng);
+        for (let i = 0; i < pool.length && distract.length < 3; i++) {
+          const e = pool[i].es;
+          if (e && !used[e.toLowerCase()]) { used[e.toLowerCase()] = true; distract.push(e); }
+        }
+        const options = sheetShuffle([correct].concat(distract), rng).map((es, j) => ({ l: String.fromCharCode(97 + j), es: es }));
+        const ans = options.find((o) => o.es === correct) || options[0];
+        return { de: nat(c), options: options, answer: ans.l, answerEs: correct };
+      }).filter((it) => it.options.length >= 2);
+      if (mcItems.length >= 3) out.push({ type: "choice", items: mcItems });
+    }
+
+    // 1d. Artikel (el/la/los/las): grundlegende Genus-Übung aus den Artikel-Nomen-
+    // Karten (global, nicht zielgebunden – darum ein verlässlicher Umfangs-Booster).
+    const artRe = /^(el|la|los|las)\s+(.+)$/i;
+    const artCards = sheetShuffle((data.CARDS || []).filter((c) => c && c.es && nat(c) && artRe.test(String(c.es).trim())), rng).slice(0, L.articles);
+    if (artCards.length >= 3) {
+      const artItems = artCards.map((c) => {
+        const m = String(c.es).trim().match(artRe);
+        return { article: m[1].toLowerCase(), noun: m[2], de: nat(c) };
+      }).filter((it) => it.article && it.noun);
+      if (artItems.length >= 3) out.push({ type: "articles", items: artItems });
+    }
+
     // 2. Lückentext (frases): themenpassend zuerst, dann gemischt aufgefüllt (bis 14).
     if (frases && frases.FRASES) {
       const all = frases.FRASES.filter((f) => f.slot && f.slot.es);
@@ -4103,6 +4139,23 @@
         const answer = c.es.trim();
         const words = answer.replace(/[.?!¿¡,;]/g, "").split(/\s+/).filter(Boolean);
         return { answer: answer, scrambled: sheetShuffle(words, rng), de: nat(c) };
+      }) });
+    }
+
+    // 3c. Buchstabensalat (Anagramm): einzelne spanische Wörter mit gewürfelten
+    // Buchstaben, deutsche Bedeutung als Hilfe. Ziel zuerst, dann aus der Reserve.
+    const isSingleWord = (c) => c.es && /^[a-zñáéíóúü]{4,12}$/i.test(String(c.es).trim());
+    const anaPick = fillFrom(cards.filter(isSingleWord), broadPool.filter(isSingleWord), L.anagram);
+    if (anaPick.length >= 3) {
+      out.push({ type: "anagram", items: anaPick.map((c) => {
+        const word = String(c.es).trim();
+        let scrambled = sheetShuffle(word.split(""), rng);
+        // Würfelt der Zufall die Originalreihenfolge, Anfang/Ende tauschen – sonst
+        // stünde die Lösung schon ungewürfelt da.
+        if (scrambled.join("") === word && word.length > 1) {
+          const last = scrambled.length - 1; const tmp = scrambled[0]; scrambled[0] = scrambled[last]; scrambled[last] = tmp;
+        }
+        return { answer: word, scrambled: scrambled, de: nat(c) };
       }) });
     }
 
@@ -4150,7 +4203,10 @@
     }
 
     // 8. Freies Schreiben (immer; Anzahl Schreibanlässe je nach Länge).
-    out.push({ type: "writing", prompts: [t("sheet.writePrompt1"), t("sheet.writePrompt2"), t("sheet.writePrompt3")].slice(0, L.writing) });
+    out.push({ type: "writing", prompts: [
+      t("sheet.writePrompt1"), t("sheet.writePrompt2"), t("sheet.writePrompt3"),
+      t("sheet.writePrompt4"), t("sheet.writePrompt5"),
+    ].slice(0, L.writing) });
 
     return out;
   }
@@ -4158,7 +4214,8 @@
   const SHEET_SEC_KEY = {
     matching: "secMatching", gapfill: "secGapfill", translate: "secTranslate",
     conjug: "secConjug", numbers: "secNumbers", dialogue: "secDialogue",
-    opposites: "secOpposites", ordenar: "secOrdenar",
+    opposites: "secOpposites", ordenar: "secOrdenar", choice: "secChoice",
+    articles: "secArticles", anagram: "secAnagram",
     culture: "secCulture", writing: "secWriting",
   };
 

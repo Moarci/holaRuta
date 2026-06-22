@@ -4241,6 +4241,44 @@
             <ol class="sheet-exlist">${items}</ol>
           </section>`;
         }
+        case "choice": {
+          const items = (s.items || []).map((it, i) => {
+            const opts = (it.options || []).map((o) => `<span class="sheet-choice__opt"><strong>${esc(o.l)})</strong> <span lang="es">${esc(o.es)}</span></span>`).join("");
+            const sol = vm.fill ? fillInput(it.answer, "mini", fk(i))
+              : vm.exercise ? '<span class="sheet-blank-mini"></span>'
+              : `<strong lang="es">${esc(it.answer)}) ${esc(it.answerEs)}</strong>`;
+            return `<li><span class="sheet-de">${esc(it.de)}</span><span class="sheet-choices">${opts}</span><span class="sheet-choice__ans">${esc(t("sheet.choiceAnswerLabel"))}: ${sol}</span></li>`;
+          }).join("");
+          return `<section class="sheet-section sheet-section--choice">
+            ${sectionHead("sheet.secChoice", "sheet.instrChoice")}
+            <ol class="sheet-exlist sheet-exlist--choice">${items}</ol>
+          </section>`;
+        }
+        case "articles": {
+          const items = (s.items || []).map((it, i) => {
+            const sol = vm.fill ? fillInput(it.article, "mini", fk(i))
+              : vm.exercise ? '<span class="sheet-blank-mini"></span>'
+              : `<strong lang="es">${esc(it.article)}</strong>`;
+            return `<li>${sol} <span class="sheet-es" lang="es">${esc(it.noun)}</span> <span class="sheet-de">(${esc(it.de)})</span></li>`;
+          }).join("");
+          return `<section class="sheet-section sheet-section--articles">
+            ${sectionHead("sheet.secArticles", "sheet.instrArticles")}
+            <ol class="sheet-exlist sheet-exlist--articles">${items}</ol>
+          </section>`;
+        }
+        case "anagram": {
+          const items = (s.items || []).map((it, i) => {
+            const chips = (it.scrambled || []).map((ch) => `<span class="sheet-chip sheet-chip--letter" lang="es">${esc(ch)}</span>`).join("");
+            const sol = vm.fill ? fillInput(it.answer, "line", fk(i))
+              : vm.exercise ? writeLine
+              : `<span class="sheet-es" lang="es">${esc(it.answer)}</span>`;
+            return `<li><span class="sheet-de">${esc(it.de)}</span><span class="sheet-scramble sheet-scramble--letters">${chips}</span>${sol}</li>`;
+          }).join("");
+          return `<section class="sheet-section sheet-section--anagram">
+            ${sectionHead("sheet.secAnagram", "sheet.instrAnagram")}
+            <ol class="sheet-exlist">${items}</ol>
+          </section>`;
+        }
         case "culture": {
           const facts = (s.facts || []).map((f) => `<li>${esc(f)}</li>`).join("");
           return `<section class="sheet-section sheet-section--culture">
@@ -4287,6 +4325,9 @@
           case "numbers": heading = t("sheet.secNumbers"); items = (s.items || []).map((it) => `${it.digits} → ${it.words}`); break;
           case "opposites": heading = t("sheet.secOpposites"); items = (s.items || []).map((it) => `${it.word} → ${it.answer}`); break;
           case "ordenar": heading = t("sheet.secOrdenar"); items = (s.items || []).map((it) => it.answer); break;
+          case "choice": heading = t("sheet.secChoice"); items = (s.items || []).map((it) => `${it.answer}) ${it.answerEs}`); break;
+          case "articles": heading = t("sheet.secArticles"); items = (s.items || []).map((it) => `${it.article} ${it.noun}`); break;
+          case "anagram": heading = t("sheet.secAnagram"); items = (s.items || []).map((it) => it.answer); break;
           case "dialogue": heading = t("sheet.secDialogue"); items = (s.turns || []).filter((tn) => tn.who === "user").map((tn) => tn.answer); break;
           default: return ""; // culture/writing haben keine Lösung
         }

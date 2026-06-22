@@ -2636,6 +2636,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-arrow { color: var(--sheet-accent); font-weight: 700; margin: 0 2px; }
 .sheet-scramble { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
 .sheet-scramble .sheet-chip { font-weight: 700; }
+/* Buchstabensalat (Anagramm) – einzelne Buchstaben als quadratische Kacheln. */
+.sheet-scramble--letters .sheet-chip--letter { min-width: 1.6em; text-align: center; padding: 2px 7px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+/* Multiple Choice – Optionen a)–d) nebeneinander, Antwortlinie darunter. */
+.sheet-exlist--choice li { margin: 10px 0; }
+.sheet-choices { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 3px 0; }
+.sheet-choice__opt { white-space: nowrap; font-size: 0.95rem; }
+.sheet-choice__opt strong { color: var(--sheet-accent); }
+.sheet-choice__ans { display: block; font-size: 0.9rem; color: #6b5a4c; margin-top: 2px; }
+/* Mini-Schreiblücke (Multiple-Choice-Buchstabe / Artikel). */
+.sheet-blank-mini { display: inline-block; min-width: 48px; border-bottom: 1px solid #444; vertical-align: baseline; }
+/* Artikel-Übung – Artikel-Lücke, Substantiv, deutsche Bedeutung. */
+.sheet-exlist--articles li { margin: 7px 0; }
+.sheet-exlist--articles .sheet-es { margin: 0 4px; }
 /* Tabellen (Konjugation, Zahlen). */
 .sheet-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
 .sheet-table th, .sheet-table td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 0.92rem; vertical-align: top; }
