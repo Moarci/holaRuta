@@ -1419,9 +1419,9 @@
           <span class="face__hint">${inputHint}</span>
         </div>
         <form class="typer" data-action="submit-typed" id="typer">
-          <input class="typer__input" id="answer" type="text" autocomplete="off"
+          <input class="typer__input" id="answer" type="text"${!sq ? ' lang="es"' : ""} autocomplete="off"
                  autocapitalize="off" autocorrect="off" spellcheck="false"
-                 placeholder="${esc(placeholder)}" />
+                 aria-label="${esc(placeholder)}" placeholder="${esc(placeholder)}" />
           <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`;
     }
@@ -1468,9 +1468,9 @@
           <span class="face__hint">${esc(t("study.listenHint"))}</span>
         </div>
         <form class="typer" data-action="submit-typed" id="typer">
-          <input class="typer__input" id="answer" type="text" autocomplete="off"
+          <input class="typer__input" id="answer" type="text" lang="es" autocomplete="off"
                  autocapitalize="off" autocorrect="off" spellcheck="false"
-                 placeholder="${esc(t("study.listenPlaceholder"))}" />
+                 aria-label="${esc(t("study.listenPlaceholder"))}" placeholder="${esc(t("study.listenPlaceholder"))}" />
           <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`;
     }
@@ -2611,10 +2611,14 @@
   // (Icon, Titel, i18n-Schlüssel der Überschriften). Leere Abschnitte fallen weg.
   // Reine Anzeige – nutzt durchgehend die vorhandenen Regatear/Knigge-CSS-Klassen.
   function moduleSheet(vm, cfg) {
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+    const liList = (items, cls, marker) => {
+      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
+      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
         .join("");
+    };
     const topicBlock = (tp, i) => {
       // Optionales spanisches Lesetraining pro Thema (wie renderFotos): nur wenn
       // das Modul es einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text
@@ -2768,10 +2772,14 @@
     '</svg>';
 
   function renderFotos(vm) {
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+    const liList = (items, cls, marker) => {
+      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
+      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
         .join("");
+    };
 
     // Ein Thema: aufklappbar wie bei Knigge/Salud, plus spanisches Lesetraining.
     const topicBlock = (tp, i) => {
@@ -2902,10 +2910,14 @@
   // prefers-reduced-motion). Dazu Zählrhythmus, Tipps, spanisches Lesetraining und
   // Video-Links. Struktur (Topbar, Nav-Chips, Sätze, Glossar, Knigge) wie renderFotos.
   function renderBailar(vm) {
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(x)}</li>`)
+    const liList = (items, cls, marker) => {
+      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
+      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
         .join("");
+    };
 
     // Ein Fußabdruck: äußere <g> trägt Position/Drehung (SVG-transform) und den
     // Wellen-Index (--bi); die innere __pop-Gruppe wird per CSS skaliert (eigenes

@@ -59,10 +59,14 @@
   // ----- Render -----
   function renderRegatear(vm) {
     // Erklärung: Taktik-Blöcke (DOs/Don'ts) wie im Knigge, aufklappbar.
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((t) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(t)}</li>`)
+    const liList = (items, cls, marker) => {
+      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
+      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((txt) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(txt)}</li>`)
         .join("");
+    };
     const tipBlock = (t, i) => `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">

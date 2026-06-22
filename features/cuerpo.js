@@ -143,10 +143,11 @@
 
     const pct = vm.total > 0 ? Math.round((vm.exploredCount / vm.total) * 100) : 0;
     const done = vm.total > 0 && vm.exploredCount >= vm.total;
+    const progLabel = done ? t("discover.cuerpoComplete", { total: vm.total }) : t("discover.cuerpoExplored", { n: vm.exploredCount, total: vm.total });
     const progress = `
       <div class="bp-progress">
-        <div class="bp-progress__bar"><div class="bp-progress__fill" style="width:${pct}%"></div></div>
-        <span class="bp-progress__label">${done ? t("discover.cuerpoComplete", { total: vm.total }) : t("discover.cuerpoExplored", { n: vm.exploredCount, total: vm.total })}</span>
+        <div class="bp-progress__bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(progLabel)}"><div class="bp-progress__fill" style="width:${pct}%"></div></div>
+        <span class="bp-progress__label">${progLabel}</span>
       </div>`;
 
     return `
@@ -243,11 +244,13 @@
   }
 
   // Dreh-Knöpfe ↺/↻ (Tastatur-/Klick-Alternative zum Ziehen). Kurz mit
-  // Transition (is-anim), damit der Sprung weich statt hart wirkt.
+  // Transition (is-anim), damit der Sprung weich statt hart wirkt – außer bei
+  // prefers-reduced-motion, dann sofort ohne Animation.
   function rotate(dir) {
     ctx.state.bodyYaw = (ctx.state.bodyYaw || 0) + dir * 32;
     const stage = root.querySelector("[data-bp-stage]");
-    if (stage) {
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (stage && !reduce) {
       stage.classList.add("is-anim");
       clearTimeout(bpAnimTimer);
       bpAnimTimer = setTimeout(() => stage.classList.remove("is-anim"), 320);

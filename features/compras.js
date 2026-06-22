@@ -273,7 +273,7 @@
           : "";
         const detail = it.open
           ? `
-            <div class="sl-item__detail" role="region">
+            <div class="sl-item__detail" role="region" aria-label="${esc(it.de)}">
               <div class="sl-item__estop">
                 <p class="sl-item__es" lang="es">${esc(it.es)}</p>
                 ${speak}
@@ -304,10 +304,11 @@
 
     const pct = vm.total > 0 ? Math.round((vm.doneCount / vm.total) * 100) : 0;
     const done = vm.total > 0 && vm.doneCount >= vm.total;
+    const progLabel = done ? t("discover.comprasComplete", { total: vm.total }) : t("discover.comprasCheckedCount", { n: vm.doneCount, total: vm.total });
     const progress = `
       <div class="bp-progress">
-        <div class="bp-progress__bar"><div class="bp-progress__fill sl-fill" style="width:${pct}%"></div></div>
-        <span class="bp-progress__label">${done ? t("discover.comprasComplete", { total: vm.total }) : t("discover.comprasCheckedCount", { n: vm.doneCount, total: vm.total })}</span>
+        <div class="bp-progress__bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(progLabel)}"><div class="bp-progress__fill sl-fill" style="width:${pct}%"></div></div>
+        <span class="bp-progress__label">${progLabel}</span>
       </div>`;
 
     const quizBtn = vm.total >= 2

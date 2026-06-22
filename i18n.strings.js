@@ -799,6 +799,8 @@
     kniggeIntroPre: "Allgemeine DOs &amp; Don'ts plus Besonderheiten",
     kniggeIntroFor: (p) => ` für ${p.country}`,
     kniggeAccentIn: (p) => `In ${p.country}:`,
+    kniggeDo: "Empfohlen",
+    kniggeDont: "Vermeiden",
 
     // Regatear
     rgTactics: "📖 So verhandelst du gut",
@@ -1217,6 +1219,8 @@
     kniggeIntroPre: "General dos &amp; don'ts plus particulars",
     kniggeIntroFor: (p) => ` for ${p.country}`,
     kniggeAccentIn: (p) => `In ${p.country}:`,
+    kniggeDo: "Do",
+    kniggeDont: "Don't",
 
     rgTactics: "📖 How to bargain well",
     rgWords: "🗣️ Words around haggling",

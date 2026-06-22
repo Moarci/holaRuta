@@ -224,7 +224,7 @@
         </div>
         <form class="typer" data-action="submit-precios" id="precios-form">
           <input class="typer__input" id="precios-answer" type="text" inputmode="numeric"
-                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(t("discover.prcPlaceholder"))}" />
+                 autocomplete="off" autocorrect="off" spellcheck="false" aria-label="${esc(t("discover.prcPlaceholder"))}" placeholder="${esc(t("discover.prcPlaceholder"))}" />
           <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`
       : `

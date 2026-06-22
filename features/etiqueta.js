@@ -62,10 +62,14 @@
 
     const countryName = vm.country ? vm.country.name : "";
 
-    const liList = (items, cls, marker) =>
-      (items || [])
-        .map((it) => `<li class="${cls}"><span class="knigge-mark" aria-hidden="true">${marker}</span>${esc(it)}</li>`)
+    const liList = (items, cls, marker) => {
+      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
+      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      return (items || [])
+        .map((it) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(it)}</li>`)
         .join("");
+    };
 
     const block = (tp, i) => {
       const dos = liList(tp.dos, "knigge-do", "✅");

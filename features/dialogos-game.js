@@ -323,7 +323,7 @@
             ${instr}
             <form class="typer" data-action="submit-dialogos" id="dialogos-form">
               <input class="typer__input" id="dialogos-answer" type="text" inputmode="text"
-                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="${esc(t("discover.dlgPlaceholder"))}" />
+                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" aria-label="${esc(t("discover.dlgPlaceholder"))}" placeholder="${esc(t("discover.dlgPlaceholder"))}" />
               <button class="typer__btn" type="submit">${esc(t("discover.dlgSay"))}</button>
             </form>
             ${help}`;

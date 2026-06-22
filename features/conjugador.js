@@ -165,7 +165,7 @@
         </div>
         <form class="typer" data-action="submit-conjug" id="conjug-form">
           <input class="typer__input" id="conjug-answer" type="text" inputmode="text"
-                 autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" placeholder="${esc(t("discover.cjPlaceholder"))}" />
+                 autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" aria-label="${esc(t("discover.cjPlaceholder"))}" placeholder="${esc(t("discover.cjPlaceholder"))}" />
           <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
         </form>`
       : `
