@@ -2511,6 +2511,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .sheet-table th, .sheet-table td { padding: 4px 7px; font-size: 9.8pt; }
   .sheet-write-line { height: 1.7em; }
   .sheet-write-box { height: 30mm; break-inside: avoid; }
+  .sheet-writeblock { break-inside: avoid; }
   .sheet-notes-lines { height: 26mm; }
   /* Innerhalb der nun fließenden Abschnitte zusammenhängende Teilblöcke schützen:
      Wortbank, Matching-Raster und die Optionenzeile eines Multiple-Choice-Items

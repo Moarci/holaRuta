@@ -4293,7 +4293,9 @@
           const box = (i) => vm.fill
             ? `<textarea class="sheet-fill-area" data-fk="${esc(fk(i))}" rows="4" lang="es" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.secWriting"))}"></textarea>`
             : `<div class="sheet-write-box" aria-hidden="true"></div>`;
-          const blocks = prompts.map((p, i) => `${p ? `<p class="sheet-goal">${esc(p)}</p>` : ""}${box(i)}`).join("");
+          // Anlass + Schreibfläche als ein Block – im Druck nie durch einen
+          // Seitenumbruch getrennt (sonst stünden leere Linien ohne Aufgabe oben).
+          const blocks = prompts.map((p, i) => `<div class="sheet-writeblock">${p ? `<p class="sheet-goal">${esc(p)}</p>` : ""}${box(i)}</div>`).join("");
           return `<section class="sheet-section sheet-section--writing">
             ${sectionHead("sheet.secWriting", "sheet.instrWriting")}
             ${blocks}
