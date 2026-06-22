@@ -6073,30 +6073,25 @@
     "precios-level": (el) => { precios.setLevel(el.dataset.level); },
     "start-precios": (el) => { precios.start(); },
     "precios-next": (el) => { precios.next(); },
-    "precios-again": (el) => { precios.again(); },
     "precios-setup": (el) => { precios.open(); },
     "precios-speak": (el) => { precios.speak(); },
     "open-frases": (el) => { frasesGame.open(); },
     "start-frases": (el) => { frasesGame.start(el.dataset.set); },
     "frases-answer": (el) => { frasesGame.answer(Number(el.dataset.idx)); },
     "frases-next": (el) => { frasesGame.next(); },
-    "frases-again": (el) => { frasesGame.again(); },
     "open-conjug-drill": (el) => { conjugDrill.open(); },
     "conjug-level": (el) => { conjugDrill.setLevel(el.dataset.level); },
     "start-conjug": (el) => { conjugDrill.start(); },
     "conjug-next": (el) => { conjugDrill.next(); },
-    "conjug-again": (el) => { conjugDrill.again(); },
     "open-yesto": (el) => { yestoGame.open(); },
     "start-yesto": (el) => { yestoGame.start(el.dataset.id); },
     "yesto-reveal": (el) => { yestoGame.reveal(); },
     "yesto-rate": (el) => { yestoGame.rate(el.dataset.known === "1"); },
-    "yesto-again": (el) => { yestoGame.again(); },
     "open-dialogos": (el) => { dialogosGame.open(); },
     "start-dialogos": (el) => { dialogosGame.start(el.dataset.id); },
     "dialogos-answer": (el) => { dialogosGame.answerMc(Number(el.dataset.idx)); },
     "dialogos-next": (el) => { dialogosGame.advance(); },
     "dialogos-hint": (el) => { dialogosGame.hint(); },
-    "dialogos-again": (el) => { dialogosGame.again(); },
     "dialogos-speak": (el) => { dialogosGame.speakNpc(); },
     "open-compras": (el) => { compras.open(); },
     "compras-section": (el) => { compras.section(el.dataset.id); },
@@ -6107,7 +6102,6 @@
     "open-compras-quiz": (el) => { compras.openQuiz(); },
     "compras-quiz-answer": (el) => { compras.quizAnswer(Number(el.dataset.idx)); },
     "compras-quiz-next": (el) => { compras.quizNext(); },
-    "compras-quiz-again": (el) => { compras.quizAgain(); },
     "compras-back-list": (el) => { compras.backToList(); },
     "home": (el) => { goHome(); },
   };
@@ -6657,6 +6651,12 @@
   const featureCtx = {
     state, setState, render, dismissBadgeToast,
     data, speech, numbers, yesto, frases, conjug, matcher, i18n, badges,
+    // Eager geladene Content-Module werden hier injiziert (Feature-Module greifen
+    // sie als ctx.<modul>, NICHT über window.SC.*). Lazy/optionale Module dagegen
+    // (loadModule: dialogos, historia, historiaCentro) liest das jeweilige Feature
+    // selbst live über window.SC.* hinter einem …ready()-Guard, da sie zur init-
+    // Zeit noch fehlen können.
+    countries, knigge, regatear,
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT, root, loadModule,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden

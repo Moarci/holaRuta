@@ -98,3 +98,15 @@ test("Hotspot-Klick (cuerpo-select) füllt das Wort-Panel und bucht den Ruta-Pas
   assert.match(d.html(), /bp-panel--filled/, "Wort-Panel ist nach der Auswahl gefüllt");
   assert.equal(window.SC.cuerpo.vm().exploredCount, 1, "das erkundete Körperteil wurde eingebucht");
 });
+
+test("cuerpo-rotate dreht die Figur in-place (bpApplyRot wirft nicht nach init3D)", () => {
+  const root = freshApp();
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  d.click("open-cuerpo");
+  // Dreh-Knopf nach dem Post-Render-Hook: schreibt nur Transforms in-place (kein
+  // Re-Render) – darf nicht werfen, und die Bühne bleibt bestehen.
+  assert.ok(d.click("cuerpo-rotate", { dir: "1" }), "Dreh-Knopf rechts anklickbar");
+  assert.ok(d.click("cuerpo-rotate", { dir: "-1" }), "Dreh-Knopf links anklickbar");
+  assert.match(d.html(), /data-bp-stage/, "3D-Bühne nach dem Drehen unverändert vorhanden");
+});

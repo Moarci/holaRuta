@@ -9,7 +9,7 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-526_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-532_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -245,8 +245,24 @@ SpanischCard/
 ├── qr.js          SC.qr         # QR-Code (gekapselte qrcode-generator-Lib) fürs Aktivitätsblatt
 ├── install.js     SC.install    # PWA-Installation („Zum Startbildschirm hinzufügen")
 │
+├── view-helpers.js SC.view      # Geteilte, zustandsfreie Render-Primitive (esc/hmTopbar/countryPicker/sect/readingBlock/cornerBtn/…)
 ├── ui.js          SC.ui         # Views: Zustand → HTML-String (renderHome/Study/Stats/…)
 ├── app.js         SC.app        # Controller: State, View-Modelle, Event-Delegation
+│
+├── features/                    # Eigenständige Screen-Module (VM+Render+Handler je Screen, via featureCtx injiziert)
+│   ├── spickzettel.js   SC.spickzettel  # Survival-Schnellzugriff
+│   ├── definiciones.js  SC.definiciones # Zuordnen-Quiz
+│   ├── precios.js       SC.precios      # Precios al oído (Preis-Hörtrainer)
+│   ├── yesto-game.js    SC.yestoGame    # ¿Y esto? (Bild-Vokabel-Spiel)
+│   ├── frases-game.js   SC.frasesGame   # Frases flexibles (Satzbaukasten)
+│   ├── conjugador.js    SC.conjugDrill  # Conjugador-Drill
+│   ├── tiempos.js       SC.tiempos      # Tiempos (Zeitformen-Erklärseite)
+│   ├── regateo.js       SC.regateo      # Regatear (Verhandeln/Feilschen)
+│   ├── cuerpo.js        SC.cuerpo       # El Cuerpo (interaktive 3D-Körperkarte)
+│   ├── compras.js       SC.compras      # Lista de compras (Einkaufsliste + Quiz)
+│   ├── dialogos-game.js SC.dialogosGame # Diálogos (Gesprächs-Simulator)
+│   ├── etiqueta.js      SC.etiqueta     # Etiqueta de viaje (Reise-Knigge)
+│   └── cronologia.js    SC.cronologia   # Historia (Geschichts-Zeitstrahl Süd-/Mittelamerika)
 │
 ├── build.js                     # Erzeugt die Einzeldatei HolaRuta.html
 ├── swversion.js                 # Build-/Test-Werkzeug: Inhalts-Hash für den SW-Cache-Namen (kein SC-Modul)
@@ -254,7 +270,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 526 Tests in 49 Dateien (node:test, keine Dependencies)
+├── test/                        # 532 Tests in 49 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -528,8 +544,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 526
-#  ℹ pass 526
+#  ℹ tests 532
+#  ℹ pass 532
 #  ℹ fail 0
 ```
 
@@ -560,7 +576,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 44 (`SC.*`) |
-| Tests | 526 (alle grün) |
+| Tests | 532 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

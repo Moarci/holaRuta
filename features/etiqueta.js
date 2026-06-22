@@ -31,8 +31,8 @@
   // Region-Gruppen fürs Dropdown wie infoVM, plus die allgemeinen Themenblöcke
   // mit eingehängtem landesspezifischem Akzent.
   function kniggeVM() {
-    const countries = window.SC.countries || null;
-    const knigge = window.SC.knigge || null;
+    const countries = ctx.countries;
+    const knigge = ctx.knigge;
     const list = countries ? countries.LIST : [];
     const regions = countries ? countries.REGIONS : [];
     const country = list.find((c) => c.id === ctx.state.countryId) || list[0] || null;

@@ -113,3 +113,32 @@ test("Quiz-Fluss: open-compras-quiz -> Antwort -> Feedback; backToList zurück z
   assert.ok(d.click("compras-back-list"), "zurück zur Liste");
   assert.match(d.html(), /class="screen sl-screen"/, "wieder auf der Einkaufsliste");
 });
+
+test("Quiz bis zum Done-Screen: quizDoneVM zählt die Treffer", () => {
+  const root = freshApp();
+  // Confetti-Mount der Mini-Done-Bühne neutralisieren (DOM-Stub kennt kein Canvas).
+  window.SC.celebrate = { celebrate() {} };
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  d.click("open-compras");
+  d.click("open-compras-quiz");
+  // Jede Frage beantworten (idx 0) und weiter, bis der Done-Screen mountet.
+  let reachedDone = false;
+  for (let i = 0; i < 60; i++) {
+    if (/id="cb-mount"/.test(d.html())) { reachedDone = true; break; }
+    // Nach dem Antworten bleiben die Optionen (disabled) im DOM – erst „Weiter"
+    // prüfen, sonst klickt die Schleife endlos auf den schon beantworteten Zug.
+    if (d.find("compras-quiz-next")) { d.click("compras-quiz-next"); continue; }
+    if (d.find("compras-quiz-answer")) { d.click("compras-quiz-answer", { idx: 0 }); continue; }
+    break;
+  }
+  assert.ok(reachedDone, "das Quiz erreicht den Done-Screen");
+  const done = window.SC.compras.quizDoneVM();
+  assert.ok(done.total > 0, "es gab Quizfragen");
+  assert.ok(done.correct >= 0 && done.correct <= done.total, "Trefferzahl im gültigen Bereich");
+});
+
+test("compras.speakPhrase wirft nicht (ohne TTS ein No-Op)", () => {
+  freshApp();
+  assert.doesNotThrow(() => window.SC.compras.speakPhrase("¿Tienen agua?"));
+});

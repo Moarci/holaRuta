@@ -29,7 +29,7 @@
   // Einheiten, Rollenspiele). Reicht die Daten 1:1 durch, hängt nur an den
   // Rollenspielen das Kurz-Label der Schwierigkeitsstufe an.
   function regatearVM() {
-    const regatear = window.SC.regatear || null;
+    const regatear = ctx.regatear;
     if (!regatear) return { intro: "", tips: [], glossary: [], phrases: [], units: [], regional: [], roleplays: [] };
     const roleplays = (regatear.ROLEPLAYS || []).map((r) => {
       const lvl = ctx.levelById(r.level);

@@ -110,4 +110,51 @@ test("Voller Gesprächs-Fluss: start -> Züge abspielen -> Done-Screen", () => {
     break;
   }
   assert.ok(reachedDone, "der Dialog erreicht den Done-Screen (cb-mount)");
+  // Am Done-Screen ist das Ergebnis konsistent eingebucht (state.dialogos lebt noch).
+  const done = window.SC.dialogosGame.doneVM();
+  assert.ok(done.total > 0, "es gab user-Züge zu beantworten");
+  assert.ok(done.correct >= 0 && done.correct <= done.total, "Trefferzahl im gültigen Bereich");
+});
+
+test("dialogos-hint deckt auf einem Frei-Tipp-Zug die Musterantwort auf", () => {
+  const root = freshApp();
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  d.click("open-dialogos");
+  d.click("start-dialogos");
+
+  // Bis zum ersten Frei-Tipp-Zug spielen (jeder Dialog hat welche): npc -> Weiter,
+  // MC -> Antwort. Stoppen, sobald Eingabefeld + Tipp-Knopf aktiv sind.
+  let reachedType = false;
+  for (let i = 0; i < 40; i++) {
+    if (root.querySelector("#dialogos-answer") && d.find("dialogos-hint")) { reachedType = true; break; }
+    if (d.find("dialogos-answer")) { d.click("dialogos-answer", { idx: 0 }); continue; }
+    if (d.find("dialogos-next")) { d.click("dialogos-next"); continue; }
+    break;
+  }
+  assert.ok(reachedType, "ein Frei-Tipp-Zug mit Tipp-Knopf wird erreicht");
+  assert.ok(!/class="dlg-tip"/.test(d.html()), "vor dem Tipp ist die Musterantwort verdeckt");
+  assert.ok(d.click("dialogos-hint"), "Tipp-Knopf anklickbar");
+  assert.match(d.html(), /class="dlg-tip"/, "Musterantwort nach dem Tipp aufgedeckt");
+});
+
+test("dialogosGame.again startet dieselbe Szene neu (Zug 1)", () => {
+  const root = freshApp();
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  d.click("open-dialogos");
+  d.click("start-dialogos");
+  if (d.find("dialogos-next")) d.click("dialogos-next"); // mind. einen Zug vorrücken
+  window.SC.dialogosGame.again();
+  assert.match(d.html(), /class="dlg-thread"/, "wieder im aktiven Dialog");
+  assert.match(d.html(), new RegExp(`dlg-step[^>]*>[^<]*1[^<]`), "Schrittzähler zurück auf Zug 1");
+});
+
+test("dialogosGame.speakNpc wirft nicht (ohne TTS ein No-Op)", () => {
+  const root = freshApp();
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  d.click("open-dialogos");
+  d.click("start-dialogos");
+  assert.doesNotThrow(() => window.SC.dialogosGame.speakNpc());
 });
