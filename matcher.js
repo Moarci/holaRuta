@@ -185,8 +185,20 @@
   // "neccesito"="necesito" (Abweichung im Wortinneren) bleibt ein Tippfehler.
   function isWordFinalEdit(a, b) {
     const longer = a.length >= b.length ? a : b;
-    const after = longer.length - commonSuffixLen(a, b); // erstes Zeichen des gemeinsamen Suffixes
-    return after >= longer.length || longer.charCodeAt(after) === 32; // 32 = Leerzeichen
+    const after = longer.length - commonSuffixLen(a, b); // Zeichen direkt NACH der Abweichung
+    // (1) Abweichung am Wortende (Leerzeichen oder String-Ende danach).
+    if (after >= longer.length || longer.charCodeAt(after) === 32) return true; // 32 = Leerzeichen
+    // (2) Genus im Plural: ein a/o-Vokal direkt vor einem wort-finalen "s"
+    //     (buenas↔buenos, amigas↔amigos) ist ebenfalls eine Flexion, kein Vertipper.
+    //     Eng gehalten (nur a/o vor "s" am Tokenende), damit echte Wort-INNEN-Tippfehler
+    //     wie "neccesito"↔"necesito" weiter als Tippfehler zählen.
+    if (a.length === b.length && longer.charCodeAt(after) === 115) { // 115 = 's'
+      const cA = a.charCodeAt(after - 1), cB = b.charCodeAt(after - 1);
+      const genderVowel = (c) => c === 97 || c === 111; // 'a' | 'o'
+      const boundaryAfterS = after + 1 >= longer.length || longer.charCodeAt(after + 1) === 32;
+      if (genderVowel(cA) && genderVowel(cB) && boundaryAfterS) return true;
+    }
+    return false;
   }
 
   // Vergleicht eine NORMALISIERTE Eingabe gegen normalisierte Kandidaten.

@@ -81,7 +81,7 @@
     return `
       <div class="topbar">
         <button class="iconbtn" data-action="${back}" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">${title}</div>
+        <h1 class="topbar__title">${title}</h1>
         <span></span>
       </div>`;
   }

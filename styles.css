@@ -812,7 +812,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   font-size: 1.3rem; line-height: 1; color: var(--ink); box-shadow: var(--shadow);
   display: grid; place-items: center;
 }
-.topbar__title { font-weight: 700; font-size: 1.05rem; }
+.topbar__title { font-weight: 700; font-size: 1.05rem; margin: 0; } /* h1: UA-Margin neutralisieren */
 .topbar__counter {
   font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink-soft);
   background: var(--card); border: 1.5px solid var(--line);

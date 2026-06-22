@@ -163,9 +163,14 @@ test("Tippfehler: Wortend-Flexion (Genus/Person/Plural) ist KEIN Tippfehler", ()
   assert.equal(matcher.check("estoy cansado", { es: "estoy cansada" }).correct, false);     // Genus
   assert.equal(matcher.check("necesito ayuda", { es: "necesita ayuda" }).correct, false);   // Flexion mitten im Satz
   assert.equal(matcher.check("reservas", { es: "reserva" }).correct, false);          // Plural-s am Ende
+  assert.equal(matcher.check("buenas dias", { es: "buenos dias" }).correct, false);   // Genus-Plural -as/-os (vor Wort-finalem s, mitten im Satz)
+  assert.equal(matcher.check("amigas", { es: "amigos" }).correct, false);             // Genus-Plural -as/-os
   // Gegenprobe: ein Vertipper im Wortinneren bleibt ein (akzeptierter) Tippfehler.
   let r = matcher.check("quiro un cafe", { es: "quiero un cafe" });
   assert.equal(r.correct, true); assert.equal(r.typo, true);
+  // … auch ein langer Wort-INNEN-Tippfehler mit a/o bleibt akzeptiert (keine Über-Strenge).
+  let r2 = matcher.check("neccesito", { es: "necesito" });
+  assert.equal(r2.correct, true); assert.equal(r2.typo, true);
 });
 
 test("Tippfehler: benachbarte Vertauschung zählt als EIN Fehler (Damerau)", () => {

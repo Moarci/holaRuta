@@ -6360,6 +6360,15 @@
       spickzettel.szClose();
       return;
     }
+    // Update-Hinweis & Favoriten-Overlay: Escape schließt (wie der Zurück-Knopf).
+    if (state.updateNotice && state.updateNotice.length && e.key === "Escape") {
+      dismissUpdateNotice();
+      return;
+    }
+    if (state.favShow && e.key === "Escape") {
+      favClose();
+      return;
+    }
     if (state.screen !== "study") return;
     const inInput = e.target && e.target.tagName === "INPUT";
     // Space/Enter auf einem echten Button (Bewerten, 🔊, 🧭 Kontext) gehört dem Button –
