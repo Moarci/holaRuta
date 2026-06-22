@@ -2666,6 +2666,31 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Artikel-Übung – Artikel-Lücke, Substantiv, deutsche Bedeutung. */
 .sheet-exlist--articles li { margin: 7px 0; }
 .sheet-exlist--articles .sheet-es { margin: 0 4px; }
+/* A4-Optimierung: die langen, kurzzeiligen Übungslisten (Gegenteile, Lückentext,
+   Übersetzen, Artikel) 2-spaltig setzen – wie der Wortschatz oben. Eine einzelne
+   Aufgabe füllt nie die volle A4-Breite, halbiert also den Seitenbedarf dieser
+   Abschnitte. Die Abschnitte bleiben break-inside:auto (fließen über Seiten,
+   nichts wird abgeschnitten); nur die einzelnen Items bleiben zusammen. Tabellen
+   (Konjugation/Zahlen), Satz-ordnen, Anagramm und Multiple-Choice brauchen die
+   volle Breite und bleiben 1-spaltig. Am schmalen Handy-Schirm alles 1-spaltig. */
+.sheet-section--opposites .sheet-exlist,
+.sheet-section--gapfill .sheet-exlist,
+.sheet-section--translate .sheet-exlist,
+.sheet-section--articles .sheet-exlist {
+  columns: 2; column-gap: 30px;
+}
+.sheet-section--opposites .sheet-exlist li,
+.sheet-section--gapfill .sheet-exlist li,
+.sheet-section--translate .sheet-exlist li,
+.sheet-section--articles .sheet-exlist li {
+  break-inside: avoid; -webkit-column-break-inside: avoid;
+}
+@media (max-width: 560px) {
+  .sheet-section--opposites .sheet-exlist,
+  .sheet-section--gapfill .sheet-exlist,
+  .sheet-section--translate .sheet-exlist,
+  .sheet-section--articles .sheet-exlist { columns: 1; }
+}
 /* Tabellen (Konjugation, Zahlen). */
 .sheet-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
 .sheet-table th, .sheet-table td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 0.92rem; vertical-align: top; }
