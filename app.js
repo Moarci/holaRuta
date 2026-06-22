@@ -251,10 +251,26 @@
   const natk = (o, base) => (i18n ? i18n.natKey(o, base) : (o && o[base]));
   // Tiefe Lokalisierung für Pass-Through-Daten (überlagert alle …En-Felder).
   const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-  const allCards = () => userCards ? data.CARDS.concat(userCards.list()) : data.CARDS;
-  const cardById = (id) => allCards().find((c) => c.id === id) || null;
-  const categoryById = (id) => data.CATEGORIES.find((c) => c.id === id) || null;
-  const levelById = (lvl) => data.LEVELS.find((l) => l.id === lvl) || null;
+  // Kategorien/Stufen ändern sich nie -> einmalige Map statt linearem find pro Aufruf.
+  const _catById = new Map(data.CATEGORIES.map((c) => [c.id, c]));
+  const _levelById = new Map(data.LEVELS.map((l) => [l.id, l]));
+  const categoryById = (id) => _catById.get(id) || null;
+  const levelById = (lvl) => _levelById.get(lvl) || null;
+  // allCards (data.CARDS + eigene Karten) und der id->Karte-Index werden gecacht:
+  // früher allozierte allCards() bei JEDEM Aufruf ein neues 2293er-Array (z. B. ~75×
+  // pro Lernen-Render) und cardById war alloc+linear. Invalidiert nur, wenn sich
+  // eigene Karten ändern (add/remove -> invalidateCardIndex); Inhalt hängt nicht an
+  // der Sprache. In-Place-Edits brauchen keine Invalidierung (gleiche Referenz/id).
+  let _allCards = null, _cardByIdMap = null;
+  function invalidateCardIndex() { _allCards = null; _cardByIdMap = null; }
+  const allCards = () => {
+    if (!_allCards) _allCards = userCards ? data.CARDS.concat(userCards.list()) : data.CARDS.slice();
+    return _allCards;
+  };
+  const cardById = (id) => {
+    if (!_cardByIdMap) { _cardByIdMap = new Map(); const a = allCards(); for (let i = 0; i < a.length; i++) _cardByIdMap.set(a[i].id, a[i]); }
+    return _cardByIdMap.get(id) || null;
+  };
   // Stufen-Filter: leere Auswahl = alle. Greift bei "Alle lernen" und je Kategorie.
   const matchesLevel = (c) => state.levels.length === 0 || state.levels.includes(c.lvl);
   const scopeCards = (scopeId) =>
@@ -386,9 +402,16 @@
 
   function homeVM() {
     const everyCard = allCards();
+    // Karten EINMAL nach Kategorie bündeln, statt je Kategorie das ganze Deck zu
+    // filtern (vorher O(72×2293) pro Lernen-Render: ein allInCat- + ein scopeCards-
+    // Vollscan je Kategorie). Ergebnis ist identisch, nur ein Pass statt 72.
+    const byCat = new Map();
+    for (let i = 0; i < everyCard.length; i++) {
+      const card = everyCard[i]; let a = byCat.get(card.cat); if (!a) byCat.set(card.cat, a = []); a.push(card);
+    }
     const categories = data.CATEGORIES.map((c) => {
-      const allInCat = everyCard.filter((card) => card.cat === c.id);
-      const cards = scopeCards(c.id); // nach Stufenfilter
+      const allInCat = byCat.get(c.id) || [];
+      const cards = allInCat.filter(matchesLevel); // entspricht scopeCards(c.id)
       // Kartenzahl je Stufe in dieser Kategorie (nur Stufen mit >0).
       const byLevel = data.LEVELS
         .map((l) => ({
@@ -5355,6 +5378,7 @@
       const card = userCards.add(input);
       editorMsg = { type: "ok", text: t("app.cardSaved", { de: card.de, es: card.es }) };
       buzz(12);
+      invalidateCardIndex();   // neue Karte in allCards/cardById aufnehmen
       invalidateSearchIndex(); // neue eigene Karte muss auffindbar werden
     }
     render();
@@ -5373,6 +5397,7 @@
       store.saveProgress(progress);
     }
     editorMsg = { type: "ok", text: t("app.cardDeleted") };
+    invalidateCardIndex();   // gelöschte Karte aus allCards/cardById nehmen
     invalidateSearchIndex(); // gelöschte Karte aus dem Suchindex nehmen
     render();
   }
