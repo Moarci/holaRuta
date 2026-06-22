@@ -74,6 +74,19 @@
         "Don't argue aggressively or film without asking – it can escalate.",
         "Don't sign statements you don't understand.",
       ],
+      es: [
+        "Si la policía te *detiene*, mantén la *calma* y sé *amable*. Pregunta por qué con „¿Por qué me detiene?“ y muestra una copia de tu *pasaporte*.",
+        "Tienes derecho a un *traductor* si no entiendes. Nunca ofrezcas dinero: eso es un *soborno* y empeora todo.",
+      ],
+      vocab: [
+        { es: "detiene", de: "hält an / nimmt fest (detener)", en: "stops / detains (detener)", take: false },
+        { es: "calma", de: "die Ruhe", en: "calm", take: true },
+        { es: "amable", de: "freundlich", en: "friendly, kind", take: true },
+        { es: "pasaporte", de: "der Reisepass", en: "passport", take: true },
+        { es: "traductor", de: "der Dolmetscher", en: "interpreter", take: true },
+        { es: "soborno", de: "die Bestechung", en: "bribe", take: true },
+      ],
+      level: "B1",
     },
     {
       icon: "⚖️",
@@ -194,6 +207,19 @@
         "Don't get into the private car of a supposed official.",
         "Don't accept drinks or food from strangers (risk of being drugged).",
       ],
+      es: [
+        "Una *estafa* común es el falso policía. Si alguien de civil te para, pide su *identificación* y propón ir a la *estación* de policía.",
+        "Pide los taxis por *aplicación* o acuerda el precio antes. En el *cajero*, tapa tu clave y no aceptes „ayuda“ de *desconocidos*.",
+      ],
+      vocab: [
+        { es: "estafa", de: "der Betrug / die Masche", en: "scam", take: true },
+        { es: "identificación", de: "der Ausweis", en: "ID", take: true },
+        { es: "estación", de: "die Station / Wache", en: "station", take: true },
+        { es: "aplicación", de: "die App", en: "app", take: true },
+        { es: "cajero", de: "der Geldautomat", en: "ATM", take: true },
+        { es: "desconocidos", de: "Fremde (desconocido)", en: "strangers (desconocido)", take: true },
+      ],
+      level: "B1",
     },
   ];
 

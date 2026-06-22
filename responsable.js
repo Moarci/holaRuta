@@ -63,6 +63,18 @@
         "Don't cut corners off the trail, not even for a better photo.",
         "Don't take stones, shells or plants as souvenirs.",
       ],
+      es: [
+        "En las *caminatas* muchas veces no hay *basureros*, así que lleva una *bolsa* y guarda toda tu *basura*.",
+        "Quédate en el *sendero* marcado: los atajos dañan las plantas. No te lleves piedras ni conchas.",
+      ],
+      vocab: [
+        { es: "caminatas", de: "die Wanderungen (caminata)", en: "hikes (caminata)", take: true },
+        { es: "basureros", de: "die Mülleimer (basurero)", en: "bins (basurero)", take: true },
+        { es: "bolsa", de: "die Tüte / Tasche", en: "bag", take: true },
+        { es: "basura", de: "der Müll", en: "rubbish", take: true },
+        { es: "sendero", de: "der Wanderweg", en: "trail", take: true },
+      ],
+      level: "A2",
     },
     {
       icon: "🛍️",
@@ -92,6 +104,19 @@
         "Don't beat down handicrafts to the last peso.",
         "Don't buy products from protected animals/plants (shells, furs, corals).",
       ],
+      es: [
+        "Tu dinero ayuda más cuando compras *local*: come en restaurantes *familiares* y compra *artesanía* de la zona.",
+        "Reserva con *guías* de la *comunidad* y paga un precio *justo*. Así el dinero se queda donde estás.",
+      ],
+      vocab: [
+        { es: "local", de: "lokal / von hier", en: "local", take: true },
+        { es: "familiares", de: "Familien- (familiar)", en: "family-run (familiar)", take: true },
+        { es: "artesanía", de: "das Kunsthandwerk", en: "handicraft", take: true },
+        { es: "guías", de: "die Guides (guía)", en: "guides (guía)", take: true },
+        { es: "comunidad", de: "die Gemeinschaft", en: "community", take: true },
+        { es: "justo", de: "fair / gerecht", en: "fair", take: true },
+      ],
+      level: "A2",
     },
     {
       icon: "💧",

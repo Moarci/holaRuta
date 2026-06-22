@@ -3395,6 +3395,7 @@
   function renderJerga(vm) {
     return moduleSheet(vm, {
       icon: "🗣️", title: "Jerga colombiana", cat: "jerga",
+      readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
       headTips: "discover.jgTips", headPhrases: "discover.jgPhrases",
       headWords: "discover.jgWords",
     });
@@ -3405,6 +3406,7 @@
   function renderDerechos(vm) {
     return moduleSheet(vm, {
       icon: "⚖️", title: "Conoce tus derechos", cat: "derechos",
+      readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
       headTips: "discover.drTips", headPhrases: "discover.drPhrases",
       headWords: "discover.drWords", headChecklist: "discover.drChecklist",
       headChecklistHint: "discover.drChecklistHint",
@@ -3416,6 +3418,7 @@
   function renderResponsable(vm) {
     return moduleSheet(vm, {
       icon: "🌱", title: "Viaja responsable", cat: "responsable",
+      readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
       headTips: "discover.rpTips", headPhrases: "discover.rpPhrases",
       headWords: "discover.rpWords", headChecklist: "discover.rpChecklist",
       headChecklistHint: "discover.rpChecklistHint",

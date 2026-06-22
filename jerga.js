@@ -73,6 +73,18 @@
         "Don't carry every word 1:1 from one country to another – slang is regional.",
         "Don't overdo the slang – otherwise it sounds forced rather than relaxed.",
       ],
+      es: [
+        "El *parche* en el hostal es el mejor lugar para aprender *jerga*: primero *escucha* cómo hablan los locales y luego usa una o dos palabras.",
+        "No hay que exagerar. Con la policía o con gente *mayor* es mejor hablar con *respeto*; el slang es para los amigos.",
+      ],
+      vocab: [
+        { es: "parche", de: "die Clique / der Treffpunkt", en: "the crew / hangout", take: true },
+        { es: "jerga", de: "der Slang", en: "slang", take: true },
+        { es: "escucha", de: "hör zu (escuchar)", en: "listen (escuchar)", take: false },
+        { es: "mayor", de: "älter / Ältere", en: "older / elders", take: true },
+        { es: "respeto", de: "der Respekt", en: "respect", take: true },
+      ],
+      level: "A2",
     },
     {
       icon: "🌎",
@@ -131,6 +143,18 @@
         "Don't take „ahorita“ literally: it often means „later/in a bit“, not „right now“.",
         "Don't use filler words in formal emails or with officials.",
       ],
+      es: [
+        "Los colombianos usan muchas *muletillas*. „Pues“ es como „halt“, y „*listo*“ significa „de acuerdo“.",
+        "Cuidado con „*ahorita*“: muchas veces quiere decir „más *tarde*“, no „ya“. Si alguien dice „de una“, está muy de *acuerdo*.",
+      ],
+      vocab: [
+        { es: "muletillas", de: "die Füllwörter", en: "filler words", take: true },
+        { es: "listo", de: "fertig / okay", en: "ready / okay", take: true },
+        { es: "ahorita", de: "gleich / später (nicht „sofort“!)", en: "in a bit / later (not „now“!)", take: true },
+        { es: "tarde", de: "spät", en: "late", take: true },
+        { es: "acuerdo", de: "die Einigung (de acuerdo = einverstanden)", en: "agreement (de acuerdo = agreed)", take: true },
+      ],
+      level: "A2",
     },
   ];
 
