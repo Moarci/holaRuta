@@ -23,6 +23,9 @@
   const regatear = window.SC.regatear || null;   // Verhandeln/Feilschen-Modul (optional)
   const logistica = window.SC.logistica || null; // Reise-Logistik: SIM, Geld, Gepäck (optional)
   const salud = window.SC.salud || null;         // Gesund & fit: Essen, Trinken, Bewegung (optional)
+  const jerga = window.SC.jerga || null;         // Jerga colombiana: Slang verstehen & mitreden (optional)
+  const derechos = window.SC.derechos || null;   // Conoce tus derechos: ruhig & sicher bei Kontrolle/Festnahme (optional)
+  const responsable = window.SC.responsable || null; // Viaja responsable: leichter Fußabdruck, lokal & ohne Plastik (optional)
   const fotografia = window.SC.fotografia || null; // Fotos & Videos: tolle Reisebilder (optional)
   const flirt = window.SC.flirt || null;         // Coqueteo y romance: flirten & daten unterwegs (optional)
   const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
@@ -94,7 +97,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'jerga' | 'derechos' | 'responsable' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
     homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -424,6 +427,9 @@
       hasRegatear: !!regatear,   // Verhandeln-Modul (Regatear)
       hasLogistica: !!logistica, // Reise-Logistik (SIM, Geld, Gepäck)
       hasSalud: !!salud,         // Gesund & fit (Essen, Trinken, Bewegung)
+      hasJerga: !!jerga,         // Jerga colombiana (Slang verstehen & mitreden)
+      hasDerechos: !!derechos,   // Conoce tus derechos (ruhig & sicher bei Kontrolle/Festnahme)
+      hasResponsable: !!responsable, // Viaja responsable (leichter Fußabdruck)
       hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
       hasFlirt: !!flirt,         // Coqueteo y romance (flirten & daten unterwegs)
       hasBailar: !!bailar,       // Bailar (Tanzen in LatAm, Schritt-Diagramme)
@@ -918,6 +924,51 @@
       phrases: loc(salud.PHRASES || []),
       glossary: loc(salud.GLOSSARY || []),
       checklist: loc(salud.CHECKLIST || []),
+    };
+  }
+
+  // Jerga colombiana: Slang verstehen & mitreden. Gleiches Schema/Pass-Through wie
+  // saludVM (ohne Checkliste – Slang braucht keine Packliste).
+  function jergaVM() {
+    if (!jerga) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && jerga.INTRO_EN) ? jerga.INTRO_EN : jerga.INTRO,
+      topics: loc(jerga.TOPICS || []),
+      phrases: loc(jerga.PHRASES || []),
+      glossary: loc(jerga.GLOSSARY || []),
+      checklist: [],
+    };
+  }
+
+  // Conoce tus derechos: ruhig & sicher bei Kontrolle/Festnahme. Gleiches Schema/
+  // Pass-Through wie saludVM.
+  function derechosVM() {
+    if (!derechos) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && derechos.INTRO_EN) ? derechos.INTRO_EN : derechos.INTRO,
+      topics: loc(derechos.TOPICS || []),
+      phrases: loc(derechos.PHRASES || []),
+      glossary: loc(derechos.GLOSSARY || []),
+      checklist: loc(derechos.CHECKLIST || []),
+    };
+  }
+
+  // Viaja responsable: leichter Fußabdruck (Leave No Trace, lokal, Plastik, Respekt).
+  // Gleiches Schema/Pass-Through wie saludVM.
+  function responsableVM() {
+    if (!responsable) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && responsable.INTRO_EN) ? responsable.INTRO_EN : responsable.INTRO,
+      topics: loc(responsable.TOPICS || []),
+      phrases: loc(responsable.PHRASES || []),
+      glossary: loc(responsable.GLOSSARY || []),
+      checklist: loc(responsable.CHECKLIST || []),
     };
   }
 
@@ -2894,6 +2945,9 @@
       "regatear": () => ui.renderRegatear(regatearVM()),
       "logistica": () => ui.renderLogistica(logisticaVM()),
       "salud": () => ui.renderSalud(saludVM()),
+      "jerga": () => ui.renderJerga(jergaVM()),
+      "derechos": () => ui.renderDerechos(derechosVM()),
+      "responsable": () => ui.renderResponsable(responsableVM()),
       "flirt": () => ui.renderFlirt(flirtVM()),
       "fotos": () => ui.renderFotos(fotosVM()),
       "bailar": () => ui.renderBailar(bailarVM()),
@@ -6509,6 +6563,7 @@
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
     dialogos: !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length),
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
+    jerga: !!jerga, derechos: !!derechos, responsable: !!responsable,
     fotos: !!fotografia, flirt: !!flirt, bailar: !!bailar, musica: !!musica,
     bebidas: !!(bebidas && countries),
     yesto: !!(yesto && yesto.THEMES && yesto.THEMES.length),
@@ -6609,6 +6664,9 @@
     };
     pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
     pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
+    pageMod(jerga, "🗣️", "Jerga colombiana", "discover.subJerga", "open-jerga");
+    pageMod(derechos, "⚖️", "Conoce tus derechos", "discover.subDerechos", "open-derechos");
+    pageMod(responsable, "🌱", "Viaja responsable", "discover.subResponsable", "open-responsable");
     pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
     pageMod(flirt, "💘", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
 
@@ -6750,6 +6808,21 @@
   function openSalud() {
     dismissBadgeToast();
     setState({ screen: "salud" });
+  }
+
+  function openJerga() {
+    dismissBadgeToast();
+    setState({ screen: "jerga" });
+  }
+
+  function openDerechos() {
+    dismissBadgeToast();
+    setState({ screen: "derechos" });
+  }
+
+  function openResponsable() {
+    dismissBadgeToast();
+    setState({ screen: "responsable" });
   }
 
   function openMusica() {
@@ -7284,6 +7357,9 @@
     regatear:  { kicker: "Regatear",          icon: "🤝", accent: ["#B97C24", "#3F7355"] },
     logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
     salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
+    jerga:     { kicker: "Jerga colombiana",  icon: "🗣️", accent: ["#C25A45", "#B97C24"] },
+    derechos:  { kicker: "Conoce tus derechos", icon: "⚖️", accent: ["#3F5BA8", "#5A4FA8"] },
+    responsable: { kicker: "Viaja responsable", icon: "🌱", accent: ["#3F7355", "#5E7D3A"] },
     fotos:     { kicker: "Fotos y videos",    icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
     flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
@@ -7295,6 +7371,9 @@
               : cat === "regatear" ? (regatear && regatear.TIPS)
               : cat === "logistica" ? (logistica && logistica.TOPICS)
               : cat === "salud" ? (salud && salud.TOPICS)
+              : cat === "jerga" ? (jerga && jerga.TOPICS)
+              : cat === "derechos" ? (derechos && derechos.TOPICS)
+              : cat === "responsable" ? (responsable && responsable.TOPICS)
               : cat === "fotos" ? (fotografia && fotografia.TOPICS)
               : cat === "flirt" ? (flirt && flirt.TOPICS)
               : cat === "bailar" ? (bailar && bailar.DANCES)
@@ -7367,6 +7446,9 @@
     knigge:        { icon: "🧭", title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
     logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
     salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+    jerga:         { icon: "🗣️", title: "Jerga colombiana",     sub: "discover.subJerga",         accent: ["#C25A45", "#B97C24"] },
+    derechos:      { icon: "⚖️", title: "Conoce tus derechos",  sub: "discover.subDerechos",      accent: ["#3F5BA8", "#5A4FA8"] },
+    responsable:   { icon: "🌱", title: "Viaja responsable",    sub: "discover.subResponsable",   accent: ["#3F7355", "#5E7D3A"] },
     fotos:         { icon: "📸", title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
     flirt:         { icon: "💘", title: "Coqueteo y romance",   sub: "discover.subFlirt",         accent: ["#D24A77", "#B05AA8"] },
     bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
@@ -7446,6 +7528,12 @@
         return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
       case "salud":
         return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
+      case "jerga":
+        return cut((jergaVM().topics || []).map((tp) => ({ mark: tp.icon || "🗣️", text: tp.title })));
+      case "derechos":
+        return cut((derechosVM().topics || []).map((tp) => ({ mark: tp.icon || "⚖️", text: tp.title })));
+      case "responsable":
+        return cut((responsableVM().topics || []).map((tp) => ({ mark: tp.icon || "🌱", text: tp.title })));
       case "fotos":
         return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
       case "flirt":
@@ -7586,6 +7674,9 @@
     "open-regatear": (el) => { openRegatear(); },
     "open-logistica": (el) => { openLogistica(); },
     "open-salud": (el) => { openSalud(); },
+    "open-jerga": (el) => { openJerga(); },
+    "open-derechos": (el) => { openDerechos(); },
+    "open-responsable": (el) => { openResponsable(); },
     "open-flirt": (el) => { openFlirt(); },
     "open-fotos": (el) => { openFotos(); },
     "open-bailar": (el) => { openBailar(); },
@@ -8165,6 +8256,9 @@
       knigge: openKnigge,
       logistica: openLogistica,
       salud: openSalud,
+      jerga: openJerga,
+      derechos: openDerechos,
+      responsable: openResponsable,
       fotos: openFotos,
       flirt: openFlirt,
       bailar: openBailar,

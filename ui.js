@@ -181,6 +181,9 @@
     { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
     { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
     { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
+    { action: "open-jerga",       icon: "🗣️", title: "Jerga colombiana",  subKey: "discover.subJerga", sub: "Slang verstehen & mitreden: parce, chévere, una luca", grad: ["#C25A45", "#B97C24"], need: "jerga", group: "reference" },
+    { action: "open-derechos",    icon: "⚖️", title: "Conoce tus derechos", subKey: "discover.subDerechos", sub: "Ruhig & sicher bleiben: Kontrolle, Anwalt, Botschaft", grad: ["#3F5BA8", "#5A4FA8"], need: "derechos", group: "reference" },
+    { action: "open-responsable", icon: "🌱", title: "Viaja responsable",  subKey: "discover.subResponsable", sub: "Leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik", grad: ["#3F7355", "#5E7D3A"], need: "responsable", group: "reference" },
     { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
     { action: "open-flirt",       icon: "💘", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
     { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
@@ -3387,6 +3390,38 @@
     });
   }
 
+  // Jerga colombiana: Slang verstehen & locker mitreden (parce, chévere, una
+  // luca). Gleiches Sheet wie Salud/Logística – ohne Checkliste.
+  function renderJerga(vm) {
+    return moduleSheet(vm, {
+      icon: "🗣️", title: "Jerga colombiana", cat: "jerga",
+      headTips: "discover.jgTips", headPhrases: "discover.jgPhrases",
+      headWords: "discover.jgWords",
+    });
+  }
+
+  // Conoce tus derechos: bei Kontrolle/Festnahme ruhig bleiben, Anwalt & Botschaft,
+  // nichts unterschreiben. Gleiches Sheet wie Salud/Logística.
+  function renderDerechos(vm) {
+    return moduleSheet(vm, {
+      icon: "⚖️", title: "Conoce tus derechos", cat: "derechos",
+      headTips: "discover.drTips", headPhrases: "discover.drPhrases",
+      headWords: "discover.drWords", headChecklist: "discover.drChecklist",
+      headChecklistHint: "discover.drChecklistHint",
+    });
+  }
+
+  // Viaja responsable: Leave No Trace, lokal kaufen, Plastik sparen, Natur & Kultur
+  // respektieren. Gleiches Sheet wie Salud/Logística.
+  function renderResponsable(vm) {
+    return moduleSheet(vm, {
+      icon: "🌱", title: "Viaja responsable", cat: "responsable",
+      headTips: "discover.rpTips", headPhrases: "discover.rpPhrases",
+      headWords: "discover.rpWords", headChecklist: "discover.rpChecklist",
+      headChecklistHint: "discover.rpChecklistHint",
+    });
+  }
+
   // Coqueteo y romance: ins Gespräch kommen, Komplimente, Konsens, Date
   // vorschlagen, Dating-Kultur, sicher daten. Gleiches Sheet wie Salud/Logística.
   function renderFlirt(vm) {
@@ -5993,7 +6028,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderHistoria, renderKnigge, renderBebidas, renderRegatear, renderLogistica, renderSalud, renderJerga, renderDerechos, renderResponsable, renderFotos, renderFlirt, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderQuizSetup, renderQuiz, renderQuizDone, renderCuerpo, renderConjugacion, renderTiempos, renderSpickzettel,
