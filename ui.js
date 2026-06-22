@@ -4123,23 +4123,27 @@
 
     // Fill-Modus: echtes Eingabefeld mit hinterlegter Lösung (data-answer) für die
     // Selbstkontrolle am Handy. „kind" steuert die Breite (inline/line/mini).
-    const fillInput = (answer, kind) => `<input class="sheet-fill sheet-fill--${kind || "line"}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" data-answer="${esc(answer)}" aria-label="${esc(t("sheet.fillAria"))}">`;
+    const fillInput = (answer, kind, key) => `<input class="sheet-fill sheet-fill--${kind || "line"}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" data-answer="${esc(answer)}" data-fk="${esc(key || "")}" aria-label="${esc(t("sheet.fillAria"))}">${vm.revealed ? `<span class="sheet-solution"><span class="sheet-solution__lbl">${esc(t("sheet.solutionLabel"))}:</span> <span lang="es">${esc(answer)}</span></span>` : ""}`;
 
-    // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie und
-    // Notizen/Challenge-Phrase (die die Lösung verraten) bleiben verborgen.
-    const cardLine = (c) => `<li>
-          ${vm.exercise
-            ? `<span class="sheet-es sheet-es--blank" aria-hidden="true"></span>`
-            : `<span class="sheet-es" lang="es">${esc(c.es)}</span>`}
+    // Im Übungsmodus wird die spanische Zeile (Antwort) zur Schreiblinie, im
+    // Fill-Modus zum tippbaren Feld mit hinterlegter Lösung. Notizen/Challenge-
+    // Phrase (die die Lösung verraten) bleiben in beiden Fällen verborgen –
+    // sonst stünden die Antworten der Übungen darunter offen daneben.
+    const cardLine = (c, key) => `<li>
+          ${vm.fill
+            ? fillInput(c.es, "line", key)
+            : vm.exercise
+              ? `<span class="sheet-es sheet-es--blank" aria-hidden="true"></span>`
+              : `<span class="sheet-es" lang="es">${esc(c.es)}</span>`}
           <span class="sheet-de">${esc(c.de)}</span>
-          ${(!vm.exercise && c.note) ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
+          ${(!vm.exercise && !vm.fill && c.note) ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
         </li>`;
-    const stagesHtml = (vm.stages || []).map((st) => `
+    const stagesHtml = (vm.stages || []).map((st, si) => `
       ${st.heading ? `<h3 class="sheet-stage">${esc(st.heading)}</h3>` : ""}
       <ol class="sheet-cards">
-        ${st.cards.map(cardLine).join("")}
+        ${st.cards.map((c, ci) => cardLine(c, "voc:" + si + ":" + ci)).join("")}
       </ol>
-      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${(!vm.exercise && st.challenge.phrase) ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
+      ${st.challenge ? `<p class="sheet-challenge"><strong>${esc(t("sheet.challengeLabel"))}:</strong> ${esc(st.challenge.text)}${(!vm.exercise && !vm.fill && st.challenge.phrase) ? ` <span lang="es">„${esc(st.challenge.phrase)}“</span>` : ""}</p>` : ""}
     `).join("");
 
     // ---------- Arbeitsheft: zusätzliche Übungsabschnitte ----------
@@ -4147,12 +4151,16 @@
     // Antworten zu Schreiblinien/Lücken, im Lösungsblatt stehen sie direkt da.
     const writeLine = '<span class="sheet-write-line"></span>';
     const sectionHead = (titleKey, instrKey) => `<h2 class="sheet-h2">${esc(t(titleKey))}</h2><p class="sheet-instr">${esc(t(instrKey))}</p>`;
-    function renderSection(s) {
+    // occ = laufende Nummer dieses Abschnitt-TYPS (z. B. Dialog #0/#1). Daraus
+    // wird je Feld ein render-stabiler Schlüssel gebaut – unabhängig davon, welche
+    // anderen Bausteine ab-/angewählt oder wie viele Items die Heftlänge zeigt.
+    function renderSection(s, occ) {
+      const fk = (i) => s.type + "#" + (occ || 0) + ":" + i;
       switch (s.type) {
         case "matching": {
           const left = (s.left || []).map((x) => `<li>${esc(x.es)}</li>`).join("");
           const right = (s.right || []).map((x) => `<li>${esc(x.de)}</li>`).join("");
-          const grid = (s.left || []).map((x) => `<span>${esc(String(x.n))} → ${vm.fill ? fillInput(x.l, "mini") : vm.exercise ? "____" : esc(x.l)}</span>`).join("");
+          const grid = (s.left || []).map((x, i) => `<span>${esc(String(x.n))} → ${vm.fill ? fillInput(x.l, "mini", fk(i)) : vm.exercise ? "____" : esc(x.l)}</span>`).join("");
           return `<section class="sheet-section sheet-section--matching">
             ${sectionHead("sheet.secMatching", "sheet.instrMatching")}
             <div class="sheet-match">
@@ -4164,8 +4172,8 @@
         }
         case "gapfill": {
           const bank = (s.wordbank || []).map((w) => `<span class="sheet-chip" lang="es">${esc(w)}</span>`).join("");
-          const items = (s.items || []).map((it) => {
-            const filler = vm.fill ? fillInput(it.answer, "inline")
+          const items = (s.items || []).map((it, i) => {
+            const filler = vm.fill ? fillInput(it.answer, "inline", fk(i))
               : vm.exercise ? '<span class="sheet-blank-inline"></span>'
               : `<strong>${esc(it.answer)}</strong>`;
             const frame = esc(it.frameEs).replace("___", filler);
@@ -4178,30 +4186,30 @@
           </section>`;
         }
         case "translate": {
-          const lines = (s.lines || []).map((l) => `<li><span class="sheet-de">${esc(l.de)}</span>${vm.fill ? fillInput(l.es, "line") : vm.exercise ? writeLine : `<span class="sheet-es" lang="es">${esc(l.es)}</span>`}</li>`).join("");
+          const lines = (s.lines || []).map((l, i) => `<li><span class="sheet-de">${esc(l.de)}</span>${vm.fill ? fillInput(l.es, "line", fk(i)) : vm.exercise ? writeLine : `<span class="sheet-es" lang="es">${esc(l.es)}</span>`}</li>`).join("");
           return `<section class="sheet-section sheet-section--translate">
             ${sectionHead("sheet.secTranslate", "sheet.instrTranslate")}
             <ol class="sheet-exlist">${lines}</ol>
           </section>`;
         }
         case "conjug": {
-          const rows = (s.rows || []).map((r) => `<tr><td lang="es">${esc(r.verb)}</td><td>${esc(r.person)}</td><td class="sheet-ans-cell">${vm.fill ? fillInput(r.answer, "line") : vm.exercise ? writeLine : `<strong lang="es">${esc(r.answer)}</strong>`}</td></tr>`).join("");
+          const rows = (s.rows || []).map((r, i) => `<tr><td lang="es">${esc(r.verb)}</td><td>${esc(r.person)}</td><td class="sheet-ans-cell">${vm.fill ? fillInput(r.answer, "line", fk(i)) : vm.exercise ? writeLine : `<strong lang="es">${esc(r.answer)}</strong>`}</td></tr>`).join("");
           return `<section class="sheet-section sheet-section--conjug">
             ${sectionHead("sheet.secConjug", "sheet.instrConjug")}
             <table class="sheet-table"><thead><tr><th>${esc(t("sheet.colVerb"))}</th><th>${esc(t("sheet.colPerson"))}</th><th>${esc(t("sheet.colAnswer"))}</th></tr></thead><tbody>${rows}</tbody></table>
           </section>`;
         }
         case "numbers": {
-          const rows = (s.items || []).map((it) => `<tr><td>${esc(it.digits)}${it.symbol ? " " + esc(it.symbol) : ""}</td><td class="sheet-ans-cell">${vm.fill ? fillInput(it.words, "line") : vm.exercise ? writeLine : `<strong lang="es">${esc(it.words)}</strong>`}</td></tr>`).join("");
+          const rows = (s.items || []).map((it, i) => `<tr><td>${esc(it.digits)}${it.symbol ? " " + esc(it.symbol) : ""}</td><td class="sheet-ans-cell">${vm.fill ? fillInput(it.words, "line", fk(i)) : vm.exercise ? writeLine : `<strong lang="es">${esc(it.words)}</strong>`}</td></tr>`).join("");
           return `<section class="sheet-section sheet-section--numbers">
             ${sectionHead("sheet.secNumbers", "sheet.instrNumbers")}
             <table class="sheet-table"><thead><tr><th>${esc(t("sheet.colNumber"))}</th><th>${esc(t("sheet.colSpanish"))}</th></tr></thead><tbody>${rows}</tbody></table>
           </section>`;
         }
         case "dialogue": {
-          const turns = (s.turns || []).map((tn) => tn.who === "npc"
+          const turns = (s.turns || []).map((tn, i) => tn.who === "npc"
             ? `<p class="sheet-turn sheet-turn--npc"><span class="who">${esc(t("sheet.npcLabel"))}:</span><span class="es" lang="es">${esc(tn.es)}</span><span class="de">${esc(tn.de)}</span></p>`
-            : `<p class="sheet-turn sheet-turn--user"><span class="who">${esc(t("sheet.youLabel"))}:</span><span class="de">${esc(tn.de)}</span>${vm.fill ? fillInput(tn.answer, "line") : vm.exercise ? writeLine : `<span class="es" lang="es">${esc(tn.answer)}</span>`}</p>`).join("");
+            : `<p class="sheet-turn sheet-turn--user"><span class="who">${esc(t("sheet.youLabel"))}:</span><span class="de">${esc(tn.de)}</span>${vm.fill ? fillInput(tn.answer, "line", fk(i)) : vm.exercise ? writeLine : `<span class="es" lang="es">${esc(tn.answer)}</span>`}</p>`).join("");
           return `<section class="sheet-section sheet-section--dialogue">
             ${sectionHead("sheet.secDialogue", "sheet.instrDialogue")}
             ${s.title ? `<h3 class="sheet-stage" lang="es">${esc(s.title)}</h3>` : ""}
@@ -4209,8 +4217,8 @@
           </section>`;
         }
         case "opposites": {
-          const items = (s.items || []).map((it) => {
-            const sol = vm.fill ? fillInput(it.answer, "inline")
+          const items = (s.items || []).map((it, i) => {
+            const sol = vm.fill ? fillInput(it.answer, "inline", fk(i))
               : vm.exercise ? '<span class="sheet-blank-inline"></span>'
               : `<strong lang="es">${esc(it.answer)}</strong>`;
             return `<li><span class="sheet-es" lang="es">${esc(it.word)}</span>${it.gloss ? ` <span class="sheet-de">(${esc(it.gloss)})</span>` : ""} <span class="sheet-arrow" aria-hidden="true">↔</span> ${sol}</li>`;
@@ -4221,9 +4229,9 @@
           </section>`;
         }
         case "ordenar": {
-          const items = (s.items || []).map((it) => {
+          const items = (s.items || []).map((it, i) => {
             const chips = (it.scrambled || []).map((w) => `<span class="sheet-chip" lang="es">${esc(w)}</span>`).join("");
-            const sol = vm.fill ? fillInput(it.answer, "line")
+            const sol = vm.fill ? fillInput(it.answer, "line", fk(i))
               : vm.exercise ? writeLine
               : `<span class="sheet-es" lang="es">${esc(it.answer)}</span>`;
             return `<li><span class="sheet-de">${esc(it.de)}</span><span class="sheet-scramble">${chips}</span>${sol}</li>`;
@@ -4244,10 +4252,10 @@
           // Mehrere Schreibanlässe (prompts[]) oder ein einzelner (prompt) – je
           // Anlass eine eigene Schreibfläche bzw. ein Textfeld im Fill-Modus.
           const prompts = (s.prompts && s.prompts.length) ? s.prompts : (s.prompt ? [s.prompt] : [""]);
-          const box = vm.fill
-            ? `<textarea class="sheet-fill-area" rows="4" lang="es" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.secWriting"))}"></textarea>`
+          const box = (i) => vm.fill
+            ? `<textarea class="sheet-fill-area" data-fk="${esc(fk(i))}" rows="4" lang="es" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.secWriting"))}"></textarea>`
             : `<div class="sheet-write-box" aria-hidden="true"></div>`;
-          const blocks = prompts.map((p) => `${p ? `<p class="sheet-goal">${esc(p)}</p>` : ""}${box}`).join("");
+          const blocks = prompts.map((p, i) => `${p ? `<p class="sheet-goal">${esc(p)}</p>` : ""}${box(i)}`).join("");
           return `<section class="sheet-section sheet-section--writing">
             ${sectionHead("sheet.secWriting", "sheet.instrWriting")}
             ${blocks}
@@ -4256,7 +4264,13 @@
         default: return "";
       }
     }
-    const sectionsHtml = (vm.sections || []).map(renderSection).join("");
+    // Pro Abschnittstyp mitzählen, damit zwei gleichartige Abschnitte (z. B. zwei
+    // Dialoge) stabile, getrennte Feldschlüssel bekommen.
+    const sectionTypeSeq = {};
+    const sectionsHtml = (vm.sections || []).map((s) => {
+      const occ = (sectionTypeSeq[s.type] = (sectionTypeSeq[s.type] || 0) + 1) - 1;
+      return renderSection(s, occ);
+    }).join("");
 
     // Lösungsschlüssel (nur Übungsmodus – im Lösungsblatt stehen die Antworten
     // bereits inline). Kompakt, eigene Seite (Seitenumbruch via CSS).
@@ -4349,7 +4363,7 @@
         <section class="sheet-notes">
           <h2 class="sheet-h2">${esc(t("sheet.notesHeading"))}</h2>
           ${vm.fill
-            ? `<textarea class="sheet-fill-area" rows="3" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.notesHeading"))}"></textarea>`
+            ? `<textarea class="sheet-fill-area" data-fk="notes" rows="3" autocapitalize="sentences" spellcheck="false" aria-label="${esc(t("sheet.notesHeading"))}"></textarea>`
             : `<div class="sheet-notes-lines" aria-hidden="true"></div>`}
         </section>
 

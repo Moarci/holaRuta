@@ -2980,6 +2980,14 @@
     // den sichtbaren Bereich holen – bei langen Gesprächen wächst der Verlauf
     // sonst unter den Bildschirmrand.
     if (state.screen === "dialogos") scrollDialogActive();
+    // Aktivitätsblatt (Handy-Modus): getippte Antworten nach dem Neu-Aufbau des
+    // DOM zurückschreiben, damit ein Re-Render (Länge/Bausteine/Modus) sie nicht
+    // verwirft. In Lösungs-/Übungsblatt gibt es keine Felder – dann ein No-Op.
+    if (state.screen === "printsheet") {
+      restoreFillSheet();
+      // „Lösungen zeigen": die eigene Trefferquote nach dem (Wieder-)Aufbau markieren.
+      if (state.sheetRevealed && state.sheetMode === "fill") gradeRevealedSheet();
+    }
 
     manageFocus();
     maybeAutoSpeak();
@@ -3843,7 +3851,7 @@
   // damit man ein Bundle zusammenstellen kann.
   function pickTarget(ctx, value) {
     if (!value) return;
-    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.targetPicker = null; render(); return; }
+    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.sheetRevealed = false; state.targetPicker = null; loadFillStore(); render(); return; }
     const item = targetValueToItem(value), key = value;
     const idx = state.taskItems.findIndex((x) => itemKey(x) === key);
     if (idx >= 0) { state.taskItems = state.taskItems.filter((_, i) => i !== idx); }
@@ -4226,7 +4234,7 @@
       // Wird nur EINE Etappe gedruckt? Dann startet der Abo-Code unten trotzdem
       // den GANZEN Plan – Hinweis darauf im Blatt (siehe sheet.subscribeWholeHint).
       stageScoped: isPretrip && stageSel !== "all",
-      accent: accent, icon: icon, exercise: exercise, fill: fill, sheetLength: sheetLength,
+      accent: accent, icon: icon, exercise: exercise, fill: fill, revealed: fill && !!state.sheetRevealed, sheetLength: sheetLength,
       title: taskTargetLabel(task), levelRange: levelRange, cardCount: allCards.length,
       stages: stages, sections: sections, sectionToggles: sectionToggles,
       code: code, link: link,
@@ -4244,6 +4252,8 @@
     if (!state.sheetMode) state.sheetMode = "full";
     if (!state.sheetLength) state.sheetLength = "gross"; // Heftlänge: standard | gross | xxl
     if (!state.sheetSkip) state.sheetSkip = []; // abgewählte Übungsbausteine (Default: alle an)
+    state.sheetRevealed = false; // Lösungen starten ausgeblendet
+    loadFillStore(); // getippte Antworten dieses Blatts gerätelokal wiederherstellen
     setState({ screen: "printsheet" });
   }
 
@@ -4280,36 +4290,118 @@
   function fillFields() {
     return Array.prototype.slice.call(root.querySelectorAll(".sheet-fill[data-answer]"));
   }
+  // Alle befüllbaren Elemente (Lösungsfelder + freie Schreibflächen) – Basis für
+  // das Merken der getippten Antworten über ein Re-Render hinweg.
+  function fillEls() {
+    return Array.prototype.slice.call(root.querySelectorAll(".sheet-fill[data-answer], .sheet-fill-area"));
+  }
+  // Render-stabiler Schlüssel je Feld. Primär das von der View vergebene data-fk
+  // (Abschnittstyp#Vorkommen:Item bzw. voc:Etappe:Karte / "notes") – stabil gegen
+  // das Ab-/Anwählen von Bausteinen UND gegen Heftlängen-Wechsel. Fallback (sollte
+  // ein Feld einmal kein data-fk tragen): Lösung+Vorkommen bzw. laufende Nummer.
+  function fillKey(el, seen) {
+    const fk = el.dataset && el.dataset.fk;
+    if (fk) return "fk:" + fk;
+    if (el.classList && el.classList.contains("sheet-fill-area")) {
+      seen.area = (seen.area || 0) + 1;
+      return "area#" + seen.area;
+    }
+    const a = (el.dataset && el.dataset.answer) || "";
+    seen[a] = (seen[a] || 0) + 1;
+    return "a:" + a + "#" + seen[a];
+  }
+  // Blatt-Identität für die Persistenz: Ziel + Etappe (NICHT Länge – die Felder
+  // tragen ihre Lösung als Schlüssel, sodass Antworten über Längen hinweg passen).
+  function sheetFillId() {
+    return (state.sheetTarget || "") + "|" + (state.sheetStage || "all");
+  }
+  // Den vollen Persistenz-Speicher lazy laden (alle Blätter) und das Bucket des
+  // aktuellen Blatts in state.sheetFillVals spiegeln.
+  function loadFillStore() {
+    if (!state.sheetFillStore) state.sheetFillStore = (store.loadSheetFill && store.loadSheetFill()) || {};
+    state.sheetFillVals = state.sheetFillStore[sheetFillId()] || {};
+    return state.sheetFillVals;
+  }
+  // Aktuelle Eingaben merken: nur die GERADE sichtbaren Felder aktualisieren –
+  // Antworten abgewählter Bausteine bleiben im Bucket erhalten. Danach gerätelokal
+  // sichern (nichts wird gesendet); leere Blätter werden wieder entfernt.
+  function snapshotFillVals() {
+    const map = (state.sheetFillVals = state.sheetFillVals || {});
+    const seen = {};
+    fillEls().forEach((el) => {
+      const k = fillKey(el, seen);
+      const v = String(el.value || "");
+      if (v.trim()) map[k] = v; else delete map[k];
+    });
+    persistFillVals();
+  }
+  function persistFillVals() {
+    const all = (state.sheetFillStore = state.sheetFillStore || {});
+    const id = sheetFillId();
+    if (state.sheetFillVals && Object.keys(state.sheetFillVals).length) all[id] = state.sheetFillVals;
+    else delete all[id];
+    if (store.saveSheetFill) store.saveSheetFill(all);
+  }
+  // Nach einem Re-Render die gemerkten Antworten zurückschreiben.
+  function restoreFillSheet() {
+    const map = state.sheetFillVals;
+    if (!map) return;
+    const seen = {};
+    fillEls().forEach((el) => {
+      const k = fillKey(el, seen);
+      if (Object.prototype.hasOwnProperty.call(map, k)) el.value = map[k];
+    });
+  }
   function setFillScore(text) {
     const out = root.querySelector(".sheet-score");
     if (out) out.textContent = text || "";
   }
-  function checkFillSheet() {
+  // Färbt die ausgefüllten Felder grün/rot anhand der eigenen Eingabe und liefert
+  // die Trefferbilanz. Leere Felder bleiben neutral. Gemeinsame Basis für „Prüfen"
+  // und „Lösungen zeigen".
+  function gradeFillFields() {
     const fields = fillFields();
-    if (!fields.length) return;
-    let ok = 0, filled = 0;
+    let ok = 0, filled = 0, firstWrong = null;
     fields.forEach((el) => {
       el.classList.remove("is-correct", "is-wrong");
       const val = String(el.value || "").trim();
       if (!val) return;
       filled += 1;
       if (fillAnswerOk(val, el.dataset.answer)) { el.classList.add("is-correct"); ok += 1; }
-      else el.classList.add("is-wrong");
+      else { el.classList.add("is-wrong"); if (!firstWrong) firstWrong = el; }
     });
-    setFillScore(t("sheet.fillResult", { ok: ok, total: fields.length }));
+    return { total: fields.length, ok: ok, filled: filled, firstWrong: firstWrong };
   }
+  function checkFillSheet() {
+    const r = gradeFillFields();
+    if (!r.total) return;
+    // Noch nichts getippt? Sanfter Hinweis statt „0 von n richtig".
+    if (!r.filled) { setFillScore(t("sheet.fillEmpty")); return; }
+    setFillScore(t("sheet.fillResult", { ok: r.ok, total: r.total }));
+    // Zum ersten falschen Feld scrollen – bei langen Heften sonst schwer zu finden.
+    if (r.firstWrong && r.firstWrong.scrollIntoView) {
+      try { r.firstWrong.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) { r.firstWrong.scrollIntoView(); }
+    }
+  }
+  // „Lösungen zeigen": die EIGENEN Eingaben bleiben stehen, unter jedem Feld wird
+  // die richtige Lösung eingeblendet (über das revealed-Flag im Re-Render) und die
+  // eigene Trefferquote markiert. Nichts wird überschrieben.
   function revealFillSheet() {
-    fillFields().forEach((el) => {
-      el.value = el.dataset.answer || "";
-      el.classList.remove("is-wrong");
-      el.classList.add("is-correct");
-    });
-    const fields = fillFields();
-    setFillScore(t("sheet.fillResult", { ok: fields.length, total: fields.length }));
+    if (!fillFields().length) return;
+    snapshotFillVals();          // eigene Eingaben sichern (nicht überschreiben)
+    state.sheetRevealed = true;
+    render();                    // Lösungen einblenden; restoreFillSheet stellt die Eingaben wieder her
+  }
+  // Nach dem Render im Reveal-Zustand die eigene Trefferquote markieren/melden.
+  function gradeRevealedSheet() {
+    const r = gradeFillFields();
+    setFillScore(r.filled ? t("sheet.fillResult", { ok: r.ok, total: r.total }) : "");
   }
   function resetFillSheet() {
-    fillFields().forEach((el) => { el.value = ""; el.classList.remove("is-correct", "is-wrong"); });
-    setFillScore("");
+    state.sheetFillVals = {};
+    state.sheetRevealed = false;
+    persistFillVals();           // gespeicherten Stand dieses Blatts mitlöschen
+    render();                    // Felder leer neu aufbauen, eingeblendete Lösungen entfernen
   }
 
   // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
@@ -7654,6 +7746,16 @@
 
   // Live-Suche: Tippen im Suchfeld zeichnet nur die Trefferliste neu (Fokus bleibt).
   function onInput(e) {
+    // Aktivitätsblatt (Handy-Modus): beim Tippen die frühere Prüf-Markierung des
+    // Feldes (✓/✗) lösen, die Live-Ergebnisanzeige leeren und die Eingabe merken
+    // (überlebt ein Re-Render). Kein Render hier – der Cursor soll nicht springen.
+    if (state.screen === "printsheet" && e.target && e.target.classList &&
+        (e.target.classList.contains("sheet-fill") || e.target.classList.contains("sheet-fill-area"))) {
+      e.target.classList.remove("is-correct", "is-wrong");
+      setFillScore("");
+      snapshotFillVals();
+      return;
+    }
     if (state.screen !== "search") return;
     if (!e.target || e.target.id !== "search-input") return;
     state.searchQuery = e.target.value;
@@ -7723,7 +7825,7 @@
     // damit der Cursor beim Tippen nicht springt.
     if (e.target && e.target.id === "teacher-classname") { setClassName(e.target.value); return; }
     // Aktivitätsblatt: Etappen-Auswahl -> sofort neu rendern (Live-Vorschau).
-    if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; render(); return; }
+    if (e.target && e.target.id === "sheet-stage") { state.sheetStage = e.target.value; state.sheetRevealed = false; loadFillStore(); render(); return; }
     const el = e.target.closest('[data-action="select-country"]');
     if (!el) return;
     selectCountry(el.value);
@@ -7740,6 +7842,23 @@
     // Spickzettel-Großanzeige: Escape schließt.
     if (state.screen === "spickzettel" && state.szShow && e.key === "Escape") {
       szClose();
+      return;
+    }
+    // Aktivitätsblatt (Handy-Modus): Enter in einem Lösungsfeld springt ins nächste
+    // Feld (erfüllt enterkeyhint="next") – im letzten Feld stattdessen „Prüfen".
+    // Mehrzeilige Schreibflächen (textarea) bleiben unberührt (dort ist Enter Umbruch).
+    if (state.screen === "printsheet" && e.key === "Enter" && e.target &&
+        e.target.classList && e.target.classList.contains("sheet-fill")) {
+      e.preventDefault();
+      const fields = fillFields();
+      const i = fields.indexOf(e.target);
+      if (i !== -1 && i + 1 < fields.length) {
+        const nx = fields[i + 1];
+        nx.focus(); if (nx.select) nx.select();
+      } else {
+        if (e.target.blur) e.target.blur();
+        checkFillSheet();
+      }
       return;
     }
     if (state.screen !== "study") return;

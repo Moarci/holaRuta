@@ -2513,7 +2513,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .sheet-write-box { height: 30mm; }
   .sheet-notes-lines { height: 26mm; }
   /* Fill-Modus-Bedienelemente sind reine Bildschirm-Helfer – nie aufs Papier. */
-  .sheet-fillbar, .sheet-score { display: none !important; }
+  .sheet-fillbar, .sheet-score, .sheet-solution { display: none !important; }
   /* Falls jemand das Fill-Blatt doch druckt: Felder als saubere Schreiblinien/Boxen. */
   .sheet-fill { border: none !important; border-bottom: 1px solid #444 !important; border-radius: 0 !important; background: none !important; padding: 0 2px !important; }
   .sheet-fill-area { background: none !important; }
@@ -2685,6 +2685,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .sheet-table .sheet-fill--line { margin-top: 0; }
 .sheet-fill.is-correct { border-color: #2e7d32; background: #eaf6ea; }
 .sheet-fill.is-wrong { border-color: #c0392b; background: #fdecea; }
+/* „Lösungen zeigen": die korrekte Lösung unter dem (unveränderten) Eigen-Eingabefeld. */
+.sheet-solution {
+  display: block; margin: 3px 0 2px; font-size: 0.9rem; line-height: 1.4;
+  color: #2e7d32;
+}
+.sheet-solution__lbl { font-weight: 700; opacity: 0.8; }
 .sheet-fill-area {
   font: inherit; color: #1c140e; background: #fff; width: 100%; box-sizing: border-box;
   border: 1px solid #b9a98f; border-radius: 8px; padding: 10px 11px; margin-top: 4px; resize: vertical; line-height: 1.6;

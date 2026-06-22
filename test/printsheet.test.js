@@ -261,6 +261,12 @@ test("renderPrintSheet: Fill-Modus rendert Eingabefelder mit hinterlegter Lösun
   assert.ok(html.includes("sheet-fill-area"), "Schreib-Textfeld fehlt");
   assert.ok(!html.includes("sheet-write-line"), "keine Druck-Schreiblinien im Fill-Modus");
   assert.ok(!html.includes("sheet-notes-lines"), "Notizen werden zum Textfeld");
+  // Felder kündigen „weiter" an (Enter springt ins nächste Feld – siehe printsheet-fill.test.js).
+  assert.ok(html.includes('enterkeyhint="next"'), "Felder signalisieren „weiter“ für die Tastatur");
+  // Jedes Feld trägt einen render-stabilen Schlüssel (data-fk) für die Persistenz
+  // – inkl. fester Notiz-Fläche. Stabil gegen Baustein-/Längen-Wechsel.
+  assert.ok(/data-fk="[^"]+"/.test(html), "Eingabefelder tragen einen Persistenz-Schlüssel (data-fk)");
+  assert.ok(html.includes('data-fk="notes"'), "Notizfläche hat einen festen Schlüssel");
 });
 
 test("renderPrintSheet: Fill-Modus zeigt Prüf-Steuerung statt Drucken, keinen Lösungsschlüssel", () => {
@@ -274,10 +280,26 @@ test("renderPrintSheet: Fill-Modus zeigt Prüf-Steuerung statt Drucken, keinen L
   assert.ok(!html.includes("sheet-answerkey"), "Fill-Modus braucht keinen separaten Schlüssel");
 });
 
-test("renderPrintSheet: Fill-Modus hält die Vokabel-Sektion als Referenz sichtbar", () => {
+test("renderPrintSheet: Fill-Modus blendet Lösungen nur im revealed-Zustand ein", () => {
+  const plain = ui.renderPrintSheet(withSections({ fill: true }));
+  assert.ok(!plain.includes("sheet-solution"), "ohne revealed keine eingeblendeten Lösungen");
+  const revealed = ui.renderPrintSheet(withSections({ fill: true, revealed: true }));
+  assert.ok(revealed.includes("sheet-solution"), "revealed blendet die Lösung unter dem Feld ein");
+  assert.ok(revealed.includes(i18n.t("sheet.solutionLabel")), "Lösungs-Label fehlt");
+  // Die Felder bleiben echte Eingabefelder (Eigeneingabe wird NICHT durch die Lösung ersetzt).
+  assert.ok(revealed.includes('class="sheet-fill sheet-fill--line"'), "Eingabefeld bleibt erhalten");
+});
+
+test("renderPrintSheet: Fill-Modus macht die Vokabel-Sektion zum tippbaren Feld", () => {
   const html = ui.renderPrintSheet(baseVM({ fill: true }));
-  assert.ok(html.includes("¿Dónde está el taxi?"), "Vokabeln bleiben im Fill-Modus sichtbar");
-  assert.ok(!html.includes("sheet-es--blank"), "keine verdeckten Vokabel-Linien im Fill-Modus");
+  // Die spanische Zeile wird zum Eingabefeld mit hinterlegter Lösung – nicht offen
+  // als Text daneben (sonst stünden die Lösungen der Übungen darunter sichtbar da).
+  assert.ok(html.includes('data-answer="¿Dónde está el taxi?"'), "Vokabel-Lösung nicht im Feld hinterlegt");
+  assert.ok(!html.includes('class="sheet-es" lang="es">¿Dónde está el taxi?'), "Vokabel-Antwort darf nicht offen stehen");
+  assert.ok(!html.includes("sheet-es--blank"), "keine verdeckten Druck-Linien im Fill-Modus");
+  // Notizen und Challenge-Phrase verraten die Lösung – im Fill-Modus verborgen.
+  assert.ok(!html.includes("carrera = Fahrt"), "Notiz darf im Fill-Modus die Lösung nicht verraten");
+  assert.ok(!html.includes("¿Por dónde se va?"), "Challenge-Phrase darf im Fill-Modus nicht offen stehen");
 });
 
 // ---------- Neue Übungstypen: Gegenteile + Satz ordnen ----------
