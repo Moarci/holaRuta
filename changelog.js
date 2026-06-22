@@ -27,6 +27,44 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.112.0",
+      date: "2026-06-22",
+      title: "Arbeitsblätter: mehr Abwechslung & deutlich mehr Inhalt",
+      titleEn: "Worksheets: more variety & a lot more content",
+      items: [
+        "🆕 Drei neue Übungstypen für mehr Abwechslung: „Multiple Choice“ (richtige spanische Antwort aus vier Optionen ankreuzen), „Artikel“ (el/la/los/las vor das Substantiv setzen) und „Buchstabensalat“ (gewürfelte Buchstaben zum richtigen Wort sortieren). Alle drei funktionieren im Lösungsblatt, im Übungsblatt mit Lösungsschlüssel UND am Handy zum Ausfüllen mit Selbstkontrolle.",
+        "📈 Spürbar mehr Umfang: Jeder Baustein wurde aufgestockt. „Groß“ liefert jetzt über 180 Aufgaben, „XXL“ über 270 – ein echtes, mehrseitiges Übungsheft. Auch mehr Konjugationen (bis 34), Übersetzungen (bis 34), Zahlen/Preise (bis 28) und bis zu VIER komplette Dialoge.",
+        "✍️ Zwei neue Schreibanlässe (Restaurant-Bestellung & Nachricht an eine neue Bekanntschaft) – im XXL-Heft jetzt bis zu fünf freie Schreibaufgaben.",
+        "🖨️ Sauberer A4-Druck bei viel Inhalt: Lange Übungsabschnitte fließen jetzt über die Seiten, statt am Rand abgeschnitten zu werden – einzelne Aufgaben, Wortbänke und Schreibflächen bleiben dabei zusammen. Keine gestrandeten Überschriften oder Einzelzeilen mehr (Witwen/Waisen): Titel wandern immer mit ihrem Inhalt auf die nächste Seite.",
+      ],
+      itemsEn: [
+        "🆕 Three new exercise types for more variety: “Multiple choice” (pick the correct Spanish answer from four options), “Articles” (put el/la/los/las in front of the noun) and “Word scramble” (unscramble the letters into the right word). All three work in the answer-key sheet, in the exercise sheet with answer key AND on your phone to fill in with self-check.",
+        "📈 Noticeably more scope: every building block was boosted. “Large” now delivers over 180 tasks, “XXL” over 270 – a real multi-page workbook. Also more conjugations (up to 34), translations (up to 34), numbers/prices (up to 28) and up to FOUR complete dialogues.",
+        "✍️ Two new writing prompts (ordering at a restaurant & a message to someone you just met) – up to five free-writing tasks in the XXL workbook.",
+        "🖨️ Clean A4 printing with lots of content: long exercise sections now flow across pages instead of being cut off at the margin – individual tasks, word banks and writing areas stay together. No more stranded headings or single lines (widows/orphans): a title always moves to the next page together with its content.",
+      ],
+    },
+    {
+      version: "1.111.0",
+      date: "2026-06-21",
+      title: "Arbeitsblätter: mehr Übungen, A4-fertiges Layout & am Handy ausfüllbar",
+      titleEn: "Worksheets: more exercises, print-ready A4 layout & fill in on your phone",
+      items: [
+        "📱 Neu: Variante „Am Handy ausfüllen“ – das Arbeitsblatt wird interaktiv. Tippe deine Antworten direkt in echte Eingabefelder, prüfe sie mit einem Knopf (richtig/falsch wird markiert) oder lass dir die Lösungen zeigen. Alles bleibt offline auf deinem Gerät.",
+        "📈 Viel mehr Umfang & neue Übungstypen: ein vollwertiges mehrseitiges Heft mit ~125 Aufgaben (14 Zuordnungs-Paare, 18 Gegenteile, 14 Lückentexte, 18 Übersetzungen, 12 Satz-ordnen, 18 Konjugationen, 15 Zahlen/Preise, ZWEI komplette Dialoge, Landeskunde, 3 Schreibanlässe). Karten-Abschnitte füllen sich bei kleinen Zielen aus dem gesamten Reise-Wortschatz auf. Neu: „Gegenteile“ (Contrarios) und „Satz ordnen“ (Wortstellung).",
+        "🖨️ Sauber auf A4: Layout und Abstände fürs Ausdrucken optimiert – kompaktere Typografie und bewusste Seitenumbrüche, damit mehr Übungen pro Seite passen und nichts unschön zerreißt.",
+        "🗝️ Lösungsschlüssel getrennt: ist jetzt ein eigenes Blatt mit eigener Kopfzeile und lässt sich separat drucken („Übungsblatt drucken“ bzw. „Lösungsschlüssel drucken“) – ideal zum Austeilen ohne Lösungen.",
+        "📏 Heftlänge wählbar: Standard, Groß oder XXL – du bestimmst selbst, wie viele Aufgaben pro Baustein im Heft landen (XXL schöpft die Quellen weitgehend aus).",
+      ],
+      itemsEn: [
+        "📱 New: a „Fill in on phone“ variant – the worksheet becomes interactive. Type your answers straight into real input fields, check them with one tap (right/wrong gets highlighted) or reveal the solutions. Everything stays offline on your device.",
+        "📈 Much more scope & new exercise types: a full multi-page workbook with ~125 tasks (14 matching pairs, 18 opposites, 14 gap-fills, 18 translations, 12 sentence-ordering, 18 conjugations, 15 numbers/prices, TWO complete dialogues, culture notes, 3 writing prompts). Card-based sections top up from the whole travel vocabulary when a target is small. New: “Opposites” (Contrarios) and “Put the sentence in order” (word order).",
+        "🖨️ Clean on A4: layout and spacing optimised for printing – tighter typography and deliberate page breaks, so more exercises fit per page and nothing breaks awkwardly.",
+        "🗝️ Separate answer key: it's now its own sheet with its own header and prints separately (“Print exercise sheet” vs. “Print answer key”) – perfect for handing out without the solutions.",
+        "📏 Choose the workbook length: Standard, Large or XXL – you decide how many tasks per building block end up in the sheet (XXL taps the sources almost fully).",
+      ],
+    },
+    {
       version: "1.110.0",
       date: "2026-06-20",
       title: "Mi léxico: Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon",

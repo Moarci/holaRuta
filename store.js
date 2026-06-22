@@ -17,6 +17,10 @@
   // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
   // überschreiben und so einen falschen Update-Hinweis auslösen.
   const SEENVERSION_KEY = "spanischcard.seenVersion.v1";
+  // Arbeitsheft „Am Handy ausfüllen": getippte Antworten je Blatt. Ebenfalls
+  // bewusst NICHT in KNOWN_KEYS – gerätelokaler Arbeitsstand, kein Backup-Inhalt
+  // (ein Import von einem anderen Gerät soll fremde Antworten nicht einspielen).
+  const SHEETFILL_KEY = "spanischcard.sheetfill.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
   const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY, FAVORITES_KEY];
 
@@ -780,5 +784,33 @@
       return typeof v === "string" ? v : null;
     },
     saveSeenVersion: (v) => writeJson(SEENVERSION_KEY, String(v)),
+    // Arbeitsheft-Eingaben (Handy-Modus). Struktur: { "<blattId>": { "<feld>": "<text>" } }.
+    // Strukturwächter mit Deckeln, damit korruptes/manipuliertes localStorage
+    // weder crasht noch unbegrenzt wuchert (max. 50 Blätter × 400 Felder).
+    loadSheetFill() {
+      const v = readJson(SHEETFILL_KEY, {});
+      if (!isPlainObject(v)) return {};
+      const out = {};
+      let sheets = 0;
+      for (const id in v) {
+        if (!Object.prototype.hasOwnProperty.call(v, id)) continue;
+        if (typeof id !== "string" || !id || id.length > 200) continue;
+        const m = v[id];
+        if (!isPlainObject(m)) continue;
+        const bucket = {};
+        let fields = 0;
+        for (const k in m) {
+          if (!Object.prototype.hasOwnProperty.call(m, k)) continue;
+          if (typeof k !== "string" || !k || k.length > 600) continue;
+          const val = m[k];
+          if (typeof val !== "string" || !val.length || val.length > 500) continue;
+          bucket[k] = val;
+          if (++fields >= 400) break;
+        }
+        if (fields) { out[id] = bucket; if (++sheets >= 50) break; }
+      }
+      return out;
+    },
+    saveSheetFill: (o) => writeJson(SHEETFILL_KEY, isPlainObject(o) ? o : {}),
   };
 })();

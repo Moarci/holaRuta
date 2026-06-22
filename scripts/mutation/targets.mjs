@@ -108,7 +108,7 @@ export const IGNORE = [
     "mergeGamestats: `else if (isObj(va) && isObj(vb))` vs `||`. Die per || zusätzlich erreichten Fälle (genau einer " +
     "ist ein Objekt) liefern über deepUnion(va,vb) denselben Wert wie der else-Zweig (a!==undefined ? a : b = va) → äquivalent." },
   // store.js
-  { file: "store.js", line: 493, op: "relational", grund:
+  { file: "store.js", line: 497, op: "relational", grund:
     "sanitizeAssessmentHistory: `for (… i < v.length …)` vs `<=`. Die Extra-Iteration ruft sanitizeAssessmentEntry(v[v.length]=undefined) " +
     "auf, das mit `if (!isPlainObject(e)) return null;` null liefert; `if (e) out.push(e)` überspringt es → identisches Ergebnis → äquivalent." },
 ];
