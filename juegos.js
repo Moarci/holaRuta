@@ -281,7 +281,7 @@
       ],
     },
     {
-      icon: "🁢",
+      icon: "🎲",
       title: "Dominó (die Karibik)",
       titleEn: "Dominoes (the Caribbean)",
       intro: "Das Spiel der Karibik – in Kuba, der Dominikanischen Republik und Puerto Rico auf jeder Straßenecke. Meist 4 Spieler in 2 Teams, laut, schnell und mit viel Leidenschaft.",
@@ -513,7 +513,7 @@
       whyEn: "For Dudo/Perudo and Generala – tiny in your bag, huge fun.",
     },
     {
-      icon: "🁢",
+      icon: "🎲",
       item: "Mini-Dominó-Set",
       itemEn: "Travel domino set",
       why: "Türöffner in der Karibik, wo Dominó Kult ist.",
