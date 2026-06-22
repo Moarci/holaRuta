@@ -42,8 +42,8 @@
     return moduleSheet(vm, {
       icon: "🗣️", title: "Jerga colombiana", cat: "jerga",
       readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
-      headTips: "discover.jgTips", headPhrases: "discover.jgPhrases",
-      headWords: "discover.jgWords",
+      headTips: "discover.jrTips", headPhrases: "discover.jrPhrases",
+      headWords: "discover.jrWords",
     });
   }
 

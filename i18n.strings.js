@@ -806,9 +806,9 @@
     sdChecklistHint: "Ein paar günstige Sachen, mit denen Essen, Trinken und der Bauch unterwegs funktionieren.",
 
     // Jerga colombiana
-    jgTips: "🤙 Slang richtig einsetzen",
-    jgPhrases: "💬 Wichtige Slang-Wörter",
-    jgWords: "🗣️ Schnell-Glossar",
+    jrTips: "🤙 Slang richtig einsetzen",
+    jrPhrases: "💬 Wichtige Slang-Wörter",
+    jrWords: "🗣️ Schnell-Glossar",
 
     // Conoce tus derechos
     drTips: "🧭 Ruhig & sicher bleiben",
@@ -1232,9 +1232,9 @@
     sdChecklistHint: "A few cheap things that keep eating, drinking and your stomach working on the road.",
 
     // Jerga colombiana
-    jgTips: "🤙 Using slang the right way",
-    jgPhrases: "💬 Key slang words",
-    jgWords: "🗣️ Quick glossary",
+    jrTips: "🤙 Using slang the right way",
+    jrPhrases: "💬 Key slang words",
+    jrWords: "🗣️ Quick glossary",
 
     // Conoce tus derechos
     drTips: "🧭 Stay calm & safe",

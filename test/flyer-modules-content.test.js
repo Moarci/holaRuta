@@ -111,7 +111,7 @@ checkModule("responsable", responsable, { hasChecklist: true });
 test("Flyer-Module: i18n-Schlüssel (Kachel + Überschriften) existieren in DE & EN", () => {
   const prev = i18n.getLang();
   const keys = [
-    "discover.subJerga", "discover.jgTips", "discover.jgPhrases", "discover.jgWords",
+    "discover.subJerga", "discover.jrTips", "discover.jrPhrases", "discover.jrWords",
     "discover.subDerechos", "discover.drTips", "discover.drPhrases", "discover.drWords",
     "discover.drChecklist", "discover.drChecklistHint",
     "discover.subResponsable", "discover.rpTips", "discover.rpPhrases", "discover.rpWords",
