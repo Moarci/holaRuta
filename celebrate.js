@@ -51,7 +51,6 @@
 
   // --- Kleine reine Helfer ---
   function num(x, d) { return typeof x === "number" && isFinite(x) ? x : d; }
-  function clamp(x, lo, hi) { return Math.min(hi, Math.max(lo, x)); }
 
   // Deterministische Auswahl (seedbar) – macht decide() und damit die Texte testbar.
   function pick(pool, seed) {

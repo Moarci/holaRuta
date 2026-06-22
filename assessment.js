@@ -653,6 +653,7 @@
 
   // Score-Stufe als Index (0..5) – feinere Schwellen für sechs Stufen.
   function scoreIndex(finalScore, unknownRate) {
+    if (!isFinite(finalScore)) return 0; // NaN/undefined -> sicher A0, nicht versehentlich C1
     if (finalScore < 0.25 || unknownRate > 0.55) return 0; // A0
     if (finalScore < 0.42) return 1; // A1
     if (finalScore < 0.58) return 2; // A2

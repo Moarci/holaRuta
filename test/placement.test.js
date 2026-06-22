@@ -277,3 +277,8 @@ test("summarize: leere/fehlende Antworten zählen als unbekannt (kein Crash)", (
   assert.equal(s.correct, 0);
   assert.equal(s.level, "A0");
 });
+
+test("levelFor mit nicht-endlichem Score fällt sicher auf A0 (nie versehentlich Höchststufe)", () => {
+  assert.equal(placement.levelFor(NaN, 0), "A0");
+  assert.equal(placement.levelFor(undefined, 0), "A0");
+});

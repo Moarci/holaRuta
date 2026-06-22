@@ -79,3 +79,21 @@ test("Jede Reise-Tipps-Kategorie (TIPS_META) ist per ?m= deeplinkbar", () => {
       `Reise-Tipp "${cat}" ist teilbar (TIPS_META), aber ?m=${cat} hat keinen Opener`);
   }
 });
+
+// Sicherheits-Regressionsschutz (CodeQL js/unvalidated-dynamic-method-call):
+// Der Deep-Link-Router darf einen URL-gesteuerten Slug NICHT als dynamischen
+// Methoden-Lookup-Namen verwenden – sonst träfe z. B. ?m=toString / ?a=constructor
+// eine geerbte Object.prototype-Methode. Dispatch läuft daher über Map.get
+// (Object.entries → nur eigene Keys) + typeof-function-Guard, KEIN obj[slug]().
+test("Deep-Link-Dispatch ohne dynamischen Methoden-Lookup per Slug (CodeQL-sicher)", () => {
+  // Kein computed member access mit nutzergesteuertem Namen mehr.
+  assert.doesNotMatch(appjs, /actions\[aSlug\]/,
+    "actions[aSlug] (dynamischer Index per URL-Slug) wieder da");
+  assert.doesNotMatch(appjs, /openers\[slug\]/,
+    "openers[slug] (dynamischer Index per URL-Slug) wieder da");
+  // Dispatch über Map.get + Funktions-Guard.
+  assert.match(appjs, /new Map\(Object\.entries\(actions\)\)\.get\(aSlug\)/,
+    "actions-Dispatch (?a=) nicht über Map.get");
+  assert.match(appjs, /new Map\(Object\.entries\(openers\)\)\.get\(slug\)/,
+    "openers-Dispatch (?m=) nicht über Map.get");
+});

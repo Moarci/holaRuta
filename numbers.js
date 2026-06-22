@@ -56,7 +56,9 @@
   // Vor „mil"/„millones" wird „uno" korrekt apokopiert (veintiún mil, treinta y
   // un millones); der letzte Hunderter-Block bleibt als reine Zahl „…uno".
   function toWords(n) {
-    n = Math.floor(Math.abs(Number(n) || 0));
+    // Definierte Domäne 0 … 999.999.999. Größere Werte werden geklemmt, damit nie
+    // „undefined millones" entsteht (der millones-Block ginge sonst über below1000 hinaus).
+    n = Math.min(Math.floor(Math.abs(Number(n) || 0)), 999999999);
     if (n === 0) return "cero";
     const parts = [];
     const millones = Math.floor(n / 1e6);
