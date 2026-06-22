@@ -2763,6 +2763,7 @@
       situationDe: "Du kommst nach einer langen Busfahrt im Hostel an. Du hast eine Reservierung und möchtest einchecken, das WLAN nutzen und wissen, wann es Frühstück gibt.", situationEn: "You arrive at the hostel after a long bus ride. You have a reservation and want to check in, use the wifi and find out when breakfast is.",
       goalA: "Sage, dass du eine Reservierung hast, nenne deinen Namen, frage nach WLAN, Frühstück und Check-out-Zeit.",
       goalB: "Frage nach dem Namen, bitte um den Pass, kläre die Bezahlung und erkläre Frühstück, WLAN und Bettnummer.",
+      titleEn: "Hostel check-in", goalAEn: "Say you have a reservation, give your name, and ask about wifi, breakfast and check-out time.", goalBEn: "Ask for the name, request the passport, sort out payment and explain breakfast, wifi and bed number.",
       dialogue: [
         { speaker: "A", de: "Hallo, guten Abend! Ich habe eine Reservierung.", en: "Hello, good evening! I have a reservation.", es: "¡Hola, buenas noches! Tengo una reserva." },
         { speaker: "B", de: "Willkommen! Auf welchen Namen läuft die Reservierung?", en: "Welcome! What name is the reservation under?", es: "¡Bienvenido! ¿A nombre de quién está la reserva?" },
@@ -2789,6 +2790,7 @@
       situationDe: "Du gehst zu deinem Bett im Dorm – aber da liegt schon jemand anderes. Du gehst zurück zur Rezeption, um das zu klären.", situationEn: "You go to your bed in the dorm – but someone else is already in it. You head back to reception to sort it out.",
       goalA: "Erkläre, dass dein Bett belegt ist, nenne deine Bettnummer und frage nach einer Lösung.",
       goalB: "Entschuldige dich, prüfe die Buchung im System und biete ein anderes Bett an.",
+      titleEn: "Bed is taken", goalAEn: "Explain that your bed is taken, give your bed number and ask for a solution.", goalBEn: "Apologise, check the booking in the system and offer another bed.",
       dialogue: [
         { speaker: "A", de: "Entschuldigung, ich glaube, mein Bett ist belegt.", en: "Excuse me, I think my bed is taken.", es: "Disculpe, creo que mi cama está ocupada." },
         { speaker: "B", de: "Oh, das tut mir leid. Welche Bettnummer hast du?", en: "Oh, I'm sorry. What's your bed number?", es: "Oh, lo siento. ¿Qué número de cama tienes?" },
@@ -2812,6 +2814,7 @@
       situationDe: "Deine Schlüsselkarte öffnet die Tür zum Dorm nicht mehr. Du gehst zur Rezeption, um das Problem zu lösen.", situationEn: "Your key card no longer opens the dorm door. You go to reception to sort out the problem.",
       goalA: "Erkläre das Problem, nenne dein Zimmer und bitte um Hilfe.",
       goalB: "Frage nach Zimmer und Karte, finde die Ursache und aktiviere die Karte neu.",
+      titleEn: "Key doesn't work", goalAEn: "Explain the problem, give your room and ask for help.", goalBEn: "Ask for the room and key card, find the cause and reactivate the card.",
       dialogue: [
         { speaker: "A", de: "Entschuldigung, meine Karte funktioniert nicht.", en: "Excuse me, my card isn't working.", es: "Disculpe, mi tarjeta no funciona." },
         { speaker: "B", de: "Lass mich sehen. Welches Zimmer ist es?", en: "Let me see. Which room is it?", es: "Déjame ver. ¿Qué habitación es?" },
@@ -2835,6 +2838,7 @@
       situationDe: "Im Gemeinschaftsraum sitzt jemand, den du kennenlernen möchtest. Ihr kommt ins Gespräch über das Reisen.", situationEn: "Someone you'd like to meet is sitting in the common room. You get chatting about travelling.",
       goalA: "Stell dich vor und frage, woher die Person kommt, wie es ihr gefällt und wohin sie reist.",
       goalB: "Antworte freundlich, erzähl ein bisschen und stell auch Gegenfragen.",
+      titleEn: "Meeting new people in the dorm", goalAEn: "Introduce yourself and ask where the person is from, how they like it and where they're travelling.", goalBEn: "Answer warmly, share a little and ask questions back too.",
       dialogue: [
         { speaker: "A", de: "Hallo! Ist hier noch frei?", en: "Hi! Is this seat free?", es: "¡Hola! ¿Está libre aquí?" },
         { speaker: "B", de: "Ja, klar, setz dich.", en: "Yes, of course, sit down.", es: "Sí, claro, siéntate." },
@@ -2859,6 +2863,7 @@
       situationDe: "Du willst jemanden aus dem Hostel fragen, ob ihr zusammen essen geht, und einen Treffpunkt ausmachen.", situationEn: "You want to ask someone from the hostel to go for a meal together and arrange where to meet.",
       goalA: "Frag, ob die Person Hunger hat, schlag ein Lokal vor und mach Zeit und Treffpunkt aus.",
       goalB: "Sag zu, frag nach den Details (wo, wann, wie teuer) und schlag vor, noch jemanden mitzunehmen.",
+      titleEn: "Going out to eat together", goalAEn: "Ask if the person is hungry, suggest a place and agree on a time and meeting point.", goalBEn: "Say yes, ask for the details (where, when, how pricey) and suggest bringing someone else along.",
       dialogue: [
         { speaker: "A", de: "Hey, hast du schon gegessen?", en: "Hey, have you eaten yet?", es: "Oye, ¿ya comiste?" },
         { speaker: "B", de: "Nein, noch nicht. Ich habe Hunger.", en: "No, not yet. I'm hungry.", es: "No, todavía no. Tengo hambre." },
@@ -2882,6 +2887,7 @@
       situationDe: "Ihr müsst beide zum Busbahnhof – teilt euch ein Taxi, um Geld zu sparen.", situationEn: "You both need to get to the bus station – share a taxi to save money.",
       goalA: "Schlag vor, ein Taxi zu teilen, frag, wohin die Person muss, und kläre den Preis.",
       goalB: "Stimm zu, kläre, wie ihr die Kosten teilt, und mach aus, wo ihr euch trefft.",
+      titleEn: "Sharing a taxi to the bus station", goalAEn: "Suggest sharing a taxi, ask where the person needs to go and sort out the price.", goalBEn: "Agree, settle how you split the cost and arrange where to meet.",
       dialogue: [
         { speaker: "A", de: "Hey, musst du auch zum Busbahnhof?", en: "Hey, are you heading to the bus station too?", es: "Oye, ¿vas también a la terminal?" },
         { speaker: "B", de: "Ja, mein Bus fährt in einer Stunde.", en: "Yes, my bus leaves in an hour.", es: "Sí, mi bus sale en una hora." },
@@ -2904,6 +2910,7 @@
       situationDe: "Du brauchst saubere Kleidung und fragst an der Rezeption nach der Waschmaschine, dem Preis und wie lange es dauert.", situationEn: "You need clean clothes and ask at reception about the washing machine, the price and how long it takes.",
       goalA: "Frage, ob es eine Waschmaschine gibt, was sie kostet und wie lange ein Waschgang dauert.",
       goalB: "Erkläre Ort, Preis, ob Waschmittel inklusive ist und wann die Wäsche fertig ist.",
+      titleEn: "Doing laundry", goalAEn: "Ask whether there's a washing machine, what it costs and how long a wash takes.", goalBEn: "Explain the location, price, whether detergent is included and when the laundry is ready.",
       dialogue: [
         { speaker: "A", de: "Hallo, gibt es hier eine Waschmaschine?", en: "Hi, is there a washing machine here?", es: "Hola, ¿hay lavadora aquí?" },
         { speaker: "B", de: "Ja, im Erdgeschoss, neben der Küche.", en: "Yes, on the ground floor, next to the kitchen.", es: "Sí, en la planta baja, al lado de la cocina." },
@@ -2927,6 +2934,7 @@
       situationDe: "Du checkst aus, dein Bus fährt aber erst am Abend. Du willst dein Gepäck bis dahin lagern.", situationEn: "You're checking out, but your bus doesn't leave until the evening. You want to store your luggage until then.",
       goalA: "Sag, dass du auscheckst, gib den Schlüssel zurück und frage, ob du dein Gepäck bis abends lassen kannst.",
       goalB: "Bestätige den Check-out, nimm den Schlüssel und erkläre die kostenlose Gepäckaufbewahrung.",
+      titleEn: "Check-out and luggage storage", goalAEn: "Say you're checking out, hand back the key and ask whether you can leave your luggage until the evening.", goalBEn: "Confirm the check-out, take the key and explain the free luggage storage.",
       dialogue: [
         { speaker: "A", de: "Guten Morgen, ich möchte auschecken, bitte.", en: "Good morning, I'd like to check out, please.", es: "Buenos días, quiero hacer el check-out, por favor." },
         { speaker: "B", de: "Guten Morgen! Klar. War alles in Ordnung?", en: "Good morning! Of course. Was everything okay?", es: "¡Buenos días! Claro. ¿Todo bien?" },
@@ -2951,6 +2959,7 @@
       situationDe: "Du setzt dich in ein typisches Lokal, willst eine Empfehlung bekommen, bestellen und am Ende zahlen.", situationEn: "You sit down in a typical eatery, want to get a recommendation, order and pay at the end.",
       goalA: "Frag nach der Karte und einer Empfehlung, bestell Essen und Trinken und bitte am Ende um die Rechnung.",
       goalB: "Bring die Karte, empfiehl ein Gericht, nimm die Bestellung auf und bring die Rechnung.",
+      titleEn: "Ordering at the restaurant", goalAEn: "Ask for the menu and a recommendation, order food and drinks and ask for the bill at the end.", goalBEn: "Bring the menu, recommend a dish, take the order and bring the bill.",
       dialogue: [
         { speaker: "A", de: "Guten Tag! Haben Sie einen Tisch für eine Person?", en: "Hello! Do you have a table for one?", es: "¡Buenas! ¿Tiene una mesa para una persona?" },
         { speaker: "B", de: "Klar, setzen Sie sich. Hier ist die Karte.", en: "Of course, take a seat. Here's the menu.", es: "Claro, siéntese. Aquí tiene la carta." },
@@ -2977,6 +2986,7 @@
       situationDe: "Am Busbahnhof willst du ein Ticket in die nächste Stadt kaufen und Abfahrt, Preis und Dauer klären.", situationEn: "At the bus station you want to buy a ticket to the next town and sort out departure, price and duration.",
       goalA: "Frag nach einem Ticket, der Abfahrtszeit, dem Preis und der Fahrtdauer.",
       goalB: "Nenne Zeiten, Preis und Dauer und gib das Ticket mit Bahnsteig aus.",
+      titleEn: "Buying a bus ticket at the terminal", goalAEn: "Ask for a ticket, the departure time, the price and the journey length.", goalBEn: "Give times, price and duration and issue the ticket with the platform.",
       dialogue: [
         { speaker: "A", de: "Guten Tag, ich möchte ein Ticket nach Medellín.", en: "Hello, I'd like a ticket to Medellín.", es: "Buenas, quiero un boleto a Medellín." },
         { speaker: "B", de: "Für wann?", en: "For when?", es: "¿Para cuándo?" },
@@ -3002,6 +3012,7 @@
       situationDe: "Dir geht es nicht gut – du gehst in die Apotheke und beschreibst deine Beschwerden.", situationEn: "You're not feeling well – you go to the pharmacy and describe your symptoms.",
       goalA: "Beschreibe deine Symptome und frag nach einem Medikament und der Einnahme.",
       goalB: "Frag nach den Symptomen, empfiehl etwas und erkläre, wie man es nimmt.",
+      titleEn: "At the pharmacy", goalAEn: "Describe your symptoms and ask for a medicine and how to take it.", goalBEn: "Ask about the symptoms, recommend something and explain how to take it.",
       dialogue: [
         { speaker: "A", de: "Hallo, ich fühle mich nicht gut.", en: "Hi, I'm not feeling well.", es: "Hola, no me siento bien." },
         { speaker: "B", de: "Was hast du denn?", en: "What's the matter?", es: "¿Qué tienes?" },
@@ -3025,6 +3036,7 @@
       situationDe: "Auf dem Kunsthandwerksmarkt gefällt dir etwas – du fragst nach dem Preis und handelst höflich.", situationEn: "You like something at the craft market – you ask the price and haggle politely.",
       goalA: "Frag nach dem Preis und versuch höflich zu handeln.",
       goalB: "Nenne den Preis, betone die Qualität und lass dich auf eine Verhandlung ein.",
+      titleEn: "Haggling at the market", goalAEn: "Ask for the price and try to haggle politely.", goalBEn: "Give the price, stress the quality and engage in a bit of bargaining.",
       dialogue: [
         { speaker: "A", de: "Guten Tag, wie viel kostet diese Tasche?", en: "Hello, how much is this bag?", es: "Buenas, ¿cuánto cuesta esta bolsa?" },
         { speaker: "B", de: "Fünfzigtausend Pesos.", en: "Fifty thousand pesos.", es: "Cincuenta mil pesos." },
@@ -3047,6 +3059,7 @@
       situationDe: "Du brauchst Bargeld und gehst in eine Wechselstube, um Euro in Pesos zu tauschen.", situationEn: "You need cash and go to a bureau de change to swap euros for pesos.",
       goalA: "Frag nach dem Wechselkurs, tausch einen Betrag und bitte um kleine Scheine.",
       goalB: "Nenne den Kurs, frag nach Betrag und Pass und gib das Geld aus.",
+      titleEn: "Changing money", goalAEn: "Ask for the exchange rate, change an amount and ask for small notes.", goalBEn: "Give the rate, ask for the amount and passport and hand over the money.",
       dialogue: [
         { speaker: "A", de: "Guten Tag, wechseln Sie Euro?", en: "Hello, do you exchange euros?", es: "Buenas, ¿cambian euros?" },
         { speaker: "B", de: "Ja, wie viel möchtest du wechseln?", en: "Yes, how much would you like to change?", es: "Sí, ¿cuánto quieres cambiar?" },
@@ -3069,6 +3082,7 @@
       situationDe: "Im Reisebüro willst du einen Tagesausflug buchen und Preis, Uhrzeit und Inhalt klären.", situationEn: "At the travel agency you want to book a day trip and sort out price, time and what's included.",
       goalA: "Frag nach dem Ausflug, dem Preis, der Uhrzeit und was inklusive ist.",
       goalB: "Erkläre Programm, Preis, Treffpunkt und was man mitbringen soll.",
+      titleEn: "Booking a day trip", goalAEn: "Ask about the trip, the price, the time and what's included.", goalBEn: "Explain the programme, price, meeting point and what to bring.",
       dialogue: [
         { speaker: "A", de: "Hallo, bieten Sie Touren zum Wasserfall an?", en: "Hi, do you offer tours to the waterfall?", es: "Hola, ¿ofrecen tours a la cascada?" },
         { speaker: "B", de: "Ja, jeden Tag um acht Uhr morgens.", en: "Yes, every day at eight in the morning.", es: "Sí, todos los días a las ocho de la mañana." },
@@ -3093,6 +3107,7 @@
       situationDe: "Dir wurde das Handy gestohlen. Du gehst zur Polizei, um eine Anzeige für die Versicherung zu machen.", situationEn: "Your phone has been stolen. You go to the police to file a report for your insurance.",
       goalA: "Erkläre, was passiert ist, wo und wann, und gib eine Beschreibung.",
       goalB: "Frag nach den Details und nimm die Anzeige auf.",
+      titleEn: "Reporting a theft to the police", goalAEn: "Explain what happened, where and when, and give a description.", goalBEn: "Ask for the details and file the report.",
       dialogue: [
         { speaker: "A", de: "Guten Tag, ich möchte einen Diebstahl melden.", en: "Hello, I'd like to report a theft.", es: "Buenas, quiero denunciar un robo." },
         { speaker: "B", de: "Was wurde dir gestohlen?", en: "What was stolen from you?", es: "¿Qué te robaron?" },
@@ -3116,6 +3131,7 @@
       situationDe: "Es ist spät und im Dorm ist es laut – du bittest höflich um etwas Ruhe.", situationEn: "It's late and the dorm is noisy – you politely ask for a bit of quiet.",
       goalA: "Bitte höflich um Ruhe und erkläre, dass du früh raus musst.",
       goalB: "Entschuldige dich und reagiere freundlich.",
+      titleEn: "It's too loud in the dorm at night", goalAEn: "Politely ask for quiet and explain that you have to get up early.", goalBEn: "Apologise and respond kindly.",
       dialogue: [
         { speaker: "A", de: "Hey, entschuldige die Störung.", en: "Hey, sorry to bother you.", es: "Oye, disculpa la molestia." },
         { speaker: "B", de: "Hi, was ist los?", en: "Hi, what's up?", es: "Hola, ¿qué pasa?" },
@@ -3137,6 +3153,7 @@
       situationDe: "Du hast dich verlaufen und fragst eine Person auf der Straße nach dem Weg.", situationEn: "You're lost and ask someone in the street for directions.",
       goalA: "Frag höflich nach dem Weg zu einem Ort und ob es weit ist.",
       goalB: "Erkläre den Weg einfach und freundlich.",
+      titleEn: "Asking for directions", goalAEn: "Politely ask for the way to a place and whether it's far.", goalBEn: "Explain the way simply and kindly.",
       dialogue: [
         { speaker: "A", de: "Entschuldigung, kannst du mir helfen?", en: "Excuse me, can you help me?", es: "Disculpa, ¿me puedes ayudar?" },
         { speaker: "B", de: "Klar, was suchst du?", en: "Sure, what are you looking for?", es: "Claro, ¿qué buscas?" },
@@ -3159,6 +3176,7 @@
       situationDe: "Du brauchst mobiles Internet und kaufst eine SIM-Karte mit Datenvolumen.", situationEn: "You need mobile internet and buy a SIM card with data.",
       goalA: "Frag nach einer SIM-Karte mit Daten, dem Preis und ob Anrufe inklusive sind.",
       goalB: "Erkläre die Tarife, frag nach dem Pass und aktiviere die Karte.",
+      titleEn: "Buying a SIM card", goalAEn: "Ask for a SIM card with data, the price and whether calls are included.", goalBEn: "Explain the plans, ask for the passport and activate the card.",
       dialogue: [
         { speaker: "A", de: "Hallo, verkaufen Sie SIM-Karten?", en: "Hi, do you sell SIM cards?", es: "Hola, ¿venden chips de celular?" },
         { speaker: "B", de: "Ja, für welches Netz?", en: "Yes, for which network?", es: "Sí, ¿de cuál operador?" },
@@ -3184,6 +3202,7 @@
       situationDe: "Du checkst ein und sagst nur das Nötigste – ganz kurze, einfache Sätze.", situationEn: "You're checking in and say only the essentials – very short, simple sentences.",
       goalA: "Sag Hallo, nenne deinen Namen und frage, wo dein Bett ist.",
       goalB: "Begrüße, frag nach dem Namen und zeig das Bett.",
+      titleEn: "Checking in — nice and easy", goalAEn: "Say hello, give your name and ask where your bed is.", goalBEn: "Greet them, ask for the name and show the bed.",
       dialogue: [
         { speaker: "A", de: "Hallo, guten Tag.", en: "Hello, good day.", es: "Hola, buenos días." },
         { speaker: "B", de: "Hallo! Wie heißt du?", en: "Hi! What's your name?", es: "¡Hola! ¿Cómo te llamas?" },
@@ -3204,6 +3223,7 @@
       situationDe: "Du bestellst kurz etwas zu trinken – einfache, kurze Sätze.", situationEn: "You quickly order something to drink – simple, short sentences.",
       goalA: "Bestell ein Getränk und frag, was es kostet.",
       goalB: "Nimm die Bestellung auf und nenne den Preis.",
+      titleEn: "Ordering something to drink", goalAEn: "Order a drink and ask what it costs.", goalBEn: "Take the order and give the price.",
       dialogue: [
         { speaker: "A", de: "Hallo, ein Wasser, bitte.", en: "Hi, a water, please.", es: "Hola, un agua, por favor." },
         { speaker: "B", de: "Mit oder ohne Kohlensäure?", en: "Sparkling or still?", es: "¿Con gas o sin gas?" },
@@ -3224,6 +3244,7 @@
       situationDe: "Du sagst kurz Hallo und stellst dich vor – ganz einfache Sätze.", situationEn: "You say a quick hello and introduce yourself – very simple sentences.",
       goalA: "Begrüße, stell dich vor und frag nach dem Namen und der Herkunft.",
       goalB: "Antworte freundlich und einfach und stell eine Gegenfrage.",
+      titleEn: "Saying a quick hello", goalAEn: "Say hi, introduce yourself and ask for their name and where they're from.", goalBEn: "Answer warmly and simply and ask a question back.",
       dialogue: [
         { speaker: "A", de: "Hallo! Ich bin {name}.", en: "Hi! I'm {name}.", es: "¡Hola! Soy {name}." },
         { speaker: "B", de: "Hallo {name}! Ich bin Ana.", en: "Hi {name}! I'm Ana.", es: "¡Hola {name}! Soy Ana." },
@@ -3245,6 +3266,7 @@
       situationDe: "Im Zimmer gibt es mehrere Probleme. Du beschwerst dich höflich, aber bestimmt und bittest um eine Lösung.", situationEn: "There are several problems in the room. You complain politely but firmly and ask for a solution.",
       goalA: "Schildere die Probleme sachlich, drück Unzufriedenheit höflich aus und bitte um eine konkrete Lösung.",
       goalB: "Entschuldige dich, zeig Verständnis und biete eine angemessene Lösung an.",
+      titleEn: "Complaining about the room", goalAEn: "Lay out the problems matter-of-factly, express your dissatisfaction politely and ask for a concrete solution.", goalBEn: "Apologise, show understanding and offer a reasonable solution.",
       dialogue: [
         { speaker: "A", de: "Guten Tag, ich würde mich gern über mein Zimmer beschweren.", en: "Hello, I'd like to make a complaint about my room.", es: "Buenas, me gustaría hacer una queja sobre mi habitación." },
         { speaker: "B", de: "Natürlich, was ist das Problem?", en: "Of course, what's the problem?", es: "Por supuesto, ¿cuál es el problema?" },
@@ -3268,6 +3290,7 @@
       situationDe: "Du bist krank und beim Arzt. Du musst deine Symptome genau beschreiben und Fragen beantworten.", situationEn: "You're ill and at the doctor's. You have to describe your symptoms precisely and answer questions.",
       goalA: "Beschreibe genau, seit wann und wie sich die Symptome anfühlen, und beantworte Rückfragen.",
       goalB: "Stell gezielte Fragen, äußere einen Verdacht und erkläre Behandlung und Vorsichtsmaßnahmen.",
+      titleEn: "At the doctor: describing symptoms", goalAEn: "Describe exactly since when and how the symptoms feel, and answer follow-up questions.", goalBEn: "Ask targeted questions, voice a suspicion and explain treatment and precautions.",
       dialogue: [
         { speaker: "A", de: "Guten Tag, Doktor. Mir geht es seit drei Tagen sehr schlecht.", en: "Hello, doctor. I've felt really unwell for three days.", es: "Buenas, doctor. Llevo tres días sintiéndome muy mal." },
         { speaker: "B", de: "Was genau spürst du?", en: "What exactly are you feeling?", es: "¿Qué es lo que sientes exactamente?" },
@@ -3293,6 +3316,7 @@
       situationDe: "Ihr unterhaltet euch ausführlich über eure Reisen, gebt Empfehlungen und Meinungen ab.", situationEn: "You have a detailed chat about your travels, sharing recommendations and opinions.",
       goalA: "Frag nach Erfahrungen, gib eigene Meinungen ab und reagiere auf Empfehlungen.",
       goalB: "Empfiehl Orte mit Begründung, äußere Meinungen und gib Tipps mit Bedingungen.",
+      titleEn: "Swapping travel plans & tips", goalAEn: "Ask about experiences, give your own opinions and react to recommendations.", goalBEn: "Recommend places with reasons, share opinions and give tips with conditions.",
       dialogue: [
         { speaker: "A", de: "Du warst doch schon im Süden, oder? Was würdest du mir empfehlen?", en: "You've been to the south, haven't you? What would you recommend?", es: "Ya estuviste en el sur, ¿no? ¿Qué me recomendarías?" },
         { speaker: "B", de: "Ich würde dir raten, ein paar Tage in Patagonien zu bleiben, auch wenn es teuer ist.", en: "I'd advise you to stay a few days in Patagonia, even though it's expensive.", es: "Te recomendaría que te quedes unos días en la Patagonia, aunque sea cara." },
@@ -3316,6 +3340,7 @@
       situationDe: "Dein Anschlussbus ist weg, weil der erste Verspätung hatte. Du verhandelst höflich, aber bestimmt um eine Umbuchung.", situationEn: "Your connecting bus is gone because the first one was late. You negotiate politely but firmly for a rebooking.",
       goalA: "Erkläre die Situation, mach deutlich, dass es nicht dein Fehler war, und bestehe höflich auf einer Umbuchung.",
       goalB: "Erkläre die Regeln, zeig Spielraum und biete eine faire Lösung an.",
+      titleEn: "Disputing a missed connection", goalAEn: "Explain the situation, make clear it wasn't your fault and politely insist on being rebooked.", goalBEn: "Explain the rules, show some flexibility and offer a fair solution.",
       dialogue: [
         { speaker: "A", de: "Guten Tag, ich habe meinen Anschluss verpasst, weil der vorige Bus über eine Stunde Verspätung hatte.", en: "Hello, I missed my connection because the previous bus was over an hour late.", es: "Buenas, perdí mi conexión porque el bus anterior se retrasó más de una hora." },
         { speaker: "B", de: "Das tut mir leid, aber die Tickets sind normalerweise nicht erstattbar.", en: "I'm sorry, but the tickets aren't usually refundable.", es: "Lo siento, pero los boletos normalmente no son reembolsables." },
@@ -3338,6 +3363,7 @@
       situationDe: "Nach einer gemeinsamen Reise wollt ihr die Ausgaben fair aufteilen und über das Budget sprechen.", situationEn: "After travelling together, you want to split the expenses fairly and talk about the budget.",
       goalA: "Sprich an, wie ihr die gemeinsamen Kosten aufteilt, und klär offene Beträge.",
       goalB: "Geh auf die Vorschläge ein, mach Gegenvorschläge und einige dich fair.",
+      titleEn: "Sorting out shared travel costs", goalAEn: "Raise how you'll split the shared costs and settle any open amounts.", goalBEn: "Engage with the proposals, make counter-proposals and reach a fair agreement.",
       dialogue: [
         { speaker: "A", de: "Sollen wir die Ausgaben der Woche durchgehen, bevor jeder seinen Weg geht?", en: "Shall we go through the week's expenses before we each go our own way?", es: "¿Repasamos los gastos de la semana antes de que cada uno siga su camino?" },
         { speaker: "B", de: "Gute Idee. Ich fürchte, ich habe vergessen, einiges aufzuschreiben.", en: "Good idea. I'm afraid I forgot to write some things down.", es: "Buena idea. Me temo que olvidé anotar algunas cosas." },
@@ -3548,7 +3574,8 @@
 
   // ===================== TIEMPOS (Erklärseite Zeiten) =====================
   // Inhalte der Grammatik-Erklärseite (Entdecken → Tiempos). REINE DATEN –
-  // gerendert von ui.renderTiempos. Die passenden Übungskarten liegen in der
+  // gerendert vom Feature-Modul SC.tiempos (features/tiempos.js). Die passenden
+  // Übungskarten liegen in der
   // Kategorie "tiempos" (Zeiten); die Seite verlinkt per "Jetzt üben" dorthin.
   // Roter Faden: EIN Verb (tomar) wandert durch alle Zeiten, damit man die
   // Endungen vergleichen kann. Alle Beispiele sind reisebezogen.

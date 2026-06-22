@@ -7,6 +7,19 @@
   "use strict";
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
+  const spickzettel = window.SC.spickzettel; // Feature-Modul (Survival-Schnellzugriff), eager geladen
+  const definiciones = window.SC.definiciones; // Feature-Modul (Zuordnen-Quiz), eager geladen
+  const precios = window.SC.precios; // Feature-Modul (Preis-Hörtrainer), eager geladen
+  const yestoGame = window.SC.yestoGame; // Feature-Modul (¿Y esto?, Bild-Vokabel-Spiel), eager geladen
+  const frasesGame = window.SC.frasesGame; // Feature-Modul (Frases flexibles, Satzbaukasten), eager geladen
+  const conjugDrill = window.SC.conjugDrill; // Feature-Modul (Conjugador-Drill), eager geladen
+  const tiempos = window.SC.tiempos; // Feature-Modul (Tiempos-Erklärseite), eager geladen
+  const regateo = window.SC.regateo; // Feature-Modul (Regatear-Erklärseite), eager geladen
+  const cuerpo = window.SC.cuerpo; // Feature-Modul (El Cuerpo, interaktive 3D-Körperkarte), eager geladen
+  const compras = window.SC.compras; // Feature-Modul (Lista de compras, Einkaufsliste + Quiz), eager geladen
+  const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
+  const etiqueta = window.SC.etiqueta; // Feature-Modul (Etiqueta de viaje / Reise-Knigge), eager geladen
+  const cronologia = window.SC.cronologia; // Feature-Modul (Historia, Geschichts-Zeitstrahl), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -191,9 +204,27 @@
   // sie folgt eigenen Speicher-Pfaden und wird hier nicht angefasst. Mit
   // `{ render: false }` als zweitem Argument kann das Neuzeichnen unterdrückt werden
   // (z. B. wenn der Aufrufer ohnehin gleich selbst rendert oder navigiert).
+  // Navigations-Epoche: zählt jeden Screen-Wechsel hoch. Asynchrone loadModule-
+  // Callbacks (siehe navAfterLoad) navigieren nur, wenn die Epoche seit dem Start
+  // des Ladens unverändert ist – sonst würde ein langsam ladendes Modul den Nutzer
+  // zurückreißen, nachdem er längst weitergetippt hat.
+  let navEpoch = 0;
   function setState(patch, opts) {
-    if (patch) Object.assign(state, patch);
+    if (patch) {
+      // Jede Navigation zählt die Epoche hoch – auch ein Dashboard-Reiterwechsel
+      // (gleicher screen "home", nur anderer homeTab), sonst snappt ein langsam
+      // ladendes Lazy-Modul den Nutzer aus dem neuen Reiter zurück.
+      if ((patch.screen && patch.screen !== state.screen) ||
+          (patch.homeTab && patch.homeTab !== state.homeTab)) navEpoch++;
+      Object.assign(state, patch);
+    }
     if (!opts || opts.render !== false) render();
+  }
+  // Modul lazy laden und erst danach auf `screen` wechseln – aber nur, wenn der
+  // Nutzer in der Zwischenzeit nicht woanders hin navigiert ist.
+  function navAfterLoad(name, screen) {
+    const epoch = navEpoch;
+    loadModule(name, () => { if (epoch === navEpoch) setState({ screen }); });
   }
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -220,10 +251,26 @@
   const natk = (o, base) => (i18n ? i18n.natKey(o, base) : (o && o[base]));
   // Tiefe Lokalisierung für Pass-Through-Daten (überlagert alle …En-Felder).
   const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-  const allCards = () => userCards ? data.CARDS.concat(userCards.list()) : data.CARDS;
-  const cardById = (id) => allCards().find((c) => c.id === id) || null;
-  const categoryById = (id) => data.CATEGORIES.find((c) => c.id === id) || null;
-  const levelById = (lvl) => data.LEVELS.find((l) => l.id === lvl) || null;
+  // Kategorien/Stufen ändern sich nie -> einmalige Map statt linearem find pro Aufruf.
+  const _catById = new Map(data.CATEGORIES.map((c) => [c.id, c]));
+  const _levelById = new Map(data.LEVELS.map((l) => [l.id, l]));
+  const categoryById = (id) => _catById.get(id) || null;
+  const levelById = (lvl) => _levelById.get(lvl) || null;
+  // allCards (data.CARDS + eigene Karten) und der id->Karte-Index werden gecacht:
+  // früher allozierte allCards() bei JEDEM Aufruf ein neues 2293er-Array (z. B. ~75×
+  // pro Lernen-Render) und cardById war alloc+linear. Invalidiert nur, wenn sich
+  // eigene Karten ändern (add/remove -> invalidateCardIndex); Inhalt hängt nicht an
+  // der Sprache. In-Place-Edits brauchen keine Invalidierung (gleiche Referenz/id).
+  let _allCards = null, _cardByIdMap = null;
+  function invalidateCardIndex() { _allCards = null; _cardByIdMap = null; }
+  const allCards = () => {
+    if (!_allCards) _allCards = userCards ? data.CARDS.concat(userCards.list()) : data.CARDS.slice();
+    return _allCards;
+  };
+  const cardById = (id) => {
+    if (!_cardByIdMap) { _cardByIdMap = new Map(); const a = allCards(); for (let i = 0; i < a.length; i++) _cardByIdMap.set(a[i].id, a[i]); }
+    return _cardByIdMap.get(id) || null;
+  };
   // Stufen-Filter: leere Auswahl = alle. Greift bei "Alle lernen" und je Kategorie.
   const matchesLevel = (c) => state.levels.length === 0 || state.levels.includes(c.lvl);
   const scopeCards = (scopeId) =>
@@ -355,9 +402,16 @@
 
   function homeVM() {
     const everyCard = allCards();
+    // Karten EINMAL nach Kategorie bündeln, statt je Kategorie das ganze Deck zu
+    // filtern (vorher O(72×2293) pro Lernen-Render: ein allInCat- + ein scopeCards-
+    // Vollscan je Kategorie). Ergebnis ist identisch, nur ein Pass statt 72.
+    const byCat = new Map();
+    for (let i = 0; i < everyCard.length; i++) {
+      const card = everyCard[i]; let a = byCat.get(card.cat); if (!a) byCat.set(card.cat, a = []); a.push(card);
+    }
     const categories = data.CATEGORIES.map((c) => {
-      const allInCat = everyCard.filter((card) => card.cat === c.id);
-      const cards = scopeCards(c.id); // nach Stufenfilter
+      const allInCat = byCat.get(c.id) || [];
+      const cards = allInCat.filter(matchesLevel); // entspricht scopeCards(c.id)
       // Kartenzahl je Stufe in dieser Kategorie (nur Stufen mit >0).
       const byLevel = data.LEVELS
         .map((l) => ({
@@ -730,13 +784,20 @@
       return (b.s.lastAt || 0) - (a.s.lastAt || 0); // zuletzt gelernt zuerst
     });
 
-    // Anzeige-Texte je Zeile ergänzen (Fälligkeit).
-    const list = rows.map((r) => Object.assign({}, r, { dueText: fmtDue(r.s.due) }));
+    // Anzeige-Texte je Zeile ergänzen (Fälligkeit). Liste auf STATS_LIST_CAP kappen:
+    // bei „Alle" sind das sonst 2293 Zeilen (~1,3 MB HTML) bei JEDEM Render/Filter-Tap.
+    // Sortierung ist schwächste-zuerst, d. h. die handlungsrelevanten Karten bleiben
+    // sichtbar; der lange Schwanz (gut gekonnt / ungesehen) wird als „+N weitere" gezählt.
+    const STATS_LIST_CAP = 200;
+    const fullLen = rows.length;
+    const list = rows.slice(0, STATS_LIST_CAP).map((r) => Object.assign({}, r, { dueText: fmtDue(r.s.due) }));
+    const listMore = Math.max(0, fullLen - list.length);
 
     return {
       overview: ov,
       xp: xpVM(),
       filter,
+      listMore,
       filters: [
         { id: "answered", label: t("app.statAnswered"), count: ov.seenCards },
         { id: "hard", label: t("app.statHard"), count: ov.hard },
@@ -776,7 +837,7 @@
         region,
         countries: list
           .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+          .map((c) => ({ id: c.id, name: natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
     // Das ganze Land-Objekt (tagline/about/history/words/foods …) für die aktive
@@ -784,53 +845,13 @@
     return { country: country ? loc(country) : null, groups, hasHistoria: !!historia, hasHistoriaCentro: !!historiaCentro };
   }
 
-  // Historia de Sudamérica: reine Erklärseite. Reicht die Inhalte per localizeDeep
-  // (deutsche Felder + …En-Pendants) für die aktive Sprache durch – analog zu
-  // regatearVM/logisticaVM. INTRO/FACTS sind {de,en}-Objekte (nativeText).
-  // Aktives Geschichts-Modul nach Region (state.histRegion: "sur" | "centro").
-  // So teilen sich Süd- und Mittelamerika dieselbe Render-/Share-Mechanik.
-  function histMod() { return state.histRegion === "centro" ? historiaCentro : historia; }
-  function histTitle() { return state.histRegion === "centro" ? "🌋 Historia de Centroamérica" : "📜 Historia de Sudamérica"; }
+  // Historia (Geschichts-Zeitstrahl Süd-/Mittelamerika): VM und Render wohnen jetzt
+  // im Feature-Modul SC.cronologia (features/cronologia.js). Das aktive Content-Modul
+  // nach Region liefert cronologia.histMod() – die Sharepics unten nutzen es.
 
-  function historiaVM() {
-    const mod = histMod();
-    if (!mod) return { intro: "", eras: [], figures: [], tensions: [], facts: [], topTitle: histTitle() };
-    return {
-      topTitle: histTitle(),
-      intro: nat(mod.INTRO),
-      eras: loc(mod.ERAS || []),
-      figures: loc(mod.FIGURES || []),
-      tensions: loc(mod.TENSIONS || []),
-      facts: (mod.FACTS || []).map(nat),
-    };
-  }
-
-  // Reise-Knigge: gewähltes Land (teilt state.countryId mit der Länderkunde),
-  // Region-Gruppen fürs Dropdown wie infoVM, plus die allgemeinen Themenblöcke
-  // mit eingehängtem landesspezifischem Akzent.
-  function kniggeVM() {
-    const list = countries ? countries.LIST : [];
-    const regions = countries ? countries.REGIONS : [];
-    const country = list.find((c) => c.id === state.countryId) || list[0] || null;
-    const groups = regions
-      .map((region) => ({
-        region,
-        countries: list
-          .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
-      }))
-      .filter((g) => g.countries.length > 0);
-    const accents = (country && knigge && knigge.ACCENTS[country.id]) || {};
-    const topics = (knigge ? knigge.TOPICS : []).map((t) => ({
-      icon: t.icon,
-      title: natk(t, "title"),
-      intro: natk(t, "intro"),
-      dos: natk(t, "dos"),
-      donts: natk(t, "donts"),
-      accent: natk(accents, t.id) || "",
-    }));
-    return { country, groups, topics };
-  }
+  // Reise-Knigge: VM und Render („Etiqueta de viaje") wohnen jetzt im Feature-Modul
+  // SC.etiqueta (features/etiqueta.js). Die geteilte Länder-Auswahl (selectCountry/
+  // select-country/state.countryId) und der Opener bleiben hier.
 
   // Bebidas AM/PM: Tag-/Abendgetränk des gewählten Landes. Nutzt dieselbe
   // Länder-Auswahl wie die Länderkunde (state.countryId), sodass die Tafel immer
@@ -845,12 +866,12 @@
         region,
         countries: list
           .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+          .map((c) => ({ id: c.id, name: natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
     const data = (country && bebidas && bebidas.BEBIDAS[country.id]) || null;
     const regionLabel = country && bebidas ? (bebidas.REGION_LABEL[country.region] || country.region) : "";
-    return { country, groups, data, regionLabel, mode: state.bebMode || bebDefaultMode() };
+    return { country: country ? loc(country) : null, groups, data, regionLabel, mode: state.bebMode || bebDefaultMode() };
   }
 
   // AM/PM-Voreinstellung nach Uhrzeit: 6–17 Uhr Tag (AM), sonst Abend (PM).
@@ -859,40 +880,14 @@
     return h >= 6 && h < 17 ? "am" : "pm";
   }
 
-  // Regatear: Verhandeln/Feilschen – reine Anzeige-Seite (Taktik, Sätze,
-  // Einheiten, Rollenspiele). Reicht die Daten 1:1 durch, hängt nur an den
-  // Rollenspielen das Kurz-Label der Schwierigkeitsstufe an.
-  function regatearVM() {
-    if (!regatear) return { intro: "", tips: [], glossary: [], phrases: [], units: [], regional: [], roleplays: [] };
-    const roleplays = (regatear.ROLEPLAYS || []).map((r) => {
-      const lvl = levelById(r.level);
-      return Object.assign({}, r, { lvlShort: lvl ? lvl.short : "" });
-    });
-    // Pass-Through-Ansicht: alle …En-Felder (Tipps, Glossar, Sätze, Regionales,
-    // Rollenspiele) per localizeDeep für die aktive Sprache überlagern. INTRO ist
-    // eine eigenständige Konstante (INTRO_EN) und wird separat aufgelöst.
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && regatear.INTRO_EN) ? regatear.INTRO_EN : regatear.INTRO,
-      tips: loc(regatear.TIPS || []),
-      glossary: loc(regatear.GLOSSARY || []),
-      phrases: loc(regatear.PHRASES || []),
-      units: loc(regatear.UNITS || []),
-      regional: loc(regatear.REGIONAL || []),
-      // {name} auch hier auflösen – symmetrisch zu roleplayVM, falls künftig ein
-      // Regatear-Rollenspiel den Platzhalter nutzt (sonst stünde „{name}" im Text).
-      roleplays: loc(roleplays).map((r) => Object.assign({}, r, {
-        dialogue: (r.dialogue || []).map((d) => Object.assign({}, d, { es: withName(d.es), de: withName(d.de) })),
-        usefulPhrases: (r.usefulPhrases || []).map(withName),
-      })),
-    };
-  }
+  // Regatear: VM und Render der Verhandeln/Feilschen-Erklärseite wohnen jetzt im
+  // Feature-Modul SC.regateo (features/regateo.js). Der Opener bleibt hier
+  // (Entdecken-Kachel + Shortcut-Map); die Spotlight-Vorschau liest regateo.vm().
 
   // Logística de viaje: praktische Reise-Logistik (SIM, Geld, Gepäck, Tracker,
   // Handgepäck-Notfallset) – reine Anzeige-Seite. Reicht die Daten 1:1 durch und
-  // überlagert per localizeDeep alle …En-Felder für die aktive Sprache (wie
-  // regatearVM). INTRO ist eine eigene Konstante und wird separat aufgelöst.
+  // überlagert per localizeDeep alle …En-Felder für die aktive Sprache (wie das
+  // Regatear-Feature SC.regateo). INTRO ist eine eigene Konstante und wird separat aufgelöst.
   function logisticaVM() {
     if (!logistica) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
     const en = i18n && i18n.getLang() === "en";
@@ -988,7 +983,7 @@
         region,
         countries: list
           .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: c.name, flag: c.flag, selected: country && c.id === country.id })),
+          .map((c) => ({ id: c.id, name: natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
       }))
       .filter((g) => g.countries.length > 0);
     const cd = (country && musica.COUNTRY[country.id]) ? loc(musica.COUNTRY[country.id]) : null;
@@ -997,7 +992,7 @@
       genres: loc(musica.GENRES || []),
       phrases: loc(musica.PHRASES || []),
       glossary: loc(musica.GLOSSARY || []),
-      country: country ? { id: country.id, name: country.name, flag: country.flag } : null,
+      country: country ? { id: country.id, name: natk(country, "name"), flag: country.flag } : null,
       countryData: cd,
       groups,
     };
@@ -1526,7 +1521,7 @@
   // localStorage-Write, kein Badge-Scan beim wiederholten Auf-/Zuklappen. Immutabel.
   function recordContextView(cardId, now) {
     if (!badges || !cardId) return;
-    if (gamestats.contextCardsSeen[cardId]) return; // bereits gezählt
+    if (gamestats.contextCardsSeen && gamestats.contextCardsSeen[cardId]) return; // bereits gezählt
     const seen = Object.assign({}, gamestats.contextCardsSeen, { [cardId]: true });
     gamestats = Object.assign({}, gamestats, { contextCardsSeen: seen });
     store.saveGameStats(gamestats);
@@ -1747,11 +1742,25 @@
     };
   }
 
+  // Rollen-Labels der hostel-Rollenspiele liegen in den Daten nur auf Deutsch vor;
+  // im EN-Modus über diese Tabelle übersetzen (14 wiederkehrende Rollen). Titel,
+  // Situation und Ziele kommen dagegen über natk aus den …En-Feldern der Daten.
+  const ROLE_EN = {
+    "Reisender": "Traveller", "Rezeption": "Reception", "Hostelgast": "Hostel guest",
+    "Mitreisender": "Fellow traveller", "Kellner": "Waiter", "Ticketverkäufer": "Ticket clerk",
+    "Apotheker": "Pharmacist", "Verkäufer": "Vendor", "Angestellter": "Clerk",
+    "Tour-Anbieter": "Tour operator", "Polizist": "Police officer", "Passant": "Passer-by",
+    "Arzt": "Doctor", "Schaltermitarbeiter": "Counter agent",
+  };
+  function roleName(de) {
+    return (i18n && i18n.getLang() === "en" && ROLE_EN[de]) || de;
+  }
+
   function roleplaySetupVM() {
     return {
       scenes: data.ROLEPLAYS.map((r) => {
         const lvl = levelById(r.level);
-        return { id: r.id, title: natk(r, "title"), roleA: r.roles.a, roleB: r.roles.b,
+        return { id: r.id, title: natk(r, "title"), roleA: roleName(r.roles.a), roleB: roleName(r.roles.b),
           lvlShort: lvl ? lvl.short : "" };
       }),
     };
@@ -1768,8 +1777,8 @@
       lvlShort: lvl ? lvl.short : "",
       situationDe: natk(r, "situationDe"),
       swapped,
-      roleA: { name: swapped ? r.roles.b : r.roles.a, goal: natk(r, swapped ? "goalB" : "goalA") },
-      roleB: { name: swapped ? r.roles.a : r.roles.b, goal: natk(r, swapped ? "goalA" : "goalB") },
+      roleA: { name: roleName(swapped ? r.roles.b : r.roles.a), goal: natk(r, swapped ? "goalB" : "goalA") },
+      roleB: { name: roleName(swapped ? r.roles.a : r.roles.b), goal: natk(r, swapped ? "goalA" : "goalB") },
       dialogue: r.dialogue.map((d) => ({
         speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
         de: withName(nat(d)), es: withName(d.es),
@@ -1778,134 +1787,10 @@
     };
   }
 
-  // ----- Definiciones (Zuordnen-Quiz): View-Modelle -----
-  const quizSetById = (id) => data.QUIZ_SETS.find((s) => s.id === id) || null;
-  const quizDefById = (id) => data.QUIZ_DEFS.find((d) => d.id === id) || null;
-  const quizDefsForSet = (setId) => data.QUIZ_DEFS.filter((d) => d.set === setId);
-
-  // Antwort-Optionen einer Frage bauen: die richtige Lösung + bis zu 3 Ablenker aus
-  // derselben Liste, anschließend gemischt. Wird beim Stellen der Frage EINMAL
-  // berechnet und im State gehalten – ein Re-Render darf nicht neu mischen.
-  function buildQuizOptions(correct, pool) {
-    const distractors = shuffle(pool.filter((d) => d.id !== correct.id)).slice(0, 3);
-    return shuffle([correct, ...distractors])
-      .map((d) => ({ id: d.id, es: d.es, de: d.de, en: d.en, icon: d.icon }));
-  }
-
-  function quizSetupVM() {
-    return {
-      sets: data.QUIZ_SETS.map((s) => {
-        const lvl = levelById(s.lvl);
-        return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
-          count: quizDefsForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
-      }),
-    };
-  }
-
-  function quizVM() {
-    const q = state.quiz;
-    const set = quizSetById(q.setId);
-    const def = quizDefById(q.queue[q.idx]);
-    const answered = q.selected !== null;
-    const options = q.options.map((o) => ({
-      id: o.id, es: o.es, de: nat(o), icon: o.icon,
-      // Zustand fürs Einfärben: vor der Antwort neutral, danach Lösung grün,
-      // falsche Wahl rot, der Rest gedämpft.
-      state: !answered ? "idle"
-        : o.id === def.id ? "correct"
-        : o.id === q.selected ? "wrong"
-        : "dim",
-    }));
-    return {
-      setLabel: set ? set.label : "",
-      setIcon: set ? set.icon : "🧩",
-      position: q.idx,
-      total: q.total,
-      definition: def.def,
-      options,
-      answered,
-      isCorrect: q.selected === def.id,
-      solutionEs: def.es,
-      solutionDe: nat(def),
-      isLast: q.idx >= q.total - 1,
-    };
-  }
-
-  function quizDoneVM() {
-    const q = state.quiz;
-    const set = quizSetById(q.setId);
-    return {
-      setLabel: set ? set.label : "",
-      setIcon: set ? set.icon : "🧩",
-      correct: q.correct,
-      total: q.total,
-      perfect: q.total > 0 && q.correct === q.total,
-    };
-  }
-
-  // ----- Definiciones: Steuerung -----
-  function openQuizSetup() {
-    dismissBadgeToast();
-    setState({ screen: "quizSetup" });
-  }
-
-  function startQuiz(setId) {
-    dismissBadgeToast();
-    const pool = quizDefsForSet(setId);
-    if (!pool.length) return;
-    const queue = shuffle(pool).map((d) => d.id);
-    state.quiz = {
-      setId,
-      queue,
-      idx: 0,
-      total: queue.length,
-      options: buildQuizOptions(quizDefById(queue[0]), pool),
-      selected: null,
-      correct: 0,
-    };
-    setState({ screen: "quiz" });
-  }
-
-  // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
-  function answerQuiz(defId) {
-    const q = state.quiz;
-    if (!q || q.selected !== null) return;
-    const current = q.queue[q.idx];
-    q.selected = defId;
-    if (defId === current) { q.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextQuiz() {
-    const q = state.quiz;
-    if (!q || q.selected === null) return; // erst antworten, dann weiter
-    if (q.idx >= q.total - 1) {
-      recordQuizResult(q);
-      syncBadges(Date.now(), true); // Quiz-Badges freischalten + einblenden
-      setState({ screen: "quizDone" });
-      return;
-    }
-    q.idx += 1;
-    q.selected = null;
-    q.options = buildQuizOptions(quizDefById(q.queue[q.idx]), quizDefsForSet(q.setId));
-    render();
-  }
-
-  function quizAgain() {
-    dismissBadgeToast();
-    state.quiz = null;
-    setState({ screen: "quizSetup" });
-  }
-
-  // Ergebnis eines beendeten Quiz in die Spiel-Zähler buchen (Ruta-Pass).
-  function recordQuizResult(q) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.quizzesPlayed = (g.quizzesPlayed || 0) + 1;
-    if (q.total > 0 && q.correct === q.total) g.quizzesPerfect = (g.quizzesPerfect || 0) + 1;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
+  // Definiciones (Zuordnen-Quiz) wohnt jetzt in features/definiciones.js
+  // (SC.definiciones): Daten-Helfer, VMs, Handler und Render gebündelt. app.js
+  // delegiert unten in SCREENS/ACTIONS, im Sharepic-Aggregator und in
+  // miniDoneConfig an die Modul-Methoden.
 
   // ----- Conjugación: Erklärseite Konjugieren -----
   // Statische Grammatik-Erklärung (Inhalte: data.CONJUGATION). Der "Jetzt üben"-
@@ -1925,168 +1810,25 @@
   }
 
   // ----- Tiempos: Erklärseite Zeiten -----
-  // Statische Zeitformen-Erklärung (Inhalte: data.TENSES). Wie bei Conjugación
-  // springt der "Jetzt üben"-Button per normaler open-category-Aktion in die
+  // VM und Render der Zeitformen-Erklärseite wohnen jetzt in features/tiempos.js
+  // (SC.tiempos). Der Opener bleibt hier (Entdecken-Kachel + Shortcut-Map);
+  // der "Jetzt üben"-Button springt per normaler open-category-Aktion in die
   // Übungskarten der Kategorie "tiempos".
-  function tiemposVM() {
-    return {
-      guide: loc(data.TENSES),
-      cardCount: data.CARDS.filter((c) => c.cat === "tiempos").length,
-    };
-  }
-
   function openTiempos() {
     dismissBadgeToast();
     setState({ screen: "tiempos" });
   }
 
-  // ----- Frases flexibles (Satzbaukasten): Steuerung -----
-  // Virtuelle "Gemischt"-Id: spielt alle Rahmen quer durch alle Themen.
-  const FRASES_ALL = "all";
-  const frasesById = (id) => (frases ? frases.FRASES.find((f) => f.id === id) : null) || null;
-  const frasesSetById = (id) => (frases && frases.FRASES_SETS ? frases.FRASES_SETS.find((s) => s.id === id) : null) || null;
-  // Rahmen eines Themas (oder alle bei "all"). Reihenfolge der Daten bleibt erhalten.
-  const frasesForSet = (setId) =>
-    frases ? frases.FRASES.filter((f) => setId === FRASES_ALL || f.cat === setId) : [];
-
-  // Optionen eines Rahmens bauen: korrekter Baustein + Ablenker, gemischt. Einmal
-  // beim Stellen berechnet und im State gehalten (Re-Render darf nicht neu mischen).
-  function buildFrasesOptions(frame) {
-    const opts = [Object.assign({ correct: true }, frame.slot)]
-      .concat((frame.distractors || []).map((d) => Object.assign({ correct: false }, d)));
-    return shuffle(opts);
-  }
-
-  // Themen-Auswahl: jede Liste mit Zahl + Stufe, plus eine "Gemischt"-Kachel über alles.
-  function frasesSetupVM() {
-    const sets = (frases && frases.FRASES_SETS ? frases.FRASES_SETS : []).map((s) => {
-      const lvl = levelById(s.lvl);
-      return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
-        count: frasesForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
-    });
-    return {
-      sets,
-      mixed: { id: FRASES_ALL, label: t("app.mixed"), icon: "🎲",
-        intro: t("app.frasesMixedIntro"),
-        count: frases ? frases.FRASES.length : 0 },
-    };
-  }
-
-  function openFrasesSetup() {
-    dismissBadgeToast();
-    setState({ screen: "frasesSetup" });
-  }
-
-  // Backwards-kompatibler Einsprung (Home-Kachel): führt jetzt zur Themen-Auswahl.
-  function openFrases() { openFrasesSetup(); }
-
-  function startFrases(setId) {
-    dismissBadgeToast();
-    const pool = frasesForSet(setId);
-    if (!pool.length) return;
-    const queue = shuffle(pool).map((f) => f.id);
-    state.frases = {
-      setId, queue, idx: 0, total: queue.length,
-      options: buildFrasesOptions(frasesById(queue[0])),
-      selected: null, correct: 0,
-    };
-    setState({ screen: "frases" });
-  }
-
-  // Kopf-Infos zum laufenden Set (Label/Icon) – "Gemischt" hat keinen Datensatz.
-  function frasesSetInfo(setId) {
-    if (setId === FRASES_ALL) return { label: t("app.mixed"), icon: "🎲" };
-    const s = frasesSetById(setId);
-    return { label: s ? s.label : "", icon: s ? s.icon : "🧱" };
-  }
-
-  function frasesVM() {
-    const f = state.frases;
-    const frame = frasesById(f.queue[f.idx]);
-    const answered = f.selected !== null;
-    const info = frasesSetInfo(f.setId);
-    const options = f.options.map((o, i) => ({
-      es: o.es, de: nat(o),
-      // vor der Antwort neutral; danach Lösung grün, falsche Wahl rot, Rest gedämpft.
-      state: !answered ? "idle"
-        : o.correct ? "correct"
-        : i === f.selected ? "wrong"
-        : "dim",
-    }));
-    const sol = f.options.find((o) => o.correct) || {};
-    return {
-      setLabel: info.label, setIcon: info.icon,
-      position: f.idx, total: f.total,
-      frameEs: frame ? frame.frameEs : "",
-      targetDe: frame ? natk(frame, "targetDe") : "",
-      options, answered,
-      isCorrect: answered && !!(f.options[f.selected] && f.options[f.selected].correct),
-      solutionEs: sol.es, solutionDe: nat(sol),
-      isLast: f.idx >= f.total - 1,
-    };
-  }
-
-  function frasesDoneVM() {
-    const f = state.frases;
-    const info = frasesSetInfo(f.setId);
-    return { setLabel: info.label, setIcon: info.icon,
-      correct: f.correct, total: f.total, perfect: f.total > 0 && f.correct === f.total };
-  }
-
-  // Eine Option wählen. Erste Wahl zählt; weitere Klicks (nach dem Aufdecken) ignorieren.
-  function answerFrases(i) {
-    const f = state.frases;
-    if (!f || f.selected !== null) return;
-    f.selected = i;
-    if (f.options[i] && f.options[i].correct) { f.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextFrases() {
-    const f = state.frases;
-    if (!f || f.selected === null) return; // erst antworten, dann weiter
-    if (f.idx >= f.total - 1) {
-      recordFrasesResult(f);
-      syncBadges(Date.now(), true);
-      setState({ screen: "frasesDone" });
-      return;
-    }
-    f.idx += 1;
-    f.selected = null;
-    f.options = buildFrasesOptions(frasesById(f.queue[f.idx]));
-    render();
-  }
-
-  function frasesAgain() {
-    // Dieselbe Themen-Runde noch einmal (startFrases baut state.frases neu auf);
-    // fällt auf "Gemischt" zurück, falls (theoretisch) kein Set hinterlegt ist.
-    startFrases(state.frases ? state.frases.setId : FRASES_ALL);
-  }
-
-  // Ergebnis einer beendeten Satzbaukasten-Runde buchen (Ruta-Pass). Zusätzlich
-  // das gespielte Thema vermerken – speist den "Alle Themen"-Badge (Gemischt zählt
-  // nicht als einzelnes Thema).
-  function recordFrasesResult(f) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.frasesPlayed = (g.frasesPlayed || 0) + 1;
-    if (f.total > 0 && f.correct === f.total) g.frasesPerfect = (g.frasesPerfect || 0) + 1;
-    if (f.setId && f.setId !== FRASES_ALL) {
-      const done = Object.assign({}, g.frasesThemesDone);
-      done[f.setId] = true;
-      g.frasesThemesDone = done;
-    }
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
+  // Frases flexibles (Satzbaukasten) wohnt jetzt in features/frases-game.js
+  // (SC.frasesGame; eigener Namespace, da SC.frases das Datenmodul ist). VMs,
+  // Handler, recordFrasesResult und Render gebündelt. app.js delegiert unten in
+  // SCREENS/ACTIONS, im Sharepic-Aggregator und in miniDoneConfig.
 
   // ----- Diálogos: Gesprächs-Simulationen -----
-  // Eine Reisesituation Zug für Zug durchspielen. npc-Züge werden angezeigt und
-  // (falls TTS da ist) vorgelesen; user-Züge sind Multiple-Choice oder freies
-  // Tippen (matcher.normalize). Pro Szenario ein zufälliger Dialog aus dem cat-Pool.
-  const dialogosReady = () => !!(dialogos && dialogos.DIALOGOS_SCENARIOS && dialogos.DIALOGOS_SCENARIOS.length);
-  const dialogueById = (id) => (dialogos ? dialogos.DIALOGOS.find((d) => d.id === id) : null) || null;
-  const scenarioById = (id) => (dialogos ? dialogos.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null;
+  // Die Diálogos-Datenhelfer (dialogosReady/dialogueById/scenarioById) leben jetzt
+  // im Feature-Modul SC.dialogosGame (features/dialogos-game.js). withName/
+  // withNameObj (unten) bleiben controller-eigen – auch Karten/Rollenspiel nutzen sie.
+
 
   // Reise-Name aus dem Profil: erscheint in Diálogos überall dort, wo der Nutzer
   // sich vorstellt (Hotel, Busticket, Notfall …). Ohne Eintrag bleibt der
@@ -2133,200 +1875,18 @@
     return out;
   }
 
-  function dialogosSetupVM() {
-    return {
-      available: dialogosReady(),
-      scenarios: dialogosReady()
-        ? dialogos.DIALOGOS_SCENARIOS
-            .filter((s) => dialogos.DIALOGOS.some((d) => d.cat === s.id))
-            .map((s) => ({ id: s.id, title: natk(s, "title"), icon: s.icon, lvl: s.lvl, intro: natk(s, "intro") }))
-        : [],
-      hasSpeech: !!(speech && speech.isSupported()),
-    };
-  }
+  // Diálogos: VMs, alle Handler (Setup/Start/Antwort/Tippen/Weiter/Tipp/Nochmal/
+  // Vorlesen), die Ergebnis-Buchung, das Auto-Vorlesen und der Scroll-Hook wohnen
+  // jetzt im Feature-Modul SC.dialogosGame (features/dialogos-game.js). Der State
+  // (state.dialogos) bleibt controller-eigen; app.js delegiert SCREENS, Aktionen,
+  // Spotlight-Vorschau, miniDone, Scroll-Hook und das Auto-Vorlesen ans Modul.
 
-  function dialogosVM() {
-    const d = state.dialogos;
-    const dia = dialogueById(d.dialogueId);
-    const turns = (dia && dia.turns) || [];
-    const scn = scenarioById(d.scenarioId);
-    // Verlaufsspur: alle bereits abgehandelten Züge (npc komplett, beantwortete
-    // user-Züge mit der Musterantwort als „gesagter" Zeile).
-    const transcript = [];
-    for (let i = 0; i < d.turnIdx; i++) {
-      const t = turns[i];
-      if (!t) continue;
-      if (t.who === "npc") transcript.push({ who: "npc", es: withName(t.es), de: withName(nat(t)) });
-      else transcript.push({ who: "user", es: withName(t.solEs), de: "" });
-    }
-    const cur = turns[d.turnIdx] || null;
-    const current = cur
-      ? (cur.who === "npc"
-          ? { who: "npc", es: withName(cur.es), de: withName(nat(cur)) }
-          : {
-              who: "user",
-              kind: cur.kind,
-              de: withName(nat(cur)),
-              solEs: withName(cur.solEs),
-              why: withName(natk(cur, "why") || ""),
-              options: cur.kind === "mc" ? cur.options.map((o) => ({ es: withName(o.es) })) : null,
-            })
-      : null;
-    return {
-      title: dia ? natk(dia, "title") : "",
-      icon: scn ? scn.icon : "💬",
-      turnIdx: d.turnIdx,
-      total: turns.length,
-      transcript,
-      current,
-      result: d.result, // null | { correct, given }
-      hint: !!d.hint,   // Musterantwort beim Frei-Tippen aufgedeckt?
-      speakable: !!(speech && speech.isSupported()),
-    };
-  }
-
-  function dialogosDoneVM() {
-    const d = state.dialogos;
-    const dia = dialogueById(d.dialogueId);
-    const scn = scenarioById(d.scenarioId);
-    return {
-      title: dia ? natk(dia, "title") : "",
-      icon: scn ? scn.icon : "💬",
-      correct: d.correct,
-      total: d.totalUser,
-      perfect: d.totalUser > 0 && d.correct === d.totalUser,
-    };
-  }
-
-  function openDialogosSetup() {
-    dismissBadgeToast();
-    loadModule("dialogos", () => {
-      if (!dialogosReady()) return;
-      setState({ screen: "dialogosSetup" });
-    });
-  }
-
-  function startDialogos(scenarioId) {
-    if (!dialogosReady()) return;
-    const pool = dialogos.DIALOGOS.filter((d) => d.cat === scenarioId);
-    if (!pool.length) return;
-    const dia = pool[Math.floor(Math.random() * pool.length)];
-    const totalUser = dia.turns.filter((t) => t.who === "user").length;
-    state.dialogos = { scenarioId, dialogueId: dia.id, turnIdx: 0, result: null, hint: false, correct: 0, totalUser };
-    state.screen = "dialogos";
-    render(); // maybeAutoSpeak liest den ersten npc-Zug vor
-  }
-
-  // Aktuellen user-Zug holen (oder null, wenn der aktuelle Zug ein npc-Zug ist).
-  function currentUserTurn() {
-    const d = state.dialogos;
-    const dia = dialogueById(d.dialogueId);
-    const t = dia && dia.turns[d.turnIdx];
-    return t && t.who === "user" ? t : null;
-  }
-
-  function answerDialogosMc(idx) {
-    const d = state.dialogos;
-    if (!d || d.result) return;
-    const t = currentUserTurn();
-    if (!t || t.kind !== "mc" || !t.options[idx]) return;
-    const correct = !!t.options[idx].ok;
-    d.result = { correct, given: withName(t.options[idx].es) };
-    if (correct) { d.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function submitDialogosType(input) {
-    const d = state.dialogos;
-    if (!d || d.result) return;
-    const t = currentUserTurn();
-    if (!t || t.kind !== "type") return;
-    const norm = matcher.normalize(input);
-    const accepted = [t.solEs].concat(t.accept || []).map((s) => matcher.normalize(withName(s)));
-    const correct = norm.length > 0 && accepted.indexOf(norm) !== -1;
-    d.result = { correct, given: input };
-    if (correct) { d.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  // Weiter: vom aktuellen Zug zum nächsten. npc-Züge brauchen kein Ergebnis,
-  // user-Züge erst nach einer Antwort. Am Ende -> Done-Screen.
-  function advanceDialogos() {
-    const d = state.dialogos;
-    if (!d) return;
-    const dia = dialogueById(d.dialogueId);
-    if (!dia) return;
-    const cur = dia.turns[d.turnIdx];
-    if (cur && cur.who === "user" && !d.result) return; // user-Zug erst beantworten
-    if (d.turnIdx >= dia.turns.length - 1) {
-      recordDialogosResult(d);
-      syncBadges(Date.now(), true);
-      setState({ screen: "dialogosDone" });
-      return;
-    }
-    d.turnIdx += 1;
-    d.result = null;
-    d.hint = false;
-    render();
-  }
-
-  // Tipp aufdecken: zeigt beim Frei-Tippen die Musterantwort als Hilfe. Reine
-  // Anzeige – die Antwort muss weiterhin getippt werden, der Zug zählt normal.
-  function dialogosHint() {
-    const d = state.dialogos;
-    if (!d || d.result) return;
-    const t = currentUserTurn();
-    if (!t || t.kind !== "type") return;
-    d.hint = true;
-    render();
-  }
-
-  function dialogosAgain() {
-    startDialogos(state.dialogos ? state.dialogos.scenarioId : null);
-  }
-
-  function speakDialogosNpc() {
-    const d = state.dialogos;
-    if (!d || !speech) return;
-    const dia = dialogueById(d.dialogueId);
-    const t = dia && dia.turns[d.turnIdx];
-    if (t && t.who === "npc") speech.speak(withName(t.es), settings.speechRate);
-  }
-
-  // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
-  // Runden und das distinkt gespielte Szenario.
-  function recordDialogosResult(d) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.dialogosPlayed = (g.dialogosPlayed || 0) + 1;
-    if (d.totalUser > 0 && d.correct === d.totalUser) g.dialogosPerfect = (g.dialogosPerfect || 0) + 1;
-    const done = Object.assign({}, g.dialogosScenesDone);
-    done[d.scenarioId] = true;
-    g.dialogosScenesDone = done;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
 
   // ----- El Cuerpo: interaktive Körperkarte -----
-  const bodyPartById = (id) => data.BODY_PARTS.find((p) => p.id === id) || null;
-
-  function cuerpoVM() {
-    const selId = state.bodyPartId;
-    const parts = data.BODY_PARTS.map((p) => ({
-      id: p.id, de: nat(p), x: p.x, y: p.y,
-      selected: p.id === selId,
-      seen: !!(gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[p.id]),
-    }));
-    const sel = bodyPartById(selId);
-    return {
-      parts,
-      selected: sel ? { id: sel.id, es: sel.es, de: nat(sel), tip: sel.tip, note: sel.note } : null,
-      exploredCount: gamestats.bodyPartsSeen ? Object.keys(gamestats.bodyPartsSeen).length : 0,
-      total: data.BODY_PARTS.length,
-      speakable: !!(speech && speech.isSupported()),
-    };
-  }
-
+  // VM, Render, die 3D-Geometrie und die Dreh-/Auswahl-Logik (inkl. globaler
+  // Pointer-Listener) wohnen jetzt im Feature-Modul SC.cuerpo (features/cuerpo.js).
+  // Der Opener bleibt hier (Entdecken-Kachel + Shortcut-Map) und setzt die
+  // Start-Drehung der Figur zurück.
   function openCuerpo() {
     dismissBadgeToast();
     state.bodyPartId = null;
@@ -2335,328 +1895,19 @@
     setState({ screen: "cuerpo" });
   }
 
-  // Ein Körperteil antippen: Wort anzeigen, vorlesen und (einmalig) für den
-  // Ruta-Pass einbuchen. Erneutes Antippen desselben Teils ist ein No-Op-Write.
-  function selectBodyPart(id) {
-    const part = bodyPartById(id);
-    if (!part) return;
-    state.bodyPartId = id;
-    buzz(8);
-    recordBodyPartView(id, Date.now());
-    render();
-    if (speech && speech.isSupported()) speech.speak(part.es, settings.speechRate);
-  }
-
-  // Distinkt erkundetes Körperteil vermerken und erfüllte 🧍-Badges freischalten.
-  function recordBodyPartView(id, now) {
-    if (!badges || !id || (gamestats.bodyPartsSeen && gamestats.bodyPartsSeen[id])) return;
-    const seen = Object.assign({}, gamestats.bodyPartsSeen, { [id]: true });
-    gamestats = Object.assign({}, gamestats, { bodyPartsSeen: seen });
-    store.saveGameStats(gamestats);
-    syncBadges(now, true); // render() malt den Toast anschließend über den Screen
-  }
-
-  // 🔊-Knopf im Körperteil-Panel: das gewählte Wort (er-)neut vorlesen.
-  function speakBodyPart() {
-    const part = bodyPartById(state.bodyPartId);
-    if (part && speech && speech.isSupported()) speech.speak(part.es, settings.speechRate);
-  }
-
   // ----- Einkaufszettel (interaktive Einkaufsliste) -----
-  const shoppingSections = () => data.SHOPPING || [];
-  const shoppingSectionById = (id) => shoppingSections().find((s) => s.id === id) || null;
-  function shoppingItemById(id) {
-    for (const s of shoppingSections()) {
-      const it = s.items.find((i) => i.id === id);
-      if (it) return it;
-    }
-    return null;
-  }
-  // Wie viele Items einer Rubrik sind schon abgehakt?
-  function shoppingSectionDone(sec) {
-    const seen = gamestats.shoppingSeen || {};
-    return sec.items.reduce((n, it) => n + (seen[it.id] ? 1 : 0), 0);
-  }
+  // Die ganze Lista de compras (Datenhelfer, VMs, Render und alle Handler für
+  // Liste, Quiz und Done) wohnt jetzt im Feature-Modul SC.compras
+  // (features/compras.js). State (state.compras/state.comprasQuiz) bleibt
+  // controller-eigen; app.js delegiert SCREENS, Aktionen, Spotlight-Vorschau,
+  // miniDone-Inhalt und Deep-Link ans Modul.
 
-  // Führenden Artikel (el/la/los/las) abtrennen – für natürlichere Fragen
-  // wie «¿Tienen agua?» statt «¿Tienen el agua?».
-  function shoppingBareNoun(es) {
-    return String(es || "").replace(/^(el|la|los|las)\s+/i, "");
-  }
 
-  // Zwei gebrauchsfertige Supermarkt-Fragen pro Item:
-  // 1) ob sie es haben, 2) wo man es findet. «¿Dónde puedo encontrar …?»
-  // funktioniert für Ein- und Mehrzahl gleich (keine está/están-Falle).
-  function shoppingAskPhrases(item) {
-    return {
-      have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: t("common.askHave") },
-      find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: t("common.askFind") },
-    };
-  }
+  // Das drehbare 3D-Körpermodell (Bühne, Billboard-Rotation, Ziehgesten, Dreh-
+  // Knöpfe) lebt jetzt im Feature-Modul SC.cuerpo (features/cuerpo.js). Es
+  // verdrahtet seine globalen Pointer-Listener selbst in init(ctx) und exponiert
+  // init3D() (Post-Render-Hook) sowie select/rotate/speak für den Action-Dispatch.
 
-  function comprasVM() {
-    const curId = state.compras.section;
-    const sec = shoppingSectionById(curId) || shoppingSections()[0];
-    const seen = gamestats.shoppingSeen || {};
-    const sections = shoppingSections().map((s) => ({
-      id: s.id, icon: s.icon, label: s.label, de: nat(s),
-      active: s.id === sec.id, total: s.items.length, done: shoppingSectionDone(s),
-    }));
-    const items = sec.items.map((it) => ({
-      id: it.id, de: nat(it), es: it.es, tip: it.tip, note: it.note,
-      ask: shoppingAskPhrases(it),
-      open: state.compras.open === it.id, seen: !!seen[it.id],
-    }));
-    return {
-      sections,
-      section: { id: sec.id, icon: sec.icon, label: sec.label, de: nat(sec), grad: sec.grad },
-      items,
-      doneCount: shoppingSectionDone(sec),
-      total: sec.items.length,
-      speakable: !!(speech && speech.isSupported()),
-    };
-  }
-
-  function openCompras() {
-    dismissBadgeToast();
-    if (!shoppingSectionById(state.compras.section)) {
-      state.compras = { section: (shoppingSections()[0] || {}).id || null, open: null };
-    } else {
-      state.compras = { section: state.compras.section, open: null };
-    }
-    setState({ screen: "compras" });
-  }
-
-  function comprasSection(id) {
-    if (!shoppingSectionById(id)) return;
-    setState({ compras: { section: id, open: null } });
-  }
-
-  // Ein Item antippen: nur auf-/zuklappen und beim Aufklappen das Wort
-  // vorlesen. Das Abhaken ist davon getrennt (eigene Checkbox), damit man
-  // ein Wort nachschlagen kann, ohne es gleich abzuhaken.
-  function comprasPick(id) {
-    const item = shoppingItemById(id);
-    if (!item) return;
-    const opening = state.compras.open !== id;
-    state.compras = { section: state.compras.section, open: opening ? id : null };
-    if (opening) buzz(8);
-    render();
-    if (opening && speech && speech.isSupported()) speech.speak(item.es, settings.speechRate);
-  }
-
-  // Checkbox antippen: Item ab-/aufhaken (echte Einkaufsliste). Der Stand
-  // wird persistent gemerkt und lässt sich jederzeit wieder zurücknehmen.
-  function comprasToggle(id) {
-    if (!id || !shoppingItemById(id)) return;
-    const cur = gamestats.shoppingSeen || {};
-    const seen = Object.assign({}, cur);
-    if (seen[id]) delete seen[id]; else seen[id] = true;
-    gamestats = Object.assign({}, gamestats, { shoppingSeen: seen });
-    store.saveGameStats(gamestats);
-    buzz(seen[id] ? 12 : 8);
-    render();
-  }
-
-  // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
-  function speakCompras(id) {
-    const item = shoppingItemById(id);
-    if (item && speech && speech.isSupported()) speech.speak(item.es, settings.speechRate);
-  }
-
-  // 🔊-Knopf an einer Supermarkt-Frage: den übergebenen Satz vorlesen.
-  function speakComprasPhrase(text) {
-    if (text && speech && speech.isSupported()) speech.speak(text, settings.speechRate);
-  }
-
-  // ----- Einkaufszettel-Quiz (Multiple Choice über die Items einer Rubrik) -----
-  // Optionen bauen: richtiges Wort + bis zu 3 Ablenker aus derselben Rubrik,
-  // dann gemischt. Einmal je Frage berechnet (Re-Render mischt nicht neu).
-  function buildComprasOptions(item, pool) {
-    const distractors = shuffle(pool.filter((d) => d.id !== item.id)).slice(0, 3);
-    return shuffle([item, ...distractors]).map((d) => ({ es: d.es, correct: d.id === item.id }));
-  }
-
-  function openComprasQuiz() {
-    const sec = shoppingSectionById(state.compras.section);
-    if (!sec || sec.items.length < 2) return;
-    const queue = shuffle(sec.items).map((it) => it.id);
-    state.comprasQuiz = {
-      section: sec.id,
-      queue,
-      idx: 0,
-      total: queue.length,
-      options: buildComprasOptions(shoppingItemById(queue[0]), sec.items),
-      selected: null,
-      correct: 0,
-    };
-    setState({ screen: "comprasQuiz" });
-  }
-
-  function comprasQuizVM() {
-    const q = state.comprasQuiz;
-    const sec = shoppingSectionById(q.section);
-    const item = shoppingItemById(q.queue[q.idx]);
-    const answered = q.selected !== null;
-    const correctEs = item.es;
-    const options = q.options.map((o, i) => ({
-      es: o.es,
-      state: !answered ? "idle"
-        : o.correct ? "correct"
-        : i === q.selected ? "wrong"
-        : "dim",
-    }));
-    return {
-      sectionIcon: sec ? sec.icon : "🛒",
-      sectionLabel: sec ? sec.label : "",
-      position: q.idx,
-      total: q.total,
-      prompt: item.de,
-      options,
-      answered,
-      isCorrect: answered && q.options[q.selected].correct,
-      solutionEs: correctEs,
-      isLast: q.idx >= q.total - 1,
-    };
-  }
-
-  // Eine Option wählen. Erste Wahl zählt; spätere Klicks ignorieren.
-  function answerComprasQuiz(i) {
-    const q = state.comprasQuiz;
-    if (!q || q.selected !== null) return;
-    q.selected = i;
-    if (q.options[i] && q.options[i].correct) { q.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextComprasQuiz() {
-    const q = state.comprasQuiz;
-    if (!q || q.selected === null) return;
-    if (q.idx >= q.total - 1) {
-      setState({ screen: "comprasQuizDone" });
-      return;
-    }
-    q.idx += 1;
-    q.selected = null;
-    const sec = shoppingSectionById(q.section);
-    q.options = buildComprasOptions(shoppingItemById(q.queue[q.idx]), sec.items);
-    render();
-  }
-
-  function comprasQuizDoneVM() {
-    const q = state.comprasQuiz;
-    const sec = shoppingSectionById(q.section);
-    return {
-      sectionIcon: sec ? sec.icon : "🛒",
-      sectionLabel: sec ? sec.label : "",
-      correct: q.correct,
-      total: q.total,
-      perfect: q.total > 0 && q.correct === q.total,
-    };
-  }
-
-  // „Nochmal" baut die Runde über dieselbe Rubrik neu.
-  function comprasQuizAgain() {
-    openComprasQuiz();
-  }
-
-  // Zurück vom Quiz zum Zettel (gleiche Rubrik bleibt aktiv).
-  function comprasBackToList() {
-    state.comprasQuiz = null;
-    state.compras = { section: state.compras.section, open: null };
-    setState({ screen: "compras" });
-  }
-
-  // ----- El Cuerpo: drehbares 3D-Modell (in-place, ohne Voll-Re-Render) -----
-  // Die Figur ist eine CSS-3D-Szene aus Kugeln (Orbs) und Hotspot-Punkten.
-  // Beim Drehen ändert sich nur der eine Eltern-Transform plus pro Element ein
-  // Billboard-Konter (rotateY/X invers), damit jede Kugel rund zur Kamera bleibt.
-  const bp3d = { fig: null, orbs: [], nodes: [], raf: 0 };
-  let bpDrag = null;        // { x, y, yaw, pitch } während einer Ziehgeste, sonst null
-  let bpDragMoved = false;  // wurde wirklich gedreht? (unterscheidet Zieh- von Tipp-Geste)
-  let bpDragEndAt = 0;      // Zeitpunkt der letzten echten Drehung – schluckt nur den
-                            // unmittelbar folgenden Maus-Klick, nicht spätere Tastatur-Auswahl
-
-  // Nach jedem Render der Cuerpo-Ansicht: Elemente neu einsammeln, Koordinaten
-  // aus den data-Attributen cachen und die aktuelle Drehung anwenden.
-  function cuerpoInit3D() {
-    bp3d.fig = root.querySelector("[data-bp-fig]");
-    if (!bp3d.fig) { bp3d.orbs = []; bp3d.nodes = []; return; }
-    const num = (el, k) => Number(el.dataset[k]);
-    bp3d.orbs = Array.prototype.map.call(bp3d.fig.querySelectorAll(".bp-orb"), (el) => {
-      el._x = num(el, "x"); el._y = num(el, "y"); el._z = num(el, "z"); return el;
-    });
-    bp3d.nodes = Array.prototype.map.call(bp3d.fig.querySelectorAll(".bp-node"), (el) => {
-      el._x = num(el, "x"); el._y = num(el, "y"); el._z = num(el, "z"); el._az = num(el, "az"); return el;
-    });
-    bpApplyRot();
-  }
-
-  // Drehung auf Figur (Eltern) und alle Kinder schreiben. Kinder bekommen den
-  // inversen Dreh-Anteil (Billboard) -> bleiben runde, zur Kamera gerichtete
-  // Scheiben. Hotspots auf der abgewandten Seite werden gedämpft/gesperrt.
-  function bpApplyRot() {
-    if (!bp3d.fig) return;
-    const yaw = state.bodyYaw, pitch = state.bodyPitch;
-    bp3d.fig.style.transform = `translateZ(-30px) rotateX(${pitch}deg) rotateY(${yaw}deg)`;
-    const inv = `rotateY(${-yaw}deg) rotateX(${-pitch}deg)`;
-    for (let i = 0; i < bp3d.orbs.length; i++) {
-      const el = bp3d.orbs[i];
-      el.style.transform = `translate3d(${el._x}px,${el._y}px,${el._z}px) ${inv} translate(-50%,-50%)`;
-    }
-    for (let i = 0; i < bp3d.nodes.length; i++) {
-      const n = bp3d.nodes[i];
-      n.style.transform = `translate3d(${n._x}px,${n._y}px,${n._z}px) ${inv} translate(-50%,-50%)`;
-      const back = Math.cos((n._az + yaw) * Math.PI / 180) < -0.15;
-      n.classList.toggle("is-back", back);
-    }
-  }
-
-  function bpScheduleApply() {
-    if (!bp3d.raf) bp3d.raf = requestAnimationFrame(() => { bp3d.raf = 0; bpApplyRot(); });
-  }
-
-  // Dreh-Knöpfe ↺/↻ (Tastatur-/Klick-Alternative zum Ziehen). Kurz mit
-  // Transition (is-anim), damit der Sprung weich statt hart wirkt.
-  let bpAnimTimer = null;
-  function rotateBody(dir) {
-    state.bodyYaw = (state.bodyYaw || 0) + dir * 32;
-    const stage = root.querySelector("[data-bp-stage]");
-    if (stage) {
-      stage.classList.add("is-anim");
-      clearTimeout(bpAnimTimer);
-      bpAnimTimer = setTimeout(() => stage.classList.remove("is-anim"), 320);
-    }
-    bpApplyRot();
-  }
-
-  // Zeigegesten: Ziehen über der Bühne dreht die Figur. Unter dem 6px-Schwellwert
-  // bleibt es ein Tipp (Hotspot wählen); darüber wird es eine Drehung.
-  function onBodyPointerDown(e) {
-    if (state.screen !== "cuerpo") return;
-    if (e.button != null && e.button > 0) return; // nur primäre Maustaste / Touch / Stift
-    const stage = e.target.closest("[data-bp-stage]");
-    if (!stage || e.target.closest(".bp-rotor")) return; // Dreh-Knöpfe nicht als Ziehstart werten
-    bpDrag = { x: e.clientX, y: e.clientY, yaw: state.bodyYaw || 0, pitch: state.bodyPitch || 0 };
-    bpDragMoved = false;
-    stage.classList.add("is-grab");
-  }
-  function onBodyPointerMove(e) {
-    if (!bpDrag) return;
-    const dx = e.clientX - bpDrag.x, dy = e.clientY - bpDrag.y;
-    if (!bpDragMoved && Math.hypot(dx, dy) > 6) bpDragMoved = true;
-    if (!bpDragMoved) return;
-    state.bodyYaw = bpDrag.yaw + dx * 0.6;
-    state.bodyPitch = Math.max(-32, Math.min(32, bpDrag.pitch - dy * 0.4));
-    bpScheduleApply();
-  }
-  function onBodyPointerUp() {
-    if (!bpDrag) return;
-    if (bpDragMoved) bpDragEndAt = Date.now(); // den gleich folgenden Klick auf den Hotspot schlucken
-    bpDrag = null;
-    const stage = root.querySelector("[data-bp-stage].is-grab");
-    if (stage) stage.classList.remove("is-grab");
-  }
 
   // ----- Reise-Route per Drag & Drop umsortieren (Profil-Zeitleiste) -----
   // Greift man den ⠿-Griff eines Routen-Eintrags, ziehen wir den Listeneintrag live
@@ -2769,7 +2020,7 @@
   function handleBack() {
     // 1) Offene Overlays/Panels zuerst schließen (wie ein „Schließen").
     if (state.updateNotice && state.updateNotice.length) { dismissUpdateNotice(); return true; }
-    if (state.szShow) { szClose(); return true; }
+    if (state.szShow) { spickzettel.szClose(); return true; }
     if (state.favShow) { favClose(); return true; }
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
     // 2) Auf einem Home-Reiter: erst zum Start-Reiter zurück (Lernen/Entdecken/
@@ -2878,6 +2129,11 @@
   }
 
   function render() {
+    // Ein laufendes Trip-Drag hält Referenzen auf DOM-Knoten, die render() gleich
+    // ersetzt. Feuert render() asynchron mitten im Ziehen (Badge-Toast-Timer,
+    // SW-Update, Farbschema-Wechsel), würden die folgenden Pointer-Events auf
+    // abgelöste Knoten zeigen -> hier abbrechen (die Guards prüfen !tripDrag).
+    tripDrag = null;
     // Screen-Dispatch-Tabelle: state.screen -> Funktion, die das HTML liefert.
     // Ersetzt die fruehere if/else-Kette. Unbekannte Screens fallen auf Home
     // zurueck (wie zuvor der else-Zweig). Reine Lookup-Tabelle, Verhalten gleich.
@@ -2888,10 +2144,10 @@
       "card": () => ui.renderCard(cardVM()),
       "editor": () => ui.renderEditor(editorVM()),
       "info": () => ui.renderInfo(infoVM()),
-      "historia": () => ui.renderHistoria(historiaVM()),
-      "knigge": () => ui.renderKnigge(kniggeVM()),
+      "historia": () => cronologia.screen(),
+      "knigge": () => etiqueta.screen(),
       "bebidas": () => ui.renderBebidas(bebidasVM()),
-      "regatear": () => ui.renderRegatear(regatearVM()),
+      "regatear": () => regateo.screen(),
       "logistica": () => ui.renderLogistica(logisticaVM()),
       "salud": () => ui.renderSalud(saludVM()),
       "flirt": () => ui.renderFlirt(flirtVM()),
@@ -2912,32 +2168,32 @@
       "battleDone": () => ui.renderBattleDone(battleDoneVM()),
       "roleplaySetup": () => ui.renderRoleplaySetup(roleplaySetupVM()),
       "roleplay": () => ui.renderRoleplay(roleplayVM()),
-      "quizSetup": () => ui.renderQuizSetup(quizSetupVM()),
-      "quiz": () => ui.renderQuiz(quizVM()),
-      "quizDone": () => ui.renderQuizDone(),
-      "cuerpo": () => ui.renderCuerpo(cuerpoVM()),
+      "quizSetup": () => definiciones.setupScreen(),
+      "quiz": () => definiciones.playScreen(),
+      "quizDone": () => definiciones.doneScreen(),
+      "cuerpo": () => cuerpo.screen(),
       "conjugacion": () => ui.renderConjugacion(conjugacionVM()),
-      "tiempos": () => ui.renderTiempos(tiemposVM()),
-      "spickzettel": () => ui.renderSpickzettel(spickzettelVM()),
+      "tiempos": () => tiempos.screen(),
+      "spickzettel": () => spickzettel.screen(),
       "favorites": () => ui.renderFavorites(favoritesVM()),
-      "preciosSetup": () => ui.renderPreciosSetup(preciosSetupVM()),
-      "precios": () => ui.renderPrecios(preciosVM()),
-      "preciosDone": () => ui.renderPreciosDone(),
-      "frasesSetup": () => ui.renderFrasesSetup(frasesSetupVM()),
-      "frases": () => ui.renderFrases(frasesVM()),
-      "frasesDone": () => ui.renderFrasesDone(),
-      "conjugSetup": () => ui.renderConjugSetup(conjugSetupVM()),
-      "conjug": () => ui.renderConjug(conjugVM()),
-      "conjugDone": () => ui.renderConjugDone(),
-      "yestoSetup": () => ui.renderYestoSetup(yestoSetupVM()),
-      "yesto": () => ui.renderYesto(yestoVM()),
-      "yestoDone": () => ui.renderYestoDone(),
-      "dialogosSetup": () => ui.renderDialogosSetup(dialogosSetupVM()),
-      "dialogos": () => ui.renderDialogos(dialogosVM()),
-      "dialogosDone": () => ui.renderDialogosDone(),
-      "compras": () => ui.renderCompras(comprasVM()),
-      "comprasQuiz": () => ui.renderComprasQuiz(comprasQuizVM()),
-      "comprasQuizDone": () => ui.renderComprasQuizDone(),
+      "preciosSetup": () => precios.setupScreen(),
+      "precios": () => precios.playScreen(),
+      "preciosDone": () => precios.doneScreen(),
+      "frasesSetup": () => frasesGame.setupScreen(),
+      "frases": () => frasesGame.playScreen(),
+      "frasesDone": () => frasesGame.doneScreen(),
+      "conjugSetup": () => conjugDrill.setupScreen(),
+      "conjug": () => conjugDrill.playScreen(),
+      "conjugDone": () => conjugDrill.doneScreen(),
+      "yestoSetup": () => yestoGame.setupScreen(),
+      "yesto": () => yestoGame.playScreen(),
+      "yestoDone": () => yestoGame.doneScreen(),
+      "dialogosSetup": () => dialogosGame.setupScreen(),
+      "dialogos": () => dialogosGame.playScreen(),
+      "dialogosDone": () => dialogosGame.doneScreen(),
+      "compras": () => compras.listScreen(),
+      "comprasQuiz": () => compras.quizScreen(),
+      "comprasQuizDone": () => compras.doneScreen(),
       "search": () => ui.renderSearch(searchVM()),
       "onboarding": () => ui.renderOnboarding(homeVM()),
     };
@@ -2968,18 +2224,24 @@
     // Fertig-Screen: die anlassbezogene Belohnungs-Inszenierung in die leere Bühne
     // fahren (SC.celebrate entscheidet Szene, baut Inhalt/Buttons, setzt aria-live +
     // Fokus). Erst NACH dem innerHTML-Austausch, da der Mount-Punkt nun existiert.
-    if (state.screen === "done") mountCelebrate();
+    // Nur beim ERSTEN Eintritt in den Fertig-Screen die volle Inszenierung (Konfetti,
+    // Count-up, Sound, Haptik). Ein erneuter Render desselben Screens (Badge-Toast-
+    // Timer, Theme-/SW-Banner) baut die Bühne statisch neu (replay=false), sonst würde
+    // die Feier bei jedem Re-Render von vorn losballern.
+    if (state.screen === "done") { mountCelebrate(celebrateMountedFor !== "done"); celebrateMountedFor = "done"; }
+    else celebrateMountedFor = null;
     // Mini-Spiel-Fertig-Screens: dieselbe Inszenierung wie der Haupt-Lernpfad.
-    if (MINI_DONE_SCREENS[state.screen]) mountMiniDone(state.screen);
+    if (MINI_DONE_SCREENS[state.screen]) { mountMiniDone(state.screen, miniDoneMountedFor !== state.screen); miniDoneMountedFor = state.screen; }
+    else miniDoneMountedFor = null;
     // „¿Y esto?“: läuft der 3-2-1-Countdown noch, den nächsten Tick scharf schalten;
     // auf jedem anderen Screen einen evtl. laufenden Timer wieder abräumen (kein Leck).
-    if (state.screen === "yesto") yestoArm(); else yestoDisarm();
+    if (state.screen === "yesto") yestoGame.arm(); else yestoGame.disarm();
     // 3D-Körpermodell nach dem Render verdrahten (Elemente neu, Drehung erhalten).
-    if (state.screen === "cuerpo") cuerpoInit3D();
+    if (state.screen === "cuerpo" && cuerpo) cuerpo.init3D();
     // Diálogos: den aktiven Zug (neue Replik, Optionen, Eingabe oder Verdikt) in
     // den sichtbaren Bereich holen – bei langen Gesprächen wächst der Verlauf
     // sonst unter den Bildschirmrand.
-    if (state.screen === "dialogos") scrollDialogActive();
+    if (state.screen === "dialogos" && dialogosGame) dialogosGame.scrollActive();
     // Aktivitätsblatt (Handy-Modus): getippte Antworten nach dem Neu-Aufbau des
     // DOM zurückschreiben, damit ein Re-Render (Länge/Bausteine/Modus) sie nicht
     // verwirft. In Lösungs-/Übungsblatt gibt es keine Felder – dann ein No-Op.
@@ -3006,13 +2268,17 @@
   // wie bisher: Pre-Trip → zurück zum Plan, Tarea → zurück zur Aufgabe, sonst
   // Übersicht/Statistik. Fehlt das Modul (z. B. Asset noch nicht da), bleibt die
   // Bühne leer statt zu crashen.
-  function mountCelebrate() {
+  let celebrateMountedFor = null; // welcher Done-Screen ist schon inszeniert? (Replay-Schutz)
+  let miniDoneMountedFor = null;
+  function mountCelebrate(replay) {
     const mount = document.getElementById("cb-mount");
     if (!mount || !(window.SC && SC.celebrate)) return;
     const result = doneVM();
+    const animate = replay !== false; // re-mount (replay===false): statisch, ohne Effekte
     SC.celebrate.celebrate(result, mount, {
-      sound: !!settings.celebrateSound, // Default aus (Sound überrascht); Haptik bleibt an
-      haptics: true,
+      sound: animate && !!settings.celebrateSound, // Default aus (Sound überrascht); Haptik bleibt an
+      haptics: animate,
+      reducedMotion: animate ? undefined : true,   // statisch nachzeichnen statt neu abspielen
       primaryLabel: result.origin === "pretrip" ? t("study.backPretrip")
         : result.origin === "task" ? t("study.backTask")
         : t("common.overview"),
@@ -3055,87 +2321,73 @@
   }
   function miniDoneConfig(screen) {
     if (screen === "quizDone") {
-      const vm = quizDoneVM();
+      const vm = definiciones.doneVM();
       return { result: miniResult(vm, vm.setLabel, "quiz"), opts: {
-        primaryLabel: t("discover.quizAgain"), onPrimary: quizAgain,
+        primaryLabel: t("discover.quizAgain"), onPrimary: definiciones.again,
         secondaryLabel: t("common.overview"), onSecondary: goHome,
       } };
     }
     if (screen === "preciosDone") {
-      const vm = preciosDoneVM();
+      const vm = precios.doneVM();
       const scope = `${vm.flag} ${vm.currencyName} · ${vm.levelLabel}`;
       return { result: miniResult(vm, scope, "precios"), opts: {
-        primaryLabel: t("discover.prcAgain"), onPrimary: preciosAgain,
-        secondaryLabel: t("discover.prcOtherCountry"), onSecondary: openPrecios,
+        primaryLabel: t("discover.prcAgain"), onPrimary: precios.again,
+        secondaryLabel: t("discover.prcOtherCountry"), onSecondary: precios.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
     if (screen === "frasesDone") {
-      const vm = frasesDoneVM();
+      const vm = frasesGame.doneVM();
       return { result: miniResult(vm, vm.setLabel, "frases"), opts: {
-        primaryLabel: t("discover.quizAgain"), onPrimary: frasesAgain,
-        secondaryLabel: t("discover.frasesOther"), onSecondary: openFrasesSetup,
+        primaryLabel: t("discover.quizAgain"), onPrimary: frasesGame.again,
+        secondaryLabel: t("discover.frasesOther"), onSecondary: frasesGame.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
     if (screen === "conjugDone") {
-      const vm = conjugDoneVM();
+      const vm = conjugDrill.doneVM();
       return { result: miniResult(vm, vm.levelLabel, "type"), opts: {
-        primaryLabel: t("discover.cjAgain"), onPrimary: conjugAgain,
-        secondaryLabel: t("discover.cjOtherLevel"), onSecondary: openConjugDrill,
+        primaryLabel: t("discover.cjAgain"), onPrimary: conjugDrill.again,
+        secondaryLabel: t("discover.cjOtherLevel"), onSecondary: conjugDrill.open,
         tertiaryLabel: t("discover.cjToGuide"), onTertiary: openConjugacion,
       } };
     }
     if (screen === "yestoDone") {
-      const vm = yestoDoneVM();
+      const vm = yestoGame.doneVM();
       return { result: miniResult(vm, vm.themeLabel, "quiz"), opts: {
-        primaryLabel: t("discover.yeAgain"), onPrimary: yestoAgain,
-        secondaryLabel: t("discover.yeOtherTheme"), onSecondary: openYesto,
+        primaryLabel: t("discover.yeAgain"), onPrimary: yestoGame.again,
+        secondaryLabel: t("discover.yeOtherTheme"), onSecondary: yestoGame.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
     if (screen === "dialogosDone") {
-      const vm = dialogosDoneVM();
+      const vm = dialogosGame.doneVM();
       return { result: miniResult(vm, vm.title, "quiz"), opts: {
-        primaryLabel: t("discover.dlgAgain"), onPrimary: dialogosAgain,
-        secondaryLabel: t("discover.dlgOther"), onSecondary: openDialogosSetup,
+        primaryLabel: t("discover.dlgAgain"), onPrimary: dialogosGame.again,
+        secondaryLabel: t("discover.dlgOther"), onSecondary: dialogosGame.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
     // comprasQuizDone
-    const vm = comprasQuizDoneVM();
+    const vm = compras.quizDoneVM();
     return { result: miniResult(vm, vm.sectionLabel, "quiz"), opts: {
-      primaryLabel: t("discover.quizAgain"), onPrimary: comprasQuizAgain,
-      secondaryLabel: t("discover.comprasBackList"), onSecondary: comprasBackToList,
+      primaryLabel: t("discover.quizAgain"), onPrimary: compras.quizAgain,
+      secondaryLabel: t("discover.comprasBackList"), onSecondary: compras.backToList,
     } };
   }
-  function mountMiniDone(screen) {
+  function mountMiniDone(screen, replay) {
     const mount = document.getElementById("cb-mount");
     if (!mount || !(window.SC && SC.celebrate)) return;
     const cfg = miniDoneConfig(screen);
+    const animate = replay !== false;
     SC.celebrate.celebrate(cfg.result, mount, Object.assign({
-      sound: !!settings.celebrateSound, haptics: true,
+      sound: animate && !!settings.celebrateSound, haptics: animate,
+      reducedMotion: animate ? undefined : true,
     }, cfg.opts));
   }
 
-  // Scrollt den aktiven Dialog-Abschnitt (#dlg-active) sanft in den Blick. Per
-  // requestAnimationFrame, damit das Layout nach dem innerHTML steht.
-  // Normalfall (npc-Satz, Optionen, Verdikt): block:"end" hält den darüber-
-  // liegenden npc-Satz mit im Bild. Tipp-Zug dagegen: das Eingabefeld mittig
-  // halten – mit block:"end" schöbe es sonst genau hinter die eingeblendete
-  // Tastatur, und der Nutzer sähe nicht, was er tippt.
-  function scrollDialogActive() {
-    if (typeof requestAnimationFrame !== "function") return;
-    requestAnimationFrame(function () {
-      const active = root.querySelector("#dlg-active");
-      if (!active) return;
-      const input = active.querySelector("#dialogos-answer");
-      const target = input || active;
-      const block = input ? "center" : "end";
-      const motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      try { target.scrollIntoView({ behavior: motion ? "auto" : "smooth", block }); } catch (e) { /* egal */ }
-    });
-  }
+  // scrollDialogActive() (der Diálogos-Scroll-Post-Render-Hook) wohnt jetzt im
+  // Feature-Modul SC.dialogosGame; render() ruft dialogosGame.scrollActive().
 
   // Hält das fokussierte Eingabefeld über der eingeblendeten Bildschirmtastatur.
   // scrollDialogActive() & manageFocus() laufen beim Render – also BEVOR die
@@ -3203,11 +2455,10 @@
       return it ? { key: "precios:" + state.precios.idx + ":" + it.value, text: it.es } : null;
     }
     // Diálogos: den aktuellen npc-Zug automatisch vorlesen (die Gegenseite spricht).
-    if (state.screen === "dialogos" && state.dialogos) {
-      const d = state.dialogos;
-      const dia = dialogueById(d.dialogueId);
-      const t = dia && dia.turns[d.turnIdx];
-      if (t && t.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: withName(t.es) };
+    // Das Feature-Modul kapselt die Zug-Auflösung (autoSpeakItem liefert {key,text}).
+    if (state.screen === "dialogos" && state.dialogos && dialogosGame) {
+      const item = dialogosGame.autoSpeakItem();
+      if (item) return item;
     }
     return null;
   }
@@ -3626,7 +2877,7 @@
     // QR-Generator (window.SC.qr) wird beim Lehrer-Screen inline für den
     // Aufgaben-Code-QR gebraucht. Bei Bedarf nachladen, dann (neu) rendern –
     // der inline qrSvg-Guard zeigt sonst nur ein leeres Feld bis zum Reload.
-    loadModule("qr", () => setState({ screen: "teacher" }));
+    navAfterLoad("qr", "teacher");
   }
 
   // Aus einem Backup-Payload eine kompakte Schüler-Auswertung bauen (rein).
@@ -4209,7 +3460,10 @@
     if (dialogos && dialogos.DIALOGOS && dialogos.DIALOGOS.length) {
       const list = dialogos.DIALOGOS;
       const name = "Marco";
-      const sub = (s) => String(s || "").replace(/\{name\}/g, name);
+      // {name} ersetzen und Geschlechts-Tokens {o/a} auflösen – auf dem Arbeitsblatt
+      // mit fixem Namen „Marco" (maskulin), also die erste Variante. Sonst stünden
+      // Tokens wie „alérgic{o/a}" wörtlich im PDF.
+      const sub = (s) => String(s || "").replace(/\{name\}/g, name).replace(/\{([^{}/]*)\/[^{}/]*\}/g, (_, m) => m);
       const first = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
       const picks = [];
       if (first) picks.push(first);
@@ -4218,8 +3472,8 @@
         if (dlg && dlg.turns) out.push({
           type: "dialogue", title: natk(dlg, "title"),
           turns: dlg.turns.map((tn) => tn.who === "npc"
-            ? { who: "npc", es: sub(tn.es), de: nat(tn) }
-            : { who: "user", de: nat(tn), answer: sub(tn.solEs) }),
+            ? { who: "npc", es: sub(tn.es), de: sub(nat(tn)) }
+            : { who: "user", de: sub(nat(tn)), answer: sub(tn.solEs) }),
         });
       });
     }
@@ -4743,14 +3997,6 @@
     const cards = taskCardsFor(task);
     const seen = cards.reduce((n, c) => n + ((stats.cardSummary(progress[c.id]).seen || 0) > 0 ? 1 : 0), 0);
     return { seen, total: cards.length, kind: "cards" };
-  }
-
-  // Ist eine Aufgabe „absolviert"? = alle Etappen bzw. alle Karten einmal durch.
-  function taskDone(task) {
-    if (!task) return false;
-    if (task.kind === "pretrip") return planAllDone(pretripPlan(task.scope));
-    const p = taskProgress(task);
-    return p.total > 0 && p.seen >= p.total;
   }
 
   function taskVM() {
@@ -5853,60 +5099,9 @@
     render();
   }
 
-  // ----- Spickzettel (Survival-Schnellzugriff, kein Lernen) -----
-  // Kuratierte Überlebens-Bereiche: `pick` hebt die kritischsten Sätze an den
-  // Anfang – auch quer zur Kategorie (z. B. "Hilfe!" steht in den Grundlagen,
-  // gehört im Ernstfall aber nach ganz oben zu Notfall). Der Rest füllt sich
-  // aus der Kategorie bis zum Cap auf, damit es mit der Datenbasis mitwächst.
-  const SPICKZETTEL_GROUPS = [
-    { cat: "notfall", limit: 10, pick: ["b17", "n01", "b18", "b19", "n08", "n10", "n11", "n14", "n06", "n15"] },
-    { cat: "basics",  limit: 10, pick: ["b10", "b11", "b15", "b14", "b08", "b16", "b05", "b06"] },
-    { cat: "rumbo",   limit: 6,  pick: ["b20", "dir20", "dir21", "dir23", "dir26"] },
-    { cat: "dinero",  limit: 6,  pick: ["d01", "d04", "d05", "d06", "d07"] },
-  ];
-
-  function spickzettelVM() {
-    const used = new Set(); // jede Karte höchstens einmal auf dem Zettel
-    const groups = SPICKZETTEL_GROUPS.map((g) => {
-      const cat = categoryById(g.cat);
-      const picked = (g.pick || []).map(cardById).filter(Boolean);
-      const rest = data.CARDS.filter((c) => c.cat === g.cat);
-      const cards = [];
-      for (const c of picked.concat(rest)) {
-        if (cards.length >= g.limit) break;
-        if (used.has(c.id)) continue;
-        used.add(c.id);
-        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null, fav: isFavorite(c.id) });
-      }
-      return {
-        id: g.cat,
-        label: cat ? natk(cat, "label") : g.cat,
-        icon: cat ? cat.icon : "📌",
-        grad: cat ? cat.grad : DEFAULT_ACCENT,
-        cards,
-      };
-    }).filter((g) => g.cards.length);
-    // Großanzeige: angetippter Satz bildschirmfüllend – zum Herzeigen.
-    const shown = state.szShow ? cardById(state.szShow) : null;
-    const show = shown ? { id: shown.id, de: shown.de, es: shown.es } : null;
-    return { groups, show, speakable: !!(speech && speech.isSupported()) };
-  }
-
-  function openSpickzettel() {
-    dismissBadgeToast();
-    state.screen = "spickzettel";
-    setState({ szShow: null });
-  }
-
-  // Großanzeige öffnen/schließen (Satz bildschirmfüllend zum Herzeigen).
-  function szShow(id) {
-    if (!cardById(id)) return;
-    setState({ szShow: id });
-  }
-
-  function szClose() {
-    setState({ szShow: null });
-  }
+  // Spickzettel (Survival-Schnellzugriff) wohnt jetzt in features/spickzettel.js
+  // (SC.spickzettel): Daten, VM, Handler und Render gebündelt. app.js delegiert
+  // unten in SCREENS/ACTIONS und über die Zurück-Geste an die Modul-Methoden.
 
   // Eine beliebige Karte per Id vorlesen (Spickzettel / Listen außerhalb der
   // Lern-Sitzung). Erste akzeptierte Variante, damit "/"-Alternativen sauber klingen.
@@ -6082,403 +5277,25 @@
     if (f && f.es) speech.speak(f.es, settings.speechRate);
   }
 
-  // ----- Precios al oído (Preis-Hörtrainer) -----
-  // Beträge werden pro Runde frisch generiert (SC.numbers) statt aus den festen
-  // Zahlen-Karten gezogen – so sind beliebig große und krumme Preise möglich
-  // (kolumbianische Pesos in Millionenhöhe, chilenische/argentinische Beträge …).
-  const PRECIOS_ROUND = 10;
-  const preciosReady = () => !!(speech && speech.isSupported() && numbers);
+  // Precios al oído (Preis-Hörtrainer) wohnt jetzt in features/precios.js
+  // (SC.precios): VMs, Handler, recordPreciosResult und Render gebündelt. app.js
+  // delegiert unten in SCREENS/ACTIONS, im submit-precios-Handler, im Sharepic-
+  // Aggregator und in miniDoneConfig. Das automatische Vorlesen des ersten Betrags
+  // bleibt im Render-Loop (autoSpeakTarget liest state.precios).
 
-  // Setup-Ansicht (Land/Währung + Schwierigkeit wählen).
-  function preciosSetupVM() {
-    const curKey = state.preciosCurrency;
-    const lvl = state.preciosLevel;
-    return {
-      speakable: preciosReady(),
-      currencies: numbers ? numbers.currencyList().map((c) => ({
-        key: c.key, flag: c.flag, name: natk(c, "name"), code: c.code, note: natk(c, "note"),
-        selected: c.key === curKey,
-      })) : [],
-      levels: numbers ? numbers.LEVELS.map((l) => ({
-        id: l.id, short: l.short, label: natk(l, "label"), hint: natk(l, "hint"), active: l.id === lvl,
-      })) : [],
-      // Beispiel-Spanne der aktuellen Wahl (gibt eine Vorstellung der Größenordnung).
-      sample: numbers ? (() => {
-        const c = numbers.currency(curKey);
-        const tier = numbers.tierFor(c, lvl);
-        return { flag: c.flag, name: natk(c, "name"), max: numbers.format(tier.max), one: c.one, many: c.many };
-      })() : null,
-    };
-  }
-
-  function preciosVM() {
-    const p = state.precios;
-    const item = p.queue[p.idx] || {};
-    const cur = numbers ? numbers.currency(p.currencyKey) : { flag: "💵", name: "", code: "" };
-    return {
-      position: p.idx,
-      total: p.total,
-      result: p.result, // null | { correct, input }
-      answerEs: item.es || "",
-      answerDigits: item.digits || "",
-      flag: cur.flag,
-      currencyName: natk(cur, "name"),
-      currencyCode: cur.code,
-      isLast: p.idx >= p.total - 1,
-      speakable: preciosReady(),
-    };
-  }
-
-  function preciosDoneVM() {
-    const p = state.precios;
-    const cur = numbers ? numbers.currency(p.currencyKey) : { flag: "💵", name: "" };
-    const lvl = numbers ? (numbers.LEVELS.find((l) => l.id === p.level) || null) : null;
-    return {
-      correct: p.correct,
-      total: p.total,
-      perfect: p.total > 0 && p.correct === p.total,
-      flag: cur.flag,
-      currencyName: natk(cur, "name"),
-      levelLabel: lvl ? natk(lvl, "label") : "",
-      hard: p.level >= 3,
-    };
-  }
-
-  // Einstieg: Setup-Ansicht zeigen (Land/Währung + Stufe). Ohne (unterstützte)
-  // Sprachausgabe gibt es nichts zu hören – gleiches Gate wie im UI.
-  function openPrecios() {
-    dismissBadgeToast();
-    if (!preciosReady()) return;
-    setState({ screen: "preciosSetup" });
-  }
-
-  function setPreciosCurrency(key) {
-    if (!numbers || !numbers.CURRENCIES[key]) return;
-    state.preciosCurrency = key;
-    settings = Object.assign({}, settings, { preciosCurrency: key });
-    store.saveSettings(settings);
-    render();
-  }
-
-  function setPreciosLevel(level) {
-    const lvl = Number(level);
-    if (![1, 2, 3].includes(lvl)) return;
-    state.preciosLevel = lvl;
-    settings = Object.assign({}, settings, { preciosLevel: lvl });
-    store.saveSettings(settings);
-    render();
-  }
-
-  // Runde mit den gewählten Einstellungen starten.
-  function startPrecios() {
-    if (!preciosReady()) return;
-    const curKey = state.preciosCurrency;
-    const level = state.preciosLevel;
-    const queue = numbers.buildRound(curKey, level, PRECIOS_ROUND);
-    state.precios = { currencyKey: curKey, level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
-    state.screen = "precios";
-    render(); // maybeAutoSpeak spielt den ersten Betrag automatisch ab
-  }
-
-  // Getippte Ziffern rein numerisch gegen den Wert prüfen: alle Nicht-Ziffern
-  // (Punkte, Leerzeichen, Währungszeichen) ignorieren – "1.250.000" == "1250000".
-  function submitPrecios(input) {
-    const p = state.precios;
-    if (!p || p.result) return;
-    const item = p.queue[p.idx];
-    if (!item) return;
-    const typed = String(input || "").replace(/\D/g, "");
-    const correct = typed.length > 0 && parseInt(typed, 10) === item.value;
-    p.result = { input, correct };
-    if (correct) { p.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextPrecios() {
-    const p = state.precios;
-    if (!p || !p.result) return;
-    if (p.idx >= p.total - 1) {
-      recordPreciosResult(p);
-      syncBadges(Date.now(), true);
-      setState({ screen: "preciosDone" });
-      return;
-    }
-    p.idx += 1;
-    p.result = null;
-    render();
-  }
-
-  // „Nochmal" auf der Ergebnis-Seite: gleiche Einstellungen, neue Beträge.
-  function preciosAgain() {
-    startPrecios();
-  }
-
-  function speakPrecios() {
-    const p = state.precios;
-    if (!p || !speech) return;
-    const item = p.queue[p.idx];
-    if (item) speech.speak(item.es, settings.speechRate);
-  }
-
-  // ----- Conjugador (generativer Konjugations-Drill) -----
-  // Übt aktiv das Konjugieren statt nur die Erklärseite zu lesen: „ir – wir" →
-  // tippe „vamos". Items werden pro Runde frisch aus data.CONJUGATION erzeugt
-  // (SC.conjug). Stufe 1 = regelmäßige Muster, Stufe 2 = + unregelmäßige Verben.
-  const CONJUG_ROUND = 10;
+  // Conjugador (generativer Konjugations-Drill) wohnt jetzt in features/conjugador.js
+  // (SC.conjugDrill; eigener Namespace, da SC.conjug das Generator-Datenmodul ist).
+  // VMs, Handler, recordConjugResult und Render gebündelt. app.js delegiert in
+  // SCREENS/ACTIONS, im submit-conjug-Handler und in miniDoneConfig. conjugReady
+  // bleibt hier, weil die Erklärseite „Conjugación" (conjugacionVM) es ebenfalls nutzt.
   const conjugReady = () => !!(conjug && data.CONJUGATION);
-  const CONJUG_LEVELS = [
-    { id: 1, short: "Regelmäßig", label: "Nur regelmäßige Muster", hint: "-ar · -er · -ir" },
-    { id: 2, short: "Alle", label: "Mit unregelmäßigen Verben", hint: "+ ir, estar, tener …" },
-  ];
 
-  function conjugSetupVM() {
-    return {
-      available: conjugReady(),
-      levels: CONJUG_LEVELS.map((l) => ({ ...l,
-        short: t(`app.conjL${l.id}Short`), label: t(`app.conjL${l.id}Label`),
-        active: l.id === state.conjugLevel })),
-    };
-  }
-
-  function conjugVM() {
-    const c = state.conjug;
-    const item = c.queue[c.idx] || {};
-    return {
-      position: c.idx,
-      total: c.total,
-      result: c.result, // null | { correct, input, answer }
-      verb: item.verb || "",
-      verbHint: natk(item, "verbHint") || "",
-      personEs: item.personEs || "",
-      personDe: natk(item, "personDe") || "",
-      isLast: c.idx >= c.total - 1,
-    };
-  }
-
-  function conjugDoneVM() {
-    const c = state.conjug;
-    const lvl = CONJUG_LEVELS.find((l) => l.id === c.level) || null;
-    return {
-      correct: c.correct,
-      total: c.total,
-      perfect: c.total > 0 && c.correct === c.total,
-      levelLabel: lvl ? t(`app.conjL${lvl.id}Label`) : "",
-    };
-  }
-
-  function openConjugDrill() {
-    dismissBadgeToast();
-    if (!conjugReady()) return;
-    setState({ screen: "conjugSetup" });
-  }
-
-  function setConjugLevel(level) {
-    const lvl = Number(level);
-    if (![1, 2].includes(lvl)) return;
-    state.conjugLevel = lvl;
-    settings = Object.assign({}, settings, { conjugLevel: lvl });
-    store.saveSettings(settings);
-    render();
-  }
-
-  function startConjug() {
-    if (!conjugReady()) return;
-    const level = state.conjugLevel;
-    const queue = conjug.buildRound(data.CONJUGATION, level, CONJUG_ROUND);
-    if (!queue.length) return;
-    state.conjug = { level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
-    setState({ screen: "conjug" });
-  }
-
-  // Getippte Form akzentnachsichtig prüfen (matcher.normalize: á=a, ñ=n, ohne
-  // Satzzeichen). So zählt „esta" für „está" – Reise-Tastaturen haben oft keine Akzente.
-  function submitConjug(input) {
-    const c = state.conjug;
-    if (!c || c.result) return;
-    const item = c.queue[c.idx];
-    if (!item) return;
-    const norm = matcher.normalize(input);
-    const correct = norm.length > 0 && norm === matcher.normalize(item.answer);
-    c.result = { input, correct, answer: item.answer };
-    if (correct) { c.correct += 1; buzz(12); } else buzz(8);
-    render();
-  }
-
-  function nextConjug() {
-    const c = state.conjug;
-    if (!c || !c.result) return;
-    if (c.idx >= c.total - 1) {
-      recordConjugResult(c);
-      syncBadges(Date.now(), true);
-      setState({ screen: "conjugDone" });
-      return;
-    }
-    c.idx += 1;
-    c.result = null;
-    render();
-  }
-
-  function conjugAgain() {
-    startConjug();
-  }
-
-  // Ergebnis einer beendeten Konjugations-Runde in die Spiel-Zähler buchen.
-  function recordConjugResult(c) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.conjugPlayed = (g.conjugPlayed || 0) + 1;
-    if (c.total > 0 && c.correct === c.total) g.conjugPerfect = (g.conjugPerfect || 0) + 1;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
-
-  // ----- „¿Y esto?“ (Bild-Vokabel-Modus mit 3-2-1-Countdown) -----
-  // Ein Motiv (Emoji) erscheint groß, ein kurzer Countdown läuft – „Wie heißt
-  // das auf Spanisch?“ – dann wird das spanische Wort + Übersetzung aufgelöst und
-  // man bewertet sich selbst („Wusste ich“/„Noch nicht“). Motive kommen pro Runde
-  // frisch gemischt aus SC.yesto (kein Foto -> bleibt offline & zero-dependency).
-  const YESTO_ROUND = 8;      // Motive pro Runde (jedes Thema hat ≥ 8)
-  const YESTO_COUNT_FROM = 3; // Start des Countdowns (3 → 2 → 1 → Auflösung)
-  let yestoTimer = null;      // genau ein pendelnder Countdown-Tick zur Zeit
-  const yestoReady = () => !!(yesto && yesto.THEMES && yesto.THEMES.length);
-
-  // Themen-Label in der aktiven UI-Sprache (label/labelEn via nativeText).
-  function natTheme(th) { return i18n.nativeText({ de: th.label, en: th.labelEn }); }
-
-  function yestoSetupVM() {
-    return {
-      available: yestoReady(),
-      themes: yestoReady() ? yesto.themeList().map((th) => ({
-        id: th.id, icon: th.icon, label: natTheme(th), count: th.count,
-      })) : [],
-    };
-  }
-
-  function yestoVM() {
-    const y = state.yesto;
-    const item = (y && y.queue[y.idx]) || {};
-    return {
-      position: y ? y.idx : 0,
-      total: y ? y.total : 0,
-      phase: y ? y.phase : "count",
-      count: y ? y.count : 0,
-      emoji: item.emoji || "",
-      es: item.es || "",
-      native: i18n.nativeText({ de: item.de, en: item.en }) || "",
-      isLast: y ? y.idx >= y.total - 1 : true,
-    };
-  }
-
-  function yestoDoneVM() {
-    const y = state.yesto || {};
-    const th = yestoReady() ? yesto.themeById(y.themeId) : null;
-    return {
-      correct: y.correct || 0,
-      total: y.total || 0,
-      themeLabel: th ? natTheme(th) : "",
-    };
-  }
-
-  function openYesto() {
-    dismissBadgeToast();
-    yestoDisarm();
-    if (!yestoReady()) return;
-    setState({ screen: "yestoSetup" });
-  }
-
-  function startYesto(themeId) {
-    if (!yestoReady()) return;
-    const queue = yesto.buildRound(themeId, YESTO_ROUND);
-    if (!queue.length) return;
-    state.yesto = { themeId, queue, idx: 0, total: queue.length, phase: "count", count: YESTO_COUNT_FROM, correct: 0 };
-    state.screen = "yesto";
-    render(); // render() schaltet anschließend den ersten Countdown-Tick scharf
-  }
-
-  // Den nächsten Countdown-Tick scharf schalten (von render() bei screen==="yesto").
-  function yestoArm() {
-    yestoDisarm();
-    const y = state.yesto;
-    if (!y || y.phase !== "count" || y.count <= 0) return;
-    yestoTimer = setTimeout(yestoTick, 1000);
-  }
-  function yestoDisarm() {
-    if (yestoTimer) { clearTimeout(yestoTimer); yestoTimer = null; }
-  }
-  function yestoTick() {
-    yestoTimer = null;
-    const y = state.yesto;
-    if (!y || state.screen !== "yesto" || y.phase !== "count") return;
-    y.count -= 1;
-    if (y.count <= 0) {
-      // Auflösung: hier ändert sich die ganze Bühne (Wort + Bewerten) -> volles
-      // render(); dessen Nach-Mount schaltet den Timer ab (Phase ist nicht mehr "count").
-      y.phase = "reveal";
-      buzz(10);
-      render();
-      return;
-    }
-    // Reiner Zähl-Tick: nur die Ziffer im DOM tauschen statt der ganze App-Neuaufbau.
-    // So läuft kein render() pro Sekunde, das sonst Fokus (manageFocus) und Scroll
-    // anfasst. Fehlt der Knoten ausnahmsweise, fällt es sicher auf render() zurück.
-    const num = document.querySelector(".ye-count__num");
-    if (num) num.textContent = String(y.count); else render();
-    yestoArm(); // nächsten Tick scharf schalten (ohne render())
-  }
-
-  // Sofort auflösen (Countdown überspringen) – für Ungeduldige & Screenreader.
-  function yestoReveal() {
-    const y = state.yesto;
-    if (!y || y.phase !== "count") return;
-    yestoDisarm();
-    y.phase = "reveal";
-    buzz(10);
-    render();
-  }
-
-  // Selbsteinschätzung nach der Auflösung -> nächstes Motiv / Runde beenden.
-  function yestoRate(known) {
-    const y = state.yesto;
-    if (!y || y.phase !== "reveal") return;
-    if (known) { y.correct += 1; buzz(12); } else buzz(8);
-    if (y.idx >= y.total - 1) {
-      recordYestoResult(y); // Zähler buchen, BEVOR die Badges ausgewertet werden
-      syncBadges(Date.now(), true);
-      yestoDisarm();
-      setState({ screen: "yestoDone" });
-      return;
-    }
-    y.idx += 1;
-    y.phase = "count";
-    y.count = YESTO_COUNT_FROM;
-    render();
-  }
-
-  function yestoAgain() { startYesto(state.yesto ? state.yesto.themeId : null); }
-
-  // Ergebnis einer beendeten ¿Y-esto?-Runde in die Spiel-Zähler buchen (Ruta-Pass).
-  // „Perfekt" = bei jedem Bild „Wusste ich" getippt (correct === total).
-  function recordYestoResult(y) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.yestoPlayed = (g.yestoPlayed || 0) + 1;
-    if (y.total > 0 && y.correct === y.total) g.yestoPerfect = (g.yestoPerfect || 0) + 1;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
+  // „¿Y esto?“ (Bild-Vokabel-Spiel mit 3-2-1-Countdown) wohnt jetzt in
+  // features/yesto-game.js (SC.yestoGame; eigener Namespace, da SC.yesto bereits
+  // das Datenmodul ist). VMs, Handler, Countdown-Timer und Render gebündelt. app.js
+  // delegiert in SCREENS/ACTIONS, in render() (arm/disarm) und in miniDoneConfig.
 
   // Ergebnis einer beendeten Preis-Hörrunde in die Spiel-Zähler buchen (Ruta-Pass).
-  function recordPreciosResult(p) {
-    if (!badges) return;
-    const g = Object.assign({}, gamestats);
-    g.preciosPlayed = (g.preciosPlayed || 0) + 1;
-    if (p.total > 0 && p.correct === p.total) g.preciosPerfect = (g.preciosPerfect || 0) + 1;
-    // Große-Beträge-Runde (Stufe 3) gemeistert: separat zählen (Badge „Millonario").
-    if (p.level >= 3 && p.total > 0 && p.correct === p.total) g.preciosMillon = (g.preciosMillon || 0) + 1;
-    gamestats = g;
-    store.saveGameStats(gamestats);
-  }
-
   // ----- Länderkunde (Infoseite) -----
   // ----- Suche (gezielt nach Karten/Übungen & Informationen suchen) -----
   // Eine flache Volltext-Suche über alle Inhalte: Vokabelkarten, Lern-Kategorien
@@ -6717,7 +5534,7 @@
   function openHistoria(region) {
     dismissBadgeToast();
     state.histRegion = region === "centro" ? "centro" : "sur";
-    loadModule(region === "centro" ? "historiaCentro" : "historia", () => setState({ screen: "historia" }));
+    navAfterLoad(region === "centro" ? "historiaCentro" : "historia", "historia");
   }
 
   function openKnigge() {
@@ -6754,22 +5571,22 @@
 
   function openMusica() {
     dismissBadgeToast();
-    loadModule("musica", () => setState({ screen: "musica" }));
+    navAfterLoad("musica", "musica");
   }
 
   function openFotos() {
     dismissBadgeToast();
-    loadModule("fotografia", () => setState({ screen: "fotos" }));
+    navAfterLoad("fotografia", "fotos");
   }
 
   function openFlirt() {
     dismissBadgeToast();
-    loadModule("flirt", () => setState({ screen: "flirt" }));
+    navAfterLoad("flirt", "flirt");
   }
 
   function openBailar() {
     dismissBadgeToast();
-    loadModule("bailar", () => setState({ screen: "bailar" }));
+    navAfterLoad("bailar", "bailar");
   }
 
   function selectCountry(id) {
@@ -6877,6 +5694,7 @@
       const card = userCards.add(input);
       editorMsg = { type: "ok", text: t("app.cardSaved", { de: card.de, es: card.es }) };
       buzz(12);
+      invalidateCardIndex();   // neue Karte in allCards/cardById aufnehmen
       invalidateSearchIndex(); // neue eigene Karte muss auffindbar werden
     }
     render();
@@ -6895,6 +5713,7 @@
       store.saveProgress(progress);
     }
     editorMsg = { type: "ok", text: t("app.cardDeleted") };
+    invalidateCardIndex();   // gelöschte Karte aus allCards/cardById nehmen
     invalidateSearchIndex(); // gelöschte Karte aus dem Suchindex nehmen
     render();
   }
@@ -7226,7 +6045,7 @@
   // Eintrag (Epoche, Protagonist oder Spannung) per id, lokalisiert ihn (de/en),
   // entfernt die *Markierungen* und reicht die „mitnehmen"-Vokabeln durch.
   function findHistItem(id) {
-    const mod = histMod();
+    const mod = cronologia.histMod();
     if (!mod) return null;
     const lists = [mod.ERAS, mod.FIGURES, mod.TENSIONS];
     for (let i = 0; i < lists.length; i++) {
@@ -7257,7 +6076,7 @@
   // Einladung (Modulname, Einleitung, Zeitstrahl-Teaser mit den Epochen) – zum
   // Weiterempfehlen des gesamten Moduls, nicht nur eines einzelnen Textes.
   function shareHistModule() {
-    const mod = histMod();
+    const mod = cronologia.histMod();
     if (!share || !mod) return;
     const name = state.histRegion === "centro" ? "Historia de Centroamérica" : "Historia de Sudamérica";
     const eras = loc(mod.ERAS || []).map((e) => ({
@@ -7407,7 +6226,7 @@
         ];
       case "supervivencia": {
         const out = [];
-        spickzettelVM().groups.forEach((g) => {
+        spickzettel.vm().groups.forEach((g) => {
           (g.cards || []).slice(0, 2).forEach((c) => out.push({ mark: g.icon || "🆘", text: `${c.es} — ${c.de}` }));
         });
         return cut(out);
@@ -7415,19 +6234,19 @@
       case "hostel":
         return cut(battleSetupVM().scenes.map((s) => ({ mark: s.icon || "⚔️", text: s.label })));
       case "definiciones":
-        return cut(quizSetupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
+        return cut(definiciones.setupVM().sets.map((s) => ({ mark: s.icon || "🧩", text: s.label })));
       case "frases":
-        return cut(frasesSetupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
+        return cut(frasesGame.setupVM().sets.map((s) => ({ mark: s.icon || "🧱", text: s.label })));
       case "dialogos":
-        return cut(dialogosSetupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
+        return cut(dialogosGame.setupVM().scenarios.map((s) => ({ mark: s.icon || "💬", text: s.title })));
       case "regatear":
-        return cut((regatearVM().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
+        return cut((regateo.vm().tips || []).map((tp) => ({ mark: tp.icon || "🤝", text: tp.title })));
       case "precios":
-        return cut(preciosSetupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
+        return cut(precios.setupVM().currencies.map((c) => ({ mark: c.flag || "💵", text: `${c.name} · ${c.code}` })));
       case "cuerpo":
         return cut((data.BODY_PARTS || []).map((p) => ({ mark: "🧍", text: `${p.es} — ${nat(p)}` })));
       case "compras":
-        return cut(comprasVM().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
+        return cut(compras.vm().sections.map((s) => ({ mark: s.icon || "🛒", text: s.label })));
       case "yesto":
         // Repräsentative Motive je Thema (Emoji + „es — Übersetzung“).
         return cut((yesto ? yesto.THEMES : []).map((th) => {
@@ -7441,7 +6260,7 @@
       case "paises":
         return cut((countries ? countries.LIST : []).map((c) => loc(c)).map((c) => ({ mark: c.flag || "🌎", text: c.name })));
       case "knigge":
-        return cut((kniggeVM().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
+        return cut((etiqueta.vm().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
       case "logistica":
         return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
       case "salud":
@@ -7638,62 +6457,56 @@
     "open-roleplay-setup": (el) => { openRoleplaySetup(); },
     "start-roleplay": (el) => { startRoleplay(el.dataset.id); },
     "roleplay-swap": (el) => { roleplaySwap(); },
-    "open-quiz-setup": (el) => { openQuizSetup(); },
-    "start-quiz": (el) => { startQuiz(el.dataset.set); },
-    "quiz-answer": (el) => { answerQuiz(el.dataset.id); },
-    "quiz-next": (el) => { nextQuiz(); },
-    "quiz-again": (el) => { quizAgain(); },
+    "open-quiz-setup": (el) => { definiciones.open(); },
+    "start-quiz": (el) => { definiciones.start(el.dataset.set); },
+    "quiz-answer": (el) => { definiciones.answer(el.dataset.id); },
+    "quiz-next": (el) => { definiciones.next(); },
+    "quiz-again": (el) => { definiciones.again(); },
     "open-cuerpo": (el) => { openCuerpo(); },
     "open-conjugacion": (el) => { openConjugacion(); },
     "open-tiempos": (el) => { openTiempos(); },
-    "cuerpo-select": (el) => { { if (Date.now() - bpDragEndAt >= 350) selectBodyPart(el.dataset.id); } },
-    "cuerpo-rotate": (el) => { rotateBody(Number(el.dataset.dir)); },
-    "cuerpo-speak": (el) => { speakBodyPart(); },
-    "open-spickzettel": (el) => { openSpickzettel(); },
-    "sz-show": (el) => { szShow(el.dataset.id); },
-    "sz-close": (el) => { szClose(); },
+    "cuerpo-select": (el) => { cuerpo.select(el.dataset.id); },
+    "cuerpo-rotate": (el) => { cuerpo.rotate(Number(el.dataset.dir)); },
+    "cuerpo-speak": (el) => { cuerpo.speak(); },
+    "open-spickzettel": (el) => { spickzettel.open(); },
+    "sz-show": (el) => { spickzettel.szShow(el.dataset.id); },
+    "sz-close": (el) => { spickzettel.szClose(); },
     "speak-card": (el) => { speakCardId(el.dataset.id); },
-    "open-precios": (el) => { openPrecios(); },
-    "precios-currency": (el) => { setPreciosCurrency(el.dataset.id); },
-    "precios-level": (el) => { setPreciosLevel(el.dataset.level); },
-    "start-precios": (el) => { startPrecios(); },
-    "precios-next": (el) => { nextPrecios(); },
-    "precios-again": (el) => { preciosAgain(); },
-    "precios-setup": (el) => { openPrecios(); },
-    "precios-speak": (el) => { speakPrecios(); },
-    "open-frases": (el) => { openFrasesSetup(); },
-    "start-frases": (el) => { startFrases(el.dataset.set); },
-    "frases-answer": (el) => { answerFrases(Number(el.dataset.idx)); },
-    "frases-next": (el) => { nextFrases(); },
-    "frases-again": (el) => { frasesAgain(); },
-    "open-conjug-drill": (el) => { openConjugDrill(); },
-    "conjug-level": (el) => { setConjugLevel(el.dataset.level); },
-    "start-conjug": (el) => { startConjug(); },
-    "conjug-next": (el) => { nextConjug(); },
-    "conjug-again": (el) => { conjugAgain(); },
-    "open-yesto": (el) => { openYesto(); },
-    "start-yesto": (el) => { startYesto(el.dataset.id); },
-    "yesto-reveal": (el) => { yestoReveal(); },
-    "yesto-rate": (el) => { yestoRate(el.dataset.known === "1"); },
-    "yesto-again": (el) => { yestoAgain(); },
-    "open-dialogos": (el) => { openDialogosSetup(); },
-    "start-dialogos": (el) => { startDialogos(el.dataset.id); },
-    "dialogos-answer": (el) => { answerDialogosMc(Number(el.dataset.idx)); },
-    "dialogos-next": (el) => { advanceDialogos(); },
-    "dialogos-hint": (el) => { dialogosHint(); },
-    "dialogos-again": (el) => { dialogosAgain(); },
-    "dialogos-speak": (el) => { speakDialogosNpc(); },
-    "open-compras": (el) => { openCompras(); },
-    "compras-section": (el) => { comprasSection(el.dataset.id); },
-    "compras-pick": (el) => { comprasPick(el.dataset.id); },
-    "compras-toggle": (el) => { comprasToggle(el.dataset.id); },
-    "compras-speak": (el) => { speakCompras(el.dataset.id); },
-    "compras-speak-phrase": (el) => { speakComprasPhrase(el.dataset.say); },
-    "open-compras-quiz": (el) => { openComprasQuiz(); },
-    "compras-quiz-answer": (el) => { answerComprasQuiz(Number(el.dataset.idx)); },
-    "compras-quiz-next": (el) => { nextComprasQuiz(); },
-    "compras-quiz-again": (el) => { comprasQuizAgain(); },
-    "compras-back-list": (el) => { comprasBackToList(); },
+    "open-precios": (el) => { precios.open(); },
+    "precios-currency": (el) => { precios.setCurrency(el.dataset.id); },
+    "precios-level": (el) => { precios.setLevel(el.dataset.level); },
+    "start-precios": (el) => { precios.start(); },
+    "precios-next": (el) => { precios.next(); },
+    "precios-setup": (el) => { precios.open(); },
+    "precios-speak": (el) => { precios.speak(); },
+    "open-frases": (el) => { frasesGame.open(); },
+    "start-frases": (el) => { frasesGame.start(el.dataset.set); },
+    "frases-answer": (el) => { frasesGame.answer(Number(el.dataset.idx)); },
+    "frases-next": (el) => { frasesGame.next(); },
+    "open-conjug-drill": (el) => { conjugDrill.open(); },
+    "conjug-level": (el) => { conjugDrill.setLevel(el.dataset.level); },
+    "start-conjug": (el) => { conjugDrill.start(); },
+    "conjug-next": (el) => { conjugDrill.next(); },
+    "open-yesto": (el) => { yestoGame.open(); },
+    "start-yesto": (el) => { yestoGame.start(el.dataset.id); },
+    "yesto-reveal": (el) => { yestoGame.reveal(); },
+    "yesto-rate": (el) => { yestoGame.rate(el.dataset.known === "1"); },
+    "open-dialogos": (el) => { dialogosGame.open(); },
+    "start-dialogos": (el) => { dialogosGame.start(el.dataset.id); },
+    "dialogos-answer": (el) => { dialogosGame.answerMc(Number(el.dataset.idx)); },
+    "dialogos-next": (el) => { dialogosGame.advance(); },
+    "dialogos-hint": (el) => { dialogosGame.hint(); },
+    "dialogos-speak": (el) => { dialogosGame.speakNpc(); },
+    "open-compras": (el) => { compras.open(); },
+    "compras-section": (el) => { compras.section(el.dataset.id); },
+    "compras-pick": (el) => { compras.pick(el.dataset.id); },
+    "compras-toggle": (el) => { compras.toggle(el.dataset.id); },
+    "compras-speak": (el) => { compras.speak(el.dataset.id); },
+    "compras-speak-phrase": (el) => { compras.speakPhrase(el.dataset.say); },
+    "open-compras-quiz": (el) => { compras.openQuiz(); },
+    "compras-quiz-answer": (el) => { compras.quizAnswer(Number(el.dataset.idx)); },
+    "compras-quiz-next": (el) => { compras.quizNext(); },
+    "compras-back-list": (el) => { compras.backToList(); },
     "home": (el) => { goHome(); },
   };
 
@@ -7779,7 +6592,7 @@
     if (e.target.closest('[data-action="submit-precios"]')) {
       e.preventDefault();
       const input = document.getElementById("precios-answer");
-      submitPrecios(input ? input.value : "");
+      precios.submit(input ? input.value : "");
       return;
     }
     // Onboarding-Schritt 1: Name + Geschlecht bestätigen (Pflicht) und zum
@@ -7805,14 +6618,14 @@
     if (e.target.closest('[data-action="submit-conjug"]')) {
       e.preventDefault();
       const input = document.getElementById("conjug-answer");
-      submitConjug(input ? input.value : "");
+      conjugDrill.submit(input ? input.value : "");
       return;
     }
     // Diálogos: getippte Schlüssel-Replik prüfen.
     if (e.target.closest('[data-action="submit-dialogos"]')) {
       e.preventDefault();
       const input = document.getElementById("dialogos-answer");
-      submitDialogosType(input ? input.value : "");
+      dialogosGame.submitType(input ? input.value : "");
       return;
     }
     // Profil: Reise-Namen speichern (Enter oder „Speichern"-Knopf).
@@ -7927,7 +6740,16 @@
     }
     // Spickzettel-Großanzeige: Escape schließt.
     if (state.screen === "spickzettel" && state.szShow && e.key === "Escape") {
-      szClose();
+      spickzettel.szClose();
+      return;
+    }
+    // Update-Hinweis & Favoriten-Overlay: Escape schließt (wie der Zurück-Knopf).
+    if (state.updateNotice && state.updateNotice.length && e.key === "Escape") {
+      dismissUpdateNotice();
+      return;
+    }
+    if (state.favShow && e.key === "Escape") {
+      favClose();
       return;
     }
     // Aktivitätsblatt (Handy-Modus): Enter in einem Lösungsfeld springt ins nächste
@@ -8140,25 +6962,30 @@
       favoritos: openFavorites, // ?a=favoritos → „Mi léxico" (Favoriten)
     };
     const aSlug = param("a");
-    if (aSlug && actions[aSlug]) {
+    // Dispatch über Map.get statt dynamischem Objekt-Index: ein URL-gesteuerter Slug
+    // löst so KEINEN Methoden-Lookup per Name aus und kann keine geerbte
+    // Object.prototype-Methode treffen (Object.entries nimmt nur eigene Keys).
+    // CodeQL js/unvalidated-dynamic-method-call hat damit keinen Sink mehr.
+    const aFn = new Map(Object.entries(actions)).get(aSlug);
+    if (typeof aFn === "function") {
       markSeen();
-      actions[aSlug]();
+      aFn();
       cleanUrl();
       return true;
     }
     const slug = param("m");
     if (!slug) return false;
     const openers = {
-      supervivencia: openSpickzettel,
+      supervivencia: () => spickzettel.open(),
       hostel: openHostel,
-      definiciones: openQuizSetup,
-      frases: openFrasesSetup,
-      dialogos: openDialogosSetup,
+      definiciones: () => definiciones.open(),
+      frases: () => frasesGame.open(),
+      dialogos: () => dialogosGame.open(),
       regatear: openRegatear,
-      precios: openPrecios,
+      precios: () => precios.open(),
       cuerpo: openCuerpo,
-      compras: openCompras,
-      yesto: openYesto,
+      compras: () => compras.open(),
+      yesto: () => yestoGame.open(),
       conjugacion: openConjugacion,
       tiempos: openTiempos,
       paises: openInfo,
@@ -8177,8 +7004,10 @@
       "nivel-test": openAssessment,
       "ruta-check": () => openPlacement(false),
     };
-    const open = openers[slug];
-    if (!open) return false;
+    // Wie oben: Dispatch über Map.get (kein dynamischer Methoden-Lookup per Slug),
+    // damit ein URL-Slug nicht auf eine geerbte Prototyp-Methode dispatcht.
+    const open = new Map(Object.entries(openers)).get(slug);
+    if (typeof open !== "function") return false;
     markSeen();
     open(); // setzt state.screen + rendert
     cleanUrl();
@@ -8209,11 +7038,8 @@
   root.addEventListener("touchstart", onTouchStart, { passive: true });
   root.addEventListener("touchend", onTouchEnd, { passive: true });
   window.addEventListener("popstate", onPopState); // Zurück-Geste: eine Ebene höher statt App schließen
-  // Drehen des 3D-Körpermodells (greift nur auf der Cuerpo-Bühne).
-  root.addEventListener("pointerdown", onBodyPointerDown);
-  window.addEventListener("pointermove", onBodyPointerMove);
-  window.addEventListener("pointerup", onBodyPointerUp);
-  window.addEventListener("pointercancel", onBodyPointerUp);
+  // Die Pointer-Listener fürs Drehen des 3D-Körpermodells verdrahtet das
+  // Feature-Modul SC.cuerpo selbst in init(featureCtx) (auf root/window).
   // Reise-Route per Drag & Drop umsortieren (Profil-Zeitleiste).
   root.addEventListener("pointerdown", onTripPointerDown);
   window.addEventListener("pointermove", onTripPointerMove);
@@ -8266,6 +7092,40 @@
     beginOnboarding();
     stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
   }
+  // Feature-Module mit Controller-Diensten versorgen (Dependency-Injection): zentraler
+  // State, Daten-Helfer und optionale Module. VOR dem ersten render() / Deep-Link, da
+  // ein Modul-Screen sofort gezeigt werden kann. Wächst mit jeder Zerlegungs-Welle.
+  const featureCtx = {
+    state, setState, render, dismissBadgeToast,
+    data, speech, numbers, yesto, frases, conjug, matcher, i18n, badges,
+    // Eager geladene Content-Module werden hier injiziert (Feature-Module greifen
+    // sie als ctx.<modul>, NICHT über window.SC.*). Lazy/optionale Module dagegen
+    // (loadModule: dialogos, historia, historiaCentro) liest das jeweilige Feature
+    // selbst live über window.SC.* hinter einem …ready()-Guard, da sie zur init-
+    // Zeit noch fehlen können.
+    countries, knigge, regatear,
+    categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
+    DEFAULT_ACCENT, root, loadModule, navEpoch: () => navEpoch,
+    // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
+    // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
+    gameStats: () => gamestats,
+    setGameStats: (g) => { gamestats = g; store.saveGameStats(gamestats); },
+    settings: () => settings,
+    setSettings: (patch) => { settings = Object.assign({}, settings, patch); store.saveSettings(settings); },
+  };
+  if (spickzettel) spickzettel.init(featureCtx);
+  if (definiciones) definiciones.init(featureCtx);
+  if (precios) precios.init(featureCtx);
+  if (yestoGame) yestoGame.init(featureCtx);
+  if (frasesGame) frasesGame.init(featureCtx);
+  if (conjugDrill) conjugDrill.init(featureCtx);
+  if (tiempos) tiempos.init(featureCtx);
+  if (regateo) regateo.init(featureCtx);
+  if (cuerpo) cuerpo.init(featureCtx);
+  if (compras) compras.init(featureCtx);
+  if (dialogosGame) dialogosGame.init(featureCtx);
+  if (etiqueta) etiqueta.init(featureCtx);
+  if (cronologia) cronologia.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

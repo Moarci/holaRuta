@@ -111,7 +111,11 @@ const serviceWorkerGlobals = {
 
 const commonRules = {
   "no-undef": "error",
-  "no-unused-vars": "warn",
+  // Ungenutzte Parameter sind bewusstes Rauschen: catch-(e) (Fehler werden
+  // geschluckt, nicht inspiziert) und die uniforme Handler-Signatur (el) der
+  // ACTIONS-Dispatch-Tabelle. _-Präfix = bewusst ungenutzt (auch in der
+  // vendorten qr.js). Tote VARIABLEN ohne _ bleiben gemeldet (Bug-Signal).
+  "no-unused-vars": ["warn", { args: "none", caughtErrors: "none", varsIgnorePattern: "^_" }],
   // KEINE Stilregeln (Einrückung, Anführungszeichen, Semikolons, …) – bewusst.
 };
 

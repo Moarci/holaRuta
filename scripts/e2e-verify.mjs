@@ -234,6 +234,17 @@ async function runSuite(browser, root, label) {
       check("Lazy qr: nach open-teacher nachgeladen (window.SC.qr da)", qrLoaded);
       const fetched = reqs.some((u) => /\/qr\.js(\?|$)/.test(u));
       check("Lazy qr: qr.js erst on-demand per Netzwerk geholt", fetched && !loadedBefore, `before=${loadedBefore} after=${fetched}`);
+
+      // Aktivitätsblatt: {name}/{o/a}-Platzhalter dürfen NICHT roh durchschlagen.
+      // (Paket A: die deutsche Dialogzeile wird jetzt ebenfalls durch sub() geschickt –
+      // vorher stand z. B. „{name}, können Sie die Zehen bewegen?" wörtlich im Blatt.)
+      await p.click('[data-action="open-printsheet"]').catch(() => {});
+      const hasDlg = await p.waitForSelector(".sheet-section--dialogue", { timeout: 5000 }).then(() => true).catch(() => false);
+      check("Aktivitätsblatt: Dialog-Sektion gerendert", hasDlg);
+      const sheetText = await p.evaluate(() => (document.getElementById("app") || {}).innerText || "");
+      check("Aktivitätsblatt: kein rohes {name} (sub() greift, auch auf DE-Zeile)", !/\{name\}/.test(sheetText),
+        /\{name\}/.test(sheetText) ? "rohes {name} im gerenderten Blatt" : "");
+      check("Aktivitätsblatt: keine rohen {o/a}-Gender-Tokens", !/\{[^{}/]*\/[^{}/]*\}/.test(sheetText));
       await ctx.close();
     }
 

@@ -16,10 +16,11 @@
  * card.alt (nur Spanisch). Klammerzusätze sind OPTIONAL – siehe candidates().
  *
  * Tippfehler-Toleranz: eine inhaltlich richtige, aber leicht VERSCHRIEBENE
- * Antwort ("quiro" statt "quiero") zählt trotzdem – check() meldet sie über
+ * Antwort ("neccesito" statt "necesito") zählt trotzdem – check() meldet sie über
  * das typo-Flag, damit die UI freundlich die korrekte Schreibweise zeigt.
  * Zusätzlich darf ein optionales Subjektpronomen ("yo quiero" = "quiero")
- * vorne stehen. Bewusst konservativ (kurze Wörter bleiben streng).
+ * vorne stehen. Bewusst konservativ: kurze Wörter (< 8 Zeichen, z. B. "quiero")
+ * bleiben streng, dort wird kein Tippfehler-Budget gewährt.
  */
 (function () {
   "use strict";
@@ -112,7 +113,7 @@
 
   // ---------- Tippfehler-Toleranz ----------
   // Ziel: eine inhaltlich richtige Antwort, die nur leicht VERSCHRIEBEN ist
-  // ("quiro" statt "quiero"), soll zählen – aber als solche erkennbar bleiben
+  // ("neccesito" statt "necesito"), soll zählen – aber als solche erkennbar bleiben
   // (typo-Flag), damit die UI freundlich auf die korrekte Schreibweise hinweist.
   // Bewusst KONSERVATIV: kurze Wörter bleiben streng (sonst kippt gato↔pato).
 
@@ -181,11 +182,28 @@
   // es im Spanischen meist eine echte Flexion (Genus -o/-a, Person, Plural -s) –
   // ein BEDEUTUNGSunterschied, kein Vertipper: direkt nach der Abweichung steht
   // ein Leerzeichen oder das String-Ende. So zählt "necesita"≠"necesito", aber
-  // "quiro"="quiero" (Abweichung im Wortinneren) bleibt ein Tippfehler.
+  // "neccesito"="necesito" (Abweichung im Wortinneren) bleibt ein Tippfehler.
   function isWordFinalEdit(a, b) {
     const longer = a.length >= b.length ? a : b;
-    const after = longer.length - commonSuffixLen(a, b); // erstes Zeichen des gemeinsamen Suffixes
-    return after >= longer.length || longer.charCodeAt(after) === 32; // 32 = Leerzeichen
+    const after = longer.length - commonSuffixLen(a, b); // Zeichen direkt NACH der Abweichung
+    // (1) Abweichung am Wortende (Leerzeichen oder String-Ende danach).
+    if (after >= longer.length || longer.charCodeAt(after) === 32) return true; // 32 = Leerzeichen
+    // (2) Genus im Plural: ein a/o-Vokal direkt vor einem wort-finalen "s"
+    //     (buenas↔buenos, amigas↔amigos, últimas↔últimos) ist ebenfalls eine Flexion,
+    //     kein Vertipper. Eng gehalten (nur a/o vor "s" am Tokenende), damit echte
+    //     Wort-INNEN-Tippfehler wie "neccesito"↔"necesito" weiter als Tippfehler zählen.
+    //     Bewusst in Kauf genommen: die nosotros-Endung "-mos" (doblamas↔doblamos) hat
+    //     dieselbe a/o-vor-s-Form und wird mit-abgelehnt. Eine Ausnahme für "-mos" ist
+    //     nicht möglich, ohne die häufigen -mo-Genus-Adjektive (último/próximo/supremo)
+    //     wieder fälschlich durchzulassen – sie sind schreibgleich. Trade-off netto
+    //     positiv (genau ein erreichbares Verb betroffen: doblamos).
+    if (a.length === b.length && longer.charCodeAt(after) === 115) { // 115 = 's'
+      const cA = a.charCodeAt(after - 1), cB = b.charCodeAt(after - 1);
+      const genderVowel = (c) => c === 97 || c === 111; // 'a' | 'o'
+      const boundaryAfterS = after + 1 >= longer.length || longer.charCodeAt(after + 1) === 32;
+      if (genderVowel(cA) && genderVowel(cB) && boundaryAfterS) return true;
+    }
+    return false;
   }
 
   // Vergleicht eine NORMALISIERTE Eingabe gegen normalisierte Kandidaten.

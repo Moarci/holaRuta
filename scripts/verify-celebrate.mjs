@@ -30,8 +30,13 @@ check("test/celebrate.test.js existiert", read("test/celebrate.test.js") !== nul
 const html = read("index.html") || "";
 check("index.html lädt celebrate.js", /<script[^>]+src=["']celebrate\.js["']/.test(html),
   'Zeile  <script src="celebrate.js"></script>  vor ui.js ergänzen');
-check("index.html: celebrate.js VOR ui.js", html.indexOf("celebrate.js") > -1 &&
-  html.indexOf("celebrate.js") < html.indexOf("ui.js"), "Ladereihenfolge: erst celebrate.js, dann ui.js");
+// Auf die ECHTEN <script src="…">-Tags abstellen, nicht auf bloße Datei-
+// erwähnungen im Fließtext/Kommentar (sonst Falsch-Negativ, wenn ein Kommentar
+// "ui.js" vor dem celebrate.js-Tag nennt).
+const posCeleb = html.search(/<script[^>]+src=["']celebrate\.js["']/);
+const posUi = html.search(/<script[^>]+src=["']ui\.js["']/);
+check("index.html: celebrate.js VOR ui.js", posCeleb > -1 && posUi > -1 &&
+  posCeleb < posUi, "Ladereihenfolge: erst celebrate.js, dann ui.js");
 
 // --- 3) SW-Precache kennt das neue Asset (sonst Drift-Test rot) ---
 const sw = read("service-worker.js") || "";

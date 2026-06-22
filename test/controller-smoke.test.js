@@ -206,6 +206,17 @@ test("open-stats rendert die Statistik; alle Filter sind durchschaltbar", () => 
   }
 });
 
+test("Statistik-Liste ist gekappt (Performance: nicht alle 2293 Karten auf einmal)", () => {
+  const root = freshApp();
+  const d = makeDriver(root);
+  d.setTab("profil");
+  d.click("open-stats");
+  d.click("set-stats-filter", { filter: "all" });
+  const rows = (root.innerHTML.match(/data-action="open-card"/g) || []).length;
+  assert.ok(rows > 0 && rows <= 200, `Karten-Zeilen auf 200 gekappt (gerendert: ${rows})`);
+  assert.match(root.innerHTML, /stat-more/, "‚+N weitere'-Hinweis erscheint bei gekappter Liste");
+});
+
 // ---------------------------------------------------------------------------
 // 6) Breites Screen-Netz: jeden erreichbaren Opener auf seinem Reiter klicken
 //    und prüfen: kein Throw + nicht-leerer Output. Das ist der Kern des Netzes –

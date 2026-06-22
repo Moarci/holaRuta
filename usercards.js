@@ -38,13 +38,16 @@
 
   // Legt eine neue Karte an (immutabel) und speichert. Gibt die Karte zurück.
   function add(input) {
+    // Längen an store.loadUserCards koppeln (de/es ≤ 500, cat ≤ 100), sonst würde
+    // eine zu lange Karte gespeichert + in der Sitzung gezeigt, aber beim nächsten
+    // Start vom Loader still verworfen. slice == was den Reload wirklich überlebt.
     const card = {
       id: genId(),
-      cat: String(input.cat || "alltag"),
+      cat: String(input.cat || "alltag").slice(0, 100),
       lvl: Number(input.lvl) || 1,
-      de: String(input.de || "").trim(),
-      es: String(input.es || "").trim(),
-      tip: String(input.tip || "").trim(),
+      de: String(input.de || "").trim().slice(0, 500),
+      es: String(input.es || "").trim().slice(0, 500),
+      tip: String(input.tip || "").trim().slice(0, 500),
       custom: true,
     };
     cards = cards.concat(card);

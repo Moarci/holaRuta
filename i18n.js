@@ -52,6 +52,11 @@
 
   // Platzhalter {name} aus params füllen. Fehlt ein Platzhalter, bleibt er stehen
   // (sichtbar statt still verschluckt – erleichtert das Finden von Lücken).
+  // SICHERHEITS-INVARIANTE: t()/interpolate escapen NICHT. Params werden roh
+  // eingesetzt. Jede Aufrufstelle, die ein t()-Ergebnis mit nutzer-/ferngespeisten
+  // Werten (Profilname, Reisename, Ranglisten-Name, Eingaben) in HTML schreibt, MUSS
+  // das Gesamtergebnis durch esc() schicken (so wie es heute überall geschieht). Hier
+  // NICHT zu escapen ist Absicht: sonst würde am Sink doppelt escapt (& -> &amp;amp;).
   function interpolate(str, params) {
     if (!params) return str;
     return str.replace(/\{(\w+)\}/g, (m, p) => (params[p] != null ? params[p] : m));
@@ -121,7 +126,7 @@
       const out = {};
       for (const k in value) {
         if (!Object.prototype.hasOwnProperty.call(value, k)) continue;
-        if (/(?:^en$|[a-z]En$)/.test(k)) continue; // En-Hilfsfelder nicht direkt kopieren
+        if (/(?:^en$|[A-Za-z]En$)/.test(k)) continue; // En-Hilfsfelder (auch roleAEn/goalBEn) nicht direkt kopieren
         const ek = enKeyFor(k);
         const en = value[ek];
         out[k] = (en != null && en !== "") ? _loc(en) : _loc(value[k]);
