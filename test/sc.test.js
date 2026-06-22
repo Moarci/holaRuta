@@ -819,6 +819,9 @@ test("data.ROLEPLAYS: Rollen, Dialog mit Sprecher A/B, usefulPhrases gesetzt", (
       assert.ok(d.de && d.es, `Dialogzeile unvollständig: ${r.id}`);
     });
     assert.ok(Array.isArray(r.usefulPhrases) && r.usefulPhrases.length > 0, `usefulPhrases leer: ${r.id}`);
+    // EN-Parität: Titel/Situation/Ziele und jede Dialogzeile auch auf Englisch.
+    assert.ok(r.titleEn && r.situationEn && r.goalAEn && r.goalBEn, `EN-Felder fehlen: ${r.id}`);
+    r.dialogue.forEach((d) => assert.ok(d.en, `Dialogzeile ohne en: ${r.id}`));
   });
 });
 

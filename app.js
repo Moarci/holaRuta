@@ -1708,11 +1708,25 @@
     };
   }
 
+  // Rollen-Labels der hostel-Rollenspiele liegen in den Daten nur auf Deutsch vor;
+  // im EN-Modus über diese Tabelle übersetzen (14 wiederkehrende Rollen). Titel,
+  // Situation und Ziele kommen dagegen über natk aus den …En-Feldern der Daten.
+  const ROLE_EN = {
+    "Reisender": "Traveller", "Rezeption": "Reception", "Hostelgast": "Hostel guest",
+    "Mitreisender": "Fellow traveller", "Kellner": "Waiter", "Ticketverkäufer": "Ticket clerk",
+    "Apotheker": "Pharmacist", "Verkäufer": "Vendor", "Angestellter": "Clerk",
+    "Tour-Anbieter": "Tour operator", "Polizist": "Police officer", "Passant": "Passer-by",
+    "Arzt": "Doctor", "Schaltermitarbeiter": "Counter agent",
+  };
+  function roleName(de) {
+    return (i18n && i18n.getLang() === "en" && ROLE_EN[de]) || de;
+  }
+
   function roleplaySetupVM() {
     return {
       scenes: data.ROLEPLAYS.map((r) => {
         const lvl = levelById(r.level);
-        return { id: r.id, title: natk(r, "title"), roleA: r.roles.a, roleB: r.roles.b,
+        return { id: r.id, title: natk(r, "title"), roleA: roleName(r.roles.a), roleB: roleName(r.roles.b),
           lvlShort: lvl ? lvl.short : "" };
       }),
     };
@@ -1729,8 +1743,8 @@
       lvlShort: lvl ? lvl.short : "",
       situationDe: natk(r, "situationDe"),
       swapped,
-      roleA: { name: swapped ? r.roles.b : r.roles.a, goal: natk(r, swapped ? "goalB" : "goalA") },
-      roleB: { name: swapped ? r.roles.a : r.roles.b, goal: natk(r, swapped ? "goalA" : "goalB") },
+      roleA: { name: roleName(swapped ? r.roles.b : r.roles.a), goal: natk(r, swapped ? "goalB" : "goalA") },
+      roleB: { name: roleName(swapped ? r.roles.a : r.roles.b), goal: natk(r, swapped ? "goalA" : "goalB") },
       dialogue: r.dialogue.map((d) => ({
         speaker: swapped ? (d.speaker === "A" ? "B" : "A") : d.speaker,
         de: withName(nat(d)), es: withName(d.es),
@@ -3245,7 +3259,10 @@
       const dlg = (theme.dialogCat && list.find((d) => d.cat === theme.dialogCat)) || list[Math.floor(rng() * list.length)];
       if (dlg && dlg.turns) {
         const name = "Marco";
-        const sub = (s) => String(s || "").replace(/\{name\}/g, name);
+        // {name} ersetzen und Geschlechts-Tokens {o/a} auflösen – auf dem Arbeitsblatt
+        // mit fixem Namen „Marco" (maskulin), also die erste Variante. Sonst stünden
+        // Tokens wie „alérgic{o/a}" wörtlich im PDF.
+        const sub = (s) => String(s || "").replace(/\{name\}/g, name).replace(/\{([^{}/]*)\/[^{}/]*\}/g, (_, m) => m);
         out.push({
           type: "dialogue", title: natk(dlg, "title"),
           turns: dlg.turns.map((tn) => tn.who === "npc"
