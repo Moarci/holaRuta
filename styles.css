@@ -2540,15 +2540,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .sheet-table { break-inside: auto; }
   .sheet-table tr, .sheet-section--gapfill li, .sheet-cards li, .sheet-exlist li, .sheet-turn { break-inside: avoid; }
   .sheet-recipe-box, .sheet-section--matching, .sheet-section--culture { break-inside: avoid; }
-  /* Bricht eine Tabelle (Konjugation/Zahlen) über die Seite, wiederholt der
-     Spaltenkopf sich auf der Folgeseite – sonst stünden die Zeilen oben ohne
-     Überschrift (Verb · Person · Antwort). */
-  .sheet-table thead { display: table-header-group; }
   /* Nichts darf über den rechten A4-Rand oder Spaltenrand hinauslaufen: überlange
      Wörter/Antworten umbrechen statt abschneiden; die nur am Bildschirm sinnvollen
      nowrap-Zeilen (Lösungsraster, MC-Optionen) im Druck umbrechen lassen. */
   .sheet { overflow-wrap: break-word; }
   .sheet-match__grid span, .sheet-choice__opt { white-space: normal; }
+  /* A4-Verdichtung: die langen, kurzzeiligen Übungslisten (Gegenteile, Lückentext,
+     Übersetzen, Artikel) 2-spaltig setzen – wie der Wortschatz. Eine einzelne
+     Aufgabe füllt so nie die volle A4-Breite und halbiert den Seitenbedarf dieser
+     Abschnitte. Nur im Druck: am Bildschirm (v. a. im Ausfüll-Modus) bleiben die
+     Eingabefelder voll breit und damit gut bedienbar. Einzelne Items bleiben über
+     die Regel oben zusammen; Tabellen, Satz-ordnen, Anagramm und MC bleiben 1-spaltig. */
+  .sheet-section--opposites .sheet-exlist,
+  .sheet-section--gapfill .sheet-exlist,
+  .sheet-section--translate .sheet-exlist,
+  .sheet-section--articles .sheet-exlist { columns: 2; column-gap: 30px; }
   /* Klassentabelle für den Druck umbrechen lassen, damit ALLE Spalten (v. a.
      das Niveau) auf A4 passen – overflow-x scrollt auf Papier nicht, es klippt sonst. */
   .teacher-tablewrap { overflow: visible !important; }
@@ -2675,31 +2681,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Artikel-Übung – Artikel-Lücke, Substantiv, deutsche Bedeutung. */
 .sheet-exlist--articles li { margin: 7px 0; }
 .sheet-exlist--articles .sheet-es { margin: 0 4px; }
-/* A4-Optimierung: die langen, kurzzeiligen Übungslisten (Gegenteile, Lückentext,
-   Übersetzen, Artikel) 2-spaltig setzen – wie der Wortschatz oben. Eine einzelne
-   Aufgabe füllt nie die volle A4-Breite, halbiert also den Seitenbedarf dieser
-   Abschnitte. Die Abschnitte bleiben break-inside:auto (fließen über Seiten,
-   nichts wird abgeschnitten); nur die einzelnen Items bleiben zusammen. Tabellen
-   (Konjugation/Zahlen), Satz-ordnen, Anagramm und Multiple-Choice brauchen die
-   volle Breite und bleiben 1-spaltig. Am schmalen Handy-Schirm alles 1-spaltig. */
-.sheet-section--opposites .sheet-exlist,
-.sheet-section--gapfill .sheet-exlist,
-.sheet-section--translate .sheet-exlist,
-.sheet-section--articles .sheet-exlist {
-  columns: 2; column-gap: 30px;
-}
-.sheet-section--opposites .sheet-exlist li,
-.sheet-section--gapfill .sheet-exlist li,
-.sheet-section--translate .sheet-exlist li,
-.sheet-section--articles .sheet-exlist li {
-  break-inside: avoid; -webkit-column-break-inside: avoid;
-}
-@media (max-width: 560px) {
-  .sheet-section--opposites .sheet-exlist,
-  .sheet-section--gapfill .sheet-exlist,
-  .sheet-section--translate .sheet-exlist,
-  .sheet-section--articles .sheet-exlist { columns: 1; }
-}
+/* Die 2-spaltige A4-Verdichtung der kurzzeiligen Übungslisten steht im
+   @media-print-Block oben (nur im Druck, damit der Ausfüll-Modus am Bildschirm
+   volle Feldbreite behält). */
 /* Tabellen (Konjugation, Zahlen). */
 .sheet-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
 .sheet-table th, .sheet-table td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 0.92rem; vertical-align: top; }
