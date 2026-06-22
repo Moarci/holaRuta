@@ -1959,7 +1959,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* „¿Sabías que…?"-Häppchen. */
 .hist-facts { margin-top: 22px; }
-.hist-facts__grid { display: flex; flex-direction: column; gap: 8px; }
+.hist-facts__grid { display: flex; flex-direction: column; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .hist-fact {
   padding: 12px 14px 12px 38px; position: relative; font-size: 0.9rem; line-height: 1.5;
   color: var(--ink); background: rgba(185, 124, 36, 0.10);

@@ -176,9 +176,9 @@
     const facts = (vm.facts || []).length
       ? `<div class="hist-facts">
            <h3 class="hist-block__h">💡 ${esc(t("discover.histFactsTitle"))}</h3>
-           <div class="hist-facts__grid">
-             ${vm.facts.map((f) => `<div class="hist-fact">${esc(f)}</div>`).join("")}
-           </div>
+           <ul class="hist-facts__grid">
+             ${vm.facts.map((f) => `<li class="hist-fact">${esc(f)}</li>`).join("")}
+           </ul>
          </div>`
       : "";
 

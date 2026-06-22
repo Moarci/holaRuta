@@ -1487,7 +1487,7 @@
   // localStorage-Write, kein Badge-Scan beim wiederholten Auf-/Zuklappen. Immutabel.
   function recordContextView(cardId, now) {
     if (!badges || !cardId) return;
-    if (gamestats.contextCardsSeen[cardId]) return; // bereits gezählt
+    if (gamestats.contextCardsSeen && gamestats.contextCardsSeen[cardId]) return; // bereits gezählt
     const seen = Object.assign({}, gamestats.contextCardsSeen, { [cardId]: true });
     gamestats = Object.assign({}, gamestats, { contextCardsSeen: seen });
     store.saveGameStats(gamestats);
@@ -2095,6 +2095,11 @@
   }
 
   function render() {
+    // Ein laufendes Trip-Drag hält Referenzen auf DOM-Knoten, die render() gleich
+    // ersetzt. Feuert render() asynchron mitten im Ziehen (Badge-Toast-Timer,
+    // SW-Update, Farbschema-Wechsel), würden die folgenden Pointer-Events auf
+    // abgelöste Knoten zeigen -> hier abbrechen (die Guards prüfen !tripDrag).
+    tripDrag = null;
     // Screen-Dispatch-Tabelle: state.screen -> Funktion, die das HTML liefert.
     // Ersetzt die fruehere if/else-Kette. Unbekannte Screens fallen auf Home
     // zurueck (wie zuvor der else-Zweig). Reine Lookup-Tabelle, Verhalten gleich.

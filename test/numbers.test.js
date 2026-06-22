@@ -63,6 +63,17 @@ test("numbers.toWords: große Beträge (Kolumbien-Größenordnung)", () => {
   assert.equal(numbers.toWords(5000000), "cinco millones");
 });
 
+test("numbers.toWords: außerhalb der Domäne (≥ 1e9) wird geklemmt, nie 'undefined'", () => {
+  // Definiert ist 0 … 999.999.999; größere Werte klemmen auf das Maximum.
+  const max = numbers.toWords(999999999);
+  assert.ok(max && !/undefined/.test(max), "Maximalwert ist ein definiertes Zahlwort");
+  for (const v of [1e9, 5e9, 1234567890, Number.MAX_SAFE_INTEGER]) {
+    const w = numbers.toWords(v);
+    assert.ok(typeof w === "string" && w.length > 0 && !/undefined/.test(w), `toWords(${v}) ist definiert: ${w}`);
+    assert.equal(w, max, `toWords(${v}) ist auf das Domänen-Maximum geklemmt`);
+  }
+});
+
 // ---------- amount: Preisangabe mit Währung ----------
 test("numbers.amount: Singular/Plural & Apokope vor dem Nomen", () => {
   const peso = { one: "peso", many: "pesos" };

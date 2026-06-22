@@ -126,7 +126,7 @@
       const out = {};
       for (const k in value) {
         if (!Object.prototype.hasOwnProperty.call(value, k)) continue;
-        if (/(?:^en$|[a-z]En$)/.test(k)) continue; // En-Hilfsfelder nicht direkt kopieren
+        if (/(?:^en$|[A-Za-z]En$)/.test(k)) continue; // En-Hilfsfelder (auch roleAEn/goalBEn) nicht direkt kopieren
         const ek = enKeyFor(k);
         const en = value[ek];
         out[k] = (en != null && en !== "") ? _loc(en) : _loc(value[k]);

@@ -324,7 +324,7 @@
           // Frei tippen. Optionaler „Tipp" deckt die Musterantwort auf – als
           // Hilfe, ohne den Zug vorwegzunehmen (getippt werden muss trotzdem).
           const help = vm.hint
-            ? `<p class="dlg-tip" role="note">💡 <b lang="es">${esc(cur.solEs)}</b></p>`
+            ? `<p class="dlg-tip" role="note"><span aria-hidden="true">💡</span> <b lang="es">${esc(cur.solEs)}</b></p>`
             : `<button class="dlg-tipbtn ghostbtn" type="button" data-action="dialogos-hint">${esc(t("discover.dlgTipShow"))}</button>`;
           active = `
             ${instr}
