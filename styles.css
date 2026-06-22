@@ -2540,6 +2540,15 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .sheet-table { break-inside: auto; }
   .sheet-table tr, .sheet-section--gapfill li, .sheet-cards li, .sheet-exlist li, .sheet-turn { break-inside: avoid; }
   .sheet-recipe-box, .sheet-section--matching, .sheet-section--culture { break-inside: avoid; }
+  /* Bricht eine Tabelle (Konjugation/Zahlen) über die Seite, wiederholt der
+     Spaltenkopf sich auf der Folgeseite – sonst stünden die Zeilen oben ohne
+     Überschrift (Verb · Person · Antwort). */
+  .sheet-table thead { display: table-header-group; }
+  /* Nichts darf über den rechten A4-Rand oder Spaltenrand hinauslaufen: überlange
+     Wörter/Antworten umbrechen statt abschneiden; die nur am Bildschirm sinnvollen
+     nowrap-Zeilen (Lösungsraster, MC-Optionen) im Druck umbrechen lassen. */
+  .sheet { overflow-wrap: break-word; }
+  .sheet-match__grid span, .sheet-choice__opt { white-space: normal; }
   /* Klassentabelle für den Druck umbrechen lassen, damit ALLE Spalten (v. a.
      das Niveau) auf A4 passen – overflow-x scrollt auf Papier nicht, es klippt sonst. */
   .teacher-tablewrap { overflow: visible !important; }
