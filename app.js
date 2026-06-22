@@ -6962,12 +6962,14 @@
       favoritos: openFavorites, // ?a=favoritos → „Mi léxico" (Favoriten)
     };
     const aSlug = param("a");
-    // Nur EIGENE Keys dispatchen: ein per URL gesteuerter Slug wie "toString"
-    // träfe sonst eine geerbte Object.prototype-Methode (unvalidierter dynamischer
-    // Methodenaufruf) statt einer echten App-Aktion.
-    if (aSlug && Object.prototype.hasOwnProperty.call(actions, aSlug)) {
+    // Dispatch über Map.get statt dynamischem Objekt-Index: ein URL-gesteuerter Slug
+    // löst so KEINEN Methoden-Lookup per Name aus und kann keine geerbte
+    // Object.prototype-Methode treffen (Object.entries nimmt nur eigene Keys).
+    // CodeQL js/unvalidated-dynamic-method-call hat damit keinen Sink mehr.
+    const aFn = new Map(Object.entries(actions)).get(aSlug);
+    if (typeof aFn === "function") {
       markSeen();
-      actions[aSlug]();
+      aFn();
       cleanUrl();
       return true;
     }
@@ -7002,10 +7004,10 @@
       "nivel-test": openAssessment,
       "ruta-check": () => openPlacement(false),
     };
-    // Wie oben: nur eigene Keys zulassen, damit ein URL-Slug nicht auf eine
-    // geerbte Prototyp-Methode dispatcht (unvalidierter dynamischer Methodenaufruf).
-    if (!Object.prototype.hasOwnProperty.call(openers, slug)) return false;
-    const open = openers[slug];
+    // Wie oben: Dispatch über Map.get (kein dynamischer Methoden-Lookup per Slug),
+    // damit ein URL-Slug nicht auf eine geerbte Prototyp-Methode dispatcht.
+    const open = new Map(Object.entries(openers)).get(slug);
+    if (typeof open !== "function") return false;
     markSeen();
     open(); // setzt state.screen + rendert
     cleanUrl();

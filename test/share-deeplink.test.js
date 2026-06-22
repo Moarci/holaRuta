@@ -81,15 +81,19 @@ test("Jede Reise-Tipps-Kategorie (TIPS_META) ist per ?m= deeplinkbar", () => {
 });
 
 // Sicherheits-Regressionsschutz (CodeQL js/unvalidated-dynamic-method-call):
-// Der Deep-Link-Router darf einen URL-gesteuerten Slug NUR auf EIGENE Map-Keys
-// dispatchen. Ohne hasOwnProperty-Guard träfe z. B. ?m=toString / ?a=constructor
-// eine geerbte Object.prototype-Methode und riefe sie als „Opener" auf.
-test("Deep-Link-Dispatch nur über eigene Keys (hasOwnProperty-Guard)", () => {
-  assert.match(appjs, /hasOwnProperty\.call\(actions,\s*aSlug\)/,
-    "actions-Dispatch (?a=) ohne hasOwnProperty-Guard");
-  assert.match(appjs, /hasOwnProperty\.call\(openers,\s*slug\)/,
-    "openers-Dispatch (?m=) ohne hasOwnProperty-Guard");
-  // Die alten ungeschützten Direktzugriffe dürfen NICHT zurückkehren.
-  assert.doesNotMatch(appjs, /if\s*\(aSlug\s*&&\s*actions\[aSlug\]\)/,
-    "alter ungeschützter actions[aSlug]-Truthy-Check wieder da");
+// Der Deep-Link-Router darf einen URL-gesteuerten Slug NICHT als dynamischen
+// Methoden-Lookup-Namen verwenden – sonst träfe z. B. ?m=toString / ?a=constructor
+// eine geerbte Object.prototype-Methode. Dispatch läuft daher über Map.get
+// (Object.entries → nur eigene Keys) + typeof-function-Guard, KEIN obj[slug]().
+test("Deep-Link-Dispatch ohne dynamischen Methoden-Lookup per Slug (CodeQL-sicher)", () => {
+  // Kein computed member access mit nutzergesteuertem Namen mehr.
+  assert.doesNotMatch(appjs, /actions\[aSlug\]/,
+    "actions[aSlug] (dynamischer Index per URL-Slug) wieder da");
+  assert.doesNotMatch(appjs, /openers\[slug\]/,
+    "openers[slug] (dynamischer Index per URL-Slug) wieder da");
+  // Dispatch über Map.get + Funktions-Guard.
+  assert.match(appjs, /new Map\(Object\.entries\(actions\)\)\.get\(aSlug\)/,
+    "actions-Dispatch (?a=) nicht über Map.get");
+  assert.match(appjs, /new Map\(Object\.entries\(openers\)\)\.get\(slug\)/,
+    "openers-Dispatch (?m=) nicht über Map.get");
 });
