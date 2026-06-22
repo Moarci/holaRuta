@@ -77,11 +77,16 @@
   }
 
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
-  function hmTopbar(title, back) {
+  // Der Titel ist die <h1> des Screens (eine echte Top-Überschrift je Screen).
+  // Ausnahme via opts.plainTitle: Screens mit eigener Inhalts-<h1> (z. B. das
+  // Aktivitätsblatt mit .sheet-title) rendern den Topbar-Titel als <div>, damit nicht
+  // zwei <h1> auf einem Screen stehen.
+  function hmTopbar(title, back, opts) {
+    const tag = opts && opts.plainTitle ? "div" : "h1";
     return `
       <div class="topbar">
         <button class="iconbtn" data-action="${back}" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <h1 class="topbar__title">${title}</h1>
+        <${tag} class="topbar__title">${title}</${tag}>
         <span></span>
       </div>`;
   }

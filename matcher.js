@@ -189,9 +189,14 @@
     // (1) Abweichung am Wortende (Leerzeichen oder String-Ende danach).
     if (after >= longer.length || longer.charCodeAt(after) === 32) return true; // 32 = Leerzeichen
     // (2) Genus im Plural: ein a/o-Vokal direkt vor einem wort-finalen "s"
-    //     (buenas↔buenos, amigas↔amigos) ist ebenfalls eine Flexion, kein Vertipper.
-    //     Eng gehalten (nur a/o vor "s" am Tokenende), damit echte Wort-INNEN-Tippfehler
-    //     wie "neccesito"↔"necesito" weiter als Tippfehler zählen.
+    //     (buenas↔buenos, amigas↔amigos, últimas↔últimos) ist ebenfalls eine Flexion,
+    //     kein Vertipper. Eng gehalten (nur a/o vor "s" am Tokenende), damit echte
+    //     Wort-INNEN-Tippfehler wie "neccesito"↔"necesito" weiter als Tippfehler zählen.
+    //     Bewusst in Kauf genommen: die nosotros-Endung "-mos" (doblamas↔doblamos) hat
+    //     dieselbe a/o-vor-s-Form und wird mit-abgelehnt. Eine Ausnahme für "-mos" ist
+    //     nicht möglich, ohne die häufigen -mo-Genus-Adjektive (último/próximo/supremo)
+    //     wieder fälschlich durchzulassen – sie sind schreibgleich. Trade-off netto
+    //     positiv (genau ein erreichbares Verb betroffen: doblamos).
     if (a.length === b.length && longer.charCodeAt(after) === 115) { // 115 = 's'
       const cA = a.charCodeAt(after - 1), cB = b.charCodeAt(after - 1);
       const genderVowel = (c) => c === 97 || c === 111; // 'a' | 'o'

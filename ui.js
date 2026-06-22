@@ -3632,7 +3632,7 @@
 
     return `
       <section class="screen">
-        ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher")}
+        ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher", { plainTitle: true })}
         ${controls}
         ${sheet}
       </section>
