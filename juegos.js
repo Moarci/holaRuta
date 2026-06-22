@@ -57,7 +57,7 @@
       dos: [
         "Ziel: als Erster alle Karten loswerden.",
         "Reihum eine Karte ablegen, die in Farbe ODER Zahl zur obersten Karte passt.",
-        "Aktionskarten: +2 (Ziehen), Retroceso (Richtung dreht), Salta (nächster setzt aus), Comodín (Farbe wählen), Comodín +4.",
+        "Aktionskarten: +2 (Ziehen), Reversa (Richtung dreht), Salta (nächster setzt aus), Comodín (Farbe wählen), Comodín +4.",
         "Hast du nur noch eine Karte, laut „¡UNO!“ rufen – sonst 2 Strafkarten.",
         "Keine passende Karte? Eine vom Stapel ziehen.",
       ],
@@ -144,13 +144,13 @@
       intro: "Das Kartenspiel des Südens, mit der baraja española (40 Karten). 2, 4 oder 6 Spieler in Teams. Es lebt vom Bluffen, vom Wetten („¡Truco!“ – „¡Quiero!“) und von heimlichen Zeichen (señas) zum Partner.",
       introEn: "The card game of the south, with the baraja española (40 cards). 2, 4 or 6 players in teams. It thrives on bluffing, betting („¡Truco!“ – „¡Quiero!“) and secret signs (señas) to your partner.",
       dos: [
-        "Spanisches Blatt ohne 8, 9 und 10. Die Kartenrangfolge ist eigen (1 de espada ist die höchste).",
+        "Spanisches 40-Karten-Blatt: 1–7 plus Sota, Caballo und Rey (eine 8 und 9 gibt es darin gar nicht). Die Kartenrangfolge ist eigen (1 de espada ist die höchste).",
         "Jeder bekommt 3 Karten; es gewinnt, wer 2 der 3 Stiche („manos“) holt.",
         "Punkte erhöhen: „Truco“ sagen → Gegner antwortet „Quiero“ (angenommen) oder „No quiero“ (aufgegeben).",
         "„Envido“ zählt die Punkte auf der Hand am Rundenanfang. Gespielt wird bis 30 (oder 15) Punkte.",
       ],
       dosEn: [
-        "Spanish deck without 8, 9 and 10. The card ranking is its own thing (the 1 of swords is the highest).",
+        "A 40-card Spanish deck: 1–7 plus Sota, Caballo and Rey (there is no 8 or 9 in it at all). The card ranking is its own thing (the 1 of swords is the highest).",
         "Each player gets 3 cards; you win by taking 2 of the 3 tricks („manos“).",
         "Raising the stakes: say „Truco“ → opponent answers „Quiero“ (accepted) or „No quiero“ (folded).",
         "„Envido“ counts the points in your hand at the start of the round. You play to 30 (or 15) points.",
@@ -422,7 +422,7 @@
       items: [
         { es: "¡Gané!", de: "Ich habe gewonnen!", en: "I won!" },
         { es: "Ganaste, bien jugado.", de: "Du hast gewonnen, gut gespielt.", en: "You won, well played." },
-        { es: "Quedamos empate.", de: "Es steht unentschieden.", en: "It's a tie." },
+        { es: "Es un empate.", de: "Es steht unentschieden.", en: "It's a tie." },
         { es: "¿Quién va ganando?", de: "Wer führt gerade?", en: "Who's winning?" },
         { es: "¿Otra ronda?", de: "Noch eine Runde?", en: "Another round?" },
         { es: "¡Buena partida!", de: "Gutes Spiel!", en: "Good game!" },
