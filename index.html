@@ -87,7 +87,7 @@
        Direktive wuerde default-src 'self' Inline-Skripte verbieten und damit Theme-Boot,
        Boot-Animation, Splash sowie den kompletten Single-File-Build (~50 inline Skripte)
        brechen. Inline-Skripte sind hier kein Angriffsvektor (keine User-HTML-Injektion). -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://upload.wikimedia.org https://commons.wikimedia.org; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; base-uri 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://upload.wikimedia.org https://commons.wikimedia.org; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="referrer" content="no-referrer" />
 </head>
 <body>

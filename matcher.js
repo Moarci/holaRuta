@@ -16,10 +16,11 @@
  * card.alt (nur Spanisch). Klammerzusätze sind OPTIONAL – siehe candidates().
  *
  * Tippfehler-Toleranz: eine inhaltlich richtige, aber leicht VERSCHRIEBENE
- * Antwort ("quiro" statt "quiero") zählt trotzdem – check() meldet sie über
+ * Antwort ("neccesito" statt "necesito") zählt trotzdem – check() meldet sie über
  * das typo-Flag, damit die UI freundlich die korrekte Schreibweise zeigt.
  * Zusätzlich darf ein optionales Subjektpronomen ("yo quiero" = "quiero")
- * vorne stehen. Bewusst konservativ (kurze Wörter bleiben streng).
+ * vorne stehen. Bewusst konservativ: kurze Wörter (< 8 Zeichen, z. B. "quiero")
+ * bleiben streng, dort wird kein Tippfehler-Budget gewährt.
  */
 (function () {
   "use strict";
@@ -112,7 +113,7 @@
 
   // ---------- Tippfehler-Toleranz ----------
   // Ziel: eine inhaltlich richtige Antwort, die nur leicht VERSCHRIEBEN ist
-  // ("quiro" statt "quiero"), soll zählen – aber als solche erkennbar bleiben
+  // ("neccesito" statt "necesito"), soll zählen – aber als solche erkennbar bleiben
   // (typo-Flag), damit die UI freundlich auf die korrekte Schreibweise hinweist.
   // Bewusst KONSERVATIV: kurze Wörter bleiben streng (sonst kippt gato↔pato).
 
@@ -181,7 +182,7 @@
   // es im Spanischen meist eine echte Flexion (Genus -o/-a, Person, Plural -s) –
   // ein BEDEUTUNGSunterschied, kein Vertipper: direkt nach der Abweichung steht
   // ein Leerzeichen oder das String-Ende. So zählt "necesita"≠"necesito", aber
-  // "quiro"="quiero" (Abweichung im Wortinneren) bleibt ein Tippfehler.
+  // "neccesito"="necesito" (Abweichung im Wortinneren) bleibt ein Tippfehler.
   function isWordFinalEdit(a, b) {
     const longer = a.length >= b.length ? a : b;
     const after = longer.length - commonSuffixLen(a, b); // erstes Zeichen des gemeinsamen Suffixes
