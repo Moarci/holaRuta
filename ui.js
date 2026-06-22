@@ -853,7 +853,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, fotos: vm.hasFotos, flirt: vm.hasFlirt, bailar: vm.hasBailar, musica: vm.hasMusica, juegos: vm.hasJuegos, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, jerga: vm.hasJerga, derechos: vm.hasDerechos, responsable: vm.hasResponsable, fotos: vm.hasFotos, flirt: vm.hasFlirt, bailar: vm.hasBailar, musica: vm.hasMusica, juegos: vm.hasJuegos, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
