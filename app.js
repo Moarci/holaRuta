@@ -211,7 +211,11 @@
   let navEpoch = 0;
   function setState(patch, opts) {
     if (patch) {
-      if (patch.screen && patch.screen !== state.screen) navEpoch++;
+      // Jede Navigation zählt die Epoche hoch – auch ein Dashboard-Reiterwechsel
+      // (gleicher screen "home", nur anderer homeTab), sonst snappt ein langsam
+      // ladendes Lazy-Modul den Nutzer aus dem neuen Reiter zurück.
+      if ((patch.screen && patch.screen !== state.screen) ||
+          (patch.homeTab && patch.homeTab !== state.homeTab)) navEpoch++;
       Object.assign(state, patch);
     }
     if (!opts || opts.render !== false) render();
@@ -3271,8 +3275,8 @@
         out.push({
           type: "dialogue", title: natk(dlg, "title"),
           turns: dlg.turns.map((tn) => tn.who === "npc"
-            ? { who: "npc", es: sub(tn.es), de: nat(tn) }
-            : { who: "user", de: nat(tn), answer: sub(tn.solEs) }),
+            ? { who: "npc", es: sub(tn.es), de: sub(nat(tn)) }
+            : { who: "user", de: sub(nat(tn)), answer: sub(tn.solEs) }),
         });
       }
     }

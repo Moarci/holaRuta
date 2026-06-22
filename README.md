@@ -139,7 +139,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und mit 0 Runtime-
 
 ## 🌎 Die Wörterbasis
 
-**2293 Karten · 72 Bereiche · 3 Stufen — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
+**2293 Karten · 72 Bereiche · 4 Stufen (A1–B2) — durchgängig auf lateinamerikanisches Spanisch ausgelegt.**
 
 Die Inhalte sind das Herz der App und wurden in einem [4-Agenten-Audit](AUDIT.md) live im Browser gegengeprüft: **0 Duplikate, 0 fehlende Felder, 0 ¿¡-Mismatches, keine falschen Übersetzungen**.
 
@@ -203,7 +203,7 @@ SpanischCard/
 ├── index.html          # App-Shell + Modul-Ladereihenfolge
 ├── styles.css          # Komplettes Design (Erdton-Palette, 3D-Flip, Responsive)
 │
-├── data.js        SC.data       # Modell: 72 Kategorien, 3 Stufen, 2293 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
+├── data.js        SC.data       # Modell: 72 Kategorien, 4 Stufen (A1–B2; B2 nur in Rollenspielen, Karten füllen A1–B1), 2293 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
 ├── contextdata.js SC.contextData # Reise-Kontext-Inhalte je Karte ({e,d,s,n}) – REINE DATEN
 ├── numbers.js     SC.numbers    # Zahl→spanisches Wort + Preis-Generator (Precios al oído, 7 Währungen) – REINE FUNKTIONEN
 ├── context.js     SC.context    # hängt Kontext an die Karten (Zahlen generiert) – REINE FUNKTIONEN
