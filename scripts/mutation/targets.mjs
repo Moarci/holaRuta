@@ -59,6 +59,18 @@ export const IGNORE = [
     "below1000: `if (n < 100)` vs `<= 100`. n===100 ist eine Zeile zuvor abgefangen " +
     "(return \"cien\") und n===0 ebenfalls; die Grenze 100 erreicht diese Bedingung also nie. " +
     "Beide Operatoren liefern für jede erreichbare Eingabe dasselbe → äquivalent." },
+  { file: "numbers.js", line: 201, op: "number", grund:
+    "tierFor: `(Number(level) || 1) - 1` (der ||-Default 1→0). Greift nur bei falschem/0-level: ||1 → 1-1=0, " +
+    "||0 → 0-1=-1, danach Math.max(0,…) → ebenfalls 0. Für gültige Stufen ist der Default irrelevant. Die " +
+    "(level-1)-Indizierung selbst ist per Test verriegelt → diese Default-Mutation ist äquivalent." },
+  { file: "numbers.js", line: 241, op: "number", grund:
+    "buildRound: `const n = Math.max(1, Number(count) || 10)` (1→0). count||10 ist für jede erreichbare " +
+    "Eingabe ≥1 (count fehlt/0 → 10, sonst die positive Aufgabenzahl); max(1,x)==max(0,x) für x≥1. Nur ein " +
+    "Bruch 0<count<1 würde abweichen – den liefert kein Aufrufer (immer ganzzahlig, real =6) → äquivalent." },
+  { file: "numbers.js", line: 246, op: "number", grund:
+    "buildRound: `guard += 1` (1→0) ist die Endlosschleifen-Sicherung der Distinkt-Sammelschleife. Der einzige " +
+    "Aufrufer nutzt count=6 ≪ kleinste Spannen-Distinktzahl (30), daher endet die Schleife stets über " +
+    "`out.length < n` – guard ist nie die reale Abbruchbedingung. Für alle erreichbaren Eingaben identisch → äquivalent." },
   // stats.js
   { file: "stats.js", line: 52, op: "number", grund:
     "statusOf: `(r.interval || 0) >= MASTERED_DAYS` mit MASTERED_DAYS=5. Der Fallback greift nur, wenn " +
@@ -69,21 +81,22 @@ export const IGNORE = [
     "review: `Math.max(0, num(s.interval, 0))`. interval fließt nur über `base = interval || 1` ein; " +
     "0 und 1 kollabieren dort beide zu base=1, und im Early-Review-Pfad klemmt min(base,…)/max(1,…) " +
     "ohnehin auf 1. Die Mutation 0→1 ändert kein beobachtbares Ergebnis → äquivalent." },
-  // matcher.js
+  // matcher.js (Zeilen = engine-lineAt; nach der Runde-3-Erweiterung neu ausgerichtet)
   { file: "matcher.js", line: 130, op: "number", grund:
-    "levenshtein: `new Array(bl + 1)` ist nur ein Kapazitäts-Hinweis. Die Schleife befüllt prev[0..bl] " +
-    "vollständig (JS erweitert das Array beim Setzen von Index bl). `new Array(bl)` liefert identische " +
-    "Inhalte → äquivalent." },
+    "levenshtein: `prev = new Array(bl + 1)` ist nur ein Kapazitäts-Hinweis. Die Schleife befüllt prev[0..bl] " +
+    "vollständig (JS erweitert das Array beim Setzen von Index bl). `new Array(bl)` liefert identische Inhalte → äquivalent." },
   { file: "matcher.js", line: 133, op: "number", grund:
-    "levenshtein: dieselbe Kapazitäts-Mutation für `cur = new Array(bl + 1)`. cur[0..bl] wird je Zeile " +
-    "komplett gesetzt → äquivalent." },
-  { file: "matcher.js", line: 211, op: "relational", grund:
-    "classifyNorm: `d > 0` vs `d >= 0` im Tippfehler-Pfad. Ein exakter Treffer (d===0) wird bereits in " +
-    "Schritt 1 mit return \"exact\" abgefangen; Schritt 2 sieht daher ausschließlich d>=1 → die 0-Grenze " +
-    "ist unerreichbar → äquivalent." },
+    "levenshtein: dieselbe Kapazitäts-Mutation für `cur = new Array(bl + 1)`. cur[0..bl] wird je Zeile komplett gesetzt → äquivalent." },
+  { file: "matcher.js", line: 137, op: "number", grund:
+    "levenshtein: `caPrev = i > 1 ? a.charCodeAt(i-2) : -1` (1→0). caPrev wird NUR im Transpositions-Zweig gelesen, " +
+    "der selbst mit `i > 1 &&` bewacht ist → bei i===1 unerreichbar; für i>1 liefern `i>1` und `i>0` identisch " +
+    "a.charCodeAt(i-2). In jedem erreichbaren Fall gleich → äquivalent." },
   { file: "matcher.js", line: 227, op: "relational", grund:
-    "check: `i < tries.length` vs `i <= tries.length`. Die Extra-Iteration greift auf tries[length]=undefined " +
-    "zu; classifyNorm(undefined,…) gibt sofort \"\" zurück und lässt cls unverändert → kein Effekt → äquivalent." },
+    "check: `i < tries.length` vs `i <= tries.length`. Die Extra-Iteration greift auf tries[length]=undefined zu; " +
+    "classifyNorm(undefined,…) gibt sofort \"\" zurück und lässt cls unverändert → kein Effekt → äquivalent." },
+  { file: "matcher.js", line: 229, op: "relational", grund:
+    "classifyNorm: `d > 0` vs `d >= 0` im Tippfehler-Pfad. Ein exakter Treffer (d===0) wird bereits in Schritt 1 " +
+    "mit return \"exact\" abgefangen; Schritt 2 sieht daher ausschließlich d>=1 → die 0-Grenze ist unerreichbar → äquivalent." },
   // sync.js (nach dem main-Merge resampelt – nachweislich äquivalent)
   { file: "sync.js", line: 84, op: "relational", grund:
     "mergePlacementHistory: `for (… i < lb.length …)` vs `<=`. Die Extra-Iteration übergibt lb[lb.length]=undefined " +

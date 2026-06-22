@@ -276,3 +276,14 @@ test("numbers.buildRound: deterministisch mit injiziertem rng", () => {
   assert.deepEqual(a, b, "gleicher Seed muss identische Beträge liefern");
   assert.equal(a.length, 6);
 });
+
+test("tierFor: Stufe wählt die richtige (1-basierte) Spanne und klemmt am Rand", () => {
+  // Verriegelt die idx = (level-1)-Berechnung (Mutations-Regressionsschutz: ein
+  // Off-by-one würde Stufe 1 auf die zweite Spanne zeigen lassen).
+  assert.equal(numbers.tierFor("CO", 1).min, 500);     // erste Spanne
+  assert.equal(numbers.tierFor("CO", 2).min, 10000);   // zweite Spanne
+  assert.equal(numbers.tierFor("CO", 3).min, 100000);  // dritte Spanne
+  // Klemmung: unter 1 -> erste, über Anzahl -> letzte Spanne.
+  assert.equal(numbers.tierFor("CO", 0).min, 500);
+  assert.equal(numbers.tierFor("CO", 99).min, 100000);
+});
