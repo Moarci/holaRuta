@@ -52,6 +52,9 @@
 
   function dialogosVM() {
     const d = ctx.state.dialogos;
+    // Schutz wie in den Handlern: ohne aktiven Dialog-State eine harmlose Leer-VM
+    // statt eines Deref-Crashes (state.dialogos wird nicht persistiert).
+    if (!d) return { title: "", icon: "💬", turnIdx: 0, total: 0, transcript: [], current: null, result: null, hint: false, speakable: false };
     const dia = dialogueById(d.dialogueId);
     const turns = (dia && dia.turns) || [];
     const scn = scenarioById(d.scenarioId);
@@ -92,6 +95,7 @@
 
   function dialogosDoneVM() {
     const d = ctx.state.dialogos;
+    if (!d) return { title: "", icon: "💬", correct: 0, total: 0, perfect: false };
     const dia = dialogueById(d.dialogueId);
     const scn = scenarioById(d.scenarioId);
     return {
@@ -106,8 +110,11 @@
   // ----- Handler -----
   function openDialogosSetup() {
     ctx.dismissBadgeToast();
+    // Epoche festhalten: navigiert der Nutzer weg, während das (heute eager, künftig
+    // evtl. lazy) Modul lädt, snappt der Callback ihn nicht zurück.
+    const epoch = ctx.navEpoch();
     ctx.loadModule("dialogos", () => {
-      if (!dialogosReady()) return;
+      if (!dialogosReady() || ctx.navEpoch() !== epoch) return;
       ctx.setState({ screen: "dialogosSetup" });
     });
   }

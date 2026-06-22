@@ -102,7 +102,7 @@
     { id: "all_cards",       group: "learning", icon: "🌎", name: "HolaRuta Legend",        nameEn: "HolaRuta Legend",      type: "allReviewed",
       description: "Lerne alle Karten mindestens einmal.", descriptionEn: "Learn every card at least once.",   unlockedText: "Du hast das komplette Reise-Deck durchgespielt.", unlockedTextEn: "You've worked through the entire travel deck." },
     { id: "master_10",       group: "learning", icon: "🏅", name: "Erste Meisterschaft",    nameEn: "First mastery",        type: "counter", metric: "cardsMastered", threshold: 10,
-      description: "Meistere 10 Karten (Intervall ≥ 7 Tage).", descriptionEn: "Master 10 cards (interval ≥ 7 days).", unlockedText: "Zehn Karten sitzen langfristig. Stark!", unlockedTextEn: "Ten cards locked in for the long run. Nice!" },
+      description: "Meistere 10 Karten (Intervall ≥ 5 Tage).", descriptionEn: "Master 10 cards (interval ≥ 5 days).", unlockedText: "Zehn Karten sitzen langfristig. Stark!", unlockedTextEn: "Ten cards locked in for the long run. Nice!" },
     { id: "master_50",       group: "learning", icon: "🏆", name: "Routinier",              nameEn: "Old hand",             type: "counter", metric: "cardsMastered", threshold: 50,
       description: "Meistere 50 Karten.",                 descriptionEn: "Master 50 cards.",                  unlockedText: "Ein halbes Hundert Karten sitzt fest.", unlockedTextEn: "Half a hundred cards firmly in place." },
 

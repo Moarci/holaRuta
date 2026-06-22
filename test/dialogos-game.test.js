@@ -158,3 +158,13 @@ test("dialogosGame.speakNpc wirft nicht (ohne TTS ein No-Op)", () => {
   d.click("start-dialogos");
   assert.doesNotThrow(() => window.SC.dialogosGame.speakNpc());
 });
+
+test("playScreen/doneVM überleben einen fehlenden Dialog-State ohne Crash", () => {
+  freshApp(); // kein Dialog gestartet -> state.dialogos ist nicht gesetzt
+  let html, done;
+  assert.doesNotThrow(() => { html = window.SC.dialogosGame.playScreen(); });
+  assert.doesNotThrow(() => { done = window.SC.dialogosGame.doneVM(); });
+  assert.equal(typeof html, "string");
+  assert.equal(done.total, 0);
+  assert.equal(done.perfect, false);
+});

@@ -204,9 +204,23 @@
   // sie folgt eigenen Speicher-Pfaden und wird hier nicht angefasst. Mit
   // `{ render: false }` als zweitem Argument kann das Neuzeichnen unterdrückt werden
   // (z. B. wenn der Aufrufer ohnehin gleich selbst rendert oder navigiert).
+  // Navigations-Epoche: zählt jeden Screen-Wechsel hoch. Asynchrone loadModule-
+  // Callbacks (siehe navAfterLoad) navigieren nur, wenn die Epoche seit dem Start
+  // des Ladens unverändert ist – sonst würde ein langsam ladendes Modul den Nutzer
+  // zurückreißen, nachdem er längst weitergetippt hat.
+  let navEpoch = 0;
   function setState(patch, opts) {
-    if (patch) Object.assign(state, patch);
+    if (patch) {
+      if (patch.screen && patch.screen !== state.screen) navEpoch++;
+      Object.assign(state, patch);
+    }
     if (!opts || opts.render !== false) render();
+  }
+  // Modul lazy laden und erst danach auf `screen` wechseln – aber nur, wenn der
+  // Nutzer in der Zwischenzeit nicht woanders hin navigiert ist.
+  function navAfterLoad(name, screen) {
+    const epoch = navEpoch;
+    loadModule(name, () => { if (epoch === navEpoch) setState({ screen }); });
   }
 
   let badgeToastTimer = null; // Aufräum-Timer der Badge-Einblendung
@@ -2790,7 +2804,7 @@
     // QR-Generator (window.SC.qr) wird beim Lehrer-Screen inline für den
     // Aufgaben-Code-QR gebraucht. Bei Bedarf nachladen, dann (neu) rendern –
     // der inline qrSvg-Guard zeigt sonst nur ein leeres Feld bis zum Reload.
-    loadModule("qr", () => setState({ screen: "teacher" }));
+    navAfterLoad("qr", "teacher");
   }
 
   // Aus einem Backup-Payload eine kompakte Schüler-Auswertung bauen (rein).
@@ -5136,7 +5150,7 @@
   function openHistoria(region) {
     dismissBadgeToast();
     state.histRegion = region === "centro" ? "centro" : "sur";
-    loadModule(region === "centro" ? "historiaCentro" : "historia", () => setState({ screen: "historia" }));
+    navAfterLoad(region === "centro" ? "historiaCentro" : "historia", "historia");
   }
 
   function openKnigge() {
@@ -5173,22 +5187,22 @@
 
   function openMusica() {
     dismissBadgeToast();
-    loadModule("musica", () => setState({ screen: "musica" }));
+    navAfterLoad("musica", "musica");
   }
 
   function openFotos() {
     dismissBadgeToast();
-    loadModule("fotografia", () => setState({ screen: "fotos" }));
+    navAfterLoad("fotografia", "fotos");
   }
 
   function openFlirt() {
     dismissBadgeToast();
-    loadModule("flirt", () => setState({ screen: "flirt" }));
+    navAfterLoad("flirt", "flirt");
   }
 
   function openBailar() {
     dismissBadgeToast();
-    loadModule("bailar", () => setState({ screen: "bailar" }));
+    navAfterLoad("bailar", "bailar");
   }
 
   function selectCountry(id) {
@@ -6658,7 +6672,7 @@
     // Zeit noch fehlen können.
     countries, knigge, regatear,
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
-    DEFAULT_ACCENT, root, loadModule,
+    DEFAULT_ACCENT, root, loadModule, navEpoch: () => navEpoch,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
     // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
     gameStats: () => gamestats,

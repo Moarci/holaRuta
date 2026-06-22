@@ -223,7 +223,9 @@
   // inversen Dreh-Anteil (Billboard) -> bleiben runde, zur Kamera gerichtete
   // Scheiben. Hotspots auf der abgewandten Seite werden gedämpft/gesperrt.
   function bpApplyRot() {
-    if (!bp3d.fig) return;
+    // Eine nach dem Verlassen des Screens noch feuernde RAF würde sonst Transforms
+    // auf den alten, abgelösten Knoten schreiben (unsichtbar, aber unnötig).
+    if (!bp3d.fig || bp3d.fig.isConnected === false) return;
     const yaw = ctx.state.bodyYaw, pitch = ctx.state.bodyPitch;
     bp3d.fig.style.transform = `translateZ(-30px) rotateX(${pitch}deg) rotateY(${yaw}deg)`;
     const inv = `rotateY(${-yaw}deg) rotateX(${-pitch}deg)`;

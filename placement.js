@@ -362,6 +362,7 @@
 
   // Score-Stufe als Index (0..3) – eine Quelle für Schwellen + Unknown-Override.
   function scoreIndex(finalScore, unknownRate) {
+    if (!isFinite(finalScore)) return 0; // NaN/undefined -> sicher A0, nicht versehentlich Höchststufe
     if (finalScore < 0.30 || unknownRate > 0.55) return 0;
     if (finalScore < 0.55) return 1;
     if (finalScore < 0.78) return 2;
