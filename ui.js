@@ -1826,7 +1826,7 @@
       .join("");
 
     const rows = vm.list.length
-      ? vm.list.map(statRow).join("")
+      ? vm.list.map(statRow).join("") + (vm.listMore ? `<p class="stat-more">${esc(t("profile.statsMore", { n: vm.listMore }))}</p>` : "")
       : `<p class="stat-empty">${esc(t("profile.statsEmpty"))}</p>`;
 
     return `

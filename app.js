@@ -761,13 +761,20 @@
       return (b.s.lastAt || 0) - (a.s.lastAt || 0); // zuletzt gelernt zuerst
     });
 
-    // Anzeige-Texte je Zeile ergänzen (Fälligkeit).
-    const list = rows.map((r) => Object.assign({}, r, { dueText: fmtDue(r.s.due) }));
+    // Anzeige-Texte je Zeile ergänzen (Fälligkeit). Liste auf STATS_LIST_CAP kappen:
+    // bei „Alle" sind das sonst 2293 Zeilen (~1,3 MB HTML) bei JEDEM Render/Filter-Tap.
+    // Sortierung ist schwächste-zuerst, d. h. die handlungsrelevanten Karten bleiben
+    // sichtbar; der lange Schwanz (gut gekonnt / ungesehen) wird als „+N weitere" gezählt.
+    const STATS_LIST_CAP = 200;
+    const fullLen = rows.length;
+    const list = rows.slice(0, STATS_LIST_CAP).map((r) => Object.assign({}, r, { dueText: fmtDue(r.s.due) }));
+    const listMore = Math.max(0, fullLen - list.length);
 
     return {
       overview: ov,
       xp: xpVM(),
       filter,
+      listMore,
       filters: [
         { id: "answered", label: t("app.statAnswered"), count: ov.seenCards },
         { id: "hard", label: t("app.statHard"), count: ov.hard },
@@ -2194,9 +2201,15 @@
     // Fertig-Screen: die anlassbezogene Belohnungs-Inszenierung in die leere Bühne
     // fahren (SC.celebrate entscheidet Szene, baut Inhalt/Buttons, setzt aria-live +
     // Fokus). Erst NACH dem innerHTML-Austausch, da der Mount-Punkt nun existiert.
-    if (state.screen === "done") mountCelebrate();
+    // Nur beim ERSTEN Eintritt in den Fertig-Screen die volle Inszenierung (Konfetti,
+    // Count-up, Sound, Haptik). Ein erneuter Render desselben Screens (Badge-Toast-
+    // Timer, Theme-/SW-Banner) baut die Bühne statisch neu (replay=false), sonst würde
+    // die Feier bei jedem Re-Render von vorn losballern.
+    if (state.screen === "done") { mountCelebrate(celebrateMountedFor !== "done"); celebrateMountedFor = "done"; }
+    else celebrateMountedFor = null;
     // Mini-Spiel-Fertig-Screens: dieselbe Inszenierung wie der Haupt-Lernpfad.
-    if (MINI_DONE_SCREENS[state.screen]) mountMiniDone(state.screen);
+    if (MINI_DONE_SCREENS[state.screen]) { mountMiniDone(state.screen, miniDoneMountedFor !== state.screen); miniDoneMountedFor = state.screen; }
+    else miniDoneMountedFor = null;
     // „¿Y esto?“: läuft der 3-2-1-Countdown noch, den nächsten Tick scharf schalten;
     // auf jedem anderen Screen einen evtl. laufenden Timer wieder abräumen (kein Leck).
     if (state.screen === "yesto") yestoGame.arm(); else yestoGame.disarm();
@@ -2224,13 +2237,17 @@
   // wie bisher: Pre-Trip → zurück zum Plan, Tarea → zurück zur Aufgabe, sonst
   // Übersicht/Statistik. Fehlt das Modul (z. B. Asset noch nicht da), bleibt die
   // Bühne leer statt zu crashen.
-  function mountCelebrate() {
+  let celebrateMountedFor = null; // welcher Done-Screen ist schon inszeniert? (Replay-Schutz)
+  let miniDoneMountedFor = null;
+  function mountCelebrate(replay) {
     const mount = document.getElementById("cb-mount");
     if (!mount || !(window.SC && SC.celebrate)) return;
     const result = doneVM();
+    const animate = replay !== false; // re-mount (replay===false): statisch, ohne Effekte
     SC.celebrate.celebrate(result, mount, {
-      sound: !!settings.celebrateSound, // Default aus (Sound überrascht); Haptik bleibt an
-      haptics: true,
+      sound: animate && !!settings.celebrateSound, // Default aus (Sound überrascht); Haptik bleibt an
+      haptics: animate,
+      reducedMotion: animate ? undefined : true,   // statisch nachzeichnen statt neu abspielen
       primaryLabel: result.origin === "pretrip" ? t("study.backPretrip")
         : result.origin === "task" ? t("study.backTask")
         : t("common.overview"),
@@ -2327,12 +2344,14 @@
       secondaryLabel: t("discover.comprasBackList"), onSecondary: compras.backToList,
     } };
   }
-  function mountMiniDone(screen) {
+  function mountMiniDone(screen, replay) {
     const mount = document.getElementById("cb-mount");
     if (!mount || !(window.SC && SC.celebrate)) return;
     const cfg = miniDoneConfig(screen);
+    const animate = replay !== false;
     SC.celebrate.celebrate(cfg.result, mount, Object.assign({
-      sound: !!settings.celebrateSound, haptics: true,
+      sound: animate && !!settings.celebrateSound, haptics: animate,
+      reducedMotion: animate ? undefined : true,
     }, cfg.opts));
   }
 
