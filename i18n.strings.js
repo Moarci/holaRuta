@@ -610,6 +610,7 @@
     favSaved: "Gemerkt",
     backPretrip: "Zum Pre-Trip-Plan",
     backTask: "Zurück zur Aufgabe",
+    backFavorites: "Zurück zu Mi léxico",
   }, {
     studyProgress: "Learning progress",
     cardBack: "Card is flipped",
@@ -640,6 +641,7 @@
     favSaved: "Saved",
     backPretrip: "Back to the pre-trip plan",
     backTask: "Back to the task",
+    backFavorites: "Back to Mi léxico",
   });
 
   // ---------- discover: Feature-Untertitel + Modus-Chrome ----------
@@ -2674,11 +2676,6 @@
     catNone: "— Eigene Einträge",
     groupToggle: "Gruppe ein-/ausklappen",
     practice: "Üben",
-    practiceTitle: "Mi léxico üben",
-    reveal: "Aufdecken",
-    next: "Weiter",
-    prev: "Zurück",
-    practiceDone: "Fertig ✓",
     share: "Teilen",
     shareTitle: "Mi léxico",
     shareHead: "📒 Mi léxico – meine Lieblingswörter & -sätze",
@@ -2721,11 +2718,6 @@
     catNone: "— Your own entries",
     groupToggle: "Collapse/expand group",
     practice: "Practice",
-    practiceTitle: "Practise Mi léxico",
-    reveal: "Reveal",
-    next: "Next",
-    prev: "Back",
-    practiceDone: "Done ✓",
     share: "Share",
     shareTitle: "Mi léxico",
     shareHead: "📒 Mi léxico – my favourite words & phrases",

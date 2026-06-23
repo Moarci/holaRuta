@@ -176,25 +176,22 @@ test("Gruppe ein-/ausklappen blendet die Einträge aus und wieder ein", () => {
   assert.ok(root.querySelector(".fav-row"), "wieder eingeblendet");
 });
 
-test("Übungsmodus: Español zeigen, aufdecken, weiterblättern, schließen", () => {
+test("Üben startet den normalen Lern-Pfad (gleiche Karteikarte/SRS-UI wie überall)", () => {
   const root = freshApp();
   openFavorites(root);
   addCustom(root, "Hallo", "Hola");
   addCustom(root, "Tschüss", "Adiós");
 
+  // „Üben" öffnet KEIN eigenes Flip-Modal mehr, sondern den echten Study-Screen.
   assert.ok(clickSel(root, '[data-action="fav-practice-start"]'), "Üben-Knopf");
-  const ov = root.querySelector(".fav-practice");
-  assert.ok(ov, "Übungs-Overlay offen");
-  assert.ok(!root.querySelector(".sz-show__de"), "Deutsch zunächst verborgen");
+  assert.ok(root.querySelector(".screen.study"), "normaler Lern-Screen offen");
+  assert.ok(!root.querySelector(".fav-practice"), "kein eigenes Übungs-Overlay mehr");
 
-  assert.ok(clickSel(root, '[data-action="fav-practice-reveal"]'), "Aufdecken");
-  assert.ok(root.querySelector(".sz-show__de"), "Deutsch nach Aufdecken sichtbar");
-
-  assert.ok(clickSel(root, '[data-action="fav-practice-next"]'), "Weiter");
-  assert.ok(!root.querySelector(".sz-show__de"), "nächste Karte wieder verdeckt");
-
-  assert.ok(clickSel(root, '[data-action="fav-practice-close"]'), "Schließen");
-  assert.ok(!root.querySelector(".fav-practice"), "Overlay geschlossen");
+  // Eigene (Nicht-Karten-)Einträge sind als ephemere Karteikarten lernbar: aufdecken
+  // (drehen) zeigt die Rückseite mit Bewertungs-Buttons, dann normal bewerten.
+  assert.ok(clickSel(root, '[data-action="flip"]'), "Karte umdrehen");
+  assert.ok(root.querySelector("[data-action='rate']") || root.querySelector(".rate"),
+    "Bewertungs-Buttons wie im normalen Lern-Pfad");
 });
 
 test("Hinzufügen-Entwurf überlebt einen Full-Render (z. B. Gruppe einklappen)", () => {

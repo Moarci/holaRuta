@@ -149,7 +149,8 @@
     statsFilter: "answered", // Statistik-Liste: 'answered'|'hard'|'mastered'|'new'|'all'
     cardId: null,            // Detailseite: welche Karte
     backTo: "home",          // wohin der Zurück-Knopf der Detailseite führt
-    studyOrigin: null,       // Herkunft der laufenden Runde: 'pretrip' | 'task' | null (=Dashboard) – steuert, wohin der Fertig-Screen zurückführt
+    studyOrigin: null,       // Herkunft der laufenden Runde: 'pretrip' | 'task' | 'favorites' | null (=Dashboard) – steuert, wohin der Fertig-Screen zurückführt
+    studyOverlay: null,      // ephemere Karteikarten (id→Karte) für „Mi léxico"-Favoriten ohne echte Karte (Satz-/eigene Einträge); nur während der Lexikon-Runde gesetzt, von cardById als Rückfall genutzt
     session: null,           // { seen:Set<id>, right, wrong } – Richtig/Falsch-Zähler PRO Lern-Runde (null außerhalb); füttert die Belohnungs-Inszenierung
     roundSnapshot: null,     // { unlocked, streak, everStudied } – Stand bei Rundenbeginn, für Diffs (neue Badges / Streak / erste Runde) am Rundenende
     countryId: null,         // Länderkunde: welches Land ist gewählt (null = erstes)
@@ -276,7 +277,11 @@
   };
   const cardById = (id) => {
     if (!_cardByIdMap) { _cardByIdMap = new Map(); const a = allCards(); for (let i = 0; i < a.length; i++) _cardByIdMap.set(a[i].id, a[i]); }
-    return _cardByIdMap.get(id) || null;
+    // Echte Karten haben Vorrang; nur wenn keine existiert, greift die Lern-Overlay
+    // (ephemere Karteikarten für „Mi léxico"-Favoriten, die keine Karte sind:
+    // Satz-/eigene Einträge – siehe favPracticeStart). Reale Karten-Favoriten laufen
+    // über ihre echte Id und damit über den normalen SRS-Fortschritt.
+    return _cardByIdMap.get(id) || (state.studyOverlay && state.studyOverlay[id]) || null;
   };
   // Stufen-Filter: leere Auswahl = alle. Greift bei "Alle lernen" und je Kategorie.
   const matchesLevel = (c) => state.levels.length === 0 || state.levels.includes(c.lvl);
@@ -2049,7 +2054,7 @@
   function backTarget() {
     if (state.screen === "card") return state.backTo === "home" ? "home" : state.backTo === "search" ? "search" : "stats";
     // Fertig-Screen: zurück zur Herkunft der Runde (Pre-Trip-Plan / Aufgabe), sonst Dashboard.
-    if (state.screen === "done") return state.studyOrigin === "pretrip" ? "pretrip" : state.studyOrigin === "task" ? "task" : "home";
+    if (state.screen === "done") return state.studyOrigin === "pretrip" ? "pretrip" : state.studyOrigin === "task" ? "task" : state.studyOrigin === "favorites" ? "favorites" : "home";
     return SCREEN_PARENT[state.screen] || "home";
   }
 
@@ -2060,7 +2065,6 @@
     // 1) Offene Overlays/Panels zuerst schließen (wie ein „Schließen").
     if (state.updateNotice && state.updateNotice.length) { dismissUpdateNotice(); return true; }
     if (state.szShow) { spickzettel.szClose(); return true; }
-    if (state.favPractice) { favPracticeClose(); return true; }
     if (state.favShow) { favClose(); return true; }
     if (state.screen === "favorites" && state.favEdit) { favEditCancel(); return true; }
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
@@ -2087,6 +2091,7 @@
     const target = backTarget();
     if (target === "home") goHome();
     else if (target === "stats") goStats();
+    else if (target === "favorites") openFavorites(); // räumt u. a. die Lexikon-Lern-Overlay weg
     else {
       dismissBadgeToast();
       state.revealed = false;
@@ -2326,11 +2331,13 @@
       reducedMotion: animate ? undefined : true,   // statisch nachzeichnen statt neu abspielen
       primaryLabel: result.origin === "pretrip" ? t("study.backPretrip")
         : result.origin === "task" ? t("study.backTask")
+        : result.origin === "favorites" ? t("study.backFavorites")
         : t("common.overview"),
       secondaryLabel: result.origin ? t("common.overview") : t("common.statsView"),
       onPrimary: function () {
         if (result.origin === "pretrip") openPretrip();
         else if (result.origin === "task") openTaskScreen();
+        else if (result.origin === "favorites") openFavorites();
         else goHome();
       },
       onSecondary: function () {
@@ -4946,6 +4953,7 @@
     state.typeResult = null;
     state.pretripDay = null;   // eine abgebrochene Pre-Trip-Sitzung beim Verlassen lösen
     state.studyOrigin = null;  // Herkunft zurücksetzen (Dashboard ist Neustart)
+    state.studyOverlay = null; // ephemere Lexikon-Karteikarten beim Verlassen lösen
     state.pretripLock = null;  // Aufgaben-Sperre lösen (frei wählbar im Entdecken-Plan)
     state.placement = null;    // Ruta-Check-Sitzung beim Verlassen lösen (kein hängender „done“-State)
     render();
@@ -5412,45 +5420,43 @@
     render();
   }
 
-  // ----- „Mi léxico" üben (Durchblätter-/Flip-Runde über ALLE Favoriten) -----
-  // Eigenständig (kein SRS): zeigt Español, deckt auf Tipp Deutsch + Aussprache-Tipp
-  // auf, blättert vor/zurück. Snapshot der aufgelösten Einträge beim Start, damit ein
-  // späteres Entfernen/Bearbeiten die laufende Runde nicht durcheinanderbringt.
+  // ----- „Mi léxico" üben -----
+  // Führt das ganze Lexikon durch den NORMALEN Lern-Pfad (dieselbe Karteikarte/
+  // Schreiben/Hören-UI + SRS-Bewertung wie überall), statt eines eigenen Flip-Modals.
+  // Echte Karten-Favoriten laufen über ihre echte Id – ihr SRS-Fortschritt zählt also
+  // ganz normal mit. Satz-/eigene Einträge sind keine Karten; für sie wird eine
+  // ephemere Karteikarte in die studyOverlay gelegt, die cardById als Rückfall findet.
+  // Schnappschuss beim Start, damit ein späteres Entfernen/Bearbeiten die laufende
+  // Runde nicht durcheinanderbringt.
   function favPracticeStart() {
-    const list = favorites.map((f) => {
+    if (!favorites.length) return;
+    dismissBadgeToast();
+    const overlay = {};
+    const ids = favorites.map((f) => {
       const card = cardById(f.id);
-      return {
+      if (card) return card.id; // echte Karte: echte Id -> normaler SRS-Fortschritt
+      overlay[f.id] = {
         id: f.id,
-        es: card ? card.es : f.es,
-        de: card ? (nat(card) || f.de) : f.de,
-        tip: card ? (card.tip || "") : (f.tip || ""),
+        cat: f.cat || "",
+        lvl: Number(f.lvl) || 1,
+        de: f.de,
+        es: f.es,
+        tip: f.tip || "",
       };
+      return f.id;
     });
-    if (!list.length) return;
-    state.favPractice = { items: shuffle(list), i: 0, revealed: false };
+    state.studyOverlay = overlay;
+    state.studyOrigin = "favorites"; // Fertig-Screen führt zurück ins Lexikon
+    state.pretripDay = null;
+    state.scopeId = "all";
+    state.queue = shuffle(ids).slice(0, SESSION_CAP);
+    state.total = state.queue.length;
+    beginRound();
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    state.screen = "study";
     render();
-  }
-  function favPracticeReveal() {
-    if (state.favPractice) { state.favPractice.revealed = true; render(); }
-  }
-  function favPracticeNext() {
-    const p = state.favPractice;
-    if (!p) return;
-    if (p.i >= p.items.length - 1) { favPracticeClose(); return; }
-    p.i += 1; p.revealed = false; render();
-  }
-  function favPracticePrev() {
-    const p = state.favPractice;
-    if (!p || p.i <= 0) return;
-    p.i -= 1; p.revealed = false; render();
-  }
-  function favPracticeClose() {
-    state.favPractice = null;
-    render();
-  }
-  function favPracticeSpeak() {
-    const p = state.favPractice;
-    if (p && speech && p.items[p.i] && p.items[p.i].es) speech.speak(p.items[p.i].es, settings.speechRate);
   }
 
   // Ganze Liste teilen/exportieren: „es — de"-Zeilen, bevorzugt über die native
@@ -5537,16 +5543,8 @@
     });
     const groups = seq.slice().sort((a, b) => (a.order - b.order) || (a.seq - b.seq));
     const shown = state.favShow ? all.find((it) => it.id === state.favShow) : null;
-    // Großanzeige & Übungsmodus zeigen zusätzlich die Herkunft (Modul/Kategorie).
+    // Die Großanzeige zeigt zusätzlich die Herkunft (Modul/Kategorie).
     const srcOf = (it) => (it ? { icon: it.gicon, label: it.glabel } : null);
-    const p = state.favPractice;
-    const practice = p ? {
-      i: p.i,
-      n: p.items.length,
-      revealed: !!p.revealed,
-      item: p.items[p.i] || null,
-      last: p.i >= p.items.length - 1,
-    } : null;
     return {
       groups,
       count: favorites.length,   // Gesamtzahl (für die Überschrift, auch beim Filtern)
@@ -5564,7 +5562,6 @@
       draft: favDraft || { de: "", es: "", tip: "", cat: "" },
       addOpen: !!(favMsg || favDraft),
       undo: favUndo ? { es: favUndo.entry.es } : null,
-      practice,
       speakable: !!(speech && speech.isSupported()),
     };
   }
@@ -5577,7 +5574,7 @@
     state.favShow = null;
     state.favEdit = null;
     state.favQuery = "";
-    state.favPractice = null;
+    state.studyOverlay = null; // eine etwaige Lexikon-Lernrunde ist beim Zurückkehren beendet
     dismissFavUndo();
     state.screen = "favorites";
     render();
@@ -6722,11 +6719,6 @@
     "fav-group-toggle": (el) => { favGroupToggle(el.dataset.key); },
     "fav-share": (el) => { favShareList(); },
     "fav-practice-start": (el) => { favPracticeStart(); },
-    "fav-practice-reveal": (el) => { favPracticeReveal(); },
-    "fav-practice-next": (el) => { favPracticeNext(); },
-    "fav-practice-prev": (el) => { favPracticePrev(); },
-    "fav-practice-close": (el) => { favPracticeClose(); },
-    "fav-practice-speak": (el) => { favPracticeSpeak(); },
     "apply-bundle": (el) => { toggleBundle(el.dataset.bundle); },
     "clear-task-sel": (el) => { clearTaskSelection(); },
     "task-generate": (el) => { generateTask(); },
@@ -7161,10 +7153,6 @@
     // Update-Hinweis & Favoriten-Overlay: Escape schließt (wie der Zurück-Knopf).
     if (state.updateNotice && state.updateNotice.length && e.key === "Escape") {
       dismissUpdateNotice();
-      return;
-    }
-    if (state.favPractice && e.key === "Escape") {
-      favPracticeClose();
       return;
     }
     if (state.favShow && e.key === "Escape") {
