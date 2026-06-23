@@ -171,6 +171,7 @@
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿Cuánto cuesta?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">¿Cuánto cuesta?</div>
                         <div class="face__tip">🗣️ KWAN-toh KWES-tah</div>
+                        <div class="face__ctx" data-i18n="ex1.ctx">🧭 Im Laden oder auf dem Markt</div>
                       </div>
                     </div>
                   </div>
@@ -192,6 +193,7 @@
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="Necesito un médico" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">Necesito un médico</div>
                         <div class="face__tip">🗣️ ne-ce-SI-to un MÉ-di-co</div>
+                        <div class="face__ctx" data-i18n="ex2.ctx">🧭 Bei Krankheit oder Verletzung</div>
                       </div>
                     </div>
                   </div>
@@ -213,6 +215,7 @@
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿A qué hora sale?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">¿A qué hora sale?</div>
                         <div class="face__tip">🗣️ a-KÉ O-ra SA-le</div>
+                        <div class="face__ctx" data-i18n="ex3.ctx">🧭 Am Busbahnhof, beim Fahrplan</div>
                       </div>
                     </div>
                   </div>
@@ -234,6 +237,7 @@
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="La cuenta, por favor" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">La cuenta, por favor</div>
                         <div class="face__tip">🗣️ la KWEN-ta por fa-VOR</div>
+                        <div class="face__ctx" data-i18n="ex4.ctx">🧭 Im Restaurant oder Café</div>
                       </div>
                     </div>
                   </div>
@@ -255,6 +259,7 @@
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿De dónde eres?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">¿De dónde eres?</div>
                         <div class="face__tip">🗣️ de DÓN-de E-res</div>
+                        <div class="face__ctx" data-i18n="ex5.ctx">🧭 Beim Frühstück oder im Dorm</div>
                       </div>
                     </div>
                   </div>
@@ -295,6 +300,11 @@
             <span class="lp-feat__icon" aria-hidden="true">🌎</span>
             <h3 class="lp-feat__title" data-i18n="feat.latam.t">Echtes Straßen-Spanisch</h3>
             <p class="lp-feat__body" data-i18n="feat.latam.b">colectivo, vuelto, plata, chévere — die Wörter, die man in Lateinamerika wirklich sagt.</p>
+          </article>
+          <article class="lp-feat" data-reveal style="--i:0; --accent:#2F6B70">
+            <span class="lp-feat__icon" aria-hidden="true">🧭</span>
+            <h3 class="lp-feat__title" data-i18n="feat.context.t">Immer mit Kontext</h3>
+            <p class="lp-feat__body" data-i18n="feat.context.b">Jede Karte zeigt dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp. So weißt du sofort, wie du ihn einordnest.</p>
           </article>
           <article class="lp-feat" data-reveal style="--i:0; --accent:#E9A23B">
             <span class="lp-feat__icon" aria-hidden="true">📶</span>
@@ -514,17 +524,18 @@
         "trust.cards": "Karten", "trust.areas": "Bereiche", "trust.modes": "Lernmodi", "trust.free": "Offline · kein Konto",
         "card.hint": "Zum Umdrehen tippen", "card.lvl": "A1 · Einsteiger", "card.lvl2": "A2 · Mittel",
         "card.speakLabel": "Antwort vorlesen",
-        "ex1.cat": "GELD", "ex1.q": "Was kostet das?",
-        "ex2.cat": "NOTFALL", "ex2.q": "Ich brauche einen Arzt",
-        "ex3.cat": "BUS", "ex3.q": "Wann fährt der Bus?",
-        "ex4.cat": "ESSEN", "ex4.q": "Die Rechnung, bitte",
-        "ex5.cat": "SMALLTALK", "ex5.q": "Woher kommst du?",
+        "ex1.cat": "GELD", "ex1.q": "Was kostet das?", "ex1.ctx": "🧭 Im Laden oder auf dem Markt",
+        "ex2.cat": "NOTFALL", "ex2.q": "Ich brauche einen Arzt", "ex2.ctx": "🧭 Bei Krankheit oder Verletzung",
+        "ex3.cat": "BUS", "ex3.q": "Wann fährt der Bus?", "ex3.ctx": "🧭 Am Busbahnhof, beim Fahrplan",
+        "ex4.cat": "ESSEN", "ex4.q": "Die Rechnung, bitte", "ex4.ctx": "🧭 Im Restaurant oder Café",
+        "ex5.cat": "SMALLTALK", "ex5.q": "Woher kommst du?", "ex5.ctx": "🧭 Beim Frühstück oder im Dorm",
         "feat.eyebrow": "WAS DRIN IST",
         "feat.title": "Alles für die Reise — nichts fürs Klassenzimmer.",
         "feat.lead": "Kein Vokabel-Pauken. Sondern die Sätze, die du am Busbahnhof, im Hostel und auf dem Markt sofort brauchst.",
         "feat.srs.t": "Du vergisst es nicht mehr", "feat.srs.b": "Jede Vokabel kommt genau dann zurück, wenn du sie zu vergessen drohst — automatisch. Du musst nichts planen.",
         "feat.modes.t": "Lern, wie's dir passt", "feat.modes.b": "Karteikarte, selbst schreiben oder nur hören — wechsle den Modus jederzeit.",
         "feat.latam.t": "Echtes Straßen-Spanisch", "feat.latam.b": "colectivo, vuelto, plata, chévere — die Wörter, die man in Lateinamerika wirklich sagt.",
+        "feat.context.t": "Immer mit Kontext", "feat.context.b": "Jede Karte zeigt dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp. So weißt du sofort, wie du ihn einordnest.",
         "feat.offline.t": "Funktioniert ohne Netz", "feat.offline.b": "Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.",
         "feat.privacy.t": "Kein Konto, kein Tracking", "feat.privacy.b": "Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.",
         "feat.areas.t": "72 Themen für echte Situationen", "feat.areas.b": "Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.",
@@ -567,17 +578,18 @@
         "trust.cards": "cards", "trust.areas": "areas", "trust.modes": "modes", "trust.free": "Offline · no account",
         "card.hint": "Tap to flip", "card.lvl": "A1 · Beginner", "card.lvl2": "A2 · Intermediate",
         "card.speakLabel": "Read answer aloud",
-        "ex1.cat": "MONEY", "ex1.q": "How much is it?",
-        "ex2.cat": "EMERGENCY", "ex2.q": "I need a doctor",
-        "ex3.cat": "BUS", "ex3.q": "What time does the bus leave?",
-        "ex4.cat": "FOOD", "ex4.q": "The check, please",
-        "ex5.cat": "SMALL TALK", "ex5.q": "Where are you from?",
+        "ex1.cat": "MONEY", "ex1.q": "How much is it?", "ex1.ctx": "🧭 At the shop or market",
+        "ex2.cat": "EMERGENCY", "ex2.q": "I need a doctor", "ex2.ctx": "🧭 When ill or injured",
+        "ex3.cat": "BUS", "ex3.q": "What time does the bus leave?", "ex3.ctx": "🧭 At the station, checking times",
+        "ex4.cat": "FOOD", "ex4.q": "The check, please", "ex4.ctx": "🧭 At a restaurant or café",
+        "ex5.cat": "SMALL TALK", "ex5.q": "Where are you from?", "ex5.ctx": "🧭 At breakfast or in the dorm",
         "feat.eyebrow": "WHAT'S INSIDE",
         "feat.title": "Everything for the road — nothing for the classroom.",
         "feat.lead": "No vocab cramming. Just the phrases you need right away at the bus terminal, in the hostel and at the market.",
         "feat.srs.t": "You won't forget it", "feat.srs.b": "Every word comes back right before you'd forget it — automatically. Nothing to plan.",
         "feat.modes.t": "Learn your way", "feat.modes.b": "Flip a card, type it yourself or just listen — switch modes anytime.",
         "feat.latam.t": "Real street Spanish", "feat.latam.b": "colectivo, vuelto, plata, chévere — the words people actually use in Latin America.",
+        "feat.context.t": "Always in context", "feat.context.b": "Every card shows you when and where you'll actually need the phrase — plus a travel tip. So you instantly know how it fits.",
         "feat.offline.t": "Works with no signal", "feat.offline.b": "Loads once, runs offline — Andes, jungle, night bus.",
         "feat.privacy.t": "No account, no tracking", "feat.privacy.b": "Your progress stays on your device. No sign-up, no ads.",
         "feat.areas.t": "72 real-life topics", "feat.areas.b": "From the bus ride to the pharmacy — 2,293 cards, neatly sorted.",

@@ -295,14 +295,30 @@ a { color: var(--brand-ink); }
   width: min(360px, 92vw); margin-inline: auto;
   touch-action: pan-y; /* vertikales Scrollen bleibt, horizontale Wische gehen ans JS */
 }
-.lp-carousel__viewport { position: relative; min-height: 300px; }
+.lp-carousel__viewport { position: relative; min-height: 330px; }
 .lp-slide {
   position: absolute; inset: 0; opacity: 0; transform: scale(0.96);
   transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
 }
 .lp-slide.is-active { position: relative; opacity: 1; transform: none; pointer-events: auto; }
-.lp-carousel .flip__inner { min-height: 270px; }
+/* Etwas höher als der App-Standard (270): die Antwortseite trägt jetzt
+   zusätzlich die Kontextzeile – die Höhe muss Wort + Aussprache + Kontext
+   tragen, ohne dass Text auf schmalen Phones in die Eck-Buttons läuft. */
+.lp-carousel .flip__inner { min-height: 310px; }
+
+/* Reise-Kontext auf der Antwortkarte: zeigt, WANN/WO man den Satz wirklich
+   braucht – damit die Showcase-Karte (wie in der App) immer Kontext zur
+   Einordnung mitliefert. Dezent unter Wort + Aussprache, mit feiner Trennlinie.
+   Die Rückseite reserviert unten Platz, damit der zentrierte Inhalt nicht in
+   den 🔊-Button (bottom:16px, 44px hoch) läuft. */
+.lp-carousel .face--back { padding-bottom: 72px; }
+.lp-carousel .face__ctx {
+  margin-top: 14px; padding-top: 12px;
+  max-width: 30ch; font-size: 0.84rem; line-height: 1.35;
+  color: rgba(251, 243, 228, 0.82); text-wrap: balance;
+  border-top: 1px solid rgba(251, 243, 228, 0.22);
+}
 
 /* Tilt-Wrapper: getrennt vom .flip (das seine eigene Perspektive fürs Umdrehen
    mitbringt), damit Kippen und Umdrehen sich nicht in die Quere kommen. */
