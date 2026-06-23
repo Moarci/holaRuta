@@ -5447,7 +5447,7 @@
     }
     const pageMod = (mod, icon, title, subKey, action) => {
       if (!mod) return;
-      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn, tp.es, (tp.vocab || []).map((v) => [v.es, v.de, v.en])]);
+      const topics = (mod.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.donts, tp.dontsEn, tp.tips, tp.tipsEn, tp.es, (tp.vocab || []).map((v) => [v.es, v.de, v.en])]);
       const phrases = (mod.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
       const gloss = (mod.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
       const checklist = (mod.CHECKLIST || []).map((c) => [c.item, c.itemEn, c.why, c.whyEn]);
@@ -6193,7 +6193,8 @@
     const o = loc(src[idx]); // …En-Felder für die aktive Sprache überlagern
     const lines = []
       .concat((o.dos || []).map((text) => ({ mark: "✅", text })))
-      .concat((o.donts || []).map((text) => ({ mark: "🚫", text })));
+      .concat((o.donts || []).map((text) => ({ mark: "🚫", text })))
+      .concat((o.tips || []).map((text) => ({ mark: "💡", text })));
     buzz(12);
     share.shareImage("tips", {
       kicker: meta.kicker,

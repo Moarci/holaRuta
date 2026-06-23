@@ -369,13 +369,13 @@
         "Geh in den ersten Würfen auf die großen Kombinationen (Generala, Póker, Full) – sie bringen die meisten Punkte.",
         "Misslingt der Wurf, „opfere“ ihn in eine kleine Kategorie (deine 1er) statt eine wertvolle zu verschenken.",
         "Behalte immer die Würfel, die zur höchsten noch offenen Kategorie passen, und würfle den Rest neu.",
-        "Hast du schon drei oder vier Gleiche im ersten Wurf, riskier den Rest auf eine „Generala servida“ – die gewinnt oft sofort die Partie.",
+        "Hast du schon drei oder vier Gleiche, behalte sie und würfle gezielt auf die Generala – die höchste Kombination. Fallen alle fünf schon im ersten Wurf, ist es eine „Generala servida“ und gewinnt oft sofort die Partie.",
       ],
       tipsEn: [
         "On your first rolls, aim for the big combinations (Generala, Póker, Full) – they score the most.",
         "If a turn flops, „sacrifice“ it into a low category (your 1s) instead of wasting a valuable one.",
         "Always keep the dice that fit your highest still-open category and re-roll the rest.",
-        "With three or four of a kind already on the first roll, gamble the rest on a „Generala servida“ – it often wins outright.",
+        "With three or four of a kind, keep them and roll for the Generala – the highest combination. If all five land on the very first roll it's a „Generala servida“ and often wins outright.",
       ],
     },
     {
@@ -407,14 +407,14 @@
         "The noise is part of it – but not in a quiet dorm in the middle of the night.",
       ],
       tips: [
-        "Merk dir, bei welcher Zahl jemand passt („paso“) – die Zahl hat er nicht; spiel sie gezielt, um ihn auszubremsen.",
+        "Passt jemand („paso“), fehlen ihm beide offenen End-Zahlen – merk sie dir und halt diese Enden im Spiel, um ihn auszubremsen.",
         "Spiel die Zahl, von der du die meisten Steine hast – so kontrollierst du, an welchen Enden es weitergeht.",
         "Im Team nie den Partner blockieren: Lass das Ende offen, das er bedienen kann.",
         "Heb deinen Doppelstein für den richtigen Moment auf, um das Tempo zu bestimmen statt darauf sitzenzubleiben.",
         "Zähl die Augen mit – bei blockiertem Spiel gewinnt, wer am wenigsten auf der Hand hält.",
       ],
       tipsEn: [
-        "Note which number a player passes on („paso“) – they don't have it; play it deliberately to stall them.",
+        "When someone passes („paso“), they lack both open end numbers – remember them and keep those ends in play to stall them.",
         "Lead the number you hold the most of – that way you control which ends stay open.",
         "In a team, never block your partner: leave open the end they can serve.",
         "Save your double for the right moment to dictate the tempo, rather than getting stuck with it.",
