@@ -5294,24 +5294,58 @@
     render();
   }
 
+  // Herkunft eines Favoriten – für Gruppierung (Überschrift) und Icon.
+  //  - Karten-Favorit / Karten-cat -> echte Kategorie (categoryById)
+  //  - Satz-Favorit aus einem Modul (id „favph-…", cat = Modul-Slug) -> Modul
+  //    (MODULE_SHARE liefert Icon + Titel)
+  //  - eigener, getippter Eintrag (id „fav-…", ohne Karte) -> eigene Gruppe
+  // order steuert die Gruppen-Reihenfolge: Inhalt (0) vor „Weitere" (1) vor den
+  // eigenen Einträgen (2) – die wandern also bewusst ans Ende, nicht nach oben.
+  function favGroupOf(f, card) {
+    if (!card && /^fav-/.test(String(f.id))) {
+      return { key: "__custom", label: t("favorites.customGroup"), icon: "✏️", custom: true, order: 2 };
+    }
+    const cat = categoryById(card ? card.cat : f.cat);
+    if (cat) return { key: "cat:" + cat.id, label: natk(cat, "label"), icon: cat.icon, custom: false, order: 0 };
+    const mod = MODULE_SHARE[f.cat];
+    if (mod) return { key: "mod:" + f.cat, label: mod.title, icon: mod.icon, custom: false, order: 0 };
+    return { key: "__other", label: t("favorites.otherGroup"), icon: "⭐", custom: false, order: 1 };
+  }
+
   function favoritesVM() {
     const items = favorites.map((f) => {
       // Karten-Favorit: live + in der UI-Sprache auflösen, solange die Karte existiert;
-      // sonst den gespeicherten Schnappschuss zeigen (eigene Einträge immer Schnappschuss).
+      // sonst den gespeicherten Schnappschuss zeigen (Satz-/eigene Einträge immer Schnappschuss).
       const card = cardById(f.id);
-      const cat = categoryById(card ? card.cat : f.cat);
+      const g = favGroupOf(f, card);
       return {
         id: f.id,
         de: card ? (nat(card) || f.de) : f.de,
         es: card ? card.es : f.es,
         tip: card ? (card.tip || "") : (f.tip || ""),
-        catIcon: cat ? cat.icon : "⭐",
-        custom: !card,
+        catIcon: g.icon,
+        custom: g.custom,
+        gkey: g.key, glabel: g.label, gicon: g.icon, gorder: g.order,
       };
     });
+    // Gruppen in Erst-Erscheinungs-Reihenfolge sammeln, dann nach order sortieren
+    // (Inhalt zuerst, eigene Einträge ans Ende). Innerhalb einer Gruppe bleibt die
+    // gespeicherte Reihenfolge (neueste zuerst) erhalten.
+    const byKey = new Map();
+    const seq = [];
+    items.forEach((it) => {
+      let grp = byKey.get(it.gkey);
+      if (!grp) {
+        grp = { key: it.gkey, label: it.glabel, icon: it.gicon, order: it.gorder, seq: seq.length, items: [] };
+        byKey.set(it.gkey, grp);
+        seq.push(grp);
+      }
+      grp.items.push(it);
+    });
+    const groups = seq.slice().sort((a, b) => (a.order - b.order) || (a.seq - b.seq));
     const shown = state.favShow ? items.find((it) => it.id === state.favShow) : null;
     return {
-      items,
+      groups,
       count: items.length,
       show: shown || null,
       msg: favMsg,

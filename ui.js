@@ -2036,22 +2036,6 @@
   // Großanzeige und Entfernen, plus ein Formular für eigene Einträge. Über den
   // Homescreen-Shortcut (?a=favoritos) direkt erreichbar.
   function renderFavorites(vm) {
-    const addForm = `
-      <form class="fav-add" data-action="fav-add">
-        <p class="sectioncap">${esc(t("favorites.addCap"))}</p>
-        <label class="fav-add__field"><span>${esc(t("favorites.addDe"))}</span>
-          <input id="fav-de" type="text" maxlength="500" autocomplete="off"
-                 placeholder="${esc(t("favorites.dePlaceholder"))}" /></label>
-        <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
-          <input id="fav-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none"
-                 placeholder="${esc(t("favorites.esPlaceholder"))}" /></label>
-        <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
-          <input id="fav-tip" type="text" maxlength="500" autocomplete="off"
-                 placeholder="${esc(t("favorites.tipPlaceholder"))}" /></label>
-        ${vm.msg ? `<p class="fav-add__msg fav-add__msg--${esc(vm.msg.type)}" role="status">${esc(vm.msg.text)}</p>` : ""}
-        <button class="cta" type="submit">${esc(t("favorites.addBtn"))}</button>
-      </form>`;
-
     const row = (it) => `
       <div class="fav-row">
         <button class="fav-row__main" type="button" data-action="fav-show" data-id="${esc(it.id)}"
@@ -2061,7 +2045,6 @@
             <span class="fav-row__es" lang="es">${esc(it.es)}</span>
             <span class="fav-row__de">${esc(it.de)}</span>
             ${it.tip ? `<span class="fav-row__tip">🗣️ ${esc(it.tip)}</span>` : ""}
-            ${it.custom ? `<span class="fav-row__tag">${esc(t("favorites.customTag"))}</span>` : ""}
           </span>
         </button>
         ${vm.speakable
@@ -2070,11 +2053,40 @@
         <button class="fav-row__rm" type="button" data-action="fav-remove" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.remove"))}" title="${esc(t("favorites.remove"))}">★</button>
       </div>`;
 
-    const list = vm.items.length
+    // Eine Herkunfts-Gruppe: Überschrift (Icon + Modul/Kategorie + Anzahl) + Karten.
+    const group = (g) => `
+      <p class="fav-group">
+        <span class="fav-group__icon" aria-hidden="true">${esc(g.icon)}</span>
+        <span class="fav-group__label">${esc(g.label)}</span>
+        <span class="fav-group__n">${g.items.length}</span>
+      </p>
+      <div class="fav-list">${g.items.map(row).join("")}</div>`;
+
+    const list = vm.count
       ? `<p class="sectioncap">${esc(t("favorites.listCap", { n: vm.count }))}</p>
-         <div class="fav-list">${vm.items.map(row).join("")}</div>`
+         ${vm.groups.map(group).join("")}`
       : `<p class="stat-empty">${esc(t("favorites.empty"))}</p>
          <p class="fav-emptyhint">${esc(t("favorites.emptyHint"))}</p>`;
+
+    // Eigenen Eintrag hinzufügen: eingeklappt UNTER der Liste (weniger prominent als
+    // früher ganz oben). Öffnet sich automatisch, wenn eine Rückmeldung ansteht.
+    const addForm = `
+      <details class="fav-add-wrap"${vm.msg ? " open" : ""}>
+        <summary class="fav-add-toggle">＋ ${esc(t("favorites.addCap"))}</summary>
+        <form class="fav-add" data-action="fav-add">
+          <label class="fav-add__field"><span>${esc(t("favorites.addDe"))}</span>
+            <input id="fav-de" type="text" maxlength="500" autocomplete="off"
+                   placeholder="${esc(t("favorites.dePlaceholder"))}" /></label>
+          <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
+            <input id="fav-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none"
+                   placeholder="${esc(t("favorites.esPlaceholder"))}" /></label>
+          <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
+            <input id="fav-tip" type="text" maxlength="500" autocomplete="off"
+                   placeholder="${esc(t("favorites.tipPlaceholder"))}" /></label>
+          ${vm.msg ? `<p class="fav-add__msg fav-add__msg--${esc(vm.msg.type)}" role="status">${esc(vm.msg.text)}</p>` : ""}
+          <button class="cta" type="submit">${esc(t("favorites.addBtn"))}</button>
+        </form>
+      </details>`;
 
     // Großanzeige: angetippter Eintrag bildschirmfüllend – zum Herzeigen.
     const show = vm.show ? `
@@ -2096,8 +2108,8 @@
       <section class="screen">
         ${hmTopbar("⭐ " + t("favorites.title"), "home")}
         <p class="hm-intro">${esc(t("favorites.intro"))}</p>
-        ${addForm}
         ${list}
+        ${addForm}
         ${show}
       </section>`;
   }

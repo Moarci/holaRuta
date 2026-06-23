@@ -2651,7 +2651,7 @@
     errNeed: "Bitte Deutsch und Español ausfüllen.",
     listCap: (p) => `Deine Favoriten (${p.n})`,
     empty: "Noch keine Favoriten.",
-    emptyHint: "Tippe auf einer Karte, im Spickzettel oder hier oben auf den Stern, um dein Lexikon zu füllen.",
+    emptyHint: "Tippe auf einer Karte oder im Spickzettel auf den Stern – oder lege unten einen eigenen Eintrag an.",
     remove: "Aus Favoriten entfernen",
     add: "Zu Favoriten hinzufügen",
     show: "Groß anzeigen",
@@ -2659,6 +2659,8 @@
     listen: "Anhören",
     listenBig: "🔊 Anhören",
     customTag: "Eigener Eintrag",
+    customGroup: "Eigene Einträge",
+    otherGroup: "Weitere",
   }, {
     title: "Mi léxico",
     intro: "Your personal lexicon: save the words and phrases that matter to you – for quick reference, even in stressful moments. Tap the star to add something.",
@@ -2674,7 +2676,7 @@
     errNeed: "Please fill in English and Español.",
     listCap: (p) => `Your favourites (${p.n})`,
     empty: "No favourites yet.",
-    emptyHint: "Tap the star on a card, in the cheat sheet or up here to fill your lexicon.",
+    emptyHint: "Tap the star on a card or in the cheat sheet – or add your own entry below.",
     remove: "Remove from favourites",
     add: "Add to favourites",
     show: "Show large",
@@ -2682,5 +2684,7 @@
     listen: "Listen",
     listenBig: "🔊 Listen",
     customTag: "Your own entry",
+    customGroup: "Your own entries",
+    otherGroup: "More",
   });
 })();
