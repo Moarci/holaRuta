@@ -3879,9 +3879,32 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .favstar--top { background: var(--card); }
 .sz-fav { font-size: 1.25rem; }
 
-/* Eigenen Eintrag hinzufügen (Formular oben im Lexikon). */
-.fav-add { display: flex; flex-direction: column; gap: 10px; margin: 4px 0 18px; }
+/* Eigenen Eintrag hinzufügen: eingeklappt unter der Liste (data-action="fav-add"). */
+.fav-add-wrap { margin: 18px 0 4px; border-top: 1px solid var(--line); padding-top: 14px; }
+.fav-add-toggle {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 14px; font: inherit; font-weight: 600; font-size: 0.9rem;
+  color: var(--ink); background: var(--card);
+  border: 1.5px solid var(--line-strong); border-radius: 999px;
+}
+.fav-add-toggle::-webkit-details-marker { display: none; }
+.fav-add-wrap[open] .fav-add-toggle { margin-bottom: 12px; }
+.fav-add { display: flex; flex-direction: column; gap: 10px; margin: 0; }
 .fav-add .sectioncap { margin-bottom: 0; }
+/* Herkunfts-Überschrift einer Favoriten-Gruppe (Modul/Kategorie/eigene) – tappbar
+   zum Ein-/Ausklappen, daher als zurückgesetzter Button. */
+.fav-group {
+  display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; width: 100%;
+  padding: 0; background: none; border: 0; cursor: pointer; text-align: left;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; color: var(--ink);
+}
+.fav-group__chev { flex: none; width: 0.9em; font-size: 0.8rem; color: var(--muted); }
+.fav-group__icon { font-size: 1.05rem; line-height: 1; }
+.fav-group__label { min-width: 0; overflow-wrap: anywhere; }
+.fav-group__n {
+  flex: none; margin-left: auto; padding: 1px 9px; font-size: 0.74rem; font-weight: 600;
+  color: var(--muted); background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+}
 .fav-add__field { display: flex; flex-direction: column; gap: 5px; font-size: 0.82rem; color: var(--muted); }
 .fav-add__field input {
   width: 100%; box-sizing: border-box; padding: 11px 12px; font: inherit;
@@ -3910,17 +3933,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .fav-row__es { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.18rem; color: var(--ink); line-height: 1.25; overflow-wrap: anywhere; }
 .fav-row__de { display: block; font-size: 0.84rem; color: var(--muted); margin-top: 2px; }
 .fav-row__tip { display: block; margin-top: 2px; font-size: 0.8rem; font-style: italic; color: var(--ink-soft); }
-.fav-row__tag {
-  display: inline-block; margin-top: 5px; padding: 1px 8px; font-size: 0.7rem;
-  color: var(--ink-soft); background: var(--surface);
-  border: 1px solid var(--line); border-radius: 999px;
-}
 .fav-row__speak {
   flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
   border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 1.15rem;
   display: flex; align-items: center; justify-content: center;
 }
 .fav-row__speak:active { transform: scale(0.92); }
+/* Bearbeiten-Knopf (nur bei eigenen, getippten Einträgen). */
+.fav-row__edit {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 1.05rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.fav-row__edit:active { transform: scale(0.92); }
 /* Entfernen-Knopf: gefüllter Stern (Eintrag IST Favorit), Tippen nimmt ihn raus. */
 .fav-row__rm {
   flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
@@ -3929,7 +3954,56 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   display: flex; align-items: center; justify-content: center;
 }
 .fav-row__rm:active { transform: scale(0.92); }
+/* Inline-Edit-Formular: ersetzt eine Zeile, gleiche Eingabe-Optik wie das Hinzufügen. */
+.fav-edit {
+  display: flex; flex-direction: column; gap: 10px; padding: 12px 14px;
+  background: var(--card); border: 1.5px solid var(--brand); border-radius: var(--r-md);
+  box-shadow: var(--shadow);
+}
+.fav-edit__actions { display: flex; gap: 8px; }
+.fav-edit__actions .cta { flex: 1 1 auto; }
+/* Schnellsuche im Lexikon: Abstand zur Liste (Optik kommt von .searchfield). */
+.fav-filter { margin: 4px 0 14px; }
+/* „Rückgängig"-Leiste nach dem Entfernen – schwebt unten über der Reiter-Leiste. */
+.fav-undo {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 60; display: flex; align-items: center; gap: 14px;
+  max-width: min(92vw, 420px); padding: 10px 12px 10px 16px;
+  color: #fff; background: #2A2A2E; border-radius: var(--r-md);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+}
+.fav-undo__text { font-size: 0.9rem; }
+.fav-undo__btn {
+  flex: none; margin-left: auto; cursor: pointer;
+  padding: 7px 14px; font: inherit; font-weight: 700; font-size: 0.88rem;
+  color: #FFD479; background: none; border: 0; border-radius: 999px;
+}
+.fav-undo__btn:active { transform: scale(0.95); }
 .fav-emptyhint { margin: 0; text-align: center; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+/* Kategorie-Auswahl in den Eingabeformularen (gleiche Optik wie die Textfelder). */
+.fav-add__select {
+  width: 100%; box-sizing: border-box; padding: 11px 12px; font: inherit;
+  color: var(--ink); background: var(--card);
+  border: 1.5px solid var(--line); border-radius: var(--r-md);
+}
+.fav-add__select:focus-visible { outline: none; border-color: var(--brand); }
+
+/* Werkzeugleiste über der Liste: üben + teilen. */
+.fav-toolbar { display: flex; gap: 8px; margin: 4px 0 14px; }
+.fav-toolbar__btn { flex: 1 1 0; }
+
+/* Herkunft in der Großanzeige (Modul/Kategorie). */
+.sz-show__src { margin: 0 0 6px; font-size: 0.95rem; font-weight: 600; color: var(--muted); }
+
+/* Übungsmodus (Flip-Runde über das ganze Lexikon). */
+.fav-practice__prog { margin: 0 0 4px; font-size: 0.9rem; font-weight: 700; color: var(--muted); }
+.fav-practice__reveal { margin-top: 14px; }
+.fav-practice__nav { display: flex; align-items: center; gap: 8px; margin-top: 20px; }
+.fav-practice__nav .cta { flex: 1 1 auto; }
+.fav-practice__nav .ghostbtn { flex: none; }
+.fav-practice__close { margin-top: 12px; }
 
 /* celebrate.css — Styles für SC.celebrate (celebrate.js).
  * AN DAS ENDE von styles.css anhängen (HolaRuta hat EINE Stylesheet-Datei, die
