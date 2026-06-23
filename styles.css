@@ -1998,6 +1998,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .knigge-mark { flex-shrink: 0; }
 .knigge-do { background: rgba(63, 115, 85, 0.10); border-color: rgba(63, 115, 85, 0.30); color: var(--ink); }
 .knigge-dont { background: rgba(181, 48, 42, 0.09); border-color: rgba(181, 48, 42, 0.28); color: var(--ink); }
+.knigge-tip { background: rgba(214, 158, 46, 0.12); border-color: rgba(214, 158, 46, 0.34); color: var(--ink); }
 .knigge-accent {
   margin-top: 10px; background: rgba(63, 107, 142, 0.12); border: 1.5px solid rgba(63, 107, 142, 0.35);
   border-radius: var(--r-md); padding: 12px 14px; color: var(--ink); line-height: 1.5; font-size: 0.92rem;

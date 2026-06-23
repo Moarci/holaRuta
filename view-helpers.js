@@ -304,7 +304,9 @@
   // weg. Reine Anzeige – nutzt die vorhandenen Regatear/Knigge-CSS-Klassen.
   function moduleSheet(vm, cfg) {
     const liList = (items, cls, marker) => {
-      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
+      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo")
+        : cls === "knigge-tip" ? t("discover.kniggeTip")
+        : t("discover.kniggeDont");
       return (items || [])
         .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
         .join("");
@@ -331,6 +333,7 @@
           ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
           ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
           ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${tp.tips && tp.tips.length ? `<ul class="knigge-list">${liList(tp.tips, "knigge-tip", "💡")}</ul>` : ""}
           ${reading}
           ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
         </div>

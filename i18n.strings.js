@@ -780,6 +780,7 @@
     kniggeAccentIn: (p) => `In ${p.country}:`,
     kniggeDo: "Empfohlen",
     kniggeDont: "Vermeiden",
+    kniggeTip: "Profi-Tipp",
 
     // Regatear
     rgTactics: "📖 So verhandelst du gut",
@@ -1207,6 +1208,7 @@
     kniggeAccentIn: (p) => `In ${p.country}:`,
     kniggeDo: "Do",
     kniggeDont: "Don't",
+    kniggeTip: "Pro tip",
 
     rgTactics: "📖 How to bargain well",
     rgWords: "🗣️ Words around haggling",
