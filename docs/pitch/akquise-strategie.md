@@ -32,25 +32,59 @@
 
 **Strategie:** Maximale Reichweite zu null Kosten. Hostels suchen ständig kostenlose Social-Aktivitäten für den Common Room — „Modo hostal" ist exakt dafür gebaut. Du verkaufst hier **nichts**; du sammelst Nutzer, Feedback und das erste Testimonial.
 
-**Wen:** Zuerst Cartagena/Getsemaní (direkter Bezug, Colombia-Pack passt). 5–8 Hostels gleichzeitig — niedrige Trefferquote, also Streuung.
+> **Pivot (du bist nicht mehr in Cartagena):** Der Vor-Ort-Vorteil entfällt — also **remote-first** und **landesweit** statt nur Getsemaní. Daraus folgt eine Prioritätenwende: **zuerst die großen, modernen Hostels und Ketten** in ganz Kolumbien. Gründe:
+> - **Ketten = Hebel:** Ein einziger Partnerships-/Marketing-Kontakt schaltet **mehrere Standorte** frei — ideal, wenn du remote arbeitest.
+> - **Große/moderne Hostels** haben ohnehin ein **Eventprogramm** (Spanish Night passt nahtlos rein), ein **Social-Media-Team** (teilen die Aktivität) und **hohen Gästedurchsatz** (= schneller viel Feedback & Testimonials).
+> - **Remote-Kanäle:** Instagram-DM (am stärksten bei Hostels), E-Mail an `info@`/`marketing@`/`events@`, und die **Partnerships-/Press-Seite** der Ketten.
 
 **Das Angebot:** „Kostenlose 5-Minuten-Spanish-Night für euren Common Room. Nur ein QR-Code, keine Installation, offline."
 
-**Vorgehen:**
-1. Erst-Nachricht (EN/ES) aus [anschreiben.md §2](anschreiben.md) — per Instagram-DM **und** E-Mail, oder vor Ort persönlich.
-2. **Beilegen:** das druckfertige QR-Poster → [docs/anleitungen/hostel.html](../anleitungen/hostel.html).
-3. Ziel: Poster hängt an Rezeption/Common Room → erste echte Nutzer.
-4. Nach ~1 Woche: Rezeptionist:in fragen, ob Gäste es nutzen → **O-Ton einsammeln** (das ist dein erstes Testimonial).
+### 2a — Zielliste: Ketten zuerst (ein Kontakt → viele Standorte)
 
-**Text — Vor-Ort-Pitch (30 Sekunden, mündlich, ES):**
-> „Hola, soy [Name]. Hice una app gratis de español para viajeros — tiene un juego de 5 minutos tipo *battle* perfecto para la zona común. Sin instalar nada, solo este código QR. ¿Les gustaría probarlo una noche con los huéspedes? Les dejo el póster, sin costo.“
+> ⚠️ **Vor dem Versand verifizieren** (Web/Instagram). Stand der Einschätzung: Juni 2026 — Hostel-Footprints ändern sich. Hier stehen Prioritäten & Kontaktwege, keine erfundenen Adressen.
+
+| Prio | Kette | Standorte in Kolumbien (ca.) | Warum zuerst | Kontaktweg |
+|---|---|---|---|---|
+| 1 | **Viajero Hostels** | ~10: Bogotá · Medellín · Cartagena · Santa Marta · Tayrona · Salento · Cali · San Andrés · Guatapé … | Größte moderne, **kolumbianisch geführte** Kette; sozialer Vibe, eigenes Aktivitätsprogramm — bester Skalierungs- & Produkt-Fit | `viajerohostels.com` Kontakt/Partnerships · Instagram-DM `@viajerohostels` |
+| 2 | **Masaya Hostels** | Medellín · Bogotá · Santa Marta/Minca · San Agustín | Design-/Boutique-Kette („nicest hostel"), kulturelles Eventprogramm (Salsa, Live-Musik) — Spanish Night passt | Website Partnerships · Instagram-DM je Standort |
+| 3 | **Los Patios / Republica** (Medellín-Gruppe) | Medellín (Los Patios, Republica) · weitere | Hostelworld-Award „bestes großes Hostel", sehr hoher Durchsatz, professionelles Team | Website · Instagram-DM `@lospatioshostel` |
+| 4 | **Dreamer Hostel** | Santa Marta · Palomino | Etablierte Karibik-Backpacker-Marke, Pool/Event-Vibe | Website · Instagram-DM |
+| — | **Selina (jetzt Collective Hospitality)** | 7: Bogotá · Medellín · Cali · Cartagena · Santa Marta · Palomino · Barranquilla | **Vorsicht:** 2024 insolvent, von Collective Hospitality übernommen, in Turnaround. Standorte offen, aber Partnerships-Entscheidungen aktuell zäh → **nachrangig**, erst mit Referenz | Marketing-Team (zentral) |
+
+### 2b — Größte/modernste Einzel-Hostels nach Backpacker-Hub
+
+Parallel zu den Ketten gezielt die Flaggschiff-Hostels je Hub anschreiben (hoher Durchsatz, eigenes Eventprogramm):
+
+| Hub | Flaggschiff-/Moderne Hostels (verifizieren) |
+|---|---|
+| **Medellín** (El Poblado/Laureles) | Los Patios · Masaya · Viajero · The Wandering Paisa · Rango Boutique · Selina |
+| **Bogotá** (La Candelaria/Chapinero) | Viajero Bogotá & Spa · Masaya · Selina · Cranky Croc · Fernweh |
+| **Santa Marta / Minca / Palomino** | Viajero Santa Marta · Masaya Minca · Dreamer (SM & Palomino) · La Brisa Loca · Casa Loma (Minca) |
+| **Salento / Kaffeezone** | Viajero Salento · La Serrana · Coffee Tree Boutique |
+| **Cartagena / Karibik** | Viajero Cartagena · Republica · Selina · Casa en el Agua (Insel) |
+| **Cali** | Viajero Cali & Salsa School · La Pinta |
+| **San Andrés / Guatapé** | Republica (San Andrés) · Viajero · Lake View (Guatapé) |
+
+**Vorgehen (remote):**
+1. **Ketten zuerst** (2a): Eine Nachricht an die zentrale Partnerships-/Marketing-Adresse + Instagram-DM. Rahmen: „kostenlose, fertige Common-Room-Aktivität für **alle eure Standorte**".
+2. **Parallel 6–10 Flaggschiff-Einzel-Hostels** (2b) per Instagram-DM **und** `info@`/`events@`-Mail — breit streuen, niedrige Trefferquote.
+3. **Beilegen:** druckfertiges QR-Poster → [docs/anleitungen/hostel.html](../anleitungen/hostel.html) (PDF/Bild anhängen, da remote kein Aufhängen vor Ort).
+4. Bei Antwort: anbieten, das Poster **auf Spanisch** + ein **2-Min-Demo-Video** zu schicken, damit das Rezeptionsteam es ohne dich aufhängen/erklären kann.
+5. Nach ~1 Woche aktivem Einsatz: per DM nach einem **O-Ton** fragen → erstes Testimonial.
+
+**Text — Instagram-DM an ein modernes Hostel/Kette (ES, kurz):**
+> „¡Hola! Soy [Name]. Hice *HolaRuta*, una app web **gratis** de español de viaje. Tiene un juego tipo *battle* de **5 minutos** ideal como actividad para la zona común — sin instalar nada, solo un código QR, funciona sin internet. ¿Les interesaría una **‚Spanish Night'** con sus huéspedes? Les paso un póster listo para imprimir, sin costo. Para una cadena como la suya funcionaría igual en **todas las sedes**. 🙌“
+
+**Text — E-Mail an Ketten-Partnerships (EN, Betreff: *A free 5-minute "Spanish Night" for all your locations*):**
+> Hi [name], I built **HolaRuta** — a free, offline travel-Spanish web app with a one-tap **5-minute language battle** that works as a ready-made common-room activity. No app install, just a QR code. For a network like yours it would run identically across **every property**, so one rollout reaches all guests. I'd send a print-ready poster (EN/ES) and a 2-min video — no cost, I'd just love your team's honest take. Demo: https://moarci.github.io/holaRuta/ → *Modo hostal*.
 
 **Einwände & Antworten:**
 - *„Wir haben schon Aktivitäten.“* → „Genau dafür — das ist eine fertige, *zusätzliche* 5-Minuten-Option ohne Vorbereitung. Hängt nur ein QR-Code.“
 - *„Müssen Gäste was installieren?“* → „Nein. QR scannen, läuft im Browser, sogar offline.“
 - *„Was kostet das?“* → „Für euch nichts. Ich sammle nur Feedback, ob Gäste Spaß haben.“
+- *„Wir sind eine Kette, das muss zentral entschieden werden.“* → „Perfekt — genau deshalb melde ich mich bei euch: Ein QR-Code, ein Poster, läuft an *jedem* Standort identisch. Ich kann ein 5-Minuten-Pilot-Set für **ein** Haus aufsetzen, bevor ihr es ausrollt.“
 
-**Erfolg in Welle 1 = ** 1–2 Hostels mit aufgehängtem Poster **+ 1 zitierfähige Rückmeldung.**
+**Erfolg in Welle 1 =** 1 Ketten-Gespräch **oder** 2–3 Flaggschiff-Hostels mit aktivem Poster **+ 1 zitierfähige Rückmeldung.**
 
 ---
 
@@ -152,8 +186,9 @@ Führe das in einer Tabelle/Sheet. Status-Stufen bewusst einfach:
 **Woche 1 — Vorbereiten & Hostels starten (Welle 1)**
 - [ ] In [anschreiben.md](anschreiben.md) und auf der Pitch-Seite die Platzhalter (`[dein Name]`, `[deine E-Mail]`) durch echte Kontaktdaten ersetzen.
 - [ ] Eine sichtbare **Feedback-Mailadresse** auf der Pitch-Seite setzen.
-- [ ] 5–8 Cartagena-Hostels recherchieren (verifizierte Kontaktwege, keine erfundenen Adressen) → in die Pipeline.
-- [ ] Erst-Nachricht (ES/EN) + [Hostel-Poster](../anleitungen/hostel.html) an alle raus.
+- [ ] **Ketten** (Viajero, Masaya, Los Patios/Republica, Dreamer) recherchieren → Partnerships-/Marketing-Kontakt + Instagram in die Pipeline (§2a).
+- [ ] **6–10 Flaggschiff-Einzel-Hostels** über die Hubs Medellín/Bogotá/Santa Marta/Salento verteilt recherchieren (§2b).
+- [ ] Erst-Nachricht (ES/EN) als **Instagram-DM + E-Mail** + [Hostel-Poster](../anleitungen/hostel.html) an alle raus.
 - [ ] **Parallel:** Muttersprachler-Gegenlesung des Kern-Sets beauftragen (entriegelt Welle 3).
 
 **Woche 2 — Hostels nachfassen, Warm-Intros anstoßen (Welle 2 an)**
@@ -190,4 +225,4 @@ Realistischer Aufbaupfad (aus [MARKT.md §9](../../MARKT.md), als Richtung, kein
 
 ---
 
-> **Kurzfassung:** Diese Woche 5–8 Hostels anschreiben (kostenlos, Poster, Feedback) **und** das Muttersprachler-Sign-off beauftragen. Parallel Warm-Intros für Gruppenreisen anstoßen. Schulen erst, wenn das Sign-off steht. Erstes Ziel ist **1 Pilot + 1 Testimonial** — nicht Umsatz.
+> **Kurzfassung:** Diese Woche **remote** die großen Hostel-**Ketten** (Viajero, Masaya, Los Patios) + 6–10 Flaggschiff-Einzel-Hostels in ganz Kolumbien anschreiben (Instagram-DM + Mail, kostenlos, Poster, Feedback) **und** das Muttersprachler-Sign-off beauftragen. Parallel Warm-Intros für Gruppenreisen anstoßen. Schulen erst, wenn das Sign-off steht. Erstes Ziel ist **1 Pilot + 1 Testimonial** — nicht Umsatz.
