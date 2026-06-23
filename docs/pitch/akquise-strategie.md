@@ -69,7 +69,7 @@ Parallel zu den Ketten gezielt die Flaggschiff-Hostels je Hub anschreiben (hoher
 **Vorgehen (remote):**
 1. **Ketten zuerst** (2a): Eine Nachricht an die zentrale Partnerships-/Marketing-Adresse + Instagram-DM. Rahmen: „kostenlose, fertige Common-Room-Aktivität für **alle eure Standorte**".
 2. **Parallel 6–10 Flaggschiff-Einzel-Hostels** (2b) per Instagram-DM **und** `info@`/`events@`-Mail — breit streuen, niedrige Trefferquote.
-3. **Beilegen:** druckfertiges QR-Poster → [docs/anleitungen/hostel.html](../anleitungen/hostel.html) (PDF/Bild anhängen, da remote kein Aufhängen vor Ort).
+3. **Beilegen:** druckfertiges QR-Poster → [docs/anleitungen/hostel.html](../anleitungen/hostel.html) (Wand/Common Room) **+** Flyer/Tisch-Karte → [docs/anleitungen/hostel-flyer.html](../anleitungen/hostel-flyer.html) (2 Karten/A4 zum Ausschneiden für Rezeption & Tische, Standard Español). Als PDF anhängen, da remote kein Aufhängen vor Ort.
 4. Bei Antwort: anbieten, das Poster **auf Spanisch** + ein **2-Min-Demo-Video** zu schicken, damit das Rezeptionsteam es ohne dich aufhängen/erklären kann.
 5. Nach ~1 Woche aktivem Einsatz: per DM nach einem **O-Ton** fragen → erstes Testimonial.
 

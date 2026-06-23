@@ -166,12 +166,45 @@ th { background: rgba(194, 80, 46, 0.10); color: var(--brand-ink); font-weight: 
   margin: 8px 0;
 }
 
+/* Hostel-Flyer: zwei identische Karten pro A4 zum Ausschneiden (Rezeption/Tisch) */
+.cutsheet {
+  background: var(--surface);
+  max-width: 600px;
+  margin: 0 auto 24px;
+  border-radius: 8px;
+  padding: 6px;
+}
+.flyer { text-align: center; padding: 26px 30px 18px; }
+.flyer h1 { font-size: 2.1rem; margin: 6px 0; }
+.flyer .lead { font-size: 1.02rem; margin: 0 0 12px; }
+.flyer .qr { width: 168px; height: 168px; margin: 12px auto; }
+.flyer .url { font-size: 1.05rem; padding: 6px 18px; }
+.flyer .how {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 12px auto 6px;
+  max-width: 360px;
+}
+.flyer .foot { border: 0; margin-top: 12px; padding-top: 0; }
+.cut {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  border-top: 2px dashed var(--line);
+  padding-top: 6px;
+  margin: 4px 8px 0;
+}
+
 /* Druck: Schalter weg, weißer Hintergrund, saubere Seitenränder */
 @page { margin: 14mm; }
 @media print {
   body { background: #fff; }
   .langbar { display: none; }
   .sheet { margin: 0; max-width: none; padding: 0; border-radius: 0; }
+  .cutsheet { max-width: none; margin: 0; }
+  .flyer { break-inside: avoid; }
   h2 { break-after: avoid; }
   tr, li, .tip { break-inside: avoid; }
 }
