@@ -593,8 +593,12 @@ Druckfertige Anleitungen (DE · EN · ES) für den Einsatz in Sprachschulen, auf
 - **[Für den Unterricht](docs/anleitungen/lehrer.html)** — Stundenaufbau + 10 Stunden-Rezepte für Lehrkräfte.
 - **[Für Reiseleiter](docs/anleitungen/coordinator.html)** — kleine Gruppen-Aktivitäten, in Sekunden startklar.
 - **[Hostel-Aushang „Spanish Night“](docs/anleitungen/hostel.html)** — Poster mit **echtem QR-Code** für den Common Room.
+- **[Hostel-Flyer / Tisch-Karte](docs/anleitungen/hostel-flyer.html)** — zwei QR-Karten pro A4 zum Ausschneiden (Rezeption &amp; Tische), Standard Español.
+- **[Hostel-Poster (Design-Variante)](docs/anleitungen/hostel-poster-bold.html)** — vollflächiges Farb-Poster für moderne Hostels (Viajero, Masaya, Los Patios), Standard Español.
+- **Flyer-Serie (weitere Aufhänger)** — [Survival Spanish](docs/anleitungen/hostel-survival.html) (Spickzettel) · [Reto del día](docs/anleitungen/hostel-reto.html) (Real-Life-Challenge) · [¿Próxima parada?](docs/anleitungen/hostel-destinos.html) (Destination-Packs), je DE·EN·ES, Standard Español.
 
 **Go-to-Market** unter [`docs/pitch/`](docs/pitch/index.html):
+- **[Akquise-Strategie & Playbook](docs/pitch/akquise-strategie.md)** — operatives Schritt-für-Schritt-Vorgehen (Schulen·Reisen·Hostels): Reihenfolge, Nachfass-Rhythmus, Einwand-Behandlung, 30-Tage-Plan, Pipeline-Tabelle.
 - **[Pitch-One-Pager](docs/pitch/index.html)** (DE·EN·ES) — die versendbare „schick mir was"-Seite mit Live-Demo-QR.
 - **[WeRoad-Colombia-Proposal](docs/pitch/weroad-colombia.html)** (DE·EN) — ausgearbeitetes Gruppenreise-Beispiel: Route↔Inhalt, 3-Phasen-Modell, Coordinator-Playbook, Preise, Pilot.
 - **[Outreach-Anschreiben](docs/pitch/anschreiben.md)** — copy-paste, je Zielgruppe (Schule/Hostel/Reiseleiter), DE·EN·ES.
