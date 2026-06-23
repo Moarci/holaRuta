@@ -17,8 +17,10 @@
  *
  * Schemas (identisch zu salud.js/flirt.js, damit ui sie 1:1 rendern kann):
  *   INTRO    : string (+ INTRO_EN) – kurze deutsche Einleitung über der Seite.
- *   TOPICS   : [{ icon, title, intro, dos:[…], donts:[…] }] – aufklappbar (+ …En);
- *              dos = „así se juega“ (Spielablauf), donts = typische Stolperfallen.
+ *   TOPICS   : [{ icon, title, intro, dos:[…], donts:[…], tips:[…] }] – aufklappbar
+ *              (+ …En); dos = „así se juega“ (Spielablauf), donts = typische
+ *              Stolperfallen, tips = recherchierte Strategie-/Profi-Tipps (💡), mit
+ *              denen HolaRuta-Nutzer in der Runde einen echten Vorteil haben.
  *              Einige Spiele tragen zusätzlich ein spanisches Lesetraining
  *              (es/vocab/level) – die LatAm-Kultur hinter dem Spiel.
  *   PHRASES  : [{ id, icon, title, items:[{ es, de, en }] }] – Sätze für den Tisch.
@@ -78,6 +80,20 @@
         "Officially you may only play +4 when you have NO card matching the colour.",
         "Don't forget to call „¡UNO!“ – or it gets expensive.",
       ],
+      tips: [
+        "Heb dir Comodín und +4 bis zum Schluss auf: Ruft ein Gegner „¡UNO!“, wechselst du die Farbe und drückst ihm Strafkarten auf.",
+        "Wirf hohe Zahlenkarten zuerst ab – bleibst du auf einer 9 sitzen, kostet sie beim Punktezählen viel mehr als eine 1.",
+        "Achte auf die Farbe, die ein Gegner ständig meidet (er zieht oder wechselt) – die hat er wahrscheinlich nicht; spiel sie gezielt.",
+        "Hat der Nächste nur noch eine Karte, spiel Salta, Reversa oder +2 – dann kommt er gar nicht zum Ablegen.",
+        "Im Duell zu zweit bringen dir Salta und Reversa sofort wieder den Zug – praktisch ein Doppelzug.",
+      ],
+      tipsEn: [
+        "Save your Wild and +4 for the very end: when an opponent calls „¡UNO!“, switch the colour and load them with penalty cards.",
+        "Dump high number cards first – getting stuck with a 9 costs far more than a 1 when points are tallied.",
+        "Watch the colour an opponent keeps avoiding (they draw or change it) – they probably don't have it; play it on purpose.",
+        "If the next player is down to one card, play Skip, Reverse or +2 so they never get to lay it.",
+        "Heads-up (two players), Skip and Reverse hand you the turn straight back – effectively a double move.",
+      ],
     },
     {
       icon: "🏠",
@@ -106,6 +122,22 @@
         "Money in the bank does NOT count as a property set – you need real colour sets.",
         "Save a „Just Say No“ for the big steal („Deal Breaker“).",
         "Don't burn all your strong action cards as money.",
+      ],
+      tips: [
+        "Spiel „Pass Go“ früh aus – mehr Handkarten heißt mehr Optionen in jedem Zug.",
+        "Halt immer ein „¡No, gracias!“ in der Hinterhand, vor allem gegen „Deal Breaker“ – ein geklautes Komplettset entscheidet die Partie.",
+        "Leg deinen eigenen „Deal Breaker“ erst, wenn ein Gegner ein vollständiges Set hat – dann schnappst du dir den größten Brocken.",
+        "Verteile deinen Wert: Geld auf der Bank ist durch Miete und Schulden angreifbar – behalt lieber schlagkräftige Aktionskarten.",
+        "Beende den Zug nie mit mehr als 7 Karten, sonst musst du abwerfen – zahl vorher schwache Aktionskarten als Geld ein.",
+        "Zweifarbige Wildcard-Grundstücke flexibel halten und erst dort einsetzen, wo dir genau eine Farbe zum Set fehlt.",
+      ],
+      tipsEn: [
+        "Play „Pass Go“ early – more cards in hand means more options every turn.",
+        "Always keep a „Just Say No“ in reserve, especially against „Deal Breaker“ – losing a complete set decides the game.",
+        "Hold your own „Deal Breaker“ until an opponent has a full set – then you grab the biggest prize.",
+        "Spread your value: money in the bank is exposed to rent and debt – better to keep punchy action cards.",
+        "Never end a turn with more than 7 cards or you must discard – bank weak action cards as money first.",
+        "Keep two-colour wild properties flexible and play them on the set where you're missing exactly one colour.",
       ],
     },
     {
@@ -136,6 +168,20 @@
         "Announce special rules before you start (e.g. an 8 clears the pile, doubles).",
         "As a drinking game: respect pace and limits, always a non-alcoholic option.",
       ],
+      tips: [
+        "Behalte deine höchsten Karten (oft die 2): Wer den Stapel mit ihnen abräumt, darf neu eröffnen und seine unbequemen Karten loswerden.",
+        "Wenn alle passen, beginnst du frei – das ist der Moment, deine einzelnen niedrigen Karten abzustoßen.",
+        "Heb Paare und Drillinge auf, um die Einzelkarten-Serien der Gegner zu brechen, statt sie früh zu verheizen.",
+        "Merk dir, wer schon viele hohe Karten gespielt hat – danach setzen sich deine mittleren Karten plötzlich durch.",
+        "Als Presidente gibst du deine zwei schwächsten Karten ab – nutze den Tausch, um gezielt ein Paar zu vervollständigen.",
+      ],
+      tipsEn: [
+        "Hold your highest cards (often the 2): clearing the pile with them lets you reopen and unload your awkward cards.",
+        "When everyone passes you lead freely – that's the moment to shed your stray low cards.",
+        "Keep pairs and triples to break opponents' singles runs instead of burning them early.",
+        "Track who has already spent their high cards – after that, your mid cards suddenly get through.",
+        "As President you hand over your two weakest cards – use the swap to complete a pair on purpose.",
+      ],
     },
     {
       icon: "🃏",
@@ -164,6 +210,20 @@
         "Señas (signs to your partner) are part of it – but only fair if the opponent knows the style; agree it first.",
         "Don't start without the (unintuitive) card ranking – a cheat sheet helps a lot.",
         "Clarify regional variants (con flor / sin flor), or everyone scores differently.",
+      ],
+      tips: [
+        "Lern die vier „matas“ auswendig: 1 de espada, 1 de basto, 7 de espada, 7 de oro – sie schlagen alles andere und gewinnen dir die wichtigen Stiche.",
+        "Truco lebt vom Bluff: Sag ab und zu „¡Truco!“ mit schwacher Hand – gibt der Gegner auf, gewinnst du ohne gute Karten.",
+        "Envido blitzschnell rechnen: zwei Karten gleicher Farbe = 20 + ihre Augen (Sota/Caballo/Rey zählen 0) – so weißt du sofort, ob du ansagst.",
+        "Spiel deine stärkste Karte oft erst in der zweiten Hand: Gewinnst du die erste knapp, kontrollierst du den Rest der Runde.",
+        "Der größte Vorteil sind feste señas mit dem Partner (z. B. Augenbrauen hoch = as de espada) – vorher absprechen und unauffällig geben.",
+      ],
+      tipsEn: [
+        "Memorise the four „matas“: 1 of swords, 1 of clubs, 7 of swords, 7 of coins – they beat everything else and win you the key tricks.",
+        "Truco thrives on bluffing: occasionally call „¡Truco!“ on a weak hand – if the opponent folds, you win with nothing.",
+        "Count envido instantly: two cards of the same suit = 20 + their pips (Sota/Caballo/Rey count 0) – so you know at once whether to call.",
+        "Often save your strongest card for the second hand: win the first narrowly and you control the rest of the round.",
+        "Your biggest edge is fixed señas with your partner (e.g. raised eyebrows = ace of swords) – agree them first and signal subtly.",
       ],
       level: "B1",
       es: [
@@ -209,6 +269,20 @@
         "Agree the wild rule and the „as“ switch up front (what happens once ones are bid).",
         "Use „Calzo“ (the bid is exactly right) only if you play that extra rule.",
       ],
+      tips: [
+        "Faustregel: Bei N Würfeln im Spiel zeigt im Schnitt rund N/3 eine bestimmte Zahl (Einsen als Joker mitgezählt). Gebote weit darüber kannst du getrost anzweifeln.",
+        "Nimm deine eigenen Würfel als Anker: Hast du selbst drei Fünfen, ist „cuatro cincos“ fast sicher – erhöh ruhig.",
+        "Zähl mit, wie viele Würfel noch im Spiel sind – je weniger, desto riskanter wird jedes hohe Gebot.",
+        "Bluff früh nur in kleinen Schritten; heb die großen Sprünge auf, wenn die Gegner unter Druck stehen.",
+        "Spielt ihr mit „calzo“: ansagen, wenn du das Gebot für exakt richtig hältst – triffst du, gewinnst du sogar einen Würfel zurück.",
+      ],
+      tipsEn: [
+        "Rule of thumb: with N dice in play, on average about N/3 show a given number (counting aces as wild). Bids well above that are safe to doubt.",
+        "Anchor on your own dice: if you already hold three fives, „cuatro cincos“ is nearly certain – raise away.",
+        "Keep count of how many dice are still in play – the fewer there are, the riskier every high bid becomes.",
+        "Bluff in small steps early; save the big jumps for when opponents are under pressure.",
+        "If you play „calzo“: call it when you think the bid is exactly right – land it and you even win a die back.",
+      ],
       level: "A2",
       es: [
         "En los Andes —Perú, Bolivia y Chile— el *dudo* se juega con cinco *dados* y un *cubilete* en casi cualquier *bar*.",
@@ -250,6 +324,18 @@
         "Agree the catching and run rules with the group; they surprise newcomers.",
         "Keep score as you go, or counting ends in arguments.",
       ],
+      tips: [
+        "Merk dir, welche Karten schon gefangen wurden – wer mitzählt, weiß genau, welche „caídas“ noch möglich sind.",
+        "Halt eine Karte zurück, die exakt die zuletzt gelegte fängt („caída“) – das bringt am Rundenende sichere Extrapunkte.",
+        "Achte auf Reihen (escaleras) auf dem Tisch: Eine passende Karte räumt mehrere auf einmal ab („limpia“) und gibt Bonus.",
+        "Im Team keine Karte legen, mit der der Gegner sofort eine „caída“ machen kann – sonst schenkst du ihm Punkte.",
+      ],
+      tipsEn: [
+        "Remember which cards have already been caught – tracking it tells you exactly which „caídas“ are still possible.",
+        "Hold back a card that catches the very last one played („caída“) – that's guaranteed bonus points at round's end.",
+        "Watch for runs (escaleras) on the table: a matching card sweeps several at once („limpia“) for a bonus.",
+        "In a team, don't lay a card that lets the opponent make an instant „caída“ – you'd be handing them points.",
+      ],
     },
     {
       icon: "🎲",
@@ -279,6 +365,18 @@
         "Don't use a category twice.",
         "Without a scoresheet you lose track – always write it down.",
       ],
+      tips: [
+        "Geh in den ersten Würfen auf die großen Kombinationen (Generala, Póker, Full) – sie bringen die meisten Punkte.",
+        "Misslingt der Wurf, „opfere“ ihn in eine kleine Kategorie (deine 1er) statt eine wertvolle zu verschenken.",
+        "Behalte immer die Würfel, die zur höchsten noch offenen Kategorie passen, und würfle den Rest neu.",
+        "Hast du schon drei oder vier Gleiche im ersten Wurf, riskier den Rest auf eine „Generala servida“ – die gewinnt oft sofort die Partie.",
+      ],
+      tipsEn: [
+        "On your first rolls, aim for the big combinations (Generala, Póker, Full) – they score the most.",
+        "If a turn flops, „sacrifice“ it into a low category (your 1s) instead of wasting a valuable one.",
+        "Always keep the dice that fit your highest still-open category and re-roll the rest.",
+        "With three or four of a kind already on the first roll, gamble the rest on a „Generala servida“ – it often wins outright.",
+      ],
     },
     {
       icon: "🎲",
@@ -307,6 +405,20 @@
         "Don't show your tiles to anyone – in a team, hidden information matters.",
         "Agree double-six vs. double-nine (set size) up front.",
         "The noise is part of it – but not in a quiet dorm in the middle of the night.",
+      ],
+      tips: [
+        "Merk dir, bei welcher Zahl jemand passt („paso“) – die Zahl hat er nicht; spiel sie gezielt, um ihn auszubremsen.",
+        "Spiel die Zahl, von der du die meisten Steine hast – so kontrollierst du, an welchen Enden es weitergeht.",
+        "Im Team nie den Partner blockieren: Lass das Ende offen, das er bedienen kann.",
+        "Heb deinen Doppelstein für den richtigen Moment auf, um das Tempo zu bestimmen statt darauf sitzenzubleiben.",
+        "Zähl die Augen mit – bei blockiertem Spiel gewinnt, wer am wenigsten auf der Hand hält.",
+      ],
+      tipsEn: [
+        "Note which number a player passes on („paso“) – they don't have it; play it deliberately to stall them.",
+        "Lead the number you hold the most of – that way you control which ends stay open.",
+        "In a team, never block your partner: leave open the end they can serve.",
+        "Save your double for the right moment to dictate the tempo, rather than getting stuck with it.",
+        "Keep a running pip count – if the game blocks, whoever holds the fewest pips wins.",
       ],
       level: "A2",
       es: [
@@ -351,6 +463,18 @@
         "Consent before every „dare“; a „no“ is accepted.",
         "If drinking: always a non-alcoholic option, never forced.",
       ],
+      tips: [
+        "Leg dir vorab 3–4 lockere „Yo nunca he…“-Sätze auf Spanisch zurecht – wer flüssig dran ist, gibt der Runde den Ton an.",
+        "Reise-Themen ziehen immer („Yo nunca he dormido en un aeropuerto“) – sie bringen Geschichten und neue Bekanntschaften.",
+        "Bei „verdad o reto“ machbare Mini-Aufgaben vorschlagen – so bleibt die Runde locker und alle machen mit.",
+        "Hör genau zu: Die Antworten sind die besten Gesprächsaufhänger für danach – dein eigentlicher Vorteil im Hostel.",
+      ],
+      tipsEn: [
+        "Prepare 3–4 light „Yo nunca he…“ lines in Spanish in advance – being fluent on your turn sets the tone for the circle.",
+        "Travel prompts always land („Yo nunca he dormido en un aeropuerto“) – they spark stories and new friendships.",
+        "For „truth or dare“, suggest doable mini-dares – it keeps the circle relaxed and everyone joining in.",
+        "Listen closely: the answers are your best conversation openers afterwards – the real edge in a hostel.",
+      ],
     },
     {
       icon: "🐺",
@@ -379,6 +503,18 @@
         "The moderator doesn't play – they stay neutral.",
         "The dead don't talk and don't reveal their role.",
         "The debate is the heart of it – don't vote too quickly, or it's over before it gets exciting.",
+      ],
+      tips: [
+        "Als Werwolf: bleib ruhig, rede aktiv mit und beschuldige selbstbewusst einen Unschuldigen – Wölfe, die sich verstecken, fallen am ehesten auf.",
+        "Als Dorf: achte auf Abstimmungsmuster – wer immer mit der Mehrheit geht oder auffällig schweigt, ist verdächtig.",
+        "Als Seherin: gib dein Wissen dosiert preis – outest du dich zu früh, bist du das erste Opfer der nächsten Nacht.",
+        "Lies Körpersprache und Redetempo statt nur die Worte – beim Hombre lobo gewinnt, wer Menschen liest.",
+      ],
+      tipsEn: [
+        "As a werewolf: stay calm, talk actively and confidently accuse an innocent – wolves who hide get spotted first.",
+        "As the village: watch the voting patterns – anyone who always follows the majority or stays oddly quiet is suspect.",
+        "As the seer: reveal your knowledge in small doses – out yourself too early and you're the next night's first victim.",
+        "Read body language and speech pace, not just words – in Werewolf, whoever reads people best wins.",
       ],
     },
   ];
