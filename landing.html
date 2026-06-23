@@ -8,6 +8,11 @@
   <meta name="description" content="HolaRuta – dein Reise-Spanisch für echte Situationen: 2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Lateinamerika-korrekt, komplett offline, kostenlos, ohne Konto." />
   <link rel="canonical" href="https://moarci.github.io/holaRuta/landing.html" />
 
+  <!-- Zweisprachig: teilbare Sprach-Links (?lang=) für Suche & Direktverlinkung. -->
+  <link rel="alternate" hreflang="de" href="https://moarci.github.io/holaRuta/landing.html?lang=de" />
+  <link rel="alternate" hreflang="en" href="https://moarci.github.io/holaRuta/landing.html?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/landing.html" />
+
   <!-- Social-Vorschau: nutzt das bestehende, gebaute og-image.png der Marke. -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HolaRuta" />
@@ -105,7 +110,7 @@
           <button class="lp-langbtn" data-lang="de" aria-pressed="true">DE</button>
           <button class="lp-langbtn" data-lang="en" aria-pressed="false">EN</button>
         </div>
-        <button class="lp-iconbtn" id="lpTheme" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel">🌙</button>
+        <button class="lp-iconbtn" id="lpTheme" data-i18n-aria="a11y.theme" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten">🌙</button>
         <a class="lp-cta lp-cta--sm lp-header__cta" href="./?start=onboarding" data-i18n="nav.cta">Starten</a>
       </div>
     </div>
@@ -149,7 +154,7 @@
           <span class="lp-chip lp-chip--2" aria-hidden="true">vuelto</span>
           <span class="lp-chip lp-chip--3" aria-hidden="true">plata</span>
           <span class="lp-chip lp-chip--4" aria-hidden="true">chévere</span>
-          <div class="lp-card" id="lpCard" role="button" tabindex="0" aria-pressed="false" aria-label="Beispielkarte umdrehen">
+          <div class="lp-card" id="lpCard" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
             <div class="lp-card__inner">
               <div class="lp-face lp-face--front">
                 <span class="lp-face__eyebrow">GELD · DINERO</span>
@@ -207,6 +212,22 @@
             <h3 class="lp-feat__title" data-i18n="feat.areas.t">73 Reise-Bereiche</h3>
             <p class="lp-feat__body" data-i18n="feat.areas.b">Von Busbahnhof bis Notaufnahme — 2293 Karten, sauber sortiert.</p>
           </article>
+        </div>
+
+        <div class="lp-more" data-reveal>
+          <p class="lp-more__intro" data-i18n="more.intro">Und noch viel mehr an Bord</p>
+          <div class="lp-more__chips">
+            <span class="lp-morechip">🆘 <span data-i18n="more.spick">Spickzettel</span></span>
+            <span class="lp-morechip">🌎 <span data-i18n="more.country">Länderkunde</span></span>
+            <span class="lp-morechip">📜 Historia</span>
+            <span class="lp-morechip">💬 Diálogos</span>
+            <span class="lp-morechip">🛏️ <span data-i18n="more.hostel">Hostel-Modus</span></span>
+            <span class="lp-morechip">🤝 Regatear</span>
+            <span class="lp-morechip">💵 Precios al oído</span>
+            <span class="lp-morechip">🎲 Juegos de viaje</span>
+            <span class="lp-morechip">🎵 Música</span>
+            <span class="lp-morechip">🧳 Logística</span>
+          </div>
         </div>
       </div>
     </section>
@@ -316,6 +337,16 @@
         </div>
       </div>
     </section>
+    <!-- ─────────────── Abschluss-CTA ─────────────── -->
+    <section class="lp-section lp-final" id="start">
+      <div class="lp-wrap">
+        <h2 class="lp-h2" data-reveal data-i18n="final.title">Pack deinen Rucksack. Den Rest übernehmen wir.</h2>
+        <p class="lp-final__sub" data-reveal data-i18n="final.sub">2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.</p>
+        <div data-reveal>
+          <a class="lp-cta lp-cta--lg lp-cta--onbrand" href="./?start=onboarding" data-i18n="final.cta">Kostenlos starten →</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- ─────────────── Footer ─────────────── -->
@@ -391,6 +422,8 @@
         "feat.offline.t": "Komplett offline", "feat.offline.b": "Einmal geladen, läuft im Funkloch — Anden, Dschungel, Nachtbus.",
         "feat.privacy.t": "Kein Konto, kein Tracking", "feat.privacy.b": "Dein Fortschritt bleibt auf dem Gerät. Keine Anmeldung, keine Werbung.",
         "feat.areas.t": "73 Reise-Bereiche", "feat.areas.b": "Von Busbahnhof bis Notaufnahme — 2293 Karten, sauber sortiert.",
+        "more.intro": "Und noch viel mehr an Bord",
+        "more.spick": "Spickzettel", "more.country": "Länderkunde", "more.hostel": "Hostel-Modus",
         "how.eyebrow": "SO FUNKTIONIERT'S", "how.title": "In drei Schritten unterwegs.",
         "how.s1.t": "Bereich wählen", "how.s1.b": "Such dir aus, was ansteht — Geld, Essen, Bus, Notfall. 73 Bereiche, alle reisefertig.",
         "how.s2.t": "Karte lernen", "how.s2.b": "Tippen, antworten, umdrehen. Karteikarte, Schreiben oder Hören — du entscheidest.",
@@ -410,7 +443,12 @@
         "footer.app": "App", "footer.open": "App öffnen", "footer.start": "Kostenlos starten", "footer.single": "Einzeldatei-Version",
         "footer.more": "Mehr", "footer.features": "Features", "footer.how": "So funktioniert's", "footer.install": "Installieren",
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut.",
-        "_title": "HolaRuta – Reise-Spanisch für Lateinamerika"
+        "final.title": "Pack deinen Rucksack. Den Rest übernehmen wir.",
+        "final.sub": "2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.",
+        "final.cta": "Kostenlos starten →",
+        "a11y.theme": "Hell/Dunkel umschalten", "a11y.card": "Beispielkarte umdrehen",
+        "_title": "HolaRuta – Reise-Spanisch für Lateinamerika",
+        "_desc": "HolaRuta – dein Reise-Spanisch für echte Situationen: 2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Lateinamerika-korrekt, komplett offline, kostenlos, ohne Konto."
       },
       en: {
         "skip": "Skip to content",
@@ -430,6 +468,8 @@
         "feat.offline.t": "Fully offline", "feat.offline.b": "Loads once, works with no signal — Andes, jungle, night bus.",
         "feat.privacy.t": "No account, no tracking", "feat.privacy.b": "Your progress stays on your device. No sign-up, no ads.",
         "feat.areas.t": "73 travel areas", "feat.areas.b": "From bus terminal to ER — 2,293 cards, neatly sorted.",
+        "more.intro": "And plenty more on board",
+        "more.spick": "Cheat sheet", "more.country": "Country guide", "more.hostel": "Hostel mode",
         "how.eyebrow": "HOW IT WORKS", "how.title": "On the road in three steps.",
         "how.s1.t": "Pick an area", "how.s1.b": "Choose what's coming up — money, food, buses, emergencies. 73 areas, all travel-ready.",
         "how.s2.t": "Learn a card", "how.s2.b": "Tap, answer, flip. Flip, type or listen — your call.",
@@ -449,7 +489,12 @@
         "footer.app": "App", "footer.open": "Open app", "footer.start": "Start free", "footer.single": "Single-file version",
         "footer.more": "More", "footer.features": "Features", "footer.how": "How it works", "footer.install": "Install",
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America.",
-        "_title": "HolaRuta – Travel Spanish for Latin America"
+        "final.title": "Pack your backpack. We'll handle the rest.",
+        "final.sub": "2,293 cards, fully offline, no account, free. Ready to go in 30 seconds.",
+        "final.cta": "Start free →",
+        "a11y.theme": "Toggle light/dark", "a11y.card": "Flip the example card",
+        "_title": "HolaRuta – Travel Spanish for Latin America",
+        "_desc": "HolaRuta – travel Spanish for real situations: 2,293 flashcards with spaced repetition for buses, hotels, food, money & emergencies. Latin-America-correct, fully offline, free, no account."
       }
     };
     // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
@@ -464,12 +509,22 @@
       document.documentElement.setAttribute("data-lang", lang);
       document.title = dict["_title"];
       var meta = document.querySelector('meta[name="description"]');
+      if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
       var nodes = document.querySelectorAll("[data-i18n]");
       for (var i = 0; i < nodes.length; i++) {
         var key = nodes[i].getAttribute("data-i18n");
         if (!(key in dict)) continue;
         if (HTML_KEYS[key]) nodes[i].innerHTML = dict[key];
         else nodes[i].textContent = dict[key];
+      }
+      // aria-labels (und ggf. title) lokalisieren – sonst liest der Screenreader
+      // im EN-Modus deutsche Beschriftungen vor.
+      var aria = document.querySelectorAll("[data-i18n-aria]");
+      for (var a = 0; a < aria.length; a++) {
+        var ak = aria[a].getAttribute("data-i18n-aria");
+        if (!(ak in dict)) continue;
+        aria[a].setAttribute("aria-label", dict[ak]);
+        if (aria[a].hasAttribute("title")) aria[a].setAttribute("title", dict[ak]);
       }
       // Umschalt-Buttons aktualisieren
       var btns = document.querySelectorAll(".lp-langbtn");
@@ -479,10 +534,13 @@
       try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
     }
 
-    // Startsprache: gemerkt > Browser > de
+    // Startsprache: ?lang= (teilbarer Link) > gemerkt > Browser > de
+    var urlLang = null;
+    try { urlLang = new URLSearchParams(location.search).get("lang"); } catch (e) {}
     var saved = null;
     try { saved = localStorage.getItem(LANG_KEY); } catch (e) {}
-    var initial = saved || ((navigator.language || "de").toLowerCase().indexOf("de") === 0 ? "de" : "en");
+    var initial = (urlLang === "de" || urlLang === "en") ? urlLang
+      : saved || ((navigator.language || "de").toLowerCase().indexOf("de") === 0 ? "de" : "en");
     setLang(initial);
 
     document.querySelectorAll(".lp-langbtn").forEach(function (b) {

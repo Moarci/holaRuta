@@ -84,6 +84,10 @@ a { color: var(--brand-ink); }
   padding-inline: var(--gutter);
 }
 
+/* Anker-Sprünge (#features/#how/#install) landen unter dem klebrigen Header,
+   nicht dahinter. */
+[id] { scroll-margin-top: 84px; }
+
 /* Skip-Link (a11y) – aus dem Fluss, erst bei :focus sichtbar. */
 .lp-skip {
   position: absolute; left: -9999px; top: 0; z-index: 200;
@@ -351,6 +355,22 @@ a { color: var(--brand-ink); }
 .lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); line-height: 1.15; color: var(--ink); margin: 0; }
 .lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
 
+/* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
+   ohne Marketing-Floskeln. Chips auf --surface, damit sie sich vom --card-Grund
+   der Features-Section abheben. */
+.lp-more { margin-top: var(--space-6); text-align: center; }
+.lp-more__intro {
+  font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--brand-ink); margin: 0 0 var(--space-3);
+}
+.lp-more__chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.lp-morechip {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
+  border-radius: 999px; padding: 9px 15px; font-weight: 700; font-size: 0.9rem;
+  box-shadow: var(--shadow);
+}
+
 /* ─────────────────────────── So funktioniert's ─────────────────────────── */
 .lp-how__grid {
   display: grid; grid-template-columns: 1fr; gap: clamp(40px, 6vw, 72px);
@@ -432,6 +452,22 @@ a { color: var(--brand-ink); }
 }
 .lp-faq details[open] summary::after { transform: rotate(-90deg); }
 .lp-faq__body { padding: 0 18px 16px; color: var(--muted); font-size: 0.97rem; line-height: 1.55; }
+
+/* ─────────────────────────── Abschluss-CTA-Band ───────────────────────────
+ * Warmer Terrakotta-Abschluss zwischen der hellen Install/FAQ-Section und dem
+ * dunklen Footer: hell → warm → dunkel ergibt einen ruhigen Rhythmus und einen
+ * letzten klaren Conversion-Push. */
+.lp-final {
+  background: linear-gradient(135deg, var(--brand), var(--warn));
+  color: var(--cream); text-align: center;
+}
+.lp-final .lp-h2 { color: var(--cream); margin-inline: auto; max-width: 24ch; }
+.lp-final__sub { font-size: var(--fs-lead); color: rgba(251, 243, 228, 0.92); margin: 0 auto var(--space-5); max-width: 46ch; }
+.lp-cta--onbrand {
+  /* Weiße Fläche bleibt in beiden Themes -> feste dunkle Tinte (#A23E20 = 6.47:1
+     auf Weiß, wie das App-Update-Banner). */
+  background: #fff; color: #A23E20; border-color: #fff;
+}
 
 /* ─────────────────────────── Footer ─────────────────────────── */
 .lp-footer {
