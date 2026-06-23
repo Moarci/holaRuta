@@ -304,6 +304,16 @@ a { color: var(--brand-ink); }
 .lp-slide.is-active { position: relative; opacity: 1; transform: none; pointer-events: auto; }
 .lp-carousel .flip__inner { min-height: 270px; }
 
+/* Reise-Kontext auf der Antwortkarte: zeigt, WANN/WO man den Satz wirklich
+   braucht – damit die Showcase-Karte (wie in der App) immer Kontext zur
+   Einordnung mitliefert. Dezent unter Wort + Aussprache, mit feiner Trennlinie. */
+.lp-carousel .face__ctx {
+  margin-top: 14px; padding-top: 12px;
+  max-width: 30ch; font-size: 0.84rem; line-height: 1.35;
+  color: rgba(251, 243, 228, 0.82); text-wrap: balance;
+  border-top: 1px solid rgba(251, 243, 228, 0.22);
+}
+
 /* Tilt-Wrapper: getrennt vom .flip (das seine eigene Perspektive fürs Umdrehen
    mitbringt), damit Kippen und Umdrehen sich nicht in die Quere kommen. */
 .lp-cardtilt {
