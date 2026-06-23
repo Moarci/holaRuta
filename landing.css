@@ -312,17 +312,28 @@ a { color: var(--brand-ink); }
 @media (min-width: 520px) { .lp-features__grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 760px) { .lp-features__grid { grid-template-columns: repeat(3, 1fr); } }
 .lp-feat {
-  display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2);
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3);
   padding: var(--space-4); border-radius: var(--r-lg);
   background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
 }
-.lp-feat:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.lp-feat:hover {
+  transform: translateY(-3px); box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 45%, var(--line));
+}
+/* Farbige Icon-Kachel je Feature (Marken-Palette via --accent inline). Weicher
+   Verlauf + feiner Innenring -> mehr Leben, bleibt aber im Erdton-Look. */
 .lp-feat__icon {
-  width: 52px; height: 52px; border-radius: var(--r-md);
+  width: 56px; height: 56px; border-radius: 16px;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 1.55rem; background: color-mix(in srgb, var(--brand) 10%, transparent);
+  font-size: 1.7rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
+  transition: transform 0.16s ease;
 }
+.lp-feat:hover .lp-feat__icon { transform: scale(1.06) rotate(-2deg); }
 .lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); line-height: 1.15; color: var(--ink); margin: 0; }
 .lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
 
