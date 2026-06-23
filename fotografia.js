@@ -341,7 +341,7 @@
       titleEn: "Offering yourself & asking permission",
       items: [
         { es: "¿Quieres que les tome una foto?", de: "Soll ich ein Foto von euch machen?", en: "Would you like me to take a photo of you (all)?" },
-        { es: "¿Te tomo una a ti también?", de: "Soll ich auch eine von dir machen?", en: "Shall I take one of you too?" },
+        { es: "¿Te tomo una a ti también?", de: "Soll ich auch eins von dir machen?", en: "Shall I take one of you too?" },
         { es: "¿Puedo tomarte una foto?", de: "Darf ich ein Foto von dir machen?", en: "May I take a photo of you?" },
         { es: "¿Se pueden tomar fotos aquí?", de: "Darf man hier fotografieren?", en: "Are photos allowed here?" },
         { es: "¿Está bien si grabo un video?", de: "Ist es in Ordnung, wenn ich ein Video mache?", en: "Is it okay if I record a video?" },
