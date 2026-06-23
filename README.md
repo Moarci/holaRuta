@@ -595,6 +595,7 @@ Druckfertige Anleitungen (DE · EN · ES) für den Einsatz in Sprachschulen, auf
 - **[Hostel-Aushang „Spanish Night“](docs/anleitungen/hostel.html)** — Poster mit **echtem QR-Code** für den Common Room.
 - **[Hostel-Flyer / Tisch-Karte](docs/anleitungen/hostel-flyer.html)** — zwei QR-Karten pro A4 zum Ausschneiden (Rezeption &amp; Tische), Standard Español.
 - **[Hostel-Poster (Design-Variante)](docs/anleitungen/hostel-poster-bold.html)** — vollflächiges Farb-Poster für moderne Hostels (Viajero, Masaya, Los Patios), Standard Español.
+- **Flyer-Serie (weitere Aufhänger)** — [Survival Spanish](docs/anleitungen/hostel-survival.html) (Spickzettel) · [Reto del día](docs/anleitungen/hostel-reto.html) (Real-Life-Challenge) · [¿Próxima parada?](docs/anleitungen/hostel-destinos.html) (Destination-Packs), je DE·EN·ES, Standard Español.
 
 **Go-to-Market** unter [`docs/pitch/`](docs/pitch/index.html):
 - **[Akquise-Strategie & Playbook](docs/pitch/akquise-strategie.md)** — operatives Schritt-für-Schritt-Vorgehen (Schulen·Reisen·Hostels): Reihenfolge, Nachfass-Rhythmus, Einwand-Behandlung, 30-Tage-Plan, Pipeline-Tabelle.
