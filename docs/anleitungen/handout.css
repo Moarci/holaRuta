@@ -166,12 +166,139 @@ th { background: rgba(194, 80, 46, 0.10); color: var(--brand-ink); font-weight: 
   margin: 8px 0;
 }
 
+/* Hostel-Flyer: zwei identische Karten pro A4 zum Ausschneiden (Rezeption/Tisch) */
+.cutsheet {
+  background: var(--surface);
+  max-width: 600px;
+  margin: 0 auto 24px;
+  border-radius: 8px;
+  padding: 6px;
+}
+.flyer { text-align: center; padding: 26px 30px 18px; }
+.flyer h1 { font-size: 2.1rem; margin: 6px 0; }
+.flyer .lead { font-size: 1.02rem; margin: 0 0 12px; }
+.flyer .qr { width: 168px; height: 168px; margin: 12px auto; }
+.flyer .url { font-size: 1.05rem; padding: 6px 18px; }
+.flyer .how {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 12px auto 6px;
+  max-width: 360px;
+}
+.flyer .foot { border: 0; margin-top: 12px; padding-top: 0; }
+.cut {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  border-top: 2px dashed var(--line);
+  padding-top: 6px;
+  margin: 4px 8px 0;
+}
+
+/*
+ * Bold/Design-Poster (wiederverwendbar) – vollflächiges Farbpanel, große Typo.
+ * Farbe je Seite über --bold-grad setzen (Default: HolaRuta-Orange).
+ * Komplett aus CSS, keine externen Bilder. Genutzt von hostel-poster-bold.html
+ * und der Flyer-Serie (Survival · Reto del día · Próxima parada).
+ */
+.bold {
+  --bold-grad:
+    radial-gradient(130% 80% at 18% 0%, rgba(255, 212, 150, 0.35) 0%, transparent 60%),
+    radial-gradient(120% 95% at 50% -6%, #e9774a 0%, #c2502e 46%, #a23e20 100%);
+  position: relative;
+  max-width: 820px;
+  margin: 0 auto 24px;
+  padding: 54px 48px 40px;
+  text-align: center;
+  color: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bold-grad);
+}
+.bold::before { /* dezente „Konfetti“-Deko, rein dekorativ */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.10) 2px, transparent 2.5px),
+    radial-gradient(rgba(255, 255, 255, 0.07) 2px, transparent 2.5px);
+  background-size: 38px 38px, 38px 38px;
+  background-position: 0 0, 19px 19px;
+  pointer-events: none;
+}
+.bold > * { position: relative; }
+.bold .kicker {
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 0.82rem;
+  opacity: 0.92;
+}
+.bold h1 {
+  font-size: 4rem;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 10px 0 6px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+}
+.bold .tag { font-size: 1.3rem; font-weight: 600; opacity: 0.97; margin: 0 0 6px; }
+.bold .qrwrap {
+  width: 256px;
+  height: 256px;
+  margin: 24px auto 14px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+.bold .qrwrap img { width: 100%; height: 100%; display: block; }
+.bold .pill {
+  display: inline-block;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  padding: 9px 24px;
+}
+.bold .chips {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 22px 0 8px;
+}
+.bold .chip {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.bold .trust { margin: 12px 0 0; font-size: 0.92rem; opacity: 0.92; }
+
 /* Druck: Schalter weg, weißer Hintergrund, saubere Seitenränder */
 @page { margin: 14mm; }
 @media print {
   body { background: #fff; }
   .langbar { display: none; }
   .sheet { margin: 0; max-width: none; padding: 0; border-radius: 0; }
+  .cutsheet { max-width: none; margin: 0; }
+  .flyer { break-inside: avoid; }
   h2 { break-after: avoid; }
   tr, li, .tip { break-inside: avoid; }
+  /* Bold-Poster randlos & seitenfüllend (randloses @page setzt die jeweilige Seite selbst) */
+  .bold {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 }

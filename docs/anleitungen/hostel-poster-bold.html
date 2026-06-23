@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es" data-lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HolaRuta · Spanish Night (Poster, Design-Variante)</title>
+<link rel="stylesheet" href="handout.css">
+<style>
+/* Design-Poster für moderne Hostels (Viajero, Masaya, Los Patios …).
+   Stile in handout.css (.bold); hier nur Farbe + randloser Druck. */
+@media print { @page { margin: 0; } }
+</style>
+</head>
+<body>
+
+<nav class="langbar" aria-label="Sprache / Language / Idioma">
+  <button data-lang="es" aria-pressed="true">Español</button>
+  <button data-lang="en" aria-pressed="false">English</button>
+  <button data-lang="de" aria-pressed="false">Deutsch</button>
+</nav>
+
+<main class="bold">
+
+  <!-- ===== localisierter Kopf ===== -->
+  <div lang="es" class="lang lang--es"><div class="kicker">🌶️ HolaRuta · Noche de español · Gratis</div></div>
+  <div lang="en" class="lang lang--en"><div class="kicker">🌶️ HolaRuta · Spanish game night · Free</div></div>
+  <div lang="de" class="lang lang--de"><div class="kicker">🌶️ HolaRuta · Reise-Spanisch-Abend · Gratis</div></div>
+
+  <h1>Spanish Night</h1>
+
+  <div lang="es" class="lang lang--es"><p class="tag">Escanea, juega y rompe el hielo — en parejas o en grupo.</p></div>
+  <div lang="en" class="lang lang--en"><p class="tag">Scan, play and break the ice — in pairs or as a group.</p></div>
+  <div lang="de" class="lang lang--de"><p class="tag">Scannen, spielen, Eis brechen — zu zweit oder in der Gruppe.</p></div>
+
+  <!-- Echter, scannbarer QR-Code (segno, verifiziert) für https://moarci.github.io/holaRuta/ -->
+  <div class="qrwrap">
+    <img src="qr-holaruta.svg" width="220" height="220"
+         alt="QR-Code, führt zu moarci.github.io/holaRuta">
+  </div>
+  <div class="pill">moarci.github.io/holaRuta</div>
+
+  <!-- ===== localisierter Fuß ===== -->
+  <div lang="es" class="lang lang--es">
+    <div class="chips"><span class="chip">🧭 Modo hostal</span><span class="chip">⚡ 5 minutos</span><span class="chip">🎲 battle &amp; retos</span></div>
+    <p class="trust">Sin instalar · sin conexión · sin cuenta · la app está en DE/EN — guíate por los iconos</p>
+  </div>
+  <div lang="en" class="lang lang--en">
+    <div class="chips"><span class="chip">🧭 Modo hostal</span><span class="chip">⚡ 5 minutes</span><span class="chip">🎲 battle &amp; challenges</span></div>
+    <p class="trust">No install · works offline · no account · free</p>
+  </div>
+  <div lang="de" class="lang lang--de">
+    <div class="chips"><span class="chip">🧭 Modo hostal</span><span class="chip">⚡ 5 Minuten</span><span class="chip">🎲 Battle &amp; Challenges</span></div>
+    <p class="trust">Keine Installation · offline · kein Konto · kostenlos</p>
+  </div>
+
+</main>
+
+<script src="handout.js"></script>
+<script>
+  /* Poster für Hostels in Lateinamerika – Startsprache Español
+     (überschreibt die Browser-Erkennung). Manuelles Umschalten oben bleibt möglich. */
+  (function () {
+    var html = document.documentElement;
+    html.setAttribute("data-lang", "es");
+    html.setAttribute("lang", "es");
+    var bar = document.querySelector(".langbar");
+    if (bar) {
+      bar.querySelectorAll("button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.dataset.lang === "es"));
+      });
+    }
+  })();
+</script>
+</body>
+</html>

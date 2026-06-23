@@ -2,6 +2,7 @@
 
 > Priorisierte Liste für die ersten Kontakte. Reihenfolge folgt [MARKT.md](../../MARKT.md) §10/§11:
 > **Kolumbien-/Immersion-Nähe zuerst, große Ketten später; Warm-Intros vor Kalt-Akquise.**
+> Operatives Schritt-für-Schritt-Vorgehen (Wellen, Nachfass, Einwände, 30-Tage-Plan): [akquise-strategie.md](akquise-strategie.md).
 >
 > ⚠️ **Wichtig:** Konkrete URLs/E-Mails/Ansprechpartner unten sind **vor dem Versand zu verifizieren**
 > (Web-Recherche). Hier stehen bewusst die *Kontaktwege* und Prioritäten, keine erfundenen Adressen.
@@ -15,9 +16,11 @@
 |---|---|---|---|---|
 | 1 | **Centro Catalina** | Sprachschule, Cartagena + Medellín | Zwei Kolumbien-Standorte, Immersion/Backpacker-Vibe – nächste am Produkt | Website-Kontaktformular / Schulleitung; ggf. Instagram-DM |
 | 2 | **ECOS · Cartagena** | Sprachschule | Cartagena-Fokus, Kultur/Aktivitäten/Salsa – deckt sich mit dem Colombia-Pack | Website / „admisiones"/Direktion; ggf. über Buchungsportale |
-| 3 | **Cartagena-Hostels** (Getsemaní) | Hostels | Direkter Bezug, niedrigste Hürde; „Spanish Night" als kostenlose Aktivität → Testimonials | Vor Ort / E-Mail / Instagram; Poster (docs/anleitungen/hostel.html) mitschicken |
+| 3 | **Große/moderne Hostels & Ketten in ganz Kolumbien** | Hostels | Niedrigste Hürde, remote machbar; „Spanish Night" als kostenlose Aktivität → Reichweite + Testimonials. **Ketten = Hebel** (ein Kontakt → viele Standorte) | Instagram-DM + E-Mail (`info@`/`events@`/Partnerships); Poster (docs/anleitungen/hostel.html) mitschicken |
 
-**Ziel Stufe A:** 1 zahlende Schule **oder** 1 aktives Hostel + **1 Testimonial**. Das ist der erste echte Meilenstein (MARKT.md §9).
+**Hostel-Prioritäten (Ketten/Flaggschiffe zuerst, dann Einzel-Hostels je Hub):** Viajero (`@viajerohostels` · `sales@viajerohostels.com`) · Masaya (`@masayaexperience` · masaya-experience.com/en/contacto/) · Los Patios (`@lospatios` · `info@lospatioshb.com`) · Republica (`@republicahostels`) · Dreamer (`@thedreamerhostel`) · (Selina/Collective Hospitality nachrangig, da im Turnaround). Volle Ziel- & Hub-Liste mit Kontaktdaten + remote-Anschreiben: [akquise-strategie.md §2](akquise-strategie.md).
+
+**Ziel Stufe A:** 1 zahlende Schule **oder** 1 aktives Hostel (idealerweise Ketten-Gespräch) + **1 Testimonial**. Das ist der erste echte Meilenstein (MARKT.md §9).
 
 ---
 
