@@ -4483,21 +4483,22 @@ a { color: var(--brand-ink); }
   width: min(360px, 92vw); margin-inline: auto;
   touch-action: pan-y; /* vertikales Scrollen bleibt, horizontale Wische gehen ans JS */
 }
-.lp-carousel__viewport { position: relative; min-height: 330px; }
+.lp-carousel__viewport { position: relative; min-height: 300px; }
 .lp-slide {
   position: absolute; inset: 0; opacity: 0; transform: scale(0.96);
   transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
 }
 .lp-slide.is-active { position: relative; opacity: 1; transform: none; pointer-events: auto; }
-.lp-carousel .flip__inner { min-height: 310px; }
-.lp-carousel .face--back { padding-bottom: 72px; }
-.lp-carousel .face__ctx {
-  margin-top: 14px; padding-top: 12px;
-  max-width: 30ch; font-size: 0.84rem; line-height: 1.35;
-  color: rgba(251, 243, 228, 0.82); text-wrap: balance;
-  border-top: 1px solid rgba(251, 243, 228, 0.22);
-}
+.lp-carousel .flip__inner { min-height: 270px; }
+
+/* Reise-Kontext wie in der App: NICHT auf der Karte, sondern hinter dem
+   🧭-Button (unten links, Pendant zum 🔊). Klick blendet das App-Panel
+   (.context-panel) unter der Karte ein – mit Reisesatz, Situation und Reisetipp.
+   Nur die aktive Slide ist position:relative, daher wächst beim Aufklappen genau
+   ihre Höhe und schiebt die Punkt-Navigation sauber nach unten. */
+.lp-ctxpanel { margin-top: 14px; text-align: left; }
+.lp-slide:not(.is-active) .lp-ctxpanel { display: none; }
 
 /* Tilt-Wrapper: getrennt vom .flip (das seine eigene Perspektive fürs Umdrehen
    mitbringt), damit Kippen und Umdrehen sich nicht in die Quere kommen. */
@@ -4827,12 +4828,27 @@ a { color: var(--brand-ink); }
                       <div class="face face--back" style="--from:#C2502E">
                         <span class="face__cat" data-i18n="ex1.cat">GELD</span>
                         <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx1">🧭</button>
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿Cuánto cuesta?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">¿Cuánto cuesta?</div>
                         <div class="face__tip">🗣️ KWAN-toh KWES-tah</div>
-                        <div class="face__ctx" data-i18n="ex1.ctx">🧭 Im Laden oder auf dem Markt</div>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx1" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex1.ctxEs">¿Cuánto cuesta esto?</p>
+                    <p class="context-panel__de" data-i18n="ex1.ctxTr">Wie viel kostet das?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxSit">Im Laden oder auf dem Markt.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxNote">Auch ¿Cuánto vale? oder auf dem Markt ¿A cómo?</p>
                   </div>
                 </div>
               </div>
@@ -4849,12 +4865,27 @@ a { color: var(--brand-ink); }
                       <div class="face face--back" style="--from:#B5302A">
                         <span class="face__cat" data-i18n="ex2.cat">NOTFALL</span>
                         <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx2">🧭</button>
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="Necesito un médico" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">Necesito un médico</div>
                         <div class="face__tip">🗣️ ne-ce-SI-to un MÉ-di-co</div>
-                        <div class="face__ctx" data-i18n="ex2.ctx">🧭 Bei Krankheit oder Verletzung</div>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx2" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex2.ctxEs">Necesito un médico, por favor.</p>
+                    <p class="context-panel__de" data-i18n="ex2.ctxTr">Ich brauche einen Arzt, bitte.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxSit">Bei Krankheit oder Verletzung – im Hostel, in der Apotheke.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxNote">Im Notfall ergänzen: Es una emergencia.</p>
                   </div>
                 </div>
               </div>
@@ -4871,12 +4902,27 @@ a { color: var(--brand-ink); }
                       <div class="face face--back" style="--from:#2F6B70">
                         <span class="face__cat" data-i18n="ex3.cat">BUS</span>
                         <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx3">🧭</button>
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿A qué hora sale?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">¿A qué hora sale?</div>
                         <div class="face__tip">🗣️ a-KÉ O-ra SA-le</div>
-                        <div class="face__ctx" data-i18n="ex3.ctx">🧭 Am Busbahnhof, beim Fahrplan</div>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx3" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex3.ctxEs">¿A qué hora sale el próximo bus?</p>
+                    <p class="context-panel__de" data-i18n="ex3.ctxTr">Wann fährt der nächste Bus?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxSit">Am Schalter oder Busbahnhof nach dem Fahrplan fragen.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxNote">Gegenwart für Festes wie Fahrpläne: sale (salir) = fährt ab.</p>
                   </div>
                 </div>
               </div>
@@ -4893,12 +4939,27 @@ a { color: var(--brand-ink); }
                       <div class="face face--back" style="--from:#3F7355">
                         <span class="face__cat" data-i18n="ex4.cat">ESSEN</span>
                         <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx4">🧭</button>
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="La cuenta, por favor" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">La cuenta, por favor</div>
                         <div class="face__tip">🗣️ la KWEN-ta por fa-VOR</div>
-                        <div class="face__ctx" data-i18n="ex4.ctx">🧭 Im Restaurant oder Café</div>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx4" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex4.ctxEs">La cuenta, por favor.</p>
+                    <p class="context-panel__de" data-i18n="ex4.ctxTr">Die Rechnung, bitte.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex4.ctxSit">Im Restaurant, Café oder bei Streetfood mit Sitzbereich.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex4.ctxNote">Kurz, höflich und völlig ausreichend. Noch höflicher: ¿Me trae la cuenta, por favor?</p>
                   </div>
                 </div>
               </div>
@@ -4915,12 +4976,27 @@ a { color: var(--brand-ink); }
                       <div class="face face--back" style="--from:#7D4A8E">
                         <span class="face__cat" data-i18n="ex5.cat">SMALLTALK</span>
                         <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx5">🧭</button>
                         <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿De dónde eres?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
                         <div class="face__word" lang="es">¿De dónde eres?</div>
                         <div class="face__tip">🗣️ de DÓN-de E-res</div>
-                        <div class="face__ctx" data-i18n="ex5.ctx">🧭 Beim Frühstück oder im Dorm</div>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx5" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex5.ctxEs">Hola, ¿de dónde eres?</p>
+                    <p class="context-panel__de" data-i18n="ex5.ctxTr">Hey, woher kommst du?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex5.ctxSit">Beim Frühstück, im Dorm, in einer Tourgruppe oder im Bus.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex5.ctxNote">Perfekter Einstieg. Danach passt: ¿Cuánto tiempo viajas?</p>
                   </div>
                 </div>
               </div>
@@ -4963,7 +5039,7 @@ a { color: var(--brand-ink); }
           <article class="lp-feat" data-reveal style="--i:0; --accent:#2F6B70">
             <span class="lp-feat__icon" aria-hidden="true">🧭</span>
             <h3 class="lp-feat__title" data-i18n="feat.context.t">Immer mit Kontext</h3>
-            <p class="lp-feat__body" data-i18n="feat.context.b">Jede Karte zeigt dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp. So weißt du sofort, wie du ihn einordnest.</p>
+            <p class="lp-feat__body" data-i18n="feat.context.b">Tipp auf 🧭 und jede Karte verrät dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp zur Einordnung.</p>
           </article>
           <article class="lp-feat" data-reveal style="--i:0; --accent:#E9A23B">
             <span class="lp-feat__icon" aria-hidden="true">📶</span>
@@ -5183,18 +5259,24 @@ a { color: var(--brand-ink); }
         "trust.cards": "Karten", "trust.areas": "Bereiche", "trust.modes": "Lernmodi", "trust.free": "Offline · kein Konto",
         "card.hint": "Zum Umdrehen tippen", "card.lvl": "A1 · Einsteiger", "card.lvl2": "A2 · Mittel",
         "card.speakLabel": "Antwort vorlesen",
-        "ex1.cat": "GELD", "ex1.q": "Was kostet das?", "ex1.ctx": "🧭 Im Laden oder auf dem Markt",
-        "ex2.cat": "NOTFALL", "ex2.q": "Ich brauche einen Arzt", "ex2.ctx": "🧭 Bei Krankheit oder Verletzung",
-        "ex3.cat": "BUS", "ex3.q": "Wann fährt der Bus?", "ex3.ctx": "🧭 Am Busbahnhof, beim Fahrplan",
-        "ex4.cat": "ESSEN", "ex4.q": "Die Rechnung, bitte", "ex4.ctx": "🧭 Im Restaurant oder Café",
-        "ex5.cat": "SMALLTALK", "ex5.q": "Woher kommst du?", "ex5.ctx": "🧭 Beim Frühstück oder im Dorm",
+        "ex1.cat": "GELD", "ex1.q": "Was kostet das?",
+        "ex2.cat": "NOTFALL", "ex2.q": "Ich brauche einen Arzt",
+        "ex3.cat": "BUS", "ex3.q": "Wann fährt der Bus?",
+        "ex4.cat": "ESSEN", "ex4.q": "Die Rechnung, bitte",
+        "ex5.cat": "SMALLTALK", "ex5.q": "Woher kommst du?",
+        "ctx.show": "Reise-Kontext anzeigen", "ctx.title": "🧭 So nutzt du es unterwegs", "ctx.situation": "Situation", "ctx.note": "Reisetipp",
+        "ex1.ctxEs": "¿Cuánto cuesta esto?", "ex1.ctxTr": "Wie viel kostet das?", "ex1.ctxSit": "Im Laden oder auf dem Markt.", "ex1.ctxNote": "Auch ¿Cuánto vale? oder auf dem Markt ¿A cómo?",
+        "ex2.ctxEs": "Necesito un médico, por favor.", "ex2.ctxTr": "Ich brauche einen Arzt, bitte.", "ex2.ctxSit": "Bei Krankheit oder Verletzung – im Hostel, in der Apotheke.", "ex2.ctxNote": "Im Notfall ergänzen: Es una emergencia.",
+        "ex3.ctxEs": "¿A qué hora sale el próximo bus?", "ex3.ctxTr": "Wann fährt der nächste Bus?", "ex3.ctxSit": "Am Schalter oder Busbahnhof nach dem Fahrplan fragen.", "ex3.ctxNote": "Gegenwart für Festes wie Fahrpläne: sale (salir) = fährt ab.",
+        "ex4.ctxEs": "La cuenta, por favor.", "ex4.ctxTr": "Die Rechnung, bitte.", "ex4.ctxSit": "Im Restaurant, Café oder bei Streetfood mit Sitzbereich.", "ex4.ctxNote": "Kurz, höflich und völlig ausreichend. Noch höflicher: ¿Me trae la cuenta, por favor?",
+        "ex5.ctxEs": "Hola, ¿de dónde eres?", "ex5.ctxTr": "Hey, woher kommst du?", "ex5.ctxSit": "Beim Frühstück, im Dorm, in einer Tourgruppe oder im Bus.", "ex5.ctxNote": "Perfekter Einstieg. Danach passt: ¿Cuánto tiempo viajas?",
         "feat.eyebrow": "WAS DRIN IST",
         "feat.title": "Alles für die Reise — nichts fürs Klassenzimmer.",
         "feat.lead": "Kein Vokabel-Pauken. Sondern die Sätze, die du am Busbahnhof, im Hostel und auf dem Markt sofort brauchst.",
         "feat.srs.t": "Du vergisst es nicht mehr", "feat.srs.b": "Jede Vokabel kommt genau dann zurück, wenn du sie zu vergessen drohst — automatisch. Du musst nichts planen.",
         "feat.modes.t": "Lern, wie's dir passt", "feat.modes.b": "Karteikarte, selbst schreiben oder nur hören — wechsle den Modus jederzeit.",
         "feat.latam.t": "Echtes Straßen-Spanisch", "feat.latam.b": "colectivo, vuelto, plata, chévere — die Wörter, die man in Lateinamerika wirklich sagt.",
-        "feat.context.t": "Immer mit Kontext", "feat.context.b": "Jede Karte zeigt dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp. So weißt du sofort, wie du ihn einordnest.",
+        "feat.context.t": "Immer mit Kontext", "feat.context.b": "Tipp auf 🧭 und jede Karte verrät dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp zur Einordnung.",
         "feat.offline.t": "Funktioniert ohne Netz", "feat.offline.b": "Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.",
         "feat.privacy.t": "Kein Konto, kein Tracking", "feat.privacy.b": "Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.",
         "feat.areas.t": "72 Themen für echte Situationen", "feat.areas.b": "Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.",
@@ -5237,18 +5319,24 @@ a { color: var(--brand-ink); }
         "trust.cards": "cards", "trust.areas": "areas", "trust.modes": "modes", "trust.free": "Offline · no account",
         "card.hint": "Tap to flip", "card.lvl": "A1 · Beginner", "card.lvl2": "A2 · Intermediate",
         "card.speakLabel": "Read answer aloud",
-        "ex1.cat": "MONEY", "ex1.q": "How much is it?", "ex1.ctx": "🧭 At the shop or market",
-        "ex2.cat": "EMERGENCY", "ex2.q": "I need a doctor", "ex2.ctx": "🧭 When ill or injured",
-        "ex3.cat": "BUS", "ex3.q": "What time does the bus leave?", "ex3.ctx": "🧭 At the station, checking times",
-        "ex4.cat": "FOOD", "ex4.q": "The check, please", "ex4.ctx": "🧭 At a restaurant or café",
-        "ex5.cat": "SMALL TALK", "ex5.q": "Where are you from?", "ex5.ctx": "🧭 At breakfast or in the dorm",
+        "ex1.cat": "MONEY", "ex1.q": "How much is it?",
+        "ex2.cat": "EMERGENCY", "ex2.q": "I need a doctor",
+        "ex3.cat": "BUS", "ex3.q": "What time does the bus leave?",
+        "ex4.cat": "FOOD", "ex4.q": "The check, please",
+        "ex5.cat": "SMALL TALK", "ex5.q": "Where are you from?",
+        "ctx.show": "Show travel context", "ctx.title": "🧭 How to use it on the road", "ctx.situation": "Situation", "ctx.note": "Travel tip",
+        "ex1.ctxEs": "¿Cuánto cuesta esto?", "ex1.ctxTr": "How much is this?", "ex1.ctxSit": "At the shop or market.", "ex1.ctxNote": "Also ¿Cuánto vale? or at the market ¿A cómo?",
+        "ex2.ctxEs": "Necesito un médico, por favor.", "ex2.ctxTr": "I need a doctor, please.", "ex2.ctxSit": "When ill or injured – at the hostel, at the pharmacy.", "ex2.ctxNote": "In an emergency add: Es una emergencia.",
+        "ex3.ctxEs": "¿A qué hora sale el próximo bus?", "ex3.ctxTr": "When does the next bus leave?", "ex3.ctxSit": "Asking about the timetable at the desk or bus station.", "ex3.ctxNote": "Present for fixed things like timetables: sale (salir) = leaves.",
+        "ex4.ctxEs": "La cuenta, por favor.", "ex4.ctxTr": "The bill, please.", "ex4.ctxSit": "At a restaurant, café or street food with seating.", "ex4.ctxNote": "Short, polite and perfectly enough. Even more polite: ¿Me trae la cuenta, por favor?",
+        "ex5.ctxEs": "Hola, ¿de dónde eres?", "ex5.ctxTr": "Hey, where are you from?", "ex5.ctxSit": "At breakfast, in the dorm, on a tour group or on the bus.", "ex5.ctxNote": "Perfect opener. After that: ¿Cuánto tiempo viajas?",
         "feat.eyebrow": "WHAT'S INSIDE",
         "feat.title": "Everything for the road — nothing for the classroom.",
         "feat.lead": "No vocab cramming. Just the phrases you need right away at the bus terminal, in the hostel and at the market.",
         "feat.srs.t": "You won't forget it", "feat.srs.b": "Every word comes back right before you'd forget it — automatically. Nothing to plan.",
         "feat.modes.t": "Learn your way", "feat.modes.b": "Flip a card, type it yourself or just listen — switch modes anytime.",
         "feat.latam.t": "Real street Spanish", "feat.latam.b": "colectivo, vuelto, plata, chévere — the words people actually use in Latin America.",
-        "feat.context.t": "Always in context", "feat.context.b": "Every card shows you when and where you'll actually need the phrase — plus a travel tip. So you instantly know how it fits.",
+        "feat.context.t": "Always in context", "feat.context.b": "Tap 🧭 and every card reveals when and where you'll actually need the phrase — plus a travel tip to place it.",
         "feat.offline.t": "Works with no signal", "feat.offline.b": "Loads once, runs offline — Andes, jungle, night bus.",
         "feat.privacy.t": "No account, no tracking", "feat.privacy.b": "Your progress stays on your device. No sign-up, no ads.",
         "feat.areas.t": "72 real-life topics", "feat.areas.b": "From the bus ride to the pharmacy — 2,293 cards, neatly sorted.",
@@ -5371,9 +5459,13 @@ a { color: var(--brand-ink); }
           var on = n === idx;
           s.classList.toggle("is-active", on);
           s.setAttribute("aria-hidden", on ? "false" : "true"); // inaktive Karten aus dem SR-Fokus
-          if (!on) { // beim Wegblättern zurück auf die Vorderseite
+          if (!on) { // beim Wegblättern zurück auf die Vorderseite + Kontext schließen
             var f = flips[n];
             if (f) { f.classList.remove("is-flipped"); f.setAttribute("aria-pressed", "false"); }
+            var cp = s.querySelector(".lp-ctxpanel");
+            if (cp) cp.setAttribute("hidden", "");
+            var cb = s.querySelector(".cardbtn--ctx");
+            if (cb) { cb.classList.remove("is-open"); cb.setAttribute("aria-expanded", "false"); }
           }
         });
         dots.forEach(function (d, n) {
@@ -5391,9 +5483,17 @@ a { color: var(--brand-ink); }
       // Flip + Vorlesen pro Karte
       flips.forEach(function (f) {
         if (!f) return;
+        var slide = f.closest(".lp-slide");
+        var ctxBtn = f.querySelector(".cardbtn--ctx");
+        var panel = slide ? slide.querySelector(".lp-ctxpanel") : null;
+        function closeCtx() {
+          if (panel) panel.setAttribute("hidden", "");
+          if (ctxBtn) { ctxBtn.classList.remove("is-open"); ctxBtn.setAttribute("aria-expanded", "false"); }
+        }
         function flip() {
           var on = f.classList.toggle("is-flipped");
           f.setAttribute("aria-pressed", on ? "true" : "false");
+          if (!on) closeCtx();                       // zurück auf Vorderseite -> Kontext zu
         }
         f.addEventListener("click", function (e) {
           if (swiped) return;                        // war ein Wisch, kein Tap
@@ -5402,6 +5502,15 @@ a { color: var(--brand-ink); }
         });
         f.addEventListener("keydown", function (e) {
           if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
+        });
+        // 🧭 Reise-Kontext: blendet das App-Panel unter der Karte ein/aus (Pendant
+        // zum 🔊; klappt auf, ohne die Karte umzudrehen). Wie in der App.
+        if (ctxBtn && panel) ctxBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var willOpen = panel.hasAttribute("hidden");
+          if (willOpen) panel.removeAttribute("hidden"); else panel.setAttribute("hidden", "");
+          ctxBtn.classList.toggle("is-open", willOpen);
+          ctxBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
         });
         var spk = f.querySelector(".cardbtn--speak");
         if (spk) spk.addEventListener("click", function (e) {
