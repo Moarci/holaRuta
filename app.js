@@ -2060,6 +2060,7 @@
     // 1) Offene Overlays/Panels zuerst schließen (wie ein „Schließen").
     if (state.updateNotice && state.updateNotice.length) { dismissUpdateNotice(); return true; }
     if (state.szShow) { spickzettel.szClose(); return true; }
+    if (state.favPractice) { favPracticeClose(); return true; }
     if (state.favShow) { favClose(); return true; }
     if (state.screen === "favorites" && state.favEdit) { favEditCancel(); return true; }
     if (state.screen === "study" && state.contextOpen) { setContextOpen(false); render(); return true; }
@@ -5310,20 +5311,28 @@
   // Bei einem Fehler bleibt der getippte Text als Entwurf erhalten (favDraft),
   // damit das Re-Render ihn nicht verwirft. Doppelte Einträge (gleiches de+es)
   // werden freundlich abgewiesen statt ein zweites Mal angelegt.
+  // Eine vom Nutzer gewählte Kategorie nur übernehmen, wenn es sie wirklich gibt
+  // (sonst ""→ landet in „Eigene Einträge").
+  function favCatOf(value) {
+    const id = String(value || "");
+    return categoryById(id) ? id : "";
+  }
+
   function addCustomFavorite(input) {
     const de = String(input.de || "").trim();
     const es = String(input.es || "").trim();
     const tip = String(input.tip || "").trim();
+    const cat = favCatOf(input.cat);
     if (!de || !es) {
       favMsg = { type: "error", text: t("favorites.errNeed") };
-      favDraft = { de, es, tip };
+      favDraft = { de, es, tip, cat };
       render();
       return;
     }
     const norm = (s) => String(s || "").trim().toLowerCase();
     if (favorites.some((f) => norm(f.es) === norm(es) && norm(f.de) === norm(de))) {
       favMsg = { type: "error", text: t("favorites.errDup") };
-      favDraft = { de, es, tip };
+      favDraft = { de, es, tip, cat };
       render();
       return;
     }
@@ -5333,7 +5342,7 @@
       de: de.slice(0, 500),
       es: es.slice(0, 500),
       tip: tip.slice(0, 500),
-      cat: "",
+      cat,
       addedAt: new Date().toISOString(),
     }].concat(favorites);
     persistFavorites();
@@ -5362,9 +5371,10 @@
     const de = String(input.de || "").trim();
     const es = String(input.es || "").trim();
     const tip = String(input.tip || "").trim();
+    const cat = favCatOf(input.cat);
     if (!de || !es) { favEditMsg = { type: "error", text: t("favorites.errNeed") }; render(); return; }
     const next = favorites.slice();
-    next[i] = Object.assign({}, next[i], { de: de.slice(0, 500), es: es.slice(0, 500), tip: tip.slice(0, 500) });
+    next[i] = Object.assign({}, next[i], { de: de.slice(0, 500), es: es.slice(0, 500), tip: tip.slice(0, 500), cat });
     favorites = next;
     persistFavorites();
     state.favEdit = null;
@@ -5384,22 +5394,97 @@
     render();
   }
 
-  // Herkunft eines Favoriten – für Gruppierung (Überschrift) und Icon.
-  //  - Karten-Favorit / Karten-cat -> echte Kategorie (categoryById)
-  //  - Satz-Favorit aus einem Modul (id „favph-…", cat = Modul-Slug) -> Modul
-  //    (MODULE_SHARE liefert Icon + Titel)
-  //  - eigener, getippter Eintrag (id „fav-…", ohne Karte) -> eigene Gruppe
-  // order steuert die Gruppen-Reihenfolge: Inhalt (0) vor „Weitere" (1) vor den
-  // eigenen Einträgen (2) – die wandern also bewusst ans Ende, nicht nach oben.
-  function favGroupOf(f, card) {
-    if (!card && /^fav-/.test(String(f.id))) {
-      return { key: "__custom", label: t("favorites.customGroup"), icon: "✏️", custom: true, order: 2 };
+  // Gruppe ein-/ausklappen (nur Optik; beim aktiven Filter ignoriert die Ansicht den
+  // Klappzustand, damit Treffer nie versteckt sind).
+  function favGroupToggle(key) {
+    if (!key) return;
+    const m = Object.assign({}, state.favCollapsed);
+    if (m[key]) delete m[key]; else m[key] = true;
+    state.favCollapsed = m;
+    render();
+  }
+
+  // ----- „Mi léxico" üben (Durchblätter-/Flip-Runde über ALLE Favoriten) -----
+  // Eigenständig (kein SRS): zeigt Español, deckt auf Tipp Deutsch + Aussprache-Tipp
+  // auf, blättert vor/zurück. Snapshot der aufgelösten Einträge beim Start, damit ein
+  // späteres Entfernen/Bearbeiten die laufende Runde nicht durcheinanderbringt.
+  function favPracticeStart() {
+    const list = favorites.map((f) => {
+      const card = cardById(f.id);
+      return {
+        id: f.id,
+        es: card ? card.es : f.es,
+        de: card ? (nat(card) || f.de) : f.de,
+        tip: card ? (card.tip || "") : (f.tip || ""),
+      };
+    });
+    if (!list.length) return;
+    state.favPractice = { items: shuffle(list), i: 0, revealed: false };
+    render();
+  }
+  function favPracticeReveal() {
+    if (state.favPractice) { state.favPractice.revealed = true; render(); }
+  }
+  function favPracticeNext() {
+    const p = state.favPractice;
+    if (!p) return;
+    if (p.i >= p.items.length - 1) { favPracticeClose(); return; }
+    p.i += 1; p.revealed = false; render();
+  }
+  function favPracticePrev() {
+    const p = state.favPractice;
+    if (!p || p.i <= 0) return;
+    p.i -= 1; p.revealed = false; render();
+  }
+  function favPracticeClose() {
+    state.favPractice = null;
+    render();
+  }
+  function favPracticeSpeak() {
+    const p = state.favPractice;
+    if (p && speech && p.items[p.i] && p.items[p.i].es) speech.speak(p.items[p.i].es, settings.speechRate);
+  }
+
+  // Ganze Liste teilen/exportieren: „es — de"-Zeilen, bevorzugt über die native
+  // Teilen-Funktion, sonst in die Zwischenablage (mit Hinweis-Toast).
+  function favShareList() {
+    if (!favorites.length) return;
+    const lines = favorites.map((f) => {
+      const card = cardById(f.id);
+      const es = card ? card.es : f.es;
+      const de = card ? (nat(card) || f.de) : f.de;
+      return "• " + es + " — " + de;
+    });
+    const text = t("favorites.shareHead") + "\n\n" + lines.join("\n");
+    if (navigator.share) {
+      navigator.share({ title: t("favorites.shareTitle"), text }).catch(function () { /* abgebrochen – egal */ });
+      return;
     }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { showNotice(t("favorites.copied")); }, function () { showNotice(text); });
+      return;
+    }
+    showNotice(text);
+  }
+
+  // Herkunft eines Favoriten – für Gruppierung (Überschrift) und Icon. Bewusst
+  // ENTKOPPELT davon, ob es ein eigener (editierbarer) Eintrag ist: ein selbst
+  // getippter Eintrag mit gewählter Kategorie landet in DERSELBEN Gruppe wie die
+  // Karten/Sätze dieser Kategorie – bleibt aber bearbeitbar (siehe „custom" im VM).
+  //  - echte Kategorie (categoryById) -> Kategorie-Gruppe
+  //  - eigener Eintrag OHNE Kategorie (id „fav-…") -> Gruppe „Eigene Einträge"
+  //  - Satz-Favorit aus einem Modul (id „favph-…", cat = Modul-Slug) -> Modul
+  // order steuert die Reihenfolge: Inhalt (0) vor „Weitere" (1) vor den eigenen
+  // unkategorisierten Einträgen (2) – die wandern also bewusst ans Ende.
+  function favGroupOf(f, card) {
     const cat = categoryById(card ? card.cat : f.cat);
-    if (cat) return { key: "cat:" + cat.id, label: natk(cat, "label"), icon: cat.icon, custom: false, order: 0 };
+    if (cat) return { key: "cat:" + cat.id, label: natk(cat, "label"), icon: cat.icon, order: 0 };
+    if (!card && /^fav-/.test(String(f.id))) {
+      return { key: "__custom", label: t("favorites.customGroup"), icon: "✏️", order: 2 };
+    }
     const mod = MODULE_SHARE[f.cat];
-    if (mod) return { key: "mod:" + f.cat, label: mod.title, icon: mod.icon, custom: false, order: 0 };
-    return { key: "__other", label: t("favorites.otherGroup"), icon: "⭐", custom: false, order: 1 };
+    if (mod) return { key: "mod:" + f.cat, label: mod.title, icon: mod.icon, order: 0 };
+    return { key: "__other", label: t("favorites.otherGroup"), icon: "⭐", order: 1 };
   }
 
   function favoritesVM() {
@@ -5409,13 +5494,15 @@
       // sonst den gespeicherten Schnappschuss zeigen (Satz-/eigene Einträge immer Schnappschuss).
       const card = cardById(f.id);
       const g = favGroupOf(f, card);
+      const own = !card && /^fav-/.test(String(f.id)); // selbst getippt -> bearbeitbar
       return {
         id: f.id,
         de: card ? (nat(card) || f.de) : f.de,
         es: card ? card.es : f.es,
         tip: card ? (card.tip || "") : (f.tip || ""),
+        catId: card ? (card.cat || "") : (f.cat || ""),
         catIcon: g.icon,
-        custom: g.custom,
+        custom: own,
         editing: editId === f.id,
         gkey: g.key, glabel: g.label, gicon: g.icon, gorder: g.order,
       };
@@ -5442,6 +5529,16 @@
     });
     const groups = seq.slice().sort((a, b) => (a.order - b.order) || (a.seq - b.seq));
     const shown = state.favShow ? all.find((it) => it.id === state.favShow) : null;
+    // Großanzeige & Übungsmodus zeigen zusätzlich die Herkunft (Modul/Kategorie).
+    const srcOf = (it) => (it ? { icon: it.gicon, label: it.glabel } : null);
+    const p = state.favPractice;
+    const practice = p ? {
+      i: p.i,
+      n: p.items.length,
+      revealed: !!p.revealed,
+      item: p.items[p.i] || null,
+      last: p.i >= p.items.length - 1,
+    } : null;
     return {
       groups,
       count: favorites.length,   // Gesamtzahl (für die Überschrift, auch beim Filtern)
@@ -5449,13 +5546,17 @@
       query: state.favQuery || "",
       hasAny: favorites.length > 0,
       noMatch: !!q && items.length === 0,
+      collapsed: state.favCollapsed || {},
+      cats: data.CATEGORIES.map((c) => ({ id: c.id, label: natk(c, "label"), icon: c.icon })),
       editId,
       show: shown || null,
+      showSrc: srcOf(shown),
       msg: favMsg,
       editMsg: favEditMsg,
-      draft: favDraft || { de: "", es: "", tip: "" },
+      draft: favDraft || { de: "", es: "", tip: "", cat: "" },
       addOpen: !!(favMsg || favDraft),
       undo: favUndo ? { es: favUndo.entry.es } : null,
+      practice,
       speakable: !!(speech && speech.isSupported()),
     };
   }
@@ -5468,6 +5569,7 @@
     state.favShow = null;
     state.favEdit = null;
     state.favQuery = "";
+    state.favPractice = null;
     dismissFavUndo();
     state.screen = "favorites";
     render();
@@ -6609,6 +6711,14 @@
     "fav-edit-cancel": (el) => { favEditCancel(); },
     "fav-undo": (el) => { restoreFavUndo(); },
     "fav-filter-clear": (el) => { clearFavFilter(); },
+    "fav-group-toggle": (el) => { favGroupToggle(el.dataset.key); },
+    "fav-share": (el) => { favShareList(); },
+    "fav-practice-start": (el) => { favPracticeStart(); },
+    "fav-practice-reveal": (el) => { favPracticeReveal(); },
+    "fav-practice-next": (el) => { favPracticeNext(); },
+    "fav-practice-prev": (el) => { favPracticePrev(); },
+    "fav-practice-close": (el) => { favPracticeClose(); },
+    "fav-practice-speak": (el) => { favPracticeSpeak(); },
     "apply-bundle": (el) => { toggleBundle(el.dataset.bundle); },
     "clear-task-sel": (el) => { clearTaskSelection(); },
     "task-generate": (el) => { generateTask(); },
@@ -6856,7 +6966,7 @@
     if (e.target.closest('[data-action="fav-add"]')) {
       e.preventDefault();
       const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
-      addCustomFavorite({ de: val("fav-de"), es: val("fav-es"), tip: val("fav-tip") });
+      addCustomFavorite({ de: val("fav-de"), es: val("fav-es"), tip: val("fav-tip"), cat: val("fav-cat") });
       return;
     }
     // Eigenen Favoriten-Eintrag inline bearbeiten (Edit-Formular einer Karte).
@@ -6864,7 +6974,7 @@
     if (favEditForm) {
       e.preventDefault();
       const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
-      favEditSave(favEditForm.dataset.id, { de: val("fav-edit-de"), es: val("fav-edit-es"), tip: val("fav-edit-tip") });
+      favEditSave(favEditForm.dataset.id, { de: val("fav-edit-de"), es: val("fav-edit-es"), tip: val("fav-edit-tip"), cat: val("fav-edit-cat") });
       return;
     }
     // Preis-Hörtrainer: getippte Ziffern prüfen.
@@ -7031,6 +7141,10 @@
     // Update-Hinweis & Favoriten-Overlay: Escape schließt (wie der Zurück-Knopf).
     if (state.updateNotice && state.updateNotice.length && e.key === "Escape") {
       dismissUpdateNotice();
+      return;
+    }
+    if (state.favPractice && e.key === "Escape") {
+      favPracticeClose();
       return;
     }
     if (state.favShow && e.key === "Escape") {

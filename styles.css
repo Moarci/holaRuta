@@ -3891,11 +3891,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .fav-add-wrap[open] .fav-add-toggle { margin-bottom: 12px; }
 .fav-add { display: flex; flex-direction: column; gap: 10px; margin: 0; }
 .fav-add .sectioncap { margin-bottom: 0; }
-/* Herkunfts-Überschrift einer Favoriten-Gruppe (Modul/Kategorie/eigene). */
+/* Herkunfts-Überschrift einer Favoriten-Gruppe (Modul/Kategorie/eigene) – tappbar
+   zum Ein-/Ausklappen, daher als zurückgesetzter Button. */
 .fav-group {
-  display: flex; align-items: center; gap: 8px; margin: 18px 0 8px;
+  display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; width: 100%;
+  padding: 0; background: none; border: 0; cursor: pointer; text-align: left;
   font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; color: var(--ink);
 }
+.fav-group__chev { flex: none; width: 0.9em; font-size: 0.8rem; color: var(--muted); }
 .fav-group__icon { font-size: 1.05rem; line-height: 1; }
 .fav-group__label { min-width: 0; overflow-wrap: anywhere; }
 .fav-group__n {
@@ -3978,6 +3981,29 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 }
 .fav-undo__btn:active { transform: scale(0.95); }
 .fav-emptyhint { margin: 0; text-align: center; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+/* Kategorie-Auswahl in den Eingabeformularen (gleiche Optik wie die Textfelder). */
+.fav-add__select {
+  width: 100%; box-sizing: border-box; padding: 11px 12px; font: inherit;
+  color: var(--ink); background: var(--card);
+  border: 1.5px solid var(--line); border-radius: var(--r-md);
+}
+.fav-add__select:focus-visible { outline: none; border-color: var(--brand); }
+
+/* Werkzeugleiste über der Liste: üben + teilen. */
+.fav-toolbar { display: flex; gap: 8px; margin: 4px 0 14px; }
+.fav-toolbar__btn { flex: 1 1 0; }
+
+/* Herkunft in der Großanzeige (Modul/Kategorie). */
+.sz-show__src { margin: 0 0 6px; font-size: 0.95rem; font-weight: 600; color: var(--muted); }
+
+/* Übungsmodus (Flip-Runde über das ganze Lexikon). */
+.fav-practice__prog { margin: 0 0 4px; font-size: 0.9rem; font-weight: 700; color: var(--muted); }
+.fav-practice__reveal { margin-top: 14px; }
+.fav-practice__nav { display: flex; align-items: center; gap: 8px; margin-top: 20px; }
+.fav-practice__nav .cta { flex: 1 1 auto; }
+.fav-practice__nav .ghostbtn { flex: none; }
+.fav-practice__close { margin-top: 12px; }
 
 /* celebrate.css — Styles für SC.celebrate (celebrate.js).
  * AN DAS ENDE von styles.css anhängen (HolaRuta hat EINE Stylesheet-Datei, die

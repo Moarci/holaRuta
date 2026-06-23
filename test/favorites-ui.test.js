@@ -148,3 +148,62 @@ test("Modul-Satz-Favorit landet in seiner Modulgruppe (nicht als eigener Eintrag
     "nach Modul (Viaja responsable) gruppiert");
   assert.ok(!root.querySelector(".fav-row__edit"), "Modul-Satz ist kein 'eigener Eintrag'");
 });
+
+test("eigener Eintrag mit Kategorie landet in der Themengruppe (bleibt editierbar)", () => {
+  const root = freshApp();
+  openFavorites(root);
+  root.querySelector("#fav-de").value = "Hallo";
+  root.querySelector("#fav-es").value = "Hola";
+  root.querySelector("#fav-tip").value = "";
+  root.querySelector("#fav-cat").value = "basics"; // echte Kategorie (Grundlagen)
+  dispatch(root.querySelector('[data-action="fav-add"]'), "submit");
+
+  assert.equal(favs()[0].cat, "basics", "gewählte Kategorie gespeichert");
+  const labels = Array.from(root.querySelectorAll(".fav-group__label")).map((e) => e.textContent);
+  assert.ok(labels.some((l) => l.indexOf("Grundlagen") !== -1), "in der Kategorie-Gruppe statt 'Eigene Einträge'");
+  assert.ok(root.querySelector(".fav-row__edit"), "eigener Eintrag bleibt bearbeitbar");
+});
+
+test("Gruppe ein-/ausklappen blendet die Einträge aus und wieder ein", () => {
+  const root = freshApp();
+  openFavorites(root);
+  addCustom(root, "Hallo", "Hola");
+  assert.ok(root.querySelector(".fav-row"), "Eintrag zunächst sichtbar");
+
+  assert.ok(clickSel(root, ".fav-group"), "Gruppen-Überschrift klickbar");
+  assert.ok(!root.querySelector(".fav-row"), "nach Einklappen ausgeblendet");
+  assert.ok(clickSel(root, ".fav-group"), "erneut klicken");
+  assert.ok(root.querySelector(".fav-row"), "wieder eingeblendet");
+});
+
+test("Übungsmodus: Español zeigen, aufdecken, weiterblättern, schließen", () => {
+  const root = freshApp();
+  openFavorites(root);
+  addCustom(root, "Hallo", "Hola");
+  addCustom(root, "Tschüss", "Adiós");
+
+  assert.ok(clickSel(root, '[data-action="fav-practice-start"]'), "Üben-Knopf");
+  const ov = root.querySelector(".fav-practice");
+  assert.ok(ov, "Übungs-Overlay offen");
+  assert.ok(!root.querySelector(".sz-show__de"), "Deutsch zunächst verborgen");
+
+  assert.ok(clickSel(root, '[data-action="fav-practice-reveal"]'), "Aufdecken");
+  assert.ok(root.querySelector(".sz-show__de"), "Deutsch nach Aufdecken sichtbar");
+
+  assert.ok(clickSel(root, '[data-action="fav-practice-next"]'), "Weiter");
+  assert.ok(!root.querySelector(".sz-show__de"), "nächste Karte wieder verdeckt");
+
+  assert.ok(clickSel(root, '[data-action="fav-practice-close"]'), "Schließen");
+  assert.ok(!root.querySelector(".fav-practice"), "Overlay geschlossen");
+});
+
+test("Liste teilen nutzt den Clipboard-Fallback (ohne native Teilen-API)", () => {
+  const root = freshApp();
+  openFavorites(root);
+  addCustom(root, "Hallo", "Hola");
+
+  let captured = "";
+  window.navigator.clipboard.writeText = (txt) => { captured = txt; return Promise.resolve(); };
+  assert.ok(clickSel(root, '[data-action="fav-share"]'), "Teilen-Knopf");
+  assert.ok(captured.indexOf("Hola") !== -1, "spanischer Text in der kopierten Liste");
+});

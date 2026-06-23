@@ -2035,6 +2035,16 @@
   // Vom Nutzer gemerkte Wörter/Sätze: eine Liste (neueste zuerst) mit Vorlesen,
   // Großanzeige und Entfernen, plus ein Formular für eigene Einträge. Über den
   // Homescreen-Shortcut (?a=favoritos) direkt erreichbar.
+  // Kategorie-Auswahl für eigene Einträge (Hinzufügen + Bearbeiten): „— Eigene
+  // Einträge" (kein Bereich) plus alle Kategorien. So landet ein selbst getippter
+  // Eintrag wahlweise in einer Themen-Gruppe statt immer unter „Eigene Einträge".
+  function favCatSelect(id, selected, vm) {
+    const opts = `<option value=""${selected ? "" : " selected"}>${esc(t("favorites.catNone"))}</option>` +
+      vm.cats.map((c) => `<option value="${esc(c.id)}"${c.id === selected ? " selected" : ""}>${esc(c.icon)} ${esc(c.label)}</option>`).join("");
+    return `<label class="fav-add__field"><span>${esc(t("favorites.addCat"))}</span>
+            <select id="${esc(id)}" class="fav-add__select">${opts}</select></label>`;
+  }
+
   // Eine Favoriten-Zeile – oder, wenn dieser Eintrag gerade bearbeitet wird, das
   // Inline-Edit-Formular an seiner Stelle. Die Edit-Taste gibt es nur bei eigenen
   // (getippten) Einträgen; Karten-/Satz-Favoriten haben keinen freien Text.
@@ -2048,6 +2058,7 @@
             <input id="fav-edit-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none" value="${esc(it.es)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
             <input id="fav-edit-tip" type="text" maxlength="500" autocomplete="off" value="${esc(it.tip)}" /></label>
+          ${favCatSelect("fav-edit-cat", it.catId, vm)}
           ${vm.editMsg ? `<p class="fav-add__msg fav-add__msg--${esc(vm.editMsg.type)}" role="status">${esc(vm.editMsg.text)}</p>` : ""}
           <div class="fav-edit__actions">
             <button class="cta" type="submit">${esc(t("favorites.saveBtn"))}</button>
@@ -2076,15 +2087,20 @@
       </div>`;
   }
 
-  // Eine Herkunfts-Gruppe: Überschrift (Icon + Modul/Kategorie + Anzahl) + Karten.
+  // Eine Herkunfts-Gruppe: tappbare Überschrift (Icon + Modul/Kategorie + Anzahl) zum
+  // Ein-/Ausklappen + Karten. Beim aktiven Filter wird der Klappzustand ignoriert,
+  // damit Treffer nie hinter einer eingeklappten Gruppe verschwinden.
   function favGroup(g, vm) {
+    const collapsed = !vm.query && vm.collapsed && vm.collapsed[g.key];
     return `
-      <p class="fav-group">
+      <button class="fav-group" type="button" data-action="fav-group-toggle" data-key="${esc(g.key)}"
+              aria-expanded="${collapsed ? "false" : "true"}" aria-label="${esc(t("favorites.groupToggle"))}">
+        <span class="fav-group__chev" aria-hidden="true">${collapsed ? "▸" : "▾"}</span>
         <span class="fav-group__icon" aria-hidden="true">${esc(g.icon)}</span>
         <span class="fav-group__label">${esc(g.label)}</span>
         <span class="fav-group__n">${g.items.length}</span>
-      </p>
-      <div class="fav-list">${g.items.map((it) => favRow(it, vm)).join("")}</div>`;
+      </button>
+      ${collapsed ? "" : `<div class="fav-list">${g.items.map((it) => favRow(it, vm)).join("")}</div>`}`;
   }
 
   // Nur die Trefferliste (Überschrift + Gruppen bzw. Leer-/Kein-Treffer-Hinweis) –
@@ -2132,6 +2148,7 @@
           <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
             <input id="fav-tip" type="text" maxlength="500" autocomplete="off"
                    placeholder="${esc(t("favorites.tipPlaceholder"))}" value="${esc(vm.draft.tip)}" /></label>
+          ${favCatSelect("fav-cat", vm.draft.cat, vm)}
           ${vm.msg ? `<p class="fav-add__msg fav-add__msg--${esc(vm.msg.type)}" role="status">${esc(vm.msg.text)}</p>` : ""}
           <button class="cta" type="submit">${esc(t("favorites.addBtn"))}</button>
         </form>
@@ -2144,10 +2161,18 @@
         <button class="fav-undo__btn" type="button" data-action="fav-undo">${esc(t("favorites.undo"))}</button>
       </div>` : "";
 
-    // Großanzeige: angetippter Eintrag bildschirmfüllend – zum Herzeigen.
+    // Werkzeugleiste: ganzes Lexikon üben (Flip-Runde) bzw. teilen/exportieren.
+    const toolbar = vm.hasAny ? `
+      <div class="fav-toolbar">
+        <button class="cta fav-toolbar__btn" type="button" data-action="fav-practice-start">▶ ${esc(t("favorites.practice"))}</button>
+        <button class="ghostbtn fav-toolbar__btn" type="button" data-action="fav-share">↗ ${esc(t("favorites.share"))}</button>
+      </div>` : "";
+
+    // Großanzeige: angetippter Eintrag bildschirmfüllend – zum Herzeigen, mit Herkunft.
     const show = vm.show ? `
       <div class="sz-show" data-action="fav-close" role="dialog" aria-modal="true" aria-label="${esc(t("favorites.showLabel"))}">
         <div class="sz-show__inner">
+          ${vm.showSrc ? `<p class="sz-show__src">${esc(vm.showSrc.icon)} ${esc(vm.showSrc.label)}</p>` : ""}
           <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
           <p class="sz-show__de">${esc(vm.show.de)}</p>
           ${vm.show.tip ? `<p class="sz-show__tip">🗣️ ${esc(vm.show.tip)}</p>` : ""}
@@ -2160,15 +2185,39 @@
         </div>
       </div>` : "";
 
+    // Übungsmodus: Español zeigen, auf Tipp Deutsch + Aussprache aufdecken, blättern.
+    const practice = vm.practice && vm.practice.item ? (function () {
+      const p = vm.practice;
+      const it = p.item;
+      return `
+      <div class="sz-show fav-practice" role="dialog" aria-modal="true" aria-label="${esc(t("favorites.practiceTitle"))}">
+        <div class="sz-show__inner">
+          <p class="fav-practice__prog">${p.i + 1} / ${p.n}</p>
+          <p class="sz-show__es" lang="es">${esc(it.es)}</p>
+          ${p.revealed
+            ? `<p class="sz-show__de">${esc(it.de)}</p>${it.tip ? `<p class="sz-show__tip">🗣️ ${esc(it.tip)}</p>` : ""}`
+            : `<button class="cta fav-practice__reveal" type="button" data-action="fav-practice-reveal">${esc(t("favorites.reveal"))}</button>`}
+          <div class="fav-practice__nav">
+            <button class="ghostbtn" type="button" data-action="fav-practice-prev"${p.i === 0 ? " disabled" : ""}>‹ ${esc(t("favorites.prev"))}</button>
+            ${vm.speakable && p.revealed ? `<button class="ghostbtn fav-practice__speak" type="button" data-action="fav-practice-speak" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">🔊</button>` : ""}
+            <button class="cta" type="button" data-action="fav-practice-next">${p.last ? esc(t("favorites.practiceDone")) : esc(t("favorites.next")) + " ›"}</button>
+          </div>
+          <button class="ghostbtn fav-practice__close" type="button" data-action="fav-practice-close">${esc(t("common.close"))}</button>
+        </div>
+      </div>`;
+    })() : "";
+
     return `
       <section class="screen">
         ${hmTopbar("⭐ " + t("favorites.title"), "home")}
         <p class="hm-intro">${esc(t("favorites.intro"))}</p>
+        ${toolbar}
         ${filter}
         <div id="fav-results">${favoritesList(vm)}</div>
         ${addForm}
         ${undo}
         ${show}
+        ${practice}
       </section>`;
   }
 
