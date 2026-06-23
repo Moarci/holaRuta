@@ -43,6 +43,9 @@ test("juegos.TOPICS: jedes Spiel ist zweisprachig & ausgewogen", () => {
     assert.ok(Array.isArray(tp.donts) && tp.donts.length, `TOPIC ${i} (${tp.title}): donts leer`);
     assert.equal(tp.dosEn.length, tp.dos.length, `TOPIC ${i} (${tp.title}): dosEn-Länge ≠ dos`);
     assert.equal(tp.dontsEn.length, tp.donts.length, `TOPIC ${i} (${tp.title}): dontsEn-Länge ≠ donts`);
+    // Strategie-/Profi-Tipps (💡): jeder Vorteil-Tipp ist zweisprachig hinterlegt.
+    assert.ok(Array.isArray(tp.tips) && tp.tips.length, `TOPIC ${i} (${tp.title}): tips leer`);
+    assert.equal(tp.tipsEn.length, tp.tips.length, `TOPIC ${i} (${tp.title}): tipsEn-Länge ≠ tips`);
   });
 });
 
