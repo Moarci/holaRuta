@@ -2035,8 +2035,27 @@
   // Vom Nutzer gemerkte Wörter/Sätze: eine Liste (neueste zuerst) mit Vorlesen,
   // Großanzeige und Entfernen, plus ein Formular für eigene Einträge. Über den
   // Homescreen-Shortcut (?a=favoritos) direkt erreichbar.
-  function renderFavorites(vm) {
-    const row = (it) => `
+  // Eine Favoriten-Zeile – oder, wenn dieser Eintrag gerade bearbeitet wird, das
+  // Inline-Edit-Formular an seiner Stelle. Die Edit-Taste gibt es nur bei eigenen
+  // (getippten) Einträgen; Karten-/Satz-Favoriten haben keinen freien Text.
+  function favRow(it, vm) {
+    if (it.editing) {
+      return `
+        <form class="fav-edit" data-action="fav-edit-save" data-id="${esc(it.id)}">
+          <label class="fav-add__field"><span>${esc(t("favorites.addDe"))}</span>
+            <input id="fav-edit-de" type="text" maxlength="500" autocomplete="off" value="${esc(it.de)}" /></label>
+          <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
+            <input id="fav-edit-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none" value="${esc(it.es)}" /></label>
+          <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
+            <input id="fav-edit-tip" type="text" maxlength="500" autocomplete="off" value="${esc(it.tip)}" /></label>
+          ${vm.editMsg ? `<p class="fav-add__msg fav-add__msg--${esc(vm.editMsg.type)}" role="status">${esc(vm.editMsg.text)}</p>` : ""}
+          <div class="fav-edit__actions">
+            <button class="cta" type="submit">${esc(t("favorites.saveBtn"))}</button>
+            <button class="ghostbtn" type="button" data-action="fav-edit-cancel">${esc(t("favorites.cancelBtn"))}</button>
+          </div>
+        </form>`;
+    }
+    return `
       <div class="fav-row">
         <button class="fav-row__main" type="button" data-action="fav-show" data-id="${esc(it.id)}"
                 title="${esc(t("favorites.show"))}">
@@ -2050,43 +2069,80 @@
         ${vm.speakable
           ? `<button class="fav-row__speak" type="button" data-action="fav-speak" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">🔊</button>`
           : ""}
+        ${it.custom
+          ? `<button class="fav-row__edit" type="button" data-action="fav-edit" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.edit"))}" title="${esc(t("favorites.edit"))}">✏️</button>`
+          : ""}
         <button class="fav-row__rm" type="button" data-action="fav-remove" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.remove"))}" title="${esc(t("favorites.remove"))}">★</button>
       </div>`;
+  }
 
-    // Eine Herkunfts-Gruppe: Überschrift (Icon + Modul/Kategorie + Anzahl) + Karten.
-    const group = (g) => `
+  // Eine Herkunfts-Gruppe: Überschrift (Icon + Modul/Kategorie + Anzahl) + Karten.
+  function favGroup(g, vm) {
+    return `
       <p class="fav-group">
         <span class="fav-group__icon" aria-hidden="true">${esc(g.icon)}</span>
         <span class="fav-group__label">${esc(g.label)}</span>
         <span class="fav-group__n">${g.items.length}</span>
       </p>
-      <div class="fav-list">${g.items.map(row).join("")}</div>`;
+      <div class="fav-list">${g.items.map((it) => favRow(it, vm)).join("")}</div>`;
+  }
 
-    const list = vm.count
-      ? `<p class="sectioncap">${esc(t("favorites.listCap", { n: vm.count }))}</p>
-         ${vm.groups.map(group).join("")}`
-      : `<p class="stat-empty">${esc(t("favorites.empty"))}</p>
+  // Nur die Trefferliste (Überschrift + Gruppen bzw. Leer-/Kein-Treffer-Hinweis) –
+  // im Voll-Render UND beim Live-Filtern (app.js updateFavList) genutzt, deshalb als
+  // eigene, exportierte Funktion.
+  function favoritesList(vm) {
+    if (!vm.hasAny) {
+      return `<p class="stat-empty">${esc(t("favorites.empty"))}</p>
          <p class="fav-emptyhint">${esc(t("favorites.emptyHint"))}</p>`;
+    }
+    if (vm.noMatch) {
+      return `<p class="fav-emptyhint">${esc(t("favorites.filterNone", { q: vm.query }))}</p>`;
+    }
+    const n = vm.query ? vm.filtered : vm.count;
+    return `<p class="sectioncap">${esc(t("favorites.listCap", { n }))}</p>
+       ${vm.groups.map((g) => favGroup(g, vm)).join("")}`;
+  }
+
+  function renderFavorites(vm) {
+    // Schnellsuche im Lexikon (nur, wenn es überhaupt Einträge gibt). Liegt AUSSERHALB
+    // von #fav-results, damit das Feld beim Live-Filtern Fokus + Cursor behält.
+    const filter = vm.hasAny ? `
+      <div class="searchfield fav-filter">
+        <span class="searchfield__icon" aria-hidden="true">🔍</span>
+        <input id="fav-filter" class="searchfield__input" type="search" inputmode="search"
+               autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
+               placeholder="${esc(t("favorites.filterPlaceholder"))}" aria-label="${esc(t("favorites.filterPlaceholder"))}"
+               value="${esc(vm.query)}" />
+        ${vm.query ? `<button class="searchfield__clear" type="button" data-action="fav-filter-clear" aria-label="${esc(t("favorites.filterClear"))}">✕</button>` : ""}
+      </div>` : "";
 
     // Eigenen Eintrag hinzufügen: eingeklappt UNTER der Liste (weniger prominent als
-    // früher ganz oben). Öffnet sich automatisch, wenn eine Rückmeldung ansteht.
+    // früher ganz oben). Öffnet automatisch, wenn eine Rückmeldung oder ein noch nicht
+    // gespeicherter Entwurf ansteht; die Felder werden dann aus dem Entwurf vorbefüllt.
     const addForm = `
-      <details class="fav-add-wrap"${vm.msg ? " open" : ""}>
+      <details class="fav-add-wrap"${vm.addOpen ? " open" : ""}>
         <summary class="fav-add-toggle">＋ ${esc(t("favorites.addCap"))}</summary>
         <form class="fav-add" data-action="fav-add">
           <label class="fav-add__field"><span>${esc(t("favorites.addDe"))}</span>
             <input id="fav-de" type="text" maxlength="500" autocomplete="off"
-                   placeholder="${esc(t("favorites.dePlaceholder"))}" /></label>
+                   placeholder="${esc(t("favorites.dePlaceholder"))}" value="${esc(vm.draft.de)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
             <input id="fav-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none"
-                   placeholder="${esc(t("favorites.esPlaceholder"))}" /></label>
+                   placeholder="${esc(t("favorites.esPlaceholder"))}" value="${esc(vm.draft.es)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
             <input id="fav-tip" type="text" maxlength="500" autocomplete="off"
-                   placeholder="${esc(t("favorites.tipPlaceholder"))}" /></label>
+                   placeholder="${esc(t("favorites.tipPlaceholder"))}" value="${esc(vm.draft.tip)}" /></label>
           ${vm.msg ? `<p class="fav-add__msg fav-add__msg--${esc(vm.msg.type)}" role="status">${esc(vm.msg.text)}</p>` : ""}
           <button class="cta" type="submit">${esc(t("favorites.addBtn"))}</button>
         </form>
       </details>`;
+
+    // „Rückgängig"-Leiste nach dem Entfernen (schwebt unten, blendet sich selbst aus).
+    const undo = vm.undo ? `
+      <div class="fav-undo" role="status">
+        <span class="fav-undo__text">${esc(t("favorites.removed"))}</span>
+        <button class="fav-undo__btn" type="button" data-action="fav-undo">${esc(t("favorites.undo"))}</button>
+      </div>` : "";
 
     // Großanzeige: angetippter Eintrag bildschirmfüllend – zum Herzeigen.
     const show = vm.show ? `
@@ -2108,8 +2164,10 @@
       <section class="screen">
         ${hmTopbar("⭐ " + t("favorites.title"), "home")}
         <p class="hm-intro">${esc(t("favorites.intro"))}</p>
-        ${list}
+        ${filter}
+        <div id="fav-results">${favoritesList(vm)}</div>
         ${addForm}
+        ${undo}
         ${show}
       </section>`;
   }
@@ -4366,7 +4424,7 @@
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderConjugacion,
-                   renderFavorites,
+                   renderFavorites, favoritesList,
                    placementCard, assessmentCard,
                    ONBOARD_SLIDE_COUNT: ONBOARD_SLIDES.length };
 })();

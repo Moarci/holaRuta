@@ -3930,17 +3930,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .fav-row__es { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.18rem; color: var(--ink); line-height: 1.25; overflow-wrap: anywhere; }
 .fav-row__de { display: block; font-size: 0.84rem; color: var(--muted); margin-top: 2px; }
 .fav-row__tip { display: block; margin-top: 2px; font-size: 0.8rem; font-style: italic; color: var(--ink-soft); }
-.fav-row__tag {
-  display: inline-block; margin-top: 5px; padding: 1px 8px; font-size: 0.7rem;
-  color: var(--ink-soft); background: var(--surface);
-  border: 1px solid var(--line); border-radius: 999px;
-}
 .fav-row__speak {
   flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
   border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 1.15rem;
   display: flex; align-items: center; justify-content: center;
 }
 .fav-row__speak:active { transform: scale(0.92); }
+/* Bearbeiten-Knopf (nur bei eigenen, getippten Einträgen). */
+.fav-row__edit {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 1.05rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.fav-row__edit:active { transform: scale(0.92); }
 /* Entfernen-Knopf: gefüllter Stern (Eintrag IST Favorit), Tippen nimmt ihn raus. */
 .fav-row__rm {
   flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
@@ -3949,6 +3951,32 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   display: flex; align-items: center; justify-content: center;
 }
 .fav-row__rm:active { transform: scale(0.92); }
+/* Inline-Edit-Formular: ersetzt eine Zeile, gleiche Eingabe-Optik wie das Hinzufügen. */
+.fav-edit {
+  display: flex; flex-direction: column; gap: 10px; padding: 12px 14px;
+  background: var(--card); border: 1.5px solid var(--brand); border-radius: var(--r-md);
+  box-shadow: var(--shadow);
+}
+.fav-edit__actions { display: flex; gap: 8px; }
+.fav-edit__actions .cta { flex: 1 1 auto; }
+/* Schnellsuche im Lexikon: Abstand zur Liste (Optik kommt von .searchfield). */
+.fav-filter { margin: 4px 0 14px; }
+/* „Rückgängig"-Leiste nach dem Entfernen – schwebt unten über der Reiter-Leiste. */
+.fav-undo {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 60; display: flex; align-items: center; gap: 14px;
+  max-width: min(92vw, 420px); padding: 10px 12px 10px 16px;
+  color: #fff; background: #2A2A2E; border-radius: var(--r-md);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+}
+.fav-undo__text { font-size: 0.9rem; }
+.fav-undo__btn {
+  flex: none; margin-left: auto; cursor: pointer;
+  padding: 7px 14px; font: inherit; font-weight: 700; font-size: 0.88rem;
+  color: #FFD479; background: none; border: 0; border-radius: 999px;
+}
+.fav-undo__btn:active { transform: scale(0.95); }
 .fav-emptyhint { margin: 0; text-align: center; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
 
 /* celebrate.css — Styles für SC.celebrate (celebrate.js).
