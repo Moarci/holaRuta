@@ -176,25 +176,32 @@ test("Gruppe ein-/ausklappen blendet die Einträge aus und wieder ein", () => {
   assert.ok(root.querySelector(".fav-row"), "wieder eingeblendet");
 });
 
-test("Übungsmodus: Español zeigen, aufdecken, weiterblättern, schließen", () => {
+test("Üben startet den normalen Lern-Pfad (gleiche Karteikarte/SRS-UI wie überall)", () => {
   const root = freshApp();
+  // Confetti-/Done-Bühne neutralisieren (DOM-Stub kennt kein Canvas/TTS).
+  window.SC.celebrate = { celebrate() {} };
   openFavorites(root);
   addCustom(root, "Hallo", "Hola");
   addCustom(root, "Tschüss", "Adiós");
 
+  // „Üben" öffnet KEIN eigenes Flip-Modal mehr, sondern den echten Study-Screen.
   assert.ok(clickSel(root, '[data-action="fav-practice-start"]'), "Üben-Knopf");
-  const ov = root.querySelector(".fav-practice");
-  assert.ok(ov, "Übungs-Overlay offen");
-  assert.ok(!root.querySelector(".sz-show__de"), "Deutsch zunächst verborgen");
+  assert.ok(root.querySelector(".screen.study"), "normaler Lern-Screen offen");
+  assert.ok(!root.querySelector(".fav-practice"), "kein eigenes Übungs-Overlay mehr");
+  // Kopfzeile trägt den Lexikon-Titel statt „Alle Bereiche".
+  assert.ok(/Mi léxico/.test(root.querySelector(".topbar__title").textContent), "Mi-léxico-Titel im Lern-Screen");
+  // Bewertungs-Buttons wie im normalen Lern-Pfad (eigene Einträge sind keine echten
+  // Karten – sie laufen über die ephemere studyOverlay; vorhanden = aufdeckbar/bewertbar).
+  assert.ok(root.querySelector("[data-action='rate']"), "Bewertungs-Buttons wie im normalen Lern-Pfad");
 
-  assert.ok(clickSel(root, '[data-action="fav-practice-reveal"]'), "Aufdecken");
-  assert.ok(root.querySelector(".sz-show__de"), "Deutsch nach Aufdecken sichtbar");
-
-  assert.ok(clickSel(root, '[data-action="fav-practice-next"]'), "Weiter");
-  assert.ok(!root.querySelector(".sz-show__de"), "nächste Karte wieder verdeckt");
-
-  assert.ok(clickSel(root, '[data-action="fav-practice-close"]'), "Schließen");
-  assert.ok(!root.querySelector(".fav-practice"), "Overlay geschlossen");
+  // Komplett durchbewerten: beweist, dass rate()/finishRound() die Overlay-Karten
+  // sauber auflösen und die Runde im Fertig-Screen (#cb-mount) landet.
+  let reachedDone = false;
+  for (let i = 0; i < 30; i++) {
+    if (root.querySelector("#cb-mount")) { reachedDone = true; break; }
+    if (!clickSel(root, "[data-action='rate'][data-rating='good']")) break;
+  }
+  assert.ok(reachedDone, "die Lexikon-Runde erreicht den normalen Fertig-Screen");
 });
 
 test("Hinzufügen-Entwurf überlebt einen Full-Render (z. B. Gruppe einklappen)", () => {

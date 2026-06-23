@@ -3997,14 +3997,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Herkunft in der Großanzeige (Modul/Kategorie). */
 .sz-show__src { margin: 0 0 6px; font-size: 0.95rem; font-weight: 600; color: var(--muted); }
 
-/* Übungsmodus (Flip-Runde über das ganze Lexikon). */
-.fav-practice__prog { margin: 0 0 4px; font-size: 0.9rem; font-weight: 700; color: var(--muted); }
-.fav-practice__reveal { margin-top: 14px; }
-.fav-practice__nav { display: flex; align-items: center; gap: 8px; margin-top: 20px; }
-.fav-practice__nav .cta { flex: 1 1 auto; }
-.fav-practice__nav .ghostbtn { flex: none; }
-.fav-practice__close { margin-top: 12px; }
-
 /* celebrate.css — Styles für SC.celebrate (celebrate.js).
  * AN DAS ENDE von styles.css anhängen (HolaRuta hat EINE Stylesheet-Datei, die
  * build.js inlinet). Nutzt nur bestehende Tokens; Dark-Mode erbt automatisch.

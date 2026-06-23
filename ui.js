@@ -2161,7 +2161,7 @@
         <button class="fav-undo__btn" type="button" data-action="fav-undo">${esc(t("favorites.undo"))}</button>
       </div>` : "";
 
-    // Werkzeugleiste: ganzes Lexikon üben (Flip-Runde) bzw. teilen/exportieren.
+    // Werkzeugleiste: ganzes Lexikon üben (normaler Lern-Pfad mit SRS) bzw. teilen/exportieren.
     const toolbar = vm.hasAny ? `
       <div class="fav-toolbar">
         <button class="cta fav-toolbar__btn" type="button" data-action="fav-practice-start">▶ ${esc(t("favorites.practice"))}</button>
@@ -2185,28 +2185,6 @@
         </div>
       </div>` : "";
 
-    // Übungsmodus: Español zeigen, auf Tipp Deutsch + Aussprache aufdecken, blättern.
-    const practice = vm.practice && vm.practice.item ? (function () {
-      const p = vm.practice;
-      const it = p.item;
-      return `
-      <div class="sz-show fav-practice" role="dialog" aria-modal="true" aria-label="${esc(t("favorites.practiceTitle"))}">
-        <div class="sz-show__inner">
-          <p class="fav-practice__prog">${p.i + 1} / ${p.n}</p>
-          <p class="sz-show__es" lang="es">${esc(it.es)}</p>
-          ${p.revealed
-            ? `<p class="sz-show__de">${esc(it.de)}</p>${it.tip ? `<p class="sz-show__tip">🗣️ ${esc(it.tip)}</p>` : ""}`
-            : `<button class="cta fav-practice__reveal" type="button" data-action="fav-practice-reveal">${esc(t("favorites.reveal"))}</button>`}
-          <div class="fav-practice__nav">
-            <button class="ghostbtn" type="button" data-action="fav-practice-prev"${p.i === 0 ? " disabled" : ""}>‹ ${esc(t("favorites.prev"))}</button>
-            ${vm.speakable && p.revealed ? `<button class="ghostbtn fav-practice__speak" type="button" data-action="fav-practice-speak" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">🔊</button>` : ""}
-            <button class="cta" type="button" data-action="fav-practice-next">${p.last ? esc(t("favorites.practiceDone")) : esc(t("favorites.next")) + " ›"}</button>
-          </div>
-          <button class="ghostbtn fav-practice__close" type="button" data-action="fav-practice-close">${esc(t("common.close"))}</button>
-        </div>
-      </div>`;
-    })() : "";
-
     return `
       <section class="screen">
         ${hmTopbar("⭐ " + t("favorites.title"), "home")}
@@ -2217,7 +2195,6 @@
         ${addForm}
         ${undo}
         ${show}
-        ${practice}
       </section>`;
   }
 

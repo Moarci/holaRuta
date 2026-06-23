@@ -15,7 +15,7 @@
  *     xpBefore, xpGained, xpAfter, levelBefore, levelAfter,
  *     streakBefore, streak, streakIsNew,
  *     newBadges:[{id,icon,name}], destinationComplete:{name,country}|null,
- *     isFirstEver, origin:'pretrip'|'task'|null, seed }
+ *     isFirstEver, origin:'pretrip'|'task'|'favorites'|null, seed }
  *
  * Szenen-Deskriptor (Rückgabe von decide):
  *   { id, staging, tone, headline, sub, confetti, sparks, sound, haptic,
