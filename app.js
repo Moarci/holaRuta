@@ -641,6 +641,7 @@
     const card = cardById(state.queue[0]);
     const cat = categoryById(card.cat);
     const isAll = state.scopeId === "all";
+    const isFavRound = state.studyOrigin === "favorites"; // „Mi léxico"-Runde: eigener Titel statt „Alle Bereiche"
     const lvl = levelById(card.lvl);
     // Lernrichtung: native→ES zeigt die Muttersprache als Frage und Spanisch als
     // Antwort; ES→native dreht das um. Aussprache-Tipps gehören immer zum Spanischen.
@@ -659,9 +660,9 @@
       spanishIsQuestion,
       tip: card.tip || null,
       level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
-      catLabel: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
-      catIcon: isAll || !cat ? "📚" : cat.icon,
-      accent: isAll || !cat ? DEFAULT_ACCENT : cat.grad,
+      catLabel: isFavRound ? t("favorites.title") : isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
+      catIcon: isFavRound ? "⭐" : isAll || !cat ? "📚" : cat.icon,
+      accent: isFavRound || isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
       total: state.total,
       revealed: state.revealed,
@@ -692,7 +693,7 @@
     const streakNow = currentStreak();
     const xp = state.roundResult || {}; // von finishRound(): xpBefore/xpGained/xpAfter/level*
     return {
-      scope: isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
+      scope: state.studyOrigin === "favorites" ? t("favorites.title") : isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
       mode: state.mode,
       total: state.total || answered,
       right: s.right,
