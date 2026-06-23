@@ -143,6 +143,9 @@
     topicNavAria: "Zur Themen-Gruppe springen",
     tripSection: "Für deine Reise",
     startProgressCap: "Dein Fortschritt",
+    // Hostel-Edition: Quick-Start-Banner auf der Startseite
+    hostelBannerTitle: "Heute Abend im Hostel?",
+    hostelBannerSub: "Gruppen-Battle & Icebreaker starten",
     // Mi-léxico-Kachel auf dem Dashboard (Schnellzugriff auf die Favoriten)
     lexSection: "Dein Lexikon",
     lexTitle: "⭐ Mi léxico",
@@ -357,6 +360,9 @@
     topicNavAria: "Jump to topic group",
     tripSection: "For your trip",
     startProgressCap: "Your progress",
+    // Hostel edition: home quick-start banner
+    hostelBannerTitle: "Tonight at the hostel?",
+    hostelBannerSub: "Start a group battle & icebreakers",
     // Mi-léxico tile on the dashboard (quick access to favourites)
     lexSection: "Your lexicon",
     lexTitle: "⭐ Mi léxico",
@@ -651,6 +657,7 @@
     discoverTitle: "Entdecken",
     discoverIntro: "Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.",
     // Abschnitts-Überschriften (Gruppierung der Einstiege nach Aktivität)
+    groupHostel: "Im Hostel",
     groupPlay: "Spielen",
     groupPractice: "Üben",
     groupReference: "Nachschlagen",
@@ -1084,6 +1091,7 @@
     quizProgress: "Quiz progress",
     discoverTitle: "Discover",
     discoverIntro: "Play, match, look things up – Spanish beyond the cards.",
+    groupHostel: "At the hostel",
     groupPlay: "Play",
     groupPractice: "Practise",
     groupReference: "Look up",

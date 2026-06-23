@@ -9,7 +9,7 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-617_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-622_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -272,7 +272,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 617 Tests in 55 Dateien (node:test, keine Dependencies)
+├── test/                        # 622 Tests in 56 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -367,14 +367,23 @@ Für Partner (Sprachschulen, Reiseanbieter, Hostels) lässt sich eine **Edition*
 ```bash
 node build.js --edition=ecos     #  ✓ HolaRuta-ecos.html   (Karibik-Teal · „· ECOS“ · Cartagena)
 node build.js --edition=weroad   #  ✓ HolaRuta-weroad.html (Coral · „· WeRoad Colombia“)
+node build.js --edition=hostel   #  ✓ HolaRuta-hostel.html (Hostel-Orange · „· Hostel“ · Hostel-Modus)
 ```
 
 Alle Editionen liegen zentral in [`editions/registry.js`](editions/registry.js) (Quelle der Wahrheit: Name, Akzent, Partner, Logo, Default-Ziel, Reiter); [config.js](config.js) merged sie über die Standardwerte. Ohne Edition entsteht das pure HolaRuta — **der Default bleibt unangetastet** (graceful). Sichtbar werden Akzentfarbe (`--brand`/`--brand-ink`, wirkt in Hell & Dunkel), Tab-Titel, ein dezenter Appbar-Zusatz (`· ECOS`), Partner-Logo (Profil + Onboarding) und der Profil-Credit; der Hell/Dunkel-Rahmen (`--page`/`theme-color`) bleibt unangetastet. Die `HolaRuta-*.html`-Editionen sind reproduzierbare Build-Ausgaben und nicht eingecheckt.
+
+**Hostel-Modus (White-Label für Hostels).** Die `hostel`-Edition ist eine **generische Vorlage**: pro Hostel den Eintrag in [`editions/registry.js`](editions/registry.js) kopieren und `brandName`, `accent`, `partner` und (optional) `defaultDestination`/`logo` anpassen. Zusätzlich zum Branding aktiviert ihr `hostel`-Block die hostel-typischen Inhalte prominent — sie bleiben dabei an ihrer angestammten Stelle erhalten:
+
+- ein **Quick-Start-Banner** auf der Startseite, das direkt in den „Modo hostal“ (Gruppen-Battle & Icebreaker) führt;
+- ein kuratierter Abschnitt **„Im Hostel“ ganz oben** unter *Entdecken* mit Modo hostal, Juegos, Coqueteo (Flirten), Etiqueta (Knigge), Diálogos und Bailar.
+
+Die Auswahl steuert `hostel.featured` (Liste von Modul-Aktionen in Wunschreihenfolge); `hostel.banner` schaltet das Startseiten-Banner. Beides ist optional — fehlt der `hostel`-Block, verhält sich die App exakt wie der Default.
 
 **Teilbarer Link (ohne eigenen Build):** Auf der gehosteten App wählt der Parameter `?edition=<id>` die Edition zur Laufzeit, `?start=onboarding` startet direkt das Onboarding (inkl. HolaRuta-Check). So verschickt eine Schule/Partnerfirma EINEN gebrandeten Einstiegslink:
 
 ```
 https://moarci.github.io/holaRuta/?edition=ecos&start=onboarding
+https://moarci.github.io/holaRuta/?edition=hostel
 ```
 
 Eine fest gebaute Edition (`--edition=…`) kann per URL **nicht** überschrieben werden.
@@ -546,8 +555,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 617
-#  ℹ pass 617
+#  ℹ tests 622
+#  ℹ pass 622
 #  ℹ fail 0
 ```
 
@@ -578,7 +587,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 51 (`SC.*`) |
-| Tests | 617 (alle grün) |
+| Tests | 622 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

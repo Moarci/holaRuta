@@ -718,6 +718,22 @@
       </button>`
       : "";
 
+    // Hostel-Edition: Quick-Start-Banner zum „Modo hostal" (Gruppen-Battle & Icebreaker).
+    // Nutzt die bestehende hist-banner-Komponente (Akzent fließt über --brand) – kein neues
+    // CSS. data-action="open-hostel" hat bereits einen Handler. Ohne Hostel-Edition leer.
+    const hcfg = (window.SC.config || {}).hostel;
+    const hostelBanner = (hcfg && hcfg.banner)
+      ? `
+      <button class="hist-banner" data-action="open-hostel">
+        <span class="hist-banner__icon" aria-hidden="true">🛏️</span>
+        <span class="hist-banner__text">
+          <span class="hist-banner__title">${esc(t("home.hostelBannerTitle"))}</span>
+          <span class="hist-banner__sub">${esc(t("home.hostelBannerSub"))}</span>
+        </span>
+        <span class="hist-banner__chev" aria-hidden="true">›</span>
+      </button>`
+      : "";
+
     // Nivel-Test fortsetzen: erscheint, solange ein begonnener Test offen ist
     // (nach versehentlichem Zurück/Reload). Verschwindet beim Abschluss.
     const assessmentResumeCue = vm.assessmentResume
@@ -766,6 +782,7 @@
         </button>
         ${resume}
         ${rutaDia}
+        ${hostelBanner}
         ${assessmentResumeCue}
         ${placementCue}
       </div>
@@ -875,10 +892,23 @@
         <p class="sectioncap">${esc(t(g.titleKey))}</p>
         <div class="featgroup">${items.map(featBtn).join("")}</div>`;
     }).join("");
+    // Hostel-Edition: kuratierter Abschnitt ganz oben, der die in config.hostel.featured
+    // genannten Module (Reihenfolge = Liste) prominent vorzieht. Sie bleiben zusätzlich in
+    // ihrer angestammten Gruppe. need-Gating greift über `available` mit; unbekannte
+    // Aktionen fallen still weg. Ohne Hostel-Edition (Standard) entsteht hier nichts.
+    const hcfg = (window.SC.config || {}).hostel;
+    let hostelSection = "";
+    if (hcfg && Array.isArray(hcfg.featured)) {
+      const items = hcfg.featured.map((a) => available.find((x) => x.action === a)).filter(Boolean);
+      if (items.length) hostelSection = `
+        <p class="sectioncap">${esc(t("discover.groupHostel"))}</p>
+        <div class="featgroup">${items.map(featBtn).join("")}</div>`;
+    }
     return `
       ${pagehead(esc(t("discover.discoverTitle")))}
       ${searchBar()}
       <p class="pageintro">${esc(t("discover.discoverIntro"))}</p>
+      ${hostelSection}
       ${sections}`;
   }
 

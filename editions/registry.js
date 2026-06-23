@@ -50,6 +50,27 @@
       taskTab: true,
       teacherTab: true,
     },
+    // Generische White-Label-Vorlage für Hostels. Pro Hostel kopieren und brandName,
+    // accent, partner, defaultDestination und (mit schriftlicher Freigabe) logo anpassen.
+    // Der `hostel`-Block holt die hostel-typischen Inhalte (Modo hostal, Games, Flirten,
+    // Knigge, Diálogos, Bailar) prominent nach vorne: eigener Abschnitt oben unter
+    // „Entdecken" plus Quick-Start-Banner auf der Startseite. Inhalte bleiben zusätzlich
+    // an ihrer angestammten Stelle. Hostel-Orange ist eine NÄHERUNG – bei Bedarf ersetzen.
+    hostel: {
+      edition: "hostel",
+      brandName: "HolaRuta · Hostel",
+      accent: { brand: "#E08A2C", brandInk: "#B5681C" },
+      partner: { name: "Dein Hostel", url: null }, // pro Hostel: Name + Backlink zur Homepage
+      logo: null,
+      defaultDestination: null, // pro Hostel z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
+      appUrl: "https://moarci.github.io/holaRuta/",
+      taskTab: false,
+      teacherTab: false,
+      hostel: {
+        banner: true,
+        featured: ["open-hostel", "open-juegos", "open-flirt", "open-knigge", "open-dialogos", "open-bailar"],
+      },
+    },
   };
 
   SC.editions = EDITIONS;

@@ -39,6 +39,12 @@
     // die Klassenübersicht der Hauptweg sind. Aktiv -> Kachel verschwindet aus Entdecken.
     taskTab: false,
     teacherTab: false,
+    // Hostel-Modus: holt die hostel-typischen Inhalte (Modo hostal, Games, Flirten,
+    // Knigge …) prominent nach vorne – ein eigener Abschnitt oben unter „Entdecken"
+    // plus ein Quick-Start-Banner auf der Startseite. null = aus (Standard).
+    //   hostel: { banner: true, featured: ["open-hostel","open-juegos", …] }
+    // featured = Liste von FEATURES-Aktionen in Wunschreihenfolge (siehe ui.js).
+    hostel: null,
   };
 
   SC.config = Object.assign({}, DEFAULT, SC.editionConfig || {});
