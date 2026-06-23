@@ -149,26 +149,49 @@
           </div>
         </div>
 
-        <div class="lp-cardstage" data-reveal style="--i:2">
-          <span class="lp-chip lp-chip--1" aria-hidden="true">colectivo</span>
-          <span class="lp-chip lp-chip--2" aria-hidden="true">vuelto</span>
-          <span class="lp-chip lp-chip--3" aria-hidden="true">plata</span>
-          <span class="lp-chip lp-chip--4" aria-hidden="true">chévere</span>
-          <div class="lp-card" id="lpCard" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
-            <div class="lp-card__inner">
-              <div class="lp-face lp-face--front">
-                <span class="lp-face__eyebrow">GELD · DINERO</span>
-                <span class="lp-face__word">¿Cuánto cuesta?</span>
-                <span class="lp-face__hint" data-i18n="card.hint">👆 Tippen zum Umdrehen</span>
-              </div>
-              <div class="lp-face lp-face--back">
-                <span class="lp-face__eyebrow">A1 · ESSENTIAL</span>
-                <div>
-                  <span class="lp-face__word" data-i18n="card.back">Was kostet das?</span>
-                  <p class="lp-face__tip">KWAN-toh KWES-tah</p>
+        <div class="lp-cardcol" data-reveal style="--i:2">
+          <div class="lp-cardstage">
+            <span class="lp-chip lp-chip--1" aria-hidden="true">colectivo</span>
+            <span class="lp-chip lp-chip--2" aria-hidden="true">vuelto</span>
+            <span class="lp-chip lp-chip--3" aria-hidden="true">plata</span>
+            <span class="lp-chip lp-chip--4" aria-hidden="true">chévere</span>
+            <!-- Echte App-Karten-Klassen (.flip/.face/.face__cat/.lvl-badge/.cardbtn)
+                 aus styles.css -> sieht 1:1 wie der Lern-Screen aus. -->
+            <div class="lp-cardtilt" id="lpTilt">
+              <div class="flip" id="lpCard" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                <div class="flip__inner">
+                  <div class="face face--front">
+                    <span class="face__cat" data-i18n="card.cat">GRUNDLAGEN</span>
+                    <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                    <div class="face__word" data-i18n="card.q">Was kostet das?</div>
+                    <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                  </div>
+                  <div class="face face--back">
+                    <span class="face__cat" data-i18n="card.cat">GRUNDLAGEN</span>
+                    <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                    <button class="cardbtn cardbtn--ctx is-on" id="lpCtxBtn" type="button" data-i18n-aria="card.ctxLabel" aria-label="Reise-Kontext zeigen" aria-expanded="false" aria-controls="lpContext">🧭</button>
+                    <button class="cardbtn cardbtn--speak is-on" id="lpSpeak" type="button" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                    <div class="face__word" lang="es">¿Cuánto cuesta?</div>
+                    <div class="face__tip">🗣️ KWAN-toh KWES-tah</div>
+                  </div>
                 </div>
-                <span class="lp-face__spk" aria-hidden="true">🔊</span>
               </div>
+            </div>
+          </div>
+          <!-- Reise-Kontext (Signatur-Feature der App): aufklappbar per 🧭. -->
+          <div class="context-panel" id="lpContext" hidden>
+            <h3 class="context-panel__title" data-i18n="card.ctxTitle">Reise-Kontext</h3>
+            <div class="context-panel__line">
+              <p class="context-panel__es" lang="es">¿Cuánto cuesta el pasaje a Medellín?</p>
+              <p class="context-panel__de" data-i18n="card.ctxSentence">Was kostet das Ticket nach Medellín?</p>
+            </div>
+            <div class="context-panel__block">
+              <div class="context-panel__label" data-i18n="card.ctxSitLabel">Situation</div>
+              <p class="context-panel__text" data-i18n="card.ctxSit">Am Busbahnhof (terminal), bevor du einsteigst.</p>
+            </div>
+            <div class="context-panel__block">
+              <div class="context-panel__label" data-i18n="card.ctxNoteLabel">Reisetipp</div>
+              <p class="context-panel__text" data-i18n="card.ctxNote">Frag den Preis immer VOR dem Einsteigen — und nach dem „vuelto“ (Wechselgeld).</p>
             </div>
           </div>
         </div>
@@ -413,7 +436,13 @@
         "hero.cta": "Kostenlos starten →",
         "hero.cta2": "Wie es funktioniert",
         "trust.cards": "Karten", "trust.areas": "Bereiche", "trust.modes": "Lernmodi", "trust.free": "Offline · kein Konto",
-        "card.hint": "👆 Tippen zum Umdrehen", "card.back": "Was kostet das?",
+        "card.hint": "Zum Umdrehen tippen", "card.cat": "GRUNDLAGEN", "card.lvl": "A1 · Einsteiger",
+        "card.q": "Was kostet das?",
+        "card.ctxLabel": "Reise-Kontext zeigen", "card.speakLabel": "Antwort vorlesen",
+        "card.ctxTitle": "Reise-Kontext",
+        "card.ctxSentence": "Was kostet das Ticket nach Medellín?",
+        "card.ctxSitLabel": "Situation", "card.ctxSit": "Am Busbahnhof (terminal), bevor du einsteigst.",
+        "card.ctxNoteLabel": "Reisetipp", "card.ctxNote": "Frag den Preis immer VOR dem Einsteigen — und nach dem „vuelto“ (Wechselgeld).",
         "feat.eyebrow": "WAS DRIN IST",
         "feat.title": "Alles für die Reise — nichts fürs Klassenzimmer.",
         "feat.srs.t": "Spaced Repetition (SM-2)", "feat.srs.b": "Wiederhol nur, was fällig ist — der Algorithmus merkt sich den Rest.",
@@ -459,7 +488,13 @@
         "hero.cta": "Start free →",
         "hero.cta2": "See how it works",
         "trust.cards": "cards", "trust.areas": "areas", "trust.modes": "modes", "trust.free": "Offline · no account",
-        "card.hint": "👆 Tap to flip", "card.back": "How much is it?",
+        "card.hint": "Tap to flip", "card.cat": "BASICS", "card.lvl": "A1 · Beginner",
+        "card.q": "How much is it?",
+        "card.ctxLabel": "Show travel context", "card.speakLabel": "Read answer aloud",
+        "card.ctxTitle": "Travel context",
+        "card.ctxSentence": "How much is the ticket to Medellín?",
+        "card.ctxSitLabel": "Situation", "card.ctxSit": "At the bus terminal, before you board.",
+        "card.ctxNoteLabel": "Travel tip", "card.ctxNote": "Always ask the price BEFORE boarding — and for your “vuelto” (change).",
         "feat.eyebrow": "WHAT'S INSIDE",
         "feat.title": "Everything for the road — nothing for the classroom.",
         "feat.srs.t": "Spaced repetition (SM-2)", "feat.srs.b": "Review only what's due — the algorithm remembers the rest.",
@@ -572,8 +607,9 @@
 
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // ── Hero-Flip-Karte ──
+    // ── Hero-Flip-Karte (echte App-Optik) ──
     var card = document.getElementById("lpCard");
+    var tilt = document.getElementById("lpTilt");
     if (card) {
       function flip() {
         var on = card.classList.toggle("is-flipped");
@@ -583,9 +619,35 @@
       card.addEventListener("keydown", function (e) {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
       });
-      // Idle-Tilt nur auf feinem Zeiger & ohne reduced-motion
+
+      // 🧭 Reise-Kontext auf-/zuklappen (Klick darf NICHT die Karte umdrehen).
+      var ctxBtn = document.getElementById("lpCtxBtn");
+      var ctxPanel = document.getElementById("lpContext");
+      if (ctxBtn && ctxPanel) {
+        ctxBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var open = ctxPanel.hasAttribute("hidden");
+          if (open) ctxPanel.removeAttribute("hidden"); else ctxPanel.setAttribute("hidden", "");
+          ctxBtn.classList.toggle("is-open", open);
+          ctxBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      }
+
+      // 🔊 Antwort vorlesen (Web Speech API, LatAm-Stimme falls vorhanden).
+      var spk = document.getElementById("lpSpeak");
+      if (spk) spk.addEventListener("click", function (e) {
+        e.stopPropagation();
+        try {
+          if (!("speechSynthesis" in window)) return;
+          var u = new SpeechSynthesisUtterance("¿Cuánto cuesta?");
+          u.lang = "es-419"; u.rate = 0.95;
+          speechSynthesis.cancel(); speechSynthesis.speak(u);
+        } catch (err) {}
+      });
+
+      // Idle-Tilt auf dem Wrapper (nur feiner Zeiger & ohne reduced-motion).
       var fine = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-      if (fine && !reduce) {
+      if (tilt && fine && !reduce) {
         var raf = 0;
         card.addEventListener("pointermove", function (e) {
           if (raf) return;
@@ -594,13 +656,13 @@
             var r = card.getBoundingClientRect();
             var px = (e.clientX - r.left) / r.width - 0.5;
             var py = (e.clientY - r.top) / r.height - 0.5;
-            card.style.setProperty("--tx", (px * 12).toFixed(2) + "deg");
-            card.style.setProperty("--ty", (-py * 12).toFixed(2) + "deg");
+            tilt.style.setProperty("--tx", (px * 10).toFixed(2) + "deg");
+            tilt.style.setProperty("--ty", (-py * 10).toFixed(2) + "deg");
           });
         });
         card.addEventListener("pointerleave", function () {
-          card.style.setProperty("--tx", "-4deg");
-          card.style.setProperty("--ty", "0deg");
+          tilt.style.setProperty("--tx", "-4deg");
+          tilt.style.setProperty("--ty", "0deg");
         });
       }
     }
