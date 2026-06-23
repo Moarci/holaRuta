@@ -119,6 +119,47 @@
     return "favph-" + String(cat || "x") + "-" + (h >>> 0).toString(36);
   }
 
+  // Gemeinsame „Wichtige Sätze"-Liste (Gruppen mit es/de). Geteilt von moduleSheet
+  // und den eigenständigen Modul-Renderern (Regatear/Fotos/Bailar/Música), damit
+  // alle Module dieselbe Darstellung und – wenn gewünscht – denselben Stern bekommen.
+  //   opts.fav  = isFavorite-Prädikat → Stern je Satz (Satz ohne eigene Karte ins
+  //               „Mi léxico"; Schnappschuss es/de + cat reist am Stern mit).
+  //   opts.cat  = Modul-Kategorie (für Schnappschuss + stabile, sprachunabhängige Id).
+  //   opts.copy = Kopier-Knopf je Satz (zum Weiterschicken).
+  function phraseGroups(groups, opts) {
+    const o = opts || {};
+    const favOn = typeof o.fav === "function";
+    const copyBtn = (p) => o.copy
+      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
+      : "";
+    const favBtn = (p) => {
+      if (!favOn) return "";
+      const fid = favPhraseId(o.cat, p.es);
+      return favStar(fid, o.fav(fid), { cls: "rg-fav", snap: { es: p.es, de: p.de, cat: o.cat || "" } });
+    };
+    const actions = (p) => {
+      const a = favBtn(p) + copyBtn(p);
+      return a ? `<span class="rg-phrase__actions">${a}</span>` : "";
+    };
+    return (groups || []).map((g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${(g.items || []).map((p) => {
+            const a = actions(p);
+            return `
+            <li class="rg-phrase${a ? " rg-phrase--row" : ""}">
+              <span class="rg-phrase__text">
+                <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+                <span class="rg-phrase__de">${esc(p.de)}</span>
+              </span>
+              ${a}
+            </li>`;
+          }).join("")}
+        </ul>
+      </div>`).join("");
+  }
+
   // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der Infoseiten
   // Länderkunde (renderInfo) und Conjugación (ui.js) sowie Tiempos (Feature-Modul).
   function sect(icon, title, body, id) {
@@ -297,39 +338,8 @@
     };
     const topics = (vm.topics || []).map(topicBlock).join("");
 
-    const copyBtn = (p) => cfg.copyPhrases
-      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
-      : "";
-    // Favoriten-Stern je Satz: nur wenn das Modul cfg.favPhrases als isFavorite-
-    // Prädikat reicht. Der Stern trägt einen Schnappschuss (es/de + Modul-cat), damit
-    // der Satz auch ohne eigene Karte ins „Mi léxico" wandern kann.
-    const favBtn = (p) => {
-      if (typeof cfg.favPhrases !== "function") return "";
-      const fid = favPhraseId(cfg.cat, p.es);
-      return favStar(fid, cfg.favPhrases(fid), { cls: "rg-fav", snap: { es: p.es, de: p.de, cat: cfg.cat || "" } });
-    };
-    const phraseActions = (p) => {
-      const acts = favBtn(p) + copyBtn(p);
-      return acts ? `<span class="rg-phrase__actions">${acts}</span>` : "";
-    };
-    const phraseGroup = (g) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
-        <ul class="rg-phrases">
-          ${g.items.map((p) => {
-            const acts = phraseActions(p);
-            return `
-            <li class="rg-phrase${acts ? " rg-phrase--row" : ""}">
-              <span class="rg-phrase__text">
-                <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-                <span class="rg-phrase__de">${esc(p.de)}</span>
-              </span>
-              ${acts}
-            </li>`;
-          }).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+    // Satz-Stern (→ „Mi léxico") und/oder Kopier-Knopf je nach Modul-Schaltern.
+    const phrases = phraseGroups(vm.phrases, { fav: cfg.favPhrases, cat: cfg.cat, copy: cfg.copyPhrases });
 
     const glossary = (vm.glossary || []).map((g) => `
       <li class="rg-gloss">
@@ -371,7 +381,7 @@
   }
 
   window.SC.view = {
-    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, favPhraseId, sect, tipsShareBtn, cornerBtn,
+    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, favPhraseId, phraseGroups, sect, tipsShareBtn, cornerBtn,
     levelMeta, readingBlock, moduleSheet,
   };
 })();

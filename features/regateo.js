@@ -20,7 +20,7 @@
   window.SC = window.SC || {};
   // Übersetzer wie in ui.js binden (i18n.js setzt SC.i18n.t === window.t vorab).
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, tipsShareBtn, moduleShareBtn } = window.SC.view;
+  const { esc, tipsShareBtn, moduleShareBtn, phraseGroups } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -90,19 +90,9 @@
         <span class="rg-gloss__de">${esc(g.de)}</span>
       </li>`).join("");
 
-    // Wichtige Sätze: pro Phase eine kleine zweispaltige Liste (es / de).
-    const phraseGroup = (g) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
-        <ul class="rg-phrases">
-          ${g.items.map((p) => `
-            <li class="rg-phrase">
-              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-              <span class="rg-phrase__de">${esc(p.de)}</span>
-            </li>`).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+    // Wichtige Sätze: pro Phase eine kleine zweispaltige Liste (es / de),
+    // jeder Satz mit Stern → „Mi léxico".
+    const phrases = phraseGroups(vm.phrases, { fav: ctx.isFavorite, cat: "regatear" });
 
     // Einheiten: kompakte Tabelle Spanisch · Deutsch · Beispiel.
     const units = (vm.units || []).map((u) => `

@@ -14,7 +14,7 @@
   // Geteilte, zustandsfreie Render-Primitive aus view-helpers.js (SC.view) –
   // dieselbe Quelle nutzen auch die Feature-Module (kein Duplikat). view-helpers.js
   // läuft vor ui.js (index.html / Build / _dom-stub-Reihenfolge).
-  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock, moduleSheet } = window.SC.view;
+  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, phraseGroups, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock, moduleSheet } = window.SC.view;
 
   // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
   // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
@@ -2721,19 +2721,9 @@
     };
     const topics = (vm.topics || []).map(topicBlock).join("");
 
-    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Salud.
-    const phraseGroup = (g) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
-        <ul class="rg-phrases">
-          ${g.items.map((p) => `
-            <li class="rg-phrase">
-              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-              <span class="rg-phrase__de">${esc(p.de)}</span>
-            </li>`).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Salud,
+    // jeder Satz mit Stern → „Mi léxico" (Schnappschuss am Stern).
+    const phrases = phraseGroups(vm.phrases, { fav: vm.isFav, cat: "fotos" });
 
     // Teilen-Block: AirDrop / Quick Share (Erklärung + DOs/Don'ts).
     const sh = vm.sharing;
@@ -2922,19 +2912,9 @@
     };
     const dances = (vm.dances || []).map(danceBlock).join("");
 
-    // Sätze: pro Situation eine zweispaltige Liste (es / de) – wie Fotos/Salud.
-    const phraseGroup = (g) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
-        <ul class="rg-phrases">
-          ${g.items.map((p) => `
-            <li class="rg-phrase">
-              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-              <span class="rg-phrase__de">${esc(p.de)}</span>
-            </li>`).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+    // Sätze: pro Situation eine zweispaltige Liste (es / de) – wie Fotos/Salud,
+    // jeder Satz mit Stern → „Mi léxico".
+    const phrases = phraseGroups(vm.phrases, { fav: vm.isFav, cat: "bailar" });
 
     const glossary = (vm.glossary || []).map((g) => `
       <li class="rg-gloss">
@@ -3055,19 +3035,9 @@
       ? `${picker}<p class="hm-intro">${esc(t("discover.musSoundHint"))}</p>${soundCard}`
       : "";
 
-    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Fotos/Salud.
-    const phraseGroup = (gr) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${gr.icon}</span> ${esc(gr.title)}</h3>
-        <ul class="rg-phrases">
-          ${gr.items.map((p) => `
-            <li class="rg-phrase">
-              <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-              <span class="rg-phrase__de">${esc(p.de)}</span>
-            </li>`).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+    // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Fotos/Salud,
+    // jeder Satz mit Stern → „Mi léxico".
+    const phrases = phraseGroups(vm.phrases, { fav: vm.isFav, cat: "musica" });
 
     const glossary = (vm.glossary || []).map((gl) => `
       <li class="rg-gloss">

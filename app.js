@@ -966,6 +966,7 @@
       apps: loc(fotografia.APPS || []),
       glossary: loc(fotografia.GLOSSARY || []),
       checklist: loc(fotografia.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -999,6 +1000,7 @@
       phrases: loc(bailar.PHRASES || []),
       glossary: loc(bailar.GLOSSARY || []),
       checklist: loc(bailar.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -1031,6 +1033,7 @@
       country: country ? { id: country.id, name: natk(country, "name"), flag: country.flag } : null,
       countryData: cd,
       groups,
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
