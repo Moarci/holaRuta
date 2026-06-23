@@ -293,6 +293,7 @@ a { color: var(--brand-ink); }
 .lp-carousel {
   position: relative; perspective: 1200px;
   width: min(360px, 92vw); margin-inline: auto;
+  touch-action: pan-y; /* vertikales Scrollen bleibt, horizontale Wische gehen ans JS */
 }
 .lp-carousel__viewport { position: relative; min-height: 300px; }
 .lp-slide {
