@@ -93,13 +93,71 @@
 
   // Favoriten-Stern als Umschalt-Knopf (data-action="fav-toggle"). Geteilt von der
   // Kartendetail-Ansicht und Modulen wie Spickzettel/Mi léxico. id = Karten-Id,
-  // on = ist Favorit?, opts.cls = zusätzliche CSS-Klasse.
+  // on = ist Favorit?, opts.cls = zusätzliche CSS-Klasse. opts.snap = { es, de, tip,
+  // cat } hängt einen Schnappschuss als data-Attribute an: so kann der Stern auch
+  // einen Satz OHNE eigene Karte (z. B. die „Wichtigen Sätze" der Module) ins
+  // Lexikon legen – der Controller baut den Eintrag dann aus den data-Werten.
   function favStar(id, on, opts) {
     const o = opts || {};
     const cls = "favstar" + (on ? " is-on" : "") + (o.cls ? " " + o.cls : "");
     const label = on ? t("favorites.remove") : t("favorites.add");
-    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"
+    const snap = o.snap
+      ? ` data-es="${esc(o.snap.es || "")}" data-de="${esc(o.snap.de || "")}" data-tip="${esc(o.snap.tip || "")}" data-cat="${esc(o.snap.cat || "")}"`
+      : "";
+    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"${snap}
               aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
+  }
+
+  // Stabile, sprachunabhängige Id für einen Modul-Satz. Der spanische Satz (es) ist
+  // konstant – die UI-Sprache tauscht nur die Übersetzung –, darum trägt er die Id.
+  // So hält der Favoriten-Stern seinen Merk-Status über Re-Renders und Sprachwechsel.
+  // Eigenes „favph-"-Präfix, damit die Id nie mit einer Karten-Id kollidiert.
+  function favPhraseId(cat, es) {
+    const s = String(es || "");
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return "favph-" + String(cat || "x") + "-" + (h >>> 0).toString(36);
+  }
+
+  // Gemeinsame „Wichtige Sätze"-Liste (Gruppen mit es/de). Geteilt von moduleSheet
+  // und den eigenständigen Modul-Renderern (Regatear/Fotos/Bailar/Música), damit
+  // alle Module dieselbe Darstellung und – wenn gewünscht – denselben Stern bekommen.
+  //   opts.fav  = isFavorite-Prädikat → Stern je Satz (Satz ohne eigene Karte ins
+  //               „Mi léxico"; Schnappschuss es/de + cat reist am Stern mit).
+  //   opts.cat  = Modul-Kategorie (für Schnappschuss + stabile, sprachunabhängige Id).
+  //   opts.copy = Kopier-Knopf je Satz (zum Weiterschicken).
+  function phraseGroups(groups, opts) {
+    const o = opts || {};
+    const favOn = typeof o.fav === "function";
+    const copyBtn = (p) => o.copy
+      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
+      : "";
+    const favBtn = (p) => {
+      if (!favOn) return "";
+      const fid = favPhraseId(o.cat, p.es);
+      return favStar(fid, o.fav(fid), { cls: "rg-fav", snap: { es: p.es, de: p.de, cat: o.cat || "" } });
+    };
+    const actions = (p) => {
+      const a = favBtn(p) + copyBtn(p);
+      return a ? `<span class="rg-phrase__actions">${a}</span>` : "";
+    };
+    return (groups || []).map((g) => `
+      <div class="rg-group">
+        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <ul class="rg-phrases">
+          ${(g.items || []).map((p) => {
+            const a = actions(p);
+            return `
+            <li class="rg-phrase${a ? " rg-phrase--row" : ""}">
+              <span class="rg-phrase__text">
+                <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
+                <span class="rg-phrase__de">${esc(p.de)}</span>
+              </span>
+              ${a}
+            </li>`;
+          }).join("")}
+        </ul>
+      </div>`).join("");
   }
 
   // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der Infoseiten
@@ -283,24 +341,8 @@
     };
     const topics = (vm.topics || []).map(topicBlock).join("");
 
-    const copyBtn = (p) => cfg.copyPhrases
-      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
-      : "";
-    const phraseGroup = (g) => `
-      <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
-        <ul class="rg-phrases">
-          ${g.items.map((p) => `
-            <li class="rg-phrase${cfg.copyPhrases ? " rg-phrase--copy" : ""}">
-              <span class="rg-phrase__text">
-                <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-                <span class="rg-phrase__de">${esc(p.de)}</span>
-              </span>
-              ${copyBtn(p)}
-            </li>`).join("")}
-        </ul>
-      </div>`;
-    const phrases = (vm.phrases || []).map(phraseGroup).join("");
+    // Satz-Stern (→ „Mi léxico") und/oder Kopier-Knopf je nach Modul-Schaltern.
+    const phrases = phraseGroups(vm.phrases, { fav: cfg.favPhrases, cat: cfg.cat, copy: cfg.copyPhrases });
 
     const glossary = (vm.glossary || []).map((g) => `
       <li class="rg-gloss">
@@ -342,7 +384,7 @@
   }
 
   window.SC.view = {
-    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn,
+    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, favPhraseId, phraseGroups, sect, tipsShareBtn, cornerBtn,
     levelMeta, readingBlock, moduleSheet,
   };
 })();

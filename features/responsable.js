@@ -39,6 +39,7 @@
     return moduleSheet(vm, {
       icon: "🌱", title: "Viaja responsable", cat: "responsable",
       readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
+      favPhrases: ctx.isFavorite, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.rpTips", headPhrases: "discover.rpPhrases",
       headWords: "discover.rpWords", headChecklist: "discover.rpChecklist",
       headChecklistHint: "discover.rpChecklistHint",

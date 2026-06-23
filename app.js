@@ -909,6 +909,7 @@
       phrases: loc(logistica.PHRASES || []),
       glossary: loc(logistica.GLOSSARY || []),
       checklist: loc(logistica.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -924,6 +925,7 @@
       phrases: loc(salud.PHRASES || []),
       glossary: loc(salud.GLOSSARY || []),
       checklist: loc(salud.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -945,6 +947,7 @@
       phrases: loc(juegos.PHRASES || []),
       glossary: loc(juegos.GLOSSARY || []),
       checklist: loc(juegos.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -963,6 +966,7 @@
       apps: loc(fotografia.APPS || []),
       glossary: loc(fotografia.GLOSSARY || []),
       checklist: loc(fotografia.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -979,6 +983,7 @@
       phrases: loc(flirt.PHRASES || []),
       glossary: loc(flirt.GLOSSARY || []),
       checklist: loc(flirt.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -995,6 +1000,7 @@
       phrases: loc(bailar.PHRASES || []),
       glossary: loc(bailar.GLOSSARY || []),
       checklist: loc(bailar.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -1027,6 +1033,7 @@
       country: country ? { id: country.id, name: natk(country, "name"), flag: country.flag } : null,
       countryData: cd,
       groups,
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
 
@@ -5179,6 +5186,28 @@
     };
   }
 
+  // Schnappschuss aus einem Satz OHNE eigene Karte (z. B. die „Wichtigen Sätze" der
+  // Module): de/es kommen direkt aus den data-Attributen des Sterns. Lebt – wie ein
+  // selbst getippter Eintrag – nur aus dem Schnappschuss; store.loadFavorites deckelt
+  // die Längen, hier nur das Nötigste zusammenstellen.
+  function favEntryFromSnap(id, snap) {
+    return {
+      id,
+      de: String(snap.de || "").slice(0, 500),
+      es: String(snap.es || "").slice(0, 500),
+      tip: String(snap.tip || "").slice(0, 500),
+      cat: String(snap.cat || "").slice(0, 100),
+      addedAt: new Date().toISOString(),
+    };
+  }
+
+  // Schnappschuss aus den data-Attributen eines Stern-Knopfs lesen – nur wenn er
+  // tatsächlich einen Satz mitführt (data-es), sonst null (reiner Karten-Stern).
+  function favSnapFromEl(el) {
+    if (!el || !el.dataset || el.dataset.es == null) return null;
+    return { es: el.dataset.es, de: el.dataset.de, tip: el.dataset.tip, cat: el.dataset.cat };
+  }
+
   // Sichtbare Favoriten-Sterne einer Id IN-PLACE umschalten – ohne Voll-Re-Render.
   // Wichtig beim Lernen: ein render() würde im Schreiben-Modus den schon getippten
   // (noch nicht abgeschickten) Text wegwerfen und die 3D-Karte neu aufbauen. Wie der
@@ -5210,16 +5239,21 @@
   // Karte (eingebaut/eigen) als Favorit an- oder abwählen. Neu hinzugefügte stehen
   // oben (neueste zuerst). Unbekannte Ids werden ignoriert. Aktualisiert die Sterne
   // in-place (kein Re-Render) – siehe updateFavStars.
-  function toggleFavorite(id) {
+  function toggleFavorite(id, snap) {
     if (!id) return;
     let on;
     if (favIds.has(id)) {
       favorites = favorites.filter((f) => f.id !== id);
       on = false;
     } else {
+      // Karten-Stern: Eintrag aus der Karte. Satz-Stern (Module): Eintrag aus dem
+      // mitgereichten Schnappschuss (es/de). Ohne beides nichts tun.
       const card = cardById(id);
-      if (!card) return;
-      favorites = [favEntryFromCard(card)].concat(favorites);
+      let entry = null;
+      if (card) entry = favEntryFromCard(card);
+      else if (snap && snap.de && snap.es) entry = favEntryFromSnap(id, snap);
+      if (!entry) return;
+      favorites = [entry].concat(favorites);
       on = true;
     }
     persistFavorites();
@@ -6420,7 +6454,7 @@
     "target-stop": (el) => { { /* Klick auf die Modal-Karte: nicht schließen */ } },
     "pick-target": (el) => { pickTarget(el.dataset.ctx, el.dataset.value); },
     "open-favorites": (el) => { openFavorites(); },
-    "fav-toggle": (el) => { toggleFavorite(el.dataset.id); },
+    "fav-toggle": (el) => { toggleFavorite(el.dataset.id, favSnapFromEl(el)); },
     "fav-remove": (el) => { removeFavorite(el.dataset.id); },
     "fav-show": (el) => { favShow(el.dataset.id); },
     "fav-close": (el) => { favClose(); },

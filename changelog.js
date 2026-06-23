@@ -27,6 +27,20 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.114.0",
+      date: "2026-06-23",
+      title: "Wichtige Sätze der Module mit einem Stern ins „Mi léxico“",
+      titleEn: "Star the modules' key phrases straight into „Mi léxico“",
+      items: [
+        "⭐ Jeder „wichtige Satz“ in den Reise-Modulen (Viaja responsable, Salud y energía, Logística de viaje, Coqueteo y romance, Juegos de viaje, Jerga colombiana, Conoce tus derechos) hat jetzt einen Stern-Knopf: ein Tipp legt den Satz (Spanisch + Übersetzung) in dein persönliches Lexikon „Mi léxico“ – wie schon bei Karten und im Spickzettel.",
+        "🔁 Der Stern ist ein Umschalter: erneut tippen nimmt den Satz wieder heraus. Der Merk-Zustand bleibt über Sprachwechsel und Neuaufbau der Seite erhalten.",
+      ],
+      itemsEn: [
+        "⭐ Every „key phrase“ in the travel modules (Viaja responsable, Salud y energía, Logística de viaje, Coqueteo y romance, Juegos de viaje, Jerga colombiana, Conoce tus derechos) now has a star button: one tap saves the phrase (Spanish + translation) to your personal lexicon „Mi léxico“ – just like cards and the cheat sheet already do.",
+        "🔁 The star is a toggle: tap again to remove the phrase. The saved state survives language switches and page re-renders.",
+      ],
+    },
+    {
       version: "1.113.0",
       date: "2026-06-22",
       title: "Neu: Juegos de viaje – die Hostel-Spiele & die Sätze dazu",
