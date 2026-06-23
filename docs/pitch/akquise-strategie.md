@@ -20,7 +20,7 @@
 
 | Welle | Kanal | Was du holst | Aufwand | Zahlungsbereitschaft |
 |---|---|---|---|---|
-| **1** | **Hostels** (Cartagena/Getsemaní) | echte Nutzer, Praxis-Feedback, erstes Testimonial | sehr niedrig | meist 0 € (Distribution/Co-Branding) |
+| **1** | **Hostels** (ganz Kolumbien, remote — Ketten zuerst) | echte Nutzer, Praxis-Feedback, erstes Testimonial | sehr niedrig | meist 0 € (Distribution/Co-Branding) |
 | **2** | **Gruppenreise-Anbieter** (klein zuerst, dann Warm-Intro WeRoad) | emotionaler Pilot, Coordinator-Erfahrung | mittel | mittel (Destination-Pack / Partnerlizenz) |
 | **3** | **Sprachschulen** (Centro Catalina, ECOS) | zahlende Jahreslizenz, Schul-Referenz | mittel-hoch | am höchsten, aber langsam |
 
@@ -47,8 +47,8 @@
 |---|---|---|---|---|---|
 | 1 | **Viajero Hostels** | ~10: Bogotá · Medellín · Cartagena · Santa Marta · Tayrona · Salento · Cali · San Andrés · Guatapé | Größte moderne LatAm-Kette (30 Ziele/9 Länder), **Hostelworld „Best Hostel Chain 2026"** — sozialer Vibe, eigenes Aktivitätsprogramm, bester Skalierungs-Hebel | `@viajerohostels` (221K) | `sales@viajerohostels.com` · viajerohostels.com/en/contact/ |
 | 2 | **Masaya Hostels** | Medellín · Bogotá · Santa Marta/Minca · San Agustín | Design-/Boutique-Kette („nicest hostel"), kulturelles Eventprogramm (Salsa, Live-Musik) — Spanish Night passt; Kontaktseite nennt **„events / collaborations"** ausdrücklich | `@masayaexperience` (303K) | masaya-experience.com/en/contacto/ · `medellin@masaya-experience.com` |
-| 3 | **Los Patios** (Flaggschiff Medellín) | Medellín (El Poblado, 2 Gebäude) | Hostelworld-Award „bestes großes Hostel", sehr hoher Durchsatz, professionelles Team — ideales Einzel-Flaggschiff | `@lospatios` (39K) | `info@lospatioshb.com` · lospatioshb.com |
-| 4 | **Republica Hostels** | Cartagena · Santa Marta · Bogotá | Kleine moderne Kette, „Be Local"-Eventfokus | `@republicahostels` | `cartagena@republicahostels.com` · republicahostels.com |
+| 3 | **Los Patios** (Flaggschiff Medellín) | Medellín (El Poblado, 2 Gebäude) | Hostelworld-Award „bestes großes Hostel", sehr hoher Durchsatz, professionelles Team — ideales Einzel-Flaggschiff | `@lospatios` (39K; auch `@lospatioshostel`) | `info@lospatioshb.com` · lospatioshb.com |
+| 4 | **Republica Hostels** | Cartagena · Santa Marta · Bogotá · San Andrés | Kleine moderne Kette, „Be Local"-Eventfokus | `@republicahostels` | `cartagena@republicahostels.com` · republicahostels.com |
 | 5 | **The Dreamer Hostel** | Santa Marta (Mamatoco) · Palomino (+ Cocora) | Etablierte Karibik-Backpacker-Marke, Pool/Event-Vibe | `@thedreamerhostel` · `@dreamerpalomino` | Kontaktformular thedreamer.com |
 | — | **Selina** (jetzt Collective Hospitality) | 7: Bogotá · Medellín · Cali · Cartagena · Santa Marta · Palomino · Barranquilla | **Vorsicht:** 2024 insolvent, von Collective Hospitality übernommen, in Turnaround. Standorte offen, aber Partnerships-Entscheidungen aktuell zäh → **nachrangig**, erst mit Referenz | (zentrales Marketing) | über Collective-Hospitality-Marketing |
 
@@ -74,7 +74,7 @@ Parallel zu den Ketten gezielt die Flaggschiff-Hostels je Hub anschreiben (hoher
 5. Nach ~1 Woche aktivem Einsatz: per DM nach einem **O-Ton** fragen → erstes Testimonial.
 
 **Text — Instagram-DM an ein modernes Hostel/Kette (ES, kurz):**
-> „¡Hola! Soy [Name]. Hice *HolaRuta*, una app web **gratis** de español de viaje. Tiene un juego tipo *battle* de **5 minutos** ideal como actividad para la zona común — sin instalar nada, solo un código QR, funciona sin internet. ¿Les interesaría una **‚Spanish Night'** con sus huéspedes? Les paso un póster listo para imprimir, sin costo. Para una cadena como la suya funcionaría igual en **todas las sedes**. 🙌“
+> „¡Hola! Soy [Name]. Hice *HolaRuta*, una app web **gratis** de español de viaje. Tiene un juego tipo *battle* de **5 minutos** ideal como actividad para la zona común — sin instalar nada, solo un código QR, funciona sin internet. ¿Les interesaría una **"Spanish Night"** con sus huéspedes? Les paso un póster listo para imprimir, sin costo. Para una cadena como la suya funcionaría igual en **todas las sedes**. 🙌“
 
 **Text — E-Mail an Ketten-Partnerships (EN, Betreff: *A free 5-minute "Spanish Night" for all your locations*):**
 > Hi [name], I built **HolaRuta** — a free, offline travel-Spanish web app with a one-tap **5-minute language battle** that works as a ready-made common-room activity. No app install, just a QR code. For a network like yours it would run identically across **every property**, so one rollout reaches all guests. I'd send a print-ready poster (EN/ES) and a 2-min video — no cost, I'd just love your team's honest take. Demo: https://moarci.github.io/holaRuta/ → *Modo hostal*.
@@ -174,7 +174,7 @@ Führe das in einer Tabelle/Sheet. Status-Stufen bewusst einfach:
 
 | Ziel | Kanal | Ansprechpartner (verifiziert?) | Kontaktweg | Status | Letzte Aktion | Nächster Schritt (Datum) |
 |---|---|---|---|---|---|---|
-| Hostel Getsemaní A | Hostel | Rezeption | DM + vor Ort | Kontaktiert | Poster gesendet | Nachfass +4 (TT.MM.) |
+| Viajero (Kette) | Hostel | Marketing-Team (verifizieren) | IG-DM + sales@ | Kontaktiert | Poster gesendet | Nachfass +4 (TT.MM.) |
 | Centro Catalina | Schule | Direktion | Website-Formular | Recherchiert | — | Erst-Mail (TT.MM.) |
 | … | … | … | … | … | … | … |
 
@@ -205,7 +205,7 @@ Führe das in einer Tabelle/Sheet. Status-Stufen bewusst einfach:
 **Woche 4 — Schulen anschreiben & bilanzieren**
 - [ ] Wenn Sign-off vorliegt: Erst-Nachricht + [Lehrer-Handout](../anleitungen/lehrer.html) an Centro Catalina & ECOS.
 - [ ] Nachfass 2 an alle stillen Kontakte; Pipeline aufräumen.
-- [ ] **Bilanz:** Habe ich 1 aktiven Pilot **oder** 1 aufgehängtes Hostel-Poster **+ 1 Testimonial?** Wenn ja → Meilenstein erreicht. Wenn nein → Welle 1 verbreitern (mehr Hostels), nicht den Kanal wechseln.
+- [ ] **Bilanz:** Habe ich 1 aktiven Pilot **oder** 1 Ketten-Gespräch / aktives Hostel (Poster hängt) **+ 1 Testimonial?** Wenn ja → Meilenstein erreicht. Wenn nein → Welle 1 verbreitern (mehr Hostels), nicht den Kanal wechseln.
 
 ---
 
