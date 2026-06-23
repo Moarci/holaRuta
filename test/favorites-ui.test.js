@@ -197,6 +197,22 @@ test("Übungsmodus: Español zeigen, aufdecken, weiterblättern, schließen", ()
   assert.ok(!root.querySelector(".fav-practice"), "Overlay geschlossen");
 });
 
+test("Hinzufügen-Entwurf überlebt einen Full-Render (z. B. Gruppe einklappen)", () => {
+  const root = freshApp();
+  openFavorites(root);
+  addCustom(root, "Hallo", "Hola"); // erzeugt eine Gruppe zum Klappen
+
+  // Neuen Eintrag anfangen zu tippen -> input-Event sichert den Entwurf live.
+  const de = root.querySelector("#fav-de");
+  de.value = "Wo ist";
+  dispatch(de, "input");
+
+  // Eine Aktion, die die ganze Seite neu zeichnet, darf den Text nicht verwerfen.
+  assert.ok(clickSel(root, ".fav-group"), "Gruppe einklappen löst Full-Render aus");
+  assert.equal(root.querySelector("#fav-de").getAttribute("value"), "Wo ist",
+    "getippter Entwurf bleibt nach dem Re-Render erhalten");
+});
+
 test("Liste teilen nutzt den Clipboard-Fallback (ohne native Teilen-API)", () => {
   const root = freshApp();
   openFavorites(root);

@@ -2129,7 +2129,7 @@
                autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
                placeholder="${esc(t("favorites.filterPlaceholder"))}" aria-label="${esc(t("favorites.filterPlaceholder"))}"
                value="${esc(vm.query)}" />
-        ${vm.query ? `<button class="searchfield__clear" type="button" data-action="fav-filter-clear" aria-label="${esc(t("favorites.filterClear"))}">✕</button>` : ""}
+        <button class="searchfield__clear" type="button" data-action="fav-filter-clear" aria-label="${esc(t("favorites.filterClear"))}">✕</button>
       </div>` : "";
 
     // Eigenen Eintrag hinzufügen: eingeklappt UNTER der Liste (weniger prominent als

@@ -5394,6 +5394,14 @@
     render();
   }
 
+  // Aktuellen Stand des Hinzufügen-Formulars als Entwurf festhalten – OHNE Re-Render
+  // (Cursor/Fokus bleiben). Ein späterer Full-Render baut die Felder dann aus favDraft
+  // wieder auf (vm.draft) und hält das Formular offen (vm.addOpen).
+  function captureFavDraft() {
+    const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+    favDraft = { de: val("fav-de"), es: val("fav-es"), tip: val("fav-tip"), cat: val("fav-cat") };
+  }
+
   // Gruppe ein-/ausklappen (nur Optik; beim aktiven Filter ignoriert die Ansicht den
   // Klappzustand, damit Treffer nie versteckt sind).
   function favGroupToggle(key) {
@@ -7050,6 +7058,12 @@
       updateFavList();
       return;
     }
+    // Hinzufügen-Formular: getipptes live als Entwurf sichern, damit ein Full-Render
+    // (Gruppe klappen, Stern entfernen, Großanzeige/Üben) den Text NICHT verwirft.
+    if (state.screen === "favorites" && e.target && /^fav-(de|es|tip)$/.test(e.target.id)) {
+      captureFavDraft();
+      return;
+    }
     if (state.screen !== "search") return;
     if (!e.target || e.target.id !== "search-input") return;
     state.searchQuery = e.target.value;
@@ -7080,6 +7094,12 @@
 
   // Dropdown-Auswahl (Länderkunde) – <select> meldet sich über 'change', nicht 'click'.
   function onChange(e) {
+    // Hinzufügen-Formular: gewählte Kategorie live in den Entwurf übernehmen (analog
+    // zu den Textfeldern in onInput), damit ein Full-Render sie nicht zurücksetzt.
+    if (state.screen === "favorites" && e.target && e.target.id === "fav-cat") {
+      captureFavDraft();
+      return;
+    }
     // Backup-Import: verstecktes file-input im Profil-Reiter.
     if (e.target && e.target.id === "import-file") {
       const file = (e.target.files && e.target.files[0]) || null;

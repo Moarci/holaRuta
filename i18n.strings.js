@@ -2679,9 +2679,8 @@
     next: "Weiter",
     prev: "Zurück",
     practiceDone: "Fertig ✓",
-    practiceEmpty: "Noch nichts zu üben – merke dir zuerst ein paar Wörter.",
     share: "Teilen",
-    shareTitle: "Mein Mi léxico",
+    shareTitle: "Mi léxico",
     shareHead: "📒 Mi léxico – meine Lieblingswörter & -sätze",
     copied: "Liste in die Zwischenablage kopiert.",
   }, {
@@ -2727,9 +2726,8 @@
     next: "Next",
     prev: "Back",
     practiceDone: "Done ✓",
-    practiceEmpty: "Nothing to practise yet – save a few words first.",
     share: "Share",
-    shareTitle: "My Mi léxico",
+    shareTitle: "Mi léxico",
     shareHead: "📒 Mi léxico – my favourite words & phrases",
     copied: "List copied to clipboard.",
   });
