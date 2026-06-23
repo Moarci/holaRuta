@@ -39,17 +39,18 @@
 
 **Das Angebot:** „Kostenlose 5-Minuten-Spanish-Night für euren Common Room. Nur ein QR-Code, keine Installation, offline."
 
-### 2a — Zielliste: Ketten zuerst (ein Kontakt → viele Standorte)
+### 2a — Zielliste mit Kontaktdaten (Ketten & Flaggschiffe zuerst)
 
-> ⚠️ **Vor dem Versand verifizieren** (Web/Instagram). Stand der Einschätzung: Juni 2026 — Hostel-Footprints ändern sich. Hier stehen Prioritäten & Kontaktwege, keine erfundenen Adressen.
+> ⚠️ **Kontakte recherchiert Juni 2026 — vor dem Versand kurz gegenprüfen** (Hostel-Footprints, Handles & Mailadressen ändern sich). DM-Handles und allgemeine Mailadressen unten sind aus den offiziellen Seiten/Profilen; eine dedizierte „Partnerships"-Adresse haben die meisten nicht — dann an `info@`/Sales/Kontaktformular gehen und nach dem Marketing-/Events-Team fragen.
 
-| Prio | Kette | Standorte in Kolumbien (ca.) | Warum zuerst | Kontaktweg |
-|---|---|---|---|---|
-| 1 | **Viajero Hostels** | ~10: Bogotá · Medellín · Cartagena · Santa Marta · Tayrona · Salento · Cali · San Andrés · Guatapé … | Größte moderne, **kolumbianisch geführte** Kette; sozialer Vibe, eigenes Aktivitätsprogramm — bester Skalierungs- & Produkt-Fit | `viajerohostels.com` Kontakt/Partnerships · Instagram-DM `@viajerohostels` |
-| 2 | **Masaya Hostels** | Medellín · Bogotá · Santa Marta/Minca · San Agustín | Design-/Boutique-Kette („nicest hostel"), kulturelles Eventprogramm (Salsa, Live-Musik) — Spanish Night passt | Website Partnerships · Instagram-DM je Standort |
-| 3 | **Los Patios / Republica** (Medellín-Gruppe) | Medellín (Los Patios, Republica) · weitere | Hostelworld-Award „bestes großes Hostel", sehr hoher Durchsatz, professionelles Team | Website · Instagram-DM `@lospatioshostel` |
-| 4 | **Dreamer Hostel** | Santa Marta · Palomino | Etablierte Karibik-Backpacker-Marke, Pool/Event-Vibe | Website · Instagram-DM |
-| — | **Selina (jetzt Collective Hospitality)** | 7: Bogotá · Medellín · Cali · Cartagena · Santa Marta · Palomino · Barranquilla | **Vorsicht:** 2024 insolvent, von Collective Hospitality übernommen, in Turnaround. Standorte offen, aber Partnerships-Entscheidungen aktuell zäh → **nachrangig**, erst mit Referenz | Marketing-Team (zentral) |
+| Prio | Marke | Standorte (Kolumbien) | Warum | Instagram (DM) | E-Mail / Kontakt |
+|---|---|---|---|---|---|
+| 1 | **Viajero Hostels** | ~10: Bogotá · Medellín · Cartagena · Santa Marta · Tayrona · Salento · Cali · San Andrés · Guatapé | Größte moderne LatAm-Kette (30 Ziele/9 Länder), **Hostelworld „Best Hostel Chain 2026"** — sozialer Vibe, eigenes Aktivitätsprogramm, bester Skalierungs-Hebel | `@viajerohostels` (221K) | `sales@viajerohostels.com` · viajerohostels.com/en/contact/ |
+| 2 | **Masaya Hostels** | Medellín · Bogotá · Santa Marta/Minca · San Agustín | Design-/Boutique-Kette („nicest hostel"), kulturelles Eventprogramm (Salsa, Live-Musik) — Spanish Night passt; Kontaktseite nennt **„events / collaborations"** ausdrücklich | `@masayaexperience` (303K) | masaya-experience.com/en/contacto/ · `medellin@masaya-experience.com` |
+| 3 | **Los Patios** (Flaggschiff Medellín) | Medellín (El Poblado, 2 Gebäude) | Hostelworld-Award „bestes großes Hostel", sehr hoher Durchsatz, professionelles Team — ideales Einzel-Flaggschiff | `@lospatios` (39K) | `info@lospatioshb.com` · lospatioshb.com |
+| 4 | **Republica Hostels** | Cartagena · Santa Marta · Bogotá | Kleine moderne Kette, „Be Local"-Eventfokus | `@republicahostels` | `cartagena@republicahostels.com` · republicahostels.com |
+| 5 | **The Dreamer Hostel** | Santa Marta (Mamatoco) · Palomino (+ Cocora) | Etablierte Karibik-Backpacker-Marke, Pool/Event-Vibe | `@thedreamerhostel` · `@dreamerpalomino` | Kontaktformular thedreamer.com |
+| — | **Selina** (jetzt Collective Hospitality) | 7: Bogotá · Medellín · Cali · Cartagena · Santa Marta · Palomino · Barranquilla | **Vorsicht:** 2024 insolvent, von Collective Hospitality übernommen, in Turnaround. Standorte offen, aber Partnerships-Entscheidungen aktuell zäh → **nachrangig**, erst mit Referenz | (zentrales Marketing) | über Collective-Hospitality-Marketing |
 
 ### 2b — Größte/modernste Einzel-Hostels nach Backpacker-Hub
 
@@ -58,8 +59,8 @@ Parallel zu den Ketten gezielt die Flaggschiff-Hostels je Hub anschreiben (hoher
 | Hub | Flaggschiff-/Moderne Hostels (verifizieren) |
 |---|---|
 | **Medellín** (El Poblado/Laureles) | Los Patios · Masaya · Viajero · The Wandering Paisa · Rango Boutique · Selina |
-| **Bogotá** (La Candelaria/Chapinero) | Viajero Bogotá & Spa · Masaya · Selina · Cranky Croc · Fernweh |
-| **Santa Marta / Minca / Palomino** | Viajero Santa Marta · Masaya Minca · Dreamer (SM & Palomino) · La Brisa Loca · Casa Loma (Minca) |
+| **Bogotá** (La Candelaria/Chapinero) | Viajero Bogotá & Spa · Masaya · Republica · Selina · Cranky Croc · Fernweh |
+| **Santa Marta / Minca / Palomino** | Viajero Santa Marta · Masaya Minca · Dreamer (SM & Palomino) · Republica (SM) · La Brisa Loca · Casa Loma (Minca) |
 | **Salento / Kaffeezone** | Viajero Salento · La Serrana · Coffee Tree Boutique |
 | **Cartagena / Karibik** | Viajero Cartagena · Republica · Selina · Casa en el Agua (Insel) |
 | **Cali** | Viajero Cali & Salsa School · La Pinta |
@@ -186,7 +187,7 @@ Führe das in einer Tabelle/Sheet. Status-Stufen bewusst einfach:
 **Woche 1 — Vorbereiten & Hostels starten (Welle 1)**
 - [ ] In [anschreiben.md](anschreiben.md) und auf der Pitch-Seite die Platzhalter (`[dein Name]`, `[deine E-Mail]`) durch echte Kontaktdaten ersetzen.
 - [ ] Eine sichtbare **Feedback-Mailadresse** auf der Pitch-Seite setzen.
-- [ ] **Ketten** (Viajero, Masaya, Los Patios/Republica, Dreamer) recherchieren → Partnerships-/Marketing-Kontakt + Instagram in die Pipeline (§2a).
+- [ ] **Ketten/Flaggschiffe** (Viajero, Masaya, Los Patios, Republica, Dreamer) — Kontakte stehen in §2a, vor Versand gegenprüfen → in die Pipeline.
 - [ ] **6–10 Flaggschiff-Einzel-Hostels** über die Hubs Medellín/Bogotá/Santa Marta/Salento verteilt recherchieren (§2b).
 - [ ] Erst-Nachricht (ES/EN) als **Instagram-DM + E-Mail** + [Hostel-Poster](../anleitungen/hostel.html) an alle raus.
 - [ ] **Parallel:** Muttersprachler-Gegenlesung des Kern-Sets beauftragen (entriegelt Welle 3).
