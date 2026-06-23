@@ -285,14 +285,24 @@ a { color: var(--brand-ink); }
 }
 .lp-trust__label { font-size: 0.74rem; font-weight: 700; color: var(--muted); letter-spacing: 0.01em; }
 
-/* ── Hero-Karte: nutzt die ECHTEN App-Karten-Klassen (.flip/.face/.face__cat/
- *    .lvl-badge/.cardbtn/.face__tip aus styles.css), damit sie 1:1 wie in der
- *    App aussieht. Hier nur das Drumherum: Bühne, Breite & dezenter Idle-Tilt. ── */
-.lp-cardcol { display: flex; flex-direction: column; gap: var(--space-3); }
-.lp-cardstage {
+/* ── Beispielkarten-Karussell. Die Karten nutzen die ECHTEN App-Klassen
+ *    (.flip/.face/.face__cat/.lvl-badge/.cardbtn/.face__tip aus styles.css), damit
+ *    sie 1:1 wie der Lern-Screen aussehen. Slides werden per Crossfade gewechselt
+ *    (kein Track-translateX -> kein Clipping der 3D-Flip-/Schatten). ── */
+.lp-cardcol { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+.lp-carousel {
   position: relative; perspective: 1200px;
   width: min(360px, 92vw); margin-inline: auto;
 }
+.lp-carousel__viewport { position: relative; min-height: 300px; }
+.lp-slide {
+  position: absolute; inset: 0; opacity: 0; transform: scale(0.96);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.lp-slide.is-active { position: relative; opacity: 1; transform: none; pointer-events: auto; }
+.lp-carousel .flip__inner { min-height: 270px; }
+
 /* Tilt-Wrapper: getrennt vom .flip (das seine eigene Perspektive fürs Umdrehen
    mitbringt), damit Kippen und Umdrehen sich nicht in die Quere kommen. */
 .lp-cardtilt {
@@ -301,8 +311,18 @@ a { color: var(--brand-ink); }
   filter: drop-shadow(0 28px 44px rgba(45, 27, 18, 0.30));
 }
 [data-theme="dark"] .lp-cardtilt { filter: drop-shadow(0 28px 44px rgba(0, 0, 0, 0.55)); }
-/* Beispielkarte etwas kompakter als im Lern-Screen. */
-.lp-cardstage .flip__inner { min-height: 270px; }
+
+/* Punkt-Navigation */
+.lp-dots { display: flex; gap: 4px; justify-content: center; }
+.lp-dot {
+  width: 28px; height: 28px; padding: 0; border: none; background: transparent;
+  cursor: pointer; display: grid; place-items: center;
+}
+.lp-dot::before {
+  content: ""; width: 9px; height: 9px; border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 24%, transparent); transition: all 0.25s ease;
+}
+.lp-dot.is-active::before { width: 22px; background: var(--brand); }
 
 /* ─────────────────────────── Features ─────────────────────────── */
 .lp-features__grid {
@@ -496,8 +516,9 @@ a { color: var(--brand-ink); }
  * Harte Garantie: keine Bewegung. Flip & Tilt instant, Chips/Shine/Reveal aus. */
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
-  /* Hero-Karte: Tilt aus, Umdrehen ohne Animation (instant). */
+  /* Karussell-Karten: Tilt aus, Umdrehen & Crossfade ohne Animation (instant). */
   .lp-cardtilt { transform: none !important; transition: none !important; }
-  .lp-cardstage .flip__inner { transition: none !important; }
+  .lp-carousel .flip__inner { transition: none !important; }
+  .lp-slide { transition: none !important; }
   .lp-cta::after { display: none !important; }
 }
