@@ -2611,6 +2611,7 @@
   function renderLogistica(vm) {
     return moduleSheet(vm, {
       icon: "🧳", title: "Logística de viaje", cat: "logistica",
+      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
       headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
       headChecklistHint: "discover.lgChecklistHint",
@@ -2621,6 +2622,7 @@
   function renderSalud(vm) {
     return moduleSheet(vm, {
       icon: "🥗", title: "Salud y energía", cat: "salud",
+      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
       headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
       headChecklistHint: "discover.sdChecklistHint",
@@ -2633,6 +2635,7 @@
   function renderJuegos(vm) {
     return moduleSheet(vm, {
       icon: "🎲", title: "Juegos de viaje", cat: "juegos",
+      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.jgTips", headPhrases: "discover.jgPhrases",
       headWords: "discover.jgWords", headChecklist: "discover.jgChecklist",
       headChecklistHint: "discover.jgChecklistHint",
@@ -2646,6 +2649,7 @@
   function renderFlirt(vm) {
     return moduleSheet(vm, {
       icon: "💘", title: "Coqueteo y romance", cat: "flirt",
+      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.flTips", headPhrases: "discover.flPhrases",
       headWords: "discover.flWords", headChecklist: "discover.flChecklist",
       headChecklistHint: "discover.flChecklistHint",

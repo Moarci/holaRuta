@@ -93,13 +93,30 @@
 
   // Favoriten-Stern als Umschalt-Knopf (data-action="fav-toggle"). Geteilt von der
   // Kartendetail-Ansicht und Modulen wie Spickzettel/Mi léxico. id = Karten-Id,
-  // on = ist Favorit?, opts.cls = zusätzliche CSS-Klasse.
+  // on = ist Favorit?, opts.cls = zusätzliche CSS-Klasse. opts.snap = { es, de, tip,
+  // cat } hängt einen Schnappschuss als data-Attribute an: so kann der Stern auch
+  // einen Satz OHNE eigene Karte (z. B. die „Wichtigen Sätze" der Module) ins
+  // Lexikon legen – der Controller baut den Eintrag dann aus den data-Werten.
   function favStar(id, on, opts) {
     const o = opts || {};
     const cls = "favstar" + (on ? " is-on" : "") + (o.cls ? " " + o.cls : "");
     const label = on ? t("favorites.remove") : t("favorites.add");
-    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"
+    const snap = o.snap
+      ? ` data-es="${esc(o.snap.es || "")}" data-de="${esc(o.snap.de || "")}" data-tip="${esc(o.snap.tip || "")}" data-cat="${esc(o.snap.cat || "")}"`
+      : "";
+    return `<button class="${cls}" type="button" data-action="fav-toggle" data-id="${esc(id)}"${snap}
               aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}">${on ? "★" : "☆"}</button>`;
+  }
+
+  // Stabile, sprachunabhängige Id für einen Modul-Satz. Der spanische Satz (es) ist
+  // konstant – die UI-Sprache tauscht nur die Übersetzung –, darum trägt er die Id.
+  // So hält der Favoriten-Stern seinen Merk-Status über Re-Renders und Sprachwechsel.
+  // Eigenes „favph-"-Präfix, damit die Id nie mit einer Karten-Id kollidiert.
+  function favPhraseId(cat, es) {
+    const s = String(es || "");
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return "favph-" + String(cat || "x") + "-" + (h >>> 0).toString(36);
   }
 
   // Ein Themenblock (Überschrift + Inhalt) – gemeinsamer Baustein der Infoseiten
@@ -283,18 +300,33 @@
     const copyBtn = (p) => cfg.copyPhrases
       ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
       : "";
+    // Favoriten-Stern je Satz: nur wenn das Modul cfg.favPhrases als isFavorite-
+    // Prädikat reicht. Der Stern trägt einen Schnappschuss (es/de + Modul-cat), damit
+    // der Satz auch ohne eigene Karte ins „Mi léxico" wandern kann.
+    const favBtn = (p) => {
+      if (typeof cfg.favPhrases !== "function") return "";
+      const fid = favPhraseId(cfg.cat, p.es);
+      return favStar(fid, cfg.favPhrases(fid), { cls: "rg-fav", snap: { es: p.es, de: p.de, cat: cfg.cat || "" } });
+    };
+    const phraseActions = (p) => {
+      const acts = favBtn(p) + copyBtn(p);
+      return acts ? `<span class="rg-phrase__actions">${acts}</span>` : "";
+    };
     const phraseGroup = (g) => `
       <div class="rg-group">
         <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
         <ul class="rg-phrases">
-          ${g.items.map((p) => `
-            <li class="rg-phrase${cfg.copyPhrases ? " rg-phrase--copy" : ""}">
+          ${g.items.map((p) => {
+            const acts = phraseActions(p);
+            return `
+            <li class="rg-phrase${acts ? " rg-phrase--row" : ""}">
               <span class="rg-phrase__text">
                 <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
                 <span class="rg-phrase__de">${esc(p.de)}</span>
               </span>
-              ${copyBtn(p)}
-            </li>`).join("")}
+              ${acts}
+            </li>`;
+          }).join("")}
         </ul>
       </div>`;
     const phrases = (vm.phrases || []).map(phraseGroup).join("");
@@ -339,7 +371,7 @@
   }
 
   window.SC.view = {
-    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, sect, tipsShareBtn, cornerBtn,
+    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, favPhraseId, sect, tipsShareBtn, cornerBtn,
     levelMeta, readingBlock, moduleSheet,
   };
 })();
