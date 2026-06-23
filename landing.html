@@ -270,7 +270,7 @@
                 <p class="lp-step__body" data-i18n="how.s1.b">Such dir aus, was ansteht — Geld, Essen, Bus, Notfall. 73 Bereiche, alle reisefertig.</p>
               </div>
               <div class="lp-step__shot">
-                <img src="docs/screenshots/home.png" width="390" height="844" loading="lazy" alt="HolaRuta Startseite mit Reise-Bereichen" />
+                <img src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="HolaRuta Startseite mit Reise-Bereichen" />
               </div>
             </article>
             <article class="lp-step" data-reveal style="--i:1" data-step="2">
@@ -280,7 +280,7 @@
                 <p class="lp-step__body" data-i18n="how.s2.b">Tippen, antworten, umdrehen. Karteikarte, Schreiben oder Hören — du entscheidest.</p>
               </div>
               <div class="lp-step__shot">
-                <img src="docs/screenshots/study-flip-revealed.png" width="390" height="844" loading="lazy" alt="Aufgedeckte Karteikarte mit Aussprache und Bewertung" />
+                <img src="docs/landing/study.png" width="390" height="844" loading="lazy" alt="Aufgedeckte Karteikarte mit Aussprache und Bewertung" />
               </div>
             </article>
             <article class="lp-step" data-reveal style="--i:2" data-step="3">
@@ -290,7 +290,7 @@
                 <p class="lp-step__body" data-i18n="how.s3.b">Markier ehrlich: Nochmal, Gut oder Einfach. Spaced Repetition plant den Rest.</p>
               </div>
               <div class="lp-step__shot">
-                <img src="docs/screenshots/stats.png" width="390" height="844" loading="lazy" alt="Statistik mit Trefferquote und Fortschritt" />
+                <img src="docs/landing/stats.png" width="390" height="844" loading="lazy" alt="Statistik mit Trefferquote und Fortschritt" />
               </div>
             </article>
           </div>
@@ -299,7 +299,7 @@
             <div class="lp-phone__screen">
               <div class="lp-phone__notch"></div>
               <div class="lp-phone__stripe"></div>
-              <img class="lp-phone__img" id="lpPhoneImg" src="docs/screenshots/home.png" width="390" height="844" alt="" />
+              <img class="lp-phone__img" id="lpPhoneImg" src="docs/landing/home.png" width="390" height="844" alt="" />
             </div>
           </div>
         </div>
@@ -700,9 +700,9 @@
     // ── Phone-Mockup: Bild je sichtbarem Schritt wechseln (Desktop-Enhancement) ──
     var phoneImg = document.getElementById("lpPhoneImg");
     var shots = {
-      "1": "docs/screenshots/home.png",
-      "2": "docs/screenshots/study-flip-revealed.png",
-      "3": "docs/screenshots/stats.png"
+      "1": "docs/landing/home.png",
+      "2": "docs/landing/study.png",
+      "3": "docs/landing/stats.png"
     };
     if (phoneImg && "IntersectionObserver" in window) {
       var ioStep = new IntersectionObserver(function (entries) {

@@ -30,7 +30,7 @@
   --space-8: 128px;
 
   /* Type-Skala (fluid) – Bricolage display, Instrument body */
-  --fs-display: clamp(2.6rem, 6vw, 4.5rem);
+  --fs-display: clamp(2.3rem, 6vw, 4.5rem);
   --fs-h2: clamp(2rem, 4vw, 3rem);
   --fs-h3: clamp(1.15rem, 2vw, 1.4rem);
   --fs-lead: clamp(1.05rem, 1.6vw, 1.3rem);
@@ -123,8 +123,9 @@ a { color: var(--brand-ink); }
   max-width: 60ch;
 }
 
-/* Sektions-Rhythmus + dezent wechselnde Hintergrundtöne (editorial). */
-.lp-section { padding-block: clamp(64px, 10vw, 128px); }
+/* Sektions-Rhythmus + dezent wechselnde Hintergrundtöne (editorial).
+   Mobile etwas kompakter (56px), Desktop großzügig (bis 128px). */
+.lp-section { padding-block: clamp(56px, 9vw, 128px); }
 .lp-section--card { background: var(--card); }
 .lp-section--wash {
   background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--brand) 5%, var(--surface)));
@@ -146,6 +147,11 @@ a { color: var(--brand-ink); }
 .lp-header__inner {
   display: flex; align-items: center; gap: var(--space-3);
   min-height: 64px; padding-block: 10px;
+}
+/* Sehr schmale Geräte: enger packen, damit Logo + DE|EN + Theme nie kollidieren. */
+@media (max-width: 400px) {
+  .lp-header__inner { gap: var(--space-2); }
+  .lp-logo__name { font-size: 1.05rem; }
 }
 .lp-header.is-stuck {
   background: color-mix(in srgb, var(--surface) 92%, transparent);
@@ -195,9 +201,11 @@ a { color: var(--brand-ink); }
 }
 .lp-iconbtn:active { transform: translateY(1px); }
 
-/* Kompakter Header-CTA (auf kleinsten Screens ausgeblendet – Hero-CTA reicht). */
-.lp-header__cta { display: none; }
-@media (min-width: 560px) { .lp-header__cta { display: inline-flex; } }
+/* Kompakter Header-CTA: auf Mobile ausgeblendet (Hero-CTA reicht), ab 560px sichtbar.
+   Höhere Spezifität (.lp-header …) ist nötig, weil .lp-cta später in der Datei
+   display:inline-flex setzt und sonst das display:none überschreiben würde. */
+.lp-header .lp-header__cta { display: none; }
+@media (min-width: 560px) { .lp-header .lp-header__cta { display: inline-flex; } }
 
 /* CTA-Varianten (bauen auf der App-.cta auf, hier per lp-Klassen für Marketing). */
 .lp-cta {
@@ -254,6 +262,11 @@ a { color: var(--brand-ink); }
 .lp-hero__sub { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink-soft); margin: 0 0 var(--space-5); max-width: 52ch; }
 
 .lp-hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-5); }
+/* Mobile: CTAs gestapelt & full-width -> große, saubere Tap-Ziele. */
+@media (max-width: 520px) {
+  .lp-hero__cta { flex-direction: column; align-items: stretch; }
+  .lp-hero__cta .lp-cta { width: 100%; }
+}
 
 /* Trust-Bar mit den Kennzahlen. */
 .lp-trust {
@@ -308,7 +321,11 @@ a { color: var(--brand-ink); }
   50% { transform: translateY(-8px) rotate(1.5deg); }
 }
 @media (max-width: 560px) {
+  /* Auf schmalen Screens nur zwei Chips, an die Kartenecken getuckt (kein
+     Anschneiden am Viewport-Rand). */
   .lp-chip--3, .lp-chip--4 { display: none; }
+  .lp-chip--1 { top: -4%; left: 0; }
+  .lp-chip--2 { top: 10%; right: 0; }
 }
 
 /* ─────────────────────────── Features ─────────────────────────── */
@@ -493,8 +510,9 @@ a { color: var(--brand-ink); }
  * Harte Garantie: keine Bewegung. Flip & Tilt instant, Chips/Shine/Reveal aus. */
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .lp-card, .lp-card__inner { transition: none !important; }
-  .lp-card { transform: none !important; }
+  /* Hero-Karte: Tilt aus, Umdrehen ohne Animation (instant). */
+  .lp-cardtilt { transform: none !important; transition: none !important; }
+  .lp-cardstage .flip__inner { transition: none !important; }
   .lp-chip { animation: none !important; }
   .lp-cta::after { display: none !important; }
 }

@@ -189,9 +189,9 @@ function buildDist() {
     "og-image-square.png",
     "landing.html",
     "landing.css",
-    "docs/screenshots/home.png",
-    "docs/screenshots/study-flip-revealed.png",
-    "docs/screenshots/stats.png",
+    "docs/landing/home.png",
+    "docs/landing/study.png",
+    "docs/landing/stats.png",
   ]) {
     const p = path.join(DIR, extra);
     if (fs.existsSync(p)) { writeDist(DIST, extra, fs.readFileSync(p)); copied.push(extra); }
