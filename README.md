@@ -595,6 +595,7 @@ Druckfertige Anleitungen (DE · EN · ES) für den Einsatz in Sprachschulen, auf
 - **[Hostel-Aushang „Spanish Night“](docs/anleitungen/hostel.html)** — Poster mit **echtem QR-Code** für den Common Room.
 
 **Go-to-Market** unter [`docs/pitch/`](docs/pitch/index.html):
+- **[Akquise-Strategie & Playbook](docs/pitch/akquise-strategie.md)** — operatives Schritt-für-Schritt-Vorgehen (Schulen·Reisen·Hostels): Reihenfolge, Nachfass-Rhythmus, Einwand-Behandlung, 30-Tage-Plan, Pipeline-Tabelle.
 - **[Pitch-One-Pager](docs/pitch/index.html)** (DE·EN·ES) — die versendbare „schick mir was"-Seite mit Live-Demo-QR.
 - **[WeRoad-Colombia-Proposal](docs/pitch/weroad-colombia.html)** (DE·EN) — ausgearbeitetes Gruppenreise-Beispiel: Route↔Inhalt, 3-Phasen-Modell, Coordinator-Playbook, Preise, Pilot.
 - **[Outreach-Anschreiben](docs/pitch/anschreiben.md)** — copy-paste, je Zielgruppe (Schule/Hostel/Reiseleiter), DE·EN·ES.

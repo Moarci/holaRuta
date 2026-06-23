@@ -2,6 +2,7 @@
 
 > Priorisierte Liste für die ersten Kontakte. Reihenfolge folgt [MARKT.md](../../MARKT.md) §10/§11:
 > **Kolumbien-/Immersion-Nähe zuerst, große Ketten später; Warm-Intros vor Kalt-Akquise.**
+> Operatives Schritt-für-Schritt-Vorgehen (Wellen, Nachfass, Einwände, 30-Tage-Plan): [akquise-strategie.md](akquise-strategie.md).
 >
 > ⚠️ **Wichtig:** Konkrete URLs/E-Mails/Ansprechpartner unten sind **vor dem Versand zu verifizieren**
 > (Web-Recherche). Hier stehen bewusst die *Kontaktwege* und Prioritäten, keine erfundenen Adressen.
