@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es" data-lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HolaRuta · Spanish Night (Poster, Design-Variante)</title>
+<link rel="stylesheet" href="handout.css">
+<style>
+/*
+ * Bold/Design-Poster für moderne Hostels (Viajero, Masaya, Los Patios …).
+ * Voll-Farbpanel, große Typo – komplett aus CSS (keine externen Bilder),
+ * zero-dependency, offline. Druck: Strg/Cmd+P → „Als PDF speichern“.
+ */
+.bold {
+  position: relative;
+  max-width: 820px;
+  margin: 0 auto 24px;
+  padding: 54px 48px 40px;
+  text-align: center;
+  color: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  background:
+    radial-gradient(130% 80% at 18% 0%, rgba(255,212,150,0.35) 0%, transparent 60%),
+    radial-gradient(120% 95% at 50% -6%, #e9774a 0%, #c2502e 46%, #a23e20 100%);
+}
+/* leichte „Konfetti“-Punkte als Deko, rein dekorativ */
+.bold::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.10) 2px, transparent 2.5px),
+    radial-gradient(rgba(255,255,255,0.07) 2px, transparent 2.5px);
+  background-size: 38px 38px, 38px 38px;
+  background-position: 0 0, 19px 19px;
+  pointer-events: none;
+}
+.bold > * { position: relative; }
+
+.bold .kicker {
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 0.82rem;
+  opacity: 0.92;
+}
+.bold h1 {
+  font-size: 4rem;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 10px 0 6px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+}
+.bold .tag { font-size: 1.3rem; font-weight: 600; opacity: 0.97; margin: 0 0 6px; }
+
+.bold .qrwrap {
+  width: 256px;
+  height: 256px;
+  margin: 24px auto 14px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+}
+.bold .qrwrap img { width: 100%; height: 100%; display: block; }
+
+.bold .pill {
+  display: inline-block;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(255,255,255,0.16);
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 999px;
+  padding: 9px 24px;
+}
+
+.bold .chips {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 22px 0 8px;
+}
+.bold .chip {
+  background: rgba(0,0,0,0.18);
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.bold .trust { margin: 12px 0 0; font-size: 0.92rem; opacity: 0.92; }
+
+/* Bildschirm: dunkler Rahmen ringsum; Druck: randlos & seitenfüllend */
+@media print {
+  @page { margin: 0; }
+  body { background: #fff; }
+  .langbar { display: none; }
+  .bold {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+</style>
+</head>
+<body>
+
+<nav class="langbar" aria-label="Sprache / Language / Idioma">
+  <button data-lang="es" aria-pressed="true">Español</button>
+  <button data-lang="en" aria-pressed="false">English</button>
+  <button data-lang="de" aria-pressed="false">Deutsch</button>
+</nav>
+
+<main class="bold">
+
+  <!-- ===== localisierter Kopf ===== -->
+  <div lang="es" class="lang lang--es"><div class="kicker">🌶️ HolaRuta · Noche de español · Gratis</div></div>
+  <div lang="en" class="lang lang--en"><div class="kicker">🌶️ HolaRuta · Spanish game night · Free</div></div>
+  <div lang="de" class="lang lang--de"><div class="kicker">🌶️ HolaRuta · Reise-Spanisch-Abend · Gratis</div></div>
+
+  <h1>Spanish Night</h1>
+
+  <div lang="es" class="lang lang--es"><p class="tag">Escanea, juega y rompe el hielo — en parejas o en grupo.</p></div>
+  <div lang="en" class="lang lang--en"><p class="tag">Scan, play and break the ice — in pairs or as a group.</p></div>
+  <div lang="de" class="lang lang--de"><p class="tag">Scannen, spielen, Eis brechen — zu zweit oder in der Gruppe.</p></div>
+
+  <!-- Echter, scannbarer QR-Code (segno, verifiziert) für https://moarci.github.io/holaRuta/ -->
+  <div class="qrwrap">
+    <img src="qr-holaruta.svg" width="220" height="220"
+         alt="QR-Code, führt zu moarci.github.io/holaRuta">
+  </div>
+  <div class="pill">moarci.github.io/holaRuta</div>
+
+  <!-- ===== localisierter Fuß ===== -->
+  <div lang="es" class="lang lang--es">
+    <div class="chips"><span class="chip">🧭 Modo hostal</span><span class="chip">⚡ 5 minutos</span><span class="chip">🎲 battle &amp; retos</span></div>
+    <p class="trust">Sin instalar · sin conexión · sin cuenta · la app está en DE/EN — guíate por los iconos</p>
+  </div>
+  <div lang="en" class="lang lang--en">
+    <div class="chips"><span class="chip">🧭 Modo hostal</span><span class="chip">⚡ 5 minutes</span><span class="chip">🎲 battle &amp; challenges</span></div>
+    <p class="trust">No install · works offline · no account · free</p>
+  </div>
+  <div lang="de" class="lang lang--de">
+    <div class="chips"><span class="chip">🧭 Modo hostal</span><span class="chip">⚡ 5 Minuten</span><span class="chip">🎲 Battle &amp; Challenges</span></div>
+    <p class="trust">Keine Installation · offline · kein Konto · kostenlos</p>
+  </div>
+
+</main>
+
+<script src="handout.js"></script>
+<script>
+  /* Poster für Hostels in Lateinamerika – Startsprache Español
+     (überschreibt die Browser-Erkennung). Manuelles Umschalten oben bleibt möglich. */
+  (function () {
+    var html = document.documentElement;
+    html.setAttribute("data-lang", "es");
+    html.setAttribute("lang", "es");
+    var bar = document.querySelector(".langbar");
+    if (bar) {
+      bar.querySelectorAll("button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.dataset.lang === "es"));
+      });
+    }
+  })();
+</script>
+</body>
+</html>
