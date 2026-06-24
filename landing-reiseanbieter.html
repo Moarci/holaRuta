@@ -570,6 +570,27 @@
       var onScroll = function () { header.classList.toggle("is-stuck", window.scrollY > 8); };
       onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
     }
+
+    // In-Page-Anker (Skip-Link #hero, Hero-CTA #kontakt) sollen sanft scrollen, aber
+    // KEINEN Hash in der Adresszeile hinterlassen – sonst trägt der native Teilen-
+    // Knopf des Browsers ihn mit und der geteilte Link landet auf #kontakt statt am
+    // Seitenanfang. Wir scrollen selbst, setzen den Fokus (Skip-Link-Verhalten) und
+    // halten die Adresszeile auf der kanonischen Landing-URL.
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        var id = a.getAttribute("href").slice(1);
+        if (!id) return;
+        var target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (err) { try { target.focus(); } catch (e2) {} }
+        if (window.history && history.replaceState) {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+      });
+    });
   })();
   </script>
 </body>
