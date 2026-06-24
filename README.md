@@ -4,12 +4,12 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.115.0** — 2293 Karten · 73 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Deutsch/Englisch umschaltbar** · **Arbeitsblätter** (druckfertig auf A4 oder **am Handy ausfüllbar** mit Selbstkontrolle) · **Mi léxico** (Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon, mit Stern direkt beim Lernen, auf Karten & im Spickzettel, plus eigenem Homescreen-Shortcut) · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Música** (Genres LatAms mit Spotify- & Apple-Music-Deep-Links) · **Juegos de viaje** (Hostel-Spiele: UNO, Truco, Dudo, Dominó & Co. — mit den Sätzen für den Tisch) · **Fotos & Videos** (bessere Reisebilder) · **Bailar** (Tanzen in LatAm: animierte Schritt-Diagramme, Rhythmus & Tutorial-Videos) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul & Ergebnis teilen** (Deep-Link öffnet Modul/Test direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · **Jerga colombiana** (Slang verstehen & mitreden: parce, chévere, una luca) · **Conoce tus derechos** (ruhig & sicher bei Kontrolle/Festnahme: Anwalt, Botschaft, nichts unterschreiben) · **Viaja responsable** (leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik) · **Coqueteo y romance** (flirten & daten mit Respekt) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · **¿Y esto?** (Bild raten mit 3-2-1-Countdown) · Spaced Repetition · Offline · Null Dependencies
+**v1.115.0** — 2293 Karten · 73 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Deutsch/Englisch umschaltbar** · **Arbeitsblätter** (druckfertig auf A4 oder **am Handy ausfüllbar** mit Selbstkontrolle) · **Mi léxico** (Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon, mit Stern direkt beim Lernen, auf Karten & im Spickzettel, plus eigenem Homescreen-Shortcut) · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Música** (Genres LatAms mit Spotify- & Apple-Music-Deep-Links) · **Juegos de viaje** (Hostel-Spiele: UNO, Truco, Dudo, Dominó & Co. — mit den Sätzen für den Tisch) · **Banderas** (Landesflaggen spielerisch lernen: Quiz, Galería & Wissen zu Flaggen) · **Fotos & Videos** (bessere Reisebilder) · **Bailar** (Tanzen in LatAm: animierte Schritt-Diagramme, Rhythmus & Tutorial-Videos) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul & Ergebnis teilen** (Deep-Link öffnet Modul/Test direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · **Jerga colombiana** (Slang verstehen & mitreden: parce, chévere, una luca) · **Conoce tus derechos** (ruhig & sicher bei Kontrolle/Festnahme: Anwalt, Botschaft, nichts unterschreiben) · **Viaja responsable** (leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik) · **Coqueteo y romance** (flirten & daten mit Respekt) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · Karten überspringen · Ruta del día · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · **¿Y esto?** (Bild raten mit 3-2-1-Countdown) · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-624_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-634_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -130,6 +130,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und mit 0 Runtime-
 | **Mehrsprachige UI** | Deutsch / Englisch 🌐 | Die komplette Oberfläche ist auf **Deutsch oder Englisch** umschaltbar (eigene i18n-Engine, `t()`-Lookups, Inhalte mit `de:`/`en:`-Feldern). Deutsch ist die Referenz, Englisch die erste Übersetzung; nicht übersetzte Inhalte und eigene Karten fallen sicher auf Deutsch zurück |
 | **Logística de viaje** | Clever & sicher ankommen 🧳 | Die praktischen Handgriffe, die kein Sprachkurs lehrt: **SIM-Karte (chip) kaufen & online sein**, **Geld wechseln und am cajero abheben** (ohne teure Umrechnung), **Geld & Wertsachen auf mehrere Gepäckstücke aufteilen**, das Gepäck per **Tracker (AirTag & Co.)** im Blick behalten, beim Fliegen das **Handgepäck-Notfallset** packen (Medikamente, Wechselwäsche, Hygiene, Powerbank, Dokumente) und in der Hochsaison **beliebte Hostels vorausplanen**. Pro Thema aufklappbare DOs & Don'ts, die passenden **Sätze als Karten** (es/de) und eine Packliste |
 | **Juegos de viaje** | Hostel-Spiele & die Sätze dazu 🎲 | Spiele sind der schnellste Weg, im Hostel Leute kennenzulernen — recherchiert wurde, was Reisende wirklich spielen: die **globalen Klassiker** (UNO, **Monopoly Deal**, **Presidente/Culo**) und die in Lateinamerika allgegenwärtigen Spiele (**Truco** in Argentinien/Uruguay, **Dudo/Perudo** in den Anden, **Cuarenta** in Ecuador, **Generala**, **Dominó** in der Karibik) plus die Spiele ganz ohne Material (**Yo nunca**, **Hombre lobo/Mafia**). Jedes Spiel kurz erklärt (aufklappbare „así se juega"-Schritte & Stolperfallen, dazu spanisches **Lesetraining** zur Spielkultur), die **Sätze für den Tisch als Karten** (*Te toca*, *¿Me explicas las reglas?*, *¡Dudo!*, *¿Otra ronda?*), ein **Glossar** (baraja, comodín, cubilete, ficha …) und ein **Spiele-Kit für den Rucksack**. Per Deep-Link (`?m=juegos`) direkt aufrufbar |
+| **Banderas** | Landesflaggen spielerisch lernen 🚩 | Die Flaggen Lateinamerikas und Spaniens als **interaktives Quiz**: eine große Flagge, „¿De qué país es esta bandera?", vier Länder zur Wahl — jede Antwort deckt **lehrreich** Farben, Symbolik und einen Merk-Fakt auf (Raten = Lernen). Spielbar nach Region (**Sudamérica**, **México/Centroamérica y el Caribe**) oder gemischt über alle **21 Länder**. Dazu eine **Galería** zum Durchblättern aller Flaggen und **Saber más** mit Wissen zu Flaggen insgesamt (Vexillologie, Farbbedeutungen, gemeinsame Symbole, verwechselbare Flaggen, Etikette, Emoji-Flaggen) plus Glossar, Sätzen zur Herkunft & Merk-Tricks. Zahlt auf den Ruta-Pass ein; **auch als Spieler im Hostel Mode** vorgezogen |
 | **Salud y energía** | Gesund & fit unterwegs 🥗 | Lange auf der Straße bleibt nur, wer auf den Körper achtet: **ausgewogen essen statt nur Streetfood** (Protein, Ballaststoffe, Vitamine), **Frühstück selbst machen** – Porridge mit Proteinpulver & Früchten ganz ohne Küche, **günstig & mit Geschmack trinken** (Zero-Sirup, Elektrolytpulver/suero), **Bauch & Verdauung**, **Sonne, Höhe & Mücken** und **in Bewegung bleiben**. Mit aufklappbaren DOs & Don'ts, den **Sätzen als Karten** fürs Einkaufen, Bestellen (*a la plancha, no frito*) und die Apotheke, sowie einem **Gesund-unterwegs-Kit** |
 | **Regatear** | Gut verhandeln 🤝 | Wie man auf Märkten freundlich feilscht: **Erklärung** der Taktik in 4 Blöcken (Grundhaltung, Verhandlung führen, Abschluss & Weggehen, Taxi/Touren), **Glossar** der Feilsch-Wörter (*regatear, la rebaja, precio fijo, la yapa*), die **wichtigsten Sätze** nach Phasen (*¿A cuánto la unidad?*, *¿Cuánto es lo menos?*, *Trato hecho*, *¿Tiene cambio?*), **Mengen & Einheiten** (unidad, docena, par, libra, kilo, litro, manojo …), **regionale Unterschiede** (México, Guatemala, Perú/Bolivia, Colombia, Argentina, Costa Rica, Cuba) und vier **Rollenspiele** zum lauten Üben (Obst & Gemüse, Souvenir feilschen, erst suchen dann handeln, Taxipreis aushandeln) |
 | **Touch + Tastatur** | Vollständige Bedienung | Wischgesten (←/↑/→), Tasten 1/2/3/Space/p, Haptik-Feedback wo verfügbar |
@@ -222,6 +223,7 @@ SpanischCard/
 ├── flirt.js       SC.flirt      # Coqueteo y romance: flirten & daten mit Respekt, Konsens, Sicherheit (REINE DATEN)
 ├── musica.js      SC.musica     # Música: LatAm-Genres + Spotify/Apple-Deep-Links, Landes-Sound (REINE DATEN)
 ├── juegos.js      SC.juegos     # Juegos de viaje: Hostel-Spiele (UNO, Truco, Dudo …) + Sätze für den Tisch (REINE DATEN)
+├── banderas.js    SC.banderas   # Banderas: Flaggen-Daten je Land (Quiz/Galería) + Info-Sheet (REINE DATEN)
 │
 ├── srs.js         SC.srs        # Spaced Repetition (SM-2) — REINE FUNKTIONEN
 ├── matcher.js     SC.matcher    # Antwortprüfung, akzent-/satzzeichen-tolerant — REINE FUNKTIONEN
@@ -257,6 +259,7 @@ SpanischCard/
 │   ├── precios.js       SC.precios      # Precios al oído (Preis-Hörtrainer)
 │   ├── yesto-game.js    SC.yestoGame    # ¿Y esto? (Bild-Vokabel-Spiel)
 │   ├── frases-game.js   SC.frasesGame   # Frases flexibles (Satzbaukasten)
+│   ├── banderas-game.js SC.banderasGame # Banderas (Flaggen-Quiz · Galería · Saber más)
 │   ├── conjugador.js    SC.conjugDrill  # Conjugador-Drill
 │   ├── tiempos.js       SC.tiempos      # Tiempos (Zeitformen-Erklärseite)
 │   ├── regateo.js       SC.regateo      # Regatear (Verhandeln/Feilschen)
@@ -272,7 +275,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 624 Tests in 57 Dateien (node:test, keine Dependencies)
+├── test/                        # 634 Tests in 58 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -401,7 +404,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 | `spanischcard.progress.v2` | Lernfortschritt pro Karte (SRS-Zustand + Statistik-Felder) |
 | `spanischcard.settings.v1` | Einstellungen (Modus, Richtung, Stufen-Filter, Share-Format, Theme, letzte Kategorie, Einstellungs-Panel auf/zu) |
 | `spanischcard.usercards.v1` | Vom Nutzer angelegte eigene Karten |
-| `spanischcard.gamestats.v1` | Ruta-Pass: Spiel-Zähler (Streak, Tageszeit-Marken, „Nochmal“, Hostel-Mode-Battles & -Rollenspiele, Definiciones-Quizze, Hör-Reviews, Precios- & Frases-Runden, Ruta-del-día-Tage, geöffnete Reise-Kontexte) + freigeschaltete Badges |
+| `spanischcard.gamestats.v1` | Ruta-Pass: Spiel-Zähler (Streak, Tageszeit-Marken, „Nochmal“, Hostel-Mode-Battles & -Rollenspiele, Definiciones-Quizze, Hör-Reviews, Precios-, Frases- & Banderas-Runden, Ruta-del-día-Tage, geöffnete Reise-Kontexte) + freigeschaltete Badges |
 
 ### Karte
 
@@ -475,7 +478,7 @@ progress + gamestats  →  buildMetrics()  →  metrics  →  evaluate()  →  S
 | `categoryMastery` | ≥ 80 % der Karten eines Bereichs gemeistert |
 | `allReviewed` | Alle Karten mindestens einmal gelernt |
 
-**Gruppen:** Lernreise (Lernmenge), Dranbleiben (Streak), Bereiche (je Kategorie ein Stempel — inkl. **Hostel** & **Social**), **Reise-Kontext** (geöffnete 🧭-Kontexte: *Erster Aha-Moment* → *Kontext-Kompass* → *Real-Life Ready*), **Hostel Mode** (Battle & Rollenspiele), **Definiciones** (abgeschlossene & fehlerfreie Zuordnen-Quizze), **Mutproben** (Real-Life Challenges) und Spezial (inkl. **Geheim-Stempel**, die erst nach Freischaltung sichtbar werden).
+**Gruppen:** Lernreise (Lernmenge), Dranbleiben (Streak), Bereiche (je Kategorie ein Stempel — inkl. **Hostel** & **Social**), **Reise-Kontext** (geöffnete 🧭-Kontexte: *Erster Aha-Moment* → *Kontext-Kompass* → *Real-Life Ready*), **Hostel Mode** (Battle & Rollenspiele), **Definiciones** (abgeschlossene & fehlerfreie Zuordnen-Quizze), **Banderas** (abgeschlossene & fehlerfreie Flaggen-Quizze), **Mutproben** (Real-Life Challenges) und Spezial (inkl. **Geheim-Stempel**, die erst nach Freischaltung sichtbar werden).
 
 Der **Hostel Mode** zahlt direkt auf den Pass ein: ein beendetes Battle schaltet *First Duel* frei, ein klarer Sieg *Dorm Champion*, eine fehlerfreie Partie *Perfect Check-in*, ein Sieg nach Rückstand *Comeback Kid*; gespielte Rollenspiele füllen *First Scene* und *Scene Collector*. Hakst du die **Real-Life Challenge** nach einem Battle als „geschafft“ ab, zahlt das auf *Mutiger erster Satz*, *Comfort Zone Exit* und *Straßen-Spanisch* ein (47 Challenges im Pool). Gezählt wird in denselben `gamestats` (battlesPlayed/-Won/perfect/comebacks, distinkte Rollenspiele & Challenges).
 
@@ -555,8 +558,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 624
-#  ℹ pass 624
+#  ℹ tests 634
+#  ℹ pass 634
 #  ℹ fail 0
 ```
 
@@ -587,7 +590,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 51 (`SC.*`) |
-| Tests | 624 (alle grün) |
+| Tests | 634 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

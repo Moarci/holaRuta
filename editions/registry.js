@@ -68,7 +68,7 @@
       teacherTab: false,
       hostel: {
         banner: true,
-        featured: ["open-hostel", "open-juegos", "open-flirt", "open-knigge", "open-dialogos", "open-bailar"],
+        featured: ["open-hostel", "open-juegos", "open-banderas", "open-flirt", "open-knigge", "open-dialogos", "open-bailar"],
       },
     },
   };

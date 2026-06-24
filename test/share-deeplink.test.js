@@ -80,6 +80,39 @@ test("Jede Reise-Tipps-Kategorie (TIPS_META) ist per ?m= deeplinkbar", () => {
   }
 });
 
+// shareModule() reicht den MODULE_SHARE-Schlüssel als moduleSlug (Variable id)
+// durch – diese Slugs entgehen literalModuleSlugs(). Daher hier separat: jeder
+// teilbare Modul-Slug MUSS einen Opener haben, sonst landet der geteilte
+// „Modul teilen"-Link still auf der Startseite.
+test("Jedes teilbare Modul (MODULE_SHARE) ist per ?m= deeplinkbar", () => {
+  const mods = objectKeys("const MODULE_SHARE = {");
+  assert.ok(mods.length > 0, "MODULE_SHARE: keine Module gefunden");
+  for (const id of mods) {
+    assert.ok(openerSlugs.has(id),
+      `Modul "${id}" ist teilbar (MODULE_SHARE), aber ?m=${id} hat keinen Opener – führt auf Home`);
+  }
+});
+
+// shareTips() löst die Quelle der Themen über einen cat===-Switch auf. Fehlt der
+// Zweig, liefert shareTips() still null (kein Bild), obwohl der Knopf erscheint.
+test("Jede TIPS_META-Kategorie hat einen Quell-Zweig in shareTips()", () => {
+  const cats = objectKeys("const TIPS_META = {");
+  for (const cat of cats) {
+    assert.ok(appjs.includes(`cat === "${cat}"`),
+      `TIPS_META "${cat}" hat keinen \`cat === "${cat}"\`-Zweig in shareTips() – Teilen liefert kein Bild`);
+  }
+});
+
+// moduleShareLines() füllt die Highlight-Zeilen je Modul über einen case-Switch.
+// Ohne case fällt es auf [] zurück → ein leeres, lieblos wirkendes Sharepic.
+test("Jedes MODULE_SHARE-Modul hat einen case in moduleShareLines()", () => {
+  const mods = objectKeys("const MODULE_SHARE = {");
+  for (const id of mods) {
+    assert.ok(appjs.includes(`case "${id}":`),
+      `MODULE_SHARE "${id}" hat keinen \`case "${id}":\` in moduleShareLines() – Sharepic bliebe ohne Highlights`);
+  }
+});
+
 // Sicherheits-Regressionsschutz (CodeQL js/unvalidated-dynamic-method-call):
 // Der Deep-Link-Router darf einen URL-gesteuerten Slug NICHT als dynamischen
 // Methoden-Lookup-Namen verwenden – sonst träfe z. B. ?m=toString / ?a=constructor

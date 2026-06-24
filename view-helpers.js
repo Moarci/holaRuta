@@ -365,7 +365,7 @@
     return `
       <section class="screen">
         <div class="topbar">
-          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <button class="iconbtn" data-action="${esc(cfg.back || "home")}" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${cfg.icon} ${esc(cfg.title)}</div>
           <span></span>
         </div>

@@ -23,6 +23,7 @@
   const jergaSheet = window.SC.jergaSheet; // Feature-Modul (Jerga colombiana / Slang), eager geladen
   const derechosSheet = window.SC.derechosSheet; // Feature-Modul (Conoce tus derechos), eager geladen
   const responsableSheet = window.SC.responsableSheet; // Feature-Modul (Viaja responsable), eager geladen
+  const banderasGame = window.SC.banderasGame; // Feature-Modul (Banderas, Flaggen-Quiz & Galería), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
   const badges = window.SC.badges || null; // optional – Badge-System ("Ruta-Pass")
@@ -47,6 +48,7 @@
   const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
   const musica = window.SC.musica || null;       // Música: Genres LatAm + Spotify/Apple-Deep-Links (optional)
   const juegos = window.SC.juegos || null;       // Juegos de viaje: Hostel-Spiele + Sätze für den Tisch (optional)
+  const banderas = window.SC.banderas || null;   // Banderas: Flaggen-Daten je Land (Quiz/Galería) + Info-Sheet (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
   const yesto = window.SC.yesto || null;         // „¿Y esto?“: Bild-Vokabel-Modus mit Countdown (optional)
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
@@ -504,6 +506,7 @@
       hasBailar: !!bailar,       // Bailar (Tanzen in LatAm, Schritt-Diagramme)
       hasMusica: !!musica,       // Música (Genres LatAm + Spotify/Apple-Links)
       hasJuegos: !!juegos,       // Juegos de viaje (Hostel-Spiele + Sätze)
+      hasBanderas: !!(banderasGame && banderasGame.ready && banderasGame.ready()), // Banderas (Flaggen-Quiz)
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
 
@@ -2036,6 +2039,8 @@
     roleplay: "roleplaySetup",
     precios: "preciosSetup", preciosDone: "preciosSetup",
     frases: "frasesSetup", frasesDone: "frasesSetup",
+    banderas: "banderasSetup", banderasDone: "banderasSetup",
+    banderasGaleria: "banderasSetup", banderasInfo: "banderasSetup",
     conjug: "conjugSetup", conjugDone: "conjugSetup",
     yesto: "yestoSetup", yestoDone: "yestoSetup",
     dialogos: "dialogosSetup", dialogosDone: "dialogosSetup",
@@ -2239,6 +2244,11 @@
       "frasesSetup": () => frasesGame.setupScreen(),
       "frases": () => frasesGame.playScreen(),
       "frasesDone": () => frasesGame.doneScreen(),
+      "banderasSetup": () => banderasGame.setupScreen(),
+      "banderas": () => banderasGame.playScreen(),
+      "banderasDone": () => banderasGame.doneScreen(),
+      "banderasGaleria": () => banderasGame.galleryScreen(),
+      "banderasInfo": () => banderasGame.infoScreen(),
       "conjugSetup": () => conjugDrill.setupScreen(),
       "conjug": () => conjugDrill.playScreen(),
       "conjugDone": () => conjugDrill.doneScreen(),
@@ -2363,7 +2373,7 @@
   const MINI_DONE_SCREENS = {
     quizDone: true, preciosDone: true, frasesDone: true,
     conjugDone: true, dialogosDone: true, comprasQuizDone: true,
-    yestoDone: true,
+    yestoDone: true, banderasDone: true,
   };
   function miniResult(vm, scope, mode) {
     const total = Math.max(0, vm.total || 0);
@@ -2400,6 +2410,14 @@
       return { result: miniResult(vm, vm.setLabel, "frases"), opts: {
         primaryLabel: t("discover.quizAgain"), onPrimary: frasesGame.again,
         secondaryLabel: t("discover.frasesOther"), onSecondary: frasesGame.open,
+        tertiaryLabel: t("common.overview"), onTertiary: goHome,
+      } };
+    }
+    if (screen === "banderasDone") {
+      const vm = banderasGame.doneVM();
+      return { result: miniResult(vm, vm.setLabel, "quiz"), opts: {
+        primaryLabel: t("discover.quizAgain"), onPrimary: banderasGame.again,
+        secondaryLabel: t("discover.bndOtherRound"), onSecondary: banderasGame.open,
         tertiaryLabel: t("common.overview"), onTertiary: goHome,
       } };
     }
@@ -5786,6 +5804,23 @@
     pageMod(flirt, "💘", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
     pageMod(juegos, "🎲", "Juegos de viaje", "discover.subJuegos", "open-juegos");
 
+    // Banderas: Info-Seite UND die Länderdaten (Name/Farben/Symbolik/Fakt je Land)
+    // fließen in den Heuhaufen – so findet auch „Sol de Mayo“ oder „Bolivia bandera“
+    // das Modul. Ein Treffer öffnet den Banderas-Hub (Quiz · Galería · Saber más).
+    if (banderas) {
+      const topics = (banderas.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.tips, tp.tipsEn, tp.es, (tp.vocab || []).map((v) => [v.es, v.de, v.en])]);
+      const phrases = (banderas.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
+      const gloss = (banderas.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
+      const checklist = (banderas.CHECKLIST || []).map((c) => [c.item, c.itemEn, c.why, c.whyEn]);
+      const lands = (banderas.COUNTRIES || []).map((c) => [c.es, c.de, c.en, c.capital, c.colors, c.colorsEn, c.sym, c.symEn, c.fact, c.factEn]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "🚩", title: "Banderas", sub: t("discover.subBanderas"),
+        action: "open-banderas",
+        hay: searchHay(["banderas flaggen flags bandera país nacionalidad", banderas.INTRO, banderas.INTRO_EN, topics, phrases, gloss, checklist, lands]),
+      });
+    }
+
     // Bailar (Tanzen): eigener Indexer, weil die Tänze als DANCES (Feld „name")
     // statt als TOPICS strukturiert sind. Ein Treffer je Tanz bringt die ganze
     // Seite nach vorn (Schritte, Tipps und Lesetext fließen in den Heuhaufen).
@@ -6487,6 +6522,7 @@
     flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
     juegos:    { kicker: "Juegos de viaje",   icon: "🎲", accent: ["#C44536", "#2E7D9A"] },
+    banderas:  { kicker: "Banderas",          icon: "🚩", accent: ["#C0392B", "#2E6E86"] },
   };
 
   function shareTips(cat, idx) {
@@ -6502,6 +6538,7 @@
               : cat === "flirt" ? (flirt && flirt.TOPICS)
               : cat === "bailar" ? (bailar && bailar.DANCES)
               : cat === "juegos" ? (juegos && juegos.TOPICS)
+              : cat === "banderas" ? (banderas && banderas.TOPICS)
               : null;
     const meta = TIPS_META[cat];
     if (!src || !src[idx] || !meta) return;
@@ -6580,6 +6617,7 @@
     bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
     musica:        { icon: "🎵", title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
     juegos:        { icon: "🎲", title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
+    banderas:      { icon: "🚩", title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -6671,6 +6709,9 @@
         return cut((musicaVM().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
       case "juegos":
         return cut((juegosVM().topics || []).map((tp) => ({ mark: tp.icon || "🎲", text: tp.title })));
+      case "banderas":
+        // Visuelle Highlights: ein paar Flaggen mit Ländernamen (spanisch).
+        return cut((banderas ? banderas.COUNTRIES : []).map((c) => ({ mark: c.flag || "🚩", text: c.es })));
       default:
         return [];
     }
@@ -6892,6 +6933,13 @@
     "start-frases": (el) => { frasesGame.start(el.dataset.set); },
     "frases-answer": (el) => { frasesGame.answer(Number(el.dataset.idx)); },
     "frases-next": (el) => { frasesGame.next(); },
+    "open-banderas": (el) => { banderasGame.open(); },
+    "start-banderas": (el) => { banderasGame.start(el.dataset.set); },
+    "banderas-answer": (el) => { banderasGame.answer(el.dataset.id); },
+    "banderas-next": (el) => { banderasGame.next(); },
+    "banderas-again": (el) => { banderasGame.again(); },
+    "open-banderas-galeria": (el) => { banderasGame.gallery(); },
+    "open-banderas-info": (el) => { banderasGame.info(); },
     "open-conjug-drill": (el) => { conjugDrill.open(); },
     "conjug-level": (el) => { conjugDrill.setLevel(el.dataset.level); },
     "start-conjug": (el) => { conjugDrill.start(); },
@@ -7435,6 +7483,7 @@
       bailar: openBailar,
       musica: openMusica,
       juegos: openJuegos,
+      banderas: () => banderasGame.open(),
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
       // Einstufungs-Tests: ein geteiltes Ergebnis-Sharepic (Motiv „assessment“/
@@ -7542,7 +7591,7 @@
     // (loadModule: dialogos, historia, historiaCentro) liest das jeweilige Feature
     // selbst live über window.SC.* hinter einem …ready()-Guard, da sie zur init-
     // Zeit noch fehlen können.
-    countries, knigge, regatear, jerga, derechos, responsable,
+    countries, knigge, regatear, jerga, derechos, responsable, banderas,
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT, root, loadModule, navEpoch: () => navEpoch,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
@@ -7568,6 +7617,7 @@
   if (jergaSheet) jergaSheet.init(featureCtx);
   if (derechosSheet) derechosSheet.init(featureCtx);
   if (responsableSheet) responsableSheet.init(featureCtx);
+  if (banderasGame) banderasGame.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab

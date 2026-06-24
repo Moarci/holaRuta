@@ -34,6 +34,7 @@ const EXPECT = {
   quiz_first: 1, quiz_10: 10, quiz_perfect: 1,
   yesto_first: 1, yesto_10: 10, yesto_perfect: 1,
   frases_first: 1, frases_10: 10, frases_perfect: 1, frases_themes: 7,
+  banderas_first: 1, banderas_10: 10, banderas_perfect: 1, banderas_sets: 3,
   listen_first: 1, listen_25: 25, precios_first: 1, precios_perfect: 1, precios_millon: 1,
   challenge_first: 1, challenge_5: 5, challenge_10: 10,
   cuerpo_first: 1, cuerpo_10: 10, cuerpo_all: 20,
@@ -61,6 +62,9 @@ test("evaluate: flag-Badges brauchen das Flag (nightOwl/earlyBird)", () => {
   assert.equal(find(off, "night_owl").satisfied, false);
   assert.equal(find(on, "early_bird").satisfied, true);
   assert.equal(find(off, "early_bird").satisfied, false);
+  // Beide sind Geheim-Stempel (secret: true) – wird in der UI als „???" verdeckt.
+  assert.equal(find(on, "night_owl").secret, true, "night_owl ist ein Geheim-Badge");
+  assert.equal(find(on, "early_bird").secret, true, "early_bird ist ein Geheim-Badge");
 });
 
 test("evaluate: allReviewed schaltet erst frei, wenn ALLE Karten gesehen", () => {
@@ -76,6 +80,8 @@ test("evaluate: categoryMastery braucht Kategorie-Karten UND >= 0.8", () => {
   assert.equal(find(badges.evaluate(m(0.8, 10)), "cat_basics").satisfied, true);
   // keine Karten der Kategorie -> nie erfüllt, auch bei 100 %
   assert.equal(find(badges.evaluate(m(1, 0)), "cat_basics").satisfied, false);
+  // categoryTotals fehlt ganz (kein Objekt) -> Fallback 0, nie erfüllt
+  assert.equal(find(badges.evaluate({ categoryMastery: { basics: 1 } }), "cat_basics").satisfied, false);
 });
 
 test("evaluate: progress-Balken 0..1 und unlocked bleibt über die unlocked-Map erhalten", () => {
