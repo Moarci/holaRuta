@@ -42,8 +42,47 @@
     "processed and roasted, then the regions – and finally the phrases to visit a " +
     "farm, order good coffee and take beans home with you.";
 
-  // ---------- Themen: Anbau, Ernte, Verarbeitung, Regionen … (aufklappbar) ----------
+  // ---------- Themen: Geschichte, Anbau, Schädlinge, Verarbeitung … (aufklappbar) ----------
   const TOPICS = [
+    {
+      icon: "📜",
+      title: "Geschichte: wann der Kaffee kam",
+      titleEn: "History: when coffee arrived",
+      intro: "Kaffee ist kein heimisches Gewächs: Er kam erst im 18. Jahrhundert über die Kolonialmächte nach Lateinamerika – in Kolumbien überliefert ab den 1730er-Jahren, oft über Missionare. Im 19. Jahrhundert wurde er zum wichtigsten Exportgut: Er besiedelte die Berge (in Kolumbien die „colonización antioqueña“), finanzierte Eisenbahnen, Häfen und ganze Städte und prägte in Mittelamerika die „Kaffeerepubliken“. Heute ist er Identität – das kolumbianische Paisaje Cultural Cafetero ist seit 2011 UNESCO-Welterbe und sichert Hunderttausenden Familien das Einkommen.",
+      introEn: "Coffee isn't native: it only arrived in Latin America in the 18th century with the colonial powers – recorded in Colombia from the 1730s, often via missionaries. In the 19th century it became the leading export: it settled the mountains (in Colombia the „colonización antioqueña“), funded railways, ports and whole cities, and shaped the „coffee republics“ of Central America. Today it's identity – Colombia's Paisaje Cultural Cafetero has been a UNESCO World Heritage Site since 2011 and supports hundreds of thousands of families.",
+      dos: [
+        "Ein Kaffeemuseum oder den Parque del Café (Quindío) besuchen, um die Geschichte zu verstehen.",
+        "Nach der Geschichte der Finca fragen – viele sind seit Generationen in Familienhand.",
+        "Die Figur „Juan Valdez“ als Marketing der Kaffeebauern-Föderation (seit 1959) einordnen.",
+      ],
+      dosEn: [
+        "Visit a coffee museum or the Parque del Café (Quindío) to understand the history.",
+        "Ask about the farm's history – many have been family-owned for generations.",
+        "Place the „Juan Valdez“ figure as marketing by the growers' federation (since 1959).",
+      ],
+      donts: [
+        "Die Kaffeegeschichte nicht romantisieren – sie ist auch eine Geschichte ungleicher Landverteilung und harter Arbeit.",
+        "Nicht denken, Kaffee sei „schon immer“ hier gewesen – er ist eine koloniale Einführung.",
+      ],
+      dontsEn: [
+        "Don't romanticise the history – it's also one of unequal land ownership and hard labour.",
+        "Don't think coffee was „always“ here – it's a colonial introduction.",
+      ],
+      es: [
+        "El café no es nativo: llegó en el siglo *dieciocho* con las potencias *coloniales* y se volvió el principal producto de *exportación*.",
+        "En el siglo *diecinueve* el café pobló las *montañas*, financió ferrocarriles y *ciudades*, y hoy es parte de la *identidad* de la región.",
+      ],
+      vocab: [
+        { es: "dieciocho", de: "achtzehn (18.)", en: "eighteen (18th)", take: false },
+        { es: "coloniales", de: "kolonial (colonial)", en: "colonial", take: true },
+        { es: "exportación", de: "der Export", en: "export", take: true },
+        { es: "diecinueve", de: "neunzehn (19.)", en: "nineteen (19th)", take: false },
+        { es: "montañas", de: "die Berge (montaña)", en: "mountains (montaña)", take: true },
+        { es: "ciudades", de: "die Städte (ciudad)", en: "cities (ciudad)", take: true },
+        { es: "identidad", de: "die Identität", en: "identity", take: true },
+      ],
+      level: "B1",
+    },
     {
       icon: "🌱",
       title: "Wie Kaffee wächst",
@@ -81,6 +120,43 @@
         { es: "bajo sombra", de: "im Schatten (angebaut)", en: "shade-grown", take: false },
       ],
       level: "A2",
+    },
+    {
+      icon: "🐛",
+      title: "Schädlinge & Krankheiten",
+      titleEn: "Pests & diseases",
+      intro: "Der Anbau ist verletzlich. Der gefürchtetste Schädling ist die „broca del café“ (Kaffeekirschenkäfer) – ein winziger Käfer, der in die Bohne bohrt. Er stammt aus Afrika, tauchte in Amerika zuerst in Brasilien auf (um 1913) und breitete sich von dort über den ganzen Kontinent aus. Dazu kommt der Pilz „la roya“ (Kaffeerost): Sein großer Ausbruch 2012/13 vernichtete in Mittelamerika riesige Ernten. Die Klimaerwärmung lässt beide in immer höhere Lagen vordringen.",
+      introEn: "Growing coffee is fragile. The most feared pest is the „broca del café“ (coffee berry borer) – a tiny beetle that bores into the bean. Native to Africa, it first appeared in the Americas in Brazil (around 1913) and spread from there across the continent. On top of that comes the fungus „la roya“ (coffee leaf rust): its big 2012/13 outbreak wiped out huge harvests in Central America. A warming climate lets both climb to ever higher elevations.",
+      dos: [
+        "Auf der Finca nach broca, roya und resistenten Sorten (z. B. Castillo, Lempira) fragen.",
+        "Verstehen, dass Schatten, Fallen und genaues Monitoring helfen, Gift zu sparen.",
+      ],
+      dosEn: [
+        "On the farm, ask about broca, roya and resistant varieties (e.g. Castillo, Lempira).",
+        "Understand that shade, traps and close monitoring help cut down on chemicals.",
+      ],
+      donts: [
+        "Schädlinge nicht unterschätzen – ein Befall kann eine ganze Ernte kosten.",
+        "Nicht erwarten, dass es „die eine“ Lösung gibt – es ist ein ständiger Kampf, verschärft durchs Klima.",
+      ],
+      dontsEn: [
+        "Don't underestimate the pests – an infestation can cost an entire harvest.",
+        "Don't expect „one“ solution – it's a constant fight, made worse by the climate.",
+      ],
+      es: [
+        "La *broca* es un escarabajo que perfora el *grano*; llegó a América por *Brasil* y se extendió por todo el continente.",
+        "El hongo de la *roya* arruinó *cosechas* enteras; con el *clima* más cálido, las *plagas* suben a mayor altura.",
+      ],
+      vocab: [
+        { es: "broca", de: "der Kaffeekäfer (broca)", en: "coffee borer beetle (broca)", take: true },
+        { es: "grano", de: "die Bohne / das Korn", en: "bean", take: true },
+        { es: "Brasil", de: "Brasilien", en: "Brazil", take: false },
+        { es: "roya", de: "der Kaffeerost (Pilz)", en: "coffee leaf rust (fungus)", take: true },
+        { es: "cosechas", de: "die Ernten (cosecha)", en: "harvests (cosecha)", take: true },
+        { es: "clima", de: "das Klima", en: "climate", take: true },
+        { es: "plagas", de: "die Schädlinge (plaga)", en: "pests (plaga)", take: true },
+      ],
+      level: "B2",
     },
     {
       icon: "🍒",
@@ -232,6 +308,42 @@
       level: "B1",
     },
     {
+      icon: "📦",
+      title: "Export & was im Land bleibt",
+      titleEn: "Export & what stays in the country",
+      intro: "Lange galt: Der beste Kaffee geht in den Export, im Land bleibt oft die zweite Wahl. Die aussortierten, beschädigten Bohnen heißen in Kolumbien „pasilla“ – aus ihnen wurde traditionell der einfache, dünne „tinto“, den man mit viel Zucker trank. Genau deshalb schmeckt der Standardkaffee vor Ort manchmal schwächer, als man es vom Ruf des Landes erwartet. Erst die Spezialitätenwelle der letzten Jahre bringt guten Kaffee zunehmend auch in die Cafés der Anbauländer selbst („consumo interno“).",
+      introEn: "For a long time the rule was: the best coffee goes to export, while the second choice often stays in the country. The sorted-out, damaged beans are called „pasilla“ in Colombia – traditionally they became the simple, thin „tinto“ people drank with lots of sugar. That's exactly why the standard local coffee can taste weaker than the country's reputation suggests. Only the specialty wave of recent years is bringing good coffee into the cafés of the producing countries themselves („consumo interno“).",
+      dos: [
+        "In Spezialitätencafés gezielt nach lokalem Spitzenkaffee fragen – er bleibt heute öfter im Land.",
+        "Den einfachen „tinto“ an der Straße als Teil der Kultur genießen – aber wissen, woher er kommt.",
+      ],
+      dosEn: [
+        "In specialty cafés, ask specifically for top local coffee – more of it stays in-country today.",
+        "Enjoy the simple street „tinto“ as part of the culture – but know where it comes from.",
+      ],
+      donts: [
+        "Nicht überrascht sein, wenn der Standardkaffee schwächer schmeckt – die Top-Lose gehen oft in den Export.",
+        "Pasilla nicht mit „schlechtem Land“ gleichsetzen – es ist eine Frage von Sortierung und Markt, nicht von schlechtem Anbau.",
+      ],
+      dontsEn: [
+        "Don't be surprised if the standard coffee tastes weaker – the top lots often go to export.",
+        "Don't equate pasilla with „a bad country“ – it's about sorting and markets, not poor growing.",
+      ],
+      es: [
+        "Tradicionalmente, el mejor café se va a la *exportación* y en el país queda la *pasilla*: el grano de segunda.",
+        "Con esa pasilla se hacía el *tinto* sencillo con mucha *azúcar*; hoy el café de *especialidad* se queda más en el *país*.",
+      ],
+      vocab: [
+        { es: "exportación", de: "der Export", en: "export", take: true },
+        { es: "pasilla", de: "der Ausschuss-/Restkaffee (CO)", en: "off-grade beans (CO)", take: true },
+        { es: "tinto", de: "schwarzer Filterkaffee (CO)", en: "black filter coffee (CO)", take: true },
+        { es: "azúcar", de: "der Zucker", en: "sugar", take: true },
+        { es: "especialidad", de: "die Spezialität", en: "specialty", take: true },
+        { es: "país", de: "das Land", en: "country", take: true },
+      ],
+      level: "B1",
+    },
+    {
       icon: "🧑‍🌾",
       title: "Eine Finca besuchen",
       titleEn: "Visiting a coffee farm",
@@ -367,6 +479,19 @@
         { es: "Me llevo una libra, por favor.", de: "Ich nehme ein Pfund, bitte.", en: "I'll take a pound, please." },
       ],
     },
+    {
+      id: "historia",
+      icon: "📜",
+      title: "Geschichte, Schädlinge & Qualität",
+      titleEn: "History, pests & quality",
+      items: [
+        { es: "¿Desde cuándo cultiva café esta finca?", de: "Seit wann baut diese Finca Kaffee an?", en: "How long has this farm grown coffee?" },
+        { es: "¿La finca es de la familia desde hace generaciones?", de: "Ist die Finca seit Generationen in Familienhand?", en: "Has the farm been in the family for generations?" },
+        { es: "¿Han tenido problemas con la broca o la roya?", de: "Hattet ihr Probleme mit dem Käfer (broca) oder dem Rost (roya)?", en: "Have you had problems with the borer (broca) or rust (roya)?" },
+        { es: "¿Este café es de exportación o se queda en el país?", de: "Ist das Exportkaffee oder bleibt er im Land?", en: "Is this export coffee or does it stay in the country?" },
+        { es: "¿Qué le pasa al café que no se exporta?", de: "Was passiert mit dem Kaffee, der nicht exportiert wird?", en: "What happens to the coffee that isn't exported?" },
+      ],
+    },
   ];
 
   // ---------- Schlüsselwörter rund um Kaffee & Anbau ----------
@@ -398,6 +523,13 @@
     { es: "el comercio justo", de: "der faire Handel", en: "fair trade" },
     { es: "en grano", de: "als ganze Bohne", en: "whole bean" },
     { es: "molido", de: "gemahlen", en: "ground" },
+    { es: "la exportación", de: "der Export", en: "the export" },
+    { es: "la pasilla", de: "der Ausschuss-/Restkaffee (CO)", en: "off-grade / reject beans (CO)" },
+    { es: "el consumo interno", de: "der Inlandsverbrauch", en: "domestic consumption" },
+    { es: "la broca", de: "der Kaffeekirschenkäfer", en: "the coffee berry borer" },
+    { es: "la roya", de: "der Kaffeerost (Pilzkrankheit)", en: "coffee leaf rust (fungal disease)" },
+    { es: "la plaga", de: "der Schädling / die Plage", en: "the pest / plague" },
+    { es: "el patrimonio cafetero", de: "das Kaffee-Kulturerbe", en: "coffee cultural heritage" },
   ];
 
   // ---------- „Finca-Besuch-Kit“ (Packliste für die Kaffeetour) ----------
