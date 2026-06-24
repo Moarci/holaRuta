@@ -6522,6 +6522,7 @@
     flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
     juegos:    { kicker: "Juegos de viaje",   icon: "🎲", accent: ["#C44536", "#2E7D9A"] },
+    banderas:  { kicker: "Banderas",          icon: "🚩", accent: ["#C0392B", "#2E6E86"] },
   };
 
   function shareTips(cat, idx) {
@@ -6537,6 +6538,7 @@
               : cat === "flirt" ? (flirt && flirt.TOPICS)
               : cat === "bailar" ? (bailar && bailar.DANCES)
               : cat === "juegos" ? (juegos && juegos.TOPICS)
+              : cat === "banderas" ? (banderas && banderas.TOPICS)
               : null;
     const meta = TIPS_META[cat];
     if (!src || !src[idx] || !meta) return;
@@ -6615,6 +6617,7 @@
     bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
     musica:        { icon: "🎵", title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
     juegos:        { icon: "🎲", title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
+    banderas:      { icon: "🚩", title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -6706,6 +6709,9 @@
         return cut((musicaVM().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
       case "juegos":
         return cut((juegosVM().topics || []).map((tp) => ({ mark: tp.icon || "🎲", text: tp.title })));
+      case "banderas":
+        // Visuelle Highlights: ein paar Flaggen mit Ländernamen (spanisch).
+        return cut((banderas ? banderas.COUNTRIES : []).map((c) => ({ mark: c.flag || "🚩", text: c.es })));
       default:
         return [];
     }

@@ -312,10 +312,13 @@
       </section>`;
   }
 
-  // Saber más: das gemeinsame Info-Modul-Blatt. Kein cat → kein Sharepic-Knopf.
+  // Saber más: das gemeinsame Info-Modul-Blatt. cat:"banderas" schaltet die
+  // Sharepic-Knöpfe frei (ganzes Modul + je Thema) und nutzt den Banderas-
+  // Namespace für Satz-Favoriten; Deep-Link & Sharepic-Register sind in app.js
+  // (MODULE_SHARE/TIPS_META/openers) gepflegt.
   function renderInfo() {
     return moduleSheet(infoVM(), {
-      icon: "📚", title: t("discover.bndSaberMas"),
+      icon: "📚", title: t("discover.bndSaberMas"), cat: "banderas",
       headTips: "discover.bnTips", headPhrases: "discover.bnPhrases", headWords: "discover.bnWords",
       headChecklist: "discover.bnChecklist", headChecklistHint: "discover.bnChecklistHint",
       readingPerTopic: true, copyPhrases: true, favPhrases: true,
