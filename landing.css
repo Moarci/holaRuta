@@ -837,4 +837,5 @@ a { color: var(--brand-ink); }
   .lp-step:hover, .lp-step.is-active { transform: none !important; }
   .lp-step:hover .lp-step__num, .lp-step.is-active .lp-step__num { transform: rotate(-5deg) !important; }
   .lp-audchip { transition: none !important; }
+  .lp-herocard__pill { transition: none !important; }
 }

@@ -204,6 +204,9 @@ function buildDist() {
     "docs/anleitungen/handout.js",
     "docs/anleitungen/qr-holaruta.svg",
     "docs/pitch/weroad-colombia.html",
+    // SEO: Sitemap + robots (von Landing/Suche referenziert, bewusst nicht im Precache).
+    "sitemap.xml",
+    "robots.txt",
   ]) {
     const p = path.join(DIR, extra);
     if (fs.existsSync(p)) { writeDist(DIST, extra, fs.readFileSync(p)); copied.push(extra); }

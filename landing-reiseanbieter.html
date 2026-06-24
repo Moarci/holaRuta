@@ -16,6 +16,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HolaRuta" />
   <meta property="og:locale" content="de_DE" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="es_ES" />
   <meta property="og:url" content="https://moarci.github.io/holaRuta/landing-reiseanbieter.html" />
   <meta property="og:title" content="HolaRuta für Reiseanbieter – der Travel-Language-Companion für Gruppen" />
   <meta property="og:description" content="Pre-Trip-Engagement, Social-Icebreaker und Sicherheit unterwegs. Reisende üben die wichtigsten lokalen Sätze – offline, in eurem Branding." />
@@ -474,7 +476,7 @@
         "card.p2.q": "¿Jugamos una ronda?", "card.p2.tr": "«¿Jugamos una ronda?» – battles de grupo que rompen el hielo el primer día.",
         "card.p3.q": "Necesito un médico.", "card.p3.tr": "«Necesito un médico.» – las frases que cuentan cuando la cosa se pone seria.",
         "use.eyebrow": "CALIDAD DE VIAJE, NO VOCABULARIO", "use.title": "Sentirse más seguro, vivir más lo local, unirse mejor.",
-        "use.lead": "Vuestros participantes no reservan una escuela – quieren sentirse menos perdidos. HolaRuta refuerza el núcleo de vuestra marca: grupos pequeños, comunidad, vibra.",
+        "use.lead": "Tus participantes no reservan una escuela – quieren sentirse menos perdidos. HolaRuta refuerza el núcleo de tu marca: grupos pequeños, comunidad, vibra.",
         "use.1.k": "Engagement pre-viaje", "use.1.t": "La ilusión se convierte en app.", "use.1.b": "Un plan pre-viaje de varios días pone al grupo en marcha antes de salir: día 1 saludos, día 5 rompehielos. Vuestro viaje empieza dos semanas antes.",
         "use.2.k": "Rompehielos social", "use.2.t": "Un toque inicia el juego de grupo.", "use.2.b": "El modo coordinador da al guía un juego de grupo de 5 minutos listo – batallas, misiones, risas. Los compañeros de viaje se vuelven un grupo.",
         "use.3.k": "Seguridad e inmersión local", "use.3.t": "Frases de emergencia y orientación – sin conexión.", "use.3.b": "Taxi, comida, dinero, emergencias: las frases clave funcionan incluso sin red en el bus nocturno. Los participantes se atreven a pedir solos – y se sienten más seguros.",
@@ -490,11 +492,11 @@
         "price.p3.tag": "Por plaza", "price.p3.price": "0,50–2,00 $", "price.p3.l1": "Facturación por participante", "price.p3.l2": "Tiene sentido solo con volumen", "price.p3.l3": "Combinable con licencia anual",
         "price.note": "Para WeRoad Colombia ya hay una propuesta elaborada con mapeo ruta↔contenido, modelo de 3 fases y plan de 7 días.",
         "faq.title": "Preguntas frecuentes de agencias",
-        "faq.q1": "¿Es un curso de idiomas?", "faq.a1": "No. HolaRuta es un compañero de idioma de viaje: sin lecciones de gramática, solo las pocas frases que vuestros viajeros necesitan al instante sobre el terreno – más actividades de grupo.",
+        "faq.q1": "¿Es un curso de idiomas?", "faq.a1": "No. HolaRuta es un compañero de idioma de viaje: sin lecciones de gramática, solo las pocas frases que tus viajeros necesitan al instante sobre el terreno – más actividades de grupo.",
         "faq.q2": "¿Funciona sin red?", "faq.a2": "Sí. Como PWA sin conexión todo funciona sin red – Andes, selva, bus nocturno. Sin tienda de apps, sin cuenta, sin registro.",
-        "faq.q3": "¿Lo tenemos con nuestra marca?", "faq.a3": "Sí. Una edición abre la app con vuestro nombre, color y el destino del viaje preseleccionado – un enlace basta para todo el grupo.",
+        "faq.q3": "¿Lo tenemos con nuestra marca?", "faq.a3": "Sí. Una edición abre la app con tu nombre, color y el destino del viaje preseleccionado – un enlace basta para todo el grupo.",
         "faq.q4": "¿Cómo empieza un piloto?", "faq.a4": "Con un pack de destino para una ruta concreta. Para WeRoad Colombia ya hay una propuesta elaborada con sugerencia de piloto.",
-        "contact.title": "Convertid vuestro próximo viaje en una experiencia – ya desde antes.", "contact.sub": "Abrid la demo en vivo en la edición WeRoad Colombia o escribidnos para un piloto en una de vuestras rutas.",
+        "contact.title": "Convierte tu próximo viaje en una experiencia – ya desde antes.", "contact.sub": "Abre la demo en vivo en la edición WeRoad Colombia o escríbenos para un piloto en una de tus rutas.",
         "contact.demo": "Abrir demo en vivo →", "contact.mail": "Solicitar piloto por email", "contact.material": "📄 Ver la propuesta elaborada de WeRoad Colombia",
         "footer.blurb": "Compañero de idioma de viaje para viajes en grupo – engagement pre-viaje, rompehielos sociales y seguridad sobre el terreno. Sin conexión, sin cuenta.",
         "footer.audiences": "¿Para quién?", "footer.more": "Más", "footer.demo": "Abrir demo en vivo", "footer.material": "Propuesta WeRoad", "footer.contact": "Contacto",
@@ -513,6 +515,8 @@
       document.title = dict["_title"];
       var meta = document.querySelector('meta[name="description"]');
       if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
+      var ogl = document.querySelector('meta[property="og:locale"]');
+      if (ogl) ogl.setAttribute("content", lang === "en" ? "en_US" : (lang === "es" ? "es_ES" : "de_DE"));
       var nodes = document.querySelectorAll("[data-i18n]");
       for (var i = 0; i < nodes.length; i++) {
         var key = nodes[i].getAttribute("data-i18n");
@@ -598,6 +602,32 @@
         entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
       }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
       reveal.forEach(function (el) { io.observe(el); });
+    }
+
+    // Zahlen hochzählen, sobald sie sichtbar werden (respektiert reduced-motion).
+    var counters = document.querySelectorAll("[data-count]");
+    function countUp(el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (isNaN(target)) return;
+      var finalText = el.textContent;
+      if (reduce) { el.textContent = finalText; return; }
+      var dur = 900, t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var v = Math.round((1 - Math.pow(1 - p, 3)) * target);
+        el.textContent = p < 1 ? String(v) : finalText;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if (reduce || !("IntersectionObserver" in window)) {
+      counters.forEach(function (el) { countUp(el); });
+    } else {
+      var cio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { countUp(e.target); cio.unobserve(e.target); } });
+      }, { threshold: 0.5 });
+      counters.forEach(function (el) { cio.observe(el); });
     }
 
     var header = document.getElementById("lpHeader");

@@ -16,6 +16,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HolaRuta" />
   <meta property="og:locale" content="de_DE" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="es_ES" />
   <meta property="og:url" content="https://moarci.github.io/holaRuta/landing-hostel.html" />
   <meta property="og:title" content="HolaRuta für Hostels – die fertige Spanish Night für den Common Room" />
   <meta property="og:description" content="Eine fertige Social-Aktivität für den Common Room – Sprach-Battles und Rollenspiele per QR-Code, ohne Planung. Offline, meist kostenlos mit Co-Branding." />
@@ -461,7 +463,7 @@
         "card.p1": "Batalla", "card.p2": "Juego de rol", "card.p3": "Co-branding",
         "card.p1.q": "¿De dónde eres?", "card.p1.tr": "«¿De dónde eres?» – el arranque perfecto para la primera ronda de batalla en la mesa común.",
         "card.p2.q": "Una cerveza, por favor.", "card.p2.tr": "«Una cerveza, por favor.» – pequeños juegos de rol en la barra: los huéspedes actúan escenas.",
-        "card.p3.q": "Bienvenido a nuestro hostel.", "card.p3.tr": "«Bienvenido a nuestro hostel.» – con vuestro logo, vuestros colores, vuestro nombre.",
+        "card.p3.q": "Bienvenido a nuestro hostel.", "card.p3.tr": "«Bienvenido a nuestro hostel.» – con tu logo, tus colores, tu nombre.",
         "use.eyebrow": "EL ENCAJE MÁS OBVIO", "use.title": "Una actividad lista – sin planificación, sin esfuerzo.",
         "use.lead": "Los hostales buscan constantemente actividades sociales para la sala común. HolaRuta ofrece justo eso – con muy poca fricción, porque funciona sin conexión y no hay que instalar nada.",
         "use.1.k": "Rompehielos", "use.1.t": "Los desconocidos de la mesa se hacen amigos.", "use.1.b": "Las batallas de idioma y los juegos de rol ponen a hablar a los huéspedes. La actividad perfecta para la noche en la sala común – sin que tu equipo tenga que dirigirla.",
@@ -481,7 +483,7 @@
         "faq.q1": "¿Qué tiene que preparar nuestro equipo?", "faq.a1": "Prácticamente nada. Colgar el póster, mencionarlo en el check-in – listo. La app dirige la batalla y el juego de rol; tu equipo no necesita estar presente.",
         "faq.q2": "¿Los huéspedes necesitan internet o una cuenta?", "faq.a2": "No. HolaRuta funciona sin conexión en el navegador, sin tienda de apps y sin registro. Perfecto para el wifi débil del hostal.",
         "faq.q3": "¿Cuánto nos cuesta?", "faq.a3": "Para hostales individuales, normalmente nada – lo vemos como partnership y co-branding. Para cadenas hay una Edición Hostal escalable.",
-        "faq.q4": "¿Podemos tenerlo con nuestra imagen?", "faq.a4": "Sí. El sistema de ediciones permite que un enlace abra la app con vuestro nombre, color y opcionalmente vuestra ciudad – y trae los contenidos de hostal al frente.",
+        "faq.q4": "¿Podemos tenerlo con nuestra imagen?", "faq.a4": "Sí. El sistema de ediciones permite que un enlace abra la app con tu nombre, color y opcionalmente tu ciudad – y trae los contenidos de hostal al frente.",
         "contact.title": "Cuelga tu código QR esta semana.", "contact.sub": "Abre la demo en vivo en la edición Hostal o escríbenos – te preparamos la marca y el póster.",
         "contact.demo": "Abrir demo en vivo →", "contact.mail": "Solicitar partnership por email", "contact.material": "📄 Ver la guía y el póster para la sala común",
         "footer.blurb": "La Spanish Night lista para la sala común – batallas y juegos de rol por código QR, sin planificación. Sin conexión, sin cuenta.",
@@ -501,6 +503,8 @@
       document.title = dict["_title"];
       var meta = document.querySelector('meta[name="description"]');
       if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
+      var ogl = document.querySelector('meta[property="og:locale"]');
+      if (ogl) ogl.setAttribute("content", lang === "en" ? "en_US" : (lang === "es" ? "es_ES" : "de_DE"));
       var nodes = document.querySelectorAll("[data-i18n]");
       for (var i = 0; i < nodes.length; i++) {
         var key = nodes[i].getAttribute("data-i18n");
@@ -586,6 +590,32 @@
         entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
       }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
       reveal.forEach(function (el) { io.observe(el); });
+    }
+
+    // Zahlen hochzählen, sobald sie sichtbar werden (respektiert reduced-motion).
+    var counters = document.querySelectorAll("[data-count]");
+    function countUp(el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (isNaN(target)) return;
+      var finalText = el.textContent;
+      if (reduce) { el.textContent = finalText; return; }
+      var dur = 900, t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var v = Math.round((1 - Math.pow(1 - p, 3)) * target);
+        el.textContent = p < 1 ? String(v) : finalText;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if (reduce || !("IntersectionObserver" in window)) {
+      counters.forEach(function (el) { countUp(el); });
+    } else {
+      var cio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { countUp(e.target); cio.unobserve(e.target); } });
+      }, { threshold: 0.5 });
+      counters.forEach(function (el) { cio.observe(el); });
     }
 
     var header = document.getElementById("lpHeader");
