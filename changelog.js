@@ -27,6 +27,42 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.118.0",
+      date: "2026-06-24",
+      title: "Café-Modul: Geschichte, Schädlinge & Export-Qualität",
+      titleEn: "Café module: history, pests & export quality",
+      items: [
+        "📜 Neues Thema „Geschichte: wann der Kaffee kam“: Kaffee ist kein heimisches Gewächs – er kam erst im 18. Jahrhundert mit den Kolonialmächten, wurde im 19. Jahrhundert zum wichtigsten Exportgut (besiedelte die Berge, finanzierte Eisenbahnen & Städte, prägte die „Kaffeerepubliken“) und ist heute Identität (Paisaje Cultural Cafetero, UNESCO-Welterbe seit 2011).",
+        "🐛 Neues Thema „Schädlinge & Krankheiten“: die „broca del café“ (Kaffeekirschenkäfer) kam aus Afrika über Brasilien (um 1913) nach ganz Lateinamerika; dazu der Kaffeerost „la roya“ (großer Ausbruch 2012/13) – beide steigen mit der Klimaerwärmung in immer höhere Lagen.",
+        "📦 Neues Thema „Export & was im Land bleibt“: der beste Kaffee geht traditionell in den Export, im Land blieb oft die zweite Wahl („pasilla“, woraus der dünne „tinto“ wurde) – die Spezialitätenwelle bringt guten Kaffee heute zunehmend ins Land zurück.",
+        "💬 Dazu eine neue Satzgruppe „Geschichte, Schädlinge & Qualität“ und passende Glossar-Begriffe (la broca, la roya, la pasilla, la exportación, el consumo interno …).",
+      ],
+      itemsEn: [
+        "📜 New topic „History: when coffee arrived“: coffee isn't native – it came with the colonial powers in the 18th century, became the leading export in the 19th (settling the mountains, funding railways & cities, shaping the „coffee republics“), and today is identity (Paisaje Cultural Cafetero, UNESCO World Heritage since 2011).",
+        "🐛 New topic „Pests & diseases“: the „broca del café“ (coffee berry borer) came from Africa via Brazil (around 1913) to all of Latin America; plus coffee leaf rust „la roya“ (big 2012/13 outbreak) – both climbing to ever higher elevations as the climate warms.",
+        "📦 New topic „Export & what stays in the country“: the best coffee traditionally goes to export while the second choice stayed local („pasilla“, which became the thin „tinto“) – the specialty wave is now bringing good coffee back into the country.",
+        "💬 Plus a new phrase group „History, pests & quality“ and matching glossary terms (la broca, la roya, la pasilla, la exportación, el consumo interno …).",
+      ],
+    },
+    {
+      version: "1.117.0",
+      date: "2026-06-24",
+      title: "Neu: Café de la región – Kaffeeanbau & -kultur",
+      titleEn: "New: Café de la región – coffee growing & culture",
+      items: [
+        "☕ Neues Modul „Café de la región“: In weiten Teilen Lateinamerikas ist Kaffee Landschaft, Lebensunterhalt und Stolz. Das Modul erklärt aufklappbar, wie Kaffee wächst (Höhe, Schatten, Arabica vs. Robusta), die Ernte (cosecha, von Hand gepflückte cerezas), die Verarbeitung (lavado, honey, natural), Rösten & Mahlen, die Anbauregionen (kolumbianischer Eje Cafetero, Antigua & Huehuetenango, Tarrazú, Chiapas, Panamas Geisha), den Finca-Besuch und fairen Handel.",
+        "📖 In jedem Thema ein spanisches Lesetraining mit antippbaren Vokabeln, Vokabel-Quiz und Schwierigkeits-Score (A2–B1).",
+        "💬 Die Sätze als Karten (es/de/en, mit Kopier- und Stern-Knopf fürs „Mi léxico“): Kaffee bestellen (un tinto, sin azúcar), auf der Finca / Kaffeetour, über Geschmack reden (¿lavado, honey o natural?) und Bohnen kaufen & mitnehmen – plus Glossar (grano, cereza, cosecha, tueste, cata …) und ein „Finca-Besuch-Kit“.",
+        "🔗 Per Deep-Link (?m=cafe) direkt aufrufbar, in Suche & Entdecken verdrahtet und offline verfügbar.",
+      ],
+      itemsEn: [
+        "☕ New module „Café de la región“: across much of Latin America coffee is landscape, livelihood and pride. The module explains, in expandable topics, how coffee grows (altitude, shade, Arabica vs. Robusta), the harvest (cosecha, hand-picked cerezas), processing (washed, honey, natural), roasting & grinding, the growing regions (Colombia's Eje Cafetero, Antigua & Huehuetenango, Tarrazú, Chiapas, Panama's Geisha), visiting a farm and fair trade.",
+        "📖 Every topic has Spanish reading practice with tappable vocab, a vocab quiz and a difficulty score (A2–B1).",
+        "💬 The phrases as cards (es/de/en, with a copy and star button for „Mi léxico“): ordering coffee (un tinto, no sugar), on the farm / coffee tour, talking about taste (washed, honey or natural?) and buying & taking beans home – plus a glossary (grano, cereza, cosecha, tueste, cata …) and a „coffee-farm visit kit“.",
+        "🔗 Reachable via deep link (?m=cafe), wired into Search & Discover and available offline.",
+      ],
+    },
+    {
       version: "1.116.0",
       date: "2026-06-24",
       title: "Flaggen im Battle & Stern an den Flaggen-Sätzen",

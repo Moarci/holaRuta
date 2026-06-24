@@ -47,6 +47,7 @@
   const flirt = window.SC.flirt || null;         // Coqueteo y romance: flirten & daten unterwegs (optional)
   const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
   const musica = window.SC.musica || null;       // Música: Genres LatAm + Spotify/Apple-Deep-Links (optional)
+  const cafe = window.SC.cafe || null;           // Café de la región: Kaffeeanbau & -kultur (optional)
   const juegos = window.SC.juegos || null;       // Juegos de viaje: Hostel-Spiele + Sätze für den Tisch (optional)
   const banderas = window.SC.banderas || null;   // Banderas: Flaggen-Daten je Land (Quiz/Galería) + Info-Sheet (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
@@ -504,6 +505,7 @@
       hasFotos: !!fotografia,    // Fotos & Videos (tolle Reisebilder)
       hasFlirt: !!flirt,         // Coqueteo y romance (flirten & daten unterwegs)
       hasBailar: !!bailar,       // Bailar (Tanzen in LatAm, Schritt-Diagramme)
+      hasCafe: !!cafe,           // Café de la región (Kaffeeanbau & -kultur)
       hasMusica: !!musica,       // Música (Genres LatAm + Spotify/Apple-Links)
       hasJuegos: !!juegos,       // Juegos de viaje (Hostel-Spiele + Sätze)
       hasBanderas: !!(banderasGame && banderasGame.ready && banderasGame.ready()), // Banderas (Flaggen-Quiz)
@@ -940,6 +942,23 @@
       phrases: loc(salud.PHRASES || []),
       glossary: loc(salud.GLOSSARY || []),
       checklist: loc(salud.CHECKLIST || []),
+      isFav: isFavorite, // Satz-Stern → „Mi léxico"
+    };
+  }
+
+  // Café de la región: Kaffeeanbau & -kultur (Anbau, Ernte, Verarbeitung, Rösten,
+  // Regionen, Finca-Besuch, fairer Handel) + Sätze. Gleiches Schema und
+  // Pass-Through wie saludVM/logisticaVM.
+  function cafeVM() {
+    if (!cafe) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
+    const en = i18n && i18n.getLang() === "en";
+    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
+    return {
+      intro: (en && cafe.INTRO_EN) ? cafe.INTRO_EN : cafe.INTRO,
+      topics: loc(cafe.TOPICS || []),
+      phrases: loc(cafe.PHRASES || []),
+      glossary: loc(cafe.GLOSSARY || []),
+      checklist: loc(cafe.CHECKLIST || []),
       isFav: isFavorite, // Satz-Stern → „Mi léxico"
     };
   }
@@ -2215,6 +2234,7 @@
       "fotos": () => ui.renderFotos(fotosVM()),
       "bailar": () => ui.renderBailar(bailarVM()),
       "musica": () => ui.renderMusica(musicaVM()),
+      "cafe": () => ui.renderCafe(cafeVM()),
       "juegos": () => ui.renderJuegos(juegosVM()),
       "badges": () => ui.renderBadges(badgesVM()),
       "social": () => ui.renderSocial(socialVM()),
@@ -5697,7 +5717,7 @@
     knigge: !!knigge, regatear: !!regatear, logistica: !!logistica, salud: !!salud,
     jerga: !!jerga, derechos: !!derechos, responsable: !!responsable,
     fotos: !!fotografia, flirt: !!flirt, bailar: !!bailar, musica: !!musica,
-    juegos: !!juegos,
+    cafe: !!cafe, juegos: !!juegos,
     bebidas: !!(bebidas && countries),
     yesto: !!(yesto && yesto.THEMES && yesto.THEMES.length),
   };
@@ -5802,6 +5822,7 @@
     pageMod(responsable, "🌱", "Viaja responsable", "discover.subResponsable", "open-responsable");
     pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
     pageMod(flirt, "💘", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
+    pageMod(cafe, "☕", "Café de la región", "discover.subCafe", "open-cafe");
     pageMod(juegos, "🎲", "Juegos de viaje", "discover.subJuegos", "open-juegos");
 
     // Banderas: Info-Seite UND die Länderdaten (Name/Farben/Symbolik/Fakt je Land)
@@ -5974,6 +5995,11 @@
   function openResponsable() {
     dismissBadgeToast();
     setState({ screen: "responsable" });
+  }
+
+  function openCafe() {
+    dismissBadgeToast();
+    setState({ screen: "cafe" });
   }
 
   function openJuegos() {
@@ -6521,6 +6547,7 @@
     fotos:     { kicker: "Fotos y videos",    icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
     flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
+    cafe:      { kicker: "Café de la región", icon: "☕", accent: ["#6F4A2E", "#B97C24"] },
     juegos:    { kicker: "Juegos de viaje",   icon: "🎲", accent: ["#C44536", "#2E7D9A"] },
     banderas:  { kicker: "Banderas",          icon: "🚩", accent: ["#C0392B", "#2E6E86"] },
   };
@@ -6537,6 +6564,7 @@
               : cat === "fotos" ? (fotografia && fotografia.TOPICS)
               : cat === "flirt" ? (flirt && flirt.TOPICS)
               : cat === "bailar" ? (bailar && bailar.DANCES)
+              : cat === "cafe" ? (cafe && cafe.TOPICS)
               : cat === "juegos" ? (juegos && juegos.TOPICS)
               : cat === "banderas" ? (banderas && banderas.TOPICS)
               : null;
@@ -6616,6 +6644,7 @@
     flirt:         { icon: "💘", title: "Coqueteo y romance",   sub: "discover.subFlirt",         accent: ["#D24A77", "#B05AA8"] },
     bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
     musica:        { icon: "🎵", title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
+    cafe:          { icon: "☕", title: "Café de la región",    sub: "discover.subCafe",          accent: ["#6F4A2E", "#B97C24"] },
     juegos:        { icon: "🎲", title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
     banderas:      { icon: "🚩", title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
   };
@@ -6707,6 +6736,8 @@
         return cut((bailarVM().dances || []).map((d) => ({ mark: d.icon || "💃", text: d.name })));
       case "musica":
         return cut((musicaVM().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
+      case "cafe":
+        return cut((cafeVM().topics || []).map((tp) => ({ mark: tp.icon || "☕", text: tp.title })));
       case "juegos":
         return cut((juegosVM().topics || []).map((tp) => ({ mark: tp.icon || "🎲", text: tp.title })));
       case "banderas":
@@ -6858,6 +6889,7 @@
     "open-fotos": (el) => { openFotos(); },
     "open-bailar": (el) => { openBailar(); },
     "open-musica": (el) => { openMusica(); },
+    "open-cafe": (el) => { openCafe(); },
     "open-juegos": (el) => { openJuegos(); },
     "set-stats-filter": (el) => { setStatsFilter(el.dataset.filter); },
     "reset-progress": (el) => { resetProgress(); },
@@ -7482,6 +7514,7 @@
       flirt: openFlirt,
       bailar: openBailar,
       musica: openMusica,
+      cafe: openCafe,
       juegos: openJuegos,
       banderas: () => banderasGame.open(),
       historia: () => openHistoria("sur"),

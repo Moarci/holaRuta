@@ -687,6 +687,7 @@
     subFlirt: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit",
     subBailar: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos",
     subMusica: "Der Soundtrack LatAms – mit Spotify & Apple Music",
+    subCafe: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen",
     subJuegos: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu",
     subBanderas: "Flaggen-Quiz: Land erraten – und Farben, Symbole & Geschichte gleich mitlernen",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
@@ -815,6 +816,13 @@
     sdWords: "🗣️ Wörter rund um Essen, Trinken & Apotheke",
     sdChecklist: "🎒 Gesund-unterwegs-Kit",
     sdChecklistHint: "Ein paar günstige Sachen, mit denen Essen, Trinken und der Bauch unterwegs funktionieren.",
+
+    // Café de la región
+    cfTips: "🌱 Vom Strauch zur Tasse",
+    cfPhrases: "💬 Wichtige Sätze",
+    cfWords: "🗣️ Wörter rund um Kaffee & Anbau",
+    cfChecklist: "🎒 Finca-Besuch-Kit",
+    cfChecklistHint: "Ein paar Dinge, mit denen die Kaffeetour auf der Finca rundläuft – und die Bohnen frisch nach Hause kommen.",
 
     // Jerga colombiana
     jrTips: "🤙 Slang richtig einsetzen",
@@ -1151,6 +1159,7 @@
     subFlirt: "Flirting & dating with respect: opening lines, compliments, a date, safety",
     subBailar: "Dancing in LatAm: step diagrams, rhythm & videos",
     subMusica: "The soundtrack of Latin America – with Spotify & Apple Music",
+    subCafe: "Coffee growing & culture: shrub to cup, farm visits & ordering",
     subJuegos: "Hostel classics: cards, dice & group games – plus the phrases to play",
     subBanderas: "Flag quiz: guess the country – and learn the colours, symbols & history along the way",
     subBebidas: "What people drink morning and evening – country by country",
@@ -1274,6 +1283,13 @@
     sdWords: "🗣️ Words for food, drink & the pharmacy",
     sdChecklist: "🎒 Stay-healthy kit",
     sdChecklistHint: "A few cheap things that keep eating, drinking and your stomach working on the road.",
+
+    // Café de la región
+    cfTips: "🌱 From shrub to cup",
+    cfPhrases: "💬 Important phrases",
+    cfWords: "🗣️ Words for coffee & growing",
+    cfChecklist: "🎒 Coffee-farm visit kit",
+    cfChecklistHint: "A few things that keep the farm coffee tour running smoothly – and the beans fresh on the way home.",
 
     // Jerga colombiana
     jrTips: "🤙 Using slang the right way",
