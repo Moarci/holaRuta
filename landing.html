@@ -398,79 +398,103 @@
           </article>
         </div>
 
-        <div class="lp-more" data-reveal>
-          <p class="lp-more__intro" data-i18n="more.intro">Und noch viel mehr an Bord</p>
-          <div class="lp-more__chips">
-            <span class="lp-morechip" style="--accent:#B5302A">
+        <div class="lp-more">
+          <p class="lp-more__intro" data-reveal data-i18n="more.intro">Und noch viel mehr an Bord</p>
+          <!-- Antippbar & wischbar: jeder Chip klappt unten ein geteiltes Beispiel-
+               Panel auf (#lpMoreDetail) und füllt es per JS mit echten Reise-Sätzen
+               des Moduls; im Panel wischt man durch die Beispiele (Scroll-Snap). -->
+          <div class="lp-more__chips" id="lpMoreChips">
+            <button class="lp-morechip" type="button" data-mod="surv" data-reveal style="--accent:#B5302A; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🆘</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Supervivencia</span>
                 <span class="lp-morechip__desc" data-i18n="more.spick.d">Die Notfall-Sätze groß auf einen Blick</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#3F7355">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="country" data-reveal style="--accent:#3F7355; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🌎</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Países y culturas</span>
                 <span class="lp-morechip__desc" data-i18n="more.country.d">Sitten, Geld &amp; Eigenheiten pro Land</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#E9A23B">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="historia" data-reveal style="--accent:#E9A23B; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">📜</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Historia</span>
                 <span class="lp-morechip__desc" data-i18n="more.historia.d">Südamerikas Geschichte zum Mitreden</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#2F6B70">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="dialogos" data-reveal style="--accent:#2F6B70; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">💬</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Diálogos</span>
                 <span class="lp-morechip__desc" data-i18n="more.dialogos.d">Ganze Gespräche Zug um Zug üben</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#7D4A8E">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="hostal" data-reveal style="--accent:#7D4A8E; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🛏️</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Modo hostal</span>
                 <span class="lp-morechip__desc" data-i18n="more.hostel.d">Zu zweit: Battle &amp; Rollenspiele</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#C2502E">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="regatear" data-reveal style="--accent:#C2502E; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🤝</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Regatear</span>
                 <span class="lp-morechip__desc" data-i18n="more.regatear.d">Auf dem Markt fair feilschen</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#3F7355">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="precios" data-reveal style="--accent:#3F7355; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">💵</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Precios al oído</span>
                 <span class="lp-morechip__desc" data-i18n="more.precios.d">Preise hören &amp; blind eintippen</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#7D4A8E">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="juegos" data-reveal style="--accent:#7D4A8E; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🎲</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Juegos de viaje</span>
                 <span class="lp-morechip__desc" data-i18n="more.juegos.d">Hostel-Spiele &amp; die Sätze dazu</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#2F6B70">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="musica" data-reveal style="--accent:#2F6B70; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🎵</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Música</span>
                 <span class="lp-morechip__desc" data-i18n="more.musica.d">Der Sound deines Reiselands</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#E9A23B">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="logistica" data-reveal style="--accent:#E9A23B; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🧳</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Logística</span>
                 <span class="lp-morechip__desc" data-i18n="more.logistica.d">SIM, Bargeld &amp; clever packen</span>
               </span>
-            </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+          </div>
+          <!-- Geteiltes Beispiel-Panel: per JS befüllt, ein Modul gleichzeitig offen. -->
+          <div class="lp-moredetail" id="lpMoreDetail" hidden>
+            <div class="lp-moredetail__bar">
+              <span class="lp-moredetail__ico" id="lpMD_ico" aria-hidden="true"></span>
+              <span class="lp-moredetail__name" id="lpMD_name"></span>
+              <span class="lp-moredetail__hint" id="lpMD_hint" data-i18n="more.swipe">Wische durch die Beispiele</span>
+              <button class="lp-moredetail__close" id="lpMD_close" type="button" data-i18n-aria="more.close" aria-label="Beispiele schließen">✕</button>
+            </div>
+            <div class="lp-moredetail__strip" id="lpMD_strip" tabindex="0" role="group" data-i18n-aria="more.examples" aria-label="Beispielsätze"></div>
+            <div class="lp-moredetail__dots" id="lpMD_dots" role="group" data-i18n-aria="more.pick" aria-label="Beispiel wählen"></div>
           </div>
         </div>
       </div>
@@ -686,6 +710,8 @@
         "more.hostel.d": "Zu zweit: Battle & Rollenspiele", "more.regatear.d": "Auf dem Markt fair feilschen",
         "more.precios.d": "Preise hören & blind eintippen", "more.juegos.d": "Hostel-Spiele & die Sätze dazu",
         "more.musica.d": "Der Sound deines Reiselands", "more.logistica.d": "SIM, Bargeld & clever packen",
+        "more.swipe": "Wische durch die Beispiele", "more.close": "Beispiele schließen",
+        "more.pick": "Beispiel wählen", "more.examples": "Beispielsätze", "more.speak": "Satz vorlesen",
         "how.eyebrow": "SO FUNKTIONIERT'S", "how.title": "In drei Schritten unterwegs.",
         "how.s1.t": "Bereich wählen", "how.s1.b": "Such dir aus, was ansteht — Geld, Essen, Bus, Notfall. 72 Bereiche, alle reisefertig.",
         "how.s2.t": "Karte lernen", "how.s2.b": "Tippen, antworten, umdrehen. Karteikarte, Schreiben oder Hören — du entscheidest.",
@@ -750,6 +776,8 @@
         "more.hostel.d": "Two-player: battle & role-plays", "more.regatear.d": "Haggle fairly at the market",
         "more.precios.d": "Hear a price, type the digits", "more.juegos.d": "Hostel games & the lines for them",
         "more.musica.d": "The soundtrack of your route", "more.logistica.d": "SIM, cash & smart packing",
+        "more.swipe": "Swipe through the examples", "more.close": "Close examples",
+        "more.pick": "Pick an example", "more.examples": "Example phrases", "more.speak": "Read sentence aloud",
         "how.eyebrow": "HOW IT WORKS", "how.title": "On the road in three steps.",
         "how.s1.t": "Pick an area", "how.s1.b": "Choose what's coming up — money, food, buses, emergencies. 72 areas, all travel-ready.",
         "how.s2.t": "Learn a card", "how.s2.b": "Tap, answer, flip. Flip, type or listen — your call.",
@@ -966,6 +994,136 @@
       setActive(0);
       startAuto();
     }
+
+    // ── „Mehr an Bord": Modul antippen -> Beispiele aufklappen & durchwischen ──
+    (function moreModules() {
+      var chipsWrap = document.getElementById("lpMoreChips");
+      var detail = document.getElementById("lpMoreDetail");
+      if (!chipsWrap || !detail) return;
+      var strip = document.getElementById("lpMD_strip");
+      var dotsWrap = document.getElementById("lpMD_dots");
+      var nameEl = document.getElementById("lpMD_name");
+      var icoEl = document.getElementById("lpMD_ico");
+      var closeBtn = document.getElementById("lpMD_close");
+      var chips = Array.prototype.slice.call(chipsWrap.querySelectorAll(".lp-morechip"));
+
+      // Echte Reise-Sätze je Modul. Spanisch ist konstant; die Übersetzung folgt
+      // der Seitensprache (de/en). Bewusst Lateinamerika-typisch: chip = SIM-Karte,
+      // cajero = Geldautomat, propina = Trinkgeld, pesos.
+      var DATA = {
+        surv:     [["¡Ayuda, por favor!", "Hilfe, bitte!", "Help, please!"],
+                   ["Llamen a la policía.", "Rufen Sie die Polizei.", "Call the police."]],
+        country:  [["¿Aquí se da propina?", "Gibt man hier Trinkgeld?", "Do people tip here?"],
+                   ["¿Pago en efectivo o con tarjeta?", "Zahle ich bar oder mit Karte?", "Do I pay cash or card?"]],
+        historia: [["¿Qué se celebra hoy?", "Was wird heute gefeiert?", "What's being celebrated today?"],
+                   ["Cuéntame la historia de aquí.", "Erzähl mir die Geschichte von hier.", "Tell me the story of this place."]],
+        dialogos: [["Una habitación para dos noches.", "Ein Zimmer für zwei Nächte.", "A room for two nights."],
+                   ["¿Incluye el desayuno?", "Ist das Frühstück inklusive?", "Is breakfast included?"]],
+        hostal:   [["Te toca a ti.", "Du bist dran.", "It's your turn."],
+                   ["¿Listos? ¡Empezamos!", "Bereit? Los geht's!", "Ready? Let's go!"]],
+        regatear: [["¿Me hace un descuento?", "Geben Sie mir einen Rabatt?", "Can you give me a discount?"],
+                   ["Le doy cien, ¿le parece?", "Ich geb Ihnen hundert, einverstanden?", "I'll give you a hundred, deal?"]],
+        precios:  [["Son ciento veinte pesos.", "Das macht hundertzwanzig Pesos.", "That's a hundred and twenty pesos."],
+                   ["¿Cuánto le debo?", "Was schulde ich Ihnen?", "How much do I owe you?"]],
+        juegos:   [["Yo nunca nunca…", "Ich hab noch nie…", "Never have I ever…"],
+                   ["¿Verdad o reto?", "Wahrheit oder Pflicht?", "Truth or dare?"]],
+        musica:   [["¿Qué están escuchando?", "Was hört ihr da?", "What are you listening to?"],
+                   ["¡Esta canción me encanta!", "Dieses Lied liebe ich!", "I love this song!"]],
+        logistica:[["¿Dónde compro un chip?", "Wo kaufe ich eine SIM-Karte?", "Where do I buy a SIM card?"],
+                   ["¿Hay un cajero cerca?", "Gibt es einen Geldautomaten in der Nähe?", "Is there an ATM nearby?"]]
+      };
+
+      var openMod = null;
+
+      function lang() { return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "de"; }
+      function t(key) { var d = I18N[lang()] || {}; return d[key] || key; }
+
+      function speak(text) {
+        try {
+          if (!("speechSynthesis" in window)) return;
+          var u = new SpeechSynthesisUtterance(text);
+          u.lang = "es-419"; u.rate = 0.95;
+          speechSynthesis.cancel(); speechSynthesis.speak(u);
+        } catch (e) {}
+      }
+
+      function syncDots() {
+        var w = strip.clientWidth || 1;
+        var active = Math.round(strip.scrollLeft / w);
+        var dots = dotsWrap.children;
+        for (var n = 0; n < dots.length; n++) dots[n].classList.toggle("is-active", n === active);
+      }
+      strip.addEventListener("scroll", function () { window.requestAnimationFrame(syncDots); });
+
+      function render(mod) {
+        var rows = DATA[mod] || [];
+        var trIdx = lang() === "en" ? 2 : 1;
+        strip.innerHTML = "";
+        dotsWrap.innerHTML = "";
+        rows.forEach(function (r, i) {
+          var slide = document.createElement("div");
+          slide.className = "lp-mdslide";
+          var es = document.createElement("p");
+          es.className = "lp-mdslide__es";
+          var span = document.createElement("span");
+          span.setAttribute("lang", "es"); span.textContent = r[0];
+          var spk = document.createElement("button");
+          spk.type = "button"; spk.className = "lp-mdspk"; spk.textContent = "🔊";
+          spk.setAttribute("aria-label", t("more.speak"));
+          spk.addEventListener("click", function () { speak(r[0]); });
+          es.appendChild(span); es.appendChild(spk);
+          var tr = document.createElement("p");
+          tr.className = "lp-mdslide__de"; tr.textContent = r[trIdx];
+          slide.appendChild(es); slide.appendChild(tr);
+          strip.appendChild(slide);
+
+          var dot = document.createElement("button");
+          dot.type = "button"; dot.className = "lp-dot" + (i === 0 ? " is-active" : "");
+          dot.setAttribute("aria-label", t("more.pick") + " " + (i + 1));
+          dot.addEventListener("click", function () {
+            strip.scrollTo({ left: strip.clientWidth * i, behavior: reduce ? "auto" : "smooth" });
+          });
+          dotsWrap.appendChild(dot);
+        });
+        strip.scrollLeft = 0;
+        syncDots();
+      }
+
+      function openChip(chip) {
+        openMod = chip.getAttribute("data-mod");
+        chips.forEach(function (c) { c.setAttribute("aria-expanded", c === chip ? "true" : "false"); });
+        detail.style.setProperty("--accent", (chip.style.getPropertyValue("--accent") || "").trim() || "var(--brand)");
+        var ico = chip.querySelector(".lp-morechip__ico");
+        var nm = chip.querySelector(".lp-morechip__name");
+        icoEl.textContent = ico ? ico.textContent : "";
+        nameEl.textContent = nm ? nm.textContent : "";
+        render(openMod);
+        detail.hidden = false;
+        // Lange Liste auf dem Handy: das Panel sanft ins Sichtfeld holen.
+        if (window.matchMedia && window.matchMedia("(max-width: 560px)").matches) {
+          try { detail.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" }); } catch (e) {}
+        }
+      }
+      function closeDetail() {
+        openMod = null;
+        chips.forEach(function (c) { c.setAttribute("aria-expanded", "false"); });
+        detail.hidden = true;
+        try { speechSynthesis.cancel(); } catch (e) {}
+      }
+
+      chips.forEach(function (chip) {
+        chip.addEventListener("click", function () {
+          if (openMod === chip.getAttribute("data-mod")) closeDetail();
+          else openChip(chip);
+        });
+      });
+      closeBtn.addEventListener("click", closeDetail);
+
+      // Sprache gewechselt -> offenes Panel neu rendern (Übersetzung + Labels).
+      document.querySelectorAll(".lp-langbtn").forEach(function (b) {
+        b.addEventListener("click", function () { if (openMod) render(openMod); });
+      });
+    })();
 
     // ── Scroll-Reveal + animierte Counter (IntersectionObserver) ──
     function easeOut(t) { return 1 - Math.pow(1 - t, 3); }

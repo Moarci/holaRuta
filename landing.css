@@ -389,6 +389,7 @@ a { color: var(--brand-ink); }
 .lp-morechip {
   position: relative; overflow: hidden;
   display: flex; align-items: center; gap: 13px; text-align: left;
+  width: 100%; appearance: none; -webkit-appearance: none; font: inherit; cursor: pointer;
   background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
   border-radius: var(--r-md); padding: 13px 15px;
   box-shadow: var(--shadow);
@@ -427,8 +428,92 @@ a { color: var(--brand-ink); }
 .lp-morechip__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .lp-morechip__name { font-weight: 800; font-size: 0.95rem; line-height: 1.2; }
 .lp-morechip__desc { font-weight: 500; font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
-@media (prefers-reduced-motion: reduce) { .lp-morechip, .lp-morechip__ico { transition: none; } }
+/* Chevron rechts signalisiert „antippbar" und dreht beim Aufklappen nach unten. */
+.lp-morechip__chev {
+  margin-left: auto; flex: none; width: 8px; height: 8px;
+  border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg); opacity: .6;
+  transition: transform .2s ease, border-color .2s ease, opacity .2s ease;
+}
+.lp-morechip[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent, var(--brand)) 8%, var(--surface));
+}
+.lp-morechip[aria-expanded="true"]::before { opacity: 1; width: 4px; }
+.lp-morechip[aria-expanded="true"] .lp-morechip__chev {
+  transform: rotate(45deg); border-color: var(--accent, var(--brand)); opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-morechip, .lp-morechip__ico, .lp-morechip__chev { transition: none; }
+}
 @media (hover: none) { .lp-morechip:hover { transform: none; } }
+
+/* Geteiltes Beispiel-Panel: klappt unter dem Raster auf, zeigt echte Reise-Sätze
+   des gewählten Moduls. Die Sätze liegen in einem Scroll-Snap-Streifen -> nativ
+   wischbar (Touch) plus Punkt-Navigation. Akzent erbt vom aktiven Chip (--accent
+   wird per JS gesetzt). */
+.lp-moredetail {
+  margin-top: 14px; border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: lp-more-in .28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes lp-more-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.lp-moredetail__bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px 11px 14px; border-bottom: 1.5px solid var(--line);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 12%, var(--card)), var(--card));
+}
+.lp-moredetail__ico {
+  width: 34px; height: 34px; flex: none; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
+  transform: rotate(-4deg);
+}
+.lp-moredetail__name { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; color: var(--ink); }
+.lp-moredetail__hint { font-size: .78rem; color: var(--muted); margin-left: 2px; }
+.lp-moredetail__close {
+  margin-left: auto; flex: none; width: 30px; height: 30px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--muted);
+  cursor: pointer; font-size: .85rem; line-height: 1;
+  transition: border-color .15s ease, color .15s ease;
+}
+.lp-moredetail__close:hover { border-color: var(--brand); color: var(--ink); }
+/* Wisch-Streifen: nativer Scroll-Snap (Touch + Trackpad), Scrollbar versteckt. */
+.lp-moredetail__strip {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.lp-moredetail__strip::-webkit-scrollbar { display: none; }
+.lp-moredetail__strip:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.lp-mdslide {
+  flex: 0 0 100%; scroll-snap-align: center; box-sizing: border-box;
+  padding: 18px 18px 20px; min-width: 0;
+}
+.lp-mdslide__es {
+  display: flex; align-items: flex-start; gap: 8px; margin: 0;
+  font-family: var(--font-display); font-weight: 800;
+  font-size: 1.22rem; line-height: 1.25; color: var(--ink);
+}
+.lp-mdslide__es > span { min-width: 0; }
+.lp-mdspk {
+  flex: none; border: none; background: transparent; cursor: pointer;
+  font-size: 1rem; line-height: 1; padding: 3px; border-radius: 7px; margin-top: 1px;
+  transition: background .14s ease;
+}
+.lp-mdspk:hover { background: color-mix(in srgb, var(--accent, var(--brand)) 16%, transparent); }
+.lp-mdslide__de { margin: 7px 0 0; color: var(--muted); font-size: .97rem; font-weight: 500; line-height: 1.4; }
+.lp-moredetail__dots { display: flex; gap: 4px; justify-content: center; padding: 0 0 13px; }
+.lp-moredetail .lp-dot.is-active::before { background: var(--accent, var(--brand)); }
+@media (prefers-reduced-motion: reduce) {
+  .lp-moredetail { animation: none; }
+  .lp-moredetail__strip { scroll-behavior: auto; }
+}
 
 /* ─────────────────────────── So funktioniert's ─────────────────────────── */
 .lp-how__grid {
