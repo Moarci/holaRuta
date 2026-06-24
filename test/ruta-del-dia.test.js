@@ -81,36 +81,49 @@ function collectRoundGroups(root, driver) {
   return groups;
 }
 
-test("Ruta del día: orts-/länderspezifische Karten sind pro Runde gedeckelt", () => {
-  const root = freshApp();
-  const d = makeDriver(root);
+// Startet eine frische Tagesrunde und gibt ihre Kategorie-Gruppen zurück. Mehrfach
+// aufrufbar: openRutaDelDia() baut die Queue jedes Mal neu (anderer shuffle), skip
+// fasst den SRS-Fortschritt nicht an – die Karten bleiben also fällig.
+function freshRound(root, d) {
   d.setTab("start");
   assert.ok(d.click("ruta-del-dia"), "Ruta del día startet");
+  return collectRoundGroups(root, d);
+}
 
-  const groups = collectRoundGroups(root, d);
-  assert.ok(groups.length > 0, "Runde enthält Karten");
+// Über VIELE Runden geprüft – das ist der eigentliche Härtetest: Mit Guard hat
+// jede Runde deterministisch genau zwei destinos. OHNE Guard zöge die Runde
+// gleichverteilt aus allen Karten (~52 % destinos); dass über alle ROUNDS hinweg
+// JEDE Runde zufällig ≤ 2 destinos hätte, ist praktisch ausgeschlossen
+// (~0,04^ROUNDS). So fällt ein versehentliches Entfernen des Guards zuverlässig auf.
+const ROUNDS = 8;
 
-  const destinos = groups.filter((g) => g === "destinos").length;
-  assert.ok(
-    destinos <= DESTINO_CAP,
-    `höchstens ${DESTINO_CAP} destinos-Karten pro Runde (waren ${destinos} von ${groups.length})`
-  );
-  // Grundlagen & allgemeine Module sollen klar dominieren.
-  assert.ok(
-    groups.length - destinos >= groups.length - DESTINO_CAP,
-    "allgemeine Karten dominieren die Runde"
-  );
-});
-
-test("Ruta del día: voll mit Karten, ohne dass destinos die Runde fluten", () => {
+test("Ruta del día: destinos bleiben über viele Runden gedeckelt", () => {
   const root = freshApp();
   const d = makeDriver(root);
-  d.setTab("start");
-  d.click("ruta-del-dia");
+  for (let r = 1; r <= ROUNDS; r++) {
+    const groups = freshRound(root, d);
+    assert.ok(groups.length > 0, `Runde ${r}: enthält Karten`);
+    // Jede Queue-Karte muss einer bekannten Kategorie zugeordnet sein – sonst misst
+    // der Test (catOfCard/groupOf) ins Leere und „0 destinos" wäre wertlos.
+    assert.ok(groups.every((g) => g !== null), `Runde ${r}: jede Karte hat eine bekannte Kategorie`);
+    const destinos = groups.filter((g) => g === "destinos").length;
+    assert.ok(
+      destinos <= DESTINO_CAP,
+      `Runde ${r}: höchstens ${DESTINO_CAP} destinos-Karten (waren ${destinos} von ${groups.length})`
+    );
+  }
+});
 
-  const groups = collectRoundGroups(root, d);
-  // Es gibt reichlich allgemeine Karten -> die Runde wird voll (10) und der
-  // destinos-Anteil bleibt beim Deckel.
+test("Ruta del día: voll, mit genau dem reservierten destino-Anteil", () => {
+  const root = freshApp();
+  const d = makeDriver(root);
+
+  // Frischer Start: alle Karten gelten als fällig (isDue(undefined) === true) und
+  // es gibt weit mehr als 8 allgemeine Karten (1095) und mehr als 2 destinos
+  // (1198). Die Auswahl ist damit deterministisch: 8 allgemeine + 2 destinos.
+  const groups = freshRound(root, d);
+  const destinos = groups.filter((g) => g === "destinos").length;
   assert.equal(groups.length, 10, "Tagesrunde ist voll (RUTA_DIA_CAP = 10)");
-  assert.ok(groups.filter((g) => g === "destinos").length <= DESTINO_CAP, "destinos bleiben gedeckelt");
+  assert.equal(destinos, DESTINO_CAP, "genau der reservierte destino-Anteil (kein Fluten)");
+  assert.equal(groups.length - destinos, 10 - DESTINO_CAP, "Rest sind allgemeine Karten");
 });

@@ -2773,8 +2773,10 @@
     // damit die Runde voll bleibt.
     const destDose = Math.min(RUTA_DIA_DESTINO_CAP, destinos.length);
     const generalPart = general.slice(0, RUTA_DIA_CAP - destDose);
+    // destinoPart füllt nur die nach generalPart freien Plätze -> die Summe ist
+    // immer ≤ RUTA_DIA_CAP (kein zusätzliches Deckeln nötig).
     const destinoPart = destinos.slice(0, RUTA_DIA_CAP - generalPart.length);
-    const chosen = shuffle(generalPart.concat(destinoPart)).slice(0, RUTA_DIA_CAP);
+    const chosen = shuffle(generalPart.concat(destinoPart));
     recordRutaDia(now);
     state.pretripDay = null;
     state.scopeId = "all";
