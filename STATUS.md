@@ -25,8 +25,8 @@ sich vom Produkt zum Vertrieb verschoben.
 | Karten | 2293 | README-Projektstatus (test-abgesichert) |
 | Bereiche / Kategorien | 72 | README-Projektstatus (test-abgesichert) |
 | Lernmodi | 3 (Karteikarte · Schreiben · Hören) | README |
-| Tests | 617 literale `test()`-Deklarationen, **alle grün** (Laufzeit inkl. dynamisch generierter: 628) | `npm test` |
-| Test-Dateien | 55 | `test/*.test.js` |
+| Tests | 622 literale `test()`-Deklarationen, **alle grün** (Laufzeit inkl. dynamisch generierter: 633) | `npm test` |
+| Test-Dateien | 56 | `test/*.test.js` |
 | Laufzeit-Dependencies | 0 | `package.json` |
 | Destination-Packs | 9 (Colombia 89 · Peru 45 · Mexiko 41 · Costa Rica 40 · Ecuador 40 · Guatemala 40 · Argentinien 40 · Chile 40 · Bolivien 40) | MARKT/BAUPLAN |
 | Code-Audit | 0 CRITICAL | [AUDIT.md](AUDIT.md) |
@@ -55,9 +55,9 @@ sich vom Produkt zum Vertrieb verschoben.
    nicht offline).
 
 ### Hinweis zur Doku-Konsistenz
-Eine geprüfte „Drift"-Vermutung hat sich **nicht** bestätigt: Die README-Testzahl **617** ist korrekt —
+Eine geprüfte „Drift"-Vermutung hat sich **nicht** bestätigt: Die README-Testzahl **622** ist korrekt —
 sie zählt bewusst literale `test()`-Deklarationen (per `doc-consistency.test.js` abgesichert); die
-Laufzeit-628 enthält zusätzlich dynamisch generierte Fälle. Die Angabe „JS-Module" ist **unscharf
+Laufzeit-633 enthält zusätzlich dynamisch generierte Fälle. Die Angabe „JS-Module" ist **unscharf
 definiert** (50 Dateien mit `window.SC`, ~60 `SC.*`-Namespaces, 64 Script-Tags) und nicht
 test-abgesichert; bewusst **nicht** spekulativ geändert.
 
