@@ -541,7 +541,17 @@ a { color: var(--brand-ink); }
 .lp-mdslide {
   flex: 0 0 100%; scroll-snap-align: center; box-sizing: border-box;
   padding: 14px 18px 24px; min-width: 0; perspective: 1200px;
+  /* Nur die aufgeklappte Karte wächst – die Nachbarn bleiben auf ihrer Höhe,
+     statt sich (Flex-Default stretch) mit hochzuziehen. */
+  align-self: flex-start;
 }
+/* Reise-Kontext hinter dem 🧭 – wie im Hero, nur kompakter. Akzentlinie oben
+   in der Modulfarbe verankert das Panel sichtbar an seiner Karte. */
+.lp-mdslide .lp-ctxpanel {
+  margin-top: 14px;
+  border-top: 3px solid color-mix(in srgb, var(--accent, var(--brand)) 70%, transparent);
+}
+.lp-mdslide .context-panel__title { color: color-mix(in srgb, var(--accent, var(--brand)) 60%, var(--ink)); }
 /* Echte App-Karteikarten (.flip/.face/.cardbtn aus styles.css) – 1:1 wie der
    Lern-Screen, nur etwas kompakter als im Hero-Karussell. Antippen dreht um:
    deutsche Frage -> spanische Antwort + Aussprache + 🔊. */
@@ -567,20 +577,66 @@ a { color: var(--brand-ink); }
 }
 @media (min-width: 880px) { .lp-how__grid { grid-template-columns: 5fr 6fr; align-items: start; } }
 
-.lp-steps { display: flex; flex-direction: column; gap: var(--space-3); }
+/* Drei Schritte als Mini-Timeline: durchgehende Linie hinter den Nummern (nur in
+   den Lücken sichtbar, da die Karten deckend davor liegen) – verbindet die
+   Schritte zu einem Weg statt drei losen Kacheln. Linie in den drei Schrittfarben. */
+.lp-steps { display: flex; flex-direction: column; gap: var(--space-3); position: relative; }
+.lp-steps::before {
+  content: ""; position: absolute; z-index: 0;
+  left: 48px; /* = padding-left (24px) + halbe Nummern-Kachel (24px) */
+  top: 48px; bottom: 48px; width: 2px; transform: translateX(-50%);
+  background: linear-gradient(#C2502E, #3F7355, #E9A23B);
+  opacity: 0.4; border-radius: 2px;
+}
+@media (min-width: 880px) { .lp-steps::before { bottom: 64px; } }
 .lp-step {
+  position: relative; z-index: 1;
   display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: start;
   padding: var(--space-4); border-radius: var(--r-lg);
   background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.25s ease;
 }
+/* Hover (Desktop) und der im Blick liegende Schritt (is-active, per Scroll) heben
+   sich in ihrer Farbe hervor -> die Liste „lebt" beim Durchscrollen. */
+.lp-step:hover, .lp-step.is-active {
+  transform: translateY(-3px); box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 48%, var(--line));
+  background: color-mix(in srgb, var(--accent, var(--brand)) 6%, var(--card));
+}
+/* Nummer als farbige, leicht gekippte Kachel (wie die Feature-Icons) mit Ring +
+   farbigem Schlagschatten. Sitzt deckend auf der Timeline-Linie = „Knoten". */
 .lp-step__num {
-  width: 44px; height: 44px; border-radius: 999px; flex: none;
+  position: relative; z-index: 1;
+  width: 48px; height: 48px; border-radius: 16px; flex: none;
   display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 800; font-size: 1.2rem;
-  color: var(--on-accent); background: var(--brand);
+  font-family: var(--font-display); font-weight: 800; font-size: 1.3rem;
+  color: var(--cream);
+  /* Bewusst zum Dunklen gemischt (auch der helle Amber-Schritt), damit die creme-
+     farbene Ziffer auf allen drei Schrittfarben sicher lesbar bleibt (WCAG). */
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 84%, #241510),
+    color-mix(in srgb, var(--accent, var(--brand)) 58%, #241510));
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent, var(--brand)) 38%, transparent),
+              inset 0 0 0 1.5px rgba(251, 243, 228, 0.28);
+  transform: rotate(-5deg);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.lp-step__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); color: var(--ink); margin: 2px 0 4px; }
+.lp-step:hover .lp-step__num,
+.lp-step.is-active .lp-step__num { transform: rotate(0deg) scale(1.08); }
+/* Kleiner spanischer-Eyebrow-Stil-Kicker je Schritt in Schrittfarbe. */
+.lp-step__kicker {
+  display: inline-block; font-family: var(--font-display); font-weight: 800;
+  font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent, var(--brand)) 72%, var(--ink));
+  margin-bottom: 2px;
+}
+.lp-step__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); color: var(--ink); margin: 0 0 4px; }
 .lp-step__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
+/* Schlüsselwörter im Fließtext farbig hervorgehoben – führt das Auge auf das
+   Wesentliche (72 Bereiche, die Modi, die Bewertung). */
+.lp-step__hl { font-weight: 800; color: var(--ink);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  background: linear-gradient(transparent 62%, color-mix(in srgb, var(--accent, var(--brand)) 30%, transparent) 0); }
 /* Mobiler Inline-Screenshot je Schritt (Baseline, ohne JS sichtbar).
    Der KOMPLETTE App-Screen in korrekter Proportion (kein Crop) – als sauberer
    „Handy-Screen" zentriert und in der Breite begrenzt, damit er nicht riesig wird. */
@@ -708,4 +764,8 @@ a { color: var(--brand-ink); }
   .lp-carousel .flip__inner { transition: none !important; }
   .lp-slide { transition: none !important; }
   .lp-cta::after { display: none !important; }
+  /* Schritte: Hover-/Aktiv-Hub & Nummern-Drehung ohne Bewegung. */
+  .lp-step, .lp-step__num { transition: none !important; }
+  .lp-step:hover, .lp-step.is-active { transform: none !important; }
+  .lp-step:hover .lp-step__num, .lp-step.is-active .lp-step__num { transform: rotate(-5deg) !important; }
 }
