@@ -1161,6 +1161,12 @@
         <span class="navrow__chev" aria-hidden="true">›</span>
       </a>
 
+      <a class="navrow" href="landing.html#partner" style="text-decoration:none" aria-label="${esc(t("profile.partner"))}">
+        <span class="navrow__icon" aria-hidden="true">🤝</span>
+        <span class="navrow__label">${esc(t("profile.partner"))}</span>
+        <span class="navrow__chev" aria-hidden="true">›</span>
+      </a>
+
       ${installBlock(vm.install)}
       ${editionCredit(vm.edition)}`;
   }

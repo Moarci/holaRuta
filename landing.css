@@ -874,7 +874,13 @@ a { color: var(--brand-ink); }
 .lp-contact__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; }
 .lp-contact__note { margin: var(--space-4) auto 0; font-size: 0.85rem; color: var(--muted); max-width: 44ch; }
 
-/* Schlanke Hero-Visitenkarte (statisch, kein JS): zeigt Marke + Akzent. */
+/* Risikofrei-/Trust-Streifen: faktische Zusicherungen (kein erfundenes Testimonial). */
+.lp-trustbar { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.lp-trustbar li { flex: 1 1 220px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--space-3); font-size: 0.95rem; font-weight: 600; color: var(--ink-soft); }
+.lp-quote { margin: var(--space-4) 0 0; padding: var(--space-3) var(--space-4); border-left: 3px solid var(--accent, var(--brand)); color: var(--ink); font-style: italic; }
+.lp-quote cite { display: block; margin-top: 6px; font-style: normal; font-size: 0.85rem; color: var(--muted); }
+
+/* Hero-Visitenkarte: Marke + Akzent, Pills als klickbare Szenario-Tabs (JS optional). */
 .lp-herocard {
   padding: var(--space-4); border-radius: var(--r-lg);
   background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow-hero);
@@ -886,7 +892,9 @@ a { color: var(--brand-ink); }
 .lp-herocard__phrase b { color: var(--brand-ink); }
 .lp-herocard__phrase span { display: block; color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
 .lp-herocard__row { display: flex; flex-wrap: wrap; gap: 6px; }
-.lp-herocard__pill { font-size: 0.78rem; font-weight: 700; color: var(--brand-ink); background: color-mix(in srgb, var(--accent, var(--brand)) 12%, var(--card)); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; }
+.lp-herocard__pill { font-family: inherit; font-size: 0.78rem; font-weight: 700; line-height: 1.2; color: var(--brand-ink); background: color-mix(in srgb, var(--accent, var(--brand)) 12%, var(--card)); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+.lp-herocard__pill:hover { border-color: color-mix(in srgb, var(--accent, var(--brand)) 50%, var(--line)); }
+.lp-herocard__pill[aria-pressed="true"] { background: var(--accent, var(--brand)); border-color: var(--accent, var(--brand)); color: #fff; }
 
 /* ─────────────────────────── Reduced Motion ───────────────────────────
  * Harte Garantie: keine Bewegung. Flip & Tilt instant, Chips/Shine/Reveal aus. */
@@ -908,4 +916,5 @@ a { color: var(--brand-ink); }
   .lp-step:hover, .lp-step.is-active { transform: none !important; }
   .lp-step:hover .lp-step__num, .lp-step.is-active .lp-step__num { transform: rotate(-5deg) !important; }
   .lp-audchip { transition: none !important; }
+  .lp-herocard__pill { transition: none !important; }
 }

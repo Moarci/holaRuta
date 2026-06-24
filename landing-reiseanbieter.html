@@ -16,6 +16,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HolaRuta" />
   <meta property="og:locale" content="de_DE" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="es_ES" />
   <meta property="og:url" content="https://moarci.github.io/holaRuta/landing-reiseanbieter.html" />
   <meta property="og:title" content="HolaRuta für Reiseanbieter – der Travel-Language-Companion für Gruppen" />
   <meta property="og:description" content="Pre-Trip-Engagement, Social-Icebreaker und Sicherheit unterwegs. Reisende üben die wichtigsten lokalen Sätze – offline, in eurem Branding." />
@@ -152,11 +154,11 @@
         <aside class="lp-cardcol" data-reveal style="--i:2">
           <div class="lp-herocard">
             <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · WeRoad Colombia</span>
-            <p class="lp-herocard__phrase"><b>¿A qué hora sale el próximo bus?</b><span data-i18n="card.tr">„Wann fährt der nächste Bus?“ – Orientierung, die jede Gruppe vor Ort sofort braucht.</span></p>
-            <div class="lp-herocard__row">
-              <span class="lp-herocard__pill" data-i18n="card.p1">Pre-Trip</span>
-              <span class="lp-herocard__pill" data-i18n="card.p2">Icebreaker</span>
-              <span class="lp-herocard__pill" data-i18n="card.p3">Safety</span>
+            <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿A qué hora sale el próximo bus?</b><span class="lp-herocard__tr">„Wann fährt der nächste Bus?“ – Orientierung, die jede Gruppe vor Ort sofort braucht.</span></p>
+            <div class="lp-herocard__row" role="group" aria-label="Einsatz-Szenarien">
+              <button type="button" class="lp-herocard__pill" data-pill="0" aria-pressed="true" data-i18n="card.p1">Pre-Trip</button>
+              <button type="button" class="lp-herocard__pill" data-pill="1" aria-pressed="false" data-i18n="card.p2">Icebreaker</button>
+              <button type="button" class="lp-herocard__pill" data-pill="2" aria-pressed="false" data-i18n="card.p3">Safety</button>
             </div>
           </div>
         </aside>
@@ -309,6 +311,21 @@
       </div>
     </section>
 
+    <!-- ─────────────── Risikofrei / Vertrauen ─────────────── -->
+    <section class="lp-section" id="trust">
+      <div class="lp-wrap">
+        <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Risikofrei starten</p>
+        <ul class="lp-trustbar" data-reveal>
+          <li data-i18n="proof.1">🆓 Pilot auf einer eurer Routen – unverbindlich</li>
+          <li data-i18n="proof.2">🎨 In eurem Branding, per Link ausgerollt</li>
+          <li data-i18n="proof.3">⚡ Offline & DSGVO-freundlich, kein Konto nötig</li>
+        </ul>
+        <!-- Sobald freigegeben, hier ein echtes Testimonial einsetzen:
+        <blockquote class="lp-quote">„Echtes Zitat …“ <cite>— Name, Reiseanbieter</cite></blockquote>
+        -->
+      </div>
+    </section>
+
     <!-- ─────────────── Kontakt / Abschluss-CTA ─────────────── -->
     <section class="lp-section lp-contact" id="kontakt">
       <div class="lp-wrap">
@@ -375,6 +392,7 @@
 
     var I18N = {
       de: {
+        "proof.title": "Risikofrei starten", "proof.1": "🆓 Pilot auf einer eurer Routen – unverbindlich", "proof.2": "🎨 In eurem Branding, per Link ausgerollt", "proof.3": "⚡ Offline & DSGVO-freundlich, kein Konto nötig",
         "_title": "HolaRuta für Reiseanbieter – der Travel-Language-Companion für Gruppen",
         "_desc": "HolaRuta für Gruppenreise-Anbieter: Pre-Trip-Engagement, Social-Icebreaker und Sicherheit unterwegs. Reisende üben die wichtigsten lokalen Sätze – offline, ohne Konto, in eurem Branding.",
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
@@ -384,8 +402,11 @@
         "hero.sub": "HolaRuta ist kein Sprachkurs, sondern ein Travel-Language-Companion: eine leichte Offline-PWA, mit der eure Reisenden die wichtigsten Sätze für Taxi, Essen, Geld, Notfälle und Smalltalk üben. Das stärkt Pre-Trip-Engagement, Gruppen-Bonding und Sicherheit – in eurem Branding.",
         "hero.demo": "Live-Demo öffnen →", "hero.contact": "Pilot anfragen",
         "trust.pretrip": "Pre-Trip-Plan", "trust.destinations": "Destination-Packs", "trust.coordinator": "Coordinator-Spiel", "trust.offlineval": "Offline", "trust.offline": "auch ohne Netz",
-        "card.brand": "HolaRuta · WeRoad Colombia", "card.tr": "„Wann fährt der nächste Bus?“ – Orientierung, die jede Gruppe vor Ort sofort braucht.",
+        "card.brand": "HolaRuta · WeRoad Colombia",
         "card.p1": "Pre-Trip", "card.p2": "Icebreaker", "card.p3": "Safety",
+        "card.p1.q": "¿A qué hora sale el próximo bus?", "card.p1.tr": "„Wann fährt der nächste Bus?“ – tägliche Mini-Aufgabe in den zwei Wochen vor Abflug.",
+        "card.p2.q": "¿Jugamos una ronda?", "card.p2.tr": "„Spielen wir eine Runde?“ – Gruppen-Battles, die am ersten Tag das Eis brechen.",
+        "card.p3.q": "Necesito un médico.", "card.p3.tr": "„Ich brauche einen Arzt.“ – die Sätze, auf die es ankommt, wenn es ernst wird.",
         "use.eyebrow": "REISEQUALITÄT, NICHT VOKABELN", "use.title": "Sicherer fühlen, mehr lokal erleben, besser zusammenwachsen.",
         "use.lead": "Eure Teilnehmer buchen keine Schule – sie wollen sich weniger hilflos fühlen. HolaRuta verstärkt euren Markenkern: kleine Gruppen, Community, Vibe.",
         "use.1.k": "Pre-Trip-Engagement", "use.1.t": "Die Vorfreude wird zur App.", "use.1.b": "Ein mehrtägiger Pre-Trip-Plan bringt die Gruppe schon vor Abreise in Bewegung: Tag 1 Begrüßung, Tag 5 Icebreaker. Eure Reise beginnt zwei Wochen früher.",
@@ -414,6 +435,7 @@
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut."
       },
       en: {
+        "proof.title": "Start risk-free", "proof.1": "🆓 Pilot on one of your routes – no commitment", "proof.2": "🎨 In your branding, rolled out via one link", "proof.3": "⚡ Offline & privacy-friendly, no account needed",
         "_title": "HolaRuta for tour operators – the travel-language companion for groups",
         "_desc": "HolaRuta for group-travel operators: pre-trip engagement, social icebreakers and safety on the road. Travelers practice the key local phrases – offline, no account, in your branding.",
         "skip": "Skip to content", "nav.demo": "Live demo",
@@ -423,8 +445,11 @@
         "hero.sub": "HolaRuta isn't a language course, it's a travel-language companion: a light offline PWA where your travelers practice the key phrases for taxis, food, money, emergencies and small talk. It boosts pre-trip engagement, group bonding and safety – in your branding.",
         "hero.demo": "Open live demo →", "hero.contact": "Request a pilot",
         "trust.pretrip": "pre-trip plan", "trust.destinations": "destination packs", "trust.coordinator": "coordinator game", "trust.offlineval": "Offline", "trust.offline": "even with no signal",
-        "card.brand": "HolaRuta · WeRoad Colombia", "card.tr": "“When does the next bus leave?” – orientation every group needs on the ground right away.",
+        "card.brand": "HolaRuta · WeRoad Colombia",
         "card.p1": "Pre-trip", "card.p2": "Icebreaker", "card.p3": "Safety",
+        "card.p1.q": "¿A qué hora sale el próximo bus?", "card.p1.tr": "“When does the next bus leave?” – a daily mini-task in the two weeks before departure.",
+        "card.p2.q": "¿Jugamos una ronda?", "card.p2.tr": "“Shall we play a round?” – group battles that break the ice on day one.",
+        "card.p3.q": "Necesito un médico.", "card.p3.tr": "“I need a doctor.” – the phrases that matter when things get serious.",
         "use.eyebrow": "TRAVEL QUALITY, NOT VOCABULARY", "use.title": "Feel safer, experience more locally, bond better.",
         "use.lead": "Your participants aren't booking a school – they want to feel less helpless. HolaRuta reinforces your brand core: small groups, community, vibe.",
         "use.1.k": "Pre-trip engagement", "use.1.t": "Anticipation becomes an app.", "use.1.b": "A multi-day pre-trip plan gets the group moving before departure: day 1 greetings, day 5 icebreaker. Your trip starts two weeks earlier.",
@@ -453,6 +478,7 @@
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America."
       },
       es: {
+        "proof.title": "Empieza sin riesgo", "proof.1": "🆓 Piloto en una de tus rutas – sin compromiso", "proof.2": "🎨 Con tu marca, desplegado con un enlace", "proof.3": "⚡ Sin conexión y respetuoso con la privacidad, sin cuenta",
         "_title": "HolaRuta para agencias de viajes – el compañero de idioma de viaje para grupos",
         "_desc": "HolaRuta para operadores de viajes en grupo: engagement pre-viaje, rompehielos sociales y seguridad sobre el terreno. Los viajeros practican las frases locales clave – sin conexión, sin cuenta, con tu marca.",
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
@@ -462,10 +488,13 @@
         "hero.sub": "HolaRuta no es un curso de idiomas, es un compañero de idioma de viaje: una PWA ligera sin conexión con la que tus viajeros practican las frases clave para taxi, comida, dinero, emergencias y charla. Refuerza el engagement pre-viaje, la cohesión del grupo y la seguridad – con tu marca.",
         "hero.demo": "Abrir demo en vivo →", "hero.contact": "Solicitar piloto",
         "trust.pretrip": "plan pre-viaje", "trust.destinations": "packs de destino", "trust.coordinator": "juego coordinador", "trust.offlineval": "Sin conexión", "trust.offline": "incluso sin red",
-        "card.brand": "HolaRuta · WeRoad Colombia", "card.tr": "«¿A qué hora sale el próximo bus?» – orientación que todo grupo necesita al instante sobre el terreno.",
+        "card.brand": "HolaRuta · WeRoad Colombia",
         "card.p1": "Pre-viaje", "card.p2": "Rompehielos", "card.p3": "Seguridad",
+        "card.p1.q": "¿A qué hora sale el próximo bus?", "card.p1.tr": "«¿A qué hora sale el próximo bus?» – una mini-tarea diaria en las dos semanas previas al vuelo.",
+        "card.p2.q": "¿Jugamos una ronda?", "card.p2.tr": "«¿Jugamos una ronda?» – battles de grupo que rompen el hielo el primer día.",
+        "card.p3.q": "Necesito un médico.", "card.p3.tr": "«Necesito un médico.» – las frases que cuentan cuando la cosa se pone seria.",
         "use.eyebrow": "CALIDAD DE VIAJE, NO VOCABULARIO", "use.title": "Sentirse más seguro, vivir más lo local, unirse mejor.",
-        "use.lead": "Vuestros participantes no reservan una escuela – quieren sentirse menos perdidos. HolaRuta refuerza el núcleo de vuestra marca: grupos pequeños, comunidad, vibra.",
+        "use.lead": "Tus participantes no reservan una escuela – quieren sentirse menos perdidos. HolaRuta refuerza el núcleo de tu marca: grupos pequeños, comunidad, vibra.",
         "use.1.k": "Engagement pre-viaje", "use.1.t": "La ilusión se convierte en app.", "use.1.b": "Un plan pre-viaje de varios días pone al grupo en marcha antes de salir: día 1 saludos, día 5 rompehielos. Vuestro viaje empieza dos semanas antes.",
         "use.2.k": "Rompehielos social", "use.2.t": "Un toque inicia el juego de grupo.", "use.2.b": "El modo coordinador da al guía un juego de grupo de 5 minutos listo – batallas, misiones, risas. Los compañeros de viaje se vuelven un grupo.",
         "use.3.k": "Seguridad e inmersión local", "use.3.t": "Frases de emergencia y orientación – sin conexión.", "use.3.b": "Taxi, comida, dinero, emergencias: las frases clave funcionan incluso sin red en el bus nocturno. Los participantes se atreven a pedir solos – y se sienten más seguros.",
@@ -481,11 +510,11 @@
         "price.p3.tag": "Por plaza", "price.p3.price": "0,50–2,00 $", "price.p3.l1": "Facturación por participante", "price.p3.l2": "Tiene sentido solo con volumen", "price.p3.l3": "Combinable con licencia anual",
         "price.note": "Para WeRoad Colombia ya hay una propuesta elaborada con mapeo ruta↔contenido, modelo de 3 fases y plan de 7 días.",
         "faq.title": "Preguntas frecuentes de agencias",
-        "faq.q1": "¿Es un curso de idiomas?", "faq.a1": "No. HolaRuta es un compañero de idioma de viaje: sin lecciones de gramática, solo las pocas frases que vuestros viajeros necesitan al instante sobre el terreno – más actividades de grupo.",
+        "faq.q1": "¿Es un curso de idiomas?", "faq.a1": "No. HolaRuta es un compañero de idioma de viaje: sin lecciones de gramática, solo las pocas frases que tus viajeros necesitan al instante sobre el terreno – más actividades de grupo.",
         "faq.q2": "¿Funciona sin red?", "faq.a2": "Sí. Como PWA sin conexión todo funciona sin red – Andes, selva, bus nocturno. Sin tienda de apps, sin cuenta, sin registro.",
-        "faq.q3": "¿Lo tenemos con nuestra marca?", "faq.a3": "Sí. Una edición abre la app con vuestro nombre, color y el destino del viaje preseleccionado – un enlace basta para todo el grupo.",
+        "faq.q3": "¿Lo tenemos con nuestra marca?", "faq.a3": "Sí. Una edición abre la app con tu nombre, color y el destino del viaje preseleccionado – un enlace basta para todo el grupo.",
         "faq.q4": "¿Cómo empieza un piloto?", "faq.a4": "Con un pack de destino para una ruta concreta. Para WeRoad Colombia ya hay una propuesta elaborada con sugerencia de piloto.",
-        "contact.title": "Convertid vuestro próximo viaje en una experiencia – ya desde antes.", "contact.sub": "Abrid la demo en vivo en la edición WeRoad Colombia o escribidnos para un piloto en una de vuestras rutas.",
+        "contact.title": "Convierte tu próximo viaje en una experiencia – ya desde antes.", "contact.sub": "Abre la demo en vivo en la edición WeRoad Colombia o escríbenos para un piloto en una de tus rutas.",
         "contact.demo": "Abrir demo en vivo →", "contact.mail": "Solicitar piloto por email", "contact.material": "📄 Ver la propuesta elaborada de WeRoad Colombia",
         "footer.blurb": "Compañero de idioma de viaje para viajes en grupo – engagement pre-viaje, rompehielos sociales y seguridad sobre el terreno. Sin conexión, sin cuenta.",
         "footer.audiences": "¿Para quién?", "footer.more": "Más", "footer.demo": "Abrir demo en vivo", "footer.material": "Propuesta WeRoad", "footer.contact": "Contacto",
@@ -504,6 +533,8 @@
       document.title = dict["_title"];
       var meta = document.querySelector('meta[name="description"]');
       if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
+      var ogl = document.querySelector('meta[property="og:locale"]');
+      if (ogl) ogl.setAttribute("content", lang === "en" ? "en_US" : (lang === "es" ? "es_ES" : "de_DE"));
       var nodes = document.querySelectorAll("[data-i18n]");
       for (var i = 0; i < nodes.length; i++) {
         var key = nodes[i].getAttribute("data-i18n");
@@ -516,6 +547,32 @@
         btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
       }
       try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+      currentLang = lang;
+      paintHeroCard();
+    }
+
+    // Hero-Karte: Pills als Tabs – jede Pill blendet ihr eigenes Szenario (Satz + Erklärung) ein.
+    var currentLang = "de";
+    var heroCard = document.querySelector(".lp-herocard");
+    var heroPills = heroCard ? heroCard.querySelectorAll(".lp-herocard__pill") : [];
+    var heroQ = heroCard ? heroCard.querySelector(".lp-herocard__q") : null;
+    var heroTr = heroCard ? heroCard.querySelector(".lp-herocard__tr") : null;
+    var heroActive = 0;
+    function paintHeroCard() {
+      if (!heroQ || !heroTr) return;
+      var d = I18N[currentLang] || I18N.de;
+      var q = d["card.p" + (heroActive + 1) + ".q"];
+      var tr = d["card.p" + (heroActive + 1) + ".tr"];
+      if (q) heroQ.textContent = q;
+      if (tr) heroTr.textContent = tr;
+      for (var i = 0; i < heroPills.length; i++) {
+        heroPills[i].setAttribute("aria-pressed", i === heroActive ? "true" : "false");
+      }
+    }
+    for (var hp = 0; hp < heroPills.length; hp++) {
+      (function (i) {
+        heroPills[i].addEventListener("click", function () { heroActive = i; paintHeroCard(); });
+      })(hp);
     }
 
     var SUPPORTED = ["de", "en", "es"];
@@ -563,6 +620,32 @@
         entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
       }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
       reveal.forEach(function (el) { io.observe(el); });
+    }
+
+    // Zahlen hochzählen, sobald sie sichtbar werden (respektiert reduced-motion).
+    var counters = document.querySelectorAll("[data-count]");
+    function countUp(el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (isNaN(target)) return;
+      var finalText = el.textContent;
+      if (reduce) { el.textContent = finalText; return; }
+      var dur = 900, t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var v = Math.round((1 - Math.pow(1 - p, 3)) * target);
+        el.textContent = p < 1 ? String(v) : finalText;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if (reduce || !("IntersectionObserver" in window)) {
+      counters.forEach(function (el) { countUp(el); });
+    } else {
+      var cio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { countUp(e.target); cio.unobserve(e.target); } });
+      }, { threshold: 0.5 });
+      counters.forEach(function (el) { cio.observe(el); });
     }
 
     var header = document.getElementById("lpHeader");

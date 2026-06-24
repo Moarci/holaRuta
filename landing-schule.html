@@ -18,6 +18,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HolaRuta" />
   <meta property="og:locale" content="de_DE" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="es_ES" />
   <meta property="og:url" content="https://moarci.github.io/holaRuta/landing-schule.html" />
   <meta property="og:title" content="HolaRuta für Sprachschulen – Reise-Spanisch als Kurs-Begleiter" />
   <meta property="og:description" content="Mobile Reise-Spanisch-Begleitung für Immersionskurse – Pre-Arrival-Pack, Classroom-Companion, Real-Life-Challenges. Offline, ohne Konto, mit Schul-Branding." />
@@ -155,11 +157,11 @@
         <aside class="lp-cardcol" data-reveal style="--i:2">
           <div class="lp-herocard">
             <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · ECOS Edition</span>
-            <p class="lp-herocard__phrase"><b>¿Me trae la cuenta, por favor?</b><span data-i18n="card.tr">„Bringen Sie mir bitte die Rechnung?“ – als Hausaufgabe heute im Café anwenden.</span></p>
-            <div class="lp-herocard__row">
-              <span class="lp-herocard__pill" data-i18n="card.p1">Pre-Arrival</span>
-              <span class="lp-herocard__pill" data-i18n="card.p2">Classroom</span>
-              <span class="lp-herocard__pill" data-i18n="card.p3">Real-Life</span>
+            <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿Tiene una habitación libre?</b><span class="lp-herocard__tr">„Haben Sie ein Zimmer frei?“ – vor der Anreise: Flughafen, Taxi, Check-in schon mal geübt.</span></p>
+            <div class="lp-herocard__row" role="group" aria-label="Einsatz-Szenarien">
+              <button type="button" class="lp-herocard__pill" data-pill="0" aria-pressed="true" data-i18n="card.p1">Pre-Arrival</button>
+              <button type="button" class="lp-herocard__pill" data-pill="1" aria-pressed="false" data-i18n="card.p2">Classroom</button>
+              <button type="button" class="lp-herocard__pill" data-pill="2" aria-pressed="false" data-i18n="card.p3">Real-Life</button>
             </div>
           </div>
         </aside>
@@ -308,6 +310,21 @@
       </div>
     </section>
 
+    <!-- ─────────────── Risikofrei / Vertrauen ─────────────── -->
+    <section class="lp-section" id="trust">
+      <div class="lp-wrap">
+        <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Risikofrei starten</p>
+        <ul class="lp-trustbar" data-reveal>
+          <li data-i18n="proof.1">🆓 Kostenloser Pilot – 4–6 Wochen mit 1–2 Klassen</li>
+          <li data-i18n="proof.2">🔒 Offline, kein Schüler-Konto, Fortschritt bleibt lokal</li>
+          <li data-i18n="proof.3">⚡ In 30 Sekunden startklar – ein Link, eure Edition</li>
+        </ul>
+        <!-- Sobald freigegeben, hier ein echtes Testimonial einsetzen:
+        <blockquote class="lp-quote">„Echtes Zitat …“ <cite>— Name, Schule · Stadt</cite></blockquote>
+        -->
+      </div>
+    </section>
+
     <!-- ─────────────── Kontakt / Abschluss-CTA ─────────────── -->
     <section class="lp-section lp-contact" id="kontakt">
       <div class="lp-wrap">
@@ -375,6 +392,7 @@
     // Dreisprachiges Wörterbuch (DE/EN/ES). _title/_desc lokalisieren <title> & meta description.
     var I18N = {
       de: {
+        "proof.title": "Risikofrei starten", "proof.1": "🆓 Kostenloser Pilot – 4–6 Wochen mit 1–2 Klassen", "proof.2": "🔒 Offline, kein Schüler-Konto, Fortschritt bleibt lokal", "proof.3": "⚡ In 30 Sekunden startklar – ein Link, eure Edition",
         "_title": "HolaRuta für Sprachschulen – Reise-Spanisch als Kurs-Begleiter",
         "_desc": "HolaRuta für Sprachschulen: mobile Reise-Spanisch-Begleitung für Immersionskurse – Pre-Arrival-Pack, Classroom-Companion und Real-Life-Challenges. Offline, ohne Konto, mit Schul-Branding.",
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
@@ -384,8 +402,11 @@
         "hero.sub": "HolaRuta begleitet eure Immersionskurse mobil: Pre-Arrival-Vorbereitung, 5-Minuten-Warm-ups im Unterricht und echte Mutproben vor Ort. Lateinamerika-korrekt, offline, ohne Konto – optional in eurem Schul-Branding.",
         "hero.demo": "Live-Demo öffnen →", "hero.contact": "Pilot anfragen",
         "trust.cards": "Karten", "trust.challenges": "Real-Life-Challenges", "trust.levels": "Niveaus", "trust.pilot": "Pilot",
-        "card.brand": "HolaRuta · ECOS Edition", "card.tr": "„Bringen Sie mir bitte die Rechnung?“ – als Hausaufgabe heute im Café anwenden.",
+        "card.brand": "HolaRuta · ECOS Edition",
         "card.p1": "Pre-Arrival", "card.p2": "Classroom", "card.p3": "Real-Life",
+        "card.p1.q": "¿Tiene una habitación libre?", "card.p1.tr": "„Haben Sie ein Zimmer frei?“ – vor der Anreise: Flughafen, Taxi, Check-in schon mal geübt.",
+        "card.p2.q": "¿Me trae la cuenta, por favor?", "card.p2.tr": "„Bringen Sie mir bitte die Rechnung?“ – 5-Minuten-Warm-up oder Partnerarbeit im Unterricht.",
+        "card.p3.q": "¿A cómo el kilo?", "card.p3.tr": "„Was kostet das Kilo?“ – als Mutprobe auf dem Markt: 47 echte Challenges.",
         "use.eyebrow": "DREI EINSATZ-SZENARIEN", "use.title": "Vorbereiten, üben, anwenden – alles in einer App.",
         "use.lead": "Schulen verkaufen keinen Grammatikkurs, sondern einen Aufenthalt. Genau dort ist HolaRuta stark – und alles davon trägt der heutige Stand.",
         "use.1.k": "Pre-Arrival-Pack", "use.1.t": "Startklar, bevor das Flugzeug landet.", "use.1.b": "Schüler bereiten sich mit Flughafen, Taxi, Check-in, Essen, Geld und Notfall vor – mit Kategorien, Spickzettel und Kontextkarten. Sie kommen schon sprechfähig an.",
@@ -414,6 +435,7 @@
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut."
       },
       en: {
+        "proof.title": "Start risk-free", "proof.1": "🆓 Free pilot – 4–6 weeks with 1–2 classes", "proof.2": "🔒 Offline, no student accounts, progress stays on device", "proof.3": "⚡ Ready in 30 seconds – one link, your edition",
         "_title": "HolaRuta for language schools – travel Spanish as a course companion",
         "_desc": "HolaRuta for language schools: a mobile travel-Spanish companion for immersion courses – pre-arrival pack, classroom companion and real-life challenges. Offline, no account, with your school branding.",
         "skip": "Skip to content", "nav.demo": "Live demo",
@@ -423,8 +445,11 @@
         "hero.sub": "HolaRuta supports your immersion courses on mobile: pre-arrival prep, 5-minute in-class warm-ups and real challenges on the ground. Latin-American-correct, offline, no account – optionally in your school branding.",
         "hero.demo": "Open live demo →", "hero.contact": "Request a pilot",
         "trust.cards": "cards", "trust.challenges": "real-life challenges", "trust.levels": "levels", "trust.pilot": "pilot",
-        "card.brand": "HolaRuta · ECOS Edition", "card.tr": "“Could you bring me the bill, please?” – use it as homework at a café today.",
+        "card.brand": "HolaRuta · ECOS Edition",
         "card.p1": "Pre-arrival", "card.p2": "Classroom", "card.p3": "Real-life",
+        "card.p1.q": "¿Tiene una habitación libre?", "card.p1.tr": "“Do you have a room available?” – before arrival: airport, taxi and check-in, practised in advance.",
+        "card.p2.q": "¿Me trae la cuenta, por favor?", "card.p2.tr": "“Could you bring me the bill, please?” – a 5-minute warm-up or partner task in class.",
+        "card.p3.q": "¿A cómo el kilo?", "card.p3.tr": "“How much per kilo?” – use it as a real-life dare at the market: 47 challenges.",
         "use.eyebrow": "THREE USE SCENARIOS", "use.title": "Prepare, practice, apply – all in one app.",
         "use.lead": "Schools don't sell a grammar course, they sell a stay. That's exactly where HolaRuta shines – and all of it is supported by what exists today.",
         "use.1.k": "Pre-arrival pack", "use.1.t": "Ready before the plane lands.", "use.1.b": "Students prepare with airport, taxi, check-in, food, money and emergencies – using categories, cheat sheets and context cards. They arrive already able to speak.",
@@ -453,6 +478,7 @@
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America."
       },
       es: {
+        "proof.title": "Empieza sin riesgo", "proof.1": "🆓 Piloto gratis – 4–6 semanas con 1–2 clases", "proof.2": "🔒 Sin conexión, sin cuentas de alumnos, el progreso queda en el dispositivo", "proof.3": "⚡ Listo en 30 segundos – un enlace, tu edición",
         "_title": "HolaRuta para escuelas de español – español de viaje como complemento del curso",
         "_desc": "HolaRuta para escuelas de idiomas: un complemento móvil de español de viaje para cursos de inmersión – pack de pre-llegada, compañero de aula y retos de la vida real. Sin conexión, sin cuenta, con la marca de tu escuela.",
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
@@ -462,8 +488,11 @@
         "hero.sub": "HolaRuta acompaña tus cursos de inmersión en el móvil: preparación de pre-llegada, calentamientos de 5 minutos en clase y retos reales sobre el terreno. Correcto para Latinoamérica, sin conexión, sin cuenta – opcionalmente con la marca de tu escuela.",
         "hero.demo": "Abrir demo en vivo →", "hero.contact": "Solicitar piloto",
         "trust.cards": "tarjetas", "trust.challenges": "retos reales", "trust.levels": "niveles", "trust.pilot": "piloto",
-        "card.brand": "HolaRuta · Edición ECOS", "card.tr": "«¿Me trae la cuenta, por favor?» – úsalo hoy como tarea en un café.",
+        "card.brand": "HolaRuta · Edición ECOS",
         "card.p1": "Pre-llegada", "card.p2": "Aula", "card.p3": "Vida real",
+        "card.p1.q": "¿Tiene una habitación libre?", "card.p1.tr": "«¿Tiene una habitación libre?» – antes de llegar: aeropuerto, taxi y check-in ya practicados.",
+        "card.p2.q": "¿Me trae la cuenta, por favor?", "card.p2.tr": "«¿Me trae la cuenta, por favor?» – un calentamiento de 5 minutos o trabajo en parejas en clase.",
+        "card.p3.q": "¿A cómo el kilo?", "card.p3.tr": "«¿A cómo el kilo?» – úsalo como reto real en el mercado: 47 desafíos.",
         "use.eyebrow": "TRES ESCENARIOS DE USO", "use.title": "Preparar, practicar, aplicar – todo en una app.",
         "use.lead": "Las escuelas no venden un curso de gramática, venden una estancia. Ahí es donde HolaRuta brilla – y todo ello lo sostiene lo que ya existe hoy.",
         "use.1.k": "Pack de pre-llegada", "use.1.t": "Listo antes de que aterrice el avión.", "use.1.b": "Los alumnos se preparan con aeropuerto, taxi, check-in, comida, dinero y emergencias – con categorías, chuletas y tarjetas de contexto. Llegan ya capaces de hablar.",
@@ -474,7 +503,7 @@
         "how.s2.k": "PRACTICAR", "how.s2.t": "En clase y en casa", "how.s2.b": "Calentamiento, parejas, tarea. <b class=\"lp-step__hl\">Tarjeta, escritura o escucha</b> – el docente marca el ritmo.",
         "how.s3.k": "APLICAR", "how.s3.t": "A la calle", "how.s3.b": "Los retos reales llevan lo aprendido a la Cartagena real. <b class=\"lp-step__hl\">El progreso</b> queda visible en el dispositivo.",
         "price.eyebrow": "PAQUETES", "price.title": "Primero un piloto gratuito, luego una licencia anual sencilla.",
-        "price.lead": "Sin riesgo al empezar: probáis una clase y luego decidís. El co-branding y las opciones de red llegan después.",
+        "price.lead": "Sin riesgo al empezar: pruebas una clase y luego decides. El co-branding y las opciones de red llegan después.",
         "price.peryear": " / año",
         "price.p1.tag": "Piloto", "price.p1.price": "0 $", "price.p1.desc": "Prueba de 4–6 semanas con 1–2 clases, incluida una llamada de feedback.",
         "price.p2.tag": "School Starter", "price.p2.price": "499 $", "price.p2.l1": "App + pack de escuela", "price.p2.l2": "Handout docente con planes de clase", "price.p2.l3": "Pre-llegada, aula, retos",
@@ -482,10 +511,10 @@
         "price.note": "Licencias de red (varias sedes) desde 2.500 $/año – bajo petición.",
         "faq.title": "Preguntas frecuentes de escuelas",
         "faq.q1": "¿Hace falta instalación o cuentas?", "faq.a1": "No. HolaRuta funciona como app web en el navegador, sin conexión, sin tienda de apps y sin cuentas de alumno. El progreso queda local en el dispositivo.",
-        "faq.q2": "¿Podemos tenerlo con nuestra marca?", "faq.a2": "Sí. El sistema de ediciones permite que un único enlace abra la app con vuestro nombre, color y ciudad – sin que distribuyáis un archivo aparte.",
-        "faq.q3": "¿Qué español se enseña?", "faq.a3": "Español de viaje latinoamericano – colectivo en vez de autobús, vuelto en vez de cambio. Para un uso serio recomendamos que vuestros docentes revisen los contenidos.",
+        "faq.q2": "¿Podemos tenerlo con nuestra marca?", "faq.a2": "Sí. El sistema de ediciones permite que un único enlace abra la app con tu nombre, color y ciudad – sin que distribuyas un archivo aparte.",
+        "faq.q3": "¿Qué español se enseña?", "faq.a3": "Español de viaje latinoamericano – colectivo en vez de autobús, vuelto en vez de cambio. Para un uso serio recomendamos que tus docentes revisen los contenidos.",
         "faq.q4": "¿Cuánto cuesta empezar?", "faq.a4": "Nada. Empezáis con un piloto gratuito de 4–6 semanas. Solo si encaja se convierte en una licencia anual sencilla.",
-        "contact.title": "Probad HolaRuta con una clase.", "contact.sub": "Abrid la demo en vivo en la edición ECOS o escribidnos para un piloto gratuito – nosotros lo configuramos todo.",
+        "contact.title": "Probad HolaRuta con una clase.", "contact.sub": "Abre la demo en vivo en la edición ECOS o escríbenos para un piloto gratuito – nosotros lo configuramos todo.",
         "contact.demo": "Abrir demo en vivo →", "contact.mail": "Solicitar piloto por email", "contact.material": "📄 Ver recetas de clase para docentes",
         "footer.blurb": "Español de viaje como complemento móvil del curso para escuelas de inmersión – pre-llegada, compañero de aula y retos reales. Sin conexión, sin cuenta.",
         "footer.audiences": "¿Para quién?", "footer.more": "Más", "footer.demo": "Abrir demo en vivo", "footer.material": "Material docente", "footer.contact": "Contacto",
@@ -505,6 +534,8 @@
       document.title = dict["_title"];
       var meta = document.querySelector('meta[name="description"]');
       if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
+      var ogl = document.querySelector('meta[property="og:locale"]');
+      if (ogl) ogl.setAttribute("content", lang === "en" ? "en_US" : (lang === "es" ? "es_ES" : "de_DE"));
       var nodes = document.querySelectorAll("[data-i18n]");
       for (var i = 0; i < nodes.length; i++) {
         var key = nodes[i].getAttribute("data-i18n");
@@ -517,6 +548,32 @@
         btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
       }
       try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+      currentLang = lang;
+      paintHeroCard();
+    }
+
+    // Hero-Karte: Pills als Tabs – jede Pill blendet ihr eigenes Szenario (Satz + Erklärung) ein.
+    var currentLang = "de";
+    var heroCard = document.querySelector(".lp-herocard");
+    var heroPills = heroCard ? heroCard.querySelectorAll(".lp-herocard__pill") : [];
+    var heroQ = heroCard ? heroCard.querySelector(".lp-herocard__q") : null;
+    var heroTr = heroCard ? heroCard.querySelector(".lp-herocard__tr") : null;
+    var heroActive = 0;
+    function paintHeroCard() {
+      if (!heroQ || !heroTr) return;
+      var d = I18N[currentLang] || I18N.de;
+      var q = d["card.p" + (heroActive + 1) + ".q"];
+      var tr = d["card.p" + (heroActive + 1) + ".tr"];
+      if (q) heroQ.textContent = q;
+      if (tr) heroTr.textContent = tr;
+      for (var i = 0; i < heroPills.length; i++) {
+        heroPills[i].setAttribute("aria-pressed", i === heroActive ? "true" : "false");
+      }
+    }
+    for (var hp = 0; hp < heroPills.length; hp++) {
+      (function (i) {
+        heroPills[i].addEventListener("click", function () { heroActive = i; paintHeroCard(); });
+      })(hp);
     }
 
     // Startsprache: ?lang= (teilbarer Link) > gemerkt > Browser > de
@@ -568,6 +625,32 @@
         entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
       }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
       reveal.forEach(function (el) { io.observe(el); });
+    }
+
+    // Zahlen hochzählen, sobald sie sichtbar werden (respektiert reduced-motion).
+    var counters = document.querySelectorAll("[data-count]");
+    function countUp(el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (isNaN(target)) return;
+      var finalText = el.textContent;
+      if (reduce) { el.textContent = finalText; return; }
+      var dur = 900, t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var v = Math.round((1 - Math.pow(1 - p, 3)) * target);
+        el.textContent = p < 1 ? String(v) : finalText;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if (reduce || !("IntersectionObserver" in window)) {
+      counters.forEach(function (el) { countUp(el); });
+    } else {
+      var cio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { countUp(e.target); cio.unobserve(e.target); } });
+      }, { threshold: 0.5 });
+      counters.forEach(function (el) { cio.observe(el); });
     }
 
     // Header-Schatten beim Scrollen (kosmetisch, wie auf der B2C-Landing).

@@ -16,6 +16,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HolaRuta" />
   <meta property="og:locale" content="de_DE" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="es_ES" />
   <meta property="og:url" content="https://moarci.github.io/holaRuta/landing-hostel.html" />
   <meta property="og:title" content="HolaRuta für Hostels – die fertige Spanish Night für den Common Room" />
   <meta property="og:description" content="Eine fertige Social-Aktivität für den Common Room – Sprach-Battles und Rollenspiele per QR-Code, ohne Planung. Offline, meist kostenlos mit Co-Branding." />
@@ -123,8 +125,8 @@
       <div class="lp-wrap lp-hero__grid">
         <div class="lp-hero__copy">
           <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">FÜR HOSTELS IN LATEINAMERIKA</p>
-          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Spanish Night, die sich von selbst plant.</h1>
-          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">HolaRuta heißt im Kern „Hostel Mode“: Sprach-Battles und Rollenspiele sind buchstäblich für den Common Room gebaut. Hängt einen QR-Code auf – die Gäste spielen, lachen und lernen. Keine Vorbereitung, kein Konto, keine App-Installation.</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Spanish Night, die sich von selbst plant – jeden Tag, immer.</h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">HolaRuta heißt im Kern „Hostel Mode“: Sprach-Battles und Rollenspiele sind buchstäblich für den Common Room gebaut. Hängt einen QR-Code auf – die Gäste spielen, lachen und lernen. Kein fester Termin, keine Vorbereitung, kein Konto: Die Spanish Night ist jeden Tag da, für jeden neuen Schwung Gäste.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
             <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=hostel&start=onboarding" data-i18n="hero.demo">Live-Demo öffnen →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#kontakt" data-i18n="hero.contact">Partner werden</a>
@@ -152,11 +154,11 @@
         <aside class="lp-cardcol" data-reveal style="--i:2">
           <div class="lp-herocard">
             <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · Hostel Edition</span>
-            <p class="lp-herocard__phrase"><b>¿De dónde eres?</b><span data-i18n="card.tr">„Woher kommst du?“ – der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.</span></p>
-            <div class="lp-herocard__row">
-              <span class="lp-herocard__pill" data-i18n="card.p1">Battle</span>
-              <span class="lp-herocard__pill" data-i18n="card.p2">Rollenspiel</span>
-              <span class="lp-herocard__pill" data-i18n="card.p3">Co-Branding</span>
+            <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿De dónde eres?</b><span class="lp-herocard__tr">„Woher kommst du?“ – der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.</span></p>
+            <div class="lp-herocard__row" role="group" aria-label="Hostel-Aktivitäten">
+              <button type="button" class="lp-herocard__pill" data-pill="0" aria-pressed="true" data-i18n="card.p1">Battle</button>
+              <button type="button" class="lp-herocard__pill" data-pill="1" aria-pressed="false" data-i18n="card.p2">Rollenspiel</button>
+              <button type="button" class="lp-herocard__pill" data-pill="2" aria-pressed="false" data-i18n="card.p3">Co-Branding</button>
             </div>
           </div>
         </aside>
@@ -300,6 +302,21 @@
       </div>
     </section>
 
+    <!-- ─────────────── Risikofrei / Vertrauen ─────────────── -->
+    <section class="lp-section" id="trust">
+      <div class="lp-wrap">
+        <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Risikofrei starten</p>
+        <ul class="lp-trustbar" data-reveal>
+          <li data-i18n="proof.1">🆓 Für einzelne Hostels meist kostenlos (Co-Branding)</li>
+          <li data-i18n="proof.2">🙌 Kein Aufwand fürs Team – Poster aufhängen, fertig</li>
+          <li data-i18n="proof.3">⚡ Offline & ohne Konto – läuft auch im schwachen WLAN</li>
+        </ul>
+        <!-- Sobald freigegeben, hier ein echtes Testimonial einsetzen:
+        <blockquote class="lp-quote">„Echtes Zitat …“ <cite>— Name, Hostel · Stadt</cite></blockquote>
+        -->
+      </div>
+    </section>
+
     <!-- ─────────────── Kontakt / Abschluss-CTA ─────────────── -->
     <section class="lp-section lp-contact" id="kontakt">
       <div class="lp-wrap">
@@ -366,17 +383,21 @@
 
     var I18N = {
       de: {
+        "proof.title": "Risikofrei starten", "proof.1": "🆓 Für einzelne Hostels meist kostenlos (Co-Branding)", "proof.2": "🙌 Kein Aufwand fürs Team – Poster aufhängen, fertig", "proof.3": "⚡ Offline & ohne Konto – läuft auch im schwachen WLAN",
         "_title": "HolaRuta für Hostels – die fertige Spanish Night für den Common Room",
         "_desc": "HolaRuta für Hostels: eine fertige Social-Aktivität für den Common Room – Sprach-Battles und Rollenspiele per QR-Code, ohne Planung. Offline, ohne Konto, meist kostenlos mit Co-Branding.",
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
         "aud.label": "Für wen?", "aud.b2c": "🎒 Privatreisende", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter",
         "hero.eyebrow": "FÜR HOSTELS IN LATEINAMERIKA",
-        "hero.h1": "Die Spanish Night, die sich von selbst plant.",
-        "hero.sub": "HolaRuta heißt im Kern „Hostel Mode“: Sprach-Battles und Rollenspiele sind buchstäblich für den Common Room gebaut. Hängt einen QR-Code auf – die Gäste spielen, lachen und lernen. Keine Vorbereitung, kein Konto, keine App-Installation.",
+        "hero.h1": "Die Spanish Night, die sich von selbst plant – jeden Tag, immer.",
+        "hero.sub": "HolaRuta heißt im Kern „Hostel Mode“: Sprach-Battles und Rollenspiele sind buchstäblich für den Common Room gebaut. Hängt einen QR-Code auf – die Gäste spielen, lachen und lernen. Kein fester Termin, keine Vorbereitung, kein Konto: Die Spanish Night ist jeden Tag da, für jeden neuen Schwung Gäste.",
         "hero.demo": "Live-Demo öffnen →", "hero.contact": "Partner werden",
         "trust.qr": "an der Rezeption", "trust.players": "Spieler-Modus", "trust.setup": "Aufbau", "trust.free": "meist kostenlos",
-        "card.brand": "HolaRuta · Hostel Edition", "card.tr": "„Woher kommst du?“ – der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.",
+        "card.brand": "HolaRuta · Hostel Edition",
         "card.p1": "Battle", "card.p2": "Rollenspiel", "card.p3": "Co-Branding",
+        "card.p1.q": "¿De dónde eres?", "card.p1.tr": "„Woher kommst du?“ – der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.",
+        "card.p2.q": "Una cerveza, por favor.", "card.p2.tr": "„Ein Bier, bitte.“ – kurze Rollenspiele an der Bar, die Gäste spielen Szenen nach.",
+        "card.p3.q": "Bienvenido a nuestro hostel.", "card.p3.tr": "„Willkommen in unserem Hostel.“ – mit eurem Logo, euren Farben, eurem Namen.",
         "use.eyebrow": "DER NAHELIEGENDSTE FIT", "use.title": "Eine fertige Aktivität – ohne Planung, ohne Aufwand.",
         "use.lead": "Hostels suchen ständig nach Social-Aktivitäten für den Common Room. HolaRuta liefert genau das – niedrigschwellig, weil es offline läuft und nichts installiert werden muss.",
         "use.1.k": "Ice-Breaker", "use.1.t": "Aus Fremden am Tisch werden Freunde.", "use.1.b": "Sprach-Battles und Rollenspiele bringen Gäste ins Gespräch. Die perfekte Aktivität für den Abend im Common Room – ganz ohne Moderation durch euer Team.",
@@ -404,6 +425,7 @@
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut."
       },
       en: {
+        "proof.title": "Start risk-free", "proof.1": "🆓 Free for most single hostels (co-branding)", "proof.2": "🙌 Zero effort for your team – put up the poster, done", "proof.3": "⚡ Offline & no account – works even on weak Wi-Fi",
         "_title": "HolaRuta for hostels – the ready-made Spanish Night for your common room",
         "_desc": "HolaRuta for hostels: a ready-made social activity for the common room – language battles and role-plays via QR code, no planning. Offline, no account, mostly free with co-branding.",
         "skip": "Skip to content", "nav.demo": "Live demo",
@@ -413,8 +435,11 @@
         "hero.sub": "At its core HolaRuta is “Hostel Mode”: language battles and role-plays are literally built for the common room. Put up a QR code – guests play, laugh and learn. No prep, no account, no app install.",
         "hero.demo": "Open live demo →", "hero.contact": "Become a partner",
         "trust.qr": "at reception", "trust.players": "two-player mode", "trust.setup": "setup", "trust.free": "mostly free",
-        "card.brand": "HolaRuta · Hostel Edition", "card.tr": "“Where are you from?” – the perfect opener for the first battle round at the shared table.",
+        "card.brand": "HolaRuta · Hostel Edition",
         "card.p1": "Battle", "card.p2": "Role-play", "card.p3": "Co-branding",
+        "card.p1.q": "¿De dónde eres?", "card.p1.tr": "“Where are you from?” – the perfect opener for the first battle round at the shared table.",
+        "card.p2.q": "Una cerveza, por favor.", "card.p2.tr": "“A beer, please.” – short role-plays at the bar, guests act out scenes.",
+        "card.p3.q": "Bienvenido a nuestro hostel.", "card.p3.tr": "“Welcome to our hostel.” – with your logo, your colours, your name.",
         "use.eyebrow": "THE MOST OBVIOUS FIT", "use.title": "A ready-made activity – no planning, no effort.",
         "use.lead": "Hostels are always looking for social activities for the common room. HolaRuta delivers exactly that – low-friction, because it runs offline and nothing needs to be installed.",
         "use.1.k": "Ice-breaker", "use.1.t": "Strangers at the table become friends.", "use.1.b": "Language battles and role-plays get guests talking. The perfect evening activity for the common room – without your team having to host it.",
@@ -442,6 +467,7 @@
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America."
       },
       es: {
+        "proof.title": "Empieza sin riesgo", "proof.1": "🆓 Gratis para la mayoría de hostales (co-branding)", "proof.2": "🙌 Cero esfuerzo para tu equipo – cuelga el póster y listo", "proof.3": "⚡ Sin conexión y sin cuenta – funciona hasta con wifi débil",
         "_title": "HolaRuta para hostales – la Spanish Night lista para tu sala común",
         "_desc": "HolaRuta para hostales: una actividad social lista para la sala común – batallas de idioma y juegos de rol por código QR, sin planificación. Sin conexión, sin cuenta, casi siempre gratis con co-branding.",
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
@@ -451,8 +477,11 @@
         "hero.sub": "En esencia HolaRuta es «Hostel Mode»: las batallas de idioma y los juegos de rol están hechos literalmente para la sala común. Coloca un código QR – los huéspedes juegan, ríen y aprenden. Sin preparación, sin cuenta, sin instalar nada.",
         "hero.demo": "Abrir demo en vivo →", "hero.contact": "Ser partner",
         "trust.qr": "en recepción", "trust.players": "modo 2 jugadores", "trust.setup": "montaje", "trust.free": "casi siempre gratis",
-        "card.brand": "HolaRuta · Edición Hostal", "card.tr": "«¿De dónde eres?» – el arranque perfecto para la primera ronda de batalla en la mesa común.",
+        "card.brand": "HolaRuta · Edición Hostal",
         "card.p1": "Batalla", "card.p2": "Juego de rol", "card.p3": "Co-branding",
+        "card.p1.q": "¿De dónde eres?", "card.p1.tr": "«¿De dónde eres?» – el arranque perfecto para la primera ronda de batalla en la mesa común.",
+        "card.p2.q": "Una cerveza, por favor.", "card.p2.tr": "«Una cerveza, por favor.» – pequeños juegos de rol en la barra: los huéspedes actúan escenas.",
+        "card.p3.q": "Bienvenido a nuestro hostel.", "card.p3.tr": "«Bienvenido a nuestro hostel.» – con tu logo, tus colores, tu nombre.",
         "use.eyebrow": "EL ENCAJE MÁS OBVIO", "use.title": "Una actividad lista – sin planificación, sin esfuerzo.",
         "use.lead": "Los hostales buscan constantemente actividades sociales para la sala común. HolaRuta ofrece justo eso – con muy poca fricción, porque funciona sin conexión y no hay que instalar nada.",
         "use.1.k": "Rompehielos", "use.1.t": "Los desconocidos de la mesa se hacen amigos.", "use.1.b": "Las batallas de idioma y los juegos de rol ponen a hablar a los huéspedes. La actividad perfecta para la noche en la sala común – sin que tu equipo tenga que dirigirla.",
@@ -472,7 +501,7 @@
         "faq.q1": "¿Qué tiene que preparar nuestro equipo?", "faq.a1": "Prácticamente nada. Colgar el póster, mencionarlo en el check-in – listo. La app dirige la batalla y el juego de rol; tu equipo no necesita estar presente.",
         "faq.q2": "¿Los huéspedes necesitan internet o una cuenta?", "faq.a2": "No. HolaRuta funciona sin conexión en el navegador, sin tienda de apps y sin registro. Perfecto para el wifi débil del hostal.",
         "faq.q3": "¿Cuánto nos cuesta?", "faq.a3": "Para hostales individuales, normalmente nada – lo vemos como partnership y co-branding. Para cadenas hay una Edición Hostal escalable.",
-        "faq.q4": "¿Podemos tenerlo con nuestra imagen?", "faq.a4": "Sí. El sistema de ediciones permite que un enlace abra la app con vuestro nombre, color y opcionalmente vuestra ciudad – y trae los contenidos de hostal al frente.",
+        "faq.q4": "¿Podemos tenerlo con nuestra imagen?", "faq.a4": "Sí. El sistema de ediciones permite que un enlace abra la app con tu nombre, color y opcionalmente tu ciudad – y trae los contenidos de hostal al frente.",
         "contact.title": "Cuelga tu código QR esta semana.", "contact.sub": "Abre la demo en vivo en la edición Hostal o escríbenos – te preparamos la marca y el póster.",
         "contact.demo": "Abrir demo en vivo →", "contact.mail": "Solicitar partnership por email", "contact.material": "📄 Ver la guía y el póster para la sala común",
         "footer.blurb": "La Spanish Night lista para la sala común – batallas y juegos de rol por código QR, sin planificación. Sin conexión, sin cuenta.",
@@ -492,6 +521,8 @@
       document.title = dict["_title"];
       var meta = document.querySelector('meta[name="description"]');
       if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
+      var ogl = document.querySelector('meta[property="og:locale"]');
+      if (ogl) ogl.setAttribute("content", lang === "en" ? "en_US" : (lang === "es" ? "es_ES" : "de_DE"));
       var nodes = document.querySelectorAll("[data-i18n]");
       for (var i = 0; i < nodes.length; i++) {
         var key = nodes[i].getAttribute("data-i18n");
@@ -504,6 +535,32 @@
         btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
       }
       try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+      currentLang = lang;
+      paintHeroCard();
+    }
+
+    // Hero-Karte: Pills als Tabs – jede Pill blendet ihr eigenes Szenario (Satz + Erklärung) ein.
+    var currentLang = "de";
+    var heroCard = document.querySelector(".lp-herocard");
+    var heroPills = heroCard ? heroCard.querySelectorAll(".lp-herocard__pill") : [];
+    var heroQ = heroCard ? heroCard.querySelector(".lp-herocard__q") : null;
+    var heroTr = heroCard ? heroCard.querySelector(".lp-herocard__tr") : null;
+    var heroActive = 0;
+    function paintHeroCard() {
+      if (!heroQ || !heroTr) return;
+      var d = I18N[currentLang] || I18N.de;
+      var q = d["card.p" + (heroActive + 1) + ".q"];
+      var tr = d["card.p" + (heroActive + 1) + ".tr"];
+      if (q) heroQ.textContent = q;
+      if (tr) heroTr.textContent = tr;
+      for (var i = 0; i < heroPills.length; i++) {
+        heroPills[i].setAttribute("aria-pressed", i === heroActive ? "true" : "false");
+      }
+    }
+    for (var hp = 0; hp < heroPills.length; hp++) {
+      (function (i) {
+        heroPills[i].addEventListener("click", function () { heroActive = i; paintHeroCard(); });
+      })(hp);
     }
 
     var SUPPORTED = ["de", "en", "es"];
@@ -551,6 +608,32 @@
         entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
       }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
       reveal.forEach(function (el) { io.observe(el); });
+    }
+
+    // Zahlen hochzählen, sobald sie sichtbar werden (respektiert reduced-motion).
+    var counters = document.querySelectorAll("[data-count]");
+    function countUp(el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (isNaN(target)) return;
+      var finalText = el.textContent;
+      if (reduce) { el.textContent = finalText; return; }
+      var dur = 900, t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var v = Math.round((1 - Math.pow(1 - p, 3)) * target);
+        el.textContent = p < 1 ? String(v) : finalText;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if (reduce || !("IntersectionObserver" in window)) {
+      counters.forEach(function (el) { countUp(el); });
+    } else {
+      var cio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { countUp(e.target); cio.unobserve(e.target); } });
+      }, { threshold: 0.5 });
+      counters.forEach(function (el) { cio.observe(el); });
     }
 
     var header = document.getElementById("lpHeader");
