@@ -387,18 +387,47 @@ a { color: var(--brand-ink); }
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
 }
 .lp-morechip {
-  display: flex; align-items: center; gap: 12px; text-align: left;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 13px; text-align: left;
   background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
-  border-radius: var(--r-md); padding: 12px 14px;
+  border-radius: var(--r-md); padding: 13px 15px;
   box-shadow: var(--shadow);
-  transition: transform .15s ease, border-color .15s ease;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
 }
-.lp-morechip:hover { transform: translateY(-2px); border-color: var(--brand); }
-.lp-morechip__ico { font-size: 1.45rem; line-height: 1; flex: none; }
+/* Feiner Akzent-Faden an der linken Kante – greift die Modul-Farbe (--accent
+   inline) auf, gibt der Liste Rhythmus, ohne laut zu werden. */
+.lp-morechip::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--accent, var(--brand)); opacity: .5;
+  transition: opacity .16s ease, width .16s ease;
+}
+.lp-morechip:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 50%, var(--line));
+  box-shadow:
+    0 10px 24px -14px color-mix(in srgb, var(--accent, var(--brand)) 55%, transparent),
+    var(--shadow);
+}
+.lp-morechip:hover::before { opacity: 1; width: 4px; }
+/* Farbige Icon-Kachel je Modul (Marken-Palette via --accent inline) – holt die
+   Wertigkeit der großen Feature-Kacheln in die Modul-Liste: weicher Verlauf,
+   feiner Innenring, leichte Schräglage. Kleiner als die Feature-Icons (42px). */
+.lp-morechip__ico {
+  width: 42px; height: 42px; flex: none; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 26%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 9%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 30%, transparent);
+  transform: rotate(-4deg);
+  transition: transform .16s ease;
+}
+.lp-morechip:hover .lp-morechip__ico { transform: scale(1.07) rotate(-6deg); }
 .lp-morechip__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .lp-morechip__name { font-weight: 800; font-size: 0.95rem; line-height: 1.2; }
 .lp-morechip__desc { font-weight: 500; font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
-@media (prefers-reduced-motion: reduce) { .lp-morechip { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .lp-morechip, .lp-morechip__ico { transition: none; } }
 @media (hover: none) { .lp-morechip:hover { transform: none; } }
 
 /* ─────────────────────────── So funktioniert's ─────────────────────────── */
