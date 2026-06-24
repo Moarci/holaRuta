@@ -251,6 +251,7 @@ const OPENERS = {
   "open-flirt": "entdecken",
   "open-bailar": "entdecken",
   "open-musica": "entdecken",
+  "open-cafe": "entdecken",
   "open-juegos": "entdecken",
   "open-banderas": "entdecken",
   // Start-Reiter

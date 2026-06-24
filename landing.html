@@ -123,28 +123,40 @@
       <div class="lp-wrap lp-hero__grid">
         <div class="lp-hero__copy">
           <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">REISE-SPANISCH FÜR LATEINAMERIKA</p>
-          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Sprich Spanisch, bevor der Bus kommt.</h1>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Sprich Spanisch, <span class="lp-hl">bevor der Bus kommt.</span></h1>
           <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">2293 Karten für echte Reisesituationen — Bus, Hotel, Essen, Geld, Notfall. Lateinamerika-korrekt, komplett offline, ohne Konto. Lern in der Hängematte, prüf am Grenzposten.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
             <a class="lp-cta lp-cta--lg" href="./?start=onboarding" data-i18n="hero.cta">Kostenlos starten →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#how" data-i18n="hero.cta2">Wie es funktioniert</a>
           </div>
-          <div class="lp-trust" data-reveal style="--i:4">
-            <div class="lp-trust__item">
-              <span class="lp-trust__num" data-count="2293">2293</span>
-              <span class="lp-trust__label" data-i18n="trust.cards">Karten</span>
+          <div class="lp-trust">
+            <div class="lp-trust__item" data-reveal style="--i:4; --accent:#C2502E">
+              <span class="lp-trust__ico" aria-hidden="true">🃏</span>
+              <div class="lp-trust__data">
+                <span class="lp-trust__num" data-count="2293">2293</span>
+                <span class="lp-trust__label" data-i18n="trust.cards">Karten</span>
+              </div>
             </div>
-            <div class="lp-trust__item">
-              <span class="lp-trust__num" data-count="72">72</span>
-              <span class="lp-trust__label" data-i18n="trust.areas">Bereiche</span>
+            <div class="lp-trust__item" data-reveal style="--i:5; --accent:#2F6B70">
+              <span class="lp-trust__ico" aria-hidden="true">🗂️</span>
+              <div class="lp-trust__data">
+                <span class="lp-trust__num" data-count="72">72</span>
+                <span class="lp-trust__label" data-i18n="trust.areas">Bereiche</span>
+              </div>
             </div>
-            <div class="lp-trust__item">
-              <span class="lp-trust__num" data-count="3">3</span>
-              <span class="lp-trust__label" data-i18n="trust.modes">Lernmodi</span>
+            <div class="lp-trust__item" data-reveal style="--i:6; --accent:#7D4A8E">
+              <span class="lp-trust__ico" aria-hidden="true">🎴</span>
+              <div class="lp-trust__data">
+                <span class="lp-trust__num" data-count="3">3</span>
+                <span class="lp-trust__label" data-i18n="trust.modes">Lernmodi</span>
+              </div>
             </div>
-            <div class="lp-trust__item">
-              <span class="lp-trust__num">0&nbsp;€</span>
-              <span class="lp-trust__label" data-i18n="trust.free">Offline · kein Konto</span>
+            <div class="lp-trust__item" data-reveal style="--i:7; --accent:#3F7355">
+              <span class="lp-trust__ico" aria-hidden="true">🎁</span>
+              <div class="lp-trust__data">
+                <span class="lp-trust__num">0&nbsp;€</span>
+                <span class="lp-trust__label" data-i18n="trust.free">Offline · kein Konto</span>
+              </div>
             </div>
           </div>
         </div>
@@ -740,7 +752,7 @@
         "skip": "Zum Inhalt springen",
         "nav.cta": "Starten",
         "hero.eyebrow": "REISE-SPANISCH FÜR LATEINAMERIKA",
-        "hero.h1": "Sprich Spanisch, bevor der Bus kommt.",
+        "hero.h1": "Sprich Spanisch, <span class=\"lp-hl\">bevor der Bus kommt.</span>",
         "hero.sub": "2293 Karten für echte Reisesituationen — Bus, Hotel, Essen, Geld, Notfall. Lateinamerika-korrekt, komplett offline, ohne Konto. Lern in der Hängematte, prüf am Grenzposten.",
         "hero.cta": "Kostenlos starten →",
         "hero.cta2": "Wie es funktioniert",
@@ -815,7 +827,7 @@
         "skip": "Skip to content",
         "nav.cta": "Start",
         "hero.eyebrow": "TRAVEL SPANISH FOR LATIN AMERICA",
-        "hero.h1": "Speak Spanish before the bus arrives.",
+        "hero.h1": "Speak Spanish <span class=\"lp-hl\">before the bus arrives.</span>",
         "hero.sub": "2,293 cards for real travel moments — buses, hotels, food, money, emergencies. Latin-America-correct, fully offline, no account. Learn in the hammock, use it at the border.",
         "hero.cta": "Start free →",
         "hero.cta2": "See how it works",
@@ -888,7 +900,7 @@
       }
     };
     // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
-    var HTML_KEYS = { "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var HTML_KEYS = { "hero.h1": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
 
     var LANG_KEY = "holaruta.landing.lang";
 
