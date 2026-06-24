@@ -4554,6 +4554,53 @@ a { color: var(--brand-ink); }
 .lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); line-height: 1.15; color: var(--ink); margin: 0; }
 .lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
 
+/* ── „Mehr als Sprache": emotionale Hooks. Editorialer als die Feature-Kacheln –
+ *    kleiner spanischer Kicker in Modulfarbe, große Display-Headline (der Hook),
+ *    erzählender Body. Macht greifbar, dass die App auch Geschichte, Kultur,
+ *    Knigge, Gesundheit & Anschluss vermittelt – nicht nur Vokabeln. ── */
+.lp-hooks { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
+@media (min-width: 760px) {
+  .lp-hooks { grid-template-columns: repeat(2, 1fr); }
+  /* Der fünfte Hook (Conexión) spannt über beide Spalten -> emotionaler Abschluss. */
+  .lp-hook--wide { grid-column: 1 / -1; }
+}
+.lp-hook {
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  padding: var(--space-4); border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.lp-hook:hover {
+  transform: translateY(-3px); box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 45%, var(--line));
+}
+.lp-hook__ico {
+  width: 52px; height: 52px; flex: none; border-radius: 15px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
+  transform: rotate(-5deg);
+  transition: transform 0.16s ease;
+}
+.lp-hook:hover .lp-hook__ico { transform: scale(1.06) rotate(-7deg); }
+.lp-hook__body { min-width: 0; }
+.lp-hook__kicker {
+  display: inline-block; margin: 0 0 6px;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent, var(--brand)) 72%, var(--ink));
+}
+.lp-hook__title {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem); line-height: 1.16; letter-spacing: -0.01em;
+  color: var(--ink); margin: 0 0 8px; text-wrap: balance;
+}
+.lp-hook__text { font-size: 1rem; line-height: 1.55; color: var(--muted); margin: 0; }
+@media (prefers-reduced-motion: reduce) { .lp-hook, .lp-hook__ico { transition: none; } }
+@media (hover: none) { .lp-hook:hover { transform: none; } }
+
 /* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
    ohne Marketing-Floskeln. Statt nackter Namens-Pills jetzt kleine Karten mit
    Mikro-Beschreibung. Die Namen sind durchgängig spanisch wie in der App
@@ -5288,6 +5335,58 @@ a { color: var(--brand-ink); }
       </div>
     </section>
 
+    <!-- ─────────────── Mehr als Sprache: emotionale Hooks ─────────────── -->
+    <section class="lp-section" id="why">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="why.eyebrow">MEHR ALS SPRACHE</p>
+        <h2 class="lp-h2" data-reveal data-i18n="why.title">Du lernst nicht nur Spanisch. Du verstehst den Kontinent.</h2>
+        <p class="lp-lead" data-reveal data-i18n="why.lead">Sprache ist nur der Anfang. HolaRuta gibt dir Geschichte, Kultur, Gespür und Anschluss — alles, was aus einer Reise deine Reise macht.</p>
+        <div class="lp-hooks">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#E9A23B">
+            <span class="lp-hook__ico" aria-hidden="true">📜</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.historia.k">Historia</span>
+              <h3 class="lp-hook__title" data-i18n="why.historia.t">Steh vor Machu Picchu — und versteh, was du siehst.</h3>
+              <p class="lp-hook__text" data-i18n="why.historia.b">Inka, Kolonialzeit, Unabhängigkeit: die Geschichte des Kontinents in Häppchen, die hängenbleiben. Du läufst nicht an Ruinen vorbei — du liest sie.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
+            <span class="lp-hook__ico" aria-hidden="true">🌎</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.culturas.k">Países &amp; culturas</span>
+              <h3 class="lp-hook__title" data-i18n="why.culturas.t">Jedes Land tickt anders. Wisse vorher, wie.</h3>
+              <p class="lp-hook__text" data-i18n="why.culturas.b">Von Kolumbien bis Patagonien: Sitten, Geld, Eigenheiten und Tabus pro Land. Damit du dich überall bewegst, als wärst du schon mal da gewesen.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#7D4A8E">
+            <span class="lp-hook__ico" aria-hidden="true">🤝</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.respeto.k">Buen viajero</span>
+              <h3 class="lp-hook__title" data-i18n="why.respeto.t">Respekt öffnet Türen, die kein Reiseführer kennt.</h3>
+              <p class="lp-hook__text" data-i18n="why.respeto.b">Wie du grüßt, dich bedankst, feilschst und dich benimmst — die kleinen Gesten entscheiden, ob du Gast bist oder bloß Tourist. Reise, ohne anzuecken.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#B5302A">
+            <span class="lp-hook__ico" aria-hidden="true">🩺</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.salud.k">Salud</span>
+              <h3 class="lp-hook__title" data-i18n="why.salud.t">Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.</h3>
+              <p class="lp-hook__text" data-i18n="why.salud.b">Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.</p>
+            </div>
+          </article>
+          <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#C2502E">
+            <span class="lp-hook__ico" aria-hidden="true">🎉</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.conexion.k">Conexión</span>
+              <h3 class="lp-hook__title" data-i18n="why.conexion.t">Aus einem „Hola" wird die beste Nacht deiner Reise.</h3>
+              <p class="lp-hook__text" data-i18n="why.conexion.b">Hostel-Spiele, Sprüche, Smalltalk: die Sätze, die aus Fremden am Tisch Freunde fürs Leben machen. Denn Reisen ist am Ende, wen du triffst.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- ─────────────── So funktioniert's ─────────────── -->
     <section class="lp-section" id="how">
       <div class="lp-wrap">
@@ -5441,6 +5540,7 @@ a { color: var(--brand-ink); }
           <h4 data-i18n="footer.more">Mehr</h4>
           <ul>
             <li><a href="#features" data-i18n="footer.features">Features</a></li>
+            <li><a href="#why" data-i18n="footer.why">Mehr als Sprache</a></li>
             <li><a href="#how" data-i18n="footer.how">So funktioniert's</a></li>
             <li><a href="#install" data-i18n="footer.install">Installieren</a></li>
           </ul>
@@ -5492,6 +5592,14 @@ a { color: var(--brand-ink); }
         "feat.offline.t": "Funktioniert ohne Netz", "feat.offline.b": "Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.",
         "feat.privacy.t": "Kein Konto, kein Tracking", "feat.privacy.b": "Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.",
         "feat.areas.t": "72 Themen für echte Situationen", "feat.areas.b": "Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.",
+        "why.eyebrow": "MEHR ALS SPRACHE",
+        "why.title": "Du lernst nicht nur Spanisch. Du verstehst den Kontinent.",
+        "why.lead": "Sprache ist nur der Anfang. HolaRuta gibt dir Geschichte, Kultur, Gespür und Anschluss — alles, was aus einer Reise deine Reise macht.",
+        "why.historia.k": "Historia", "why.historia.t": "Steh vor Machu Picchu — und versteh, was du siehst.", "why.historia.b": "Inka, Kolonialzeit, Unabhängigkeit: die Geschichte des Kontinents in Häppchen, die hängenbleiben. Du läufst nicht an Ruinen vorbei — du liest sie.",
+        "why.culturas.k": "Países & culturas", "why.culturas.t": "Jedes Land tickt anders. Wisse vorher, wie.", "why.culturas.b": "Von Kolumbien bis Patagonien: Sitten, Geld, Eigenheiten und Tabus pro Land. Damit du dich überall bewegst, als wärst du schon mal da gewesen.",
+        "why.respeto.k": "Buen viajero", "why.respeto.t": "Respekt öffnet Türen, die kein Reiseführer kennt.", "why.respeto.b": "Wie du grüßt, dich bedankst, feilschst und dich benimmst — die kleinen Gesten entscheiden, ob du Gast bist oder bloß Tourist. Reise, ohne anzuecken.",
+        "why.salud.k": "Salud", "why.salud.t": "Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.", "why.salud.b": "Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.",
+        "why.conexion.k": "Conexión", "why.conexion.t": "Aus einem „Hola\" wird die beste Nacht deiner Reise.", "why.conexion.b": "Hostel-Spiele, Sprüche, Smalltalk: die Sätze, die aus Fremden am Tisch Freunde fürs Leben machen. Denn Reisen ist am Ende, wen du triffst.",
         "more.intro": "Und noch viel mehr an Bord",
         "more.spick.d": "Die Notfall-Sätze groß auf einen Blick", "more.country.d": "Sitten, Geld & Eigenheiten pro Land",
         "more.historia.d": "Südamerikas Geschichte zum Mitreden", "more.dialogos.d": "Ganze Gespräche Zug um Zug üben",
@@ -5517,7 +5625,7 @@ a { color: var(--brand-ink); }
         "faq.q5": "Auf welchen Geräten läuft es?", "faq.a5": "In jedem modernen Browser — Android, iPhone, Tablet, Laptop. Auf dem Handy als App installierbar.",
         "footer.blurb": "Dein Reise-Spanisch für echte Situationen — Karteikarten für Bus, Hotel, Essen, Geld und Notfall. Lateinamerika-korrekt, offline, kostenlos.",
         "footer.app": "App", "footer.open": "App öffnen", "footer.start": "Kostenlos starten", "footer.single": "Einzeldatei-Version",
-        "footer.more": "Mehr", "footer.features": "Features", "footer.how": "So funktioniert's", "footer.install": "Installieren",
+        "footer.more": "Mehr", "footer.features": "Features", "footer.why": "Mehr als Sprache", "footer.how": "So funktioniert's", "footer.install": "Installieren",
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut.",
         "final.title": "Pack deinen Rucksack. Den Rest übernehmen wir.",
         "final.sub": "2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.",
@@ -5558,6 +5666,14 @@ a { color: var(--brand-ink); }
         "feat.offline.t": "Works with no signal", "feat.offline.b": "Loads once, runs offline — Andes, jungle, night bus.",
         "feat.privacy.t": "No account, no tracking", "feat.privacy.b": "Your progress stays on your device. No sign-up, no ads.",
         "feat.areas.t": "72 real-life topics", "feat.areas.b": "From the bus ride to the pharmacy — 2,293 cards, neatly sorted.",
+        "why.eyebrow": "MORE THAN LANGUAGE",
+        "why.title": "You don't just learn Spanish. You get the continent.",
+        "why.lead": "Language is only the start. HolaRuta gives you history, culture, instinct and connection — everything that turns a trip into your trip.",
+        "why.historia.k": "Historia", "why.historia.t": "Stand before Machu Picchu — and understand what you see.", "why.historia.b": "Inca, colonial era, independence: the continent's history in bites that stick. You don't walk past the ruins — you read them.",
+        "why.culturas.k": "Países & cultures", "why.culturas.t": "Every country ticks differently. Know how, before you go.", "why.culturas.b": "From Colombia to Patagonia: customs, money, quirks and taboos per country. So you move everywhere like you've been before.",
+        "why.respeto.k": "Buen viajero", "why.respeto.t": "Respect opens doors no guidebook knows.", "why.respeto.b": "How you greet, thank, haggle and behave — the small gestures decide whether you're a guest or just a tourist. Travel without stepping on toes.",
+        "why.salud.k": "Salud", "why.salud.t": "When your body gives out at 4,000 metres, every phrase counts.", "why.salud.b": "Altitude sickness, stomach, pharmacy, doctor: the lines for when it gets serious — and the tips that keep you healthy and moving.",
+        "why.conexion.k": "Conexión", "why.conexion.t": "One “Hola” turns into the best night of your trip.", "why.conexion.b": "Hostel games, one-liners, small talk: the phrases that turn strangers at the table into friends for life. Because travel is, in the end, who you meet.",
         "more.intro": "And plenty more on board",
         "more.spick.d": "Your survival lines, big and tappable", "more.country.d": "Customs, money & quirks per country",
         "more.historia.d": "South America's story, made easy", "more.dialogos.d": "Whole conversations, turn by turn",
@@ -5583,7 +5699,7 @@ a { color: var(--brand-ink); }
         "faq.q5": "Which devices does it run on?", "faq.a5": "Any modern browser — Android, iPhone, tablet, laptop. Installable as an app on your phone.",
         "footer.blurb": "Travel Spanish for real situations — flashcards for buses, hotels, food, money and emergencies. Latin-America-correct, offline, free.",
         "footer.app": "App", "footer.open": "Open app", "footer.start": "Start free", "footer.single": "Single-file version",
-        "footer.more": "More", "footer.features": "Features", "footer.how": "How it works", "footer.install": "Install",
+        "footer.more": "More", "footer.features": "Features", "footer.why": "More than language", "footer.how": "How it works", "footer.install": "Install",
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America.",
         "final.title": "Pack your backpack. We'll handle the rest.",
         "final.sub": "2,293 cards, fully offline, no account, free. Ready to go in 30 seconds.",
