@@ -4555,20 +4555,36 @@ a { color: var(--brand-ink); }
 .lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
 
 /* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
-   ohne Marketing-Floskeln. Chips auf --surface, damit sie sich vom --card-Grund
-   der Features-Section abheben. */
-.lp-more { margin-top: var(--space-6); text-align: center; }
+   ohne Marketing-Floskeln. Statt nackter Namens-Pills jetzt kleine Karten mit
+   Mikro-Beschreibung. Die Namen sind durchgängig spanisch wie in der App
+   (Supervivencia, Modo hostal, Regatear …), das Deutsche steht – wie bei den
+   App-Kacheln – im Untertitel. So erklärt sich jedes Modul selbst und die Breite
+   der App wird auf einen Blick lesbar. Karten auf --surface, damit sie sich vom
+   --card-Grund der Features-Section abheben. */
+.lp-more { margin-top: var(--space-6); }
 .lp-more__intro {
   font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--brand-ink); margin: 0 0 var(--space-3);
+  text-transform: uppercase; color: var(--brand-ink); margin: 0 0 var(--space-4);
+  text-align: center;
 }
-.lp-more__chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.lp-more__chips {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+}
 .lp-morechip {
-  display: inline-flex; align-items: center; gap: 7px;
+  display: flex; align-items: center; gap: 12px; text-align: left;
   background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
-  border-radius: 999px; padding: 9px 15px; font-weight: 700; font-size: 0.9rem;
+  border-radius: var(--r-md); padding: 12px 14px;
   box-shadow: var(--shadow);
+  transition: transform .15s ease, border-color .15s ease;
 }
+.lp-morechip:hover { transform: translateY(-2px); border-color: var(--brand); }
+.lp-morechip__ico { font-size: 1.45rem; line-height: 1; flex: none; }
+.lp-morechip__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lp-morechip__name { font-weight: 800; font-size: 0.95rem; line-height: 1.2; }
+.lp-morechip__desc { font-weight: 500; font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
+@media (prefers-reduced-motion: reduce) { .lp-morechip { transition: none; } }
+@media (hover: none) { .lp-morechip:hover { transform: none; } }
 
 /* ─────────────────────────── So funktioniert's ─────────────────────────── */
 .lp-how__grid {
@@ -5061,16 +5077,76 @@ a { color: var(--brand-ink); }
         <div class="lp-more" data-reveal>
           <p class="lp-more__intro" data-i18n="more.intro">Und noch viel mehr an Bord</p>
           <div class="lp-more__chips">
-            <span class="lp-morechip">🆘 <span data-i18n="more.spick">Spickzettel</span></span>
-            <span class="lp-morechip">🌎 <span data-i18n="more.country">Länderkunde</span></span>
-            <span class="lp-morechip">📜 Historia</span>
-            <span class="lp-morechip">💬 Diálogos</span>
-            <span class="lp-morechip">🛏️ <span data-i18n="more.hostel">Hostel-Modus</span></span>
-            <span class="lp-morechip">🤝 Regatear</span>
-            <span class="lp-morechip">💵 Precios al oído</span>
-            <span class="lp-morechip">🎲 Juegos de viaje</span>
-            <span class="lp-morechip">🎵 Música</span>
-            <span class="lp-morechip">🧳 Logística</span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">🆘</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Supervivencia</span>
+                <span class="lp-morechip__desc" data-i18n="more.spick.d">Die Notfall-Sätze groß auf einen Blick</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">🌎</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Países y culturas</span>
+                <span class="lp-morechip__desc" data-i18n="more.country.d">Sitten, Geld &amp; Eigenheiten pro Land</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">📜</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Historia</span>
+                <span class="lp-morechip__desc" data-i18n="more.historia.d">Südamerikas Geschichte zum Mitreden</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">💬</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Diálogos</span>
+                <span class="lp-morechip__desc" data-i18n="more.dialogos.d">Ganze Gespräche Zug um Zug üben</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">🛏️</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Modo hostal</span>
+                <span class="lp-morechip__desc" data-i18n="more.hostel.d">Zu zweit: Battle &amp; Rollenspiele</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">🤝</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Regatear</span>
+                <span class="lp-morechip__desc" data-i18n="more.regatear.d">Auf dem Markt fair feilschen</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">💵</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Precios al oído</span>
+                <span class="lp-morechip__desc" data-i18n="more.precios.d">Preise hören &amp; blind eintippen</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">🎲</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Juegos de viaje</span>
+                <span class="lp-morechip__desc" data-i18n="more.juegos.d">Hostel-Spiele &amp; die Sätze dazu</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">🎵</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Música</span>
+                <span class="lp-morechip__desc" data-i18n="more.musica.d">Der Sound deines Reiselands</span>
+              </span>
+            </span>
+            <span class="lp-morechip">
+              <span class="lp-morechip__ico" aria-hidden="true">🧳</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Logística</span>
+                <span class="lp-morechip__desc" data-i18n="more.logistica.d">SIM, Bargeld &amp; clever packen</span>
+              </span>
+            </span>
           </div>
         </div>
       </div>
@@ -5281,7 +5357,11 @@ a { color: var(--brand-ink); }
         "feat.privacy.t": "Kein Konto, kein Tracking", "feat.privacy.b": "Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.",
         "feat.areas.t": "72 Themen für echte Situationen", "feat.areas.b": "Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.",
         "more.intro": "Und noch viel mehr an Bord",
-        "more.spick": "Spickzettel", "more.country": "Länderkunde", "more.hostel": "Hostel-Modus",
+        "more.spick.d": "Die Notfall-Sätze groß auf einen Blick", "more.country.d": "Sitten, Geld & Eigenheiten pro Land",
+        "more.historia.d": "Südamerikas Geschichte zum Mitreden", "more.dialogos.d": "Ganze Gespräche Zug um Zug üben",
+        "more.hostel.d": "Zu zweit: Battle & Rollenspiele", "more.regatear.d": "Auf dem Markt fair feilschen",
+        "more.precios.d": "Preise hören & blind eintippen", "more.juegos.d": "Hostel-Spiele & die Sätze dazu",
+        "more.musica.d": "Der Sound deines Reiselands", "more.logistica.d": "SIM, Bargeld & clever packen",
         "how.eyebrow": "SO FUNKTIONIERT'S", "how.title": "In drei Schritten unterwegs.",
         "how.s1.t": "Bereich wählen", "how.s1.b": "Such dir aus, was ansteht — Geld, Essen, Bus, Notfall. 72 Bereiche, alle reisefertig.",
         "how.s2.t": "Karte lernen", "how.s2.b": "Tippen, antworten, umdrehen. Karteikarte, Schreiben oder Hören — du entscheidest.",
@@ -5341,7 +5421,11 @@ a { color: var(--brand-ink); }
         "feat.privacy.t": "No account, no tracking", "feat.privacy.b": "Your progress stays on your device. No sign-up, no ads.",
         "feat.areas.t": "72 real-life topics", "feat.areas.b": "From the bus ride to the pharmacy — 2,293 cards, neatly sorted.",
         "more.intro": "And plenty more on board",
-        "more.spick": "Cheat sheet", "more.country": "Country guide", "more.hostel": "Hostel mode",
+        "more.spick.d": "Your survival lines, big and tappable", "more.country.d": "Customs, money & quirks per country",
+        "more.historia.d": "South America's story, made easy", "more.dialogos.d": "Whole conversations, turn by turn",
+        "more.hostel.d": "Two-player: battle & role-plays", "more.regatear.d": "Haggle fairly at the market",
+        "more.precios.d": "Hear a price, type the digits", "more.juegos.d": "Hostel games & the lines for them",
+        "more.musica.d": "The soundtrack of your route", "more.logistica.d": "SIM, cash & smart packing",
         "how.eyebrow": "HOW IT WORKS", "how.title": "On the road in three steps.",
         "how.s1.t": "Pick an area", "how.s1.b": "Choose what's coming up — money, food, buses, emergencies. 72 areas, all travel-ready.",
         "how.s2.t": "Learn a card", "how.s2.b": "Tap, answer, flip. Flip, type or listen — your call.",

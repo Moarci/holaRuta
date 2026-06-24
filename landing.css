@@ -370,20 +370,36 @@ a { color: var(--brand-ink); }
 .lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
 
 /* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
-   ohne Marketing-Floskeln. Chips auf --surface, damit sie sich vom --card-Grund
-   der Features-Section abheben. */
-.lp-more { margin-top: var(--space-6); text-align: center; }
+   ohne Marketing-Floskeln. Statt nackter Namens-Pills jetzt kleine Karten mit
+   Mikro-Beschreibung. Die Namen sind durchgängig spanisch wie in der App
+   (Supervivencia, Modo hostal, Regatear …), das Deutsche steht – wie bei den
+   App-Kacheln – im Untertitel. So erklärt sich jedes Modul selbst und die Breite
+   der App wird auf einen Blick lesbar. Karten auf --surface, damit sie sich vom
+   --card-Grund der Features-Section abheben. */
+.lp-more { margin-top: var(--space-6); }
 .lp-more__intro {
   font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--brand-ink); margin: 0 0 var(--space-3);
+  text-transform: uppercase; color: var(--brand-ink); margin: 0 0 var(--space-4);
+  text-align: center;
 }
-.lp-more__chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.lp-more__chips {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+}
 .lp-morechip {
-  display: inline-flex; align-items: center; gap: 7px;
+  display: flex; align-items: center; gap: 12px; text-align: left;
   background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
-  border-radius: 999px; padding: 9px 15px; font-weight: 700; font-size: 0.9rem;
+  border-radius: var(--r-md); padding: 12px 14px;
   box-shadow: var(--shadow);
+  transition: transform .15s ease, border-color .15s ease;
 }
+.lp-morechip:hover { transform: translateY(-2px); border-color: var(--brand); }
+.lp-morechip__ico { font-size: 1.45rem; line-height: 1; flex: none; }
+.lp-morechip__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lp-morechip__name { font-weight: 800; font-size: 0.95rem; line-height: 1.2; }
+.lp-morechip__desc { font-weight: 500; font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
+@media (prefers-reduced-motion: reduce) { .lp-morechip { transition: none; } }
+@media (hover: none) { .lp-morechip:hover { transform: none; } }
 
 /* ─────────────────────────── So funktioniert's ─────────────────────────── */
 .lp-how__grid {
