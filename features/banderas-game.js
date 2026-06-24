@@ -321,7 +321,7 @@
       icon: "📚", title: t("discover.bndSaberMas"), cat: "banderas", back: "open-banderas",
       headTips: "discover.bnTips", headPhrases: "discover.bnPhrases", headWords: "discover.bnWords",
       headChecklist: "discover.bnChecklist", headChecklistHint: "discover.bnChecklistHint",
-      readingPerTopic: true, copyPhrases: true, favPhrases: true,
+      readingPerTopic: true, copyPhrases: true, favPhrases: ctx.isFavorite, // jeder Satz mit Stern → „Mi léxico"
     });
   }
 

@@ -2688,6 +2688,7 @@
     { id: "food",    label: "Essen & Trinken",   labelEn: "Food & drink",    icon: "🍽️" },
     { id: "out",     label: "Unterwegs",         labelEn: "Out and about",   icon: "🧭" },
     { id: "problem", label: "Problem lösen",     labelEn: "Solving a problem", icon: "🛠️" },
+    { id: "banderas", label: "Herkunft & Flaggen", labelEn: "Origin & flags",  icon: "🚩" },
   ];
 
   // Battle-Aufgaben: Ansage auf Deutsch (promptDe), laut auf Spanisch antworten.
@@ -2753,6 +2754,15 @@
     { id: "hb43", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Sag, dass du den Schlüssel im Zimmer vergessen hast.", promptEn: "Say that you left the key in the room.", answerEs: "Dejé la llave en el cuarto.", acceptable: ["deje la llave en el cuarto", "olvide la llave adentro", "deje la llave adentro"], points: 2, level: 2, hint: "dejé = ich ließ / vergaß", hintEn: "dejé = I left / forgot" },
     { id: "hb44", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Frag, wo es eine Apotheke gibt.", promptEn: "Ask where there's a pharmacy.", answerEs: "¿Dónde hay una farmacia?", acceptable: ["donde hay una farmacia", "donde esta la farmacia", "hay una farmacia cerca"], points: 2, level: 1, hint: "farmacia = Apotheke", hintEn: "farmacia = pharmacy" },
     { id: "hb45", mode: "battle", cat: "notfall", scene: "problem", promptDe: "Bitte jemanden, einen Arzt zu rufen.", promptEn: "Ask someone to call a doctor.", answerEs: "¿Puede llamar a un médico?", acceptable: ["puede llamar a un medico", "llamen a un medico", "necesito un medico"], points: 2, level: 3, hint: "médico = Arzt", hintEn: "médico = doctor" },
+
+    // ----- Herkunft & Flaggen (passt zum Flaggen-Modul „Banderas") -----
+    { id: "hb46", mode: "battle", cat: "social", scene: "banderas", promptDe: "Frag, von welchem Land diese Flagge ist.", promptEn: "Ask which country this flag is from.", answerEs: "¿De qué país es esta bandera?", acceptable: ["de que pais es esta bandera", "de que pais es esta", "esta bandera de que pais es"], points: 2, level: 2, hint: "bandera = Flagge", hintEn: "bandera = flag" },
+    { id: "hb47", mode: "battle", cat: "social", scene: "banderas", promptDe: "Sag, dass das die Flagge von Mexiko ist.", promptEn: "Say that this is the flag of Mexico.", answerEs: "Esta es la bandera de México.", acceptable: ["esta es la bandera de mexico", "es la bandera de mexico"], points: 2, level: 1, hint: "Esta es la bandera de ...", hintEn: "Esta es la bandera de ..." },
+    { id: "hb48", mode: "battle", cat: "social", scene: "banderas", promptDe: "Frag, was die Farben ihrer Flagge bedeuten.", promptEn: "Ask what the colours of their flag mean.", answerEs: "¿Qué significan los colores de tu bandera?", acceptable: ["que significan los colores de tu bandera", "que significan los colores de su bandera", "que significan esos colores"], points: 2, level: 2, hint: "colores = Farben", hintEn: "colores = colours" },
+    { id: "hb49", mode: "battle", cat: "social", scene: "banderas", promptDe: "Sag jemandem, dass du seine/ihre Flagge schön findest.", promptEn: "Tell someone you love their flag.", answerEs: "Me encanta tu bandera.", acceptable: ["me encanta tu bandera", "me encanta su bandera", "me gusta mucho tu bandera"], points: 2, level: 1, hint: "me encanta = ich mag sehr", hintEn: "me encanta = I love" },
+    { id: "hb50", mode: "battle", cat: "social", scene: "banderas", promptDe: "Frag, was das Symbol in der Mitte ist.", promptEn: "Ask what that symbol in the centre is.", answerEs: "¿Qué es ese símbolo del centro?", acceptable: ["que es ese simbolo del centro", "que es el simbolo del centro", "que significa ese simbolo"], points: 2, level: 2, hint: "símbolo = Symbol · centro = Mitte", hintEn: "símbolo = symbol · centro = centre" },
+    { id: "hb51", mode: "battle", cat: "social", scene: "banderas", promptDe: "Frag jemanden nach seiner Nationalität.", promptEn: "Ask someone about their nationality.", answerEs: "¿Cuál es tu nacionalidad?", acceptable: ["cual es tu nacionalidad", "cual es su nacionalidad", "de que nacionalidad eres"], points: 2, level: 2, hint: "nacionalidad = Staatsangehörigkeit", hintEn: "nacionalidad = nationality" },
+    { id: "hb52", mode: "battle", cat: "social", scene: "banderas", promptDe: "Sag, dass du aus Deutschland kommst.", promptEn: "Say that you're from Germany.", answerEs: "Soy de Alemania.", acceptable: ["soy de alemania", "vengo de alemania", "soy aleman", "soy alemana"], points: 2, level: 1, hint: "Soy de ...", hintEn: "Soy de ..." },
   ];
 
   // Rollenspiele: kurze Dialoge zum lauten Durchspielen zu zweit.
