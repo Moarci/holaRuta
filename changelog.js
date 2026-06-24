@@ -27,6 +27,20 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.115.0",
+      date: "2026-06-24",
+      title: "Ruta del día: vor allem Grundlagen statt fast nur Städte-/Länder-Sätze",
+      titleEn: "Ruta del día: mostly basics instead of almost only city/country phrases",
+      items: [
+        "🗺️ Die tägliche Mini-Runde „Ruta del día“ bringt jetzt vor allem Grundlagen und allgemeine Module. Wer mehrere Länder/Städte aktiv hatte, bekam zuvor fast nur orts-/länderspezifische Sätze (Städte- & Länder-Packs), weil davon sehr viele fällig oder neu waren – pro Tagesrunde sind solche Karten jetzt gedeckelt (höchstens zwei), der Rest wird mit allgemeinen Karten gefüllt.",
+        "🔁 Reihenfolge & Spaced Repetition bleiben unverändert (fällige vor neuen Karten). Sind zu wenige allgemeine Karten verfügbar (z. B. enger Stufen-Filter), rücken weitere ortsspezifische nach, damit die Runde voll bleibt.",
+      ],
+      itemsEn: [
+        "🗺️ The daily mini-round „Ruta del día“ now brings mostly basics and general modules. With several countries/cities active you previously got almost only place-/country-specific sentences (city & country packs), because so many of them were due or new – per daily round such cards are now capped (at most two), and the rest is filled with general cards.",
+        "🔁 Order & spaced repetition stay the same (due cards before new ones). If too few general cards are available (e.g. a narrow level filter), more place-specific ones step in so the round stays full.",
+      ],
+    },
+    {
       version: "1.114.0",
       date: "2026-06-23",
       title: "Wichtige Sätze der Module mit einem Stern ins „Mi léxico“",

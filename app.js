@@ -288,6 +288,12 @@
   const scopeCards = (scopeId) =>
     allCards().filter((c) => (scopeId === "all" || c.cat === scopeId) && matchesLevel(c));
   const dueIn = (cards) => cards.filter((c) => srs.isDue(progress[c.id]));
+  // Orts-/länderspezifisch? Karten der Gruppe „destinos" (Städte- & Länder-Packs).
+  // Eigene Karten ohne bekannte Kategorie zählen als allgemein (Grundlagen-Pfad).
+  const isDestinoCard = (c) => {
+    const cat = categoryById(c.cat);
+    return !!cat && cat.group === "destinos";
+  };
 
   // ----- Datums-/Zeit-Helfer (für die Statistik-Anzeige) -----
   const DAY_MS = 24 * 60 * 60 * 1000;
@@ -2721,6 +2727,21 @@
 
   // ----- Ruta del día (kurze tägliche Mini-Runde) -----
   const RUTA_DIA_CAP = 10;
+  // Guard gegen zu viel Orts-/Länder-Spezifisches: Die Tagesrunde soll vor allem
+  // Grundlagen & allgemeine Module bringen. Hat man viele Länder/Städte aktiv,
+  // dominieren sonst „destinos"-Karten. Darum höchstens so viele pro Runde – der
+  // Rest wird mit allgemeinen Karten gefüllt (nur wenn es zu wenige allgemeine
+  // gibt, springen weitere Destinos ein, damit die Runde voll bleibt).
+  const RUTA_DIA_DESTINO_CAP = 2;
+
+  // Lern-Reihenfolge einer Tagesrunde innerhalb eines Karten-Topfes: zuerst
+  // fällige (SRS), sonst nie gesehene, sonst irgendeine Auswahl – jeweils gemischt.
+  function rutaPriority(cards) {
+    const due = dueIn(cards);
+    if (due.length) return shuffle(due);
+    const fresh = cards.filter((c) => !(progress[c.id] && progress[c.id].seen));
+    return shuffle(fresh.length ? fresh : cards);
+  }
 
   // Tag mit gestarteter Ruta del día vermerken (distinkt, für die 🗺️-Badges).
   function recordRutaDia(now) {
@@ -2735,21 +2756,27 @@
   // Eine kurze, kategorienübergreifende Tagesrunde starten: bevorzugt fällige
   // Karten (gemischt), sonst neue (nie gesehene), sonst irgendeine Auswahl. Nutzt
   // den normalen Study-/SRS-Pfad – nur kleiner gedeckelt (RUTA_DIA_CAP) und über
-  // alle Bereiche. Stärkt die Lern-Serie.
+  // alle Bereiche. Stärkt die Lern-Serie. Orts-/länderspezifische „destinos"-Karten
+  // sind dabei pro Runde gedeckelt (RUTA_DIA_DESTINO_CAP), damit Grundlagen &
+  // allgemeine Module dominieren – auch wenn viele Länder/Städte aktiv sind.
   function openRutaDelDia() {
     dismissBadgeToast();
     state.studyOrigin = null;
     const now = Date.now();
     const all = scopeCards("all");       // respektiert den Stufen-Filter
-    const due = dueIn(all);
-    let pool;
-    if (due.length) {
-      pool = shuffle(due);
-    } else {
-      const fresh = all.filter((c) => !(progress[c.id] && progress[c.id].seen));
-      pool = shuffle(fresh.length ? fresh : all);
-    }
-    const chosen = pool.slice(0, RUTA_DIA_CAP);
+    // Allgemeine Module (Grundlagen, Essen, Reise …) vor orts-/länderspezifischen
+    // „destinos"-Karten priorisieren, jeweils mit fällig > neu > beliebig.
+    const general = rutaPriority(all.filter((c) => !isDestinoCard(c)));
+    const destinos = rutaPriority(all.filter((c) => isDestinoCard(c)));
+    // Einen kleinen Destino-Anteil reservieren (ab und zu okay), Rest mit allgemeinen
+    // Karten füllen. Sind zu wenige allgemeine da, rücken weitere Destinos nach,
+    // damit die Runde voll bleibt.
+    const destDose = Math.min(RUTA_DIA_DESTINO_CAP, destinos.length);
+    const generalPart = general.slice(0, RUTA_DIA_CAP - destDose);
+    // destinoPart füllt nur die nach generalPart freien Plätze -> die Summe ist
+    // immer ≤ RUTA_DIA_CAP (kein zusätzliches Deckeln nötig).
+    const destinoPart = destinos.slice(0, RUTA_DIA_CAP - generalPart.length);
+    const chosen = shuffle(generalPart.concat(destinoPart));
     recordRutaDia(now);
     state.pretripDay = null;
     state.scopeId = "all";
