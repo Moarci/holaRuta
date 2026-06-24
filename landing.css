@@ -795,7 +795,8 @@ a { color: var(--brand-ink); }
 .lp-footer__grid {
   display: grid; grid-template-columns: 1fr; gap: var(--space-5);
 }
-@media (min-width: 720px) { .lp-footer__grid { grid-template-columns: 2fr 1fr 1fr; } }
+@media (min-width: 720px) { .lp-footer__grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 960px) { .lp-footer__grid { grid-template-columns: 2fr 1fr 1fr 1fr; } }
 .lp-footer__blurb { font-size: 0.95rem; line-height: 1.55; color: rgba(251, 243, 228, 0.75); max-width: 40ch; margin: var(--space-2) 0 0; }
 .lp-footer h4 { font-family: var(--font-display); font-weight: 800; font-size: 0.95rem; margin: 0 0 var(--space-2); color: var(--cream); }
 .lp-footer ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -822,6 +823,71 @@ a { color: var(--brand-ink); }
   transition-delay: calc(var(--i, 0) * 70ms);
 }
 
+/* ═══════════════════════════ B2B-Landing-Pages ═══════════════════════════
+ * Zusätzliche Komponenten NUR für die zielgruppenspezifischen Seiten
+ * (landing-schule / landing-hostel / landing-reiseanbieter). Token-basiert,
+ * Hell/Dunkel ohne Sonderfälle. Pro Seite setzt der Header --accent (Edition-
+ * Akzentfarbe), worauf Hero-Akzente, Preis-Highlight & Demo-CTA reagieren. */
+
+/* Zielgruppen-Umschalter: Chip-Reihe direkt unter dem Header. Verlinkt die je
+   anderen Seiten + die B2C-Landing. Die aktive Seite trägt aria-current="page". */
+.lp-audnav { background: var(--surface); border-bottom: 1px solid var(--line); }
+.lp-audnav__inner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding-block: var(--space-2); }
+.lp-audnav__label { font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-right: var(--space-1); }
+.lp-audchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 999px;
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  color: var(--ink); text-decoration: none; font-size: 0.9rem; font-weight: 700;
+  transition: border-color 0.16s ease, transform 0.16s ease;
+}
+.lp-audchip:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent, var(--brand)) 45%, var(--line)); }
+.lp-audchip[aria-current="page"] {
+  background: color-mix(in srgb, var(--accent, var(--brand)) 14%, var(--card));
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 55%, var(--line));
+  color: var(--brand-ink);
+}
+
+/* Demo-CTA in Akzentfarbe der Edition (statt Marken-Terrakotta). */
+.lp-cta--accent { background: var(--accent, var(--brand)); }
+
+/* Preis-/Modell-Block: 1–3 Karten nebeneinander, eine als Highlight markierbar. */
+.lp-pricing { display: grid; gap: var(--space-3); margin-top: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.lp-pricecard {
+  padding: var(--space-4); border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.lp-pricecard--feat { border-color: color-mix(in srgb, var(--accent, var(--brand)) 55%, var(--line)); box-shadow: var(--shadow-lg); }
+.lp-pricecard__tag { font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand-ink); }
+.lp-pricecard__price { font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; color: var(--ink); line-height: 1.05; }
+.lp-pricecard__price small { font-size: 0.9rem; font-weight: 700; color: var(--muted); }
+.lp-pricecard__desc { margin: 0; font-size: 0.95rem; line-height: 1.5; color: var(--muted); }
+.lp-pricecard ul { list-style: none; margin: var(--space-1) 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lp-pricecard li { font-size: 0.95rem; color: var(--ink-soft); padding-left: 1.5rem; position: relative; }
+.lp-pricecard li::before { content: "✓"; position: absolute; left: 0; color: var(--accent, var(--brand)); font-weight: 800; }
+
+/* Zweistufiger Kontakt-/CTA-Block: Live-Demo (primär) + E-Mail (sekundär). */
+.lp-contact { text-align: center; }
+.lp-contact .lp-h2 { margin-inline: auto; max-width: 22ch; }
+.lp-contact__sub { font-size: var(--fs-lead); color: var(--muted); margin: var(--space-2) auto var(--space-5); max-width: 48ch; }
+.lp-contact__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; }
+.lp-contact__note { margin: var(--space-4) auto 0; font-size: 0.85rem; color: var(--muted); max-width: 44ch; }
+
+/* Schlanke Hero-Visitenkarte (statisch, kein JS): zeigt Marke + Akzent. */
+.lp-herocard {
+  padding: var(--space-4); border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow-hero);
+  border-top: 6px solid var(--accent, var(--brand));
+  display: flex; flex-direction: column; gap: var(--space-3);
+}
+.lp-herocard__brand { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--ink); }
+.lp-herocard__phrase { font-size: 1.1rem; color: var(--ink); }
+.lp-herocard__phrase b { color: var(--brand-ink); }
+.lp-herocard__phrase span { display: block; color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
+.lp-herocard__row { display: flex; flex-wrap: wrap; gap: 6px; }
+.lp-herocard__pill { font-size: 0.78rem; font-weight: 700; color: var(--brand-ink); background: color-mix(in srgb, var(--accent, var(--brand)) 12%, var(--card)); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; }
+
 /* ─────────────────────────── Reduced Motion ───────────────────────────
  * Harte Garantie: keine Bewegung. Flip & Tilt instant, Chips/Shine/Reveal aus. */
 @media (prefers-reduced-motion: reduce) {
@@ -841,4 +907,5 @@ a { color: var(--brand-ink); }
   .lp-step, .lp-step__num { transition: none !important; }
   .lp-step:hover, .lp-step.is-active { transform: none !important; }
   .lp-step:hover .lp-step__num, .lp-step.is-active .lp-step__num { transform: rotate(-5deg) !important; }
+  .lp-audchip { transition: none !important; }
 }
