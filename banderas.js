@@ -116,8 +116,8 @@
       region: "sur", capital: "Brasília", colors: "Grün · Gelb · Blau", colorsEn: "Green · Yellow · Blue",
       sym: "Grünes Feld, gelbe Raute, blaue Kugel mit Sternen und dem Spruch „Ordem e Progresso“ (Ordnung und Fortschritt).",
       symEn: "A green field, a yellow rhombus and a blue globe with stars and the motto „Ordem e Progresso“ (Order and Progress).",
-      fact: "Die Sterne zeigen den Sternenhimmel über Rio in der Nacht des 15. November 1889 – jeder Stern ist ein Bundesstaat.",
-      factEn: "The stars depict the night sky over Rio on 15 November 1889 – each star is a federal state.",
+      fact: "Die Sterne zeigen den Sternenhimmel über Rio in der Nacht des 15. November 1889 – jeder Stern steht für einen Bundesstaat oder den Hauptstadtdistrikt.",
+      factEn: "The stars depict the night sky over Rio on 15 November 1889 – each star stands for a federal state or the capital district.",
     },
     // ----- Centroamérica y el Caribe -----
     {
@@ -197,8 +197,8 @@
       region: "centro", capital: "San Juan", colors: "Rot · Weiß · Blau", colorsEn: "Red · White · Blue",
       sym: "Fünf Streifen in Rot und Weiß mit einem blauen Dreieck und einem weißen Stern: das Dreieck steht für die drei Staatsgewalten, der Stern für die Insel selbst.",
       symEn: "Five red and white stripes with a blue triangle and a white star: the triangle stands for the three branches of government, the star for the island itself.",
-      fact: "Fast spiegelbildlich zu Kuba – nur sind hier die Streifen rot und das Dreieck blau. Beide Flaggen entstanden um 1895 fast zur selben Zeit.",
-      factEn: "Almost a mirror image of Cuba – here the stripes are red and the triangle is blue. Both flags emerged around 1895 at nearly the same time.",
+      fact: "Fast spiegelbildlich zu Kuba – nur sind hier die Streifen rot und das Dreieck blau. Puerto-ricanische Exilanten entwarfen sie 1895 bewusst als Spiegelbild der kubanischen Flagge – als Zeichen der Solidarität im Unabhängigkeitskampf.",
+      factEn: "Almost a mirror image of Cuba – here the stripes are red and the triangle is blue. Puerto Rican exiles designed it in 1895 as a deliberate mirror of Cuba's flag – a sign of solidarity in the independence struggle.",
     },
     // ----- España -----
     {
