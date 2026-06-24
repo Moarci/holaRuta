@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#241510" />
+  <title>HolaRuta – Reise-Spanisch für Lateinamerika</title>
+  <meta name="description" content="HolaRuta – dein Reise-Spanisch für echte Situationen: 2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Lateinamerika-korrekt, komplett offline, kostenlos, ohne Konto." />
+  <link rel="canonical" href="https://moarci.github.io/holaRuta/landing.html" />
+
+  <!-- Zweisprachig: teilbare Sprach-Links (?lang=) für Suche & Direktverlinkung. -->
+  <link rel="alternate" hreflang="de" href="https://moarci.github.io/holaRuta/landing.html?lang=de" />
+  <link rel="alternate" hreflang="en" href="https://moarci.github.io/holaRuta/landing.html?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/landing.html" />
+
+  <!-- Social-Vorschau: nutzt das bestehende, gebaute og-image.png der Marke. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="HolaRuta" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:url" content="https://moarci.github.io/holaRuta/landing.html" />
+  <meta property="og:title" content="HolaRuta – Reise-Spanisch für Lateinamerika" />
+  <meta property="og:description" content="2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Offline, ohne Konto, kostenlos." />
+  <meta property="og:image" content="https://moarci.github.io/holaRuta/og-image.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="HolaRuta – Reise-Spanisch für echte Situationen. Beispielkarte: „Was kostet das?“ → „¿Cuánto cuesta?“" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="HolaRuta – Reise-Spanisch für Lateinamerika" />
+  <meta name="twitter:description" content="2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Offline, ohne Konto, kostenlos." />
+  <meta name="twitter:image" content="https://moarci.github.io/holaRuta/og-image.png" />
+
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+
+  <!-- Schriften self-hosted (DSGVO/offline), Definition in styles.css. Die beim
+       ersten Paint sichtbaren Schriften vorladen (wie index.html). -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/bricolage-grotesque-600-800-latin.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/instrument-sans-400-700-latin.woff2" />
+
+  <!-- Theme so früh wie möglich setzen (kein Hell-Aufblitzen). Gemerkte Wahl der
+       APP (spanischcard.settings.v1) schlägt die System-Vorliebe – Landing & App
+       bleiben konsistent. Zusätzlich html.js setzen, damit der Reveal-Startzustand
+       greift, bevor der Inhalt gemalt wird (ohne JS bleibt alles sichtbar). -->
+  <script>
+    (function () {
+      document.documentElement.classList.add("js");
+      try {
+        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
+        var t = (s && (s.theme === "dark" || s.theme === "light")) ? s.theme
+          : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", t === "dark" ? "#0E0907" : "#241510");
+      } catch (e) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+
+  <!-- styles.css ZUERST: Design-Tokens, @font-face, focus-visible, reduced-motion.
+       landing.css DANACH: nur das Marketing-Layout (gewinnt bei gleicher Spezifität). -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="landing.css" />
+
+  <!-- Sicherheits-Header analog index.html. Diese Seite nutzt keine externen
+       Ressourcen (Fonts/Bilder self-hosted) – default-src 'self' genügt. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta name="referrer" content="no-referrer" />
+
+  <!-- Strukturierte Daten: Web-App, kostenlos. Hilft der Suche, die Seite korrekt
+       einzuordnen. Inline erlaubt unter script-src 'self' 'unsafe-inline'. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "HolaRuta",
+    "description": "Reise-Spanisch für Lateinamerika – 2293 Karteikarten mit Spaced Repetition, offline, kostenlos.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "url": "https://moarci.github.io/holaRuta/",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+  }
+  </script>
+</head>
+<body>
+  <a href="#hero" class="lp-skip" data-i18n="skip">Zum Inhalt springen</a>
+  <div class="lp-topstripe"></div>
+
+  <!-- ─────────────── Header ─────────────── -->
+  <header class="lp-header" id="lpHeader">
+    <div class="lp-wrap lp-header__inner">
+      <a class="lp-logo" href="./" aria-label="HolaRuta">
+        <span class="lp-logo__mark" aria-hidden="true">
+          <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="lpLogoG" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#C2502E"/>
+                <stop offset="1" stop-color="#E9A23B"/>
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" fill="url(#lpLogoG)"/>
+            <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+            <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+          </svg>
+        </span>
+        <span class="lp-logo__name">Hola<span>Ruta</span></span>
+      </a>
+      <span class="lp-header__spacer"></span>
+      <div class="lp-header__tools">
+        <div class="lp-langtoggle" role="group" aria-label="Sprache / Language">
+          <button class="lp-langbtn" data-lang="de" aria-pressed="true">DE</button>
+          <button class="lp-langbtn" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button class="lp-iconbtn" id="lpTheme" data-i18n-aria="a11y.theme" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten">🌙</button>
+        <a class="lp-cta lp-cta--sm lp-header__cta" href="./?start=onboarding" data-i18n="nav.cta">Starten</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ─────────────── Hero ─────────────── -->
+    <section class="lp-hero" id="hero">
+      <div class="lp-hero__mesh" aria-hidden="true"></div>
+      <div class="lp-wrap lp-hero__grid">
+        <div class="lp-hero__copy">
+          <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">REISE-SPANISCH FÜR LATEINAMERIKA</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Sprich Spanisch, bevor der Bus kommt.</h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">2293 Karten für echte Reisesituationen — Bus, Hotel, Essen, Geld, Notfall. Lateinamerika-korrekt, komplett offline, ohne Konto. Lern in der Hängematte, prüf am Grenzposten.</p>
+          <div class="lp-hero__cta" data-reveal style="--i:3">
+            <a class="lp-cta lp-cta--lg" href="./?start=onboarding" data-i18n="hero.cta">Kostenlos starten →</a>
+            <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#how" data-i18n="hero.cta2">Wie es funktioniert</a>
+          </div>
+          <div class="lp-trust" data-reveal style="--i:4">
+            <div class="lp-trust__item">
+              <span class="lp-trust__num" data-count="2293">2293</span>
+              <span class="lp-trust__label" data-i18n="trust.cards">Karten</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num" data-count="72">72</span>
+              <span class="lp-trust__label" data-i18n="trust.areas">Bereiche</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num" data-count="3">3</span>
+              <span class="lp-trust__label" data-i18n="trust.modes">Lernmodi</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num">0&nbsp;€</span>
+              <span class="lp-trust__label" data-i18n="trust.free">Offline · kein Konto</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Beispielkarten-Karussell: rotiert durch echte Reise-Sätze verschiedener
+             Kategorien (Eyecatcher + zeigt die Bandbreite). Karten nutzen die echten
+             App-Klassen (.flip/.face/.cardbtn) und sind antippbar zum Umdrehen. -->
+        <div class="lp-cardcol" data-reveal style="--i:2">
+          <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" aria-label="Beispielkarten">
+            <div class="lp-carousel__viewport">
+              <div class="lp-slide is-active">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex1.cat">GELD</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex1.q">Was kostet das?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#C2502E">
+                        <span class="face__cat" data-i18n="ex1.cat">GELD</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿Cuánto cuesta?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿Cuánto cuesta?</div>
+                        <div class="face__tip">🗣️ KWAN-toh KWES-tah</div>
+                        <div class="face__ctx" data-i18n="ex1.ctx">🧭 Im Laden oder auf dem Markt</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex2.cat">NOTFALL</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex2.q">Ich brauche einen Arzt</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#B5302A">
+                        <span class="face__cat" data-i18n="ex2.cat">NOTFALL</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="Necesito un médico" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">Necesito un médico</div>
+                        <div class="face__tip">🗣️ ne-ce-SI-to un MÉ-di-co</div>
+                        <div class="face__ctx" data-i18n="ex2.ctx">🧭 Bei Krankheit oder Verletzung</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex3.cat">BUS</span>
+                        <span class="lvl-badge" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <div class="face__word" data-i18n="ex3.q">Wann fährt der Bus?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#2F6B70">
+                        <span class="face__cat" data-i18n="ex3.cat">BUS</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿A qué hora sale?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿A qué hora sale?</div>
+                        <div class="face__tip">🗣️ a-KÉ O-ra SA-le</div>
+                        <div class="face__ctx" data-i18n="ex3.ctx">🧭 Am Busbahnhof, beim Fahrplan</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex4.cat">ESSEN</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex4.q">Die Rechnung, bitte</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#3F7355">
+                        <span class="face__cat" data-i18n="ex4.cat">ESSEN</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="La cuenta, por favor" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">La cuenta, por favor</div>
+                        <div class="face__tip">🗣️ la KWEN-ta por fa-VOR</div>
+                        <div class="face__ctx" data-i18n="ex4.ctx">🧭 Im Restaurant oder Café</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex5.cat">SMALLTALK</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex5.q">Woher kommst du?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#7D4A8E">
+                        <span class="face__cat" data-i18n="ex5.cat">SMALLTALK</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿De dónde eres?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿De dónde eres?</div>
+                        <div class="face__tip">🗣️ de DÓN-de E-res</div>
+                        <div class="face__ctx" data-i18n="ex5.ctx">🧭 Beim Frühstück oder im Dorm</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lp-dots" id="lpDots" role="group" aria-label="Beispielkarte wählen">
+            <button class="lp-dot is-active" type="button" data-i="0" aria-label="Karte 1"></button>
+            <button class="lp-dot" type="button" data-i="1" aria-label="Karte 2"></button>
+            <button class="lp-dot" type="button" data-i="2" aria-label="Karte 3"></button>
+            <button class="lp-dot" type="button" data-i="3" aria-label="Karte 4"></button>
+            <button class="lp-dot" type="button" data-i="4" aria-label="Karte 5"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Features ─────────────── -->
+    <section class="lp-section lp-section--card" id="features">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="feat.eyebrow">WAS DRIN IST</p>
+        <h2 class="lp-h2" data-reveal data-i18n="feat.title">Alles für die Reise — nichts fürs Klassenzimmer.</h2>
+        <p class="lp-lead" data-reveal data-i18n="feat.lead">Kein Vokabel-Pauken. Sondern die Sätze, die du am Busbahnhof, im Hostel und auf dem Markt sofort brauchst.</p>
+        <div class="lp-features__grid">
+          <article class="lp-feat" data-reveal style="--i:0; --accent:#C2502E">
+            <span class="lp-feat__icon" aria-hidden="true">🧠</span>
+            <h3 class="lp-feat__title" data-i18n="feat.srs.t">Du vergisst es nicht mehr</h3>
+            <p class="lp-feat__body" data-i18n="feat.srs.b">Jede Vokabel kommt genau dann zurück, wenn du sie zu vergessen drohst — automatisch. Du musst nichts planen.</p>
+          </article>
+          <article class="lp-feat" data-reveal style="--i:1; --accent:#2F6B70">
+            <span class="lp-feat__icon" aria-hidden="true">🃏</span>
+            <h3 class="lp-feat__title" data-i18n="feat.modes.t">Lern, wie's dir passt</h3>
+            <p class="lp-feat__body" data-i18n="feat.modes.b">Karteikarte, selbst schreiben oder nur hören — wechsle den Modus jederzeit.</p>
+          </article>
+          <article class="lp-feat" data-reveal style="--i:2; --accent:#3F7355">
+            <span class="lp-feat__icon" aria-hidden="true">🌎</span>
+            <h3 class="lp-feat__title" data-i18n="feat.latam.t">Echtes Straßen-Spanisch</h3>
+            <p class="lp-feat__body" data-i18n="feat.latam.b">colectivo, vuelto, plata, chévere — die Wörter, die man in Lateinamerika wirklich sagt.</p>
+          </article>
+          <article class="lp-feat" data-reveal style="--i:0; --accent:#2F6B70">
+            <span class="lp-feat__icon" aria-hidden="true">🧭</span>
+            <h3 class="lp-feat__title" data-i18n="feat.context.t">Immer mit Kontext</h3>
+            <p class="lp-feat__body" data-i18n="feat.context.b">Jede Karte zeigt dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp. So weißt du sofort, wie du ihn einordnest.</p>
+          </article>
+          <article class="lp-feat" data-reveal style="--i:0; --accent:#E9A23B">
+            <span class="lp-feat__icon" aria-hidden="true">📶</span>
+            <h3 class="lp-feat__title" data-i18n="feat.offline.t">Funktioniert ohne Netz</h3>
+            <p class="lp-feat__body" data-i18n="feat.offline.b">Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.</p>
+          </article>
+          <article class="lp-feat" data-reveal style="--i:1; --accent:#7D4A8E">
+            <span class="lp-feat__icon" aria-hidden="true">🔒</span>
+            <h3 class="lp-feat__title" data-i18n="feat.privacy.t">Kein Konto, kein Tracking</h3>
+            <p class="lp-feat__body" data-i18n="feat.privacy.b">Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.</p>
+          </article>
+          <article class="lp-feat" data-reveal style="--i:2; --accent:#B5302A">
+            <span class="lp-feat__icon" aria-hidden="true">🗂️</span>
+            <h3 class="lp-feat__title" data-i18n="feat.areas.t">72 Themen für echte Situationen</h3>
+            <p class="lp-feat__body" data-i18n="feat.areas.b">Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.</p>
+          </article>
+        </div>
+
+        <div class="lp-more" data-reveal>
+          <p class="lp-more__intro" data-i18n="more.intro">Und noch viel mehr an Bord</p>
+          <div class="lp-more__chips">
+            <span class="lp-morechip">🆘 <span data-i18n="more.spick">Spickzettel</span></span>
+            <span class="lp-morechip">🌎 <span data-i18n="more.country">Länderkunde</span></span>
+            <span class="lp-morechip">📜 Historia</span>
+            <span class="lp-morechip">💬 Diálogos</span>
+            <span class="lp-morechip">🛏️ <span data-i18n="more.hostel">Hostel-Modus</span></span>
+            <span class="lp-morechip">🤝 Regatear</span>
+            <span class="lp-morechip">💵 Precios al oído</span>
+            <span class="lp-morechip">🎲 Juegos de viaje</span>
+            <span class="lp-morechip">🎵 Música</span>
+            <span class="lp-morechip">🧳 Logística</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── So funktioniert's ─────────────── -->
+    <section class="lp-section" id="how">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="how.eyebrow">SO FUNKTIONIERT'S</p>
+        <h2 class="lp-h2" data-reveal data-i18n="how.title">In drei Schritten unterwegs.</h2>
+        <div class="lp-how__grid">
+          <div class="lp-steps">
+            <article class="lp-step" data-reveal style="--i:0" data-step="1">
+              <span class="lp-step__num">1</span>
+              <div>
+                <h3 class="lp-step__title" data-i18n="how.s1.t">Bereich wählen</h3>
+                <p class="lp-step__body" data-i18n="how.s1.b">Such dir aus, was ansteht — Geld, Essen, Bus, Notfall. 72 Bereiche, alle reisefertig.</p>
+              </div>
+              <div class="lp-step__shot">
+                <img src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="HolaRuta Startseite mit Reise-Bereichen" />
+              </div>
+            </article>
+            <article class="lp-step" data-reveal style="--i:1" data-step="2">
+              <span class="lp-step__num">2</span>
+              <div>
+                <h3 class="lp-step__title" data-i18n="how.s2.t">Karte lernen</h3>
+                <p class="lp-step__body" data-i18n="how.s2.b">Tippen, antworten, umdrehen. Karteikarte, Schreiben oder Hören — du entscheidest.</p>
+              </div>
+              <div class="lp-step__shot">
+                <img src="docs/landing/study.png" width="390" height="844" loading="lazy" alt="Aufgedeckte Karteikarte mit Aussprache und Bewertung" />
+              </div>
+            </article>
+            <article class="lp-step" data-reveal style="--i:2" data-step="3">
+              <span class="lp-step__num">3</span>
+              <div>
+                <h3 class="lp-step__title" data-i18n="how.s3.t">Großzügig prüfen</h3>
+                <p class="lp-step__body" data-i18n="how.s3.b">Markier ehrlich: Nochmal, Gut oder Einfach. Den Rest plant die App für dich.</p>
+              </div>
+              <div class="lp-step__shot">
+                <img src="docs/landing/stats.png" width="390" height="844" loading="lazy" alt="Statistik mit Trefferquote und Fortschritt" />
+              </div>
+            </article>
+          </div>
+
+          <div class="lp-phone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div>
+              <div class="lp-phone__stripe"></div>
+              <img class="lp-phone__img" id="lpPhoneImg" src="docs/landing/home.png" width="390" height="844" alt="" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Install + FAQ ─────────────── -->
+    <section class="lp-section lp-section--wash" id="install">
+      <div class="lp-wrap">
+        <div class="lp-rule lp-rule--center" data-reveal></div>
+        <p class="lp-eyebrow" style="text-align:center" data-reveal data-i18n="install.eyebrow">INSTALLIEREN</p>
+        <h2 class="lp-h2" style="margin-inline:auto;text-align:center;max-width:28ch" data-reveal data-i18n="install.title">Als App auf den Homescreen.</h2>
+        <div class="lp-install__grid">
+          <article class="lp-installcard" data-reveal style="--i:0">
+            <span class="lp-installcard__plat">🤖 <span data-i18n="install.android">Android</span></span>
+            <ol>
+              <li data-i18n="install.a1">Öffne HolaRuta im Browser.</li>
+              <li data-i18n="install.a2">Tippe auf „Zum Startbildschirm hinzufügen".</li>
+              <li data-i18n="install.a3">Fertig — HolaRuta liegt als App auf dem Homescreen, offline-fähig.</li>
+            </ol>
+            <p class="lp-installcard__note" data-i18n="install.note">Kein App-Store, keine Anmeldung, keine Updates-Warteschlange.</p>
+          </article>
+          <article class="lp-installcard" data-reveal style="--i:1">
+            <span class="lp-installcard__plat">🍎 <span data-i18n="install.ios">iPhone (Safari)</span></span>
+            <ol>
+              <li data-i18n="install.i1">Öffne HolaRuta in Safari.</li>
+              <li data-i18n="install.i2">Tippe auf das Teilen-Symbol, dann „Zum Home-Bildschirm".</li>
+              <li data-i18n="install.i3">Öffne HolaRuta vom Homescreen — läuft offline.</li>
+            </ol>
+            <p class="lp-installcard__note" data-i18n="install.note">Kein App-Store, keine Anmeldung, keine Updates-Warteschlange.</p>
+          </article>
+        </div>
+        <div class="lp-install__cta" data-reveal>
+          <a class="lp-cta lp-cta--lg" href="./" data-i18n="install.cta">Jetzt im Browser öffnen →</a>
+        </div>
+
+        <div class="lp-faq">
+          <details data-reveal style="--i:0">
+            <summary data-i18n="faq.q1">Brauche ich Internet?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a1">Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.</div>
+          </details>
+          <details data-reveal style="--i:1">
+            <summary data-i18n="faq.q2">Ist es wirklich kostenlos?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a2">Ja. Komplett kostenlos, keine Werbung, keine In-App-Käufe, kein Konto.</div>
+          </details>
+          <details data-reveal style="--i:2">
+            <summary data-i18n="faq.q3">Welches Spanisch lerne ich?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a3">Lateinamerikanisches Reise-Spanisch — colectivo statt autobús, vuelto statt cambio. Die Wörter, die man dort wirklich hört.</div>
+          </details>
+          <details data-reveal style="--i:3">
+            <summary data-i18n="faq.q4">Werden meine Daten gespeichert?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a4">Dein Fortschritt bleibt lokal auf dem Gerät. Kein Tracking, keine Anmeldung, kein Server (Cloud-Sync ist optional und standardmäßig aus).</div>
+          </details>
+          <details data-reveal style="--i:4">
+            <summary data-i18n="faq.q5">Auf welchen Geräten läuft es?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a5">In jedem modernen Browser — Android, iPhone, Tablet, Laptop. Auf dem Handy als App installierbar.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+    <!-- ─────────────── Abschluss-CTA ─────────────── -->
+    <section class="lp-section lp-final" id="start">
+      <div class="lp-wrap">
+        <h2 class="lp-h2" data-reveal data-i18n="final.title">Pack deinen Rucksack. Den Rest übernehmen wir.</h2>
+        <p class="lp-final__sub" data-reveal data-i18n="final.sub">2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.</p>
+        <div data-reveal>
+          <a class="lp-cta lp-cta--lg lp-cta--onbrand" href="./?start=onboarding" data-i18n="final.cta">Kostenlos starten →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ─────────────── Footer ─────────────── -->
+  <footer class="lp-footer">
+    <div class="lp-footer__top"></div>
+    <div class="lp-wrap">
+      <div class="lp-footer__grid">
+        <div>
+          <a class="lp-logo" href="./" aria-label="HolaRuta">
+            <span class="lp-logo__mark" aria-hidden="true">
+              <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+                <rect width="512" height="512" fill="url(#lpLogoG)"/>
+                <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+                <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+              </svg>
+            </span>
+            <span class="lp-logo__name" style="color:var(--cream)">Hola<span>Ruta</span></span>
+          </a>
+          <p class="lp-footer__blurb" data-i18n="footer.blurb">Dein Reise-Spanisch für echte Situationen — Karteikarten für Bus, Hotel, Essen, Geld und Notfall. Lateinamerika-korrekt, offline, kostenlos.</p>
+          <div class="lp-footer__chips" aria-hidden="true">
+            <span class="lp-footer__chip">colectivo</span>
+            <span class="lp-footer__chip">vuelto</span>
+            <span class="lp-footer__chip">plata</span>
+            <span class="lp-footer__chip">chévere</span>
+          </div>
+        </div>
+        <div>
+          <h4 data-i18n="footer.app">App</h4>
+          <ul>
+            <li><a href="./" data-i18n="footer.open">App öffnen</a></li>
+            <li><a href="./?start=onboarding" data-i18n="footer.start">Kostenlos starten</a></li>
+            <li><a href="https://moarci.github.io/holaRuta/HolaRuta.html" data-i18n="footer.single">Einzeldatei-Version</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer.more">Mehr</h4>
+          <ul>
+            <li><a href="#features" data-i18n="footer.features">Features</a></li>
+            <li><a href="#how" data-i18n="footer.how">So funktioniert's</a></li>
+            <li><a href="#install" data-i18n="footer.install">Installieren</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="lp-footer__credit">
+        <span>© <span id="lpYear">2026</span> HolaRuta</span>
+        <span data-i18n="footer.credit">Mit <span class="lp-footer__heart">♥</span> für Lateinamerika gebaut.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─────────────── Verhalten: i18n · Theme · Flip · Motion ─────────────── -->
+  <script>
+  (function () {
+    "use strict";
+
+    // ── Zweisprachiges Wörterbuch (DE/EN nebeneinander, je Key) ──
+    var I18N = {
+      de: {
+        "skip": "Zum Inhalt springen",
+        "nav.cta": "Starten",
+        "hero.eyebrow": "REISE-SPANISCH FÜR LATEINAMERIKA",
+        "hero.h1": "Sprich Spanisch, bevor der Bus kommt.",
+        "hero.sub": "2293 Karten für echte Reisesituationen — Bus, Hotel, Essen, Geld, Notfall. Lateinamerika-korrekt, komplett offline, ohne Konto. Lern in der Hängematte, prüf am Grenzposten.",
+        "hero.cta": "Kostenlos starten →",
+        "hero.cta2": "Wie es funktioniert",
+        "trust.cards": "Karten", "trust.areas": "Bereiche", "trust.modes": "Lernmodi", "trust.free": "Offline · kein Konto",
+        "card.hint": "Zum Umdrehen tippen", "card.lvl": "A1 · Einsteiger", "card.lvl2": "A2 · Mittel",
+        "card.speakLabel": "Antwort vorlesen",
+        "ex1.cat": "GELD", "ex1.q": "Was kostet das?", "ex1.ctx": "🧭 Im Laden oder auf dem Markt",
+        "ex2.cat": "NOTFALL", "ex2.q": "Ich brauche einen Arzt", "ex2.ctx": "🧭 Bei Krankheit oder Verletzung",
+        "ex3.cat": "BUS", "ex3.q": "Wann fährt der Bus?", "ex3.ctx": "🧭 Am Busbahnhof, beim Fahrplan",
+        "ex4.cat": "ESSEN", "ex4.q": "Die Rechnung, bitte", "ex4.ctx": "🧭 Im Restaurant oder Café",
+        "ex5.cat": "SMALLTALK", "ex5.q": "Woher kommst du?", "ex5.ctx": "🧭 Beim Frühstück oder im Dorm",
+        "feat.eyebrow": "WAS DRIN IST",
+        "feat.title": "Alles für die Reise — nichts fürs Klassenzimmer.",
+        "feat.lead": "Kein Vokabel-Pauken. Sondern die Sätze, die du am Busbahnhof, im Hostel und auf dem Markt sofort brauchst.",
+        "feat.srs.t": "Du vergisst es nicht mehr", "feat.srs.b": "Jede Vokabel kommt genau dann zurück, wenn du sie zu vergessen drohst — automatisch. Du musst nichts planen.",
+        "feat.modes.t": "Lern, wie's dir passt", "feat.modes.b": "Karteikarte, selbst schreiben oder nur hören — wechsle den Modus jederzeit.",
+        "feat.latam.t": "Echtes Straßen-Spanisch", "feat.latam.b": "colectivo, vuelto, plata, chévere — die Wörter, die man in Lateinamerika wirklich sagt.",
+        "feat.context.t": "Immer mit Kontext", "feat.context.b": "Jede Karte zeigt dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp. So weißt du sofort, wie du ihn einordnest.",
+        "feat.offline.t": "Funktioniert ohne Netz", "feat.offline.b": "Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.",
+        "feat.privacy.t": "Kein Konto, kein Tracking", "feat.privacy.b": "Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.",
+        "feat.areas.t": "72 Themen für echte Situationen", "feat.areas.b": "Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.",
+        "more.intro": "Und noch viel mehr an Bord",
+        "more.spick": "Spickzettel", "more.country": "Länderkunde", "more.hostel": "Hostel-Modus",
+        "how.eyebrow": "SO FUNKTIONIERT'S", "how.title": "In drei Schritten unterwegs.",
+        "how.s1.t": "Bereich wählen", "how.s1.b": "Such dir aus, was ansteht — Geld, Essen, Bus, Notfall. 72 Bereiche, alle reisefertig.",
+        "how.s2.t": "Karte lernen", "how.s2.b": "Tippen, antworten, umdrehen. Karteikarte, Schreiben oder Hören — du entscheidest.",
+        "how.s3.t": "Großzügig prüfen", "how.s3.b": "Markier ehrlich: Nochmal, Gut oder Einfach. Den Rest plant die App für dich.",
+        "install.eyebrow": "INSTALLIEREN", "install.title": "Als App auf den Homescreen.",
+        "install.android": "Android", "install.ios": "iPhone (Safari)",
+        "install.a1": "Öffne HolaRuta im Browser.", "install.a2": "Tippe auf „Zum Startbildschirm hinzufügen\".", "install.a3": "Fertig — HolaRuta liegt als App auf dem Homescreen, offline-fähig.",
+        "install.i1": "Öffne HolaRuta in Safari.", "install.i2": "Tippe auf das Teilen-Symbol, dann „Zum Home-Bildschirm\".", "install.i3": "Öffne HolaRuta vom Homescreen — läuft offline.",
+        "install.note": "Kein App-Store, keine Anmeldung, keine Updates-Warteschlange.",
+        "install.cta": "Jetzt im Browser öffnen →",
+        "faq.q1": "Brauche ich Internet?", "faq.a1": "Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.",
+        "faq.q2": "Ist es wirklich kostenlos?", "faq.a2": "Ja. Komplett kostenlos, keine Werbung, keine In-App-Käufe, kein Konto.",
+        "faq.q3": "Welches Spanisch lerne ich?", "faq.a3": "Lateinamerikanisches Reise-Spanisch — colectivo statt autobús, vuelto statt cambio. Die Wörter, die man dort wirklich hört.",
+        "faq.q4": "Werden meine Daten gespeichert?", "faq.a4": "Dein Fortschritt bleibt lokal auf dem Gerät. Kein Tracking, keine Anmeldung, kein Server (Cloud-Sync ist optional und standardmäßig aus).",
+        "faq.q5": "Auf welchen Geräten läuft es?", "faq.a5": "In jedem modernen Browser — Android, iPhone, Tablet, Laptop. Auf dem Handy als App installierbar.",
+        "footer.blurb": "Dein Reise-Spanisch für echte Situationen — Karteikarten für Bus, Hotel, Essen, Geld und Notfall. Lateinamerika-korrekt, offline, kostenlos.",
+        "footer.app": "App", "footer.open": "App öffnen", "footer.start": "Kostenlos starten", "footer.single": "Einzeldatei-Version",
+        "footer.more": "Mehr", "footer.features": "Features", "footer.how": "So funktioniert's", "footer.install": "Installieren",
+        "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut.",
+        "final.title": "Pack deinen Rucksack. Den Rest übernehmen wir.",
+        "final.sub": "2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.",
+        "final.cta": "Kostenlos starten →",
+        "a11y.theme": "Hell/Dunkel umschalten", "a11y.card": "Beispielkarte umdrehen",
+        "_title": "HolaRuta – Reise-Spanisch für Lateinamerika",
+        "_desc": "HolaRuta – dein Reise-Spanisch für echte Situationen: 2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Lateinamerika-korrekt, komplett offline, kostenlos, ohne Konto."
+      },
+      en: {
+        "skip": "Skip to content",
+        "nav.cta": "Start",
+        "hero.eyebrow": "TRAVEL SPANISH FOR LATIN AMERICA",
+        "hero.h1": "Speak Spanish before the bus arrives.",
+        "hero.sub": "2,293 cards for real travel moments — buses, hotels, food, money, emergencies. Latin-America-correct, fully offline, no account. Learn in the hammock, use it at the border.",
+        "hero.cta": "Start free →",
+        "hero.cta2": "See how it works",
+        "trust.cards": "cards", "trust.areas": "areas", "trust.modes": "modes", "trust.free": "Offline · no account",
+        "card.hint": "Tap to flip", "card.lvl": "A1 · Beginner", "card.lvl2": "A2 · Intermediate",
+        "card.speakLabel": "Read answer aloud",
+        "ex1.cat": "MONEY", "ex1.q": "How much is it?", "ex1.ctx": "🧭 At the shop or market",
+        "ex2.cat": "EMERGENCY", "ex2.q": "I need a doctor", "ex2.ctx": "🧭 When ill or injured",
+        "ex3.cat": "BUS", "ex3.q": "What time does the bus leave?", "ex3.ctx": "🧭 At the station, checking times",
+        "ex4.cat": "FOOD", "ex4.q": "The check, please", "ex4.ctx": "🧭 At a restaurant or café",
+        "ex5.cat": "SMALL TALK", "ex5.q": "Where are you from?", "ex5.ctx": "🧭 At breakfast or in the dorm",
+        "feat.eyebrow": "WHAT'S INSIDE",
+        "feat.title": "Everything for the road — nothing for the classroom.",
+        "feat.lead": "No vocab cramming. Just the phrases you need right away at the bus terminal, in the hostel and at the market.",
+        "feat.srs.t": "You won't forget it", "feat.srs.b": "Every word comes back right before you'd forget it — automatically. Nothing to plan.",
+        "feat.modes.t": "Learn your way", "feat.modes.b": "Flip a card, type it yourself or just listen — switch modes anytime.",
+        "feat.latam.t": "Real street Spanish", "feat.latam.b": "colectivo, vuelto, plata, chévere — the words people actually use in Latin America.",
+        "feat.context.t": "Always in context", "feat.context.b": "Every card shows you when and where you'll actually need the phrase — plus a travel tip. So you instantly know how it fits.",
+        "feat.offline.t": "Works with no signal", "feat.offline.b": "Loads once, runs offline — Andes, jungle, night bus.",
+        "feat.privacy.t": "No account, no tracking", "feat.privacy.b": "Your progress stays on your device. No sign-up, no ads.",
+        "feat.areas.t": "72 real-life topics", "feat.areas.b": "From the bus ride to the pharmacy — 2,293 cards, neatly sorted.",
+        "more.intro": "And plenty more on board",
+        "more.spick": "Cheat sheet", "more.country": "Country guide", "more.hostel": "Hostel mode",
+        "how.eyebrow": "HOW IT WORKS", "how.title": "On the road in three steps.",
+        "how.s1.t": "Pick an area", "how.s1.b": "Choose what's coming up — money, food, buses, emergencies. 72 areas, all travel-ready.",
+        "how.s2.t": "Learn a card", "how.s2.b": "Tap, answer, flip. Flip, type or listen — your call.",
+        "how.s3.t": "Rate it honestly", "how.s3.b": "Mark it: again, good or easy. The app schedules the rest for you.",
+        "install.eyebrow": "INSTALL", "install.title": "Add it to your home screen.",
+        "install.android": "Android", "install.ios": "iPhone (Safari)",
+        "install.a1": "Open HolaRuta in your browser.", "install.a2": "Tap \"Add to Home screen\".", "install.a3": "Done — HolaRuta sits on your home screen, offline-ready.",
+        "install.i1": "Open HolaRuta in Safari.", "install.i2": "Tap the Share icon, then \"Add to Home Screen\".", "install.i3": "Launch HolaRuta from the home screen — it runs offline.",
+        "install.note": "No app store, no sign-up, no update queue.",
+        "install.cta": "Open in your browser →",
+        "faq.q1": "Do I need internet?", "faq.a1": "No. Once loaded, HolaRuta works offline — built for the dead zone on the night bus.",
+        "faq.q2": "Is it really free?", "faq.a2": "Yes. Completely free, no ads, no in-app purchases, no account.",
+        "faq.q3": "Which Spanish will I learn?", "faq.a3": "Latin-American travel Spanish — colectivo not autobús, vuelto not cambio. The words you'll actually hear there.",
+        "faq.q4": "Is my data collected?", "faq.a4": "Your progress stays local on your device. No tracking, no sign-up, no server (cloud sync is optional and off by default).",
+        "faq.q5": "Which devices does it run on?", "faq.a5": "Any modern browser — Android, iPhone, tablet, laptop. Installable as an app on your phone.",
+        "footer.blurb": "Travel Spanish for real situations — flashcards for buses, hotels, food, money and emergencies. Latin-America-correct, offline, free.",
+        "footer.app": "App", "footer.open": "Open app", "footer.start": "Start free", "footer.single": "Single-file version",
+        "footer.more": "More", "footer.features": "Features", "footer.how": "How it works", "footer.install": "Install",
+        "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America.",
+        "final.title": "Pack your backpack. We'll handle the rest.",
+        "final.sub": "2,293 cards, fully offline, no account, free. Ready to go in 30 seconds.",
+        "final.cta": "Start free →",
+        "a11y.theme": "Toggle light/dark", "a11y.card": "Flip the example card",
+        "_title": "HolaRuta – Travel Spanish for Latin America",
+        "_desc": "HolaRuta – travel Spanish for real situations: 2,293 flashcards with spaced repetition for buses, hotels, food, money & emergencies. Latin-America-correct, fully offline, free, no account."
+      }
+    };
+    // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
+    var HTML_KEYS = { "footer.credit": true };
+
+    var LANG_KEY = "holaruta.landing.lang";
+
+    function setLang(lang) {
+      if (!I18N[lang]) lang = "de";
+      var dict = I18N[lang];
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute("data-lang", lang);
+      document.title = dict["_title"];
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
+      var nodes = document.querySelectorAll("[data-i18n]");
+      for (var i = 0; i < nodes.length; i++) {
+        var key = nodes[i].getAttribute("data-i18n");
+        if (!(key in dict)) continue;
+        if (HTML_KEYS[key]) nodes[i].innerHTML = dict[key];
+        else nodes[i].textContent = dict[key];
+      }
+      // aria-labels (und ggf. title) lokalisieren – sonst liest der Screenreader
+      // im EN-Modus deutsche Beschriftungen vor.
+      var aria = document.querySelectorAll("[data-i18n-aria]");
+      for (var a = 0; a < aria.length; a++) {
+        var ak = aria[a].getAttribute("data-i18n-aria");
+        if (!(ak in dict)) continue;
+        aria[a].setAttribute("aria-label", dict[ak]);
+        if (aria[a].hasAttribute("title")) aria[a].setAttribute("title", dict[ak]);
+      }
+      // Umschalt-Buttons aktualisieren
+      var btns = document.querySelectorAll(".lp-langbtn");
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
+      }
+      try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    }
+
+    // Startsprache: ?lang= (teilbarer Link) > gemerkt > Browser > de
+    var urlLang = null;
+    try { urlLang = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+    var saved = null;
+    try { saved = localStorage.getItem(LANG_KEY); } catch (e) {}
+    var initial = (urlLang === "de" || urlLang === "en") ? urlLang
+      : saved || ((navigator.language || "de").toLowerCase().indexOf("de") === 0 ? "de" : "en");
+    setLang(initial);
+
+    document.querySelectorAll(".lp-langbtn").forEach(function (b) {
+      b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+    });
+
+    // Jahr im Footer
+    var y = document.getElementById("lpYear"); if (y) y.textContent = new Date().getFullYear();
+
+    // ── Theme-Toggle (schreibt zurück in spanischcard.settings.v1) ──
+    var themeBtn = document.getElementById("lpTheme");
+    function syncThemeIcon() {
+      var dark = document.documentElement.dataset.theme === "dark";
+      if (themeBtn) themeBtn.textContent = dark ? "☀️" : "🌙";
+    }
+    syncThemeIcon();
+    if (themeBtn) themeBtn.addEventListener("click", function () {
+      var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute("content", next === "dark" ? "#0E0907" : "#241510");
+      syncThemeIcon();
+      try {
+        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
+        s.theme = next;
+        localStorage.setItem("spanischcard.settings.v1", JSON.stringify(s));
+      } catch (e) {}
+    });
+
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ── Beispielkarten-Karussell ──
+    var car = document.getElementById("lpCar");
+    if (car) {
+      var slides = Array.prototype.slice.call(car.querySelectorAll(".lp-slide"));
+      var flips = slides.map(function (s) { return s.querySelector(".flip"); });
+      var dots = Array.prototype.slice.call(document.querySelectorAll("#lpDots .lp-dot"));
+      var idx = 0, timer = null, swiped = false;
+      var AUTO = 4200;
+
+      function setActive(i, focusDot) {
+        idx = (i + slides.length) % slides.length;
+        slides.forEach(function (s, n) {
+          var on = n === idx;
+          s.classList.toggle("is-active", on);
+          s.setAttribute("aria-hidden", on ? "false" : "true"); // inaktive Karten aus dem SR-Fokus
+          if (!on) { // beim Wegblättern zurück auf die Vorderseite
+            var f = flips[n];
+            if (f) { f.classList.remove("is-flipped"); f.setAttribute("aria-pressed", "false"); }
+          }
+        });
+        dots.forEach(function (d, n) {
+          var on = n === idx;
+          d.classList.toggle("is-active", on);
+          if (on) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current");
+        });
+        if (focusDot && dots[idx]) dots[idx].focus();
+      }
+      function next() { setActive(idx + 1); }
+
+      function startAuto() { if (reduce) return; stopAuto(); timer = setInterval(next, AUTO); }
+      function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
+
+      // Flip + Vorlesen pro Karte
+      flips.forEach(function (f) {
+        if (!f) return;
+        function flip() {
+          var on = f.classList.toggle("is-flipped");
+          f.setAttribute("aria-pressed", on ? "true" : "false");
+        }
+        f.addEventListener("click", function (e) {
+          if (swiped) return;                        // war ein Wisch, kein Tap
+          if (e.target.closest(".cardbtn")) return;  // Eck-Button nicht als Flip werten
+          flip();
+        });
+        f.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
+        });
+        var spk = f.querySelector(".cardbtn--speak");
+        if (spk) spk.addEventListener("click", function (e) {
+          e.stopPropagation();
+          try {
+            if (!("speechSynthesis" in window)) return;
+            var u = new SpeechSynthesisUtterance(spk.getAttribute("data-spk") || "");
+            u.lang = "es-419"; u.rate = 0.95;
+            speechSynthesis.cancel(); speechSynthesis.speak(u);
+          } catch (err) {}
+        });
+      });
+
+      // Punkt-Navigation
+      dots.forEach(function (d) {
+        d.addEventListener("click", function () { setActive(parseInt(d.getAttribute("data-i"), 10) || 0); startAuto(); });
+      });
+
+      // Auto-Rotation pausieren bei Hover/Fokus/Interaktion
+      car.addEventListener("pointerenter", stopAuto);
+      car.addEventListener("pointerleave", startAuto);
+      car.addEventListener("focusin", stopAuto);
+      car.addEventListener("focusout", startAuto);
+
+      // Wisch-Geste (Touch & Maus). pointerup hängt am window, damit ein Release
+      // auch AUSSERHALB des Karussells erkannt wird. Ein erkannter Wisch setzt
+      // `swiped` -> der nachfolgende Klick dreht die Karte NICHT um.
+      var dragX = null, dragY = null;
+      car.addEventListener("pointerdown", function (e) {
+        if (e.target.closest(".cardbtn")) return; // auf Buttons keinen Wisch starten
+        dragX = e.clientX; dragY = e.clientY; swiped = false;
+      });
+      window.addEventListener("pointerup", function (e) {
+        if (dragX === null) return;
+        var dx = e.clientX - dragX, dy = e.clientY - dragY;
+        dragX = dragY = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { // klar horizontal
+          swiped = true;
+          setActive(idx + (dx < 0 ? 1 : -1));
+          startAuto();
+        }
+      });
+      car.addEventListener("pointercancel", function () { dragX = dragY = null; });
+
+      setActive(0);
+      startAuto();
+    }
+
+    // ── Scroll-Reveal + animierte Counter (IntersectionObserver) ──
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+    function countUp(el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (reduce || !target) { el.textContent = String(target || el.textContent); return; }
+      var start = performance.now(), dur = 1100;
+      function step(now) {
+        var p = Math.min(1, (now - start) / dur);
+        el.textContent = String(Math.round(easeOut(p) * target));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          en.target.classList.add("is-in");
+          en.target.querySelectorAll && en.target.querySelectorAll("[data-count]").forEach(countUp);
+          io.unobserve(en.target);
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
+      document.querySelectorAll("[data-reveal]").forEach(function (el) { io.observe(el); });
+    } else {
+      // Kein IO: alles sofort zeigen, Counter direkt setzen.
+      document.querySelectorAll("[data-reveal]").forEach(function (el) { el.classList.add("is-in"); });
+      document.querySelectorAll("[data-count]").forEach(countUp);
+    }
+
+    // ── Phone-Mockup: Bild je sichtbarem Schritt wechseln (Desktop-Enhancement) ──
+    var phoneImg = document.getElementById("lpPhoneImg");
+    var shots = {
+      "1": "docs/landing/home.png",
+      "2": "docs/landing/study.png",
+      "3": "docs/landing/stats.png"
+    };
+    if (phoneImg && "IntersectionObserver" in window) {
+      var ioStep = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting && en.intersectionRatio > 0.5) {
+            var s = en.target.getAttribute("data-step");
+            if (shots[s] && phoneImg.getAttribute("src") !== shots[s]) phoneImg.setAttribute("src", shots[s]);
+          }
+        });
+      }, { threshold: [0.5, 0.75] });
+      document.querySelectorAll(".lp-step[data-step]").forEach(function (el) { ioStep.observe(el); });
+    }
+
+    // ── Sticky-Header-Schatten ab erstem Scroll ──
+    var header = document.getElementById("lpHeader");
+    var sentinel = document.getElementById("hero");
+    if (header && sentinel && "IntersectionObserver" in window) {
+      var ioHead = new IntersectionObserver(function (entries) {
+        header.classList.toggle("is-stuck", !entries[0].isIntersecting);
+      }, { rootMargin: "-72px 0px 0px 0px", threshold: 0 });
+      ioHead.observe(sentinel);
+    }
+  })();
+  </script>
+</body>
+</html>

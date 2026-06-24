@@ -181,7 +181,18 @@ function buildDist() {
   writeDist(DIST, "service-worker.js", fs.readFileSync(path.join(DIR, "service-worker.js")));
   // Zusätzliche Root-Assets, die nicht im Precache stehen, aber von index.html/Manifest
   // referenziert werden (Social-Vorschau-Bilder), best effort mitkopieren.
-  for (const extra of ["og-image.png", "og-image-square.png"]) {
+  // Dazu die separate Marketing-Landing-Page (landing.html/.css) plus die wenigen
+  // Screenshots, die sie zeigt. Bewusst NICHT im Service-Worker-Precache, damit der
+  // PWA-Offline-Cache der App schlank bleibt (Marketing muss nicht offline laufen).
+  for (const extra of [
+    "og-image.png",
+    "og-image-square.png",
+    "landing.html",
+    "landing.css",
+    "docs/landing/home.png",
+    "docs/landing/study.png",
+    "docs/landing/stats.png",
+  ]) {
     const p = path.join(DIR, extra);
     if (fs.existsSync(p)) { writeDist(DIST, extra, fs.readFileSync(p)); copied.push(extra); }
   }

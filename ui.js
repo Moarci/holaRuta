@@ -1153,6 +1153,12 @@
       ${vm.socialEnabled ? navrow("open-social", "🏆", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
+      <a class="navrow" href="landing.html" style="text-decoration:none" aria-label="${esc(t("profile.about"))}">
+        <span class="navrow__icon" aria-hidden="true">ℹ️</span>
+        <span class="navrow__label">${esc(t("profile.about"))}</span>
+        <span class="navrow__chev" aria-hidden="true">›</span>
+      </a>
+
       ${installBlock(vm.install)}
       ${editionCredit(vm.edition)}`;
   }

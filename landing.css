@@ -1,0 +1,541 @@
+/* landing.css – Marketing-Landing-Page für HolaRuta.
+ *
+ * Erbt das komplette Design-System aus styles.css (Tokens in :root /
+ * [data-theme="dark"], @font-face für Bricolage Grotesque + Instrument Sans,
+ * flache Sticker-Schatten, :focus-visible, reduced-motion). styles.css wird in
+ * landing.html ZUERST eingebunden, diese Datei DANACH – Marketing-Layout gewinnt.
+ *
+ * Eigene Klassen sind mit `lp-` präfixiert, damit sie nie mit App-Klassen
+ * kollidieren. Wiederverwendet werden bewusst nur stabile App-Komponenten
+ * (.cta, .segmented/.seg). Alles ist token-basiert und funktioniert in Hell &
+ * Dunkel ohne Sonderfälle.
+ */
+
+/* ─────────────────────────── Marketing-Tokens ───────────────────────────
+ * Bauen auf den App-Tokens auf: nur was die breitere, luftigere Marketing-
+ * Ästhetik zusätzlich braucht (Seitenbreite, Spacing-/Type-Skala, EIN reicherer
+ * Hero-Schatten). Die App-Spalte bleibt 460px – hier darf es weiter atmen. */
+:root {
+  --maxw-page: 1080px;
+  --gutter: clamp(20px, 5vw, 64px);
+
+  /* Spacing-Skala (~1.5-Ratio) */
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+  --space-7: 96px;
+  --space-8: 128px;
+
+  /* Type-Skala (fluid) – Bricolage display, Instrument body */
+  --fs-display: clamp(2.3rem, 6vw, 4.5rem);
+  --fs-h2: clamp(2rem, 4vw, 3rem);
+  --fs-h3: clamp(1.15rem, 2vw, 1.4rem);
+  --fs-lead: clamp(1.05rem, 1.6vw, 1.3rem);
+  --fs-body: 1.0625rem;
+  --fs-eyebrow: 0.72rem;
+
+  /* Eine reichere Elevation – NUR für die Hero-Karte: weiche Tiefe UNTER dem
+     kanonischen 2px-Sticker-Offset (Marken-Identität bleibt erhalten). */
+  --shadow-hero: 0 30px 60px -24px rgba(45, 27, 18, 0.45), 0 2px 0 rgba(45, 27, 18, 0.10);
+}
+[data-theme="dark"] {
+  --shadow-hero: 0 30px 60px -24px rgba(0, 0, 0, 0.6), 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Der Rainbow-Stripe-Gradient der Marke (verbatim aus styles.css). Als Variable,
+   damit Top-Band, Mini-Regeln & Phone-Bezel dieselbe Quelle teilen. */
+:root {
+  --rainbow: linear-gradient(90deg,
+    #C2502E 0% 16%, #E9A23B 16% 33%, #3F7355 33% 50%,
+    #2F6B70 50% 66%, #7D4A8E 66% 83%, #B5302A 83% 100%);
+}
+
+/* ─────────────────────────── Grundgerüst ─────────────────────────── */
+html { background: var(--page); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  background: var(--surface);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Marken-Rahmen: 8px Rainbow-Band ganz oben, edge-to-edge. */
+.lp-topstripe {
+  height: 8px;
+  background: var(--rainbow);
+}
+
+img { max-width: 100%; display: block; }
+a { color: var(--brand-ink); }
+
+.lp-wrap {
+  width: 100%;
+  max-width: var(--maxw-page);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Anker-Sprünge (#features/#how/#install) landen unter dem klebrigen Header,
+   nicht dahinter. */
+[id] { scroll-margin-top: 84px; }
+
+/* Skip-Link (a11y) – aus dem Fluss, erst bei :focus sichtbar. */
+.lp-skip {
+  position: absolute; left: -9999px; top: 0; z-index: 200;
+  background: var(--brand); color: var(--on-accent);
+  padding: 10px 16px; border-radius: 0 0 var(--r-sm) 0; font-weight: 700;
+}
+.lp-skip:focus { left: 0; }
+
+/* ─────────────────────────── Eyebrow / Section-Titel ─────────────────────────── */
+.lp-eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-ink);
+  margin: 0 0 var(--space-2);
+}
+.lp-h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-h2);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 var(--space-3);
+  max-width: 22ch;
+}
+.lp-lead {
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin: 0;
+  max-width: 60ch;
+}
+
+/* Sektions-Rhythmus + dezent wechselnde Hintergrundtöne (editorial).
+   Mobile etwas kompakter (56px), Desktop großzügig (bis 128px). */
+.lp-section { padding-block: clamp(56px, 9vw, 128px); }
+.lp-section--card { background: var(--card); }
+.lp-section--wash {
+  background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--brand) 5%, var(--surface)));
+}
+
+/* Mini-Rainbow-Regel als Trenner (statt Hairline) – sparsam eingesetzt. */
+.lp-rule {
+  width: 120px; height: 3px; border-radius: 999px;
+  background: var(--rainbow);
+  margin: 0 0 var(--space-4);
+}
+.lp-rule--center { margin-inline: auto; }
+
+/* ─────────────────────────── Header ─────────────────────────── */
+.lp-header {
+  position: sticky; top: 0; z-index: 100;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+.lp-header__inner {
+  display: flex; align-items: center; gap: var(--space-3);
+  min-height: 64px; padding-block: 10px;
+}
+/* Sehr schmale Geräte: enger packen, damit Logo + DE|EN + Theme nie kollidieren. */
+@media (max-width: 400px) {
+  .lp-header__inner { gap: var(--space-2); }
+  .lp-logo__name { font-size: 1.05rem; }
+}
+.lp-header.is-stuck {
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+  border-bottom: 1.5px solid var(--line);
+}
+
+.lp-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.lp-logo__mark {
+  width: 38px; height: 38px; border-radius: 11px; overflow: hidden;
+  box-shadow: var(--shadow); flex: none;
+}
+.lp-logo__mark svg { display: block; width: 100%; height: 100%; }
+.lp-logo__name {
+  font-family: var(--font-display); font-size: 1.18rem; font-weight: 800;
+  letter-spacing: -0.01em; color: var(--ink);
+}
+.lp-logo__name span { color: var(--brand); }
+
+.lp-header__spacer { flex: 1 1 auto; }
+.lp-header__tools { display: flex; align-items: center; gap: var(--space-2); }
+
+/* Sprach-Umschalter (DE|EN) – kompakte Pille im App-Look (.segmented/.seg). */
+.lp-langtoggle {
+  display: inline-grid; grid-auto-flow: column; gap: 4px;
+  background: rgba(45, 27, 18, 0.06); border: 1.5px solid var(--line);
+  padding: 4px; border-radius: 999px;
+}
+[data-theme="dark"] .lp-langtoggle { background: rgba(251, 243, 228, 0.05); }
+.lp-langbtn {
+  border: none; background: transparent; cursor: pointer;
+  padding: 7px 12px; min-height: 36px; border-radius: 999px;
+  font-family: inherit; font-size: 0.82rem; font-weight: 800;
+  color: var(--ink-soft); transition: all 0.18s ease;
+}
+.lp-langbtn[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+[data-theme="dark"] .lp-langbtn[aria-pressed="true"] { background: #3C2C1E; }
+
+/* Icon-Button (Theme-Toggle) */
+.lp-iconbtn {
+  width: 44px; height: 44px; flex: none; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+  border-radius: 999px; font-size: 1.1rem; box-shadow: var(--shadow);
+  transition: transform 0.12s ease;
+}
+.lp-iconbtn:active { transform: translateY(1px); }
+
+/* Kompakter Header-CTA: auf Mobile ausgeblendet (Hero-CTA reicht), ab 560px sichtbar.
+   Höhere Spezifität (.lp-header …) ist nötig, weil .lp-cta später in der Datei
+   display:inline-flex setzt und sonst das display:none überschreiben würde. */
+.lp-header .lp-header__cta { display: none; }
+@media (min-width: 560px) { .lp-header .lp-header__cta { display: inline-flex; } }
+
+/* CTA-Varianten (bauen auf der App-.cta auf, hier per lp-Klassen für Marketing). */
+.lp-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  cursor: pointer; text-decoration: none; position: relative; overflow: hidden;
+  border: 1.5px solid var(--brand); background: var(--brand); color: var(--on-accent);
+  padding: 14px 22px; border-radius: var(--r-md); box-shadow: var(--shadow);
+  font-family: inherit; font-size: 1rem; font-weight: 800; letter-spacing: -0.01em;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.lp-cta--sm { padding: 9px 16px; font-size: 0.9rem; }
+.lp-cta--lg { padding: 17px 28px; font-size: 1.1rem; }
+.lp-cta:hover { filter: brightness(1.04); }
+.lp-cta:active { transform: translateY(1px); }
+/* CTA-Shine: heller Streifen wischt bei Hover quer durch. */
+.lp-cta::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(251, 243, 228, 0.35) 50%, transparent 70%);
+  transform: translateX(-130%); transition: transform 0.6s ease;
+}
+.lp-cta:hover::after { transform: translateX(130%); }
+
+.lp-cta--ghost {
+  background: var(--card); color: var(--brand-ink); border-color: var(--line-strong);
+}
+.lp-cta--ghost::after { display: none; }
+
+/* ─────────────────────────── Hero ─────────────────────────── */
+.lp-hero { position: relative; padding-block: clamp(48px, 8vw, 104px) clamp(56px, 9vw, 120px); }
+
+/* Earth-tone Gradient-Mesh als Hintergrund (rein dekorativ). */
+.lp-hero__mesh {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 82% 8%, color-mix(in srgb, var(--warn) 22%, transparent), transparent 70%),
+    radial-gradient(52% 52% at 8% 92%, color-mix(in srgb, var(--easy) 18%, transparent), transparent 70%),
+    radial-gradient(44% 40% at 50% 48%, color-mix(in srgb, var(--brand) 14%, transparent), transparent 70%);
+}
+
+.lp-hero__grid {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 1fr; gap: clamp(40px, 6vw, 72px);
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .lp-hero__grid { grid-template-columns: 7fr 5fr; }
+}
+
+.lp-hero h1 {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: var(--fs-display); line-height: 1.02; letter-spacing: -0.03em;
+  color: var(--ink); margin: var(--space-3) 0 var(--space-4); max-width: 16ch;
+}
+.lp-hero__sub { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink-soft); margin: 0 0 var(--space-5); max-width: 52ch; }
+
+.lp-hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-5); }
+/* Mobile: CTAs gestapelt & full-width -> große, saubere Tap-Ziele. */
+@media (max-width: 520px) {
+  .lp-hero__cta { flex-direction: column; align-items: stretch; }
+  .lp-hero__cta .lp-cta { width: 100%; }
+}
+
+/* Trust-Bar mit den Kennzahlen. */
+.lp-trust {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-2);
+  max-width: 520px;
+}
+@media (min-width: 560px) { .lp-trust { grid-template-columns: repeat(4, 1fr); } }
+.lp-trust__item {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 12px 14px; border-radius: var(--r-md);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+}
+.lp-trust__num {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.5rem;
+  color: var(--brand-ink); font-variant-numeric: tabular-nums; line-height: 1;
+}
+.lp-trust__label { font-size: 0.74rem; font-weight: 700; color: var(--muted); letter-spacing: 0.01em; }
+
+/* ── Beispielkarten-Karussell. Die Karten nutzen die ECHTEN App-Klassen
+ *    (.flip/.face/.face__cat/.lvl-badge/.cardbtn/.face__tip aus styles.css), damit
+ *    sie 1:1 wie der Lern-Screen aussehen. Slides werden per Crossfade gewechselt
+ *    (kein Track-translateX -> kein Clipping der 3D-Flip-/Schatten). ── */
+.lp-cardcol { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+.lp-carousel {
+  position: relative; perspective: 1200px;
+  width: min(360px, 92vw); margin-inline: auto;
+  touch-action: pan-y; /* vertikales Scrollen bleibt, horizontale Wische gehen ans JS */
+}
+.lp-carousel__viewport { position: relative; min-height: 330px; }
+.lp-slide {
+  position: absolute; inset: 0; opacity: 0; transform: scale(0.96);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.lp-slide.is-active { position: relative; opacity: 1; transform: none; pointer-events: auto; }
+/* Etwas höher als der App-Standard (270): die Antwortseite trägt jetzt
+   zusätzlich die Kontextzeile – die Höhe muss Wort + Aussprache + Kontext
+   tragen, ohne dass Text auf schmalen Phones in die Eck-Buttons läuft. */
+.lp-carousel .flip__inner { min-height: 310px; }
+
+/* Reise-Kontext auf der Antwortkarte: zeigt, WANN/WO man den Satz wirklich
+   braucht – damit die Showcase-Karte (wie in der App) immer Kontext zur
+   Einordnung mitliefert. Dezent unter Wort + Aussprache, mit feiner Trennlinie.
+   Die Rückseite reserviert unten Platz, damit der zentrierte Inhalt nicht in
+   den 🔊-Button (bottom:16px, 44px hoch) läuft. */
+.lp-carousel .face--back { padding-bottom: 72px; }
+.lp-carousel .face__ctx {
+  margin-top: 14px; padding-top: 12px;
+  max-width: 30ch; font-size: 0.84rem; line-height: 1.35;
+  color: rgba(251, 243, 228, 0.82); text-wrap: balance;
+  border-top: 1px solid rgba(251, 243, 228, 0.22);
+}
+
+/* Tilt-Wrapper: getrennt vom .flip (das seine eigene Perspektive fürs Umdrehen
+   mitbringt), damit Kippen und Umdrehen sich nicht in die Quere kommen. */
+.lp-cardtilt {
+  transition: transform 0.2s ease;
+  transform: rotateX(var(--ty, 0deg)) rotateY(var(--tx, -4deg));
+  filter: drop-shadow(0 28px 44px rgba(45, 27, 18, 0.30));
+}
+[data-theme="dark"] .lp-cardtilt { filter: drop-shadow(0 28px 44px rgba(0, 0, 0, 0.55)); }
+
+/* Punkt-Navigation */
+.lp-dots { display: flex; gap: 4px; justify-content: center; }
+.lp-dot {
+  width: 28px; height: 28px; padding: 0; border: none; background: transparent;
+  cursor: pointer; display: grid; place-items: center;
+}
+.lp-dot::before {
+  content: ""; width: 9px; height: 9px; border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 24%, transparent); transition: all 0.25s ease;
+}
+.lp-dot.is-active::before { width: 22px; background: var(--brand); }
+
+/* ─────────────────────────── Features ─────────────────────────── */
+.lp-features__grid {
+  display: grid; grid-template-columns: 1fr; gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+@media (min-width: 520px) { .lp-features__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 760px) { .lp-features__grid { grid-template-columns: repeat(3, 1fr); } }
+.lp-feat {
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.lp-feat:hover {
+  transform: translateY(-3px); box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 45%, var(--line));
+}
+/* Farbige Icon-Kachel je Feature (Marken-Palette via --accent inline). Weicher
+   Verlauf + feiner Innenring -> mehr Leben, bleibt aber im Erdton-Look. */
+.lp-feat__icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.7rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
+  transition: transform 0.16s ease;
+}
+.lp-feat:hover .lp-feat__icon { transform: scale(1.06) rotate(-2deg); }
+.lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); line-height: 1.15; color: var(--ink); margin: 0; }
+.lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
+
+/* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
+   ohne Marketing-Floskeln. Chips auf --surface, damit sie sich vom --card-Grund
+   der Features-Section abheben. */
+.lp-more { margin-top: var(--space-6); text-align: center; }
+.lp-more__intro {
+  font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--brand-ink); margin: 0 0 var(--space-3);
+}
+.lp-more__chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.lp-morechip {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
+  border-radius: 999px; padding: 9px 15px; font-weight: 700; font-size: 0.9rem;
+  box-shadow: var(--shadow);
+}
+
+/* ─────────────────────────── So funktioniert's ─────────────────────────── */
+.lp-how__grid {
+  display: grid; grid-template-columns: 1fr; gap: clamp(40px, 6vw, 72px);
+  align-items: center; margin-top: var(--space-5);
+}
+@media (min-width: 880px) { .lp-how__grid { grid-template-columns: 5fr 6fr; align-items: start; } }
+
+.lp-steps { display: flex; flex-direction: column; gap: var(--space-3); }
+.lp-step {
+  display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: start;
+  padding: var(--space-4); border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+}
+.lp-step__num {
+  width: 44px; height: 44px; border-radius: 999px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.2rem;
+  color: var(--on-accent); background: var(--brand);
+}
+.lp-step__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); color: var(--ink); margin: 2px 0 4px; }
+.lp-step__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
+/* Mobiler Inline-Screenshot je Schritt (Baseline, ohne JS sichtbar).
+   Der KOMPLETTE App-Screen in korrekter Proportion (kein Crop) – als sauberer
+   „Handy-Screen" zentriert und in der Breite begrenzt, damit er nicht riesig wird. */
+.lp-step__shot { grid-column: 1 / -1; margin-top: var(--space-3); display: flex; justify-content: center; }
+.lp-step__shot img {
+  display: block; width: 100%; max-width: 220px; height: auto;
+  border-radius: 18px; border: 1.5px solid var(--line); box-shadow: var(--shadow-lg);
+}
+@media (min-width: 880px) { .lp-step__shot { display: none; } }
+
+/* CSS-Phone-Frame mit echtem Screenshot (Desktop). */
+.lp-phone { display: none; }
+@media (min-width: 880px) {
+  .lp-phone {
+    display: block; position: sticky; top: 96px;
+    width: 300px; margin-inline: auto;
+    background: var(--page); border-radius: 40px; padding: 12px;
+    box-shadow: var(--shadow-hero);
+  }
+}
+.lp-phone__screen {
+  position: relative; border-radius: 28px; overflow: hidden;
+  background: var(--surface); aspect-ratio: 390 / 844; /* exakt wie die Screenshots -> kein Crop */
+}
+.lp-phone__stripe { height: 6px; background: var(--rainbow); }
+.lp-phone__notch {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 2;
+  width: 92px; height: 18px; border-radius: 999px; background: var(--page);
+}
+.lp-phone__img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: opacity 0.3s ease; }
+
+/* ─────────────────────────── Install + FAQ ─────────────────────────── */
+.lp-install__grid {
+  display: grid; grid-template-columns: 1fr; gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+@media (min-width: 720px) { .lp-install__grid { grid-template-columns: 1fr 1fr; } }
+.lp-installcard {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4); border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--brand) 8%, var(--card));
+  border: 1.5px dashed color-mix(in srgb, var(--brand) 38%, var(--line));
+}
+.lp-installcard__plat { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: var(--ink); }
+.lp-installcard ol { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 0.95rem; line-height: 1.45; }
+.lp-installcard__note { margin: 0; font-size: 0.82rem; font-weight: 700; color: var(--muted); }
+.lp-install__cta { margin-top: var(--space-4); display: flex; justify-content: center; }
+
+.lp-faq { margin-top: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); max-width: 760px; margin-inline: auto; }
+.lp-faq details {
+  background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md);
+  overflow: hidden; box-shadow: var(--shadow);
+}
+.lp-faq summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 44px; padding: 16px 18px; cursor: pointer;
+  font-weight: 800; font-size: 1.02rem; color: var(--ink); list-style: none;
+}
+.lp-faq summary::-webkit-details-marker { display: none; }
+.lp-faq summary::after {
+  content: "›"; font-size: 1.5rem; font-weight: 700; color: var(--brand);
+  transition: transform 0.2s ease; transform: rotate(90deg);
+}
+.lp-faq details[open] summary::after { transform: rotate(-90deg); }
+.lp-faq__body { padding: 0 18px 16px; color: var(--muted); font-size: 0.97rem; line-height: 1.55; }
+
+/* ─────────────────────────── Abschluss-CTA-Band ───────────────────────────
+ * Warmer Terrakotta-Abschluss zwischen der hellen Install/FAQ-Section und dem
+ * dunklen Footer: hell → warm → dunkel ergibt einen ruhigen Rhythmus und einen
+ * letzten klaren Conversion-Push. */
+.lp-final {
+  background: linear-gradient(135deg, var(--brand), var(--warn));
+  color: var(--cream); text-align: center;
+}
+.lp-final .lp-h2 { color: var(--cream); margin-inline: auto; max-width: 24ch; }
+.lp-final__sub { font-size: var(--fs-lead); color: rgba(251, 243, 228, 0.92); margin: 0 auto var(--space-5); max-width: 46ch; }
+.lp-cta--onbrand {
+  /* Weiße Fläche bleibt in beiden Themes -> feste dunkle Tinte (#A23E20 = 6.47:1
+     auf Weiß, wie das App-Update-Banner). */
+  background: #fff; color: #A23E20; border-color: #fff;
+}
+
+/* ─────────────────────────── Footer ─────────────────────────── */
+.lp-footer {
+  background: var(--page); color: var(--cream);
+  padding-block: var(--space-6) var(--space-5);
+}
+.lp-footer__top { height: 3px; width: 100%; background: var(--rainbow); opacity: 0.55; margin-bottom: var(--space-6); }
+.lp-footer__grid {
+  display: grid; grid-template-columns: 1fr; gap: var(--space-5);
+}
+@media (min-width: 720px) { .lp-footer__grid { grid-template-columns: 2fr 1fr 1fr; } }
+.lp-footer__blurb { font-size: 0.95rem; line-height: 1.55; color: rgba(251, 243, 228, 0.75); max-width: 40ch; margin: var(--space-2) 0 0; }
+.lp-footer h4 { font-family: var(--font-display); font-weight: 800; font-size: 0.95rem; margin: 0 0 var(--space-2); color: var(--cream); }
+.lp-footer ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lp-footer a { color: rgba(251, 243, 228, 0.78); text-decoration: none; font-size: 0.92rem; }
+.lp-footer a:hover { color: var(--cream); }
+.lp-footer__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--space-3); }
+.lp-footer__chip { font-size: 0.74rem; font-weight: 700; color: rgba(251, 243, 228, 0.7); background: rgba(251, 243, 228, 0.08); border-radius: 999px; padding: 4px 10px; }
+.lp-footer__credit {
+  margin-top: var(--space-6); padding-top: var(--space-4);
+  border-top: 1px solid rgba(251, 243, 228, 0.12);
+  font-size: 0.85rem; font-style: italic; color: rgba(251, 243, 228, 0.65);
+  display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; justify-content: space-between;
+}
+.lp-footer__credit span { font-style: normal; }
+.lp-footer__heart { color: var(--brand); font-style: normal; }
+
+/* ─────────────────────────── Scroll-Reveal (progressive enhancement) ───────────────────────────
+ * Nur wenn JS läuft (html.js) wird der Start-Zustand versteckt; ohne JS ist alles
+ * sofort sichtbar. .is-in deckt auf. */
+.js [data-reveal] { opacity: 0; transform: translateY(18px); }
+.js [data-reveal].is-in {
+  opacity: 1; transform: none;
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* ─────────────────────────── Reduced Motion ───────────────────────────
+ * Harte Garantie: keine Bewegung. Flip & Tilt instant, Chips/Shine/Reveal aus. */
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+  /* Karussell-Karten: Tilt aus, Umdrehen & Crossfade ohne Animation (instant). */
+  .lp-cardtilt { transform: none !important; transition: none !important; }
+  .lp-carousel .flip__inner { transition: none !important; }
+  .lp-slide { transition: none !important; }
+  .lp-cta::after { display: none !important; }
+}
