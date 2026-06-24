@@ -27,6 +27,20 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.116.0",
+      date: "2026-06-24",
+      title: "Flaggen im Battle & Stern an den Flaggen-Sätzen",
+      titleEn: "Flags in the Battle & a star on the flag phrases",
+      items: [
+        "🚩 Hostel-Battle: neue Szene „Herkunft & Flaggen“ – auf Deutsch ansagen, laut auf Spanisch antworten, zu Herkunft, Flaggen, Farben, Symbolen und Nationalität (z. B. „¿De qué país es esta bandera?“, „¿Qué significan los colores de tu bandera?“). Damit zahlt das Flaggen-Modul jetzt auch aufs Sprachduell zu zweit ein.",
+        "⭐ Flaggen-Modul „Saber más“: die „wichtigen Sätze“ tragen jetzt – wie in allen anderen Reise-Modulen – einen Stern-Knopf. Ein Tipp legt den Satz (Spanisch + Übersetzung) in dein „Mi léxico“; erneut tippen nimmt ihn wieder heraus.",
+      ],
+      itemsEn: [
+        "🚩 Hostel Battle: new scene „Origin & flags“ – say it in German, answer out loud in Spanish, about origin, flags, colours, symbols and nationality (e.g. „¿De qué país es esta bandera?“, „¿Qué significan los colores de tu bandera?“). The flag module now feeds the two-player language duel too.",
+        "⭐ Flag module „Saber más“: the „key phrases“ now carry a star button – just like every other travel module. One tap saves the phrase (Spanish + translation) to your „Mi léxico“; tap again to remove it.",
+      ],
+    },
+    {
       version: "1.115.0",
       date: "2026-06-24",
       title: "Ruta del día: vor allem Grundlagen statt fast nur Städte-/Länder-Sätze",
