@@ -490,7 +490,7 @@
             <div class="lp-moredetail__bar">
               <span class="lp-moredetail__ico" id="lpMD_ico" aria-hidden="true"></span>
               <span class="lp-moredetail__name" id="lpMD_name"></span>
-              <span class="lp-moredetail__hint" id="lpMD_hint" data-i18n="more.swipe">Wische durch die Beispiele</span>
+              <span class="lp-moredetail__hint" id="lpMD_hint" data-i18n="more.swipe">Antippen dreht um · wischen für mehr</span>
               <button class="lp-moredetail__close" id="lpMD_close" type="button" data-i18n-aria="more.close" aria-label="Beispiele schließen">✕</button>
             </div>
             <div class="lp-moredetail__strip" id="lpMD_strip" tabindex="0" role="group" data-i18n-aria="more.examples" aria-label="Beispielsätze"></div>
@@ -710,7 +710,7 @@
         "more.hostel.d": "Zu zweit: Battle & Rollenspiele", "more.regatear.d": "Auf dem Markt fair feilschen",
         "more.precios.d": "Preise hören & blind eintippen", "more.juegos.d": "Hostel-Spiele & die Sätze dazu",
         "more.musica.d": "Der Sound deines Reiselands", "more.logistica.d": "SIM, Bargeld & clever packen",
-        "more.swipe": "Wische durch die Beispiele", "more.close": "Beispiele schließen",
+        "more.swipe": "Antippen dreht um · wischen für mehr", "more.close": "Beispiele schließen",
         "more.pick": "Beispiel wählen", "more.examples": "Beispielsätze", "more.speak": "Satz vorlesen",
         "how.eyebrow": "SO FUNKTIONIERT'S", "how.title": "In drei Schritten unterwegs.",
         "how.s1.t": "Bereich wählen", "how.s1.b": "Such dir aus, was ansteht — Geld, Essen, Bus, Notfall. 72 Bereiche, alle reisefertig.",
@@ -776,7 +776,7 @@
         "more.hostel.d": "Two-player: battle & role-plays", "more.regatear.d": "Haggle fairly at the market",
         "more.precios.d": "Hear a price, type the digits", "more.juegos.d": "Hostel games & the lines for them",
         "more.musica.d": "The soundtrack of your route", "more.logistica.d": "SIM, cash & smart packing",
-        "more.swipe": "Swipe through the examples", "more.close": "Close examples",
+        "more.swipe": "Tap to flip · swipe for more", "more.close": "Close examples",
         "more.pick": "Pick an example", "more.examples": "Example phrases", "more.speak": "Read sentence aloud",
         "how.eyebrow": "HOW IT WORKS", "how.title": "On the road in three steps.",
         "how.s1.t": "Pick an area", "how.s1.b": "Choose what's coming up — money, food, buses, emergencies. 72 areas, all travel-ready.",
@@ -1007,33 +1007,45 @@
       var closeBtn = document.getElementById("lpMD_close");
       var chips = Array.prototype.slice.call(chipsWrap.querySelectorAll(".lp-morechip"));
 
-      // Echte Reise-Sätze je Modul. Spanisch ist konstant; die Übersetzung folgt
-      // der Seitensprache (de/en). Bewusst Lateinamerika-typisch: chip = SIM-Karte,
+      // Echte Reise-Karteikarten je Modul: cat = Kategorie (de/en), und je Beispiel
+      // { de, en, es, tip, lvl }. Spanisch + Aussprache sind konstant, die Frage-
+      // Seite folgt der Seitensprache. Bewusst Lateinamerika-typisch: chip = SIM,
       // cajero = Geldautomat, propina = Trinkgeld, pesos.
       var DATA = {
-        surv:     [["¡Ayuda, por favor!", "Hilfe, bitte!", "Help, please!"],
-                   ["Llamen a la policía.", "Rufen Sie die Polizei.", "Call the police."]],
-        country:  [["¿Aquí se da propina?", "Gibt man hier Trinkgeld?", "Do people tip here?"],
-                   ["¿Pago en efectivo o con tarjeta?", "Zahle ich bar oder mit Karte?", "Do I pay cash or card?"]],
-        historia: [["¿Qué se celebra hoy?", "Was wird heute gefeiert?", "What's being celebrated today?"],
-                   ["Cuéntame la historia de aquí.", "Erzähl mir die Geschichte von hier.", "Tell me the story of this place."]],
-        dialogos: [["Una habitación para dos noches.", "Ein Zimmer für zwei Nächte.", "A room for two nights."],
-                   ["¿Incluye el desayuno?", "Ist das Frühstück inklusive?", "Is breakfast included?"]],
-        hostal:   [["Te toca a ti.", "Du bist dran.", "It's your turn."],
-                   ["¿Listos? ¡Empezamos!", "Bereit? Los geht's!", "Ready? Let's go!"]],
-        regatear: [["¿Me hace un descuento?", "Geben Sie mir einen Rabatt?", "Can you give me a discount?"],
-                   ["Le doy cien, ¿le parece?", "Ich geb Ihnen hundert, einverstanden?", "I'll give you a hundred, deal?"]],
-        precios:  [["Son ciento veinte pesos.", "Das macht hundertzwanzig Pesos.", "That's a hundred and twenty pesos."],
-                   ["¿Cuánto le debo?", "Was schulde ich Ihnen?", "How much do I owe you?"]],
-        juegos:   [["Yo nunca nunca…", "Ich hab noch nie…", "Never have I ever…"],
-                   ["¿Verdad o reto?", "Wahrheit oder Pflicht?", "Truth or dare?"]],
-        musica:   [["¿Qué están escuchando?", "Was hört ihr da?", "What are you listening to?"],
-                   ["¡Esta canción me encanta!", "Dieses Lied liebe ich!", "I love this song!"]],
-        logistica:[["¿Dónde compro un chip?", "Wo kaufe ich eine SIM-Karte?", "Where do I buy a SIM card?"],
-                   ["¿Hay un cajero cerca?", "Gibt es einen Geldautomaten in der Nähe?", "Is there an ATM nearby?"]]
+        surv:     { cat: ["NOTFALL", "EMERGENCY"], ex: [
+          { de: "Hilfe, bitte!", en: "Help, please!", es: "¡Ayuda, por favor!", tip: "a-YU-da por fa-VOR", lvl: 1 },
+          { de: "Rufen Sie die Polizei.", en: "Call the police.", es: "Llamen a la policía.", tip: "YA-men a la po-li-SEE-a", lvl: 1 } ] },
+        country:  { cat: ["LAND & LEUTE", "CULTURE"], ex: [
+          { de: "Gibt man hier Trinkgeld?", en: "Do people tip here?", es: "¿Aquí se da propina?", tip: "a-KEE se da pro-PEE-na", lvl: 1 },
+          { de: "Zahle ich bar oder mit Karte?", en: "Do I pay cash or card?", es: "¿Pago en efectivo o con tarjeta?", tip: "PA-go en e-fek-TEE-vo o kon tar-HE-ta", lvl: 2 } ] },
+        historia: { cat: ["GESCHICHTE", "HISTORY"], ex: [
+          { de: "Was wird heute gefeiert?", en: "What's being celebrated today?", es: "¿Qué se celebra hoy?", tip: "ke se se-LE-bra oy", lvl: 1 },
+          { de: "Erzähl mir die Geschichte von hier.", en: "Tell me the story of this place.", es: "Cuéntame la historia de aquí.", tip: "KWEN-ta-me la is-TO-ria de a-KEE", lvl: 2 } ] },
+        dialogos: { cat: ["UNTERKUNFT", "STAY"], ex: [
+          { de: "Ein Zimmer für zwei Nächte.", en: "A room for two nights.", es: "Una habitación para dos noches.", tip: "U-na a-bi-ta-SYON pa-ra dos NO-ches", lvl: 2 },
+          { de: "Ist das Frühstück inklusive?", en: "Is breakfast included?", es: "¿Incluye el desayuno?", tip: "in-KLU-ye el de-sa-YU-no", lvl: 1 } ] },
+        hostal:   { cat: ["ZU ZWEIT", "TWO-PLAYER"], ex: [
+          { de: "Du bist dran.", en: "It's your turn.", es: "Te toca a ti.", tip: "te TO-ka a tee", lvl: 1 },
+          { de: "Bereit? Los geht's!", en: "Ready? Let's go!", es: "¿Listos? ¡Empezamos!", tip: "LEES-tos em-pe-SA-mos", lvl: 1 } ] },
+        regatear: { cat: ["MARKT", "MARKET"], ex: [
+          { de: "Geben Sie mir einen Rabatt?", en: "Can you give me a discount?", es: "¿Me hace un descuento?", tip: "me A-se un des-KWEN-to", lvl: 1 },
+          { de: "Ich geb Ihnen hundert, einverstanden?", en: "I'll give you a hundred, deal?", es: "Le doy cien, ¿le parece?", tip: "le doy SYEN le pa-RE-se", lvl: 2 } ] },
+        precios:  { cat: ["GELD", "MONEY"], ex: [
+          { de: "Das macht hundertzwanzig Pesos.", en: "That's a hundred and twenty pesos.", es: "Son ciento veinte pesos.", tip: "son SYEN-to VEYN-te PE-sos", lvl: 2 },
+          { de: "Was schulde ich Ihnen?", en: "How much do I owe you?", es: "¿Cuánto le debo?", tip: "KWAN-to le DE-bo", lvl: 1 } ] },
+        juegos:   { cat: ["SPIEL", "GAME"], ex: [
+          { de: "Ich hab noch nie…", en: "Never have I ever…", es: "Yo nunca nunca…", tip: "yo NOON-ka NOON-ka", lvl: 1 },
+          { de: "Wahrheit oder Pflicht?", en: "Truth or dare?", es: "¿Verdad o reto?", tip: "ver-DAD o RE-to", lvl: 1 } ] },
+        musica:   { cat: ["MUSIK", "MUSIC"], ex: [
+          { de: "Was hört ihr da?", en: "What are you listening to?", es: "¿Qué están escuchando?", tip: "ke es-TAN es-ku-CHAN-do", lvl: 1 },
+          { de: "Dieses Lied liebe ich!", en: "I love this song!", es: "¡Esta canción me encanta!", tip: "ES-ta kan-SYON me en-KAN-ta", lvl: 1 } ] },
+        logistica:{ cat: ["LOGISTIK", "LOGISTICS"], ex: [
+          { de: "Wo kaufe ich eine SIM-Karte?", en: "Where do I buy a SIM card?", es: "¿Dónde compro un chip?", tip: "DON-de KOM-pro un cheep", lvl: 1 },
+          { de: "Gibt es einen Geldautomaten in der Nähe?", en: "Is there an ATM nearby?", es: "¿Hay un cajero cerca?", tip: "ai un ka-HE-ro SER-ka", lvl: 1 } ] }
       };
 
       var openMod = null;
+      var currentAccent = "var(--brand)";
 
       function lang() { return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "de"; }
       function t(key) { var d = I18N[lang()] || {}; return d[key] || key; }
@@ -1052,29 +1064,75 @@
         var active = Math.round(strip.scrollLeft / w);
         var dots = dotsWrap.children;
         for (var n = 0; n < dots.length; n++) dots[n].classList.toggle("is-active", n === active);
+        // Weggewischte Karten zurück auf die Frage-Seite (wie im Hero-Karussell).
+        var slides = strip.children;
+        for (var s = 0; s < slides.length; s++) {
+          if (s === active) continue;
+          var fl = slides[s].querySelector(".flip");
+          if (fl) { fl.classList.remove("is-flipped"); fl.setAttribute("aria-pressed", "false"); }
+        }
       }
       strip.addEventListener("scroll", function () { window.requestAnimationFrame(syncDots); });
 
       function render(mod) {
-        var rows = DATA[mod] || [];
-        var trIdx = lang() === "en" ? 2 : 1;
+        var m = DATA[mod];
+        if (!m) return;
+        var l = lang();
+        var cat = l === "en" ? m.cat[1] : m.cat[0];
+        var hint = t("card.hint"), speakLbl = t("card.speakLabel"), flipLbl = t("a11y.card");
+        // Rückseite leicht abgedunkelt, damit die cremefarbene Schrift auf jeder
+        // Modulfarbe (auch Amber) sicher lesbar bleibt.
+        var fromCol = "color-mix(in srgb, " + currentAccent + " 84%, #241510)";
         strip.innerHTML = "";
         dotsWrap.innerHTML = "";
-        rows.forEach(function (r, i) {
+        m.ex.forEach(function (c, i) {
+          var lvl = t(c.lvl === 2 ? "card.lvl2" : "card.lvl");
+          var front = l === "en" ? c.en : c.de;
           var slide = document.createElement("div");
           slide.className = "lp-mdslide";
-          var es = document.createElement("p");
-          es.className = "lp-mdslide__es";
-          var span = document.createElement("span");
-          span.setAttribute("lang", "es"); span.textContent = r[0];
-          var spk = document.createElement("button");
-          spk.type = "button"; spk.className = "lp-mdspk"; spk.textContent = "🔊";
-          spk.setAttribute("aria-label", t("more.speak"));
-          spk.addEventListener("click", function () { speak(r[0]); });
-          es.appendChild(span); es.appendChild(spk);
-          var tr = document.createElement("p");
-          tr.className = "lp-mdslide__de"; tr.textContent = r[trIdx];
-          slide.appendChild(es); slide.appendChild(tr);
+          slide.innerHTML =
+            '<div class="flip" role="button" tabindex="0" aria-pressed="false">' +
+              '<div class="flip__inner">' +
+                '<div class="face face--front">' +
+                  '<span class="face__cat"></span>' +
+                  '<span class="lvl-badge"></span>' +
+                  '<div class="face__word"></div>' +
+                  '<span class="face__hint"></span>' +
+                '</div>' +
+                '<div class="face face--back">' +
+                  '<span class="face__cat"></span>' +
+                  '<span class="lvl-badge lvl-badge--on"></span>' +
+                  '<button class="cardbtn cardbtn--speak is-on" type="button">🔊</button>' +
+                  '<div class="face__word" lang="es"></div>' +
+                  '<div class="face__tip"></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+          var front_ = slide.querySelector(".face--front");
+          front_.querySelector(".face__cat").textContent = cat;
+          front_.querySelector(".lvl-badge").textContent = lvl;
+          front_.querySelector(".face__word").textContent = front;
+          front_.querySelector(".face__hint").textContent = hint;
+          var back_ = slide.querySelector(".face--back");
+          back_.style.setProperty("--from", fromCol);
+          back_.querySelector(".face__cat").textContent = cat;
+          back_.querySelector(".lvl-badge").textContent = lvl;
+          back_.querySelector(".face__word").textContent = c.es;
+          back_.querySelector(".face__tip").textContent = "🗣️ " + c.tip;
+          var spk = back_.querySelector(".cardbtn--speak");
+          spk.setAttribute("aria-label", speakLbl);
+          spk.setAttribute("data-spk", c.es);
+          spk.addEventListener("click", function (e) { e.stopPropagation(); speak(c.es); });
+          var flip = slide.querySelector(".flip");
+          flip.setAttribute("aria-label", flipLbl);
+          function doFlip() {
+            var on = flip.classList.toggle("is-flipped");
+            flip.setAttribute("aria-pressed", on ? "true" : "false");
+          }
+          flip.addEventListener("click", function (e) { if (e.target.closest(".cardbtn")) return; doFlip(); });
+          flip.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); doFlip(); }
+          });
           strip.appendChild(slide);
 
           var dot = document.createElement("button");
@@ -1092,7 +1150,8 @@
       function openChip(chip) {
         openMod = chip.getAttribute("data-mod");
         chips.forEach(function (c) { c.setAttribute("aria-expanded", c === chip ? "true" : "false"); });
-        detail.style.setProperty("--accent", (chip.style.getPropertyValue("--accent") || "").trim() || "var(--brand)");
+        currentAccent = (chip.style.getPropertyValue("--accent") || "").trim() || "var(--brand)";
+        detail.style.setProperty("--accent", currentAccent);
         var ico = chip.querySelector(".lp-morechip__ico");
         var nm = chip.querySelector(".lp-morechip__name");
         icoEl.textContent = ico ? ico.textContent : "";
