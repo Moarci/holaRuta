@@ -192,6 +192,18 @@ function buildDist() {
     "docs/landing/home.png",
     "docs/landing/study.png",
     "docs/landing/stats.png",
+    // Zielgruppenspezifische B2B-Landings (DE/EN/ES) – teilen sich styles.css/landing.css.
+    "landing-schule.html",
+    "landing-hostel.html",
+    "landing-reiseanbieter.html",
+    // Beleg-Material, das die B2B-Landings verlinken (+ deren Abhängigkeiten), damit die
+    // Links auch in Produktion (dist/) auflösen statt 404 zu liefern.
+    "docs/anleitungen/lehrer.html",
+    "docs/anleitungen/hostel.html",
+    "docs/anleitungen/handout.css",
+    "docs/anleitungen/handout.js",
+    "docs/anleitungen/qr-holaruta.svg",
+    "docs/pitch/weroad-colombia.html",
   ]) {
     const p = path.join(DIR, extra);
     if (fs.existsSync(p)) { writeDist(DIST, extra, fs.readFileSync(p)); copied.push(extra); }

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#241510" />
+  <title>HolaRuta für Sprachschulen – Reise-Spanisch als Kurs-Begleiter</title>
+  <meta name="description" content="HolaRuta für Sprachschulen: mobile Reise-Spanisch-Begleitung für Immersionskurse – Pre-Arrival-Pack, Classroom-Companion und Real-Life-Challenges. Offline, ohne Konto, mit Schul-Branding." />
+  <link rel="canonical" href="https://moarci.github.io/holaRuta/landing-schule.html" />
+
+  <!-- Dreisprachig: teilbare Sprach-Links (?lang=) für Suche & Direktverlinkung. -->
+  <link rel="alternate" hreflang="de" href="https://moarci.github.io/holaRuta/landing-schule.html?lang=de" />
+  <link rel="alternate" hreflang="en" href="https://moarci.github.io/holaRuta/landing-schule.html?lang=en" />
+  <link rel="alternate" hreflang="es" href="https://moarci.github.io/holaRuta/landing-schule.html?lang=es" />
+  <link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/landing-schule.html" />
+
+  <!-- Social-Vorschau: nutzt das bestehende, gebaute og-image.png der Marke. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="HolaRuta" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:url" content="https://moarci.github.io/holaRuta/landing-schule.html" />
+  <meta property="og:title" content="HolaRuta für Sprachschulen – Reise-Spanisch als Kurs-Begleiter" />
+  <meta property="og:description" content="Mobile Reise-Spanisch-Begleitung für Immersionskurse – Pre-Arrival-Pack, Classroom-Companion, Real-Life-Challenges. Offline, ohne Konto, mit Schul-Branding." />
+  <meta property="og:image" content="https://moarci.github.io/holaRuta/og-image.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="HolaRuta für Sprachschulen" />
+  <meta name="twitter:description" content="Reise-Spanisch als Kurs-Begleiter: Pre-Arrival, Classroom-Companion, Real-Life-Challenges. Offline, mit Schul-Branding." />
+  <meta name="twitter:image" content="https://moarci.github.io/holaRuta/og-image.png" />
+
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/bricolage-grotesque-600-800-latin.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/instrument-sans-400-700-latin.woff2" />
+
+  <!-- Theme so früh wie möglich setzen (kein Hell-Aufblitzen), konsistent mit App/Landing. -->
+  <script>
+    (function () {
+      document.documentElement.classList.add("js");
+      try {
+        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
+        var t = (s && (s.theme === "dark" || s.theme === "light")) ? s.theme
+          : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", t === "dark" ? "#0E0907" : "#241510");
+      } catch (e) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="landing.css" />
+  <!-- Edition-Akzent (ECOS · Cartagena, Karibik-Teal) für Demo-CTA, Chips & Preis-Highlight. -->
+  <style>:root { --accent: #1F7A8C; }</style>
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta name="referrer" content="no-referrer" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "HolaRuta für Sprachschulen",
+    "description": "Mobile Reise-Spanisch-Begleitung für Immersionskurse – Pre-Arrival, Classroom-Companion, Real-Life-Challenges. Offline, ohne Konto.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "url": "https://moarci.github.io/holaRuta/landing-schule.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Kostenloser Pilot" }
+  }
+  </script>
+</head>
+<body>
+  <a href="#hero" class="lp-skip" data-i18n="skip">Zum Inhalt springen</a>
+  <div class="lp-topstripe"></div>
+
+  <!-- ─────────────── Header ─────────────── -->
+  <header class="lp-header" id="lpHeader">
+    <div class="lp-wrap lp-header__inner">
+      <a class="lp-logo" href="./" aria-label="HolaRuta">
+        <span class="lp-logo__mark" aria-hidden="true">
+          <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="lpLogoG" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#C2502E"/>
+                <stop offset="1" stop-color="#E9A23B"/>
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" fill="url(#lpLogoG)"/>
+            <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+            <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+          </svg>
+        </span>
+        <span class="lp-logo__name">Hola<span>Ruta</span></span>
+      </a>
+      <span class="lp-header__spacer"></span>
+      <div class="lp-header__tools">
+        <div class="lp-langtoggle" role="group" aria-label="Sprache / Language / Idioma">
+          <button class="lp-langbtn" data-lang="de" aria-pressed="true">DE</button>
+          <button class="lp-langbtn" data-lang="en" aria-pressed="false">EN</button>
+          <button class="lp-langbtn" data-lang="es" aria-pressed="false">ES</button>
+        </div>
+        <button class="lp-iconbtn" id="lpTheme" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten">🌙</button>
+        <a class="lp-cta lp-cta--sm lp-cta--accent lp-header__cta" href="./?edition=ecos&start=onboarding" data-i18n="nav.demo">Live-Demo</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─────────────── Zielgruppen-Umschalter ─────────────── -->
+  <nav class="lp-audnav" aria-label="Für wen ist HolaRuta?">
+    <div class="lp-wrap lp-audnav__inner">
+      <span class="lp-audnav__label" data-i18n="aud.label">Für wen?</span>
+      <a class="lp-audchip" href="landing.html" data-i18n="aud.b2c">🎒 Privatreisende</a>
+      <a class="lp-audchip" href="landing-schule.html" aria-current="page" data-i18n="aud.schule">🎓 Sprachschulen</a>
+      <a class="lp-audchip" href="landing-hostel.html" data-i18n="aud.hostel">🛏️ Hostels</a>
+      <a class="lp-audchip" href="landing-reiseanbieter.html" data-i18n="aud.reise">🧭 Reiseanbieter</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ─────────────── Hero ─────────────── -->
+    <section class="lp-hero" id="hero">
+      <div class="lp-hero__mesh" aria-hidden="true"></div>
+      <div class="lp-wrap lp-hero__grid">
+        <div class="lp-hero__copy">
+          <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">FÜR SPRACHSCHULEN IN LATEINAMERIKA</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Brücke zwischen Klassenzimmer und Straße.</h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">HolaRuta begleitet eure Immersionskurse mobil: Pre-Arrival-Vorbereitung, 5-Minuten-Warm-ups im Unterricht und echte Mutproben vor Ort. Lateinamerika-korrekt, offline, ohne Konto – optional in eurem Schul-Branding.</p>
+          <div class="lp-hero__cta" data-reveal style="--i:3">
+            <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=ecos&start=onboarding" data-i18n="hero.demo">Live-Demo öffnen →</a>
+            <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#kontakt" data-i18n="hero.contact">Pilot anfragen</a>
+          </div>
+          <div class="lp-trust" data-reveal style="--i:4">
+            <div class="lp-trust__item">
+              <span class="lp-trust__num" data-count="2293">2293</span>
+              <span class="lp-trust__label" data-i18n="trust.cards">Karten</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num" data-count="47">47</span>
+              <span class="lp-trust__label" data-i18n="trust.challenges">Real-Life-Challenges</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num">A1–B1</span>
+              <span class="lp-trust__label" data-i18n="trust.levels">Niveaus</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num">0&nbsp;$</span>
+              <span class="lp-trust__label" data-i18n="trust.pilot">Pilot</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="lp-cardcol" data-reveal style="--i:2">
+          <div class="lp-herocard">
+            <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · ECOS Edition</span>
+            <p class="lp-herocard__phrase"><b>¿Me trae la cuenta, por favor?</b><span data-i18n="card.tr">„Bringen Sie mir bitte die Rechnung?“ – als Hausaufgabe heute im Café anwenden.</span></p>
+            <div class="lp-herocard__row">
+              <span class="lp-herocard__pill" data-i18n="card.p1">Pre-Arrival</span>
+              <span class="lp-herocard__pill" data-i18n="card.p2">Classroom</span>
+              <span class="lp-herocard__pill" data-i18n="card.p3">Real-Life</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ─────────────── Einsatz-Szenarien ─────────────── -->
+    <section class="lp-section" id="use">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="use.eyebrow">DREI EINSATZ-SZENARIEN</p>
+        <h2 class="lp-h2" data-reveal data-i18n="use.title">Vorbereiten, üben, anwenden – alles in einer App.</h2>
+        <p class="lp-lead" data-reveal data-i18n="use.lead">Schulen verkaufen keinen Grammatikkurs, sondern einen Aufenthalt. Genau dort ist HolaRuta stark – und alles davon trägt der heutige Stand.</p>
+        <div class="lp-hooks">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#1F7A8C">
+            <span class="lp-hook__ico" aria-hidden="true">✈️</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="use.1.k">Pre-Arrival-Pack</span>
+              <h3 class="lp-hook__title" data-i18n="use.1.t">Startklar, bevor das Flugzeug landet.</h3>
+              <p class="lp-hook__text" data-i18n="use.1.b">Schüler bereiten sich mit Flughafen, Taxi, Check-in, Essen, Geld und Notfall vor – mit Kategorien, Spickzettel und Kontextkarten. Sie kommen schon sprechfähig an.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
+            <span class="lp-hook__ico" aria-hidden="true">🧑‍🏫</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="use.2.k">Classroom-Companion</span>
+              <h3 class="lp-hook__title" data-i18n="use.2.t">5-Minuten-Warm-up und Partnerarbeit.</h3>
+              <p class="lp-hook__text" data-i18n="use.2.b">Karten als Aufwärmrunde, Hostel-Battle und Rollenspiele für Partnerarbeit, der Kontext-Button als Gesprächsanlass. Hausaufgabe: 10 Karten + 1 Mutprobe.</p>
+            </div>
+          </article>
+          <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#C2502E">
+            <span class="lp-hook__ico" aria-hidden="true">🎯</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="use.3.k">Real-Life-Challenge</span>
+              <h3 class="lp-hook__title" data-i18n="use.3.t">„Frag heute im Café nach der Rechnung.“</h3>
+              <p class="lp-hook__text" data-i18n="use.3.b">Der spannendste Teil für Immersion: 47 echte Mutproben treiben die Schüler raus auf die Straße – genau das, was einen Aufenthalt von einem Sprachkurs zuhause unterscheidet.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── So setzt ihr es ein ─────────────── -->
+    <section class="lp-section lp-section--wash" id="how">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="how.eyebrow">IN DREI SCHRITTEN IN DEN KURS</p>
+        <h2 class="lp-h2" data-reveal data-i18n="how.title">Kein Setup, kein App-Store, kein Konto.</h2>
+        <div class="lp-steps">
+          <article class="lp-step" data-reveal style="--i:0; --accent:#1F7A8C" data-step="1">
+            <span class="lp-step__num" aria-hidden="true">1</span>
+            <div class="lp-step__main">
+              <span class="lp-step__kicker" data-i18n="how.s1.k">TEILEN</span>
+              <h3 class="lp-step__title" data-i18n="how.s1.t">Einen Link verschicken</h3>
+              <p class="lp-step__body" data-i18n="how.s1.b">Ein QR-Code oder Link öffnet die App – optional direkt in eurer <b class="lp-step__hl">Schul-Edition</b> mit Name, Farbe und Stadt.</p>
+            </div>
+            <div class="lp-step__shot">
+              <img src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="HolaRuta Startseite mit Reise-Bereichen" />
+            </div>
+          </article>
+          <article class="lp-step" data-reveal style="--i:1; --accent:#3F7355" data-step="2">
+            <span class="lp-step__num" aria-hidden="true">2</span>
+            <div class="lp-step__main">
+              <span class="lp-step__kicker" data-i18n="how.s2.k">ÜBEN</span>
+              <h3 class="lp-step__title" data-i18n="how.s2.t">Im Unterricht & daheim</h3>
+              <p class="lp-step__body" data-i18n="how.s2.b">Warm-up, Partnerarbeit, Hausaufgabe. <b class="lp-step__hl">Karteikarte, Schreiben oder Hören</b> – die Lehrkraft steuert das Tempo.</p>
+            </div>
+            <div class="lp-step__shot">
+              <img src="docs/landing/study.png" width="390" height="844" loading="lazy" alt="Aufgedeckte Karteikarte mit Aussprache und Bewertung" />
+            </div>
+          </article>
+          <article class="lp-step" data-reveal style="--i:2; --accent:#E9A23B" data-step="3">
+            <span class="lp-step__num" aria-hidden="true">3</span>
+            <div class="lp-step__main">
+              <span class="lp-step__kicker" data-i18n="how.s3.k">ANWENDEN</span>
+              <h3 class="lp-step__title" data-i18n="how.s3.t">Raus auf die Straße</h3>
+              <p class="lp-step__body" data-i18n="how.s3.b">Real-Life-Challenges verlagern das Gelernte ins echte Cartagena. <b class="lp-step__hl">Der Fortschritt</b> bleibt sichtbar auf dem Gerät.</p>
+            </div>
+            <div class="lp-step__shot">
+              <img src="docs/landing/stats.png" width="390" height="844" loading="lazy" alt="Statistik mit Trefferquote und Fortschritt" />
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Preise / Pakete ─────────────── -->
+    <section class="lp-section" id="preise">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="price.eyebrow">PAKETE</p>
+        <h2 class="lp-h2" data-reveal data-i18n="price.title">Erst ein kostenloser Pilot, dann eine einfache Jahreslizenz.</h2>
+        <p class="lp-lead" data-reveal data-i18n="price.lead">Kein Risiko zum Start: testet eine Klasse, dann entscheidet ihr. Co-Branding und Netzwerk-Optionen kommen später.</p>
+        <div class="lp-pricing">
+          <article class="lp-pricecard" data-reveal style="--i:0">
+            <span class="lp-pricecard__tag" data-i18n="price.p1.tag">Pilot</span>
+            <span class="lp-pricecard__price" data-i18n="price.p1.price">0 $</span>
+            <p class="lp-pricecard__desc" data-i18n="price.p1.desc">4–6 Wochen Test mit 1–2 Klassen, inkl. Feedbackgespräch.</p>
+          </article>
+          <article class="lp-pricecard lp-pricecard--feat" data-reveal style="--i:1">
+            <span class="lp-pricecard__tag" data-i18n="price.p2.tag">School Starter</span>
+            <span class="lp-pricecard__price" data-i18n="price.p2.price">499 $<small data-i18n="price.peryear"> / Jahr</small></span>
+            <ul>
+              <li data-i18n="price.p2.l1">App + School-Pack</li>
+              <li data-i18n="price.p2.l2">Lehrer-PDF mit Stundenabläufen</li>
+              <li data-i18n="price.p2.l3">Pre-Arrival, Classroom, Challenges</li>
+            </ul>
+          </article>
+          <article class="lp-pricecard" data-reveal style="--i:2">
+            <span class="lp-pricecard__tag" data-i18n="price.p3.tag">School Plus / Edition</span>
+            <span class="lp-pricecard__price" data-i18n="price.p3.price">999–1.499 $<small data-i18n="price.peryear"> / Jahr</small></span>
+            <ul>
+              <li data-i18n="price.p3.l1">Stadt-/Schulpaket (z.&nbsp;B. Cartagena)</li>
+              <li data-i18n="price.p3.l2">Eigenes Branding & Co-Branding-Seite</li>
+              <li data-i18n="price.p3.l3">Mehr Lehrer-Material & Support</li>
+            </ul>
+          </article>
+        </div>
+        <p class="lp-contact__note" data-reveal data-i18n="price.note">Netzwerk-Lizenzen (mehrere Standorte) ab 2.500 $/Jahr – auf Anfrage.</p>
+      </div>
+    </section>
+
+    <!-- ─────────────── FAQ ─────────────── -->
+    <section class="lp-section lp-section--wash" id="faq">
+      <div class="lp-wrap">
+        <div class="lp-rule lp-rule--center" data-reveal></div>
+        <h2 class="lp-h2" style="margin-inline:auto;text-align:center;max-width:24ch" data-reveal data-i18n="faq.title">Häufige Fragen von Schulen</h2>
+        <div class="lp-faq">
+          <details data-reveal style="--i:0">
+            <summary data-i18n="faq.q1">Braucht es Installation oder Konten?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a1">Nein. HolaRuta läuft als Web-App im Browser, offline-fähig, ohne App-Store und ohne Schüler-Konten. Der Fortschritt bleibt lokal auf dem Gerät.</div>
+          </details>
+          <details data-reveal style="--i:1">
+            <summary data-i18n="faq.q2">Können wir es in unserem Branding bekommen?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a2">Ja. Über das Editions-System öffnet ein Link die App mit eurem Namen, eurer Farbe und eurer Stadt – ohne dass ihr eine eigene Datei verteilt.</div>
+          </details>
+          <details data-reveal style="--i:2">
+            <summary data-i18n="faq.q3">Welches Spanisch wird vermittelt?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a3">Lateinamerikanisches Reise-Spanisch – colectivo statt autobús, vuelto statt cambio. Für den ernsthaften Einsatz empfehlen wir die Gegenlesung der Inhalte durch eure Lehrkräfte.</div>
+          </details>
+          <details data-reveal style="--i:3">
+            <summary data-i18n="faq.q4">Was kostet der Einstieg?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a4">Nichts. Ihr startet mit einem kostenlosen Pilot über 4–6 Wochen. Erst wenn es passt, wird daraus eine einfache Jahreslizenz.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Kontakt / Abschluss-CTA ─────────────── -->
+    <section class="lp-section lp-contact" id="kontakt">
+      <div class="lp-wrap">
+        <h2 class="lp-h2" data-reveal data-i18n="contact.title">Testet HolaRuta mit einer Klasse.</h2>
+        <p class="lp-contact__sub" data-reveal data-i18n="contact.sub">Öffnet die Live-Demo in der ECOS-Edition oder schreibt uns für einen kostenlosen Pilot – wir richten alles ein.</p>
+        <div class="lp-contact__actions" data-reveal>
+          <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=ecos&start=onboarding" data-i18n="contact.demo">Live-Demo öffnen →</a>
+          <a class="lp-cta lp-cta--lg lp-cta--ghost" href="mailto:hola@holaruta.app?subject=HolaRuta%20f%C3%BCr%20unsere%20Sprachschule" data-i18n="contact.mail">Pilot per E-Mail anfragen</a>
+        </div>
+        <p class="lp-contact__note" data-reveal>
+          <a href="docs/anleitungen/lehrer.html" data-i18n="contact.material">📄 Stundenrezepte für Lehrkräfte ansehen</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ─────────────── Footer ─────────────── -->
+  <footer class="lp-footer">
+    <div class="lp-footer__top"></div>
+    <div class="lp-wrap">
+      <div class="lp-footer__grid">
+        <div>
+          <a class="lp-logo" href="./" aria-label="HolaRuta">
+            <span class="lp-logo__mark" aria-hidden="true">
+              <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+                <rect width="512" height="512" fill="url(#lpLogoG)"/>
+                <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+                <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+              </svg>
+            </span>
+            <span class="lp-logo__name" style="color:var(--cream)">Hola<span>Ruta</span></span>
+          </a>
+          <p class="lp-footer__blurb" data-i18n="footer.blurb">Reise-Spanisch als mobiler Kurs-Begleiter für Immersionsschulen – Pre-Arrival, Classroom-Companion und Real-Life-Challenges. Offline, ohne Konto.</p>
+        </div>
+        <div>
+          <h4 data-i18n="footer.audiences">Für wen?</h4>
+          <ul>
+            <li><a href="landing.html" data-i18n="aud.b2c">🎒 Privatreisende</a></li>
+            <li><a href="landing-schule.html" data-i18n="aud.schule">🎓 Sprachschulen</a></li>
+            <li><a href="landing-hostel.html" data-i18n="aud.hostel">🛏️ Hostels</a></li>
+            <li><a href="landing-reiseanbieter.html" data-i18n="aud.reise">🧭 Reiseanbieter</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer.more">Mehr</h4>
+          <ul>
+            <li><a href="./?edition=ecos&start=onboarding" data-i18n="footer.demo">Live-Demo öffnen</a></li>
+            <li><a href="docs/anleitungen/lehrer.html" data-i18n="footer.material">Lehrer-Material</a></li>
+            <li><a href="mailto:hola@holaruta.app?subject=HolaRuta%20f%C3%BCr%20unsere%20Sprachschule" data-i18n="footer.contact">Kontakt</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="lp-footer__credit">
+        <span>© <span id="lpYear">2026</span> HolaRuta</span>
+        <span data-i18n="footer.credit">Mit <span class="lp-footer__heart">♥</span> für Lateinamerika gebaut.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─────────────── Verhalten: i18n · Theme · Jahr ─────────────── -->
+  <script>
+  (function () {
+    "use strict";
+
+    // Dreisprachiges Wörterbuch (DE/EN/ES). _title/_desc lokalisieren <title> & meta description.
+    var I18N = {
+      de: {
+        "_title": "HolaRuta für Sprachschulen – Reise-Spanisch als Kurs-Begleiter",
+        "_desc": "HolaRuta für Sprachschulen: mobile Reise-Spanisch-Begleitung für Immersionskurse – Pre-Arrival-Pack, Classroom-Companion und Real-Life-Challenges. Offline, ohne Konto, mit Schul-Branding.",
+        "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
+        "aud.label": "Für wen?", "aud.b2c": "🎒 Privatreisende", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter",
+        "hero.eyebrow": "FÜR SPRACHSCHULEN IN LATEINAMERIKA",
+        "hero.h1": "Die Brücke zwischen Klassenzimmer und Straße.",
+        "hero.sub": "HolaRuta begleitet eure Immersionskurse mobil: Pre-Arrival-Vorbereitung, 5-Minuten-Warm-ups im Unterricht und echte Mutproben vor Ort. Lateinamerika-korrekt, offline, ohne Konto – optional in eurem Schul-Branding.",
+        "hero.demo": "Live-Demo öffnen →", "hero.contact": "Pilot anfragen",
+        "trust.cards": "Karten", "trust.challenges": "Real-Life-Challenges", "trust.levels": "Niveaus", "trust.pilot": "Pilot",
+        "card.brand": "HolaRuta · ECOS Edition", "card.tr": "„Bringen Sie mir bitte die Rechnung?“ – als Hausaufgabe heute im Café anwenden.",
+        "card.p1": "Pre-Arrival", "card.p2": "Classroom", "card.p3": "Real-Life",
+        "use.eyebrow": "DREI EINSATZ-SZENARIEN", "use.title": "Vorbereiten, üben, anwenden – alles in einer App.",
+        "use.lead": "Schulen verkaufen keinen Grammatikkurs, sondern einen Aufenthalt. Genau dort ist HolaRuta stark – und alles davon trägt der heutige Stand.",
+        "use.1.k": "Pre-Arrival-Pack", "use.1.t": "Startklar, bevor das Flugzeug landet.", "use.1.b": "Schüler bereiten sich mit Flughafen, Taxi, Check-in, Essen, Geld und Notfall vor – mit Kategorien, Spickzettel und Kontextkarten. Sie kommen schon sprechfähig an.",
+        "use.2.k": "Classroom-Companion", "use.2.t": "5-Minuten-Warm-up und Partnerarbeit.", "use.2.b": "Karten als Aufwärmrunde, Hostel-Battle und Rollenspiele für Partnerarbeit, der Kontext-Button als Gesprächsanlass. Hausaufgabe: 10 Karten + 1 Mutprobe.",
+        "use.3.k": "Real-Life-Challenge", "use.3.t": "„Frag heute im Café nach der Rechnung.“", "use.3.b": "Der spannendste Teil für Immersion: 47 echte Mutproben treiben die Schüler raus auf die Straße – genau das, was einen Aufenthalt von einem Sprachkurs zuhause unterscheidet.",
+        "how.eyebrow": "IN DREI SCHRITTEN IN DEN KURS", "how.title": "Kein Setup, kein App-Store, kein Konto.",
+        "how.s1.k": "TEILEN", "how.s1.t": "Einen Link verschicken", "how.s1.b": "Ein QR-Code oder Link öffnet die App – optional direkt in eurer <b class=\"lp-step__hl\">Schul-Edition</b> mit Name, Farbe und Stadt.",
+        "how.s2.k": "ÜBEN", "how.s2.t": "Im Unterricht & daheim", "how.s2.b": "Warm-up, Partnerarbeit, Hausaufgabe. <b class=\"lp-step__hl\">Karteikarte, Schreiben oder Hören</b> – die Lehrkraft steuert das Tempo.",
+        "how.s3.k": "ANWENDEN", "how.s3.t": "Raus auf die Straße", "how.s3.b": "Real-Life-Challenges verlagern das Gelernte ins echte Cartagena. <b class=\"lp-step__hl\">Der Fortschritt</b> bleibt sichtbar auf dem Gerät.",
+        "price.eyebrow": "PAKETE", "price.title": "Erst ein kostenloser Pilot, dann eine einfache Jahreslizenz.",
+        "price.lead": "Kein Risiko zum Start: testet eine Klasse, dann entscheidet ihr. Co-Branding und Netzwerk-Optionen kommen später.",
+        "price.peryear": " / Jahr",
+        "price.p1.tag": "Pilot", "price.p1.price": "0 $", "price.p1.desc": "4–6 Wochen Test mit 1–2 Klassen, inkl. Feedbackgespräch.",
+        "price.p2.tag": "School Starter", "price.p2.price": "499 $", "price.p2.l1": "App + School-Pack", "price.p2.l2": "Lehrer-PDF mit Stundenabläufen", "price.p2.l3": "Pre-Arrival, Classroom, Challenges",
+        "price.p3.tag": "School Plus / Edition", "price.p3.price": "999–1.499 $", "price.p3.l1": "Stadt-/Schulpaket (z. B. Cartagena)", "price.p3.l2": "Eigenes Branding & Co-Branding-Seite", "price.p3.l3": "Mehr Lehrer-Material & Support",
+        "price.note": "Netzwerk-Lizenzen (mehrere Standorte) ab 2.500 $/Jahr – auf Anfrage.",
+        "faq.title": "Häufige Fragen von Schulen",
+        "faq.q1": "Braucht es Installation oder Konten?", "faq.a1": "Nein. HolaRuta läuft als Web-App im Browser, offline-fähig, ohne App-Store und ohne Schüler-Konten. Der Fortschritt bleibt lokal auf dem Gerät.",
+        "faq.q2": "Können wir es in unserem Branding bekommen?", "faq.a2": "Ja. Über das Editions-System öffnet ein Link die App mit eurem Namen, eurer Farbe und eurer Stadt – ohne dass ihr eine eigene Datei verteilt.",
+        "faq.q3": "Welches Spanisch wird vermittelt?", "faq.a3": "Lateinamerikanisches Reise-Spanisch – colectivo statt autobús, vuelto statt cambio. Für den ernsthaften Einsatz empfehlen wir die Gegenlesung der Inhalte durch eure Lehrkräfte.",
+        "faq.q4": "Was kostet der Einstieg?", "faq.a4": "Nichts. Ihr startet mit einem kostenlosen Pilot über 4–6 Wochen. Erst wenn es passt, wird daraus eine einfache Jahreslizenz.",
+        "contact.title": "Testet HolaRuta mit einer Klasse.", "contact.sub": "Öffnet die Live-Demo in der ECOS-Edition oder schreibt uns für einen kostenlosen Pilot – wir richten alles ein.",
+        "contact.demo": "Live-Demo öffnen →", "contact.mail": "Pilot per E-Mail anfragen", "contact.material": "📄 Stundenrezepte für Lehrkräfte ansehen",
+        "footer.blurb": "Reise-Spanisch als mobiler Kurs-Begleiter für Immersionsschulen – Pre-Arrival, Classroom-Companion und Real-Life-Challenges. Offline, ohne Konto.",
+        "footer.audiences": "Für wen?", "footer.more": "Mehr", "footer.demo": "Live-Demo öffnen", "footer.material": "Lehrer-Material", "footer.contact": "Kontakt",
+        "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut."
+      },
+      en: {
+        "_title": "HolaRuta for language schools – travel Spanish as a course companion",
+        "_desc": "HolaRuta for language schools: a mobile travel-Spanish companion for immersion courses – pre-arrival pack, classroom companion and real-life challenges. Offline, no account, with your school branding.",
+        "skip": "Skip to content", "nav.demo": "Live demo",
+        "aud.label": "Who is it for?", "aud.b2c": "🎒 Independent travelers", "aud.schule": "🎓 Language schools", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Tour operators",
+        "hero.eyebrow": "FOR LANGUAGE SCHOOLS IN LATIN AMERICA",
+        "hero.h1": "The bridge between classroom and street.",
+        "hero.sub": "HolaRuta supports your immersion courses on mobile: pre-arrival prep, 5-minute in-class warm-ups and real challenges on the ground. Latin-American-correct, offline, no account – optionally in your school branding.",
+        "hero.demo": "Open live demo →", "hero.contact": "Request a pilot",
+        "trust.cards": "cards", "trust.challenges": "real-life challenges", "trust.levels": "levels", "trust.pilot": "pilot",
+        "card.brand": "HolaRuta · ECOS Edition", "card.tr": "“Could you bring me the bill, please?” – use it as homework at a café today.",
+        "card.p1": "Pre-arrival", "card.p2": "Classroom", "card.p3": "Real-life",
+        "use.eyebrow": "THREE USE SCENARIOS", "use.title": "Prepare, practice, apply – all in one app.",
+        "use.lead": "Schools don't sell a grammar course, they sell a stay. That's exactly where HolaRuta shines – and all of it is supported by what exists today.",
+        "use.1.k": "Pre-arrival pack", "use.1.t": "Ready before the plane lands.", "use.1.b": "Students prepare with airport, taxi, check-in, food, money and emergencies – using categories, cheat sheets and context cards. They arrive already able to speak.",
+        "use.2.k": "Classroom companion", "use.2.t": "5-minute warm-up and pair work.", "use.2.b": "Cards as a warm-up, Hostel Battle and role-plays for pair work, the context button as a conversation prompt. Homework: 10 cards + 1 challenge.",
+        "use.3.k": "Real-life challenge", "use.3.t": "“Ask for the bill at a café today.”", "use.3.b": "The most exciting part for immersion: 47 real challenges push students out onto the street – exactly what makes a stay different from a language course back home.",
+        "how.eyebrow": "INTO THE COURSE IN THREE STEPS", "how.title": "No setup, no app store, no account.",
+        "how.s1.k": "SHARE", "how.s1.t": "Send one link", "how.s1.b": "A QR code or link opens the app – optionally straight into your <b class=\"lp-step__hl\">school edition</b> with name, color and city.",
+        "how.s2.k": "PRACTICE", "how.s2.t": "In class & at home", "how.s2.b": "Warm-up, pair work, homework. <b class=\"lp-step__hl\">Flashcard, typing or listening</b> – the teacher sets the pace.",
+        "how.s3.k": "APPLY", "how.s3.t": "Out onto the street", "how.s3.b": "Real-life challenges move learning into the real Cartagena. <b class=\"lp-step__hl\">Progress</b> stays visible on the device.",
+        "price.eyebrow": "PACKAGES", "price.title": "A free pilot first, then a simple yearly license.",
+        "price.lead": "No risk to start: test one class, then you decide. Co-branding and network options come later.",
+        "price.peryear": " / year",
+        "price.p1.tag": "Pilot", "price.p1.price": "$0", "price.p1.desc": "4–6 week test with 1–2 classes, including a feedback call.",
+        "price.p2.tag": "School Starter", "price.p2.price": "$499", "price.p2.l1": "App + school pack", "price.p2.l2": "Teacher PDF with lesson plans", "price.p2.l3": "Pre-arrival, classroom, challenges",
+        "price.p3.tag": "School Plus / Edition", "price.p3.price": "$999–1,499", "price.p3.l1": "City/school pack (e.g. Cartagena)", "price.p3.l2": "Your own branding & co-branding page", "price.p3.l3": "More teacher material & support",
+        "price.note": "Network licenses (multiple locations) from $2,500/year – on request.",
+        "faq.title": "Frequently asked by schools",
+        "faq.q1": "Does it need installation or accounts?", "faq.a1": "No. HolaRuta runs as a web app in the browser, offline-capable, with no app store and no student accounts. Progress stays local on the device.",
+        "faq.q2": "Can we get it in our branding?", "faq.a2": "Yes. The editions system lets a single link open the app with your name, color and city – without you distributing a separate file.",
+        "faq.q3": "Which Spanish is taught?", "faq.a3": "Latin-American travel Spanish – colectivo instead of autobús, vuelto instead of cambio. For serious use we recommend having your teachers proofread the content.",
+        "faq.q4": "What does it cost to start?", "faq.a4": "Nothing. You start with a free 4–6 week pilot. Only if it fits does it become a simple yearly license.",
+        "contact.title": "Test HolaRuta with one class.", "contact.sub": "Open the live demo in the ECOS edition or write to us for a free pilot – we'll set everything up.",
+        "contact.demo": "Open live demo →", "contact.mail": "Request a pilot by email", "contact.material": "📄 See lesson recipes for teachers",
+        "footer.blurb": "Travel Spanish as a mobile course companion for immersion schools – pre-arrival, classroom companion and real-life challenges. Offline, no account.",
+        "footer.audiences": "Who is it for?", "footer.more": "More", "footer.demo": "Open live demo", "footer.material": "Teacher material", "footer.contact": "Contact",
+        "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America."
+      },
+      es: {
+        "_title": "HolaRuta para escuelas de español – español de viaje como complemento del curso",
+        "_desc": "HolaRuta para escuelas de idiomas: un complemento móvil de español de viaje para cursos de inmersión – pack de pre-llegada, compañero de aula y retos de la vida real. Sin conexión, sin cuenta, con la marca de tu escuela.",
+        "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
+        "aud.label": "¿Para quién?", "aud.b2c": "🎒 Viajeros particulares", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes",
+        "hero.eyebrow": "PARA ESCUELAS DE IDIOMAS EN LATINOAMÉRICA",
+        "hero.h1": "El puente entre el aula y la calle.",
+        "hero.sub": "HolaRuta acompaña tus cursos de inmersión en el móvil: preparación de pre-llegada, calentamientos de 5 minutos en clase y retos reales sobre el terreno. Correcto para Latinoamérica, sin conexión, sin cuenta – opcionalmente con la marca de tu escuela.",
+        "hero.demo": "Abrir demo en vivo →", "hero.contact": "Solicitar piloto",
+        "trust.cards": "tarjetas", "trust.challenges": "retos reales", "trust.levels": "niveles", "trust.pilot": "piloto",
+        "card.brand": "HolaRuta · Edición ECOS", "card.tr": "«¿Me trae la cuenta, por favor?» – úsalo hoy como tarea en un café.",
+        "card.p1": "Pre-llegada", "card.p2": "Aula", "card.p3": "Vida real",
+        "use.eyebrow": "TRES ESCENARIOS DE USO", "use.title": "Preparar, practicar, aplicar – todo en una app.",
+        "use.lead": "Las escuelas no venden un curso de gramática, venden una estancia. Ahí es donde HolaRuta brilla – y todo ello lo sostiene lo que ya existe hoy.",
+        "use.1.k": "Pack de pre-llegada", "use.1.t": "Listo antes de que aterrice el avión.", "use.1.b": "Los alumnos se preparan con aeropuerto, taxi, check-in, comida, dinero y emergencias – con categorías, chuletas y tarjetas de contexto. Llegan ya capaces de hablar.",
+        "use.2.k": "Compañero de aula", "use.2.t": "Calentamiento de 5 minutos y trabajo en parejas.", "use.2.b": "Tarjetas como calentamiento, Hostel Battle y juegos de rol para parejas, el botón de contexto como pretexto de conversación. Tarea: 10 tarjetas + 1 reto.",
+        "use.3.k": "Reto de la vida real", "use.3.t": "«Pide hoy la cuenta en un café.»", "use.3.b": "La parte más emocionante de la inmersión: 47 retos reales empujan a los alumnos a la calle – justo lo que distingue una estancia de un curso de idiomas en casa.",
+        "how.eyebrow": "AL CURSO EN TRES PASOS", "how.title": "Sin instalación, sin tienda de apps, sin cuenta.",
+        "how.s1.k": "COMPARTIR", "how.s1.t": "Enviar un enlace", "how.s1.b": "Un código QR o enlace abre la app – opcionalmente directo en tu <b class=\"lp-step__hl\">edición de escuela</b> con nombre, color y ciudad.",
+        "how.s2.k": "PRACTICAR", "how.s2.t": "En clase y en casa", "how.s2.b": "Calentamiento, parejas, tarea. <b class=\"lp-step__hl\">Tarjeta, escritura o escucha</b> – el docente marca el ritmo.",
+        "how.s3.k": "APLICAR", "how.s3.t": "A la calle", "how.s3.b": "Los retos reales llevan lo aprendido a la Cartagena real. <b class=\"lp-step__hl\">El progreso</b> queda visible en el dispositivo.",
+        "price.eyebrow": "PAQUETES", "price.title": "Primero un piloto gratuito, luego una licencia anual sencilla.",
+        "price.lead": "Sin riesgo al empezar: probáis una clase y luego decidís. El co-branding y las opciones de red llegan después.",
+        "price.peryear": " / año",
+        "price.p1.tag": "Piloto", "price.p1.price": "0 $", "price.p1.desc": "Prueba de 4–6 semanas con 1–2 clases, incluida una llamada de feedback.",
+        "price.p2.tag": "School Starter", "price.p2.price": "499 $", "price.p2.l1": "App + pack de escuela", "price.p2.l2": "PDF docente con planes de clase", "price.p2.l3": "Pre-llegada, aula, retos",
+        "price.p3.tag": "School Plus / Edición", "price.p3.price": "999–1.499 $", "price.p3.l1": "Pack de ciudad/escuela (p. ej. Cartagena)", "price.p3.l2": "Tu propia marca y página de co-branding", "price.p3.l3": "Más material docente y soporte",
+        "price.note": "Licencias de red (varias sedes) desde 2.500 $/año – bajo petición.",
+        "faq.title": "Preguntas frecuentes de escuelas",
+        "faq.q1": "¿Hace falta instalación o cuentas?", "faq.a1": "No. HolaRuta funciona como app web en el navegador, sin conexión, sin tienda de apps y sin cuentas de alumno. El progreso queda local en el dispositivo.",
+        "faq.q2": "¿Podemos tenerlo con nuestra marca?", "faq.a2": "Sí. El sistema de ediciones permite que un único enlace abra la app con vuestro nombre, color y ciudad – sin que distribuyáis un archivo aparte.",
+        "faq.q3": "¿Qué español se enseña?", "faq.a3": "Español de viaje latinoamericano – colectivo en vez de autobús, vuelto en vez de cambio. Para un uso serio recomendamos que vuestros docentes revisen los contenidos.",
+        "faq.q4": "¿Cuánto cuesta empezar?", "faq.a4": "Nada. Empezáis con un piloto gratuito de 4–6 semanas. Solo si encaja se convierte en una licencia anual sencilla.",
+        "contact.title": "Probad HolaRuta con una clase.", "contact.sub": "Abrid la demo en vivo en la edición ECOS o escribidnos para un piloto gratuito – nosotros lo configuramos todo.",
+        "contact.demo": "Abrir demo en vivo →", "contact.mail": "Solicitar piloto por email", "contact.material": "📄 Ver recetas de clase para docentes",
+        "footer.blurb": "Español de viaje como complemento móvil del curso para escuelas de inmersión – pre-llegada, compañero de aula y retos reales. Sin conexión, sin cuenta.",
+        "footer.audiences": "¿Para quién?", "footer.more": "Más", "footer.demo": "Abrir demo en vivo", "footer.material": "Material docente", "footer.contact": "Contacto",
+        "footer.credit": "Hecho con <span class=\"lp-footer__heart\">♥</span> para Latinoamérica."
+      }
+    };
+
+    // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
+    var HTML_KEYS = { "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var LANG_KEY = "holaruta.landing.lang";
+
+    function setLang(lang) {
+      if (!I18N[lang]) lang = "de";
+      var dict = I18N[lang];
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute("data-lang", lang);
+      document.title = dict["_title"];
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
+      var nodes = document.querySelectorAll("[data-i18n]");
+      for (var i = 0; i < nodes.length; i++) {
+        var key = nodes[i].getAttribute("data-i18n");
+        if (!(key in dict)) continue;
+        if (HTML_KEYS[key]) nodes[i].innerHTML = dict[key];
+        else nodes[i].textContent = dict[key];
+      }
+      var btns = document.querySelectorAll(".lp-langbtn");
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
+      }
+      try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    }
+
+    // Startsprache: ?lang= (teilbarer Link) > gemerkt > Browser > de
+    var SUPPORTED = ["de", "en", "es"];
+    var urlLang = null;
+    try { urlLang = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+    var saved = null;
+    try { saved = localStorage.getItem(LANG_KEY); } catch (e) {}
+    var browser = (navigator.language || "de").toLowerCase();
+    var browserLang = browser.indexOf("de") === 0 ? "de" : (browser.indexOf("es") === 0 ? "es" : "en");
+    var initial = (urlLang && SUPPORTED.indexOf(urlLang) >= 0) ? urlLang
+      : (saved && SUPPORTED.indexOf(saved) >= 0) ? saved : browserLang;
+    setLang(initial);
+
+    document.querySelectorAll(".lp-langbtn").forEach(function (b) {
+      b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+    });
+
+    // Jahr im Footer
+    var y = document.getElementById("lpYear"); if (y) y.textContent = new Date().getFullYear();
+
+    // Theme-Toggle (schreibt zurück in spanischcard.settings.v1 – konsistent mit App & Landing)
+    var themeBtn = document.getElementById("lpTheme");
+    function syncThemeIcon() {
+      var dark = document.documentElement.dataset.theme === "dark";
+      if (themeBtn) themeBtn.textContent = dark ? "☀️" : "🌙";
+    }
+    syncThemeIcon();
+    if (themeBtn) themeBtn.addEventListener("click", function () {
+      var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute("content", next === "dark" ? "#0E0907" : "#241510");
+      syncThemeIcon();
+      try {
+        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
+        s.theme = next;
+        localStorage.setItem("spanischcard.settings.v1", JSON.stringify(s));
+      } catch (e) {}
+    });
+
+    // Scroll-Reveal (progressive enhancement) – ohne JS bleibt alles sichtbar.
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var reveal = document.querySelectorAll("[data-reveal]");
+    if (reduce || !("IntersectionObserver" in window)) {
+      reveal.forEach(function (el) { el.classList.add("is-in"); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+      }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
+      reveal.forEach(function (el) { io.observe(el); });
+    }
+
+    // Header-Schatten beim Scrollen (kosmetisch, wie auf der B2C-Landing).
+    var header = document.getElementById("lpHeader");
+    if (header) {
+      var onScroll = function () { header.classList.toggle("is-stuck", window.scrollY > 8); };
+      onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
+    }
+  })();
+  </script>
+</body>
+</html>
