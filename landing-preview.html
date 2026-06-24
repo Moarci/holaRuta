@@ -4554,6 +4554,53 @@ a { color: var(--brand-ink); }
 .lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); line-height: 1.15; color: var(--ink); margin: 0; }
 .lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
 
+/* ── „Mehr als Sprache": emotionale Hooks. Editorialer als die Feature-Kacheln –
+ *    kleiner spanischer Kicker in Modulfarbe, große Display-Headline (der Hook),
+ *    erzählender Body. Macht greifbar, dass die App auch Geschichte, Kultur,
+ *    Knigge, Gesundheit & Anschluss vermittelt – nicht nur Vokabeln. ── */
+.lp-hooks { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
+@media (min-width: 760px) {
+  .lp-hooks { grid-template-columns: repeat(2, 1fr); }
+  /* Der fünfte Hook (Conexión) spannt über beide Spalten -> emotionaler Abschluss. */
+  .lp-hook--wide { grid-column: 1 / -1; }
+}
+.lp-hook {
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  padding: var(--space-4); border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.lp-hook:hover {
+  transform: translateY(-3px); box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 45%, var(--line));
+}
+.lp-hook__ico {
+  width: 52px; height: 52px; flex: none; border-radius: 15px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
+  transform: rotate(-5deg);
+  transition: transform 0.16s ease;
+}
+.lp-hook:hover .lp-hook__ico { transform: scale(1.06) rotate(-7deg); }
+.lp-hook__body { min-width: 0; }
+.lp-hook__kicker {
+  display: inline-block; margin: 0 0 6px;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent, var(--brand)) 72%, var(--ink));
+}
+.lp-hook__title {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem); line-height: 1.16; letter-spacing: -0.01em;
+  color: var(--ink); margin: 0 0 8px; text-wrap: balance;
+}
+.lp-hook__text { font-size: 1rem; line-height: 1.55; color: var(--muted); margin: 0; }
+@media (prefers-reduced-motion: reduce) { .lp-hook, .lp-hook__ico { transition: none; } }
+@media (hover: none) { .lp-hook:hover { transform: none; } }
+
 /* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
    ohne Marketing-Floskeln. Statt nackter Namens-Pills jetzt kleine Karten mit
    Mikro-Beschreibung. Die Namen sind durchgängig spanisch wie in der App
@@ -4574,6 +4621,7 @@ a { color: var(--brand-ink); }
 .lp-morechip {
   position: relative; overflow: hidden;
   display: flex; align-items: center; gap: 13px; text-align: left;
+  width: 100%; appearance: none; -webkit-appearance: none; font: inherit; cursor: pointer;
   background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
   border-radius: var(--r-md); padding: 13px 15px;
   box-shadow: var(--shadow);
@@ -4612,8 +4660,90 @@ a { color: var(--brand-ink); }
 .lp-morechip__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .lp-morechip__name { font-weight: 800; font-size: 0.95rem; line-height: 1.2; }
 .lp-morechip__desc { font-weight: 500; font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
-@media (prefers-reduced-motion: reduce) { .lp-morechip, .lp-morechip__ico { transition: none; } }
+/* Chevron rechts signalisiert „antippbar" und dreht beim Aufklappen nach unten. */
+.lp-morechip__chev {
+  margin-left: auto; flex: none; width: 8px; height: 8px;
+  border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg); opacity: .6;
+  transition: transform .2s ease, border-color .2s ease, opacity .2s ease;
+}
+.lp-morechip[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent, var(--brand)) 8%, var(--surface));
+}
+.lp-morechip[aria-expanded="true"]::before { opacity: 1; width: 4px; }
+.lp-morechip[aria-expanded="true"] .lp-morechip__chev {
+  transform: rotate(45deg); border-color: var(--accent, var(--brand)); opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-morechip, .lp-morechip__ico, .lp-morechip__chev { transition: none; }
+}
 @media (hover: none) { .lp-morechip:hover { transform: none; } }
+
+/* Geteiltes Beispiel-Panel: klappt unter dem Raster auf, zeigt echte Reise-Sätze
+   des gewählten Moduls. Die Sätze liegen in einem Scroll-Snap-Streifen -> nativ
+   wischbar (Touch) plus Punkt-Navigation. Akzent erbt vom aktiven Chip (--accent
+   wird per JS gesetzt). */
+.lp-moredetail {
+  margin-top: 14px; border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: lp-more-in .28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes lp-more-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.lp-moredetail__bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px 11px 14px; border-bottom: 1.5px solid var(--line);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 12%, var(--card)), var(--card));
+}
+.lp-moredetail__ico {
+  width: 34px; height: 34px; flex: none; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
+  transform: rotate(-4deg);
+}
+.lp-moredetail__name { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; color: var(--ink); }
+.lp-moredetail__hint { font-size: .78rem; color: var(--muted); margin-left: 2px; }
+.lp-moredetail__close {
+  margin-left: auto; flex: none; width: 30px; height: 30px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--muted);
+  cursor: pointer; font-size: .85rem; line-height: 1;
+  transition: border-color .15s ease, color .15s ease;
+}
+.lp-moredetail__close:hover { border-color: var(--brand); color: var(--ink); }
+/* Wisch-Streifen: nativer Scroll-Snap (Touch + Trackpad), Scrollbar versteckt. */
+.lp-moredetail__strip {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.lp-moredetail__strip::-webkit-scrollbar { display: none; }
+.lp-moredetail__strip:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.lp-mdslide {
+  flex: 0 0 100%; scroll-snap-align: center; box-sizing: border-box;
+  padding: 14px 18px 24px; min-width: 0; perspective: 1200px;
+}
+/* Echte App-Karteikarten (.flip/.face/.cardbtn aus styles.css) – 1:1 wie der
+   Lern-Screen, nur etwas kompakter als im Hero-Karussell. Antippen dreht um:
+   deutsche Frage -> spanische Antwort + Aussprache + 🔊. */
+.lp-moredetail .flip { width: 100%; }
+.lp-moredetail .flip__inner { min-height: 222px; }
+.lp-moredetail .face { padding: 42px 22px 24px; }
+.lp-moredetail .face__word { font-size: 1.5rem; }
+.lp-moredetail .face--back .face__word { font-size: 1.65rem; }
+.lp-moredetail .face__tip { margin-top: 10px; font-size: 0.96rem; }
+.lp-moredetail .cardbtn { width: 38px; height: 38px; font-size: 1rem; }
+.lp-moredetail__dots { display: flex; gap: 4px; justify-content: center; padding: 0 0 13px; }
+.lp-moredetail .lp-dot.is-active::before { background: var(--accent, var(--brand)); }
+@media (prefers-reduced-motion: reduce) {
+  .lp-moredetail { animation: none; }
+  .lp-moredetail__strip { scroll-behavior: auto; }
+  .lp-moredetail .flip__inner { transition: none; }
+}
 
 /* ─────────────────────────── So funktioniert's ─────────────────────────── */
 .lp-how__grid {
@@ -5103,80 +5233,156 @@ a { color: var(--brand-ink); }
           </article>
         </div>
 
-        <div class="lp-more" data-reveal>
-          <p class="lp-more__intro" data-i18n="more.intro">Und noch viel mehr an Bord</p>
-          <div class="lp-more__chips">
-            <span class="lp-morechip" style="--accent:#B5302A">
+        <div class="lp-more">
+          <p class="lp-more__intro" data-reveal data-i18n="more.intro">Und noch viel mehr an Bord</p>
+          <!-- Antippbar & wischbar: jeder Chip klappt unten ein geteiltes Beispiel-
+               Panel auf (#lpMoreDetail) und füllt es per JS mit echten Reise-Sätzen
+               des Moduls; im Panel wischt man durch die Beispiele (Scroll-Snap). -->
+          <div class="lp-more__chips" id="lpMoreChips">
+            <button class="lp-morechip" type="button" data-mod="surv" data-reveal style="--accent:#B5302A; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🆘</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Supervivencia</span>
                 <span class="lp-morechip__desc" data-i18n="more.spick.d">Die Notfall-Sätze groß auf einen Blick</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#3F7355">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="country" data-reveal style="--accent:#3F7355; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🌎</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Países y culturas</span>
                 <span class="lp-morechip__desc" data-i18n="more.country.d">Sitten, Geld &amp; Eigenheiten pro Land</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#E9A23B">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="historia" data-reveal style="--accent:#E9A23B; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">📜</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Historia</span>
                 <span class="lp-morechip__desc" data-i18n="more.historia.d">Südamerikas Geschichte zum Mitreden</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#2F6B70">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="dialogos" data-reveal style="--accent:#2F6B70; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">💬</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Diálogos</span>
                 <span class="lp-morechip__desc" data-i18n="more.dialogos.d">Ganze Gespräche Zug um Zug üben</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#7D4A8E">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="hostal" data-reveal style="--accent:#7D4A8E; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🛏️</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Modo hostal</span>
                 <span class="lp-morechip__desc" data-i18n="more.hostel.d">Zu zweit: Battle &amp; Rollenspiele</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#C2502E">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="regatear" data-reveal style="--accent:#C2502E; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🤝</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Regatear</span>
                 <span class="lp-morechip__desc" data-i18n="more.regatear.d">Auf dem Markt fair feilschen</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#3F7355">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="precios" data-reveal style="--accent:#3F7355; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">💵</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Precios al oído</span>
                 <span class="lp-morechip__desc" data-i18n="more.precios.d">Preise hören &amp; blind eintippen</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#7D4A8E">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="juegos" data-reveal style="--accent:#7D4A8E; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🎲</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Juegos de viaje</span>
                 <span class="lp-morechip__desc" data-i18n="more.juegos.d">Hostel-Spiele &amp; die Sätze dazu</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#2F6B70">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="musica" data-reveal style="--accent:#2F6B70; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🎵</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Música</span>
                 <span class="lp-morechip__desc" data-i18n="more.musica.d">Der Sound deines Reiselands</span>
               </span>
-            </span>
-            <span class="lp-morechip" style="--accent:#E9A23B">
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="logistica" data-reveal style="--accent:#E9A23B; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true">🧳</span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Logística</span>
                 <span class="lp-morechip__desc" data-i18n="more.logistica.d">SIM, Bargeld &amp; clever packen</span>
               </span>
-            </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
           </div>
+          <!-- Geteiltes Beispiel-Panel: per JS befüllt, ein Modul gleichzeitig offen. -->
+          <div class="lp-moredetail" id="lpMoreDetail" hidden>
+            <div class="lp-moredetail__bar">
+              <span class="lp-moredetail__ico" id="lpMD_ico" aria-hidden="true"></span>
+              <span class="lp-moredetail__name" id="lpMD_name"></span>
+              <span class="lp-moredetail__hint" id="lpMD_hint" data-i18n="more.swipe">Antippen dreht um · wischen für mehr</span>
+              <button class="lp-moredetail__close" id="lpMD_close" type="button" data-i18n-aria="more.close" aria-label="Beispiele schließen">✕</button>
+            </div>
+            <div class="lp-moredetail__strip" id="lpMD_strip" tabindex="0" role="group" data-i18n-aria="more.examples" aria-label="Beispielsätze"></div>
+            <div class="lp-moredetail__dots" id="lpMD_dots" role="group" data-i18n-aria="more.pick" aria-label="Beispiel wählen"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Mehr als Sprache: emotionale Hooks ─────────────── -->
+    <section class="lp-section" id="why">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="why.eyebrow">MEHR ALS SPRACHE</p>
+        <h2 class="lp-h2" data-reveal data-i18n="why.title">Du lernst nicht nur Spanisch. Du verstehst den Kontinent.</h2>
+        <p class="lp-lead" data-reveal data-i18n="why.lead">Sprache ist nur der Anfang. HolaRuta gibt dir Geschichte, Kultur, Gespür und Anschluss — alles, was aus einer Reise deine Reise macht.</p>
+        <div class="lp-hooks">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#E9A23B">
+            <span class="lp-hook__ico" aria-hidden="true">📜</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.historia.k">Historia</span>
+              <h3 class="lp-hook__title" data-i18n="why.historia.t">Steh vor Machu Picchu — und versteh, was du siehst.</h3>
+              <p class="lp-hook__text" data-i18n="why.historia.b">Inka, Kolonialzeit, Unabhängigkeit: die Geschichte des Kontinents in Häppchen, die hängenbleiben. Du läufst nicht an Ruinen vorbei — du liest sie.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
+            <span class="lp-hook__ico" aria-hidden="true">🌎</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.culturas.k">Países &amp; culturas</span>
+              <h3 class="lp-hook__title" data-i18n="why.culturas.t">Jedes Land tickt anders. Wisse vorher, wie.</h3>
+              <p class="lp-hook__text" data-i18n="why.culturas.b">Von Kolumbien bis Patagonien: Sitten, Geld, Eigenheiten und Tabus pro Land. Damit du dich überall bewegst, als wärst du schon mal da gewesen.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#7D4A8E">
+            <span class="lp-hook__ico" aria-hidden="true">🤝</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.respeto.k">Buen viajero</span>
+              <h3 class="lp-hook__title" data-i18n="why.respeto.t">Respekt öffnet Türen, die kein Reiseführer kennt.</h3>
+              <p class="lp-hook__text" data-i18n="why.respeto.b">Wie du grüßt, dich bedankst, feilschst und dich benimmst — die kleinen Gesten entscheiden, ob du Gast bist oder bloß Tourist. Reise, ohne anzuecken.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#B5302A">
+            <span class="lp-hook__ico" aria-hidden="true">🩺</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.salud.k">Salud</span>
+              <h3 class="lp-hook__title" data-i18n="why.salud.t">Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.</h3>
+              <p class="lp-hook__text" data-i18n="why.salud.b">Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.</p>
+            </div>
+          </article>
+          <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#C2502E">
+            <span class="lp-hook__ico" aria-hidden="true">🎉</span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.conexion.k">Conexión</span>
+              <h3 class="lp-hook__title" data-i18n="why.conexion.t">Aus einem „Hola" wird die beste Nacht deiner Reise.</h3>
+              <p class="lp-hook__text" data-i18n="why.conexion.b">Hostel-Spiele, Sprüche, Smalltalk: die Sätze, die aus Fremden am Tisch Freunde fürs Leben machen. Denn Reisen ist am Ende, wen du triffst.</p>
+            </div>
+          </article>
         </div>
       </div>
     </section>
@@ -5334,6 +5540,7 @@ a { color: var(--brand-ink); }
           <h4 data-i18n="footer.more">Mehr</h4>
           <ul>
             <li><a href="#features" data-i18n="footer.features">Features</a></li>
+            <li><a href="#why" data-i18n="footer.why">Mehr als Sprache</a></li>
             <li><a href="#how" data-i18n="footer.how">So funktioniert's</a></li>
             <li><a href="#install" data-i18n="footer.install">Installieren</a></li>
           </ul>
@@ -5385,12 +5592,22 @@ a { color: var(--brand-ink); }
         "feat.offline.t": "Funktioniert ohne Netz", "feat.offline.b": "Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.",
         "feat.privacy.t": "Kein Konto, kein Tracking", "feat.privacy.b": "Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.",
         "feat.areas.t": "72 Themen für echte Situationen", "feat.areas.b": "Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.",
+        "why.eyebrow": "MEHR ALS SPRACHE",
+        "why.title": "Du lernst nicht nur Spanisch. Du verstehst den Kontinent.",
+        "why.lead": "Sprache ist nur der Anfang. HolaRuta gibt dir Geschichte, Kultur, Gespür und Anschluss — alles, was aus einer Reise deine Reise macht.",
+        "why.historia.k": "Historia", "why.historia.t": "Steh vor Machu Picchu — und versteh, was du siehst.", "why.historia.b": "Inka, Kolonialzeit, Unabhängigkeit: die Geschichte des Kontinents in Häppchen, die hängenbleiben. Du läufst nicht an Ruinen vorbei — du liest sie.",
+        "why.culturas.k": "Países & culturas", "why.culturas.t": "Jedes Land tickt anders. Wisse vorher, wie.", "why.culturas.b": "Von Kolumbien bis Patagonien: Sitten, Geld, Eigenheiten und Tabus pro Land. Damit du dich überall bewegst, als wärst du schon mal da gewesen.",
+        "why.respeto.k": "Buen viajero", "why.respeto.t": "Respekt öffnet Türen, die kein Reiseführer kennt.", "why.respeto.b": "Wie du grüßt, dich bedankst, feilschst und dich benimmst — die kleinen Gesten entscheiden, ob du Gast bist oder bloß Tourist. Reise, ohne anzuecken.",
+        "why.salud.k": "Salud", "why.salud.t": "Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.", "why.salud.b": "Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.",
+        "why.conexion.k": "Conexión", "why.conexion.t": "Aus einem „Hola\" wird die beste Nacht deiner Reise.", "why.conexion.b": "Hostel-Spiele, Sprüche, Smalltalk: die Sätze, die aus Fremden am Tisch Freunde fürs Leben machen. Denn Reisen ist am Ende, wen du triffst.",
         "more.intro": "Und noch viel mehr an Bord",
         "more.spick.d": "Die Notfall-Sätze groß auf einen Blick", "more.country.d": "Sitten, Geld & Eigenheiten pro Land",
         "more.historia.d": "Südamerikas Geschichte zum Mitreden", "more.dialogos.d": "Ganze Gespräche Zug um Zug üben",
         "more.hostel.d": "Zu zweit: Battle & Rollenspiele", "more.regatear.d": "Auf dem Markt fair feilschen",
         "more.precios.d": "Preise hören & blind eintippen", "more.juegos.d": "Hostel-Spiele & die Sätze dazu",
         "more.musica.d": "Der Sound deines Reiselands", "more.logistica.d": "SIM, Bargeld & clever packen",
+        "more.swipe": "Antippen dreht um · wischen für mehr", "more.close": "Beispiele schließen",
+        "more.pick": "Beispiel wählen", "more.examples": "Beispielsätze", "more.speak": "Satz vorlesen",
         "how.eyebrow": "SO FUNKTIONIERT'S", "how.title": "In drei Schritten unterwegs.",
         "how.s1.t": "Bereich wählen", "how.s1.b": "Such dir aus, was ansteht — Geld, Essen, Bus, Notfall. 72 Bereiche, alle reisefertig.",
         "how.s2.t": "Karte lernen", "how.s2.b": "Tippen, antworten, umdrehen. Karteikarte, Schreiben oder Hören — du entscheidest.",
@@ -5408,7 +5625,7 @@ a { color: var(--brand-ink); }
         "faq.q5": "Auf welchen Geräten läuft es?", "faq.a5": "In jedem modernen Browser — Android, iPhone, Tablet, Laptop. Auf dem Handy als App installierbar.",
         "footer.blurb": "Dein Reise-Spanisch für echte Situationen — Karteikarten für Bus, Hotel, Essen, Geld und Notfall. Lateinamerika-korrekt, offline, kostenlos.",
         "footer.app": "App", "footer.open": "App öffnen", "footer.start": "Kostenlos starten", "footer.single": "Einzeldatei-Version",
-        "footer.more": "Mehr", "footer.features": "Features", "footer.how": "So funktioniert's", "footer.install": "Installieren",
+        "footer.more": "Mehr", "footer.features": "Features", "footer.why": "Mehr als Sprache", "footer.how": "So funktioniert's", "footer.install": "Installieren",
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut.",
         "final.title": "Pack deinen Rucksack. Den Rest übernehmen wir.",
         "final.sub": "2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.",
@@ -5449,12 +5666,22 @@ a { color: var(--brand-ink); }
         "feat.offline.t": "Works with no signal", "feat.offline.b": "Loads once, runs offline — Andes, jungle, night bus.",
         "feat.privacy.t": "No account, no tracking", "feat.privacy.b": "Your progress stays on your device. No sign-up, no ads.",
         "feat.areas.t": "72 real-life topics", "feat.areas.b": "From the bus ride to the pharmacy — 2,293 cards, neatly sorted.",
+        "why.eyebrow": "MORE THAN LANGUAGE",
+        "why.title": "You don't just learn Spanish. You get the continent.",
+        "why.lead": "Language is only the start. HolaRuta gives you history, culture, instinct and connection — everything that turns a trip into your trip.",
+        "why.historia.k": "Historia", "why.historia.t": "Stand before Machu Picchu — and understand what you see.", "why.historia.b": "Inca, colonial era, independence: the continent's history in bites that stick. You don't walk past the ruins — you read them.",
+        "why.culturas.k": "Países & cultures", "why.culturas.t": "Every country ticks differently. Know how, before you go.", "why.culturas.b": "From Colombia to Patagonia: customs, money, quirks and taboos per country. So you move everywhere like you've been before.",
+        "why.respeto.k": "Buen viajero", "why.respeto.t": "Respect opens doors no guidebook knows.", "why.respeto.b": "How you greet, thank, haggle and behave — the small gestures decide whether you're a guest or just a tourist. Travel without stepping on toes.",
+        "why.salud.k": "Salud", "why.salud.t": "When your body gives out at 4,000 metres, every phrase counts.", "why.salud.b": "Altitude sickness, stomach, pharmacy, doctor: the lines for when it gets serious — and the tips that keep you healthy and moving.",
+        "why.conexion.k": "Conexión", "why.conexion.t": "One “Hola” turns into the best night of your trip.", "why.conexion.b": "Hostel games, one-liners, small talk: the phrases that turn strangers at the table into friends for life. Because travel is, in the end, who you meet.",
         "more.intro": "And plenty more on board",
         "more.spick.d": "Your survival lines, big and tappable", "more.country.d": "Customs, money & quirks per country",
         "more.historia.d": "South America's story, made easy", "more.dialogos.d": "Whole conversations, turn by turn",
         "more.hostel.d": "Two-player: battle & role-plays", "more.regatear.d": "Haggle fairly at the market",
         "more.precios.d": "Hear a price, type the digits", "more.juegos.d": "Hostel games & the lines for them",
         "more.musica.d": "The soundtrack of your route", "more.logistica.d": "SIM, cash & smart packing",
+        "more.swipe": "Tap to flip · swipe for more", "more.close": "Close examples",
+        "more.pick": "Pick an example", "more.examples": "Example phrases", "more.speak": "Read sentence aloud",
         "how.eyebrow": "HOW IT WORKS", "how.title": "On the road in three steps.",
         "how.s1.t": "Pick an area", "how.s1.b": "Choose what's coming up — money, food, buses, emergencies. 72 areas, all travel-ready.",
         "how.s2.t": "Learn a card", "how.s2.b": "Tap, answer, flip. Flip, type or listen — your call.",
@@ -5472,7 +5699,7 @@ a { color: var(--brand-ink); }
         "faq.q5": "Which devices does it run on?", "faq.a5": "Any modern browser — Android, iPhone, tablet, laptop. Installable as an app on your phone.",
         "footer.blurb": "Travel Spanish for real situations — flashcards for buses, hotels, food, money and emergencies. Latin-America-correct, offline, free.",
         "footer.app": "App", "footer.open": "Open app", "footer.start": "Start free", "footer.single": "Single-file version",
-        "footer.more": "More", "footer.features": "Features", "footer.how": "How it works", "footer.install": "Install",
+        "footer.more": "More", "footer.features": "Features", "footer.why": "More than language", "footer.how": "How it works", "footer.install": "Install",
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America.",
         "final.title": "Pack your backpack. We'll handle the rest.",
         "final.sub": "2,293 cards, fully offline, no account, free. Ready to go in 30 seconds.",
@@ -5671,6 +5898,195 @@ a { color: var(--brand-ink); }
       setActive(0);
       startAuto();
     }
+
+    // ── „Mehr an Bord": Modul antippen -> Beispiele aufklappen & durchwischen ──
+    (function moreModules() {
+      var chipsWrap = document.getElementById("lpMoreChips");
+      var detail = document.getElementById("lpMoreDetail");
+      if (!chipsWrap || !detail) return;
+      var strip = document.getElementById("lpMD_strip");
+      var dotsWrap = document.getElementById("lpMD_dots");
+      var nameEl = document.getElementById("lpMD_name");
+      var icoEl = document.getElementById("lpMD_ico");
+      var closeBtn = document.getElementById("lpMD_close");
+      var chips = Array.prototype.slice.call(chipsWrap.querySelectorAll(".lp-morechip"));
+
+      // Echte Reise-Karteikarten je Modul: cat = Kategorie (de/en), und je Beispiel
+      // { de, en, es, tip, lvl }. Spanisch + Aussprache sind konstant, die Frage-
+      // Seite folgt der Seitensprache. Bewusst Lateinamerika-typisch: chip = SIM,
+      // cajero = Geldautomat, propina = Trinkgeld, pesos.
+      var DATA = {
+        surv:     { cat: ["NOTFALL", "EMERGENCY"], ex: [
+          { de: "Hilfe, bitte!", en: "Help, please!", es: "¡Ayuda, por favor!", tip: "a-YU-da por fa-VOR", lvl: 1 },
+          { de: "Rufen Sie die Polizei.", en: "Call the police.", es: "Llamen a la policía.", tip: "YA-men a la po-li-SEE-a", lvl: 1 } ] },
+        country:  { cat: ["LAND & LEUTE", "CULTURE"], ex: [
+          { de: "Gibt man hier Trinkgeld?", en: "Do people tip here?", es: "¿Aquí se da propina?", tip: "a-KEE se da pro-PEE-na", lvl: 1 },
+          { de: "Zahle ich bar oder mit Karte?", en: "Do I pay cash or card?", es: "¿Pago en efectivo o con tarjeta?", tip: "PA-go en e-fek-TEE-vo o kon tar-HE-ta", lvl: 2 } ] },
+        historia: { cat: ["GESCHICHTE", "HISTORY"], ex: [
+          { de: "Was wird heute gefeiert?", en: "What's being celebrated today?", es: "¿Qué se celebra hoy?", tip: "ke se se-LE-bra oy", lvl: 1 },
+          { de: "Erzähl mir die Geschichte von hier.", en: "Tell me the story of this place.", es: "Cuéntame la historia de aquí.", tip: "KWEN-ta-me la is-TO-ria de a-KEE", lvl: 2 } ] },
+        dialogos: { cat: ["UNTERKUNFT", "STAY"], ex: [
+          { de: "Ein Zimmer für zwei Nächte.", en: "A room for two nights.", es: "Una habitación para dos noches.", tip: "U-na a-bi-ta-SYON pa-ra dos NO-ches", lvl: 2 },
+          { de: "Ist das Frühstück inklusive?", en: "Is breakfast included?", es: "¿Incluye el desayuno?", tip: "in-KLU-ye el de-sa-YU-no", lvl: 1 } ] },
+        hostal:   { cat: ["ZU ZWEIT", "TWO-PLAYER"], ex: [
+          { de: "Du bist dran.", en: "It's your turn.", es: "Te toca a ti.", tip: "te TO-ka a tee", lvl: 1 },
+          { de: "Bereit? Los geht's!", en: "Ready? Let's go!", es: "¿Listos? ¡Empezamos!", tip: "LEES-tos em-pe-SA-mos", lvl: 1 } ] },
+        regatear: { cat: ["MARKT", "MARKET"], ex: [
+          { de: "Geben Sie mir einen Rabatt?", en: "Can you give me a discount?", es: "¿Me hace un descuento?", tip: "me A-se un des-KWEN-to", lvl: 1 },
+          { de: "Ich geb Ihnen hundert, einverstanden?", en: "I'll give you a hundred, deal?", es: "Le doy cien, ¿le parece?", tip: "le doy SYEN le pa-RE-se", lvl: 2 } ] },
+        precios:  { cat: ["GELD", "MONEY"], ex: [
+          { de: "Das macht hundertzwanzig Pesos.", en: "That's a hundred and twenty pesos.", es: "Son ciento veinte pesos.", tip: "son SYEN-to VEYN-te PE-sos", lvl: 2 },
+          { de: "Was schulde ich Ihnen?", en: "How much do I owe you?", es: "¿Cuánto le debo?", tip: "KWAN-to le DE-bo", lvl: 1 } ] },
+        juegos:   { cat: ["SPIEL", "GAME"], ex: [
+          { de: "Ich hab noch nie…", en: "Never have I ever…", es: "Yo nunca nunca…", tip: "yo NOON-ka NOON-ka", lvl: 1 },
+          { de: "Wahrheit oder Pflicht?", en: "Truth or dare?", es: "¿Verdad o reto?", tip: "ver-DAD o RE-to", lvl: 1 } ] },
+        musica:   { cat: ["MUSIK", "MUSIC"], ex: [
+          { de: "Was hört ihr da?", en: "What are you listening to?", es: "¿Qué están escuchando?", tip: "ke es-TAN es-ku-CHAN-do", lvl: 1 },
+          { de: "Dieses Lied liebe ich!", en: "I love this song!", es: "¡Esta canción me encanta!", tip: "ES-ta kan-SYON me en-KAN-ta", lvl: 1 } ] },
+        logistica:{ cat: ["LOGISTIK", "LOGISTICS"], ex: [
+          { de: "Wo kaufe ich eine SIM-Karte?", en: "Where do I buy a SIM card?", es: "¿Dónde compro un chip?", tip: "DON-de KOM-pro un cheep", lvl: 1 },
+          { de: "Gibt es einen Geldautomaten in der Nähe?", en: "Is there an ATM nearby?", es: "¿Hay un cajero cerca?", tip: "ai un ka-HE-ro SER-ka", lvl: 1 } ] }
+      };
+
+      var openMod = null;
+      var currentAccent = "var(--brand)";
+
+      function lang() { return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "de"; }
+      function t(key) { var d = I18N[lang()] || {}; return d[key] || key; }
+
+      function speak(text) {
+        try {
+          if (!("speechSynthesis" in window)) return;
+          var u = new SpeechSynthesisUtterance(text);
+          u.lang = "es-419"; u.rate = 0.95;
+          speechSynthesis.cancel(); speechSynthesis.speak(u);
+        } catch (e) {}
+      }
+
+      function syncDots() {
+        var w = strip.clientWidth || 1;
+        var active = Math.round(strip.scrollLeft / w);
+        var dots = dotsWrap.children;
+        for (var n = 0; n < dots.length; n++) dots[n].classList.toggle("is-active", n === active);
+        // Weggewischte Karten zurück auf die Frage-Seite (wie im Hero-Karussell).
+        var slides = strip.children;
+        for (var s = 0; s < slides.length; s++) {
+          if (s === active) continue;
+          var fl = slides[s].querySelector(".flip");
+          if (fl) { fl.classList.remove("is-flipped"); fl.setAttribute("aria-pressed", "false"); }
+        }
+      }
+      strip.addEventListener("scroll", function () { window.requestAnimationFrame(syncDots); });
+
+      function render(mod) {
+        var m = DATA[mod];
+        if (!m) return;
+        var l = lang();
+        var cat = l === "en" ? m.cat[1] : m.cat[0];
+        var hint = t("card.hint"), speakLbl = t("card.speakLabel"), flipLbl = t("a11y.card");
+        // Rückseite leicht abgedunkelt, damit die cremefarbene Schrift auf jeder
+        // Modulfarbe (auch Amber) sicher lesbar bleibt.
+        var fromCol = "color-mix(in srgb, " + currentAccent + " 84%, #241510)";
+        strip.innerHTML = "";
+        dotsWrap.innerHTML = "";
+        m.ex.forEach(function (c, i) {
+          var lvl = t(c.lvl === 2 ? "card.lvl2" : "card.lvl");
+          var front = l === "en" ? c.en : c.de;
+          var slide = document.createElement("div");
+          slide.className = "lp-mdslide";
+          slide.innerHTML =
+            '<div class="flip" role="button" tabindex="0" aria-pressed="false">' +
+              '<div class="flip__inner">' +
+                '<div class="face face--front">' +
+                  '<span class="face__cat"></span>' +
+                  '<span class="lvl-badge"></span>' +
+                  '<div class="face__word"></div>' +
+                  '<span class="face__hint"></span>' +
+                '</div>' +
+                '<div class="face face--back">' +
+                  '<span class="face__cat"></span>' +
+                  '<span class="lvl-badge lvl-badge--on"></span>' +
+                  '<button class="cardbtn cardbtn--speak is-on" type="button">🔊</button>' +
+                  '<div class="face__word" lang="es"></div>' +
+                  '<div class="face__tip"></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+          var front_ = slide.querySelector(".face--front");
+          front_.querySelector(".face__cat").textContent = cat;
+          front_.querySelector(".lvl-badge").textContent = lvl;
+          front_.querySelector(".face__word").textContent = front;
+          front_.querySelector(".face__hint").textContent = hint;
+          var back_ = slide.querySelector(".face--back");
+          back_.style.setProperty("--from", fromCol);
+          back_.querySelector(".face__cat").textContent = cat;
+          back_.querySelector(".lvl-badge").textContent = lvl;
+          back_.querySelector(".face__word").textContent = c.es;
+          back_.querySelector(".face__tip").textContent = "🗣️ " + c.tip;
+          var spk = back_.querySelector(".cardbtn--speak");
+          spk.setAttribute("aria-label", speakLbl);
+          spk.setAttribute("data-spk", c.es);
+          spk.addEventListener("click", function (e) { e.stopPropagation(); speak(c.es); });
+          var flip = slide.querySelector(".flip");
+          flip.setAttribute("aria-label", flipLbl);
+          function doFlip() {
+            var on = flip.classList.toggle("is-flipped");
+            flip.setAttribute("aria-pressed", on ? "true" : "false");
+          }
+          flip.addEventListener("click", function (e) { if (e.target.closest(".cardbtn")) return; doFlip(); });
+          flip.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); doFlip(); }
+          });
+          strip.appendChild(slide);
+
+          var dot = document.createElement("button");
+          dot.type = "button"; dot.className = "lp-dot" + (i === 0 ? " is-active" : "");
+          dot.setAttribute("aria-label", t("more.pick") + " " + (i + 1));
+          dot.addEventListener("click", function () {
+            strip.scrollTo({ left: strip.clientWidth * i, behavior: reduce ? "auto" : "smooth" });
+          });
+          dotsWrap.appendChild(dot);
+        });
+        strip.scrollLeft = 0;
+        syncDots();
+      }
+
+      function openChip(chip) {
+        openMod = chip.getAttribute("data-mod");
+        chips.forEach(function (c) { c.setAttribute("aria-expanded", c === chip ? "true" : "false"); });
+        currentAccent = (chip.style.getPropertyValue("--accent") || "").trim() || "var(--brand)";
+        detail.style.setProperty("--accent", currentAccent);
+        var ico = chip.querySelector(".lp-morechip__ico");
+        var nm = chip.querySelector(".lp-morechip__name");
+        icoEl.textContent = ico ? ico.textContent : "";
+        nameEl.textContent = nm ? nm.textContent : "";
+        render(openMod);
+        detail.hidden = false;
+        // Lange Liste auf dem Handy: das Panel sanft ins Sichtfeld holen.
+        if (window.matchMedia && window.matchMedia("(max-width: 560px)").matches) {
+          try { detail.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" }); } catch (e) {}
+        }
+      }
+      function closeDetail() {
+        openMod = null;
+        chips.forEach(function (c) { c.setAttribute("aria-expanded", "false"); });
+        detail.hidden = true;
+        try { speechSynthesis.cancel(); } catch (e) {}
+      }
+
+      chips.forEach(function (chip) {
+        chip.addEventListener("click", function () {
+          if (openMod === chip.getAttribute("data-mod")) closeDetail();
+          else openChip(chip);
+        });
+      });
+      closeBtn.addEventListener("click", closeDetail);
+
+      // Sprache gewechselt -> offenes Panel neu rendern (Übersetzung + Labels).
+      document.querySelectorAll(".lp-langbtn").forEach(function (b) {
+        b.addEventListener("click", function () { if (openMod) render(openMod); });
+      });
+    })();
 
     // ── Scroll-Reveal + animierte Counter (IntersectionObserver) ──
     function easeOut(t) { return 1 - Math.pow(1 - t, 3); }

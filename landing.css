@@ -369,6 +369,53 @@ a { color: var(--brand-ink); }
 .lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); line-height: 1.15; color: var(--ink); margin: 0; }
 .lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
 
+/* ── „Mehr als Sprache": emotionale Hooks. Editorialer als die Feature-Kacheln –
+ *    kleiner spanischer Kicker in Modulfarbe, große Display-Headline (der Hook),
+ *    erzählender Body. Macht greifbar, dass die App auch Geschichte, Kultur,
+ *    Knigge, Gesundheit & Anschluss vermittelt – nicht nur Vokabeln. ── */
+.lp-hooks { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
+@media (min-width: 760px) {
+  .lp-hooks { grid-template-columns: repeat(2, 1fr); }
+  /* Der fünfte Hook (Conexión) spannt über beide Spalten -> emotionaler Abschluss. */
+  .lp-hook--wide { grid-column: 1 / -1; }
+}
+.lp-hook {
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  padding: var(--space-4); border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.lp-hook:hover {
+  transform: translateY(-3px); box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 45%, var(--line));
+}
+.lp-hook__ico {
+  width: 52px; height: 52px; flex: none; border-radius: 15px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
+  transform: rotate(-5deg);
+  transition: transform 0.16s ease;
+}
+.lp-hook:hover .lp-hook__ico { transform: scale(1.06) rotate(-7deg); }
+.lp-hook__body { min-width: 0; }
+.lp-hook__kicker {
+  display: inline-block; margin: 0 0 6px;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent, var(--brand)) 72%, var(--ink));
+}
+.lp-hook__title {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem); line-height: 1.16; letter-spacing: -0.01em;
+  color: var(--ink); margin: 0 0 8px; text-wrap: balance;
+}
+.lp-hook__text { font-size: 1rem; line-height: 1.55; color: var(--muted); margin: 0; }
+@media (prefers-reduced-motion: reduce) { .lp-hook, .lp-hook__ico { transition: none; } }
+@media (hover: none) { .lp-hook:hover { transform: none; } }
+
 /* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
    ohne Marketing-Floskeln. Statt nackter Namens-Pills jetzt kleine Karten mit
    Mikro-Beschreibung. Die Namen sind durchgängig spanisch wie in der App
@@ -389,6 +436,7 @@ a { color: var(--brand-ink); }
 .lp-morechip {
   position: relative; overflow: hidden;
   display: flex; align-items: center; gap: 13px; text-align: left;
+  width: 100%; appearance: none; -webkit-appearance: none; font: inherit; cursor: pointer;
   background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
   border-radius: var(--r-md); padding: 13px 15px;
   box-shadow: var(--shadow);
@@ -427,8 +475,90 @@ a { color: var(--brand-ink); }
 .lp-morechip__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .lp-morechip__name { font-weight: 800; font-size: 0.95rem; line-height: 1.2; }
 .lp-morechip__desc { font-weight: 500; font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
-@media (prefers-reduced-motion: reduce) { .lp-morechip, .lp-morechip__ico { transition: none; } }
+/* Chevron rechts signalisiert „antippbar" und dreht beim Aufklappen nach unten. */
+.lp-morechip__chev {
+  margin-left: auto; flex: none; width: 8px; height: 8px;
+  border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg); opacity: .6;
+  transition: transform .2s ease, border-color .2s ease, opacity .2s ease;
+}
+.lp-morechip[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent, var(--brand)) 8%, var(--surface));
+}
+.lp-morechip[aria-expanded="true"]::before { opacity: 1; width: 4px; }
+.lp-morechip[aria-expanded="true"] .lp-morechip__chev {
+  transform: rotate(45deg); border-color: var(--accent, var(--brand)); opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-morechip, .lp-morechip__ico, .lp-morechip__chev { transition: none; }
+}
 @media (hover: none) { .lp-morechip:hover { transform: none; } }
+
+/* Geteiltes Beispiel-Panel: klappt unter dem Raster auf, zeigt echte Reise-Sätze
+   des gewählten Moduls. Die Sätze liegen in einem Scroll-Snap-Streifen -> nativ
+   wischbar (Touch) plus Punkt-Navigation. Akzent erbt vom aktiven Chip (--accent
+   wird per JS gesetzt). */
+.lp-moredetail {
+  margin-top: 14px; border-radius: var(--r-lg);
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: lp-more-in .28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes lp-more-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.lp-moredetail__bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px 11px 14px; border-bottom: 1.5px solid var(--line);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 12%, var(--card)), var(--card));
+}
+.lp-moredetail__ico {
+  width: 34px; height: 34px; flex: none; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
+  transform: rotate(-4deg);
+}
+.lp-moredetail__name { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; color: var(--ink); }
+.lp-moredetail__hint { font-size: .78rem; color: var(--muted); margin-left: 2px; }
+.lp-moredetail__close {
+  margin-left: auto; flex: none; width: 30px; height: 30px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--muted);
+  cursor: pointer; font-size: .85rem; line-height: 1;
+  transition: border-color .15s ease, color .15s ease;
+}
+.lp-moredetail__close:hover { border-color: var(--brand); color: var(--ink); }
+/* Wisch-Streifen: nativer Scroll-Snap (Touch + Trackpad), Scrollbar versteckt. */
+.lp-moredetail__strip {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.lp-moredetail__strip::-webkit-scrollbar { display: none; }
+.lp-moredetail__strip:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.lp-mdslide {
+  flex: 0 0 100%; scroll-snap-align: center; box-sizing: border-box;
+  padding: 14px 18px 24px; min-width: 0; perspective: 1200px;
+}
+/* Echte App-Karteikarten (.flip/.face/.cardbtn aus styles.css) – 1:1 wie der
+   Lern-Screen, nur etwas kompakter als im Hero-Karussell. Antippen dreht um:
+   deutsche Frage -> spanische Antwort + Aussprache + 🔊. */
+.lp-moredetail .flip { width: 100%; }
+.lp-moredetail .flip__inner { min-height: 222px; }
+.lp-moredetail .face { padding: 42px 22px 24px; }
+.lp-moredetail .face__word { font-size: 1.5rem; }
+.lp-moredetail .face--back .face__word { font-size: 1.65rem; }
+.lp-moredetail .face__tip { margin-top: 10px; font-size: 0.96rem; }
+.lp-moredetail .cardbtn { width: 38px; height: 38px; font-size: 1rem; }
+.lp-moredetail__dots { display: flex; gap: 4px; justify-content: center; padding: 0 0 13px; }
+.lp-moredetail .lp-dot.is-active::before { background: var(--accent, var(--brand)); }
+@media (prefers-reduced-motion: reduce) {
+  .lp-moredetail { animation: none; }
+  .lp-moredetail__strip { scroll-behavior: auto; }
+  .lp-moredetail .flip__inner { transition: none; }
+}
 
 /* ─────────────────────────── So funktioniert's ─────────────────────────── */
 .lp-how__grid {
