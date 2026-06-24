@@ -1461,6 +1461,30 @@
       }, { rootMargin: "-72px 0px 0px 0px", threshold: 0 });
       ioHead.observe(sentinel);
     }
+
+    // ── In-Page-Anker ohne #abschnitt in der Adresszeile ──
+    // Footer-Navigation („Mehr als Sprache" → #why), Hero-CTA „Wie es funktioniert"
+    // (#how) und der Skip-Link (#hero) sollen sanft zum Abschnitt scrollen – aber
+    // KEINEN Hash in der URL hinterlassen. Sonst trägt der native Teilen-Knopf des
+    // Browsers den zuletzt angesprungenen Abschnitt mit, und der geteilte Link
+    // landet z.B. auf …/landing.html#why statt am Seitenanfang. Wir scrollen daher
+    // selbst, setzen den Fokus für Tastatur/Screenreader (Skip-Link-Verhalten) und
+    // halten die Adresszeile auf der kanonischen Landing-URL.
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        var id = a.getAttribute("href").slice(1);
+        if (!id) return;
+        var target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (err) { try { target.focus(); } catch (e2) {} }
+        if (window.history && history.replaceState) {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+      });
+    });
   })();
   </script>
 </body>
