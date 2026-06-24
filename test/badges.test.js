@@ -34,7 +34,7 @@ const EXPECT = {
   quiz_first: 1, quiz_10: 10, quiz_perfect: 1,
   yesto_first: 1, yesto_10: 10, yesto_perfect: 1,
   frases_first: 1, frases_10: 10, frases_perfect: 1, frases_themes: 7,
-  banderas_first: 1, banderas_10: 10, banderas_perfect: 1,
+  banderas_first: 1, banderas_10: 10, banderas_perfect: 1, banderas_sets: 3,
   listen_first: 1, listen_25: 25, precios_first: 1, precios_perfect: 1, precios_millon: 1,
   challenge_first: 1, challenge_5: 5, challenge_10: 10,
   cuerpo_first: 1, cuerpo_10: 10, cuerpo_all: 20,

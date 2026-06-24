@@ -183,6 +183,8 @@
       description: "Schließe 10 Banderas-Runden ab.",        descriptionEn: "Complete 10 Banderas rounds.",        unlockedText: "Farben, Sterne, Sonnen – du liest Flaggen wie eine Landkarte.", unlockedTextEn: "Colours, stars, suns – you read flags like a map." },
     { id: "banderas_perfect", group: "banderas", icon: "💯", name: "Bandera perfecta",    nameEn: "Bandera perfecta", type: "counter", metric: "banderasPerfect", threshold: 1,
       description: "Beende eine Banderas-Runde ohne Fehler.", descriptionEn: "Finish a Banderas round without mistakes.", unlockedText: "Jede Flagge auf Anhieb richtig zugeordnet.", unlockedTextEn: "Matched every flag correctly on the first try." },
+    { id: "banderas_sets",    group: "banderas", icon: "🗺️", name: "Cartógrafo",          nameEn: "Cartographer",     type: "counter", metric: "banderasSetsCompleted", threshold: 3,
+      description: "Spiele alle drei Banderas-Runden (Sudamérica, Centroamérica, Mix).", descriptionEn: "Play all three Banderas rounds (South America, Central America, mix).", unlockedText: "Von den Anden bis zur Karibik – jede Region einmal gespielt.", unlockedTextEn: "From the Andes to the Caribbean – every region played once." },
 
     // ---------- Hören (Escuchar & Precios) ----------
     { id: "listen_first", group: "listening", icon: "👂", name: "Primer oído",        nameEn: "Primer oído",        type: "counter", metric: "listenReviews", threshold: 1,
@@ -302,6 +304,7 @@
       // Banderas (Flaggen-Quiz): abgeschlossene und fehlerfreie Runden.
       banderasPlayed: c.banderasPlayed || 0,
       banderasPerfect: c.banderasPerfect || 0,
+      banderasSetsCompleted: c.banderasSetsDone ? Object.keys(c.banderasSetsDone).length : 0,
       // Hören: im Hör-Modus bewertete Karten + Preis-Hörtrainer-Runden.
       listenReviews: c.listenReviews || 0,
       preciosPlayed: c.preciosPlayed || 0,

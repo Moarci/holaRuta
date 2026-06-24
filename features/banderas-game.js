@@ -318,7 +318,7 @@
   // (MODULE_SHARE/TIPS_META/openers) gepflegt.
   function renderInfo() {
     return moduleSheet(infoVM(), {
-      icon: "📚", title: t("discover.bndSaberMas"), cat: "banderas",
+      icon: "📚", title: t("discover.bndSaberMas"), cat: "banderas", back: "open-banderas",
       headTips: "discover.bnTips", headPhrases: "discover.bnPhrases", headWords: "discover.bnWords",
       headChecklist: "discover.bnChecklist", headChecklistHint: "discover.bnChecklistHint",
       readingPerTopic: true, copyPhrases: true, favPhrases: true,
