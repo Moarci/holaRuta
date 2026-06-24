@@ -807,6 +807,12 @@ a { color: var(--brand-ink); }
 .lp-contact__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; }
 .lp-contact__note { margin: var(--space-4) auto 0; font-size: 0.85rem; color: var(--muted); max-width: 44ch; }
 
+/* Risikofrei-/Trust-Streifen: faktische Zusicherungen (kein erfundenes Testimonial). */
+.lp-trustbar { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.lp-trustbar li { flex: 1 1 220px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--space-3); font-size: 0.95rem; font-weight: 600; color: var(--ink-soft); }
+.lp-quote { margin: var(--space-4) 0 0; padding: var(--space-3) var(--space-4); border-left: 3px solid var(--accent, var(--brand)); color: var(--ink); font-style: italic; }
+.lp-quote cite { display: block; margin-top: 6px; font-style: normal; font-size: 0.85rem; color: var(--muted); }
+
 /* Hero-Visitenkarte: Marke + Akzent, Pills als klickbare Szenario-Tabs (JS optional). */
 .lp-herocard {
   padding: var(--space-4); border-radius: var(--r-lg);

@@ -154,7 +154,7 @@
         <aside class="lp-cardcol" data-reveal style="--i:2">
           <div class="lp-herocard">
             <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · WeRoad Colombia</span>
-            <p class="lp-herocard__phrase"><b class="lp-herocard__q">¿A qué hora sale el próximo bus?</b><span class="lp-herocard__tr">„Wann fährt der nächste Bus?“ – Orientierung, die jede Gruppe vor Ort sofort braucht.</span></p>
+            <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿A qué hora sale el próximo bus?</b><span class="lp-herocard__tr">„Wann fährt der nächste Bus?“ – Orientierung, die jede Gruppe vor Ort sofort braucht.</span></p>
             <div class="lp-herocard__row" role="group" aria-label="Einsatz-Szenarien">
               <button type="button" class="lp-herocard__pill" data-pill="0" aria-pressed="true" data-i18n="card.p1">Pre-Trip</button>
               <button type="button" class="lp-herocard__pill" data-pill="1" aria-pressed="false" data-i18n="card.p2">Icebreaker</button>
@@ -311,6 +311,21 @@
       </div>
     </section>
 
+    <!-- ─────────────── Risikofrei / Vertrauen ─────────────── -->
+    <section class="lp-section" id="trust">
+      <div class="lp-wrap">
+        <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Risikofrei starten</p>
+        <ul class="lp-trustbar" data-reveal>
+          <li data-i18n="proof.1">🆓 Pilot auf einer eurer Routen – unverbindlich</li>
+          <li data-i18n="proof.2">🎨 In eurem Branding, per Link ausgerollt</li>
+          <li data-i18n="proof.3">⚡ Offline & DSGVO-freundlich, kein Konto nötig</li>
+        </ul>
+        <!-- Sobald freigegeben, hier ein echtes Testimonial einsetzen:
+        <blockquote class="lp-quote">„Echtes Zitat …“ <cite>— Name, Reiseanbieter</cite></blockquote>
+        -->
+      </div>
+    </section>
+
     <!-- ─────────────── Kontakt / Abschluss-CTA ─────────────── -->
     <section class="lp-section lp-contact" id="kontakt">
       <div class="lp-wrap">
@@ -377,6 +392,7 @@
 
     var I18N = {
       de: {
+        "proof.title": "Risikofrei starten", "proof.1": "🆓 Pilot auf einer eurer Routen – unverbindlich", "proof.2": "🎨 In eurem Branding, per Link ausgerollt", "proof.3": "⚡ Offline & DSGVO-freundlich, kein Konto nötig",
         "_title": "HolaRuta für Reiseanbieter – der Travel-Language-Companion für Gruppen",
         "_desc": "HolaRuta für Gruppenreise-Anbieter: Pre-Trip-Engagement, Social-Icebreaker und Sicherheit unterwegs. Reisende üben die wichtigsten lokalen Sätze – offline, ohne Konto, in eurem Branding.",
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
@@ -419,6 +435,7 @@
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut."
       },
       en: {
+        "proof.title": "Start risk-free", "proof.1": "🆓 Pilot on one of your routes – no commitment", "proof.2": "🎨 In your branding, rolled out via one link", "proof.3": "⚡ Offline & privacy-friendly, no account needed",
         "_title": "HolaRuta for tour operators – the travel-language companion for groups",
         "_desc": "HolaRuta for group-travel operators: pre-trip engagement, social icebreakers and safety on the road. Travelers practice the key local phrases – offline, no account, in your branding.",
         "skip": "Skip to content", "nav.demo": "Live demo",
@@ -461,6 +478,7 @@
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America."
       },
       es: {
+        "proof.title": "Empieza sin riesgo", "proof.1": "🆓 Piloto en una de tus rutas – sin compromiso", "proof.2": "🎨 Con tu marca, desplegado con un enlace", "proof.3": "⚡ Sin conexión y respetuoso con la privacidad, sin cuenta",
         "_title": "HolaRuta para agencias de viajes – el compañero de idioma de viaje para grupos",
         "_desc": "HolaRuta para operadores de viajes en grupo: engagement pre-viaje, rompehielos sociales y seguridad sobre el terreno. Los viajeros practican las frases locales clave – sin conexión, sin cuenta, con tu marca.",
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",

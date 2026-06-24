@@ -154,7 +154,7 @@
         <aside class="lp-cardcol" data-reveal style="--i:2">
           <div class="lp-herocard">
             <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · Hostel Edition</span>
-            <p class="lp-herocard__phrase"><b class="lp-herocard__q">¿De dónde eres?</b><span class="lp-herocard__tr">„Woher kommst du?“ – der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.</span></p>
+            <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿De dónde eres?</b><span class="lp-herocard__tr">„Woher kommst du?“ – der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.</span></p>
             <div class="lp-herocard__row" role="group" aria-label="Hostel-Aktivitäten">
               <button type="button" class="lp-herocard__pill" data-pill="0" aria-pressed="true" data-i18n="card.p1">Battle</button>
               <button type="button" class="lp-herocard__pill" data-pill="1" aria-pressed="false" data-i18n="card.p2">Rollenspiel</button>
@@ -302,6 +302,21 @@
       </div>
     </section>
 
+    <!-- ─────────────── Risikofrei / Vertrauen ─────────────── -->
+    <section class="lp-section" id="trust">
+      <div class="lp-wrap">
+        <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Risikofrei starten</p>
+        <ul class="lp-trustbar" data-reveal>
+          <li data-i18n="proof.1">🆓 Für einzelne Hostels meist kostenlos (Co-Branding)</li>
+          <li data-i18n="proof.2">🙌 Kein Aufwand fürs Team – Poster aufhängen, fertig</li>
+          <li data-i18n="proof.3">⚡ Offline & ohne Konto – läuft auch im schwachen WLAN</li>
+        </ul>
+        <!-- Sobald freigegeben, hier ein echtes Testimonial einsetzen:
+        <blockquote class="lp-quote">„Echtes Zitat …“ <cite>— Name, Hostel · Stadt</cite></blockquote>
+        -->
+      </div>
+    </section>
+
     <!-- ─────────────── Kontakt / Abschluss-CTA ─────────────── -->
     <section class="lp-section lp-contact" id="kontakt">
       <div class="lp-wrap">
@@ -368,6 +383,7 @@
 
     var I18N = {
       de: {
+        "proof.title": "Risikofrei starten", "proof.1": "🆓 Für einzelne Hostels meist kostenlos (Co-Branding)", "proof.2": "🙌 Kein Aufwand fürs Team – Poster aufhängen, fertig", "proof.3": "⚡ Offline & ohne Konto – läuft auch im schwachen WLAN",
         "_title": "HolaRuta für Hostels – die fertige Spanish Night für den Common Room",
         "_desc": "HolaRuta für Hostels: eine fertige Social-Aktivität für den Common Room – Sprach-Battles und Rollenspiele per QR-Code, ohne Planung. Offline, ohne Konto, meist kostenlos mit Co-Branding.",
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
@@ -409,6 +425,7 @@
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut."
       },
       en: {
+        "proof.title": "Start risk-free", "proof.1": "🆓 Free for most single hostels (co-branding)", "proof.2": "🙌 Zero effort for your team – put up the poster, done", "proof.3": "⚡ Offline & no account – works even on weak Wi-Fi",
         "_title": "HolaRuta for hostels – the ready-made Spanish Night for your common room",
         "_desc": "HolaRuta for hostels: a ready-made social activity for the common room – language battles and role-plays via QR code, no planning. Offline, no account, mostly free with co-branding.",
         "skip": "Skip to content", "nav.demo": "Live demo",
@@ -450,6 +467,7 @@
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America."
       },
       es: {
+        "proof.title": "Empieza sin riesgo", "proof.1": "🆓 Gratis para la mayoría de hostales (co-branding)", "proof.2": "🙌 Cero esfuerzo para tu equipo – cuelga el póster y listo", "proof.3": "⚡ Sin conexión y sin cuenta – funciona hasta con wifi débil",
         "_title": "HolaRuta para hostales – la Spanish Night lista para tu sala común",
         "_desc": "HolaRuta para hostales: una actividad social lista para la sala común – batallas de idioma y juegos de rol por código QR, sin planificación. Sin conexión, sin cuenta, casi siempre gratis con co-branding.",
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
