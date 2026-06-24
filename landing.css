@@ -371,9 +371,11 @@ a { color: var(--brand-ink); }
 
 /* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
    ohne Marketing-Floskeln. Statt nackter Namens-Pills jetzt kleine Karten mit
-   Mikro-Beschreibung: Spanische Modulnamen (Regatear, Logística …) erklären
-   sich so von selbst, und die Breite der App wird auf einen Blick lesbar. Karten
-   auf --surface, damit sie sich vom --card-Grund der Features-Section abheben. */
+   Mikro-Beschreibung. Die Namen sind durchgängig spanisch wie in der App
+   (Supervivencia, Modo hostal, Regatear …), das Deutsche steht – wie bei den
+   App-Kacheln – im Untertitel. So erklärt sich jedes Modul selbst und die Breite
+   der App wird auf einen Blick lesbar. Karten auf --surface, damit sie sich vom
+   --card-Grund der Features-Section abheben. */
 .lp-more { margin-top: var(--space-6); }
 .lp-more__intro {
   font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.1em;
