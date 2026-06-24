@@ -156,6 +156,7 @@
     { action: "open-flirt",       icon: "💘", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
     { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
     { action: "open-musica",      icon: "🎵", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
+    { action: "open-cafe",        icon: "☕", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
     { action: "open-juegos",      icon: "🎲", title: "Juegos de viaje",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
     { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
@@ -871,7 +872,7 @@
   function entdeckenBody(vm) {
     // Voraussetzungen prüfen (Offline-/Feature-Guards): Länderkunde braucht das
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
-    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, jerga: vm.hasJerga, derechos: vm.hasDerechos, responsable: vm.hasResponsable, fotos: vm.hasFotos, flirt: vm.hasFlirt, bailar: vm.hasBailar, musica: vm.hasMusica, juegos: vm.hasJuegos, banderas: vm.hasBanderas, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
+    const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, jerga: vm.hasJerga, derechos: vm.hasDerechos, responsable: vm.hasResponsable, fotos: vm.hasFotos, flirt: vm.hasFlirt, bailar: vm.hasBailar, musica: vm.hasMusica, cafe: vm.hasCafe, juegos: vm.hasJuegos, banderas: vm.hasBanderas, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${x.icon}</span>
@@ -2762,6 +2763,22 @@
     });
   }
 
+  // Café de la región: Kaffeeanbau & -kultur (Anbau, Ernte, Verarbeitung, Rösten,
+  // Regionen, Finca-Besuch, fairer Handel) + Sätze zum Bestellen, auf der Tour und
+  // beim Bohnenkauf. Gleiches Sheet wie Salud/Flirt; readingPerTopic für das
+  // spanische Lesetraining je Thema, copyPhrases für Sätze zum Weiterschicken.
+  function renderCafe(vm) {
+    return moduleSheet(vm, {
+      icon: "☕", title: "Café de la región", cat: "cafe",
+      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
+      headTips: "discover.cfTips", headPhrases: "discover.cfPhrases",
+      headWords: "discover.cfWords", headChecklist: "discover.cfChecklist",
+      headChecklistHint: "discover.cfChecklistHint",
+      readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
+      copyPhrases: true,     // jeder Satz mit Kopier-Knopf (zum Weiterschicken)
+    });
+  }
+
   // Juegos de viaje: Hostel-Spiele (UNO, Monopoly Deal, Presidente, Truco, Dudo,
   // Cuarenta, Generala, Dominó, Yo nunca, Hombre lobo) + die Sätze für den Tisch.
   // Gleiches Sheet wie Salud/Flirt; readingPerTopic für die LatAm-Kultur-Texte.
@@ -4483,7 +4500,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderJuegos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderCafe, renderJuegos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderConjugacion,

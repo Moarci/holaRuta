@@ -27,6 +27,24 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.117.0",
+      date: "2026-06-24",
+      title: "Neu: Café de la región – Kaffeeanbau & -kultur",
+      titleEn: "New: Café de la región – coffee growing & culture",
+      items: [
+        "☕ Neues Modul „Café de la región“: In weiten Teilen Lateinamerikas ist Kaffee Landschaft, Lebensunterhalt und Stolz. Das Modul erklärt aufklappbar, wie Kaffee wächst (Höhe, Schatten, Arabica vs. Robusta), die Ernte (cosecha, von Hand gepflückte cerezas), die Verarbeitung (lavado, honey, natural), Rösten & Mahlen, die Anbauregionen (kolumbianischer Eje Cafetero, Antigua & Huehuetenango, Tarrazú, Chiapas, Panamas Geisha), den Finca-Besuch und fairen Handel.",
+        "📖 In jedem Thema ein spanisches Lesetraining mit antippbaren Vokabeln, Vokabel-Quiz und Schwierigkeits-Score (A2–B1).",
+        "💬 Die Sätze als Karten (es/de/en, mit Kopier- und Stern-Knopf fürs „Mi léxico“): Kaffee bestellen (un tinto, sin azúcar), auf der Finca / Kaffeetour, über Geschmack reden (¿lavado, honey o natural?) und Bohnen kaufen & mitnehmen – plus Glossar (grano, cereza, cosecha, tueste, cata …) und ein „Finca-Besuch-Kit“.",
+        "🔗 Per Deep-Link (?m=cafe) direkt aufrufbar, in Suche & Entdecken verdrahtet und offline verfügbar.",
+      ],
+      itemsEn: [
+        "☕ New module „Café de la región“: across much of Latin America coffee is landscape, livelihood and pride. The module explains, in expandable topics, how coffee grows (altitude, shade, Arabica vs. Robusta), the harvest (cosecha, hand-picked cerezas), processing (washed, honey, natural), roasting & grinding, the growing regions (Colombia's Eje Cafetero, Antigua & Huehuetenango, Tarrazú, Chiapas, Panama's Geisha), visiting a farm and fair trade.",
+        "📖 Every topic has Spanish reading practice with tappable vocab, a vocab quiz and a difficulty score (A2–B1).",
+        "💬 The phrases as cards (es/de/en, with a copy and star button for „Mi léxico“): ordering coffee (un tinto, no sugar), on the farm / coffee tour, talking about taste (washed, honey or natural?) and buying & taking beans home – plus a glossary (grano, cereza, cosecha, tueste, cata …) and a „coffee-farm visit kit“.",
+        "🔗 Reachable via deep link (?m=cafe), wired into Search & Discover and available offline.",
+      ],
+    },
+    {
       version: "1.116.0",
       date: "2026-06-24",
       title: "Flaggen im Battle & Stern an den Flaggen-Sätzen",
