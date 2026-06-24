@@ -21,8 +21,8 @@
  * Eselsbrücke/Anekdote, mit der man die Flagge sicher wiedererkennt.
  *
  * Schemas (identisch zu juegos.js, damit ui sie 1:1 rendern kann):
- *   COUNTRIES: [{ id, flag, es, de, en, region, capital, colors, sym, symEn,
- *               fact, factEn }]  – region ∈ {sur, centro, europa}.
+ *   COUNTRIES: [{ id, flag, es, de, en, region, capital, colors, colorsEn,
+ *               sym, symEn, fact, factEn }]  – region ∈ {sur, centro, europa}.
  *   INTRO    : string (+ INTRO_EN) – kurze deutsche Einleitung über der Info-Seite.
  *   TOPICS   : [{ icon, title, intro, dos:[…], tips:[…] }] – aufklappbar (+ …En);
  *              dos = Fakten, tips = Merkhilfen (💡). Einige tragen ein spanisches
@@ -41,7 +41,7 @@
     // ----- Sudamérica -----
     {
       id: "ar", flag: "🇦🇷", es: "Argentina", de: "Argentinien", en: "Argentina",
-      region: "sur", capital: "Buenos Aires", colors: "Hellblau · Weiß",
+      region: "sur", capital: "Buenos Aires", colors: "Hellblau · Weiß", colorsEn: "Light blue · White",
       sym: "Drei waagerechte Streifen in Himmelblau-Weiß-Himmelblau, in der Mitte die „Sol de Mayo“ – eine goldene Sonne mit Gesicht für die Mai-Revolution von 1810.",
       symEn: "Three horizontal stripes of sky-blue, white and sky-blue, with the „Sol de Mayo“ in the centre – a golden sun with a face, for the May Revolution of 1810.",
       fact: "Die Sonne hat ein Gesicht – das ist der „Inti“, die Sonne der Inka. Genau dieselbe Sonne trägt auch Uruguays Flagge.",
@@ -49,15 +49,15 @@
     },
     {
       id: "bo", flag: "🇧🇴", es: "Bolivia", de: "Bolivien", en: "Bolivia",
-      region: "sur", capital: "Sucre / La Paz", colors: "Rot · Gelb · Grün",
+      region: "sur", capital: "Sucre / La Paz", colors: "Rot · Gelb · Grün", colorsEn: "Red · Yellow · Green",
       sym: "Rot-Gelb-Grün waagerecht, mit dem Staatswappen in der Mitte: Rot für das Blut der Helden, Gelb für die Bodenschätze, Grün für die fruchtbare Natur.",
       symEn: "Red-yellow-green horizontal bands with the state coat of arms: red for the heroes' blood, yellow for mineral wealth, green for fertile nature.",
-      fact: "Bolivien hat zwei offizielle Flaggen: die Trikolore und die „Whipala“, ein buntes Karomuster der indigenen Andenvölker.",
+      fact: "Bolivien hat zwei offizielle Flaggen: die Trikolore und die „Wiphala“, ein buntes Karomuster der indigenen Andenvölker.",
       factEn: "Bolivia has two official flags: the tricolour and the „Wiphala“, a colourful chequered emblem of the indigenous Andean peoples.",
     },
     {
       id: "cl", flag: "🇨🇱", es: "Chile", de: "Chile", en: "Chile",
-      region: "sur", capital: "Santiago", colors: "Weiß · Blau · Rot",
+      region: "sur", capital: "Santiago", colors: "Weiß · Blau · Rot", colorsEn: "White · Blue · Red",
       sym: "Oben weiß, unten rot, dazu ein blaues Eck mit einem weißen Stern: Weiß für den Schnee der Anden, Blau für den Himmel, Rot für das Blut, der Stern für Ehre und Fortschritt.",
       symEn: "White over red, with a blue canton bearing a white star: white for the Andean snow, blue for the sky, red for the blood, the star for honour and progress.",
       fact: "„La Estrella Solitaria“ – der einzelne Stern. Verwechslungsgefahr mit Texas, aber bei Chile ist der rote Streifen unten und breiter.",
@@ -65,7 +65,7 @@
     },
     {
       id: "co", flag: "🇨🇴", es: "Colombia", de: "Kolumbien", en: "Colombia",
-      region: "sur", capital: "Bogotá", colors: "Gelb · Blau · Rot",
+      region: "sur", capital: "Bogotá", colors: "Gelb · Blau · Rot", colorsEn: "Yellow · Blue · Red",
       sym: "Gelb (obere Hälfte), Blau und Rot: Gelb für den Reichtum und das Gold des Landes, Blau für die zwei Ozeane und Flüsse, Rot für das vergossene Blut.",
       symEn: "Yellow (the top half), blue and red: yellow for the country's wealth and gold, blue for the two oceans and rivers, red for the blood that was shed.",
       fact: "Merkhilfe: Das Gelb ist so wertvoll, dass es die halbe Flagge einnimmt – die anderen beiden Farben teilen sich die untere Hälfte.",
@@ -73,7 +73,7 @@
     },
     {
       id: "ec", flag: "🇪🇨", es: "Ecuador", de: "Ecuador", en: "Ecuador",
-      region: "sur", capital: "Quito", colors: "Gelb · Blau · Rot",
+      region: "sur", capital: "Quito", colors: "Gelb · Blau · Rot", colorsEn: "Yellow · Blue · Red",
       sym: "Dieselben Gran-Colombia-Farben Gelb-Blau-Rot, aber mit Wappen: ein Kondor über dem Vulkan Chimborazo und einem Dampfschiff im Fluss.",
       symEn: "The same Gran Colombia colours – yellow, blue, red – but with a coat of arms: a condor above Mt Chimborazo and a steamship on the river.",
       fact: "So unterscheidest du das Trio: Ecuador trägt immer das große Wappen mit dem Kondor, Kolumbien hat gar keines.",
@@ -81,7 +81,7 @@
     },
     {
       id: "py", flag: "🇵🇾", es: "Paraguay", de: "Paraguay", en: "Paraguay",
-      region: "sur", capital: "Asunción", colors: "Rot · Weiß · Blau",
+      region: "sur", capital: "Asunción", colors: "Rot · Weiß · Blau", colorsEn: "Red · White · Blue",
       sym: "Rot-Weiß-Blau waagerecht mit einem Emblem in der weißen Mitte – Farben für Unabhängigkeit, Frieden und Gerechtigkeit.",
       symEn: "Red-white-blue horizontal bands with an emblem in the white centre – colours for independence, peace and justice.",
       fact: "Weltweit einzigartig: Vorder- und Rückseite sind verschieden! Vorne der Stern des Staatswappens, hinten der Löwe des Schatzamtes.",
@@ -89,7 +89,7 @@
     },
     {
       id: "pe", flag: "🇵🇪", es: "Perú", de: "Peru", en: "Peru",
-      region: "sur", capital: "Lima", colors: "Rot · Weiß · Rot",
+      region: "sur", capital: "Lima", colors: "Rot · Weiß · Rot", colorsEn: "Red · White · Red",
       sym: "Drei senkrechte Streifen Rot-Weiß-Rot; die Staatsflagge trägt mittig das Wappen mit Vikunja, Chinarindenbaum und Füllhorn.",
       symEn: "Three vertical bands of red-white-red; the state flag bears the coat of arms with a vicuña, a cinchona tree and a cornucopia.",
       fact: "Der Legende nach wählte San Martín Rot-Weiß nach den rot-weißen Flamingos, die er bei seiner Landung auffliegen sah.",
@@ -97,7 +97,7 @@
     },
     {
       id: "uy", flag: "🇺🇾", es: "Uruguay", de: "Uruguay", en: "Uruguay",
-      region: "sur", capital: "Montevideo", colors: "Weiß · Blau",
+      region: "sur", capital: "Montevideo", colors: "Weiß · Blau", colorsEn: "White · Blue",
       sym: "Neun weiße und blaue Streifen plus die „Sol de Mayo“ im weißen Eck: Die neun Streifen stehen für die neun ursprünglichen Departamentos.",
       symEn: "Nine white and blue stripes plus the „Sol de Mayo“ in the white canton: the nine stripes stand for the nine original departments.",
       fact: "Dieselbe goldene Gesichts-Sonne wie Argentinien – kein Zufall: Beide gehen auf die Mai-Revolution am Río de la Plata zurück.",
@@ -105,7 +105,7 @@
     },
     {
       id: "ve", flag: "🇻🇪", es: "Venezuela", de: "Venezuela", en: "Venezuela",
-      region: "sur", capital: "Caracas", colors: "Gelb · Blau · Rot",
+      region: "sur", capital: "Caracas", colors: "Gelb · Blau · Rot", colorsEn: "Yellow · Blue · Red",
       sym: "Gelb-Blau-Rot mit einem Bogen aus acht weißen Sternen in der blauen Mitte – die Sterne stehen für acht Provinzen der Unabhängigkeit.",
       symEn: "Yellow-blue-red with an arc of eight white stars in the blue band – the stars stand for eight provinces of the independence.",
       fact: "Lange waren es sieben Sterne; den achten ließ Hugo Chávez 2006 für die Provinz Guayana hinzufügen – nach einem Wunsch Bolívars.",
@@ -113,7 +113,7 @@
     },
     {
       id: "br", flag: "🇧🇷", es: "Brasil", de: "Brasilien", en: "Brazil",
-      region: "sur", capital: "Brasília", colors: "Grün · Gelb · Blau",
+      region: "sur", capital: "Brasília", colors: "Grün · Gelb · Blau", colorsEn: "Green · Yellow · Blue",
       sym: "Grünes Feld, gelbe Raute, blaue Kugel mit Sternen und dem Spruch „Ordem e Progresso“ (Ordnung und Fortschritt).",
       symEn: "A green field, a yellow rhombus and a blue globe with stars and the motto „Ordem e Progresso“ (Order and Progress).",
       fact: "Die Sterne zeigen den Sternenhimmel über Rio in der Nacht des 15. November 1889 – jeder Stern ist ein Bundesstaat.",
@@ -122,7 +122,7 @@
     // ----- Centroamérica y el Caribe -----
     {
       id: "mx", flag: "🇲🇽", es: "México", de: "Mexiko", en: "Mexico",
-      region: "centro", capital: "Ciudad de México", colors: "Grün · Weiß · Rot",
+      region: "centro", capital: "Ciudad de México", colors: "Grün · Weiß · Rot", colorsEn: "Green · White · Red",
       sym: "Grün-Weiß-Rot senkrecht, in der Mitte ein Adler auf einem Kaktus, der eine Schlange verschlingt: Grün für Hoffnung, Weiß für Einheit, Rot für das Blut der Helden.",
       symEn: "Green-white-red vertical bands with an eagle on a cactus devouring a snake: green for hope, white for unity, red for the heroes' blood.",
       fact: "Das Wappen erzählt die Azteken-Gründungssage von Tenochtitlan – genau dort, wo der Adler saß, entstand Mexiko-Stadt.",
@@ -130,7 +130,7 @@
     },
     {
       id: "gt", flag: "🇬🇹", es: "Guatemala", de: "Guatemala", en: "Guatemala",
-      region: "centro", capital: "Ciudad de Guatemala", colors: "Blau · Weiß · Blau",
+      region: "centro", capital: "Ciudad de Guatemala", colors: "Blau · Weiß · Blau", colorsEn: "Blue · White · Blue",
       sym: "Senkrechtes Blau-Weiß-Blau mit Wappen: ein Quetzal-Vogel, eine Schriftrolle und gekreuzte Gewehre und Schwerter. Blau für die zwei Ozeane, Weiß für den Frieden.",
       symEn: "Vertical blue-white-blue with a crest: a quetzal bird, a scroll and crossed rifles and swords. Blue for the two oceans, white for peace.",
       fact: "Der Quetzal ist der Nationalvogel und steht für Freiheit – in Gefangenschaft stirbt er. So heißt auch die Währung: der Quetzal.",
@@ -138,7 +138,7 @@
     },
     {
       id: "hn", flag: "🇭🇳", es: "Honduras", de: "Honduras", en: "Honduras",
-      region: "centro", capital: "Tegucigalpa", colors: "Blau · Weiß · Blau",
+      region: "centro", capital: "Tegucigalpa", colors: "Blau · Weiß · Blau", colorsEn: "Blue · White · Blue",
       sym: "Blau-Weiß-Blau waagerecht mit fünf blauen Sternen in der Mitte – die Sterne stehen für die fünf Staaten der einstigen Zentralamerikanischen Föderation.",
       symEn: "Blue-white-blue horizontal bands with five blue stars in the centre – the stars stand for the five states of the old Central American Federation.",
       fact: "Merkhilfe für die blau-weiß-blauen Nachbarn: Honduras ist das mit den fünf Sternen, ganz ohne großes Wappen.",
@@ -146,7 +146,7 @@
     },
     {
       id: "sv", flag: "🇸🇻", es: "El Salvador", de: "El Salvador", en: "El Salvador",
-      region: "centro", capital: "San Salvador", colors: "Blau · Weiß · Blau",
+      region: "centro", capital: "San Salvador", colors: "Blau · Weiß · Blau", colorsEn: "Blue · White · Blue",
       sym: "Blau-Weiß-Blau mit einem runden Wappen: ein Dreieck mit fünf Vulkanen, Regenbogen und Freiheitsmütze – die Föderationsfarben Zentralamerikas.",
       symEn: "Blue-white-blue with a round emblem: a triangle with five volcanoes, a rainbow and a liberty cap – the Central American federation colours.",
       fact: "Das Dreieck steht für Gleichheit, die fünf Vulkane für die fünf Föderationsstaaten – dasselbe Motiv wie bei Nicaragua.",
@@ -154,7 +154,7 @@
     },
     {
       id: "ni", flag: "🇳🇮", es: "Nicaragua", de: "Nicaragua", en: "Nicaragua",
-      region: "centro", capital: "Managua", colors: "Blau · Weiß · Blau",
+      region: "centro", capital: "Managua", colors: "Blau · Weiß · Blau", colorsEn: "Blue · White · Blue",
       sym: "Blau-Weiß-Blau mit einem Wappendreieck samt fünf Vulkanen und Regenbogen – nah verwandt mit El Salvador, beide aus der Föderation.",
       symEn: "Blue-white-blue with an emblem triangle of five volcanoes and a rainbow – closely related to El Salvador, both from the federation.",
       fact: "So trennst du beide: Nicaraguas Wappen ist farbig (mit Regenbogen), El Salvadors Inschrift bildet einen Halbkreis um das Dreieck.",
@@ -162,7 +162,7 @@
     },
     {
       id: "cr", flag: "🇨🇷", es: "Costa Rica", de: "Costa Rica", en: "Costa Rica",
-      region: "centro", capital: "San José", colors: "Blau · Weiß · Rot",
+      region: "centro", capital: "San José", colors: "Blau · Weiß · Rot", colorsEn: "Blue · White · Red",
       sym: "Blau-Weiß-Rot-Weiß-Blau mit breitem rotem Mittelstreifen: Blau für den Himmel und die Chancen, Weiß für Frieden und Weisheit, Rot für die Wärme der „Ticos“.",
       symEn: "Blue-white-red-white-blue with a broad red central band: blue for the sky and opportunity, white for peace and wisdom, red for the warmth of the „Ticos“.",
       fact: "Der rote Streifen kam 1848 dazu – inspiriert von der französischen Trikolore. Das macht Costa Rica unter den Nachbarn leicht erkennbar.",
@@ -170,7 +170,7 @@
     },
     {
       id: "pa", flag: "🇵🇦", es: "Panamá", de: "Panama", en: "Panama",
-      region: "centro", capital: "Ciudad de Panamá", colors: "Weiß · Rot · Blau",
+      region: "centro", capital: "Ciudad de Panamá", colors: "Weiß · Rot · Blau", colorsEn: "White · Red · Blue",
       sym: "Vier Felder: weiß mit blauem Stern, weiß mit rotem Stern, dazu ein rotes und ein blaues Feld. Blau und Rot stehen für die zwei großen Parteien, Weiß für den Frieden zwischen ihnen.",
       symEn: "Four quarters: white with a blue star, white with a red star, plus a red and a blue field. Blue and red stand for the two main parties, white for the peace between them.",
       fact: "Die zwei Sterne stehen für Reinheit und Autorität – ein seltenes Vier-Felder-Design, das du sofort wiedererkennst.",
@@ -178,7 +178,7 @@
     },
     {
       id: "cu", flag: "🇨🇺", es: "Cuba", de: "Kuba", en: "Cuba",
-      region: "centro", capital: "La Habana", colors: "Blau · Weiß · Rot",
+      region: "centro", capital: "La Habana", colors: "Blau · Weiß · Rot", colorsEn: "Blue · White · Red",
       sym: "Fünf blau-weiße Streifen mit rotem Dreieck und weißem Stern: drei blaue Streifen für die alten Landesteile, das rote Dreieck und der Stern für Freiheit und Unabhängigkeit.",
       symEn: "Five blue and white stripes with a red triangle and a white star: three blue stripes for the old regions, the red triangle and star for freedom and independence.",
       fact: "Auch „La Estrella Solitaria“. Puerto Ricos Flagge ist fast spiegelbildlich – nur sind dort die Streifen rot und das Dreieck blau.",
@@ -186,16 +186,24 @@
     },
     {
       id: "do", flag: "🇩🇴", es: "República Dominicana", de: "Dominikanische Republik", en: "Dominican Republic",
-      region: "centro", capital: "Santo Domingo", colors: "Blau · Rot · Weiß",
+      region: "centro", capital: "Santo Domingo", colors: "Blau · Rot · Weiß", colorsEn: "Blue · Red · White",
       sym: "Ein weißes Kreuz teilt die Flagge in blaue und rote Felder; in der Mitte das Wappen mit Schild, Lorbeer und einer aufgeschlagenen Bibel.",
       symEn: "A white cross divides the flag into blue and red fields; in the centre the coat of arms with a shield, laurel and an open Bible.",
       fact: "Die einzige Nationalflagge der Welt mit einer Bibel im Wappen – sie ist beim Buch des Johannes „Die Wahrheit macht euch frei“ aufgeschlagen.",
       factEn: "The only national flag in the world with a Bible in its emblem – opened at the Gospel of John, „the truth shall set you free“.",
     },
+    {
+      id: "pr", flag: "🇵🇷", es: "Puerto Rico", de: "Puerto Rico", en: "Puerto Rico",
+      region: "centro", capital: "San Juan", colors: "Rot · Weiß · Blau", colorsEn: "Red · White · Blue",
+      sym: "Fünf Streifen in Rot und Weiß mit einem blauen Dreieck und einem weißen Stern: das Dreieck steht für die drei Staatsgewalten, der Stern für die Insel selbst.",
+      symEn: "Five red and white stripes with a blue triangle and a white star: the triangle stands for the three branches of government, the star for the island itself.",
+      fact: "Fast spiegelbildlich zu Kuba – nur sind hier die Streifen rot und das Dreieck blau. Beide Flaggen entstanden um 1895 fast zur selben Zeit.",
+      factEn: "Almost a mirror image of Cuba – here the stripes are red and the triangle is blue. Both flags emerged around 1895 at nearly the same time.",
+    },
     // ----- España -----
     {
       id: "es", flag: "🇪🇸", es: "España", de: "Spanien", en: "Spain",
-      region: "europa", capital: "Madrid", colors: "Rot · Gelb",
+      region: "europa", capital: "Madrid", colors: "Rot · Gelb", colorsEn: "Red · Yellow",
       sym: "Die „Rojigualda“: ein breiter gelber Streifen zwischen zwei roten, mit dem Wappen links – Burg und Löwe der alten Königreiche und die Säulen des Herkules mit „Plus Ultra“.",
       symEn: "The „Rojigualda“: a wide yellow band between two red ones, with the coat of arms on the left – castle and lion of the old kingdoms and the Pillars of Hercules with „Plus Ultra“.",
       fact: "Der gelbe Streifen ist doppelt so breit wie jeder rote – gut sichtbar auf See, wofür König Karl III. die Farben 1785 wählte.",

@@ -47,6 +47,7 @@
     { id: "quiz",     label: "Definiciones", labelEn: "Definiciones", icon: "🧩" },
     { id: "yesto",    label: "¿Y esto?",    labelEn: "¿Y esto?", icon: "👀" },
     { id: "construir",label: "Satzbaukasten", labelEn: "Sentence builder", icon: "🧱" },
+    { id: "banderas", label: "Banderas",     labelEn: "Flags", icon: "🚩" },
     { id: "listening",label: "Hören",       labelEn: "Listening", icon: "👂" },
     { id: "cuerpo",   label: "El Cuerpo",   labelEn: "El Cuerpo", icon: "🧍" },
     { id: "reallife", label: "Mutproben",   labelEn: "Dares", icon: "🚪" },
@@ -175,6 +176,14 @@
     { id: "frases_themes",  group: "construir", icon: "🏛️", name: "Constructor experto",  nameEn: "Constructor experto",  type: "counter", metric: "frasesThemesCompleted", threshold: 7,
       description: "Schließe jedes Frases-Thema mindestens einmal ab.", descriptionEn: "Complete every Frases theme at least once.", unlockedText: "Von der Busfahrt bis zum Smalltalk – jede Reise-Situation gebaut.", unlockedTextEn: "From the bus ride to small talk – every travel situation built." },
 
+    // ---------- Banderas (Flaggen-Quiz) ----------
+    { id: "banderas_first",   group: "banderas", icon: "🚩", name: "Primera bandera",     nameEn: "First flag",       type: "counter", metric: "banderasPlayed", threshold: 1,
+      description: "Schließe deine erste Banderas-Runde ab.", descriptionEn: "Complete your first Banderas round.", unlockedText: "Du erkennst die ersten Flaggen Lateinamerikas.", unlockedTextEn: "You're recognising your first Latin American flags." },
+    { id: "banderas_10",      group: "banderas", icon: "🌎", name: "Geógrafo",            nameEn: "Geographer",       type: "counter", metric: "banderasPlayed", threshold: 10,
+      description: "Schließe 10 Banderas-Runden ab.",        descriptionEn: "Complete 10 Banderas rounds.",        unlockedText: "Farben, Sterne, Sonnen – du liest Flaggen wie eine Landkarte.", unlockedTextEn: "Colours, stars, suns – you read flags like a map." },
+    { id: "banderas_perfect", group: "banderas", icon: "💯", name: "Bandera perfecta",    nameEn: "Bandera perfecta", type: "counter", metric: "banderasPerfect", threshold: 1,
+      description: "Beende eine Banderas-Runde ohne Fehler.", descriptionEn: "Finish a Banderas round without mistakes.", unlockedText: "Jede Flagge auf Anhieb richtig zugeordnet.", unlockedTextEn: "Matched every flag correctly on the first try." },
+
     // ---------- Hören (Escuchar & Precios) ----------
     { id: "listen_first", group: "listening", icon: "👂", name: "Primer oído",        nameEn: "Primer oído",        type: "counter", metric: "listenReviews", threshold: 1,
       description: "Lerne deine erste Karte im Hör-Modus.",   descriptionEn: "Learn your first card in listening mode.", unlockedText: "Du trainierst jetzt auch dein Ohr für echtes LatAm-Spanisch.", unlockedTextEn: "You're now training your ear for real LatAm Spanish too." },
@@ -290,6 +299,9 @@
       frasesPlayed: c.frasesPlayed || 0,
       frasesPerfect: c.frasesPerfect || 0,
       frasesThemesCompleted: c.frasesThemesDone ? Object.keys(c.frasesThemesDone).length : 0,
+      // Banderas (Flaggen-Quiz): abgeschlossene und fehlerfreie Runden.
+      banderasPlayed: c.banderasPlayed || 0,
+      banderasPerfect: c.banderasPerfect || 0,
       // Hören: im Hör-Modus bewertete Karten + Preis-Hörtrainer-Runden.
       listenReviews: c.listenReviews || 0,
       preciosPlayed: c.preciosPlayed || 0,

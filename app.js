@@ -5804,6 +5804,23 @@
     pageMod(flirt, "💘", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
     pageMod(juegos, "🎲", "Juegos de viaje", "discover.subJuegos", "open-juegos");
 
+    // Banderas: Info-Seite UND die Länderdaten (Name/Farben/Symbolik/Fakt je Land)
+    // fließen in den Heuhaufen – so findet auch „Sol de Mayo“ oder „Bolivia bandera“
+    // das Modul. Ein Treffer öffnet den Banderas-Hub (Quiz · Galería · Saber más).
+    if (banderas) {
+      const topics = (banderas.TOPICS || []).map((tp) => [tp.title, tp.titleEn, tp.intro, tp.introEn, tp.dos, tp.dosEn, tp.tips, tp.tipsEn, tp.es, (tp.vocab || []).map((v) => [v.es, v.de, v.en])]);
+      const phrases = (banderas.PHRASES || []).map((p) => [p.title, p.titleEn, (p.items || []).map((it) => [it.es, it.de, it.en])]);
+      const gloss = (banderas.GLOSSARY || []).map((g) => [g.es, g.de, g.en]);
+      const checklist = (banderas.CHECKLIST || []).map((c) => [c.item, c.itemEn, c.why, c.whyEn]);
+      const lands = (banderas.COUNTRIES || []).map((c) => [c.es, c.de, c.en, c.capital, c.colors, c.colorsEn, c.sym, c.symEn, c.fact, c.factEn]);
+      idx.push({
+        group: "info", kind: "page", kindLabel: t("search.kindInfo"),
+        icon: "🚩", title: "Banderas", sub: t("discover.subBanderas"),
+        action: "open-banderas",
+        hay: searchHay(["banderas flaggen flags bandera país nacionalidad", banderas.INTRO, banderas.INTRO_EN, topics, phrases, gloss, checklist, lands]),
+      });
+    }
+
     // Bailar (Tanzen): eigener Indexer, weil die Tänze als DANCES (Feld „name")
     // statt als TOPICS strukturiert sind. Ein Treffer je Tanz bringt die ganze
     // Seite nach vorn (Schritte, Tipps und Lesetext fließen in den Heuhaufen).

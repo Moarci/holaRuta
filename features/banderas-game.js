@@ -48,6 +48,7 @@
   const localName = (c) => (isEn() ? c.en : c.de);
   const symText = (c) => (isEn() ? c.symEn : c.sym);
   const factText = (c) => (isEn() ? c.factEn : c.fact);
+  const colorsText = (c) => (isEn() && c.colorsEn ? c.colorsEn : c.colors);
 
   // Antwort-Optionen bauen: das richtige Land + bis zu 3 Ablenker aus derselben
   // Menge (gleiche Region = angemessen schwer), dann gemischt. Einmal beim Stellen
@@ -86,7 +87,7 @@
       options, answered,
       isCorrect: answered && b.selected === country.id,
       solutionName: country.es, solutionLocal: localName(country),
-      colors: country.colors, sym: symText(country), fact: factText(country),
+      colors: colorsText(country), sym: symText(country), fact: factText(country),
       isLast: b.idx >= b.total - 1,
     };
   }
@@ -293,7 +294,7 @@
           <span class="knigge-topic__chev" aria-hidden="true">▾</span>
         </summary>
         <div class="knigge-topic__body">
-          <p class="bnd-card__colors">🎨 ${esc(c.colors)} · 📍 ${esc(c.capital)}</p>
+          <p class="bnd-card__colors">🎨 ${esc(colorsText(c))} · 📍 ${esc(c.capital)}</p>
           <p class="knigge-intro">${esc(symText(c))}</p>
           <ul class="knigge-list"><li class="knigge-tip"><span class="knigge-mark" role="img" aria-label="${esc(t("discover.kniggeTip"))}">💡</span>${esc(factText(c))}</li></ul>
         </div>

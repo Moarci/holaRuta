@@ -28,7 +28,7 @@ test("banderas: lädt und exportiert COUNTRIES + Info-Modul-Schema", () => {
 test("banderas.COUNTRIES: jedes Land ist vollständig & zweisprachig", () => {
   const REGIONS = new Set(["sur", "centro", "europa"]);
   banderas.COUNTRIES.forEach((c, i) => {
-    for (const f of ["id", "flag", "es", "de", "en", "capital", "colors", "sym", "symEn", "fact", "factEn"]) {
+    for (const f of ["id", "flag", "es", "de", "en", "capital", "colors", "colorsEn", "sym", "symEn", "fact", "factEn"]) {
       assert.ok(typeof c[f] === "string" && c[f].trim().length, `COUNTRIES[${i}] (${c.id || "?"}): Feld ${f} fehlt`);
     }
     assert.ok(REGIONS.has(c.region), `COUNTRIES[${i}] (${c.id}): region „${c.region}" unbekannt`);
