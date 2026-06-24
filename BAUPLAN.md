@@ -33,7 +33,7 @@ Jeder Bau hält sich daran, sonst bricht er das Produkt:
 | Vorlage | Ort | Wofür |
 |---|---|---|
 | **`SPICKZETTEL_GROUPS`** | `app.js:2454` — `{ cat, limit, pick:[ids] }` | kuratierte Karten-Presets (Top-100, Destination-Sets) |
-| **`openRutaDelDia()`** | `app.js:2011` (`RUTA_DIA_CAP`, Pool aus fälligen/neuen Karten) | neue geführte Modi (Pre-Trip-Sequenz, Coordinator-Runde) |
+| **`openRutaDelDia()`** | `app.js` (`RUTA_DIA_CAP`, Pool aus fälligen/neuen Karten; `RUTA_DIA_DESTINO_CAP` deckelt orts-/länderspezifische „destinos"-Karten pro Runde, damit Grundlagen dominieren) | neue geführte Modi (Pre-Trip-Sequenz, Coordinator-Runde) |
 
 ### Bestehende Datenstrukturen (Belege aus `data.js`)
 
