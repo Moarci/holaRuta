@@ -132,3 +132,16 @@ test("Vollständigkeit regatear: jeder Satz hat einen Stern (Mi léxico)", () =>
 test("Vollständigkeit fotos: jeder Satz hat einen Stern (Mi léxico)", () => assertModuleStar("open-fotos", "fotos"));
 test("Vollständigkeit bailar: jeder Satz hat einen Stern (Mi léxico)", () => assertModuleStar("open-bailar", "bailar"));
 test("Vollständigkeit musica: jeder Satz hat einen Stern (Mi léxico)", () => assertModuleStar("open-musica", "musica"));
+
+// Banderas: das Saber-más-Blatt liegt eine Ebene tiefer (Hub → „Saber más"), darum
+// ein eigener Fall mit zwei Klicks statt des einstufigen assertModuleStar-Helfers.
+test("Vollständigkeit banderas: jeder Satz hat einen Stern (Mi léxico)", () => {
+  const root = freshApp();
+  assert.ok(openModule(root, "open-banderas").ok, "open-banderas erreichbar");
+  assert.ok(click(root, "open-banderas-info"), "Saber más erreichbar");
+  const star = root.querySelector('[data-action="fav-toggle"][data-cat="banderas"][data-es]');
+  assert.ok(star, "banderas: Satz-Stern vorhanden");
+  assert.match(star.getAttribute("data-id"), /^favph-banderas-/, "banderas: stabile Id");
+  assert.ok(star.getAttribute("data-es"), "banderas: spanischer Satz im Schnappschuss");
+  assert.ok(star.getAttribute("data-de"), "banderas: Übersetzung im Schnappschuss");
+});
