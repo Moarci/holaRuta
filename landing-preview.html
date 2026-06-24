@@ -4424,13 +4424,19 @@ a { color: var(--brand-ink); }
 /* ─────────────────────────── Hero ─────────────────────────── */
 .lp-hero { position: relative; padding-block: clamp(48px, 8vw, 104px) clamp(56px, 9vw, 120px); }
 
-/* Earth-tone Gradient-Mesh als Hintergrund (rein dekorativ). */
+/* Earth-tone Gradient-Mesh als Hintergrund (rein dekorativ). Driftet sehr langsam
+   -> der Hero „atmet" leicht, ohne abzulenken (reduced-motion schaltet es aus). */
 .lp-hero__mesh {
-  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  position: absolute; inset: -8% -6%; z-index: 0; pointer-events: none;
   background:
     radial-gradient(60% 50% at 82% 8%, color-mix(in srgb, var(--warn) 22%, transparent), transparent 70%),
     radial-gradient(52% 52% at 8% 92%, color-mix(in srgb, var(--easy) 18%, transparent), transparent 70%),
     radial-gradient(44% 40% at 50% 48%, color-mix(in srgb, var(--brand) 14%, transparent), transparent 70%);
+  animation: lp-hero-drift 22s ease-in-out infinite alternate;
+}
+@keyframes lp-hero-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(0, -2.2%, 0) scale(1.06); }
 }
 
 .lp-hero__grid {
@@ -4442,10 +4448,38 @@ a { color: var(--brand-ink); }
   .lp-hero__grid { grid-template-columns: 7fr 5fr; }
 }
 
+/* Hero-Eyebrow als kleine „Live"-Pille statt nackter Versalzeile – holt die
+   Wertigkeit der Sektionen nach oben: Marken-getönte Pille mit feinem Ring und
+   einem sanft pulsierenden Punkt (signalisiert „echt & unterwegs"). */
+.lp-hero .lp-eyebrow {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin: 0 0 var(--space-4); padding: 7px 15px 7px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand) 11%, var(--card));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--brand) 30%, transparent), var(--shadow);
+}
+.lp-hero .lp-eyebrow::before {
+  content: ""; flex: none; width: 8px; height: 8px; border-radius: 999px;
+  background: var(--brand);
+  animation: lp-pulse 2.4s ease-out infinite;
+}
+@keyframes lp-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
 .lp-hero h1 {
   font-family: var(--font-display); font-weight: 800;
   font-size: var(--fs-display); line-height: 1.02; letter-spacing: -0.03em;
   color: var(--ink); margin: var(--space-3) 0 var(--space-4); max-width: 16ch;
+}
+/* Schlüssel-Phrase farbig unterlegt – derselbe Highlight-Duktus wie die
+   Schlüsselwörter in den Schritten (.lp-step__hl), nur kräftiger fürs Hero. */
+.lp-hl {
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  background: linear-gradient(transparent 56%,
+    color-mix(in srgb, var(--brand) 34%, transparent) 0);
 }
 .lp-hero__sub { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink-soft); margin: 0 0 var(--space-5); max-width: 52ch; }
 
@@ -4462,14 +4496,47 @@ a { color: var(--brand-ink); }
   max-width: 520px;
 }
 @media (min-width: 560px) { .lp-trust { grid-template-columns: repeat(4, 1fr); } }
+/* Stat-Karten in voller Wertigkeit der Feature-Kacheln: farbige Gradient-Icon-
+   Kachel (--accent inline), Akzent-Faden an der Kante, Hub bei Hover. So liest
+   sich der Hero-Beleg genauso hochwertig wie die Sektionen darunter. */
 .lp-trust__item {
-  display: flex; flex-direction: column; gap: 2px;
-  padding: 12px 14px; border-radius: var(--r-md);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px; border-radius: var(--r-md);
   background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
 }
+.lp-trust__item::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--accent, var(--brand)); opacity: .55;
+  transition: opacity .16s ease, width .16s ease;
+}
+.lp-trust__item:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent, var(--brand)) 48%, var(--line));
+  box-shadow:
+    0 10px 24px -14px color-mix(in srgb, var(--accent, var(--brand)) 55%, transparent),
+    var(--shadow);
+}
+.lp-trust__item:hover::before { opacity: 1; width: 4px; }
+@media (hover: none) { .lp-trust__item:hover { transform: none; } }
+.lp-trust__ico {
+  width: 42px; height: 42px; flex: none; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; line-height: 1;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, var(--brand)) 26%, var(--card)),
+    color-mix(in srgb, var(--accent, var(--brand)) 9%, var(--card)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 30%, transparent);
+  transform: rotate(-4deg);
+  transition: transform .16s ease;
+}
+.lp-trust__item:hover .lp-trust__ico { transform: scale(1.07) rotate(-6deg); }
+.lp-trust__data { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .lp-trust__num {
   font-family: var(--font-display); font-weight: 800; font-size: 1.5rem;
-  color: var(--brand-ink); font-variant-numeric: tabular-nums; line-height: 1;
+  color: color-mix(in srgb, var(--accent, var(--brand)) 76%, var(--ink));
+  font-variant-numeric: tabular-nums; line-height: 1;
 }
 .lp-trust__label { font-size: 0.74rem; font-weight: 700; color: var(--muted); letter-spacing: 0.01em; }
 
@@ -4949,6 +5016,12 @@ a { color: var(--brand-ink); }
   .lp-carousel .flip__inner { transition: none !important; }
   .lp-slide { transition: none !important; }
   .lp-cta::after { display: none !important; }
+  /* Hero: Mesh-Drift, Eyebrow-Puls & Stat-Karten-Hub ohne Bewegung. */
+  .lp-hero__mesh { animation: none !important; }
+  .lp-hero .lp-eyebrow::before { animation: none !important; }
+  .lp-trust__item { transition: none !important; }
+  .lp-trust__item:hover { transform: none !important; }
+  .lp-trust__item:hover .lp-trust__ico { transform: rotate(-4deg) !important; }
   /* Schritte: Hover-/Aktiv-Hub & Nummern-Drehung ohne Bewegung. */
   .lp-step, .lp-step__num { transition: none !important; }
   .lp-step:hover, .lp-step.is-active { transform: none !important; }
@@ -5018,28 +5091,40 @@ a { color: var(--brand-ink); }
       <div class="lp-wrap lp-hero__grid">
         <div class="lp-hero__copy">
           <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">REISE-SPANISCH FÜR LATEINAMERIKA</p>
-          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Sprich Spanisch, bevor der Bus kommt.</h1>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Sprich Spanisch, <span class="lp-hl">bevor der Bus kommt.</span></h1>
           <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">2293 Karten für echte Reisesituationen — Bus, Hotel, Essen, Geld, Notfall. Lateinamerika-korrekt, komplett offline, ohne Konto. Lern in der Hängematte, prüf am Grenzposten.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
             <a class="lp-cta lp-cta--lg" href="./?start=onboarding" data-i18n="hero.cta">Kostenlos starten →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#how" data-i18n="hero.cta2">Wie es funktioniert</a>
           </div>
-          <div class="lp-trust" data-reveal style="--i:4">
-            <div class="lp-trust__item">
-              <span class="lp-trust__num" data-count="2293">2293</span>
-              <span class="lp-trust__label" data-i18n="trust.cards">Karten</span>
+          <div class="lp-trust">
+            <div class="lp-trust__item" data-reveal style="--i:4; --accent:#C2502E">
+              <span class="lp-trust__ico" aria-hidden="true">🃏</span>
+              <div class="lp-trust__data">
+                <span class="lp-trust__num" data-count="2293">2293</span>
+                <span class="lp-trust__label" data-i18n="trust.cards">Karten</span>
+              </div>
             </div>
-            <div class="lp-trust__item">
-              <span class="lp-trust__num" data-count="72">72</span>
-              <span class="lp-trust__label" data-i18n="trust.areas">Bereiche</span>
+            <div class="lp-trust__item" data-reveal style="--i:5; --accent:#2F6B70">
+              <span class="lp-trust__ico" aria-hidden="true">🗂️</span>
+              <div class="lp-trust__data">
+                <span class="lp-trust__num" data-count="72">72</span>
+                <span class="lp-trust__label" data-i18n="trust.areas">Bereiche</span>
+              </div>
             </div>
-            <div class="lp-trust__item">
-              <span class="lp-trust__num" data-count="3">3</span>
-              <span class="lp-trust__label" data-i18n="trust.modes">Lernmodi</span>
+            <div class="lp-trust__item" data-reveal style="--i:6; --accent:#7D4A8E">
+              <span class="lp-trust__ico" aria-hidden="true">🎴</span>
+              <div class="lp-trust__data">
+                <span class="lp-trust__num" data-count="3">3</span>
+                <span class="lp-trust__label" data-i18n="trust.modes">Lernmodi</span>
+              </div>
             </div>
-            <div class="lp-trust__item">
-              <span class="lp-trust__num">0&nbsp;€</span>
-              <span class="lp-trust__label" data-i18n="trust.free">Offline · kein Konto</span>
+            <div class="lp-trust__item" data-reveal style="--i:7; --accent:#3F7355">
+              <span class="lp-trust__ico" aria-hidden="true">🎁</span>
+              <div class="lp-trust__data">
+                <span class="lp-trust__num">0&nbsp;€</span>
+                <span class="lp-trust__label" data-i18n="trust.free">Offline · kein Konto</span>
+              </div>
             </div>
           </div>
         </div>
@@ -5627,7 +5712,7 @@ a { color: var(--brand-ink); }
         "skip": "Zum Inhalt springen",
         "nav.cta": "Starten",
         "hero.eyebrow": "REISE-SPANISCH FÜR LATEINAMERIKA",
-        "hero.h1": "Sprich Spanisch, bevor der Bus kommt.",
+        "hero.h1": "Sprich Spanisch, <span class=\"lp-hl\">bevor der Bus kommt.</span>",
         "hero.sub": "2293 Karten für echte Reisesituationen — Bus, Hotel, Essen, Geld, Notfall. Lateinamerika-korrekt, komplett offline, ohne Konto. Lern in der Hängematte, prüf am Grenzposten.",
         "hero.cta": "Kostenlos starten →",
         "hero.cta2": "Wie es funktioniert",
@@ -5701,7 +5786,7 @@ a { color: var(--brand-ink); }
         "skip": "Skip to content",
         "nav.cta": "Start",
         "hero.eyebrow": "TRAVEL SPANISH FOR LATIN AMERICA",
-        "hero.h1": "Speak Spanish before the bus arrives.",
+        "hero.h1": "Speak Spanish <span class=\"lp-hl\">before the bus arrives.</span>",
         "hero.sub": "2,293 cards for real travel moments — buses, hotels, food, money, emergencies. Latin-America-correct, fully offline, no account. Learn in the hammock, use it at the border.",
         "hero.cta": "Start free →",
         "hero.cta2": "See how it works",
@@ -5773,7 +5858,7 @@ a { color: var(--brand-ink); }
       }
     };
     // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
-    var HTML_KEYS = { "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var HTML_KEYS = { "hero.h1": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
 
     var LANG_KEY = "holaruta.landing.lang";
 
