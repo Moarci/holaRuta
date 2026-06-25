@@ -188,18 +188,7 @@
   // catIcon() fällt auf das Inhalts-Emoji aus data.js zurück, sodass die
   // Reiseziel-Flaggen (destinos) unverändert als Flaggen-Emoji bleiben und auch
   // <option>-Dropdowns (kein SVG möglich) weiter das Emoji nutzen.
-  const CAT_ICON = {
-    basics: "lc:message-circle", zahlen: "lc:hash", essen: "lc:utensils", trinken: "lc:cup-soda",
-    hotel: "lc:building", hostel: "lc:bed", social: "lc:users", verkehr: "lc:bus",
-    compras: "lc:shopping-cart", dinero: "lc:banknote", notfall: "lc:siren", belleza: "lc:scissors",
-    deporte: "lc:dumbbell", trabajo: "lc:briefcase", banco: "lc:credit-card", correo: "lc:mail",
-    familia: "lc:baby", dieta: "lc:salad", playa: "lc:palmtree", noche: "lc:party-popper",
-    coqueteo: "lc:heart", clima: "lc:cloud-sun", auto: "lc:car", farmacia: "lc:stethoscope",
-    tour: "lc:footprints", internet: "lc:smartphone", lavanderia: "lc:washing-machine", zeit: "lc:clock",
-    talk: "lc:messages-square", alltag: "lc:building-2", frases: "lc:hand", grenze: "lc:shield-check",
-    reise: "lc:map", ropa: "lc:shirt", rumbo: "lc:compass", verbos: "lc:repeat",
-    tiempos: "lc:hourglass", colores: "lc:palette", contrarios: "lc:arrow-left-right",
-  };
+  const CAT_ICON = (window.SC && window.SC.catIcon) || {};
   const catIcon = (c) => (c && CAT_ICON[c.id]) || (c && c.icon) || "";
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -305,7 +294,7 @@
       ? `<span class="trip__route" aria-label="${esc(t("home.tripRouteCap"))}">${route.map((s, i) =>
           `${i ? `<span class="trip__arrow" aria-hidden="true">→</span>` : ""}<span class="trip__stop">${s.flag ? `<span class="trip__stop-flag">${esc(s.flag)}</span>` : ""}<span class="trip__stop-name">${esc(s.dest)}</span></span>`
         ).join("")}</span>`
-      : `<span class="trip__dest">🎯 ${dest}</span>`;
+      : `<span class="trip__dest">${renderIcon("lc:map-pin")} ${dest}</span>`;
     // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
     const who = trip.userName ? esc(trip.userName) + ", " : "";
     // Oben steht klar die Reise (Countdown bzw. Abreise-Meldung). Das tägliche
@@ -478,10 +467,10 @@
   // bis „Wie viel steckt drin". Die Anzahl wird exportiert, damit app.js den letzten
   // Slide kennt (dann „Los geht's" → Profil-Schritt).
   const ONBOARD_SLIDES = [
-    { icon: "🌶️", title: "home.onboardSlide1Title", body: "home.onboardSlide1Body" },
-    { icon: "🃏", title: "home.onboardSlide2Title", body: "home.onboardSlide2Body" },
-    { icon: "🧭", title: "home.onboardSlide3Title", body: "home.onboardSlide3Body" },
-    { icon: "🗺️", title: "home.onboardSlide4Title", body: "home.onboardSlide4Body" },
+    { icon: "lc:flame", title: "home.onboardSlide1Title", body: "home.onboardSlide1Body" },
+    { icon: "lc:layers", title: "home.onboardSlide2Title", body: "home.onboardSlide2Body" },
+    { icon: "lc:compass", title: "home.onboardSlide3Title", body: "home.onboardSlide3Body" },
+    { icon: "lc:map", title: "home.onboardSlide4Title", body: "home.onboardSlide4Body" },
   ];
 
   // Intro-Slides rendern (Schritt 'intro'). Ein Slide zur Zeit, mit Punkt-Navigation
@@ -502,7 +491,7 @@
         <div class="onboarding__inner">
           ${brand}
           <div class="onboarding__slide">
-            <div class="onboarding__icon" aria-hidden="true">${s.icon}</div>
+            <div class="onboarding__icon" aria-hidden="true">${renderIcon(s.icon)}</div>
             <h1 class="onboarding__title">${esc(t(s.title))}</h1>
             <p class="onboarding__intro">${esc(t(s.body))}</p>
           </div>
@@ -1341,7 +1330,7 @@
       <section class="screen study" style="--from:${esc(accent[0])};--to:${esc(accent[1])}">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
+          <div class="topbar__title">${renderIcon(vm.catLc || vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
             <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
           </div>
@@ -1929,7 +1918,7 @@
         <span class="statrow__main">
           <span class="statrow__de">${esc(r.de)}</span>
           <span class="statrow__es" lang="es">${esc(r.es)}</span>
-          <span class="statrow__meta">${esc(r.catIcon)} ${esc(r.catLabel)} · ${esc(seen)}${r.s.lapses ? ` · ${esc(t("profile.forgotTimes", { n: r.s.lapses }))}` : ""}</span>
+          <span class="statrow__meta">${renderIcon(r.catLc || r.catIcon)} ${esc(r.catLabel)} · ${esc(seen)}${r.s.lapses ? ` · ${esc(t("profile.forgotTimes", { n: r.s.lapses }))}` : ""}</span>
         </span>
         <span class="statrow__right">
           ${rateBadge(r.s.rate)}
@@ -1992,7 +1981,7 @@
       <section class="screen" style="--from:${esc(accent[0])};--to:${esc(accent[1])}">
         <div class="topbar">
           <button class="iconbtn" data-action="card-back" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
+          <div class="topbar__title">${renderIcon(vm.catLc || vm.catIcon)} ${esc(vm.catLabel)}</div>
           ${favStar(vm.id, vm.isFav, { cls: "favstar--top" })}
         </div>
 
@@ -2081,7 +2070,7 @@
         <div class="ed-item__main">
           <div class="ed-item__de">${esc(c.de)}</div>
           <div class="ed-item__es" lang="es">${esc(c.es)}</div>
-          <div class="ed-item__meta">${esc(c.catIcon)} ${esc(c.catLabel)}${c.lvlShort ? ` · ${esc(c.lvlShort)}` : ""}${tip}</div>
+          <div class="ed-item__meta">${renderIcon(c.catLc || c.catIcon)} ${esc(c.catLabel)}${c.lvlShort ? ` · ${esc(c.lvlShort)}` : ""}${tip}</div>
         </div>
         <button class="ed-del" type="button" data-action="delete-card" data-id="${esc(c.id)}" aria-label="${esc(t("common.delete"))}" title="${esc(t("common.deleteTitle"))}">🗑️</button>
       </div>`;
@@ -2133,7 +2122,7 @@
       <div class="fav-row">
         <button class="fav-row__main" type="button" data-action="fav-show" data-id="${esc(it.id)}"
                 title="${esc(t("favorites.show"))}">
-          <span class="fav-row__icon" aria-hidden="true">${esc(it.catIcon)}</span>
+          <span class="fav-row__icon" aria-hidden="true">${renderIcon(it.catLc || it.catIcon)}</span>
           <span class="fav-row__text">
             <span class="fav-row__es" lang="es">${esc(it.es)}</span>
             <span class="fav-row__de">${esc(it.de)}</span>

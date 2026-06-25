@@ -39,6 +39,10 @@
     "shopping-cart": '<circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />',
     "repeat": '<path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" />',
     "layers": '<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" /><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />',
+    "library": '<path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" />',
+    "folder": '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />',
+    "map-pin": '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" />',
+    "flame": '<path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4" />',
     "hourglass": '<path d="M5 22h14" /><path d="M5 2h14" /><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />',
     "globe": '<circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" />',
     "scroll": '<path d="M19 17V5a2 2 0 0 0-2-2H4" /><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" />',
@@ -145,4 +149,21 @@
   }
 
   window.SC.icon = { icon: icon, injectSprite: injectSprite, has: function (n) { return !!PATHS[n]; } };
+
+  // Lern-Kategorie -> "lc:"-Token. Schlüssel = stabile Kategorie-Id (nicht das
+  // Emoji). Hier zentral, weil sie zwei Konsumenten hat: ui.js (Themen-Kacheln,
+  // Topbar) und app.js (Viewmodel-Feld catLc). Das Inhalts-Emoji in data.js
+  // (cat.icon) bleibt als Fallback für <option>-Dropdowns und Share-Bilder.
+  window.SC.catIcon = {
+    basics: "lc:message-circle", zahlen: "lc:hash", essen: "lc:utensils", trinken: "lc:cup-soda",
+    hotel: "lc:building", hostel: "lc:bed", social: "lc:users", verkehr: "lc:bus",
+    compras: "lc:shopping-cart", dinero: "lc:banknote", notfall: "lc:siren", belleza: "lc:scissors",
+    deporte: "lc:dumbbell", trabajo: "lc:briefcase", banco: "lc:credit-card", correo: "lc:mail",
+    familia: "lc:baby", dieta: "lc:salad", playa: "lc:palmtree", noche: "lc:party-popper",
+    coqueteo: "lc:heart", clima: "lc:cloud-sun", auto: "lc:car", farmacia: "lc:stethoscope",
+    tour: "lc:footprints", internet: "lc:smartphone", lavanderia: "lc:washing-machine", zeit: "lc:clock",
+    talk: "lc:messages-square", alltag: "lc:building-2", frases: "lc:hand", grenze: "lc:shield-check",
+    reise: "lc:map", ropa: "lc:shirt", rumbo: "lc:compass", verbos: "lc:repeat",
+    tiempos: "lc:hourglass", colores: "lc:palette", contrarios: "lc:arrow-left-right",
+  };
 })();

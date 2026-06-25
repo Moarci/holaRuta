@@ -7,6 +7,10 @@
   "use strict";
 
   const { data, srs, matcher, store, ui, stats } = window.SC;
+  // Kategorie-Id -> "lc:"-Token für das Viewmodel-Feld catLc, das die UI in
+  // Topbar/Statistik/Favoriten/Edition bevorzugt rendert. Leer bei unbekannter
+  // Id; die UI fällt dann auf das Inhalts-Emoji (catIcon) zurück.
+  const catLcFor = (id) => (window.SC.catIcon || {})[id] || "";
   const spickzettel = window.SC.spickzettel; // Feature-Modul (Survival-Schnellzugriff), eager geladen
   const definiciones = window.SC.definiciones; // Feature-Modul (Zuordnen-Quiz), eager geladen
   const precios = window.SC.precios; // Feature-Modul (Preis-Hörtrainer), eager geladen
@@ -673,6 +677,7 @@
       level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
       catLabel: isFavRound ? t("favorites.title") : isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
       catIcon: isFavRound ? "⭐" : isAll || !cat ? "📚" : cat.icon,
+      catLc: isFavRound ? "lc:star" : isAll || !cat ? "lc:library" : catLcFor(cat.id),
       accent: isFavRound || isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
       total: state.total,
@@ -751,6 +756,7 @@
       tip: card.tip || null,
       catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
+      catLc: cat ? catLcFor(cat.id) : "lc:library",
       accent: cat ? cat.grad : DEFAULT_ACCENT,
       level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
       swatch: card.swatch || null,
@@ -5582,6 +5588,7 @@
         tip: card ? (card.tip || "") : (f.tip || ""),
         catId: card ? (card.cat || "") : (f.cat || ""),
         catIcon: g.icon,
+        catLc: catLcFor(card ? (card.cat || "") : (f.cat || "")),
         custom: own,
         editing: editId === f.id,
         gkey: g.key, glabel: g.label, gicon: g.icon, gorder: g.order,
@@ -6102,6 +6109,7 @@
         return {
           id: c.id, de: c.de, es: c.es, tip: c.tip,
           catIcon: cat ? cat.icon : "🗂️",
+          catLc: cat ? catLcFor(cat.id) : "lc:folder",
           catLabel: cat ? natk(cat, "label") : c.cat,
           lvlShort: lvl ? lvl.short : "",
         };
@@ -6368,6 +6376,7 @@
       tip: card.tip || null,
       catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
+      catLc: cat ? catLcFor(cat.id) : "lc:library",
       accent: cat ? cat.grad : DEFAULT_ACCENT,
       levelLabel: lvl ? `${lvl.short} · ${natk(lvl, "label")}` : null,
     };
