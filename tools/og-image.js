@@ -2,7 +2,7 @@
 /*
  * tools/og-image.js – Erzeugt die Social-Media-/OG-Vorschaubilder aus der Marke.
  *
- *   og-image.png         1200×630  – Link-Vorschau (WhatsApp, Facebook, X, LinkedIn, Signal …)
+ *   og-image.png         1200×630  – Link-Vorschau (WhatsApp, Facebook, Instagram, LinkedIn, Signal …)
  *   og-image-square.png  1080×1080 – Instagram-Post / quadratische WhatsApp-Vorschau
  *
  * Quelle der Wahrheit ist DIESES Skript (kein KI-Bildgenerator): das Bild wird aus
