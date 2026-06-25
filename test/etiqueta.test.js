@@ -70,7 +70,7 @@ test("vm() liefert Land, Regionen-Gruppen und Themenblöcke", () => {
 test("screen() baut die Knigge-Tafel (Topbar, Länder-Dropdown, Themen, tipsShareBtn)", () => {
   freshApp();
   const html = window.SC.etiqueta.screen();
-  assert.match(html, /🧭 Etiqueta de viaje/, "lokale Topbar");
+  assert.match(html, /Etiqueta de viaje/, "lokale Topbar");
   assert.match(html, /data-action="select-country"/, "geteiltes Länder-Dropdown (countryPicker)");
   assert.match(html, /class="knigge-topic"/, "aufklappbare Themenblöcke");
   assert.match(html, /data-action="share-tips" data-cat="knigge"/, "geteilter Tipp-Teilen-Knopf (SC.view)");
@@ -81,7 +81,7 @@ test("Klick open-knigge öffnet die Tafel", () => {
   const d = driver(root);
   assert.ok(d.click("set-tab", { tab: "entdecken" }), "Entdecken-Reiter erreichbar");
   assert.ok(d.click("open-knigge"), "open-knigge anklickbar");
-  assert.match(d.html(), /🧭 Etiqueta de viaje/, "Knigge-Tafel sichtbar");
+  assert.match(d.html(), /Etiqueta de viaje/, "Knigge-Tafel sichtbar");
 });
 
 test("Geteilte Länder-Auswahl: select-country wechselt das Land und rendert neu", () => {
@@ -104,5 +104,5 @@ test("Geteilte Länder-Auswahl: select-country wechselt das Land und rendert neu
   select.dispatchEvent({ type: "change", target: select, bubbles: true });
 
   assert.equal(window.SC.etiqueta.vm().country.id, otherId, "state.countryId ist umgeschaltet");
-  assert.match(d.html(), /🧭 Etiqueta de viaje/, "Knigge-Tafel nach dem Wechsel neu gerendert");
+  assert.match(d.html(), /Etiqueta de viaje/, "Knigge-Tafel nach dem Wechsel neu gerendert");
 });

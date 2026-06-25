@@ -59,7 +59,7 @@
     {
       id: "salsa",
       name: "Salsa",
-      icon: "🌶️",
+      icon: "lc:flame",
       accent: "#C0392B",
       origin: "Kuba, Puerto Rico & Cali (Kolumbien) · überall in LatAm",
       originEn: "Cuba, Puerto Rico & Cali (Colombia) · all over Latin America",
@@ -121,7 +121,7 @@
     {
       id: "bachata",
       name: "Bachata",
-      icon: "💞",
+      icon: "lc:heart",
       accent: "#B53A6E",
       origin: "Dominikanische Republik",
       originEn: "Dominican Republic",
@@ -185,7 +185,7 @@
     {
       id: "merengue",
       name: "Merengue",
-      icon: "🥁",
+      icon: "lc:drum",
       accent: "#C97A1E",
       origin: "Dominikanische Republik",
       originEn: "Dominican Republic",
@@ -244,7 +244,7 @@
     {
       id: "cumbia",
       name: "Cumbia",
-      icon: "👒",
+      icon: "lc:shirt",
       accent: "#2E8B6F",
       origin: "Kolumbien · in ganz LatAm verbreitet (México, Perú, Argentina …)",
       originEn: "Colombia · spread across all of Latin America (Mexico, Peru, Argentina …)",
@@ -308,7 +308,7 @@
     {
       id: "chachacha",
       name: "Cha-cha-chá",
-      icon: "✨",
+      icon: "lc:sparkles",
       accent: "#1F8AA8",
       origin: "Kuba",
       originEn: "Cuba",
@@ -373,7 +373,7 @@
     {
       id: "tango",
       name: "Tango",
-      icon: "🌹",
+      icon: "lc:flower-2",
       accent: "#7A2E3A",
       origin: "Argentinien & Uruguay (Río de la Plata)",
       originEn: "Argentina & Uruguay (Río de la Plata)",
@@ -435,7 +435,7 @@
     {
       id: "reggaeton",
       name: "Reggaetón (Perreo)",
-      icon: "🔥",
+      icon: "lc:flame",
       accent: "#5A3FB8",
       origin: "Puerto Rico · Panamá · heute überall im Club",
       originEn: "Puerto Rico · Panama · today everywhere in the club",
@@ -498,7 +498,7 @@
   const PHRASES = [
     {
       id: "invitar",
-      icon: "💃",
+      icon: "lc:footprints",
       title: "Jemanden zum Tanzen auffordern",
       titleEn: "Asking someone to dance",
       items: [
@@ -514,7 +514,7 @@
     },
     {
       id: "club",
-      icon: "🎉",
+      icon: "lc:party-popper",
       title: "Auf der Fiesta & im Club",
       titleEn: "At the party & in the club",
       items: [
@@ -530,7 +530,7 @@
     },
     {
       id: "pausa",
-      icon: "🙏",
+      icon: "lc:hand-heart",
       title: "Höflich ablehnen, Pause & danke",
       titleEn: "Politely declining, a break & thanks",
       items: [
@@ -572,13 +572,13 @@
 
   // ---------- Tanz-Knigge: Etikette auf der Pista (Icon + Sache + Warum) ----------
   const CHECKLIST = [
-    { icon: "🤝", item: "Freundlich auffordern", itemEn: "Ask kindly", why: "Augenkontakt, ein Lächeln und eine kurze Frage. Ein „Nein, gracias“ ist völlig okay – nie drängen.", whyEn: "Eye contact, a smile and a short question. A „no, gracias“ is perfectly fine – never push." },
-    { icon: "👟", item: "Bequeme Schuhe", itemEn: "Comfortable shoes", why: "Eine glatte Sohle dreht besser; im vollen Club keine offenen Zehen (es wird getreten).", whyEn: "A smooth sole turns better; no open toes in a crowded club (toes get stepped on)." },
-    { icon: "🚿", item: "Frisch bleiben", itemEn: "Stay fresh", why: "Eng getanzt zählt Hygiene: Deo, ein Minz-Kaugummi und ein kleines Handtuch für die Stirn.", whyEn: "Dancing close, hygiene matters: deodorant, a mint and a small towel for your forehead." },
-    { icon: "🧭", item: "Führen heißt einladen", itemEn: "Leading means inviting", why: "Sanfte, klare Signale statt Schieben. Die Folgende bestimmt das Tempo und die Nähe.", whyEn: "Gentle, clear signals instead of pushing. The follower sets the pace and the closeness." },
-    { icon: "💧", item: "Trinken & Pausen", itemEn: "Water & breaks", why: "Zwischendurch Wasser, besonders in Höhe oder Hitze – Tanzen ist Sport.", whyEn: "Water between dances, especially at altitude or in heat – dancing is exercise." },
-    { icon: "🙏", item: "Bedanken & begleiten", itemEn: "Thank & escort", why: "Nach dem Lied „¡Gracias!“ sagen und die Person zurück an den Rand begleiten – gehört zum guten Ton.", whyEn: "After the song say „¡Gracias!“ and walk the person back to the edge – it's good manners." },
-    { icon: "📵", item: "Handy weg", itemEn: "Phone away", why: "Auf der Pista zählt der Moment – tanzen statt filmen. Frag, bevor du jemanden aufnimmst.", whyEn: "On the dance floor the moment counts – dance, don't film. Ask before recording anyone." },
+    { icon: "lc:handshake", item: "Freundlich auffordern", itemEn: "Ask kindly", why: "Augenkontakt, ein Lächeln und eine kurze Frage. Ein „Nein, gracias“ ist völlig okay – nie drängen.", whyEn: "Eye contact, a smile and a short question. A „no, gracias“ is perfectly fine – never push." },
+    { icon: "lc:footprints", item: "Bequeme Schuhe", itemEn: "Comfortable shoes", why: "Eine glatte Sohle dreht besser; im vollen Club keine offenen Zehen (es wird getreten).", whyEn: "A smooth sole turns better; no open toes in a crowded club (toes get stepped on)." },
+    { icon: "lc:shower-head", item: "Frisch bleiben", itemEn: "Stay fresh", why: "Eng getanzt zählt Hygiene: Deo, ein Minz-Kaugummi und ein kleines Handtuch für die Stirn.", whyEn: "Dancing close, hygiene matters: deodorant, a mint and a small towel for your forehead." },
+    { icon: "lc:compass", item: "Führen heißt einladen", itemEn: "Leading means inviting", why: "Sanfte, klare Signale statt Schieben. Die Folgende bestimmt das Tempo und die Nähe.", whyEn: "Gentle, clear signals instead of pushing. The follower sets the pace and the closeness." },
+    { icon: "lc:droplet", item: "Trinken & Pausen", itemEn: "Water & breaks", why: "Zwischendurch Wasser, besonders in Höhe oder Hitze – Tanzen ist Sport.", whyEn: "Water between dances, especially at altitude or in heat – dancing is exercise." },
+    { icon: "lc:hand-heart", item: "Bedanken & begleiten", itemEn: "Thank & escort", why: "Nach dem Lied „¡Gracias!“ sagen und die Person zurück an den Rand begleiten – gehört zum guten Ton.", whyEn: "After the song say „¡Gracias!“ and walk the person back to the edge – it's good manners." },
+    { icon: "lc:phone-off", item: "Handy weg", itemEn: "Phone away", why: "Auf der Pista zählt der Moment – tanzen statt filmen. Frag, bevor du jemanden aufnimmst.", whyEn: "On the dance floor the moment counts – dance, don't film. Ask before recording anyone." },
   ];
 
   window.SC = window.SC || {};

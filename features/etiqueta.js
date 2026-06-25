@@ -22,7 +22,7 @@
   window.SC = window.SC || {};
   // Übersetzer wie in ui.js binden (i18n.js setzt SC.i18n.t === window.t vorab).
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, countryPicker, tipsShareBtn, moduleShareBtn } = window.SC.view;
+  const { esc, renderIcon, countryPicker, tipsShareBtn, moduleShareBtn } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -75,12 +75,12 @@
       const dos = liList(tp.dos, "knigge-do", "✅");
       const donts = liList(tp.donts, "knigge-dont", "🚫");
       const accent = tp.accent
-        ? `<div class="knigge-accent">💡 <strong>${esc(window.t("discover.kniggeAccentIn", { country: countryName }))}</strong> ${esc(tp.accent)}</div>`
+        ? `<div class="knigge-accent">${renderIcon("lc:lightbulb")} <strong>${esc(window.t("discover.kniggeAccentIn", { country: countryName }))}</strong> ${esc(tp.accent)}</div>`
         : "";
       return `
         <details class="knigge-topic">
           <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
+            <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(tp.icon)}</span>
             <span class="knigge-topic__title">${esc(tp.title)}</span>
             <span class="knigge-topic__chev" aria-hidden="true">▾</span>
           </summary>
@@ -110,7 +110,7 @@
     return `
       <div class="topbar">
         <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">🧭 Etiqueta de viaje</div>
+        <div class="topbar__title">${renderIcon("lc:compass")} Etiqueta de viaje</div>
         <span></span>
       </div>`;
   }

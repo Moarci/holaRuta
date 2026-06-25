@@ -31,17 +31,17 @@
   "use strict";
 
   const DIALOGOS_SCENARIOS = [
-    { id: "hotel",      title: "Hotel-Check-in",  titleEn: "Hotel check-in",  icon: "🛎️", lvl: 1, intro: "An der Rezeption einchecken.", introEn: "Check in at reception." },
-    { id: "restaurante",title: "Im Restaurant",   titleEn: "At the restaurant",   icon: "🍽️", lvl: 1, intro: "Bestellen, fragen, zahlen.", introEn: "Order, ask, pay." },
-    { id: "bus",        title: "Busticket kaufen", titleEn: "Buy a bus ticket", icon: "🚌", lvl: 1, intro: "Am Schalter ein Ticket lösen.", introEn: "Get a ticket at the counter." },
-    { id: "taxi",       title: "Taxifahrt",       titleEn: "Taxi ride",       icon: "🚕", lvl: 1, intro: "Ziel nennen und Preis klären.", introEn: "Give your destination and sort out the price." },
-    { id: "mercado",    title: "Auf dem Markt",   titleEn: "At the market",   icon: "🛍️", lvl: 2, intro: "Fragen und freundlich feilschen.", introEn: "Ask questions and haggle nicely." },
-    { id: "farmacia",   title: "In der Apotheke", titleEn: "At the pharmacy", icon: "💊", lvl: 2, intro: "Beschwerden schildern, Hilfe holen.", introEn: "Describe your symptoms and get help." },
-    { id: "hostel",     title: "Hostel-Smalltalk", titleEn: "Hostel small talk", icon: "🛏️", lvl: 2, intro: "Andere Reisende kennenlernen.", introEn: "Get to know other travellers." },
-    { id: "frontera",   title: "An der Grenze",   titleEn: "At the border",   icon: "🛂", lvl: 2, intro: "Ein- und Ausreise-Fragen.", introEn: "Entry and exit questions." },
-    { id: "emergencia", title: "Notfall",         titleEn: "Emergency",         icon: "🆘", lvl: 2, intro: "Schnell um Hilfe bitten.", introEn: "Ask for help quickly." },
-    { id: "calle",      title: "Nach dem Weg fragen", titleEn: "Asking for directions", icon: "🧭", lvl: 1, intro: "Sich auf der Straße orientieren.", introEn: "Find your way around on the street." },
-    { id: "coqueteo",   title: "Coquetear con respeto", titleEn: "Flirting with respect", icon: "💘", lvl: 2, intro: "Jemanden kennenlernen: ansprechen, Kompliment, Date – und Konsens.", introEn: "Meeting someone: an opening line, a compliment, a date – and consent." },
+    { id: "hotel",      title: "Hotel-Check-in",  titleEn: "Hotel check-in",  icon: "lc:bell", lvl: 1, intro: "An der Rezeption einchecken.", introEn: "Check in at reception." },
+    { id: "restaurante",title: "Im Restaurant",   titleEn: "At the restaurant",   icon: "lc:utensils", lvl: 1, intro: "Bestellen, fragen, zahlen.", introEn: "Order, ask, pay." },
+    { id: "bus",        title: "Busticket kaufen", titleEn: "Buy a bus ticket", icon: "lc:bus", lvl: 1, intro: "Am Schalter ein Ticket lösen.", introEn: "Get a ticket at the counter." },
+    { id: "taxi",       title: "Taxifahrt",       titleEn: "Taxi ride",       icon: "lc:car-taxi-front", lvl: 1, intro: "Ziel nennen und Preis klären.", introEn: "Give your destination and sort out the price." },
+    { id: "mercado",    title: "Auf dem Markt",   titleEn: "At the market",   icon: "lc:shopping-bag", lvl: 2, intro: "Fragen und freundlich feilschen.", introEn: "Ask questions and haggle nicely." },
+    { id: "farmacia",   title: "In der Apotheke", titleEn: "At the pharmacy", icon: "lc:pill", lvl: 2, intro: "Beschwerden schildern, Hilfe holen.", introEn: "Describe your symptoms and get help." },
+    { id: "hostel",     title: "Hostel-Smalltalk", titleEn: "Hostel small talk", icon: "lc:bed", lvl: 2, intro: "Andere Reisende kennenlernen.", introEn: "Get to know other travellers." },
+    { id: "frontera",   title: "An der Grenze",   titleEn: "At the border",   icon: "lc:stamp", lvl: 2, intro: "Ein- und Ausreise-Fragen.", introEn: "Entry and exit questions." },
+    { id: "emergencia", title: "Notfall",         titleEn: "Emergency",         icon: "lc:life-buoy", lvl: 2, intro: "Schnell um Hilfe bitten.", introEn: "Ask for help quickly." },
+    { id: "calle",      title: "Nach dem Weg fragen", titleEn: "Asking for directions", icon: "lc:compass", lvl: 1, intro: "Sich auf der Straße orientieren.", introEn: "Find your way around on the street." },
+    { id: "coqueteo",   title: "Coquetear con respeto", titleEn: "Flirting with respect", icon: "lc:heart", lvl: 2, intro: "Jemanden kennenlernen: ansprechen, Kompliment, Date – und Konsens.", introEn: "Meeting someone: an opening line, a compliment, a date – and consent." },
   ];
 
   const DIALOGOS = [

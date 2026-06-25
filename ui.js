@@ -154,7 +154,7 @@
     { action: "open-responsable", icon: "lc:sprout", title: "Viaja responsable",  subKey: "discover.subResponsable", sub: "Leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik", grad: ["#3F7355", "#5E7D3A"], need: "responsable", group: "reference" },
     { action: "open-fotos",       icon: "lc:camera", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
     { action: "open-flirt",       icon: "lc:heart", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
-    { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
+    { action: "open-bailar",      icon: "lc:footprints", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
     { action: "open-musica",      icon: "lc:music", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
     { action: "open-cafe",        icon: "lc:coffee", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
     { action: "open-juegos",      icon: "lc:dices", title: "Juegos de viaje",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
@@ -182,6 +182,14 @@
     { id: "travel",  titleKey: "home.catGroupTravel" },
     { id: "destinos", titleKey: "home.catGroupDestinos" },
   ];
+
+  // Lucide-Icon je Lern-Kategorie (Themen-Kacheln im Lernen-Reiter). Schlüssel ist
+  // die stabile Kategorie-Id (nicht das Emoji), Wert ein "lc:"-Token aus icons.js.
+  // catIcon() fällt auf das Inhalts-Emoji aus data.js zurück, sodass die
+  // Reiseziel-Flaggen (destinos) unverändert als Flaggen-Emoji bleiben und auch
+  // <option>-Dropdowns (kein SVG möglich) weiter das Emoji nutzen.
+  const CAT_ICON = (window.SC && window.SC.catIcon) || {};
+  const catIcon = (c) => (c && CAT_ICON[c.id]) || (c && c.icon) || "";
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
   // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
@@ -221,23 +229,23 @@
     // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
     // sonst gäbe es nichts zu hören (graceful degradation).
     const listenSeg = speechReady()
-      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">${esc(t("home.modeListen"))}</button>`
+      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">${renderIcon("lc:ear")} ${esc(t("home.modeListen"))}</button>`
       : "";
     // Kurz-Info zu den Modi: erklärt direkt unter der Auswahl, was jeder Modus macht
     // und welche Lern-Aufgabe er hat. Der aktive Modus wird hervorgehoben. Hören nur,
     // wenn der Browser vorlesen kann (sonst gibt es den Modus gar nicht).
     const modeRows = [
-      { id: "flip", label: t("home.modeFlip"), desc: t("home.modeFlipDesc") },
-      { id: "type", label: t("home.modeType"), desc: t("home.modeTypeDesc") },
+      { id: "flip", icon: "lc:layers", label: t("home.modeFlip"), desc: t("home.modeFlipDesc") },
+      { id: "type", icon: "lc:square-pen", label: t("home.modeType"), desc: t("home.modeTypeDesc") },
     ];
-    if (speechReady()) modeRows.push({ id: "listen", label: t("home.modeListen"), desc: t("home.modeListenDesc") });
+    if (speechReady()) modeRows.push({ id: "listen", icon: "lc:ear", label: t("home.modeListen"), desc: t("home.modeListenDesc") });
     const modeInfo = `
       <div class="modeinfo">
         <span class="switchcap">${esc(t("home.modeInfoCap"))}</span>
         <ul class="modeinfo__list">
           ${modeRows.map((r) => `
             <li class="modeinfo__item${mode === r.id ? " is-active" : ""}">
-              <span class="modeinfo__label">${esc(r.label)}</span>
+              <span class="modeinfo__label">${renderIcon(r.icon)} ${esc(r.label)}</span>
               <span class="modeinfo__desc">${esc(r.desc)}</span>
             </li>`).join("")}
         </ul>
@@ -259,8 +267,8 @@
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.modeLabel"))}</span>
         <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="${esc(t("home.modeAria"))}">
-          <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">${esc(t("home.modeFlip"))}</button>
-          <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">${esc(t("home.modeType"))}</button>
+          <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">${renderIcon("lc:layers")} ${esc(t("home.modeFlip"))}</button>
+          <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">${renderIcon("lc:square-pen")} ${esc(t("home.modeType"))}</button>
           ${listenSeg}
         </div>
         ${modeInfo}
@@ -286,7 +294,7 @@
       ? `<span class="trip__route" aria-label="${esc(t("home.tripRouteCap"))}">${route.map((s, i) =>
           `${i ? `<span class="trip__arrow" aria-hidden="true">→</span>` : ""}<span class="trip__stop">${s.flag ? `<span class="trip__stop-flag">${esc(s.flag)}</span>` : ""}<span class="trip__stop-name">${esc(s.dest)}</span></span>`
         ).join("")}</span>`
-      : `<span class="trip__dest">🎯 ${dest}</span>`;
+      : `<span class="trip__dest">${renderIcon("lc:map-pin")} ${dest}</span>`;
     // Persönliche Ansprache nur bei der Abreise-/Heute-Meldung (Countdown bleibt sachlich).
     const who = trip.userName ? esc(trip.userName) + ", " : "";
     // Oben steht klar die Reise (Countdown bzw. Abreise-Meldung). Das tägliche
@@ -459,10 +467,10 @@
   // bis „Wie viel steckt drin". Die Anzahl wird exportiert, damit app.js den letzten
   // Slide kennt (dann „Los geht's" → Profil-Schritt).
   const ONBOARD_SLIDES = [
-    { icon: "🌶️", title: "home.onboardSlide1Title", body: "home.onboardSlide1Body" },
-    { icon: "🃏", title: "home.onboardSlide2Title", body: "home.onboardSlide2Body" },
-    { icon: "🧭", title: "home.onboardSlide3Title", body: "home.onboardSlide3Body" },
-    { icon: "🗺️", title: "home.onboardSlide4Title", body: "home.onboardSlide4Body" },
+    { icon: "lc:flame", title: "home.onboardSlide1Title", body: "home.onboardSlide1Body" },
+    { icon: "lc:layers", title: "home.onboardSlide2Title", body: "home.onboardSlide2Body" },
+    { icon: "lc:compass", title: "home.onboardSlide3Title", body: "home.onboardSlide3Body" },
+    { icon: "lc:map", title: "home.onboardSlide4Title", body: "home.onboardSlide4Body" },
   ];
 
   // Intro-Slides rendern (Schritt 'intro'). Ein Slide zur Zeit, mit Punkt-Navigation
@@ -483,7 +491,7 @@
         <div class="onboarding__inner">
           ${brand}
           <div class="onboarding__slide">
-            <div class="onboarding__icon" aria-hidden="true">${s.icon}</div>
+            <div class="onboarding__icon" aria-hidden="true">${renderIcon(s.icon)}</div>
             <h1 class="onboarding__title">${esc(t(s.title))}</h1>
             <p class="onboarding__intro">${esc(t(s.body))}</p>
           </div>
@@ -527,7 +535,7 @@
             <h1 class="onboarding__title">${esc(welcomeTitle)}</h1>
             <p class="onboarding__intro">${esc(t("home.onboardWelcomeIntro"))}</p>
             <form class="trip trip--edit" data-action="onboard-profile-next">
-              <label class="trip__field"><span>${esc(t("home.nameCap"))}</span>
+              <label class="trip__field"><span>${renderIcon("lc:user")} ${esc(t("home.nameCap"))}</span>
                 <input id="onboard-name" type="text" maxlength="40"
                        autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
                        placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" /></label>
@@ -580,7 +588,7 @@
     return `
       <div class="xpbanner">
         <div class="xpbanner__head">
-          <span class="xpbanner__rank">🧭 ${esc(xp.rankName)}</span>
+          <span class="xpbanner__rank">${renderIcon("lc:compass")} ${esc(xp.rankName)}</span>
           <span class="xpbanner__xp">${esc(t("profile.xpPoints", { n: xp.xp }))}</span>
         </div>
         <div class="xpbanner__track" role="img" aria-label="${esc(hint)}">
@@ -727,7 +735,7 @@
     const hostelBanner = (hcfg && hcfg.banner)
       ? `
       <button class="hist-banner" data-action="open-hostel">
-        <span class="hist-banner__icon" aria-hidden="true">🛏️</span>
+        <span class="hist-banner__icon" aria-hidden="true">${renderIcon("lc:bed")}</span>
         <span class="hist-banner__text">
           <span class="hist-banner__title">${esc(t("home.hostelBannerTitle"))}</span>
           <span class="hist-banner__sub">${esc(t("home.hostelBannerSub"))}</span>
@@ -816,7 +824,7 @@
       return `
         <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
                 style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
-          <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
+          <span class="tile__icon" aria-hidden="true">${renderIcon(catIcon(c))}</span>
           <span class="tile__label">${esc(c.label)}</span>
           <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
           ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
@@ -958,7 +966,7 @@
       <li class="pl-review__item pl-review__item--${esc(r.status)}">
         <p class="pl-review__q">
           <span class="pl-review__icon" aria-hidden="true">${renderIcon(reviewIcon[r.status] || "")}</span>
-          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? "🎧 " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
+          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? renderIcon("lc:headphones") + " " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
         </p>
         ${r.status !== "correct" ? `
           <p class="pl-review__line">
@@ -1105,7 +1113,7 @@
     // (change-Handler in app.js), falls ohne „Speichern" weggetippt wird.
     const nameGroup = `
       <form class="switchgroup namefield" data-action="save-name">
-        <label class="switchcap" for="profile-name">${esc(t("home.nameCap"))}</label>
+        <label class="switchcap" for="profile-name">${renderIcon("lc:user")} ${esc(t("home.nameCap"))}</label>
         <div class="namefield__row">
           <input id="profile-name" class="namefield__input" type="text" maxlength="40"
                  autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
@@ -1322,7 +1330,7 @@
       <section class="screen study" style="--from:${esc(accent[0])};--to:${esc(accent[1])}">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
+          <div class="topbar__title">${renderIcon(vm.catLc || vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
             <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
           </div>
@@ -1417,7 +1425,7 @@
   // Karteikarte-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
   // 🔊 und Aussprache-Tipp sitzen immer auf der spanischen Seite.
   function flipBody(vm) {
-    const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";
+    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:megaphone")} ${esc(vm.tip)}</div>` : "";
     const sq = vm.spanishIsQuestion; // Spanisch steht vorne (Frage)?
     return `
       <div class="flip ${vm.revealed ? "is-flipped" : ""}" data-action="flip" id="flip"
@@ -1453,7 +1461,7 @@
   function typeBody(vm) {
     const res = vm.typeResult; // null | {correct, answers, input}
     const sq = vm.spanishIsQuestion;
-    const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";
+    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:megaphone")} ${esc(vm.tip)}</div>` : "";
 
     if (!res) {
       const inputHint = sq ? t("study.inputDe") : t("study.inputEs");
@@ -1501,7 +1509,7 @@
   // Modus. Reuse: 🔊 (data-action="speak"), typer-Formular, rateButtons.
   function listenBody(vm) {
     const res = vm.typeResult; // null | {correct, answers, input}
-    const tip = vm.tip ? `<div class="face__tip">🗣️ ${esc(vm.tip)}</div>` : "";
+    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:megaphone")} ${esc(vm.tip)}</div>` : "";
 
     if (!res) {
       const replay = speechReady()
@@ -1610,7 +1618,7 @@
     if (b.secret) {
       return `
         <div class="badge is-locked badge--secret" aria-label="${esc(t("profile.badgeSecretLabel"))}">
-          <span class="badge__icon" aria-hidden="true">❓</span>
+          <span class="badge__icon" aria-hidden="true">${renderIcon("lc:help-circle")}</span>
           <span class="badge__name">${esc(t("profile.badgeSecretName"))}</span>
           <span class="badge__desc">${esc(t("profile.badgeSecretDesc"))}</span>
         </div>`;
@@ -1636,7 +1644,7 @@
         <section class="screen">
           <div class="topbar">
             <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-            <div class="topbar__title">🎖️ ${esc(t("profile.rutaPass"))}</div>
+            <div class="topbar__title">${renderIcon("lc:medal")} ${esc(t("profile.rutaPass"))}</div>
             <span></span>
           </div>
           <p class="stat-empty">${esc(t("profile.passUnavailable"))}</p>
@@ -1658,7 +1666,7 @@
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">🎖️ ${esc(t("profile.rutaPass"))}</div>
+          <div class="topbar__title">${renderIcon("lc:medal")} ${esc(t("profile.rutaPass"))}</div>
           <div class="topbar__counter">${vm.unlocked}/${vm.total}</div>
         </div>
 
@@ -1691,7 +1699,7 @@
       : (list.length > 1 ? t("profile.badgeNewMulti", { n: list.length }) : t("profile.badgeNewOne"));
     return `
       <button class="btoast" data-action="open-badges" aria-label="${esc(t("profile.badgeToastLabel", { head }))}">
-        <span class="btoast__head">🎖️ ${esc(head)}</span>
+        <span class="btoast__head">${renderIcon("lc:medal")} ${esc(head)}</span>
         ${items}
       </button>`;
   }
@@ -1800,9 +1808,9 @@
   function routeMap(ov) {
     const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
     const stops = [
-      { icon: "🆕", label: t("profile.routeNew"),       n: ov.neu,      cls: "is-new",    at: 0 },
-      { icon: "📚", label: t("profile.routeLearning"),  n: ov.learning, cls: "is-learn",  at: 50 },
-      { icon: "🏁", label: t("profile.routeMastered"),  n: ov.mastered, cls: "is-master", at: 100 },
+      { icon: "lc:sparkles", label: t("profile.routeNew"),       n: ov.neu,      cls: "is-new",    at: 0 },
+      { icon: "lc:book-open", label: t("profile.routeLearning"),  n: ov.learning, cls: "is-learn",  at: 50 },
+      { icon: "lc:award", label: t("profile.routeMastered"),  n: ov.mastered, cls: "is-master", at: 100 },
     ];
     // Haltestellen-Punkte sitzen auf der Linie, Beschriftung läuft im
     // normalen Fluss darunter – so überlappt nichts (auch bei 0 %).
@@ -1812,7 +1820,7 @@
     const stopsHtml = stops.map((s) => `
       <div class="route__stop ${s.cls}">
         <span class="route__n">${s.n}</span>
-        <span class="route__lbl">${s.icon} ${esc(s.label)}</span>
+        <span class="route__lbl">${renderIcon(s.icon)} ${esc(s.label)}</span>
       </div>`).join("");
     return `
       <div class="route" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct }))}">
@@ -1823,7 +1831,7 @@
         <div class="route__track">
           <div class="route__fill" style="width:${pct}%"></div>
           ${nodesHtml}
-          <span class="route__bus" style="left:${pct}%" aria-hidden="true">🚌</span>
+          <span class="route__bus" style="left:${pct}%" aria-hidden="true">${renderIcon("lc:bus")}</span>
         </div>
         <div class="route__stops">${stopsHtml}</div>
       </div>`;
@@ -1910,7 +1918,7 @@
         <span class="statrow__main">
           <span class="statrow__de">${esc(r.de)}</span>
           <span class="statrow__es" lang="es">${esc(r.es)}</span>
-          <span class="statrow__meta">${esc(r.catIcon)} ${esc(r.catLabel)} · ${esc(seen)}${r.s.lapses ? ` · ${esc(t("profile.forgotTimes", { n: r.s.lapses }))}` : ""}</span>
+          <span class="statrow__meta">${renderIcon(r.catLc || r.catIcon)} ${esc(r.catLabel)} · ${esc(seen)}${r.s.lapses ? ` · ${esc(t("profile.forgotTimes", { n: r.s.lapses }))}` : ""}</span>
         </span>
         <span class="statrow__right">
           ${rateBadge(r.s.rate)}
@@ -1931,7 +1939,7 @@
     const s = vm.s;
     const meta = STATUS_META[displayStatus(s)] || STATUS_META.new;
     const accent = vm.accent;
-    const tip = vm.tip ? `<div class="cardx__tip">🗣️ ${esc(vm.tip)}</div>` : "";
+    const tip = vm.tip ? `<div class="cardx__tip">${renderIcon("lc:megaphone")} ${esc(vm.tip)}</div>` : "";
 
     // Aufschlüsselung der Bewertungen als kleine Balken.
     const total = s.seen || 1;
@@ -1973,7 +1981,7 @@
       <section class="screen" style="--from:${esc(accent[0])};--to:${esc(accent[1])}">
         <div class="topbar">
           <button class="iconbtn" data-action="card-back" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${esc(vm.catIcon)} ${esc(vm.catLabel)}</div>
+          <div class="topbar__title">${renderIcon(vm.catLc || vm.catIcon)} ${esc(vm.catLabel)}</div>
           ${favStar(vm.id, vm.isFav, { cls: "favstar--top" })}
         </div>
 
@@ -2056,15 +2064,15 @@
   }
 
   function editorItem(c) {
-    const tip = c.tip ? ` · 🗣️ ${esc(c.tip)}` : "";
+    const tip = c.tip ? ` · ${renderIcon("lc:megaphone")} ${esc(c.tip)}` : "";
     return `
       <div class="ed-item">
         <div class="ed-item__main">
           <div class="ed-item__de">${esc(c.de)}</div>
           <div class="ed-item__es" lang="es">${esc(c.es)}</div>
-          <div class="ed-item__meta">${esc(c.catIcon)} ${esc(c.catLabel)}${c.lvlShort ? ` · ${esc(c.lvlShort)}` : ""}${tip}</div>
+          <div class="ed-item__meta">${renderIcon(c.catLc || c.catIcon)} ${esc(c.catLabel)}${c.lvlShort ? ` · ${esc(c.lvlShort)}` : ""}${tip}</div>
         </div>
-        <button class="ed-del" type="button" data-action="delete-card" data-id="${esc(c.id)}" aria-label="${esc(t("common.delete"))}" title="${esc(t("common.deleteTitle"))}">🗑️</button>
+        <button class="ed-del" type="button" data-action="delete-card" data-id="${esc(c.id)}" aria-label="${esc(t("common.delete"))}" title="${esc(t("common.deleteTitle"))}">${renderIcon("lc:trash-2")}</button>
       </div>`;
   }
 
@@ -2114,18 +2122,18 @@
       <div class="fav-row">
         <button class="fav-row__main" type="button" data-action="fav-show" data-id="${esc(it.id)}"
                 title="${esc(t("favorites.show"))}">
-          <span class="fav-row__icon" aria-hidden="true">${esc(it.catIcon)}</span>
+          <span class="fav-row__icon" aria-hidden="true">${renderIcon(it.catLc || it.catIcon)}</span>
           <span class="fav-row__text">
             <span class="fav-row__es" lang="es">${esc(it.es)}</span>
             <span class="fav-row__de">${esc(it.de)}</span>
-            ${it.tip ? `<span class="fav-row__tip">🗣️ ${esc(it.tip)}</span>` : ""}
+            ${it.tip ? `<span class="fav-row__tip">${renderIcon("lc:megaphone")} ${esc(it.tip)}</span>` : ""}
           </span>
         </button>
         ${vm.speakable
           ? `<button class="fav-row__speak" type="button" data-action="fav-speak" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">${renderIcon("lc:volume-2")}</button>`
           : ""}
         ${it.custom
-          ? `<button class="fav-row__edit" type="button" data-action="fav-edit" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.edit"))}" title="${esc(t("favorites.edit"))}">✏️</button>`
+          ? `<button class="fav-row__edit" type="button" data-action="fav-edit" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.edit"))}" title="${esc(t("favorites.edit"))}">${renderIcon("lc:square-pen")}</button>`
           : ""}
         <button class="fav-row__rm" type="button" data-action="fav-remove" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.remove"))}" title="${esc(t("favorites.remove"))}">★</button>
       </div>`;
@@ -2168,7 +2176,7 @@
     // von #fav-results, damit das Feld beim Live-Filtern Fokus + Cursor behält.
     const filter = vm.hasAny ? `
       <div class="searchfield fav-filter">
-        <span class="searchfield__icon" aria-hidden="true">🔍</span>
+        <span class="searchfield__icon" aria-hidden="true">${renderIcon("lc:search")}</span>
         <input id="fav-filter" class="searchfield__input" type="search" inputmode="search"
                autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
                placeholder="${esc(t("favorites.filterPlaceholder"))}" aria-label="${esc(t("favorites.filterPlaceholder"))}"
@@ -2219,7 +2227,7 @@
           ${vm.showSrc ? `<p class="sz-show__src">${esc(vm.showSrc.icon)} ${esc(vm.showSrc.label)}</p>` : ""}
           <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
           <p class="sz-show__de">${esc(vm.show.de)}</p>
-          ${vm.show.tip ? `<p class="sz-show__tip">🗣️ ${esc(vm.show.tip)}</p>` : ""}
+          ${vm.show.tip ? `<p class="sz-show__tip">${renderIcon("lc:megaphone")} ${esc(vm.show.tip)}</p>` : ""}
           <div class="sz-show__actions">
             ${vm.speakable
               ? `<button class="cta" type="button" data-action="fav-speak" data-id="${esc(vm.show.id)}">${esc(t("favorites.listenBig"))}</button>`
@@ -2231,7 +2239,7 @@
 
     return `
       <section class="screen">
-        ${hmTopbar("⭐ " + t("favorites.title"), "home")}
+        ${hmTopbar(`${renderIcon("lc:star")} ` + t("favorites.title"), "home")}
         <p class="hm-intro">${esc(t("favorites.intro"))}</p>
         ${toolbar}
         ${filter}
@@ -2251,9 +2259,9 @@
   // WANN die Lehrkraft/Reiseleitung sie wählen sollte. Geteilt von beiden Stellen
   // über ctx ("task" | "sheet"); die Auswahl landet via data-action="pick-target".
   const TARGET_GROUPS = [
-    { id: "pretrip",  icon: "🗓️", labelKey: "teacher.grpPretrip",  helpKey: "teacher.grpPretripHelp" },
-    { id: "preset",   icon: "🎒", labelKey: "teacher.grpPreset",   helpKey: "teacher.grpPresetHelp" },
-    { id: "category", icon: "📦", labelKey: "teacher.grpCategory", helpKey: "teacher.grpCategoryHelp" },
+    { id: "pretrip",  icon: "lc:calendar", labelKey: "teacher.grpPretrip",  helpKey: "teacher.grpPretripHelp" },
+    { id: "preset",   icon: "lc:backpack", labelKey: "teacher.grpPreset",   helpKey: "teacher.grpPresetHelp" },
+    { id: "category", icon: "lc:package", labelKey: "teacher.grpCategory", helpKey: "teacher.grpCategoryHelp" },
   ];
   // Abschnitte der Bundle-Vorlagen im Picker (Reihenfolge = Anzeigereihenfolge).
   const BUNDLE_GROUPS = [
@@ -2280,14 +2288,14 @@
       const cur = (opts.targets || []).find((x) => x.value === opts.current);
       const g = cur ? targetGroupOf(cur.value) : null;
       valLine = cur
-        ? `${g ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
+        ? `${g ? `<span class="tgt-field__kicker">${renderIcon(g.icon)} ${esc(t(g.labelKey))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
         : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
     } else {
       const s = opts.summary || { kind: "none" };
       if (s.kind === "single") {
         valLine = `<span class="tgt-field__kicker">${esc(t("teacher.sumSingle"))}</span><span class="tgt-field__val">${esc(s.label)}</span>`;
       } else if (s.kind === "bundle") {
-        valLine = `<span class="tgt-field__kicker">📦 ${esc(t("teacher.sumBundle"))}</span><span class="tgt-field__val">${esc(s.label)} · ${esc(t("teacher.bundleItems", { n: s.count }))}</span>`;
+        valLine = `<span class="tgt-field__kicker">${renderIcon("lc:package")} ${esc(t("teacher.sumBundle"))}</span><span class="tgt-field__val">${esc(s.label)} · ${esc(t("teacher.bundleItems", { n: s.count }))}</span>`;
       } else {
         valLine = `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
       }
@@ -2316,7 +2324,7 @@
       }).join("");
       return `
         <section class="tgt-group">
-          <h3 class="tgt-group__title">${g.icon} ${esc(t(g.labelKey))}</h3>
+          <h3 class="tgt-group__title">${renderIcon(g.icon)} ${esc(t(g.labelKey))}</h3>
           <p class="tgt-group__help">${esc(t(g.helpKey))}</p>
           <div class="tgt-opts">${rows}</div>
         </section>`;
@@ -2354,7 +2362,7 @@
       const active = activeBundles.indexOf(b.id) >= 0;
       return `<button type="button" class="tgt-bundle${active ? " is-active" : ""}"
                 data-action="apply-bundle" data-bundle="${esc(b.id)}"${active ? ' aria-current="true"' : ""}>
-                <span class="tgt-bundle__icon" aria-hidden="true">${b.icon}</span>
+                <span class="tgt-bundle__icon" aria-hidden="true">${renderIcon(b.icon)}</span>
                 <span class="tgt-bundle__text"><span class="tgt-bundle__label">${esc(b.label)}</span>
                   <span class="tgt-bundle__meta">${esc(t("teacher.bundleItems", { n: b.count }))}</span></span>
                 <span class="tgt-opt__check" aria-hidden="true">${active ? "✓" : ""}</span>
@@ -2486,7 +2494,7 @@
         ? `<h4 class="cinfo-sub">${esc(t("discover.infoAthletes"))}</h4><ul class="cinfo-athletes">${athletes}</ul>`
         : "";
       const sportsBody = sportsIntro + popularBlock + athletesBlock;
-      if (sportsBody) sportsSect = sect("⚽", t("discover.infoSports"), sportsBody);
+      if (sportsBody) sportsSect = sect("lc:goal", t("discover.infoSports"), sportsBody);
     }
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
@@ -2501,7 +2509,7 @@
       factRow(t("discover.infoLivelihood"), c.livelihood),
     ].join("");
     const peopleSect = peopleFacts
-      ? sect("👥", t("discover.infoPeople"), `<div class="cinfo-facts">${peopleFacts}</div>`)
+      ? sect("lc:users", t("discover.infoPeople"), `<div class="cinfo-facts">${peopleFacts}</div>`)
       : "";
 
     // Brücke zur passenden kontinentalen Geschichte: mittelamerikanische Länder
@@ -2509,11 +2517,11 @@
     // Historia de Sudamérica. Jeweils nur, wenn das Modul geladen ist.
     const inCentro = vm.country && vm.country.region === "Mittelamerika";
     const histTarget = inCentro
-      ? (vm.hasHistoriaCentro ? { action: "open-historia-centro", icon: "🌋", title: t("discover.histBannerCentroTitle"), sub: t("discover.histBannerCentroSub") } : null)
-      : (vm.hasHistoria ? { action: "open-historia", icon: "📜", title: t("discover.histBannerTitle"), sub: t("discover.histBannerSub") } : null);
+      ? (vm.hasHistoriaCentro ? { action: "open-historia-centro", icon: "lc:mountain", title: t("discover.histBannerCentroTitle"), sub: t("discover.histBannerCentroSub") } : null)
+      : (vm.hasHistoria ? { action: "open-historia", icon: "lc:scroll", title: t("discover.histBannerTitle"), sub: t("discover.histBannerSub") } : null);
     const histBanner = histTarget ? `
       <button class="hist-banner" data-action="${histTarget.action}">
-        <span class="hist-banner__icon" aria-hidden="true">${histTarget.icon}</span>
+        <span class="hist-banner__icon" aria-hidden="true">${renderIcon(histTarget.icon)}</span>
         <span class="hist-banner__text">
           <span class="hist-banner__title">${esc(histTarget.title)}</span>
           <span class="hist-banner__sub">${esc(histTarget.sub)}</span>
@@ -2536,12 +2544,12 @@
             <p class="cinfo-head__cap">${t("discover.infoCapital", { capital: esc(c.capital) })}</p>
           </div>
         </div>
-        <button class="hist-share cinfo-share" type="button" data-action="share-country">📤 ${esc(t("discover.tipsShare"))}</button>
+        <button class="hist-share cinfo-share" type="button" data-action="share-country">${renderIcon("lc:upload")} ${esc(t("discover.tipsShare"))}</button>
 
-        ${sect("🌎", t("discover.infoAbout"), para(c.about))}
+        ${sect("lc:globe", t("discover.infoAbout"), para(c.about))}
         ${peopleSect}
-        ${sect("📜", t("discover.infoHistory"), para(c.history))}
-        ${sect("🗣️", t("discover.infoLanguage"), para(c.language) + wordsBlock)}
+        ${sect("lc:scroll", t("discover.infoHistory"), para(c.history))}
+        ${sect("lc:megaphone", t("discover.infoLanguage"), para(c.language) + wordsBlock)}
 
         <div class="cinfo-sect cinfo-sect--food">
           <h3 class="cinfo-sect__h">${t("discover.infoFood")}</h3>
@@ -2560,7 +2568,7 @@
     return `
       <div class="topbar">
         <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">🌎 Países y culturas</div>
+        <div class="topbar__title">${renderIcon("lc:globe")} Países y culturas</div>
         <span></span>
       </div>`;
   }
@@ -2664,7 +2672,7 @@
     return `
       <div class="topbar">
         <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">☕ Bebidas AM/PM</div>
+        <div class="topbar__title">${renderIcon("lc:coffee")} Bebidas AM/PM</div>
         <span></span>
       </div>`;
   }
@@ -2750,7 +2758,7 @@
   // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
   function renderLogistica(vm) {
     return moduleSheet(vm, {
-      icon: "🧳", title: "Logística de viaje", cat: "logistica",
+      icon: "lc:luggage", title: "Logística de viaje", cat: "logistica",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
       headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
@@ -2761,7 +2769,7 @@
   // Salud y energía: ausgewogen essen, günstig trinken, Bauch, Sonne/Höhe, Bewegung.
   function renderSalud(vm) {
     return moduleSheet(vm, {
-      icon: "🥗", title: "Salud y energía", cat: "salud",
+      icon: "lc:salad", title: "Salud y energía", cat: "salud",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
       headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
@@ -2775,7 +2783,7 @@
   // spanische Lesetraining je Thema, copyPhrases für Sätze zum Weiterschicken.
   function renderCafe(vm) {
     return moduleSheet(vm, {
-      icon: "☕", title: "Café de la región", cat: "cafe",
+      icon: "lc:coffee", title: "Café de la región", cat: "cafe",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.cfTips", headPhrases: "discover.cfPhrases",
       headWords: "discover.cfWords", headChecklist: "discover.cfChecklist",
@@ -2790,7 +2798,7 @@
   // Gleiches Sheet wie Salud/Flirt; readingPerTopic für die LatAm-Kultur-Texte.
   function renderJuegos(vm) {
     return moduleSheet(vm, {
-      icon: "🎲", title: "Juegos de viaje", cat: "juegos",
+      icon: "lc:dices", title: "Juegos de viaje", cat: "juegos",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.jgTips", headPhrases: "discover.jgPhrases",
       headWords: "discover.jgWords", headChecklist: "discover.jgChecklist",
@@ -2804,7 +2812,7 @@
   // vorschlagen, Dating-Kultur, sicher daten. Gleiches Sheet wie Salud/Logística.
   function renderFlirt(vm) {
     return moduleSheet(vm, {
-      icon: "💘", title: "Coqueteo y romance", cat: "flirt",
+      icon: "lc:heart", title: "Coqueteo y romance", cat: "flirt",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.flTips", headPhrases: "discover.flPhrases",
       headWords: "discover.flWords", headChecklist: "discover.flChecklist",
@@ -2855,14 +2863,14 @@
       const lvl = levelMeta(tp.level);
       const reading = (tp.es && tp.es.length)
         ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
              <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
            </details>`
         : "";
       return `
         <details class="knigge-topic">
           <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
+            <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(tp.icon)}</span>
             <span class="knigge-topic__title">${esc(tp.title)}</span>
             <span class="knigge-topic__chev" aria-hidden="true">▾</span>
           </summary>
@@ -2902,7 +2910,7 @@
             <h3 class="foto-app__name">${esc(a.name)}${a.platform ? ` <span class="foto-app__plat">${esc(a.platform)}</span>` : ""}</h3>
             <p class="foto-app__desc">${esc(a.desc)}</p>
             ${bullets}
-            ${a.url ? `<a class="foto-app__link" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">🔗 ${esc(linkLabel)}</a>` : ""}
+            ${a.url ? `<a class="foto-app__link" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">${renderIcon("lc:link")} ${esc(linkLabel)}</a>` : ""}
           </div>
         </article>`;
     };
@@ -2916,7 +2924,7 @@
 
     const checklist = (vm.checklist || []).map((c) => `
       <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
         <span class="rg-region__body">
           <span class="rg-region__country">${esc(c.item)}</span>
           <span class="rg-region__note">${esc(c.why)}</span>
@@ -2926,23 +2934,23 @@
     // Sprungmarken-Leiste (wie hist-nav/sz-nav): die Seite ist lang, ein Tipp
     // springt direkt zum Abschnitt. Nur Chips für tatsächlich vorhandene Blöcke.
     const navItems = [
-      topics && { id: "ft-tips", icon: "🎯", label: t("discover.ftNavTips") },
-      phrases && { id: "ft-phrases", icon: "💬", label: t("discover.ftNavPhrases") },
-      sharing && { id: "ft-share", icon: "📤", label: t("discover.ftNavShare") },
-      apps && { id: "ft-apps", icon: "📲", label: t("discover.ftNavApps") },
-      glossary && { id: "ft-words", icon: "🗣️", label: t("discover.ftNavWords") },
-      (vm.checklist && vm.checklist.length) && { id: "ft-kit", icon: "🎒", label: t("discover.ftNavKit") },
+      topics && { id: "ft-tips", icon: "lc:target", label: t("discover.ftNavTips") },
+      phrases && { id: "ft-phrases", icon: "lc:message-circle", label: t("discover.ftNavPhrases") },
+      sharing && { id: "ft-share", icon: "lc:upload", label: t("discover.ftNavShare") },
+      apps && { id: "ft-apps", icon: "lc:smartphone", label: t("discover.ftNavApps") },
+      glossary && { id: "ft-words", icon: "lc:megaphone", label: t("discover.ftNavWords") },
+      (vm.checklist && vm.checklist.length) && { id: "ft-kit", icon: "lc:backpack", label: t("discover.ftNavKit") },
     ].filter(Boolean);
     const nav = navItems.length > 1
       ? `<nav class="ft-nav" aria-label="${esc(t("discover.ftAreas"))}">${navItems.map((n) =>
-          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${renderIcon(n.icon)}</span> ${esc(n.label)}</a>`).join("")}</nav>`
       : "";
 
     return `
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">📸 Fotos y videos</div>
+          <div class="topbar__title">${renderIcon("lc:camera")} Fotos y videos</div>
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
@@ -3009,7 +3017,7 @@
           <div class="bf-stage__bar">
             <label class="bf-pause" for="${pauseId}">
               <span class="bf-pause__play" aria-hidden="true">▶</span>
-              <span class="bf-pause__pause" aria-hidden="true">⏸</span>
+              <span class="bf-pause__pause" aria-hidden="true">${renderIcon("lc:pause")}</span>
               <span class="bf-pause__t bf-pause__t--play">${esc(t("discover.blPlay"))}</span>
               <span class="bf-pause__t bf-pause__t--pause">${esc(t("discover.blPause"))}</span>
             </label>
@@ -3035,20 +3043,20 @@
       const lvl = levelMeta(d.level);
       const reading = (d.es && d.es.length)
         ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
              <div class="hist-read__body">${readingBlock({ es: d.es, vocab: d.vocab, level: d.level, quiz: true })}</div>
            </details>`
         : "";
       const videos = (d.videos && d.videos.length)
         ? `<div class="bf-videos">
-             <p class="bf-videos__cap">🎬 ${esc(t("discover.blVideos"))}</p>
+             <p class="bf-videos__cap">${renderIcon("lc:clapperboard")} ${esc(t("discover.blVideos"))}</p>
              ${d.videos.map((v) => `<a class="bf-video" href="${esc(v.url)}" target="_blank" rel="noopener noreferrer"><span class="bf-video__play" aria-hidden="true">▶</span><span class="bf-video__t">${esc(v.title)}</span><span class="bf-video__src">${esc(v.source || "")}</span></a>`).join("")}
            </div>`
         : "";
       return `
         <details class="knigge-topic bf-dance">
           <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${d.icon}</span>
+            <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(d.icon)}</span>
             <span class="knigge-topic__title">${esc(d.name)}${d.origin ? `<span class="bf-dance__origin">${esc(d.origin)}</span>` : ""}</span>
             ${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}
             <span class="knigge-topic__chev" aria-hidden="true">▾</span>
@@ -3057,7 +3065,7 @@
             ${d.intro ? `<p class="knigge-intro">${esc(d.intro)}</p>` : ""}
             ${floor(d)}
             <p class="bf-count" lang="es">${esc(d.count || "")}</p>
-            ${d.compas ? `<p class="bf-compas">🎵 ${esc(d.compas)}</p>` : ""}
+            ${d.compas ? `<p class="bf-compas">${renderIcon("lc:music")} ${esc(d.compas)}</p>` : ""}
             ${videos}
             ${d.dos && d.dos.length ? `<ul class="knigge-list">${liList(d.dos, "knigge-do", "✅")}</ul>` : ""}
             ${d.donts && d.donts.length ? `<ul class="knigge-list">${liList(d.donts, "knigge-dont", "🚫")}</ul>` : ""}
@@ -3080,7 +3088,7 @@
 
     const checklist = (vm.checklist || []).map((c) => `
       <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
         <span class="rg-region__body">
           <span class="rg-region__country">${esc(c.item)}</span>
           <span class="rg-region__note">${esc(c.why)}</span>
@@ -3088,21 +3096,21 @@
       </li>`).join("");
 
     const navItems = [
-      dances && { id: "bl-dances", icon: "💃", label: t("discover.blNavDances") },
-      phrases && { id: "bl-phrases", icon: "💬", label: t("discover.blNavPhrases") },
-      glossary && { id: "bl-words", icon: "🗣️", label: t("discover.blNavWords") },
-      (vm.checklist && vm.checklist.length) && { id: "bl-etiquette", icon: "🤝", label: t("discover.blNavEtiquette") },
+      dances && { id: "bl-dances", icon: "lc:footprints", label: t("discover.blNavDances") },
+      phrases && { id: "bl-phrases", icon: "lc:message-circle", label: t("discover.blNavPhrases") },
+      glossary && { id: "bl-words", icon: "lc:megaphone", label: t("discover.blNavWords") },
+      (vm.checklist && vm.checklist.length) && { id: "bl-etiquette", icon: "lc:handshake", label: t("discover.blNavEtiquette") },
     ].filter(Boolean);
     const nav = navItems.length > 1
       ? `<nav class="ft-nav" aria-label="${esc(t("discover.blAreas"))}">${navItems.map((n) =>
-          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${renderIcon(n.icon)}</span> ${esc(n.label)}</a>`).join("")}</nav>`
       : "";
 
     return `
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">💃 Bailar</div>
+          <div class="topbar__title">${renderIcon("lc:footprints")} Bailar</div>
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
@@ -3145,7 +3153,7 @@
       const lvl = levelMeta(g.level);
       const reading = (g.es && g.es.length)
         ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
              <div class="hist-read__body">${readingBlock({ es: g.es, vocab: g.vocab, level: g.level, quiz: true })}</div>
            </details>`
         : "";
@@ -3157,7 +3165,7 @@
       return `
         <details class="knigge-topic mus-genre">
           <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${g.icon}</span>
+            <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(g.icon)}</span>
             <span class="knigge-topic__title">${esc(g.name)}${g.origin ? `<span class="mus-genre__origin">${esc(g.origin)}</span>` : ""}</span>
             <span class="knigge-topic__chev" aria-hidden="true">▾</span>
           </summary>
@@ -3203,21 +3211,21 @@
 
     // Sprungmarken-Leiste (wie ft-nav): nur Chips für vorhandene Blöcke.
     const navItems = [
-      sound && { id: "mus-sound", icon: "📍", label: t("discover.musNavSound") },
-      genres && { id: "mus-genres", icon: "🎶", label: t("discover.musNavGenres") },
-      phrases && { id: "mus-phrases", icon: "💬", label: t("discover.musNavPhrases") },
-      glossary && { id: "mus-words", icon: "🗣️", label: t("discover.musNavWords") },
+      sound && { id: "mus-sound", icon: "lc:map-pin", label: t("discover.musNavSound") },
+      genres && { id: "mus-genres", icon: "lc:music", label: t("discover.musNavGenres") },
+      phrases && { id: "mus-phrases", icon: "lc:message-circle", label: t("discover.musNavPhrases") },
+      glossary && { id: "mus-words", icon: "lc:megaphone", label: t("discover.musNavWords") },
     ].filter(Boolean);
     const nav = navItems.length > 1
       ? `<nav class="mus-nav" aria-label="${esc(t("discover.musAreas"))}">${navItems.map((n) =>
-          `<a class="mus-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+          `<a class="mus-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${renderIcon(n.icon)}</span> ${esc(n.label)}</a>`).join("")}</nav>`
       : "";
 
     return `
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">🎵 Música</div>
+          <div class="topbar__title">${renderIcon("lc:music")} Música</div>
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>
@@ -3236,24 +3244,24 @@
   function renderHostel(vm) {
     return `
       <section class="screen">
-        ${hmTopbar("🛏️ Modo hostal", "home")}
+        ${hmTopbar(`${renderIcon("lc:bed")} Modo hostal`, "home")}
         <p class="hm-intro">${esc(t("discover.hostelIntro"))}</p>
         ${moduleShareBtn("hostel")}
         <div class="hm-menu">
           <button class="hm-card hm-card--coordinator" data-action="coordinator-round">
-            <span class="hm-card__icon" aria-hidden="true">⚡</span>
+            <span class="hm-card__icon" aria-hidden="true">${renderIcon("lc:zap")}</span>
             <span class="hm-card__title">${esc(t("discover.coordinatorTitle"))}</span>
             <span class="hm-card__desc">${esc(t("discover.coordinatorDesc"))}</span>
             <span class="hm-card__meta">${esc(t("discover.coordinatorMeta", { n: vm.coordinatorRounds }))}</span>
           </button>
           <button class="hm-card hm-card--battle" data-action="open-battle-setup">
-            <span class="hm-card__icon" aria-hidden="true">⚔️</span>
+            <span class="hm-card__icon" aria-hidden="true">${renderIcon("lc:swords")}</span>
             <span class="hm-card__title">${esc(t("discover.battleTitle"))}</span>
             <span class="hm-card__desc">${esc(t("discover.battleDesc"))}</span>
             <span class="hm-card__meta">${esc(t("discover.battleTasks", { n: vm.battleCount }))}</span>
           </button>
           <button class="hm-card hm-card--roleplay" data-action="open-roleplay-setup">
-            <span class="hm-card__icon" aria-hidden="true">🎭</span>
+            <span class="hm-card__icon" aria-hidden="true">${renderIcon("lc:venetian-mask")}</span>
             <span class="hm-card__title">${esc(t("discover.roleplaysTitle"))}</span>
             <span class="hm-card__desc">${esc(t("discover.roleplaysDesc"))}</span>
             <span class="hm-card__meta">${esc(t("discover.roleplaysScenes", { n: vm.roleplayCount }))}</span>
@@ -3270,9 +3278,9 @@
       const status = d.done ? "done" : (d.unlocked ? "current" : "locked");
       const mark = d.done ? "✓" : (d.unlocked ? String(d.day) : "🔒");
       const challenge = d.challenge
-        ? `<span class="pretrip-day__challenge">🚪 ${esc(d.challenge)}</span>` : "";
+        ? `<span class="pretrip-day__challenge">${renderIcon("lc:door-open")} ${esc(d.challenge)}</span>` : "";
       const right = status === "locked"
-        ? `<span class="pretrip-day__lock"><span aria-hidden="true">🔒</span> ${esc(t("discover.pretripLocked"))}</span>`
+        ? `<span class="pretrip-day__lock"><span aria-hidden="true">${renderIcon("lc:lock")}</span> ${esc(t("discover.pretripLocked"))}</span>`
         : `<button class="pretrip-day__btn" data-action="start-pretrip-day" data-day="${d.day}">${esc(d.done ? t("discover.pretripReplay") : t("discover.pretripStart"))}</button>`;
       return `
         <li class="pretrip-day pretrip-day--${status}">
@@ -3292,7 +3300,7 @@
     // Bei zugewiesener Aufgabe ist das Ziel fix -> nur ein nicht-klickbares Abzeichen.
     const dest = vm.locked
       ? `<div class="sl-chips sl-chips--locked">
-           <span class="sl-chip sl-chip--locked is-active" role="status" aria-label="${esc(vm.scopeLabel + " – " + t("discover.pretripAssigned"))}" style="--from:var(--brand);--to:var(--brand-ink)"><span aria-hidden="true">📌 ${esc(vm.scopeLabel)}</span></span>
+           <span class="sl-chip sl-chip--locked is-active" role="status" aria-label="${esc(vm.scopeLabel + " – " + t("discover.pretripAssigned"))}" style="--from:var(--brand);--to:var(--brand-ink)"><span aria-hidden="true">${renderIcon("lc:pin")} ${esc(vm.scopeLabel)}</span></span>
          </div>
          <p class="pretrip-assigned" aria-hidden="true">${esc(t("discover.pretripAssigned"))}</p>`
       : `<div class="sl-chips" role="group" aria-label="${esc(t("discover.pretripDestLabel"))}">${(vm.plans || []).map((p) =>
@@ -3300,7 +3308,7 @@
         ).join("")}</div>`;
     return `
       <section class="screen">
-        ${hmTopbar("🗓️ " + esc(t("discover.pretripTitle")), "home")}
+        ${hmTopbar(`${renderIcon("lc:calendar")} ` + esc(t("discover.pretripTitle")), "home")}
         <p class="hm-intro">${esc(t("discover.pretripIntro"))}</p>
         ${dest}
         ${banner}
@@ -3328,7 +3336,7 @@
       : "";
     return `
       <div class="leveldist">
-        <h3 class="leveldist-h3">📊 ${esc(t("teacher.distHeading"))}</h3>
+        <h3 class="leveldist-h3">${renderIcon("lc:bar-chart-3")} ${esc(t("teacher.distHeading"))}</h3>
         <p class="teacher-sub2">${esc(t("teacher.distHint"))}</p>
         <div class="leveldist-rows">${bars}</div>
         ${untested}
@@ -3341,10 +3349,10 @@
   function renderTeacher(vm) {
     const actions = `
       <div class="teacher-actions">
-        <button class="teacher-btn teacher-btn--main" data-action="teacher-import">📥 ${esc(t("teacher.importBtn"))}</button>
-        ${vm.count ? `<button class="teacher-btn" data-action="teacher-csv">📄 ${esc(t("teacher.csvBtn"))}</button>
-        <button class="teacher-btn" data-action="teacher-print">🖨️ ${esc(t("teacher.printBtn"))}</button>
-        <button class="teacher-btn" data-action="teacher-clear">🗑️ ${esc(t("teacher.clearBtn"))}</button>` : ""}
+        <button class="teacher-btn teacher-btn--main" data-action="teacher-import">${renderIcon("lc:download")} ${esc(t("teacher.importBtn"))}</button>
+        ${vm.count ? `<button class="teacher-btn" data-action="teacher-csv">${renderIcon("lc:file-text")} ${esc(t("teacher.csvBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-print">${renderIcon("lc:printer")} ${esc(t("teacher.printBtn"))}</button>
+        <button class="teacher-btn" data-action="teacher-clear">${renderIcon("lc:trash-2")} ${esc(t("teacher.clearBtn"))}</button>` : ""}
       </div>
       <input type="file" id="teacher-file" accept="application/json,.json" multiple hidden>`;
 
@@ -3396,7 +3404,7 @@
               <td>${s.streak}${s.longestStreak > s.streak ? `<span class="teacher-sub"> (max ${s.longestStreak})</span>` : ""}</td>
               <td>${s.challenges}</td>
               <td>${s.pretripDays} / ${s.pretripMax}</td>
-              <td>${(s.assessment || s.placement) ? `${esc((s.assessment || s.placement).level)}<span class="teacher-sub"> · ${Math.round(((s.assessment || s.placement).finalScore || 0) * 100)}%${s.assessment ? " 📋" : ""}</span>` : "—"}</td>
+              <td>${(s.assessment || s.placement) ? `${esc((s.assessment || s.placement).level)}<span class="teacher-sub"> · ${Math.round(((s.assessment || s.placement).finalScore || 0) * 100)}%${s.assessment ? " " + renderIcon("lc:clipboard-list") : ""}</span>` : "—"}</td>
               <td class="teacher-packs">${s.masteredCats.length ? esc(s.masteredCats.join(", ")) : "—"}</td>
               <td class="no-print"><button class="teacher-x" data-action="teacher-remove" data-idx="${s._idx}" aria-label="${esc(t("teacher.remove"))}" title="${esc(t("teacher.remove"))}">✕</button></td>
             </tr>`).join("")}
@@ -3416,12 +3424,12 @@
       </div>
       ${vm.taskCode ? `
       <div class="task-result">
-        ${vm.taskCodeLabel ? `<p class="task-codefor">🎯 ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
+        ${vm.taskCodeLabel ? `<p class="task-codefor">${renderIcon("lc:target")} ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
         <textarea id="task-code" class="task-code" readonly rows="2" aria-label="${esc(t("teacher.taskTarget"))}">${esc(vm.taskCode)}</textarea>
         <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
         <div class="teacher-actions task-result__btns">
-          <button class="teacher-btn teacher-btn--main" data-action="task-copy-link">🔗 ${esc(t("teacher.taskCopyLink"))}</button>
-          <button class="teacher-btn" data-action="task-copy">📋 ${esc(t("teacher.taskCopy"))}</button>
+          <button class="teacher-btn teacher-btn--main" data-action="task-copy-link">${renderIcon("lc:link")} ${esc(t("teacher.taskCopyLink"))}</button>
+          <button class="teacher-btn" data-action="task-copy">${renderIcon("lc:clipboard-list")} ${esc(t("teacher.taskCopy"))}</button>
         </div>
       </div>` : ""}`;
 
@@ -3431,7 +3439,7 @@
     const withTab = !!(cfg.taskTab || cfg.teacherTab);
     return `
       <section class="screen${withTab ? " screen--tabbed" : ""}">
-        ${hmTopbar("🧑‍🏫 " + esc(t("teacher.title")), withTab ? "open-task" : "home")}
+        ${hmTopbar(`${renderIcon("lc:graduation-cap")} ` + esc(t("teacher.title")), withTab ? "open-task" : "home")}
         <p class="hm-intro no-print">${esc(t("teacher.intro"))}</p>
         <div class="tip no-print">${esc(t("teacher.privacy"))}</div>
         ${actions}
@@ -3443,7 +3451,7 @@
           <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
           <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
           <div class="teacher-actions">
-            <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">📄 ${esc(t("sheet.openBtn"))}</button>
+            <button class="teacher-btn teacher-btn--main" data-action="open-printsheet">${renderIcon("lc:file-text")} ${esc(t("sheet.openBtn"))}</button>
           </div>
         </div>
       </section>
@@ -3485,14 +3493,14 @@
     // Prüfen / Lösungen zeigen / zurücksetzen + Live-Ergebnis.
     const actionBtn = vm.fill
       ? `<button class="teacher-btn teacher-btn--main" data-action="sheet-check">${renderIcon("lc:check-circle")} ${esc(t("sheet.checkBtn"))}</button>
-         <button class="teacher-btn" data-action="sheet-reveal">👁️ ${esc(t("sheet.revealBtn"))}</button>
-         <button class="teacher-btn" data-action="sheet-reset">♻️ ${esc(t("sheet.resetBtn"))}</button>
+         <button class="teacher-btn" data-action="sheet-reveal">${renderIcon("lc:eye")} ${esc(t("sheet.revealBtn"))}</button>
+         <button class="teacher-btn" data-action="sheet-reset">${renderIcon("lc:rotate-ccw")} ${esc(t("sheet.resetBtn"))}</button>
          <span class="sheet-score" role="status" aria-live="polite"></span>`
       // Übungsmodus: Übungsblatt und Lösungsschlüssel getrennt druckbar.
       : vm.exercise
-        ? `<button class="teacher-btn teacher-btn--main" data-action="printsheet-print" data-scope="exercise">🖨️ ${esc(t("sheet.printExercise"))}</button>
-           <button class="teacher-btn" data-action="printsheet-print" data-scope="key">🗝️ ${esc(t("sheet.printKey"))}</button>`
-        : `<button class="teacher-btn teacher-btn--main" data-action="printsheet-print">🖨️ ${esc(t("sheet.printBtn"))}</button>`;
+        ? `<button class="teacher-btn teacher-btn--main" data-action="printsheet-print" data-scope="exercise">${renderIcon("lc:printer")} ${esc(t("sheet.printExercise"))}</button>
+           <button class="teacher-btn" data-action="printsheet-print" data-scope="key">${renderIcon("lc:key")} ${esc(t("sheet.printKey"))}</button>`
+        : `<button class="teacher-btn teacher-btn--main" data-action="printsheet-print">${renderIcon("lc:printer")} ${esc(t("sheet.printBtn"))}</button>`;
     const controls = `
       <div class="sheet-controls no-print">
         ${targetField("sheet", { targets: vm.targets, current: vm.sheetTarget })}
@@ -3518,7 +3526,7 @@
               ? `<span class="sheet-es sheet-es--blank" aria-hidden="true"></span>`
               : `<span class="sheet-es" lang="es">${esc(c.es)}</span>`}
           <span class="sheet-de">${esc(c.de)}</span>
-          ${(!vm.exercise && !vm.fill && c.note) ? `<span class="sheet-note">💡 ${esc(c.note)}</span>` : ""}
+          ${(!vm.exercise && !vm.fill && c.note) ? `<span class="sheet-note">${renderIcon("lc:lightbulb")} ${esc(c.note)}</span>` : ""}
         </li>`;
     const stagesHtml = (vm.stages || []).map((st, si) => `
       ${st.heading ? `<h3 class="sheet-stage">${esc(st.heading)}</h3>` : ""}
@@ -3732,7 +3740,7 @@
       <article class="sheet sheet--key sheet-answerkey" style="--sheet-accent:${accent}">
         <span class="sheet-accent-bar" aria-hidden="true"></span>
         <header class="sheet-head">
-          <p class="sheet-brand"><span class="sheet-badge" aria-hidden="true">🗝️</span><span class="sheet-brand-name">${credit}</span></p>
+          <p class="sheet-brand"><span class="sheet-badge" aria-hidden="true">${renderIcon("lc:key")}</span><span class="sheet-brand-name">${credit}</span></p>
           <h1 class="sheet-title">${esc(vm.title)} <span class="sheet-tag sheet-tag--key">${esc(t("sheet.answerKeyHeading"))}</span></h1>
           <p class="sheet-meta">${vm.levelRange ? esc(vm.levelRange) + " · " : ""}${esc(t("sheet.cardCount", { n: vm.cardCount }))} · ${esc(vm.date)}</p>
         </header>
@@ -3749,7 +3757,7 @@
           <p class="sheet-meta">${vm.levelRange ? esc(vm.levelRange) + " · " : ""}${esc(t("sheet.cardCount", { n: vm.cardCount }))} · ${esc(vm.date)}</p>
         </header>
 
-        ${vm.fill ? `<p class="sheet-fillbar">✍️ ${esc(t("sheet.fillHint"))}</p>` : ""}
+        ${vm.fill ? `<p class="sheet-fillbar">${renderIcon("lc:square-pen")} ${esc(t("sheet.fillHint"))}</p>` : ""}
 
         <p class="sheet-goal"><strong>${esc(t("sheet.goalLabel"))}:</strong> ${esc(t("sheet.goalText"))}</p>
 
@@ -3799,7 +3807,7 @@
 
     return `
       <section class="screen">
-        ${hmTopbar("📄 " + esc(t("sheet.heading")), "open-teacher", { plainTitle: true })}
+        ${hmTopbar(`${renderIcon("lc:file-text")} ` + esc(t("sheet.heading")), "open-teacher", { plainTitle: true })}
         ${controls}
         <div class="sheet-doc sheet-doc--exercise">${sheet}</div>
         ${answerKeySheet ? `<div class="sheet-doc sheet-doc--key">${answerKeySheet}</div>` : ""}
@@ -3836,8 +3844,8 @@
       <label class="task-label" for="task-code-input">${esc(t("task.pasteLabel"))}</label>
       <textarea id="task-code-input" class="task-code" rows="3" placeholder="HRT1.…"></textarea>
       <div class="teacher-actions">
-        <button class="teacher-btn teacher-btn--main" data-action="task-open">➕ ${esc(t("task.add"))}</button>
-        <button class="teacher-btn" data-action="task-paste">📋 ${esc(t("task.paste"))}</button>
+        <button class="teacher-btn teacher-btn--main" data-action="task-open">${renderIcon("lc:plus")} ${esc(t("task.add"))}</button>
+        <button class="teacher-btn" data-action="task-paste">${renderIcon("lc:clipboard-list")} ${esc(t("task.paste"))}</button>
       </div>
       <p class="task-paste-hint">${esc(t("task.pasteHelp"))}</p>`;
     // Mit eigenem Reiter (Edition) die untere Navigation mitzeigen und „Tarea“
@@ -3847,12 +3855,12 @@
     // Modo profe ist im Tarea-Reiter mit eingehängt (kein eigener Reiter mehr).
     const profe = cfg.teacherTab
       ? `<hr class="teacher-sep">
-         <button class="teacher-btn teacher-btn--profe" data-action="open-teacher">🧑‍🏫 ${esc(t("teacher.title"))}</button>
+         <button class="teacher-btn teacher-btn--profe" data-action="open-teacher">${renderIcon("lc:graduation-cap")} ${esc(t("teacher.title"))}</button>
          <p class="task-profe-hint">${esc(t("teacher.openHint"))}</p>`
       : "";
     return `
       <section class="screen${withTab ? " screen--tabbed" : ""}">
-        ${hmTopbar("📝 " + esc(t("task.title")), "home")}
+        ${hmTopbar(`${renderIcon("lc:square-pen")} ` + esc(t("task.title")), "home")}
         <p class="hm-intro">${esc(t("task.intro"))}</p>
         ${body}
         ${profe}
@@ -3912,7 +3920,7 @@
       : `<div class="pl-options" role="group" aria-label="${esc(t("placement.optionsLabel"))}">
            ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
          </div>`;
-    const unknown = `<button class="pl-unknown" data-action="placement-unknown">🤷 ${esc(t("placement.unknown"))}</button>`;
+    const unknown = `<button class="pl-unknown" data-action="placement-unknown">${renderIcon("lc:help-circle")} ${esc(t("placement.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("placement.unknownHint"))}</p>` : "";
     // Im Onboarding KEIN „Home“-Zurück-Pfeil (würde das Onboarding nicht abschließen);
     // Abbrechen geht über die Wisch-Geste (markiert onboarded) – sonst regulär zurück.
@@ -3986,7 +3994,7 @@
     // Zwei Tiefen zur Wahl: Standard und – mit Sprachausgabe – Extremo (mit Hören).
     const extremoBtn = vm.hasAudio
       ? `<button class="teacher-btn teacher-btn--main pl-variant pl-variant--extremo" data-action="assessment-start" data-variant="extremo">
-           🎧 ${esc(t("assessment.startExtremo", { n: vm.extremoTotal }))}
+           ${renderIcon("lc:headphones")} ${esc(t("assessment.startExtremo", { n: vm.extremoTotal }))}
            <span class="pl-variant__desc">${esc(t("assessment.variantExtremoDesc"))}</span>
          </button>`
       : `<div class="tip pl-noaudio">${esc(t("assessment.extremoNoAudio"))}</div>`;
@@ -4031,7 +4039,7 @@
            <span class="pl-listen__icon" aria-hidden="true">${renderIcon("lc:volume-2")}</span>
            <span class="pl-listen__label">${esc(t("assessment.listenPlay"))}</span>
          </button>
-         <p class="pl-hint pl-hint--listen">${esc(t("assessment.listenHint"))}</p>`
+         <p class="pl-hint pl-hint--listen">${renderIcon("lc:ear")} ${esc(t("assessment.listenHint"))}</p>`
       : "";
     const prompt = `
       <p class="pl-prompt">${esc(q.promptDe)}</p>
@@ -4044,7 +4052,7 @@
       : `<div class="pl-options" role="group" aria-label="${esc(t("assessment.optionsLabel"))}">
            ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
          </div>`;
-    const unknown = `<button class="pl-unknown" data-action="assessment-unknown">🤷 ${esc(t("assessment.unknown"))}</button>`;
+    const unknown = `<button class="pl-unknown" data-action="assessment-unknown">${renderIcon("lc:help-circle")} ${esc(t("assessment.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("assessment.unknownHint"))}</p>` : "";
     return `
       <section class="screen">
@@ -4075,7 +4083,7 @@
         <div class="pl-result">
           <p class="pl-result__cap">${esc(t("assessment.yourLevel"))}</p>
           <p class="pl-result__level">${esc(vm.level)}</p>
-          ${vm.variant ? `<p class="pl-result__variant">${esc(t("assessment.variant_" + vm.variant))}${vm.variant === "extremo" ? " · 🎧" : ""}</p>` : ""}
+          ${vm.variant ? `<p class="pl-result__variant">${esc(t("assessment.variant_" + vm.variant))}${vm.variant === "extremo" ? " · " + renderIcon("lc:headphones") : ""}</p>` : ""}
           <p class="pl-result__score">${esc(t("assessment.resultLine", { correct: vm.correct, total: vm.total, score: vm.scorePct }))}</p>
         </div>
         <ul class="pl-stats">
@@ -4104,13 +4112,13 @@
     const roundsBadge = (n) => `<span class="hm-scene__count">${esc(t("discover.battleRounds", { n }))}</span>`;
     const scenes = [
       `<button class="hm-scene" data-action="start-battle" data-scene="all">
-         <span class="hm-scene__icon" aria-hidden="true">🎲</span>
+         <span class="hm-scene__icon" aria-hidden="true">${renderIcon("lc:dices")}</span>
          <span class="hm-scene__label">${esc(t("discover.battleAllScenes"))}</span>
          ${roundsBadge(vm.totalRounds)}
        </button>`,
       ...vm.scenes.map((s) =>
         `<button class="hm-scene" data-action="start-battle" data-scene="${esc(s.id)}">
-           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+           <span class="hm-scene__icon" aria-hidden="true">${renderIcon(s.icon)}</span>
            <span class="hm-scene__label">${esc(s.label)}</span>
            ${roundsBadge(s.rounds)}
          </button>`),
@@ -4123,7 +4131,7 @@
        </button>`).join("");
     return `
       <section class="screen">
-        ${hmTopbar("⚔️ Battle", "open-hostel")}
+        ${hmTopbar(`${renderIcon("lc:swords")} Battle`, "open-hostel")}
         <p class="hm-intro">${esc(t("discover.battleSetupIntro"))}</p>
         <details class="hm-how" open>
           <summary class="hm-how__sum">${esc(t("discover.battleHowSum"))}</summary>
@@ -4173,7 +4181,7 @@
               <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:x-circle")}</span><span class="feel__txt">${esc(t("discover.battleWrong"))}</span>
             </button>
             <button class="feel feel--good" data-action="battle-score" data-points="1">
-              <span class="feel__emoji" aria-hidden="true">😬</span><span class="feel__txt">${esc(t("discover.battleAlmost"))}</span>
+              <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:meh")}</span><span class="feel__txt">${esc(t("discover.battleAlmost"))}</span>
             </button>
             <button class="feel feel--easy" data-action="battle-score" data-points="2">
               <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:check-circle")}</span><span class="feel__txt">${esc(t("discover.battleCorrect"))}</span>
@@ -4181,16 +4189,16 @@
           </div>
         </div>`
       : `
-        ${vm.hint ? `<div class="hm-hint">💡 ${esc(vm.hint)}</div>` : ""}
+        ${vm.hint ? `<div class="hm-hint">${renderIcon("lc:lightbulb")} ${esc(vm.hint)}</div>` : ""}
         <button class="cta" data-action="battle-reveal">${esc(t("discover.battleReveal"))}</button>`;
 
     const meta = `
-      <span class="hm-prompt__tag">${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}</span>
+      <span class="hm-prompt__tag">${renderIcon(vm.sceneIcon)} ${esc(vm.sceneLabel)}</span>
       ${vm.levelShort ? `<span class="hm-prompt__lvl">${esc(vm.levelShort)}</span>` : ""}`;
 
     return `
       <section class="screen study">
-        ${hmTopbar(vm.suddenDeath ? esc(t("discover.battleSudden")) : `${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
+        ${hmTopbar(vm.suddenDeath ? esc(t("discover.battleSudden")) : `${renderIcon(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
         <div class="hm-score">
           <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">${esc(vm.chipA)} <b>${vm.scores.A}</b></span>
           <span class="hm-score__round">${esc(t("discover.battleScoreRound", { sudden: vm.suddenDeath, round: vm.round, total: vm.totalRounds }))}</span>
@@ -4387,14 +4395,14 @@
 
     return `
       <section class="screen">
-        ${hmTopbar("🔁 Conjugación", "home")}
+        ${hmTopbar(`${renderIcon("lc:repeat")} Conjugación`, "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
         ${moduleShareBtn("conjugacion")}
 
-        ${sect("🧑‍🤝‍🧑", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
-        ${sect("🧱", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
-        ${sect("⭐", t("discover.cjIrregulars"), `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
-        ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
+        ${sect("lc:users", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
+        ${sect("lc:blocks", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
+        ${sect("lc:star", t("discover.cjIrregulars"), `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
+        ${sect("lc:compass", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
 
         <button class="cta cj-cta" data-action="open-category" data-id="verbos">
           ${esc(t("discover.cjPractice"))} <span class="cta__count">${esc(t("home.tileCards", { n: vm.cardCount }))}</span>

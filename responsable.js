@@ -36,7 +36,7 @@
   // ---------- Erklärung: leichter Fußabdruck (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
-      icon: "♻️",
+      icon: "lc:recycle",
       title: "Keine Spuren hinterlassen",
       titleEn: "Leave no trace",
       intro: "Nimm mit, was du mitbringst. Gerade auf Wanderungen und an Stränden gibt es oft keine Mülleimer – also wandert der Müll zurück in den Rucksack.",
@@ -77,7 +77,7 @@
       level: "A2",
     },
     {
-      icon: "🛍️",
+      icon: "lc:shopping-bag",
       title: "Lokal kaufen & unterstützen",
       titleEn: "Buy & support local",
       intro: "Dein Geld wirkt am meisten, wenn es direkt bei den Menschen vor Ort landet: kleine Läden, Familienküchen, lokale Guides, handgemachtes Kunsthandwerk.",
@@ -119,7 +119,7 @@
       level: "A2",
     },
     {
-      icon: "💧",
+      icon: "lc:droplet",
       title: "Wasser & Plastik sparen",
       titleEn: "Save water & plastic",
       intro: "Einwegflaschen summieren sich schnell. Mit einer Mehrwegflasche und einem Filter/Tabletten kommst du fast überall an Trinkwasser – und sparst nebenbei Geld.",
@@ -160,7 +160,7 @@
       level: "A2",
     },
     {
-      icon: "🦜",
+      icon: "lc:bird",
       title: "Natur, Tiere & Kultur respektieren",
       titleEn: "Respect nature, animals & culture",
       intro: "Wildtiere bleiben wild, Gemeinschaften bleiben Gastgeber. Abstand halten, vor Fotos fragen und sich an lokale Gepflogenheiten halten gehört zum guten Reisen dazu.",
@@ -202,7 +202,7 @@
       level: "B1",
     },
     {
-      icon: "🤝",
+      icon: "lc:handshake",
       title: "Freiwilligenarbeit & faires Reisen",
       titleEn: "Volunteering & fair travel",
       intro: "Helfen will gut überlegt sein. Manche „Volunteer“-Angebote schaden mehr, als sie nutzen – such dir Projekte, die wirklich von der Gemeinschaft getragen werden.",
@@ -243,7 +243,7 @@
       level: "B1",
     },
     {
-      icon: "🚌",
+      icon: "lc:bus",
       title: "Unterwegs mit weniger CO₂",
       titleEn: "Getting around with less CO₂",
       intro: "Der größte Fußabdruck einer Reise sind oft die Flüge. Über Land reisen, Strecken bündeln und vor Ort zu Fuß, mit Bus oder Rad fahren spart enorm – und du siehst mehr.",
@@ -290,7 +290,7 @@
   const PHRASES = [
     {
       id: "agua",
-      icon: "💧",
+      icon: "lc:droplet",
       title: "Wasser & Plastik",
       titleEn: "Water & plastic",
       items: [
@@ -303,7 +303,7 @@
     },
     {
       id: "local",
-      icon: "🛍️",
+      icon: "lc:shopping-bag",
       title: "Lokal kaufen",
       titleEn: "Buying local",
       items: [
@@ -315,7 +315,7 @@
     },
     {
       id: "respeto",
-      icon: "🙏",
+      icon: "lc:hand-heart",
       title: "Respekt & Fotos",
       titleEn: "Respect & photos",
       items: [
@@ -327,7 +327,7 @@
     },
     {
       id: "transporte",
-      icon: "🚌",
+      icon: "lc:bus",
       title: "Transport & Touren",
       titleEn: "Transport & tours",
       items: [
@@ -365,42 +365,42 @@
   // ---------- Wenig-Müll-Kit ----------
   const CHECKLIST = [
     {
-      icon: "🍶",
+      icon: "lc:wine",
       item: "Mehrwegflasche (am besten mit Filter)",
       itemEn: "Reusable bottle (ideally with a filter)",
       why: "Spart Geld und Berge von Einwegplastik; fast überall auffüllbar.",
       whyEn: "Saves money and piles of single-use plastic; refillable almost anywhere.",
     },
     {
-      icon: "🛍️",
+      icon: "lc:shopping-bag",
       item: "Faltbare Stofftasche",
       itemEn: "Foldable cloth bag",
       why: "Passt in jede Tasche und ersetzt Plastiktüten beim Einkauf.",
       whyEn: "Fits in any pocket and replaces plastic bags when shopping.",
     },
     {
-      icon: "🗑️",
+      icon: "lc:trash-2",
       item: "Kleine Mülltüte für unterwegs",
       itemEn: "Small rubbish bag for the trail",
       why: "Für Wanderungen und Strände ohne Mülleimer – alles kommt zurück.",
       whyEn: "For hikes and beaches without bins – everything comes back with you.",
     },
     {
-      icon: "🧴",
+      icon: "lc:spray-can",
       item: "Riff-/umweltfreundliche Sonnencreme & Seife",
       itemEn: "Reef-/eco-friendly sunscreen & soap",
       why: "Schont Korallen und Flüsse beim Baden – ohne aggressive Chemie.",
       whyEn: "Protects corals and rivers when you swim – without harsh chemicals.",
     },
     {
-      icon: "🥢",
+      icon: "lc:utensils",
       item: "Eigenes Besteck / Becher (leicht)",
       itemEn: "Your own cutlery / cup (lightweight)",
       why: "Macht Einweg-Plastikbesteck und To-go-Becher überflüssig.",
       whyEn: "Makes single-use plastic cutlery and to-go cups unnecessary.",
     },
     {
-      icon: "📵",
+      icon: "lc:phone-off",
       item: "Digitale Tickets & Offline-Karten statt Ausdrucke",
       itemEn: "Digital tickets & offline maps instead of printouts",
       why: "Spart Papier; Offline-Karten funktionieren auch ohne Netz.",

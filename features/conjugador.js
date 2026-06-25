@@ -14,7 +14,7 @@
   "use strict";
   window.SC = window.SC || {};
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar } = window.SC.view;
+  const { esc, renderIcon, hmTopbar } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -133,7 +133,7 @@
     if (!vm.available) {
       return `
         <section class="screen">
-          ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
+          ${hmTopbar(`${renderIcon("lc:repeat")} Conjugador`, "open-conjugacion")}
           <p class="stat-empty">${esc(t("discover.cjDrillUnavailable"))}</p>
         </section>`;
     }
@@ -146,7 +146,7 @@
       </button>`).join("");
     return `
       <section class="screen">
-        ${hmTopbar("🔁 Conjugador", "open-conjugacion")}
+        ${hmTopbar(`${renderIcon("lc:repeat")} Conjugador`, "open-conjugacion")}
         <p class="hm-intro">${esc(t("discover.cjDrillIntro"))}</p>
         <h3 class="prc-head">${esc(t("discover.cjDifficulty"))}</h3>
         <div class="prc-lvls">${levels}</div>
@@ -179,7 +179,7 @@
         <button class="cta" data-action="conjug-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
     return `
       <section class="screen study">
-        ${hmTopbar("🔁 Conjugador", "open-conjug-drill")}
+        ${hmTopbar(`${renderIcon("lc:repeat")} Conjugador`, "open-conjug-drill")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
         ${body}

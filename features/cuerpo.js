@@ -26,7 +26,7 @@
   window.SC = window.SC || {};
   // Übersetzer wie in ui.js binden (i18n.js setzt SC.i18n.t === window.t vorab).
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleShareBtn, cornerBtn } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn, cornerBtn } = window.SC.view;
 
   let ctx = null;  // vom Controller injizierte Dienste (init)
   let root = null; // App-Container (ctx.root) – Bühne der 3D-Szene
@@ -133,7 +133,7 @@
             ${speak}
           </div>
           <p class="bp-panel__es" lang="es">${esc(sel.es)}</p>
-          ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">🗣️</span> ${esc(sel.tip)}</p>` : ""}
+          ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">${renderIcon("lc:megaphone")}</span> ${esc(sel.tip)}</p>` : ""}
           ${sel.note ? `<p class="bp-panel__note">${esc(sel.note)}</p>` : ""}
         </div>`
       : `
@@ -152,7 +152,7 @@
 
     return `
       <section class="screen bp-screen">
-        ${hmTopbar("🧍 El Cuerpo", "home")}
+        ${hmTopbar(`${renderIcon("lc:person-standing")} El Cuerpo`, "home")}
         <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
         ${moduleShareBtn("cuerpo")}
         ${progress}

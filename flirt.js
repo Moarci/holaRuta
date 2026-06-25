@@ -46,7 +46,7 @@
   // ---------- Erklärung: flirten & daten unterwegs (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
-      icon: "👋",
+      icon: "lc:hand",
       title: "Entspannt ins Gespräch kommen",
       titleEn: "Easing into a conversation",
       intro: "Der erste Satz muss nicht clever sein – er muss nur freundlich und echt sein. Eine kleine Frage zur Situation wirkt natürlicher als eine einstudierte Anmachzeile.",
@@ -90,7 +90,7 @@
       level: "A2",
     },
     {
-      icon: "😊",
+      icon: "lc:smile",
       title: "Komplimente, die ankommen",
       titleEn: "Compliments that land",
       intro: "Ein gutes Kompliment ist konkret, ehrlich und nicht aufdringlich. Lieber etwas zur Person sagen (Lachen, Energie, Geschmack) als nur zum Aussehen.",
@@ -130,7 +130,7 @@
       level: "A2",
     },
     {
-      icon: "🤝",
+      icon: "lc:handshake",
       title: "Respekt & Konsens: Signale lesen",
       titleEn: "Respect & consent: reading the signals",
       intro: "Die wichtigste Regel beim Flirten: auf das Gegenüber achten. Interesse zeigt sich beidseitig – fehlt es auf einer Seite, ist Schluss. Ein Nein gilt sofort, ohne Diskussion.",
@@ -174,7 +174,7 @@
       level: "B1",
     },
     {
-      icon: "☕",
+      icon: "lc:coffee",
       title: "Vom Flirt zum Date",
       titleEn: "From flirting to a date",
       intro: "Läuft es gut, schlag etwas Konkretes und Lockeres vor – ein Kaffee, ein Spaziergang, gemeinsam tanzen. Ein erstes Treffen tagsüber oder an einem belebten Ort nimmt beiden den Druck.",
@@ -216,7 +216,7 @@
       level: "A2",
     },
     {
-      icon: "🌎",
+      icon: "lc:globe",
       title: "Dating-Kultur in Lateinamerika",
       titleEn: "Dating culture in Latin America",
       intro: "Daten läuft je nach Land und Person unterschiedlich. Vieles ist warmherzig und direkt, manches förmlicher als zu Hause. Ein paar Faustregeln helfen – aber jede Person ist anders.",
@@ -260,7 +260,7 @@
       level: "B1",
     },
     {
-      icon: "🛡️",
+      icon: "lc:shield-check",
       title: "Sicher daten unterwegs",
       titleEn: "Dating safely on the road",
       intro: "Beim Kennenlernen in einem fremden Land lohnt sich etwas Vorsicht – für alle, besonders allein Reisende. Ein paar einfache Gewohnheiten machen ein Date entspannt und sicher.",
@@ -313,7 +313,7 @@
   const PHRASES = [
     {
       id: "abrir",
-      icon: "👋",
+      icon: "lc:hand",
       title: "Ins Gespräch kommen",
       titleEn: "Starting a conversation",
       items: [
@@ -329,7 +329,7 @@
     },
     {
       id: "piropos",
-      icon: "😊",
+      icon: "lc:smile",
       title: "Komplimente & nett sein",
       titleEn: "Compliments & being nice",
       items: [
@@ -347,7 +347,7 @@
     },
     {
       id: "cita",
-      icon: "☕",
+      icon: "lc:coffee",
       title: "Ein Date vorschlagen",
       titleEn: "Suggesting a date",
       items: [
@@ -363,7 +363,7 @@
     },
     {
       id: "limites",
-      icon: "💬",
+      icon: "lc:message-circle",
       title: "Interesse zeigen & Grenzen setzen",
       titleEn: "Showing interest & setting boundaries",
       items: [
@@ -380,7 +380,7 @@
     },
     {
       id: "subir",
-      icon: "🔥",
+      icon: "lc:flame",
       title: "Heißer werden – mit Konsens",
       titleEn: "Turning up the heat – with consent",
       items: [
@@ -399,7 +399,7 @@
     },
     {
       id: "despues",
-      icon: "📱",
+      icon: "lc:smartphone",
       title: "Kontakt & danach",
       titleEn: "Staying in touch & afterwards",
       items: [
@@ -446,14 +446,14 @@
 
   // ---------- „Date- & Sicherheits-Kit": kleine Liste (Icon + Sache + Warum) ----------
   const CHECKLIST = [
-    { icon: "📍", item: "Standort geteilt", itemEn: "Location shared", why: "Jemandem aus dem Hostel sagen, wo du bist und wann du zurück bist – kurz den Live-Standort teilen.", whyEn: "Tell someone at the hostel where you are and when you'll be back – share your live location briefly." },
-    { icon: "📱", item: "Geladenes Handy + Taxi-App", itemEn: "Charged phone + taxi app", why: "Eigener Heimweg, jederzeit erreichbar; eine Ride-App (Uber/DiDi/Cabify) erspart das Verhandeln nachts.", whyEn: "Your own way home, reachable any time; a ride app (Uber/DiDi/Cabify) saves haggling at night." },
-    { icon: "🛡️", item: "Kondome", itemEn: "Condoms", why: "Safer Sex liegt bei dir – verlass dich nicht darauf, dass die andere Person welche dabeihat.", whyEn: "Safer sex is on you – don't rely on the other person to have any." },
-    { icon: "💵", item: "Eigenes Geld für den Heimweg", itemEn: "Your own cash for getting home", why: "Etwas Bargeld extra, damit du jederzeit unabhängig gehen kannst – ohne auf jemanden angewiesen zu sein.", whyEn: "A little spare cash so you can leave independently any time – without depending on anyone." },
-    { icon: "🥤", item: "Getränk im Blick", itemEn: "Eyes on your drink", why: "Selbst bestellen, nie unbeaufsichtigt stehen lassen – schützt vor K.-o.-Tropfen.", whyEn: "Order it yourself, never leave it unattended – guards against spiked drinks." },
-    { icon: "🗺️", item: "Öffentlicher Treffpunkt", itemEn: "A public meeting spot", why: "Erstes Date an einem belebten Ort (Café, Plaza, Bar) statt irgendwo abgelegen.", whyEn: "First date somewhere busy (a café, plaza, bar) rather than somewhere secluded." },
-    { icon: "🧠", item: "Bauchgefühl + Ausrede parat", itemEn: "Your gut + an exit line", why: "Stimmt etwas nicht, darfst du jederzeit höflich gehen – „mañana madrugo“ reicht als Grund.", whyEn: "If something feels off, you can leave politely any time – „I've got an early start“ is reason enough." },
-    { icon: "🆔", item: "Doku im Hostel-Locker", itemEn: "Documents in the hostel locker", why: "Pass und Reserve-Karte sicher verstaut; nur das Nötigste mitnehmen.", whyEn: "Passport and a backup card stowed safely; take only what you need." },
+    { icon: "lc:map-pin", item: "Standort geteilt", itemEn: "Location shared", why: "Jemandem aus dem Hostel sagen, wo du bist und wann du zurück bist – kurz den Live-Standort teilen.", whyEn: "Tell someone at the hostel where you are and when you'll be back – share your live location briefly." },
+    { icon: "lc:smartphone", item: "Geladenes Handy + Taxi-App", itemEn: "Charged phone + taxi app", why: "Eigener Heimweg, jederzeit erreichbar; eine Ride-App (Uber/DiDi/Cabify) erspart das Verhandeln nachts.", whyEn: "Your own way home, reachable any time; a ride app (Uber/DiDi/Cabify) saves haggling at night." },
+    { icon: "lc:shield-check", item: "Kondome", itemEn: "Condoms", why: "Safer Sex liegt bei dir – verlass dich nicht darauf, dass die andere Person welche dabeihat.", whyEn: "Safer sex is on you – don't rely on the other person to have any." },
+    { icon: "lc:banknote", item: "Eigenes Geld für den Heimweg", itemEn: "Your own cash for getting home", why: "Etwas Bargeld extra, damit du jederzeit unabhängig gehen kannst – ohne auf jemanden angewiesen zu sein.", whyEn: "A little spare cash so you can leave independently any time – without depending on anyone." },
+    { icon: "lc:cup-soda", item: "Getränk im Blick", itemEn: "Eyes on your drink", why: "Selbst bestellen, nie unbeaufsichtigt stehen lassen – schützt vor K.-o.-Tropfen.", whyEn: "Order it yourself, never leave it unattended – guards against spiked drinks." },
+    { icon: "lc:map", item: "Öffentlicher Treffpunkt", itemEn: "A public meeting spot", why: "Erstes Date an einem belebten Ort (Café, Plaza, Bar) statt irgendwo abgelegen.", whyEn: "First date somewhere busy (a café, plaza, bar) rather than somewhere secluded." },
+    { icon: "lc:brain", item: "Bauchgefühl + Ausrede parat", itemEn: "Your gut + an exit line", why: "Stimmt etwas nicht, darfst du jederzeit höflich gehen – „mañana madrugo“ reicht als Grund.", whyEn: "If something feels off, you can leave politely any time – „I've got an early start“ is reason enough." },
+    { icon: "lc:id-card", item: "Doku im Hostel-Locker", itemEn: "Documents in the hostel locker", why: "Pass und Reserve-Karte sicher verstaut; nur das Nötigste mitnehmen.", whyEn: "Passport and a backup card stowed safely; take only what you need." },
   ];
 
   window.SC = window.SC || {};

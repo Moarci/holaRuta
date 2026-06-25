@@ -16,7 +16,7 @@
 (function () {
   "use strict";
   window.SC = window.SC || {};
-  const { esc, hmTopbar, moduleShareBtn, sect } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn, sect } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -228,33 +228,33 @@
     // mit id + nav (Kurzlabel) ist per Sprungmarke erreichbar; ohne nav erscheint
     // er nur im Fließtext. Reihenfolge der Sprungleiste = Reihenfolge der Seite.
     const sections = [
-      { icon: "↔️", title: t.title, body: timeline },
-      { icon: "🪄", title: ep.title, body: easyPast, id: "ti-tricks", nav: tt("discover.tiNavTricks") },
-      { icon: "🕰️", title: tt("discover.tiTenses"), body: `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, id: "ti-tenses", nav: tt("discover.tiNavTenses") },
-      { icon: "⏯️", title: c.title, body: continuous, id: "ti-continuous", nav: tt("discover.tiNavContinuous") },
-      { icon: "⏪", title: pc.title, body: pastContinuous },
-      { icon: "⏱️", title: ad.title, body: acabarDe },
-      { icon: "⚖️", title: iv.title, body: indefVsImperf, id: "ti-compare", nav: tt("discover.tiNavCompare") },
-      { icon: "💪", title: sp.title, body: strongPast, id: "ti-irregular", nav: tt("discover.tiNavIrregular") },
-      { icon: "🧩", title: pp.title, body: participles },
-      { icon: "🗣️", title: im.title, body: imperative, id: "ti-commands", nav: tt("discover.tiNavCommands") },
-      { icon: "📦", title: hy.title, body: hayBlock },
-      { icon: "🧳", title: sc.title, body: scenarios, id: "ti-practice", nav: tt("discover.tiNavPractice") },
-      { icon: "⚠️", title: pf.title, body: pitfalls },
-      { icon: "🔑", title: tt("discover.tiSignalWords"), body: `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>` },
-      { icon: "🧭", title: tt("discover.tiDialogs"), body: dialogsHtml, id: "ti-dialogs", nav: tt("discover.tiNavDialogs") },
+      { icon: "lc:arrow-left-right", title: t.title, body: timeline },
+      { icon: "lc:wand-sparkles", title: ep.title, body: easyPast, id: "ti-tricks", nav: tt("discover.tiNavTricks") },
+      { icon: "lc:clock", title: tt("discover.tiTenses"), body: `<div class="cinfo-dishes">${tenseBlocks}</div><p class="cinfo-text cj-note">${esc(g.tensesNote)}</p>`, id: "ti-tenses", nav: tt("discover.tiNavTenses") },
+      { icon: "lc:play", title: c.title, body: continuous, id: "ti-continuous", nav: tt("discover.tiNavContinuous") },
+      { icon: "lc:rewind", title: pc.title, body: pastContinuous },
+      { icon: "lc:timer", title: ad.title, body: acabarDe },
+      { icon: "lc:scale", title: iv.title, body: indefVsImperf, id: "ti-compare", nav: tt("discover.tiNavCompare") },
+      { icon: "lc:biceps-flexed", title: sp.title, body: strongPast, id: "ti-irregular", nav: tt("discover.tiNavIrregular") },
+      { icon: "lc:puzzle", title: pp.title, body: participles },
+      { icon: "lc:megaphone", title: im.title, body: imperative, id: "ti-commands", nav: tt("discover.tiNavCommands") },
+      { icon: "lc:package", title: hy.title, body: hayBlock },
+      { icon: "lc:luggage", title: sc.title, body: scenarios, id: "ti-practice", nav: tt("discover.tiNavPractice") },
+      { icon: "lc:alert-triangle", title: pf.title, body: pitfalls },
+      { icon: "lc:key", title: tt("discover.tiSignalWords"), body: `<ul class="cinfo-words">${signalRows}</ul><p class="cinfo-text cj-note">${esc(g.signalsNote)}</p>` },
+      { icon: "lc:compass", title: tt("discover.tiDialogs"), body: dialogsHtml, id: "ti-dialogs", nav: tt("discover.tiNavDialogs") },
     ];
 
     // Sprungmarken-Leiste (wie hist-nav/sz-nav): bei dieser langen Erklärseite
     // springt man direkt zu den Hauptlandmarken, statt endlos zu scrollen.
     const tiNav = `
       <nav class="ti-nav" aria-label="${esc(tt("discover.tiNavLabel"))}">
-        ${sections.filter((s) => s.id && s.nav).map((s) => `<a class="ti-nav__chip" href="#${s.id}" data-action="scroll-to" data-target="${s.id}">${s.icon} ${esc(s.nav)}</a>`).join("")}
+        ${sections.filter((s) => s.id && s.nav).map((s) => `<a class="ti-nav__chip" href="#${s.id}" data-action="scroll-to" data-target="${s.id}">${renderIcon(s.icon)} ${esc(s.nav)}</a>`).join("")}
       </nav>`;
 
     return `
       <section class="screen">
-        ${hmTopbar("⏳ Tiempos", "home")}
+        ${hmTopbar(`${renderIcon("lc:hourglass")} Tiempos`, "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
         ${moduleShareBtn("tiempos")}
         ${tiNav}

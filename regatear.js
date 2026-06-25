@@ -40,7 +40,7 @@
   // ---------- Erklärung: wie man gut verhandelt (aufklappbar, Knigge-Stil) ----------
   const TIPS = [
     {
-      icon: "🤝",
+      icon: "lc:handshake",
       title: "Die Grundhaltung",
       titleEn: "The basic attitude",
       intro: "Feilschen ist in Lateinamerika ein freundliches Spiel, kein Streit. Wer lächelt und höflich bleibt, bekommt den besseren Preis.",
@@ -69,7 +69,7 @@
       ],
     },
     {
-      icon: "🎯",
+      icon: "lc:target",
       title: "Die Verhandlung führen",
       titleEn: "Running the negotiation",
       intro: "Der erste genannte Preis ist fast nie der letzte. Frag nach, biete weniger, triff dich in der Mitte.",
@@ -102,7 +102,7 @@
       ],
     },
     {
-      icon: "🚶",
+      icon: "lc:person-standing",
       title: "Der Abschluss (und das Weggehen)",
       titleEn: "Closing the deal (and walking away)",
       intro: "Weggehen ist die stärkste Taktik – oft kommt der bessere Preis erst dann. Und ein Nein ist auch okay.",
@@ -133,7 +133,7 @@
       ],
     },
     {
-      icon: "🚕",
+      icon: "lc:car-taxi-front",
       title: "Taxi, Tuk-Tuk & Touren",
       titleEn: "Taxis, tuk-tuks & tours",
       intro: "Wo kein Taxameter läuft, wird der Preis vorher ausgemacht – nie erst am Ziel. Das vermeidet den „Touristenpreis“.",
@@ -183,7 +183,7 @@
   const PHRASES = [
     {
       id: "preguntar",
-      icon: "💬",
+      icon: "lc:message-circle",
       title: "Nach dem Preis fragen",
       titleEn: "Asking the price",
       items: [
@@ -198,7 +198,7 @@
     },
     {
       id: "regatear",
-      icon: "🤏",
+      icon: "lc:hand",
       title: "Feilschen & verhandeln",
       titleEn: "Haggling & bargaining",
       items: [
@@ -214,7 +214,7 @@
     },
     {
       id: "cerrar",
-      icon: "✅",
+      icon: "lc:check-circle",
       title: "Abschluss",
       titleEn: "Closing",
       items: [
@@ -227,7 +227,7 @@
     },
     {
       id: "pagar",
-      icon: "💵",
+      icon: "lc:banknote",
       title: "Bezahlen & Wechselgeld",
       titleEn: "Paying & change",
       items: [
@@ -240,7 +240,7 @@
     },
     {
       id: "buscar",
-      icon: "🔎",
+      icon: "lc:search",
       title: "Finden & danach fragen",
       titleEn: "Finding & asking for things",
       items: [

@@ -22,7 +22,7 @@
   const TOPICS = [
     {
       id: "hostel",
-      icon: "🛏️",
+      icon: "lc:bed",
       title: "Hostel & Dorm",
       titleEn: "Hostel & dorm",
       intro: "Im Schlafsaal teilst du den Raum mit Fremden – Rücksicht ist die halbe Miete.",
@@ -60,7 +60,7 @@
     },
     {
       id: "bus",
-      icon: "🚌",
+      icon: "lc:bus",
       title: "Bus & Transport",
       titleEn: "Bus & transport",
       intro: "Nachtbusse sparen eine Übernachtung – mit etwas Umsicht reist du sicher und entspannt.",
@@ -94,7 +94,7 @@
     },
     {
       id: "grupo",
-      icon: "👋",
+      icon: "lc:hand",
       title: "Gruppen & Leute",
       titleEn: "Groups & people",
       intro: "Reisende sind offen – ein ehrliches „Hola“ öffnet fast überall Türen.",
@@ -128,7 +128,7 @@
     },
     {
       id: "cultura",
-      icon: "🤝",
+      icon: "lc:handshake",
       title: "Kultur & Etikette",
       titleEn: "Culture & etiquette",
       intro: "Kleine Gesten – Begrüßung, Trinkgeld, Pünktlichkeit – zeigen Respekt und werden gemerkt.",

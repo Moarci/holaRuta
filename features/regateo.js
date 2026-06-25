@@ -20,7 +20,7 @@
   window.SC = window.SC || {};
   // Übersetzer wie in ui.js binden (i18n.js setzt SC.i18n.t === window.t vorab).
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, tipsShareBtn, moduleShareBtn, phraseGroups } = window.SC.view;
+  const { esc, renderIcon, tipsShareBtn, moduleShareBtn, phraseGroups } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -70,7 +70,7 @@
     const tipBlock = (t, i) => `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
-          <span class="knigge-topic__icon" aria-hidden="true">${t.icon}</span>
+          <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(t.icon)}</span>
           <span class="knigge-topic__title">${esc(t.title)}</span>
           <span class="knigge-topic__chev" aria-hidden="true">▾</span>
         </summary>
@@ -131,7 +131,7 @@
       return `
         <details class="knigge-topic rg-rp">
           <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">🎭</span>
+            <span class="knigge-topic__icon" aria-hidden="true">${renderIcon("lc:venetian-mask")}</span>
             <span class="knigge-topic__title">${esc(r.title)}</span>
             ${r.lvlShort ? `<span class="hm-rp__lvl">${esc(r.lvlShort)}</span>` : ""}
             <span class="knigge-topic__chev" aria-hidden="true">▾</span>
@@ -159,7 +159,7 @@
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">🤝 Regatear</div>
+          <div class="topbar__title">${renderIcon("lc:handshake")} Regatear</div>
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>

@@ -25,7 +25,7 @@
   window.SC = window.SC || {};
   // Übersetzer wie in ui.js binden (i18n.js setzt SC.i18n.t === window.t vorab).
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleShareBtn } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn } = window.SC.view;
 
   let ctx = null;  // vom Controller injizierte Dienste (init)
   let root = null; // App-Container (ctx.root) – Ziel des Scroll-Hooks
@@ -54,7 +54,7 @@
     const d = ctx.state.dialogos;
     // Schutz wie in den Handlern: ohne aktiven Dialog-State eine harmlose Leer-VM
     // statt eines Deref-Crashes (state.dialogos wird nicht persistiert).
-    if (!d) return { title: "", icon: "💬", turnIdx: 0, total: 0, transcript: [], current: null, result: null, hint: false, speakable: false };
+    if (!d) return { title: "", icon: "lc:message-circle", turnIdx: 0, total: 0, transcript: [], current: null, result: null, hint: false, speakable: false };
     const dia = dialogueById(d.dialogueId);
     const turns = (dia && dia.turns) || [];
     const scn = scenarioById(d.scenarioId);
@@ -82,7 +82,7 @@
       : null;
     return {
       title: dia ? ctx.natk(dia, "title") : "",
-      icon: scn ? scn.icon : "💬",
+      icon: scn ? scn.icon : "lc:message-circle",
       turnIdx: d.turnIdx,
       total: turns.length,
       transcript,
@@ -95,12 +95,12 @@
 
   function dialogosDoneVM() {
     const d = ctx.state.dialogos;
-    if (!d) return { title: "", icon: "💬", correct: 0, total: 0, perfect: false };
+    if (!d) return { title: "", icon: "lc:message-circle", correct: 0, total: 0, perfect: false };
     const dia = dialogueById(d.dialogueId);
     const scn = scenarioById(d.scenarioId);
     return {
       title: dia ? ctx.natk(dia, "title") : "",
-      icon: scn ? scn.icon : "💬",
+      icon: scn ? scn.icon : "lc:message-circle",
       correct: d.correct,
       total: d.totalUser,
       perfect: d.totalUser > 0 && d.correct === d.totalUser,
@@ -256,14 +256,14 @@
     if (!vm.available) {
       return `
         <section class="screen">
-          ${hmTopbar("💬 Diálogos", "home")}
+          ${hmTopbar(`${renderIcon("lc:message-circle")} Diálogos`, "home")}
           <p class="stat-empty">${esc(t("discover.dlgUnavailable"))}</p>
         </section>`;
     }
     const hint = vm.hasSpeech ? "" : `<p class="dlg-nospeak">${esc(t("discover.dlgNoSpeak"))}</p>`;
     const cards = vm.scenarios.map((s) => `
       <button class="dlg-pick" type="button" data-action="start-dialogos" data-id="${esc(s.id)}">
-        <span class="dlg-pick__icon" aria-hidden="true">${esc(s.icon)}</span>
+        <span class="dlg-pick__icon" aria-hidden="true">${renderIcon(s.icon)}</span>
         <span class="dlg-pick__text">
           <span class="dlg-pick__title">${esc(s.title)}</span>
           <span class="dlg-pick__sub">${esc(s.intro)}</span>
@@ -272,7 +272,7 @@
       </button>`).join("");
     return `
       <section class="screen">
-        ${hmTopbar("💬 Diálogos", "home")}
+        ${hmTopbar(`${renderIcon("lc:message-circle")} Diálogos`, "home")}
         <p class="hm-intro">${esc(t("discover.dlgIntro"))}</p>
         ${moduleShareBtn("dialogos")}
         ${hint}
@@ -324,7 +324,7 @@
           // Frei tippen. Optionaler „Tipp" deckt die Musterantwort auf – als
           // Hilfe, ohne den Zug vorwegzunehmen (getippt werden muss trotzdem).
           const help = vm.hint
-            ? `<p class="dlg-tip" role="note"><span aria-hidden="true">💡</span> <b lang="es">${esc(cur.solEs)}</b></p>`
+            ? `<p class="dlg-tip" role="note"><span aria-hidden="true">${renderIcon("lc:lightbulb")}</span> <b lang="es">${esc(cur.solEs)}</b></p>`
             : `<button class="dlg-tipbtn ghostbtn" type="button" data-action="dialogos-hint">${esc(t("discover.dlgTipShow"))}</button>`;
           active = `
             ${instr}
@@ -362,7 +362,7 @@
     const step = Math.min(vm.turnIdx + 1, vm.total);
     return `
       <section class="screen study">
-        ${hmTopbar(vm.icon + " " + esc(vm.title), "open-dialogos")}
+        ${hmTopbar(renderIcon(vm.icon) + " " + esc(vm.title), "open-dialogos")}
         <div class="dlg-progress">
           <div class="progress" role="progressbar" aria-valuenow="${step}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
           <span class="dlg-step">${esc(t("discover.dlgStep", { step, total: vm.total }))}</span>

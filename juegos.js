@@ -51,7 +51,7 @@
   // ---------- Die Spiele (aufklappbar, Knigge-/Salud-Stil) ----------
   const TOPICS = [
     {
-      icon: "🎴",
+      icon: "lc:layers",
       title: "UNO – der globale Eisbrecher",
       titleEn: "UNO – the global icebreaker",
       intro: "2–10 Spieler, eine Runde dauert ~10 Minuten, und gefühlt liegt in jedem Hostel ein (zerfleddertes) Deck. Jeder kennt es – perfekt, um schnell eine Runde zusammenzubekommen.",
@@ -96,7 +96,7 @@
       ],
     },
     {
-      icon: "🏠",
+      icon: "lc:house",
       title: "Monopoly Deal – Monopoly in 15 Minuten",
       titleEn: "Monopoly Deal – Monopoly in 15 minutes",
       intro: "Die ganze Monopoly-Laune als schnelles Kartenspiel, ohne winzige Häuschen, die im Rucksack verloren gehen. 2–5 Spieler, eine Partie ist in 15–20 Minuten durch.",
@@ -141,7 +141,7 @@
       ],
     },
     {
-      icon: "👑",
+      icon: "lc:crown",
       title: "El Presidente (Culo / Asshole)",
       titleEn: "President (Asshole / Culo)",
       intro: "Der Backpacker-Klassiker weltweit: ein Rangspiel mit normalem Deck, 4–8 Spieler, schnell und lustig. Wird oft als Trinkspiel gespielt – funktioniert genauso gut ohne.",
@@ -184,7 +184,7 @@
       ],
     },
     {
-      icon: "🃏",
+      icon: "lc:layers",
       title: "Truco (Argentinien · Uruguay)",
       titleEn: "Truco (Argentina · Uruguay)",
       intro: "Das Kartenspiel des Südens, mit der baraja española (40 Karten). 2, 4 oder 6 Spieler in Teams. Es lebt vom Bluffen, vom Wetten („¡Truco!“ – „¡Quiero!“) und von heimlichen Zeichen (señas) zum Partner.",
@@ -240,7 +240,7 @@
       ],
     },
     {
-      icon: "🎲",
+      icon: "lc:dices",
       title: "Dudo / Perudo / Cacho (die Anden)",
       titleEn: "Dudo / Perudo / Cacho (the Andes)",
       intro: "Das Lügen-Würfelspiel der Anden – in Peru, Bolivien und Chile fast überall. Jeder hat 5 Würfel und einen Becher (cubilete); es geht ums Bluffen und ums „¡Dudo!“ (ich zweifle).",
@@ -338,7 +338,7 @@
       ],
     },
     {
-      icon: "🎲",
+      icon: "lc:dices",
       title: "Generala – Südamerikas Yahtzee",
       titleEn: "Generala – South America's Yahtzee",
       intro: "Das Würfelspiel für Strand, Pool und nach dem Abendessen. 2+ Spieler, 5 Würfel, bis zu 3 Würfe pro Zug – nur Zettel und Stift dazu.",
@@ -379,7 +379,7 @@
       ],
     },
     {
-      icon: "🎲",
+      icon: "lc:dices",
       title: "Dominó (die Karibik)",
       titleEn: "Dominoes (the Caribbean)",
       intro: "Das Spiel der Karibik – in Kuba, der Dominikanischen Republik und Puerto Rico auf jeder Straßenecke. Meist 4 Spieler in 2 Teams, laut, schnell und mit viel Leidenschaft.",
@@ -436,7 +436,7 @@
       ],
     },
     {
-      icon: "🙊",
+      icon: "lc:venetian-mask",
       title: "Yo nunca · Verdad o reto",
       titleEn: "Never have I ever · Truth or dare",
       intro: "Die Eisbrecher ganz ohne Material. „Yo nunca“ (Never have I ever) und „Verdad o reto“ (Wahrheit oder Pflicht) bringen eine frische Hostel-Runde in Minuten zum Reden und Lachen.",
@@ -477,7 +477,7 @@
       ],
     },
     {
-      icon: "🐺",
+      icon: "lc:dog",
       title: "Hombre lobo / Mafia",
       titleEn: "Werewolf / Mafia",
       intro: "Das große Gruppenspiel für laue Hostel-Abende: 8–18 Spieler, Werwölfe gegen das Dorf, und ein Spielleiter (moderador), der durch Nacht und Tag führt. Braucht nur ein paar Kärtchen oder eine App.",
@@ -523,7 +523,7 @@
   const PHRASES = [
     {
       id: "proponer",
-      icon: "🤝",
+      icon: "lc:handshake",
       title: "Mitspielen & vorschlagen",
       titleEn: "Joining in & suggesting a game",
       items: [
@@ -537,7 +537,7 @@
     },
     {
       id: "mesa",
-      icon: "🔄",
+      icon: "lc:repeat",
       title: "Am Tisch & Spielablauf",
       titleEn: "At the table & taking turns",
       items: [
@@ -552,7 +552,7 @@
     },
     {
       id: "ganar",
-      icon: "🏆",
+      icon: "lc:trophy",
       title: "Gewinnen, verlieren, fair play",
       titleEn: "Winning, losing, fair play",
       items: [
@@ -566,7 +566,7 @@
     },
     {
       id: "dados",
-      icon: "🎲",
+      icon: "lc:dices",
       title: "Würfeln & wetten (Dudo, Generala)",
       titleEn: "Dice & bidding (Dudo, Generala)",
       items: [
@@ -580,7 +580,7 @@
     },
     {
       id: "ambiente",
-      icon: "🍻",
+      icon: "lc:beer",
       title: "Stimmung & Eisbrecher (mit Respekt)",
       titleEn: "Vibe & icebreakers (with respect)",
       items: [
@@ -621,49 +621,49 @@
   // ---------- „Spiele-Kit für den Rucksack“ ----------
   const CHECKLIST = [
     {
-      icon: "🎴",
+      icon: "lc:layers",
       item: "UNO-Deck",
       itemEn: "UNO deck",
       why: "Der universelle Eisbrecher – jeder kennt es, winzig und leicht.",
       whyEn: "The universal icebreaker – everyone knows it, tiny and light.",
     },
     {
-      icon: "🃏",
+      icon: "lc:layers",
       item: "Normales/spanisches Kartendeck (baraja)",
       itemEn: "A normal/Spanish deck of cards (baraja)",
       why: "Für Presidente, Truco, Cuarenta & Dutzende Spiele – das vielseitigste Teil im Rucksack.",
       whyEn: "For Presidente, Truco, Cuarenta & dozens of games – the most versatile thing in your pack.",
     },
     {
-      icon: "🏠",
+      icon: "lc:house",
       item: "Monopoly Deal",
       itemEn: "Monopoly Deal",
       why: "Volle Monopoly-Laune in 15 Minuten, ganz ohne lose Teile.",
       whyEn: "Full Monopoly fun in 15 minutes, with no loose pieces.",
     },
     {
-      icon: "🎲",
+      icon: "lc:dices",
       item: "5 Würfel + kleiner Becher",
       itemEn: "5 dice + a small cup",
       why: "Für Dudo/Perudo und Generala – winzig im Gepäck, riesiger Spaßfaktor.",
       whyEn: "For Dudo/Perudo and Generala – tiny in your bag, huge fun.",
     },
     {
-      icon: "🎲",
+      icon: "lc:dices",
       item: "Mini-Dominó-Set",
       itemEn: "Travel domino set",
       why: "Türöffner in der Karibik, wo Dominó Kult ist.",
       whyEn: "A door-opener in the Caribbean, where dominoes are a cult.",
     },
     {
-      icon: "📝",
+      icon: "lc:square-pen",
       item: "Stift & kleiner Block",
       itemEn: "Pen & a small notepad",
       why: "Punkte für Generala/Truco zählen – und neue Spielregeln notieren.",
       whyEn: "To keep score for Generala/Truco – and jot down new rules.",
     },
     {
-      icon: "📱",
+      icon: "lc:smartphone",
       item: "Offline-Spiele-App",
       itemEn: "An offline games app",
       why: "Werwolf-Moderator, Kartenregeln & Solo-Spiele, auch ohne Netz.",

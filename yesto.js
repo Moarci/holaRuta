@@ -25,7 +25,7 @@
   // (z. B. „el boleto“ statt „el billete“).
   const THEMES = [
     {
-      id: "comida", icon: "🍽️", label: "Comida", labelEn: "Food",
+      id: "comida", icon: "lc:utensils", label: "Comida", labelEn: "Food",
       items: [
         { emoji: "🍗", es: "el pollo", de: "das Hähnchen", en: "chicken" },
         { emoji: "🥩", es: "la carne", de: "das Fleisch", en: "meat" },
@@ -40,7 +40,7 @@
       ],
     },
     {
-      id: "bebidas", icon: "🥤", label: "Bebidas", labelEn: "Drinks",
+      id: "bebidas", icon: "lc:cup-soda", label: "Bebidas", labelEn: "Drinks",
       items: [
         { emoji: "💧", es: "el agua", de: "das Wasser", en: "water" },
         { emoji: "☕", es: "el café", de: "der Kaffee", en: "coffee" },
@@ -53,7 +53,7 @@
       ],
     },
     {
-      id: "animales", icon: "🐾", label: "Animales", labelEn: "Animals",
+      id: "animales", icon: "lc:paw-print", label: "Animales", labelEn: "Animals",
       items: [
         { emoji: "🐶", es: "el perro", de: "der Hund", en: "dog" },
         { emoji: "🐱", es: "el gato", de: "die Katze", en: "cat" },
@@ -67,7 +67,7 @@
       ],
     },
     {
-      id: "viaje", icon: "🧳", label: "De viaje", labelEn: "Travel gear",
+      id: "viaje", icon: "lc:luggage", label: "De viaje", labelEn: "Travel gear",
       items: [
         { emoji: "🧳", es: "la maleta", de: "der Koffer", en: "suitcase" },
         { emoji: "🎒", es: "la mochila", de: "der Rucksack", en: "backpack" },
@@ -80,7 +80,7 @@
       ],
     },
     {
-      id: "naturaleza", icon: "🌴", label: "Naturaleza", labelEn: "Nature",
+      id: "naturaleza", icon: "lc:palmtree", label: "Naturaleza", labelEn: "Nature",
       items: [
         { emoji: "☀️", es: "el sol", de: "die Sonne", en: "sun" },
         { emoji: "🌙", es: "la luna", de: "der Mond", en: "moon" },
@@ -93,7 +93,7 @@
       ],
     },
     {
-      id: "casa", icon: "🏠", label: "En casa", labelEn: "At home",
+      id: "casa", icon: "lc:house", label: "En casa", labelEn: "At home",
       items: [
         { emoji: "🛏️", es: "la cama", de: "das Bett", en: "bed" },
         { emoji: "🪑", es: "la silla", de: "der Stuhl", en: "chair" },

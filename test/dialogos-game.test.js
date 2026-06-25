@@ -75,7 +75,7 @@ test("setupVM() liefert die Szenarien aus dem Content-Modul SC.dialogos", () => 
 test("setupScreen() baut die Szenario-Auswahl", () => {
   freshApp();
   const html = window.SC.dialogosGame.setupScreen();
-  assert.match(html, /💬 Diálogos/, "Topbar-Titel");
+  assert.match(html, /Diálogos/, "Topbar-Titel");
   assert.match(html, /data-action="start-dialogos"/, "Szenario-Knöpfe");
 });
 
@@ -84,7 +84,7 @@ test("Klick open-dialogos öffnet die Auswahl (delegiertes loadModule)", () => {
   const d = driver(root);
   assert.ok(d.click("set-tab", { tab: "entdecken" }), "Entdecken-Reiter erreichbar");
   assert.ok(d.click("open-dialogos"), "open-dialogos anklickbar");
-  assert.match(d.html(), /💬 Diálogos/, "Setup sichtbar");
+  assert.match(d.html(), /Diálogos/, "Setup sichtbar");
   assert.match(d.html(), /data-action="start-dialogos"/, "Szenarien gerendert");
 });
 

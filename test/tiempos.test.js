@@ -68,7 +68,7 @@ test("screen() baut die Erklärseite (Topbar, Sprungleiste, sect-Blöcke, Übung
   freshApp();
   const html = window.SC.tiempos.screen();
   assert.match(html, /<section class="screen">/);
-  assert.match(html, /⏳ Tiempos/, "hmTopbar-Titel");
+  assert.match(html, /Tiempos/, "hmTopbar-Titel");
   assert.match(html, /class="ti-nav"/, "Sprungmarken-Leiste");
   assert.match(html, /class="cinfo-sect"/, "Themenblöcke via geteiltem SC.view.sect");
   assert.match(html, /data-action="open-category" data-id="tiempos"/, "Übungs-CTA in die Kategorie");
@@ -80,5 +80,5 @@ test("Klick open-tiempos öffnet die Erklärseite (ctx-Verdrahtung greift)", () 
   assert.ok(d.click("set-tab", { tab: "entdecken" }), "Entdecken-Reiter erreichbar");
   assert.ok(d.click("open-tiempos"), "open-tiempos ist erreichbar/anklickbar");
   assert.match(d.html(), /class="ti-nav"/, "Tiempos-Screen rendert die Sprungleiste");
-  assert.match(d.html(), /⏳ Tiempos/, "Tiempos-Topbar sichtbar");
+  assert.match(d.html(), /Tiempos/, "Tiempos-Topbar sichtbar");
 });

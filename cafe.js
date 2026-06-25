@@ -45,7 +45,7 @@
   // ---------- Themen: Geschichte, Anbau, Schädlinge, Verarbeitung … (aufklappbar) ----------
   const TOPICS = [
     {
-      icon: "📜",
+      icon: "lc:scroll",
       title: "Geschichte: wann der Kaffee kam",
       titleEn: "History: when coffee arrived",
       intro: "Kaffee ist kein heimisches Gewächs: Er kam erst im 18. Jahrhundert über die Kolonialmächte nach Lateinamerika – in Kolumbien überliefert ab den 1730er-Jahren, oft über Missionare. Im 19. Jahrhundert wurde er zum wichtigsten Exportgut: Er besiedelte die Berge (in Kolumbien die „colonización antioqueña“), finanzierte Eisenbahnen, Häfen und ganze Städte und prägte in Mittelamerika die „Kaffeerepubliken“. Heute ist er Identität – das kolumbianische Paisaje Cultural Cafetero ist seit 2011 UNESCO-Welterbe und sichert Hunderttausenden Familien das Einkommen.",
@@ -84,7 +84,7 @@
       level: "B1",
     },
     {
-      icon: "🌱",
+      icon: "lc:sprout",
       title: "Wie Kaffee wächst",
       titleEn: "How coffee grows",
       intro: "Guter Kaffee braucht Höhe, Schatten und Geduld. Arabica gedeiht im Hochland (rund 1.200–2.000 m), wo kühle Nächte die Bohnen langsam und aromatisch reifen lassen. Ein Kaffeestrauch trägt erst nach drei bis vier Jahren richtig.",
@@ -122,7 +122,7 @@
       level: "A2",
     },
     {
-      icon: "🐛",
+      icon: "lc:bug",
       title: "Schädlinge & Krankheiten",
       titleEn: "Pests & diseases",
       intro: "Der Anbau ist verletzlich. Der gefürchtetste Schädling ist die „broca del café“ (Kaffeekirschenkäfer) – ein winziger Käfer, der in die Bohne bohrt. Er stammt aus Afrika, tauchte in Amerika zuerst in Brasilien auf (um 1913) und breitete sich von dort über den ganzen Kontinent aus. Dazu kommt der Pilz „la roya“ (Kaffeerost): Sein großer Ausbruch 2012/13 vernichtete in Mittelamerika riesige Ernten. Die Klimaerwärmung lässt beide in immer höhere Lagen vordringen.",
@@ -159,7 +159,7 @@
       level: "B2",
     },
     {
-      icon: "🍒",
+      icon: "lc:cherry",
       title: "Die Ernte: la cosecha",
       titleEn: "The harvest: la cosecha",
       intro: "Die Kaffeefrucht heißt wegen ihrer Farbe „cereza“ (Kirsche). Beim besten Kaffee wird von Hand gepflückt – nur die reifen, roten Kirschen. Pflücker:innen werden oft nach Gewicht oder Eimern bezahlt.",
@@ -197,7 +197,7 @@
       level: "A2",
     },
     {
-      icon: "💧",
+      icon: "lc:droplet",
       title: "Verarbeitung: lavado, honey & natural",
       titleEn: "Processing: washed, honey & natural",
       intro: "Wie aus der Kirsche eine grüne Bohne wird, prägt den Geschmack stark. Gewaschen (lavado) schmeckt klar und sauber, natural (sonnengetrocknet mit Fruchtfleisch) fruchtiger, honey liegt dazwischen.",
@@ -234,7 +234,7 @@
       level: "B1",
     },
     {
-      icon: "🔥",
+      icon: "lc:flame",
       title: "Rösten, mahlen & aufbrühen",
       titleEn: "Roasting, grinding & brewing",
       intro: "Erst das Rösten weckt das Aroma. Hell geröstet bleibt mehr Säure und Frucht, dunkel wird kräftig und bitter. Frisch gemahlen schmeckt es am besten – ganze Bohnen halten länger.",
@@ -271,7 +271,7 @@
       level: "B1",
     },
     {
-      icon: "🗺️",
+      icon: "lc:map",
       title: "Die Anbauregionen",
       titleEn: "The growing regions",
       intro: "Fast jedes Land hat seinen Stolz: Kolumbiens „Eje Cafetero“ (Caldas, Quindío, Risaralda) ist UNESCO-Welterbe; Guatemala (Antigua, Huehuetenango), Costa Rica (Tarrazú), Honduras, Mexiko (Chiapas, Veracruz), Peru und Bolivien liefern feine Hochlandkaffees – und Panama ist für seinen teuren Geisha berühmt.",
@@ -308,7 +308,7 @@
       level: "B1",
     },
     {
-      icon: "📦",
+      icon: "lc:package",
       title: "Export & was im Land bleibt",
       titleEn: "Export & what stays in the country",
       intro: "Lange galt: Der beste Kaffee geht in den Export, im Land bleibt oft die zweite Wahl. Die aussortierten, beschädigten Bohnen heißen in Kolumbien „pasilla“ – aus ihnen wurde traditionell der einfache, dünne „tinto“, den man mit viel Zucker trank. Genau deshalb schmeckt der Standardkaffee vor Ort manchmal schwächer, als man es vom Ruf des Landes erwartet. Erst die Spezialitätenwelle der letzten Jahre bringt guten Kaffee zunehmend auch in die Cafés der Anbauländer selbst („consumo interno“).",
@@ -344,7 +344,7 @@
       level: "B1",
     },
     {
-      icon: "🧑‍🌾",
+      icon: "lc:tractor",
       title: "Eine Finca besuchen",
       titleEn: "Visiting a coffee farm",
       intro: "Eine Kaffeetour (tour del café) auf einer Finca ist eines der schönsten Erlebnisse der Region: vom Strauch über das beneficio bis zur Tasse – oft mit Verkostung (cata) und Bohnen zum Mitnehmen.",
@@ -385,7 +385,7 @@
       level: "A2",
     },
     {
-      icon: "⚖️",
+      icon: "lc:scale",
       title: "Fairer Handel & Spezialitätenkaffee",
       titleEn: "Fair trade & specialty coffee",
       intro: "Hinter der schönen Landschaft steht harte Arbeit zu oft niedrigen Weltmarktpreisen. Direkt auf der Finca oder bei Kooperativen zu kaufen und auf Siegel wie Fairtrade oder „comercio justo“ zu achten, lässt mehr Geld bei den Bäuer:innen.",
@@ -428,7 +428,7 @@
   const PHRASES = [
     {
       id: "pedir",
-      icon: "☕",
+      icon: "lc:coffee",
       title: "Kaffee bestellen",
       titleEn: "Ordering coffee",
       items: [
@@ -442,7 +442,7 @@
     },
     {
       id: "tour",
-      icon: "🧑‍🌾",
+      icon: "lc:tractor",
       title: "Auf der Finca / Kaffeetour",
       titleEn: "On the farm / coffee tour",
       items: [
@@ -455,7 +455,7 @@
     },
     {
       id: "sabor",
-      icon: "👅",
+      icon: "lc:coffee",
       title: "Über Geschmack reden",
       titleEn: "Talking about taste",
       items: [
@@ -468,7 +468,7 @@
     },
     {
       id: "comprar",
-      icon: "🛍️",
+      icon: "lc:shopping-bag",
       title: "Bohnen kaufen & mitnehmen",
       titleEn: "Buying & taking beans home",
       items: [
@@ -481,7 +481,7 @@
     },
     {
       id: "historia",
-      icon: "📜",
+      icon: "lc:scroll",
       title: "Geschichte, Schädlinge & Qualität",
       titleEn: "History, pests & quality",
       items: [
@@ -535,42 +535,42 @@
   // ---------- „Finca-Besuch-Kit“ (Packliste für die Kaffeetour) ----------
   const CHECKLIST = [
     {
-      icon: "🥾",
+      icon: "lc:footprints",
       item: "Festes Schuhwerk",
       itemEn: "Sturdy shoes",
       why: "Die Hänge der Fincas sind steil und nach Regen rutschig.",
       whyEn: "The farm slopes are steep and slippery after rain.",
     },
     {
-      icon: "🧥",
+      icon: "lc:shirt",
       item: "Leichte Regenjacke",
       itemEn: "Light rain jacket",
       why: "Im Kaffee-Hochland regnet es oft kurz und kräftig.",
       whyEn: "In the coffee highlands it often rains briefly and hard.",
     },
     {
-      icon: "💵",
+      icon: "lc:banknote",
       item: "Bargeld in kleinen Scheinen",
       itemEn: "Cash in small notes",
       why: "Kleine Fincas nehmen selten Karte – für Tour und Bohnen.",
       whyEn: "Small farms rarely take cards – for the tour and beans.",
     },
     {
-      icon: "🧴",
+      icon: "lc:spray-can",
       item: "Sonnenschutz & Mückenmittel",
       itemEn: "Sun protection & insect repellent",
       why: "Höhensonne und Mücken zwischen den Sträuchern unterschätzt man leicht.",
       whyEn: "High-altitude sun and mosquitoes among the shrubs are easy to underestimate.",
     },
     {
-      icon: "🫙",
+      icon: "lc:package",
       item: "Wiederverschließbare Tüte/Dose",
       itemEn: "Resealable bag/tin",
       why: "Hält frisch gekaufte Bohnen aromadicht für den Heimweg.",
       whyEn: "Keeps freshly bought beans aroma-tight for the journey home.",
     },
     {
-      icon: "📒",
+      icon: "lc:notebook",
       item: "Notizen zu Geschmack & Region",
       itemEn: "Notes on taste & region",
       why: "So findest du deinen Lieblingskaffee zu Hause wieder.",

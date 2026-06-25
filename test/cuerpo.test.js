@@ -69,7 +69,7 @@ test("screen() baut die 3D-Bühne (Topbar, Fortschritt, Dreh-Knöpfe, Hotspots)"
   freshApp();
   const html = window.SC.cuerpo.screen();
   assert.match(html, /class="screen bp-screen"/);
-  assert.match(html, /🧍 El Cuerpo/, "Topbar-Titel");
+  assert.match(html, /El Cuerpo/, "Topbar-Titel");
   assert.match(html, /class="bp-progress"/, "Fortschrittsbalken");
   assert.match(html, /data-bp-stage/, "3D-Bühne");
   assert.match(html, /data-bp-fig/, "Figur-Container (Ziel des Post-Render-Hooks)");
@@ -84,7 +84,7 @@ test("Klick open-cuerpo öffnet die Bühne und löst den Post-Render-Hook init3D
   assert.ok(d.click("open-cuerpo"), "open-cuerpo ist erreichbar/anklickbar");
   // Das Rendern hat den Post-Render-Hook cuerpo.init3D() durchlaufen (root.querySelector
   // der Figur) – ohne Wurf landet die Bühne im DOM.
-  assert.match(d.html(), /🧍 El Cuerpo/, "Cuerpo-Topbar sichtbar");
+  assert.match(d.html(), /El Cuerpo/, "Cuerpo-Topbar sichtbar");
   assert.match(d.html(), /data-bp-stage/, "3D-Bühne gerendert");
 });
 
