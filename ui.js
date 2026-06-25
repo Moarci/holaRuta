@@ -418,7 +418,7 @@
       return tripForm(trip, extra);
     }
     if (trip) return tripDisplayCard(trip, "trip-edit") + tripTimeline(vm) + tripCountrySwitch(vm);
-    return `<button class="trip trip--empty" data-action="trip-edit">${t("home.tripEmpty")}</button>`;
+    return `<button class="trip trip--empty" data-action="trip-edit">${renderIcon("lc:target")} ${t("home.tripEmpty")}</button>`;
   }
 
   // Geschlechts-Auswahl (♀/♂) als segmentierte Buttons. Gemeinsam für Onboarding
@@ -715,7 +715,7 @@
     const placementCue = (vm.hasPlacement && !vm.placementDone)
       ? `
       <button class="today__ruta" data-action="open-placement">
-        <span class="today__ruta-main">${esc(t("home.placementOpenTitle"))}</span>
+        <span class="today__ruta-main">${renderIcon("lc:target")} ${esc(t("home.placementOpenTitle"))}</span>
         <span class="today__ruta-sub">${esc(t("home.placementOpenSub"))}</span>
       </button>`
       : "";
@@ -741,7 +741,7 @@
     const assessmentResumeCue = vm.assessmentResume
       ? `
       <button class="today__ruta" data-action="assessment-resume">
-        <span class="today__ruta-main">${esc(t("home.assessmentResumeTitle"))}</span>
+        <span class="today__ruta-main">${renderIcon("lc:clipboard-list")} ${esc(t("home.assessmentResumeTitle"))}</span>
         <span class="today__ruta-sub">${esc(t("home.assessmentResumeSub", { i: vm.assessmentResume.index, n: vm.assessmentResume.total }))}</span>
       </button>`
       : "";
@@ -1017,7 +1017,7 @@
   // sieht einen Einstiegs-Aufruf. p = vm.placement (null = Modul nicht geladen).
   function placementCard(p, shareFmt) {
     if (!p) return "";
-    const cap = `<p class="sectioncap">🎯 ${esc(t("placement.profileCap"))}</p>`;
+    const cap = `<p class="sectioncap">${renderIcon("lc:target")} ${esc(t("placement.profileCap"))}</p>`;
     if (!p.taken || !p.last) {
       return `
         ${cap}
@@ -1054,7 +1054,7 @@
   // assessment-Namespace und mit eigenem Öffnen/Teilen-Hook.
   function assessmentCard(p, shareFmt) {
     if (!p) return "";
-    const cap = `<p class="sectioncap">📋 ${esc(t("assessment.profileCap"))}</p>`;
+    const cap = `<p class="sectioncap">${renderIcon("lc:clipboard-list")} ${esc(t("assessment.profileCap"))}</p>`;
     if (!p.taken || !p.last) {
       return `
         ${cap}
@@ -1127,13 +1127,13 @@
 
       ${progressCard(vm)}
 
-      <p class="sectioncap">${esc(t("home.tripCap"))}</p>
+      <p class="sectioncap">${renderIcon("lc:target")} ${esc(t("home.tripCap"))}</p>
       ${tripManage(vm)}
 
       ${vm.hasPlacement ? placementCard(vm.placement, vm.shareFormat) : ""}
       ${vm.hasAssessment ? assessmentCard(vm.assessment, vm.shareFormat) : ""}
 
-      <p class="sectioncap">${esc(t("home.settingsCap"))}</p>
+      <p class="sectioncap">${renderIcon("lc:settings")} ${esc(t("home.settingsCap"))}</p>
       <div class="prefs">
         ${themeSetting(vm)}
         ${nameGroup}
@@ -2335,7 +2335,7 @@
         <div class="tgt-scrim" data-action="close-target-picker">
           <div class="tgt-modal" role="dialog" aria-modal="true" aria-labelledby="tgt-title" data-action="target-stop">
             <div class="tgt-modal__head">
-              <h2 class="tgt-modal__title" id="tgt-title">🎯 ${esc(t("sheet.pickTitle"))}</h2>
+              <h2 class="tgt-modal__title" id="tgt-title">${renderIcon("lc:target")} ${esc(t("sheet.pickTitle"))}</h2>
               <button type="button" class="tgt-modal__x" data-action="close-target-picker" aria-label="${esc(t("teacher.pickClose"))}">✕</button>
             </div>
             <p class="tgt-modal__intro">${esc(t("sheet.pickIntro"))}</p>
@@ -2384,7 +2384,7 @@
       <div class="tgt-scrim" data-action="close-target-picker">
         <div class="tgt-modal" role="dialog" aria-modal="true" aria-labelledby="tgt-title" data-action="target-stop">
           <div class="tgt-modal__head">
-            <h2 class="tgt-modal__title" id="tgt-title">🎯 ${esc(t("teacher.pickTitle"))}</h2>
+            <h2 class="tgt-modal__title" id="tgt-title">${renderIcon("lc:target")} ${esc(t("teacher.pickTitle"))}</h2>
             <button type="button" class="tgt-modal__x" data-action="close-target-picker" aria-label="${esc(t("teacher.pickClose"))}">✕</button>
           </div>
           <p class="tgt-modal__intro">${esc(t("teacher.pickIntro"))} ${esc(t("teacher.multiHint"))}</p>
@@ -3870,8 +3870,8 @@
   function renderPlacementIntro(vm) {
     // Im Onboarding: Kopf ohne Zurück-Knopf, dafür „Später“ zum Überspringen.
     const head = vm.fromOnboarding
-      ? `<div class="pagehead"><h2 class="pagehead__title">🎯 ${esc(t("placement.title"))}</h2></div>`
-      : hmTopbar("🎯 " + esc(t("placement.title")), "home");
+      ? `<div class="pagehead"><h2 class="pagehead__title">${renderIcon("lc:target")} ${esc(t("placement.title"))}</h2></div>`
+      : hmTopbar(renderIcon("lc:target") + " " + esc(t("placement.title")), "home");
     const later = vm.fromOnboarding
       ? `<button class="ghostbtn" data-action="placement-skip">${esc(t("placement.later"))}</button>` : "";
     return `
@@ -3917,8 +3917,8 @@
     // Im Onboarding KEIN „Home“-Zurück-Pfeil (würde das Onboarding nicht abschließen);
     // Abbrechen geht über die Wisch-Geste (markiert onboarded) – sonst regulär zurück.
     const topbar = vm.fromOnboarding
-      ? `<div class="pagehead"><h2 class="pagehead__title">🎯 ${esc(t("placement.title"))}</h2></div>`
-      : hmTopbar("🎯 " + esc(t("placement.title")), "home");
+      ? `<div class="pagehead"><h2 class="pagehead__title">${renderIcon("lc:target")} ${esc(t("placement.title"))}</h2></div>`
+      : hmTopbar(renderIcon("lc:target") + " " + esc(t("placement.title")), "home");
     return `
       <section class="screen">
         ${topbar}
@@ -3945,7 +3945,7 @@
     const review = reviewBox("placement", vm.review);
     // Im Onboarding führt der Zurück-Pfeil über „placement-finish“ (schließt das
     // Onboarding ab), sonst regulär nach Home.
-    const topbar = hmTopbar("🎯 " + esc(t("placement.title")), vm.fromOnboarding ? "placement-finish" : "home");
+    const topbar = hmTopbar(renderIcon("lc:target") + " " + esc(t("placement.title")), vm.fromOnboarding ? "placement-finish" : "home");
     return `
       <section class="screen">
         ${topbar}
@@ -3992,7 +3992,7 @@
       : `<div class="tip pl-noaudio">${esc(t("assessment.extremoNoAudio"))}</div>`;
     return `
       <section class="screen">
-        ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
+        ${hmTopbar(renderIcon("lc:clipboard-list") + " " + esc(t("assessment.title")), "home")}
         <p class="hm-intro">${esc(t("assessment.introLead", { n: vm.standardTotal }))}</p>
         <div class="tip">${esc(t("assessment.introHonest"))}</div>
         <ul class="pl-introlist">
@@ -4048,7 +4048,7 @@
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("assessment.unknownHint"))}</p>` : "";
     return `
       <section class="screen">
-        ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
+        ${hmTopbar(renderIcon("lc:clipboard-list") + " " + esc(t("assessment.title")), "home")}
         ${head}
         ${prompt}
         ${listenBlock}
@@ -4071,7 +4071,7 @@
     const review = reviewBox("assessment", vm.review);
     return `
       <section class="screen">
-        ${hmTopbar("📋 " + esc(t("assessment.title")), "home")}
+        ${hmTopbar(renderIcon("lc:clipboard-list") + " " + esc(t("assessment.title")), "home")}
         <div class="pl-result">
           <p class="pl-result__cap">${esc(t("assessment.yourLevel"))}</p>
           <p class="pl-result__level">${esc(vm.level)}</p>
