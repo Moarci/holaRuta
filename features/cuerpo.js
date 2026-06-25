@@ -123,7 +123,7 @@
 
     const sel = vm.selected;
     const speak = sel && vm.speakable
-      ? cornerBtn({ base: "cardbtn--speak bp-speak", on: false, icon: "🔊", label: t("discover.cuerpoSpeak"), action: "cuerpo-speak" })
+      ? cornerBtn({ base: "cardbtn--speak bp-speak", on: false, icon: "lc:volume-2", label: t("discover.cuerpoSpeak"), action: "cuerpo-speak" })
       : "";
     const panel = sel
       ? `

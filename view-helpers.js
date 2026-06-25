@@ -19,6 +19,18 @@
       .replace(/'/g, "&#39;");
   }
 
+  // renderIcon(value): ein "lc:<name>"-Token wird zum vendored Lucide-Inline-SVG
+  // (SC.icon), alles andere (Emoji, einfarbiger Glyph) läuft HTML-escaped durch.
+  // So hält ein einzelnes icon:-Feld entweder ein Icon-Token oder ein Inhalts-Emoji
+  // – die Migration bleibt inkrementell und Flaggen/Kategorien bleiben unverändert.
+  function renderIcon(value, opts) {
+    const v = String(value == null ? "" : value);
+    if (v.slice(0, 3) === "lc:") {
+      return (window.SC.icon && window.SC.icon.icon(v.slice(3), opts)) || "";
+    }
+    return esc(v);
+  }
+
   // Sharepic verfügbar? (Modul geladen + Canvas vorhanden)
   function canShare() {
     return !!(window.SC && window.SC.share);
@@ -184,7 +196,7 @@
   function cornerBtn({ base, on, icon, label, action, extra = "" }) {
     const cls = `cardbtn ${base}${on ? " is-on" : ""}`;
     return `<button class="${cls}" type="button" data-action="${action}"
-              aria-label="${esc(label)}" title="${esc(label)}"${extra ? " " + extra : ""}>${icon}</button>`;
+              aria-label="${esc(label)}" title="${esc(label)}"${extra ? " " + extra : ""}>${renderIcon(icon)}</button>`;
   }
 
   // ----- Lesetraining-Bausteine (geteilt: Historia-Feature, Logística/Salud-
@@ -384,7 +396,7 @@
   }
 
   window.SC.view = {
-    esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, favPhraseId, phraseGroups, sect, tipsShareBtn, cornerBtn,
+    esc, renderIcon, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, favPhraseId, phraseGroups, sect, tipsShareBtn, cornerBtn,
     levelMeta, readingBlock, moduleSheet,
   };
 })();

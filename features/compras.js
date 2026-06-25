@@ -248,7 +248,7 @@
     const items = vm.items
       .map((it) => {
         const speak = it.open && vm.speakable
-          ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: t("discover.comprasSpeakWord"),
+          ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "lc:volume-2", label: t("discover.comprasSpeakWord"),
               action: "compras-speak", extra: `data-id="${esc(it.id)}"` })
           : "";
         // Eine Supermarkt-Frage mit deutschem Label und 🔊 zum Vorlesen.
@@ -259,7 +259,7 @@
               <span class="sl-ask__es" lang="es">${esc(ask.es)}</span>
             </div>
             ${vm.speakable
-              ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "🔊", label: t("discover.comprasSpeakPhrase"),
+              ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "lc:volume-2", label: t("discover.comprasSpeakPhrase"),
                   action: "compras-speak-phrase", extra: `data-say="${esc(ask.es)}"` })
               : ""}
           </div>`;
