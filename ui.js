@@ -154,7 +154,7 @@
     { action: "open-responsable", icon: "lc:sprout", title: "Viaja responsable",  subKey: "discover.subResponsable", sub: "Leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik", grad: ["#3F7355", "#5E7D3A"], need: "responsable", group: "reference" },
     { action: "open-fotos",       icon: "lc:camera", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
     { action: "open-flirt",       icon: "lc:heart", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
-    { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
+    { action: "open-bailar",      icon: "lc:footprints", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
     { action: "open-musica",      icon: "lc:music", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
     { action: "open-cafe",        icon: "lc:coffee", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
     { action: "open-juegos",      icon: "lc:dices", title: "Juegos de viaje",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
@@ -2144,7 +2144,7 @@
           ? `<button class="fav-row__speak" type="button" data-action="fav-speak" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">${renderIcon("lc:volume-2")}</button>`
           : ""}
         ${it.custom
-          ? `<button class="fav-row__edit" type="button" data-action="fav-edit" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.edit"))}" title="${esc(t("favorites.edit"))}">✏️</button>`
+          ? `<button class="fav-row__edit" type="button" data-action="fav-edit" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.edit"))}" title="${esc(t("favorites.edit"))}">${renderIcon("lc:square-pen")}</button>`
           : ""}
         <button class="fav-row__rm" type="button" data-action="fav-remove" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.remove"))}" title="${esc(t("favorites.remove"))}">★</button>
       </div>`;
@@ -3504,8 +3504,8 @@
     // Prüfen / Lösungen zeigen / zurücksetzen + Live-Ergebnis.
     const actionBtn = vm.fill
       ? `<button class="teacher-btn teacher-btn--main" data-action="sheet-check">${renderIcon("lc:check-circle")} ${esc(t("sheet.checkBtn"))}</button>
-         <button class="teacher-btn" data-action="sheet-reveal">👁️ ${esc(t("sheet.revealBtn"))}</button>
-         <button class="teacher-btn" data-action="sheet-reset">♻️ ${esc(t("sheet.resetBtn"))}</button>
+         <button class="teacher-btn" data-action="sheet-reveal">${renderIcon("lc:eye")} ${esc(t("sheet.revealBtn"))}</button>
+         <button class="teacher-btn" data-action="sheet-reset">${renderIcon("lc:rotate-ccw")} ${esc(t("sheet.resetBtn"))}</button>
          <span class="sheet-score" role="status" aria-live="polite"></span>`
       // Übungsmodus: Übungsblatt und Lösungsschlüssel getrennt druckbar.
       : vm.exercise
@@ -4192,7 +4192,7 @@
               <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:x-circle")}</span><span class="feel__txt">${esc(t("discover.battleWrong"))}</span>
             </button>
             <button class="feel feel--good" data-action="battle-score" data-points="1">
-              <span class="feel__emoji" aria-hidden="true">😬</span><span class="feel__txt">${esc(t("discover.battleAlmost"))}</span>
+              <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:meh")}</span><span class="feel__txt">${esc(t("discover.battleAlmost"))}</span>
             </button>
             <button class="feel feel--easy" data-action="battle-score" data-points="2">
               <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:check-circle")}</span><span class="feel__txt">${esc(t("discover.battleCorrect"))}</span>
