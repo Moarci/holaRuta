@@ -133,7 +133,7 @@
             ${speak}
           </div>
           <p class="bp-panel__es" lang="es">${esc(sel.es)}</p>
-          ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">${renderIcon("lc:megaphone")}</span> ${esc(sel.tip)}</p>` : ""}
+          ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">${renderIcon("lc:audio-lines")}</span> ${esc(sel.tip)}</p>` : ""}
           ${sel.note ? `<p class="bp-panel__note">${esc(sel.note)}</p>` : ""}
         </div>`
       : `

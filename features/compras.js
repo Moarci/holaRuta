@@ -278,7 +278,7 @@
                 <p class="sl-item__es" lang="es">${esc(it.es)}</p>
                 ${speak}
               </div>
-              ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">${renderIcon("lc:megaphone")}</span> ${esc(it.tip)}</p>` : ""}
+              ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">${renderIcon("lc:audio-lines")}</span> ${esc(it.tip)}</p>` : ""}
               ${it.note ? `<p class="sl-item__note">${esc(it.note)}</p>` : ""}
               ${ask}
             </div>`
