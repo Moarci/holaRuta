@@ -300,8 +300,8 @@
     // Oben steht klar die Reise (Countdown bzw. Abreise-Meldung). Das tägliche
     // Karten-Pensum ist bewusst als eigene, beschriftete Zeile darunter abgesetzt –
     // sonst wirkt der Tagesbalken wie ein „Fortschritt bis zur Reise".
-    const countdown = trip.past ? who + t("home.tripTime") + " " + renderIcon("lc:luggage")
-      : trip.today ? who + t("home.tripToday") + " " + renderIcon("lc:luggage")
+    const countdown = trip.past ? who + t("home.tripTime") + " " + renderIcon("lc:backpack")
+      : trip.today ? who + t("home.tripToday") + " " + renderIcon("lc:backpack")
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
@@ -311,7 +311,7 @@
         <span class="trip__daily">
           <span class="trip__daily-head">
             <span class="trip__daily-cap">${esc(t("home.tripDailyCap"))}</span>
-            <span class="trip__count ${trip.todayOver ? "is-over" : trip.todayDone ? "is-done" : ""}">${esc(t("home.tripDailyCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone, over: trip.todayExtra }))}</span>
+            <span class="trip__count ${trip.todayOver ? "is-over" : trip.todayDone ? "is-done" : ""}">${trip.todayOver ? renderIcon("lc:flame") + " " : ""}${esc(t("home.tripDailyCount", { done: trip.todayCount, perDay: trip.perDay, complete: trip.todayDone, over: trip.todayExtra }))}${trip.todayDone && !trip.todayOver ? " " + renderIcon("lc:check-circle") : ""}</span>
           </span>
           <span class="trip__bar"><span class="trip__bar-fill ${trip.todayOver ? "is-over" : trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
         </span>
@@ -606,7 +606,7 @@
       <div class="profcard">
         ${xpBanner(vm.xp)}
         ${vm.xp && vm.xp.xp ? shareBlock(vm.shareFormat, "share-rank", t("profile.shareRank")) : ""}
-        <p class="profcard__streak">${vm.streak > 0 ? renderIcon("lc:flame") + " " : ""}${esc(streakLine)}</p>
+        <p class="profcard__streak">${renderIcon(vm.streak > 0 ? "lc:flame" : "lc:sprout")} ${esc(streakLine)}</p>
         <div class="dist__bar" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct: ov.pct }))}">
           ${seg(ov.mastered, "var(--ok)")}${seg(ov.learning, "var(--warn)")}${seg(ov.neu, "rgba(45,27,18,0.16)")}
         </div>

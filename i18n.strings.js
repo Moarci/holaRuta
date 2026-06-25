@@ -268,8 +268,8 @@
     // Über dem Tagesziel schaltet die Anzeige um: statt "67/15" (wirkt wie ein
     // kaputter Bruch) zeigt sie das geschaffte Ziel plus den Überschuss.
     tripDailyCount: (p) => p.over > 0
-      ? `🔥 ${p.done} Karten · +${p.over} über dem Ziel`
-      : `${p.done}/${p.perDay} Karten${p.complete ? " ✓" : ""}`,
+      ? `${p.done} Karten · +${p.over} über dem Ziel`
+      : `${p.done}/${p.perDay} Karten`,
     tripSwitchCap: "Reiseland schnell wechseln",
     // Zeitleiste mehrerer Reiseländer (Route): jeder Schnellwechsel hängt ein Land an.
     tripRouteCap: "Deine Route",
@@ -479,8 +479,8 @@
     tripCountdown: (p) => `<b>${p.n}</b> ${p.n === 1 ? "day" : "days"} to go until ${p.dest}`,
     tripDailyCap: "Today's goal",
     tripDailyCount: (p) => p.over > 0
-      ? `🔥 ${p.done} cards · +${p.over} over goal`
-      : `${p.done}/${p.perDay} cards${p.complete ? " ✓" : ""}`,
+      ? `${p.done} cards · +${p.over} over goal`
+      : `${p.done}/${p.perDay} cards`,
     tripSwitchCap: "Quick-switch country",
     tripRouteCap: "Your route",
     tripSwitchHint: "Tap to add a country to your timeline — e.g. first El Salvador, then Colombia, then Peru.",
@@ -2240,7 +2240,7 @@
   // ---------- profile: Reiter „Profil" (Fortschritt, Statistik, Eigene Karten) ----------
   i18n.register("profile", {
     streakInRow: (p) => `${p.n} ${p.n === 1 ? "Tag" : "Tage"} in Folge`,
-    streakFirst: "🌱 Heute die erste Karte lernen",
+    streakFirst: "Heute die erste Karte lernen",
     progressTitle: "Dein Fortschritt",
     about: "Über HolaRuta",
     partner: "Für Partner",
@@ -2371,7 +2371,7 @@
     edYourCards: "Deine Karten",
   }, {
     streakInRow: (p) => `${p.n} ${p.n === 1 ? "day" : "days"} in a row`,
-    streakFirst: "🌱 Learn your first card today",
+    streakFirst: "Learn your first card today",
     progressTitle: "Your progress",
     about: "About HolaRuta",
     partner: "For partners",
