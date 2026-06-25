@@ -5696,20 +5696,20 @@
   // Übungs-Features (spiegelt die FEATURES-Liste in ui.js, ohne die reinen
   // Infoseiten – die kommen unten als „Informationen" mit reichem Suchindex).
   const SEARCH_FEATURES = [
-    { action: "open-favorites",   icon: "⭐", title: "Mi léxico",        subKey: "discover.subFavorites" },
-    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
-    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",       subKey: "discover.subHostel" },
-    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",      subKey: "discover.subDefiniciones" },
-    { action: "open-frases",      icon: "🧱", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases" },
-    { action: "open-dialogos",    icon: "💬", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos" },
-    { action: "open-regatear",    icon: "🤝", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
-    { action: "open-precios",     icon: "💵", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech" },
-    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",         subKey: "discover.subCuerpo" },
-    { action: "open-compras",     icon: "🛒", title: "Lista de compras",  subKey: "discover.subCompras" },
-    { action: "open-yesto",       icon: "👀", title: "¿Y esto?",          subKey: "discover.subYesto", need: "yesto" },
-    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",       subKey: "discover.subConjugacion" },
-    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",           subKey: "discover.subTiempos" },
-    { action: "open-bebidas",     icon: "☕", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
+    { action: "open-favorites",   icon: "lc:star", title: "Mi léxico",        subKey: "discover.subFavorites" },
+    { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
+    { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",       subKey: "discover.subHostel" },
+    { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",      subKey: "discover.subDefiniciones" },
+    { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases" },
+    { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos" },
+    { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
+    { action: "open-precios",     icon: "lc:banknote", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech" },
+    { action: "open-cuerpo",      icon: "lc:person-standing", title: "El Cuerpo",         subKey: "discover.subCuerpo" },
+    { action: "open-compras",     icon: "lc:shopping-cart", title: "Lista de compras",  subKey: "discover.subCompras" },
+    { action: "open-yesto",       icon: "lc:eye", title: "¿Y esto?",          subKey: "discover.subYesto", need: "yesto" },
+    { action: "open-conjugacion", icon: "lc:repeat", title: "Conjugación",       subKey: "discover.subConjugacion" },
+    { action: "open-tiempos",     icon: "lc:hourglass", title: "Tiempos",           subKey: "discover.subTiempos" },
+    { action: "open-bebidas",     icon: "lc:coffee", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
   ];
   const searchHas = {
     countries: !!countries, speech: !!(speech && speech.isSupported()), frases: !!frases,
@@ -5793,7 +5793,7 @@
         tp.dos, tp.dosEn, tp.donts, tp.dontsEn]);
       idx.push({
         group: "info", kind: "page", kindLabel: t("search.kindInfo"),
-        icon: "🧭", title: "Etiqueta de viaje", sub: t("discover.subKnigge"),
+        icon: "lc:compass", title: "Etiqueta de viaje", sub: t("discover.subKnigge"),
         action: "open-knigge",
         hay: searchHay(["etiqueta knigge benehmen verhalten etiquette manners", topics]),
       });
@@ -5815,15 +5815,15 @@
         hay: searchHay([title, mod.INTRO, mod.INTRO_EN, topics, phrases, gloss, checklist, sharing, apps]),
       });
     };
-    pageMod(logistica, "🧳", "Logística de viaje", "discover.subLogistica", "open-logistica");
-    pageMod(salud, "🥗", "Salud y energía", "discover.subSalud", "open-salud");
-    pageMod(jerga, "🗣️", "Jerga colombiana", "discover.subJerga", "open-jerga");
-    pageMod(derechos, "⚖️", "Conoce tus derechos", "discover.subDerechos", "open-derechos");
-    pageMod(responsable, "🌱", "Viaja responsable", "discover.subResponsable", "open-responsable");
-    pageMod(fotografia, "📸", "Fotos y videos", "discover.subFotos", "open-fotos");
-    pageMod(flirt, "💘", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
-    pageMod(cafe, "☕", "Café de la región", "discover.subCafe", "open-cafe");
-    pageMod(juegos, "🎲", "Juegos de viaje", "discover.subJuegos", "open-juegos");
+    pageMod(logistica, "lc:luggage", "Logística de viaje", "discover.subLogistica", "open-logistica");
+    pageMod(salud, "lc:salad", "Salud y energía", "discover.subSalud", "open-salud");
+    pageMod(jerga, "lc:megaphone", "Jerga colombiana", "discover.subJerga", "open-jerga");
+    pageMod(derechos, "lc:scale", "Conoce tus derechos", "discover.subDerechos", "open-derechos");
+    pageMod(responsable, "lc:sprout", "Viaja responsable", "discover.subResponsable", "open-responsable");
+    pageMod(fotografia, "lc:camera", "Fotos y videos", "discover.subFotos", "open-fotos");
+    pageMod(flirt, "lc:heart", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
+    pageMod(cafe, "lc:coffee", "Café de la región", "discover.subCafe", "open-cafe");
+    pageMod(juegos, "lc:dices", "Juegos de viaje", "discover.subJuegos", "open-juegos");
 
     // Banderas: Info-Seite UND die Länderdaten (Name/Farben/Symbolik/Fakt je Land)
     // fließen in den Heuhaufen – so findet auch „Sol de Mayo“ oder „Bolivia bandera“
@@ -5836,7 +5836,7 @@
       const lands = (banderas.COUNTRIES || []).map((c) => [c.es, c.de, c.en, c.capital, c.colors, c.colorsEn, c.sym, c.symEn, c.fact, c.factEn]);
       idx.push({
         group: "info", kind: "page", kindLabel: t("search.kindInfo"),
-        icon: "🚩", title: "Banderas", sub: t("discover.subBanderas"),
+        icon: "lc:flag", title: "Banderas", sub: t("discover.subBanderas"),
         action: "open-banderas",
         hay: searchHay(["banderas flaggen flags bandera país nacionalidad", banderas.INTRO, banderas.INTRO_EN, topics, phrases, gloss, checklist, lands]),
       });
@@ -5869,7 +5869,7 @@
       const sounds = Object.keys(musica.COUNTRY || {}).map((k) => { const c = musica.COUNTRY[k]; return [c.genre, c.genreEn, c.artist, c.song]; });
       idx.push({
         group: "info", kind: "page", kindLabel: t("search.kindInfo"),
-        icon: "🎵", title: "Música", sub: t("discover.subMusica"),
+        icon: "lc:music", title: "Música", sub: t("discover.subMusica"),
         action: "open-musica",
         hay: searchHay(["musica music musik canciones genero spotify apple cumbia salsa reggaeton tango mariachi", musica.INTRO, musica.INTRO_EN, genres, phrases, gloss, sounds]),
       });
@@ -7656,6 +7656,9 @@
   // abschließende render() deckt zusätzlich Fälle ab, in denen ein Opener vorab
   // abbricht (z.B. Precios ohne Sprachausgabe) – so bleibt der Bildschirm nie leer.
   applyModuleDeepLink();
+  // Icon-Sprite einmal vor dem ersten Paint injizieren, damit <use>-Referenzen
+  // sofort auflösen (graceful, falls icons.js fehlt).
+  if (window.SC && window.SC.icon) window.SC.icon.injectSprite();
   render();
   registerServiceWorker();
   // Persistenten Speicher anfragen (fire-and-forget): senkt das Risiko, dass

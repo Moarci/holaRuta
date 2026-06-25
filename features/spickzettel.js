@@ -15,7 +15,7 @@
   "use strict";
   window.SC = window.SC || {};
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleShareBtn, favStar } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn, favStar } = window.SC.view;
 
   // Vom Controller injizierte Dienste (init). Bündelt zentralen State, Daten-Helfer
   // und optionale Module – statt globaler Closures wie zuvor in app.js.
@@ -92,7 +92,7 @@
           </button>
           ${favStar(c.id, c.fav, { cls: "sz-fav" })}
           ${vm.speakable
-            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="${esc(t("discover.szListen"))}" title="${esc(t("discover.szListen"))}">🔊</button>`
+            ? `<button class="sz-speak" type="button" data-action="speak-card" data-id="${esc(c.id)}" aria-label="${esc(t("discover.szListen"))}" title="${esc(t("discover.szListen"))}">${renderIcon("lc:volume-2")}</button>`
             : ""}
         </div>`).join("");
       return `

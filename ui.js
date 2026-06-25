@@ -14,7 +14,7 @@
   // Geteilte, zustandsfreie Render-Primitive aus view-helpers.js (SC.view) –
   // dieselbe Quelle nutzen auch die Feature-Module (kein Duplikat). view-helpers.js
   // läuft vor ui.js (index.html / Build / _dom-stub-Reihenfolge).
-  const { esc, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, phraseGroups, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock, moduleSheet } = window.SC.view;
+  const { esc, renderIcon, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, phraseGroups, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock, moduleSheet } = window.SC.view;
 
   // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
   // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
@@ -129,38 +129,38 @@
   // Aktivität (Spielen · Üben · Nachschlagen) – deckt sich mit dem Intro-Text
   // und gibt der inzwischen langen Liste eine klare, einheitliche Achse.
   const FEATURES = [
-    { action: "open-favorites",   icon: "⭐", title: "Mi léxico",     subKey: "discover.subFavorites", sub: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit", grad: ["#B97C24", "#E9A23B"], group: "reference" },
-    { action: "open-spickzettel", icon: "🆘", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
-    { action: "open-hostel",      icon: "🛏️", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
-    { action: "open-quiz-setup",  icon: "🧩", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
-    { action: "open-yesto",       icon: "👀", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
-    { action: "open-banderas",    icon: "🚩", title: "Banderas",      subKey: "discover.subBanderas", sub: "Flaggen-Quiz: Land raten, Farben & Symbole lernen", grad: ["#C0392B", "#2E6E86"], need: "banderas", group: "play" },
-    { action: "open-frases",      icon: "🧱", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
-    { action: "open-dialogos",    icon: "💬", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
-    { action: "open-regatear",    icon: "🤝", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
-    { action: "open-precios",     icon: "💵", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
-    { action: "open-cuerpo",      icon: "🧍", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
-    { action: "open-compras",     icon: "🛒", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
-    { action: "open-conjugacion", icon: "🔁", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"], group: "practice" },
-    { action: "open-tiempos",     icon: "⏳", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"], group: "practice" },
-    { action: "open-info",        icon: "🌎", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries", group: "reference" },
-    { action: "open-historia",    icon: "📜", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia", group: "reference" },
-    { action: "open-historia-centro", icon: "🌋", title: "Historia de Centroamérica", subKey: "discover.subHistoriaCentro", sub: "Von den Maya über Morazán bis heute", grad: ["#2E6E5A", "#1F4A3A"], need: "historiaCentro", group: "reference" },
-    { action: "open-knigge",      icon: "🧭", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
-    { action: "open-logistica",   icon: "🧳", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
-    { action: "open-salud",       icon: "🥗", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
-    { action: "open-jerga",       icon: "🗣️", title: "Jerga colombiana",  subKey: "discover.subJerga", sub: "Slang verstehen & mitreden: parce, chévere, una luca", grad: ["#C25A45", "#B97C24"], need: "jerga", group: "reference" },
-    { action: "open-derechos",    icon: "⚖️", title: "Conoce tus derechos", subKey: "discover.subDerechos", sub: "Ruhig & sicher bleiben: Kontrolle, Anwalt, Botschaft", grad: ["#3F5BA8", "#5A4FA8"], need: "derechos", group: "reference" },
-    { action: "open-responsable", icon: "🌱", title: "Viaja responsable",  subKey: "discover.subResponsable", sub: "Leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik", grad: ["#3F7355", "#5E7D3A"], need: "responsable", group: "reference" },
-    { action: "open-fotos",       icon: "📸", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
-    { action: "open-flirt",       icon: "💘", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
+    { action: "open-favorites",   icon: "lc:star", title: "Mi léxico",     subKey: "discover.subFavorites", sub: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit", grad: ["#B97C24", "#E9A23B"], group: "reference" },
+    { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
+    { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
+    { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
+    { action: "open-yesto",       icon: "lc:eye", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
+    { action: "open-banderas",    icon: "lc:flag", title: "Banderas",      subKey: "discover.subBanderas", sub: "Flaggen-Quiz: Land raten, Farben & Symbole lernen", grad: ["#C0392B", "#2E6E86"], need: "banderas", group: "play" },
+    { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
+    { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
+    { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
+    { action: "open-precios",     icon: "lc:banknote", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
+    { action: "open-cuerpo",      icon: "lc:person-standing", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
+    { action: "open-compras",     icon: "lc:shopping-cart", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
+    { action: "open-conjugacion", icon: "lc:repeat", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"], group: "practice" },
+    { action: "open-tiempos",     icon: "lc:hourglass", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"], group: "practice" },
+    { action: "open-info",        icon: "lc:globe", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries", group: "reference" },
+    { action: "open-historia",    icon: "lc:scroll", title: "Historia de Sudamérica", subKey: "discover.subHistoria", sub: "Von den Inka über Bolívar bis heute", grad: ["#8E5A2E", "#5A3A24"], need: "historia", group: "reference" },
+    { action: "open-historia-centro", icon: "lc:mountain", title: "Historia de Centroamérica", subKey: "discover.subHistoriaCentro", sub: "Von den Maya über Morazán bis heute", grad: ["#2E6E5A", "#1F4A3A"], need: "historiaCentro", group: "reference" },
+    { action: "open-knigge",      icon: "lc:compass", title: "Etiqueta de viaje", subKey: "discover.subKnigge", sub: "Verhalten unterwegs: Hostel, Bus, Gruppen", grad: ["#3F6B8E", "#6B4FA8"], need: "knigge", group: "reference" },
+    { action: "open-logistica",   icon: "lc:luggage", title: "Logística de viaje", subKey: "discover.subLogistica", sub: "SIM, Geld & Gepäck – clever & sicher ankommen", grad: ["#2F6B70", "#B97C24"], need: "logistica", group: "reference" },
+    { action: "open-salud",       icon: "lc:salad", title: "Salud y energía",   subKey: "discover.subSalud", sub: "Gesund & fit bleiben: Essen, Trinken, Bewegung", grad: ["#2F8E5B", "#76954E"], need: "salud", group: "reference" },
+    { action: "open-jerga",       icon: "lc:megaphone", title: "Jerga colombiana",  subKey: "discover.subJerga", sub: "Slang verstehen & mitreden: parce, chévere, una luca", grad: ["#C25A45", "#B97C24"], need: "jerga", group: "reference" },
+    { action: "open-derechos",    icon: "lc:scale", title: "Conoce tus derechos", subKey: "discover.subDerechos", sub: "Ruhig & sicher bleiben: Kontrolle, Anwalt, Botschaft", grad: ["#3F5BA8", "#5A4FA8"], need: "derechos", group: "reference" },
+    { action: "open-responsable", icon: "lc:sprout", title: "Viaja responsable",  subKey: "discover.subResponsable", sub: "Leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik", grad: ["#3F7355", "#5E7D3A"], need: "responsable", group: "reference" },
+    { action: "open-fotos",       icon: "lc:camera", title: "Fotos y videos",    subKey: "discover.subFotos", sub: "Tolle Reisebilder: Motiv, Licht, Posen & Teilen", grad: ["#C25A45", "#5A4FA8"], need: "fotos", group: "reference" },
+    { action: "open-flirt",       icon: "lc:heart", title: "Coqueteo y romance", subKey: "discover.subFlirt", sub: "Flirten & daten mit Respekt: ansprechen, Komplimente, Date, Sicherheit", grad: ["#D24A77", "#B05AA8"], need: "flirt", group: "reference" },
     { action: "open-bailar",      icon: "💃", title: "Bailar",            subKey: "discover.subBailar", sub: "Tanzen in LatAm: Schritt-Diagramme, Rhythmus & Videos", grad: ["#C0392B", "#5A3FB8"], need: "bailar", group: "reference" },
-    { action: "open-musica",      icon: "🎵", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
-    { action: "open-cafe",        icon: "☕", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
-    { action: "open-juegos",      icon: "🎲", title: "Juegos de viaje",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
-    { action: "open-pretrip",     icon: "🗓️", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
-    { action: "open-placement",   icon: "🎯", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
-    { action: "open-assessment",  icon: "📋", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
+    { action: "open-musica",      icon: "lc:music", title: "Música",            subKey: "discover.subMusica", sub: "Der Soundtrack LatAms – mit Spotify & Apple Music", grad: ["#7A3FA8", "#C2502E"], need: "musica", group: "reference" },
+    { action: "open-cafe",        icon: "lc:coffee", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
+    { action: "open-juegos",      icon: "lc:dices", title: "Juegos de viaje",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
+    { action: "open-pretrip",     icon: "lc:calendar", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
+    { action: "open-placement",   icon: "lc:target", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
+    { action: "open-assessment",  icon: "lc:clipboard-list", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
   ];
 
   // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),
@@ -190,7 +190,7 @@
     const tb = (id, icon, label) =>
       `<button class="tab ${tab === id ? "is-active" : ""}"${tab === id ? ' aria-current="page"' : ""}
                data-action="set-tab" data-tab="${id}">
-         <span class="tab__icon" aria-hidden="true">${icon}</span><span class="tab__label">${label}</span>
+         <span class="tab__icon" aria-hidden="true">${renderIcon(icon)}</span><span class="tab__label">${label}</span>
        </button>`;
     // Ein einziger „Tarea“-Reiter, wenn eine Edition Aufgaben ODER Modo profe nutzt.
     // Der Modo-profe-Bereich hängt im Tarea-Screen mit drin (kein eigener Reiter).
@@ -198,7 +198,7 @@
     const showTask = !!(cfg.taskTab || cfg.teacherTab);
     return `
       <nav class="tabbar" aria-label="${esc(t("home.tabsAreas"))}">
-        ${tb("start", "🏠", t("home.tabStart"))}${tb("lernen", "🎒", t("home.tabLearn"))}${tb("entdecken", "🧭", t("home.tabDiscover"))}${showTask ? tb("tarea", "📝", t("home.tabTask")) : ""}${tb("profil", "👤", t("home.tabProfile"))}
+        ${tb("start", "lc:house", t("home.tabStart"))}${tb("lernen", "lc:backpack", t("home.tabLearn"))}${tb("entdecken", "lc:compass", t("home.tabDiscover"))}${showTask ? tb("tarea", "lc:clipboard-list", t("home.tabTask")) : ""}${tb("profil", "lc:user", t("home.tabProfile"))}
       </nav>`;
   }
 
@@ -558,7 +558,7 @@
   function searchBar() {
     return `
       <button class="searchbar" data-action="open-search" aria-label="${esc(t("search.open"))}">
-        <span class="searchbar__icon" aria-hidden="true">🔍</span>
+        <span class="searchbar__icon" aria-hidden="true">${renderIcon("lc:search")}</span>
         <span class="searchbar__text">${esc(t("search.placeholder"))}</span>
       </button>`;
   }
@@ -875,7 +875,7 @@
     const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, jerga: vm.hasJerga, derechos: vm.hasDerechos, responsable: vm.hasResponsable, fotos: vm.hasFotos, flirt: vm.hasFlirt, bailar: vm.hasBailar, musica: vm.hasMusica, cafe: vm.hasCafe, juegos: vm.hasJuegos, banderas: vm.hasBanderas, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
-        <span class="feat__icon" aria-hidden="true">${x.icon}</span>
+        <span class="feat__icon" aria-hidden="true">${renderIcon(x.icon)}</span>
         <span class="feat__text">
           <span class="feat__title">${esc(x.title)}</span>
           <span class="feat__sub">${esc(x.subKey ? t(x.subKey) : x.sub)}</span>
@@ -953,11 +953,11 @@
   function reviewList(ns, review) {
     if (!review || !review.length) return "";
     const tn = (k) => t(ns + "." + k);
-    const reviewIcon = { correct: "✅", wrong: "❌", unknown: "🤷" };
+    const reviewIcon = { correct: "lc:check-circle", wrong: "lc:x-circle", unknown: "lc:help-circle" };
     const reviewRow = (r, i) => `
       <li class="pl-review__item pl-review__item--${esc(r.status)}">
         <p class="pl-review__q">
-          <span class="pl-review__icon" aria-hidden="true">${reviewIcon[r.status] || ""}</span>
+          <span class="pl-review__icon" aria-hidden="true">${renderIcon(reviewIcon[r.status] || "")}</span>
           <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? "🎧 " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="es">„${esc(r.questionEs)}“</span>` : ""}</span>
         </p>
         ${r.status !== "correct" ? `
@@ -1023,7 +1023,7 @@
         ${cap}
         <div class="plprof plprof--empty">
           <p class="plprof__never">${esc(t("placement.profileNever"))}</p>
-          <button class="teacher-btn teacher-btn--main" data-action="open-placement">▶️ ${esc(t("placement.takeNow"))}</button>
+          <button class="teacher-btn teacher-btn--main" data-action="open-placement">${renderIcon("lc:play")} ${esc(t("placement.takeNow"))}</button>
         </div>`;
     }
     const l = p.last;
@@ -1045,7 +1045,7 @@
         ${historyList("placement", p.history)}
         ${shareBlock(shareFmt, "share-placement", t("placement.share"))}
         <div class="plprof__actions">
-          <button class="ghostbtn" data-action="open-placement">🔁 ${esc(t("placement.retake"))}</button>
+          <button class="ghostbtn" data-action="open-placement">${renderIcon("lc:rotate-ccw")} ${esc(t("placement.retake"))}</button>
         </div>
       </div>`;
   }
@@ -1060,7 +1060,7 @@
         ${cap}
         <div class="plprof plprof--empty">
           <p class="plprof__never">${esc(t("assessment.profileNever"))}</p>
-          <button class="teacher-btn teacher-btn--main" data-action="open-assessment">▶️ ${esc(t("assessment.takeNow"))}</button>
+          <button class="teacher-btn teacher-btn--main" data-action="open-assessment">${renderIcon("lc:play")} ${esc(t("assessment.takeNow"))}</button>
         </div>`;
     }
     const l = p.last;
@@ -1083,7 +1083,7 @@
         ${historyList("assessment", p.history)}
         ${shareBlock(shareFmt, "share-assessment", t("assessment.share"))}
         <div class="plprof__actions">
-          <button class="ghostbtn" data-action="open-assessment">🔁 ${esc(t("assessment.retake"))}</button>
+          <button class="ghostbtn" data-action="open-assessment">${renderIcon("lc:rotate-ccw")} ${esc(t("assessment.retake"))}</button>
         </div>
       </div>`;
   }
@@ -1091,7 +1091,7 @@
   function profilBody(vm) {
     const navrow = (action, icon, label, chip) => `
       <button class="navrow" data-action="${action}">
-        <span class="navrow__icon" aria-hidden="true">${icon}</span>
+        <span class="navrow__icon" aria-hidden="true">${renderIcon(icon)}</span>
         <span class="navrow__label">${esc(label)}</span>
         ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
         <span class="navrow__chev" aria-hidden="true">›</span>
@@ -1143,26 +1143,26 @@
         ${celebrateSoundGroup(vm)}
       </div>
 
-      ${navrow("open-stats", "📊", t("profile.statistics"))}
-      ${vm.hasBadges ? navrow("open-badges", "🎖️", t("profile.rutaPass"), vm.badgeCount || "") : ""}
-      ${navrow("open-favorites", "⭐", t("profile.favorites"), vm.favCount || "")}
-      ${navrow("open-editor", "✍️", t("profile.ownCards"))}
+      ${navrow("open-stats", "lc:bar-chart-3", t("profile.statistics"))}
+      ${vm.hasBadges ? navrow("open-badges", "lc:award", t("profile.rutaPass"), vm.badgeCount || "") : ""}
+      ${navrow("open-favorites", "lc:star", t("profile.favorites"), vm.favCount || "")}
+      ${navrow("open-editor", "lc:square-pen", t("profile.ownCards"))}
 
       <p class="sectioncap">${esc(t("profile.yourData"))}</p>
-      ${navrow("export-data", "📤", t("profile.exportData"))}
-      ${navrow("import-data", "📥", t("profile.importData"))}
-      ${vm.syncEnabled ? navrow("cloud-sync", "☁️", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
-      ${vm.socialEnabled ? navrow("open-social", "🏆", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
+      ${navrow("export-data", "lc:upload", t("profile.exportData"))}
+      ${navrow("import-data", "lc:download", t("profile.importData"))}
+      ${vm.syncEnabled ? navrow("cloud-sync", "lc:cloud", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
+      ${vm.socialEnabled ? navrow("open-social", "lc:trophy", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
       <a class="navrow" href="landing.html" style="text-decoration:none" aria-label="${esc(t("profile.about"))}">
-        <span class="navrow__icon" aria-hidden="true">ℹ️</span>
+        <span class="navrow__icon" aria-hidden="true">${renderIcon("lc:info")}</span>
         <span class="navrow__label">${esc(t("profile.about"))}</span>
         <span class="navrow__chev" aria-hidden="true">›</span>
       </a>
 
       <a class="navrow" href="landing.html#partner" style="text-decoration:none" aria-label="${esc(t("profile.partner"))}">
-        <span class="navrow__icon" aria-hidden="true">🤝</span>
+        <span class="navrow__icon" aria-hidden="true">${renderIcon("lc:handshake")}</span>
         <span class="navrow__label">${esc(t("profile.partner"))}</span>
         <span class="navrow__chev" aria-hidden="true">›</span>
       </a>
@@ -1203,7 +1203,7 @@
         : "";
       return `
         <div class="installcard installcard--done">
-          <p class="installcard__title"><span aria-hidden="true">✅</span> ${esc(t("profile.installedTitle"))}</p>
+          <p class="installcard__title"><span aria-hidden="true">${renderIcon("lc:check-circle")}</span> ${esc(t("profile.installedTitle"))}</p>
           <p class="installcard__text">${esc(t("profile.installedText"))}</p>
           ${iosNote}
         </div>`;
@@ -1224,7 +1224,7 @@
            <p class="installcard__note">${esc(t("profile.installHintNote"))}</p>`;
     return `
       <div class="installcard">
-        <p class="installcard__title"><span aria-hidden="true">📲</span> ${esc(t("profile.notInstalledTitle"))}</p>
+        <p class="installcard__title"><span aria-hidden="true">${renderIcon("lc:smartphone")}</span> ${esc(t("profile.notInstalledTitle"))}</p>
         ${body}
       </div>`;
   }
@@ -1248,11 +1248,11 @@
       <section class="screen screen--search">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">🔍 ${esc(t("search.title"))}</div>
+          <div class="topbar__title">${renderIcon("lc:search")} ${esc(t("search.title"))}</div>
           <span></span>
         </div>
         <div class="searchfield">
-          <span class="searchfield__icon" aria-hidden="true">🔍</span>
+          <span class="searchfield__icon" aria-hidden="true">${renderIcon("lc:search")}</span>
           <input id="search-input" class="searchfield__input" type="search" inputmode="search"
                  autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
                  placeholder="${esc(t("search.inputPlaceholder"))}" aria-label="${esc(t("search.inputPlaceholder"))}"
@@ -1281,7 +1281,7 @@
     const sub = it.sub ? `<span class="search-row__sub">${esc(it.sub)}</span>` : "";
     return `
       <button class="search-row" data-action="${esc(it.action)}"${dataId}${dataBack}>
-        <span class="search-row__icon" aria-hidden="true">${esc(it.icon)}</span>
+        <span class="search-row__icon" aria-hidden="true">${renderIcon(it.icon)}</span>
         <span class="search-row__text">
           <span class="search-row__title"${titleLang}>${esc(it.title)}</span>
           ${sub}
@@ -1357,7 +1357,7 @@
   // on = farbige Variante (für die bunte Rückseite).
   function speakBtn(on) {
     if (!speechReady()) return "";
-    return cornerBtn({ base: "cardbtn--speak", on, icon: "🔊", label: t("study.speakAnswer"), action: "speak" });
+    return cornerBtn({ base: "cardbtn--speak", on, icon: "lc:volume-2", label: t("study.speakAnswer"), action: "speak" });
   }
 
   // Reise-Kontext-Panel: aufklappbarer Inhalt mit echtem Reisesatz, Situation und
@@ -1387,7 +1387,7 @@
   function contextIconBtn(ctx, on, open) {
     if (!ctx) return "";
     return cornerBtn({
-      base: "cardbtn--ctx" + (open ? " is-open" : ""), on, icon: "🧭",
+      base: "cardbtn--ctx" + (open ? " is-open" : ""), on, icon: "lc:compass",
       label: t("study.contextShow"), action: "toggle-context",
       extra: `aria-expanded="${!!open}" aria-controls="context-panel"`,
     });
@@ -1511,7 +1511,7 @@
         <div class="card-static card-listen">
           <span class="face__cat">${esc(vm.catLabel)}</span>
           ${levelBadge(vm, false)}
-          <span class="listen-ear" aria-hidden="true">👂</span>
+          <span class="listen-ear" aria-hidden="true">${renderIcon("lc:ear")}</span>
           ${replay}
           <span class="face__hint">${esc(t("study.listenHint"))}</span>
         </div>
@@ -1552,15 +1552,15 @@
       </div>
       <div class="ratebar" role="group" aria-label="${esc(t("study.ratePromptDe"))}">
         <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="${esc(t("study.rateAgainLabel"))}">
-          <span class="feel__emoji" aria-hidden="true">😅</span>
+          <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:meh")}</span>
           <span class="feel__txt">Otra vez</span>
         </button>
         <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="${esc(t("study.rateGoodLabel"))}">
-          <span class="feel__emoji" aria-hidden="true">🙂</span>
+          <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:smile")}</span>
           <span class="feel__txt">Vale</span>
         </button>
         <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="${esc(t("study.rateEasyLabel"))}">
-          <span class="feel__emoji" aria-hidden="true">😎</span>
+          <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:glasses")}</span>
           <span class="feel__txt">¡Fácil!</span>
         </button>
       </div>`;
@@ -1701,7 +1701,7 @@
   function noticeToast(text) {
     return `
       <button class="btoast" data-action="dismiss-notice" aria-live="assertive">
-        <span class="btoast__head">⚠️ ${esc(text)}</span>
+        <span class="btoast__head">${renderIcon("lc:alert-triangle")} ${esc(text)}</span>
       </button>`;
   }
 
@@ -1735,7 +1735,7 @@
       <div class="upd-scrim" data-action="dismiss-update">
         <div class="upd" role="dialog" aria-modal="true" aria-labelledby="upd-title"
              data-action="upd-stop">
-          <div class="upd__head">🎉 <span id="upd-title">${esc(t("profile.updTitle"))}</span></div>
+          <div class="upd__head">${renderIcon("lc:party-popper")} <span id="upd-title">${esc(t("profile.updTitle"))}</span></div>
           ${blocks}
           <div class="upd__how">
             <div class="upd__how-title">${esc(t("profile.updHowTitle"))}</div>
@@ -2122,7 +2122,7 @@
           </span>
         </button>
         ${vm.speakable
-          ? `<button class="fav-row__speak" type="button" data-action="fav-speak" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">🔊</button>`
+          ? `<button class="fav-row__speak" type="button" data-action="fav-speak" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.listen"))}" title="${esc(t("favorites.listen"))}">${renderIcon("lc:volume-2")}</button>`
           : ""}
         ${it.custom
           ? `<button class="fav-row__edit" type="button" data-action="fav-edit" data-id="${esc(it.id)}" aria-label="${esc(t("favorites.edit"))}" title="${esc(t("favorites.edit"))}">✏️</button>`
@@ -3286,7 +3286,7 @@
         </li>`;
     }).join("");
     const banner = vm.allDone
-      ? `<p class="pretrip-alldone">🎉 ${esc(t("discover.pretripAllDone"))}</p>`
+      ? `<p class="pretrip-alldone">${renderIcon("lc:party-popper")} ${esc(t("discover.pretripAllDone"))}</p>`
       : `<p class="pretrip-progress">${esc(t("discover.pretripProgress", { done: vm.doneCount, total: vm.total }))}</p>`;
     // Destination-Auswahl: ein Plan je Reiseziel; ✓ markiert vollständig geschaffte Pläne.
     // Bei zugewiesener Aufgabe ist das Ziel fix -> nur ein nicht-klickbares Abzeichen.
@@ -3484,7 +3484,7 @@
     // Im Fill-Modus (am Handy) statt „Drucken" die interaktiven Knöpfe:
     // Prüfen / Lösungen zeigen / zurücksetzen + Live-Ergebnis.
     const actionBtn = vm.fill
-      ? `<button class="teacher-btn teacher-btn--main" data-action="sheet-check">✅ ${esc(t("sheet.checkBtn"))}</button>
+      ? `<button class="teacher-btn teacher-btn--main" data-action="sheet-check">${renderIcon("lc:check-circle")} ${esc(t("sheet.checkBtn"))}</button>
          <button class="teacher-btn" data-action="sheet-reveal">👁️ ${esc(t("sheet.revealBtn"))}</button>
          <button class="teacher-btn" data-action="sheet-reset">♻️ ${esc(t("sheet.resetBtn"))}</button>
          <span class="sheet-score" role="status" aria-live="polite"></span>`
@@ -3817,14 +3817,14 @@
            ${tasks.map((tk) => `
              <li class="task-item${tk.done ? " task-item--done" : tk.started ? " task-item--active" : ""}"${tk.done ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.done"))}"` : tk.started ? ` aria-label="${esc(tk.targetLabel + " – " + t("task.inProgress"))}"` : ""}>
                <div class="task-item__body">
-                 <span class="task-item__target"><span aria-hidden="true">${tk.done ? "✅" : tk.started ? "⏳" : "🎯"}</span> ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge" role="status" title="${esc(t("task.doneHint"))}">${esc(t("task.done"))}</span>` : tk.started ? ` <span class="task-item__badge task-item__badge--active" role="status" title="${esc(t("task.inProgressHint"))}">${esc(t("task.inProgress"))}</span>` : ""}</span>
+                 <span class="task-item__target"><span aria-hidden="true">${renderIcon(tk.done ? "lc:check-circle" : tk.started ? "lc:hourglass" : "lc:target")}</span> ${esc(tk.targetLabel)}${tk.done ? ` <span class="task-item__badge" role="status" title="${esc(t("task.doneHint"))}">${esc(t("task.done"))}</span>` : tk.started ? ` <span class="task-item__badge task-item__badge--active" role="status" title="${esc(t("task.inProgressHint"))}">${esc(t("task.inProgress"))}</span>` : ""}</span>
                  ${tk.title ? `<span class="task-item__title">„${esc(tk.title)}“</span>` : ""}
                  ${!tk.done && tk.total > 0 ? `<span class="task-item__progress">${esc(t(tk.progressKind === "stages" ? "task.progStages" : "task.progCards", { seen: tk.seen, total: tk.total }))}</span>
                  ${tk.started ? `<span class="task-item__bar" aria-hidden="true"><span class="task-item__bar-fill" style="width:${tk.pct}%"></span></span>` : ""}` : ""}
                  ${tk.due ? `<span class="task-item__due${tk.overdue && !tk.done ? " is-overdue" : ""}">${esc(t(tk.overdue && !tk.done ? "task.overdue" : "task.dueLabel", { date: tk.due }))}</span>` : ""}
                </div>
                <div class="task-item__actions">
-                 <button class="teacher-btn${tk.done ? "" : " teacher-btn--main"}" data-action="task-start" data-idx="${tk.idx}">${tk.done ? "🔁 " + esc(t("task.replay")) : "▶️ " + esc(t("task.start"))}</button>
+                 <button class="teacher-btn${tk.done ? "" : " teacher-btn--main"}" data-action="task-start" data-idx="${tk.idx}">${tk.done ? renderIcon("lc:rotate-ccw") + " " + esc(t("task.replay")) : renderIcon("lc:play") + " " + esc(t("task.start"))}</button>
                  <button class="teacher-x" data-action="task-remove" data-idx="${tk.idx}" aria-label="${esc(t("task.remove"))}" title="${esc(t("task.remove"))}">✕</button>
                </div>
              </li>`).join("")}
@@ -3886,7 +3886,7 @@
         </ul>
         ${vm.fromOnboarding ? "" : moduleShareBtn("ruta-check")}
         <div class="teacher-actions">
-          <button class="teacher-btn teacher-btn--main" data-action="placement-start">▶️ ${esc(t("placement.start"))}</button>
+          <button class="teacher-btn teacher-btn--main" data-action="placement-start">${renderIcon("lc:play")} ${esc(t("placement.start"))}</button>
           ${later}
         </div>
       </section>`;
@@ -3968,7 +3968,7 @@
         <p class="pl-disclaimer">${esc(t("placement.schoolNote"))}</p>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="${vm.fromOnboarding ? "placement-finish" : "home"}">${esc(vm.fromOnboarding ? t("placement.toApp") : t("common.overview"))}</button>
-          <button class="teacher-btn" data-action="placement-retake">🔁 ${esc(t("placement.retake"))}</button>
+          <button class="teacher-btn" data-action="placement-retake">${renderIcon("lc:rotate-ccw")} ${esc(t("placement.retake"))}</button>
         </div>
       </section>`;
   }
@@ -4005,7 +4005,7 @@
         <p class="sectioncap">${esc(t("assessment.chooseVariant"))}</p>
         <div class="pl-variants">
           <button class="teacher-btn teacher-btn--main pl-variant" data-action="assessment-start" data-variant="standard">
-            ▶️ ${esc(t("assessment.startStandard", { n: vm.standardTotal }))}
+            ${renderIcon("lc:play")} ${esc(t("assessment.startStandard", { n: vm.standardTotal }))}
             <span class="pl-variant__desc">${esc(t("assessment.variantStandardDesc"))}</span>
           </button>
           ${extremoBtn}
@@ -4028,7 +4028,7 @@
     // Hör-Item: großer Abspiel-Knopf statt sichtbarem Spanisch-Satz.
     const listenBlock = q.type === "listen"
       ? `<button class="pl-listen" data-action="assessment-listen-play" aria-label="${esc(t("assessment.listenPlay"))}">
-           <span class="pl-listen__icon" aria-hidden="true">🔊</span>
+           <span class="pl-listen__icon" aria-hidden="true">${renderIcon("lc:volume-2")}</span>
            <span class="pl-listen__label">${esc(t("assessment.listenPlay"))}</span>
          </button>
          <p class="pl-hint pl-hint--listen">${esc(t("assessment.listenHint"))}</p>`
@@ -4092,7 +4092,7 @@
         <p class="pl-disclaimer">${esc(t("assessment.schoolNote"))}</p>
         <div class="teacher-actions">
           <button class="teacher-btn teacher-btn--main" data-action="home">${esc(t("common.overview"))}</button>
-          <button class="teacher-btn" data-action="assessment-retake">🔁 ${esc(t("assessment.retake"))}</button>
+          <button class="teacher-btn" data-action="assessment-retake">${renderIcon("lc:rotate-ccw")} ${esc(t("assessment.retake"))}</button>
         </div>
       </section>`;
   }
@@ -4170,13 +4170,13 @@
             : ""}
           <div class="ratebar" role="group" aria-label="${esc(t("discover.battleRateAria"))}">
             <button class="feel feel--again" data-action="battle-score" data-points="0">
-              <span class="feel__emoji" aria-hidden="true">❌</span><span class="feel__txt">${esc(t("discover.battleWrong"))}</span>
+              <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:x-circle")}</span><span class="feel__txt">${esc(t("discover.battleWrong"))}</span>
             </button>
             <button class="feel feel--good" data-action="battle-score" data-points="1">
               <span class="feel__emoji" aria-hidden="true">😬</span><span class="feel__txt">${esc(t("discover.battleAlmost"))}</span>
             </button>
             <button class="feel feel--easy" data-action="battle-score" data-points="2">
-              <span class="feel__emoji" aria-hidden="true">✅</span><span class="feel__txt">${esc(t("discover.battleCorrect"))}</span>
+              <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:check-circle")}</span><span class="feel__txt">${esc(t("discover.battleCorrect"))}</span>
             </button>
           </div>
         </div>`
@@ -4225,7 +4225,7 @@
     return `
       <section class="screen">
         <div class="done">
-          <div class="done__emoji">🎉</div>
+          <div class="done__emoji">${renderIcon("lc:party-popper")}</div>
           <h2>${t("discover.battleSurvived", { scene: esc(vm.sceneLabel) })}</h2>
           <p class="hm-result">
             <span class="hm-result__p ${vm.winner === "A" ? "is-win" : ""}">${esc(vm.nameA)}<br><b>${vm.scores.A}</b></span>
