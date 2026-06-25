@@ -88,7 +88,7 @@
                   title="${esc(t("discover.szShowTitle"))}">
             <span class="sz-row__de">${esc(c.de)}</span>
             <span class="sz-row__es" lang="es">${esc(c.es)}</span>
-            ${c.tip ? `<span class="sz-row__tip">${renderIcon("lc:megaphone")} ${esc(c.tip)}</span>` : ""}
+            ${c.tip ? `<span class="sz-row__tip">${renderIcon("lc:audio-lines")} ${esc(c.tip)}</span>` : ""}
           </button>
           ${favStar(c.id, c.fav, { cls: "sz-fav" })}
           ${vm.speakable

@@ -1346,7 +1346,7 @@
   // Dezenter „Überspringen“-Button: nimmt die aktuelle Karte ohne Bewertung aus der
   // Sitzung (sie bleibt fällig). So muss niemand jede Karte durchziehen.
   function skipBtn() {
-    return `<button class="skipbtn" type="button" data-action="skip" aria-label="${esc(t("study.skipLabel"))}">${esc(t("study.skip"))}</button>`;
+    return `<button class="skipbtn" type="button" data-action="skip" aria-label="${esc(t("study.skipLabel"))}">${renderIcon("lc:skip-forward")} ${esc(t("study.skip"))}</button>`;
   }
 
   // Stufen-Badge (oben rechts auf der Karte). on = farbig (Rückseite), sonst dezent.
@@ -1395,7 +1395,7 @@
   function contextIconBtn(ctx, on, open) {
     if (!ctx) return "";
     return cornerBtn({
-      base: "cardbtn--ctx" + (open ? " is-open" : ""), on, icon: "lc:compass",
+      base: "cardbtn--ctx" + (open ? " is-open" : ""), on, icon: "lc:info",
       label: t("study.contextShow"), action: "toggle-context",
       extra: `aria-expanded="${!!open}" aria-controls="context-panel"`,
     });
@@ -1425,7 +1425,7 @@
   // Karteikarte-Modus: 3D-Dreh-Karte. Frage/Antwort hängen an der Lernrichtung;
   // 🔊 und Aussprache-Tipp sitzen immer auf der spanischen Seite.
   function flipBody(vm) {
-    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:megaphone")} ${esc(vm.tip)}</div>` : "";
+    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:audio-lines")} ${esc(vm.tip)}</div>` : "";
     const sq = vm.spanishIsQuestion; // Spanisch steht vorne (Frage)?
     return `
       <div class="flip ${vm.revealed ? "is-flipped" : ""}" data-action="flip" id="flip"
@@ -1461,7 +1461,7 @@
   function typeBody(vm) {
     const res = vm.typeResult; // null | {correct, answers, input}
     const sq = vm.spanishIsQuestion;
-    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:megaphone")} ${esc(vm.tip)}</div>` : "";
+    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:audio-lines")} ${esc(vm.tip)}</div>` : "";
 
     if (!res) {
       const inputHint = sq ? t("study.inputDe") : t("study.inputEs");
@@ -1509,7 +1509,7 @@
   // Modus. Reuse: 🔊 (data-action="speak"), typer-Formular, rateButtons.
   function listenBody(vm) {
     const res = vm.typeResult; // null | {correct, answers, input}
-    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:megaphone")} ${esc(vm.tip)}</div>` : "";
+    const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:audio-lines")} ${esc(vm.tip)}</div>` : "";
 
     if (!res) {
       const replay = speechReady()
@@ -1568,7 +1568,7 @@
           <span class="feel__txt">Vale</span>
         </button>
         <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="${esc(t("study.rateEasyLabel"))}">
-          <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:glasses")}</span>
+          <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:laugh")}</span>
           <span class="feel__txt">¡Fácil!</span>
         </button>
       </div>`;
@@ -1939,7 +1939,7 @@
     const s = vm.s;
     const meta = STATUS_META[displayStatus(s)] || STATUS_META.new;
     const accent = vm.accent;
-    const tip = vm.tip ? `<div class="cardx__tip">${renderIcon("lc:megaphone")} ${esc(vm.tip)}</div>` : "";
+    const tip = vm.tip ? `<div class="cardx__tip">${renderIcon("lc:audio-lines")} ${esc(vm.tip)}</div>` : "";
 
     // Aufschlüsselung der Bewertungen als kleine Balken.
     const total = s.seen || 1;
@@ -2064,7 +2064,7 @@
   }
 
   function editorItem(c) {
-    const tip = c.tip ? ` · ${renderIcon("lc:megaphone")} ${esc(c.tip)}` : "";
+    const tip = c.tip ? ` · ${renderIcon("lc:audio-lines")} ${esc(c.tip)}` : "";
     return `
       <div class="ed-item">
         <div class="ed-item__main">
@@ -2126,7 +2126,7 @@
           <span class="fav-row__text">
             <span class="fav-row__es" lang="es">${esc(it.es)}</span>
             <span class="fav-row__de">${esc(it.de)}</span>
-            ${it.tip ? `<span class="fav-row__tip">${renderIcon("lc:megaphone")} ${esc(it.tip)}</span>` : ""}
+            ${it.tip ? `<span class="fav-row__tip">${renderIcon("lc:audio-lines")} ${esc(it.tip)}</span>` : ""}
           </span>
         </button>
         ${vm.speakable
@@ -2227,7 +2227,7 @@
           ${vm.showSrc ? `<p class="sz-show__src">${esc(vm.showSrc.icon)} ${esc(vm.showSrc.label)}</p>` : ""}
           <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
           <p class="sz-show__de">${esc(vm.show.de)}</p>
-          ${vm.show.tip ? `<p class="sz-show__tip">${renderIcon("lc:megaphone")} ${esc(vm.show.tip)}</p>` : ""}
+          ${vm.show.tip ? `<p class="sz-show__tip">${renderIcon("lc:audio-lines")} ${esc(vm.show.tip)}</p>` : ""}
           <div class="sz-show__actions">
             ${vm.speakable
               ? `<button class="cta" type="button" data-action="fav-speak" data-id="${esc(vm.show.id)}">${esc(t("favorites.listenBig"))}</button>`
