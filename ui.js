@@ -1808,9 +1808,9 @@
   function routeMap(ov) {
     const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
     const stops = [
-      { icon: "🆕", label: t("profile.routeNew"),       n: ov.neu,      cls: "is-new",    at: 0 },
-      { icon: "📚", label: t("profile.routeLearning"),  n: ov.learning, cls: "is-learn",  at: 50 },
-      { icon: "🏁", label: t("profile.routeMastered"),  n: ov.mastered, cls: "is-master", at: 100 },
+      { icon: "lc:sparkles", label: t("profile.routeNew"),       n: ov.neu,      cls: "is-new",    at: 0 },
+      { icon: "lc:book-open", label: t("profile.routeLearning"),  n: ov.learning, cls: "is-learn",  at: 50 },
+      { icon: "lc:award", label: t("profile.routeMastered"),  n: ov.mastered, cls: "is-master", at: 100 },
     ];
     // Haltestellen-Punkte sitzen auf der Linie, Beschriftung läuft im
     // normalen Fluss darunter – so überlappt nichts (auch bei 0 %).
@@ -1820,7 +1820,7 @@
     const stopsHtml = stops.map((s) => `
       <div class="route__stop ${s.cls}">
         <span class="route__n">${s.n}</span>
-        <span class="route__lbl">${s.icon} ${esc(s.label)}</span>
+        <span class="route__lbl">${renderIcon(s.icon)} ${esc(s.label)}</span>
       </div>`).join("");
     return `
       <div class="route" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct }))}">
@@ -2259,9 +2259,9 @@
   // WANN die Lehrkraft/Reiseleitung sie wählen sollte. Geteilt von beiden Stellen
   // über ctx ("task" | "sheet"); die Auswahl landet via data-action="pick-target".
   const TARGET_GROUPS = [
-    { id: "pretrip",  icon: "🗓️", labelKey: "teacher.grpPretrip",  helpKey: "teacher.grpPretripHelp" },
-    { id: "preset",   icon: "🎒", labelKey: "teacher.grpPreset",   helpKey: "teacher.grpPresetHelp" },
-    { id: "category", icon: "📦", labelKey: "teacher.grpCategory", helpKey: "teacher.grpCategoryHelp" },
+    { id: "pretrip",  icon: "lc:calendar", labelKey: "teacher.grpPretrip",  helpKey: "teacher.grpPretripHelp" },
+    { id: "preset",   icon: "lc:backpack", labelKey: "teacher.grpPreset",   helpKey: "teacher.grpPresetHelp" },
+    { id: "category", icon: "lc:package", labelKey: "teacher.grpCategory", helpKey: "teacher.grpCategoryHelp" },
   ];
   // Abschnitte der Bundle-Vorlagen im Picker (Reihenfolge = Anzeigereihenfolge).
   const BUNDLE_GROUPS = [
@@ -2288,7 +2288,7 @@
       const cur = (opts.targets || []).find((x) => x.value === opts.current);
       const g = cur ? targetGroupOf(cur.value) : null;
       valLine = cur
-        ? `${g ? `<span class="tgt-field__kicker">${g.icon} ${esc(t(g.labelKey))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
+        ? `${g ? `<span class="tgt-field__kicker">${renderIcon(g.icon)} ${esc(t(g.labelKey))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
         : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
     } else {
       const s = opts.summary || { kind: "none" };
@@ -2324,7 +2324,7 @@
       }).join("");
       return `
         <section class="tgt-group">
-          <h3 class="tgt-group__title">${g.icon} ${esc(t(g.labelKey))}</h3>
+          <h3 class="tgt-group__title">${renderIcon(g.icon)} ${esc(t(g.labelKey))}</h3>
           <p class="tgt-group__help">${esc(t(g.helpKey))}</p>
           <div class="tgt-opts">${rows}</div>
         </section>`;
@@ -2362,7 +2362,7 @@
       const active = activeBundles.indexOf(b.id) >= 0;
       return `<button type="button" class="tgt-bundle${active ? " is-active" : ""}"
                 data-action="apply-bundle" data-bundle="${esc(b.id)}"${active ? ' aria-current="true"' : ""}>
-                <span class="tgt-bundle__icon" aria-hidden="true">${b.icon}</span>
+                <span class="tgt-bundle__icon" aria-hidden="true">${renderIcon(b.icon)}</span>
                 <span class="tgt-bundle__text"><span class="tgt-bundle__label">${esc(b.label)}</span>
                   <span class="tgt-bundle__meta">${esc(t("teacher.bundleItems", { n: b.count }))}</span></span>
                 <span class="tgt-opt__check" aria-hidden="true">${active ? "✓" : ""}</span>
@@ -2494,7 +2494,7 @@
         ? `<h4 class="cinfo-sub">${esc(t("discover.infoAthletes"))}</h4><ul class="cinfo-athletes">${athletes}</ul>`
         : "";
       const sportsBody = sportsIntro + popularBlock + athletesBlock;
-      if (sportsBody) sportsSect = sect("⚽", t("discover.infoSports"), sportsBody);
+      if (sportsBody) sportsSect = sect("lc:goal", t("discover.infoSports"), sportsBody);
     }
 
     const tip = c.tip ? `<div class="cinfo-tip">💡 ${esc(c.tip)}</div>` : "";
@@ -2509,7 +2509,7 @@
       factRow(t("discover.infoLivelihood"), c.livelihood),
     ].join("");
     const peopleSect = peopleFacts
-      ? sect("👥", t("discover.infoPeople"), `<div class="cinfo-facts">${peopleFacts}</div>`)
+      ? sect("lc:users", t("discover.infoPeople"), `<div class="cinfo-facts">${peopleFacts}</div>`)
       : "";
 
     // Brücke zur passenden kontinentalen Geschichte: mittelamerikanische Länder
@@ -2517,8 +2517,8 @@
     // Historia de Sudamérica. Jeweils nur, wenn das Modul geladen ist.
     const inCentro = vm.country && vm.country.region === "Mittelamerika";
     const histTarget = inCentro
-      ? (vm.hasHistoriaCentro ? { action: "open-historia-centro", icon: "🌋", title: t("discover.histBannerCentroTitle"), sub: t("discover.histBannerCentroSub") } : null)
-      : (vm.hasHistoria ? { action: "open-historia", icon: "📜", title: t("discover.histBannerTitle"), sub: t("discover.histBannerSub") } : null);
+      ? (vm.hasHistoriaCentro ? { action: "open-historia-centro", icon: "lc:mountain", title: t("discover.histBannerCentroTitle"), sub: t("discover.histBannerCentroSub") } : null)
+      : (vm.hasHistoria ? { action: "open-historia", icon: "lc:scroll", title: t("discover.histBannerTitle"), sub: t("discover.histBannerSub") } : null);
     const histBanner = histTarget ? `
       <button class="hist-banner" data-action="${histTarget.action}">
         <span class="hist-banner__icon" aria-hidden="true">${renderIcon(histTarget.icon)}</span>
@@ -2546,10 +2546,10 @@
         </div>
         <button class="hist-share cinfo-share" type="button" data-action="share-country">📤 ${esc(t("discover.tipsShare"))}</button>
 
-        ${sect("🌎", t("discover.infoAbout"), para(c.about))}
+        ${sect("lc:globe", t("discover.infoAbout"), para(c.about))}
         ${peopleSect}
-        ${sect("📜", t("discover.infoHistory"), para(c.history))}
-        ${sect("🗣️", t("discover.infoLanguage"), para(c.language) + wordsBlock)}
+        ${sect("lc:scroll", t("discover.infoHistory"), para(c.history))}
+        ${sect("lc:megaphone", t("discover.infoLanguage"), para(c.language) + wordsBlock)}
 
         <div class="cinfo-sect cinfo-sect--food">
           <h3 class="cinfo-sect__h">${t("discover.infoFood")}</h3>
@@ -2934,12 +2934,12 @@
     // Sprungmarken-Leiste (wie hist-nav/sz-nav): die Seite ist lang, ein Tipp
     // springt direkt zum Abschnitt. Nur Chips für tatsächlich vorhandene Blöcke.
     const navItems = [
-      topics && { id: "ft-tips", icon: "🎯", label: t("discover.ftNavTips") },
-      phrases && { id: "ft-phrases", icon: "💬", label: t("discover.ftNavPhrases") },
-      sharing && { id: "ft-share", icon: "📤", label: t("discover.ftNavShare") },
-      apps && { id: "ft-apps", icon: "📲", label: t("discover.ftNavApps") },
-      glossary && { id: "ft-words", icon: "🗣️", label: t("discover.ftNavWords") },
-      (vm.checklist && vm.checklist.length) && { id: "ft-kit", icon: "🎒", label: t("discover.ftNavKit") },
+      topics && { id: "ft-tips", icon: "lc:target", label: t("discover.ftNavTips") },
+      phrases && { id: "ft-phrases", icon: "lc:message-circle", label: t("discover.ftNavPhrases") },
+      sharing && { id: "ft-share", icon: "lc:upload", label: t("discover.ftNavShare") },
+      apps && { id: "ft-apps", icon: "lc:smartphone", label: t("discover.ftNavApps") },
+      glossary && { id: "ft-words", icon: "lc:megaphone", label: t("discover.ftNavWords") },
+      (vm.checklist && vm.checklist.length) && { id: "ft-kit", icon: "lc:backpack", label: t("discover.ftNavKit") },
     ].filter(Boolean);
     const nav = navItems.length > 1
       ? `<nav class="ft-nav" aria-label="${esc(t("discover.ftAreas"))}">${navItems.map((n) =>
@@ -3096,9 +3096,9 @@
       </li>`).join("");
 
     const navItems = [
-      dances && { id: "bl-dances", icon: "💃", label: t("discover.blNavDances") },
-      phrases && { id: "bl-phrases", icon: "💬", label: t("discover.blNavPhrases") },
-      glossary && { id: "bl-words", icon: "🗣️", label: t("discover.blNavWords") },
+      dances && { id: "bl-dances", icon: "lc:footprints", label: t("discover.blNavDances") },
+      phrases && { id: "bl-phrases", icon: "lc:message-circle", label: t("discover.blNavPhrases") },
+      glossary && { id: "bl-words", icon: "lc:megaphone", label: t("discover.blNavWords") },
       (vm.checklist && vm.checklist.length) && { id: "bl-etiquette", icon: "lc:handshake", label: t("discover.blNavEtiquette") },
     ].filter(Boolean);
     const nav = navItems.length > 1
@@ -3211,10 +3211,10 @@
 
     // Sprungmarken-Leiste (wie ft-nav): nur Chips für vorhandene Blöcke.
     const navItems = [
-      sound && { id: "mus-sound", icon: "📍", label: t("discover.musNavSound") },
-      genres && { id: "mus-genres", icon: "🎶", label: t("discover.musNavGenres") },
-      phrases && { id: "mus-phrases", icon: "💬", label: t("discover.musNavPhrases") },
-      glossary && { id: "mus-words", icon: "🗣️", label: t("discover.musNavWords") },
+      sound && { id: "mus-sound", icon: "lc:map-pin", label: t("discover.musNavSound") },
+      genres && { id: "mus-genres", icon: "lc:music", label: t("discover.musNavGenres") },
+      phrases && { id: "mus-phrases", icon: "lc:message-circle", label: t("discover.musNavPhrases") },
+      glossary && { id: "mus-words", icon: "lc:megaphone", label: t("discover.musNavWords") },
     ].filter(Boolean);
     const nav = navItems.length > 1
       ? `<nav class="mus-nav" aria-label="${esc(t("discover.musAreas"))}">${navItems.map((n) =>
@@ -4112,13 +4112,13 @@
     const roundsBadge = (n) => `<span class="hm-scene__count">${esc(t("discover.battleRounds", { n }))}</span>`;
     const scenes = [
       `<button class="hm-scene" data-action="start-battle" data-scene="all">
-         <span class="hm-scene__icon" aria-hidden="true">🎲</span>
+         <span class="hm-scene__icon" aria-hidden="true">${renderIcon("lc:dices")}</span>
          <span class="hm-scene__label">${esc(t("discover.battleAllScenes"))}</span>
          ${roundsBadge(vm.totalRounds)}
        </button>`,
       ...vm.scenes.map((s) =>
         `<button class="hm-scene" data-action="start-battle" data-scene="${esc(s.id)}">
-           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+           <span class="hm-scene__icon" aria-hidden="true">${renderIcon(s.icon)}</span>
            <span class="hm-scene__label">${esc(s.label)}</span>
            ${roundsBadge(s.rounds)}
          </button>`),
@@ -4193,12 +4193,12 @@
         <button class="cta" data-action="battle-reveal">${esc(t("discover.battleReveal"))}</button>`;
 
     const meta = `
-      <span class="hm-prompt__tag">${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}</span>
+      <span class="hm-prompt__tag">${renderIcon(vm.sceneIcon)} ${esc(vm.sceneLabel)}</span>
       ${vm.levelShort ? `<span class="hm-prompt__lvl">${esc(vm.levelShort)}</span>` : ""}`;
 
     return `
       <section class="screen study">
-        ${hmTopbar(vm.suddenDeath ? esc(t("discover.battleSudden")) : `${esc(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
+        ${hmTopbar(vm.suddenDeath ? esc(t("discover.battleSudden")) : `${renderIcon(vm.sceneIcon)} ${esc(vm.sceneLabel)}`, "battle-again")}
         <div class="hm-score">
           <span class="hm-score__p ${vm.current === "A" ? "is-turn" : ""}">${esc(vm.chipA)} <b>${vm.scores.A}</b></span>
           <span class="hm-score__round">${esc(t("discover.battleScoreRound", { sudden: vm.suddenDeath, round: vm.round, total: vm.totalRounds }))}</span>
@@ -4399,10 +4399,10 @@
         <p class="hm-intro">${esc(g.intro)}</p>
         ${moduleShareBtn("conjugacion")}
 
-        ${sect("🧑‍🤝‍🧑", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
-        ${sect("🧱", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
-        ${sect("⭐", t("discover.cjIrregulars"), `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
-        ${sect("🧭", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
+        ${sect("lc:users", t("discover.cjPersons"), `<ul class="cinfo-words">${personRows}</ul><p class="cinfo-text cj-note">${esc(g.personsNote)}</p>`)}
+        ${sect("lc:blocks", t("discover.cjRegularPatterns"), `<div class="cj-verbs">${regularBlocks}</div><p class="cinfo-text cj-note">${esc(g.regularNote)}</p>`)}
+        ${sect("lc:star", t("discover.cjIrregulars"), `<div class="cinfo-dishes">${irregularBlocks}</div>`)}
+        ${sect("lc:compass", g.example.title, `${exampleLines}<p class="cinfo-text cj-note">${esc(g.example.note)}</p>`)}
 
         <button class="cta cj-cta" data-action="open-category" data-id="verbos">
           ${esc(t("discover.cjPractice"))} <span class="cta__count">${esc(t("home.tileCards", { n: vm.cardCount }))}</span>

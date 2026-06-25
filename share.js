@@ -984,7 +984,7 @@
       ctx.fillStyle = INK;
       ctx.textAlign = "left";
       ctx.textBaseline = "alphabetic";
-      ctx.fillText(ln.mark || "•", innerX, iy + px);
+      ctx.fillText((ln.mark && ln.mark.slice(0, 3) === "lc:") ? "•" : (ln.mark || "•"), innerX, iy + px);
       const endY = drawWrapped(ctx, ln.text || "", innerX + markW, iy, innerW - markW, {
         px, weight: "500", color: INK, lineHeight: 1.34, maxBottom: bottom,
       });

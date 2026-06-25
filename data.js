@@ -2681,14 +2681,14 @@
 
   // Battle-Szenen (Auswahl vor einer Runde). icon nur fürs UI.
   const BATTLE_SCENES = [
-    { id: "checkin", label: "Check-in",          labelEn: "Check-in",        icon: "🛎️" },
-    { id: "dorm",    label: "Dorm & Zimmer",     labelEn: "Dorm & room",     icon: "🛏️" },
-    { id: "meet",    label: "Leute kennenlernen", labelEn: "Meeting people", icon: "🤝" },
-    { id: "plan",    label: "Gemeinsam planen",  labelEn: "Planning together", icon: "🗓️" },
-    { id: "food",    label: "Essen & Trinken",   labelEn: "Food & drink",    icon: "🍽️" },
-    { id: "out",     label: "Unterwegs",         labelEn: "Out and about",   icon: "🧭" },
-    { id: "problem", label: "Problem lösen",     labelEn: "Solving a problem", icon: "🛠️" },
-    { id: "banderas", label: "Herkunft & Flaggen", labelEn: "Origin & flags",  icon: "🚩" },
+    { id: "checkin", label: "Check-in",          labelEn: "Check-in",        icon: "lc:bell" },
+    { id: "dorm",    label: "Dorm & Zimmer",     labelEn: "Dorm & room",     icon: "lc:bed" },
+    { id: "meet",    label: "Leute kennenlernen", labelEn: "Meeting people", icon: "lc:handshake" },
+    { id: "plan",    label: "Gemeinsam planen",  labelEn: "Planning together", icon: "lc:calendar" },
+    { id: "food",    label: "Essen & Trinken",   labelEn: "Food & drink",    icon: "lc:utensils" },
+    { id: "out",     label: "Unterwegs",         labelEn: "Out and about",   icon: "lc:compass" },
+    { id: "problem", label: "Problem lösen",     labelEn: "Solving a problem", icon: "lc:wrench" },
+    { id: "banderas", label: "Herkunft & Flaggen", labelEn: "Origin & flags",  icon: "lc:flag" },
   ];
 
   // Battle-Aufgaben: Ansage auf Deutsch (promptDe), laut auf Spanisch antworten.

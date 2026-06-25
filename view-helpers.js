@@ -177,7 +177,7 @@
   function sect(icon, title, body, id) {
     return `
       <div class="cinfo-sect"${id ? ` id="${esc(id)}"` : ""}>
-        <h3 class="cinfo-sect__h">${icon} ${esc(title)}</h3>
+        <h3 class="cinfo-sect__h">${renderIcon(icon)} ${esc(title)}</h3>
         ${body}
       </div>`;
   }

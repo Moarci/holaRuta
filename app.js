@@ -1782,7 +1782,7 @@
       : [];
     return {
       sceneLabel: b.sceneId === "all" ? t("app.allScenes") : (scene ? natk(scene, "label") : ""),
-      sceneIcon: b.sceneId === "all" ? "🎲" : (scene ? scene.icon : "🛏️"),
+      sceneIcon: b.sceneId === "all" ? "lc:dices" : (scene ? scene.icon : "lc:bed"),
       round: b.round,
       totalRounds: b.totalRounds,
       current: b.current,
