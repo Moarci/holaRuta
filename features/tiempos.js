@@ -254,7 +254,7 @@
 
     return `
       <section class="screen">
-        ${hmTopbar("⏳ Tiempos", "home")}
+        ${hmTopbar(`${renderIcon("lc:hourglass")} Tiempos`, "home")}
         <p class="hm-intro">${esc(g.intro)}</p>
         ${moduleShareBtn("tiempos")}
         ${tiNav}

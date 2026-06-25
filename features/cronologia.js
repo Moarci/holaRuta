@@ -61,16 +61,16 @@
     // Sprungmarken-Leiste (wie die Spickzettel-Navigation).
     const nav = `
       <nav class="hist-nav" aria-label="${esc(t("discover.histAreas"))}">
-        <a class="hist-nav__chip" href="#hist-zeitstrahl" data-action="scroll-to" data-target="hist-zeitstrahl">🕰️ ${esc(t("discover.histNavTimeline"))}</a>
-        <a class="hist-nav__chip" href="#hist-protagonisten" data-action="scroll-to" data-target="hist-protagonisten">👤 ${esc(t("discover.histNavFigures"))}</a>
-        <a class="hist-nav__chip" href="#hist-heute" data-action="scroll-to" data-target="hist-heute">📰 ${esc(t("discover.histNavToday"))}</a>
+        <a class="hist-nav__chip" href="#hist-zeitstrahl" data-action="scroll-to" data-target="hist-zeitstrahl">${renderIcon("lc:clock")} ${esc(t("discover.histNavTimeline"))}</a>
+        <a class="hist-nav__chip" href="#hist-protagonisten" data-action="scroll-to" data-target="hist-protagonisten">${renderIcon("lc:user")} ${esc(t("discover.histNavFigures"))}</a>
+        <a class="hist-nav__chip" href="#hist-heute" data-action="scroll-to" data-target="hist-heute">${renderIcon("lc:newspaper")} ${esc(t("discover.histNavToday"))}</a>
       </nav>`;
 
     // Auf Modul-Ebene teilbar: ein Sharepic des ganzen Moduls (Titel, Einleitung
     // und Zeitstrahl-Teaser) – damit man „Historia de Sudamérica" weiterempfehlen
     // kann, nicht nur einen einzelnen Text. Logik in app.shareHistModule.
     const moduleShare = canShare()
-      ? `<div class="hist-modshare"><button class="hist-share" type="button" data-action="share-hist-module">📤 ${esc(t("discover.histModuleShare"))}</button></div>`
+      ? `<div class="hist-modshare"><button class="hist-share" type="button" data-action="share-hist-module">${renderIcon("lc:upload")} ${esc(t("discover.histModuleShare"))}</button></div>`
       : "";
 
     // Eine Epoche als aufklappbare Karte am Zeitstrahl. Aufbau wie bei den
@@ -88,7 +88,7 @@
       const bodyText = (e.body || []).map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("");
       const reading = (e.es && e.es.length)
         ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
              <div class="hist-read__body">${readingBlock({ es: e.es, vocab: e.vocab, level: e.level, shareId: e.id, quiz: true })}</div>
            </details>`
         : "";
@@ -124,12 +124,12 @@
       const img = f.img
         ? `<img class="hist-fig__img" src="${esc(commonsImg(f.img, 320))}" alt="${esc(f.name)}"
                 loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
-        : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">👤</span>`;
+        : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">${renderIcon("lc:user")}</span>`;
       const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
       const lvl = levelMeta(f.level);
       const reading = (f.es && f.es.length)
         ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
              <div class="hist-read__body">${readingBlock({ es: f.es, vocab: f.vocab, level: f.level, shareId: f.id, quiz: false })}</div>
            </details>`
         : "";
@@ -155,7 +155,7 @@
       const lvl = levelMeta(s.level);
       const reading = (s.es && s.es.length)
         ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
              <div class="hist-read__body">${readingBlock({ es: s.es, vocab: s.vocab, level: s.level, shareId: s.id, quiz: false })}</div>
            </details>`
         : "";
@@ -175,7 +175,7 @@
 
     const facts = (vm.facts || []).length
       ? `<div class="hist-facts">
-           <h3 class="hist-block__h">💡 ${esc(t("discover.histFactsTitle"))}</h3>
+           <h3 class="hist-block__h">${renderIcon("lc:lightbulb")} ${esc(t("discover.histFactsTitle"))}</h3>
            <ul class="hist-facts__grid">
              ${vm.facts.map((f) => `<li class="hist-fact">${esc(f)}</li>`).join("")}
            </ul>
@@ -190,19 +190,19 @@
         ${moduleShare}
 
         <div class="hist-block" id="hist-zeitstrahl">
-          <h3 class="hist-block__h">🕰️ ${esc(t("discover.histTimelineTitle"))}</h3>
+          <h3 class="hist-block__h">${renderIcon("lc:clock")} ${esc(t("discover.histTimelineTitle"))}</h3>
           <p class="hist-block__sub">${esc(t("discover.histTimelineSub"))}</p>
           <div class="hist-timeline">${eras}</div>
         </div>
 
         <div class="hist-block" id="hist-protagonisten">
-          <h3 class="hist-block__h">👤 ${esc(t("discover.histFiguresTitle"))}</h3>
+          <h3 class="hist-block__h">${renderIcon("lc:user")} ${esc(t("discover.histFiguresTitle"))}</h3>
           <p class="hist-block__sub">${esc(t("discover.histFiguresSub"))}</p>
           <div class="hist-figs">${figures}</div>
         </div>
 
         <div class="hist-block" id="hist-heute">
-          <h3 class="hist-block__h">📰 ${esc(t("discover.histTodayTitle"))}</h3>
+          <h3 class="hist-block__h">${renderIcon("lc:newspaper")} ${esc(t("discover.histTodayTitle"))}</h3>
           <p class="hist-block__sub">${esc(t("discover.histTodaySub"))}</p>
           <div class="hist-tens">${tensions}</div>
         </div>

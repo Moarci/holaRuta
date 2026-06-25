@@ -15,7 +15,7 @@
   "use strict";
   window.SC = window.SC || {};
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleShareBtn } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -174,7 +174,7 @@
     if (!vm.speakable) {
       return `
         <section class="screen">
-          ${hmTopbar("💵 Precios al oído", "home")}
+          ${hmTopbar(`${renderIcon("lc:banknote")} Precios al oído`, "home")}
           <p class="stat-empty">${esc(t("discover.prcNoSpeech"))}</p>
         </section>`;
     }
@@ -197,7 +197,7 @@
       : "";
     return `
       <section class="screen">
-        ${hmTopbar("💵 Precios al oído", "home")}
+        ${hmTopbar(`${renderIcon("lc:banknote")} Precios al oído`, "home")}
         <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
         ${moduleShareBtn("precios")}
         <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
@@ -218,7 +218,7 @@
     const body = !vm.result
       ? `
         <div class="card-static card-listen">
-          <span class="listen-ear" aria-hidden="true">💵</span>
+          <span class="listen-ear" aria-hidden="true">${renderIcon("lc:banknote")}</span>
           ${replay}
           <span class="face__hint">${esc(t("discover.prcWhich"))}</span>
         </div>
@@ -238,7 +238,7 @@
         <button class="cta" data-action="precios-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
     return `
       <section class="screen study">
-        ${hmTopbar("💵 Precios al oído", "precios-setup")}
+        ${hmTopbar(`${renderIcon("lc:banknote")} Precios al oído`, "precios-setup")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.prcProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="prc-status"><div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>${curTag}</div>
         ${body}

@@ -72,7 +72,7 @@ test("listScreen() baut die Einkaufsliste (Topbar, Rubrik-Chips, Items, Quiz-CTA
   freshApp();
   const html = window.SC.compras.listScreen();
   assert.match(html, /class="screen sl-screen"/);
-  assert.match(html, /🛒 Lista de compras/, "Topbar-Titel");
+  assert.match(html, /Lista de compras/, "Topbar-Titel");
   assert.match(html, /data-action="compras-section"/, "Rubrik-Chips");
   assert.match(html, /data-action="compras-toggle"/, "Abhak-Checkboxen");
   assert.match(html, /data-action="compras-pick"/, "antippbare Items");
@@ -84,7 +84,7 @@ test("Klick open-compras öffnet die Liste; compras-toggle zählt persistent", (
   const d = driver(root);
   assert.ok(d.click("set-tab", { tab: "entdecken" }), "Entdecken-Reiter erreichbar");
   assert.ok(d.click("open-compras"), "open-compras anklickbar");
-  assert.match(d.html(), /🛒 Lista de compras/, "Liste sichtbar");
+  assert.match(d.html(), /Lista de compras/, "Liste sichtbar");
   assert.equal(window.SC.compras.vm().doneCount, 0, "anfangs nichts abgehakt");
   assert.ok(d.click("compras-toggle"), "eine Checkbox ist anklickbar");
   assert.equal(window.SC.compras.vm().doneCount, 1, "das abgehakte Item wird gezählt");

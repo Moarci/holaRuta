@@ -22,7 +22,7 @@
   window.SC = window.SC || {};
   // Übersetzer wie in ui.js binden (i18n.js setzt SC.i18n.t === window.t vorab).
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleShareBtn, cornerBtn } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn, cornerBtn } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -278,7 +278,7 @@
                 <p class="sl-item__es" lang="es">${esc(it.es)}</p>
                 ${speak}
               </div>
-              ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">🗣️</span> ${esc(it.tip)}</p>` : ""}
+              ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">${renderIcon("lc:megaphone")}</span> ${esc(it.tip)}</p>` : ""}
               ${it.note ? `<p class="sl-item__note">${esc(it.note)}</p>` : ""}
               ${ask}
             </div>`
@@ -317,7 +317,7 @@
 
     return `
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
-        ${hmTopbar("🛒 Lista de compras", "home")}
+        ${hmTopbar(`${renderIcon("lc:shopping-cart")} Lista de compras`, "home")}
         <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
         ${moduleShareBtn("compras")}
         <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>

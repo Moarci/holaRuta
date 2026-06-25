@@ -22,7 +22,7 @@
   "use strict";
   window.SC = window.SC || {};
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleSheet } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleSheet } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -205,7 +205,7 @@
     };
     return `
       <section class="screen">
-        ${hmTopbar("🚩 Banderas", "home")}
+        ${hmTopbar(`${renderIcon("lc:flag")} Banderas`, "home")}
         <p class="hm-intro">${esc(t("discover.bndSetupIntro"))}</p>
         <h2 class="rg-head">${esc(t("discover.bndPlayHead"))}</h2>
         <div class="hm-scenes">
@@ -216,12 +216,12 @@
         <h2 class="rg-head">${esc(t("discover.bndLearnHead"))}</h2>
         <div class="hm-scenes">
           <button class="hm-scene hm-scene--mixed" data-action="open-banderas-galeria">
-            <span class="hm-scene__icon" aria-hidden="true">🖼️</span>
+            <span class="hm-scene__icon" aria-hidden="true">${renderIcon("lc:image")}</span>
             <span class="hm-scene__label">${esc(t("discover.bndGaleria"))}<br><span class="quiz-set__intro">${esc(t("discover.bndGaleriaDesc"))}</span></span>
             <span class="hm-scene__count">${vm.galleryCount}</span>
           </button>
           <button class="hm-scene hm-scene--mixed" data-action="open-banderas-info">
-            <span class="hm-scene__icon" aria-hidden="true">📚</span>
+            <span class="hm-scene__icon" aria-hidden="true">${renderIcon("lc:book-open")}</span>
             <span class="hm-scene__label">${esc(t("discover.bndSaberMas"))}<br><span class="quiz-set__intro">${esc(t("discover.bndSaberMasDesc"))}</span></span>
             <span class="hm-scene__count" aria-hidden="true">›</span>
           </button>
@@ -252,16 +252,16 @@
       ? `<div class="quiz-feedback bnd-reveal ${vm.isCorrect ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
            <span class="quiz-feedback__head">${esc(vm.isCorrect ? t("discover.quizCorrect") : t("discover.quizNotExactly"))}</span>
            <span class="bnd-reveal__name"><span lang="es">${esc(vm.solutionName)}</span> · ${esc(vm.solutionLocal)}</span>
-           <span class="bnd-reveal__colors">🎨 ${esc(vm.colors)}</span>
+           <span class="bnd-reveal__colors">${renderIcon("lc:palette")} ${esc(vm.colors)}</span>
            <span class="bnd-reveal__sym">${esc(vm.sym)}</span>
-           <span class="bnd-reveal__fact">💡 ${esc(vm.fact)}</span>
+           <span class="bnd-reveal__fact">${renderIcon("lc:lightbulb")} ${esc(vm.fact)}</span>
          </div>
          <button class="cta" data-action="banderas-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`
       : "";
 
     return `
       <section class="screen study">
-        ${hmTopbar("🚩 Banderas", "banderas-again")}
+        ${hmTopbar(`${renderIcon("lc:flag")} Banderas`, "banderas-again")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.bndCount", { pos: vm.position + 1, total: vm.total }))}</div>
         <div class="bnd-stage">
@@ -294,7 +294,7 @@
           <span class="knigge-topic__chev" aria-hidden="true">▾</span>
         </summary>
         <div class="knigge-topic__body">
-          <p class="bnd-card__colors">🎨 ${esc(colorsText(c))} · 📍 ${esc(c.capital)}</p>
+          <p class="bnd-card__colors">${renderIcon("lc:palette")} ${esc(colorsText(c))} · ${renderIcon("lc:map-pin")} ${esc(c.capital)}</p>
           <p class="knigge-intro">${esc(symText(c))}</p>
           <ul class="knigge-list"><li class="knigge-tip"><span class="knigge-mark" role="img" aria-label="${esc(t("discover.kniggeTip"))}">💡</span>${esc(factText(c))}</li></ul>
         </div>
@@ -306,7 +306,7 @@
     }).join("");
     return `
       <section class="screen">
-        ${hmTopbar("🖼️ Galería de banderas", "open-banderas")}
+        ${hmTopbar(`${renderIcon("lc:image")} Galería de banderas`, "open-banderas")}
         <p class="pageintro">${esc(t("discover.bndGaleriaIntro"))}</p>
         ${sections}
       </section>`;

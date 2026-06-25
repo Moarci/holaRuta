@@ -75,7 +75,7 @@
       const dos = liList(tp.dos, "knigge-do", "✅");
       const donts = liList(tp.donts, "knigge-dont", "🚫");
       const accent = tp.accent
-        ? `<div class="knigge-accent">💡 <strong>${esc(window.t("discover.kniggeAccentIn", { country: countryName }))}</strong> ${esc(tp.accent)}</div>`
+        ? `<div class="knigge-accent">${renderIcon("lc:lightbulb")} <strong>${esc(window.t("discover.kniggeAccentIn", { country: countryName }))}</strong> ${esc(tp.accent)}</div>`
         : "";
       return `
         <details class="knigge-topic">

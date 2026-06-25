@@ -14,7 +14,7 @@
   "use strict";
   window.SC = window.SC || {};
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleShareBtn } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -161,7 +161,7 @@
       .join("");
     return `
       <section class="screen">
-        ${hmTopbar("🧩 Definiciones", "home")}
+        ${hmTopbar(`${renderIcon("lc:puzzle")} Definiciones`, "home")}
         <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
         ${moduleShareBtn("definiciones")}
         <div class="hm-scenes">${list}</div>

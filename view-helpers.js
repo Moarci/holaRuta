@@ -56,7 +56,7 @@
         <div class="fmtrow" role="group" aria-label="${esc(t("common.imageFormat"))}">
           ${chip("square", "▢ 1:1")}${chip("story", "▯ 9:16")}
         </div>
-        <button class="ghostbtn" data-action="${action}">📤 ${esc(label)}</button>
+        <button class="ghostbtn" data-action="${action}">${renderIcon("lc:upload")} ${esc(label)}</button>
       </div>`;
   }
 
@@ -85,7 +85,7 @@
   // bei Historia. Ohne Teilen-Fähigkeit (kein Share-Modul) entfällt der Knopf.
   function moduleShareBtn(mod) {
     if (!canShare()) return "";
-    return `<div class="hist-modshare"><button class="hist-share mod-share" type="button" data-action="share-module" data-mod="${esc(mod)}">📤 ${esc(t("discover.moduleShare"))}</button></div>`;
+    return `<div class="hist-modshare"><button class="hist-share mod-share" type="button" data-action="share-module" data-mod="${esc(mod)}">${renderIcon("lc:upload")} ${esc(t("discover.moduleShare"))}</button></div>`;
   }
 
   // Topbar-Helfer für alle Hostel-Mode-Screens. back = data-action des Zurück-Knopfs.
@@ -142,7 +142,7 @@
     const o = opts || {};
     const favOn = typeof o.fav === "function";
     const copyBtn = (p) => o.copy
-      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">📋</span></button>`
+      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">${renderIcon("lc:clipboard-list")}</span></button>`
       : "";
     const favBtn = (p) => {
       if (!favOn) return "";
@@ -186,7 +186,7 @@
   // Salud/Fotos/Bailar): erzeugt ein Sharepic des Themas mit seinen DOs/Don'ts
   // „zum Versenden" (Logik in app.shareTips). cat = Kategorie, i = Index des Themas.
   function tipsShareBtn(cat, i) {
-    return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">📤 ${esc(t("discover.tipsShare"))}</button>`;
+    return `<button class="hist-share" type="button" data-action="share-tips" data-cat="${esc(cat)}" data-idx="${i}">${renderIcon("lc:upload")} ${esc(t("discover.tipsShare"))}</button>`;
   }
 
   // Runder Eck-Icon-Button (Karten-Ecken/Panels): geteilt von Lernkarte (🔊/🧭),
@@ -237,14 +237,14 @@
     const row = (v) => `<li class="hist-voc__row"><span class="hist-voc__es" lang="es">${esc(v.es)}</span><span class="hist-voc__de">${esc(v.de)}</span></li>`;
     const take = vocab.filter((v) => v.take), skip = vocab.filter((v) => !v.take);
     const takeList = take.length
-      ? `<p class="hist-voc__cap hist-voc__cap--take">✅ ${esc(t("discover.histTake"))}</p><ul class="hist-voc__list">${take.map(row).join("")}</ul>`
+      ? `<p class="hist-voc__cap hist-voc__cap--take">${renderIcon("lc:check-circle")} ${esc(t("discover.histTake"))}</p><ul class="hist-voc__list">${take.map(row).join("")}</ul>`
       : "";
     const skipList = skip.length
       ? `<p class="hist-voc__cap hist-voc__cap--skip">○ ${esc(t("discover.histSkip"))}</p><ul class="hist-voc__list hist-voc__list--skip">${skip.map(row).join("")}</ul>`
       : "";
     return `
       <details class="hist-voc">
-        <summary class="hist-voc__sum">📒 ${esc(t("discover.histVocab"))} <span class="hist-voc__n">${vocab.length}</span><span class="hist-voc__chev" aria-hidden="true">▾</span></summary>
+        <summary class="hist-voc__sum">${renderIcon("lc:notebook")} ${esc(t("discover.histVocab"))} <span class="hist-voc__n">${vocab.length}</span><span class="hist-voc__chev" aria-hidden="true">▾</span></summary>
         <div class="hist-voc__body">${takeList}${skipList}</div>
       </details>`;
   }
@@ -274,7 +274,7 @@
     }).join("");
     return `
       <details class="hist-quiz">
-        <summary class="hist-quiz__sum">🧩 ${esc(t("discover.histQuiz"))}<span class="hist-quiz__chev" aria-hidden="true">▾</span></summary>
+        <summary class="hist-quiz__sum">${renderIcon("lc:puzzle")} ${esc(t("discover.histQuiz"))}<span class="hist-quiz__chev" aria-hidden="true">▾</span></summary>
         <div class="hist-quiz__body">
           <p class="hist-quiz__intro">${esc(t("discover.histQuizIntro"))}</p>
           ${questions}
@@ -291,17 +291,17 @@
     const lvl = levelMeta(o.level);
     const bar = `
       <div class="hist-es__bar">
-        <span class="hist-es__label">📖 ${esc(t("discover.histReadEs"))}</span>
+        <span class="hist-es__label">${renderIcon("lc:book-open")} ${esc(t("discover.histReadEs"))}</span>
         ${lvl ? `<span class="hist-lvl hist-lvl--${esc(lvl.code)}" title="${esc(t("discover.histLevelTitle"))}"><span class="hist-lvl__code">${esc(lvl.code)}</span> ${esc(lvl.word)} <span class="hist-lvl__meter" aria-hidden="true">${lvl.meter}</span></span>` : ""}
       </div>`;
-    const text = `<div class="hist-es">${bar}${esRich(o.es, o.vocab)}<p class="hist-es__hint">👆 ${esc(t("discover.histTapHint"))}</p></div>`;
+    const text = `<div class="hist-es">${bar}${esRich(o.es, o.vocab)}<p class="hist-es__hint">${renderIcon("lc:pointer")} ${esc(t("discover.histTapHint"))}</p></div>`;
     const vocab = vocabBlock(o.vocab);
     const quiz = o.quiz ? quizBlock(o.vocab) : "";
     const trans = (o.trans && o.trans.length)
-      ? `<details class="hist-trans"><summary class="hist-trans__sum">🌐 ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary><div class="hist-trans__body">${o.trans.map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div></details>`
+      ? `<details class="hist-trans"><summary class="hist-trans__sum">${renderIcon("lc:globe")} ${esc(t("discover.histTranslation"))}<span class="hist-trans__chev" aria-hidden="true">▾</span></summary><div class="hist-trans__body">${o.trans.map((p) => `<p class="hist-era__p">${esc(p)}</p>`).join("")}</div></details>`
       : "";
     const share = o.shareId
-      ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(o.shareId)}">📤 ${esc(t("discover.histShare"))}</button>`
+      ? `<button class="hist-share" type="button" data-action="share-historia" data-id="${esc(o.shareId)}">${renderIcon("lc:upload")} ${esc(t("discover.histShare"))}</button>`
       : "";
     return `${text}${vocab}${quiz}${trans}${share}`;
   }
@@ -330,7 +330,7 @@
       const lvl = (cfg.readingPerTopic && tp.es && tp.es.length) ? levelMeta(tp.level) : null;
       const reading = (cfg.readingPerTopic && tp.es && tp.es.length)
         ? `<details class="hist-read">
-             <summary class="hist-read__sum">📖 ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
              <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
            </details>`
         : "";
