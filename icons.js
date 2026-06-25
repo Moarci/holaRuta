@@ -196,6 +196,12 @@
     "laugh": '<circle cx="12" cy="12" r="10" /><path d="M18 13a6 6 0 0 1-6 5 6 6 0 0 1-6-5h12Z" /><line x1="9" x2="9.01" y1="9" y2="9" /><line x1="15" x2="15.01" y1="9" y2="9" />',
     "audio-lines": '<path d="M2 10v3" /><path d="M6 6v11" /><path d="M10 3v18" /><path d="M14 8v7" /><path d="M18 5v13" /><path d="M22 10v3" />',
     "skip-forward": '<path d="M21 4v16" /><path d="M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z" />',
+    "cable-car": '<path d="M10 3h.01" /><path d="M14 2h.01" /><path d="m2 9 20-5" /><path d="M12 12V6.5" /><rect width="16" height="10" x="4" y="12" rx="3" /><path d="M9 12v5" /><path d="M15 12v5" /><path d="M4 17h16" />',
+    "tent": '<path d="M3.5 21 14 3" /><path d="M20.5 21 10 3" /><path d="M15.5 21 12 15l-3.5 6" /><path d="M2 21h20" />',
+    "sailboat": '<path d="M10 2v15" /><path d="M7 22a4 4 0 0 1-4-4 1 1 0 0 1 1-1h16a1 1 0 0 1 1 1 4 4 0 0 1-4 4z" /><path d="M9.159 2.46a1 1 0 0 1 1.521-.193l9.977 8.98A1 1 0 0 1 20 13H4a1 1 0 0 1-.824-1.567z" />',
+    "skull": '<path d="m12.5 17-.5-1-.5 1h1z" /><path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z" /><circle cx="15" cy="12" r="1" /><circle cx="9" cy="12" r="1" />',
+    "telescope": '<path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44" /><path d="m13.56 11.747 4.332-.924" /><path d="m16 21-3.105-6.21" /><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z" /><path d="m6.158 8.633 1.114 4.456" /><path d="m8 21 3.105-6.21" /><circle cx="12" cy="13" r="2" />',
+    "gem": '<path d="M10.5 3 8 9l4 13 4-13-2.5-6" /><path d="M17 3a2 2 0 0 1 1.6.8l3 4a2 2 0 0 1 .013 2.382l-7.99 10.986a2 2 0 0 1-3.247 0l-7.99-10.986A2 2 0 0 1 2.4 7.8l2.998-3.997A2 2 0 0 1 7 3z" /><path d="M2 9h20" />',
     "wand-sparkles": '<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" /><path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" /><path d="M10 2v2" /><path d="M7 8H3" /><path d="M21 16h-4" /><path d="M11 3H9" />',
     "rewind": '<path d="M12 6a2 2 0 0 0-3.414-1.414l-6 6a2 2 0 0 0 0 2.828l6 6A2 2 0 0 0 12 18z" /><path d="M22 6a2 2 0 0 0-3.414-1.414l-6 6a2 2 0 0 0 0 2.828l6 6A2 2 0 0 0 22 18z" />',
     "timer": '<line x1="10" x2="14" y1="2" y2="2" /><line x1="12" x2="15" y1="14" y2="11" /><circle cx="12" cy="14" r="8" />',
@@ -259,5 +265,15 @@
     talk: "lc:messages-square", alltag: "lc:building-2", frases: "lc:hand", grenze: "lc:shield-check",
     reise: "lc:map", ropa: "lc:shirt", rumbo: "lc:compass", verbos: "lc:repeat",
     tiempos: "lc:hourglass", colores: "lc:palette", contrarios: "lc:arrow-left-right",
+    // Reiseziele (destinos): nur Städte/Orte. Die 9 Länder bleiben absichtlich
+    // OHNE Eintrag -> catIcon() fällt auf ihr Flaggen-Emoji aus data.js zurück.
+    cartagena: "lc:palmtree", medellin: "lc:building-2", cusco: "lc:mountain",
+    cdmx: "lc:building-2", antigua: "lc:mountain", buenosaires: "lc:footprints",
+    quito: "lc:mountain", lima: "lc:waves", arequipa: "lc:landmark",
+    mendoza: "lc:wine", bariloche: "lc:trees", oaxaca: "lc:skull",
+    merida: "lc:landmark", arenal: "lc:mountain", monteverde: "lc:leaf",
+    santiago: "lc:building-2", valparaiso: "lc:palette", atacama: "lc:telescope",
+    lapaz: "lc:cable-car", uyuni: "lc:gem", puertonatales: "lc:tent",
+    pucon: "lc:mountain", copacabana: "lc:sailboat", sucre: "lc:footprints",
   };
 })();
