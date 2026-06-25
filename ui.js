@@ -183,6 +183,25 @@
     { id: "destinos", titleKey: "home.catGroupDestinos" },
   ];
 
+  // Lucide-Icon je Lern-Kategorie (Themen-Kacheln im Lernen-Reiter). Schlüssel ist
+  // die stabile Kategorie-Id (nicht das Emoji), Wert ein "lc:"-Token aus icons.js.
+  // catIcon() fällt auf das Inhalts-Emoji aus data.js zurück, sodass die
+  // Reiseziel-Flaggen (destinos) unverändert als Flaggen-Emoji bleiben und auch
+  // <option>-Dropdowns (kein SVG möglich) weiter das Emoji nutzen.
+  const CAT_ICON = {
+    basics: "lc:message-circle", zahlen: "lc:hash", essen: "lc:utensils", trinken: "lc:cup-soda",
+    hotel: "lc:building", hostel: "lc:bed", social: "lc:users", verkehr: "lc:bus",
+    compras: "lc:shopping-cart", dinero: "lc:banknote", notfall: "lc:siren", belleza: "lc:scissors",
+    deporte: "lc:dumbbell", trabajo: "lc:briefcase", banco: "lc:credit-card", correo: "lc:mail",
+    familia: "lc:baby", dieta: "lc:salad", playa: "lc:palmtree", noche: "lc:party-popper",
+    coqueteo: "lc:heart", clima: "lc:cloud-sun", auto: "lc:car", farmacia: "lc:stethoscope",
+    tour: "lc:footprints", internet: "lc:smartphone", lavanderia: "lc:washing-machine", zeit: "lc:clock",
+    talk: "lc:messages-square", alltag: "lc:building-2", frases: "lc:hand", grenze: "lc:shield-check",
+    reise: "lc:map", ropa: "lc:shirt", rumbo: "lc:compass", verbos: "lc:repeat",
+    tiempos: "lc:hourglass", colores: "lc:palette", contrarios: "lc:arrow-left-right",
+  };
+  const catIcon = (c) => (c && CAT_ICON[c.id]) || (c && c.icon) || "";
+
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
   // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
   // ist ehrlicher und für Screenreader genauso klar (Seiten-Navigation).
@@ -816,7 +835,7 @@
       return `
         <button class="tile" data-action="open-category" data-id="${esc(c.id)}"
                 style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
-          <span class="tile__icon" aria-hidden="true">${esc(c.icon)}</span>
+          <span class="tile__icon" aria-hidden="true">${renderIcon(catIcon(c))}</span>
           <span class="tile__label">${esc(c.label)}</span>
           <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
           ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
