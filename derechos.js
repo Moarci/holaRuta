@@ -43,7 +43,7 @@
   // ---------- Erklärung: ruhig & sicher bleiben (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
-      icon: "🚓",
+      icon: "lc:siren",
       title: "Wenn die Polizei dich kontrolliert",
       titleEn: "If the police stop you",
       intro: "Kontrollen sind in vielen Ländern normal. Bleib ruhig und höflich, zeig (eine Kopie von) deinem Ausweis und frag freundlich nach dem Grund.",
@@ -89,7 +89,7 @@
       level: "B1",
     },
     {
-      icon: "⚖️",
+      icon: "lc:scale",
       title: "Wenn du festgehalten wirst",
       titleEn: "If you're detained",
       intro: "Wirst du festgehalten, hast du in vielen Ländern das Recht, einen Anwalt und deine Botschaft zu kontaktieren. Sag ruhig, dass du das möchtest – und warte, bevor du etwas unterschreibst.",
@@ -135,7 +135,7 @@
       level: "B1",
     },
     {
-      icon: "🚫",
+      icon: "lc:ban",
       title: "Drogen & die Gesetze",
       titleEn: "Drugs & the law",
       intro: "Drogen sind in ganz Lateinamerika illegal – auch dort, wo Konsum geduldet wirkt. Strafen reichen je nach Land und Menge bis zu langer Haft. Das Risiko ist es nie wert.",
@@ -177,7 +177,7 @@
       level: "B1",
     },
     {
-      icon: "🛂",
+      icon: "lc:stamp",
       title: "Grenze & Migration",
       titleEn: "Border & immigration",
       intro: "An der Grenze und am Flughafen entscheidet sich, wie lange und wie sauber du im Land bist. Stempel prüfen, Aufenthalt nicht überziehen, Nachweise parat haben.",
@@ -218,7 +218,7 @@
       level: "A2",
     },
     {
-      icon: "🕵️",
+      icon: "lc:search",
       title: "Häufige Maschen erkennen",
       titleEn: "Spotting common scams",
       intro: "Die meisten Probleme sind keine Festnahmen, sondern Tricks: falsche „Polizisten“, manipulierte Taxameter, der Geldautomat mit versteckter Kamera. Ruhig bleiben und auf Nummer sicher gehen.",
@@ -265,7 +265,7 @@
   const PHRASES = [
     {
       id: "control",
-      icon: "🚓",
+      icon: "lc:siren",
       title: "Bei der Kontrolle",
       titleEn: "During a check",
       items: [
@@ -278,7 +278,7 @@
     },
     {
       id: "derechos",
-      icon: "⚖️",
+      icon: "lc:scale",
       title: "Deine Rechte einfordern",
       titleEn: "Asserting your rights",
       items: [
@@ -292,7 +292,7 @@
     },
     {
       id: "ayuda",
-      icon: "🆘",
+      icon: "lc:life-buoy",
       title: "Hilfe & Notfall",
       titleEn: "Help & emergency",
       items: [
@@ -305,7 +305,7 @@
     },
     {
       id: "migracion",
-      icon: "🛂",
+      icon: "lc:stamp",
       title: "An der Grenze",
       titleEn: "At the border",
       items: [
@@ -319,7 +319,7 @@
     },
     {
       id: "estafas",
-      icon: "🚕",
+      icon: "lc:car-taxi-front",
       title: "Bei Tricks & Taxi",
       titleEn: "With scams & taxis",
       items: [
@@ -359,42 +359,42 @@
   // ---------- Im-Notfall-vorbereitet-Kit ----------
   const CHECKLIST = [
     {
-      icon: "📄",
+      icon: "lc:file-text",
       item: "Passkopie & Visum (Foto am Handy + Papier)",
       itemEn: "Passport & visa copy (photo on phone + paper)",
       why: "Bei Kontrollen reicht oft eine Kopie; das Original bleibt sicher im Hostel.",
       whyEn: "A copy is often enough at checks; the original stays safe in the hostel.",
     },
     {
-      icon: "☎️",
+      icon: "lc:phone",
       item: "Nummer & Adresse deiner Botschaft/Konsulat",
       itemEn: "Number & address of your embassy/consulate",
       why: "Im Ernstfall die wichtigste Anlaufstelle – vorher speichern, auch offline.",
       whyEn: "The key contact in an emergency – save it beforehand, offline too.",
     },
     {
-      icon: "🆘",
+      icon: "lc:life-buoy",
       item: "Örtliche Notrufnummer (z. B. 123 in Kolumbien)",
       itemEn: "Local emergency number (e.g. 123 in Colombia)",
       why: "Notrufnummern unterscheiden sich je Land – vor der Ankunft nachsehen.",
       whyEn: "Emergency numbers vary by country – look them up before arrival.",
     },
     {
-      icon: "👥",
+      icon: "lc:users",
       item: "Vertrauensperson zu Hause informiert",
       itemEn: "A trusted person back home kept in the loop",
       why: "Jemand sollte deine grobe Route kennen und im Notfall handeln können.",
       whyEn: "Someone should know your rough route and be able to act in an emergency.",
     },
     {
-      icon: "🛡️",
+      icon: "lc:shield-check",
       item: "Reise- & Auslandskrankenversicherung",
       itemEn: "Travel & health insurance",
       why: "Deckt Notfälle ab und nennt oft eine 24/7-Hotline für Hilfe.",
       whyEn: "Covers emergencies and often gives a 24/7 hotline for help.",
     },
     {
-      icon: "💳",
+      icon: "lc:credit-card",
       item: "Notfall-Bargeld & Zweitkarte getrennt verwahren",
       itemEn: "Emergency cash & a backup card stored separately",
       why: "Wird eine Karte gesperrt oder gestohlen, bleibst du zahlungsfähig.",

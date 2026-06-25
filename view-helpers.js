@@ -155,7 +155,7 @@
     };
     return (groups || []).map((g) => `
       <div class="rg-group">
-        <h3 class="rg-group__title"><span aria-hidden="true">${g.icon}</span> ${esc(g.title)}</h3>
+        <h3 class="rg-group__title">${renderIcon(g.icon)} ${esc(g.title)}</h3>
         <ul class="rg-phrases">
           ${(g.items || []).map((p) => {
             const a = actions(p);
@@ -337,7 +337,7 @@
       return `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
-          <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
+          <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(tp.icon)}</span>
           <span class="knigge-topic__title">${esc(tp.title)}</span>
           <span class="knigge-topic__chev" aria-hidden="true">▾</span>
         </summary>
@@ -364,7 +364,7 @@
 
     const checklist = (vm.checklist || []).map((c) => `
       <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
         <span class="rg-region__body">
           <span class="rg-region__country">${esc(c.item)}</span>
           <span class="rg-region__note">${esc(c.why)}</span>
@@ -378,7 +378,7 @@
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="${esc(cfg.back || "home")}" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${cfg.icon} ${esc(cfg.title)}</div>
+          <div class="topbar__title">${renderIcon(cfg.icon)} ${esc(cfg.title)}</div>
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>

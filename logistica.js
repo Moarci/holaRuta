@@ -42,7 +42,7 @@
   // ---------- Erklärung: die praktischen Handgriffe (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
-      icon: "📶",
+      icon: "lc:signal",
       title: "Online sein: SIM & eSIM",
       titleEn: "Getting online: SIM & eSIM",
       intro: "Eine lokale SIM (hier oft „chip“) ist meist viel billiger als Roaming. Am Flughafen ist es teurer – ein paar Schritte weiter im Laden oder im offiziellen Shop des Anbieters lohnt sich.",
@@ -75,7 +75,7 @@
       ],
     },
     {
-      icon: "💸",
+      icon: "lc:wallet",
       title: "Geld wechseln & abheben",
       titleEn: "Changing & withdrawing money",
       intro: "Bargeld ist in Lateinamerika oft König. Wechsle nur eine kleine Menge am Flughafen (schlechter Kurs) und hol den Rest am Geldautomaten (cajero) oder in einer seriösen Wechselstube (casa de cambio).",
@@ -106,7 +106,7 @@
       ],
     },
     {
-      icon: "🔒",
+      icon: "lc:lock",
       title: "Geld & Wertsachen aufteilen",
       titleEn: "Splitting up money & valuables",
       intro: "Nie alles an einem Ort. Verteile Bargeld, Karten und Kopien auf mehrere Gepäckstücke und Verstecke – wird eins geklaut oder geht verloren, bist du nicht blank.",
@@ -137,7 +137,7 @@
       ],
     },
     {
-      icon: "📍",
+      icon: "lc:map-pin",
       title: "Gepäck im Blick: Tracker",
       titleEn: "Keeping tabs on your luggage: a tracker",
       intro: "Ein Bluetooth-Tracker (AirTag, Samsung SmartTag, Tile o. Ä.) im großen Rucksack zeigt dir, wo dein Gepäck ist – Gold wert, wenn der Bus es woanders ablädt oder der Flieger es verliert.",
@@ -166,7 +166,7 @@
       ],
     },
     {
-      icon: "✈️",
+      icon: "lc:plane",
       title: "Beim Fliegen: das Wichtigste ins Handgepäck",
       titleEn: "When flying: the essentials in your carry-on",
       intro: "Aufgegebenes Gepäck kommt manchmal später – oder gar nicht. Pack das Wichtigste ins Handgepäck, damit du 1–2 Tage ohne den großen Rucksack überstehst. Die Packliste dazu steht unten.",
@@ -197,7 +197,7 @@
       ],
     },
     {
-      icon: "📅",
+      icon: "lc:calendar",
       title: "Vorausplanen: Hostels & Transport",
       titleEn: "Planning ahead: hostels & transport",
       intro: "In manchen Regionen und zu Stoßzeiten ist das Angebot knapp – oder die bekannten Top-Hostels sind schnell weg. Dann lohnt es sich, früher zu buchen statt auf gut Glück anzukommen.",
@@ -231,7 +231,7 @@
   const PHRASES = [
     {
       id: "sim",
-      icon: "📶",
+      icon: "lc:signal",
       title: "SIM-Karte & online sein",
       titleEn: "SIM card & getting online",
       items: [
@@ -247,7 +247,7 @@
     },
     {
       id: "dinero",
-      icon: "💸",
+      icon: "lc:wallet",
       title: "Geld wechseln & abheben",
       titleEn: "Changing & withdrawing money",
       items: [
@@ -263,7 +263,7 @@
     },
     {
       id: "equipaje",
-      icon: "✈️",
+      icon: "lc:plane",
       title: "Flughafen & verlorenes Gepäck",
       titleEn: "Airport & lost luggage",
       items: [
@@ -300,14 +300,14 @@
 
   // ---------- Handgepäck-Notfallset: Packliste (Icon + Sache + Warum) ----------
   const CHECKLIST = [
-    { icon: "💊", item: "Wichtige Medikamente", itemEn: "Important medication", why: "Verschreibungspflichtiges und die Reiseapotheke gehören IMMER ins Handgepäck, nie in den aufgegebenen Rucksack.", whyEn: "Prescription meds and your first-aid kit ALWAYS go in the carry-on, never in the checked backpack." },
-    { icon: "🩲", item: "Wechselwäsche & Socken", itemEn: "Spare underwear & socks", why: "Ein bis zwei Sätze, falls der große Rucksack einen Tag später kommt.", whyEn: "One or two sets in case the big backpack arrives a day late." },
-    { icon: "🪥", item: "Mini-Hygiene", itemEn: "Mini toiletries", why: "Zahnbürste, kleine Zahnpasta, Deo – Reisegrößen unter 100 ml.", whyEn: "Toothbrush, small toothpaste, deodorant – travel sizes under 100 ml." },
-    { icon: "👕", item: "Frisches Oberteil", itemEn: "A fresh top", why: "Ein T-Shirt und etwas Warmes für die Klimaanlage oder eine kühle Ankunft.", whyEn: "A T-shirt and something warm for the air conditioning or a chilly arrival." },
-    { icon: "👓", item: "Brille / Kontaktlinsen", itemEn: "Glasses / contact lenses", why: "Ohne sie geht nichts – plus Linsenlösung im Reiseformat.", whyEn: "You can't manage without them – plus lens solution in travel size." },
-    { icon: "🔋", item: "Powerbank & Ladekabel", itemEn: "Power bank & charging cable", why: "Die Powerbank MUSS ins Handgepäck (im Frachtraum verboten).", whyEn: "The power bank MUST go in the carry-on (banned in the hold)." },
-    { icon: "🛂", item: "Pass, Karten & Bargeld", itemEn: "Passport, cards & cash", why: "Dokumente, Geld und Kopien nie aufgeben – immer am Körper bzw. im Handgepäck.", whyEn: "Never check in documents, money and copies – keep them on you or in the carry-on." },
-    { icon: "📷", item: "Wertsachen & Elektronik", itemEn: "Valuables & electronics", why: "Kamera, Laptop, Ersatzakku – nichts davon in den Frachtraum.", whyEn: "Camera, laptop, spare battery – none of it in the hold." },
+    { icon: "lc:pill", item: "Wichtige Medikamente", itemEn: "Important medication", why: "Verschreibungspflichtiges und die Reiseapotheke gehören IMMER ins Handgepäck, nie in den aufgegebenen Rucksack.", whyEn: "Prescription meds and your first-aid kit ALWAYS go in the carry-on, never in the checked backpack." },
+    { icon: "lc:shirt", item: "Wechselwäsche & Socken", itemEn: "Spare underwear & socks", why: "Ein bis zwei Sätze, falls der große Rucksack einen Tag später kommt.", whyEn: "One or two sets in case the big backpack arrives a day late." },
+    { icon: "lc:brush", item: "Mini-Hygiene", itemEn: "Mini toiletries", why: "Zahnbürste, kleine Zahnpasta, Deo – Reisegrößen unter 100 ml.", whyEn: "Toothbrush, small toothpaste, deodorant – travel sizes under 100 ml." },
+    { icon: "lc:shirt", item: "Frisches Oberteil", itemEn: "A fresh top", why: "Ein T-Shirt und etwas Warmes für die Klimaanlage oder eine kühle Ankunft.", whyEn: "A T-shirt and something warm for the air conditioning or a chilly arrival." },
+    { icon: "lc:glasses", item: "Brille / Kontaktlinsen", itemEn: "Glasses / contact lenses", why: "Ohne sie geht nichts – plus Linsenlösung im Reiseformat.", whyEn: "You can't manage without them – plus lens solution in travel size." },
+    { icon: "lc:battery-full", item: "Powerbank & Ladekabel", itemEn: "Power bank & charging cable", why: "Die Powerbank MUSS ins Handgepäck (im Frachtraum verboten).", whyEn: "The power bank MUST go in the carry-on (banned in the hold)." },
+    { icon: "lc:stamp", item: "Pass, Karten & Bargeld", itemEn: "Passport, cards & cash", why: "Dokumente, Geld und Kopien nie aufgeben – immer am Körper bzw. im Handgepäck.", whyEn: "Never check in documents, money and copies – keep them on you or in the carry-on." },
+    { icon: "lc:camera", item: "Wertsachen & Elektronik", itemEn: "Valuables & electronics", why: "Kamera, Laptop, Ersatzakku – nichts davon in den Frachtraum.", whyEn: "Camera, laptop, spare battery – none of it in the hold." },
   ];
 
   window.SC = window.SC || {};

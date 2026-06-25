@@ -24,7 +24,7 @@
   window.SC = window.SC || {};
   // Übersetzer wie in ui.js binden (i18n.js setzt SC.i18n.t === window.t vorab).
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, canShare, hmTopbar, levelMeta, readingBlock } = window.SC.view;
+  const { esc, renderIcon, canShare, hmTopbar, levelMeta, readingBlock } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -98,7 +98,7 @@
       return `
         <details class="hist-era">
           <summary class="hist-era__head">
-            <span class="hist-era__dot" aria-hidden="true">${esc(e.icon || "•")}</span>
+            <span class="hist-era__dot" aria-hidden="true">${renderIcon(e.icon || "•")}</span>
             <span class="hist-era__heart">
               <span class="hist-era__metarow">
                 <span class="hist-era__period">${esc(e.period)}</span>
@@ -162,7 +162,7 @@
       return `
       <article class="hist-ten hist-ten--${esc(s.tone || "shift")}">
         <div class="hist-ten__head">
-          <span class="hist-ten__icon" aria-hidden="true">${esc(s.icon || "•")}</span>
+          <span class="hist-ten__icon" aria-hidden="true">${renderIcon(s.icon || "•")}</span>
           <h4 class="hist-ten__title">${esc(s.title)}</h4>
           <span class="hist-ten__badge">${esc(s.status)}</span>
         </div>

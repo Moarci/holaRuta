@@ -75,7 +75,7 @@ test("screen() baut die Erklärseite (Topbar, Modul-Teilen, Taktik via tipsShare
   freshApp();
   const html = window.SC.regateo.screen();
   assert.match(html, /<section class="screen">/);
-  assert.match(html, /🤝 Regatear/, "Topbar-Titel");
+  assert.match(html, /Regatear/, "Topbar-Titel");
   assert.match(html, /class="knigge-topic"/, "aufklappbare Taktik-Blöcke");
   assert.match(html, /data-action="share-tips" data-cat="regatear"/, "geteilter Tipp-Teilen-Knopf (SC.view)");
   assert.match(html, /rg-rp/, "Rollenspiel-Abschnitt");
@@ -86,6 +86,6 @@ test("Klick open-regatear öffnet die Erklärseite (ctx-Verdrahtung greift)", ()
   const d = driver(root);
   assert.ok(d.click("set-tab", { tab: "entdecken" }), "Entdecken-Reiter erreichbar");
   assert.ok(d.click("open-regatear"), "open-regatear ist erreichbar/anklickbar");
-  assert.match(d.html(), /🤝 Regatear/, "Regatear-Topbar sichtbar");
+  assert.match(d.html(), /Regatear/, "Regatear-Topbar sichtbar");
   assert.match(d.html(), /class="rg-head"/, "Regatear-Abschnittsüberschriften gerendert");
 });

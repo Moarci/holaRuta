@@ -42,7 +42,7 @@
   // ---------- Erklärung: Slang sinnvoll einsetzen (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
-      icon: "🤙",
+      icon: "lc:phone",
       title: "Slang richtig einsetzen",
       titleEn: "Using slang the right way",
       intro: "Slang macht dich nahbar – aber nur, wenn er zur Situation passt. Mit Gleichaltrigen im Hostel ja, beim Beamten oder bei älteren Leuten lieber höflich und neutral.",
@@ -87,7 +87,7 @@
       level: "A2",
     },
     {
-      icon: "🌎",
+      icon: "lc:globe",
       title: "Regional verschieden",
       titleEn: "It varies by region",
       intro: "Dasselbe Gefühl, andere Wörter: Was in Kolumbien „chévere“ ist, heißt anderswo „bacán“, „padre“ oder „copado“. Ein „Kumpel“ ist mal „parce“, mal „pana“, „güey“ oder „weón“.",
@@ -126,7 +126,7 @@
       level: "B1",
     },
     {
-      icon: "💬",
+      icon: "lc:message-circle",
       title: "Muletillas & typische Wendungen",
       titleEn: "Filler words & typical phrases",
       intro: "Kleine Wörtchen, die Kolumbianer ständig einstreuen. Wer sie kennt, versteht den Rhythmus der Sprache – und klingt selbst gleich viel natürlicher.",
@@ -174,7 +174,7 @@
   const PHRASES = [
     {
       id: "parche",
-      icon: "🧑‍🤝‍🧑",
+      icon: "lc:users",
       title: "Leute & Parche",
       titleEn: "People & hanging out",
       items: [
@@ -188,7 +188,7 @@
     },
     {
       id: "bueno",
-      icon: "👍",
+      icon: "lc:thumbs-up",
       title: "Gut, cool & geil",
       titleEn: "Good, cool & great",
       items: [
@@ -202,7 +202,7 @@
     },
     {
       id: "fiesta",
-      icon: "🎉",
+      icon: "lc:party-popper",
       title: "Feiern & ausgehen",
       titleEn: "Partying & going out",
       items: [
@@ -216,7 +216,7 @@
     },
     {
       id: "plata",
-      icon: "💵",
+      icon: "lc:banknote",
       title: "Geld & Preise",
       titleEn: "Money & prices",
       items: [
@@ -230,7 +230,7 @@
     },
     {
       id: "cuidado",
-      icon: "⚠️",
+      icon: "lc:alert-triangle",
       title: "Vorsicht & Situationen",
       titleEn: "Careful & situations",
       items: [
@@ -244,7 +244,7 @@
     },
     {
       id: "reacciones",
-      icon: "😲",
+      icon: "lc:smile",
       title: "Schnelle Reaktionen",
       titleEn: "Quick reactions",
       items: [
@@ -258,7 +258,7 @@
     },
     {
       id: "trato",
-      icon: "🫶",
+      icon: "lc:heart",
       title: "Anrede & Höflichkeit",
       titleEn: "Address & politeness",
       items: [

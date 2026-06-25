@@ -55,7 +55,7 @@
   // ---------- Die großen Genres (aufklappbar, mit ES-Lesetraining + Deep-Links) ----------
   const GENRES = [
     {
-      icon: "🪗",
+      icon: "lc:music",
       name: "Cumbia",
       origin: "Kolumbien · ganz Lateinamerika",
       originEn: "Colombia · all of Latin America",
@@ -76,7 +76,7 @@
       level: "A2",
     },
     {
-      icon: "🎺",
+      icon: "lc:music",
       name: "Salsa",
       origin: "Kuba · Puerto Rico · New York",
       originEn: "Cuba · Puerto Rico · New York",
@@ -97,7 +97,7 @@
       level: "A2",
     },
     {
-      icon: "🔥",
+      icon: "lc:flame",
       name: "Reggaetón",
       origin: "Puerto Rico · weltweit",
       originEn: "Puerto Rico · worldwide",
@@ -118,7 +118,7 @@
       level: "A2",
     },
     {
-      icon: "💃",
+      icon: "lc:footprints",
       name: "Tango",
       origin: "Argentinien · Uruguay (Río de la Plata)",
       originEn: "Argentina · Uruguay (Río de la Plata)",
@@ -139,7 +139,7 @@
       level: "B1",
     },
     {
-      icon: "🎻",
+      icon: "lc:music",
       name: "Mariachi & Ranchera",
       origin: "Mexiko",
       originEn: "Mexico",
@@ -160,7 +160,7 @@
       level: "B1",
     },
     {
-      icon: "🪕",
+      icon: "lc:guitar",
       name: "Vallenato",
       origin: "Kolumbien (Karibikküste)",
       originEn: "Colombia (Caribbean coast)",
@@ -181,7 +181,7 @@
       level: "B1",
     },
     {
-      icon: "🌴",
+      icon: "lc:palmtree",
       name: "Bachata & Merengue",
       origin: "Dominikanische Republik",
       originEn: "Dominican Republic",
@@ -202,7 +202,7 @@
       level: "A2",
     },
     {
-      icon: "🏔️",
+      icon: "lc:mountain",
       name: "Folklore andino & Nueva canción",
       origin: "Anden · Chile · Bolivien · Peru",
       originEn: "Andes · Chile · Bolivia · Peru",
@@ -223,7 +223,7 @@
       level: "B1",
     },
     {
-      icon: "🎸",
+      icon: "lc:guitar",
       name: "Rock en español & Latin Pop",
       origin: "Ganz Lateinamerika",
       originEn: "All of Latin America",
@@ -274,7 +274,7 @@
   const PHRASES = [
     {
       id: "mus-talk",
-      icon: "🗣️",
+      icon: "lc:megaphone",
       title: "Über Musik reden",
       titleEn: "Talking about music",
       items: [
@@ -288,7 +288,7 @@
     },
     {
       id: "mus-dance",
-      icon: "💃",
+      icon: "lc:footprints",
       title: "Tanzen gehen & Live-Musik",
       titleEn: "Going dancing & live music",
       items: [
@@ -301,7 +301,7 @@
     },
     {
       id: "mus-party",
-      icon: "🎉",
+      icon: "lc:party-popper",
       title: "Auf der Feier",
       titleEn: "At the party",
       items: [

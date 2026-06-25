@@ -42,7 +42,7 @@
   // ---------- Erklärung: gesund & fit unterwegs (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
-      icon: "🥗",
+      icon: "lc:salad",
       title: "Ausgewogen essen – nicht nur Streetfood",
       titleEn: "Eat a balanced diet – not just street food",
       intro: "Streetfood ist lecker und günstig – aber dein Körper braucht auch Protein, Ballaststoffe und Vitamine. Hol dir gezielt das, was im Frittierten fehlt.",
@@ -73,7 +73,7 @@
       ],
     },
     {
-      icon: "🥣",
+      icon: "lc:soup",
       title: "Frühstück selbst machen (Porridge & Protein)",
       titleEn: "Make your own breakfast (porridge & protein)",
       intro: "Kauf dir im Supermarkt ein paar Zutaten und mach dir morgens Porridge mit Proteinpulver und Früchten. Dafür brauchst du keine ausgestattete Küche – Löffel und Tasse reichen. Spart oft auch Geld (nicht überall).",
@@ -104,7 +104,7 @@
       ],
     },
     {
-      icon: "💧",
+      icon: "lc:droplet",
       title: "Genug trinken – günstig & mit Geschmack",
       titleEn: "Drink enough – cheap & with flavour",
       intro: "Bei Hitze und Höhe viel trinken. Günstiges (sicheres) Wasser aufpeppen statt teure Softdrinks: Zero-Sirup bringt Abwechslung, Elektrolytpulver gleicht das Schwitzen aus – beides spart Geld und schmeckt.",
@@ -135,7 +135,7 @@
       ],
     },
     {
-      icon: "🦠",
+      icon: "lc:bug",
       title: "Bauch & Verdauung",
       titleEn: "Stomach & digestion",
       intro: "Neues Essen, wenig Gemüse, lange Fahrten – der Bauch streikt schnell. Ballaststoffe helfen vielen für einen besseren Stuhlgang, Hygiene und Elektrolyte für den Rest.",
@@ -166,7 +166,7 @@
       ],
     },
     {
-      icon: "☀️",
+      icon: "lc:sun",
       title: "Sonne, Höhe & Mücken",
       titleEn: "Sun, altitude & mosquitoes",
       intro: "Näher am Äquator und oft in Höhe unterschätzt man Sonne und dünne Luft leicht. Und Mücken übertragen mancherorts Dengue oder Malaria.",
@@ -195,7 +195,7 @@
       ],
     },
     {
-      icon: "🎒",
+      icon: "lc:backpack",
       title: "Ausflüge & lange Fahrten: vorbereitet losziehen",
       titleEn: "Day trips & long journeys: head out prepared",
       intro: "Auf Tagesausflügen und langen Fahrten ist selten ein Shop in der Nähe – und auf abgelegenen Straßen mit forschen Fahrern wird einem schnell mal schlecht. Ein paar Kleinigkeiten am Körper retten den Tag.",
@@ -230,7 +230,7 @@
       ],
     },
     {
-      icon: "💪",
+      icon: "lc:biceps-flexed",
       title: "In Bewegung bleiben",
       titleEn: "Keep moving",
       intro: "Lange Busfahrten und gemütliche Hostels – schnell bewegt man sich kaum noch. Fit bleiben geht auch ohne Fitnessstudio.",
@@ -270,7 +270,7 @@
   const PHRASES = [
     {
       id: "mercado",
-      icon: "🛒",
+      icon: "lc:shopping-cart",
       title: "Gesund einkaufen",
       titleEn: "Shopping healthily",
       items: [
@@ -286,7 +286,7 @@
     },
     {
       id: "pedir",
-      icon: "🍽️",
+      icon: "lc:utensils",
       title: "Gesünder bestellen",
       titleEn: "Ordering more healthily",
       items: [
@@ -300,7 +300,7 @@
     },
     {
       id: "deporte",
-      icon: "🏋️",
+      icon: "lc:dumbbell",
       title: "Yoga, Gym & Bewegung",
       titleEn: "Yoga, gym & moving",
       items: [
@@ -313,7 +313,7 @@
     },
     {
       id: "farmacia",
-      icon: "💊",
+      icon: "lc:pill",
       title: "Apotheke & Bauch",
       titleEn: "Pharmacy & stomach",
       items: [
@@ -361,18 +361,18 @@
 
   // ---------- „Gesund-unterwegs-Kit": kleine Packliste (Icon + Sache + Warum) ----------
   const CHECKLIST = [
-    { icon: "🥣", item: "Haferflocken & Proteinpulver", itemEn: "Oats & protein powder", why: "Schnelles, sattmachendes Frühstück ganz ohne Küche – Porridge in 2 Minuten.", whyEn: "A quick, filling breakfast with no kitchen at all – porridge in 2 minutes." },
-    { icon: "🧂", item: "Elektrolytpulver (suero)", itemEn: "Electrolyte powder (suero)", why: "Gleicht Schwitzen und Durchfall aus – günstiger und gesünder als Softdrinks.", whyEn: "Makes up for sweating and diarrhoea – cheaper and healthier than soft drinks." },
-    { icon: "🫗", item: "Zero-Sirup / Geschmackstropfen", itemEn: "Zero syrup / flavour drops", why: "Günstiges Wasser mit Geschmack – mehr Abwechslung, du trinkst mehr.", whyEn: "Cheap water with flavour – more variety, and you drink more." },
-    { icon: "💧", item: "Wiederbefüllbare Flasche (+ Filter)", itemEn: "Refillable bottle (+ filter)", why: "Nachfüllen statt kaufen; Filter oder Tabletten, wo das Wasser unsicher ist.", whyEn: "Refill instead of buying; a filter or tablets where the water isn't safe." },
-    { icon: "🥄", item: "Spork & Faltbecher", itemEn: "Spork & collapsible cup", why: "Deine Mini-Küche fürs Hostel – mehr braucht Porridge nicht.", whyEn: "Your mini-kitchen for the hostel – porridge needs no more than this." },
-    { icon: "💊", item: "Bauch-Set", itemEn: "Stomach kit", why: "„Algo para la diarrea“, Rehydratationssalze und ggf. Probiotika für den Notfall.", whyEn: "„Algo para la diarrea“, rehydration salts and maybe probiotics for emergencies." },
-    { icon: "🧴", item: "Sonnencreme & Repelente", itemEn: "Sunscreen & repellent", why: "Schutz vor Sonne (auch in der Höhe) und vor Mücken in Dengue-/Malariagebieten.", whyEn: "Protection from the sun (also at altitude) and from mosquitoes in dengue/malaria areas." },
-    { icon: "🥜", item: "Nüsse & Obst als Snack", itemEn: "Nuts & fruit as a snack", why: "Protein, Ballaststoffe und Vitamine für unterwegs statt Chips.", whyEn: "Protein, fibre and vitamins on the go instead of crisps." },
-    { icon: "🍬", item: "Zucker-Snack (Riegel/Traubenzucker)", itemEn: "Sugary snack (bar/glucose)", why: "Rettet den Kreislauf auf Ausflügen, wo oft kein Shop in der Nähe ist.", whyEn: "Saves your circulation on trips where there's often no shop nearby." },
-    { icon: "🥪", item: "Eigener Proviant", itemEn: "Your own provisions", why: "Auch bei „Verpflegung inklusive“ weißt du nie, was und wann – ein Snack rettet den teuren Ausflug.", whyEn: "Even with „meals included“ you never know what or when – a snack saves the pricey trip." },
-    { icon: "🩹", item: "Mini-Reiseapotheke", itemEn: "Mini first-aid kit", why: "Schmerztablette, Reisetablette (Übelkeit) und Pflaster – auf holprigen Busfahrten Gold wert; Schmerzmittel sind unterwegs schwer zu bekommen (für Frauen besonders wichtig).", whyEn: "Painkiller, motion-sickness tablet and a plaster – worth gold on bumpy bus rides; painkillers are hard to get on the road (especially important for women)." },
-    { icon: "🧥", item: "Langärmliges zum Überziehen", itemEn: "A long-sleeved layer", why: "Für lange (Bus-)Fahrten – die Klimaanlage läuft oft eiskalt.", whyEn: "For long (bus) journeys – the AC is often freezing." },
+    { icon: "lc:soup", item: "Haferflocken & Proteinpulver", itemEn: "Oats & protein powder", why: "Schnelles, sattmachendes Frühstück ganz ohne Küche – Porridge in 2 Minuten.", whyEn: "A quick, filling breakfast with no kitchen at all – porridge in 2 minutes." },
+    { icon: "lc:utensils-crossed", item: "Elektrolytpulver (suero)", itemEn: "Electrolyte powder (suero)", why: "Gleicht Schwitzen und Durchfall aus – günstiger und gesünder als Softdrinks.", whyEn: "Makes up for sweating and diarrhoea – cheaper and healthier than soft drinks." },
+    { icon: "lc:droplets", item: "Zero-Sirup / Geschmackstropfen", itemEn: "Zero syrup / flavour drops", why: "Günstiges Wasser mit Geschmack – mehr Abwechslung, du trinkst mehr.", whyEn: "Cheap water with flavour – more variety, and you drink more." },
+    { icon: "lc:droplet", item: "Wiederbefüllbare Flasche (+ Filter)", itemEn: "Refillable bottle (+ filter)", why: "Nachfüllen statt kaufen; Filter oder Tabletten, wo das Wasser unsicher ist.", whyEn: "Refill instead of buying; a filter or tablets where the water isn't safe." },
+    { icon: "lc:utensils", item: "Spork & Faltbecher", itemEn: "Spork & collapsible cup", why: "Deine Mini-Küche fürs Hostel – mehr braucht Porridge nicht.", whyEn: "Your mini-kitchen for the hostel – porridge needs no more than this." },
+    { icon: "lc:pill", item: "Bauch-Set", itemEn: "Stomach kit", why: "„Algo para la diarrea“, Rehydratationssalze und ggf. Probiotika für den Notfall.", whyEn: "„Algo para la diarrea“, rehydration salts and maybe probiotics for emergencies." },
+    { icon: "lc:spray-can", item: "Sonnencreme & Repelente", itemEn: "Sunscreen & repellent", why: "Schutz vor Sonne (auch in der Höhe) und vor Mücken in Dengue-/Malariagebieten.", whyEn: "Protection from the sun (also at altitude) and from mosquitoes in dengue/malaria areas." },
+    { icon: "lc:bean", item: "Nüsse & Obst als Snack", itemEn: "Nuts & fruit as a snack", why: "Protein, Ballaststoffe und Vitamine für unterwegs statt Chips.", whyEn: "Protein, fibre and vitamins on the go instead of crisps." },
+    { icon: "lc:candy", item: "Zucker-Snack (Riegel/Traubenzucker)", itemEn: "Sugary snack (bar/glucose)", why: "Rettet den Kreislauf auf Ausflügen, wo oft kein Shop in der Nähe ist.", whyEn: "Saves your circulation on trips where there's often no shop nearby." },
+    { icon: "lc:sandwich", item: "Eigener Proviant", itemEn: "Your own provisions", why: "Auch bei „Verpflegung inklusive“ weißt du nie, was und wann – ein Snack rettet den teuren Ausflug.", whyEn: "Even with „meals included“ you never know what or when – a snack saves the pricey trip." },
+    { icon: "lc:bandage", item: "Mini-Reiseapotheke", itemEn: "Mini first-aid kit", why: "Schmerztablette, Reisetablette (Übelkeit) und Pflaster – auf holprigen Busfahrten Gold wert; Schmerzmittel sind unterwegs schwer zu bekommen (für Frauen besonders wichtig).", whyEn: "Painkiller, motion-sickness tablet and a plaster – worth gold on bumpy bus rides; painkillers are hard to get on the road (especially important for women)." },
+    { icon: "lc:shirt", item: "Langärmliges zum Überziehen", itemEn: "A long-sleeved layer", why: "Für lange (Bus-)Fahrten – die Klimaanlage läuft oft eiskalt.", whyEn: "For long (bus) journeys – the AC is often freezing." },
   ];
 
   window.SC = window.SC || {};

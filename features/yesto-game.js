@@ -14,7 +14,7 @@
   "use strict";
   window.SC = window.SC || {};
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleShareBtn } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn } = window.SC.view;
 
   let ctx = null;             // vom Controller injizierte Dienste (init)
   let yestoTimer = null;      // genau ein pendelnder Countdown-Tick zur Zeit (modul-privat)
@@ -155,19 +155,19 @@
     if (!vm.available) {
       return `
         <section class="screen">
-          ${hmTopbar("👀 ¿Y esto?", "home")}
+          ${hmTopbar(`${renderIcon("lc:eye")} ¿Y esto?`, "home")}
           <p class="stat-empty">${esc(t("discover.yeUnavailable"))}</p>
         </section>`;
     }
     const themes = vm.themes.map((th) => `
       <button class="ye-theme" type="button" data-action="start-yesto" data-id="${esc(th.id)}">
-        <span class="ye-theme__icon" aria-hidden="true">${esc(th.icon)}</span>
+        <span class="ye-theme__icon" aria-hidden="true">${renderIcon(th.icon)}</span>
         <span class="ye-theme__label">${esc(th.label)}</span>
         <span class="ye-theme__count">${esc(t("discover.yeCount", { n: th.count }))}</span>
       </button>`).join("");
     return `
       <section class="screen">
-        ${hmTopbar("👀 ¿Y esto?", "home")}
+        ${hmTopbar(`${renderIcon("lc:eye")} ¿Y esto?`, "home")}
         <p class="hm-intro">${esc(t("discover.yeIntro"))}</p>
         ${moduleShareBtn("yesto")}
         <h3 class="prc-head">${esc(t("discover.yeChooseTheme"))}</h3>
@@ -199,7 +199,7 @@
         </div>`;
     return `
       <section class="screen study">
-        ${hmTopbar("👀 ¿Y esto?", "open-yesto")}
+        ${hmTopbar(`${renderIcon("lc:eye")} ¿Y esto?`, "open-yesto")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
         ${stage}

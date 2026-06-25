@@ -36,7 +36,7 @@
   const ERAS = [
     {
       id: "precolombino",
-      icon: "🏔️",
+      icon: "lc:mountain",
       period: "bis 1492",
       periodEn: "before 1492",
       title: "Vor den Spaniern – die Hochkulturen",
@@ -89,7 +89,7 @@
     },
     {
       id: "conquista",
-      icon: "⚔️",
+      icon: "lc:swords",
       period: "1492–1572",
       title: "Die Conquista – die Eroberung",
       titleEn: "The Conquista – the conquest",
@@ -140,7 +140,7 @@
     },
     {
       id: "colonial",
-      icon: "👑",
+      icon: "lc:crown",
       period: "1542–1808",
       title: "Die Kolonialzeit – Vizekönige & Silber",
       titleEn: "The colonial era – viceroys & silver",
@@ -191,7 +191,7 @@
     },
     {
       id: "chispa",
-      icon: "🔥",
+      icon: "lc:flame",
       period: "1780–1810",
       title: "Der Funke – Aufklärung, Napoleon & die ersten Junten",
       titleEn: "The spark – Enlightenment, Napoleon & the first juntas",
@@ -241,7 +241,7 @@
     },
     {
       id: "independencia",
-      icon: "🗡️",
+      icon: "lc:sword",
       period: "1810–1825",
       title: "Der Freiheitskampf – Bolívar & San Martín",
       titleEn: "The fight for freedom – Bolívar & San Martín",
@@ -291,7 +291,7 @@
     },
     {
       id: "naciones",
-      icon: "🗺️",
+      icon: "lc:map",
       period: "1819–1860",
       title: "Die Abspaltung – vom Traum zu vielen Nationen",
       titleEn: "The break-up – from one dream to many nations",
@@ -342,7 +342,7 @@
     },
     {
       id: "moderno",
-      icon: "⏳",
+      icon: "lc:hourglass",
       period: "1860–heute",
       periodEn: "1860–today",
       title: "Bis heute – Kriege, Diktaturen, Demokratie",
@@ -597,7 +597,7 @@
     },
     {
       id: "essequibo",
-      icon: "🛢️",
+      icon: "lc:fuel",
       level: "B2",
       es: [
         "El Esequibo es una enorme región de selva que forma casi dos tercios del pequeño país de Guyana. Venezuela dice que ese territorio le pertenece desde hace más de un siglo.",
@@ -624,7 +624,7 @@
     },
     {
       id: "salida-al-mar",
-      icon: "🌊",
+      icon: "lc:waves",
       level: "B1",
       es: [
         "Hace más de cien años, en la Guerra del Pacífico (1879–1883), Bolivia *perdió* contra Chile toda su costa. Desde entonces es un país sin *mar*, rodeado por completo de tierra.",
@@ -652,7 +652,7 @@
     },
     {
       id: "colombia-paz",
-      icon: "🕊️",
+      icon: "lc:bird",
       level: "B2",
       es: [
         "Durante más de cincuenta años, Colombia vivió una guerra interna durísima entre el Estado y la guerrilla de las FARC, con miles de muertos, secuestrados y desplazados.",
@@ -679,7 +679,7 @@
     },
     {
       id: "peru-politica",
-      icon: "🏛️",
+      icon: "lc:landmark",
       level: "B2",
       es: [
         "Pocos países del mundo *cambian* de presidente tan rápido como el Perú. Entre 2016 y 2023, el país tuvo cerca de media docena de gobernantes, además de muchos *escándalos* de corrupción.",
@@ -707,7 +707,7 @@
     },
     {
       id: "argentina-economia",
-      icon: "💸",
+      icon: "lc:wallet",
       level: "B1",
       es: [
         "Hace cien años, Argentina era uno de los países más *ricos* del mundo. Hoy, en cambio, lleva décadas luchando contra la *inflación*, las deudas y crisis económicas que se repiten una y otra vez.",
@@ -734,7 +734,7 @@
     },
     {
       id: "amazonia",
-      icon: "🌳",
+      icon: "lc:trees",
       level: "B2",
       es: [
         "La selva amazónica es mucho más que un bosque: es el hogar de cientos de *pueblos* indígenas y una pieza clave para el clima de todo el planeta. Por eso muchos la llaman „el pulmón verde“ del mundo.",
@@ -761,7 +761,7 @@
     },
     {
       id: "migracion",
-      icon: "🚶",
+      icon: "lc:person-standing",
       level: "B1",
       es: [
         "En los últimos años, cientos de miles de personas, muchas de ellas venezolanas, han salido de sus países en busca de trabajo y seguridad. La mayoría *viaja* hacia el norte, soñando con llegar a Estados Unidos.",

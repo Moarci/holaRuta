@@ -46,7 +46,7 @@
   // ---------- Erklärung: tolle Reisebilder (aufklappbar, mit ES-Lesetraining) ----------
   const TOPICS = [
     {
-      icon: "🎯",
+      icon: "lc:target",
       title: "Motiv & Bildaufbau",
       titleEn: "Subject & composition",
       intro: "Ein gutes Bild hat eine klare Hauptsache und einen aufgeräumten Aufbau. Bevor du auslöst, frag dich kurz: Was ist hier eigentlich das Motiv – und stört irgendwas drumherum?",
@@ -96,7 +96,7 @@
       level: "A2",
     },
     {
-      icon: "⚙️",
+      icon: "lc:settings",
       title: "Kameraeinstellungen",
       titleEn: "Camera settings",
       intro: "Du brauchst keine teure Kamera – aber ein paar Einstellungen am Handy machen sofort einen Unterschied. Das Meiste stellst du einmal ein und vergisst es dann.",
@@ -148,7 +148,7 @@
       level: "A2",
     },
     {
-      icon: "🌅",
+      icon: "lc:sunrise",
       title: "Licht – der wichtigste Trick",
       titleEn: "Light – the most important trick",
       intro: "Licht macht das Foto, nicht die Kamera. Dieselbe Szene sieht morgens, mittags und abends völlig anders aus. Wer auf das Licht achtet, macht sofort bessere Bilder.",
@@ -197,7 +197,7 @@
       level: "B1",
     },
     {
-      icon: "🧍",
+      icon: "lc:person-standing",
       title: "Posen & Menschen fotografieren",
       titleEn: "Poses & photographing people",
       intro: "Vor der Kamera fühlen sich die meisten steif. Mit ein paar kleinen Kniffen wirken Personen sofort lockerer und natürlicher – auf dem Foto sieht man den Unterschied sofort.",
@@ -248,7 +248,7 @@
       level: "B1",
     },
     {
-      icon: "🎥",
+      icon: "lc:video",
       title: "Videos drehen",
       titleEn: "Shooting video",
       intro: "Video lebt von ruhiger Hand und kurzen Szenen. Lieber viele kurze, stabile Clips als ein langes Gewackel – beim Schneiden bist du dann froh über jede ruhige Aufnahme.",
@@ -305,7 +305,7 @@
   const PHRASES = [
     {
       id: "pedir",
-      icon: "📸",
+      icon: "lc:camera",
       title: "Jemanden bitten, ein Foto zu machen",
       titleEn: "Asking someone to take a photo",
       items: [
@@ -322,7 +322,7 @@
     },
     {
       id: "paso",
-      icon: "🙏",
+      icon: "lc:hand-heart",
       title: "Höflich um Platz bitten",
       titleEn: "Politely asking for space",
       items: [
@@ -336,7 +336,7 @@
     },
     {
       id: "permiso",
-      icon: "🤝",
+      icon: "lc:handshake",
       title: "Selbst anbieten & um Erlaubnis fragen",
       titleEn: "Offering yourself & asking permission",
       items: [
@@ -437,13 +437,13 @@
 
   // ---------- „Foto-Kit": kleine Packliste (Icon + Sache + Warum) ----------
   const CHECKLIST = [
-    { icon: "🧽", item: "Mikrofasertuch", itemEn: "Microfibre cloth", why: "Saubere Linse = scharfe Fotos – die Linse verschmiert in der Hosentasche ständig.", whyEn: "A clean lens = sharp photos – the lens smears constantly in your pocket." },
-    { icon: "🔋", item: "Powerbank", itemEn: "Power bank", why: "Fotos und vor allem Video leeren den Akku schnell – unterwegs gibt es selten eine Steckdose.", whyEn: "Photos and especially video drain the battery fast – there's rarely a socket on the road." },
-    { icon: "🦾", item: "Mini-Stativ / Gorillapod", itemEn: "Mini tripod / Gorillapod", why: "Für Selfies, Gruppenbilder, Nachtaufnahmen und ruhiges Video.", whyEn: "For selfies, group shots, night shots and steady video." },
-    { icon: "📡", item: "Bluetooth-Auslöser", itemEn: "Bluetooth shutter remote", why: "Gruppenfoto ohne Hektik und Langzeitaufnahmen ganz ohne Wackeln.", whyEn: "Group photos without the rush and long exposures with no wobble." },
-    { icon: "☁️", item: "Cloud-Backup (Google Fotos/iCloud)", itemEn: "Cloud backup (Google Photos/iCloud)", why: "Bilder sichern, falls das Handy verloren geht – und Speicher freihalten.", whyEn: "Back up your shots in case the phone is lost – and keep storage free." },
-    { icon: "💾", item: "Genug Speicher / SD-Karte", itemEn: "Enough storage / SD card", why: "Video frisst Platz – ein volles Handy verpasst genau den schönsten Moment.", whyEn: "Video eats space – a full phone misses exactly the best moment." },
-    { icon: "📱", item: "Schutztuch / Zip-Tüte", itemEn: "Protective cloth / zip bag", why: "Staub, Sand und Regen schützen Linse und Handy unterwegs.", whyEn: "Protects the lens and phone from dust, sand and rain on the road." },
+    { icon: "lc:eraser", item: "Mikrofasertuch", itemEn: "Microfibre cloth", why: "Saubere Linse = scharfe Fotos – die Linse verschmiert in der Hosentasche ständig.", whyEn: "A clean lens = sharp photos – the lens smears constantly in your pocket." },
+    { icon: "lc:battery-full", item: "Powerbank", itemEn: "Power bank", why: "Fotos und vor allem Video leeren den Akku schnell – unterwegs gibt es selten eine Steckdose.", whyEn: "Photos and especially video drain the battery fast – there's rarely a socket on the road." },
+    { icon: "lc:bot", item: "Mini-Stativ / Gorillapod", itemEn: "Mini tripod / Gorillapod", why: "Für Selfies, Gruppenbilder, Nachtaufnahmen und ruhiges Video.", whyEn: "For selfies, group shots, night shots and steady video." },
+    { icon: "lc:satellite-dish", item: "Bluetooth-Auslöser", itemEn: "Bluetooth shutter remote", why: "Gruppenfoto ohne Hektik und Langzeitaufnahmen ganz ohne Wackeln.", whyEn: "Group photos without the rush and long exposures with no wobble." },
+    { icon: "lc:cloud", item: "Cloud-Backup (Google Fotos/iCloud)", itemEn: "Cloud backup (Google Photos/iCloud)", why: "Bilder sichern, falls das Handy verloren geht – und Speicher freihalten.", whyEn: "Back up your shots in case the phone is lost – and keep storage free." },
+    { icon: "lc:save", item: "Genug Speicher / SD-Karte", itemEn: "Enough storage / SD card", why: "Video frisst Platz – ein volles Handy verpasst genau den schönsten Moment.", whyEn: "Video eats space – a full phone misses exactly the best moment." },
+    { icon: "lc:smartphone", item: "Schutztuch / Zip-Tüte", itemEn: "Protective cloth / zip bag", why: "Staub, Sand und Regen schützen Linse und Handy unterwegs.", whyEn: "Protects the lens and phone from dust, sand and rain on the road." },
   ];
 
   window.SC = window.SC || {};

@@ -13,7 +13,7 @@
   "use strict";
   window.SC = window.SC || {};
   const t = (window.SC && window.SC.i18n && window.SC.i18n.t) || window.t;
-  const { esc, hmTopbar, moduleShareBtn } = window.SC.view;
+  const { esc, renderIcon, hmTopbar, moduleShareBtn } = window.SC.view;
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
@@ -43,7 +43,7 @@
     });
     return {
       sets,
-      mixed: { id: FRASES_ALL, label: t("app.mixed"), icon: "🎲",
+      mixed: { id: FRASES_ALL, label: t("app.mixed"), icon: "lc:dices",
         intro: t("app.frasesMixedIntro"),
         count: frases ? frases.FRASES.length : 0 },
     };
@@ -51,9 +51,9 @@
 
   // Kopf-Infos zum laufenden Set (Label/Icon) – "Gemischt" hat keinen Datensatz.
   function frasesSetInfo(setId) {
-    if (setId === FRASES_ALL) return { label: t("app.mixed"), icon: "🎲" };
+    if (setId === FRASES_ALL) return { label: t("app.mixed"), icon: "lc:dices" };
     const s = frasesSetById(setId);
-    return { label: s ? s.label : "", icon: s ? s.icon : "🧱" };
+    return { label: s ? s.label : "", icon: s ? s.icon : "lc:blocks" };
   }
 
   function frasesVM() {
@@ -161,14 +161,14 @@
   function renderFrasesSetup(vm) {
     const tile = (s, mixed) =>
       `<button class="hm-scene${mixed ? " hm-scene--mixed" : ""}" data-action="start-frases" data-set="${esc(s.id)}">
-         <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+         <span class="hm-scene__icon" aria-hidden="true">${renderIcon(s.icon)}</span>
          <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
          <span class="hm-scene__count">${s.count}</span>
        </button>`;
     const list = vm.sets.map((s) => tile(s, false)).join("");
     return `
       <section class="screen">
-        ${hmTopbar("🧱 Frases flexibles", "home")}
+        ${hmTopbar(`${renderIcon("lc:blocks")} Frases flexibles`, "home")}
         <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
         ${moduleShareBtn("frases")}
         <div class="hm-scenes">
@@ -214,7 +214,7 @@
 
     return `
       <section class="screen study">
-        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "open-frases")}
+        ${hmTopbar(`${renderIcon(vm.setIcon)} ${esc(vm.setLabel)}`, "open-frases")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.frasesSentence", { pos: vm.position + 1, total: vm.total }))}</div>
         <div class="quiz-def">

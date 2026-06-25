@@ -34,7 +34,7 @@
   const ERAS = [
     {
       id: "maya",
-      icon: "🗿",
+      icon: "lc:mountain",
       period: "bis 1523",
       periodEn: "before 1523",
       title: "Vor den Spaniern – die Welt der Maya",
@@ -86,7 +86,7 @@
     },
     {
       id: "conquista",
-      icon: "⚔️",
+      icon: "lc:swords",
       period: "1519–1540",
       periodEn: "1519–1540",
       title: "Die Conquista – Eroberung der Landbrücke",
@@ -137,7 +137,7 @@
     },
     {
       id: "colonial",
-      icon: "⛪",
+      icon: "lc:church",
       period: "1540–1821",
       periodEn: "1540–1821",
       title: "Die Kolonialzeit – das Königreich Guatemala",
@@ -187,7 +187,7 @@
     },
     {
       id: "independencia",
-      icon: "🔔",
+      icon: "lc:bell",
       period: "1821",
       periodEn: "1821",
       title: "Die Unabhängigkeit – fast ohne einen Schuss",
@@ -233,7 +233,7 @@
     },
     {
       id: "federacion",
-      icon: "⭐",
+      icon: "lc:star",
       period: "1823–1839",
       periodEn: "1823–1839",
       title: "Die Föderation – ein Traum von Einheit",
@@ -282,7 +282,7 @@
     },
     {
       id: "cafe-bananas",
-      icon: "🍌",
+      icon: "lc:banana",
       period: "1840–1930",
       periodEn: "1840–1930",
       title: "Kaffee & Bananen – die Exportzeit",
@@ -328,7 +328,7 @@
     },
     {
       id: "guerras",
-      icon: "🕊️",
+      icon: "lc:bird",
       period: "1960–1996",
       periodEn: "1960–1996",
       title: "Bürgerkriege & Kalter Krieg",
@@ -375,7 +375,7 @@
     },
     {
       id: "hoy",
-      icon: "🌎",
+      icon: "lc:globe",
       period: "heute",
       periodEn: "today",
       title: "Bis heute – Demokratie, Migration, Wandel",
@@ -556,7 +556,7 @@
   const TENSIONS = [
     {
       id: "el-salvador-bukele",
-      icon: "🦅",
+      icon: "lc:bird",
       title: "El Salvador: Bukeles harte Hand",
       titleEn: "El Salvador: Bukele's hard hand",
       where: "El Salvador",
@@ -582,7 +582,7 @@
     },
     {
       id: "nicaragua-ortega",
-      icon: "✊",
+      icon: "lc:flag",
       title: "Nicaragua: Ortegas Machtkonzentration",
       titleEn: "Nicaragua: Ortega's grip on power",
       where: "Nicaragua",
@@ -608,7 +608,7 @@
     },
     {
       id: "panama-canal",
-      icon: "🚢",
+      icon: "lc:ship",
       title: "Panamá: der Kanal & der Druck aus dem Norden",
       titleEn: "Panama: the canal & pressure from the north",
       where: "Panama",
@@ -634,7 +634,7 @@
     },
     {
       id: "maras-migracion",
-      icon: "🛣️",
+      icon: "lc:route",
       title: "Maras & Migration nach Norden",
       titleEn: "Gangs & migration northward",
       where: "Guatemala · Honduras · El Salvador",
@@ -660,7 +660,7 @@
     },
     {
       id: "guatemala-arevalo",
-      icon: "🗳️",
+      icon: "lc:vote",
       title: "Guatemala: ein fragiler Neuanfang",
       titleEn: "Guatemala: a fragile fresh start",
       where: "Guatemala",
@@ -686,7 +686,7 @@
     },
     {
       id: "costa-rica",
-      icon: "🌿",
+      icon: "lc:leaf",
       title: "Costa Rica: die stabile Ausnahme",
       titleEn: "Costa Rica: the stable exception",
       where: "Costa Rica",

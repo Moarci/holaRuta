@@ -2521,7 +2521,7 @@
       : (vm.hasHistoria ? { action: "open-historia", icon: "📜", title: t("discover.histBannerTitle"), sub: t("discover.histBannerSub") } : null);
     const histBanner = histTarget ? `
       <button class="hist-banner" data-action="${histTarget.action}">
-        <span class="hist-banner__icon" aria-hidden="true">${histTarget.icon}</span>
+        <span class="hist-banner__icon" aria-hidden="true">${renderIcon(histTarget.icon)}</span>
         <span class="hist-banner__text">
           <span class="hist-banner__title">${esc(histTarget.title)}</span>
           <span class="hist-banner__sub">${esc(histTarget.sub)}</span>
@@ -2758,7 +2758,7 @@
   // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
   function renderLogistica(vm) {
     return moduleSheet(vm, {
-      icon: "🧳", title: "Logística de viaje", cat: "logistica",
+      icon: "lc:luggage", title: "Logística de viaje", cat: "logistica",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
       headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
@@ -2769,7 +2769,7 @@
   // Salud y energía: ausgewogen essen, günstig trinken, Bauch, Sonne/Höhe, Bewegung.
   function renderSalud(vm) {
     return moduleSheet(vm, {
-      icon: "🥗", title: "Salud y energía", cat: "salud",
+      icon: "lc:salad", title: "Salud y energía", cat: "salud",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
       headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
@@ -2783,7 +2783,7 @@
   // spanische Lesetraining je Thema, copyPhrases für Sätze zum Weiterschicken.
   function renderCafe(vm) {
     return moduleSheet(vm, {
-      icon: "☕", title: "Café de la región", cat: "cafe",
+      icon: "lc:coffee", title: "Café de la región", cat: "cafe",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.cfTips", headPhrases: "discover.cfPhrases",
       headWords: "discover.cfWords", headChecklist: "discover.cfChecklist",
@@ -2798,7 +2798,7 @@
   // Gleiches Sheet wie Salud/Flirt; readingPerTopic für die LatAm-Kultur-Texte.
   function renderJuegos(vm) {
     return moduleSheet(vm, {
-      icon: "🎲", title: "Juegos de viaje", cat: "juegos",
+      icon: "lc:dices", title: "Juegos de viaje", cat: "juegos",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.jgTips", headPhrases: "discover.jgPhrases",
       headWords: "discover.jgWords", headChecklist: "discover.jgChecklist",
@@ -2812,7 +2812,7 @@
   // vorschlagen, Dating-Kultur, sicher daten. Gleiches Sheet wie Salud/Logística.
   function renderFlirt(vm) {
     return moduleSheet(vm, {
-      icon: "💘", title: "Coqueteo y romance", cat: "flirt",
+      icon: "lc:heart", title: "Coqueteo y romance", cat: "flirt",
       favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.flTips", headPhrases: "discover.flPhrases",
       headWords: "discover.flWords", headChecklist: "discover.flChecklist",
@@ -2870,7 +2870,7 @@
       return `
         <details class="knigge-topic">
           <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${tp.icon}</span>
+            <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(tp.icon)}</span>
             <span class="knigge-topic__title">${esc(tp.title)}</span>
             <span class="knigge-topic__chev" aria-hidden="true">▾</span>
           </summary>
@@ -2924,7 +2924,7 @@
 
     const checklist = (vm.checklist || []).map((c) => `
       <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
         <span class="rg-region__body">
           <span class="rg-region__country">${esc(c.item)}</span>
           <span class="rg-region__note">${esc(c.why)}</span>
@@ -2943,7 +2943,7 @@
     ].filter(Boolean);
     const nav = navItems.length > 1
       ? `<nav class="ft-nav" aria-label="${esc(t("discover.ftAreas"))}">${navItems.map((n) =>
-          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${renderIcon(n.icon)}</span> ${esc(n.label)}</a>`).join("")}</nav>`
       : "";
 
     return `
@@ -3056,7 +3056,7 @@
       return `
         <details class="knigge-topic bf-dance">
           <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${d.icon}</span>
+            <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(d.icon)}</span>
             <span class="knigge-topic__title">${esc(d.name)}${d.origin ? `<span class="bf-dance__origin">${esc(d.origin)}</span>` : ""}</span>
             ${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}
             <span class="knigge-topic__chev" aria-hidden="true">▾</span>
@@ -3088,7 +3088,7 @@
 
     const checklist = (vm.checklist || []).map((c) => `
       <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${c.icon}</span>
+        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
         <span class="rg-region__body">
           <span class="rg-region__country">${esc(c.item)}</span>
           <span class="rg-region__note">${esc(c.why)}</span>
@@ -3099,11 +3099,11 @@
       dances && { id: "bl-dances", icon: "💃", label: t("discover.blNavDances") },
       phrases && { id: "bl-phrases", icon: "💬", label: t("discover.blNavPhrases") },
       glossary && { id: "bl-words", icon: "🗣️", label: t("discover.blNavWords") },
-      (vm.checklist && vm.checklist.length) && { id: "bl-etiquette", icon: "🤝", label: t("discover.blNavEtiquette") },
+      (vm.checklist && vm.checklist.length) && { id: "bl-etiquette", icon: "lc:handshake", label: t("discover.blNavEtiquette") },
     ].filter(Boolean);
     const nav = navItems.length > 1
       ? `<nav class="ft-nav" aria-label="${esc(t("discover.blAreas"))}">${navItems.map((n) =>
-          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+          `<a class="ft-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${renderIcon(n.icon)}</span> ${esc(n.label)}</a>`).join("")}</nav>`
       : "";
 
     return `
@@ -3165,7 +3165,7 @@
       return `
         <details class="knigge-topic mus-genre">
           <summary class="knigge-topic__head">
-            <span class="knigge-topic__icon" aria-hidden="true">${g.icon}</span>
+            <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(g.icon)}</span>
             <span class="knigge-topic__title">${esc(g.name)}${g.origin ? `<span class="mus-genre__origin">${esc(g.origin)}</span>` : ""}</span>
             <span class="knigge-topic__chev" aria-hidden="true">▾</span>
           </summary>
@@ -3218,7 +3218,7 @@
     ].filter(Boolean);
     const nav = navItems.length > 1
       ? `<nav class="mus-nav" aria-label="${esc(t("discover.musAreas"))}">${navItems.map((n) =>
-          `<a class="mus-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${n.icon}</span> ${esc(n.label)}</a>`).join("")}</nav>`
+          `<a class="mus-nav__chip" href="#${n.id}" data-action="scroll-to" data-target="${n.id}"><span aria-hidden="true">${renderIcon(n.icon)}</span> ${esc(n.label)}</a>`).join("")}</nav>`
       : "";
 
     return `

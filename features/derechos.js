@@ -38,7 +38,7 @@
   // ----- Render -----
   function renderDerechos(vm) {
     return moduleSheet(vm, {
-      icon: "⚖️", title: "Conoce tus derechos", cat: "derechos",
+      icon: "lc:scale", title: "Conoce tus derechos", cat: "derechos",
       readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
       favPhrases: ctx.isFavorite, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.drTips", headPhrases: "discover.drPhrases",
