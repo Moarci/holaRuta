@@ -240,23 +240,23 @@
     // Hör-Modus (Dictado) nur anbieten, wenn der Browser Sprachausgabe kann –
     // sonst gäbe es nichts zu hören (graceful degradation).
     const listenSeg = speechReady()
-      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">${esc(t("home.modeListen"))}</button>`
+      ? `<button class="seg ${mode === "listen" ? "is-active" : ""}" data-action="set-mode" data-mode="listen">${renderIcon("lc:ear")} ${esc(t("home.modeListen"))}</button>`
       : "";
     // Kurz-Info zu den Modi: erklärt direkt unter der Auswahl, was jeder Modus macht
     // und welche Lern-Aufgabe er hat. Der aktive Modus wird hervorgehoben. Hören nur,
     // wenn der Browser vorlesen kann (sonst gibt es den Modus gar nicht).
     const modeRows = [
-      { id: "flip", label: t("home.modeFlip"), desc: t("home.modeFlipDesc") },
-      { id: "type", label: t("home.modeType"), desc: t("home.modeTypeDesc") },
+      { id: "flip", icon: "lc:layers", label: t("home.modeFlip"), desc: t("home.modeFlipDesc") },
+      { id: "type", icon: "lc:square-pen", label: t("home.modeType"), desc: t("home.modeTypeDesc") },
     ];
-    if (speechReady()) modeRows.push({ id: "listen", label: t("home.modeListen"), desc: t("home.modeListenDesc") });
+    if (speechReady()) modeRows.push({ id: "listen", icon: "lc:ear", label: t("home.modeListen"), desc: t("home.modeListenDesc") });
     const modeInfo = `
       <div class="modeinfo">
         <span class="switchcap">${esc(t("home.modeInfoCap"))}</span>
         <ul class="modeinfo__list">
           ${modeRows.map((r) => `
             <li class="modeinfo__item${mode === r.id ? " is-active" : ""}">
-              <span class="modeinfo__label">${esc(r.label)}</span>
+              <span class="modeinfo__label">${renderIcon(r.icon)} ${esc(r.label)}</span>
               <span class="modeinfo__desc">${esc(r.desc)}</span>
             </li>`).join("")}
         </ul>
@@ -278,8 +278,8 @@
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.modeLabel"))}</span>
         <div class="segmented${listenSeg ? " segmented--three" : ""}" role="tablist" aria-label="${esc(t("home.modeAria"))}">
-          <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">${esc(t("home.modeFlip"))}</button>
-          <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">${esc(t("home.modeType"))}</button>
+          <button class="seg ${mode === "flip" ? "is-active" : ""}" data-action="set-mode" data-mode="flip">${renderIcon("lc:layers")} ${esc(t("home.modeFlip"))}</button>
+          <button class="seg ${mode === "type" ? "is-active" : ""}" data-action="set-mode" data-mode="type">${renderIcon("lc:square-pen")} ${esc(t("home.modeType"))}</button>
           ${listenSeg}
         </div>
         ${modeInfo}
@@ -546,7 +546,7 @@
             <h1 class="onboarding__title">${esc(welcomeTitle)}</h1>
             <p class="onboarding__intro">${esc(t("home.onboardWelcomeIntro"))}</p>
             <form class="trip trip--edit" data-action="onboard-profile-next">
-              <label class="trip__field"><span>${esc(t("home.nameCap"))}</span>
+              <label class="trip__field"><span>${renderIcon("lc:user")} ${esc(t("home.nameCap"))}</span>
                 <input id="onboard-name" type="text" maxlength="40"
                        autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
                        placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" /></label>
@@ -1124,7 +1124,7 @@
     // (change-Handler in app.js), falls ohne „Speichern" weggetippt wird.
     const nameGroup = `
       <form class="switchgroup namefield" data-action="save-name">
-        <label class="switchcap" for="profile-name">${esc(t("home.nameCap"))}</label>
+        <label class="switchcap" for="profile-name">${renderIcon("lc:user")} ${esc(t("home.nameCap"))}</label>
         <div class="namefield__row">
           <input id="profile-name" class="namefield__input" type="text" maxlength="40"
                  autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
@@ -4050,7 +4050,7 @@
            <span class="pl-listen__icon" aria-hidden="true">${renderIcon("lc:volume-2")}</span>
            <span class="pl-listen__label">${esc(t("assessment.listenPlay"))}</span>
          </button>
-         <p class="pl-hint pl-hint--listen">${esc(t("assessment.listenHint"))}</p>`
+         <p class="pl-hint pl-hint--listen">${renderIcon("lc:ear")} ${esc(t("assessment.listenHint"))}</p>`
       : "";
     const prompt = `
       <p class="pl-prompt">${esc(q.promptDe)}</p>
