@@ -300,14 +300,14 @@
     // Oben steht klar die Reise (Countdown bzw. Abreise-Meldung). Das tägliche
     // Karten-Pensum ist bewusst als eigene, beschriftete Zeile darunter abgesetzt –
     // sonst wirkt der Tagesbalken wie ein „Fortschritt bis zur Reise".
-    const countdown = trip.past ? who + t("home.tripTime")
-      : trip.today ? who + t("home.tripToday")
+    const countdown = trip.past ? who + t("home.tripTime") + " " + renderIcon("lc:luggage")
+      : trip.today ? who + t("home.tripToday") + " " + renderIcon("lc:luggage")
       : t("home.tripCountdown", { n: trip.daysLeft, dest });
     return `
       <button class="trip" data-action="${action}" aria-label="${esc(t("home.tripEditLabel"))}">
         ${head}
         <span class="trip__countdown">${countdown}</span>
-        ${trip.stayDays ? `<span class="trip__stay">${esc(t("home.tripStay", { n: trip.stayDays, approx: trip.stayApprox }))}</span>` : ""}
+        ${trip.stayDays ? `<span class="trip__stay">${renderIcon("lc:luggage")} ${esc(t("home.tripStay", { n: trip.stayDays, approx: trip.stayApprox }))}</span>` : ""}
         <span class="trip__daily">
           <span class="trip__daily-head">
             <span class="trip__daily-cap">${esc(t("home.tripDailyCap"))}</span>
@@ -606,7 +606,7 @@
       <div class="profcard">
         ${xpBanner(vm.xp)}
         ${vm.xp && vm.xp.xp ? shareBlock(vm.shareFormat, "share-rank", t("profile.shareRank")) : ""}
-        <p class="profcard__streak">${esc(streakLine)}</p>
+        <p class="profcard__streak">${vm.streak > 0 ? renderIcon("lc:flame") + " " : ""}${esc(streakLine)}</p>
         <div class="dist__bar" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct: ov.pct }))}">
           ${seg(ov.mastered, "var(--ok)")}${seg(ov.learning, "var(--warn)")}${seg(ov.neu, "rgba(45,27,18,0.16)")}
         </div>
@@ -625,11 +625,11 @@
   function startBody(vm) {
     // "Heute"-Karte: Streak-Chip, Haupt-CTA und Quick-Resume.
     const streakChip = vm.streak > 0
-      ? `<span class="today__streak">${esc(t("home.streakDays", { n: vm.streak }))}</span>`
-      : `<span class="today__streak today__streak--new">${esc(t("home.streakNew"))}</span>`;
+      ? `<span class="today__streak">${renderIcon("lc:flame")} ${esc(t("home.streakDays", { n: vm.streak }))}</span>`
+      : `<span class="today__streak today__streak--new">${renderIcon("lc:sprout")} ${esc(t("home.streakNew"))}</span>`;
     const resume = vm.lastCat
       ? `<button class="today__resume" data-action="resume-last">
-           ${esc(t("home.resumeWith", { cat: vm.lastCat.icon + " " + vm.lastCat.label }))}
+           ${renderIcon("lc:corner-down-right")} ${esc(t("home.resumeWith", { cat: vm.lastCat.label }))}
            <span class="today__resumecount">${esc(t("home.tileDue", { n: vm.lastCat.due }))}</span>
          </button>`
       : "";
@@ -640,12 +640,12 @@
     const rutaDia = vm.rutaDone
       ? `
       <button class="today__ruta today__ruta--done" data-action="ruta-del-dia">
-        <span class="today__ruta-main">${esc(t("home.rutaDoneTitle"))}</span>
+        <span class="today__ruta-main">${renderIcon("lc:check-circle")} ${esc(t("home.rutaDoneTitle"))}</span>
         <span class="today__ruta-sub">${esc(t("home.rutaDoneSub"))}</span>
       </button>`
       : `
       <button class="today__ruta" data-action="ruta-del-dia">
-        <span class="today__ruta-main">${esc(t("home.rutaTitle"))}</span>
+        <span class="today__ruta-main">${renderIcon("lc:map")} ${esc(t("home.rutaTitle"))}</span>
         <span class="today__ruta-sub">${esc(t("home.rutaSub"))}</span>
       </button>`;
 
@@ -654,6 +654,26 @@
     // Ruta-del-día-Optik; erscheint nur bei passendem Trip-/Edition-Bezug. Ist das
     // Paket absolviert (alle Karten einmal gelernt), zeigt die Kachel das mit
     // Häkchen + „geschafft" an (bleibt antippbar zum Wiederholen).
+    // Pre-Arrival-Kachel-Icons: Städte/Orte als Lucide-Token (deckungsgleich mit
+    // SC.catIcon aus #201), die 9 Länder bewusst als Flaggen-Emoji (Identität).
+    // renderIcon() rendert Token → SVG, Flaggen-Emoji → escaped durch.
+    const PRESET_ICON = {
+      "prearrival-co": "🇨🇴", "prearrival-pe": "🇵🇪", "prearrival-mx": "🇲🇽",
+      "prearrival-cr": "🇨🇷", "prearrival-ec": "🇪🇨", "prearrival-gt": "🇬🇹",
+      "prearrival-ar": "🇦🇷", "prearrival-cl": "🇨🇱", "prearrival-bo": "🇧🇴",
+      "prearrival-ctg": "lc:palmtree", "prearrival-med": "lc:building-2",
+      "prearrival-cus": "lc:mountain", "prearrival-cdmx": "lc:building-2",
+      "prearrival-ant": "lc:mountain", "prearrival-bue": "lc:footprints",
+      "prearrival-qui": "lc:mountain", "prearrival-lima": "lc:waves",
+      "prearrival-arequipa": "lc:landmark", "prearrival-mendoza": "lc:wine",
+      "prearrival-bariloche": "lc:trees", "prearrival-oaxaca": "lc:skull",
+      "prearrival-merida": "lc:landmark", "prearrival-arenal": "lc:mountain",
+      "prearrival-monteverde": "lc:leaf", "prearrival-santiago": "lc:building-2",
+      "prearrival-valparaiso": "lc:palette", "prearrival-atacama": "lc:telescope",
+      "prearrival-lapaz": "lc:cable-car", "prearrival-uyuni": "lc:gem",
+      "prearrival-puertonatales": "lc:tent", "prearrival-pucon": "lc:mountain",
+      "prearrival-copacabana": "lc:sailboat", "prearrival-sucre": "lc:footprints",
+    };
     const PRESET_CARDS = [
       { id: "prearrival-co", show: vm.showColombiaPreset, titleKey: "home.presetCoTitle", subKey: "home.presetCoSub" },
       { id: "prearrival-ctg", show: vm.showCartagenaPreset, titleKey: "home.presetCtgTitle", subKey: "home.presetCtgSub" },
@@ -696,7 +716,7 @@
         : t(p.subKey);
       return `
       <button class="today__ruta${st.done ? " today__ruta--done" : ""}" data-action="open-preset" data-preset="${p.id}">
-        <span class="today__ruta-main">${st.done ? "✓ " : ""}${esc(t(p.titleKey))}${st.done ? ` <span class="today__ruta-badge" role="status">${esc(t("home.presetDone"))}</span>` : ""}</span>
+        <span class="today__ruta-main">${st.done ? renderIcon("lc:check-circle") + " " : ""}${renderIcon(PRESET_ICON[p.id] || "")} ${esc(t(p.titleKey))}${st.done ? ` <span class="today__ruta-badge" role="status">${esc(t("home.presetDone"))}</span>` : ""}</span>
         <span class="today__ruta-sub">${esc(sub)}</span>
       </button>`;
     }).join("");
@@ -764,7 +784,7 @@
       ? `<section class="dashgrp">
           <p class="sectioncap">${esc(t("home.lexSection"))}</p>
           <button class="today__ruta" data-action="open-favorites">
-            <span class="today__ruta-main">${esc(t("home.lexTitle"))} <span class="today__ruta-badge today__ruta-badge--lex" role="status">${vm.favCount}</span></span>
+            <span class="today__ruta-main">${renderIcon("lc:star")} ${esc(t("home.lexTitle"))} <span class="today__ruta-badge today__ruta-badge--lex" role="status">${vm.favCount}</span></span>
             <span class="today__ruta-sub">${esc(favSub)}</span>
           </button>
         </section>`
@@ -785,7 +805,7 @@
         ${streakChip}
         <button class="cta ${vm.totalDue === 0 ? "is-done" : ""}" data-action="study-all">
           ${vm.totalDue === 0
-            ? `${esc(t("home.allReviewed"))} <span class="cta__count">${vm.totalCards}</span>`
+            ? `${esc(t("home.allReviewed"))} ${renderIcon("lc:party-popper")} <span class="cta__count">${vm.totalCards}</span>`
             : vm.totalDue > vm.sessionCap
               ? `${esc(t("home.startSession"))} <span class="cta__count">${esc(t("home.sessionOf", { cap: vm.sessionCap, due: vm.totalDue }))}</span>`
               : `${esc(t("home.studyAllDue"))} <span class="cta__count">${vm.totalDue}</span>`}
@@ -814,7 +834,7 @@
   // ----- LERNEN-Reiter: alle Themen mit klebriger Sprungmarken-Leiste je Gruppe -----
   function lernenBody(vm) {
     const tileBtn = (c) => {
-      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${esc(t("home.tileDone"))}</span>`;
+      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${renderIcon("lc:check-circle")} ${esc(t("home.tileDone"))}</span>`;
       // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
       // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
       const breakdown = vm.allLevels ? "" : c.byLevel
