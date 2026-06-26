@@ -283,9 +283,10 @@
     tripRemainingToday: (p) => `Noch ${p.n} ${p.n === 1 ? "Karte" : "Karten"} heute`,
     tripRemainingDone: "Tagesziel erreicht ✓",
     tripStartDaily: "Tagesziel lernen",
-    // Startklar-Meilensteine (Schicht 4): Punkte im Prognose-Block + Feier-Headline.
+    // Startklar-Meilensteine (Schicht 4): aria-Label der Punkte-Gruppe im Prognose-Block.
+    // (Die Feier-Headline selbst stellt celebrate.js – wie das ganze Belohnungs-Modul –
+    // bewusst in eigener, nicht lokalisierter Reise-Copy dar.)
     tripMilestoneCap: "Startklar",
-    tripMilestone: (p) => `${p.pct} % startklar${p.dest ? " für " + p.dest : ""}! 🎒`,
     tripSwitchCap: "Reiseland schnell wechseln",
     // Zeitleiste mehrerer Reiseländer (Route): jeder Schnellwechsel hängt ein Land an.
     tripRouteCap: "Deine Route",
@@ -509,7 +510,6 @@
     tripRemainingDone: "Daily goal reached ✓",
     tripStartDaily: "Study daily goal",
     tripMilestoneCap: "Trip-ready",
-    tripMilestone: (p) => `${p.pct} % ready${p.dest ? " for " + p.dest : ""}! 🎒`,
     tripSwitchCap: "Quick-switch country",
     tripRouteCap: "Your route",
     tripSwitchHint: "Tap to add a country to your timeline — e.g. first El Salvador, then Colombia, then Peru.",

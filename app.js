@@ -543,7 +543,7 @@
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       celebrateSound: !!settings.celebrateSound, // Belohnungs-Sound an/aus (Default aus)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
-      trip: tripGoalVM(),       // Trip-Ziel-Karte (null = kein Ziel gesetzt)
+      trip: tripGoalVM(overall), // Trip-Ziel-Karte (null = kein Ziel gesetzt); overview wiederverwendet
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       tripRouteOpen: state.tripRouteOpen !== false, // Route-Zeitleiste auf-/eingeklappt
       tripSwitchOpen: !!state.tripSwitchOpen,        // Schnellwechsel-Chips auf-/eingeklappt
@@ -1328,7 +1328,9 @@
     return { name: c.brandName, partner: c.partner || null, logo: c.logo || null };
   }
 
-  function tripGoalVM() {
+  // overview = optional vorab berechneter stats.overview (homeVM hat ihn bereits) –
+  // spart die zweite O(n)-Berechnung pro Render; fehlt er, wird er hier nachgezogen.
+  function tripGoalVM(overview) {
     const t = gamestats.tripGoal;
     if (!t) return null;
     const today = dayKey(Date.now());
@@ -1350,7 +1352,7 @@
     const recentAvg = recentSum / 7;
     // Aktueller Mastery-Stand fürs Budget-Modell (gemeistert/total) – dieselbe Quelle
     // wie Dashboard & Profil (stats.overview), nur hier fürs Trip-Ziel wiederverwendet.
-    const ov = stats.overview(allCards(), progress);
+    const ov = overview || stats.overview(allCards(), progress);
     // Reise-Prognose: nur sinnvoll, solange die Abreise noch in der Zukunft liegt.
     const forecast = (daysLeft !== null && daysLeft > 0)
       ? stats.tripForecast({
@@ -1548,7 +1550,22 @@
     } else if (stayRaw >= 1) {
       goal.stayDays = Math.min(400, stayRaw);
     }
-    gamestats = Object.assign({}, gamestats, { tripGoal: goal });
+    // Startklar-Meilensteine vorwärtsgewandt und pro Reise halten: wird ein Ziel NEU
+    // angelegt (vorher keines), gelten bereits überschrittene Schwellen (25/50/75/100 %)
+    // sofort als „gesehen" – sonst würde die erste Runde rückwirkend z. B. „50 % startklar"
+    // feiern. Der Stand wird dabei FRISCH gesetzt (nicht mit dem einer früheren Reise
+    // vermischt), damit jede neue Reise ihre Meilensteine wieder erleben kann. Beim
+    // Bearbeiten eines bestehenden Ziels (cur) bleibt der bisherige Stand unangetastet.
+    const patch = { tripGoal: goal };
+    if (!cur) {
+      const ov = stats.overview(allCards(), progress);
+      const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
+      const stamp = Date.now();
+      const seeded = {};
+      [25, 50, 75, 100].forEach((m) => { if (pct >= m) seeded[m] = stamp; });
+      patch.tripMilestonesSeen = seeded;
+    }
+    gamestats = Object.assign({}, gamestats, patch);
     store.saveGameStats(gamestats);
     state.tripEdit = false;
     buzz(8);
@@ -1578,7 +1595,9 @@
   }
 
   function clearTripGoal() {
-    gamestats = Object.assign({}, gamestats, { tripGoal: null });
+    // Auch die Startklar-Meilensteine zurücksetzen – sie gehören zu DIESER Reise; eine
+    // später neu gesetzte Reise startet damit wieder bei null (kein Alt-Stand).
+    gamestats = Object.assign({}, gamestats, { tripGoal: null, tripMilestonesSeen: {} });
     store.saveGameStats(gamestats);
     setState({ tripEdit: false });
   }
