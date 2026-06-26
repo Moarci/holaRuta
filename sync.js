@@ -230,8 +230,7 @@
 
   // Ein vollständiger Sync: pull -> merge(local, remote) -> lokal anwenden -> push.
   // Gibt { ok, changedLocal, rev } zurück. store wird für Export/Import genutzt.
-  function syncNow() {
-    if (!enabled() || !loggedIn()) return Promise.reject(new Error("not ready"));
+  function runSync() {
     var store = SC.store;
     var local = store.exportData();
     return pull().then(function (r) {
@@ -254,6 +253,24 @@
         return { ok: !!pr.ok, changedLocal: changedLocal, rev: (pr.body && pr.body.rev) || baseRev, status: pr.status };
       });
     });
+  }
+
+  // Single-Flight: solange ein Sync läuft, denselben Promise zurückgeben, statt
+  // parallel einen zweiten Pull/Push loszutreten. So fluten schnell aufeinander
+  // folgende Auslöser (mehrere Bewertungen, App-Fokus, manueller Button) den
+  // Server NICHT mit gleichzeitigen Syncs und treiben sich nicht selbst in
+  // 409-Konflikte. Verlustfrei: nach Abschluss ist sofort wieder ein Sync möglich
+  // (kein Verschlucken). Echte Missbrauchsabwehr bleibt serverseitig
+  // (Rate-Limiting auf Auth/Sync, BACKEND.md §13).
+  var inFlight = null;
+  function syncNow() {
+    if (!enabled() || !loggedIn()) return Promise.reject(new Error("not ready"));
+    if (inFlight) return inFlight;
+    var p = runSync();
+    inFlight = p;
+    var clear = function () { if (inFlight === p) inFlight = null; };
+    p.then(clear, clear); // auf JEDEM Ausgang (Erfolg wie Fehler) wieder freigeben
+    return p;
   }
 
   SC.sync = {

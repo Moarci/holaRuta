@@ -344,6 +344,56 @@ test("syncNow: ohne Konflikt -> genau ein Push, rev/status aus der Antwort", asy
   assert.equal(imported.data[GS].reviews, 7, "gemergter Stand (max) lokal angewendet");
 });
 
+test("syncNow: Single-Flight – parallele Aufrufe teilen EINEN Sync (kein Doppel-Pull/-Push)", async () => {
+  const GS = GAMESTATS;
+  let pulls = 0, pushes = 0;
+  let a, b;
+  await withStubs(
+    {
+      loggedIn: () => true,
+      request: (_b, method) => {
+        if (method === "GET") {
+          pulls++;
+          // Pull bewusst verzögern, damit der zweite syncNow() WÄHREND des ersten kommt.
+          return new Promise((r) => setTimeout(() => r({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 1 } }), 5));
+        }
+        pushes++; return Promise.resolve({ ok: true, status: 200, body: { rev: 2 } });
+      },
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 1 } } }), importData: () => {} },
+    {},
+    async () => {
+      a = sync.syncNow();
+      b = sync.syncNow(); // während a noch im Pull hängt
+      assert.equal(a, b, "zweiter Aufruf liefert denselben in-flight Promise");
+      await Promise.all([a, b]);
+    },
+  );
+  assert.equal(pulls, 1, "nur EIN Pull trotz zwei syncNow-Aufrufen");
+  assert.equal(pushes, 1, "nur EIN Push");
+});
+
+test("syncNow: nach Abschluss ist wieder ein neuer Sync möglich (Single-Flight gibt frei)", async () => {
+  const GS = GAMESTATS;
+  let pulls = 0;
+  await withStubs(
+    {
+      loggedIn: () => true,
+      request: (_b, method) => {
+        if (method === "GET") { pulls++; return Promise.resolve({ ok: true, body: { payload: {}, rev: 1 } }); }
+        return Promise.resolve({ ok: true, status: 200, body: { rev: 2 } });
+      },
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 1 } } }), importData: () => {} },
+    {},
+    async () => {
+      await sync.syncNow();
+      await sync.syncNow(); // sequenziell: zweiter läuft, weil der erste fertig ist
+    },
+  );
+  assert.equal(pulls, 2, "zwei nacheinander awaitete Syncs laufen beide (kein Verschlucken)");
+});
+
 test("syncNow: 409-Konflikt -> mit fremdem Stand neu mergen und GENAU einmal erneut pushen", async () => {
   const GS = GAMESTATS;
   const pushes = [];
