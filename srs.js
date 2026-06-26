@@ -89,9 +89,12 @@
     };
   }
 
-  function isDue(state) {
+  // now ist optional (Default: Date.now()) – wie review() testbar und konsistent:
+  // beide Funktionen einer Bewertung können denselben Zeitpunkt teilen.
+  function isDue(state, now) {
     if (!state || !state.due) return true; // neu -> sofort fällig
-    return state.due <= Date.now();
+    const t = typeof now === "number" && isFinite(now) ? now : Date.now();
+    return state.due <= t;
   }
 
   window.SC = window.SC || {};

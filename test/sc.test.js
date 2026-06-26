@@ -152,6 +152,14 @@ test("srs.isDue: neu/0 → fällig, Vergangenheit → fällig, Zukunft → nicht
   assert.equal(srs.isDue({ due: Date.now() + 60 * 60 * 1000 }), false);
 });
 
+test("srs.isDue: optionaler now-Parameter steuert die Fälligkeit (wie review)", () => {
+  const T = 1700000000000;
+  assert.equal(srs.isDue({ due: T }, T), true);        // due == now -> fällig
+  assert.equal(srs.isDue({ due: T + 1 }, T), false);   // due in der Zukunft
+  assert.equal(srs.isDue({ due: T - 1 }, T), true);    // due in der Vergangenheit
+  assert.equal(srs.isDue({ due: T }, NaN), true);      // ungültiges now -> Date.now()-Fallback
+});
+
 test("srs.review: expliziter now-Zeitpunkt steuert die Fälligkeit exakt", () => {
   const T = 1700000000000; // fester Zeitpunkt
   const r = srs.review(srs.freshState(), srs.RATING.GOOD, T);
