@@ -1150,7 +1150,7 @@
       const ov = stats.overview(allCards(), progress);
       const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
       const seen = Object.assign({}, gamestats.tripMilestonesSeen || {});
-      const fresh = [25, 50, 75, 100].filter((m) => pct >= m && !seen[m]);
+      const fresh = stats.freshTripMilestones(pct, seen);
       if (fresh.length) {
         const stamp = Date.now();
         fresh.forEach((m) => { seen[m] = stamp; });
@@ -1562,7 +1562,7 @@
       const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
       const stamp = Date.now();
       const seeded = {};
-      [25, 50, 75, 100].forEach((m) => { if (pct >= m) seeded[m] = stamp; });
+      stats.reachedTripMilestones(pct).forEach((m) => { seeded[m] = stamp; });
       patch.tripMilestonesSeen = seeded;
     }
     gamestats = Object.assign({}, gamestats, patch);

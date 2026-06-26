@@ -367,7 +367,7 @@
       ? esc(t("home.tripRemainingDone"))
       : esc(t("home.tripRemainingToday", { n: trip.remainingToday }));
     return `
-      <button class="trip-daily ${done ? "is-done" : ""}" data-action="study-trip-daily"${done ? " disabled aria-disabled=\"true\"" : ""}>
+      <button class="trip-daily ${done ? "is-done" : ""}"${done ? " disabled aria-disabled=\"true\"" : ` data-action="study-trip-daily"`}>
         ${done ? renderIcon("lc:check-circle") : renderIcon("lc:play")}
         <span class="trip-daily__label">${label}</span>
         ${done ? "" : `<span class="trip-daily__go">${esc(t("home.tripStartDaily"))}</span>`}

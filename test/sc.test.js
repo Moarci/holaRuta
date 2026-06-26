@@ -349,6 +349,31 @@ test("stats.tripForecast: riesiges Tagesziel bleibt bei total/100 % gedeckelt & 
   assert.ok(Number.isFinite(f.pace.recommendedPerDay));
 });
 
+test("stats.reachedTripMilestones: Schwellen je Mastery-Stand (mit Coercion & Robustheit)", () => {
+  assert.deepEqual(stats.reachedTripMilestones(0), []);
+  assert.deepEqual(stats.reachedTripMilestones(24), []);
+  assert.deepEqual(stats.reachedTripMilestones(25), [25]);   // exakt auf der Schwelle
+  assert.deepEqual(stats.reachedTripMilestones(60), [25, 50]);
+  assert.deepEqual(stats.reachedTripMilestones(100), [25, 50, 75, 100]);
+  assert.deepEqual(stats.reachedTripMilestones("70"), [25, 50]); // String wird zu Zahl
+  assert.deepEqual(stats.reachedTripMilestones(NaN), []);         // unbrauchbar -> leer
+  assert.deepEqual(stats.reachedTripMilestones(undefined), []);
+});
+
+test("stats.freshTripMilestones: nur noch nicht 'gesehene' Schwellen feiern", () => {
+  // seen-Keys sind nach JSON Strings – der numerische Zugriff muss trotzdem greifen.
+  assert.deepEqual(stats.freshTripMilestones(60, {}), [25, 50]);
+  assert.deepEqual(stats.freshTripMilestones(60, { 25: 1 }), [50]);
+  assert.deepEqual(stats.freshTripMilestones(60, { "25": 1, "50": 1 }), []);
+  assert.deepEqual(stats.freshTripMilestones(100, {}), [25, 50, 75, 100]);
+  assert.deepEqual(stats.freshTripMilestones(40, null), [25]); // seen fehlt -> wie leer
+  // Seeding-Szenario: wer schon bei 60 % ein Ziel anlegt, hat 25/50 sofort 'gesehen'
+  // -> die nächste Runde feiert KEINE rückwirkende Schwelle.
+  const seeded = {};
+  stats.reachedTripMilestones(60).forEach((m) => { seeded[m] = 123; });
+  assert.deepEqual(stats.freshTripMilestones(60, seeded), []);
+});
+
 test("stats.levelDistribution: zählt CEFR-Stufen, Nivel-Test schlägt Quick-Check", () => {
   const students = [
     { assessment: { level: "B1" }, placement: { level: "A2" } }, // Nivel-Test hat Vorrang -> B1

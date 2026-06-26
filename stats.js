@@ -204,6 +204,22 @@
     };
   }
 
+  // Reise-„Startklar"-Meilensteine: Mastery-Schwellen (% gemeistert) bis zur Abreise.
+  const TRIP_MILESTONES = [25, 50, 75, 100];
+  // Welche Schwellen sind bei einem Mastery-Stand pct (%) erreicht? REIN.
+  function reachedTripMilestones(pct) {
+    const p = Number(pct);
+    if (!isFinite(p)) return [];
+    return TRIP_MILESTONES.filter((m) => p >= m);
+  }
+  // Davon die noch nicht „gesehenen" (seen = Map Schwelle->Zeitstempel) – also die,
+  // die gerade frisch zum Feiern anstehen. REIN. (seen-Keys sind nach JSON Strings;
+  // der Zugriff seen[m] mit numerischem m greift dank Coercion trotzdem.)
+  function freshTripMilestones(pct, seen) {
+    const s = seen || {};
+    return reachedTripMilestones(pct).filter((m) => !s[m]);
+  }
+
   // Kanonische CEFR-Reihenfolge der angezeigten Niveaus (Quick-Check kennt "B1-"
   // als „nahe B1", der ausführliche Nivel-Test die echten B1/B2/C1). Unbekannte
   // Strings landen – alphabetisch – hinter den bekannten.
@@ -314,7 +330,8 @@
   window.SC = window.SC || {};
   window.SC.stats = {
     record, statusOf, cardSummary, overview, tripForecast,
+    reachedTripMilestones, freshTripMilestones,
     levelDistribution, studentLevel, levelRank, sortRoster, upsertStudent, rosterCSV,
-    CEFR_ORDER, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS, REVIEWS_PER_CARD,
+    CEFR_ORDER, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS, REVIEWS_PER_CARD, TRIP_MILESTONES,
   };
 })();
