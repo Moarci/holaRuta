@@ -360,8 +360,10 @@
   // Tagesziel-Knopf (Schicht 3): startet eine Lernrunde mit genau dem heute noch
   // offenen Pensum (remainingToday) – steht als eigener Button NEBEN der Karte
   // (die Karte ist selbst ein <button>). Bei erfülltem Tagesziel als „erledigt".
+  // Bleibt AUCH während der Reise sichtbar (man lernt unterwegs weiter); nur die
+  // Reise-Prognose oben blendet ab der Abreise aus (forecast === null).
   function tripDailyCta(trip) {
-    if (!trip || trip.past) return ""; // nach der Abreise kein Tagesziel mehr
+    if (!trip) return "";
     const done = trip.remainingToday <= 0;
     const label = done
       ? esc(t("home.tripRemainingDone"))
