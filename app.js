@@ -3045,7 +3045,15 @@
       else if (skipped) showNotice(t("teacher.someSkipped", { n: skipped }));
       render();
     };
+    // Ein echtes HolaRuta-Backup ist klein (Fortschritt + Spielstand, meist < 1 MB).
+    // Absurd große Dateien (versehentliche Fehlauswahl, kein Backup) gar nicht erst
+    // in den Speicher lesen – ein FileReader auf eine riesige Datei kann den Tab
+    // zum Absturz bringen. Wird wie ein nicht lesbares Backup als „übersprungen" gezählt.
+    const MAX_BACKUP_BYTES = 8 * 1024 * 1024; // 8 MB
     list.forEach((file) => {
+      if (file && typeof file.size === "number" && file.size > MAX_BACKUP_BYTES) {
+        skipped++; finalize(); return;
+      }
       const reader = new FileReader();
       reader.onload = () => {
         let payload = null;
