@@ -111,6 +111,28 @@ export const IGNORE = [
   { file: "store.js", line: 497, op: "relational", grund:
     "sanitizeAssessmentHistory: `for (… i < v.length …)` vs `<=`. Die Extra-Iteration ruft sanitizeAssessmentEntry(v[v.length]=undefined) " +
     "auf, das mit `if (!isPlainObject(e)) return null;` null liefert; `if (e) out.push(e)` überspringt es → identisches Ergebnis → äquivalent." },
+  // srs.js (nach dem isDue-now-Parameter resampelt – nachweislich äquivalent)
+  { file: "srs.js", line: 77, op: "relational", grund:
+    "review: `if (due > t)` vs `>=` (Early-Review-Dämpfung). Nur die exakte Gleichheit due===t unterscheidet die Operatoren; " +
+    "dort ist elapsedDays = interval - (due-t)/DAY = interval, also base = max(1, min(base, interval)) = interval — identisch " +
+    "zum ungedämpften Pfad (base = interval||1). Für jeden erreichbaren Wert dasselbe nextInterval → äquivalent." },
+  { file: "srs.js", line: 81, op: "number", grund:
+    "review: `Math.max(1, Math.round(base * ease))` (1→0). base ist stets ≥1 (interval||1 bzw. max(1,…)) und ease∈[1.3,3.0], " +
+    "also round(base*ease) ≥ round(1.3) = 1. Für jeden erreichbaren Wert ist max(1,x)==max(0,x) → äquivalent." },
+  // net.js (Härtung Timeout/Retry resampelt – reine Wartedauer ohne beobachtbaren Effekt)
+  { file: "net.js", line: 76, op: "number", grund:
+    "request: `backoff = (typeof opts.backoff === 'number') ? opts.backoff : 400` (Default 400→0). Der Default-Backoff " +
+    "beeinflusst NUR die Wartedauer zwischen Wiederholungen, nicht deren Ergebnis; alle Tests übergeben backoff explizit. " +
+    "Kein nicht-zeitbasierter Test kann 400 vs 0 unterscheiden → beobachtbar äquivalent." },
+  // request: `delay(backoff * Math.pow(2, attempt - 1))` (Zeilen 81 + 85, Status- und
+  // Netzfehler-Retry). JEDE Operator-/Zahl-Mutation hier (Math.pow-Basis 2→0, *→+, attempt-1
+  // → +1/-0) ändert ausschließlich die WARTEDAUER zwischen Wiederholungen, nie ob/wie oft
+  // wiederholt wird (das verriegeln die Retry-Count-Tests). Ohne flakige Zeitmessung nicht
+  // unterscheidbar → beobachtbar äquivalent.
+  { file: "net.js", line: 81, op: "number", grund: "Backoff-Wartedauer (Math.pow-Basis), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
+  { file: "net.js", line: 81, op: "arithmetic", grund: "Backoff-Wartedauer (Exponent attempt-1), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
+  { file: "net.js", line: 85, op: "number", grund: "Backoff-Wartedauer im Netzfehler-Retry (Math.pow-Basis/Exponent), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
+  { file: "net.js", line: 85, op: "arithmetic", grund: "Backoff-Wartedauer im Netzfehler-Retry (* und Exponent), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
 ];
 
 export const isIgnored = (file, line, op) =>

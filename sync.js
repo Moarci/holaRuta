@@ -191,8 +191,24 @@
   function enabled() { return !!(cfg() && cfg().enabled && cfg().apiBase && typeof fetch === "function"); }
   function apiBase() { return (cfg() && cfg().apiBase || "").replace(/\/+$/, ""); }
 
+  // Server erzwingt eine Obergrenze pro Sync-Payload (BACKEND.md §13: 256 KB).
+  // Clientseitig vorab prüfen -> klare, frühe Fehlermeldung statt überraschendem
+  // 413 nach dem Hochladen. UTF-8-Bytes (nicht Zeichen) zählen, da Akzente/Emojis
+  // im Content mehr als ein Byte belegen.
+  var MAX_PAYLOAD_BYTES = 256 * 1024;
+  function byteLength(s) {
+    if (typeof TextEncoder !== "undefined") { try { return new TextEncoder().encode(s).length; } catch (e) { /* Fallback */ } }
+    return s.length; // konservativer Fallback (zählt Zeichen)
+  }
+  function payloadTooLarge(payload) {
+    try { return byteLength(JSON.stringify(payload)) > MAX_PAYLOAD_BYTES; } catch (e) { return false; }
+  }
+
   function loggedIn() { return SC.net.loggedIn(); }
-  function req(method, path, body) { return SC.net.request(apiBase(), method, path, body); }
+  function req(method, path, body, opts) { return SC.net.request(apiBase(), method, path, body, opts); }
+  // Sync-Aufrufe sind idempotent (GET) bzw. über baseRev/409 konfliktgesichert
+  // (PUT), darum bei transienten Fehlern automatisch erneut versuchen.
+  var RETRY = { retries: 2 };
 
   // Passwortloser Login (BACKEND.md §7), geteilt über SC.net. Ohne aktive
   // Sync-Config bleibt der Pfad gesperrt (graceful).
@@ -206,13 +222,15 @@
   }
   function logout() { SC.net.logout(); }
 
-  function pull() { return req("GET", "/v1/sync"); }
-  function push(payload, baseRev) { return req("PUT", "/v1/sync", { baseRev: baseRev || 0, payload: payload }); }
+  function pull() { return req("GET", "/v1/sync", null, RETRY); }
+  function push(payload, baseRev) {
+    if (payloadTooLarge(payload)) return Promise.reject(new Error("payload too large"));
+    return req("PUT", "/v1/sync", { baseRev: baseRev || 0, payload: payload }, RETRY);
+  }
 
   // Ein vollständiger Sync: pull -> merge(local, remote) -> lokal anwenden -> push.
   // Gibt { ok, changedLocal, rev } zurück. store wird für Export/Import genutzt.
-  function syncNow() {
-    if (!enabled() || !loggedIn()) return Promise.reject(new Error("not ready"));
+  function runSync() {
     var store = SC.store;
     var local = store.exportData();
     return pull().then(function (r) {
@@ -235,6 +253,24 @@
         return { ok: !!pr.ok, changedLocal: changedLocal, rev: (pr.body && pr.body.rev) || baseRev, status: pr.status };
       });
     });
+  }
+
+  // Single-Flight: solange ein Sync läuft, denselben Promise zurückgeben, statt
+  // parallel einen zweiten Pull/Push loszutreten. So fluten schnell aufeinander
+  // folgende Auslöser (mehrere Bewertungen, App-Fokus, manueller Button) den
+  // Server NICHT mit gleichzeitigen Syncs und treiben sich nicht selbst in
+  // 409-Konflikte. Verlustfrei: nach Abschluss ist sofort wieder ein Sync möglich
+  // (kein Verschlucken). Echte Missbrauchsabwehr bleibt serverseitig
+  // (Rate-Limiting auf Auth/Sync, BACKEND.md §13).
+  var inFlight = null;
+  function syncNow() {
+    if (!enabled() || !loggedIn()) return Promise.reject(new Error("not ready"));
+    if (inFlight) return inFlight;
+    var p = runSync();
+    inFlight = p;
+    var clear = function () { if (inFlight === p) inFlight = null; };
+    p.then(clear, clear); // auf JEDEM Ausgang (Erfolg wie Fehler) wieder freigeben
+    return p;
   }
 
   SC.sync = {

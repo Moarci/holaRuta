@@ -271,6 +271,63 @@ test("mergeGamestats: überlappendes boolesches Top-Level-Flag -> ODER", () => {
   assert.equal(sync.mergeGamestats({ earlyBird: false }, { earlyBird: false }).earlyBird, false);
 });
 
+test("mergeProgress: ungültiges Zahlenfeld fällt auf 0 (nicht 1) – num()-Default", () => {
+  // reps 0 (kein 1e15-Term, der den Bruch verschlucken würde); due einmal ungültig
+  // (undefined -> num()=0) vs 0.5 -> der finite due gewinnt. Mit kaputtem Default 1
+  // wäre num(undefined)=1 > 0.5 und a (due undefined) gewänne fälschlich.
+  const a = { c1: { reps: 0, due: undefined } }; // score 0 + num(undefined)
+  const b = { c1: { reps: 0, due: 0.5 } };        // score 0 + 0.5
+  assert.equal(sync.mergeProgress(a, b).c1.due, 0.5, "num(undefined)=0 < 0.5 -> b gewinnt");
+});
+
+test("mergeGamestats: assessmentProgress ohne savedAt zählt als 0 (nicht 1) – beide Richtungen", () => {
+  // b ohne savedAt -> qb=0; a mit 0.5 behält (qb 0 > qa 0.5 ist falsch).
+  const a = { assessmentProgress: { savedAt: 0.5, id: "a" } };
+  const b = { assessmentProgress: { id: "b" } };
+  assert.equal(sync.mergeGamestats(a, b).assessmentProgress.id, "a", "fehlendes savedAt rechts -> 0");
+  // a ohne savedAt -> qa=0; b mit 0.5 gewinnt.
+  const a2 = { assessmentProgress: { id: "a" } };
+  const b2 = { assessmentProgress: { savedAt: 0.5, id: "b" } };
+  assert.equal(sync.mergeGamestats(a2, b2).assessmentProgress.id, "b", "fehlendes savedAt links -> 0");
+});
+
+test("mergeGamestats: String vs Nicht-String -> lokaler Wert bleibt (Typwächter ist UND, nicht ODER)", () => {
+  // va String, vb Zahl: kein Typ-Zweig trifft -> finaler else behält va. Mit kaputtem
+  // ODER würde fälschlich `va >= vb ? va : vb` (String vs Zahl) ausgewertet -> 5.
+  assert.equal(sync.mergeGamestats({ foo: "x" }, { foo: 5 }).foo, "x");
+});
+
+test("mergeUsercards: gleiche Id, gleich lange Inhalte -> erste Variante bleibt (strikt >)", () => {
+  // {id:"x",v:1} und {id:"x",v:2} haben dieselbe JSON-Länge: bei `>` bleibt die zuerst
+  // gesehene, bei kaputtem `>=` würde die zweite sie überschreiben.
+  assert.equal(sync.mergeUsercards([{ id: "x", v: 1 }], [{ id: "x", v: 2 }])[0].v, 1);
+});
+
+test("merge: format-Vorrang l über r, Default 1 wenn beide fehlen", () => {
+  assert.equal(sync.merge({ format: 2, data: {} }, { format: 3, data: {} }).format, 2, "l.format gewinnt (erstes ||)");
+  assert.equal(sync.merge({ data: {} }, { data: {} }).format, 1, "beide fehlen -> Default 1 (zweites ||)");
+});
+
+test("syncNow: fehlgeschlagener Pull (ok:false) mit payload wird NICHT übernommen", async () => {
+  const GS = GAMESTATS;
+  let pushed = null;
+  await withStubs(
+    {
+      loggedIn: () => true,
+      request: (_b, method, _p, body) => {
+        // Pull schlägt fehl, trägt aber ein payload: das darf NICHT als remote gelten.
+        if (method === "GET") return Promise.resolve({ ok: false, status: 500, body: { payload: { [GS]: { reviews: 99 } }, rev: 5 } });
+        pushed = body; return Promise.resolve({ ok: true, status: 200, body: { rev: 1 } });
+      },
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {},
+    () => sync.syncNow(),
+  );
+  assert.equal(pushed.payload[GS].reviews, 5, "ok:false -> remote ignoriert, nur lokaler Stand (5) gepusht");
+  assert.equal(pushed.baseRev, 0, "ok:false -> baseRev fällt auf 0 zurück");
+});
+
 // ---- dünner fetch-Adapter (push / syncNow): SC.net & SC.store gestubbt ----
 function withStubs(net, store, cfg, fn) {
   const orig = { net: window.SC.net, store: window.SC.store, config: window.SC.config };
@@ -294,6 +351,42 @@ test("push: baseRev wird durchgereicht (Default 0, nicht verschluckt)", async ()
   assert.equal(bodies[0].baseRev, 5, "expliziter baseRev bleibt erhalten");
   assert.equal(bodies[1].baseRev, 0, "fehlender/0 baseRev -> 0");
   assert.equal(bodies[0].payload.foo, 1);
+});
+
+test("push: lehnt zu große Payloads vorab ab (BACKEND.md §13, 256 KB) – kein Request", async () => {
+  let called = false;
+  const big = { blob: "x".repeat(300 * 1024) }; // > 256 KB als JSON
+  await withStubs(
+    { request: () => { called = true; return Promise.resolve({ ok: true, body: {} }); } },
+    {}, {},
+    async () => { await assert.rejects(() => sync.push(big, 0), /payload too large/); },
+  );
+  assert.equal(called, false, "übergroßer Push erreicht das Netzwerk gar nicht");
+});
+
+test("push: normal große Payload geht durch (deutlich unter dem 256-KB-Limit)", async () => {
+  let called = false;
+  // ~5 KB: liegt unter dem echten Limit (256*1024), aber ÜBER einer kaputten
+  // 256+1024-Grenze -> verriegelt, dass das Limit wirklich 256*1024 Bytes ist.
+  const ok = { blob: "x".repeat(5 * 1024) };
+  await withStubs(
+    { request: () => { called = true; return Promise.resolve({ ok: true, body: { rev: 1 } }); } },
+    {}, {},
+    async () => { const r = await sync.push(ok, 0); assert.equal(r.ok, true); },
+  );
+  assert.equal(called, true, "normale Payload wird gesendet");
+});
+
+test("push: Payload exakt am Limit (256 KB) wird noch akzeptiert (Grenze ist exklusiv: >)", async () => {
+  let called = false;
+  // JSON {"blob":"x…x"} = N + 11 Bytes (ASCII). N so, dass es GENAU 256*1024 Bytes sind.
+  const exact = { blob: "x".repeat(256 * 1024 - 11) };
+  await withStubs(
+    { request: () => { called = true; return Promise.resolve({ ok: true, body: { rev: 1 } }); } },
+    {}, {},
+    async () => { await sync.push(exact, 0); },
+  );
+  assert.equal(called, true, "genau am Limit -> akzeptiert (>, nicht >=)");
 });
 
 test("syncNow: ohne Konflikt -> genau ein Push, rev/status aus der Antwort", async () => {
@@ -320,6 +413,56 @@ test("syncNow: ohne Konflikt -> genau ein Push, rev/status aus der Antwort", asy
   assert.equal(res.rev, 8, "rev kommt aus pr.body.rev (kein Objekt/Fallback)");
   assert.equal(res.status, 200);
   assert.equal(imported.data[GS].reviews, 7, "gemergter Stand (max) lokal angewendet");
+});
+
+test("syncNow: Single-Flight – parallele Aufrufe teilen EINEN Sync (kein Doppel-Pull/-Push)", async () => {
+  const GS = GAMESTATS;
+  let pulls = 0, pushes = 0;
+  let a, b;
+  await withStubs(
+    {
+      loggedIn: () => true,
+      request: (_b, method) => {
+        if (method === "GET") {
+          pulls++;
+          // Pull bewusst verzögern, damit der zweite syncNow() WÄHREND des ersten kommt.
+          return new Promise((r) => setTimeout(() => r({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 1 } }), 5));
+        }
+        pushes++; return Promise.resolve({ ok: true, status: 200, body: { rev: 2 } });
+      },
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 1 } } }), importData: () => {} },
+    {},
+    async () => {
+      a = sync.syncNow();
+      b = sync.syncNow(); // während a noch im Pull hängt
+      assert.equal(a, b, "zweiter Aufruf liefert denselben in-flight Promise");
+      await Promise.all([a, b]);
+    },
+  );
+  assert.equal(pulls, 1, "nur EIN Pull trotz zwei syncNow-Aufrufen");
+  assert.equal(pushes, 1, "nur EIN Push");
+});
+
+test("syncNow: nach Abschluss ist wieder ein neuer Sync möglich (Single-Flight gibt frei)", async () => {
+  const GS = GAMESTATS;
+  let pulls = 0;
+  await withStubs(
+    {
+      loggedIn: () => true,
+      request: (_b, method) => {
+        if (method === "GET") { pulls++; return Promise.resolve({ ok: true, body: { payload: {}, rev: 1 } }); }
+        return Promise.resolve({ ok: true, status: 200, body: { rev: 2 } });
+      },
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 1 } } }), importData: () => {} },
+    {},
+    async () => {
+      await sync.syncNow();
+      await sync.syncNow(); // sequenziell: zweiter läuft, weil der erste fertig ist
+    },
+  );
+  assert.equal(pulls, 2, "zwei nacheinander awaitete Syncs laufen beide (kein Verschlucken)");
 });
 
 test("syncNow: 409-Konflikt -> mit fremdem Stand neu mergen und GENAU einmal erneut pushen", async () => {

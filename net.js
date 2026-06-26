@@ -26,22 +26,67 @@
   function loggedIn() { return !!getToken(); }
   function logout() { setToken(null); }
 
-  // base = bereits normalisierte API-Adresse (ohne Slash am Ende). Hängt den
-  // Bearer-Token an (falls vorhanden) und parst die JSON-Antwort tolerant.
-  function request(base, method, path, body) {
+  // Standard-Timeout pro Versuch (ms). Verhindert, dass ein hängender fetch die
+  // UI bis zum Browser-Default (~90 s) blockiert. Pro Aufruf via opts.timeout
+  // überschreibbar; opts.timeout <= 0 schaltet ihn ab.
+  var DEFAULT_TIMEOUT_MS = 12000;
+
+  // HTTP-Status, die ein transienter Server-/Rate-Limit-Fehler sein können und
+  // sich für einen erneuten Versuch eignen – aber NUR, wenn der Aufrufer ein
+  // Retry-Budget (opts.retries) mitgibt. Dauerhafte 4xx (401, 404 …) niemals.
+  var TRANSIENT_STATUS = { 408: 1, 425: 1, 429: 1, 500: 1, 502: 1, 503: 1, 504: 1 };
+
+  function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+
+  // Ein einzelner fetch-Versuch mit Timeout (AbortController, falls verfügbar).
+  // Der Timer wird auf JEDEM Ausgang (Erfolg wie Fehler) wieder gelöscht, damit
+  // er den Event-Loop nicht offen hält.
+  function attemptFetch(base, method, path, body, timeout) {
     var headers = { "Content-Type": "application/json" };
     var tok = getToken();
     if (tok) headers.Authorization = "Bearer " + tok;
+    var ctrl = (typeof AbortController !== "undefined" && timeout > 0) ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeout) : null;
+    function clear() { if (timer) { clearTimeout(timer); timer = null; } }
     return fetch(base + path, {
       method: method,
       headers: headers,
       body: body ? JSON.stringify(body) : undefined,
+      signal: ctrl ? ctrl.signal : undefined,
     }).then(function (res) {
       return res.text().then(function (txt) {
+        clear();
         var json = null; try { json = txt ? JSON.parse(txt) : null; } catch (e) { json = null; }
         return { ok: res.ok, status: res.status, body: json };
       });
-    });
+    }, function (err) { clear(); throw err; });
+  }
+
+  // base = bereits normalisierte API-Adresse (ohne Slash am Ende). Hängt den
+  // Bearer-Token an (falls vorhanden) und parst die JSON-Antwort tolerant.
+  // opts (optional): { timeout, retries, backoff }. Ohne opts genau EIN Versuch
+  // mit DEFAULT_TIMEOUT_MS – das bisherige Verhalten bleibt damit unverändert.
+  // Mit opts.retries > 0 wird bei transientem Status oder Netzwerkfehler/Timeout
+  // mit exponentiellem Backoff erneut versucht (für idempotente/rev-gesicherte
+  // Aufrufe wie GET /sync und PUT /sync, siehe sync.js).
+  function request(base, method, path, body, opts) {
+    opts = opts || {};
+    var timeout = (typeof opts.timeout === "number") ? opts.timeout : DEFAULT_TIMEOUT_MS;
+    var retries = (opts.retries > 0) ? opts.retries : 0;
+    var backoff = (typeof opts.backoff === "number") ? opts.backoff : 400;
+    var attempt = 0;
+    function run() {
+      return attemptFetch(base, method, path, body, timeout).then(function (r) {
+        if (attempt < retries && TRANSIENT_STATUS[r.status]) {
+          attempt++; return delay(backoff * Math.pow(2, attempt - 1)).then(run);
+        }
+        return r;
+      }, function (err) {
+        if (attempt < retries) { attempt++; return delay(backoff * Math.pow(2, attempt - 1)).then(run); }
+        throw err;
+      });
+    }
+    return run();
   }
 
   // Passwortloser Login (BACKEND.md §7): start -> (E-Mail/OTP) -> confirm.

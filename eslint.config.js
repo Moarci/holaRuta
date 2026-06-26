@@ -22,6 +22,7 @@ const browserGlobals = {
   localStorage: "readonly",
   sessionStorage: "readonly",
   fetch: "readonly",
+  AbortController: "readonly",
   Headers: "readonly",
   Request: "readonly",
   Response: "readonly",
