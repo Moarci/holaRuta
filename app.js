@@ -5572,13 +5572,15 @@
   // unkategorisierten Einträgen (2) – die wandern also bewusst ans Ende.
   function favGroupOf(f, card) {
     const cat = categoryById(card ? card.cat : f.cat);
-    if (cat) return { key: "cat:" + cat.id, label: natk(cat, "label"), icon: cat.icon, order: 0 };
+    // lc = Icon-Token fürs Gruppen-Chrome (wie die Favoriten-Zeilen). Fehlt eins
+    // (z. B. die 9 Länder ohne catIcon), fällt die UI auf das Inhalts-Emoji zurück.
+    if (cat) return { key: "cat:" + cat.id, label: natk(cat, "label"), icon: cat.icon, lc: catLcFor(cat.id), order: 0 };
     if (!card && /^fav-/.test(String(f.id))) {
-      return { key: "__custom", label: t("favorites.customGroup"), icon: "✏️", order: 2 };
+      return { key: "__custom", label: t("favorites.customGroup"), icon: "✏️", lc: "lc:square-pen", order: 2 };
     }
     const mod = MODULE_SHARE[f.cat];
-    if (mod) return { key: "mod:" + f.cat, label: mod.title, icon: mod.icon, order: 0 };
-    return { key: "__other", label: t("favorites.otherGroup"), icon: "⭐", order: 1 };
+    if (mod) return { key: "mod:" + f.cat, label: mod.title, icon: mod.icon, lc: mod.lc || "", order: 0 };
+    return { key: "__other", label: t("favorites.otherGroup"), icon: "⭐", lc: "lc:star", order: 1 };
   }
 
   function favoritesVM() {
@@ -5596,10 +5598,12 @@
         tip: card ? (card.tip || "") : (f.tip || ""),
         catId: card ? (card.cat || "") : (f.cat || ""),
         catIcon: g.icon,
-        catLc: catLcFor(card ? (card.cat || "") : (f.cat || "")),
+        // Zeilen-Icon = dasselbe Token wie die Gruppe (Kategorie/Modul/eigene),
+        // damit Modul-Sätze nicht doch wieder auf ihr Emoji zurückfallen.
+        catLc: g.lc,
         custom: own,
         editing: editId === f.id,
-        gkey: g.key, glabel: g.label, gicon: g.icon, gorder: g.order,
+        gkey: g.key, glabel: g.label, gicon: g.icon, glc: g.lc, gorder: g.order,
       };
     });
     // Live-Filter: nach es/de/Aussprache-Tipp (sprach- und akzentunabhängig genug
@@ -5616,7 +5620,7 @@
     items.forEach((it) => {
       let grp = byKey.get(it.gkey);
       if (!grp) {
-        grp = { key: it.gkey, label: it.glabel, icon: it.gicon, order: it.gorder, seq: seq.length, items: [] };
+        grp = { key: it.gkey, label: it.glabel, icon: it.gicon, lc: it.glc, order: it.gorder, seq: seq.length, items: [] };
         byKey.set(it.gkey, grp);
         seq.push(grp);
       }
@@ -5625,7 +5629,7 @@
     const groups = seq.slice().sort((a, b) => (a.order - b.order) || (a.seq - b.seq));
     const shown = state.favShow ? all.find((it) => it.id === state.favShow) : null;
     // Die Großanzeige zeigt zusätzlich die Herkunft (Modul/Kategorie).
-    const srcOf = (it) => (it ? { icon: it.gicon, label: it.glabel } : null);
+    const srcOf = (it) => (it ? { icon: it.gicon, lc: it.glc, label: it.glabel } : null);
     return {
       groups,
       count: favorites.length,   // Gesamtzahl (für die Überschrift, auch beim Filtern)
@@ -6635,35 +6639,37 @@
   // jeweilige Entdecken-Kachel (siehe FEATURES in ui.js); der Intro-Einzeiler
   // kommt aus dem Kachel-Untertitel (discover.sub…), damit DE/EN gepflegt sind.
   // Historia hat ein eigenes Motiv (shareHistModule) und ist hier nicht gelistet.
+  // icon = Inhalts-Emoji fürs Sharepic (auf Canvas gemalt); lc = "lc:"-Token fürs
+  // UI-Chrome (Mi-léxico-Gruppen), gespiegelt aus den FEATURES-Kacheln in ui.js.
   const MODULE_SHARE = {
-    "ruta-check":  { icon: "🎯", title: "HolaRuta-Check",      sub: "discover.subPlacement",     accent: ["#2E6E86", "#C2502E"] },
-    "nivel-test":  { icon: "📋", title: "HolaRuta Nivel-Test", sub: "discover.subAssessment",    accent: ["#3F5BA8", "#2E6E86"] },
-    supervivencia: { icon: "🆘", title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
-    hostel:        { icon: "🛏️", title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
-    definiciones:  { icon: "🧩", title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
-    frases:        { icon: "🧱", title: "Frases flexibles",     sub: "discover.subFrases",        accent: ["#7048E8", "#5A3FB8"] },
-    dialogos:      { icon: "💬", title: "Diálogos",             sub: "discover.subDialogos",      accent: ["#9B5A8C", "#5A4FA8"] },
-    regatear:      { icon: "🤝", title: "Regatear",             sub: "discover.subRegatear",      accent: ["#B97C24", "#3F7355"] },
-    precios:       { icon: "💵", title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
-    cuerpo:        { icon: "🧍", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
-    compras:       { icon: "🛒", title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
-    yesto:         { icon: "👀", title: "¿Y esto?",              sub: "discover.subYesto",         accent: ["#C2502E", "#E9A23B"] },
-    conjugacion:   { icon: "🔁", title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
-    tiempos:       { icon: "⏳", title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
-    paises:        { icon: "🌎", title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
-    knigge:        { icon: "🧭", title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
-    logistica:     { icon: "🧳", title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
-    salud:         { icon: "🥗", title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
-    jerga:         { icon: "🗣️", title: "Jerga colombiana",     sub: "discover.subJerga",         accent: ["#C25A45", "#B97C24"] },
-    derechos:      { icon: "⚖️", title: "Conoce tus derechos",  sub: "discover.subDerechos",      accent: ["#3F5BA8", "#5A4FA8"] },
-    responsable:   { icon: "🌱", title: "Viaja responsable",    sub: "discover.subResponsable",   accent: ["#3F7355", "#5E7D3A"] },
-    fotos:         { icon: "📸", title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
-    flirt:         { icon: "💘", title: "Coqueteo y romance",   sub: "discover.subFlirt",         accent: ["#D24A77", "#B05AA8"] },
-    bailar:        { icon: "💃", title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
-    musica:        { icon: "🎵", title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
-    cafe:          { icon: "☕", title: "Café de la región",    sub: "discover.subCafe",          accent: ["#6F4A2E", "#B97C24"] },
-    juegos:        { icon: "🎲", title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
-    banderas:      { icon: "🚩", title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
+    "ruta-check":  { icon: "🎯", lc: "lc:target",          title: "HolaRuta-Check",      sub: "discover.subPlacement",     accent: ["#2E6E86", "#C2502E"] },
+    "nivel-test":  { icon: "📋", lc: "lc:clipboard-list",  title: "HolaRuta Nivel-Test", sub: "discover.subAssessment",    accent: ["#3F5BA8", "#2E6E86"] },
+    supervivencia: { icon: "🆘", lc: "lc:life-buoy",       title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
+    hostel:        { icon: "🛏️", lc: "lc:bed",             title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
+    definiciones:  { icon: "🧩", lc: "lc:puzzle",          title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
+    frases:        { icon: "🧱", lc: "lc:blocks",          title: "Frases flexibles",     sub: "discover.subFrases",        accent: ["#7048E8", "#5A3FB8"] },
+    dialogos:      { icon: "💬", lc: "lc:message-circle",  title: "Diálogos",             sub: "discover.subDialogos",      accent: ["#9B5A8C", "#5A4FA8"] },
+    regatear:      { icon: "🤝", lc: "lc:handshake",       title: "Regatear",             sub: "discover.subRegatear",      accent: ["#B97C24", "#3F7355"] },
+    precios:       { icon: "💵", lc: "lc:banknote",        title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
+    cuerpo:        { icon: "🧍", lc: "lc:person-standing", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
+    compras:       { icon: "🛒", lc: "lc:shopping-cart",   title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
+    yesto:         { icon: "👀", lc: "lc:eye",             title: "¿Y esto?",              sub: "discover.subYesto",         accent: ["#C2502E", "#E9A23B"] },
+    conjugacion:   { icon: "🔁", lc: "lc:repeat",          title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
+    tiempos:       { icon: "⏳", lc: "lc:hourglass",       title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
+    paises:        { icon: "🌎", lc: "lc:globe",           title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
+    knigge:        { icon: "🧭", lc: "lc:compass",         title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
+    logistica:     { icon: "🧳", lc: "lc:luggage",         title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
+    salud:         { icon: "🥗", lc: "lc:salad",           title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+    jerga:         { icon: "🗣️", lc: "lc:megaphone",       title: "Jerga colombiana",     sub: "discover.subJerga",         accent: ["#C25A45", "#B97C24"] },
+    derechos:      { icon: "⚖️", lc: "lc:scale",           title: "Conoce tus derechos",  sub: "discover.subDerechos",      accent: ["#3F5BA8", "#5A4FA8"] },
+    responsable:   { icon: "🌱", lc: "lc:sprout",          title: "Viaja responsable",    sub: "discover.subResponsable",   accent: ["#3F7355", "#5E7D3A"] },
+    fotos:         { icon: "📸", lc: "lc:camera",          title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
+    flirt:         { icon: "💘", lc: "lc:heart",           title: "Coqueteo y romance",   sub: "discover.subFlirt",         accent: ["#D24A77", "#B05AA8"] },
+    bailar:        { icon: "💃", lc: "lc:footprints",      title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
+    musica:        { icon: "🎵", lc: "lc:music",           title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
+    cafe:          { icon: "☕", lc: "lc:coffee",          title: "Café de la región",    sub: "discover.subCafe",          accent: ["#6F4A2E", "#B97C24"] },
+    juegos:        { icon: "🎲", lc: "lc:dices",           title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
+    banderas:      { icon: "🚩", lc: "lc:flag",            title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
