@@ -24,6 +24,16 @@
   const FIRMING_DAYS = 3;
   // Unter dieser Trefferquote (%) bei >=2 Wiederholungen gilt eine Karte als "schwierig".
   const HARD_BELOW = 60;
+  // Grobe Schätzung: so viele Bewertungen ("Touches") braucht eine neue Karte im
+  // Schnitt, bis sie "gemeistert" ist (interval >= MASTERED_DAYS). KEINE exakte
+  // SRS-Simulation – bewusst konservativ. Die Reise-Prognose (tripForecast) rechnet
+  // damit das geplante Tages-Budget in "voraussichtlich gemeistert" um; die UI sagt
+  // deshalb immer "rund/etwa", nie eine exakte Zahl.
+  const REVIEWS_PER_CARD = 3;
+  // Pace-Schwellen: tatsächliches Tempo / Tagesziel. Ab 0.9 "auf Kurs",
+  // ab 0.5 "etwas zu langsam", darunter "im Rückstand".
+  const PACE_ON_TRACK = 0.9;
+  const PACE_SLIGHTLY = 0.5;
 
   // Verbucht eine Bewertung. srsNext = bereits berechneter SRS-Zustand.
   // Gibt einen NEUEN, zusammengeführten Datensatz zurück (immutabel).
@@ -113,6 +123,84 @@
       rate: totalSeen ? Math.round((totalCorrect / totalSeen) * 100) : null,
       firstTry, needPractice, hard,
       totalSeen,
+    };
+  }
+
+  // Reise-Prognose: verrechnet das Tagesziel (perDay) und die Tage bis zur Abreise
+  // (daysLeft) mit dem echten Fortschritt (mastered/total) und dem zuletzt tatsächlich
+  // gelernten Schnitt (recentAvg). Liefert eine ehrliche, bewusst grobe Schätzung
+  // "voraussichtlich X % gemeistert bis zur Abreise" plus einen Pace-Check gegen das
+  // reale Tempo. REIN, wirft nie. null nur, wenn die Eckdaten unbrauchbar sind.
+  //
+  //   p = { total, mastered, perDay, daysLeft, recentAvg }
+  //
+  // Annahme: pro neuer Karte ~REVIEWS_PER_CARD Bewertungen bis "gemeistert". Daraus:
+  //   budget          = max(0, daysLeft) * perDay   (geplante Bewertungen bis Abreise)
+  //   projectedNew    = floor(budget / REVIEWS_PER_CARD)   (neu gemeisterte Karten)
+  //   projectedMaster = min(total, mastered + projectedNew)
+  function tripForecast(p) {
+    const o = p || {};
+    const total = Math.max(0, Math.round(o.total || 0));
+    if (total <= 0) return null;
+    const perDay = Math.max(0, Math.round(o.perDay || 0));
+    if (perDay <= 0) return null;
+
+    const mastered = Math.min(total, Math.max(0, Math.round(o.mastered || 0)));
+    const daysLeft = Math.max(0, Math.round(o.daysLeft || 0));
+    const recentAvg = Math.max(0, Number(o.recentAvg) || 0);
+    const hasHistory = !!o.hasHistory;
+
+    const nowPct = Math.round((mastered / total) * 100);
+
+    // Schon alles gemeistert -> feierlicher "fertig"-Zustand, keine Empfehlung.
+    if (mastered >= total) {
+      return {
+        done: true,
+        nowPct: 100,
+        projectedMastered: total,
+        projectedNew: 0,
+        projectedPct: 100,
+        budget: daysLeft * perDay,
+        remaining: 0,
+        pace: { recentAvg: Math.round(recentAvg * 10) / 10, ratio: null, verdict: "done", recommendedPerDay: 0 },
+      };
+    }
+
+    const remaining = total - mastered; // noch nicht gemeisterte Karten
+    const budget = daysLeft * perDay;
+    const projectedNew = Math.floor(budget / REVIEWS_PER_CARD);
+    const projectedMastered = Math.min(total, mastered + projectedNew);
+    const projectedPct = Math.round((projectedMastered / total) * 100);
+
+    // Pace-Check: realer Schnitt vs. Tagesziel. Ohne jede Lernhistorie ermutigen
+    // (noHistory) statt tadeln. recommendedPerDay = was nötig wäre, um den Rest bis
+    // zur Abreise zu schaffen – nur sinnvoll, wenn noch Tage übrig sind.
+    const ratio = perDay > 0 ? recentAvg / perDay : 0;
+    let verdict;
+    if (!hasHistory && recentAvg <= 0) verdict = "noHistory";
+    else if (ratio >= PACE_ON_TRACK) verdict = "onTrack";
+    else if (ratio >= PACE_SLIGHTLY) verdict = "slightlyBehind";
+    else verdict = "behind";
+
+    let recommendedPerDay = 0;
+    if (daysLeft > 0) {
+      recommendedPerDay = Math.ceil((remaining * REVIEWS_PER_CARD) / daysLeft);
+    }
+
+    return {
+      done: false,
+      nowPct,
+      projectedMastered,
+      projectedNew,
+      projectedPct,
+      budget,
+      remaining,
+      pace: {
+        recentAvg: Math.round(recentAvg * 10) / 10,
+        ratio: Math.round(ratio * 100) / 100,
+        verdict,
+        recommendedPerDay,
+      },
     };
   }
 
@@ -225,8 +313,8 @@
 
   window.SC = window.SC || {};
   window.SC.stats = {
-    record, statusOf, cardSummary, overview,
+    record, statusOf, cardSummary, overview, tripForecast,
     levelDistribution, studentLevel, levelRank, sortRoster, upsertStudent, rosterCSV,
-    CEFR_ORDER, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS,
+    CEFR_ORDER, HARD_BELOW, MASTERED_DAYS, FIRMING_DAYS, REVIEWS_PER_CARD,
   };
 })();

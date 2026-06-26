@@ -720,6 +720,7 @@
       streakIsNew: streakNow > (snap.streak || 0),
       newBadges,
       destinationComplete: pretripJustCompleted(), // {name,country}|null
+      tripMilestone: xp.tripMilestone || null, // {pct,dest}|null – Startklar-Meilenstein (Schicht 4)
       isFirstEver: !snap.everStudied,
       // XP-/Rang-Layer (BAUPLAN §6): fehlt finishRound, bleiben die Felder undefined
       // und decide() zeigt weder Level-Up noch XP-Pille.
@@ -1140,7 +1141,26 @@
     const xpAfter = xpBefore + xpGained;
     const levelFor = (window.SC && SC.celebrate && SC.celebrate.levelForXp)
       ? (xp) => SC.celebrate.levelForXp(xp).n : () => 0;
-    gamestats = Object.assign({}, gamestats, { xp: xpAfter });
+    // Trip-Meilensteine (Schicht 4): hat diese Runde eine Startklar-Schwelle
+    // (25/50/75/100 % gemeistert) frisch überschritten? Einmalig feiern + dauerhaft
+    // merken (tripMilestonesSeen), damit dieselbe Schwelle nie erneut feiert.
+    let tripMilestone = null;
+    const updated = { xp: xpAfter };
+    if (gamestats.tripGoal) {
+      const ov = stats.overview(allCards(), progress);
+      const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
+      const seen = Object.assign({}, gamestats.tripMilestonesSeen || {});
+      const fresh = [25, 50, 75, 100].filter((m) => pct >= m && !seen[m]);
+      if (fresh.length) {
+        const stamp = Date.now();
+        fresh.forEach((m) => { seen[m] = stamp; });
+        updated.tripMilestonesSeen = seen;
+        const r = gamestats.tripGoal.route;
+        const dest = (Array.isArray(r) && r.length && r[0].dest) || gamestats.tripGoal.destination || "";
+        tripMilestone = { pct: fresh[fresh.length - 1], dest }; // höchste frisch erreichte Schwelle
+      }
+    }
+    gamestats = Object.assign({}, gamestats, updated);
     store.saveGameStats(gamestats);
     state.roundResult = {
       xpBefore: xpBefore,
@@ -1148,6 +1168,7 @@
       xpAfter: xpAfter,
       levelBefore: levelFor(xpBefore),
       levelAfter: levelFor(xpAfter),
+      tripMilestone: tripMilestone, // {pct,dest}|null – Startklar-Meilenstein dieser Runde
     };
   }
 
@@ -1317,6 +1338,30 @@
     // Karten über dem Tagesziel: für die "Ziel übertroffen"-Darstellung. Der Balken
     // ist bei >= Ziel ohnehin voll, deshalb genügt hier der reine Überschuss-Wert.
     const todayExtra = Math.max(0, todayCount - perDay);
+    // Restpensum heute (Schicht 3): treibt CTA "Noch X Karten heute" + Tagesziel-Session.
+    const remainingToday = Math.max(0, perDay - todayCount);
+    // Reales Lerntempo der letzten 7 Tage (inkl. Null-Tage), damit ein abgerissener
+    // Nutzer ehrlich als "im Rückstand" erscheint. Basis für den Pace-Check.
+    const counts = gamestats.dailyCounts || {};
+    let recentSum = 0;
+    for (let i = 0; i < 7; i++) {
+      recentSum += counts[dayKey(Date.now() - i * DAY_MS)] || 0;
+    }
+    const recentAvg = recentSum / 7;
+    // Aktueller Mastery-Stand fürs Budget-Modell (gemeistert/total) – dieselbe Quelle
+    // wie Dashboard & Profil (stats.overview), nur hier fürs Trip-Ziel wiederverwendet.
+    const ov = stats.overview(allCards(), progress);
+    // Reise-Prognose: nur sinnvoll, solange die Abreise noch in der Zukunft liegt.
+    const forecast = (daysLeft !== null && daysLeft > 0)
+      ? stats.tripForecast({
+          total: ov.total,
+          mastered: ov.mastered,
+          perDay,
+          daysLeft,
+          recentAvg,
+          hasHistory: !!gamestats.lastStudyDate,
+        })
+      : null;
     // Aufenthaltsdauer: aus einem konkreten Rückreisedatum berechnet (inkl. An- und
     // Abreisetag) – sonst die grob eingegebene Tageszahl. stayApprox unterscheidet
     // beide Fälle für die „ca."-Darstellung.
@@ -1351,6 +1396,8 @@
       todayOver: todayExtra > 0, // über dem Tagesziel -> eigene Darstellung
       todayExtra,
       todayPct: Math.max(0, Math.min(100, Math.round((todayCount / perDay) * 100))),
+      remainingToday,      // Schicht 3: noch offene Karten heute (0 = Tagesziel erreicht)
+      forecast,            // Schicht 1+2: Reise-Prognose + Pace-Check (null = nicht anzeigbar)
     };
   }
 
@@ -2742,16 +2789,20 @@
   }
 
   // ----- Aktionen -----
-  function startStudy(scopeId, origin) {
+  function startStudy(scopeId, origin, cap) {
     dismissBadgeToast();
     state.studyOrigin = origin || null;
     const cards = scopeCards(scopeId);
     const due = dueIn(cards);
+    // Rundengröße: standardmäßig SESSION_CAP (Newcomer-Schutz). Das Tagesziel des
+    // Trip-Ziels (Schicht 3) übergibt sein eigenes Restpensum als cap, damit die
+    // Runde genau so lang ist, wie der Nutzer sich für heute vorgenommen hat.
+    const limit = (typeof cap === "number" && cap > 0) ? Math.round(cap) : SESSION_CAP;
     // Nichts fällig? -> freies Üben mit GEMISCHTER Auswahl – sonst bestünde
     // jede freie Runde aus denselben ersten 20 Karten der Datenreihenfolge
     // (Karte 21+ einer Kategorie wäre nie erreichbar). Fällige Karten behalten
     // ihre Reihenfolge. In beiden Fällen auf eine Runde gedeckelt.
-    const chosen = (due.length ? due : shuffle(cards)).slice(0, SESSION_CAP);
+    const chosen = (due.length ? due : shuffle(cards)).slice(0, limit);
     // Letzte Kategorie merken (für "Weiter mit …" auf der Startseite).
     if (scopeId !== "all" && settings.lastScope !== scopeId) {
       settings = Object.assign({}, settings, { lastScope: scopeId });
@@ -2767,6 +2818,19 @@
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
+  }
+
+  // Tagesziel-Runde (Schicht 3): startet eine Lernrunde mit genau dem heute noch
+  // offenen Pensum aus dem Trip-Ziel (perDay − bereits heute gelernt). Ohne Ziel
+  // fällt es auf die normale „Alles lernen"-Runde zurück. Mind. 1 Karte, damit der
+  // Knopf nie eine leere Runde startet (er ist bei erreichtem Ziel ohnehin disabled).
+  function startTripDaily() {
+    const t = gamestats.tripGoal;
+    if (!t) { startStudy("all"); return; }
+    const today = dayKey(Date.now());
+    const todayCount = (gamestats.dailyCounts && gamestats.dailyCounts[today]) || 0;
+    const remaining = Math.max(1, (t.perDay || 1) - todayCount);
+    startStudy("all", "trip-daily", remaining);
   }
 
   // ----- Ruta del día (kurze tägliche Mini-Runde) -----
@@ -6804,6 +6868,7 @@
     "set-ui-lang": (el) => { setUiLang(el.dataset.lang); },
     "set-level": (el) => { toggleLevel(Number(el.dataset.level)); },
     "study-all": (el) => { startStudy("all"); },
+    "study-trip-daily": (el) => { startTripDaily(); },
     "open-category": (el) => { startStudy(el.dataset.id); },
     "ruta-del-dia": (el) => { openRutaDelDia(); },
     "open-preset": (el) => { startPreset(el.dataset.preset); },

@@ -289,6 +289,66 @@ test("stats.overview: aggregiert Status, Quote und Zähler", () => {
   assert.equal(ov.rate, 50); // 2 correct / 4 seen
 });
 
+test("stats.tripForecast: 'auf Kurs' – Prognose + Pace bei passendem Tempo", () => {
+  const f = stats.tripForecast({ total: 100, mastered: 10, perDay: 3, daysLeft: 10, recentAvg: 3, hasHistory: true });
+  assert.equal(f.done, false);
+  assert.equal(f.nowPct, 10);
+  assert.equal(f.budget, 30);             // 10 Tage * 3/Tag
+  assert.equal(f.projectedNew, 10);       // floor(30 / REVIEWS_PER_CARD=3)
+  assert.equal(f.projectedMastered, 20);  // 10 + 10
+  assert.equal(f.projectedPct, 20);
+  assert.equal(f.pace.verdict, "onTrack"); // ratio 3/3 = 1 >= 0.9
+});
+
+test("stats.tripForecast: 'im Rückstand' empfiehlt ein höheres Tagesziel", () => {
+  const f = stats.tripForecast({ total: 100, mastered: 10, perDay: 10, daysLeft: 10, recentAvg: 2, hasHistory: true });
+  assert.equal(f.pace.verdict, "behind"); // ratio 0.2 < 0.5
+  // remaining 90 * 3 Touches / 10 Tage = 27 Karten/Tag, um es noch zu schaffen.
+  assert.equal(f.pace.recommendedPerDay, 27);
+  assert.ok(f.pace.recommendedPerDay > 10);
+});
+
+test("stats.tripForecast: 'etwas zu langsam' an der 0.5-Grenze", () => {
+  const f = stats.tripForecast({ total: 100, mastered: 0, perDay: 10, daysLeft: 30, recentAvg: 5, hasHistory: true });
+  assert.equal(f.pace.verdict, "slightlyBehind"); // ratio 0.5 -> noch nicht 'behind'
+});
+
+test("stats.tripForecast: ohne Lernhistorie ermutigend statt tadelnd", () => {
+  const f = stats.tripForecast({ total: 100, mastered: 0, perDay: 15, daysLeft: 100, recentAvg: 0, hasHistory: false });
+  assert.equal(f.pace.verdict, "noHistory");
+});
+
+test("stats.tripForecast: Deck schon gemeistert -> feierlicher 'done'-Zustand", () => {
+  const f = stats.tripForecast({ total: 50, mastered: 50, perDay: 15, daysLeft: 20, recentAvg: 15, hasHistory: true });
+  assert.equal(f.done, true);
+  assert.equal(f.projectedPct, 100);
+  assert.equal(f.pace.verdict, "done");
+  assert.equal(f.pace.recommendedPerDay, 0);
+});
+
+test("stats.tripForecast: Abreise erreicht (daysLeft 0) -> Budget 0, kein Crash", () => {
+  const f = stats.tripForecast({ total: 100, mastered: 30, perDay: 15, daysLeft: 0, recentAvg: 0, hasHistory: true });
+  assert.notEqual(f, null);
+  assert.equal(f.budget, 0);
+  assert.equal(f.projectedNew, 0);
+  assert.equal(f.projectedMastered, 30); // unverändert
+  assert.equal(f.pace.recommendedPerDay, 0); // keine Tage mehr -> keine Empfehlung
+});
+
+test("stats.tripForecast: unbrauchbare Eckdaten -> null", () => {
+  assert.equal(stats.tripForecast({ total: 100, mastered: 0, perDay: 0, daysLeft: 10 }), null);
+  assert.equal(stats.tripForecast({ total: 0, mastered: 0, perDay: 15, daysLeft: 10 }), null);
+  assert.equal(stats.tripForecast(null), null);
+});
+
+test("stats.tripForecast: riesiges Tagesziel bleibt bei total/100 % gedeckelt & endlich", () => {
+  const f = stats.tripForecast({ total: 10, mastered: 0, perDay: 500, daysLeft: 100, recentAvg: 500, hasHistory: true });
+  assert.ok(f.projectedMastered <= 10);
+  assert.ok(f.projectedPct >= 0 && f.projectedPct <= 100);
+  assert.ok(Number.isFinite(f.budget) && Number.isFinite(f.projectedNew));
+  assert.ok(Number.isFinite(f.pace.recommendedPerDay));
+});
+
 test("stats.levelDistribution: zählt CEFR-Stufen, Nivel-Test schlägt Quick-Check", () => {
   const students = [
     { assessment: { level: "B1" }, placement: { level: "A2" } }, // Nivel-Test hat Vorrang -> B1
@@ -572,6 +632,7 @@ test("store.loadGameStats: gültiger Stand bleibt erhalten", () => {
     pretripDays: { colombia: { 1: true, 2: true }, peru: { 1: true } },
     tripGoal: { destination: "Cusco", endDate: "2026-07-01", perDay: 15, startedAt: "2026-06-12" },
     dailyCounts: { "2026-06-11": 12 },
+    tripMilestonesSeen: { 25: 1700000000000 },
     contextCardsSeen: { hostel01: true },
     bodyPartsSeen: { bp_cabeza: true },
     shoppingSeen: { sl_agua: true },
@@ -1229,7 +1290,7 @@ test("store.freshGameStats: exakte Default-Struktur (alle Zähler 0, Maps leer, 
     listenReviews: 0, preciosPlayed: 0, preciosPerfect: 0, preciosMillon: 0,
     conjugPlayed: 0, conjugPerfect: 0,
     dialogosPlayed: 0, dialogosPerfect: 0, dialogosScenesDone: {},
-    rutaDays: {}, pretripDays: {}, tripGoal: null, dailyCounts: {},
+    rutaDays: {}, pretripDays: {}, tripGoal: null, dailyCounts: {}, tripMilestonesSeen: {},
     contextCardsSeen: {}, bodyPartsSeen: {}, shoppingSeen: {},
     unlocked: {}, placement: null, placementHistory: [],
     assessment: null, assessmentHistory: [], assessmentProgress: null,
