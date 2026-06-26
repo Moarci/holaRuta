@@ -296,6 +296,28 @@ test("push: baseRev wird durchgereicht (Default 0, nicht verschluckt)", async ()
   assert.equal(bodies[0].payload.foo, 1);
 });
 
+test("push: lehnt zu große Payloads vorab ab (BACKEND.md §13, 256 KB) – kein Request", async () => {
+  let called = false;
+  const big = { blob: "x".repeat(300 * 1024) }; // > 256 KB als JSON
+  await withStubs(
+    { request: () => { called = true; return Promise.resolve({ ok: true, body: {} }); } },
+    {}, {},
+    async () => { await assert.rejects(() => sync.push(big, 0), /payload too large/); },
+  );
+  assert.equal(called, false, "übergroßer Push erreicht das Netzwerk gar nicht");
+});
+
+test("push: normal große Payload geht durch (unter dem Limit)", async () => {
+  let called = false;
+  const ok = { blob: "x".repeat(1024) };
+  await withStubs(
+    { request: () => { called = true; return Promise.resolve({ ok: true, body: { rev: 1 } }); } },
+    {}, {},
+    async () => { const r = await sync.push(ok, 0); assert.equal(r.ok, true); },
+  );
+  assert.equal(called, true, "normale Payload wird gesendet");
+});
+
 test("syncNow: ohne Konflikt -> genau ein Push, rev/status aus der Antwort", async () => {
   const GS = GAMESTATS;
   const pushes = [];

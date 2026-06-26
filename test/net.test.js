@@ -197,3 +197,74 @@ test("confirm: ok, aber Body ohne accessToken-Feld -> wirft, kein Token", async 
   await assert.rejects(() => net.confirm("http://api", "a@b", "x"), /confirm failed/);
   assert.equal(net.getToken(), null, "ohne accessToken-Feld kein stilles Anmelden");
 });
+
+// ---- Timeout + opt-in Retry/Backoff (Härtung) ----
+
+test("request: opts.timeout bricht einen hängenden fetch ab (AbortController)", async () => {
+  reset();
+  // fetch, das nie antwortet, aber auf das Abort-Signal hört.
+  globalThis.fetch = (url, opts) => new Promise((_resolve, reject) => {
+    const sig = opts && opts.signal;
+    if (sig) sig.addEventListener("abort", () => reject(new Error("aborted")));
+  });
+  await assert.rejects(
+    () => net.request("http://api", "GET", "/slow", null, { timeout: 5, retries: 0 }),
+    /aborted/,
+    "kurzer Timeout bricht den Request ab",
+  );
+});
+
+test("request: ohne opts.retries wird ein 503 NICHT wiederholt (unverändertes Verhalten)", async () => {
+  reset();
+  let calls = 0;
+  globalThis.fetch = () => { calls++; return Promise.resolve(res(503, "{}")); };
+  const r = await net.request("http://api", "GET", "/x");
+  assert.equal(calls, 1, "genau ein Versuch ohne Retry-Budget");
+  assert.equal(r.ok, false);
+  assert.equal(r.status, 503, "transienter Status wird unverändert durchgereicht");
+});
+
+test("request: opts.retries wiederholt transiente Fehler (503) mit Backoff bis zum Erfolg", async () => {
+  reset();
+  let calls = 0;
+  globalThis.fetch = (url, opts) => {
+    calls++; last = { url, opts: opts || {} };
+    return Promise.resolve(calls < 3 ? res(503, "{}") : res(200, JSON.stringify({ ok: 1 })));
+  };
+  const r = await net.request("http://api", "GET", "/v1/sync", null, { retries: 3, backoff: 1 });
+  assert.equal(calls, 3, "zwei Wiederholungen nach 503, dann Erfolg");
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.body, { ok: 1 });
+});
+
+test("request: opts.retries wiederholt auch Netzwerkfehler (fetch rejectet)", async () => {
+  reset();
+  let calls = 0;
+  globalThis.fetch = () => {
+    calls++;
+    return calls === 1 ? Promise.reject(new Error("network down")) : Promise.resolve(res(200, JSON.stringify({ ok: 1 })));
+  };
+  const r = await net.request("http://api", "GET", "/x", null, { retries: 2, backoff: 1 });
+  assert.equal(calls, 2, "ein Netzwerkfehler, dann Erfolg");
+  assert.equal(r.status, 200);
+});
+
+test("request: erschöpftes Retry-Budget bei Dauer-Netzwerkfehler wirft am Ende", async () => {
+  reset();
+  let calls = 0;
+  globalThis.fetch = () => { calls++; return Promise.reject(new Error("network down")); };
+  await assert.rejects(
+    () => net.request("http://api", "GET", "/x", null, { retries: 2, backoff: 1 }),
+    /network down/,
+  );
+  assert.equal(calls, 3, "Erstversuch + 2 Wiederholungen, dann Aufgabe");
+});
+
+test("request: 4xx wird trotz Retry-Budget NICHT wiederholt (kein transienter Fehler)", async () => {
+  reset();
+  let calls = 0;
+  globalThis.fetch = () => { calls++; return Promise.resolve(res(401, JSON.stringify({ error: "nope" }))); };
+  const r = await net.request("http://api", "GET", "/x", null, { retries: 3, backoff: 1 });
+  assert.equal(calls, 1, "401 ist dauerhaft -> kein Retry");
+  assert.equal(r.status, 401);
+});

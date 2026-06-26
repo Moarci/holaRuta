@@ -191,8 +191,24 @@
   function enabled() { return !!(cfg() && cfg().enabled && cfg().apiBase && typeof fetch === "function"); }
   function apiBase() { return (cfg() && cfg().apiBase || "").replace(/\/+$/, ""); }
 
+  // Server erzwingt eine Obergrenze pro Sync-Payload (BACKEND.md §13: 256 KB).
+  // Clientseitig vorab prüfen -> klare, frühe Fehlermeldung statt überraschendem
+  // 413 nach dem Hochladen. UTF-8-Bytes (nicht Zeichen) zählen, da Akzente/Emojis
+  // im Content mehr als ein Byte belegen.
+  var MAX_PAYLOAD_BYTES = 256 * 1024;
+  function byteLength(s) {
+    if (typeof TextEncoder !== "undefined") { try { return new TextEncoder().encode(s).length; } catch (e) { /* Fallback */ } }
+    return s.length; // konservativer Fallback (zählt Zeichen)
+  }
+  function payloadTooLarge(payload) {
+    try { return byteLength(JSON.stringify(payload)) > MAX_PAYLOAD_BYTES; } catch (e) { return false; }
+  }
+
   function loggedIn() { return SC.net.loggedIn(); }
-  function req(method, path, body) { return SC.net.request(apiBase(), method, path, body); }
+  function req(method, path, body, opts) { return SC.net.request(apiBase(), method, path, body, opts); }
+  // Sync-Aufrufe sind idempotent (GET) bzw. über baseRev/409 konfliktgesichert
+  // (PUT), darum bei transienten Fehlern automatisch erneut versuchen.
+  var RETRY = { retries: 2 };
 
   // Passwortloser Login (BACKEND.md §7), geteilt über SC.net. Ohne aktive
   // Sync-Config bleibt der Pfad gesperrt (graceful).
@@ -206,8 +222,11 @@
   }
   function logout() { SC.net.logout(); }
 
-  function pull() { return req("GET", "/v1/sync"); }
-  function push(payload, baseRev) { return req("PUT", "/v1/sync", { baseRev: baseRev || 0, payload: payload }); }
+  function pull() { return req("GET", "/v1/sync", null, RETRY); }
+  function push(payload, baseRev) {
+    if (payloadTooLarge(payload)) return Promise.reject(new Error("payload too large"));
+    return req("PUT", "/v1/sync", { baseRev: baseRev || 0, payload: payload }, RETRY);
+  }
 
   // Ein vollständiger Sync: pull -> merge(local, remote) -> lokal anwenden -> push.
   // Gibt { ok, changedLocal, rev } zurück. store wird für Export/Import genutzt.
