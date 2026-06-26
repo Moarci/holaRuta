@@ -2168,7 +2168,7 @@
       <button class="fav-group" type="button" data-action="fav-group-toggle" data-key="${esc(g.key)}"
               aria-expanded="${collapsed ? "false" : "true"}" aria-label="${esc(t("favorites.groupToggle"))}">
         <span class="fav-group__chev" aria-hidden="true">${collapsed ? "▸" : "▾"}</span>
-        <span class="fav-group__icon" aria-hidden="true">${esc(g.icon)}</span>
+        <span class="fav-group__icon" aria-hidden="true">${renderIcon(g.lc || g.icon)}</span>
         <span class="fav-group__label">${esc(g.label)}</span>
         <span class="fav-group__n">${g.items.length}</span>
       </button>
@@ -2244,7 +2244,7 @@
     const show = vm.show ? `
       <div class="sz-show" data-action="fav-close" role="dialog" aria-modal="true" aria-label="${esc(t("favorites.showLabel"))}">
         <div class="sz-show__inner">
-          ${vm.showSrc ? `<p class="sz-show__src">${esc(vm.showSrc.icon)} ${esc(vm.showSrc.label)}</p>` : ""}
+          ${vm.showSrc ? `<p class="sz-show__src">${renderIcon(vm.showSrc.lc || vm.showSrc.icon)} ${esc(vm.showSrc.label)}</p>` : ""}
           <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
           <p class="sz-show__de">${esc(vm.show.de)}</p>
           ${vm.show.tip ? `<p class="sz-show__tip">${renderIcon("lc:audio-lines")} ${esc(vm.show.tip)}</p>` : ""}
