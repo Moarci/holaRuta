@@ -357,6 +357,7 @@
       // ----- Trip-Ziel (Countdown + Tagesziel) -----
       tripGoal: null,       // { destination, endDate:"YYYY-MM-DD", perDay, startedAt, route? } | null
       dailyCounts: {},      // Map "YYYY-MM-DD" -> Anzahl Bewertungen an dem Tag
+      tripMilestonesSeen: {}, // Map Schwelle (25/50/75/100) -> Zeitstempel (einmal-Feier der Startklar-Meilensteine)
       // ----- Reise-Kontext (🧭 Kontext-Button) -----
       contextCardsSeen: {}, // Map cardId -> true (distinkt geöffnete Kontexte)
       // ----- El Cuerpo (interaktive Körperkarte) -----
@@ -635,6 +636,7 @@
       pretripDays: sanitizePretripDays(v.pretripDays),
       tripGoal: sanitizeTripGoal(v.tripGoal),
       dailyCounts: isPlainObject(v.dailyCounts) ? v.dailyCounts : {},
+      tripMilestonesSeen: isPlainObject(v.tripMilestonesSeen) ? v.tripMilestonesSeen : {},
       contextCardsSeen: isPlainObject(v.contextCardsSeen) ? v.contextCardsSeen : {},
       bodyPartsSeen: isPlainObject(v.bodyPartsSeen) ? v.bodyPartsSeen : {},
       shoppingSeen: isPlainObject(v.shoppingSeen) ? v.shoppingSeen : {},

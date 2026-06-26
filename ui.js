@@ -283,6 +283,44 @@
       ${speedGroup}`;
   }
 
+  // Reise-Prognose-Block (Schicht 1+2): macht aus Datum + Karten/Tag eine echte
+  // Aussage – „voraussichtlich X % gemeistert" + Pace-Ampel + ggf. Empfehlung +
+  // Startklar-Meilensteine (25/50/75/100). Nur Spans (die Karte ist ein <button>,
+  // also dürfen hier KEINE verschachtelten Buttons stehen). Leer, wenn keine
+  // Prognose vorliegt (Abreise heute/vergangen, Datum kaputt, perDay/total = 0).
+  const TRIP_MILESTONES = [25, 50, 75, 100];
+  function tripForecastBlock(trip) {
+    const f = trip.forecast;
+    if (!f) return "";
+    const verdictClass = {
+      onTrack: "is-ontrack", slightlyBehind: "is-slightly",
+      behind: "is-behind", noHistory: "is-neutral", done: "is-ontrack",
+    }[f.pace.verdict] || "is-neutral";
+    const paceText = {
+      onTrack: "home.tripPaceOnTrack", slightlyBehind: "home.tripPaceSlightly",
+      behind: "home.tripPaceBehind", noHistory: "home.tripPaceNoHistory", done: "home.tripPaceOnTrack",
+    }[f.pace.verdict] || "home.tripPaceNoHistory";
+    // Prognose-Hauptzeile: fertig -> Glückwunsch, sonst „rund X % gemeistert".
+    const mainLine = f.done
+      ? esc(t("home.tripForecastDone"))
+      : t("home.tripForecast", { pct: f.projectedPct, now: f.nowPct }); // enthält <b> -> nicht escapen
+    // Empfehlung nur bei echtem Rückstand und wenn sie das aktuelle Ziel übersteigt.
+    const showRec = f.pace.verdict === "behind" && f.pace.recommendedPerDay > 0
+      && f.pace.recommendedPerDay > trip.perDay;
+    // Startklar-Meilensteine: erreicht (nowPct), in Reichweite (projectedPct) oder offen.
+    const dots = TRIP_MILESTONES.map((m) => {
+      const cls = f.nowPct >= m ? "is-reached" : (f.projectedPct >= m ? "is-projected" : "");
+      return `<span class="trip__ms-dot ${cls}" aria-hidden="true"></span><span class="trip__ms-label">${m}%</span>`;
+    }).join("");
+    return `
+      <span class="trip__forecast">
+        <span class="trip__fc-cap">${esc(t("home.tripForecastCap"))}</span>
+        <span class="trip__fc-main">${mainLine}</span>
+        <span class="trip__pace ${verdictClass}">${esc(t(paceText))}${showRec ? ` · ${esc(t("home.tripPaceRecommend", { rec: f.pace.recommendedPerDay }))}` : ""}</span>
+        <span class="trip__ms" role="group" aria-label="${esc(t("home.tripMilestoneCap"))}">${dots}</span>
+      </span>`;
+  }
+
   // Trip-Ziel: read-only Countdown-Karte (bis zum Reisedatum + Tages-Fortschritt).
   // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
   function tripDisplayCard(trip, action) {
@@ -315,6 +353,24 @@
           </span>
           <span class="trip__bar"><span class="trip__bar-fill ${trip.todayOver ? "is-over" : trip.todayDone ? "is-done" : ""}" style="width:${trip.todayPct}%"></span></span>
         </span>
+        ${tripForecastBlock(trip)}
+      </button>`;
+  }
+
+  // Tagesziel-Knopf (Schicht 3): startet eine Lernrunde mit genau dem heute noch
+  // offenen Pensum (remainingToday) – steht als eigener Button NEBEN der Karte
+  // (die Karte ist selbst ein <button>). Bei erfülltem Tagesziel als „erledigt".
+  function tripDailyCta(trip) {
+    if (!trip || trip.past) return ""; // nach der Abreise kein Tagesziel mehr
+    const done = trip.remainingToday <= 0;
+    const label = done
+      ? esc(t("home.tripRemainingDone"))
+      : esc(t("home.tripRemainingToday", { n: trip.remainingToday }));
+    return `
+      <button class="trip-daily ${done ? "is-done" : ""}"${done ? " disabled aria-disabled=\"true\"" : ` data-action="study-trip-daily"`}>
+        ${done ? renderIcon("lc:check-circle") : renderIcon("lc:play")}
+        <span class="trip-daily__label">${label}</span>
+        ${done ? "" : `<span class="trip-daily__go">${esc(t("home.tripStartDaily"))}</span>`}
       </button>`;
   }
 
@@ -425,7 +481,7 @@
         `<button class="ghostbtn" type="button" data-action="trip-edit">${esc(t("common.cancel"))}</button>`;
       return tripForm(trip, extra);
     }
-    if (trip) return tripDisplayCard(trip, "trip-edit") + tripTimeline(vm) + tripCountrySwitch(vm);
+    if (trip) return tripDisplayCard(trip, "trip-edit") + tripDailyCta(trip) + tripTimeline(vm) + tripCountrySwitch(vm);
     return `<button class="trip trip--empty" data-action="trip-edit">${renderIcon("lc:target")} ${t("home.tripEmpty")}</button>`;
   }
 
@@ -724,7 +780,7 @@
     // Trip-Ziel: auf dem Dashboard nur die motivierende Countdown-Karte – und nur,
     // wenn ein Ziel gesetzt ist. Angelegt/bearbeitet wird es im Profil bzw. beim
     // Onboarding; ein Tap führt deshalb ins Profil zur Verwaltung.
-    const tripCard = vm.trip ? tripDisplayCard(vm.trip, "manage-trip") : "";
+    const tripCard = vm.trip ? tripDisplayCard(vm.trip, "manage-trip") + tripDailyCta(vm.trip) : "";
 
     // „Für deine Reise" – eigener, klar betitelter Abschnitt (Trip-Countdown +
     // Pre-Arrival-Pakete). Fällt komplett weg, wenn weder Ziel noch Preset aktiv

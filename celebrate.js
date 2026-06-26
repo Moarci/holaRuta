@@ -150,6 +150,25 @@
       });
     }
 
+    // (2b) Startklar-Meilenstein: 25/50/75/100 % der Karten bis zur Reise gemeistert.
+    // Ein großer Motivations-Moment – darum direkt nach dem Reiseziel-Pack, vor dem
+    // Badge. Nutzt die vorhandene „stamp"-Inszenierung (kein neues CSS nötig).
+    if (r.tripMilestone && num(r.tripMilestone.pct, 0) > 0) {
+      var tm = r.tripMilestone;
+      var tmPct = Math.max(0, Math.min(100, Math.round(num(tm.pct, 0))));
+      var tmDest = tm.dest ? String(tm.dest) : "";
+      var tmFull = tmPct >= 100;
+      return scene({
+        id: "tripMilestone", staging: "stamp", tone: "gold",
+        headline: tmFull ? "¡Listo! Startklar für die Reise" : tmPct + " % startklar",
+        sub: tmDest
+          ? (tmFull ? "Alle Karten gemeistert · " + tmDest + ", wir kommen!" : tmPct + " % gemeistert · auf dem Weg nach " + tmDest)
+          : (tmFull ? "Alle Karten gemeistert – ¡buen viaje!" : tmPct + " % deiner Karten gemeistert"),
+        tripMilestone: tm,
+        confetti: tmFull ? 60 : 40, sparks: tmFull ? 18 : 12, sound: "fanfare", haptic: [16, 32, 16, 32, 24],
+      });
+    }
+
     // (3) Neuer Ruta-Pass-Stempel.
     if (newBadges.length) {
       var b = newBadges[0];

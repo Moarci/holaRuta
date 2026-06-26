@@ -3701,6 +3701,41 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    passend zur „Ziel übertroffen“-Zeile. */
 .trip__bar-fill.is-over { background: var(--brand); }
 
+/* Reise-Prognose (Schicht 1+2): „bis zur Abreise voraussichtlich X % gemeistert"
+   plus Pace-Ampel und Startklar-Meilensteine. Eigener, abgesetzter Block unter
+   dem Tagesbalken – macht aus Datum + Karten/Tag eine handfeste Aussage. */
+.trip__forecast { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; padding-top: 9px; border-top: 1px solid var(--line); }
+.trip__fc-cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.trip__fc-main { font-size: 0.92rem; font-weight: 700; color: var(--ink); line-height: 1.25; }
+.trip__fc-main b { font-weight: 800; }
+.trip__pace { font-size: 0.82rem; font-weight: 700; color: var(--muted); }
+.trip__pace.is-ontrack { color: var(--ok, #2F6B45); }
+.trip__pace.is-slightly { color: var(--warn, #B97C24); }
+.trip__pace.is-behind { color: var(--brand); }
+.trip__pace.is-neutral { color: var(--muted); }
+/* Startklar-Meilensteine: vier Punkte (25/50/75/100). Erreicht = voll, in Reichweite
+   (Prognose) = halb, offen = leer. */
+.trip__ms { display: flex; align-items: center; gap: 5px; margin-top: 2px; flex-wrap: wrap; }
+.trip__ms-dot { width: 9px; height: 9px; border-radius: 999px; border: 1.5px solid var(--line-strong); background: transparent; }
+.trip__ms-dot.is-projected { background: var(--line-strong); opacity: .55; }
+.trip__ms-dot.is-reached { background: var(--ok, #2F6B45); border-color: var(--ok, #2F6B45); }
+.trip__ms-label { font-size: 0.7rem; font-weight: 700; color: var(--muted); margin-right: 6px; }
+
+/* Tagesziel-Knopf (Schicht 3): startet genau das heute noch offene Pensum. */
+.trip-daily {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  margin-top: 8px; padding: 10px 14px; border-radius: var(--r-md);
+  border: 1.5px solid var(--brand); background: var(--brand); color: #fff;
+  font-weight: 800; cursor: pointer; box-shadow: var(--shadow);
+}
+.trip-daily:active { transform: translateY(1px); }
+.trip-daily__label { flex: 1; }
+.trip-daily__go { font-size: 0.82rem; font-weight: 800; opacity: .92; }
+.trip-daily.is-done {
+  border-color: var(--line-strong); background: var(--surface); color: var(--ok, #2F6B45);
+  cursor: default; box-shadow: none;
+}
+
 /* Schnellwechsel Reiseland (Profil): einklappbarer Abschnitt mit Länder-Chips. */
 .tripswitch { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .tripswitch__cap { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }

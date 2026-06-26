@@ -27,6 +27,24 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.119.0",
+      date: "2026-06-26",
+      title: "Trip-Ziel: Reise-Prognose, Tagesplan & Startklar-Meilensteine",
+      titleEn: "Trip goal: readiness forecast, daily plan & ready-to-go milestones",
+      items: [
+        "🔮 Reise-Prognose: Aus deinem Tagesziel (Karten/Tag) und den Tagen bis zur Abreise schätzt die Trip-Karte jetzt, wie viel du voraussichtlich bis zur Reise meisterst – „voraussichtlich rund X % gemeistert (jetzt Y %)“. Bewusst grobe Schätzung, klar als „rund“ benannt.",
+        "🎯 Pace-Check: Dein tatsächliches Lerntempo der letzten 7 Tage wird mit dem Ziel verglichen – auf Kurs, etwas zu langsam oder im Rückstand. Liegst du zurück, schlägt die App ein machbares höheres Karten/Tag vor, um es rechtzeitig zu schaffen.",
+        "📅 Tagesplan: Ein „Tagesziel lernen“-Knopf startet eine Runde mit genau dem heute noch offenen Pensum („Noch X Karten heute“) statt nur einen Balken zu zeigen.",
+        "🎒 Startklar-Meilensteine: 25/50/75/100 % gemeistert werden bis zur Abreise einmalig gefeiert (Konfetti) und als Punkte auf der Trip-Karte angezeigt.",
+      ],
+      itemsEn: [
+        "🔮 Readiness forecast: from your daily target (cards/day) and the days until departure, the trip card now estimates how much you'll likely master before the trip – „projected around X % mastered (now Y %)“. A deliberately rough estimate, clearly labelled „around“.",
+        "🎯 Pace check: your actual pace over the last 7 days is compared to the goal – on track, a little slow, or behind. If you're behind, the app suggests a doable higher cards/day to still make it in time.",
+        "📅 Daily plan: a „Study daily goal“ button starts a round with exactly today's remaining quota („X cards left today“) instead of just showing a bar.",
+        "🎒 Trip-ready milestones: 25/50/75/100 % mastered are celebrated once before departure (confetti) and shown as dots on the trip card.",
+      ],
+    },
+    {
       version: "1.118.0",
       date: "2026-06-24",
       title: "Café-Modul: Geschichte, Schädlinge & Export-Qualität",

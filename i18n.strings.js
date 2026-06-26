@@ -270,6 +270,23 @@
     tripDailyCount: (p) => p.over > 0
       ? `${p.done} Karten · +${p.over} über dem Ziel`
       : `${p.done}/${p.perDay} Karten`,
+    // Reise-Prognose & Pace-Check: macht aus Datum + Karten/Tag eine handfeste Aussage.
+    tripForecastCap: "Bis zur Abreise",
+    tripForecast: (p) => `Voraussichtlich rund <b>${p.pct} %</b> gemeistert (jetzt ${p.now} %)`,
+    tripForecastDone: "Stark – du hast schon alle Karten gemeistert! 🎉",
+    tripPaceOnTrack: "Du bist auf Kurs 🎯",
+    tripPaceSlightly: "Etwas zu langsam – bleib dran",
+    tripPaceBehind: "Du liegst zurück",
+    tripPaceNoHistory: "Leg los – dein Tempo zählt ab heute",
+    tripPaceRecommend: (p) => `Schaffst du mit rund ${p.rec} Karten/Tag`,
+    // Tagesplan (Schicht 3): Restpensum + Knopf, der genau diese Karten zieht.
+    tripRemainingToday: (p) => `Noch ${p.n} ${p.n === 1 ? "Karte" : "Karten"} heute`,
+    tripRemainingDone: "Tagesziel erreicht ✓",
+    tripStartDaily: "Tagesziel lernen",
+    // Startklar-Meilensteine (Schicht 4): aria-Label der Punkte-Gruppe im Prognose-Block.
+    // (Die Feier-Headline selbst stellt celebrate.js – wie das ganze Belohnungs-Modul –
+    // bewusst in eigener, nicht lokalisierter Reise-Copy dar.)
+    tripMilestoneCap: "Startklar",
     tripSwitchCap: "Reiseland schnell wechseln",
     // Zeitleiste mehrerer Reiseländer (Route): jeder Schnellwechsel hängt ein Land an.
     tripRouteCap: "Deine Route",
@@ -481,6 +498,18 @@
     tripDailyCount: (p) => p.over > 0
       ? `${p.done} cards · +${p.over} over goal`
       : `${p.done}/${p.perDay} cards`,
+    tripForecastCap: "By departure",
+    tripForecast: (p) => `Projected around <b>${p.pct} %</b> mastered (now ${p.now} %)`,
+    tripForecastDone: "Amazing – you've already mastered every card! 🎉",
+    tripPaceOnTrack: "You're on track 🎯",
+    tripPaceSlightly: "A little slow – keep going",
+    tripPaceBehind: "You're behind",
+    tripPaceNoHistory: "Get started – your pace counts from today",
+    tripPaceRecommend: (p) => `You'd make it at around ${p.rec} cards/day`,
+    tripRemainingToday: (p) => `${p.n} ${p.n === 1 ? "card" : "cards"} left today`,
+    tripRemainingDone: "Daily goal reached ✓",
+    tripStartDaily: "Study daily goal",
+    tripMilestoneCap: "Trip-ready",
     tripSwitchCap: "Quick-switch country",
     tripRouteCap: "Your route",
     tripSwitchHint: "Tap to add a country to your timeline — e.g. first El Salvador, then Colombia, then Peru.",
