@@ -298,6 +298,8 @@ test("stats.tripForecast: 'auf Kurs' – Prognose + Pace bei passendem Tempo", (
   assert.equal(f.projectedMastered, 20);  // 10 + 10
   assert.equal(f.projectedPct, 20);
   assert.equal(f.pace.verdict, "onTrack"); // ratio 3/3 = 1 >= 0.9
+  assert.equal(f.pace.ratio, 1);           // exakt gerundetes Verhältnis (recentAvg/perDay)
+  assert.equal(f.pace.recentAvg, 3);
 });
 
 test("stats.tripForecast: 'im Rückstand' empfiehlt ein höheres Tagesziel", () => {
@@ -311,6 +313,9 @@ test("stats.tripForecast: 'im Rückstand' empfiehlt ein höheres Tagesziel", () 
 test("stats.tripForecast: 'etwas zu langsam' an der 0.5-Grenze", () => {
   const f = stats.tripForecast({ total: 100, mastered: 0, perDay: 10, daysLeft: 30, recentAvg: 5, hasHistory: true });
   assert.equal(f.pace.verdict, "slightlyBehind"); // ratio 0.5 -> noch nicht 'behind'
+  assert.equal(f.pace.ratio, 0.5);
+  assert.equal(f.nowPct, 0);          // mastered 0 -> 0 % (kein Fallback auf 1)
+  assert.equal(f.projectedMastered, f.projectedNew); // mastered 0 -> alles Projizierte ist neu
 });
 
 test("stats.tripForecast: ohne Lernhistorie ermutigend statt tadelnd", () => {
@@ -324,6 +329,7 @@ test("stats.tripForecast: Deck schon gemeistert -> feierlicher 'done'-Zustand", 
   assert.equal(f.projectedPct, 100);
   assert.equal(f.pace.verdict, "done");
   assert.equal(f.pace.recommendedPerDay, 0);
+  assert.equal(f.pace.recentAvg, 15); // realer Schnitt bleibt korrekt gerundet (auch im 'done'-Zweig)
 });
 
 test("stats.tripForecast: Abreise erreicht (daysLeft 0) -> Budget 0, kein Crash", () => {
@@ -463,6 +469,30 @@ test("stats.record: Nicht-Treffer erhöht good/easy NICHT (Zähler bleiben 0)", 
 test("stats.cardSummary: due wird durchgereicht (|| 0 ist nur Fallback)", () => {
   assert.equal(stats.cardSummary({ seen: 1, due: 12345, interval: 1 }).due, 12345);
   assert.equal(stats.cardSummary({ seen: 1, interval: 1 }).due, 0); // fehlend -> 0
+});
+
+test("stats.cardSummary: firstRating/interval werden durchgereicht (|| ist nur Fallback)", () => {
+  const s = stats.cardSummary({ seen: 1, firstRating: "easy", interval: 10 });
+  assert.equal(s.firstRating, "easy"); // || null darf den echten Wert nicht verschlucken
+  assert.equal(s.interval, 10);
+  // fehlende Felder fallen auf den Default (0/null), NICHT auf 1
+  const empty = stats.cardSummary({ seen: 1 });
+  assert.equal(empty.interval, 0);
+  assert.equal(empty.firstRating, null);
+});
+
+test("stats.levelRank: A0 ist Rang 0 (nicht -1); Unbekanntes/null sortiert darunter (-1)", () => {
+  assert.equal(stats.levelRank("A0"), 0);  // erste bekannte Stufe -> Index 0, nicht „ungetestet"
+  assert.equal(stats.levelRank("A2"), 2);
+  assert.equal(stats.levelRank("???"), -1); // unbekannt
+  assert.equal(stats.levelRank(null), -1);
+});
+
+test("stats.sortRoster: challenges sortiert numerisch nach Wert (nicht nach Objekt/Name)", () => {
+  // Namens- und Challenge-Reihenfolge bewusst gegenläufig: nur eine echte Zahl-
+  // Extraktion liefert Zoe(1) vor Ann(5); ein Objekt-Rückgabe-Bug fiele auf Name zurück.
+  const ch = [{ name: "Ann", challenges: 5 }, { name: "Zoe", challenges: 1 }];
+  assert.deepEqual(stats.sortRoster(ch, "challenges", 1).map((s) => s.name), ["Zoe", "Ann"]);
 });
 
 test("stats.cardSummary: 'hard' an der 60%-Grenze ist exklusiv (strikt <)", () => {

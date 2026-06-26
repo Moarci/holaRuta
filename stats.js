@@ -175,7 +175,8 @@
     // Pace-Check: realer Schnitt vs. Tagesziel. Ohne jede Lernhistorie ermutigen
     // (noHistory) statt tadeln. recommendedPerDay = was nötig wäre, um den Rest bis
     // zur Abreise zu schaffen – nur sinnvoll, wenn noch Tage übrig sind.
-    const ratio = perDay > 0 ? recentAvg / perDay : 0;
+    // perDay ist hier garantiert >= 1 (frühe Rückgabe oben), daher kein Guard nötig.
+    const ratio = recentAvg / perDay;
     let verdict;
     if (!hasHistory && recentAvg <= 0) verdict = "noHistory";
     else if (ratio >= PACE_ON_TRACK) verdict = "onTrack";
