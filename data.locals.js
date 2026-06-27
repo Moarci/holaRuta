@@ -462,7 +462,7 @@
     // --- banco y dinero (Forts.) ---
     { id: "loc-din11", cat: "dinero-en", lvl: 2, es: "El cajero no tiene billetes.", en: "The ATM is out of cash.", tip: "di ei-ti-ÉM is aut of CASH" },
     { id: "loc-din12", cat: "dinero-en", lvl: 2, es: "¿Puedo dividir el pago?", en: "Can I split the payment?", tip: "can ai SPLIT da PÉI-ment" },
-    { id: "loc-din13", cat: "dinero-en", lvl: 2, es: "¿Hacen cambio de moneda?", en: "Do you exchange currency?", tip: "du yu eks-CHÉINCH CÓ-ren-si" },
+    { id: "loc-din13", cat: "dinero-en", lvl: 2, es: "¿Hacen cambio de moneda?", en: "Do you exchange currency?", tip: "du yu eks-CHÉINCH QUÉ-ren-si" },
     { id: "loc-din14", cat: "dinero-en", lvl: 1, es: "Necesito sacar efectivo.", en: "I need to withdraw cash.", tip: "ai nid tu wid-DRÓ cash" },
     // --- transporte público (Forts.) ---
     { id: "loc-tra09", cat: "transporte-en", lvl: 2, es: "¿Cada cuánto pasa el bus?", en: "How often does the bus come?", tip: "jau Ó-fen dos da BOS com" },
@@ -535,7 +535,7 @@
     { id: "loc-lim03", cat: "limpieza", lvl: 1, es: "Le traigo toallas limpias.", en: "I'll bring fresh towels.", tip: "ail bring fresh TÁU-els" },
     { id: "loc-lim04", cat: "limpieza", lvl: 2, es: "¿Necesita más jabón o champú?", en: "Do you need more soap or shampoo?", tip: "du yu nid mor SÓUP or sham-PÚ" },
     { id: "loc-lim05", cat: "limpieza", lvl: 2, es: "Ya cambié las sábanas.", en: "I've changed the sheets.", tip: "aiv CHÉINCHD da shits" },
-    { id: "loc-lim06", cat: "limpieza", lvl: 2, es: "¿A qué hora prefiere la limpieza?", en: "What time would you prefer cleaning?", tip: "wat taim wud yu pri-FÉR CLÍ-ning" },
+    { id: "loc-lim06", cat: "limpieza", lvl: 2, es: "¿A qué hora prefiere la limpieza?", en: "What time works best for cleaning?", tip: "wat taim works best for CLÍ-ning" },
     { id: "loc-lim07", cat: "limpieza", lvl: 1, es: "Vuelvo más tarde.", en: "I'll come back later.", tip: "ail com bak LÉI-ter" },
     { id: "loc-lim08", cat: "limpieza", lvl: 2, es: "Cuelgue el letrero si no desea molestias.", en: "Hang the sign if you don't want to be disturbed.", tip: "jang da SÁIN if yu dont want tu bi dis-TÉRBD" },
     { id: "loc-lim09", cat: "limpieza", lvl: 1, es: "Aquí tiene papel higiénico.", en: "Here is some toilet paper.", tip: "JIR is som TÓI-let PÉI-per" },
@@ -571,7 +571,7 @@
     // --- salida y check-out ---
     { id: "loc-cko01", cat: "checkout-en", lvl: 1, es: "¿Listo para el check-out?", en: "Ready to check out?", tip: "RÉ-di tu chek ÁUT" },
     { id: "loc-cko02", cat: "checkout-en", lvl: 2, es: "¿Disfrutó su estadía?", en: "Did you enjoy your stay?", tip: "did yu en-YÓI yor stéi" },
-    { id: "loc-cko03", cat: "checkout-en", lvl: 1, es: "Aquí está su factura.", en: "Here is your invoice.", tip: "JIR is yor ÍN-vois" },
+    { id: "loc-cko03", cat: "checkout-en", lvl: 1, es: "Aquí tiene su cuenta.", en: "Here is your bill.", tip: "JIR is yor BIL" },
     { id: "loc-cko04", cat: "checkout-en", lvl: 2, es: "¿Usó algo del minibar?", en: "Did you use anything from the minibar?", tip: "did yu YUS É-ni-zing from da MÍ-ni-bar" },
     { id: "loc-cko05", cat: "checkout-en", lvl: 1, es: "¿Cómo desea pagar?", en: "How would you like to pay?", tip: "jau wud yu laik tu PÉI" },
     { id: "loc-cko06", cat: "checkout-en", lvl: 2, es: "¿Necesita un taxi al aeropuerto?", en: "Do you need a taxi to the airport?", tip: "du yu nid a TÁK-si tu di ER-port" },
@@ -591,7 +591,7 @@
     { id: "loc-pel07", cat: "peluqueria", lvl: 1, es: "Siéntese, por favor.", en: "Have a seat, please.", tip: "jav a SIT plis" },
     { id: "loc-pel08", cat: "peluqueria", lvl: 2, es: "¿Quiere ver la parte de atrás?", en: "Would you like to see the back?", tip: "wud yu laik tu SI da bak" },
     { id: "loc-pel09", cat: "peluqueria", lvl: 1, es: "El corte cuesta veinte mil.", en: "The haircut is twenty thousand.", tip: "da JER-cot is TUÉN-ti ZÁU-sand" },
-    { id: "loc-pel10", cat: "peluqueria", lvl: 2, es: "¿Le gusta el largo?", en: "Do you like the length?", tip: "du yu laik da LENGZ" },
+    { id: "loc-pel10", cat: "peluqueria", lvl: 2, es: "¿Le gusta el largo?", en: "Do you like the length?", tip: "du yu laik da LENKZ" },
     { id: "loc-pel11", cat: "peluqueria", lvl: 1, es: "No se mueva, por favor.", en: "Please don't move.", tip: "plis dont MUV" },
     { id: "loc-pel12", cat: "peluqueria", lvl: 2, es: "¿Vuelve en un mes?", en: "See you in a month?", tip: "si yu in a MONZ" },
     // --- alquiler y vivienda (Gastgeber / Vermieter) ---
@@ -959,9 +959,9 @@
         whyEs: "Confirmar el minibar evita cobros sorpresa.", whyEn: "Checking the minibar avoids surprise charges.",
         accept: ["did you use anything from the minibar", "did you use the minibar", "anything from the minibar"] },
       { who: "npc", en: "No, nothing. Here is the key.", es: "No, nada. Aquí está la llave." },
-      { who: "user", kind: "mc", es: "(entrégale la factura)", solEs: "Here is your invoice.",
-        whyEs: "«Here is your invoice» entrega la cuenta final.", whyEn: "«Here is your invoice» hands over the final bill.",
-        options: [{ es: "Here is your invoice.", ok: true }, { es: "No invoice today.", ok: false }, { es: "Pay in cash only.", ok: false }] },
+      { who: "user", kind: "mc", es: "(entrégale la cuenta)", solEs: "Here is your bill.",
+        whyEs: "«Here is your bill» entrega la cuenta final.", whyEn: "«Here is your bill» hands over the final bill.",
+        options: [{ es: "Here is your bill.", ok: true }, { es: "No bill today.", ok: false }, { es: "Pay in cash only.", ok: false }] },
       { who: "npc", en: "Thank you. Can you call me a taxi?", es: "Gracias. ¿Me puede pedir un taxi?" },
       { who: "user", kind: "type", es: "(dile que sí y deséale buen viaje)", solEs: "Of course. Have a safe trip!",
         whyEs: "Cierra con servicio y un buen deseo.", whyEn: "Closes with service and a kind wish.",
