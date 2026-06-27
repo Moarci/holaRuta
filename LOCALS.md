@@ -50,17 +50,17 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 
 | Gruppe | Kategorien |
 |---|---|
-| Turismo y hostelería (`loc-hosp`) | meseros, recepción, guías, taxi, ventas, bar, playa, quejas y disculpas, comida típica |
-| Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público, emergencias y seguridad |
-| Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes |
-| Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores |
+| Turismo y hostelería (`loc-hosp`) | meseros, recepción, guías, taxi, ventas, bar, playa, quejas y disculpas, comida típica, limpieza/housekeeping, spa y masajes, lancha e islas, salida/check-out |
+| Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público, emergencias y seguridad, peluquería, alquiler y vivienda, el clima |
+| Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes, hoja de vida (CV), negociar |
+| Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores, tiempos verbales, preposiciones, hacer preguntas |
 
-Aktuell **26 Kategorien · 262 Karten** (ein Schnellstart-Preset je Kategorie).
+Aktuell **38 Kategorien · 514 Karten** (ein Schnellstart-Preset je Kategorie).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
 ### Kurspläne „Semana 1–4"
 
-`data.locals.js → PLANS` definiert **zwei** strukturierte 4-Wochen-Lehrgänge, die die
+`data.locals.js → PLANS` definiert **drei** strukturierte 4-Wochen-Lehrgänge, die die
 vorhandene `PRETRIP`-Etappen-Engine wiederverwenden; jede Woche bündelt ~8 Karten quer
 durch die Kategorien zu einem Lernpfad, und die nächste Woche öffnet sich nach Abschluss
 der aktuellen:
@@ -68,6 +68,8 @@ der aktuellen:
   Verkaufen/Reklamation → Essen/Strand/Reseñas.
 - **Curso pro: trabajo** (scope `curso-pro`) – Entrevista → Oficina/Teléfono →
   Atención al cliente → Reseñas/Números.
+- **Curso día a día** (scope `curso-dia`) – Saludar/Llamar → Orientieren/Bewegen →
+  Einkaufen/Bezahlen → Gesundheit/Wetter/Notfälle.
 
 Über die Chip-Leiste in „Descubrir → Curso" umschaltbar (`pretripVM` filtert im Locals-
 Track auf `^curso`); im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten
@@ -80,9 +82,10 @@ laufen durch die normale (track-korrekte) Study-Engine.
 Der **NPC ist ein Tourist und spricht Englisch** (`turn.en`, wird per englischer TTS
 vorgelesen); Übersetzung & Handlungsanweisung stehen auf Spanisch (`turn.es`); der/die
 Lernende antwortet auf Englisch (MC oder frei getippt, `solEs`/`options[].es`/`accept`
-tragen die englische Musterantwort). Zehn Szenarien: Restaurant, Recepción, Tour, Taxi,
-Mercado, Queja (Beschwerde), Playa, Entrevista de trabajo (Jobinterview), Llamada de
-servicio (Service-Anruf) und Farmacia (Apotheke).
+tragen die englische Musterantwort). Fünfzehn Szenarien: Restaurant, Recepción, Tour,
+Taxi, Mercado, Queja (Beschwerde), Playa, Entrevista de trabajo (Jobinterview), Llamada
+de servicio (Service-Anruf), Farmacia (Apotheke), Check-out, Spa/Masaje, Lancha (Islas
+del Rosario), Banco und Peluquería.
 
 Die geteilte Engine (`features/dialogos-game.js`) wurde dafür track-fähig gemacht:
 gesprochene Zeile = Lernsprache, Übersetzung/Anweisung = Muttersprache (Reise-Track

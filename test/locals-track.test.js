@@ -164,7 +164,8 @@ test("Content: Kurspläne (PLANS) – je 4 Wochen, Karten existieren, scope curs
     }
   }
   assert.equal(scopes.size, dataLocals.PLANS.length, "Plan-scopes sind eindeutig");
-  assert.ok(scopes.has("curso-en") && scopes.has("curso-pro"), "Grund- und Pro-Kurs vorhanden");
+  assert.ok(scopes.has("curso-en") && scopes.has("curso-pro") && scopes.has("curso-dia"),
+    "Grund-, Pro- und Alltags-Kurs vorhanden");
 });
 
 test("Content: Kursplan ist im Locals-Track vorn in PRETRIP (defaultPretripScope)", () => {
