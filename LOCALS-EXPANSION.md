@@ -15,7 +15,9 @@ zugeschnitten auf die Rolle.
 > Zusätzlich adversarialer Inhalts-Review aller ~290 neuen Karten + 4 Diálogos
 > (1 HIGH behoben: „Is there any problem?" → „Are there any questions?"; mehrere LOW).
 > `reunion-en`/`videocall-en` bleiben bewusst getrennt (komplementär, keine Dubletten —
-> vom Review bestätigt). Offen/optional: weitere Diálogos je Cluster.
+> vom Review bestätigt). **Nachgezogen:** Nische Healthcare (`salud-pro-en`, 14 Karten +
+> Diálogo „En la consulta") → **63 Kategorien · 818 Karten · 20 Diálogos · 7 Kurspläne**.
+> Offen/optional: weitere Diálogos je Cluster.
 
 ---
 

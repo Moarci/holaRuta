@@ -52,10 +52,10 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 |---|---|
 | Turismo y hostelería (`loc-hosp`) | meseros, recepción, guías, taxi, ventas, bar, playa, quejas y disculpas, comida típica, limpieza/housekeeping, spa y masajes, lancha e islas, salida/check-out, buceo y snorkel, senderismo, aeropuerto, alquiler de autos, museo y entradas |
 | Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público, emergencias y seguridad, peluquería, alquiler y vivienda, el clima, domicilios, gimnasio, casa y servicios |
-| Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes, hoja de vida (CV), negociar, call-center/BPO, inglés para TI, videollamadas, ventas y pitch, finanzas y facturas, logística y envíos, RR. HH./feedback, networking |
+| Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes, hoja de vida (CV), negociar, call-center/BPO, inglés para TI, videollamadas, ventas y pitch, finanzas y facturas, logística y envíos, RR. HH./feedback, networking, personal de salud (médicos/enfermeras) |
 | Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores, tiempos verbales, preposiciones, hacer preguntas, falsos amigos, pronunciación (minimalpaare), present perfect, artículos a/an/the, cantidades (much/many), verbos modales, phrasal verbs, comparar |
 
-Aktuell **62 Kategorien · 804 Karten** (ein Schnellstart-Preset je Kategorie).
+Aktuell **63 Kategorien · 818 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
@@ -84,11 +84,11 @@ laufen durch die normale (track-korrekte) Study-Engine.
 Der **NPC ist ein Tourist und spricht Englisch** (`turn.en`, wird per englischer TTS
 vorgelesen); Übersetzung & Handlungsanweisung stehen auf Spanisch (`turn.es`); der/die
 Lernende antwortet auf Englisch (MC oder frei getippt, `solEs`/`options[].es`/`accept`
-tragen die englische Musterantwort). Neunzehn Szenarien: Restaurant, Recepción, Tour,
+tragen die englische Musterantwort). Zwanzig Szenarien: Restaurant, Recepción, Tour,
 Taxi, Mercado, Queja, Playa, Entrevista de trabajo, Llamada de servicio, Farmacia,
-Check-out, Spa/Masaje, Lancha (Islas del Rosario), Banco, Peluquería sowie – neu aus dem
-Erweiterungspack – **Briefing de buceo, Check-in de vuelo, Daily standup (TI) und Demo
-de ventas**.
+Check-out, Spa/Masaje, Lancha (Islas del Rosario), Banco, Peluquería sowie – aus dem
+Erweiterungspack – **Briefing de buceo, Check-in de vuelo, Daily standup (TI), Demo
+de ventas und En la consulta (clínica)**.
 
 Die geteilte Engine (`features/dialogos-game.js`) wurde dafür track-fähig gemacht:
 gesprochene Zeile = Lernsprache, Übersetzung/Anweisung = Muttersprache (Reise-Track

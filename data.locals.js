@@ -71,6 +71,7 @@
     { id: "logistica-en",label: "Logística y envíos", labelEs: "Logística y envíos", labelEn: "Logistics & shipping", icon: "📦", grad: ["#B97C24", "#3F7355"], group: "loc-trab" },
     { id: "feedback-en",label: "RR. HH. y feedback", labelEs: "RR. HH. y feedback", labelEn: "HR & feedback",     icon: "🗣️", grad: ["#4C5FA8", "#7D4A8E"], group: "loc-trab" },
     { id: "networking-en",label: "Networking",       labelEs: "Networking",        labelEn: "Networking",        icon: "🪪", grad: ["#3E8388", "#4C5FA8"], group: "loc-trab" },
+    { id: "salud-pro-en",label: "Personal de salud", labelEs: "Personal de salud", labelEn: "Healthcare staff",   icon: "🩺", grad: ["#2F8E5B", "#1F7A8C"], group: "loc-trab" },
     // --- Escuela y examen ---
     { id: "gramatica-en", label: "Gramática básica", labelEs: "Gramática básica", labelEn: "Basic grammar",     icon: "📐", grad: ["#B5302A", "#CE463E"], group: "loc-esc" },
     { id: "examen",     label: "En clase",          labelEs: "En clase",          labelEn: "In class",           icon: "✏️", grad: ["#B97C24", "#3F7355"], group: "loc-esc" },
@@ -821,6 +822,21 @@
     { id: "loc-net08", cat: "networking-en", lvl: 1, es: "Te escribo la próxima semana.", en: "I'll message you next week.", tip: "ail MÉ-sech yu nekst wik" },
     { id: "loc-net09", cat: "networking-en", lvl: 2, es: "Me encantó tu presentación.", en: "I loved your talk.", tip: "ai lovd yor TOK" },
     { id: "loc-net10", cat: "networking-en", lvl: 1, es: "Mantengámonos en contacto.", en: "Let's keep in touch.", tip: "lets kip in TOCH" },
+    // --- salud-pro-en (Personal de salud: médicos/enfermeras con pacientes en inglés) ---
+    { id: "loc-hc01", cat: "salud-pro-en", lvl: 1, es: "¿Cómo se siente hoy?", en: "How are you feeling today?", tip: "jau ar yu FÍ-ling tu-DÉI" },
+    { id: "loc-hc02", cat: "salud-pro-en", lvl: 1, es: "¿Dónde le duele?", en: "Where does it hurt?", tip: "wer dos it JÉRT" },
+    { id: "loc-hc03", cat: "salud-pro-en", lvl: 3, es: "¿Desde cuándo tiene estos síntomas?", en: "How long have you had these symptoms?", tip: "jau long jav yu jad dis SÍMP-toms" },
+    { id: "loc-hc04", cat: "salud-pro-en", lvl: 1, es: "Respire profundo, por favor.", en: "Take a deep breath, please.", tip: "teik a dip BREZ plis" },
+    { id: "loc-hc05", cat: "salud-pro-en", lvl: 2, es: "¿Es alérgico a algún medicamento?", en: "Are you allergic to any medication?", tip: "ar yu a-LÉR-yic tu É-ni me-di-CÉI-shon" },
+    { id: "loc-hc06", cat: "salud-pro-en", lvl: 2, es: "Le voy a tomar la presión.", en: "I'm going to take your blood pressure.", tip: "aim góu-ing tu teik yor blod PRÉ-shur" },
+    { id: "loc-hc07", cat: "salud-pro-en", lvl: 2, es: "Necesita unos análisis de sangre.", en: "You need some blood tests.", tip: "yu nid som blod TESTS" },
+    { id: "loc-hc08", cat: "salud-pro-en", lvl: 1, es: "Tome este medicamento dos veces al día.", en: "Take this medicine twice a day.", tip: "teik dis MÉ-di-sin tuais a DÉI" },
+    { id: "loc-hc09", cat: "salud-pro-en", lvl: 2, es: "No es nada grave.", en: "It's nothing serious.", tip: "its NÓ-zing SÍ-rios" },
+    { id: "loc-hc10", cat: "salud-pro-en", lvl: 1, es: "¿Tiene seguro médico?", en: "Do you have health insurance?", tip: "du yu jav JELZ in-SHÚ-rans" },
+    { id: "loc-hc11", cat: "salud-pro-en", lvl: 3, es: "Le voy a recetar un antibiótico.", en: "I'll prescribe an antibiotic.", tip: "ail pres-CRÁIB an an-ti-bai-Ó-tic" },
+    { id: "loc-hc12", cat: "salud-pro-en", lvl: 1, es: "Descanse y tome líquidos.", en: "Rest and drink fluids.", tip: "rest and drink FLÚ-ids" },
+    { id: "loc-hc13", cat: "salud-pro-en", lvl: 2, es: "Si empeora, vuelva de inmediato.", en: "If it gets worse, come back right away.", tip: "if it gets WERS, com bak rait a-WÉI" },
+    { id: "loc-hc14", cat: "salud-pro-en", lvl: 1, es: "Que se mejore pronto.", en: "Get well soon.", tip: "get wel SUN" },
 
     // ===================================================================
     // ===== ERWEITERUNGSPACK · Batch 2: Grammatik-Packs (loc-esc) =======
@@ -1178,6 +1194,7 @@
     { id: "dlg-aeropuerto", title: "Check-in del vuelo", titleEs: "Check-in del vuelo", titleEn: "Flight check-in", icon: "lc:plane", lvl: 2, intro: "Atiende a un viajero en el mostrador.", introEs: "Atiende a un viajero en el mostrador.", introEn: "Help a traveler at the check-in desk." },
     { id: "dlg-tech", title: "Daily standup", titleEs: "Daily standup", titleEn: "Daily standup", icon: "lc:briefcase", lvl: 2, intro: "Da tu reporte en el standup del equipo.", introEs: "Da tu reporte en el standup del equipo.", introEn: "Give your update in the team standup." },
     { id: "dlg-ventas", title: "Demo de ventas", titleEs: "Demo de ventas", titleEn: "Sales demo", icon: "lc:handshake", lvl: 2, intro: "Presenta tu producto a un cliente.", introEs: "Presenta tu producto a un cliente.", introEn: "Pitch your product to a customer." },
+    { id: "dlg-clinica", title: "En la consulta", titleEs: "En la consulta", titleEn: "At the clinic", icon: "lc:stethoscope", lvl: 2, intro: "Atiende a un paciente extranjero en la consulta.", introEs: "Atiende a un paciente extranjero en la consulta.", introEn: "See a foreign patient at the clinic." },
   ];
   var DLG = [
     { id: "dlg-restaurante-1", cat: "dlg-restaurante", title: "En el restaurante", titleEs: "En el restaurante", titleEn: "At the restaurant", lvl: 1, turns: [
@@ -1521,6 +1538,24 @@
       { who: "user", kind: "type", es: "(dile que le haces seguimiento mañana)", solEs: "I'll follow up tomorrow.",
         whyEs: "El seguimiento mantiene viva la oportunidad.", whyEn: "Following up keeps the deal alive.",
         accept: ["i'll follow up tomorrow", "i will follow up tomorrow", "follow up tomorrow"] },
+    ] },
+    { id: "dlg-clinica-1", cat: "dlg-clinica", title: "En la consulta", titleEs: "En la consulta", titleEn: "At the clinic", lvl: 2, turns: [
+      { who: "npc", en: "Hi doctor, I don't feel well.", es: "Hola doctor, no me siento bien." },
+      { who: "user", kind: "mc", es: "(pregúntale dónde le duele)", solEs: "Where does it hurt?",
+        whyEs: "Empieza localizando el dolor.", whyEn: "Start by locating the pain.",
+        options: [{ es: "Where does it hurt?", ok: true }, { es: "Pay first, please.", ok: false }, { es: "I'm busy right now.", ok: false }] },
+      { who: "npc", en: "My stomach hurts a lot.", es: "Me duele mucho el estómago." },
+      { who: "user", kind: "type", es: "(pregunta desde cuándo lo tiene)", solEs: "How long have you had this?",
+        whyEs: "El present perfect pregunta por la duración hasta ahora.", whyEn: "Present perfect asks about duration up to now.",
+        accept: ["how long have you had this", "how long have you had this?", "how long have you had it"] },
+      { who: "npc", en: "Since yesterday.", es: "Desde ayer." },
+      { who: "user", kind: "mc", es: "(pregúntale si es alérgico a algún medicamento)", solEs: "Are you allergic to any medication?",
+        whyEs: "Verificar alergias es clave antes de recetar.", whyEn: "Checking allergies is key before prescribing.",
+        options: [{ es: "Are you allergic to any medication?", ok: true }, { es: "Just walk it off.", ok: false }, { es: "I don't care.", ok: false }] },
+      { who: "npc", en: "No, I'm not.", es: "No, no lo soy." },
+      { who: "user", kind: "type", es: "(dile que le recetas un medicamento y que descanse)", solEs: "I'll prescribe some medicine. Get some rest.",
+        whyEs: "Cierra con tratamiento y una recomendación.", whyEn: "Closes with treatment and a recommendation.",
+        accept: ["i'll prescribe some medicine. get some rest", "i'll prescribe some medicine and get some rest", "i will prescribe some medicine. get some rest"] },
     ] },
   ];
 
