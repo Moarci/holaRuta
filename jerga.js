@@ -195,6 +195,7 @@
         { es: "chévere", de: "cool, super, klasse", en: "cool, great, awesome" },
         { es: "bacano / bacán", de: "richtig cool, geil", en: "really cool, awesome" },
         { es: "¡Qué chimba!", de: "Wie geil! (sehr umgangssprachlich, Vorsicht)", en: "How awesome! (very colloquial, careful)" },
+        { es: "del putas", de: "der absolute Hammer, mega gut (sehr derb, Vorsicht)", en: "absolutely amazing (very crude, careful)" },
         { es: "una nota", de: "klasse, eine Wucht (Sache/Person)", en: "great, a blast (thing/person)" },
         { es: "brutal / una chimba", de: "der Hammer, mega", en: "amazing, killer" },
         { es: "está muy bueno", de: "das ist richtig gut", en: "that's really good" },
@@ -207,6 +208,7 @@
       titleEn: "Partying & going out",
       items: [
         { es: "la rumba", de: "die Party, das Feiern", en: "the party, partying" },
+        { es: "la farra / farrear", de: "die Sause / ausgiebig feiern (Ausgehen & Nachtleben)", en: "the bash / to party hard (going out & nightlife)" },
         { es: "rumbear", de: "feiern gehen, abtanzen", en: "to party, go out dancing" },
         { es: "el guaro", de: "Aguardiente (Anis-Schnaps, das Nationalgetränk)", en: "aguardiente (anise liquor, the national drink)" },
         { es: "estar prendido", de: "angeheitert sein", en: "to be tipsy" },
@@ -278,6 +280,7 @@
     { es: "chévere", de: "cool", en: "cool" },
     { es: "bacano", de: "richtig cool", en: "really cool" },
     { es: "la rumba", de: "die Party", en: "the party" },
+    { es: "la farra", de: "die Sause, das Feiern", en: "the bash, partying" },
     { es: "el guaro", de: "Aguardiente", en: "aguardiente" },
     { es: "la plata", de: "Geld", en: "money" },
     { es: "una luca", de: "1.000 Pesos", en: "1,000 pesos" },
