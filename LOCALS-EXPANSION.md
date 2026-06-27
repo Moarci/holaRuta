@@ -8,6 +8,12 @@ Person? Anschließend gegen unseren Bestand (`data.locals.js`, Stand **38 Katego
 Leitprinzip bleibt **„Sinnhaftigkeit nie vergessen"**: nur real benötigte Sprache,
 zugeschnitten auf die Rolle.
 
+> **Umsetzungsstand:** Batch 1 (Beruf-Tiefe), Batch 2 (Grammatik-Packs) und Batch 3
+> (Tourismus-Nischen + Alltag/Expat-Dienste + 4 Diálogos) sind **umgesetzt** →
+> **62 Kategorien · 804 Karten · 19 Diálogos · 7 Kurspläne**. Offen: die Qualitäts-
+> Verbesserungen am Bestand (Teil 3.7: Video-Call-Karten aus `reunion-en` migrieren,
+> `alt`-Varianten, `lvl:3`-Feinschliff) und optionale weitere Diálogos.
+
 ---
 
 ## Teil 1 — Aufstellung: Wer hat Kontakt, wer braucht was?
