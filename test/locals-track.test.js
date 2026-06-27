@@ -165,6 +165,33 @@ test("Content: Kursplan ist im Locals-Track vorn in PRETRIP (defaultPretripScope
   assert.equal(data.PRETRIP[0].scope, "curso-en");
 });
 
+test("Content: Diálogos (Local-Perspektive) – NPC Englisch, Antwort Englisch", () => {
+  const scn = dataLocals.DIALOGOS_SCENARIOS, dlg = dataLocals.DIALOGOS;
+  assert.ok(Array.isArray(scn) && scn.length >= 3);
+  // jedes Szenario hat mind. einen Dialog
+  for (const s of scn) assert.ok(dlg.some((d) => d.cat === s.id), `Szenario ${s.id} hat einen Dialog`);
+  for (const d of dlg) {
+    let userTurns = 0;
+    for (const tn of d.turns) {
+      if (tn.who === "npc") {
+        assert.ok(tn.en && tn.en.length, `${d.id}: NPC-Zug spricht Englisch (en)`);
+        assert.ok(tn.es && tn.es.length, `${d.id}: NPC-Zug hat spanische Übersetzung (es)`);
+      } else {
+        userTurns++;
+        assert.ok(tn.es && tn.es.length, `${d.id}: user-Zug hat spanische Anweisung (es)`);
+        assert.ok(tn.solEs && tn.solEs.length, `${d.id}: user-Zug hat englische Musterantwort (solEs)`);
+        if (tn.kind === "mc") {
+          const oks = tn.options.filter((o) => o.ok);
+          assert.equal(oks.length, 1, `${d.id}: genau eine richtige MC-Option`);
+        } else {
+          assert.ok(Array.isArray(tn.accept), `${d.id}: type-Zug hat accept[]`);
+        }
+      }
+    }
+    assert.ok(userTurns > 0, `${d.id} hat user-Züge`);
+  }
+});
+
 test("Content: data.locals hängt im Locals-Track an den aktiven Korpus an", () => {
   const ids = new Set(data.CARDS.map((c) => c.id));
   assert.ok(ids.has("loc-mes01"), "Locals-Karten sind im aktiven Korpus");

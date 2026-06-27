@@ -987,7 +987,7 @@
     // Inhalte (Precios, Conjugación, Jerga, Diálogos, Länder/Geschichte …). Für
     // Englisch-Lernende nur die sprachunabhängigen behalten (Mi léxico).
     const localsTrack = !!(window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
-    const LOCALS_FEATURES = { "open-favorites": true };
+    const LOCALS_FEATURES = { "open-favorites": true, "open-dialogos": true };
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
       // Locals-Track: nur sprachunabhängige Features (Mi léxico) + die mit loc:true

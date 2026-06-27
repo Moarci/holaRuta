@@ -68,9 +68,18 @@ sich nach Abschluss der aktuellen. Erreichbar über „Descubrir → Curso · Se
 im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten laufen durch die
 normale (track-korrekte) Study-Engine.
 
-> Diálogos-Rollenspiele aus Local-Perspektive sind als nächster Schritt vorgesehen –
-> sie brauchen einen Umbau der stark reise-codierten Diálogos-Turn-Engine (NPC-Sprache,
-> TTS-Richtung) und sind daher bewusst noch nicht enthalten.
+### Diálogos-Rollenspiele (Local-Perspektive)
+
+`data.locals.js → DIALOGOS_SCENARIOS/DIALOGOS` (gesetzt als `SC.dialogos`, sodass
+`loadModule` nicht die Reise-Datei lädt; `dialogos.js` überspringt sich im Locals-Track).
+Der **NPC ist ein Tourist und spricht Englisch** (`turn.en`, wird per englischer TTS
+vorgelesen); Übersetzung & Handlungsanweisung stehen auf Spanisch (`turn.es`); der/die
+Lernende antwortet auf Englisch (MC oder frei getippt, `solEs`/`options[].es`/`accept`
+tragen die englische Musterantwort). Drei Szenarien (Restaurant, Recepción, Tour).
+
+Die geteilte Engine (`features/dialogos-game.js`) wurde dafür track-fähig gemacht:
+gesprochene Zeile = Lernsprache, Übersetzung/Anweisung = Muttersprache (Reise-Track
+unverändert: NPC Spanisch, Übersetzung de/en).
 
 ## Fokussierte Edition (Reise-Inhalte ausgeblendet)
 

@@ -234,6 +234,22 @@
     pretripStart: "Empezar",
     pretripReplay: "Repetir",
     pretripLocked: "bloqueada",
+    // Diálogos (Rollenspiel: der Tourist spricht Englisch, der/die Lernende antwortet)
+    subDialogos: "Atiende una conversación, turno a turno.",
+    dlgUnavailable: "No hay diálogos disponibles ahora.",
+    dlgNoSpeak: "Tu dispositivo no puede leer en voz alta; los diálogos igual funcionan (para leer).",
+    dlgIntro: "Practica una conversación real turno a turno. La otra persona habla en inglés; tú respondes. Elige una situación.",
+    dlgReplay: "🔊 Escuchar otra vez",
+    dlgTipShow: "💡 Ver pista",
+    dlgPlaceholder: "Escribe tu respuesta en inglés …",
+    dlgSay: "Decir",
+    dlgWellSaid: "✓ ¡Bien dicho!",
+    dlgBetter: function (p) { return 'Mejor así: <b lang="en">' + p.es + "</b>"; },
+    dlgWhy: "¿Por qué?",
+    dlgYou: function (p) { return "Tú: «" + p.given + "»"; },
+    dlgStep: function (p) { return "Paso " + p.step + " de " + p.total; },
+    dlgAgain: "Practicar otra vez",
+    dlgOther: "Otra situación",
   });
 
   // ---------- app: alcance, controles, avisos ----------

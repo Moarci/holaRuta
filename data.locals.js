@@ -407,8 +407,76 @@
     },
   ];
 
+  // Diálogos (Gesprächs-Simulationen) aus LOCAL-Perspektive: der NPC ist ein Tourist
+  // und spricht ENGLISCH (turn.en, wird per TTS vorgelesen); die Übersetzung/Anweisung
+  // steht auf Spanisch (turn.es). Der/die Lernende antwortet auf Englisch (solEs/
+  // options[].es/accept tragen die ENGLISCHE Musterantwort – Feldnamen wie im Reise-
+  // Schema, Inhalt gespiegelt). why/whyEs/whyEn = kurze Begründung (Spanisch/Englisch).
+  // Die Engine (features/dialogos-game.js) liest die gesprochene Zeile track-abhängig.
+  var DLG_SCENARIOS = [
+    { id: "dlg-restaurante", title: "En el restaurante", titleEs: "En el restaurante", titleEn: "At the restaurant", icon: "lc:utensils", lvl: 1, intro: "Atiende a un turista en tu restaurante.", introEs: "Atiende a un turista en tu restaurante.", introEn: "Serve a tourist at your restaurant." },
+    { id: "dlg-recepcion", title: "En la recepción", titleEs: "En la recepción", titleEn: "At reception", icon: "lc:bell", lvl: 1, intro: "Recibe a un huésped en la recepción.", introEs: "Recibe a un huésped en la recepción.", introEn: "Welcome a guest at reception." },
+    { id: "dlg-tour", title: "En el tour", titleEs: "En el tour", titleEn: "On the tour", icon: "lc:compass", lvl: 2, intro: "Guía a un grupo de turistas.", introEs: "Guía a un grupo de turistas.", introEn: "Guide a group of tourists." },
+  ];
+  var DLG = [
+    { id: "dlg-restaurante-1", cat: "dlg-restaurante", title: "En el restaurante", titleEs: "En el restaurante", titleEn: "At the restaurant", lvl: 1, turns: [
+      { who: "npc", en: "Hi! Do you have a table for two?", es: "¡Hola! ¿Tienen mesa para dos?" },
+      { who: "user", kind: "mc", es: "(salúdalo y dile que sí, por aquí)", solEs: "Yes, of course. This way, please.",
+        whyEs: "«This way, please» guía al cliente con cortesía.", whyEn: "«This way, please» politely guides the guest.",
+        options: [{ es: "Yes, of course. This way, please.", ok: true }, { es: "Sorry, we're closed.", ok: false }, { es: "The bill, please.", ok: false }] },
+      { who: "npc", en: "Thank you. Can we see the menu?", es: "Gracias. ¿Podemos ver el menú?" },
+      { who: "user", kind: "type", es: "(diles que aquí está el menú)", solEs: "Here is the menu.",
+        whyEs: "«Here is …» presenta algo de forma natural.", whyEn: "«Here is …» presents something naturally.",
+        accept: ["here is the menu", "here's the menu"] },
+      { who: "npc", en: "What do you recommend?", es: "¿Qué recomienda?" },
+      { who: "user", kind: "mc", es: "(recomienda el pescado del día)", solEs: "I recommend today's fish.",
+        whyEs: "«I recommend …» sirve para sugerir un plato.", whyEn: "«I recommend …» suggests a dish.",
+        options: [{ es: "I recommend today's fish.", ok: true }, { es: "I don't know.", ok: false }, { es: "We have no food.", ok: false }] },
+      { who: "npc", en: "Perfect, we'll take that.", es: "Perfecto, lo pedimos." },
+      { who: "user", kind: "type", es: "(diles que es una buena elección)", solEs: "Great choice!",
+        whyEs: "«Great choice!» felicita la elección del cliente.", whyEn: "«Great choice!» affirms the guest's pick.",
+        accept: ["great choice", "good choice", "great choice!"] },
+    ] },
+    { id: "dlg-recepcion-1", cat: "dlg-recepcion", title: "En la recepción", titleEs: "En la recepción", titleEn: "At reception", lvl: 1, turns: [
+      { who: "npc", en: "Hello, I have a reservation.", es: "Hola, tengo una reserva." },
+      { who: "user", kind: "mc", es: "(salúdalo y pídele el pasaporte)", solEs: "Welcome! May I see your passport?",
+        whyEs: "«May I see …?» pide algo con cortesía.", whyEn: "«May I see …?» asks for something politely.",
+        options: [{ es: "Welcome! May I see your passport?", ok: true }, { es: "No rooms today.", ok: false }, { es: "Pay now, please.", ok: false }] },
+      { who: "npc", en: "Sure, here you go.", es: "Claro, aquí tiene." },
+      { who: "user", kind: "type", es: "(dile que su cuarto está en el segundo piso)", solEs: "Your room is on the second floor.",
+        whyEs: "«on the second floor» indica el piso.", whyEn: "«on the second floor» gives the floor.",
+        accept: ["your room is on the second floor", "second floor"] },
+      { who: "npc", en: "Great. What time is breakfast?", es: "Genial. ¿A qué hora es el desayuno?" },
+      { who: "user", kind: "mc", es: "(di que de siete a diez)", solEs: "Breakfast is from seven to ten.",
+        whyEs: "«from … to …» expresa un rango de horas.", whyEn: "«from … to …» gives a time range.",
+        options: [{ es: "Breakfast is from seven to ten.", ok: true }, { es: "There is no breakfast.", ok: false }, { es: "At midnight.", ok: false }] },
+      { who: "npc", en: "Thank you so much.", es: "Muchas gracias." },
+      { who: "user", kind: "type", es: "(deséale una buena estadía)", solEs: "Enjoy your stay!",
+        whyEs: "«Enjoy your stay!» es la despedida típica en hoteles.", whyEn: "«Enjoy your stay!» is the typical hotel sign-off.",
+        accept: ["enjoy your stay", "enjoy your stay!"] },
+    ] },
+    { id: "dlg-tour-1", cat: "dlg-tour", title: "En el tour", titleEs: "En el tour", titleEn: "On the tour", lvl: 2, turns: [
+      { who: "npc", en: "Hi! Is this the city tour?", es: "¡Hola! ¿Este es el tour de la ciudad?" },
+      { who: "user", kind: "mc", es: "(dale la bienvenida al tour)", solEs: "Yes, welcome to the tour!",
+        whyEs: "«Welcome to …» da la bienvenida a un lugar o evento.", whyEn: "«Welcome to …» welcomes someone to a place or event.",
+        options: [{ es: "Yes, welcome to the tour!", ok: true }, { es: "No, go away.", ok: false }, { es: "I am lost.", ok: false }] },
+      { who: "npc", en: "How long does it take?", es: "¿Cuánto dura?" },
+      { who: "user", kind: "type", es: "(di que dura dos horas)", solEs: "It lasts two hours.",
+        whyEs: "«It lasts …» indica la duración.", whyEn: "«It lasts …» gives the duration.",
+        accept: ["it lasts two hours", "two hours"] },
+      { who: "npc", en: "Can we take photos?", es: "¿Podemos tomar fotos?" },
+      { who: "user", kind: "mc", es: "(diles que tienen quince minutos para fotos)", solEs: "We have fifteen minutes for photos.",
+        whyEs: "Indica el tiempo disponible con «We have … minutes».", whyEn: "State the available time with «We have … minutes».",
+        options: [{ es: "We have fifteen minutes for photos.", ok: true }, { es: "No photos ever.", ok: false }, { es: "I have no camera.", ok: false }] },
+      { who: "npc", en: "Thank you, that was great!", es: "¡Gracias, estuvo genial!" },
+      { who: "user", kind: "type", es: "(diles que disfruten su visita)", solEs: "Enjoy your visit!",
+        whyEs: "«Enjoy your visit!» cierra con amabilidad.", whyEn: "«Enjoy your visit!» closes warmly.",
+        accept: ["enjoy your visit", "enjoy your visit!", "i hope you enjoy your visit"] },
+    ] },
+  ];
+
   // Öffentlich machen (für Tests / spätere Cluster) …
-  SC.dataLocals = { CATEGORIES: CATEGORIES, CARDS: CARDS, PRESETS: PRESETS, PLANS: PLANS };
+  SC.dataLocals = { CATEGORIES: CATEGORIES, CARDS: CARDS, PRESETS: PRESETS, PLANS: PLANS, DIALOGOS_SCENARIOS: DLG_SCENARIOS, DIALOGOS: DLG };
 
   // … und NUR im Locals-Track in den aktiven Korpus einhängen. data.js hat SC.data
   // bereits angelegt; idempotentes Anhängen (kein doppeltes Einfügen bei Re-Eval).
@@ -425,6 +493,9 @@
         // Kursplan VORN: defaultPretripScope nimmt im Locals-Track PRETRIP()[0].
         SC.data.PRETRIP = PLANS.concat(SC.data.PRETRIP || []);
       }
+      // Diálogos-Content: SC.dialogos VORAB setzen, damit loadModule("dialogos") die
+      // Locals-Szenarien nimmt und NICHT die Reise-Datei dialogos.js nachlädt.
+      if (!SC.dialogos) SC.dialogos = { DIALOGOS_SCENARIOS: DLG_SCENARIOS, DIALOGOS: DLG };
     }
   } catch (e) { /* ohne Config/Data: stiller Rückfall, App läuft wie gehabt */ }
 })();
