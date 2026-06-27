@@ -105,15 +105,17 @@
   function natKey(obj, base) {
     if (!obj) return "";
     const de = obj[base];
-    // Für jede Nicht-Deutsch-Sprache (en UND es) das En-Pendant bevorzugen. Inhalts-
-    // objekte tragen bislang nur de/En-Felder (kein …Es); für ein spanischsprachiges
-    // Publikum ist das englische Label der bessere Rückfall als der deutsche Basiswert.
-    if (lang !== "de") {
-      // "situationDe" -> "situationEn"; "title" -> "titleEn"
-      const enKey = /De$/.test(base) ? base.slice(0, -2) + "En" : base + "En";
-      const en = obj[enKey];
-      if (en != null && en !== "") return en;
+    if (lang === "de") return de != null ? de : "";
+    // "situationDe" -> Stamm "situation"; "title" -> "title".
+    const stem = /De$/.test(base) ? base.slice(0, -2) : base;
+    // Spanisch bevorzugt das …Es-Feld (z.B. labelEs). Fehlt es, ist das …En-Feld der
+    // bessere Zwischenrückfall als der deutsche Basiswert (Inhalte ohne …Es-Pendant).
+    if (lang === "es") {
+      const es = obj[stem + "Es"];
+      if (es != null && es !== "") return es;
     }
+    const en = obj[stem + "En"];
+    if (en != null && en !== "") return en;
     return de != null ? de : "";
   }
 

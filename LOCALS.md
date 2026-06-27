@@ -46,9 +46,29 @@ Der Standard-Track `de-es` bildet das bisherige Verhalten 1:1 ab – **ohne Edit
 
 `data.locals.js` (reine Daten, hängt nur im Locals-Track an `SC.data` an):
 `es` = Frage, `en` = gelernte Antwort, `tip` = englische Aussprachehilfe für
-Spanisch-Sprecher. **Pilot-Cluster „Inglés para el trabajo"**: `meseros`
-(Restaurant), `recepcion` (Rezeption/Hostal), `guias` (Tours). Karten-Schema und
-Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
+Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
+
+| Gruppe | Kategorien |
+|---|---|
+| Turismo y hostelería (`loc-hosp`) | meseros, recepción, guías, taxi, ventas |
+| Día a día (`loc-dia`) | saludos, teléfono, direcciones |
+| Trabajo y negocios (`loc-trab`) | entrevista, oficina |
+| Escuela y examen (`loc-esc`) | gramática, en clase |
+
+Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
+
+## Fokussierte Edition (Reise-Inhalte ausgeblendet)
+
+Im Locals-Track zeigt die App **nur** die Locals-Inhalte – die Reise-Inhalte bleiben
+im Korpus (damit keine Reise-Code-Pfade brechen), sind aber unsichtbar:
+- `allCards()` liefert im Locals-Track nur Locals-Karten → Study/Ruta/Suche/Badges/
+  Stats sind fokussiert.
+- Die Startseite zeigt nur die vier Locals-Kategorie-Gruppen.
+- „Entdecken" zeigt nur sprachunabhängige Features (Mi léxico); die spanisch-
+  spezifischen Reise-Features (Precios, Conjugación, Diálogos, Jerga, Länder/
+  Geschichte …) sind ausgeblendet.
+- Onboarding überspringt im Locals-Track den „Reiseziel"-Schritt und den spanischen
+  Ruta-Check.
 
 > Funktioniert auch ohne neuen Inhalt: Da jede Bestandskarte `es`+`en` trägt, läuft
 > der umgekehrte Track sofort auf dem vorhandenen Korpus; `data.locals.js` ergänzt die

@@ -175,7 +175,11 @@
   // Entdecken sortiert ein fester thematischer Rahmen die inzwischen 23 Themen;
   // innerhalb einer Gruppe bleibt die Fälligkeits-Sortierung aus homeVM erhalten.
   const CATEGORY_GROUPS = [
-    { id: "locals",  titleKey: "home.catGroupLocals" }, // Locals-Track: Arbeitswelt-Englisch (leer/ausgeblendet im Reise-Track)
+    // Locals-Track: Englisch nach Lebensbereich (leer/ausgeblendet im Reise-Track).
+    { id: "loc-hosp", titleKey: "home.catGroupLocHosp" },
+    { id: "loc-dia",  titleKey: "home.catGroupLocDia" },
+    { id: "loc-trab", titleKey: "home.catGroupLocTrab" },
+    { id: "loc-esc",  titleKey: "home.catGroupLocEsc" },
     { id: "basics",  titleKey: "home.catGroupBasics" },
     { id: "grammar", titleKey: "home.catGroupGrammar" },
     { id: "people",  titleKey: "home.catGroupPeople" },
@@ -970,8 +974,14 @@
       </button>`;
     // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
     // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
+    // Locals-Track: die Entdecken-Features sind durchweg spanisch-spezifische Reise-
+    // Inhalte (Precios, Conjugación, Jerga, Diálogos, Länder/Geschichte …). Für
+    // Englisch-Lernende nur die sprachunabhängigen behalten (Mi léxico).
+    const localsTrack = !!(window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
+    const LOCALS_FEATURES = { "open-favorites": true };
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
+      if (localsTrack && !LOCALS_FEATURES[x.action]) return false;
       return true;
     });
     const sections = FEATURE_GROUPS.map((g) => {

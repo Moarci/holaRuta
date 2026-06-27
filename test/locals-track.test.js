@@ -120,6 +120,23 @@ test("Content: Presets referenzieren existierende Locals-Karten", () => {
   }
 });
 
+test("i18n natKey: es bevorzugt …Es, sonst …En, sonst de", () => {
+  i18n.setLang("es");
+  assert.equal(i18n.natKey({ label: "base", labelEs: "Restaurante", labelEn: "Restaurant" }, "label"), "Restaurante");
+  assert.equal(i18n.natKey({ label: "base", labelEn: "Beginner" }, "label"), "Beginner"); // kein …Es -> …En
+  assert.equal(i18n.natKey({ label: "nur-base" }, "label"), "nur-base");                   // weder Es noch En
+  i18n.setLang("es");
+});
+
+test("Content: Locals-Kategorien sind 4 Gruppen mit spanischem labelEs", () => {
+  const groups = new Set(dataLocals.CATEGORIES.map((c) => c.group));
+  assert.deepEqual([...groups].sort(), ["loc-dia", "loc-esc", "loc-hosp", "loc-trab"]);
+  for (const c of dataLocals.CATEGORIES) {
+    assert.ok(c.labelEs && c.labelEs.length, `Kategorie ${c.id} hat labelEs (spanisch)`);
+    assert.ok(c.labelEn && c.labelEn.length, `Kategorie ${c.id} hat labelEn (englisch)`);
+  }
+});
+
 test("Content: data.locals hängt im Locals-Track an den aktiven Korpus an", () => {
   const ids = new Set(data.CARDS.map((c) => c.id));
   assert.ok(ids.has("loc-mes01"), "Locals-Karten sind im aktiven Korpus");

@@ -291,6 +291,12 @@
   const cardNativeField = () => (trk() && trk().cardNativeLang && trk().cardNativeLang()) || (i18n ? i18n.getLang() : "de");
   // Locals-Track aktiv? (Spanisch lernt Englisch.)
   const isLocals = () => { const t = trk(); return !!(t && t.id && t.id() === "es-en"); };
+  // Mengen der Locals-Kategorien/-Gruppen (aus data.locals.js). Im Locals-Track werden
+  // nur diese sichtbar/lernbar gemacht – die Reise-Inhalte bleiben im Korpus, sind aber
+  // ausgeblendet (fokussierte Edition, ohne Reise-Code-Pfade zu brechen).
+  const _localsCats = () => (window.SC && window.SC.dataLocals && window.SC.dataLocals.CATEGORIES) || [];
+  const localsCatSet = () => new Set(_localsCats().map((c) => c.id));
+  const localsGroupSet = () => new Set(_localsCats().map((c) => c.group));
   // Locals-Karte? (Eigener Korpus aus data.locals.js, Präfix "loc-".) Im Locals-Track
   // tragen nur diese einen ENGLISCHEN Aussprache-Tipp; die Reise-Karten tragen einen
   // SPANISCHEN Tipp (+ deutschen Klammertext), der dort fehl am Platz wäre.
@@ -324,7 +330,14 @@
   let _allCards = null, _cardByIdMap = null;
   function invalidateCardIndex() { _allCards = null; _cardByIdMap = null; }
   const allCards = () => {
-    if (!_allCards) _allCards = userCards ? data.CARDS.concat(userCards.list()) : data.CARDS.slice();
+    if (!_allCards) {
+      // Locals-Track: nur Locals-Karten in den lern-/statistik-relevanten Pool, damit
+      // Study/Ruta/Suche/Badges/Stats fokussiert sind (Reise-Karten bleiben im Korpus,
+      // aber außerhalb der Sicht). Reise-Track: unverändert das ganze Deck.
+      let base = data.CARDS;
+      if (isLocals()) { const set = localsCatSet(); base = base.filter((c) => set.has(c.cat)); }
+      _allCards = userCards ? base.concat(userCards.list()) : base.slice();
+    }
     return _allCards;
   };
   const cardById = (id) => {
@@ -479,7 +492,12 @@
     for (let i = 0; i < everyCard.length; i++) {
       const card = everyCard[i]; let a = byCat.get(card.cat); if (!a) byCat.set(card.cat, a = []); a.push(card);
     }
-    const categories = data.CATEGORIES.map((c) => {
+    // Im Locals-Track nur die Locals-Kategorien als Kacheln zeigen (Reise-Kategorien
+    // ausblenden); im Reise-Track alle.
+    const visibleCats = isLocals()
+      ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group))
+      : data.CATEGORIES;
+    const categories = visibleCats.map((c) => {
       const allInCat = byCat.get(c.id) || [];
       const cards = allInCat.filter(matchesLevel); // entspricht scopeCards(c.id)
       // Kartenzahl je Stufe in dieser Kategorie (nur Stufen mit >0).
@@ -5094,6 +5112,9 @@
       showNotice(t("home.onboardProfileInvalid"));
       return;
     }
+    // Locals-Track: der „Reiseziel"-Schritt ist reise-spezifisch und ergibt für
+    // Einheimische keinen Sinn -> Onboarding nach dem Profil direkt abschließen.
+    if (isLocals()) { buzz(8); finishOnboarding(); return; }
     state.onboardStep = "trip";
     buzz(8);
     render();
