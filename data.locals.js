@@ -29,6 +29,8 @@
     { id: "ventas",     label: "Ventas y mercado",  labelEs: "Ventas y mercado",  labelEn: "Sales & market",    icon: "🛍️", grad: ["#3F7355", "#5A8E6E"], group: "loc-hosp" },
     { id: "bar-en",     label: "En el bar",         labelEs: "En el bar",         labelEn: "At the bar",        icon: "🍹", grad: ["#B5302A", "#E08A2C"], group: "loc-hosp" },
     { id: "playa-en",   label: "En la playa",       labelEs: "En la playa",       labelEn: "At the beach",      icon: "🏖️", grad: ["#1F7A8C", "#E0743C"], group: "loc-hosp" },
+    { id: "quejas-en",  label: "Quejas y disculpas", labelEs: "Quejas y disculpas", labelEn: "Complaints & apologies", icon: "🙏", grad: ["#C25A45", "#B97C24"], group: "loc-hosp" },
+    { id: "platos-en",  label: "Comida típica",     labelEs: "Comida típica",     labelEn: "Local food",        icon: "🍲", grad: ["#CB5A2B", "#76954E"], group: "loc-hosp" },
     // --- Día a día ---
     { id: "saludos-en", label: "Saludos y charla",  labelEs: "Saludos y charla",  labelEn: "Greetings & chat",  icon: "👋", grad: ["#C2502E", "#D4673F"], group: "loc-dia" },
     { id: "telefono",   label: "Por teléfono",      labelEs: "Por teléfono",      labelEn: "On the phone",       icon: "📞", grad: ["#2F6B70", "#3E8388"], group: "loc-dia" },
@@ -37,11 +39,13 @@
     { id: "salud-en",   label: "Salud y farmacia",  labelEs: "Salud y farmacia",  labelEn: "Health & pharmacy", icon: "💊", grad: ["#2F8E5B", "#76954E"], group: "loc-dia" },
     { id: "dinero-en",  label: "Banco y dinero",    labelEs: "Banco y dinero",    labelEn: "Bank & money",      icon: "💵", grad: ["#5E7D3A", "#2F6B70"], group: "loc-dia" },
     { id: "transporte-en", label: "Transporte público", labelEs: "Transporte público", labelEn: "Public transport", icon: "🚌", grad: ["#B97C24", "#2F6B70"], group: "loc-dia" },
+    { id: "emergencias-en", label: "Emergencias y seguridad", labelEs: "Emergencias y seguridad", labelEn: "Emergencies & safety", icon: "🚨", grad: ["#B5302A", "#CE463E"], group: "loc-dia" },
     // --- Trabajo y negocios ---
     { id: "entrevista", label: "Entrevista de trabajo", labelEs: "Entrevista de trabajo", labelEn: "Job interview", icon: "💼", grad: ["#4C5FA8", "#2B7A78"], group: "loc-trab" },
     { id: "oficina",    label: "Oficina y correos", labelEs: "Oficina y correos", labelEn: "Office & emails",    icon: "🖥️", grad: ["#3E7CA8", "#5A9BC4"], group: "loc-trab" },
     { id: "cliente-en", label: "Atención al cliente", labelEs: "Atención al cliente", labelEn: "Customer service", icon: "🎧", grad: ["#7D4A8E", "#4C5FA8"], group: "loc-trab" },
     { id: "reunion-en", label: "En la reunión",     labelEs: "En la reunión",     labelEn: "In the meeting",    icon: "👥", grad: ["#4C5FA8", "#3E7CA8"], group: "loc-trab" },
+    { id: "resenas-en", label: "Reseñas y redes",   labelEs: "Reseñas y redes",   labelEn: "Reviews & social",  icon: "📣", grad: ["#B97C24", "#3F7355"], group: "loc-trab" },
     // --- Escuela y examen ---
     { id: "gramatica-en", label: "Gramática básica", labelEs: "Gramática básica", labelEn: "Basic grammar",     icon: "📐", grad: ["#B5302A", "#CE463E"], group: "loc-esc" },
     { id: "examen",     label: "En clase",          labelEs: "En clase",          labelEn: "In class",           icon: "✏️", grad: ["#B97C24", "#3F7355"], group: "loc-esc" },
@@ -331,6 +335,46 @@
     { id: "loc-con06", cat: "conectores-en", lvl: 2, es: "además", en: "besides", tip: "bi-SÁIDS" },
     { id: "loc-con07", cat: "conectores-en", lvl: 2, es: "sin embargo", en: "however", tip: "jau-É-ver" },
     { id: "loc-con08", cat: "conectores-en", lvl: 2, es: "al final", en: "in the end", tip: "in di END" },
+
+    // --- Quejas y disculpas (Beschwerden souverän lösen) ---
+    { id: "loc-que01", cat: "quejas-en", lvl: 1, es: "Lo siento mucho.", en: "I'm very sorry.", tip: "aim VÉ-ri SO-rri" },
+    { id: "loc-que02", cat: "quejas-en", lvl: 2, es: "Voy a solucionarlo enseguida.", en: "I'll fix it right away.", tip: "ail FIKS it rait a-WÉI" },
+    { id: "loc-que03", cat: "quejas-en", lvl: 2, es: "¿Cuál es el problema?", en: "What seems to be the problem?", tip: "wat sims tu bi da PRÓ-blem" },
+    { id: "loc-que04", cat: "quejas-en", lvl: 1, es: "Le traigo otro.", en: "I'll bring you another one.", tip: "ail bring yu a-NÓ-der uan" },
+    { id: "loc-que05", cat: "quejas-en", lvl: 2, es: "No se le cobrará.", en: "It's on the house.", tip: "its on da JÁUS" },
+    { id: "loc-que06", cat: "quejas-en", lvl: 2, es: "Permítame llamar al gerente.", en: "Let me call the manager.", tip: "let mi col da MÁ-na-yer" },
+    { id: "loc-que07", cat: "quejas-en", lvl: 1, es: "Gracias por avisarnos.", en: "Thanks for letting us know.", tip: "zenks for LÉ-ting os nóu" },
+    { id: "loc-que08", cat: "quejas-en", lvl: 1, es: "¿Está mejor así?", en: "Is this better?", tip: "is dis BÉ-ter" },
+
+    // --- Comida típica (Gerichte erklären, Cartagena) ---
+    { id: "loc-pla-t01", cat: "platos-en", lvl: 1, es: "Es un plato típico de aquí.", en: "It's a local dish.", tip: "its a LÓU-cal dish" },
+    { id: "loc-pla-t02", cat: "platos-en", lvl: 2, es: "Viene con arroz y pescado.", en: "It comes with rice and fish.", tip: "it coms wid RÁIS and fish" },
+    { id: "loc-pla-t03", cat: "platos-en", lvl: 1, es: "Es un poco picante.", en: "It's a little spicy.", tip: "its a LÍ-tol SPÁI-si" },
+    { id: "loc-pla-t04", cat: "platos-en", lvl: 2, es: "La arepa es de maíz.", en: "The arepa is made of corn.", tip: "di a-RÉ-pa is meid of CORN" },
+    { id: "loc-pla-t05", cat: "platos-en", lvl: 2, es: "El ceviche lleva limón.", en: "The ceviche has lime.", tip: "da se-VÍ-che jas LÁIM" },
+    { id: "loc-pla-t06", cat: "platos-en", lvl: 1, es: "¿Es vegetariano?", en: "Is it vegetarian?", tip: "is it ve-ye-TÉ-rian" },
+    { id: "loc-pla-t07", cat: "platos-en", lvl: 1, es: "Se lo recomiendo.", en: "I recommend it.", tip: "ai re-co-MÉND it" },
+    { id: "loc-pla-t08", cat: "platos-en", lvl: 1, es: "Buen provecho.", en: "Enjoy your meal.", tip: "en-YÓI yor MIL" },
+
+    // --- Emergencias y seguridad (Touristen helfen / eigene Sicherheit) ---
+    { id: "loc-eme01", cat: "emergencias-en", lvl: 1, es: "¿Está bien?", en: "Are you okay?", tip: "ar yu o-KÉI" },
+    { id: "loc-eme02", cat: "emergencias-en", lvl: 1, es: "Llame a la policía.", en: "Call the police.", tip: "COL da po-LÍS" },
+    { id: "loc-eme03", cat: "emergencias-en", lvl: 1, es: "Necesito ayuda.", en: "I need help.", tip: "ai nid JELP" },
+    { id: "loc-eme04", cat: "emergencias-en", lvl: 2, es: "¿Llamo a una ambulancia?", en: "Should I call an ambulance?", tip: "shud ai col an ÁM-biu-lans" },
+    { id: "loc-eme05", cat: "emergencias-en", lvl: 1, es: "Tenga cuidado.", en: "Be careful.", tip: "bi KER-ful" },
+    { id: "loc-eme06", cat: "emergencias-en", lvl: 2, es: "Perdí mi pasaporte.", en: "I lost my passport.", tip: "ai lost mai PÁS-port" },
+    { id: "loc-eme07", cat: "emergencias-en", lvl: 2, es: "Me robaron.", en: "I was robbed.", tip: "ai was ROBD" },
+    { id: "loc-eme08", cat: "emergencias-en", lvl: 1, es: "Quédese tranquilo.", en: "Stay calm.", tip: "stei CALM" },
+
+    // --- Reseñas y redes (Bewertungen & Social für Tourismusbetriebe) ---
+    { id: "loc-res01", cat: "resenas-en", lvl: 2, es: "¿Nos deja una reseña?", en: "Could you leave us a review?", tip: "cud yu liv os a ri-VIÚ" },
+    { id: "loc-res02", cat: "resenas-en", lvl: 1, es: "Síganos en Instagram.", en: "Follow us on Instagram.", tip: "FÓ-lou os on ÍNS-ta-gram" },
+    { id: "loc-res03", cat: "resenas-en", lvl: 2, es: "Etiquétenos en sus fotos.", en: "Tag us in your photos.", tip: "TAG os in yor FÓU-tos" },
+    { id: "loc-res04", cat: "resenas-en", lvl: 1, es: "Gracias por su visita.", en: "Thanks for visiting.", tip: "zenks for VÍ-si-ting" },
+    { id: "loc-res05", cat: "resenas-en", lvl: 2, es: "¿Le gustó el servicio?", en: "Did you enjoy the service?", tip: "did yu en-YÓI da SÉR-vis" },
+    { id: "loc-res06", cat: "resenas-en", lvl: 2, es: "Compártalo con sus amigos.", en: "Share it with your friends.", tip: "SHER it wid yor frends" },
+    { id: "loc-res07", cat: "resenas-en", lvl: 2, es: "Estamos en Google Maps.", en: "We're on Google Maps.", tip: "wir on GÚ-gol maps" },
+    { id: "loc-res08", cat: "resenas-en", lvl: 1, es: "Vuelva cuando quiera.", en: "Come back anytime.", tip: "com bak É-ni-taim" },
   ];
 
   // Ein kuratiertes Schnellstart-Paket je Kategorie (analog data.js PRESETS).

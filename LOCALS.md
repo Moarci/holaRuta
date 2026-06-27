@@ -50,12 +50,12 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 
 | Gruppe | Kategorien |
 |---|---|
-| Turismo y hostelería (`loc-hosp`) | meseros, recepción, guías, taxi, ventas, bar, playa |
-| Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público |
-| Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión |
+| Turismo y hostelería (`loc-hosp`) | meseros, recepción, guías, taxi, ventas, bar, playa, quejas y disculpas, comida típica |
+| Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público, emergencias y seguridad |
+| Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes |
 | Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores |
 
-Aktuell **22 Kategorien · 230 Karten** (ein Schnellstart-Preset je Kategorie).
+Aktuell **26 Kategorien · 262 Karten** (ein Schnellstart-Preset je Kategorie).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
 ## Fokussierte Edition (Reise-Inhalte ausgeblendet)
