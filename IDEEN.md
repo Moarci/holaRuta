@@ -61,6 +61,21 @@ denkbar – außerhalb dieses Durchlaufs.
 
 ---
 
+## Nachtrag aus dem Wettbewerbs-Gegencheck (2026-06-27)
+
+### 7. 🤝 Zwei-Seiten-Venue-Roleplay *(Produkt-Wedge, noch nicht gebaut)*
+Aus [WETTBEWERB-EN.md](WETTBEWERB-EN.md): Gegen ELSA/Voxy/Dexway ist unser einziger nicht kopierbarer
+Vorteil, dass HolaRuta **beide Lernrichtungen in einer Engine** hat. Idee: Gast (lernt Spanisch,
+Reise-Track) und Mitarbeiter (lernt Englisch, [Locals-Track](LOCALS.md)) spielen aus *einem* QR eine
+gepaarte Live-Szene (z. B. Check-in) — jeder in seiner Lernrichtung. Heute sind die Diálogos
+NPC-gesteuert (Einzel-Lerner); nötig ist ein gepaarter Modus.
+- **Warum:** schließt den in der Pitch verkauften, aber im Produkt fehlenden Wedge — der höchste
+  Differenzierungs-Hebel gegenüber dem Wettbewerb.
+- **Reuse:** Diálogos-/Spielmodus-Engine + `isLocals()` (`app.js:300`). *Unlock, kein Greenfield.*
+- **Aufwand:** mittel–groß. Priorität P1 (siehe WETTBEWERB-EN §4).
+
+---
+
 ## Leitplanken (gelten für jede Idee)
 Offline & zero-dep · graceful degradation (TTS-Features verschwinden ohne Support) · A11y
 (`aria-live`-Verdicts, ≥44px Tap-Targets, `esc()` für alle Interpolationen) · **die Wörterbasis bleibt

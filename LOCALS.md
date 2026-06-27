@@ -1,5 +1,8 @@
 # HolaRuta · Inglés – der Locals-Track (Spanisch lernt Englisch)
 
+> **Wettbewerb dieses Tracks:** siehe [WETTBEWERB-EN.md](WETTBEWERB-EN.md) (Gegencheck der
+> englischseitigen Konkurrenz ELSA/Voxy/Dexway/… und abgeleitete Schritte).
+
 Sprachschulen wie ECOS in Cartagena unterrichten nicht nur Reisende in Spanisch,
 sondern auch **Einheimische in Englisch** (Kellner:innen, Rezeption, Guides, dazu
 Alltag, Beruf, Schule/Prüfung). Dafür gibt es einen zweiten **Lern-Track**, der
