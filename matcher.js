@@ -77,13 +77,23 @@
   //        | "native" (Muttersprache = aktive UI-Sprache, via SC.i18n.nativeText).
   function fieldText(card, field) {
     if (field === "native") {
-      // Track mit fixer L1 (Locals): immer dieses Feld (Frage bleibt Spanisch).
+      // Track mit fixer L1 (Locals): Frage bleibt in der L1. Custom-/Legacy-Karte
+      // ({de,es} ohne en) trägt die native Frage im de-Slot.
       const l1 = cardNativeLang();
-      if (l1) return String(card[l1] != null ? card[l1] : "");
+      if (l1) {
+        if (card.en == null || card.en === "") return String(card.de != null ? card.de : "");
+        return String(card[l1] != null ? card[l1] : "");
+      }
       const i18n = window.SC && window.SC.i18n;
       return i18n ? i18n.nativeText(card) : String(card.de);
     }
-    if (field === "learn") return String(card[learnLang()] != null ? card[learnLang()] : "");
+    if (field === "learn") {
+      // Gelerntes Feld des Tracks; Custom-/Legacy-Karte (kein learnLang-Feld) hält die
+      // gelernte Antwort generisch im es-Slot.
+      const lf = learnLang();
+      const v = card[lf];
+      return String((v != null && v !== "") ? v : (card.es != null ? card.es : ""));
+    }
     return String(card[field]);
   }
 

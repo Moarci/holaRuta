@@ -283,7 +283,14 @@
   // GELERNTER Text einer Karte (Pendant zu nat() für die Antwort-Seite): Reise-Track
   // = card.es, Locals-Track = card.en. Kapselt SC.track; ohne Modul Rückfall auf es.
   const trk = () => window.SC && window.SC.track;
-  const learn = (o) => (trk() ? trk().learnText(o) : (o && o.es) || "");
+  const learn = (o) => {
+    if (!o) return "";
+    const v = trk() ? trk().learnText(o) : "";
+    if (v) return v;
+    // Custom-/Legacy-Karte ({de,es}, ohne learnLang-Feld): die GELERNTE Antwort liegt
+    // generisch im es-Slot (Editor/Favoriten speichern de=Frage, es=Antwort).
+    return o.es != null ? String(o.es) : "";
+  };
   const learnField = () => (trk() ? trk().learnLang() : "es");
   // Muttersprachliche KARTEN-Frage. Hat der Track eine fixe L1 (Locals: "es"),
   // immer dieses Feld – unabhängig von der UI-Chrome-Sprache; sonst (Reise) folgt
@@ -307,7 +314,13 @@
   const cardNative = (o) => {
     const t = trk();
     const l1 = t && t.cardNativeLang && t.cardNativeLang();
-    if (l1) return (o && o[l1] != null ? o[l1] : (o && o.de)) || "";
+    if (l1) {
+      // Built-in-Locals-Karte trägt die Frage im l1-Slot (es) und hat ein en-Feld.
+      // Eine Custom-/Legacy-Karte ({de,es} ohne en) trägt die native Frage im de-Slot
+      // (Editor/Favoriten speichern de=Frage, es=gelernte Antwort).
+      if (o && (o.en == null || o.en === "")) return o.de != null ? String(o.de) : "";
+      return o && o[l1] != null ? String(o[l1]) : "";
+    }
     return nat(o);
   };
   // Flagge/Klartext zu einem Sprachcode – für Richtungs-Labels (Frage/Antwort-Seite).
@@ -472,6 +485,7 @@
   }
 
   function assessmentResumeVM() {
+    if (isLocals()) return null; // spanischer Test -> im Locals-Track ausgeblendet
     const prog = liveAssessmentProgress();
     if (!prog) return null;
     const variant = prog.variant === "extremo" ? "extremo" : "standard";
@@ -3327,15 +3341,23 @@
   function taskTargets() {
     const labelOf = (sc) => { const c = categoryById(sc); return c ? natk(c, "label") : sc; };
     const out = [];
-    (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
-    (data.PRESETS || []).forEach((pr) => out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" }));
-    // Ganzes Paket = beliebiger Themenbereich (Destinationen UND Klassiker wie Notfall/Essen).
-    (data.CATEGORIES || []).forEach((c) => out.push({ value: "category:" + c.id, label: natk(c, "label"), group: "category" }));
+    const locals = isLocals();
+    const catset = locals ? localsCatSet() : null;
+    // Reise-Pre-Trip-Pläne im Locals-Track ausblenden (rein reise-spezifisch).
+    if (!locals) (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
+    (data.PRESETS || []).forEach((pr) => {
+      if (locals && !catset.has(pr.scope)) return; // im Locals-Track nur Locals-Presets
+      out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" });
+    });
+    // Ganzes Paket = Themenbereich; im Locals-Track nur die Locals-Kategorien.
+    const cats = locals ? (data.CATEGORIES || []).filter((c) => localsGroupSet().has(c.group)) : (data.CATEGORIES || []);
+    cats.forEach((c) => out.push({ value: "category:" + c.id, label: natk(c, "label"), group: "category" }));
     return out;
   }
 
   // Bundle-Vorlagen mit lokalisierten Labels + Item-Schlüsseln (für die Auswahl).
   function bundlesVM() {
+    if (isLocals()) return []; // Fertige Bundles sind reise-spezifisch -> im Locals-Track aus
     return (data.BUNDLES || []).map((b) => ({
       id: b.id, icon: b.icon || "📦", group: b.group || "tema",
       label: natk(b, "label"), count: (b.items || []).length,
@@ -4577,6 +4599,7 @@
 
   function openAssessment() {
     dismissBadgeToast();
+    if (isLocals()) return; // spanischer Nivel-Test -> im Locals-Track nicht verfügbar
     if (!assessment) return; // Modul nicht geladen (Edition/Offline) -> nicht crashen
     // Läuft noch ein unabgeschlossener Test (z. B. nach versehentlichem Zurück
     // oder Reload)? Dann nahtlos fortsetzen statt von vorn zu beginnen.
@@ -5920,6 +5943,9 @@
   }
   function buildSearchIndex() {
     const idx = [];
+    // Locals-Track: nur Locals-Karten (über allCards) und Locals-Kategorien indexieren;
+    // die Reise-Features/Länder/Info-Seiten bleiben außen vor (sie sind hier verborgen).
+    const locals = isLocals();
 
     // --- Übungen: Vokabelkarten (eigene inklusive) ---
     allCards().forEach((c) => {
@@ -5934,15 +5960,20 @@
     });
 
     // --- Übungen: Lern-Kategorien (ganze Themen-Decks) ---
-    data.CATEGORIES.forEach((c) => {
+    const searchCats = locals ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group)) : data.CATEGORIES;
+    searchCats.forEach((c) => {
       idx.push({
         group: "ex", kind: "category", kindLabel: t("search.kindCategory"),
         icon: c.icon, title: natk(c, "label"), sub: t("search.subCategory"),
         action: "open-category", id: c.id,
-        hay: searchHay([c.label, c.labelEn, c.id]),
+        hay: searchHay([c.label, c.labelEn, c.labelEs, c.id]),
       });
     });
 
+    // Reine Reise-Inhalte (Übungs-Features, Länderkunde, Info-Seiten) im Locals-Track
+    // NICHT indexieren – sie sind dort ausgeblendet und sollen nicht über die Suche
+    // erreichbar sein.
+    if (!locals) {
     // --- Übungen: Übungs-Features (nur die geladenen/verfügbaren) ---
     SEARCH_FEATURES.forEach((f) => {
       if (f.need && !searchHas[f.need]) return;
@@ -6078,6 +6109,7 @@
       "historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit");
     histPage(historiaCentro, "🌋", "Historia de Centroamérica", "discover.subHistoriaCentro", "open-historia-centro",
       "historia geschichte history mittelamerika centroamérica maya morazán sandino romero menchú independencia conquista bukele panama panamá kanal");
+    } // Ende: Reise-Inhalte nur im Reise-Track indexieren
 
     return idx;
   }

@@ -2328,7 +2328,7 @@
       <div class="sz-show" data-action="fav-close" role="dialog" aria-modal="true" aria-label="${esc(t("favorites.showLabel"))}">
         <div class="sz-show__inner">
           ${vm.showSrc ? `<p class="sz-show__src">${renderIcon(vm.showSrc.lc || vm.showSrc.icon)} ${esc(vm.showSrc.label)}</p>` : ""}
-          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
+          <p class="sz-show__es" lang="${learnLangCode()}">${esc(vm.show.es)}</p>
           <p class="sz-show__de">${esc(vm.show.de)}</p>
           ${vm.show.tip ? `<p class="sz-show__tip">${renderIcon("lc:audio-lines")} ${esc(vm.show.tip)}</p>` : ""}
           <div class="sz-show__actions">

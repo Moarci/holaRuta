@@ -29,8 +29,8 @@
     {
       version: "1.120.0",
       date: "2026-06-27",
-      title: "Locals-Track: Englisch lernen (Edition „LocalRuta · Inglés“)",
-      titleEn: "Locals track: learn English (edition “LocalRuta · Inglés”)",
+      title: "Locals-Track: Englisch lernen (Edition „HolaRuta · Inglés“)",
+      titleEn: "Locals track: learn English (edition “HolaRuta · Inglés”)",
       items: [
         "🔄 Lernrichtung umkehrbar: Ein neuer „Track“ (config.js/SC.track) löst die feste Annahme „gelernt wird Spanisch“ ab. Die Edition cartagena-locals dreht die Richtung um – Spanisch-Sprecher:innen lernen Englisch (Frage spanisch, Antwort englisch).",
         "🗣️ Englische Sprachausgabe & Bewertung: Der Hör-Modus spricht jetzt im Locals-Track Englisch (track.ttsLocale), und der Schreib-Check ist englisch-tolerant (Artikel the/a/an optional, keine spanischen Flexions-Sonderregeln).",

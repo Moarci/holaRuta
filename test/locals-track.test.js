@@ -80,6 +80,17 @@ test("Matcher: Richtung ES→native prüft gegen Spanisch – auch bei englische
   i18n.setLang("es");
 });
 
+test("Matcher: Custom-/Legacy-Karte ({de,es} ohne en) im Locals-Track", () => {
+  // Editor & Favoriten speichern generisch de=Frage (Spanisch), es=Antwort (Englisch),
+  // OHNE en-Feld. Der Matcher muss die gelernte Antwort dann im es-Slot finden und die
+  // native Frage im de-Slot – sonst wäre eine selbst angelegte Karte unlösbar.
+  const custom = { de: "la cuenta", es: "the bill" };
+  assert.equal(matcher.check("the bill", custom, "learn").correct, true);
+  assert.equal(matcher.check("bill", custom, "learn").correct, true);   // Artikel-Toleranz (Englisch)
+  assert.equal(matcher.check("la cuenta", custom, "native").correct, true);
+  assert.equal(matcher.check("the spoon", custom, "learn").correct, false);
+});
+
 test("i18n: Spanisch ist eine unterstützte UI-Sprache", () => {
   assert.ok(i18n.SUPPORTED.indexOf("es") >= 0);
   i18n.setLang("es");

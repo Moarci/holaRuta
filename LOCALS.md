@@ -1,4 +1,4 @@
-# LocalRuta – der Locals-Track (Spanisch lernt Englisch)
+# HolaRuta · Inglés – der Locals-Track (Spanisch lernt Englisch)
 
 Sprachschulen wie ECOS in Cartagena unterrichten nicht nur Reisende in Spanisch,
 sondern auch **Einheimische in Englisch** (Kellner:innen, Rezeption, Guides, dazu
@@ -91,14 +91,10 @@ im Korpus (damit keine Reise-Code-Pfade brechen), sind aber unsichtbar:
 
 ## Nächste Schritte (offen)
 
-- Weitere Content-Cluster: **Alltag/Conversación**, **Beruf/Negocios**,
-  **Escuela/Examen** (je Kategorien + Presets + Kurspläne + Diálogos).
-- Vollständige spanische UI (aktuell Kern-Namespaces; Rest fällt auf Englisch zurück).
-- **Reise-Inhalte im Locals-Home fokussieren**: Aktuell erscheinen unter den Locals-
-  Kategorien auch alle Reise-Kategorien (reversiert lauffähig, aber thematisch fremd).
-  Geplant: rein spanisch-spezifische Reise-Features/-Kategorien (Precios, Conjugación,
-  Jerga, Destinos, Länder/Geschichte …) im Locals-Track über die Edition-Sichtbarkeit
-  ausblenden.
+- Weitere Kurspläne/Diálogos je Cluster (analog `PRETRIP`/`dialogos.js`).
+- Spanische Übersetzung der rein reise-spezifischen Namespaces (Arbeitsblätter,
+  Einstufungstests, Hostel/Battle, 30 Pre-Arrival-Städte) – aktuell EN-Rückfall,
+  im Locals-Track ohnehin ausgeblendet, daher niedrige Priorität.
 - Eigenes englisches Tippfehler-Korpus & ES-Parität im i18n-Test ausbauen.
 
 ## Spanische UI & a11y (umgesetzt)

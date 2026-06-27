@@ -78,7 +78,7 @@
     // (data.locals.js) ergänzt arbeitsweltnahe Kategorien (Hospitality usw.).
     "cartagena-locals": {
       edition: "cartagena-locals",
-      brandName: "LocalRuta · Inglés",
+      brandName: "HolaRuta · Inglés",
       // Karibik-Teal wie ECOS Cartagena. NÄHERUNG – bei Freigabe ersetzen.
       accent: { brand: "#1F7A8C", brandInk: "#155C69" },
       partner: { name: "ECOS · Cartagena", url: "https://www.ecosescuela.com/" },

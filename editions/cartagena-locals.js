@@ -1,5 +1,5 @@
 /*
- * editions/cartagena-locals.js – Edition-Build-Anker „LocalRuta · Inglés".
+ * editions/cartagena-locals.js – Edition-Build-Anker „HolaRuta · Inglés".
  *
  *   node build.js --edition=cartagena-locals   →   HolaRuta-cartagena-locals.html
  *
