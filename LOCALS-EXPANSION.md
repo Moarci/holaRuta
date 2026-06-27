@@ -8,11 +8,14 @@ Person? Anschließend gegen unseren Bestand (`data.locals.js`, Stand **38 Katego
 Leitprinzip bleibt **„Sinnhaftigkeit nie vergessen"**: nur real benötigte Sprache,
 zugeschnitten auf die Rolle.
 
-> **Umsetzungsstand:** Batch 1 (Beruf-Tiefe), Batch 2 (Grammatik-Packs) und Batch 3
-> (Tourismus-Nischen + Alltag/Expat-Dienste + 4 Diálogos) sind **umgesetzt** →
-> **62 Kategorien · 804 Karten · 19 Diálogos · 7 Kurspläne**. Offen: die Qualitäts-
-> Verbesserungen am Bestand (Teil 3.7: Video-Call-Karten aus `reunion-en` migrieren,
-> `alt`-Varianten, `lvl:3`-Feinschliff) und optionale weitere Diálogos.
+> **Umsetzungsstand:** Batch 1 (Beruf-Tiefe), Batch 2 (Grammatik-Packs), Batch 3
+> (Tourismus-Nischen + Alltag/Expat-Dienste + 4 Diálogos) **und** die Qualitäts-
+> Verbesserungen (Teil 3.7: `alt`-Varianten gegen Falsch-Negative, `lvl:3`-Progression)
+> sind **umgesetzt** → **62 Kategorien · 804 Karten · 19 Diálogos · 7 Kurspläne**.
+> Zusätzlich adversarialer Inhalts-Review aller ~290 neuen Karten + 4 Diálogos
+> (1 HIGH behoben: „Is there any problem?" → „Are there any questions?"; mehrere LOW).
+> `reunion-en`/`videocall-en` bleiben bewusst getrennt (komplementär, keine Dubletten —
+> vom Review bestätigt). Offen/optional: weitere Diálogos je Cluster.
 
 ---
 
