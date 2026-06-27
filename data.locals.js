@@ -368,7 +368,7 @@
     { id: "loc-con03", cat: "conectores-en", lvl: 1, es: "también", en: "also", tip: "ÓL-sou" },
     { id: "loc-con04", cat: "conectores-en", lvl: 2, es: "por ejemplo", en: "for example", tip: "for eg-ZÁM-pol" },
     { id: "loc-con05", cat: "conectores-en", lvl: 1, es: "entonces", en: "so", tip: "SÓU" },
-    { id: "loc-con06", cat: "conectores-en", lvl: 2, es: "además", en: "besides", tip: "bi-SÁIDS" },
+    { id: "loc-con06", cat: "conectores-en", lvl: 2, es: "además", en: "besides", tip: "bi-SÁIDS", alt: ["in addition", "moreover"] },
     { id: "loc-con07", cat: "conectores-en", lvl: 2, es: "sin embargo", en: "however", tip: "jau-É-ver" },
     { id: "loc-con08", cat: "conectores-en", lvl: 2, es: "al final", en: "in the end", tip: "in di END" },
 
@@ -498,7 +498,7 @@
     // --- emergencias y seguridad (Forts.) ---
     { id: "loc-eme09", cat: "emergencias-en", lvl: 2, es: "Hay un accidente.", en: "There's an accident.", tip: "ders an ÁK-si-dent" },
     { id: "loc-eme10", cat: "emergencias-en", lvl: 1, es: "¿Dónde está el hospital?", en: "Where is the hospital?", tip: "wer is da JÓS-pi-tal" },
-    { id: "loc-eme11", cat: "emergencias-en", lvl: 2, es: "Se siente mareado.", en: "He feels dizzy.", tip: "ji fils DÍ-si" },
+    { id: "loc-eme11", cat: "emergencias-en", lvl: 2, es: "Él se siente mareado.", en: "He feels dizzy.", tip: "ji fils DÍ-si" },
     { id: "loc-eme12", cat: "emergencias-en", lvl: 1, es: "No se mueva.", en: "Don't move.", tip: "dont MUV" },
     { id: "loc-eme13", cat: "emergencias-en", lvl: 2, es: "Llamen a los bomberos.", en: "Call the fire department.", tip: "col da FÁIR di-PÁRT-ment" },
     { id: "loc-eme14", cat: "emergencias-en", lvl: 1, es: "Mantenga la calma.", en: "Keep calm.", tip: "kip CAM" },
