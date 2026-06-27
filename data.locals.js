@@ -28,6 +28,7 @@
     { id: "taxi-en",    label: "Taxi y transporte", labelEs: "Taxi y transporte", labelEn: "Taxi & transport",  icon: "🚕", grad: ["#B97C24", "#CE9438"], group: "loc-hosp" },
     { id: "ventas",     label: "Ventas y mercado",  labelEs: "Ventas y mercado",  labelEn: "Sales & market",    icon: "🛍️", grad: ["#3F7355", "#5A8E6E"], group: "loc-hosp" },
     { id: "bar-en",     label: "En el bar",         labelEs: "En el bar",         labelEn: "At the bar",        icon: "🍹", grad: ["#B5302A", "#E08A2C"], group: "loc-hosp" },
+    { id: "playa-en",   label: "En la playa",       labelEs: "En la playa",       labelEn: "At the beach",      icon: "🏖️", grad: ["#1F7A8C", "#E0743C"], group: "loc-hosp" },
     // --- Día a día ---
     { id: "saludos-en", label: "Saludos y charla",  labelEs: "Saludos y charla",  labelEn: "Greetings & chat",  icon: "👋", grad: ["#C2502E", "#D4673F"], group: "loc-dia" },
     { id: "telefono",   label: "Por teléfono",      labelEs: "Por teléfono",      labelEn: "On the phone",       icon: "📞", grad: ["#2F6B70", "#3E8388"], group: "loc-dia" },
@@ -35,14 +36,17 @@
     { id: "compras-en", label: "De compras",        labelEs: "De compras",        labelEn: "Shopping",          icon: "🛒", grad: ["#3F7355", "#B97C24"], group: "loc-dia" },
     { id: "salud-en",   label: "Salud y farmacia",  labelEs: "Salud y farmacia",  labelEn: "Health & pharmacy", icon: "💊", grad: ["#2F8E5B", "#76954E"], group: "loc-dia" },
     { id: "dinero-en",  label: "Banco y dinero",    labelEs: "Banco y dinero",    labelEn: "Bank & money",      icon: "💵", grad: ["#5E7D3A", "#2F6B70"], group: "loc-dia" },
+    { id: "transporte-en", label: "Transporte público", labelEs: "Transporte público", labelEn: "Public transport", icon: "🚌", grad: ["#B97C24", "#2F6B70"], group: "loc-dia" },
     // --- Trabajo y negocios ---
     { id: "entrevista", label: "Entrevista de trabajo", labelEs: "Entrevista de trabajo", labelEn: "Job interview", icon: "💼", grad: ["#4C5FA8", "#2B7A78"], group: "loc-trab" },
     { id: "oficina",    label: "Oficina y correos", labelEs: "Oficina y correos", labelEn: "Office & emails",    icon: "🖥️", grad: ["#3E7CA8", "#5A9BC4"], group: "loc-trab" },
     { id: "cliente-en", label: "Atención al cliente", labelEs: "Atención al cliente", labelEn: "Customer service", icon: "🎧", grad: ["#7D4A8E", "#4C5FA8"], group: "loc-trab" },
+    { id: "reunion-en", label: "En la reunión",     labelEs: "En la reunión",     labelEn: "In the meeting",    icon: "👥", grad: ["#4C5FA8", "#3E7CA8"], group: "loc-trab" },
     // --- Escuela y examen ---
     { id: "gramatica-en", label: "Gramática básica", labelEs: "Gramática básica", labelEn: "Basic grammar",     icon: "📐", grad: ["#B5302A", "#CE463E"], group: "loc-esc" },
     { id: "examen",     label: "En clase",          labelEs: "En clase",          labelEn: "In class",           icon: "✏️", grad: ["#B97C24", "#3F7355"], group: "loc-esc" },
     { id: "numeros-en", label: "Números y fechas",  labelEs: "Números y fechas",  labelEn: "Numbers & dates",   icon: "🔢", grad: ["#B97C24", "#CE9438"], group: "loc-esc" },
+    { id: "conectores-en", label: "Conectores útiles", labelEs: "Conectores útiles", labelEn: "Useful connectors", icon: "🔗", grad: ["#3F7355", "#4C5FA8"], group: "loc-esc" },
   ];
 
   // lvl: 1=Einsteiger, 2=Mittel.
@@ -75,7 +79,7 @@
     { id: "loc-rec08", cat: "recepcion", lvl: 1, es: "Con gusto le ayudo.", en: "I'm happy to help you.", tip: "aim JÁ-pi tu jelp yu" },
     { id: "loc-rec09", cat: "recepcion", lvl: 2, es: "Lo siento, estamos llenos.", en: "I'm sorry, we're fully booked.", tip: "aim SO-rri, wir FÚ-li bukt" },
     { id: "loc-rec10", cat: "recepcion", lvl: 2, es: "¿Qué tal su estadía?", en: "How was your stay?", tip: "jau was yor stéi" },
-    { id: "loc-rec11", cat: "recepcion", lvl: 2, es: "¿Necesita ayuda con el equipaje?", en: "Do you need help with your luggage?", tip: "du yu nid jelp wid yor LÓ-gich" },
+    { id: "loc-rec11", cat: "recepcion", lvl: 2, es: "¿Necesita ayuda con el equipaje?", en: "Do you need help with your luggage?", tip: "du yu nid jelp wid yor LÓ-guich" },
     { id: "loc-rec12", cat: "recepcion", lvl: 1, es: "El registro es a las tres.", en: "Check-in is at three.", tip: "CHÉK-in is at zri" },
     { id: "loc-rec13", cat: "recepcion", lvl: 2, es: "¿Quiere que le pida un taxi?", en: "Would you like me to call a taxi?", tip: "wud yu laik mi tu COL a TÁK-si" },
     { id: "loc-rec14", cat: "recepcion", lvl: 1, es: "Su llave, por favor.", en: "Your key, please.", tip: "yor KI plis" },
@@ -84,7 +88,7 @@
     { id: "loc-gui01", cat: "guias", lvl: 1, es: "Bienvenidos al tour.", en: "Welcome to the tour.", tip: "WÉL-com tu da tur" },
     { id: "loc-gui02", cat: "guias", lvl: 1, es: "Síganme, por favor.", en: "Please follow me.", tip: "plis FÓ-lou mi" },
     { id: "loc-gui03", cat: "guias", lvl: 2, es: "Por aquí, cuidado con el escalón.", en: "This way, mind the step.", tip: "dis wéi, maind da step" },
-    { id: "loc-gui04", cat: "guias", lvl: 2, es: "La ciudad fue fundada en 1533.", en: "The city was founded in 1533.", tip: "da SÍ-ti was FÁUN-ded in FIF-tin ZÉR-ti-zri" },
+    { id: "loc-gui04", cat: "guias", lvl: 2, es: "La ciudad fue fundada en 1533.", en: "The city was founded in 1533.", tip: "da SÍ-ti was FÁUN-ded in FIF-tin ZÉR-ti ZRI" },
     { id: "loc-gui05", cat: "guias", lvl: 2, es: "Tenemos quince minutos para fotos.", en: "We have fifteen minutes for photos.", tip: "wi jav fif-TÍN MÍ-nits for FÓU-tos" },
     { id: "loc-gui06", cat: "guias", lvl: 2, es: "No se alejen del grupo.", en: "Please don't stray from the group.", tip: "plis dont strei from da grup" },
     { id: "loc-gui07", cat: "guias", lvl: 1, es: "Nos vemos en el bus a las tres.", en: "Let's meet at the bus at three.", tip: "lets mit at da bas at zri" },
@@ -105,6 +109,8 @@
     { id: "loc-tax06", cat: "taxi-en", lvl: 2, es: "¿Le abro el baúl?", en: "Shall I open the trunk?", tip: "shal ai ÓU-pen da tronk" },
     { id: "loc-tax07", cat: "taxi-en", lvl: 1, es: "No tengo cambio.", en: "I don't have change.", tip: "ai dont jav cheinch" },
     { id: "loc-tax08", cat: "taxi-en", lvl: 1, es: "Buen viaje.", en: "Have a good trip.", tip: "jav a gud trip" },
+    { id: "loc-tax09", cat: "taxi-en", lvl: 2, es: "Hay mucho tráfico.", en: "There's a lot of traffic.", tip: "ders a LOT of TRÁ-fic" },
+    { id: "loc-tax10", cat: "taxi-en", lvl: 1, es: "¿Le ayudo con las maletas?", en: "Can I help with your bags?", tip: "can ai JELP wid yor bags" },
 
     // --- ventas y mercado (Verkäufer-Sicht) ---
     { id: "loc-ven01", cat: "ventas", lvl: 1, es: "¿En qué le puedo ayudar?", en: "How can I help you?", tip: "jau can ai jelp yu" },
@@ -115,6 +121,8 @@
     { id: "loc-ven06", cat: "ventas", lvl: 2, es: "¿Se lo envuelvo?", en: "Shall I wrap it for you?", tip: "shal ai rap it for yu" },
     { id: "loc-ven07", cat: "ventas", lvl: 1, es: "Es el último que queda.", en: "It's the last one.", tip: "its da last uan" },
     { id: "loc-ven08", cat: "ventas", lvl: 1, es: "Vuelva pronto.", en: "Come back soon.", tip: "com bak sun" },
+    { id: "loc-ven09", cat: "ventas", lvl: 1, es: "¿Quiere probarlo?", en: "Would you like to try it?", tip: "wud yu laik tu TRÁI it" },
+    { id: "loc-ven10", cat: "ventas", lvl: 2, es: "Tenemos más colores.", en: "We have more colors.", tip: "wi jav mor CÓ-lors" },
 
     // ===== Día a día =====
     // --- saludos y charla ---
@@ -179,6 +187,8 @@
     { id: "loc-ofi06", cat: "oficina", lvl: 1, es: "Estoy de acuerdo.", en: "I agree.", tip: "ai a-GRÍ" },
     { id: "loc-ofi07", cat: "oficina", lvl: 2, es: "¿Me puede explicar de nuevo?", en: "Could you explain that again?", tip: "cud yu eks-PLÉIN dat a-GUÉN" },
     { id: "loc-ofi08", cat: "oficina", lvl: 1, es: "Hablamos mañana.", en: "Let's talk tomorrow.", tip: "lets tok tu-MÓ-rrou" },
+    { id: "loc-ofi09", cat: "oficina", lvl: 1, es: "¿Recibió mi correo?", en: "Did you get my email?", tip: "did yu get mai Í-meil" },
+    { id: "loc-ofi10", cat: "oficina", lvl: 2, es: "Lo copio en el correo.", en: "I'll copy you on the email.", tip: "ail CÓ-pi yu on di Í-meil" },
 
     // ===== Escuela y examen =====
     // --- gramática básica (verbo "to be" + preguntas + tiempo) ---
@@ -192,6 +202,8 @@
     { id: "loc-gra08", cat: "gramatica-en", lvl: 2, es: "¿Por qué…?", en: "Why…?", tip: "wai" },
     { id: "loc-gra09", cat: "gramatica-en", lvl: 1, es: "ayer (pasado)", en: "yesterday", tip: "YÉS-ter-dei" },
     { id: "loc-gra10", cat: "gramatica-en", lvl: 1, es: "mañana (futuro)", en: "tomorrow", tip: "tu-MÓ-rrou" },
+    { id: "loc-gra11", cat: "gramatica-en", lvl: 1, es: "¿Cómo se dice…?", en: "How do you say…?", tip: "jau du yu SÉI" },
+    { id: "loc-gra12", cat: "gramatica-en", lvl: 2, es: "¿Qué significa…?", en: "What does … mean?", tip: "wat dos … MIN" },
 
     // --- en clase ---
     { id: "loc-exa01", cat: "examen", lvl: 1, es: "Levanta la mano.", en: "Raise your hand.", tip: "reis yor jand" },
@@ -202,6 +214,8 @@
     { id: "loc-exa06", cat: "examen", lvl: 2, es: "¿Cómo se escribe?", en: "How do you spell it?", tip: "jau du yu SPEL it" },
     { id: "loc-exa07", cat: "examen", lvl: 1, es: "Repite, por favor.", en: "Say it again, please.", tip: "sei it a-GUÉN plis" },
     { id: "loc-exa08", cat: "examen", lvl: 1, es: "Ya terminé.", en: "I'm done.", tip: "aim don" },
+    { id: "loc-exa09", cat: "examen", lvl: 1, es: "No estoy seguro.", en: "I'm not sure.", tip: "aim not SHUR" },
+    { id: "loc-exa10", cat: "examen", lvl: 1, es: "¿Me puede ayudar?", en: "Can you help me?", tip: "can yu JELP mi" },
 
     // --- bar (Bar / Café-Service) ---
     { id: "loc-bar01", cat: "bar-en", lvl: 1, es: "¿Qué le sirvo?", en: "What can I get you?", tip: "wat can ai GET yu" },
@@ -212,6 +226,8 @@
     { id: "loc-bar06", cat: "bar-en", lvl: 1, es: "¿Algo más?", en: "Anything else?", tip: "É-ni-zing els" },
     { id: "loc-bar07", cat: "bar-en", lvl: 2, es: "Son diez mil, por favor.", en: "That's ten thousand, please.", tip: "dats ten ZÁU-sand plis" },
     { id: "loc-bar08", cat: "bar-en", lvl: 1, es: "¡Salud!", en: "Cheers!", tip: "CHIRS" },
+    { id: "loc-bar09", cat: "bar-en", lvl: 2, es: "La última ronda es a la una.", en: "Last call is at one.", tip: "last COL is at uan" },
+    { id: "loc-bar10", cat: "bar-en", lvl: 1, es: "¿Agua con o sin gas?", en: "Still or sparkling water?", tip: "stil or SPÁR-kling WÓ-ter" },
 
     // ===== Día a día (Forts.) =====
     // --- de compras (Kundensicht) ---
@@ -223,6 +239,8 @@
     { id: "loc-com06", cat: "compras-en", lvl: 1, es: "¿Me da una bolsa, por favor?", en: "Can I have a bag, please?", tip: "can ai jav a BAG plis" },
     { id: "loc-com07", cat: "compras-en", lvl: 2, es: "¿Hay descuento?", en: "Is there a discount?", tip: "is der a DÍS-caunt" },
     { id: "loc-com08", cat: "compras-en", lvl: 1, es: "Me lo llevo.", en: "I'll take it.", tip: "ail TÉIK it" },
+    { id: "loc-com09", cat: "compras-en", lvl: 2, es: "¿Dónde está el probador?", en: "Where's the fitting room?", tip: "wers da FÍ-ting rum" },
+    { id: "loc-com10", cat: "compras-en", lvl: 1, es: "¿Tienen otro color?", en: "Do you have another color?", tip: "du yu jav a-NÓ-der CÓ-lor" },
 
     // --- salud y farmacia (eigene Gesundheit) ---
     { id: "loc-med01", cat: "salud-en", lvl: 1, es: "Me siento mal.", en: "I feel sick.", tip: "ai fil SIK" },
@@ -233,16 +251,20 @@
     { id: "loc-med06", cat: "salud-en", lvl: 1, es: "¿Dónde está la farmacia?", en: "Where is the pharmacy?", tip: "wer is da FÁR-ma-si" },
     { id: "loc-med07", cat: "salud-en", lvl: 2, es: "¿Cada cuánto lo tomo?", en: "How often do I take it?", tip: "jau Ó-fen du ai TÉIK it" },
     { id: "loc-med08", cat: "salud-en", lvl: 2, es: "Llame a una ambulancia.", en: "Call an ambulance.", tip: "COL an ÁM-biu-lans" },
+    { id: "loc-med09", cat: "salud-en", lvl: 2, es: "Tome una pastilla cada ocho horas.", en: "Take one pill every eight hours.", tip: "TÉIK uan pil É-vri eit ÁURS" },
+    { id: "loc-med10", cat: "salud-en", lvl: 2, es: "¿Necesita receta?", en: "Does it need a prescription?", tip: "dos it nid a pres-CRÍP-shon" },
 
     // --- banco y dinero ---
     { id: "loc-din01", cat: "dinero-en", lvl: 1, es: "¿Dónde hay un cajero?", en: "Where is an ATM?", tip: "wer is an ei-ti-ÉM" },
     { id: "loc-din02", cat: "dinero-en", lvl: 2, es: "¿Cobran comisión?", en: "Is there a fee?", tip: "is der a FI" },
-    { id: "loc-din03", cat: "dinero-en", lvl: 2, es: "Quiero cambiar dólares.", en: "I want to change dollars.", tip: "ai want tu CHÉINCH DÓ-lars" },
+    { id: "loc-din03", cat: "dinero-en", lvl: 2, es: "Quiero cambiar dólares.", en: "I want to exchange dollars.", tip: "ai want tu eks-CHÉINCH DÓ-lars" },
     { id: "loc-din04", cat: "dinero-en", lvl: 2, es: "¿Cuál es la tasa de cambio?", en: "What's the exchange rate?", tip: "wats di eks-CHÉINCH reit" },
     { id: "loc-din05", cat: "dinero-en", lvl: 1, es: "¿Puedo pagar en efectivo?", en: "Can I pay in cash?", tip: "can ai PÉI in cash" },
     { id: "loc-din06", cat: "dinero-en", lvl: 2, es: "La tarjeta fue rechazada.", en: "The card was declined.", tip: "da card was di-CLÁIND" },
     { id: "loc-din07", cat: "dinero-en", lvl: 1, es: "¿Me da un recibo?", en: "Can I have a receipt?", tip: "can ai jav a ri-SÍT" },
     { id: "loc-din08", cat: "dinero-en", lvl: 1, es: "Quédese con el cambio.", en: "Keep the change.", tip: "KIP da cheinch" },
+    { id: "loc-din09", cat: "dinero-en", lvl: 2, es: "Necesito una factura.", en: "I need an invoice.", tip: "ai nid an ÍN-vois" },
+    { id: "loc-din10", cat: "dinero-en", lvl: 1, es: "¿Puedo pagar con el teléfono?", en: "Can I pay with my phone?", tip: "can ai PÉI wid mai fóun" },
 
     // ===== Trabajo y negocios (Forts.) =====
     // --- atención al cliente ---
@@ -254,10 +276,12 @@
     { id: "loc-cli06", cat: "cliente-en", lvl: 2, es: "¿Hay algo más en lo que pueda ayudar?", en: "Is there anything else I can help with?", tip: "is der É-ni-zing els ai can JELP wid" },
     { id: "loc-cli07", cat: "cliente-en", lvl: 1, es: "Gracias por su paciencia.", en: "Thank you for your patience.", tip: "zenk yu for yor PÉI-shens" },
     { id: "loc-cli08", cat: "cliente-en", lvl: 1, es: "Que tenga un buen día.", en: "Have a great day.", tip: "jav a GRÉIT dei" },
+    { id: "loc-cli09", cat: "cliente-en", lvl: 2, es: "Voy a transferir su llamada.", en: "I'll transfer your call.", tip: "ail trans-FÉR yor COL" },
+    { id: "loc-cli10", cat: "cliente-en", lvl: 2, es: "Su caso quedó resuelto.", en: "Your case has been resolved.", tip: "yor KÉIS jas bin ri-ZÓLVD" },
 
     // ===== Escuela y examen (Forts.) =====
     // --- números y fechas ---
-    { id: "loc-num01", cat: "numeros-en", lvl: 1, es: "uno, dos, tres", en: "one, two, three", tip: "UAN tu ZRI" },
+    { id: "loc-num01", cat: "numeros-en", lvl: 1, es: "uno, dos, tres", en: "one, two, three", tip: "UAN, TU, ZRI" },
     { id: "loc-num02", cat: "numeros-en", lvl: 1, es: "diez", en: "ten", tip: "TEN" },
     { id: "loc-num03", cat: "numeros-en", lvl: 1, es: "veinte", en: "twenty", tip: "TUÉN-ti" },
     { id: "loc-num04", cat: "numeros-en", lvl: 2, es: "cien", en: "one hundred", tip: "uan JÓN-dred" },
@@ -265,6 +289,48 @@
     { id: "loc-num06", cat: "numeros-en", lvl: 2, es: "el primero", en: "the first", tip: "da FERST" },
     { id: "loc-num07", cat: "numeros-en", lvl: 1, es: "lunes", en: "Monday", tip: "MÓN-dei" },
     { id: "loc-num08", cat: "numeros-en", lvl: 2, es: "¿Qué fecha es hoy?", en: "What's the date today?", tip: "wats da DÉIT tu-DÉI" },
+    { id: "loc-num09", cat: "numeros-en", lvl: 2, es: "la mitad", en: "half", tip: "JAF" },
+    { id: "loc-num10", cat: "numeros-en", lvl: 1, es: "¿Cuánto es en total?", en: "How much is it in total?", tip: "jau moch is it in TÓU-tal" },
+
+    // --- En la playa (Strand-Service / Cartagena) ---
+    { id: "loc-pla01", cat: "playa-en", lvl: 1, es: "¿Le rento una silla?", en: "Would you like to rent a chair?", tip: "wud yu laik tu RENT a CHER" },
+    { id: "loc-pla02", cat: "playa-en", lvl: 1, es: "¿Quiere una sombrilla?", en: "Would you like an umbrella?", tip: "wud yu laik an om-BRÉ-la" },
+    { id: "loc-pla03", cat: "playa-en", lvl: 2, es: "Cuidado con las olas.", en: "Watch out for the waves.", tip: "WACH aut for da WÉIVS" },
+    { id: "loc-pla04", cat: "playa-en", lvl: 1, es: "El sol está fuerte hoy.", en: "The sun is strong today.", tip: "da SON is strong tu-DÉI" },
+    { id: "loc-pla05", cat: "playa-en", lvl: 2, es: "¿Le ofrezco un masaje?", en: "Can I offer you a massage?", tip: "can ai Ó-fer yu a ma-SÁSH" },
+    { id: "loc-pla06", cat: "playa-en", lvl: 1, es: "¿Un coco frío?", en: "A cold coconut?", tip: "a cold CÓU-co-not" },
+    { id: "loc-pla07", cat: "playa-en", lvl: 2, es: "No deje sus cosas solas.", en: "Don't leave your things alone.", tip: "dont LIV yor zings a-LÓUN" },
+    { id: "loc-pla08", cat: "playa-en", lvl: 1, es: "El bote sale en diez minutos.", en: "The boat leaves in ten minutes.", tip: "da BÓUT livs in ten MÍ-nits" },
+
+    // --- Transporte público ---
+    { id: "loc-tra01", cat: "transporte-en", lvl: 1, es: "¿Este bus va al centro?", en: "Does this bus go downtown?", tip: "dos dis BOS gou DÁUN-taun" },
+    { id: "loc-tra02", cat: "transporte-en", lvl: 2, es: "¿Cuánto cuesta el pasaje?", en: "How much is the fare?", tip: "jau moch is da FER" },
+    { id: "loc-tra03", cat: "transporte-en", lvl: 1, es: "¿Dónde me bajo?", en: "Where do I get off?", tip: "wer du ai get OF" },
+    { id: "loc-tra04", cat: "transporte-en", lvl: 1, es: "La próxima parada, por favor.", en: "Next stop, please.", tip: "nekst STOP plis" },
+    { id: "loc-tra05", cat: "transporte-en", lvl: 2, es: "¿A qué hora sale el próximo?", en: "What time is the next one?", tip: "wat taim is da nekst UAN" },
+    { id: "loc-tra06", cat: "transporte-en", lvl: 1, es: "¿Tiene cambio?", en: "Do you have change?", tip: "du yu jav CHÉINCH" },
+    { id: "loc-tra07", cat: "transporte-en", lvl: 1, es: "Voy al aeropuerto.", en: "I'm going to the airport.", tip: "aim GÓU-ing tu di ER-port" },
+    { id: "loc-tra08", cat: "transporte-en", lvl: 2, es: "¿Está muy lejos a pie?", en: "Is it far on foot?", tip: "is it FAR on fut" },
+
+    // --- En la reunión (Meetings) ---
+    { id: "loc-reu01", cat: "reunion-en", lvl: 1, es: "Empecemos.", en: "Let's get started.", tip: "lets get STÁR-ted" },
+    { id: "loc-reu02", cat: "reunion-en", lvl: 2, es: "¿Pueden ver mi pantalla?", en: "Can you see my screen?", tip: "can yu SI mai scrin" },
+    { id: "loc-reu03", cat: "reunion-en", lvl: 2, es: "Disculpen, se cortó.", en: "Sorry, you cut out.", tip: "SO-rri, yu cot ÁUT" },
+    { id: "loc-reu04", cat: "reunion-en", lvl: 2, es: "¿Pueden repetir eso?", en: "Could you repeat that?", tip: "cud yu ri-PÍT dat" },
+    { id: "loc-reu05", cat: "reunion-en", lvl: 1, es: "Estoy de acuerdo con eso.", en: "I agree with that.", tip: "ai a-GRÍ wid dat" },
+    { id: "loc-reu06", cat: "reunion-en", lvl: 2, es: "Lo dejamos para después.", en: "Let's leave it for later.", tip: "lets liv it for LÉI-ter" },
+    { id: "loc-reu07", cat: "reunion-en", lvl: 1, es: "¿Alguna pregunta?", en: "Any questions?", tip: "É-ni KUÉS-chons" },
+    { id: "loc-reu08", cat: "reunion-en", lvl: 1, es: "Gracias a todos.", en: "Thanks, everyone.", tip: "zenks É-vri-uan" },
+
+    // --- Conectores útiles (Bindewörter) ---
+    { id: "loc-con01", cat: "conectores-en", lvl: 1, es: "pero", en: "but", tip: "BOT" },
+    { id: "loc-con02", cat: "conectores-en", lvl: 1, es: "porque", en: "because", tip: "bi-CÓS" },
+    { id: "loc-con03", cat: "conectores-en", lvl: 1, es: "también", en: "also", tip: "ÓL-sou" },
+    { id: "loc-con04", cat: "conectores-en", lvl: 2, es: "por ejemplo", en: "for example", tip: "for eg-ZÁM-pol" },
+    { id: "loc-con05", cat: "conectores-en", lvl: 1, es: "entonces", en: "so", tip: "SÓU" },
+    { id: "loc-con06", cat: "conectores-en", lvl: 2, es: "además", en: "besides", tip: "bi-SÁIDS" },
+    { id: "loc-con07", cat: "conectores-en", lvl: 2, es: "sin embargo", en: "however", tip: "jau-É-ver" },
+    { id: "loc-con08", cat: "conectores-en", lvl: 2, es: "al final", en: "in the end", tip: "in di END" },
   ];
 
   // Ein kuratiertes Schnellstart-Paket je Kategorie (analog data.js PRESETS).
