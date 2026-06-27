@@ -648,13 +648,14 @@ function installModules() {
     "editions/registry.js", "config.js", "i18n.js", "i18n.strings.js",
     "contextdata.js", "data.js", "numbers.js", "context.js", "countries.js",
     "historia.js", "historiaCentro.js", "knigge.js", "frases.js", "dialogos.js",
+    "venue-roleplay.js",
     "conjug.js", "regatear.js", "logistica.js", "salud.js", "jerga.js",
     "derechos.js", "responsable.js", "fotografia.js",
     "flirt.js", "bailar.js", "musica.js", "juegos.js", "banderas.js", "bebidas.js", "yesto.js", "srs.js",
     "store.js", "net.js", "sync.js", "social.js", "usercards.js", "matcher.js",
     "placement.js", "assessment.js", "search.js", "stats.js", "badges.js",
     "speech.js", "share.js", "qr.js", "install.js", "changelog.js",
-    "celebrate.js", "view-helpers.js", "ui.js", "features/spickzettel.js", "features/definiciones.js", "features/precios.js", "features/yesto-game.js", "features/frases-game.js", "features/conjugador.js", "features/tiempos.js", "features/regateo.js", "features/cuerpo.js", "features/compras.js", "features/dialogos-game.js", "features/etiqueta.js", "features/cronologia.js", "features/jerga.js", "features/derechos.js", "features/responsable.js", "features/banderas-game.js", "app.js",
+    "celebrate.js", "view-helpers.js", "ui.js", "features/spickzettel.js", "features/definiciones.js", "features/precios.js", "features/yesto-game.js", "features/frases-game.js", "features/conjugador.js", "features/tiempos.js", "features/regateo.js", "features/cuerpo.js", "features/compras.js", "features/dialogos-game.js", "features/venue-roleplay-game.js", "features/etiqueta.js", "features/cronologia.js", "features/jerga.js", "features/derechos.js", "features/responsable.js", "features/banderas-game.js", "app.js",
   ];
   for (const rel of order) {
     require(path.join(SRC, rel));

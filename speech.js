@@ -21,13 +21,16 @@
     return (tr && typeof tr.ttsLocale === "function" && tr.ttsLocale()) || "es-419";
   }
 
-  // Beste passende Stimme suchen: bevorzugt die Track-Locale (z. B. en-US/es-419),
-  // sonst eine Stimme derselben Sprachfamilie, sonst null. Für Spanisch wird wie
-  // bisher eine LatAm-Variante bevorzugt; für Englisch eine beliebige en-Stimme.
-  function pickVoice() {
+  // Beste passende Stimme suchen: bevorzugt die übergebene bzw. Track-Locale (z. B.
+  // en-US/es-419), sonst eine Stimme derselben Sprachfamilie, sonst null. Für Spanisch
+  // wird wie bisher eine LatAm-Variante bevorzugt; für Englisch eine beliebige en-Stimme.
+  // overrideLocale (optional): erzwingt eine andere Sprache als die des aktiven Tracks
+  // – nötig fürs Zwei-Seiten-Rollenspiel, das pro Zeile mal Spanisch, mal Englisch
+  // spricht. Fehlt sie, gilt wie bisher die Track-Locale.
+  function pickVoice(overrideLocale) {
     if (!synth) return null;
     const voices = synth.getVoices() || [];
-    const locale = targetLocale();
+    const locale = overrideLocale || targetLocale();
     const base = locale.slice(0, 2).toLowerCase(); // "es" | "en"
     const family = voices.filter((v) => v.lang && v.lang.slice(0, 2).toLowerCase() === base);
     if (!family.length) return null;
@@ -53,17 +56,19 @@
   // cancel() nur bei Bedarf: ein bedingungsloses cancel() direkt vor speak()
   // verschluckt auf iOS gelegentlich die erste Utterance.
   // rate (optional): Sprechgeschwindigkeit; fehlt sie, gilt DEFAULT_RATE.
-  function speak(text, rate) {
+  // locale (optional): erzwingt eine bestimmte Sprache (z. B. "es-419"/"en-US") statt
+  // der Track-Stimme – fürs Zwei-Seiten-Rollenspiel. Fehlt sie, bleibt alles wie bisher.
+  function speak(text, rate, locale) {
     if (!synth || !text) return;
     try {
       if (synth.speaking || synth.pending) synth.cancel();
       const u = new SpeechSynthesisUtterance(String(text));
-      const voice = pickVoice();
+      const voice = pickVoice(locale);
       if (voice) {
         u.voice = voice;
         u.lang = voice.lang;
       } else {
-        u.lang = targetLocale(); // Fallback (Track-Locale), falls (noch) keine Stimme geladen ist
+        u.lang = locale || targetLocale(); // Fallback, falls (noch) keine Stimme geladen ist
       }
       u.rate = clampRate(rate);
       synth.speak(u);

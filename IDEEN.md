@@ -63,16 +63,16 @@ denkbar – außerhalb dieses Durchlaufs.
 
 ## Nachtrag aus dem Wettbewerbs-Gegencheck (2026-06-27)
 
-### 7. 🤝 Zwei-Seiten-Venue-Roleplay *(Produkt-Wedge, noch nicht gebaut)*
+### 7. 🤝 Zwei-Seiten-Venue-Roleplay *(Produkt-Wedge — Prototyp umgesetzt 2026-06-27)*
 Aus [WETTBEWERB-EN.md](WETTBEWERB-EN.md): Gegen ELSA/Voxy/Dexway ist unser einziger nicht kopierbarer
-Vorteil, dass HolaRuta **beide Lernrichtungen in einer Engine** hat. Idee: Gast (lernt Spanisch,
-Reise-Track) und Mitarbeiter (lernt Englisch, [Locals-Track](LOCALS.md)) spielen aus *einem* QR eine
-gepaarte Live-Szene (z. B. Check-in) — jeder in seiner Lernrichtung. Heute sind die Diálogos
-NPC-gesteuert (Einzel-Lerner); nötig ist ein gepaarter Modus.
-- **Warum:** schließt den in der Pitch verkauften, aber im Produkt fehlenden Wedge — der höchste
+Vorteil, dass HolaRuta **beide Lernrichtungen in einer Engine** hat. Umgesetzt: Gast (übt Spanisch) und
+Mitarbeiter (übt Englisch, [Locals-Track](LOCALS.md)) spielen eine Szene im Wechsel auf einem Gerät
+(Pass-and-play), jede:r in seiner Lernrichtung; TTS pro Zeile in der passenden Stimme.
+- **Warum:** schließt den in der Pitch verkauften, zuvor im Produkt fehlenden Wedge — der höchste
   Differenzierungs-Hebel gegenüber dem Wettbewerb.
-- **Reuse:** Diálogos-/Spielmodus-Engine + `isLocals()` (`app.js:300`). *Unlock, kein Greenfield.*
-- **Aufwand:** mittel–groß. Priorität P1 (siehe WETTBEWERB-EN §4).
+- **Umgesetzt:** `venue-roleplay.js` (3 bilinguale Szenen) + `features/venue-roleplay-game.js`,
+  Discover-Eintrag „Roleplay del local" (loc-only), Test `test/venue-roleplay-game.test.js`.
+- **Offener Ausbau:** mehr Szenen, Frei-Tippen statt MC, Muttersprachler-Sign-off der Szenen.
 
 ---
 

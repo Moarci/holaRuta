@@ -50,7 +50,7 @@ Die Matrix beschreibt HolaRuta als geplant/„nachzubauen". Der Code sagt etwas 
 |---|---|---|---|
 | **Inhalts-Umfang** | „Standard-Hospitality-Syllabus **(nachzubauen)**" | **818 Karten · 63 Kategorien · 7 Vier-Wochen-Kurse · 20 Diálogos**, buildbar (`build.js --edition=cartagena-locals`). Breiter als jeder Wettbewerber: Hospitality **+** Alltag **+** Beruf/BPO/Tech **+** Grammatik/Examen ([LOCALS.md](LOCALS.md), `data.locals.js`) | **Matrix unterschätzt** — Content ist erledigt, nicht offen |
 | **Hospitality-Vertical** | „situiert am Arbeitsplatz" | Vollständig: recepción, meseros, quejas/escalación, limpieza/housekeeping, ventas/upselling, teléfono/bpo, platos/bar, guías … | **Erfüllt** |
-| **Peer-Roleplay (der Wedge!)** | „Situiertes Peer-Roleplay; Gast↔Personal als **Live-Übung**" | Locals-Track bietet flip/type/listen + **NPC-gesteuerte** Diálogos (Einzel-Lerner, `DLG_SCENARIOS`). Ein **zwei-seitiges Gast↔Personal-Peer-Roleplay existiert nicht.** `isLocals()` (`app.js:300`) gated diverse Reise-Features aus | **ECHTE LÜCKE** — der als Wedge benannte Mechanismus ist nicht gebaut |
+| **Peer-Roleplay (der Wedge!)** | „Situiertes Peer-Roleplay; Gast↔Personal als **Live-Übung**" | Bisher nur NPC-gesteuerte Diálogos (Einzel-Lerner). **Seit 2026-06-27 als Prototyp gebaut:** `venue-roleplay.js` + `features/venue-roleplay-game.js` — Pass-and-play, Gast übt Spanisch, Personal übt Englisch in einer Szene (MC, TTS pro Zeile) | **Lücke geschlossen (Prototyp)** — der Wedge-Mechanismus existiert jetzt; Ausbau (mehr Szenen, Frei-Tippen) offen |
 | **Speech-Feedback** | „Offen (Constraint vs. offline/kontolos)" | TTS-Ausgabe (Web Speech API) + phonetische `tip`-Zeile je Karte; **keine** Spracherkennung/Scoring | **Konsistent** — bewusst nicht hier konkurrieren ([IDEEN.md §6](IDEEN.md)) |
 | **L1 ES/PT** | „native LatAm ES/PT" | ES ja (`config.js:73` — `cardNativeLang:"es"`, `ttsLocale:"en-US"`); **PT nicht gebaut** (kein `pt`-Track) | PT = Phase 2, wie Matrix sagt |
 | **LatAm-Kontext** | „Hoch (Akzente/Kontext, Mascots)" | LatAm-korrekter Content — **aber Muttersprachler-Sign-off offen** ([RISIKO.md R13](RISIKO.md)) | Versprechen marketing-tragend, menschlich unbestätigt |
@@ -104,19 +104,23 @@ Phase 2.
 > Leitprinzip wie in [STATUS.md](STATUS.md): der größte Hebel ist nicht noch ein Feature, sondern der
 > erste Markt-Beweis — **außer** an der einen Stelle, wo der verkaufte Wedge im Produkt noch fehlt.
 
-**P1 — Zwei-Seiten-Venue-Roleplay bauen (den verkauften Wedge schließen).**
-Gast (lernt Spanisch, Reise-Track) und Mitarbeiter (lernt Englisch, Locals-Track) machen aus *einem* QR
-eine gepaarte Live-Übung — beide Richtungen einer Szene (z. B. Check-in) gleichzeitig. **Nur HolaRuta hat
-beide Richtungen in einer Engine** → der einzige nicht kopierbare Moat. Heute NPC-gesteuert; nötig ist ein
-gepaarter Modus. *Unlock, kein Greenfield* (Diálogos-/Spielmodus vorhanden; `app.js:300`, `isLocals()`).
+**P1 — Zwei-Seiten-Venue-Roleplay ✅ (Prototyp gebaut, 2026-06-27).**
+Gast (übt Spanisch) und Mitarbeiter (übt Englisch) spielen eine Szene im Wechsel auf *einem* Gerät
+(Pass-and-play, offline, kein Konto); jede:r produziert seine Zeile in der eigenen Lernsprache, TTS spricht
+sie in der passenden Stimme (Gast es-419, Personal en-US). **Nur HolaRuta hat beide Richtungen in einer
+Engine** → der einzige nicht kopierbare Moat. Umgesetzt: `venue-roleplay.js` (3 bilinguale Szenen),
+`features/venue-roleplay-game.js`, Discover-Eintrag „Roleplay del local" (loc-only), Test
+`test/venue-roleplay-game.test.js`. **Offener Ausbau:** mehr Szenen, Frei-Tippen statt MC,
+Muttersprachler-Sign-off der Szenen.
 
 **P1 — Muttersprachler-/Bilingual-Sign-off der 818 Locals-Karten.**
 Englischer Output + LatAm-ES gegenlesen lassen. Schließt [R13](RISIKO.md) für den English-Track;
 Voraussetzung für Schul-/Hotel-Deals. Ergebnis als sichtbares „native-reviewed"-Siegel.
 
-**P2 — Generische Venue-English-Edition templaten.**
-`editions/venue-en.js` ohne ECOS-Bezug + venue-spezifisches QR-Poster (Asset-Muster in
-`docs/anleitungen/`). ~1–2 h, macht employer-pays sofort über Cartagena hinaus pitchbar.
+**P2 — Generische Venue-English-Edition ✅ (gebaut, 2026-06-27).**
+`venue-en` in `editions/registry.js` (track `es-en`, ohne ECOS-Bezug, taskTab/teacherTab aus) +
+druckfertiges QR-Poster `docs/anleitungen/venue-en.html` (QR → `?edition=venue-en`). Macht employer-pays
+sofort über Cartagena hinaus pitchbar: `?edition=venue-en` oder `node build.js --edition=venue-en`.
 
 **P2 — Dexway-Differenzierungs-Slide für den Pitch.**
 Eine Folie: HolaRuta (offline · kontolos · gratis-Lerner · LatAm · zwei-seitig) vs. Dexway (Spanien ·
