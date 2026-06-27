@@ -232,7 +232,7 @@
     ctx.fillStyle = MUTE;
     ctx.textAlign = "center";
     ctx.font = font("600", 30);
-    ctx.fillText(t("share.sideNative"), cx, contentTop + 30);
+    ctx.fillText((payload.nativeLabel || t("share.sideNative")).toUpperCase(), cx, contentTop + 30);
     const deTop = contentTop + 50;
     fitText(ctx, payload.de, cx, deTop, innerW, {
       px: 58, min: 32, weight: "600", color: INK, maxLines: 2,
@@ -251,7 +251,7 @@
     // immer Platz für den Aussprache-Tipp bleibt (kein Überlappen mehr).
     ctx.fillStyle = accent[0];
     ctx.font = font("600", 30);
-    ctx.fillText("ESPAÑOL", cx, dividerY + 56);
+    ctx.fillText((payload.learnLabel || "ESPAÑOL").toUpperCase(), cx, dividerY + 56);
     const esTop = dividerY + 76;
     const esBottom = fitText(ctx, payload.es, cx, esTop, innerW, {
       px: 88, min: 38, weight: "800", color: accent[0], maxLines: 2,

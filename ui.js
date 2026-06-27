@@ -159,6 +159,8 @@
     { action: "open-cafe",        icon: "lc:coffee", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
     { action: "open-juegos",      icon: "lc:dices", title: "Juegos de viaje",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
     { action: "open-pretrip",     icon: "lc:calendar", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
+    // Locals-Track: derselbe Plan-Screen als 4-Wochen-Kurs (nur hier sichtbar).
+    { action: "open-pretrip",     icon: "lc:calendar", titleKey: "discover.cursoTitle", subKey: "discover.cursoSub", grad: ["#1F7A8C", "#3F7355"], group: "practice", loc: true },
     { action: "open-placement",   icon: "lc:target", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-assessment",  icon: "lc:clipboard-list", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
   ];
@@ -175,6 +177,11 @@
   // Entdecken sortiert ein fester thematischer Rahmen die inzwischen 23 Themen;
   // innerhalb einer Gruppe bleibt die Fälligkeits-Sortierung aus homeVM erhalten.
   const CATEGORY_GROUPS = [
+    // Locals-Track: Englisch nach Lebensbereich (leer/ausgeblendet im Reise-Track).
+    { id: "loc-hosp", titleKey: "home.catGroupLocHosp" },
+    { id: "loc-dia",  titleKey: "home.catGroupLocDia" },
+    { id: "loc-trab", titleKey: "home.catGroupLocTrab" },
+    { id: "loc-esc",  titleKey: "home.catGroupLocEsc" },
     { id: "basics",  titleKey: "home.catGroupBasics" },
     { id: "grammar", titleKey: "home.catGroupGrammar" },
     { id: "people",  titleKey: "home.catGroupPeople" },
@@ -190,6 +197,13 @@
   // <option>-Dropdowns (kein SVG möglich) weiter das Emoji nutzen.
   const CAT_ICON = (window.SC && window.SC.catIcon) || {};
   const catIcon = (c) => (c && CAT_ICON[c.id]) || (c && c.icon) || "";
+
+  // Sprachcode der GELERNTEN Antwort (Reise: es, Locals: en) – für lang-Attribute auf
+  // geteilten Sekundär-Screens (Statistik, Karten-Detail, Mi léxico), deren „es"-Slot
+  // die gelernte Antwort trägt. Die reise-spezifischen Feature-Screens (Arbeitsblätter,
+  // Placement, Hostel-Battle, Conjugador …) bleiben fest lang="es": dort ist es korrekt
+  // und sie sind im Locals-Track ohnehin ausgeblendet.
+  const learnLangCode = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
   // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
@@ -276,8 +290,8 @@
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.dirLabel"))}</span>
         <div class="segmented" role="tablist" aria-label="${esc(t("home.dirAria"))}">
-          <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">${vm.nativeFlag} → 🇪🇸 ${esc(vm.nativeLabel)}</button>
-          <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">🇪🇸 → ${vm.nativeFlag} Español</button>
+          <button class="seg ${vm.dir === "de2es" ? "is-active" : ""}" data-action="set-dir" data-dir="de2es" aria-pressed="${vm.dir === "de2es"}">${vm.nativeFlag} → ${vm.learnFlag} ${esc(vm.nativeLabel)}</button>
+          <button class="seg ${vm.dir === "es2de" ? "is-active" : ""}" data-action="set-dir" data-dir="es2de" aria-pressed="${vm.dir === "es2de"}">${vm.learnFlag} → ${vm.nativeFlag} ${esc(vm.learnLabel)}</button>
         </div>
       </div>
       ${speedGroup}`;
@@ -963,15 +977,23 @@
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${renderIcon(x.icon)}</span>
         <span class="feat__text">
-          <span class="feat__title">${esc(x.title)}</span>
+          <span class="feat__title">${esc(x.titleKey ? t(x.titleKey) : x.title)}</span>
           <span class="feat__sub">${esc(x.subKey ? t(x.subKey) : x.sub)}</span>
         </span>
       </button>`;
     // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
     // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
+    // Locals-Track: die Entdecken-Features sind durchweg spanisch-spezifische Reise-
+    // Inhalte (Precios, Conjugación, Jerga, Diálogos, Länder/Geschichte …). Für
+    // Englisch-Lernende nur die sprachunabhängigen behalten (Mi léxico).
+    const localsTrack = !!(window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
+    const LOCALS_FEATURES = { "open-favorites": true, "open-dialogos": true };
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
-      return true;
+      // Locals-Track: nur sprachunabhängige Features (Mi léxico) + die mit loc:true
+      // markierten Locals-Einträge (z. B. Kursplan). Reise-Track: keine loc-Einträge.
+      if (localsTrack) return x.loc === true || !!LOCALS_FEATURES[x.action];
+      return !x.loc;
     });
     const sections = FEATURE_GROUPS.map((g) => {
       const items = available.filter((x) => x.group === g.id);
@@ -1204,8 +1226,9 @@
       <div class="switchgroup">
         <span class="switchcap">${esc(t("home.uiLanguage"))}</span>
         <div class="segmented" role="tablist" aria-label="${esc(t("home.uiLanguage"))}">
-          <button class="seg ${vm.uiLang === "de" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="de" aria-pressed="${vm.uiLang === "de"}">🇩🇪 Deutsch</button>
-          <button class="seg ${vm.uiLang === "en" ? "is-active" : ""}" data-action="set-ui-lang" data-lang="en" aria-pressed="${vm.uiLang === "en"}">🇬🇧 English</button>
+          ${(vm.uiLangOptions || [{ code: "de", flag: "🇩🇪", label: "Deutsch" }, { code: "en", flag: "🇬🇧", label: "English" }]).map((o) =>
+            `<button class="seg ${vm.uiLang === o.code ? "is-active" : ""}" data-action="set-ui-lang" data-lang="${esc(o.code)}" aria-pressed="${vm.uiLang === o.code}">${o.flag} ${esc(o.label)}</button>`
+          ).join("")}
         </div>
       </div>`;
     return `
@@ -1213,8 +1236,8 @@
 
       ${progressCard(vm)}
 
-      <p class="sectioncap">${renderIcon("lc:target")} ${esc(t("home.tripCap"))}</p>
-      ${tripManage(vm)}
+      ${vm.showTrip === false ? "" : `<p class="sectioncap">${renderIcon("lc:target")} ${esc(t("home.tripCap"))}</p>
+      ${tripManage(vm)}`}
 
       ${vm.hasPlacement ? placementCard(vm.placement, vm.shareFormat) : ""}
       ${vm.hasAssessment ? assessmentCard(vm.assessment, vm.shareFormat) : ""}
@@ -1504,7 +1527,11 @@
   // 🔊 und Aussprache-Tipp sitzen immer auf der spanischen Seite.
   function flipBody(vm) {
     const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:audio-lines")} ${esc(vm.tip)}</div>` : "";
-    const sq = vm.spanishIsQuestion; // Spanisch steht vorne (Frage)?
+    const sq = vm.spanishIsQuestion; // Lernsprache steht vorne (Frage)?
+    // lang-Attribute spiegeln die tatsächlich gezeigte Sprache (a11y/Vorlesen):
+    // Frageseite = Lernsprache wenn sq, sonst Muttersprache; Antwortseite umgekehrt.
+    const qLang = sq ? vm.learnLang : vm.nativeLang;
+    const aLang = sq ? vm.nativeLang : vm.learnLang;
     return `
       <div class="flip ${vm.revealed ? "is-flipped" : ""}" data-action="flip" id="flip"
            role="button" tabindex="0" aria-label="${vm.revealed ? esc(t("study.cardBack")) : esc(t("study.cardFlip"))}">
@@ -1513,7 +1540,7 @@
             <span class="face__cat">${esc(vm.catLabel)}</span>
             ${levelBadge(vm, false)}
             ${sq ? speakBtn(false) : ""}
-            <div class="face__word"${sq ? ' lang="es"' : ""}>${esc(vm.question)}</div>
+            <div class="face__word" lang="${esc(qLang)}">${esc(vm.question)}</div>
             ${sq ? tip : ""}
             <span class="face__hint">${esc(t("study.flipHint"))}</span>
           </div>
@@ -1522,7 +1549,7 @@
             ${levelBadge(vm, true)}
             ${contextIconBtn(vm.context, true, vm.contextOpen)}
             ${sq ? "" : speakBtn(true)}
-            <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
+            <div class="face__word" lang="${esc(aLang)}">${esc(vm.answer)}</div>
             ${colorSwatch(vm.swatch)}
             ${sq ? "" : tip}
           </div>
@@ -1539,6 +1566,8 @@
   function typeBody(vm) {
     const res = vm.typeResult; // null | {correct, answers, input}
     const sq = vm.spanishIsQuestion;
+    const qLang = sq ? vm.learnLang : vm.nativeLang; // Sprache der Frage
+    const aLang = sq ? vm.nativeLang : vm.learnLang; // Sprache der erwarteten Antwort
     const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:audio-lines")} ${esc(vm.tip)}</div>` : "";
 
     if (!res) {
@@ -1549,11 +1578,11 @@
           <span class="face__cat">${esc(vm.catLabel)}</span>
           ${levelBadge(vm, false)}
           ${sq ? speakBtn(false) : ""}
-          <div class="face__word"${sq ? ' lang="es"' : ""}>${esc(vm.question)}</div>
+          <div class="face__word" lang="${esc(qLang)}">${esc(vm.question)}</div>
           <span class="face__hint">${inputHint}</span>
         </div>
         <form class="typer" data-action="submit-typed" id="typer">
-          <input class="typer__input" id="answer" type="text"${!sq ? ' lang="es"' : ""} autocomplete="off"
+          <input class="typer__input" id="answer" type="text" lang="${esc(aLang)}" autocomplete="off"
                  autocapitalize="off" autocorrect="off" spellcheck="false"
                  aria-label="${esc(placeholder)}" placeholder="${esc(placeholder)}" />
           <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
@@ -1569,7 +1598,7 @@
         ${levelBadge(vm, false)}
         ${contextIconBtn(vm.context, false, vm.contextOpen)}
         ${sq ? "" : speakBtn(false)}
-        <div class="face__word"${sq ? "" : ' lang="es"'}>${esc(vm.answer)}</div>
+        <div class="face__word" lang="${esc(aLang)}">${esc(vm.answer)}</div>
         ${colorSwatch(vm.swatch)}
         ${sq ? "" : tip}
         ${verdict}
@@ -1602,7 +1631,7 @@
           <span class="face__hint">${esc(t("study.listenHint"))}</span>
         </div>
         <form class="typer" data-action="submit-typed" id="typer">
-          <input class="typer__input" id="answer" type="text" lang="es" autocomplete="off"
+          <input class="typer__input" id="answer" type="text" lang="${esc(vm.learnLang)}" autocomplete="off"
                  autocapitalize="off" autocorrect="off" spellcheck="false"
                  aria-label="${esc(t("study.listenPlaceholder"))}" placeholder="${esc(t("study.listenPlaceholder"))}" />
           <button class="typer__btn" type="submit">${esc(t("common.check"))}</button>
@@ -1618,7 +1647,7 @@
         ${levelBadge(vm, false)}
         ${contextIconBtn(vm.context, false, vm.contextOpen)}
         ${speakBtn(false)}
-        <div class="face__word" lang="es">${esc(vm.es)}</div>
+        <div class="face__word" lang="${esc(vm.learnLang)}">${esc(vm.es)}</div>
         ${colorSwatch(vm.swatch)}
         <div class="listen-de">${esc(vm.de)}</div>
         ${tip}
@@ -1995,7 +2024,7 @@
         <span class="statrow__dot" style="background:${meta.color}" title="${esc(meta.label())}"></span>
         <span class="statrow__main">
           <span class="statrow__de">${esc(r.de)}</span>
-          <span class="statrow__es" lang="es">${esc(r.es)}</span>
+          <span class="statrow__es" lang="${learnLangCode()}">${esc(r.es)}</span>
           <span class="statrow__meta">${renderIcon(r.catLc || r.catIcon)} ${esc(r.catLabel)} · ${esc(seen)}${r.s.lapses ? ` · ${esc(t("profile.forgotTimes", { n: r.s.lapses }))}` : ""}</span>
         </span>
         <span class="statrow__right">
@@ -2065,7 +2094,7 @@
 
         <div class="cardx">
           <div class="cardx__de">${esc(vm.de)}</div>
-          <div class="cardx__es" lang="es">${esc(vm.es)}</div>
+          <div class="cardx__es" lang="${learnLangCode()}">${esc(vm.es)}</div>
           ${colorSwatch(vm.swatch)}
           ${tip}
           <div class="cardx__tags">${firstTryBadge}</div>
@@ -2147,7 +2176,7 @@
       <div class="ed-item">
         <div class="ed-item__main">
           <div class="ed-item__de">${esc(c.de)}</div>
-          <div class="ed-item__es" lang="es">${esc(c.es)}</div>
+          <div class="ed-item__es" lang="${learnLangCode()}">${esc(c.es)}</div>
           <div class="ed-item__meta">${renderIcon(c.catLc || c.catIcon)} ${esc(c.catLabel)}${c.lvlShort ? ` · ${esc(c.lvlShort)}` : ""}${tip}</div>
         </div>
         <button class="ed-del" type="button" data-action="delete-card" data-id="${esc(c.id)}" aria-label="${esc(t("common.delete"))}" title="${esc(t("common.deleteTitle"))}">${renderIcon("lc:trash-2")}</button>
@@ -2185,7 +2214,7 @@
           <label class="fav-add__field"><span>${esc(t("favorites.addDe"))}</span>
             <input id="fav-edit-de" type="text" maxlength="500" autocomplete="off" value="${esc(it.de)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
-            <input id="fav-edit-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none" value="${esc(it.es)}" /></label>
+            <input id="fav-edit-es" type="text" maxlength="500" lang="${learnLangCode()}" autocomplete="off" autocapitalize="none" value="${esc(it.es)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
             <input id="fav-edit-tip" type="text" maxlength="500" autocomplete="off" value="${esc(it.tip)}" /></label>
           ${favCatSelect("fav-edit-cat", it.catId, vm)}
@@ -2202,7 +2231,7 @@
                 title="${esc(t("favorites.show"))}">
           <span class="fav-row__icon" aria-hidden="true">${renderIcon(it.catLc || it.catIcon)}</span>
           <span class="fav-row__text">
-            <span class="fav-row__es" lang="es">${esc(it.es)}</span>
+            <span class="fav-row__es" lang="${learnLangCode()}">${esc(it.es)}</span>
             <span class="fav-row__de">${esc(it.de)}</span>
             ${it.tip ? `<span class="fav-row__tip">${renderIcon("lc:audio-lines")} ${esc(it.tip)}</span>` : ""}
           </span>
@@ -2273,7 +2302,7 @@
             <input id="fav-de" type="text" maxlength="500" autocomplete="off"
                    placeholder="${esc(t("favorites.dePlaceholder"))}" value="${esc(vm.draft.de)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
-            <input id="fav-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none"
+            <input id="fav-es" type="text" maxlength="500" lang="${learnLangCode()}" autocomplete="off" autocapitalize="none"
                    placeholder="${esc(t("favorites.esPlaceholder"))}" value="${esc(vm.draft.es)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
             <input id="fav-tip" type="text" maxlength="500" autocomplete="off"
@@ -2303,7 +2332,7 @@
       <div class="sz-show" data-action="fav-close" role="dialog" aria-modal="true" aria-label="${esc(t("favorites.showLabel"))}">
         <div class="sz-show__inner">
           ${vm.showSrc ? `<p class="sz-show__src">${renderIcon(vm.showSrc.lc || vm.showSrc.icon)} ${esc(vm.showSrc.label)}</p>` : ""}
-          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
+          <p class="sz-show__es" lang="${learnLangCode()}">${esc(vm.show.es)}</p>
           <p class="sz-show__de">${esc(vm.show.de)}</p>
           ${vm.show.tip ? `<p class="sz-show__tip">${renderIcon("lc:audio-lines")} ${esc(vm.show.tip)}</p>` : ""}
           <div class="sz-show__actions">

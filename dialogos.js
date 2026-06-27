@@ -29,6 +29,10 @@
  */
 (function () {
   "use strict";
+  // Im Locals-Track (Spanisch lernt Englisch) NICHT die Reise-Dialoge setzen –
+  // data.locals.js hat SC.dialogos bereits mit den Local-Perspektive-Dialogen belegt
+  // (dialogos.js lädt in index.html NACH data.locals.js und würde es sonst überschreiben).
+  if (window.SC && window.SC.config && window.SC.config.track === "es-en") return;
 
   const DIALOGOS_SCENARIOS = [
     { id: "hotel",      title: "Hotel-Check-in",  titleEn: "Hotel check-in",  icon: "lc:bell", lvl: 1, intro: "An der Rezeption einchecken.", introEn: "Check in at reception." },

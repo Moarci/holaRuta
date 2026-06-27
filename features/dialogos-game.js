@@ -32,6 +32,14 @@
 
   // ----- Daten-Helfer (lesen das lazy geladene Content-Modul SC.dialogos) -----
   const dlgMod = () => window.SC.dialogos || null;
+  // Track-Helfer: welche Sprache spricht der NPC (gelernt) bzw. steht in der
+  // Übersetzung/Anweisung (Muttersprache)? Reise: NPC=Spanisch (turn.es), Übersetzung
+  // via nat(). Locals: NPC=Englisch (turn.en), Übersetzung=Spanisch (turn.es).
+  // Graceful ohne SC.track -> bisheriges Reise-Verhalten.
+  const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+  const trackNativeLang = () => (window.SC && window.SC.track && window.SC.track.cardNativeLang && window.SC.track.cardNativeLang()) || null;
+  const spokenT = (turn) => { const ll = trackLearnLang(); return String(turn[ll] != null && turn[ll] !== "" ? turn[ll] : (turn.es != null ? turn.es : "")); };
+  const nativeT = (turn) => { const cn = trackNativeLang(); if (cn) return String(turn[cn] != null ? turn[cn] : (turn.de != null ? turn.de : "")); return ctx.nat(turn); };
   const dialogosReady = () => { const m = dlgMod(); return !!(m && m.DIALOGOS_SCENARIOS && m.DIALOGOS_SCENARIOS.length); };
   const dialogueById = (id) => { const m = dlgMod(); return (m ? m.DIALOGOS.find((d) => d.id === id) : null) || null; };
   const scenarioById = (id) => { const m = dlgMod(); return (m ? m.DIALOGOS_SCENARIOS.find((s) => s.id === id) : null) || null; };
@@ -64,17 +72,17 @@
     for (let i = 0; i < d.turnIdx; i++) {
       const turn = turns[i];
       if (!turn) continue;
-      if (turn.who === "npc") transcript.push({ who: "npc", es: ctx.withName(turn.es), de: ctx.withName(ctx.nat(turn)) });
+      if (turn.who === "npc") transcript.push({ who: "npc", es: ctx.withName(spokenT(turn)), de: ctx.withName(nativeT(turn)) });
       else transcript.push({ who: "user", es: ctx.withName(turn.solEs), de: "" });
     }
     const cur = turns[d.turnIdx] || null;
     const current = cur
       ? (cur.who === "npc"
-          ? { who: "npc", es: ctx.withName(cur.es), de: ctx.withName(ctx.nat(cur)) }
+          ? { who: "npc", es: ctx.withName(spokenT(cur)), de: ctx.withName(nativeT(cur)) }
           : {
               who: "user",
               kind: cur.kind,
-              de: ctx.withName(ctx.nat(cur)),
+              de: ctx.withName(nativeT(cur)),
               solEs: ctx.withName(cur.solEs),
               why: ctx.withName(ctx.natk(cur, "why") || ""),
               options: cur.kind === "mc" ? cur.options.map((o) => ({ es: ctx.withName(o.es) })) : null,
@@ -203,7 +211,7 @@
     if (!d || !ctx.speech) return;
     const dia = dialogueById(d.dialogueId);
     const turn = dia && dia.turns[d.turnIdx];
-    if (turn && turn.who === "npc") ctx.speech.speak(ctx.withName(turn.es), ctx.settings().speechRate);
+    if (turn && turn.who === "npc") ctx.speech.speak(ctx.withName(spokenT(turn)), ctx.settings().speechRate);
   }
 
   // Ergebnis einer beendeten Dialog-Runde buchen (Ruta-Pass): Anzahl, fehlerfreie
@@ -227,7 +235,7 @@
     if (!d) return null;
     const dia = dialogueById(d.dialogueId);
     const turn = dia && dia.turns[d.turnIdx];
-    if (turn && turn.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: ctx.withName(turn.es) };
+    if (turn && turn.who === "npc") return { key: "dialogos:" + d.dialogueId + ":" + d.turnIdx, text: ctx.withName(spokenT(turn)) };
     return null;
   }
 
@@ -287,7 +295,7 @@
     return `
       <div class="dlg-row dlg-row--${side}">
         <div class="dlg-bubble dlg-bubble--${side}">
-          <span class="dlg-bubble__es" lang="es">${esc(turn.es)}</span>
+          <span class="dlg-bubble__es" lang="${trackLearnLang()}">${esc(turn.es)}</span>
           ${de}
         </div>
       </div>`;
@@ -317,20 +325,20 @@
         if (cur.kind === "mc") {
           const opts = cur.options.map((o, i) => `
             <button class="quiz-opt" type="button" data-action="dialogos-answer" data-idx="${i}">
-              <span class="quiz-opt__text"><span class="quiz-opt__es" lang="es">${esc(o.es)}</span></span>
+              <span class="quiz-opt__text"><span class="quiz-opt__es" lang="${trackLearnLang()}">${esc(o.es)}</span></span>
             </button>`).join("");
           active = `${instr}<div class="quiz-opts">${opts}</div>`;
         } else {
           // Frei tippen. Optionaler „Tipp" deckt die Musterantwort auf – als
           // Hilfe, ohne den Zug vorwegzunehmen (getippt werden muss trotzdem).
           const help = vm.hint
-            ? `<p class="dlg-tip" role="note"><span aria-hidden="true">${renderIcon("lc:lightbulb")}</span> <b lang="es">${esc(cur.solEs)}</b></p>`
+            ? `<p class="dlg-tip" role="note"><span aria-hidden="true">${renderIcon("lc:lightbulb")}</span> <b lang="${trackLearnLang()}">${esc(cur.solEs)}</b></p>`
             : `<button class="dlg-tipbtn ghostbtn" type="button" data-action="dialogos-hint">${esc(t("discover.dlgTipShow"))}</button>`;
           active = `
             ${instr}
             <form class="typer" data-action="submit-dialogos" id="dialogos-form">
               <input class="typer__input" id="dialogos-answer" type="text" inputmode="text"
-                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="es" aria-label="${esc(t("discover.dlgPlaceholder"))}" placeholder="${esc(t("discover.dlgPlaceholder"))}" />
+                     autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" lang="${trackLearnLang()}" aria-label="${esc(t("discover.dlgPlaceholder"))}" placeholder="${esc(t("discover.dlgPlaceholder"))}" />
               <button class="typer__btn" type="submit">${esc(t("discover.dlgSay"))}</button>
             </form>
             ${help}`;

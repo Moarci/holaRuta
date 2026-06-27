@@ -108,16 +108,34 @@
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
   // deutschsprachigem System, sonst die internationale Variante Englisch.
+  // Erlaubte UI-/Muttersprachen des aktiven Tracks (Reise: de/en, Locals: es/en).
+  function allowedUiLangs() {
+    return (window.SC && window.SC.track) ? window.SC.track.nativeLangs() : ["de", "en"];
+  }
+  // OS-Sprache gegen die erlaubten Track-Sprachen matchen (erste Übereinstimmung).
+  // Kein Treffer: der Reise-Track behält seinen bisherigen Default „en" (auch bei
+  // z.B. französischem OS), andere Tracks nehmen ihre Vorgabe (erste erlaubte Sprache,
+  // Locals: es). So bekommt ein spanisches Gerät im Locals-Track auch Spanisch –
+  // früher kannte die Erkennung nur de/en und fiel fälschlich auf en zurück.
   function detectUiLang() {
+    const allowed = allowedUiLangs();
     try {
       const langs = (navigator.languages && navigator.languages.length)
         ? navigator.languages
         : [navigator.language || ""];
       for (const l of langs) {
-        if (typeof l === "string" && /^de(-|$)/i.test(l)) return "de";
+        if (typeof l !== "string") continue;
+        const base = l.slice(0, 2).toLowerCase();
+        if (allowed.indexOf(base) >= 0) return base;
       }
     } catch (e) { /* kein navigator (z.B. Test) -> Standard unten */ }
-    return "en";
+    return (allowed[0] === "de" && allowed.indexOf("en") >= 0) ? "en" : allowed[0];
+  }
+  // Initiale UI-Sprache: gespeicherte Wahl (falls für den Track erlaubt), sonst OS-Sprache.
+  function initialUiLang() {
+    const allowed = allowedUiLangs();
+    if (settings.uiLang && allowed.indexOf(settings.uiLang) >= 0) return settings.uiLang;
+    return detectUiLang();
   }
 
   const state = {
@@ -128,7 +146,7 @@
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
     // UI-/Muttersprache: "de" | "en". Gespeicherte Wahl gewinnt; beim ersten
     // Öffnen (noch nichts gespeichert) nach Betriebssystem-Sprache vorbelegen.
-    uiLang: settings.uiLang === "en" ? "en" : settings.uiLang === "de" ? "de" : detectUiLang(),
+    uiLang: initialUiLang(),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
@@ -262,6 +280,52 @@
   // Muttersprachlicher Text eines Inhaltsobjekts (obj[uiLang] || obj.de). Kapselt
   // den i18n-Zugriff für alle VM-Builder; ohne i18n-Modul Rückfall auf Deutsch.
   const nat = (o) => (i18n ? i18n.nativeText(o) : (o && o.de));
+  // GELERNTER Text einer Karte (Pendant zu nat() für die Antwort-Seite): Reise-Track
+  // = card.es, Locals-Track = card.en. Kapselt SC.track; ohne Modul Rückfall auf es.
+  const trk = () => window.SC && window.SC.track;
+  const learn = (o) => {
+    if (!o) return "";
+    const v = trk() ? trk().learnText(o) : "";
+    if (v) return v;
+    // Custom-/Legacy-Karte ({de,es}, ohne learnLang-Feld): die GELERNTE Antwort liegt
+    // generisch im es-Slot (Editor/Favoriten speichern de=Frage, es=Antwort).
+    return o.es != null ? String(o.es) : "";
+  };
+  const learnField = () => (trk() ? trk().learnLang() : "es");
+  // Muttersprachliche KARTEN-Frage. Hat der Track eine fixe L1 (Locals: "es"),
+  // immer dieses Feld – unabhängig von der UI-Chrome-Sprache; sonst (Reise) folgt
+  // sie wie bisher der UI-Sprache via nat().
+  const cardNativeField = () => (trk() && trk().cardNativeLang && trk().cardNativeLang()) || (i18n ? i18n.getLang() : "de");
+  // Locals-Track aktiv? (Spanisch lernt Englisch.)
+  const isLocals = () => { const t = trk(); return !!(t && t.id && t.id() === "es-en"); };
+  // Mengen der Locals-Kategorien/-Gruppen (aus data.locals.js). Im Locals-Track werden
+  // nur diese sichtbar/lernbar gemacht – die Reise-Inhalte bleiben im Korpus, sind aber
+  // ausgeblendet (fokussierte Edition, ohne Reise-Code-Pfade zu brechen).
+  const _localsCats = () => (window.SC && window.SC.dataLocals && window.SC.dataLocals.CATEGORIES) || [];
+  const localsCatSet = () => new Set(_localsCats().map((c) => c.id));
+  const localsGroupSet = () => new Set(_localsCats().map((c) => c.group));
+  // Locals-Karte? (Eigener Korpus aus data.locals.js, Präfix "loc-".) Im Locals-Track
+  // tragen nur diese einen ENGLISCHEN Aussprache-Tipp; die Reise-Karten tragen einen
+  // SPANISCHEN Tipp (+ deutschen Klammertext), der dort fehl am Platz wäre.
+  const tipFor = (card) => {
+    if (isLocals() && !(card && card.id && card.id.indexOf("loc-") === 0)) return null;
+    return (card && card.tip) || null;
+  };
+  const cardNative = (o) => {
+    const t = trk();
+    const l1 = t && t.cardNativeLang && t.cardNativeLang();
+    if (l1) {
+      // Built-in-Locals-Karte trägt die Frage im l1-Slot (es) und hat ein en-Feld.
+      // Eine Custom-/Legacy-Karte ({de,es} ohne en) trägt die native Frage im de-Slot
+      // (Editor/Favoriten speichern de=Frage, es=gelernte Antwort).
+      if (o && (o.en == null || o.en === "")) return o.de != null ? String(o.de) : "";
+      return o && o[l1] != null ? String(o[l1]) : "";
+    }
+    return nat(o);
+  };
+  // Flagge/Klartext zu einem Sprachcode – für Richtungs-Labels (Frage/Antwort-Seite).
+  const langFlag = (l) => (l === "en" ? "🇬🇧" : l === "es" ? "🇪🇸" : "🇩🇪");
+  const langLabel = (l) => (l === "en" ? "English" : l === "es" ? "Español" : "Deutsch");
   // Suffix-Felder (base+"En"), z. B. situationDe/situationEn oder title/titleEn.
   const natk = (o, base) => (i18n ? i18n.natKey(o, base) : (o && o[base]));
   // Tiefe Lokalisierung für Pass-Through-Daten (überlagert alle …En-Felder).
@@ -279,7 +343,14 @@
   let _allCards = null, _cardByIdMap = null;
   function invalidateCardIndex() { _allCards = null; _cardByIdMap = null; }
   const allCards = () => {
-    if (!_allCards) _allCards = userCards ? data.CARDS.concat(userCards.list()) : data.CARDS.slice();
+    if (!_allCards) {
+      // Locals-Track: nur Locals-Karten in den lern-/statistik-relevanten Pool, damit
+      // Study/Ruta/Suche/Badges/Stats fokussiert sind (Reise-Karten bleiben im Korpus,
+      // aber außerhalb der Sicht). Reise-Track: unverändert das ganze Deck.
+      let base = data.CARDS;
+      if (isLocals()) { const set = localsCatSet(); base = base.filter((c) => set.has(c.cat)); }
+      _allCards = userCards ? base.concat(userCards.list()) : base.slice();
+    }
     return _allCards;
   };
   const cardById = (id) => {
@@ -414,6 +485,7 @@
   }
 
   function assessmentResumeVM() {
+    if (isLocals()) return null; // spanischer Test -> im Locals-Track ausgeblendet
     const prog = liveAssessmentProgress();
     if (!prog) return null;
     const variant = prog.variant === "extremo" ? "extremo" : "standard";
@@ -434,7 +506,12 @@
     for (let i = 0; i < everyCard.length; i++) {
       const card = everyCard[i]; let a = byCat.get(card.cat); if (!a) byCat.set(card.cat, a = []); a.push(card);
     }
-    const categories = data.CATEGORIES.map((c) => {
+    // Im Locals-Track nur die Locals-Kategorien als Kacheln zeigen (Reise-Kategorien
+    // ausblenden); im Reise-Track alle.
+    const visibleCats = isLocals()
+      ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group))
+      : data.CATEGORIES;
+    const categories = visibleCats.map((c) => {
       const allInCat = byCat.get(c.id) || [];
       const cards = allInCat.filter(matchesLevel); // entspricht scopeCards(c.id)
       // Kartenzahl je Stufe in dieser Kategorie (nur Stufen mit >0).
@@ -477,9 +554,12 @@
     return {
       mode: state.mode,
       dir: state.dir,
-      uiLang: state.uiLang,                                   // gewählte UI-/Muttersprache (de/en)
-      nativeFlag: state.uiLang === "en" ? "🇬🇧" : "🇩🇪",         // Flagge der Muttersprache (für Richtungs-Labels)
-      nativeLabel: state.uiLang === "en" ? "English" : "Deutsch", // Klartext der Muttersprache
+      uiLang: state.uiLang,                                   // gewählte UI-/Muttersprache (de/en/es)
+      uiLangOptions: allowedUiLangs().map((l) => ({ code: l, flag: langFlag(l), label: langLabel(l) })), // wählbare UI-Sprachen je Track
+      nativeFlag: langFlag(state.uiLang),                     // Flagge der Muttersprache (für Richtungs-Labels)
+      nativeLabel: langLabel(state.uiLang),                   // Klartext der Muttersprache
+      learnFlag: langFlag(learnField()),                      // Flagge der GELERNTEN Sprache
+      learnLabel: langLabel(learnField()),                    // Klartext der gelernten Sprache
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
@@ -516,9 +596,10 @@
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
 
-      hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
+      // Einstufungstests sind SPANISCH-Instrumente -> im Locals-Track ausblenden.
+      hasPlacement: !!placement && !isLocals(), // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
-      hasAssessment: !!assessment, // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
+      hasAssessment: !!assessment && !isLocals(), // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
@@ -543,7 +624,8 @@
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       celebrateSound: !!settings.celebrateSound, // Belohnungs-Sound an/aus (Default aus)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
-      trip: tripGoalVM(overall), // Trip-Ziel-Karte (null = kein Ziel gesetzt); overview wiederverwendet
+      trip: isLocals() ? null : tripGoalVM(overall), // Trip-Ziel-Karte (Reise; im Locals-Track aus)
+      showTrip: !isLocals(),     // Trip-Bereich (inkl. „Ziel setzen"-Leerzustand) nur im Reise-Track
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       tripRouteOpen: state.tripRouteOpen !== false, // Route-Zeitleiste auf-/eingeklappt
       tripSwitchOpen: !!state.tripSwitchOpen,        // Schnellwechsel-Chips auf-/eingeklappt
@@ -658,22 +740,28 @@
     const isAll = state.scopeId === "all";
     const isFavRound = state.studyOrigin === "favorites"; // „Mi léxico"-Runde: eigener Titel statt „Alle Bereiche"
     const lvl = levelById(card.lvl);
-    // Lernrichtung: native→ES zeigt die Muttersprache als Frage und Spanisch als
-    // Antwort; ES→native dreht das um. Aussprache-Tipps gehören immer zum Spanischen.
-    const spanishIsQuestion = state.dir === "es2de";
-    const native = nat(card); // muttersprachlicher Text (de oder en)
+    // Lernrichtung: native→learn zeigt die Muttersprache als Frage und die
+    // Lernsprache als Antwort; learn→native dreht das um. Der gespeicherte dir-Wert
+    // "es2de" heißt track-neutral „Lernsprache ist die Frage". Aussprache-Tipps
+    // gehören immer zur Lernsprache.
+    const learnIsQuestion = state.dir === "es2de";
+    const native = cardNative(card); // muttersprachliche Frage (Reise: de/en nach UI, Locals: immer es)
+    const learnt = learn(card);      // gelernte Antwort (Reise: es, Locals: en)
     return {
       mode: state.mode,
       dir: state.dir,
       card,
       cardId: card.id,
       isFav: isFavorite(card.id),
-      question: spanishIsQuestion ? card.es : native,
-      answer: spanishIsQuestion ? native : card.es,
-      es: card.es, // Hör-Modus deckt immer das Spanische auf (richtungsunabhängig)
+      question: learnIsQuestion ? learnt : native,
+      answer: learnIsQuestion ? native : learnt,
+      learnLang: learnField(),    // Sprachcode der gelernten Antwort (für lang="…")
+      nativeLang: cardNativeField(), // Sprachcode der Frage-Seite (Locals: immer es)
+      es: learnt, // Hör-Modus deckt immer die Lernsprache auf (richtungsunabhängig)
       de: native, // dazu die muttersprachliche Bedeutung als Verständnis-Hilfe
-      spanishIsQuestion,
-      tip: card.tip || null,
+      spanishIsQuestion: learnIsQuestion, // Alias-Name beibehalten für ui.js
+      learnIsQuestion,
+      tip: tipFor(card),
       level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
       catLabel: isFavRound ? t("favorites.title") : isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
       catIcon: isFavRound ? "⭐" : isAll || !cat ? "📚" : cat.icon,
@@ -742,7 +830,8 @@
     const plan = pretripPlan(state.pretripScope);
     if (!planAllDone(plan)) return null;
     const cat = categoryById(state.pretripScope);
-    return { name: cat ? natk(cat, "label") : state.pretripScope, country: "" };
+    const name = natk(plan, "label") || (cat ? natk(cat, "label") : state.pretripScope);
+    return { name: name, country: "" };
   }
 
   // Eine Karte für Listen/Detail aufbereiten (Karte + Statistik + Anzeige-Texte).
@@ -752,9 +841,9 @@
     const s = stats.cardSummary(progress[card.id]);
     return {
       id: card.id,
-      de: nat(card),
-      es: card.es,
-      tip: card.tip || null,
+      de: cardNative(card),
+      es: learn(card),
+      tip: tipFor(card),
       catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
       catLc: cat ? catLcFor(cat.id) : "lc:library",
@@ -2617,7 +2706,7 @@
     if (!speech || !speech.isSupported()) return null;
     if (state.screen === "study" && state.mode === "listen" && !state.typeResult) {
       const card = cardById(state.queue[0]);
-      return card ? { key: "listen:" + state.queue[0], text: matcher.acceptedAnswers(card)[0] || card.es } : null;
+      return card ? { key: "listen:" + state.queue[0], text: matcher.acceptedAnswers(card, "learn")[0] || learn(card) } : null;
     }
     if (state.screen === "precios" && state.precios && !state.precios.result) {
       const it = state.precios.queue[state.precios.idx];
@@ -2956,6 +3045,7 @@
   // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
   // sonst der erste Plan (Kolumbien).
   function defaultPretripScope() {
+    if (isLocals()) return "curso-en"; // Locals-Track: der 4-Wochen-Kursplan
     if (tripMentions("cusco")) return "cusco"; // konkrete Städte vor dem breiten Land
     if (tripMentions("lima")) return "lima";
     if (tripMentions("arequipa")) return "arequipa";
@@ -3024,14 +3114,20 @@
     });
     const total = days.length;
     const doneCount = days.filter((d) => d.done).length;
-    // Im gesperrten Modus NUR das zugewiesene Land anbieten (kein Wechsel).
-    const plans = (locked ? PRETRIP().filter((p) => p.scope === scope) : PRETRIP()).map((p) => ({
+    // Plan-Label: eigenes label-Feld des Plans (Locals-Kursplan) ODER Kategorie-Label
+    // (Reise-Destinationen) ODER der scope als Rückfall.
+    const planLabel = (p) => natk(p, "label") || natk(categoryById(p.scope) || {}, "label") || p.scope;
+    // Im gesperrten Modus NUR das zugewiesene Land; im Locals-Track NUR die Kurspläne.
+    const poolPlans = locked ? PRETRIP().filter((p) => p.scope === scope)
+      : isLocals() ? PRETRIP().filter((p) => /^curso/.test(p.scope))
+      : PRETRIP();
+    const plans = poolPlans.map((p) => ({
       scope: p.scope,
-      label: natk(categoryById(p.scope) || {}, "label") || p.scope,
+      label: planLabel(p),
       active: p.scope === scope,
       done: planAllDone(p),
     }));
-    const scopeLabel = natk(categoryById(scope) || {}, "label") || scope;
+    const scopeLabel = planLabel(plan);
     return { scope, scopeLabel, locked, plans, days, total, doneCount, allDone: total > 0 && doneCount === total };
   }
 
@@ -3253,15 +3349,23 @@
   function taskTargets() {
     const labelOf = (sc) => { const c = categoryById(sc); return c ? natk(c, "label") : sc; };
     const out = [];
-    (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
-    (data.PRESETS || []).forEach((pr) => out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" }));
-    // Ganzes Paket = beliebiger Themenbereich (Destinationen UND Klassiker wie Notfall/Essen).
-    (data.CATEGORIES || []).forEach((c) => out.push({ value: "category:" + c.id, label: natk(c, "label"), group: "category" }));
+    const locals = isLocals();
+    const catset = locals ? localsCatSet() : null;
+    // Reise-Pre-Trip-Pläne im Locals-Track ausblenden (rein reise-spezifisch).
+    if (!locals) (data.PRETRIP || []).forEach((p) => out.push({ value: "pretrip:" + p.scope, label: labelOf(p.scope), group: "pretrip" }));
+    (data.PRESETS || []).forEach((pr) => {
+      if (locals && !catset.has(pr.scope)) return; // im Locals-Track nur Locals-Presets
+      out.push({ value: "preset:" + pr.id, label: labelOf(pr.scope), group: "preset" });
+    });
+    // Ganzes Paket = Themenbereich; im Locals-Track nur die Locals-Kategorien.
+    const cats = locals ? (data.CATEGORIES || []).filter((c) => localsGroupSet().has(c.group)) : (data.CATEGORIES || []);
+    cats.forEach((c) => out.push({ value: "category:" + c.id, label: natk(c, "label"), group: "category" }));
     return out;
   }
 
   // Bundle-Vorlagen mit lokalisierten Labels + Item-Schlüsseln (für die Auswahl).
   function bundlesVM() {
+    if (isLocals()) return []; // Fertige Bundles sind reise-spezifisch -> im Locals-Track aus
     return (data.BUNDLES || []).map((b) => ({
       id: b.id, icon: b.icon || "📦", group: b.group || "tema",
       label: natk(b, "label"), count: (b.items || []).length,
@@ -4249,6 +4353,10 @@
 
   function openPlacement(fromOnboarding) {
     dismissBadgeToast();
+    // Locals-Track: der Ruta-Check ist ein SPANISCH-Einstufungstest und damit für
+    // Englisch-Lernende inhaltlich sinnlos -> überspringen (aus dem Onboarding heraus
+    // sauber abschließen, sonst no-op). So landet ein neuer Locals-Nutzer direkt im Dashboard.
+    if (isLocals()) { if (fromOnboarding) finishOnboarding(); return; }
     // Schutz, falls das placement-Modul nicht geladen ist (z. B. Edition-Build /
     // Offline-Erstaufruf): nicht crashen. Aus dem Onboarding heraus stattdessen
     // sauber abschließen, sonst einfach nichts tun. (Sonst würde unten
@@ -4499,6 +4607,7 @@
 
   function openAssessment() {
     dismissBadgeToast();
+    if (isLocals()) return; // spanischer Nivel-Test -> im Locals-Track nicht verfügbar
     if (!assessment) return; // Modul nicht geladen (Edition/Offline) -> nicht crashen
     // Läuft noch ein unabgeschlossener Test (z. B. nach versehentlichem Zurück
     // oder Reload)? Dann nahtlos fortsetzen statt von vorn zu beginnen.
@@ -4821,9 +4930,9 @@
   function submitTyped(input) {
     const card = cardById(state.queue[0]);
     if (!card) return;
-    // Hör-Modus prüft immer gegen Spanisch (man tippt das Gehörte). Sonst nach
-    // Richtung: ES→native erwartet die muttersprachliche Antwort, native→ES die spanische.
-    const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "native" : "es");
+    // Hör-Modus prüft immer gegen die Lernsprache (man tippt das Gehörte). Sonst nach
+    // Richtung: learn→native erwartet die muttersprachliche Antwort, native→learn die gelernte.
+    const field = state.mode === "listen" ? "learn" : (state.dir === "es2de" ? "native" : "learn");
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
     setState({ contextOpen: false });
   }
@@ -4931,7 +5040,7 @@
     settings = Object.assign({}, settings, { speechRate: r });
     store.saveSettings(settings);
     render();
-    if (speech && speech.isSupported()) speech.speak("¡Vamos!", r);
+    if (speech && speech.isSupported()) speech.speak(learnField() === "en" ? "Let's go!" : "¡Vamos!", r);
   }
 
   // ----- Dark Mode ("Nachts im Hostel-Bett") -----
@@ -5036,6 +5145,9 @@
       showNotice(t("home.onboardProfileInvalid"));
       return;
     }
+    // Locals-Track: der „Reiseziel"-Schritt ist reise-spezifisch und ergibt für
+    // Einheimische keinen Sinn -> Onboarding nach dem Profil direkt abschließen.
+    if (isLocals()) { buzz(8); finishOnboarding(); return; }
     state.onboardStep = "trip";
     buzz(8);
     render();
@@ -5044,7 +5156,8 @@
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
   // Wird beim Start UND bei jedem Wechsel aufgerufen (Single Source of Truth).
   function applyUiLang(l) {
-    const next = l === "en" ? "en" : "de";
+    const allowed = allowedUiLangs();
+    const next = allowed.indexOf(l) >= 0 ? l : allowed[0];
     state.uiLang = next;
     if (i18n) i18n.setLang(next);
     try { document.documentElement.lang = next; } catch (e) { /* egal */ }
@@ -5325,7 +5438,7 @@
     if (!speech) return;
     const card = cardById(id);
     if (!card) return;
-    speech.speak(matcher.acceptedAnswers(card)[0] || card.es, settings.speechRate);
+    speech.speak(matcher.acceptedAnswers(card, "learn")[0] || learn(card), settings.speechRate);
   }
 
   // ----- Favoriten ("Mi léxico" – persönliches Lexikon) -----
@@ -5355,8 +5468,8 @@
   function favEntryFromCard(card) {
     return {
       id: card.id,
-      de: nat(card) || card.de || "",
-      es: card.es || "",
+      de: cardNative(card) || card.de || "",
+      es: learn(card) || "",
       tip: card.tip || "",
       cat: card.cat || "",
       addedAt: new Date().toISOString(),
@@ -5598,14 +5711,14 @@
     const ids = favorites.map((f) => {
       const card = cardById(f.id);
       if (card) return card.id; // echte Karte: echte Id -> normaler SRS-Fortschritt
-      overlay[f.id] = {
-        id: f.id,
-        cat: f.cat || "",
-        lvl: Number(f.lvl) || 1,
-        de: f.de,
-        es: f.es,
-        tip: f.tip || "",
-      };
+      // Schnappschuss-Slots in die echten Sprachfelder des aktiven Tracks zurückmappen
+      // (f.es = gelernte Antwort, f.de = Muttersprache), damit learn()/cardNative()/
+      // nativeText sie finden – sonst zeigt der Locals-Track eine leere Antwort.
+      const ov = { id: f.id, cat: f.cat || "", lvl: Number(f.lvl) || 1, tip: f.tip || "" };
+      ov[learnField()] = f.es;
+      ov[cardNativeField()] = f.de;
+      if (ov.de == null) ov.de = f.de; // nativeText-Rückfall (.de) sicherstellen
+      overlay[f.id] = ov;
       return f.id;
     });
     state.studyOverlay = overlay;
@@ -5628,8 +5741,8 @@
     if (!favorites.length) return;
     const lines = favorites.map((f) => {
       const card = cardById(f.id);
-      const es = card ? card.es : f.es;
-      const de = card ? (nat(card) || f.de) : f.de;
+      const es = card ? learn(card) : f.es;
+      const de = card ? (cardNative(card) || f.de) : f.de;
       return "• " + es + " — " + de;
     });
     const text = t("favorites.shareHead") + "\n\n" + lines.join("\n");
@@ -5676,8 +5789,8 @@
       const own = !card && /^fav-/.test(String(f.id)); // selbst getippt -> bearbeitbar
       return {
         id: f.id,
-        de: card ? (nat(card) || f.de) : f.de,
-        es: card ? card.es : f.es,
+        de: card ? (cardNative(card) || f.de) : f.de,
+        es: card ? learn(card) : f.es,
         tip: card ? (card.tip || "") : (f.tip || ""),
         catId: card ? (card.cat || "") : (f.cat || ""),
         catIcon: g.icon,
@@ -5838,6 +5951,9 @@
   }
   function buildSearchIndex() {
     const idx = [];
+    // Locals-Track: nur Locals-Karten (über allCards) und Locals-Kategorien indexieren;
+    // die Reise-Features/Länder/Info-Seiten bleiben außen vor (sie sind hier verborgen).
+    const locals = isLocals();
 
     // --- Übungen: Vokabelkarten (eigene inklusive) ---
     allCards().forEach((c) => {
@@ -5852,15 +5968,20 @@
     });
 
     // --- Übungen: Lern-Kategorien (ganze Themen-Decks) ---
-    data.CATEGORIES.forEach((c) => {
+    const searchCats = locals ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group)) : data.CATEGORIES;
+    searchCats.forEach((c) => {
       idx.push({
         group: "ex", kind: "category", kindLabel: t("search.kindCategory"),
         icon: c.icon, title: natk(c, "label"), sub: t("search.subCategory"),
         action: "open-category", id: c.id,
-        hay: searchHay([c.label, c.labelEn, c.id]),
+        hay: searchHay([c.label, c.labelEn, c.labelEs, c.id]),
       });
     });
 
+    // Reine Reise-Inhalte (Übungs-Features, Länderkunde, Info-Seiten) im Locals-Track
+    // NICHT indexieren – sie sind dort ausgeblendet und sollen nicht über die Suche
+    // erreichbar sein.
+    if (!locals) {
     // --- Übungen: Übungs-Features (nur die geladenen/verfügbaren) ---
     SEARCH_FEATURES.forEach((f) => {
       if (f.need && !searchHas[f.need]) return;
@@ -5996,6 +6117,7 @@
       "historia geschichte history bolivar bolívar san martin independencia unabhängigkeit inka inca conquista kolonialzeit");
     histPage(historiaCentro, "🌋", "Historia de Centroamérica", "discover.subHistoriaCentro", "open-historia-centro",
       "historia geschichte history mittelamerika centroamérica maya morazán sandino romero menchú independencia conquista bukele panama panamá kanal");
+    } // Ende: Reise-Inhalte nur im Reise-Track indexieren
 
     return idx;
   }
@@ -6439,13 +6561,13 @@
     } catch (e) { /* egal */ }
   }
 
-  // Spricht die spanische Antwort der aktuellen Karte vor.
+  // Spricht die gelernte Antwort der aktuellen Karte vor (Reise: Spanisch, Locals: Englisch).
   // Erste akzeptierte Variante (ohne "/"-Alternativen), damit es sauber klingt.
   function speakCurrent() {
     if (!speech) return;
     const card = cardById(state.queue[0]);
     if (!card) return;
-    const primary = matcher.acceptedAnswers(card)[0] || card.es;
+    const primary = matcher.acceptedAnswers(card, "learn")[0] || learn(card);
     speech.speak(primary, settings.speechRate);
   }
 
@@ -6466,9 +6588,11 @@
     const cat = categoryById(card.cat);
     const lvl = levelById(card.lvl);
     return {
-      de: nat(card),
-      es: card.es,
-      tip: card.tip || null,
+      de: cardNative(card),
+      es: learn(card),
+      nativeLabel: langLabel(cardNativeField()), // Sharepic-Label der Frage-Seite
+      learnLabel: langLabel(learnField()),       // Sharepic-Label der Antwort-Seite
+      tip: tipFor(card),
       catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
       catLc: cat ? catLcFor(cat.id) : "lc:library",

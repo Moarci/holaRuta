@@ -103,10 +103,10 @@
 
   // Schwierigkeitsstufen – id entspricht card.lvl (warme Palette).
   const LEVELS = [
-    { id: 1, label: "Einsteiger",      labelEn: "Beginner",     short: "A1", color: "#3F7355" },
-    { id: 2, label: "Mittel",          labelEn: "Intermediate", short: "A2", color: "#B97C24" },
-    { id: 3, label: "Fortgeschritten", labelEn: "Advanced",     short: "B1", color: "#B5302A" },
-    { id: 4, label: "Profi",           labelEn: "Expert",       short: "B2", color: "#6B3FA0" },
+    { id: 1, label: "Einsteiger",      labelEn: "Beginner",     labelEs: "Principiante", short: "A1", color: "#3F7355" },
+    { id: 2, label: "Mittel",          labelEn: "Intermediate", labelEs: "Intermedio",   short: "A2", color: "#B97C24" },
+    { id: 3, label: "Fortgeschritten", labelEn: "Advanced",     labelEs: "Avanzado",     short: "B1", color: "#B5302A" },
+    { id: 4, label: "Profi",           labelEn: "Expert",       labelEs: "Experto",      short: "B2", color: "#6B3FA0" },
   ];
 
   const CARDS = [
