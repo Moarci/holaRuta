@@ -39,33 +39,60 @@
       .trim();
   }
 
+  // Aktiver Lern-Track (config.js → SC.track). Welche Sprache wird als ANTWORT
+  // erwartet? Graceful, wenn SC.track nicht geladen ist (isolierte Matcher-Tests):
+  // dann gilt das bisherige Axiom „gelernt wird Spanisch" -> "es".
+  function learnLang() {
+    const tr = (typeof window !== "undefined") && window.SC && window.SC.track;
+    return (tr && typeof tr.learnLang === "function" && tr.learnLang()) || "es";
+  }
+  function uiLang() {
+    const i18n = (typeof window !== "undefined") && window.SC && window.SC.i18n;
+    return (i18n && i18n.getLang && i18n.getLang()) || "de";
+  }
+  // Sprache der erwarteten Antwort für ein Feld.
+  //   "learn"  -> die zu lernende Sprache des Tracks (Reise: es, Locals: en)
+  //   "native" -> die aktive UI-/Muttersprache (via SC.i18n)
+  //   sonst (z.B. "es"/"de"/"en") -> das Feld selbst (Alias, hält Bestands-Tests grün).
+  function answerLang(field) {
+    if (field === "learn") return learnLang();
+    if (field === "native") return uiLang();
+    return field || "es";
+  }
+  // Gilt das Feld als die GELERNTE Antwort? Steuert die card.alt-Konvention:
+  // "learn" immer, und das konkrete learnLang-Feld (Reise: "es", Locals: "en").
+  function isLearnedField(field) {
+    return field === "learn" || field === learnLang();
+  }
+
   // Wert des erwarteten Antwortfeldes einer Karte.
-  // field: "es" (Spanisch) | "de" (Deutsch, Alias – hält Bestands-Tests grün)
+  // field: "es"/"de"/"en" (direktes Feld) | "learn" (gelernte Antwort des Tracks)
   //        | "native" (Muttersprache = aktive UI-Sprache, via SC.i18n.nativeText).
   function fieldText(card, field) {
     if (field === "native") {
       const i18n = window.SC && window.SC.i18n;
       return i18n ? i18n.nativeText(card) : String(card.de);
     }
+    if (field === "learn") return String(card[learnLang()] != null ? card[learnLang()] : "");
     return String(card[field]);
   }
 
   // Artikel-Toleranz fürs Englische: führendes the/a/an darf fehlen
-  // ("the bus stop" == "bus stop"). Nur sinnvoll, wenn die Muttersprache gerade
-  // Englisch ist – sonst (de/es) unverändert. Greift auf NORMALISIERTEN Text.
-  function nativeIsEnglish(field) {
-    const i18n = window.SC && window.SC.i18n;
-    return field === "native" && i18n && i18n.getLang() === "en";
+  // ("the bus stop" == "bus stop"). Nur sinnvoll, wenn die erwartete ANTWORT
+  // Englisch ist – egal ob als Muttersprache (Reise ES→native, UI=en) oder als
+  // Lernsprache (Locals, learnLang=en). Greift auf NORMALISIERTEN Text.
+  function answerIsEnglish(field) {
+    return answerLang(field) === "en";
   }
   function stripArticle(norm) {
     return norm.replace(/^(?:the|a|an)\s+/, "");
   }
 
   // Anzeige-Antworten einer Karte (UNnormalisiert, z.B. fürs Vorlesen).
-  // card.alt gilt nur für die spanische Antwort.
+  // card.alt gilt nur für die GELERNTE Antwort (Reise: Spanisch, Locals: Englisch).
   function acceptedAnswers(card, field) {
     field = field || "es";
-    if (field === "es" && Array.isArray(card.alt) && card.alt.length) return card.alt;
+    if (isLearnedField(field) && Array.isArray(card.alt) && card.alt.length) return card.alt;
     return fieldText(card, field).split("/").map((s) => s.trim()).filter(Boolean);
   }
 
@@ -80,7 +107,7 @@
   function candidates(card, field) {
     field = field || "es";
     const out = [];
-    const stripEn = nativeIsEnglish(field);
+    const stripEn = answerIsEnglish(field);
     const add = (s) => {
       const n = normalize(s);
       if (n && out.indexOf(n) === -1) out.push(n);
@@ -91,8 +118,8 @@
       }
     };
 
-    // card.alt zählt nur für Spanisch und ersetzt dort die generierten Varianten.
-    if (field === "es" && Array.isArray(card.alt) && card.alt.length) {
+    // card.alt zählt nur für die gelernte Antwort und ersetzt dort die Varianten.
+    if (isLearnedField(field) && Array.isArray(card.alt) && card.alt.length) {
       card.alt.forEach(add);
       return out;
     }
@@ -210,23 +237,31 @@
   // -> "exact" (Treffer, evtl. nur ein optionales Pronomen zu viel – kein Hinweis),
   //    "typo"  (klarer Vertipper innerhalb des Budgets – zählt, aber mit Hinweis),
   //    ""      (kein Treffer).
-  function classifyNorm(normInput, normCands) {
+  // ansLang (optional, Default "es"): Sprache der erwarteten Antwort. Die
+  // spanischen Flexions-Sonderregeln (führendes Subjektpronomen optional;
+  // wort-finale Abweichung = Flexion statt Vertipper) gelten NUR fürs Spanische.
+  // Für Englisch als Lernsprache wären sie falsch (buses↔busses, color↔colour,
+  // fehlendes Plural-"s" sind genau die typischen Tippfehler).
+  function classifyNorm(normInput, normCands, ansLang) {
     if (!normInput) return "";
+    const isEs = (ansLang || "es") === "es";
     const inVariants = [normInput];
-    const noPron = dropLeadingPronoun(normInput);
-    if (noPron !== normInput) inVariants.push(noPron);
-    // 1) exakter Treffer (auch nach Weglassen eines optionalen Pronomens).
+    if (isEs) {
+      const noPron = dropLeadingPronoun(normInput);
+      if (noPron !== normInput) inVariants.push(noPron);
+    }
+    // 1) exakter Treffer (auch nach Weglassen eines optionalen Pronomens, nur es).
     for (let c = 0; c < normCands.length; c++)
       for (let v = 0; v < inVariants.length; v++)
         if (inVariants[v] === normCands[c]) return "exact";
-    // 2) klarer Vertipper innerhalb des Budgets – aber NICHT, wenn die einzige
-    //    Abweichung am Wortende sitzt (das ist eine Flexion, keine Verschreibung).
+    // 2) klarer Vertipper innerhalb des Budgets – im Spanischen aber NICHT, wenn die
+    //    einzige Abweichung am Wortende sitzt (das ist eine Flexion, kein Vertipper).
     for (let c = 0; c < normCands.length; c++) {
       const budget = typoBudget(normCands[c].length);
       if (!budget) continue;
       for (let v = 0; v < inVariants.length; v++) {
         const d = levenshtein(inVariants[v], normCands[c]);
-        if (d > 0 && d <= budget && !(d === 1 && isWordFinalEdit(inVariants[v], normCands[c]))) return "typo";
+        if (d > 0 && d <= budget && !(isEs && d === 1 && isWordFinalEdit(inVariants[v], normCands[c]))) return "typo";
       }
     }
     return "";
@@ -238,12 +273,13 @@
   function check(input, card, field) {
     const norm = normalize(input);
     const accepted = candidates(card, field);
-    // Englische Muttersprache: auch die artikellose Eingabe gegen die Liste prüfen,
+    const ans = answerLang(field);
+    // Englische Antwort: auch die artikellose Eingabe gegen die Liste prüfen,
     // damit „the bus stop" und „bus stop" beidseitig passen.
-    const tries = nativeIsEnglish(field) ? [norm, stripArticle(norm)] : [norm];
+    const tries = answerIsEnglish(field) ? [norm, stripArticle(norm)] : [norm];
     let cls = "";
     for (let i = 0; i < tries.length && cls !== "exact"; i++) {
-      const c = classifyNorm(tries[i], accepted);
+      const c = classifyNorm(tries[i], accepted, ans);
       if (c === "exact") cls = "exact";
       else if (c === "typo") cls = "typo"; // exakt hätte weiterhin Vorrang
     }

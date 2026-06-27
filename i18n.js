@@ -19,11 +19,12 @@
   // Unterstützte UI-Sprachen. Deutsch ist die Quelle/Referenz, Englisch die
   // erste Übersetzung. Neue Sprachen brauchen nur einen weiteren Schlüssel hier
   // plus die passenden en-Pendants in i18n.strings.js / den Inhaltsobjekten.
-  const SUPPORTED = ["de", "en"];
+  const SUPPORTED = ["de", "en", "es"];
   const DEFAULT_LANG = "de";
 
-  // Zusammengeführte Wörterbücher (aus register-Aufrufen von i18n.strings.js).
-  const DICT = { de: {}, en: {} };
+  // Zusammengeführte Wörterbücher (aus register-Aufrufen von i18n.strings.js und
+  // i18n.strings.es.js). Spanisch (es) ist die Muttersprache des Locals-Tracks.
+  const DICT = { de: {}, en: {}, es: {} };
   let lang = DEFAULT_LANG;
 
   function isSupported(l) {
@@ -44,10 +45,18 @@
     return out;
   }
 
-  // i18n.strings.js trägt seine Bereiche bei: register("home", {de…}, {en…}).
-  function register(area, deObj, enObj) {
+  // i18n.strings.js trägt seine Bereiche bei: register("home", {de…}, {en…}[, {es…}]).
+  // esObj ist optional – fehlt es, fällt t() für Spanisch über die Kette es→en→de.
+  function register(area, deObj, enObj, esObj) {
     Object.assign(DICT.de, prefixKeys(area, deObj));
     Object.assign(DICT.en, prefixKeys(area, enObj));
+    if (esObj) Object.assign(DICT.es, prefixKeys(area, esObj));
+  }
+
+  // Ergänzende Strings für EINE Sprache (z. B. i18n.strings.es.js trägt nachträglich
+  // spanische Bereiche bei, ohne die große de/en-Datei umzubauen).
+  function registerLang(l, area, obj) {
+    if (DICT[l]) Object.assign(DICT[l], prefixKeys(area, obj));
   }
 
   // Platzhalter {name} aus params füllen. Fehlt ein Platzhalter, bleibt er stehen
@@ -67,6 +76,10 @@
   //   inNDays: (p) => p.n === 1 ? "morgen" : `in ${p.n} Tagen`
   function t(key, params) {
     let s = DICT[lang][key];
+    // Fallback-Kette: aktive Sprache -> (für es: Englisch) -> Deutsch -> der Key.
+    // Für ein spanischsprachiges Publikum ist Englisch der bessere Zwischen-Rückfall
+    // als Deutsch (der Locals-Track ist ohnehin ES/EN); fehlt auch das, bleibt de.
+    if (s == null && lang === "es") s = DICT.en[key];
     if (s == null) s = DICT.de[key];
     if (s == null) return key;
     if (typeof s === "function") return s(params || {});
@@ -92,7 +105,10 @@
   function natKey(obj, base) {
     if (!obj) return "";
     const de = obj[base];
-    if (lang === "en") {
+    // Für jede Nicht-Deutsch-Sprache (en UND es) das En-Pendant bevorzugen. Inhalts-
+    // objekte tragen bislang nur de/En-Felder (kein …Es); für ein spanischsprachiges
+    // Publikum ist das englische Label der bessere Rückfall als der deutsche Basiswert.
+    if (lang !== "de") {
       // "situationDe" -> "situationEn"; "title" -> "titleEn"
       const enKey = /De$/.test(base) ? base.slice(0, -2) + "En" : base + "En";
       const en = obj[enKey];
@@ -138,16 +154,19 @@
 
   // Locale-Tag für Datums-/Zahlformatierung (toLocaleDateString u.ä.).
   function locale() {
-    return lang === "en" ? "en-GB" : "de-DE";
+    if (lang === "en") return "en-GB";
+    if (lang === "es") return "es-CO";
+    return "de-DE";
   }
 
   // Schlüsselmengen der zusammengeführten UI-Wörterbücher – für den Paritäts-Test
   // (DE⟷EN) und Debugging. Read-only.
-  function dictKeys() { return { de: Object.keys(DICT.de), en: Object.keys(DICT.en) }; }
+  function dictKeys() { return { de: Object.keys(DICT.de), en: Object.keys(DICT.en), es: Object.keys(DICT.es) }; }
 
   window.SC.i18n = {
     SUPPORTED,
     register,
+    registerLang,
     dictKeys,
     t,
     getLang,

@@ -120,6 +120,19 @@
     return "en";
   }
 
+  // Erlaubte UI-/Muttersprachen des aktiven Tracks (Reise: de/en, Locals: es/en).
+  function allowedUiLangs() {
+    return (window.SC && window.SC.track) ? window.SC.track.nativeLangs() : ["de", "en"];
+  }
+  // Initiale UI-Sprache: gespeicherte Wahl (falls für den Track erlaubt), sonst nach
+  // OS-Sprache, sonst die Vorgabe des Tracks (erste erlaubte Sprache).
+  function initialUiLang() {
+    const allowed = allowedUiLangs();
+    if (settings.uiLang && allowed.indexOf(settings.uiLang) >= 0) return settings.uiLang;
+    const d = detectUiLang();
+    return allowed.indexOf(d) >= 0 ? d : allowed[0];
+  }
+
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'jerga' | 'derechos' | 'responsable' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
     homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
@@ -128,7 +141,7 @@
     mode: (settings.mode === "listen" && !(speech && speech.isSupported())) ? "flip" : (settings.mode || "flip"),
     // UI-/Muttersprache: "de" | "en". Gespeicherte Wahl gewinnt; beim ersten
     // Öffnen (noch nichts gespeichert) nach Betriebssystem-Sprache vorbelegen.
-    uiLang: settings.uiLang === "en" ? "en" : settings.uiLang === "de" ? "de" : detectUiLang(),
+    uiLang: initialUiLang(),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
     scopeId: "all",          // 'all' | Kategorie-Id
@@ -262,6 +275,24 @@
   // Muttersprachlicher Text eines Inhaltsobjekts (obj[uiLang] || obj.de). Kapselt
   // den i18n-Zugriff für alle VM-Builder; ohne i18n-Modul Rückfall auf Deutsch.
   const nat = (o) => (i18n ? i18n.nativeText(o) : (o && o.de));
+  // GELERNTER Text einer Karte (Pendant zu nat() für die Antwort-Seite): Reise-Track
+  // = card.es, Locals-Track = card.en. Kapselt SC.track; ohne Modul Rückfall auf es.
+  const trk = () => window.SC && window.SC.track;
+  const learn = (o) => (trk() ? trk().learnText(o) : (o && o.es) || "");
+  const learnField = () => (trk() ? trk().learnLang() : "es");
+  // Muttersprachliche KARTEN-Frage. Hat der Track eine fixe L1 (Locals: "es"),
+  // immer dieses Feld – unabhängig von der UI-Chrome-Sprache; sonst (Reise) folgt
+  // sie wie bisher der UI-Sprache via nat().
+  const cardNativeField = () => (trk() && trk().cardNativeLang && trk().cardNativeLang()) || (i18n ? i18n.getLang() : "de");
+  const cardNative = (o) => {
+    const t = trk();
+    const l1 = t && t.cardNativeLang && t.cardNativeLang();
+    if (l1) return (o && o[l1] != null ? o[l1] : (o && o.de)) || "";
+    return nat(o);
+  };
+  // Flagge/Klartext zu einem Sprachcode – für Richtungs-Labels (Frage/Antwort-Seite).
+  const langFlag = (l) => (l === "en" ? "🇬🇧" : l === "es" ? "🇪🇸" : "🇩🇪");
+  const langLabel = (l) => (l === "en" ? "English" : l === "es" ? "Español" : "Deutsch");
   // Suffix-Felder (base+"En"), z. B. situationDe/situationEn oder title/titleEn.
   const natk = (o, base) => (i18n ? i18n.natKey(o, base) : (o && o[base]));
   // Tiefe Lokalisierung für Pass-Through-Daten (überlagert alle …En-Felder).
@@ -477,9 +508,12 @@
     return {
       mode: state.mode,
       dir: state.dir,
-      uiLang: state.uiLang,                                   // gewählte UI-/Muttersprache (de/en)
-      nativeFlag: state.uiLang === "en" ? "🇬🇧" : "🇩🇪",         // Flagge der Muttersprache (für Richtungs-Labels)
-      nativeLabel: state.uiLang === "en" ? "English" : "Deutsch", // Klartext der Muttersprache
+      uiLang: state.uiLang,                                   // gewählte UI-/Muttersprache (de/en/es)
+      uiLangOptions: allowedUiLangs().map((l) => ({ code: l, flag: langFlag(l), label: langLabel(l) })), // wählbare UI-Sprachen je Track
+      nativeFlag: langFlag(state.uiLang),                     // Flagge der Muttersprache (für Richtungs-Labels)
+      nativeLabel: langLabel(state.uiLang),                   // Klartext der Muttersprache
+      learnFlag: langFlag(learnField()),                      // Flagge der GELERNTEN Sprache
+      learnLabel: langLabel(learnField()),                    // Klartext der gelernten Sprache
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
@@ -658,21 +692,27 @@
     const isAll = state.scopeId === "all";
     const isFavRound = state.studyOrigin === "favorites"; // „Mi léxico"-Runde: eigener Titel statt „Alle Bereiche"
     const lvl = levelById(card.lvl);
-    // Lernrichtung: native→ES zeigt die Muttersprache als Frage und Spanisch als
-    // Antwort; ES→native dreht das um. Aussprache-Tipps gehören immer zum Spanischen.
-    const spanishIsQuestion = state.dir === "es2de";
-    const native = nat(card); // muttersprachlicher Text (de oder en)
+    // Lernrichtung: native→learn zeigt die Muttersprache als Frage und die
+    // Lernsprache als Antwort; learn→native dreht das um. Der gespeicherte dir-Wert
+    // "es2de" heißt track-neutral „Lernsprache ist die Frage". Aussprache-Tipps
+    // gehören immer zur Lernsprache.
+    const learnIsQuestion = state.dir === "es2de";
+    const native = cardNative(card); // muttersprachliche Frage (Reise: de/en nach UI, Locals: immer es)
+    const learnt = learn(card);      // gelernte Antwort (Reise: es, Locals: en)
     return {
       mode: state.mode,
       dir: state.dir,
       card,
       cardId: card.id,
       isFav: isFavorite(card.id),
-      question: spanishIsQuestion ? card.es : native,
-      answer: spanishIsQuestion ? native : card.es,
-      es: card.es, // Hör-Modus deckt immer das Spanische auf (richtungsunabhängig)
+      question: learnIsQuestion ? learnt : native,
+      answer: learnIsQuestion ? native : learnt,
+      learnLang: learnField(),    // Sprachcode der gelernten Antwort (für lang="…")
+      nativeLang: cardNativeField(), // Sprachcode der Frage-Seite (Locals: immer es)
+      es: learnt, // Hör-Modus deckt immer die Lernsprache auf (richtungsunabhängig)
       de: native, // dazu die muttersprachliche Bedeutung als Verständnis-Hilfe
-      spanishIsQuestion,
+      spanishIsQuestion: learnIsQuestion, // Alias-Name beibehalten für ui.js
+      learnIsQuestion,
       tip: card.tip || null,
       level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
       catLabel: isFavRound ? t("favorites.title") : isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
@@ -752,8 +792,8 @@
     const s = stats.cardSummary(progress[card.id]);
     return {
       id: card.id,
-      de: nat(card),
-      es: card.es,
+      de: cardNative(card),
+      es: learn(card),
       tip: card.tip || null,
       catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
@@ -2617,7 +2657,7 @@
     if (!speech || !speech.isSupported()) return null;
     if (state.screen === "study" && state.mode === "listen" && !state.typeResult) {
       const card = cardById(state.queue[0]);
-      return card ? { key: "listen:" + state.queue[0], text: matcher.acceptedAnswers(card)[0] || card.es } : null;
+      return card ? { key: "listen:" + state.queue[0], text: matcher.acceptedAnswers(card, "learn")[0] || learn(card) } : null;
     }
     if (state.screen === "precios" && state.precios && !state.precios.result) {
       const it = state.precios.queue[state.precios.idx];
@@ -4821,9 +4861,9 @@
   function submitTyped(input) {
     const card = cardById(state.queue[0]);
     if (!card) return;
-    // Hör-Modus prüft immer gegen Spanisch (man tippt das Gehörte). Sonst nach
-    // Richtung: ES→native erwartet die muttersprachliche Antwort, native→ES die spanische.
-    const field = state.mode === "listen" ? "es" : (state.dir === "es2de" ? "native" : "es");
+    // Hör-Modus prüft immer gegen die Lernsprache (man tippt das Gehörte). Sonst nach
+    // Richtung: learn→native erwartet die muttersprachliche Antwort, native→learn die gelernte.
+    const field = state.mode === "listen" ? "learn" : (state.dir === "es2de" ? "native" : "learn");
     state.typeResult = Object.assign({ input }, matcher.check(input, card, field));
     setState({ contextOpen: false });
   }
@@ -4931,7 +4971,7 @@
     settings = Object.assign({}, settings, { speechRate: r });
     store.saveSettings(settings);
     render();
-    if (speech && speech.isSupported()) speech.speak("¡Vamos!", r);
+    if (speech && speech.isSupported()) speech.speak(learnField() === "en" ? "Let's go!" : "¡Vamos!", r);
   }
 
   // ----- Dark Mode ("Nachts im Hostel-Bett") -----
@@ -5044,7 +5084,8 @@
   // UI-Sprache anwenden (ohne Persistenz): i18n umstellen + <html lang> setzen.
   // Wird beim Start UND bei jedem Wechsel aufgerufen (Single Source of Truth).
   function applyUiLang(l) {
-    const next = l === "en" ? "en" : "de";
+    const allowed = allowedUiLangs();
+    const next = allowed.indexOf(l) >= 0 ? l : allowed[0];
     state.uiLang = next;
     if (i18n) i18n.setLang(next);
     try { document.documentElement.lang = next; } catch (e) { /* egal */ }
@@ -5325,7 +5366,7 @@
     if (!speech) return;
     const card = cardById(id);
     if (!card) return;
-    speech.speak(matcher.acceptedAnswers(card)[0] || card.es, settings.speechRate);
+    speech.speak(matcher.acceptedAnswers(card, "learn")[0] || learn(card), settings.speechRate);
   }
 
   // ----- Favoriten ("Mi léxico" – persönliches Lexikon) -----
@@ -5355,8 +5396,8 @@
   function favEntryFromCard(card) {
     return {
       id: card.id,
-      de: nat(card) || card.de || "",
-      es: card.es || "",
+      de: cardNative(card) || card.de || "",
+      es: learn(card) || "",
       tip: card.tip || "",
       cat: card.cat || "",
       addedAt: new Date().toISOString(),
@@ -5628,8 +5669,8 @@
     if (!favorites.length) return;
     const lines = favorites.map((f) => {
       const card = cardById(f.id);
-      const es = card ? card.es : f.es;
-      const de = card ? (nat(card) || f.de) : f.de;
+      const es = card ? learn(card) : f.es;
+      const de = card ? (cardNative(card) || f.de) : f.de;
       return "• " + es + " — " + de;
     });
     const text = t("favorites.shareHead") + "\n\n" + lines.join("\n");
@@ -5676,8 +5717,8 @@
       const own = !card && /^fav-/.test(String(f.id)); // selbst getippt -> bearbeitbar
       return {
         id: f.id,
-        de: card ? (nat(card) || f.de) : f.de,
-        es: card ? card.es : f.es,
+        de: card ? (cardNative(card) || f.de) : f.de,
+        es: card ? learn(card) : f.es,
         tip: card ? (card.tip || "") : (f.tip || ""),
         catId: card ? (card.cat || "") : (f.cat || ""),
         catIcon: g.icon,
@@ -6439,13 +6480,13 @@
     } catch (e) { /* egal */ }
   }
 
-  // Spricht die spanische Antwort der aktuellen Karte vor.
+  // Spricht die gelernte Antwort der aktuellen Karte vor (Reise: Spanisch, Locals: Englisch).
   // Erste akzeptierte Variante (ohne "/"-Alternativen), damit es sauber klingt.
   function speakCurrent() {
     if (!speech) return;
     const card = cardById(state.queue[0]);
     if (!card) return;
-    const primary = matcher.acceptedAnswers(card)[0] || card.es;
+    const primary = matcher.acceptedAnswers(card, "learn")[0] || learn(card);
     speech.speak(primary, settings.speechRate);
   }
 

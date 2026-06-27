@@ -27,6 +27,24 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.120.0",
+      date: "2026-06-27",
+      title: "Locals-Track: Englisch lernen (Edition „LocalRuta · Inglés“)",
+      titleEn: "Locals track: learn English (edition “LocalRuta · Inglés”)",
+      items: [
+        "🔄 Lernrichtung umkehrbar: Ein neuer „Track“ (config.js/SC.track) löst die feste Annahme „gelernt wird Spanisch“ ab. Die Edition cartagena-locals dreht die Richtung um – Spanisch-Sprecher:innen lernen Englisch (Frage spanisch, Antwort englisch).",
+        "🗣️ Englische Sprachausgabe & Bewertung: Der Hör-Modus spricht jetzt im Locals-Track Englisch (track.ttsLocale), und der Schreib-Check ist englisch-tolerant (Artikel the/a/an optional, keine spanischen Flexions-Sonderregeln).",
+        "🇪🇸 Spanische Oberfläche: Neue UI-Sprache Spanisch (umschaltbar ES/EN); Kern-Texte übersetzt, Rest fällt sauber auf Englisch zurück.",
+        "🍽️ Inhalt für die Arbeitswelt (Pilot): Erstes Cluster „Inglés para el trabajo“ – Restaurant, Recepción und Tours/Guides – mit englischer Aussprachehilfe.",
+      ],
+      itemsEn: [
+        "🔄 Reversible learning direction: a new “track” (config.js/SC.track) replaces the hard-wired assumption “the learned language is Spanish”. The cartagena-locals edition flips it – Spanish speakers learn English (Spanish prompt, English answer).",
+        "🗣️ English speech & grading: in the locals track, listening mode now speaks English (track.ttsLocale) and the typed check is English-tolerant (leading the/a/an optional, no Spanish-specific inflection rules).",
+        "🇪🇸 Spanish interface: new Spanish UI language (switchable ES/EN); core copy translated, the rest falls back cleanly to English.",
+        "🍽️ Work-ready content (pilot): first cluster “Inglés para el trabajo” – restaurant, reception and tours/guides – with English pronunciation hints.",
+      ],
+    },
+    {
       version: "1.119.0",
       date: "2026-06-26",
       title: "Trip-Ziel: Reise-Prognose, Tagesplan & Startklar-Meilensteine",

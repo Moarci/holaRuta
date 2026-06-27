@@ -152,6 +152,7 @@
     lexLast: (p) => `Zuletzt gemerkt: „${p.es}“`,
     lexHint: "Deine gemerkten Wörter & Sätze – griffbereit",
     // Themen-Abschnitte (Gruppierung der Lern-Kacheln)
+    catGroupLocals: "Inglés para el trabajo",
     catGroupBasics: "Grundlagen",
     catGroupGrammar: "Grammatik",
     catGroupPeople: "Leute & Alltag",
@@ -385,6 +386,7 @@
     lexTitle: "Mi léxico",
     lexLast: (p) => `Last saved: “${p.es}”`,
     lexHint: "Your saved words & phrases – within reach",
+    catGroupLocals: "English for work",
     catGroupBasics: "Basics",
     catGroupGrammar: "Grammar",
     catGroupPeople: "People & everyday",

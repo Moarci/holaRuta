@@ -71,6 +71,24 @@
         featured: ["open-hostel", "open-juegos", "open-banderas", "open-flirt", "open-knigge", "open-dialogos", "open-bailar"],
       },
     },
+    // Locals-Edition: Cartagena-Einheimische lernen ENGLISCH (umgekehrter Track).
+    // track:"es-en" dreht Lernrichtung, Stimme (TTS) und UI-Sprachen um: Frage =
+    // Spanisch (card.es), Antwort = Englisch (card.en), Oberfläche ES/EN. Funktioniert
+    // schon mit dem Bestandskorpus (jede Karte trägt es+en); der Locals-Inhalt
+    // (data.locals.js) ergänzt arbeitsweltnahe Kategorien (Hospitality usw.).
+    "cartagena-locals": {
+      edition: "cartagena-locals",
+      brandName: "LocalRuta · Inglés",
+      // Karibik-Teal wie ECOS Cartagena. NÄHERUNG – bei Freigabe ersetzen.
+      accent: { brand: "#1F7A8C", brandInk: "#155C69" },
+      partner: { name: "ECOS · Cartagena", url: "https://www.ecosescuela.com/" },
+      logo: null,
+      defaultDestination: null,
+      appUrl: "https://moarci.github.io/holaRuta/",
+      track: "es-en",      // <- kehrt die Lernrichtung um (Spanisch lernt Englisch)
+      taskTab: true,       // Tarea (Aufgaben) zentral für Schulen
+      teacherTab: true,    // Modo profe (Klassenübersicht) zentral für Schulen
+    },
   };
 
   SC.editions = EDITIONS;
