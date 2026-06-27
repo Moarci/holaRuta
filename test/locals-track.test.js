@@ -68,6 +68,18 @@ test("Matcher: Spanisch-Strenge bleibt für den learn-Fall im Reise-Sinn erhalte
   assert.equal(matcher.check("médica", card, "es").correct, false);
 });
 
+test("Matcher: Richtung ES→native prüft gegen Spanisch – auch bei englischer UI", () => {
+  // Locals + dir es2de: Englisch ist die Frage, die getippte Antwort ist Spanisch
+  // (Muttersprache). Auch wenn die UI-Chrome auf Englisch steht, MUSS gegen card.es
+  // geprüft werden (nicht gegen card.en = die Frage). Regression-Schutz für die
+  // cardNativeLang-Auflösung im Matcher.
+  const card = { es: "la cuenta", en: "the bill" };
+  i18n.setLang("en"); // UI-Chrome Englisch
+  assert.equal(matcher.check("la cuenta", card, "native").correct, true);
+  assert.equal(matcher.check("the bill", card, "native").correct, false); // die Frage zählt nicht als Antwort
+  i18n.setLang("es");
+});
+
 test("i18n: Spanisch ist eine unterstützte UI-Sprache", () => {
   assert.ok(i18n.SUPPORTED.indexOf("es") >= 0);
   i18n.setLang("es");

@@ -54,13 +54,33 @@ Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 > der umgekehrte Track sofort auf dem vorhandenen Korpus; `data.locals.js` ergänzt die
 > arbeitsweltnahen Themen.
 
+## Korrektheits-Schliffe (umgesetzt)
+
+- **Onboarding**: Der spanische Ruta-Check (Einstufungstest) wird im Locals-Track
+  übersprungen (`openPlacement` → direkt ins Dashboard), statt einen sinnlosen
+  Spanisch-Test anzuzeigen.
+- **OS-Spracherkennung** ist track-aware: ein spanisches Gerät startet die Locals-
+  Edition auf Spanisch (früher kannte die Erkennung nur de/en).
+- **Reise-Karten-Tipps unterdrückt**: Studiert man im Locals-Track eine Bestands-
+  (Reise-)Karte, wird ihr spanischer Aussprache-Tipp (mit deutschem Klammertext)
+  ausgeblendet; nur Locals-Karten (`loc-…`) zeigen ihren englischen Tipp.
+- **Sharepic & Mi-léxico-Üben** track-korrekt: das geteilte Bild zeigt die englische
+  Antwort unter dem richtigen Label (statt fest „ESPAÑOL"); Satz-/eigene Favoriten
+  werden beim Üben korrekt auf die Track-Sprachfelder gemappt (keine leere Antwort).
+- **Matcher** prüft die `ES→native`-Richtung gegen Spanisch, auch bei englischer UI.
+
 ## Nächste Schritte (offen)
 
 - Weitere Content-Cluster: **Alltag/Conversación**, **Beruf/Negocios**,
   **Escuela/Examen** (je Kategorien + Presets + Kurspläne + Diálogos).
 - Vollständige spanische UI (aktuell Kern-Namespaces; Rest fällt auf Englisch zurück).
-- Optionales Ausblenden rein spanisch-spezifischer Reise-Features im Locals-Track
-  (Precios, Conjugación, Jerga, Länder/Geschichte …) über die Edition-Sichtbarkeit.
+- **Reise-Inhalte im Locals-Home fokussieren**: Aktuell erscheinen unter den Locals-
+  Kategorien auch alle Reise-Kategorien (reversiert lauffähig, aber thematisch fremd).
+  Geplant: rein spanisch-spezifische Reise-Features/-Kategorien (Precios, Conjugación,
+  Jerga, Destinos, Länder/Geschichte …) im Locals-Track über die Edition-Sichtbarkeit
+  ausblenden.
+- `lang`-Attribute auf Sekundär-Screens (Karten-Detail, Statistik, Favoriten-Liste,
+  Spickzettel) folgen noch fest `es`; für reine a11y/Aussprache nachziehen.
 - Eigenes englisches Tippfehler-Korpus & ES-Parität im i18n-Test ausbauen.
 
 Tests: `test/locals-track.test.js` (Track, Matcher-Englisch, TTS-Locale, ES-UI,

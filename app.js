@@ -108,29 +108,34 @@
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
   // deutschsprachigem System, sonst die internationale Variante Englisch.
+  // Erlaubte UI-/Muttersprachen des aktiven Tracks (Reise: de/en, Locals: es/en).
+  function allowedUiLangs() {
+    return (window.SC && window.SC.track) ? window.SC.track.nativeLangs() : ["de", "en"];
+  }
+  // OS-Sprache gegen die erlaubten Track-Sprachen matchen (erste Übereinstimmung).
+  // Kein Treffer: der Reise-Track behält seinen bisherigen Default „en" (auch bei
+  // z.B. französischem OS), andere Tracks nehmen ihre Vorgabe (erste erlaubte Sprache,
+  // Locals: es). So bekommt ein spanisches Gerät im Locals-Track auch Spanisch –
+  // früher kannte die Erkennung nur de/en und fiel fälschlich auf en zurück.
   function detectUiLang() {
+    const allowed = allowedUiLangs();
     try {
       const langs = (navigator.languages && navigator.languages.length)
         ? navigator.languages
         : [navigator.language || ""];
       for (const l of langs) {
-        if (typeof l === "string" && /^de(-|$)/i.test(l)) return "de";
+        if (typeof l !== "string") continue;
+        const base = l.slice(0, 2).toLowerCase();
+        if (allowed.indexOf(base) >= 0) return base;
       }
     } catch (e) { /* kein navigator (z.B. Test) -> Standard unten */ }
-    return "en";
+    return (allowed[0] === "de" && allowed.indexOf("en") >= 0) ? "en" : allowed[0];
   }
-
-  // Erlaubte UI-/Muttersprachen des aktiven Tracks (Reise: de/en, Locals: es/en).
-  function allowedUiLangs() {
-    return (window.SC && window.SC.track) ? window.SC.track.nativeLangs() : ["de", "en"];
-  }
-  // Initiale UI-Sprache: gespeicherte Wahl (falls für den Track erlaubt), sonst nach
-  // OS-Sprache, sonst die Vorgabe des Tracks (erste erlaubte Sprache).
+  // Initiale UI-Sprache: gespeicherte Wahl (falls für den Track erlaubt), sonst OS-Sprache.
   function initialUiLang() {
     const allowed = allowedUiLangs();
     if (settings.uiLang && allowed.indexOf(settings.uiLang) >= 0) return settings.uiLang;
-    const d = detectUiLang();
-    return allowed.indexOf(d) >= 0 ? d : allowed[0];
+    return detectUiLang();
   }
 
   const state = {
@@ -284,6 +289,15 @@
   // immer dieses Feld – unabhängig von der UI-Chrome-Sprache; sonst (Reise) folgt
   // sie wie bisher der UI-Sprache via nat().
   const cardNativeField = () => (trk() && trk().cardNativeLang && trk().cardNativeLang()) || (i18n ? i18n.getLang() : "de");
+  // Locals-Track aktiv? (Spanisch lernt Englisch.)
+  const isLocals = () => { const t = trk(); return !!(t && t.id && t.id() === "es-en"); };
+  // Locals-Karte? (Eigener Korpus aus data.locals.js, Präfix "loc-".) Im Locals-Track
+  // tragen nur diese einen ENGLISCHEN Aussprache-Tipp; die Reise-Karten tragen einen
+  // SPANISCHEN Tipp (+ deutschen Klammertext), der dort fehl am Platz wäre.
+  const tipFor = (card) => {
+    if (isLocals() && !(card && card.id && card.id.indexOf("loc-") === 0)) return null;
+    return (card && card.tip) || null;
+  };
   const cardNative = (o) => {
     const t = trk();
     const l1 = t && t.cardNativeLang && t.cardNativeLang();
@@ -713,7 +727,7 @@
       de: native, // dazu die muttersprachliche Bedeutung als Verständnis-Hilfe
       spanishIsQuestion: learnIsQuestion, // Alias-Name beibehalten für ui.js
       learnIsQuestion,
-      tip: card.tip || null,
+      tip: tipFor(card),
       level: lvl ? { label: natk(lvl, "label"), short: lvl.short, color: lvl.color } : null,
       catLabel: isFavRound ? t("favorites.title") : isAll ? t("app.allTopics") : (cat ? natk(cat, "label") : ""),
       catIcon: isFavRound ? "⭐" : isAll || !cat ? "📚" : cat.icon,
@@ -794,7 +808,7 @@
       id: card.id,
       de: cardNative(card),
       es: learn(card),
-      tip: card.tip || null,
+      tip: tipFor(card),
       catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
       catLc: cat ? catLcFor(cat.id) : "lc:library",
@@ -4289,6 +4303,10 @@
 
   function openPlacement(fromOnboarding) {
     dismissBadgeToast();
+    // Locals-Track: der Ruta-Check ist ein SPANISCH-Einstufungstest und damit für
+    // Englisch-Lernende inhaltlich sinnlos -> überspringen (aus dem Onboarding heraus
+    // sauber abschließen, sonst no-op). So landet ein neuer Locals-Nutzer direkt im Dashboard.
+    if (isLocals()) { if (fromOnboarding) finishOnboarding(); return; }
     // Schutz, falls das placement-Modul nicht geladen ist (z. B. Edition-Build /
     // Offline-Erstaufruf): nicht crashen. Aus dem Onboarding heraus stattdessen
     // sauber abschließen, sonst einfach nichts tun. (Sonst würde unten
@@ -5639,14 +5657,14 @@
     const ids = favorites.map((f) => {
       const card = cardById(f.id);
       if (card) return card.id; // echte Karte: echte Id -> normaler SRS-Fortschritt
-      overlay[f.id] = {
-        id: f.id,
-        cat: f.cat || "",
-        lvl: Number(f.lvl) || 1,
-        de: f.de,
-        es: f.es,
-        tip: f.tip || "",
-      };
+      // Schnappschuss-Slots in die echten Sprachfelder des aktiven Tracks zurückmappen
+      // (f.es = gelernte Antwort, f.de = Muttersprache), damit learn()/cardNative()/
+      // nativeText sie finden – sonst zeigt der Locals-Track eine leere Antwort.
+      const ov = { id: f.id, cat: f.cat || "", lvl: Number(f.lvl) || 1, tip: f.tip || "" };
+      ov[learnField()] = f.es;
+      ov[cardNativeField()] = f.de;
+      if (ov.de == null) ov.de = f.de; // nativeText-Rückfall (.de) sicherstellen
+      overlay[f.id] = ov;
       return f.id;
     });
     state.studyOverlay = overlay;
@@ -6507,9 +6525,11 @@
     const cat = categoryById(card.cat);
     const lvl = levelById(card.lvl);
     return {
-      de: nat(card),
-      es: card.es,
-      tip: card.tip || null,
+      de: cardNative(card),
+      es: learn(card),
+      nativeLabel: langLabel(cardNativeField()), // Sharepic-Label der Frage-Seite
+      learnLabel: langLabel(learnField()),       // Sharepic-Label der Antwort-Seite
+      tip: tipFor(card),
       catLabel: cat ? natk(cat, "label") : "",
       catIcon: cat ? cat.icon : "📚",
       catLc: cat ? catLcFor(cat.id) : "lc:library",

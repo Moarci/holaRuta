@@ -50,13 +50,20 @@
     const i18n = (typeof window !== "undefined") && window.SC && window.SC.i18n;
     return (i18n && i18n.getLang && i18n.getLang()) || "de";
   }
+  // Fixe Muttersprache (L1) der Karten-Frage laut Track (Locals: "es"). null =
+  // folgt der UI-Sprache. Spiegelt cardNative() in app.js, damit die getippte
+  // Antwort der ES→learn-Richtung gegen DASSELBE Feld geprüft wird, das angezeigt wird.
+  function cardNativeLang() {
+    const tr = (typeof window !== "undefined") && window.SC && window.SC.track;
+    return (tr && typeof tr.cardNativeLang === "function" && tr.cardNativeLang()) || null;
+  }
   // Sprache der erwarteten Antwort für ein Feld.
   //   "learn"  -> die zu lernende Sprache des Tracks (Reise: es, Locals: en)
   //   "native" -> die aktive UI-/Muttersprache (via SC.i18n)
   //   sonst (z.B. "es"/"de"/"en") -> das Feld selbst (Alias, hält Bestands-Tests grün).
   function answerLang(field) {
     if (field === "learn") return learnLang();
-    if (field === "native") return uiLang();
+    if (field === "native") return cardNativeLang() || uiLang();
     return field || "es";
   }
   // Gilt das Feld als die GELERNTE Antwort? Steuert die card.alt-Konvention:
@@ -70,6 +77,9 @@
   //        | "native" (Muttersprache = aktive UI-Sprache, via SC.i18n.nativeText).
   function fieldText(card, field) {
     if (field === "native") {
+      // Track mit fixer L1 (Locals): immer dieses Feld (Frage bleibt Spanisch).
+      const l1 = cardNativeLang();
+      if (l1) return String(card[l1] != null ? card[l1] : "");
       const i18n = window.SC && window.SC.i18n;
       return i18n ? i18n.nativeText(card) : String(card.de);
     }
