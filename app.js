@@ -582,9 +582,10 @@
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
 
-      hasPlacement: !!placement, // Ruta-Check (Einstufungstest)
+      // Einstufungstests sind SPANISCH-Instrumente -> im Locals-Track ausblenden.
+      hasPlacement: !!placement && !isLocals(), // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
-      hasAssessment: !!assessment, // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
+      hasAssessment: !!assessment && !isLocals(), // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
@@ -609,7 +610,8 @@
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       celebrateSound: !!settings.celebrateSound, // Belohnungs-Sound an/aus (Default aus)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
-      trip: tripGoalVM(overall), // Trip-Ziel-Karte (null = kein Ziel gesetzt); overview wiederverwendet
+      trip: isLocals() ? null : tripGoalVM(overall), // Trip-Ziel-Karte (Reise; im Locals-Track aus)
+      showTrip: !isLocals(),     // Trip-Bereich (inkl. „Ziel setzen"-Leerzustand) nur im Reise-Track
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       tripRouteOpen: state.tripRouteOpen !== false, // Route-Zeitleiste auf-/eingeklappt
       tripSwitchOpen: !!state.tripSwitchOpen,        // Schnellwechsel-Chips auf-/eingeklappt

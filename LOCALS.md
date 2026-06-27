@@ -99,9 +99,22 @@ im Korpus (damit keine Reise-Code-Pfade brechen), sind aber unsichtbar:
   Geplant: rein spanisch-spezifische Reise-Features/-Kategorien (Precios, Conjugación,
   Jerga, Destinos, Länder/Geschichte …) im Locals-Track über die Edition-Sichtbarkeit
   ausblenden.
-- `lang`-Attribute auf Sekundär-Screens (Karten-Detail, Statistik, Favoriten-Liste,
-  Spickzettel) folgen noch fest `es`; für reine a11y/Aussprache nachziehen.
 - Eigenes englisches Tippfehler-Korpus & ES-Parität im i18n-Test ausbauen.
+
+## Spanische UI & a11y (umgesetzt)
+
+- **ES-Übersetzung** der im Locals-Track sichtbaren Oberflächen in
+  `i18n.strings.es.js`: Inicio/Aprender, Ajustes & Estadísticas (Perfil),
+  Búsqueda, Mi léxico, Tarea, Modo profe sowie die geteilten Bausteine – mit für
+  Locals gespiegelten Feldern (Editor/Favoriten: Frage = español, Antwort = inglés)
+  und einem an Locals angepassten Onboarding. Reine Reise-Namespaces (Arbeitsblätter,
+  Einstufungstests, Hostel/Battle, 30 Pre-Arrival-Städte …) bleiben auf der
+  EN-Rückfallkette – sie sind im Locals-Track ohnehin ausgeblendet.
+- **`lang`-Attribute** auf den geteilten Sekundär-Screens (Statistik, Karten-Detail,
+  Mi léxico) folgen jetzt der gelernten Sprache (`learnLangCode()`); die reise-
+  spezifischen Feature-Screens bleiben `lang="es"` (dort korrekt, in Locals verborgen).
+- **Profil fokussiert**: Trip-Ziel-Karte und die spanischen Einstufungstests
+  (HolaRuta-Check / Nivel-Test) sind im Locals-Track ausgeblendet.
 
 Tests: `test/locals-track.test.js` (Track, Matcher-Englisch, TTS-Locale, ES-UI,
 Content-Integrität). Browser-Smoke siehe E2E-Muster in `scripts/`.

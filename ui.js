@@ -196,6 +196,13 @@
   const CAT_ICON = (window.SC && window.SC.catIcon) || {};
   const catIcon = (c) => (c && CAT_ICON[c.id]) || (c && c.icon) || "";
 
+  // Sprachcode der GELERNTEN Antwort (Reise: es, Locals: en) – für lang-Attribute auf
+  // geteilten Sekundär-Screens (Statistik, Karten-Detail, Mi léxico), deren „es"-Slot
+  // die gelernte Antwort trägt. Die reise-spezifischen Feature-Screens (Arbeitsblätter,
+  // Placement, Hostel-Battle, Conjugador …) bleiben fest lang="es": dort ist es korrekt
+  // und sie sind im Locals-Track ohnehin ausgeblendet.
+  const learnLangCode = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
   // das ARIA-Tab-Muster unvollständig. Eine schlichte <nav> mit aria-current
   // ist ehrlicher und für Screenreader genauso klar (Seiten-Navigation).
@@ -1225,8 +1232,8 @@
 
       ${progressCard(vm)}
 
-      <p class="sectioncap">${renderIcon("lc:target")} ${esc(t("home.tripCap"))}</p>
-      ${tripManage(vm)}
+      ${vm.showTrip === false ? "" : `<p class="sectioncap">${renderIcon("lc:target")} ${esc(t("home.tripCap"))}</p>
+      ${tripManage(vm)}`}
 
       ${vm.hasPlacement ? placementCard(vm.placement, vm.shareFormat) : ""}
       ${vm.hasAssessment ? assessmentCard(vm.assessment, vm.shareFormat) : ""}
@@ -2013,7 +2020,7 @@
         <span class="statrow__dot" style="background:${meta.color}" title="${esc(meta.label())}"></span>
         <span class="statrow__main">
           <span class="statrow__de">${esc(r.de)}</span>
-          <span class="statrow__es" lang="es">${esc(r.es)}</span>
+          <span class="statrow__es" lang="${learnLangCode()}">${esc(r.es)}</span>
           <span class="statrow__meta">${renderIcon(r.catLc || r.catIcon)} ${esc(r.catLabel)} · ${esc(seen)}${r.s.lapses ? ` · ${esc(t("profile.forgotTimes", { n: r.s.lapses }))}` : ""}</span>
         </span>
         <span class="statrow__right">
@@ -2083,7 +2090,7 @@
 
         <div class="cardx">
           <div class="cardx__de">${esc(vm.de)}</div>
-          <div class="cardx__es" lang="es">${esc(vm.es)}</div>
+          <div class="cardx__es" lang="${learnLangCode()}">${esc(vm.es)}</div>
           ${colorSwatch(vm.swatch)}
           ${tip}
           <div class="cardx__tags">${firstTryBadge}</div>
@@ -2165,7 +2172,7 @@
       <div class="ed-item">
         <div class="ed-item__main">
           <div class="ed-item__de">${esc(c.de)}</div>
-          <div class="ed-item__es" lang="es">${esc(c.es)}</div>
+          <div class="ed-item__es" lang="${learnLangCode()}">${esc(c.es)}</div>
           <div class="ed-item__meta">${renderIcon(c.catLc || c.catIcon)} ${esc(c.catLabel)}${c.lvlShort ? ` · ${esc(c.lvlShort)}` : ""}${tip}</div>
         </div>
         <button class="ed-del" type="button" data-action="delete-card" data-id="${esc(c.id)}" aria-label="${esc(t("common.delete"))}" title="${esc(t("common.deleteTitle"))}">${renderIcon("lc:trash-2")}</button>
@@ -2203,7 +2210,7 @@
           <label class="fav-add__field"><span>${esc(t("favorites.addDe"))}</span>
             <input id="fav-edit-de" type="text" maxlength="500" autocomplete="off" value="${esc(it.de)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
-            <input id="fav-edit-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none" value="${esc(it.es)}" /></label>
+            <input id="fav-edit-es" type="text" maxlength="500" lang="${learnLangCode()}" autocomplete="off" autocapitalize="none" value="${esc(it.es)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
             <input id="fav-edit-tip" type="text" maxlength="500" autocomplete="off" value="${esc(it.tip)}" /></label>
           ${favCatSelect("fav-edit-cat", it.catId, vm)}
@@ -2220,7 +2227,7 @@
                 title="${esc(t("favorites.show"))}">
           <span class="fav-row__icon" aria-hidden="true">${renderIcon(it.catLc || it.catIcon)}</span>
           <span class="fav-row__text">
-            <span class="fav-row__es" lang="es">${esc(it.es)}</span>
+            <span class="fav-row__es" lang="${learnLangCode()}">${esc(it.es)}</span>
             <span class="fav-row__de">${esc(it.de)}</span>
             ${it.tip ? `<span class="fav-row__tip">${renderIcon("lc:audio-lines")} ${esc(it.tip)}</span>` : ""}
           </span>
@@ -2291,7 +2298,7 @@
             <input id="fav-de" type="text" maxlength="500" autocomplete="off"
                    placeholder="${esc(t("favorites.dePlaceholder"))}" value="${esc(vm.draft.de)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addEs"))}</span>
-            <input id="fav-es" type="text" maxlength="500" lang="es" autocomplete="off" autocapitalize="none"
+            <input id="fav-es" type="text" maxlength="500" lang="${learnLangCode()}" autocomplete="off" autocapitalize="none"
                    placeholder="${esc(t("favorites.esPlaceholder"))}" value="${esc(vm.draft.es)}" /></label>
           <label class="fav-add__field"><span>${esc(t("favorites.addTip"))}</span>
             <input id="fav-tip" type="text" maxlength="500" autocomplete="off"
