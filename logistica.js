@@ -308,6 +308,7 @@
     { icon: "lc:battery-full", item: "Powerbank & Ladekabel", itemEn: "Power bank & charging cable", why: "Die Powerbank MUSS ins Handgepäck (im Frachtraum verboten).", whyEn: "The power bank MUST go in the carry-on (banned in the hold)." },
     { icon: "lc:stamp", item: "Pass, Karten & Bargeld", itemEn: "Passport, cards & cash", why: "Dokumente, Geld und Kopien nie aufgeben – immer am Körper bzw. im Handgepäck.", whyEn: "Never check in documents, money and copies – keep them on you or in the carry-on." },
     { icon: "lc:camera", item: "Wertsachen & Elektronik", itemEn: "Valuables & electronics", why: "Kamera, Laptop, Ersatzakku – nichts davon in den Frachtraum.", whyEn: "Camera, laptop, spare battery – none of it in the hold." },
+    { icon: "lc:ear", item: "Zwei Packungen Ohrstöpsel", itemEn: "Two packs of earplugs", why: "In LatAm oft schwer zu finden, im Dorm und im Nachtbus aber Gold wert – guter Schlaf gibt dir die Energie für den Tag.", whyEn: "Often hard to find in LatAm, but worth their weight in gold in the dorm and on the night bus – good sleep gives you the energy for the day." },
   ];
 
   window.SC = window.SC || {};
