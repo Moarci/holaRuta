@@ -90,7 +90,7 @@
     { id: "comparar-en", label: "Comparar",          labelEs: "Comparar",          labelEn: "Comparatives",      icon: "⚖️", grad: ["#B97C24", "#3F7355"], group: "loc-esc" },
   ];
 
-  // lvl: 1=Einsteiger, 2=Mittel.
+  // lvl: 1=Einsteiger, 2=Mittel, 3=Fortgeschritten.
   var CARDS = [
     // ===== Tourismus & Hostelería =====
     // --- meseros (Kellner:innen / Service) ---
@@ -340,7 +340,7 @@
     { id: "loc-pla04", cat: "playa-en", lvl: 1, es: "El sol está fuerte hoy.", en: "The sun is strong today.", tip: "da SON is strong tu-DÉI" },
     { id: "loc-pla05", cat: "playa-en", lvl: 2, es: "¿Le ofrezco un masaje?", en: "Can I offer you a massage?", tip: "can ai Ó-fer yu a ma-SÁSH" },
     { id: "loc-pla06", cat: "playa-en", lvl: 1, es: "¿Un coco frío?", en: "A cold coconut?", tip: "a cold CÓU-co-not" },
-    { id: "loc-pla07", cat: "playa-en", lvl: 2, es: "No deje sus cosas solas.", en: "Don't leave your things alone.", tip: "dont LIV yor zings a-LÓUN" },
+    { id: "loc-pla07", cat: "playa-en", lvl: 2, es: "No deje sus cosas solas.", en: "Don't leave your things unattended.", tip: "dont liv yor zings on-a-TÉN-ded" },
     { id: "loc-pla08", cat: "playa-en", lvl: 1, es: "El bote sale en diez minutos.", en: "The boat leaves in ten minutes.", tip: "da BÓUT livs in ten MÍ-nits" },
 
     // --- Transporte público ---
@@ -650,7 +650,7 @@
     { id: "loc-cv02", cat: "cv-en", lvl: 2, es: "Adjunto mi hoja de vida.", en: "I'm attaching my CV.", tip: "aim a-TÁ-ching mai si-VÍ" },
     { id: "loc-cv03", cat: "cv-en", lvl: 1, es: "Tengo cinco años de experiencia.", en: "I have five years of experience.", tip: "ai jav faiv yirs of eks-PÍ-riens" },
     { id: "loc-cv04", cat: "cv-en", lvl: 2, es: "Mis fortalezas son la puntualidad y el orden.", en: "My strengths are punctuality and organization.", tip: "mai strengzs ar ponk-chu-Á-li-ti and or-ga-ni-SÉI-shon" },
-    { id: "loc-cv05", cat: "cv-en", lvl: 1, es: "Estudié administración.", en: "I studied business.", tip: "ai STÓ-did BÍS-nes" },
+    { id: "loc-cv05", cat: "cv-en", lvl: 1, es: "Estudié administración.", en: "I studied business administration.", tip: "ai STÓ-did BÍS-nes ad-mi-nis-TRÉI-shon" },
     { id: "loc-cv06", cat: "cv-en", lvl: 2, es: "Hablo español e inglés.", en: "I speak Spanish and English.", tip: "ai spik SPÁ-nish and ÍN-glish" },
     { id: "loc-cv07", cat: "cv-en", lvl: 1, es: "Estoy buscando trabajo.", en: "I'm looking for a job.", tip: "aim LÚ-king for a YOB" },
     { id: "loc-cv08", cat: "cv-en", lvl: 2, es: "Puedo enviar referencias.", en: "I can provide references.", tip: "ai can pro-VÁID RÉ-fe-ren-ses" },
@@ -817,15 +817,15 @@
     { id: "loc-net03", cat: "networking-en", lvl: 1, es: "Aquí tienes mi tarjeta.", en: "Here's my card.", tip: "jirs mai CARD" },
     { id: "loc-net04", cat: "networking-en", lvl: 2, es: "Me alegra coincidir aquí.", en: "Glad to run into you here.", tip: "glad tu ron ÍN-tu yu jir" },
     { id: "loc-net05", cat: "networking-en", lvl: 2, es: "¿De qué se trata tu trabajo?", en: "What does your job involve?", tip: "wat dos yor yob in-VÓLV" },
-    { id: "loc-net06", cat: "networking-en", lvl: 1, es: "¿Vienes seguido a estos eventos?", en: "Do you come to these events often?", tip: "du yu com tu dis i-VÉNTS Ó-fen" },
+    { id: "loc-net06", cat: "networking-en", lvl: 1, es: "¿Vienes seguido a estos eventos?", en: "Do you come to these events often?", tip: "du yu com tu diis i-VÉNTS Ó-fen" },
     { id: "loc-net07", cat: "networking-en", lvl: 2, es: "Deberíamos colaborar.", en: "We should work together.", tip: "wi shud werk tu-GUÉ-der" },
-    { id: "loc-net08", cat: "networking-en", lvl: 1, es: "Te escribo la próxima semana.", en: "I'll message you next week.", tip: "ail MÉ-sech yu nekst wik" },
+    { id: "loc-net08", cat: "networking-en", lvl: 1, es: "Te escribo la próxima semana.", en: "I'll message you next week.", tip: "ail MÉ-sey yu nekst wik" },
     { id: "loc-net09", cat: "networking-en", lvl: 2, es: "Me encantó tu presentación.", en: "I loved your talk.", tip: "ai lovd yor TOK" },
     { id: "loc-net10", cat: "networking-en", lvl: 1, es: "Mantengámonos en contacto.", en: "Let's keep in touch.", tip: "lets kip in TOCH" },
     // --- salud-pro-en (Personal de salud: médicos/enfermeras con pacientes en inglés) ---
     { id: "loc-hc01", cat: "salud-pro-en", lvl: 1, es: "¿Cómo se siente hoy?", en: "How are you feeling today?", tip: "jau ar yu FÍ-ling tu-DÉI" },
     { id: "loc-hc02", cat: "salud-pro-en", lvl: 1, es: "¿Dónde le duele?", en: "Where does it hurt?", tip: "wer dos it JÉRT" },
-    { id: "loc-hc03", cat: "salud-pro-en", lvl: 3, es: "¿Desde cuándo tiene estos síntomas?", en: "How long have you had these symptoms?", tip: "jau long jav yu jad dis SÍMP-toms" },
+    { id: "loc-hc03", cat: "salud-pro-en", lvl: 3, es: "¿Desde cuándo tiene estos síntomas?", en: "How long have you had these symptoms?", tip: "jau long jav yu jad diis SÍMP-toms" },
     { id: "loc-hc04", cat: "salud-pro-en", lvl: 1, es: "Respire profundo, por favor.", en: "Take a deep breath, please.", tip: "teik a dip BREZ plis" },
     { id: "loc-hc05", cat: "salud-pro-en", lvl: 2, es: "¿Es alérgico a algún medicamento?", en: "Are you allergic to any medication?", tip: "ar yu a-LÉR-yic tu É-ni me-di-CÉI-shon" },
     { id: "loc-hc06", cat: "salud-pro-en", lvl: 2, es: "Le voy a tomar la presión.", en: "I'm going to take your blood pressure.", tip: "aim góu-ing tu teik yor blod PRÉ-shur" },
@@ -1014,7 +1014,7 @@
     { id: "loc-mus05", cat: "museo-en", lvl: 2, es: "Por favor, no toque las obras.", en: "Please don't touch the artwork.", tip: "plis dont toch di ÁRT-werk" },
     { id: "loc-mus06", cat: "museo-en", lvl: 1, es: "El guardarropa está a la izquierda.", en: "The cloakroom is on the left.", tip: "da CLÓUK-rum is on da left" },
     { id: "loc-mus07", cat: "museo-en", lvl: 2, es: "Hay descuento para estudiantes.", en: "There's a student discount.", tip: "ders a STIÚ-dent DÍS-caunt" },
-    { id: "loc-mus08", cat: "museo-en", lvl: 1, es: "Siga las flechas.", en: "Follow the arrows.", tip: "FÓ-lou di Á-rrous" },
+    { id: "loc-mus08", cat: "museo-en", lvl: 1, es: "Siga las flechas.", en: "Follow the arrows.", tip: "FÓ-lou di Á-rous" },
     { id: "loc-mus09", cat: "museo-en", lvl: 2, es: "La exposición es temporal.", en: "The exhibition is temporary.", tip: "di ek-si-BÍ-shon is TÉM-po-ra-ri" },
     { id: "loc-mus10", cat: "museo-en", lvl: 1, es: "Disfrute su visita.", en: "Enjoy your visit.", tip: "en-YÓI yor VÍ-sit" },
     // --- delivery-en (Domicilios / Repartidor) ---
@@ -1475,7 +1475,7 @@
       { who: "npc", en: "Great. What do I do with my ears?", es: "Genial. ¿Qué hago con mis oídos?" },
       { who: "user", kind: "type", es: "(dile que iguale la presión de sus oídos)", solEs: "Equalize your ears.",
         whyEs: "Igualar la presión evita el dolor de oídos.", whyEn: "Equalizing prevents ear pain.",
-        accept: ["equalize your ears", "equalize your ears.", "equalize"] },
+        accept: ["equalize your ears", "equalize your ears."] },
       { who: "npc", en: "Okay. Can I touch the fish?", es: "Bien. ¿Puedo tocar los peces?" },
       { who: "user", kind: "mc", es: "(dile que no toque nada)", solEs: "Please don't touch anything.",
         whyEs: "Proteger la vida marina es una regla clave.", whyEn: "Protecting marine life is a key rule.",
@@ -1552,7 +1552,7 @@
       { who: "user", kind: "mc", es: "(pregúntale si es alérgico a algún medicamento)", solEs: "Are you allergic to any medication?",
         whyEs: "Verificar alergias es clave antes de recetar.", whyEn: "Checking allergies is key before prescribing.",
         options: [{ es: "Are you allergic to any medication?", ok: true }, { es: "Just walk it off.", ok: false }, { es: "I don't care.", ok: false }] },
-      { who: "npc", en: "No, I'm not.", es: "No, no lo soy." },
+      { who: "npc", en: "No, I'm not.", es: "No, no soy alérgico." },
       { who: "user", kind: "type", es: "(dile que le recetas un medicamento y que descanse)", solEs: "I'll prescribe some medicine. Get some rest.",
         whyEs: "Cierra con tratamiento y una recomendación.", whyEn: "Closes with treatment and a recommendation.",
         accept: ["i'll prescribe some medicine. get some rest", "i'll prescribe some medicine and get some rest", "i will prescribe some medicine. get some rest"] },
