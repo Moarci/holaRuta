@@ -58,15 +58,20 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 Aktuell **26 Kategorien · 262 Karten** (ein Schnellstart-Preset je Kategorie).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
-### Kursplan „Semana 1–4"
+### Kurspläne „Semana 1–4"
 
-`data.locals.js → PLANS` definiert einen strukturierten 4-Wochen-Lehrgang (scope
-`curso-en`), der die vorhandene `PRETRIP`-Etappen-Engine wiederverwendet: jede Woche
-bündelt ~8 Karten quer durch die Kategorien zu einem Lernpfad (Service-Basis →
-Orientieren → Verkaufen/Reklamation → Essen/Strand/Reseñas). Die nächste Woche öffnet
-sich nach Abschluss der aktuellen. Erreichbar über „Descubrir → Curso · Semana 1–4";
-im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten laufen durch die
-normale (track-korrekte) Study-Engine.
+`data.locals.js → PLANS` definiert **zwei** strukturierte 4-Wochen-Lehrgänge, die die
+vorhandene `PRETRIP`-Etappen-Engine wiederverwenden; jede Woche bündelt ~8 Karten quer
+durch die Kategorien zu einem Lernpfad, und die nächste Woche öffnet sich nach Abschluss
+der aktuellen:
+- **Curso de inglés** (scope `curso-en`) – Service-Basis → Orientieren →
+  Verkaufen/Reklamation → Essen/Strand/Reseñas.
+- **Curso pro: trabajo** (scope `curso-pro`) – Entrevista → Oficina/Teléfono →
+  Atención al cliente → Reseñas/Números.
+
+Über die Chip-Leiste in „Descubrir → Curso" umschaltbar (`pretripVM` filtert im Locals-
+Track auf `^curso`); im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten
+laufen durch die normale (track-korrekte) Study-Engine.
 
 ### Diálogos-Rollenspiele (Local-Perspektive)
 
@@ -75,8 +80,9 @@ normale (track-korrekte) Study-Engine.
 Der **NPC ist ein Tourist und spricht Englisch** (`turn.en`, wird per englischer TTS
 vorgelesen); Übersetzung & Handlungsanweisung stehen auf Spanisch (`turn.es`); der/die
 Lernende antwortet auf Englisch (MC oder frei getippt, `solEs`/`options[].es`/`accept`
-tragen die englische Musterantwort). Sieben Szenarien: Restaurant, Recepción, Tour,
-Taxi, Mercado, Queja (Beschwerde) und Playa.
+tragen die englische Musterantwort). Zehn Szenarien: Restaurant, Recepción, Tour, Taxi,
+Mercado, Queja (Beschwerde), Playa, Entrevista de trabajo (Jobinterview), Llamada de
+servicio (Service-Anruf) und Farmacia (Apotheke).
 
 Die geteilte Engine (`features/dialogos-game.js`) wurde dafür track-fähig gemacht:
 gesprochene Zeile = Lernsprache, Übersetzung/Anweisung = Muttersprache (Reise-Track

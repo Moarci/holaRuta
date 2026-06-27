@@ -3119,7 +3119,7 @@
     const planLabel = (p) => natk(p, "label") || natk(categoryById(p.scope) || {}, "label") || p.scope;
     // Im gesperrten Modus NUR das zugewiesene Land; im Locals-Track NUR die Kurspläne.
     const poolPlans = locked ? PRETRIP().filter((p) => p.scope === scope)
-      : isLocals() ? PRETRIP().filter((p) => p.scope === "curso-en")
+      : isLocals() ? PRETRIP().filter((p) => /^curso/.test(p.scope))
       : PRETRIP();
     const plans = poolPlans.map((p) => ({
       scope: p.scope,

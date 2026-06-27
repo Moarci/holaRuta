@@ -148,17 +148,23 @@ test("Content: Locals-Kategorien sind 4 Gruppen mit spanischem labelEs", () => {
   }
 });
 
-test("Content: Kursplan (PLANS) – 4 Wochen, Karten existieren", () => {
-  assert.ok(Array.isArray(dataLocals.PLANS) && dataLocals.PLANS.length >= 1);
-  const plan = dataLocals.PLANS[0];
-  assert.equal(plan.scope, "curso-en");
-  assert.equal(plan.days.length, 4, "vier Wochen");
+test("Content: Kurspläne (PLANS) – je 4 Wochen, Karten existieren, scope curso*", () => {
+  assert.ok(Array.isArray(dataLocals.PLANS) && dataLocals.PLANS.length >= 2);
   const ids = new Set(dataLocals.CARDS.map((c) => c.id));
-  for (const w of plan.days) {
-    assert.ok(w.titleEs && w.titleEn, `Woche ${w.day} hat titleEs/titleEn`);
-    assert.ok(w.cardIds.length > 0, `Woche ${w.day} ist nicht leer`);
-    for (const id of w.cardIds) assert.ok(ids.has(id), `Woche ${w.day} referenziert existierende Karte ${id}`);
+  const scopes = new Set();
+  for (const plan of dataLocals.PLANS) {
+    assert.ok(/^curso/.test(plan.scope), `Plan-scope beginnt mit curso: ${plan.scope}`);
+    scopes.add(plan.scope);
+    assert.equal(plan.days.length, 4, `Plan ${plan.scope} hat vier Wochen`);
+    assert.ok(plan.labelEs && plan.labelEn, `Plan ${plan.scope} hat labelEs/labelEn`);
+    for (const w of plan.days) {
+      assert.ok(w.titleEs && w.titleEn, `${plan.scope} Woche ${w.day} hat titleEs/titleEn`);
+      assert.ok(w.cardIds.length > 0, `${plan.scope} Woche ${w.day} ist nicht leer`);
+      for (const id of w.cardIds) assert.ok(ids.has(id), `${plan.scope} Woche ${w.day} referenziert existierende Karte ${id}`);
+    }
   }
+  assert.equal(scopes.size, dataLocals.PLANS.length, "Plan-scopes sind eindeutig");
+  assert.ok(scopes.has("curso-en") && scopes.has("curso-pro"), "Grund- und Pro-Kurs vorhanden");
 });
 
 test("Content: Kursplan ist im Locals-Track vorn in PRETRIP (defaultPretripScope)", () => {
