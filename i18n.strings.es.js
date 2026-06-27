@@ -222,6 +222,18 @@
     discoverTitle: "Descubrir",
     discoverIntro: "Tus palabras guardadas, a mano.",
     subFavorites: "Tus favoritos como léxico personal: palabras y frases a mano.",
+    // Kursplan (im Locals-Track der „Pre-Trip"-Screen, als 4-Wochen-Kurs umgedeutet)
+    cursoTitle: "Curso · Semana 1–4",
+    cursoSub: "Listo para el trabajo en 4 semanas",
+    pretripTitle: "Curso de inglés",
+    pretripIntro: "Avanza semana a semana: una etapa por semana; la siguiente se abre cuando completas la actual.",
+    pretripDestLabel: "Elegir plan",
+    pretripProgress: function (p) { return p.done + " de " + p.total + " semanas completadas"; },
+    pretripAllDone: "¡Completaste el curso! 🎉",
+    pretripCards: function (p) { return p.n + " tarjetas"; },
+    pretripStart: "Empezar",
+    pretripReplay: "Repetir",
+    pretripLocked: "bloqueada",
   });
 
   // ---------- app: alcance, controles, avisos ----------

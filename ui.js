@@ -159,6 +159,8 @@
     { action: "open-cafe",        icon: "lc:coffee", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
     { action: "open-juegos",      icon: "lc:dices", title: "Juegos de viaje",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
     { action: "open-pretrip",     icon: "lc:calendar", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
+    // Locals-Track: derselbe Plan-Screen als 4-Wochen-Kurs (nur hier sichtbar).
+    { action: "open-pretrip",     icon: "lc:calendar", titleKey: "discover.cursoTitle", subKey: "discover.cursoSub", grad: ["#1F7A8C", "#3F7355"], group: "practice", loc: true },
     { action: "open-placement",   icon: "lc:target", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-assessment",  icon: "lc:clipboard-list", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
   ];
@@ -975,7 +977,7 @@
       <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${renderIcon(x.icon)}</span>
         <span class="feat__text">
-          <span class="feat__title">${esc(x.title)}</span>
+          <span class="feat__title">${esc(x.titleKey ? t(x.titleKey) : x.title)}</span>
           <span class="feat__sub">${esc(x.subKey ? t(x.subKey) : x.sub)}</span>
         </span>
       </button>`;
@@ -988,8 +990,10 @@
     const LOCALS_FEATURES = { "open-favorites": true };
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
-      if (localsTrack && !LOCALS_FEATURES[x.action]) return false;
-      return true;
+      // Locals-Track: nur sprachunabhängige Features (Mi léxico) + die mit loc:true
+      // markierten Locals-Einträge (z. B. Kursplan). Reise-Track: keine loc-Einträge.
+      if (localsTrack) return x.loc === true || !!LOCALS_FEATURES[x.action];
+      return !x.loc;
     });
     const sections = FEATURE_GROUPS.map((g) => {
       const items = available.filter((x) => x.group === g.id);

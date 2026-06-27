@@ -148,6 +148,23 @@ test("Content: Locals-Kategorien sind 4 Gruppen mit spanischem labelEs", () => {
   }
 });
 
+test("Content: Kursplan (PLANS) – 4 Wochen, Karten existieren", () => {
+  assert.ok(Array.isArray(dataLocals.PLANS) && dataLocals.PLANS.length >= 1);
+  const plan = dataLocals.PLANS[0];
+  assert.equal(plan.scope, "curso-en");
+  assert.equal(plan.days.length, 4, "vier Wochen");
+  const ids = new Set(dataLocals.CARDS.map((c) => c.id));
+  for (const w of plan.days) {
+    assert.ok(w.titleEs && w.titleEn, `Woche ${w.day} hat titleEs/titleEn`);
+    assert.ok(w.cardIds.length > 0, `Woche ${w.day} ist nicht leer`);
+    for (const id of w.cardIds) assert.ok(ids.has(id), `Woche ${w.day} referenziert existierende Karte ${id}`);
+  }
+});
+
+test("Content: Kursplan ist im Locals-Track vorn in PRETRIP (defaultPretripScope)", () => {
+  assert.equal(data.PRETRIP[0].scope, "curso-en");
+});
+
 test("Content: data.locals hängt im Locals-Track an den aktiven Korpus an", () => {
   const ids = new Set(data.CARDS.map((c) => c.id));
   assert.ok(ids.has("loc-mes01"), "Locals-Karten sind im aktiven Korpus");

@@ -339,10 +339,10 @@
     // --- Quejas y disculpas (Beschwerden souverän lösen) ---
     { id: "loc-que01", cat: "quejas-en", lvl: 1, es: "Lo siento mucho.", en: "I'm very sorry.", tip: "aim VÉ-ri SO-rri" },
     { id: "loc-que02", cat: "quejas-en", lvl: 2, es: "Voy a solucionarlo enseguida.", en: "I'll fix it right away.", tip: "ail FIKS it rait a-WÉI" },
-    { id: "loc-que03", cat: "quejas-en", lvl: 2, es: "¿Cuál es el problema?", en: "What seems to be the problem?", tip: "wat sims tu bi da PRÓ-blem" },
+    { id: "loc-que03", cat: "quejas-en", lvl: 2, es: "¿Cuál es el problema?", en: "What's the problem?", tip: "wats da PRÓ-blem" },
     { id: "loc-que04", cat: "quejas-en", lvl: 1, es: "Le traigo otro.", en: "I'll bring you another one.", tip: "ail bring yu a-NÓ-der uan" },
-    { id: "loc-que05", cat: "quejas-en", lvl: 2, es: "No se le cobrará.", en: "It's on the house.", tip: "its on da JÁUS" },
-    { id: "loc-que06", cat: "quejas-en", lvl: 2, es: "Permítame llamar al gerente.", en: "Let me call the manager.", tip: "let mi col da MÁ-na-yer" },
+    { id: "loc-que05", cat: "quejas-en", lvl: 2, es: "No se le cobrará.", en: "There's no charge.", tip: "ders no CHARCH" },
+    { id: "loc-que06", cat: "quejas-en", lvl: 2, es: "Permítame llamar al gerente.", en: "Let me call the manager.", tip: "let mi col da MÁ-ni-yer" },
     { id: "loc-que07", cat: "quejas-en", lvl: 1, es: "Gracias por avisarnos.", en: "Thanks for letting us know.", tip: "zenks for LÉ-ting os nóu" },
     { id: "loc-que08", cat: "quejas-en", lvl: 1, es: "¿Está mejor así?", en: "Is this better?", tip: "is dis BÉ-ter" },
 
@@ -364,11 +364,11 @@
     { id: "loc-eme05", cat: "emergencias-en", lvl: 1, es: "Tenga cuidado.", en: "Be careful.", tip: "bi KER-ful" },
     { id: "loc-eme06", cat: "emergencias-en", lvl: 2, es: "Perdí mi pasaporte.", en: "I lost my passport.", tip: "ai lost mai PÁS-port" },
     { id: "loc-eme07", cat: "emergencias-en", lvl: 2, es: "Me robaron.", en: "I was robbed.", tip: "ai was ROBD" },
-    { id: "loc-eme08", cat: "emergencias-en", lvl: 1, es: "Quédese tranquilo.", en: "Stay calm.", tip: "stei CALM" },
+    { id: "loc-eme08", cat: "emergencias-en", lvl: 1, es: "Quédese tranquilo.", en: "Stay calm.", tip: "stei CAM" },
 
     // --- Reseñas y redes (Bewertungen & Social für Tourismusbetriebe) ---
     { id: "loc-res01", cat: "resenas-en", lvl: 2, es: "¿Nos deja una reseña?", en: "Could you leave us a review?", tip: "cud yu liv os a ri-VIÚ" },
-    { id: "loc-res02", cat: "resenas-en", lvl: 1, es: "Síganos en Instagram.", en: "Follow us on Instagram.", tip: "FÓ-lou os on ÍNS-ta-gram" },
+    { id: "loc-res02", cat: "resenas-en", lvl: 1, es: "Síganos en Instagram.", en: "Follow us on Instagram.", tip: "FÓ-lou os on ÍN-sta-gram" },
     { id: "loc-res03", cat: "resenas-en", lvl: 2, es: "Etiquétenos en sus fotos.", en: "Tag us in your photos.", tip: "TAG os in yor FÓU-tos" },
     { id: "loc-res04", cat: "resenas-en", lvl: 1, es: "Gracias por su visita.", en: "Thanks for visiting.", tip: "zenks for VÍ-si-ting" },
     { id: "loc-res05", cat: "resenas-en", lvl: 2, es: "¿Le gustó el servicio?", en: "Did you enjoy the service?", tip: "did yu en-YÓI da SÉR-vis" },
@@ -386,8 +386,29 @@
     };
   });
 
+  // Kursplan „Semana 1–4" – ein strukturierter 4-Wochen-Lehrgang (analog data.js
+  // PRETRIP, läuft über dieselbe Etappen-/Study-Engine). Jede Woche bündelt Karten
+  // quer durch die Kategorien zu einem sinnvollen Lernpfad: vom Service-Basis bis zu
+  // Reklamationen, Verkauf, Essen & Reseñas. scope "curso-en" (kein Reiseziel).
+  var PLANS = [
+    {
+      scope: "curso-en",
+      label: "Curso de inglés", labelEs: "Curso de inglés", labelEn: "English course",
+      days: [
+        { day: 1, titleDe: "Semana 1: Lo básico del servicio", titleEs: "Semana 1: Lo básico del servicio", titleEn: "Week 1: Service basics",
+          cardIds: ["loc-sal01", "loc-sal02", "loc-sal05", "loc-mes01", "loc-mes02", "loc-mes04", "loc-rec01", "loc-rec08"] },
+        { day: 2, titleDe: "Semana 2: Atender y orientar", titleEs: "Semana 2: Atender y orientar", titleEn: "Week 2: Assist & guide",
+          cardIds: ["loc-rec02", "loc-rec06", "loc-dir01", "loc-dir02", "loc-dir03", "loc-tax01", "loc-tax03", "loc-gui02"] },
+        { day: 3, titleDe: "Semana 3: Vender y resolver", titleEs: "Semana 3: Vender y resolver", titleEn: "Week 3: Sell & resolve",
+          cardIds: ["loc-ven01", "loc-ven02", "loc-com05", "loc-din05", "loc-din07", "loc-que01", "loc-que02", "loc-que04"] },
+        { day: 4, titleDe: "Semana 4: Más allá del servicio", titleEs: "Semana 4: Más allá del servicio", titleEn: "Week 4: Beyond service",
+          cardIds: ["loc-pla-t01", "loc-pla-t03", "loc-pla01", "loc-pla02", "loc-res01", "loc-res02", "loc-eme01", "loc-eme03"] },
+      ],
+    },
+  ];
+
   // Öffentlich machen (für Tests / spätere Cluster) …
-  SC.dataLocals = { CATEGORIES: CATEGORIES, CARDS: CARDS, PRESETS: PRESETS };
+  SC.dataLocals = { CATEGORIES: CATEGORIES, CARDS: CARDS, PRESETS: PRESETS, PLANS: PLANS };
 
   // … und NUR im Locals-Track in den aktiven Korpus einhängen. data.js hat SC.data
   // bereits angelegt; idempotentes Anhängen (kein doppeltes Einfügen bei Re-Eval).
@@ -401,6 +422,8 @@
         SC.data.CATEGORIES = CATEGORIES.concat(SC.data.CATEGORIES);
         SC.data.CARDS = SC.data.CARDS.concat(CARDS);
         SC.data.PRESETS = (SC.data.PRESETS || []).concat(PRESETS);
+        // Kursplan VORN: defaultPretripScope nimmt im Locals-Track PRETRIP()[0].
+        SC.data.PRETRIP = PLANS.concat(SC.data.PRETRIP || []);
       }
     }
   } catch (e) { /* ohne Config/Data: stiller Rückfall, App läuft wie gehabt */ }

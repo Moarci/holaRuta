@@ -58,6 +58,20 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 Aktuell **26 Kategorien · 262 Karten** (ein Schnellstart-Preset je Kategorie).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
+### Kursplan „Semana 1–4"
+
+`data.locals.js → PLANS` definiert einen strukturierten 4-Wochen-Lehrgang (scope
+`curso-en`), der die vorhandene `PRETRIP`-Etappen-Engine wiederverwendet: jede Woche
+bündelt ~8 Karten quer durch die Kategorien zu einem Lernpfad (Service-Basis →
+Orientieren → Verkaufen/Reklamation → Essen/Strand/Reseñas). Die nächste Woche öffnet
+sich nach Abschluss der aktuellen. Erreichbar über „Descubrir → Curso · Semana 1–4";
+im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten laufen durch die
+normale (track-korrekte) Study-Engine.
+
+> Diálogos-Rollenspiele aus Local-Perspektive sind als nächster Schritt vorgesehen –
+> sie brauchen einen Umbau der stark reise-codierten Diálogos-Turn-Engine (NPC-Sprache,
+> TTS-Richtung) und sind daher bewusst noch nicht enthalten.
+
 ## Fokussierte Edition (Reise-Inhalte ausgeblendet)
 
 Im Locals-Track zeigt die App **nur** die Locals-Inhalte – die Reise-Inhalte bleiben

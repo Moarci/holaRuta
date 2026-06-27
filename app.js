@@ -830,7 +830,8 @@
     const plan = pretripPlan(state.pretripScope);
     if (!planAllDone(plan)) return null;
     const cat = categoryById(state.pretripScope);
-    return { name: cat ? natk(cat, "label") : state.pretripScope, country: "" };
+    const name = natk(plan, "label") || (cat ? natk(cat, "label") : state.pretripScope);
+    return { name: name, country: "" };
   }
 
   // Eine Karte für Listen/Detail aufbereiten (Karte + Statistik + Anzeige-Texte).
@@ -3044,6 +3045,7 @@
   // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
   // sonst der erste Plan (Kolumbien).
   function defaultPretripScope() {
+    if (isLocals()) return "curso-en"; // Locals-Track: der 4-Wochen-Kursplan
     if (tripMentions("cusco")) return "cusco"; // konkrete Städte vor dem breiten Land
     if (tripMentions("lima")) return "lima";
     if (tripMentions("arequipa")) return "arequipa";
@@ -3112,14 +3114,20 @@
     });
     const total = days.length;
     const doneCount = days.filter((d) => d.done).length;
-    // Im gesperrten Modus NUR das zugewiesene Land anbieten (kein Wechsel).
-    const plans = (locked ? PRETRIP().filter((p) => p.scope === scope) : PRETRIP()).map((p) => ({
+    // Plan-Label: eigenes label-Feld des Plans (Locals-Kursplan) ODER Kategorie-Label
+    // (Reise-Destinationen) ODER der scope als Rückfall.
+    const planLabel = (p) => natk(p, "label") || natk(categoryById(p.scope) || {}, "label") || p.scope;
+    // Im gesperrten Modus NUR das zugewiesene Land; im Locals-Track NUR die Kurspläne.
+    const poolPlans = locked ? PRETRIP().filter((p) => p.scope === scope)
+      : isLocals() ? PRETRIP().filter((p) => p.scope === "curso-en")
+      : PRETRIP();
+    const plans = poolPlans.map((p) => ({
       scope: p.scope,
-      label: natk(categoryById(p.scope) || {}, "label") || p.scope,
+      label: planLabel(p),
       active: p.scope === scope,
       done: planAllDone(p),
     }));
-    const scopeLabel = natk(categoryById(scope) || {}, "label") || scope;
+    const scopeLabel = planLabel(plan);
     return { scope, scopeLabel, locked, plans, days, total, doneCount, allDone: total > 0 && doneCount === total };
   }
 
