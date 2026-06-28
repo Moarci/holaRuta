@@ -1,6 +1,6 @@
 # HolaRuta — Standortbestimmung (Status-Snapshot)
 
-> **Datum:** 2026-06-23 · **Folgt auf:** [AUDIT.md](AUDIT.md), [RISIKO.md](RISIKO.md), [IDEEN.md](IDEEN.md), [MARKT.md](MARKT.md)
+> **Datum:** 2026-06-23 · **Folgt auf:** [AUDIT.md](AUDIT.md), [RISIKO.md](RISIKO.md), [IDEEN.md](IDEEN.md), [MARKT.md](MARKT.md), [WETTBEWERB-EN.md](WETTBEWERB-EN.md)
 > **Fokus:** Wo steht das Projekt *jetzt* — qualitativ **und** marktmäßig — und was ist der nächste konkrete Hebel.
 > **Maßgeblich bleibt die [README.md](README.md)** als Single-Source-of-Truth (Tabelle „Projektstatus", per `test/doc-consistency.test.js` gegen den Code abgesichert). Dieses Dokument ist ein datierter Snapshot, kein laufend nachgezogenes Register.
 

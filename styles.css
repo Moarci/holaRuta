@@ -3589,6 +3589,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dlg-verdict--no { background: color-mix(in srgb, #B5302A 12%, var(--surface)); color: var(--ink); display: flex; flex-direction: column; gap: 3px; }
 .dlg-verdict__given { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
 
+/* Zwei-Seiten-Venue-Rollenspiel (features/venue-roleplay-game.js). Lehnt sich an die
+   dlg-*-Stile an; eigene Klassen nur für die „Gerät weiterreichen"-Schleuse und die
+   Rollen-/Ergebnis-Anzeige. */
+.vrp-pass { text-align: center; padding: 22px 12px; background: color-mix(in srgb, var(--brand) 8%, var(--surface));
+  border: 1.5px solid var(--line); border-radius: var(--r-sm, 10px); margin-top: 8px; }
+.vrp-pass__lead { color: var(--muted); font-weight: 600; margin: 0 0 6px; }
+.vrp-pass__role { font-size: 1.4rem; font-weight: 800; color: var(--brand-ink); margin: 0 0 14px; }
+.vrp-role { font-weight: 800; color: var(--brand-ink); text-align: center; margin: 2px 0 6px; }
+.vrp-pick { color: var(--muted); font-weight: 600; text-align: center; margin: 0 0 8px; font-size: 0.9rem; }
+.vrp-done { text-align: center; padding: 18px 12px; }
+.vrp-done__score { font-size: 1.2rem; margin: 0 0 8px; }
+.vrp-perfect { color: var(--ok, #2F6B45); font-weight: 700; margin: 0 0 14px; }
+
 /* Aufklappbarer Hintergrund zur Musterantwort (natives <details>). */
 .dlg-why { margin: -2px 0 8px; background: color-mix(in srgb, var(--brand) 8%, var(--surface));
   border: 1.5px solid var(--line); border-radius: var(--r-sm, 10px); padding: 0 12px; }

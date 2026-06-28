@@ -22,6 +22,7 @@
   const cuerpo = window.SC.cuerpo; // Feature-Modul (El Cuerpo, interaktive 3D-Körperkarte), eager geladen
   const compras = window.SC.compras; // Feature-Modul (Lista de compras, Einkaufsliste + Quiz), eager geladen
   const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
+  const venueRoleplayGame = window.SC.venueRoleplayGame; // Feature-Modul (Zwei-Seiten-Venue-Rollenspiel), eager geladen
   const etiqueta = window.SC.etiqueta; // Feature-Modul (Etiqueta de viaje / Reise-Knigge), eager geladen
   const cronologia = window.SC.cronologia; // Feature-Modul (Historia, Geschichts-Zeitstrahl), eager geladen
   const jergaSheet = window.SC.jergaSheet; // Feature-Modul (Jerga colombiana / Slang), eager geladen
@@ -2224,6 +2225,7 @@
     conjug: "conjugSetup", conjugDone: "conjugSetup",
     yesto: "yestoSetup", yestoDone: "yestoSetup",
     dialogos: "dialogosSetup", dialogosDone: "dialogosSetup",
+    venueRoleplay: "venueRoleplaySetup", venueRoleplayDone: "venueRoleplaySetup",
     comprasQuiz: "compras", comprasQuizDone: "compras",
     editor: "home",
   };
@@ -2439,6 +2441,9 @@
       "dialogosSetup": () => dialogosGame.setupScreen(),
       "dialogos": () => dialogosGame.playScreen(),
       "dialogosDone": () => dialogosGame.doneScreen(),
+      "venueRoleplaySetup": () => venueRoleplayGame.setupScreen(),
+      "venueRoleplay": () => venueRoleplayGame.playScreen(),
+      "venueRoleplayDone": () => venueRoleplayGame.doneScreen(),
       "compras": () => compras.listScreen(),
       "comprasQuiz": () => compras.quizScreen(),
       "comprasQuizDone": () => compras.doneScreen(),
@@ -7217,6 +7222,13 @@
     "dialogos-next": (el) => { dialogosGame.advance(); },
     "dialogos-hint": (el) => { dialogosGame.hint(); },
     "dialogos-speak": (el) => { dialogosGame.speakNpc(); },
+    "open-venue-roleplay": (el) => { venueRoleplayGame.open(); },
+    "start-venue-roleplay": (el) => { venueRoleplayGame.start(el.dataset.id); },
+    "venue-roleplay-begin": (el) => { venueRoleplayGame.begin(); },
+    "venue-roleplay-answer": (el) => { venueRoleplayGame.answerMc(Number(el.dataset.idx)); },
+    "venue-roleplay-next": (el) => { venueRoleplayGame.advance(); },
+    "venue-roleplay-again": (el) => { venueRoleplayGame.again(); },
+    "venue-roleplay-speak": (el) => { venueRoleplayGame.speakLine(); },
     "open-compras": (el) => { compras.open(); },
     "compras-section": (el) => { compras.section(el.dataset.id); },
     "compras-pick": (el) => { compras.pick(el.dataset.id); },
@@ -7876,6 +7888,7 @@
   if (cuerpo) cuerpo.init(featureCtx);
   if (compras) compras.init(featureCtx);
   if (dialogosGame) dialogosGame.init(featureCtx);
+  if (venueRoleplayGame) venueRoleplayGame.init(featureCtx);
   if (etiqueta) etiqueta.init(featureCtx);
   if (cronologia) cronologia.init(featureCtx);
   if (jergaSheet) jergaSheet.init(featureCtx);

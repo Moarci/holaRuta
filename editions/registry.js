@@ -89,6 +89,25 @@
       taskTab: true,       // Tarea (Aufgaben) zentral für Schulen
       teacherTab: true,    // Modo profe (Klassenübersicht) zentral für Schulen
     },
+    // Generische Venue-Vorlage für den Locals-Track (employer-pays): ein Hostel/Hotel
+    // hängt EINEN QR auf, das Personal lernt Englisch (track:"es-en"), ohne Konto,
+    // offline. Wie der `hostel`-Block, nur in der Lernrichtung umgekehrt und ohne
+    // ECOS-Bezug – pro Venue brandName/accent/partner anpassen (Freigabe für logo
+    // nötig). Kein Schul-Backoffice: taskTab/teacherTab aus (reines Selbstlernen am
+    // Arbeitsplatz). Poster: docs/anleitungen/venue-en.html.
+    "venue-en": {
+      edition: "venue-en",
+      brandName: "HolaRuta · English at Work",
+      // Neutrales Petrol – markenfrei. NÄHERUNG, pro Venue ersetzbar.
+      accent: { brand: "#2F6B70", brandInk: "#1F4A4E" },
+      partner: { name: "Your Venue", url: null }, // pro Venue: Name + Backlink
+      logo: null,
+      defaultDestination: null,
+      appUrl: "https://moarci.github.io/holaRuta/",
+      track: "es-en",      // Personal lernt Englisch (Frage = Spanisch, Antwort = Englisch)
+      taskTab: false,      // kein Schul-Aufgaben-Workflow – Selbstlernen am Arbeitsplatz
+      teacherTab: false,
+    },
   };
 
   SC.editions = EDITIONS;

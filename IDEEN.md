@@ -61,6 +61,21 @@ denkbar – außerhalb dieses Durchlaufs.
 
 ---
 
+## Nachtrag aus dem Wettbewerbs-Gegencheck (2026-06-27)
+
+### 7. 🤝 Zwei-Seiten-Venue-Roleplay *(Produkt-Wedge — Prototyp umgesetzt 2026-06-27)*
+Aus [WETTBEWERB-EN.md](WETTBEWERB-EN.md): Gegen ELSA/Voxy/Dexway ist unser einziger nicht kopierbarer
+Vorteil, dass HolaRuta **beide Lernrichtungen in einer Engine** hat. Umgesetzt: Gast (übt Spanisch) und
+Mitarbeiter (übt Englisch, [Locals-Track](LOCALS.md)) spielen eine Szene im Wechsel auf einem Gerät
+(Pass-and-play), jede:r in seiner Lernrichtung; TTS pro Zeile in der passenden Stimme.
+- **Warum:** schließt den in der Pitch verkauften, zuvor im Produkt fehlenden Wedge — der höchste
+  Differenzierungs-Hebel gegenüber dem Wettbewerb.
+- **Umgesetzt:** `venue-roleplay.js` (3 bilinguale Szenen) + `features/venue-roleplay-game.js`,
+  Discover-Eintrag „Roleplay del local" (loc-only), Test `test/venue-roleplay-game.test.js`.
+- **Offener Ausbau:** mehr Szenen, Frei-Tippen statt MC, Muttersprachler-Sign-off der Szenen.
+
+---
+
 ## Leitplanken (gelten für jede Idee)
 Offline & zero-dep · graceful degradation (TTS-Features verschwinden ohne Support) · A11y
 (`aria-live`-Verdicts, ≥44px Tap-Targets, `esc()` für alle Interpolationen) · **die Wörterbasis bleibt

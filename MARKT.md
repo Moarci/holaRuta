@@ -2,6 +2,8 @@
 
 > **Datum:** 2026-06-14 · **Folgt auf:** [IDEEN.md](IDEEN.md), [RISIKO.md](RISIKO.md), [AUDIT.md](AUDIT.md)
 > **Fokus:** Vermarktung (B2B + B2C) — *nicht* Code-Hygiene (die ist in AUDIT/RISIKO behandelt).
+> **Reichweite:** Dieses Dokument betrachtet die *Reisenden*-Seite (Spanisch lernen). Der Wettbewerb der
+> Gegenrichtung — Locals lernen Englisch — ist in [WETTBEWERB-EN.md](WETTBEWERB-EN.md) behandelt.
 > **Historischer Analyse-Snapshot (datiert, nicht maßgeblich):** Diese Marktanalyse entstand auf `main` v1.24.0 — 718 Karten · 23 Bereiche · 3 Stufen · 3 Lernmodi · 154 Tests grün — und einem späteren Zwischenstand mit ~1133 Karten · 32 Bereiche · 47 Challenges · 181 Tests. Diese Zahlen sind **veraltet** und dienen nur der Nachvollziehbarkeit der damaligen Argumentation.
 > **Aktueller Stand (2026-06-20): 2293 Karten · 72 Bereiche/Kategorien · 333 Tests grün.** Maßgeblich ist immer die **[README.md](README.md) als Single-Source-of-Truth** (Tabelle „Projektstatus") — sie wird per `test/doc-consistency.test.js` gegen den Code abgesichert. Diese MARKT.md wird nicht laufend nachgezogen.
 
