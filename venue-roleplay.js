@@ -143,7 +143,7 @@
         },
         {
           role: "guest", target: "es", say: "Perfecto, lo probamos. La cuenta luego, gracias.",
-          instr: { es: "Di que lo tomas y pide la cuenta para luego.", en: "Say you'll take it and ask for the bill later.", de: "Sag, dass du ihn nimmst, und bitte später um die Rechnung." },
+          instr: { es: "Di que lo prueban y pide la cuenta para luego.", en: "Say you'll try it and ask for the bill later.", de: "Sag, dass ihr ihn probiert, und bitte später um die Rechnung." },
           options: [
             { t: "Perfecto, lo probamos. La cuenta luego, gracias.", ok: true },
             { t: "No tengo reserva.", ok: false },

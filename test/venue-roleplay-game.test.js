@@ -66,7 +66,7 @@ test("Inhalt SC.venueRoleplay: Zwei-Richtungs-Invariante je Szene", () => {
       assert.ok(tn.role === "guest" || tn.role === "staff", "Rolle gültig");
       // Gast übt Spanisch, Personal übt Englisch – das ist der Wedge.
       assert.equal(tn.target, tn.role === "guest" ? "es" : "en", `${s.id}: target passt zur Rolle`);
-      assert.ok(tn.instr && (tn.instr.es || tn.instr.en), "Anweisung vorhanden");
+      assert.ok(tn.instr && tn.instr.es && tn.instr.en && tn.instr.de, `${s.id}: Anweisung in allen drei Sprachen (kein leeres Instruktionsfeld)`);
       const oks = tn.options.filter((o) => o.ok);
       assert.equal(oks.length, 1, `${s.id}: genau eine richtige Option`);
       assert.equal(tn.say, oks[0].t, `${s.id}: say == richtige Option`);
@@ -112,6 +112,29 @@ test("Pass-and-play: vor dem ersten Zug erscheint die Weiterreich-Schleuse", () 
   assert.ok(!d.find("venue-roleplay-answer"), "Optionen erst nach dem Weiterreichen");
   d.click("venue-roleplay-begin");
   assert.ok(d.find("venue-roleplay-answer"), "nach Bereit erscheinen die Optionen");
+});
+
+test("Gast-Instruktion steht bei spanischer UI nie in der Lernsprache (kein Antwort-Verrat)", () => {
+  const root = freshApp();
+  const d = driver(root);
+  // venue-en-Edition läuft mit spanischer UI – die Gast-Optionen sind Spanisch.
+  window.SC.i18n.setLang("es");
+  const scene = window.SC.venueRoleplay.SCENES.find((s) => s.id === "checkin");
+  const guestTurn = scene.turns.find((t) => t.role === "guest"); // checkin: turn1
+  window.SC.venueRoleplayGame.open();
+  d.click("start-venue-roleplay", { id: "checkin" });
+  const instrOf = () => { const m = d.html().match(/class="dlg-instr">([^<]*)</); return m ? m[1] : ""; };
+  // bis zum ersten Gast-Zug spielen
+  let reachedGuest = false;
+  for (let i = 0; i < 12; i++) {
+    if (d.find("venue-roleplay-begin")) { d.click("venue-roleplay-begin"); }
+    const instr = instrOf();
+    if (instr && instr === guestTurn.instr.en) { reachedGuest = true; break; } // EN, nicht ES
+    if (instr && instr === guestTurn.instr.es) { reachedGuest = false; break; }  // Bug: ES verrät die Antwort
+    if (d.find("venue-roleplay-answer")) { d.click("venue-roleplay-answer", { idx: 0 }); }
+    if (d.find("venue-roleplay-next")) { d.click("venue-roleplay-next"); }
+  }
+  assert.ok(reachedGuest, "Gast-Instruktion erscheint auf Englisch (nicht in der gelernten Sprache Spanisch)");
 });
 
 test("speakLine wirft nicht (ohne TTS ein No-Op)", () => {

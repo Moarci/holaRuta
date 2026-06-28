@@ -61,13 +61,19 @@
   const tr = (k) => { const e = L[k] || {}; const l = uiLang(); return e[l] || e.en || e.es || ""; };
   const roleLabel = (role) => tr(role === "staff" ? "staff" : "guest");
   const roleIcon = (role) => (role === "staff" ? "🛎️" : "🧳");
-  // Anweisung in der Muttersprache der aktiven Person: Personal (lokal) liest Spanisch;
-  // Gast (Reisende:r) liest die UI-Sprache (de/en), mit Rückfall.
+  // Anweisung in der Muttersprache der aktiven Person: Personal (lokal) liest Spanisch
+  // (Zielsprache ist Englisch – kein Verrat). Gast (Reisende:r) liest die UI-Sprache,
+  // ABER nie die Zielsprache: stünde die Anweisung in der gelernten Sprache (es), würde
+  // sie die richtige Antwort verraten und die Stütze entwerten. Steht die UI auf der
+  // Zielsprache (venue-en-Edition: UI = Spanisch), fällt die Gast-Anweisung auf Englisch
+  // zurück (Reisende verstehen meist Englisch).
   const instrText = (turn) => {
     if (!turn || !turn.instr) return "";
     if (turn.role === "staff") return turn.instr.es || turn.instr.en || turn.instr.de || "";
     const l = uiLang();
-    return turn.instr[l] || turn.instr.en || turn.instr.es || turn.instr.de || "";
+    const order = (l === turn.target) ? ["en", "de", "es"] : [l, "en", "de", "es"];
+    for (let i = 0; i < order.length; i++) if (turn.instr[order[i]]) return turn.instr[order[i]];
+    return "";
   };
   // TTS-Locale je produzierter Sprache (unabhängig vom aktiven Track).
   const localeFor = (target) => (target === "es" ? "es-419" : "en-US");
