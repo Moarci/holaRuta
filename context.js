@@ -102,11 +102,29 @@
     note: x.n, noteEn: x.nEn,
   });
 
+  // LOCALS-Track (es-en, Spanisch lernt Englisch): gedrehte Lernrichtung. Der
+  // Beispielsatz ist ENGLISCH (die gelernte Antwort), darunter die spanische
+  // Übersetzung als Verständnishilfe; Situation/Tipp folgen der UI-Sprache (es/en).
+  // Bewusst NEUTRALE Feldnamen (egLearn/egNative ohne …En/…Es/…De-Suffix), damit
+  // i18n.localizeDeep sie nicht als Sprach-Hilfsfelder behandelt/wegwirft. Das Flag
+  // `loc` schaltet die Anzeige (ui.js contextPanel) auf die englische Richtung um.
+  //   e = englischer Beispielsatz, t = spanische Übersetzung,
+  //   s/sEn = Situation (ES/EN), n/nEn = Tipp (ES/EN)
+  const expandLocals = (x) => ({
+    loc: true,
+    egLearn: x.e, egNative: x.t,
+    situation: x.s, situationEn: x.sEn,
+    note: x.n, noteEn: x.nEn,
+  });
+
   // Kontext an die Karten hängen (mutiert die übergebene Liste – einmalig beim Start).
-  function attach(cards, contextData) {
+  // localsData (SC.contextDataLocals) hat Vorrang für loc-* Karten im Locals-Track.
+  function attach(cards, contextData, localsData) {
     const map = contextData || {};
+    const lmap = localsData || {};
     (cards || []).forEach((card) => {
       if (card.context) return;                          // bereits gesetzt? unangetastet
+      if (lmap[card.id]) { card.context = expandLocals(lmap[card.id]); return; }
       if (map[card.id]) { card.context = expand(map[card.id]); return; }
       if (/^z\d+$/.test(card.id)) card.context = numberContext(card);
     });
@@ -114,7 +132,8 @@
   }
 
   const SC = window.SC || (window.SC = {});
-  SC.context = { numberContext, attach };
-  // Beim Laden direkt auf die echten Karten anwenden (data.js + contextdata.js sind da).
-  if (SC.data && SC.data.CARDS) attach(SC.data.CARDS, SC.contextData);
+  SC.context = { numberContext, attach, expandLocals };
+  // Beim Laden direkt auf die echten Karten anwenden (data.js + contextdata.js und –
+  // im Locals-Track – data.locals.js + contextdata.locals.js sind bereits geladen).
+  if (SC.data && SC.data.CARDS) attach(SC.data.CARDS, SC.contextData, SC.contextDataLocals);
 })();

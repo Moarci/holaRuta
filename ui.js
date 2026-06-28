@@ -801,8 +801,10 @@
 
     // „Für deine Reise" – eigener, klar betitelter Abschnitt (Trip-Countdown +
     // Pre-Arrival-Pakete). Fällt komplett weg, wenn weder Ziel noch Preset aktiv
-    // ist, damit der Start-Reiter bei den meisten Nutzern ruhig bleibt.
-    const reiseInner = `${tripCard}${presetCards}`;
+    // ist, damit der Start-Reiter bei den meisten Nutzern ruhig bleibt. Im Locals-
+    // Track (Englisch lernen am Arbeitsplatz) gibt es keine Reise – Abschnitt entfällt.
+    const homeLocalsTrack = !!(window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
+    const reiseInner = homeLocalsTrack ? "" : `${tripCard}${presetCards}`;
     const reiseGroup = reiseInner.trim()
       ? `<section class="dashgrp">
           <p class="sectioncap">${esc(t("home.tripSection"))}</p>
@@ -1475,18 +1477,23 @@
   // der Controller hält DOM und Zustand in-place synchron (kein Re-Render nötig).
   function contextPanel(ctx, open) {
     if (!ctx) return "";
-    const line = (es, de) => {
-      const e = es ? `<p class="context-panel__es" lang="es">${esc(es)}</p>` : "";
-      const d = de ? `<p class="context-panel__de">${esc(de)}</p>` : "";
+    // Beispielzeile: gelernter Satz oben (lang-Attribut für a11y/Vorlesen), darunter
+    // die Übersetzung. Reise: Spanisch + Mutterspr.; Locals: Englisch + Spanisch.
+    const line = (learn, learnLang, gloss) => {
+      const e = learn ? `<p class="context-panel__es" lang="${esc(learnLang)}">${esc(learn)}</p>` : "";
+      const d = gloss ? `<p class="context-panel__de">${esc(gloss)}</p>` : "";
       return e || d ? `<div class="context-panel__line">${e}${d}</div>` : "";
     };
     const meta = (label, text) => text
       ? `<div class="context-panel__block"><div class="context-panel__label">${esc(label)}</div><p class="context-panel__text">${esc(text)}</p></div>`
       : "";
+    const exLine = ctx.loc
+      ? line(ctx.egLearn, "en", ctx.egNative)        // Locals: englischer Satz + spanische Übersetzung
+      : line(ctx.sentenceEs, "es", ctx.sentenceDe);  // Reise: spanischer Satz + Mutterspr.
     return `
       <div class="context-panel" id="context-panel"${open ? "" : " hidden"}>
         <h3 class="context-panel__title">${esc(t("study.contextTitle"))}</h3>
-        ${line(ctx.sentenceEs, ctx.sentenceDe)}
+        ${exLine}
         ${meta(t("study.contextSituation"), ctx.situation)}
         ${meta(t("study.contextNote"), ctx.note)}
       </div>`;

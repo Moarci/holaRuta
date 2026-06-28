@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HolaRuta · Inglés</title>
+  <!-- Einfache, teilbare URL für die Englisch-Lern-Sektion (Locals-Track, es-en).
+       Leitet auf die App mit der Edition „cartagena-locals" weiter. Reiner Redirect:
+       Die App selbst liegt unter ../ (relative Asset-Pfade bleiben intakt). -->
+  <link rel="canonical" href="../?edition=cartagena-locals" />
+  <meta name="robots" content="noindex, follow" />
+  <meta http-equiv="refresh" content="0; url=../?edition=cartagena-locals" />
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { display: grid; place-items: center; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+           background: #1F7A8C; color: #fff; text-align: center; padding: 1.5rem; }
+    a { color: #fff; }
+  </style>
+</head>
+<body>
+  <!-- location.replace statt href: kein zusätzlicher History-Eintrag, „Zurück"
+       landet nicht wieder auf dieser Weiterleitung. -->
+  <script>location.replace("../?edition=cartagena-locals");</script>
+  <noscript>
+    <p>HolaRuta · Inglés</p>
+    <p><a href="../?edition=cartagena-locals">Abrir / Open →</a></p>
+  </noscript>
+</body>
+</html>
