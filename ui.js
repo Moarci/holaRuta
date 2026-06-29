@@ -1791,7 +1791,7 @@
         </div>
 
         <div class="passhero">
-          <p class="passhero__sub">${esc(t("profile.passHero"))}</p>
+          <p class="passhero__sub">${esc(t(isLocalsTrk() ? "profile.passHeroCurso" : "profile.passHero"))}</p>
           <div class="passhero__bar"><div class="passhero__fill" style="width:${pct}%"></div></div>
           <p class="passhero__meta">${esc(t("profile.passMeta", { unlocked: vm.unlocked, total: vm.total, pct }))}</p>
         </div>

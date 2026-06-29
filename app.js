@@ -1815,7 +1815,7 @@
     if (!badges) return null;
     const metrics = badges.buildMetrics(allCards(), progress, gamestats);
     const all = badges.evaluate(metrics, gamestats.unlocked);
-    const groups = badges.GROUPS
+    const groups = (badges.groups ? badges.groups() : badges.GROUPS)
       .map((g) => {
         const list = all.filter((b) => b.group === g.id);
         return {
@@ -6658,7 +6658,7 @@
     const all = badges.evaluate(metrics, gamestats.unlocked);
     const b = all.find((x) => x.id === id);
     if (!b || !b.unlocked) return;
-    const grp = (badges.GROUPS || []).find((g) => g.id === b.group);
+    const grp = ((badges.groups ? badges.groups() : badges.GROUPS) || []).find((g) => g.id === b.group);
     buzz(12);
     share.shareImage("badge", {
       userName: profileName(),

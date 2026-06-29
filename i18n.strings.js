@@ -2348,6 +2348,7 @@
     // Ruta-Pass
     passUnavailable: "Der Ruta-Pass ist gerade nicht verfügbar – vermutlich wurde die App offline geöffnet, bevor alles geladen war. Mit Netz neu laden, dann klappt's wieder.",
     passHero: "Sammle Stempel für deine Reise-Skills.",
+    passHeroCurso: "Sammle Stempel für deine Englisch-Skills.",
     passMeta: (p) => `${p.unlocked} von ${p.total} Stempeln gesammelt · ${p.pct} %`,
     badgeShareLabel: (p) => `Stempel „${p.name}“ als Bild teilen`,
     badgeShare: "📤 Teilen",
@@ -2478,6 +2479,7 @@
 
     passUnavailable: "The Ruta pass isn't available right now – the app was probably opened offline before everything loaded. Reload with a connection and it'll work again.",
     passHero: "Collect stamps for your travel skills.",
+    passHeroCurso: "Collect stamps for your English skills.",
     passMeta: (p) => `${p.unlocked} of ${p.total} stamps collected · ${p.pct} %`,
     badgeShareLabel: (p) => `Share the stamp “${p.name}” as an image`,
     badgeShare: "📤 Share",

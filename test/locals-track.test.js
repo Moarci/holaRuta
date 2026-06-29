@@ -247,3 +247,29 @@ test("Kontext: localizeDeep schaltet Situation/Tipp auf die UI-Sprache (es/en), 
   assert.ok(!Object.keys(en).some((k) => /En$/.test(k)), "keine …En-Hilfsfelder im EN-Ergebnis");
   i18n.setLang("es"); // Track-Default wiederherstellen
 });
+
+// ---------------------------------------------------------------------------
+// Badges: im Locals-Track eigene, reise-freie Badge-Welt (edition-aware).
+// ---------------------------------------------------------------------------
+test("Badges: Locals-Track liefert re-thematisierte Badges ohne Reise-Spielmodi", () => {
+  const badges = require(path.join(__dirname, "..", "badges.js")).default || window.SC.badges;
+  // Gruppen: nur die im Locals-Track vorhandenen Features
+  const gids = badges.groups().map((g) => g.id).sort();
+  assert.deepEqual(gids, ["category", "context", "learning", "special", "streak"]);
+  const all = badges.evaluate({});
+  const ids = new Set(all.map((b) => b.id));
+  // Reise-only Spielmodus-Badges sind raus
+  for (const gone of ["banderas_first", "cuerpo_first", "yesto_first", "quiz_first", "battle_first", "listen_first", "challenge_first", "frases_first"]) {
+    assert.ok(!ids.has(gone), `Reise-Badge ${gone} ist im Locals-Track ausgeblendet`);
+  }
+  // Reise-Kategorie-Badges raus, Locals-Kategorie-Badges da
+  assert.ok(!ids.has("cat_basics") && !ids.has("cat_hotel"), "Reise-Kategorie-Badges ausgeblendet");
+  assert.ok(ids.has("cat_bpo-en") && ids.has("cat_tech-en"), "Locals-Kategorie-Badges vorhanden");
+  // pretrip_done ist zum Lernpfad-Meilenstein umgedeutet (kein „Trip")
+  const pd = badges.byId("pretrip_done");
+  assert.equal(pd.nameEn, "Learning-path milestone");
+  assert.ok(!/trip|travel|reise/i.test(pd.nameEn + " " + pd.descriptionEn + " " + pd.unlockedTextEn), "pretrip_done ohne Reise-Wording");
+  // Stichprobe: keine Reise-Metaphern in den sichtbaren Badge-Texten (EN)
+  const blob = all.map((b) => `${b.nameEn} ${b.descriptionEn} ${b.unlockedTextEn}`).join(" ");
+  assert.ok(!/\b(trip|travel|backpack|guidebook|on the road|Ruta)\b/i.test(blob), "keine Reise-Metaphern in Locals-Badges");
+});

@@ -320,6 +320,7 @@
     installedText: "HolaRuta funciona como app instalada, con su propio ícono, también sin conexión.",
     passUnavailable: "El Ruta-Pass no está disponible ahora; seguramente se abrió la app sin conexión antes de cargar todo. Recarga con internet y volverá a funcionar.",
     passHero: "Colecciona sellos por tus logros.",
+    passHeroCurso: "Colecciona sellos por tus logros.",
     passMeta: function (p) { return p.unlocked + " de " + p.total + " sellos · " + p.pct + " %"; },
     badgeShare: "📤 Compartir",
     badgeSecretName: "Sello secreto",
