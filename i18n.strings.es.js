@@ -102,6 +102,7 @@
     favSave: "Guardar",
     favSaved: "Guardado",
     backPretrip: "Volver al plan",
+    backCurso: "Volver al curso",
     backTask: "Volver a la tarea",
     backFavorites: "Volver a Mi léxico",
   });
@@ -228,9 +229,15 @@
     discoverTitle: "Descubrir",
     discoverIntro: "Tus palabras guardadas, a mano.",
     subFavorites: "Tus favoritos como léxico personal: palabras y frases a mano.",
-    // Kursplan (im Locals-Track der „Pre-Trip"-Screen, als 4-Wochen-Kurs umgedeutet)
-    cursoTitle: "Curso · Semana 1–4",
-    cursoSub: "Listo para el trabajo en 4 semanas",
+    // Ruta de aprendizaje (im Locals-Track der „Pre-Trip"-Screen, als Kurs umgedeutet).
+    // Der Screen nutzt für Locals die curso*-Keys; die pretrip*-Overrides bleiben als Rückfall.
+    cursoTitle: "Curso de inglés",
+    cursoSub: "Listo para el trabajo, semana a semana",
+    cursoIntro: "Avanza paso a paso: una parte a la vez; la siguiente se abre cuando completas la actual.",
+    cursoDestLabel: "Elegir curso",
+    cursoProgress: function (p) { return p.done + " de " + p.total + " partes completadas"; },
+    cursoAllDone: "¡Completaste el curso! 🎉",
+    cursoWeek: function (p) { return "Semana " + p.w; },
     pretripTitle: "Curso de inglés",
     pretripIntro: "Avanza semana a semana: una etapa por semana; la siguiente se abre cuando completas la actual.",
     pretripDestLabel: "Elegir plan",

@@ -2532,7 +2532,7 @@
       sound: animate && !!settings.celebrateSound, // Default aus (Sound überrascht); Haptik bleibt an
       haptics: animate,
       reducedMotion: animate ? undefined : true,   // statisch nachzeichnen statt neu abspielen
-      primaryLabel: result.origin === "pretrip" ? t("study.backPretrip")
+      primaryLabel: result.origin === "pretrip" ? t(isLocals() ? "study.backCurso" : "study.backPretrip")
         : result.origin === "task" ? t("study.backTask")
         : result.origin === "favorites" ? t("study.backFavorites")
         : t("common.overview"),
@@ -3110,6 +3110,9 @@
       const ch = d.challengeId ? (data.CHALLENGES || []).find((c) => c.id === d.challengeId) : null;
       return {
         day: d.day,
+        week: d.week != null ? d.week : null,   // Locals-Kursplan: Woche/Teil zur Gruppierung
+        part: d.part != null ? d.part : null,
+        weekTitle: natk(d, "weekTitleDe") || null, // nur auf dem 1. Teil je Woche gesetzt
         title: natk(d, "titleDe"),
         count: d.cardIds.length,
         challenge: ch ? natk(ch, "textDe") : null,
@@ -3388,7 +3391,7 @@
     if (task.kind === "preset") { const pr = (data.PRESETS || []).find((p) => p.id === task.scope); sc = pr ? pr.scope : task.scope; }
     const c = categoryById(sc);
     const name = c ? natk(c, "label") : sc;
-    const prefix = task.kind === "pretrip" ? t("task.kindPretrip") : task.kind === "preset" ? t("task.kindPreset") : t("task.kindCategory");
+    const prefix = task.kind === "pretrip" ? t(isLocals() ? "task.kindCurso" : "task.kindPretrip") : task.kind === "preset" ? t("task.kindPreset") : t("task.kindCategory");
     return prefix + ": " + name;
   }
 
