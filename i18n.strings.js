@@ -1122,6 +1122,9 @@
     yeChooseTheme: "Wähle ein Thema",
     yeCount: (p) => `${p.n} Motive`,
     yePromptHint: "Wie heißt das auf Spanisch?",
+    // Locals-Track (Englisch lernen): nach „auf Englisch" fragen statt „auf Spanisch".
+    yePromptHintLocals: "Wie heißt das auf Englisch?",
+    yeIntroLocals: "Ein Bild erscheint, der Countdown läuft – überlege, wie es auf Englisch heißt. Bei 0 wird das Wort samt Übersetzung aufgelöst.",
     yeReveal: "Auflösen",
     yeKnown: "Wusste ich ✓",
     yeKnownLast: "Wusste ich ✓ – Ergebnis",
@@ -1582,6 +1585,9 @@
     yeChooseTheme: "Pick a theme",
     yeCount: (p) => `${p.n} pictures`,
     yePromptHint: "What's it called in Spanish?",
+    // Locals track (learning English): ask "in English" instead of "in Spanish".
+    yePromptHintLocals: "What's it called in English?",
+    yeIntroLocals: "A picture appears and the countdown runs – think how it's called in English. At 0 the word and its translation are revealed.",
     yeReveal: "Reveal",
     yeKnown: "I knew it ✓",
     yeKnownLast: "I knew it ✓ – result",

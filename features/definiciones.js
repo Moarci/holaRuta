@@ -18,6 +18,11 @@
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
+  // Gelernte Sprache des aktiven Tracks: Reise "es", Locals "en" (Muster wie
+  // dialogos-game). Die spanische Definition bleibt in beiden Tracks die Frage;
+  // gewählt wird das Wort in der gelernten Sprache.
+  const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+
   // ----- Daten-Helfer -----
   const quizSetById = (id) => ctx.data.QUIZ_SETS.find((s) => s.id === id) || null;
   const quizDefById = (id) => ctx.data.QUIZ_DEFS.find((d) => d.id === id) || null;
@@ -50,8 +55,14 @@
     const set = quizSetById(q.setId);
     const def = quizDefById(q.queue[q.idx]);
     const answered = q.selected !== null;
+    const ll = trackLearnLang();
+    // Primärzeile = gelerntes Wort (Reise: spanisch, Locals: englisch); die
+    // Sekundärzeile zeigt die andere Seite (Locals: das spanische Wort, Reise:
+    // die muttersprachliche Übersetzung).
+    const primary = (o) => (ll === "en" ? o.en : o.es) || "";
+    const secondary = (o) => (ll === "en" ? o.es : nat(o)) || "";
     const options = q.options.map((o) => ({
-      id: o.id, es: o.es, de: nat(o), icon: o.icon,
+      id: o.id, es: primary(o), de: secondary(o), icon: o.icon,
       // Zustand fürs Einfärben: vor der Antwort neutral, danach Lösung grün,
       // falsche Wahl rot, der Rest gedämpft.
       state: !answered ? "idle"
@@ -62,14 +73,15 @@
     return {
       setLabel: set ? set.label : "",
       setIcon: set ? set.icon : "🧩",
+      lang: ll,
       position: q.idx,
       total: q.total,
       definition: def.def,
       options,
       answered,
       isCorrect: q.selected === def.id,
-      solutionEs: def.es,
-      solutionDe: nat(def),
+      solutionEs: primary(def),
+      solutionDe: secondary(def),
       isLast: q.idx >= q.total - 1,
     };
   }
@@ -182,7 +194,7 @@
           <button class="${cls}" type="button" data-action="quiz-answer" data-id="${esc(o.id)}"${dis}>
             <span class="quiz-opt__icon" aria-hidden="true">${esc(o.icon)}</span>
             <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+              <span class="quiz-opt__es" lang="${esc(vm.lang)}">${esc(o.es)}</span>
               <span class="quiz-opt__de">${esc(o.de)}</span>
             </span>
             ${mark}

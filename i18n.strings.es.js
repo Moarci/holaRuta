@@ -256,6 +256,68 @@
     dlgStep: function (p) { return "Paso " + p.step + " de " + p.total; },
     dlgAgain: "Practicar otra vez",
     dlgOther: "Otra situación",
+
+    // ----- Reise-Spiele, im Locals-Track recycelt (Englisch lernen) -----
+    // Untertitel der Entdecken-Kacheln (in der spanischen UI = Locals-Track)
+    subBanderas: "Quiz de banderas: adivina el país y aprende de paso colores, símbolos e historia.",
+    subYesto: "Adivina la imagen: 3-2-1, ¿cómo se dice en inglés?",
+    subDefiniciones: "Lee la definición y elige la palabra.",
+    subFrases: "Coloca las piezas y arma frases en inglés.",
+
+    // Definiciones (Zuordnen-Quiz): spanische Definition → englisches Wort
+    quizSetupIntro: "Lee una definición en español y elige la palabra en inglés. Así aprendes vocabulario por su significado, sin traducir.",
+    quizCorrect: "¡Correcto! 🎉",
+    quizNotExactly: "No exactamente.",
+    quizSolution: (p) => `Correcto: <b lang="en">${p.es}</b> · ${p.de}`,
+    quizDefinicion: "Definición",
+    quizQuestion: (p) => `Pregunta ${p.pos}/${p.total}`,
+    quizProgress: "Progreso del quiz",
+
+    // Frases flexibles (Satzbaukasten): englischen Satz bauen
+    frasesIntro: "Elige una situación y completa el hueco del marco con la pieza correcta: así armas frases en inglés en vez de solo traducir.",
+    frasesBuild: "Arma la frase",
+    frasesSentence: (p) => `Frase ${p.pos}/${p.total}`,
+
+    // ¿Y esto? (Bild-Vokabel-Modus): im Locals-Track „auf Englisch"
+    yeIntroLocals: "Aparece una imagen y corre la cuenta atrás: piensa cómo se dice en inglés. Al llegar a 0 se revela la palabra y su traducción.",
+    yePromptHintLocals: "¿Cómo se dice en inglés?",
+    yeChooseTheme: "Elige un tema",
+    yeCount: (p) => `${p.n} imágenes`,
+    yeReveal: "Revelar",
+    yeKnown: "Lo sabía ✓",
+    yeKnownLast: "Lo sabía ✓ – resultado",
+    yeUnknown: "Todavía no",
+    yeUnavailable: "Este modo no está disponible ahora.",
+
+    // Banderas (Flaggen-Quiz)
+    bndSetupIntro: "Aprende jugando las banderas de Latinoamérica y España: primero adivina y, con cada respuesta, descubre qué significan los colores y símbolos.",
+    bndPlayHead: "🎮 Quiz: adivina la bandera",
+    bndLearnHead: "📚 Aprender y consultar",
+    bndQuestion: "¿De qué país es esta bandera?",
+    bndCount: (p) => `Bandera ${p.pos}/${p.total}`,
+    bnd_sur: "Sudamérica",
+    bnd_sur_icon: "🌎",
+    bnd_sur_desc: "Sudamérica: de Argentina a Venezuela",
+    bnd_centro: "Centroamérica y el Caribe",
+    bnd_centro_icon: "🌴",
+    bnd_centro_desc: "México, Centroamérica y el Caribe",
+    bnd_todas: "Todas las banderas",
+    bnd_todas_icon: "🎲",
+    bnd_todas_desc: "Todos los países mezclados: la ronda completa",
+    bndGaleria: "Galería de banderas",
+    bndGaleriaDesc: "Hojea todas las banderas: colores, simbolismo y un truco para recordar",
+    bndGaleriaIntro: "Toca un país para ver sus colores, su significado y un truco para recordarlo.",
+    bndSaberMas: "Saber más sobre banderas",
+    bndSaberMasDesc: "Conocimiento general de banderas: colores, símbolos y etiqueta",
+    bndRegSur: "🌎 Sudamérica",
+    bndRegCentro: "🌴 México, Centroamérica y el Caribe",
+    bndRegEuropa: "🇪🇺 Europa",
+    bnTips: "🚩 Entender las banderas",
+    bnPhrases: "💬 Frases sobre origen y banderas",
+    bnWords: "🗣️ Palabras sobre banderas",
+    bnChecklist: "🧠 Memorizar las banderas",
+    bnChecklistHint: "Unos trucos para que cada bandera se te quede.",
+    kniggeTip: "Consejo pro",
   });
 
   // ---------- app: alcance, controles, avisos ----------
@@ -263,6 +325,7 @@
     allTopics: "Todos los temas",
     all: "Todos",
     mixed: "Mezclado",
+    frasesMixedIntro: "Todos los temas mezclados: la ronda completa.",
     contextShow: "🧭 Contexto",
     contextHide: "🧭 Ocultar contexto",
     cardFlip: "Voltear la tarjeta",

@@ -990,7 +990,14 @@
     // Inhalte (Precios, Conjugación, Jerga, Diálogos, Länder/Geschichte …). Für
     // Englisch-Lernende nur die sprachunabhängigen behalten (Mi léxico).
     const localsTrack = !!(window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
-    const LOCALS_FEATURES = { "open-favorites": true, "open-dialogos": true };
+    // Recycelte Reise-Spiele, die track-fähig auf Englisch lehren (Lernseite =
+    // card.en/item.en): Diálogos, Banderas (sprachunabhängig), ¿Y esto?,
+    // Definiciones, Frases flexibles. Mi léxico bleibt sprachunabhängig.
+    const LOCALS_FEATURES = {
+      "open-favorites": true, "open-dialogos": true,
+      "open-banderas": true, "open-yesto": true,
+      "open-quiz-setup": true, "open-frases": true,
+    };
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
       // Locals-Track: nur sprachunabhängige Features (Mi léxico) + die mit loc:true
