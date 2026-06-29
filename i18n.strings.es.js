@@ -129,6 +129,7 @@
     catGroupLocDia: "Día a día",
     catGroupLocTrab: "Trabajo y negocios",
     catGroupLocEsc: "Escuela y examen",
+    catGroupLocVoc: "Vocabulario por temas",
     sectionLevels: "Niveles",
     levelsAll: "Todos",
     levelsGroup: "Nivel de dificultad",

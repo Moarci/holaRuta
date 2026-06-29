@@ -57,8 +57,16 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 | Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público, emergencias y seguridad, peluquería, alquiler y vivienda, el clima, domicilios, gimnasio, casa y servicios |
 | Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes, hoja de vida (CV), negociar, call-center/BPO, inglés para TI, videollamadas, ventas y pitch, finanzas y facturas, logística y envíos, RR. HH./feedback, networking, personal de salud (médicos/enfermeras) |
 | Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores, tiempos verbales, preposiciones, hacer preguntas, falsos amigos, pronunciación (minimalpaare), present perfect, artículos a/an/the, cantidades (much/many), verbos modales, phrasal verbs, comparar |
+| Vocabulario por temas (`loc-voc`) | números, colores, familia, cuerpo, comida y bebida, frutas y verduras, animales, ropa, casa, cocina, ciudad, transporte, días y meses, clima, verbos comunes, adjetivos, profesiones, tecnología, naturaleza, emociones, escuela, deportes, salud, oficina, dinero y compras, viaje |
 
-Aktuell **63 Kategorien · 818 Karten** (ein Schnellstart-Preset je Kategorie).
+Die fünfte Gruppe **Vocabulario por temas (`loc-voc`)** ist eine reine **Vokabel-Sektion**
+(Einzelwörter statt Service-Sätze): 26 Themen-Kategorien mit je 16–26 Wortkarten
+(`es` = palabra en español, `en` = englisches Wort, `tip` = englische Aussprachehilfe),
+plus pro Karte ein voller Beispielsatz-Kontext in `contextdata.locals.js`. Sie deckt den
+Grundwortschatz ab (Zahlen, Farben, Familie, Körper, Essen, Tiere, Stadt, Verben, Adjektive …),
+den Lernende neben den Arbeits-/Alltagssätzen brauchen.
+
+Aktuell **89 Kategorien · 1294 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
