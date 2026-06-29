@@ -226,13 +226,84 @@
   ];
 
   const BY_ID = BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
-  const byId = (id) => BY_ID[id] || null;
+
+  // ===================================================================
+  // LOCALS-TRACK (es-en, Englisch lernen): eigene Badge-Welt OHNE Reise-
+  // Metaphern. Reise-Edition bleibt 1:1 erhalten – die Auswahl erfolgt zur
+  // Laufzeit über den aktiven Track (isLocalsTrack), nicht beim Laden.
+  // ===================================================================
+  const LOC_GROUPS = [
+    { id: "learning", label: "Fortschritt", labelEn: "Progress",      icon: "🧭" },
+    { id: "streak",   label: "Dranbleiben", labelEn: "Keeping it up", icon: "🔥" },
+    { id: "category", label: "Bereiche",    labelEn: "Topics",        icon: "🗂️" },
+    { id: "context",  label: "Kontext",     labelEn: "Context",       icon: "💡" },
+    { id: "special",  label: "Spezial",     labelEn: "Special",       icon: "✨" },
+  ];
+  // Kategorie-Badges für den Locals-Track: an echte loc-Kategorien gekoppelt,
+  // Job-/Alltags-Englisch statt Reise. category-Id = cat einer loc-Karte.
+  const LOC_CATEGORY_BADGES = [
+    { category: "saludos-en",       icon: "👋", name: "Smalltalk-Starter",  nameEn: "Small talk starter", description: "Meistere 80 % der Saludos-Karten.",        descriptionEn: "Master 80% of the greetings cards." },
+    { category: "meseros",          icon: "🍽️", name: "Service-Profi",      nameEn: "Service pro",        description: "Meistere 80 % der Restaurant-Karten.",     descriptionEn: "Master 80% of the restaurant cards." },
+    { category: "bpo-en",           icon: "🎧", name: "Call-Center-Profi",   nameEn: "Call-center pro",    description: "Meistere 80 % der Call-Center-Karten.",    descriptionEn: "Master 80% of the call-center cards." },
+    { category: "tech-en",          icon: "💻", name: "Tech-Englisch",       nameEn: "Tech English",       description: "Meistere 80 % der Tech-Karten.",           descriptionEn: "Master 80% of the tech cards." },
+    { category: "entrevista",       icon: "💼", name: "Interview-bereit",    nameEn: "Interview-ready",    description: "Meistere 80 % der Interview-Karten.",      descriptionEn: "Master 80% of the interview cards." },
+    { category: "cliente-en",       icon: "🤝", name: "Kundenliebling",      nameEn: "Customer-service star", description: "Meistere 80 % der Kundenservice-Karten.", descriptionEn: "Master 80% of the customer-service cards." },
+    { category: "oficina",          icon: "🖥️", name: "Büro-Englisch",       nameEn: "Office English",     description: "Meistere 80 % der Büro-Karten.",           descriptionEn: "Master 80% of the office cards." },
+    { category: "direcciones",      icon: "🗺️", name: "Wegweiser",           nameEn: "Wayfinder",          description: "Meistere 80 % der Wegbeschreibung-Karten.", descriptionEn: "Master 80% of the directions cards." },
+    { category: "dinero-en",        icon: "💵", name: "Geld & Bank",         nameEn: "Money & bank",       description: "Meistere 80 % der Geld-Karten.",           descriptionEn: "Master 80% of the money cards." },
+    { category: "gramatica-en",     icon: "📐", name: "Grammatik-Grundlagen", nameEn: "Grammar basics",    description: "Meistere 80 % der Grammatik-Karten.",      descriptionEn: "Master 80% of the grammar cards." },
+    { category: "numeros-en",       icon: "🔢", name: "Zahlen & Daten",      nameEn: "Numbers & dates",    description: "Meistere 80 % der Zahlen-Karten.",         descriptionEn: "Master 80% of the numbers cards." },
+    { category: "pronunciacion-en", icon: "🔊", name: "Klare Aussprache",    nameEn: "Clear pronunciation", description: "Meistere 80 % der Aussprache-Karten.",    descriptionEn: "Master 80% of the pronunciation cards." },
+  ].map((b) => Object.assign({
+    id: "cat_" + b.category, group: "category", type: "categoryMastery", threshold: 0.8,
+    unlockedText: "Du kommst in diesem Bereich klar. 👍", unlockedTextEn: "You can hold your own in this area. 👍",
+  }, b));
+  // Re-thematisierte Texte (Job/Alltag-Englisch) für die im Locals-Track sichtbaren
+  // Standard-Badges. Nur die abweichenden Felder; der Rest wird vom Original geerbt.
+  const LOC_OVERRIDES = {
+    first_steps:     { name: "Erste Worte",        nameEn: "First words",        description: "Lerne deine erste Karte.",       descriptionEn: "Learn your first card.",        unlockedText: "Dein erster Schritt ins Englische ist gemacht.", unlockedTextEn: "You've taken your first step into English." },
+    ten_cards:       { icon: "📒", name: "10 Vokabeln",  nameEn: "10 words learned",  description: "Lerne 10 verschiedene Karten.",  descriptionEn: "Learn 10 different cards.",     unlockedText: "Dein Englisch nimmt Fahrt auf.", unlockedTextEn: "Your English is picking up speed." },
+    fifty_cards:     { icon: "📗", name: "50 Vokabeln",  nameEn: "50 words learned",  description: "Lerne 50 verschiedene Karten.",  descriptionEn: "Learn 50 different cards.",     unlockedText: "Genug Englisch für viele Alltagssituationen.", unlockedTextEn: "Enough English for plenty of everyday situations." },
+    hundred_cards:   { icon: "📚", name: "100 Vokabeln", nameEn: "100 words learned", description: "Lerne 100 verschiedene Karten.", descriptionEn: "Learn 100 different cards.",    unlockedText: "Du kommst im Job sprachlich gut zurecht.", unlockedTextEn: "You can hold your own at work." },
+    twohundred_cards:{ name: "200 Vokabeln", nameEn: "200 words learned", description: "Lerne 200 verschiedene Karten.", descriptionEn: "Learn 200 different cards.",    unlockedText: "Ein solider englischer Wortschatz steht.", unlockedTextEn: "A solid English vocabulary is in place." },
+    all_cards:       { name: "Alle Karten gesehen", nameEn: "Whole deck learned", description: "Lerne alle Karten mindestens einmal.", descriptionEn: "Learn every card at least once.", unlockedText: "Du hast das komplette Deck durchgearbeitet.", unlockedTextEn: "You've worked through the entire deck." },
+    streak_3:        { name: "Drei Tage am Stück", nameEn: "Three days in a row", unlockedText: "Drei Tage ohne Pause gelernt.", unlockedTextEn: "Three days of learning without a break." },
+    streak_7:        { name: "Eine Woche dran",  nameEn: "A week of practice", unlockedText: "Eine ganze Woche Englisch durchgezogen.", unlockedTextEn: "A whole week of English, done." },
+    streak_14:       { icon: "📆", name: "Zwei Wochen Routine", nameEn: "Two-week routine", unlockedText: "Englisch ist Teil deines Tages geworden.", unlockedTextEn: "English has become part of your day." },
+    streak_30:       { name: "Tägliche Gewohnheit", nameEn: "Daily habit", unlockedText: "Aus Lernen ist eine echte Gewohnheit geworden.", unlockedTextEn: "Learning has turned into a real habit." },
+    ruta_dia_first:  { name: "Tagesplan gestartet", nameEn: "Daily plan started", description: "Starte deinen ersten Tagesplan.", descriptionEn: "Start your first daily plan.", unlockedText: "Dein täglicher Mini-Plan steht.", unlockedTextEn: "Your daily mini-plan is set." },
+    ruta_dia_7:      { icon: "📅", name: "Sieben Tagespläne", nameEn: "Seven daily plans", description: "Mach an 7 Tagen einen Tagesplan.", descriptionEn: "Do a daily plan on 7 days.", unlockedText: "Sieben tägliche Einheiten – stark dran.", unlockedTextEn: "Seven daily sessions – great consistency." },
+    pretrip_done:    { icon: "🎓", name: "Lernpfad-Meilenstein", nameEn: "Learning-path milestone", description: "Schließe 7 Teile deines Lernpfads ab.", descriptionEn: "Complete 7 parts of your learning path.", unlockedText: "Sieben Etappen im Lernpfad geschafft.", unlockedTextEn: "Seven parts of your learning path done." },
+    context_first:   { name: "Erster Aha-Moment", nameEn: "First aha moment", description: "Öffne deinen ersten Kontext.", descriptionEn: "Open your first context.", unlockedText: "Du siehst, wie ein Satz im Alltag wirklich benutzt wird.", unlockedTextEn: "You can see how a phrase is really used in real life." },
+    context_10:      { icon: "💡", name: "Kontext-Kenner", nameEn: "Context connoisseur", description: "Sieh dir den Kontext von 10 Karten an.", descriptionEn: "View the context of 10 cards.", unlockedText: "Du lernst nicht nur Wörter, sondern echte Situationen.", unlockedTextEn: "You're learning not just words, but real situations." },
+    context_25:      { icon: "🌐", name: "Bereit für echte Gespräche", nameEn: "Ready for real conversations", description: "Sieh dir den Kontext von 25 Karten an.", descriptionEn: "View the context of 25 cards.", unlockedText: "Du verstehst immer besser, wie Englisch im Alltag klingt.", unlockedTextEn: "You're getting a better feel for how English sounds in real life." },
+    night_owl:       { name: "Englisch um Mitternacht", nameEn: "Midnight English", unlockedText: "Noch schnell etwas Englisch vor dem Schlafen.", unlockedTextEn: "A quick bit of English before bed." },
+    early_bird:      { name: "Englisch zum Kaffee", nameEn: "English with coffee", unlockedText: "Englisch gelernt, bevor der Tag losging.", unlockedTextEn: "Learned English before the day started." },
+  };
+  // Aktive Badge-Welt für den Locals-Track: Reise-Spielmodus-Gruppen raus
+  // (banderas/cuerpo/listening/yesto/construir/quiz/hostel/reallife – Features,
+  // die es im Locals-Track nicht gibt), Kategorie-Badges ersetzt, Texte überlagert.
+  const LOC_KEEP_GROUPS = { learning: 1, streak: 1, context: 1, special: 1 };
+  const LOC_BADGES = BADGES
+    .filter((b) => b.group !== "category" && LOC_KEEP_GROUPS[b.group])
+    .map((b) => (LOC_OVERRIDES[b.id] ? Object.assign({}, b, LOC_OVERRIDES[b.id]) : b))
+    .concat(LOC_CATEGORY_BADGES);
+  const LOC_BY_ID = LOC_BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
+
+  function isLocalsTrack() {
+    return !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
+  }
+  function activeBadges() { return isLocalsTrack() ? LOC_BADGES : BADGES; }
+  function activeById(id) { return (isLocalsTrack() ? LOC_BY_ID : BY_ID)[id] || null; }
+  function groups() { return isLocalsTrack() ? LOC_GROUPS : GROUPS; }
+
+  const byId = (id) => activeById(id);
 
   // Schlanker Reader für die Belohnungs-Inszenierung (celebrate.js): zu einer
   // Badge-Id nur das, was der Fertig-Screen braucht – Icon + Namen (de/en, die
   // Lokalisierung übernimmt der Aufrufer via i18n.natKey). Unbekannte Id -> null.
   function badgeMeta(id) {
-    const b = BY_ID[id];
+    const b = activeById(id);
     if (!b) return null;
     return { id: b.id, icon: b.icon, name: b.name, nameEn: b.nameEn || b.name };
   }
@@ -365,7 +436,7 @@
 
   // Ids aller aktuell erfüllten Badges (für die Freischalt-Erkennung).
   function satisfiedIds(m) {
-    return BADGES.filter((b) => isSatisfied(b, m)).map((b) => b.id);
+    return activeBadges().filter((b) => isSatisfied(b, m)).map((b) => b.id);
   }
 
   // Vollständige Auswertung für die UI. unlocked = Map id -> Zeitstempel.
@@ -373,7 +444,7 @@
   // unlocked-Map steht (Freischaltung bleibt erhalten, auch wenn sich Werte ändern).
   function evaluate(m, unlocked) {
     const u = unlocked || {};
-    return BADGES.map((b) => {
+    return activeBadges().map((b) => {
       const satisfied = isSatisfied(b, m);
       const value = valueOf(b, m);
       const target = targetOf(b, m);
@@ -393,6 +464,7 @@
   // modul-intern.
   window.SC.badges = {
     GROUPS,
+    groups,
     byId,
     badgeMeta,
     buildMetrics,

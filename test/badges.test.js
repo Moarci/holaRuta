@@ -158,10 +158,11 @@ test("buildMetrics: leere Zähler -> JEDE Metrik 0/false (kein Default-Kurzschlu
     "battlesPlayed", "battlesWon", "perfectBattles", "comebacks",
     "quizzesPlayed", "quizzesPerfect", "yestoPlayed", "yestoPerfect",
     "frasesPlayed", "frasesPerfect", "listenReviews", "preciosPlayed",
-    "preciosPerfect", "preciosMillon",
+    "preciosPerfect", "preciosMillon", "banderasPlayed", "banderasPerfect",
     // alle „X ? Object.keys(X).length : 0"-Distinkt-Zähler:
     "roleplaysCompleted", "challengesCompleted", "frasesThemesCompleted",
     "rutaDays", "contextCardsViewed", "bodyPartsExplored", "pretripDaysDone",
+    "banderasSetsCompleted",
   ]) {
     assert.equal(m[k], 0, `${k} muss bei leeren Zählern 0 sein`);
   }
@@ -241,4 +242,69 @@ test("byId/badgeMeta: bekannte Id liefert Daten, unbekannte null", () => {
   assert.equal(meta.icon, "🌙");
   assert.equal(meta.nameEn, "Midnight Español");
   assert.equal(badges.badgeMeta("nope"), null);
+});
+
+// ---------------------------- Locals-Track (edition-aware) ----------------------------
+// badges.js wählt zur Laufzeit über window.SC.track die Badge-Welt. Hier den
+// Locals-Track (es-en) simulieren und die abweichende Auswahl/Benennung prüfen.
+test("Locals-Track: groups()/evaluate/byId liefern die reise-freie Badge-Welt", () => {
+  const prev = window.SC.track;
+  window.SC.track = { id: () => "es-en" };
+  try {
+    // Gruppen: nur im Locals-Track vorhandene Bereiche
+    assert.deepEqual(badges.groups().map((g) => g.id).sort(),
+      ["category", "context", "learning", "special", "streak"]);
+    const loc = badges.evaluate({});
+    const has = (id) => !!find(loc, id);
+    // Je KEEP-Gruppe ein Vertreter MUSS da sein (verriegelt LOC_KEEP_GROUPS):
+    assert.ok(has("first_steps"), "learning vorhanden");
+    assert.ok(has("streak_3"), "streak vorhanden");
+    assert.ok(has("context_first"), "context vorhanden");
+    assert.ok(has("night_owl"), "special vorhanden");
+    // Locals-Kategorie-Badges statt Reise-Kategorien:
+    assert.ok(has("cat_bpo-en") && has("cat_tech-en"), "Locals-Kategorie-Badges da");
+    assert.ok(!has("cat_basics") && !has("cat_hotel"), "Reise-Kategorie-Badges weg");
+    // Reise-Spielmodus-Badges (Features fehlen im Locals-Track) sind ausgeblendet:
+    for (const gone of ["banderas_first", "cuerpo_first", "yesto_first", "battle_first", "challenge_first", "frases_first", "quiz_first", "listen_first"]) {
+      assert.ok(!has(gone), `${gone} im Locals-Track ausgeblendet`);
+    }
+    // pretrip_done als Lernpfad-Meilenstein (kein „Trip"):
+    const pd = badges.byId("pretrip_done");
+    assert.equal(pd.nameEn, "Learning-path milestone");
+    assert.ok(!/trip|travel|reise/i.test(`${pd.nameEn} ${pd.descriptionEn} ${pd.unlockedTextEn}`), "kein Reise-Wording");
+  } finally {
+    if (prev === undefined) delete window.SC.track; else window.SC.track = prev;
+  }
+});
+
+test("Reise-Track (Default): groups()/evaluate behalten die Reise-Badges", () => {
+  // Ohne es-en-Track bleibt alles wie gehabt (Regression-Schutz fürs Edition-Gating).
+  assert.ok(find(badges.evaluate({}), "cat_basics"), "Reise-Kategorie-Badge da");
+  assert.ok(find(badges.evaluate({}), "banderas_first"), "Reise-Spielmodus-Badge da");
+  assert.ok(badges.groups().some((g) => g.id === "banderas") || badges.GROUPS.some((g) => g.id === "banderas"), "Reise-Gruppen vorhanden");
+});
+
+// buildMetrics mit echten Karten: isMastered-Logik (seen>0 UND interval>=MASTERED_DAYS).
+// Verriegelt die 0-Literale in `(r.seen||0) > 0 && (r.interval||0) >= days` (Mutation 0→1).
+test("buildMetrics: cardsMastered/categoryMastery folgen isMastered (seen>0 & interval>=5)", () => {
+  const prevStats = window.SC && window.SC.stats;
+  if (window.SC) delete window.SC.stats; // Fallback-Pfad (MASTERED_DAYS_FALLBACK=5) prüfen
+  try {
+    const cards = [
+      { id: "a", cat: "x" }, { id: "b", cat: "x" }, { id: "c", cat: "y" }, { id: "d", cat: "y" },
+    ];
+    const progress = {
+      a: { seen: 3, interval: 5 },  // gemeistert (interval == Grenze)
+      b: { seen: 2, interval: 4 },  // NICHT gemeistert (interval unter Grenze)
+      c: { interval: 9 },           // NICHT gemeistert (seen fehlt -> seen||0 = 0, nicht >0)
+      d: { seen: 1, interval: 12 }, // gemeistert (seen genau 1 reicht: > 0)
+    };
+    const m = badges.buildMetrics(cards, progress, {});
+    assert.equal(m.cardsReviewed, 3, "a,b,d gesehen (c ohne seen zählt nicht)");
+    assert.equal(m.cardsMastered, 2, "nur a und d sind gemeistert");
+    assert.equal(Math.round(m.categoryMastery.x * 100), 50, "Kategorie x: 1 von 2 gemeistert");
+    assert.equal(Math.round(m.categoryMastery.y * 100), 50, "Kategorie y: 1 von 2 gemeistert");
+  } finally {
+    if (prevStats !== undefined) window.SC.stats = prevStats;
+  }
 });
