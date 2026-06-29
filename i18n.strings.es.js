@@ -80,6 +80,12 @@
     contextNote: "Consejo",
     contextHide: "🧭 Ocultar contexto",
     context: "🧭 Contexto",
+    // Variantes "work" (track es-en) – mismos textos: la UI ES es solo Locals.
+    contextTitleWork: "🧭 Cómo usarlo en el trabajo",
+    contextNoteWork: "Consejo",
+    contextShowWork: "Mostrar el contexto",
+    contextHideWork: "🧭 Ocultar contexto",
+    contextWork: "🧭 Contexto",
     // Locals: la respuesta nativa es español, la aprendida es inglés.
     inputDe: "Escribe tu respuesta en español",
     inputEs: "Escribe tu respuesta en inglés",
