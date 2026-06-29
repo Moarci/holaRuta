@@ -1490,12 +1490,15 @@
     const exLine = ctx.loc
       ? line(ctx.egLearn, "en", ctx.egNative)        // Locals: englischer Satz + spanische Übersetzung
       : line(ctx.sentenceEs, "es", ctx.sentenceDe);  // Reise: spanischer Satz + Mutterspr.
+    // Locals (Englisch lernen) nutzt die Arbeits-Labels statt des Reise-Wortlauts.
+    const titleKey = ctx.loc ? "study.contextTitleWork" : "study.contextTitle";
+    const noteKey = ctx.loc ? "study.contextNoteWork" : "study.contextNote";
     return `
       <div class="context-panel" id="context-panel"${open ? "" : " hidden"}>
-        <h3 class="context-panel__title">${esc(t("study.contextTitle"))}</h3>
+        <h3 class="context-panel__title">${esc(t(titleKey))}</h3>
         ${exLine}
         ${meta(t("study.contextSituation"), ctx.situation)}
-        ${meta(t("study.contextNote"), ctx.note)}
+        ${meta(t(noteKey), ctx.note)}
       </div>`;
   }
 
@@ -1505,7 +1508,7 @@
     if (!ctx) return "";
     return cornerBtn({
       base: "cardbtn--ctx" + (open ? " is-open" : ""), on, icon: "lc:info",
-      label: t("study.contextShow"), action: "toggle-context",
+      label: t(ctx.loc ? "study.contextShowWork" : "study.contextShow"), action: "toggle-context",
       extra: `aria-expanded="${!!open}" aria-controls="context-panel"`,
     });
   }
@@ -1514,7 +1517,9 @@
   // Textfluss, da hier kein 🔊 zum Spiegeln und mehr Platz vorhanden ist.
   function contextBlock(ctx, open) {
     if (!ctx) return "";
-    const label = open ? t("study.contextHide") : t("study.context");
+    const label = ctx.loc
+      ? (open ? t("study.contextHideWork") : t("study.contextWork"))
+      : (open ? t("study.contextHide") : t("study.context"));
     return `
       <div class="context">
         <button class="ghostbtn contextbtn${open ? " is-open" : ""}" type="button" data-action="toggle-context"
