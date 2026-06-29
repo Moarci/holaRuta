@@ -131,8 +131,50 @@
     return cards;
   }
 
+  // ----- Reise-Kontext für favorisierte Modul-Sätze ("Wichtige Sätze") -----
+  // Die "Wichtigen Sätze" der Module sind keine echten data.js-Karten: ins „Mi
+  // léxico" gelegt, laufen sie als ephemere Favoriten-Karten mit einer „favph-…"-Id
+  // (siehe view-helpers.favPhraseId + app.favPracticeStart). Ihr Kontext liegt darum
+  // nicht in contextData (Id-basiert), sondern in SC.phraseContextData – nach Modul-
+  // Slug und spanischem Satz gegliedert. Hier wird er EINMALIG lazy auf die „favph-…"-
+  // Ids indiziert (favPracticeStart fragt dann pro Karte ab).
+  //
+  // favPhraseId muss exakt der Logik aus view-helpers entsprechen (gleiche Id, sonst
+  // greift der Lookup nicht). view-helpers lädt aber NACH context.js, darum hier eine
+  // identische lokale Kopie als Fallback; zur Laufzeit (favPracticeStart) ist SC.view
+  // längst da und liefert die kanonische Funktion.
+  function localFavPhraseId(cat, es) {
+    const s = String(es || "");
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return "favph-" + String(cat || "x") + "-" + (h >>> 0).toString(36);
+  }
+
+  let phraseIndex = null; // { "favph-…": expandedContext } – lazy gebaut
+
+  function buildPhraseIndex() {
+    const idx = Object.create(null);
+    const data = window.SC && window.SC.phraseContextData;
+    if (!data) return idx;
+    const mkId = (window.SC.view && window.SC.view.favPhraseId) || localFavPhraseId;
+    Object.keys(data).forEach((slug) => {
+      const group = data[slug] || {};
+      Object.keys(group).forEach((es) => {
+        idx[mkId(slug, es)] = expand(group[es]);
+      });
+    });
+    return idx;
+  }
+
+  // Expandierter Reise-Kontext für eine „favph-…"-Id (oder null). Gleiche Form wie
+  // bei echten Karten, läuft also durch denselben loc()/View-Pfad.
+  function phraseById(id) {
+    if (!phraseIndex) phraseIndex = buildPhraseIndex();
+    return (id && phraseIndex[id]) || null;
+  }
+
   const SC = window.SC || (window.SC = {});
-  SC.context = { numberContext, attach, expandLocals };
+  SC.context = { numberContext, attach, expandLocals, phraseById };
   // Beim Laden direkt auf die echten Karten anwenden (data.js + contextdata.js und –
   // im Locals-Track – data.locals.js + contextdata.locals.js sind bereits geladen).
   if (SC.data && SC.data.CARDS) attach(SC.data.CARDS, SC.contextData, SC.contextDataLocals);

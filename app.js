@@ -5723,6 +5723,10 @@
       ov[learnField()] = f.es;
       ov[cardNativeField()] = f.de;
       if (ov.de == null) ov.de = f.de; // nativeText-Rückfall (.de) sicherstellen
+      // Reise-Kontext (🧭) für favorisierte Modul-Sätze: liegt nicht id-basiert in
+      // contextData, sondern (Slug+Satz) in SC.phraseContextData – per favph-Id geholt.
+      const pctx = window.SC.context && window.SC.context.phraseById ? window.SC.context.phraseById(f.id) : null;
+      if (pctx) ov.context = pctx;
       overlay[f.id] = ov;
       return f.id;
     });
