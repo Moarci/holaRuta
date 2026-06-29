@@ -1,6 +1,6 @@
 /*
  * locals-track.test.js – Der Locals-Track (Spanisch lernt Englisch), Edition
- * "cartagena-locals". Prüft Track-Auflösung, den Matcher mit Englisch als
+ * "ingles-pro". Prüft Track-Auflösung, den Matcher mit Englisch als
  * Lernsprache (Artikel-Toleranz an, spanische Flexions-Strenge AUS), die
  * TTS-Locale, die spanische UI-Schicht und die Integrität des Pilot-Korpus
  * (data.locals.js).
@@ -15,7 +15,7 @@ const path = require("path");
 // Edition VOR config.js setzen (wie Build/Runtime), damit der Locals-Track aktiv ist.
 globalThis.window = globalThis.window || {};
 require(path.join(__dirname, "..", "editions", "registry.js"));
-window.SC.editionConfig = window.SC.editions["cartagena-locals"];
+window.SC.editionConfig = window.SC.editions["ingles-pro"];
 require(path.join(__dirname, "..", "config.js"));
 require(path.join(__dirname, "..", "i18n.js"));
 require(path.join(__dirname, "..", "i18n.strings.js"));
@@ -25,7 +25,7 @@ require(path.join(__dirname, "..", "data.js"));
 require(path.join(__dirname, "..", "data.locals.js"));
 const { track, matcher, i18n, data, dataLocals, config } = window.SC;
 
-test("Track: Edition cartagena-locals setzt den es-en-Track", () => {
+test("Track: Edition ingles-pro setzt den es-en-Track", () => {
   assert.equal(config.track, "es-en");
   assert.equal(track.id(), "es-en");
   assert.equal(track.learnLang(), "en");

@@ -32,14 +32,14 @@
       title: "Locals-Track: Englisch lernen (Edition „HolaRuta · Inglés“)",
       titleEn: "Locals track: learn English (edition “HolaRuta · Inglés”)",
       items: [
-        "🔄 Lernrichtung umkehrbar: Ein neuer „Track“ (config.js/SC.track) löst die feste Annahme „gelernt wird Spanisch“ ab. Die Edition cartagena-locals dreht die Richtung um – Spanisch-Sprecher:innen lernen Englisch (Frage spanisch, Antwort englisch).",
+        "🔄 Lernrichtung umkehrbar: Ein neuer „Track“ (config.js/SC.track) löst die feste Annahme „gelernt wird Spanisch“ ab. Die Edition ingles-pro dreht die Richtung um – Spanisch-Sprecher:innen lernen Englisch (Frage spanisch, Antwort englisch).",
         "🗣️ Englische Sprachausgabe & Bewertung: Der Hör-Modus spricht jetzt im Locals-Track Englisch (track.ttsLocale), und der Schreib-Check ist englisch-tolerant (Artikel the/a/an optional, keine spanischen Flexions-Sonderregeln).",
         "🇪🇸 Spanische Oberfläche: Neue UI-Sprache Spanisch (umschaltbar ES/EN); Kern-Texte übersetzt, Rest fällt sauber auf Englisch zurück.",
         "🍽️ Inhalt für die Arbeitswelt: Vier Themen-Gruppen – Turismo y hostelería (Restaurant, Recepción, Tours, Taxi, Ventas), Día a día (Saludos, Teléfono, Direcciones), Trabajo y negocios (Entrevista, Oficina) und Escuela y examen (Gramática, Clase) – mit englischer Aussprachehilfe.",
         "🎯 Fokussierte Edition: Im Locals-Track zeigt die App nur die Englisch-Inhalte; reise-spezifische Themen, Features und der spanische Einstufungstest sind ausgeblendet.",
       ],
       itemsEn: [
-        "🔄 Reversible learning direction: a new “track” (config.js/SC.track) replaces the hard-wired assumption “the learned language is Spanish”. The cartagena-locals edition flips it – Spanish speakers learn English (Spanish prompt, English answer).",
+        "🔄 Reversible learning direction: a new “track” (config.js/SC.track) replaces the hard-wired assumption “the learned language is Spanish”. The ingles-pro edition flips it – Spanish speakers learn English (Spanish prompt, English answer).",
         "🗣️ English speech & grading: in the locals track, listening mode now speaks English (track.ttsLocale) and the typed check is English-tolerant (leading the/a/an optional, no Spanish-specific inflection rules).",
         "🇪🇸 Spanish interface: new Spanish UI language (switchable ES/EN); core copy translated, the rest falls back cleanly to English.",
         "🍽️ Work-ready content: four topic groups – Tourism & hospitality (restaurant, reception, tours, taxi, sales), Everyday (greetings, phone, directions), Work & business (interview, office) and School & exam (grammar, class) – with English pronunciation hints.",

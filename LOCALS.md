@@ -10,11 +10,11 @@ dieselbe Engine wiederverwendet und nur die **Richtung umkehrt**.
 
 Öffnen:
 ```
-https://…/holaRuta/?edition=cartagena-locals
+https://…/holaRuta/?edition=ingles-pro
 ```
 oder als fest gebaute Datei:
 ```
-node build.js --edition=cartagena-locals   →   HolaRuta-cartagena-locals.html
+node build.js --edition=ingles-pro   →   HolaRuta-ingles-pro.html
 ```
 
 ## Was der Track umdreht

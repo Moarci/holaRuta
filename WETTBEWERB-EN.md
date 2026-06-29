@@ -48,13 +48,13 @@ Die Matrix beschreibt HolaRuta als geplant/„nachzubauen". Der Code sagt etwas 
 
 | Dimension | Matrix-Annahme | Realer Stand (verifiziert) | Bewertung |
 |---|---|---|---|
-| **Inhalts-Umfang** | „Standard-Hospitality-Syllabus **(nachzubauen)**" | **818 Karten · 63 Kategorien · 7 Vier-Wochen-Kurse · 20 Diálogos**, buildbar (`build.js --edition=cartagena-locals`). Breiter als jeder Wettbewerber: Hospitality **+** Alltag **+** Beruf/BPO/Tech **+** Grammatik/Examen ([LOCALS.md](LOCALS.md), `data.locals.js`) | **Matrix unterschätzt** — Content ist erledigt, nicht offen |
+| **Inhalts-Umfang** | „Standard-Hospitality-Syllabus **(nachzubauen)**" | **818 Karten · 63 Kategorien · 7 Vier-Wochen-Kurse · 20 Diálogos**, buildbar (`build.js --edition=ingles-pro`). Breiter als jeder Wettbewerber: Hospitality **+** Alltag **+** Beruf/BPO/Tech **+** Grammatik/Examen ([LOCALS.md](LOCALS.md), `data.locals.js`) | **Matrix unterschätzt** — Content ist erledigt, nicht offen |
 | **Hospitality-Vertical** | „situiert am Arbeitsplatz" | Vollständig: recepción, meseros, quejas/escalación, limpieza/housekeeping, ventas/upselling, teléfono/bpo, platos/bar, guías … | **Erfüllt** |
 | **Peer-Roleplay (der Wedge!)** | „Situiertes Peer-Roleplay; Gast↔Personal als **Live-Übung**" | Bisher nur NPC-gesteuerte Diálogos (Einzel-Lerner). **Seit 2026-06-27 als Prototyp gebaut:** `venue-roleplay.js` + `features/venue-roleplay-game.js` — Pass-and-play, Gast übt Spanisch, Personal übt Englisch in einer Szene (MC, TTS pro Zeile) | **Lücke geschlossen (Prototyp)** — der Wedge-Mechanismus existiert jetzt; Ausbau (mehr Szenen, Frei-Tippen) offen |
 | **Speech-Feedback** | „Offen (Constraint vs. offline/kontolos)" | TTS-Ausgabe (Web Speech API) + phonetische `tip`-Zeile je Karte; **keine** Spracherkennung/Scoring | **Konsistent** — bewusst nicht hier konkurrieren ([IDEEN.md §6](IDEEN.md)) |
 | **L1 ES/PT** | „native LatAm ES/PT" | ES ja (`config.js:73` — `cardNativeLang:"es"`, `ttsLocale:"en-US"`); **PT nicht gebaut** (kein `pt`-Track) | PT = Phase 2, wie Matrix sagt |
 | **LatAm-Kontext** | „Hoch (Akzente/Kontext, Mascots)" | LatAm-korrekter Content — **aber Muttersprachler-Sign-off offen** ([RISIKO.md R13](RISIKO.md)) | Versprechen marketing-tragend, menschlich unbestätigt |
-| **Distribution** | „QR, kein Konto, Co-Branding, employer-pays" | Vollständig: `editions/`-System, `cartagena-locals` registriert (`editions/registry.js:79`), offline-PWA, localStorage, kein Login, druckfertige QR-Poster (`docs/anleitungen/`) | **Erfüllt & produktionsreif** |
+| **Distribution** | „QR, kein Konto, Co-Branding, employer-pays" | Vollständig: `editions/`-System, `ingles-pro` registriert (`editions/registry.js:79`), offline-PWA, localStorage, kein Login, druckfertige QR-Poster (`docs/anleitungen/`) | **Erfüllt & produktionsreif** |
 
 ---
 

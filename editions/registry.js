@@ -71,13 +71,14 @@
         featured: ["open-hostel", "open-juegos", "open-banderas", "open-flirt", "open-knigge", "open-dialogos", "open-bailar"],
       },
     },
-    // Locals-Edition: Cartagena-Einheimische lernen ENGLISCH (umgekehrter Track).
-    // track:"es-en" dreht Lernrichtung, Stimme (TTS) und UI-Sprachen um: Frage =
-    // Spanisch (card.es), Antwort = Englisch (card.en), Oberfläche ES/EN. Funktioniert
-    // schon mit dem Bestandskorpus (jede Karte trägt es+en); der Locals-Inhalt
-    // (data.locals.js) ergänzt arbeitsweltnahe Kategorien (Hospitality usw.).
-    "cartagena-locals": {
-      edition: "cartagena-locals",
+    // Inglés-Edition: Spanisch-Sprecher:innen lernen ENGLISCH fürs Berufsleben
+    // (umgekehrter Track, nicht orts- oder zielgruppengebunden). track:"es-en" dreht
+    // Lernrichtung, Stimme (TTS) und UI-Sprachen um: Frage = Spanisch (card.es),
+    // Antwort = Englisch (card.en), Oberfläche ES/EN. Funktioniert schon mit dem
+    // Bestandskorpus (jede Karte trägt es+en); data.locals.js ergänzt arbeitsweltnahe
+    // Kategorien (Hospitality, Alltag, Beruf usw.).
+    "ingles-pro": {
+      edition: "ingles-pro",
       brandName: "HolaRuta · Inglés",
       // Karibik-Teal wie ECOS Cartagena. NÄHERUNG – bei Freigabe ersetzen.
       accent: { brand: "#1F7A8C", brandInk: "#155C69" },
