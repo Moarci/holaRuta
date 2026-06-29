@@ -205,3 +205,38 @@ test("Content: data.locals hängt im Locals-Track an den aktiven Korpus an", () 
   const catIds = new Set(data.CATEGORIES.map((c) => c.id));
   assert.ok(catIds.has("meseros") && catIds.has("recepcion") && catIds.has("guias"));
 });
+
+test("Kontext: JEDE loc-Karte bekommt englischen Kontext (contextdata.locals + expandLocals)", () => {
+  // context.js hängt beim Laden den Kontext an SC.data.CARDS (Locals-Korpus ist da).
+  require(path.join(__dirname, "..", "contextdata.locals.js"));
+  require(path.join(__dirname, "..", "numbers.js"));
+  require(path.join(__dirname, "..", "context.js"));
+  const locCards = data.CARDS.filter((c) => /^loc-/.test(c.id));
+  assert.ok(locCards.length >= 800, `genug Locals-Karten (${locCards.length})`);
+  for (const c of locCards) {
+    const ctx = c.context;
+    assert.ok(ctx, `Kontext fehlt: ${c.id}`);
+    assert.equal(ctx.loc, true, `loc-Flag fehlt (englische Lernrichtung): ${c.id}`);
+    assert.ok(ctx.egLearn && ctx.egLearn.trim(), `englischer Beispielsatz fehlt: ${c.id}`);
+    assert.ok(ctx.egNative && ctx.egNative.trim(), `spanische Übersetzung fehlt: ${c.id}`);
+    assert.ok(ctx.situation && ctx.situation.trim(), `situación (ES) fehlt: ${c.id}`);
+    assert.ok(ctx.situationEn && ctx.situationEn.trim(), `situation (EN) fehlt: ${c.id}`);
+    assert.ok(ctx.note && ctx.note.trim(), `consejo (ES) fehlt: ${c.id}`);
+    assert.ok(ctx.noteEn && ctx.noteEn.trim(), `tip (EN) fehlt: ${c.id}`);
+  }
+});
+
+test("Kontext: localizeDeep schaltet Situation/Tipp auf die UI-Sprache (es/en), Beispiel bleibt EN+ES", () => {
+  const card = data.CARDS.find((c) => c.id === "loc-mes01");
+  assert.ok(card && card.context, "loc-mes01 hat Kontext");
+  i18n.setLang("es");
+  const es = i18n.localizeDeep(card.context);
+  assert.equal(es.egLearn, card.context.egLearn, "englischer Beispielsatz unverändert (ES-UI)");
+  assert.equal(es.situation, card.context.situation, "Situation spanisch bei ES-UI");
+  i18n.setLang("en");
+  const en = i18n.localizeDeep(card.context);
+  assert.equal(en.egLearn, card.context.egLearn, "englischer Beispielsatz unverändert (EN-UI)");
+  assert.equal(en.situation, card.context.situationEn, "Situation englisch bei EN-UI");
+  assert.ok(!Object.keys(en).some((k) => /En$/.test(k)), "keine …En-Hilfsfelder im EN-Ergebnis");
+  i18n.setLang("es"); // Track-Default wiederherstellen
+});
