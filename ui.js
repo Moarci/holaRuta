@@ -184,6 +184,7 @@
     { id: "loc-trab", titleKey: "home.catGroupLocTrab" },
     { id: "loc-esc",  titleKey: "home.catGroupLocEsc" },
     { id: "loc-voc",  titleKey: "home.catGroupLocVoc" },
+    { id: "loc-b2",   titleKey: "home.catGroupLocB2" },
     { id: "basics",  titleKey: "home.catGroupBasics" },
     { id: "grammar", titleKey: "home.catGroupGrammar" },
     { id: "people",  titleKey: "home.catGroupPeople" },

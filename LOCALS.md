@@ -57,18 +57,22 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 | Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público, emergencias y seguridad, peluquería, alquiler y vivienda, el clima, domicilios, gimnasio, casa y servicios |
 | Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes, hoja de vida (CV), negociar, call-center/BPO, inglés para TI, videollamadas, ventas y pitch, finanzas y facturas, logística y envíos, RR. HH./feedback, networking, personal de salud (médicos/enfermeras) |
 | Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores, tiempos verbales, preposiciones, hacer preguntas, falsos amigos, pronunciación (minimalpaare), present perfect, artículos a/an/the, cantidades (much/many), verbos modales, phrasal verbs, comparar |
-| Vocabulario por temas (`loc-voc`) | números, colores, familia, cuerpo, comida y bebida, frutas y verduras, animales, ropa, casa, cocina, ciudad, transporte, días y meses, clima, verbos comunes, adjetivos, profesiones, tecnología, naturaleza, emociones, escuela, deportes, salud, oficina, dinero y compras, viaje, la hora, baño, herramientas, música, formas, materiales, aves, vida marina, insectos, postres y dulces, especias y hierbas, medidas, direcciones, palabras de pregunta, pronombres, países, nacionalidades, belleza y cuidado, limpieza del hogar, emergencias |
+| Vocabulario por temas (`loc-voc`) | números, colores, familia, cuerpo, comida y bebida, frutas y verduras, animales, ropa, casa, cocina, ciudad, transporte, días y meses, clima, verbos comunes, adjetivos, profesiones, tecnología, naturaleza, emociones, escuela, deportes, salud, oficina, dinero y compras, viaje, la hora, baño, herramientas, música, formas, materiales, aves, vida marina, insectos, postres y dulces, especias y hierbas, medidas, direcciones, palabras de pregunta, pronombres, países, nacionalidades, belleza y cuidado, limpieza del hogar, emergencias, **palabras esenciales (núcleo)**, **verbos esenciales** |
+| Vocabulario B2 / avanzado (`loc-b2`) | opinar y argumentar, acuerdo y desacuerdo, conectores avanzados, frecuencia y tiempo, emociones matizadas, personalidad, conceptos abstractos, colocaciones, mundo laboral, negocios y reuniones, finanzas, educación, phrasal verbs, verbos avanzados, adjetivos avanzados, sociedad y actualidad, medio ambiente, tecnología digital, salud y bienestar, viajes avanzado |
 
-Die fünfte Gruppe **Vocabulario por temas (`loc-voc`)** ist eine reine **Vokabel-Sektion**
-(Einzelwörter statt Service-Sätze): 46 Themen-Kategorien mit je 16–26 Wortkarten
-(`es` = palabra en español, `en` = englisches Wort, `tip` = englische Aussprachehilfe),
-plus pro Karte ein voller Beispielsatz-Kontext in `contextdata.locals.js`. Sie deckt den
-Grundwortschatz breit ab (Zahlen, Farben, Familie, Körper, Essen, Tiere, Stadt, Verben,
-Adjektive, Uhrzeit, Werkzeuge, Musik, Formen, Materialien, Tiere zu Wasser/Luft, Süßes,
-Gewürze, Maße, Frage- und Funktionswörter, Länder/Nationalitäten, Notfälle …), den
-Lernende neben den Arbeits-/Alltagssätzen brauchen.
+Die Gruppe **Vocabulario por temas (`loc-voc`)** ist eine reine **Vokabel-Sektion**
+(Einzelwörter statt Service-Sätze): 48 Themen-Kategorien. Darin auch das **núcleo**
+(`voc-nucleo` + `voc-acciones`): die häufigsten Funktions-/Kernwörter (Artikel,
+Präpositionen, Konjunktionen, Hochfrequenz-Adverbien, Quantoren, Modale, Kernverben),
+die in den thematischen Kategorien fehlen — das frequenzbasierte Fundament.
 
-Aktuell **109 Kategorien · 1614 Karten** (ein Schnellstart-Preset je Kategorie).
+Die Gruppe **Vocabulario B2 / avanzado (`loc-b2`)** hebt den Wortschatz auf **Niveau B2**
+(`lvl: 4` = „Experto"): 20 Kategorien mit fortgeschrittenem, abstrakterem und
+diskursivem Vokabular (Meinung/Argumentation, Konnektoren, Kollokationen, phrasal
+verbs, Arbeit/Wirtschaft, Gesellschaft/Umwelt …). Jede Karte trägt `es`/`en`/`tip`
+plus einen vollen Beispielsatz-Kontext in `contextdata.locals.js`.
+
+Aktuell **131 Kategorien · 2150 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 

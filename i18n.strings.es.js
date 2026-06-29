@@ -130,6 +130,7 @@
     catGroupLocTrab: "Trabajo y negocios",
     catGroupLocEsc: "Escuela y examen",
     catGroupLocVoc: "Vocabulario por temas",
+    catGroupLocB2: "Vocabulario B2 (avanzado)",
     sectionLevels: "Niveles",
     levelsAll: "Todos",
     levelsGroup: "Nivel de dificultad",
