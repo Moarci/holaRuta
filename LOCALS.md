@@ -89,6 +89,10 @@ der aktuellen:
 - **Curso inglés para TI** (`curso-tech`) – Standup/Status → Tickets/Code-Review → Meetings/Videollamadas → Entregas/Reportes.
 - **Curso de gramática** (`curso-gram`) – Artículos/Cantidades → Tiempos/Present perfect → Modales/Phrasal verbs → Falsos amigos/Pronunciación.
 - **Curso turismo avanzado** (`curso-tur-pro`) – Buceo/Senderismo → Aeropuerto/Mietwagen → Museo/Tour → Sicherheit/Notfälle auf Tour.
+- **Curso esencial: las 1000 palabras más usadas** (`curso-esencial`) – die **frequenzbasierten** 966
+  häufigsten Einzelwörter (núcleo + Grundwortschatz, ohne B2-Spezialvokabular), in vier Bändern nach
+  Gebrauchshäufigkeit geordnet: las 250 más usadas → 251–500 → 501–750 → 751–1000. Die Reihenfolge
+  stammt aus einem Frequenz-Ranking; mit ~1000 Kernwörtern erreicht man A2→B1 („etwas sprechen können").
 
 Über die Chip-Leiste in „Descubrir → Curso" umschaltbar (`pretripVM` filtert im Locals-
 Track auf `^curso`); im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten
