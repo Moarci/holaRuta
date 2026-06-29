@@ -133,6 +133,18 @@ export const IGNORE = [
   { file: "net.js", line: 81, op: "arithmetic", grund: "Backoff-Wartedauer (Exponent attempt-1), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
   { file: "net.js", line: 85, op: "number", grund: "Backoff-Wartedauer im Netzfehler-Retry (Math.pow-Basis/Exponent), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
   { file: "net.js", line: 85, op: "arithmetic", grund: "Backoff-Wartedauer im Netzfehler-Retry (* und Exponent), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
+  // badges.js (nach der Locals-Badge-Welt resampelt – nachweislich äquivalent)
+  { file: "badges.js", line: 344, op: "number", grund:
+    "buildMetrics: `categoryMastery[cat] = catTotal[cat] ? (catMastered[cat]||0)/catTotal[cat] : 0` (Fallback 0→1). " +
+    "Die Schleife läuft über Object.keys(catTotal); jeder dort vorhandene cat hat catTotal[cat] ≥ 1 (mind. eine Karte " +
+    "gezählt) → der `: 0`-Zweig ist unerreichbar. Für jede erreichbare Eingabe identisch → äquivalent." },
+  { file: "badges.js", line: 402, op: "number", grund:
+    "valueOf: `case 'allReviewed': return m.cardsReviewed || 0` (Default 0→1). Greift nur bei fehlendem cardsReviewed; " +
+    "isSatisfied('allReviewed') verlangt zusätzlich totalCards>0 UND value>=totalCards. Bei fehlendem cardsReviewed ist " +
+    "totalCards ebenfalls 0 → nie erfüllt; 0 vs 1 ändert das Ergebnis nicht → äquivalent." },
+  { file: "badges.js", line: 403, op: "number", grund:
+    "valueOf: `default: return 0` (0→1) ist der Fallback für unbekannte Badge-Typen. Alle definierten Badges nutzen " +
+    "counter/flag/categoryMastery/allReviewed → der default-Zweig ist unerreichbar → äquivalent." },
 ];
 
 export const isIgnored = (file, line, op) =>

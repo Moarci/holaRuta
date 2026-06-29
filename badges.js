@@ -291,8 +291,7 @@
   const LOC_BY_ID = LOC_BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
 
   function isLocalsTrack() {
-    try { return !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en"); }
-    catch (e) { return false; }
+    return !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
   }
   function activeBadges() { return isLocalsTrack() ? LOC_BADGES : BADGES; }
   function activeById(id) { return (isLocalsTrack() ? LOC_BY_ID : BY_ID)[id] || null; }
