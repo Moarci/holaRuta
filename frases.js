@@ -26,31 +26,38 @@
   const FRASES_SETS = [
     { id: "transporte",  label: "En la ruta",      icon: "lc:bus", lvl: 1,
       intro: "Bus, Taxi & Tickets – unterwegs von A nach B.",
-      introEn: "Bus, taxi & tickets – getting from A to B." },
+      introEn: "Bus, taxi & tickets – getting from A to B.",
+      introEs: "Bus, taxi y tiquetes: de un lugar a otro." },
     { id: "alojamiento", label: "En el hostal",    icon: "lc:bed", lvl: 1,
       intro: "Einchecken, Zimmer, WLAN und Gepäck.",
-      introEn: "Checking in, rooms, WiFi and luggage." },
+      introEn: "Checking in, rooms, WiFi and luggage.",
+      introEs: "Check-in, habitación, wifi y equipaje." },
     { id: "comida",      label: "Comida y bebida", icon: "lc:utensils", lvl: 1,
       intro: "Bestellen, empfehlen lassen und die Rechnung.",
-      introEn: "Ordering, getting recommendations and the bill." },
+      introEn: "Ordering, getting recommendations and the bill.",
+      introEs: "Pedir, pedir recomendaciones y la cuenta." },
     { id: "compras",     label: "Compras y dinero", icon: "lc:shopping-cart", lvl: 1,
       intro: "Einkaufen, handeln und bezahlen.",
-      introEn: "Shopping, haggling and paying." },
+      introEn: "Shopping, haggling and paying.",
+      introEs: "Comprar, regatear y pagar." },
     { id: "emergencia",  label: "Salud y emergencias", icon: "lc:life-buoy", lvl: 2,
       intro: "Beim Arzt, in der Apotheke und im Notfall.",
-      introEn: "At the doctor's, at the pharmacy and in an emergency." },
+      introEn: "At the doctor's, at the pharmacy and in an emergency.",
+      introEs: "En el médico, en la farmacia y en una emergencia." },
     { id: "social",      label: "Conocer gente",   icon: "lc:megaphone", lvl: 1,
       intro: "Smalltalk – Leute auf der Reise kennenlernen.",
-      introEn: "Small talk – getting to know people while travelling." },
+      introEn: "Small talk – getting to know people while travelling.",
+      introEs: "Charla ligera: conocer gente en el viaje." },
     { id: "orientacion", label: "Orientarse",      icon: "lc:compass", lvl: 1,
       intro: "Nach dem Weg fragen und sich zurechtfinden.",
-      introEn: "Asking for directions and finding your way around." },
+      introEn: "Asking for directions and finding your way around.",
+      introEs: "Pedir indicaciones y ubicarse." },
   ];
 
   const FRASES = [
     // ---------- En la ruta (Transport) ----------
     {
-      id: "tr01", cat: "transporte", frameEs: "¿Cuánto cuesta ___?", targetDe: "Wie viel kostet das Ticket?", targetEn: "How much does the ticket cost?",
+      id: "tr01", cat: "transporte", frameEs: "¿Cuánto cuesta ___?", frameEn: "How much does ___ cost?", targetDe: "Wie viel kostet das Ticket?", targetEn: "How much does the ticket cost?",
       slot: { es: "el boleto", de: "das Ticket", en: "the ticket" },
       distractors: [
         { es: "la habitación", de: "das Zimmer", en: "the room" },
@@ -59,7 +66,7 @@
       ],
     },
     {
-      id: "tr02", cat: "transporte", frameEs: "¿A qué hora ___?", targetDe: "Um wie viel Uhr fährt der Bus ab?", targetEn: "What time does the bus leave?",
+      id: "tr02", cat: "transporte", frameEs: "¿A qué hora ___?", frameEn: "What time ___?", targetDe: "Um wie viel Uhr fährt der Bus ab?", targetEn: "What time does the bus leave?",
       slot: { es: "sale el bus", de: "fährt der Bus ab", en: "does the bus leave" },
       distractors: [
         { es: "abren", de: "öffnen sie", en: "do they open" },
@@ -68,7 +75,7 @@
       ],
     },
     {
-      id: "tr03", cat: "transporte", frameEs: "Quiero un boleto para ___.", targetDe: "Ich möchte ein Ticket nach Bogotá.", targetEn: "I'd like a ticket to Bogotá.",
+      id: "tr03", cat: "transporte", frameEs: "Quiero un boleto para ___.", frameEn: "I'd like a ticket ___.", targetDe: "Ich möchte ein Ticket nach Bogotá.", targetEn: "I'd like a ticket to Bogotá.",
       slot: { es: "Bogotá", de: "nach Bogotá", en: "to Bogotá" },
       distractors: [
         { es: "el centro", de: "ins Zentrum", en: "to the centre" },
@@ -77,7 +84,7 @@
       ],
     },
     {
-      id: "tr04", cat: "transporte", frameEs: "¿Este bus va ___?", targetDe: "Fährt dieser Bus ins Zentrum?", targetEn: "Does this bus go to the centre?",
+      id: "tr04", cat: "transporte", frameEs: "¿Este bus va ___?", frameEn: "Does this bus go ___?", targetDe: "Fährt dieser Bus ins Zentrum?", targetEn: "Does this bus go to the centre?",
       slot: { es: "al centro", de: "ins Zentrum", en: "to the centre" },
       distractors: [
         { es: "a la playa", de: "zum Strand", en: "to the beach" },
@@ -86,7 +93,7 @@
       ],
     },
     {
-      id: "tr05", cat: "transporte", frameEs: "Pare en ___, por favor.", targetDe: "Halten Sie an der Ecke, bitte.", targetEn: "Stop at the corner, please.",
+      id: "tr05", cat: "transporte", frameEs: "Pare en ___, por favor.", frameEn: "Stop ___, please.", targetDe: "Halten Sie an der Ecke, bitte.", targetEn: "Stop at the corner, please.",
       slot: { es: "la esquina", de: "an der Ecke", en: "at the corner" },
       distractors: [
         { es: "el semáforo", de: "an der Ampel", en: "at the traffic lights" },
@@ -95,7 +102,7 @@
       ],
     },
     {
-      id: "tr06", cat: "transporte", frameEs: "¿Dónde puedo tomar ___?", targetDe: "Wo kann ich ein Taxi nehmen?", targetEn: "Where can I get a taxi?",
+      id: "tr06", cat: "transporte", frameEs: "¿Dónde puedo tomar ___?", frameEn: "Where can I get ___?", targetDe: "Wo kann ich ein Taxi nehmen?", targetEn: "Where can I get a taxi?",
       slot: { es: "un taxi", de: "ein Taxi", en: "a taxi" },
       distractors: [
         { es: "el metro", de: "die U-Bahn", en: "the underground" },
@@ -104,7 +111,7 @@
       ],
     },
     {
-      id: "tr07", cat: "transporte", frameEs: "El bus sale desde ___.", targetDe: "Der Bus fährt vom Busbahnhof ab.", targetEn: "The bus leaves from the bus station.",
+      id: "tr07", cat: "transporte", frameEs: "El bus sale desde ___.", frameEn: "The bus leaves ___.", targetDe: "Der Bus fährt vom Busbahnhof ab.", targetEn: "The bus leaves from the bus station.",
       slot: { es: "la terminal", de: "vom Busbahnhof", en: "from the bus station" },
       distractors: [
         { es: "el andén", de: "vom Bahnsteig", en: "from the platform" },
@@ -115,7 +122,7 @@
 
     // ---------- En el hostal (Unterkunft) ----------
     {
-      id: "al01", cat: "alojamiento", frameEs: "¿Tiene ___?", targetDe: "Haben Sie WLAN?", targetEn: "Do you have WiFi?",
+      id: "al01", cat: "alojamiento", frameEs: "¿Tiene ___?", frameEn: "Do you have ___?", targetDe: "Haben Sie WLAN?", targetEn: "Do you have WiFi?",
       slot: { es: "wifi", de: "WLAN", en: "WiFi" },
       distractors: [
         { es: "cambio", de: "Kleingeld", en: "small change" },
@@ -124,7 +131,7 @@
       ],
     },
     {
-      id: "al02", cat: "alojamiento", frameEs: "Quisiera reservar ___.", targetDe: "Ich möchte ein Bett reservieren.", targetEn: "I'd like to book a bed.",
+      id: "al02", cat: "alojamiento", frameEs: "Quisiera reservar ___.", frameEn: "I'd like to book ___.", targetDe: "Ich möchte ein Bett reservieren.", targetEn: "I'd like to book a bed.",
       slot: { es: "una cama", de: "ein Bett", en: "a bed" },
       distractors: [
         { es: "una habitación doble", de: "ein Doppelzimmer", en: "a double room" },
@@ -133,7 +140,7 @@
       ],
     },
     {
-      id: "al03", cat: "alojamiento", frameEs: "¿El desayuno está ___?", targetDe: "Ist das Frühstück inklusive?", targetEn: "Is breakfast included?",
+      id: "al03", cat: "alojamiento", frameEs: "¿El desayuno está ___?", frameEn: "Is breakfast ___?", targetDe: "Ist das Frühstück inklusive?", targetEn: "Is breakfast included?",
       slot: { es: "incluido", de: "inklusive", en: "included" },
       distractors: [
         { es: "listo", de: "fertig", en: "ready" },
@@ -142,7 +149,7 @@
       ],
     },
     {
-      id: "al04", cat: "alojamiento", frameEs: "¿A qué hora es ___?", targetDe: "Um wie viel Uhr ist der Checkout?", targetEn: "What time is checkout?",
+      id: "al04", cat: "alojamiento", frameEs: "¿A qué hora es ___?", frameEn: "What time is ___?", targetDe: "Um wie viel Uhr ist der Checkout?", targetEn: "What time is checkout?",
       slot: { es: "la salida", de: "der Checkout", en: "checkout" },
       distractors: [
         { es: "el desayuno", de: "das Frühstück", en: "breakfast" },
@@ -151,7 +158,7 @@
       ],
     },
     {
-      id: "al05", cat: "alojamiento", frameEs: "¿Puedo dejar ___ aquí?", targetDe: "Kann ich meinen Rucksack hier lassen?", targetEn: "Can I leave my backpack here?",
+      id: "al05", cat: "alojamiento", frameEs: "¿Puedo dejar ___ aquí?", frameEn: "Can I leave ___ here?", targetDe: "Kann ich meinen Rucksack hier lassen?", targetEn: "Can I leave my backpack here?",
       slot: { es: "mi mochila", de: "meinen Rucksack", en: "my backpack" },
       distractors: [
         { es: "la llave", de: "den Schlüssel", en: "the key" },
@@ -160,7 +167,7 @@
       ],
     },
     {
-      id: "al06", cat: "alojamiento", frameEs: "La habitación tiene ___.", targetDe: "Das Zimmer hat ein eigenes Bad.", targetEn: "The room has an en-suite bathroom.",
+      id: "al06", cat: "alojamiento", frameEs: "La habitación tiene ___.", frameEn: "The room has ___.", targetDe: "Das Zimmer hat ein eigenes Bad.", targetEn: "The room has an en-suite bathroom.",
       slot: { es: "baño privado", de: "ein eigenes Bad", en: "an en-suite bathroom" },
       distractors: [
         { es: "aire acondicionado", de: "eine Klimaanlage", en: "air conditioning" },
@@ -169,7 +176,7 @@
       ],
     },
     {
-      id: "al07", cat: "alojamiento", frameEs: "¿Hay ___ en el hostal?", targetDe: "Gibt es Spinde im Hostel?", targetEn: "Are there lockers in the hostel?",
+      id: "al07", cat: "alojamiento", frameEs: "¿Hay ___ en el hostal?", frameEn: "Are there ___ in the hostel?", targetDe: "Gibt es Spinde im Hostel?", targetEn: "Are there lockers in the hostel?",
       slot: { es: "casilleros", de: "Spinde", en: "lockers" },
       distractors: [
         { es: "cocina", de: "eine Küche", en: "a kitchen" },
@@ -180,7 +187,7 @@
 
     // ---------- Comida y bebida (Essen & Trinken) ----------
     {
-      id: "co01", cat: "comida", frameEs: "Quiero ___, por favor.", targetDe: "Ich möchte die Rechnung, bitte.", targetEn: "I'd like the bill, please.",
+      id: "co01", cat: "comida", frameEs: "Quiero ___, por favor.", frameEn: "I'd like ___, please.", targetDe: "Ich möchte die Rechnung, bitte.", targetEn: "I'd like the bill, please.",
       slot: { es: "la cuenta", de: "die Rechnung", en: "the bill" },
       distractors: [
         { es: "un café", de: "einen Kaffee", en: "a coffee" },
@@ -189,7 +196,7 @@
       ],
     },
     {
-      id: "co02", cat: "comida", frameEs: "Para mí ___, por favor.", targetDe: "Für mich ein stilles Wasser, bitte.", targetEn: "For me a still water, please.",
+      id: "co02", cat: "comida", frameEs: "Para mí ___, por favor.", frameEn: "For me ___, please.", targetDe: "Für mich ein stilles Wasser, bitte.", targetEn: "For me a still water, please.",
       slot: { es: "agua sin gas", de: "ein stilles Wasser", en: "a still water" },
       distractors: [
         { es: "un jugo", de: "einen Saft", en: "a juice" },
@@ -198,7 +205,7 @@
       ],
     },
     {
-      id: "co03", cat: "comida", frameEs: "¿Qué me ___?", targetDe: "Was empfehlen Sie mir?", targetEn: "What do you recommend?",
+      id: "co03", cat: "comida", frameEs: "¿Qué me ___?", frameEn: "What ___?", targetDe: "Was empfehlen Sie mir?", targetEn: "What do you recommend?",
       slot: { es: "recomienda", de: "empfehlen Sie", en: "do you recommend" },
       distractors: [
         { es: "trae", de: "bringen Sie", en: "do you bring" },
@@ -207,7 +214,7 @@
       ],
     },
     {
-      id: "co04", cat: "comida", frameEs: "¿Esto lleva ___?", targetDe: "Ist da Fleisch drin?", targetEn: "Does this have meat in it?",
+      id: "co04", cat: "comida", frameEs: "¿Esto lleva ___?", frameEn: "Does this have ___ in it?", targetDe: "Ist da Fleisch drin?", targetEn: "Does this have meat in it?",
       slot: { es: "carne", de: "Fleisch", en: "meat" },
       distractors: [
         { es: "picante", de: "Schärfe", en: "spice" },
@@ -216,7 +223,7 @@
       ],
     },
     {
-      id: "co05", cat: "comida", frameEs: "Soy ___, ¿qué hay?", targetDe: "Ich bin Vegetarier, was gibt es?", targetEn: "I'm vegetarian, what is there?",
+      id: "co05", cat: "comida", frameEs: "Soy ___, ¿qué hay?", frameEn: "I'm ___, what is there?", targetDe: "Ich bin Vegetarier, was gibt es?", targetEn: "I'm vegetarian, what is there?",
       slot: { es: "vegetariano", de: "Vegetarier", en: "vegetarian" },
       distractors: [
         { es: "alérgico", de: "allergisch", en: "allergic" },
@@ -225,7 +232,7 @@
       ],
     },
     {
-      id: "co06", cat: "comida", frameEs: "La cuenta ___, por favor.", targetDe: "Die Rechnung getrennt, bitte.", targetEn: "Separate bills, please.",
+      id: "co06", cat: "comida", frameEs: "La cuenta ___, por favor.", frameEn: "The bill ___, please.", targetDe: "Die Rechnung getrennt, bitte.", targetEn: "Separate bills, please.",
       slot: { es: "separada", de: "getrennt", en: "separate" },
       distractors: [
         { es: "completa", de: "komplett", en: "all together" },
@@ -234,7 +241,7 @@
       ],
     },
     {
-      id: "co07", cat: "comida", frameEs: "¿Me trae ___?", targetDe: "Bringen Sie mir die Speisekarte?", targetEn: "Could you bring me the menu?",
+      id: "co07", cat: "comida", frameEs: "¿Me trae ___?", frameEn: "Could you bring me ___?", targetDe: "Bringen Sie mir die Speisekarte?", targetEn: "Could you bring me the menu?",
       slot: { es: "el menú", de: "die Speisekarte", en: "the menu" },
       distractors: [
         { es: "la sal", de: "das Salz", en: "the salt" },
@@ -245,7 +252,7 @@
 
     // ---------- Compras y dinero (Einkaufen & Geld) ----------
     {
-      id: "cp01", cat: "compras", frameEs: "Me gustaría ___.", targetDe: "Ich würde gern mit Karte bezahlen.", targetEn: "I'd like to pay by card.",
+      id: "cp01", cat: "compras", frameEs: "Me gustaría ___.", frameEn: "I'd like ___.", targetDe: "Ich würde gern mit Karte bezahlen.", targetEn: "I'd like to pay by card.",
       slot: { es: "pagar con tarjeta", de: "mit Karte bezahlen", en: "to pay by card" },
       distractors: [
         { es: "reservar una cama", de: "ein Bett reservieren", en: "to book a bed" },
@@ -254,7 +261,7 @@
       ],
     },
     {
-      id: "cp02", cat: "compras", frameEs: "¿Me hace ___?", targetDe: "Geben Sie mir einen Rabatt?", targetEn: "Could you give me a discount?",
+      id: "cp02", cat: "compras", frameEs: "¿Me hace ___?", frameEn: "Could you give me ___?", targetDe: "Geben Sie mir einen Rabatt?", targetEn: "Could you give me a discount?",
       slot: { es: "un descuento", de: "einen Rabatt", en: "a discount" },
       distractors: [
         { es: "un favor", de: "einen Gefallen", en: "a favour" },
@@ -263,7 +270,7 @@
       ],
     },
     {
-      id: "cp03", cat: "compras", frameEs: "Solo estoy ___.", targetDe: "Ich schaue nur.", targetEn: "I'm just looking.",
+      id: "cp03", cat: "compras", frameEs: "Solo estoy ___.", frameEn: "I'm just ___.", targetDe: "Ich schaue nur.", targetEn: "I'm just looking.",
       slot: { es: "mirando", de: "am Schauen", en: "looking" },
       distractors: [
         { es: "pagando", de: "am Bezahlen", en: "paying" },
@@ -272,7 +279,7 @@
       ],
     },
     {
-      id: "cp04", cat: "compras", frameEs: "¿Tiene esto en ___?", targetDe: "Haben Sie das in einer anderen Größe?", targetEn: "Do you have this in another size?",
+      id: "cp04", cat: "compras", frameEs: "¿Tiene esto en ___?", frameEn: "Do you have this in ___?", targetDe: "Haben Sie das in einer anderen Größe?", targetEn: "Do you have this in another size?",
       slot: { es: "otra talla", de: "einer anderen Größe", en: "another size" },
       distractors: [
         { es: "otro color", de: "einer anderen Farbe", en: "another colour" },
@@ -281,7 +288,7 @@
       ],
     },
     {
-      id: "cp05", cat: "compras", frameEs: "¿Puedo pagar ___?", targetDe: "Kann ich in bar bezahlen?", targetEn: "Can I pay in cash?",
+      id: "cp05", cat: "compras", frameEs: "¿Puedo pagar ___?", frameEn: "Can I pay ___?", targetDe: "Kann ich in bar bezahlen?", targetEn: "Can I pay in cash?",
       slot: { es: "en efectivo", de: "in bar", en: "in cash" },
       distractors: [
         { es: "con tarjeta", de: "mit Karte", en: "by card" },
@@ -290,7 +297,7 @@
       ],
     },
     {
-      id: "cp06", cat: "compras", frameEs: "¿Me da ___, por favor?", targetDe: "Geben Sie mir eine Tüte, bitte?", targetEn: "Could you give me a bag, please?",
+      id: "cp06", cat: "compras", frameEs: "¿Me da ___, por favor?", frameEn: "Could you give me ___, please?", targetDe: "Geben Sie mir eine Tüte, bitte?", targetEn: "Could you give me a bag, please?",
       slot: { es: "una bolsa", de: "eine Tüte", en: "a bag" },
       distractors: [
         { es: "el recibo", de: "den Kassenbon", en: "the receipt" },
@@ -299,7 +306,7 @@
       ],
     },
     {
-      id: "cp07", cat: "compras", frameEs: "¿Dónde está ___?", targetDe: "Wo ist die Kasse?", targetEn: "Where is the till?",
+      id: "cp07", cat: "compras", frameEs: "¿Dónde está ___?", frameEn: "Where is ___?", targetDe: "Wo ist die Kasse?", targetEn: "Where is the till?",
       slot: { es: "la caja", de: "die Kasse", en: "the till" },
       distractors: [
         { es: "la entrada", de: "der Eingang", en: "the entrance" },
@@ -310,7 +317,7 @@
 
     // ---------- Salud y emergencias (Gesundheit & Notfall) ----------
     {
-      id: "em01", cat: "emergencia", frameEs: "Necesito ___.", targetDe: "Ich brauche einen Arzt.", targetEn: "I need a doctor.",
+      id: "em01", cat: "emergencia", frameEs: "Necesito ___.", frameEn: "I need ___.", targetDe: "Ich brauche einen Arzt.", targetEn: "I need a doctor.",
       slot: { es: "un médico", de: "einen Arzt", en: "a doctor" },
       distractors: [
         { es: "un taxi", de: "ein Taxi", en: "a taxi" },
@@ -319,7 +326,7 @@
       ],
     },
     {
-      id: "em02", cat: "emergencia", frameEs: "Me duele ___.", targetDe: "Mein Bauch tut weh.", targetEn: "My stomach hurts.",
+      id: "em02", cat: "emergencia", frameEs: "Me duele ___.", frameEn: "My ___ hurts.", targetDe: "Mein Bauch tut weh.", targetEn: "My stomach hurts.",
       slot: { es: "el estómago", de: "der Bauch", en: "stomach" },
       distractors: [
         { es: "la cabeza", de: "der Kopf", en: "head" },
@@ -328,7 +335,7 @@
       ],
     },
     {
-      id: "em03", cat: "emergencia", frameEs: "Soy alérgico ___.", targetDe: "Ich bin allergisch gegen Penicillin.", targetEn: "I'm allergic to penicillin.",
+      id: "em03", cat: "emergencia", frameEs: "Soy alérgico ___.", frameEn: "I'm allergic ___.", targetDe: "Ich bin allergisch gegen Penicillin.", targetEn: "I'm allergic to penicillin.",
       slot: { es: "a la penicilina", de: "gegen Penicillin", en: "to penicillin" },
       distractors: [
         { es: "a los mariscos", de: "gegen Meeresfrüchte", en: "to seafood" },
@@ -337,7 +344,7 @@
       ],
     },
     {
-      id: "em04", cat: "emergencia", frameEs: "Llame a ___, por favor.", targetDe: "Rufen Sie einen Krankenwagen, bitte.", targetEn: "Call an ambulance, please.",
+      id: "em04", cat: "emergencia", frameEs: "Llame a ___, por favor.", frameEn: "Call ___, please.", targetDe: "Rufen Sie einen Krankenwagen, bitte.", targetEn: "Call an ambulance, please.",
       slot: { es: "una ambulancia", de: "einen Krankenwagen", en: "an ambulance" },
       distractors: [
         { es: "la policía", de: "die Polizei", en: "the police" },
@@ -346,7 +353,7 @@
       ],
     },
     {
-      id: "em05", cat: "emergencia", frameEs: "Necesito ___ para el dolor.", targetDe: "Ich brauche ein Medikament gegen die Schmerzen.", targetEn: "I need some medicine for the pain.",
+      id: "em05", cat: "emergencia", frameEs: "Necesito ___ para el dolor.", frameEn: "I need ___ for the pain.", targetDe: "Ich brauche ein Medikament gegen die Schmerzen.", targetEn: "I need some medicine for the pain.",
       slot: { es: "un medicamento", de: "ein Medikament", en: "some medicine" },
       distractors: [
         { es: "una receta", de: "ein Rezept", en: "a prescription" },
@@ -355,7 +362,7 @@
       ],
     },
     {
-      id: "em06", cat: "emergencia", frameEs: "Perdí ___.", targetDe: "Ich habe meinen Pass verloren.", targetEn: "I've lost my passport.",
+      id: "em06", cat: "emergencia", frameEs: "Perdí ___.", frameEn: "I've lost ___.", targetDe: "Ich habe meinen Pass verloren.", targetEn: "I've lost my passport.",
       slot: { es: "mi pasaporte", de: "meinen Pass", en: "my passport" },
       distractors: [
         { es: "mi celular", de: "mein Handy", en: "my phone" },
@@ -364,7 +371,7 @@
       ],
     },
     {
-      id: "em07", cat: "emergencia", frameEs: "¿Dónde hay ___?", targetDe: "Wo gibt es eine Apotheke?", targetEn: "Where is there a pharmacy?",
+      id: "em07", cat: "emergencia", frameEs: "¿Dónde hay ___?", frameEn: "Where is there ___?", targetDe: "Wo gibt es eine Apotheke?", targetEn: "Where is there a pharmacy?",
       slot: { es: "una farmacia", de: "eine Apotheke", en: "a pharmacy" },
       distractors: [
         { es: "un hospital", de: "ein Krankenhaus", en: "a hospital" },
@@ -375,7 +382,7 @@
 
     // ---------- Conocer gente (Smalltalk) ----------
     {
-      id: "so01", cat: "social", frameEs: "¿Me puede ___?", targetDe: "Können Sie mir helfen?", targetEn: "Can you help me?",
+      id: "so01", cat: "social", frameEs: "¿Me puede ___?", frameEn: "Can you ___?", targetDe: "Können Sie mir helfen?", targetEn: "Can you help me?",
       slot: { es: "ayudar", de: "helfen", en: "help" },
       distractors: [
         { es: "recomendar algo", de: "etwas empfehlen", en: "recommend something" },
@@ -384,7 +391,7 @@
       ],
     },
     {
-      id: "so02", cat: "social", frameEs: "¿De ___ eres?", targetDe: "Woher kommst du?", targetEn: "Where are you from?",
+      id: "so02", cat: "social", frameEs: "¿De ___ eres?", frameEn: "___ are you from?", targetDe: "Woher kommst du?", targetEn: "Where are you from?",
       slot: { es: "dónde", de: "woher", en: "where" },
       distractors: [
         { es: "quién", de: "wer", en: "who" },
@@ -393,7 +400,7 @@
       ],
     },
     {
-      id: "so03", cat: "social", frameEs: "¿Cómo te ___?", targetDe: "Wie heißt du?", targetEn: "What's your name?",
+      id: "so03", cat: "social", frameEs: "¿Cómo te ___?", frameEn: "How ___?", targetDe: "Wie heißt du?", targetEn: "What's your name?",
       slot: { es: "llamas", de: "heißt du", en: "are you called" },
       distractors: [
         { es: "sientes", de: "fühlst du dich", en: "do you feel" },
@@ -402,7 +409,7 @@
       ],
     },
     {
-      id: "so04", cat: "social", frameEs: "Mucho ___.", targetDe: "Sehr erfreut.", targetEn: "Pleased to meet you.",
+      id: "so04", cat: "social", frameEs: "Mucho ___.", frameEn: "___ to meet you.", targetDe: "Sehr erfreut.", targetEn: "Pleased to meet you.",
       slot: { es: "gusto", de: "erfreut", en: "pleased" },
       distractors: [
         { es: "tiempo", de: "Zeit", en: "time" },
@@ -411,7 +418,7 @@
       ],
     },
     {
-      id: "so05", cat: "social", frameEs: "¿Quieres ___ algo?", targetDe: "Willst du etwas trinken?", targetEn: "Do you want to drink something?",
+      id: "so05", cat: "social", frameEs: "¿Quieres ___ algo?", frameEn: "Do you want to ___ something?", targetDe: "Willst du etwas trinken?", targetEn: "Do you want to drink something?",
       slot: { es: "tomar", de: "trinken", en: "drink" },
       distractors: [
         { es: "comer", de: "essen", en: "eat" },
@@ -420,7 +427,7 @@
       ],
     },
     {
-      id: "so06", cat: "social", frameEs: "¿Me das tu ___?", targetDe: "Gibst du mir deine Nummer?", targetEn: "Will you give me your number?",
+      id: "so06", cat: "social", frameEs: "¿Me das tu ___?", frameEn: "Will you give me your ___?", targetDe: "Gibst du mir deine Nummer?", targetEn: "Will you give me your number?",
       slot: { es: "número", de: "Nummer", en: "number" },
       distractors: [
         { es: "nombre", de: "Namen", en: "name" },
@@ -429,7 +436,7 @@
       ],
     },
     {
-      id: "so07", cat: "social", frameEs: "¿Vamos a ___?", targetDe: "Gehen wir tanzen?", targetEn: "Shall we go dancing?",
+      id: "so07", cat: "social", frameEs: "¿Vamos a ___?", frameEn: "Shall we go ___?", targetDe: "Gehen wir tanzen?", targetEn: "Shall we go dancing?",
       slot: { es: "bailar", de: "tanzen", en: "dance" },
       distractors: [
         { es: "comer", de: "essen", en: "eat" },
@@ -440,7 +447,7 @@
 
     // ---------- Orientarse (Orientierung) ----------
     {
-      id: "or01", cat: "orientacion", frameEs: "¿Dónde está ___?", targetDe: "Wo ist die Bushaltestelle?", targetEn: "Where is the bus stop?",
+      id: "or01", cat: "orientacion", frameEs: "¿Dónde está ___?", frameEn: "Where is ___?", targetDe: "Wo ist die Bushaltestelle?", targetEn: "Where is the bus stop?",
       slot: { es: "la parada", de: "die Haltestelle", en: "the bus stop" },
       distractors: [
         { es: "el cajero", de: "der Geldautomat", en: "the cash machine" },
@@ -449,7 +456,7 @@
       ],
     },
     {
-      id: "or02", cat: "orientacion", frameEs: "¿Está ___ de aquí?", targetDe: "Ist es weit von hier?", targetEn: "Is it far from here?",
+      id: "or02", cat: "orientacion", frameEs: "¿Está ___ de aquí?", frameEn: "Is it ___ from here?", targetDe: "Ist es weit von hier?", targetEn: "Is it far from here?",
       slot: { es: "lejos", de: "weit", en: "far" },
       distractors: [
         { es: "cerca", de: "nah", en: "near" },
@@ -458,7 +465,7 @@
       ],
     },
     {
-      id: "or03", cat: "orientacion", frameEs: "Siga ___.", targetDe: "Gehen Sie geradeaus.", targetEn: "Carry straight on.",
+      id: "or03", cat: "orientacion", frameEs: "Siga ___.", frameEn: "Go ___.", targetDe: "Gehen Sie geradeaus.", targetEn: "Carry straight on.",
       slot: { es: "derecho", de: "geradeaus", en: "straight on" },
       distractors: [
         { es: "a la derecha", de: "nach rechts", en: "to the right" },
@@ -467,7 +474,7 @@
       ],
     },
     {
-      id: "or04", cat: "orientacion", frameEs: "Doble ___.", targetDe: "Biegen Sie nach links ab.", targetEn: "Turn left.",
+      id: "or04", cat: "orientacion", frameEs: "Doble ___.", frameEn: "Turn ___.", targetDe: "Biegen Sie nach links ab.", targetEn: "Turn left.",
       slot: { es: "a la izquierda", de: "nach links", en: "left" },
       distractors: [
         { es: "a la derecha", de: "nach rechts", en: "right" },
@@ -476,7 +483,7 @@
       ],
     },
     {
-      id: "or05", cat: "orientacion", frameEs: "¿Cómo llego ___?", targetDe: "Wie komme ich zum Zentrum?", targetEn: "How do I get to the centre?",
+      id: "or05", cat: "orientacion", frameEs: "¿Cómo llego ___?", frameEn: "How do I get ___?", targetDe: "Wie komme ich zum Zentrum?", targetEn: "How do I get to the centre?",
       slot: { es: "al centro", de: "zum Zentrum", en: "to the centre" },
       distractors: [
         { es: "a la playa", de: "zum Strand", en: "to the beach" },
@@ -485,7 +492,7 @@
       ],
     },
     {
-      id: "or06", cat: "orientacion", frameEs: "Está a ___ minutos.", targetDe: "Es ist fünf Minuten entfernt.", targetEn: "It's five minutes away.",
+      id: "or06", cat: "orientacion", frameEs: "Está a ___ minutos.", frameEn: "It's ___ minutes away.", targetDe: "Es ist fünf Minuten entfernt.", targetEn: "It's five minutes away.",
       slot: { es: "cinco", de: "fünf", en: "five" },
       distractors: [
         { es: "diez", de: "zehn", en: "ten" },
@@ -494,7 +501,7 @@
       ],
     },
     {
-      id: "or07", cat: "orientacion", frameEs: "¿Me lo muestra en ___?", targetDe: "Zeigen Sie es mir auf der Karte?", targetEn: "Could you show me on the map?",
+      id: "or07", cat: "orientacion", frameEs: "¿Me lo muestra en ___?", frameEn: "Could you show me on ___?", targetDe: "Zeigen Sie es mir auf der Karte?", targetEn: "Could you show me on the map?",
       slot: { es: "el mapa", de: "der Karte", en: "the map" },
       distractors: [
         { es: "el celular", de: "dem Handy", en: "the phone" },

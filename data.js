@@ -3467,13 +3467,16 @@
   const QUIZ_SETS = [
     { id: "ciudad", label: "En la ciudad", icon: "🏙️", lvl: 1,
       intro: "Lies die Definition und wähle den richtigen Ort in der Stadt.",
-      introEn: "Read the definition and pick the right place in the city." },
+      introEn: "Read the definition and pick the right place in the city.",
+      introEs: "Lee la definición y elige el lugar correcto de la ciudad." },
     { id: "ruta", label: "En la ruta", icon: "🎒", lvl: 1,
       intro: "Orte, die du als Backpacker unterwegs ständig brauchst.",
-      introEn: "Places you'll need all the time as a backpacker on the road." },
+      introEn: "Places you'll need all the time as a backpacker on the road.",
+      introEs: "Lugares que necesitas todo el tiempo como mochilero en la ruta." },
     { id: "comida", label: "La comida", icon: "🍽️", lvl: 1,
       intro: "Lies die Definition und wähle das passende Essen oder Getränk.",
-      introEn: "Read the definition and pick the matching food or drink." },
+      introEn: "Read the definition and pick the matching food or drink.",
+      introEs: "Lee la definición y elige la comida o bebida correcta." },
   ];
 
   const QUIZ_DEFS = [

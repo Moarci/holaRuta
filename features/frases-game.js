@@ -17,6 +17,10 @@
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
+  // Gelernte Sprache des aktiven Tracks: Reise "es", Locals "en" (Muster wie
+  // dialogos-game). Steuert Rahmen (frameEs/frameEn), Bausteine und Zielbedeutung.
+  const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+
   // Virtuelle "Gemischt"-Id: spielt alle Rahmen quer durch alle Themen.
   const FRASES_ALL = "all";
   const frasesById = (id) => { const f = ctx.frases; return (f ? f.FRASES.find((x) => x.id === id) : null) || null; };
@@ -62,8 +66,12 @@
     const frame = frasesById(f.queue[f.idx]);
     const answered = f.selected !== null;
     const info = frasesSetInfo(f.setId);
+    const ll = trackLearnLang();
+    // Primärzeile der Bausteine = gelernte Sprache; Sekundärzeile die andere Seite.
+    const primary = (o) => (ll === "en" ? o.en : o.es) || "";
+    const secondary = (o) => (ll === "en" ? o.es : nat(o)) || "";
     const options = f.options.map((o, i) => ({
-      es: o.es, de: nat(o),
+      es: primary(o), de: secondary(o),
       // vor der Antwort neutral; danach Lösung grün, falsche Wahl rot, Rest gedämpft.
       state: !answered ? "idle"
         : o.correct ? "correct"
@@ -71,14 +79,22 @@
         : "dim",
     }));
     const sol = f.options.find((o) => o.correct) || {};
+    // Locals baut den englischen Satz (frameEn) zur spanischen Zielbedeutung
+    // (vollständiger spanischer Satz = frameEs mit korrektem Baustein); Reise
+    // unverändert: frameEs + muttersprachliche Zielbedeutung (targetDe/En).
+    const frameShown = !frame ? "" : (ll === "en" ? (frame.frameEn || frame.frameEs) : frame.frameEs);
+    const target = !frame ? "" : (ll === "en"
+      ? frame.frameEs.replace("___", (frame.slot && frame.slot.es) || "")
+      : natk(frame, "targetDe"));
     return {
       setLabel: info.label, setIcon: info.icon,
+      lang: ll,
       position: f.idx, total: f.total,
-      frameEs: frame ? frame.frameEs : "",
-      targetDe: frame ? natk(frame, "targetDe") : "",
+      frameEs: frameShown,
+      targetDe: target,
       options, answered,
       isCorrect: answered && !!(f.options[f.selected] && f.options[f.selected].correct),
-      solutionEs: sol.es, solutionDe: nat(sol),
+      solutionEs: primary(sol), solutionDe: secondary(sol),
       isLast: f.idx >= f.total - 1,
     };
   }
@@ -194,7 +210,7 @@
         return `
           <button class="${cls}" type="button" data-action="frases-answer" data-idx="${i}"${dis}>
             <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+              <span class="quiz-opt__es" lang="${esc(vm.lang)}">${esc(o.es)}</span>
               <span class="quiz-opt__de">${esc(o.de)}</span>
             </span>
             ${mark}
@@ -220,7 +236,7 @@
         <div class="quiz-def">
           <span class="quiz-def__cap">${esc(t("discover.frasesBuild"))}</span>
           <p class="frases-target">${esc(vm.targetDe)}</p>
-          <p class="quiz-def__text frases-frame" lang="es">${frameHtml}</p>
+          <p class="quiz-def__text frases-frame" lang="${esc(vm.lang)}">${frameHtml}</p>
         </div>
         <div class="quiz-opts">${options}</div>
         ${feedback}

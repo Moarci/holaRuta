@@ -44,11 +44,15 @@
   const countryById = (id) => allCountries().find((c) => c.id === id) || null;
 
   const isEn = () => !!(ctx.i18n && ctx.i18n.getLang && ctx.i18n.getLang() === "en");
+  // Banderas-Daten tragen nur deutsche Inhalte + …En-Pendants (keine …Es-Felder).
+  // Unter jeder Nicht-DE-Oberfläche (Englisch ODER Spanisch im Locals-Track) ist
+  // das englische Feld der passende Wert; nur die deutsche UI nimmt den de-Wert.
+  const preferEn = () => !!(ctx.i18n && ctx.i18n.getLang && ctx.i18n.getLang() !== "de");
   // Lokaler Ländername in UI-Sprache (Spanisch bleibt der Hauptname im Quiz).
-  const localName = (c) => (isEn() ? c.en : c.de);
-  const symText = (c) => (isEn() ? c.symEn : c.sym);
-  const factText = (c) => (isEn() ? c.factEn : c.fact);
-  const colorsText = (c) => (isEn() && c.colorsEn ? c.colorsEn : c.colors);
+  const localName = (c) => (preferEn() ? c.en : c.de);
+  const symText = (c) => (preferEn() ? c.symEn : c.sym);
+  const factText = (c) => (preferEn() ? c.factEn : c.fact);
+  const colorsText = (c) => (preferEn() && c.colorsEn ? c.colorsEn : c.colors);
 
   // Antwort-Optionen bauen: das richtige Land + bis zu 3 Ablenker aus derselben
   // Menge (gleiche Region = angemessen schwer), dann gemischt. Einmal beim Stellen
@@ -108,7 +112,7 @@
     const loc = (v) => (ctx.i18n ? ctx.i18n.localizeDeep(v) : v);
     if (!b) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
     return {
-      intro: (isEn() && b.INTRO_EN) ? b.INTRO_EN : b.INTRO,
+      intro: (preferEn() && b.INTRO_EN) ? b.INTRO_EN : b.INTRO,
       topics: loc(b.TOPICS || []),
       phrases: loc(b.PHRASES || []),
       glossary: loc(b.GLOSSARY || []),

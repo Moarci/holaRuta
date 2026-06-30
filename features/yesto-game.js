@@ -23,8 +23,18 @@
   const YESTO_COUNT_FROM = 3; // Start des Countdowns (3 → 2 → 1 → Auflösung)
   const yestoReady = () => { const y = ctx.yesto; return !!(y && y.THEMES && y.THEMES.length); };
 
-  // Themen-Label in der aktiven UI-Sprache (label/labelEn via nativeText).
-  function natTheme(th) { return ctx.i18n.nativeText({ de: th.label, en: th.labelEn }); }
+  // Gelernte Sprache des aktiven Tracks: Reise "es", Locals "en" (Muster wie
+  // dialogos-game). Steuert, welches Feld das „Lösungswort" ist und ob der
+  // Countdown „auf Spanisch" oder „auf Englisch" fragt.
+  const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+  // i18n-Key track-abhängig: im Locals-Track die …Locals-Variante (fragt nach
+  // „auf Englisch"), sonst der Reise-Key.
+  const tKey = (key) => (trackLearnLang() === "en" ? key + "Locals" : key);
+
+  // Themen-Label in der aktiven UI-Sprache. Das Daten-`label` ist bereits Spanisch
+  // (z. B. „Comida"), `labelEn` die englische Variante. Nur die englische UI nimmt
+  // `labelEn`; de- und es-Oberfläche zeigen das spanische `label`.
+  function natTheme(th) { return (ctx.i18n.getLang && ctx.i18n.getLang() === "en" && th.labelEn) ? th.labelEn : th.label; }
 
   // ----- View-Modelle -----
   function yestoSetupVM() {
@@ -40,14 +50,23 @@
   function yestoVM() {
     const y = ctx.state.yesto;
     const item = (y && y.queue[y.idx]) || {};
+    const ll = trackLearnLang();
+    // Lösungswort = gelernte Sprache (Reise: spanisch, Locals: englisch); die
+    // Hilfszeile darunter zeigt die jeweils andere Seite (Locals: das spanische
+    // Wort; Reise: die muttersprachliche Übersetzung de/en).
+    const word = (ll === "en" ? item.en : item.es) || "";
+    const native = ll === "en"
+      ? (item.es || "")
+      : (ctx.i18n.nativeText({ de: item.de, en: item.en }) || "");
     return {
       position: y ? y.idx : 0,
       total: y ? y.total : 0,
       phase: y ? y.phase : "count",
       count: y ? y.count : 0,
       emoji: item.emoji || "",
-      es: item.es || "",
-      native: ctx.i18n.nativeText({ de: item.de, en: item.en }) || "",
+      word,
+      lang: ll,
+      native,
       isLast: y ? y.idx >= y.total - 1 : true,
     };
   }
@@ -168,7 +187,7 @@
     return `
       <section class="screen">
         ${hmTopbar(`${renderIcon("lc:eye")} ¿Y esto?`, "home")}
-        <p class="hm-intro">${esc(t("discover.yeIntro"))}</p>
+        <p class="hm-intro">${esc(t("discover." + tKey("yeIntro")))}</p>
         ${moduleShareBtn("yesto")}
         <h3 class="prc-head">${esc(t("discover.yeChooseTheme"))}</h3>
         <div class="ye-themes">${themes}</div>
@@ -180,17 +199,17 @@
     const pct = vm.total > 0 ? Math.round((shown / vm.total) * 100) : 0;
     const stage = vm.phase !== "reveal"
       ? `
-        <div class="ye-stage" role="group" aria-label="${esc(t("discover.yePromptHint"))}">
+        <div class="ye-stage" role="group" aria-label="${esc(t("discover." + tKey("yePromptHint")))}">
           <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
           <div class="ye-q">¿Y esto?</div>
-          <div class="ye-think">${esc(t("discover.yePromptHint"))}</div>
+          <div class="ye-think">${esc(t("discover." + tKey("yePromptHint")))}</div>
           <div class="ye-count" aria-hidden="true"><span class="ye-count__num">${esc(String(vm.count))}</span></div>
         </div>
         <button class="cta cta--ghost" data-action="yesto-reveal">${esc(t("discover.yeReveal"))}</button>`
       : `
         <div class="ye-stage is-reveal" role="status" aria-live="assertive">
           <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
-          <div class="ye-word" lang="es">${esc(vm.es)}</div>
+          <div class="ye-word" lang="${esc(vm.lang)}">${esc(vm.word)}</div>
           <div class="ye-native">${esc(vm.native)}</div>
         </div>
         <div class="ye-rate">
