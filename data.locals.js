@@ -345,7 +345,7 @@
     // --- de compras (Kundensicht) ---
     { id: "loc-com01", cat: "compras-en", lvl: 1, es: "¿Cuánto cuesta esto?", en: "How much is this?", tip: "jau MOCH is dis" },
     { id: "loc-com02", cat: "compras-en", lvl: 2, es: "¿Tienen una talla más grande?", en: "Do you have a bigger size?", tip: "du yu jav a BÍ-guer sais" },
-    { id: "loc-com03", cat: "compras-en", lvl: 2, es: "Solo estoy mirando, gracias.", en: "I'm just looking, thanks.", tip: "aim yost LÚ-king zenks" },
+    { id: "loc-com03", cat: "compras-en", lvl: 2, es: "Solo estoy mirando, gracias.", en: "I'm just looking, thanks.", tip: "aim yast LÚ-king zenks" },
     { id: "loc-com04", cat: "compras-en", lvl: 1, es: "¿Puedo probármelo?", en: "Can I try it on?", tip: "can ai TRÁI it on" },
     { id: "loc-com05", cat: "compras-en", lvl: 1, es: "¿Aceptan tarjeta?", en: "Do you take card?", tip: "du yu TÉIK card" },
     { id: "loc-com06", cat: "compras-en", lvl: 1, es: "¿Me da una bolsa, por favor?", en: "Can I have a bag, please?", tip: "can ai jav a BAG plis" },
@@ -558,7 +558,7 @@
     // --- banco y dinero (Forts.) ---
     { id: "loc-din11", cat: "dinero-en", lvl: 2, es: "El cajero no tiene billetes.", en: "The ATM is out of cash.", tip: "di ei-ti-ÉM is aut of CASH" },
     { id: "loc-din12", cat: "dinero-en", lvl: 2, es: "¿Puedo dividir el pago?", en: "Can I split the payment?", tip: "can ai SPLIT da PÉI-ment" },
-    { id: "loc-din13", cat: "dinero-en", lvl: 2, es: "¿Hacen cambio de moneda?", en: "Do you exchange currency?", tip: "du yu eks-CHÉINCH QUÉ-ren-si" },
+    { id: "loc-din13", cat: "dinero-en", lvl: 2, es: "¿Hacen cambio de moneda?", en: "Do you exchange currency?", tip: "du yu eks-CHÉINCH KÉR-ren-si" },
     { id: "loc-din14", cat: "dinero-en", lvl: 1, es: "Necesito sacar efectivo.", en: "I need to withdraw cash.", tip: "ai nid tu wid-DRÓ cash" },
     // --- transporte público (Forts.) ---
     { id: "loc-tra09", cat: "transporte-en", lvl: 2, es: "¿Cada cuánto pasa el bus?", en: "How often does the bus come?", tip: "jau Ó-fen dos da BOS com" },
@@ -1097,13 +1097,13 @@
     { id: "loc-del06", cat: "delivery-en", lvl: 1, es: "Su pedido llega en diez minutos.", en: "Your order arrives in ten minutes.", tip: "yor OR-der a-RÁIVS in ten MÍ-nits" },
     { id: "loc-del07", cat: "delivery-en", lvl: 2, es: "¿Paga en efectivo o tarjeta?", en: "Cash or card?", tip: "cash or CARD" },
     { id: "loc-del08", cat: "delivery-en", lvl: 1, es: "Lo dejo en la puerta.", en: "I'll leave it at the door.", tip: "ail liv it at da DOR" },
-    { id: "loc-del09", cat: "delivery-en", lvl: 1, es: "Estoy abajo.", en: "I'm downstairs.", tip: "aim DÁUN-sters" },
+    { id: "loc-del09", cat: "delivery-en", lvl: 1, es: "Estoy abajo.", en: "I'm downstairs.", tip: "aim daun-STÉRS" },
     { id: "loc-del10", cat: "delivery-en", lvl: 1, es: "Gracias por su pedido.", en: "Thanks for your order.", tip: "zenks for yor OR-der" },
     // --- gym-en (Gimnasio / Trainer) ---
     { id: "loc-gym01", cat: "gym-en", lvl: 1, es: "Diez repeticiones más.", en: "Ten more reps.", tip: "ten mor REPS" },
     { id: "loc-gym02", cat: "gym-en", lvl: 2, es: "Mantenga la espalda recta.", en: "Keep your back straight.", tip: "kip yor bak STREIT" },
     { id: "loc-gym03", cat: "gym-en", lvl: 1, es: "¡Buen trabajo, siga así!", en: "Great job, keep it up!", tip: "greit YOB, kip it OP" },
-    { id: "loc-gym04", cat: "gym-en", lvl: 2, es: "Exhale al subir.", en: "Breathe out as you lift.", tip: "brid áut as yu LIFT" },
+    { id: "loc-gym04", cat: "gym-en", lvl: 2, es: "Exhale al subir.", en: "Breathe out as you lift.", tip: "briid áut as yu LIFT" },
     { id: "loc-gym05", cat: "gym-en", lvl: 1, es: "Descanse treinta segundos.", en: "Rest for thirty seconds.", tip: "rest for ZÉR-ti SÉ-conds" },
     { id: "loc-gym06", cat: "gym-en", lvl: 2, es: "No olvide calentar.", en: "Don't forget to warm up.", tip: "dont for-GUÉT tu uorm OP" },
     { id: "loc-gym07", cat: "gym-en", lvl: 1, es: "Tome agua.", en: "Drink some water.", tip: "drink som WÓ-ter" },
@@ -2966,11 +2966,11 @@
     // --- compras-en ---
     { id: "loc-com21", cat: "compras-en", lvl: 3, es: "Si no me queda bien, ¿puedo traerlo de vuelta y cambiarlo por otra talla?", en: "If it doesn't fit, can I bring it back and exchange it for another size?", tip: "if it DÓsent fit, can ai bring it bac and ex-CHEINCH it for a-NÓder sais" },
     { id: "loc-com22", cat: "compras-en", lvl: 3, es: "Me lo llevaría, pero quisiera pensarlo un poco antes de decidirme.", en: "I'd take it, but I'd like to think about it a bit before I decide.", tip: "aid teik it, bot aid laik tu zinc a-BÁUT it a bit bi-FÓR ai di-SÁID" },
-    { id: "loc-com23", cat: "compras-en", lvl: 3, es: "¿Me podría avisar si les llega más mercancía la próxima semana?", en: "Could you let me know if you get more stock in next week?", tip: "cud yu let mi nou if yu get mor stoc in next wiik" },
+    { id: "loc-com23", cat: "compras-en", lvl: 3, es: "¿Me podría avisar si les llega más mercancía la próxima semana?", en: "Could you let me know if you get more stock in next week?", tip: "cud yu let mi NOU if yu get mor STOC in next wiik" },
     { id: "loc-com24", cat: "compras-en", lvl: 2, es: "¿Me lo puede apartar hasta mañana?", en: "Can you hold it for me until tomorrow?", tip: "can yu jould it for mi on-TÍL tu-MÓ-rou" },
     // --- salud-en ---
     { id: "loc-med15", cat: "salud-en", lvl: 1, es: "Me duele la garganta.", en: "I have a sore throat.", tip: "ai jav a sor zrout" },
-    { id: "loc-med16", cat: "salud-en", lvl: 1, es: "Estoy resfriado.", en: "I have a cold.", tip: "ai jav a could" },
+    { id: "loc-med16", cat: "salud-en", lvl: 1, es: "Estoy resfriado.", en: "I have a cold.", tip: "ai jav a KOULD" },
     { id: "loc-med17", cat: "salud-en", lvl: 2, es: "¿Tiene algo para la alergia?", en: "Do you have something for allergies?", tip: "du yu jav SÓM-zing for Á-ler-yis" },
     { id: "loc-med18", cat: "salud-en", lvl: 2, es: "¿Lo tomo antes o después de comer?", en: "Do I take it before or after meals?", tip: "du ai teik it bi-FÓR or Áf-ter miils" },
     { id: "loc-med19", cat: "salud-en", lvl: 2, es: "Necesito sacar una cita con el médico.", en: "I need to make an appointment with the doctor.", tip: "ai niid tu meik an a-PÓINT-ment wid de DÓC-tor" },
@@ -3003,7 +3003,7 @@
     { id: "loc-eme19", cat: "emergencias-en", lvl: 2, es: "Se me perdió mi hijo.", en: "I can't find my son.", tip: "ai cant faind mai son" },
     { id: "loc-eme20", cat: "emergencias-en", lvl: 3, es: "Si ve algo sospechoso, avise a seguridad de inmediato.", en: "If you see anything suspicious, tell security right away.", tip: "if yu sii É-ni-zing sos-PÍ-shos, tel si-KIÚ-ri-ti rait a-WÉI" },
     { id: "loc-eme21", cat: "emergencias-en", lvl: 3, es: "Creo que alguien me siguió, no me siento seguro caminando solo.", en: "I think someone followed me, I don't feel safe walking alone.", tip: "ai zinc SÓM-won FÓ-loud mi, ai dont fiil seif WÓ-king a-LÓUN" },
-    { id: "loc-eme22", cat: "emergencias-en", lvl: 3, es: "Mantenga la calma y siga las salidas de emergencia hasta la calle.", en: "Stay calm and follow the emergency exits out to the street.", tip: "stei calm and FÓ-lou di i-MÉR-yen-si ÉG-sits aut tu de striit" },
+    { id: "loc-eme22", cat: "emergencias-en", lvl: 3, es: "Mantenga la calma y siga las salidas de emergencia hasta la calle.", en: "Stay calm and follow the emergency exits out to the street.", tip: "stei CAM and FÓ-lou di i-MÉR-yen-si ÉG-sits aut tu de striit" },
     { id: "loc-eme23", cat: "emergencias-en", lvl: 3, es: "Si no se siente mejor pronto, deberíamos ir a urgencias.", en: "If you don't feel better soon, we should go to the emergency room.", tip: "if yu dont fiil BÉter suun, wi shud gou tu di i-MÉR-yen-si rum" },
     { id: "loc-eme24", cat: "emergencias-en", lvl: 2, es: "¿Me puede ayudar, por favor?", en: "Can you help me, please?", tip: "can yu jelp mi, pliis" },
     // --- peluqueria ---

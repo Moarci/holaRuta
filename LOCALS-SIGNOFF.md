@@ -100,23 +100,23 @@ So wird der Sign-off dauerhaft test-verankert (Regression = roter Test).
 
 ## Stufe 2 — Alltag/Schule
 
-### Día a día (`loc-dia`) — 14 Kategorien · 336 Karten · Stufe —
+### Día a día (`loc-dia`) — 14 Kategorien · 336 Karten · Stufe ✅ (Sign-off: 8 Befunde behoben)
 | Kategorie | Karten | EN-Lint | Sign-off |
 | --- | --- | --- | --- |
-| Saludos y charla (`saludos-en`) | 24 | ⬜ | ⬜ |
-| Por teléfono (`telefono`) | 24 | ⬜ | ⬜ |
-| Dar direcciones (`direcciones`) | 24 | ⬜ | ⬜ |
-| De compras (`compras-en`) | 24 | ⬜ | ⬜ |
-| Salud y farmacia (`salud-en`) | 24 | ⬜ | ⬜ |
-| Banco y dinero (`dinero-en`) | 24 | ⬜ | ⬜ |
-| Transporte público (`transporte-en`) | 24 | ⬜ | ⬜ |
-| Emergencias y seguridad (`emergencias-en`) | 24 | ⬜ | ⬜ |
-| Peluquería (`peluqueria`) | 24 | ⬜ | ⬜ |
-| Alquiler y vivienda (`vivienda`) | 24 | ⬜ | ⬜ |
-| El clima (`clima-en`) | 24 | ⬜ | ⬜ |
-| Domicilios (`delivery-en`) | 24 | ⬜ | ⬜ |
-| Gimnasio (`gym-en`) | 24 | ⬜ | ⬜ |
-| Casa y servicios (`hogar-en`) | 24 | ⬜ | ⬜ |
+| Saludos y charla (`saludos-en`) | 24 | ✅ | ✅ |
+| Por teléfono (`telefono`) | 24 | ✅ | ✅ |
+| Dar direcciones (`direcciones`) | 24 | ✅ | ✅ |
+| De compras (`compras-en`) | 24 | ✅ | ✅ |
+| Salud y farmacia (`salud-en`) | 24 | ✅ | ✅ |
+| Banco y dinero (`dinero-en`) | 24 | ✅ | ✅ |
+| Transporte público (`transporte-en`) | 24 | ✅ | ✅ |
+| Emergencias y seguridad (`emergencias-en`) | 24 | ✅ | ✅ |
+| Peluquería (`peluqueria`) | 24 | ✅ | ✅ |
+| Alquiler y vivienda (`vivienda`) | 24 | ✅ | ✅ |
+| El clima (`clima-en`) | 24 | ✅ | ✅ |
+| Domicilios (`delivery-en`) | 24 | ✅ | ✅ |
+| Gimnasio (`gym-en`) | 24 | ✅ | ✅ |
+| Casa y servicios (`hogar-en`) | 24 | ✅ | ✅ |
 
 ### Escuela y examen (`loc-esc`) — 15 Kategorien · 360 Karten · Stufe —
 | Kategorie | Karten | EN-Lint | Sign-off |
