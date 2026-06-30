@@ -6256,7 +6256,7 @@
     if (now - lastSearchTrackAt < 1000) return;
     lastSearchTrackAt = now;
     const results = searchResultsData(q).groups.reduce((n, g) => n + g.items.length, 0);
-    trackEvent("search", { qlen: abucket(q.length, [3, 6, 12, 24]), results: abucket(results, [0, 1, 5, 20]) });
+    trackEvent("search", { qlen: abucket(q.length, [3, 6, 12, 24]), results: abucket(results, [1, 5, 20]) });
   }
 
   function clearSearch() {
@@ -7398,10 +7398,16 @@
 
     const handler = ACTIONS[action];
     if (handler) {
-      trackEvent("action", actionProps(action, el));
+      // Hochfrequente Lern-Aktionen NICHT als generisches „action"-Event doppeln –
+      // sie sind bereits über card_rated / die Session-Events abgedeckt und würden
+      // sonst die Event-Queue fluten.
+      if (!NOISY_ACTIONS[action]) trackEvent("action", actionProps(action, el));
       handler(el);
     }
   }
+
+  // Lern-Aktionen, die pro Karte mehrfach feuern und separat erfasst sind.
+  const NOISY_ACTIONS = { flip: 1, rate: 1, skip: 1, speak: 1 };
 
   // Sichere, allowlist-basierte Props für ein „action"-Event. Bewusst NUR Enum-/
   // Kategorie-artige dataset-Felder (mode/dir/level/tab/scope) – NIE Freitext und
@@ -8045,6 +8051,12 @@
     const A = window.SC.analytics;
     if (!A || !A.configure) return;
     A.configure(analyticsCtx());
+
+    // Die allererste Ansicht nachholen: der erste render() lief vor configure(),
+    // sein screen_view wurde mangels Zustimmung verworfen. Jetzt – mit gesetztem
+    // Kontext – die aktuelle Ansicht (Deep-Link/Start/Onboarding) einmal erfassen.
+    lastTrackedView = null;
+    trackScreenView();
 
     // App-Start + grobe Ladezeit (einmal pro Start).
     let loadMs = 0;

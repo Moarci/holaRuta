@@ -266,3 +266,25 @@ test("flush({beacon}): nutzt navigator.sendBeacon und leert die Queue", async ()
   assert.equal(beacons.length, 1);
   assert.ok(beacons[0].url.indexOf("/v1/events") >= 0);
 });
+
+test("flush: nebenläufiger Beacon-Flush während eines Netz-Flushes verliert keine Events", async () => {
+  if (typeof Blob === "undefined" || typeof globalThis.navigator === "undefined" || typeof globalThis.navigator.sendBeacon !== "function") return;
+  analytics.resetClientId();
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  globalThis.navigator.sendBeacon = () => true;
+  // Netz-Flush mit manuell auflösbarem Promise -> Überlappung erzwingen.
+  let resolveNet = null;
+  globalThis.window.SC.net = { request: () => new Promise((res) => { resolveNet = () => res({ ok: true }); }) };
+  analytics.configure({ consent: true });
+  for (let i = 0; i < 60; i++) analytics.track("action", { action: "x" }); // > 1 Batch (>50)
+
+  const netP = analytics.flush();                      // nimmt die ersten 50 (seq 0..49), Promise hängt
+  await analytics.flush({ beacon: true });             // nimmt aktuell dieselben 50 und entfernt sie per seq
+  resolveNet();                                        // Netz-Flush löst auf -> removeSent ist No-op (schon weg)
+  await netP;
+
+  // Die restlichen 10 Events dürfen NICHT verloren gegangen sein.
+  globalThis.window.SC.net = { request: () => Promise.resolve({ ok: true }) };
+  let rest = 0, r; do { r = await analytics.flush(); rest += r.sent; } while (r.sent > 0);
+  assert.equal(rest, 10, "die zweiten 10 Events bleiben erhalten (removeSent per seq, nicht slice)");
+});

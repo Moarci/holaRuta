@@ -413,10 +413,11 @@ Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Wei
 - **Lokale Pufferung & Batching:** Ring-Queue (≤ 200 Events) im `localStorage`; Versand gebündelt
   (≤ 50/Batch) periodisch und beim Verstecken/Schließen via `navigator.sendBeacon` (zuverlässig).
 
-**17.6.2 Event-Taxonomie (Start-Set)** — `app_open` · `screen_view` · `action` · `session_start` ·
-`session_complete` · `card_rated` · `search` · `feature_start`/`feature_complete` · `error` · `perf` ·
-`consent_change` · `pwa_installed`/`update_applied`. Envelope:
-`{ v, ts, day, clientId, sessionId, seq, appVersion, locale, track, event, props }`.
+**17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `perf` · `screen_view` · `action` ·
+`session_start` · `session_complete` · `card_rated` · `search` · `error` · `consent_change` ·
+`pwa_installed`. Bewusst nur Events, die der Client tatsächlich sendet (Spec == Implementierung);
+die Allowlist (`analytics.js: EVENTS`) ist erweiterbar (z. B. `feature_complete` pro Lernspiel).
+Envelope: `{ v, ts, day, clientId, sessionId, seq, appVersion, locale, track, event, props }`.
 
 **17.6.3 API (Ergänzung zu §17.2, ohne Bearer-Token)**
 - `POST /v1/events` `{ events: [ <envelope>, … ] }` → `{ ok:true }`. Auch via `sendBeacon`

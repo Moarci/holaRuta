@@ -230,13 +230,14 @@
     session_complete: { answered: "bucket", accuracy: "bucket", xp: "bucket", again: "bucket", mastered: "int" },
     card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug" },
     search:           { qlen: "bucket", results: "bucket" },
-    feature_start:    { feature: "slug", level: "int" },
-    feature_complete: { feature: "slug", perfect: "bool", score: "bucket" },
     error:            { type: "slug", msg: "text", src: "text", line: "int" },
     consent_change:   { on: "bool" },
     pwa_installed:    {},
-    update_applied:   {},
   };
+  // Erweiterbar: weitere Event-Namen (z.B. feature_complete pro Lernspiel) lassen
+  // sich später hier ergänzen + im jeweiligen Modul via SC.analytics.track() senden;
+  // der Server akzeptiert sie über dasselbe Allowlist-Muster. Bewusst NUR Events
+  // gelistet, die der Client heute tatsächlich sendet (Spec == Implementierung).
 
   // Hält NUR die für dieses Event erlaubten, sanitisierten Props (Default deny).
   function sanitizeProps(name, props) {
@@ -308,26 +309,46 @@
     saveQueue();
   }
 
+  // Entfernt GENAU die gesendeten Events (per seq) aus der Queue. Nebenläufigkeits-
+  // sicher: nimmt ein zweiter (z.B. Beacon-)Flush dieselbe Slice, löscht er nicht aus
+  // Versehen die NÄCHSTE Slice (das wäre Datenverlust) – schlimmstenfalls ein
+  // Duplikat-Send. Idempotent (bereits entfernte seqs sind ein No-op).
+  function removeSent(batch) {
+    var ids = Object.create(null);
+    batch.forEach(function (e) { if (e) ids[e.seq] = 1; });
+    queue = queue.filter(function (e) { return !ids[e.seq]; });
+    saveQueue();
+  }
+
+  var flushing = false; // verhindert parallele Netz-Flushes (Doppel-Sends)
+
   // Sendet einen Batch gepufferter Events. opts.beacon nutzt navigator.sendBeacon
-  // (zuverlässig beim Verstecken/Schließen). Erfolg -> Slice entfernen. Wirft nie.
+  // (zuverlässig beim Verstecken/Schließen). Erfolg -> gesendete Events entfernen.
+  // Wirft nie.
   function flush(opts) {
     var o = isObj(opts) ? opts : {};
     if (!available() || ctx.consent !== true || !queue.length) return Promise.resolve({ sent: 0 });
     var batch = queue.slice(0, BATCH_MAX);
+    // Beim Verstecken/Schließen: zuverlässig via sendBeacon (synchron, übersteht das
+    // Entladen). Best-effort, auch wenn gerade ein regulärer Flush läuft.
     if (o.beacon && typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
       var ok = false;
       try {
         var blob = new Blob([JSON.stringify({ events: batch })], { type: "application/json" });
         ok = navigator.sendBeacon(apiBase() + EVENTS_PATH, blob);
       } catch (e) { ok = false; }
-      if (ok) { queue = queue.slice(batch.length); saveQueue(); return Promise.resolve({ sent: batch.length, beacon: true }); }
+      if (ok) { removeSent(batch); return Promise.resolve({ sent: batch.length, beacon: true }); }
       // Beacon abgelehnt -> regulärer Pfad unten
     }
+    // Regulärer Pfad: nur EIN gleichzeitiger Netz-Flush.
+    if (flushing) return Promise.resolve({ sent: 0, busy: true });
+    flushing = true;
     return SC.net.request(apiBase(), "POST", EVENTS_PATH, { events: batch }, { timeout: 8000 })
       .then(function (r) {
-        if (r && r.ok) { queue = queue.slice(batch.length); saveQueue(); return { sent: batch.length }; }
+        flushing = false;
+        if (r && r.ok) { removeSent(batch); return { sent: batch.length }; }
         return { sent: 0 };
-      }, function () { return { sent: 0 }; });
+      }, function () { flushing = false; return { sent: 0 }; });
   }
 
   // Pseudonyme clientId verwerfen und Puffer leeren (Reset / Consent-aus).
