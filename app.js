@@ -149,7 +149,7 @@
     // Öffnen (noch nichts gespeichert) nach Betriebssystem-Sprache vorbelegen.
     uiLang: initialUiLang(),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
-    levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
+    levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3,4] (A1/A2/B1/B2)
     scopeId: "all",          // 'all' | Kategorie-Id
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
@@ -524,7 +524,7 @@
         }))
         .filter((b) => b.count > 0);
       return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad, group: c.group,
-               total: cards.length, due: dueIn(cards).length, byLevel };
+               total: cards.length, totalAll: allInCat.length, due: dueIn(cards).length, byLevel };
     });
     // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
     // seine Originalreihenfolge – so steht das Dringende oben, ohne dass die
@@ -2905,7 +2905,15 @@
   function startStudy(scopeId, origin, cap) {
     dismissBadgeToast();
     state.studyOrigin = origin || null;
-    const cards = scopeCards(scopeId);
+    let cards = scopeCards(scopeId);
+    // Bewusst gewählte Kategorie, aber der Stufen-Filter blendet alle ihre Karten
+    // aus (z. B. eine reine B2-Kategorie bei Filter A1–B1)? Dann den Filter für
+    // diesen einen Griff ignorieren – die explizite Kategoriewahl schlägt den
+    // globalen Stufen-Filter, sonst startete eine leere Runde.
+    if (!cards.length && scopeId !== "all") {
+      const inCat = allCards().filter((c) => c.cat === scopeId);
+      if (inCat.length) cards = inCat;
+    }
     const due = dueIn(cards);
     // Rundengröße: standardmäßig SESSION_CAP (Newcomer-Schutz). Das Tagesziel des
     // Trip-Ziels (Schicht 3) übergibt sein eigenes Restpensum als cap, damit die

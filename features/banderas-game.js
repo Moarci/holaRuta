@@ -31,6 +31,7 @@
   const SETS = [
     { id: "sur", region: "sur" },
     { id: "centro", region: "centro" },
+    { id: "mundo", region: "mundo" },
     { id: "todas", region: null },
   ];
 
@@ -215,6 +216,7 @@
         <div class="hm-scenes">
           ${quizTile("sur")}
           ${quizTile("centro")}
+          ${quizTile("mundo")}
           ${quizTile("todas")}
         </div>
         <h2 class="rg-head">${esc(t("discover.bndLearnHead"))}</h2>
@@ -289,6 +291,7 @@
       { id: "sur", label: t("discover.bndRegSur") },
       { id: "centro", label: t("discover.bndRegCentro") },
       { id: "europa", label: t("discover.bndRegEuropa") },
+      { id: "mundo", label: t("discover.bndRegMundo") },
     ];
     const card = (c) => `
       <details class="knigge-topic bnd-card">

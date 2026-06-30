@@ -911,7 +911,14 @@
   // ----- LERNEN-Reiter: alle Themen mit klebriger Sprungmarken-Leiste je Gruppe -----
   function lernenBody(vm) {
     const tileBtn = (c) => {
-      const badge = c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${renderIcon("lc:check-circle")} ${esc(t("home.tileDone"))}</span>`;
+      // Kategorie hat Karten, aber keine auf der aktiven Stufe (Filter blendet
+      // sie aus)? Dann NICHT „erledigt“ (grünes Häkchen) zeigen – das würde
+      // fälschlich „gemeistert“ suggerieren –, sondern „andere Stufe“, und als
+      // Kartenzahl die echte Gesamtzahl statt der gefilterten 0.
+      const filteredOut = c.total === 0 && c.totalAll > 0;
+      const badge = filteredOut
+        ? `<span class="tile__due tile__due--off">${renderIcon("lc:layers")} ${esc(t("home.tileFiltered"))}</span>`
+        : c.due > 0 ? `<span class="tile__due">${esc(t("home.tileDue", { n: c.due }))}</span>` : `<span class="tile__due tile__due--ok">${renderIcon("lc:check-circle")} ${esc(t("home.tileDone"))}</span>`;
       // Stufen-Aufschlüsselung nur bei aktivem Stufen-Filter (aktive Stufe
       // farbig, inaktive ausgegraut) – ohne Filter bleiben die Kacheln ruhig.
       const breakdown = vm.allLevels ? "" : c.byLevel
@@ -923,7 +930,7 @@
                 style="--from:${esc(c.grad[0])};--to:${esc(c.grad[1])}">
           <span class="tile__icon" aria-hidden="true">${renderIcon(catIcon(c))}</span>
           <span class="tile__label">${esc(c.label)}</span>
-          <span class="tile__meta">${esc(t("home.tileCards", { n: c.total }))} · ${badge}</span>
+          <span class="tile__meta">${esc(t("home.tileCards", { n: filteredOut ? c.totalAll : c.total }))} · ${badge}</span>
           ${breakdown ? `<span class="tile__levels">${breakdown}</span>` : ""}
         </button>`;
     };

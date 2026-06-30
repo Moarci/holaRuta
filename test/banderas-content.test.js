@@ -26,7 +26,7 @@ test("banderas: lädt und exportiert COUNTRIES + Info-Modul-Schema", () => {
 });
 
 test("banderas.COUNTRIES: jedes Land ist vollständig & zweisprachig", () => {
-  const REGIONS = new Set(["sur", "centro", "europa"]);
+  const REGIONS = new Set(["sur", "centro", "europa", "mundo"]);
   banderas.COUNTRIES.forEach((c, i) => {
     for (const f of ["id", "flag", "es", "de", "en", "capital", "colors", "colorsEn", "sym", "symEn", "fact", "factEn"]) {
       assert.ok(typeof c[f] === "string" && c[f].trim().length, `COUNTRIES[${i}] (${c.id || "?"}): Feld ${f} fehlt`);
@@ -85,10 +85,11 @@ test("banderas: alle genutzten i18n-Schlüssel existieren in DE & EN", () => {
     "discover.subBanderas", "discover.bndSetupIntro", "discover.bndPlayHead", "discover.bndLearnHead",
     "discover.bnd_sur", "discover.bnd_sur_icon", "discover.bnd_sur_desc",
     "discover.bnd_centro", "discover.bnd_centro_icon", "discover.bnd_centro_desc",
+    "discover.bnd_mundo", "discover.bnd_mundo_icon", "discover.bnd_mundo_desc",
     "discover.bnd_todas", "discover.bnd_todas_icon", "discover.bnd_todas_desc",
     "discover.bndGaleria", "discover.bndGaleriaDesc", "discover.bndGaleriaIntro",
     "discover.bndSaberMas", "discover.bndSaberMasDesc", "discover.bndQuestion",
-    "discover.bndRegSur", "discover.bndRegCentro", "discover.bndRegEuropa", "discover.bndOtherRound",
+    "discover.bndRegSur", "discover.bndRegCentro", "discover.bndRegEuropa", "discover.bndRegMundo", "discover.bndOtherRound",
     "discover.bnTips", "discover.bnPhrases", "discover.bnWords", "discover.bnChecklist", "discover.bnChecklistHint",
   ];
   try {

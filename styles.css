@@ -804,6 +804,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .tile__meta { margin-left: 6px; font-size: 0.78rem; color: var(--muted); }
 .tile__due { color: var(--brand-ink); font-weight: 700; }
 .tile__due--ok { color: var(--ok); }
+.tile__due--off { color: var(--muted); font-weight: 600; }
 .tile__levels { margin-left: 6px; display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
 .tile__lvl {
   display: inline-flex; align-items: center; gap: 4px;

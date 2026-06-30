@@ -16,13 +16,15 @@
  *      gerendert – gleiches Schema, kein neuer Renderer.
  *
  * Fokus: die spanischsprachige Welt Amerikas + España, dazu Brasil als großer
- * Nachbar – genau die Länder, die HolaRuta-Reisende treffen. Inhalte recherchiert
- * und bewusst knapp gehalten: pro Land eine korrekte Symbolik-Zeile plus eine
- * Eselsbrücke/Anekdote, mit der man die Flagge sicher wiedererkennt.
+ * Nachbar – und „El mundo“, die großen Reiseziele der Welt (USA, Europa, Japan,
+ * Thailand, Australien, Marokko …), die HolaRuta-Reisende ebenfalls ansteuern.
+ * Inhalte recherchiert und bewusst knapp gehalten: pro Land eine korrekte
+ * Symbolik-Zeile plus eine Eselsbrücke/Anekdote, mit der man die Flagge sicher
+ * wiedererkennt.
  *
  * Schemas (identisch zu juegos.js, damit ui sie 1:1 rendern kann):
  *   COUNTRIES: [{ id, flag, es, de, en, region, capital, colors, colorsEn,
- *               sym, symEn, fact, factEn }]  – region ∈ {sur, centro, europa}.
+ *               sym, symEn, fact, factEn }]  – region ∈ {sur, centro, europa, mundo}.
  *   INTRO    : string (+ INTRO_EN) – kurze deutsche Einleitung über der Info-Seite.
  *   TOPICS   : [{ icon, title, intro, dos:[…], tips:[…] }] – aufklappbar (+ …En);
  *              dos = Fakten, tips = Merkhilfen (💡). Einige tragen ein spanisches
@@ -36,7 +38,7 @@
   window.SC = window.SC || {};
 
   // ---------- Die Flaggen je Land (Quiz + Galería) ----------
-  // region: "sur" = Sudamérica · "centro" = Centroamérica y el Caribe · "europa" = España
+  // region: "sur" = Sudamérica · "centro" = Centroamérica y el Caribe · "europa" = España · "mundo" = große Reiseziele der Welt
   const COUNTRIES = [
     // ----- Sudamérica -----
     {
@@ -208,6 +210,135 @@
       symEn: "The „Rojigualda“: a wide yellow band between two red ones, with the coat of arms on the left – castle and lion of the old kingdoms and the Pillars of Hercules with „Plus Ultra“.",
       fact: "Der gelbe Streifen ist doppelt so breit wie jeder rote – gut sichtbar auf See, wofür König Karl III. die Farben 1785 wählte.",
       factEn: "The yellow band is twice as wide as each red one – highly visible at sea, which is why King Charles III chose the colours in 1785.",
+    },
+    // ----- Mundo: die großen Reiseziele der Welt -----
+    {
+      id: "us", flag: "🇺🇸", es: "Estados Unidos", de: "USA", en: "United States",
+      region: "mundo", capital: "Washington D. C.", colors: "Rot · Weiß · Blau", colorsEn: "Red · White · Blue",
+      sym: "Die „Stars and Stripes“: 13 rot-weiße Streifen für die 13 Gründerkolonien, dazu 50 weiße Sterne im blauen Feld – einer je Bundesstaat.",
+      symEn: "The „Stars and Stripes“: 13 red-and-white stripes for the 13 founding colonies, plus 50 white stars on the blue canton – one per state.",
+      fact: "Einfach zu merken: 50 Sterne = 50 Staaten, 13 Streifen = 13 Kolonien. Mit jedem neuen Staat kam ein Stern dazu.",
+      factEn: "Easy to remember: 50 stars = 50 states, 13 stripes = 13 colonies. A new star was added for every new state.",
+    },
+    {
+      id: "ca", flag: "🇨🇦", es: "Canadá", de: "Kanada", en: "Canada",
+      region: "mundo", capital: "Ottawa", colors: "Rot · Weiß", colorsEn: "Red · White",
+      sym: "Rot-Weiß-Rot senkrecht (das breite weiße „kanadische Feld“ in der Mitte), darin ein rotes Ahornblatt mit elf Spitzen – das Nationalsymbol.",
+      symEn: "Vertical red-white-red (the broad white „Canadian pale“ in the middle) with a red maple leaf of eleven points – the national emblem.",
+      fact: "Das Ahornblatt erkennt man sofort. Die elf Zacken haben keine besondere Bedeutung – sie wirkten im Wind einfach am ruhigsten.",
+      factEn: "The maple leaf is instantly recognisable. The eleven points carry no special meaning – they simply looked steadiest in the wind.",
+    },
+    {
+      id: "gb", flag: "🇬🇧", es: "Reino Unido", de: "Vereinigtes Königreich", en: "United Kingdom",
+      region: "mundo", capital: "Londres", colors: "Blau · Weiß · Rot", colorsEn: "Blue · White · Red",
+      sym: "Der „Union Jack“ überlagert drei Kreuze: das rote St.-Georgs-Kreuz (England), das weiße St.-Andreas-Kreuz (Schottland) und das rote St.-Patricks-Kreuz (Irland).",
+      symEn: "The „Union Jack“ layers three crosses: the red cross of St George (England), the white saltire of St Andrew (Scotland) and the red saltire of St Patrick (Ireland).",
+      fact: "Sie hat ein Oben und Unten: Der breite weiße Diagonalstreifen gehört oben an den Mast – falsch herum gehisst gilt als Notsignal.",
+      factEn: "It has a right way up: the wider white diagonal belongs at the top by the mast – flown upside down it signals distress.",
+    },
+    {
+      id: "fr", flag: "🇫🇷", es: "Francia", de: "Frankreich", en: "France",
+      region: "mundo", capital: "París", colors: "Blau · Weiß · Rot", colorsEn: "Blue · White · Red",
+      sym: "Die „Tricolore“: Blau, Weiß und Rot senkrecht. Blau und Rot sind die Farben von Paris, Weiß die des Königshauses – vereint seit der Revolution von 1789.",
+      symEn: "The „Tricolore“: blue, white and red in vertical bands. Blue and red are the colours of Paris, white that of the monarchy – united since the 1789 Revolution.",
+      fact: "Vorbild für unzählige Trikoloren weltweit. Tipp: Blau steht am Mast – so unterscheidet man sie von den Niederlanden (waagerecht).",
+      factEn: "The model for countless tricolours worldwide. Tip: blue sits at the mast – that tells it apart from the Netherlands (which is horizontal).",
+    },
+    {
+      id: "it", flag: "🇮🇹", es: "Italia", de: "Italien", en: "Italy",
+      region: "mundo", capital: "Roma", colors: "Grün · Weiß · Rot", colorsEn: "Green · White · Red",
+      sym: "„Il Tricolore“: Grün, Weiß und Rot senkrecht. Oft gedeutet als Grün für die Landschaft, Weiß für die Alpen/den Schnee und Rot für das vergossene Blut.",
+      symEn: "„Il Tricolore“: green, white and red vertical bands, often read as green for the landscape, white for the Alps/snow and red for the blood that was shed.",
+      fact: "Nicht mit Mexiko verwechseln: Italien hat dieselben Farben, aber kein Wappen in der Mitte – das weiße Feld bleibt leer.",
+      factEn: "Don't confuse it with Mexico: Italy has the same colours but no emblem in the centre – the white band stays empty.",
+    },
+    {
+      id: "de", flag: "🇩🇪", es: "Alemania", de: "Deutschland", en: "Germany",
+      region: "mundo", capital: "Berlín", colors: "Schwarz · Rot · Gold", colorsEn: "Black · Red · Gold",
+      sym: "Schwarz, Rot und Gold waagerecht. Die Farben gehen auf die Uniformen des Lützowschen Freikorps und die Revolution von 1848 für ein einiges, freies Deutschland zurück.",
+      symEn: "Black, red and gold in horizontal bands. The colours trace back to the uniforms of the Lützow Free Corps and the 1848 revolution for a united, free Germany.",
+      fact: "Nicht mit Belgien verwechseln: gleiche Farben, aber Belgien stellt sie senkrecht.",
+      factEn: "Don't confuse it with Belgium: same colours, but Belgium arranges them vertically.",
+    },
+    {
+      id: "pt", flag: "🇵🇹", es: "Portugal", de: "Portugal", en: "Portugal",
+      region: "mundo", capital: "Lisboa", colors: "Grün · Rot", colorsEn: "Green · Red",
+      sym: "Grün am Mast, Rot zum Flugende, auf der Trennlinie eine gelbe Armillarsphäre mit dem Landeswappen – Grün für die Hoffnung, Rot für das Blut der Gefallenen.",
+      symEn: "Green at the mast, red at the fly, and on the dividing line a yellow armillary sphere bearing the national shield – green for hope, red for the blood of the fallen.",
+      fact: "Die Armillarsphäre (ein altes Navigationsinstrument) erinnert an Portugals Seefahrer im Zeitalter der Entdeckungen.",
+      factEn: "The armillary sphere (an old navigation instrument) recalls Portugal's seafarers in the Age of Discoveries.",
+    },
+    {
+      id: "nl", flag: "🇳🇱", es: "Países Bajos", de: "Niederlande", en: "Netherlands",
+      region: "mundo", capital: "Ámsterdam", colors: "Rot · Weiß · Blau", colorsEn: "Red · White · Blue",
+      sym: "Rot, Weiß und Blau waagerecht – die älteste Trikolore der Welt, abgeleitet von den Farben Wilhelms von Oranien.",
+      symEn: "Red, white and blue horizontal bands – the world's oldest tricolour, derived from the colours of William of Orange.",
+      fact: "Ursprünglich war der oberste Streifen Orange; er verblasste auf See zu Rot. Orange bleibt bis heute die Farbe der Königsfamilie.",
+      factEn: "The top band was originally orange; it faded to red at sea. Orange remains the colour of the royal family to this day.",
+    },
+    {
+      id: "ch", flag: "🇨🇭", es: "Suiza", de: "Schweiz", en: "Switzerland",
+      region: "mundo", capital: "Berna", colors: "Rot · Weiß", colorsEn: "Red · White",
+      sym: "Ein weißes, frei stehendes Kreuz auf rotem Grund – die Arme sind alle gleich lang und berühren den Rand nicht.",
+      symEn: "A white, free-standing cross on a red field – the arms are all equal in length and do not touch the edges.",
+      fact: "Eine von nur zwei quadratischen Nationalflaggen (die andere ist die des Vatikans). Das Rote Kreuz ist genau ihre Umkehrung.",
+      factEn: "One of only two square national flags (the other is Vatican City's). The Red Cross emblem is exactly its inversion.",
+    },
+    {
+      id: "gr", flag: "🇬🇷", es: "Grecia", de: "Griechenland", en: "Greece",
+      region: "mundo", capital: "Atenas", colors: "Blau · Weiß", colorsEn: "Blue · White",
+      sym: "Neun blau-weiße Streifen und oben links ein weißes Kreuz auf blauem Feld – das Kreuz steht für den orthodoxen Glauben.",
+      symEn: "Nine blue-and-white stripes with a white cross on a blue canton in the upper hoist – the cross stands for the Orthodox faith.",
+      fact: "Die neun Streifen werden gern mit den neun Silben von „Eleftheria i Thanatos“ („Freiheit oder Tod“) verbunden.",
+      factEn: "The nine stripes are popularly linked to the nine syllables of „Eleftheria i Thanatos“ („Freedom or Death“).",
+    },
+    {
+      id: "jp", flag: "🇯🇵", es: "Japón", de: "Japan", en: "Japan",
+      region: "mundo", capital: "Tokio", colors: "Weiß · Rot", colorsEn: "White · Red",
+      sym: "Die „Hinomaru“: eine schlichte rote Scheibe – die Sonne – mittig auf weißem Grund.",
+      symEn: "The „Hinomaru“: a plain red disc – the sun – centred on a white field.",
+      fact: "„Land der aufgehenden Sonne“: Der rote Kreis ist genau diese Sonne. Kaum eine Flagge ist reduzierter und einprägsamer.",
+      factEn: "„Land of the Rising Sun“: the red circle is that very sun. Few flags are more minimal or more memorable.",
+    },
+    {
+      id: "th", flag: "🇹🇭", es: "Tailandia", de: "Thailand", en: "Thailand",
+      region: "mundo", capital: "Bangkok", colors: "Rot · Weiß · Blau", colorsEn: "Red · White · Blue",
+      sym: "Fünf waagerechte Streifen rot-weiß-blau-weiß-rot, der blaue in der Mitte doppelt so breit: Rot für die Nation, Weiß für die Religion, Blau für das Königshaus.",
+      symEn: "Five horizontal bands red-white-blue-white-red, the central blue one twice as wide: red for the nation, white for religion, blue for the monarchy.",
+      fact: "Die blaue Mittelfarbe für den König wurde im Ersten Weltkrieg ergänzt – damals zur Solidarität mit den Alliierten.",
+      factEn: "The central blue for the king was added during the First World War – then a gesture of solidarity with the Allies.",
+    },
+    {
+      id: "au", flag: "🇦🇺", es: "Australia", de: "Australien", en: "Australia",
+      region: "mundo", capital: "Canberra", colors: "Blau · Weiß · Rot", colorsEn: "Blue · White · Red",
+      sym: "Blaues Feld mit dem Union Jack oben links, darunter der große siebenzackige „Commonwealth-Stern“ und rechts das Sternbild Kreuz des Südens.",
+      symEn: "A blue field with the Union Jack in the upper hoist, the large seven-pointed „Commonwealth Star“ below it and the Southern Cross constellation on the fly.",
+      fact: "Das Kreuz des Südens steht am Südhimmel – es zeigt auf einen Blick die Lage des Landes auf der Südhalbkugel.",
+      factEn: "The Southern Cross sits in the southern sky – at a glance it marks the country's place in the Southern Hemisphere.",
+    },
+    {
+      id: "ma", flag: "🇲🇦", es: "Marruecos", de: "Marokko", en: "Morocco",
+      region: "mundo", capital: "Rabat", colors: "Rot · Grün", colorsEn: "Red · Green",
+      sym: "Rotes Feld mit einem grünen, fünfzackigen Stern – dem „Siegel Salomos“. Rot steht für die Herrscherdynastie, der grüne Stern für den Islam.",
+      symEn: "A red field with a green five-pointed star – the „Seal of Solomon“. Red stands for the ruling dynasty, the green star for Islam.",
+      fact: "Die fünf Zacken werden mit den fünf Säulen des Islam verbunden. Der grüne Stern kam 1915 hinzu, das Rot ist viel älter.",
+      factEn: "The five points are linked to the Five Pillars of Islam. The green star was added in 1915; the red is far older.",
+    },
+    {
+      id: "eg", flag: "🇪🇬", es: "Egipto", de: "Ägypten", en: "Egypt",
+      region: "mundo", capital: "El Cairo", colors: "Rot · Weiß · Schwarz", colorsEn: "Red · White · Black",
+      sym: "Rot, Weiß und Schwarz waagerecht (die arabischen Befreiungsfarben), in der Mitte der goldene „Adler Saladins“.",
+      symEn: "Red, white and black horizontal bands (the Arab Liberation colours) with the golden „Eagle of Saladin“ in the centre.",
+      fact: "Rot steht für den Kampf, Weiß für die unblutige Revolution von 1952, Schwarz für das Ende der Unterdrückung.",
+      factEn: "Red stands for the struggle, white for the bloodless 1952 revolution and black for the end of oppression.",
+    },
+    {
+      id: "tr", flag: "🇹🇷", es: "Turquía", de: "Türkei", en: "Turkey",
+      region: "mundo", capital: "Ankara", colors: "Rot · Weiß", colorsEn: "Red · White",
+      sym: "Rotes Feld mit weißem Halbmond und einem fünfzackigen Stern – traditionelle Sinnbilder, die schon das Osmanische Reich führte.",
+      symEn: "A red field with a white crescent and a five-pointed star – traditional emblems already carried by the Ottoman Empire.",
+      fact: "Halbmond und Stern stehen heute bei vielen Ländern für den Islam – verbreitet wurden sie vor allem durch die Osmanen.",
+      factEn: "The crescent and star today symbolise Islam for many countries – they were spread above all by the Ottomans.",
     },
   ];
 
