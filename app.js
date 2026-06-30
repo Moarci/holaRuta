@@ -1214,6 +1214,16 @@
       xp: gamestats.xp || 0,           // XP-Stand vor der Runde (für die Level-Up-Szene)
     };
     state.roundResult = null;          // wird von finishRound() am Rundenende gefüllt
+    // Session-Start als Event – beginRound() ist der gemeinsame Einstieg ALLER
+    // Lern-Startpfade (startStudy/Preset/Pre-Trip-Tag/Ruta del día), daher hier
+    // genau einmal pro Runde, ohne Duplikate. scopeId/total/studyOrigin/mode sind
+    // an dieser Stelle bereits gesetzt.
+    trackEvent("session_start", {
+      scope: state.scopeId,                 // "all" oder Kategorie-Id (Slug, kein PII)
+      origin: state.studyOrigin || "direct",
+      mode: state.mode,
+      cards: abucket(state.total, [5, 10, 20, 40]),
+    });
   }
 
   // Eine Runde abschließen: Reise-XP gutschreiben und das XP-/Rang-Ergebnis EINMAL
@@ -2942,12 +2952,6 @@
     state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
-    trackEvent("session_start", {
-      scope: scopeId,                 // "all" oder Kategorie-Id (Slug, kein PII/keine Karten-Id)
-      origin: origin || "direct",
-      mode: state.mode,
-      cards: abucket(state.total, [5, 10, 20, 40]),
-    });
     render();
   }
 
@@ -5258,6 +5262,28 @@
     if (key === lastTrackedView) return;
     lastTrackedView = key;
     trackEvent("screen_view", { screen: state.screen, tab: state.screen === "home" ? state.homeTab : undefined });
+  }
+  // Map: gamestats-„*Played"-Zähler (steigt pro abgeschlossener Spielrunde um 1) ->
+  // Event-Feature + zugehöriger „*Perfect"-Zähler. Eine zentrale Stelle deckt alle
+  // Lernspiele ab, ohne jedes Modul einzeln zu instrumentieren.
+  const FEATURE_COUNTERS = [
+    { count: "preciosPlayed", perfect: "preciosPerfect", feature: "precios" },
+    { count: "dialogosPlayed", perfect: "dialogosPerfect", feature: "dialogos" },
+    { count: "quizzesPlayed", perfect: "quizzesPerfect", feature: "definiciones" },
+    { count: "yestoPlayed", perfect: "yestoPerfect", feature: "yesto" },
+    { count: "frasesPlayed", perfect: "frasesPerfect", feature: "frases" },
+    { count: "conjugPlayed", perfect: "conjugPerfect", feature: "conjug" },
+    { count: "battlesPlayed", perfect: "perfectBattles", feature: "battle" },
+  ];
+  // Aus setGameStats aufgerufen: stieg ein „*Played"-Zähler, ist eine Spielrunde
+  // fertig -> feature_complete (nur Feature + perfekt ja/nein, kein Inhalt).
+  function trackFeatureCompletions(prev, next) {
+    if (!prev || !next || prev === next) return;
+    FEATURE_COUNTERS.forEach((f) => {
+      if ((next[f.count] | 0) > (prev[f.count] | 0)) {
+        trackEvent("feature_complete", { feature: f.feature, perfect: (next[f.perfect] | 0) > (prev[f.perfect] | 0) });
+      }
+    });
   }
 
   // UI-/Muttersprache umschalten (de/en), merken und neu rendern.
@@ -7997,7 +8023,7 @@
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
     // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
     gameStats: () => gamestats,
-    setGameStats: (g) => { gamestats = g; store.saveGameStats(gamestats); },
+    setGameStats: (g) => { const prev = gamestats; gamestats = g; store.saveGameStats(gamestats); trackFeatureCompletions(prev, g); },
     settings: () => settings,
     setSettings: (patch) => { settings = Object.assign({}, settings, patch); store.saveSettings(settings); },
   };

@@ -229,15 +229,16 @@
     session_start:    { scope: "slug", origin: "slug", mode: "slug", cards: "bucket" },
     session_complete: { answered: "bucket", accuracy: "bucket", xp: "bucket", again: "bucket", mastered: "int" },
     card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug" },
+    feature_complete: { feature: "slug", perfect: "bool" },
     search:           { qlen: "bucket", results: "bucket" },
     error:            { type: "slug", msg: "text", src: "text", line: "int" },
     consent_change:   { on: "bool" },
     pwa_installed:    {},
   };
-  // Erweiterbar: weitere Event-Namen (z.B. feature_complete pro Lernspiel) lassen
-  // sich später hier ergänzen + im jeweiligen Modul via SC.analytics.track() senden;
-  // der Server akzeptiert sie über dasselbe Allowlist-Muster. Bewusst NUR Events
-  // gelistet, die der Client heute tatsächlich sendet (Spec == Implementierung).
+  // Erweiterbar: weitere Event-Namen lassen sich hier ergänzen + an der passenden
+  // Stelle via SC.analytics.track() senden; der Server akzeptiert sie über dasselbe
+  // Allowlist-Muster. Bewusst NUR Events gelistet, die der Client heute tatsächlich
+  // sendet (Spec == Implementierung).
 
   // Hält NUR die für dieses Event erlaubten, sanitisierten Props (Default deny).
   function sanitizeProps(name, props) {

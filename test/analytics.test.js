@@ -152,6 +152,8 @@ test("sanitizeProps: behält nur die Allowlist, verwirft Freitext & unbekannte K
   assert.deepEqual(analytics.sanitizeProps("action", { action: "hola que tal" }), {});
   // search trägt NIE den Suchtext – nur Buckets.
   assert.deepEqual(analytics.sanitizeProps("search", { qlen: "1-10", results: "1-5", q: "border crossing" }), { qlen: "1-10", results: "1-5" });
+  // feature_complete: nur Feature-Slug + perfect-Bool.
+  assert.deepEqual(analytics.sanitizeProps("feature_complete", { feature: "precios", perfect: true, score: 42 }), { feature: "precios", perfect: true });
   // unbekanntes Event -> keine Props.
   assert.deepEqual(analytics.sanitizeProps("whatever", { a: 1 }), {});
 });
