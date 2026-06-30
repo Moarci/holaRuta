@@ -126,13 +126,22 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 ---
 
-## 7. Lokal ausprobieren
+## 7. Dashboard — „wie viele nutzen es und wie lange?"
+
+Damit man die Daten **sieht**, gibt es einen self-host-tauglichen Collector **mit Dashboard**:
+[`tools/telemetry-server.js`](../tools/telemetry-server.js) (+ [`tools/telemetry-dashboard.html`](../tools/telemetry-dashboard.html)).
+Zero-Dependency (nur Node-Builtins), persistiert als JSONL, rechnet die Kennzahlen in einer
+**reinen, unit-getesteten** `aggregate()`-Funktion ([`test/telemetry-aggregate.test.js`](../test/telemetry-aggregate.test.js)).
 
 ```bash
-node tools/mock-events-server.js          # Collector auf :8789, loggt eintreffende Events
+node tools/telemetry-server.js            # Server + Dashboard auf :8789
+# optional:  PORT=9000 TELEMETRY_DIR=/var/holaruta node tools/telemetry-server.js
 ```
 
-In einer Edition (`editions/<id>.js`) setzen und bauen:
+Dashboard öffnen: **http://localhost:8789/** · API: `GET /api/stats` (JSON).
+
+In einer Edition (`editions/<id>.js`) den Endpunkt setzen und bauen, dann im Profil
+**„Nutzungsstatistik teilen" → An**:
 
 ```js
 analytics: { enabled: true, endpoint: "http://localhost:8789" }
@@ -142,8 +151,27 @@ analytics: { enabled: true, endpoint: "http://localhost:8789" }
 node build.js --edition=<id>
 ```
 
-Dann App öffnen → Profil → **„Nutzungsstatistik teilen" → An**. Klicken/Lernen/Suchen erzeugt
-Events; der Collector zeigt im Terminal Anzahl je Event-Typ und distinkte (pseudonyme) Clients.
+**Das Dashboard zeigt** (30-Tage-Fenster, auto-refresh):
+
+| Bereich | Kennzahlen |
+|---|---|
+| **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate** (≥2 aktive Tage); Balken „aktive Nutzer/Tag" |
+| **Sitzungen** | Anzahl, **Ø & Median Sitzungsdauer** (aus den `ts`-Spannen je `sessionId`), Dauer-Histogramm, Sitzungen/Tag, Ø Events/Sitzung |
+| **Engagement** | meistgenutzte Bildschirme, Top-Aktionen |
+| **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen (Nochmal/Gut/Einfach), Runden-Genauigkeit |
+| **Monitoring** | JS-Fehler (Top nach Häufigkeit) |
+| **Meta** | App-Versionen, Sprachen, Lern-Tracks; aus dem anonymen Snapshot: Feature-Adoption, Karten/Tag |
+
+> **„Wie viele Leute"** = distinkte `clientId` (nur aus dem Event-Strom; der Tages-Snapshot ist
+> anonym ohne Id). **„Wie lange"** = Sitzungsdauer als Spanne zwischen erstem und letztem Event
+> derselben `sessionId`.
+
+> ⚠️ **Kein Produktionsdienst.** Das Dashboard ist **ungeschützt** und der Storage ist eine Datei
+> (`tools/telemetry-data/`, ge-`.gitignore`-t). Für echten Betrieb gehören davor **Auth**, ein
+> richtiger **Event-Store**, Rate-/Größenlimits und EU-Hosting (siehe [BACKEND.md §17.6.3](../BACKEND.md)).
+
+**Ultra-einfacher Smoke-Test** ohne Dashboard/Persistenz: [`tools/mock-events-server.js`](../tools/mock-events-server.js)
+loggt eintreffende Events nur im Terminal.
 
 ---
 

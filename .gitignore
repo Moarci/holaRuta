@@ -21,6 +21,10 @@ HolaRuta-*.html
 # Minifizierter Multi-File-Deploy-Build (reproduzierbar via `node build.js --dist`)
 dist/
 
+# Lokal gesammelte Telemetrie (tools/telemetry-server.js) – enthält pseudonyme
+# Nutzerdaten, gehört NICHT ins Repo.
+tools/telemetry-data/
+
 # OS / editor
 .DS_Store
 Thumbs.db

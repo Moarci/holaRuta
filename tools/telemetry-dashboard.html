@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HolaRuta — Telemetrie-Dashboard</title>
+<style>
+  :root {
+    --bg:#0f1115; --card:#171a21; --ink:#e7e9ee; --mut:#9aa3b2; --line:#262b36;
+    --brand:#e07a5f; --good:#5fb37a; --warn:#e0b15f; --bad:#d96d6d; --accent:#5f8fe0;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+  header { padding:20px 24px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:700; }
+  header .sub { color:var(--mut); font-size:13px; }
+  header .spacer { flex:1; }
+  button { background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; cursor:pointer; font:inherit; }
+  button:hover { border-color:var(--brand); }
+  main { padding:20px 24px 60px; max-width:1180px; margin:0 auto; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .kpi .v { font-size:26px; font-weight:700; }
+  .kpi .l { color:var(--mut); font-size:12px; margin-top:2px; }
+  .kpi .h { color:var(--mut); font-size:11px; margin-top:4px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:860px){ .grid { grid-template-columns:1fr; } }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  .panel h2 { font-size:14px; margin:0 0 12px; font-weight:600; }
+  .panel h2 small { color:var(--mut); font-weight:400; }
+  .row { display:flex; align-items:center; gap:10px; margin:5px 0; }
+  .row .lab { width:140px; flex:none; color:var(--mut); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .row .barwrap { flex:1; background:#0d0f14; border-radius:6px; overflow:hidden; height:18px; }
+  .row .bar { height:100%; border-radius:6px; background:var(--accent); }
+  .row .n { width:48px; flex:none; text-align:right; font-variant-numeric:tabular-nums; font-size:13px; }
+  .empty { color:var(--mut); font-size:13px; padding:8px 0; }
+  svg { display:block; width:100%; height:auto; }
+  .axis { fill:var(--mut); font-size:10px; }
+  .barv { fill:var(--accent); }
+  .ttip { fill:var(--ink); font-size:10px; }
+  footer { color:var(--mut); font-size:12px; padding:0 24px 40px; max-width:1180px; margin:0 auto; }
+  code { background:#0d0f14; padding:1px 5px; border-radius:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 HolaRuta — Telemetrie</h1>
+  <span class="sub" id="window"></span>
+  <span class="spacer"></span>
+  <span class="sub" id="updated"></span>
+  <button id="refresh">Aktualisieren</button>
+</header>
+<main id="app"><p class="empty">Lade …</p></main>
+<footer>
+  Self-host-Tool · ungeschützt · Daten kommen nur von Geräten mit <b>aktivierter</b> opt-in-Statistik.
+  Felder: siehe <code>docs/TELEMETRIE.md</code>. Nutzer = distinkte pseudonyme <code>clientId</code>.
+</footer>
+<script>
+"use strict";
+var $ = function (id) { return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+function fmtDur(sec){ sec=sec|0; if(sec<60) return sec+" s"; var m=Math.floor(sec/60), s=sec%60; if(m<60) return m+" min "+(s?(s+" s"):""); var h=Math.floor(m/60); return h+" h "+(m%60)+" min"; }
+
+// Horizontale Balkenliste: data = [{key/label, count, sub?}]
+function hbars(data, opts){
+  opts = opts || {};
+  if(!data || !data.length) return '<p class="empty">— keine Daten —</p>';
+  var max = data.reduce(function(m,d){ return Math.max(m, d.count||0); }, 0) || 1;
+  var color = opts.color || "var(--accent)";
+  return data.map(function(d){
+    var label = d.label!=null?d.label:d.key;
+    var w = Math.round(((d.count||0)/max)*100);
+    var n = opts.fmt ? opts.fmt(d) : d.count;
+    return '<div class="row"><div class="lab" title="'+esc(label)+'">'+esc(label)+'</div>'
+      + '<div class="barwrap"><div class="bar" style="width:'+w+'%;background:'+color+'"></div></div>'
+      + '<div class="n">'+esc(n)+'</div></div>';
+  }).join("");
+}
+
+// Vertikales Zeitreihen-Balkendiagramm als SVG. series = [{day, count}]
+function vbars(series, opts){
+  opts = opts || {};
+  if(!series || !series.length) return '<p class="empty">— keine Daten —</p>';
+  var W=1000, H=180, padB=22, padL=26, padT=8;
+  var max = series.reduce(function(m,d){ return Math.max(m, d.count||0); }, 0) || 1;
+  var n = series.length, gap=2;
+  var bw = (W-padL)/n - gap;
+  var color = opts.color || "var(--accent)";
+  var bars = series.map(function(d,i){
+    var h = Math.round(((d.count||0)/max)*(H-padB-padT));
+    var x = padL + i*((W-padL)/n);
+    var y = H-padB-h;
+    return '<rect class="barv" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+Math.max(1,bw).toFixed(1)+'" height="'+h+'" rx="1.5" style="fill:'+color+'"><title>'+esc(d.day)+': '+(d.count||0)+'</title></rect>';
+  }).join("");
+  // y-Achse: 0 und max; x-Achse: erstes/mittleres/letztes Datum
+  var ticks = '<text class="axis" x="0" y="'+(padT+8)+'">'+max+'</text><text class="axis" x="0" y="'+(H-padB)+'">0</text>';
+  function lab(i){ var d=series[i]; var x=padL+i*((W-padL)/n); return '<text class="axis" x="'+x.toFixed(1)+'" y="'+(H-6)+'">'+esc(d.day.slice(5))+'</text>'; }
+  var xl = lab(0) + (n>2?lab(Math.floor(n/2)):"") + lab(n-1);
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+bars+ticks+xl+'</svg>';
+}
+
+function kpi(v, l, h, color){
+  return '<div class="kpi"><div class="v" style="color:'+(color||"var(--ink)")+'">'+esc(v)+'</div>'
+    + '<div class="l">'+esc(l)+'</div>'+(h?'<div class="h">'+esc(h)+'</div>':'')+'</div>';
+}
+
+function render(s){
+  var u=s.users, se=s.sessions, le=s.learning;
+  var html = "";
+  html += '<div class="kpis">'
+    + kpi(u.total, "Nutzer (distinkt)", "im "+s.windowDays+"-Tage-Fenster", "var(--brand)")
+    + kpi(u.dauToday, "Aktiv heute (DAU)", s.today)
+    + kpi(u.wau, "Aktiv 7 Tage (WAU)")
+    + kpi(u.mau, "Aktiv 30 Tage (MAU)")
+    + kpi(se.count, "Sitzungen")
+    + kpi(fmtDur(se.avgDurationSec), "Ø Sitzungsdauer", "Median "+fmtDur(se.medianDurationSec), "var(--good)")
+    + kpi(u.returnRatePct+" %", "Wiederkehrrate", "≥ 2 aktive Tage", "var(--accent)")
+    + kpi(s.totals.errors, "Fehler", s.totals.events+" Events gesamt", s.totals.errors?"var(--bad)":"var(--mut)")
+    + '</div>';
+
+  html += '<div class="panel"><h2>Aktive Nutzer pro Tag <small>(distinkte clientId)</small></h2>'+vbars(u.dauSeries,{color:"var(--brand)"})+'</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Sitzungen pro Tag</h2>'+vbars(se.perDay,{color:"var(--accent)"})+'</div>';
+  html += '<div class="panel"><h2>Sitzungsdauer <small>(wie lange pro Besuch)</small></h2>'
+    + hbars(se.durationHistogram.map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--good)"})
+    + '<div class="h" style="color:var(--mut);margin-top:8px">Ø '+esc(fmtDur(se.avgDurationSec))+' · Median '+esc(fmtDur(se.medianDurationSec))+' · Ø '+esc(se.avgEventsPerSession)+' Events/Sitzung</div></div>';
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Genutzte Bildschirme</h2>'+hbars(s.engagement.screens)+'</div>';
+  html += '<div class="panel"><h2>Top-Aktionen</h2>'+hbars(s.engagement.actions)+'</div>';
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Lernspiele abgeschlossen</h2>'
+    + hbars(le.features.map(function(f){return {label:f.feature, count:f.count};}),{color:"var(--warn)",fmt:function(){return "";}})
+    + (le.features.length? le.features.map(function(f){ return '<div class="row"><div class="lab">'+esc(f.feature)+'</div><div class="barwrap"><div class="bar" style="width:'+Math.round(f.count/(le.features[0].count||1)*100)+'%;background:var(--warn)"></div></div><div class="n">'+f.count+'</div></div>'; }).join("") : '<p class="empty">— keine Daten —</p>')
+    + '</div>';
+  html += '<div class="panel"><h2>Karten-Bewertungen & Genauigkeit</h2>'
+    + hbars([{label:"😬 Nochmal",count:le.ratings.again},{label:"🙂 Gut",count:le.ratings.good},{label:"😎 Einfach",count:le.ratings.easy}],{color:"var(--good)"})
+    + '<h2 style="margin-top:14px">Runden-Genauigkeit</h2>'
+    + hbars(le.accuracy.map(function(a){return {label:a.key+" %",count:a.count};}))
+    + '</div>';
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>App-Versionen</h2>'+hbars(s.meta.appVersions)+'</div>';
+  html += '<div class="panel"><h2>Sprachen & Tracks</h2>'+hbars(s.meta.locales)
+    + '<h2 style="margin-top:14px">Lern-Tracks</h2>'+hbars(s.meta.tracks)+'</div>';
+  html += '</div>';
+
+  html += '<div class="panel"><h2>Neu vs. wiederkehrend <small>(App-Starts)</small></h2>'
+    + hbars([{label:"Neue Starts",count:u.newOpens},{label:"Wiederkehrend",count:u.returningOpens}],{color:"var(--brand)"})+'</div>';
+
+  html += '<div class="panel"><h2>Fehler <small>(Monitoring)</small></h2>'
+    + (s.errors.length? hbars(s.errors.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--bad)"}) : '<p class="empty">— keine Fehler im Fenster 🎉 —</p>')+'</div>';
+
+  $("app").innerHTML = html;
+  $("window").textContent = "Fenster: "+s.windowDays+" Tage";
+  $("updated").textContent = "Stand: "+new Date(s.generatedAt).toLocaleString();
+}
+
+function load(){
+  fetch("/api/stats").then(function(r){return r.json();}).then(render).catch(function(e){
+    $("app").innerHTML = '<p class="empty">Fehler beim Laden: '+esc(e&&e.message)+'</p>';
+  });
+}
+$("refresh").addEventListener("click", load);
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>
