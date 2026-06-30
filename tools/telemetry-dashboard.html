@@ -93,9 +93,10 @@ function vbars(series, opts){
     var y = H-padB-h;
     return '<rect class="barv" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+Math.max(1,bw).toFixed(1)+'" height="'+h+'" rx="1.5" style="fill:'+color+'"><title>'+esc(d.day)+': '+(d.count||0)+'</title></rect>';
   }).join("");
-  // y-Achse: 0 und max; x-Achse: erstes/mittleres/letztes Datum
+  // y-Achse: 0 und max; x-Achse: erstes/mittleres/letztes Label
+  var xlab = opts.xlabel || function(d){ return String(d.day).slice(5); };
   var ticks = '<text class="axis" x="0" y="'+(padT+8)+'">'+max+'</text><text class="axis" x="0" y="'+(H-padB)+'">0</text>';
-  function lab(i){ var d=series[i]; var x=padL+i*((W-padL)/n); return '<text class="axis" x="'+x.toFixed(1)+'" y="'+(H-6)+'">'+esc(d.day.slice(5))+'</text>'; }
+  function lab(i){ var d=series[i]; var x=padL+i*((W-padL)/n); return '<text class="axis" x="'+x.toFixed(1)+'" y="'+(H-6)+'">'+esc(xlab(d))+'</text>'; }
   var xl = lab(0) + (n>2?lab(Math.floor(n/2)):"") + lab(n-1);
   return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+bars+ticks+xl+'</svg>';
 }
@@ -116,6 +117,10 @@ function render(s){
     + kpi(se.count, "Sitzungen")
     + kpi(fmtDur(se.avgDurationSec), "Ø Sitzungsdauer", "Median "+fmtDur(se.medianDurationSec), "var(--good)")
     + kpi(u.returnRatePct+" %", "Wiederkehrrate", "≥ 2 aktive Tage", "var(--accent)")
+    + kpi((u.stickinessPct||0)+" %", "Stickiness", "Ø DAU / MAU")
+    + kpi(((u.retention&&u.retention[0]&&u.retention[0].pct)||0)+" %", "D1-Retention", "Tag-1 zurück", "var(--good)")
+    + kpi((s.search&&s.search.noResultPct||0)+" %", "Suche ø Treffer", (s.search&&s.search.total||0)+" Suchen", (s.search&&s.search.noResultPct)>20?"var(--warn)":"var(--mut)")
+    + kpi((s.trip&&s.trip.withGoalPct||0)+" %", "mit Reiseziel", (s.trip&&s.trip.snapshots||0)+" Snapshots", "var(--brand)")
     + kpi(s.totals.errors, "Fehler", s.totals.events+" Events gesamt", s.totals.errors?"var(--bad)":"var(--mut)")
     + '</div>';
 
@@ -144,6 +149,50 @@ function render(s){
     + '</div>';
   html += '</div>';
 
+  // --- Bindung & Retention ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Retention <small>(Tag-N wieder aktiv)</small></h2>'
+    + hbars((u.retention||[]).map(function(r){return {label:"D"+r.day+" · "+r.eligible+" elig.",count:r.pct};}),{color:"var(--good)",fmt:function(d){return d.count+" %";}})+'</div>';
+  html += '<div class="panel"><h2>Aktive Tage je Nutzer</h2>'
+    + hbars((u.activeDaysHistogram||[]).map(function(d){return {label:d.bucket+(d.bucket==="1"?" Tag":" Tage"),count:d.count};}),{color:"var(--brand)"})+'</div>';
+  html += '</div>';
+
+  // --- Content-Qualität: schwierigste Themen + Lernmodus ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Schwierigste Themen <small>(„Nochmal"-Quote · Anzahl)</small></h2>'
+    + (le.difficult&&le.difficult.length? hbars(le.difficult.map(function(d){return {label:d.cat+" · "+d.total,count:d.againPct};}),{color:"var(--bad)",fmt:function(d){return d.count+" %";}}) : '<p class="empty">— zu wenig Daten (ab 5 Bewertungen/Thema) —</p>')+'</div>';
+  html += '<div class="panel"><h2>Lernmodus <small>(je Sitzung)</small></h2>'
+    + hbars((le.modes||[]).map(function(m){return {label:m.key,count:m.count};}),{color:"var(--good)"})+'</div>';
+  html += '</div>';
+
+  // --- Lernfortschritt + Reiseziel (aus Snapshots) ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Lernfortschritt <small>(% gemeisterte Karten)</small></h2>'
+    + (le.mastery&&le.mastery.length? hbars(le.mastery.slice().sort(function(a,b){return numlead(a.key)-numlead(b.key);}).map(function(m){return {label:m.key+" %",count:m.count};}),{color:"var(--good)"}) : '<p class="empty">— keine Snapshots —</p>')+'</div>';
+  html += '<div class="panel"><h2>Reiseziel <small>('+((s.trip&&s.trip.withGoalPct)||0)+'% haben eins)</small></h2>'
+    + '<h2 style="margin-top:0">Tagesziel (Karten/Tag)</h2>'
+    + (s.trip&&s.trip.daily&&s.trip.daily.length? hbars(s.trip.daily.map(function(d){return {label:d.key,count:d.count};})) : '<p class="empty">— keine Daten —</p>')+'</div>';
+  html += '</div>';
+
+  // --- Wann wird gelernt ---
+  html += '<div class="panel"><h2>Aktivität nach Uhrzeit <small>(UTC)</small></h2>'
+    + vbars((s.time&&s.time.byHour||[]).map(function(h){return {day:String(h.hour),count:h.count};}),{color:"var(--accent)",xlabel:function(d){return d.day+"h";}})+'</div>';
+  var WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Aktivität nach Wochentag</h2>'
+    + hbars((s.time&&s.time.byWeekday||[]).map(function(d){return {label:WD[d.weekday],count:d.count};}),{color:"var(--brand)"})+'</div>';
+  html += '<div class="panel"><h2>Onboarding-Funnel <small>(distinkte Nutzer)</small></h2>'
+    + ((s.funnel||[]).some(function(f){return f.count>0;})? hbars(s.funnel.map(function(f){return {label:f.step,count:f.count};}),{color:"var(--warn)"}) : '<p class="empty">— keine Onboarding-Events (greift nur mit Consent während des Onboardings, z. B. Editionen) —</p>')+'</div>';
+  html += '</div>';
+
+  // --- Segmente ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Plattformen <small>(distinkte Nutzer)</small></h2>'
+    + hbars(((s.segments&&s.segments.platforms)||[]).map(function(p){return {label:p.key,count:p.count};}),{color:"var(--accent)"})+'</div>';
+  html += '<div class="panel"><h2>Editionen <small>(distinkte Nutzer)</small></h2>'
+    + hbars(((s.segments&&s.segments.editions)||[]).map(function(e){return {label:e.key,count:e.count};}),{color:"var(--brand)"})+'</div>';
+  html += '</div>';
+
   html += '<div class="grid">';
   html += '<div class="panel"><h2>App-Versionen</h2>'+hbars(s.meta.appVersions)+'</div>';
   html += '<div class="panel"><h2>Sprachen & Tracks</h2>'+hbars(s.meta.locales)
@@ -153,8 +202,12 @@ function render(s){
   html += '<div class="panel"><h2>Neu vs. wiederkehrend <small>(App-Starts)</small></h2>'
     + hbars([{label:"Neue Starts",count:u.newOpens},{label:"Wiederkehrend",count:u.returningOpens}],{color:"var(--brand)"})+'</div>';
 
+  html += '<div class="grid">';
   html += '<div class="panel"><h2>Fehler <small>(Monitoring)</small></h2>'
     + (s.errors.length? hbars(s.errors.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--bad)"}) : '<p class="empty">— keine Fehler im Fenster 🎉 —</p>')+'</div>';
+  html += '<div class="panel"><h2>Fehler je App-Version <small>(Regressionen)</small></h2>'
+    + ((s.errorsByVersion&&s.errorsByVersion.length)? hbars(s.errorsByVersion.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--bad)"}) : '<p class="empty">— keine Fehler —</p>')+'</div>';
+  html += '</div>';
 
   $("app").innerHTML = html;
   $("window").textContent = "Fenster: "+s.windowDays+" Tage";

@@ -92,8 +92,12 @@
   var STREAK_EDGES = [1, 3, 7, 30];
   var REVIEW_EDGES = [10, 50, 200, 1000];
 
+  var MASTERED_EDGES = [10, 25, 50, 75, 90]; // % gemeisterte Karten (Lernfortschritt)
+  var TRIPDAILY_EDGES = [5, 10, 20, 40];     // Tagesziel (Karten/Tag) des Reiseziels
+
   // Baut den ANONYMEN Tages-Snapshot, den der Client (mit Zustimmung) sendet.
-  // meta = { day?, now?, appVersion?, locale?, track? } – nur grobe Metadaten.
+  // meta = { day?, now?, appVersion?, locale?, track?, masteredPct?, hasTripGoal?,
+  //          tripPerDay?, edition?, platform? } – nur grobe Metadaten.
   // KEINE Identität, keine PII, keine Karten-IDs: der Server zählt nur Aggregate.
   function buildUsageSnapshot(gamestats, meta) {
     var g = isObj(gamestats) ? gamestats : {};
@@ -107,9 +111,14 @@
       appVersion: str(m.appVersion).slice(0, 20), // grob (z.B. "1.120.0"), kein Build-Fingerprint
       locale: str(m.locale).slice(0, 8),          // UI-Sprache (de/en/es)
       track: str(m.track).slice(0, 12),           // Lern-Track (de-es/es-en)
+      edition: str(m.edition).slice(0, 16) || "none",   // Co-Branding-Edition (B2B) | "none"
+      platform: str(m.platform).slice(0, 12) || "other", // grobe Plattform-Klasse
       cardsToday: bucket(counts[day], CARD_EDGES), // Aktivität heute (Bucket)
       streak: bucket(g.dailyStreak, STREAK_EDGES), // Bindung (Bucket)
       reviews: bucket(g.reviews, REVIEW_EDGES),    // Gesamt-Nutzung (Bucket)
+      mastered: bucket(m.masteredPct, MASTERED_EDGES), // Lernfortschritt (% gemeistert, Bucket)
+      tripGoal: m.hasTripGoal === true,            // hat ein Reiseziel gesetzt?
+      tripDaily: bucket(m.tripPerDay, TRIPDAILY_EDGES), // Tagesziel (Bucket)
       features: featuresUsed(g),                   // welche Modi je benutzt (boolesch)
     };
   }
@@ -231,6 +240,8 @@
     card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug" },
     feature_complete: { feature: "slug", perfect: "bool" },
     search:           { qlen: "bucket", results: "bucket" },
+    onboarding_step:  { step: "slug", n: "int" },
+    onboarding_complete: {},
     error:            { type: "slug", msg: "text", src: "text", line: "int" },
     consent_change:   { on: "bool" },
     pwa_installed:    {},
@@ -268,6 +279,8 @@
       appVersion: str(c.appVersion).slice(0, 20),
       locale: str(c.locale).slice(0, 8),
       track: str(c.track).slice(0, 12),
+      edition: str(c.edition).slice(0, 16),   // Co-Branding-Edition (B2B) | ""
+      platform: str(c.platform).slice(0, 12), // grobe Plattform-Klasse | ""
       event: str(name).slice(0, 40),
       props: sanitizeProps(name, props),
     };
@@ -277,7 +290,7 @@
 
   // Vom Controller einmalig (und bei Consent-/Sprachwechsel) gesetzt: Meta + ob der
   // Nutzer zugestimmt hat. OHNE consent wird NICHTS gepuffert (keine stille Sammlung).
-  var ctx = { appVersion: "", locale: "", track: "", consent: false };
+  var ctx = { appVersion: "", locale: "", track: "", edition: "", platform: "", consent: false };
   function configure(next) { if (isObj(next)) ctx = Object.assign({}, ctx, next); }
 
   function loadQueue() {
@@ -304,6 +317,8 @@
       appVersion: ctx.appVersion,
       locale: ctx.locale,
       track: ctx.track,
+      edition: ctx.edition,
+      platform: ctx.platform,
     });
     queue.push(ev);
     if (queue.length > QUEUE_CAP) queue = queue.slice(queue.length - QUEUE_CAP); // Ring: Älteste verwerfen

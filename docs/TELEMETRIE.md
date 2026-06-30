@@ -40,9 +40,14 @@ Erzeugt von `buildUsageSnapshot(gamestats, meta)` in [`analytics.js`](../analyti
 | `appVersion` | string ≤20 | z. B. `"1.120.0"` (aus `changelog.VERSION`) |
 | `locale` | string ≤8 | UI-Sprache (`de`/`en`/`es`) |
 | `track` | string ≤12 | Lern-Track (`de-es`/`es-en`) |
+| `edition` | string ≤16 | Co-Branding-Edition (B2B) oder `"none"` |
+| `platform` | string ≤12 | grobe Plattform-Klasse: `android`/`ios`/`mobile`/`desktop`/`other` (UA wird **nur lokal** ausgelesen, **nie** gesendet) |
 | `cardsToday` | Bucket | Karten heute, Kanten `[10, 30, 60]` → `"0"`,`"1-10"`,`"11-30"`,`"31-60"`,`"61+"` |
 | `streak` | Bucket | Tagesserie, Kanten `[1, 3, 7, 30]` |
 | `reviews` | Bucket | Bewertungen gesamt (Lebenszeit), Kanten `[10, 50, 200, 1000]` |
+| `mastered` | Bucket | **% gemeisterte Karten** (Lernfortschritt), Kanten `[10, 25, 50, 75, 90]` |
+| `tripGoal` | bool | hat ein Reiseziel gesetzt? |
+| `tripDaily` | Bucket | Tagesziel (Karten/Tag), Kanten `[5, 10, 20, 40]` |
 | `features` | Objekt aus **Booleans** | je Modus „**jemals** benutzt": `study, listen, precios, dialogos, definiciones, yesto, frases, conjug, battles, roleplay, challenges, ruta, pretrip` |
 
 > **Keine** IDs, **keine** PII, **keine** Karteninhalte. Tages-Dedupe rein clientseitig
@@ -55,7 +60,7 @@ Erzeugt von `buildUsageSnapshot(gamestats, meta)` in [`analytics.js`](../analyti
 Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 ```
-{ v:1, ts, day, clientId, sessionId, seq, appVersion, locale, track, event, props }
+{ v:1, ts, day, clientId, sessionId, seq, appVersion, locale, track, edition, platform, event, props }
 ```
 
 | Envelope-Feld | Inhalt |
@@ -66,7 +71,7 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | `clientId` | **pseudonyme**, resetbare Geräte-Id (zufällig; kein Klarname) |
 | `sessionId` | **pseudonyme** Sitzungs-Id (pro App-Start, rotiert nach 30 min Inaktivität) |
 | `seq` | fortlaufende Nummer (Dedupe/Reihenfolge) |
-| `appVersion` / `locale` / `track` | wie beim Snapshot |
+| `appVersion` / `locale` / `track` / `edition` / `platform` | wie beim Snapshot |
 | `event` | Event-Name (s. u.) |
 | `props` | **Allowlist-gefilterte** Felder (Default deny) |
 
@@ -83,6 +88,8 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | **`card_rated`** | `rating`:`again`/`good`/`easy` · `mode` · `level` · `cat`:Kategorie-slug | `app.js` · `rate()` | eine Karte bewertet – **nur** Bewertung/Modus/Stufe/**Kategorie**, **nie** Karten-Id/-Text |
 | **`feature_complete`** | `feature`:slug · `perfect`:bool | `app.js` · `setGameStats`-Diff (`trackFeatureCompletions`) | Lernspiel-Runde fertig; zentral über die `*Played`-Zähler. `feature` ∈ `precios, dialogos, definiciones, yesto, frases, conjug, battle` |
 | **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – **nur Länge & Trefferzahl**, **NIE** der Suchtext |
+| **`onboarding_step`** | `step`:`intro`/`profile`/`trip` · `n`:int | `app.js` · `beginOnboarding`/`onboardSlidesToProfile`/`advanceOnboardingProfile` | Onboarding-Schritt erreicht (Aktivierungs-Funnel). Greift nur mit Consent **während** des Onboardings (z. B. Editionen) |
+| **`onboarding_complete`** | – | `app.js` · `finishOnboarding` | Onboarding abgeschlossen |
 | **`error`** | `type`:`error`/`promise` · `msg`:text (PII-bereinigt ≤80) · `src` · `line`:int | `app.js` · `window.onerror` / `unhandledrejection` | JS-Fehler fürs Monitoring; `msg` ohne E-Mails/lange Ziffernfolgen |
 | **`consent_change`** | `on`:bool | `app.js` · `setAnalyticsConsent` | Zustimmung erteilt (nur `on:true`; ein Opt-out wird bewusst **nicht** gesendet) |
 | **`pwa_installed`** | – | `app.js` · `window 'appinstalled'` | App als PWA installiert |
@@ -155,11 +162,17 @@ node build.js --edition=<id>
 
 | Bereich | Kennzahlen |
 |---|---|
-| **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate** (≥2 aktive Tage); Balken „aktive Nutzer/Tag" |
+| **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate** (≥2 aktive Tage), **Stickiness** (Ø DAU/MAU); Balken „aktive Nutzer/Tag" |
+| **Bindung & Retention** | **D1/D7/D30-Retention** (Kohorte nach Erst-Tag), Verteilung „aktive Tage je Nutzer" |
 | **Sitzungen** | Anzahl, **Ø & Median Sitzungsdauer** (aus den `ts`-Spannen je `sessionId`), Dauer-Histogramm, Sitzungen/Tag, Ø Events/Sitzung |
 | **Engagement** | meistgenutzte Bildschirme, Top-Aktionen |
-| **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen (Nochmal/Gut/Einfach), Runden-Genauigkeit |
-| **Monitoring** | JS-Fehler (Top nach Häufigkeit) |
+| **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen, Runden-Genauigkeit, **Lernmodus** (flip/type/listen) |
+| **Content-Qualität** | **schwierigste Themen** („Nochmal"-Quote je Kategorie), **Suche-ohne-Treffer-Quote** |
+| **Lernfortschritt** | **Mastery-Verteilung** (% gemeisterte Karten), **Reiseziel-Adoption** + Tagesziel |
+| **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off) |
+| **Zeit** | Aktivität nach **Uhrzeit** (UTC) und **Wochentag** |
+| **Segmente** | **Plattformen** & **Editionen** (distinkte Nutzer) |
+| **Monitoring** | JS-Fehler (Top), **Fehler je App-Version** (Regressionen) |
 | **Meta** | App-Versionen, Sprachen, Lern-Tracks; aus dem anonymen Snapshot: Feature-Adoption, Karten/Tag |
 
 > **„Wie viele Leute"** = distinkte `clientId` (nur aus dem Event-Strom; der Tages-Snapshot ist

@@ -126,4 +126,62 @@ test("aggregate: leere Eingaben -> Nullwerte, kein Crash", () => {
   assert.equal(s.sessions.avgDurationSec, 0);
   assert.equal(s.users.dauSeries.length, 30);
   assert.deepEqual(s.errors, []);
+  assert.deepEqual(s.learning.difficult, []);
+  assert.equal(s.users.retention[0].day, 1);
+});
+
+test("aggregate: Themen-Schwierigkeit / Modus / Suche / Fehler-je-Version / Segmente", () => {
+  const E = []; let q = 0;
+  const mk = (event, props) => E.push(Object.assign(
+    { v: 1, seq: q++, day: TODAY, clientId: "A", sessionId: "s1", ts: T0, appVersion: "1.120.0", edition: "ecos", platform: "android" },
+    { event, props }
+  ));
+  for (let i = 0; i < 3; i++) mk("card_rated", { rating: "again", cat: "comida" }); // 3x Nochmal
+  for (let i = 0; i < 3; i++) mk("card_rated", { rating: "good", cat: "comida" });  // 3x Gut -> 50 %
+  mk("session_start", { mode: "listen", scope: "all" });
+  mk("session_start", { mode: "flip", scope: "comida" });
+  mk("search", { qlen: "3-6", results: "0" });
+  mk("search", { qlen: "3-6", results: "1-5" });
+  mk("search", { qlen: "3-6", results: "5-20" });
+  mk("error", { type: "error", msg: "boom" });
+  const s = aggregate(E, [], { now: NOW });
+  assert.deepEqual(s.learning.difficult[0], { cat: "comida", total: 6, againPct: 50 });
+  const modes = {}; s.learning.modes.forEach((m) => { modes[m.key] = m.count; });
+  assert.equal(modes.listen, 1); assert.equal(modes.flip, 1);
+  assert.equal(s.search.total, 3); assert.equal(s.search.zero, 1); assert.equal(s.search.noResultPct, 33);
+  assert.deepEqual(s.errorsByVersion, [{ key: "1.120.0", count: 1 }]);
+  assert.deepEqual(s.segments.editions, [{ key: "ecos", count: 1 }]);
+  assert.deepEqual(s.segments.platforms, [{ key: "android", count: 1 }]);
+});
+
+test("aggregate: Retention D1, Onboarding-Funnel, Zeit-Verteilung", () => {
+  const E = []; let q = 0;
+  const mk = (event, props, day, ts, cid) => E.push({ v: 1, seq: q++, event, props, day, ts, clientId: cid, sessionId: "x" + q });
+  mk("app_open", {}, YEST, T0 - 86400000, "R"); // R: Erst-Tag gestern …
+  mk("app_open", {}, TODAY, T0, "R");           // … und Tag+1 zurück -> retained
+  mk("app_open", {}, YEST, T0 - 86400000, "N"); // N: nur Erst-Tag -> nicht retained
+  mk("onboarding_step", { step: "intro", n: 0 }, TODAY, T0, "R");
+  mk("onboarding_step", { step: "profile", n: 1 }, TODAY, T0, "R");
+  mk("onboarding_complete", {}, TODAY, T0, "R");
+  const s = aggregate(E, [], { now: NOW });
+  const d1 = s.users.retention.find((r) => r.day === 1);
+  assert.equal(d1.eligible, 2);
+  assert.equal(d1.pct, 50, "nur R kam an Tag+1 zurück");
+  const f = {}; s.funnel.forEach((x) => { f[x.step] = x.count; });
+  assert.equal(f.intro, 1); assert.equal(f.profile, 1); assert.equal(f.trip, 0); assert.equal(f.complete, 1);
+  assert.equal(s.time.byHour.length, 24);
+  assert.equal(s.time.byWeekday.length, 7);
+  assert.ok(s.time.byHour.reduce((a, b) => a + b.count, 0) > 0);
+});
+
+test("aggregate: Mastery & Trip aus Snapshots", () => {
+  const U = [
+    { day: TODAY, mastered: "26-50", tripGoal: true, tripDaily: "11-20" },
+    { day: TODAY, mastered: "0", tripGoal: false, tripDaily: "0" },
+  ];
+  const s = aggregate([], U, { now: NOW });
+  const m = {}; s.learning.mastery.forEach((x) => { m[x.key] = x.count; });
+  assert.equal(m["26-50"], 1);
+  assert.equal(s.trip.snapshots, 2);
+  assert.equal(s.trip.withGoalPct, 50);
 });

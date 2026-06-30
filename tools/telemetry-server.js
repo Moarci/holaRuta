@@ -92,6 +92,16 @@ function aggregate(events, usage, opts) {
   var locales = {};
   var tracks = {};
   var openNew = 0, openReturning = 0;
+  var catStats = {};                   // cat -> { total, again } (schwierigste Themen)
+  var errorsByVersion = {};            // appVersion -> Fehleranzahl (Regressionen)
+  var searchTotal = 0, searchZero = 0; // Suchen gesamt / ohne Treffer
+  var modeCount = {};                  // Lernmodus je Session (flip/type/listen)
+  var hourCount = []; for (var hi = 0; hi < 24; hi++) hourCount.push(0); // Aktivität je UTC-Stunde
+  var weekdayCount = []; for (var wi = 0; wi < 7; wi++) weekdayCount.push(0); // je Wochentag (0=So)
+  var onboardSteps = {};               // step -> { clientId: 1 }
+  var onboardComplete = {};            // clientId -> 1
+  var editionClients = {};             // edition -> { clientId: 1 }
+  var platformClients = {};            // platform -> { clientId: 1 }
 
   ev.forEach(function (e) {
     var day = String(e.day || "");
@@ -105,6 +115,11 @@ function aggregate(events, usage, opts) {
     if (e.appVersion) appVersions[e.appVersion] = (appVersions[e.appVersion] || 0) + 1;
     if (e.locale) locales[e.locale] = (locales[e.locale] || 0) + 1;
     if (e.track) tracks[e.track] = (tracks[e.track] || 0) + 1;
+    if (cid) {
+      var edi = String(e.edition || "none"); (editionClients[edi] || (editionClients[edi] = {}))[cid] = 1;
+      var plt = String(e.platform || "other"); (platformClients[plt] || (platformClients[plt] = {}))[cid] = 1;
+    }
+    if (ts) { var dt = new Date(ts); hourCount[dt.getUTCHours()]++; weekdayCount[dt.getUTCDay()]++; }
 
     if (cid) {
       if (!clientsAll[cid]) clientsAll[cid] = {};
@@ -127,7 +142,11 @@ function aggregate(events, usage, opts) {
       case "app_open": (p.returning ? openReturning++ : openNew++); break;
       case "screen_view": if (p.screen) screenCounts[p.screen] = (screenCounts[p.screen] || 0) + 1; break;
       case "action": if (p.action) actionCounts[p.action] = (actionCounts[p.action] || 0) + 1; break;
-      case "card_rated": if (ratingCounts[p.rating] != null) ratingCounts[p.rating]++; break;
+      case "card_rated":
+        if (ratingCounts[p.rating] != null) ratingCounts[p.rating]++;
+        if (p.cat) { var cs = catStats[p.cat] || (catStats[p.cat] = { total: 0, again: 0 }); cs.total++; if (p.rating === "again") cs.again++; }
+        break;
+      case "session_start": if (p.mode) modeCount[p.mode] = (modeCount[p.mode] || 0) + 1; break;
       case "session_complete": if (p.accuracy) accuracyDist[p.accuracy] = (accuracyDist[p.accuracy] || 0) + 1; break;
       case "feature_complete":
         if (p.feature) {
@@ -135,7 +154,14 @@ function aggregate(events, usage, opts) {
           f.count++; if (p.perfect) f.perfect++;
         }
         break;
-      case "error": { var key = (p.type || "error") + ": " + (p.msg || "?"); errorCounts[key] = (errorCounts[key] || 0) + 1; break; }
+      case "search": searchTotal++; if (p.results === "0") searchZero++; break;
+      case "onboarding_step": if (p.step && cid) { (onboardSteps[p.step] || (onboardSteps[p.step] = {}))[cid] = 1; } break;
+      case "onboarding_complete": if (cid) onboardComplete[cid] = 1; break;
+      case "error": {
+        var key = (p.type || "error") + ": " + (p.msg || "?"); errorCounts[key] = (errorCounts[key] || 0) + 1;
+        if (e.appVersion) errorsByVersion[e.appVersion] = (errorsByVersion[e.appVersion] || 0) + 1;
+        break;
+      }
       default: break;
     }
   });
@@ -173,14 +199,55 @@ function aggregate(events, usage, opts) {
     return Object.keys(set).length;
   }
 
-  // --- Tages-Snapshots (anonym, ohne clientId) ---
+  // --- Tages-Snapshots (anonym, ohne clientId): Adoption, Mastery, Trip ---
   var snapFeatureAdoption = {};
   var snapCardsToday = {};
+  var masteryDist = {};
+  var tripDailyDist = {};
+  var tripGoalYes = 0;
   us.forEach(function (s) {
     var feats = isObj(s.features) ? s.features : {};
     Object.keys(feats).forEach(function (k) { if (feats[k]) snapFeatureAdoption[k] = (snapFeatureAdoption[k] || 0) + 1; });
     if (s.cardsToday) snapCardsToday[s.cardsToday] = (snapCardsToday[s.cardsToday] || 0) + 1;
+    if (s.mastered) masteryDist[s.mastered] = (masteryDist[s.mastered] || 0) + 1;
+    if (s.tripGoal) tripGoalYes++;
+    if (s.tripDaily) tripDailyDist[s.tripDaily] = (tripDailyDist[s.tripDaily] || 0) + 1;
   });
+
+  // --- Schwierigste Themen: „Nochmal"-Quote je Kategorie (ab Mindestvolumen 5) ---
+  var difficult = Object.keys(catStats).filter(function (c) { return catStats[c].total >= 5; })
+    .map(function (c) { return { cat: c, total: catStats[c].total, againPct: Math.round((catStats[c].again / catStats[c].total) * 100) }; })
+    .sort(function (a, b) { return b.againPct - a.againPct || b.total - a.total; }).slice(0, 12);
+
+  // --- Aktive Tage je Nutzer + Erst-Tag (für Retention) ---
+  var activeDaysHist = { "1": 0, "2": 0, "3-4": 0, "5-7": 0, "8+": 0 };
+  var clientFirstDay = {};
+  Object.keys(clientsAll).forEach(function (c) {
+    var days = Object.keys(clientsAll[c]).sort();
+    var n = days.length;
+    activeDaysHist[n === 1 ? "1" : n === 2 ? "2" : n <= 4 ? "3-4" : n <= 7 ? "5-7" : "8+"]++;
+    clientFirstDay[c] = days[0];
+  });
+  function addDays(dayStr, k) { var pp = String(dayStr).split("-"); return dayUTC(Date.UTC(+pp[0], +pp[1] - 1, +pp[2]) + k * DAY_MS); }
+  // N-Tage-Retention: von den Nutzern, deren Erst-Tag+N noch im Bereich liegt, wie
+  // viele waren an genau Tag (Erst-Tag+N) wieder aktiv?
+  function retentionDay(k) {
+    var elig = 0, ret = 0;
+    Object.keys(clientFirstDay).forEach(function (c) {
+      var target = addDays(clientFirstDay[c], k);
+      if (target <= today) { elig++; if (clientsAll[c][target]) ret++; }
+    });
+    return { day: k, eligible: elig, pct: elig ? Math.round((ret / elig) * 100) : 0 };
+  }
+  var avgDAU = dauSeries.length ? Math.round(dauSeries.reduce(function (a, r) { return a + r.count; }, 0) / dauSeries.length) : 0;
+
+  // --- Onboarding-Funnel (distinkte Nutzer je Schritt) ---
+  var funnel = ["intro", "profile", "trip"].map(function (st) {
+    return { step: st, count: onboardSteps[st] ? Object.keys(onboardSteps[st]).length : 0 };
+  });
+  funnel.push({ step: "complete", count: Object.keys(onboardComplete).length });
+
+  function clientsByKey(map) { return topCounts(Object.keys(map).reduce(function (o, k) { o[k] = Object.keys(map[k]).length; return o; }, {})); }
 
   return {
     generatedAt: now,
@@ -198,11 +265,15 @@ function aggregate(events, usage, opts) {
       returning: returningUsers,
       returnRatePct: totalUsers ? Math.round((returningUsers / totalUsers) * 100) : 0,
       dauToday: dauMap[today] ? Object.keys(dauMap[today]).length : 0,
+      avgDau: avgDAU,
       wau: activeSince(7),
       mau: activeSince(30),
+      stickinessPct: activeSince(30) ? Math.round((avgDAU / activeSince(30)) * 100) : 0,
       newOpens: openNew,
       returningOpens: openReturning,
       dauSeries: dauSeries,
+      activeDaysHistogram: ["1", "2", "3-4", "5-7", "8+"].map(function (k) { return { bucket: k, count: activeDaysHist[k] }; }),
+      retention: [retentionDay(1), retentionDay(7), retentionDay(30)],
     },
     sessions: {
       count: Object.keys(sessions).length,
@@ -221,12 +292,24 @@ function aggregate(events, usage, opts) {
     learning: {
       ratings: ratingCounts,
       accuracy: topCounts(accuracyDist),
+      modes: topCounts(modeCount),
+      difficult: difficult,
+      mastery: topCounts(masteryDist),
       features: Object.keys(featureCompletes).map(function (f) {
         var c = featureCompletes[f];
         return { feature: f, count: c.count, perfectPct: c.count ? Math.round((c.perfect / c.count) * 100) : 0 };
       }).sort(function (a, b) { return b.count - a.count; }),
     },
+    funnel: funnel,
+    search: { total: searchTotal, zero: searchZero, noResultPct: searchTotal ? Math.round((searchZero / searchTotal) * 100) : 0 },
+    trip: { snapshots: us.length, withGoalPct: us.length ? Math.round((tripGoalYes / us.length) * 100) : 0, daily: topCounts(tripDailyDist) },
+    time: {
+      byHour: hourCount.map(function (c, h) { return { hour: h, count: c }; }),
+      byWeekday: weekdayCount.map(function (c, w) { return { weekday: w, count: c }; }),
+    },
     errors: topCounts(errorCounts, 15),
+    errorsByVersion: topCounts(errorsByVersion, 8),
+    segments: { editions: clientsByKey(editionClients), platforms: clientsByKey(platformClients) },
     meta: {
       appVersions: topCounts(appVersions, 8),
       locales: topCounts(locales),

@@ -1692,6 +1692,7 @@
     state.onboardSlide = 0;
     settings = Object.assign({}, settings, { placementPending: true });
     store.saveSettings(settings);
+    trackEvent("onboarding_step", { step: "intro", n: 0 });
   }
 
   // Onboarding einmalig als erledigt vermerken und aufs Dashboard wechseln. Der
@@ -1699,6 +1700,7 @@
   function finishOnboarding() {
     settings = Object.assign({}, settings, { onboarded: true });
     store.saveSettings(settings);
+    trackEvent("onboarding_complete", {});
     state.tripEdit = false;
     setState({ screen: "home" });
   }
@@ -5145,6 +5147,7 @@
   function onboardSlidesToProfile() {
     state.onboardStep = "profile";
     state.onboardSlide = 0;
+    trackEvent("onboarding_step", { step: "profile", n: 1 });
     buzz(8);
     render();
   }
@@ -5182,6 +5185,7 @@
     // Einheimische keinen Sinn -> Onboarding nach dem Profil direkt abschließen.
     if (isLocals()) { buzz(8); finishOnboarding(); return; }
     state.onboardStep = "trip";
+    trackEvent("onboarding_step", { step: "trip", n: 2 });
     buzz(8);
     render();
   }
@@ -5228,12 +5232,16 @@
   // werden geschluckt – Telemetrie darf die App nie blockieren.
   function sendUsageSnapshot() {
     if (!window.SC.analytics) return;
-    window.SC.analytics.maybeSend(gamestats, {
-      consent: settings.analyticsConsent === true,
-      appVersion: (changelog && changelog.VERSION) || "",
-      locale: state.uiLang,
-      track: (window.SC.track && window.SC.track.id()) || "",
-    });
+    // Lernfortschritt (% gemeisterte Karten) und Reiseziel grob mitgeben – beides
+    // gebucketet, keine Inhalte. Mastery aus der vorhandenen stats.overview-Logik.
+    var masteredPct = 0;
+    try { var ov = stats.overview(allCards(), progress); if (ov && ov.total) masteredPct = Math.round((ov.mastered / ov.total) * 100); } catch (e) { /* egal */ }
+    var tg = gamestats.tripGoal || null;
+    window.SC.analytics.maybeSend(gamestats, Object.assign(analyticsCtx(), {
+      masteredPct: masteredPct,
+      hasTripGoal: !!tg,
+      tripPerDay: tg ? (tg.perDay || 0) : 0,
+    }));
   }
 
   // ---- Interaktions-Tracking (Event-Pipeline, opt-in) ----------------------
@@ -5244,7 +5252,26 @@
       appVersion: (changelog && changelog.VERSION) || "",
       locale: state.uiLang,
       track: (window.SC.track && window.SC.track.id()) || "",
+      edition: (window.SC.config && window.SC.config.edition) || "none",
+      platform: detectPlatform(),
     };
+  }
+  // Grobe, NICHT fingerprintende Plattform-Klasse (4 Buckets). Liest den UA nur
+  // lokal aus, um ihn auf einen kurzen Enum-Wert abzubilden – der UA selbst wird
+  // NIE gesendet. Einmal berechnet und gemerkt.
+  var _platform = null;
+  function detectPlatform() {
+    if (_platform) return _platform;
+    var p = "other";
+    try {
+      var ua = (navigator && navigator.userAgent) || "";
+      if (/android/i.test(ua)) p = "android";
+      else if (/iphone|ipad|ipod/i.test(ua)) p = "ios";
+      else if ((navigator && navigator.maxTouchPoints || 0) > 1) p = "mobile";
+      else p = "desktop";
+    } catch (e) { p = "other"; }
+    _platform = p;
+    return p;
   }
   // Ein Event erfassen – graceful, wenn das Modul fehlt. Das Modul prüft selbst
   // Endpunkt + Zustimmung; ohne beides wird NICHTS gepuffert.

@@ -71,6 +71,21 @@ test("buildUsageSnapshot: anonym, gebucketet, liest Aktivität aus dailyCounts",
   assert.equal(snap.features.dialogos, false);
 });
 
+test("buildUsageSnapshot: Lernfortschritt/Trip/Edition/Plattform gebucketet", () => {
+  const snap = analytics.buildUsageSnapshot({}, { day: "2026-06-30", masteredPct: 42, hasTripGoal: true, tripPerDay: 15, edition: "ecos", platform: "android" });
+  assert.equal(snap.mastered, "26-50", "42 % gemeistert -> Bucket");
+  assert.equal(snap.tripGoal, true);
+  assert.equal(snap.tripDaily, "11-20");
+  assert.equal(snap.edition, "ecos");
+  assert.equal(snap.platform, "android");
+  // Defaults ohne Angabe:
+  const def = analytics.buildUsageSnapshot({}, { day: "2026-06-30" });
+  assert.equal(def.edition, "none");
+  assert.equal(def.platform, "other");
+  assert.equal(def.mastered, "0");
+  assert.equal(def.tripGoal, false);
+});
+
 test("buildUsageSnapshot: Datenminimierung – feste Allowlist, keine PII/IDs/exakten Zähler", () => {
   const g = {
     dailyCounts: { "2026-06-30": 12 }, dailyStreak: 9, reviews: 412,
@@ -79,7 +94,7 @@ test("buildUsageSnapshot: Datenminimierung – feste Allowlist, keine PII/IDs/ex
   const snap = analytics.buildUsageSnapshot(g, { day: "2026-06-30" });
   assert.deepEqual(
     Object.keys(snap).sort(),
-    ["app", "appVersion", "cardsToday", "day", "features", "locale", "reviews", "schema", "streak", "track"]
+    ["app", "appVersion", "cardsToday", "day", "edition", "features", "locale", "mastered", "platform", "reviews", "schema", "streak", "track", "tripDaily", "tripGoal"]
   );
   const json = JSON.stringify(snap);
   assert.ok(json.indexOf("B1") < 0, "kein Placement-Level");
@@ -154,6 +169,8 @@ test("sanitizeProps: behält nur die Allowlist, verwirft Freitext & unbekannte K
   assert.deepEqual(analytics.sanitizeProps("search", { qlen: "1-10", results: "1-5", q: "border crossing" }), { qlen: "1-10", results: "1-5" });
   // feature_complete: nur Feature-Slug + perfect-Bool.
   assert.deepEqual(analytics.sanitizeProps("feature_complete", { feature: "precios", perfect: true, score: 42 }), { feature: "precios", perfect: true });
+  // onboarding_step: Schritt-Slug + Index, sonst nichts.
+  assert.deepEqual(analytics.sanitizeProps("onboarding_step", { step: "profile", n: 1, name: "Marcel" }), { step: "profile", n: 1 });
   // unbekanntes Event -> keine Props.
   assert.deepEqual(analytics.sanitizeProps("whatever", { a: 1 }), {});
 });
@@ -170,13 +187,15 @@ test("sanitizeProps: error-Text wird PII-bereinigt und gekappt", () => {
 test("buildEvent: vollständiger, deterministischer Envelope (Props sanitisiert)", () => {
   const now = 1750000000000;
   const ev = analytics.buildEvent("screen_view", { screen: "home", tab: "start", secret: "x y" }, {
-    now, clientId: "cid1", sessionId: "sid1", seq: 3, appVersion: "1.120.0", locale: "de", track: "de-es",
+    now, clientId: "cid1", sessionId: "sid1", seq: 3, appVersion: "1.120.0", locale: "de", track: "de-es", edition: "ecos", platform: "ios",
   });
   assert.equal(ev.event, "screen_view");
   assert.equal(ev.clientId, "cid1");
   assert.equal(ev.sessionId, "sid1");
   assert.equal(ev.seq, 3);
   assert.equal(ev.day, analytics.dayKey(now));
+  assert.equal(ev.edition, "ecos");
+  assert.equal(ev.platform, "ios");
   assert.deepEqual(ev.props, { screen: "home", tab: "start" });
 });
 
