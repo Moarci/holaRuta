@@ -966,6 +966,13 @@
            <span class="lvl__dot"></span>${esc(l.short)} · ${esc(l.label)}
          </button>`),
     ].join("");
+    // Wortart-Filter: Einzelwörter vs. auch Wendungen/Sätze. Einfach-Auswahl
+    // (immer genau ein Chip aktiv), je Chip die Kartenzahl der Wahl.
+    const kindChips = (vm.vocabKinds || []).map((k) =>
+      `<button class="lvl ${k.active ? "is-active" : ""}" data-action="set-vocabkind" data-kind="${esc(k.id)}"
+               aria-pressed="${k.active}" title="${esc(t("home.kindTitle", { label: t("home.kind_" + k.id), n: k.count }))}">
+         ${esc(t("home.kind_" + k.id))} · ${k.count}
+       </button>`).join("");
 
     return `
       ${pagehead(esc(t("home.sectionTopics")))}
@@ -975,6 +982,11 @@
       <section class="dashgrp">
         <p class="sectioncap">${esc(t("home.sectionLevels"))}</p>
         <div class="levels" role="group" aria-label="${esc(t("home.levelsGroup"))}">${levelChips}</div>
+      </section>
+
+      <section class="dashgrp">
+        <p class="sectioncap">${esc(t("home.sectionKind"))}</p>
+        <div class="levels" role="group" aria-label="${esc(t("home.kindGroup"))}">${kindChips}</div>
       </section>
 
       ${topicSections}

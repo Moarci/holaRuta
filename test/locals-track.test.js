@@ -288,13 +288,22 @@ test("Kontext: JEDE loc-Karte bekommt englischen Kontext (contextdata.locals + e
     assert.ok(ctx.egLearn && ctx.egLearn.trim(), `englischer Beispielsatz fehlt: ${c.id}`);
     assert.ok(ctx.egNative && ctx.egNative.trim(), `spanische Übersetzung fehlt: ${c.id}`);
     assert.ok(ctx.situation && ctx.situation.trim(), `situación (ES) fehlt: ${c.id}`);
-    assert.ok(ctx.situationEn && ctx.situationEn.trim(), `situation (EN) fehlt: ${c.id}`);
     assert.ok(ctx.note && ctx.note.trim(), `consejo (ES) fehlt: ${c.id}`);
-    assert.ok(ctx.noteEn && ctx.noteEn.trim(), `tip (EN) fehlt: ${c.id}`);
+    // Die Erklärung bleibt rein spanisch (keine …En-Hilfsfelder am Kontext) – sie
+    // ist die Muttersprache der Lernenden und darf nie auf Englisch umschalten.
+    assert.ok(!ctx.situationEn && !ctx.noteEn, `Kontext-Erklärung muss spanisch bleiben (kein …En): ${c.id}`);
   }
 });
 
-test("Kontext: localizeDeep schaltet Situation/Tipp auf die UI-Sprache (es/en), Beispiel bleibt EN+ES", () => {
+test("Kontext: die spanischen Quelltexte tragen weiterhin englische Pendants (sEn/nEn)", () => {
+  // Die englischen Erklär-Texte bleiben in den Rohdaten erhalten (Doku/Zukunft),
+  // werden aber bewusst nicht an die Karten gehängt (expandLocals ohne …En).
+  const raw = window.SC.contextDataLocals;
+  assert.ok(raw && raw["loc-mes01"], "Rohdaten geladen");
+  assert.ok(raw["loc-mes01"].sEn && raw["loc-mes01"].nEn, "englische Pendants in den Rohdaten vorhanden");
+});
+
+test("Kontext: Situation/Tipp bleiben IMMER spanisch (auch bei EN-UI), Beispiel bleibt EN+ES", () => {
   const card = data.CARDS.find((c) => c.id === "loc-mes01");
   assert.ok(card && card.context, "loc-mes01 hat Kontext");
   i18n.setLang("es");
@@ -304,7 +313,10 @@ test("Kontext: localizeDeep schaltet Situation/Tipp auf die UI-Sprache (es/en), 
   i18n.setLang("en");
   const en = i18n.localizeDeep(card.context);
   assert.equal(en.egLearn, card.context.egLearn, "englischer Beispielsatz unverändert (EN-UI)");
-  assert.equal(en.situation, card.context.situationEn, "Situation englisch bei EN-UI");
+  // Kern dieses Tracks: die Erklärung folgt NICHT der UI-Sprache, sie bleibt spanisch
+  // (die Lernenden sind Spanisch-Muttersprachler und müssen sie verstehen).
+  assert.equal(en.situation, card.context.situation, "Situation bleibt spanisch bei EN-UI");
+  assert.equal(en.note, card.context.note, "Tipp bleibt spanisch bei EN-UI");
   assert.ok(!Object.keys(en).some((k) => /En$/.test(k)), "keine …En-Hilfsfelder im EN-Ergebnis");
   i18n.setLang("es"); // Track-Default wiederherstellen
 });

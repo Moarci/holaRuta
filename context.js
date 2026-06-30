@@ -104,17 +104,22 @@
 
   // LOCALS-Track (es-en, Spanisch lernt Englisch): gedrehte Lernrichtung. Der
   // Beispielsatz ist ENGLISCH (die gelernte Antwort), darunter die spanische
-  // Übersetzung als Verständnishilfe; Situation/Tipp folgen der UI-Sprache (es/en).
-  // Bewusst NEUTRALE Feldnamen (egLearn/egNative ohne …En/…Es/…De-Suffix), damit
-  // i18n.localizeDeep sie nicht als Sprach-Hilfsfelder behandelt/wegwirft. Das Flag
-  // `loc` schaltet die Anzeige (ui.js contextPanel) auf die englische Richtung um.
+  // Übersetzung als Verständnishilfe. Die ERKLÄRUNG (Situation/Tipp) bleibt –
+  // wie die L1-Frage der Karte (cardNative) – IMMER Spanisch: die Lernenden sind
+  // Spanisch-Muttersprachler, die Erklärung muss in ihrer Sprache stehen, auch
+  // wenn die UI-Chrome auf Englisch läuft. Darum bewusst NEUTRALE Feldnamen ohne
+  // …En-Suffix (egLearn/egNative/situation/note), damit i18n.localizeDeep sie NICHT
+  // auf die UI-Sprache umschaltet (kein englisches Pendant -> bleibt Spanisch). Die
+  // englischen Quelltexte (x.sEn/x.nEn) bleiben in den Daten, werden hier aber nicht
+  // angehängt. Das Flag `loc` schaltet die Anzeige (ui.js contextPanel) auf die
+  // englische Richtung um.
   //   e = englischer Beispielsatz, t = spanische Übersetzung,
-  //   s/sEn = Situation (ES/EN), n/nEn = Tipp (ES/EN)
+  //   s = Situation (Spanisch), n = Tipp (Spanisch)
   const expandLocals = (x) => ({
     loc: true,
     egLearn: x.e, egNative: x.t,
-    situation: x.s, situationEn: x.sEn,
-    note: x.n, noteEn: x.nEn,
+    situation: x.s,
+    note: x.n,
   });
 
   // Kontext an die Karten hängen (mutiert die übergebene Liste – einmalig beim Start).
