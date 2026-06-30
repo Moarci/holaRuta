@@ -27,6 +27,22 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.122.0",
+      date: "2026-06-30",
+      title: "Vocabulario sin fin: Karteikarten im Endlos-Modus",
+      titleEn: "Vocabulario sin fin: flashcards in endless mode",
+      items: [
+        "♾️ Neues Modul „Vocabulario sin fin“ unter Entdecken › Üben: Karteikarten am Stück über alle aktiven Themen gemischt – ohne die 20er-Runde und ohne Fertig-Screen. Lernen, solange du magst; zurück geht es jederzeit über den Pfeil oben links.",
+        "🧠 Dein Lernstand zählt voll mit: Jede Bewertung fließt wie gewohnt in die Wiederholungs-Steuerung (SRS) und die Statistik ein – fällige Karten kommen zuerst. Die gewählte Lernart (Karteikarte, Schreiben oder Hören) bleibt erhalten.",
+        "🔢 Oben läuft ein ∞-Zähler der bisher gelernten Karten statt „X/Y“, dazu eine dezent durchlaufende Fortschrittsleiste.",
+      ],
+      itemsEn: [
+        "♾️ New module “Vocabulario sin fin” under Discover › Practise: flashcards back to back across all active topics mixed together – no 20-card round and no finish screen. Study for as long as you like; the arrow top-left takes you back anytime.",
+        "🧠 Your progress counts fully: every rating feeds the spaced-repetition schedule (SRS) and your stats as usual – due cards come first. The chosen mode (flashcard, writing or listening) stays as set.",
+        "🔢 The top shows an ∞ counter of cards studied so far instead of “X/Y”, plus a subtly looping progress bar.",
+      ],
+    },
+    {
       version: "1.121.0",
       date: "2026-06-30",
       title: "Banderas: die ganze Welt der Reisenden + klarere leere Kacheln",

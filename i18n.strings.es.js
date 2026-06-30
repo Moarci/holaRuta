@@ -73,6 +73,7 @@
     flipHint: "Toca o desliza ↑ para voltear 🔄",
     skip: "Saltar",
     skipLabel: "Saltar esta tarjeta",
+    endlessLabel: "Modo sin fin – tarjetas estudiadas",
     speakAnswer: "Escuchar la respuesta",
     contextShow: "Mostrar el contexto",
     contextTitle: "🧭 Cómo usarlo en el trabajo",
@@ -273,6 +274,7 @@
     subBanderas: "Quiz de banderas: adivina el país y aprende de paso colores, símbolos e historia.",
     subYesto: "Adivina la imagen: 3-2-1, ¿cómo se dice en inglés?",
     subDefiniciones: "Lee la definición y elige la palabra.",
+    subEndless: "Tarjetas sin parar: todos los temas mezclados, sin fin de ronda.",
     subFrases: "Coloca las piezas y arma frases en inglés.",
 
     // Definiciones (Zuordnen-Quiz): spanische Definition → englisches Wort
