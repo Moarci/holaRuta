@@ -32,14 +32,14 @@
       title: "Banderas: die ganze Welt der Reisenden + klarere leere Kacheln",
       titleEn: "Banderas: the whole travellers' world + clearer empty tiles",
       items: [
-        "🌍 Banderas „El mundo“: 16 große Reiseziele der Welt neu im Flaggen-Quiz und in der Galería – USA, Kanada, Großbritannien, Frankreich, Italien, Deutschland, Portugal, Niederlande, Schweiz, Griechenland, Japan, Thailand, Australien, Marokko, Ägypten und Türkei, jeweils mit Farben, Symbolik und einer Eselsbrücke.",
-        "🃏 Eigene Quiz-Runde „El mundo“ und ein neuer Galería-Abschnitt; „Todas las banderas“ mischt jetzt alle 37 Länder.",
+        "🌍 Banderas „El mundo“: 30 große Reiseziele der Welt neu im Flaggen-Quiz und in der Galería – von USA, Kanada und ganz Europa (u. a. Frankreich, Italien, Deutschland, Skandinavien, Polen, Kroatien) über Asien (Japan, China, Südkorea, Indien, Thailand, Vietnam, Indonesien) bis Australien, Neuseeland, Marokko, Ägypten, Türkei und Südafrika – jeweils mit Farben, Symbolik und einer Eselsbrücke.",
+        "🃏 Eigene Quiz-Runde „El mundo“ und ein neuer Galería-Abschnitt; „Todas las banderas“ mischt jetzt alle 51 Länder.",
         "🏷️ Klarere Kacheln: Ein Bereich, dessen Karten der aktive Stufen-Filter ausblendet (z. B. reine B2-Themen unter A1–B1), zeigt nicht mehr fälschlich „erledigt“, sondern „andere Stufe“ samt echter Kartenzahl.",
         "👉 Tippt man so eine Kachel trotzdem an, startet die Runde jetzt mit den Karten der Kategorie (der Stufen-Filter wird für diesen Griff ignoriert) statt einer leeren Sitzung.",
       ],
       itemsEn: [
-        "🌍 Banderas “El mundo”: 16 of the world's great travel destinations added to the flag quiz and the gallery – USA, Canada, UK, France, Italy, Germany, Portugal, Netherlands, Switzerland, Greece, Japan, Thailand, Australia, Morocco, Egypt and Turkey, each with colours, symbolism and a memory hook.",
-        "🃏 A dedicated “El mundo” quiz round and a new gallery section; “Todas las banderas” now mixes all 37 countries.",
+        "🌍 Banderas “El mundo”: 30 of the world's great travel destinations added to the flag quiz and the gallery – from the USA, Canada and all of Europe (France, Italy, Germany, Scandinavia, Poland, Croatia and more) through Asia (Japan, China, South Korea, India, Thailand, Vietnam, Indonesia) to Australia, New Zealand, Morocco, Egypt, Turkey and South Africa – each with colours, symbolism and a memory hook.",
+        "🃏 A dedicated “El mundo” quiz round and a new gallery section; “Todas las banderas” now mixes all 51 countries.",
         "🏷️ Clearer tiles: a topic whose cards are hidden by the active level filter (e.g. B2-only topics under A1–B1) no longer wrongly shows “done” but “other level” with the real card count.",
         "👉 Tapping such a tile anyway now starts a round with the category's cards (the level filter is ignored for that one tap) instead of an empty session.",
       ],
