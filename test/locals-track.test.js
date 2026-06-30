@@ -139,9 +139,9 @@ test("i18n natKey: es bevorzugt …Es, sonst …En, sonst de", () => {
   i18n.setLang("es");
 });
 
-test("Content: Locals-Kategorien sind 4 Gruppen mit spanischem labelEs", () => {
+test("Content: Locals-Kategorien sind 6 Gruppen mit spanischem labelEs", () => {
   const groups = new Set(dataLocals.CATEGORIES.map((c) => c.group));
-  assert.deepEqual([...groups].sort(), ["loc-dia", "loc-esc", "loc-hosp", "loc-trab"]);
+  assert.deepEqual([...groups].sort(), ["loc-b2", "loc-dia", "loc-esc", "loc-hosp", "loc-trab", "loc-voc"]);
   for (const c of dataLocals.CATEGORIES) {
     assert.ok(c.labelEs && c.labelEs.length, `Kategorie ${c.id} hat labelEs (spanisch)`);
     assert.ok(c.labelEn && c.labelEn.length, `Kategorie ${c.id} hat labelEn (englisch)`);
