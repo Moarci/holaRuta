@@ -33,11 +33,11 @@
       titleEn: "Word-type filter & Spanish context tips (Locals)",
       items: [
         "🔤 Neuer Wortart-Filter im Lernen-Reiter (neben den Stufen): wähle „Nur Wörter“, „Wörter & Wendungen“ oder „Alles“ – so übst du gezielt Einzelvokabeln oder auch ganze Sätze. Jede Wahl zeigt ihre Kartenzahl und gilt für alle Runden (auch Endlos-Modus).",
-        "🇪🇸 Im Locals-Track (Spanisch lernt Englisch) steht die Kontext-Erklärung (Situation & Tipp) jetzt immer auf Spanisch – der Muttersprache der Lernenden –, auch wenn die Oberfläche auf Englisch läuft. Der englische Beispielsatz bleibt natürlich Englisch, mit spanischer Übersetzung darunter.",
+        "🇪🇸 Im Locals-Track (Spanisch lernt Englisch) steht die Kontext-Erklärung (Überschrift, Situation & Tipp) jetzt immer auf Spanisch – der Muttersprache der Lernenden –, auch wenn die Oberfläche auf Englisch läuft. Der englische Beispielsatz bleibt natürlich Englisch, mit spanischer Übersetzung darunter.",
       ],
       itemsEn: [
         "🔤 New word-type filter on the Learn tab (next to the levels): pick “Words only”, “Words & phrases” or “Everything” – practise single vocabulary or whole sentences on purpose. Each choice shows its card count and applies to every round (endless mode included).",
-        "🇪🇸 In the Locals track (Spanish learning English) the context tip (situation & advice) is now always shown in Spanish – the learners’ mother tongue – even when the interface runs in English. The English example sentence stays English, with its Spanish translation underneath.",
+        "🇪🇸 In the Locals track (Spanish learning English) the context tip (heading, situation & advice) is now always shown in Spanish – the learners’ mother tongue – even when the interface runs in English. The English example sentence stays English, with its Spanish translation underneath.",
       ],
     },
     {

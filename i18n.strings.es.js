@@ -118,7 +118,7 @@
     tabProfile: "Perfil",
     tileDue: function (p) { return p.n + " pendientes"; },
     tileDone: "hecho",
-    tileFiltered: "otro nivel",
+    tileFiltered: "ocultas",
     tileCards: function (p) { return p.n + " tarjetas"; },
     sectionTopics: "Temas",
     topicNavAria: "Ir al grupo de temas",

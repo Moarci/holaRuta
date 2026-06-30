@@ -138,7 +138,7 @@
     // Kacheln / Themen
     tileDue: (p) => `${p.n} fällig`,
     tileDone: "erledigt",
-    tileFiltered: "andere Stufe",
+    tileFiltered: "ausgeblendet",
     tileCards: (p) => `${p.n} Karten`,
     sectionTopics: "Themen",
     topicNavAria: "Zur Themen-Gruppe springen",
@@ -387,7 +387,7 @@
     tabProfile: "Profile",
     tileDue: (p) => `${p.n} due`,
     tileDone: "done",
-    tileFiltered: "other level",
+    tileFiltered: "filtered out",
     tileCards: (p) => `${p.n} cards`,
     sectionTopics: "Topics",
     topicNavAria: "Jump to topic group",

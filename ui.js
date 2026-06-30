@@ -1532,12 +1532,16 @@
     // Locals (Englisch lernen) nutzt die Arbeits-Labels statt des Reise-Wortlauts.
     const titleKey = ctx.loc ? "study.contextTitleWork" : "study.contextTitle";
     const noteKey = ctx.loc ? "study.contextNoteWork" : "study.contextNote";
+    // Im Locals-Track ist der ganze Erklärblock eine Verständnishilfe in der L1 der
+    // Lernenden: Überschrift + Labels stehen darum – wie der Inhalt (situation/note)
+    // und die Karten-Frage – IMMER auf Spanisch, auch bei englischer UI-Chrome.
+    const nl = ctx.loc ? "es" : null;
     return `
-      <div class="context-panel" id="context-panel"${open ? "" : " hidden"}>
-        <h3 class="context-panel__title">${esc(t(titleKey))}</h3>
+      <div class="context-panel" id="context-panel"${open ? "" : " hidden"}${ctx.loc ? ' lang="es"' : ""}>
+        <h3 class="context-panel__title">${esc(t(titleKey, null, nl))}</h3>
         ${exLine}
-        ${meta(t("study.contextSituation"), ctx.situation)}
-        ${meta(t(noteKey), ctx.note)}
+        ${meta(t("study.contextSituation", null, nl), ctx.situation)}
+        ${meta(t(noteKey, null, nl), ctx.note)}
       </div>`;
   }
 

@@ -321,6 +321,20 @@ test("Kontext: Situation/Tipp bleiben IMMER spanisch (auch bei EN-UI), Beispiel 
   i18n.setLang("es"); // Track-Default wiederherstellen
 });
 
+test("i18n.t(langOverride): Kontext-Labels stehen auch bei EN-UI auf Spanisch", () => {
+  // Der Erklärblock im Locals-Track rendert seine Überschrift + Labels mit fester
+  // Zielsprache "es" (ui.js contextPanel) – unabhängig von der UI-Chrome-Sprache.
+  i18n.setLang("en");
+  assert.equal(i18n.t("study.contextTitleWork"), "🧭 How to use it at work", "ohne Override: UI-Sprache (EN)");
+  assert.equal(i18n.t("study.contextTitleWork", null, "es"), "🧭 Cómo usarlo en el trabajo", "Override es: Titel spanisch");
+  assert.equal(i18n.t("study.contextSituation", null, "es"), "Situación", "Override es: Situation-Label spanisch");
+  assert.equal(i18n.t("study.contextNoteWork", null, "es"), "Consejo", "Override es: Tipp-Label spanisch");
+  // Leerer/ungültiger Override fällt sauber auf die aktive UI-Sprache zurück.
+  assert.equal(i18n.t("study.contextSituation", null, null), i18n.t("study.contextSituation"), "null-Override = UI-Sprache");
+  assert.equal(i18n.t("study.contextSituation", null, "xx"), i18n.t("study.contextSituation"), "unbekannter Override = UI-Sprache");
+  i18n.setLang("es"); // Track-Default wiederherstellen
+});
+
 // ---------------------------------------------------------------------------
 // Badges: im Locals-Track eigene, reise-freie Badge-Welt (edition-aware).
 // ---------------------------------------------------------------------------
