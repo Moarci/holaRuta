@@ -770,6 +770,8 @@
       accent: isFavRound || isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
       total: state.total,
+      endless: !!state.endless,
+      studied: state.session ? (state.session.right + state.session.wrong) : 0,
       revealed: state.revealed,
       typeResult: state.typeResult,
       context: card.context ? withNameObj(loc(card.context)) : null,
@@ -1204,6 +1206,7 @@
   // aufgerufen, die state.total für eine NEUE Runde setzt (Kategorie/Preset/Ruta/
   // Pre-Trip) – NICHT in rate()/skip(). Speist die Belohnungs-Inszenierung (celebrate.js).
   function beginRound() {
+    state.endless = false; // nur startEndless() schaltet den Endlos-Modus danach scharf
     state.session = { seen: new Set(), right: 0, wrong: 0 };
     state.roundSnapshot = {
       unlocked: Object.assign({}, gamestats.unlocked),
@@ -2939,6 +2942,52 @@
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
+  }
+
+  // ----- Endlos-Modus (Vocabulario sin fin) -----
+  // Karteikarten am Stück über ALLE aktiven Themen, ohne Rundenende und ohne die
+  // 20er-Deckelung. SRS bleibt voll wirksam – jede Bewertung zählt –, die Queue
+  // füllt sich beim Durchlaufen immer wieder nach. Kein Fertig-Screen: man verlässt
+  // den Modus über „Zurück". Die gewählte Lernrichtung/-art (Karteikarte/Schreiben/
+  // Hören) bleibt wie eingestellt.
+  const ENDLESS_BATCH = 20;     // wie viele Karten höchstens in der Queue gehalten werden
+  const ENDLESS_REFILL_AT = 5;  // ab so wenig Restkarten wird nachgefüllt
+
+  function startEndless() {
+    dismissBadgeToast();
+    state.studyOrigin = "endless";
+    state.scopeId = "all";
+    state.pretripDay = null;
+    state.queue = [];
+    beginRound();
+    state.endless = true; // nach beginRound(), das den Modus zurücksetzt
+    refillEndless();
+    state.total = state.queue.length;
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    // Keine Karten verfügbar (Filter zu eng)? Fertig-Screen statt leerer Anzeige –
+    // greift in der Praxis kaum, da der Scope „all" über alle Themen läuft.
+    state.screen = state.queue.length ? "study" : "done";
+    render();
+  }
+
+  // Endlos-Queue auffüllen: zieht frisch aus dem aktuellen Scope, fällige Karten
+  // zuerst (so bleibt SRS wirksam), Dubletten ausgenommen. Nur bis ENDLESS_BATCH –
+  // die Queue bleibt kurz, läuft aber nie leer.
+  function refillEndless() {
+    if (!state.endless) return;
+    if (state.queue.length > ENDLESS_REFILL_AT) return;
+    const cards = scopeCards(state.scopeId || "all");
+    if (!cards.length) return;
+    const queued = new Set(state.queue);
+    const ordered = dueIn(cards).concat(shuffle(cards)); // fällige zuerst, dann gemischt
+    for (let i = 0; i < ordered.length && state.queue.length < ENDLESS_BATCH; i++) {
+      const id = ordered[i].id;
+      if (queued.has(id)) continue;
+      queued.add(id);
+      state.queue.push(id);
+    }
   }
 
   // Tagesziel-Runde (Schicht 3): startet eine Lernrunde mit genau dem heute noch
@@ -4987,6 +5036,7 @@
 
     state.queue = state.queue.slice(1);
     if (rating === srs.RATING.AGAIN) state.queue = state.queue.concat(card.id);
+    if (state.endless) refillEndless(); // Endlos-Modus: Queue läuft nie leer
 
     state.revealed = false;
     state.contextOpen = false;
@@ -5010,6 +5060,7 @@
     buzz(8);
 
     state.queue = state.queue.slice(1);
+    if (state.endless) refillEndless(); // Endlos-Modus: Übersprungene rückt nach, kein Rundenende
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
@@ -5935,6 +5986,7 @@
     { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
     { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",       subKey: "discover.subHostel" },
     { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",      subKey: "discover.subDefiniciones" },
+    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless" },
     { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases" },
     { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos" },
     { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
@@ -7191,6 +7243,7 @@
     "start-roleplay": (el) => { startRoleplay(el.dataset.id); },
     "roleplay-swap": (el) => { roleplaySwap(); },
     "open-quiz-setup": (el) => { definiciones.open(); },
+    "open-endless": (el) => { startEndless(); },
     "start-quiz": (el) => { definiciones.start(el.dataset.set); },
     "quiz-answer": (el) => { definiciones.answer(el.dataset.id); },
     "quiz-next": (el) => { definiciones.next(); },

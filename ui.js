@@ -135,6 +135,7 @@
     { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
     { action: "open-yesto",       icon: "lc:eye", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
     { action: "open-banderas",    icon: "lc:flag", title: "Banderas",      subKey: "discover.subBanderas", sub: "Flaggen-Quiz: Land raten, Farben & Symbole lernen", grad: ["#C0392B", "#2E6E86"], need: "banderas", group: "play" },
+    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", sub: "Karteikarten am Stück – alle Themen gemischt, ohne Rundenende", grad: ["#2E6E86", "#7048E8"], group: "practice" },
     { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
     { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
     { action: "open-venue-roleplay", icon: "lc:handshake", title: "Roleplay del local", sub: "Huésped y personal practican por turnos, en un teléfono", grad: ["#2F6B70", "#5A4FA8"], loc: true, group: "play" },
@@ -1006,6 +1007,7 @@
       "open-favorites": true, "open-dialogos": true,
       "open-banderas": true, "open-yesto": true,
       "open-quiz-setup": true, "open-frases": true,
+      "open-endless": true,
     };
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
@@ -1446,16 +1448,25 @@
       vm.mode === "listen" ? listenBody(vm) :
       vm.mode === "type" ? typeBody(vm) : flipBody(vm);
 
+    // Endlos-Modus: kein „X/Y", sondern der laufende Zähler bisher gelernter Karten
+    // plus ∞-Symbol; die Fortschrittsleiste läuft als dezente Endlos-Animation.
+    const counter = vm.endless
+      ? `<div class="topbar__counter" aria-live="polite" title="${esc(t("study.endlessLabel"))}">${vm.studied} ∞</div>`
+      : `<div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>`;
+    const progress = vm.endless
+      ? `<div class="progress progress--endless" role="progressbar" aria-valuetext="${esc(t("study.endlessLabel"))}" aria-label="${esc(t("study.studyProgress"))}"><div class="progress__bar"></div></div>`
+      : `<div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("study.studyProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>`;
+
     return `
       <section class="screen study" style="--from:${esc(accent[0])};--to:${esc(accent[1])}">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
           <div class="topbar__title">${renderIcon(vm.catLc || vm.catIcon)} ${esc(vm.catLabel)}</div>
           <div class="topbar__right">
-            <div class="topbar__counter" aria-live="polite">${vm.position + 1}/${vm.total}</div>
+            ${counter}
           </div>
         </div>
-        <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("study.studyProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
+        ${progress}
         ${body}
         ${favLine(vm)}
         ${skipBtn()}
