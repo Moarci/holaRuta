@@ -146,6 +146,8 @@ test("i18n: Locals-Variante überschreibt NICHT die korrekte spanische Basiszeil
   i18n.setLang("es");
   assert.equal(i18n.t("discover.subYesto"), "Adivina la imagen: 3-2-1, ¿cómo se dice en inglés?");
   assert.ok(/en inglés/.test(i18n.t("discover.quizSetupIntro")));
+  // Descubrir-Intro: spanischer Text passt zur Seite (kein „Mi léxico"-Rest).
+  assert.ok(/inglés/.test(i18n.t("discover.discoverIntro")) && !/guardadas/.test(i18n.t("discover.discoverIntro")));
 });
 
 test("Content: Pilot-Korpus data.locals ist strukturell sauber", () => {
