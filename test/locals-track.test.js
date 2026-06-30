@@ -53,19 +53,21 @@ test("Matcher: card.alt zählt als englische Alternativen (field 'learn')", () =
   assert.equal(matcher.check("bathroom", card, "learn").correct, true); // artikellos
 });
 
-test("Matcher: card.alt ERGÄNZT die Hauptantwort, ersetzt sie nicht (Regression)", () => {
-  // Bug-Fix: bei vorhandenem alt MUSS die angezeigte Haupt-en weiterhin akzeptiert
-  // werden. Früher ersetzte alt die Antwortmenge komplett – die angezeigte Antwort
-  // („besides") wurde dadurch als falsch gewertet.
-  const card = { es: "además", en: "besides", alt: ["in addition", "moreover"] };
-  assert.equal(matcher.check("besides", card, "learn").correct, true, "Haupt-en bleibt akzeptiert");
-  assert.equal(matcher.check("in addition", card, "learn").correct, true);
-  assert.equal(matcher.check("moreover", card, "learn").correct, true);
+test("Matcher: jede loc-alt-Karte akzeptiert ihre eigene Haupt-en (Regression)", () => {
+  // card.alt ERSETZT beim Matching die Antwortmenge der gelernten Antwort. Damit die
+  // ANGEZEIGTE Haupt-en weiterhin akzeptiert wird (früher ein Bug – „besides" wurde
+  // als falsch gewertet), MUSS jede loc-alt-Liste die Hauptantwort als ersten Eintrag
+  // enthalten. Diese Daten-Invariante wird hier festgeschrieben.
+  const card = { es: "además", en: "besides", alt: ["besides", "in addition", "moreover"] };
+  assert.equal(matcher.check("besides", card, "learn").correct, true, "Haupt-en akzeptiert");
+  assert.equal(matcher.check("moreover", card, "learn").correct, true, "Synonym akzeptiert");
   assert.equal(matcher.acceptedAnswers(card, "learn")[0], "besides", "Anzeige/TTS = Haupt-en zuerst");
-  // ALLE echten loc-Karten mit alt akzeptieren ihre eigene Haupt-en.
+  // ALLE echten loc-Karten mit alt: die Hauptantwort ist enthalten UND wird akzeptiert.
+  const norm = (s) => String(s || "").toLowerCase().replace(/[.,!?¿¡;:"']/g, "").replace(/^(?:the|a|an)\s+/, "").replace(/\s+/g, " ").trim();
   const withAlt = data.CARDS.filter((c) => /^loc-/.test(c.id) && Array.isArray(c.alt) && c.alt.length);
   assert.ok(withAlt.length >= 7, `genug alt-Karten (${withAlt.length})`);
   for (const c of withAlt) {
+    assert.ok(c.alt.some((a) => norm(a) === norm(c.en)), `${c.id}: alt enthält die Haupt-en (${JSON.stringify(c.en)})`);
     assert.equal(matcher.check(c.en, c, "learn").correct, true, `${c.id}: Haupt-en akzeptiert (${JSON.stringify(c.en)})`);
   }
 });
