@@ -127,6 +127,14 @@ als Abschied, regionale Register) können vereinzelt falsch oder unnatürlich se
 Kernversprechen „LatAm-korrekt" ist Marketing-tragend → ein systematischer
 Native-Speaker-Review (mind. stichprobenhaft je Bereich, vollständig bei neuen Packs) sollte
 fest eingeplant werden. **Schwere: MEDIUM** (Glaubwürdigkeit des Hauptversprechens).
+>
+> **Update (Englisch-/Locals-Track):** Der gesamte EN-Korpus (2844 Karten + Kontext,
+> 131 Kategorien) hat einen **systematischen Multi-Agent-Sign-off** durchlaufen
+> (pro Kategorie Review + adversariale Verifikation, vier Dimensionen; ~86 Befunde
+> behoben — Doku: [LOCALS-SIGNOFF.md](LOCALS-SIGNOFF.md)). Agentenbasiert, daher
+> ist ein finaler menschlicher Native-Stempel weiterhin optional, aber R13 ist für
+> den Englisch-Track damit **deutlich gesenkt**. Der **Reise-/ES-Track** (`data.js`)
+> bleibt unverändert offen.
 
 ### R14 · Impressum / DSGVO für öffentlich erreichbare DE-App *(rechtlich)*
 Eine in Deutschland öffentlich erreichbare App unterliegt i. d. R. **Impressumspflicht (§ 5 DDG/TMG)**

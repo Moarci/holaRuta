@@ -9,6 +9,30 @@ Sign-off" – der als marketing-tragend eingestufte Punkt.
 Quelle der Wahrheit für den Freigabe-Fortschritt. Karten/Kontext liegen in
 `data.locals.js` und `contextdata.locals.js`.
 
+## ✅ Status: KOMPLETT (alle 131 Kategorien / 2844 Karten)
+
+Systematischer **Multi-Agent-Sign-off** (pro Kategorie: Review → adversariale
+Verifikation, AmE-Standard, vier Review-Dimensionen) über den gesamten Englisch-
+Korpus, in 6 Gruppen-Läufen. **~86 echte Befunde** behoben — fast alle interne
+Inkonsistenzen (Aussprache-Tipp widerspricht der eigenen Note/Schwesterkarte),
+dazu erfundene Grammatik-„Regeln", Fehlübersetzungen und AmE-Lokalisierungen:
+
+| Gruppe | Karten | Befunde |
+| --- | --- | --- |
+| loc-hosp (Tourismus/Hostelería) | 432 | 5 |
+| loc-trab (Arbeit/BPO/Tech) | 384 | 16 |
+| loc-dia (Día a día) | 336 | 8 |
+| loc-esc (Escuela/Grammatik) | 360 | 7 |
+| loc-voc (Vokabel-Wortlisten) | 966 | 37 + 1 Disambiguierung |
+| loc-b2 (B2/avanzado) | 366 | 8 |
+| **Σ** | **2844** | **~86** |
+
+> **Art des Sign-offs:** agentenbasiert (kein menschlicher Native-Speaker). Zwei
+> unabhängige Schichten je Kategorie (Vorschlag + adversariale Bestätigung,
+> konservativ gegen False Positives). Das senkt R13 für den Englisch-Track
+> deutlich; ein finaler menschlicher Stempel bleibt optional. Der **Reise-Track**
+> (ES, `data.js`) ist davon NICHT berührt — R13 dort weiter offen.
+
 ## Status-Legende
 
 | Symbol | EN-Lint | Sign-off |
@@ -193,26 +217,26 @@ So wird der Sign-off dauerhaft test-verankert (Regression = roter Test).
 
 ## Stufe 4 — Fortgeschritten
 
-### Vocabulario B2 (`loc-b2`) — 20 Kategorien · 366 Karten · Stufe —
+### Vocabulario B2 (`loc-b2`) — 20 Kategorien · 366 Karten · Stufe ✅ (Sign-off: 8 Befunde behoben)
 | Kategorie | Karten | EN-Lint | Sign-off |
 | --- | --- | --- | --- |
-| Opinar y argumentar (`b2-opiniones`) | 18 | ⬜ | ⬜ |
-| Acuerdo y desacuerdo (`b2-debate`) | 18 | ⬜ | ⬜ |
-| Conectores avanzados (`b2-conectores`) | 18 | ⬜ | ⬜ |
-| Frecuencia y tiempo (`b2-tiempo`) | 18 | ⬜ | ⬜ |
-| Emociones matizadas (`b2-emociones`) | 18 | ⬜ | ⬜ |
-| Personalidad (`b2-personalidad`) | 18 | ⬜ | ⬜ |
-| Conceptos abstractos (`b2-abstracto`) | 18 | ⬜ | ⬜ |
-| Colocaciones (`b2-colocaciones`) | 18 | ⬜ | ⬜ |
-| Mundo laboral (`b2-trabajo`) | 18 | ⬜ | ⬜ |
-| Negocios y reuniones (`b2-negocios`) | 18 | ⬜ | ⬜ |
-| Finanzas personales (`b2-dinero`) | 18 | ⬜ | ⬜ |
-| Educación (`b2-educacion`) | 18 | ⬜ | ⬜ |
-| Phrasal verbs (`b2-phrasal`) | 20 | ⬜ | ⬜ |
-| Verbos avanzados (`b2-verbos`) | 20 | ⬜ | ⬜ |
-| Adjetivos avanzados (`b2-adjetivos`) | 20 | ⬜ | ⬜ |
-| Sociedad y actualidad (`b2-sociedad`) | 18 | ⬜ | ⬜ |
-| Medio ambiente (`b2-medioambiente`) | 18 | ⬜ | ⬜ |
-| Tecnología digital (`b2-tecnologia`) | 18 | ⬜ | ⬜ |
-| Salud y bienestar (`b2-salud`) | 18 | ⬜ | ⬜ |
-| Viajes avanzado (`b2-viajes`) | 18 | ⬜ | ⬜ |
+| Opinar y argumentar (`b2-opiniones`) | 18 | ✅ | ✅ |
+| Acuerdo y desacuerdo (`b2-debate`) | 18 | ✅ | ✅ |
+| Conectores avanzados (`b2-conectores`) | 18 | ✅ | ✅ |
+| Frecuencia y tiempo (`b2-tiempo`) | 18 | ✅ | ✅ |
+| Emociones matizadas (`b2-emociones`) | 18 | ✅ | ✅ |
+| Personalidad (`b2-personalidad`) | 18 | ✅ | ✅ |
+| Conceptos abstractos (`b2-abstracto`) | 18 | ✅ | ✅ |
+| Colocaciones (`b2-colocaciones`) | 18 | ✅ | ✅ |
+| Mundo laboral (`b2-trabajo`) | 18 | ✅ | ✅ |
+| Negocios y reuniones (`b2-negocios`) | 18 | ✅ | ✅ |
+| Finanzas personales (`b2-dinero`) | 18 | ✅ | ✅ |
+| Educación (`b2-educacion`) | 18 | ✅ | ✅ |
+| Phrasal verbs (`b2-phrasal`) | 20 | ✅ | ✅ |
+| Verbos avanzados (`b2-verbos`) | 20 | ✅ | ✅ |
+| Adjetivos avanzados (`b2-adjetivos`) | 20 | ✅ | ✅ |
+| Sociedad y actualidad (`b2-sociedad`) | 18 | ✅ | ✅ |
+| Medio ambiente (`b2-medioambiente`) | 18 | ✅ | ✅ |
+| Tecnología digital (`b2-tecnologia`) | 18 | ✅ | ✅ |
+| Salud y bienestar (`b2-salud`) | 18 | ✅ | ✅ |
+| Viajes avanzado (`b2-viajes`) | 18 | ✅ | ✅ |
