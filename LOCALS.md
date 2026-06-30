@@ -80,7 +80,7 @@ diskursivem Vokabular (Meinung/Argumentation, Konnektoren, Kollokationen, phrasa
 verbs, Arbeit/Wirtschaft, Gesellschaft/Umwelt …). Jede Karte trägt `es`/`en`/`tip`
 plus einen vollen Beispielsatz-Kontext in `contextdata.locals.js`.
 
-Aktuell **131 Kategorien · 2294 Karten** (ein Schnellstart-Preset je Kategorie).
+Aktuell **131 Kategorien · 2844 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 

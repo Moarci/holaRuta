@@ -357,3 +357,16 @@ test("Korpus: kein In-Session-Set (Kategorie/Preset/Kurs-Etappe) zeigt denselben
     for (const d of plan.days) findDup(d.cardIds, `${plan.scope} Etappe ${d.day}`);
   }
 });
+
+test("Doku: LOCALS.md-Zähler (Kategorien · Karten) == echter Stand", () => {
+  const fs = require("fs");
+  const md = fs.readFileSync(path.join(__dirname, "..", "LOCALS.md"), "utf8");
+  const m = md.match(/\*\*(\d+)\s+Kategorien\s+·\s+(\d+)\s+Karten\*\*/);
+  assert.ok(m, "LOCALS.md nennt '**N Kategorien · M Karten**'");
+  const docCats = Number(m[1]);
+  const docCards = Number(m[2]);
+  const realCats = dataLocals.CATEGORIES.length;
+  const realCards = data.CARDS.filter((c) => /^loc-/.test(c.id)).length;
+  assert.equal(docCats, realCats, `LOCALS.md Kategorien (${docCats}) == echt (${realCats})`);
+  assert.equal(docCards, realCards, `LOCALS.md Karten (${docCards}) == echt (${realCards})`);
+});
