@@ -139,57 +139,57 @@ So wird der Sign-off dauerhaft test-verankert (Regression = roter Test).
 
 ## Stufe 3 — Wortlisten
 
-### Vocabulario por temas (`loc-voc`) — 48 Kategorien · 966 Karten · Stufe —
+### Vocabulario por temas (`loc-voc`) — 48 Kategorien · 966 Karten · Stufe ✅ (Sign-off: 37 Befunde + 1 Disambiguierung)
 | Kategorie | Karten | EN-Lint | Sign-off |
 | --- | --- | --- | --- |
-| Números (`voc-numeros`) | 26 | ⬜ | ⬜ |
-| Colores (`voc-colores`) | 16 | ⬜ | ⬜ |
-| La familia (`voc-familia`) | 18 | ⬜ | ⬜ |
-| El cuerpo (`voc-cuerpo`) | 20 | ⬜ | ⬜ |
-| Comida y bebida (`voc-comida`) | 20 | ⬜ | ⬜ |
-| Frutas y verduras (`voc-frutas`) | 18 | ⬜ | ⬜ |
-| Animales (`voc-animales`) | 20 | ⬜ | ⬜ |
-| La ropa (`voc-ropa`) | 18 | ⬜ | ⬜ |
-| La casa (`voc-casa`) | 18 | ⬜ | ⬜ |
-| La cocina (`voc-cocina`) | 16 | ⬜ | ⬜ |
-| En la ciudad (`voc-ciudad`) | 20 | ⬜ | ⬜ |
-| Transporte (`voc-transporte`) | 16 | ⬜ | ⬜ |
-| Días y meses (`voc-dias`) | 19 | ⬜ | ⬜ |
-| El clima (`voc-clima`) | 17 | ⬜ | ⬜ |
-| Verbos comunes (`voc-verbos`) | 24 | ⬜ | ⬜ |
-| Adjetivos (`voc-adjetivos`) | 20 | ⬜ | ⬜ |
-| Profesiones (`voc-profesiones`) | 20 | ⬜ | ⬜ |
-| Tecnología (`voc-tecnologia`) | 18 | ⬜ | ⬜ |
-| Naturaleza (`voc-naturaleza`) | 18 | ⬜ | ⬜ |
-| Emociones (`voc-emociones`) | 16 | ⬜ | ⬜ |
-| La escuela (`voc-escuela`) | 16 | ⬜ | ⬜ |
-| Deportes (`voc-deportes`) | 16 | ⬜ | ⬜ |
-| Salud (`voc-salud`) | 16 | ⬜ | ⬜ |
-| La oficina (`voc-oficina`) | 16 | ⬜ | ⬜ |
-| Dinero y compras (`voc-dinero`) | 16 | ⬜ | ⬜ |
-| De viaje (`voc-viaje`) | 18 | ⬜ | ⬜ |
-| La hora (`voc-tiempo`) | 16 | ⬜ | ⬜ |
-| El baño (`voc-bano`) | 16 | ⬜ | ⬜ |
-| Herramientas (`voc-herramientas`) | 16 | ⬜ | ⬜ |
-| Música (`voc-musica`) | 16 | ⬜ | ⬜ |
-| Formas (`voc-formas`) | 16 | ⬜ | ⬜ |
-| Materiales (`voc-materiales`) | 16 | ⬜ | ⬜ |
-| Aves (`voc-aves`) | 16 | ⬜ | ⬜ |
-| Vida marina (`voc-marvida`) | 16 | ⬜ | ⬜ |
-| Insectos (`voc-insectos`) | 16 | ⬜ | ⬜ |
-| Postres y dulces (`voc-postres`) | 16 | ⬜ | ⬜ |
-| Especias y hierbas (`voc-especias`) | 16 | ⬜ | ⬜ |
-| Medidas (`voc-medidas`) | 16 | ⬜ | ⬜ |
-| Direcciones (`voc-direcciones`) | 16 | ⬜ | ⬜ |
-| Palabras de pregunta (`voc-preguntas`) | 16 | ⬜ | ⬜ |
-| Pronombres (`voc-pronombres`) | 16 | ⬜ | ⬜ |
-| Países (`voc-paises`) | 16 | ⬜ | ⬜ |
-| Nacionalidades (`voc-nacionalidades`) | 16 | ⬜ | ⬜ |
-| Belleza y cuidado (`voc-belleza`) | 16 | ⬜ | ⬜ |
-| Limpieza del hogar (`voc-limpieza`) | 16 | ⬜ | ⬜ |
-| Emergencias (`voc-emergencias`) | 16 | ⬜ | ⬜ |
-| Palabras esenciales (`voc-nucleo`) | 120 | ⬜ | ⬜ |
-| Verbos esenciales (`voc-acciones`) | 50 | ⬜ | ⬜ |
+| Números (`voc-numeros`) | 26 | ✅ | ✅ |
+| Colores (`voc-colores`) | 16 | ✅ | ✅ |
+| La familia (`voc-familia`) | 18 | ✅ | ✅ |
+| El cuerpo (`voc-cuerpo`) | 20 | ✅ | ✅ |
+| Comida y bebida (`voc-comida`) | 20 | ✅ | ✅ |
+| Frutas y verduras (`voc-frutas`) | 18 | ✅ | ✅ |
+| Animales (`voc-animales`) | 20 | ✅ | ✅ |
+| La ropa (`voc-ropa`) | 18 | ✅ | ✅ |
+| La casa (`voc-casa`) | 18 | ✅ | ✅ |
+| La cocina (`voc-cocina`) | 16 | ✅ | ✅ |
+| En la ciudad (`voc-ciudad`) | 20 | ✅ | ✅ |
+| Transporte (`voc-transporte`) | 16 | ✅ | ✅ |
+| Días y meses (`voc-dias`) | 19 | ✅ | ✅ |
+| El clima (`voc-clima`) | 17 | ✅ | ✅ |
+| Verbos comunes (`voc-verbos`) | 24 | ✅ | ✅ |
+| Adjetivos (`voc-adjetivos`) | 20 | ✅ | ✅ |
+| Profesiones (`voc-profesiones`) | 20 | ✅ | ✅ |
+| Tecnología (`voc-tecnologia`) | 18 | ✅ | ✅ |
+| Naturaleza (`voc-naturaleza`) | 18 | ✅ | ✅ |
+| Emociones (`voc-emociones`) | 16 | ✅ | ✅ |
+| La escuela (`voc-escuela`) | 16 | ✅ | ✅ |
+| Deportes (`voc-deportes`) | 16 | ✅ | ✅ |
+| Salud (`voc-salud`) | 16 | ✅ | ✅ |
+| La oficina (`voc-oficina`) | 16 | ✅ | ✅ |
+| Dinero y compras (`voc-dinero`) | 16 | ✅ | ✅ |
+| De viaje (`voc-viaje`) | 18 | ✅ | ✅ |
+| La hora (`voc-tiempo`) | 16 | ✅ | ✅ |
+| El baño (`voc-bano`) | 16 | ✅ | ✅ |
+| Herramientas (`voc-herramientas`) | 16 | ✅ | ✅ |
+| Música (`voc-musica`) | 16 | ✅ | ✅ |
+| Formas (`voc-formas`) | 16 | ✅ | ✅ |
+| Materiales (`voc-materiales`) | 16 | ✅ | ✅ |
+| Aves (`voc-aves`) | 16 | ✅ | ✅ |
+| Vida marina (`voc-marvida`) | 16 | ✅ | ✅ |
+| Insectos (`voc-insectos`) | 16 | ✅ | ✅ |
+| Postres y dulces (`voc-postres`) | 16 | ✅ | ✅ |
+| Especias y hierbas (`voc-especias`) | 16 | ✅ | ✅ |
+| Medidas (`voc-medidas`) | 16 | ✅ | ✅ |
+| Direcciones (`voc-direcciones`) | 16 | ✅ | ✅ |
+| Palabras de pregunta (`voc-preguntas`) | 16 | ✅ | ✅ |
+| Pronombres (`voc-pronombres`) | 16 | ✅ | ✅ |
+| Países (`voc-paises`) | 16 | ✅ | ✅ |
+| Nacionalidades (`voc-nacionalidades`) | 16 | ✅ | ✅ |
+| Belleza y cuidado (`voc-belleza`) | 16 | ✅ | ✅ |
+| Limpieza del hogar (`voc-limpieza`) | 16 | ✅ | ✅ |
+| Emergencias (`voc-emergencias`) | 16 | ✅ | ✅ |
+| Palabras esenciales (`voc-nucleo`) | 120 | ✅ | ✅ |
+| Verbos esenciales (`voc-acciones`) | 50 | ✅ | ✅ |
 
 ## Stufe 4 — Fortgeschritten
 
