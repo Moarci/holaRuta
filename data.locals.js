@@ -475,7 +475,7 @@
     { id: "loc-eme08", cat: "emergencias-en", lvl: 1, es: "Quédese tranquilo.", en: "Stay calm.", tip: "stei CAM" },
 
     // --- Reseñas y redes (Bewertungen & Social für Tourismusbetriebe) ---
-    { id: "loc-res01", cat: "resenas-en", lvl: 2, es: "¿Nos deja una reseña?", en: "Could you leave us a review?", tip: "cud yu liv os a ri-VIÚ" },
+    { id: "loc-res01", cat: "resenas-en", lvl: 2, es: "¿Nos deja una reseña?", en: "Could you leave us a review?", tip: "cud yu liiv os a ri-VIÚ" },
     { id: "loc-res02", cat: "resenas-en", lvl: 1, es: "Síganos en Instagram.", en: "Follow us on Instagram.", tip: "FÓ-lou os on ÍN-sta-gram" },
     { id: "loc-res03", cat: "resenas-en", lvl: 2, es: "Etiquétenos en sus fotos.", en: "Tag us in your photos.", tip: "TAG os in yor FÓU-tos" },
     { id: "loc-res04", cat: "resenas-en", lvl: 1, es: "Gracias por su visita.", en: "Thanks for visiting.", tip: "zenks for VÍ-si-ting" },
@@ -593,7 +593,7 @@
     { id: "loc-reu11", cat: "reunion-en", lvl: 1, es: "Permítanme un segundo.", en: "Give me a second.", tip: "giv mi a SÉ-cond" },
     { id: "loc-reu12", cat: "reunion-en", lvl: 2, es: "Pasemos al siguiente punto.", en: "Let's move to the next point.", tip: "lets MUV tu da nekst point" },
     { id: "loc-reu13", cat: "reunion-en", lvl: 1, es: "¿Quedó claro?", en: "Is that clear?", tip: "is dat CLIR" },
-    { id: "loc-reu14", cat: "reunion-en", lvl: 2, es: "Les envío el resumen después.", en: "I'll send the summary later.", tip: "ail send da SÓ-ma-ri LÉI-ter" },
+    { id: "loc-reu14", cat: "reunion-en", lvl: 2, es: "Les envío el resumen después.", en: "I'll send the summary later.", tip: "ail send da SÁ-ma-ri LÉI-ter" },
     // --- reseñas y redes (Forts.) ---
     { id: "loc-res09", cat: "resenas-en", lvl: 2, es: "Su opinión nos ayuda mucho.", en: "Your feedback helps us a lot.", tip: "yor FÍD-bak jelps os a LOT" },
     { id: "loc-res10", cat: "resenas-en", lvl: 1, es: "Cuéntenos qué le pareció.", en: "Tell us what you think.", tip: "tel os wat yu ZINK" },
@@ -794,7 +794,7 @@
     { id: "loc-bpo06", cat: "bpo-en", lvl: 2, es: "Permítame ponerlo en espera.", en: "Let me put you on hold.", tip: "let mi put yu on JÓULD" },
     { id: "loc-bpo07", cat: "bpo-en", lvl: 3, es: "Lo transfiero con el área correspondiente.", en: "I'll transfer you to the right department.", tip: "ail trans-FÉR yu tu da rait di-PÁRT-ment" },
     { id: "loc-bpo08", cat: "bpo-en", lvl: 2, es: "Permítame confirmar lo que entendí.", en: "Let me make sure I understand.", tip: "let mi meik shur ai an-der-STÁND" },
-    { id: "loc-bpo09", cat: "bpo-en", lvl: 1, es: "Lamento la molestia.", en: "I'm sorry for the trouble.", tip: "aim SO-rri for da TRÓ-bol" },
+    { id: "loc-bpo09", cat: "bpo-en", lvl: 1, es: "Lamento la molestia.", en: "I'm sorry for the trouble.", tip: "aim SO-rri for da TRÁ-bol" },
     { id: "loc-bpo10", cat: "bpo-en", lvl: 2, es: "Déjeme verificar su información.", en: "Let me verify your information.", tip: "let mi VÉ-ri-fai yor in-for-MÉI-shon" },
     { id: "loc-bpo11", cat: "bpo-en", lvl: 1, es: "¿Sigue en la línea?", en: "Are you still there?", tip: "ar yu stil DER" },
     { id: "loc-bpo12", cat: "bpo-en", lvl: 2, es: "Su caso quedó registrado.", en: "Your case has been logged.", tip: "yor KÉIS jas bin LOGD" },
@@ -803,7 +803,7 @@
     { id: "loc-bpo15", cat: "bpo-en", lvl: 1, es: "Gracias por su tiempo.", en: "Thank you for your time.", tip: "zenk yu for yor TÁIM" },
     { id: "loc-bpo16", cat: "bpo-en", lvl: 2, es: "Que tenga un excelente día.", en: "Have a wonderful day.", tip: "jav a WÓN-der-ful dei" },
     // --- tech-en (Inglés para TI / dev) ---
-    { id: "loc-tech01", cat: "tech-en", lvl: 2, es: "Estoy bloqueado con un error.", en: "I'm blocked by a bug.", tip: "aim BLOKT bai a BOG" },
+    { id: "loc-tech01", cat: "tech-en", lvl: 2, es: "Estoy bloqueado con un error.", en: "I'm blocked by a bug.", tip: "aim BLOKT bai a BAG" },
     { id: "loc-tech02", cat: "tech-en", lvl: 3, es: "Subí el cambio, ¿lo revisas?", en: "I pushed the change, can you review it?", tip: "ai pusht da chéinch, can yu ri-VIÚ it" },
     { id: "loc-tech03", cat: "tech-en", lvl: 2, es: "Lo despliego a producción hoy.", en: "I'll deploy it to production today.", tip: "ail di-PLÓI it tu pro-DÓK-shon tu-DÉI" },
     { id: "loc-tech04", cat: "tech-en", lvl: 1, es: "Necesito más tiempo para esto.", en: "I need more time for this.", tip: "ai nid mor TAIM for dis" },
@@ -837,8 +837,8 @@
     { id: "loc-vp02", cat: "ventas-pro", lvl: 2, es: "¿Le muestro una demostración?", en: "Can I show you a demo?", tip: "can ai shou yu a DÉ-mou" },
     { id: "loc-vp03", cat: "ventas-pro", lvl: 1, es: "Le hago seguimiento mañana.", en: "I'll follow up tomorrow.", tip: "ail FÓ-lou op tu-MÓ-rrou" },
     { id: "loc-vp04", cat: "ventas-pro", lvl: 2, es: "Esto resuelve su problema.", en: "This solves your problem.", tip: "dis SOLVS yor PRÓ-blem" },
-    { id: "loc-vp05", cat: "ventas-pro", lvl: 2, es: "¿Cuál es su presupuesto?", en: "What's your budget?", tip: "wats yor BÓ-yet" },
-    { id: "loc-vp06", cat: "ventas-pro", lvl: 1, es: "Le envío una propuesta.", en: "I'll send you a proposal.", tip: "ail send yu a pro-PÓU-sal" },
+    { id: "loc-vp05", cat: "ventas-pro", lvl: 2, es: "¿Cuál es su presupuesto?", en: "What's your budget?", tip: "wats yor BÁ-yet" },
+    { id: "loc-vp06", cat: "ventas-pro", lvl: 1, es: "Le envío una propuesta.", en: "I'll send you a proposal.", tip: "ail send yu a pro-PÓU-zal" },
     { id: "loc-vp07", cat: "ventas-pro", lvl: 2, es: "Tenemos una oferta especial.", en: "We have a special offer.", tip: "wi jav a SPÉ-shal Ó-fer" },
     { id: "loc-vp08", cat: "ventas-pro", lvl: 1, es: "¿Le interesa probarlo?", en: "Want to give it a try?", tip: "want tu giv it a TRÁI" },
     { id: "loc-vp09", cat: "ventas-pro", lvl: 2, es: "Con gusto le explico los planes.", en: "I'd be happy to explain the plans.", tip: "aid bi JÁ-pi tu eks-PLÉIN da plans" },
@@ -883,7 +883,7 @@
     { id: "loc-fb09", cat: "feedback-en", lvl: 1, es: "Gracias por tu trabajo.", en: "Thank you for your work.", tip: "zenk yu for yor WERK" },
     { id: "loc-fb10", cat: "feedback-en", lvl: 2, es: "Cuentas con mi apoyo.", en: "You have my support.", tip: "yu jav mai su-PÓRT" },
     // --- networking-en (Networking) ---
-    { id: "loc-net01", cat: "networking-en", lvl: 1, es: "¿En qué empresa trabajas?", en: "What company do you work for?", tip: "wat CÓM-pa-ni du yu werk for" },
+    { id: "loc-net01", cat: "networking-en", lvl: 1, es: "¿En qué empresa trabajas?", en: "What company do you work for?", tip: "wat KÁM-pa-ni du yu werk for" },
     { id: "loc-net02", cat: "networking-en", lvl: 2, es: "Conectemos en LinkedIn.", en: "Let's connect on LinkedIn.", tip: "lets co-NÉKT on LÍNKD-in" },
     { id: "loc-net03", cat: "networking-en", lvl: 1, es: "Aquí tienes mi tarjeta.", en: "Here's my card.", tip: "jirs mai CARD" },
     { id: "loc-net04", cat: "networking-en", lvl: 2, es: "Me alegra coincidir aquí.", en: "Glad to run into you here.", tip: "glad tu ron ÍN-tu yu jir" },
@@ -2654,7 +2654,7 @@
     { id: "loc-ofi19", cat: "oficina", lvl: 1, es: "Hoy trabajo desde casa.", en: "I'm working from home today.", tip: "aim wér-king from joum tu-DÉI" },
     { id: "loc-ofi20", cat: "oficina", lvl: 2, es: "La próxima semana estoy de permiso.", en: "I'm on leave next week.", tip: "aim on liv nekst WIK" },
     // --- tech-en ---
-    { id: "loc-tech17", cat: "tech-en", lvl: 1, es: "Hay que arreglar este bug.", en: "We need to fix this bug.", tip: "wi nid tu fiks dis BOG" },
+    { id: "loc-tech17", cat: "tech-en", lvl: 1, es: "Hay que arreglar este bug.", en: "We need to fix this bug.", tip: "wi nid tu fiks dis BAG" },
     { id: "loc-tech18", cat: "tech-en", lvl: 3, es: "¿Puedes hacer merge del PR?", en: "Can you merge the PR?", tip: "can yu merch da pi-ÁR" },
     { id: "loc-tech19", cat: "tech-en", lvl: 2, es: "Está en pruebas ahora.", en: "It's in testing now.", tip: "its in TÉS-ting nau" },
     { id: "loc-tech20", cat: "tech-en", lvl: 2, es: "El servidor está caído.", en: "The server is down.", tip: "da SÉR-ver is DÁUN" },
@@ -2666,7 +2666,7 @@
     { id: "loc-ent17", cat: "entrevista", lvl: 2, es: "¿El puesto es remoto o presencial?", en: "Is the role remote or on-site?", tip: "is da roul ri-MÓUT or on-SÁIT" },
     { id: "loc-ent18", cat: "entrevista", lvl: 2, es: "Manejo bien la presión.", en: "I handle pressure well.", tip: "ai JÁN-dol PRÉ-shur wel" },
     { id: "loc-ent19", cat: "entrevista", lvl: 2, es: "¿Cuáles serían mis funciones?", en: "What would my duties be?", tip: "wat wud mai DIÚ-tis bi" },
-    { id: "loc-ent20", cat: "entrevista", lvl: 2, es: "Estoy disponible de inmediato.", en: "I'm available right away.", tip: "aim a-VÉI-la-bol rait a-wéi" },
+    { id: "loc-ent20", cat: "entrevista", lvl: 2, es: "Estoy disponible de inmediato.", en: "I'm available right away.", tip: "aim a-VÉI-la-bol rait a-WÉI" },
     // --- modales-en ---
     { id: "loc-mod13", cat: "modales-en", lvl: 2, es: "¿Podrías echarme una mano?", en: "Could you give me a hand?", tip: "cud yu giv mi a JAND" },
     { id: "loc-mod14", cat: "modales-en", lvl: 2, es: "No tienes que disculparte.", en: "You don't have to apologize.", tip: "yu dont jav tu a-PÓ-lo-yais", alt: ["you don't have to apologise."] },
@@ -3105,7 +3105,7 @@
     { id: "loc-cli24", cat: "cliente-en", lvl: 3, es: "Una vez que reciba el reembolso, le llegará un correo de confirmación.", en: "Once the refund is processed, you'll get a confirmation email.", tip: "uans da RI-fand is PRO-sest yul guet a kon-fer-MEI-shon II-meil" },
     // --- reunion-en ---
     { id: "loc-reu21", cat: "reunion-en", lvl: 3, es: "Antes de cerrar, quiero asegurarme de que todos estén de acuerdo.", en: "Before we wrap up, I want to make sure everyone's on board.", tip: "bi-FOR ui rap ap ai uant tu meik shur EV-ri-uans on bord" },
-    { id: "loc-reu22", cat: "reunion-en", lvl: 3, es: "Si no hay objeciones, sigamos adelante con esa propuesta.", en: "If there are no objections, let's go ahead with that proposal.", tip: "if der ar nou ob-YEK-shons lets gou a-JED uiz dat pro-POU-sal" },
+    { id: "loc-reu22", cat: "reunion-en", lvl: 3, es: "Si no hay objeciones, sigamos adelante con esa propuesta.", en: "If there are no objections, let's go ahead with that proposal.", tip: "if der ar nou ob-YEK-shons lets gou a-JED wid dat pro-POU-sal" },
     { id: "loc-reu23", cat: "reunion-en", lvl: 3, es: "Me gustaría escuchar la opinión de todos antes de decidir.", en: "I'd like to hear everyone's thoughts before we decide.", tip: "aid laik tu jiir EV-ri-uans zots bi-FOR ui di-SAID" },
     { id: "loc-reu24", cat: "reunion-en", lvl: 3, es: "Tomé nota de los puntos y se los enviaré después de la reunión.", en: "I've taken notes on the key points and I'll send them after the meeting.", tip: "aiv TEI-ken nouts on da kii points and ail send dem AF-ter da MII-ting" },
     // --- resenas-en ---
@@ -3148,14 +3148,14 @@
     { id: "loc-vc24", cat: "videocall-en", lvl: 2, es: "¿Me escuchan mejor si me acerco al micrófono?", en: "Do I sound better if I get closer to the mic?", tip: "du ai saund BE-ter if ai guet KLOU-ser tu da maik" },
     // --- ventas-pro ---
     { id: "loc-vp13", cat: "ventas-pro", lvl: 2, es: "Permítame mostrarle cómo funciona.", en: "Let me walk you through how it works.", tip: "let mi uok yu zru jau it uerks" },
-    { id: "loc-vp14", cat: "ventas-pro", lvl: 2, es: "Muchos clientes empiezan con el plan básico.", en: "Most clients start with the basic plan.", tip: "moust KLAI-ents start uiz da BEI-sik plan" },
+    { id: "loc-vp14", cat: "ventas-pro", lvl: 2, es: "Muchos clientes empiezan con el plan básico.", en: "Most clients start with the basic plan.", tip: "moust KLAI-ents start uid da BEI-sik plan" },
     { id: "loc-vp15", cat: "ventas-pro", lvl: 1, es: "La primera semana es gratis.", en: "The first week is free.", tip: "da ferst uiik is frii" },
     { id: "loc-vp16", cat: "ventas-pro", lvl: 2, es: "Puede cancelar cuando quiera.", en: "You can cancel anytime.", tip: "yu kan KAN-sel E-ni-taim" },
     { id: "loc-vp17", cat: "ventas-pro", lvl: 2, es: "¿Qué le impide tomar la decisión hoy?", en: "What's holding you back from deciding today?", tip: "uats JOUL-ding yu bak from di-SAI-ding tu-DEI" },
     { id: "loc-vp18", cat: "ventas-pro", lvl: 1, es: "Le ofrezco un descuento de bienvenida.", en: "I'll give you a welcome discount.", tip: "ail guiv yu a UEL-kam DIS-kaunt" },
     { id: "loc-vp19", cat: "ventas-pro", lvl: 3, es: "Si lo prueba esta semana, le incluyo la instalación sin costo.", en: "If you try it this week, I'll throw in the setup at no cost.", tip: "if yu trai it dis uiik ail zrou in da SET-ap at nou kost" },
     { id: "loc-vp20", cat: "ventas-pro", lvl: 3, es: "Entiendo su duda; muchos clientes sentían lo mismo hasta que lo probaron.", en: "I get your hesitation; many clients felt the same until they tried it.", tip: "ai guet yor je-si-TEI-shon ME-ni KLAI-ents felt da seim an-TIL dei traid it" },
-    { id: "loc-vp21", cat: "ventas-pro", lvl: 3, es: "Lo que diferencia a nuestro producto es el soporte que viene incluido.", en: "What sets our product apart is the support that comes with it.", tip: "uat sets aur PRO-dakt a-PART is da sa-PORT dat kams uiz it" },
+    { id: "loc-vp21", cat: "ventas-pro", lvl: 3, es: "Lo que diferencia a nuestro producto es el soporte que viene incluido.", en: "What sets our product apart is the support that comes with it.", tip: "uat sets aur PRO-dakt a-PART is da sa-PORT dat kams uid it" },
     { id: "loc-vp22", cat: "ventas-pro", lvl: 3, es: "Si me da diez minutos, le muestro exactamente cómo le ahorraría dinero.", en: "If you give me ten minutes, I'll show you exactly how this would save you money.", tip: "if yu guiv mi ten MI-nits ail shou yu ek-SAKT-li jau dis uud seiv yu MA-ni" },
     { id: "loc-vp23", cat: "ventas-pro", lvl: 2, es: "Déjeme enviarle un caso de éxito parecido al suyo.", en: "Let me send you a success story similar to yours.", tip: "let mi send yu a sak-SES STO-ri SI-mi-lar tu yors" },
     { id: "loc-vp24", cat: "ventas-pro", lvl: 1, es: "No hay compromiso de permanencia.", en: "There's no long-term commitment.", tip: "ders nou long-term ko-MIT-ment" },
@@ -3172,11 +3172,11 @@
     { id: "loc-log15", cat: "logistica-en", lvl: 2, es: "Le envío la guía de rastreo por correo.", en: "I'll email you the tracking link.", tip: "ail II-meil yu da TRA-king link" },
     { id: "loc-log16", cat: "logistica-en", lvl: 2, es: "Falta una caja en el envío.", en: "One box is missing from the shipment.", tip: "uan box is MI-sing from da SHIP-ment" },
     { id: "loc-log17", cat: "logistica-en", lvl: 1, es: "El paquete llegó dañado.", en: "The package arrived damaged.", tip: "da PA-kech a-RAIVD DA-mecht" },
-    { id: "loc-log18", cat: "logistica-en", lvl: 2, es: "Necesito reprogramar la entrega.", en: "I need to reschedule the delivery.", tip: "ai niid tu ri-SKE-yul da di-LI-ve-ri" },
+    { id: "loc-log18", cat: "logistica-en", lvl: 2, es: "Necesito reprogramar la entrega.", en: "I need to reschedule the delivery.", tip: "ai niid tu ri-SKE-chul da di-LI-ve-ri" },
     { id: "loc-log19", cat: "logistica-en", lvl: 3, es: "Si el envío se retiene en aduana, le avisaremos de inmediato.", en: "If the shipment gets held at customs, we'll let you know right away.", tip: "if da SHIP-ment guets jeld at KAS-toms uil let yu nou rait a-UEI" },
     { id: "loc-log20", cat: "logistica-en", lvl: 3, es: "El proveedor confirmó que el pedido saldrá en cuanto reciba el pago.", en: "The supplier confirmed the order will ship as soon as payment clears.", tip: "da sa-PLAI-er kon-FERMD di OR-der uil ship as suun as PEI-ment kliirs" },
     { id: "loc-log21", cat: "logistica-en", lvl: 3, es: "Dado que el contenedor se retrasó, debemos avisar al cliente del nuevo plazo.", en: "Since the container was delayed, we need to update the client on the new timeline.", tip: "sins da kon-TEI-ner uas di-LEID ui niid tu ap-DEIT da KLAI-ent on da nyu TAIM-lain" },
-    { id: "loc-log22", cat: "logistica-en", lvl: 3, es: "Antes de despachar, asegúrese de que el embalaje cumpla con los requisitos.", en: "Before dispatching, make sure the packaging meets the requirements.", tip: "bi-FOR dis-PA-ching meik shur da PA-ke-ying miits da ri-KUAIR-ments" },
+    { id: "loc-log22", cat: "logistica-en", lvl: 3, es: "Antes de despachar, asegúrese de que el embalaje cumpla con los requisitos.", en: "Before dispatching, make sure the packaging meets the requirements.", tip: "bi-FOR dis-PA-ching meik shur da PA-ke-ching miits da ri-KUAIR-ments" },
     { id: "loc-log23", cat: "logistica-en", lvl: 2, es: "El courier intentó entregar dos veces.", en: "The courier tried to deliver twice.", tip: "da KU-rier traid tu di-LI-ver tuais" },
     { id: "loc-log24", cat: "logistica-en", lvl: 1, es: "La bodega cierra a las cinco.", en: "The warehouse closes at five.", tip: "da UER-jaus KLOU-ses at faiv" },
     // --- feedback-en ---

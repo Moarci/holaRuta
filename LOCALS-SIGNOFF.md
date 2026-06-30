@@ -78,25 +78,25 @@ So wird der Sign-off dauerhaft test-verankert (Regression = roter Test).
 | Alquiler de autos (`alquiler-auto-en`) | 24 | ✅ | ✅ |
 | Museo y entradas (`museo-en`) | 24 | ✅ | ✅ |
 
-### Trabajo y negocios (`loc-trab`) — 16 Kategorien · 384 Karten · Stufe —
+### Trabajo & negocios (`loc-trab`) — 16 Kategorien · 384 Karten · Stufe ✅ (Sign-off: 16 Befunde behoben)
 | Kategorie | Karten | EN-Lint | Sign-off |
 | --- | --- | --- | --- |
-| Entrevista de trabajo (`entrevista`) | 24 | ⬜ | ⬜ |
-| Oficina y correos (`oficina`) | 24 | ⬜ | ⬜ |
-| Atención al cliente (`cliente-en`) | 24 | ⬜ | ⬜ |
-| En la reunión (`reunion-en`) | 24 | ⬜ | ⬜ |
-| Reseñas y redes (`resenas-en`) | 24 | ⬜ | ⬜ |
-| Hoja de vida (`cv-en`) | 24 | ⬜ | ⬜ |
-| Negociar (`negociacion`) | 24 | ⬜ | ⬜ |
-| Call-center / BPO (`bpo-en`) | 24 | ⬜ | ⬜ |
-| Inglés para TI (`tech-en`) | 24 | ⬜ | ⬜ |
-| Videollamadas (`videocall-en`) | 24 | ⬜ | ⬜ |
-| Ventas y pitch (`ventas-pro`) | 24 | ⬜ | ⬜ |
-| Finanzas y facturas (`finanzas-en`) | 24 | ⬜ | ⬜ |
-| Logística y envíos (`logistica-en`) | 24 | ⬜ | ⬜ |
-| RR. HH. y feedback (`feedback-en`) | 24 | ⬜ | ⬜ |
-| Networking (`networking-en`) | 24 | ⬜ | ⬜ |
-| Personal de salud (`salud-pro-en`) | 24 | ⬜ | ⬜ |
+| Entrevista de trabajo (`entrevista`) | 24 | ✅ | ✅ |
+| Oficina y correos (`oficina`) | 24 | ✅ | ✅ |
+| Atención al cliente (`cliente-en`) | 24 | ✅ | ✅ |
+| En la reunión (`reunion-en`) | 24 | ✅ | ✅ |
+| Reseñas y redes (`resenas-en`) | 24 | ✅ | ✅ |
+| Hoja de vida (`cv-en`) | 24 | ✅ | ✅ |
+| Negociar (`negociacion`) | 24 | ✅ | ✅ |
+| Call-center / BPO (`bpo-en`) | 24 | ✅ | ✅ |
+| Inglés para TI (`tech-en`) | 24 | ✅ | ✅ |
+| Videollamadas (`videocall-en`) | 24 | ✅ | ✅ |
+| Ventas y pitch (`ventas-pro`) | 24 | ✅ | ✅ |
+| Finanzas y facturas (`finanzas-en`) | 24 | ✅ | ✅ |
+| Logística y envíos (`logistica-en`) | 24 | ✅ | ✅ |
+| RR. HH. y feedback (`feedback-en`) | 24 | ✅ | ✅ |
+| Networking (`networking-en`) | 24 | ✅ | ✅ |
+| Personal de salud (`salud-pro-en`) | 24 | ✅ | ✅ |
 
 ## Stufe 2 — Alltag/Schule
 
