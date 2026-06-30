@@ -167,6 +167,25 @@ test("Content: Locals-Kategorien sind 6 Gruppen mit spanischem labelEs", () => {
   }
 });
 
+test("Content: jede Locals-Kategorie hat Karten (keine leeren Kacheln)", () => {
+  // Schützt vor „null content": die Kachel-Anzeige „0 Karten" entsteht NUR durch
+  // den Stufen-Filter, nie durch eine kartenlose Kategorie. Besonders die reine
+  // B2-Gruppe (loc-b2, alle Karten lvl 4) muss befüllt bleiben.
+  const counts = new Map();
+  for (const k of dataLocals.CARDS) counts.set(k.cat, (counts.get(k.cat) || 0) + 1);
+  for (const c of dataLocals.CATEGORIES) {
+    assert.ok((counts.get(c.id) || 0) > 0, `Kategorie ${c.id} hat keine Karten`);
+  }
+  // Die B2-Gruppe existiert und trägt ausschließlich Stufe-4-Karten.
+  const b2 = dataLocals.CATEGORIES.filter((c) => c.group === "loc-b2");
+  assert.ok(b2.length > 0, "loc-b2-Gruppe fehlt");
+  for (const c of b2) {
+    const cards = dataLocals.CARDS.filter((k) => k.cat === c.id);
+    assert.ok(cards.length > 0, `B2-Kategorie ${c.id} ist leer`);
+    assert.ok(cards.every((k) => k.lvl === 4), `B2-Kategorie ${c.id}: alle Karten Stufe 4`);
+  }
+});
+
 test("Content: Lernpfade (PLANS) – 8 Wochen × 5 Teile à 20 Karten, scope curso*", () => {
   assert.ok(Array.isArray(dataLocals.PLANS) && dataLocals.PLANS.length >= 2);
   const ids = new Set(dataLocals.CARDS.map((c) => c.id));
