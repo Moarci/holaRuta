@@ -2981,7 +2981,12 @@
     const cards = scopeCards(state.scopeId || "all");
     if (!cards.length) return;
     const queued = new Set(state.queue);
-    const ordered = dueIn(cards).concat(shuffle(cards)); // fällige zuerst, dann gemischt
+    // Fällige zuerst (SRS-Priorität), ABER auch die fälligen gemischt – sonst kämen
+    // sie in Datenreihenfolge, also Thema für Thema. Bei einem frischen Nutzer sind
+    // alle Karten fällig (isDue(undefined) === true); ohne das Mischen liefe der
+    // Endlos-Modus dann sortiert statt „alle Themen gemischt". Danach der Rest,
+    // ebenfalls gemischt, als unerschöpflicher Nachschub.
+    const ordered = shuffle(dueIn(cards)).concat(shuffle(cards));
     for (let i = 0; i < ordered.length && state.queue.length < ENDLESS_BATCH; i++) {
       const id = ordered[i].id;
       if (queued.has(id)) continue;

@@ -81,6 +81,31 @@ test("Endlos-Modus endet nicht: viele Bewertungen → bleibt im Study-Screen", (
   }
 });
 
+test("Endlos-Modus zieht „alle Themen gemischt“ (nicht in Datenreihenfolge Thema für Thema)", () => {
+  // Frischer Nutzer ⇒ alle Karten fällig (isDue(undefined) === true). Würde der
+  // Modus die fälligen unverändert (Datenreihenfolge) servieren, kämen die ersten
+  // Karten alle aus derselben Anfangs-Kategorie. Der Mix-Fix mischt die Fälligen,
+  // also müssen die ersten Karten mehrere Kategorien abdecken.
+  const root = freshApp();
+  const d = makeDriver(root);
+  // id -> Kategorie aus den echten Daten (gleiche Quelle wie der Controller).
+  const catById = new Map(window.SC.data.CARDS.map((c) => [c.id, c.cat]));
+
+  d.setTab("profil");
+  if (d.find("set-mode", { mode: "flip" })) d.click("set-mode", { mode: "flip" });
+  d.setTab("entdecken");
+  assert.ok(d.click("open-endless"), "open-endless klickbar");
+
+  const cats = new Set();
+  for (let i = 0; i < 20; i++) {
+    const fav = root.querySelector('[data-action="fav-toggle"]');
+    if (fav) { const cat = catById.get(fav.getAttribute("data-id")); if (cat) cats.add(cat); }
+    if (d.find("flip")) d.click("flip");
+    if (!d.click("rate", { rating: "good" })) break;
+  }
+  assert.ok(cats.size >= 2, `erste Karten decken mehrere Kategorien ab (gesehen: ${cats.size})`);
+});
+
 test("Endlos-Modus: „Zurück“ verlässt den Modus auf den Home-Screen", () => {
   const root = freshApp();
   const d = makeDriver(root);
