@@ -56,27 +56,27 @@ So wird der Sign-off dauerhaft test-verankert (Regression = roter Test).
 ## Stufe 1 — marketing-tragend
 <!-- ROWS:loc-hosp+loc-trab -->
 
-### Tourismus & Hostelería (`loc-hosp`) — 18 Kategorien · 432 Karten · Stufe —
+### Tourismus & Hostelería (`loc-hosp`) — 18 Kategorien · 432 Karten · Stufe ✅ (Sign-off: 5 Befunde behoben)
 | Kategorie | Karten | EN-Lint | Sign-off |
 | --- | --- | --- | --- |
-| En el restaurante (`meseros`) | 24 | ⬜ | ⬜ |
-| En la recepción (`recepcion`) | 24 | ⬜ | ⬜ |
-| Tours y guías (`guias`) | 24 | ⬜ | ⬜ |
-| Taxi y transporte (`taxi-en`) | 24 | ⬜ | ⬜ |
-| Ventas y mercado (`ventas`) | 24 | ⬜ | ⬜ |
-| En el bar (`bar-en`) | 24 | ⬜ | ⬜ |
-| En la playa (`playa-en`) | 24 | ⬜ | ⬜ |
-| Quejas y disculpas (`quejas-en`) | 24 | ⬜ | ⬜ |
-| Comida típica (`platos-en`) | 24 | ⬜ | ⬜ |
-| Limpieza y pisos (`limpieza`) | 24 | ⬜ | ⬜ |
-| Spa y masajes (`spa-en`) | 24 | ⬜ | ⬜ |
-| Lancha e islas (`lancha-en`) | 24 | ⬜ | ⬜ |
-| Salida y check-out (`checkout-en`) | 24 | ⬜ | ⬜ |
-| Buceo y snorkel (`buceo-en`) | 24 | ⬜ | ⬜ |
-| Senderismo (`trekking-en`) | 24 | ⬜ | ⬜ |
-| Aeropuerto (`aeropuerto-en`) | 24 | ⬜ | ⬜ |
-| Alquiler de autos (`alquiler-auto-en`) | 24 | ⬜ | ⬜ |
-| Museo y entradas (`museo-en`) | 24 | ⬜ | ⬜ |
+| En el restaurante (`meseros`) | 24 | ✅ | ✅ |
+| En la recepción (`recepcion`) | 24 | ✅ | ✅ |
+| Tours y guías (`guias`) | 24 | ✅ | ✅ |
+| Taxi y transporte (`taxi-en`) | 24 | ✅ | ✅ |
+| Ventas y mercado (`ventas`) | 24 | ✅ | ✅ |
+| En el bar (`bar-en`) | 24 | ✅ | ✅ |
+| En la playa (`playa-en`) | 24 | ✅ | ✅ |
+| Quejas y disculpas (`quejas-en`) | 24 | ✅ | ✅ |
+| Comida típica (`platos-en`) | 24 | ✅ | ✅ |
+| Limpieza y pisos (`limpieza`) | 24 | ✅ | ✅ |
+| Spa y masajes (`spa-en`) | 24 | ✅ | ✅ |
+| Lancha e islas (`lancha-en`) | 24 | ✅ | ✅ |
+| Salida y check-out (`checkout-en`) | 24 | ✅ | ✅ |
+| Buceo y snorkel (`buceo-en`) | 24 | ✅ | ✅ |
+| Senderismo (`trekking-en`) | 24 | ✅ | ✅ |
+| Aeropuerto (`aeropuerto-en`) | 24 | ✅ | ✅ |
+| Alquiler de autos (`alquiler-auto-en`) | 24 | ✅ | ✅ |
+| Museo y entradas (`museo-en`) | 24 | ✅ | ✅ |
 
 ### Trabajo y negocios (`loc-trab`) — 16 Kategorien · 384 Karten · Stufe —
 | Kategorie | Karten | EN-Lint | Sign-off |

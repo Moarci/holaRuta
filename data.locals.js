@@ -645,7 +645,7 @@
     { id: "loc-spa04", cat: "spa-en", lvl: 1, es: "Relájese.", en: "Relax.", tip: "ri-LÁKS" },
     { id: "loc-spa05", cat: "spa-en", lvl: 2, es: "Avíseme si le molesta algo.", en: "Let me know if anything bothers you.", tip: "let mi nóu if É-ni-zing BÓ-ders yu" },
     { id: "loc-spa06", cat: "spa-en", lvl: 1, es: "El masaje dura una hora.", en: "The massage lasts one hour.", tip: "da ma-SÁSH lasts uan ÁUR" },
-    { id: "loc-spa07", cat: "spa-en", lvl: 2, es: "¿Tiene alguna lesión?", en: "Do you have any injuries?", tip: "du yu jav É-ni ÍN-yu-ris" },
+    { id: "loc-spa07", cat: "spa-en", lvl: 2, es: "¿Tiene alguna lesión?", en: "Do you have any injuries?", tip: "du yu jav É-ni ÍN-llu-ris" },
     { id: "loc-spa08", cat: "spa-en", lvl: 1, es: "Respire profundo.", en: "Breathe deeply.", tip: "BRID DÍP-li" },
     { id: "loc-spa09", cat: "spa-en", lvl: 2, es: "¿La temperatura está bien?", en: "Is the temperature okay?", tip: "is da TÉM-pra-chur o-KÉI" },
     { id: "loc-spa10", cat: "spa-en", lvl: 1, es: "Tómese su tiempo.", en: "Take your time.", tip: "TÉIK yor taim" },
@@ -2917,7 +2917,7 @@
     { id: "loc-air19", cat: "aeropuerto-en", lvl: 2, es: "Quítese el cinturón y los zapatos, por favor.", en: "Please remove your belt and shoes.", tip: "plis ri-MÚV yor belt and shus" },
     { id: "loc-air20", cat: "aeropuerto-en", lvl: 2, es: "El abordaje preferencial es primero.", en: "Priority boarding goes first.", tip: "prai-Ó-ri-ti BOR-ding gous ferst" },
     { id: "loc-air21", cat: "aeropuerto-en", lvl: 1, es: "Su vuelo está a tiempo.", en: "Your flight is on time.", tip: "yor flait is on taim" },
-    { id: "loc-air22", cat: "aeropuerto-en", lvl: 1, es: "¿Viaja solo?", en: "Are you traveling alone?", tip: "ar yu TRÁ-ve-ling a-LÓN" },
+    { id: "loc-air22", cat: "aeropuerto-en", lvl: 1, es: "¿Viaja solo?", en: "Are you traveling alone?", tip: "ar yu TRÁ-ve-ling a-LÓUN" },
     { id: "loc-air23", cat: "aeropuerto-en", lvl: 1, es: "Por aquí a la puerta.", en: "This way to the gate.", tip: "dis uei tu de gueit" },
     { id: "loc-air24", cat: "aeropuerto-en", lvl: 1, es: "¿Cuál es su destino?", en: "What's your destination?", tip: "uats yor des-ti-NÉI-shon" },
     // --- alquiler-auto-en ---
