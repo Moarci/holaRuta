@@ -146,7 +146,7 @@ Parallel zu den Ketten gezielt die Flaggschiff-Hostels je Hub anschreiben (hoher
 - *„Wer hat die Inhalte geprüft?“* → (nach Sign-off) „Ein:e Muttersprachler:in/Lehrkraft hat das Kern-Set gegengelesen — hier das Siegel.“ (Ohne Sign-off **nicht** pitchen.)
 - *„Wir haben schon ein Lehrwerk.“* → „HolaRuta ersetzt nichts. Es ist der mobile Begleiter für *draußen* — die Brücke vom Unterricht in echte Situationen.“
 - *„Können Lehrer den Fortschritt sehen?“* → ehrlich: „Heute über importierte Backups (‚Modo profe‘) und Aufgaben-Codes, offline. Ein echtes Dashboard ist Roadmap — dafür ist der Pilot da, um den Bedarf zu klären.“
-- *„Datenschutz?“* → „Stark: alles lokal, kein Konto, kein Tracking, DSGVO-freundlich.“
+- *„Datenschutz?“* → „Stark: alles lokal, kein Konto, keine Werbung, DSGVO-freundlich (anonyme Nutzungsstatistik nur opt-in, standardmäßig aus).“
 
 ---
 

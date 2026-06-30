@@ -574,6 +574,8 @@
       syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
       socialEnabled: !!(window.SC.social && window.SC.social.enabled()), // opt-in Freunde/Rangliste (nur per Edition)
       socialLoggedIn: !!(window.SC.social && window.SC.social.loggedIn && window.SC.social.loggedIn()),
+      analyticsAvailable: !!(window.SC.analytics && window.SC.analytics.available()), // anonyme Telemetrie nur, wenn eine Edition einen Endpunkt setzt
+      analyticsConsent: settings.analyticsConsent === true, // Nutzer hat dem Senden ausdrücklich zugestimmt (Default aus)
       hasCountries: !!countries, // dito für die Länderkunde
       hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasHistoriaCentro: !!historiaCentro, // dito für die Geschichte Mittelamerikas
@@ -5180,6 +5182,31 @@
     render();
   }
 
+  // Anonyme Nutzungsstatistik teilen an/aus (opt-in, Default aus). Merken, neu
+  // rendern und bei FRISCHER Zustimmung gleich einen Tages-Snapshot senden (sofort
+  // wirksam – nicht erst beim nächsten Start). Ohne Zustimmung verlässt kein Datum
+  // das Gerät; das Modul prüft beides (Endpunkt + consent) nochmals selbst.
+  function setAnalyticsConsent(on) {
+    settings = Object.assign({}, settings, { analyticsConsent: !!on });
+    store.saveSettings(settings);
+    buzz(8);
+    if (on) sendUsageSnapshot();
+    render();
+  }
+
+  // Fire-and-forget: höchstens ein anonymer, gebucketeter Tages-Snapshot. Macht
+  // NICHTS ohne konfigurierten Endpunkt UND Zustimmung (Prüfung im Modul). Fehler
+  // werden geschluckt – Telemetrie darf die App nie blockieren.
+  function sendUsageSnapshot() {
+    if (!window.SC.analytics) return;
+    window.SC.analytics.maybeSend(gamestats, {
+      consent: settings.analyticsConsent === true,
+      appVersion: (changelog && changelog.VERSION) || "",
+      locale: state.uiLang,
+      track: (window.SC.track && window.SC.track.id()) || "",
+    });
+  }
+
   // UI-/Muttersprache umschalten (de/en), merken und neu rendern.
   function setUiLang(l) {
     applyUiLang(l);
@@ -7020,6 +7047,7 @@
     "set-theme": (el) => { setTheme(el.dataset.theme); },
     "set-dir": (el) => { setDir(el.dataset.dir); },
     "set-celebrate-sound": (el) => { setCelebrateSound(el.dataset.on === "1"); },
+    "set-analytics-consent": (el) => { setAnalyticsConsent(el.dataset.on === "1"); },
     "set-ui-lang": (el) => { setUiLang(el.dataset.lang); },
     "set-level": (el) => { toggleLevel(Number(el.dataset.level)); },
     "study-all": (el) => { startStudy("all"); },
@@ -7919,6 +7947,11 @@
       navigator.storage.persist().catch(() => { /* egal */ });
     }
   } catch (e) { /* Feature fehlt – egal */ }
+
+  // Anonyme Nutzungs-Telemetrie (opt-in, BACKEND.md §17): höchstens ein anonymer
+  // Tages-Snapshot. Tut NICHTS ohne konfigurierten Endpunkt UND Zustimmung – ohne
+  // beides exakt 0 Netzwerk-Calls wie bisher. Fire-and-forget, nie blockierend.
+  sendUsageSnapshot();
 
   window.SC.app = { render }; // nach außen minimal
 })();

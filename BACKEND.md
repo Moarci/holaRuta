@@ -33,7 +33,7 @@ Diese Spec hebt genau diese drei Server-Themen auf einen **anschlussfähigen, da
 
 1. **Offline-first bleibt.** Die PWA funktioniert **vollständig ohne Backend**. Der lokale `localStorage`
    bleibt die primäre Quelle der Wahrheit auf dem Gerät; das Backend ist nur ein **Spiegel/Merge-Ziel**.
-2. **Opt-in.** Ohne Login keine Netzwerk-Calls, kein Tracking — exakt wie heute. Sync ist eine bewusste
+2. **Opt-in.** Ohne Login keine Netzwerk-Calls — exakt wie heute. Sync ist eine bewusste
    Nutzer-Entscheidung (Anmelden).
 3. **Zero-dependency-Prinzip der PWA bleibt.** Der Client bekommt **einen** schlanken Vanilla-JS-Adapter
    (`sync.js`, < 1 Modul, `fetch`-basiert, keine Frameworks). Die **Server-Komponente** ist ein
@@ -218,7 +218,8 @@ größten Endkunden-Nutzen (Mehrgeräte). Phase 3+4 sind die B2B-/Schul-Monetari
 
 - **Rechtsgrundlage & Einwilligung:** Sync ist opt-in; klare Einwilligung beim Login; Datenschutzerklärung + AVV/DPA.
 - **Datenminimierung:** nur E-Mail (oder Pseudonym) + Fortschritts-Blob + Klassen-Zugehörigkeit. **Keine**
-  Verhaltens-Analytics, **kein** Werbe-Tracking, **keine** Drittanbieter-Tracker.
+  personenbezogene Verhaltens-Analytics, **kein** Werbe-Tracking, **keine** Drittanbieter-Tracker.
+  (Die optionale **anonyme, aggregierte** Nutzungsstatistik aus §17 ist opt-in, ohne PII und ohne Karteninhalte.)
 - **Minderjährige/Schulen:** Schüler-Pseudonym-Konten ohne E-Mail; Org/Schule ist Verantwortliche, HolaRuta
   Auftragsverarbeiter (AVV). Elternzustimmung über die Schule.
 - **Betroffenenrechte:** Self-Service-Export (`/account/export`) und harte Löschung (`/account`) ab Tag 1.
@@ -325,6 +326,68 @@ Scoping: ein Nutzer sieht **nur** eigene Freunde; `meId` markiert den eigenen Ei
   und vermeidet Leistungsdruck/PII-Streuung.
 - **Kein** Push/Realtime — die Rangliste wird beim Öffnen/„Aktualisieren" geholt (offline-first).
 - **Keine** Verlaufs-Historie fremder Nutzer auf dem Client — immer nur der angefragte Tag.
+
+---
+
+## 17. Anonyme Nutzungs-Telemetrie — „wie viele nutzen es und wie?" (Phase 6, opt-in)
+
+Die **betreiberseitige** Frage „wie viele Leute nutzen HolaRuta und welche Modi?" lässt sich nicht
+offline beantworten — sie braucht einen **Zähl-Endpunkt**. Damit das die Datensparsamkeit der App
+nicht aufweicht, ist die Telemetrie **opt-in, anonym und aggregiert**: standardmäßig aus, und selbst
+eingeschaltet verlässt **kein** Lernfortschritt, **keine** Karteninhalte und **keine** stabile
+Nutzer-ID das Gerät.
+
+> **Status:** Der **Client ist vorbereitet** (`analytics.js` reiner Kern + dünner fetch-Adapter über
+> `SC.net`, Consent-Schalter im Profil, `test/analytics.test.js`). Es fehlt **nur noch der Server**,
+> der den einen unten spezifizierten Endpunkt implementiert. Wie alle Stufe-3-Phasen kundengetrieben
+> bzw. erst mit eigener Domain/EU-Hosting.
+
+### 17.1 Leitplanken (zusätzlich zu §1, §12)
+
+- **Doppelte Schranke.** Gesendet wird **nur**, wenn (1) eine Edition `SC.config.analytics`
+  (`enabled` + `endpoint`) setzt **und** (2) der Nutzer im Profil ausdrücklich zustimmt
+  (`settings.analyticsConsent === true`). Ohne beides: **0 Netzwerk-Calls** — exakt wie ohne das Modul.
+- **Datenminimierung als Kern.** Der Snapshot trägt **nur grobe, gebucketete** Aggregate, alle aus dem
+  **bereits vorhandenen** `gamestats` abgeleitet (nichts Neues wird erfasst): Tag, App-Version, UI-Sprache,
+  Lern-Track, Karten-heute-**Bucket**, Streak-**Bucket**, Reviews-**Bucket** und boolesche „je-Modus-benutzt"-
+  Flags. Buckets sind bewusst grob (k-anonymity-freundlich). **Keine** Karten-IDs, **kein** Suchtext,
+  **keine** PII, **keine** stabile/rotierende ID — der Server zählt reine Aggregate.
+- **Anonym & ohne Auth.** Der Endpunkt braucht **keinen** Login/Token (anders als §6/§16). Ein Nutzer ist
+  serverseitig nicht wiedererkennbar; Tages-Dedupe passiert **clientseitig** (lokaler „zuletzt gesendet"-Tag,
+  nicht im Backup).
+- **Höchstens ein Snapshot pro Tag**, beim App-Start (fire-and-forget; Fehler werden geschluckt, nie blockierend).
+
+### 17.2 API (Ergänzung zu §6, unter `/v1`, **ohne** Bearer-Token)
+
+- `POST /v1/usage`
+  `{ app:"holaruta", schema:1, day:"YYYY-MM-DD", appVersion, locale, track,
+     cardsToday:"<bucket>", streak:"<bucket>", reviews:"<bucket>",
+     features:{ study, listen, precios, dialogos, definiciones, yesto, frases, conjug, battles, roleplay, challenges, ruta, pretrip } }`
+  → `{ ok:true }`. Server: strikte Eingabevalidierung, **Größenlimit** (z. B. ≤ 4 KB), **Rate-Limiting**
+  (pro IP/Tag), CORS strikt auf die App-Origin. Die Bucket-Grenzen sind clientseitig fix
+  (`analytics.js`: `CARD_EDGES`/`STREAK_EDGES`/`REVIEW_EDGES`) und serverseitig 1:1 nachnutzbar.
+
+### 17.3 Datenschutz (Ergänzung zu §12)
+
+- **Rechtsgrundlage:** ausdrückliche Einwilligung (opt-in im Profil), jederzeit widerrufbar (Schalter aus).
+- **Keine PII, kein Profil, kein Werbe-Tracking, keine Drittanbieter-Tracker.** Server speichert nur
+  aggregierte Tageszahlen; IP wird **nicht** persistiert (nur transient fürs Rate-Limit).
+- **Marketing-Konsistenz:** Da nun eine — opt-in — Telemetrie existiert, wird die frühere absolute
+  „kein Tracking"-Aussage in den Beschreibungen durch die ehrliche Formulierung ersetzt
+  („lokal-first, keine Werbung; Cloud-Sync **und** anonyme Nutzungsstatistik sind optional und
+  standardmäßig aus").
+
+### 17.4 Akzeptanzkriterien (DoD)
+
+- Ohne `SC.config.analytics` **oder** ohne Consent: nachweisbar **0** `fetch`-Calls (Test mit Spy).
+- Mit beidem: **genau ein** `POST /v1/usage` pro Tag mit anonymem, gebucketetem Body (kein PII/keine
+  Karten-ID/keine ID — per Allowlist-Assertion geprüft). `analytics.js`-Kern ist rein + voll unit-getestet.
+
+### 17.5 Bewusst draußen (zusätzlich zu §15)
+
+- **Kein** Event-Stream / kein Klick-für-Klick-Tracking — nur ein grober Tages-Snapshot.
+- **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies.
+- **Keine** Verknüpfung mit Sync/Social-Konten (anonym, ohne Token).
 
 ---
 

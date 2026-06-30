@@ -535,6 +535,24 @@
       </div>`;
   }
 
+  // Anonyme Nutzungsstatistik teilen (opt-in, Default aus). Nur sichtbar, wenn eine
+  // Edition einen Telemetrie-Endpunkt konfiguriert hat (vm.analyticsAvailable). Ohne
+  // Zustimmung verlässt KEIN Datum das Gerät; gesendet wird – mit Zustimmung – nur
+  // ein anonymer, gebucketeter Tages-Snapshot (keine PII, keine Karten-IDs).
+  function analyticsConsentGroup(vm) {
+    if (!vm.analyticsAvailable) return "";
+    const on = !!vm.analyticsConsent;
+    return `
+      <div class="switchgroup">
+        <span class="switchcap">${esc(t("home.analyticsCap"))}</span>
+        <div class="segmented" role="group" aria-label="${esc(t("home.analyticsAria"))}">
+          <button class="seg ${on ? "is-active" : ""}" type="button" data-action="set-analytics-consent" data-on="1" aria-pressed="${on}">${esc(t("home.analyticsOn"))}</button>
+          <button class="seg ${!on ? "is-active" : ""}" type="button" data-action="set-analytics-consent" data-on="0" aria-pressed="${!on}">${esc(t("home.analyticsOff"))}</button>
+        </div>
+        <p class="namefield__hint">${esc(t("home.analyticsHint"))}</p>
+      </div>`;
+  }
+
   // Erklär-Slides ganz am Anfang des Onboardings: ein kurzer Überblick, WIE die App
   // funktioniert und welchen UMFANG sie hat – bevor wir Name/Geschlecht und Reiseziel
   // erfragen. Rein datengetrieben: Icon + zwei i18n-Schlüssel je Slide. Die Reihenfolge
@@ -1274,6 +1292,7 @@
       ${navrow("import-data", "lc:download", t("profile.importData"))}
       ${vm.syncEnabled ? navrow("cloud-sync", "lc:cloud", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
       ${vm.socialEnabled ? navrow("open-social", "lc:trophy", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
+      ${analyticsConsentGroup(vm)}
       <input type="file" id="import-file" accept=".json,application/json" hidden />
 
       <a class="navrow" href="landing.html" style="text-decoration:none" aria-label="${esc(t("profile.about"))}">
