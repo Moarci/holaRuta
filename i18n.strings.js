@@ -715,6 +715,8 @@
     // Reiter-Kopf
     discoverTitle: "Entdecken",
     discoverIntro: "Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.",
+    // Locals-Track (Englisch lernen): Richtung umgekehrt – „Englisch" statt „Spanisch".
+    discoverIntroLocals: "Spielen, zuordnen, nachschlagen – Englisch abseits der Karten.",
     // Abschnitts-Überschriften (Gruppierung der Einstiege nach Aktivität)
     groupHostel: "Im Hostel",
     groupPlay: "Spielen",
@@ -751,6 +753,8 @@
     subBanderas: "Flaggen-Quiz: Land erraten – und Farben, Symbole & Geschichte gleich mitlernen",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
     subYesto: "Bild raten: 3-2-1 – wie heißt das auf Spanisch?",
+    // Locals-Track (Englisch lernen): nach „auf Englisch" fragen.
+    subYestoLocals: "Bild raten: 3-2-1 – wie heißt das auf Englisch?",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
@@ -1061,6 +1065,8 @@
 
     // Definiciones
     quizSetupIntro: "Lies eine spanische Definition und wähle den passenden Begriff. So lernst du Wörter über ihre Bedeutung – ganz ohne Übersetzung.",
+    // Locals-Track: spanische Definition → passendes englisches Wort.
+    quizSetupIntroLocals: "Lies eine spanische Definition und wähle das passende englische Wort. So lernst du Vokabeln über ihre Bedeutung.",
     quizCorrect: "¡Correcto! 🎉",
     quizNotExactly: "No exactamente.",
     quizSolution: (p) => `Richtig: <b lang="es">${p.es}</b> · ${p.de}`,
@@ -1203,6 +1209,8 @@
     quizProgress: "Quiz progress",
     discoverTitle: "Discover",
     discoverIntro: "Play, match, look things up – Spanish beyond the cards.",
+    // Locals track (learning English): direction reversed – "English" instead of "Spanish".
+    discoverIntroLocals: "Play, match, look things up – English beyond the cards.",
     groupHostel: "At the hostel",
     groupPlay: "Play",
     groupPractice: "Practise",
@@ -1237,6 +1245,8 @@
     subBanderas: "Flag quiz: guess the country – and learn the colours, symbols & history along the way",
     subBebidas: "What people drink morning and evening – country by country",
     subYesto: "Guess the picture: 3-2-1 – what's it called in Spanish?",
+    // Locals track (learning English): ask "in English".
+    subYestoLocals: "Guess the picture: 3-2-1 – what's it called in English?",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
 
@@ -1536,6 +1546,8 @@
     roleplaysHead: "🎭 Role-plays",
 
     quizSetupIntro: "Read a Spanish definition and pick the matching term. That way you learn words through their meaning – with no translation at all.",
+    // Locals track: Spanish definition → matching English word.
+    quizSetupIntroLocals: "Read a Spanish definition and pick the matching English word. That way you learn vocabulary through its meaning.",
     quizCorrect: "¡Correcto! 🎉",
     quizNotExactly: "No exactamente.",
     quizSolution: (p) => `Correct: <b lang="es">${p.es}</b> · ${p.de}`,
