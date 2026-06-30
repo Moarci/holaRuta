@@ -57,17 +57,31 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 | Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público, emergencias y seguridad, peluquería, alquiler y vivienda, el clima, domicilios, gimnasio, casa y servicios |
 | Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes, hoja de vida (CV), negociar, call-center/BPO, inglés para TI, videollamadas, ventas y pitch, finanzas y facturas, logística y envíos, RR. HH./feedback, networking, personal de salud (médicos/enfermeras) |
 | Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores, tiempos verbales, preposiciones, hacer preguntas, falsos amigos, pronunciación (minimalpaare), present perfect, artículos a/an/the, cantidades (much/many), verbos modales, phrasal verbs, comparar |
+| Vocabulario por temas (`loc-voc`) | números, colores, familia, cuerpo, comida y bebida, frutas y verduras, animales, ropa, casa, cocina, ciudad, transporte, días y meses, clima, verbos comunes, adjetivos, profesiones, tecnología, naturaleza, emociones, escuela, deportes, salud, oficina, dinero y compras, viaje, la hora, baño, herramientas, música, formas, materiales, aves, vida marina, insectos, postres y dulces, especias y hierbas, medidas, direcciones, palabras de pregunta, pronombres, países, nacionalidades, belleza y cuidado, limpieza del hogar, emergencias, **palabras esenciales (núcleo)**, **verbos esenciales** |
+| Vocabulario B2 / avanzado (`loc-b2`) | opinar y argumentar, acuerdo y desacuerdo, conectores avanzados, frecuencia y tiempo, emociones matizadas, personalidad, conceptos abstractos, colocaciones, mundo laboral, negocios y reuniones, finanzas, educación, phrasal verbs, verbos avanzados, adjetivos avanzados, sociedad y actualidad, medio ambiente, tecnología digital, salud y bienestar, viajes avanzado |
 
-Aktuell **63 Kategorien · 818 Karten** (ein Schnellstart-Preset je Kategorie).
+Die Gruppe **Vocabulario por temas (`loc-voc`)** ist eine reine **Vokabel-Sektion**
+(Einzelwörter statt Service-Sätze): 48 Themen-Kategorien. Darin auch das **núcleo**
+(`voc-nucleo` + `voc-acciones`): die häufigsten Funktions-/Kernwörter (Artikel,
+Präpositionen, Konjunktionen, Hochfrequenz-Adverbien, Quantoren, Modale, Kernverben),
+die in den thematischen Kategorien fehlen — das frequenzbasierte Fundament.
+
+Die Gruppe **Vocabulario B2 / avanzado (`loc-b2`)** hebt den Wortschatz auf **Niveau B2**
+(`lvl: 4` = „Experto"): 20 Kategorien mit fortgeschrittenem, abstrakterem und
+diskursivem Vokabular (Meinung/Argumentation, Konnektoren, Kollokationen, phrasal
+verbs, Arbeit/Wirtschaft, Gesellschaft/Umwelt …). Jede Karte trägt `es`/`en`/`tip`
+plus einen vollen Beispielsatz-Kontext in `contextdata.locals.js`.
+
+Aktuell **131 Kategorien · 2294 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
-### Kurspläne „Semana 1–4"
+### Kurspläne (8 Wochen × 5 Teile)
 
-`data.locals.js → PLANS` definiert **sieben** strukturierte 4-Wochen-Lehrgänge, die die
-vorhandene `PRETRIP`-Etappen-Engine wiederverwenden; jede Woche bündelt ~8 Karten quer
-durch die Kategorien zu einem Lernpfad, und die nächste Woche öffnet sich nach Abschluss
-der aktuellen:
+`data.locals.js → PLANS` definiert **acht** strukturierte Lehrgänge (je **8 Wochen × 5 Teile
+à 20 Karten = 800 Karten**), die die vorhandene `PRETRIP`-Etappen-Engine wiederverwenden;
+jeder Teil bündelt 20 Karten zu einer Etappe, die nächste Etappe öffnet sich nach Abschluss
+der aktuellen. Die thematischen Stichworte unten skizzieren den groben Verlauf je Kurs:
 - **Curso de inglés** (`curso-en`) – Service-Basis → Orientieren → Verkaufen/Reklamation → Essen/Strand/Reseñas.
 - **Curso pro: trabajo** (`curso-pro`) – Entrevista → Oficina/Teléfono → Atención al cliente → Reseñas/Números.
 - **Curso día a día** (`curso-dia`) – Saludar/Llamar → Orientieren/Bewegen → Einkaufen/Bezahlen → Gesundheit/Wetter/Notfälle.
@@ -75,6 +89,13 @@ der aktuellen:
 - **Curso inglés para TI** (`curso-tech`) – Standup/Status → Tickets/Code-Review → Meetings/Videollamadas → Entregas/Reportes.
 - **Curso de gramática** (`curso-gram`) – Artículos/Cantidades → Tiempos/Present perfect → Modales/Phrasal verbs → Falsos amigos/Pronunciación.
 - **Curso turismo avanzado** (`curso-tur-pro`) – Buceo/Senderismo → Aeropuerto/Mietwagen → Museo/Tour → Sicherheit/Notfälle auf Tour.
+- **Curso esencial: las palabras más usadas** (`curso-esencial`) – die **frequenzbasierten 800
+  häufigsten Einzelwörter** (núcleo-Funktionswörter + thematischer Grundwortschatz, ohne
+  B2-Spezialvokabular), nach Gebrauchshäufigkeit in **8 Wochen-Bänder à 100 Wörter** geordnet
+  (Woche 1 = die 100 meistgebrauchten, Woche 2 = 101–200, … Woche 8 = 701–800; je Teil 20 Karten).
+  Die Reihenfolge stammt aus einem Frequenz-Ranking eines spezialisierten Agenten; mit diesem
+  Hochfrequenz-Kern erreicht man A2→B1 („etwas sprechen können"). Die 1000-häufigsten-Wörter-Idee
+  in Reinform: ~80–90 % der Alltagssprache sind damit abgedeckt.
 
 Über die Chip-Leiste in „Descubrir → Curso" umschaltbar (`pretripVM` filtert im Locals-
 Track auf `^curso`); im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten

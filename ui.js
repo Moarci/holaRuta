@@ -183,6 +183,8 @@
     { id: "loc-dia",  titleKey: "home.catGroupLocDia" },
     { id: "loc-trab", titleKey: "home.catGroupLocTrab" },
     { id: "loc-esc",  titleKey: "home.catGroupLocEsc" },
+    { id: "loc-voc",  titleKey: "home.catGroupLocVoc" },
+    { id: "loc-b2",   titleKey: "home.catGroupLocB2" },
     { id: "basics",  titleKey: "home.catGroupBasics" },
     { id: "grammar", titleKey: "home.catGroupGrammar" },
     { id: "people",  titleKey: "home.catGroupPeople" },
@@ -1798,7 +1800,7 @@
         </div>
 
         <div class="passhero">
-          <p class="passhero__sub">${esc(t("profile.passHero"))}</p>
+          <p class="passhero__sub">${esc(t(isLocalsTrk() ? "profile.passHeroCurso" : "profile.passHero"))}</p>
           <div class="passhero__bar"><div class="passhero__fill" style="width:${pct}%"></div></div>
           <p class="passhero__meta">${esc(t("profile.passMeta", { unlocked: vm.unlocked, total: vm.total, pct }))}</p>
         </div>
@@ -2405,6 +2407,11 @@
     return TARGET_GROUPS.find((x) => String(value || "").indexOf(x.id + ":") === 0) || null;
   }
 
+  // Locals-Track: der „Pre-Trip"-Block ist hier der Lernpfad – Label/Hilfe entsprechend.
+  const isLocalsTrk = () => !!(window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
+  const tgLabelKey = (g) => (isLocalsTrk() && g.id === "pretrip") ? "teacher.grpCurso" : g.labelKey;
+  const tgHelpKey = (g) => (isLocalsTrk() && g.id === "pretrip") ? "teacher.grpCursoHelp" : g.helpKey;
+
   // Tappbarer „Select-Ersatz": zeigt die aktuelle Auswahl und öffnet das Modal.
   //   sheet (Aktivitätsblatt): EIN Ziel → Gruppe + Label.
   //   task  (Modo profe): Auswahl-Zusammenfassung (keins / Einzelaufgabe / Bundle).
@@ -2415,7 +2422,7 @@
       const cur = (opts.targets || []).find((x) => x.value === opts.current);
       const g = cur ? targetGroupOf(cur.value) : null;
       valLine = cur
-        ? `${g ? `<span class="tgt-field__kicker">${renderIcon(g.icon)} ${esc(t(g.labelKey))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
+        ? `${g ? `<span class="tgt-field__kicker">${renderIcon(g.icon)} ${esc(t(tgLabelKey(g)))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
         : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
     } else {
       const s = opts.summary || { kind: "none" };
@@ -2451,8 +2458,8 @@
       }).join("");
       return `
         <section class="tgt-group">
-          <h3 class="tgt-group__title">${renderIcon(g.icon)} ${esc(t(g.labelKey))}</h3>
-          <p class="tgt-group__help">${esc(t(g.helpKey))}</p>
+          <h3 class="tgt-group__title">${renderIcon(g.icon)} ${esc(t(tgLabelKey(g)))}</h3>
+          <p class="tgt-group__help">${esc(t(tgHelpKey(g)))}</p>
           <div class="tgt-opts">${rows}</div>
         </section>`;
     }).join("");
@@ -3401,15 +3408,22 @@
   // (erledigt ✓ / aktuell startbar / gesperrt 🔒); jeder Tag mit Karten + optionaler
   // Mutprobe. Reuse der Screen-/Topbar-Struktur der übrigen Entdecken-Module.
   function renderPretrip(vm) {
+    // Locals-Track: derselbe Screen ist der „Lernpfad" (Kurs), nicht der Reise-„Pre-Trip".
+    // Strings entsprechend wählen; Etappen werden zusätzlich nach Woche gruppiert.
+    const loc = isLocalsTrk();
+    const K = (curso, pretrip) => loc ? curso : pretrip;
+    let lastWeek = null;
     const rows = vm.days.map((d) => {
       const status = d.done ? "done" : (d.unlocked ? "current" : "locked");
-      const mark = d.done ? "✓" : (d.unlocked ? String(d.day) : "🔒");
+      // Bei Wochen/Teilen die Teilnummer (1..5) zeigen, sonst die Etappennummer.
+      const num = (d.part != null) ? d.part : d.day;
+      const mark = d.done ? "✓" : (d.unlocked ? String(num) : "🔒");
       const challenge = d.challenge
         ? `<span class="pretrip-day__challenge">${renderIcon("lc:door-open")} ${esc(d.challenge)}</span>` : "";
       const right = status === "locked"
         ? `<span class="pretrip-day__lock"><span aria-hidden="true">${renderIcon("lc:lock")}</span> ${esc(t("discover.pretripLocked"))}</span>`
         : `<button class="pretrip-day__btn" data-action="start-pretrip-day" data-day="${d.day}">${esc(d.done ? t("discover.pretripReplay") : t("discover.pretripStart"))}</button>`;
-      return `
+      const row = `
         <li class="pretrip-day pretrip-day--${status}">
           <span class="pretrip-day__num" aria-hidden="true">${mark}</span>
           <span class="pretrip-day__body">
@@ -3419,24 +3433,32 @@
           </span>
           ${right}
         </li>`;
+      // Wochen-Kopf (nur wenn week gesetzt = Locals-Kursplan): gruppiert die Teile.
+      let head = "";
+      if (d.week != null && d.week !== lastWeek) {
+        lastWeek = d.week;
+        const wk = d.weekTitle ? (" · " + esc(d.weekTitle)) : "";
+        head = `<li class="pretrip-week" role="presentation">${esc(t("discover.cursoWeek", { w: d.week }))}${wk}</li>`;
+      }
+      return head + row;
     }).join("");
     const banner = vm.allDone
-      ? `<p class="pretrip-alldone">${renderIcon("lc:party-popper")} ${esc(t("discover.pretripAllDone"))}</p>`
-      : `<p class="pretrip-progress">${esc(t("discover.pretripProgress", { done: vm.doneCount, total: vm.total }))}</p>`;
-    // Destination-Auswahl: ein Plan je Reiseziel; ✓ markiert vollständig geschaffte Pläne.
+      ? `<p class="pretrip-alldone">${renderIcon("lc:party-popper")} ${esc(t(K("discover.cursoAllDone", "discover.pretripAllDone")))}</p>`
+      : `<p class="pretrip-progress">${esc(t(K("discover.cursoProgress", "discover.pretripProgress"), { done: vm.doneCount, total: vm.total }))}</p>`;
+    // Auswahl: ein Plan je Reiseziel (Reise) bzw. je Kurs (Locals); ✓ = vollständig geschafft.
     // Bei zugewiesener Aufgabe ist das Ziel fix -> nur ein nicht-klickbares Abzeichen.
     const dest = vm.locked
       ? `<div class="sl-chips sl-chips--locked">
            <span class="sl-chip sl-chip--locked is-active" role="status" aria-label="${esc(vm.scopeLabel + " – " + t("discover.pretripAssigned"))}" style="--from:var(--brand);--to:var(--brand-ink)"><span aria-hidden="true">${renderIcon("lc:pin")} ${esc(vm.scopeLabel)}</span></span>
          </div>
          <p class="pretrip-assigned" aria-hidden="true">${esc(t("discover.pretripAssigned"))}</p>`
-      : `<div class="sl-chips" role="group" aria-label="${esc(t("discover.pretripDestLabel"))}">${(vm.plans || []).map((p) =>
+      : `<div class="sl-chips" role="group" aria-label="${esc(t(K("discover.cursoDestLabel", "discover.pretripDestLabel")))}">${(vm.plans || []).map((p) =>
           `<button class="sl-chip ${p.active ? "is-active" : ""}" data-action="set-pretrip-scope" data-scope="${p.scope}"${p.active ? ' aria-current="true"' : ""}>${p.done ? "✓ " : ""}${esc(p.label)}</button>`
         ).join("")}</div>`;
     return `
       <section class="screen">
-        ${hmTopbar(`${renderIcon("lc:calendar")} ` + esc(t("discover.pretripTitle")), "home")}
-        <p class="hm-intro">${esc(t("discover.pretripIntro"))}</p>
+        ${hmTopbar(`${renderIcon("lc:calendar")} ` + esc(t(K("discover.cursoTitle", "discover.pretripTitle"))), "home")}
+        <p class="hm-intro">${esc(t(K("discover.cursoIntro", "discover.pretripIntro")))}</p>
         ${dest}
         ${banner}
         <ol class="pretrip">${rows}</ol>

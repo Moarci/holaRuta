@@ -2444,6 +2444,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Pre-Trip-Plan: sequenzielle Tagesliste (erledigt / aktuell / gesperrt). */
 .pretrip { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+/* Wochen-Kopf im Lernpfad (Locals-Kursplan): trennt die Teile sichtbar nach Woche. */
+.pretrip-week { list-style: none; margin: 14px 0 2px; padding: 4px 2px; font-weight: 800; font-family: var(--font-display); font-size: 0.92rem; letter-spacing: 0.02em; color: var(--brand-ink); border-bottom: 2px solid var(--line); text-transform: uppercase; }
+.pretrip-week:first-child { margin-top: 4px; }
 .pretrip-progress, .pretrip-alldone { text-align: center; font-weight: 700; color: var(--brand-ink); margin: 6px 0 0; }
 .pretrip-alldone { color: var(--ok); }
 
