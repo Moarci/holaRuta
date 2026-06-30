@@ -53,7 +53,7 @@ Die Matrix beschreibt HolaRuta als geplant/„nachzubauen". Der Code sagt etwas 
 | **Peer-Roleplay (der Wedge!)** | „Situiertes Peer-Roleplay; Gast↔Personal als **Live-Übung**" | Bisher nur NPC-gesteuerte Diálogos (Einzel-Lerner). **Seit 2026-06-27 als Prototyp gebaut:** `venue-roleplay.js` + `features/venue-roleplay-game.js` — Pass-and-play, Gast übt Spanisch, Personal übt Englisch in einer Szene (MC, TTS pro Zeile) | **Lücke geschlossen (Prototyp)** — der Wedge-Mechanismus existiert jetzt; Ausbau (mehr Szenen, Frei-Tippen) offen |
 | **Speech-Feedback** | „Offen (Constraint vs. offline/kontolos)" | TTS-Ausgabe (Web Speech API) + phonetische `tip`-Zeile je Karte; **keine** Spracherkennung/Scoring | **Konsistent** — bewusst nicht hier konkurrieren ([IDEEN.md §6](IDEEN.md)) |
 | **L1 ES/PT** | „native LatAm ES/PT" | ES ja (`config.js:73` — `cardNativeLang:"es"`, `ttsLocale:"en-US"`); **PT nicht gebaut** (kein `pt`-Track) | PT = Phase 2, wie Matrix sagt |
-| **LatAm-Kontext** | „Hoch (Akzente/Kontext, Mascots)" | LatAm-korrekter Content — **aber Muttersprachler-Sign-off offen** ([RISIKO.md R13](RISIKO.md)) | Versprechen marketing-tragend, menschlich unbestätigt |
+| **LatAm-Kontext** | „Hoch (Akzente/Kontext, Mascots)" | LatAm-korrekter Content — **Multi-Agent-Sign-off des EN-Korpus erledigt**, menschlicher Stempel optional ([RISIKO.md R13](RISIKO.md), [LOCALS-SIGNOFF.md](LOCALS-SIGNOFF.md)) | Hauptversprechen abgesichert; finaler Human-Review als Siegel offen |
 | **Distribution** | „QR, kein Konto, Co-Branding, employer-pays" | Vollständig: `editions/`-System, `ingles-pro` registriert (`editions/registry.js:79`), offline-PWA, localStorage, kein Login, druckfertige QR-Poster (`docs/anleitungen/`) | **Erfüllt & produktionsreif** |
 
 ---
@@ -113,9 +113,12 @@ Engine** → der einzige nicht kopierbare Moat. Umgesetzt: `venue-roleplay.js` (
 `test/venue-roleplay-game.test.js`. **Offener Ausbau:** mehr Szenen, Frei-Tippen statt MC,
 Muttersprachler-Sign-off der Szenen.
 
-**P1 — Muttersprachler-/Bilingual-Sign-off der 818 Locals-Karten.**
-Englischer Output + LatAm-ES gegenlesen lassen. Schließt [R13](RISIKO.md) für den English-Track;
-Voraussetzung für Schul-/Hotel-Deals. Ergebnis als sichtbares „native-reviewed"-Siegel.
+**P1 — Muttersprachler-/Bilingual-Sign-off der Locals-Karten. → WEITGEHEND ERLEDIGT.**
+Der inzwischen auf **2844 Karten** gewachsene EN-Korpus hat einen systematischen
+**Multi-Agent-Sign-off** durchlaufen (Review + adversariale Verifikation je Kategorie,
+~86 Befunde behoben — [LOCALS-SIGNOFF.md](LOCALS-SIGNOFF.md)). [R13](RISIKO.md) ist für den
+English-Track damit deutlich gesenkt. Offen bleibt nur noch ein optionaler finaler
+**menschlicher** Native-Stempel als sichtbares „native-reviewed"-Siegel für Schul-/Hotel-Deals.
 
 **P2 — Generische Venue-English-Edition ✅ (gebaut, 2026-06-27).**
 `venue-en` in `editions/registry.js` (track `es-en`, ohne ECOS-Bezug, taskTab/teacherTab aus) +
