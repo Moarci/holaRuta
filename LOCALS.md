@@ -66,6 +66,14 @@ Die Gruppe **Vocabulario por temas (`loc-voc`)** ist eine reine **Vokabel-Sektio
 Präpositionen, Konjunktionen, Hochfrequenz-Adverbien, Quantoren, Modale, Kernverben),
 die in den thematischen Kategorien fehlen — das frequenzbasierte Fundament.
 
+> **Bewusste Überschneidung.** Die thematischen Wortlisten teilen sich naturgemäß
+> häufige Wörter: „naranja" gehört zu *colores* **und** zu *frutas*, „hospital" zu
+> *ciudad*, *salud* **und** *emergencias*. Eine themische Wortliste ohne diese Wörter
+> wäre unvollständig, daher bleiben sie in jeder Liste. **Garantiert** ist aber, dass
+> **kein einzelnes Lern-Set denselben Prompt doppelt zeigt** — nicht innerhalb einer
+> Kategorie, eines Presets oder einer Kurs-Etappe (akzent-sensitiv, d. h. `tú`≠`tu`,
+> `sí`≠`si`). Diese Invariante ist in `test/locals-track.test.js` festgeschrieben.
+
 Die Gruppe **Vocabulario B2 / avanzado (`loc-b2`)** hebt den Wortschatz auf **Niveau B2**
 (`lvl: 4` = „Experto"): 20 Kategorien mit fortgeschrittenem, abstrakterem und
 diskursivem Vokabular (Meinung/Argumentation, Konnektoren, Kollokationen, phrasal

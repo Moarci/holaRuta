@@ -273,3 +273,87 @@ test("Badges: Locals-Track liefert re-thematisierte Badges ohne Reise-Spielmodi"
   const blob = all.map((b) => `${b.nameEn} ${b.descriptionEn} ${b.unlockedTextEn}`).join(" ");
   assert.ok(!/\b(trip|travel|backpack|guidebook|on the road|Ruta)\b/i.test(blob), "keine Reise-Metaphern in Locals-Badges");
 });
+
+// ---------------------------------------------------------------------------
+// Discover-Spiele aus dem Reise-Track recycelt (PR #217): im Locals-Track ist
+// die gelernte Seite Englisch (card.en/item.en/o.en/frameEn). Die Spiele lesen
+// dieses Feld – fehlt es in den Daten, rendern sie leere Wörter. Diese Tests
+// sichern die volle en-Feld-Abdeckung der drei datengetriebenen Spiele ab.
+// ---------------------------------------------------------------------------
+test("Discover-Spiele (Locals): Definiciones-Quiz hat für jede Option ein en-Wort", () => {
+  const defs = data.QUIZ_DEFS || [];
+  assert.ok(defs.length > 0, "QUIZ_DEFS vorhanden");
+  for (const d of defs) {
+    assert.ok(d.es && d.es.length, `QUIZ_DEF ${d.id} hat ein spanisches Wort`);
+    assert.ok(d.en && d.en.trim(), `QUIZ_DEF ${d.id} hat ein englisches Wort (Locals-Lernseite)`);
+    assert.ok(d.def && d.def.length, `QUIZ_DEF ${d.id} hat eine (spanische) Definition`);
+  }
+});
+
+test("Discover-Spiele (Locals): ¿Y esto? – jedes Motiv hat ein en-Lösungswort", () => {
+  const yesto = require(path.join(__dirname, "..", "yesto.js")).default || window.SC.yesto;
+  const themes = (yesto && yesto.THEMES) || [];
+  assert.ok(themes.length > 0, "yesto THEMES vorhanden");
+  let items = 0;
+  for (const th of themes) {
+    for (const it of th.items || []) {
+      items++;
+      assert.ok(it.es && it.es.length, `yesto ${th.id}: Item hat es`);
+      assert.ok(it.en && String(it.en).trim(), `yesto ${th.id}: Item „${it.es}" hat en (Locals-Lösungswort)`);
+    }
+  }
+  assert.ok(items > 0, "yesto hat Motive");
+});
+
+test("Discover-Spiele (Locals): Frases – jeder Rahmen hat frameEn (mit Lücke) + en-Bausteine", () => {
+  const frases = require(path.join(__dirname, "..", "frases.js")).default || window.SC.frases;
+  const list = (frases && frases.FRASES) || [];
+  assert.ok(list.length > 0, "FRASES vorhanden");
+  for (const f of list) {
+    assert.ok(f.frameEn && f.frameEn.indexOf("___") >= 0, `Frase ${f.id}: frameEn mit Lücke (Locals baut den englischen Satz)`);
+    assert.ok(f.slot && f.slot.en && f.slot.en.length, `Frase ${f.id}: slot.en (richtiger englischer Baustein)`);
+    for (const d of f.distractors || []) {
+      assert.ok(d.en && d.en.length, `Frase ${f.id}: jeder Distraktor hat en`);
+    }
+    // Der zusammengesetzte englische Satz darf kein „How are you called?"-Muster
+    // erzeugen (unidiomatisch): das war der Review-Befund zu so03.
+    const built = f.frameEn.replace("___", f.slot.en).toLowerCase();
+    assert.ok(!/how\s+(is|are|am|do|does|did)\s+\w+\s+called/.test(built),
+      `Frase ${f.id}: zusammengesetzter Satz ist idiomatisch (kein „how … called"): ${built}`);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Korpus-Integrität: Vokabel-Wortlisten (loc-voc) und Themen-/Service-Karten
+// teilen sich bewusst häufige Wörter (z. B. „naranja" als Farbe UND als Frucht).
+// Das ist gewollt – ABER kein einzelnes Lern-Set (Kategorie, Preset, Kurs-Etappe)
+// darf denselben Prompt doppelt zeigen. Akzent-sensitiv, d. h. tu≠tú, si≠sí.
+// ---------------------------------------------------------------------------
+test("Korpus: kein In-Session-Set (Kategorie/Preset/Kurs-Etappe) zeigt denselben Prompt doppelt", () => {
+  const loc = data.CARDS.filter((c) => /^loc-/.test(c.id));
+  const byId = Object.fromEntries(loc.map((c) => [c.id, c]));
+  const norm = (s) => (s || "").toLowerCase().replace(/[¿¡!?.,]/g, "").replace(/\s+/g, " ").trim();
+  const findDup = (ids, where) => {
+    const seen = {};
+    for (const id of ids) {
+      const c = byId[id];
+      if (!c) continue;
+      const k = norm(c.es);
+      if (!k) continue;
+      (seen[k] = seen[k] || []).push(id);
+    }
+    for (const [k, v] of Object.entries(seen)) {
+      assert.equal(v.length, 1, `${where}: Prompt „${k}" mehrfach (${v.join(", ")})`);
+    }
+  };
+  // Kategorien
+  const cats = {};
+  for (const c of loc) (cats[c.cat] = cats[c.cat] || []).push(c.id);
+  for (const [cat, ids] of Object.entries(cats)) findDup(ids, `Kategorie ${cat}`);
+  // Presets
+  for (const p of dataLocals.PRESETS) findDup(p.pick, `Preset ${p.id}`);
+  // Kurs-Etappen (je 20 Karten)
+  for (const plan of dataLocals.PLANS) {
+    for (const d of plan.days) findDup(d.cardIds, `${plan.scope} Etappe ${d.day}`);
+  }
+});
