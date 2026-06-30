@@ -146,15 +146,215 @@
       }, function () { return { sent: false }; });
   }
 
+  // =========================================================================
+  // EVENT-PIPELINE (Interaktions-Tracking, BACKEND.md §17.6)
+  // Detaillierter Event-Strom NEBEN dem Tages-Snapshot – für Weiterentwicklung
+  // (Funnels/Retention/Drop-off) und Monitoring (Fehler/Performance). Gleiches
+  // Opt-in-Gate; ohne Endpunkt UND Zustimmung wird NICHTS gepuffert/gesendet.
+  // =========================================================================
+
+  var EVENTS_PATH = "/v1/events";
+  var QUEUE_KEY = "spanischcard.analyticsqueue.v1"; // gepufferte Events (Ring)
+  var CLIENT_KEY = "spanischcard.analyticscid.v1";  // pseudonyme, resetbare clientId
+  // Alle drei bewusst NICHT in store.KNOWN_KEYS -> reisen nicht im Backup mit.
+  var QUEUE_CAP = 200;                 // höchstens so viele Events puffern (Ring)
+  var BATCH_MAX = 50;                  // pro POST höchstens so viele
+  var SESSION_GAP_MS = 30 * 60 * 1000; // >30 min Inaktivität -> neue Session
+
+  // Pseudonyme Id (kein Klarname, keine Krypto-Anforderung – nur Wiedererkennung).
+  function randomId() {
+    try {
+      if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+        var a = new Uint8Array(9); crypto.getRandomValues(a);
+        return Array.prototype.map.call(a, function (b) { return (b & 0xff).toString(16).padStart(2, "0"); }).join("");
+      }
+    } catch (e) { /* Fallback unten */ }
+    return "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+
+  // Geräte-pseudonym: persistent, aber jederzeit resetbar (resetClientId / Consent-aus).
+  function clientId() {
+    var id = null;
+    try { id = localStorage.getItem(CLIENT_KEY); } catch (e) { id = null; }
+    if (!id) { id = randomId(); try { localStorage.setItem(CLIENT_KEY, id); } catch (e2) { /* egal */ } }
+    return id;
+  }
+
+  // Sitzungs-pseudonym: pro App-Start neu, rotiert nach Inaktivität. Nur im Speicher.
+  var sess = null; // { id, last }
+  function sessionId(now) {
+    var t = typeof now === "number" ? now : Date.now();
+    if (!sess || (t - sess.last) > SESSION_GAP_MS) sess = { id: randomId(), last: t };
+    else sess.last = t;
+    return sess.id;
+  }
+
+  // ---------- reiner Kern: Taxonomie + Allowlist-Sanitizer (testbar) ----------
+
+  // Erlaubtes „Slug"-Format für Enum-/Kategorie-Werte: KEINE Leerzeichen, kurz.
+  // Freitext (Suchbegriffe, Kartentexte, Namen) hat Leerzeichen/Satzzeichen und
+  // fällt damit STRUKTURELL durch -> kann nicht versehentlich gesendet werden.
+  var SLUG = /^[a-z0-9_.:+-]{1,32}$/i;
+
+  // Wenige „text"-Felder (nur Fehler-Diagnose) gehen NICHT als Slug durch, sondern
+  // werden PII-bereinigt und hart gekappt.
+  function cleanText(v) {
+    var s = str(v);
+    if (!s) return undefined;
+    s = s.replace(/[\w.+-]+@[\w.-]+/g, "@"); // E-Mail-Adressen entfernen
+    s = s.replace(/\d{4,}/g, "#");           // lange Ziffernfolgen (IDs/Tel/Karten) entfernen
+    s = s.replace(/\s+/g, " ").trim();
+    return s ? s.slice(0, 80) : undefined;
+  }
+
+  function san(mode, val) {
+    switch (mode) {
+      case "bool": return typeof val === "boolean" ? val : !!val;
+      case "int": { var n = num(val); return n < 0 ? 0 : Math.round(n); }
+      case "slug":
+      case "bucket": return (typeof val === "string" && SLUG.test(val)) ? val : undefined;
+      case "text": return cleanText(val);
+      default: return undefined;
+    }
+  }
+
+  // Taxonomie: pro Event eine feste Prop-Allowlist (key -> Sanitizer-Modus). Alles
+  // NICHT Gelistete wird verworfen (Default deny). „bucket"-Felder erwartet der Kern
+  // bereits als Bucket-STRING (Aufrufer nutzt SC.analytics.bucket).
+  var EVENTS = {
+    app_open:         { returning: "bool", load_ms: "bucket" },
+    perf:             { load_ms: "bucket" },
+    screen_view:      { screen: "slug", tab: "slug" },
+    action:           { action: "slug", mode: "slug", dir: "slug", level: "slug", tab: "slug", scope: "slug" },
+    session_start:    { scope: "slug", origin: "slug", mode: "slug", cards: "bucket" },
+    session_complete: { answered: "bucket", accuracy: "bucket", xp: "bucket", again: "bucket", mastered: "int" },
+    card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug" },
+    search:           { qlen: "bucket", results: "bucket" },
+    feature_start:    { feature: "slug", level: "int" },
+    feature_complete: { feature: "slug", perfect: "bool", score: "bucket" },
+    error:            { type: "slug", msg: "text", src: "text", line: "int" },
+    consent_change:   { on: "bool" },
+    pwa_installed:    {},
+    update_applied:   {},
+  };
+
+  // Hält NUR die für dieses Event erlaubten, sanitisierten Props (Default deny).
+  function sanitizeProps(name, props) {
+    var spec = EVENTS[str(name)];
+    if (!spec) return {};
+    var p = isObj(props) ? props : {};
+    var out = {};
+    Object.keys(spec).forEach(function (k) {
+      if (p[k] === undefined || p[k] === null) return;
+      var v = san(spec[k], p[k]);
+      if (v !== undefined) out[k] = v;
+    });
+    return out;
+  }
+
+  // Baut den vollständigen Event-Envelope (rein, deterministisch über ctx).
+  function buildEvent(name, props, ctx) {
+    var c = isObj(ctx) ? ctx : {};
+    var now = typeof c.now === "number" ? c.now : Date.now();
+    return {
+      v: 1,
+      ts: now,
+      day: dayKey(now),
+      clientId: str(c.clientId),
+      sessionId: str(c.sessionId),
+      seq: num(c.seq),
+      appVersion: str(c.appVersion).slice(0, 20),
+      locale: str(c.locale).slice(0, 8),
+      track: str(c.track).slice(0, 12),
+      event: str(name).slice(0, 40),
+      props: sanitizeProps(name, props),
+    };
+  }
+
+  // ---------- Adapter: Kontext, Queue, track/flush ----------
+
+  // Vom Controller einmalig (und bei Consent-/Sprachwechsel) gesetzt: Meta + ob der
+  // Nutzer zugestimmt hat. OHNE consent wird NICHTS gepuffert (keine stille Sammlung).
+  var ctx = { appVersion: "", locale: "", track: "", consent: false };
+  function configure(next) { if (isObj(next)) ctx = Object.assign({}, ctx, next); }
+
+  function loadQueue() {
+    try { var a = JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]"); return Array.isArray(a) ? a : []; }
+    catch (e) { return []; }
+  }
+  var queue = loadQueue();
+  function saveQueue() { try { localStorage.setItem(QUEUE_KEY, JSON.stringify(queue)); } catch (e) { /* Quota/aus -> egal */ } }
+
+  var seqCounter = 0;
+
+  // Erfasst ein Event: bauen + sanitisieren + in die Ring-Queue. Tut NICHTS ohne
+  // Endpunkt UND Zustimmung und NUR für bekannte Event-Namen. Wirft nie.
+  function track(name, props, opts) {
+    if (!available() || ctx.consent !== true) return;
+    if (!EVENTS[str(name)]) return;
+    var o = isObj(opts) ? opts : {};
+    var now = typeof o.now === "number" ? o.now : Date.now();
+    var ev = buildEvent(name, props, {
+      now: now,
+      clientId: clientId(),
+      sessionId: sessionId(now),
+      seq: seqCounter++,
+      appVersion: ctx.appVersion,
+      locale: ctx.locale,
+      track: ctx.track,
+    });
+    queue.push(ev);
+    if (queue.length > QUEUE_CAP) queue = queue.slice(queue.length - QUEUE_CAP); // Ring: Älteste verwerfen
+    saveQueue();
+  }
+
+  // Sendet einen Batch gepufferter Events. opts.beacon nutzt navigator.sendBeacon
+  // (zuverlässig beim Verstecken/Schließen). Erfolg -> Slice entfernen. Wirft nie.
+  function flush(opts) {
+    var o = isObj(opts) ? opts : {};
+    if (!available() || ctx.consent !== true || !queue.length) return Promise.resolve({ sent: 0 });
+    var batch = queue.slice(0, BATCH_MAX);
+    if (o.beacon && typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+      var ok = false;
+      try {
+        var blob = new Blob([JSON.stringify({ events: batch })], { type: "application/json" });
+        ok = navigator.sendBeacon(apiBase() + EVENTS_PATH, blob);
+      } catch (e) { ok = false; }
+      if (ok) { queue = queue.slice(batch.length); saveQueue(); return Promise.resolve({ sent: batch.length, beacon: true }); }
+      // Beacon abgelehnt -> regulärer Pfad unten
+    }
+    return SC.net.request(apiBase(), "POST", EVENTS_PATH, { events: batch }, { timeout: 8000 })
+      .then(function (r) {
+        if (r && r.ok) { queue = queue.slice(batch.length); saveQueue(); return { sent: batch.length }; }
+        return { sent: 0 };
+      }, function () { return { sent: 0 }; });
+  }
+
+  // Pseudonyme clientId verwerfen und Puffer leeren (Reset / Consent-aus).
+  function resetClientId() {
+    try { localStorage.removeItem(CLIENT_KEY); } catch (e) { /* egal */ }
+    queue = []; saveQueue(); sess = null;
+  }
+
   SC.analytics = {
-    // Adapter
+    // Adapter (Snapshot)
     available: available,
     maybeSend: maybeSend,
     SENT_KEY: SENT_KEY,
+    // Adapter (Events)
+    configure: configure,
+    track: track,
+    flush: flush,
+    resetClientId: resetClientId,
+    QUEUE_KEY: QUEUE_KEY,
+    CLIENT_KEY: CLIENT_KEY,
     // Reiner Kern (für Tests + serverseitige Wiederverwendung)
     dayKey: dayKey,
     bucket: bucket,
     featuresUsed: featuresUsed,
     buildUsageSnapshot: buildUsageSnapshot,
+    buildEvent: buildEvent,
+    sanitizeProps: sanitizeProps,
+    EVENTS: EVENTS,
   };
 })();

@@ -385,9 +385,59 @@ Nutzer-ID das Gerät.
 
 ### 17.5 Bewusst draußen (zusätzlich zu §15)
 
-- **Kein** Event-Stream / kein Klick-für-Klick-Tracking — nur ein grober Tages-Snapshot.
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies.
-- **Keine** Verknüpfung mit Sync/Social-Konten (anonym, ohne Token).
+- **Keine** Verknüpfung mit Sync/Social-Konten (ohne Token, eigene pseudonyme `clientId`).
+- **Kein** Klick-für-Klick-Mitschnitt von Inhalten — Events tragen nur Enums/Buckets (s. §17.6).
+
+### 17.6 Interaktions-Events — „was machen sie genau?" (Vollausbau, opt-in)
+
+Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Weiterentwicklung**
+(Funnels, Retention, Drop-off) und **Monitoring** (JS-Fehler, Ladezeiten) kommt ein
+**Event-Strom** dazu — derselbe Opt-in-Schalter, dieselbe Datenminimierungs-DNA.
+
+> **Status:** Client fertig (`analytics.js`: `track`/`flush`/`buildEvent`/`sanitizeProps`, Queue,
+> pseudonyme IDs; Hooks in `app.js`; `test/analytics.test.js`). Es fehlt **nur** der Server
+> (Event-Store). Referenz-Collector für die lokale Demo: `tools/mock-events-server.js`.
+
+**17.6.1 Leitplanken (zusätzlich zu §17.1)**
+- **Doppelte Schranke unverändert:** ohne Endpunkt **und** ohne Zustimmung wird **nichts gepuffert
+  oder gesendet** (kein Sammeln „auf Vorrat").
+- **Pseudonym statt anonym (bewusst):** zufällige, **resetbare** `clientId` (gerätelokal, eigener
+  LS-Key, **nicht** im Backup) + `sessionId` (pro App-Start, rotiert nach 30 min Inaktivität).
+  Erlaubt Journeys/Retention, **kein** Klarname, **keine** Geräte-Fingerprints. Reset-Knopf im Profil;
+  Consent-aus verwirft `clientId` + Puffer.
+- **Allowlist-Sanitizer (Default deny):** jedes Event hat eine feste Prop-Allowlist; Werte werden in
+  **Enum/Slug/Zahl/Bucket** gezwungen. Freitext (Leerzeichen/Satzzeichen) fällt **strukturell** durch
+  → **kein Suchtext, keine Kartentexte/-IDs, keine Namen**. Fehler-Texte werden PII-bereinigt
+  (E-Mail/lange Ziffernfolgen raus) und auf 80 Zeichen gekappt.
+- **Lokale Pufferung & Batching:** Ring-Queue (≤ 200 Events) im `localStorage`; Versand gebündelt
+  (≤ 50/Batch) periodisch und beim Verstecken/Schließen via `navigator.sendBeacon` (zuverlässig).
+
+**17.6.2 Event-Taxonomie (Start-Set)** — `app_open` · `screen_view` · `action` · `session_start` ·
+`session_complete` · `card_rated` · `search` · `feature_start`/`feature_complete` · `error` · `perf` ·
+`consent_change` · `pwa_installed`/`update_applied`. Envelope:
+`{ v, ts, day, clientId, sessionId, seq, appVersion, locale, track, event, props }`.
+
+**17.6.3 API (Ergänzung zu §17.2, ohne Bearer-Token)**
+- `POST /v1/events` `{ events: [ <envelope>, … ] }` → `{ ok:true }`. Auch via `sendBeacon`
+  (Content-Type `application/json`). Server: **Größenlimit** (z. B. ≤ 64 KB/Batch), **Rate-Limiting**
+  pro `clientId`/IP, CORS strikt auf die App-Origin, Schema-/Allowlist-Validierung **serverseitig
+  spiegeln** (nie mehr Felder akzeptieren als der Client sendet).
+- **Datenspeicher:** anders als der Snapshot (1 Zeile/Tag) braucht der Event-Strom einen echten
+  **append-only Event-Store** (z. B. Tabelle/Spalten-DB oder ein privacy-freundliches Analytics-
+  Backend). Aufbewahrung **befristet** (z. B. 90 Tage), danach nur Aggregate.
+
+**17.6.4 Datenschutz (Ergänzung zu §17.3)**
+- Einwilligung deckt Snapshot **und** Events (ein Schalter); Widerruf stoppt sofort und verwirft die
+  lokale `clientId` + Queue. **Löschung per `clientId`** muss serverseitig möglich sein (DSGVO Art. 17).
+- IP nicht persistieren (nur transient fürs Rate-Limit); **kein** Werbe-Tracking, **keine** Dritt-Tracker.
+- **Sampling** optional (`SC.config.analytics.sampleRate`) zur Datenminimierung bei Reichweite.
+
+**17.6.5 Akzeptanzkriterien (DoD)**
+- Ohne Endpunkt **oder** ohne Consent: **0** `request`/`sendBeacon` und **0** gepufferte Events (Test).
+- Mit beidem: `track` puffert sanitisierte Envelopes; `flush` sendet **einen** Batch an `/v1/events`;
+  Allowlist-Assertion belegt, dass Freitext/PII/Karten-IDs **nicht** durchkommen; Queue-Ring deckelt
+  auf 200, Batch ≤ 50; `sessionId` rotiert nach Inaktivität, `clientId` bleibt bis Reset.
 
 ---
 

@@ -9,7 +9,7 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-715_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-722_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -62,7 +62,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und mit 0 Runtime-
 - **0 Runtime-npm-Dependencies** — Reines Vanilla JS. Kein Framework, kein Bundler, kein `node_modules` zur Laufzeit. Nur Module, die sich an `window.SC` hängen. Optionales Build-Tooling (z. B. esbuild) ist dev-only; die Cloud-/Sync-Schicht ist opt-in.
 - **Reine Funktionen im Kern** — `srs`, `matcher` und `stats` kennen weder UI noch Speicher. Sie nehmen Zustand + Eingabe und geben **neuen** Zustand zurück (Immutability durchgängig).
 - **Offline first** — Service Worker cacht die komplette App. Einmal geladen, laufen **Texte, Lernkarten und UI ohne Netz** weiter. Ausnahme: Kultur-/Geschichtsbilder der Länderkunde werden von **Wikimedia** geladen — ohne Cookies/Tracker, aber als externer Request (also nicht offline verfügbar).
-- **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`; diese Daten verlassen das Gerät nicht. **Keine Werbung, keine Drittanbieter-Tracker.** Der einzige externe Request im Normalbetrieb sind die Wikimedia-Bilder (s. o.). Optional und **standardmäßig aus** sind die opt-in Cloud-Sync-Schicht sowie eine **anonyme, aggregierte** Nutzungsstatistik (BACKEND.md §17) — beide nur nach ausdrücklicher Zustimmung, ohne PII und ohne Karteninhalte.
+- **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`; diese Daten verlassen das Gerät nicht. **Keine Werbung, keine Drittanbieter-Tracker.** Der einzige externe Request im Normalbetrieb sind die Wikimedia-Bilder (s. o.). Optional und **standardmäßig aus** sind die opt-in Cloud-Sync-Schicht sowie eine **opt-in Nutzungsstatistik** (BACKEND.md §17): ein anonymer Tages-Snapshot **und** ein pseudonymer Interaktions-Event-Strom (für Weiterentwicklung & Fehler-Monitoring). Beide nur nach ausdrücklicher Zustimmung; ein Allowlist-Sanitizer stellt sicher, dass **kein** Suchtext, **keine** Karteninhalte/-IDs und **keine** Namen das Gerät verlassen — nur grobe Enums/Buckets. Pseudonyme Statistik-Id jederzeit resetbar.
 - **Graceful Degradation** — Kein `localStorage`? Kein TTS? Kein Service Worker? Die App läuft trotzdem, nur ohne das jeweilige Extra.
 
 ---
@@ -275,7 +275,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 715 Tests in 62 Dateien (node:test, keine Dependencies)
+├── test/                        # 722 Tests in 62 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -558,8 +558,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 715
-#  ℹ pass 715
+#  ℹ tests 722
+#  ℹ pass 722
 #  ℹ fail 0
 ```
 
@@ -590,7 +590,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 51 (`SC.*`) |
-| Tests | 715 (alle grün) |
+| Tests | 722 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

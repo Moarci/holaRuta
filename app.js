@@ -1262,6 +1262,13 @@
       levelAfter: levelFor(xpAfter),
       tripMilestone: tripMilestone, // {pct,dest}|null – Startklar-Meilenstein dieser Runde
     };
+    // Session-Abschluss als grobe Aggregat-Kennzahlen (keine Karten/Inhalte).
+    trackEvent("session_complete", {
+      answered: abucket(answered, [1, 5, 10, 20, 40]),
+      accuracy: abucket(accuracy, [25, 50, 75, 90, 99]),
+      xp: abucket(xpGained, [10, 30, 60, 120]),
+      again: abucket(s.wrong, [1, 3, 6, 12]),
+    });
   }
 
   // ----- Trip-Ziel (Countdown + Tagesziel) -----
@@ -2371,6 +2378,9 @@
   }
 
   function render() {
+    // Screen-View-Event nur bei echtem Ansichtswechsel (gleiche Logik wie der
+    // Scroll-Reset): re-Renders DERSELBEN Ansicht erzeugen kein Event.
+    trackScreenView();
     // Ein laufendes Trip-Drag hält Referenzen auf DOM-Knoten, die render() gleich
     // ersetzt. Feuert render() asynchron mitten im Ziehen (Badge-Toast-Timer,
     // SW-Update, Farbschema-Wechsel), würden die folgenden Pointer-Events auf
@@ -2932,6 +2942,12 @@
     state.contextOpen = false;
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
+    trackEvent("session_start", {
+      scope: scopeId,                 // "all" oder Kategorie-Id (Slug, kein PII/keine Karten-Id)
+      origin: origin || "direct",
+      mode: state.mode,
+      cards: abucket(state.total, [5, 10, 20, 40]),
+    });
     render();
   }
 
@@ -4976,6 +4992,9 @@
 
     // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
     recordStudyEvent(rating, now);
+    // Karten-Bewertung als grobes Event (Bewertung + Modus + Stufe + Kategorie –
+    // NIE die Karten-Id oder den Karteninhalt).
+    trackEvent("card_rated", { rating: String(rating), mode: state.mode, level: String(card.lvl || ""), cat: card.cat });
     if (state.mode === "listen") recordListenReview();
     syncBadges(now, true);
 
@@ -5190,7 +5209,13 @@
     settings = Object.assign({}, settings, { analyticsConsent: !!on });
     store.saveSettings(settings);
     buzz(8);
-    if (on) sendUsageSnapshot();
+    // Event-Pipeline über die neue Einwilligung informieren. Bei AUS zusätzlich die
+    // pseudonyme Statistik-Id verwerfen und den Puffer leeren (kein Nachsenden).
+    if (window.SC.analytics && window.SC.analytics.configure) {
+      window.SC.analytics.configure(analyticsCtx());
+      if (!on && window.SC.analytics.resetClientId) window.SC.analytics.resetClientId();
+    }
+    if (on) { sendUsageSnapshot(); trackEvent("consent_change", { on: true }); }
     render();
   }
 
@@ -5207,11 +5232,40 @@
     });
   }
 
+  // ---- Interaktions-Tracking (Event-Pipeline, opt-in) ----------------------
+  // Gemeinsamer Kontext (Meta + Einwilligung) für SC.analytics.configure/track.
+  function analyticsCtx() {
+    return {
+      consent: settings.analyticsConsent === true,
+      appVersion: (changelog && changelog.VERSION) || "",
+      locale: state.uiLang,
+      track: (window.SC.track && window.SC.track.id()) || "",
+    };
+  }
+  // Ein Event erfassen – graceful, wenn das Modul fehlt. Das Modul prüft selbst
+  // Endpunkt + Zustimmung; ohne beides wird NICHTS gepuffert.
+  function trackEvent(name, props) {
+    if (window.SC.analytics && window.SC.analytics.track) window.SC.analytics.track(name, props);
+  }
+  // Zahl -> grober Bucket-String (über den reinen Kern in analytics.js).
+  function abucket(n, edges) {
+    return (window.SC.analytics && window.SC.analytics.bucket) ? window.SC.analytics.bucket(n, edges) : String(n | 0);
+  }
+  // Screen-View nur bei Wechsel der Ansicht (scrollKey = Screen bzw. home:<tab>).
+  let lastTrackedView = null;
+  function trackScreenView() {
+    const key = scrollKey();
+    if (key === lastTrackedView) return;
+    lastTrackedView = key;
+    trackEvent("screen_view", { screen: state.screen, tab: state.screen === "home" ? state.homeTab : undefined });
+  }
+
   // UI-/Muttersprache umschalten (de/en), merken und neu rendern.
   function setUiLang(l) {
     applyUiLang(l);
     settings = Object.assign({}, settings, { uiLang: state.uiLang });
     store.saveSettings(settings);
+    if (window.SC.analytics && window.SC.analytics.configure) window.SC.analytics.configure(analyticsCtx());
     invalidateSearchIndex(); // Titel/Untertitel & Gruppen hängen an der UI-Sprache
     render();
   }
@@ -6189,6 +6243,20 @@
   function updateSearchResults() {
     const box = document.getElementById("search-results");
     if (box) box.innerHTML = ui.searchResults(searchVM());
+    maybeTrackSearch();
+  }
+
+  // Such-Event NUR als grobe Buckets: Länge der Anfrage + Trefferzahl. NIEMALS der
+  // Suchtext selbst. Gedrosselt, damit nicht jeder Tastendruck ein Event erzeugt.
+  let lastSearchTrackAt = 0;
+  function maybeTrackSearch() {
+    const q = String(state.searchQuery || "").trim();
+    if (!q) return;
+    const now = Date.now();
+    if (now - lastSearchTrackAt < 1000) return;
+    lastSearchTrackAt = now;
+    const results = searchResultsData(q).groups.reduce((n, g) => n + g.items.length, 0);
+    trackEvent("search", { qlen: abucket(q.length, [3, 6, 12, 24]), results: abucket(results, [0, 1, 5, 20]) });
   }
 
   function clearSearch() {
@@ -7048,6 +7116,7 @@
     "set-dir": (el) => { setDir(el.dataset.dir); },
     "set-celebrate-sound": (el) => { setCelebrateSound(el.dataset.on === "1"); },
     "set-analytics-consent": (el) => { setAnalyticsConsent(el.dataset.on === "1"); },
+    "reset-analytics-id": () => { if (window.SC.analytics && window.SC.analytics.resetClientId) { window.SC.analytics.resetClientId(); buzz(8); } },
     "set-ui-lang": (el) => { setUiLang(el.dataset.lang); },
     "set-level": (el) => { toggleLevel(Number(el.dataset.level)); },
     "study-all": (el) => { startStudy("all"); },
@@ -7328,7 +7397,21 @@
     }
 
     const handler = ACTIONS[action];
-    if (handler) handler(el);
+    if (handler) {
+      trackEvent("action", actionProps(action, el));
+      handler(el);
+    }
+  }
+
+  // Sichere, allowlist-basierte Props für ein „action"-Event. Bewusst NUR Enum-/
+  // Kategorie-artige dataset-Felder (mode/dir/level/tab/scope) – NIE Freitext und
+  // NIE Karten-IDs (data-id). Der Sanitizer in analytics.js verwirft zusätzlich alles
+  // Nicht-Gelistete und jeden Wert mit Leerzeichen.
+  function actionProps(action, el) {
+    const d = (el && el.dataset) || {};
+    const p = { action: action };
+    ["mode", "dir", "level", "tab", "scope"].forEach((k) => { if (d[k] != null) p[k] = String(d[k]); });
+    return p;
   }
 
   function onSubmit(e) {
@@ -7952,6 +8035,45 @@
   // Tages-Snapshot. Tut NICHTS ohne konfigurierten Endpunkt UND Zustimmung – ohne
   // beides exakt 0 Netzwerk-Calls wie bisher. Fire-and-forget, nie blockierend.
   sendUsageSnapshot();
+  setupAnalyticsEvents();
+
+  // Interaktions-Tracking aufsetzen (opt-in, BACKEND.md §17.6): Kontext setzen,
+  // app_open/perf erfassen, Fehler-Monitoring einhängen und die Event-Queue
+  // periodisch sowie beim Verstecken/Schließen (sendBeacon) flushen. Alles tut
+  // NICHTS ohne konfigurierten Endpunkt UND Zustimmung (Prüfung im Modul).
+  function setupAnalyticsEvents() {
+    const A = window.SC.analytics;
+    if (!A || !A.configure) return;
+    A.configure(analyticsCtx());
+
+    // App-Start + grobe Ladezeit (einmal pro Start).
+    let loadMs = 0;
+    try { loadMs = Math.max(0, Math.round((window.performance && performance.now && performance.now()) || 0)); } catch (e) { /* egal */ }
+    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]) });
+    trackEvent("perf", { load_ms: abucket(loadMs, [200, 500, 1000, 3000]) });
+
+    // Fehler-Monitoring (vorher gar nicht vorhanden). Nur Diagnose-Text, PII-bereinigt.
+    try {
+      window.addEventListener("error", (ev) => {
+        const file = ev && ev.filename ? String(ev.filename).split("/").pop() : "";
+        trackEvent("error", { type: "error", msg: ev && ev.message, src: ev && ev.lineno ? file + ":" + ev.lineno : file, line: (ev && ev.lineno) || 0 });
+      });
+      window.addEventListener("unhandledrejection", (ev) => {
+        const r = ev && ev.reason;
+        trackEvent("error", { type: "promise", msg: r && (r.message || String(r)), line: 0 });
+      });
+      window.addEventListener("appinstalled", () => trackEvent("pwa_installed", {}));
+    } catch (e) { /* addEventListener fehlt – egal */ }
+
+    // Flush: periodisch und beim Verstecken/Schließen (sendBeacon ist dort zuverlässig).
+    try {
+      setInterval(() => { A.flush(); }, 15000);
+      document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") A.flush({ beacon: true }); });
+      window.addEventListener("pagehide", () => { A.flush({ beacon: true }); });
+    } catch (e) { /* egal */ }
+    // Erster Flush kurz nach Start (schickt app_open/perf raus, sobald zugestimmt).
+    setTimeout(() => A.flush(), 3000);
+  }
 
   window.SC.app = { render }; // nach außen minimal
 })();

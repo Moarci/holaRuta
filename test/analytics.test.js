@@ -140,3 +140,129 @@ test("dayKey: lokales YYYY-MM-DD (zweistellig)", () => {
   const k = analytics.dayKey(new Date(2026, 0, 5, 12, 0, 0).getTime()); // 5. Jan
   assert.equal(k, "2026-01-05");
 });
+
+// ===== Event-Pipeline (Interaktions-Tracking) ============================
+
+test("sanitizeProps: behält nur die Allowlist, verwirft Freitext & unbekannte Keys", () => {
+  assert.deepEqual(
+    analytics.sanitizeProps("action", { action: "open-search", mode: "flip", note: "geheim", scope: "transporte" }),
+    { action: "open-search", mode: "flip", scope: "transporte" }
+  );
+  // Freitext (Leerzeichen) fällt strukturell durch den Slug-Filter.
+  assert.deepEqual(analytics.sanitizeProps("action", { action: "hola que tal" }), {});
+  // search trägt NIE den Suchtext – nur Buckets.
+  assert.deepEqual(analytics.sanitizeProps("search", { qlen: "1-10", results: "1-5", q: "border crossing" }), { qlen: "1-10", results: "1-5" });
+  // unbekanntes Event -> keine Props.
+  assert.deepEqual(analytics.sanitizeProps("whatever", { a: 1 }), {});
+});
+
+test("sanitizeProps: error-Text wird PII-bereinigt und gekappt", () => {
+  const out = analytics.sanitizeProps("error", { type: "promise", msg: "fail for user a@b.com card po12345 ok", src: "app.js", line: 42 });
+  assert.equal(out.type, "promise");
+  assert.equal(out.line, 42);
+  assert.ok(out.msg.indexOf("a@b.com") < 0, "E-Mail entfernt");
+  assert.ok(out.msg.indexOf("12345") < 0, "lange Ziffernfolge entfernt");
+  assert.ok(out.msg.length <= 80);
+});
+
+test("buildEvent: vollständiger, deterministischer Envelope (Props sanitisiert)", () => {
+  const now = 1750000000000;
+  const ev = analytics.buildEvent("screen_view", { screen: "home", tab: "start", secret: "x y" }, {
+    now, clientId: "cid1", sessionId: "sid1", seq: 3, appVersion: "1.120.0", locale: "de", track: "de-es",
+  });
+  assert.equal(ev.event, "screen_view");
+  assert.equal(ev.clientId, "cid1");
+  assert.equal(ev.sessionId, "sid1");
+  assert.equal(ev.seq, 3);
+  assert.equal(ev.day, analytics.dayKey(now));
+  assert.deepEqual(ev.props, { screen: "home", tab: "start" });
+});
+
+test("track/flush: puffert nur mit Endpunkt UND Zustimmung; ein Batch an /v1/events; Queue leert", async () => {
+  analytics.resetClientId();
+  const calls = [];
+  globalThis.window.SC.net = { request: (base, m, p, body) => { calls.push({ base, m, p, body }); return Promise.resolve({ ok: true, status: 200, body: null }); } };
+
+  // (a) ohne Config: track puffert nicht, flush sendet nichts.
+  globalThis.window.SC.config = {};
+  analytics.configure({ consent: true, appVersion: "1.120.0", locale: "de", track: "de-es" });
+  analytics.track("screen_view", { screen: "home", tab: "start" });
+  let r = await analytics.flush();
+  assert.equal(r.sent, 0); assert.equal(calls.length, 0);
+
+  // (b) mit Endpunkt, aber ohne Zustimmung: nichts.
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  analytics.configure({ consent: false });
+  analytics.track("action", { action: "open-search" });
+  r = await analytics.flush();
+  assert.equal(r.sent, 0); assert.equal(calls.length, 0);
+
+  // (c) mit beidem: track puffert, flush sendet genau einen Batch.
+  analytics.configure({ consent: true });
+  analytics.track("action", { action: "open-search", mode: "flip" });
+  analytics.track("card_rated", { rating: "good", cat: "transporte", level: "1" });
+  r = await analytics.flush();
+  assert.equal(r.sent, 2);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].m, "POST");
+  assert.equal(calls[0].p, "/v1/events");
+  assert.equal(calls[0].base, "https://x.test");
+  assert.equal(calls[0].body.events.length, 2);
+  const e0 = calls[0].body.events[0];
+  assert.ok(e0.clientId && e0.sessionId, "pseudonyme IDs gesetzt");
+  assert.deepEqual(e0.props, { action: "open-search", mode: "flip" });
+
+  // (d) nach erfolgreichem Flush ist die Queue leer.
+  r = await analytics.flush();
+  assert.equal(r.sent, 0);
+  assert.equal(calls.length, 1);
+});
+
+test("Queue-Ring: deckelt auf 200, Batches <= 50", async () => {
+  analytics.resetClientId();
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  let total = 0, maxBatch = 0;
+  globalThis.window.SC.net = { request: (b, m, p, body) => { maxBatch = Math.max(maxBatch, body.events.length); return Promise.resolve({ ok: true }); } };
+  analytics.configure({ consent: true });
+  for (let i = 0; i < 250; i++) analytics.track("action", { action: "x" });
+  let r; do { r = await analytics.flush(); total += r.sent; } while (r.sent > 0);
+  assert.equal(total, 200, "Ring deckelt auf QUEUE_CAP=200 (älteste 50 verworfen)");
+  assert.ok(maxBatch <= 50, "Batch <= BATCH_MAX=50");
+});
+
+test("sessionId via track: gleich in der Sitzung, neu nach >30 min; clientId bleibt", async () => {
+  analytics.resetClientId();
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  let captured = [];
+  globalThis.window.SC.net = { request: (b, m, p, body) => { captured = captured.concat(body.events); return Promise.resolve({ ok: true }); } };
+  analytics.configure({ consent: true });
+  const t0 = 1750000000000;
+  analytics.track("action", { action: "a" }, { now: t0 });
+  analytics.track("action", { action: "b" }, { now: t0 + 60 * 1000 });       // +1 min
+  analytics.track("action", { action: "c" }, { now: t0 + 60 * 60 * 1000 });  // +60 min -> neue Session
+  let r; do { r = await analytics.flush(); } while (r.sent > 0);
+  assert.equal(captured.length, 3);
+  assert.equal(captured[0].sessionId, captured[1].sessionId, "selbe Session innerhalb der Lücke");
+  assert.notEqual(captured[2].sessionId, captured[0].sessionId, "neue Session nach Inaktivität");
+  assert.equal(captured[0].clientId, captured[2].clientId, "clientId bleibt konstant");
+});
+
+test("flush({beacon}): nutzt navigator.sendBeacon und leert die Queue", async () => {
+  if (typeof Blob === "undefined") return; // Umgebung ohne Blob -> nichts zu testen
+  if (typeof globalThis.navigator === "undefined") { try { globalThis.navigator = {}; } catch (e) { return; } }
+  const beacons = [];
+  try { globalThis.navigator.sendBeacon = (url, blob) => { beacons.push({ url, blob }); return true; }; }
+  catch (e) { return; }
+  if (typeof globalThis.navigator.sendBeacon !== "function") return;
+
+  analytics.resetClientId();
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  globalThis.window.SC.net = { request: () => { throw new Error("beacon path darf net.request nicht nutzen"); } };
+  analytics.configure({ consent: true });
+  analytics.track("app_open", { returning: true, load_ms: "200-500" });
+  const r = await analytics.flush({ beacon: true });
+  assert.equal(r.beacon, true);
+  assert.ok(r.sent >= 1);
+  assert.equal(beacons.length, 1);
+  assert.ok(beacons[0].url.indexOf("/v1/events") >= 0);
+});

@@ -535,10 +535,12 @@
       </div>`;
   }
 
-  // Anonyme Nutzungsstatistik teilen (opt-in, Default aus). Nur sichtbar, wenn eine
-  // Edition einen Telemetrie-Endpunkt konfiguriert hat (vm.analyticsAvailable). Ohne
-  // Zustimmung verlässt KEIN Datum das Gerät; gesendet wird – mit Zustimmung – nur
-  // ein anonymer, gebucketeter Tages-Snapshot (keine PII, keine Karten-IDs).
+  // Nutzungsstatistik teilen (opt-in, Default aus). Nur sichtbar, wenn eine Edition
+  // einen Telemetrie-Endpunkt konfiguriert hat (vm.analyticsAvailable). Ohne
+  // Zustimmung verlässt KEIN Datum das Gerät; mit Zustimmung werden ein anonymer
+  // Tages-Snapshot UND pseudonyme Interaktions-Events gesendet (keine PII, keine
+  // Karten-IDs, kein Suchtext). Bei „An" gibt es einen Knopf, die pseudonyme
+  // Statistik-Id zurückzusetzen.
   function analyticsConsentGroup(vm) {
     if (!vm.analyticsAvailable) return "";
     const on = !!vm.analyticsConsent;
@@ -550,6 +552,7 @@
           <button class="seg ${!on ? "is-active" : ""}" type="button" data-action="set-analytics-consent" data-on="0" aria-pressed="${!on}">${esc(t("home.analyticsOff"))}</button>
         </div>
         <p class="namefield__hint">${esc(t("home.analyticsHint"))}</p>
+        ${on ? `<button class="ghostbtn" type="button" data-action="reset-analytics-id">${esc(t("home.analyticsResetId"))}</button>` : ""}
       </div>`;
   }
 
