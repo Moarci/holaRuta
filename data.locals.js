@@ -459,7 +459,7 @@
     { id: "loc-pla-t10", cat: "platos-en", lvl: 2, es: "Lleva leche de coco.", en: "It has coconut milk.", tip: "it jas CÓU-co-not milk" },
     { id: "loc-pla-t11", cat: "platos-en", lvl: 1, es: "Es muy fresco.", en: "It's very fresh.", tip: "its VÉ-ri FRESH" },
     { id: "loc-pla-t12", cat: "platos-en", lvl: 2, es: "El patacón es de plátano frito.", en: "The patacón is fried plantain.", tip: "da pa-ta-CÓN is FRÁID PLÁN-tein" },
-    { id: "loc-pla-t13", cat: "platos-en", lvl: 1, es: "¿Quiere probarlo?", en: "Would you like to try it?", tip: "wud yu laik tu TRÁI it" },
+    { id: "loc-pla-t13", cat: "platos-en", lvl: 1, es: "¿Quiere una prueba primero?", en: "Would you like a taste first?", tip: "wud yu laik a TÉIST ferst" },
     { id: "loc-pla-t14", cat: "platos-en", lvl: 2, es: "Va bien con jugo natural.", en: "It goes well with fresh juice.", tip: "it góus WEL wid fresh YUS" },
     // --- saludos y charla (Forts.) ---
     { id: "loc-sal13", cat: "saludos-en", lvl: 1, es: "¿Cómo te llamas?", en: "What's your name?", tip: "wats yor NÉIM" },
@@ -657,7 +657,7 @@
     { id: "loc-cv09", cat: "cv-en", lvl: 1, es: "Soy trabajador y honesto.", en: "I'm hardworking and honest.", tip: "aim JÁRD-wer-king and Ó-nest" },
     { id: "loc-cv10", cat: "cv-en", lvl: 2, es: "Me gustaría crecer en la empresa.", en: "I'd like to grow with the company.", tip: "aid laik tu GRÓU wid da CÓM-pa-ni" },
     { id: "loc-cv11", cat: "cv-en", lvl: 1, es: "¿A quién debo dirigirme?", en: "Who should I address this to?", tip: "ju shud ai a-DRÉS dis tu" },
-    { id: "loc-cv12", cat: "cv-en", lvl: 2, es: "Quedo atento a su respuesta.", en: "I look forward to hearing from you.", tip: "ai luk FÓR-ward tu JÍ-ring from yu" },
+    { id: "loc-cv12", cat: "cv-en", lvl: 2, es: "Agradezco su consideración.", en: "Thank you for your consideration.", tip: "zenk yu for yor con-si-de-RÉI-shon" },
     // --- negociar ---
     { id: "loc-neg01", cat: "negociacion", lvl: 1, es: "¿Podemos hablar del precio?", en: "Can we talk about the price?", tip: "can wi tok a-BÁUT da prais" },
     { id: "loc-neg02", cat: "negociacion", lvl: 2, es: "Esperaba un poco más.", en: "I was hoping for a bit more.", tip: "ai was JÓU-ping for a bit MOR" },
@@ -769,7 +769,7 @@
     { id: "loc-vp05", cat: "ventas-pro", lvl: 2, es: "¿Cuál es su presupuesto?", en: "What's your budget?", tip: "wats yor BÓ-yet" },
     { id: "loc-vp06", cat: "ventas-pro", lvl: 1, es: "Le envío una propuesta.", en: "I'll send you a proposal.", tip: "ail send yu a pro-PÓU-sal" },
     { id: "loc-vp07", cat: "ventas-pro", lvl: 2, es: "Tenemos una oferta especial.", en: "We have a special offer.", tip: "wi jav a SPÉ-shal Ó-fer" },
-    { id: "loc-vp08", cat: "ventas-pro", lvl: 1, es: "¿Le interesa probarlo?", en: "Would you like to try it?", tip: "wud yu laik tu TRÁI it" },
+    { id: "loc-vp08", cat: "ventas-pro", lvl: 1, es: "¿Le interesa probarlo?", en: "Want to give it a try?", tip: "want tu giv it a TRÁI" },
     { id: "loc-vp09", cat: "ventas-pro", lvl: 2, es: "Con gusto le explico los planes.", en: "I'd be happy to explain the plans.", tip: "aid bi JÁ-pi tu eks-PLÉIN da plans" },
     { id: "loc-vp10", cat: "ventas-pro", lvl: 2, es: "Es más barato a largo plazo.", en: "It's cheaper in the long run.", tip: "its CHÍ-per in da long RON" },
     { id: "loc-vp11", cat: "ventas-pro", lvl: 1, es: "Gracias por su interés.", en: "Thank you for your interest.", tip: "zenk yu for yor ÍN-trest" },
@@ -879,7 +879,7 @@
     { id: "loc-perf02", cat: "perfecto-en", lvl: 2, es: "Viví allí en 2019 (terminado).", en: "I lived there in 2019.", tip: "ai LIVD der in tu-zÁU-sand nain-TÍN" },
     { id: "loc-perf03", cat: "perfecto-en", lvl: 2, es: "¿Alguna vez has viajado?", en: "Have you ever traveled?", tip: "jav yu É-ver TRÁ-veld" },
     { id: "loc-perf04", cat: "perfecto-en", lvl: 2, es: "Nunca he comido eso.", en: "I have never eaten that.", tip: "ai jav NÉ-ver Í-ten dat" },
-    { id: "loc-perf05", cat: "perfecto-en", lvl: 1, es: "Ya terminé.", en: "I have finished.", tip: "ai jav FÍ-nishd" },
+    { id: "loc-perf05", cat: "perfecto-en", lvl: 1, es: "He terminado la tarea.", en: "I have finished the homework.", tip: "ai jav FÍ-nishd da JÓM-wark" },
     { id: "loc-perf06", cat: "perfecto-en", lvl: 2, es: "Acabo de llegar.", en: "I have just arrived.", tip: "ai jav yost a-RÁIVD" },
     { id: "loc-perf07", cat: "perfecto-en", lvl: 1, es: "Trabajé ayer.", en: "I worked yesterday.", tip: "ai werkt YÉS-ter-dei" },
     { id: "loc-perf08", cat: "perfecto-en", lvl: 2, es: "He trabajado mucho hoy.", en: "I have worked a lot today.", tip: "ai jav werkt a lot tu-DÉI" },
@@ -1021,7 +1021,7 @@
     { id: "loc-del01", cat: "delivery-en", lvl: 1, es: "Traigo su pedido.", en: "I have your order.", tip: "ai jav yor OR-der" },
     { id: "loc-del02", cat: "delivery-en", lvl: 1, es: "¿Me abre el portón?", en: "Can you open the gate?", tip: "can yu ÓU-pen da GUÉIT" },
     { id: "loc-del03", cat: "delivery-en", lvl: 2, es: "¿En qué piso es?", en: "Which floor is it?", tip: "wich FLOR is it" },
-    { id: "loc-del04", cat: "delivery-en", lvl: 1, es: "Que lo disfrute.", en: "Enjoy your meal.", tip: "en-YÓI yor MIL" },
+    { id: "loc-del04", cat: "delivery-en", lvl: 1, es: "Que disfrute su pedido.", en: "Enjoy your order.", tip: "en-YÓI yor ÓR-der" },
     { id: "loc-del05", cat: "delivery-en", lvl: 2, es: "¿Me firma aquí?", en: "Can you sign here?", tip: "can yu sain JIR" },
     { id: "loc-del06", cat: "delivery-en", lvl: 1, es: "Su pedido llega en diez minutos.", en: "Your order arrives in ten minutes.", tip: "yor OR-der a-RÁIVS in ten MÍ-nits" },
     { id: "loc-del07", cat: "delivery-en", lvl: 2, es: "¿Paga en efectivo o tarjeta?", en: "Cash or card?", tip: "cash or CARD" },
@@ -1094,7 +1094,7 @@
     { id: "loc-din15", cat: "dinero-en", lvl: 1, es: "¿Tiene cambio de cincuenta?", en: "Do you have change for fifty?", tip: "du yu jav CHÉINCH for FÍF-ti" },
     { id: "loc-din16", cat: "dinero-en", lvl: 2, es: "¿Cuánto cobran por retirar?", en: "What's the withdrawal fee?", tip: "wats da wiz-DRÓ-al fi" },
     { id: "loc-din17", cat: "dinero-en", lvl: 2, es: "Se me venció la tarjeta.", en: "My card has expired.", tip: "mai card jas eks-PÁIRD" },
-    { id: "loc-din18", cat: "dinero-en", lvl: 1, es: "¿Cuánto es en total?", en: "How much is it in total?", tip: "jau moch is it in TÓU-tal" },
+    { id: "loc-din18", cat: "dinero-en", lvl: 1, es: "¿Cuánto debo pagar?", en: "How much do I owe?", tip: "jau moch du ai OU" },
     { id: "loc-din19", cat: "dinero-en", lvl: 2, es: "¿Puedo abrir una cuenta?", en: "Can I open an account?", tip: "can ai ou-pen an a-CÁUNT" },
     { id: "loc-din20", cat: "dinero-en", lvl: 2, es: "Quisiera depositar dinero.", en: "I'd like to deposit money.", tip: "aid laik tu di-PÓ-sit MÓ-ni" },
     // --- numeros-en ---
@@ -1115,7 +1115,7 @@
     { id: "loc-con22", cat: "conectores-en", lvl: 2, es: "finalmente", en: "finally", tip: "FÁI-na-li" },
     // --- preguntas-en ---
     { id: "loc-prg13", cat: "preguntas-en", lvl: 1, es: "¿Me puede recomendar algo?", en: "Can you recommend something?", tip: "can yu re-co-MÉND SÓM-zing" },
-    { id: "loc-prg14", cat: "preguntas-en", lvl: 1, es: "¿Puede ayudarme?", en: "Can you help me?", tip: "can yu JELP mi" },
+    { id: "loc-prg14", cat: "preguntas-en", lvl: 1, es: "¿Le puedo hacer una pregunta?", en: "May I ask you a question?", tip: "mei ai ask yu a KUÉS-chon" },
     { id: "loc-prg15", cat: "preguntas-en", lvl: 2, es: "¿Qué significa esto?", en: "What does this mean?", tip: "wat dos dis MIN" },
     { id: "loc-prg16", cat: "preguntas-en", lvl: 1, es: "¿Cuándo abre?", en: "When does it open?", tip: "wen dos it ÓU-pen" },
     { id: "loc-prg17", cat: "preguntas-en", lvl: 1, es: "¿Hay wifi aquí?", en: "Is there Wi-Fi here?", tip: "is der UÁI-fai jir" },
@@ -1123,7 +1123,7 @@
     { id: "loc-prg19", cat: "preguntas-en", lvl: 1, es: "¿Puede repetir, por favor?", en: "Can you say that again?", tip: "can yu sei dat a-GÉN" },
     { id: "loc-prg20", cat: "preguntas-en", lvl: 2, es: "¿Está bien si pago después?", en: "Is it okay if I pay later?", tip: "is it ou-kéi if ai pei LÉI-ter" },
     // --- cliente-en ---
-    { id: "loc-cli15", cat: "cliente-en", lvl: 2, es: "Con gusto le ayudo.", en: "I'd be happy to help.", tip: "aid bi JÁ-pi tu jelp" },
+    { id: "loc-cli15", cat: "cliente-en", lvl: 2, es: "Con gusto me encargo de eso.", en: "I'd be glad to take care of that for you.", tip: "aid bi glad tu teik ker of dat for yu" },
     { id: "loc-cli16", cat: "cliente-en", lvl: 2, es: "¿Podría darme más detalles?", en: "Could you give me more details?", tip: "cud yu giv mi mor DÍ-teils" },
     { id: "loc-cli17", cat: "cliente-en", lvl: 2, es: "Reviso su caso de inmediato.", en: "I'll look into it right away.", tip: "ail luk ín-tu it rait a-WÉI" },
     { id: "loc-cli18", cat: "cliente-en", lvl: 2, es: "Entiendo su preocupación.", en: "I understand your concern.", tip: "ai on-der-STÁND yor con-SÉRN" },
@@ -1140,7 +1140,7 @@
     { id: "loc-reu15", cat: "reunion-en", lvl: 2, es: "Avancemos con la agenda.", en: "Let's get through the agenda.", tip: "lets get zru da a-YÉN-da" },
     { id: "loc-reu16", cat: "reunion-en", lvl: 1, es: "¿Quieren añadir algo?", en: "Anything to add?", tip: "É-ni-zing tu AD" },
     { id: "loc-reu17", cat: "reunion-en", lvl: 2, es: "Lo vemos en la próxima reunión.", en: "Let's cover it next meeting.", tip: "lets CÓ-ver it nekst MÍ-ting" },
-    { id: "loc-reu18", cat: "reunion-en", lvl: 1, es: "Estoy de acuerdo.", en: "I agree.", tip: "ai a-GRÍ" },
+    { id: "loc-reu18", cat: "reunion-en", lvl: 1, es: "Buen punto.", en: "Good point.", tip: "gud POINT" },
     { id: "loc-reu19", cat: "reunion-en", lvl: 2, es: "¿Podemos ir cerrando?", en: "Can we wrap up?", tip: "can wi rap OP" },
     { id: "loc-reu20", cat: "reunion-en", lvl: 2, es: "Te comparto las notas.", en: "I'll share the notes.", tip: "ail sher da NÓUTS" },
     // --- oficina ---
@@ -1158,7 +1158,7 @@
     { id: "loc-tech21", cat: "tech-en", lvl: 2, es: "Reinicia el servicio.", en: "Restart the service.", tip: "ri-START da SÉR-vis" },
     { id: "loc-tech22", cat: "tech-en", lvl: 2, es: "Te paso el acceso.", en: "I'll give you access.", tip: "ail giv yu ÁK-ses" },
     // --- entrevista ---
-    { id: "loc-ent15", cat: "entrevista", lvl: 2, es: "Tengo cinco años de experiencia.", en: "I have five years of experience.", tip: "ai jav faiv yirs of eks-PÍ-riens" },
+    { id: "loc-ent15", cat: "entrevista", lvl: 2, es: "Tengo experiencia liderando equipos pequeños.", en: "I have experience leading small teams.", tip: "ai jav eks-PÍ-riens LÍ-ding smol tims" },
     { id: "loc-ent16", cat: "entrevista", lvl: 1, es: "Trabajo bien en equipo.", en: "I work well in a team.", tip: "ai werk wel in a TIM" },
     { id: "loc-ent17", cat: "entrevista", lvl: 2, es: "¿El puesto es remoto o presencial?", en: "Is the role remote or on-site?", tip: "is da roul ri-MÓUT or on-SÁIT" },
     { id: "loc-ent18", cat: "entrevista", lvl: 2, es: "Manejo bien la presión.", en: "I handle pressure well.", tip: "ai JÁN-dol PRÉ-shur wel" },
@@ -1193,7 +1193,7 @@
     { id: "loc-fb15", cat: "feedback-en", lvl: 2, es: "¿Qué puedo mejorar?", en: "What can I improve?", tip: "wat can ai im-PRÚV" },
     { id: "loc-fb16", cat: "feedback-en", lvl: 2, es: "¿Cómo puedo apoyarte mejor?", en: "How can I support you better?", tip: "jau can ai so-PÓRT yu BÉ-ter" },
     // --- networking-en ---
-    { id: "loc-net11", cat: "networking-en", lvl: 1, es: "¿A qué te dedicas?", en: "What do you do for work?", tip: "wat du yu du for WÉRK" },
+    { id: "loc-net11", cat: "networking-en", lvl: 1, es: "¿En qué área trabajas?", en: "What field are you in?", tip: "wat fild ar yu in" },
     { id: "loc-net12", cat: "networking-en", lvl: 2, es: "Cuéntame de tu proyecto.", en: "Tell me about your project.", tip: "tel mi a-báut yor PRÓ-yekt" },
     { id: "loc-net13", cat: "networking-en", lvl: 2, es: "¿Me presentas a alguien?", en: "Can you introduce me to someone?", tip: "can yu in-tro-DIÚS mi tu SÓM-uan" },
     { id: "loc-net14", cat: "networking-en", lvl: 2, es: "Te escribo esta semana.", en: "I'll reach out this week.", tip: "ail rich aut dis WIK" },
@@ -1215,7 +1215,7 @@
     { id: "loc-fin18", cat: "finanzas-en", lvl: 2, es: "Aprobaron el presupuesto.", en: "The budget was approved.", tip: "da BÓ-yet was a-PRÚVD" },
     // --- negociacion ---
     { id: "loc-neg13", cat: "negociacion", lvl: 2, es: "¿Cuál es su mejor precio?", en: "What's your best price?", tip: "wats yor best PRÁIS" },
-    { id: "loc-neg14", cat: "negociacion", lvl: 2, es: "¿Podemos llegar a un acuerdo?", en: "Can we make a deal?", tip: "can wi meik a DÍL" },
+    { id: "loc-neg14", cat: "negociacion", lvl: 2, es: "¿Hay margen para negociar?", en: "Is there any room to negotiate?", tip: "is der É-ni rum tu ne-GÓ-shi-eit" },
     { id: "loc-neg15", cat: "negociacion", lvl: 2, es: "Es un poco caro para mí.", en: "It's a bit pricey for me.", tip: "its a bit PRÁI-si for mi" },
     { id: "loc-neg16", cat: "negociacion", lvl: 3, es: "¿Hay descuento por volumen?", en: "Is there a bulk discount?", tip: "is der a bolk DÍS-caunt" },
     { id: "loc-neg17", cat: "negociacion", lvl: 2, es: "Cerremos el trato.", en: "Let's close the deal.", tip: "lets clous da DÍL" },
