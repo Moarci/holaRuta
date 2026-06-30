@@ -68,7 +68,10 @@ function aggregate(events, usage, opts) {
   var evAll = Array.isArray(events) ? events : [];
   var usAll = Array.isArray(usage) ? usage : [];
 
-  var cutoff = dayUTC(now - windowDays * DAY_MS);
+  // Fenster = die LETZTEN windowDays Kalendertage INKLUSIVE heute (now-(N-1) … now),
+  // deckungsgleich mit der dauSeries unten. (Tagesschlüssel sind UTC; e.day ist die
+  // lokale Tagesangabe des Clients – „heute" meint hier den UTC-Tag des Servers.)
+  var cutoff = dayUTC(now - (windowDays - 1) * DAY_MS);
   var ev = evAll.filter(function (e) { return isObj(e) && String(e.day || "") >= cutoff; });
   var us = usAll.filter(function (s) { return isObj(s) && String(s.day || "") >= cutoff; });
   var today = dayUTC(now);
@@ -164,7 +167,7 @@ function aggregate(events, usage, opts) {
   var totalUsers = clientIds.length;
   var returningUsers = clientIds.filter(function (c) { return Object.keys(clientsAll[c]).length >= 2; }).length;
   function activeSince(daysBack) {
-    var since = dayUTC(now - daysBack * DAY_MS);
+    var since = dayUTC(now - (daysBack - 1) * DAY_MS); // letzte daysBack Tage inkl. heute
     var set = {};
     Object.keys(dauMap).forEach(function (day) { if (day >= since) Object.keys(dauMap[day]).forEach(function (c) { set[c] = 1; }); });
     return Object.keys(set).length;

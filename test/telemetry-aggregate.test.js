@@ -106,12 +106,18 @@ test("aggregate: Lernen, Engagement, Fehler, Snapshots", () => {
   assert.equal(adopt.listen, undefined, "false-Features zählen nicht");
 });
 
-test("aggregate: Zeitfenster filtert alte Events weg", () => {
+test("aggregate: Zeitfenster — Grenze inklusive (letzte 30 Tage inkl. heute)", () => {
   const ev = fixtureEvents();
+  const inDay = dayUTC(NOW - 29 * 86400000);   // jüngste Grenze -> NOCH im 30-Tage-Fenster
+  const outDay = dayUTC(NOW - 30 * 86400000);  // einen Tag zu alt -> raus
+  ev.push({ event: "app_open", day: inDay, clientId: "IN", sessionId: "in", ts: NOW - 29 * 86400000, props: {} });
+  ev.push({ event: "app_open", day: outDay, clientId: "OUT", sessionId: "out", ts: NOW - 30 * 86400000, props: {} });
   ev.push({ event: "app_open", day: "2020-01-01", clientId: "Z", sessionId: "old", ts: Date.UTC(2020, 0, 1), props: {} });
   const s = aggregate(ev, USAGE, { now: NOW, windowDays: 30 });
-  assert.equal(s.totals.events, 10, "das alte Event ist außerhalb des Fensters");
-  assert.equal(s.totals.users, 2, "Z zählt nicht");
+  assert.equal(s.totals.events, 11, "nur das Grenz-Event (now-29) zählt mit; now-30/2020 nicht");
+  assert.equal(s.totals.users, 3, "A,B + IN; OUT und Z außerhalb");
+  // dauSeries deckt exakt dieselben 30 Tage ab wie der Filter (Grenze = ältester Balken).
+  assert.equal(s.users.dauSeries[0].day, inDay);
 });
 
 test("aggregate: leere Eingaben -> Nullwerte, kein Crash", () => {

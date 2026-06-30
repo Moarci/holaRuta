@@ -60,6 +60,7 @@
 var $ = function (id) { return document.getElementById(id); };
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
 function fmtDur(sec){ sec=sec|0; if(sec<60) return sec+" s"; var m=Math.floor(sec/60), s=sec%60; if(m<60) return m+" min "+(s?(s+" s"):""); var h=Math.floor(m/60); return h+" h "+(m%60)+" min"; }
+function numlead(s){ var m=String(s).match(/\d+/); return m?parseInt(m[0],10):0; } // führende Zahl (für Bucket-Sortierung)
 
 // Horizontale Balkenliste: data = [{key/label, count, sub?}]
 function hbars(data, opts){
@@ -139,7 +140,7 @@ function render(s){
   html += '<div class="panel"><h2>Karten-Bewertungen & Genauigkeit</h2>'
     + hbars([{label:"😬 Nochmal",count:le.ratings.again},{label:"🙂 Gut",count:le.ratings.good},{label:"😎 Einfach",count:le.ratings.easy}],{color:"var(--good)"})
     + '<h2 style="margin-top:14px">Runden-Genauigkeit</h2>'
-    + hbars(le.accuracy.map(function(a){return {label:a.key+" %",count:a.count};}))
+    + hbars(le.accuracy.slice().sort(function(a,b){return numlead(a.key)-numlead(b.key);}).map(function(a){return {label:a.key+" %",count:a.count};}))
     + '</div>';
   html += '</div>';
 
