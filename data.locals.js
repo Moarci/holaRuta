@@ -435,7 +435,7 @@
     { id: "loc-reu08", cat: "reunion-en", lvl: 1, es: "Gracias a todos.", en: "Thanks, everyone.", tip: "zenks É-vri-uan" },
 
     // --- Conectores útiles (Bindewörter) ---
-    { id: "loc-con01", cat: "conectores-en", lvl: 1, es: "pero", en: "but", tip: "BOT" },
+    { id: "loc-con01", cat: "conectores-en", lvl: 1, es: "pero", en: "but", tip: "BAT" },
     { id: "loc-con02", cat: "conectores-en", lvl: 1, es: "porque", en: "because", tip: "bi-CÓS" },
     { id: "loc-con03", cat: "conectores-en", lvl: 1, es: "también", en: "also", tip: "ÓL-sou" },
     { id: "loc-con04", cat: "conectores-en", lvl: 2, es: "por ejemplo", en: "for example", tip: "for eg-ZÁM-pol" },
@@ -3236,7 +3236,7 @@
     { id: "loc-num23", cat: "numeros-en", lvl: 3, es: "El concierto empieza a las siete y cuarto.", en: "The concert starts at a quarter past seven.", tip: "da KÓN-sert starts at a KUÓR-ter past SÉ-ven" },
     { id: "loc-num24", cat: "numeros-en", lvl: 3, es: "Casi dos tercios de la clase aprobaron el examen.", en: "Almost two-thirds of the class passed the exam.", tip: "ÓL-moust tu zerds of da clas past di eg-SÁM" },
     // --- conectores-en ---
-    { id: "loc-con23", cat: "conectores-en", lvl: 2, es: "tan pronto como", en: "as soon as", tip: "as sun as" },
+    { id: "loc-con23", cat: "conectores-en", lvl: 2, es: "tan pronto como", en: "as soon as", tip: "as SUUN as" },
     { id: "loc-con24", cat: "conectores-en", lvl: 2, es: "aun así", en: "even so", tip: "Í-ven sou" },
     // --- tiempos-en ---
     { id: "loc-tie13", cat: "tiempos-en", lvl: 1, es: "Ella vive en México.", en: "She lives in Mexico.", tip: "shi livs in MÉK-si-co" },
@@ -3270,11 +3270,11 @@
     { id: "loc-prg23", cat: "preguntas-en", lvl: 3, es: "¿Cuánto tiempo llevas esperando?", en: "How long have you been waiting?", tip: "jau long jav yu bin UÉI-ting" },
     { id: "loc-prg24", cat: "preguntas-en", lvl: 3, es: "¿Me podrías decir cómo llegar a la estación?", en: "Could you tell me how to get to the station?", tip: "kud yu tel mi jau tu guet tu da STÉI-shen" },
     // --- falsos-amigos ---
-    { id: "loc-fa23", cat: "falsos-amigos", lvl: 2, es: "ropa (≠ rope)", en: "clothes", tip: "clouds" },
+    { id: "loc-fa23", cat: "falsos-amigos", lvl: 2, es: "ropa (≠ rope)", en: "clothes", tip: "clouz" },
     { id: "loc-fa24", cat: "falsos-amigos", lvl: 2, es: "tuna (≠ atún)", en: "prickly pear", tip: "PRÍ-kli per" },
     // --- pronunciacion-en ---
     { id: "loc-pron21", cat: "pronunciacion-en", lvl: 3, es: "thought (la \"th\" fuerte + vocal larga)", en: "thought", tip: "zot" },
-    { id: "loc-pron22", cat: "pronunciacion-en", lvl: 3, es: "month (la \"th\" final, plural irregular)", en: "month", tip: "manz" },
+    { id: "loc-pron22", cat: "pronunciacion-en", lvl: 3, es: "month (la \"th\" final, plural \"months\")", en: "month", tip: "manz" },
     { id: "loc-pron23", cat: "pronunciacion-en", lvl: 3, es: "vegetable (3 sílabas, no 4)", en: "vegetable", tip: "VÉCH-ta-bol" },
     { id: "loc-pron24", cat: "pronunciacion-en", lvl: 2, es: "island (la \"s\" muda)", en: "island", tip: "ÁI-land" },
     // --- perfecto-en ---

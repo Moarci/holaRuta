@@ -118,24 +118,24 @@ So wird der Sign-off dauerhaft test-verankert (Regression = roter Test).
 | Gimnasio (`gym-en`) | 24 | ✅ | ✅ |
 | Casa y servicios (`hogar-en`) | 24 | ✅ | ✅ |
 
-### Escuela y examen (`loc-esc`) — 15 Kategorien · 360 Karten · Stufe —
+### Escuela y examen (`loc-esc`) — 15 Kategorien · 360 Karten · Stufe ✅ (Sign-off: 7 Befunde behoben)
 | Kategorie | Karten | EN-Lint | Sign-off |
 | --- | --- | --- | --- |
-| Gramática básica (`gramatica-en`) | 24 | ⬜ | ⬜ |
-| En clase (`examen`) | 24 | ⬜ | ⬜ |
-| Números y fechas (`numeros-en`) | 24 | ⬜ | ⬜ |
-| Conectores útiles (`conectores-en`) | 24 | ⬜ | ⬜ |
-| Tiempos verbales (`tiempos-en`) | 24 | ⬜ | ⬜ |
-| Preposiciones (`preposiciones`) | 24 | ⬜ | ⬜ |
-| Hacer preguntas (`preguntas-en`) | 24 | ⬜ | ⬜ |
-| Falsos amigos (`falsos-amigos`) | 24 | ⬜ | ⬜ |
-| Pronunciación (`pronunciacion-en`) | 24 | ⬜ | ⬜ |
-| Present perfect (`perfecto-en`) | 24 | ⬜ | ⬜ |
-| Artículos a/an/the (`articulos-en`) | 24 | ⬜ | ⬜ |
-| Cantidades (`cantidades-en`) | 24 | ⬜ | ⬜ |
-| Verbos modales (`modales-en`) | 24 | ⬜ | ⬜ |
-| Phrasal verbs (`phrasal-en`) | 24 | ⬜ | ⬜ |
-| Comparar (`comparar-en`) | 24 | ⬜ | ⬜ |
+| Gramática básica (`gramatica-en`) | 24 | ✅ | ✅ |
+| En clase (`examen`) | 24 | ✅ | ✅ |
+| Números y fechas (`numeros-en`) | 24 | ✅ | ✅ |
+| Conectores útiles (`conectores-en`) | 24 | ✅ | ✅ |
+| Tiempos verbales (`tiempos-en`) | 24 | ✅ | ✅ |
+| Preposiciones (`preposiciones`) | 24 | ✅ | ✅ |
+| Hacer preguntas (`preguntas-en`) | 24 | ✅ | ✅ |
+| Falsos amigos (`falsos-amigos`) | 24 | ✅ | ✅ |
+| Pronunciación (`pronunciacion-en`) | 24 | ✅ | ✅ |
+| Present perfect (`perfecto-en`) | 24 | ✅ | ✅ |
+| Artículos a/an/the (`articulos-en`) | 24 | ✅ | ✅ |
+| Cantidades (`cantidades-en`) | 24 | ✅ | ✅ |
+| Verbos modales (`modales-en`) | 24 | ✅ | ✅ |
+| Phrasal verbs (`phrasal-en`) | 24 | ✅ | ✅ |
+| Comparar (`comparar-en`) | 24 | ✅ | ✅ |
 
 ## Stufe 3 — Wortlisten
 
