@@ -148,19 +148,26 @@ test("Content: Locals-Kategorien sind 6 Gruppen mit spanischem labelEs", () => {
   }
 });
 
-test("Content: Kurspläne (PLANS) – je 4 Wochen, Karten existieren, scope curso*", () => {
+test("Content: Lernpfade (PLANS) – 8 Wochen × 5 Teile à 20 Karten, scope curso*", () => {
   assert.ok(Array.isArray(dataLocals.PLANS) && dataLocals.PLANS.length >= 2);
   const ids = new Set(dataLocals.CARDS.map((c) => c.id));
   const scopes = new Set();
   for (const plan of dataLocals.PLANS) {
     assert.ok(/^curso/.test(plan.scope), `Plan-scope beginnt mit curso: ${plan.scope}`);
     scopes.add(plan.scope);
-    assert.equal(plan.days.length, 4, `Plan ${plan.scope} hat vier Wochen`);
+    assert.equal(plan.days.length, 40, `Plan ${plan.scope} hat 40 Etappen (8 Wochen × 5 Teile)`);
     assert.ok(plan.labelEs && plan.labelEn, `Plan ${plan.scope} hat labelEs/labelEn`);
+    let expectedDay = 0;
     for (const w of plan.days) {
-      assert.ok(w.titleEs && w.titleEn, `${plan.scope} Woche ${w.day} hat titleEs/titleEn`);
-      assert.ok(w.cardIds.length > 0, `${plan.scope} Woche ${w.day} ist nicht leer`);
-      for (const id of w.cardIds) assert.ok(ids.has(id), `${plan.scope} Woche ${w.day} referenziert existierende Karte ${id}`);
+      expectedDay++;
+      assert.equal(w.day, expectedDay, `${plan.scope}: day läuft sequenziell (${w.day})`);
+      assert.ok(w.week >= 1 && w.week <= 8, `${plan.scope} day ${w.day}: week 1..8 (${w.week})`);
+      assert.ok(w.part >= 1 && w.part <= 5, `${plan.scope} day ${w.day}: part 1..5 (${w.part})`);
+      assert.ok(w.titleEs && w.titleEn, `${plan.scope} day ${w.day} hat titleEs/titleEn`);
+      if (w.part === 1) assert.ok(w.weekTitleEs && w.weekTitleEn, `${plan.scope} Woche ${w.week} hat weekTitle auf Teil 1`);
+      assert.equal(w.cardIds.length, 20, `${plan.scope} day ${w.day} hat 20 Karten`);
+      assert.equal(new Set(w.cardIds).size, 20, `${plan.scope} day ${w.day}: keine Dubletten im Teil`);
+      for (const id of w.cardIds) assert.ok(ids.has(id), `${plan.scope} day ${w.day} referenziert existierende Karte ${id}`);
     }
   }
   assert.equal(scopes.size, dataLocals.PLANS.length, "Plan-scopes sind eindeutig");
@@ -239,4 +246,30 @@ test("Kontext: localizeDeep schaltet Situation/Tipp auf die UI-Sprache (es/en), 
   assert.equal(en.situation, card.context.situationEn, "Situation englisch bei EN-UI");
   assert.ok(!Object.keys(en).some((k) => /En$/.test(k)), "keine …En-Hilfsfelder im EN-Ergebnis");
   i18n.setLang("es"); // Track-Default wiederherstellen
+});
+
+// ---------------------------------------------------------------------------
+// Badges: im Locals-Track eigene, reise-freie Badge-Welt (edition-aware).
+// ---------------------------------------------------------------------------
+test("Badges: Locals-Track liefert re-thematisierte Badges ohne Reise-Spielmodi", () => {
+  const badges = require(path.join(__dirname, "..", "badges.js")).default || window.SC.badges;
+  // Gruppen: nur die im Locals-Track vorhandenen Features
+  const gids = badges.groups().map((g) => g.id).sort();
+  assert.deepEqual(gids, ["category", "context", "learning", "special", "streak"]);
+  const all = badges.evaluate({});
+  const ids = new Set(all.map((b) => b.id));
+  // Reise-only Spielmodus-Badges sind raus
+  for (const gone of ["banderas_first", "cuerpo_first", "yesto_first", "quiz_first", "battle_first", "listen_first", "challenge_first", "frases_first"]) {
+    assert.ok(!ids.has(gone), `Reise-Badge ${gone} ist im Locals-Track ausgeblendet`);
+  }
+  // Reise-Kategorie-Badges raus, Locals-Kategorie-Badges da
+  assert.ok(!ids.has("cat_basics") && !ids.has("cat_hotel"), "Reise-Kategorie-Badges ausgeblendet");
+  assert.ok(ids.has("cat_bpo-en") && ids.has("cat_tech-en"), "Locals-Kategorie-Badges vorhanden");
+  // pretrip_done ist zum Lernpfad-Meilenstein umgedeutet (kein „Trip")
+  const pd = badges.byId("pretrip_done");
+  assert.equal(pd.nameEn, "Learning-path milestone");
+  assert.ok(!/trip|travel|reise/i.test(pd.nameEn + " " + pd.descriptionEn + " " + pd.unlockedTextEn), "pretrip_done ohne Reise-Wording");
+  // Stichprobe: keine Reise-Metaphern in den sichtbaren Badge-Texten (EN)
+  const blob = all.map((b) => `${b.nameEn} ${b.descriptionEn} ${b.unlockedTextEn}`).join(" ");
+  assert.ok(!/\b(trip|travel|backpack|guidebook|on the road|Ruta)\b/i.test(blob), "keine Reise-Metaphern in Locals-Badges");
 });
