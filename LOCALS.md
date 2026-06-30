@@ -72,16 +72,16 @@ diskursivem Vokabular (Meinung/Argumentation, Konnektoren, Kollokationen, phrasa
 verbs, Arbeit/Wirtschaft, Gesellschaft/Umwelt …). Jede Karte trägt `es`/`en`/`tip`
 plus einen vollen Beispielsatz-Kontext in `contextdata.locals.js`.
 
-Aktuell **131 Kategorien · 2150 Karten** (ein Schnellstart-Preset je Kategorie).
+Aktuell **131 Kategorien · 2294 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
-### Kurspläne „Semana 1–4"
+### Kurspläne (8 Wochen × 5 Teile)
 
-`data.locals.js → PLANS` definiert **sieben** strukturierte 4-Wochen-Lehrgänge, die die
-vorhandene `PRETRIP`-Etappen-Engine wiederverwenden; jede Woche bündelt ~8 Karten quer
-durch die Kategorien zu einem Lernpfad, und die nächste Woche öffnet sich nach Abschluss
-der aktuellen:
+`data.locals.js → PLANS` definiert **acht** strukturierte Lehrgänge (je **8 Wochen × 5 Teile
+à 20 Karten = 800 Karten**), die die vorhandene `PRETRIP`-Etappen-Engine wiederverwenden;
+jeder Teil bündelt 20 Karten zu einer Etappe, die nächste Etappe öffnet sich nach Abschluss
+der aktuellen. Die thematischen Stichworte unten skizzieren den groben Verlauf je Kurs:
 - **Curso de inglés** (`curso-en`) – Service-Basis → Orientieren → Verkaufen/Reklamation → Essen/Strand/Reseñas.
 - **Curso pro: trabajo** (`curso-pro`) – Entrevista → Oficina/Teléfono → Atención al cliente → Reseñas/Números.
 - **Curso día a día** (`curso-dia`) – Saludar/Llamar → Orientieren/Bewegen → Einkaufen/Bezahlen → Gesundheit/Wetter/Notfälle.
@@ -89,10 +89,13 @@ der aktuellen:
 - **Curso inglés para TI** (`curso-tech`) – Standup/Status → Tickets/Code-Review → Meetings/Videollamadas → Entregas/Reportes.
 - **Curso de gramática** (`curso-gram`) – Artículos/Cantidades → Tiempos/Present perfect → Modales/Phrasal verbs → Falsos amigos/Pronunciación.
 - **Curso turismo avanzado** (`curso-tur-pro`) – Buceo/Senderismo → Aeropuerto/Mietwagen → Museo/Tour → Sicherheit/Notfälle auf Tour.
-- **Curso esencial: las 1000 palabras más usadas** (`curso-esencial`) – die **frequenzbasierten** 966
-  häufigsten Einzelwörter (núcleo + Grundwortschatz, ohne B2-Spezialvokabular), in vier Bändern nach
-  Gebrauchshäufigkeit geordnet: las 250 más usadas → 251–500 → 501–750 → 751–1000. Die Reihenfolge
-  stammt aus einem Frequenz-Ranking; mit ~1000 Kernwörtern erreicht man A2→B1 („etwas sprechen können").
+- **Curso esencial: las palabras más usadas** (`curso-esencial`) – die **frequenzbasierten 800
+  häufigsten Einzelwörter** (núcleo-Funktionswörter + thematischer Grundwortschatz, ohne
+  B2-Spezialvokabular), nach Gebrauchshäufigkeit in **8 Wochen-Bänder à 100 Wörter** geordnet
+  (Woche 1 = die 100 meistgebrauchten, Woche 2 = 101–200, … Woche 8 = 701–800; je Teil 20 Karten).
+  Die Reihenfolge stammt aus einem Frequenz-Ranking eines spezialisierten Agenten; mit diesem
+  Hochfrequenz-Kern erreicht man A2→B1 („etwas sprechen können"). Die 1000-häufigsten-Wörter-Idee
+  in Reinform: ~80–90 % der Alltagssprache sind damit abgedeckt.
 
 Über die Chip-Leiste in „Descubrir → Curso" umschaltbar (`pretripVM` filtert im Locals-
 Track auf `^curso`); im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten
