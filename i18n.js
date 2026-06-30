@@ -81,20 +81,26 @@
   // UI-String holen. Fallback-Kette: aktive Sprache -> Deutsch -> der Key selbst
   // (sichtbar, aber crashfrei). Werte dürfen Funktionen sein (Pluralformen):
   //   inNDays: (p) => p.n === 1 ? "morgen" : `in ${p.n} Tagen`
-  function t(key, params) {
+  // langOverride (optional): eine FESTE Zielsprache statt der aktiven UI-Sprache.
+  // Genutzt, wo ein String unabhängig von der UI-Chrome in einer bestimmten Sprache
+  // stehen muss – z. B. die Kontext-Erklärung im Locals-Track, die immer in der L1
+  // (Spanisch) der Lernenden bleibt. Ungültige/leere Werte fallen auf die aktive
+  // Sprache zurück. Die Rückfall-Kette bleibt identisch, nur an L statt lang gehängt.
+  function t(key, params, langOverride) {
+    const L = (langOverride && DICT[langOverride]) ? langOverride : lang;
     let s;
     // Locals-Track: bevorzugt – falls vorhanden – die <key>Locals-Variante eines
     // Strings (z. B. „auf Englisch" statt „auf Spanisch"). BEWUSST ohne Sprach-
     // Rückfall: eine nur englische Variante darf die bereits korrekte spanische
     // Basiszeile der ES-UI nicht überschreiben. Fehlt die Variante in der aktiven
     // Sprache, greift unverändert der Basis-Key (Reise-Track bleibt unberührt).
-    if (localsTrack()) s = DICT[lang][key + "Locals"];
+    if (localsTrack()) s = DICT[L][key + "Locals"];
     if (s == null) {
-      s = DICT[lang][key];
+      s = DICT[L][key];
       // Fallback-Kette: aktive Sprache -> (für es: Englisch) -> Deutsch -> der Key.
       // Für ein spanischsprachiges Publikum ist Englisch der bessere Zwischen-Rückfall
       // als Deutsch (der Locals-Track ist ohnehin ES/EN); fehlt auch das, bleibt de.
-      if (s == null && lang === "es") s = DICT.en[key];
+      if (s == null && L === "es") s = DICT.en[key];
       if (s == null) s = DICT.de[key];
     }
     if (s == null) return key;

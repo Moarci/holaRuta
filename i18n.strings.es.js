@@ -118,7 +118,7 @@
     tabProfile: "Perfil",
     tileDue: function (p) { return p.n + " pendientes"; },
     tileDone: "hecho",
-    tileFiltered: "otro nivel",
+    tileFiltered: "ocultas",
     tileCards: function (p) { return p.n + " tarjetas"; },
     sectionTopics: "Temas",
     topicNavAria: "Ir al grupo de temas",
@@ -138,6 +138,13 @@
     levelsAll: "Todos",
     levelsGroup: "Nivel de dificultad",
     levelTitle: function (p) { return p.label + " · " + p.n + " tarjetas"; },
+    // Filtro por tipo (solo palabras / también frases y oraciones)
+    sectionKind: "Tipo",
+    kindGroup: "Solo palabras u oraciones completas",
+    kind_all: "Todo",
+    kind_phrases: "Palabras y frases",
+    kind_words: "Solo palabras",
+    kindTitle: function (p) { return p.label + " · " + p.n + " tarjetas"; },
     // Tarjeta «hoy»
     streakDays: function (p) { return p.n + " " + (p.n === 1 ? "día" : "días") + " seguidos"; },
     streakNew: "Empieza tu racha",

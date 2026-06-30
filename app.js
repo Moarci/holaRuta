@@ -150,6 +150,10 @@
     uiLang: initialUiLang(),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
     levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3,4] (A1/A2/B1/B2)
+    // Wortart-Filter: "all" (Wörter+Verbünde+Sätze) | "phrases" (Wörter+kurze
+    // Verbünde, ohne ganze Sätze) | "words" (nur Einzelwörter). Steuert, ob eine
+    // Runde nur Vokabeln oder auch ganze Service-Sätze zieht.
+    vocabKind: (settings.vocabKind === "words" || settings.vocabKind === "phrases") ? settings.vocabKind : "all",
     scopeId: "all",          // 'all' | Kategorie-Id
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
@@ -364,8 +368,29 @@
   };
   // Stufen-Filter: leere Auswahl = alle. Greift bei "Alle lernen" und je Kategorie.
   const matchesLevel = (c) => state.levels.length === 0 || state.levels.includes(c.lvl);
+  // Wortart einer Karte aus der GELERNTEN Antwort (learn): Locals = Englisch,
+  // Reise = Spanisch. Heuristik nach Länge/Satzzeichen:
+  //   "word"     – ein einzelnes Token (Einzelwort/Vokabel)
+  //   "sentence" – endet auf Satzzeichen (.?!) oder ≥5 Wörter (ganzer Satz)
+  //   "phrase"   – alles dazwischen (Verbund/kurze Wendung wie "ice cream")
+  const cardKind = (c) => {
+    const txt = String(learn(c) || "").trim();
+    if (!txt) return "phrase";
+    const words = txt.split(/\s+/).filter(Boolean);
+    if (words.length <= 1) return "word";
+    if (/[.?!…]$/.test(txt) || words.length >= 5) return "sentence";
+    return "phrase";
+  };
+  // Wortart-Filter (state.vocabKind). "all" zeigt alles, "phrases" schließt ganze
+  // Sätze aus (Wörter + kurze Verbünde), "words" nur Einzelwörter.
+  const matchesKind = (c) => {
+    const k = state.vocabKind;
+    if (k === "words") return cardKind(c) === "word";
+    if (k === "phrases") return cardKind(c) !== "sentence";
+    return true;
+  };
   const scopeCards = (scopeId) =>
-    allCards().filter((c) => (scopeId === "all" || c.cat === scopeId) && matchesLevel(c));
+    allCards().filter((c) => (scopeId === "all" || c.cat === scopeId) && matchesLevel(c) && matchesKind(c));
   const dueIn = (cards) => cards.filter((c) => srs.isDue(progress[c.id]));
   // Orts-/länderspezifisch? Karten der Gruppe „destinos" (Städte- & Länder-Packs).
   // Eigene Karten ohne bekannte Kategorie zählen als allgemein (Grundlagen-Pfad).
@@ -514,7 +539,7 @@
       : data.CATEGORIES;
     const categories = visibleCats.map((c) => {
       const allInCat = byCat.get(c.id) || [];
-      const cards = allInCat.filter(matchesLevel); // entspricht scopeCards(c.id)
+      const cards = allInCat.filter((card) => matchesLevel(card) && matchesKind(card)); // entspricht scopeCards(c.id)
       // Kartenzahl je Stufe in dieser Kategorie (nur Stufen mit >0).
       const byLevel = data.LEVELS
         .map((l) => ({
@@ -542,6 +567,16 @@
       count: everyCard.filter((c) => c.lvl === l.id).length,
       active: state.levels.includes(l.id),
     })).filter((l) => l.count > 0);
+    // Wortart-Filter (Vokabeln/Wendungen/Sätze): Kartenzahl je Klasse über das
+    // sichtbare, stufengefilterte Deck – so sieht man, wie viel jede Wahl zieht.
+    const levelPool = everyCard.filter(matchesLevel);
+    const kindCount = { word: 0, phrase: 0, sentence: 0 };
+    for (let i = 0; i < levelPool.length; i++) kindCount[cardKind(levelPool[i])]++;
+    const vocabKinds = [
+      { id: "all", count: levelPool.length },
+      { id: "phrases", count: kindCount.word + kindCount.phrase },
+      { id: "words", count: kindCount.word },
+    ].map((k) => ({ ...k, active: state.vocabKind === k.id }));
     // Gesamtfortschritt für die "Heute"-Karte – über ALLE Karten, unabhängig
     // vom Stufenfilter, damit der Balken eine stabile Bezugsgröße hat.
     const overall = stats.overview(everyCard, progress);
@@ -564,6 +599,8 @@
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
+      vocabKind: state.vocabKind,
+      vocabKinds,
       categories: sortedCategories,
       totalDue: dueIn(all).length,
       sessionCap: SESSION_CAP,
@@ -5276,6 +5313,17 @@
     render();
   }
 
+  // Wortart-Filter setzen: "all" | "phrases" | "words". Steuert, ob eine Runde nur
+  // Einzelwörter, Wörter+kurze Wendungen oder auch ganze Sätze zieht.
+  function setVocabKind(kind) {
+    const next = (kind === "words" || kind === "phrases") ? kind : "all";
+    if (state.vocabKind === next) return;
+    state.vocabKind = next;
+    settings = Object.assign({}, settings, { vocabKind: next });
+    store.saveSettings(settings);
+    render();
+  }
+
   // "Weiter mit …" auf der Startseite: gemerkte letzte Kategorie fortsetzen.
   function resumeLast() {
     if (settings.lastScope && categoryById(settings.lastScope)) startStudy(settings.lastScope);
@@ -7087,6 +7135,7 @@
     "set-celebrate-sound": (el) => { setCelebrateSound(el.dataset.on === "1"); },
     "set-ui-lang": (el) => { setUiLang(el.dataset.lang); },
     "set-level": (el) => { toggleLevel(Number(el.dataset.level)); },
+    "set-vocabkind": (el) => { setVocabKind(el.dataset.kind); },
     "study-all": (el) => { startStudy("all"); },
     "study-trip-daily": (el) => { startTripDaily(); },
     "open-category": (el) => { startStudy(el.dataset.id); },
