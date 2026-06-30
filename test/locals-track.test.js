@@ -53,6 +53,23 @@ test("Matcher: card.alt zählt als englische Alternativen (field 'learn')", () =
   assert.equal(matcher.check("bathroom", card, "learn").correct, true); // artikellos
 });
 
+test("Matcher: card.alt ERGÄNZT die Hauptantwort, ersetzt sie nicht (Regression)", () => {
+  // Bug-Fix: bei vorhandenem alt MUSS die angezeigte Haupt-en weiterhin akzeptiert
+  // werden. Früher ersetzte alt die Antwortmenge komplett – die angezeigte Antwort
+  // („besides") wurde dadurch als falsch gewertet.
+  const card = { es: "además", en: "besides", alt: ["in addition", "moreover"] };
+  assert.equal(matcher.check("besides", card, "learn").correct, true, "Haupt-en bleibt akzeptiert");
+  assert.equal(matcher.check("in addition", card, "learn").correct, true);
+  assert.equal(matcher.check("moreover", card, "learn").correct, true);
+  assert.equal(matcher.acceptedAnswers(card, "learn")[0], "besides", "Anzeige/TTS = Haupt-en zuerst");
+  // ALLE echten loc-Karten mit alt akzeptieren ihre eigene Haupt-en.
+  const withAlt = data.CARDS.filter((c) => /^loc-/.test(c.id) && Array.isArray(c.alt) && c.alt.length);
+  assert.ok(withAlt.length >= 7, `genug alt-Karten (${withAlt.length})`);
+  for (const c of withAlt) {
+    assert.equal(matcher.check(c.en, c, "learn").correct, true, `${c.id}: Haupt-en akzeptiert (${JSON.stringify(c.en)})`);
+  }
+});
+
 test("Matcher: keine spanische Flexions-Strenge, wenn Englisch gelernt wird", () => {
   // Wort-finale Einzelabweichung (Plural-s) ist im Spanischen eine Flexion (würde
   // abgelehnt), im Englischen ein verzeihlicher Tippfehler -> wird akzeptiert.

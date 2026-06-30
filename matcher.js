@@ -109,11 +109,21 @@
   }
 
   // Anzeige-Antworten einer Karte (UNnormalisiert, z.B. fürs Vorlesen).
-  // card.alt gilt nur für die GELERNTE Antwort (Reise: Spanisch, Locals: Englisch).
+  // card.alt gilt nur für die GELERNTE Antwort (Reise: Spanisch, Locals: Englisch)
+  // und ERGÄNZT die Hauptantwort (Synonyme), ersetzt sie NICHT – die angezeigte
+  // Antwort bleibt akzeptiert/vorgelesen. Bei Slash-Feldern („vegetariano/a") wird
+  // die volle, ungesplittete Form genommen, damit sie nicht zu „a" zerfällt.
   function acceptedAnswers(card, field) {
     field = field || "es";
-    if (isLearnedField(field) && Array.isArray(card.alt) && card.alt.length) return card.alt;
-    return fieldText(card, field).split("/").map((s) => s.trim()).filter(Boolean);
+    const raw = fieldText(card, field);
+    if (isLearnedField(field) && Array.isArray(card.alt) && card.alt.length) {
+      // Saubere (slash-freie) Hauptantwort wird ergänzt; bei Slash-Feldern
+      // ("vegetariano/a") liefern die alt-Einträge die Varianten, weil der naive
+      // Split „/a" zu „a" zerlegen würde.
+      const primary = raw.indexOf("/") === -1 ? [raw.trim()] : [];
+      return [...primary, ...card.alt].filter((v, i, a) => v && a.indexOf(v) === i);
+    }
+    return raw.split("/").map((s) => s.trim()).filter(Boolean);
   }
 
   // Kandidaten-Generierung: Liste akzeptierter NORMALISIERTER Eingaben.
@@ -138,8 +148,13 @@
       }
     };
 
-    // card.alt zählt nur für die gelernte Antwort und ersetzt dort die Varianten.
+    // card.alt zählt nur für die gelernte Antwort und ERGÄNZT die Hauptantwort:
+    // erst die saubere (slash-freie) angezeigte Antwort, dann die Synonyme. So
+    // bleibt die Hauptantwort akzeptiert. Bei Slash-Feldern liefern allein die
+    // alt-Einträge die Varianten (der Split würde „vegetariano/a" zu „a" zerlegen).
     if (isLearnedField(field) && Array.isArray(card.alt) && card.alt.length) {
+      const raw0 = fieldText(card, field);
+      if (raw0.indexOf("/") === -1) add(raw0);
       card.alt.forEach(add);
       return out;
     }
