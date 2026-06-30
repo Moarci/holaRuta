@@ -331,6 +331,8 @@ Scoping: ein Nutzer sieht **nur** eigene Freunde; `meId` markiert den eigenen Ei
 
 ## 17. Anonyme Nutzungs-Telemetrie — „wie viele nutzen es und wie?" (Phase 6, opt-in)
 
+> **Vollständige Feld-für-Feld-Aufstellung aller geloggten Daten:** [docs/TELEMETRIE.md](docs/TELEMETRIE.md).
+
 Die **betreiberseitige** Frage „wie viele Leute nutzen HolaRuta und welche Modi?" lässt sich nicht
 offline beantworten — sie braucht einen **Zähl-Endpunkt**. Damit das die Datensparsamkeit der App
 nicht aufweicht, ist die Telemetrie **opt-in, anonym und aggregiert**: standardmäßig aus, und selbst
