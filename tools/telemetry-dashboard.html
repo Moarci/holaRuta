@@ -133,9 +133,8 @@ function render(s){
   html += '</div>';
 
   html += '<div class="grid">';
-  html += '<div class="panel"><h2>Lernspiele abgeschlossen</h2>'
-    + hbars(le.features.map(function(f){return {label:f.feature, count:f.count};}),{color:"var(--warn)",fmt:function(){return "";}})
-    + (le.features.length? le.features.map(function(f){ return '<div class="row"><div class="lab">'+esc(f.feature)+'</div><div class="barwrap"><div class="bar" style="width:'+Math.round(f.count/(le.features[0].count||1)*100)+'%;background:var(--warn)"></div></div><div class="n">'+f.count+'</div></div>'; }).join("") : '<p class="empty">— keine Daten —</p>')
+  html += '<div class="panel"><h2>Lernspiele abgeschlossen <small>(Anzahl · perfekt-Quote)</small></h2>'
+    + hbars(le.features.map(function(f){return {label:f.feature+" · "+f.perfectPct+"% perfekt", count:f.count};}),{color:"var(--warn)"})
     + '</div>';
   html += '<div class="panel"><h2>Karten-Bewertungen & Genauigkeit</h2>'
     + hbars([{label:"😬 Nochmal",count:le.ratings.again},{label:"🙂 Gut",count:le.ratings.good},{label:"😎 Einfach",count:le.ratings.easy}],{color:"var(--good)"})
