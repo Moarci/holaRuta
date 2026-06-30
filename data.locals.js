@@ -1631,7 +1631,7 @@
     { id: "loc-vdin08", cat: "voc-dinero", lvl: 1, es: "efectivo", en: "cash", tip: "kash" },
     { id: "loc-vdin09", cat: "voc-dinero", lvl: 1, es: "cambio", en: "change", tip: "chéinch" },
     { id: "loc-vdin10", cat: "voc-dinero", lvl: 2, es: "recibo", en: "receipt", tip: "ri-SÍT" },
-    { id: "loc-vdin11", cat: "voc-dinero", lvl: 1, es: "factura", en: "invoice", tip: "bil" },
+    { id: "loc-vdin11", cat: "voc-dinero", lvl: 1, es: "factura", en: "bill", tip: "bil" },
     { id: "loc-vdin12", cat: "voc-dinero", lvl: 1, es: "carrito", en: "cart", tip: "kart" },
     { id: "loc-vdin13", cat: "voc-dinero", lvl: 1, es: "bolsa", en: "bag", tip: "bag" },
     { id: "loc-vdin14", cat: "voc-dinero", lvl: 1, es: "moneda", en: "coin", tip: "kóin" },
@@ -1836,7 +1836,7 @@
     { id: "loc-vpos13", cat: "voc-postres", lvl: 2, es: "paleta", en: "lollipop", tip: "LÓ-li-pop" },
     { id: "loc-vpos14", cat: "voc-postres", lvl: 1, es: "chicle", en: "gum", tip: "gam" },
     { id: "loc-vpos15", cat: "voc-postres", lvl: 2, es: "budín", en: "pudding", tip: "PÚ-ding" },
-    { id: "loc-vpos16", cat: "voc-postres", lvl: 2, es: "gelatina", en: "Jell-O", tip: "YÉ-li" },
+    { id: "loc-vpos16", cat: "voc-postres", lvl: 2, es: "gelatina", en: "Jell-O", tip: "YÉ-lou", alt: ["jello","gelatin"] },
 
     // ── Especias y hierbas ──
     { id: "loc-vesp01", cat: "voc-especias", lvl: 1, es: "sal", en: "salt", tip: "solt" },
@@ -2369,7 +2369,7 @@
     { id: "loc-b2ng16", cat: "b2-negocios", lvl: 4, es: "parte interesada", en: "stakeholder", tip: "STÉIK-jol-der" },
     { id: "loc-b2ng17", cat: "b2-negocios", lvl: 4, es: "ingresos (de empresa)", en: "revenue", tip: "RÉ-ve-niu" },
     { id: "loc-b2ng18", cat: "b2-negocios", lvl: 4, es: "negociación", en: "negotiation", tip: "ne-go-shi-ÉI-shon" },
-    { id: "loc-b2di01", cat: "b2-dinero", lvl: 4, es: "presupuesto personal", en: "personal budget", tip: "MÁNZ-li BÁ-yet" },
+    { id: "loc-b2di01", cat: "b2-dinero", lvl: 4, es: "presupuesto personal", en: "personal budget", tip: "PÉR-so-nal BÁ-yet" },
     { id: "loc-b2di02", cat: "b2-dinero", lvl: 4, es: "ahorros", en: "savings", tip: "SÉI-vins" },
     { id: "loc-b2di03", cat: "b2-dinero", lvl: 4, es: "invertir", en: "to invest", tip: "tu in-VÉST" },
     { id: "loc-b2di04", cat: "b2-dinero", lvl: 4, es: "deuda", en: "debt", tip: "det" },
