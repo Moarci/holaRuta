@@ -31,9 +31,10 @@
   // „auf Englisch"), sonst der Reise-Key.
   const tKey = (key) => (trackLearnLang() === "en" ? key + "Locals" : key);
 
-  // Themen-Label in der aktiven UI-Sprache. Daten tragen nur label/labelEn –
-  // unter spanischer UI ist labelEn der bessere Wert als der deutsche Rückfall.
-  function natTheme(th) { const en = trackLearnLang() === "en" || (ctx.i18n.getLang && ctx.i18n.getLang() !== "de"); return (en && th.labelEn) ? th.labelEn : th.label; }
+  // Themen-Label in der aktiven UI-Sprache. Das Daten-`label` ist bereits Spanisch
+  // (z. B. „Comida"), `labelEn` die englische Variante. Nur die englische UI nimmt
+  // `labelEn`; de- und es-Oberfläche zeigen das spanische `label`.
+  function natTheme(th) { return (ctx.i18n.getLang && ctx.i18n.getLang() === "en" && th.labelEn) ? th.labelEn : th.label; }
 
   // ----- View-Modelle -----
   function yestoSetupVM() {
