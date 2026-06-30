@@ -231,7 +231,8 @@
   // ---------- discover: solo el marco (las funciones de viaje están ocultas) ----------
   reg("discover", {
     discoverTitle: "Descubrir",
-    discoverIntro: "Tus palabras guardadas, a mano.",
+    // Intro del Descubrir (paridad con el de/en); el texto anterior era de „Mi léxico".
+    discoverIntro: "Juega, relaciona, consulta: inglés más allá de las tarjetas.",
     subFavorites: "Tus favoritos como léxico personal: palabras y frases a mano.",
     // Ruta de aprendizaje (im Locals-Track der „Pre-Trip"-Screen, als Kurs umgedeutet).
     // Der Screen nutzt für Locals die curso*-Keys; die pretrip*-Overrides bleiben als Rückfall.

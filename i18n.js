@@ -71,16 +71,32 @@
     return str.replace(/\{(\w+)\}/g, (m, p) => (params[p] != null ? params[p] : m));
   }
 
+  // Locals-Track (Edition „es-en", Spanisch lernt Englisch) aktiv? Dann kehren
+  // einzelne UI-Strings die Sprachrichtung um (siehe t()).
+  function localsTrack() {
+    const tr = window.SC && window.SC.track;
+    return !!(tr && typeof tr.id === "function" && tr.id() === "es-en");
+  }
+
   // UI-String holen. Fallback-Kette: aktive Sprache -> Deutsch -> der Key selbst
   // (sichtbar, aber crashfrei). Werte dürfen Funktionen sein (Pluralformen):
   //   inNDays: (p) => p.n === 1 ? "morgen" : `in ${p.n} Tagen`
   function t(key, params) {
-    let s = DICT[lang][key];
-    // Fallback-Kette: aktive Sprache -> (für es: Englisch) -> Deutsch -> der Key.
-    // Für ein spanischsprachiges Publikum ist Englisch der bessere Zwischen-Rückfall
-    // als Deutsch (der Locals-Track ist ohnehin ES/EN); fehlt auch das, bleibt de.
-    if (s == null && lang === "es") s = DICT.en[key];
-    if (s == null) s = DICT.de[key];
+    let s;
+    // Locals-Track: bevorzugt – falls vorhanden – die <key>Locals-Variante eines
+    // Strings (z. B. „auf Englisch" statt „auf Spanisch"). BEWUSST ohne Sprach-
+    // Rückfall: eine nur englische Variante darf die bereits korrekte spanische
+    // Basiszeile der ES-UI nicht überschreiben. Fehlt die Variante in der aktiven
+    // Sprache, greift unverändert der Basis-Key (Reise-Track bleibt unberührt).
+    if (localsTrack()) s = DICT[lang][key + "Locals"];
+    if (s == null) {
+      s = DICT[lang][key];
+      // Fallback-Kette: aktive Sprache -> (für es: Englisch) -> Deutsch -> der Key.
+      // Für ein spanischsprachiges Publikum ist Englisch der bessere Zwischen-Rückfall
+      // als Deutsch (der Locals-Track ist ohnehin ES/EN); fehlt auch das, bleibt de.
+      if (s == null && lang === "es") s = DICT.en[key];
+      if (s == null) s = DICT.de[key];
+    }
     if (s == null) return key;
     if (typeof s === "function") return s(params || {});
     return interpolate(s, params);

@@ -127,6 +127,29 @@ test("i18n: spanische Kern-Strings vorhanden, sonst Rückfall es→en→de", () 
   assert.ok(typeof en === "string");
 });
 
+test("i18n: Locals-Track dreht die Sprachrichtung der EN-UI um (Englisch statt Spanisch)", () => {
+  // In der englischen UI des Locals-Tracks darf kein „Spanish" mehr auftauchen, wo
+  // tatsächlich Englisch gelernt wird – t() bevorzugt die <key>Locals-Variante.
+  i18n.setLang("en");
+  const intro = i18n.t("discover.discoverIntro");
+  assert.ok(/English/.test(intro) && !/Spanish/.test(intro), `Entdecken-Intro: ${intro}`);
+  const yesto = i18n.t("discover.subYesto");
+  assert.ok(/English/.test(yesto) && !/Spanish/.test(yesto), `¿Y esto?-Untertitel: ${yesto}`);
+  const quiz = i18n.t("discover.quizSetupIntro");
+  assert.ok(/English/.test(quiz) && !/with no translation/.test(quiz), `Definiciones-Intro: ${quiz}`);
+  i18n.setLang("es"); // Track-Default wiederherstellen
+});
+
+test("i18n: Locals-Variante überschreibt NICHT die korrekte spanische Basiszeile (ES-UI)", () => {
+  // Eine nur auf Englisch hinterlegte <key>Locals-Variante darf in der ES-UI die
+  // bereits richtige spanische Basiszeile nicht durch Englisch ersetzen.
+  i18n.setLang("es");
+  assert.equal(i18n.t("discover.subYesto"), "Adivina la imagen: 3-2-1, ¿cómo se dice en inglés?");
+  assert.ok(/en inglés/.test(i18n.t("discover.quizSetupIntro")));
+  // Descubrir-Intro: spanischer Text passt zur Seite (kein „Mi léxico"-Rest).
+  assert.ok(/inglés/.test(i18n.t("discover.discoverIntro")) && !/guardadas/.test(i18n.t("discover.discoverIntro")));
+});
+
 test("Content: Pilot-Korpus data.locals ist strukturell sauber", () => {
   assert.ok(dataLocals && Array.isArray(dataLocals.CARDS) && dataLocals.CARDS.length > 0);
   const catIds = new Set(dataLocals.CATEGORIES.map((c) => c.id));
