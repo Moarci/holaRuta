@@ -33,7 +33,7 @@ Diese Spec hebt genau diese drei Server-Themen auf einen **anschlussfähigen, da
 
 1. **Offline-first bleibt.** Die PWA funktioniert **vollständig ohne Backend**. Der lokale `localStorage`
    bleibt die primäre Quelle der Wahrheit auf dem Gerät; das Backend ist nur ein **Spiegel/Merge-Ziel**.
-2. **Opt-in.** Ohne Login keine Netzwerk-Calls, kein Tracking — exakt wie heute. Sync ist eine bewusste
+2. **Opt-in.** Ohne Login keine Netzwerk-Calls — exakt wie heute. Sync ist eine bewusste
    Nutzer-Entscheidung (Anmelden).
 3. **Zero-dependency-Prinzip der PWA bleibt.** Der Client bekommt **einen** schlanken Vanilla-JS-Adapter
    (`sync.js`, < 1 Modul, `fetch`-basiert, keine Frameworks). Die **Server-Komponente** ist ein
@@ -218,7 +218,8 @@ größten Endkunden-Nutzen (Mehrgeräte). Phase 3+4 sind die B2B-/Schul-Monetari
 
 - **Rechtsgrundlage & Einwilligung:** Sync ist opt-in; klare Einwilligung beim Login; Datenschutzerklärung + AVV/DPA.
 - **Datenminimierung:** nur E-Mail (oder Pseudonym) + Fortschritts-Blob + Klassen-Zugehörigkeit. **Keine**
-  Verhaltens-Analytics, **kein** Werbe-Tracking, **keine** Drittanbieter-Tracker.
+  personenbezogene Verhaltens-Analytics, **kein** Werbe-Tracking, **keine** Drittanbieter-Tracker.
+  (Die optionale **anonyme, aggregierte** Nutzungsstatistik aus §17 ist opt-in, ohne PII und ohne Karteninhalte.)
 - **Minderjährige/Schulen:** Schüler-Pseudonym-Konten ohne E-Mail; Org/Schule ist Verantwortliche, HolaRuta
   Auftragsverarbeiter (AVV). Elternzustimmung über die Schule.
 - **Betroffenenrechte:** Self-Service-Export (`/account/export`) und harte Löschung (`/account`) ab Tag 1.
@@ -325,6 +326,129 @@ Scoping: ein Nutzer sieht **nur** eigene Freunde; `meId` markiert den eigenen Ei
   und vermeidet Leistungsdruck/PII-Streuung.
 - **Kein** Push/Realtime — die Rangliste wird beim Öffnen/„Aktualisieren" geholt (offline-first).
 - **Keine** Verlaufs-Historie fremder Nutzer auf dem Client — immer nur der angefragte Tag.
+
+---
+
+## 17. Anonyme Nutzungs-Telemetrie — „wie viele nutzen es und wie?" (Phase 6, opt-in)
+
+> **Vollständige Feld-für-Feld-Aufstellung aller geloggten Daten:** [docs/TELEMETRIE.md](docs/TELEMETRIE.md).
+
+Die **betreiberseitige** Frage „wie viele Leute nutzen HolaRuta und welche Modi?" lässt sich nicht
+offline beantworten — sie braucht einen **Zähl-Endpunkt**. Damit das die Datensparsamkeit der App
+nicht aufweicht, ist die Telemetrie **opt-in, anonym und aggregiert**: standardmäßig aus, und selbst
+eingeschaltet verlässt **kein** Lernfortschritt, **keine** Karteninhalte und **keine** stabile
+Nutzer-ID das Gerät.
+
+> **Status:** Der **Client ist vorbereitet** (`analytics.js` reiner Kern + dünner fetch-Adapter über
+> `SC.net`, Consent-Schalter im Profil, `test/analytics.test.js`). Es fehlt **nur noch der Server**,
+> der den einen unten spezifizierten Endpunkt implementiert. Wie alle Stufe-3-Phasen kundengetrieben
+> bzw. erst mit eigener Domain/EU-Hosting.
+
+### 17.1 Leitplanken (zusätzlich zu §1, §12)
+
+- **Doppelte Schranke.** Gesendet wird **nur**, wenn (1) eine Edition `SC.config.analytics`
+  (`enabled` + `endpoint`) setzt **und** (2) der Nutzer im Profil ausdrücklich zustimmt
+  (`settings.analyticsConsent === true`). Ohne beides: **0 Netzwerk-Calls** — exakt wie ohne das Modul.
+- **Datenminimierung als Kern.** Der Snapshot trägt **nur grobe, gebucketete** Aggregate, alle aus dem
+  **bereits vorhandenen** `gamestats` abgeleitet (nichts Neues wird erfasst): Tag, App-Version, UI-Sprache,
+  Lern-Track, Karten-heute-**Bucket**, Streak-**Bucket**, Reviews-**Bucket** und boolesche „je-Modus-benutzt"-
+  Flags. Buckets sind bewusst grob (k-anonymity-freundlich). **Keine** Karten-IDs, **kein** Suchtext,
+  **keine** PII, **keine** stabile/rotierende ID — der Server zählt reine Aggregate.
+- **Anonym & ohne Auth.** Der Endpunkt braucht **keinen** Login/Token (anders als §6/§16). Ein Nutzer ist
+  serverseitig nicht wiedererkennbar; Tages-Dedupe passiert **clientseitig** (lokaler „zuletzt gesendet"-Tag,
+  nicht im Backup).
+- **Höchstens ein Snapshot pro Tag**, beim App-Start (fire-and-forget; Fehler werden geschluckt, nie blockierend).
+
+### 17.2 API (Ergänzung zu §6, unter `/v1`, **ohne** Bearer-Token)
+
+- `POST /v1/usage`
+  `{ app:"holaruta", schema:1, day:"YYYY-MM-DD", appVersion, locale, track,
+     cardsToday:"<bucket>", streak:"<bucket>", reviews:"<bucket>",
+     features:{ study, listen, precios, dialogos, definiciones, yesto, frases, conjug, battles, roleplay, challenges, ruta, pretrip } }`
+  → `{ ok:true }`. Server: strikte Eingabevalidierung, **Größenlimit** (z. B. ≤ 4 KB), **Rate-Limiting**
+  (pro IP/Tag), CORS strikt auf die App-Origin. Die Bucket-Grenzen sind clientseitig fix
+  (`analytics.js`: `CARD_EDGES`/`STREAK_EDGES`/`REVIEW_EDGES`) und serverseitig 1:1 nachnutzbar.
+
+### 17.3 Datenschutz (Ergänzung zu §12)
+
+- **Rechtsgrundlage:** ausdrückliche Einwilligung (opt-in im Profil), jederzeit widerrufbar (Schalter aus).
+- **Keine PII, kein Profil, kein Werbe-Tracking, keine Drittanbieter-Tracker.** Server speichert nur
+  aggregierte Tageszahlen; IP wird **nicht** persistiert (nur transient fürs Rate-Limit).
+- **Marketing-Konsistenz:** Da nun eine — opt-in — Telemetrie existiert, wird die frühere absolute
+  „kein Tracking"-Aussage in den Beschreibungen durch die ehrliche Formulierung ersetzt
+  („lokal-first, keine Werbung; Cloud-Sync **und** anonyme Nutzungsstatistik sind optional und
+  standardmäßig aus").
+
+### 17.4 Akzeptanzkriterien (DoD)
+
+- Ohne `SC.config.analytics` **oder** ohne Consent: nachweisbar **0** `fetch`-Calls (Test mit Spy).
+- Mit beidem: **genau ein** `POST /v1/usage` pro Tag mit anonymem, gebucketetem Body (kein PII/keine
+  Karten-ID/keine ID — per Allowlist-Assertion geprüft). `analytics.js`-Kern ist rein + voll unit-getestet.
+
+### 17.5 Bewusst draußen (zusätzlich zu §15)
+
+- **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies.
+- **Keine** Verknüpfung mit Sync/Social-Konten (ohne Token, eigene pseudonyme `clientId`).
+- **Kein** Klick-für-Klick-Mitschnitt von Inhalten — Events tragen nur Enums/Buckets (s. §17.6).
+
+### 17.6 Interaktions-Events — „was machen sie genau?" (Vollausbau, opt-in)
+
+Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Weiterentwicklung**
+(Funnels, Retention, Drop-off) und **Monitoring** (JS-Fehler, Ladezeiten) kommt ein
+**Event-Strom** dazu — derselbe Opt-in-Schalter, dieselbe Datenminimierungs-DNA.
+
+> **Status:** Client fertig (`analytics.js`: `track`/`flush`/`buildEvent`/`sanitizeProps`, Queue,
+> pseudonyme IDs; Hooks in `app.js`; `test/analytics.test.js`). Es fehlt **nur** der Server
+> (Event-Store). Referenz-Collector für die lokale Demo: `tools/mock-events-server.js`.
+
+**17.6.1 Leitplanken (zusätzlich zu §17.1)**
+- **Doppelte Schranke unverändert:** ohne Endpunkt **und** ohne Zustimmung wird **nichts gepuffert
+  oder gesendet** (kein Sammeln „auf Vorrat").
+- **Pseudonym statt anonym (bewusst):** zufällige, **resetbare** `clientId` (gerätelokal, eigener
+  LS-Key, **nicht** im Backup) + `sessionId` (pro App-Start, rotiert nach 30 min Inaktivität).
+  Erlaubt Journeys/Retention, **kein** Klarname, **keine** Geräte-Fingerprints. Reset-Knopf im Profil;
+  Consent-aus verwirft `clientId` + Puffer.
+- **Allowlist-Sanitizer (Default deny):** jedes Event hat eine feste Prop-Allowlist; Werte werden in
+  **Enum/Slug/Zahl/Bucket** gezwungen. Freitext (Leerzeichen/Satzzeichen) fällt **strukturell** durch
+  → **kein Suchtext, keine Kartentexte/-IDs, keine Namen**. Fehler-Texte werden PII-bereinigt
+  (E-Mail/lange Ziffernfolgen raus) und auf 80 Zeichen gekappt.
+- **Lokale Pufferung & Batching:** Ring-Queue (≤ 200 Events) im `localStorage`; Versand gebündelt
+  (≤ 50/Batch) periodisch und beim Verstecken/Schließen via `navigator.sendBeacon` (zuverlässig).
+
+**17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `perf` · `screen_view` · `action` ·
+`session_start` · `session_complete` · `card_rated` · `feature_complete` · `search` ·
+`onboarding_step` · `onboarding_complete` · `error` · `consent_change` · `pwa_installed`. Bewusst
+nur Events, die der Client tatsächlich sendet (Spec == Implementierung); die Allowlist
+(`analytics.js: EVENTS`) ist erweiterbar. `session_start` deckt **alle** Lern-Startpfade ab
+(zentral aus `beginRound`); `feature_complete` **alle** Lernspiele (zentral aus `setGameStats`).
+Envelope (zusätzlich `edition` + grobe `platform`-Klasse):
+`{ v, ts, day, clientId, sessionId, seq, appVersion, locale, track, edition, platform, event, props }`.
+Der **anonyme Snapshot** trägt zusätzlich `mastered` (% gemeistert), `tripGoal`/`tripDaily`,
+`edition`, `platform` — alles gebucketet. `app_open` trägt zudem `src` (Akquise-Quelle, nur Enum).
+Vollständige Feldliste: [docs/TELEMETRIE.md](docs/TELEMETRIE.md). Der Referenz-Collector
+(`tools/telemetry-server.js`) bietet Zeitfenster (`?days=`), CSV-Export, optionalen
+`TELEMETRY_TOKEN`-Zugriffsschutz und Aufbewahrung (`TELEMETRY_RETENTION_DAYS`).
+
+**17.6.3 API (Ergänzung zu §17.2, ohne Bearer-Token)**
+- `POST /v1/events` `{ events: [ <envelope>, … ] }` → `{ ok:true }`. Auch via `sendBeacon`
+  (Content-Type `application/json`). Server: **Größenlimit** (z. B. ≤ 64 KB/Batch), **Rate-Limiting**
+  pro `clientId`/IP, CORS strikt auf die App-Origin, Schema-/Allowlist-Validierung **serverseitig
+  spiegeln** (nie mehr Felder akzeptieren als der Client sendet).
+- **Datenspeicher:** anders als der Snapshot (1 Zeile/Tag) braucht der Event-Strom einen echten
+  **append-only Event-Store** (z. B. Tabelle/Spalten-DB oder ein privacy-freundliches Analytics-
+  Backend). Aufbewahrung **befristet** (z. B. 90 Tage), danach nur Aggregate.
+
+**17.6.4 Datenschutz (Ergänzung zu §17.3)**
+- Einwilligung deckt Snapshot **und** Events (ein Schalter); Widerruf stoppt sofort und verwirft die
+  lokale `clientId` + Queue. **Löschung per `clientId`** muss serverseitig möglich sein (DSGVO Art. 17).
+- IP nicht persistieren (nur transient fürs Rate-Limit); **kein** Werbe-Tracking, **keine** Dritt-Tracker.
+- **Sampling** optional (`SC.config.analytics.sampleRate`) zur Datenminimierung bei Reichweite.
+
+**17.6.5 Akzeptanzkriterien (DoD)**
+- Ohne Endpunkt **oder** ohne Consent: **0** `request`/`sendBeacon` und **0** gepufferte Events (Test).
+- Mit beidem: `track` puffert sanitisierte Envelopes; `flush` sendet **einen** Batch an `/v1/events`;
+  Allowlist-Assertion belegt, dass Freitext/PII/Karten-IDs **nicht** durchkommen; Queue-Ring deckelt
+  auf 200, Batch ≤ 50; `sessionId` rotiert nach Inaktivität, `clientId` bleibt bis Reset.
 
 ---
 

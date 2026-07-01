@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HolaRuta — Telemetrie-Dashboard</title>
+<style>
+  :root {
+    --bg:#0f1115; --card:#171a21; --ink:#e7e9ee; --mut:#9aa3b2; --line:#262b36;
+    --brand:#e07a5f; --good:#5fb37a; --warn:#e0b15f; --bad:#d96d6d; --accent:#5f8fe0;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+  header { padding:20px 24px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:700; }
+  header .sub { color:var(--mut); font-size:13px; }
+  header .spacer { flex:1; }
+  button { background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:6px 10px; cursor:pointer; font:inherit; font-size:13px; }
+  button:hover { border-color:var(--brand); }
+  button.active { border-color:var(--brand); color:var(--brand); }
+  #daysbtns button { margin-left:4px; }
+  .tools { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  main { padding:20px 24px 60px; max-width:1180px; margin:0 auto; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .kpi .v { font-size:26px; font-weight:700; }
+  .kpi .l { color:var(--mut); font-size:12px; margin-top:2px; }
+  .kpi .h { color:var(--mut); font-size:11px; margin-top:4px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:860px){ .grid { grid-template-columns:1fr; } }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  .panel h2 { font-size:14px; margin:0 0 12px; font-weight:600; }
+  .panel h2 small { color:var(--mut); font-weight:400; }
+  .row { display:flex; align-items:center; gap:10px; margin:5px 0; }
+  .row .lab { width:140px; flex:none; color:var(--mut); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .row .barwrap { flex:1; background:#0d0f14; border-radius:6px; overflow:hidden; height:18px; }
+  .row .bar { height:100%; border-radius:6px; background:var(--accent); }
+  .row .n { width:48px; flex:none; text-align:right; font-variant-numeric:tabular-nums; font-size:13px; }
+  .empty { color:var(--mut); font-size:13px; padding:8px 0; }
+  svg { display:block; width:100%; height:auto; }
+  .axis { fill:var(--mut); font-size:10px; }
+  .barv { fill:var(--accent); }
+  .ttip { fill:var(--ink); font-size:10px; }
+  footer { color:var(--mut); font-size:12px; padding:0 24px 40px; max-width:1180px; margin:0 auto; }
+  code { background:#0d0f14; padding:1px 5px; border-radius:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 HolaRuta — Telemetrie</h1>
+  <span class="sub" id="window"></span>
+  <span class="spacer"></span>
+  <span class="sub" id="updated"></span>
+  <span class="tools">
+    <span id="daysbtns"></span>
+    <button id="exp-json" title="Statistik als JSON laden">JSON</button>
+    <button id="exp-csv" title="Tagesreihe als CSV laden">CSV</button>
+    <button id="refresh">Aktualisieren</button>
+  </span>
+</header>
+<main id="app"><p class="empty">Lade …</p></main>
+<footer>
+  Self-host-Tool · ungeschützt · Daten kommen nur von Geräten mit <b>aktivierter</b> opt-in-Statistik.
+  Felder: siehe <code>docs/TELEMETRIE.md</code>. Nutzer = distinkte pseudonyme <code>clientId</code>.
+</footer>
+<script>
+"use strict";
+var $ = function (id) { return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+function fmtDur(sec){ sec=sec|0; if(sec<60) return sec+" s"; var m=Math.floor(sec/60), s=sec%60; if(m<60) return m+" min "+(s?(s+" s"):""); var h=Math.floor(m/60); return h+" h "+(m%60)+" min"; }
+function numlead(s){ var m=String(s).match(/\d+/); return m?parseInt(m[0],10):0; } // führende Zahl (für Bucket-Sortierung)
+function sortBuckets(arr){ return (arr||[]).slice().sort(function(a,b){return numlead(a.key)-numlead(b.key);}); }
+
+// Horizontale Balkenliste: data = [{key/label, count, sub?}]
+function hbars(data, opts){
+  opts = opts || {};
+  if(!data || !data.length) return '<p class="empty">— keine Daten —</p>';
+  var max = data.reduce(function(m,d){ return Math.max(m, d.count||0); }, 0) || 1;
+  var color = opts.color || "var(--accent)";
+  return data.map(function(d){
+    var label = d.label!=null?d.label:d.key;
+    var w = Math.round(((d.count||0)/max)*100);
+    var n = opts.fmt ? opts.fmt(d) : d.count;
+    return '<div class="row"><div class="lab" title="'+esc(label)+'">'+esc(label)+'</div>'
+      + '<div class="barwrap"><div class="bar" style="width:'+w+'%;background:'+color+'"></div></div>'
+      + '<div class="n">'+esc(n)+'</div></div>';
+  }).join("");
+}
+
+// Vertikales Zeitreihen-Balkendiagramm als SVG. series = [{day, count}]
+function vbars(series, opts){
+  opts = opts || {};
+  if(!series || !series.length) return '<p class="empty">— keine Daten —</p>';
+  var W=1000, H=180, padB=22, padL=26, padT=8;
+  var max = series.reduce(function(m,d){ return Math.max(m, d.count||0); }, 0) || 1;
+  var n = series.length, gap=2;
+  var bw = (W-padL)/n - gap;
+  var color = opts.color || "var(--accent)";
+  var bars = series.map(function(d,i){
+    var h = Math.round(((d.count||0)/max)*(H-padB-padT));
+    var x = padL + i*((W-padL)/n);
+    var y = H-padB-h;
+    return '<rect class="barv" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+Math.max(1,bw).toFixed(1)+'" height="'+h+'" rx="1.5" style="fill:'+color+'"><title>'+esc(d.day)+': '+(d.count||0)+'</title></rect>';
+  }).join("");
+  // y-Achse: 0 und max; x-Achse: erstes/mittleres/letztes Label
+  var xlab = opts.xlabel || function(d){ return String(d.day).slice(5); };
+  var ticks = '<text class="axis" x="0" y="'+(padT+8)+'">'+max+'</text><text class="axis" x="0" y="'+(H-padB)+'">0</text>';
+  function lab(i){ var d=series[i]; var x=padL+i*((W-padL)/n); return '<text class="axis" x="'+x.toFixed(1)+'" y="'+(H-6)+'">'+esc(xlab(d))+'</text>'; }
+  var xl = lab(0) + (n>2?lab(Math.floor(n/2)):"") + lab(n-1);
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+bars+ticks+xl+'</svg>';
+}
+
+function kpi(v, l, h, color, raw){
+  return '<div class="kpi"><div class="v" style="color:'+(color||"var(--ink)")+'">'+esc(v)+'</div>'
+    + '<div class="l">'+esc(l)+'</div>'+((h||raw)?'<div class="h">'+esc(h||"")+(raw||"")+'</div>':'')+'</div>';
+}
+function arrow(delta){ delta=delta|0; if(delta>0) return '<span style="color:var(--good)">▲ '+delta+'%</span>'; if(delta<0) return '<span style="color:var(--bad)">▼ '+Math.abs(delta)+'%</span>'; return '<span style="color:var(--mut)">±0%</span>'; }
+
+function render(s){
+  var u=s.users, se=s.sessions, le=s.learning;
+  var html = "";
+  html += '<div class="kpis">'
+    + kpi(u.total, "Nutzer (distinkt)", "im "+s.windowDays+"-Tage-Fenster", "var(--brand)")
+    + kpi(u.dauToday, "Aktiv heute (DAU)", s.today)
+    + kpi(u.wau, "Aktiv 7 Tage (WAU)", "", null, "vs. Vorwoche "+arrow((u.trendWau7||{}).deltaPct))
+    + kpi(u.mau, "Aktiv 30 Tage (MAU)")
+    + kpi(se.count, "Sitzungen")
+    + kpi(fmtDur(se.avgDurationSec), "Ø Sitzungsdauer", "Median "+fmtDur(se.medianDurationSec), "var(--good)")
+    + kpi(u.returnRatePct+" %", "Wiederkehrrate", "≥ 2 aktive Tage", "var(--accent)")
+    + kpi((u.stickinessPct||0)+" %", "Stickiness", "Ø DAU / MAU")
+    + kpi(((u.retention&&u.retention[0]&&u.retention[0].pct)||0)+" %", "D1-Retention", "Tag-1 zurück", "var(--good)")
+    + kpi((s.search&&s.search.noResultPct||0)+" %", "Suche ø Treffer", (s.search&&s.search.total||0)+" Suchen", (s.search&&s.search.noResultPct)>20?"var(--warn)":"var(--mut)")
+    + kpi((s.trip&&s.trip.withGoalPct||0)+" %", "mit Reiseziel", (s.trip&&s.trip.snapshots||0)+" Snapshots", "var(--brand)")
+    + kpi(s.totals.errors, "Fehler", s.totals.events+" Events gesamt", s.totals.errors?"var(--bad)":"var(--mut)")
+    + '</div>';
+
+  html += '<div class="panel"><h2>Aktive Nutzer pro Tag <small>(distinkte clientId)</small></h2>'+vbars(u.dauSeries,{color:"var(--brand)"})+'</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Sitzungen pro Tag</h2>'+vbars(se.perDay,{color:"var(--accent)"})+'</div>';
+  html += '<div class="panel"><h2>Sitzungsdauer <small>(wie lange pro Besuch)</small></h2>'
+    + hbars(se.durationHistogram.map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--good)"})
+    + '<div class="h" style="color:var(--mut);margin-top:8px">Ø '+esc(fmtDur(se.avgDurationSec))+' · Median '+esc(fmtDur(se.medianDurationSec))+' · Ø '+esc(se.avgEventsPerSession)+' Events/Sitzung</div></div>';
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Genutzte Bildschirme</h2>'+hbars(s.engagement.screens)+'</div>';
+  html += '<div class="panel"><h2>Top-Aktionen</h2>'+hbars(s.engagement.actions)+'</div>';
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Akquise-Quelle <small>(distinkte Nutzer nach erster Quelle)</small></h2>'
+    + hbars(((s.engagement.acquisition)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--brand)"})+'</div>';
+  html += '<div class="panel"><h2>Teilen <small>(share-Aktionen)</small></h2>'
+    + ((s.engagement.share&&s.engagement.share.length)? hbars(s.engagement.share.map(function(a){return {label:a.key,count:a.count};}),{color:"var(--good)"}) : '<p class="empty">— keine —</p>')+'</div>';
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Lernspiele abgeschlossen <small>(Anzahl · perfekt-Quote)</small></h2>'
+    + hbars(le.features.map(function(f){return {label:f.feature+" · "+f.perfectPct+"% perfekt", count:f.count};}),{color:"var(--warn)"})
+    + '</div>';
+  html += '<div class="panel"><h2>Karten-Bewertungen & Genauigkeit</h2>'
+    + hbars([{label:"😬 Nochmal",count:le.ratings.again},{label:"🙂 Gut",count:le.ratings.good},{label:"😎 Einfach",count:le.ratings.easy}],{color:"var(--good)"})
+    + '<h2 style="margin-top:14px">Runden-Genauigkeit</h2>'
+    + hbars(le.accuracy.slice().sort(function(a,b){return numlead(a.key)-numlead(b.key);}).map(function(a){return {label:a.key+" %",count:a.count};}))
+    + '</div>';
+  html += '</div>';
+
+  // --- Bindung & Retention ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Retention <small>(Tag-N wieder aktiv)</small></h2>'
+    + hbars((u.retention||[]).map(function(r){return {label:"D"+r.day+" · "+r.eligible+" elig.",count:r.pct};}),{color:"var(--good)",fmt:function(d){return d.count+" %";}})+'</div>';
+  html += '<div class="panel"><h2>Aktive Tage je Nutzer</h2>'
+    + hbars((u.activeDaysHistogram||[]).map(function(d){return {label:d.bucket+(d.bucket==="1"?" Tag":" Tage"),count:d.count};}),{color:"var(--brand)"})+'</div>';
+  html += '</div>';
+
+  // --- Content-Qualität: schwierigste Themen + Lernmodus ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Schwierigste Themen <small>(„Nochmal"-Quote · Anzahl)</small></h2>'
+    + (le.difficult&&le.difficult.length? hbars(le.difficult.map(function(d){return {label:d.cat+" · "+d.total,count:d.againPct};}),{color:"var(--bad)",fmt:function(d){return d.count+" %";}}) : '<p class="empty">— zu wenig Daten (ab 5 Bewertungen/Thema) —</p>')+'</div>';
+  html += '<div class="panel"><h2>Lernmodus <small>(je Sitzung)</small></h2>'
+    + hbars((le.modes||[]).map(function(m){return {label:m.key,count:m.count};}),{color:"var(--good)"})+'</div>';
+  html += '</div>';
+
+  // --- Lernfortschritt + Reiseziel (aus Snapshots) ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Lernfortschritt <small>(% gemeisterte Karten)</small></h2>'
+    + (le.mastery&&le.mastery.length? hbars(le.mastery.slice().sort(function(a,b){return numlead(a.key)-numlead(b.key);}).map(function(m){return {label:m.key+" %",count:m.count};}),{color:"var(--good)"}) : '<p class="empty">— keine Snapshots —</p>')+'</div>';
+  html += '<div class="panel"><h2>Reiseziel <small>('+((s.trip&&s.trip.withGoalPct)||0)+'% haben eins)</small></h2>'
+    + '<h2 style="margin-top:0">Tagesziel (Karten/Tag)</h2>'
+    + (s.trip&&s.trip.daily&&s.trip.daily.length? hbars(s.trip.daily.map(function(d){return {label:d.key,count:d.count};})) : '<p class="empty">— keine Daten —</p>')+'</div>';
+  html += '</div>';
+
+  // --- Wann wird gelernt ---
+  html += '<div class="panel"><h2>Aktivität nach Uhrzeit <small>(UTC)</small></h2>'
+    + vbars((s.time&&s.time.byHour||[]).map(function(h){return {day:String(h.hour),count:h.count};}),{color:"var(--accent)",xlabel:function(d){return d.day+"h";}})+'</div>';
+  var WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Aktivität nach Wochentag</h2>'
+    + hbars((s.time&&s.time.byWeekday||[]).map(function(d){return {label:WD[d.weekday],count:d.count};}),{color:"var(--brand)"})+'</div>';
+  html += '<div class="panel"><h2>Onboarding-Funnel <small>(distinkte Nutzer)</small></h2>'
+    + ((s.funnel||[]).some(function(f){return f.count>0;})? hbars(s.funnel.map(function(f){return {label:f.step,count:f.count};}),{color:"var(--warn)"}) : '<p class="empty">— keine Onboarding-Events (greift nur mit Consent während des Onboardings, z. B. Editionen) —</p>')+'</div>';
+  html += '</div>';
+
+  // --- Segmente ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Plattformen <small>(distinkte Nutzer)</small></h2>'
+    + hbars(((s.segments&&s.segments.platforms)||[]).map(function(p){return {label:p.key,count:p.count};}),{color:"var(--accent)"})+'</div>';
+  html += '<div class="panel"><h2>Editionen <small>(distinkte Nutzer)</small></h2>'
+    + hbars(((s.segments&&s.segments.editions)||[]).map(function(e){return {label:e.key,count:e.count};}),{color:"var(--brand)"})+'</div>';
+  html += '</div>';
+
+  // --- Snapshot-Verteilungen (anonym) ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Feature-Adoption <small>(Snapshot: je Modus benutzt)</small></h2>'
+    + hbars(((s.meta.snapshotFeatureAdoption)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--good)"})+'</div>';
+  html += '<div class="panel"><h2>Streak-Verteilung</h2>'
+    + hbars(sortBuckets(s.meta.snapshotStreak).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--warn)"})+'</div>';
+  html += '</div>';
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Karten heute <small>(Snapshot-Verteilung)</small></h2>'
+    + hbars(sortBuckets(s.meta.snapshotCardsToday).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--accent)"})+'</div>';
+  html += '<div class="panel"><h2>Bewertungen gesamt <small>(Lebenszeit)</small></h2>'
+    + hbars(sortBuckets(s.meta.snapshotReviews).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--accent)"})+'</div>';
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>App-Versionen</h2>'+hbars(s.meta.appVersions)+'</div>';
+  html += '<div class="panel"><h2>Sprachen & Tracks</h2>'+hbars(s.meta.locales)
+    + '<h2 style="margin-top:14px">Lern-Tracks</h2>'+hbars(s.meta.tracks)+'</div>';
+  html += '</div>';
+
+  html += '<div class="panel"><h2>Neu vs. wiederkehrend <small>(App-Starts)</small></h2>'
+    + hbars([{label:"Neue Starts",count:u.newOpens},{label:"Wiederkehrend",count:u.returningOpens}],{color:"var(--brand)"})+'</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Fehler <small>(Monitoring)</small></h2>'
+    + (s.errors.length? hbars(s.errors.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--bad)"}) : '<p class="empty">— keine Fehler im Fenster 🎉 —</p>')+'</div>';
+  html += '<div class="panel"><h2>Fehler je App-Version <small>(Regressionen)</small></h2>'
+    + ((s.errorsByVersion&&s.errorsByVersion.length)? hbars(s.errorsByVersion.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--bad)"}) : '<p class="empty">— keine Fehler —</p>')+'</div>';
+  html += '</div>';
+
+  $("app").innerHTML = html;
+  $("window").textContent = "Fenster: "+s.windowDays+" Tage";
+  $("updated").textContent = "Stand: "+new Date(s.generatedAt).toLocaleString();
+}
+
+var TOKEN = (new URLSearchParams(location.search)).get("token") || "";
+var DAYS = 30;
+function apiUrl(base){ var p=[]; if(DAYS) p.push("days="+DAYS); if(TOKEN) p.push("token="+encodeURIComponent(TOKEN)); return base + (p.length? "?"+p.join("&") : ""); }
+function renderDaysBtns(){ $("daysbtns").innerHTML = [7,30,90].map(function(d){ return '<button class="'+(d===DAYS?"active":"")+'" data-days="'+d+'">'+d+' T</button>'; }).join(""); }
+function load(){
+  fetch(apiUrl("/api/stats")).then(function(r){ if(r.status===401){throw new Error("Token erforderlich (?token=… an die URL anhängen)");} return r.json(); }).then(render).catch(function(e){
+    $("app").innerHTML = '<p class="empty">Fehler beim Laden: '+esc(e&&e.message)+'</p>';
+  });
+}
+$("refresh").addEventListener("click", load);
+$("daysbtns").addEventListener("click", function(e){ var b=e.target.closest("[data-days]"); if(!b) return; DAYS=Number(b.dataset.days); renderDaysBtns(); load(); });
+$("exp-csv").addEventListener("click", function(){ location.href = apiUrl("/api/stats.csv"); });
+$("exp-json").addEventListener("click", function(){ fetch(apiUrl("/api/stats")).then(function(r){return r.text();}).then(function(t){ var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([t],{type:"application/json"})); a.download="holaruta-stats.json"; a.click(); }); });
+renderDaysBtns();
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>

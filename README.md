@@ -9,7 +9,7 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-731_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-759_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
@@ -53,7 +53,7 @@ Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Span
 
 **HolaRuta** ist eine Lernkarten-PWA für Survival-Spanisch beim Backpacking durch Lateinamerika. Kein Schulbuch-Spanisch, sondern genau die Sätze, die man am Busbahnhof, an der Grenze, im Hostel und beim Essen wirklich braucht — durchgängig **LatAm-korrekt** (colectivo, vuelto, plata, chévere, celular).
 
-Die App ist eine **einzige statische Web-App ohne Build-Zwang und mit 0 Runtime-npm-Dependencies**. Sie läuft im Browser, lässt sich als App installieren und funktioniert weitgehend **offline**. Der gesamte Lernfortschritt bleibt lokal auf dem Gerät — kein Konto, kein Tracking; ein Server kommt nur ins Spiel, wenn die **opt-in** Cloud-Sync-Schicht aktiviert wird. Optionales Build-Tooling (z. B. ein Minifier/Bundler wie esbuild) wäre rein **dev-only** und für Betrieb wie Auslieferung nicht erforderlich.
+Die App ist eine **einzige statische Web-App ohne Build-Zwang und mit 0 Runtime-npm-Dependencies**. Sie läuft im Browser, lässt sich als App installieren und funktioniert weitgehend **offline**. Der gesamte Lernfortschritt bleibt lokal auf dem Gerät — kein Konto, keine Werbung; ein Server kommt nur ins Spiel, wenn die **opt-in** Cloud-Sync-Schicht oder die **opt-in** anonyme Nutzungsstatistik (beide standardmäßig aus) aktiviert wird. Optionales Build-Tooling (z. B. ein Minifier/Bundler wie esbuild) wäre rein **dev-only** und für Betrieb wie Auslieferung nicht erforderlich.
 
 **Kernversprechen:** In Sekunden eine Karte lernen, großzügig getippte Antworten prüfen, mit dem Daumen durch die Sitzung wischen — und nur das wiederholen, was wirklich fällig ist.
 
@@ -61,8 +61,8 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und mit 0 Runtime-
 
 - **0 Runtime-npm-Dependencies** — Reines Vanilla JS. Kein Framework, kein Bundler, kein `node_modules` zur Laufzeit. Nur Module, die sich an `window.SC` hängen. Optionales Build-Tooling (z. B. esbuild) ist dev-only; die Cloud-/Sync-Schicht ist opt-in.
 - **Reine Funktionen im Kern** — `srs`, `matcher` und `stats` kennen weder UI noch Speicher. Sie nehmen Zustand + Eingabe und geben **neuen** Zustand zurück (Immutability durchgängig).
-- **Offline first** — Service Worker cacht die komplette App. Einmal geladen, laufen **Texte, Lernkarten und UI ohne Netz** weiter. Ausnahme: Kultur-/Geschichtsbilder der Länderkunde werden von **Wikimedia** geladen — ohne Tracking, aber als externer Request (also nicht offline verfügbar).
-- **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`; diese Daten verlassen das Gerät nicht. Es gibt **kein Tracking**. Der einzige externe Request im Normalbetrieb sind die Wikimedia-Bilder (s. o.); ein Server kommt nur bei aktivierter **opt-in** Cloud-Sync-Schicht hinzu.
+- **Offline first** — Service Worker cacht die komplette App. Einmal geladen, laufen **Texte, Lernkarten und UI ohne Netz** weiter. Ausnahme: Kultur-/Geschichtsbilder der Länderkunde werden von **Wikimedia** geladen — ohne Cookies/Tracker, aber als externer Request (also nicht offline verfügbar).
+- **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`; diese Daten verlassen das Gerät nicht. **Keine Werbung, keine Drittanbieter-Tracker.** Der einzige externe Request im Normalbetrieb sind die Wikimedia-Bilder (s. o.). Optional und **standardmäßig aus** sind die opt-in Cloud-Sync-Schicht sowie eine **opt-in Nutzungsstatistik** (BACKEND.md §17): ein anonymer Tages-Snapshot **und** ein pseudonymer Interaktions-Event-Strom (für Weiterentwicklung & Fehler-Monitoring). Beide nur nach ausdrücklicher Zustimmung; ein Allowlist-Sanitizer stellt sicher, dass **kein** Suchtext, **keine** Karteninhalte/-IDs und **keine** Namen das Gerät verlassen — nur grobe Enums/Buckets. Pseudonyme Statistik-Id jederzeit resetbar. **Vollständige Aufstellung aller geloggten Felder:** [docs/TELEMETRIE.md](docs/TELEMETRIE.md).
 - **Graceful Degradation** — Kein `localStorage`? Kein TTS? Kein Service Worker? Die App läuft trotzdem, nur ohne das jeweilige Extra.
 
 ---
@@ -275,7 +275,7 @@ SpanischCard/
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 727 Tests in 64 Dateien (node:test, keine Dependencies)
+├── test/                        # 759 Tests in 66 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -515,7 +515,7 @@ Normalisiert wird über:
 - **Versionierung:** `CACHE_VERSION` = Inhalts-Hash der Assets, automatisch von `node build.js` gestempelt (nie von Hand) → ändert sich eine ausgelieferte Datei, wird der alte Cache beim Aktivieren entfernt und frische Inhalte geladen. Ein Test (`test/sw-version.test.js`) + der CI-Drift-Check blockieren einen veralteten Cache.
 - **Navigations-Fallback:** Bei Seitenaufrufen ohne Treffer liefert der SW `index.html` statt eines Netzwerkfehlers
 - **Manifest:** Standalone-Display, Portrait, Markenfarbe `#241510`, Kategorien `education` + `travel`
-- **Ehrliche Offline-Grenze:** Texte, Lernkarten und UI sind vollständig offline. Die Kultur-/Geschichtsbilder der Länderkunde liegen bei **Wikimedia** und werden bei Bedarf extern geladen — kein Tracking, aber ein externer Request; ohne Netz fehlen dann nur diese Bilder, nicht die App.
+- **Ehrliche Offline-Grenze:** Texte, Lernkarten und UI sind vollständig offline. Die Kultur-/Geschichtsbilder der Länderkunde liegen bei **Wikimedia** und werden bei Bedarf extern geladen — ohne Cookies/Tracker, aber ein externer Request; ohne Netz fehlen dann nur diese Bilder, nicht die App.
 
 ---
 
@@ -558,8 +558,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 731
-#  ℹ pass 731
+#  ℹ tests 759
+#  ℹ pass 759
 #  ℹ fail 0
 ```
 
@@ -590,7 +590,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 51 (`SC.*`) |
-| Tests | 731 (alle grün) |
+| Tests | 759 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 

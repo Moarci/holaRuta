@@ -70,7 +70,7 @@ Sign-off).
 
 ### Positionierung (überzeugend)
 Kein Allzweck-Wettbewerb gegen Duolingo/Babbel, sondern die bewusst ausgelassene Nische:
-**situatives, LatAm-korrektes Reise-Spanisch, offline, ohne Tracking.** Differenzierung (LatAm-korrekt ·
+**situatives, LatAm-korrektes Reise-Spanisch, offline, ohne Werbung.** Differenzierung (LatAm-korrekt ·
 situativ statt kursförmig · offline-PWA · privacy by design) ist scharf und glaubwürdig — Details in
 [MARKT.md §1b](MARKT.md).
 

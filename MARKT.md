@@ -42,7 +42,7 @@ Daraus ergeben sich drei tragende B2B-Kanäle plus ein optionaler B2C-Pfad:
 
 HolaRuta tritt nicht gegen die großen Sprach-Apps als „bessere Allzweck-Sprachschule" an — es besetzt
 eine **Nische, die die Marktführer bewusst nicht bedienen**: situatives, regional korrektes
-Reise-Spanisch für Lateinamerika, offline und ohne Tracking.
+Reise-Spanisch für Lateinamerika, offline und ohne Werbung.
 
 | Wettbewerber | Stärke | Lücke, die HolaRuta füllt |
 |---|---|---|
@@ -60,7 +60,7 @@ Reise-Spanisch für Lateinamerika, offline und ohne Tracking.
 3. **Offline & PWA-leicht** — Texte, Karten und UI funktionieren ohne Netz; installierbar als App,
    ohne Store, ohne Abo-Zwang. (Ehrliche Grenze: Wikimedia-Kultur-/Geschichtsbilder werden extern
    geladen.)
-4. **Kein Tracking, volle Datenhoheit** — Fortschritt bleibt lokal (`localStorage`), kein Konto-Zwang,
+4. **Keine Werbung, volle Datenhoheit** — Fortschritt bleibt lokal (`localStorage`), kein Konto-Zwang,
    keine Werbung, kein Verkauf von Nutzerdaten. Die Cloud-Sync-Schicht ist **opt-in**.
 
 > Kurz: Die Großen sind breiter, billiger beworben und gamifizierter. HolaRuta ist **das schärfere
@@ -82,7 +82,7 @@ gegen `main` v1.24.0:
 | Badges (Ruta-Pass) | `badges.js`: 50+ Stempel, 11 Gruppen | ✅ existiert |
 | Kategorien | 23 Bereiche (Hostel, Essen, Busreise, Notfall, Geld …) | ✅ existiert |
 | Spickzettel (Survival, offline, vorgelesen) | README / `ui.js` | ✅ existiert |
-| Offline / PWA / zero-dependency / kein Tracking | Service Worker, `localStorage` | ✅ existiert |
+| Offline / PWA / zero-dependency / keine Werbung | Service Worker, `localStorage` | ✅ existiert |
 | Niveau A1/A2/B1 | `lvl`-Mehrfach-Filter, 3 Stufen | ✅ existiert (s. u.) |
 | Coordinator-Modus (5-Min-Icebreaker) | `startCoordinatorRound` (Modo hostal) | ✅ umgesetzt |
 | Lehrer-/Coordinator-Übersicht + Zuweisung | „Modo profe" (Import von Schüler-Backups → Klassenübersicht) + Aufgaben-Codes („Tarea") – offline, kein Backend | ✅ teilweise (echter Sync/Accounts bleibt Stufe 3) |
@@ -110,7 +110,7 @@ gegen `main` v1.24.0:
 - **Inhalts-Qualität ist agent-, nicht lehrkraft-geprüft.** Es gibt ein 4-Agenten-[AUDIT.md](AUDIT.md),
   aber **kein** Sign-off durch Muttersprachler/Lehrkraft. Für Schulen ist das Pflicht, für
   Gruppenreisen/Hostels weniger heikel.
-- **Privacy/Offline ist ein unterschätztes Verkaufsargument** (DSGVO, kein Tracking, alles lokal).
+- **Privacy/Offline ist ein unterschätztes Verkaufsargument** (DSGVO, lokal-first, keine Werbung; anonyme Statistik nur opt-in).
   ABER: Auf GitHub Pages teilen sich alle Projekte derselben `github.io`-Origin den `localStorage`
   — beim ernsthaften Schul-/Partnereinsatz eine eigene Domain erwägen.
 

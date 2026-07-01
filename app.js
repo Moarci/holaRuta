@@ -611,6 +611,8 @@
       syncOrg: (window.SC.config && window.SC.config.sync && window.SC.config.sync.orgLabel) || "",
       socialEnabled: !!(window.SC.social && window.SC.social.enabled()), // opt-in Freunde/Rangliste (nur per Edition)
       socialLoggedIn: !!(window.SC.social && window.SC.social.loggedIn && window.SC.social.loggedIn()),
+      analyticsAvailable: !!(window.SC.analytics && window.SC.analytics.available()), // anonyme Telemetrie nur, wenn eine Edition einen Endpunkt setzt
+      analyticsConsent: settings.analyticsConsent === true, // Nutzer hat dem Senden ausdrücklich zugestimmt (Default aus)
       hasCountries: !!countries, // dito für die Länderkunde
       hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasHistoriaCentro: !!historiaCentro, // dito für die Geschichte Mittelamerikas
@@ -1252,6 +1254,16 @@
       xp: gamestats.xp || 0,           // XP-Stand vor der Runde (für die Level-Up-Szene)
     };
     state.roundResult = null;          // wird von finishRound() am Rundenende gefüllt
+    // Session-Start als Event – beginRound() ist der gemeinsame Einstieg ALLER
+    // Lern-Startpfade (startStudy/Preset/Pre-Trip-Tag/Ruta del día), daher hier
+    // genau einmal pro Runde, ohne Duplikate. scopeId/total/studyOrigin/mode sind
+    // an dieser Stelle bereits gesetzt.
+    trackEvent("session_start", {
+      scope: state.scopeId,                 // "all" oder Kategorie-Id (Slug, kein PII)
+      origin: state.studyOrigin || "direct",
+      mode: state.mode,
+      cards: abucket(state.total, [5, 10, 20, 40]),
+    });
   }
 
   // Eine Runde abschließen: Reise-XP gutschreiben und das XP-/Rang-Ergebnis EINMAL
@@ -1300,6 +1312,13 @@
       levelAfter: levelFor(xpAfter),
       tripMilestone: tripMilestone, // {pct,dest}|null – Startklar-Meilenstein dieser Runde
     };
+    // Session-Abschluss als grobe Aggregat-Kennzahlen (keine Karten/Inhalte).
+    trackEvent("session_complete", {
+      answered: abucket(answered, [1, 5, 10, 20, 40]),
+      accuracy: abucket(accuracy, [25, 50, 75, 90, 99]),
+      xp: abucket(xpGained, [10, 30, 60, 120]),
+      again: abucket(s.wrong, [1, 3, 6, 12]),
+    });
   }
 
   // ----- Trip-Ziel (Countdown + Tagesziel) -----
@@ -1713,6 +1732,7 @@
     state.onboardSlide = 0;
     settings = Object.assign({}, settings, { placementPending: true });
     store.saveSettings(settings);
+    trackEvent("onboarding_step", { step: "intro", n: 0 });
   }
 
   // Onboarding einmalig als erledigt vermerken und aufs Dashboard wechseln. Der
@@ -1720,6 +1740,7 @@
   function finishOnboarding() {
     settings = Object.assign({}, settings, { onboarded: true });
     store.saveSettings(settings);
+    trackEvent("onboarding_complete", {});
     state.tripEdit = false;
     setState({ screen: "home" });
   }
@@ -2409,6 +2430,9 @@
   }
 
   function render() {
+    // Screen-View-Event nur bei echtem Ansichtswechsel (gleiche Logik wie der
+    // Scroll-Reset): re-Renders DERSELBEN Ansicht erzeugen kein Event.
+    trackScreenView();
     // Ein laufendes Trip-Drag hält Referenzen auf DOM-Knoten, die render() gleich
     // ersetzt. Feuert render() asynchron mitten im Ziehen (Badge-Toast-Timer,
     // SW-Update, Farbschema-Wechsel), würden die folgenden Pointer-Events auf
@@ -5073,6 +5097,9 @@
 
     // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
     recordStudyEvent(rating, now);
+    // Karten-Bewertung als grobes Event (Bewertung + Modus + Stufe + Kategorie –
+    // NIE die Karten-Id oder den Karteninhalt).
+    trackEvent("card_rated", { rating: String(rating), mode: state.mode, level: String(card.lvl || ""), cat: card.cat });
     if (state.mode === "listen") recordListenReview();
     syncBadges(now, true);
 
@@ -5221,6 +5248,7 @@
   function onboardSlidesToProfile() {
     state.onboardStep = "profile";
     state.onboardSlide = 0;
+    trackEvent("onboarding_step", { step: "profile", n: 1 });
     buzz(8);
     render();
   }
@@ -5258,6 +5286,7 @@
     // Einheimische keinen Sinn -> Onboarding nach dem Profil direkt abschließen.
     if (isLocals()) { buzz(8); finishOnboarding(); return; }
     state.onboardStep = "trip";
+    trackEvent("onboarding_step", { step: "trip", n: 2 });
     buzz(8);
     render();
   }
@@ -5281,11 +5310,128 @@
     render();
   }
 
+  // Anonyme Nutzungsstatistik teilen an/aus (opt-in, Default aus). Merken, neu
+  // rendern und bei FRISCHER Zustimmung gleich einen Tages-Snapshot senden (sofort
+  // wirksam – nicht erst beim nächsten Start). Ohne Zustimmung verlässt kein Datum
+  // das Gerät; das Modul prüft beides (Endpunkt + consent) nochmals selbst.
+  function setAnalyticsConsent(on) {
+    settings = Object.assign({}, settings, { analyticsConsent: !!on });
+    store.saveSettings(settings);
+    buzz(8);
+    // Event-Pipeline über die neue Einwilligung informieren. Bei AUS zusätzlich die
+    // pseudonyme Statistik-Id verwerfen und den Puffer leeren (kein Nachsenden).
+    if (window.SC.analytics && window.SC.analytics.configure) {
+      window.SC.analytics.configure(analyticsCtx());
+      if (!on && window.SC.analytics.resetClientId) window.SC.analytics.resetClientId();
+    }
+    if (on) { sendUsageSnapshot(); trackEvent("consent_change", { on: true }); }
+    render();
+  }
+
+  // Fire-and-forget: höchstens ein anonymer, gebucketeter Tages-Snapshot. Macht
+  // NICHTS ohne konfigurierten Endpunkt UND Zustimmung (Prüfung im Modul). Fehler
+  // werden geschluckt – Telemetrie darf die App nie blockieren.
+  function sendUsageSnapshot() {
+    if (!window.SC.analytics) return;
+    // Lernfortschritt (% gemeisterte Karten) und Reiseziel grob mitgeben – beides
+    // gebucketet, keine Inhalte. Mastery aus der vorhandenen stats.overview-Logik.
+    var masteredPct = 0;
+    try { var ov = stats.overview(allCards(), progress); if (ov && ov.total) masteredPct = Math.round((ov.mastered / ov.total) * 100); } catch (e) { /* egal */ }
+    var tg = gamestats.tripGoal || null;
+    window.SC.analytics.maybeSend(gamestats, Object.assign(analyticsCtx(), {
+      masteredPct: masteredPct,
+      hasTripGoal: !!tg,
+      tripPerDay: tg ? (tg.perDay || 0) : 0,
+    }));
+  }
+
+  // ---- Interaktions-Tracking (Event-Pipeline, opt-in) ----------------------
+  // Gemeinsamer Kontext (Meta + Einwilligung) für SC.analytics.configure/track.
+  function analyticsCtx() {
+    return {
+      consent: settings.analyticsConsent === true,
+      appVersion: (changelog && changelog.VERSION) || "",
+      locale: state.uiLang,
+      track: (window.SC.track && window.SC.track.id()) || "",
+      edition: (window.SC.config && window.SC.config.edition) || "none",
+      platform: detectPlatform(),
+    };
+  }
+  // Grobe, NICHT fingerprintende Plattform-Klasse (4 Buckets). Liest den UA nur
+  // lokal aus, um ihn auf einen kurzen Enum-Wert abzubilden – der UA selbst wird
+  // NIE gesendet. Einmal berechnet und gemerkt.
+  var _platform = null;
+  function detectPlatform() {
+    if (_platform) return _platform;
+    var p = "other";
+    try {
+      var ua = (navigator && navigator.userAgent) || "";
+      if (/android/i.test(ua)) p = "android";
+      else if (/iphone|ipad|ipod/i.test(ua)) p = "ios";
+      else if ((navigator && navigator.maxTouchPoints || 0) > 1) p = "mobile";
+      else p = "desktop";
+    } catch (e) { p = "other"; }
+    _platform = p;
+    return p;
+  }
+  // Akquise-Quelle (grober Enum): woher kam der Nutzer? Aus den Start-URL-Parametern,
+  // die weiter unten im Init noch entfernt werden – daher EINMAL beim Modul-Laden
+  // (vor dem Strippen) erfasst. Es wird NUR der Enum gesendet, nie die URL/Query.
+  var _rawSearch = (typeof location !== "undefined" && location.search) || "";
+  function detectAcquisitionSrc() {
+    var s = _rawSearch;
+    if (/[?&]task=/.test(s)) return "task";                 // geteilter Aufgaben-Code (Tarea)
+    if (/[?&]start=onboarding/i.test(s)) return "onboard-link"; // Schul-/Partner-Onboarding-Link
+    if (/[?&]m=/.test(s)) return "module-link";             // geteilter Modul-Link
+    if (/[?&]edition=/.test(s) || (window.SC.config && window.SC.config.edition)) return "edition";
+    return "direct";
+  }
+  // Ein Event erfassen – graceful, wenn das Modul fehlt. Das Modul prüft selbst
+  // Endpunkt + Zustimmung; ohne beides wird NICHTS gepuffert.
+  function trackEvent(name, props) {
+    if (window.SC.analytics && window.SC.analytics.track) window.SC.analytics.track(name, props);
+  }
+  // Zahl -> grober Bucket-String (über den reinen Kern in analytics.js).
+  function abucket(n, edges) {
+    return (window.SC.analytics && window.SC.analytics.bucket) ? window.SC.analytics.bucket(n, edges) : String(n | 0);
+  }
+  // Screen-View nur bei Wechsel der Ansicht (scrollKey = Screen bzw. home:<tab>).
+  let lastTrackedView = null;
+  function trackScreenView() {
+    const key = scrollKey();
+    if (key === lastTrackedView) return;
+    lastTrackedView = key;
+    trackEvent("screen_view", { screen: state.screen, tab: state.screen === "home" ? state.homeTab : undefined });
+  }
+  // Map: gamestats-„*Played"-Zähler (steigt pro abgeschlossener Spielrunde um 1) ->
+  // Event-Feature + zugehöriger „*Perfect"-Zähler. Eine zentrale Stelle deckt alle
+  // Lernspiele ab, ohne jedes Modul einzeln zu instrumentieren.
+  const FEATURE_COUNTERS = [
+    { count: "preciosPlayed", perfect: "preciosPerfect", feature: "precios" },
+    { count: "dialogosPlayed", perfect: "dialogosPerfect", feature: "dialogos" },
+    { count: "quizzesPlayed", perfect: "quizzesPerfect", feature: "definiciones" },
+    { count: "yestoPlayed", perfect: "yestoPerfect", feature: "yesto" },
+    { count: "frasesPlayed", perfect: "frasesPerfect", feature: "frases" },
+    { count: "conjugPlayed", perfect: "conjugPerfect", feature: "conjug" },
+    { count: "battlesPlayed", perfect: "perfectBattles", feature: "battle" },
+  ];
+  // Aus setGameStats aufgerufen: stieg ein „*Played"-Zähler, ist eine Spielrunde
+  // fertig -> feature_complete (nur Feature + perfekt ja/nein, kein Inhalt).
+  function trackFeatureCompletions(prev, next) {
+    if (!prev || !next || prev === next) return;
+    FEATURE_COUNTERS.forEach((f) => {
+      if ((next[f.count] | 0) > (prev[f.count] | 0)) {
+        trackEvent("feature_complete", { feature: f.feature, perfect: (next[f.perfect] | 0) > (prev[f.perfect] | 0) });
+      }
+    });
+  }
+
   // UI-/Muttersprache umschalten (de/en), merken und neu rendern.
   function setUiLang(l) {
     applyUiLang(l);
     settings = Object.assign({}, settings, { uiLang: state.uiLang });
     store.saveSettings(settings);
+    if (window.SC.analytics && window.SC.analytics.configure) window.SC.analytics.configure(analyticsCtx());
     invalidateSearchIndex(); // Titel/Untertitel & Gruppen hängen an der UI-Sprache
     render();
   }
@@ -6275,6 +6421,20 @@
   function updateSearchResults() {
     const box = document.getElementById("search-results");
     if (box) box.innerHTML = ui.searchResults(searchVM());
+    maybeTrackSearch();
+  }
+
+  // Such-Event NUR als grobe Buckets: Länge der Anfrage + Trefferzahl. NIEMALS der
+  // Suchtext selbst. Gedrosselt, damit nicht jeder Tastendruck ein Event erzeugt.
+  let lastSearchTrackAt = 0;
+  function maybeTrackSearch() {
+    const q = String(state.searchQuery || "").trim();
+    if (!q) return;
+    const now = Date.now();
+    if (now - lastSearchTrackAt < 1000) return;
+    lastSearchTrackAt = now;
+    const results = searchResultsData(q).groups.reduce((n, g) => n + g.items.length, 0);
+    trackEvent("search", { qlen: abucket(q.length, [3, 6, 12, 24]), results: abucket(results, [1, 5, 20]) });
   }
 
   function clearSearch() {
@@ -7133,6 +7293,8 @@
     "set-theme": (el) => { setTheme(el.dataset.theme); },
     "set-dir": (el) => { setDir(el.dataset.dir); },
     "set-celebrate-sound": (el) => { setCelebrateSound(el.dataset.on === "1"); },
+    "set-analytics-consent": (el) => { setAnalyticsConsent(el.dataset.on === "1"); },
+    "reset-analytics-id": () => { if (window.SC.analytics && window.SC.analytics.resetClientId) { window.SC.analytics.resetClientId(); buzz(8); } },
     "set-ui-lang": (el) => { setUiLang(el.dataset.lang); },
     "set-level": (el) => { toggleLevel(Number(el.dataset.level)); },
     "set-vocabkind": (el) => { setVocabKind(el.dataset.kind); },
@@ -7415,7 +7577,27 @@
     }
 
     const handler = ACTIONS[action];
-    if (handler) handler(el);
+    if (handler) {
+      // Hochfrequente Lern-Aktionen NICHT als generisches „action"-Event doppeln –
+      // sie sind bereits über card_rated / die Session-Events abgedeckt und würden
+      // sonst die Event-Queue fluten.
+      if (!NOISY_ACTIONS[action]) trackEvent("action", actionProps(action, el));
+      handler(el);
+    }
+  }
+
+  // Lern-Aktionen, die pro Karte mehrfach feuern und separat erfasst sind.
+  const NOISY_ACTIONS = { flip: 1, rate: 1, skip: 1, speak: 1 };
+
+  // Sichere, allowlist-basierte Props für ein „action"-Event. Bewusst NUR Enum-/
+  // Kategorie-artige dataset-Felder (mode/dir/level/tab/scope) – NIE Freitext und
+  // NIE Karten-IDs (data-id). Der Sanitizer in analytics.js verwirft zusätzlich alles
+  // Nicht-Gelistete und jeden Wert mit Leerzeichen.
+  function actionProps(action, el) {
+    const d = (el && el.dataset) || {};
+    const p = { action: action };
+    ["mode", "dir", "level", "tab", "scope"].forEach((k) => { if (d[k] != null) p[k] = String(d[k]); });
+    return p;
   }
 
   function onSubmit(e) {
@@ -7995,7 +8177,7 @@
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
     // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
     gameStats: () => gamestats,
-    setGameStats: (g) => { gamestats = g; store.saveGameStats(gamestats); },
+    setGameStats: (g) => { const prev = gamestats; gamestats = g; store.saveGameStats(gamestats); trackFeatureCompletions(prev, g); },
     settings: () => settings,
     setSettings: (patch) => { settings = Object.assign({}, settings, patch); store.saveSettings(settings); },
   };
@@ -8034,6 +8216,65 @@
       navigator.storage.persist().catch(() => { /* egal */ });
     }
   } catch (e) { /* Feature fehlt – egal */ }
+
+  // Anonyme Nutzungs-Telemetrie (opt-in, BACKEND.md §17): höchstens ein anonymer
+  // Tages-Snapshot. Tut NICHTS ohne konfigurierten Endpunkt UND Zustimmung – ohne
+  // beides exakt 0 Netzwerk-Calls wie bisher. Fire-and-forget, nie blockierend.
+  sendUsageSnapshot();
+  setupAnalyticsEvents();
+
+  // Interaktions-Tracking aufsetzen (opt-in, BACKEND.md §17.6): Kontext setzen,
+  // app_open/perf erfassen, Fehler-Monitoring einhängen und die Event-Queue
+  // periodisch sowie beim Verstecken/Schließen (sendBeacon) flushen. Alles tut
+  // NICHTS ohne konfigurierten Endpunkt UND Zustimmung (Prüfung im Modul).
+  function setupAnalyticsEvents() {
+    const A = window.SC.analytics;
+    if (!A || !A.configure) return;
+    A.configure(analyticsCtx());
+
+    // Die allererste Ansicht nachholen: der erste render() lief vor configure(),
+    // sein screen_view wurde mangels Zustimmung verworfen. Jetzt – mit gesetztem
+    // Kontext – die aktuelle Ansicht (Deep-Link/Start/Onboarding) einmal erfassen.
+    lastTrackedView = null;
+    trackScreenView();
+
+    // Läuft die App gerade im Onboarding? Der zugehörige onboarding_step (aus
+    // beginOnboarding) feuerte VOR configure() und wurde verworfen -> hier den
+    // aktuellen Schritt nachholen, sonst wäre der Funnel nicht-monoton (intro < profile).
+    if (state.screen === "onboarding") {
+      const stepN = { intro: 0, profile: 1, trip: 2 };
+      const st = state.onboardStep || "intro";
+      trackEvent("onboarding_step", { step: st, n: stepN[st] || 0 });
+    }
+
+    // App-Start + grobe Ladezeit (einmal pro Start).
+    let loadMs = 0;
+    try { loadMs = Math.max(0, Math.round((window.performance && performance.now && performance.now()) || 0)); } catch (e) { /* egal */ }
+    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc() });
+    trackEvent("perf", { load_ms: abucket(loadMs, [200, 500, 1000, 3000]) });
+
+    // Fehler-Monitoring (vorher gar nicht vorhanden). Nur Diagnose-Text, PII-bereinigt.
+    try {
+      window.addEventListener("error", (ev) => {
+        const file = ev && ev.filename ? String(ev.filename).split("/").pop() : "";
+        trackEvent("error", { type: "error", msg: ev && ev.message, src: ev && ev.lineno ? file + ":" + ev.lineno : file, line: (ev && ev.lineno) || 0 });
+      });
+      window.addEventListener("unhandledrejection", (ev) => {
+        const r = ev && ev.reason;
+        trackEvent("error", { type: "promise", msg: r && (r.message || String(r)), line: 0 });
+      });
+      window.addEventListener("appinstalled", () => trackEvent("pwa_installed", {}));
+    } catch (e) { /* addEventListener fehlt – egal */ }
+
+    // Flush: periodisch und beim Verstecken/Schließen (sendBeacon ist dort zuverlässig).
+    try {
+      setInterval(() => { A.flush(); }, 15000);
+      document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") A.flush({ beacon: true }); });
+      window.addEventListener("pagehide", () => { A.flush({ beacon: true }); });
+    } catch (e) { /* egal */ }
+    // Erster Flush kurz nach Start (schickt app_open/perf raus, sobald zugestimmt).
+    setTimeout(() => A.flush(), 3000);
+  }
 
   window.SC.app = { render }; // nach außen minimal
 })();

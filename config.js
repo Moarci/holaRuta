@@ -39,6 +39,12 @@
     // Login wie sync; apiBase fällt auf sync.apiBase zurück, wenn nicht gesetzt:
     //   social: { enabled: true, apiBase: "https://…" }
     social: null,
+    // Optionale ANONYME Nutzungs-Telemetrie (BACKEND.md §17). null = aus (Standard,
+    // kein Netzwerk). Sendet NUR mit Endpunkt UND ausdrücklicher Nutzer-Zustimmung
+    // im Profil einen anonymen, gebucketeten Tages-Snapshot (keine PII, keine
+    // Karten-IDs, keine stabile ID). Eine Edition kann sie vorkonfigurieren:
+    //   analytics: { enabled: true, endpoint: "https://…" }
+    analytics: null,
     // Kanonische Web-Adresse der App (für teilbare Aufgaben-/Onboarding-Links).
     // null = aktuelle Adresse (location) verwenden. Editionen setzen ihre Pages-URL,
     // damit ein Link auch dann stimmt, wenn die Lehrkraft die App als Datei öffnet.
