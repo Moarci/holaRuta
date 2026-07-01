@@ -445,6 +445,19 @@ test("Korpus: kein In-Session-Set (Kategorie/Preset/Kurs-Etappe) zeigt denselben
   }
 });
 
+test("Content-Gate: audit-locals findet keine harten alt-Fehler (Struktur/Ambiguität)", () => {
+  // Verankert das zuvor nur manuell laufende Gate (`node tools/audit-locals.js
+  // --strict`) im Testlauf: leere alt-Arrays, Dubletten, alt==Haupt-en und
+  // Set-interne Antwort-Ambiguität werden hier rot statt still durchgelassen.
+  const { altErrors } = require(path.join(__dirname, "..", "tools", "audit-locals.js"));
+  const errs = altErrors();
+  assert.equal(
+    errs.length,
+    0,
+    "harte alt-Fehler: " + errs.map((e) => `${e.id}(${e.kind})`).join(", ")
+  );
+});
+
 test("Doku: LOCALS.md-Zähler (Kategorien · Karten) == echter Stand", () => {
   const fs = require("fs");
   const md = fs.readFileSync(path.join(__dirname, "..", "LOCALS.md"), "utf8");
