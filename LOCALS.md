@@ -164,7 +164,11 @@ im Korpus (damit keine Reise-Code-Pfade brechen), sind aber unsichtbar:
 - Spanische Übersetzung der rein reise-spezifischen Namespaces (Arbeitsblätter,
   Einstufungstests, Hostel/Battle, 30 Pre-Arrival-Städte) – aktuell EN-Rückfall,
   im Locals-Track ohnehin ausgeblendet, daher niedrige Priorität.
-- Eigenes englisches Tippfehler-Korpus & ES-Parität im i18n-Test ausbauen.
+- ~~Eigenes englisches Tippfehler-Korpus & ES-Parität im i18n-Test ausbauen.~~
+  **Umgesetzt:** `test/typo-corpus-en.test.js` (englische Matcher-Toleranz an echten
+  Locals-Antworten) und ein ES-Schicht-Gate in `test/i18n.test.js` (kein verwaister
+  ES-Schlüssel + Coverage-Floor). Das `alt`-Struktur-Gate läuft jetzt zusätzlich in
+  `test/locals-track.test.js` (`tools/audit-locals.js`).
 
 ## Spanische UI & a11y (umgesetzt)
 
@@ -182,4 +186,6 @@ im Korpus (damit keine Reise-Code-Pfade brechen), sind aber unsichtbar:
   (HolaRuta-Check / Nivel-Test) sind im Locals-Track ausgeblendet.
 
 Tests: `test/locals-track.test.js` (Track, Matcher-Englisch, TTS-Locale, ES-UI,
-Content-Integrität). Browser-Smoke siehe E2E-Muster in `scripts/`.
+Content-Integrität inkl. `alt`-Struktur-Gate), `test/typo-corpus-en.test.js`
+(englische Tippfehler-Toleranz an echten Locals-Antworten) und die ES-Schicht-Prüfung
+in `test/i18n.test.js`. Browser-Smoke siehe E2E-Muster in `scripts/`.
