@@ -86,7 +86,7 @@ Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
 ### Kurspläne (8 Wochen × 5 Teile)
 
-`data.locals.js → PLANS` definiert **acht** strukturierte Lehrgänge (je **8 Wochen × 5 Teile
+`data.locals.js → PLANS` definiert **neun** strukturierte Lehrgänge (je **8 Wochen × 5 Teile
 à 20 Karten = 800 Karten**), die die vorhandene `PRETRIP`-Etappen-Engine wiederverwenden;
 jeder Teil bündelt 20 Karten zu einer Etappe, die nächste Etappe öffnet sich nach Abschluss
 der aktuellen. Die thematischen Stichworte unten skizzieren den groben Verlauf je Kurs:
@@ -104,6 +104,12 @@ der aktuellen. Die thematischen Stichworte unten skizzieren den groben Verlauf j
   Die Reihenfolge stammt aus einem Frequenz-Ranking eines spezialisierten Agenten; mit diesem
   Hochfrequenz-Kern erreicht man A2→B1 („etwas sprechen können"). Die 1000-häufigsten-Wörter-Idee
   in Reinform: ~80–90 % der Alltagssprache sind damit abgedeckt.
+- **Curso de vocabulario** (`curso-voc`) – die **thematische** Ergänzung zum frequenzbasierten
+  `curso-esencial`: 800 rein thematische Vokabeln aus der `loc-voc`-Sektion, nach Themen-Clustern
+  in 8 Wochen geordnet: Fundamentos (Zahlen/Farben/Formen/Frage-/Pronomen) → La persona (Körper/
+  Familie/Gesundheit/Gefühle) → Comida y cocina → Casa y ciudad → Naturaleza y animales → Ropa,
+  tiempo y viaje → Trabajo y estudio → Acciones y cualidades. Nutzt ausschließlich muttersprachlich
+  freigegebene Karten (ohne den núcleo-Frequenzkern, der in `curso-esencial` steckt).
 
 Über die Chip-Leiste in „Descubrir → Curso" umschaltbar (`pretripVM` filtert im Locals-
 Track auf `^curso`); im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten
@@ -116,11 +122,12 @@ laufen durch die normale (track-korrekte) Study-Engine.
 Der **NPC ist ein Tourist und spricht Englisch** (`turn.en`, wird per englischer TTS
 vorgelesen); Übersetzung & Handlungsanweisung stehen auf Spanisch (`turn.es`); der/die
 Lernende antwortet auf Englisch (MC oder frei getippt, `solEs`/`options[].es`/`accept`
-tragen die englische Musterantwort). Einundzwanzig Szenarien: Restaurant, Recepción, Tour,
+tragen die englische Musterantwort). Vierundzwanzig Szenarien: Restaurant, Recepción, Tour,
 Taxi, Mercado, Queja, Playa, Entrevista de trabajo, Llamada de servicio, Farmacia,
 Check-out, Spa/Masaje, Lancha (Islas del Rosario), Banco, Peluquería sowie – aus dem
 Erweiterungspack – **Briefing de buceo, Check-in de vuelo, Daily standup (TI), Demo
-de ventas, En la consulta (clínica) und Entrega del auto de alquiler**.
+de ventas, En la consulta (clínica), Entrega del auto de alquiler, Llamada de reclamo
+(call-center), Antes de la caminata (senderismo) und Negociar en el mercado**.
 
 Die geteilte Engine (`features/dialogos-game.js`) wurde dafür track-fähig gemacht:
 gesprochene Zeile = Lernsprache, Übersetzung/Anweisung = Muttersprache (Reise-Track

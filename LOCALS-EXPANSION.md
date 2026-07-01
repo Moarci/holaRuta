@@ -19,7 +19,7 @@ zugeschnitten auf die Rolle.
 > Diálogo „En la consulta") → **63 Kategorien · 818 Karten · 20 Diálogos · 7 Kurspläne**.
 >
 > **Aktueller Stand (2026-07):** Der Korpus ist seither weit über diesen Bauplan hinaus
-> gewachsen — **131 Kategorien · 2844 Karten · 21 Diálogos · 8 Kurspläne** (u. a. die
+> gewachsen — **131 Kategorien · 2844 Karten · 24 Diálogos · 9 Kurspläne** (u. a. die
 > Vokabel-Sektion `loc-voc` und die B2-Gruppe `loc-b2`), mit komplettem Sign-off
 > (siehe [LOCALS-SIGNOFF.md](LOCALS-SIGNOFF.md)). Maßgeblich für die Zähler ist der
 > test-verankerte Stand in [LOCALS.md](LOCALS.md); **dieses Dokument ist ein
