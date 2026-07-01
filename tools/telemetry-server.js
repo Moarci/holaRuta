@@ -102,7 +102,8 @@ function aggregate(events, usage, opts) {
   var onboardComplete = {};            // clientId -> 1
   var editionClients = {};             // edition -> { clientId: 1 }
   var platformClients = {};            // platform -> { clientId: 1 }
-  var acquisition = {};                // app_open.src -> count (woher kommen Nutzer)
+  var acquisition = {};                // src -> distinkte Nutzer (nach erster Quelle)
+  var clientFirstOpen = {};            // clientId -> { ts, src } (früheste Quelle je Nutzer)
 
   ev.forEach(function (e) {
     var day = String(e.day || "");
@@ -140,7 +141,10 @@ function aggregate(events, usage, opts) {
     }
 
     switch (name) {
-      case "app_open": (p.returning ? openReturning++ : openNew++); if (p.src) acquisition[p.src] = (acquisition[p.src] || 0) + 1; break;
+      case "app_open":
+        (p.returning ? openReturning++ : openNew++);
+        if (p.src && cid) { var fo = clientFirstOpen[cid]; if (!fo || ts < fo.ts) clientFirstOpen[cid] = { ts: ts, src: p.src }; }
+        break;
       case "screen_view": if (p.screen) screenCounts[p.screen] = (screenCounts[p.screen] || 0) + 1; break;
       case "action": if (p.action) actionCounts[p.action] = (actionCounts[p.action] || 0) + 1; break;
       case "card_rated":
@@ -270,6 +274,10 @@ function aggregate(events, usage, opts) {
   funnel.push({ step: "complete", count: Object.keys(onboardComplete).length });
 
   function clientsByKey(map) { return topCounts(Object.keys(map).reduce(function (o, k) { o[k] = Object.keys(map[k]).length; return o; }, {})); }
+
+  // Akquise: distinkte Nutzer nach ihrer ERSTEN Quelle (nicht Opens – sonst würden
+  // wiederkehrende „direct"-Starts die Kanäle verzerren).
+  Object.keys(clientFirstOpen).forEach(function (c) { var s = clientFirstOpen[c].src; acquisition[s] = (acquisition[s] || 0) + 1; });
 
   return {
     generatedAt: now,

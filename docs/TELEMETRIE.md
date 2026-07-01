@@ -188,9 +188,10 @@ node build.js --edition=<id>
 > anonym ohne Id). **„Wie lange"** = Sitzungsdauer als Spanne zwischen erstem und letztem Event
 > derselben `sessionId`.
 
-> ⚠️ **Kein Produktionsdienst.** Das Dashboard ist **ungeschützt** und der Storage ist eine Datei
-> (`tools/telemetry-data/`, ge-`.gitignore`-t). Für echten Betrieb gehören davor **Auth**, ein
-> richtiger **Event-Store**, Rate-/Größenlimits und EU-Hosting (siehe [BACKEND.md §17.6.3](../BACKEND.md)).
+> ⚠️ **Kein Produktionsdienst.** Das Dashboard ist standardmäßig **offen** (optional per
+> `TELEMETRY_TOKEN` schützbar) und der Storage ist eine **Datei** (`tools/telemetry-data/`,
+> ge-`.gitignore`-t) mit In-Memory-Aggregation. Für echten Betrieb gehören davor **echte Auth**,
+> ein richtiger **Event-Store (DB)**, Rate-Limits und EU-Hosting (siehe [BACKEND.md §17.6.3](../BACKEND.md)).
 
 **Ultra-einfacher Smoke-Test** ohne Dashboard/Persistenz: [`tools/mock-events-server.js`](../tools/mock-events-server.js)
 loggt eintreffende Events nur im Terminal.
@@ -203,3 +204,58 @@ loggt eintreffende Events nur im Terminal.
 2. An der passenden Stelle `SC.analytics.track("<name>", { … })` aufrufen (im Controller über den Helfer `trackEvent`).
 3. Zahl-Felder als Bucket übergeben: `abucket(n, [kanten…])`.
 4. Diese Tabelle (§3.1) **und** BACKEND.md §17.6.2 aktualisieren – **Spec == Implementierung** halten.
+
+---
+
+## 9. Dateien & Architektur
+
+| Datei | Rolle |
+|---|---|
+| [`analytics.js`](../analytics.js) | **Client-Modul** `SC.analytics`: reiner Kern (Snapshot, Event-Bau, Allowlist-Sanitizer, Buckets, IDs) + dünner opt-in-Adapter (`track`/`flush`/`maybeSend`, Ring-Queue, `sendBeacon`). |
+| [`app.js`](../app.js) | **Instrumentierung**: `trackEvent`/`abucket`, Hooks (onClick, render, beginRound, finishRound, rate, updateSearchResults, Onboarding, setGameStats-Diff, Boot/Errors), `analyticsCtx`, `detectPlatform`, `detectAcquisitionSrc`, Consent-Handler. |
+| `ui.js` + `i18n.strings*.js` | Consent-Schalter „Nutzungsstatistik teilen" + „Statistik-Id zurücksetzen" (de/en/es). |
+| `config.js` | `SC.config.analytics = { enabled, endpoint }` (Default `null` = aus). |
+| `index.html` · `service-worker.js` | Modul eingebunden + im PWA-Precache. |
+| [`tools/telemetry-server.js`](../tools/telemetry-server.js) | **Collector + Dashboard-Server**: nimmt `POST /v1/usage`+`/v1/events` an, persistiert JSONL, reine `aggregate()`-Funktion, `GET /api/stats(.csv)`, serviert das Dashboard; Token/Retention/Windowing. |
+| [`tools/telemetry-dashboard.html`](../tools/telemetry-dashboard.html) | **Dashboard-UI** (Vanilla, SVG-Charts, kein externes Framework). |
+| [`tools/mock-events-server.js`](../tools/mock-events-server.js) | Ultra-einfacher Smoke-Collector (nur Terminal-Log). |
+| `test/analytics.test.js` · `test/telemetry-aggregate.test.js` | Unit-Tests (Sanitizer/Gating/Queue/Envelope · Aggregation). |
+| [`BACKEND.md §17`](../BACKEND.md) | Server-/DSGVO-Spec (Ziel-Endpunkte, Event-Store, Löschung, Sampling). |
+
+---
+
+## 10. Status & offene Punkte (TODO)
+
+### ✅ Fertig (client-seitig vollständig, end-to-end lauffähig)
+- Opt-in-Snapshot + pseudonymer Event-Strom, Allowlist-Sanitizer, Ring-Queue, Batching/Beacon, Reset-Id.
+- Volle Instrumentierung (Screens, Aktionen, Sessions, Karten, Spiele, Suche, Onboarding, Fehler, Perf, PWA).
+- Collector mit Persistenz, `aggregate()`, Dashboard (Nutzer/Retention/Sessions/Content/Lernfortschritt/Zeit/Segmente/Monitoring), Zeitfenster, CSV/JSON-Export, optionaler Token, Retention-Pruning.
+- 746 Unit-Tests grün; Doku hier + BACKEND.md + README.
+
+### ⚠️ Bekannte Grenzen (bewusst)
+- **Self-Host-/Dev-Tool:** Datei-Storage + In-Memory-Aggregation; Dashboard nur per optionalem Token geschützt.
+- **UTC-„heute":** Tages-Buckets nutzen den UTC-Tag des Servers vs. die lokale `day` des Clients → minimale Unschärfe an Tagesgrenzen.
+- **Onboarding-Funnel & Snapshot-Kennzahlen** liefern nur Daten von Nutzern **mit aktivem Consent** (der Consent-Schalter liegt hinter dem Onboarding → Funnel primär für Editionen mit vor-aktiviertem Consent aussagekräftig).
+- **Beacon-Flush** beim Schließen sendet höchstens **einen** Batch (≤ 50 Events); ein sehr großer Restpuffer kann beim harten Schließen verloren gehen.
+- **`mock-events-server.js`** und `telemetry-server.js` überlappen (bewusst: einfacher Smoke vs. voll).
+
+### 🔧 TODO — Produktion (server-seitig, außerhalb dieses Repos)
+- [ ] Echter **Event-Store** (DB/Spalten-DB) statt JSONL; Aggregation server-/query-seitig.
+- [ ] **Echte Auth** (statt einfachem Token), Rate-Limiting, Größenlimit server-seitig gespiegelt.
+- [ ] **DSGVO-Löschung per `clientId`** (Art. 17) + Aufbewahrungsfrist als Job; Auskunft/Export.
+- [ ] **EU-Hosting** + Datenschutzerklärung/AVV (vgl. BACKEND.md §12/§17.3).
+- [ ] Optional **Sampling** (`SC.config.analytics.sampleRate`) client- und/oder serverseitig verdrahten.
+
+### 🧪 TODO — Tests/Qualität
+- [ ] **Integrationstest** der Server-Routen (Token-401, `?days=`, `/api/stats.csv`, 400 bei kaputtem POST) — aktuell manuell verifiziert.
+- [ ] Optional Controller-Smoke, der belegt, dass die App-Hooks ohne Fehler feuern (DOM-Stub vorhanden).
+
+### 📈 TODO — Produkt-Metriken (nice-to-have)
+- [ ] Retention-**Kohorten über Zeit** (Heatmap Erst-Tag × Tag-N) statt nur D1/D7/D30-Gesamt.
+- [ ] **Trichter-Konversion** Onboarding→erste Session→wiederkehrend als ein Funnel.
+- [ ] **Alerting** bei Fehler-Spitzen je Version (Schwellenwert-Hinweis im Dashboard).
+- [ ] `feature_start` (heute nur `feature_complete`) für Start↔Abschluss-Quote je Lernspiel.
+
+### 🧹 TODO — Housekeeping
+- [ ] Entscheiden, ob `mock-events-server.js` zugunsten von `telemetry-server.js` entfällt.
+- [ ] `perf` und `app_open.load_ms` sind redundant — ggf. `perf` streichen.

@@ -8123,6 +8123,15 @@
     lastTrackedView = null;
     trackScreenView();
 
+    // Läuft die App gerade im Onboarding? Der zugehörige onboarding_step (aus
+    // beginOnboarding) feuerte VOR configure() und wurde verworfen -> hier den
+    // aktuellen Schritt nachholen, sonst wäre der Funnel nicht-monoton (intro < profile).
+    if (state.screen === "onboarding") {
+      const stepN = { intro: 0, profile: 1, trip: 2 };
+      const st = state.onboardStep || "intro";
+      trackEvent("onboarding_step", { step: st, n: stepN[st] || 0 });
+    }
+
     // App-Start + grobe Ladezeit (einmal pro Start).
     let loadMs = 0;
     try { loadMs = Math.max(0, Math.round((window.performance && performance.now && performance.now()) || 0)); } catch (e) { /* egal */ }

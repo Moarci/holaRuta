@@ -149,7 +149,7 @@ function render(s){
   html += '</div>';
 
   html += '<div class="grid">';
-  html += '<div class="panel"><h2>Akquise-Quelle <small>(woher kommen Nutzer)</small></h2>'
+  html += '<div class="panel"><h2>Akquise-Quelle <small>(distinkte Nutzer nach erster Quelle)</small></h2>'
     + hbars(((s.engagement.acquisition)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--brand)"})+'</div>';
   html += '<div class="panel"><h2>Teilen <small>(share-Aktionen)</small></h2>'
     + ((s.engagement.share&&s.engagement.share.length)? hbars(s.engagement.share.map(function(a){return {label:a.key,count:a.count};}),{color:"var(--good)"}) : '<p class="empty">— keine —</p>')+'</div>';
