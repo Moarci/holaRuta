@@ -24,7 +24,9 @@ const PORT = Number(process.env.PORT) || 8789;
 
 // In-RAM-„Store": nur Aggregate, damit man im Terminal sofort etwas sieht.
 let snapshots = 0;                 // empfangene Tages-Snapshots
-const eventCounts = Object.create(null); // event-Name -> Anzahl
+// Echte Map: der Schlüssel (event-Name) kommt aus ungeprüften POST-Daten – ein
+// Objekt-Property-Write damit wäre eine Injection-/Prototype-Pollution-Senke.
+const eventCounts = new Map();     // event-Name -> Anzahl
 const clients = new Set();         // distinkte pseudonyme clientIds (nur zum Zählen)
 let totalEvents = 0;
 
@@ -48,7 +50,7 @@ function readBody(req) {
 }
 
 function summary() {
-  const parts = Object.keys(eventCounts).sort().map((k) => `${k}=${eventCounts[k]}`);
+  const parts = [...eventCounts.keys()].sort().map((k) => `${k}=${eventCounts.get(k)}`);
   return `snapshots=${snapshots} · events=${totalEvents} · clients=${clients.size}` +
     (parts.length ? `\n   ${parts.join("  ")}` : "");
 }
@@ -72,7 +74,7 @@ const server = http.createServer(async (req, res) => {
       if (!e || typeof e !== "object") return;
       totalEvents++;
       const name = String(e.event || "?");
-      eventCounts[name] = (eventCounts[name] || 0) + 1;
+      eventCounts.set(name, (eventCounts.get(name) || 0) + 1);
       if (e.clientId) clients.add(String(e.clientId));
     });
     console.log(`[events] +${events.length} (${events.map((e) => e && e.event).join(", ")})`);

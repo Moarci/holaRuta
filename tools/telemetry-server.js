@@ -34,10 +34,18 @@ function dayUTC(ts) {
 function isObj(v) { return v && typeof v === "object" && !Array.isArray(v); }
 function num(v) { return typeof v === "number" && isFinite(v) ? v : 0; }
 
-// Zählt Vorkommen in einer Map und gibt eine nach Anzahl absteigend sortierte
+// Zähl-Maps sind bewusst echte `Map`s (nicht Objekte): Schlüssel stammen aus
+// EMPFANGENEN, ungeprüften Event-Daten. Ein Objekt-Property-Write mit solchem
+// Schlüssel wäre eine „remote property injection"/Prototype-Pollution-Senke
+// (z. B. event="__proto__"). Map.set/.get sind Methodenaufrufe -> keine Senke.
+function inc(map, key, n) { map.set(key, (map.get(key) || 0) + (typeof n === "number" ? n : 1)); }
+function addToSet(map, key, member) { var s = map.get(key); if (!s) { s = new Set(); map.set(key, s); } s.add(member); }
+
+// Nimmt eine `Map<string, number>` und gibt eine nach Anzahl absteigend sortierte
 // Liste [{ key, count }] zurück (optional gekürzt).
 function topCounts(map, limit) {
-  var rows = Object.keys(map).map(function (k) { return { key: k, count: map[k] }; });
+  var rows = [];
+  map.forEach(function (v, k) { rows.push({ key: k, count: v }); });
   rows.sort(function (a, b) { return b.count - a.count || (a.key < b.key ? -1 : 1); });
   return limit ? rows.slice(0, limit) : rows;
 }
@@ -76,34 +84,34 @@ function aggregate(events, usage, opts) {
   var us = usAll.filter(function (s) { return isObj(s) && String(s.day || "") >= cutoff; });
   var today = dayUTC(now);
 
-  // --- Nutzer / DAU ---
-  var clientsAll = {};                 // clientId -> Set(Tage aktiv)
-  var dauMap = {};                     // day -> Set(clientId)
-  var perDaySessions = {};             // day -> Set(sessionId)
-  var sessions = {};                   // sessionId -> { min, max, count, client }
-  var eventCounts = {};
-  var screenCounts = {};
-  var actionCounts = {};
-  var ratingCounts = { again: 0, good: 0, easy: 0 };
-  var accuracyDist = {};
-  var featureCompletes = {};           // feature -> { count, perfect }
-  var errorCounts = {};
-  var appVersions = {};
-  var locales = {};
-  var tracks = {};
+  // --- Nutzer / DAU (Schlüssel = ungeprüfte Event-Daten -> Map/Set, keine Objekt-Writes) ---
+  var clientsAll = new Map();          // clientId -> Set(Tage aktiv)
+  var dauMap = new Map();              // day -> Set(clientId)
+  var perDaySessions = new Map();      // day -> Set(sessionId)
+  var sessions = new Map();            // sessionId -> { min, max, count, client }
+  var eventCounts = new Map();
+  var screenCounts = new Map();
+  var actionCounts = new Map();
+  var ratingCounts = { again: 0, good: 0, easy: 0 }; // feste Schlüssel -> Objekt unbedenklich
+  var accuracyDist = new Map();
+  var featureCompletes = new Map();    // feature -> { count, perfect }
+  var errorCounts = new Map();
+  var appVersions = new Map();
+  var locales = new Map();
+  var tracks = new Map();
   var openNew = 0, openReturning = 0;
-  var catStats = {};                   // cat -> { total, again } (schwierigste Themen)
-  var errorsByVersion = {};            // appVersion -> Fehleranzahl (Regressionen)
+  var catStats = new Map();            // cat -> { total, again } (schwierigste Themen)
+  var errorsByVersion = new Map();     // appVersion -> Fehleranzahl (Regressionen)
   var searchTotal = 0, searchZero = 0; // Suchen gesamt / ohne Treffer
-  var modeCount = {};                  // Lernmodus je Session (flip/type/listen)
+  var modeCount = new Map();           // Lernmodus je Session (flip/type/listen)
   var hourCount = []; for (var hi = 0; hi < 24; hi++) hourCount.push(0); // Aktivität je UTC-Stunde
   var weekdayCount = []; for (var wi = 0; wi < 7; wi++) weekdayCount.push(0); // je Wochentag (0=So)
-  var onboardSteps = {};               // step -> { clientId: 1 }
-  var onboardComplete = {};            // clientId -> 1
-  var editionClients = {};             // edition -> { clientId: 1 }
-  var platformClients = {};            // platform -> { clientId: 1 }
-  var acquisition = {};                // src -> distinkte Nutzer (nach erster Quelle)
-  var clientFirstOpen = {};            // clientId -> { ts, src } (früheste Quelle je Nutzer)
+  var onboardSteps = new Map();        // step -> Set(clientId)
+  var onboardComplete = new Set();     // clientId
+  var editionClients = new Map();      // edition -> Set(clientId)
+  var platformClients = new Map();     // platform -> Set(clientId)
+  var acquisition = new Map();         // src -> distinkte Nutzer (nach erster Quelle)
+  var clientFirstOpen = new Map();     // clientId -> { ts, src } (früheste Quelle je Nutzer)
 
   ev.forEach(function (e) {
     var day = String(e.day || "");
@@ -113,28 +121,24 @@ function aggregate(events, usage, opts) {
     var name = String(e.event || "?");
     var p = isObj(e.props) ? e.props : {};
 
-    eventCounts[name] = (eventCounts[name] || 0) + 1;
-    if (e.appVersion) appVersions[e.appVersion] = (appVersions[e.appVersion] || 0) + 1;
-    if (e.locale) locales[e.locale] = (locales[e.locale] || 0) + 1;
-    if (e.track) tracks[e.track] = (tracks[e.track] || 0) + 1;
+    inc(eventCounts, name);
+    if (e.appVersion) inc(appVersions, String(e.appVersion));
+    if (e.locale) inc(locales, String(e.locale));
+    if (e.track) inc(tracks, String(e.track));
     if (cid) {
-      var edi = String(e.edition || "none"); (editionClients[edi] || (editionClients[edi] = {}))[cid] = 1;
-      var plt = String(e.platform || "other"); (platformClients[plt] || (platformClients[plt] = {}))[cid] = 1;
+      addToSet(editionClients, String(e.edition || "none"), cid);
+      addToSet(platformClients, String(e.platform || "other"), cid);
     }
     if (ts) { var dt = new Date(ts); hourCount[dt.getUTCHours()]++; weekdayCount[dt.getUTCDay()]++; }
 
-    if (cid) {
-      if (!clientsAll[cid]) clientsAll[cid] = {};
-      if (day) clientsAll[cid][day] = 1;
-    }
+    if (cid && day) addToSet(clientsAll, cid, day);
     if (day) {
-      if (!dauMap[day]) dauMap[day] = {};
-      if (cid) dauMap[day][cid] = 1;
-      if (!perDaySessions[day]) perDaySessions[day] = {};
-      if (sid) perDaySessions[day][sid] = 1;
+      if (cid) addToSet(dauMap, day, cid);
+      if (sid) addToSet(perDaySessions, day, sid);
     }
     if (sid) {
-      var s = sessions[sid] || (sessions[sid] = { min: ts, max: ts, count: 0, client: cid });
+      var s = sessions.get(sid);
+      if (!s) { s = { min: ts, max: ts, count: 0, client: cid }; sessions.set(sid, s); }
       if (ts < s.min) s.min = ts;
       if (ts > s.max) s.max = ts;
       s.count++;
@@ -143,30 +147,28 @@ function aggregate(events, usage, opts) {
     switch (name) {
       case "app_open":
         (p.returning ? openReturning++ : openNew++);
-        if (p.src && cid) { var fo = clientFirstOpen[cid]; if (!fo || ts < fo.ts) clientFirstOpen[cid] = { ts: ts, src: p.src }; }
+        if (p.src && cid) { var fo = clientFirstOpen.get(cid); if (!fo || ts < fo.ts) clientFirstOpen.set(cid, { ts: ts, src: String(p.src) }); }
         break;
-      case "screen_view": if (p.screen) screenCounts[p.screen] = (screenCounts[p.screen] || 0) + 1; break;
-      case "action": if (p.action) actionCounts[p.action] = (actionCounts[p.action] || 0) + 1; break;
+      case "screen_view": if (p.screen) inc(screenCounts, String(p.screen)); break;
+      case "action": if (p.action) inc(actionCounts, String(p.action)); break;
       case "card_rated":
-        if (ratingCounts[p.rating] != null) ratingCounts[p.rating]++;
-        if (p.cat) { var cs = catStats[p.cat] || (catStats[p.cat] = { total: 0, again: 0 }); cs.total++; if (p.rating === "again") cs.again++; }
+        if (p.rating === "again") ratingCounts.again++;
+        else if (p.rating === "good") ratingCounts.good++;
+        else if (p.rating === "easy") ratingCounts.easy++;
+        if (p.cat) { var cat = String(p.cat); var cs = catStats.get(cat); if (!cs) { cs = { total: 0, again: 0 }; catStats.set(cat, cs); } cs.total++; if (p.rating === "again") cs.again++; }
         break;
-      case "session_start": if (p.mode) modeCount[p.mode] = (modeCount[p.mode] || 0) + 1; break;
-      case "session_complete": if (p.accuracy) accuracyDist[p.accuracy] = (accuracyDist[p.accuracy] || 0) + 1; break;
+      case "session_start": if (p.mode) inc(modeCount, String(p.mode)); break;
+      case "session_complete": if (p.accuracy) inc(accuracyDist, String(p.accuracy)); break;
       case "feature_complete":
-        if (p.feature) {
-          var f = featureCompletes[p.feature] || (featureCompletes[p.feature] = { count: 0, perfect: 0 });
-          f.count++; if (p.perfect) f.perfect++;
-        }
+        if (p.feature) { var ft = String(p.feature); var f = featureCompletes.get(ft); if (!f) { f = { count: 0, perfect: 0 }; featureCompletes.set(ft, f); } f.count++; if (p.perfect) f.perfect++; }
         break;
       case "search": searchTotal++; if (p.results === "0") searchZero++; break;
-      case "onboarding_step": if (p.step && cid) { (onboardSteps[p.step] || (onboardSteps[p.step] = {}))[cid] = 1; } break;
-      case "onboarding_complete": if (cid) onboardComplete[cid] = 1; break;
-      case "error": {
-        var key = (p.type || "error") + ": " + (p.msg || "?"); errorCounts[key] = (errorCounts[key] || 0) + 1;
-        if (e.appVersion) errorsByVersion[e.appVersion] = (errorsByVersion[e.appVersion] || 0) + 1;
+      case "onboarding_step": if (p.step && cid) addToSet(onboardSteps, String(p.step), cid); break;
+      case "onboarding_complete": if (cid) onboardComplete.add(cid); break;
+      case "error":
+        inc(errorCounts, (p.type || "error") + ": " + (p.msg || "?"));
+        if (e.appVersion) inc(errorsByVersion, String(e.appVersion));
         break;
-      }
       default: break;
     }
   });
@@ -175,57 +177,57 @@ function aggregate(events, usage, opts) {
   var dauSeries = [];
   for (var i = windowDays - 1; i >= 0; i--) {
     var d = dayUTC(now - i * DAY_MS);
-    dauSeries.push({ day: d, count: dauMap[d] ? Object.keys(dauMap[d]).length : 0 });
+    dauSeries.push({ day: d, count: dauMap.has(d) ? dauMap.get(d).size : 0 });
   }
   var sessionsPerDay = dauSeries.map(function (row) {
-    return { day: row.day, count: perDaySessions[row.day] ? Object.keys(perDaySessions[row.day]).length : 0 };
+    return { day: row.day, count: perDaySessions.has(row.day) ? perDaySessions.get(row.day).size : 0 };
   });
 
   // --- Sitzungsdauer ---
   var durations = []; // Sekunden
-  var durHist = {};
-  DURATION_ORDER.forEach(function (k) { durHist[k] = 0; });
-  Object.keys(sessions).forEach(function (sid) {
-    var s = sessions[sid];
+  var durHist = new Map();
+  DURATION_ORDER.forEach(function (k) { durHist.set(k, 0); });
+  sessions.forEach(function (s) {
     var sec = Math.max(0, Math.round((s.max - s.min) / 1000));
     durations.push(sec);
-    durHist[durationBucket(sec)]++;
+    inc(durHist, durationBucket(sec));
   });
   var avgDuration = durations.length ? Math.round(durations.reduce(function (a, b) { return a + b; }, 0) / durations.length) : 0;
 
   // --- Nutzer-Kennzahlen ---
-  var clientIds = Object.keys(clientsAll);
-  var totalUsers = clientIds.length;
-  var returningUsers = clientIds.filter(function (c) { return Object.keys(clientsAll[c]).length >= 2; }).length;
+  var totalUsers = clientsAll.size;
+  var returningUsers = 0;
+  clientsAll.forEach(function (daysSet) { if (daysSet.size >= 2) returningUsers++; });
   function activeSince(daysBack) {
     var since = dayUTC(now - (daysBack - 1) * DAY_MS); // letzte daysBack Tage inkl. heute
-    var set = {};
-    Object.keys(dauMap).forEach(function (day) { if (day >= since) Object.keys(dauMap[day]).forEach(function (c) { set[c] = 1; }); });
-    return Object.keys(set).length;
+    var set = new Set();
+    dauMap.forEach(function (cids, day) { if (day >= since) cids.forEach(function (c) { set.add(c); }); });
+    return set.size;
   }
 
   // --- Tages-Snapshots (anonym, ohne clientId): Adoption, Mastery, Trip, Streak ---
-  var snapFeatureAdoption = {};
-  var snapCardsToday = {};
-  var snapStreak = {};
-  var snapReviews = {};
-  var masteryDist = {};
-  var tripDailyDist = {};
+  var snapFeatureAdoption = new Map();
+  var snapCardsToday = new Map();
+  var snapStreak = new Map();
+  var snapReviews = new Map();
+  var masteryDist = new Map();
+  var tripDailyDist = new Map();
   var tripGoalYes = 0;
   us.forEach(function (s) {
     var feats = isObj(s.features) ? s.features : {};
-    Object.keys(feats).forEach(function (k) { if (feats[k]) snapFeatureAdoption[k] = (snapFeatureAdoption[k] || 0) + 1; });
-    if (s.cardsToday) snapCardsToday[s.cardsToday] = (snapCardsToday[s.cardsToday] || 0) + 1;
-    if (s.streak) snapStreak[s.streak] = (snapStreak[s.streak] || 0) + 1;
-    if (s.reviews) snapReviews[s.reviews] = (snapReviews[s.reviews] || 0) + 1;
-    if (s.mastered) masteryDist[s.mastered] = (masteryDist[s.mastered] || 0) + 1;
+    Object.keys(feats).forEach(function (k) { if (feats[k]) inc(snapFeatureAdoption, String(k)); });
+    if (s.cardsToday) inc(snapCardsToday, String(s.cardsToday));
+    if (s.streak) inc(snapStreak, String(s.streak));
+    if (s.reviews) inc(snapReviews, String(s.reviews));
+    if (s.mastered) inc(masteryDist, String(s.mastered));
     if (s.tripGoal) tripGoalYes++;
-    if (s.tripDaily) tripDailyDist[s.tripDaily] = (tripDailyDist[s.tripDaily] || 0) + 1;
+    if (s.tripDaily) inc(tripDailyDist, String(s.tripDaily));
   });
 
   // --- Teilen-Aktivität (share-*) aus den Aktionen ---
-  var shareActions = topCounts(Object.keys(actionCounts).filter(function (k) { return k.indexOf("share") === 0; })
-    .reduce(function (o, k) { o[k] = actionCounts[k]; return o; }, {}));
+  var shareMap = new Map();
+  actionCounts.forEach(function (v, k) { if (k.indexOf("share") === 0) shareMap.set(k, v); });
+  var shareActions = topCounts(shareMap);
 
   // --- Trend vs. Vorperiode: aktive Nutzer der letzten 7 Tage vs. der 7 davor ---
   // Scannt ALLE Events (nicht die Fenster-gefilterten), da die Vorperiode sonst bei
@@ -233,35 +235,36 @@ function aggregate(events, usage, opts) {
   function activeUsersWindow(offset, len) {
     var hi = dayUTC(now - offset * DAY_MS);
     var lo = dayUTC(now - (offset + len - 1) * DAY_MS);
-    var set = {};
-    evAll.forEach(function (e) { if (!isObj(e)) return; var day = String(e.day || ""), cid = String(e.clientId || ""); if (cid && day >= lo && day <= hi) set[cid] = 1; });
-    return Object.keys(set).length;
+    var set = new Set();
+    evAll.forEach(function (e) { if (!isObj(e)) return; var day = String(e.day || ""), cid = String(e.clientId || ""); if (cid && day >= lo && day <= hi) set.add(cid); });
+    return set.size;
   }
   function trend(cur, prev) { return { cur: cur, prev: prev, deltaPct: prev ? Math.round(((cur - prev) / prev) * 100) : (cur ? 100 : 0) }; }
   var wau7Cur = activeUsersWindow(0, 7), wau7Prev = activeUsersWindow(7, 7);
 
   // --- Schwierigste Themen: „Nochmal"-Quote je Kategorie (ab Mindestvolumen 5) ---
-  var difficult = Object.keys(catStats).filter(function (c) { return catStats[c].total >= 5; })
-    .map(function (c) { return { cat: c, total: catStats[c].total, againPct: Math.round((catStats[c].again / catStats[c].total) * 100) }; })
-    .sort(function (a, b) { return b.againPct - a.againPct || b.total - a.total; }).slice(0, 12);
+  var difficult = [];
+  catStats.forEach(function (v, cat) { if (v.total >= 5) difficult.push({ cat: cat, total: v.total, againPct: Math.round((v.again / v.total) * 100) }); });
+  difficult.sort(function (a, b) { return b.againPct - a.againPct || b.total - a.total; });
+  difficult = difficult.slice(0, 12);
 
   // --- Aktive Tage je Nutzer + Erst-Tag (für Retention) ---
   var activeDaysHist = { "1": 0, "2": 0, "3-4": 0, "5-7": 0, "8+": 0 };
-  var clientFirstDay = {};
-  Object.keys(clientsAll).forEach(function (c) {
-    var days = Object.keys(clientsAll[c]).sort();
+  var clientFirstDay = new Map();
+  clientsAll.forEach(function (daysSet, c) {
+    var days = Array.from(daysSet).sort();
     var n = days.length;
     activeDaysHist[n === 1 ? "1" : n === 2 ? "2" : n <= 4 ? "3-4" : n <= 7 ? "5-7" : "8+"]++;
-    clientFirstDay[c] = days[0];
+    clientFirstDay.set(c, days[0]);
   });
   function addDays(dayStr, k) { var pp = String(dayStr).split("-"); return dayUTC(Date.UTC(+pp[0], +pp[1] - 1, +pp[2]) + k * DAY_MS); }
   // N-Tage-Retention: von den Nutzern, deren Erst-Tag+N noch im Bereich liegt, wie
   // viele waren an genau Tag (Erst-Tag+N) wieder aktiv?
   function retentionDay(k) {
     var elig = 0, ret = 0;
-    Object.keys(clientFirstDay).forEach(function (c) {
-      var target = addDays(clientFirstDay[c], k);
-      if (target <= today) { elig++; if (clientsAll[c][target]) ret++; }
+    clientFirstDay.forEach(function (first, c) {
+      var target = addDays(first, k);
+      if (target <= today) { elig++; var ds = clientsAll.get(c); if (ds && ds.has(target)) ret++; }
     });
     return { day: k, eligible: elig, pct: elig ? Math.round((ret / elig) * 100) : 0 };
   }
@@ -269,15 +272,15 @@ function aggregate(events, usage, opts) {
 
   // --- Onboarding-Funnel (distinkte Nutzer je Schritt) ---
   var funnel = ["intro", "profile", "trip"].map(function (st) {
-    return { step: st, count: onboardSteps[st] ? Object.keys(onboardSteps[st]).length : 0 };
+    return { step: st, count: onboardSteps.has(st) ? onboardSteps.get(st).size : 0 };
   });
-  funnel.push({ step: "complete", count: Object.keys(onboardComplete).length });
+  funnel.push({ step: "complete", count: onboardComplete.size });
 
-  function clientsByKey(map) { return topCounts(Object.keys(map).reduce(function (o, k) { o[k] = Object.keys(map[k]).length; return o; }, {})); }
+  function clientsByKey(map) { var m = new Map(); map.forEach(function (set, k) { m.set(k, set.size); }); return topCounts(m); }
 
   // Akquise: distinkte Nutzer nach ihrer ERSTEN Quelle (nicht Opens – sonst würden
   // wiederkehrende „direct"-Starts die Kanäle verzerren).
-  Object.keys(clientFirstOpen).forEach(function (c) { var s = clientFirstOpen[c].src; acquisition[s] = (acquisition[s] || 0) + 1; });
+  clientFirstOpen.forEach(function (fo) { inc(acquisition, fo.src); });
 
   return {
     generatedAt: now,
@@ -286,15 +289,15 @@ function aggregate(events, usage, opts) {
     totals: {
       events: ev.length,
       users: totalUsers,
-      sessions: Object.keys(sessions).length,
+      sessions: sessions.size,
       snapshots: us.length,
-      errors: Object.keys(errorCounts).reduce(function (a, k) { return a + errorCounts[k]; }, 0),
+      errors: (function () { var t = 0; errorCounts.forEach(function (v) { t += v; }); return t; })(),
     },
     users: {
       total: totalUsers,
       returning: returningUsers,
       returnRatePct: totalUsers ? Math.round((returningUsers / totalUsers) * 100) : 0,
-      dauToday: dauMap[today] ? Object.keys(dauMap[today]).length : 0,
+      dauToday: dauMap.has(today) ? dauMap.get(today).size : 0,
       avgDau: avgDAU,
       wau: activeSince(7),
       mau: activeSince(30),
@@ -307,13 +310,12 @@ function aggregate(events, usage, opts) {
       trendWau7: trend(wau7Cur, wau7Prev),
     },
     sessions: {
-      count: Object.keys(sessions).length,
+      count: sessions.size,
       avgDurationSec: avgDuration,
       medianDurationSec: median(durations),
-      durationHistogram: DURATION_ORDER.map(function (k) { return { bucket: k, count: durHist[k] }; }),
+      durationHistogram: DURATION_ORDER.map(function (k) { return { bucket: k, count: durHist.get(k) || 0 }; }),
       perDay: sessionsPerDay,
-      avgEventsPerSession: Object.keys(sessions).length
-        ? Math.round((ev.length / Object.keys(sessions).length) * 10) / 10 : 0,
+      avgEventsPerSession: sessions.size ? Math.round((ev.length / sessions.size) * 10) / 10 : 0,
     },
     engagement: {
       events: topCounts(eventCounts),
@@ -328,10 +330,12 @@ function aggregate(events, usage, opts) {
       modes: topCounts(modeCount),
       difficult: difficult,
       mastery: topCounts(masteryDist),
-      features: Object.keys(featureCompletes).map(function (f) {
-        var c = featureCompletes[f];
-        return { feature: f, count: c.count, perfectPct: c.count ? Math.round((c.perfect / c.count) * 100) : 0 };
-      }).sort(function (a, b) { return b.count - a.count; }),
+      features: (function () {
+        var arr = [];
+        featureCompletes.forEach(function (c, f) { arr.push({ feature: f, count: c.count, perfectPct: c.count ? Math.round((c.perfect / c.count) * 100) : 0 }); });
+        arr.sort(function (a, b) { return b.count - a.count; });
+        return arr;
+      })(),
     },
     funnel: funnel,
     search: { total: searchTotal, zero: searchZero, noResultPct: searchTotal ? Math.round((searchZero / searchTotal) * 100) : 0 },
@@ -413,9 +417,17 @@ if (require.main === module) {
       req.on("error", function () { resolve(null); });
     });
   }
+  // Nur bekannte Query-Parameter übernehmen (Whitelist) – der Parametername kommt
+  // aus der URL (ungeprüft); ein dynamischer Objekt-Write damit wäre eine Injection-Senke.
   function query(req) {
-    var q = {}; var qs = (req.url || "").split("?")[1] || "";
-    qs.split("&").forEach(function (kv) { if (!kv) return; var i = kv.indexOf("="); var k = decodeURIComponent(i < 0 ? kv : kv.slice(0, i)); q[k] = i < 0 ? "" : decodeURIComponent(kv.slice(i + 1)); });
+    var q = { token: "", days: "" };
+    var qs = (req.url || "").split("?")[1] || "";
+    qs.split("&").forEach(function (kv) {
+      if (!kv) return;
+      var i = kv.indexOf("="); var k = decodeURIComponent(i < 0 ? kv : kv.slice(0, i));
+      var v = i < 0 ? "" : decodeURIComponent(kv.slice(i + 1));
+      if (k === "token") q.token = v; else if (k === "days") q.days = v;
+    });
     return q;
   }
   function authed(q, req) { return !TOKEN || q.token === TOKEN || (req.headers && req.headers.authorization === "Bearer " + TOKEN); }

@@ -230,6 +230,7 @@ loggt eintreffende Events nur im Terminal.
 - Opt-in-Snapshot + pseudonymer Event-Strom, Allowlist-Sanitizer, Ring-Queue, Batching/Beacon, Reset-Id.
 - Volle Instrumentierung (Screens, Aktionen, Sessions, Karten, Spiele, Suche, Onboarding, Fehler, Perf, PWA).
 - Collector mit Persistenz, `aggregate()`, Dashboard (Nutzer/Retention/Sessions/Content/Lernfortschritt/Zeit/Segmente/Monitoring), Zeitfenster, CSV/JSON-Export, optionaler Token, Retention-Pruning.
+- **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
 - 746 Unit-Tests grün; Doku hier + BACKEND.md + README.
 
 ### ⚠️ Bekannte Grenzen (bewusst)

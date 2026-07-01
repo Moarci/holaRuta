@@ -198,6 +198,24 @@ test("aggregate: Akquise, Teilen, Snapshot-Streak/Reviews, WAU-Trend", () => {
   assert.equal(s.users.trendWau7.deltaPct, 100);
 });
 
+test("aggregate: bösartige __proto__-Schlüssel -> keine Prototype-Pollution, kein Crash", () => {
+  const E = [
+    { v: 1, seq: 0, event: "__proto__", clientId: "__proto__", sessionId: "s1", ts: T0, day: TODAY, edition: "__proto__", platform: "__proto__", props: { cat: "__proto__", rating: "again", action: "__proto__", screen: "__proto__", mode: "__proto__" } },
+    { v: 1, seq: 1, event: "action", clientId: "a", sessionId: "s2", ts: T0, day: TODAY, props: { action: "open-search" } },
+  ];
+  // Snapshot mit echtem eigenen "__proto__"-Property (wie JSON.parse es liefert):
+  const U = [JSON.parse('{"day":"' + TODAY + '","streak":"__proto__","reviews":"__proto__","features":{"__proto__":true,"study":true}}')];
+  const s = aggregate(E, U, { now: NOW });
+  // Global unversehrt (Map schreibt __proto__ NICHT in den Prototyp):
+  assert.equal(({}).polluted, undefined);
+  assert.equal(Object.prototype.study, undefined);
+  // Kein Crash, plausible Aggregate; __proto__ als NORMALER Datenschlüssel gezählt:
+  assert.equal(s.totals.events, 2);
+  assert.equal(s.totals.users, 2);
+  assert.ok(s.engagement.events.map((x) => x.key).indexOf("__proto__") >= 0);
+  assert.ok(s.segments.platforms.map((x) => x.key).indexOf("__proto__") >= 0);
+});
+
 test("aggregate: Mastery & Trip aus Snapshots", () => {
   const U = [
     { day: TODAY, mastered: "26-50", tripGoal: true, tripDaily: "11-20" },
