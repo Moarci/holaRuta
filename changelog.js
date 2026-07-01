@@ -27,6 +27,54 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.123.0",
+      date: "2026-06-30",
+      title: "Wortart-Filter & spanische Kontext-Erklärungen (Locals)",
+      titleEn: "Word-type filter & Spanish context tips (Locals)",
+      items: [
+        "🔤 Neuer Wortart-Filter im Lernen-Reiter (neben den Stufen): wähle „Nur Wörter“, „Wörter & Wendungen“ oder „Alles“ – so übst du gezielt Einzelvokabeln oder auch ganze Sätze. Jede Wahl zeigt ihre Kartenzahl und gilt für alle Runden (auch Endlos-Modus).",
+        "🇪🇸 Im Locals-Track (Spanisch lernt Englisch) steht die Kontext-Erklärung (Überschrift, Situation & Tipp) jetzt immer auf Spanisch – der Muttersprache der Lernenden –, auch wenn die Oberfläche auf Englisch läuft. Der englische Beispielsatz bleibt natürlich Englisch, mit spanischer Übersetzung darunter.",
+      ],
+      itemsEn: [
+        "🔤 New word-type filter on the Learn tab (next to the levels): pick “Words only”, “Words & phrases” or “Everything” – practise single vocabulary or whole sentences on purpose. Each choice shows its card count and applies to every round (endless mode included).",
+        "🇪🇸 In the Locals track (Spanish learning English) the context tip (heading, situation & advice) is now always shown in Spanish – the learners’ mother tongue – even when the interface runs in English. The English example sentence stays English, with its Spanish translation underneath.",
+      ],
+    },
+    {
+      version: "1.122.0",
+      date: "2026-06-30",
+      title: "Vocabulario sin fin: Karteikarten im Endlos-Modus",
+      titleEn: "Vocabulario sin fin: flashcards in endless mode",
+      items: [
+        "♾️ Neues Modul „Vocabulario sin fin“ unter Entdecken › Üben: Karteikarten am Stück über alle aktiven Themen gemischt – ohne die 20er-Runde und ohne Fertig-Screen. Lernen, solange du magst; zurück geht es jederzeit über den Pfeil oben links.",
+        "🧠 Dein Lernstand zählt voll mit: Jede Bewertung fließt wie gewohnt in die Wiederholungs-Steuerung (SRS) und die Statistik ein – fällige Karten kommen zuerst. Die gewählte Lernart (Karteikarte, Schreiben oder Hören) bleibt erhalten.",
+        "🔢 Oben läuft ein ∞-Zähler der bisher gelernten Karten statt „X/Y“, dazu eine dezent durchlaufende Fortschrittsleiste.",
+      ],
+      itemsEn: [
+        "♾️ New module “Vocabulario sin fin” under Discover › Practise: flashcards back to back across all active topics mixed together – no 20-card round and no finish screen. Study for as long as you like; the arrow top-left takes you back anytime.",
+        "🧠 Your progress counts fully: every rating feeds the spaced-repetition schedule (SRS) and your stats as usual – due cards come first. The chosen mode (flashcard, writing or listening) stays as set.",
+        "🔢 The top shows an ∞ counter of cards studied so far instead of “X/Y”, plus a subtly looping progress bar.",
+      ],
+    },
+    {
+      version: "1.121.0",
+      date: "2026-06-30",
+      title: "Banderas: die ganze Welt der Reisenden + klarere leere Kacheln",
+      titleEn: "Banderas: the whole travellers' world + clearer empty tiles",
+      items: [
+        "🌍 Banderas „El mundo“: 30 große Reiseziele der Welt neu im Flaggen-Quiz und in der Galería – von USA, Kanada und ganz Europa (u. a. Frankreich, Italien, Deutschland, Skandinavien, Polen, Kroatien) über Asien (Japan, China, Südkorea, Indien, Thailand, Vietnam, Indonesien) bis Australien, Neuseeland, Marokko, Ägypten, Türkei und Südafrika – jeweils mit Farben, Symbolik und einer Eselsbrücke.",
+        "🃏 Eigene Quiz-Runde „El mundo“ und ein neuer Galería-Abschnitt; „Todas las banderas“ mischt jetzt alle 51 Länder.",
+        "🏷️ Klarere Kacheln: Ein Bereich, dessen Karten der aktive Stufen-Filter ausblendet (z. B. reine B2-Themen unter A1–B1), zeigt nicht mehr fälschlich „erledigt“, sondern „andere Stufe“ samt echter Kartenzahl.",
+        "👉 Tippt man so eine Kachel trotzdem an, startet die Runde jetzt mit den Karten der Kategorie (der Stufen-Filter wird für diesen Griff ignoriert) statt einer leeren Sitzung.",
+      ],
+      itemsEn: [
+        "🌍 Banderas “El mundo”: 30 of the world's great travel destinations added to the flag quiz and the gallery – from the USA, Canada and all of Europe (France, Italy, Germany, Scandinavia, Poland, Croatia and more) through Asia (Japan, China, South Korea, India, Thailand, Vietnam, Indonesia) to Australia, New Zealand, Morocco, Egypt, Turkey and South Africa – each with colours, symbolism and a memory hook.",
+        "🃏 A dedicated “El mundo” quiz round and a new gallery section; “Todas las banderas” now mixes all 51 countries.",
+        "🏷️ Clearer tiles: a topic whose cards are hidden by the active level filter (e.g. B2-only topics under A1–B1) no longer wrongly shows “done” but “other level” with the real card count.",
+        "👉 Tapping such a tile anyway now starts a round with the category's cards (the level filter is ignored for that one tap) instead of an empty session.",
+      ],
+    },
+    {
       version: "1.120.0",
       date: "2026-06-27",
       title: "Locals-Track: Englisch lernen (Edition „HolaRuta · Inglés“)",

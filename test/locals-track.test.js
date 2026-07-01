@@ -53,6 +53,25 @@ test("Matcher: card.alt zählt als englische Alternativen (field 'learn')", () =
   assert.equal(matcher.check("bathroom", card, "learn").correct, true); // artikellos
 });
 
+test("Matcher: jede loc-alt-Karte akzeptiert ihre eigene Haupt-en (Regression)", () => {
+  // card.alt ERSETZT beim Matching die Antwortmenge der gelernten Antwort. Damit die
+  // ANGEZEIGTE Haupt-en weiterhin akzeptiert wird (früher ein Bug – „besides" wurde
+  // als falsch gewertet), MUSS jede loc-alt-Liste die Hauptantwort als ersten Eintrag
+  // enthalten. Diese Daten-Invariante wird hier festgeschrieben.
+  const card = { es: "además", en: "besides", alt: ["besides", "in addition", "moreover"] };
+  assert.equal(matcher.check("besides", card, "learn").correct, true, "Haupt-en akzeptiert");
+  assert.equal(matcher.check("moreover", card, "learn").correct, true, "Synonym akzeptiert");
+  assert.equal(matcher.acceptedAnswers(card, "learn")[0], "besides", "Anzeige/TTS = Haupt-en zuerst");
+  // ALLE echten loc-Karten mit alt: die Hauptantwort ist enthalten UND wird akzeptiert.
+  const norm = (s) => String(s || "").toLowerCase().replace(/[.,!?¿¡;:"']/g, "").replace(/^(?:the|a|an)\s+/, "").replace(/\s+/g, " ").trim();
+  const withAlt = data.CARDS.filter((c) => /^loc-/.test(c.id) && Array.isArray(c.alt) && c.alt.length);
+  assert.ok(withAlt.length >= 7, `genug alt-Karten (${withAlt.length})`);
+  for (const c of withAlt) {
+    assert.ok(c.alt.some((a) => norm(a) === norm(c.en)), `${c.id}: alt enthält die Haupt-en (${JSON.stringify(c.en)})`);
+    assert.equal(matcher.check(c.en, c, "learn").correct, true, `${c.id}: Haupt-en akzeptiert (${JSON.stringify(c.en)})`);
+  }
+});
+
 test("Matcher: keine spanische Flexions-Strenge, wenn Englisch gelernt wird", () => {
   // Wort-finale Einzelabweichung (Plural-s) ist im Spanischen eine Flexion (würde
   // abgelehnt), im Englischen ein verzeihlicher Tippfehler -> wird akzeptiert.
@@ -108,6 +127,29 @@ test("i18n: spanische Kern-Strings vorhanden, sonst Rückfall es→en→de", () 
   assert.ok(typeof en === "string");
 });
 
+test("i18n: Locals-Track dreht die Sprachrichtung der EN-UI um (Englisch statt Spanisch)", () => {
+  // In der englischen UI des Locals-Tracks darf kein „Spanish" mehr auftauchen, wo
+  // tatsächlich Englisch gelernt wird – t() bevorzugt die <key>Locals-Variante.
+  i18n.setLang("en");
+  const intro = i18n.t("discover.discoverIntro");
+  assert.ok(/English/.test(intro) && !/Spanish/.test(intro), `Entdecken-Intro: ${intro}`);
+  const yesto = i18n.t("discover.subYesto");
+  assert.ok(/English/.test(yesto) && !/Spanish/.test(yesto), `¿Y esto?-Untertitel: ${yesto}`);
+  const quiz = i18n.t("discover.quizSetupIntro");
+  assert.ok(/English/.test(quiz) && !/with no translation/.test(quiz), `Definiciones-Intro: ${quiz}`);
+  i18n.setLang("es"); // Track-Default wiederherstellen
+});
+
+test("i18n: Locals-Variante überschreibt NICHT die korrekte spanische Basiszeile (ES-UI)", () => {
+  // Eine nur auf Englisch hinterlegte <key>Locals-Variante darf in der ES-UI die
+  // bereits richtige spanische Basiszeile nicht durch Englisch ersetzen.
+  i18n.setLang("es");
+  assert.equal(i18n.t("discover.subYesto"), "Adivina la imagen: 3-2-1, ¿cómo se dice en inglés?");
+  assert.ok(/en inglés/.test(i18n.t("discover.quizSetupIntro")));
+  // Descubrir-Intro: spanischer Text passt zur Seite (kein „Mi léxico"-Rest).
+  assert.ok(/inglés/.test(i18n.t("discover.discoverIntro")) && !/guardadas/.test(i18n.t("discover.discoverIntro")));
+});
+
 test("Content: Pilot-Korpus data.locals ist strukturell sauber", () => {
   assert.ok(dataLocals && Array.isArray(dataLocals.CARDS) && dataLocals.CARDS.length > 0);
   const catIds = new Set(dataLocals.CATEGORIES.map((c) => c.id));
@@ -145,6 +187,25 @@ test("Content: Locals-Kategorien sind 6 Gruppen mit spanischem labelEs", () => {
   for (const c of dataLocals.CATEGORIES) {
     assert.ok(c.labelEs && c.labelEs.length, `Kategorie ${c.id} hat labelEs (spanisch)`);
     assert.ok(c.labelEn && c.labelEn.length, `Kategorie ${c.id} hat labelEn (englisch)`);
+  }
+});
+
+test("Content: jede Locals-Kategorie hat Karten (keine leeren Kacheln)", () => {
+  // Schützt vor „null content": die Kachel-Anzeige „0 Karten" entsteht NUR durch
+  // den Stufen-Filter, nie durch eine kartenlose Kategorie. Besonders die reine
+  // B2-Gruppe (loc-b2, alle Karten lvl 4) muss befüllt bleiben.
+  const counts = new Map();
+  for (const k of dataLocals.CARDS) counts.set(k.cat, (counts.get(k.cat) || 0) + 1);
+  for (const c of dataLocals.CATEGORIES) {
+    assert.ok((counts.get(c.id) || 0) > 0, `Kategorie ${c.id} hat keine Karten`);
+  }
+  // Die B2-Gruppe existiert und trägt ausschließlich Stufe-4-Karten.
+  const b2 = dataLocals.CATEGORIES.filter((c) => c.group === "loc-b2");
+  assert.ok(b2.length > 0, "loc-b2-Gruppe fehlt");
+  for (const c of b2) {
+    const cards = dataLocals.CARDS.filter((k) => k.cat === c.id);
+    assert.ok(cards.length > 0, `B2-Kategorie ${c.id} ist leer`);
+    assert.ok(cards.every((k) => k.lvl === 4), `B2-Kategorie ${c.id}: alle Karten Stufe 4`);
   }
 });
 
@@ -227,13 +288,22 @@ test("Kontext: JEDE loc-Karte bekommt englischen Kontext (contextdata.locals + e
     assert.ok(ctx.egLearn && ctx.egLearn.trim(), `englischer Beispielsatz fehlt: ${c.id}`);
     assert.ok(ctx.egNative && ctx.egNative.trim(), `spanische Übersetzung fehlt: ${c.id}`);
     assert.ok(ctx.situation && ctx.situation.trim(), `situación (ES) fehlt: ${c.id}`);
-    assert.ok(ctx.situationEn && ctx.situationEn.trim(), `situation (EN) fehlt: ${c.id}`);
     assert.ok(ctx.note && ctx.note.trim(), `consejo (ES) fehlt: ${c.id}`);
-    assert.ok(ctx.noteEn && ctx.noteEn.trim(), `tip (EN) fehlt: ${c.id}`);
+    // Die Erklärung bleibt rein spanisch (keine …En-Hilfsfelder am Kontext) – sie
+    // ist die Muttersprache der Lernenden und darf nie auf Englisch umschalten.
+    assert.ok(!ctx.situationEn && !ctx.noteEn, `Kontext-Erklärung muss spanisch bleiben (kein …En): ${c.id}`);
   }
 });
 
-test("Kontext: localizeDeep schaltet Situation/Tipp auf die UI-Sprache (es/en), Beispiel bleibt EN+ES", () => {
+test("Kontext: die spanischen Quelltexte tragen weiterhin englische Pendants (sEn/nEn)", () => {
+  // Die englischen Erklär-Texte bleiben in den Rohdaten erhalten (Doku/Zukunft),
+  // werden aber bewusst nicht an die Karten gehängt (expandLocals ohne …En).
+  const raw = window.SC.contextDataLocals;
+  assert.ok(raw && raw["loc-mes01"], "Rohdaten geladen");
+  assert.ok(raw["loc-mes01"].sEn && raw["loc-mes01"].nEn, "englische Pendants in den Rohdaten vorhanden");
+});
+
+test("Kontext: Situation/Tipp bleiben IMMER spanisch (auch bei EN-UI), Beispiel bleibt EN+ES", () => {
   const card = data.CARDS.find((c) => c.id === "loc-mes01");
   assert.ok(card && card.context, "loc-mes01 hat Kontext");
   i18n.setLang("es");
@@ -243,8 +313,25 @@ test("Kontext: localizeDeep schaltet Situation/Tipp auf die UI-Sprache (es/en), 
   i18n.setLang("en");
   const en = i18n.localizeDeep(card.context);
   assert.equal(en.egLearn, card.context.egLearn, "englischer Beispielsatz unverändert (EN-UI)");
-  assert.equal(en.situation, card.context.situationEn, "Situation englisch bei EN-UI");
+  // Kern dieses Tracks: die Erklärung folgt NICHT der UI-Sprache, sie bleibt spanisch
+  // (die Lernenden sind Spanisch-Muttersprachler und müssen sie verstehen).
+  assert.equal(en.situation, card.context.situation, "Situation bleibt spanisch bei EN-UI");
+  assert.equal(en.note, card.context.note, "Tipp bleibt spanisch bei EN-UI");
   assert.ok(!Object.keys(en).some((k) => /En$/.test(k)), "keine …En-Hilfsfelder im EN-Ergebnis");
+  i18n.setLang("es"); // Track-Default wiederherstellen
+});
+
+test("i18n.t(langOverride): Kontext-Labels stehen auch bei EN-UI auf Spanisch", () => {
+  // Der Erklärblock im Locals-Track rendert seine Überschrift + Labels mit fester
+  // Zielsprache "es" (ui.js contextPanel) – unabhängig von der UI-Chrome-Sprache.
+  i18n.setLang("en");
+  assert.equal(i18n.t("study.contextTitleWork"), "🧭 How to use it at work", "ohne Override: UI-Sprache (EN)");
+  assert.equal(i18n.t("study.contextTitleWork", null, "es"), "🧭 Cómo usarlo en el trabajo", "Override es: Titel spanisch");
+  assert.equal(i18n.t("study.contextSituation", null, "es"), "Situación", "Override es: Situation-Label spanisch");
+  assert.equal(i18n.t("study.contextNoteWork", null, "es"), "Consejo", "Override es: Tipp-Label spanisch");
+  // Leerer/ungültiger Override fällt sauber auf die aktive UI-Sprache zurück.
+  assert.equal(i18n.t("study.contextSituation", null, null), i18n.t("study.contextSituation"), "null-Override = UI-Sprache");
+  assert.equal(i18n.t("study.contextSituation", null, "xx"), i18n.t("study.contextSituation"), "unbekannter Override = UI-Sprache");
   i18n.setLang("es"); // Track-Default wiederherstellen
 });
 
@@ -272,4 +359,101 @@ test("Badges: Locals-Track liefert re-thematisierte Badges ohne Reise-Spielmodi"
   // Stichprobe: keine Reise-Metaphern in den sichtbaren Badge-Texten (EN)
   const blob = all.map((b) => `${b.nameEn} ${b.descriptionEn} ${b.unlockedTextEn}`).join(" ");
   assert.ok(!/\b(trip|travel|backpack|guidebook|on the road|Ruta)\b/i.test(blob), "keine Reise-Metaphern in Locals-Badges");
+});
+
+// ---------------------------------------------------------------------------
+// Discover-Spiele aus dem Reise-Track recycelt (PR #217): im Locals-Track ist
+// die gelernte Seite Englisch (card.en/item.en/o.en/frameEn). Die Spiele lesen
+// dieses Feld – fehlt es in den Daten, rendern sie leere Wörter. Diese Tests
+// sichern die volle en-Feld-Abdeckung der drei datengetriebenen Spiele ab.
+// ---------------------------------------------------------------------------
+test("Discover-Spiele (Locals): Definiciones-Quiz hat für jede Option ein en-Wort", () => {
+  const defs = data.QUIZ_DEFS || [];
+  assert.ok(defs.length > 0, "QUIZ_DEFS vorhanden");
+  for (const d of defs) {
+    assert.ok(d.es && d.es.length, `QUIZ_DEF ${d.id} hat ein spanisches Wort`);
+    assert.ok(d.en && d.en.trim(), `QUIZ_DEF ${d.id} hat ein englisches Wort (Locals-Lernseite)`);
+    assert.ok(d.def && d.def.length, `QUIZ_DEF ${d.id} hat eine (spanische) Definition`);
+  }
+});
+
+test("Discover-Spiele (Locals): ¿Y esto? – jedes Motiv hat ein en-Lösungswort", () => {
+  const yesto = require(path.join(__dirname, "..", "yesto.js")).default || window.SC.yesto;
+  const themes = (yesto && yesto.THEMES) || [];
+  assert.ok(themes.length > 0, "yesto THEMES vorhanden");
+  let items = 0;
+  for (const th of themes) {
+    for (const it of th.items || []) {
+      items++;
+      assert.ok(it.es && it.es.length, `yesto ${th.id}: Item hat es`);
+      assert.ok(it.en && String(it.en).trim(), `yesto ${th.id}: Item „${it.es}" hat en (Locals-Lösungswort)`);
+    }
+  }
+  assert.ok(items > 0, "yesto hat Motive");
+});
+
+test("Discover-Spiele (Locals): Frases – jeder Rahmen hat frameEn (mit Lücke) + en-Bausteine", () => {
+  const frases = require(path.join(__dirname, "..", "frases.js")).default || window.SC.frases;
+  const list = (frases && frases.FRASES) || [];
+  assert.ok(list.length > 0, "FRASES vorhanden");
+  for (const f of list) {
+    assert.ok(f.frameEn && f.frameEn.indexOf("___") >= 0, `Frase ${f.id}: frameEn mit Lücke (Locals baut den englischen Satz)`);
+    assert.ok(f.slot && f.slot.en && f.slot.en.length, `Frase ${f.id}: slot.en (richtiger englischer Baustein)`);
+    for (const d of f.distractors || []) {
+      assert.ok(d.en && d.en.length, `Frase ${f.id}: jeder Distraktor hat en`);
+    }
+    // Der zusammengesetzte englische Satz darf kein „How are you called?"-Muster
+    // erzeugen (unidiomatisch): das war der Review-Befund zu so03.
+    const built = f.frameEn.replace("___", f.slot.en).toLowerCase();
+    assert.ok(!/how\s+(is|are|am|do|does|did)\s+\w+\s+called/.test(built),
+      `Frase ${f.id}: zusammengesetzter Satz ist idiomatisch (kein „how … called"): ${built}`);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Korpus-Integrität: Vokabel-Wortlisten (loc-voc) und Themen-/Service-Karten
+// teilen sich bewusst häufige Wörter (z. B. „naranja" als Farbe UND als Frucht).
+// Das ist gewollt – ABER kein einzelnes Lern-Set (Kategorie, Preset, Kurs-Etappe)
+// darf denselben Prompt doppelt zeigen. Akzent-sensitiv, d. h. tu≠tú, si≠sí.
+// ---------------------------------------------------------------------------
+test("Korpus: kein In-Session-Set (Kategorie/Preset/Kurs-Etappe) zeigt denselben Prompt doppelt", () => {
+  const loc = data.CARDS.filter((c) => /^loc-/.test(c.id));
+  const byId = Object.fromEntries(loc.map((c) => [c.id, c]));
+  const norm = (s) => (s || "").toLowerCase().replace(/[¿¡!?.,]/g, "").replace(/\s+/g, " ").trim();
+  const findDup = (ids, where) => {
+    const seen = {};
+    for (const id of ids) {
+      const c = byId[id];
+      if (!c) continue;
+      const k = norm(c.es);
+      if (!k) continue;
+      (seen[k] = seen[k] || []).push(id);
+    }
+    for (const [k, v] of Object.entries(seen)) {
+      assert.equal(v.length, 1, `${where}: Prompt „${k}" mehrfach (${v.join(", ")})`);
+    }
+  };
+  // Kategorien
+  const cats = {};
+  for (const c of loc) (cats[c.cat] = cats[c.cat] || []).push(c.id);
+  for (const [cat, ids] of Object.entries(cats)) findDup(ids, `Kategorie ${cat}`);
+  // Presets
+  for (const p of dataLocals.PRESETS) findDup(p.pick, `Preset ${p.id}`);
+  // Kurs-Etappen (je 20 Karten)
+  for (const plan of dataLocals.PLANS) {
+    for (const d of plan.days) findDup(d.cardIds, `${plan.scope} Etappe ${d.day}`);
+  }
+});
+
+test("Doku: LOCALS.md-Zähler (Kategorien · Karten) == echter Stand", () => {
+  const fs = require("fs");
+  const md = fs.readFileSync(path.join(__dirname, "..", "LOCALS.md"), "utf8");
+  const m = md.match(/\*\*(\d+)\s+Kategorien\s+·\s+(\d+)\s+Karten\*\*/);
+  assert.ok(m, "LOCALS.md nennt '**N Kategorien · M Karten**'");
+  const docCats = Number(m[1]);
+  const docCards = Number(m[2]);
+  const realCats = dataLocals.CATEGORIES.length;
+  const realCards = data.CARDS.filter((c) => /^loc-/.test(c.id)).length;
+  assert.equal(docCats, realCats, `LOCALS.md Kategorien (${docCats}) == echt (${realCats})`);
+  assert.equal(docCards, realCards, `LOCALS.md Karten (${docCards}) == echt (${realCards})`);
 });

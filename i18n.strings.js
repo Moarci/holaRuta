@@ -138,6 +138,7 @@
     // Kacheln / Themen
     tileDue: (p) => `${p.n} fällig`,
     tileDone: "erledigt",
+    tileFiltered: "ausgeblendet",
     tileCards: (p) => `${p.n} Karten`,
     sectionTopics: "Themen",
     topicNavAria: "Zur Themen-Gruppe springen",
@@ -170,6 +171,13 @@
     levelsAll: "Alle",
     levelsGroup: "Schwierigkeitsstufe",
     levelTitle: (p) => `${p.label} · ${p.n} Karten`,
+    // Wortart-Filter (Einzelwörter / auch Wendungen & Sätze)
+    sectionKind: "Wortart",
+    kindGroup: "Nur Wörter oder auch Sätze",
+    kind_all: "Alles",
+    kind_phrases: "Wörter & Wendungen",
+    kind_words: "Nur Wörter",
+    kindTitle: (p) => `${p.label} · ${p.n} Karten`,
     // Heute-Karte
     streakDays: (p) => `${p.n} ${p.n === 1 ? "Tag" : "Tage"} Serie`,
     streakNew: "Starte deine Serie",
@@ -385,6 +393,7 @@
     tabProfile: "Profile",
     tileDue: (p) => `${p.n} due`,
     tileDone: "done",
+    tileFiltered: "filtered out",
     tileCards: (p) => `${p.n} cards`,
     sectionTopics: "Topics",
     topicNavAria: "Jump to topic group",
@@ -415,6 +424,12 @@
     levelsAll: "All",
     levelsGroup: "Level",
     levelTitle: (p) => `${p.label} · ${p.n} cards`,
+    sectionKind: "Type",
+    kindGroup: "Words only or whole sentences",
+    kind_all: "Everything",
+    kind_phrases: "Words & phrases",
+    kind_words: "Words only",
+    kindTitle: (p) => `${p.label} · ${p.n} cards`,
     streakDays: (p) => `${p.n}-${p.n === 1 ? "day" : "days"} streak`,
     streakNew: "Start your streak",
     resumeWith: (p) => `Carry on with ${p.cat}`,
@@ -648,6 +663,7 @@
     flipHint: "Tippen oder ↑ wischen zum Umdrehen 🔄",
     skip: "Überspringen",
     skipLabel: "Diese Karte überspringen",
+    endlessLabel: "Endlos-Modus – gelernte Karten",
     speakAnswer: "Antwort anhören",
     contextShow: "Reise-Kontext anzeigen",
     contextTitle: "🧭 So nutzt du es unterwegs",
@@ -686,6 +702,7 @@
     flipHint: "Tap or swipe ↑ to flip 🔄",
     skip: "Skip",
     skipLabel: "Skip this card",
+    endlessLabel: "Endless mode – cards studied",
     speakAnswer: "Listen to the answer",
     contextShow: "Show travel context",
     contextTitle: "🧭 How to use it on the road",
@@ -725,6 +742,8 @@
     // Reiter-Kopf
     discoverTitle: "Entdecken",
     discoverIntro: "Spielen, zuordnen, nachschlagen – Spanisch abseits der Karten.",
+    // Locals-Track (Englisch lernen): Richtung umgekehrt – „Englisch" statt „Spanisch".
+    discoverIntroLocals: "Spielen, zuordnen, nachschlagen – Englisch abseits der Karten.",
     // Abschnitts-Überschriften (Gruppierung der Einstiege nach Aktivität)
     groupHostel: "Im Hostel",
     groupPlay: "Spielen",
@@ -735,6 +754,7 @@
     subSupervivencia: "Die wichtigsten Sätze sofort griffbereit",
     subHostel: "Zu zweit & laut: Battle und Rollenspiele",
     subDefiniciones: "Definition lesen, Begriff wählen",
+    subEndless: "Karteikarten am Stück – alle Themen gemischt, ohne Rundenende",
     subFrases: "Bausteine einsetzen – selbst Sätze bauen",
     subDialogos: "Allein ein Gespräch Zug für Zug führen",
     subRegatear: "Gut verhandeln & feilschen auf dem Markt",
@@ -761,6 +781,8 @@
     subBanderas: "Flaggen-Quiz: Land erraten – und Farben, Symbole & Geschichte gleich mitlernen",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
     subYesto: "Bild raten: 3-2-1 – wie heißt das auf Spanisch?",
+    // Locals-Track (Englisch lernen): nach „auf Englisch" fragen.
+    subYestoLocals: "Bild raten: 3-2-1 – wie heißt das auf Englisch?",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
@@ -1071,6 +1093,8 @@
 
     // Definiciones
     quizSetupIntro: "Lies eine spanische Definition und wähle den passenden Begriff. So lernst du Wörter über ihre Bedeutung – ganz ohne Übersetzung.",
+    // Locals-Track: spanische Definition → passendes englisches Wort.
+    quizSetupIntroLocals: "Lies eine spanische Definition und wähle das passende englische Wort. So lernst du Vokabeln über ihre Bedeutung.",
     quizCorrect: "¡Correcto! 🎉",
     quizNotExactly: "No exactamente.",
     quizSolution: (p) => `Richtig: <b lang="es">${p.es}</b> · ${p.de}`,
@@ -1094,6 +1118,9 @@
     bnd_centro: "Centroamérica y el Caribe",
     bnd_centro_icon: "🌴",
     bnd_centro_desc: "Mexiko, Mittelamerika & die Karibik",
+    bnd_mundo: "El mundo",
+    bnd_mundo_icon: "🌍",
+    bnd_mundo_desc: "Die großen Reiseziele der Welt",
     bnd_todas: "Todas las banderas",
     bnd_todas_icon: "🎲",
     bnd_todas_desc: "Alle Länder gemischt – die volle Runde",
@@ -1107,6 +1134,7 @@
     bndRegSur: "🌎 Sudamérica",
     bndRegCentro: "🌴 México, Centroamérica y el Caribe",
     bndRegEuropa: "🇪🇺 Europa",
+    bndRegMundo: "🌍 El mundo",
     bndOtherRound: "Andere Runde",
     bnTips: "🚩 Flaggen verstehen",
     bnPhrases: "💬 Sätze zu Herkunft & Flaggen",
@@ -1209,6 +1237,8 @@
     quizProgress: "Quiz progress",
     discoverTitle: "Discover",
     discoverIntro: "Play, match, look things up – Spanish beyond the cards.",
+    // Locals track (learning English): direction reversed – "English" instead of "Spanish".
+    discoverIntroLocals: "Play, match, look things up – English beyond the cards.",
     groupHostel: "At the hostel",
     groupPlay: "Play",
     groupPractice: "Practise",
@@ -1217,6 +1247,7 @@
     subSupervivencia: "The most important phrases right to hand",
     subHostel: "In pairs & out loud: battle and role-plays",
     subDefiniciones: "Read the definition, pick the term",
+    subEndless: "Flashcards back to back – all topics mixed, no round end",
     subFrases: "Slot in building blocks – build sentences yourself",
     subDialogos: "Solo: work through one conversation turn by turn",
     subRegatear: "Bargain and haggle well at the market",
@@ -1243,6 +1274,8 @@
     subBanderas: "Flag quiz: guess the country – and learn the colours, symbols & history along the way",
     subBebidas: "What people drink morning and evening – country by country",
     subYesto: "Guess the picture: 3-2-1 – what's it called in Spanish?",
+    // Locals track (learning English): ask "in English".
+    subYestoLocals: "Guess the picture: 3-2-1 – what's it called in English?",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
 
@@ -1542,6 +1575,8 @@
     roleplaysHead: "🎭 Role-plays",
 
     quizSetupIntro: "Read a Spanish definition and pick the matching term. That way you learn words through their meaning – with no translation at all.",
+    // Locals track: Spanish definition → matching English word.
+    quizSetupIntroLocals: "Read a Spanish definition and pick the matching English word. That way you learn vocabulary through its meaning.",
     quizCorrect: "¡Correcto! 🎉",
     quizNotExactly: "No exactamente.",
     quizSolution: (p) => `Correct: <b lang="es">${p.es}</b> · ${p.de}`,
@@ -1564,6 +1599,9 @@
     bnd_centro: "Centroamérica y el Caribe",
     bnd_centro_icon: "🌴",
     bnd_centro_desc: "Mexico, Central America & the Caribbean",
+    bnd_mundo: "El mundo",
+    bnd_mundo_icon: "🌍",
+    bnd_mundo_desc: "The world's great travel destinations",
     bnd_todas: "Todas las banderas",
     bnd_todas_icon: "🎲",
     bnd_todas_desc: "All countries mixed – the full round",
@@ -1577,6 +1615,7 @@
     bndRegSur: "🌎 Sudamérica",
     bndRegCentro: "🌴 México, Centroamérica y el Caribe",
     bndRegEuropa: "🇪🇺 Europe",
+    bndRegMundo: "🌍 El mundo",
     bndOtherRound: "Another round",
     bnTips: "🚩 Understanding flags",
     bnPhrases: "💬 Phrases on origin & flags",

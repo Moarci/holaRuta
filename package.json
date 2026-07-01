@@ -1,6 +1,6 @@
 {
   "name": "holaruta",
-  "version": "1.120.0",
+  "version": "1.123.0",
   "private": true,
   "description": "HolaRuta – Dein Reise-Spanisch für echte Situationen. Vanilla-JS-Lernkarten-PWA (keine Runtime-Dependencies).",
   "scripts": {
@@ -12,6 +12,7 @@
     "e2e:verify": "node scripts/e2e-verify.mjs",
     "e2e:cards": "node scripts/e2e-cardcache.mjs",
     "audit:levels": "node tools/audit-levels.js",
+    "audit:locals": "node tools/audit-locals.js",
     "mutation:catalog": "node scripts/mutation/run.mjs --catalog",
     "mutation:engine": "node scripts/mutation/run.mjs --engine",
     "mutation:diff": "node scripts/mutation/run.mjs --catalog --engine --diff",

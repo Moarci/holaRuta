@@ -400,7 +400,7 @@
       ],
     },
     {
-      id: "so03", cat: "social", frameEs: "¿Cómo te ___?", frameEn: "How ___?", targetDe: "Wie heißt du?", targetEn: "What's your name?",
+      id: "so03", cat: "social", frameEs: "¿Cómo te ___?", frameEn: "What ___?", targetDe: "Wie heißt du?", targetEn: "What's your name?",
       slot: { es: "llamas", de: "heißt du", en: "are you called" },
       distractors: [
         { es: "sientes", de: "fühlst du dich", en: "do you feel" },

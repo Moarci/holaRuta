@@ -73,6 +73,7 @@
     flipHint: "Toca o desliza ↑ para voltear 🔄",
     skip: "Saltar",
     skipLabel: "Saltar esta tarjeta",
+    endlessLabel: "Modo sin fin – tarjetas estudiadas",
     speakAnswer: "Escuchar la respuesta",
     contextShow: "Mostrar el contexto",
     contextTitle: "🧭 Cómo usarlo en el trabajo",
@@ -117,6 +118,7 @@
     tabProfile: "Perfil",
     tileDue: function (p) { return p.n + " pendientes"; },
     tileDone: "hecho",
+    tileFiltered: "ocultas",
     tileCards: function (p) { return p.n + " tarjetas"; },
     sectionTopics: "Temas",
     topicNavAria: "Ir al grupo de temas",
@@ -136,6 +138,13 @@
     levelsAll: "Todos",
     levelsGroup: "Nivel de dificultad",
     levelTitle: function (p) { return p.label + " · " + p.n + " tarjetas"; },
+    // Filtro por tipo (solo palabras / también frases y oraciones)
+    sectionKind: "Tipo",
+    kindGroup: "Solo palabras u oraciones completas",
+    kind_all: "Todo",
+    kind_phrases: "Palabras y frases",
+    kind_words: "Solo palabras",
+    kindTitle: function (p) { return p.label + " · " + p.n + " tarjetas"; },
     // Tarjeta «hoy»
     streakDays: function (p) { return p.n + " " + (p.n === 1 ? "día" : "días") + " seguidos"; },
     streakNew: "Empieza tu racha",
@@ -235,7 +244,8 @@
   // ---------- discover: solo el marco (las funciones de viaje están ocultas) ----------
   reg("discover", {
     discoverTitle: "Descubrir",
-    discoverIntro: "Tus palabras guardadas, a mano.",
+    // Intro del Descubrir (paridad con el de/en); el texto anterior era de „Mi léxico".
+    discoverIntro: "Juega, relaciona, consulta: inglés más allá de las tarjetas.",
     subFavorites: "Tus favoritos como léxico personal: palabras y frases a mano.",
     // Ruta de aprendizaje (im Locals-Track der „Pre-Trip"-Screen, als Kurs umgedeutet).
     // Der Screen nutzt für Locals die curso*-Keys; die pretrip*-Overrides bleiben als Rückfall.
@@ -277,6 +287,7 @@
     subBanderas: "Quiz de banderas: adivina el país y aprende de paso colores, símbolos e historia.",
     subYesto: "Adivina la imagen: 3-2-1, ¿cómo se dice en inglés?",
     subDefiniciones: "Lee la definición y elige la palabra.",
+    subEndless: "Tarjetas sin parar: todos los temas mezclados, sin fin de ronda.",
     subFrases: "Coloca las piezas y arma frases en inglés.",
 
     // Definiciones (Zuordnen-Quiz): spanische Definition → englisches Wort
@@ -316,6 +327,9 @@
     bnd_centro: "Centroamérica y el Caribe",
     bnd_centro_icon: "🌴",
     bnd_centro_desc: "México, Centroamérica y el Caribe",
+    bnd_mundo: "El mundo",
+    bnd_mundo_icon: "🌍",
+    bnd_mundo_desc: "Los grandes destinos de viaje del mundo",
     bnd_todas: "Todas las banderas",
     bnd_todas_icon: "🎲",
     bnd_todas_desc: "Todos los países mezclados: la ronda completa",
@@ -327,6 +341,7 @@
     bndRegSur: "🌎 Sudamérica",
     bndRegCentro: "🌴 México, Centroamérica y el Caribe",
     bndRegEuropa: "🇪🇺 Europa",
+    bndRegMundo: "🌍 El mundo",
     bnTips: "🚩 Entender las banderas",
     bnPhrases: "💬 Frases sobre origen y banderas",
     bnWords: "🗣️ Palabras sobre banderas",

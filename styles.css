@@ -804,6 +804,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .tile__meta { margin-left: 6px; font-size: 0.78rem; color: var(--muted); }
 .tile__due { color: var(--brand-ink); font-weight: 700; }
 .tile__due--ok { color: var(--ok); }
+.tile__due--off { color: var(--muted); font-weight: 600; }
 .tile__levels { margin-left: 6px; display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
 .tile__lvl {
   display: inline-flex; align-items: center; gap: 4px;
@@ -1003,6 +1004,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   height: 100%; border-radius: 999px;
   background: var(--from, var(--brand));
   transition: width 0.3s ease;
+}
+/* Endlos-Modus: keine feste Breite, sondern eine dezent durchlaufende Leiste. */
+.progress--endless .progress__bar {
+  width: 40%; transition: none;
+  background: linear-gradient(90deg, transparent, var(--from, var(--brand)), transparent);
+  animation: progress-endless 1.6s ease-in-out infinite;
+}
+@keyframes progress-endless {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(310%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress--endless .progress__bar { animation: none; width: 100%; transform: none; opacity: 0.5; }
 }
 
 /* 3D-Dreh-Karte */

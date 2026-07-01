@@ -149,7 +149,11 @@
     // Öffnen (noch nichts gespeichert) nach Betriebssystem-Sprache vorbelegen.
     uiLang: initialUiLang(),
     dir: settings.dir === "es2de" ? "es2de" : "de2es", // Lernrichtung: native→ES (Standard) | ES→native
-    levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3]
+    levels: Array.isArray(settings.levels) ? settings.levels : [], // [] = alle Stufen, sonst Teilmenge von [1,2,3,4] (A1/A2/B1/B2)
+    // Wortart-Filter: "all" (Wörter+Verbünde+Sätze) | "phrases" (Wörter+kurze
+    // Verbünde, ohne ganze Sätze) | "words" (nur Einzelwörter). Steuert, ob eine
+    // Runde nur Vokabeln oder auch ganze Service-Sätze zieht.
+    vocabKind: (settings.vocabKind === "words" || settings.vocabKind === "phrases") ? settings.vocabKind : "all",
     scopeId: "all",          // 'all' | Kategorie-Id
     pretripDay: null,        // läuft gerade ein Pre-Trip-Tag? (Tagesnummer | null) – markiert ihn bei Abschluss
     pretripScope: null,      // gewählte Pre-Trip-Destination (= Kategorie-Id, null = noch nicht gesetzt)
@@ -364,8 +368,29 @@
   };
   // Stufen-Filter: leere Auswahl = alle. Greift bei "Alle lernen" und je Kategorie.
   const matchesLevel = (c) => state.levels.length === 0 || state.levels.includes(c.lvl);
+  // Wortart einer Karte aus der GELERNTEN Antwort (learn): Locals = Englisch,
+  // Reise = Spanisch. Heuristik nach Länge/Satzzeichen:
+  //   "word"     – ein einzelnes Token (Einzelwort/Vokabel)
+  //   "sentence" – endet auf Satzzeichen (.?!) oder ≥5 Wörter (ganzer Satz)
+  //   "phrase"   – alles dazwischen (Verbund/kurze Wendung wie "ice cream")
+  const cardKind = (c) => {
+    const txt = String(learn(c) || "").trim();
+    if (!txt) return "phrase";
+    const words = txt.split(/\s+/).filter(Boolean);
+    if (words.length <= 1) return "word";
+    if (/[.?!…]$/.test(txt) || words.length >= 5) return "sentence";
+    return "phrase";
+  };
+  // Wortart-Filter (state.vocabKind). "all" zeigt alles, "phrases" schließt ganze
+  // Sätze aus (Wörter + kurze Verbünde), "words" nur Einzelwörter.
+  const matchesKind = (c) => {
+    const k = state.vocabKind;
+    if (k === "words") return cardKind(c) === "word";
+    if (k === "phrases") return cardKind(c) !== "sentence";
+    return true;
+  };
   const scopeCards = (scopeId) =>
-    allCards().filter((c) => (scopeId === "all" || c.cat === scopeId) && matchesLevel(c));
+    allCards().filter((c) => (scopeId === "all" || c.cat === scopeId) && matchesLevel(c) && matchesKind(c));
   const dueIn = (cards) => cards.filter((c) => srs.isDue(progress[c.id]));
   // Orts-/länderspezifisch? Karten der Gruppe „destinos" (Städte- & Länder-Packs).
   // Eigene Karten ohne bekannte Kategorie zählen als allgemein (Grundlagen-Pfad).
@@ -514,7 +539,7 @@
       : data.CATEGORIES;
     const categories = visibleCats.map((c) => {
       const allInCat = byCat.get(c.id) || [];
-      const cards = allInCat.filter(matchesLevel); // entspricht scopeCards(c.id)
+      const cards = allInCat.filter((card) => matchesLevel(card) && matchesKind(card)); // entspricht scopeCards(c.id)
       // Kartenzahl je Stufe in dieser Kategorie (nur Stufen mit >0).
       const byLevel = data.LEVELS
         .map((l) => ({
@@ -524,7 +549,7 @@
         }))
         .filter((b) => b.count > 0);
       return { id: c.id, label: natk(c, "label"), icon: c.icon, grad: c.grad, group: c.group,
-               total: cards.length, due: dueIn(cards).length, byLevel };
+               total: cards.length, totalAll: allInCat.length, due: dueIn(cards).length, byLevel };
     });
     // Kategorien mit fälligen Karten zuerst (meiste zuerst); der Rest behält
     // seine Originalreihenfolge – so steht das Dringende oben, ohne dass die
@@ -542,6 +567,16 @@
       count: everyCard.filter((c) => c.lvl === l.id).length,
       active: state.levels.includes(l.id),
     })).filter((l) => l.count > 0);
+    // Wortart-Filter (Vokabeln/Wendungen/Sätze): Kartenzahl je Klasse über das
+    // sichtbare, stufengefilterte Deck – so sieht man, wie viel jede Wahl zieht.
+    const levelPool = everyCard.filter(matchesLevel);
+    const kindCount = { word: 0, phrase: 0, sentence: 0 };
+    for (let i = 0; i < levelPool.length; i++) kindCount[cardKind(levelPool[i])]++;
+    const vocabKinds = [
+      { id: "all", count: levelPool.length },
+      { id: "phrases", count: kindCount.word + kindCount.phrase },
+      { id: "words", count: kindCount.word },
+    ].map((k) => ({ ...k, active: state.vocabKind === k.id }));
     // Gesamtfortschritt für die "Heute"-Karte – über ALLE Karten, unabhängig
     // vom Stufenfilter, damit der Balken eine stabile Bezugsgröße hat.
     const overall = stats.overview(everyCard, progress);
@@ -564,6 +599,8 @@
       theme: effectiveTheme(),
       allLevels: state.levels.length === 0,
       levels,
+      vocabKind: state.vocabKind,
+      vocabKinds,
       categories: sortedCategories,
       totalDue: dueIn(all).length,
       sessionCap: SESSION_CAP,
@@ -772,6 +809,8 @@
       accent: isFavRound || isAll || !cat ? DEFAULT_ACCENT : cat.grad,
       position: state.total - state.queue.length,
       total: state.total,
+      endless: !!state.endless,
+      studied: state.session ? (state.session.right + state.session.wrong) : 0,
       revealed: state.revealed,
       typeResult: state.typeResult,
       context: card.context ? withNameObj(loc(card.context)) : null,
@@ -1206,6 +1245,7 @@
   // aufgerufen, die state.total für eine NEUE Runde setzt (Kategorie/Preset/Ruta/
   // Pre-Trip) – NICHT in rate()/skip(). Speist die Belohnungs-Inszenierung (celebrate.js).
   function beginRound() {
+    state.endless = false; // nur startEndless() schaltet den Endlos-Modus danach scharf
     state.session = { seen: new Set(), right: 0, wrong: 0 };
     state.roundSnapshot = {
       unlocked: Object.assign({}, gamestats.unlocked),
@@ -2929,7 +2969,15 @@
   function startStudy(scopeId, origin, cap) {
     dismissBadgeToast();
     state.studyOrigin = origin || null;
-    const cards = scopeCards(scopeId);
+    let cards = scopeCards(scopeId);
+    // Bewusst gewählte Kategorie, aber der Stufen-Filter blendet alle ihre Karten
+    // aus (z. B. eine reine B2-Kategorie bei Filter A1–B1)? Dann den Filter für
+    // diesen einen Griff ignorieren – die explizite Kategoriewahl schlägt den
+    // globalen Stufen-Filter, sonst startete eine leere Runde.
+    if (!cards.length && scopeId !== "all") {
+      const inCat = allCards().filter((c) => c.cat === scopeId);
+      if (inCat.length) cards = inCat;
+    }
     const due = dueIn(cards);
     // Rundengröße: standardmäßig SESSION_CAP (Newcomer-Schutz). Das Tagesziel des
     // Trip-Ziels (Schicht 3) übergibt sein eigenes Restpensum als cap, damit die
@@ -2955,6 +3003,57 @@
     state.typeResult = null;
     state.screen = state.queue.length ? "study" : "done";
     render();
+  }
+
+  // ----- Endlos-Modus (Vocabulario sin fin) -----
+  // Karteikarten am Stück über ALLE aktiven Themen, ohne Rundenende und ohne die
+  // 20er-Deckelung. SRS bleibt voll wirksam – jede Bewertung zählt –, die Queue
+  // füllt sich beim Durchlaufen immer wieder nach. Kein Fertig-Screen: man verlässt
+  // den Modus über „Zurück". Die gewählte Lernrichtung/-art (Karteikarte/Schreiben/
+  // Hören) bleibt wie eingestellt.
+  const ENDLESS_BATCH = 20;     // wie viele Karten höchstens in der Queue gehalten werden
+  const ENDLESS_REFILL_AT = 5;  // ab so wenig Restkarten wird nachgefüllt
+
+  function startEndless() {
+    dismissBadgeToast();
+    state.studyOrigin = "endless";
+    state.scopeId = "all";
+    state.pretripDay = null;
+    state.queue = [];
+    beginRound();
+    state.endless = true; // nach beginRound(), das den Modus zurücksetzt
+    refillEndless();
+    state.total = state.queue.length;
+    state.revealed = false;
+    state.contextOpen = false;
+    state.typeResult = null;
+    // Keine Karten verfügbar (Filter zu eng)? Fertig-Screen statt leerer Anzeige –
+    // greift in der Praxis kaum, da der Scope „all" über alle Themen läuft.
+    state.screen = state.queue.length ? "study" : "done";
+    render();
+  }
+
+  // Endlos-Queue auffüllen: zieht frisch aus dem aktuellen Scope, fällige Karten
+  // zuerst (so bleibt SRS wirksam), Dubletten ausgenommen. Nur bis ENDLESS_BATCH –
+  // die Queue bleibt kurz, läuft aber nie leer.
+  function refillEndless() {
+    if (!state.endless) return;
+    if (state.queue.length > ENDLESS_REFILL_AT) return;
+    const cards = scopeCards(state.scopeId || "all");
+    if (!cards.length) return;
+    const queued = new Set(state.queue);
+    // Fällige zuerst (SRS-Priorität), ABER auch die fälligen gemischt – sonst kämen
+    // sie in Datenreihenfolge, also Thema für Thema. Bei einem frischen Nutzer sind
+    // alle Karten fällig (isDue(undefined) === true); ohne das Mischen liefe der
+    // Endlos-Modus dann sortiert statt „alle Themen gemischt". Danach der Rest,
+    // ebenfalls gemischt, als unerschöpflicher Nachschub.
+    const ordered = shuffle(dueIn(cards)).concat(shuffle(cards));
+    for (let i = 0; i < ordered.length && state.queue.length < ENDLESS_BATCH; i++) {
+      const id = ordered[i].id;
+      if (queued.has(id)) continue;
+      queued.add(id);
+      state.queue.push(id);
+    }
   }
 
   // Tagesziel-Runde (Schicht 3): startet eine Lernrunde mit genau dem heute noch
@@ -5006,6 +5105,7 @@
 
     state.queue = state.queue.slice(1);
     if (rating === srs.RATING.AGAIN) state.queue = state.queue.concat(card.id);
+    if (state.endless) refillEndless(); // Endlos-Modus: Queue läuft nie leer
 
     state.revealed = false;
     state.contextOpen = false;
@@ -5029,6 +5129,7 @@
     buzz(8);
 
     state.queue = state.queue.slice(1);
+    if (state.endless) refillEndless(); // Endlos-Modus: Übersprungene rückt nach, kein Rundenende
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
@@ -5354,6 +5455,17 @@
       state.levels = Array.from(set).sort((a, b) => a - b);
     }
     settings = Object.assign({}, settings, { levels: state.levels });
+    store.saveSettings(settings);
+    render();
+  }
+
+  // Wortart-Filter setzen: "all" | "phrases" | "words". Steuert, ob eine Runde nur
+  // Einzelwörter, Wörter+kurze Wendungen oder auch ganze Sätze zieht.
+  function setVocabKind(kind) {
+    const next = (kind === "words" || kind === "phrases") ? kind : "all";
+    if (state.vocabKind === next) return;
+    state.vocabKind = next;
+    settings = Object.assign({}, settings, { vocabKind: next });
     store.saveSettings(settings);
     render();
   }
@@ -6073,6 +6185,7 @@
     { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
     { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",       subKey: "discover.subHostel" },
     { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",      subKey: "discover.subDefiniciones" },
+    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless" },
     { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases" },
     { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos" },
     { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
@@ -7184,6 +7297,7 @@
     "reset-analytics-id": () => { if (window.SC.analytics && window.SC.analytics.resetClientId) { window.SC.analytics.resetClientId(); buzz(8); } },
     "set-ui-lang": (el) => { setUiLang(el.dataset.lang); },
     "set-level": (el) => { toggleLevel(Number(el.dataset.level)); },
+    "set-vocabkind": (el) => { setVocabKind(el.dataset.kind); },
     "study-all": (el) => { startStudy("all"); },
     "study-trip-daily": (el) => { startTripDaily(); },
     "open-category": (el) => { startStudy(el.dataset.id); },
@@ -7345,6 +7459,7 @@
     "start-roleplay": (el) => { startRoleplay(el.dataset.id); },
     "roleplay-swap": (el) => { roleplaySwap(); },
     "open-quiz-setup": (el) => { definiciones.open(); },
+    "open-endless": (el) => { startEndless(); },
     "start-quiz": (el) => { definiciones.start(el.dataset.set); },
     "quiz-answer": (el) => { definiciones.answer(el.dataset.id); },
     "quiz-next": (el) => { definiciones.next(); },
