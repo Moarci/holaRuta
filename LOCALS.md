@@ -116,11 +116,11 @@ laufen durch die normale (track-korrekte) Study-Engine.
 Der **NPC ist ein Tourist und spricht Englisch** (`turn.en`, wird per englischer TTS
 vorgelesen); Übersetzung & Handlungsanweisung stehen auf Spanisch (`turn.es`); der/die
 Lernende antwortet auf Englisch (MC oder frei getippt, `solEs`/`options[].es`/`accept`
-tragen die englische Musterantwort). Zwanzig Szenarien: Restaurant, Recepción, Tour,
+tragen die englische Musterantwort). Einundzwanzig Szenarien: Restaurant, Recepción, Tour,
 Taxi, Mercado, Queja, Playa, Entrevista de trabajo, Llamada de servicio, Farmacia,
 Check-out, Spa/Masaje, Lancha (Islas del Rosario), Banco, Peluquería sowie – aus dem
 Erweiterungspack – **Briefing de buceo, Check-in de vuelo, Daily standup (TI), Demo
-de ventas und En la consulta (clínica)**.
+de ventas, En la consulta (clínica) und Entrega del auto de alquiler**.
 
 Die geteilte Engine (`features/dialogos-game.js`) wurde dafür track-fähig gemacht:
 gesprochene Zeile = Lernsprache, Übersetzung/Anweisung = Muttersprache (Reise-Track

@@ -4080,6 +4080,7 @@
     { id: "dlg-tech", title: "Daily standup", titleEs: "Daily standup", titleEn: "Daily standup", icon: "lc:briefcase", lvl: 2, intro: "Da tu reporte en el standup del equipo.", introEs: "Da tu reporte en el standup del equipo.", introEn: "Give your update in the team standup." },
     { id: "dlg-ventas", title: "Demo de ventas", titleEs: "Demo de ventas", titleEn: "Sales demo", icon: "lc:handshake", lvl: 2, intro: "Presenta tu producto a un cliente.", introEs: "Presenta tu producto a un cliente.", introEn: "Pitch your product to a customer." },
     { id: "dlg-clinica", title: "En la consulta", titleEs: "En la consulta", titleEn: "At the clinic", icon: "lc:stethoscope", lvl: 2, intro: "Atiende a un paciente extranjero en la consulta.", introEs: "Atiende a un paciente extranjero en la consulta.", introEn: "See a foreign patient at the clinic." },
+    { id: "dlg-alquiler-auto", title: "Entrega del auto de alquiler", titleEs: "Entrega del auto de alquiler", titleEn: "Rental car pickup", icon: "lc:car", lvl: 2, intro: "Entrega un auto de alquiler a un turista.", introEs: "Entrega un auto de alquiler a un turista.", introEn: "Hand over a rental car to a tourist." },
   ];
   var DLG = [
     { id: "dlg-restaurante-1", cat: "dlg-restaurante", title: "En el restaurante", titleEs: "En el restaurante", titleEn: "At the restaurant", lvl: 1, turns: [
@@ -4441,6 +4442,24 @@
       { who: "user", kind: "type", es: "(dile que le recetas un medicamento y que descanse)", solEs: "I'll prescribe some medicine. Get some rest.",
         whyEs: "Cierra con tratamiento y una recomendación.", whyEn: "Closes with treatment and a recommendation.",
         accept: ["i'll prescribe some medicine. get some rest", "i'll prescribe some medicine and get some rest", "i will prescribe some medicine. get some rest"] },
+    ] },
+    { id: "dlg-alquiler-auto-1", cat: "dlg-alquiler-auto", title: "Entrega del auto de alquiler", titleEs: "Entrega del auto de alquiler", titleEn: "Rental car pickup", lvl: 2, turns: [
+      { who: "npc", en: "Hi, I'm here to pick up my rental car.", es: "Hola, vengo a recoger mi auto de alquiler." },
+      { who: "user", kind: "mc", es: "(salúdalo y pídele su licencia de conducir)", solEs: "Welcome! I need your driver's license.",
+        whyEs: "Empieza verificando la licencia antes de entregar el auto.", whyEn: "Start by checking the license before handing over the car.",
+        options: [{ es: "Welcome! I need your driver's license.", ok: true }, { es: "We don't have any cars.", ok: false }, { es: "Just take any car.", ok: false }] },
+      { who: "npc", en: "Sure, here it is. Does it include insurance?", es: "Claro, aquí está. ¿Incluye seguro?" },
+      { who: "user", kind: "mc", es: "(dile que sí y que con cobertura completa no se preocupe por rayones menores)", solEs: "Yes. With full coverage, you won't have to worry about minor scratches.",
+        whyEs: "Confirma el seguro y tranquiliza al cliente.", whyEn: "Confirms the insurance and reassures the customer.",
+        options: [{ es: "Yes. With full coverage, you won't have to worry about minor scratches.", ok: true }, { es: "No, there's no insurance.", ok: false }, { es: "I'm not sure, sorry.", ok: false }] },
+      { who: "npc", en: "Great. Anything I should know before I go?", es: "Perfecto. ¿Algo que deba saber antes de irme?" },
+      { who: "user", kind: "type", es: "(dile que devuelva el auto con el tanque lleno)", solEs: "Return it with a full tank.",
+        whyEs: "Un recordatorio clave para evitar cargos extra.", whyEn: "A key reminder to avoid extra charges.",
+        accept: ["return it with a full tank", "please return it with a full tank", "return the car with a full tank"] },
+      { who: "npc", en: "Got it. Where do I sign?", es: "Entendido. ¿Dónde firmo?" },
+      { who: "user", kind: "type", es: "(dile que firme aquí y que luego le entregas las llaves)", solEs: "Sign here, and then I'll hand you the keys.",
+        whyEs: "Cierra la entrega: firma y llaves.", whyEn: "Closes the handover: signature and keys.",
+        accept: ["sign here, and then i'll hand you the keys", "sign here and i'll hand you the keys", "sign here, then i'll give you the keys"] },
     ] },
   ];
 
