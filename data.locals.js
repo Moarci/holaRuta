@@ -4558,7 +4558,7 @@
       { who: "npc", en: "Sure, it's four-four-seven-two.", es: "Claro, es cuatro-cuatro-siete-dos." },
       { who: "user", kind: "type", es: "(dile que un momento mientras revisas)", solEs: "One moment while I check.",
         whyEs: "Gana tiempo con cortesía mientras verificas.", whyEn: "Politely buys time while you check.",
-        accept: ["one moment while i check", "one moment while i check.", "just a moment while i check"] },
+        accept: ["one moment while i check", "just a moment while i check", "one moment while i check on that"] },
       { who: "npc", en: "Okay. Can you fix it?", es: "Bien. ¿Puede solucionarlo?" },
       { who: "user", kind: "mc", es: "(confirma que registraste el caso y que le darás un número de referencia)", solEs: "Your case has been logged. I'll give you a reference number.",
         whyEs: "Cierra el reclamo con un registro y un número de seguimiento.", whyEn: "Closes the complaint with a log and a tracking number.",
@@ -4566,7 +4566,7 @@
       { who: "npc", en: "Great, thank you.", es: "Perfecto, gracias." },
       { who: "user", kind: "type", es: "(pregúntale si puedes ayudarle en algo más hoy)", solEs: "Can I help you with anything else today?",
         whyEs: "Ofrece más ayuda antes de despedirte.", whyEn: "Offers further help before closing.",
-        accept: ["can i help you with anything else today", "can i help you with anything else today?", "is there anything else i can help you with today"] },
+        accept: ["can i help you with anything else today", "is there anything else i can help you with today", "is there anything else i can help you with"] },
     ] },
     { id: "dlg-trekking-1", cat: "dlg-trekking", title: "Antes de la caminata", titleEs: "Antes de la caminata", titleEn: "Before the hike", lvl: 2, turns: [
       { who: "npc", en: "Hi! Is this the trail to the top?", es: "¡Hola! ¿Este es el sendero a la cima?" },
@@ -4576,7 +4576,7 @@
       { who: "npc", en: "Got it. How long is the hike?", es: "Entendido. ¿Cuánto dura la caminata?" },
       { who: "user", kind: "type", es: "(diles que la caminata dura cuatro horas)", solEs: "The hike takes four hours.",
         whyEs: "Da la duración con claridad para que se preparen.", whyEn: "Clearly states the duration so they can prepare.",
-        accept: ["the hike takes four hours", "the hike takes four hours.", "the hike is four hours"] },
+        accept: ["the hike takes four hours", "the hike is four hours", "it takes four hours"] },
       { who: "npc", en: "Okay. The trail looks wet.", es: "Bien. El sendero se ve mojado." },
       { who: "user", kind: "mc", es: "(adviérteles que tengan cuidado, el camino es resbaloso)", solEs: "Careful, the trail is slippery.",
         whyEs: "Una advertencia de seguridad oportuna.", whyEn: "A timely safety warning.",
@@ -4584,7 +4584,7 @@
       { who: "npc", en: "Thanks. We're almost there, right?", es: "Gracias. Ya casi llegamos, ¿verdad?" },
       { who: "user", kind: "type", es: "(diles que casi llegan a la cima y que sigan las marcas del sendero)", solEs: "We're almost at the top. Follow the trail markers.",
         whyEs: "Anima al grupo y refuerza la ruta segura.", whyEn: "Encourages the group and reinforces the safe route.",
-        accept: ["we're almost at the top. follow the trail markers", "we're almost at the top, follow the trail markers", "we are almost at the top. follow the trail markers"] },
+        accept: ["we're almost at the top. follow the trail markers", "we are almost at the top. follow the trail markers", "we're almost at the top, just follow the trail markers"] },
     ] },
     { id: "dlg-negociar-1", cat: "dlg-negociar", title: "Negociar en el mercado", titleEs: "Negociar en el mercado", titleEn: "Haggling at the market", lvl: 2, turns: [
       { who: "npc", en: "I really like this, but it's a bit pricey for me.", es: "Me gusta mucho esto, pero es un poco caro para mí." },
@@ -4594,7 +4594,7 @@
       { who: "npc", en: "Hmm. What's your best offer?", es: "Mmm. ¿Cuál es su mejor oferta?" },
       { who: "user", kind: "type", es: "(dile que es un precio justo)", solEs: "It's a fair price.",
         whyEs: "Defiende el valor con calma.", whyEn: "Calmly stands by the value.",
-        accept: ["it's a fair price", "it's a fair price.", "it is a fair price"] },
+        accept: ["it's a fair price", "it is a fair price", "that's a fair price"] },
       { who: "npc", en: "Could we meet in the middle?", es: "¿Podríamos llegar a un punto medio?" },
       { who: "user", kind: "mc", es: "(acepta: pueden llegar a un acuerdo)", solEs: "We can reach an agreement.",
         whyEs: "Muestra disposición a cerrar el trato.", whyEn: "Shows willingness to close the deal.",
@@ -4602,7 +4602,7 @@
       { who: "npc", en: "Great. Let's do it.", es: "Perfecto. Hagámoslo." },
       { who: "user", kind: "type", es: "(cierra el trato: trato hecho)", solEs: "It's a deal.",
         whyEs: "Cierra con una fórmula clara y amable.", whyEn: "Closes with a clear, friendly phrase.",
-        accept: ["it's a deal", "it's a deal.", "it is a deal"] },
+        accept: ["it's a deal", "it is a deal", "you've got a deal"] },
     ] },
   ];
 
