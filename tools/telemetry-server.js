@@ -102,6 +102,7 @@ function aggregate(events, usage, opts) {
   var onboardComplete = {};            // clientId -> 1
   var editionClients = {};             // edition -> { clientId: 1 }
   var platformClients = {};            // platform -> { clientId: 1 }
+  var acquisition = {};                // app_open.src -> count (woher kommen Nutzer)
 
   ev.forEach(function (e) {
     var day = String(e.day || "");
@@ -139,7 +140,7 @@ function aggregate(events, usage, opts) {
     }
 
     switch (name) {
-      case "app_open": (p.returning ? openReturning++ : openNew++); break;
+      case "app_open": (p.returning ? openReturning++ : openNew++); if (p.src) acquisition[p.src] = (acquisition[p.src] || 0) + 1; break;
       case "screen_view": if (p.screen) screenCounts[p.screen] = (screenCounts[p.screen] || 0) + 1; break;
       case "action": if (p.action) actionCounts[p.action] = (actionCounts[p.action] || 0) + 1; break;
       case "card_rated":
@@ -199,9 +200,11 @@ function aggregate(events, usage, opts) {
     return Object.keys(set).length;
   }
 
-  // --- Tages-Snapshots (anonym, ohne clientId): Adoption, Mastery, Trip ---
+  // --- Tages-Snapshots (anonym, ohne clientId): Adoption, Mastery, Trip, Streak ---
   var snapFeatureAdoption = {};
   var snapCardsToday = {};
+  var snapStreak = {};
+  var snapReviews = {};
   var masteryDist = {};
   var tripDailyDist = {};
   var tripGoalYes = 0;
@@ -209,10 +212,29 @@ function aggregate(events, usage, opts) {
     var feats = isObj(s.features) ? s.features : {};
     Object.keys(feats).forEach(function (k) { if (feats[k]) snapFeatureAdoption[k] = (snapFeatureAdoption[k] || 0) + 1; });
     if (s.cardsToday) snapCardsToday[s.cardsToday] = (snapCardsToday[s.cardsToday] || 0) + 1;
+    if (s.streak) snapStreak[s.streak] = (snapStreak[s.streak] || 0) + 1;
+    if (s.reviews) snapReviews[s.reviews] = (snapReviews[s.reviews] || 0) + 1;
     if (s.mastered) masteryDist[s.mastered] = (masteryDist[s.mastered] || 0) + 1;
     if (s.tripGoal) tripGoalYes++;
     if (s.tripDaily) tripDailyDist[s.tripDaily] = (tripDailyDist[s.tripDaily] || 0) + 1;
   });
+
+  // --- Teilen-Aktivität (share-*) aus den Aktionen ---
+  var shareActions = topCounts(Object.keys(actionCounts).filter(function (k) { return k.indexOf("share") === 0; })
+    .reduce(function (o, k) { o[k] = actionCounts[k]; return o; }, {}));
+
+  // --- Trend vs. Vorperiode: aktive Nutzer der letzten 7 Tage vs. der 7 davor ---
+  // Scannt ALLE Events (nicht die Fenster-gefilterten), da die Vorperiode sonst bei
+  // kleinen Fenstern (z. B. days=7) herausfiele.
+  function activeUsersWindow(offset, len) {
+    var hi = dayUTC(now - offset * DAY_MS);
+    var lo = dayUTC(now - (offset + len - 1) * DAY_MS);
+    var set = {};
+    evAll.forEach(function (e) { if (!isObj(e)) return; var day = String(e.day || ""), cid = String(e.clientId || ""); if (cid && day >= lo && day <= hi) set[cid] = 1; });
+    return Object.keys(set).length;
+  }
+  function trend(cur, prev) { return { cur: cur, prev: prev, deltaPct: prev ? Math.round(((cur - prev) / prev) * 100) : (cur ? 100 : 0) }; }
+  var wau7Cur = activeUsersWindow(0, 7), wau7Prev = activeUsersWindow(7, 7);
 
   // --- Schwierigste Themen: „Nochmal"-Quote je Kategorie (ab Mindestvolumen 5) ---
   var difficult = Object.keys(catStats).filter(function (c) { return catStats[c].total >= 5; })
@@ -274,6 +296,7 @@ function aggregate(events, usage, opts) {
       dauSeries: dauSeries,
       activeDaysHistogram: ["1", "2", "3-4", "5-7", "8+"].map(function (k) { return { bucket: k, count: activeDaysHist[k] }; }),
       retention: [retentionDay(1), retentionDay(7), retentionDay(30)],
+      trendWau7: trend(wau7Cur, wau7Prev),
     },
     sessions: {
       count: Object.keys(sessions).length,
@@ -288,6 +311,8 @@ function aggregate(events, usage, opts) {
       events: topCounts(eventCounts),
       screens: topCounts(screenCounts, 12),
       actions: topCounts(actionCounts, 15),
+      share: shareActions,
+      acquisition: topCounts(acquisition),
     },
     learning: {
       ratings: ratingCounts,
@@ -316,6 +341,8 @@ function aggregate(events, usage, opts) {
       tracks: topCounts(tracks),
       snapshotFeatureAdoption: topCounts(snapFeatureAdoption),
       snapshotCardsToday: topCounts(snapCardsToday),
+      snapshotStreak: topCounts(snapStreak),
+      snapshotReviews: topCounts(snapReviews),
     },
   };
 }
@@ -335,6 +362,8 @@ if (require.main === module) {
   var USAGE_FILE = path.join(DATA_DIR, "usage.jsonl");
   var DASH_FILE = path.join(__dirname, "telemetry-dashboard.html");
   var MAX_BODY = 256 * 1024; // 256 KB/Request
+  var TOKEN = process.env.TELEMETRY_TOKEN || "";                             // optionaler Zugriffsschutz (Dashboard/API)
+  var RETENTION_DAYS = Number(process.env.TELEMETRY_RETENTION_DAYS) || 120;  // Aufbewahrung, danach verworfen
 
   try { fs.mkdirSync(DATA_DIR, { recursive: true }); } catch (e) { /* egal */ }
 
@@ -348,6 +377,16 @@ if (require.main === module) {
   var events = loadJsonl(EVENTS_FILE);
   var usage = loadJsonl(USAGE_FILE);
   function append(file, obj) { try { fs.appendFileSync(file, JSON.stringify(obj) + "\n"); } catch (e) { /* egal */ } }
+
+  // Aufbewahrung: beim Start Einträge älter als RETENTION_DAYS verwerfen und die
+  // JSONL-Dateien kompaktieren -> begrenztes Wachstum, Datensparsamkeit.
+  (function prune() {
+    var cutoff = dayUTC(Date.now() - (RETENTION_DAYS - 1) * DAY_MS);
+    function keep(arr) { return arr.filter(function (o) { return o && String(o.day || "") >= cutoff; }); }
+    var e2 = keep(events), u2 = keep(usage);
+    if (e2.length !== events.length) { events = e2; try { fs.writeFileSync(EVENTS_FILE, events.map(function (x) { return JSON.stringify(x); }).join("\n") + (events.length ? "\n" : "")); } catch (e) { /* egal */ } }
+    if (u2.length !== usage.length) { usage = u2; try { fs.writeFileSync(USAGE_FILE, usage.map(function (x) { return JSON.stringify(x); }).join("\n") + (usage.length ? "\n" : "")); } catch (e) { /* egal */ } }
+  })();
 
   function send(res, status, body, type) {
     res.writeHead(status, {
@@ -366,27 +405,54 @@ if (require.main === module) {
       req.on("error", function () { resolve(null); });
     });
   }
+  function query(req) {
+    var q = {}; var qs = (req.url || "").split("?")[1] || "";
+    qs.split("&").forEach(function (kv) { if (!kv) return; var i = kv.indexOf("="); var k = decodeURIComponent(i < 0 ? kv : kv.slice(0, i)); q[k] = i < 0 ? "" : decodeURIComponent(kv.slice(i + 1)); });
+    return q;
+  }
+  function authed(q, req) { return !TOKEN || q.token === TOKEN || (req.headers && req.headers.authorization === "Bearer " + TOKEN); }
+  var ALLOWED_DAYS = { 7: 1, 14: 1, 30: 1, 90: 1 };
+  function windowDaysOf(q) { var d = Number(q.days); return ALLOWED_DAYS[d] ? d : 30; }
+  function toCsv(stats) {
+    var sByDay = {}; stats.sessions.perDay.forEach(function (r) { sByDay[r.day] = r.count; });
+    var rows = [["day", "dau", "sessions"]];
+    stats.users.dauSeries.forEach(function (r) { rows.push([r.day, r.count, sByDay[r.day] || 0]); });
+    return rows.map(function (r) { return r.join(","); }).join("\n") + "\n";
+  }
 
   var server = http.createServer(function (req, res) {
     if (req.method === "OPTIONS") return send(res, 204);
     var url = (req.url || "").split("?")[0];
+    var q = query(req);
 
+    // POST-Endpunkte bleiben offen (Clients senden keinen Token). Ungültiger/zu
+    // großer Body -> 400, damit ein echter Client den Batch behält und erneut sendet.
     if (req.method === "POST" && url === "/v1/usage") {
       return readBody(req).then(function (body) {
+        if (body === null) return send(res, 400, { error: "invalid body" });
         if (isObj(body)) { usage.push(body); append(USAGE_FILE, body); }
         send(res, 200, { ok: true });
       });
     }
     if (req.method === "POST" && url === "/v1/events") {
       return readBody(req).then(function (body) {
-        var list = body && Array.isArray(body.events) ? body.events : [];
+        if (body === null) return send(res, 400, { error: "invalid body" });
+        var list = Array.isArray(body.events) ? body.events : [];
         list.forEach(function (e) { if (isObj(e)) { events.push(e); append(EVENTS_FILE, e); } });
         console.log("[events] +" + list.length + " (gesamt " + events.length + ")");
         send(res, 200, { ok: true, accepted: list.length });
       });
     }
+
+    // Lese-Endpunkte optional per Token geschützt (TELEMETRY_TOKEN).
+    if (req.method === "GET" && (url === "/api/stats" || url === "/api/stats.csv" || url === "/" || url === "/dashboard")) {
+      if (!authed(q, req)) return send(res, 401, { error: "Token erforderlich (?token=… oder Authorization: Bearer …)" });
+    }
     if (req.method === "GET" && url === "/api/stats") {
-      return send(res, 200, aggregate(events, usage, { now: Date.now(), windowDays: 30 }));
+      return send(res, 200, aggregate(events, usage, { now: Date.now(), windowDays: windowDaysOf(q) }));
+    }
+    if (req.method === "GET" && url === "/api/stats.csv") {
+      return send(res, 200, toCsv(aggregate(events, usage, { now: Date.now(), windowDays: windowDaysOf(q) })), "text/csv; charset=utf-8");
     }
     if (req.method === "GET" && (url === "/" || url === "/dashboard")) {
       try { return send(res, 200, fs.readFileSync(DASH_FILE, "utf8"), "text/html; charset=utf-8"); }
@@ -397,8 +463,9 @@ if (require.main === module) {
 
   server.listen(PORT, function () {
     console.log("HolaRuta Telemetrie-Server auf http://localhost:" + PORT);
-    console.log("  Dashboard:   http://localhost:" + PORT + "/");
-    console.log("  Daten:       " + DATA_DIR + " (events=" + events.length + ", usage=" + usage.length + ")");
+    console.log("  Dashboard:   http://localhost:" + PORT + "/" + (TOKEN ? "?token=…" : "") + (TOKEN ? "  (TELEMETRY_TOKEN gesetzt)" : ""));
+    console.log("  API:         /api/stats?days=7|30|90 · /api/stats.csv");
+    console.log("  Daten:       " + DATA_DIR + " (events=" + events.length + ", usage=" + usage.length + ", Aufbewahrung " + RETENTION_DAYS + " Tage)");
     console.log("  Edition:     analytics: { enabled: true, endpoint: \"http://localhost:" + PORT + "\" }");
   });
 }

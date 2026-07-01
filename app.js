@@ -5273,6 +5273,18 @@
     _platform = p;
     return p;
   }
+  // Akquise-Quelle (grober Enum): woher kam der Nutzer? Aus den Start-URL-Parametern,
+  // die weiter unten im Init noch entfernt werden – daher EINMAL beim Modul-Laden
+  // (vor dem Strippen) erfasst. Es wird NUR der Enum gesendet, nie die URL/Query.
+  var _rawSearch = (typeof location !== "undefined" && location.search) || "";
+  function detectAcquisitionSrc() {
+    var s = _rawSearch;
+    if (/[?&]task=/.test(s)) return "task";                 // geteilter Aufgaben-Code (Tarea)
+    if (/[?&]start=onboarding/i.test(s)) return "onboard-link"; // Schul-/Partner-Onboarding-Link
+    if (/[?&]m=/.test(s)) return "module-link";             // geteilter Modul-Link
+    if (/[?&]edition=/.test(s) || (window.SC.config && window.SC.config.edition)) return "edition";
+    return "direct";
+  }
   // Ein Event erfassen – graceful, wenn das Modul fehlt. Das Modul prüft selbst
   // Endpunkt + Zustimmung; ohne beides wird NICHTS gepuffert.
   function trackEvent(name, props) {
@@ -8114,7 +8126,7 @@
     // App-Start + grobe Ladezeit (einmal pro Start).
     let loadMs = 0;
     try { loadMs = Math.max(0, Math.round((window.performance && performance.now && performance.now()) || 0)); } catch (e) { /* egal */ }
-    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]) });
+    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc() });
     trackEvent("perf", { load_ms: abucket(loadMs, [200, 500, 1000, 3000]) });
 
     // Fehler-Monitoring (vorher gar nicht vorhanden). Nur Diagnose-Text, PII-bereinigt.

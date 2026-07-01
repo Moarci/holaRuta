@@ -424,7 +424,10 @@ nur Events, die der Client tatsächlich sendet (Spec == Implementierung); die Al
 Envelope (zusätzlich `edition` + grobe `platform`-Klasse):
 `{ v, ts, day, clientId, sessionId, seq, appVersion, locale, track, edition, platform, event, props }`.
 Der **anonyme Snapshot** trägt zusätzlich `mastered` (% gemeistert), `tripGoal`/`tripDaily`,
-`edition`, `platform` — alles gebucketet. Vollständige Feldliste: [docs/TELEMETRIE.md](docs/TELEMETRIE.md).
+`edition`, `platform` — alles gebucketet. `app_open` trägt zudem `src` (Akquise-Quelle, nur Enum).
+Vollständige Feldliste: [docs/TELEMETRIE.md](docs/TELEMETRIE.md). Der Referenz-Collector
+(`tools/telemetry-server.js`) bietet Zeitfenster (`?days=`), CSV-Export, optionalen
+`TELEMETRY_TOKEN`-Zugriffsschutz und Aufbewahrung (`TELEMETRY_RETENTION_DAYS`).
 
 **17.6.3 API (Ergänzung zu §17.2, ohne Bearer-Token)**
 - `POST /v1/events` `{ events: [ <envelope>, … ] }` → `{ ok:true }`. Auch via `sendBeacon`

@@ -174,6 +174,30 @@ test("aggregate: Retention D1, Onboarding-Funnel, Zeit-Verteilung", () => {
   assert.ok(s.time.byHour.reduce((a, b) => a + b.count, 0) > 0);
 });
 
+test("aggregate: Akquise, Teilen, Snapshot-Streak/Reviews, WAU-Trend", () => {
+  const E = []; let q = 0;
+  const mk = (event, props, day, cid) => E.push({ v: 1, seq: q++, event, props, day, ts: T0, clientId: cid, sessionId: "s" + q });
+  mk("app_open", { src: "task" }, TODAY, "A");
+  mk("app_open", { src: "direct" }, TODAY, "B");
+  mk("action", { action: "share-stats" }, TODAY, "A");
+  mk("action", { action: "share-card" }, TODAY, "A");
+  mk("action", { action: "open-search" }, TODAY, "A");
+  mk("app_open", {}, dayUTC(NOW - 10 * 86400000), "C"); // C nur in der Vorwoche aktiv
+  const U = [{ day: TODAY, streak: "4-7", reviews: "51-200" }, { day: TODAY, streak: "4-7", reviews: "11-50" }];
+  const s = aggregate(E, U, { now: NOW });
+  const acq = {}; s.engagement.acquisition.forEach((a) => { acq[a.key] = a.count; });
+  assert.equal(acq.task, 1); assert.equal(acq.direct, 1);
+  const sh = s.engagement.share.map((x) => x.key);
+  assert.ok(sh.indexOf("share-stats") >= 0 && sh.indexOf("share-card") >= 0);
+  assert.ok(sh.indexOf("open-search") < 0, "nur share-*");
+  const streak = {}; s.meta.snapshotStreak.forEach((x) => { streak[x.key] = x.count; });
+  assert.equal(streak["4-7"], 2);
+  assert.equal(s.meta.snapshotReviews.length, 2);
+  assert.equal(s.users.trendWau7.cur, 2, "A,B in den letzten 7 Tagen");
+  assert.equal(s.users.trendWau7.prev, 1, "C in den 7 Tagen davor");
+  assert.equal(s.users.trendWau7.deltaPct, 100);
+});
+
 test("aggregate: Mastery & Trip aus Snapshots", () => {
   const U = [
     { day: TODAY, mastered: "26-50", tripGoal: true, tripDaily: "11-20" },

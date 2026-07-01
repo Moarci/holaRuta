@@ -15,8 +15,11 @@
   header h1 { font-size:19px; margin:0; font-weight:700; }
   header .sub { color:var(--mut); font-size:13px; }
   header .spacer { flex:1; }
-  button { background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; cursor:pointer; font:inherit; }
+  button { background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:6px 10px; cursor:pointer; font:inherit; font-size:13px; }
   button:hover { border-color:var(--brand); }
+  button.active { border-color:var(--brand); color:var(--brand); }
+  #daysbtns button { margin-left:4px; }
+  .tools { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   main { padding:20px 24px 60px; max-width:1180px; margin:0 auto; }
   .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
   .kpi { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
@@ -48,7 +51,12 @@
   <span class="sub" id="window"></span>
   <span class="spacer"></span>
   <span class="sub" id="updated"></span>
-  <button id="refresh">Aktualisieren</button>
+  <span class="tools">
+    <span id="daysbtns"></span>
+    <button id="exp-json" title="Statistik als JSON laden">JSON</button>
+    <button id="exp-csv" title="Tagesreihe als CSV laden">CSV</button>
+    <button id="refresh">Aktualisieren</button>
+  </span>
 </header>
 <main id="app"><p class="empty">Lade …</p></main>
 <footer>
@@ -61,6 +69,7 @@ var $ = function (id) { return document.getElementById(id); };
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
 function fmtDur(sec){ sec=sec|0; if(sec<60) return sec+" s"; var m=Math.floor(sec/60), s=sec%60; if(m<60) return m+" min "+(s?(s+" s"):""); var h=Math.floor(m/60); return h+" h "+(m%60)+" min"; }
 function numlead(s){ var m=String(s).match(/\d+/); return m?parseInt(m[0],10):0; } // führende Zahl (für Bucket-Sortierung)
+function sortBuckets(arr){ return (arr||[]).slice().sort(function(a,b){return numlead(a.key)-numlead(b.key);}); }
 
 // Horizontale Balkenliste: data = [{key/label, count, sub?}]
 function hbars(data, opts){
@@ -101,10 +110,11 @@ function vbars(series, opts){
   return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+bars+ticks+xl+'</svg>';
 }
 
-function kpi(v, l, h, color){
+function kpi(v, l, h, color, raw){
   return '<div class="kpi"><div class="v" style="color:'+(color||"var(--ink)")+'">'+esc(v)+'</div>'
-    + '<div class="l">'+esc(l)+'</div>'+(h?'<div class="h">'+esc(h)+'</div>':'')+'</div>';
+    + '<div class="l">'+esc(l)+'</div>'+((h||raw)?'<div class="h">'+esc(h||"")+(raw||"")+'</div>':'')+'</div>';
 }
+function arrow(delta){ delta=delta|0; if(delta>0) return '<span style="color:var(--good)">▲ '+delta+'%</span>'; if(delta<0) return '<span style="color:var(--bad)">▼ '+Math.abs(delta)+'%</span>'; return '<span style="color:var(--mut)">±0%</span>'; }
 
 function render(s){
   var u=s.users, se=s.sessions, le=s.learning;
@@ -112,7 +122,7 @@ function render(s){
   html += '<div class="kpis">'
     + kpi(u.total, "Nutzer (distinkt)", "im "+s.windowDays+"-Tage-Fenster", "var(--brand)")
     + kpi(u.dauToday, "Aktiv heute (DAU)", s.today)
-    + kpi(u.wau, "Aktiv 7 Tage (WAU)")
+    + kpi(u.wau, "Aktiv 7 Tage (WAU)", "", null, "vs. Vorwoche "+arrow((u.trendWau7||{}).deltaPct))
     + kpi(u.mau, "Aktiv 30 Tage (MAU)")
     + kpi(se.count, "Sitzungen")
     + kpi(fmtDur(se.avgDurationSec), "Ø Sitzungsdauer", "Median "+fmtDur(se.medianDurationSec), "var(--good)")
@@ -136,6 +146,13 @@ function render(s){
   html += '<div class="grid">';
   html += '<div class="panel"><h2>Genutzte Bildschirme</h2>'+hbars(s.engagement.screens)+'</div>';
   html += '<div class="panel"><h2>Top-Aktionen</h2>'+hbars(s.engagement.actions)+'</div>';
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Akquise-Quelle <small>(woher kommen Nutzer)</small></h2>'
+    + hbars(((s.engagement.acquisition)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--brand)"})+'</div>';
+  html += '<div class="panel"><h2>Teilen <small>(share-Aktionen)</small></h2>'
+    + ((s.engagement.share&&s.engagement.share.length)? hbars(s.engagement.share.map(function(a){return {label:a.key,count:a.count};}),{color:"var(--good)"}) : '<p class="empty">— keine —</p>')+'</div>';
   html += '</div>';
 
   html += '<div class="grid">';
@@ -193,6 +210,20 @@ function render(s){
     + hbars(((s.segments&&s.segments.editions)||[]).map(function(e){return {label:e.key,count:e.count};}),{color:"var(--brand)"})+'</div>';
   html += '</div>';
 
+  // --- Snapshot-Verteilungen (anonym) ---
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Feature-Adoption <small>(Snapshot: je Modus benutzt)</small></h2>'
+    + hbars(((s.meta.snapshotFeatureAdoption)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--good)"})+'</div>';
+  html += '<div class="panel"><h2>Streak-Verteilung</h2>'
+    + hbars(sortBuckets(s.meta.snapshotStreak).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--warn)"})+'</div>';
+  html += '</div>';
+  html += '<div class="grid">';
+  html += '<div class="panel"><h2>Karten heute <small>(Snapshot-Verteilung)</small></h2>'
+    + hbars(sortBuckets(s.meta.snapshotCardsToday).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--accent)"})+'</div>';
+  html += '<div class="panel"><h2>Bewertungen gesamt <small>(Lebenszeit)</small></h2>'
+    + hbars(sortBuckets(s.meta.snapshotReviews).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--accent)"})+'</div>';
+  html += '</div>';
+
   html += '<div class="grid">';
   html += '<div class="panel"><h2>App-Versionen</h2>'+hbars(s.meta.appVersions)+'</div>';
   html += '<div class="panel"><h2>Sprachen & Tracks</h2>'+hbars(s.meta.locales)
@@ -214,12 +245,20 @@ function render(s){
   $("updated").textContent = "Stand: "+new Date(s.generatedAt).toLocaleString();
 }
 
+var TOKEN = (new URLSearchParams(location.search)).get("token") || "";
+var DAYS = 30;
+function apiUrl(base){ var p=[]; if(DAYS) p.push("days="+DAYS); if(TOKEN) p.push("token="+encodeURIComponent(TOKEN)); return base + (p.length? "?"+p.join("&") : ""); }
+function renderDaysBtns(){ $("daysbtns").innerHTML = [7,30,90].map(function(d){ return '<button class="'+(d===DAYS?"active":"")+'" data-days="'+d+'">'+d+' T</button>'; }).join(""); }
 function load(){
-  fetch("/api/stats").then(function(r){return r.json();}).then(render).catch(function(e){
+  fetch(apiUrl("/api/stats")).then(function(r){ if(r.status===401){throw new Error("Token erforderlich (?token=… an die URL anhängen)");} return r.json(); }).then(render).catch(function(e){
     $("app").innerHTML = '<p class="empty">Fehler beim Laden: '+esc(e&&e.message)+'</p>';
   });
 }
 $("refresh").addEventListener("click", load);
+$("daysbtns").addEventListener("click", function(e){ var b=e.target.closest("[data-days]"); if(!b) return; DAYS=Number(b.dataset.days); renderDaysBtns(); load(); });
+$("exp-csv").addEventListener("click", function(){ location.href = apiUrl("/api/stats.csv"); });
+$("exp-json").addEventListener("click", function(){ fetch(apiUrl("/api/stats")).then(function(r){return r.text();}).then(function(t){ var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([t],{type:"application/json"})); a.download="holaruta-stats.json"; a.click(); }); });
+renderDaysBtns();
 load();
 setInterval(load, 30000);
 </script>

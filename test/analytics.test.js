@@ -171,6 +171,8 @@ test("sanitizeProps: behält nur die Allowlist, verwirft Freitext & unbekannte K
   assert.deepEqual(analytics.sanitizeProps("feature_complete", { feature: "precios", perfect: true, score: 42 }), { feature: "precios", perfect: true });
   // onboarding_step: Schritt-Slug + Index, sonst nichts.
   assert.deepEqual(analytics.sanitizeProps("onboarding_step", { step: "profile", n: 1, name: "Marcel" }), { step: "profile", n: 1 });
+  // app_open: returning/load_ms/src – keine URL o. Ä.
+  assert.deepEqual(analytics.sanitizeProps("app_open", { returning: true, load_ms: "1-200", src: "task", url: "x?y=1" }), { returning: true, load_ms: "1-200", src: "task" });
   // unbekanntes Event -> keine Props.
   assert.deepEqual(analytics.sanitizeProps("whatever", { a: 1 }), {});
 });

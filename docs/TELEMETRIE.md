@@ -79,7 +79,7 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 | Event | `props` | Wo erfasst (Datei · Funktion) | Bedeutung |
 |---|---|---|---|
-| **`app_open`** | `returning`:bool · `load_ms`:Bucket`[200,500,1000,3000]` | `app.js` · `setupAnalyticsEvents` (Boot) | App geöffnet; `returning` = es gab schon mal einen Lerntag |
+| **`app_open`** | `returning`:bool · `load_ms`:Bucket`[200,500,1000,3000]` · `src`:slug | `app.js` · `setupAnalyticsEvents` (Boot) | App geöffnet; `returning` = es gab schon mal einen Lerntag; `src` = Akquise-Quelle (`task`/`onboard-link`/`module-link`/`edition`/`direct`) aus den Start-URL-Parametern (nur Enum, **nie** die URL) |
 | **`perf`** | `load_ms`:Bucket`[200,500,1000,3000]` | `app.js` · `setupAnalyticsEvents` (Boot) | grobe Startzeit (`performance.now`) |
 | **`screen_view`** | `screen`:slug · `tab`:slug | `app.js` · `render()` → `trackScreenView` | Ansicht gewechselt (nur bei echtem Wechsel; `tab` nur auf Home) |
 | **`action`** | `action`:slug · `mode` · `dir` · `level` · `tab` · `scope` | `app.js` · `onClick` (Aktions-Dispatch) | jeder Button-Klick mit `data-action`; **ausgenommen** die Hochfrequenz-Aktionen `flip`/`rate`/`skip`/`speak` (separat erfasst) |
@@ -145,7 +145,14 @@ node tools/telemetry-server.js            # Server + Dashboard auf :8789
 # optional:  PORT=9000 TELEMETRY_DIR=/var/holaruta node tools/telemetry-server.js
 ```
 
-Dashboard öffnen: **http://localhost:8789/** · API: `GET /api/stats` (JSON).
+Dashboard öffnen: **http://localhost:8789/** · API: `GET /api/stats` (JSON) · `GET /api/stats.csv` (Tagesreihe).
+
+**Bedienung/Betrieb:**
+- **Zeitfenster** 7 / 30 / 90 Tage (Umschalter im Header bzw. `?days=`).
+- **Export:** Buttons **JSON** (ganze Statistik) und **CSV** (Tag · DAU · Sessions).
+- **Zugriffsschutz (optional):** `TELEMETRY_TOKEN=… node tools/telemetry-server.js` → Dashboard/API nur mit `?token=…`.
+- **Aufbewahrung:** `TELEMETRY_RETENTION_DAYS` (Default 120) — ältere Einträge werden beim Start verworfen und die Dateien kompaktiert.
+- Ungültiger/zu großer POST → `400` (Client behält den Batch und sendet erneut → kein Datenverlust).
 
 In einer Edition (`editions/<id>.js`) den Endpunkt setzen und bauen, dann im Profil
 **„Nutzungsstatistik teilen" → An**:
@@ -162,7 +169,9 @@ node build.js --edition=<id>
 
 | Bereich | Kennzahlen |
 |---|---|
-| **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate** (≥2 aktive Tage), **Stickiness** (Ø DAU/MAU); Balken „aktive Nutzer/Tag" |
+| **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T, mit **Trend** vs. Vorwoche ▲/▼), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate**, **Stickiness** (Ø DAU/MAU); Balken „aktive Nutzer/Tag" |
+| **Akquise & Teilen** | **Akquise-Quelle** (`app_open.src`: task/onboarding-link/edition/direct), **Teilen**-Aktionen |
+| **Snapshot-Verteilungen** | **Feature-Adoption**, **Streak**, **Karten/Tag**, **Bewertungen gesamt** (Lebenszeit) |
 | **Bindung & Retention** | **D1/D7/D30-Retention** (Kohorte nach Erst-Tag), Verteilung „aktive Tage je Nutzer" |
 | **Sitzungen** | Anzahl, **Ø & Median Sitzungsdauer** (aus den `ts`-Spannen je `sessionId`), Dauer-Histogramm, Sitzungen/Tag, Ø Events/Sitzung |
 | **Engagement** | meistgenutzte Bildschirme, Top-Aktionen |
