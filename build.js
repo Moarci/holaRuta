@@ -123,7 +123,17 @@ function build() {
     return `<script>\n${code}\n</script>`;
   });
 
-  // 4) Hinweis-Kommentar in den <head> setzen.
+  // 4) CSP für die Einzeldatei lockern: die Multi-File-CSP ist bewusst streng
+  //    (script-src 'self', siehe index.html) – hier sind aber ~50 Skripte inline
+  //    eingebettet, die sonst komplett geblockt würden (stumm weiße Seite).
+  //    Harter Fehler statt stillem Drift, falls die Direktive umformuliert wird.
+  const patched = html.replace("script-src 'self';", "script-src 'self' 'unsafe-inline';");
+  if (patched === html) {
+    throw new Error("CSP-Patch griff nicht – wurde die script-src-Direktive in index.html geändert?");
+  }
+  html = patched;
+
+  // 5) Hinweis-Kommentar in den <head> setzen.
   const note = `  <!-- EINZELDATEI: CSS + alle Skripte eingebettet. Funktioniert offline per Doppeltipp,\n` +
                `       ohne Server. Erzeugt aus index.html/styles.css/*.js mit "node build.js" –\n` +
                `       nicht von Hand editieren. -->`;

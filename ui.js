@@ -2629,10 +2629,11 @@
     const factRow = (label, value) =>
       value ? `<div class="cinfo-fact"><span class="cinfo-fact__k">${esc(label)}</span><span class="cinfo-fact__v">${esc(value)}</span></div>` : "";
     const dish = (d) => {
-      // Bild: lädt faul; bei Fehler/Offline blendet onerror es sauber aus.
+      // Bild: lädt faul; bei Fehler/Offline sauber ausblenden (delegierter
+      // error-Listener in app.js – Inline-onerror verbietet die CSP script-src 'self').
       const img = d.img
         ? `<img class="cinfo-dish__img" src="${esc(d.img)}" alt="${esc(d.name)}" loading="lazy"
-                referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
+                referrerpolicy="no-referrer" data-img-fallback="hide" />`
         : "";
       const long = d.long ? `<p class="cinfo-dish__long">${esc(d.long)}</p>` : "";
       const order = d.order

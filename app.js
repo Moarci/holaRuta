@@ -8098,6 +8098,21 @@
 
   // ----- Start -----
   root.addEventListener("click", onClick);
+  // Kaputte/Offline-Bilder (Wikimedia) sauber ausblenden. Früher inline
+  // onerror="…" am <img> – unter der CSP script-src 'self' sind Inline-Event-
+  // Handler verboten. error-Events bubbeln nicht, laufen aber in der
+  // Capture-Phase über root; data-img-fallback wählt das Verhalten:
+  // "hide" = Bild selbst weg, "hide-figure" = umschließende <figure> weg.
+  root.addEventListener("error", (e) => {
+    const img = e.target;
+    if (!img || img.tagName !== "IMG" || !img.dataset || !img.dataset.imgFallback) return;
+    if (img.dataset.imgFallback === "hide-figure") {
+      const fig = img.closest("figure");
+      if (fig) fig.style.display = "none";
+    } else {
+      img.style.display = "none";
+    }
+  }, true);
   root.addEventListener("change", onChange);
   root.addEventListener("input", onInput);
   root.addEventListener("paste", onPaste);
