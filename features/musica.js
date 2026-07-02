@@ -22,7 +22,7 @@
 (function () {
   "use strict";
   window.SC = window.SC || {};
-  const { esc, renderIcon, levelMeta, readingBlock, phraseGroups, moduleShareBtn, countryPicker } = window.SC.view;
+  const { esc, renderIcon, phraseGroups, moduleShareBtn, countryPicker, readingDetails, glossItem } = window.SC.view;
   const t = (key, vars) => window.t(key, vars);
 
   let ctx = null; // vom Controller injizierte Dienste (init)
@@ -73,13 +73,7 @@
     // Ein Genre: aufklappbar wie bei Salud/Fotos, plus Künstler-Chips,
     // Deep-Links und spanisches Lesetraining.
     const genreBlock = (g) => {
-      const lvl = levelMeta(g.level);
-      const reading = (g.es && g.es.length)
-        ? `<details class="hist-read">
-             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-read__body">${readingBlock({ es: g.es, vocab: g.vocab, level: g.level, quiz: true })}</div>
-           </details>`
-        : "";
+      const reading = readingDetails(g);
       const artists = (g.artists || []).length
         ? `<div class="mus-artists"><span class="mus-artists__cap">${esc(t("discover.musArtists"))}</span><span class="mus-artists__chips">${
             g.artists.map((a) => `<span class="mus-artist">${esc(a)}</span>`).join("")
@@ -126,11 +120,7 @@
     // jeder Satz mit Stern → „Mi léxico".
     const phrases = phraseGroups(vm.phrases, { fav: ctx.isFavorite, cat: "musica" });
 
-    const glossary = (vm.glossary || []).map((gl) => `
-      <li class="rg-gloss">
-        <span class="rg-gloss__es" lang="es">${esc(gl.es)}</span>
-        <span class="rg-gloss__de">${esc(gl.de)}</span>
-      </li>`).join("");
+    const glossary = (vm.glossary || []).map(glossItem).join("");
 
     // Sprungmarken-Leiste (wie ft-nav): nur Chips für vorhandene Blöcke.
     const navItems = [

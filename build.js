@@ -86,20 +86,23 @@ function build() {
   // End-Tag-Match maximal tolerant ([^>]* deckt "</script >", "</script/>",
   // "</script\n>" etc. ab) – sonst feuert js/bad-tag-filter.
   html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*><\/script[^>]*>/gi, (m, src) => {
-    inlined.push(src);
-    const code = inlineCode(src);
     // Locals-Loader: im Single-File gibt es kein Nachladen per document.write –
     // die drei Korpus-Dateien werden an GENAU dieser Position eingebettet
     // (nach i18n.strings.js/data.js, vor context.js/dialogos.js); der Loader
-    // selbst entfällt. Ihre eigenen Track-Guards greifen dann wie bei der
-    // früheren statischen Verdrahtung. Reihenfolge ist wichtig: attach()
-    // (context.js) braucht den Locals-Kontext, und data.locals.js muss
-    // SC.dialogos VOR dialogos.js vorbelegen können.
+    // selbst entfällt (NICHT in `inlined` – er wird ersetzt, nicht eingebettet).
+    // Ihre eigenen Track-Guards greifen dann wie bei der früheren statischen
+    // Verdrahtung. Reihenfolge ist wichtig: attach() (context.js) braucht den
+    // Locals-Kontext, und data.locals.js muss SC.dialogos VOR dialogos.js
+    // vorbelegen können. Vor push/inlineCode(src), damit die Build-Ausgabe nicht
+    // fälschlich „locals-loader.js" als eingebettet meldet und der Loader-Code
+    // nicht vergeblich gelesen wird.
     if (/(?:^|\/)locals-loader\.js$/i.test(src)) {
       return ["i18n.strings.es.js", "data.locals.js", "contextdata.locals.js"]
         .map((f) => { inlined.push(f); return `<script>\n${inlineCode(f)}\n</script>`; })
         .join("\n");
     }
+    inlined.push(src);
+    const code = inlineCode(src);
     // Edition-Build: die Edition-Config direkt vor config.js einbetten, damit
     // config.js sie beim Merge sieht (setzt window.SC.editionConfig).
     if (EDITION && src === "config.js") {
@@ -126,10 +129,15 @@ function build() {
   // 4) CSP für die Einzeldatei lockern: die Multi-File-CSP ist bewusst streng
   //    (script-src 'self', siehe index.html) – hier sind aber ~50 Skripte inline
   //    eingebettet, die sonst komplett geblockt würden (stumm weiße Seite).
-  //    Harter Fehler statt stillem Drift, falls die Direktive umformuliert wird.
-  const patched = html.replace("script-src 'self';", "script-src 'self' 'unsafe-inline';");
+  //    Bewusst NUR die script-src-Direktive INNERHALB des CSP-Meta-Tags patchen
+  //    (Anker auf content="…"): so kann ein zufällig identischer String in einem
+  //    eingebetteten Kommentar (z. B. boot.js erwähnt "script-src 'self'") den
+  //    Patch nicht fehlleiten. Harter Fehler bei 0 Treffern (Direktive/Meta
+  //    umformuliert) – kein stiller Drift zur stummen weißen Seite.
+  const CSP_META = /(<meta http-equiv="Content-Security-Policy" content="[^"]*?)script-src 'self';/;
+  const patched = html.replace(CSP_META, "$1script-src 'self' 'unsafe-inline';");
   if (patched === html) {
-    throw new Error("CSP-Patch griff nicht – wurde die script-src-Direktive in index.html geändert?");
+    throw new Error("CSP-Patch griff nicht – script-src 'self' in der CSP-Meta von index.html nicht gefunden?");
   }
   html = patched;
 

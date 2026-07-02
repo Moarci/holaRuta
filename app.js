@@ -2378,7 +2378,23 @@
       "onboarding": () => ui.renderOnboarding(homeVM()),
     };
     const screenFn = SCREENS[state.screen];
-    root.innerHTML = screenFn ? screenFn() : ui.renderHome(homeVM());
+    // Robustheit: Feature-/Screen-Module (features/*.js) werden als eigene
+    // <script>-Requests geladen und können beim Erstbesuch OHNE Service-Worker-
+    // Cache einzeln ausfallen (flaky Netz/Extension/Proxy). Das zugehörige
+    // Sheet-Handle ist dann undefined und screenFn() wirft. Ohne Fang bliebe
+    // root.innerHTML unersetzt -> Ansicht leer/eingefroren. Darum zentral fangen
+    // und auf Home zurückfallen (deckt auch die schon länger extrahierten
+    // jerga/derechos/etiqueta und alle Spiel-Module ab). Der Fehler wird geloggt;
+    // echte Screen-Regressionen scheitern weiterhin an den screen-spezifischen
+    // Checks in controller-smoke (Home-HTML erfüllt sie nicht).
+    let screenHtml;
+    try {
+      screenHtml = screenFn ? screenFn() : ui.renderHome(homeVM());
+    } catch (err) {
+      console.error("Render von Screen '" + state.screen + "' fehlgeschlagen:", err);
+      try { screenHtml = ui.renderHome(homeVM()); } catch (e2) { screenHtml = ""; }
+    }
+    root.innerHTML = screenHtml;
 
     // Nach dem Austausch des Inhalts: bei echtem Ansichtswechsel oben anfangen.
     resetScrollOnViewChange();

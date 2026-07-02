@@ -377,10 +377,8 @@ async function runSuite(browser, root, label) {
       const LOCALS_RE = /\/(data\.locals\.js|contextdata\.locals\.js|i18n\.strings\.es\.js)(\?|$)/;
       // 13a) Reise-Track (Default): keiner der drei Korpus-Requests darf rausgehen.
       {
-        const ctx = await browser.newContext({ viewport: { width: 412, height: 915 } });
-        const p = await ctx.newPage();
+        const { ctx, p } = await newPage("flip");
         const reqs = []; p.on("request", (r) => reqs.push(r.url()));
-        await seed(p, "flip");
         await p.goto(base, { waitUntil: "networkidle" });
         const hit = reqs.filter((u) => LOCALS_RE.test(u));
         check("Locals-Split: Reise-Track lädt keinen Locals-Korpus (~1,76 MB gespart)", hit.length === 0, hit.join(" | "));
@@ -391,12 +389,7 @@ async function runSuite(browser, root, label) {
       // 13b) Locals-Track (?edition=ingles-pro): Loader schreibt die Tags, Korpus
       //      hängt in SC.data, attach() liefert Kontext, Home rendert fehlerfrei.
       {
-        const ctx = await browser.newContext({ viewport: { width: 412, height: 915 } });
-        const errs = []; const csp = [];
-        const p = await ctx.newPage();
-        p.on("pageerror", (e) => errs.push("pageerror: " + e.message));
-        p.on("console", (m) => { if (m.type() === "error") { const tx = m.text(); errs.push("console: " + tx); if (cspErr(tx)) csp.push(tx); } });
-        await seed(p, "flip");
+        const { ctx, p, errs, csp } = await newPage("flip");
         await p.goto(baseUrl + "?edition=ingles-pro", { waitUntil: "networkidle" });
         const trackOk = await p.evaluate(() => window.SC.track && window.SC.track.id() === "es-en");
         check("Locals-Split: ?edition=ingles-pro aktiviert es-en-Track", trackOk);

@@ -19,6 +19,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("fs");
 const path = require("path");
+const { readAssets } = require("../swversion.js");
 
 const SRC = path.join(__dirname, "..");
 const read = (f) => fs.readFileSync(path.join(SRC, f), "utf8");
@@ -51,25 +52,33 @@ test("CSP: boot.js parser-blockend (ohne defer) VOR dem Stylesheet", () => {
 });
 
 test("CSP: keine Inline-Event-Handler in gerenderten Templates (onerror= etc.)", () => {
-  // Inline-Handler wie onerror="…" im per innerHTML gesetzten Markup werden
-  // unter script-src 'self' geblockt (stille Fehlfunktion). Ausblende-Fallback
-  // für Bilder läuft delegiert über data-img-fallback (error-Listener in app.js).
-  const sw = read("service-worker.js");
-  const assets = [...(sw.match(/const ASSETS\s*=\s*\[([\s\S]*?)\]/) || ["", ""])[1]
-    .matchAll(/["']\.\/([^"']+\.js)["']/g)].map((m) => m[1]);
+  // Inline-Handler wie onerror=… im per innerHTML gesetzten Markup werden unter
+  // script-src 'self' geblockt (stille Fehlfunktion). Ausblende-Fallback für
+  // Bilder läuft delegiert über data-img-fallback (error-Listener in app.js).
+  // readAssets() (swversion.js, eine Quelle der Wahrheit) statt eigener ASSETS-
+  // Regex: wirft bei kaputter/umbenannter Liste HART, statt still 0 Dateien zu
+  // prüfen (dann wäre der Wächter wirkungslos grün). index.html wird mitgescannt.
+  const targets = ["index.html", ...readAssets().filter((f) => /\.js$/.test(f))];
+  // KEIN Quote-Zwang nach '=': auch unquoted Handler (onerror=hide(this)) sind
+  // legales HTML und würden von der CSP geblockt – die Vor-CSP-Schreibweise.
+  const RE = /<[a-z][^<>]*\son[a-z]+\s*=/gi;
   const offenders = [];
-  for (const f of assets) {
+  for (const f of targets) {
     if (!fs.existsSync(path.join(SRC, f))) continue;
-    const src = read(f);
-    for (const m of src.matchAll(/<[a-z][^<>]*\son[a-z]+=["']/gi)) offenders.push(`${f}: …${m[0].slice(-40)}`);
+    for (const m of read(f).matchAll(RE)) offenders.push(`${f}: …${m[0].slice(-50)}`);
   }
   assert.deepEqual(offenders, [], `Inline-Event-Handler gefunden (CSP blockt sie):\n${offenders.join("\n")}`);
 });
 
-test("CSP: build.js patcht 'unsafe-inline' für den Single-File-Build zurück", () => {
+test("CSP: build.js patcht 'unsafe-inline' für den Single-File-Build zurück (auf die Meta geankert)", () => {
   const build = read("build.js");
-  assert.ok(build.includes(`html.replace("script-src 'self';", "script-src 'self' 'unsafe-inline';")`),
-    "build.js: CSP-Patch für die Einzeldatei fehlt – HolaRuta.html bräche stumm");
+  // Der Patch muss auf das CSP-Meta-Tag geankert sein (nicht bloß erstes
+  // Vorkommen im ganzen Dokument), sonst könnte ein eingebetteter Kommentar mit
+  // demselben String die Direktive fehlleiten → stumme weiße Seite.
+  assert.ok(/Content-Security-Policy[^]*?script-src 'self';/.test(build),
+    "build.js: CSP-Patch ist nicht auf das CSP-Meta-Tag geankert (Fehlleitung durch Kommentare möglich)");
+  assert.ok(build.includes("'self' 'unsafe-inline';"),
+    "build.js: CSP-Patch fügt 'unsafe-inline' nicht zurück – HolaRuta.html bräche stumm");
   assert.ok(/CSP-Patch griff nicht/.test(build),
     "build.js: harter Fehler bei nicht greifendem CSP-Patch fehlt");
 });

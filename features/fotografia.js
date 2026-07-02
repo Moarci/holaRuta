@@ -21,7 +21,7 @@
 (function () {
   "use strict";
   window.SC = window.SC || {};
-  const { esc, renderIcon, levelMeta, readingBlock, tipsShareBtn, phraseGroups, moduleShareBtn } = window.SC.view;
+  const { esc, renderIcon, tipsShareBtn, phraseGroups, moduleShareBtn, kniggeList, readingDetails, glossItem, checkItem } = window.SC.view;
   const t = (key, vars) => window.t(key, vars);
 
   let ctx = null; // vom Controller injizierte Dienste (init)
@@ -66,25 +66,8 @@
     '</svg>';
 
   function renderFotos(vm) {
-    const liList = (items, cls, marker) => {
-      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
-      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
-      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
-      return (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
-        .join("");
-    };
-
     // Ein Thema: aufklappbar wie bei Knigge/Salud, plus spanisches Lesetraining.
-    const topicBlock = (tp, i) => {
-      const lvl = levelMeta(tp.level);
-      const reading = (tp.es && tp.es.length)
-        ? `<details class="hist-read">
-             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
-           </details>`
-        : "";
-      return `
+    const topicBlock = (tp, i) => `
         <details class="knigge-topic">
           <summary class="knigge-topic__head">
             <span class="knigge-topic__icon" aria-hidden="true">${renderIcon(tp.icon)}</span>
@@ -93,13 +76,12 @@
           </summary>
           <div class="knigge-topic__body">
             ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
-            ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
-            ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
-            ${reading}
+            ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${kniggeList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
+            ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${kniggeList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+            ${readingDetails(tp)}
             ${tipsShareBtn("fotos", i)}
           </div>
         </details>`;
-    };
     const topics = (vm.topics || []).map(topicBlock).join("");
 
     // Wichtige Sätze: pro Thema eine zweispaltige Liste (es / de) – wie Salud,
@@ -110,8 +92,8 @@
     const sh = vm.sharing;
     const sharing = sh
       ? `<p class="hm-intro">${esc(sh.intro)}</p>
-         ${sh.dos && sh.dos.length ? `<ul class="knigge-list">${liList(sh.dos, "knigge-do", "✅")}</ul>` : ""}
-         ${sh.donts && sh.donts.length ? `<ul class="knigge-list">${liList(sh.donts, "knigge-dont", "🚫")}</ul>` : ""}`
+         ${sh.dos && sh.dos.length ? `<ul class="knigge-list">${kniggeList(sh.dos, "knigge-do", "✅")}</ul>` : ""}
+         ${sh.donts && sh.donts.length ? `<ul class="knigge-list">${kniggeList(sh.donts, "knigge-dont", "🚫")}</ul>` : ""}`
       : "";
 
     // Foto-Apps: Karte mit Bild (SVG), Erklärung und Link (z. B. Mymories).
@@ -133,20 +115,9 @@
     };
     const apps = (vm.apps || []).map(appCard).join("");
 
-    const glossary = (vm.glossary || []).map((g) => `
-      <li class="rg-gloss">
-        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
-        <span class="rg-gloss__de">${esc(g.de)}</span>
-      </li>`).join("");
+    const glossary = (vm.glossary || []).map(glossItem).join("");
 
-    const checklist = (vm.checklist || []).map((c) => `
-      <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
-        <span class="rg-region__body">
-          <span class="rg-region__country">${esc(c.item)}</span>
-          <span class="rg-region__note">${esc(c.why)}</span>
-        </span>
-      </li>`).join("");
+    const checklist = (vm.checklist || []).map(checkItem).join("");
 
     // Sprungmarken-Leiste (wie hist-nav/sz-nav): die Seite ist lang, ein Tipp
     // springt direkt zum Abschnitt. Nur Chips für tatsächlich vorhandene Blöcke.

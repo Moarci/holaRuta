@@ -207,7 +207,7 @@ SpanischCard/
 │
 ├── data.js        SC.data       # Modell: 72 Kategorien, 4 Stufen (A1–B2; B2 nur in Rollenspielen, Karten füllen A1–B1), 2293 Karten + Hostel-Mode- & Definiciones-Daten (REINE DATEN)
 ├── contextdata.js SC.contextData # Reise-Kontext-Inhalte je Karte ({e,d,s,n}) – REINE DATEN
-├── locals-loader.js             # Lädt den Locals-Korpus (data.locals/contextdata.locals/i18n.strings.es) NUR im es-en-Track (~1,76 MB Ersparnis im Reise-Track)
+├── locals-loader.js             # Lädt den Locals-Korpus (data.locals/contextdata.locals/i18n.strings.es) NUR im es-en-Track (~1,76 MB weniger Parse/Ausführung im Reise-Track; im Precache bleiben sie für den Offline-Editionswechsel)
 ├── numbers.js     SC.numbers    # Zahl→spanisches Wort + Preis-Generator (Precios al oído, 7 Währungen) – REINE FUNKTIONEN
 ├── context.js     SC.context    # hängt Kontext an die Karten (Zahlen generiert) – REINE FUNKTIONEN
 ├── countries.js   SC.countries  # Länderkunde: 19 Länder in 3 Regionen

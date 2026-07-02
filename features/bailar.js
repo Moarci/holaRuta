@@ -22,7 +22,7 @@
 (function () {
   "use strict";
   window.SC = window.SC || {};
-  const { esc, renderIcon, levelMeta, readingBlock, tipsShareBtn, phraseGroups, moduleShareBtn } = window.SC.view;
+  const { esc, renderIcon, levelMeta, tipsShareBtn, phraseGroups, moduleShareBtn, kniggeList, readingDetails, glossItem, checkItem } = window.SC.view;
   const t = (key, vars) => window.t(key, vars);
 
   let ctx = null; // vom Controller injizierte Dienste (init)
@@ -44,15 +44,6 @@
 
   // ----- Render -----
   function renderBailar(vm) {
-    const liList = (items, cls, marker) => {
-      // Marker als role="img" mit Label, damit Screenreader „Empfohlen/Vermeiden"
-      // hören – sonst sind DO- und Don't-Liste nur über Emoji+Farbe unterscheidbar.
-      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo") : t("discover.kniggeDont");
-      return (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
-        .join("");
-    };
-
     // Ein Fußabdruck: äußere <g> trägt Position/Drehung (SVG-transform) und den
     // Wellen-Index (--bi); die innere __pop-Gruppe wird per CSS skaliert (eigenes
     // transform, daher getrennt). Die Zählzahl steht auf dem Ballen.
@@ -107,13 +98,8 @@
     // Eine Tanz-Karte (aufklappbar wie knigge-topic): Diagramm, Rhythmus, Videos,
     // Tipps, Lesetraining.
     const danceBlock = (d, i) => {
-      const lvl = levelMeta(d.level);
-      const reading = (d.es && d.es.length)
-        ? `<details class="hist-read">
-             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-read__body">${readingBlock({ es: d.es, vocab: d.vocab, level: d.level, quiz: true })}</div>
-           </details>`
-        : "";
+      const lvl = levelMeta(d.level); // Niveau-Chip in der Summary (readingDetails berechnet sein eigenes)
+      const reading = readingDetails(d);
       const videos = (d.videos && d.videos.length)
         ? `<div class="bf-videos">
              <p class="bf-videos__cap">${renderIcon("lc:clapperboard")} ${esc(t("discover.blVideos"))}</p>
@@ -134,8 +120,8 @@
             <p class="bf-count" lang="es">${esc(d.count || "")}</p>
             ${d.compas ? `<p class="bf-compas">${renderIcon("lc:music")} ${esc(d.compas)}</p>` : ""}
             ${videos}
-            ${d.dos && d.dos.length ? `<ul class="knigge-list">${liList(d.dos, "knigge-do", "✅")}</ul>` : ""}
-            ${d.donts && d.donts.length ? `<ul class="knigge-list">${liList(d.donts, "knigge-dont", "🚫")}</ul>` : ""}
+            ${d.dos && d.dos.length ? `<ul class="knigge-list">${kniggeList(d.dos, "knigge-do", "✅")}</ul>` : ""}
+            ${d.donts && d.donts.length ? `<ul class="knigge-list">${kniggeList(d.donts, "knigge-dont", "🚫")}</ul>` : ""}
             ${reading}
             ${tipsShareBtn("bailar", i)}
           </div>
@@ -147,20 +133,9 @@
     // jeder Satz mit Stern → „Mi léxico".
     const phrases = phraseGroups(vm.phrases, { fav: ctx.isFavorite, cat: "bailar" });
 
-    const glossary = (vm.glossary || []).map((g) => `
-      <li class="rg-gloss">
-        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
-        <span class="rg-gloss__de">${esc(g.de)}</span>
-      </li>`).join("");
+    const glossary = (vm.glossary || []).map(glossItem).join("");
 
-    const checklist = (vm.checklist || []).map((c) => `
-      <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
-        <span class="rg-region__body">
-          <span class="rg-region__country">${esc(c.item)}</span>
-          <span class="rg-region__note">${esc(c.why)}</span>
-        </span>
-      </li>`).join("");
+    const checklist = (vm.checklist || []).map(checkItem).join("");
 
     const navItems = [
       dances && { id: "bl-dances", icon: "lc:footprints", label: t("discover.blNavDances") },
