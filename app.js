@@ -33,6 +33,9 @@
   const cafeSheet = window.SC.cafeSheet; // Feature-Modul (Café de la región), eager geladen
   const juegosSheet = window.SC.juegosSheet; // Feature-Modul (Juegos de viaje), eager geladen
   const flirtSheet = window.SC.flirtSheet; // Feature-Modul (Coqueteo y romance; liest SC.flirt live)
+  const fotosSheet = window.SC.fotosSheet; // Feature-Modul (Fotos y videos; liest SC.fotografia live)
+  const bailarSheet = window.SC.bailarSheet; // Feature-Modul (Bailar; liest SC.bailar live)
+  const musicaSheet = window.SC.musicaSheet; // Feature-Modul (Música; liest SC.musica live)
   const banderasGame = window.SC.banderasGame; // Feature-Modul (Banderas, Flaggen-Quiz & Galería), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
@@ -1063,74 +1066,11 @@
   // & „Modul teilen" lesen weiterhin die Content-Module SC.salud/cafe/… direkt
   // (wie bei Knigge/Etiqueta).
 
-  // Fotos & Videos: praktische Tipps (Topics mit DOs/Don'ts + spanisches
-  // Lesetraining wie in der Historia), Sätze zum Bitten/Platz-Machen, der
-  // Teilen-Block (AirDrop/Quick Share) plus Foto-Apps (Mymories), Glossar, Kit.
-  function fotosVM() {
-    if (!fotografia) return { intro: "", topics: [], phrases: [], sharing: null, apps: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && fotografia.INTRO_EN) ? fotografia.INTRO_EN : fotografia.INTRO,
-      topics: loc(fotografia.TOPICS || []),
-      phrases: loc(fotografia.PHRASES || []),
-      sharing: fotografia.SHARING ? loc(fotografia.SHARING) : null,
-      apps: loc(fotografia.APPS || []),
-      glossary: loc(fotografia.GLOSSARY || []),
-      checklist: loc(fotografia.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
-
-  // Bailar: Tanzen in LatAm. Die Tänze (mit Schritt-Diagramm-Koordinaten,
-  // Zählrhythmus, Tipps, Lesetraining und Video-Links), Sätze zum Auffordern,
-  // ein Glossar und ein Tanz-Knigge. localizeDeep überlagert die …En-Felder.
-  function bailarVM() {
-    if (!bailar) return { intro: "", dances: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && bailar.INTRO_EN) ? bailar.INTRO_EN : bailar.INTRO,
-      dances: loc(bailar.DANCES || []),
-      phrases: loc(bailar.PHRASES || []),
-      glossary: loc(bailar.GLOSSARY || []),
-      checklist: loc(bailar.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
-
-  // Música: die großen Genres LatAms (mit ES-Lesetraining + Spotify/Apple-Deep-
-  // Links), der Sound des gewählten Reiselands (state.countryId wie Bebidas/
-  // Länderkunde), die Sätze zum Reden/Tanzen und ein Glossar. Pass-Through wie
-  // saludVM; zusätzlich die Länder-Auswahl wie bebidasVM, damit der „Sound deines
-  // Reiselands" immer das Land der Reise trifft.
-  function musicaVM() {
-    if (!musica) return { intro: "", genres: [], phrases: [], glossary: [], country: null, countryData: null, groups: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    const list = countries ? countries.LIST : [];
-    const regions = countries ? countries.REGIONS : [];
-    const country = list.find((c) => c.id === state.countryId) || list[0] || null;
-    const groups = regions
-      .map((region) => ({
-        region,
-        countries: list
-          .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
-      }))
-      .filter((g) => g.countries.length > 0);
-    const cd = (country && musica.COUNTRY[country.id]) ? loc(musica.COUNTRY[country.id]) : null;
-    return {
-      intro: (en && musica.INTRO_EN) ? musica.INTRO_EN : musica.INTRO,
-      genres: loc(musica.GENRES || []),
-      phrases: loc(musica.PHRASES || []),
-      glossary: loc(musica.GLOSSARY || []),
-      country: country ? { id: country.id, name: natk(country, "name"), flag: country.flag } : null,
-      countryData: cd,
-      groups,
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
+  // Fotos / Bailar / Música: VM + Render leben jetzt in den Feature-Modulen
+  // features/fotografia.js (SC.fotosSheet), features/bailar.js und
+  // features/musica.js. Alle drei Content-Module werden per navAfterLoad
+  // geöffnet (können lazy sein) – die Features lesen window.SC.<modul> live.
+  // Der Controller delegiert via SCREENS an .screen(); Spotlight liest .vm().
 
   // ----- Badge-System ("Mein Ruta-Pass") -----
   // Lokaler Tages-Schlüssel "YYYY-MM-DD" – Basis für die Lern-Serie (Streak).
@@ -2381,9 +2321,9 @@
       "derechos": () => derechosSheet.screen(),
       "responsable": () => responsableSheet.screen(),
       "flirt": () => flirtSheet.screen(),
-      "fotos": () => ui.renderFotos(fotosVM()),
-      "bailar": () => ui.renderBailar(bailarVM()),
-      "musica": () => ui.renderMusica(musicaVM()),
+      "fotos": () => fotosSheet.screen(),
+      "bailar": () => bailarSheet.screen(),
+      "musica": () => musicaSheet.screen(),
       "cafe": () => cafeSheet.screen(),
       "juegos": () => juegosSheet.screen(),
       "badges": () => ui.renderBadges(badgesVM()),
@@ -7167,13 +7107,13 @@
       case "responsable":
         return cut((responsableSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🌱", text: tp.title })));
       case "fotos":
-        return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
+        return cut((fotosSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
       case "flirt":
         return cut((flirtSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "💘", text: tp.title })));
       case "bailar":
-        return cut((bailarVM().dances || []).map((d) => ({ mark: d.icon || "💃", text: d.name })));
+        return cut((bailarSheet.vm().dances || []).map((d) => ({ mark: d.icon || "💃", text: d.name })));
       case "musica":
-        return cut((musicaVM().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
+        return cut((musicaSheet.vm().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
       case "cafe":
         return cut((cafeSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "☕", text: tp.title })));
       case "juegos":
@@ -8142,6 +8082,9 @@
   if (cafeSheet) cafeSheet.init(featureCtx);
   if (juegosSheet) juegosSheet.init(featureCtx);
   if (flirtSheet) flirtSheet.init(featureCtx);
+  if (fotosSheet) fotosSheet.init(featureCtx);
+  if (bailarSheet) bailarSheet.init(featureCtx);
+  if (musicaSheet) musicaSheet.init(featureCtx);
   if (banderasGame) banderasGame.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das

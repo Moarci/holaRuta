@@ -276,7 +276,10 @@ SpanischCard/
 │   ├── logistica.js     SC.logisticaSheet # Logística de viaje (SIM, Geld, Gepäck)
 │   ├── cafe.js          SC.cafeSheet    # Café de la región (Kaffeeanbau & -kultur)
 │   ├── juegos.js        SC.juegosSheet  # Juegos de viaje (Hostel-Spiele)
-│   └── flirt.js         SC.flirtSheet   # Coqueteo y romance (flirten & daten)
+│   ├── flirt.js         SC.flirtSheet   # Coqueteo y romance (flirten & daten)
+│   ├── fotografia.js    SC.fotosSheet   # Fotos y videos (Tipps, Teilen, Foto-Apps)
+│   ├── bailar.js        SC.bailarSheet  # Bailar (Tänze mit Schritt-Diagramm)
+│   └── musica.js        SC.musicaSheet  # Música (Genres + Spotify/Apple-Deep-Links)
 │
 ├── build.js                     # Erzeugt die Einzeldatei HolaRuta.html
 ├── swversion.js                 # Build-/Test-Werkzeug: Inhalts-Hash für den SW-Cache-Namen (kein SC-Modul)
