@@ -14,7 +14,9 @@
   // Geteilte, zustandsfreie Render-Primitive aus view-helpers.js (SC.view) –
   // dieselbe Quelle nutzen auch die Feature-Module (kein Duplikat). view-helpers.js
   // läuft vor ui.js (index.html / Build / _dom-stub-Reihenfolge).
-  const { esc, renderIcon, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, phraseGroups, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock, moduleSheet } = window.SC.view;
+  // (moduleSheet wird hier nicht mehr gebraucht: alle Info-Blätter sind in
+  // features/*-Module gewandert und holen es selbst aus SC.view.)
+  const { esc, renderIcon, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, phraseGroups, sect, tipsShareBtn, cornerBtn, levelMeta, readingBlock } = window.SC.view;
 
   // Hell/Dunkel-Wahl als doppelseitiges Emaille-Schild. Hell = Kaffee am Morgen
   // (AM, Dampf steigt), Dunkel = Wein am Abend (PM, Glas voll). Bewusst KEIN blinder
@@ -2946,72 +2948,10 @@
   // im Controller. Der Tipp-Teilen-Knopf tipsShareBtn() kommt aus SC.view.
 
 
-  // Logística de viaje: SIM, Geld, Gepäck-Tracker, Handgepäck-Notfallset, Planung.
-  function renderLogistica(vm) {
-    return moduleSheet(vm, {
-      icon: "lc:luggage", title: "Logística de viaje", cat: "logistica",
-      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
-      headTips: "discover.lgTips", headPhrases: "discover.lgPhrases",
-      headWords: "discover.lgWords", headChecklist: "discover.lgChecklist",
-      headChecklistHint: "discover.lgChecklistHint",
-    });
-  }
-
-  // Salud y energía: ausgewogen essen, günstig trinken, Bauch, Sonne/Höhe, Bewegung.
-  function renderSalud(vm) {
-    return moduleSheet(vm, {
-      icon: "lc:salad", title: "Salud y energía", cat: "salud",
-      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
-      headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
-      headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",
-      headChecklistHint: "discover.sdChecklistHint",
-    });
-  }
-
-  // Café de la región: Kaffeeanbau & -kultur (Anbau, Ernte, Verarbeitung, Rösten,
-  // Regionen, Finca-Besuch, fairer Handel) + Sätze zum Bestellen, auf der Tour und
-  // beim Bohnenkauf. Gleiches Sheet wie Salud/Flirt; readingPerTopic für das
-  // spanische Lesetraining je Thema, copyPhrases für Sätze zum Weiterschicken.
-  function renderCafe(vm) {
-    return moduleSheet(vm, {
-      icon: "lc:coffee", title: "Café de la región", cat: "cafe",
-      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
-      headTips: "discover.cfTips", headPhrases: "discover.cfPhrases",
-      headWords: "discover.cfWords", headChecklist: "discover.cfChecklist",
-      headChecklistHint: "discover.cfChecklistHint",
-      readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
-      copyPhrases: true,     // jeder Satz mit Kopier-Knopf (zum Weiterschicken)
-    });
-  }
-
-  // Juegos de viaje: Hostel-Spiele (UNO, Monopoly Deal, Presidente, Truco, Dudo,
-  // Cuarenta, Generala, Dominó, Yo nunca, Hombre lobo) + die Sätze für den Tisch.
-  // Gleiches Sheet wie Salud/Flirt; readingPerTopic für die LatAm-Kultur-Texte.
-  function renderJuegos(vm) {
-    return moduleSheet(vm, {
-      icon: "lc:dices", title: "Juegos de viaje", cat: "juegos",
-      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
-      headTips: "discover.jgTips", headPhrases: "discover.jgPhrases",
-      headWords: "discover.jgWords", headChecklist: "discover.jgChecklist",
-      headChecklistHint: "discover.jgChecklistHint",
-      readingPerTopic: true, // spanisches Lesetraining je Spiel (es/vocab/level)
-      copyPhrases: true,     // jeder Tisch-Satz mit Kopier-Knopf (zum Weiterschicken)
-    });
-  }
-
-  // Coqueteo y romance: ins Gespräch kommen, Komplimente, Konsens, Date
-  // vorschlagen, Dating-Kultur, sicher daten. Gleiches Sheet wie Salud/Logística.
-  function renderFlirt(vm) {
-    return moduleSheet(vm, {
-      icon: "lc:heart", title: "Coqueteo y romance", cat: "flirt",
-      favPhrases: vm.isFav, // jeder Satz mit Stern → „Mi léxico"
-      headTips: "discover.flTips", headPhrases: "discover.flPhrases",
-      headWords: "discover.flWords", headChecklist: "discover.flChecklist",
-      headChecklistHint: "discover.flChecklistHint",
-      readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
-      copyPhrases: true,     // jeder wichtige Satz mit Kopier-Knopf (zum Weiterschicken)
-    });
-  }
+  // LOGÍSTICA / SALUD / CAFÉ / JUEGOS / COQUETEO sind nach features/logistica.js,
+  // features/salud.js, features/cafe.js, features/juegos.js und features/flirt.js
+  // (SC.<modul>Sheet) gewandert – VM und Render leben dort zusammen; die Opener
+  // bleiben im Controller. Das gemeinsame Blatt moduleSheet() kommt aus SC.view.
 
   // ---------- FOTOS Y VIDEOS (ERKLÄRSEITE) ----------
   // Wie die Info-Module (Tipps mit DOs/Don'ts, Sätze, Glossar, Kit), aber jedes
@@ -4720,7 +4660,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderLogistica, renderSalud, renderFotos, renderFlirt, renderBailar, renderMusica, renderCafe, renderJuegos, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderFotos, renderBailar, renderMusica, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderConjugacion,

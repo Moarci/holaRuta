@@ -268,7 +268,15 @@ SpanischCard/
 │   ├── compras.js       SC.compras      # Lista de compras (Einkaufsliste + Quiz)
 │   ├── dialogos-game.js SC.dialogosGame # Diálogos (Gesprächs-Simulator)
 │   ├── etiqueta.js      SC.etiqueta     # Etiqueta de viaje (Reise-Knigge)
-│   └── cronologia.js    SC.cronologia   # Historia (Geschichts-Zeitstrahl Süd-/Mittelamerika)
+│   ├── cronologia.js    SC.cronologia   # Historia (Geschichts-Zeitstrahl Süd-/Mittelamerika)
+│   ├── jerga.js         SC.jergaSheet   # Jerga colombiana (Slang-Blatt)
+│   ├── derechos.js      SC.derechosSheet # Conoce tus derechos (Rechte-Blatt)
+│   ├── responsable.js   SC.responsableSheet # Viaja responsable (nachhaltig reisen)
+│   ├── salud.js         SC.saludSheet   # Salud y energía (gesund & fit unterwegs)
+│   ├── logistica.js     SC.logisticaSheet # Logística de viaje (SIM, Geld, Gepäck)
+│   ├── cafe.js          SC.cafeSheet    # Café de la región (Kaffeeanbau & -kultur)
+│   ├── juegos.js        SC.juegosSheet  # Juegos de viaje (Hostel-Spiele)
+│   └── flirt.js         SC.flirtSheet   # Coqueteo y romance (flirten & daten)
 │
 ├── build.js                     # Erzeugt die Einzeldatei HolaRuta.html
 ├── swversion.js                 # Build-/Test-Werkzeug: Inhalts-Hash für den SW-Cache-Namen (kein SC-Modul)
