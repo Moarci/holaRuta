@@ -17,6 +17,13 @@ zugeschnitten auf die Rolle.
 > `reunion-en`/`videocall-en` bleiben bewusst getrennt (komplementär, keine Dubletten —
 > vom Review bestätigt). **Nachgezogen:** Nische Healthcare (`salud-pro-en`, 14 Karten +
 > Diálogo „En la consulta") → **63 Kategorien · 818 Karten · 20 Diálogos · 7 Kurspläne**.
+>
+> **Aktueller Stand (2026-07):** Der Korpus ist seither weit über diesen Bauplan hinaus
+> gewachsen — **131 Kategorien · 2844 Karten · 24 Diálogos · 9 Kurspläne** (u. a. die
+> Vokabel-Sektion `loc-voc` und die B2-Gruppe `loc-b2`), mit komplettem Sign-off
+> (siehe [LOCALS-SIGNOFF.md](LOCALS-SIGNOFF.md)). Maßgeblich für die Zähler ist der
+> test-verankerte Stand in [LOCALS.md](LOCALS.md); **dieses Dokument ist ein
+> historischer Bauplan-Snapshot**, kein laufend nachgezogenes Register.
 > Offen/optional: weitere Diálogos je Cluster.
 
 ---

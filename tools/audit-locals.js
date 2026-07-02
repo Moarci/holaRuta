@@ -10,8 +10,11 @@
  *      als falsch – Arbeitsliste für das `alt`-Feature.
  *
  *   2. HARTE PRÜFUNGEN (gate-fähig, `--strict`):
- *      (a) `alt`-Struktur: jeder Eintrag nicht leer, normalisierbar, untereinander
- *          distinkt und ≠ Haupt-`en`.
+ *      (a) `alt`-Struktur: jeder Eintrag nicht leer, normalisierbar und untereinander
+ *          distinkt. WICHTIG: Bei nicht-leerem `alt` MUSS die Haupt-`en` enthalten
+ *          sein – der Matcher (matcher.js: acceptedAnswers) lässt `alt` die
+ *          Antwortmenge ERSETZEN, d. h. ohne die Haupt-`en` würde die eigene,
+ *          angezeigte Antwort als falsch gewertet (früher der „besides"-Bug).
  *      (b) Ambiguität: ein `alt`-Synonym darf nicht der Haupt-`en` einer ANDEREN
  *          Karte im selben Lern-Set (Kategorie / Preset / Kurs-Etappe) entsprechen
  *          (sonst zwei „richtige" Karten mit kollidierender Antwort). Artikel-los
@@ -129,8 +132,11 @@ function altErrors() {
       if (seen.has(k)) errors.push({ id: c.id, kind: "alt-dublette", detail: `doppelt: ${JSON.stringify(a)}` });
       seen.add(k);
     }
-    if (c.en && seen.has(key(c.en))) {
-      errors.push({ id: c.id, kind: "alt==en", detail: `alt enthält die Haupt-en: ${JSON.stringify(c.en)}` });
+    // Der Matcher ersetzt bei nicht-leerem alt die Antwortmenge (matcher.js:
+    // acceptedAnswers). Die Haupt-en MUSS daher in alt stehen, sonst wird die
+    // angezeigte Antwort selbst abgelehnt.
+    if (c.en && !seen.has(key(c.en))) {
+      errors.push({ id: c.id, kind: "en-fehlt-in-alt", detail: `Haupt-en nicht in alt (alt ersetzt die Antwortmenge): ${JSON.stringify(c.en)}` });
     }
   }
 

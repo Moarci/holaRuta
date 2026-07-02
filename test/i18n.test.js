@@ -14,6 +14,7 @@ const path = require("path");
 globalThis.window = globalThis.window || {};
 require(path.join(__dirname, "..", "i18n.js"));
 require(path.join(__dirname, "..", "i18n.strings.js"));
+require(path.join(__dirname, "..", "i18n.strings.es.js")); // ES-Schicht (Locals-UI)
 require(path.join(__dirname, "..", "matcher.js"));
 require(path.join(__dirname, "..", "data.js"));
 const { i18n, matcher, data } = globalThis.window.SC;
@@ -117,4 +118,19 @@ test("i18n: DE⟷EN Key-Parität im UI-Wörterbuch (keine fehlenden/überzählig
   const missingDe = en.filter((k) => !setDe.has(k)).sort();
   assert.deepEqual(missingEn, [], `Schlüssel ohne EN-Pendant: ${missingEn.join(", ")}`);
   assert.deepEqual(missingDe, [], `Schlüssel ohne DE-Pendant: ${missingDe.join(", ")}`);
+});
+
+test("i18n: ES-Schicht (Locals-UI) – kein verwaister ES-Schlüssel + Coverage-Floor", () => {
+  // ES ist BEWUSST nur teilweise übersetzt: rein reise-spezifische Namespaces fallen
+  // über die Kette es→en→de zurück (im Locals-Track ohnehin ausgeblendet). Daher KEINE
+  // Voll-Parität zu EN, aber zwei harte Garantien:
+  const { en, es } = i18n.dictKeys();
+  const setEn = new Set(en);
+  // (a) Jeder ES-Schlüssel MUSS ein EN-Pendant haben – ein ES-Key ohne EN ist ein
+  //     Tippfehler im ES-Wörterbuch (er würde nie greifen).
+  const esOrphans = es.filter((k) => !setEn.has(k)).sort();
+  assert.deepEqual(esOrphans, [], `ES-Schlüssel ohne EN-Pendant (Tippfehler?): ${esOrphans.join(", ")}`);
+  // (b) Coverage-Floor: die ES-Schicht darf nicht wegbrechen (Regression, wenn jemand
+  //     versehentlich ES-Strings entfernt). Aktuell ~522 Schlüssel; Floor konservativ.
+  assert.ok(es.length >= 500, `ES-Coverage gebrochen: nur ${es.length} Schlüssel (Floor 500)`);
 });
