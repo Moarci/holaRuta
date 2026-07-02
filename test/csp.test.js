@@ -26,9 +26,24 @@ const read = (f) => fs.readFileSync(path.join(SRC, f), "utf8");
 
 test("CSP: index.html enthält kein Inline-Skript (alle <script> mit src)", () => {
   const html = read("index.html");
-  const inline = [...html.matchAll(/<script\b([^>]*)>/g)].filter((m) => !/\bsrc=/.test(m[1]));
+  // Inline-<script> = ein Öffnungs-Tag OHNE src=. Bewusst per String-Scan
+  // (indexOf, case-insensitiv über eine Kleinschreib-Kopie) statt eines
+  // HTML-Tag-Filter-Regex: ein solcher Regex triggert js/bad-tag-filter (CodeQL)
+  // und übersieht z. B. <SCRIPT> in Großschreibung. An jedem „<script" bis zum
+  // nächsten „>" schauen, ob das Öffnungs-Tag ein src-Attribut trägt.
+  const hay = html.toLowerCase();
+  const inline = [];
+  for (let i = hay.indexOf("<script"); i !== -1; i = hay.indexOf("<script", i + 7)) {
+    // Zeichen direkt nach "<script" muss Tag-Grenze sein (Whitespace/>/), sonst
+    // ist es ein anderer Tag/Text wie "<scripting" – kein Inline-Skript.
+    const after = hay[i + 7];
+    if (after && !/[\s>/]/.test(after)) continue;
+    const gt = hay.indexOf(">", i);
+    const openTag = hay.slice(i, gt === -1 ? hay.length : gt);
+    if (!/\bsrc\s*=/.test(openTag)) inline.push(html.slice(i, i + 40));
+  }
   assert.equal(inline.length, 0,
-    `index.html enthält ${inline.length} Inline-<script> – unter script-src 'self' geblockt (nach boot.js auslagern)`);
+    `index.html enthält ${inline.length} Inline-<script> – unter script-src 'self' geblockt (nach boot.js auslagern):\n${inline.join("\n")}`);
 });
 
 test("CSP: script-src 'self' ohne 'unsafe-inline' in der Meta", () => {

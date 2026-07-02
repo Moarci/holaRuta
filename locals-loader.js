@@ -16,7 +16,9 @@
  * der defer-Queue, also nach context.js/app.js – zu spät für attach() und
  * die Parse-Zeit-Konsumenten in app.js. document.write ist same-origin
  * unkritisch (Browser drosseln nur cross-origin-Writes); die Lighthouse-
- * Warnung ist hier bewusst in Kauf genommen.
+ * Warnung und die CodeQL-Note "eval-like DOM function" sind hier bewusst in
+ * Kauf genommen: die geschriebenen Strings sind statische, eigene Literale
+ * (keine Laufzeit-/Angreifer-Daten), also kein Code-Injection-Risiko.
  *
  * Single-File-Build: build.js ersetzt diesen Loader komplett durch die
  * eingebetteten Module (gleiche Position, Guards greifen wie bisher).
