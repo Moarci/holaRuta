@@ -306,6 +306,55 @@
     return `${text}${vocab}${quiz}${trans}${share}`;
   }
 
+  // ----- Geteilte Bausteine der Info-Blätter -----------------------------------
+  // Genutzt von moduleSheet UND den Custom-Render-Feature-Modulen (fotografia,
+  // bailar, musica), damit dieselben Markup-Fragmente nicht mehrfach kopiert
+  // driften. Alle liefern reine HTML-Strings.
+
+  // DOs/Don'ts/Tipps-Liste (grüner Haken / rotes Verbot / gelbe Glühbirne). Der
+  // Screenreader-Marker unterscheidet die drei Listen, die sich sonst nur über
+  // Emoji + Farbe unterschieden.
+  function kniggeList(items, cls, marker) {
+    const srLabel = cls === "knigge-do" ? t("discover.kniggeDo")
+      : cls === "knigge-tip" ? t("discover.kniggeTip")
+      : t("discover.kniggeDont");
+    return (items || [])
+      .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
+      .join("");
+  }
+
+  // Aufklappbares spanisches Lesetraining zu einem Eintrag mit { es, vocab, level }.
+  // Leerer String, wenn kein es-Text vorhanden. Tap-/Quiz-Logik ist global.
+  function readingDetails(item) {
+    if (!(item && item.es && item.es.length)) return "";
+    const lvl = levelMeta(item.level);
+    return `<details class="hist-read">
+             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
+             <div class="hist-read__body">${readingBlock({ es: item.es, vocab: item.vocab, level: item.level, quiz: true })}</div>
+           </details>`;
+  }
+
+  // Ein Glossar-Eintrag { es, de }.
+  function glossItem(g) {
+    return `
+      <li class="rg-gloss">
+        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
+        <span class="rg-gloss__de">${esc(g.de)}</span>
+      </li>`;
+  }
+
+  // Ein Packlisten-/Checklist-Eintrag { icon, item, why }.
+  function checkItem(c) {
+    return `
+      <li class="rg-region">
+        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
+        <span class="rg-region__body">
+          <span class="rg-region__country">${esc(c.item)}</span>
+          <span class="rg-region__note">${esc(c.why)}</span>
+        </span>
+      </li>`;
+  }
+
   // ----- Info-Modul-Blatt (Logística, Salud, Jerga, Derechos, Viaja responsable …) -----
   // Gemeinsame Nachschlage-Seite im Regatear-Stil für Module mit dem Schema
   // { intro, topics[], phrases[], glossary[], checklist[] }: erst die praktischen
@@ -315,25 +364,10 @@
   // cat fürs Teilen, readingPerTopic/copyPhrases-Schalter). Leere Abschnitte fallen
   // weg. Reine Anzeige – nutzt die vorhandenen Regatear/Knigge-CSS-Klassen.
   function moduleSheet(vm, cfg) {
-    const liList = (items, cls, marker) => {
-      const srLabel = cls === "knigge-do" ? t("discover.kniggeDo")
-        : cls === "knigge-tip" ? t("discover.kniggeTip")
-        : t("discover.kniggeDont");
-      return (items || [])
-        .map((x) => `<li class="${cls}"><span class="knigge-mark" role="img" aria-label="${esc(srLabel)}">${marker}</span>${esc(x)}</li>`)
-        .join("");
-    };
     const topicBlock = (tp, i) => {
       // Optionales spanisches Lesetraining pro Thema: nur wenn das Modul es
-      // einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text trägt. Die
-      // Tap-/Quiz-Logik ist global (hist-word/hist-quiz-answer).
-      const lvl = (cfg.readingPerTopic && tp.es && tp.es.length) ? levelMeta(tp.level) : null;
-      const reading = (cfg.readingPerTopic && tp.es && tp.es.length)
-        ? `<details class="hist-read">
-             <summary class="hist-read__sum">${renderIcon("lc:book-open")} ${esc(t("discover.histReadToggle"))}${lvl ? `<span class="hist-read__lvl hist-lvl--${esc(lvl.code)}">${esc(lvl.code)}</span>` : ""}<span class="hist-read__chev" aria-hidden="true">▾</span></summary>
-             <div class="hist-read__body">${readingBlock({ es: tp.es, vocab: tp.vocab, level: tp.level, quiz: true })}</div>
-           </details>`
-        : "";
+      // einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text trägt.
+      const reading = cfg.readingPerTopic ? readingDetails(tp) : "";
       return `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">
@@ -343,9 +377,9 @@
         </summary>
         <div class="knigge-topic__body">
           ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
-          ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${liList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
-          ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${liList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
-          ${tp.tips && tp.tips.length ? `<ul class="knigge-list">${liList(tp.tips, "knigge-tip", "💡")}</ul>` : ""}
+          ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${kniggeList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
+          ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${kniggeList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
+          ${tp.tips && tp.tips.length ? `<ul class="knigge-list">${kniggeList(tp.tips, "knigge-tip", "💡")}</ul>` : ""}
           ${reading}
           ${cfg.cat ? tipsShareBtn(cfg.cat, i) : ""}
         </div>
@@ -356,20 +390,9 @@
     // Satz-Stern (→ „Mi léxico") und/oder Kopier-Knopf je nach Modul-Schaltern.
     const phrases = phraseGroups(vm.phrases, { fav: cfg.favPhrases, cat: cfg.cat, copy: cfg.copyPhrases });
 
-    const glossary = (vm.glossary || []).map((g) => `
-      <li class="rg-gloss">
-        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
-        <span class="rg-gloss__de">${esc(g.de)}</span>
-      </li>`).join("");
+    const glossary = (vm.glossary || []).map(glossItem).join("");
 
-    const checklist = (vm.checklist || []).map((c) => `
-      <li class="rg-region">
-        <span class="rg-region__flag" aria-hidden="true">${renderIcon(c.icon)}</span>
-        <span class="rg-region__body">
-          <span class="rg-region__country">${esc(c.item)}</span>
-          <span class="rg-region__note">${esc(c.why)}</span>
-        </span>
-      </li>`).join("");
+    const checklist = (vm.checklist || []).map(checkItem).join("");
 
     const section = (cond, head, body) =>
       cond ? `<h2 class="rg-head">${esc(t(head))}</h2>${body}` : "";
@@ -397,6 +420,6 @@
 
   window.SC.view = {
     esc, renderIcon, canShare, speechReady, shareBlock, countryPicker, moduleShareBtn, hmTopbar, favStar, favPhraseId, phraseGroups, sect, tipsShareBtn, cornerBtn,
-    levelMeta, readingBlock, moduleSheet,
+    levelMeta, readingBlock, moduleSheet, kniggeList, readingDetails, glossItem, checkItem,
   };
 })();

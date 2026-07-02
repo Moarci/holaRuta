@@ -80,7 +80,7 @@
       const img = e.img
         ? `<figure class="hist-era__fig">
              <img class="hist-era__img" src="${esc(commonsImg(e.img))}" alt="${esc(e.imgCaption || e.title)}"
-                  loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').style.display='none'" />
+                  loading="lazy" referrerpolicy="no-referrer" data-img-fallback="hide-figure" />
              ${e.imgCaption ? `<figcaption class="hist-era__cap">${esc(e.imgCaption)}</figcaption>` : ""}
            </figure>`
         : "";
@@ -123,7 +123,7 @@
     const figure = (f) => {
       const img = f.img
         ? `<img class="hist-fig__img" src="${esc(commonsImg(f.img, 320))}" alt="${esc(f.name)}"
-                loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />`
+                loading="lazy" referrerpolicy="no-referrer" data-img-fallback="hide" />`
         : `<span class="hist-fig__img hist-fig__img--ph" aria-hidden="true">${renderIcon("lc:user")}</span>`;
       const quote = f.quote ? `<p class="hist-fig__quote">${esc(f.quote)}</p>` : "";
       const lvl = levelMeta(f.level);

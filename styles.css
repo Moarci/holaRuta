@@ -228,6 +228,17 @@ body {
 .boot.is-hiding { opacity: 0; pointer-events: none; }
 .boot.is-done { display: none; }
 
+/* CSS-only-Notnagel: blendet den opaken Splash nach 8 s auch dann aus, wenn
+ * boot.js gar nicht lädt/läuft (separater Request, kann beim Erstbesuch ohne
+ * Service-Worker-Cache einzeln scheitern – Extension/Proxy/flaky Netz). Ohne
+ * diesen Fallback würde .boot die fertig geladene App dauerhaft verdecken.
+ * Im Normalfall setzt boot.js .is-done (display:none) längst vor 8 s → die
+ * Animation wird nie sichtbar. 8 s liegt klar jenseits jeder normalen Boot-Zeit. */
+.boot { animation: boot-failsafe 0.5s linear 8s forwards; }
+@keyframes boot-failsafe {
+  to { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
 /* Die Animationen starten pausiert (zeigen ihr 0%-Bild) und laufen erst los,
  * wenn index.html die Klasse .is-ready setzt – nämlich sobald der Hauptthread
  * nach dem Ausführen der App-Skripte frei ist. Sonst blockieren beim Kaltstart

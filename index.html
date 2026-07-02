@@ -50,44 +50,31 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/bricolage-grotesque-600-800-latin.woff2" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/instrument-sans-400-700-latin.woff2" />
 
-  <!-- Theme so früh wie möglich setzen (verhindert Hell-Aufblitzen, wenn man im
-       Hostel-Bett im Dunkeln öffnet). Gemerkte Wahl schlägt die System-Vorliebe.
-       Der OS-PWA-Splash wird aus dem Manifest-background_color gemalt – und Android
-       friert genau eine Farbe beim Installieren ein (keine Media-Query, kein Wechsel
-       zur Laufzeit). Darum ist background_color in BEIDEN Manifesten das dunkle
-       Marken-Braun (#241510): blendet nie, im Hellmodus bewusster Marken-Splash.
-       Im Dark Mode hängen wir trotzdem auf das dunkle Manifest um – das verfeinert
-       nur noch die theme_color (Toolbar/Statusleiste) der installierten App. -->
-  <script>
-    (function () {
-      window.__bootStart = Date.now(); // Startzeit für den In-App-Splash (Mindestdauer)
-      try {
-        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
-        var t = (s && (s.theme === "dark" || s.theme === "light")) ? s.theme
-          : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.documentElement.dataset.theme = t;
-        var m = document.querySelector('meta[name="theme-color"]');
-        if (m) m.setAttribute("content", t === "dark" ? "#0E0907" : "#241510");
-        var man = document.querySelector('link[rel="manifest"]');
-        if (man) man.setAttribute("href", t === "dark" ? "manifest-dark.webmanifest" : "manifest.webmanifest");
-      } catch (e) { /* localStorage gesperrt o.ä. – App startet hell */ }
-    })();
-  </script>
+  <!-- Boot-Schritte (Theme vor dem ersten Paint, Splash-Animation/-Ausblenden):
+       bewusst als EXTERNES, parser-blockendes Skript ohne defer – so kommt die
+       CSP unten ohne script-src 'unsafe-inline' aus. Muss VOR styles.css stehen
+       (Theme vor Paint, kein Hell-Aufblitzen im Dunkeln). Details in boot.js. -->
+  <script src="boot.js"></script>
 
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Sicherheits-Header. Bewusst KEIN restriktives script-src: der Single-File-Build
-       (HolaRuta.html) inlined ~50 Skripte und ui.js baut Dutzende Inline-style-Attribute,
-       die nicht hash-bar sind. Der reale Schutz liegt hier auf Bild-/Verbindungszielen &
-       Referrer: img-src erlaubt nur self + data: + Wikimedia (Kulturbilder); connect-src
-       'self' (opt-in-Sync ist im Default aus -> kein fremder Host; eine Edition mit
-       cross-origin-apiBase muesste ihren Sync-Host hier ergaenzen); frame-ancestors 'none'
-       schuetzt vor Clickjacking; referrer no-referrer verhindert Leakage.
-       script-src ist explizit 'self' 'unsafe-inline' (NICHT restriktiv): ohne diese
-       Direktive wuerde default-src 'self' Inline-Skripte verbieten und damit Theme-Boot,
-       Boot-Animation, Splash sowie den kompletten Single-File-Build (~50 inline Skripte)
-       brechen. Inline-Skripte sind hier kein Angriffsvektor (keine User-HTML-Injektion). -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://upload.wikimedia.org https://commons.wikimedia.org; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <!-- Sicherheits-Header. script-src ist 'self' OHNE 'unsafe-inline': alle Skripte
+       (inkl. der Boot-Schritte, siehe boot.js) sind extern – Inline-Skripte würden
+       geblockt. Nur der Single-File-Build (HolaRuta.html) braucht Inline-Skripte;
+       build.js patcht dort 'unsafe-inline' wieder in die CSP (mit hartem Fehler,
+       falls die Direktive hier umformuliert wird).
+       style-src behält 'unsafe-inline': ui.js rendert Dutzende style="…"-Attribute
+       in Template-Strings, die nicht hash-bar sind (eine Aufteilung in style-src-elem
+       'self' + style-src-attr 'unsafe-inline' brächte kaum Gewinn, da zur Laufzeit
+       keine <style>-Elemente erzeugt werden).
+       img-src erlaubt nur self + data: + Wikimedia (Kulturbilder); connect-src 'self'
+       (opt-in-Sync ist im Default aus -> kein fremder Host; eine Edition mit
+       cross-origin-apiBase muesste ihren Sync-Host hier ergaenzen); referrer
+       no-referrer verhindert Leakage.
+       Clickjacking: frame-ancestors wirkt NUR als HTTP-Header, nicht als <meta>-CSP
+       (Browser ignorieren es dort) – GitHub Pages kann keine Header setzen, ein
+       Frame-Schutz ist auf diesem Hosting daher nicht erreichbar. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data: https://upload.wikimedia.org https://commons.wikimedia.org; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="referrer" content="no-referrer" />
 </head>
 <body>
@@ -117,39 +104,9 @@
     <div class="boot__name">Hola<span>Ruta</span></div>
     <div class="boot__bar"></div>
   </div>
-  <!-- Schrumpf-Animation erst beim load-Event loslassen – NICHT schon beim Parsen.
-       Hintergrund: als installierte PWA zeigt das System zuerst seinen eigenen
-       Start-Bildschirm und übergibt erst beim ersten Paint an die echte Seite.
-       Würde die Animation (wie früher) schon ein paar Frames nach den Skripten
-       starten, liefe sie noch WÄHREND dieser Übergabe – und weil CSS-Animationen
-       nach Wanduhr-Zeit laufen, wäre das Logo beim ersten sichtbaren Frame längst
-       fast klein. Genau das „Springen". load feuert erst NACH dem ersten Paint,
-       also wenn der Nutzer den großen Start-Frame (scale 2.8) wirklich sieht;
-       die zwei requestAnimationFrame stellen sicher, dass dieser große Frame
-       präsentiert ist, bevor das Schrumpfen losgeht. __bootStart wird hier
-       gesetzt, damit die Mindest-Anzeigedauer ab diesem sichtbaren Start zählt. -->
-  <script>
-    (function () {
-      var boot = document.getElementById("boot");
-      if (!boot) return;
-      var started = false;
-      function go() {
-        if (started) return; // load + Fallback-Timeout dürfen sich nicht doppeln
-        started = true;
-        window.__bootStart = Date.now();
-        if (window.requestAnimationFrame) {
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () { boot.classList.add("is-ready"); });
-          });
-        } else { boot.classList.add("is-ready"); }
-      }
-      if (document.readyState === "complete") go();
-      else window.addEventListener("load", go, { once: true });
-      // Notnagel: hängt eine Ressource, soll das Logo trotzdem schrumpfen statt
-      // groß einzufrieren. 3 s liegt klar nach dem normalen load, stört also nie.
-      setTimeout(go, 3000);
-    })();
-  </script>
+  <!-- Schrumpf-Animation und Splash-Ausblenden steuert boot.js (Abschnitte 2+3,
+       am load-Event – Begründung dort). Früher zwei Inline-Skripte; ausgelagert,
+       damit die CSP oben ohne script-src 'unsafe-inline' auskommt. -->
 
   <!-- Geteilte „Farb"-Filter für den AM/PM-Umschalter (Kaffee hell · Wein dunkel).
        Einmal im Dokument definiert, von den Schild-SVGs per url(#…) referenziert –
@@ -192,19 +149,23 @@
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
-  <!-- Edition-Verzeichnis zuerst: erlaubt Partner-Branding per Link (?edition=ecos). -->
-  <script defer src="editions/registry.js"></script>
+  <!-- Edition-Verzeichnis zuerst: erlaubt Partner-Branding per Link (?edition=ecos).
+       registry.js + config.js bewusst OHNE defer (beide DOM-frei und winzig):
+       locals-loader.js braucht SC.track bereits zur Parse-Zeit. -->
+  <script src="editions/registry.js"></script>
   <!-- Marken-/Edition-Konfiguration (Standard = HolaRuta pur; Edition aus Registry/URL). -->
-  <script defer src="config.js"></script>
+  <script src="config.js"></script>
   <!-- Mehrsprachigkeit zuerst: Engine + UI-Wörterbuch, damit t()/nativeText überall stehen. -->
   <script defer src="i18n.js"></script>
   <script defer src="i18n.strings.js"></script>
-  <script defer src="i18n.strings.es.js"></script>
   <script defer src="contextdata.js"></script>
   <script defer src="phrasecontext.js"></script>
   <script defer src="data.js"></script>
-  <script defer src="data.locals.js"></script>
-  <script defer src="contextdata.locals.js"></script>
+  <!-- Locals-Korpus (i18n.strings.es.js, data.locals.js, contextdata.locals.js)
+       NUR im es-en-Track: der Loader schreibt die defer-Tags an DIESE Position
+       (nach i18n.strings.js/data.js, vor context.js) – im Reise-Track werden
+       ~1,76 MB weder geladen noch geparst. Details im Loader selbst. -->
+  <script src="locals-loader.js"></script>
   <script defer src="numbers.js"></script>
   <script defer src="context.js"></script>
   <script defer src="countries.js"></script>
@@ -272,40 +233,18 @@
   <script defer src="features/jerga.js"></script>
   <script defer src="features/derechos.js"></script>
   <script defer src="features/responsable.js"></script>
+  <script defer src="features/salud.js"></script>
+  <script defer src="features/logistica.js"></script>
+  <script defer src="features/cafe.js"></script>
+  <script defer src="features/juegos.js"></script>
+  <script defer src="features/flirt.js"></script>
+  <script defer src="features/fotografia.js"></script>
+  <script defer src="features/bailar.js"></script>
+  <script defer src="features/musica.js"></script>
   <script defer src="features/banderas-game.js"></script>
   <script defer src="app.js"></script>
 
-  <!-- Start-Splash wegblenden, sobald die App steht – aber mind. ~1,9 s zeigen,
-       damit Schrumpfen/Aufstieg/Regenbogen-Wisch fertig landen und kurz stehen, statt
-       abgeschnitten wegzublitzen (__bootStart wird ganz oben gesetzt).
-       Läuft als eigenes <script> NACH app.js: selbst wenn app.js wirft, blendet
-       der Splash beim load-Event verlässlich weg und blockiert nie die App. -->
-  <script>
-    (function () {
-      var boot = document.getElementById("boot");
-      if (!boot) return;
-      // Mindest-Anzeigedauer: muss die GESAMTE Boot-Animation abdecken, sonst
-      // blendet der Splash weg, bevor man etwas sieht. Die Spuren enden (relativ
-      // zum is-ready-Start) bei: Schrumpfen 1,15 s · Name-Aufstieg 0,78 + 0,55 =
-      // 1,33 s · Regenbogen-Wisch 0,92 + 0,8 = 1,72 s. Bei 800 ms (alter Wert)
-      // startete der Wisch nie und der Name blitzte nur kurz auf – die Animation
-      // wirkte „kaputt". 1900 ms lässt alle drei landen + kurz stehen. Bei
-      // prefers-reduced-motion sofort weg (0 ms) – keine erzwungene Wartezeit.
-      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      var MIN = reduce ? 0 : 1900;
-      var start = window.__bootStart || Date.now();
-      function done() { boot.classList.add("is-done"); }
-      function hide() {
-        var wait = Math.max(0, MIN - (Date.now() - start));
-        setTimeout(function () {
-          boot.classList.add("is-hiding");
-          boot.addEventListener("transitionend", done, { once: true });
-          setTimeout(done, 700); // Fallback, falls transitionend ausbleibt
-        }, wait);
-      }
-      if (document.readyState === "complete") hide();
-      else window.addEventListener("load", hide, { once: true });
-    })();
-  </script>
+  <!-- Splash-Ausblenden: boot.js Abschnitt 3 (load-Event, app-unabhängig –
+       selbst wenn app.js wirft, blendet der Splash verlässlich weg). -->
 </body>
 </html>

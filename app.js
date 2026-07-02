@@ -28,6 +28,14 @@
   const jergaSheet = window.SC.jergaSheet; // Feature-Modul (Jerga colombiana / Slang), eager geladen
   const derechosSheet = window.SC.derechosSheet; // Feature-Modul (Conoce tus derechos), eager geladen
   const responsableSheet = window.SC.responsableSheet; // Feature-Modul (Viaja responsable), eager geladen
+  const saludSheet = window.SC.saludSheet; // Feature-Modul (Salud y energía), eager geladen
+  const logisticaSheet = window.SC.logisticaSheet; // Feature-Modul (Logística de viaje), eager geladen
+  const cafeSheet = window.SC.cafeSheet; // Feature-Modul (Café de la región), eager geladen
+  const juegosSheet = window.SC.juegosSheet; // Feature-Modul (Juegos de viaje), eager geladen
+  const flirtSheet = window.SC.flirtSheet; // Feature-Modul (Coqueteo y romance; liest SC.flirt live)
+  const fotosSheet = window.SC.fotosSheet; // Feature-Modul (Fotos y videos; liest SC.fotografia live)
+  const bailarSheet = window.SC.bailarSheet; // Feature-Modul (Bailar; liest SC.bailar live)
+  const musicaSheet = window.SC.musicaSheet; // Feature-Modul (Música; liest SC.musica live)
   const banderasGame = window.SC.banderasGame; // Feature-Modul (Banderas, Flaggen-Quiz & Galería), eager geladen
   const i18n = window.SC.i18n; // Mehrsprachigkeit (UI-Sprache + nativeText)
   const numbers = window.SC.numbers || null; // Zahl→Wort & Preis-Generator (Precios al oído)
@@ -1050,164 +1058,19 @@
   // Feature-Modul SC.regateo (features/regateo.js). Der Opener bleibt hier
   // (Entdecken-Kachel + Shortcut-Map); die Spotlight-Vorschau liest regateo.vm().
 
-  // Logística de viaje: praktische Reise-Logistik (SIM, Geld, Gepäck, Tracker,
-  // Handgepäck-Notfallset) – reine Anzeige-Seite. Reicht die Daten 1:1 durch und
-  // überlagert per localizeDeep alle …En-Felder für die aktive Sprache (wie das
-  // Regatear-Feature SC.regateo). INTRO ist eine eigene Konstante und wird separat aufgelöst.
-  function logisticaVM() {
-    if (!logistica) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && logistica.INTRO_EN) ? logistica.INTRO_EN : logistica.INTRO,
-      topics: loc(logistica.TOPICS || []),
-      phrases: loc(logistica.PHRASES || []),
-      glossary: loc(logistica.GLOSSARY || []),
-      checklist: loc(logistica.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
+  // Logística / Salud / Café / Juegos / Coqueteo: VM + Render leben jetzt in den
+  // Feature-Modulen features/logistica.js (SC.logisticaSheet), features/salud.js,
+  // features/cafe.js, features/juegos.js und features/flirt.js – wie zuvor schon
+  // Jerga / Derechos / Viaja responsable (features/jerga.js usw.). Der Controller
+  // delegiert via SCREENS an .screen(); die Spotlight-Vorschau liest .vm(); Suche
+  // & „Modul teilen" lesen weiterhin die Content-Module SC.salud/cafe/… direkt
+  // (wie bei Knigge/Etiqueta).
 
-  // Salud y energía: gesund & fit unterwegs (Essen, Trinken, Bauch, Sonne/Höhe,
-  // Bewegung). Gleiches Schema und Pass-Through wie logisticaVM.
-  function saludVM() {
-    if (!salud) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && salud.INTRO_EN) ? salud.INTRO_EN : salud.INTRO,
-      topics: loc(salud.TOPICS || []),
-      phrases: loc(salud.PHRASES || []),
-      glossary: loc(salud.GLOSSARY || []),
-      checklist: loc(salud.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
-
-  // Café de la región: Kaffeeanbau & -kultur (Anbau, Ernte, Verarbeitung, Rösten,
-  // Regionen, Finca-Besuch, fairer Handel) + Sätze. Gleiches Schema und
-  // Pass-Through wie saludVM/logisticaVM.
-  function cafeVM() {
-    if (!cafe) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && cafe.INTRO_EN) ? cafe.INTRO_EN : cafe.INTRO,
-      topics: loc(cafe.TOPICS || []),
-      phrases: loc(cafe.PHRASES || []),
-      glossary: loc(cafe.GLOSSARY || []),
-      checklist: loc(cafe.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
-
-  // Jerga / Derechos / Viaja responsable: VM + Render leben jetzt in den Feature-
-  // Modulen features/jerga.js (SC.jergaSheet), features/derechos.js und
-  // features/responsable.js. Der Controller delegiert via SCREENS an .screen();
-  // Suche & „Modul teilen" lesen weiterhin die Content-Module SC.jerga/derechos/
-  // responsable direkt (wie bei Knigge/Etiqueta).
-
-  // Juegos de viaje: Hostel-Spiele (UNO, Truco, Dudo …) + Sätze für den Tisch.
-  // Gleiches Schema und Pass-Through wie saludVM/flirtVM.
-  function juegosVM() {
-    if (!juegos) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && juegos.INTRO_EN) ? juegos.INTRO_EN : juegos.INTRO,
-      topics: loc(juegos.TOPICS || []),
-      phrases: loc(juegos.PHRASES || []),
-      glossary: loc(juegos.GLOSSARY || []),
-      checklist: loc(juegos.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
-
-  // Fotos & Videos: praktische Tipps (Topics mit DOs/Don'ts + spanisches
-  // Lesetraining wie in der Historia), Sätze zum Bitten/Platz-Machen, der
-  // Teilen-Block (AirDrop/Quick Share) plus Foto-Apps (Mymories), Glossar, Kit.
-  function fotosVM() {
-    if (!fotografia) return { intro: "", topics: [], phrases: [], sharing: null, apps: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && fotografia.INTRO_EN) ? fotografia.INTRO_EN : fotografia.INTRO,
-      topics: loc(fotografia.TOPICS || []),
-      phrases: loc(fotografia.PHRASES || []),
-      sharing: fotografia.SHARING ? loc(fotografia.SHARING) : null,
-      apps: loc(fotografia.APPS || []),
-      glossary: loc(fotografia.GLOSSARY || []),
-      checklist: loc(fotografia.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
-
-  // Coqueteo y romance: flirten & daten unterwegs (Ansprechen, Komplimente,
-  // Konsens, Date vorschlagen, Dating-Kultur, Sicherheit). Gleiches Schema und
-  // Pass-Through wie saludVM/logisticaVM.
-  function flirtVM() {
-    if (!flirt) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && flirt.INTRO_EN) ? flirt.INTRO_EN : flirt.INTRO,
-      topics: loc(flirt.TOPICS || []),
-      phrases: loc(flirt.PHRASES || []),
-      glossary: loc(flirt.GLOSSARY || []),
-      checklist: loc(flirt.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
-
-  // Bailar: Tanzen in LatAm. Die Tänze (mit Schritt-Diagramm-Koordinaten,
-  // Zählrhythmus, Tipps, Lesetraining und Video-Links), Sätze zum Auffordern,
-  // ein Glossar und ein Tanz-Knigge. localizeDeep überlagert die …En-Felder.
-  function bailarVM() {
-    if (!bailar) return { intro: "", dances: [], phrases: [], glossary: [], checklist: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    return {
-      intro: (en && bailar.INTRO_EN) ? bailar.INTRO_EN : bailar.INTRO,
-      dances: loc(bailar.DANCES || []),
-      phrases: loc(bailar.PHRASES || []),
-      glossary: loc(bailar.GLOSSARY || []),
-      checklist: loc(bailar.CHECKLIST || []),
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
-
-  // Música: die großen Genres LatAms (mit ES-Lesetraining + Spotify/Apple-Deep-
-  // Links), der Sound des gewählten Reiselands (state.countryId wie Bebidas/
-  // Länderkunde), die Sätze zum Reden/Tanzen und ein Glossar. Pass-Through wie
-  // saludVM; zusätzlich die Länder-Auswahl wie bebidasVM, damit der „Sound deines
-  // Reiselands" immer das Land der Reise trifft.
-  function musicaVM() {
-    if (!musica) return { intro: "", genres: [], phrases: [], glossary: [], country: null, countryData: null, groups: [] };
-    const en = i18n && i18n.getLang() === "en";
-    const loc = (v) => (i18n ? i18n.localizeDeep(v) : v);
-    const list = countries ? countries.LIST : [];
-    const regions = countries ? countries.REGIONS : [];
-    const country = list.find((c) => c.id === state.countryId) || list[0] || null;
-    const groups = regions
-      .map((region) => ({
-        region,
-        countries: list
-          .filter((c) => c.region === region)
-          .map((c) => ({ id: c.id, name: natk(c, "name"), flag: c.flag, selected: country && c.id === country.id })),
-      }))
-      .filter((g) => g.countries.length > 0);
-    const cd = (country && musica.COUNTRY[country.id]) ? loc(musica.COUNTRY[country.id]) : null;
-    return {
-      intro: (en && musica.INTRO_EN) ? musica.INTRO_EN : musica.INTRO,
-      genres: loc(musica.GENRES || []),
-      phrases: loc(musica.PHRASES || []),
-      glossary: loc(musica.GLOSSARY || []),
-      country: country ? { id: country.id, name: natk(country, "name"), flag: country.flag } : null,
-      countryData: cd,
-      groups,
-      isFav: isFavorite, // Satz-Stern → „Mi léxico"
-    };
-  }
+  // Fotos / Bailar / Música: VM + Render leben jetzt in den Feature-Modulen
+  // features/fotografia.js (SC.fotosSheet), features/bailar.js und
+  // features/musica.js. Alle drei Content-Module werden per navAfterLoad
+  // geöffnet (können lazy sein) – die Features lesen window.SC.<modul> live.
+  // Der Controller delegiert via SCREENS an .screen(); Spotlight liest .vm().
 
   // ----- Badge-System ("Mein Ruta-Pass") -----
   // Lokaler Tages-Schlüssel "YYYY-MM-DD" – Basis für die Lern-Serie (Streak).
@@ -2452,17 +2315,17 @@
       "knigge": () => etiqueta.screen(),
       "bebidas": () => ui.renderBebidas(bebidasVM()),
       "regatear": () => regateo.screen(),
-      "logistica": () => ui.renderLogistica(logisticaVM()),
-      "salud": () => ui.renderSalud(saludVM()),
+      "logistica": () => logisticaSheet.screen(),
+      "salud": () => saludSheet.screen(),
       "jerga": () => jergaSheet.screen(),
       "derechos": () => derechosSheet.screen(),
       "responsable": () => responsableSheet.screen(),
-      "flirt": () => ui.renderFlirt(flirtVM()),
-      "fotos": () => ui.renderFotos(fotosVM()),
-      "bailar": () => ui.renderBailar(bailarVM()),
-      "musica": () => ui.renderMusica(musicaVM()),
-      "cafe": () => ui.renderCafe(cafeVM()),
-      "juegos": () => ui.renderJuegos(juegosVM()),
+      "flirt": () => flirtSheet.screen(),
+      "fotos": () => fotosSheet.screen(),
+      "bailar": () => bailarSheet.screen(),
+      "musica": () => musicaSheet.screen(),
+      "cafe": () => cafeSheet.screen(),
+      "juegos": () => juegosSheet.screen(),
       "badges": () => ui.renderBadges(badgesVM()),
       "social": () => ui.renderSocial(socialVM()),
       "hostel": () => ui.renderHostel(hostelVM()),
@@ -2515,7 +2378,23 @@
       "onboarding": () => ui.renderOnboarding(homeVM()),
     };
     const screenFn = SCREENS[state.screen];
-    root.innerHTML = screenFn ? screenFn() : ui.renderHome(homeVM());
+    // Robustheit: Feature-/Screen-Module (features/*.js) werden als eigene
+    // <script>-Requests geladen und können beim Erstbesuch OHNE Service-Worker-
+    // Cache einzeln ausfallen (flaky Netz/Extension/Proxy). Das zugehörige
+    // Sheet-Handle ist dann undefined und screenFn() wirft. Ohne Fang bliebe
+    // root.innerHTML unersetzt -> Ansicht leer/eingefroren. Darum zentral fangen
+    // und auf Home zurückfallen (deckt auch die schon länger extrahierten
+    // jerga/derechos/etiqueta und alle Spiel-Module ab). Der Fehler wird geloggt;
+    // echte Screen-Regressionen scheitern weiterhin an den screen-spezifischen
+    // Checks in controller-smoke (Home-HTML erfüllt sie nicht).
+    let screenHtml;
+    try {
+      screenHtml = screenFn ? screenFn() : ui.renderHome(homeVM());
+    } catch (err) {
+      console.error("Render von Screen '" + state.screen + "' fehlgeschlagen:", err);
+      try { screenHtml = ui.renderHome(homeVM()); } catch (e2) { screenHtml = ""; }
+    }
+    root.innerHTML = screenHtml;
 
     // Nach dem Austausch des Inhalts: bei echtem Ansichtswechsel oben anfangen.
     resetScrollOnViewChange();
@@ -7234,9 +7113,9 @@
       case "knigge":
         return cut((etiqueta.vm().topics || []).map((tp) => ({ mark: tp.icon || "🧭", text: tp.title })));
       case "logistica":
-        return cut((logisticaVM().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
+        return cut((logisticaSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🧳", text: tp.title })));
       case "salud":
-        return cut((saludVM().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
+        return cut((saludSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🥗", text: tp.title })));
       case "jerga":
         return cut((jergaSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🗣️", text: tp.title })));
       case "derechos":
@@ -7244,17 +7123,17 @@
       case "responsable":
         return cut((responsableSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🌱", text: tp.title })));
       case "fotos":
-        return cut((fotosVM().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
+        return cut((fotosSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "📸", text: tp.title })));
       case "flirt":
-        return cut((flirtVM().topics || []).map((tp) => ({ mark: tp.icon || "💘", text: tp.title })));
+        return cut((flirtSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "💘", text: tp.title })));
       case "bailar":
-        return cut((bailarVM().dances || []).map((d) => ({ mark: d.icon || "💃", text: d.name })));
+        return cut((bailarSheet.vm().dances || []).map((d) => ({ mark: d.icon || "💃", text: d.name })));
       case "musica":
-        return cut((musicaVM().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
+        return cut((musicaSheet.vm().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
       case "cafe":
-        return cut((cafeVM().topics || []).map((tp) => ({ mark: tp.icon || "☕", text: tp.title })));
+        return cut((cafeSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "☕", text: tp.title })));
       case "juegos":
-        return cut((juegosVM().topics || []).map((tp) => ({ mark: tp.icon || "🎲", text: tp.title })));
+        return cut((juegosSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🎲", text: tp.title })));
       case "banderas":
         // Visuelle Highlights: ein paar Flaggen mit Ländernamen (spanisch).
         return cut((banderas ? banderas.COUNTRIES : []).map((c) => ({ mark: c.flag || "🚩", text: c.es })));
@@ -8098,6 +7977,21 @@
 
   // ----- Start -----
   root.addEventListener("click", onClick);
+  // Kaputte/Offline-Bilder (Wikimedia) sauber ausblenden. Früher inline
+  // onerror="…" am <img> – unter der CSP script-src 'self' sind Inline-Event-
+  // Handler verboten. error-Events bubbeln nicht, laufen aber in der
+  // Capture-Phase über root; data-img-fallback wählt das Verhalten:
+  // "hide" = Bild selbst weg, "hide-figure" = umschließende <figure> weg.
+  root.addEventListener("error", (e) => {
+    const img = e.target;
+    if (!img || img.tagName !== "IMG" || !img.dataset || !img.dataset.imgFallback) return;
+    if (img.dataset.imgFallback === "hide-figure") {
+      const fig = img.closest("figure");
+      if (fig) fig.style.display = "none";
+    } else {
+      img.style.display = "none";
+    }
+  }, true);
   root.addEventListener("change", onChange);
   root.addEventListener("input", onInput);
   root.addEventListener("paste", onPaste);
@@ -8172,6 +8066,7 @@
     // selbst live über window.SC.* hinter einem …ready()-Guard, da sie zur init-
     // Zeit noch fehlen können.
     countries, knigge, regatear, jerga, derechos, responsable, banderas,
+    salud, logistica, cafe, juegos, // flirt bewusst NICHT: navAfterLoad-Opener → SC.flirtSheet liest window.SC.flirt live
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT, root, loadModule, navEpoch: () => navEpoch,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
@@ -8198,6 +8093,14 @@
   if (jergaSheet) jergaSheet.init(featureCtx);
   if (derechosSheet) derechosSheet.init(featureCtx);
   if (responsableSheet) responsableSheet.init(featureCtx);
+  if (saludSheet) saludSheet.init(featureCtx);
+  if (logisticaSheet) logisticaSheet.init(featureCtx);
+  if (cafeSheet) cafeSheet.init(featureCtx);
+  if (juegosSheet) juegosSheet.init(featureCtx);
+  if (flirtSheet) flirtSheet.init(featureCtx);
+  if (fotosSheet) fotosSheet.init(featureCtx);
+  if (bailarSheet) bailarSheet.init(featureCtx);
+  if (musicaSheet) musicaSheet.init(featureCtx);
   if (banderasGame) banderasGame.init(featureCtx);
   // Deep-Link aus einem geteilten „Modul teilen"-Link (?m=<id>) hat Vorrang vor
   // Startseite/Onboarding. applyModuleDeepLink() rendert beim Treffer selbst; das

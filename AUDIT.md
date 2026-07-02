@@ -115,7 +115,10 @@ Weitere MEDIUM: voller `innerHTML`-Re-Render je Aktion (Scroll-Reset, Fokus) `ap
 - Aussprache-Tipps stilistisch: `diez`→`di-ES`, `vegetariano`→`…RI-a-no` (Diskussionssache, kein Fehler).
 - `usercards.validate()` ohne Längenbegrenzung → stiller Quota-Verlust (`usercards.js:28`).
 - `share.js` `payload.de/es` ohne Null-Guard → „null" auf Canvas (`share.js:170`).
-- Keine CSP-Meta in `index.html` (statische App; Defense-in-Depth).
+- ~~Keine CSP-Meta in `index.html` (statische App; Defense-in-Depth).~~ **Erledigt:**
+  `index.html` trägt inzwischen eine restriktive CSP-Meta (`script-src 'self'` ohne
+  `'unsafe-inline'`; Inline-Boot-Skripte nach `boot.js` ausgelagert, nur der
+  Single-File-Build patcht `'unsafe-inline'` zurück – siehe `build.js` + `test/csp.test.js`).
 - Keine `app.js`-Modulteilung (628 Z.) — `actions/viewmodels/handlers`-Split empfohlen.
 
 ---

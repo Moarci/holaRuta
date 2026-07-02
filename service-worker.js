@@ -18,21 +18,26 @@
  * neue Dateien in einer laufenden Sitzung (Mixed-Version-Load): das Aktivieren
  * ist immer an ein vollständiges Reload gekoppelt.
  */
-const CACHE_VERSION = "holaruta-6f6c35bd3a8c"; // von build.js gestempelt – nicht von Hand ändern
+const CACHE_VERSION = "holaruta-90907369fedb"; // von build.js gestempelt – nicht von Hand ändern
 const ASSETS = [
   "./",
   "./index.html",
+  "./boot.js",
   "./styles.css",
   "./editions/registry.js",
   "./config.js",
   "./i18n.js",
   "./i18n.strings.js",
-  "./i18n.strings.es.js",
   "./contextdata.js",
   "./phrasecontext.js",
   "./data.js",
+  // Locals-Korpus: kein <script>-Tag mehr in index.html (locals-loader.js lädt
+  // ihn nur im es-en-Track), bleibt aber im Precache, damit ein Laufzeit-Wechsel
+  // per ?edition=ingles-pro/venue-en auch offline funktioniert.
+  "./locals-loader.js",
   "./data.locals.js",
   "./contextdata.locals.js",
+  "./i18n.strings.es.js",
   "./numbers.js",
   "./context.js",
   "./countries.js",
@@ -97,6 +102,14 @@ const ASSETS = [
   "./features/jerga.js",
   "./features/derechos.js",
   "./features/responsable.js",
+  "./features/salud.js",
+  "./features/logistica.js",
+  "./features/cafe.js",
+  "./features/juegos.js",
+  "./features/flirt.js",
+  "./features/fotografia.js",
+  "./features/bailar.js",
+  "./features/musica.js",
   "./features/banderas-game.js",
   "./app.js",
   "./icon.svg",
