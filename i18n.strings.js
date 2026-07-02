@@ -144,6 +144,8 @@
     topicNavAria: "Zur Themen-Gruppe springen",
     tripSection: "Für deine Reise",
     startProgressCap: "Dein Fortschritt",
+    // Lernpfad-Karte auf dem Start-Reiter (sekundärer Link auf den ganzen Pfad)
+    lpathView: "Ganzen Pfad ansehen",
     // Hostel-Edition: Quick-Start-Banner auf der Startseite
     hostelBannerTitle: "Heute Abend im Hostel?",
     hostelBannerSub: "Gruppen-Battle & Icebreaker starten",
@@ -399,6 +401,8 @@
     topicNavAria: "Jump to topic group",
     tripSection: "For your trip",
     startProgressCap: "Your progress",
+    // Learning-path card on the Start tab (secondary link to the full path)
+    lpathView: "View full path",
     // Hostel edition: home quick-start banner
     hostelBannerTitle: "Tonight at the hostel?",
     hostelBannerSub: "Start a group battle & icebreakers",
@@ -1019,6 +1023,8 @@
     cursoProgress: (p) => `${p.done} von ${p.total} Teilen geschafft`,
     cursoAllDone: "Kurs geschafft! 🎉",
     cursoWeek: (p) => `Woche ${p.w}`,
+    lpathContinue: (p) => `Weiter: ${p.title}`,
+    lpathStart: (p) => `Loslegen: ${p.title}`,
     pretripTitle: "Pre-Trip-Plan",
     pretripIntro: "Werde Schritt für Schritt reisefertig für dein Reiseziel: wähle ein Land, dann ein Tag pro Etappe – der nächste öffnet sich, sobald du den aktuellen geschafft hast.",
     pretripDestLabel: "Reiseziel wählen",
@@ -1506,6 +1512,8 @@
     cursoProgress: (p) => `${p.done} of ${p.total} parts done`,
     cursoAllDone: "Course complete! 🎉",
     cursoWeek: (p) => `Week ${p.w}`,
+    lpathContinue: (p) => `Continue: ${p.title}`,
+    lpathStart: (p) => `Start: ${p.title}`,
     pretripTitle: "Pre-trip plan",
     pretripIntro: "Get trip-ready for your destination step by step: pick a country, then one stage at a time – the next unlocks once you finish the current one.",
     pretripDestLabel: "Choose destination",

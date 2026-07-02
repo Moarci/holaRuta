@@ -297,3 +297,19 @@ test('Aktion "home" führt aus einem Modul-Screen zurück aufs Dashboard', () =>
   assert.ok(d.click("home"), 'home-Knopf vorhanden');
   assert.match(root.innerHTML, /data-action="set-tab"/, "wieder auf dem Dashboard");
 });
+
+// ---------------------------------------------------------------------------
+// 8) Lernpfad/Pre-Trip: der „Weiter"-CTA im Hero startet direkt den nächsten
+//    offenen Teil (Study-Screen), ohne die passende Zeile suchen zu müssen.
+// ---------------------------------------------------------------------------
+test('pretrip-continue startet aus dem Lernpfad-Hero die nächste Etappe', () => {
+  const root = freshApp();
+  const d = makeDriver(root);
+  d.setTab("entdecken");
+  assert.ok(d.click("open-pretrip"), "Lernpfad geöffnet");
+  assert.ok(d.find("start-pretrip-day"), "aktuelle Etappe trägt weiterhin start-pretrip-day");
+  assert.ok(d.find("set-pretrip-scope"), "Kurskarten (Scope-Wechsel) vorhanden");
+  assert.ok(d.click("pretrip-continue"), "Weiter-CTA vorhanden & klickbar");
+  assert.match(d.html(), /data-action="flip"|data-action="rate"|id="answer"/,
+    "Study-Screen erscheint");
+});

@@ -719,6 +719,36 @@
       </div>`;
   }
 
+  // „Weiterlernen"-Karte auf dem Start-Reiter: der Lernpfad (Locals) bzw. ein
+  // angefangener Pre-Trip-Plan (Reise) als prominenter Einstieg statt vergraben im
+  // Entdecken-Reiter. Haupt-Tap startet DIREKT den nächsten offenen Teil
+  // (pretrip-continue); der sekundäre Text-Button öffnet den ganzen Pfad. Mini-Ring
+  // + Balken zeigen den Fortschritt auf einen Blick (gleiche conic-Technik wie Hero).
+  function lpathHomeCard(lp) {
+    const loc = isLocalsTrk();
+    const nextLine = lp.allDone
+      ? t(loc ? "discover.cursoAllDone" : "discover.pretripAllDone")
+      : t(lp.done ? "discover.lpathContinue" : "discover.lpathStart", { title: lp.nextTitle });
+    const progressLine = t(loc ? "discover.cursoProgress" : "discover.pretripProgress", { done: lp.done, total: lp.total });
+    return `
+      <section class="dashgrp">
+        <p class="sectioncap">${esc(t(loc ? "discover.cursoTitle" : "discover.pretripTitle"))}</p>
+        <div class="lpath-card" style="--pct:${lp.pct}">
+          <button class="lpath-card__main" data-action="pretrip-continue" data-scope="${esc(lp.scope)}">
+            <span class="lpath-card__ring" aria-hidden="true"><span class="lpath-card__pct">${lp.pct}%</span></span>
+            <span class="lpath-card__text">
+              <span class="lpath-card__title">${esc(lp.label)}</span>
+              <span class="lpath-card__next">${esc(nextLine)}</span>
+              <span class="lpath-card__bar" aria-hidden="true"><span style="width:${lp.pct}%"></span></span>
+              <span class="lpath-card__meta">${esc(progressLine)}</span>
+            </span>
+            <span class="lpath-card__go" aria-hidden="true">${renderIcon(lp.allDone ? "lc:rotate-ccw" : "lc:play")}</span>
+          </button>
+          <button class="lpath-card__all" data-action="open-pretrip" data-scope="${esc(lp.scope)}">${esc(t("home.lpathView"))} ›</button>
+        </div>
+      </section>`;
+  }
+
   // ----- START-Reiter (Cockpit): heutige Aktion + Reise + Fortschritt -----
   // Bewusst fokussiert und kurz: hier landet jeder App-Start. Die vielen Themen
   // (mit Sprungmarken) leben im eigenen „Lernen"-Reiter (siehe lernenBody).
@@ -899,6 +929,9 @@
         ${progressCard(vm)}
       </section>`;
 
+    // Lernpfad prominent auf dem Start-Reiter (Locals immer, Reise bei laufendem Plan).
+    const lpathGroup = vm.lpath ? lpathHomeCard(vm.lpath) : "";
+
     return `
       ${pagehead(esc(vm.userName ? t("home.homePromptName", { name: vm.userName }) : t("home.homePrompt")))}
       ${searchBar()}
@@ -919,6 +952,7 @@
         ${placementCue}
       </div>
 
+      ${lpathGroup}
       ${reiseGroup}
       ${favGroup}
       ${progressGroup}
@@ -2990,64 +3024,117 @@
       </section>`;
   }
 
-  // Pre-Trip-Plan: mehrtägiger Onboarding-Pfad. Tage sequenziell freischaltbar
-  // (erledigt ✓ / aktuell startbar / gesperrt 🔒); jeder Tag mit Karten + optionaler
-  // Mutprobe. Reuse der Screen-/Topbar-Struktur der übrigen Entdecken-Module.
+  // Pre-Trip-Plan / Lernpfad: mehrtägiger, sequenziell freischaltender Pfad.
+  // Aufbau: Hero (Fortschrittsring + direkter „Weiter"-CTA in den nächsten Teil),
+  // horizontal scrollbare Kurskarten mit Fortschritt (statt Pill-Wolke) und ein
+  // Timeline-Pfad mit verbundenen Knoten + Wochen-Meilensteinen. Reise-Pläne ohne
+  // week-Felder rendern denselben Pfad einfach ohne Meilensteine.
   function renderPretrip(vm) {
     // Locals-Track: derselbe Screen ist der „Lernpfad" (Kurs), nicht der Reise-„Pre-Trip".
-    // Strings entsprechend wählen; Etappen werden zusätzlich nach Woche gruppiert.
     const loc = isLocalsTrk();
     const K = (curso, pretrip) => loc ? curso : pretrip;
+
+    // Wochen-Zähler (erledigt/gesamt je Woche) für die Meilenstein-Zeilen.
+    const weekStats = {};
+    vm.days.forEach((d) => {
+      if (d.week == null) return;
+      const w = weekStats[d.week] || (weekStats[d.week] = { done: 0, total: 0 });
+      w.total++; if (d.done) w.done++;
+    });
+
+    // Hero: Ring (conic-gradient über --pct), Kursname, Fortschritt + aktuelle Woche,
+    // und EIN großer Einstieg in den nächsten offenen Teil – kein Scrollen nötig.
+    const progressLabel = t(K("discover.cursoProgress", "discover.pretripProgress"), { done: vm.doneCount, total: vm.total });
+    let metaLine = progressLabel;
+    if (vm.next && vm.next.week != null) {
+      const wt = (vm.days.find((d) => d.week === vm.next.week && d.weekTitle) || {}).weekTitle;
+      metaLine += " · " + t("discover.cursoWeek", { w: vm.next.week }) + (wt ? " · " + wt : "");
+    }
+    const cta = vm.next
+      ? `<button class="lpath-hero__cta" data-action="pretrip-continue" data-scope="${esc(vm.scope)}">
+           ${renderIcon("lc:play")} <span class="lpath-hero__ctatxt">${esc(t(vm.doneCount ? "discover.lpathContinue" : "discover.lpathStart", { title: vm.next.title }))}</span>
+         </button>`
+      : `<p class="lpath-hero__done">${renderIcon("lc:party-popper")} ${esc(t(K("discover.cursoAllDone", "discover.pretripAllDone")))}</p>`;
+    const hero = `
+      <header class="lpath-hero" style="--pct:${vm.pct}">
+        <div class="lpath-hero__top">
+          <div class="lpath-hero__ring" role="img" aria-label="${esc(progressLabel)}"><span class="lpath-hero__pct">${vm.pct}%</span></div>
+          <div class="lpath-hero__body">
+            <h2 class="lpath-hero__title">${esc(vm.scopeLabel)}</h2>
+            <p class="lpath-hero__meta">${esc(metaLine)}</p>
+          </div>
+        </div>
+        ${cta}
+      </header>`;
+
+    // Kurskarten: je Kurs Label + Mini-Balken + erledigt/gesamt (✓ wenn fertig).
+    // Bei zugewiesener Aufgabe ist das Ziel fix -> eine nicht-klickbare Pin-Karte.
+    const cards = (vm.plans || []).map((p) => `
+      <button class="coursecard${p.active ? " is-active" : ""}${p.done ? " is-done" : ""}"
+              data-action="set-pretrip-scope" data-scope="${p.scope}"${p.active ? ' aria-current="true"' : ""}>
+        <span class="coursecard__label">${esc(p.label)}</span>
+        <span class="coursecard__bar" aria-hidden="true"><span style="width:${p.pct}%"></span></span>
+        <span class="coursecard__meta">${p.done ? "✓" : `${p.doneCount}/${p.total}`}</span>
+      </button>`).join("");
+    const picker = vm.locked
+      ? `<div class="coursecards coursecards--locked">
+           <span class="coursecard coursecard--locked is-active" role="status" aria-label="${esc(vm.scopeLabel + " – " + t("discover.pretripAssigned"))}">
+             <span class="coursecard__label">${renderIcon("lc:pin")} ${esc(vm.scopeLabel)}</span>
+             <span class="coursecard__bar" aria-hidden="true"><span style="width:${vm.pct}%"></span></span>
+             <span class="coursecard__meta">${vm.doneCount}/${vm.total}</span>
+           </span>
+         </div>
+         <p class="pretrip-assigned" aria-hidden="true">${esc(t("discover.pretripAssigned"))}</p>`
+      : (vm.plans || []).length > 1
+        ? `<div class="coursecards" role="group" aria-label="${esc(t(K("discover.cursoDestLabel", "discover.pretripDestLabel")))}">${cards}</div>`
+        : "";
+
+    // Timeline-Pfad: Knoten (✓ / Teilnummer / Schloss) an einer Verbindungslinie;
+    // gesperrte Teile werden nur gedimmt (Schloss im Knoten + sr-only-Text) statt
+    // je Zeile laut „noch gesperrt" zu rufen. Start/Wiederholen bleibt wie gehabt.
     let lastWeek = null;
     const rows = vm.days.map((d) => {
       const status = d.done ? "done" : (d.unlocked ? "current" : "locked");
       // Bei Wochen/Teilen die Teilnummer (1..5) zeigen, sonst die Etappennummer.
       const num = (d.part != null) ? d.part : d.day;
-      const mark = d.done ? "✓" : (d.unlocked ? String(num) : "🔒");
+      const node = d.done ? "✓" : (d.unlocked ? String(num) : renderIcon("lc:lock"));
       const challenge = d.challenge
-        ? `<span class="pretrip-day__challenge">${renderIcon("lc:door-open")} ${esc(d.challenge)}</span>` : "";
+        ? `<span class="lpath-step__challenge">${renderIcon("lc:door-open")} ${esc(d.challenge)}</span>` : "";
       const right = status === "locked"
-        ? `<span class="pretrip-day__lock"><span aria-hidden="true">${renderIcon("lc:lock")}</span> ${esc(t("discover.pretripLocked"))}</span>`
-        : `<button class="pretrip-day__btn" data-action="start-pretrip-day" data-day="${d.day}">${esc(d.done ? t("discover.pretripReplay") : t("discover.pretripStart"))}</button>`;
+        ? `<span class="sr-only">${esc(t("discover.pretripLocked"))}</span>`
+        : `<button class="lpath-step__btn" data-action="start-pretrip-day" data-day="${d.day}">${esc(d.done ? t("discover.pretripReplay") : t("discover.pretripStart"))}</button>`;
       const row = `
-        <li class="pretrip-day pretrip-day--${status}">
-          <span class="pretrip-day__num" aria-hidden="true">${mark}</span>
-          <span class="pretrip-day__body">
-            <span class="pretrip-day__title">${esc(d.title)}</span>
-            <span class="pretrip-day__meta">${esc(t("discover.pretripCards", { n: d.count }))}</span>
+        <li class="lpath-step lpath-step--${status}"${status === "locked" ? ' aria-disabled="true"' : ""}>
+          <span class="lpath-step__node" aria-hidden="true">${node}</span>
+          <span class="lpath-step__body">
+            <span class="lpath-step__title">${esc(d.title)}</span>
+            <span class="lpath-step__meta">${esc(t("discover.pretripCards", { n: d.count }))}</span>
             ${challenge}
           </span>
           ${right}
         </li>`;
-      // Wochen-Kopf (nur wenn week gesetzt = Locals-Kursplan): gruppiert die Teile.
+      // Wochen-Meilenstein (nur wenn week gesetzt = Kursplan): Titel + Zähler.
       let head = "";
       if (d.week != null && d.week !== lastWeek) {
         lastWeek = d.week;
+        const ws = weekStats[d.week];
         const wk = d.weekTitle ? (" · " + esc(d.weekTitle)) : "";
-        head = `<li class="pretrip-week" role="presentation">${esc(t("discover.cursoWeek", { w: d.week }))}${wk}</li>`;
+        head = `
+        <li class="lpath-week${ws.done === ws.total ? " lpath-week--done" : ""}" role="presentation">
+          <span class="lpath-week__cap">${esc(t("discover.cursoWeek", { w: d.week }))}${wk}</span>
+          <span class="lpath-week__count">${ws.done}/${ws.total}</span>
+        </li>`;
       }
       return head + row;
     }).join("");
-    const banner = vm.allDone
-      ? `<p class="pretrip-alldone">${renderIcon("lc:party-popper")} ${esc(t(K("discover.cursoAllDone", "discover.pretripAllDone")))}</p>`
-      : `<p class="pretrip-progress">${esc(t(K("discover.cursoProgress", "discover.pretripProgress"), { done: vm.doneCount, total: vm.total }))}</p>`;
-    // Auswahl: ein Plan je Reiseziel (Reise) bzw. je Kurs (Locals); ✓ = vollständig geschafft.
-    // Bei zugewiesener Aufgabe ist das Ziel fix -> nur ein nicht-klickbares Abzeichen.
-    const dest = vm.locked
-      ? `<div class="sl-chips sl-chips--locked">
-           <span class="sl-chip sl-chip--locked is-active" role="status" aria-label="${esc(vm.scopeLabel + " – " + t("discover.pretripAssigned"))}" style="--from:var(--brand);--to:var(--brand-ink)"><span aria-hidden="true">${renderIcon("lc:pin")} ${esc(vm.scopeLabel)}</span></span>
-         </div>
-         <p class="pretrip-assigned" aria-hidden="true">${esc(t("discover.pretripAssigned"))}</p>`
-      : `<div class="sl-chips" role="group" aria-label="${esc(t(K("discover.cursoDestLabel", "discover.pretripDestLabel")))}">${(vm.plans || []).map((p) =>
-          `<button class="sl-chip ${p.active ? "is-active" : ""}" data-action="set-pretrip-scope" data-scope="${p.scope}"${p.active ? ' aria-current="true"' : ""}>${p.done ? "✓ " : ""}${esc(p.label)}</button>`
-        ).join("")}</div>`;
+
     return `
-      <section class="screen">
+      <section class="screen lpath">
         ${hmTopbar(`${renderIcon("lc:calendar")} ` + esc(t(K("discover.cursoTitle", "discover.pretripTitle"))), "home")}
-        <p class="hm-intro">${esc(t(K("discover.cursoIntro", "discover.pretripIntro")))}</p>
-        ${dest}
-        ${banner}
-        <ol class="pretrip">${rows}</ol>
+        ${hero}
+        ${picker}
+        <p class="lpath-intro">${esc(t(K("discover.cursoIntro", "discover.pretripIntro")))}</p>
+        <ol class="lpath-path">${rows}</ol>
       </section>`;
   }
 

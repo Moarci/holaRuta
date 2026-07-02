@@ -752,6 +752,7 @@
         return m;
       })(),
       edition: editionInfo(),   // Co-Branding-Credit im Profil (null = keine Edition)
+      lpath: homeLpathVM(),     // „Weiterlernen"-Karte (Lernpfad/Pre-Trip) auf dem Start-Reiter
       tab: state.homeTab,
       install: installVM(),
       shareFormat: shareFormat(), // gewähltes Sharepic-Format (für den Ruta-Check-Teilen-Block)
@@ -3048,6 +3049,18 @@
   const pretripDone = (scope, day) => !!(gamestats.pretripDays && gamestats.pretripDays[scope] && gamestats.pretripDays[scope][day]);
   const pretripUnlocked = (scope, day) => day === 1 || pretripDone(scope, day - 1);
   const planAllDone = (p) => p.days.length > 0 && p.days.every((d) => pretripDone(p.scope, d.day));
+  // Nächster offener Teil eines Plans: durch die strikt sequenzielle Freischaltung
+  // (pretripUnlocked) ist der erste nicht-erledigte Tag immer der aktuell startbare.
+  const pretripNextDay = (plan) => plan.days.find((d) => !pretripDone(plan.scope, d.day)) || null;
+  // Fortschritt eines Plans (erledigt/gesamt/Prozent) – für Kurskarten & Start-Karte.
+  const planStats = (p) => {
+    const total = p.days.length;
+    const done = p.days.filter((d) => pretripDone(p.scope, d.day)).length;
+    return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
+  };
+  // Plan-Label: eigenes label-Feld des Plans (Locals-Kursplan) ODER Kategorie-Label
+  // (Reise-Destinationen) ODER der scope als Rückfall. Geteilt von pretripVM & Start-Karte.
+  const pretripPlanLabel = (p) => natk(p, "label") || natk(categoryById(p.scope) || {}, "label") || p.scope;
 
   // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
   // sonst der erste Plan (Kolumbien).
@@ -3100,7 +3113,17 @@
   function setPretripScope(scope) {
     if (state.pretripLock) return; // zugewiesene Aufgabe: Ziel ist fix, kein Wechsel
     if (!PRETRIP().some((p) => p.scope === scope)) return;
+    rememberPretripScope(scope);
     setState({ pretripScope: scope });
+  }
+
+  // Kurswahl über Reloads hinweg merken: state.pretripScope ist session-only, die
+  // „Weiterlernen"-Karte auf dem Start-Reiter soll aber nach einem Neustart denselben
+  // Kurs zeigen. Gleiches Settings-Muster wie lastScope (wandert mit ins Backup).
+  function rememberPretripScope(scope) {
+    if (!scope || settings.cursoScope === scope) return;
+    settings = Object.assign({}, settings, { cursoScope: scope });
+    store.saveSettings(settings);
   }
 
   function pretripVM() {
@@ -3124,21 +3147,84 @@
     });
     const total = days.length;
     const doneCount = days.filter((d) => d.done).length;
-    // Plan-Label: eigenes label-Feld des Plans (Locals-Kursplan) ODER Kategorie-Label
-    // (Reise-Destinationen) ODER der scope als Rückfall.
-    const planLabel = (p) => natk(p, "label") || natk(categoryById(p.scope) || {}, "label") || p.scope;
+    const planLabel = pretripPlanLabel;
     // Im gesperrten Modus NUR das zugewiesene Land; im Locals-Track NUR die Kurspläne.
     const poolPlans = locked ? PRETRIP().filter((p) => p.scope === scope)
       : isLocals() ? PRETRIP().filter((p) => /^curso/.test(p.scope))
       : PRETRIP();
-    const plans = poolPlans.map((p) => ({
-      scope: p.scope,
-      label: planLabel(p),
-      active: p.scope === scope,
-      done: planAllDone(p),
-    }));
+    const plans = poolPlans.map((p) => {
+      const st = planStats(p);
+      return {
+        scope: p.scope,
+        label: planLabel(p),
+        active: p.scope === scope,
+        done: planAllDone(p),
+        doneCount: st.done,
+        total: st.total,
+        pct: st.pct,
+      };
+    });
     const scopeLabel = planLabel(plan);
-    return { scope, scopeLabel, locked, plans, days, total, doneCount, allDone: total > 0 && doneCount === total };
+    // Nächster startbarer Teil (fürs Hero-„Weiter"): wie days[] aufbereitet, null wenn fertig.
+    const nd = pretripNextDay(plan);
+    const next = nd ? {
+      day: nd.day,
+      week: nd.week != null ? nd.week : null,
+      part: nd.part != null ? nd.part : null,
+      title: natk(nd, "titleDe"),
+      count: nd.cardIds.length,
+    } : null;
+    const pct = total ? Math.round((doneCount / total) * 100) : 0;
+    return { scope, scopeLabel, locked, plans, days, total, doneCount, pct, next, allDone: total > 0 && doneCount === total };
+  }
+
+  // „Weiterlernen"-Karte auf dem Start-Reiter: im Locals-Track immer (der Lernpfad
+  // ist dort das Kernprodukt), im Reise-Track nur bei angefangenem, noch nicht
+  // fertigem Plan (0 < done < total) – sonst bleibt der Start-Reiter ruhig.
+  // Scope-Wahl: Lehrer-Lock > Session-Wahl > gemerkte Kurswahl (settings.cursoScope)
+  // > angefangener Plan mit dem meisten Fortschritt > erster Plan.
+  function homeLpathVM() {
+    const pool = isLocals() ? PRETRIP().filter((p) => /^curso/.test(p.scope)) : PRETRIP();
+    if (!pool.length) return null;
+    const byScope = (s) => s && pool.find((p) => p.scope === s);
+    const started = pool
+      .map((p) => ({ p, st: planStats(p) }))
+      .filter((x) => x.st.done > 0 && x.st.done < x.st.total)
+      .sort((a, b) => b.st.done - a.st.done);
+    const plan = byScope(state.pretripLock) || byScope(state.pretripScope) || byScope(settings.cursoScope)
+      || (started[0] && started[0].p) || pool[0];
+    const st = planStats(plan);
+    if (!isLocals() && (st.done === 0 || st.done === st.total)) return null;
+    const nd = pretripNextDay(plan);
+    return {
+      scope: plan.scope,
+      label: pretripPlanLabel(plan),
+      done: st.done,
+      total: st.total,
+      pct: st.pct,
+      allDone: st.total > 0 && st.done === st.total,
+      nextTitle: nd ? natk(nd, "titleDe") : null,
+      nextPart: nd && nd.part != null ? nd.part : null,
+      nextWeek: nd && nd.week != null ? nd.week : null,
+    };
+  }
+
+  // „Weiter"-Einstieg (Hero-CTA & Start-Reiter-Karte): startet direkt den nächsten
+  // offenen Teil des Kurses – ohne Scrollen zur richtigen Zeile. Lehrer-Lock gewinnt
+  // IMMER und wird hier (anders als bei open-pretrip) NIE gelöscht: der Continue-Weg
+  // existiert auch innerhalb einer zugewiesenen Aufgabe. Ist alles fertig, öffnet
+  // sich der Pfad selbst (Replay-Auswahl statt No-op).
+  function continuePretrip(scope) {
+    dismissBadgeToast();
+    const locked = !!(state.pretripLock && PRETRIP().some((p) => p.scope === state.pretripLock));
+    const s = locked ? state.pretripLock
+      : (scope && PRETRIP().some((p) => p.scope === scope)) ? scope
+      : (state.pretripScope && PRETRIP().some((p) => p.scope === state.pretripScope)) ? state.pretripScope
+      : defaultPretripScope();
+    state.pretripScope = s;
+    const next = pretripNextDay(pretripPlan(s));
+    if (next) startPretripDay(next.day);
+    else openPretrip();
   }
 
   function startPretripDay(day) {
@@ -3147,6 +3233,7 @@
     const plan = pretripPlan(scope);
     const d = plan.days.find((x) => x.day === day);
     if (!d || !pretripUnlocked(scope, day)) return; // gesperrte Tage nicht startbar
+    rememberPretripScope(scope);
     const cards = d.cardIds.map(cardById).filter(Boolean);
     if (!cards.length) { recordPretripDay(scope, day); openPretrip(); return; }
     state.studyOrigin = "pretrip";  // nach der Etappe zurück zum Pre-Trip-Plan
@@ -7182,9 +7269,15 @@
     "open-category": (el) => { startStudy(el.dataset.id); },
     "ruta-del-dia": (el) => { openRutaDelDia(); },
     "open-preset": (el) => { startPreset(el.dataset.preset); },
-    "open-pretrip": (el) => { { state.pretripLock = null; openPretrip(); } },
+    "open-pretrip": (el) => { {
+      state.pretripLock = null;
+      // Optionaler Scope (Start-Karte „Ganzen Pfad ansehen"): direkt den Kurs öffnen.
+      if (el.dataset.scope && PRETRIP().some((p) => p.scope === el.dataset.scope)) state.pretripScope = el.dataset.scope;
+      openPretrip();
+    } },
     "set-pretrip-scope": (el) => { setPretripScope(el.dataset.scope); },
     "start-pretrip-day": (el) => { startPretripDay(Number(el.dataset.day)); },
+    "pretrip-continue": (el) => { continuePretrip(el.dataset.scope); },
     "open-teacher": (el) => { openTeacher(); },
     "teacher-import": (el) => { { const inp = document.getElementById("teacher-file"); if (inp) inp.click(); } },
     "teacher-remove": (el) => { removeTeacherStudent(Number(el.dataset.idx)); },
