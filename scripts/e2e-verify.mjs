@@ -371,6 +371,49 @@ async function runSuite(browser, root, label) {
       check("Discover-Opener öffnen ohne Fehler", okCount >= 4 && appErrs(errs).length === 0, `ok=${okCount} appErrs=${appErrs(errs).join(" | ")}`);
       await ctx.close();
     }
+
+    // ===== 13) Locals-Splitting: Korpus lädt NUR im es-en-Track =====
+    {
+      const LOCALS_RE = /\/(data\.locals\.js|contextdata\.locals\.js|i18n\.strings\.es\.js)(\?|$)/;
+      // 13a) Reise-Track (Default): keiner der drei Korpus-Requests darf rausgehen.
+      {
+        const ctx = await browser.newContext({ viewport: { width: 412, height: 915 } });
+        const p = await ctx.newPage();
+        const reqs = []; p.on("request", (r) => reqs.push(r.url()));
+        await seed(p, "flip");
+        await p.goto(base, { waitUntil: "networkidle" });
+        const hit = reqs.filter((u) => LOCALS_RE.test(u));
+        check("Locals-Split: Reise-Track lädt keinen Locals-Korpus (~1,76 MB gespart)", hit.length === 0, hit.join(" | "));
+        const noLocalsGlobals = await p.evaluate(() => typeof window.SC.dataLocals === "undefined" && typeof window.SC.contextDataLocals === "undefined");
+        check("Locals-Split: SC.dataLocals/contextDataLocals im Reise-Track undefined", noLocalsGlobals);
+        await ctx.close();
+      }
+      // 13b) Locals-Track (?edition=ingles-pro): Loader schreibt die Tags, Korpus
+      //      hängt in SC.data, attach() liefert Kontext, Home rendert fehlerfrei.
+      {
+        const ctx = await browser.newContext({ viewport: { width: 412, height: 915 } });
+        const errs = []; const csp = [];
+        const p = await ctx.newPage();
+        p.on("pageerror", (e) => errs.push("pageerror: " + e.message));
+        p.on("console", (m) => { if (m.type() === "error") { const tx = m.text(); errs.push("console: " + tx); if (cspErr(tx)) csp.push(tx); } });
+        await seed(p, "flip");
+        await p.goto(baseUrl + "?edition=ingles-pro", { waitUntil: "networkidle" });
+        const trackOk = await p.evaluate(() => window.SC.track && window.SC.track.id() === "es-en");
+        check("Locals-Split: ?edition=ingles-pro aktiviert es-en-Track", trackOk);
+        const corpusOk = await p.evaluate(() => !!(window.SC.data && window.SC.data.CARDS && window.SC.data.CARDS.some((c) => c.id === "loc-mes01")));
+        check("Locals-Split: Locals-Korpus in SC.data eingehängt (loc-mes01)", corpusOk);
+        const contextOk = await p.evaluate(() => {
+          // expandLocals liefert { loc:true, egLearn, egNative, situation, note }
+          const c = (window.SC.data.CARDS || []).find((x) => /^loc-/.test(x.id || "") && x.context);
+          return !!(c && c.context && c.context.loc && c.context.egLearn);
+        });
+        check("Locals-Split: attach() hängt Locals-Kontext an (loc-Karte mit context)", contextOk);
+        const homeOk = await p.evaluate(() => { const a = document.getElementById("app"); return !!a && a.innerHTML.trim().length > 200; });
+        check("Locals-Split: Home rendert im Locals-Track", homeOk);
+        check("Locals-Split: keine CSP-/App-Fehler im Locals-Track", csp.length === 0 && appErrs(errs).length === 0, [...csp, ...appErrs(errs)].join(" | "));
+        await ctx.close();
+      }
+    }
   } catch (e) {
     check("Suite-Lauf ohne Abbruch", false, e && e.message);
   } finally {
