@@ -192,19 +192,23 @@
   </div>
 
   <!-- Module in Abhängigkeits-Reihenfolge: erst Daten/Logik, dann View, dann Controller. -->
-  <!-- Edition-Verzeichnis zuerst: erlaubt Partner-Branding per Link (?edition=ecos). -->
-  <script defer src="editions/registry.js"></script>
+  <!-- Edition-Verzeichnis zuerst: erlaubt Partner-Branding per Link (?edition=ecos).
+       registry.js + config.js bewusst OHNE defer (beide DOM-frei und winzig):
+       locals-loader.js braucht SC.track bereits zur Parse-Zeit. -->
+  <script src="editions/registry.js"></script>
   <!-- Marken-/Edition-Konfiguration (Standard = HolaRuta pur; Edition aus Registry/URL). -->
-  <script defer src="config.js"></script>
+  <script src="config.js"></script>
   <!-- Mehrsprachigkeit zuerst: Engine + UI-Wörterbuch, damit t()/nativeText überall stehen. -->
   <script defer src="i18n.js"></script>
   <script defer src="i18n.strings.js"></script>
-  <script defer src="i18n.strings.es.js"></script>
   <script defer src="contextdata.js"></script>
   <script defer src="phrasecontext.js"></script>
   <script defer src="data.js"></script>
-  <script defer src="data.locals.js"></script>
-  <script defer src="contextdata.locals.js"></script>
+  <!-- Locals-Korpus (i18n.strings.es.js, data.locals.js, contextdata.locals.js)
+       NUR im es-en-Track: der Loader schreibt die defer-Tags an DIESE Position
+       (nach i18n.strings.js/data.js, vor context.js) – im Reise-Track werden
+       ~1,76 MB weder geladen noch geparst. Details im Loader selbst. -->
+  <script src="locals-loader.js"></script>
   <script defer src="numbers.js"></script>
   <script defer src="context.js"></script>
   <script defer src="countries.js"></script>

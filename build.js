@@ -88,6 +88,18 @@ function build() {
   html = html.replace(/[ \t]*<script[^>]*src="([^"]+)"[^>]*><\/script[^>]*>/gi, (m, src) => {
     inlined.push(src);
     const code = inlineCode(src);
+    // Locals-Loader: im Single-File gibt es kein Nachladen per document.write –
+    // die drei Korpus-Dateien werden an GENAU dieser Position eingebettet
+    // (nach i18n.strings.js/data.js, vor context.js/dialogos.js); der Loader
+    // selbst entfällt. Ihre eigenen Track-Guards greifen dann wie bei der
+    // früheren statischen Verdrahtung. Reihenfolge ist wichtig: attach()
+    // (context.js) braucht den Locals-Kontext, und data.locals.js muss
+    // SC.dialogos VOR dialogos.js vorbelegen können.
+    if (/(?:^|\/)locals-loader\.js$/i.test(src)) {
+      return ["i18n.strings.es.js", "data.locals.js", "contextdata.locals.js"]
+        .map((f) => { inlined.push(f); return `<script>\n${inlineCode(f)}\n</script>`; })
+        .join("\n");
+    }
     // Edition-Build: die Edition-Config direkt vor config.js einbetten, damit
     // config.js sie beim Merge sieht (setzt window.SC.editionConfig).
     if (EDITION && src === "config.js") {
