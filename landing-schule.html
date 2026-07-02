@@ -79,6 +79,14 @@
 <body>
   <a href="#hero" class="lp-skip" data-i18n="skip">Zum Inhalt springen</a>
   <div class="lp-topstripe"></div>
+  <!-- Icon-Sprite: stroke-basiertes SVG-Set in Markenmanier (currentColor,
+       24er-Raster) fuer die Sticker-Kacheln – ersetzt die frueheren Emojis. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+    <symbol id="lpi-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+    <symbol id="lpi-teach" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></symbol>
+    <symbol id="lpi-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  </defs></svg>
+
 
   <!-- ─────────────── Header ─────────────── -->
   <header class="lp-header" id="lpHeader">
@@ -179,7 +187,7 @@
         <p class="lp-lead" data-reveal data-i18n="use.lead">Schulen verkaufen keinen Grammatikkurs, sondern einen Aufenthalt. Genau dort ist HolaRuta stark – und alles davon trägt der heutige Stand.</p>
         <div class="lp-hooks">
           <article class="lp-hook" data-reveal style="--i:0; --accent:#1F7A8C">
-            <span class="lp-hook__ico" aria-hidden="true">✈️</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-plane"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.1.k">Pre-Arrival-Pack</span>
               <h3 class="lp-hook__title" data-i18n="use.1.t">Startklar, bevor das Flugzeug landet.</h3>
@@ -187,7 +195,7 @@
             </div>
           </article>
           <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
-            <span class="lp-hook__ico" aria-hidden="true">🧑‍🏫</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-teach"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.2.k">Classroom-Companion</span>
               <h3 class="lp-hook__title" data-i18n="use.2.t">5-Minuten-Warm-up und Partnerarbeit.</h3>
@@ -195,7 +203,7 @@
             </div>
           </article>
           <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#C2502E">
-            <span class="lp-hook__ico" aria-hidden="true">🎯</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-target"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.3.k">Real-Life-Challenge</span>
               <h3 class="lp-hook__title" data-i18n="use.3.t">„Frag heute im Café nach der Rechnung.“</h3>
@@ -313,7 +321,7 @@
     </section>
 
     <!-- ─────────────── Risikofrei / Vertrauen ─────────────── -->
-    <section class="lp-section" id="trust">
+    <section class="lp-section lp-section--band" id="trust">
       <div class="lp-wrap">
         <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Risikofrei starten</p>
         <ul class="lp-trustbar" data-reveal>

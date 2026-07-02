@@ -76,6 +76,14 @@
 <body>
   <a href="#hero" class="lp-skip" data-i18n="skip">Zum Inhalt springen</a>
   <div class="lp-topstripe"></div>
+  <!-- Icon-Sprite: stroke-basiertes SVG-Set in Markenmanier (currentColor,
+       24er-Raster) fuer die Sticker-Kacheln – ersetzt die frueheren Emojis. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+    <symbol id="lpi-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/><line x1="19" y1="3" x2="19" y2="7"/><line x1="17" y1="5" x2="21" y2="5"/></symbol>
+    <symbol id="lpi-qr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3z"/><line x1="21" y1="14" x2="21.01" y2="14"/><line x1="14" y1="21" x2="14.01" y2="21"/><line x1="21" y1="21" x2="21.01" y2="21"/><line x1="17.5" y1="21" x2="17.51" y2="21"/><line x1="21" y1="17.5" x2="21.01" y2="17.5"/></symbol>
+    <symbol id="lpi-swatch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="9.5" r="5"/><circle cx="15.5" cy="9.5" r="5"/><circle cx="12" cy="15.5" r="5"/></symbol>
+  </defs></svg>
+
 
   <!-- ─────────────── Header ─────────────── -->
   <header class="lp-header" id="lpHeader">
@@ -176,7 +184,7 @@
         <p class="lp-lead" data-reveal data-i18n="use.lead">Hostels suchen ständig nach Social-Aktivitäten für den Common Room. HolaRuta liefert genau das – niedrigschwellig, weil es offline läuft und nichts installiert werden muss.</p>
         <div class="lp-hooks">
           <article class="lp-hook" data-reveal style="--i:0; --accent:#E08A2C">
-            <span class="lp-hook__ico" aria-hidden="true">🎉</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-sparkle"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.1.k">Ice-Breaker</span>
               <h3 class="lp-hook__title" data-i18n="use.1.t">Aus Fremden am Tisch werden Freunde.</h3>
@@ -184,7 +192,7 @@
             </div>
           </article>
           <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
-            <span class="lp-hook__ico" aria-hidden="true">📲</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-qr"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.2.k">QR-Code & los</span>
               <h3 class="lp-hook__title" data-i18n="use.2.t">Aufhängen, scannen, spielen.</h3>
@@ -192,7 +200,7 @@
             </div>
           </article>
           <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#7D4A8E">
-            <span class="lp-hook__ico" aria-hidden="true">🎨</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-swatch"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.3.k">Co-Branding</span>
               <h3 class="lp-hook__title" data-i18n="use.3.t">Eure Marke, eure Farbe – fertig.</h3>
@@ -305,7 +313,7 @@
     </section>
 
     <!-- ─────────────── Risikofrei / Vertrauen ─────────────── -->
-    <section class="lp-section" id="trust">
+    <section class="lp-section lp-section--band" id="trust">
       <div class="lp-wrap">
         <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Risikofrei starten</p>
         <ul class="lp-trustbar" data-reveal>

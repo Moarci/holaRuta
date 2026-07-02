@@ -86,6 +86,32 @@
 <body>
   <a href="#hero" class="lp-skip" data-i18n="skip">Zum Inhalt springen</a>
   <div class="lp-topstripe"></div>
+  <!-- Icon-Sprite: stroke-basiertes SVG-Set in Markenmanier (currentColor,
+       24er-Raster) fuer die Sticker-Kacheln – ersetzt die frueheren Emojis. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+    <symbol id="lpi-cards" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="12" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></symbol>
+    <symbol id="lpi-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="lpi-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></symbol>
+    <symbol id="lpi-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></symbol>
+    <symbol id="lpi-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></symbol>
+    <symbol id="lpi-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+    <symbol id="lpi-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></symbol>
+    <symbol id="lpi-wifi-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></symbol>
+    <symbol id="lpi-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="lpi-lifebuoy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/></symbol>
+    <symbol id="lpi-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+    <symbol id="lpi-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></symbol>
+    <symbol id="lpi-bed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M2 17h20"/></symbol>
+    <symbol id="lpi-exchange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 3 21 7 17 11"/><line x1="21" y1="7" x2="9" y2="7"/><polyline points="7 13 3 17 7 21"/><line x1="3" y1="17" x2="15" y2="17"/></symbol>
+    <symbol id="lpi-banknote" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/></symbol>
+    <symbol id="lpi-dice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="8" y1="8" x2="8.01" y2="8"/><line x1="16" y1="8" x2="16.01" y2="8"/><line x1="12" y1="12" x2="12.01" y2="12"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/></symbol>
+    <symbol id="lpi-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="lpi-backpack" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/><line x1="8" y1="10" x2="16" y2="10"/></symbol>
+    <symbol id="lpi-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="lpi-health" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/></symbol>
+    <symbol id="lpi-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/><line x1="19" y1="3" x2="19" y2="7"/><line x1="17" y1="5" x2="21" y2="5"/></symbol>
+  </defs></svg>
+
 
   <!-- ─────────────── Header ─────────────── -->
   <header class="lp-header" id="lpHeader">
@@ -133,28 +159,28 @@
           </div>
           <div class="lp-trust">
             <div class="lp-trust__item" data-reveal style="--i:4; --accent:#C2502E">
-              <span class="lp-trust__ico" aria-hidden="true">🃏</span>
+              <span class="lp-trust__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-cards"/></svg></span>
               <div class="lp-trust__data">
                 <span class="lp-trust__num" data-count="2293">2293</span>
                 <span class="lp-trust__label" data-i18n="trust.cards">Karten</span>
               </div>
             </div>
             <div class="lp-trust__item" data-reveal style="--i:5; --accent:#2F6B70">
-              <span class="lp-trust__ico" aria-hidden="true">🗂️</span>
+              <span class="lp-trust__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-folder"/></svg></span>
               <div class="lp-trust__data">
                 <span class="lp-trust__num" data-count="72">72</span>
                 <span class="lp-trust__label" data-i18n="trust.areas">Bereiche</span>
               </div>
             </div>
             <div class="lp-trust__item" data-reveal style="--i:6; --accent:#7D4A8E">
-              <span class="lp-trust__ico" aria-hidden="true">🎴</span>
+              <span class="lp-trust__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-sliders"/></svg></span>
               <div class="lp-trust__data">
                 <span class="lp-trust__num" data-count="3">3</span>
                 <span class="lp-trust__label" data-i18n="trust.modes">Lernmodi</span>
               </div>
             </div>
             <div class="lp-trust__item" data-reveal style="--i:7; --accent:#3F7355">
-              <span class="lp-trust__ico" aria-hidden="true">🎁</span>
+              <span class="lp-trust__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-gift"/></svg></span>
               <div class="lp-trust__data">
                 <span class="lp-trust__num">0&nbsp;€</span>
                 <span class="lp-trust__label" data-i18n="trust.free">Offline · kein Konto</span>
@@ -167,6 +193,15 @@
              Kategorien (Eyecatcher + zeigt die Bandbreite). Karten nutzen die echten
              App-Klassen (.flip/.face/.cardbtn) und sind antippbar zum Umdrehen. -->
         <div class="lp-cardcol" data-reveal style="--i:2">
+          <!-- Echter App-Screenshot im Phone-Rahmen hinter der Karte (nur Desktop):
+               zeigt sofort das Produkt und gibt dem Hero Tiefe. -->
+          <div class="lp-herophone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div>
+              <div class="lp-phone__stripe"></div>
+              <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
+            </div>
+          </div>
           <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" aria-label="Beispielkarten">
             <div class="lp-carousel__viewport">
               <div class="lp-slide is-active">
@@ -376,37 +411,37 @@
         <p class="lp-lead" data-reveal data-i18n="feat.lead">Kein Vokabel-Pauken. Sondern die Sätze, die du am Busbahnhof, im Hostel und auf dem Markt sofort brauchst.</p>
         <div class="lp-features__grid">
           <article class="lp-feat" data-reveal style="--i:0; --accent:#C2502E">
-            <span class="lp-feat__icon" aria-hidden="true">🧠</span>
+            <span class="lp-feat__icon" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-refresh"/></svg></span>
             <h3 class="lp-feat__title" data-i18n="feat.srs.t">Du vergisst es nicht mehr</h3>
             <p class="lp-feat__body" data-i18n="feat.srs.b">Jede Vokabel kommt genau dann zurück, wenn du sie zu vergessen drohst — automatisch. Du musst nichts planen.</p>
           </article>
           <article class="lp-feat" data-reveal style="--i:1; --accent:#2F6B70">
-            <span class="lp-feat__icon" aria-hidden="true">🃏</span>
+            <span class="lp-feat__icon" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-sliders"/></svg></span>
             <h3 class="lp-feat__title" data-i18n="feat.modes.t">Lern, wie's dir passt</h3>
             <p class="lp-feat__body" data-i18n="feat.modes.b">Karteikarte, selbst schreiben oder nur hören — wechsle den Modus jederzeit.</p>
           </article>
           <article class="lp-feat" data-reveal style="--i:2; --accent:#3F7355">
-            <span class="lp-feat__icon" aria-hidden="true">🌎</span>
+            <span class="lp-feat__icon" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-globe"/></svg></span>
             <h3 class="lp-feat__title" data-i18n="feat.latam.t">Echtes Straßen-Spanisch</h3>
             <p class="lp-feat__body" data-i18n="feat.latam.b">colectivo, vuelto, plata, chévere — die Wörter, die man in Lateinamerika wirklich sagt.</p>
           </article>
           <article class="lp-feat" data-reveal style="--i:0; --accent:#2F6B70">
-            <span class="lp-feat__icon" aria-hidden="true">🧭</span>
+            <span class="lp-feat__icon" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-compass"/></svg></span>
             <h3 class="lp-feat__title" data-i18n="feat.context.t">Immer mit Kontext</h3>
             <p class="lp-feat__body" data-i18n="feat.context.b">Tipp auf 🧭 und jede Karte verrät dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp zur Einordnung.</p>
           </article>
           <article class="lp-feat" data-reveal style="--i:0; --accent:#E9A23B">
-            <span class="lp-feat__icon" aria-hidden="true">📶</span>
+            <span class="lp-feat__icon" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-wifi-off"/></svg></span>
             <h3 class="lp-feat__title" data-i18n="feat.offline.t">Funktioniert ohne Netz</h3>
             <p class="lp-feat__body" data-i18n="feat.offline.b">Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.</p>
           </article>
           <article class="lp-feat" data-reveal style="--i:1; --accent:#7D4A8E">
-            <span class="lp-feat__icon" aria-hidden="true">🔒</span>
+            <span class="lp-feat__icon" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-lock"/></svg></span>
             <h3 class="lp-feat__title" data-i18n="feat.privacy.t">Kein Konto, keine Werbung</h3>
             <p class="lp-feat__body" data-i18n="feat.privacy.b">Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.</p>
           </article>
           <article class="lp-feat" data-reveal style="--i:2; --accent:#B5302A">
-            <span class="lp-feat__icon" aria-hidden="true">🗂️</span>
+            <span class="lp-feat__icon" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-folder"/></svg></span>
             <h3 class="lp-feat__title" data-i18n="feat.areas.t">72 Themen für echte Situationen</h3>
             <p class="lp-feat__body" data-i18n="feat.areas.b">Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.</p>
           </article>
@@ -419,7 +454,7 @@
                des Moduls; im Panel wischt man durch die Beispiele (Scroll-Snap). -->
           <div class="lp-more__chips" id="lpMoreChips">
             <button class="lp-morechip" type="button" data-mod="surv" data-reveal style="--accent:#B5302A; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">🆘</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-lifebuoy"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Supervivencia</span>
                 <span class="lp-morechip__desc" data-i18n="more.spick.d">Die Notfall-Sätze groß auf einen Blick</span>
@@ -427,7 +462,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="country" data-reveal style="--accent:#3F7355; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">🌎</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-globe"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Países y culturas</span>
                 <span class="lp-morechip__desc" data-i18n="more.country.d">Sitten, Geld &amp; Eigenheiten pro Land</span>
@@ -435,7 +470,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="historia" data-reveal style="--accent:#E9A23B; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">📜</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-book"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Historia</span>
                 <span class="lp-morechip__desc" data-i18n="more.historia.d">Südamerikas Geschichte zum Mitreden</span>
@@ -443,7 +478,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="dialogos" data-reveal style="--accent:#2F6B70; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">💬</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-chat"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Diálogos</span>
                 <span class="lp-morechip__desc" data-i18n="more.dialogos.d">Ganze Gespräche Zug um Zug üben</span>
@@ -451,7 +486,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="hostal" data-reveal style="--accent:#7D4A8E; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">🛏️</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-bed"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Modo hostal</span>
                 <span class="lp-morechip__desc" data-i18n="more.hostel.d">Zu zweit: Battle &amp; Rollenspiele</span>
@@ -459,7 +494,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="regatear" data-reveal style="--accent:#C2502E; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">🤝</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-exchange"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Regatear</span>
                 <span class="lp-morechip__desc" data-i18n="more.regatear.d">Auf dem Markt fair feilschen</span>
@@ -467,7 +502,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="precios" data-reveal style="--accent:#3F7355; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">💵</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-banknote"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Precios al oído</span>
                 <span class="lp-morechip__desc" data-i18n="more.precios.d">Preise hören &amp; blind eintippen</span>
@@ -475,7 +510,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="juegos" data-reveal style="--accent:#7D4A8E; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">🎲</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-dice"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Juegos de viaje</span>
                 <span class="lp-morechip__desc" data-i18n="more.juegos.d">Hostel-Spiele &amp; die Sätze dazu</span>
@@ -483,7 +518,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="musica" data-reveal style="--accent:#2F6B70; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">🎵</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-music"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Música</span>
                 <span class="lp-morechip__desc" data-i18n="more.musica.d">Der Sound deines Reiselands</span>
@@ -491,7 +526,7 @@
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
             <button class="lp-morechip" type="button" data-mod="logistica" data-reveal style="--accent:#E9A23B; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
-              <span class="lp-morechip__ico" aria-hidden="true">🧳</span>
+              <span class="lp-morechip__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-backpack"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name">Logística</span>
                 <span class="lp-morechip__desc" data-i18n="more.logistica.d">SIM, Bargeld &amp; clever packen</span>
@@ -515,7 +550,7 @@
     </section>
 
     <!-- ─────────────── Mehr als Sprache: emotionale Hooks ─────────────── -->
-    <section class="lp-section" id="why">
+    <section class="lp-section lp-section--band" id="why">
       <div class="lp-wrap">
         <div class="lp-rule" data-reveal></div>
         <p class="lp-eyebrow" data-reveal data-i18n="why.eyebrow">MEHR ALS SPRACHE</p>
@@ -523,7 +558,7 @@
         <p class="lp-lead" data-reveal data-i18n="why.lead">Sprache ist nur der Anfang. HolaRuta gibt dir Geschichte, Kultur, Gespür und Anschluss — alles, was aus einer Reise deine Reise macht.</p>
         <div class="lp-hooks">
           <article class="lp-hook" data-reveal style="--i:0; --accent:#E9A23B">
-            <span class="lp-hook__ico" aria-hidden="true">📜</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-book"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.historia.k">Historia</span>
               <h3 class="lp-hook__title" data-i18n="why.historia.t">Steh vor Machu Picchu — und versteh, was du siehst.</h3>
@@ -531,7 +566,7 @@
             </div>
           </article>
           <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
-            <span class="lp-hook__ico" aria-hidden="true">🌎</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-globe"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.culturas.k">Países &amp; culturas</span>
               <h3 class="lp-hook__title" data-i18n="why.culturas.t">Jedes Land tickt anders. Wisse vorher, wie.</h3>
@@ -539,7 +574,7 @@
             </div>
           </article>
           <article class="lp-hook" data-reveal style="--i:0; --accent:#7D4A8E">
-            <span class="lp-hook__ico" aria-hidden="true">🤝</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-heart"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.respeto.k">Buen viajero</span>
               <h3 class="lp-hook__title" data-i18n="why.respeto.t">Respekt öffnet Türen, die kein Reiseführer kennt.</h3>
@@ -547,7 +582,7 @@
             </div>
           </article>
           <article class="lp-hook" data-reveal style="--i:1; --accent:#B5302A">
-            <span class="lp-hook__ico" aria-hidden="true">🩺</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-health"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.salud.k">Salud</span>
               <h3 class="lp-hook__title" data-i18n="why.salud.t">Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.</h3>
@@ -555,7 +590,7 @@
             </div>
           </article>
           <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#C2502E">
-            <span class="lp-hook__ico" aria-hidden="true">🎉</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg aria-hidden="true"><use href="#lpi-sparkle"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.conexion.k">Conexión</span>
               <h3 class="lp-hook__title" data-i18n="why.conexion.t">Aus einem „Hola" wird die beste Nacht deiner Reise.</h3>
@@ -1370,7 +1405,9 @@
         detail.style.setProperty("--accent", currentAccent);
         var ico = chip.querySelector(".lp-morechip__ico");
         var nm = chip.querySelector(".lp-morechip__name");
-        icoEl.textContent = ico ? ico.textContent : "";
+        // innerHTML statt textContent: das Chip-Icon ist ein Inline-SVG (eigenes,
+        // statisches Markup – kein Nutzer-Input).
+        icoEl.innerHTML = ico ? ico.innerHTML : "";
         nameEl.textContent = nm ? nm.textContent : "";
         render(openMod);
         detail.hidden = false;
