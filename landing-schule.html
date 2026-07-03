@@ -139,8 +139,8 @@
       <div class="lp-wrap lp-hero__grid">
         <div class="lp-hero__copy">
           <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">FÜR SPRACHSCHULEN IN LATEINAMERIKA</p>
-          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Brücke zwischen Klassenzimmer und Straße.</h1>
-          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">HolaRuta begleitet eure Immersionskurse mobil: Pre-Arrival-Vorbereitung, 5-Minuten-Warm-ups im Unterricht und echte Mutproben vor Ort. Lateinamerika-korrekt, offline, ohne Konto – optional in eurem Schul-Branding.</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Brücke zwischen Klassenzimmer und <span class="lp-hl">Straße</span>.</h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Was im Klassenzimmer geübt wird, trauen sich eure Schüler draußen zu sagen — mit 5-Minuten-Warm-ups und echten Mutproben.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
             <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=ecos&start=onboarding" data-i18n="hero.demo">Live-Demo öffnen →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#kontakt" data-i18n="hero.contact">Pilot anfragen</a>
@@ -166,6 +166,19 @@
         </div>
 
         <aside class="lp-cardcol" data-reveal style="--i:2">
+          <!-- Echter App-Screenshot im Phone-Rahmen hinter der Karte (nur Desktop):
+               gibt dem Hero Produkt-Tiefe. Nur ab 1040px sichtbar (lazy = kein
+               Download darunter). Die Karte liegt via z-index:1 darüber. -->
+          <div class="lp-herophone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div>
+              <div class="lp-phone__stripe"></div>
+              <picture>
+                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/home-hero.webp" />
+                <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
+              </picture>
+            </div>
+          </div>
           <div class="lp-herocard">
             <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · ECOS Edition</span>
             <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿Tiene una habitación libre?</b><span class="lp-herocard__tr">„Haben Sie ein Zimmer frei?“ – vor der Anreise: Flughafen, Taxi, Check-in schon mal geübt.</span></p>
@@ -409,8 +422,8 @@
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
         "aud.label": "Für wen?", "aud.b2c": "🎒 Privatreisende", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter",
         "hero.eyebrow": "FÜR SPRACHSCHULEN IN LATEINAMERIKA",
-        "hero.h1": "Die Brücke zwischen Klassenzimmer und Straße.",
-        "hero.sub": "HolaRuta begleitet eure Immersionskurse mobil: Pre-Arrival-Vorbereitung, 5-Minuten-Warm-ups im Unterricht und echte Mutproben vor Ort. Lateinamerika-korrekt, offline, ohne Konto – optional in eurem Schul-Branding.",
+        "hero.h1": "Die Brücke zwischen Klassenzimmer und <span class=\"lp-hl\">Straße</span>.",
+        "hero.sub": "Was im Klassenzimmer geübt wird, trauen sich eure Schüler draußen zu sagen — mit 5-Minuten-Warm-ups und echten Mutproben.",
         "hero.demo": "Live-Demo öffnen →", "hero.contact": "Pilot anfragen",
         "trust.cards": "Karten", "trust.challenges": "Real-Life-Challenges", "trust.levels": "Niveaus", "trust.pilot": "Pilot",
         "card.brand": "HolaRuta · ECOS Edition",
@@ -452,8 +465,8 @@
         "skip": "Skip to content", "nav.demo": "Live demo",
         "aud.label": "Who is it for?", "aud.b2c": "🎒 Independent travelers", "aud.schule": "🎓 Language schools", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Tour operators",
         "hero.eyebrow": "FOR LANGUAGE SCHOOLS IN LATIN AMERICA",
-        "hero.h1": "The bridge between classroom and street.",
-        "hero.sub": "HolaRuta supports your immersion courses on mobile: pre-arrival prep, 5-minute in-class warm-ups and real challenges on the ground. Latin-American-correct, offline, no account – optionally in your school branding.",
+        "hero.h1": "The bridge between classroom and <span class=\"lp-hl\">street</span>.",
+        "hero.sub": "What your students practice in class, they dare to say outside — with 5-minute warm-ups and real challenges.",
         "hero.demo": "Open live demo →", "hero.contact": "Request a pilot",
         "trust.cards": "cards", "trust.challenges": "real-life challenges", "trust.levels": "levels", "trust.pilot": "pilot",
         "card.brand": "HolaRuta · ECOS Edition",
@@ -495,8 +508,8 @@
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
         "aud.label": "¿Para quién?", "aud.b2c": "🎒 Viajeros particulares", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes",
         "hero.eyebrow": "PARA ESCUELAS DE IDIOMAS EN LATINOAMÉRICA",
-        "hero.h1": "El puente entre el aula y la calle.",
-        "hero.sub": "HolaRuta acompaña tus cursos de inmersión en el móvil: preparación de pre-llegada, calentamientos de 5 minutos en clase y retos reales sobre el terreno. Correcto para Latinoamérica, sin conexión, sin cuenta – opcionalmente con la marca de tu escuela.",
+        "hero.h1": "El puente entre el aula y <span class=\"lp-hl\">la calle</span>.",
+        "hero.sub": "Lo que practican en clase, tus alumnos se atreven a decirlo fuera — con calentamientos de 5 minutos y retos reales.",
         "hero.demo": "Abrir demo en vivo →", "hero.contact": "Solicitar piloto",
         "trust.cards": "tarjetas", "trust.challenges": "retos reales", "trust.levels": "niveles", "trust.pilot": "piloto",
         "card.brand": "HolaRuta · Edición ECOS",
@@ -534,7 +547,7 @@
     };
 
     // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
-    var HTML_KEYS = { "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var HTML_KEYS = { "hero.h1": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
     var LANG_KEY = "holaruta.landing.lang";
 
     function setLang(lang) {
