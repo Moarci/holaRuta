@@ -57,12 +57,6 @@
 html { background: var(--page); scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-/* styles.css setzt html,body { height:100% } (App-Layout). Auf der Landing
-   würde der Body dadurch nur eine Viewport-Höhe cremefarben malen und alles
-   darunter zeigte den dunklen --page-Canvas: unlesbare Sektionen im Light
-   Theme. Hier muss der Body mit dem Inhalt wachsen. */
-html, body { height: auto; min-height: 100%; }
-
 body {
   margin: 0;
   font-family: var(--font);
@@ -144,22 +138,25 @@ a { color: var(--brand-ink); }
    beiden Themes ab. */
 .lp-section--band { background: var(--page); }
 .lp-section--band .lp-h2 { color: var(--cream); }
-.lp-section--band .lp-lead { color: rgba(251, 243, 228, 0.82); }
-.lp-section--band .lp-eyebrow { color: #F0996B; }
+.lp-section--band .lp-lead { color: color-mix(in srgb, var(--cream) 82%, transparent); }
+.lp-section--band .lp-eyebrow { color: var(--brand-ink-on-dark); }
+/* Zitate (Testimonials) liegen direkt auf dem Band – helle Tinte statt --ink,
+   sonst wäre ein einkommentiertes Testimonial im Light Theme unsichtbar. */
+.lp-section--band .lp-quote { color: var(--cream); }
+.lp-section--band .lp-quote cite { color: color-mix(in srgb, var(--cream) 70%, transparent); }
 
 /* ─────────────────────────── Icon-Kacheln (SVG-Set) ───────────────────────────
    Stroke-Icons (Sprite #lpi-*) in tiefer Akzentfarbe auf dem hellen Accent-
    Verlauf der Sticker-Kachel. Die Kachel-Hintergründe bleiben unverändert;
-   currentColor folgt --accent je Karte (Muster wie .lp-trust__num). */
+   currentColor folgt --accent je Karte (Muster wie .lp-trust__num).
+   Größe: die SVGs tragen width/height="1em" im Markup – die font-size der
+   Kachel ist der EINE Regler und das Markup bleibt auch ohne dieses CSS
+   (z. B. HTML/CSS-Cache-Versatz nach einem Deploy) korrekt dimensioniert. */
 .lp-trust__ico, .lp-feat__icon, .lp-hook__ico, .lp-morechip__ico, .lp-moredetail__ico {
   color: color-mix(in srgb, var(--accent, var(--brand)) 78%, var(--ink));
 }
 .lp-trust__ico svg, .lp-feat__icon svg, .lp-hook__ico svg,
 .lp-morechip__ico svg, .lp-moredetail__ico svg { display: block; }
-.lp-trust__ico svg, .lp-morechip__ico svg { width: 21px; height: 21px; }
-.lp-feat__icon svg { width: 27px; height: 27px; }
-.lp-hook__ico svg { width: 25px; height: 25px; }
-.lp-moredetail__ico svg { width: 18px; height: 18px; }
 
 /* Mini-Rainbow-Regel als Trenner (statt Hairline) – sparsam eingesetzt. */
 .lp-rule {
@@ -367,7 +364,9 @@ a { color: var(--brand-ink); }
 .lp-trust__ico {
   width: 38px; height: 38px; flex: none; border-radius: 12px;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 1.3rem; line-height: 1;
+  /* font-size = Icon-Größe (SVGs sind 1em): 1.2rem hält die Icon/Kachel-
+     Proportion (~0.5) im Gleichschritt mit feat/hook/morechip. */
+  font-size: 1.2rem; line-height: 1;
   background: linear-gradient(135deg,
     color-mix(in srgb, var(--accent, var(--brand)) 26%, var(--card)),
     color-mix(in srgb, var(--accent, var(--brand)) 9%, var(--card)));

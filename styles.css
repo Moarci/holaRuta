@@ -49,6 +49,8 @@
   /* Akzente */
   --brand: #C2502E;      /* Terrakotta */
   --brand-ink: #A23E20;  /* dunkler für Text */
+  --brand-ink-on-dark: #F0996B; /* Marken-Text auf dauerhaft dunklen Flächen
+                                   (Dark-Mode-Tinte & z. B. das dunkle Landing-Band) */
   --ok: #3F7355;         /* grün ("Gewusst"/gemeistert) */
   --no: #B5302A;         /* rot ("Nochmal"/Fehler) */
   --easy: #2F6B70;       /* teal ("Einfach") */
@@ -88,7 +90,7 @@
   --line-strong: rgba(251, 243, 228, 0.22);
   /* Akzente – etwas heller, damit sie auf Dunkel leuchten */
   --brand: #E06A40;      /* Terrakotta */
-  --brand-ink: #F0996B;  /* heller für Text auf Dunkel */
+  --brand-ink: var(--brand-ink-on-dark); /* heller für Text auf Dunkel */
   --ok: #5FA77C;
   --no: #E5736A;
   --easy: #4FA0A6;
@@ -148,7 +150,11 @@ html, body, .appshell, .appbar { transition: background-color 0.3s ease, color 0
  * Kasten um den Titel aus. */
 .pagehead__title:focus, .pagehead__title:focus-visible { outline: none; }
 
-html, body { height: 100%; }
+/* KEIN html,body{height:100%} setzen: Damit malte der Body seinen Hintergrund
+ * nur eine Viewport-Höhe hoch – auf jeder langen Seite ohne eigene Flächen
+ * (z. B. den Landing-Pages) schien darunter der dunkle --page-Canvas durch.
+ * Die App braucht die Regel nicht: body min-height:100dvh + die mitwachsende
+ * .appshell decken die volle Scroll-Höhe ab (pixel-identisch verifiziert). */
 html { background: var(--page); }
 body {
   margin: 0;
