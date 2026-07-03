@@ -206,6 +206,31 @@ erstaunlich gut** — hier der Abgleich Atom für Atom:
 5. **CTA-Reibung testen (E6).** „Kostenlos starten →" ist gut; A/B gegen eine noch
    konkretere, ergebnisorientierte Variante („Erste 10 Sätze lernen →") messbar machen.
 
+> **Hinweis:** Die Tabelle oben ist der Analyse-Stand *vor* der Umsetzung. Der
+> tatsächlich umgesetzte Stand steht direkt darunter.
+
+### Umsetzungsstatus (Stand 2026-07-03)
+
+Umgesetzt auf allen vier Landing-Pages (Branch `claude/cap-analysis-insights-d5civo`):
+
+- ✅ **1 · Sub-Headlines entrümpelt** — je ein Versprechen; Zahlen/Attribute bleiben
+  in der Trust-Bar. `landing.html` (DE/EN) + hostel/reiseanbieter/schule (DE/EN/ES),
+  jeweils Markup-Fallback + Dicts synchron. Consumer neu: „Genau die Sätze, die du im
+  Bus, beim Essen und am Grenzposten brauchst — parat, wenn's drauf ankommt."
+- ✅ **2 · Visual „Wunsch in der Hand"** — echtes Phone-Mockup (`.lp-herophone` +
+  App-Screenshot) hinter der Hero-Card der drei Partner-Seiten (Consumer hatte es
+  bereits). Mesh-Gradient bleibt als Ambient-Ebene. CSS-Fix: `.lp-herocard` erhält
+  `z-index:1`, damit die Karte über dem Mockup liegt.
+- ✅ **3 · Headline** — Consumer-H1 unverändert; die drei Partner-H1s haben jetzt je
+  ein `lp-hl`-Highlight (DE dabei auf EN/ES-Kürze angeglichen). `hero.h1` in `HTML_KEYS`
+  aufgenommen, damit das Span als Highlight statt als Text rendert.
+- ◻️ **4 · Ein Job pro Section** — Hero enthält keine Fremd-Moleküle; Trust-Bar
+  bewusst behalten (schlank genug).
+- ◻️ **5 · CTA-Reibung** — offen (A/B-Test bräuchte Infrastruktur), CTAs unverändert.
+
+Bewusst offen: ES für die Consumer-`landing.html` (nur DE/EN) sowie die hartcodierte
+Trust-Bar-Zahl „2 Wo." in `landing-reiseanbieter.html` (ohne `data-i18n`).
+
 ---
 
 ## 6. Die eine Zeile zum Merken
