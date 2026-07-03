@@ -222,6 +222,12 @@ function buildDist() {
     "docs/landing/home.png",
     "docs/landing/study.png",
     "docs/landing/stats.png",
+    // WebP-Varianten: die Landing-Seiten binden primär .webp ein (kleiner);
+    // fehlen sie in dist/, zeigen alle Screenshots in Produktion nur Alt-Text.
+    "docs/landing/home.webp",
+    "docs/landing/study.webp",
+    "docs/landing/stats.webp",
+    "docs/landing/home-hero.webp",
     // Zielgruppenspezifische B2B-Landings (DE/EN/ES) – teilen sich styles.css/landing.css.
     "landing-schule.html",
     "landing-hostel.html",
