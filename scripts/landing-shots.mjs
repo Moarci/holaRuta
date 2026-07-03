@@ -115,6 +115,36 @@ async function run() {
     console.log("✓ docs/landing/stats.png");
   }
 
+  // 4) WebP-Ableitungen: die Landing-Pages binden {home,study,stats}.webp ein
+  //    (deutlich kleiner als PNG) plus home-hero.webp (612px, Hero-Phone auf
+  //    Desktop). Kodierung dependency-frei über Chromiums Canvas-Encoder.
+  {
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    const toWebp = async (srcName, outName, targetWidth) => {
+      const { readFileSync, writeFileSync } = await import("node:fs");
+      const b64 = readFileSync(path.join(OUT, srcName)).toString("base64");
+      const dataUrl = await page.evaluate(async ({ b64, targetWidth }) => {
+        const img = new Image();
+        img.src = "data:image/png;base64," + b64;
+        await img.decode();
+        const w = targetWidth || img.naturalWidth;
+        const h = Math.round(img.naturalHeight * w / img.naturalWidth);
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        return canvas.toDataURL("image/webp", 0.82);
+      }, { b64, targetWidth });
+      writeFileSync(path.join(OUT, outName), Buffer.from(dataUrl.split(",")[1], "base64"));
+      console.log(`✓ docs/landing/${outName}`);
+    };
+    await toWebp("home.png", "home.webp");
+    await toWebp("study.png", "study.webp");
+    await toWebp("stats.png", "stats.webp");
+    await toWebp("home.png", "home-hero.webp", 612);
+    await ctx.close();
+  }
+
   await browser.close();
 }
 

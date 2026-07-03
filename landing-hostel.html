@@ -76,6 +76,15 @@
 <body>
   <a href="#hero" class="lp-skip" data-i18n="skip">Zum Inhalt springen</a>
   <div class="lp-topstripe"></div>
+  <!-- Icon-Sprite für die Sticker-Kacheln (ersetzt die früheren Emojis).
+       Geometrie 1:1 aus icons.js (SC.icon, vendored Lucide) – Änderungen dort
+       pflegen; test/landing-icons.test.js wacht über den Gleichstand. Nur qr ist handgezeichnet (kein Lucide-Pendant im Set). -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+    <symbol id="lpi-party-popper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.79" /><path d="M4 3h.01" /><path d="M22 8h.01" /><path d="M15 2h.01" /><path d="M22 20h.01" /><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10" /><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17" /><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7" /><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" /></symbol>
+    <symbol id="lpi-qr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3z"/><line x1="21" y1="14" x2="21.01" y2="14"/><line x1="14" y1="21" x2="14.01" y2="21"/><line x1="21" y1="21" x2="21.01" y2="21"/><line x1="17.5" y1="21" x2="17.51" y2="21"/><line x1="21" y1="17.5" x2="21.01" y2="17.5"/></symbol>
+    <symbol id="lpi-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></symbol>
+  </defs></svg>
+
 
   <!-- ─────────────── Header ─────────────── -->
   <header class="lp-header" id="lpHeader">
@@ -176,7 +185,7 @@
         <p class="lp-lead" data-reveal data-i18n="use.lead">Hostels suchen ständig nach Social-Aktivitäten für den Common Room. HolaRuta liefert genau das – niedrigschwellig, weil es offline läuft und nichts installiert werden muss.</p>
         <div class="lp-hooks">
           <article class="lp-hook" data-reveal style="--i:0; --accent:#E08A2C">
-            <span class="lp-hook__ico" aria-hidden="true">🎉</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-party-popper"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.1.k">Ice-Breaker</span>
               <h3 class="lp-hook__title" data-i18n="use.1.t">Aus Fremden am Tisch werden Freunde.</h3>
@@ -184,7 +193,7 @@
             </div>
           </article>
           <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
-            <span class="lp-hook__ico" aria-hidden="true">📲</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-qr"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.2.k">QR-Code & los</span>
               <h3 class="lp-hook__title" data-i18n="use.2.t">Aufhängen, scannen, spielen.</h3>
@@ -192,7 +201,7 @@
             </div>
           </article>
           <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#7D4A8E">
-            <span class="lp-hook__ico" aria-hidden="true">🎨</span>
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-palette"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.3.k">Co-Branding</span>
               <h3 class="lp-hook__title" data-i18n="use.3.t">Eure Marke, eure Farbe – fertig.</h3>
@@ -218,7 +227,7 @@
               <p class="lp-step__body" data-i18n="how.s1.b">Druckt das fertige Poster und hängt es in den Common Room. <b class="lp-step__hl">Ein Scan</b> öffnet die App – in eurem Branding.</p>
             </div>
             <div class="lp-step__shot">
-              <img src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="HolaRuta Startseite mit Reise-Bereichen" />
+              <img src="docs/landing/home.webp" width="390" height="844" loading="lazy" alt="HolaRuta Startseite mit Reise-Bereichen" />
             </div>
           </article>
           <article class="lp-step" data-reveal style="--i:1; --accent:#3F7355" data-step="2">
@@ -229,7 +238,7 @@
               <p class="lp-step__body" data-i18n="how.s2.b">Zwei Gäste treten zu zweit an – <b class="lp-step__hl">Battle oder Rollenspiel</b>. Kein Team nötig, die App moderiert.</p>
             </div>
             <div class="lp-step__shot">
-              <img src="docs/landing/study.png" width="390" height="844" loading="lazy" alt="Aufgedeckte Karteikarte mit Aussprache und Bewertung" />
+              <img src="docs/landing/study.webp" width="390" height="844" loading="lazy" alt="Aufgedeckte Karteikarte mit Aussprache und Bewertung" />
             </div>
           </article>
           <article class="lp-step" data-reveal style="--i:2; --accent:#E9A23B" data-step="3">
@@ -240,7 +249,7 @@
               <p class="lp-step__body" data-i18n="how.s3.b">Aus dem Spiel werden Gespräche – und ein guter Abend in eurem Hostel. <b class="lp-step__hl">Null Planung</b> für euer Team.</p>
             </div>
             <div class="lp-step__shot">
-              <img src="docs/landing/stats.png" width="390" height="844" loading="lazy" alt="Statistik mit Trefferquote und Fortschritt" />
+              <img src="docs/landing/stats.webp" width="390" height="844" loading="lazy" alt="Statistik mit Trefferquote und Fortschritt" />
             </div>
           </article>
         </div>
@@ -305,7 +314,7 @@
     </section>
 
     <!-- ─────────────── Risikofrei / Vertrauen ─────────────── -->
-    <section class="lp-section" id="trust">
+    <section class="lp-section lp-section--band" id="trust">
       <div class="lp-wrap">
         <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Risikofrei starten</p>
         <ul class="lp-trustbar" data-reveal>
