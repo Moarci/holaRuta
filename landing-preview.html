@@ -4706,7 +4706,13 @@ a { color: var(--brand-ink); }
 .lp-cta--ghost::after { display: none; }
 
 /* ─────────────────────────── Hero ─────────────────────────── */
-.lp-hero { position: relative; padding-block: clamp(48px, 8vw, 104px) clamp(56px, 9vw, 120px); }
+/* overflow clip: das Mesh (inset -6% + Drift-scale) ragt sonst seitlich über den
+   Viewport hinaus und macht die Seite auf Mobile breiter als den Bildschirm
+   (Inhalt wirkt „seitlich abgeschnitten"). hidden = Fallback für alte Browser. */
+.lp-hero {
+  position: relative; padding-block: clamp(48px, 8vw, 104px) clamp(56px, 9vw, 120px);
+  overflow: hidden; overflow: clip;
+}
 
 /* Earth-tone Gradient-Mesh als Hintergrund (rein dekorativ). Driftet sehr langsam
    -> der Hero „atmet" leicht, ohne abzulenken (reduced-motion schaltet es aus). */
