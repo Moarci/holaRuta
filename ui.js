@@ -725,14 +725,16 @@
   // (pretrip-continue); der sekundäre Text-Button öffnet den ganzen Pfad. Mini-Ring
   // + Balken zeigen den Fortschritt auf einen Blick (gleiche conic-Technik wie Hero).
   function lpathHomeCard(lp) {
+    // Track-Strings über denselben K(curso, pretrip)-Schalter wie renderPretrip.
     const loc = isLocalsTrk();
+    const K = (curso, pretrip) => loc ? curso : pretrip;
     const nextLine = lp.allDone
-      ? t(loc ? "discover.cursoAllDone" : "discover.pretripAllDone")
+      ? t(K("discover.cursoAllDone", "discover.pretripAllDone"))
       : t(lp.done ? "discover.lpathContinue" : "discover.lpathStart", { title: lp.nextTitle });
-    const progressLine = t(loc ? "discover.cursoProgress" : "discover.pretripProgress", { done: lp.done, total: lp.total });
+    const progressLine = t(K("discover.cursoProgress", "discover.pretripProgress"), { done: lp.done, total: lp.total });
     return `
       <section class="dashgrp">
-        <p class="sectioncap">${esc(t(loc ? "discover.cursoTitle" : "discover.pretripTitle"))}</p>
+        <p class="sectioncap">${esc(t(K("discover.cursoTitle", "discover.pretripTitle")))}</p>
         <div class="lpath-card" style="--pct:${lp.pct}">
           <button class="lpath-card__main" data-action="pretrip-continue" data-scope="${esc(lp.scope)}">
             <span class="lpath-card__ring" aria-hidden="true"><span class="lpath-card__pct">${lp.pct}%</span></span>

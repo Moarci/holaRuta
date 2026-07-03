@@ -3061,6 +3061,23 @@
   // Plan-Label: eigenes label-Feld des Plans (Locals-Kursplan) ODER Kategorie-Label
   // (Reise-Destinationen) ODER der scope als Rückfall. Geteilt von pretripVM & Start-Karte.
   const pretripPlanLabel = (p) => natk(p, "label") || natk(categoryById(p.scope) || {}, "label") || p.scope;
+  // Gemeinsamer Plan-Pool der Kurs-/Ziel-Auswahl: im Locals-Track nur die Kurspläne.
+  // (Reise-Pläne bleiben über zugewiesene Aufgaben erreichbar, siehe pretripLock.)
+  const pretripPool = () => isLocals() ? PRETRIP().filter((p) => /^curso/.test(p.scope)) : PRETRIP();
+  // DIE eine Scope-Auflösung für alle Einstiege (Pfad-Screen, Weiter-CTA, Start-Karte):
+  // Lehrer-Lock > expliziter Wunsch > Session-Wahl > gemerkte Wahl (settings.cursoScope)
+  // > Standard (Trip-Ziel/erster Plan). Lock darf außerhalb des Pools liegen (zugewiesener
+  // Reise-Plan im Locals-Track); alles andere muss im Pool sein, damit z. B. ein im
+  // Locals-Track gemerkter Reise-Scope die Kurs-Auswahl nicht aus dem Tritt bringt.
+  function resolvePretripScope(explicit) {
+    if (state.pretripLock && PRETRIP().some((p) => p.scope === state.pretripLock)) return state.pretripLock;
+    const pool = pretripPool();
+    const valid = (s) => !!s && pool.some((p) => p.scope === s);
+    if (valid(explicit)) return explicit;
+    if (valid(state.pretripScope)) return state.pretripScope;
+    if (valid(settings.cursoScope)) return settings.cursoScope;
+    return defaultPretripScope();
+  }
 
   // Standard-Destination für den Pre-Trip-Plan: folgt dem Trip-Ziel/der Edition,
   // sonst der erste Plan (Kolumbien).
@@ -3104,9 +3121,9 @@
 
   function openPretrip() {
     dismissBadgeToast();
-    if (!state.pretripScope || !PRETRIP().some((p) => p.scope === state.pretripScope)) {
-      state.pretripScope = defaultPretripScope();
-    }
+    // Zentrale Auflösung: berücksichtigt auch die über Reloads gemerkte Kurswahl
+    // (settings.cursoScope), damit Pfad-Screen und Start-Karte denselben Kurs zeigen.
+    state.pretripScope = resolvePretripScope();
     setState({ screen: "pretrip" });
   }
 
@@ -3129,7 +3146,7 @@
   function pretripVM() {
     // Zugewiesene Aufgabe: Ziel ist auf das vom Lehrer gewählte Land fixiert.
     const locked = !!(state.pretripLock && PRETRIP().some((p) => p.scope === state.pretripLock));
-    const scope = locked ? state.pretripLock : (state.pretripScope || defaultPretripScope());
+    const scope = resolvePretripScope();
     const plan = pretripPlan(scope);
     const days = plan.days.map((d) => {
       const ch = d.challengeId ? (data.CHALLENGES || []).find((c) => c.id === d.challengeId) : null;
@@ -3147,24 +3164,21 @@
     });
     const total = days.length;
     const doneCount = days.filter((d) => d.done).length;
-    const planLabel = pretripPlanLabel;
-    // Im gesperrten Modus NUR das zugewiesene Land; im Locals-Track NUR die Kurspläne.
-    const poolPlans = locked ? PRETRIP().filter((p) => p.scope === scope)
-      : isLocals() ? PRETRIP().filter((p) => /^curso/.test(p.scope))
-      : PRETRIP();
+    // Im gesperrten Modus NUR das zugewiesene Land; sonst der gemeinsame Pool.
+    const poolPlans = locked ? PRETRIP().filter((p) => p.scope === scope) : pretripPool();
     const plans = poolPlans.map((p) => {
       const st = planStats(p);
       return {
         scope: p.scope,
-        label: planLabel(p),
+        label: pretripPlanLabel(p),
         active: p.scope === scope,
-        done: planAllDone(p),
+        done: st.total > 0 && st.done === st.total,
         doneCount: st.done,
         total: st.total,
         pct: st.pct,
       };
     });
-    const scopeLabel = planLabel(plan);
+    const scopeLabel = pretripPlanLabel(plan);
     // Nächster startbarer Teil (fürs Hero-„Weiter"): wie days[] aufbereitet, null wenn fertig.
     const nd = pretripNextDay(plan);
     const next = nd ? {
@@ -3180,21 +3194,34 @@
 
   // „Weiterlernen"-Karte auf dem Start-Reiter: im Locals-Track immer (der Lernpfad
   // ist dort das Kernprodukt), im Reise-Track nur bei angefangenem, noch nicht
-  // fertigem Plan (0 < done < total) – sonst bleibt der Start-Reiter ruhig.
-  // Scope-Wahl: Lehrer-Lock > Session-Wahl > gemerkte Kurswahl (settings.cursoScope)
-  // > angefangener Plan mit dem meisten Fortschritt > erster Plan.
+  // fertigem Plan – sonst bleibt der Start-Reiter ruhig. Scope-Wahl wie überall
+  // (Lock > Session > gemerkte Kurswahl), plus als Karten-Rückfall der angefangene
+  // Plan mit dem meisten Fortschritt. Ein Lehrer-Lock zeigt IMMER den gesperrten
+  // Plan – auch außerhalb des Kurs-Pools –, damit Karten-Label und Continue-Aktion
+  // (Lock-Vorrang in continuePretrip) nie auseinanderfallen.
   function homeLpathVM() {
-    const pool = isLocals() ? PRETRIP().filter((p) => /^curso/.test(p.scope)) : PRETRIP();
+    const pool = pretripPool();
     if (!pool.length) return null;
+    const lockedPlan = state.pretripLock
+      ? PRETRIP().find((p) => p.scope === state.pretripLock) || null
+      : null;
     const byScope = (s) => s && pool.find((p) => p.scope === s);
     const started = pool
       .map((p) => ({ p, st: planStats(p) }))
       .filter((x) => x.st.done > 0 && x.st.done < x.st.total)
       .sort((a, b) => b.st.done - a.st.done);
-    const plan = byScope(state.pretripLock) || byScope(state.pretripScope) || byScope(settings.cursoScope)
+    let plan = lockedPlan || byScope(state.pretripScope) || byScope(settings.cursoScope)
       || (started[0] && started[0].p) || pool[0];
-    const st = planStats(plan);
-    if (!isLocals() && (st.done === 0 || st.done === st.total)) return null;
+    let st = planStats(plan);
+    // Reise-Track ohne Lock: nur laufende Pläne zeigen. Ist der gewählte Plan fertig
+    // oder unbegonnen, fällt die Karte auf einen tatsächlich angefangenen Plan zurück
+    // (z. B. Peru 3/7, während das gemerkte Kolumbien schon 7/7 ist) – erst ohne
+    // jeden laufenden Plan bleibt der Start-Reiter still.
+    if (!lockedPlan && !isLocals() && (st.done === 0 || st.done === st.total)) {
+      if (!started.length) return null;
+      plan = started[0].p;
+      st = started[0].st;
+    }
     const nd = pretripNextDay(plan);
     return {
       scope: plan.scope,
@@ -3216,11 +3243,7 @@
   // sich der Pfad selbst (Replay-Auswahl statt No-op).
   function continuePretrip(scope) {
     dismissBadgeToast();
-    const locked = !!(state.pretripLock && PRETRIP().some((p) => p.scope === state.pretripLock));
-    const s = locked ? state.pretripLock
-      : (scope && PRETRIP().some((p) => p.scope === scope)) ? scope
-      : (state.pretripScope && PRETRIP().some((p) => p.scope === state.pretripScope)) ? state.pretripScope
-      : defaultPretripScope();
+    const s = resolvePretripScope(scope);
     state.pretripScope = s;
     const next = pretripNextDay(pretripPlan(s));
     if (next) startPretripDay(next.day);
