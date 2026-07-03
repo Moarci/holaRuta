@@ -228,8 +228,10 @@ Umgesetzt auf allen vier Landing-Pages (Branch `claude/cap-analysis-insights-d5c
   bewusst behalten (schlank genug).
 - ◻️ **5 · CTA-Reibung** — offen (A/B-Test bräuchte Infrastruktur), CTAs unverändert.
 
-Bewusst offen: ES für die Consumer-`landing.html` (nur DE/EN) sowie die hartcodierte
-Trust-Bar-Zahl „2 Wo." in `landing-reiseanbieter.html` (ohne `data-i18n`).
+Nachgezogen (Folge-Commit): **ES für die Consumer-`landing.html`** (voller `es`-Block
++ Sprachbutton + Init-Logik, Key-Parität de/en/es je 155) und die zuvor hartcodierte
+Trust-Bar-Zahl „2 Wo." in `landing-reiseanbieter.html` ist jetzt via
+`trust.pretripval` i18n-fähig (DE „2 Wo." · EN „2 wk." · ES „2 sem.").
 
 ---
 
