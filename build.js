@@ -228,10 +228,12 @@ function buildDist() {
     "docs/landing/study.webp",
     "docs/landing/stats.webp",
     "docs/landing/home-hero.webp",
-    // Zielgruppenspezifische B2B-Landings (DE/EN/ES) – teilen sich styles.css/landing.css.
+    // Zielgruppenspezifische B2B-Landings (DE/EN/ES) – teilen sich styles.css/
+    // landing.css und das Beispielkarten-Karussell (landing-carousel.js).
     "landing-schule.html",
     "landing-hostel.html",
     "landing-reiseanbieter.html",
+    "landing-carousel.js",
     // Beleg-Material, das die B2B-Landings verlinken (+ deren Abhängigkeiten), damit die
     // Links auch in Produktion (dist/) auflösen statt 404 zu liefern.
     "docs/anleitungen/lehrer.html",

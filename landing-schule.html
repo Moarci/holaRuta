@@ -59,6 +59,8 @@
   <link rel="stylesheet" href="landing.css" />
   <!-- Edition-Akzent (ECOS · Cartagena, Karibik-Teal) für Demo-CTA, Chips & Preis-Highlight. -->
   <style>:root { --accent: #1F7A8C; }</style>
+  <!-- Geteiltes Beispielkarten-Karussell der B2B-Landings (Flip, 🔊, 🧭, Pills). -->
+  <script src="landing-carousel.js" defer></script>
 
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="referrer" content="no-referrer" />
@@ -287,9 +289,9 @@
             </div>
           </div>
           <div class="lp-herocard__row" id="lpPills" role="group" data-i18n-aria="card.scenarios" aria-label="Einsatz-Szenarien">
-            <button type="button" class="lp-herocard__pill" data-i="0" aria-pressed="true" data-i18n="card.p1">Pre-Arrival</button>
-            <button type="button" class="lp-herocard__pill" data-i="1" aria-pressed="false" data-i18n="card.p2">Classroom</button>
-            <button type="button" class="lp-herocard__pill" data-i="2" aria-pressed="false" data-i18n="card.p3">Real-Life</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="true" data-i18n="card.p1">Pre-Arrival</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="false" data-i18n="card.p2">Classroom</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="false" data-i18n="card.p3">Real-Life</button>
           </div>
         </aside>
       </div>
@@ -531,7 +533,7 @@
         "trust.cards": "Karten", "trust.challenges": "Real-Life-Challenges", "trust.levels": "Niveaus", "trust.pilot": "Pilot",
         "card.brand": "HolaRuta · ECOS Edition",
         "card.p1": "Pre-Arrival", "card.p2": "Classroom", "card.p3": "Real-Life",
-        "card.hint": "Zum Umdrehen tippen", "card.lvl": "A1 · Einsteiger", "card.lvl2": "A2 · Mittel", "card.speakLabel": "Antwort vorlesen",
+        "card.hint": "Zum Umdrehen tippen", "card.lvl2": "A2 · Mittel", "card.speakLabel": "Antwort vorlesen",
         "a11y.card": "Beispielkarte umdrehen", "a11y.carousel": "Beispielkarten", "card.scenarios": "Einsatz-Szenarien",
         "ctx.show": "Reise-Kontext anzeigen", "ctx.title": "🧭 So nutzt du es unterwegs", "ctx.situation": "Situation", "ctx.note": "Reisetipp",
         "ex1.cat": "PRE-ARRIVAL", "ex1.q": "Haben Sie ein Zimmer frei?", "ex1.ctxEs": "¿Tiene una habitación libre?", "ex1.ctxTr": "Haben Sie ein Zimmer frei?", "ex1.ctxSit": "Schon vor der Anreise geübt: Flughafen, Taxi, Check-in.", "ex1.ctxNote": "So kommen Schüler vorbereitet an – und starten selbstbewusst in Woche 1.",
@@ -577,7 +579,7 @@
         "trust.cards": "cards", "trust.challenges": "real-life challenges", "trust.levels": "levels", "trust.pilot": "pilot",
         "card.brand": "HolaRuta · ECOS Edition",
         "card.p1": "Pre-arrival", "card.p2": "Classroom", "card.p3": "Real-life",
-        "card.hint": "Tap to flip", "card.lvl": "A1 · Beginner", "card.lvl2": "A2 · Intermediate", "card.speakLabel": "Read answer aloud",
+        "card.hint": "Tap to flip", "card.lvl2": "A2 · Intermediate", "card.speakLabel": "Read answer aloud",
         "a11y.card": "Flip the example card", "a11y.carousel": "Example cards", "card.scenarios": "Usage scenarios",
         "ctx.show": "Show travel context", "ctx.title": "🧭 How to use it on the road", "ctx.situation": "Situation", "ctx.note": "Travel tip",
         "ex1.cat": "PRE-ARRIVAL", "ex1.q": "Do you have a room available?", "ex1.ctxEs": "¿Tiene una habitación libre?", "ex1.ctxTr": "Do you have a room available?", "ex1.ctxSit": "Practised before arrival: airport, taxi, check-in.", "ex1.ctxNote": "Students arrive prepared – and start week one with confidence.",
@@ -623,12 +625,14 @@
         "trust.cards": "tarjetas", "trust.challenges": "retos reales", "trust.levels": "niveles", "trust.pilot": "piloto",
         "card.brand": "HolaRuta · Edición ECOS",
         "card.p1": "Pre-llegada", "card.p2": "Aula", "card.p3": "Vida real",
-        "card.hint": "Toca para girar", "card.lvl": "A1 · Principiante", "card.lvl2": "A2 · Intermedio", "card.speakLabel": "Escuchar la respuesta",
+        "card.hint": "Toca para girar", "card.lvl2": "A2 · Intermedio", "card.speakLabel": "Escuchar la respuesta",
         "a11y.card": "Girar la tarjeta de ejemplo", "a11y.carousel": "Tarjetas de ejemplo", "card.scenarios": "Escenarios de uso",
         "ctx.show": "Mostrar contexto de viaje", "ctx.title": "🧭 Así lo usas en ruta", "ctx.situation": "Situación", "ctx.note": "Consejo de viaje",
-        "ex1.cat": "PRE-LLEGADA", "ex1.q": "¿Tiene una habitación libre?", "ex1.ctxEs": "¿Tiene una habitación libre?", "ex1.ctxTr": "«¿Tiene una habitación libre?»", "ex1.ctxSit": "Practicado antes de llegar: aeropuerto, taxi, check-in.", "ex1.ctxNote": "Así los alumnos llegan preparados y empiezan la semana 1 con confianza.",
-        "ex2.cat": "AULA", "ex2.q": "¿Me trae la cuenta, por favor?", "ex2.ctxEs": "¿Me trae la cuenta, por favor?", "ex2.ctxTr": "«¿Me trae la cuenta, por favor?»", "ex2.ctxSit": "Como calentamiento de 5 minutos o trabajo en parejas en clase.", "ex2.ctxNote": "Con usted, como en un restaurante de verdad.",
-        "ex3.cat": "VIDA REAL", "ex3.q": "¿A cómo el kilo?", "ex3.ctxEs": "¿A cómo el kilo?", "ex3.ctxTr": "«¿A cómo el kilo?»", "ex3.ctxSit": "Como reto real en el mercado: uno de 47 desafíos.", "ex3.ctxNote": "¿A cómo…? es la pregunta típica de mercado en Latinoamérica.",
+        // Kartenfronten bleiben im ES-Modus in Gästesprache (EN): die Demo zeigt
+        // Front→Spanisch – eine spanische Front wäre identisch mit der Rückseite.
+        "ex1.cat": "PRE-LLEGADA", "ex1.q": "Do you have a room available?", "ex1.ctxEs": "¿Tiene una habitación libre?", "ex1.ctxTr": "Do you have a room available?", "ex1.ctxSit": "Practicado antes de llegar: aeropuerto, taxi, check-in.", "ex1.ctxNote": "Así los alumnos llegan preparados y empiezan la semana 1 con confianza.",
+        "ex2.cat": "AULA", "ex2.q": "Could you bring me the bill, please?", "ex2.ctxEs": "¿Me trae la cuenta, por favor?", "ex2.ctxTr": "Could you bring me the bill, please?", "ex2.ctxSit": "Como calentamiento de 5 minutos o trabajo en parejas en clase.", "ex2.ctxNote": "Con usted, como en un restaurante de verdad.",
+        "ex3.cat": "VIDA REAL", "ex3.q": "How much per kilo?", "ex3.ctxEs": "¿A cómo el kilo?", "ex3.ctxTr": "How much per kilo?", "ex3.ctxSit": "Como reto real en el mercado: uno de 47 desafíos.", "ex3.ctxNote": "¿A cómo…? es la pregunta típica de mercado en Latinoamérica.",
         "use.eyebrow": "TRES ESCENARIOS DE USO", "use.title": "Preparar, practicar, aplicar – todo en una app.",
         "use.lead": "Las escuelas no venden un curso de gramática, venden una estancia. Ahí es donde HolaRuta brilla – y todo ello lo sostiene lo que ya existe hoy.",
         "use.1.k": "Pack de pre-llegada", "use.1.t": "Listo antes de que aterrice el avión.", "use.1.b": "Los alumnos se preparan con aeropuerto, taxi, check-in, comida, dinero y emergencias – con categorías, chuletas y tarjetas de contexto. Llegan ya capaces de hablar.",
@@ -736,121 +740,6 @@
 
     // Scroll-Reveal (progressive enhancement) – ohne JS bleibt alles sichtbar.
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    // ── Beispielkarten-Karussell (wie auf der B2C-Landing): die Szenario-Pills
-    //    schalten die Karten um, Tippen dreht sie, 🔊 liest vor, 🧭 öffnet den
-    //    Reise-Kontext. Rotiert automatisch, pausiert bei Hover/Fokus/Interaktion.
-    var car = document.getElementById("lpCar");
-    if (car) {
-      var slides = Array.prototype.slice.call(car.querySelectorAll(".lp-slide"));
-      var flips = slides.map(function (s) { return s.querySelector(".flip"); });
-      var pills = Array.prototype.slice.call(document.querySelectorAll("#lpPills .lp-herocard__pill"));
-      var idx = 0, timer = null, swiped = false;
-      var AUTO = 4200;
-
-      function setActive(i) {
-        idx = (i + slides.length) % slides.length;
-        slides.forEach(function (s, n) {
-          var on = n === idx;
-          s.classList.toggle("is-active", on);
-          s.setAttribute("aria-hidden", on ? "false" : "true"); // inaktive Karten aus dem SR-Fokus
-          if (!on) { // beim Wegblättern zurück auf die Vorderseite + Kontext schließen
-            var f = flips[n];
-            if (f) { f.classList.remove("is-flipped"); f.setAttribute("aria-pressed", "false"); }
-            var cp = s.querySelector(".lp-ctxpanel");
-            if (cp) cp.setAttribute("hidden", "");
-            var cb = s.querySelector(".cardbtn--ctx");
-            if (cb) { cb.classList.remove("is-open"); cb.setAttribute("aria-expanded", "false"); }
-          }
-        });
-        pills.forEach(function (p, n) {
-          p.setAttribute("aria-pressed", n === idx ? "true" : "false");
-        });
-      }
-      function next() { setActive(idx + 1); }
-
-      function startAuto() { if (reduce) return; stopAuto(); timer = setInterval(next, AUTO); }
-      function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
-
-      // Flip + Vorlesen + Reise-Kontext pro Karte
-      flips.forEach(function (f) {
-        if (!f) return;
-        var slide = f.closest(".lp-slide");
-        var ctxBtn = f.querySelector(".cardbtn--ctx");
-        var panel = slide ? slide.querySelector(".lp-ctxpanel") : null;
-        function closeCtx() {
-          if (panel) panel.setAttribute("hidden", "");
-          if (ctxBtn) { ctxBtn.classList.remove("is-open"); ctxBtn.setAttribute("aria-expanded", "false"); }
-        }
-        function flip() {
-          var on = f.classList.toggle("is-flipped");
-          f.setAttribute("aria-pressed", on ? "true" : "false");
-          if (!on) closeCtx();                       // zurück auf Vorderseite -> Kontext zu
-        }
-        f.addEventListener("click", function (e) {
-          if (swiped) return;                        // war ein Wisch, kein Tap
-          if (e.target.closest(".cardbtn")) return;  // Eck-Button nicht als Flip werten
-          flip();
-        });
-        f.addEventListener("keydown", function (e) {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
-        });
-        // 🧭 Reise-Kontext: blendet das App-Panel unter der Karte ein/aus (Pendant
-        // zum 🔊; klappt auf, ohne die Karte umzudrehen). Wie in der App.
-        if (ctxBtn && panel) ctxBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          var willOpen = panel.hasAttribute("hidden");
-          if (willOpen) panel.removeAttribute("hidden"); else panel.setAttribute("hidden", "");
-          ctxBtn.classList.toggle("is-open", willOpen);
-          ctxBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
-        });
-        var spk = f.querySelector(".cardbtn--speak");
-        if (spk) spk.addEventListener("click", function (e) {
-          e.stopPropagation();
-          try {
-            if (!("speechSynthesis" in window)) return;
-            var u = new SpeechSynthesisUtterance(spk.getAttribute("data-spk") || "");
-            u.lang = "es-419"; u.rate = 0.95;
-            speechSynthesis.cancel(); speechSynthesis.speak(u);
-          } catch (err) {}
-        });
-      });
-
-      // Pill-Navigation (Pendant zu den Punkten der B2C-Landing)
-      pills.forEach(function (p) {
-        p.addEventListener("click", function () { setActive(parseInt(p.getAttribute("data-i"), 10) || 0); startAuto(); });
-      });
-
-      // Auto-Rotation pausieren bei Hover/Fokus/Interaktion
-      car.addEventListener("pointerenter", stopAuto);
-      car.addEventListener("pointerleave", startAuto);
-      car.addEventListener("focusin", stopAuto);
-      car.addEventListener("focusout", startAuto);
-
-      // Wisch-Geste (Touch & Maus). pointerup hängt am window, damit ein Release
-      // auch AUSSERHALB des Karussells erkannt wird. Ein erkannter Wisch setzt
-      // `swiped` -> der nachfolgende Klick dreht die Karte NICHT um.
-      var dragX = null, dragY = null;
-      car.addEventListener("pointerdown", function (e) {
-        if (e.target.closest(".cardbtn")) return; // auf Buttons keinen Wisch starten
-        dragX = e.clientX; dragY = e.clientY; swiped = false;
-      });
-      window.addEventListener("pointerup", function (e) {
-        if (dragX === null) return;
-        var dx = e.clientX - dragX, dy = e.clientY - dragY;
-        dragX = dragY = null;
-        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { // klar horizontal
-          swiped = true;
-          setActive(idx + (dx < 0 ? 1 : -1));
-          startAuto();
-        }
-      });
-      car.addEventListener("pointercancel", function () { dragX = dragY = null; });
-
-      setActive(0);
-      startAuto();
-    }
-
     var reveal = document.querySelectorAll("[data-reveal]");
     if (reduce || !("IntersectionObserver" in window)) {
       reveal.forEach(function (el) { el.classList.add("is-in"); });
