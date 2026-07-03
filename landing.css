@@ -759,6 +759,10 @@ a { color: var(--brand-ink); }
   }
   .lp-carousel, .lp-dots { position: relative; z-index: 1; }
   .lp-carousel { margin-inline: 0 auto; }
+  /* Partner-Seiten: die interaktive Hero-Karte muss über dem Phone-Mockup
+     (position:absolute, z-index:0) liegen – sonst verdeckt das Mockup rechts die
+     Pills (Paint + Klick). Pendant zur z-index:1-Regel des Karussells oben. */
+  .lp-herocard { position: relative; z-index: 1; }
 }
 
 /* CSS-Phone-Frame mit echtem Screenshot (Desktop). */
