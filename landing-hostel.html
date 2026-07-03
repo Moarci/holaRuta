@@ -162,15 +162,131 @@
           </div>
         </div>
 
+        <!-- Interaktive Beispielkarten wie auf der B2C-Landing: echte App-Klassen
+             (.flip/.face/.cardbtn aus styles.css), antippbar zum Umdrehen, 🔊 liest
+             vor, 🧭 öffnet den Reise-Kontext. Die Szenario-Pills darunter schalten
+             die Karten um (eine Karte je Szenario). -->
         <aside class="lp-cardcol" data-reveal style="--i:2">
-          <div class="lp-herocard">
-            <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · Hostel Edition</span>
-            <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿De dónde eres?</b><span class="lp-herocard__tr">„Woher kommst du?“ – der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.</span></p>
-            <div class="lp-herocard__row" role="group" aria-label="Hostel-Aktivitäten">
-              <button type="button" class="lp-herocard__pill" data-pill="0" aria-pressed="true" data-i18n="card.p1">Battle</button>
-              <button type="button" class="lp-herocard__pill" data-pill="1" aria-pressed="false" data-i18n="card.p2">Rollenspiel</button>
-              <button type="button" class="lp-herocard__pill" data-pill="2" aria-pressed="false" data-i18n="card.p3">Co-Branding</button>
+          <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · Hostel Edition</span>
+          <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" data-i18n-aria="a11y.carousel" aria-label="Beispielkarten">
+            <div class="lp-carousel__viewport">
+              <div class="lp-slide is-active">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex1.cat">BATTLE</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex1.q">Woher kommst du?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#7D4A8E">
+                        <span class="face__cat" data-i18n="ex1.cat">BATTLE</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx1">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿De dónde eres?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿De dónde eres?</div>
+                        <div class="face__tip">🗣️ de DÓN-de E-res</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx1" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex1.ctxEs">Hola, ¿de dónde eres?</p>
+                    <p class="context-panel__de" data-i18n="ex1.ctxTr">Hey, woher kommst du?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxSit">Der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxNote">Danach passt: ¿Cuánto tiempo viajas?</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex2.cat">ROLLENSPIEL</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex2.q">Ein Bier, bitte</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#3F7355">
+                        <span class="face__cat" data-i18n="ex2.cat">ROLLENSPIEL</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx2">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="Una cerveza, por favor" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">Una cerveza, por favor</div>
+                        <div class="face__tip">🗣️ U-na ser-VE-sa por fa-VOR</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx2" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex2.ctxEs">Una cerveza, por favor.</p>
+                    <p class="context-panel__de" data-i18n="ex2.ctxTr">Ein Bier, bitte.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxSit">Kurze Rollenspiele an der Bar – Gäste spielen echte Szenen nach.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxNote">Noch höflicher: ¿Me da una cerveza, por favor?</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex3.cat">CO-BRANDING</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex3.q">Willkommen in unserem Hostel</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#C2502E">
+                        <span class="face__cat" data-i18n="ex3.cat">CO-BRANDING</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx3">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="Bienvenido a nuestro hostel" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">Bienvenido a nuestro hostel</div>
+                        <div class="face__tip">🗣️ byen-ve-NI-do a NWES-tro OS-tel</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx3" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex3.ctxEs">¡Bienvenido a nuestro hostel!</p>
+                    <p class="context-panel__de" data-i18n="ex3.ctxTr">Willkommen in unserem Hostel!</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxSit">Beim QR-Scan begrüßt die App eure Gäste in eurem Look: Logo, Farbe, Name.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxNote">Eine Edition ist in Minuten eingerichtet – ein Link genügt.</p>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+          <div class="lp-herocard__row" id="lpPills" role="group" data-i18n-aria="card.scenarios" aria-label="Hostel-Aktivitäten">
+            <button type="button" class="lp-herocard__pill" data-i="0" aria-pressed="true" data-i18n="card.p1">Battle</button>
+            <button type="button" class="lp-herocard__pill" data-i="1" aria-pressed="false" data-i18n="card.p2">Rollenspiel</button>
+            <button type="button" class="lp-herocard__pill" data-i="2" aria-pressed="false" data-i18n="card.p3">Co-Branding</button>
           </div>
         </aside>
       </div>
@@ -406,9 +522,12 @@
         "trust.qr": "an der Rezeption", "trust.players": "Spieler-Modus", "trust.setup": "Aufbau", "trust.free": "meist kostenlos",
         "card.brand": "HolaRuta · Hostel Edition",
         "card.p1": "Battle", "card.p2": "Rollenspiel", "card.p3": "Co-Branding",
-        "card.p1.q": "¿De dónde eres?", "card.p1.tr": "„Woher kommst du?“ – der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.",
-        "card.p2.q": "Una cerveza, por favor.", "card.p2.tr": "„Ein Bier, bitte.“ – kurze Rollenspiele an der Bar, die Gäste spielen Szenen nach.",
-        "card.p3.q": "Bienvenido a nuestro hostel.", "card.p3.tr": "„Willkommen in unserem Hostel.“ – beim Scan begrüßt die App eure Gäste in eurem Look: Logo, Farbe, Name.",
+        "card.hint": "Zum Umdrehen tippen", "card.lvl": "A1 · Einsteiger", "card.lvl2": "A2 · Mittel", "card.speakLabel": "Antwort vorlesen",
+        "a11y.card": "Beispielkarte umdrehen", "a11y.carousel": "Beispielkarten", "card.scenarios": "Hostel-Aktivitäten",
+        "ctx.show": "Reise-Kontext anzeigen", "ctx.title": "🧭 So nutzt du es unterwegs", "ctx.situation": "Situation", "ctx.note": "Reisetipp",
+        "ex1.cat": "BATTLE", "ex1.q": "Woher kommst du?", "ex1.ctxEs": "Hola, ¿de dónde eres?", "ex1.ctxTr": "Hey, woher kommst du?", "ex1.ctxSit": "Der perfekte Einstieg für die erste Battle-Runde am gemeinsamen Tisch.", "ex1.ctxNote": "Danach passt: ¿Cuánto tiempo viajas?",
+        "ex2.cat": "ROLLENSPIEL", "ex2.q": "Ein Bier, bitte", "ex2.ctxEs": "Una cerveza, por favor.", "ex2.ctxTr": "Ein Bier, bitte.", "ex2.ctxSit": "Kurze Rollenspiele an der Bar – Gäste spielen echte Szenen nach.", "ex2.ctxNote": "Noch höflicher: ¿Me da una cerveza, por favor?",
+        "ex3.cat": "CO-BRANDING", "ex3.q": "Willkommen in unserem Hostel", "ex3.ctxEs": "¡Bienvenido a nuestro hostel!", "ex3.ctxTr": "Willkommen in unserem Hostel!", "ex3.ctxSit": "Beim QR-Scan begrüßt die App eure Gäste in eurem Look: Logo, Farbe, Name.", "ex3.ctxNote": "Eine Edition ist in Minuten eingerichtet – ein Link genügt.",
         "use.eyebrow": "DER NAHELIEGENDSTE FIT", "use.title": "Eine fertige Aktivität – ohne Planung, ohne Aufwand.",
         "use.lead": "Hostels suchen ständig nach Social-Aktivitäten für den Common Room. HolaRuta liefert genau das – niedrigschwellig, weil es offline läuft und nichts installiert werden muss.",
         "use.1.k": "Ice-Breaker", "use.1.t": "Aus Fremden am Tisch werden Freunde.", "use.1.b": "Sprach-Battles und Rollenspiele bringen Gäste ins Gespräch. Die perfekte Aktivität für den Abend im Common Room – ganz ohne Moderation durch euer Team.",
@@ -448,9 +567,12 @@
         "trust.qr": "at reception", "trust.players": "two-player mode", "trust.setup": "setup", "trust.free": "mostly free",
         "card.brand": "HolaRuta · Hostel Edition",
         "card.p1": "Battle", "card.p2": "Role-play", "card.p3": "Co-branding",
-        "card.p1.q": "¿De dónde eres?", "card.p1.tr": "“Where are you from?” – the perfect opener for the first battle round at the shared table.",
-        "card.p2.q": "Una cerveza, por favor.", "card.p2.tr": "“A beer, please.” – short role-plays at the bar, guests act out scenes.",
-        "card.p3.q": "Bienvenido a nuestro hostel.", "card.p3.tr": "“Welcome to our hostel.” – on scan, the app greets your guests in your look: logo, colour, name.",
+        "card.hint": "Tap to flip", "card.lvl": "A1 · Beginner", "card.lvl2": "A2 · Intermediate", "card.speakLabel": "Read answer aloud",
+        "a11y.card": "Flip the example card", "a11y.carousel": "Example cards", "card.scenarios": "Hostel activities",
+        "ctx.show": "Show travel context", "ctx.title": "🧭 How to use it on the road", "ctx.situation": "Situation", "ctx.note": "Travel tip",
+        "ex1.cat": "BATTLE", "ex1.q": "Where are you from?", "ex1.ctxEs": "Hola, ¿de dónde eres?", "ex1.ctxTr": "Hey, where are you from?", "ex1.ctxSit": "The perfect opener for the first battle round at the shared table.", "ex1.ctxNote": "A great follow-up: ¿Cuánto tiempo viajas?",
+        "ex2.cat": "ROLE-PLAY", "ex2.q": "A beer, please", "ex2.ctxEs": "Una cerveza, por favor.", "ex2.ctxTr": "A beer, please.", "ex2.ctxSit": "Short role-plays at the bar – guests act out real scenes.", "ex2.ctxNote": "More polite: ¿Me da una cerveza, por favor?",
+        "ex3.cat": "CO-BRANDING", "ex3.q": "Welcome to our hostel", "ex3.ctxEs": "¡Bienvenido a nuestro hostel!", "ex3.ctxTr": "Welcome to our hostel!", "ex3.ctxSit": "On scan, the app greets your guests in your look: logo, colour, name.", "ex3.ctxNote": "An edition is set up in minutes – one link is enough.",
         "use.eyebrow": "THE MOST OBVIOUS FIT", "use.title": "A ready-made activity – no planning, no effort.",
         "use.lead": "Hostels are always looking for social activities for the common room. HolaRuta delivers exactly that – low-friction, because it runs offline and nothing needs to be installed.",
         "use.1.k": "Ice-breaker", "use.1.t": "Strangers at the table become friends.", "use.1.b": "Language battles and role-plays get guests talking. The perfect evening activity for the common room – without your team having to host it.",
@@ -490,9 +612,12 @@
         "trust.qr": "en recepción", "trust.players": "modo 2 jugadores", "trust.setup": "montaje", "trust.free": "casi siempre gratis",
         "card.brand": "HolaRuta · Edición Hostal",
         "card.p1": "Batalla", "card.p2": "Juego de rol", "card.p3": "Co-branding",
-        "card.p1.q": "¿De dónde eres?", "card.p1.tr": "«¿De dónde eres?» – el arranque perfecto para la primera ronda de batalla en la mesa común.",
-        "card.p2.q": "Una cerveza, por favor.", "card.p2.tr": "«Una cerveza, por favor.» – pequeños juegos de rol en la barra: los huéspedes actúan escenas.",
-        "card.p3.q": "Bienvenido a nuestro hostel.", "card.p3.tr": "«Bienvenido a nuestro hostel.» – al escanear, la app saluda a tus huéspedes con tu estilo: logo, color, nombre.",
+        "card.hint": "Toca para girar", "card.lvl": "A1 · Principiante", "card.lvl2": "A2 · Intermedio", "card.speakLabel": "Escuchar la respuesta",
+        "a11y.card": "Girar la tarjeta de ejemplo", "a11y.carousel": "Tarjetas de ejemplo", "card.scenarios": "Actividades del hostal",
+        "ctx.show": "Mostrar contexto de viaje", "ctx.title": "🧭 Así lo usas en ruta", "ctx.situation": "Situación", "ctx.note": "Consejo de viaje",
+        "ex1.cat": "BATALLA", "ex1.q": "¿De dónde eres?", "ex1.ctxEs": "Hola, ¿de dónde eres?", "ex1.ctxTr": "«Hola, ¿de dónde eres?»", "ex1.ctxSit": "El arranque perfecto para la primera ronda de batalla en la mesa común.", "ex1.ctxNote": "Después encaja: ¿Cuánto tiempo viajas?",
+        "ex2.cat": "JUEGO DE ROL", "ex2.q": "Una cerveza, por favor", "ex2.ctxEs": "Una cerveza, por favor.", "ex2.ctxTr": "«Una cerveza, por favor.»", "ex2.ctxSit": "Pequeños juegos de rol en la barra: los huéspedes actúan escenas reales.", "ex2.ctxNote": "Más cortés: ¿Me da una cerveza, por favor?",
+        "ex3.cat": "CO-BRANDING", "ex3.q": "Bienvenido a nuestro hostel", "ex3.ctxEs": "¡Bienvenido a nuestro hostel!", "ex3.ctxTr": "«¡Bienvenido a nuestro hostel!»", "ex3.ctxSit": "Al escanear, la app saluda a tus huéspedes con tu estilo: logo, color, nombre.", "ex3.ctxNote": "Una edición se configura en minutos: basta un enlace.",
         "use.eyebrow": "EL ENCAJE MÁS OBVIO", "use.title": "Una actividad lista – sin planificación, sin esfuerzo.",
         "use.lead": "Los hostales buscan constantemente actividades sociales para la sala común. HolaRuta ofrece justo eso – con muy poca fricción, porque funciona sin conexión y no hay que instalar nada.",
         "use.1.k": "Rompehielos", "use.1.t": "Los desconocidos de la mesa se hacen amigos.", "use.1.b": "Las batallas de idioma y los juegos de rol ponen a hablar a los huéspedes. La actividad perfecta para la noche en la sala común – sin que tu equipo tenga que dirigirla.",
@@ -541,37 +666,20 @@
         if (HTML_KEYS[key]) nodes[i].innerHTML = dict[key];
         else nodes[i].textContent = dict[key];
       }
+      // aria-labels (und ggf. title) lokalisieren – sonst liest der Screenreader
+      // im EN/ES-Modus deutsche Beschriftungen vor.
+      var aria = document.querySelectorAll("[data-i18n-aria]");
+      for (var a = 0; a < aria.length; a++) {
+        var ak = aria[a].getAttribute("data-i18n-aria");
+        if (!(ak in dict)) continue;
+        aria[a].setAttribute("aria-label", dict[ak]);
+        if (aria[a].hasAttribute("title")) aria[a].setAttribute("title", dict[ak]);
+      }
       var btns = document.querySelectorAll(".lp-langbtn");
       for (var j = 0; j < btns.length; j++) {
         btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
       }
       try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
-      currentLang = lang;
-      paintHeroCard();
-    }
-
-    // Hero-Karte: Pills als Tabs – jede Pill blendet ihr eigenes Szenario (Satz + Erklärung) ein.
-    var currentLang = "de";
-    var heroCard = document.querySelector(".lp-herocard");
-    var heroPills = heroCard ? heroCard.querySelectorAll(".lp-herocard__pill") : [];
-    var heroQ = heroCard ? heroCard.querySelector(".lp-herocard__q") : null;
-    var heroTr = heroCard ? heroCard.querySelector(".lp-herocard__tr") : null;
-    var heroActive = 0;
-    function paintHeroCard() {
-      if (!heroQ || !heroTr) return;
-      var d = I18N[currentLang] || I18N.de;
-      var q = d["card.p" + (heroActive + 1) + ".q"];
-      var tr = d["card.p" + (heroActive + 1) + ".tr"];
-      if (q) heroQ.textContent = q;
-      if (tr) heroTr.textContent = tr;
-      for (var i = 0; i < heroPills.length; i++) {
-        heroPills[i].setAttribute("aria-pressed", i === heroActive ? "true" : "false");
-      }
-    }
-    for (var hp = 0; hp < heroPills.length; hp++) {
-      (function (i) {
-        heroPills[i].addEventListener("click", function () { heroActive = i; paintHeroCard(); });
-      })(hp);
     }
 
     var SUPPORTED = ["de", "en", "es"];
@@ -611,6 +719,121 @@
     });
 
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ── Beispielkarten-Karussell (wie auf der B2C-Landing): die Szenario-Pills
+    //    schalten die Karten um, Tippen dreht sie, 🔊 liest vor, 🧭 öffnet den
+    //    Reise-Kontext. Rotiert automatisch, pausiert bei Hover/Fokus/Interaktion.
+    var car = document.getElementById("lpCar");
+    if (car) {
+      var slides = Array.prototype.slice.call(car.querySelectorAll(".lp-slide"));
+      var flips = slides.map(function (s) { return s.querySelector(".flip"); });
+      var pills = Array.prototype.slice.call(document.querySelectorAll("#lpPills .lp-herocard__pill"));
+      var idx = 0, timer = null, swiped = false;
+      var AUTO = 4200;
+
+      function setActive(i) {
+        idx = (i + slides.length) % slides.length;
+        slides.forEach(function (s, n) {
+          var on = n === idx;
+          s.classList.toggle("is-active", on);
+          s.setAttribute("aria-hidden", on ? "false" : "true"); // inaktive Karten aus dem SR-Fokus
+          if (!on) { // beim Wegblättern zurück auf die Vorderseite + Kontext schließen
+            var f = flips[n];
+            if (f) { f.classList.remove("is-flipped"); f.setAttribute("aria-pressed", "false"); }
+            var cp = s.querySelector(".lp-ctxpanel");
+            if (cp) cp.setAttribute("hidden", "");
+            var cb = s.querySelector(".cardbtn--ctx");
+            if (cb) { cb.classList.remove("is-open"); cb.setAttribute("aria-expanded", "false"); }
+          }
+        });
+        pills.forEach(function (p, n) {
+          p.setAttribute("aria-pressed", n === idx ? "true" : "false");
+        });
+      }
+      function next() { setActive(idx + 1); }
+
+      function startAuto() { if (reduce) return; stopAuto(); timer = setInterval(next, AUTO); }
+      function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
+
+      // Flip + Vorlesen + Reise-Kontext pro Karte
+      flips.forEach(function (f) {
+        if (!f) return;
+        var slide = f.closest(".lp-slide");
+        var ctxBtn = f.querySelector(".cardbtn--ctx");
+        var panel = slide ? slide.querySelector(".lp-ctxpanel") : null;
+        function closeCtx() {
+          if (panel) panel.setAttribute("hidden", "");
+          if (ctxBtn) { ctxBtn.classList.remove("is-open"); ctxBtn.setAttribute("aria-expanded", "false"); }
+        }
+        function flip() {
+          var on = f.classList.toggle("is-flipped");
+          f.setAttribute("aria-pressed", on ? "true" : "false");
+          if (!on) closeCtx();                       // zurück auf Vorderseite -> Kontext zu
+        }
+        f.addEventListener("click", function (e) {
+          if (swiped) return;                        // war ein Wisch, kein Tap
+          if (e.target.closest(".cardbtn")) return;  // Eck-Button nicht als Flip werten
+          flip();
+        });
+        f.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
+        });
+        // 🧭 Reise-Kontext: blendet das App-Panel unter der Karte ein/aus (Pendant
+        // zum 🔊; klappt auf, ohne die Karte umzudrehen). Wie in der App.
+        if (ctxBtn && panel) ctxBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var willOpen = panel.hasAttribute("hidden");
+          if (willOpen) panel.removeAttribute("hidden"); else panel.setAttribute("hidden", "");
+          ctxBtn.classList.toggle("is-open", willOpen);
+          ctxBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+        });
+        var spk = f.querySelector(".cardbtn--speak");
+        if (spk) spk.addEventListener("click", function (e) {
+          e.stopPropagation();
+          try {
+            if (!("speechSynthesis" in window)) return;
+            var u = new SpeechSynthesisUtterance(spk.getAttribute("data-spk") || "");
+            u.lang = "es-419"; u.rate = 0.95;
+            speechSynthesis.cancel(); speechSynthesis.speak(u);
+          } catch (err) {}
+        });
+      });
+
+      // Pill-Navigation (Pendant zu den Punkten der B2C-Landing)
+      pills.forEach(function (p) {
+        p.addEventListener("click", function () { setActive(parseInt(p.getAttribute("data-i"), 10) || 0); startAuto(); });
+      });
+
+      // Auto-Rotation pausieren bei Hover/Fokus/Interaktion
+      car.addEventListener("pointerenter", stopAuto);
+      car.addEventListener("pointerleave", startAuto);
+      car.addEventListener("focusin", stopAuto);
+      car.addEventListener("focusout", startAuto);
+
+      // Wisch-Geste (Touch & Maus). pointerup hängt am window, damit ein Release
+      // auch AUSSERHALB des Karussells erkannt wird. Ein erkannter Wisch setzt
+      // `swiped` -> der nachfolgende Klick dreht die Karte NICHT um.
+      var dragX = null, dragY = null;
+      car.addEventListener("pointerdown", function (e) {
+        if (e.target.closest(".cardbtn")) return; // auf Buttons keinen Wisch starten
+        dragX = e.clientX; dragY = e.clientY; swiped = false;
+      });
+      window.addEventListener("pointerup", function (e) {
+        if (dragX === null) return;
+        var dx = e.clientX - dragX, dy = e.clientY - dragY;
+        dragX = dragY = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { // klar horizontal
+          swiped = true;
+          setActive(idx + (dx < 0 ? 1 : -1));
+          startAuto();
+        }
+      });
+      car.addEventListener("pointercancel", function () { dragX = dragY = null; });
+
+      setActive(0);
+      startAuto();
+    }
+
     var reveal = document.querySelectorAll("[data-reveal]");
     if (reduce || !("IntersectionObserver" in window)) {
       reveal.forEach(function (el) { el.classList.add("is-in"); });
