@@ -233,6 +233,17 @@ Nachgezogen (Folge-Commit): **ES für die Consumer-`landing.html`** (voller `es`
 Trust-Bar-Zahl „2 Wo." in `landing-reiseanbieter.html` ist jetzt via
 `trust.pretripval` i18n-fähig (DE „2 Wo." · EN „2 wk." · ES „2 sem.").
 
+**Hero-Mockup lokalisiert (Folge-Commit):** Der App-Screenshot im Phone-Mockup zeigte
+auf allen Seiten die deutsche App-UI. Jetzt tauscht `setLang` das Bild sprachabhängig
+(`#lpHeroShot` → `home-hero-de.webp` / `home-hero-en.webp`), verdrahtet auf allen vier
+Landing-Pages. Die Assets wurden aus der echten App per CDP erzeugt.
+**Produkt-Befund:** Der Reise-Track der App hat nur **de/en** als UI-Sprachen —
+Spanisch existiert nur im Locals-Track (Spanisch lernt Englisch, ein anderes Produkt).
+Deshalb gibt es keinen spanischen Reise-App-Screenshot; die **ES-Seite nutzt den
+englischen** Screenshot als neutrale Produkt-Ansicht. Offene strategische Frage:
+Ob die ES-Consumer-Seite langfristig auf die „inglés"/Locals-Zielgruppe umframen soll
+(dann würde auch ein spanischer App-Screenshot Sinn ergeben).
+
 ---
 
 ## 6. Die eine Zeile zum Merken

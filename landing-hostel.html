@@ -170,10 +170,7 @@
             <div class="lp-phone__screen">
               <div class="lp-phone__notch"></div>
               <div class="lp-phone__stripe"></div>
-              <picture>
-                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/home-hero.webp" />
-                <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
-              </picture>
+              <img class="lp-phone__img" id="lpHeroShot" src="docs/landing/home-hero-de.webp" width="390" height="844" loading="lazy" alt="" />
             </div>
           </div>
           <div class="lp-herocard">
@@ -554,6 +551,8 @@
         if (HTML_KEYS[key]) nodes[i].innerHTML = dict[key];
         else nodes[i].textContent = dict[key];
       }
+      var heroShot = document.getElementById("lpHeroShot");
+      if (heroShot) heroShot.src = "docs/landing/home-hero-" + (lang === "de" ? "de" : "en") + ".webp";
       var btns = document.querySelectorAll(".lp-langbtn");
       for (var j = 0; j < btns.length; j++) {
         btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");

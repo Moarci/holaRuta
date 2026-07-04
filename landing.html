@@ -204,10 +204,10 @@
               <!-- Desktop lädt die kleine Hero-Variante (~38 KB WebP statt 208 KB PNG).
                    loading="lazy" bewusst behalten: unter 1040px ist .lp-herophone
                    display:none und lazy verhindert dort den Download komplett. -->
-              <picture>
-                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/home-hero.webp" />
-                <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
-              </picture>
+              <!-- Sprachabhängiger App-Screenshot (setLang tauscht die Quelle):
+                   de → …-de.webp, en/es → …-en.webp (der Reise-Track hat keine
+                   spanische UI, daher ist Englisch die neutrale Produkt-Ansicht). -->
+              <img class="lp-phone__img" id="lpHeroShot" src="docs/landing/home-hero-de.webp" width="390" height="844" loading="lazy" alt="" />
             </div>
           </div>
           <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" aria-label="Beispielkarten">
@@ -1048,6 +1048,9 @@
         aria[a].setAttribute("aria-label", dict[ak]);
         if (aria[a].hasAttribute("title")) aria[a].setAttribute("title", dict[ak]);
       }
+      // App-Screenshot im Hero-Mockup lokalisieren (de → -de, en/es → -en).
+      var heroShot = document.getElementById("lpHeroShot");
+      if (heroShot) heroShot.src = "docs/landing/home-hero-" + (lang === "de" ? "de" : "en") + ".webp";
       // Umschalt-Buttons aktualisieren
       var btns = document.querySelectorAll(".lp-langbtn");
       for (var j = 0; j < btns.length; j++) {
