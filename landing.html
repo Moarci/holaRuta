@@ -491,21 +491,12 @@
         </div>
 
         <div class="lp-more">
-          <!-- Aufklapper: die 12 Modul-Kacheln liegen jetzt hinter diesem Toggle,
-               damit die Sektion ruhiger startet und nicht sofort ein volles Kachel-
-               Raster zeigt. Tippen klappt das Panel (#lpMorePanel) auf/zu. -->
-          <button class="lp-more__toggle" id="lpMoreToggle" type="button" data-reveal aria-expanded="false" aria-controls="lpMorePanel">
-            <span class="lp-more__toggle-txt">
-              <span class="lp-more__toggle-label" data-i18n="more.intro">Und noch viel mehr an Bord</span>
-              <span class="lp-more__toggle-hint" data-i18n="more.count">12 Module — tippen zum Aufklappen</span>
-            </span>
-            <span class="lp-more__toggle-chev" aria-hidden="true"></span>
-          </button>
-          <div class="lp-more__panel" id="lpMorePanel" hidden>
-          <!-- Antippbar & wischbar: jeder Chip klappt unten ein geteiltes Beispiel-
-               Panel auf (#lpMoreDetail) und füllt es per JS mit echten Reise-Sätzen
-               des Moduls; im Panel wischt man durch die Beispiele (Scroll-Snap). -->
-          <div class="lp-more__chips" id="lpMoreChips">
+          <p class="lp-more__intro" data-reveal data-i18n="more.intro">Und noch viel mehr an Bord</p>
+          <!-- Kompakte horizontale Wisch-Leiste (Scroll-Snap): es sind immer nur
+               wenige Kacheln gleichzeitig sichtbar, seitlich wischt man durch die
+               übrigen Module. Jeder Chip bleibt antippbar und klappt unten das
+               geteilte Beispiel-Panel (#lpMoreDetail) mit echten Reise-Sätzen auf. -->
+          <div class="lp-more__chips" id="lpMoreChips" role="group" data-i18n-aria="more.modules" aria-label="Weitere Module — seitlich wischen">
             <button class="lp-morechip" type="button" data-mod="surv" data-reveal style="--accent:#B5302A; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-life-buoy"/></svg></span>
               <span class="lp-morechip__txt">
@@ -613,7 +604,6 @@
             </div>
             <div class="lp-moredetail__strip" id="lpMD_strip" tabindex="0" role="group" data-i18n-aria="more.examples" aria-label="Beispielsätze"></div>
             <div class="lp-moredetail__dots" id="lpMD_dots" role="group" data-i18n-aria="more.pick" aria-label="Beispiel wählen"></div>
-          </div>
           </div>
         </div>
       </div>
@@ -909,7 +899,7 @@
         "why.salud.k": "Salud", "why.salud.t": "Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.", "why.salud.b": "Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.",
         "why.musica.k": "Música", "why.musica.t": "Der Song, den am Ende alle mitsingen.", "why.musica.b": "Cumbia, Reggaetón, Folklore — die Lieder, die in jedem Bus und jeder Bar laufen. Kenn den Refrain, und du gehörst dazu statt nur daneben.",
         "why.conexion.k": "Conexión", "why.conexion.t": "Aus einem „Hola\" wird die beste Nacht deiner Reise.", "why.conexion.b": "Hostel-Spiele, Sprüche, Smalltalk: die Sätze, die aus Fremden am Tisch Freunde fürs Leben machen. Denn Reisen ist am Ende, wen du triffst.",
-        "more.intro": "Und noch viel mehr an Bord", "more.count": "12 Module — tippen zum Aufklappen",
+        "more.intro": "Und noch viel mehr an Bord", "more.modules": "Weitere Module — seitlich wischen",
         "more.spick.d": "Die Notfall-Sätze groß auf einen Blick", "more.country.d": "Sitten, Geld & Eigenheiten pro Land",
         "more.historia.d": "Südamerikas Geschichte zum Mitreden", "more.dialogos.d": "Ganze Gespräche Zug um Zug üben",
         "more.hostel.d": "Zu zweit: Battle & Rollenspiele", "more.regatear.d": "Auf dem Markt fair feilschen",
@@ -991,7 +981,7 @@
         "why.salud.k": "Salud", "why.salud.t": "When your body gives out at 4,000 metres, every phrase counts.", "why.salud.b": "Altitude sickness, stomach, pharmacy, doctor: the lines for when it gets serious — and the tips that keep you healthy and moving.",
         "why.musica.k": "Música", "why.musica.t": "The song everyone ends up singing.", "why.musica.b": "Cumbia, reggaetón, folklore — the tracks playing in every bus and every bar. Know the chorus and you're part of it, not just next to it.",
         "why.conexion.k": "Conexión", "why.conexion.t": "One “Hola” turns into the best night of your trip.", "why.conexion.b": "Hostel games, one-liners, small talk: the phrases that turn strangers at the table into friends for life. Because travel is, in the end, who you meet.",
-        "more.intro": "And plenty more on board", "more.count": "12 modules — tap to expand",
+        "more.intro": "And plenty more on board", "more.modules": "More modules — swipe sideways",
         "more.spick.d": "Your survival lines, big and tappable", "more.country.d": "Customs, money & quirks per country",
         "more.historia.d": "South America's story, made easy", "more.dialogos.d": "Whole conversations, turn by turn",
         "more.hostel.d": "Two-player: battle & role-plays", "more.regatear.d": "Haggle fairly at the market",
@@ -1073,7 +1063,7 @@
         "why.salud.k": "Salud", "why.salud.t": "Cuando el cuerpo falla a 4000 metros, cada frase cuenta.", "why.salud.b": "Mal de altura, estómago, farmacia, médico: las frases para cuando la cosa se pone seria — y los consejos para seguir sano y en marcha.",
         "why.musica.k": "Música", "why.musica.t": "La canción que al final todos cantan.", "why.musica.b": "Cumbia, reguetón, folclor — las canciones que suenan en cada bus y cada bar. Aprende el coro y ya eres de la casa, no solo de paso.",
         "why.conexion.k": "Conexión", "why.conexion.t": "Un «Hola» se convierte en la mejor noche de tu viaje.", "why.conexion.b": "Juegos de hostal, frases sueltas, charla: las frases que convierten a desconocidos en la mesa en amigos para toda la vida. Porque viajar es, al final, a quién conoces.",
-        "more.intro": "Y mucho más a bordo", "more.count": "12 módulos — toca para desplegar",
+        "more.intro": "Y mucho más a bordo", "more.modules": "Más módulos — desliza de lado",
         "more.spick.d": "Tus frases de emergencia, grandes y de un vistazo", "more.country.d": "Costumbres, dinero y rarezas por país",
         "more.historia.d": "La historia de Sudamérica, fácil de seguir", "more.dialogos.d": "Conversaciones enteras, turno a turno",
         "more.hostel.d": "De a dos: battle y juegos de rol", "more.regatear.d": "Regatea con justicia en el mercado",
@@ -1196,33 +1186,16 @@
       var chipsWrap = document.getElementById("lpMoreChips");
       var detail = document.getElementById("lpMoreDetail");
       if (!chipsWrap || !detail) return;
-
-      // Aufklapper für das gesamte Kachel-Raster: startet eingeklappt, damit die
-      // Sektion ruhig anfängt. Tippen zeigt/versteckt das Panel (#lpMorePanel).
-      var moreToggle = document.getElementById("lpMoreToggle");
-      var morePanel = document.getElementById("lpMorePanel");
-      if (moreToggle && morePanel) {
-        moreToggle.addEventListener("click", function () {
-          var open = moreToggle.getAttribute("aria-expanded") === "true";
-          moreToggle.setAttribute("aria-expanded", open ? "false" : "true");
-          if (open) {
-            morePanel.setAttribute("hidden", "");
-          } else {
-            morePanel.removeAttribute("hidden");
-            // Frisch aufgeklappt: die per Scroll-Reveal (opacity:0) versteckten
-            // Kacheln sofort einblenden, statt auf den Observer zu warten.
-            morePanel.querySelectorAll("[data-reveal]").forEach(function (el) {
-              el.classList.add("is-in");
-            });
-          }
-        });
-      }
       var strip = document.getElementById("lpMD_strip");
       var dotsWrap = document.getElementById("lpMD_dots");
       var nameEl = document.getElementById("lpMD_name");
       var icoEl = document.getElementById("lpMD_ico");
       var closeBtn = document.getElementById("lpMD_close");
       var chips = Array.prototype.slice.call(chipsWrap.querySelectorAll(".lp-morechip"));
+      // Die Kacheln liegen in einer horizontalen Wisch-Leiste; die rechts außer-
+      // halb des Sichtfelds würde der vertikale Scroll-Reveal (opacity:0) nie ein-
+      // blenden. Darum hier direkt sichtbar schalten.
+      chips.forEach(function (c) { c.classList.add("is-in"); });
 
       // Echte Reise-Karteikarten je Modul: cat = Kategorie (de/en), und je Beispiel
       // { de, en, es, tip, lvl, sit:{de,en}, note:{de,en} }. Spanisch + Aussprache
