@@ -131,21 +131,26 @@
   // group = thematischer Abschnitt (siehe FEATURE_GROUPS); gegliedert nach
   // Aktivität (Spielen · Üben · Nachschlagen) – deckt sich mit dem Intro-Text
   // und gibt der inzwischen langen Liste eine klare, einheitliche Achse.
+  // tracks = Lern-Tracks, in denen der Eintrag erscheint (siehe config.js SC.track).
+  // Fehlt das Feld, gilt ["de-es"] (Reise-Track): die meisten Einträge sind
+  // spanisch-spezifische Reise-Inhalte. Track-fähige Module (Lernseite über
+  // SC.track/learnLang) deklarieren beide Tracks; reine Locals-Einträge nur "es-en".
+  // scope = optionaler data-scope des Buttons (z. B. open-pretrip mit festem Kurs).
   const FEATURES = [
-    { action: "open-favorites",   icon: "lc:star", title: "Mi léxico",     subKey: "discover.subFavorites", sub: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit", grad: ["#B97C24", "#E9A23B"], group: "reference" },
-    { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
+    { action: "open-favorites", tracks: ["de-es", "es-en"],   icon: "lc:star", title: "Mi léxico",     subKey: "discover.subFavorites", sub: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit", grad: ["#B97C24", "#E9A23B"], group: "reference" },
+    { action: "open-spickzettel", tracks: ["de-es", "es-en"], icon: "lc:life-buoy", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
     { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
-    { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
-    { action: "open-yesto",       icon: "lc:eye", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
-    { action: "open-banderas",    icon: "lc:flag", title: "Banderas",      subKey: "discover.subBanderas", sub: "Flaggen-Quiz: Land raten, Farben & Symbole lernen", grad: ["#C0392B", "#2E6E86"], need: "banderas", group: "play" },
-    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", sub: "Karteikarten am Stück – alle Themen gemischt, ohne Rundenende", grad: ["#2E6E86", "#7048E8"], group: "practice" },
-    { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
-    { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
-    { action: "open-venue-roleplay", icon: "lc:handshake", title: "Roleplay del local", sub: "Huésped y personal practican por turnos, en un teléfono", grad: ["#2F6B70", "#5A4FA8"], loc: true, group: "play" },
+    { action: "open-quiz-setup", tracks: ["de-es", "es-en"],  icon: "lc:puzzle", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
+    { action: "open-yesto", tracks: ["de-es", "es-en"],       icon: "lc:eye", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
+    { action: "open-banderas", tracks: ["de-es", "es-en"],    icon: "lc:flag", title: "Banderas",      subKey: "discover.subBanderas", sub: "Flaggen-Quiz: Land raten, Farben & Symbole lernen", grad: ["#C0392B", "#2E6E86"], need: "banderas", group: "play" },
+    { action: "open-endless", tracks: ["de-es", "es-en"],     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", sub: "Karteikarten am Stück – alle Themen gemischt, ohne Rundenende", grad: ["#2E6E86", "#7048E8"], group: "practice" },
+    { action: "open-frases", tracks: ["de-es", "es-en"],      icon: "lc:blocks", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
+    { action: "open-dialogos", tracks: ["de-es", "es-en"],    icon: "lc:message-circle", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
+    { action: "open-venue-roleplay", tracks: ["es-en"], icon: "lc:handshake", title: "Roleplay del local", sub: "Huésped y personal practican por turnos, en un teléfono", grad: ["#2F6B70", "#5A4FA8"], group: "play" },
     { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
-    { action: "open-precios",     icon: "lc:banknote", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
-    { action: "open-cuerpo",      icon: "lc:person-standing", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
-    { action: "open-compras",     icon: "lc:shopping-cart", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
+    { action: "open-precios",     tracks: ["de-es", "es-en"], icon: "lc:banknote", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
+    { action: "open-cuerpo",      tracks: ["de-es", "es-en"], icon: "lc:person-standing", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
+    { action: "open-compras",     tracks: ["de-es", "es-en"], icon: "lc:shopping-cart", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
     { action: "open-conjugacion", icon: "lc:repeat", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"], group: "practice" },
     { action: "open-tiempos",     icon: "lc:hourglass", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"], group: "practice" },
     { action: "open-info",        icon: "lc:globe", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries", group: "reference" },
@@ -164,8 +169,12 @@
     { action: "open-cafe",        icon: "lc:coffee", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
     { action: "open-juegos",      icon: "lc:dices", title: "Juegos de viaje",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
     { action: "open-pretrip",     icon: "lc:calendar", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
-    // Locals-Track: derselbe Plan-Screen als 4-Wochen-Kurs (nur hier sichtbar).
-    { action: "open-pretrip",     icon: "lc:calendar", titleKey: "discover.cursoTitle", subKey: "discover.cursoSub", grad: ["#1F7A8C", "#3F7355"], group: "practice", loc: true },
+    // Reise-Track: der wochenstrukturierte Spanisch-Kurs (Lernpfad-Mechanik wie der
+    // Englisch-Kurs, siehe scripts/gen-curso-espanol.mjs) – öffnet per scope direkt
+    // den Kursplan statt des zuletzt gewählten Reiseziels.
+    { action: "open-pretrip",     scope: "ruta-espanol", icon: "lc:route", title: "Ruta del español", subKey: "discover.subCursoEs", sub: "Der Spanisch-Kurs: 4 Wochen, Woche für Woche", grad: ["#1F7A8C", "#3F7355"], group: "practice" },
+    // Locals-Track: derselbe Plan-Screen als mehrwöchiger Kurs (nur hier sichtbar).
+    { action: "open-pretrip",     tracks: ["es-en"], icon: "lc:calendar", titleKey: "discover.cursoTitle", subKey: "discover.cursoSub", grad: ["#1F7A8C", "#3F7355"], group: "practice" },
     { action: "open-placement",   icon: "lc:target", title: "HolaRuta-Check",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
     { action: "open-assessment",  icon: "lc:clipboard-list", title: "Nivel-Test",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
   ];
@@ -1059,7 +1068,7 @@
     // countries-Modul, Precios die Sprachausgabe, Frases das frases-Modul.
     const has = { countries: vm.hasCountries, historia: vm.hasHistoria, historiaCentro: vm.hasHistoriaCentro, speech: vm.hasSpeech, frases: vm.hasFrases, dialogos: vm.hasDialogos, knigge: vm.hasKnigge, regatear: vm.hasRegatear, logistica: vm.hasLogistica, salud: vm.hasSalud, jerga: vm.hasJerga, derechos: vm.hasDerechos, responsable: vm.hasResponsable, fotos: vm.hasFotos, flirt: vm.hasFlirt, bailar: vm.hasBailar, musica: vm.hasMusica, cafe: vm.hasCafe, juegos: vm.hasJuegos, banderas: vm.hasBanderas, yesto: vm.hasYesto, placement: vm.hasPlacement, assessment: vm.hasAssessment };
     const featBtn = (x) => `
-      <button class="feat" data-action="${x.action}" style="--from:${x.grad[0]};--to:${x.grad[1]}">
+      <button class="feat" data-action="${x.action}"${x.scope ? ` data-scope="${esc(x.scope)}"` : ""} style="--from:${x.grad[0]};--to:${x.grad[1]}">
         <span class="feat__icon" aria-hidden="true">${renderIcon(x.icon)}</span>
         <span class="feat__text">
           <span class="feat__title">${esc(x.titleKey ? t(x.titleKey) : x.title)}</span>
@@ -1068,25 +1077,14 @@
       </button>`;
     // Pro Abschnitt nur die verfügbaren Einträge zeigen; leere Gruppen (alle
     // Einträge per need ausgeblendet) fallen samt Überschrift komplett weg.
-    // Locals-Track: die Entdecken-Features sind durchweg spanisch-spezifische Reise-
-    // Inhalte (Precios, Conjugación, Jerga, Diálogos, Länder/Geschichte …). Für
-    // Englisch-Lernende nur die sprachunabhängigen behalten (Mi léxico).
-    const localsTrack = !!(window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
-    // Recycelte Reise-Spiele, die track-fähig auf Englisch lehren (Lernseite =
-    // card.en/item.en): Diálogos, Banderas (sprachunabhängig), ¿Y esto?,
-    // Definiciones, Frases flexibles. Mi léxico bleibt sprachunabhängig.
-    const LOCALS_FEATURES = {
-      "open-favorites": true, "open-dialogos": true,
-      "open-banderas": true, "open-yesto": true,
-      "open-quiz-setup": true, "open-frases": true,
-      "open-endless": true,
-    };
+    // Sichtbarkeit je Lern-Track deklariert jeder Eintrag selbst über `tracks`
+    // (fehlend = nur Reise-Track "de-es"): die meisten Features sind spanisch-
+    // spezifische Reise-Inhalte; track-fähige Spiele (Lernseite über SC.track)
+    // nennen beide Tracks, reine Locals-Einträge nur "es-en".
+    const trackId = (window.SC.track && window.SC.track.id && window.SC.track.id()) || "de-es";
     const available = FEATURES.filter((x) => {
       if (x.need && !has[x.need]) return false;
-      // Locals-Track: nur sprachunabhängige Features (Mi léxico) + die mit loc:true
-      // markierten Locals-Einträge (z. B. Kursplan). Reise-Track: keine loc-Einträge.
-      if (localsTrack) return x.loc === true || !!LOCALS_FEATURES[x.action];
-      return !x.loc;
+      return (x.tracks || ["de-es"]).indexOf(trackId) >= 0;
     });
     const sections = FEATURE_GROUPS.map((g) => {
       const items = available.filter((x) => x.group === g.id);

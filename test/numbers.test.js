@@ -104,6 +104,95 @@ test("numbers.amount: andere Währungen mit eigener Pluralform", () => {
   assert.equal(numbers.amount(40, quetzal), "cuarenta quetzales");
 });
 
+// ---------- toWordsEn: englische Zahlwörter (Locals-Track) ----------
+// Exakte Erwartungen über alle Blöcke (Einer/Teens/Zehner/Hunderter/Tausender/
+// Millionen), damit keine Zeile der englischen Wandler still mutierbar bleibt.
+test("numbers.toWordsEn: Einer, Teens & Zehner (Bindestrich ab 21)", () => {
+  assert.equal(numbers.toWordsEn(0), "zero");
+  assert.equal(numbers.toWordsEn(7), "seven");
+  assert.equal(numbers.toWordsEn(13), "thirteen");
+  assert.equal(numbers.toWordsEn(19), "nineteen");
+  assert.equal(numbers.toWordsEn(20), "twenty");              // voller Zehner, kein Bindestrich
+  assert.equal(numbers.toWordsEn(21), "twenty-one");          // Bindestrich
+  assert.equal(numbers.toWordsEn(42), "forty-two");           // Zehner-Lookup (n/10)
+  assert.equal(numbers.toWordsEn(70), "seventy");
+  assert.equal(numbers.toWordsEn(99), "ninety-nine");
+});
+
+test("numbers.toWordsEn: Hunderter (US-Stil ohne 'and')", () => {
+  assert.equal(numbers.toWordsEn(100), "one hundred");
+  assert.equal(numbers.toWordsEn(101), "one hundred one");    // kein 'and'
+  assert.equal(numbers.toWordsEn(115), "one hundred fifteen");
+  assert.equal(numbers.toWordsEn(320), "three hundred twenty");
+  assert.equal(numbers.toWordsEn(999), "nine hundred ninety-nine");
+});
+
+test("numbers.toWordsEn: Tausender & Millionen", () => {
+  assert.equal(numbers.toWordsEn(1000), "one thousand");
+  assert.equal(numbers.toWordsEn(1001), "one thousand one");
+  assert.equal(numbers.toWordsEn(21000), "twenty-one thousand");
+  assert.equal(numbers.toWordsEn(23500), "twenty-three thousand five hundred");
+  assert.equal(numbers.toWordsEn(100000), "one hundred thousand");
+  assert.equal(numbers.toWordsEn(1000000), "one million");
+  assert.equal(numbers.toWordsEn(2000000), "two million");
+  assert.equal(numbers.toWordsEn(1250000), "one million two hundred fifty thousand");
+});
+
+test("numbers.toWordsEn: außerhalb der Domäne (≥ 1e9) wird geklemmt, nie 'undefined'", () => {
+  const max = numbers.toWordsEn(1e9);
+  assert.equal(max, "nine hundred ninety-nine million nine hundred ninety-nine thousand nine hundred ninety-nine");
+  for (const v of [1e9, 5e9, 1e12]) {
+    const w = numbers.toWordsEn(v);
+    assert.ok(typeof w === "string" && w.length > 0 && !/undefined/.test(w), `toWordsEn(${v}) definiert: ${w}`);
+  }
+});
+
+test("numbers.amountEn: Singular/Plural mit englischem Währungswort", () => {
+  const us = numbers.currency("US");
+  assert.equal(numbers.amountEn(1, us), "one dollar");        // Singular
+  assert.equal(numbers.amountEn(2, us), "two dollars");
+  assert.equal(numbers.amountEn(150, us), "one hundred fifty dollars");
+  // LatAm-Währungen bleiben als Lehnwörter (manyEn = pesos/soles/colones).
+  assert.equal(numbers.amountEn(23500, numbers.currency("CO")), "twenty-three thousand five hundred pesos");
+  assert.equal(numbers.amountEn(2000000, numbers.currency("CO")), "two million pesos");
+  assert.equal(numbers.amountEn(1, numbers.currency("PE")), "one sol");
+  assert.equal(numbers.amountEn(40, numbers.currency("PE")), "forty soles");
+});
+
+test("numbers.currencyList('en'): USD steht vorn, der Reise-Track sieht nie USD", () => {
+  const en = numbers.currencyList("en");
+  assert.equal(en[0].key, "US");                              // Dollar zuerst im Locals-Track
+  assert.ok(en.some((c) => c.key === "CO"), "Landeswährungen weiter dabei");
+  assert.ok(!numbers.currencyList().some((c) => c.key === "US"), "Default-Liste (Reise) ohne USD");
+  assert.ok(!numbers.currencyList("de").some((c) => c.key === "US"), "nur 'en' schaltet USD frei");
+  // US trägt englische UND (unreachable, aber parität) spanische Währungswörter.
+  const us = numbers.currency("US");
+  assert.equal(us.oneEn, "dollar");
+  assert.equal(us.manyEn, "dollars");
+  assert.equal(us.levels.length, 3);
+});
+
+test("numbers.tierFor: US-Dollar-Spannen (Locals-Track, exakt)", () => {
+  const EXPECT = [
+    { min: 1, max: 100, step: 1 },
+    { min: 20, max: 2000, step: 5, fine: 1 },
+    { min: 500, max: 100000, step: 100, fine: 25 },
+  ];
+  for (let lvl = 1; lvl <= 3; lvl++) {
+    assert.deepEqual(numbers.tierFor("US", lvl), EXPECT[lvl - 1], `US L${lvl}`);
+  }
+});
+
+test("numbers.makeItem(lang='en'): schreibt englische Wortform ins es-Feld", () => {
+  const it = numbers.makeItem(23500, "CO", "en");
+  assert.equal(it.es, "twenty-three thousand five hundred pesos");
+  assert.equal(it.words, "twenty-three thousand five hundred");
+  assert.equal(it.digits, "23.500");
+  // Ohne lang bleibt alles spanisch (Reise-Track unverändert).
+  const es = numbers.makeItem(23500, "CO");
+  assert.equal(es.es, "veintitrés mil quinientos pesos");
+});
+
 // ---------- format: Tausenderpunkte ----------
 test("numbers.format: Punkt-Tausendertrennung", () => {
   assert.equal(numbers.format(500), "500");

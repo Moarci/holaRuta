@@ -293,6 +293,56 @@
     subEndless: "Tarjetas sin parar: todos los temas mezclados, sin fin de ronda.",
     subFrases: "Coloca las piezas y arma frases en inglés.",
 
+    // Supervivencia (laboral): die kritischsten Arbeits-Sätze auf Englisch
+    subSupervivencia: "Las frases más importantes del trabajo, siempre a mano.",
+    szIntro: "Las frases en inglés que más necesitas en el trabajo: al instante y leídas en voz alta al tocar. Toca una frase para verla en pantalla completa y mostrarla.",
+    szAreas: "Secciones",
+    szShowTitle: "Ver en grande",
+    szListen: "Escuchar",
+    szListenBig: "🔊 Escuchar",
+    szShowLabel: "Pantalla completa",
+
+    // Lista de compras: Einkaufsliste auf Englisch (Wort + zwei fertige Fragen)
+    subCompras: "Supermercado, ropa, farmacia: practica las compras en inglés.",
+    comprasIntro: "Tu lista de compras en inglés. Elige una sección y toca una palabra: aparece la palabra en inglés con dos preguntas listas para usar (si lo tienen y dónde encontrarlo), todo leído en voz alta. Con la casilla de la izquierda marcas lo que ya está, y lo desmarcas si hace falta. Si quieres, ponte a prueba después con el quiz corto.",
+    comprasPickSection: "Elegir sección",
+    comprasAsk: "Preguntar en la tienda",
+    comprasSpeakWord: "Escuchar la palabra",
+    comprasSpeakPhrase: "Escuchar la pregunta",
+    comprasCheckOff: "Marcar",
+    comprasUncheck: "Quitar la marca",
+    comprasCheckedTitle: function (p) { return p.de + " – " + p.done + "/" + p.total + " marcadas"; },
+    comprasComplete: function (p) { return "¡Lista lista! 🎉 Marcaste las " + p.total; },
+    comprasCheckedCount: function (p) { return "Marcadas: " + p.n + "/" + p.total; },
+    comprasQuiz: function (p) { return "🧩 Quiz: " + p.section; },
+    comprasNeed: "Necesitas …",
+    comprasSolution: function (p) { return 'Correcto: <b lang="en">' + p.es + "</b>"; },
+    comprasBackList: "Volver a la lista",
+
+    // El Cuerpo: Körperteile auf Englisch (3D-Figur; ohne Touristen-Tipps)
+    subCuerpo: "Toca las partes del cuerpo y aprende la palabra en inglés.",
+    cuerpoIntro: "El cuerpo humano en inglés, como modelo 3D giratorio. Arrastra la figura para girarla y toca una parte del cuerpo: aparece la palabra en inglés y se lee en voz alta.",
+    cuerpoSpeak: "Escuchar la palabra",
+    cuerpoComplete: function (p) { return "¡Cuerpo completo! 🎉 Exploraste las " + p.total; },
+    cuerpoExplored: function (p) { return "Exploradas: " + p.n + "/" + p.total; },
+    cuerpoRotateLeft: "Girar la figura a la izquierda",
+    cuerpoRotateRight: "Girar la figura a la derecha",
+    cuerpoDragHint: "↔ arrastra para girar",
+    cuerpoHint: "👆 Toca un punto de la figura: aparece la palabra en inglés y se lee en voz alta.",
+
+    // Precios al oído: Beträge auf Englisch hören & eintippen (USD zuerst)
+    subPrecios: "Escucha precios en inglés y escribe la cifra: dólares y pesos.",
+    prcNoSpeech: "Tu dispositivo no puede leer en voz alta; sin eso no hay nada que escuchar.",
+    prcIntro: "Escucha un precio en inglés y escribe la cifra. Elige la moneda y el tamaño de los montos: de propinas en dólares a precios en pesos.",
+    prcCountryCurrency: "País y moneda",
+    prcDifficulty: "Dificultad",
+    prcSample: function (p) { return p.flag + " " + p.name + ": montos hasta <b>" + p.max + "</b> " + p.many + "."; },
+    prcStart: "Empezar ronda",
+    prcReplay: "🔊 Escuchar otra vez",
+    prcWhich: "¿Qué monto escuchas? Escribe la cifra (sin puntos).",
+    prcPlaceholder: "p. ej. 45000",
+    prcProgress: "Progreso",
+
     // Definiciones (Zuordnen-Quiz): spanische Definition → englisches Wort
     quizSetupIntro: "Lee una definición en español y elige la palabra en inglés. Así aprendes vocabulario por su significado, sin traducir.",
     quizCorrect: "¡Correcto! 🎉",

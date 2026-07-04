@@ -4,6 +4,11 @@
  * Fortschrittsbalken (erkundete Teile) und eine CSS-3D-Figur aus Kugel-Impostoren,
  * die per Ziehgeste oder ↺/↻-Knöpfen gedreht wird. Inhalte aus data.BODY_PARTS.
  *
+ * Track-fähig: im Locals-Track (es-en) ist das gelernte Wort card.en (Stimme
+ * en-US via speech.js/ttsLocale). Aussprache-Tipp und Reise-Notiz sind dort
+ * ausgeblendet: beide erklären das SPANISCHE Wort für Touristen (falsches
+ * Publikum) – ausblenden statt übersetzen.
+ *
  * Teil der app.js/ui.js-Zerlegung (Welle D) – der ERSTE interaktive Screen mit
  * Post-Render-Hook: VM, Render, die 3D-Geometrie-Konstanten und die komplette
  * Dreh-/Auswahl-Logik (inkl. globaler Pointer-Listener) leben hier zusammen.
@@ -85,10 +90,18 @@
 
   const bodyPartById = (id) => ctx.data.BODY_PARTS.find((p) => p.id === id) || null;
 
+  // Sprachfeld der GELERNTEN Seite (Reise: es, Locals: en) – Muster wie in den
+  // anderen track-fähigen Feature-Modulen (definiciones …).
+  const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+  // Gelerntes Wort eines Körperteils (Locals: p.en, sonst p.es).
+  const learnWord = (p) => p[trackLearnLang()] || p.es;
+
   // ----- View-Modell -----
   function cuerpoVM() {
     const gamestats = ctx.gameStats();
     const selId = ctx.state.bodyPartId;
+    const learnLang = trackLearnLang();
+    const locals = learnLang === "en";
     const parts = ctx.data.BODY_PARTS.map((p) => ({
       id: p.id, de: ctx.nat(p), x: p.x, y: p.y,
       selected: p.id === selId,
@@ -96,11 +109,18 @@
     }));
     const sel = bodyPartById(selId);
     return {
+      // tip/note nur im Reise-Track (erklären das spanische Wort für Touristen);
+      // natk statt roher Felder: die englische UI bekommt tipEn/noteEn.
+      selected: sel ? {
+        id: sel.id, es: learnWord(sel), de: ctx.nat(sel),
+        tip: locals ? null : ctx.natk(sel, "tip"),
+        note: locals ? null : ctx.natk(sel, "note"),
+      } : null,
       parts,
-      selected: sel ? { id: sel.id, es: sel.es, de: ctx.nat(sel), tip: sel.tip, note: sel.note } : null,
       exploredCount: gamestats.bodyPartsSeen ? Object.keys(gamestats.bodyPartsSeen).length : 0,
       total: ctx.data.BODY_PARTS.length,
       speakable: !!(ctx.speech && ctx.speech.isSupported()),
+      learnLang,
     };
   }
 
@@ -132,7 +152,7 @@
             <span class="bp-panel__de">${esc(sel.de)}</span>
             ${speak}
           </div>
-          <p class="bp-panel__es" lang="es">${esc(sel.es)}</p>
+          <p class="bp-panel__es" lang="${esc(vm.learnLang)}">${esc(sel.es)}</p>
           ${sel.tip ? `<p class="bp-panel__tip"><span aria-hidden="true">${renderIcon("lc:audio-lines")}</span> ${esc(sel.tip)}</p>` : ""}
           ${sel.note ? `<p class="bp-panel__note">${esc(sel.note)}</p>` : ""}
         </div>`
@@ -185,7 +205,7 @@
     ctx.buzz(8);
     recordBodyPartView(id, Date.now());
     ctx.render();
-    if (ctx.speech && ctx.speech.isSupported()) ctx.speech.speak(part.es, ctx.settings().speechRate);
+    if (ctx.speech && ctx.speech.isSupported()) ctx.speech.speak(learnWord(part), ctx.settings().speechRate);
   }
 
   // Distinkt erkundetes Körperteil vermerken und erfüllte 🧍-Badges freischalten.
@@ -200,7 +220,7 @@
   // 🔊-Knopf im Körperteil-Panel: das gewählte Wort (er-)neut vorlesen.
   function speak() {
     const part = bodyPartById(ctx.state.bodyPartId);
-    if (part && ctx.speech && ctx.speech.isSupported()) ctx.speech.speak(part.es, ctx.settings().speechRate);
+    if (part && ctx.speech && ctx.speech.isSupported()) ctx.speech.speak(learnWord(part), ctx.settings().speechRate);
   }
 
   // ----- 3D-Bühne -----

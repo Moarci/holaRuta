@@ -9,6 +9,13 @@
  *                      quizDoneVM()/quizAgain/backToList den miniDone-Inhalt).
  * Inhalte aus data.SHOPPING; der Abhak-Stand lebt in gamestats.shoppingSeen.
  *
+ * Track-fähig: im Locals-Track (es-en) ist die gelernte Seite item.en (Stimme
+ * en-US via speech.js/ttsLocale), die Muttersprachen-Seite item.es (SHOPPING-
+ * Items tragen kein …Es-Notiz-Pendant, nat() fiele auf Deutsch zurück). Die
+ * beiden Einkaufs-Fragen werden auf Englisch gebaut («Do you have …?»);
+ * Aussprache-Tipp und Reise-Notiz sind ausgeblendet (erklären das SPANISCHE
+ * Wort für Touristen – falsches Publikum).
+ *
  * Teil der app.js/ui.js-Zerlegung (Welle D): VMs, Render und alle Handler leben hier
  * zusammen; Controller-Dienste kommen per init(ctx). Der State (state.compras /
  * state.comprasQuiz) bleibt controller-eigen und wird über ctx.state gelesen/
@@ -42,16 +49,46 @@
     return sec.items.reduce((n, it) => n + (seen[it.id] ? 1 : 0), 0);
   }
 
+  // Sprachfeld der GELERNTEN Seite (Reise: es, Locals: en) – Muster wie in den
+  // anderen track-fähigen Feature-Modulen (definiciones …).
+  const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+  const isLocalsTrk = () => trackLearnLang() === "en";
+  // Gelerntes Wort eines Items (Locals: it.en, sonst it.es).
+  const learnWord = (it) => it[trackLearnLang()] || it.es;
+  // Muttersprachliche Seite: im Locals-Track Spanisch (it.es / Rubrik-label –
+  // SHOPPING trägt keine …Es-Felder, nat() fiele auf Deutsch zurück), sonst nat().
+  const natWord = (o) => (isLocalsTrk() ? (o.es || o.label || ctx.nat(o)) : ctx.nat(o));
+
   // Führenden Artikel (el/la/los/las) abtrennen – für natürlichere Fragen
   // wie «¿Tienen agua?» statt «¿Tienen el agua?».
   function shoppingBareNoun(es) {
     return String(es || "").replace(/^(el|la|los|las)\s+/i, "");
   }
 
+  // Erster Buchstabe klein – die item.en-Felder sind Anzeige-Labels (großgeschrieben,
+  // z. B. „Toilet roll", „Bag"); satzintern eingebettet müssen sie klein sein, sonst
+  // entsteht „Do you have Toilet roll?". Nur der erste Buchstabe, damit Eigennamen-
+  // Anteile („T-shirt") unangetastet bleiben.
+  function lowerFirst(s) {
+    s = String(s || "");
+    return s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+  }
+
   // Zwei gebrauchsfertige Supermarkt-Fragen pro Item:
   // 1) ob sie es haben, 2) wo man es findet. «¿Dónde puedo encontrar …?»
   // funktioniert für Ein- und Mehrzahl gleich (keine está/están-Falle).
+  // Locals-Track: dieselben Fragen auf ENGLISCH (gelernte Seite; item.en ist
+  // artikellos, daher ohne Abtrenn-Logik – nur klein geschrieben fürs Satzinnere).
+  // Das Label (de) übersetzt t() passend zur UI-Sprache (common.askHave/askFind
+  // existieren auch auf Spanisch).
   function shoppingAskPhrases(item) {
+    if (isLocalsTrk()) {
+      const en = lowerFirst(item.en);
+      return {
+        have: { es: `Do you have ${en}?`, de: t("common.askHave") },
+        find: { es: `Where can I find ${en}?`, de: t("common.askFind") },
+      };
+    }
     return {
       have: { es: `¿Tienen ${shoppingBareNoun(item.es)}?`, de: t("common.askHave") },
       find: { es: `¿Dónde puedo encontrar ${item.es}?`, de: t("common.askFind") },
@@ -63,22 +100,26 @@
     const curId = ctx.state.compras.section;
     const sec = shoppingSectionById(curId) || shoppingSections()[0];
     const seen = ctx.gameStats().shoppingSeen || {};
+    const locals = isLocalsTrk();
     const sections = shoppingSections().map((s) => ({
-      id: s.id, icon: s.icon, label: s.label, de: ctx.nat(s),
+      id: s.id, icon: s.icon, label: s.label, de: natWord(s),
       active: s.id === sec.id, total: s.items.length, done: shoppingSectionDone(s),
     }));
+    // Feldnamen bewusst stabil: `de` = Muttersprache, `es` = gelernte Seite.
     const items = sec.items.map((it) => ({
-      id: it.id, de: ctx.nat(it), es: it.es, tip: it.tip, note: it.note,
+      id: it.id, de: natWord(it), es: learnWord(it),
+      tip: locals ? null : it.tip, note: locals ? null : it.note,
       ask: shoppingAskPhrases(it),
       open: ctx.state.compras.open === it.id, seen: !!seen[it.id],
     }));
     return {
       sections,
-      section: { id: sec.id, icon: sec.icon, label: sec.label, de: ctx.nat(sec), grad: sec.grad },
+      section: { id: sec.id, icon: sec.icon, label: sec.label, de: natWord(sec), grad: sec.grad },
       items,
       doneCount: shoppingSectionDone(sec),
       total: sec.items.length,
       speakable: !!(ctx.speech && ctx.speech.isSupported()),
+      learnLang: trackLearnLang(),
     };
   }
 
@@ -107,7 +148,7 @@
     ctx.state.compras = { section: ctx.state.compras.section, open: opening ? id : null };
     if (opening) ctx.buzz(8);
     ctx.render();
-    if (opening && ctx.speech && ctx.speech.isSupported()) ctx.speech.speak(item.es, ctx.settings().speechRate);
+    if (opening && ctx.speech && ctx.speech.isSupported()) ctx.speech.speak(learnWord(item), ctx.settings().speechRate);
   }
 
   // Checkbox antippen: Item ab-/aufhaken (echte Einkaufsliste). Der Stand
@@ -122,10 +163,10 @@
     ctx.render();
   }
 
-  // 🔊-Knopf im aufgeklappten Item: das spanische Wort (er-)neut vorlesen.
+  // 🔊-Knopf im aufgeklappten Item: das gelernte Wort (er-)neut vorlesen.
   function speakCompras(id) {
     const item = shoppingItemById(id);
-    if (item && ctx.speech && ctx.speech.isSupported()) ctx.speech.speak(item.es, ctx.settings().speechRate);
+    if (item && ctx.speech && ctx.speech.isSupported()) ctx.speech.speak(learnWord(item), ctx.settings().speechRate);
   }
 
   // 🔊-Knopf an einer Supermarkt-Frage: den übergebenen Satz vorlesen.
@@ -138,7 +179,7 @@
   // dann gemischt. Einmal je Frage berechnet (Re-Render mischt nicht neu).
   function buildComprasOptions(item, pool) {
     const distractors = ctx.shuffle(pool.filter((d) => d.id !== item.id)).slice(0, 3);
-    return ctx.shuffle([item, ...distractors]).map((d) => ({ es: d.es, correct: d.id === item.id }));
+    return ctx.shuffle([item, ...distractors]).map((d) => ({ es: learnWord(d), correct: d.id === item.id }));
   }
 
   function openComprasQuiz() {
@@ -162,7 +203,6 @@
     const sec = shoppingSectionById(q.section);
     const item = shoppingItemById(q.queue[q.idx]);
     const answered = q.selected !== null;
-    const correctEs = item.es;
     const options = q.options.map((o, i) => ({
       es: o.es,
       state: !answered ? "idle"
@@ -175,12 +215,13 @@
       sectionLabel: sec ? sec.label : "",
       position: q.idx,
       total: q.total,
-      prompt: item.de,
+      prompt: natWord(item),       // Muttersprache (Locals: Spanisch)
       options,
       answered,
       isCorrect: answered && q.options[q.selected].correct,
-      solutionEs: correctEs,
+      solutionEs: learnWord(item), // gelernte Seite (Locals: Englisch)
       isLast: q.idx >= q.total - 1,
+      learnLang: trackLearnLang(),
     };
   }
 
@@ -256,7 +297,7 @@
           <div class="sl-ask__line">
             <div class="sl-ask__texts">
               <span class="sl-ask__de">${esc(ask.de)}</span>
-              <span class="sl-ask__es" lang="es">${esc(ask.es)}</span>
+              <span class="sl-ask__es" lang="${esc(vm.learnLang)}">${esc(ask.es)}</span>
             </div>
             ${vm.speakable
               ? cornerBtn({ base: "cardbtn--speak sl-speak", on: false, icon: "lc:volume-2", label: t("discover.comprasSpeakPhrase"),
@@ -275,7 +316,7 @@
           ? `
             <div class="sl-item__detail" role="region" aria-label="${esc(it.de)}">
               <div class="sl-item__estop">
-                <p class="sl-item__es" lang="es">${esc(it.es)}</p>
+                <p class="sl-item__es" lang="${esc(vm.learnLang)}">${esc(it.es)}</p>
                 ${speak}
               </div>
               ${it.tip ? `<p class="sl-item__tip"><span aria-hidden="true">${renderIcon("lc:audio-lines")}</span> ${esc(it.tip)}</p>` : ""}
@@ -341,7 +382,7 @@
         return `
           <button class="${cls}" type="button" data-action="compras-quiz-answer" data-idx="${i}"${dis}>
             <span class="quiz-opt__text">
-              <span class="quiz-opt__es" lang="es">${esc(o.es)}</span>
+              <span class="quiz-opt__es" lang="${esc(vm.learnLang)}">${esc(o.es)}</span>
             </span>
             ${mark}
           </button>`;
