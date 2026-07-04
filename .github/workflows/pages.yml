@@ -165,7 +165,8 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      # URL kommt von dem Versuch, der durchlief (siehe Retry-Kette unten).
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -204,8 +205,36 @@ jobs:
         with:
           path: ./dist # minifizierter Multi-File-Build (index.html ist die App-Startseite)
 
-      - name: Deploy to GitHub Pages
+      # GitHub Pages' Backend liefert gelegentlich transient
+      # "Deployment failed, try again later." – der Artefakt-Upload war ok, nur die
+      # Veröffentlichung auf GitHub-Seite schlug fehl. Genau das hat die Live-Seite
+      # mehrfach auf einem alten Stand hängen lassen (Deploy hängt an needs: test,
+      # aber DIESER Schritt scheiterte). Deshalb bis zu 3 Anläufe mit kurzem Backoff:
+      # die ersten beiden schlucken den Fehler (continue-on-error), erst der letzte
+      # bricht den Job hart ab. Bleibt es rot, ist es KEIN transienter Fehler mehr
+      # (dann Settings → Pages: Source = "GitHub Actions" prüfen).
+      - name: Deploy to GitHub Pages (Versuch 1)
+        id: deploy1
+        continue-on-error: true
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
+      - name: Backoff vor Versuch 2
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 30
+
+      - name: Deploy to GitHub Pages (Versuch 2)
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
+      - name: Backoff vor Versuch 3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        run: sleep 60
+
+      - name: Deploy to GitHub Pages (Versuch 3, final)
         id: deployment
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
 
   # Nächtlicher VOLLER Mutations-Score über ALLE Engine-Module (entkoppelt vom

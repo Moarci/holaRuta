@@ -767,10 +767,23 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
 /* Mobiler Inline-Screenshot je Schritt (Baseline, ohne JS sichtbar).
    Der KOMPLETTE App-Screen in korrekter Proportion (kein Crop) – als sauberer
    „Handy-Screen" zentriert und in der Breite begrenzt, damit er nicht riesig wird. */
-.lp-step__shot { grid-column: 1 / -1; margin-top: var(--space-3); display: flex; justify-content: center; }
+/* Mobil: der Per-Step-Screenshot steckt in einem echten Smartphone-Rahmen
+   (abgerundeter Bezel + Kamera-Pille im oberen Rand), damit die Landing-Pages
+   auch auf dem Handy ein Gerät zeigen – nicht nur einen nackten Screenshot.
+   Ab 880px übernimmt das sticky .lp-phone rechts, deshalb hier ausgeblendet. */
+.lp-step__shot {
+  grid-column: 1 / -1; margin: var(--space-3) auto 0;
+  width: max-content; max-width: 100%; position: relative;
+  background: var(--page); border-radius: 34px;
+  padding: 22px 12px 14px; box-shadow: var(--shadow-hero);
+}
+.lp-step__shot::before { /* Kamera-Pille im oberen Rahmen */
+  content: ""; position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 8px; border-radius: 999px; background: var(--line);
+}
 .lp-step__shot img {
-  display: block; width: 100%; max-width: 220px; height: auto;
-  border-radius: 18px; border: 1.5px solid var(--line); box-shadow: var(--shadow-lg);
+  display: block; width: 210px; max-width: 62vw; height: auto;
+  border-radius: 22px; border: 0; box-shadow: none;
 }
 @media (min-width: 880px) { .lp-step__shot { display: none; } }
 
