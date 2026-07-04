@@ -834,6 +834,21 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* ---------- STUDY ---------- */
 .study { gap: 14px; }
+/* Desktop: zwei Spalten (Karte + Smartphone-Mockup) */
+@media (min-width: 900px) {
+  .study { display: grid !important; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .study > .topbar { grid-column: 1 / -1; }
+  .study > .progress { grid-column: 1 / -1; }
+  .study > .flip { grid-column: 1; }
+  .study > .card-static { grid-column: 1; }
+  .study > .card-listen { grid-column: 1; }
+  .study > .controls { grid-column: 1; }
+  .study > .favline { grid-column: 1; }
+  .study > .skipbtn { grid-column: 1; }
+  .study > .sharepic-btn { grid-column: 1; }
+  /* Smartphone-Mockup auf rechter Seite */
+  .smartphone-mock { grid-column: 2; grid-row: 2 / span 20; position: sticky; top: 20px; }
+}
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .iconbtn {
   width: 42px; height: 42px; border-radius: 50%; cursor: pointer;
@@ -1098,6 +1113,63 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* 🧭 aktiv (Panel offen) */
 .cardbtn--ctx.is-open { background: var(--brand); border-color: var(--brand); color: var(--cream); }
 .cardbtn--ctx.is-on.is-open { background: rgba(36, 21, 16, 0.42); border-color: var(--cream); }
+
+/* Smartphone-Mockup für Desktop-Ansicht (rechte Spalte bei min-width: 900px).
+   Zeigt die aktuelle Lernkarte auf einem simulierten Smartphone-Screen. */
+.smartphone-mock {
+  display: none; /* nur auf Desktop sichtbar */
+}
+@media (min-width: 900px) {
+  .smartphone-mock {
+    display: block;
+    width: 320px; margin: 0 auto;
+    background: #000; border-radius: 40px; padding: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255,255,255,0.1);
+    position: relative;
+  }
+  .smartphone-mock::before {
+    content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 150px; height: 25px; background: #000; border-radius: 0 0 20px 20px;
+    z-index: 10;
+  }
+  .smartphone-mock__screen {
+    width: 100%; height: 640px; border-radius: 32px; overflow: hidden;
+    background: var(--page); border: 1px solid rgba(0,0,0,0.2);
+    display: flex; flex-direction: column;
+  }
+  .smartphone-mock__statusbar {
+    height: 24px; padding: 0 12px; background: var(--page-dark, #1a1a1a);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.7rem; color: var(--muted);
+  }
+  .smartphone-mock__content {
+    flex: 1; overflow-y: auto; padding: 12px; display: flex; align-items: center;
+    justify-content: center;
+  }
+  .smartphone-mock__card {
+    width: 100%; max-width: 280px;
+    border-radius: 16px; padding: 30px 20px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center;
+    background: var(--card); border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-lg);
+    min-height: 300px;
+  }
+  .smartphone-mock__card.is-back {
+    background: var(--from, var(--brand));
+    color: var(--cream); border: none;
+  }
+  .smartphone-mock__card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em;
+    color: var(--faint); margin-bottom: 12px; text-transform: uppercase; }
+  .smartphone-mock__card.is-back .smartphone-mock__card-label {
+    color: rgba(251, 243, 228, 0.6);
+  }
+  .smartphone-mock__card-text { font-size: 1.3rem; font-weight: 800; line-height: 1.3;
+    overflow-wrap: anywhere; hyphens: auto; }
+  .smartphone-mock__card.is-back .smartphone-mock__card-text { font-family: var(--font-display); font-size: 1.5rem; }
+  .smartphone-mock__hint { font-size: 0.7rem; color: var(--faint); margin-top: 16px; }
+  .smartphone-mock__card.is-back .smartphone-mock__hint { color: rgba(251, 243, 228, 0.5); }
+}
 
 /* Statische Karte (Schreiben-Modus) */
 .card-static {
