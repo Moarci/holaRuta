@@ -45,6 +45,13 @@
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Länderkunde mit Reise-Infos"
+    },
+    {
+      "src": "docs/screenshots/study-type.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Schreibübung – Antwort selbst eintippen"
     }
   ],
   "icons": [
