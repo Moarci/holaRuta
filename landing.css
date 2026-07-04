@@ -786,7 +786,10 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
     background: var(--page); border-radius: 34px; padding: 10px;
     box-shadow: var(--shadow-hero);
   }
-  .lp-carousel, .lp-dots { position: relative; z-index: 1; }
+  /* Karussell (B2C: + Punkte) und die Szenario-Pills der Partner-Seiten müssen
+     über dem Phone-Mockup (position:absolute, z-index:0) liegen – sonst verdeckt
+     das Mockup rechts die Karte bzw. die Pills (Paint + Klick). */
+  .lp-carousel, .lp-dots, .lp-herocard__row { position: relative; z-index: 1; }
   .lp-carousel { margin-inline: 0 auto; }
 }
 

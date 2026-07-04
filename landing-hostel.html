@@ -138,8 +138,8 @@
       <div class="lp-wrap lp-hero__grid">
         <div class="lp-hero__copy">
           <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">FÜR HOSTELS IN LATEINAMERIKA</p>
-          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Spanish Night, die sich von selbst plant – jeden Tag, immer.</h1>
-          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">HolaRuta heißt im Kern „Hostel Mode“: Sprach-Battles und Rollenspiele sind buchstäblich für den Common Room gebaut. Hängt einen QR-Code auf – die Gäste spielen, lachen und lernen. Kein fester Termin, keine Vorbereitung, kein Konto: Die Spanish Night ist jeden Tag da, für jeden neuen Schwung Gäste.</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Spanish Night, die <span class="lp-hl">sich von selbst plant</span>.</h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Sprach-Battles für den Common Room. Ein QR-Code an der Rezeption — die Gäste spielen, lachen und lernen, jeden Abend neu.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
             <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=hostel&start=onboarding" data-i18n="hero.demo">Live-Demo öffnen →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#kontakt" data-i18n="hero.contact">Partner werden</a>
@@ -169,6 +169,19 @@
              vor, 🧭 öffnet den Reise-Kontext. Die Szenario-Pills darunter schalten
              die Karten um (eine Karte je Szenario). -->
         <aside class="lp-cardcol" data-reveal style="--i:2">
+          <!-- Echter App-Screenshot im Phone-Rahmen hinter der Karte (nur Desktop):
+               gibt dem Hero Produkt-Tiefe. Nur ab 1040px sichtbar (lazy = kein
+               Download darunter). Die Karte liegt via z-index:1 darüber. -->
+          <div class="lp-herophone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div>
+              <div class="lp-phone__stripe"></div>
+              <picture>
+                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/home-hero.webp" />
+                <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
+              </picture>
+            </div>
+          </div>
           <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · Hostel Edition</span>
           <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" data-i18n-aria="a11y.carousel" aria-label="Beispielkarten">
             <div class="lp-carousel__viewport">
@@ -518,8 +531,8 @@
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
         "aud.label": "Für wen?", "aud.b2c": "🎒 Privatreisende", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter",
         "hero.eyebrow": "FÜR HOSTELS IN LATEINAMERIKA",
-        "hero.h1": "Die Spanish Night, die sich von selbst plant – jeden Tag, immer.",
-        "hero.sub": "HolaRuta heißt im Kern „Hostel Mode“: Sprach-Battles und Rollenspiele sind buchstäblich für den Common Room gebaut. Hängt einen QR-Code auf – die Gäste spielen, lachen und lernen. Kein fester Termin, keine Vorbereitung, kein Konto: Die Spanish Night ist jeden Tag da, für jeden neuen Schwung Gäste.",
+        "hero.h1": "Die Spanish Night, die <span class=\"lp-hl\">sich von selbst plant</span>.",
+        "hero.sub": "Sprach-Battles für den Common Room. Ein QR-Code an der Rezeption — die Gäste spielen, lachen und lernen, jeden Abend neu.",
         "hero.demo": "Live-Demo öffnen →", "hero.contact": "Partner werden",
         "trust.qr": "an der Rezeption", "trust.players": "Spieler-Modus", "trust.setup": "Aufbau", "trust.free": "meist kostenlos",
         "card.brand": "HolaRuta · Hostel Edition",
@@ -563,8 +576,8 @@
         "skip": "Skip to content", "nav.demo": "Live demo",
         "aud.label": "Who is it for?", "aud.b2c": "🎒 Independent travelers", "aud.schule": "🎓 Language schools", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Tour operators",
         "hero.eyebrow": "FOR HOSTELS IN LATIN AMERICA",
-        "hero.h1": "The Spanish Night that plans itself.",
-        "hero.sub": "At its core HolaRuta is “Hostel Mode”: language battles and role-plays are literally built for the common room. Put up a QR code – guests play, laugh and learn. No prep, no account, no app install.",
+        "hero.h1": "The Spanish Night that <span class=\"lp-hl\">plans itself</span>.",
+        "hero.sub": "Language battles built for the common room. One QR code at reception — guests play, laugh and learn, every night.",
         "hero.demo": "Open live demo →", "hero.contact": "Become a partner",
         "trust.qr": "at reception", "trust.players": "two-player mode", "trust.setup": "setup", "trust.free": "mostly free",
         "card.brand": "HolaRuta · Hostel Edition",
@@ -608,8 +621,8 @@
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
         "aud.label": "¿Para quién?", "aud.b2c": "🎒 Viajeros particulares", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes",
         "hero.eyebrow": "PARA HOSTALES EN LATINOAMÉRICA",
-        "hero.h1": "La Spanish Night que se planifica sola.",
-        "hero.sub": "En esencia HolaRuta es «Hostel Mode»: las batallas de idioma y los juegos de rol están hechos literalmente para la sala común. Coloca un código QR – los huéspedes juegan, ríen y aprenden. Sin preparación, sin cuenta, sin instalar nada.",
+        "hero.h1": "La Spanish Night que <span class=\"lp-hl\">se planifica sola</span>.",
+        "hero.sub": "Batallas de idioma para la sala común. Un código QR en recepción — los huéspedes juegan, ríen y aprenden, cada noche.",
         "hero.demo": "Abrir demo en vivo →", "hero.contact": "Ser partner",
         "trust.qr": "en recepción", "trust.players": "modo 2 jugadores", "trust.setup": "montaje", "trust.free": "casi siempre gratis",
         "card.brand": "HolaRuta · Edición Hostal",
@@ -650,7 +663,7 @@
       }
     };
 
-    var HTML_KEYS = { "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var HTML_KEYS = { "hero.h1": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
     var LANG_KEY = "holaruta.landing.lang";
 
     function setLang(lang) {
