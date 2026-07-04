@@ -466,8 +466,21 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
   display: grid; grid-template-columns: 1fr; gap: var(--space-3);
   margin-top: var(--space-5);
 }
-@media (min-width: 520px) { .lp-features__grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 760px) { .lp-features__grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 520px) {
+  .lp-features__grid { grid-template-columns: repeat(2, 1fr); }
+  /* Bleibt in der letzten Reihe eine Karte allein übrig (7 Karten = 2+2+2+1),
+     zentriert sie sich auf Einzelspaltenbreite statt links zu kleben. */
+  .lp-features__grid > .lp-feat:last-child:nth-child(2n - 1) {
+    grid-column: 1 / -1; justify-self: center;
+    width: 100%; max-width: calc((100% - var(--space-3)) / 2);
+  }
+}
+@media (min-width: 760px) {
+  .lp-features__grid { grid-template-columns: repeat(3, 1fr); }
+  /* 7 Karten = 3+3+1: die einzelne letzte Karte in die Mittelspalte rücken,
+     damit sie nicht als „Waise" links unten hängt. */
+  .lp-features__grid > .lp-feat:last-child:nth-child(3n - 2) { grid-column: 2 / 3; }
+}
 .lp-feat {
   display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3);
   padding: var(--space-4); border-radius: var(--r-lg);

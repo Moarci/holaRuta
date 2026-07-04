@@ -1445,28 +1445,49 @@
       document.querySelectorAll("[data-count]").forEach(countUp);
     }
 
-    // ── Phone-Mockup: Bild je sichtbarem Schritt wechseln (Desktop-Enhancement) ──
+    // ── Phone-Mockup: Bild je aktivem Schritt wechseln (Desktop-Enhancement) ──
     var phoneImg = document.getElementById("lpPhoneImg");
     var shots = {
       "1": "docs/landing/home.webp",
       "2": "docs/landing/study.webp",
       "3": "docs/landing/stats.webp"
     };
-    // Der gerade im Blick liegende Schritt bekommt `is-active` (farbiges Hervorheben
-    // + gerade gerückte Nummer) und – auf dem Desktop – wechselt das Phone-Bild.
-    // Läuft auch ohne phoneImg, damit die Hervorhebung auf Mobil ebenso greift.
     var stepEls = document.querySelectorAll(".lp-step[data-step]");
-    if (stepEls.length && "IntersectionObserver" in window) {
-      var ioStep = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting && en.intersectionRatio > 0.55) {
-            stepEls.forEach(function (st) { st.classList.toggle("is-active", st === en.target); });
-            var s = en.target.getAttribute("data-step");
-            if (phoneImg && shots[s] && phoneImg.getAttribute("src") !== shots[s]) phoneImg.setAttribute("src", shots[s]);
-          }
-        });
-      }, { threshold: [0.55, 0.75] });
-      stepEls.forEach(function (el) { ioStep.observe(el); });
+    // Genau EIN Schritt trägt `is-active` (farbiges Hervorheben + gerade gerückte
+    // Nummer) und – auf dem Desktop – bestimmt das Phone-Bild.
+    function activateStep(el) {
+      if (!el) return;
+      stepEls.forEach(function (st) { st.classList.toggle("is-active", st === el); });
+      var s = el.getAttribute("data-step");
+      if (phoneImg && shots[s] && phoneImg.getAttribute("src") !== shots[s]) {
+        phoneImg.setAttribute("src", shots[s]);
+      }
+    }
+
+    if (stepEls.length) {
+      // Direkte Interaktion (Desktop): Zeiger/Fokus/Klick auf einen Schritt
+      // wechselt sofort Hervorhebung + Phone-Bild – unabhängig vom Scroll.
+      stepEls.forEach(function (el) {
+        el.addEventListener("pointerenter", function () { activateStep(el); });
+        el.addEventListener("focusin", function () { activateStep(el); });
+        el.addEventListener("click", function () { activateStep(el); });
+      });
+
+      // Scroll-Spy: aktiv ist der Schritt, der die vertikale Bildschirmmitte
+      // kreuzt. Das rootMargin schneidet oben/unten je ~48 % weg, sodass nur EIN
+      // Schritt im schmalen Mittelband liegt. Vorher waren auf dem Desktop alle
+      // drei Karten gleichzeitig >55 % sichtbar, wodurch immer der zuletzt
+      // ausgewertete Schritt (Nr. 3) hängen blieb und das Bild nie wechselte.
+      if ("IntersectionObserver" in window) {
+        var ioStep = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) activateStep(en.target);
+          });
+        }, { rootMargin: "-48% 0px -48% 0px", threshold: 0 });
+        stepEls.forEach(function (el) { ioStep.observe(el); });
+      }
+      // Startzustand: erster Schritt aktiv statt dauerhaft Nr. 3.
+      activateStep(stepEls[0]);
     }
 
     // ── Sticky-Header-Schatten ab erstem Scroll ──
