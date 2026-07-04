@@ -63,6 +63,10 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="landing.css" />
 
+  <!-- Geteiltes Beispielkarten-Karussell (Flip, 🔊, 🧭, Punkt-Navigation);
+       dieselbe Datei bedient auch die B2B-Landings (dort mit Pills). -->
+  <script src="landing-carousel.js" defer></script>
+
   <!-- Sicherheits-Header analog index.html. Diese Seite nutzt keine externen
        Ressourcen (Fonts/Bilder self-hosted) – default-src 'self' genügt. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
@@ -1097,120 +1101,8 @@
 
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // ── Beispielkarten-Karussell ──
-    var car = document.getElementById("lpCar");
-    if (car) {
-      var slides = Array.prototype.slice.call(car.querySelectorAll(".lp-slide"));
-      var flips = slides.map(function (s) { return s.querySelector(".flip"); });
-      var dots = Array.prototype.slice.call(document.querySelectorAll("#lpDots .lp-dot"));
-      var idx = 0, timer = null, swiped = false;
-      var AUTO = 4200;
-
-      function setActive(i, focusDot) {
-        idx = (i + slides.length) % slides.length;
-        slides.forEach(function (s, n) {
-          var on = n === idx;
-          s.classList.toggle("is-active", on);
-          s.setAttribute("aria-hidden", on ? "false" : "true"); // inaktive Karten aus dem SR-Fokus
-          if (!on) { // beim Wegblättern zurück auf die Vorderseite + Kontext schließen
-            var f = flips[n];
-            if (f) { f.classList.remove("is-flipped"); f.setAttribute("aria-pressed", "false"); }
-            var cp = s.querySelector(".lp-ctxpanel");
-            if (cp) cp.setAttribute("hidden", "");
-            var cb = s.querySelector(".cardbtn--ctx");
-            if (cb) { cb.classList.remove("is-open"); cb.setAttribute("aria-expanded", "false"); }
-          }
-        });
-        dots.forEach(function (d, n) {
-          var on = n === idx;
-          d.classList.toggle("is-active", on);
-          if (on) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current");
-        });
-        if (focusDot && dots[idx]) dots[idx].focus();
-      }
-      function next() { setActive(idx + 1); }
-
-      function startAuto() { if (reduce) return; stopAuto(); timer = setInterval(next, AUTO); }
-      function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
-
-      // Flip + Vorlesen pro Karte
-      flips.forEach(function (f) {
-        if (!f) return;
-        var slide = f.closest(".lp-slide");
-        var ctxBtn = f.querySelector(".cardbtn--ctx");
-        var panel = slide ? slide.querySelector(".lp-ctxpanel") : null;
-        function closeCtx() {
-          if (panel) panel.setAttribute("hidden", "");
-          if (ctxBtn) { ctxBtn.classList.remove("is-open"); ctxBtn.setAttribute("aria-expanded", "false"); }
-        }
-        function flip() {
-          var on = f.classList.toggle("is-flipped");
-          f.setAttribute("aria-pressed", on ? "true" : "false");
-          if (!on) closeCtx();                       // zurück auf Vorderseite -> Kontext zu
-        }
-        f.addEventListener("click", function (e) {
-          if (swiped) return;                        // war ein Wisch, kein Tap
-          if (e.target.closest(".cardbtn")) return;  // Eck-Button nicht als Flip werten
-          flip();
-        });
-        f.addEventListener("keydown", function (e) {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
-        });
-        // 🧭 Reise-Kontext: blendet das App-Panel unter der Karte ein/aus (Pendant
-        // zum 🔊; klappt auf, ohne die Karte umzudrehen). Wie in der App.
-        if (ctxBtn && panel) ctxBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          var willOpen = panel.hasAttribute("hidden");
-          if (willOpen) panel.removeAttribute("hidden"); else panel.setAttribute("hidden", "");
-          ctxBtn.classList.toggle("is-open", willOpen);
-          ctxBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
-        });
-        var spk = f.querySelector(".cardbtn--speak");
-        if (spk) spk.addEventListener("click", function (e) {
-          e.stopPropagation();
-          try {
-            if (!("speechSynthesis" in window)) return;
-            var u = new SpeechSynthesisUtterance(spk.getAttribute("data-spk") || "");
-            u.lang = "es-419"; u.rate = 0.95;
-            speechSynthesis.cancel(); speechSynthesis.speak(u);
-          } catch (err) {}
-        });
-      });
-
-      // Punkt-Navigation
-      dots.forEach(function (d) {
-        d.addEventListener("click", function () { setActive(parseInt(d.getAttribute("data-i"), 10) || 0); startAuto(); });
-      });
-
-      // Auto-Rotation pausieren bei Hover/Fokus/Interaktion
-      car.addEventListener("pointerenter", stopAuto);
-      car.addEventListener("pointerleave", startAuto);
-      car.addEventListener("focusin", stopAuto);
-      car.addEventListener("focusout", startAuto);
-
-      // Wisch-Geste (Touch & Maus). pointerup hängt am window, damit ein Release
-      // auch AUSSERHALB des Karussells erkannt wird. Ein erkannter Wisch setzt
-      // `swiped` -> der nachfolgende Klick dreht die Karte NICHT um.
-      var dragX = null, dragY = null;
-      car.addEventListener("pointerdown", function (e) {
-        if (e.target.closest(".cardbtn")) return; // auf Buttons keinen Wisch starten
-        dragX = e.clientX; dragY = e.clientY; swiped = false;
-      });
-      window.addEventListener("pointerup", function (e) {
-        if (dragX === null) return;
-        var dx = e.clientX - dragX, dy = e.clientY - dragY;
-        dragX = dragY = null;
-        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { // klar horizontal
-          swiped = true;
-          setActive(idx + (dx < 0 ? 1 : -1));
-          startAuto();
-        }
-      });
-      car.addEventListener("pointercancel", function () { dragX = dragY = null; });
-
-      setActive(0);
-      startAuto();
-    }
+    // Das Beispielkarten-Karussell (#lpCar) wird von der geteilten
+    // landing-carousel.js gesteuert (Flip, 🔊, 🧭, Punkt-Navigation, Rotation).
 
     // ── „Mehr an Bord": Modul antippen -> Beispiele aufklappen & durchwischen ──
     (function moreModules() {

@@ -406,7 +406,30 @@ a { color: var(--brand-ink); }
   pointer-events: none;
 }
 .lp-slide.is-active { position: relative; opacity: 1; transform: none; pointer-events: auto; }
-.lp-carousel .flip__inner { min-height: 270px; }
+.lp-carousel .flip__inner { min-height: 290px; }
+/* Lange B2B-Sätze (z. B. „Bringen Sie mir bitte die Rechnung?" + Aussprache-
+   Tipp) dürfen auf schmalen Handys nicht in die Eck-Buttons (🧭/🔊) laufen:
+   unten Platz für die Button-Zeile reservieren und die Wortgrößen auf sehr
+   schmalen Viewports leicht reduzieren. */
+.lp-carousel .face { padding-bottom: 72px; }
+@media (max-width: 400px) {
+  .lp-carousel .face__word { font-size: 1.55rem; }
+  .lp-carousel .face--back .face__word { font-size: 1.7rem; }
+  .lp-carousel .face__tip { font-size: 0.95rem; }
+}
+
+/* Nur für Screenreader (Live-Region des Karussells: kündigt Kartenwechsel an). */
+.lp-visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* Ohne JS ist die Karten-Rückseite (Spanisch + Aussprache) unerreichbar:
+   das Kontext-Panel der sichtbaren Karte statisch einblenden (es trägt den
+   spanischen Satz, die Übersetzung, Situation & Reisetipp) und den dann toten
+   „Zum Umdrehen tippen"-Hinweis ausblenden. */
+html:not(.js) .lp-slide.is-active .lp-ctxpanel[hidden] { display: block; }
+html:not(.js) .lp-carousel .face__hint { display: none; }
 
 /* Reise-Kontext wie in der App: NICHT auf der Karte, sondern hinter dem
    🧭-Button (unten links, Pendant zum 🔊). Klick blendet das App-Panel
@@ -763,12 +786,11 @@ a { color: var(--brand-ink); }
     background: var(--page); border-radius: 34px; padding: 10px;
     box-shadow: var(--shadow-hero);
   }
-  .lp-carousel, .lp-dots { position: relative; z-index: 1; }
+  /* Karussell (B2C: + Punkte) und die Szenario-Pills der Partner-Seiten müssen
+     über dem Phone-Mockup (position:absolute, z-index:0) liegen – sonst verdeckt
+     das Mockup rechts die Karte bzw. die Pills (Paint + Klick). */
+  .lp-carousel, .lp-dots, .lp-herocard__row { position: relative; z-index: 1; }
   .lp-carousel { margin-inline: 0 auto; }
-  /* Partner-Seiten: die interaktive Hero-Karte muss über dem Phone-Mockup
-     (position:absolute, z-index:0) liegen – sonst verdeckt das Mockup rechts die
-     Pills (Paint + Klick). Pendant zur z-index:1-Regel des Karussells oben. */
-  .lp-herocard { position: relative; z-index: 1; }
 }
 
 /* CSS-Phone-Frame mit echtem Screenshot (Desktop). */
