@@ -120,6 +120,7 @@
     <symbol id="lpi-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></symbol>
     <symbol id="lpi-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></symbol>
     <symbol id="lpi-book-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></symbol>
+    <symbol id="lpi-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2" /><path d="M14 2v2" /><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1" /><path d="M6 2v2" /></symbol>
   </defs></svg>
 
 
@@ -575,6 +576,22 @@
               </span>
               <span class="lp-morechip__chev" aria-hidden="true"></span>
             </button>
+            <button class="lp-morechip" type="button" data-mod="salud" data-reveal style="--accent:#B5302A; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-stethoscope"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Salud</span>
+                <span class="lp-morechip__desc" data-i18n="more.salud.d">Höhe, Apotheke &amp; Arzt</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="comida" data-reveal style="--accent:#3F7355; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-coffee"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name">Comida</span>
+                <span class="lp-morechip__desc" data-i18n="more.comida.d">Bestellen, zahlen, genießen</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
           </div>
           <!-- Geteiltes Beispiel-Panel: per JS befüllt, ein Modul gleichzeitig offen. -->
           <div class="lp-moredetail" id="lpMoreDetail" hidden>
@@ -631,7 +648,15 @@
               <p class="lp-hook__text" data-i18n="why.salud.b">Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.</p>
             </div>
           </article>
-          <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#C2502E">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#2F6B70">
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-music"/></svg></span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="why.musica.k">Música</span>
+              <h3 class="lp-hook__title" data-i18n="why.musica.t">Der Song, den am Ende alle mitsingen.</h3>
+              <p class="lp-hook__text" data-i18n="why.musica.b">Cumbia, Reggaetón, Folklore — die Lieder, die in jedem Bus und jeder Bar laufen. Kenn den Refrain, und du gehörst dazu statt nur daneben.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#C2502E">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-party-popper"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.conexion.k">Conexión</span>
@@ -871,6 +896,7 @@
         "why.culturas.k": "Países & culturas", "why.culturas.t": "Jedes Land tickt anders. Wisse vorher, wie.", "why.culturas.b": "Von Kolumbien bis Patagonien: Sitten, Geld, Eigenheiten und Tabus pro Land. Damit du dich überall bewegst, als wärst du schon mal da gewesen.",
         "why.respeto.k": "Buen viajero", "why.respeto.t": "Respekt öffnet Türen, die kein Reiseführer kennt.", "why.respeto.b": "Wie du grüßt, dich bedankst, feilschst und dich benimmst — die kleinen Gesten entscheiden, ob du Gast bist oder bloß Tourist. Reise, ohne anzuecken.",
         "why.salud.k": "Salud", "why.salud.t": "Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.", "why.salud.b": "Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.",
+        "why.musica.k": "Música", "why.musica.t": "Der Song, den am Ende alle mitsingen.", "why.musica.b": "Cumbia, Reggaetón, Folklore — die Lieder, die in jedem Bus und jeder Bar laufen. Kenn den Refrain, und du gehörst dazu statt nur daneben.",
         "why.conexion.k": "Conexión", "why.conexion.t": "Aus einem „Hola\" wird die beste Nacht deiner Reise.", "why.conexion.b": "Hostel-Spiele, Sprüche, Smalltalk: die Sätze, die aus Fremden am Tisch Freunde fürs Leben machen. Denn Reisen ist am Ende, wen du triffst.",
         "more.intro": "Und noch viel mehr an Bord",
         "more.spick.d": "Die Notfall-Sätze groß auf einen Blick", "more.country.d": "Sitten, Geld & Eigenheiten pro Land",
@@ -878,6 +904,7 @@
         "more.hostel.d": "Zu zweit: Battle & Rollenspiele", "more.regatear.d": "Auf dem Markt fair feilschen",
         "more.precios.d": "Preise hören & blind eintippen", "more.juegos.d": "Hostel-Spiele & die Sätze dazu",
         "more.musica.d": "Der Sound deines Reiselands", "more.logistica.d": "SIM, Bargeld & clever packen",
+        "more.salud.d": "Höhe, Apotheke & Arzt", "more.comida.d": "Bestellen, zahlen, genießen",
         "more.swipe": "Antippen dreht um · wischen für mehr", "more.close": "Beispiele schließen",
         "more.pick": "Beispiel wählen", "more.examples": "Beispielsätze", "more.speak": "Satz vorlesen",
         "how.eyebrow": "SO FUNKTIONIERT'S", "how.title": "In drei Schritten unterwegs.",
@@ -951,6 +978,7 @@
         "why.culturas.k": "Países & cultures", "why.culturas.t": "Every country ticks differently. Know how, before you go.", "why.culturas.b": "From Colombia to Patagonia: customs, money, quirks and taboos per country. So you move everywhere like you've been before.",
         "why.respeto.k": "Buen viajero", "why.respeto.t": "Respect opens doors no guidebook knows.", "why.respeto.b": "How you greet, thank, haggle and behave — the small gestures decide whether you're a guest or just a tourist. Travel without stepping on toes.",
         "why.salud.k": "Salud", "why.salud.t": "When your body gives out at 4,000 metres, every phrase counts.", "why.salud.b": "Altitude sickness, stomach, pharmacy, doctor: the lines for when it gets serious — and the tips that keep you healthy and moving.",
+        "why.musica.k": "Música", "why.musica.t": "The song everyone ends up singing.", "why.musica.b": "Cumbia, reggaetón, folklore — the tracks playing in every bus and every bar. Know the chorus and you're part of it, not just next to it.",
         "why.conexion.k": "Conexión", "why.conexion.t": "One “Hola” turns into the best night of your trip.", "why.conexion.b": "Hostel games, one-liners, small talk: the phrases that turn strangers at the table into friends for life. Because travel is, in the end, who you meet.",
         "more.intro": "And plenty more on board",
         "more.spick.d": "Your survival lines, big and tappable", "more.country.d": "Customs, money & quirks per country",
@@ -958,6 +986,7 @@
         "more.hostel.d": "Two-player: battle & role-plays", "more.regatear.d": "Haggle fairly at the market",
         "more.precios.d": "Hear a price, type the digits", "more.juegos.d": "Hostel games & the lines for them",
         "more.musica.d": "The soundtrack of your route", "more.logistica.d": "SIM, cash & smart packing",
+        "more.salud.d": "Altitude, pharmacy & doctor", "more.comida.d": "Order, pay, enjoy",
         "more.swipe": "Tap to flip · swipe for more", "more.close": "Close examples",
         "more.pick": "Pick an example", "more.examples": "Example phrases", "more.speak": "Read sentence aloud",
         "how.eyebrow": "HOW IT WORKS", "how.title": "On the road in three steps.",
@@ -1031,6 +1060,7 @@
         "why.culturas.k": "Países & culturas", "why.culturas.t": "Cada país es distinto. Sábelo antes de ir.", "why.culturas.b": "De Colombia a la Patagonia: costumbres, dinero, rarezas y tabúes por país. Para que te muevas en todas partes como si ya hubieras estado.",
         "why.respeto.k": "Buen viajero", "why.respeto.t": "El respeto abre puertas que ninguna guía conoce.", "why.respeto.b": "Cómo saludas, agradeces, regateas y te comportas — los pequeños gestos deciden si eres un huésped o solo un turista. Viaja sin incomodar.",
         "why.salud.k": "Salud", "why.salud.t": "Cuando el cuerpo falla a 4000 metros, cada frase cuenta.", "why.salud.b": "Mal de altura, estómago, farmacia, médico: las frases para cuando la cosa se pone seria — y los consejos para seguir sano y en marcha.",
+        "why.musica.k": "Música", "why.musica.t": "La canción que al final todos cantan.", "why.musica.b": "Cumbia, reguetón, folclor — las canciones que suenan en cada bus y cada bar. Aprende el coro y ya eres de la casa, no solo de paso.",
         "why.conexion.k": "Conexión", "why.conexion.t": "Un «Hola» se convierte en la mejor noche de tu viaje.", "why.conexion.b": "Juegos de hostal, frases sueltas, charla: las frases que convierten a desconocidos en la mesa en amigos para toda la vida. Porque viajar es, al final, a quién conoces.",
         "more.intro": "Y mucho más a bordo",
         "more.spick.d": "Tus frases de emergencia, grandes y de un vistazo", "more.country.d": "Costumbres, dinero y rarezas por país",
@@ -1038,6 +1068,7 @@
         "more.hostel.d": "De a dos: battle y juegos de rol", "more.regatear.d": "Regatea con justicia en el mercado",
         "more.precios.d": "Escucha un precio, teclea las cifras", "more.juegos.d": "Juegos de hostal y sus frases",
         "more.musica.d": "La banda sonora de tu ruta", "more.logistica.d": "SIM, efectivo y equipaje inteligente",
+        "more.salud.d": "Altura, farmacia y médico", "more.comida.d": "Pedir, pagar, disfrutar",
         "more.swipe": "Toca para girar · desliza para ver más", "more.close": "Cerrar ejemplos",
         "more.pick": "Elige un ejemplo", "more.examples": "Frases de ejemplo", "more.speak": "Leer la frase en voz alta",
         "how.eyebrow": "CÓMO FUNCIONA", "how.title": "Sobre el terreno en tres pasos.",
@@ -1267,7 +1298,27 @@
             note: { de: "cajero = Geldautomat. Achte auf Gebühren – manche Banken sind teuer.", en: "cajero = ATM. Watch the fees – some banks are pricey." } },
           { de: "Wie komme ich ins Zentrum?", en: "How do I get to the center?", es: "¿Cómo llego al centro?", tip: "KO-mo YE-go al SEN-tro", lvl: 1,
             sit: { de: "Nach der Ankunft am Terminal oder Flughafen.", en: "After arriving at the terminal or airport." },
-            note: { de: "Frag nach colectivo oder bus – oft günstiger als Taxi.", en: "Ask for a colectivo or bus – often cheaper than a taxi." } } ] }
+            note: { de: "Frag nach colectivo oder bus – oft günstiger als Taxi.", en: "Ask for a colectivo or bus – often cheaper than a taxi." } } ] },
+        salud:    { cat: ["GESUNDHEIT", "HEALTH"], ex: [
+          { de: "Mir ist schlecht.", en: "I feel sick.", es: "Me siento mal.", tip: "me SYEN-to mal", lvl: 1,
+            sit: { de: "Wenn Magen, Höhe oder Hitze dich umhauen.", en: "When your stomach, altitude or heat hits you." },
+            note: { de: "Höhenkrankheit (soroche) trifft viele in den Anden – langsam angehen.", en: "Altitude sickness (soroche) hits many in the Andes – take it slow." } },
+          { de: "Wo ist die nächste Apotheke?", en: "Where's the nearest pharmacy?", es: "¿Dónde está la farmacia más cercana?", tip: "DON-de es-TA la far-MA-sya mas ser-KA-na", lvl: 2,
+            sit: { de: "Bei Kopfweh, Magen oder für Sonnencreme.", en: "For a headache, upset stomach or sunscreen." },
+            note: { de: "In der farmacia berät man oft auch ohne Rezept.", en: "Pharmacies often give advice without a prescription." } },
+          { de: "Ich brauche einen Arzt.", en: "I need a doctor.", es: "Necesito un médico.", tip: "ne-se-SEE-to un ME-di-ko", lvl: 1,
+            sit: { de: "Wenn es ernst wird – Fieber, starke Schmerzen.", en: "When it gets serious – fever, strong pain." },
+            note: { de: "Versicherungsnummer bereithalten; clínica ist oft schneller als hospital.", en: "Have your insurance number ready; a clínica is often faster than a hospital." } } ] },
+        comida:   { cat: ["ESSEN & CAFÉ", "FOOD & CAFÉ"], ex: [
+          { de: "Einen Kaffee, bitte.", en: "A coffee, please.", es: "Un café, por favor.", tip: "un ka-FE por fa-VOR", lvl: 1,
+            sit: { de: "Im Café, am Straßenstand, morgens.", en: "At a café, a street stall, in the morning." },
+            note: { de: "café con leche = Milchkaffee, tinto = schwarzer Kaffee (Kolumbien).", en: "café con leche = coffee with milk, tinto = black coffee (Colombia)." } },
+          { de: "Was empfehlen Sie?", en: "What do you recommend?", es: "¿Qué me recomienda?", tip: "ke me re-ko-MYEN-da", lvl: 2,
+            sit: { de: "Wenn die Karte fremd ist und du Lokales willst.", en: "When the menu's unfamiliar and you want something local." },
+            note: { de: "So landest du beim menú del día – günstig und frisch.", en: "This lands you the menú del día – cheap and fresh." } },
+          { de: "Die Rechnung, bitte.", en: "The check, please.", es: "La cuenta, por favor.", tip: "la KWEN-ta por fa-VOR", lvl: 1,
+            sit: { de: "Am Ende, wenn du zahlen willst.", en: "At the end, when you want to pay." },
+            note: { de: "propina = Trinkgeld; manchmal steht es schon auf der Rechnung.", en: "propina = tip; sometimes it's already on the bill." } } ] }
       };
 
       var openMod = null;

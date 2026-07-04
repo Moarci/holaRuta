@@ -519,8 +519,6 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
 .lp-hooks { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
 @media (min-width: 760px) {
   .lp-hooks { grid-template-columns: repeat(2, 1fr); }
-  /* Der fünfte Hook (Conexión) spannt über beide Spalten -> emotionaler Abschluss. */
-  .lp-hook--wide { grid-column: 1 / -1; }
 }
 .lp-hook {
   display: flex; gap: var(--space-3); align-items: flex-start;
