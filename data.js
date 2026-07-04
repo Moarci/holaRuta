@@ -4833,6 +4833,59 @@
     ] },
   ];
 
+  // GENERIERT (scripts/gen-curso-espanol.mjs) – BEGIN ruta-espanol
+  // „Ruta del español": wochenstrukturierter Kurs (Lernpfad) für den Reise-Track –
+  // dieselbe Kurs-Mechanik wie der Englisch-Kurs. NICHT von Hand editieren,
+  // stattdessen das Skript erneut ausführen. scope beginnt bewusst nicht mit
+  // "curso" (Locals-Kurswähler filtert auf /^curso/).
+  PRETRIP.push({
+    scope: "ruta-espanol",
+    label: "Ruta del español", labelEn: "Spanish course",
+    days: [
+      { day: 1, week: 1, part: 1, weekTitleDe: "Erste Schritte", weekTitleEn: "First steps", titleDe: "Grundlagen", titleEn: "Basics",
+        cardIds: ["b01", "b02", "b03", "b04", "b05", "b06", "b07", "b08", "b09", "b16", "b17", "b21"] },
+      { day: 2, week: 1, part: 2, titleDe: "Sätze", titleEn: "Phrases",
+        cardIds: ["f07", "f14", "f15", "f16", "f17", "f30", "f01", "f02", "f03", "f04", "f05", "f06"] },
+      { day: 3, week: 1, part: 3, titleDe: "Zahlen", titleEn: "Numbers",
+        cardIds: ["z00", "z01", "z02", "z03", "z04", "z05", "z06", "z07", "z08", "z09", "z10", "z11"] },
+      { day: 4, week: 1, part: 4, titleDe: "Zeit", titleEn: "Time",
+        cardIds: ["ti02", "ti03", "ti04", "ti05", "ti06", "ti08", "ti08b", "ti09", "ti10", "ti11", "ti12", "ti13"] },
+      { day: 5, week: 1, part: 5, titleDe: "Farben", titleEn: "Colours",
+        cardIds: ["col01", "col02", "col03", "col04", "col05", "col06", "col07", "col08", "col09", "col10", "col11", "col12"] },
+      { day: 6, week: 2, part: 1, weekTitleDe: "Essen & Einkaufen", weekTitleEn: "Food & shopping", titleDe: "Essen", titleEn: "Food",
+        cardIds: ["e01", "e03", "e06", "e07", "e08", "e09", "e10", "e11", "e12", "e13", "e14", "e15"] },
+      { day: 7, week: 2, part: 2, titleDe: "Trinken", titleEn: "Drinks",
+        cardIds: ["t02", "t05", "t06", "t07", "t08", "t09", "t10", "t01", "t03", "t04", "t11", "t12"] },
+      { day: 8, week: 2, part: 3, titleDe: "Einkaufen", titleEn: "Shopping",
+        cardIds: ["c03", "c06", "c07", "c10", "c14", "c15", "c16", "c17", "c34", "c01", "c02", "c04"] },
+      { day: 9, week: 2, part: 4, titleDe: "Geld", titleEn: "Money",
+        cardIds: ["d02", "d03", "d05", "d08", "d09", "d10", "d01", "d04", "d06", "d07", "d11", "d12"] },
+      { day: 10, week: 2, part: 5, titleDe: "Geldautomat & Bank", titleEn: "ATM & Bank",
+        cardIds: ["bk01", "bk02", "bk04", "bk05", "bk08", "bk09", "bk14", "bk18", "bk19", "bk24", "bk03", "bk06"] },
+      { day: 11, week: 3, part: 1, weekTitleDe: "Unterwegs", weekTitleEn: "On the road", titleDe: "Verkehr", titleEn: "Transport",
+        cardIds: ["v02", "v03", "v05", "v06", "v07", "v08", "v09", "v17", "v18", "v01", "v04", "v10"] },
+      { day: 12, week: 3, part: 2, titleDe: "Hotel", titleEn: "Hotel",
+        cardIds: ["h04", "h05", "h06", "h07", "h01", "h02", "h03", "h08", "h12", "h13", "h14", "h15"] },
+      { day: 13, week: 3, part: 3, titleDe: "Wegbeschreibung", titleEn: "Directions",
+        cardIds: ["dir01", "dir02", "dir03", "dir04", "dir05", "dir06", "dir08", "dir09", "dir10", "dir11", "dir17", "dir47"] },
+      { day: 14, week: 3, part: 4, titleDe: "Notfall", titleEn: "Emergency",
+        cardIds: ["n07", "n12", "n13", "n01", "n02", "n03", "n04", "n05", "n09", "n10", "n11", "n14"] },
+      { day: 15, week: 3, part: 5, titleDe: "Apotheke & Arzt", titleEn: "Pharmacy & Doctor",
+        cardIds: ["fa01", "fa02", "fa03", "fa04", "fa05", "fa06", "fa07", "fa08", "fa09", "fa10", "fa11", "fa12"] },
+      { day: 16, week: 4, part: 1, weekTitleDe: "Menschen & Small Talk", weekTitleEn: "People & small talk", titleDe: "Social", titleEn: "Social",
+        cardIds: ["social01", "social02", "social03", "social04", "social10", "social11", "social12", "social14", "social05", "social06", "social07", "social08"] },
+      { day: 17, week: 4, part: 2, titleDe: "Smalltalk", titleEn: "Small talk",
+        cardIds: ["s01", "s02", "s09", "s10", "s12", "s13", "s15", "s17", "s05", "s06", "s08", "s11"] },
+      { day: 18, week: 4, part: 3, titleDe: "Alltag", titleEn: "Everyday",
+        cardIds: ["a09", "a11", "a12", "a13", "a14", "a02", "a04", "a07", "a08", "a10", "a01", "a03"] },
+      { day: 19, week: 4, part: 4, titleDe: "Kinder & Familie", titleEn: "Kids & Family",
+        cardIds: ["fm01", "fm02", "fm03", "fm06", "fm08", "fm11", "fm13", "fm20", "fm21", "fm04", "fm05", "fm07"] },
+      { day: 20, week: 4, part: 5, titleDe: "Wetter", titleEn: "Weather",
+        cardIds: ["cm01", "cm02", "cm03", "cm04", "cm05", "cm06", "cm07", "cm08", "cm09", "cm10", "cm11", "cm12"] },
+    ],
+  });
+  // GENERIERT – END ruta-espanol
+
   // Bundles (Modo profe): kuratierte Sammlungen mehrerer Ziele, die als EIN
   // teilbarer Code/Link mehrere Aufgaben auf einmal abonnieren. Jedes item ist
   // ein Aufgaben-Ziel { kind: "pretrip"|"preset"|"category", scope }:

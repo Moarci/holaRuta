@@ -27,6 +27,24 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.124.0",
+      date: "2026-07-04",
+      title: "Entdecken für Englisch-Lernende + „Ruta del español“",
+      titleEn: "Discover for English learners + “Ruta del español”",
+      items: [
+        "🆘 „Supervivencia laboral“ jetzt auch im Englisch-Kurs: die wichtigsten Sätze für Notfall, Beschwerde, Begrüßung, Wegbeschreibung und Geld – groß, auf Englisch und auf Tipp vorgelesen.",
+        "💵 „Precios al oído“ spricht jetzt auch Englisch: Beträge in Dollar (und den Landeswährungen) hören und die Zahl eintippen – ideal fürs Trinkgeld und Preise für Gäste.",
+        "🧍 „El Cuerpo“ und „Lista de compras“ lehren im Englisch-Kurs die englischen Wörter (mit englischer Sprachausgabe und arbeitsfertigen Fragen wie „Do you have …?“).",
+        "🗺️ Neu für Spanisch-Lernende: „Ruta del español“ – ein Kurs über 4 Wochen, Woche für Woche, mit denselben Meilensteinen wie der Englisch-Kurs. Zu finden unter Entdecken › Üben.",
+      ],
+      itemsEn: [
+        "🆘 “Survival at work” is now in the English course too: the most important phrases for emergencies, complaints, greetings, directions and money – large, in English and read aloud on tap.",
+        "💵 “Precios al oído” now speaks English as well: hear amounts in dollars (and local currencies) and type the number – perfect for tips and prices for guests.",
+        "🧍 “El Cuerpo” and “Lista de compras” now teach the English words in the English course (with English speech and ready-made questions like “Do you have …?”).",
+        "🗺️ New for Spanish learners: “Ruta del español” – a course over 4 weeks, week by week, with the same milestones as the English course. Find it under Discover › Practise.",
+      ],
+    },
+    {
       version: "1.123.0",
       date: "2026-06-30",
       title: "Wortart-Filter & spanische Kontext-Erklärungen (Locals)",

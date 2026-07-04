@@ -642,11 +642,23 @@ function install() {
 
 // Lädt alle App-Module in der Reihenfolge von index.html (Zeilen 171-216).
 // app.js bootet beim Laden (verdrahtet Listener, ruft render()).
-function installModules() {
+// opts.edition (z. B. "ingles-pro"): aktiviert die Edition VOR config.js (wie
+// Build/Runtime) und lädt die Locals-Korpusdateien an ihrer locals-loader-
+// Position (i18n.strings.es nach den de/en-Strings, data.locals nach data,
+// contextdata.locals vor context) – der Boot entspricht ?edition=ingles-pro.
+function installModules(opts) {
   const SRC = path.join(__dirname, "..");
+  const edition = opts && opts.edition;
+  if (edition) {
+    require(path.join(SRC, "editions/registry.js"));
+    globalThis.window.SC.editionConfig = globalThis.window.SC.editions[edition];
+  }
   const order = [
     "editions/registry.js", "config.js", "i18n.js", "i18n.strings.js",
-    "contextdata.js", "data.js", "numbers.js", "context.js", "countries.js",
+    "contextdata.js", "data.js",
+    // locals-loader-Position (index.html): nach i18n.strings/data, vor context.
+    ...(edition ? ["i18n.strings.es.js", "data.locals.js", "contextdata.locals.js"] : []),
+    "numbers.js", "context.js", "countries.js",
     "historia.js", "historiaCentro.js", "knigge.js", "frases.js", "dialogos.js",
     "venue-roleplay.js",
     "conjug.js", "regatear.js", "logistica.js", "salud.js", "jerga.js",

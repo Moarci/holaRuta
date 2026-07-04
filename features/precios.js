@@ -10,6 +10,11 @@
  * für gamestats, setSettings für die gemerkte Währung/Stufe). Das automatische
  * Vorlesen des ersten Betrags bleibt im Render-Loop des Controllers (autoSpeak).
  * app.js behält die Dispatch-Tabellen und delegiert an die hier exportierten Methoden.
+ *
+ * Track-fähig: im Locals-Track (es-en) werden die Beträge auf ENGLISCH generiert
+ * (SC.numbers toWordsEn/amountEn, Dollar zuerst in der Währungsliste) und über
+ * speech.js/ttsLocale automatisch mit en-US-Stimme vorgelesen – hören & tippen
+ * wie im Reise-Track, nur in der gelernten Sprache.
  */
 (function () {
   "use strict";
@@ -21,6 +26,11 @@
 
   const PRECIOS_ROUND = 10;
   const preciosReady = () => !!(ctx.speech && ctx.speech.isSupported() && ctx.numbers);
+  // Sprachfeld der GELERNTEN Seite (Reise: es, Locals: en) – Muster wie in den
+  // anderen track-fähigen Feature-Modulen. Steuert Generator-Sprache & lang-Attribut.
+  const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+  // Generator-Parameter: nur "en" schaltet SC.numbers um; alles andere = Spanisch.
+  const genLang = () => (trackLearnLang() === "en" ? "en" : undefined);
 
   // ----- View-Modelle -----
   // Setup-Ansicht (Land/Währung + Schwierigkeit wählen).
@@ -28,9 +38,10 @@
     const { state, numbers, natk } = ctx;
     const curKey = state.preciosCurrency;
     const lvl = state.preciosLevel;
+    const en = genLang() === "en";
     return {
       speakable: preciosReady(),
-      currencies: numbers ? numbers.currencyList().map((c) => ({
+      currencies: numbers ? numbers.currencyList(genLang()).map((c) => ({
         key: c.key, flag: c.flag, name: natk(c, "name"), code: c.code, note: natk(c, "note"),
         selected: c.key === curKey,
       })) : [],
@@ -41,7 +52,8 @@
       sample: numbers ? (() => {
         const c = numbers.currency(curKey);
         const tier = numbers.tierFor(c, lvl);
-        return { flag: c.flag, name: natk(c, "name"), max: numbers.format(tier.max), one: c.one, many: c.many };
+        return { flag: c.flag, name: natk(c, "name"), max: numbers.format(tier.max),
+                 one: en ? (c.oneEn || c.one) : c.one, many: en ? (c.manyEn || c.many) : c.many };
       })() : null,
     };
   }
@@ -62,6 +74,7 @@
       currencyCode: cur.code,
       isLast: p.idx >= p.total - 1,
       speakable: preciosReady(),
+      learnLang: trackLearnLang(), // lang-Attribut der aufgedeckten Wortform
     };
   }
 
@@ -92,7 +105,8 @@
 
   function setPreciosCurrency(key) {
     const { numbers } = ctx;
-    if (!numbers || !numbers.CURRENCIES[key]) return;
+    // Nur Währungen aus der Liste des Tracks (Reise nie USD, Locals inkl. USD).
+    if (!numbers || !numbers.currencyList(genLang()).some((c) => c.key === key)) return;
     ctx.state.preciosCurrency = key;
     ctx.setSettings({ preciosCurrency: key });
     ctx.render();
@@ -111,7 +125,7 @@
     if (!preciosReady()) return;
     const curKey = ctx.state.preciosCurrency;
     const level = ctx.state.preciosLevel;
-    const queue = ctx.numbers.buildRound(curKey, level, PRECIOS_ROUND);
+    const queue = ctx.numbers.buildRound(curKey, level, PRECIOS_ROUND, undefined, genLang());
     ctx.state.precios = { currencyKey: curKey, level, queue, idx: 0, total: queue.length, result: null, correct: 0 };
     ctx.state.screen = "precios";
     ctx.render(); // autoSpeak (Controller) spielt den ersten Betrag automatisch ab
@@ -229,7 +243,7 @@
         </form>`
       : `
         <div class="card-static ${vm.result.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
-          <div class="face__word" lang="es">${esc(vm.answerEs)}</div>
+          <div class="face__word" lang="${esc(vm.learnLang)}">${esc(vm.answerEs)}</div>
           <div class="listen-de">= ${esc(vm.answerDigits)} ${esc(vm.currencyCode)}</div>
           ${vm.result.correct
             ? `<div class="verdict verdict--ok">${esc(t("common.correctHeard"))}</div>`

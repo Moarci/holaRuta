@@ -2,6 +2,12 @@
  * features/spickzettel.js  (SC.spickzettel) – Survival-Schnellzugriff (kein SRS):
  * die kritischsten Sätze groß, je mit 🔊, plus Großanzeige zum Herzeigen.
  *
+ * Track-fähig: im Reise-Track (de-es) die spanischen Überlebens-Sätze, im
+ * Locals-Track (es-en) die kritischsten ARBEITS-Sätze auf Englisch („Supervivencia
+ * laboral": Notfälle, Beschwerden, Begrüßung, Wege, Geld) – eigene Gruppenliste,
+ * die gelernte Seite kommt über SC.track.learnLang() (card.en), die Stimme über
+ * speech.js/ttsLocale automatisch als en-US.
+ *
  * Erstes Feature-Modul der app.js/ui.js-Zerlegung. Es bündelt zusammengehörig:
  * Daten (SPICKZETTEL_GROUPS), View-Modell, Handler und Render. Den Zugriff auf
  * Controller-Dienste (zentraler State, Daten-Helfer, Persistenz) bekommt es per
@@ -21,6 +27,10 @@
   // und optionale Module – statt globaler Closures wie zuvor in app.js.
   let ctx = null;
 
+  // Sprachfeld der GELERNTEN Seite (Reise: card.es, Locals: card.en) – dasselbe
+  // Muster wie in den anderen track-fähigen Feature-Modulen (definiciones …).
+  const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+
   // Kuratierte Überlebens-Bereiche: `pick` hebt die kritischsten Sätze an den
   // Anfang – auch quer zur Kategorie (z. B. "Hilfe!" steht in den Grundlagen,
   // gehört im Ernstfall aber nach ganz oben zu Notfall). Der Rest füllt sich
@@ -32,10 +42,22 @@
     { cat: "dinero",  limit: 6,  pick: ["d01", "d04", "d05", "d06", "d07"] },
   ];
 
+  // Locals-Track („Supervivencia laboral"): dieselbe Mechanik über den Englisch-
+  // Korpus (data.locals.js) – die kritischsten Sätze für den Arbeitsalltag.
+  const SPICKZETTEL_GROUPS_LOCALS = [
+    { cat: "emergencias-en", limit: 10, pick: ["loc-eme03", "loc-eme24", "loc-eme02", "loc-eme04", "loc-eme10", "loc-eme17", "loc-eme14", "loc-eme16", "loc-eme15", "loc-eme01"] },
+    { cat: "saludos-en",     limit: 10, pick: ["loc-sal08", "loc-sal07", "loc-sal01", "loc-sal02", "loc-sal05", "loc-sal06"] },
+    { cat: "quejas-en",      limit: 8,  pick: ["loc-que01", "loc-que03", "loc-que02", "loc-que04", "loc-que07"] },
+    { cat: "direcciones",    limit: 6,  pick: ["loc-dir01", "loc-dir02", "loc-dir03", "loc-dir08", "loc-dir06"] },
+    { cat: "dinero-en",      limit: 6,  pick: ["loc-din05", "loc-din07", "loc-din06", "loc-din01"] },
+  ];
+
   function spickzettelVM() {
     const { data, categoryById, cardById, nat, natk, isFavorite, speech, DEFAULT_ACCENT, state } = ctx;
+    const learnLang = trackLearnLang();
+    const groupsDef = learnLang === "en" ? SPICKZETTEL_GROUPS_LOCALS : SPICKZETTEL_GROUPS;
     const used = new Set(); // jede Karte höchstens einmal auf dem Zettel
-    const groups = SPICKZETTEL_GROUPS.map((g) => {
+    const groups = groupsDef.map((g) => {
       const cat = categoryById(g.cat);
       const picked = (g.pick || []).map(cardById).filter(Boolean);
       const rest = data.CARDS.filter((c) => c.cat === g.cat);
@@ -44,7 +66,9 @@
         if (cards.length >= g.limit) break;
         if (used.has(c.id)) continue;
         used.add(c.id);
-        cards.push({ id: c.id, de: nat(c), es: c.es, tip: c.tip || null, fav: isFavorite(c.id) });
+        // Feldname `es` = GELERNTE Seite (Reise: Spanisch, Locals: Englisch) –
+        // bewusst beibehalten, damit Renderer/Tests stabil bleiben.
+        cards.push({ id: c.id, de: nat(c), es: c[learnLang] || c.es, tip: c.tip || null, fav: isFavorite(c.id) });
       }
       return {
         id: g.cat,
@@ -55,9 +79,10 @@
       };
     }).filter((g) => g.cards.length);
     // Großanzeige: angetippter Satz bildschirmfüllend – zum Herzeigen.
+    // nat(shown) statt shown.de: Locals-Karten tragen kein de-Feld.
     const shown = state.szShow ? cardById(state.szShow) : null;
-    const show = shown ? { id: shown.id, de: shown.de, es: shown.es } : null;
-    return { groups, show, speakable: !!(speech && speech.isSupported()) };
+    const show = shown ? { id: shown.id, de: nat(shown), es: shown[learnLang] || shown.es } : null;
+    return { groups, show, speakable: !!(speech && speech.isSupported()), learnLang };
   }
 
   function openSpickzettel() {
@@ -87,7 +112,7 @@
           <button class="sz-row__main" type="button" data-action="sz-show" data-id="${esc(c.id)}"
                   title="${esc(t("discover.szShowTitle"))}">
             <span class="sz-row__de">${esc(c.de)}</span>
-            <span class="sz-row__es" lang="es">${esc(c.es)}</span>
+            <span class="sz-row__es" lang="${esc(vm.learnLang)}">${esc(c.es)}</span>
             ${c.tip ? `<span class="sz-row__tip">${renderIcon("lc:audio-lines")} ${esc(c.tip)}</span>` : ""}
           </button>
           ${favStar(c.id, c.fav, { cls: "sz-fav" })}
@@ -105,7 +130,7 @@
     const show = vm.show ? `
       <div class="sz-show" data-action="sz-close" role="dialog" aria-modal="true" aria-label="${esc(t("discover.szShowLabel"))}">
         <div class="sz-show__inner">
-          <p class="sz-show__es" lang="es">${esc(vm.show.es)}</p>
+          <p class="sz-show__es" lang="${esc(vm.learnLang)}">${esc(vm.show.es)}</p>
           <p class="sz-show__de">${esc(vm.show.de)}</p>
           <div class="sz-show__actions">
             ${vm.speakable

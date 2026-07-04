@@ -140,9 +140,15 @@ im Korpus (damit keine Reise-Code-Pfade brechen), sind aber unsichtbar:
 - `allCards()` liefert im Locals-Track nur Locals-Karten → Study/Ruta/Suche/Badges/
   Stats sind fokussiert.
 - Die Startseite zeigt nur die vier Locals-Kategorie-Gruppen.
-- „Entdecken" zeigt nur sprachunabhängige Features (Mi léxico); die spanisch-
-  spezifischen Reise-Features (Precios, Conjugación, Diálogos, Jerga, Länder/
-  Geschichte …) sind ausgeblendet.
+- „Entdecken" zeigt die track-fähigen Features (Mi léxico, Diálogos, Banderas,
+  ¿Y esto?, Definiciones, Frases, Vocabulario sin fin, **Supervivencia laboral**,
+  **Precios al oído** auf Englisch, **El Cuerpo** und **Lista de compras** –
+  jeweils mit Englisch als gelernter Seite) plus die Locals-eigenen Einträge
+  (Roleplay del local, Lernpfad). Jeder Eintrag deklariert seine Tracks selbst
+  über das `tracks`-Feld in `FEATURES` (ui.js); rein spanisch-spezifische Reise-
+  Features (Conjugación, Tiempos, Jerga, Länder/Geschichte, Regatear …) bleiben
+  ausgeblendet. Der Spanisch-Kurs „Ruta del español" erscheint umgekehrt nur im
+  Reise-Track.
 - Onboarding überspringt im Locals-Track den „Reiseziel"-Schritt und den spanischen
   Ruta-Check.
 

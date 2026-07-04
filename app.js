@@ -214,7 +214,15 @@
     // festen Zahlen-Karten gezogen. So sind beliebig große/krumme Preise möglich
     // (z. B. kolumbianische Pesos in Millionenhöhe). queue: generierte Preis-Objekte.
     precios: null,           // { currencyKey, level, queue:[{value,digits,es,…}…], idx, total, result:{correct,input}|null, correct }
-    preciosCurrency: numbers && numbers.CURRENCIES[settings.preciosCurrency] ? settings.preciosCurrency : "CO", // zuletzt gewählte Währung
+    // Zuletzt gewählte Währung – gegen die Liste des Tracks validiert (Locals bietet
+    // USD zuerst, Reise nie). Inline-Track-Check statt isLocals(): das steht erst unten.
+    preciosCurrency: (() => {
+      const en = !!(window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
+      const keys = numbers ? numbers.currencyList(en ? "en" : undefined).map((c) => c.key) : [];
+      // Gemerkte Wahl behalten, wenn im Track gültig; sonst die erste Währung der
+      // Track-Liste (Locals: USD, Reise: Kolumbien) statt eines zweiten Hardcodes.
+      return keys.indexOf(settings.preciosCurrency) >= 0 ? settings.preciosCurrency : (keys[0] || "CO");
+    })(),
     preciosLevel: [1, 2, 3].includes(settings.preciosLevel) ? settings.preciosLevel : 2,                        // zuletzt gewählte Stufe
     // ----- Frases flexibles (Satzbaukasten, transient) -----
     frases: null,            // { setId, queue:[frameId…], idx, total, options:[{es,de,correct}…], selected:idx|null, correct }
@@ -6169,19 +6177,24 @@
 
   // Übungs-Features (spiegelt die FEATURES-Liste in ui.js, ohne die reinen
   // Infoseiten – die kommen unten als „Informationen" mit reichem Suchindex).
+  // tracks: in welchen Lern-Tracks das Feature durchsuchbar ist (spiegelt die
+  // gleichnamige Deklaration der Entdecken-Kacheln in ui.js FEATURES). Fehlt das
+  // Feld, gilt nur der Reise-Track ["de-es"]: die recycelten Module (Supervivencia,
+  // Definiciones, Precios, Cuerpo, Compras, Frases, Diálogos, Vocabulario sin fin,
+  // ¿Y esto?, Mi léxico) sind in BEIDEN Tracks sichtbar und daher auch suchbar.
   const SEARCH_FEATURES = [
-    { action: "open-favorites",   icon: "lc:star", title: "Mi léxico",        subKey: "discover.subFavorites" },
-    { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",    subKey: "discover.subSupervivencia" },
+    { action: "open-favorites",   icon: "lc:star", title: "Mi léxico",        subKey: "discover.subFavorites", tracks: ["de-es", "es-en"] },
+    { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",    subKey: "discover.subSupervivencia", tracks: ["de-es", "es-en"] },
     { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",       subKey: "discover.subHostel" },
-    { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",      subKey: "discover.subDefiniciones" },
-    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless" },
-    { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases" },
-    { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos" },
+    { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",      subKey: "discover.subDefiniciones", tracks: ["de-es", "es-en"] },
+    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", tracks: ["de-es", "es-en"] },
+    { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases", tracks: ["de-es", "es-en"] },
+    { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos", tracks: ["de-es", "es-en"] },
     { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
-    { action: "open-precios",     icon: "lc:banknote", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech" },
-    { action: "open-cuerpo",      icon: "lc:person-standing", title: "El Cuerpo",         subKey: "discover.subCuerpo" },
-    { action: "open-compras",     icon: "lc:shopping-cart", title: "Lista de compras",  subKey: "discover.subCompras" },
-    { action: "open-yesto",       icon: "lc:eye", title: "¿Y esto?",          subKey: "discover.subYesto", need: "yesto" },
+    { action: "open-precios",     icon: "lc:banknote", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech", tracks: ["de-es", "es-en"] },
+    { action: "open-cuerpo",      icon: "lc:person-standing", title: "El Cuerpo",         subKey: "discover.subCuerpo", tracks: ["de-es", "es-en"] },
+    { action: "open-compras",     icon: "lc:shopping-cart", title: "Lista de compras",  subKey: "discover.subCompras", tracks: ["de-es", "es-en"] },
+    { action: "open-yesto",       icon: "lc:eye", title: "¿Y esto?",          subKey: "discover.subYesto", need: "yesto", tracks: ["de-es", "es-en"] },
     { action: "open-conjugacion", icon: "lc:repeat", title: "Conjugación",       subKey: "discover.subConjugacion" },
     { action: "open-tiempos",     icon: "lc:hourglass", title: "Tiempos",           subKey: "discover.subTiempos" },
     { action: "open-bebidas",     icon: "lc:coffee", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
@@ -6238,13 +6251,13 @@
       });
     });
 
-    // Reine Reise-Inhalte (Übungs-Features, Länderkunde, Info-Seiten) im Locals-Track
-    // NICHT indexieren – sie sind dort ausgeblendet und sollen nicht über die Suche
-    // erreichbar sein.
-    if (!locals) {
     // --- Übungen: Übungs-Features (nur die geladenen/verfügbaren) ---
+    // Track-gefiltert wie die Entdecken-Kacheln (ui.js): die recycelten Module sind
+    // in beiden Tracks suchbar, rein spanisch-spezifische Features nur im Reise-Track.
+    const trackId = (trk() && trk().id && trk().id()) || "de-es";
     SEARCH_FEATURES.forEach((f) => {
       if (f.need && !searchHas[f.need]) return;
+      if ((f.tracks || ["de-es"]).indexOf(trackId) < 0) return;
       idx.push({
         group: "ex", kind: "feature", kindLabel: t("search.kindFeature"),
         icon: f.icon, title: f.title, sub: t(f.subKey),
@@ -6253,6 +6266,10 @@
       });
     });
 
+    // Reine Reise-Inhalte (Länderkunde, Info-Seiten) im Locals-Track NICHT
+    // indexieren – sie sind dort ausgeblendet und sollen nicht über die Suche
+    // erreichbar sein.
+    if (!locals) {
     // --- Informationen: Länderkunde (ein Treffer je Land) ---
     if (countries && Array.isArray(countries.LIST)) {
       countries.LIST.forEach((c) => {

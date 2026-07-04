@@ -1289,7 +1289,10 @@ test("data.PRETRIP: Pläne je Destination, Tage sequenziell, Karten/Challenges e
   const scopes = new Set(data.CATEGORIES.map((c) => c.id));
   assert.ok(Array.isArray(data.PRETRIP) && data.PRETRIP.length, "PRETRIP fehlt/leer");
   data.PRETRIP.forEach((plan) => {
-    assert.ok(scopes.has(plan.scope), `Plan: unbekannter scope ${plan.scope}`);
+    // Kurspläne (eigenes label-Feld, z. B. "ruta-espanol") haben keinen Kategorie-
+    // Scope – pretripPlanLabel (app.js) nutzt dann plan.label statt des Kategorie-Labels.
+    if (plan.label) assert.ok(!scopes.has(plan.scope), `Kursplan ${plan.scope}: scope kollidiert mit Kategorie`);
+    else assert.ok(scopes.has(plan.scope), `Plan: unbekannter scope ${plan.scope}`);
     assert.ok(Array.isArray(plan.days) && plan.days.length, `Plan ${plan.scope}: days leer`);
     plan.days.forEach((d, i) => {
       assert.equal(d.day, i + 1, `${plan.scope} Tag ${i + 1}: day-Nummer nicht sequenziell`);
@@ -1305,12 +1308,36 @@ test("data.PRETRIP: Pläne je Destination, Tage sequenziell, Karten/Challenges e
       seen.add(id);
     }));
   });
-  // „Reisefertig"-Badge schaltet frei, wenn EIN ganzer Plan geschafft ist; alle Pläne gleich lang.
+  // „Reisefertig"-Badge schaltet frei, wenn EIN ganzer Plan geschafft ist; alle
+  // REISE-Pläne gleich lang (Kurspläne wie "ruta-espanol"/"curso-en" sind länger,
+  // erreichen die Schwelle also erst recht).
   const badge = badges.byId("pretrip_done");
   assert.ok(badge, "pretrip_done-Badge fehlt");
-  const lengths = new Set(data.PRETRIP.map((p) => p.days.length));
-  assert.equal(lengths.size, 1, "Pläne haben unterschiedliche Etappenzahl");
-  assert.equal(badge.threshold, data.PRETRIP[0].days.length, "Badge-Schwelle != Etappen pro Plan");
+  const travel = data.PRETRIP.filter((p) => !p.label);
+  const lengths = new Set(travel.map((p) => p.days.length));
+  assert.equal(lengths.size, 1, "Reise-Pläne haben unterschiedliche Etappenzahl");
+  assert.equal(badge.threshold, travel[0].days.length, "Badge-Schwelle != Etappen pro Reise-Plan");
+});
+
+// „Ruta del español": generierter Wochen-Kurs (scripts/gen-curso-espanol.mjs) –
+// Wochen-/Teil-Struktur konsistent, Scope bewusst außerhalb des /^curso/-Filters
+// (der gehört dem Locals-Kurswähler, siehe app.js pretripPool).
+test("data.PRETRIP: Kursplan ruta-espanol – Wochenstruktur & Scope-Regeln", () => {
+  const plan = data.PRETRIP.find((p) => p.scope === "ruta-espanol");
+  assert.ok(plan, "ruta-espanol fehlt");
+  assert.ok(!/^curso/.test(plan.scope), "scope darf nicht mit 'curso' beginnen (Locals-Pool-Filter)");
+  assert.ok(plan.label && plan.labelEn, "Kursplan braucht label/labelEn");
+  assert.notEqual(data.PRETRIP[0].scope, "ruta-espanol", "Kursplan darf nicht PRETRIP[0] sein (Default-Scope)");
+  let lastWeek = 0;
+  plan.days.forEach((d) => {
+    assert.ok(d.week >= 1 && d.part >= 1, `Tag ${d.day}: week/part fehlt`);
+    assert.ok(d.week === lastWeek || d.week === lastWeek + 1, `Tag ${d.day}: Wochen nicht fortlaufend`);
+    if (d.week !== lastWeek) {
+      assert.equal(d.part, 1, `Woche ${d.week}: beginnt nicht mit Teil 1`);
+      assert.ok(d.weekTitleDe && d.weekTitleEn, `Woche ${d.week}: Wochentitel fehlt auf Teil 1`);
+    }
+    lastWeek = d.week;
+  });
 });
 
 test("badges: pretrip_done erst ab einem vollständigen Plan", () => {
