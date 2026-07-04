@@ -97,6 +97,7 @@
     <symbol id="lpi-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></symbol>
     <symbol id="lpi-backpack" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" /><path d="M8 10h8" /><path d="M8 18h8" /><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6" /><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" /></symbol>
     <symbol id="lpi-stethoscope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2v2" /><path d="M5 2v2" /><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1" /><path d="M8 15a6 6 0 0 0 12 0v-3" /><circle cx="20" cy="10" r="2" /></symbol>
+    <symbol id="lpi-wifi-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></symbol>
   </defs></svg>
 
 
@@ -343,12 +344,20 @@
               <p class="lp-hook__text" data-i18n="use.2.b">Ein QR-Code an Rezeption oder Common Room öffnet die App direkt – offline, ohne Anmeldung, ohne App-Store. Empfehlung beim Check-in genügt.</p>
             </div>
           </article>
-          <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#7D4A8E">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#7D4A8E">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-palette"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.3.k">Co-Branding</span>
               <h3 class="lp-hook__title" data-i18n="use.3.t">Eure Marke, eure Farbe – fertig.</h3>
               <p class="lp-hook__text" data-i18n="use.3.b">Über das Editions-System öffnet ein Link die App im Look eures Hostels: Name, Farbe und optional euer Reiseziel als Vorauswahl. Hostel-Inhalte (Modo hostal, Games, Flirten, Diálogos, Bailar) kommen prominent nach vorne.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#2F6B70">
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-wifi-off"/></svg></span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="use.4.k">Keine Hürden</span>
+              <h3 class="lp-hook__title" data-i18n="use.4.t">Offline & ohne Konto.</h3>
+              <p class="lp-hook__text" data-i18n="use.4.b">Kein WLAN? Kein Problem. Alles läuft offline, ohne App-Store und ohne Anmeldung – eure Gäste scannen und legen sofort los.</p>
             </div>
           </article>
         </div>
@@ -420,102 +429,90 @@
         <p class="lp-lead" data-reveal data-i18n="themen.lead">Kein Sprachkurs, sondern die Situationen, die eure Gäste wirklich erleben – im Hostel und draußen. Jedes Themengebiet ist sofort spielbar, tippt euch durch die Live-Demo.</p>
         <div class="lp-more">
           <div class="lp-more__chips">
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#7D4A8E; --i:0">
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#7D4A8E; --i:0">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-bed"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.hostal.n">Check-in & Hostal</span>
                 <span class="lp-morechip__desc" data-i18n="themen.hostal.d">Zimmer, Schlüssel, Regeln – die ersten Minuten laufen glatt</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#FB5A47; --i:1">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#FB5A47; --i:1">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-dices"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.spiele.n">Spiele & Battles</span>
                 <span class="lp-morechip__desc" data-i18n="themen.spiele.d">Fertige Common-Room-Spiele, die Fremde zu Tischnachbarn machen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#C2502E; --i:2">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#C2502E; --i:2">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-coffee"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.essen.n">Essen & Café</span>
                 <span class="lp-morechip__desc" data-i18n="themen.essen.d">Bestellen, teilen, empfehlen lassen – vom Frühstück bis zum Streetfood</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#3F7355; --i:3">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#3F7355; --i:3">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-arrow-left-right"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.markt.n">Markt & Feilschen</span>
                 <span class="lp-morechip__desc" data-i18n="themen.markt.d">Auf dem Mercado fair handeln statt Touri-Preis zahlen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#E9A23B; --i:0">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#E9A23B; --i:0">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-banknote"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.geld.n">Geld & Preise</span>
                 <span class="lp-morechip__desc" data-i18n="themen.geld.d">Zahlen verstehen, Wechselgeld prüfen, Rechnung teilen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#B5302A; --i:1">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#B5302A; --i:1">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-life-buoy"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.notfall.n">Notfall & Sicherheit</span>
                 <span class="lp-morechip__desc" data-i18n="themen.notfall.d">Arzt, Polizei, Hilfe – die Sätze, die zählen, auch offline</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#2F6B70; --i:2">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#2F6B70; --i:2">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-message-circle"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.dialoge.n">Diálogos</span>
                 <span class="lp-morechip__desc" data-i18n="themen.dialoge.d">Ganze Gespräche Zug um Zug – Smalltalk an der Bar</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#7D4A8E; --i:3">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#7D4A8E; --i:3">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-music"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.musik.n">Musik & Nightlife</span>
                 <span class="lp-morechip__desc" data-i18n="themen.musik.d">Der Sound der Stadt – mitsingen statt danebenstehen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#3F7355; --i:0">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#3F7355; --i:0">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-globe"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.laender.n">Länder & Kultur</span>
                 <span class="lp-morechip__desc" data-i18n="themen.laender.d">Sitten, Eigenheiten & Geld pro Land – 19 LatAm-Ziele</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#B5302A; --i:1">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#B5302A; --i:1">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-compass"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.orientierung.n">Orientierung</span>
                 <span class="lp-morechip__desc" data-i18n="themen.orientierung.d">Nach dem Weg fragen, Treffpunkte klären, nichts verpassen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#2F6B70; --i:2">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#2F6B70; --i:2">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-backpack"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.transport.n">Bus & Transport</span>
                 <span class="lp-morechip__desc" data-i18n="themen.transport.d">Taxi, Nachtbus, Ticket – zur nächsten Station kommen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=hostel&start=onboarding" data-reveal style="--accent:#E9A23B; --i:3">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#E9A23B; --i:3">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-stethoscope"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.gesundheit.n">Gesundheit & Höhe</span>
                 <span class="lp-morechip__desc" data-i18n="themen.gesundheit.d">Apotheke, Höhenkrankheit, Kater – klar kommunizieren</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
+            </div>
           </div>
         </div>
       </div>
@@ -682,6 +679,7 @@
         "use.1.k": "Ice-Breaker", "use.1.t": "Aus Fremden am Tisch werden Freunde.", "use.1.b": "Sprach-Battles und Rollenspiele bringen Gäste ins Gespräch. Die perfekte Aktivität für den Abend im Common Room – ganz ohne Moderation durch euer Team.",
         "use.2.k": "QR-Code & los", "use.2.t": "Aufhängen, scannen, spielen.", "use.2.b": "Ein QR-Code an Rezeption oder Common Room öffnet die App direkt – offline, ohne Anmeldung, ohne App-Store. Empfehlung beim Check-in genügt.",
         "use.3.k": "Co-Branding", "use.3.t": "Eure Marke, eure Farbe – fertig.", "use.3.b": "Über das Editions-System öffnet ein Link die App im Look eures Hostels: Name, Farbe und optional euer Reiseziel als Vorauswahl. Hostel-Inhalte (Modo hostal, Games, Flirten, Diálogos, Bailar) kommen prominent nach vorne.",
+        "use.4.k": "Keine Hürden", "use.4.t": "Offline & ohne Konto.", "use.4.b": "Kein WLAN? Kein Problem. Alles läuft offline, ohne App-Store und ohne Anmeldung – eure Gäste scannen und legen sofort los.",
         "how.eyebrow": "SO LÄUFT DIE SPANISH NIGHT", "how.title": "In drei Schritten zum vollen Common Room.",
         "how.s1.k": "AUFHÄNGEN", "how.s1.t": "QR-Poster platzieren", "how.s1.b": "Druckt das fertige Poster und hängt es in den Common Room. <b class=\"lp-step__hl\">Ein Scan</b> öffnet die App – in eurem Branding.",
         "how.s2.k": "SPIELEN", "how.s2.t": "Battle & Rollenspiel", "how.s2.b": "Zwei Gäste treten zu zweit an – <b class=\"lp-step__hl\">Battle oder Rollenspiel</b>. Kein Team nötig, die App moderiert.",
@@ -740,6 +738,7 @@
         "use.1.k": "Ice-breaker", "use.1.t": "Strangers at the table become friends.", "use.1.b": "Language battles and role-plays get guests talking. The perfect evening activity for the common room – without your team having to host it.",
         "use.2.k": "QR code & go", "use.2.t": "Hang it, scan it, play.", "use.2.b": "A QR code at reception or in the common room opens the app directly – offline, no sign-up, no app store. A mention at check-in is enough.",
         "use.3.k": "Co-branding", "use.3.t": "Your brand, your color – done.", "use.3.b": "The editions system lets a link open the app in your hostel's look: name, color and optionally your destination preset. Hostel content (Hostel mode, games, flirting, dialogues, dancing) moves to the front.",
+        "use.4.k": "No hurdles", "use.4.t": "Offline & no account.", "use.4.b": "No Wi-Fi? No problem. Everything runs offline, without app store or sign-up – your guests scan and get going right away.",
         "how.eyebrow": "HOW THE SPANISH NIGHT WORKS", "how.title": "A full common room in three steps.",
         "how.s1.k": "PUT IT UP", "how.s1.t": "Place the QR poster", "how.s1.b": "Print the ready-made poster and hang it in the common room. <b class=\"lp-step__hl\">One scan</b> opens the app – in your branding.",
         "how.s2.k": "PLAY", "how.s2.t": "Battle & role-play", "how.s2.b": "Two guests go head-to-head – <b class=\"lp-step__hl\">battle or role-play</b>. No staff needed, the app hosts it.",
@@ -800,6 +799,7 @@
         "use.1.k": "Rompehielos", "use.1.t": "Los desconocidos de la mesa se hacen amigos.", "use.1.b": "Las batallas de idioma y los juegos de rol ponen a hablar a los huéspedes. La actividad perfecta para la noche en la sala común – sin que tu equipo tenga que dirigirla.",
         "use.2.k": "Código QR y listo", "use.2.t": "Colgar, escanear, jugar.", "use.2.b": "Un código QR en recepción o en la sala común abre la app directamente – sin conexión, sin registro, sin tienda de apps. Basta con mencionarlo en el check-in.",
         "use.3.k": "Co-branding", "use.3.t": "Tu marca, tu color – listo.", "use.3.b": "El sistema de ediciones permite que un enlace abra la app con la imagen de tu hostal: nombre, color y opcionalmente tu destino preseleccionado. Los contenidos de hostal (Hostel mode, juegos, ligar, diálogos, bailar) pasan al frente.",
+        "use.4.k": "Sin barreras", "use.4.t": "Sin conexión y sin cuenta.", "use.4.b": "¿Sin wifi? No pasa nada. Todo funciona sin conexión, sin tienda de apps y sin registro: tus huéspedes escanean y empiezan al momento.",
         "how.eyebrow": "ASÍ FUNCIONA LA SPANISH NIGHT", "how.title": "Una sala común llena en tres pasos.",
         "how.s1.k": "COLGAR", "how.s1.t": "Coloca el póster QR", "how.s1.b": "Imprime el póster listo y cuélgalo en la sala común. <b class=\"lp-step__hl\">Un escaneo</b> abre la app – con tu marca.",
         "how.s2.k": "JUGAR", "how.s2.t": "Batalla y juego de rol", "how.s2.b": "Dos huéspedes se enfrentan – <b class=\"lp-step__hl\">batalla o juego de rol</b>. Sin personal, la app lo dirige.",

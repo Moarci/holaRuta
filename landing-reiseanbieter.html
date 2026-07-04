@@ -94,6 +94,7 @@
     <symbol id="lpi-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></symbol>
     <symbol id="lpi-message-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" /></symbol>
     <symbol id="lpi-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></symbol>
+    <symbol id="lpi-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></symbol>
   </defs></svg>
 
 
@@ -340,12 +341,20 @@
               <p class="lp-hook__text" data-i18n="use.2.b">Der Coordinator-Modus gibt dem Reiseleiter ein fertiges 5-Minuten-Gruppenspiel an die Hand – Battles, Missionen, Lacher. Aus Mitreisenden wird eine Gruppe.</p>
             </div>
           </article>
-          <article class="lp-hook lp-hook--wide" data-reveal style="--i:0; --accent:#B5302A">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#B5302A">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-compass"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="use.3.k">Safety & Local Immersion</span>
               <h3 class="lp-hook__title" data-i18n="use.3.t">Notfall- und Orientierungssätze – offline.</h3>
               <p class="lp-hook__text" data-i18n="use.3.b">Taxi, Essen, Geld, Notfälle: die wichtigsten Sätze funktionieren auch ohne Netz im Nachtbus. Teilnehmer trauen sich, selbst zu bestellen – und fühlen sich sicherer.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#2F6B70">
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-palette"/></svg></span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="use.4.k">Eigene Edition</span>
+              <h3 class="lp-hook__title" data-i18n="use.4.t">Eure Marke reist mit.</h3>
+              <p class="lp-hook__text" data-i18n="use.4.b">Name, Farbe und Route in eurer eigenen Edition – ein Link genügt. Nach der Reise bleibt die App als digitales Souvenir und bringt Reisende zurück.</p>
             </div>
           </article>
         </div>
@@ -417,102 +426,90 @@
         <p class="lp-lead" data-reveal data-i18n="themen.lead">Kein Grammatik-Kurs, sondern die Situationen, die eure Gruppe wirklich erlebt. Jedes Themengebiet ist reisefertig – tippt euch durch die Live-Demo.</p>
         <div class="lp-more">
           <div class="lp-more__chips">
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#B5302A; --i:0">
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#B5302A; --i:0">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-life-buoy"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.notfall.n">Notfall & Sicherheit</span>
                 <span class="lp-morechip__desc" data-i18n="themen.notfall.d">Arzt, Polizei, Hilfe – die Sätze, die zählen, auch offline</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#C2502E; --i:1">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#C2502E; --i:1">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-coffee"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.essen.n">Essen & Café</span>
                 <span class="lp-morechip__desc" data-i18n="themen.essen.d">Bestellen, zahlen, empfehlen lassen – ohne Zeigefinger</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#3F7355; --i:2">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#3F7355; --i:2">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-arrow-left-right"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.markt.n">Markt & Feilschen</span>
                 <span class="lp-morechip__desc" data-i18n="themen.markt.d">Auf dem Mercado fair handeln statt Touri-Preis zahlen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#E9A23B; --i:3">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#E9A23B; --i:3">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-banknote"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.geld.n">Geld & Preise</span>
                 <span class="lp-morechip__desc" data-i18n="themen.geld.d">Zahlen verstehen, Wechselgeld prüfen, Trinkgeld regeln</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#2F6B70; --i:0">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#2F6B70; --i:0">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-backpack"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.transport.n">Bus & Transport</span>
                 <span class="lp-morechip__desc" data-i18n="themen.transport.d">Taxi, Nachtbus, Ticket – ankommen, wo die Gruppe hinwill</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#7D4A8E; --i:1">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#7D4A8E; --i:1">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-stethoscope"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.gesundheit.n">Gesundheit & Höhe</span>
                 <span class="lp-morechip__desc" data-i18n="themen.gesundheit.d">Apotheke, Höhenkrankheit, Allergien – klar kommunizieren</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#3F7355; --i:2">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#3F7355; --i:2">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-globe"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.laender.n">Länder & Kultur</span>
                 <span class="lp-morechip__desc" data-i18n="themen.laender.d">Sitten, Eigenheiten & Geld pro Land – 19 LatAm-Ziele</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#FB5A47; --i:3">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#FB5A47; --i:3">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-dices"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.spiele.n">Icebreaker-Spiele</span>
                 <span class="lp-morechip__desc" data-i18n="themen.spiele.d">Gruppen-Battles & Missionen, die das Eis sofort brechen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#B5302A; --i:0">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#B5302A; --i:0">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-compass"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.orientierung.n">Orientierung</span>
                 <span class="lp-morechip__desc" data-i18n="themen.orientierung.d">Nach dem Weg fragen, Treffpunkte klären, nichts verpassen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#2F6B70; --i:1">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#2F6B70; --i:1">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-message-circle"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.dialoge.n">Diálogos</span>
                 <span class="lp-morechip__desc" data-i18n="themen.dialoge.d">Ganze Gespräche Zug um Zug – Smalltalk mit Locals</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#E9A23B; --i:2">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#E9A23B; --i:2">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-music"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.musik.n">Musik</span>
                 <span class="lp-morechip__desc" data-i18n="themen.musik.d">Der Sound des Reiselands – mitsingen statt danebenstehen</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
-            <a class="lp-morechip" href="./?edition=weroad&start=onboarding" data-reveal style="--accent:#7D4A8E; --i:3">
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#7D4A8E; --i:3">
               <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-calendar"/></svg></span>
               <span class="lp-morechip__txt">
                 <span class="lp-morechip__name" data-i18n="themen.pretrip.n">Pre-Trip & Begrüßung</span>
                 <span class="lp-morechip__desc" data-i18n="themen.pretrip.d">Tägliche Mini-Aufgaben vor Abflug – die Reise beginnt früher</span>
               </span>
-              <span class="lp-morechip__chev" aria-hidden="true"></span>
-            </a>
+            </div>
           </div>
         </div>
       </div>
@@ -688,6 +685,7 @@
         "use.1.k": "Pre-Trip-Engagement", "use.1.t": "Die Vorfreude wird zur App.", "use.1.b": "Ein mehrtägiger Pre-Trip-Plan bringt die Gruppe schon vor Abreise in Bewegung: Tag 1 Begrüßung, Tag 5 Icebreaker. Eure Reise beginnt zwei Wochen früher.",
         "use.2.k": "Social Icebreaker", "use.2.t": "Ein Tap startet das Gruppenspiel.", "use.2.b": "Der Coordinator-Modus gibt dem Reiseleiter ein fertiges 5-Minuten-Gruppenspiel an die Hand – Battles, Missionen, Lacher. Aus Mitreisenden wird eine Gruppe.",
         "use.3.k": "Safety & Local Immersion", "use.3.t": "Notfall- und Orientierungssätze – offline.", "use.3.b": "Taxi, Essen, Geld, Notfälle: die wichtigsten Sätze funktionieren auch ohne Netz im Nachtbus. Teilnehmer trauen sich, selbst zu bestellen – und fühlen sich sicherer.",
+        "use.4.k": "Eigene Edition", "use.4.t": "Eure Marke reist mit.", "use.4.b": "Name, Farbe und Route in eurer eigenen Edition – ein Link genügt. Nach der Reise bleibt die App als digitales Souvenir und bringt Reisende zurück.",
         "how.eyebrow": "DREI PHASEN, EINE REISE", "how.title": "Vor der Reise, unterwegs, danach.",
         "how.s1.k": "VORHER", "how.s1.t": "Pre-Trip-Challenge", "how.s1.b": "Zwei Wochen vor Abreise tägliche Mini-Aufgaben – <b class=\"lp-step__hl\">Destination-Pack</b> für Colombia, Peru, Mexiko & Co.",
         "how.s2.k": "UNTERWEGS", "how.s2.t": "Coordinator & Missions", "how.s2.b": "Der Reiseleiter startet ein <b class=\"lp-step__hl\">5-Minuten-Spiel</b>; die Gruppe meistert gemeinsame Mutproben vor Ort.",
@@ -747,6 +745,7 @@
         "use.1.k": "Pre-trip engagement", "use.1.t": "Anticipation becomes an app.", "use.1.b": "A multi-day pre-trip plan gets the group moving before departure: day 1 greetings, day 5 icebreaker. Your trip starts two weeks earlier.",
         "use.2.k": "Social icebreaker", "use.2.t": "One tap starts the group game.", "use.2.b": "Coordinator mode hands the guide a ready-made 5-minute group game – battles, missions, laughs. Fellow travelers become a group.",
         "use.3.k": "Safety & local immersion", "use.3.t": "Emergency and orientation phrases – offline.", "use.3.b": "Taxi, food, money, emergencies: the key phrases work even with no signal on the night bus. Participants dare to order themselves – and feel safer.",
+        "use.4.k": "Own edition", "use.4.t": "Your brand travels along.", "use.4.b": "Name, colour and route in your own edition – one link is enough. After the trip the app stays as a digital souvenir and brings travellers back.",
         "how.eyebrow": "THREE PHASES, ONE TRIP", "how.title": "Before the trip, on the road, afterwards.",
         "how.s1.k": "BEFORE", "how.s1.t": "Pre-trip challenge", "how.s1.b": "Daily mini-tasks two weeks before departure – a <b class=\"lp-step__hl\">destination pack</b> for Colombia, Peru, Mexico & co.",
         "how.s2.k": "ON THE ROAD", "how.s2.t": "Coordinator & missions", "how.s2.b": "The guide starts a <b class=\"lp-step__hl\">5-minute game</b>; the group takes on shared challenges on the ground.",
@@ -808,6 +807,7 @@
         "use.1.k": "Engagement pre-viaje", "use.1.t": "La ilusión se convierte en app.", "use.1.b": "Un plan pre-viaje de varios días pone al grupo en marcha antes de salir: día 1 saludos, día 5 rompehielos. Vuestro viaje empieza dos semanas antes.",
         "use.2.k": "Rompehielos social", "use.2.t": "Un toque inicia el juego de grupo.", "use.2.b": "El modo coordinador da al guía un juego de grupo de 5 minutos listo – batallas, misiones, risas. Los compañeros de viaje se vuelven un grupo.",
         "use.3.k": "Seguridad e inmersión local", "use.3.t": "Frases de emergencia y orientación – sin conexión.", "use.3.b": "Taxi, comida, dinero, emergencias: las frases clave funcionan incluso sin red en el bus nocturno. Los participantes se atreven a pedir solos – y se sienten más seguros.",
+        "use.4.k": "Edición propia", "use.4.t": "Tu marca viaja contigo.", "use.4.b": "Nombre, color y ruta en tu propia edición: basta un enlace. Tras el viaje la app queda como recuerdo digital y hace volver a los viajeros.",
         "how.eyebrow": "TRES FASES, UN VIAJE", "how.title": "Antes del viaje, sobre el terreno, después.",
         "how.s1.k": "ANTES", "how.s1.t": "Reto pre-viaje", "how.s1.b": "Mini-tareas diarias dos semanas antes de salir – un <b class=\"lp-step__hl\">pack de destino</b> para Colombia, Perú, México y más.",
         "how.s2.k": "SOBRE EL TERRENO", "how.s2.t": "Coordinador y misiones", "how.s2.b": "El guía inicia un <b class=\"lp-step__hl\">juego de 5 minutos</b>; el grupo supera retos compartidos sobre el terreno.",

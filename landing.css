@@ -635,6 +635,12 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
   .lp-morechip, .lp-morechip__ico, .lp-morechip__chev { transition: none; }
 }
 @media (hover: none) { .lp-morechip:hover { transform: none; } }
+/* Nicht-interaktive Info-Variante (B2B-Themengebiete): reine Übersicht ohne
+   Link/Klick – neutralisiert Pointer-Cursor und Hover-„antippbar"-Look. */
+.lp-morechip--static { cursor: default; }
+.lp-morechip--static:hover { transform: none; border-color: var(--line); box-shadow: var(--shadow); }
+.lp-morechip--static:hover::before { opacity: .5; width: 3px; }
+.lp-morechip--static:hover .lp-morechip__ico { transform: rotate(-4deg); }
 
 /* Geteiltes Beispiel-Panel: klappt unter dem Raster auf, zeigt echte Reise-Sätze
    des gewählten Moduls. Die Sätze liegen in einem Scroll-Snap-Streifen -> nativ
