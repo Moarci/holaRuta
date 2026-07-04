@@ -239,10 +239,25 @@ auf allen Seiten die deutsche App-UI. Jetzt tauscht `setLang` das Bild sprachabh
 Landing-Pages. Die Assets wurden aus der echten App per CDP erzeugt.
 **Produkt-Befund:** Der Reise-Track der App hat nur **de/en** als UI-Sprachen —
 Spanisch existiert nur im Locals-Track (Spanisch lernt Englisch, ein anderes Produkt).
-Deshalb gibt es keinen spanischen Reise-App-Screenshot; die **ES-Seite nutzt den
-englischen** Screenshot als neutrale Produkt-Ansicht. Offene strategische Frage:
-Ob die ES-Consumer-Seite langfristig auf die „inglés"/Locals-Zielgruppe umframen soll
-(dann würde auch ein spanischer App-Screenshot Sinn ergeben).
+Deshalb gibt es keinen spanischen Reise-App-Screenshot; die ES-Seite nutzte zunächst
+den englischen Screenshot als neutrale Produkt-Ansicht.
+
+**ES-Consumer-Seite auf „inglés"/Locals umgeframed (Folge-Commit):** Die spanische
+Fassung von `landing.html` zielt jetzt auf **Spanischsprachige, die Englisch fürs
+Reisen lernen** (Inglés-Edition, Track `es-en`):
+- **Narrativ** komplett umgeschrieben (Hero, Features, „Más que idioma", How-it-works,
+  FAQ, Footer, Final, Meta) — von „lerne Spanisch" zu „aprende inglés de viaje".
+- **Beispielkarten** demonstrieren jetzt Spanisch→Englisch: Rückseite (`ex*.back`),
+  Aussprache (`ex*.tip`) und Kontext-Zielsatz per i18n; `data-spk` + `lang`-Attribut +
+  TTS-Stimme (`en-US`) werden in `setLang` an die Zielsprache gekoppelt.
+- **CTAs** führen im ES-Modus in die Inglés-Edition (`?edition=ingles-pro`, via
+  `data-app-onboard`).
+- **Mockup** nutzt einen echten Spanisch-UI-Screenshot der Locals-App (`home-hero-es.webp`).
+
+Bekannte Rest-Punkte (klein): Die Trust-Bar-Zahlen im Hero-Markup (`2293`, `72`) sind
+Reise-Spanisch-Werte und erscheinen auch auf der ES-Seite; der Fließtext wurde bereits
+zahl-agnostisch gemacht („miles"/„decenas"). Die „more"-Modul-Chips wurden generisch
+gehalten, nicht auf exakte Inglés-Edition-Feature-Parität geprüft.
 
 ---
 
