@@ -1456,17 +1456,30 @@
     // + gerade gerückte Nummer) und – auf dem Desktop – wechselt das Phone-Bild.
     // Läuft auch ohne phoneImg, damit die Hervorhebung auf Mobil ebenso greift.
     var stepEls = document.querySelectorAll(".lp-step[data-step]");
-    if (stepEls.length && "IntersectionObserver" in window) {
-      var ioStep = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting && en.intersectionRatio > 0.55) {
-            stepEls.forEach(function (st) { st.classList.toggle("is-active", st === en.target); });
-            var s = en.target.getAttribute("data-step");
-            if (phoneImg && shots[s] && phoneImg.getAttribute("src") !== shots[s]) phoneImg.setAttribute("src", shots[s]);
-          }
+    function activateStep(el) {
+      stepEls.forEach(function (st) { st.classList.toggle("is-active", st === el); });
+      var s = el.getAttribute("data-step");
+      if (phoneImg && shots[s] && phoneImg.getAttribute("src") !== shots[s]) phoneImg.setAttribute("src", shots[s]);
+    }
+    if (stepEls.length) {
+      // Klick/Tastatur: Schritt anwählen und – auf dem Desktop – das Phone-Bild wechseln.
+      // (Vorher konnte man die drei Schritte nicht anklicken; das Bild wechselte nur beim Scrollen.)
+      stepEls.forEach(function (el) {
+        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
+        el.addEventListener("click", function () { activateStep(el); });
+        el.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); activateStep(el); }
         });
-      }, { threshold: [0.55, 0.75] });
-      stepEls.forEach(function (el) { ioStep.observe(el); });
+      });
+      // Scroll-Enhancement: der im Blick liegende Schritt aktiviert sich zusätzlich automatisch.
+      if ("IntersectionObserver" in window) {
+        var ioStep = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting && en.intersectionRatio > 0.55) activateStep(en.target);
+          });
+        }, { threshold: [0.55, 0.75] });
+        stepEls.forEach(function (el) { ioStep.observe(el); });
+      }
     }
 
     // ── Sticky-Header-Schatten ab erstem Scroll ──

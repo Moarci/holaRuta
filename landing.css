@@ -717,12 +717,20 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
 }
 @media (min-width: 880px) { .lp-steps::before { bottom: 64px; } }
 .lp-step {
-  position: relative; z-index: 1;
+  position: relative; z-index: 1; cursor: pointer;
   display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: start;
   padding: var(--space-4); border-radius: var(--r-lg);
   background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.25s ease;
 }
+.lp-step:focus-visible {
+  outline: 2px solid var(--brand); outline-offset: 3px;
+}
+/* Dark Theme: --line liegt bei nur 12% Deckkraft -> die Karten-Rahmen verschwimmen
+   fast unsichtbar mit der Fläche. Für die Schritt-Karten (und ihr Timeline-Band)
+   einen kräftigeren Rahmen ziehen, damit die drei Kacheln klar abgegrenzt bleiben. */
+[data-theme="dark"] .lp-step { border-color: var(--line-strong); }
+[data-theme="dark"] .lp-steps::before { opacity: 0.7; }
 /* Hover (Desktop) und der im Blick liegende Schritt (is-active, per Scroll) heben
    sich in ihrer Farbe hervor -> die Liste „lebt" beim Durchscrollen. */
 .lp-step:hover, .lp-step.is-active {
