@@ -1,15 +1,17 @@
 /*
- * landing-carousel.js – Beispielkarten-Karussell der B2B-Landing-Pages
- * (landing-schule/-hostel/-reiseanbieter.html). EINE geteilte Implementierung
- * statt dreier Inline-Kopien; die Seiten liefern Markup (#lpCar mit .lp-slide,
- * #lpPills mit .lp-herocard__pill) und i18n, hier wohnt nur das Verhalten:
+ * landing-carousel.js – Beispielkarten-Karussell ALLER Landing-Pages
+ * (B2C landing.html + B2B landing-schule/-hostel/-reiseanbieter.html). EINE
+ * geteilte Implementierung statt früher vierer Inline-Kopien; die Seiten liefern
+ * Markup (#lpCar mit .lp-slide) und i18n, hier wohnt nur das Verhalten:
  *
- *  – Szenario-Pills schalten die Karten um (Pendant zu den Punkten der
- *    B2C-Landing), Tippen dreht die Karte, 🔊 liest vor, 🧭 öffnet den
- *    Reise-Kontext (wie in der App).
- *  – Auto-Rotation NUR bis zur ersten bewussten Navigation (Pill/Wisch):
- *    die Pills sind Szenario-Tabs, eine explizite Wahl darf nicht 4 s
- *    später wegrotieren. Hover/Fokus (Karussell UND Pill-Zeile) pausiert.
+ *  – Zwei Navigations-Varianten, automatisch erkannt:
+ *      · #lpPills mit .lp-herocard__pill  → Szenario-TABS (B2B). Eine bewusste
+ *        Wahl (Pill/Wisch) beendet die Auto-Rotation dauerhaft – ein Szenario
+ *        darf nicht 4 s später wegrotieren (aria-pressed).
+ *      · #lpDots  mit .lp-dot             → Positions-PUNKTE (B2C). Anonyme
+ *        Positionsanzeiger; nach einem Klick/Wisch läuft die Rotation weiter
+ *        (aria-current + .is-active), Pausieren nur bei Hover/Fokus.
+ *  – Tippen dreht die Karte, 🔊 liest vor, 🧭 öffnet den Reise-Kontext (App).
  *  – Inaktive Slides sind inert und aus der Tab-Reihenfolge genommen –
  *    aria-hidden-Inhalte dürfen nicht fokussierbar sein (WCAG).
  *  – Nutzer-initiierte Kartenwechsel werden über eine aria-live-Region
@@ -25,8 +27,10 @@
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var slides = Array.prototype.slice.call(car.querySelectorAll(".lp-slide"));
     var flips = slides.map(function (s) { return s.querySelector(".flip"); });
-    var pillRow = document.getElementById("lpPills");
-    var pills = pillRow ? Array.prototype.slice.call(pillRow.querySelectorAll(".lp-herocard__pill")) : [];
+    // Navigation automatisch erkennen: Pills (Tabs) oder Punkte (Positionsanzeiger).
+    var navRow = document.getElementById("lpPills") || document.getElementById("lpDots");
+    var isPills = !!(navRow && navRow.id === "lpPills");
+    var navBtns = navRow ? Array.prototype.slice.call(navRow.querySelectorAll(isPills ? ".lp-herocard__pill" : ".lp-dot")) : [];
     var idx = 0, timer = null, swiped = false, userNavigated = false;
     var AUTO = 4200;
 
@@ -63,8 +67,14 @@
           if (cb) { cb.classList.remove("is-open"); cb.setAttribute("aria-expanded", "false"); }
         }
       });
-      pills.forEach(function (p, n) {
-        p.setAttribute("aria-pressed", n === idx ? "true" : "false");
+      navBtns.forEach(function (b, n) {
+        var on = n === idx;
+        if (isPills) {
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        } else { // Positions-Punkte: sichtbarer Zustand + aria-current
+          b.classList.toggle("is-active", on);
+          if (on) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
+        }
       });
       if (announce) {
         var front = slides[idx].querySelector(".face--front");
@@ -77,8 +87,13 @@
 
     function startAuto() { if (reduce || userNavigated) return; stopAuto(); timer = setInterval(next, AUTO); }
     function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
-    // Bewusste Navigation (Pill oder Wisch) beendet die Auto-Rotation dauerhaft.
-    function userNav(i) { userNavigated = true; stopAuto(); setActive(i, true); }
+    // Bewusste Navigation (Pill/Punkt oder Wisch). Bei Szenario-Tabs (Pills)
+    // beendet sie die Auto-Rotation dauerhaft; bei anonymen Punkten läuft die
+    // Rotation weiter. In beiden Fällen wird der Wechsel angesagt (announce).
+    function navigate(i) {
+      if (isPills) { userNavigated = true; stopAuto(); setActive(i, true); }
+      else { setActive(i, true); startAuto(); }
+    }
 
     // Flip + Vorlesen + Reise-Kontext pro Karte
     flips.forEach(function (f) {
@@ -124,14 +139,14 @@
       });
     });
 
-    // Pill-Navigation: Pills sind Szenario-Tabs – die Wahl bleibt stehen.
-    pills.forEach(function (p, n) {
-      p.addEventListener("click", function () { userNav(n); });
+    // Navigation per Pill/Punkt.
+    navBtns.forEach(function (b, n) {
+      b.addEventListener("click", function () { navigate(n); });
     });
 
-    // Auto-Rotation pausieren bei Hover/Fokus – auf Karussell UND Pill-Zeile,
-    // damit auch das Lesen der Pills nichts unterm Zeiger wegdreht.
-    [car, pillRow].forEach(function (zone) {
+    // Auto-Rotation pausieren bei Hover/Fokus – auf Karussell UND Navi-Zeile,
+    // damit auch das Lesen/Ansteuern der Pills/Punkte nichts wegdreht.
+    [car, navRow].forEach(function (zone) {
       if (!zone) return;
       zone.addEventListener("pointerenter", stopAuto);
       zone.addEventListener("pointerleave", startAuto);
@@ -153,7 +168,7 @@
       dragX = dragY = null;
       if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { // klar horizontal
         swiped = true;
-        userNav(idx + (dx < 0 ? 1 : -1));
+        navigate(idx + (dx < 0 ? 1 : -1));
       }
     });
     car.addEventListener("pointercancel", function () { dragX = dragY = null; });
