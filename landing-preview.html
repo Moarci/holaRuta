@@ -5012,33 +5012,66 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
      aussieht statt als schmale „Waise" links unten zu hängen. */
   .lp-features__grid > .lp-feat:last-child:nth-child(3n - 2) { grid-column: 2 / 3; }
 }
-.lp-feat {
-  display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3);
-  padding: var(--space-4); border-radius: var(--r-lg);
-  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
-  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+/* ── Feature-Karten als umdrehbare Memory-Karten ───────────────────────────
+   Jede .lp-feat ist jetzt eine .flip-Karte (3D-Dreh-Mechanik + Klick/Tastatur
+   aus styles.css, per JS in landing.html verdrahtet). Ruheseite (Teaser,
+   farbig) = Icon + Titel + „umdrehen"-Hinweis; Rückseite (Detail, weiß) =
+   Icon + Titel + Fließtext. Ausgangslage ist ein Mix – einige Karten starten
+   via .is-flipped aufgedeckt -> Memory-Charakter, weniger Text auf einen Blick.
+   Die Karte selbst trägt keine Fläche mehr; das übernehmen die beiden Faces.
+   perspective/cursor/user-select kommen von der geerbten .flip-Regel. */
+.lp-feat { transition: transform 0.16s ease; }
+.lp-feat:hover { transform: translateY(-3px); }
+@media (hover: none) { .lp-feat:hover { transform: none; } }
+/* Einheitliche Kachelhöhe je Breakpoint – die absolut gestapelten Faces
+   brauchen eine feste Höhe; hoch genug für den längsten Detailtext je Spalte. */
+.lp-feat .flip__inner { min-height: 180px; }
+@media (min-width: 520px) { .lp-feat .flip__inner { min-height: 240px; } }
+@media (min-width: 760px) { .lp-feat .flip__inner { min-height: 258px; } }
+
+/* Beide Faces: Feature-Layout (zentriert, kompaktes Padding) mit dem flachen
+   Marken-Sticker-Schatten statt des großen Flashcard-Schattens. */
+.lp-feat .face { gap: var(--space-2); padding: 22px 20px; box-shadow: var(--shadow); }
+.lp-feat:hover .face { box-shadow: var(--shadow-lg); }
+
+/* Ruheseite (farbig, im Modul-Akzentton --from) – überschreibt das helle
+   .face--front-Standardbild. */
+.lp-feat__teaser {
+  background: linear-gradient(150deg,
+    var(--from, var(--brand)),
+    color-mix(in srgb, var(--from, var(--brand)) 80%, #000));
+  color: var(--cream); border: none;
 }
-.lp-feat:hover {
-  transform: translateY(-3px); box-shadow: var(--shadow-lg);
-  border-color: color-mix(in srgb, var(--accent, var(--brand)) 45%, var(--line));
+.lp-feat__teaser .lp-feat__title { color: var(--cream); }
+.lp-feat__teaser .lp-feat__icon {
+  color: var(--cream);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.30);
 }
-/* Farbige Icon-Kachel je Feature (Marken-Palette via --accent inline). Weicher
-   Verlauf + feiner Innenring -> mehr Leben, bleibt aber im Erdton-Look. */
+.lp-feat__flip {
+  margin-top: 2px; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.03em; opacity: 0.82;
+}
+
+/* Rückseite (weiße Detail-Karte) – überschreibt das farbige .face--back-Standardbild. */
+.lp-feat__detail { background: var(--card); border: 1.5px solid var(--line); color: var(--muted); }
+
+/* Farbige Icon-Kachel je Feature (Basis = Detail-Seite; der Teaser überschreibt
+   Farbe & Fläche oben). Weicher Verlauf + feiner Innenring, leicht schräg. */
 .lp-feat__icon {
-  width: 56px; height: 56px; border-radius: 16px;
+  width: 52px; height: 52px; border-radius: 15px;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 1.7rem; line-height: 1;
+  font-size: 1.55rem; line-height: 1;
   background: linear-gradient(135deg,
     color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
     color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
   box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
-  /* Leichte Schräglage -> verspielter, „von Hand gesetzter" Look (wie der Kompass). */
   transform: rotate(-5deg);
   transition: transform 0.16s ease;
 }
 .lp-feat:hover .lp-feat__icon { transform: scale(1.06) rotate(-7deg); }
-.lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); line-height: 1.15; color: var(--ink); margin: 0; }
-.lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
+.lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: 1.12rem; line-height: 1.16; color: var(--ink); margin: 0; }
+.lp-feat__body { font-size: 0.9rem; line-height: 1.45; color: var(--muted); margin: 0; }
 
 /* ── „Mehr als Sprache": emotionale Hooks. Editorialer als die Feature-Kacheln –
  *    kleiner spanischer Kicker in Modulfarbe, große Display-Headline (der Hook),
@@ -5187,6 +5220,12 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
   .lp-morechip, .lp-morechip__ico, .lp-morechip__chev { transition: none; }
 }
 @media (hover: none) { .lp-morechip:hover { transform: none; } }
+/* Nicht-interaktive Info-Variante (B2B-Themengebiete): reine Übersicht ohne
+   Link/Klick – neutralisiert Pointer-Cursor und Hover-„antippbar"-Look. */
+.lp-morechip--static { cursor: default; }
+.lp-morechip--static:hover { transform: none; border-color: var(--line); box-shadow: var(--shadow); }
+.lp-morechip--static:hover::before { opacity: .5; width: 3px; }
+.lp-morechip--static:hover .lp-morechip__ico { transform: rotate(-4deg); }
 
 /* Geteiltes Beispiel-Panel: klappt unter dem Raster auf, zeigt echte Reise-Sätze
    des gewählten Moduls. Die Sätze liegen in einem Scroll-Snap-Streifen -> nativ
@@ -5943,65 +5982,173 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         <h2 class="lp-h2" data-reveal data-i18n="feat.title">Alles für die Reise — nichts fürs Klassenzimmer.</h2>
         <p class="lp-lead" data-reveal data-i18n="feat.lead">Kein Vokabel-Pauken. Sondern die Sätze, die du am Busbahnhof, im Hostel und auf dem Markt sofort brauchst.</p>
         <div class="lp-features__grid">
-          <article class="lp-feat" data-reveal style="--i:0; --accent:#C2502E">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-brain"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.srs.t">Du vergisst es nicht mehr</h3>
-            <p class="lp-feat__body" data-i18n="feat.srs.b">Jede Vokabel kommt genau dann zurück, wenn du sie zu vergessen drohst — automatisch. Du musst nichts planen.</p>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:0; --accent:#C2502E; --from:#C2502E">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-brain"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.srs.t">Du vergisst es nicht mehr</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-brain"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.srs.t">Du vergisst es nicht mehr</h3>
+                <p class="lp-feat__body" data-i18n="feat.srs.b">Jede Vokabel kommt genau dann zurück, wenn du sie zu vergessen drohst — automatisch. Du musst nichts planen.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:1; --accent:#2F6B70">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-sliders"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.modes.t">Lern, wie's dir passt</h3>
-            <p class="lp-feat__body" data-i18n="feat.modes.b">Karteikarte, selbst schreiben oder nur hören — wechsle den Modus jederzeit.</p>
+          <article class="lp-feat flip is-flipped" data-reveal role="button" tabindex="0" aria-pressed="true" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:1; --accent:#2F6B70; --from:#2F6B70">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-sliders"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.modes.t">Lern, wie's dir passt</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-sliders"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.modes.t">Lern, wie's dir passt</h3>
+                <p class="lp-feat__body" data-i18n="feat.modes.b">Karteikarte, selbst schreiben oder nur hören — wechsle den Modus jederzeit.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:2; --accent:#3F7355">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-globe"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.latam.t">Echtes Straßen-Spanisch</h3>
-            <p class="lp-feat__body" data-i18n="feat.latam.b">colectivo, vuelto, plata, chévere — die Wörter, die man in Lateinamerika wirklich sagt.</p>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:2; --accent:#3F7355; --from:#3F7355">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-globe"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.latam.t">Echtes Straßen-Spanisch</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-globe"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.latam.t">Echtes Straßen-Spanisch</h3>
+                <p class="lp-feat__body" data-i18n="feat.latam.b">colectivo, vuelto, plata, chévere — die Wörter, die man in Lateinamerika wirklich sagt.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:0; --accent:#2F6B70">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-compass"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.context.t">Immer mit Kontext</h3>
-            <p class="lp-feat__body" data-i18n="feat.context.b">Tipp auf 🧭 und jede Karte verrät dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp zur Einordnung.</p>
+          <article class="lp-feat flip is-flipped" data-reveal role="button" tabindex="0" aria-pressed="true" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:0; --accent:#2F6B70; --from:#2F6B70">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-compass"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.context.t">Immer mit Kontext</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-compass"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.context.t">Immer mit Kontext</h3>
+                <p class="lp-feat__body" data-i18n="feat.context.b">Tipp auf 🧭 und jede Karte verrät dir, wann und wo du den Satz wirklich brauchst — plus Reisetipp zur Einordnung.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:0; --accent:#E9A23B">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-wifi-off"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.offline.t">Funktioniert ohne Netz</h3>
-            <p class="lp-feat__body" data-i18n="feat.offline.b">Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.</p>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:0; --accent:#E9A23B; --from:#E9A23B">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-wifi-off"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.offline.t">Funktioniert ohne Netz</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-wifi-off"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.offline.t">Funktioniert ohne Netz</h3>
+                <p class="lp-feat__body" data-i18n="feat.offline.b">Einmal geladen, läuft alles offline — Anden, Dschungel, Nachtbus.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:1; --accent:#7D4A8E">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-lock"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.privacy.t">Kein Konto, keine Werbung</h3>
-            <p class="lp-feat__body" data-i18n="feat.privacy.b">Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.</p>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:1; --accent:#7D4A8E; --from:#7D4A8E">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-lock"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.privacy.t">Kein Konto, keine Werbung</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-lock"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.privacy.t">Kein Konto, keine Werbung</h3>
+                <p class="lp-feat__body" data-i18n="feat.privacy.b">Dein Fortschritt bleibt auf deinem Gerät. Keine Anmeldung, keine Werbung.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:2; --accent:#B5302A">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-folder"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.areas.t">72 Themen für echte Situationen</h3>
-            <p class="lp-feat__body" data-i18n="feat.areas.b">Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.</p>
+          <article class="lp-feat flip is-flipped" data-reveal role="button" tabindex="0" aria-pressed="true" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:2; --accent:#B5302A; --from:#B5302A">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-folder"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.areas.t">72 Themen für echte Situationen</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-folder"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.areas.t">72 Themen für echte Situationen</h3>
+                <p class="lp-feat__body" data-i18n="feat.areas.b">Von der Busfahrt bis zur Apotheke — 2293 Karten, sauber sortiert.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:0; --accent:#7D4A8E">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-volume-2"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.audio.t">Hör die echte Aussprache</h3>
-            <p class="lp-feat__body" data-i18n="feat.audio.b">Jeder Satz wird dir vorgelesen — Betonung, Tempo, Klang. Sprich nach, bis es sich richtig anfühlt.</p>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:0; --accent:#7D4A8E; --from:#7D4A8E">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-volume-2"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.audio.t">Hör die echte Aussprache</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-volume-2"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.audio.t">Hör die echte Aussprache</h3>
+                <p class="lp-feat__body" data-i18n="feat.audio.b">Jeder Satz wird dir vorgelesen — Betonung, Tempo, Klang. Sprich nach, bis es sich richtig anfühlt.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:1; --accent:#E9A23B">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-bar-chart-3"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.progress.t">Dein Fortschritt in Zahlen</h3>
-            <p class="lp-feat__body" data-i18n="feat.progress.b">Trefferquote, Serien und Abzeichen zeigen dir schwarz auf weiß, wie viel schon sitzt — und was als Nächstes dran ist.</p>
+          <article class="lp-feat flip is-flipped" data-reveal role="button" tabindex="0" aria-pressed="true" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:1; --accent:#E9A23B; --from:#E9A23B">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-bar-chart-3"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.progress.t">Dein Fortschritt in Zahlen</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-bar-chart-3"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.progress.t">Dein Fortschritt in Zahlen</h3>
+                <p class="lp-feat__body" data-i18n="feat.progress.b">Trefferquote, Serien und Abzeichen zeigen dir schwarz auf weiß, wie viel schon sitzt — und was als Nächstes dran ist.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:2; --accent:#C2502E">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-search"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.search.t">Finde jeden Satz sofort</h3>
-            <p class="lp-feat__body" data-i18n="feat.search.b">Tippe ein Wort — deutsch oder spanisch — und die passende Karte ist da. Kein Blättern, kein Suchen.</p>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:2; --accent:#C2502E; --from:#C2502E">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-search"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.search.t">Finde jeden Satz sofort</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-search"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.search.t">Finde jeden Satz sofort</h3>
+                <p class="lp-feat__body" data-i18n="feat.search.b">Tippe ein Wort — deutsch oder spanisch — und die passende Karte ist da. Kein Blättern, kein Suchen.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:0; --accent:#3F7355">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-target"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.level.t">Start auf deinem Niveau</h3>
-            <p class="lp-feat__body" data-i18n="feat.level.b">Ein kurzer Check sortiert dich ein — du übst nicht, was du längst kannst, und stehst nie am Nullpunkt.</p>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:0; --accent:#3F7355; --from:#3F7355">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-target"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.level.t">Start auf deinem Niveau</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-target"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.level.t">Start auf deinem Niveau</h3>
+                <p class="lp-feat__body" data-i18n="feat.level.b">Ein kurzer Check sortiert dich ein — du übst nicht, was du längst kannst, und stehst nie am Nullpunkt.</p>
+              </div>
+            </div>
           </article>
-          <article class="lp-feat" data-reveal style="--i:1; --accent:#2F6B70">
-            <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-book-open"/></svg></span>
-            <h3 class="lp-feat__title" data-i18n="feat.conjug.t">Verben ohne Tabellen-Frust</h3>
-            <p class="lp-feat__body" data-i18n="feat.conjug.b">Der Konjugator zeigt dir jede Zeitform genau dann, wenn ein Satz sie braucht — statt stumpfem Auswendiglernen.</p>
+          <article class="lp-feat flip is-flipped" data-reveal role="button" tabindex="0" aria-pressed="true" data-i18n-aria="a11y.feat" aria-label="Karte umdrehen" style="--i:1; --accent:#2F6B70; --from:#2F6B70">
+            <div class="flip__inner">
+              <div class="face face--front lp-feat__teaser">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-book-open"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.conjug.t">Verben ohne Tabellen-Frust</h3>
+                <span class="lp-feat__flip" data-i18n="feat.flip" aria-hidden="true">↺ umdrehen</span>
+              </div>
+              <div class="face face--back lp-feat__detail">
+                <span class="lp-feat__icon" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-book-open"/></svg></span>
+                <h3 class="lp-feat__title" data-i18n="feat.conjug.t">Verben ohne Tabellen-Frust</h3>
+                <p class="lp-feat__body" data-i18n="feat.conjug.b">Der Konjugator zeigt dir jede Zeitform genau dann, wenn ein Satz sie braucht — statt stumpfem Auswendiglernen.</p>
+              </div>
+            </div>
           </article>
         </div>
 
@@ -6405,6 +6552,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "feat.search.t": "Finde jeden Satz sofort", "feat.search.b": "Tippe ein Wort — deutsch oder spanisch — und die passende Karte ist da. Kein Blättern, kein Suchen.",
         "feat.level.t": "Start auf deinem Niveau", "feat.level.b": "Ein kurzer Check sortiert dich ein — du übst nicht, was du längst kannst, und stehst nie am Nullpunkt.",
         "feat.conjug.t": "Verben ohne Tabellen-Frust", "feat.conjug.b": "Der Konjugator zeigt dir jede Zeitform genau dann, wenn ein Satz sie braucht — statt stumpfem Auswendiglernen.",
+        "feat.flip": "↺ umdrehen",
         "why.eyebrow": "MEHR ALS SPRACHE",
         "why.title": "Du lernst nicht nur Spanisch. Du verstehst den Kontinent.",
         "why.lead": "Sprache ist nur der Anfang. HolaRuta gibt dir Geschichte, Kultur, Gespür und Anschluss — alles, was aus einer Reise deine Reise macht.",
@@ -6446,7 +6594,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "final.title": "Pack deinen Rucksack. Den Rest übernehmen wir.",
         "final.sub": "2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.",
         "final.cta": "Kostenlos starten →",
-        "a11y.theme": "Hell/Dunkel umschalten", "a11y.card": "Beispielkarte umdrehen",
+        "a11y.theme": "Hell/Dunkel umschalten", "a11y.card": "Beispielkarte umdrehen", "a11y.feat": "Karte umdrehen",
         "_title": "HolaRuta – Reise-Spanisch für Lateinamerika",
         "_desc": "HolaRuta – dein Reise-Spanisch für echte Situationen: 2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Lateinamerika-korrekt, komplett offline, kostenlos, ohne Konto."
       },
@@ -6487,6 +6635,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "feat.search.t": "Find any phrase instantly", "feat.search.b": "Type a word — English or Spanish — and the right card is there. No scrolling, no digging.",
         "feat.level.t": "Start at your level", "feat.level.b": "A quick check places you — you won't drill what you already know, and never start from zero.",
         "feat.conjug.t": "Verbs without the tables", "feat.conjug.b": "The conjugator shows you each tense right when a phrase needs it — no rote memorizing.",
+        "feat.flip": "↺ flip",
         "why.eyebrow": "MORE THAN LANGUAGE",
         "why.title": "You don't just learn Spanish. You get the continent.",
         "why.lead": "Language is only the start. HolaRuta gives you history, culture, instinct and connection — everything that turns a trip into your trip.",
@@ -6528,7 +6677,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "final.title": "Pack your backpack. We'll handle the rest.",
         "final.sub": "2,293 cards, fully offline, no account, free. Ready to go in 30 seconds.",
         "final.cta": "Start free →",
-        "a11y.theme": "Toggle light/dark", "a11y.card": "Flip the example card",
+        "a11y.theme": "Toggle light/dark", "a11y.card": "Flip the example card", "a11y.feat": "Flip card",
         "_title": "HolaRuta – Travel Spanish for Latin America",
         "_desc": "HolaRuta – travel Spanish for real situations: 2,293 flashcards with spaced repetition for buses, hotels, food, money & emergencies. Latin-America-correct, fully offline, free, no account."
       },
@@ -6569,6 +6718,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "feat.search.t": "Encuentra cualquier frase al instante", "feat.search.b": "Escribe una palabra — en alemán o español — y la tarjeta aparece. Sin buscar, sin desplazarte.",
         "feat.level.t": "Empieza en tu nivel", "feat.level.b": "Un test corto te ubica — no repasas lo que ya sabes ni empiezas desde cero.",
         "feat.conjug.t": "Verbos sin tablas aburridas", "feat.conjug.b": "El conjugador te muestra cada tiempo justo cuando una frase lo necesita — sin memorizar de memoria.",
+        "feat.flip": "↺ girar",
         "why.eyebrow": "MÁS QUE IDIOMA",
         "why.title": "No solo aprendes español. Entiendes el continente.",
         "why.lead": "El idioma es solo el comienzo. HolaRuta te da historia, cultura, instinto y conexión — todo lo que convierte un viaje en tu viaje.",
@@ -6610,7 +6760,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "final.title": "Haz la maleta. Del resto nos encargamos nosotros.",
         "final.sub": "2293 tarjetas, sin conexión, sin cuenta, gratis. Listo en 30 segundos.",
         "final.cta": "Empezar gratis →",
-        "a11y.theme": "Cambiar claro/oscuro", "a11y.card": "Girar la tarjeta de ejemplo",
+        "a11y.theme": "Cambiar claro/oscuro", "a11y.card": "Girar la tarjeta de ejemplo", "a11y.feat": "Girar la tarjeta",
         "_title": "HolaRuta – Español de viaje para Latinoamérica",
         "_desc": "HolaRuta – tu español de viaje para situaciones reales: 2293 tarjetas con repetición espaciada para bus, hotel, comida, dinero y emergencias. Correcto para Latinoamérica, sin conexión, gratis, sin cuenta."
       }
@@ -6695,6 +6845,23 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
 
     // Das Beispielkarten-Karussell (#lpCar) wird von der geteilten
     // landing-carousel.js gesteuert (Flip, 🔊, 🧭, Punkt-Navigation, Rotation).
+
+    // ── Feature-Karten wie Memory-Karten umdrehen (Klick + Tastatur) ──
+    // Nutzt dieselbe .is-flipped-Mechanik wie die Beispielkarten (styles.css).
+    // Ausgangslage kommt aus dem Markup (einige Karten tragen bereits .is-flipped
+    // + aria-pressed="true"); hier wird nur das Umschalten verdrahtet.
+    (function featureFlip() {
+      document.querySelectorAll(".lp-feat.flip").forEach(function (card) {
+        function flip() {
+          var on = card.classList.toggle("is-flipped");
+          card.setAttribute("aria-pressed", on ? "true" : "false");
+        }
+        card.addEventListener("click", flip);
+        card.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
+        });
+      });
+    })();
 
     // ── „Mehr an Bord": Modul antippen -> Beispiele aufklappen & durchwischen ──
     (function moreModules() {

@@ -493,33 +493,66 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
      aussieht statt als schmale „Waise" links unten zu hängen. */
   .lp-features__grid > .lp-feat:last-child:nth-child(3n - 2) { grid-column: 2 / 3; }
 }
-.lp-feat {
-  display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3);
-  padding: var(--space-4); border-radius: var(--r-lg);
-  background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--shadow);
-  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+/* ── Feature-Karten als umdrehbare Memory-Karten ───────────────────────────
+   Jede .lp-feat ist jetzt eine .flip-Karte (3D-Dreh-Mechanik + Klick/Tastatur
+   aus styles.css, per JS in landing.html verdrahtet). Ruheseite (Teaser,
+   farbig) = Icon + Titel + „umdrehen"-Hinweis; Rückseite (Detail, weiß) =
+   Icon + Titel + Fließtext. Ausgangslage ist ein Mix – einige Karten starten
+   via .is-flipped aufgedeckt -> Memory-Charakter, weniger Text auf einen Blick.
+   Die Karte selbst trägt keine Fläche mehr; das übernehmen die beiden Faces.
+   perspective/cursor/user-select kommen von der geerbten .flip-Regel. */
+.lp-feat { transition: transform 0.16s ease; }
+.lp-feat:hover { transform: translateY(-3px); }
+@media (hover: none) { .lp-feat:hover { transform: none; } }
+/* Einheitliche Kachelhöhe je Breakpoint – die absolut gestapelten Faces
+   brauchen eine feste Höhe; hoch genug für den längsten Detailtext je Spalte. */
+.lp-feat .flip__inner { min-height: 180px; }
+@media (min-width: 520px) { .lp-feat .flip__inner { min-height: 240px; } }
+@media (min-width: 760px) { .lp-feat .flip__inner { min-height: 258px; } }
+
+/* Beide Faces: Feature-Layout (zentriert, kompaktes Padding) mit dem flachen
+   Marken-Sticker-Schatten statt des großen Flashcard-Schattens. */
+.lp-feat .face { gap: var(--space-2); padding: 22px 20px; box-shadow: var(--shadow); }
+.lp-feat:hover .face { box-shadow: var(--shadow-lg); }
+
+/* Ruheseite (farbig, im Modul-Akzentton --from) – überschreibt das helle
+   .face--front-Standardbild. */
+.lp-feat__teaser {
+  background: linear-gradient(150deg,
+    var(--from, var(--brand)),
+    color-mix(in srgb, var(--from, var(--brand)) 80%, #000));
+  color: var(--cream); border: none;
 }
-.lp-feat:hover {
-  transform: translateY(-3px); box-shadow: var(--shadow-lg);
-  border-color: color-mix(in srgb, var(--accent, var(--brand)) 45%, var(--line));
+.lp-feat__teaser .lp-feat__title { color: var(--cream); }
+.lp-feat__teaser .lp-feat__icon {
+  color: var(--cream);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.30);
 }
-/* Farbige Icon-Kachel je Feature (Marken-Palette via --accent inline). Weicher
-   Verlauf + feiner Innenring -> mehr Leben, bleibt aber im Erdton-Look. */
+.lp-feat__flip {
+  margin-top: 2px; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.03em; opacity: 0.82;
+}
+
+/* Rückseite (weiße Detail-Karte) – überschreibt das farbige .face--back-Standardbild. */
+.lp-feat__detail { background: var(--card); border: 1.5px solid var(--line); color: var(--muted); }
+
+/* Farbige Icon-Kachel je Feature (Basis = Detail-Seite; der Teaser überschreibt
+   Farbe & Fläche oben). Weicher Verlauf + feiner Innenring, leicht schräg. */
 .lp-feat__icon {
-  width: 56px; height: 56px; border-radius: 16px;
+  width: 52px; height: 52px; border-radius: 15px;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 1.7rem; line-height: 1;
+  font-size: 1.55rem; line-height: 1;
   background: linear-gradient(135deg,
     color-mix(in srgb, var(--accent, var(--brand)) 28%, var(--card)),
     color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card)));
   box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent, var(--brand)) 32%, transparent);
-  /* Leichte Schräglage -> verspielter, „von Hand gesetzter" Look (wie der Kompass). */
   transform: rotate(-5deg);
   transition: transform 0.16s ease;
 }
 .lp-feat:hover .lp-feat__icon { transform: scale(1.06) rotate(-7deg); }
-.lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); line-height: 1.15; color: var(--ink); margin: 0; }
-.lp-feat__body { font-size: 0.96rem; line-height: 1.5; color: var(--muted); margin: 0; }
+.lp-feat__title { font-family: var(--font-display); font-weight: 800; font-size: 1.12rem; line-height: 1.16; color: var(--ink); margin: 0; }
+.lp-feat__body { font-size: 0.9rem; line-height: 1.45; color: var(--muted); margin: 0; }
 
 /* ── „Mehr als Sprache": emotionale Hooks. Editorialer als die Feature-Kacheln –
  *    kleiner spanischer Kicker in Modulfarbe, große Display-Headline (der Hook),
