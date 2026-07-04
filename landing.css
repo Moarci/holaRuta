@@ -581,16 +581,19 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
 }
 /* Horizontale Wisch-Leiste statt vollem 12er-Raster: die Kacheln liegen in
    einer scrollbaren Reihe (Scroll-Snap), es sind immer nur wenige gleichzeitig
-   sichtbar. Das nimmt der Sektion die „Kachel-Wand" und den vielen Weißraum,
-   ohne die Interaktivität zu verstecken – jeder Chip bleibt direkt antippbar.
-   Die weiche Maske am rechten Rand deutet an, dass es seitlich weitergeht;
-   auf breiten Screens läuft die Reihe voll aus (kein Scrollen mehr nötig). */
+   sichtbar; seitlich wischt man durch den Rest. Das nimmt der Sektion die
+   „Kachel-Wand" und den vielen Weißraum, ohne die Interaktivität zu verstecken
+   – jeder Chip bleibt direkt antippbar. Die zwölf Kacheln passen nie in eine
+   Reihe, es wird also auf jeder Breite gescrollt. Die weiche Maske am rechten
+   Rand deutet an, dass es seitlich weitergeht. */
 .lp-more__chips {
   display: flex; gap: 12px;
   overflow-x: auto; overflow-y: hidden;
   scroll-snap-type: x proximity;
-  /* Rand-Luft für den Hover-Lift + Sticker-Schatten, sonst clippt overflow. */
-  padding: 6px 2px 8px;
+  /* Rand-Luft oben/unten für Hover-Lift + Sticker-Schatten (sonst clippt
+     overflow); rechts genug Trailing-Raum (> Maskenbreite), damit die letzte
+     Kachel am Scroll-Ende NICHT unter der Fade-Maske verblasst. */
+  padding: 6px 48px 8px 2px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 46px), transparent);
