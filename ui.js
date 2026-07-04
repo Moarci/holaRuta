@@ -1512,6 +1512,29 @@
               aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}"><span class="favline__star" aria-hidden="true">${on ? "★" : "☆"}</span><span class="favline__txt">${esc(on ? t("study.favSaved") : t("study.favSave"))}</span></button>`;
   }
 
+  // Smartphone-Mockup: zeigt die aktuelle Lernkarte auf Desktop-Größe in einem Smartphone-Rahmen.
+  function smartphoneMock(vm) {
+    const isFlipped = vm.revealed || false;
+    const cardText = isFlipped ? (vm.answer || "—") : (vm.question || "—");
+    const catLabel = vm.catLabel || "";
+    return `
+      <div class="smartphone-mock">
+        <div class="smartphone-mock__screen">
+          <div class="smartphone-mock__statusbar">
+            <span>12:34</span>
+            <span>📶 ▼</span>
+          </div>
+          <div class="smartphone-mock__content">
+            <div class="smartphone-mock__card${isFlipped ? ' is-back' : ''}">
+              <div class="smartphone-mock__card-label">${esc(catLabel)}</div>
+              <div class="smartphone-mock__card-text">${esc(cardText)}</div>
+              <div class="smartphone-mock__hint">${isFlipped ? '✓' : '↻ Flip'}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
   // ---------- STUDY ----------
   function renderStudy(vm) {
     const pct = vm.total > 0 ? Math.round((vm.position / vm.total) * 100) : 0;
@@ -1544,6 +1567,7 @@
         ${favLine(vm)}
         ${skipBtn()}
         ${shareCardBtn()}
+        ${smartphoneMock(vm)}
       </section>`;
   }
 
@@ -1649,24 +1673,27 @@
     // Frageseite = Lernsprache wenn sq, sonst Muttersprache; Antwortseite umgekehrt.
     const qLang = sq ? vm.learnLang : vm.nativeLang;
     const aLang = sq ? vm.nativeLang : vm.learnLang;
+    const catLabel = vm.catLabel || "";
+    const question = vm.question || "—";
+    const answer = vm.answer || "—";
     return `
       <div class="flip ${vm.revealed ? "is-flipped" : ""}" data-action="flip" id="flip"
            role="button" tabindex="0" aria-label="${vm.revealed ? esc(t("study.cardBack")) : esc(t("study.cardFlip"))}">
         <div class="flip__inner">
           <div class="face face--front">
-            <span class="face__cat">${esc(vm.catLabel)}</span>
+            <span class="face__cat">${esc(catLabel)}</span>
             ${levelBadge(vm, false)}
             ${sq ? speakBtn(false) : ""}
-            <div class="face__word" lang="${esc(qLang)}">${esc(vm.question)}</div>
+            <div class="face__word" lang="${esc(qLang)}">${esc(question)}</div>
             ${sq ? tip : ""}
             <span class="face__hint">${esc(t("study.flipHint"))}</span>
           </div>
           <div class="face face--back">
-            <span class="face__cat">${esc(vm.catLabel)}</span>
+            <span class="face__cat">${esc(catLabel)}</span>
             ${levelBadge(vm, true)}
             ${contextIconBtn(vm.context, true, vm.contextOpen)}
             ${sq ? "" : speakBtn(true)}
-            <div class="face__word" lang="${esc(aLang)}">${esc(vm.answer)}</div>
+            <div class="face__word" lang="${esc(aLang)}">${esc(answer)}</div>
             ${colorSwatch(vm.swatch)}
             ${sq ? "" : tip}
           </div>
@@ -1685,6 +1712,9 @@
     const sq = vm.spanishIsQuestion;
     const qLang = sq ? vm.learnLang : vm.nativeLang; // Sprache der Frage
     const aLang = sq ? vm.nativeLang : vm.learnLang; // Sprache der erwarteten Antwort
+    const catLabel = vm.catLabel || "";
+    const question = vm.question || "—";
+    const answer = vm.answer || "—";
     const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:audio-lines")} ${esc(vm.tip)}</div>` : "";
 
     if (!res) {
@@ -1692,10 +1722,10 @@
       const placeholder = sq ? t("study.placeholderDe") : t("study.placeholderEs");
       return `
         <div class="card-static">
-          <span class="face__cat">${esc(vm.catLabel)}</span>
+          <span class="face__cat">${esc(catLabel)}</span>
           ${levelBadge(vm, false)}
           ${sq ? speakBtn(false) : ""}
-          <div class="face__word" lang="${esc(qLang)}">${esc(vm.question)}</div>
+          <div class="face__word" lang="${esc(qLang)}">${esc(question)}</div>
           <span class="face__hint">${inputHint}</span>
         </div>
         <form class="typer" data-action="submit-typed" id="typer">
@@ -1711,11 +1741,11 @@
       : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: res.input || "—" }))}</div>`;
     return `
       <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
-        <span class="face__cat">${esc(vm.catLabel)}</span>
+        <span class="face__cat">${esc(catLabel)}</span>
         ${levelBadge(vm, false)}
         ${contextIconBtn(vm.context, false, vm.contextOpen)}
         ${sq ? "" : speakBtn(false)}
-        <div class="face__word" lang="${esc(aLang)}">${esc(vm.answer)}</div>
+        <div class="face__word" lang="${esc(aLang)}">${esc(answer)}</div>
         ${colorSwatch(vm.swatch)}
         ${sq ? "" : tip}
         ${verdict}
@@ -1733,6 +1763,9 @@
   // Modus. Reuse: 🔊 (data-action="speak"), typer-Formular, rateButtons.
   function listenBody(vm) {
     const res = vm.typeResult; // null | {correct, answers, input}
+    const catLabel = vm.catLabel || "";
+    const es = vm.es || "—";
+    const de = vm.de || "—";
     const tip = vm.tip ? `<div class="face__tip">${renderIcon("lc:audio-lines")} ${esc(vm.tip)}</div>` : "";
 
     if (!res) {
@@ -1741,7 +1774,7 @@
         : "";
       return `
         <div class="card-static card-listen">
-          <span class="face__cat">${esc(vm.catLabel)}</span>
+          <span class="face__cat">${esc(catLabel)}</span>
           ${levelBadge(vm, false)}
           <span class="listen-ear" aria-hidden="true">${renderIcon("lc:ear")}</span>
           ${replay}
@@ -1760,13 +1793,13 @@
       : `<div class="verdict verdict--no">${esc(t("common.notQuiteInput", { input: res.input || "—" }))}</div>`;
     return `
       <div class="card-static ${res.correct ? "is-ok" : "is-no"}" role="status" aria-live="assertive">
-        <span class="face__cat">${esc(vm.catLabel)}</span>
+        <span class="face__cat">${esc(catLabel)}</span>
         ${levelBadge(vm, false)}
         ${contextIconBtn(vm.context, false, vm.contextOpen)}
         ${speakBtn(false)}
-        <div class="face__word" lang="${esc(vm.learnLang)}">${esc(vm.es)}</div>
+        <div class="face__word" lang="${esc(vm.learnLang)}">${esc(es)}</div>
         ${colorSwatch(vm.swatch)}
-        <div class="listen-de">${esc(vm.de)}</div>
+        <div class="listen-de">${esc(de)}</div>
         ${tip}
         ${verdict}
       </div>
