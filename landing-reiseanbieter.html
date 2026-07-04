@@ -56,6 +56,8 @@
   <link rel="stylesheet" href="landing.css" />
   <!-- Edition-Akzent (WeRoad-Koralle) für Demo-CTA, Chips & Preis-Highlight. -->
   <style>:root { --accent: #FB5A47; }</style>
+  <!-- Geteiltes Beispielkarten-Karussell der B2B-Landings (Flip, 🔊, 🧭, Pills). -->
+  <script src="landing-carousel.js" defer></script>
 
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="referrer" content="no-referrer" />
@@ -136,15 +138,15 @@
       <div class="lp-wrap lp-hero__grid">
         <div class="lp-hero__copy">
           <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">FÜR GRUPPENREISE-ANBIETER</p>
-          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Reise beginnt zwei Wochen vor dem Abflug.</h1>
-          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">HolaRuta ist kein Sprachkurs, sondern ein Travel-Language-Companion: eine leichte Offline-PWA, mit der eure Reisenden die wichtigsten Sätze für Taxi, Essen, Geld, Notfälle und Smalltalk üben. Das stärkt Pre-Trip-Engagement, Gruppen-Bonding und Sicherheit – in eurem Branding.</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Reise beginnt <span class="lp-hl">zwei Wochen vor dem Abflug</span>.</h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Eure Reisenden üben die Sätze, die vor Ort zählen — das schafft Vorfreude, Gruppen-Bonding und Sicherheit, in eurem Branding.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
             <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=weroad&start=onboarding" data-i18n="hero.demo">Live-Demo öffnen →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#kontakt" data-i18n="hero.contact">Pilot anfragen</a>
           </div>
           <div class="lp-trust" data-reveal style="--i:4">
             <div class="lp-trust__item">
-              <span class="lp-trust__num">2&nbsp;Wo.</span>
+              <span class="lp-trust__num" data-i18n="trust.pretripval">2&nbsp;Wo.</span>
               <span class="lp-trust__label" data-i18n="trust.pretrip">Pre-Trip-Plan</span>
             </div>
             <div class="lp-trust__item">
@@ -162,15 +164,144 @@
           </div>
         </div>
 
+        <!-- Interaktive Beispielkarten wie auf der B2C-Landing: echte App-Klassen
+             (.flip/.face/.cardbtn aus styles.css), antippbar zum Umdrehen, 🔊 liest
+             vor, 🧭 öffnet den Reise-Kontext. Die Szenario-Pills darunter schalten
+             die Karten um (eine Karte je Szenario). -->
         <aside class="lp-cardcol" data-reveal style="--i:2">
-          <div class="lp-herocard">
-            <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · WeRoad Colombia</span>
-            <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿A qué hora sale el próximo bus?</b><span class="lp-herocard__tr">„Wann fährt der nächste Bus?“ – Orientierung, die jede Gruppe vor Ort sofort braucht.</span></p>
-            <div class="lp-herocard__row" role="group" aria-label="Einsatz-Szenarien">
-              <button type="button" class="lp-herocard__pill" data-pill="0" aria-pressed="true" data-i18n="card.p1">Pre-Trip</button>
-              <button type="button" class="lp-herocard__pill" data-pill="1" aria-pressed="false" data-i18n="card.p2">Icebreaker</button>
-              <button type="button" class="lp-herocard__pill" data-pill="2" aria-pressed="false" data-i18n="card.p3">Safety</button>
+          <!-- Echter App-Screenshot im Phone-Rahmen hinter der Karte (nur Desktop):
+               gibt dem Hero Produkt-Tiefe. Nur ab 1040px sichtbar (lazy = kein
+               Download darunter). Die Karte liegt via z-index:1 darüber. -->
+          <div class="lp-herophone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div>
+              <div class="lp-phone__stripe"></div>
+              <picture>
+                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/home-hero.webp" />
+                <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
+              </picture>
             </div>
+          </div>
+          <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · WeRoad Colombia</span>
+          <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" data-i18n-aria="a11y.carousel" aria-label="Beispielkarten">
+            <div class="lp-carousel__viewport">
+              <div class="lp-slide is-active">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex1.cat">PRE-TRIP</span>
+                        <span class="lvl-badge" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <div class="face__word" data-i18n="ex1.q">Wann fährt der nächste Bus?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#2F6B70">
+                        <span class="face__cat" data-i18n="ex1.cat">PRE-TRIP</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx1">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿A qué hora sale el próximo bus?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿A qué hora sale el próximo bus?</div>
+                        <div class="face__tip">🗣️ a-KÉ O-ra SA-le el PRÓK-si-mo boos</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx1" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex1.ctxEs">¿A qué hora sale el próximo bus?</p>
+                    <p class="context-panel__de" data-i18n="ex1.ctxTr">Wann fährt der nächste Bus?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxSit">Die tägliche Mini-Aufgabe in den zwei Wochen vor dem Abflug.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxNote">Ein Satz pro Tag – so beginnt eure Reise schon zu Hause.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex2.cat">ICEBREAKER</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex2.q">Spielen wir eine Runde?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#7D4A8E">
+                        <span class="face__cat" data-i18n="ex2.cat">ICEBREAKER</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx2">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿Jugamos una ronda?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿Jugamos una ronda?</div>
+                        <div class="face__tip">🗣️ hu-GA-mos U-na RON-da</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx2" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex2.ctxEs">¿Jugamos una ronda?</p>
+                    <p class="context-panel__de" data-i18n="ex2.ctxTr">Spielen wir eine Runde?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxSit">Gruppen-Battles, die schon am ersten Tag das Eis brechen.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxNote">Der Coordinator-Modus gibt dem Reiseleiter ein fertiges 5-Minuten-Spiel.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex3.cat">SAFETY</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <div class="face__word" data-i18n="ex3.q">Ich brauche einen Arzt</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#B5302A">
+                        <span class="face__cat" data-i18n="ex3.cat">SAFETY</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A1 · Einsteiger</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx3">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="Necesito un médico" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">Necesito un médico</div>
+                        <div class="face__tip">🗣️ ne-se-SI-to un MÉ-di-ko</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx3" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex3.ctxEs">Necesito un médico, por favor.</p>
+                    <p class="context-panel__de" data-i18n="ex3.ctxTr">Ich brauche einen Arzt, bitte.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxSit">Die Sätze, die zählen, wenn es ernst wird – auch offline im Nachtbus.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxNote">Im Notfall ergänzen: Es una emergencia.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lp-herocard__row" id="lpPills" role="group" data-i18n-aria="card.scenarios" aria-label="Einsatz-Szenarien">
+            <button type="button" class="lp-herocard__pill" aria-pressed="true" data-i18n="card.p1">Pre-Trip</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="false" data-i18n="card.p2">Icebreaker</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="false" data-i18n="card.p3">Safety</button>
           </div>
         </aside>
       </div>
@@ -409,15 +540,18 @@
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
         "aud.label": "Für wen?", "aud.b2c": "🎒 Privatreisende", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter",
         "hero.eyebrow": "FÜR GRUPPENREISE-ANBIETER",
-        "hero.h1": "Die Reise beginnt zwei Wochen vor dem Abflug.",
-        "hero.sub": "HolaRuta ist kein Sprachkurs, sondern ein Travel-Language-Companion: eine leichte Offline-PWA, mit der eure Reisenden die wichtigsten Sätze für Taxi, Essen, Geld, Notfälle und Smalltalk üben. Das stärkt Pre-Trip-Engagement, Gruppen-Bonding und Sicherheit – in eurem Branding.",
+        "hero.h1": "Die Reise beginnt <span class=\"lp-hl\">zwei Wochen vor dem Abflug</span>.",
+        "hero.sub": "Eure Reisenden üben die Sätze, die vor Ort zählen — das schafft Vorfreude, Gruppen-Bonding und Sicherheit, in eurem Branding.",
         "hero.demo": "Live-Demo öffnen →", "hero.contact": "Pilot anfragen",
-        "trust.pretrip": "Pre-Trip-Plan", "trust.destinations": "LatAm-Länder abgedeckt", "trust.coordinator": "Coordinator-Spiel", "trust.offlineval": "Offline", "trust.offline": "auch ohne Netz",
+        "trust.pretripval": "2&nbsp;Wo.", "trust.pretrip": "Pre-Trip-Plan", "trust.destinations": "LatAm-Länder abgedeckt", "trust.coordinator": "Coordinator-Spiel", "trust.offlineval": "Offline", "trust.offline": "auch ohne Netz",
         "card.brand": "HolaRuta · WeRoad Colombia",
         "card.p1": "Pre-Trip", "card.p2": "Icebreaker", "card.p3": "Safety",
-        "card.p1.q": "¿A qué hora sale el próximo bus?", "card.p1.tr": "„Wann fährt der nächste Bus?“ – die tägliche Mini-Aufgabe in den zwei Wochen vor dem Abflug.",
-        "card.p2.q": "¿Jugamos una ronda?", "card.p2.tr": "„Spielen wir eine Runde?“ – Gruppen-Battles, die schon am ersten Tag das Eis brechen.",
-        "card.p3.q": "Necesito un médico.", "card.p3.tr": "„Ich brauche einen Arzt.“ – die Sätze, die zählen, wenn es ernst wird.",
+        "card.hint": "Zum Umdrehen tippen", "card.lvl": "A1 · Einsteiger", "card.lvl2": "A2 · Mittel", "card.speakLabel": "Antwort vorlesen",
+        "a11y.card": "Beispielkarte umdrehen", "a11y.carousel": "Beispielkarten", "card.scenarios": "Einsatz-Szenarien",
+        "ctx.show": "Reise-Kontext anzeigen", "ctx.title": "🧭 So nutzt du es unterwegs", "ctx.situation": "Situation", "ctx.note": "Reisetipp",
+        "ex1.cat": "PRE-TRIP", "ex1.q": "Wann fährt der nächste Bus?", "ex1.ctxEs": "¿A qué hora sale el próximo bus?", "ex1.ctxTr": "Wann fährt der nächste Bus?", "ex1.ctxSit": "Die tägliche Mini-Aufgabe in den zwei Wochen vor dem Abflug.", "ex1.ctxNote": "Ein Satz pro Tag – so beginnt eure Reise schon zu Hause.",
+        "ex2.cat": "ICEBREAKER", "ex2.q": "Spielen wir eine Runde?", "ex2.ctxEs": "¿Jugamos una ronda?", "ex2.ctxTr": "Spielen wir eine Runde?", "ex2.ctxSit": "Gruppen-Battles, die schon am ersten Tag das Eis brechen.", "ex2.ctxNote": "Der Coordinator-Modus gibt dem Reiseleiter ein fertiges 5-Minuten-Spiel.",
+        "ex3.cat": "SAFETY", "ex3.q": "Ich brauche einen Arzt", "ex3.ctxEs": "Necesito un médico, por favor.", "ex3.ctxTr": "Ich brauche einen Arzt, bitte.", "ex3.ctxSit": "Die Sätze, die zählen, wenn es ernst wird – auch offline im Nachtbus.", "ex3.ctxNote": "Im Notfall ergänzen: Es una emergencia.",
         "use.eyebrow": "REISEQUALITÄT, NICHT VOKABELN", "use.title": "Sicherer fühlen, mehr lokal erleben, besser zusammenwachsen.",
         "use.lead": "Eure Teilnehmer buchen keine Schule – sie wollen sich weniger hilflos fühlen. HolaRuta verstärkt euren Markenkern: kleine Gruppen, Community, Vibe.",
         "use.1.k": "Pre-Trip-Engagement", "use.1.t": "Die Vorfreude wird zur App.", "use.1.b": "Ein mehrtägiger Pre-Trip-Plan bringt die Gruppe schon vor Abreise in Bewegung: Tag 1 Begrüßung, Tag 5 Icebreaker. Eure Reise beginnt zwei Wochen früher.",
@@ -452,15 +586,18 @@
         "skip": "Skip to content", "nav.demo": "Live demo",
         "aud.label": "Who is it for?", "aud.b2c": "🎒 Independent travelers", "aud.schule": "🎓 Language schools", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Tour operators",
         "hero.eyebrow": "FOR GROUP-TRAVEL OPERATORS",
-        "hero.h1": "The trip begins two weeks before departure.",
-        "hero.sub": "HolaRuta isn't a language course, it's a travel-language companion: a light offline PWA where your travelers practice the key phrases for taxis, food, money, emergencies and small talk. It boosts pre-trip engagement, group bonding and safety – in your branding.",
+        "hero.h1": "The trip begins <span class=\"lp-hl\">two weeks before departure</span>.",
+        "hero.sub": "Your travelers practice the phrases that count on the ground — building anticipation, group bonding and safety, in your branding.",
         "hero.demo": "Open live demo →", "hero.contact": "Request a pilot",
-        "trust.pretrip": "pre-trip plan", "trust.destinations": "LatAm countries covered", "trust.coordinator": "coordinator game", "trust.offlineval": "Offline", "trust.offline": "even with no signal",
+        "trust.pretripval": "2&nbsp;wk.", "trust.pretrip": "pre-trip plan", "trust.destinations": "LatAm countries covered", "trust.coordinator": "coordinator game", "trust.offlineval": "Offline", "trust.offline": "even with no signal",
         "card.brand": "HolaRuta · WeRoad Colombia",
         "card.p1": "Pre-trip", "card.p2": "Icebreaker", "card.p3": "Safety",
-        "card.p1.q": "¿A qué hora sale el próximo bus?", "card.p1.tr": "“When does the next bus leave?” – the daily mini-task in the two weeks before departure.",
-        "card.p2.q": "¿Jugamos una ronda?", "card.p2.tr": "“Shall we play a round?” – group battles that break the ice on day one.",
-        "card.p3.q": "Necesito un médico.", "card.p3.tr": "“I need a doctor.” – the phrases that count when things get serious.",
+        "card.hint": "Tap to flip", "card.lvl": "A1 · Beginner", "card.lvl2": "A2 · Intermediate", "card.speakLabel": "Read answer aloud",
+        "a11y.card": "Flip the example card", "a11y.carousel": "Example cards", "card.scenarios": "Usage scenarios",
+        "ctx.show": "Show travel context", "ctx.title": "🧭 How to use it on the road", "ctx.situation": "Situation", "ctx.note": "Travel tip",
+        "ex1.cat": "PRE-TRIP", "ex1.q": "When does the next bus leave?", "ex1.ctxEs": "¿A qué hora sale el próximo bus?", "ex1.ctxTr": "When does the next bus leave?", "ex1.ctxSit": "The daily mini-task in the two weeks before departure.", "ex1.ctxNote": "One phrase a day – the trip starts at home.",
+        "ex2.cat": "ICEBREAKER", "ex2.q": "Shall we play a round?", "ex2.ctxEs": "¿Jugamos una ronda?", "ex2.ctxTr": "Shall we play a round?", "ex2.ctxSit": "Group battles that break the ice on day one.", "ex2.ctxNote": "Coordinator mode hands the guide a ready-made 5-minute game.",
+        "ex3.cat": "SAFETY", "ex3.q": "I need a doctor", "ex3.ctxEs": "Necesito un médico, por favor.", "ex3.ctxTr": "I need a doctor, please.", "ex3.ctxSit": "The phrases that count when things get serious – offline even on the night bus.", "ex3.ctxNote": "In an emergency add: Es una emergencia.",
         "use.eyebrow": "TRAVEL QUALITY, NOT VOCABULARY", "use.title": "Feel safer, experience more locally, bond better.",
         "use.lead": "Your participants aren't booking a school – they want to feel less helpless. HolaRuta reinforces your brand core: small groups, community, vibe.",
         "use.1.k": "Pre-trip engagement", "use.1.t": "Anticipation becomes an app.", "use.1.b": "A multi-day pre-trip plan gets the group moving before departure: day 1 greetings, day 5 icebreaker. Your trip starts two weeks earlier.",
@@ -495,15 +632,20 @@
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
         "aud.label": "¿Para quién?", "aud.b2c": "🎒 Viajeros particulares", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes",
         "hero.eyebrow": "PARA OPERADORES DE VIAJES EN GRUPO",
-        "hero.h1": "El viaje empieza dos semanas antes del despegue.",
-        "hero.sub": "HolaRuta no es un curso de idiomas, es un compañero de idioma de viaje: una PWA ligera sin conexión con la que tus viajeros practican las frases clave para taxi, comida, dinero, emergencias y charla. Refuerza el engagement pre-viaje, la cohesión del grupo y la seguridad – con tu marca.",
+        "hero.h1": "El viaje empieza <span class=\"lp-hl\">dos semanas antes del despegue</span>.",
+        "hero.sub": "Tus viajeros practican las frases que cuentan sobre el terreno — creando ilusión, cohesión de grupo y seguridad, con tu marca.",
         "hero.demo": "Abrir demo en vivo →", "hero.contact": "Solicitar piloto",
-        "trust.pretrip": "plan pre-viaje", "trust.destinations": "países LatAm cubiertos", "trust.coordinator": "juego coordinador", "trust.offlineval": "Sin conexión", "trust.offline": "incluso sin red",
+        "trust.pretripval": "2&nbsp;sem.", "trust.pretrip": "plan pre-viaje", "trust.destinations": "países LatAm cubiertos", "trust.coordinator": "juego coordinador", "trust.offlineval": "Sin conexión", "trust.offline": "incluso sin red",
         "card.brand": "HolaRuta · WeRoad Colombia",
         "card.p1": "Pre-viaje", "card.p2": "Rompehielos", "card.p3": "Seguridad",
-        "card.p1.q": "¿A qué hora sale el próximo bus?", "card.p1.tr": "«¿A qué hora sale el próximo bus?» – una mini-tarea diaria en las dos semanas previas al vuelo.",
-        "card.p2.q": "¿Jugamos una ronda?", "card.p2.tr": "«¿Jugamos una ronda?» – battles de grupo que rompen el hielo ya el primer día.",
-        "card.p3.q": "Necesito un médico.", "card.p3.tr": "«Necesito un médico.» – las frases que cuentan cuando la cosa se pone seria.",
+        "card.hint": "Toca para girar", "card.lvl": "A1 · Principiante", "card.lvl2": "A2 · Intermedio", "card.speakLabel": "Escuchar la respuesta",
+        "a11y.card": "Girar la tarjeta de ejemplo", "a11y.carousel": "Tarjetas de ejemplo", "card.scenarios": "Escenarios de uso",
+        "ctx.show": "Mostrar contexto de viaje", "ctx.title": "🧭 Así lo usas en ruta", "ctx.situation": "Situación", "ctx.note": "Consejo de viaje",
+        // Kartenfronten bleiben im ES-Modus in Gästesprache (EN): die Demo zeigt
+        // Front→Spanisch – eine spanische Front wäre identisch mit der Rückseite.
+        "ex1.cat": "PRE-VIAJE", "ex1.q": "When does the next bus leave?", "ex1.ctxEs": "¿A qué hora sale el próximo bus?", "ex1.ctxTr": "When does the next bus leave?", "ex1.ctxSit": "La mini-tarea diaria en las dos semanas previas al vuelo.", "ex1.ctxNote": "Una frase al día: el viaje empieza ya en casa.",
+        "ex2.cat": "ROMPEHIELOS", "ex2.q": "Shall we play a round?", "ex2.ctxEs": "¿Jugamos una ronda?", "ex2.ctxTr": "Shall we play a round?", "ex2.ctxSit": "Battles de grupo que rompen el hielo ya el primer día.", "ex2.ctxNote": "El modo coordinador da al guía un juego de 5 minutos listo.",
+        "ex3.cat": "SEGURIDAD", "ex3.q": "I need a doctor", "ex3.ctxEs": "Necesito un médico, por favor.", "ex3.ctxTr": "I need a doctor, please.", "ex3.ctxSit": "Las frases que cuentan cuando la cosa se pone seria, incluso sin red en el bus nocturno.", "ex3.ctxNote": "En una emergencia añade: Es una emergencia.",
         "use.eyebrow": "CALIDAD DE VIAJE, NO VOCABULARIO", "use.title": "Sentirse más seguro, vivir más lo local, unirse mejor.",
         "use.lead": "Tus participantes no reservan una escuela – quieren sentirse menos perdidos. HolaRuta refuerza el núcleo de tu marca: grupos pequeños, comunidad, vibra.",
         "use.1.k": "Engagement pre-viaje", "use.1.t": "La ilusión se convierte en app.", "use.1.b": "Un plan pre-viaje de varios días pone al grupo en marcha antes de salir: día 1 saludos, día 5 rompehielos. Vuestro viaje empieza dos semanas antes.",
@@ -533,7 +675,7 @@
       }
     };
 
-    var HTML_KEYS = { "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var HTML_KEYS = { "hero.h1": true, "trust.pretripval": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
     var LANG_KEY = "holaruta.landing.lang";
 
     function setLang(lang) {
@@ -553,37 +695,20 @@
         if (HTML_KEYS[key]) nodes[i].innerHTML = dict[key];
         else nodes[i].textContent = dict[key];
       }
+      // aria-labels (und ggf. title) lokalisieren – sonst liest der Screenreader
+      // im EN/ES-Modus deutsche Beschriftungen vor.
+      var aria = document.querySelectorAll("[data-i18n-aria]");
+      for (var a = 0; a < aria.length; a++) {
+        var ak = aria[a].getAttribute("data-i18n-aria");
+        if (!(ak in dict)) continue;
+        aria[a].setAttribute("aria-label", dict[ak]);
+        if (aria[a].hasAttribute("title")) aria[a].setAttribute("title", dict[ak]);
+      }
       var btns = document.querySelectorAll(".lp-langbtn");
       for (var j = 0; j < btns.length; j++) {
         btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
       }
       try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
-      currentLang = lang;
-      paintHeroCard();
-    }
-
-    // Hero-Karte: Pills als Tabs – jede Pill blendet ihr eigenes Szenario (Satz + Erklärung) ein.
-    var currentLang = "de";
-    var heroCard = document.querySelector(".lp-herocard");
-    var heroPills = heroCard ? heroCard.querySelectorAll(".lp-herocard__pill") : [];
-    var heroQ = heroCard ? heroCard.querySelector(".lp-herocard__q") : null;
-    var heroTr = heroCard ? heroCard.querySelector(".lp-herocard__tr") : null;
-    var heroActive = 0;
-    function paintHeroCard() {
-      if (!heroQ || !heroTr) return;
-      var d = I18N[currentLang] || I18N.de;
-      var q = d["card.p" + (heroActive + 1) + ".q"];
-      var tr = d["card.p" + (heroActive + 1) + ".tr"];
-      if (q) heroQ.textContent = q;
-      if (tr) heroTr.textContent = tr;
-      for (var i = 0; i < heroPills.length; i++) {
-        heroPills[i].setAttribute("aria-pressed", i === heroActive ? "true" : "false");
-      }
-    }
-    for (var hp = 0; hp < heroPills.length; hp++) {
-      (function (i) {
-        heroPills[i].addEventListener("click", function () { heroActive = i; paintHeroCard(); });
-      })(hp);
     }
 
     var SUPPORTED = ["de", "en", "es"];

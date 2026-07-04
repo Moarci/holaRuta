@@ -59,6 +59,8 @@
   <link rel="stylesheet" href="landing.css" />
   <!-- Edition-Akzent (ECOS · Cartagena, Karibik-Teal) für Demo-CTA, Chips & Preis-Highlight. -->
   <style>:root { --accent: #1F7A8C; }</style>
+  <!-- Geteiltes Beispielkarten-Karussell der B2B-Landings (Flip, 🔊, 🧭, Pills). -->
+  <script src="landing-carousel.js" defer></script>
 
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="referrer" content="no-referrer" />
@@ -139,8 +141,8 @@
       <div class="lp-wrap lp-hero__grid">
         <div class="lp-hero__copy">
           <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">FÜR SPRACHSCHULEN IN LATEINAMERIKA</p>
-          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Brücke zwischen Klassenzimmer und Straße.</h1>
-          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">HolaRuta begleitet eure Immersionskurse mobil: Pre-Arrival-Vorbereitung, 5-Minuten-Warm-ups im Unterricht und echte Mutproben vor Ort. Lateinamerika-korrekt, offline, ohne Konto – optional in eurem Schul-Branding.</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Die Brücke zwischen Klassenzimmer und <span class="lp-hl">Straße</span>.</h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Was im Klassenzimmer geübt wird, trauen sich eure Schüler draußen zu sagen — mit 5-Minuten-Warm-ups und echten Mutproben.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
             <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=ecos&start=onboarding" data-i18n="hero.demo">Live-Demo öffnen →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#kontakt" data-i18n="hero.contact">Pilot anfragen</a>
@@ -165,15 +167,144 @@
           </div>
         </div>
 
+        <!-- Interaktive Beispielkarten wie auf der B2C-Landing: echte App-Klassen
+             (.flip/.face/.cardbtn aus styles.css), antippbar zum Umdrehen, 🔊 liest
+             vor, 🧭 öffnet den Reise-Kontext. Die Szenario-Pills darunter schalten
+             die Karten um (eine Karte je Szenario). -->
         <aside class="lp-cardcol" data-reveal style="--i:2">
-          <div class="lp-herocard">
-            <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · ECOS Edition</span>
-            <p class="lp-herocard__phrase" aria-live="polite" aria-atomic="true"><b class="lp-herocard__q">¿Tiene una habitación libre?</b><span class="lp-herocard__tr">„Haben Sie ein Zimmer frei?“ – vor der Anreise: Flughafen, Taxi, Check-in schon mal geübt.</span></p>
-            <div class="lp-herocard__row" role="group" aria-label="Einsatz-Szenarien">
-              <button type="button" class="lp-herocard__pill" data-pill="0" aria-pressed="true" data-i18n="card.p1">Pre-Arrival</button>
-              <button type="button" class="lp-herocard__pill" data-pill="1" aria-pressed="false" data-i18n="card.p2">Classroom</button>
-              <button type="button" class="lp-herocard__pill" data-pill="2" aria-pressed="false" data-i18n="card.p3">Real-Life</button>
+          <!-- Echter App-Screenshot im Phone-Rahmen hinter der Karte (nur Desktop):
+               gibt dem Hero Produkt-Tiefe. Nur ab 1040px sichtbar (lazy = kein
+               Download darunter). Die Karte liegt via z-index:1 darüber. -->
+          <div class="lp-herophone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div>
+              <div class="lp-phone__stripe"></div>
+              <picture>
+                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/home-hero.webp" />
+                <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
+              </picture>
             </div>
+          </div>
+          <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · ECOS Edition</span>
+          <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" data-i18n-aria="a11y.carousel" aria-label="Beispielkarten">
+            <div class="lp-carousel__viewport">
+              <div class="lp-slide is-active">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex1.cat">PRE-ARRIVAL</span>
+                        <span class="lvl-badge" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <div class="face__word" data-i18n="ex1.q">Haben Sie ein Zimmer frei?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#1F7A8C">
+                        <span class="face__cat" data-i18n="ex1.cat">PRE-ARRIVAL</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx1">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿Tiene una habitación libre?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿Tiene una habitación libre?</div>
+                        <div class="face__tip">🗣️ TYE-ne U-na a-bi-ta-SYON LEE-bre</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx1" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex1.ctxEs">¿Tiene una habitación libre?</p>
+                    <p class="context-panel__de" data-i18n="ex1.ctxTr">Haben Sie ein Zimmer frei?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxSit">Schon vor der Anreise geübt: Flughafen, Taxi, Check-in.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxNote">So kommen Schüler vorbereitet an – und starten selbstbewusst in Woche 1.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex2.cat">CLASSROOM</span>
+                        <span class="lvl-badge" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <div class="face__word" data-i18n="ex2.q">Bringen Sie mir bitte die Rechnung?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#3F7355">
+                        <span class="face__cat" data-i18n="ex2.cat">CLASSROOM</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx2">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿Me trae la cuenta, por favor?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿Me trae la cuenta, por favor?</div>
+                        <div class="face__tip">🗣️ me TRA-e la KWEN-ta por fa-VOR</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx2" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex2.ctxEs">¿Me trae la cuenta, por favor?</p>
+                    <p class="context-panel__de" data-i18n="ex2.ctxTr">Bringen Sie mir bitte die Rechnung?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxSit">Als 5-Minuten-Warm-up oder Partnerarbeit im Unterricht.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxNote">Höflich mit usted – genau wie im echten Restaurant.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Beispielkarte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex3.cat">REAL-LIFE</span>
+                        <span class="lvl-badge" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <div class="face__word" data-i18n="ex3.q">Was kostet das Kilo?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#C2502E">
+                        <span class="face__cat" data-i18n="ex3.cat">REAL-LIFE</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl2">A2 · Mittel</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Reise-Kontext anzeigen" aria-expanded="false" aria-controls="lpctx3">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="¿A cómo el kilo?" data-i18n-aria="card.speakLabel" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word" lang="es">¿A cómo el kilo?</div>
+                        <div class="face__tip">🗣️ a KO-mo el KEE-lo</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx3" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du es unterwegs</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="es" data-i18n="ex3.ctxEs">¿A cómo el kilo?</p>
+                    <p class="context-panel__de" data-i18n="ex3.ctxTr">Was kostet das Kilo?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situation</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxSit">Als Mutprobe auf dem Markt – eine von 47 echten Challenges.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Reisetipp</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxNote">¿A cómo…? ist die typische Marktfrage in Lateinamerika.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lp-herocard__row" id="lpPills" role="group" data-i18n-aria="card.scenarios" aria-label="Einsatz-Szenarien">
+            <button type="button" class="lp-herocard__pill" aria-pressed="true" data-i18n="card.p1">Pre-Arrival</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="false" data-i18n="card.p2">Classroom</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="false" data-i18n="card.p3">Real-Life</button>
           </div>
         </aside>
       </div>
@@ -409,15 +540,18 @@
         "skip": "Zum Inhalt springen", "nav.demo": "Live-Demo",
         "aud.label": "Für wen?", "aud.b2c": "🎒 Privatreisende", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter",
         "hero.eyebrow": "FÜR SPRACHSCHULEN IN LATEINAMERIKA",
-        "hero.h1": "Die Brücke zwischen Klassenzimmer und Straße.",
-        "hero.sub": "HolaRuta begleitet eure Immersionskurse mobil: Pre-Arrival-Vorbereitung, 5-Minuten-Warm-ups im Unterricht und echte Mutproben vor Ort. Lateinamerika-korrekt, offline, ohne Konto – optional in eurem Schul-Branding.",
+        "hero.h1": "Die Brücke zwischen Klassenzimmer und <span class=\"lp-hl\">Straße</span>.",
+        "hero.sub": "Was im Klassenzimmer geübt wird, trauen sich eure Schüler draußen zu sagen — mit 5-Minuten-Warm-ups und echten Mutproben.",
         "hero.demo": "Live-Demo öffnen →", "hero.contact": "Pilot anfragen",
         "trust.cards": "Karten", "trust.challenges": "Real-Life-Challenges", "trust.levels": "Niveaus", "trust.pilot": "Pilot",
         "card.brand": "HolaRuta · ECOS Edition",
         "card.p1": "Pre-Arrival", "card.p2": "Classroom", "card.p3": "Real-Life",
-        "card.p1.q": "¿Tiene una habitación libre?", "card.p1.tr": "„Haben Sie ein Zimmer frei?“ – schon vor der Anreise geübt: Flughafen, Taxi, Check-in.",
-        "card.p2.q": "¿Me trae la cuenta, por favor?", "card.p2.tr": "„Bringen Sie mir bitte die Rechnung?“ – als 5-Minuten-Warm-up oder Partnerarbeit im Unterricht.",
-        "card.p3.q": "¿A cómo el kilo?", "card.p3.tr": "„Was kostet das Kilo?“ – als Mutprobe auf dem Markt: 47 echte Challenges.",
+        "card.hint": "Zum Umdrehen tippen", "card.lvl2": "A2 · Mittel", "card.speakLabel": "Antwort vorlesen",
+        "a11y.card": "Beispielkarte umdrehen", "a11y.carousel": "Beispielkarten", "card.scenarios": "Einsatz-Szenarien",
+        "ctx.show": "Reise-Kontext anzeigen", "ctx.title": "🧭 So nutzt du es unterwegs", "ctx.situation": "Situation", "ctx.note": "Reisetipp",
+        "ex1.cat": "PRE-ARRIVAL", "ex1.q": "Haben Sie ein Zimmer frei?", "ex1.ctxEs": "¿Tiene una habitación libre?", "ex1.ctxTr": "Haben Sie ein Zimmer frei?", "ex1.ctxSit": "Schon vor der Anreise geübt: Flughafen, Taxi, Check-in.", "ex1.ctxNote": "So kommen Schüler vorbereitet an – und starten selbstbewusst in Woche 1.",
+        "ex2.cat": "CLASSROOM", "ex2.q": "Bringen Sie mir bitte die Rechnung?", "ex2.ctxEs": "¿Me trae la cuenta, por favor?", "ex2.ctxTr": "Bringen Sie mir bitte die Rechnung?", "ex2.ctxSit": "Als 5-Minuten-Warm-up oder Partnerarbeit im Unterricht.", "ex2.ctxNote": "Höflich mit usted – genau wie im echten Restaurant.",
+        "ex3.cat": "REAL-LIFE", "ex3.q": "Was kostet das Kilo?", "ex3.ctxEs": "¿A cómo el kilo?", "ex3.ctxTr": "Was kostet das Kilo?", "ex3.ctxSit": "Als Mutprobe auf dem Markt – eine von 47 echten Challenges.", "ex3.ctxNote": "¿A cómo…? ist die typische Marktfrage in Lateinamerika.",
         "use.eyebrow": "DREI EINSATZ-SZENARIEN", "use.title": "Vorbereiten, üben, anwenden – alles in einer App.",
         "use.lead": "Schulen verkaufen keinen Grammatikkurs, sondern einen Aufenthalt. Genau dort ist HolaRuta stark – und alles davon trägt der heutige Stand.",
         "use.1.k": "Pre-Arrival-Pack", "use.1.t": "Startklar, bevor das Flugzeug landet.", "use.1.b": "Schüler bereiten sich mit Flughafen, Taxi, Check-in, Essen, Geld und Notfall vor – mit Kategorien, Spickzettel und Kontextkarten. Sie kommen schon sprechfähig an.",
@@ -452,15 +586,18 @@
         "skip": "Skip to content", "nav.demo": "Live demo",
         "aud.label": "Who is it for?", "aud.b2c": "🎒 Independent travelers", "aud.schule": "🎓 Language schools", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Tour operators",
         "hero.eyebrow": "FOR LANGUAGE SCHOOLS IN LATIN AMERICA",
-        "hero.h1": "The bridge between classroom and street.",
-        "hero.sub": "HolaRuta supports your immersion courses on mobile: pre-arrival prep, 5-minute in-class warm-ups and real challenges on the ground. Latin-American-correct, offline, no account – optionally in your school branding.",
+        "hero.h1": "The bridge between classroom and <span class=\"lp-hl\">street</span>.",
+        "hero.sub": "What your students practice in class, they dare to say outside — with 5-minute warm-ups and real challenges.",
         "hero.demo": "Open live demo →", "hero.contact": "Request a pilot",
         "trust.cards": "cards", "trust.challenges": "real-life challenges", "trust.levels": "levels", "trust.pilot": "pilot",
         "card.brand": "HolaRuta · ECOS Edition",
         "card.p1": "Pre-arrival", "card.p2": "Classroom", "card.p3": "Real-life",
-        "card.p1.q": "¿Tiene una habitación libre?", "card.p1.tr": "“Do you have a room available?” – practised before arrival: airport, taxi, check-in.",
-        "card.p2.q": "¿Me trae la cuenta, por favor?", "card.p2.tr": "“Could you bring me the bill, please?” – as a 5-minute warm-up or partner task in class.",
-        "card.p3.q": "¿A cómo el kilo?", "card.p3.tr": "“How much per kilo?” – as a real-life dare at the market: 47 challenges.",
+        "card.hint": "Tap to flip", "card.lvl2": "A2 · Intermediate", "card.speakLabel": "Read answer aloud",
+        "a11y.card": "Flip the example card", "a11y.carousel": "Example cards", "card.scenarios": "Usage scenarios",
+        "ctx.show": "Show travel context", "ctx.title": "🧭 How to use it on the road", "ctx.situation": "Situation", "ctx.note": "Travel tip",
+        "ex1.cat": "PRE-ARRIVAL", "ex1.q": "Do you have a room available?", "ex1.ctxEs": "¿Tiene una habitación libre?", "ex1.ctxTr": "Do you have a room available?", "ex1.ctxSit": "Practised before arrival: airport, taxi, check-in.", "ex1.ctxNote": "Students arrive prepared – and start week one with confidence.",
+        "ex2.cat": "CLASSROOM", "ex2.q": "Could you bring me the bill, please?", "ex2.ctxEs": "¿Me trae la cuenta, por favor?", "ex2.ctxTr": "Could you bring me the bill, please?", "ex2.ctxSit": "As a 5-minute warm-up or partner task in class.", "ex2.ctxNote": "Politely with usted – just like in a real restaurant.",
+        "ex3.cat": "REAL-LIFE", "ex3.q": "How much per kilo?", "ex3.ctxEs": "¿A cómo el kilo?", "ex3.ctxTr": "How much per kilo?", "ex3.ctxSit": "As a real-life dare at the market – one of 47 challenges.", "ex3.ctxNote": "¿A cómo…? is the typical market question in Latin America.",
         "use.eyebrow": "THREE USE SCENARIOS", "use.title": "Prepare, practice, apply – all in one app.",
         "use.lead": "Schools don't sell a grammar course, they sell a stay. That's exactly where HolaRuta shines – and all of it is supported by what exists today.",
         "use.1.k": "Pre-arrival pack", "use.1.t": "Ready before the plane lands.", "use.1.b": "Students prepare with airport, taxi, check-in, food, money and emergencies – using categories, cheat sheets and context cards. They arrive already able to speak.",
@@ -495,15 +632,20 @@
         "skip": "Saltar al contenido", "nav.demo": "Demo en vivo",
         "aud.label": "¿Para quién?", "aud.b2c": "🎒 Viajeros particulares", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes",
         "hero.eyebrow": "PARA ESCUELAS DE IDIOMAS EN LATINOAMÉRICA",
-        "hero.h1": "El puente entre el aula y la calle.",
-        "hero.sub": "HolaRuta acompaña tus cursos de inmersión en el móvil: preparación de pre-llegada, calentamientos de 5 minutos en clase y retos reales sobre el terreno. Correcto para Latinoamérica, sin conexión, sin cuenta – opcionalmente con la marca de tu escuela.",
+        "hero.h1": "El puente entre el aula y <span class=\"lp-hl\">la calle</span>.",
+        "hero.sub": "Lo que practican en clase, tus alumnos se atreven a decirlo fuera — con calentamientos de 5 minutos y retos reales.",
         "hero.demo": "Abrir demo en vivo →", "hero.contact": "Solicitar piloto",
         "trust.cards": "tarjetas", "trust.challenges": "retos reales", "trust.levels": "niveles", "trust.pilot": "piloto",
         "card.brand": "HolaRuta · Edición ECOS",
         "card.p1": "Pre-llegada", "card.p2": "Aula", "card.p3": "Vida real",
-        "card.p1.q": "¿Tiene una habitación libre?", "card.p1.tr": "«¿Tiene una habitación libre?» – practicado antes de llegar: aeropuerto, taxi, check-in.",
-        "card.p2.q": "¿Me trae la cuenta, por favor?", "card.p2.tr": "«¿Me trae la cuenta, por favor?» – como calentamiento de 5 minutos o trabajo en parejas en clase.",
-        "card.p3.q": "¿A cómo el kilo?", "card.p3.tr": "«¿A cómo el kilo?» – como reto real en el mercado: 47 desafíos.",
+        "card.hint": "Toca para girar", "card.lvl2": "A2 · Intermedio", "card.speakLabel": "Escuchar la respuesta",
+        "a11y.card": "Girar la tarjeta de ejemplo", "a11y.carousel": "Tarjetas de ejemplo", "card.scenarios": "Escenarios de uso",
+        "ctx.show": "Mostrar contexto de viaje", "ctx.title": "🧭 Así lo usas en ruta", "ctx.situation": "Situación", "ctx.note": "Consejo de viaje",
+        // Kartenfronten bleiben im ES-Modus in Gästesprache (EN): die Demo zeigt
+        // Front→Spanisch – eine spanische Front wäre identisch mit der Rückseite.
+        "ex1.cat": "PRE-LLEGADA", "ex1.q": "Do you have a room available?", "ex1.ctxEs": "¿Tiene una habitación libre?", "ex1.ctxTr": "Do you have a room available?", "ex1.ctxSit": "Practicado antes de llegar: aeropuerto, taxi, check-in.", "ex1.ctxNote": "Así los alumnos llegan preparados y empiezan la semana 1 con confianza.",
+        "ex2.cat": "AULA", "ex2.q": "Could you bring me the bill, please?", "ex2.ctxEs": "¿Me trae la cuenta, por favor?", "ex2.ctxTr": "Could you bring me the bill, please?", "ex2.ctxSit": "Como calentamiento de 5 minutos o trabajo en parejas en clase.", "ex2.ctxNote": "Con usted, como en un restaurante de verdad.",
+        "ex3.cat": "VIDA REAL", "ex3.q": "How much per kilo?", "ex3.ctxEs": "¿A cómo el kilo?", "ex3.ctxTr": "How much per kilo?", "ex3.ctxSit": "Como reto real en el mercado: uno de 47 desafíos.", "ex3.ctxNote": "¿A cómo…? es la pregunta típica de mercado en Latinoamérica.",
         "use.eyebrow": "TRES ESCENARIOS DE USO", "use.title": "Preparar, practicar, aplicar – todo en una app.",
         "use.lead": "Las escuelas no venden un curso de gramática, venden una estancia. Ahí es donde HolaRuta brilla – y todo ello lo sostiene lo que ya existe hoy.",
         "use.1.k": "Pack de pre-llegada", "use.1.t": "Listo antes de que aterrice el avión.", "use.1.b": "Los alumnos se preparan con aeropuerto, taxi, check-in, comida, dinero y emergencias – con categorías, chuletas y tarjetas de contexto. Llegan ya capaces de hablar.",
@@ -534,7 +676,7 @@
     };
 
     // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
-    var HTML_KEYS = { "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var HTML_KEYS = { "hero.h1": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
     var LANG_KEY = "holaruta.landing.lang";
 
     function setLang(lang) {
@@ -554,37 +696,20 @@
         if (HTML_KEYS[key]) nodes[i].innerHTML = dict[key];
         else nodes[i].textContent = dict[key];
       }
+      // aria-labels (und ggf. title) lokalisieren – sonst liest der Screenreader
+      // im EN/ES-Modus deutsche Beschriftungen vor.
+      var aria = document.querySelectorAll("[data-i18n-aria]");
+      for (var a = 0; a < aria.length; a++) {
+        var ak = aria[a].getAttribute("data-i18n-aria");
+        if (!(ak in dict)) continue;
+        aria[a].setAttribute("aria-label", dict[ak]);
+        if (aria[a].hasAttribute("title")) aria[a].setAttribute("title", dict[ak]);
+      }
       var btns = document.querySelectorAll(".lp-langbtn");
       for (var j = 0; j < btns.length; j++) {
         btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
       }
       try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
-      currentLang = lang;
-      paintHeroCard();
-    }
-
-    // Hero-Karte: Pills als Tabs – jede Pill blendet ihr eigenes Szenario (Satz + Erklärung) ein.
-    var currentLang = "de";
-    var heroCard = document.querySelector(".lp-herocard");
-    var heroPills = heroCard ? heroCard.querySelectorAll(".lp-herocard__pill") : [];
-    var heroQ = heroCard ? heroCard.querySelector(".lp-herocard__q") : null;
-    var heroTr = heroCard ? heroCard.querySelector(".lp-herocard__tr") : null;
-    var heroActive = 0;
-    function paintHeroCard() {
-      if (!heroQ || !heroTr) return;
-      var d = I18N[currentLang] || I18N.de;
-      var q = d["card.p" + (heroActive + 1) + ".q"];
-      var tr = d["card.p" + (heroActive + 1) + ".tr"];
-      if (q) heroQ.textContent = q;
-      if (tr) heroTr.textContent = tr;
-      for (var i = 0; i < heroPills.length; i++) {
-        heroPills[i].setAttribute("aria-pressed", i === heroActive ? "true" : "false");
-      }
-    }
-    for (var hp = 0; hp < heroPills.length; hp++) {
-      (function (i) {
-        heroPills[i].addEventListener("click", function () { heroActive = i; paintHeroCard(); });
-      })(hp);
     }
 
     // Startsprache: ?lang= (teilbarer Link) > gemerkt > Browser > de

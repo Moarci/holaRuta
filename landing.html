@@ -63,6 +63,10 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="landing.css" />
 
+  <!-- Geteiltes Beispielkarten-Karussell (Flip, 🔊, 🧭, Punkt-Navigation);
+       dieselbe Datei bedient auch die B2B-Landings (dort mit Pills). -->
+  <script src="landing-carousel.js" defer></script>
+
   <!-- Sicherheits-Header analog index.html. Diese Seite nutzt keine externen
        Ressourcen (Fonts/Bilder self-hosted) – default-src 'self' genügt. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
@@ -138,6 +142,7 @@
         <div class="lp-langtoggle" role="group" aria-label="Sprache / Language">
           <button class="lp-langbtn" data-lang="de" aria-pressed="true">DE</button>
           <button class="lp-langbtn" data-lang="en" aria-pressed="false">EN</button>
+          <button class="lp-langbtn" data-lang="es" aria-pressed="false">ES</button>
         </div>
         <button class="lp-iconbtn" id="lpTheme" data-i18n-aria="a11y.theme" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten">🌙</button>
         <a class="lp-cta lp-cta--sm lp-header__cta" href="./?start=onboarding" data-i18n="nav.cta">Starten</a>
@@ -153,7 +158,7 @@
         <div class="lp-hero__copy">
           <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">REISE-SPANISCH FÜR LATEINAMERIKA</p>
           <h1 data-reveal style="--i:1" data-i18n="hero.h1">Sprich Spanisch, <span class="lp-hl">bevor der Bus kommt.</span></h1>
-          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">2293 Karten für echte Reisesituationen — Bus, Hotel, Essen, Geld, Notfall. Lateinamerika-korrekt, komplett offline, ohne Konto. Lern in der Hängematte, prüf am Grenzposten.</p>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Genau die Sätze, die du im Bus, beim Essen und am Grenzposten brauchst — parat, wenn's drauf ankommt.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
             <a class="lp-cta lp-cta--lg" href="./?start=onboarding" data-i18n="hero.cta">Kostenlos starten →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#how" data-i18n="hero.cta2">Wie es funktioniert</a>
@@ -797,7 +802,7 @@
         "nav.cta": "Starten",
         "hero.eyebrow": "REISE-SPANISCH FÜR LATEINAMERIKA",
         "hero.h1": "Sprich Spanisch, <span class=\"lp-hl\">bevor der Bus kommt.</span>",
-        "hero.sub": "2293 Karten für echte Reisesituationen — Bus, Hotel, Essen, Geld, Notfall. Lateinamerika-korrekt, komplett offline, ohne Konto. Lern in der Hängematte, prüf am Grenzposten.",
+        "hero.sub": "Genau die Sätze, die du im Bus, beim Essen und am Grenzposten brauchst — parat, wenn's drauf ankommt.",
         "hero.cta": "Kostenlos starten →",
         "hero.cta2": "Wie es funktioniert",
         "trust.cards": "Karten", "trust.areas": "Bereiche", "trust.modes": "Lernmodi", "trust.free": "Offline · kein Konto",
@@ -872,7 +877,7 @@
         "nav.cta": "Start",
         "hero.eyebrow": "TRAVEL SPANISH FOR LATIN AMERICA",
         "hero.h1": "Speak Spanish <span class=\"lp-hl\">before the bus arrives.</span>",
-        "hero.sub": "2,293 cards for real travel moments — buses, hotels, food, money, emergencies. Latin-America-correct, fully offline, no account. Learn in the hammock, use it at the border.",
+        "hero.sub": "Exactly the phrases you'll need on the bus, at the table and at the border — ready when it counts.",
         "hero.cta": "Start free →",
         "hero.cta2": "See how it works",
         "trust.cards": "cards", "trust.areas": "areas", "trust.modes": "modes", "trust.free": "Offline · no account",
@@ -941,6 +946,81 @@
         "a11y.theme": "Toggle light/dark", "a11y.card": "Flip the example card",
         "_title": "HolaRuta – Travel Spanish for Latin America",
         "_desc": "HolaRuta – travel Spanish for real situations: 2,293 flashcards with spaced repetition for buses, hotels, food, money & emergencies. Latin-America-correct, fully offline, free, no account."
+      },
+      es: {
+        "skip": "Saltar al contenido",
+        "nav.cta": "Empezar",
+        "hero.eyebrow": "ESPAÑOL DE VIAJE PARA LATINOAMÉRICA",
+        "hero.h1": "Habla español <span class=\"lp-hl\">antes de que llegue el bus.</span>",
+        "hero.sub": "Justo las frases que necesitas en el bus, en la mesa y en la frontera — listas para cuando cuentan.",
+        "hero.cta": "Empezar gratis →",
+        "hero.cta2": "Cómo funciona",
+        "trust.cards": "tarjetas", "trust.areas": "áreas", "trust.modes": "modos", "trust.free": "Sin conexión · sin cuenta",
+        "card.hint": "Toca para girar", "card.lvl": "A1 · Principiante", "card.lvl2": "A2 · Intermedio",
+        "card.speakLabel": "Leer la respuesta en voz alta",
+        "ex1.cat": "DINERO", "ex1.q": "¿Cuánto cuesta esto?",
+        "ex2.cat": "EMERGENCIA", "ex2.q": "Necesito un médico",
+        "ex3.cat": "BUS", "ex3.q": "¿A qué hora sale el bus?",
+        "ex4.cat": "COMIDA", "ex4.q": "La cuenta, por favor",
+        "ex5.cat": "CHARLA", "ex5.q": "¿De dónde eres?",
+        "ctx.show": "Mostrar contexto de viaje", "ctx.title": "🧭 Cómo usarlo sobre el terreno", "ctx.situation": "Situación", "ctx.note": "Consejo de viaje",
+        "ex1.ctxEs": "¿Cuánto cuesta esto?", "ex1.ctxTr": "¿Cuánto vale esto?", "ex1.ctxSit": "En la tienda o en el mercado.", "ex1.ctxNote": "También ¿Cuánto vale? o en el mercado ¿A cómo?",
+        "ex2.ctxEs": "Necesito un médico, por favor.", "ex2.ctxTr": "Necesito un doctor, por favor.", "ex2.ctxSit": "Cuando estás enfermo o herido – en el hostal, en la farmacia.", "ex2.ctxNote": "En una emergencia añade: Es una emergencia.",
+        "ex3.ctxEs": "¿A qué hora sale el próximo bus?", "ex3.ctxTr": "¿Cuándo sale el próximo bus?", "ex3.ctxSit": "Preguntando por el horario en la ventanilla o la terminal.", "ex3.ctxNote": "Presente para lo fijo, como los horarios: sale (salir) = parte.",
+        "ex4.ctxEs": "La cuenta, por favor.", "ex4.ctxTr": "La cuenta, por favor.", "ex4.ctxSit": "En un restaurante, café o puesto de comida con mesas.", "ex4.ctxNote": "Corto, cortés y más que suficiente. Aún más cortés: ¿Me trae la cuenta, por favor?",
+        "ex5.ctxEs": "Hola, ¿de dónde eres?", "ex5.ctxTr": "Hola, ¿de dónde vienes?", "ex5.ctxSit": "En el desayuno, en el dormitorio, en un tour o en el bus.", "ex5.ctxNote": "Un inicio perfecto. Después va bien: ¿Cuánto tiempo viajas?",
+        "feat.eyebrow": "QUÉ INCLUYE",
+        "feat.title": "Todo para el viaje — nada para el aula.",
+        "feat.lead": "Sin empollar vocabulario. Solo las frases que necesitas al instante en la terminal, en el hostal y en el mercado.",
+        "feat.srs.t": "No se te olvida", "feat.srs.b": "Cada palabra vuelve justo antes de que la olvides — automáticamente. No tienes que planear nada.",
+        "feat.modes.t": "Aprende a tu manera", "feat.modes.b": "Gira una tarjeta, escríbela tú mismo o solo escucha — cambia de modo cuando quieras.",
+        "feat.latam.t": "Español de calle de verdad", "feat.latam.b": "colectivo, vuelto, plata, chévere — las palabras que de verdad se usan en Latinoamérica.",
+        "feat.context.t": "Siempre con contexto", "feat.context.b": "Toca 🧭 y cada tarjeta te dice cuándo y dónde vas a necesitar la frase — más un consejo de viaje para situarla.",
+        "feat.offline.t": "Funciona sin red", "feat.offline.b": "Se carga una vez y todo corre sin conexión — Andes, selva, bus nocturno.",
+        "feat.privacy.t": "Sin cuenta, sin anuncios", "feat.privacy.b": "Tu progreso se queda en tu dispositivo. Sin registro, sin anuncios.",
+        "feat.areas.t": "72 temas para situaciones reales", "feat.areas.b": "Del viaje en bus a la farmacia — 2293 tarjetas, bien ordenadas.",
+        "why.eyebrow": "MÁS QUE IDIOMA",
+        "why.title": "No solo aprendes español. Entiendes el continente.",
+        "why.lead": "El idioma es solo el comienzo. HolaRuta te da historia, cultura, instinto y conexión — todo lo que convierte un viaje en tu viaje.",
+        "why.historia.k": "Historia", "why.historia.t": "Ponte frente a Machu Picchu — y entiende lo que ves.", "why.historia.b": "Incas, época colonial, independencia: la historia del continente en bocados que se quedan. No pasas de largo ante las ruinas — las lees.",
+        "why.culturas.k": "Países & culturas", "why.culturas.t": "Cada país es distinto. Sábelo antes de ir.", "why.culturas.b": "De Colombia a la Patagonia: costumbres, dinero, rarezas y tabúes por país. Para que te muevas en todas partes como si ya hubieras estado.",
+        "why.respeto.k": "Buen viajero", "why.respeto.t": "El respeto abre puertas que ninguna guía conoce.", "why.respeto.b": "Cómo saludas, agradeces, regateas y te comportas — los pequeños gestos deciden si eres un huésped o solo un turista. Viaja sin incomodar.",
+        "why.salud.k": "Salud", "why.salud.t": "Cuando el cuerpo falla a 4000 metros, cada frase cuenta.", "why.salud.b": "Mal de altura, estómago, farmacia, médico: las frases para cuando la cosa se pone seria — y los consejos para seguir sano y en marcha.",
+        "why.conexion.k": "Conexión", "why.conexion.t": "Un «Hola» se convierte en la mejor noche de tu viaje.", "why.conexion.b": "Juegos de hostal, frases sueltas, charla: las frases que convierten a desconocidos en la mesa en amigos para toda la vida. Porque viajar es, al final, a quién conoces.",
+        "more.intro": "Y mucho más a bordo",
+        "more.spick.d": "Tus frases de emergencia, grandes y de un vistazo", "more.country.d": "Costumbres, dinero y rarezas por país",
+        "more.historia.d": "La historia de Sudamérica, fácil de seguir", "more.dialogos.d": "Conversaciones enteras, turno a turno",
+        "more.hostel.d": "De a dos: battle y juegos de rol", "more.regatear.d": "Regatea con justicia en el mercado",
+        "more.precios.d": "Escucha un precio, teclea las cifras", "more.juegos.d": "Juegos de hostal y sus frases",
+        "more.musica.d": "La banda sonora de tu ruta", "more.logistica.d": "SIM, efectivo y equipaje inteligente",
+        "more.swipe": "Toca para girar · desliza para ver más", "more.close": "Cerrar ejemplos",
+        "more.pick": "Elige un ejemplo", "more.examples": "Frases de ejemplo", "more.speak": "Leer la frase en voz alta",
+        "how.eyebrow": "CÓMO FUNCIONA", "how.title": "Sobre el terreno en tres pasos.",
+        "how.s1.k": "ELIGE", "how.s1.t": "Elige un área", "how.s1.b": "Elige lo que viene — dinero, comida, buses, emergencias. <b class=\"lp-step__hl\">72 áreas</b>, todas listas para viajar.",
+        "how.s2.k": "APRENDE", "how.s2.t": "Aprende una tarjeta", "how.s2.b": "Toca, responde, gira. <b class=\"lp-step__hl\">Girar, escribir o escuchar</b> — tú decides.",
+        "how.s3.k": "REPASA", "how.s3.t": "Evalúa con honestidad", "how.s3.b": "Márcala: <b class=\"lp-step__hl\">otra vez, bien o fácil</b>. La app programa el resto por ti.",
+        "install.eyebrow": "INSTALAR", "install.title": "Como app en tu pantalla de inicio.",
+        "install.android": "Android", "install.ios": "iPhone (Safari)",
+        "install.a1": "Abre HolaRuta en tu navegador.", "install.a2": "Toca «Añadir a la pantalla de inicio».", "install.a3": "Listo — HolaRuta queda como app en tu pantalla de inicio, lista sin conexión.",
+        "install.i1": "Abre HolaRuta en Safari.", "install.i2": "Toca el icono de Compartir y luego «Añadir a inicio».", "install.i3": "Abre HolaRuta desde la pantalla de inicio — funciona sin conexión.",
+        "install.note": "Sin tienda de apps, sin registro, sin cola de actualizaciones.",
+        "install.cta": "Abrir ahora en el navegador →",
+        "faq.q1": "¿Necesito internet?", "faq.a1": "No. Una vez cargada, HolaRuta funciona sin conexión — pensada para el bus nocturno sin señal.",
+        "faq.q2": "¿De verdad es gratis?", "faq.a2": "Sí. Completamente gratis, sin anuncios, sin compras dentro de la app, sin cuenta.",
+        "faq.q3": "¿Qué español aprendo?", "faq.a3": "Español latinoamericano de viaje — colectivo en vez de autobús, vuelto en vez de cambio. Las palabras que de verdad se oyen allí.",
+        "faq.q4": "¿Se guardan mis datos?", "faq.a4": "Tu progreso se queda local en tu dispositivo. Sin anuncios, sin registro, sin servidor. La sincronización en la nube y las estadísticas anónimas son opcionales y están desactivadas por defecto.",
+        "faq.q5": "¿En qué dispositivos funciona?", "faq.a5": "En cualquier navegador moderno — Android, iPhone, tablet, portátil. Instalable como app en el móvil.",
+        "footer.blurb": "Tu español de viaje para situaciones reales — tarjetas para bus, hotel, comida, dinero y emergencias. Correcto para Latinoamérica, sin conexión, gratis.",
+        "footer.app": "App", "footer.open": "Abrir app", "footer.start": "Empezar gratis", "footer.single": "Versión de archivo único",
+        "footer.more": "Más", "footer.features": "Funciones", "footer.why": "Más que idioma", "footer.how": "Cómo funciona", "footer.install": "Instalar",
+        "footer.audiences": "Para partners", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes",
+        "footer.credit": "Hecho con <span class=\"lp-footer__heart\">♥</span> para Latinoamérica.",
+        "final.title": "Haz la maleta. Del resto nos encargamos nosotros.",
+        "final.sub": "2293 tarjetas, sin conexión, sin cuenta, gratis. Listo en 30 segundos.",
+        "final.cta": "Empezar gratis →",
+        "a11y.theme": "Cambiar claro/oscuro", "a11y.card": "Girar la tarjeta de ejemplo",
+        "_title": "HolaRuta – Español de viaje para Latinoamérica",
+        "_desc": "HolaRuta – tu español de viaje para situaciones reales: 2293 tarjetas con repetición espaciada para bus, hotel, comida, dinero y emergencias. Correcto para Latinoamérica, sin conexión, gratis, sin cuenta."
       }
     };
     // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
@@ -985,8 +1065,11 @@
     try { urlLang = new URLSearchParams(location.search).get("lang"); } catch (e) {}
     var saved = null;
     try { saved = localStorage.getItem(LANG_KEY); } catch (e) {}
-    var initial = (urlLang === "de" || urlLang === "en") ? urlLang
-      : saved || ((navigator.language || "de").toLowerCase().indexOf("de") === 0 ? "de" : "en");
+    var SUPPORTED = ["de", "en", "es"];
+    var browser = (navigator.language || "de").toLowerCase();
+    var browserLang = browser.indexOf("de") === 0 ? "de" : (browser.indexOf("es") === 0 ? "es" : "en");
+    var initial = (urlLang && SUPPORTED.indexOf(urlLang) >= 0) ? urlLang
+      : (saved && SUPPORTED.indexOf(saved) >= 0) ? saved : browserLang;
     setLang(initial);
 
     document.querySelectorAll(".lp-langbtn").forEach(function (b) {
@@ -1018,120 +1101,8 @@
 
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // ── Beispielkarten-Karussell ──
-    var car = document.getElementById("lpCar");
-    if (car) {
-      var slides = Array.prototype.slice.call(car.querySelectorAll(".lp-slide"));
-      var flips = slides.map(function (s) { return s.querySelector(".flip"); });
-      var dots = Array.prototype.slice.call(document.querySelectorAll("#lpDots .lp-dot"));
-      var idx = 0, timer = null, swiped = false;
-      var AUTO = 4200;
-
-      function setActive(i, focusDot) {
-        idx = (i + slides.length) % slides.length;
-        slides.forEach(function (s, n) {
-          var on = n === idx;
-          s.classList.toggle("is-active", on);
-          s.setAttribute("aria-hidden", on ? "false" : "true"); // inaktive Karten aus dem SR-Fokus
-          if (!on) { // beim Wegblättern zurück auf die Vorderseite + Kontext schließen
-            var f = flips[n];
-            if (f) { f.classList.remove("is-flipped"); f.setAttribute("aria-pressed", "false"); }
-            var cp = s.querySelector(".lp-ctxpanel");
-            if (cp) cp.setAttribute("hidden", "");
-            var cb = s.querySelector(".cardbtn--ctx");
-            if (cb) { cb.classList.remove("is-open"); cb.setAttribute("aria-expanded", "false"); }
-          }
-        });
-        dots.forEach(function (d, n) {
-          var on = n === idx;
-          d.classList.toggle("is-active", on);
-          if (on) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current");
-        });
-        if (focusDot && dots[idx]) dots[idx].focus();
-      }
-      function next() { setActive(idx + 1); }
-
-      function startAuto() { if (reduce) return; stopAuto(); timer = setInterval(next, AUTO); }
-      function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
-
-      // Flip + Vorlesen pro Karte
-      flips.forEach(function (f) {
-        if (!f) return;
-        var slide = f.closest(".lp-slide");
-        var ctxBtn = f.querySelector(".cardbtn--ctx");
-        var panel = slide ? slide.querySelector(".lp-ctxpanel") : null;
-        function closeCtx() {
-          if (panel) panel.setAttribute("hidden", "");
-          if (ctxBtn) { ctxBtn.classList.remove("is-open"); ctxBtn.setAttribute("aria-expanded", "false"); }
-        }
-        function flip() {
-          var on = f.classList.toggle("is-flipped");
-          f.setAttribute("aria-pressed", on ? "true" : "false");
-          if (!on) closeCtx();                       // zurück auf Vorderseite -> Kontext zu
-        }
-        f.addEventListener("click", function (e) {
-          if (swiped) return;                        // war ein Wisch, kein Tap
-          if (e.target.closest(".cardbtn")) return;  // Eck-Button nicht als Flip werten
-          flip();
-        });
-        f.addEventListener("keydown", function (e) {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
-        });
-        // 🧭 Reise-Kontext: blendet das App-Panel unter der Karte ein/aus (Pendant
-        // zum 🔊; klappt auf, ohne die Karte umzudrehen). Wie in der App.
-        if (ctxBtn && panel) ctxBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          var willOpen = panel.hasAttribute("hidden");
-          if (willOpen) panel.removeAttribute("hidden"); else panel.setAttribute("hidden", "");
-          ctxBtn.classList.toggle("is-open", willOpen);
-          ctxBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
-        });
-        var spk = f.querySelector(".cardbtn--speak");
-        if (spk) spk.addEventListener("click", function (e) {
-          e.stopPropagation();
-          try {
-            if (!("speechSynthesis" in window)) return;
-            var u = new SpeechSynthesisUtterance(spk.getAttribute("data-spk") || "");
-            u.lang = "es-419"; u.rate = 0.95;
-            speechSynthesis.cancel(); speechSynthesis.speak(u);
-          } catch (err) {}
-        });
-      });
-
-      // Punkt-Navigation
-      dots.forEach(function (d) {
-        d.addEventListener("click", function () { setActive(parseInt(d.getAttribute("data-i"), 10) || 0); startAuto(); });
-      });
-
-      // Auto-Rotation pausieren bei Hover/Fokus/Interaktion
-      car.addEventListener("pointerenter", stopAuto);
-      car.addEventListener("pointerleave", startAuto);
-      car.addEventListener("focusin", stopAuto);
-      car.addEventListener("focusout", startAuto);
-
-      // Wisch-Geste (Touch & Maus). pointerup hängt am window, damit ein Release
-      // auch AUSSERHALB des Karussells erkannt wird. Ein erkannter Wisch setzt
-      // `swiped` -> der nachfolgende Klick dreht die Karte NICHT um.
-      var dragX = null, dragY = null;
-      car.addEventListener("pointerdown", function (e) {
-        if (e.target.closest(".cardbtn")) return; // auf Buttons keinen Wisch starten
-        dragX = e.clientX; dragY = e.clientY; swiped = false;
-      });
-      window.addEventListener("pointerup", function (e) {
-        if (dragX === null) return;
-        var dx = e.clientX - dragX, dy = e.clientY - dragY;
-        dragX = dragY = null;
-        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { // klar horizontal
-          swiped = true;
-          setActive(idx + (dx < 0 ? 1 : -1));
-          startAuto();
-        }
-      });
-      car.addEventListener("pointercancel", function () { dragX = dragY = null; });
-
-      setActive(0);
-      startAuto();
-    }
+    // Das Beispielkarten-Karussell (#lpCar) wird von der geteilten
+    // landing-carousel.js gesteuert (Flip, 🔊, 🧭, Punkt-Navigation, Rotation).
 
     // ── „Mehr an Bord": Modul antippen -> Beispiele aufklappen & durchwischen ──
     (function moreModules() {
