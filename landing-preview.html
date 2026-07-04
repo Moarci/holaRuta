@@ -4985,10 +4985,12 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
   display: grid; grid-template-columns: 1fr; gap: var(--space-3);
   margin-top: var(--space-5);
 }
-@media (min-width: 520px) {
-  .lp-features__grid { grid-template-columns: repeat(2, 1fr); }
-  /* Bleibt in der letzten Reihe eine Karte allein übrig (7 Karten = 2+2+2+1),
-     zentriert sie sich auf Einzelspaltenbreite statt links zu kleben. */
+@media (min-width: 520px) { .lp-features__grid { grid-template-columns: repeat(2, 1fr); } }
+/* Nur im 2-Spalten-Bereich: bleibt eine Karte allein in der letzten Reihe
+   (7 Karten = 2+2+2+1), zentriert sie sich auf Einzelspaltenbreite. Obergrenze
+   759.98px, damit die max-width-Regel NICHT in die 3-Spalten-Ansicht durchschlägt
+   und dort die Waisen-Karte auf eine halbe Spalte verengt. */
+@media (min-width: 520px) and (max-width: 759.98px) {
   .lp-features__grid > .lp-feat:last-child:nth-child(2n - 1) {
     grid-column: 1 / -1; justify-self: center;
     width: 100%; max-width: calc((100% - var(--space-3)) / 2);
@@ -4996,8 +4998,9 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
 }
 @media (min-width: 760px) {
   .lp-features__grid { grid-template-columns: repeat(3, 1fr); }
-  /* 7 Karten = 3+3+1: die einzelne letzte Karte in die Mittelspalte rücken,
-     damit sie nicht als „Waise" links unten hängt. */
+  /* 7 Karten = 3+3+1: die einzelne letzte Karte in die Mittelspalte rücken –
+     in voller Spaltenbreite (kein max-width), damit sie wie eine normale Karte
+     aussieht statt als schmale „Waise" links unten zu hängen. */
   .lp-features__grid > .lp-feat:last-child:nth-child(3n - 2) { grid-column: 2 / 3; }
 }
 .lp-feat {
@@ -6954,12 +6957,14 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         el.addEventListener("click", function () { activateStep(el); });
       });
 
-      // Scroll-Spy: aktiv ist der Schritt, der die vertikale Bildschirmmitte
-      // kreuzt. Das rootMargin schneidet oben/unten je ~48 % weg, sodass nur EIN
-      // Schritt im schmalen Mittelband liegt. Vorher waren auf dem Desktop alle
-      // drei Karten gleichzeitig >55 % sichtbar, wodurch immer der zuletzt
-      // ausgewertete Schritt (Nr. 3) hängen blieb und das Bild nie wechselte.
-      if ("IntersectionObserver" in window) {
+      // Scroll-Spy NUR auf Touch-Geräten ohne echten Hover (z. B. Tablet):
+      // dort steuert das Durchscrollen das Phone-Bild, weil man nicht hovern kann.
+      // Auf dem Desktop mit Maus ist der Scroll-Spy AUS – sonst überschreibt das
+      // Scrollen die Hover-Auswahl und bleibt am Ende immer auf dem untersten
+      // Schritt (Nr. 3) hängen. Dort wählt allein die Maus.
+      var canHover = window.matchMedia &&
+        window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      if (!canHover && "IntersectionObserver" in window) {
         var ioStep = new IntersectionObserver(function (entries) {
           entries.forEach(function (en) {
             if (en.isIntersecting) activateStep(en.target);

@@ -1473,12 +1473,14 @@
         el.addEventListener("click", function () { activateStep(el); });
       });
 
-      // Scroll-Spy: aktiv ist der Schritt, der die vertikale Bildschirmmitte
-      // kreuzt. Das rootMargin schneidet oben/unten je ~48 % weg, sodass nur EIN
-      // Schritt im schmalen Mittelband liegt. Vorher waren auf dem Desktop alle
-      // drei Karten gleichzeitig >55 % sichtbar, wodurch immer der zuletzt
-      // ausgewertete Schritt (Nr. 3) hängen blieb und das Bild nie wechselte.
-      if ("IntersectionObserver" in window) {
+      // Scroll-Spy NUR auf Touch-Geräten ohne echten Hover (z. B. Tablet):
+      // dort steuert das Durchscrollen das Phone-Bild, weil man nicht hovern kann.
+      // Auf dem Desktop mit Maus ist der Scroll-Spy AUS – sonst überschreibt das
+      // Scrollen die Hover-Auswahl und bleibt am Ende immer auf dem untersten
+      // Schritt (Nr. 3) hängen. Dort wählt allein die Maus.
+      var canHover = window.matchMedia &&
+        window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      if (!canHover && "IntersectionObserver" in window) {
         var ioStep = new IntersectionObserver(function (entries) {
           entries.forEach(function (en) {
             if (en.isIntersecting) activateStep(en.target);
