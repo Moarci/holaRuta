@@ -846,8 +846,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .study > .favline { grid-column: 1; }
   .study > .skipbtn { grid-column: 1; }
   .study > .sharepic-btn { grid-column: 1; }
-  /* Smartphone-Mockup auf rechter Seite */
-  .smartphone-mock { grid-column: 2; grid-row: 2 / span 20; position: sticky; top: 20px; }
+  .study > .typer { grid-column: 1; }
 }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .iconbtn {
@@ -1120,6 +1119,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   display: none; /* nur auf Desktop sichtbar */
 }
 @media (min-width: 900px) {
+  .study > .smartphone-mock {
+    grid-column: 2; grid-row: 3 / -1; position: sticky; top: 20px;
+  }
   .smartphone-mock {
     display: block;
     width: 320px; margin: 0 auto;
@@ -1138,7 +1140,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     display: flex; flex-direction: column;
   }
   .smartphone-mock__statusbar {
-    height: 24px; padding: 0 12px; background: var(--page-dark, #1a1a1a);
+    height: 24px; padding: 0 12px; background: var(--card);
     display: flex; align-items: center; justify-content: space-between;
     font-size: 0.7rem; color: var(--muted);
   }

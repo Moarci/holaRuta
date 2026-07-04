@@ -1512,6 +1512,29 @@
               aria-pressed="${on ? "true" : "false"}" aria-label="${esc(label)}" title="${esc(label)}"><span class="favline__star" aria-hidden="true">${on ? "★" : "☆"}</span><span class="favline__txt">${esc(on ? t("study.favSaved") : t("study.favSave"))}</span></button>`;
   }
 
+  // Smartphone-Mockup: zeigt die aktuelle Lernkarte auf Desktop-Größe in einem Smartphone-Rahmen.
+  function smartphoneMock(vm) {
+    const isFlipped = vm.revealed || false;
+    const cardText = isFlipped ? (vm.answer || "—") : (vm.question || "—");
+    const catLabel = vm.catLabel || "";
+    return `
+      <div class="smartphone-mock">
+        <div class="smartphone-mock__screen">
+          <div class="smartphone-mock__statusbar">
+            <span>12:34</span>
+            <span>📶 ▼</span>
+          </div>
+          <div class="smartphone-mock__content">
+            <div class="smartphone-mock__card${isFlipped ? ' is-back' : ''}">
+              <div class="smartphone-mock__card-label">${esc(catLabel)}</div>
+              <div class="smartphone-mock__card-text">${esc(cardText)}</div>
+              <div class="smartphone-mock__hint">${isFlipped ? '✓' : '↻ Flip'}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
   // ---------- STUDY ----------
   function renderStudy(vm) {
     const pct = vm.total > 0 ? Math.round((vm.position / vm.total) * 100) : 0;
@@ -1530,28 +1553,6 @@
       ? `<div class="progress progress--endless" role="progressbar" aria-valuetext="${esc(t("study.endlessLabel"))}" aria-label="${esc(t("study.studyProgress"))}"><div class="progress__bar"></div></div>`
       : `<div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("study.studyProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>`;
 
-    // Smartphone-Mockup: zeigt die aktuelle Lernkarte auf Desktop-Größe in einem Smartphone-Rahmen
-    const smartphoneMock = () => {
-      const isFlipped = vm.revealed || false;
-      const cardText = isFlipped ? vm.answer : vm.question;
-      return `
-        <div class="smartphone-mock">
-          <div class="smartphone-mock__screen">
-            <div class="smartphone-mock__statusbar">
-              <span>12:34</span>
-              <span>📶 ▼</span>
-            </div>
-            <div class="smartphone-mock__content">
-              <div class="smartphone-mock__card${isFlipped ? ' is-back' : ''}">
-                <div class="smartphone-mock__card-label">${esc(vm.catLabel)}</div>
-                <div class="smartphone-mock__card-text">${esc(cardText)}</div>
-                <div class="smartphone-mock__hint">${isFlipped ? '✓' : '↻ Flip'}</div>
-              </div>
-            </div>
-          </div>
-        </div>`;
-    };
-
     return `
       <section class="screen study" style="--from:${esc(accent[0])};--to:${esc(accent[1])}">
         <div class="topbar">
@@ -1566,7 +1567,7 @@
         ${favLine(vm)}
         ${skipBtn()}
         ${shareCardBtn()}
-        ${smartphoneMock()}
+        ${smartphoneMock(vm)}
       </section>`;
   }
 
