@@ -253,11 +253,16 @@ Reisen lernen** (Inglés-Edition, Track `es-en`):
 - **CTAs** führen im ES-Modus in die Inglés-Edition (`?edition=ingles-pro`, via
   `data-app-onboard`).
 - **Mockup** nutzt einen echten Spanisch-UI-Screenshot der Locals-App (`home-hero-es.webp`).
+- **Trust-Bar-Zahlen** werden im ES-Modus auf die echten Inglés-Edition-Werte gezählt:
+  **2844 tarjetas · 131 áreas** (statt 2293 / 72). Die Werte wurden per CDP direkt aus
+  der laufenden `?edition=ingles-pro`-App gelesen (Karten-Chip „Todo · 2844",
+  `open-category`-Themen = 131); `setLang` setzt `data-count` + `textContent` je Sprache.
+- **„more"-Modul-Chips** gegen die echte Inglés-Edition abgeglichen und ehrlich gefasst:
+  `musica` → „La banda sonora de tu viaje" (statt fälschlich „El inglés de tus canciones" —
+  das Modul zeigt LatAm-Genres), `historia` → „La historia de tu continente".
 
-Bekannte Rest-Punkte (klein): Die Trust-Bar-Zahlen im Hero-Markup (`2293`, `72`) sind
-Reise-Spanisch-Werte und erscheinen auch auf der ES-Seite; der Fließtext wurde bereits
-zahl-agnostisch gemacht („miles"/„decenas"). Die „more"-Modul-Chips wurden generisch
-gehalten, nicht auf exakte Inglés-Edition-Feature-Parität geprüft.
+Verbleibender Mikro-Punkt: Die „Gratis"-Kachel zeigt hartcodiert „0 €" (Euro) statt
+`$`/„Gratis" — auf der Latino-ES-Seite kosmetisch unpassend, aber trivial.
 
 ---
 

@@ -163,14 +163,14 @@
             <div class="lp-trust__item" data-reveal style="--i:4; --accent:#C2502E">
               <span class="lp-trust__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-cards"/></svg></span>
               <div class="lp-trust__data">
-                <span class="lp-trust__num" data-count="2293">2293</span>
+                <span class="lp-trust__num" id="lpTrustCards" data-count="2293" data-count-base="2293" data-count-es="2844">2293</span>
                 <span class="lp-trust__label" data-i18n="trust.cards">Karten</span>
               </div>
             </div>
             <div class="lp-trust__item" data-reveal style="--i:5; --accent:#2F6B70">
               <span class="lp-trust__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-folder"/></svg></span>
               <div class="lp-trust__data">
-                <span class="lp-trust__num" data-count="72">72</span>
+                <span class="lp-trust__num" id="lpTrustAreas" data-count="72" data-count-base="72" data-count-es="131">72</span>
                 <span class="lp-trust__label" data-i18n="trust.areas">Bereiche</span>
               </div>
             </div>
@@ -995,10 +995,10 @@
         "why.conexion.k": "Conexión", "why.conexion.t": "Un «Hi» se convierte en la mejor noche de tu viaje.", "why.conexion.b": "Charla, frases sueltas, humor: el inglés que convierte a desconocidos en la mesa en amigos para toda la vida. Porque viajar es, al final, a quién conoces.",
         "more.intro": "Y mucho más a bordo",
         "more.spick.d": "Tus frases clave, grandes y de un vistazo", "more.country.d": "Costumbres, propinas y rarezas por país",
-        "more.historia.d": "Cultura de viaje, fácil de seguir", "more.dialogos.d": "Conversaciones enteras, turno a turno",
+        "more.historia.d": "La historia de tu continente, fácil de seguir", "more.dialogos.d": "Conversaciones enteras, turno a turno",
         "more.hostel.d": "De a dos: practica hablando", "more.regatear.d": "Pide y negocia con educación",
         "more.precios.d": "Escucha un precio, teclea las cifras", "more.juegos.d": "Juegos para romper el hielo",
-        "more.musica.d": "El inglés de tus canciones", "more.logistica.d": "SIM, efectivo y equipaje inteligente",
+        "more.musica.d": "La banda sonora de tu viaje", "more.logistica.d": "SIM, efectivo y equipaje inteligente",
         "more.swipe": "Toca para girar · desliza para ver más", "more.close": "Cerrar ejemplos",
         "more.pick": "Elige un ejemplo", "more.examples": "Frases de ejemplo", "more.speak": "Leer la frase en voz alta",
         "how.eyebrow": "CÓMO FUNCIONA", "how.title": "Sobre el terreno en tres pasos.",
@@ -1080,6 +1080,15 @@
       for (var s = 0; s < speakBtns.length; s++) {
         var bWord = speakBtns[s].parentElement.querySelector(".face__word");
         if (bWord) speakBtns[s].setAttribute("data-spk", bWord.textContent);
+      }
+      // Trust-Bar-Zahlen an die Edition koppeln: ES = Inglés-Edition (2844 Karten,
+      // 131 temas), sonst Reise-Spanisch (2293 / 72). data-count zieht die
+      // Zähl-Animation mit; textContent setzt spätere Sprachwechsel direkt.
+      var tNums = document.querySelectorAll("[data-count-es]");
+      for (var tn = 0; tn < tNums.length; tn++) {
+        var val = learnsEnglish ? tNums[tn].getAttribute("data-count-es") : tNums[tn].getAttribute("data-count-base");
+        tNums[tn].setAttribute("data-count", val);
+        tNums[tn].textContent = val;
       }
       // Umschalt-Buttons aktualisieren
       var btns = document.querySelectorAll(".lp-langbtn");
