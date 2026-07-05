@@ -109,6 +109,25 @@
       taskTab: false,      // kein Schul-Aufgaben-Workflow – Selbstlernen am Arbeitsplatz
       teacherTab: false,
     },
+    // Medellín-Locals-Variante: Paisas lernen Englisch für den Umgang mit
+    // englischsprachigen Tourist:innen – mit stadtspezifischen Modulen (Comuna 13,
+    // Metro/Metrocable, medio ambiente, cultura paisa, Guatapé, nómadas digitales,
+    // Feria de las Flores). track:"es-en" wie venue-en; zusätzlich blendet der
+    // Locals-Track die neue Kategorie-Gruppe „loc-med" (data.locals.js) oben ein.
+    // Paisa-Grün als Akzent (Ciudad de la Eterna Primavera / Corredores Verdes) –
+    // NÄHERUNG, bei Freigabe ersetzen. Selbstlernen: kein Schul-Backoffice.
+    medellin: {
+      edition: "medellin",
+      brandName: "HolaRuta · Medellín",
+      accent: { brand: "#2F8E5B", brandInk: "#1F6B44" },
+      partner: { name: "Medellín", url: null },
+      logo: null,
+      defaultDestination: null,
+      appUrl: "https://moarci.github.io/holaRuta/",
+      track: "es-en",      // Paisas lernen Englisch (Frage = Spanisch, Antwort = Englisch)
+      taskTab: false,
+      teacherTab: false,
+    },
   };
 
   SC.editions = EDITIONS;
