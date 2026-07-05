@@ -176,10 +176,12 @@
   function bubble(role, text, sub) {
     const side = role === "npc" ? "npc" : "user";
     const ico = role === "npc" ? "🧳" : "🙋";
+    // Beide Seiten sprechen Englisch: der/die Turista fragt auf Englisch, das Kind
+    // antwortet auf Englisch (die zu übende Sprache). Daher immer lang="en".
     return `
       <div class="dlg-row dlg-row--${side}">
         <div class="dlg-bubble dlg-bubble--${side}">
-          <span class="dlg-bubble__es" lang="${role === "npc" ? "en" : "en"}">${esc(ico + " " + text)}</span>
+          <span class="dlg-bubble__es" lang="en">${esc(ico + " " + text)}</span>
           ${sub ? `<span class="dlg-bubble__de">${esc(sub)}</span>` : ""}
         </div>
       </div>`;
