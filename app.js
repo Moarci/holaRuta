@@ -7181,7 +7181,7 @@
     juegos:        { icon: "🎲", lc: "lc:dices",           title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
     banderas:      { icon: "🚩", lc: "lc:flag",            title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
     carrito:       { icon: "🛒", lc: "lc:shopping-cart",   title: "El carrito",           sub: "discover.subCarrito",       accent: ["#E0743C", "#B97C24"] },
-    jugar:         { icon: "🎮", lc: "lc:gamepad-2",       title: "¡A jugar en inglés!",  sub: "discover.subJugar",         accent: ["#3F7355", "#2E6E86"] },
+    jugar:         { icon: "🎮", lc: "lc:dices",           title: "¡A jugar en inglés!",  sub: "discover.subJugar",         accent: ["#3F7355", "#2E6E86"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).

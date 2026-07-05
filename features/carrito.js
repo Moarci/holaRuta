@@ -142,13 +142,21 @@
       const tn = turns[i];
       if (tn) transcript.push({ role: tn.role, text: tn.role === "npc" ? tn.en : tn.say, sub: tn.role === "npc" ? tn.es : "" });
     }
+    // Fortschritt zählt NUR die Spiel-Züge des Kindes (user), NICHT die automatisch
+    // übersprungenen Turista-Züge (npc) – sonst widerspräche der Nenner dem Ergebnis
+    // (Aciertos: k/userTurns). userTotal = Anzahl user-Züge; userStep = laufende
+    // Nummer des aktuellen user-Zuges; userDone = fertig beantwortete user-Züge.
+    const isUser = (t) => t && t.role === "user";
+    const userTotal = turns.filter(isUser).length;
+    const userStep = turns.slice(0, st.turnIdx + 1).filter(isUser).length;
+    const userDone = turns.slice(0, st.turnIdx).filter(isUser).length + (st.result ? 1 : 0);
     return {
       empty: false,
       title: (scene && scene.title && (scene.title[uiLang()] || scene.title.en)) || "",
       icon: scene ? scene.icon : "🛒",
-      total: turns.length,
-      step: Math.min(st.turnIdx + 1, turns.length),
-      pct: turns.length ? Math.round(((st.turnIdx + (st.result ? 1 : 0)) / turns.length) * 100) : 0,
+      total: userTotal,
+      step: Math.min(userStep, userTotal),
+      pct: userTotal ? Math.round((userDone / userTotal) * 100) : 0,
       transcript,
       role: cur ? cur.role : null,
       npc: cur && cur.role === "npc" ? { en: cur.en, es: cur.es } : null,
@@ -276,6 +284,7 @@
     const scene = sceneById(sceneId);
     if (!scene || !scene.turns.length) return;
     const userTurns = scene.turns.filter((tn) => tn.role === "user").length;
+    if (!userTurns) return; // ohne spielbaren user-Zug gäbe es keine Auswahl (Dead-Lock-Schutz)
     ctx.state.carritoRP = { sceneId: sceneId, turnIdx: 0, result: null, correct: 0, total: userTurns };
     skipNpc();
     ctx.state.screen = "carritoPlay";
@@ -286,7 +295,7 @@
     const st = ctx.state.carritoRP;
     if (!st || st.result) return;
     const turn = currentTurn();
-    if (!turn || turn.role !== "user" || !turn.options[idx]) return;
+    if (!turn || turn.role !== "user" || !turn.options || !turn.options[idx]) return;
     const correct = !!turn.options[idx].ok;
     st.result = { correct, given: turn.options[idx].t };
     if (correct) { st.correct += 1; ctx.buzz && ctx.buzz(12); } else ctx.buzz && ctx.buzz(8);

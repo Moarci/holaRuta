@@ -200,7 +200,7 @@
     { id: "loc-vnn06", cat: "vender-nino", lvl: 1, es: "¿Cuántos quiere?", en: "How many would you like?", tip: "jáo MÉ-ni wud yu láik" },
     { id: "loc-vnn07", cat: "vender-nino", lvl: 1, es: "Mire, por favor.", en: "Have a look, please.", tip: "jav a luk plis" },
     { id: "loc-vnn08", cat: "vender-nino", lvl: 1, es: "Aquí tiene.", en: "Here you go.", tip: "JÍR yu góu" },
-    { id: "loc-vnn09", cat: "vender-nino", lvl: 1, es: "Gracias por comprar.", en: "Thanks for buying.", tip: "zenks for BÁ-ing" },
+    { id: "loc-vnn09", cat: "vender-nino", lvl: 1, es: "Gracias por comprar.", en: "Thanks for buying.", tip: "zenks for BÁI-ing" },
     { id: "loc-vnn10", cat: "vender-nino", lvl: 1, es: "¿Algo más?", en: "Anything else?", tip: "É-ni-zing els" },
     // --- precios-nino: Precios y vuelto ---
     { id: "loc-pnn01", cat: "precios-nino", lvl: 1, es: "Un dólar.", en: "One dollar.", tip: "uán DÓ-lar" },
@@ -220,7 +220,7 @@
     { id: "loc-chn04", cat: "charla-nino", lvl: 1, es: "¿Cómo se llama?", en: "What's your name?", tip: "wats yor néim" },
     { id: "loc-chn05", cat: "charla-nino", lvl: 1, es: "Bienvenido.", en: "Welcome.", tip: "UÉL-com" },
     { id: "loc-chn06", cat: "charla-nino", lvl: 1, es: "Que tenga un buen día.", en: "Have a nice day.", tip: "jav a náis déi" },
-    { id: "loc-chn07", cat: "charla-nino", lvl: 1, es: "Gracias, muy amable.", en: "Thank you, that's kind.", tip: "zenk yu dats káind" },
+    { id: "loc-chn07", cat: "charla-nino", lvl: 1, es: "Gracias, muy amable.", en: "Thank you, that's very kind.", tip: "zenk yu dats VÉ-ri káind" },
     { id: "loc-chn08", cat: "charla-nino", lvl: 1, es: "Hasta luego.", en: "See you later.", tip: "si yu LÉI-ter" },
     { id: "loc-chn09", cat: "charla-nino", lvl: 1, es: "Disfrute su viaje.", en: "Enjoy your trip.", tip: "en-YÓI yor trip" },
     { id: "loc-chn10", cat: "charla-nino", lvl: 1, es: "Cuídese.", en: "Take care.", tip: "téik ker" },
